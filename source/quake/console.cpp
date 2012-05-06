@@ -275,26 +275,6 @@ DRAWING
 ==============================================================================
 */
 
-
-/*
-================
-Con_DrawInput
-
-The input line scrolls horizontally if typing goes beyond the right edge
-================
-*/
-void Con_DrawInput(void)
-{
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && !con_forcedup)
-	{
-		return;		// don't draw anything
-	}
-
-	UI_DrawString(8, con.vislines - 16, "]");
-	Field_Draw(&g_consoleField, 16, con.vislines - 16, true);
-}
-
-
 /*
 ================
 Con_DrawNotify
@@ -340,37 +320,6 @@ void Con_DrawNotify(void)
 		Field_Draw(&chatField, 40, v, true);
 	}
 }
-
-/*
-================
-Con_DrawConsole
-
-Draws the console with the solid background
-The typing input line at the bottom should only be drawn if typing is allowed
-================
-*/
-void Con_DrawConsole(int lines, qboolean drawinput)
-{
-	if (lines <= 0)
-	{
-		return;
-	}
-
-// draw the background
-	Con_DrawBackground((float)lines / viddef.height, lines);
-
-// draw the text
-	con.vislines = lines;
-
-	Con_DrawText(lines);
-
-// draw the input prompt, user text, and cursor if desired
-	if (drawinput)
-	{
-		Con_DrawInput();
-	}
-}
-
 
 /*
 ==================

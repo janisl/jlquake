@@ -627,7 +627,7 @@ void SCR_DrawConsole(void)
 {
 	if (scr_con_current)
 	{
-		Con_DrawConsole(scr_con_current, true);
+		Con_DrawSolidConsole((float)scr_con_current / viddef.height);
 	}
 	else
 	{

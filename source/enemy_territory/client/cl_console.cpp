@@ -42,7 +42,6 @@ Cvar* con_autoclear;
 Cvar* con_restricted;
 
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
-vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
 
 /*
@@ -265,48 +264,6 @@ DRAWING
 ==============================================================================
 */
 
-
-/*
-================
-Con_DrawInput
-
-Draw the editline after a ] prompt
-================
-*/
-void Con_DrawInput(void)
-{
-	int y;
-
-	if (cls.state != CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_CONSOLE))
-	{
-		return;
-	}
-
-	y = con.vislines - (SMALLCHAR_HEIGHT * 2);
-
-	// hightlight the current autocompleted part
-	if (con.acLength)
-	{
-		Cmd_TokenizeString(g_consoleField.buffer);
-
-		if (String::Length(Cmd_Argv(0)) - con.acLength > 0)
-		{
-			R_SetColor(console_highlightcolor);
-			R_StretchPic(con.xadjust + (2 + con.acLength) * SMALLCHAR_WIDTH,
-				y + 2,
-				(String::Length(Cmd_Argv(0)) - con.acLength) * SMALLCHAR_WIDTH,
-				SMALLCHAR_HEIGHT - 2, 0, 0, 0, 0, cls.whiteShader);
-		}
-	}
-
-	R_SetColor(con.color);
-
-	SCR_DrawSmallChar(con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']');
-
-	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true);
-}
-
-
 /*
 ================
 Con_DrawNotify
@@ -404,47 +361,6 @@ void Con_DrawNotify(void)
 		v += BIGCHAR_HEIGHT;
 	}
 
-}
-
-/*
-================
-Con_DrawSolidConsole
-
-Draws the console with the solid background
-================
-*/
-
-void Con_DrawSolidConsole(float frac)
-{
-	int lines;
-
-	lines = cls.glconfig.vidHeight * frac;
-	if (lines <= 0)
-	{
-		return;
-	}
-
-	if (lines > cls.glconfig.vidHeight)
-	{
-		lines = cls.glconfig.vidHeight;
-	}
-
-	// on wide screens, we will center the text
-	con.xadjust = 0;
-	UI_AdjustFromVirtualScreen(&con.xadjust, NULL, NULL, NULL);
-
-	// draw the background
-	Con_DrawBackground(frac, lines);
-
-	// draw the text
-	con.vislines = lines;
-
-	Con_DrawText(lines);
-
-	// draw the input prompt, user text, and cursor if desired
-	Con_DrawInput();
-
-	R_SetColor(NULL);
 }
 
 extern Cvar* con_drawnotify;

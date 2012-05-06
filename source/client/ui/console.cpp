@@ -29,6 +29,8 @@ image_t* conback;
 
 Cvar* cl_noprint;
 
+static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
+
 void Con_ClearNotify()
 {
 	for (int i = 0; i < NUM_CON_TIMES; i++)
@@ -286,7 +288,7 @@ void CL_ConsolePrintCommon(const char*& txt, int mask)
 	}
 }
 
-void Con_DrawBackground(float frac, int lines)
+static void Con_DrawBackground(float frac, int lines)
 {
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -409,7 +411,7 @@ void Con_DrawFullBackground()
 	Con_DrawBackground(1, viddef.height);
 }
 
-void Con_DrawText(int lines)
+static void Con_DrawText(int lines)
 {
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
@@ -498,7 +500,7 @@ void Con_DrawText(int lines)
 	}
 }
 
-void Con_DrawDownloadBar()
+static void Con_DrawDownloadBar()
 {
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2)))
 	{
@@ -560,4 +562,121 @@ void Con_DrawDownloadBar()
 	// draw it
 	y = con.vislines - 12;
 	UI_DrawString(8, y, dlbar);
+}
+
+//	The input line scrolls horizontally if typing goes beyond the right edge
+static void Con_DrawInput()
+{
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE))
+	{
+		if (GGameType & GAME_Tech3)
+		{
+			if (cls.state != CA_DISCONNECTED)
+			{
+				return;
+			}
+		}
+		else if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+		{
+			if (cls.state == CA_ACTIVE)
+			{
+				return;
+			}
+		}
+		else
+		{
+			if (cls.state == CA_CONNECTED && clc.qh_signon == SIGNONS)
+			{
+				return;
+			}
+		}
+	}
+
+	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
+	int y = con.vislines - (charHeight * 2);
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		y -= 6;
+	}
+
+	// hightlight the current autocompleted part
+	if (con.acLength)
+	{
+		Cmd_TokenizeString(g_consoleField.buffer);
+
+		if (String::Length(Cmd_Argv(0)) - con.acLength > 0)
+		{
+			if (GGameType & GAME_Tech3)
+			{
+				R_SetColor(console_highlightcolor);
+				R_StretchPic(con.xadjust + (2 + con.acLength) * SMALLCHAR_WIDTH,
+					y + 2,
+					(String::Length(Cmd_Argv(0)) - con.acLength) * SMALLCHAR_WIDTH,
+					charHeight - 2, 0, 0, 0, 0, cls.whiteShader);
+			}
+			else
+			{
+				UI_Fill(con.xadjust + (2 + con.acLength) * SMALLCHAR_WIDTH, y + 1,
+					(String::Length(Cmd_Argv(0)) - con.acLength) * SMALLCHAR_WIDTH,
+					charHeight - 1, console_highlightcolor[0],
+					console_highlightcolor[1], console_highlightcolor[2], console_highlightcolor[3]);
+			}
+		}
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		R_SetColor(con.color);
+		SCR_DrawSmallChar(con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']');
+	}
+	else
+	{
+		UI_DrawString(8, y, "]");
+	}
+
+	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true);
+}
+
+void Con_DrawSolidConsole(float frac)
+{
+	int lines;
+	if (GGameType & GAME_Tech3)
+	{
+		lines = cls.glconfig.vidHeight * frac;
+		if (lines > cls.glconfig.vidHeight)
+		{
+			lines = cls.glconfig.vidHeight;
+		}
+	}
+	else
+	{
+		lines = viddef.height * frac;
+		if (lines > viddef.height)
+		{
+			lines = viddef.height;
+		}
+	}
+	if (lines <= 0)
+	{
+		return;
+	}
+
+	// on wide screens, we will center the text
+	con.xadjust = 0;
+	UI_AdjustFromVirtualScreen(&con.xadjust, NULL, NULL, NULL);
+
+	Con_DrawBackground(frac, lines);
+
+	con.vislines = lines;
+
+	Con_DrawText(lines);
+
+	Con_DrawDownloadBar();
+
+	Con_DrawInput();
+
+	if (GGameType & GAME_Tech3)
+	{
+		R_SetColor(NULL);
+	}
 }

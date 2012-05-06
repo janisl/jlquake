@@ -246,33 +246,6 @@ DRAWING
 ==============================================================================
 */
 
-
-/*
-================
-Con_DrawInput
-
-Draw the editline after a ] prompt
-================
-*/
-void Con_DrawInput(void)
-{
-	int y;
-
-	if (cls.state != CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_CONSOLE))
-	{
-		return;
-	}
-
-	y = con.vislines - (SMALLCHAR_HEIGHT * 2);
-
-	R_SetColor(con.color);
-
-	SCR_DrawSmallChar(con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']');
-
-	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true);
-}
-
-
 /*
 ================
 Con_DrawNotify
@@ -360,48 +333,6 @@ void Con_DrawNotify(void)
 	}
 
 }
-
-/*
-================
-Con_DrawSolidConsole
-
-Draws the console with the solid background
-================
-*/
-void Con_DrawSolidConsole(float frac)
-{
-	int lines;
-
-	lines = cls.glconfig.vidHeight * frac;
-	if (lines <= 0)
-	{
-		return;
-	}
-
-	if (lines > cls.glconfig.vidHeight)
-	{
-		lines = cls.glconfig.vidHeight;
-	}
-
-	// on wide screens, we will center the text
-	con.xadjust = 0;
-	UI_AdjustFromVirtualScreen(&con.xadjust, NULL, NULL, NULL);
-
-	// draw the background
-	Con_DrawBackground(frac, lines);
-
-	// draw the text
-	con.vislines = lines;
-
-	Con_DrawText(lines);
-
-	// draw the input prompt, user text, and cursor if desired
-	Con_DrawInput();
-
-	R_SetColor(NULL);
-}
-
-
 
 /*
 ==================
