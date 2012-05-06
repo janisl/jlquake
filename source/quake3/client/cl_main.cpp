@@ -50,7 +50,6 @@ Cvar* cl_activeAction;
 Cvar* cl_motdString;
 
 Cvar* cl_allowDownload;
-Cvar* cl_conXOffset;
 
 Cvar* cl_serverStatusResendTime;
 Cvar* cl_trn;

@@ -2,8 +2,6 @@
 
 #include "quakedef.h"
 
-Cvar* con_notifytime;
-
 qboolean con_debuglog;
 
 void Key_ClearTyping(void)
@@ -234,36 +232,10 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify(void)
 {
-	int x, v;
-	short* text;
-	int i;
+	int v;
 	int skip;
 
-	v = 0;
-	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
-	{
-		if (i < 0)
-		{
-			continue;
-		}
-		int time = con.times[i % NUM_CON_TIMES];
-		if (time == 0)
-		{
-			continue;
-		}
-		time = realtime * 1000 - time;
-		if (time > con_notifytime->value * 1000)
-		{
-			continue;
-		}
-		text = con.text + (i % con.totallines) * con.linewidth;
-
-		for (x = 0; x < con.linewidth; x++)
-			UI_DrawChar((x + 1) << 3, v, text[x]);
-
-		v += 8;
-	}
-
+	Con_DrawNotifyCommon(v);
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

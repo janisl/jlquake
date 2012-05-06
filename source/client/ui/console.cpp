@@ -28,6 +28,8 @@ int historyLine;			// the line being displayed from history buffer
 image_t* conback;
 
 Cvar* cl_noprint;
+Cvar* cl_conXOffset;
+Cvar* con_notifytime;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
@@ -674,6 +676,69 @@ void Con_DrawSolidConsole(float frac)
 	Con_DrawDownloadBar();
 
 	Con_DrawInput();
+
+	if (GGameType & GAME_Tech3)
+	{
+		R_SetColor(NULL);
+	}
+}
+
+void Con_DrawNotifyCommon(int& y)
+{
+	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
+
+	int currentColor = 7;
+	if (GGameType & GAME_Tech3)
+	{
+		R_SetColor(g_color_table[currentColor]);
+	}
+
+	y = 0;
+	for (int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
+	{
+		if (i < 0)
+		{
+			continue;
+		}
+		int time = con.times[i % NUM_CON_TIMES];
+		if (time == 0)
+		{
+			continue;
+		}
+		time = cls.realtime - time;
+		if (time > con_notifytime->value * 1000)
+		{
+			continue;
+		}
+		short* text = con.text + (i % con.totallines) * con.linewidth;
+
+		for (int x = 0; x < con.linewidth; x++)
+		{
+			if ((text[x] & 0xff) == ' ')
+			{
+				continue;
+			}
+			if (((text[x] >> 8) & COLOR_BITS) != currentColor)
+			{
+				currentColor = (text[x] >> 8) & COLOR_BITS;
+				if (GGameType & GAME_Tech3)
+				{
+					R_SetColor(g_color_table[currentColor]);
+				}
+			}
+			if (GGameType & GAME_Tech3)
+			{
+				SCR_DrawSmallChar(cl_conXOffset->integer + con.xadjust + (x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff);
+			}
+			else
+			{
+				float* c = g_color_table[currentColor];
+				UI_DrawChar((x + 1) * SMALLCHAR_WIDTH, y, text[x] & 0xff, c[0], c[1], c[2], c[3]);
+			}
+		}
+
+		y += charHeight;
+	}
 
 	if (GGameType & GAME_Tech3)
 	{

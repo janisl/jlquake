@@ -54,6 +54,8 @@ extern int nextHistoryLine;
 extern int historyLine;
 
 extern Cvar* cl_noprint;
+extern Cvar* cl_conXOffset;
+extern Cvar* con_notifytime;
 
 extern image_t* conback;
 
@@ -67,3 +69,4 @@ void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawSolidConsole(float frac);
+void Con_DrawNotifyCommon(int& y);

@@ -64,7 +64,6 @@ extern Cvar* cl_timedemo;
 extern Cvar* cl_activeAction;
 
 extern Cvar* cl_allowDownload;
-extern Cvar* cl_conXOffset;
 
 //=================================================
 

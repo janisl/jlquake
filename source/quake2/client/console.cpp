@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-Cvar* con_notifytime;
-
 void Key_ClearTyping(void)
 {
 	g_consoleField.buffer[0] = 0;	// clear any typing
@@ -284,37 +282,10 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify(void)
 {
-	int x, v;
-	short* text;
-	int i;
-	int time;
+	int v;
 	int skip;
 
-	v = 0;
-	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
-	{
-		if (i < 0)
-		{
-			continue;
-		}
-		time = con.times[i % NUM_CON_TIMES];
-		if (time == 0)
-		{
-			continue;
-		}
-		time = cls.realtime - time;
-		if (time > con_notifytime->value * 1000)
-		{
-			continue;
-		}
-		text = con.text + (i % con.totallines) * con.linewidth;
-
-		for (x = 0; x < con.linewidth; x++)
-			UI_DrawChar((x + 1) << 3, v, text[x] & 0xff);
-
-		v += 8;
-	}
-
+	Con_DrawNotifyCommon(v);
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

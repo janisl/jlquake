@@ -75,7 +75,6 @@ extern Cvar* cl_activeAction;
 extern Cvar* cl_autorecord;
 
 extern Cvar* cl_allowDownload;
-extern Cvar* cl_conXOffset;
 
 extern Cvar* cl_missionStats;
 extern Cvar* cl_waitForFire;
