@@ -307,7 +307,7 @@ void Con_DrawNotifyAndChat(void)
 		return;
 	}
 
-	if (cl.wm_snap.ps.pm_type != PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
+	if (cl.wm_snap.ps.pm_type != Q3PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
 	{
 		return;
 	}

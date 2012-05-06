@@ -256,7 +256,7 @@ void Con_DrawNotifyAndChat(void)
 {
 	int v;
 
-	if (cl.q3_snap.ps.pm_type != PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
+	if (cl.q3_snap.ps.pm_type != Q3PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
 	{
 		return;
 	}

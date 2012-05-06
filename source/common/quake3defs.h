@@ -285,3 +285,8 @@ enum
 	Q3PERS_SCORE,						// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
 	// ... the rest are game specific.
 };
+
+enum
+{
+	Q3PM_INTERMISSION = 5	// no movement or status bar
+};
