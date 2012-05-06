@@ -506,7 +506,7 @@ static void Con_DrawText(int lines)
 	}
 }
 
-static void Con_DrawDownloadBar()
+static void Con_DrawDownloadBar(int lines)
 {
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2)))
 	{
@@ -566,12 +566,12 @@ static void Con_DrawDownloadBar()
 	sprintf(dlbar + String::Length(dlbar), " %02d%%", clc.downloadPercent);
 
 	// draw it
-	y = con.vislines - 12;
+	y = lines - 12;
 	UI_DrawString(8, y, dlbar);
 }
 
 //	The input line scrolls horizontally if typing goes beyond the right edge
-static void Con_DrawInput()
+static void Con_DrawInput(int lines)
 {
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE))
 	{
@@ -599,7 +599,7 @@ static void Con_DrawInput()
 	}
 
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
-	int y = con.vislines - (charHeight * 2);
+	int y = lines - (charHeight * 2);
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
 	{
 		y -= 6;
@@ -673,13 +673,11 @@ void Con_DrawSolidConsole(float frac)
 
 	Con_DrawBackground(frac, lines);
 
-	con.vislines = lines;
-
 	Con_DrawText(lines);
 
-	Con_DrawDownloadBar();
+	Con_DrawDownloadBar(lines);
 
-	Con_DrawInput();
+	Con_DrawInput(lines);
 
 	if (GGameType & GAME_Tech3)
 	{
