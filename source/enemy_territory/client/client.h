@@ -122,14 +122,6 @@ int CL_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen);
 void CL_AddToLimboChat(const char* str);					// NERVE - SMF
 qboolean CL_GetLimboString(int index, char* buf);			// NERVE - SMF
 
-// NERVE - SMF - localization
-void CL_InitTranslation();
-void CL_SaveTransTable(const char* fileName, qboolean newOnly);
-void CL_ReloadTranslation();
-void CL_TranslateString(const char* string, char* dest_buffer);
-const char* CL_TranslateStringBuf(const char* string);	// TTimo
-// -NERVE - SMF
-
 void CL_OpenURL(const char* url);	// TTimo
 
 void CL_Record(const char* name);

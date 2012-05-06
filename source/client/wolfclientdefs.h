@@ -129,13 +129,3 @@ struct etdoubleTap_t
 
 	int lastdoubleTap;
 };
-
-// NERVE - SMF - localization
-enum
-{
-	LANGUAGE_FRENCH = 0,
-	LANGUAGE_GERMAN,
-	LANGUAGE_ITALIAN,
-	LANGUAGE_SPANISH,
-	MAX_LANGUAGES
-};

@@ -101,6 +101,7 @@ set(CLIENT_FILES
 	chase.cpp
 	client_main.cpp
 	system_unix.cpp
+	translate.cpp
 	utils.cpp
 )
 

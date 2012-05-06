@@ -61,11 +61,6 @@ Cvar* cl_trn;
 Cvar* cl_missionStats;
 Cvar* cl_waitForFire;
 
-// NERVE - SMF - localization
-Cvar* cl_debugTranslation;
-// -NERVE - SMF
-
-
 char cl_cdkey[34] = "                                ";
 
 vm_t* cgvm;
@@ -2690,11 +2685,6 @@ void CL_Init(void)
 	cl_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
 	cl_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
 
-	// NERVE - SMF - localization
-	cl_language = Cvar_Get("cl_language", "0", CVAR_ARCHIVE);
-	cl_debugTranslation = Cvar_Get("cl_debugTranslation", "0", 0);
-	// -NERVE - SMF
-
 	//
 	// register our commands
 	//
@@ -2745,6 +2735,8 @@ void CL_Init(void)
 	Cmd_AddCommand("map_restart", CL_MapRestart_f);
 
 	Cmd_AddCommand("setRecommended", CL_SetRecommended_f);
+
+	CL_InitTranslation();
 
 	CL_InitRef();
 

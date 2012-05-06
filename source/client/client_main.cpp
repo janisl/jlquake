@@ -18,8 +18,6 @@
 
 Cvar* cl_inGameVideo;
 
-Cvar* cl_language;
-
 Cvar* clqh_nolerp;
 
 // these two are not intended to be set directly

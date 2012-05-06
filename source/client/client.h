@@ -38,6 +38,7 @@
 #include "game/input.h"
 #include "game/camera.h"
 #include "splines/public.h"
+#include "translate.h"
 
 #define CSHIFT_CONTENTS 0
 #define CSHIFT_DAMAGE   1
@@ -608,8 +609,6 @@ extern clientStatic_t cls;
 extern int bitcounts[32];
 
 extern Cvar* cl_inGameVideo;
-
-extern Cvar* cl_language;
 
 extern Cvar* clqh_nolerp;
 
