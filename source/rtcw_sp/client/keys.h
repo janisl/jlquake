@@ -26,7 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-extern qboolean chat_team;
 extern qboolean chat_limbo;				// NERVE - SMF
 extern int chat_playerNum;
 

@@ -59,6 +59,7 @@ void Sys_SendKeyEvents();
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
+extern bool key_overstrikeMode;
 
 extern qkey_t keys[MAX_KEYS];
 

@@ -301,47 +301,23 @@ DRAWING
 
 /*
 ================
-Con_DrawNotify
+Con_DrawNotifyAndChat
 
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotifyAndChat(void)
 {
 	int v;
-	int skip;
 
 	if (cl.ws_snap.ps.pm_type != PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
 	{
 		return;
 	}
 
-	Con_DrawNotifyCommon(v);
+	Con_DrawNotify(v);
 
-	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
-	{
-		return;
-	}
-
-	// draw the chat line
-	if (in_keyCatchers & KEYCATCH_MESSAGE)
-	{
-		if (chat_team)
-		{
-			SCR_DrawBigString(8, v, "say_team:", 1.0f);
-			skip = 11;
-		}
-		else
-		{
-			SCR_DrawBigString(8, v, "say:", 1.0f);
-			skip = 5;
-		}
-
-		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, v, true);
-
-		v += BIGCHAR_HEIGHT;
-	}
-
+	Con_DrawChat(v);
 }
 
 /*
@@ -408,7 +384,7 @@ void Con_DrawConsole(void)
 	}
 	else
 	{
-		Con_DrawNotify();		// draw notify lines
+		Con_DrawNotifyAndChat();		// draw notify lines
 	}
 }
 

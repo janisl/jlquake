@@ -225,33 +225,18 @@ DRAWING
 
 /*
 ================
-Con_DrawNotify
+Con_DrawNotifyAndChat
 
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotifyAndChat(void)
 {
 	int v;
-	int skip;
 
-	Con_DrawNotifyCommon(v);
+	Con_DrawNotify(v);
 
-	if (in_keyCatchers & KEYCATCH_MESSAGE)
-	{
-		if (chat_team)
-		{
-			UI_DrawString(8, v, "say_team:");
-			skip = 11;
-		}
-		else
-		{
-			UI_DrawString(8, v, "say:");
-			skip = 5;
-		}
-
-		Field_Draw(&chatField, skip << 3, v, true);
-	}
+	Con_DrawChat(v);
 }
 
 /*

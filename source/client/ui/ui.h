@@ -38,9 +38,6 @@ extern viddef_t viddef;					// global video state
 extern image_t* char_texture;
 extern vec4_t g_color_table[32];
 
-extern field_t chatField;
-extern bool key_overstrikeMode;
-
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
 void UI_DrawNamedPic(int x, int y, const char* name);

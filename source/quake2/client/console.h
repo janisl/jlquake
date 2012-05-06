@@ -26,5 +26,5 @@ void Con_DrawCharacter(int cx, int line, int num);
 void Con_Init(void);
 void Con_Print(const char* txt);
 void Con_CenteredPrint(char* text);
-void Con_DrawNotify(void);
+void Con_DrawNotifyAndChat(void);
 void Con_ToggleConsole_f(void);

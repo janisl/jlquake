@@ -33,6 +33,10 @@ Cvar* con_notifytime;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
+field_t chatField;
+bool chat_team;
+bool chat_buddy;
+
 void Con_ClearNotify()
 {
 	for (int i = 0; i < NUM_CON_TIMES; i++)
@@ -683,7 +687,46 @@ void Con_DrawSolidConsole(float frac)
 	}
 }
 
-void Con_DrawNotifyCommon(int& y)
+void Con_DrawChat(int y)
+{
+	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
+	{
+		return;
+	}
+
+	if (!(in_keyCatchers & KEYCATCH_MESSAGE))
+	{
+		return;
+	}
+
+	char buf[128];
+	if (chat_team)
+	{
+		CL_TranslateString("say_team:", buf);
+	}
+	else if (chat_buddy)
+	{
+		CL_TranslateString("say_fireteam:", buf);
+	}
+	else
+	{
+		CL_TranslateString("say:", buf);
+	}
+
+	int skip = String::Length(buf) + 2;
+	if (GGameType & GAME_Tech3)
+	{
+		SCR_DrawBigString(8, y, buf, 1.0f);
+		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, y, true);
+	}
+	else
+	{
+		UI_DrawString(8, y, buf);
+		Field_Draw(&chatField, skip << 3, y, true);
+	}
+}
+
+void Con_DrawNotify(int& y)
 {
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 

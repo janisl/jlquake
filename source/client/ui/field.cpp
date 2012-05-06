@@ -16,10 +16,6 @@
 
 #include "../client.h"
 
-field_t chatField;
-
-bool key_overstrikeMode;
-
 static void Field_Paste(field_t* edit)
 {
 	char* cbd;

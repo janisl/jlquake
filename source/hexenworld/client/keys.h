@@ -2,8 +2,6 @@
 extern int key_count;				// incremented every key event
 extern int key_lastpress;
 
-extern qboolean chat_team;
-
 void Key_Event(int key, qboolean down, unsigned time);
 void Key_Init(void);
 void Key_WriteBindings(fileHandle_t f);

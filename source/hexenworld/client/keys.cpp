@@ -202,8 +202,6 @@ void Key_Console(int key)
 
 //============================================================================
 
-qboolean chat_team;
-
 void Key_Message(int key)
 {
 

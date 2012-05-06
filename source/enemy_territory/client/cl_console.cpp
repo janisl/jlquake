@@ -265,58 +265,23 @@ DRAWING
 
 /*
 ================
-Con_DrawNotify
+Con_DrawNotifyAndChat
 
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotifyAndChat(void)
 {
 	int v;
-	int skip;
 
 	if (cl.et_snap.ps.pm_type != PM_INTERMISSION && in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
 	{
 		return;
 	}
 
-	Con_DrawNotifyCommon(v);
+	Con_DrawNotify(v);
 
-	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
-	{
-		return;
-	}
-
-	// draw the chat line
-	if (in_keyCatchers & KEYCATCH_MESSAGE)
-	{
-		if (chat_team)
-		{
-			char buf[128];
-			CL_TranslateString("say_team:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f);
-			skip = String::Length(buf) + 2;
-		}
-		else if (chat_buddy)
-		{
-			char buf[128];
-			CL_TranslateString("say_fireteam:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f);
-			skip = String::Length(buf) + 2;
-		}
-		else
-		{
-			char buf[128];
-			CL_TranslateString("say:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f);
-			skip = String::Length(buf) + 1;
-		}
-
-		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, v, true);
-
-		v += BIGCHAR_HEIGHT;
-	}
-
+	Con_DrawChat(v);
 }
 
 extern Cvar* con_drawnotify;
@@ -350,7 +315,7 @@ void Con_DrawConsole(void)
 		// draw notify lines
 		if (cls.state == CA_ACTIVE && con_drawnotify->integer)
 		{
-			Con_DrawNotify();
+			Con_DrawNotifyAndChat();
 		}
 	}
 }

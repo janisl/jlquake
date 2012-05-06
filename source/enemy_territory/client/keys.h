@@ -26,9 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-extern qboolean chat_team;
-extern qboolean chat_buddy;
-
 void Key_WriteBindings(fileHandle_t f);
 void Key_SetBinding(int keynum, const char* binding);
 void Key_GetBindingByString(const char* binding, int* key1, int* key2);

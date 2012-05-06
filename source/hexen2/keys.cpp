@@ -140,8 +140,6 @@ void Key_Console(int key)
 
 //============================================================================
 
-qboolean chat_team = false;
-
 void Key_Message(int key)
 {
 	if (key == K_ENTER)

@@ -59,6 +59,10 @@ extern Cvar* con_notifytime;
 
 extern image_t* conback;
 
+extern field_t chatField;
+extern bool chat_team;
+extern bool chat_buddy;
+
 void Con_ClearNotify();
 void Con_CheckResize();
 void Con_PageUp();
@@ -69,4 +73,5 @@ void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawSolidConsole(float frac);
-void Con_DrawNotifyCommon(int& y);
+void Con_DrawNotify(int& y);
+void Con_DrawChat(int y);

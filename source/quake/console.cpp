@@ -63,8 +63,6 @@ void Con_ToggleConsole_f(void)
 Con_MessageMode_f
 ================
 */
-extern qboolean chat_team;
-
 void Con_MessageMode_f(void)
 {
 	in_keyCatchers |= KEYCATCH_MESSAGE;
@@ -275,23 +273,18 @@ DRAWING
 
 /*
 ================
-Con_DrawNotify
+Con_DrawNotifyAndChat
 
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotifyAndChat(void)
 {
 	int v;
 
-	Con_DrawNotifyCommon(v);
+	Con_DrawNotify(v);
 
-
-	if (in_keyCatchers & KEYCATCH_MESSAGE)
-	{
-		UI_DrawString(8, v, "say:");
-		Field_Draw(&chatField, 40, v, true);
-	}
+	Con_DrawChat(v);
 }
 
 /*

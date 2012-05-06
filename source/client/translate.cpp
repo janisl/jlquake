@@ -538,16 +538,22 @@ void CL_InitTranslation()
 
 void CL_TranslateString(const char* string, char* destBuffer)
 {
-	int currentLanguage = cl_language->integer - 1;
-
-	// early bail if we only want english or bad language type
 	if (!string)
 	{
 		String::Cpy(destBuffer, "(null)");
 		return;
 	}
-	if (!(GGameType & (GAME_WolfMP | GAME_ET)) || currentLanguage < 0 ||
-		currentLanguage >= MAX_LANGUAGES || !String::Length(string))
+
+	if (!(GGameType & (GAME_WolfMP | GAME_ET)))
+	{
+		String::Cpy(destBuffer, string);
+		return;
+	}
+
+	int currentLanguage = cl_language->integer - 1;
+
+	// early bail if we only want english or bad language type
+	if (currentLanguage < 0 || currentLanguage >= MAX_LANGUAGES || !String::Length(string))
 	{
 		String::Cpy(destBuffer, string);
 		return;

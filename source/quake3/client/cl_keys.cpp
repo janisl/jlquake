@@ -27,8 +27,6 @@ key up events are sent even if in console mode
 
 */
 
-qboolean chat_team;
-
 int chat_playerNum;
 
 /*

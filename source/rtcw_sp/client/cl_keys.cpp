@@ -34,7 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-qboolean chat_team;
 qboolean chat_limbo;			// NERVE - SMF
 
 int chat_playerNum;

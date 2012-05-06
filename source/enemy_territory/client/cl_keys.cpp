@@ -34,9 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-qboolean chat_team;
-qboolean chat_buddy;
-
 qboolean UI_checkKeyExec(int key);			// NERVE - SMF
 qboolean CL_CGameCheckKeyExec(int key);
 

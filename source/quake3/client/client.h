@@ -134,7 +134,7 @@ void Con_DrawCharacter(int cx, int line, int num);
 
 void Con_Init(void);
 void Con_ToggleConsole_f(void);
-void Con_DrawNotify(void);
+void Con_DrawNotifyAndChat(void);
 void Con_RunConsole(void);
 void Con_DrawConsole(void);
 void Con_Close(void);
