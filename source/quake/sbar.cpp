@@ -965,7 +965,7 @@ Sbar_Draw
 */
 void Sbar_Draw(void)
 {
-	if (scr_con_current == viddef.height)
+	if (con.displayFrac == 1)
 	{
 		return;		// console is full screen
 

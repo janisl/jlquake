@@ -4091,7 +4091,7 @@ void M_Draw(void)
 
 	if (!m_recursiveDraw)
 	{
-		if (scr_con_current)
+		if (con.displayFrac)
 		{
 			Con_DrawFullBackground();
 			S_ExtraUpdate();

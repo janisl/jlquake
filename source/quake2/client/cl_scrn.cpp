@@ -34,7 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-float scr_con_current;			// aproaches scr_conlines at scr_conspeed
 float scr_conlines;				// 0.0 to 1.0 lines of console to display
 
 qboolean scr_initialized;			// ready to draw
@@ -477,21 +476,21 @@ void SCR_RunConsole(void)
 		scr_conlines = 0;				// none visible
 
 	}
-	if (scr_conlines < scr_con_current)
+	if (scr_conlines < con.displayFrac)
 	{
-		scr_con_current -= scr_conspeed->value * cls.q2_frametimeFloat;
-		if (scr_conlines > scr_con_current)
+		con.displayFrac -= scr_conspeed->value * cls.q2_frametimeFloat;
+		if (scr_conlines > con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines;
 		}
 
 	}
-	else if (scr_conlines > scr_con_current)
+	else if (scr_conlines > con.displayFrac)
 	{
-		scr_con_current += scr_conspeed->value * cls.q2_frametimeFloat;
-		if (scr_conlines < scr_con_current)
+		con.displayFrac += scr_conspeed->value * cls.q2_frametimeFloat;
+		if (scr_conlines < con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines;
 		}
 	}
 
@@ -519,9 +518,9 @@ void SCR_DrawConsole(void)
 		return;
 	}
 
-	if (scr_con_current)
+	if (con.displayFrac)
 	{
-		Con_DrawSolidConsole(scr_con_current);
+		Con_DrawSolidConsole(con.displayFrac);
 	}
 	else
 	{
@@ -631,7 +630,7 @@ Clear any parts of the tiled background that were drawn on last frame
 */
 void SCR_TileClear(void)
 {
-	if (scr_con_current == 1.0)
+	if (con.displayFrac == 1.0)
 	{
 		return;		// full screen console
 	}

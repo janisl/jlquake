@@ -15,7 +15,6 @@ void SCR_DrawLoading(void);
 
 int SCR_ModalMessage(const char* text);
 
-extern float scr_con_current;
 extern float scr_conlines;				// lines of console to display
 
 extern int sb_lines;

@@ -69,7 +69,6 @@ console is:
 
 */
 
-float scr_con_current;
 float scr_conlines;				// lines of console to display
 
 Cvar* scr_viewsize;
@@ -588,7 +587,7 @@ void SCR_SetUpToDrawConsole(void)
 	if (con_forcedup)
 	{
 		scr_conlines = viddef.height;		// full screen
-		scr_con_current = scr_conlines;
+		con.displayFrac = 1;
 	}
 	else if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
@@ -599,21 +598,21 @@ void SCR_SetUpToDrawConsole(void)
 		scr_conlines = 0;				// none visible
 
 	}
-	if (scr_conlines < scr_con_current)
+	if (scr_conlines / viddef.height < con.displayFrac)
 	{
-		scr_con_current -= scr_conspeed->value * host_frametime;
-		if (scr_conlines > scr_con_current)
+		con.displayFrac -= scr_conspeed->value * host_frametime / viddef.height;
+		if (scr_conlines / viddef.height > con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines / viddef.height;
 		}
 
 	}
-	else if (scr_conlines > scr_con_current)
+	else if (scr_conlines / viddef.height > con.displayFrac)
 	{
-		scr_con_current += scr_conspeed->value * host_frametime;
-		if (scr_conlines < scr_con_current)
+		con.displayFrac += scr_conspeed->value * host_frametime / viddef.height;
+		if (scr_conlines / viddef.height < con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines / viddef.height;
 		}
 	}
 }
@@ -625,9 +624,9 @@ SCR_DrawConsole
 */
 void SCR_DrawConsole(void)
 {
-	if (scr_con_current)
+	if (con.displayFrac)
 	{
-		Con_DrawSolidConsole((float)scr_con_current / viddef.height);
+		Con_DrawSolidConsole(con.displayFrac);
 	}
 	else
 	{
@@ -660,7 +659,7 @@ void SCR_BeginLoadingPlaque(void)
 // redraw with no console and the loading plaque
 	Con_ClearNotify();
 	scr_centertime_off = 0;
-	scr_con_current = 0;
+	con.displayFrac = 0;
 
 	scr_drawloading = true;
 	SCR_UpdateScreen();
@@ -764,7 +763,7 @@ void SCR_BringDownConsole(void)
 
 	scr_centertime_off = 0;
 
-	for (i = 0; i < 20 && scr_conlines != scr_con_current; i++)
+	for (i = 0; i < 20 && scr_conlines != con.displayFrac * viddef.height; i++)
 		SCR_UpdateScreen();
 
 	cl.qh_cshifts[0].percent = 0;		// no area contents palette on next frame

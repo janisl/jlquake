@@ -50,7 +50,6 @@ console is:
 
 */
 
-float scr_con_current;
 float scr_conlines;						// lines of console to display
 
 Cvar* scr_viewsize;
@@ -592,7 +591,7 @@ void SCR_SetUpToDrawConsole(void)
 	if (cls.state != CA_ACTIVE)
 	{
 		scr_conlines = viddef.height;				// full screen
-		scr_con_current = scr_conlines;
+		con.displayFrac = 1;
 	}
 	else if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
@@ -603,21 +602,21 @@ void SCR_SetUpToDrawConsole(void)
 		scr_conlines = 0;								// none visible
 
 	}
-	if (scr_conlines < scr_con_current)
+	if (scr_conlines / viddef.height < con.displayFrac)
 	{
-		scr_con_current -= scr_conspeed->value * host_frametime;
-		if (scr_conlines > scr_con_current)
+		con.displayFrac -= scr_conspeed->value * host_frametime / viddef.height;
+		if (scr_conlines / viddef.height > con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines / viddef.height;
 		}
 
 	}
-	else if (scr_conlines > scr_con_current)
+	else if (scr_conlines / viddef.height > con.displayFrac)
 	{
-		scr_con_current += scr_conspeed->value * host_frametime;
-		if (scr_conlines < scr_con_current)
+		con.displayFrac += scr_conspeed->value * host_frametime / viddef.height;
+		if (scr_conlines / viddef.height < con.displayFrac)
 		{
-			scr_con_current = scr_conlines;
+			con.displayFrac = scr_conlines / viddef.height;
 		}
 	}
 }
@@ -629,9 +628,9 @@ SCR_DrawConsole
 */
 void SCR_DrawConsole(void)
 {
-	if (scr_con_current)
+	if (con.displayFrac)
 	{
-		Con_DrawSolidConsole((float)scr_con_current / viddef.height);
+		Con_DrawSolidConsole(con.displayFrac);
 	}
 	else
 	{
@@ -701,7 +700,7 @@ void SCR_BringDownConsole(void)
 
 	scr_centertime_off = 0;
 
-	for (i = 0; i < 20 && scr_conlines != scr_con_current; i++)
+	for (i = 0; i < 20 && scr_conlines / viddef.height != con.displayFrac; i++)
 		SCR_UpdateScreen();
 
 	cl.qh_cshifts[0].percent = 0;				// no area contents palette on next frame
@@ -768,7 +767,7 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 	char temp[80];
 	int bx,by;
 
-	if (scr_con_current == viddef.height && !AlwaysDraw)
+	if (con.displayFrac == 1 && !AlwaysDraw)
 	{
 		return;		// console is full screen
 

@@ -294,7 +294,7 @@ void Sbar_Draw(void)
 		SB_PlacePlayerNames();
 	}
 
-	if (scr_con_current == viddef.height)
+	if (con.displayFrac == 1)
 	{	// console is full screen
 		return;
 	}
@@ -1650,7 +1650,7 @@ static void DrawActiveRings(void)
 	int frame;
 	char tempStr[24];
 
-	if (scr_con_current == viddef.height)
+	if (con.displayFrac == 1)
 	{
 		return;		// console is full screen
 
@@ -1705,7 +1705,7 @@ static void DrawActiveArtifacts(void)
 	int frame;
 	char tempStr[24];
 
-	if (scr_con_current == viddef.height)
+	if (con.displayFrac == 1)
 	{
 		return;
 	}
