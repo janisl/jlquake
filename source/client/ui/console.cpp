@@ -497,3 +497,67 @@ void Con_DrawText(int lines)
 		}
 	}
 }
+
+void Con_DrawDownloadBar()
+{
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2)))
+	{
+		return;
+	}
+	if (!clc.download)
+	{
+		return;
+	}
+
+	char dlbar[1024];
+	// figure out width
+	char* text = String::RChr(clc.downloadName, '/');
+	if (text)
+	{
+		text++;
+	}
+	else
+	{
+		text = clc.downloadName;
+	}
+
+	int x = con.linewidth - ((con.linewidth * 7) / 40);
+	int y = x - String::Length(text) - 8;
+	int i = con.linewidth / 3;
+	if (String::Length(text) > i)
+	{
+		y = x - i - 11;
+		String::NCpy(dlbar, text, i);
+		dlbar[i] = 0;
+		String::Cat(dlbar, sizeof(dlbar), "...");
+	}
+	else
+	{
+		String::Cpy(dlbar, text);
+	}
+	String::Cat(dlbar, sizeof(dlbar), ": ");
+	i = String::Length(dlbar);
+	dlbar[i++] = '\x80';
+
+	// where's the dot go?
+	int n = y * clc.downloadPercent / 100;
+	for (int j = 0; j < y; j++)
+	{
+		if (j == n)
+		{
+			dlbar[i++] = '\x83';
+		}
+		else
+		{
+			dlbar[i++] = '\x81';
+		}
+	}
+	dlbar[i++] = '\x82';
+	dlbar[i] = 0;
+
+	sprintf(dlbar + String::Length(dlbar), " %02d%%", clc.downloadPercent);
+
+	// draw it
+	y = con.vislines - 12;
+	UI_DrawString(8, y, dlbar);
+}

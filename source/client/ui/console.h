@@ -68,3 +68,4 @@ void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawBackground(float frac, int lines);
 void Con_DrawFullBackground();
 void Con_DrawText(int lines);
+void Con_DrawDownloadBar();

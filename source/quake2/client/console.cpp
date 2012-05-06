@@ -365,9 +365,7 @@ Draws the console with the solid background
 */
 void Con_DrawConsole(float frac)
 {
-	int i, j, x, y, n;
 	int lines;
-	char dlbar[1024];
 
 	lines = viddef.height * frac;
 	if (lines <= 0)
@@ -388,67 +386,8 @@ void Con_DrawConsole(float frac)
 
 	Con_DrawText(lines);
 
-//ZOID
 	// draw the download bar
-	// figure out width
-	if (clc.download)
-	{
-		char* text = String::RChr(clc.downloadName, '/');
-		if (text)
-		{
-			text++;
-		}
-		else
-		{
-			text = clc.downloadName;
-		}
-
-		x = con.linewidth - ((con.linewidth * 7) / 40);
-		y = x - String::Length(text) - 8;
-		i = con.linewidth / 3;
-		if (String::Length(text) > i)
-		{
-			y = x - i - 11;
-			String::NCpy(dlbar, text, i);
-			dlbar[i] = 0;
-			String::Cat(dlbar, sizeof(dlbar), "...");
-		}
-		else
-		{
-			String::Cpy(dlbar, text);
-		}
-		String::Cat(dlbar, sizeof(dlbar), ": ");
-		i = String::Length(dlbar);
-		dlbar[i++] = '\x80';
-		// where's the dot go?
-		if (clc.downloadPercent == 0)
-		{
-			n = 0;
-		}
-		else
-		{
-			n = y * clc.downloadPercent / 100;
-		}
-
-		for (j = 0; j < y; j++)
-			if (j == n)
-			{
-				dlbar[i++] = '\x83';
-			}
-			else
-			{
-				dlbar[i++] = '\x81';
-			}
-		dlbar[i++] = '\x82';
-		dlbar[i] = 0;
-
-		sprintf(dlbar + String::Length(dlbar), " %02d%%", clc.downloadPercent);
-
-		// draw it
-		y = con.vislines - 12;
-		UI_DrawString(8, y, dlbar);
-	}
-//ZOID
+	Con_DrawDownloadBar();
 
 // draw the input prompt, user text, and cursor if desired
 	Con_DrawInput();
