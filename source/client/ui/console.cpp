@@ -591,7 +591,7 @@ static void Con_DrawInput(int lines)
 		}
 		else
 		{
-			if (cls.state == CA_CONNECTED && clc.qh_signon == SIGNONS)
+			if (cls.state == CA_ACTIVE && clc.qh_signon == SIGNONS)
 			{
 				return;
 			}
