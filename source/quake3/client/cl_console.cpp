@@ -236,51 +236,6 @@ void CL_ConsolePrint(const char* txt)
 	CL_ConsolePrintCommon(txt, mask);
 }
 
-
-/*
-==============================================================================
-
-DRAWING
-
-==============================================================================
-*/
-
-/*
-==================
-Con_DrawConsole
-==================
-*/
-void Con_DrawConsole(void)
-{
-	// check for console width changes from a vid mode change
-	Con_CheckResize();
-
-	// if disconnected, render console full screen
-	if (cls.state == CA_DISCONNECTED)
-	{
-		if (!(in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME)))
-		{
-			Con_DrawSolidConsole(1.0);
-			return;
-		}
-	}
-
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		// draw notify lines
-		if (cls.state == CA_ACTIVE)
-		{
-			Con_DrawNotifyAndChat();
-		}
-	}
-}
-
-//================================================================
-
 /*
 ==================
 Con_RunConsole

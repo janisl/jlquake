@@ -494,41 +494,6 @@ void SCR_RunConsole(void)
 
 }
 
-/*
-==================
-SCR_DrawConsole
-==================
-*/
-void SCR_DrawConsole(void)
-{
-	Con_CheckResize();
-
-	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
-	{	// forced full screen console
-		Con_DrawSolidConsole(1.0);
-		return;
-	}
-
-	if (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped)
-	{	// connected, but can't render
-		Con_DrawSolidConsole(0.5);
-		UI_FillPal(0, viddef.height / 2, viddef.width, viddef.height / 2, 0);
-		return;
-	}
-
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
-		{
-			Con_DrawNotifyAndChat();	// only draw notify in game
-		}
-	}
-}
-
 //=============================================================================
 
 /*
@@ -1220,7 +1185,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 		}
 		else if (in_keyCatchers & KEYCATCH_CONSOLE)
 		{
-			SCR_DrawConsole();
+			Con_DrawConsole();
 		}
 	}
 	else
@@ -1258,7 +1223,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 
 		SCR_DrawPause();
 
-		SCR_DrawConsole();
+		Con_DrawConsole();
 
 		M_Draw();
 

@@ -572,8 +572,6 @@ SCR_SetUpToDrawConsole
 */
 void SCR_SetUpToDrawConsole(void)
 {
-	Con_CheckResize();
-
 	if (scr_drawloading)
 	{
 		return;		// never a console with loading plaque
@@ -611,26 +609,6 @@ void SCR_SetUpToDrawConsole(void)
 		if (con.finalFrac < con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;
-		}
-	}
-}
-
-/*
-==================
-SCR_DrawConsole
-==================
-*/
-void SCR_DrawConsole(void)
-{
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
-		{
-			Con_DrawNotifyAndChat();	// only draw notify in game
 		}
 	}
 }
@@ -876,7 +854,7 @@ void SCR_UpdateScreen(void)
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString();
 		Sbar_Draw();
-		SCR_DrawConsole();
+		Con_DrawConsole();
 		M_Draw();
 	}
 

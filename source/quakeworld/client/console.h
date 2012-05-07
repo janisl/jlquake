@@ -30,7 +30,6 @@ void Con_Print(const char* txt);
 void Con_Printf(const char* fmt, ...);
 void Con_DPrintf(const char* fmt, ...);
 void Con_SafePrintf(const char* fmt, ...);
-void Con_DrawNotifyAndChat(void);
 void Con_ToggleConsole_f(void);
 
 void Con_NotifyBox(const char* text);	// during startup for sound / cd warnings

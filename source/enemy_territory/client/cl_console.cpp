@@ -218,6 +218,7 @@ void Con_Init(void)
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);			// DHM - Nerve
+	con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
 
 	Field_Clear(&g_consoleField);
 	g_consoleField.widthInChars = g_console_field_width;
@@ -252,52 +253,6 @@ void CL_ConsolePrint(const char* txt)
 
 	CL_ConsolePrintCommon(txt, mask);
 }
-
-/*
-==============================================================================
-
-DRAWING
-
-==============================================================================
-*/
-
-extern Cvar* con_drawnotify;
-
-/*
-==================
-Con_DrawConsole
-==================
-*/
-void Con_DrawConsole(void)
-{
-	// check for console width changes from a vid mode change
-	Con_CheckResize();
-
-	// if disconnected, render console full screen
-	if (cls.state == CA_DISCONNECTED)
-	{
-		if (!(in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME)))
-		{
-			Con_DrawSolidConsole(1.0);
-			return;
-		}
-	}
-
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		// draw notify lines
-		if (cls.state == CA_ACTIVE && con_drawnotify->integer)
-		{
-			Con_DrawNotifyAndChat();
-		}
-	}
-}
-
-//================================================================
 
 /*
 ==================

@@ -71,7 +71,6 @@ Cvar* com_showtrace;
 Cvar* com_version;
 //Cvar	*com_blood;
 Cvar* com_buildScript;		// for automated data building scripts
-Cvar* con_drawnotify;
 Cvar* com_introPlayed;
 Cvar* com_logosPlaying;
 Cvar* cl_paused;
@@ -3013,8 +3012,6 @@ void Com_Init(char* commandLine)
 		com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
 		com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
 		com_buildScript = Cvar_Get("com_buildScript", "0", 0);
-
-		con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
 
 		com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
 		com_logosPlaying = Cvar_Get("com_logosPlaying", "0", CVAR_ROM);

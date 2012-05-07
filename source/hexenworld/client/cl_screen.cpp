@@ -578,8 +578,6 @@ SCR_SetUpToDrawConsole
 */
 void SCR_SetUpToDrawConsole(void)
 {
-	Con_CheckResize();
-
 	if (scr_drawloading)
 	{
 		return;			// never a console with loading plaque
@@ -618,27 +616,6 @@ void SCR_SetUpToDrawConsole(void)
 		}
 	}
 }
-
-/*
-==================
-SCR_DrawConsole
-==================
-*/
-void SCR_DrawConsole(void)
-{
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
-		{
-			Con_DrawNotifyAndChat();	// only draw notify in game
-		}
-	}
-}
-
 
 //=============================================================================
 
@@ -1046,7 +1023,7 @@ void SCR_UpdateScreen(void)
 		Sbar_Draw();
 		Plaque_Draw(plaquemessage,0);
 		SCR_DrawNet();
-		SCR_DrawConsole();
+		Con_DrawConsole();
 		M_Draw();
 		if (errormessage)
 		{

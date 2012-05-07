@@ -681,8 +681,6 @@ SCR_SetUpToDrawConsole
 */
 void SCR_SetUpToDrawConsole(void)
 {
-	Con_CheckResize();
-
 	if (scr_drawloading)
 	{
 		return;		// never a console with loading plaque
@@ -720,26 +718,6 @@ void SCR_SetUpToDrawConsole(void)
 		if (con.finalFrac < con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;
-		}
-	}
-}
-
-/*
-==================
-SCR_DrawConsole
-==================
-*/
-void SCR_DrawConsole(void)
-{
-	if (con.displayFrac)
-	{
-		Con_DrawSolidConsole(con.displayFrac);
-	}
-	else
-	{
-		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
-		{
-			Con_DrawNotifyAndChat();	// only draw notify in game
 		}
 	}
 }
@@ -1217,7 +1195,7 @@ void SCR_UpdateScreen(void)
 		SB_IntermissionOverlay();
 		if (cl.qh_intermission < 12)
 		{
-			SCR_DrawConsole();
+			Con_DrawConsole();
 			M_Draw();
 		}
 	}
@@ -1240,7 +1218,7 @@ void SCR_UpdateScreen(void)
 		SCR_CheckDrawCenterString();
 		SB_Draw();
 		Plaque_Draw(plaquemessage,0);
-		SCR_DrawConsole();
+		Con_DrawConsole();
 		M_Draw();
 		if (errormessage)
 		{

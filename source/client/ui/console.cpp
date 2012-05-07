@@ -30,6 +30,7 @@ image_t* conback;
 Cvar* cl_noprint;
 Cvar* cl_conXOffset;
 Cvar* con_notifytime;
+Cvar* con_drawnotify;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
@@ -643,7 +644,7 @@ static void Con_DrawInput(int lines)
 	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true);
 }
 
-void Con_DrawSolidConsole(float frac)
+static void Con_DrawSolidConsole(float frac)
 {
 	int lines;
 	if (GGameType & GAME_Tech3)
@@ -790,7 +791,7 @@ static void Con_DrawChat(int y)
 	}
 }
 
-void Con_DrawNotifyAndChat()
+static void Con_DrawNotifyAndChat()
 {
 	// NERVE - SMF - we dont want draw notify in limbo mode
 	if (GGameType & GAME_WolfMP && Cvar_VariableIntegerValue("ui_limboMode"))
@@ -800,6 +801,10 @@ void Con_DrawNotifyAndChat()
 
 	if (in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME))
 	{
+		if (!(GGameType & GAME_Tech3))
+		{
+			return;
+		}
 		if (GGameType & GAME_Quake3 && cl.q3_snap.ps.pm_type != Q3PM_INTERMISSION)
 		{
 			return;
@@ -821,4 +826,69 @@ void Con_DrawNotifyAndChat()
 	int y = Con_DrawNotify();
 
 	Con_DrawChat(y);
+}
+
+void Con_DrawConsole()
+{
+	// check for console width changes from a vid mode change
+	Con_CheckResize();
+
+	if (GGameType & GAME_Tech3)
+	{
+		// if disconnected, render console full screen
+		if (cls.state == CA_DISCONNECTED)
+		{
+			if (!(in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CGAME)))
+			{
+				Con_DrawSolidConsole(1.0);
+				return;
+			}
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
+		{
+			// forced full screen console
+			Con_DrawSolidConsole(1.0);
+			return;
+		}
+	}
+	else if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (cls.state != CA_ACTIVE)
+		{
+			Con_DrawSolidConsole(1.0);
+			return;
+		}
+	}
+	else
+	{
+		if (cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS)
+		{
+			Con_DrawSolidConsole(1.0);
+			return;
+		}
+	}
+
+	if (GGameType & GAME_Quake2 && (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped))
+	{
+		// connected, but can't render
+		Con_DrawSolidConsole(0.5);
+		UI_Fill(0, viddef.height / 2, viddef.width, viddef.height / 2, 0, 0, 0, 1);
+		return;
+	}
+
+	if (con.displayFrac)
+	{
+		Con_DrawSolidConsole(con.displayFrac);
+	}
+	else
+	{
+		// draw notify lines
+		if (cls.state == CA_ACTIVE && (!(GGameType & GAME_ET) || con_drawnotify->integer))
+		{
+			Con_DrawNotifyAndChat();
+		}
+	}
 }
