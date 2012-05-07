@@ -31,8 +31,6 @@ void    SCR_TouchPics(void);
 
 void    SCR_RunConsole(void);
 
-extern float scr_conlines;				// lines of console to display
-
 extern int sb_lines;
 
 extern Cvar* scr_viewsize;

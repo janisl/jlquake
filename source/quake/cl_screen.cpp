@@ -69,8 +69,6 @@ console is:
 
 */
 
-float scr_conlines;				// lines of console to display
-
 Cvar* scr_viewsize;
 Cvar* scr_fov;
 Cvar* scr_conspeed;
@@ -586,33 +584,33 @@ void SCR_SetUpToDrawConsole(void)
 
 	if (con_forcedup)
 	{
-		scr_conlines = viddef.height;		// full screen
+		con.finalFrac = 1;		// full screen
 		con.displayFrac = 1;
 	}
 	else if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		scr_conlines = viddef.height / 2;	// half screen
+		con.finalFrac = 0.5;	// half screen
 	}
 	else
 	{
-		scr_conlines = 0;				// none visible
+		con.finalFrac = 0;				// none visible
 
 	}
-	if (scr_conlines / viddef.height < con.displayFrac)
+	if (con.finalFrac < con.displayFrac)
 	{
 		con.displayFrac -= scr_conspeed->value * host_frametime / viddef.height;
-		if (scr_conlines / viddef.height > con.displayFrac)
+		if (con.finalFrac > con.displayFrac)
 		{
-			con.displayFrac = scr_conlines / viddef.height;
+			con.displayFrac = con.finalFrac;
 		}
 
 	}
-	else if (scr_conlines / viddef.height > con.displayFrac)
+	else if (con.finalFrac > con.displayFrac)
 	{
 		con.displayFrac += scr_conspeed->value * host_frametime / viddef.height;
-		if (scr_conlines / viddef.height < con.displayFrac)
+		if (con.finalFrac < con.displayFrac)
 		{
-			con.displayFrac = scr_conlines / viddef.height;
+			con.displayFrac = con.finalFrac;
 		}
 	}
 }
@@ -763,7 +761,7 @@ void SCR_BringDownConsole(void)
 
 	scr_centertime_off = 0;
 
-	for (i = 0; i < 20 && scr_conlines != con.displayFrac * viddef.height; i++)
+	for (i = 0; i < 20 && con.finalFrac != con.displayFrac; i++)
 		SCR_UpdateScreen();
 
 	cl.qh_cshifts[0].percent = 0;		// no area contents palette on next frame

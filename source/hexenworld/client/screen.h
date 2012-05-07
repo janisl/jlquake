@@ -12,8 +12,6 @@ void SCR_CenterPrint(char* str);
 
 int SCR_ModalMessage(const char* text);
 
-extern float scr_conlines;				// lines of console to display
-
 extern int sb_lines;
 
 extern Cvar* scr_viewsize;

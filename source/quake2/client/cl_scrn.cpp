@@ -34,8 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-float scr_conlines;				// 0.0 to 1.0 lines of console to display
-
 qboolean scr_initialized;			// ready to draw
 
 int scr_draw_loading;
@@ -469,28 +467,28 @@ void SCR_RunConsole(void)
 // decide on the height of the console
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		scr_conlines = 0.5;		// half screen
+		con.finalFrac = 0.5;		// half screen
 	}
 	else
 	{
-		scr_conlines = 0;				// none visible
+		con.finalFrac = 0;				// none visible
 
 	}
-	if (scr_conlines < con.displayFrac)
+	if (con.finalFrac < con.displayFrac)
 	{
 		con.displayFrac -= scr_conspeed->value * cls.q2_frametimeFloat;
-		if (scr_conlines > con.displayFrac)
+		if (con.finalFrac > con.displayFrac)
 		{
-			con.displayFrac = scr_conlines;
+			con.displayFrac = con.finalFrac;
 		}
 
 	}
-	else if (scr_conlines > con.displayFrac)
+	else if (con.finalFrac > con.displayFrac)
 	{
 		con.displayFrac += scr_conspeed->value * cls.q2_frametimeFloat;
-		if (scr_conlines < con.displayFrac)
+		if (con.finalFrac < con.displayFrac)
 		{
-			con.displayFrac = scr_conlines;
+			con.displayFrac = con.finalFrac;
 		}
 	}
 
