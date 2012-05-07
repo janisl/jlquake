@@ -63,12 +63,8 @@ extern bool chat_team;
 extern bool chat_buddy;
 
 void Con_ClearNotify();
-void Con_CheckResize();
-void Con_PageUp();
-void Con_PageDown();
-void Con_Top();
-void Con_Bottom();
 void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
+void Console_KeyCommon(int key);

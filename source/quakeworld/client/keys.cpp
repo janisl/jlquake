@@ -140,6 +140,7 @@ void Key_Console(int key)
 		historyLine = nextHistoryLine;
 		g_consoleField.buffer[0] = 0;
 		g_consoleField.cursor = 0;
+		g_consoleField.widthInChars = con.linewidth;
 		if (cls.state == CA_DISCONNECTED)
 		{
 			SCR_UpdateScreen();		// force an update, because the command
@@ -154,69 +155,7 @@ void Key_Console(int key)
 		return;
 	}
 
-	if (key == K_UPARROW)
-	{
-		do
-		{
-			historyLine--;
-		}
-		while (historyLine >= 0 && historyLine > nextHistoryLine - COMMAND_HISTORY && !historyEditLines[historyLine % COMMAND_HISTORY].buffer[0]);
-		if (historyLine < 0)
-		{
-			historyLine = 0;
-		}
-		g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
-		g_consoleField.cursor = String::Length(g_consoleField.buffer);
-		return;
-	}
-
-	if (key == K_DOWNARROW)
-	{
-		if (historyLine == nextHistoryLine)
-		{
-			return;
-		}
-		do
-		{
-			historyLine++;
-		}
-		while (historyLine < nextHistoryLine && !historyEditLines[historyLine % COMMAND_HISTORY].buffer[0]);
-		if (historyLine == nextHistoryLine)
-		{
-			g_consoleField.buffer[0] = 0;
-		}
-		else
-		{
-			g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
-		}
-		g_consoleField.cursor = String::Length(g_consoleField.buffer);
-		return;
-	}
-
-	if (key == K_PGUP || key == K_MWHEELUP)
-	{
-		Con_PageUp();
-		return;
-	}
-
-	if (key == K_PGDN || key == K_MWHEELDOWN)
-	{
-		Con_PageDown();
-		return;
-	}
-
-	if (key == K_HOME && keys[K_CTRL].down)
-	{
-		Con_Top();
-		return;
-	}
-
-	if (key == K_END && keys[K_CTRL].down)
-	{
-		Con_Bottom();
-		return;
-	}
-	Field_KeyDownEvent(&g_consoleField, key);
+	Console_KeyCommon(key);
 }
 
 //============================================================================

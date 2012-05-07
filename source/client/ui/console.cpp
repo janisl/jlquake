@@ -55,7 +55,7 @@ static void Con_ClearText()
 }
 
 //	If the line width has changed, reformat the buffer.
-void Con_CheckResize()
+static void Con_CheckResize()
 {
 	int width;
 	if (GGameType & GAME_Tech3)
@@ -117,44 +117,6 @@ void Con_CheckResize()
 
 	con.current = con.totallines - 1;
 	con.display = con.current;
-}
-
-void Con_PageUp()
-{
-	con.display -= 2;
-	if (con.current - con.display >= con.totallines)
-	{
-		con.display = con.current - con.totallines + 1;
-	}
-}
-
-void Con_PageDown()
-{
-	con.display += 2;
-	if (con.display > con.current)
-	{
-		con.display = con.current;
-	}
-}
-
-void Con_Top()
-{
-	con.display = con.totallines;
-	if (con.current - con.display >= con.totallines)
-	{
-		con.display = con.current - con.totallines + 1;
-	}
-}
-
-void Con_Bottom()
-{
-	con.display = con.current;
-}
-
-void Con_Clear_f()
-{
-	Con_ClearText();
-	Con_Bottom();		// go to end
 }
 
 static void Con_Linefeed(bool skipNotify)
@@ -891,4 +853,124 @@ void Con_DrawConsole()
 			Con_DrawNotifyAndChat();
 		}
 	}
+}
+
+static void Con_PageUp()
+{
+	con.display -= 2;
+	if (con.current - con.display >= con.totallines)
+	{
+		con.display = con.current - con.totallines + 1;
+	}
+}
+
+static void Con_PageDown()
+{
+	con.display += 2;
+	if (con.display > con.current)
+	{
+		con.display = con.current;
+	}
+}
+
+static void Con_Top()
+{
+	con.display = con.totallines;
+	if (con.current - con.display >= con.totallines)
+	{
+		con.display = con.current - con.totallines + 1;
+	}
+}
+
+static void Con_Bottom()
+{
+	con.display = con.current;
+}
+
+void Console_KeyCommon(int key)
+{
+	// command history (ctrl-p ctrl-n for unix style)
+	if ((key == K_MWHEELUP && keys[K_SHIFT].down) || (key == K_UPARROW) || (key == K_KP_UPARROW) ||
+		((String::ToLower(key) == 'p') && keys[K_CTRL].down))
+	{
+		if (nextHistoryLine - historyLine < COMMAND_HISTORY &&
+			historyLine > 0)
+		{
+			historyLine--;
+		}
+		g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
+		con.acLength = 0;
+		return;
+	}
+
+	if ((key == K_MWHEELDOWN && keys[K_SHIFT].down) || (key == K_DOWNARROW) || (key == K_KP_DOWNARROW) ||
+		((String::ToLower(key) == 'n') && keys[K_CTRL].down))
+	{
+		if (historyLine == nextHistoryLine)
+		{
+			return;
+		}
+		historyLine++;
+		g_consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
+		con.acLength = 0;
+		return;
+	}
+
+	// console scrolling
+	if (key == K_PGUP || key == K_KP_PGUP)
+	{
+		Con_PageUp();
+		return;
+	}
+
+	if (key == K_PGDN || key == K_KP_PGDN)
+	{
+		Con_PageDown();
+		return;
+	}
+
+	if (key == K_MWHEELUP)
+	{
+		Con_PageUp();
+		if (keys[K_CTRL].down)	// hold <ctrl> to accelerate scrolling
+		{
+			Con_PageUp();
+			Con_PageUp();
+		}
+		return;
+	}
+
+	if (key == K_MWHEELDOWN)
+	{
+		Con_PageDown();
+		if (keys[K_CTRL].down)	// hold <ctrl> to accelerate scrolling
+		{
+			Con_PageDown();
+			Con_PageDown();
+		}
+		return;
+	}
+
+	// ctrl-home = top of console
+	if ((key == K_HOME || key == K_KP_HOME) && keys[K_CTRL].down)
+	{
+		Con_Top();
+		return;
+	}
+
+	// ctrl-end = bottom of console
+	if ((key == K_END || key == K_KP_END) && keys[K_CTRL].down)
+	{
+		Con_Bottom();
+		return;
+	}
+
+	// pass to the normal editline routine
+	Field_KeyDownEvent(&g_consoleField, key);
+}
+
+void Con_Clear_f()
+{
+	Con_ClearText();
+	Con_Bottom();		// go to end
 }
