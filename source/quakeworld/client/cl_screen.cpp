@@ -654,7 +654,7 @@ void SCR_DrawConsole(void)
 	{
 		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
 		{
-			Con_DrawNotifyAndChat();		// only draw notify in game
+			Con_DrawNotifyAndChat();	// only draw notify in game
 		}
 	}
 }

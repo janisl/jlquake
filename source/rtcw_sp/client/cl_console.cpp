@@ -34,7 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 int g_console_field_width = 78;
 
 
-Cvar* con_debug;
 Cvar* con_conspeed;
 
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
@@ -253,7 +252,6 @@ void Con_Init(void)
 
 	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
-	con_debug = Cvar_Get("con_debug", "0", CVAR_ARCHIVE);	//----(SA)	added
 
 	Field_Clear(&g_consoleField);
 	g_consoleField.widthInChars = g_console_field_width;
@@ -310,51 +308,13 @@ void Con_DrawConsole(void)
 	Con_CheckResize();
 
 	// if disconnected, render console full screen
-	switch (cls.state)
+	if (cls.state == CA_DISCONNECTED)
 	{
-	case CA_UNINITIALIZED:
-	case CA_CONNECTING:			// sending request packets to the server
-	case CA_CHALLENGING:		// sending challenge packets to the server
-	case CA_CONNECTED:			// netchan_t established, getting gamestate
-	case CA_PRIMED:				// got gamestate, waiting for first frame
-	case CA_LOADING:			// only during cgame initialization, never during main loop
-		if (!con_debug->integer)	// these are all 'no console at all' when con_debug is not set
-		{
-			return;
-		}
-
-		if (in_keyCatchers & KEYCATCH_UI)
-		{
-			return;
-		}
-
-		Con_DrawSolidConsole(1.0);
-		return;
-
-	case CA_DISCONNECTED:		// not talking to a server
 		if (!(in_keyCatchers & KEYCATCH_UI))
 		{
 			Con_DrawSolidConsole(1.0);
 			return;
 		}
-		break;
-
-	case CA_ACTIVE:				// game views should be displayed
-		if (con.displayFrac)
-		{
-			if (con_debug->integer == 2)		// 2 means draw full screen console at '~'
-			{	//					Con_DrawSolidConsole( 1.0f );
-				Con_DrawSolidConsole(con.displayFrac * 2.0f);
-				return;
-			}
-		}
-
-		break;
-
-
-	case CA_CINEMATIC:			// playing a cinematic or a static pic, not connected to a server
-	default:
-		break;
 	}
 
 	if (con.displayFrac)
@@ -363,7 +323,10 @@ void Con_DrawConsole(void)
 	}
 	else
 	{
-		Con_DrawNotifyAndChat();		// draw notify lines
+		if (cls.state == CA_ACTIVE)
+		{
+			Con_DrawNotifyAndChat();		// draw notify lines
+		}
 	}
 }
 

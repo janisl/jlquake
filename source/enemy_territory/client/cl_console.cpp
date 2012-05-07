@@ -33,7 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 int g_console_field_width = 78;
 
-Cvar* con_debug;
 Cvar* con_conspeed;
 Cvar* con_autoclear;
 
@@ -217,7 +216,6 @@ void Con_Init(void)
 
 	con_notifytime = Cvar_Get("con_notifytime", "7", 0);	// JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
-	con_debug = Cvar_Get("con_debug", "0", CVAR_ARCHIVE);		//----(SA)	added
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);			// DHM - Nerve
 
