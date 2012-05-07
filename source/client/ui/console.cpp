@@ -117,6 +117,12 @@ static void Con_CheckResize()
 
 	con.current = con.totallines - 1;
 	con.display = con.current;
+
+	g_consoleField.widthInChars = con.linewidth;
+	for (int i = 0; i < COMMAND_HISTORY; i++)
+	{
+		historyEditLines[i].widthInChars = con.linewidth;
+	}
 }
 
 static void Con_Linefeed(bool skipNotify)
@@ -973,4 +979,8 @@ void Con_Clear_f()
 {
 	Con_ClearText();
 	Con_Bottom();		// go to end
+}
+
+void Con_InitCommon()
+{
 }

@@ -49,8 +49,6 @@ void Con_ToggleConsole_f(void)
 	}
 	else
 	{
-		g_consoleField.widthInChars = con.linewidth;
-
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 	}
 
@@ -100,6 +98,8 @@ void Con_Init(void)
 	}
 
 	Con_Printf("Console initialized.\n");
+
+	Con_InitCommon();
 
 //
 // register our commands

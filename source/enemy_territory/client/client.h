@@ -38,8 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 
-extern int g_console_field_width;
-
 typedef struct
 {
 	netadr_t adr;

@@ -2284,8 +2284,6 @@ void CL_InitRenderer(void)
 	cls.charSetShader = R_RegisterShader("gfx/2d/bigchars");
 	cls.whiteShader = R_RegisterShader("white");
 	cls.consoleShader = R_RegisterShader("console");
-	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
-	g_consoleField.widthInChars = g_console_field_width;
 }
 
 /*

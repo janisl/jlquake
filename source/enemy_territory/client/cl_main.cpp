@@ -3194,9 +3194,6 @@ void CL_InitRenderer(void)
 
 	cls.consoleShader = R_RegisterShader("console-16bit");	// JPW NERVE shader works with 16bit
 	cls.consoleShader2 = R_RegisterShader("console2-16bit");	// JPW NERVE same
-
-	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
-	g_consoleField.widthInChars = g_console_field_width;
 }
 
 /*

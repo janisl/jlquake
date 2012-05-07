@@ -31,8 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 
-int g_console_field_width = 78;
-
 Cvar* con_conspeed;
 
 // DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
@@ -61,7 +59,6 @@ void Con_ToggleConsole_f(void)
 	}
 
 	Field_Clear(&g_consoleField);
-	g_consoleField.widthInChars = g_console_field_width;
 
 	Con_ClearNotify();
 	in_keyCatchers ^= KEYCATCH_CONSOLE;
@@ -245,12 +242,12 @@ void Con_Init(void)
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);		// DHM - Nerve
 
+	Con_InitCommon();
+
 	Field_Clear(&g_consoleField);
-	g_consoleField.widthInChars = g_console_field_width;
 	for (i = 0; i < COMMAND_HISTORY; i++)
 	{
 		Field_Clear(&historyEditLines[i]);
-		historyEditLines[i].widthInChars = g_console_field_width;
 	}
 
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);

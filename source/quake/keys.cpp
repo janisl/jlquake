@@ -65,7 +65,6 @@ void Key_Console(int key)
 		historyLine = nextHistoryLine;
 		g_consoleField.buffer[0] = 0;
 		g_consoleField.cursor = 0;
-		g_consoleField.widthInChars = con.linewidth;
 		if (cls.state == CA_DISCONNECTED)
 		{
 			SCR_UpdateScreen();		// force an update, because the command

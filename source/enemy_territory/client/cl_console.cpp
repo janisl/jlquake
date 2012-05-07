@@ -31,8 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 
-int g_console_field_width = 78;
-
 Cvar* con_conspeed;
 Cvar* con_autoclear;
 
@@ -62,8 +60,6 @@ void Con_ToggleConsole_f(void)
 	{
 		Field_Clear(&g_consoleField);
 	}
-
-	g_consoleField.widthInChars = g_console_field_width;
 
 	Con_ClearNotify();
 
@@ -212,7 +208,7 @@ Con_Init
 */
 void Con_Init(void)
 {
-	int i;
+	Con_InitCommon();
 
 	con_notifytime = Cvar_Get("con_notifytime", "7", 0);	// JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
@@ -221,11 +217,9 @@ void Con_Init(void)
 	con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
 
 	Field_Clear(&g_consoleField);
-	g_consoleField.widthInChars = g_console_field_width;
-	for (i = 0; i < COMMAND_HISTORY; i++)
+	for (int i = 0; i < COMMAND_HISTORY; i++)
 	{
 		Field_Clear(&historyEditLines[i]);
-		historyEditLines[i].widthInChars = g_console_field_width;
 	}
 
 	Cmd_AddCommand("toggleConsole", Con_ToggleConsole_f);

@@ -62,8 +62,6 @@ void Con_ToggleConsole_f(void)
 		M_ForceMenuOff();
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 
-		g_consoleField.widthInChars = con.linewidth;
-
 		if (Cvar_VariableValue("maxclients") == 1 &&
 			Com_ServerState())
 		{
@@ -202,6 +200,8 @@ Con_Init
 void Con_Init(void)
 {
 	Com_Printf("Console initialized.\n");
+
+	Con_InitCommon();
 
 //
 // register our commands
