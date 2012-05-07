@@ -580,7 +580,7 @@ void SCR_SetUpToDrawConsole(void)
 
 	}
 // decide on the height of the console
-	con_forcedup = cls.state != CA_CONNECTED || clc.qh_signon != SIGNONS;
+	con_forcedup = cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS;
 
 	if (con_forcedup)
 	{
@@ -645,7 +645,7 @@ void SCR_BeginLoadingPlaque(void)
 {
 	S_StopAllSounds();
 
-	if (cls.state != CA_CONNECTED)
+	if (cls.state != CA_ACTIVE)
 	{
 		return;
 	}

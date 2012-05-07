@@ -44,7 +44,7 @@ Sends the entire command line over to the server
 */
 void Cmd_ForwardToServer(void)
 {
-	if (cls.state != CA_CONNECTED)
+	if (cls.state != CA_ACTIVE)
 	{
 		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;

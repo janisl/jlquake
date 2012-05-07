@@ -140,7 +140,7 @@ CL_SendCmd
 */
 void CL_SendCmd(void)
 {
-	if (cls.state != CA_CONNECTED)
+	if (cls.state != CA_ACTIVE)
 	{
 		return;
 	}

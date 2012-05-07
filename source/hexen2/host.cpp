@@ -503,7 +503,7 @@ void Host_ShutdownServer(qboolean crash)
 	sv.active = false;
 
 // stop all client sounds immediately
-	if (cls.state == CA_CONNECTED)
+	if (cls.state == CA_ACTIVE)
 	{
 		CL_Disconnect();
 	}
@@ -794,7 +794,7 @@ void _Host_Frame(float time)
 			host_time += host_frametime;
 
 			// fetch results from server
-			if (cls.state == CA_CONNECTED)
+			if (cls.state == CA_ACTIVE)
 			{
 				CL_ReadFromServer();
 

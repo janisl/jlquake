@@ -1110,7 +1110,7 @@ void Host_Name_f(void)
 			return;
 		}
 		Cvar_Set("_cl_name", newName);
-		if (cls.state == CA_CONNECTED)
+		if (cls.state == CA_ACTIVE)
 		{
 			Cmd_ForwardToServer();
 		}
@@ -1173,7 +1173,7 @@ void Host_Class_f(void)
 		}
 #endif
 
-		if (cls.state == CA_CONNECTED)
+		if (cls.state == CA_ACTIVE)
 		{
 			Cmd_ForwardToServer();
 		}
@@ -1521,7 +1521,7 @@ void Host_Color_f(void)
 	if (cmd_source == src_command)
 	{
 		Cvar_SetValue("_cl_color", playercolor);
-		if (cls.state == CA_CONNECTED)
+		if (cls.state == CA_ACTIVE)
 		{
 			Cmd_ForwardToServer();
 		}

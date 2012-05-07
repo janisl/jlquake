@@ -71,7 +71,7 @@ void CL_Disconnect(void)
 	{
 		CL_StopPlayback();
 	}
-	else if (cls.state == CA_CONNECTED)
+	else if (cls.state == CA_ACTIVE)
 	{
 		if (clc.demorecording)
 		{
@@ -141,7 +141,7 @@ void CL_EstablishConnection(const char* host)
 	Con_DPrintf("CL_EstablishConnection: connected to %s\n", host);
 
 	cls.qh_demonum = -1;			// not in the demo loop now
-	cls.state = CA_CONNECTED;
+	cls.state = CA_ACTIVE;
 	clc.qh_signon = 0;				// need all the signon messages before playing
 }
 
@@ -237,7 +237,7 @@ int CL_ReadFromServer(void)
 		cl.qh_last_received_message = realtime;
 		CL_ParseServerMessage();
 	}
-	while (ret && cls.state == CA_CONNECTED);
+	while (ret && cls.state == CA_ACTIVE);
 
 	if (cl_shownet->value)
 	{

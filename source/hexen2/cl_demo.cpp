@@ -236,7 +236,7 @@ void CL_Record_f(void)
 		return;
 	}
 
-	if (c == 2 && cls.state == CA_CONNECTED)
+	if (c == 2 && cls.state == CA_ACTIVE)
 	{
 		Con_Printf("Can not record - already connected to server\nClient demo recording must be started before connecting\n");
 		return;
@@ -335,7 +335,7 @@ void CL_PlayDemo_f(void)
 
 	clc.demoplaying = true;
 	clc.netchan.message.InitOOB(clc.netchan.messageBuffer, 1024);
-	cls.state = CA_CONNECTED;
+	cls.state = CA_ACTIVE;
 	cls.qh_forcetrack = 0;
 
 	bool neg = false;

@@ -683,7 +683,7 @@ void M_Main_Key(int key)
 		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		cls.qh_demonum = m_save_demonum;
-		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state != CA_CONNECTED)
+		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state != CA_ACTIVE)
 		{
 			CL_NextDemo();
 		}
