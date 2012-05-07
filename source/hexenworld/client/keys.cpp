@@ -57,35 +57,6 @@ qboolean CheckForCommand(void)
 	return true;
 }
 
-void CompleteCommand(void)
-{
-	const char* cmd;
-	char* s;
-
-	s = g_consoleField.buffer;
-	if (*s == '\\' || *s == '/')
-	{
-		s++;
-	}
-
-	cmd = Cmd_CompleteCommand(s);
-	if (!cmd)
-	{
-		cmd = Cvar_CompleteVariable(s);
-	}
-	if (cmd)
-	{
-		g_consoleField.buffer[0] = '/';
-		String::Cpy(g_consoleField.buffer + 1, cmd);
-		int key_linepos = String::Length(cmd) + 1;
-		g_consoleField.buffer[key_linepos] = ' ';
-		key_linepos++;
-		g_consoleField.buffer[key_linepos] = 0;
-		g_consoleField.cursor = String::Length(g_consoleField.buffer);
-		return;
-	}
-}
-
 /*
 ====================
 Key_Console
@@ -96,7 +67,10 @@ Interactive line editing and console scrollback
 void Key_Console(int key)
 {
 	if (key == K_ENTER)
-	{	// backslash text are commands, else chat
+	{
+		con.acLength = 0;
+
+		// backslash text are commands, else chat
 		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
 		{
 			Cbuf_AddText(g_consoleField.buffer + 1);
@@ -126,12 +100,6 @@ void Key_Console(int key)
 			SCR_UpdateScreen();		// force an update, because the command
 		}
 		// may take some time
-		return;
-	}
-
-	if (key == K_TAB)
-	{	// command completion
-		CompleteCommand();
 		return;
 	}
 

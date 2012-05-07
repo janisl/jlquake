@@ -562,6 +562,8 @@ void Console_Key(int key)
 	// enter finishes the line
 	if (key == K_ENTER || key == K_KP_ENTER)
 	{
+		con.acLength = 0;
+
 		// if not in the game explicitly prepent a slash if needed
 		if (cls.state != CA_ACTIVE && g_consoleField.buffer[0] != '\\' &&
 			g_consoleField.buffer[0] != '/')
@@ -607,15 +609,6 @@ void Console_Key(int key)
 		{
 			SCR_UpdateScreen();		// force an update, because the command
 		}							// may take some time
-		return;
-	}
-
-	// command completion
-
-	if (key == K_TAB)
-	{
-		int acLength = 0;
-		Field_CompleteCommand(&g_consoleField, acLength);
 		return;
 	}
 

@@ -57,7 +57,16 @@ void Key_Console(int key)
 
 	if (key == K_ENTER)
 	{
-		Cbuf_AddText(g_consoleField.buffer);
+		con.acLength = 0;
+
+		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
+		{
+			Cbuf_AddText(g_consoleField.buffer + 1);
+		}
+		else
+		{
+			Cbuf_AddText(g_consoleField.buffer);
+		}
 		Cbuf_AddText("\n");
 		Con_Printf("]%s\n",g_consoleField.buffer);
 		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
@@ -71,25 +80,6 @@ void Key_Console(int key)
 		}
 		// may take some time
 		return;
-	}
-
-	if (key == K_TAB)
-	{	// command completion
-		cmd = Cmd_CompleteCommand(g_consoleField.buffer);
-		if (!cmd)
-		{
-			cmd = Cvar_CompleteVariable(g_consoleField.buffer);
-		}
-		if (cmd)
-		{
-			String::Cpy(g_consoleField.buffer, cmd);
-			int len = String::Length(cmd);
-			g_consoleField.buffer[len] = ' ';
-			len++;
-			g_consoleField.buffer[len] = 0;
-			g_consoleField.cursor = String::Length(g_consoleField.buffer);
-			return;
-		}
 	}
 
 	Console_KeyCommon(key);

@@ -43,6 +43,8 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f(void)
 {
+	con.acLength = 0;
+
 	// closing a full screen console restarts the demo loop
 	if (cls.state == CA_DISCONNECTED && in_keyCatchers == KEYCATCH_CONSOLE)
 	{

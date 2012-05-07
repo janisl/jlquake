@@ -609,22 +609,6 @@ void Console_Key(int key)
 		return;
 	}
 
-	// command completion
-
-	if (key == K_TAB)
-	{
-		Field_CompleteCommand(&g_consoleField, con.acLength);
-		return;
-	}
-
-	// clear autocompletion buffer on normal key input
-	if ((key >= K_SPACE && key <= K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_RIGHTARROW) ||
-		(key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW) ||
-		(key >= K_KP_SLASH && key <= K_KP_PLUS) || (key >= K_KP_STAR && key <= K_KP_EQUALS))
-	{
-		con.acLength = 0;
-	}
-
 	Console_KeyCommon(key);
 }
 

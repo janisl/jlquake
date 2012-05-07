@@ -34,6 +34,8 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f(void)
 {
+	con.acLength = 0;
+
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
 		in_keyCatchers &= ~KEYCATCH_CONSOLE;

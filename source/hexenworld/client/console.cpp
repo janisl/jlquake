@@ -17,6 +17,8 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f(void)
 {
+	con.acLength = 0;
+
 	Key_ClearTyping();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)

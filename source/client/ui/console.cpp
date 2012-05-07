@@ -895,6 +895,21 @@ static void Con_Bottom()
 
 void Console_KeyCommon(int key)
 {
+	// command completion
+	if (key == K_TAB)
+	{
+		Field_CompleteCommand(&g_consoleField, con.acLength);
+		return;
+	}
+
+	// clear autocompletion buffer on normal key input
+	if ((key >= K_SPACE && key <= K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_RIGHTARROW) ||
+		(key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW) ||
+		(key >= K_KP_SLASH && key <= K_KP_PLUS) || (key >= K_KP_STAR && key <= K_KP_EQUALS))
+	{
+		con.acLength = 0;
+	}
+
 	// command history (ctrl-p ctrl-n for unix style)
 	if ((key == K_MWHEELUP && keys[K_SHIFT].down) || (key == K_UPARROW) || (key == K_KP_UPARROW) ||
 		((String::ToLower(key) == 'p') && keys[K_CTRL].down))

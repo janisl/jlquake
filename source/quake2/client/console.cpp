@@ -34,6 +34,8 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f(void)
 {
+	con.acLength = 0;
+
 	SCR_EndLoadingPlaque();		// get rid of loading plaque
 
 	if (cl.q2_attractloop)
