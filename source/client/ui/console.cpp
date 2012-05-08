@@ -1096,6 +1096,11 @@ void Con_KeyEvent(int key)
 	Field_KeyDownEvent(&g_consoleField, key);
 }
 
+void Con_CharEvent(int key)
+{
+	Field_CharEvent(&g_consoleField, key);
+}
+
 void Con_MessageKeyEvent(int key)
 {
 	if (key == K_ESCAPE)
@@ -1106,6 +1111,11 @@ void Con_MessageKeyEvent(int key)
 	}
 
 	Field_KeyDownEvent(&chatField, key);
+}
+
+void Con_MessageCharEvent(int key)
+{
+	Field_CharEvent(&chatField, key);
 }
 
 //	Scroll it up or down

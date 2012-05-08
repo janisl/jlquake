@@ -753,7 +753,7 @@ void CL_CharEvent(int key)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Field_CharEvent(&g_consoleField, key);
+		Con_CharEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
@@ -761,11 +761,11 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Field_CharEvent(&chatField, key);
+		Con_MessageCharEvent(key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{
-		Field_CharEvent(&g_consoleField, key);
+		Con_CharEvent(key);
 	}
 }
 
