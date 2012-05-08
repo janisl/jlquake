@@ -31,7 +31,7 @@ static Cvar* cl_noprint;
 static Cvar* cl_conXOffset;
 static Cvar* con_notifytime;
 static Cvar* con_drawnotify;
-Cvar* con_conspeed;
+static Cvar* con_conspeed;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 

@@ -332,7 +332,7 @@ void CL_ParseServerData(void)
 	{
 		// seperate the printfs so the server message can have a color
 		Com_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-		Com_Printf("%c%s\n", 2, str);
+		Com_Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE "\n", str);
 
 		// need to prep refresh at next oportunity
 		cl.q2_refresh_prepped = false;

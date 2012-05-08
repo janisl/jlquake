@@ -246,7 +246,7 @@ void CL_ParseServerInfo(void)
 
 // seperate the printfs so the server message can have a color
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-	Con_Printf("%c%s\n", 2, str);
+	Con_Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE "\n", str);
 
 // precache models
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
