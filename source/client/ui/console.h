@@ -47,6 +47,7 @@ struct console_t
 
 extern console_t con;
 extern field_t g_consoleField;
+extern Cvar* con_conspeed;
 
 extern image_t* conback;
 

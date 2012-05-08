@@ -71,7 +71,6 @@ console is:
 
 Cvar* scr_viewsize;
 Cvar* scr_fov;
-Cvar* scr_conspeed;
 Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
@@ -418,7 +417,6 @@ void SCR_Init(void)
 {
 	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
-	scr_conspeed = Cvar_Get("scr_conspeed", "300", 0);
 	scr_centertime = Cvar_Get("scr_centertime", "2", 0);
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
@@ -596,7 +594,7 @@ void SCR_SetUpToDrawConsole(void)
 	}
 	if (con.finalFrac < con.displayFrac)
 	{
-		con.displayFrac -= scr_conspeed->value * host_frametime / viddef.height;
+		con.displayFrac -= con_conspeed->value * host_frametime;
 		if (con.finalFrac > con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;
@@ -605,7 +603,7 @@ void SCR_SetUpToDrawConsole(void)
 	}
 	else if (con.finalFrac > con.displayFrac)
 	{
-		con.displayFrac += scr_conspeed->value * host_frametime / viddef.height;
+		con.displayFrac += con_conspeed->value * host_frametime;
 		if (con.finalFrac < con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;

@@ -42,7 +42,6 @@ vrect_t scr_vrect;			// position of render window on screen
 
 
 Cvar* scr_viewsize;
-Cvar* scr_conspeed;
 Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
@@ -373,7 +372,6 @@ SCR_Init
 void SCR_Init(void)
 {
 	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
-	scr_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	scr_showturtle = Cvar_Get("scr_showturtle", "0", 0);
 	scr_showpause = Cvar_Get("scr_showpause", "1", 0);
 	scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
@@ -476,7 +474,7 @@ void SCR_RunConsole(void)
 	}
 	if (con.finalFrac < con.displayFrac)
 	{
-		con.displayFrac -= scr_conspeed->value * cls.q2_frametimeFloat;
+		con.displayFrac -= con_conspeed->value * cls.q2_frametimeFloat;
 		if (con.finalFrac > con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;
@@ -485,7 +483,7 @@ void SCR_RunConsole(void)
 	}
 	else if (con.finalFrac > con.displayFrac)
 	{
-		con.displayFrac += scr_conspeed->value * cls.q2_frametimeFloat;
+		con.displayFrac += con_conspeed->value * cls.q2_frametimeFloat;
 		if (con.finalFrac < con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;

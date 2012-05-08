@@ -31,6 +31,7 @@ static Cvar* cl_noprint;
 static Cvar* cl_conXOffset;
 static Cvar* con_notifytime;
 static Cvar* con_drawnotify;
+Cvar* con_conspeed;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
@@ -1124,6 +1125,7 @@ void Con_InitCommon()
 	cl_noprint = Cvar_Get("cl_noprint", "0", 0);
 	cl_conXOffset = Cvar_Get("cl_conXOffset", "0", 0);
 	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
+	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	if (GGameType & GAME_ET)
 	{
 		con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);

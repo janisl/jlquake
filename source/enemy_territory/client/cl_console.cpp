@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 
-Cvar* con_conspeed;
 Cvar* con_autoclear;
 
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
@@ -202,7 +201,6 @@ void Con_Init(void)
 {
 	Con_InitCommon();
 
-	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 
 	Cmd_AddCommand("toggleConsole", Con_ToggleConsole_f);
