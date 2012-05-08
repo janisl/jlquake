@@ -643,5 +643,6 @@ void Key_ClearStates();
 float* CL_GetSimOrg();
 bool CL_IsServerActive();
 void CL_WriteWaveFilePacket(int endtime);
+void SCR_UpdateScreen();
 
 #endif

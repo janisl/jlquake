@@ -67,5 +67,5 @@ void Con_Clear_f();
 void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
-void Console_KeyCommon(int key);
+void Con_KeyEvent(int key);
 void Con_InitCommon();

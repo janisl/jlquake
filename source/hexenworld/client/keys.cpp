@@ -18,94 +18,6 @@ qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
 
-/*
-==============================================================================
-
-            LINE TYPING INTO THE CONSOLE
-
-==============================================================================
-*/
-
-qboolean CheckForCommand(void)
-{
-	char command[128];
-	const char* cmd, * s;
-	int i;
-
-	s = g_consoleField.buffer;
-
-	for (i = 0; i < 127; i++)
-		if (s[i] <= ' ')
-		{
-			break;
-		}
-		else
-		{
-			command[i] = s[i];
-		}
-	command[i] = 0;
-
-	cmd = Cmd_CompleteCommand(command);
-	if (!cmd || String::Cmp(cmd, command))
-	{
-		cmd = Cvar_CompleteVariable(command);
-	}
-	if (!cmd  || String::Cmp(cmd, command))
-	{
-		return false;		// just a chat message
-	}
-	return true;
-}
-
-/*
-====================
-Key_Console
-
-Interactive line editing and console scrollback
-====================
-*/
-void Key_Console(int key)
-{
-	if (key == K_ENTER)
-	{
-		con.acLength = 0;
-
-		// backslash text are commands, else chat
-		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
-		{
-			Cbuf_AddText(g_consoleField.buffer + 1);
-		}
-		else if (CheckForCommand())
-		{
-			Cbuf_AddText(g_consoleField.buffer);	// valid command
-		}
-		else
-		{	// convert to a chat message
-			if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
-			{
-				Cbuf_AddText("say ");
-			}
-			Cbuf_AddText(g_consoleField.buffer);
-		}
-
-		Cbuf_AddText("\n");
-		Con_Printf("]%s\n",g_consoleField.buffer);
-		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
-		nextHistoryLine++;
-		historyLine = nextHistoryLine;
-		g_consoleField.buffer[0] = 0;
-		g_consoleField.cursor = 0;
-		if (cls.state == CA_DISCONNECTED)
-		{
-			SCR_UpdateScreen();		// force an update, because the command
-		}
-		// may take some time
-		return;
-	}
-
-	Console_KeyCommon(key);
-}
-
 //============================================================================
 
 void Key_Message(int key)
@@ -579,7 +491,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 	else
 	{
-		Key_Console(key);
+		Con_KeyEvent(key);
 	}
 }
 

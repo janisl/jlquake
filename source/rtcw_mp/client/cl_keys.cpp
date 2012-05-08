@@ -535,86 +535,6 @@ keyname_t keynames_i[] =	//Italian
 	{NULL,0}
 };
 
-/*
-=============================================================================
-
-CONSOLE LINE EDITING
-
-==============================================================================
-*/
-
-/*
-====================
-Console_Key
-
-Handles history and console scrollback
-====================
-*/
-void Console_Key(int key)
-{
-	// ctrl-L clears screen
-	if (key == 'l' && keys[K_CTRL].down)
-	{
-		Cbuf_AddText("clear\n");
-		return;
-	}
-
-	// enter finishes the line
-	if (key == K_ENTER || key == K_KP_ENTER)
-	{
-		con.acLength = 0;
-
-		// if not in the game explicitly prepent a slash if needed
-		if (cls.state != CA_ACTIVE && g_consoleField.buffer[0] != '\\' &&
-			g_consoleField.buffer[0] != '/')
-		{
-			char temp[MAX_STRING_CHARS];
-
-			String::NCpyZ(temp, g_consoleField.buffer, sizeof(temp));
-			String::Sprintf(g_consoleField.buffer, sizeof(g_consoleField.buffer), "\\%s", temp);
-			g_consoleField.cursor++;
-		}
-
-		Com_Printf("]%s\n", g_consoleField.buffer);
-
-		// leading slash is an explicit command
-		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
-		{
-			Cbuf_AddText(g_consoleField.buffer + 1);		// valid command
-			Cbuf_AddText("\n");
-		}
-		else
-		{
-			// other text will be chat messages
-			if (!g_consoleField.buffer[0])
-			{
-				return;	// empty lines just scroll the console without adding to history
-			}
-			else
-			{
-				Cbuf_AddText("cmd say ");
-				Cbuf_AddText(g_consoleField.buffer);
-				Cbuf_AddText("\n");
-			}
-		}
-
-		// copy line to history buffer
-		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
-		nextHistoryLine++;
-		historyLine = nextHistoryLine;
-
-		Field_Clear(&g_consoleField);
-
-		if (cls.state == CA_DISCONNECTED)
-		{
-			SCR_UpdateScreen();		// force an update, because the command
-		}							// may take some time
-		return;
-	}
-
-	Console_KeyCommon(key);
-}
-
 //============================================================================
 
 
@@ -1292,7 +1212,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	// distribute the key down event to the apropriate handler
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
-		Console_Key(key);
+		Con_KeyEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
 	{
@@ -1344,7 +1264,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	else if (cls.state == CA_DISCONNECTED)
 	{
 
-		Console_Key(key);
+		Con_KeyEvent(key);
 
 	}
 	else

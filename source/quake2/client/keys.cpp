@@ -33,64 +33,6 @@ qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
 int keyshift[256];			// key to map to if shift held down in console
 
-/*
-==============================================================================
-
-            LINE TYPING INTO THE CONSOLE
-
-==============================================================================
-*/
-
-/*
-====================
-Key_Console
-
-Interactive line editing and console scrollback
-====================
-*/
-void Key_Console(int key)
-{
-	if (key == 'l')
-	{
-		if (keys[K_CTRL].down)
-		{
-			Cbuf_AddText("clear\n");
-			return;
-		}
-	}
-
-	if (key == K_ENTER || key == K_KP_ENTER)
-	{
-		con.acLength = 0;
-
-		// backslash text are commands, else chat
-		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
-		{
-			Cbuf_AddText(g_consoleField.buffer + 1);	// skip the >
-		}
-		else
-		{
-			Cbuf_AddText(g_consoleField.buffer);	// valid command
-
-		}
-		Cbuf_AddText("\n");
-		Com_Printf("]%s\n",g_consoleField.buffer);
-		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
-		nextHistoryLine++;
-		historyLine = nextHistoryLine;
-		g_consoleField.buffer[0] = 0;
-		g_consoleField.cursor = 0;
-		if (cls.state == CA_DISCONNECTED)
-		{
-			SCR_UpdateScreen();		// force an update, because the command
-		}
-		// may take some time
-		return;
-	}
-
-	Console_KeyCommon(key);
-}
-
 //============================================================================
 
 void Key_Message(int key)
@@ -623,7 +565,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 	else
 	{
-		Key_Console(key);
+		Con_KeyEvent(key);
 	}
 }
 

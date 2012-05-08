@@ -893,8 +893,113 @@ static void Con_Bottom()
 	con.display = con.current;
 }
 
-void Console_KeyCommon(int key)
+static bool CheckForCommand()
 {
+	char command[128];
+	const char* cmd, * s;
+	int i;
+
+	s = g_consoleField.buffer;
+
+	for (i = 0; i < 127; i++)
+		if (s[i] <= ' ')
+		{
+			break;
+		}
+		else
+		{
+			command[i] = s[i];
+		}
+	command[i] = 0;
+
+	cmd = Cmd_CompleteCommand(command);
+	if (!cmd || String::Cmp(cmd, command))
+	{
+		cmd = Cvar_CompleteVariable(command);
+	}
+	if (!cmd  || String::Cmp(cmd, command))
+	{
+		return false;		// just a chat message
+	}
+	return true;
+}
+
+void Con_KeyEvent(int key)
+{
+	// ctrl-L clears screen
+	if (key == 'l' && keys[K_CTRL].down)
+	{
+		Cbuf_AddText("clear\n");
+		return;
+	}
+
+	// enter finishes the line
+	if (key == K_ENTER || key == K_KP_ENTER)
+	{
+		con.acLength = 0;
+
+		// if not in the game explicitly prepent a slash if needed
+		if (cls.state != CA_ACTIVE && g_consoleField.buffer[0] != '\\' &&
+			g_consoleField.buffer[0] != '/')
+		{
+			char temp[MAX_STRING_CHARS];
+
+			String::NCpyZ(temp, g_consoleField.buffer, sizeof(temp));
+			String::Sprintf(g_consoleField.buffer, sizeof(g_consoleField.buffer), "\\%s", temp);
+			g_consoleField.cursor++;
+		}
+
+		common->Printf("]%s\n", g_consoleField.buffer);
+
+		// leading slash is an explicit command
+		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/')
+		{
+			if (!g_consoleField.buffer[1])
+			{
+				// empty lines just scroll the console without adding to history
+				return;
+			}
+			Cbuf_AddText(g_consoleField.buffer + 1);	// valid command
+			Cbuf_AddText("\n");
+		}
+		else
+		{
+			if (!g_consoleField.buffer[0])
+			{
+				// empty lines just scroll the console without adding to history
+				return;
+			}
+			if (GGameType & GAME_Tech3)
+			{
+				// other text will be chat messages
+				Cbuf_AddText("cmd say ");
+			}
+			else if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+			{
+				if (!CheckForCommand())
+				{
+					// convert to a chat message
+					Cbuf_AddText("say ");
+				}
+			}
+			Cbuf_AddText(g_consoleField.buffer);
+			Cbuf_AddText("\n");
+		}
+
+		// copy line to history buffer
+		historyEditLines[nextHistoryLine % COMMAND_HISTORY] = g_consoleField;
+		nextHistoryLine++;
+		historyLine = nextHistoryLine;
+
+		Field_Clear(&g_consoleField);
+
+		if (cls.state == CA_DISCONNECTED)
+		{
+			SCR_UpdateScreen();		// force an update, because the command
+		}							// may take some time
+		return;
+	}
+
 	// command completion
 	if (key == K_TAB)
 	{
