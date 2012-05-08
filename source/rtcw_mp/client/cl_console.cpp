@@ -33,9 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* con_conspeed;
 
-// DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
-Cvar* con_restricted;
-
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
 
 
@@ -52,11 +49,6 @@ void Con_ToggleConsole_f(void)
 	if (cls.state == CA_DISCONNECTED && in_keyCatchers == KEYCATCH_CONSOLE)
 	{
 		CL_StartDemoLoop();
-		return;
-	}
-
-	if (con_restricted->integer && (!keys[K_CTRL].down || !keys[K_SHIFT].down))
-	{
 		return;
 	}
 
@@ -242,7 +234,6 @@ void Con_Init(void)
 
 	con_notifytime = Cvar_Get("con_notifytime", "7", 0);	// JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
-	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);		// DHM - Nerve
 
 	Con_InitCommon();
 

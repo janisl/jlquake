@@ -34,9 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* con_conspeed;
 Cvar* con_autoclear;
 
-// DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
-Cvar* con_restricted;
-
 vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
 
 
@@ -48,11 +45,6 @@ Con_ToggleConsole_f
 void Con_ToggleConsole_f(void)
 {
 	con.acLength = 0;
-
-	if (con_restricted->integer && (!keys[K_CTRL].down || !keys[K_SHIFT].down))
-	{
-		return;
-	}
 
 	// ydnar: persistent console input is more useful
 	// Arnout: added cvar
@@ -213,7 +205,6 @@ void Con_Init(void)
 	con_notifytime = Cvar_Get("con_notifytime", "7", 0);	// JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
-	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);			// DHM - Nerve
 	con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
 
 	Field_Clear(&g_consoleField);
