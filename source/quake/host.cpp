@@ -749,6 +749,8 @@ void _Host_Frame(float time)
 			time1 = Sys_DoubleTime();
 		}
 
+		Con_RunConsole();
+
 		SCR_UpdateScreen();
 
 		if (host_speeds->value)

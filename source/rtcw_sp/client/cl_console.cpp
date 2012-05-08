@@ -54,6 +54,7 @@ void Con_ToggleConsole_f(void)
 
 	Con_ClearNotify();
 	in_keyCatchers ^= KEYCATCH_CONSOLE;
+	con.desiredFrac = 0.5;
 }
 
 /*
@@ -271,46 +272,6 @@ void CL_ConsolePrint(const char* txt)
 	int mask = 0;
 
 	CL_ConsolePrintCommon(txt, mask);
-}
-
-/*
-==================
-Con_RunConsole
-
-Scroll it up or down
-==================
-*/
-void Con_RunConsole(void)
-{
-	// decide on the destination height of the console
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		con.finalFrac = 0.5;		// half screen
-	}
-	else
-	{
-		con.finalFrac = 0;				// none visible
-
-	}
-	// scroll towards the destination height
-	if (con.finalFrac < con.displayFrac)
-	{
-		con.displayFrac -= con_conspeed->value * cls.realFrametime * 0.001;
-		if (con.finalFrac > con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-
-	}
-	else if (con.finalFrac > con.displayFrac)
-	{
-		con.displayFrac += con_conspeed->value * cls.realFrametime * 0.001;
-		if (con.finalFrac < con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-	}
-
 }
 
 void Con_Close(void)

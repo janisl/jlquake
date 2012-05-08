@@ -70,6 +70,7 @@ void Con_ToggleConsole_f(void)
 			Cvar_SetLatched("paused", "1");
 		}
 	}
+	con.desiredFrac = 0.5;
 }
 
 /*

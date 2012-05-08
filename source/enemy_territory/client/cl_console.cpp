@@ -229,47 +229,6 @@ void CL_ConsolePrint(const char* txt)
 	CL_ConsolePrintCommon(txt, mask);
 }
 
-/*
-==================
-Con_RunConsole
-
-Scroll it up or down
-==================
-*/
-void Con_RunConsole(void)
-{
-	// decide on the destination height of the console
-	// ydnar: added short console support (via shift+~)
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		con.finalFrac = con.desiredFrac;
-	}
-	else
-	{
-		con.finalFrac = 0;	// none visible
-
-	}
-	// scroll towards the destination height
-	if (con.finalFrac < con.displayFrac)
-	{
-		con.displayFrac -= con_conspeed->value * cls.realFrametime * 0.001;
-		if (con.finalFrac > con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-
-	}
-	else if (con.finalFrac > con.displayFrac)
-	{
-		con.displayFrac += con_conspeed->value * cls.realFrametime * 0.001;
-		if (con.finalFrac < con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-	}
-
-}
-
 void Con_Close(void)
 {
 	if (!com_cl_running->integer)

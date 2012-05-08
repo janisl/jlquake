@@ -63,9 +63,6 @@ void CL_Disconnect(void)
 // stop sounds (especially looping!)
 	S_StopAllSounds();
 
-// bring the console down and fade the colors back to normal
-//	SCR_BringDownConsole ();
-
 // if running a local server, shut it down
 	if (clc.demoplaying)
 	{

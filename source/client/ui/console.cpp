@@ -1108,6 +1108,49 @@ void Con_MessageKeyEvent(int key)
 	Field_KeyDownEvent(&chatField, key);
 }
 
+//	Scroll it up or down
+void Con_RunConsole()
+{
+	// decide on the destination height of the console
+	if (GGameType & GAME_QuakeHexen && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) &&
+		(cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS))
+	{
+		con.finalFrac = 1;		// full screen
+		con.displayFrac = 1;
+	}
+	else if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) && cls.state != CA_ACTIVE)
+	{
+		con.finalFrac = 1;		// full screen
+		con.displayFrac = 1;
+	}
+	else if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
+		con.finalFrac = con.desiredFrac;
+	}
+	else
+	{
+		con.finalFrac = 0;	// none visible
+	}
+
+	// scroll towards the destination height
+	if (con.finalFrac < con.displayFrac)
+	{
+		con.displayFrac -= con_conspeed->value * cls.realFrametime * 0.001;
+		if (con.finalFrac > con.displayFrac)
+		{
+			con.displayFrac = con.finalFrac;
+		}
+	}
+	else if (con.finalFrac > con.displayFrac)
+	{
+		con.displayFrac += con_conspeed->value * cls.realFrametime * 0.001;
+		if (con.finalFrac < con.displayFrac)
+		{
+			con.displayFrac = con.finalFrac;
+		}
+	}
+}
+
 void Con_Clear_f()
 {
 	Con_ClearText();
@@ -1120,6 +1163,12 @@ void Con_InitCommon()
 	for (int i = 0; i < COMMAND_HISTORY; i++)
 	{
 		Field_Clear(&historyEditLines[i]);
+	}
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		con.finalFrac = 1;
+		con.displayFrac = 1;
 	}
 
 	cl_noprint = Cvar_Get("cl_noprint", "0", 0);

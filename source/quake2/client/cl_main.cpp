@@ -1927,7 +1927,7 @@ void CL_Frame(int msec)
 	CL_RunDLights();
 	CL_RunLightStyles();
 	SCR_RunCinematic();
-	SCR_RunConsole();
+	Con_RunConsole();
 
 	cls.framecount++;
 

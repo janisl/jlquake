@@ -206,7 +206,7 @@ void SB_Draw(void)
 		return;
 	}
 
-	if (con.displayFrac == 1)
+	if (con_forcedup || con.displayFrac == 1)
 	{	// console is full screen
 		return;
 	}
@@ -1280,7 +1280,7 @@ static void DrawActiveRings(void)
 	int frame;
 	char tempStr[24];
 
-	if (con.displayFrac == 1)
+	if (con_forcedup || con.displayFrac == 1)
 	{
 		return;		// console is full screen
 
@@ -1326,7 +1326,7 @@ static void DrawActiveArtifacts(void)
 	int frame;
 	char tempStr[24];
 
-	if (con.displayFrac == 1)
+	if (con_forcedup || con.displayFrac == 1)
 	{
 		return;
 	}

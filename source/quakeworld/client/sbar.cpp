@@ -833,7 +833,7 @@ void Sbar_Draw(void)
 
 	headsup = !(cl_sbar->value || scr_viewsize->value < 100);
 
-	if (con.displayFrac == 1)
+	if (cls.state != CA_ACTIVE || con.displayFrac == 1)
 	{
 		return;		// console is full screen
 

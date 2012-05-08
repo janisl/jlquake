@@ -454,47 +454,6 @@ void SCR_DrawLoading(void)
 //=============================================================================
 
 /*
-==================
-SCR_RunConsole
-
-Scroll it up or down
-==================
-*/
-void SCR_RunConsole(void)
-{
-// decide on the height of the console
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		con.finalFrac = 0.5;		// half screen
-	}
-	else
-	{
-		con.finalFrac = 0;				// none visible
-
-	}
-	if (con.finalFrac < con.displayFrac)
-	{
-		con.displayFrac -= con_conspeed->value * cls.q2_frametimeFloat;
-		if (con.finalFrac > con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-
-	}
-	else if (con.finalFrac > con.displayFrac)
-	{
-		con.displayFrac += con_conspeed->value * cls.q2_frametimeFloat;
-		if (con.finalFrac < con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-	}
-
-}
-
-//=============================================================================
-
-/*
 ================
 SCR_BeginLoadingPlaque
 ================

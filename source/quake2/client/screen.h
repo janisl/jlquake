@@ -29,8 +29,6 @@ void    SCR_CenterPrint(char* str);
 
 void    SCR_TouchPics(void);
 
-void    SCR_RunConsole(void);
-
 extern int sb_lines;
 
 extern Cvar* scr_viewsize;

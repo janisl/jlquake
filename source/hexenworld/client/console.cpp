@@ -34,6 +34,7 @@ void Con_ToggleConsole_f(void)
 	}
 
 	Con_ClearNotify();
+	con.desiredFrac = 0.5;
 }
 
 /*

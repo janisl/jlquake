@@ -965,7 +965,7 @@ Sbar_Draw
 */
 void Sbar_Draw(void)
 {
-	if (con.displayFrac == 1)
+	if (con_forcedup || con.displayFrac == 1)
 	{
 		return;		// console is full screen
 

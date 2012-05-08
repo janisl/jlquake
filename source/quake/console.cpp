@@ -56,6 +56,7 @@ void Con_ToggleConsole_f(void)
 
 	SCR_EndLoadingPlaque();
 	Con_ClearNotify();
+	con.desiredFrac = 0.5;
 }
 
 /*

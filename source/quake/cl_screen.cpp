@@ -562,55 +562,6 @@ void SCR_DrawLoading(void)
 
 //=============================================================================
 
-
-/*
-==================
-SCR_SetUpToDrawConsole
-==================
-*/
-void SCR_SetUpToDrawConsole(void)
-{
-	if (scr_drawloading)
-	{
-		return;		// never a console with loading plaque
-
-	}
-// decide on the height of the console
-	con_forcedup = cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS;
-
-	if (con_forcedup)
-	{
-		con.finalFrac = 1;		// full screen
-		con.displayFrac = 1;
-	}
-	else if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		con.finalFrac = 0.5;	// half screen
-	}
-	else
-	{
-		con.finalFrac = 0;				// none visible
-
-	}
-	if (con.finalFrac < con.displayFrac)
-	{
-		con.displayFrac -= con_conspeed->value * host_frametime;
-		if (con.finalFrac > con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-
-	}
-	else if (con.finalFrac > con.displayFrac)
-	{
-		con.displayFrac += con_conspeed->value * host_frametime;
-		if (con.finalFrac < con.displayFrac)
-		{
-			con.displayFrac = con.finalFrac;
-		}
-	}
-}
-
 /*
 ===============
 SCR_BeginLoadingPlaque
@@ -724,25 +675,6 @@ int SCR_ModalMessage(const char* text)
 
 //=============================================================================
 
-/*
-===============
-SCR_BringDownConsole
-
-Brings the console down and fades the palettes back to normal
-================
-*/
-void SCR_BringDownConsole(void)
-{
-	int i;
-
-	scr_centertime_off = 0;
-
-	for (i = 0; i < 20 && con.finalFrac != con.displayFrac; i++)
-		SCR_UpdateScreen();
-
-	cl.qh_cshifts[0].percent = 0;		// no area contents palette on next frame
-}
-
 void SCR_TileClear(void)
 {
 	if (scr_vrect.x > 0)
@@ -810,7 +742,7 @@ void SCR_UpdateScreen(void)
 //
 // do 3D refresh drawing, and then update the screen
 //
-	SCR_SetUpToDrawConsole();
+	con_forcedup = cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS;
 
 	V_RenderView();
 
