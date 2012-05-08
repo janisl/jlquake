@@ -2394,7 +2394,6 @@ void CL_Init(void)
 	//
 	// register our variables
 	//
-	cl_noprint = Cvar_Get("cl_noprint", "0", 0);
 	cl_motd = Cvar_Get("cl_motd", "1", 0);
 
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
@@ -2416,8 +2415,6 @@ void CL_Init(void)
 	cl_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
 
 	cl_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
-
-	cl_conXOffset = Cvar_Get("cl_conXOffset", "0", 0);
 
 	cl_serverStatusResendTime = Cvar_Get("cl_serverStatusResendTime", "750", 0);
 

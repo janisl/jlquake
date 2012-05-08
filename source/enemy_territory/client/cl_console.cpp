@@ -202,16 +202,8 @@ void Con_Init(void)
 {
 	Con_InitCommon();
 
-	con_notifytime = Cvar_Get("con_notifytime", "7", 0);	// JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
-	con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
-
-	Field_Clear(&g_consoleField);
-	for (int i = 0; i < COMMAND_HISTORY; i++)
-	{
-		Field_Clear(&historyEditLines[i]);
-	}
 
 	Cmd_AddCommand("toggleConsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("clear", Con_Clear_f);

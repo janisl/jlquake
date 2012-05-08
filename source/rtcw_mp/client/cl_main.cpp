@@ -2926,7 +2926,6 @@ void CL_Init(void)
 	//
 	// register our variables
 	//
-	cl_noprint = Cvar_Get("cl_noprint", "0", 0);
 	cl_motd = Cvar_Get("cl_motd", "1", 0);
 	cl_autoupdate = Cvar_Get("cl_autoupdate", "1", CVAR_ARCHIVE);
 
@@ -2963,8 +2962,6 @@ void CL_Init(void)
 	// Rafael - particle switch
 	Cvar_Get("cg_wolfparticles", "1", CVAR_ARCHIVE);
 	// done
-
-	cl_conXOffset = Cvar_Get("cl_conXOffset", "0", 0);
 
 	cl_serverStatusResendTime = Cvar_Get("cl_serverStatusResendTime", "750", 0);
 

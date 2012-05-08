@@ -106,8 +106,6 @@ void Con_Init(void)
 //
 // register our commands
 //
-	con_notifytime = Cvar_Get("con_notifytime", "3", 0);		//seconds
-
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);

@@ -208,8 +208,6 @@ void Con_Init(void)
 //
 // register our commands
 //
-	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
-
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
 	Cmd_AddCommand("messagemode", Con_MessageMode_f);

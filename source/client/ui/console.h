@@ -47,14 +47,6 @@ struct console_t
 
 extern console_t con;
 extern field_t g_consoleField;
-extern field_t historyEditLines[COMMAND_HISTORY];
-extern int nextHistoryLine;
-extern int historyLine;
-
-extern Cvar* cl_noprint;
-extern Cvar* cl_conXOffset;
-extern Cvar* con_notifytime;
-extern Cvar* con_drawnotify;
 
 extern image_t* conback;
 

@@ -20,17 +20,17 @@
 
 console_t con;
 field_t g_consoleField;
-field_t historyEditLines[COMMAND_HISTORY];
-int nextHistoryLine;		// the last line in the history buffer, not masked
-int historyLine;			// the line being displayed from history buffer
+static field_t historyEditLines[COMMAND_HISTORY];
+static int nextHistoryLine;		// the last line in the history buffer, not masked
+static int historyLine;			// the line being displayed from history buffer
 							// will be <= nextHistoryLine
 
 image_t* conback;
 
-Cvar* cl_noprint;
-Cvar* cl_conXOffset;
-Cvar* con_notifytime;
-Cvar* con_drawnotify;
+static Cvar* cl_noprint;
+static Cvar* cl_conXOffset;
+static Cvar* con_notifytime;
+static Cvar* con_drawnotify;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
@@ -1115,4 +1115,17 @@ void Con_Clear_f()
 
 void Con_InitCommon()
 {
+	Field_Clear(&g_consoleField);
+	for (int i = 0; i < COMMAND_HISTORY; i++)
+	{
+		Field_Clear(&historyEditLines[i]);
+	}
+
+	cl_noprint = Cvar_Get("cl_noprint", "0", 0);
+	cl_conXOffset = Cvar_Get("cl_conXOffset", "0", 0);
+	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
+	if (GGameType & GAME_ET)
+	{
+		con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
+	}
 }
