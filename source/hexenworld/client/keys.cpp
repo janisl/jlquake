@@ -22,7 +22,6 @@ int keyshift[256];			// key to map to if shift held down in console
 
 void Key_Message(int key)
 {
-
 	if (key == K_ENTER)
 	{
 		if (chat_team)
@@ -42,14 +41,7 @@ void Key_Message(int key)
 		return;
 	}
 
-	if (key == K_ESCAPE)
-	{
-		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chatField.cursor = 0;
-		chatField.buffer[0] = 0;
-		return;
-	}
-	Field_KeyDownEvent(&chatField, key);
+	Con_MessageKeyEvent(key);
 }
 
 //============================================================================

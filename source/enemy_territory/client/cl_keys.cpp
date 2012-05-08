@@ -548,13 +548,6 @@ void Message_Key(int key)
 	char buffer[MAX_STRING_CHARS];
 
 
-	if (key == K_ESCAPE)
-	{
-		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear(&chatField);
-		return;
-	}
-
 	if (key == K_ENTER || key == K_KP_ENTER)
 	{
 		if (chatField.buffer[0] && cls.state == CA_ACTIVE)
@@ -579,7 +572,7 @@ void Message_Key(int key)
 		return;
 	}
 
-	Field_KeyDownEvent(&chatField, key);
+	Con_MessageKeyEvent(key);
 }
 
 //============================================================================

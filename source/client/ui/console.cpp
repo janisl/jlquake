@@ -1095,6 +1095,18 @@ void Con_KeyEvent(int key)
 	Field_KeyDownEvent(&g_consoleField, key);
 }
 
+void Con_MessageKeyEvent(int key)
+{
+	if (key == K_ESCAPE)
+	{
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
+		Field_Clear(&chatField);
+		return;
+	}
+
+	Field_KeyDownEvent(&chatField, key);
+}
+
 void Con_Clear_f()
 {
 	Con_ClearText();

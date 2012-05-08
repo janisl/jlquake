@@ -68,4 +68,5 @@ void CL_ConsolePrintCommon(const char*& txt, int mask);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
 void Con_KeyEvent(int key);
+void Con_MessageKeyEvent(int key);
 void Con_InitCommon();
