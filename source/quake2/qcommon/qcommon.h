@@ -304,7 +304,6 @@ void CL_Init(void);
 void CL_Drop(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
-void Con_Print(const char* text);
 void SCR_BeginLoadingPlaque(bool Clear = false);
 
 void SV_Init(void);

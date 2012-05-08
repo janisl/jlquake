@@ -154,7 +154,9 @@ static void Con_Linefeed(bool skipNotify)
 	}
 }
 
-void CL_ConsolePrintCommon(const char*& txt, int mask)
+//	Handles cursor positioning, line wrapping, etc
+//	If no console is visible, the text will appear at the top of the game window
+void Con_ConsolePrint(const char* txt)
 {
 	// for some demos we don't want to ever show anything on the console
 	if (cl_noprint && cl_noprint->integer)
@@ -233,7 +235,7 @@ void CL_ConsolePrintCommon(const char*& txt, int mask)
 			int y = con.current % con.totallines;
 			// rain - sign extension caused the character to carry over
 			// into the color info for high ascii chars; casting c to unsigned
-			con.text[y * con.linewidth + con.x] = (color << 8) | (unsigned char)c | mask | con.ormask;
+			con.text[y * con.linewidth + con.x] = (color << 8) | (unsigned char)c | con.ormask;
 			con.x++;
 			if (con.x >= con.linewidth)
 			{

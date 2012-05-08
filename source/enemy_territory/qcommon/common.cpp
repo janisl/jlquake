@@ -191,7 +191,7 @@ int QDECL Com_VPrintf(const char* fmt, va_list argptr)
 	// echo to console if we're not a dedicated server
 	if (com_dedicated && !com_dedicated->integer)
 	{
-		CL_ConsolePrint(msg);
+		Con_ConsolePrint(msg);
 	}
 
 	// echo to dedicated console and early console

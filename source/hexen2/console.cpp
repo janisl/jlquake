@@ -101,25 +101,6 @@ void Con_Init(void)
 
 /*
 ================
-Con_Print
-
-Handles cursor positioning, line wrapping, etc
-All console printing must go through this in order to be logged to disk
-If no console is visible, the notify window will pop up.
-================
-*/
-void Con_Print(const char* txt)
-{
-	int mask;
-
-		mask = 0;
-
-	CL_ConsolePrintCommon(txt, mask);
-}
-
-
-/*
-================
 Con_DebugLog
 ================
 */
@@ -170,7 +151,7 @@ void Con_Printf(const char* fmt, ...)
 
 	}
 // write it to the scrollable buffer
-	Con_Print(msg);
+	Con_ConsolePrint(msg);
 
 // update the screen if the console is displayed
 	if (clc.qh_signon != SIGNONS && !cls.disable_screen)

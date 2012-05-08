@@ -108,25 +108,6 @@ void Con_Init(void)
 	Cmd_AddCommand("clear", Con_Clear_f);
 }
 
-/*
-================
-Con_Print
-
-Handles cursor positioning, line wrapping, etc
-All console printing must go through this in order to be logged to disk
-If no console is visible, the notify window will pop up.
-================
-*/
-void Con_Print(const char* txt)
-{
-	int mask;
-
-		mask = 0;
-
-	CL_ConsolePrintCommon(txt, mask);
-}
-
-
 static void Con_DebugLog(const char* file, const char* fmt, ...)
 {
 	va_list argptr;
@@ -168,7 +149,7 @@ void Con_Printf(const char* fmt, ...)
 	}
 
 // write it to the scrollable buffer
-	Con_Print(msg);
+	Con_ConsolePrint(msg);
 
 // update the screen immediately if the console is displayed
 	if (cls.state != CA_ACTIVE)

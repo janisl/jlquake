@@ -76,7 +76,7 @@ void CL_ForwardCommandToServer(const char* string)
 {
 }
 
-void CL_ConsolePrint(const char* txt)
+void Con_ConsolePrint(const char* txt)
 {
 }
 

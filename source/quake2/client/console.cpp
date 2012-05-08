@@ -218,25 +218,6 @@ void Con_Init(void)
 }
 
 /*
-================
-Con_Print
-
-Handles cursor positioning, line wrapping, etc
-All console printing must go through this in order to be logged to disk
-If no console is visible, the text will appear at the top of the game window
-================
-*/
-void Con_Print(const char* txt)
-{
-	int mask;
-
-		mask = 0;
-
-	CL_ConsolePrintCommon(txt, mask);
-}
-
-
-/*
 ==============
 Con_CenteredPrint
 ==============
@@ -255,5 +236,5 @@ void Con_CenteredPrint(char* text)
 	Com_Memset(buffer, ' ', l);
 	String::Cpy(buffer + l, text);
 	String::Cat(buffer, sizeof(buffer), "\n");
-	Con_Print(buffer);
+	Con_ConsolePrint(buffer);
 }

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // common.c -- misc functions used in client and server
 #include "qcommon.h"
+#include "../client/client.h"
 #include <setjmp.h>
 
 
@@ -124,7 +125,7 @@ void Com_Printf(const char* fmt, ...)
 		return;
 	}
 
-	Con_Print(msg);
+	Con_ConsolePrint(msg);
 
 	// also echo to debugging console
 	Sys_Print(msg);

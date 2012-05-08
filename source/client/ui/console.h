@@ -56,7 +56,7 @@ extern bool chat_buddy;
 
 void Con_ClearNotify();
 void Con_Clear_f();
-void CL_ConsolePrintCommon(const char*& txt, int mask);
+void Con_ConsolePrint(const char* txt);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
 void Con_KeyEvent(int key);

@@ -908,7 +908,7 @@ void CL_ConnectionlessPacket(void)
 		Con_Printf("print\n");
 
 		s = const_cast<char*>(net_message.ReadString2());
-		Con_Print(s);
+		Con_ConsolePrint(s);
 		return;
 	}
 
