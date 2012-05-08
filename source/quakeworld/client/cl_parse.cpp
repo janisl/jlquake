@@ -1036,6 +1036,21 @@ void CL_MuzzleFlash(void)
 	CLQ1_MuzzleFlashLight(i, pl->origin, pl->viewangles);
 }
 
+static void CL_ParsePrint()
+{
+	int i = net_message.ReadByte();
+	const char* txt = net_message.ReadString2();
+
+	if (i == PRINT_CHAT)
+	{
+		S_StartLocalSound("misc/talk.wav");
+		Con_Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt);
+	}
+	else
+	{
+		Con_Printf("%s", txt);
+	}
+}
 
 #define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
@@ -1114,14 +1129,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_print:
-			i = net_message.ReadByte();
-			if (i == PRINT_CHAT)
-			{
-				S_StartLocalSound("misc/talk.wav");
-				con.ormask = 128;
-			}
-			Con_Printf("%s", net_message.ReadString2());
-			con.ormask = 0;
+			CL_ParsePrint();
 			break;
 
 		case q1svc_centerprint:

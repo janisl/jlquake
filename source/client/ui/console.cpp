@@ -235,7 +235,7 @@ void Con_ConsolePrint(const char* txt)
 			int y = con.current % con.totallines;
 			// rain - sign extension caused the character to carry over
 			// into the color info for high ascii chars; casting c to unsigned
-			con.text[y * con.linewidth + con.x] = (color << 8) | (unsigned char)c | con.ormask;
+			con.text[y * con.linewidth + con.x] = (color << 8) | (unsigned char)c;
 			con.x++;
 			if (con.x >= con.linewidth)
 			{

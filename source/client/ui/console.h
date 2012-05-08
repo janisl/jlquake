@@ -40,8 +40,6 @@ struct console_t
 	// for transparent notify lines
 	vec4_t color;
 
-	int ormask;				// high bit mask for colored characters
-
 	int acLength;			// Arnout: autocomplete buffer length
 };
 

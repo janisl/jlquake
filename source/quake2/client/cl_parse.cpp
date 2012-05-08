@@ -667,6 +667,21 @@ void CL_ParseStartSoundPacket(void)
 	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume, attenuation, ofs);
 }
 
+static void CL_ParsePrint()
+{
+	int i = net_message.ReadByte();
+	const char* txt = net_message.ReadString2();
+
+	if (i == PRINT_CHAT)
+	{
+		S_StartLocalSound("misc/talk.wav");
+		Com_Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE, txt);
+	}
+	else
+	{
+		Com_Printf("%s", txt);
+	}
+}
 
 void SHOWNET(const char* s)
 {
@@ -685,7 +700,6 @@ void CL_ParseServerMessage(void)
 {
 	int cmd;
 	char* s;
-	int i;
 
 //
 // if recording demos, copy the message out
@@ -759,14 +773,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_print:
-			i = net_message.ReadByte();
-			if (i == PRINT_CHAT)
-			{
-				S_StartLocalSound("misc/talk.wav");
-				con.ormask = 128;
-			}
-			Com_Printf("%s", net_message.ReadString2());
-			con.ormask = 0;
+			CL_ParsePrint();
 			break;
 
 		case q2svc_centerprint:

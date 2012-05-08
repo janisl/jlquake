@@ -949,50 +949,48 @@ void CL_Plaque(void)
 
 void CL_IndexedPrint(void)
 {
-	int index,i;
-
-	i = net_message.ReadByte();
+	int i = net_message.ReadByte();
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		con.ormask = 1 << 8;
 	}
 
-	index = net_message.ReadShort();
+	int index = net_message.ReadShort();
 
 	if (index > 0 && index <= pr_string_count)
 	{
-		Con_Printf("%s",&pr_global_strings[pr_string_index[index - 1]]);
+		if (i == PRINT_CHAT)
+		{
+			Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &pr_global_strings[pr_string_index[index - 1]]);
+		}
+		else
+		{
+			Con_Printf("%s",&pr_global_strings[pr_string_index[index - 1]]);
+		}
 	}
-	else
-	{
-		Con_Printf("");
-	}
-	con.ormask = 0;
 }
 
 void CL_NamePrint(void)
 {
-	int index,i;
+	int i = net_message.ReadByte();
+	int index = net_message.ReadByte();
 
-	i = net_message.ReadByte();
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		con.ormask = 1 << 8;
 	}
-
-	index = net_message.ReadByte();
 
 	if (index >= 0 && index < HWMAX_CLIENTS)
 	{
-		Con_Printf("%s",&cl.h2_players[index].name);
+		if (i == PRINT_CHAT)
+		{
+			Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &cl.h2_players[index].name);
+		}
+		else
+		{
+			Con_Printf("%s",&cl.h2_players[index].name);
+		}
 	}
-	else
-	{
-		Con_Printf("");
-	}
-	con.ormask = 0;
 }
 
 void CL_ParticleExplosion(void)
@@ -1010,6 +1008,32 @@ void CL_ParticleExplosion(void)
 	CLH2_ColouredParticleExplosion(org,color,radius,counter);
 }
 
+static void CL_ParsePrint()
+{
+	int i = net_message.ReadByte();
+	const char* txt = net_message.ReadString2();
+
+	if (i == PRINT_CHAT)
+	{
+		S_StartLocalSound("misc/talk.wav");
+		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
+	}
+	else if (i >= PRINT_SOUND)
+	{
+		if (!talksounds->value)
+		{
+			return;
+		}
+		char temp[100];
+		sprintf(temp, "taunt/taunt%.3d.wav", i - PRINT_SOUND + 1);
+		S_StartLocalSound(temp);
+		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
+	}
+	else
+	{
+		Con_Printf("%s", txt);
+	}
+}
 
 #define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
@@ -1033,7 +1057,6 @@ void CL_ParseServerMessage(void)
 	int i, j;
 	unsigned sc1, sc2;
 	byte test;
-	char temp[100];
 	vec3_t pos;
 
 	LastServerMessageSize += net_message.cursize;
@@ -1097,28 +1120,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_print:
-			i = net_message.ReadByte();
-			if (i == PRINT_CHAT)
-			{
-				S_StartLocalSound("misc/talk.wav");
-				con.ormask = 1 << 8;
-			}
-			else if (i >= PRINT_SOUND)
-			{
-				if (talksounds->value)
-				{
-					sprintf(temp,"taunt/taunt%.3d.wav",i - PRINT_SOUND + 1);
-					S_StartLocalSound(temp);
-					con.ormask = 1 << 8;
-				}
-				else
-				{
-					net_message.ReadString2();
-					break;
-				}
-			}
-			Con_Printf("%s", net_message.ReadString2());
-			con.ormask = 0;
+			CL_ParsePrint();
 			break;
 
 		case h2svc_centerprint:
