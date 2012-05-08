@@ -919,13 +919,18 @@ static void InitOpenGL()
 	if (glConfig.vidWidth == 0)
 	{
 		InitOpenGLSubsystem();
+
+		// init command buffers and SMP
+		R_InitCommandBuffers();
+
+		// print info
+		GfxInfo_f();
 	}
-
-	// init command buffers and SMP
-	R_InitCommandBuffers();
-
-	// print info
-	GfxInfo_f();
+	else
+	{
+		// init command buffers and SMP
+		R_InitCommandBuffers();
+	}
 
 	// set default state
 	GL_SetDefaultState();
