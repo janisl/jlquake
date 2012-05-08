@@ -1105,6 +1105,27 @@ void CL_ParseRainEffect(void)
 	CLH2_RainEffect(org,e_size,x_dir,y_dir,color,count);
 }
 
+static void CL_ParsePrint()
+{
+	const char* txt = net_message.ReadString2();
+	if (intro_playing)
+	{
+		return;
+	}
+	if (txt[0] == 1)
+	{
+		S_StartLocalSound("misc/comm.wav");
+	}
+	if (txt[0] == 1 || txt[0] == 2)
+	{
+		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt + 1);
+	}
+	else
+	{
+		Con_Printf("%s", txt);
+	}
+}
+
 #define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
 
 /*
@@ -1225,14 +1246,7 @@ void CL_ParseServerMessage(void)
 			Host_EndGame("Server disconnected\n");
 
 		case h2svc_print:
-			if (intro_playing)
-			{
-				net_message.ReadString2();
-			}
-			else
-			{
-				Con_Printf("%s", net_message.ReadString2());
-			}
+			CL_ParsePrint();
 			break;
 
 		case h2svc_centerprint:

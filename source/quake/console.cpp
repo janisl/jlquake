@@ -126,22 +126,7 @@ void Con_Print(const char* txt)
 {
 	int mask;
 
-	if (txt[0] == 1)
-	{
-		mask = 128;		// go to colored text
-		S_StartLocalSound("misc/talk.wav");
-		// play talk wav
-		txt++;
-	}
-	else if (txt[0] == 2)
-	{
-		mask = 128;		// go to colored text
-		txt++;
-	}
-	else
-	{
 		mask = 0;
-	}
 
 	CL_ConsolePrintCommon(txt, mask);
 }
