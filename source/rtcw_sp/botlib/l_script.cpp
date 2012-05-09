@@ -35,21 +35,7 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//#define SCREWUP
 //#define BOTLIB
-
-#ifdef SCREWUP
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
-#include <stdarg.h>
-#include "../botlib/l_memory.h"
-#include "../botlib/l_script.h"
-
-typedef enum {qfalse, qtrue}    qboolean;
-
-#endif	//SCREWUP
 
 #ifdef BOTLIB
 //include files for usage in the bot library

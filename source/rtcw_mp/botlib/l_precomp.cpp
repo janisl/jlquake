@@ -37,22 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 
 //Notes:			fix: PC_StringizeTokens
 
-//#define SCREWUP
 //#define BOTLIB
-
-#ifdef SCREWUP
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
-#include <stdarg.h>
-#include <time.h>
-#include "l_memory.h"
-#include "l_script.h"
-#include "l_precomp.h"
-
-typedef enum {qfalse, qtrue}    qboolean;
-#endif	//SCREWUP
 
 #ifdef BOTLIB
 #include "../game/q_shared.h"
@@ -1051,13 +1036,8 @@ int PC_Directive_include(source_t* source)
 	}	//end else
 	if (!script)
 	{
-#ifdef SCREWUP
-		SourceWarning(source, "file %s not found", path);
-		return qtrue;
-#else
 		SourceError(source, "file %s not found", path);
 		return qfalse;
-#endif	//SCREWUP
 	}	//end if
 	PC_PushScript(source, script);
 	return qtrue;
