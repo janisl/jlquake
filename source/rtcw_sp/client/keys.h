@@ -26,9 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-extern qboolean chat_limbo;				// NERVE - SMF
-extern int chat_playerNum;
-
 void Key_WriteBindings(fileHandle_t f);
 void Key_SetBinding(int keynum, const char* binding);
 const char* Key_GetBinding(int keynum);

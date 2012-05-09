@@ -42,31 +42,6 @@ void Con_ToggleConsole_f(void)
 
 /*
 ================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f(void)
-{
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chat_team = false;
-	chatField.widthInChars = (viddef.width - 48) / 8;
-}
-
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f(void)
-{
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chat_team = true;
-	chatField.widthInChars = (viddef.width - 48) / 8;
-}
-
-/*
-================
 Con_Init
 ================
 */
@@ -89,9 +64,6 @@ void Con_Init(void)
 // register our commands
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand("clear", Con_Clear_f);
 
 	PR_LoadStrings();
 #ifdef MISSIONPACK

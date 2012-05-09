@@ -27,11 +27,6 @@ key up events are sent even if in console mode
 
 */
 
-int chat_playerNum;
-
-//============================================================================
-
-
 /*
 ================
 Message_Key

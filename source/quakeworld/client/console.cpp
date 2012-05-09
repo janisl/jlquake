@@ -63,6 +63,8 @@ Con_ToggleChat_f
 */
 void Con_ToggleChat_f(void)
 {
+	con.acLength = 0;
+
 	Key_ClearTyping();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
@@ -78,30 +80,7 @@ void Con_ToggleChat_f(void)
 	}
 
 	Con_ClearNotify();
-}
-
-/*
-================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f(void)
-{
-	chat_team = false;
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chatField.widthInChars = (viddef.width >> 3) - 6;
-}
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f(void)
-{
-	chat_team = true;
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chatField.widthInChars = (viddef.width >> 3) - 12;
+	con.desiredFrac = 0.5;
 }
 
 /*
@@ -122,9 +101,6 @@ void Con_Init(void)
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand("clear", Con_Clear_f);
 }
 
 static void Con_DebugLog(const char* file, const char* fmt, ...)

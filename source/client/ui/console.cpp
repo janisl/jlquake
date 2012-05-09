@@ -38,6 +38,8 @@ static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 field_t chatField;
 bool chat_team;
 bool chat_buddy;
+bool chat_limbo;
+int chat_playerNum;
 
 void Con_ClearNotify()
 {
@@ -1163,10 +1165,103 @@ void Con_RunConsole()
 	}
 }
 
-void Con_Clear_f()
+static void Con_Clear_f()
 {
 	Con_ClearText();
 	Con_Bottom();		// go to end
+}
+
+//	Save the console contents out to a file
+static void Con_Dump_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("usage: condump <filename>\n");
+		return;
+	}
+
+	common->Printf("Dumped console text to %s.\n", Cmd_Argv(1));
+
+	fileHandle_t f = FS_FOpenFileWrite(Cmd_Argv(1));
+	if (!f)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+
+	// skip empty lines
+	int l;
+	for (l = con.current - con.totallines + 1; l <= con.current; l++)
+	{
+		short* line = con.text + (l % con.totallines) * con.linewidth;
+		int x;
+		for (x = 0; x < con.linewidth; x++)
+		{
+			if ((line[x] & 0xff) != ' ')
+			{
+				break;
+			}
+		}
+		if (x != con.linewidth)
+		{
+			break;
+		}
+	}
+
+	// write the remaining lines
+	char buffer[1024];
+	buffer[con.linewidth] = 0;
+	for (; l <= con.current; l++)
+	{
+		short* line = con.text + (l % con.totallines) * con.linewidth;
+		for (int i = 0; i < con.linewidth; i++)
+		{
+			buffer[i] = line[i] & 0xff;
+		}
+		for (int x = con.linewidth - 1; x >= 0; x--)
+		{
+			if (buffer[x] == ' ')
+			{
+				buffer[x] = 0;
+			}
+			else
+			{
+				break;
+			}
+		}
+		String::Cat(buffer, sizeof(buffer), "\n");
+		FS_Write(buffer, String::Length(buffer), f);
+	}
+
+	FS_FCloseFile(f);
+}
+
+static void Con_MessageMode_f()
+{
+	chat_team = false;
+	chat_playerNum = -1;
+	Field_Clear(&chatField);
+	chatField.widthInChars = GGameType & GAME_Tech3 ? 30 : (viddef.width >> 3) - 6;
+	in_keyCatchers ^= KEYCATCH_MESSAGE;
+}
+
+static void Con_MessageMode2_f()
+{
+	chat_team = true;
+	chat_playerNum = -1;
+	Field_Clear(&chatField);
+	chatField.widthInChars = GGameType & GAME_Tech3 ? 25 : (viddef.width >> 3) - 12;
+	in_keyCatchers ^= KEYCATCH_MESSAGE;
+}
+
+static void Con_StartLimboMode_f()
+{
+	chat_limbo = true;
+}
+
+static void Con_StopLimboMode_f()
+{
+	chat_limbo = false;
 }
 
 void Con_InitCommon()
@@ -1190,5 +1285,24 @@ void Con_InitCommon()
 	if (GGameType & GAME_ET)
 	{
 		con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
+	}
+
+	Cmd_AddCommand("clear", Con_Clear_f);
+	Cmd_AddCommand("condump", Con_Dump_f);
+	if (GGameType & GAME_ET)
+	{
+		// ydnar: these are deprecated in favor of cgame/ui based version
+		Cmd_AddCommand("clMessageMode", Con_MessageMode_f);
+		Cmd_AddCommand("clMessageMode2", Con_MessageMode2_f);
+	}
+	else
+	{
+		Cmd_AddCommand("messagemode", Con_MessageMode_f);
+		Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
+	}
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		Cmd_AddCommand("startLimboMode", Con_StartLimboMode_f);
+		Cmd_AddCommand("stopLimboMode", Con_StopLimboMode_f);
 	}
 }

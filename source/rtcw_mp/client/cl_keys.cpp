@@ -34,10 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-qboolean chat_limbo;			// NERVE - SMF
-
-int chat_playerNum;
-
 qboolean UI_checkKeyExec(int key);			// NERVE - SMF
 
 keyname_t keynames_d[] =	//deutsch

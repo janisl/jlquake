@@ -100,103 +100,6 @@ void Con_ToggleChat_f(void)
 
 /*
 ================
-Con_Dump_f
-
-Save the console contents out to a file
-================
-*/
-void Con_Dump_f(void)
-{
-	int l, x;
-	short* line;
-	fileHandle_t f;
-	char buffer[1024];
-	char name[MAX_OSPATH];
-
-	if (Cmd_Argc() != 2)
-	{
-		Com_Printf("usage: condump <filename>\n");
-		return;
-	}
-
-	String::Sprintf(name, sizeof(name), "%s.txt", Cmd_Argv(1));
-
-	Com_Printf("Dumped console text to %s.\n", name);
-	f = FS_FOpenFileWrite(name);
-	if (!f)
-	{
-		Com_Printf("ERROR: couldn't open.\n");
-		return;
-	}
-
-	// skip empty lines
-	for (l = con.current - con.totallines + 1; l <= con.current; l++)
-	{
-		line = con.text + (l % con.totallines) * con.linewidth;
-		for (x = 0; x < con.linewidth; x++)
-			if (line[x] != ' ')
-			{
-				break;
-			}
-		if (x != con.linewidth)
-		{
-			break;
-		}
-	}
-
-	// write the remaining lines
-	buffer[con.linewidth] = 0;
-	for (; l <= con.current; l++)
-	{
-		line = con.text + (l % con.totallines) * con.linewidth;
-		for (int i = 0; i < con.linewidth; i++)
-			buffer[i] = line[i] & 0xff;
-		for (x = con.linewidth - 1; x >= 0; x--)
-		{
-			if (buffer[x] == ' ')
-			{
-				buffer[x] = 0;
-			}
-			else
-			{
-				break;
-			}
-		}
-		for (x = 0; buffer[x]; x++)
-			buffer[x] &= 0x7f;
-
-		FS_Printf(f, "%s\n", buffer);
-	}
-
-	FS_FCloseFile(f);
-}
-
-/*
-================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f(void)
-{
-	chat_team = false;
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chatField.widthInChars = (viddef.width >> 3) - 6;
-}
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f(void)
-{
-	chat_team = true;
-	in_keyCatchers |= KEYCATCH_MESSAGE;
-	chatField.widthInChars = (viddef.width >> 3) - 12;
-}
-
-/*
-================
 Con_Init
 ================
 */
@@ -211,10 +114,6 @@ void Con_Init(void)
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
-	Cmd_AddCommand("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
-	Cmd_AddCommand("clear", Con_Clear_f);
-	Cmd_AddCommand("condump", Con_Dump_f);
 }
 
 /*

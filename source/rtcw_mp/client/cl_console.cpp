@@ -30,10 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-
-vec4_t console_color = {1.0, 1.0, 1.0, 1.0};
-
-
 /*
 ================
 Con_ToggleConsole_f
@@ -55,35 +51,6 @@ void Con_ToggleConsole_f(void)
 	Con_ClearNotify();
 	in_keyCatchers ^= KEYCATCH_CONSOLE;
 	con.desiredFrac = 0.5;
-}
-
-/*
-================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f(void)
-{
-	chat_playerNum = -1;
-	chat_team = qfalse;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 30;
-
-	in_keyCatchers ^= KEYCATCH_MESSAGE;
-}
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f(void)
-{
-	chat_playerNum = -1;
-	chat_team = qtrue;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 25;
-	in_keyCatchers ^= KEYCATCH_MESSAGE;
 }
 
 /*
@@ -124,104 +91,6 @@ void Con_MessageMode4_f(void)
 	in_keyCatchers ^= KEYCATCH_MESSAGE;
 }
 
-// NERVE - SMF
-/*
-================
-Con_StartLimboMode_f
-================
-*/
-void Con_StartLimboMode_f(void)
-{
-	chat_limbo = qtrue;
-}
-
-/*
-================
-Con_StopLimboMode_f
-================
-*/
-void Con_StopLimboMode_f(void)
-{
-	chat_limbo = qfalse;
-}
-// -NERVE - SMF
-
-/*
-================
-Con_Dump_f
-
-Save the console contents out to a file
-================
-*/
-void Con_Dump_f(void)
-{
-	int l, x, i;
-	short* line;
-	fileHandle_t f;
-	char buffer[1024];
-
-	if (Cmd_Argc() != 2)
-	{
-		Com_Printf("usage: condump <filename>\n");
-		return;
-	}
-
-	Com_Printf("Dumped console text to %s.\n", Cmd_Argv(1));
-
-#ifdef __MACOS__	//DAJ MacOS file typing
-	{
-		extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-		_ftype = 'TEXT';
-		_fcreator = 'R*ch';
-	}
-#endif
-	f = FS_FOpenFileWrite(Cmd_Argv(1));
-	if (!f)
-	{
-		Com_Printf("ERROR: couldn't open.\n");
-		return;
-	}
-
-	// skip empty lines
-	for (l = con.current - con.totallines + 1; l <= con.current; l++)
-	{
-		line = con.text + (l % con.totallines) * con.linewidth;
-		for (x = 0; x < con.linewidth; x++)
-			if ((line[x] & 0xff) != ' ')
-			{
-				break;
-			}
-		if (x != con.linewidth)
-		{
-			break;
-		}
-	}
-
-	// write the remaining lines
-	buffer[con.linewidth] = 0;
-	for (; l <= con.current; l++)
-	{
-		line = con.text + (l % con.totallines) * con.linewidth;
-		for (i = 0; i < con.linewidth; i++)
-			buffer[i] = line[i] & 0xff;
-		for (x = con.linewidth - 1; x >= 0; x--)
-		{
-			if (buffer[x] == ' ')
-			{
-				buffer[x] = 0;
-			}
-			else
-			{
-				break;
-			}
-		}
-		strcat(buffer, "\n");
-		FS_Write(buffer, String::Length(buffer), f);
-	}
-
-	FS_FCloseFile(f);
-}
-
 /*
 ================
 Con_Init
@@ -232,14 +101,8 @@ void Con_Init(void)
 	Con_InitCommon();
 
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand("messagemode", Con_MessageMode_f);
-	Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand("messagemode3", Con_MessageMode3_f);
 	Cmd_AddCommand("messagemode4", Con_MessageMode4_f);
-	Cmd_AddCommand("startLimboMode", Con_StartLimboMode_f);			// NERVE - SMF
-	Cmd_AddCommand("stopLimboMode", Con_StopLimboMode_f);				// NERVE - SMF
-	Cmd_AddCommand("clear", Con_Clear_f);
-	Cmd_AddCommand("condump", Con_Dump_f);
 }
 
 void Con_Close(void)

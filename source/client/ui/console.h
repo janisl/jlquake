@@ -51,9 +51,10 @@ extern image_t* conback;
 extern field_t chatField;
 extern bool chat_team;
 extern bool chat_buddy;
+extern bool chat_limbo;
+extern int chat_playerNum;
 
 void Con_ClearNotify();
-void Con_Clear_f();
 void Con_ConsolePrint(const char* txt);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
