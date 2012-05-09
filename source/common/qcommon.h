@@ -56,6 +56,7 @@
 #include "player_move.h"
 #include "network_channel.h"
 #include "message_utils.h"
+#include "precompiler.h"
 
 int Com_Milliseconds();
 

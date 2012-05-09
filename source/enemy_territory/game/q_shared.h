@@ -370,17 +370,6 @@ qboolean COM_BitCheck(const int array[], int bitNum);
 void COM_BitSet(int array[], int bitNum);
 void COM_BitClear(int array[], int bitNum);
 
-#define MAX_TOKENLENGTH     1024
-
-#ifndef TT_STRING
-//token types
-#define TT_STRING                   1			// string
-#define TT_LITERAL                  2			// literal
-#define TT_NUMBER                   3			// number
-#define TT_NAME                     4			// name
-#define TT_PUNCTUATION              5			// punctuation
-#endif
-
 typedef struct pc_token_s
 {
 	int type;
