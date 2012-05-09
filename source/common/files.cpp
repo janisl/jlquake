@@ -323,7 +323,6 @@ char fs_gamedir[MAX_OSPATH];					// this will be a single file name with no sepa
 Cvar* fs_homepath;
 Cvar* fs_basepath;
 static Cvar* fs_debug;
-static Cvar* fs_restrict;
 
 static filelink_t* fs_links;
 
@@ -3602,7 +3601,6 @@ bool FS_Initialized()
 void FS_SharedStartup()
 {
 	fs_debug = Cvar_Get("fs_debug", "0", 0);
-	fs_restrict = Cvar_Get("fs_restrict", "", CVAR_INIT);
 	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
 	const char* homePath = Sys_DefaultHomePath();
 	if (!homePath || !homePath[0])

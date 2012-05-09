@@ -447,15 +447,6 @@ vm_t* VM_Create(const char* module, qintptr (* systemCalls)(qintptr*),
 	String::NCpyZ(vm->name, module, sizeof(vm->name));
 	vm->systemCall = systemCalls;
 
-	// never allow dll loading with a demo
-	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET)) && interpret == VMI_NATIVE)
-	{
-		if (Cvar_VariableValue("fs_restrict"))
-		{
-			interpret = VMI_COMPILED;
-		}
-	}
-
 	if (interpret == VMI_NATIVE)
 	{
 		// try to load as a system dll

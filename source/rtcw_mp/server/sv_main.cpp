@@ -422,16 +422,6 @@ void SVC_Status(netadr_t from)
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
-	// add "demo" to the sv_keywords if restricted
-	if (Cvar_VariableValue("fs_restrict"))
-	{
-		char keywords[MAX_INFO_STRING_Q3];
-
-		String::Sprintf(keywords, sizeof(keywords), "demo %s",
-			Info_ValueForKey(infostring, "sv_keywords"));
-		Info_SetValueForKey(infostring, "sv_keywords", keywords, MAX_INFO_STRING_Q3);
-	}
-
 	status[0] = 0;
 	statusLength = 0;
 
@@ -486,16 +476,6 @@ void SVC_GameCompleteStatus(netadr_t from)
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
-
-	// add "demo" to the sv_keywords if restricted
-	if (Cvar_VariableValue("fs_restrict"))
-	{
-		char keywords[MAX_INFO_STRING_Q3];
-
-		String::Sprintf(keywords, sizeof(keywords), "demo %s",
-			Info_ValueForKey(infostring, "sv_keywords"));
-		Info_SetValueForKey(infostring, "sv_keywords", keywords, MAX_INFO_STRING_Q3);
-	}
 
 	status[0] = 0;
 	statusLength = 0;

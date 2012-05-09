@@ -1284,32 +1284,25 @@ void CL_RequestAuthorization(void)
 		return;
 	}
 
-	if (Cvar_VariableValue("fs_restrict"))
+	// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
+	j = 0;
+	l = String::Length(cl_cdkey);
+	if (l > 32)
 	{
-		String::NCpyZ(nums, "ettest", sizeof(nums));
+		l = 32;
 	}
-	else
+	for (i = 0; i < l; i++)
 	{
-		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
-		j = 0;
-		l = String::Length(cl_cdkey);
-		if (l > 32)
+		if ((cl_cdkey[i] >= '0' && cl_cdkey[i] <= '9') ||
+			(cl_cdkey[i] >= 'a' && cl_cdkey[i] <= 'z') ||
+			(cl_cdkey[i] >= 'A' && cl_cdkey[i] <= 'Z')
+			)
 		{
-			l = 32;
+			nums[j] = cl_cdkey[i];
+			j++;
 		}
-		for (i = 0; i < l; i++)
-		{
-			if ((cl_cdkey[i] >= '0' && cl_cdkey[i] <= '9') ||
-				(cl_cdkey[i] >= 'a' && cl_cdkey[i] <= 'z') ||
-				(cl_cdkey[i] >= 'A' && cl_cdkey[i] <= 'Z')
-				)
-			{
-				nums[j] = cl_cdkey[i];
-				j++;
-			}
-		}
-		nums[j] = 0;
 	}
+	nums[j] = 0;
 
 	fs = Cvar_Get("cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO);
 	NET_OutOfBandPrint(NS_CLIENT, cls.authorizeServer, va("getKeyAuthorize %i %s", fs->integer, nums));
@@ -4309,12 +4302,6 @@ void CL_GlobalServers_f(void)
 	count   = Cmd_Argc();
 	for (i = 3; i < count; i++)
 		buffptr += sprintf(buffptr, " %s", Cmd_Argv(i));
-
-	// if we are a demo, automatically add a "demo" keyword
-	if (Cvar_VariableValue("fs_restrict"))
-	{
-		buffptr += sprintf(buffptr, " demo");
-	}
 
 	NET_OutOfBandPrint(NS_SERVER, to, command);
 }

@@ -244,7 +244,6 @@ void FS_InitFilesystem(void)
 	Com_StartupVariable("fs_buildgame");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_game");
-	Com_StartupVariable("fs_restrict");
 
 	// try to start up normally
 	FS_Startup(BASEGAME);
@@ -303,7 +302,6 @@ void FS_Restart(int checksumFeed)
 			Cvar_Set("fs_gamedirvar", lastValidGame);
 			lastValidBase[0] = '\0';
 			lastValidGame[0] = '\0';
-			Cvar_Set("fs_restrict", "0");
 			FS_Restart(checksumFeed);
 			Com_Error(ERR_DROP, "Invalid game folder\n");
 			return;
