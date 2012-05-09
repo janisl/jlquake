@@ -272,7 +272,7 @@ typedef enum {
 } errorParm_t;
 
 
-#if defined(_DEBUG) && !defined(BSPC)
+#if defined(_DEBUG)
 	#define HUNK_DEBUG
 #endif
 

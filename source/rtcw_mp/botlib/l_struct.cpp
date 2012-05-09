@@ -45,18 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 #endif	//BOTLIB
 
-#ifdef BSPC
-//include files for usage in the BSP Converter
-#include "../bspc/qbsp.h"
-#include "../bspc/l_log.h"
-#include "../bspc/l_mem.h"
-#include "l_precomp.h"
-#include "l_struct.h"
-
-#define qtrue   true
-#define qfalse  false
-#endif	//BSPC
-
 //===========================================================================
 //
 // Parameter:				-

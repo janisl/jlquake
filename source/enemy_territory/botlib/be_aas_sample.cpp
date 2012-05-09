@@ -1445,8 +1445,6 @@ aas_plane_t* AAS_PlaneFromNum(int planenum)
 }	//end of the function AAS_PlaneFromNum
 
 
-#ifndef BSPC
-
 /*
 =============
 AAS_BBoxAreas
@@ -1592,30 +1590,6 @@ int AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int* areas, int maxareas)
 
 	return num;
 }	//end of the function AAS_BBoxAreas
-
-#else
-
-int AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int* areas, int maxareas)
-{
-	aas_link_t* linkedareas, * link;
-	int num;
-
-	linkedareas = AAS_AASLinkEntity(absmins, absmaxs, -1);
-	num = 0;
-	for (link = linkedareas; link; link = link->next_area)
-	{
-		areas[num] = link->areanum;
-		num++;
-		if (num >= maxareas)
-		{
-			break;
-		}
-	}	//end for
-	AAS_UnlinkFromAreas(linkedareas);
-	return num;
-}	//end of the function AAS_BBoxAreas
-
-#endif
 
 /*
 =============

@@ -46,8 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-//#define BSPC
-
 extern botlib_import_t botimport;
 
 aas_settings_t aassettings;

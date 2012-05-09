@@ -280,7 +280,7 @@ typedef enum {
 	ERR_NEED_CD					// pop up the need-cd dialog
 } errorParm_t;
 
-#if defined(_DEBUG) && !defined(BSPC)
+#if defined(_DEBUG)
 	#define HUNK_DEBUG
 #endif
 

@@ -1634,16 +1634,12 @@ void AAS_InitClustering(void)
 	//if there are clusters
 	if ((*aasworld).numclusters >= 1)
 	{
-#ifndef BSPC
 		//if clustering isn't forced
 		if (!((int)LibVarGetValue("forceclustering")) &&
 			!((int)LibVarGetValue("forcereachability")))
 		{
 			return;
 		}
-#else
-		return;
-#endif
 	}	//end if
 		//
 	AAS_CountForcedClusterPortals();
