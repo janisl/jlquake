@@ -514,7 +514,7 @@ static void R_Register()
 	}
 	r_fullbright = Cvar_Get("r_fullbright", "0", CVAR_LATCH2 | CVAR_CHEAT);
 	r_singleShader = Cvar_Get("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2);
-	if (GGameType & GAME_WolfSP)
+	if (GGameType & (GAME_QuakeHexen | GAME_Quake2 | GAME_WolfSP))
 	{
 		// NOTE TTimo: r_cache is disabled by default in SP
 		Cvar_Set("r_cache", "0");
