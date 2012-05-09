@@ -39,9 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //Notes:			fix: PC_StringizeTokens
 
-//#define BOTLIB
-
-#ifdef BOTLIB
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
@@ -49,7 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_log.h"
-#endif	//BOTLIB
 
 //#define DEBUG_EVAL
 
@@ -92,9 +88,7 @@ void QDECL SourceError(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif	//BOTLIB
 }	//end of the function SourceError
 //===========================================================================
 //
@@ -110,9 +104,7 @@ void QDECL SourceWarning(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-#endif	//BOTLIB
 }	//end of the function ScriptWarning
 //============================================================================
 //
@@ -3536,9 +3528,7 @@ void PC_CheckOpenSourceHandles(void)
 	{
 		if (sourceFiles[i])
 		{
-#ifdef BOTLIB
 			botimport.Print(PRT_ERROR, "file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
-#endif	//BOTLIB
 		}	//end if
 	}	//end for
 }	//end of the function PC_CheckOpenSourceHandles

@@ -28,4 +28,4 @@ add_library(botlib-et STATIC
 	l_script.cpp
 	l_struct.cpp
 )
-set_target_properties(botlib-et PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DBOTLIB")
+set_target_properties(botlib-et PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

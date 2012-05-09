@@ -35,9 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//#define BOTLIB
-
-#ifdef BOTLIB
 //include files for usage in the bot library
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
@@ -46,8 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_memory.h"
 #include "l_log.h"
 #include "l_libvar.h"
-#endif	//BOTLIB
-
 
 #define PUNCTABLE
 
@@ -224,9 +219,7 @@ void QDECL ScriptError(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", script->filename, script->line, text);
-#endif	//BOTLIB
 }	//end of the function ScriptError
 //===========================================================================
 //
@@ -247,9 +240,7 @@ void QDECL ScriptWarning(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-#ifdef BOTLIB
 	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", script->filename, script->line, text);
-#endif	//BOTLIB
 }	//end of the function ScriptWarning
 //===========================================================================
 //
@@ -1438,26 +1429,6 @@ int ScriptSkipTo(script_t* script, char* value)
 	}
 	while (1);
 }	//end of the function ScriptSkipTo
-#ifndef BOTLIB
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int FileLength(FILE* fp)
-{
-	int pos;
-	int end;
-
-	pos = ftell(fp);
-	fseek(fp, 0, SEEK_END);
-	end = ftell(fp);
-	fseek(fp, pos, SEEK_SET);
-
-	return end;
-}	//end of the function FileLength
-#endif
 //============================================================================
 //
 // Parameter:				-
@@ -1466,17 +1437,12 @@ int FileLength(FILE* fp)
 //============================================================================
 script_t* LoadScriptFile(const char* filename)
 {
-#ifdef BOTLIB
 	fileHandle_t fp;
 	char pathname[MAX_QPATH];
-#else
-	FILE* fp;
-#endif
 	int length;
 	void* buffer;
 	script_t* script;
 
-#ifdef BOTLIB
 	if (String::Length(basefolder))
 	{
 		String::Sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
@@ -1490,15 +1456,6 @@ script_t* LoadScriptFile(const char* filename)
 	{
 		return NULL;
 	}
-#else
-	fp = fopen(filename, "rb");
-	if (!fp)
-	{
-		return NULL;
-	}
-
-	length = FileLength(fp);
-#endif
 
 	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
 	script = (script_t*)buffer;
@@ -1521,17 +1478,8 @@ script_t* LoadScriptFile(const char* filename)
 	//
 	SetScriptPunctuations(script, NULL);
 	//
-#ifdef BOTLIB
 	botimport.FS_Read(script->buffer, length, fp);
 	botimport.FS_FCloseFile(fp);
-#else
-	if (fread(script->buffer, length, 1, fp) != 1)
-	{
-		FreeMemory(buffer);
-		script = NULL;
-	}	//end if
-	fclose(fp);
-#endif
 	//
 	script->length = String::Compress(script->buffer);
 

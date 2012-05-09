@@ -28,4 +28,4 @@ add_library(botlib-wolfsp STATIC
 	l_script.cpp
 	l_struct.cpp
 )
-set_target_properties(botlib-wolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DBOTLIB")
+set_target_properties(botlib-wolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

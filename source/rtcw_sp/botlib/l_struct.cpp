@@ -35,7 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifdef BOTLIB
 #include "../game/q_shared.h"
 #include "../game/botlib.h"				//for the include of be_interface.h
 #include "l_script.h"
@@ -43,7 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_struct.h"
 #include "l_utils.h"
 #include "be_interface.h"
-#endif	//BOTLIB
 
 //===========================================================================
 //
