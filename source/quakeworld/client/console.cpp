@@ -155,26 +155,3 @@ void Con_DPrintf(const char* fmt, ...)
 
 	Con_Printf("%s", msg);
 }
-
-/*
-==================
-Con_SafePrintf
-
-Okay to call even when the screen can't be updated
-==================
-*/
-void Con_SafePrintf(const char* fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-	int temp;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end(argptr);
-
-	temp = cls.disable_screen;
-	cls.disable_screen = true;
-	Con_Printf("%s", msg);
-	cls.disable_screen = temp;
-}
