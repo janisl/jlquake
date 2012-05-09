@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 //#define SCREWUP
 //#define BOTLIB
 //#define QUAKE
-//#define QUAKEC
 
 #ifdef SCREWUP
 #include <stdio.h>
@@ -2971,65 +2970,6 @@ int PC_ReadDollarDirective(source_t* source)
 	return qfalse;
 }	//end of the function PC_ReadDirective
 
-#ifdef QUAKEC
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int BuiltinFunction(source_t* source)
-{
-	token_t token;
-
-	if (!PC_ReadSourceToken(source, &token))
-	{
-		return qfalse;
-	}
-	if (token.type == TT_NUMBER)
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qtrue;
-	}	//end if
-	else
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qfalse;
-	}	//end else
-}	//end of the function BuiltinFunction
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int QuakeCMacro(source_t* source)
-{
-	int i;
-	token_t token;
-
-	if (!PC_ReadSourceToken(source, &token))
-	{
-		return qtrue;
-	}
-	if (token.type != TT_NAME)
-	{
-		PC_UnreadSourceToken(source, &token);
-		return qtrue;
-	}	//end if
-		//find the precompiler directive
-	for (i = 0; dollardirectives[i].name; i++)
-	{
-		if (!String::Cmp(dollardirectives[i].name, token.string))
-		{
-			PC_UnreadSourceToken(source, &token);
-			return qfalse;
-		}	//end if
-	}	//end for
-	PC_UnreadSourceToken(source, &token);
-	return qtrue;
-}	//end of the function QuakeCMacro
-#endif	//QUAKEC
 //============================================================================
 //
 // Parameter:				-
@@ -3049,31 +2989,21 @@ int PC_ReadToken(source_t* source, token_t* token)
 		//check for precompiler directives
 		if (token->type == TT_PUNCTUATION && *token->string == '#')
 		{
-#ifdef QUAKEC
-			if (!BuiltinFunction(source))
-#endif	//QUAKC
+			//read the precompiler directive
+			if (!PC_ReadDirective(source))
 			{
-				//read the precompiler directive
-				if (!PC_ReadDirective(source))
-				{
-					return qfalse;
-				}
-				continue;
-			}	//end if
+				return qfalse;
+			}
+			continue;
 		}	//end if
 		if (token->type == TT_PUNCTUATION && *token->string == '$')
 		{
-#ifdef QUAKEC
-			if (!QuakeCMacro(source))
-#endif	//QUAKEC
+			//read the precompiler directive
+			if (!PC_ReadDollarDirective(source))
 			{
-				//read the precompiler directive
-				if (!PC_ReadDollarDirective(source))
-				{
-					return qfalse;
-				}
-				continue;
-			}	//end if
+				return qfalse;
+			}
+			continue;
 		}	//end if
 			//if skipping source because of conditional compilation
 		if (source->skip)
