@@ -319,11 +319,6 @@ sysEvent_t Sys_GetEvent(void)
 
 /*****************************************************************************/
 
-qboolean Sys_CheckCD(void)
-{
-	return qtrue;
-}
-
 void Sys_AppActivate(void)
 {
 }

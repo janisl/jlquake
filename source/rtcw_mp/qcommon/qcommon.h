@@ -439,8 +439,6 @@ int     Sys_GetProcessorId(void);
 
 void    Sys_SetErrorText(const char* text);
 
-qboolean    Sys_CheckCD(void);
-
 void    Sys_BeginProfiling(void);
 void    Sys_EndProfiling(void);
 

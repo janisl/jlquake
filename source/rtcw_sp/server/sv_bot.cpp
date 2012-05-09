@@ -633,15 +633,6 @@ void SV_BotInitBotLib(void)
 {
 	botlib_import_t botlib_import;
 
-#if COPY_PROTECT
-	if (!Cvar_VariableValue("fs_restrict") && !Sys_CheckCD())
-	{
-		Com_Error(ERR_NEED_CD, "Game CD not in drive");
-	}
-#else
-	Com_Printf("Bypassing CD checks\n");
-#endif
-
 	/*
 	if ( botlib_export ) {
 	    SV_BotLibShutdown();
