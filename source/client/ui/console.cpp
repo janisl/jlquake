@@ -1254,6 +1254,15 @@ static void Con_MessageMode2_f()
 	in_keyCatchers ^= KEYCATCH_MESSAGE;
 }
 
+static void Con_MessageModeBuddy_f()
+{
+	chat_team = false;
+	chat_buddy = true;
+	Field_Clear(&chatField);
+	chatField.widthInChars = 26;
+	in_keyCatchers ^= KEYCATCH_MESSAGE;
+}
+
 static void Con_StartLimboMode_f()
 {
 	chat_limbo = true;
@@ -1294,6 +1303,7 @@ void Con_InitCommon()
 		// ydnar: these are deprecated in favor of cgame/ui based version
 		Cmd_AddCommand("clMessageMode", Con_MessageMode_f);
 		Cmd_AddCommand("clMessageMode2", Con_MessageMode2_f);
+		Cmd_AddCommand("clMessageMode3", Con_MessageModeBuddy_f);
 	}
 	else
 	{

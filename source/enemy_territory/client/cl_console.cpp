@@ -80,20 +80,6 @@ void Con_ToggleConsole_f(void)
 
 /*
 ================
-Con_MessageMode3_f
-================
-*/
-void Con_MessageMode3_f(void)
-{
-	chat_team = qfalse;
-	chat_buddy = qtrue;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 26;
-	in_keyCatchers ^= KEYCATCH_MESSAGE;
-}
-
-/*
-================
 Con_Init
 ================
 */
@@ -104,9 +90,6 @@ void Con_Init(void)
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 
 	Cmd_AddCommand("toggleConsole", Con_ToggleConsole_f);
-
-	// ydnar: these are deprecated in favor of cgame/ui based version
-	Cmd_AddCommand("clMessageMode3", Con_MessageMode3_f);
 }
 
 void Con_Close(void)
