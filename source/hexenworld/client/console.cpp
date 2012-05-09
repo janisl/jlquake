@@ -39,33 +39,6 @@ void Con_ToggleConsole_f(void)
 
 /*
 ================
-Con_ToggleChat_f
-================
-*/
-void Con_ToggleChat_f(void)
-{
-	con.acLength = 0;
-
-	Key_ClearTyping();
-
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		if (cls.state == CA_ACTIVE)
-		{
-			in_keyCatchers &= ~KEYCATCH_CONSOLE;
-		}
-	}
-	else
-	{
-		in_keyCatchers |= KEYCATCH_CONSOLE;
-	}
-
-	Con_ClearNotify();
-	con.desiredFrac = 0.5;
-}
-
-/*
-================
 Con_Init
 ================
 */
@@ -81,7 +54,6 @@ void Con_Init(void)
 // register our commands
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
 }
 
 static void Con_DebugLog(const char* file, const char* fmt, ...)

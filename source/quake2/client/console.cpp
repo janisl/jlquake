@@ -75,31 +75,6 @@ void Con_ToggleConsole_f(void)
 
 /*
 ================
-Con_ToggleChat_f
-================
-*/
-void Con_ToggleChat_f(void)
-{
-	Key_ClearTyping();
-
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		if (cls.state == CA_ACTIVE)
-		{
-			M_ForceMenuOff();
-			in_keyCatchers &= ~KEYCATCH_CONSOLE;
-		}
-	}
-	else
-	{
-		in_keyCatchers |= KEYCATCH_CONSOLE;
-	}
-
-	Con_ClearNotify();
-}
-
-/*
-================
 Con_Init
 ================
 */
@@ -113,7 +88,6 @@ void Con_Init(void)
 // register our commands
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand("togglechat", Con_ToggleChat_f);
 }
 
 /*
