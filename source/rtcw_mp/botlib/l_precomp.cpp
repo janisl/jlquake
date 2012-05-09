@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //#define SCREWUP
 //#define BOTLIB
-//#define QUAKE
 
 #ifdef SCREWUP
 #include <stdio.h>
@@ -64,10 +63,6 @@ typedef enum {qfalse, qtrue}    qboolean;
 #include "l_precomp.h"
 #include "l_log.h"
 #endif	//BOTLIB
-
-#if defined(QUAKE)
-#include "l_utils.h"
-#endif	//QUAKE
 
 //#define DEBUG_EVAL
 
@@ -993,9 +988,6 @@ int PC_Directive_include(source_t* source)
 	script_t* script;
 	token_t token;
 	char path[_MAX_PATH];
-#ifdef QUAKE
-	foundfile_t file;
-#endif	//QUAKE
 
 	if (source->skip > 0)
 	{
@@ -1057,17 +1049,6 @@ int PC_Directive_include(source_t* source)
 		SourceError(source, "#include without file name");
 		return qfalse;
 	}	//end else
-#ifdef QUAKE
-	if (!script)
-	{
-		memset(&file, 0, sizeof(foundfile_t));
-		script = LoadScriptFile(path);
-		if (script)
-		{
-			String::NCpy(script->filename, path, _MAX_PATH);
-		}
-	}	//end if
-#endif	//QUAKE
 	if (!script)
 	{
 #ifdef SCREWUP
