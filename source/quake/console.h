@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // console
 //
 extern qboolean con_forcedup;	// because no entities to refresh
-extern byte* con_chars;
-
-void Con_DrawCharacter(int cx, int line, int num);
 
 void Con_Init(void);
 void Con_Printf(const char* fmt, ...);
