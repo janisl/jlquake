@@ -74,10 +74,6 @@ automatically restricts where game media can come from to prevent add-ons from w
 If not running in restricted mode, and a file is not found in any local filesystem,
 an attempt will be made to download it and save it under the base path.
 
-If the "fs_copyfiles" cvar is set to 1, then every time a file is sourced from the cd
-path, it will be copied over to the base path.  This is a development aid to help build
-test releases and to copy working sets over slow network links.
-
 File search order: when FS_FOpenFileRead gets called it will go through the fs_searchpaths
 structure and stop on the first successful hit. fs_searchpaths is built with successive
 calls to FS_AddGameDirectory
@@ -328,8 +324,6 @@ Cvar* fs_homepath;
 Cvar* fs_basepath;
 static Cvar* fs_debug;
 static Cvar* fs_restrict;
-Cvar* fs_cdpath;
-static Cvar* fs_copyfiles;
 
 static filelink_t* fs_links;
 
@@ -865,8 +859,6 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 // then loads the pak1.pak pak2.pak ... and zip headers
 void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks)
 {
-	// this fixes the case where fs_basepath is the same as fs_cdpath
-	// which happens on full installs
 	for (searchpath_t* sp = fs_searchpaths; sp; sp = sp->next)
 	{
 		if (sp->dir && !String::ICmp(sp->dir->path, path) && !String::ICmp(sp->dir->gamedir, dir))
@@ -1410,14 +1402,6 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 					dir->path, dir->gamedir);
 			}
 
-			// if we are getting it from the cdpath, optionally copy it
-			//  to the basepath
-			if (fs_copyfiles->integer && !String::ICmp(dir->path, fs_cdpath->string))
-			{
-				char* copypath = FS_BuildOSPath(fs_basepath->string, dir->gamedir, filename);
-				FS_CopyFile(netpath, copypath);
-			}
-
 			return FS_filelength(*file);
 		}
 	}
@@ -1614,21 +1598,6 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 			fsh[f].handleFiles.file.o = fopen(ospath, "rb");
 			fsh[f].handleSync = false;
 		}
-	}
-
-	if (!fsh[f].handleFiles.file.o)
-	{
-		// search cd path
-		ospath = FS_BuildOSPath(fs_cdpath->string, filename, "");
-		ospath[String::Length(ospath) - 1] = '\0';
-
-		if (fs_debug->integer)
-		{
-			Log::write("FS_SV_FOpenFileRead (fs_cdpath) : %s\n", ospath);
-		}
-
-		fsh[f].handleFiles.file.o = fopen(ospath, "rb");
-		fsh[f].handleSync = false;
 	}
 
 	if (!fsh[f].handleFiles.file.o)
@@ -2735,7 +2704,6 @@ int FS_GetModList(char* listbuf, int bufsize)
 	int dummy;
 	char** pFiles0 = NULL;
 	char** pFiles1 = NULL;
-	char** pFiles2 = NULL;
 	qboolean bDrop = false;
 
 	*listbuf = 0;
@@ -2743,13 +2711,9 @@ int FS_GetModList(char* listbuf, int bufsize)
 
 	pFiles0 = Sys_ListFiles(fs_homepath->string, NULL, NULL, &dummy, true);
 	pFiles1 = Sys_ListFiles(fs_basepath->string, NULL, NULL, &dummy, true);
-	if (fs_cdpath->string[0])
-	{
-		pFiles2 = Sys_ListFiles(fs_cdpath->string, NULL, NULL, &dummy, true);
-	}
 	// we searched for mods in the three paths
 	// it is likely that we have duplicate names now, which we will cleanup below
-	pFiles = Sys_ConcatenateFileLists(pFiles0, pFiles1, pFiles2);
+	pFiles = Sys_ConcatenateFileLists(pFiles0, pFiles1, NULL);
 	nPotential = Sys_CountFileList(pFiles);
 
 	for (i = 0; i < nPotential; i++)
@@ -2789,15 +2753,6 @@ int FS_GetModList(char* listbuf, int bufsize)
 		nPaks = 0;
 		pPaks = Sys_ListFiles(path, ".pk3", NULL, &nPaks, false);
 		Sys_FreeFileList(pPaks);// we only use Sys_ListFiles to check wether .pk3 files are present
-
-		/* Try on cd path */
-		if (nPaks <= 0)
-		{
-			path = FS_BuildOSPath(fs_cdpath->string, name, "");
-			nPaks = 0;
-			pPaks = Sys_ListFiles(path, ".pk3", NULL, &nPaks, false);
-			Sys_FreeFileList(pPaks);
-		}
 
 		/* try on home path */
 		if (nPaks <= 0)
@@ -3594,25 +3549,6 @@ static void FS_NewDir_f()
 	FS_FreeFileList(dirnames);
 }
 
-//	The only purpose of this function is to allow game script files to copy
-// arbitrary files furing an "fs_copyfiles 1" run.
-static void FS_TouchFile_f()
-{
-	fileHandle_t f;
-
-	if (Cmd_Argc() != 2)
-	{
-		Log::write("Usage: touchFile <file>\n");
-		return;
-	}
-
-	FS_FOpenFileRead(Cmd_Argv(1), &f, false);
-	if (f)
-	{
-		FS_FCloseFile(f);
-	}
-}
-
 //	Creates a filelink_t
 static void FS_Link_f()
 {
@@ -3666,9 +3602,7 @@ bool FS_Initialized()
 void FS_SharedStartup()
 {
 	fs_debug = Cvar_Get("fs_debug", "0", 0);
-	fs_copyfiles = Cvar_Get("fs_copyfiles", "0", CVAR_INIT);
 	fs_restrict = Cvar_Get("fs_restrict", "", CVAR_INIT);
-	fs_cdpath = Cvar_Get("fs_cdpath", "", CVAR_INIT);
 	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
 	const char* homePath = Sys_DefaultHomePath();
 	if (!homePath || !homePath[0])
@@ -3681,7 +3615,6 @@ void FS_SharedStartup()
 	Cmd_AddCommand("path", FS_Path_f);
 	Cmd_AddCommand("dir", FS_Dir_f);
 	Cmd_AddCommand("fdir", FS_NewDir_f);
-	Cmd_AddCommand("touchFile", FS_TouchFile_f);
 	if (GGameType & GAME_Quake2)
 	{
 		Cmd_AddCommand("link", FS_Link_f);

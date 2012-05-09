@@ -109,10 +109,6 @@ void FS_SetGamedir(char* dir)
 	else
 	{
 		Cvar_Set("gamedir", dir);
-		if (fs_cdpath->string[0])
-		{
-			FS_AddGameDirectory(fs_cdpath->string, dir, ADDPACKS_First10);
-		}
 		FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
 		if (fs_homepath->string[0])
 		{
@@ -185,16 +181,6 @@ void FS_InitFilesystem(void)
 	// basedir <path>
 	// allows the game to run from outside the data tree
 	//
-
-	//
-	// cddir <path>
-	// Logically concatenates the cddir after the basedir for
-	// allows the game to run from outside the data tree
-	//
-	if (fs_cdpath->string[0])
-	{
-		FS_AddGameDirectory(fs_cdpath->string, BASEDIRNAME, ADDPACKS_First10);
-	}
 
 	//
 	// start up with baseq2 by default

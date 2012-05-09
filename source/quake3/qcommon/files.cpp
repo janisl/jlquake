@@ -76,10 +76,6 @@ static void FS_Startup(const char* gameName)
 	fs_gamedirvar = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 
 	// add search path elements in reverse priority order
-	if (fs_cdpath->string[0])
-	{
-		FS_AddGameDirectory(fs_cdpath->string, gameName, ADDPACKS_None);
-	}
 	if (fs_basepath->string[0])
 	{
 		FS_AddGameDirectory(fs_basepath->string, gameName, ADDPACKS_None);
@@ -94,10 +90,6 @@ static void FS_Startup(const char* gameName)
 	// check for additional base game so mods can be based upon other mods
 	if (fs_basegame->string[0] && !String::ICmp(gameName, BASEGAME) && String::ICmp(fs_basegame->string, gameName))
 	{
-		if (fs_cdpath->string[0])
-		{
-			FS_AddGameDirectory(fs_cdpath->string, fs_basegame->string, ADDPACKS_None);
-		}
 		if (fs_basepath->string[0])
 		{
 			FS_AddGameDirectory(fs_basepath->string, fs_basegame->string, ADDPACKS_None);
@@ -111,10 +103,6 @@ static void FS_Startup(const char* gameName)
 	// check for additional game folder for mods
 	if (fs_gamedirvar->string[0] && !String::ICmp(gameName, BASEGAME) && String::ICmp(fs_gamedirvar->string, gameName))
 	{
-		if (fs_cdpath->string[0])
-		{
-			FS_AddGameDirectory(fs_cdpath->string, fs_gamedirvar->string, ADDPACKS_None);
-		}
 		if (fs_basepath->string[0])
 		{
 			FS_AddGameDirectory(fs_basepath->string, fs_gamedirvar->string, ADDPACKS_None);
@@ -161,11 +149,9 @@ void FS_InitFilesystem(void)
 	// line variable sets don't happen until after the filesystem
 	// has already been initialized
 	fs_PrimaryBaseGame = BASEGAME;
-	Com_StartupVariable("fs_cdpath");
 	Com_StartupVariable("fs_basepath");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_game");
-	Com_StartupVariable("fs_copyfiles");
 	Com_StartupVariable("fs_restrict");
 
 	// try to start up normally
