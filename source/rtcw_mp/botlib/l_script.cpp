@@ -699,7 +699,6 @@ int PS_ReadNumber(script_t* script, token_t* token)
 		}	//end while
 		token->subtype |= TT_HEX;
 	}	//end if
-#ifdef BINARYNUMBERS
 	//check for a binary number
 	else if (*script->script_p == '0' &&
 			 (*(script->script_p + 1) == 'b' ||
@@ -721,7 +720,6 @@ int PS_ReadNumber(script_t* script, token_t* token)
 		}	//end while
 		token->subtype |= TT_BINARY;
 	}	//end if
-#endif	//BINARYNUMBERS
 	else//decimal or octal integer or floating point number
 	{
 		octal = qfalse;

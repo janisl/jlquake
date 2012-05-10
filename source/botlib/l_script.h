@@ -29,9 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-//undef if binary numbers of the form 0b... or 0B... are not allowed
-#define BINARYNUMBERS
-
 //maximum token length
 #define MAX_TOKEN                   1024
 
@@ -56,9 +53,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TT_DECIMAL                  0x0008	// decimal number
 #define TT_HEX                          0x0100	// hexadecimal number
 #define TT_OCTAL                        0x0200	// octal number
-#ifdef BINARYNUMBERS
 #define TT_BINARY                       0x0400	// binary number
-#endif	//BINARYNUMBERS
 #define TT_FLOAT                        0x0800	// floating point number
 #define TT_INTEGER                  0x1000	// integer number
 #define TT_LONG                     0x2000	// long number
