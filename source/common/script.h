@@ -121,5 +121,13 @@ struct script_t
 	script_t* next;					//next script in a chain
 };
 
+//set the base folder to load files from
+void PS_SetBaseFolder(const char* path);
 //set an array with punctuations, NULL restores default C/C++ set
 void SetScriptPunctuations(script_t* script, punctuation_t* p);
+//load a script from the given file at the given offset with the given length
+script_t* LoadScriptFile(const char* filename);
+//load a script from the given memory with the given length
+script_t* LoadScriptMemory(const char* ptr, int length, const char* name);
+//free a script
+void FreeScript(script_t* script);

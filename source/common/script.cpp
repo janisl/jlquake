@@ -92,6 +92,13 @@ static punctuation_t default_punctuations[] =
 	{NULL, 0}
 };
 
+static char basefolder[MAX_QPATH];
+
+void PS_SetBaseFolder(const char* path)
+{
+	String::Sprintf(basefolder, sizeof(basefolder), path);
+}
+
 static void PS_CreatePunctuationTable(script_t* script, punctuation_t* punctuations)
 {
 	//get memory for the table
@@ -151,4 +158,94 @@ void SetScriptPunctuations(script_t* script, punctuation_t* p)
 		PS_CreatePunctuationTable(script, default_punctuations);
 		script->punctuations = default_punctuations;
 	}
+}
+
+script_t* LoadScriptFile(const char* filename)
+{
+	char pathname[MAX_QPATH];
+	if (String::Length(basefolder))
+	{
+		String::Sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
+	}
+	else
+	{
+		String::Sprintf(pathname, sizeof(pathname), "%s", filename);
+	}
+	fileHandle_t fp;
+	int length = FS_FOpenFileByMode(pathname, &fp, FS_READ);
+	if (!fp)
+	{
+		return NULL;
+	}
+
+	void* buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
+	script_t* script = (script_t*)buffer;
+	Com_Memset(script, 0, sizeof(script_t));
+	String::Cpy(script->filename, filename);
+	script->buffer = (char*)buffer + sizeof(script_t);
+	script->buffer[length] = 0;
+	script->length = length;
+	//pointer in script buffer
+	script->script_p = script->buffer;
+	//pointer in script buffer before reading token
+	script->lastscript_p = script->buffer;
+	//pointer to end of script buffer
+	script->end_p = &script->buffer[length];
+	//set if there's a token available in script->token
+	script->tokenavailable = 0;
+	script->line = 1;
+	script->lastline = 1;
+
+	SetScriptPunctuations(script, NULL);
+
+	FS_Read(script->buffer, length, fp);
+	FS_FCloseFile(fp);
+
+	return script;
+}
+
+//============================================================================
+//
+// Parameter:			-
+// Returns:				-
+// Changes Globals:		-
+//============================================================================
+script_t* LoadScriptMemory(const char* ptr, int length, const char* name)
+{
+	void* buffer;
+	script_t* script;
+
+	buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
+	script = (script_t*)buffer;
+	Com_Memset(script, 0, sizeof(script_t));
+	String::Cpy(script->filename, name);
+	script->buffer = (char*)buffer + sizeof(script_t);
+	script->buffer[length] = 0;
+	script->length = length;
+	//pointer in script buffer
+	script->script_p = script->buffer;
+	//pointer in script buffer before reading token
+	script->lastscript_p = script->buffer;
+	//pointer to end of script buffer
+	script->end_p = &script->buffer[length];
+	//set if there's a token available in script->token
+	script->tokenavailable = 0;
+	//
+	script->line = 1;
+	script->lastline = 1;
+	//
+	SetScriptPunctuations(script, NULL);
+	//
+	Com_Memcpy(script->buffer, ptr, length);
+	//
+	return script;
+}	//end of the function LoadScriptMemory
+
+void FreeScript(script_t* script)
+{
+	if (script->punctuationtable)
+	{
+		Mem_Free(script->punctuationtable);
+	}
+	Mem_Free(script);
 }
