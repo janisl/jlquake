@@ -48,8 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 // done.
 
-//maximum token length
-#define MAX_TOKEN                   1024
 //maximum path length
 #ifndef _MAX_PATH
 // TTimo: used to be MAX_QPATH, which is the game filesystem max len, and not the OS max len
@@ -148,50 +146,6 @@ If you have questions concerning this license or the applicable additional terms
 //name sub type
 //-------------
 //		the length of the name
-
-//punctuation
-typedef struct punctuation_s
-{
-	const char* p;							//punctuation character(s)
-	int n;							//punctuation indication
-	struct punctuation_s* next;		//next punctuation
-} punctuation_t;
-
-//token
-typedef struct token_s
-{
-	char string[MAX_TOKEN];			//available token
-	int type;						//last read token type
-	int subtype;					//last read token sub type
-	unsigned long int intvalue;	//integer value
-	long double floatvalue;			//floating point value
-	char* whitespace_p;				//start of white space before token
-	char* endwhitespace_p;			//start of white space before token
-	int line;						//line the token was on
-	int linescrossed;				//lines crossed in white space
-	struct token_s* next;			//next token in chain
-} token_t;
-
-//script file
-typedef struct script_s
-{
-	char filename[_MAX_PATH];		//file name of the script
-	char* buffer;						//buffer containing the script
-	char* script_p;					//current pointer in the script
-	char* end_p;					//pointer to the end of the script
-	char* lastscript_p;				//script pointer before reading token
-	char* whitespace_p;				//begin of the white space
-	char* endwhitespace_p;			//end of the white space
-	int length;						//length of the script in bytes
-	int line;						//current line in script
-	int lastline;					//line before reading token
-	int tokenavailable;				//set by UnreadLastToken
-	int flags;						//several script flags
-	punctuation_t* punctuations;	//the punctuations used in the script
-	punctuation_t** punctuationtable;
-	token_t token;					//available token
-	struct script_s* next;			//next script in a chain
-} script_t;
 
 //read a token from the script
 int PS_ReadToken(script_t* script, token_t* token);

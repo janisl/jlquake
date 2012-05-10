@@ -57,6 +57,7 @@
 #include "network_channel.h"
 #include "message_utils.h"
 #include "precompiler.h"
+#include "script.h"
 
 int Com_Milliseconds();
 

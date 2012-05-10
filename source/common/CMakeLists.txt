@@ -40,6 +40,7 @@ set(COMMON_FILES
 	player_move.cpp
 	player_move1.cpp
 	precompiler.cpp
+	script.cpp
 	socket.cpp
 	socket_unix.cpp
 	strings.cpp
