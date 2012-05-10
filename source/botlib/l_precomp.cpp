@@ -40,8 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_script.h"
 #include "l_precomp.h"
 
-//#define DEBUG_EVAL
-
 #define MAX_DEFINEPARMS         128
 
 //directive name with parse function
@@ -687,16 +685,6 @@ int PC_ExpandDefine(source_t* source, token_t* deftoken, define_t* define,
 		{
 			return false;
 		}
-#ifdef DEBUG_EVAL
-		for (i = 0; i < define->numparms; i++)
-		{
-			Log_Write("define parms %d:", i);
-			for (pt = parms[i]; pt; pt = pt->next)
-			{
-				Log_Write("%s", pt->string);
-			}	//end for
-		}	//end for
-#endif	//DEBUG_EVAL
 	}	//end if
 		//empty list at first
 	first = NULL;
@@ -1934,24 +1922,6 @@ int PC_EvaluateTokens(source_t* source, token_t* tokens, signed long int* intval
 		}
 		v1 = v;
 		v2 = v->next;
-#ifdef DEBUG_EVAL
-		if (integer)
-		{
-			Log_Write("operator %s, value1 = %d", PunctuationFromNum(source->scriptstack, o->operator), v1->intvalue);
-				if (v2)
-				{
-					Log_Write("value2 = %d", v2->intvalue);
-				}
-				}	//end if
-				else
-				{
-					Log_Write("operator %s, value1 = %f", PunctuationFromNum(source->scriptstack, o->operator), v1->floatvalue);
-						if (v2)
-						{
-							Log_Write("value2 = %f", v2->floatvalue);
-						}
-						}	//end else
-#endif	//DEBUG_EVAL
 		switch (o->oper)
 		{
 		case P_LOGIC_NOT:       v1->intvalue = !v1->intvalue;
@@ -2044,16 +2014,6 @@ int PC_EvaluateTokens(source_t* source, token_t* tokens, signed long int* intval
 			break;
 		}		//end if
 		}	//end switch
-#ifdef DEBUG_EVAL
-		if (integer)
-		{
-			Log_Write("result value = %d", v1->intvalue);
-		}
-		else
-		{
-			Log_Write("result value = %f", v1->floatvalue);
-		}
-#endif	//DEBUG_EVAL
 		if (error)
 		{
 			break;
@@ -2253,27 +2213,11 @@ int PC_Evaluate(source_t* source, signed long int* intvalue,
 		return false;
 	}
 	//
-#ifdef DEBUG_EVAL
-	Log_Write("eval:");
-#endif	//DEBUG_EVAL
 	for (t = firsttoken; t; t = nexttoken)
 	{
-#ifdef DEBUG_EVAL
-		Log_Write(" %s", t->string);
-#endif	//DEBUG_EVAL
 		nexttoken = t->next;
 		PC_FreeToken(t);
 	}	//end for
-#ifdef DEBUG_EVAL
-	if (integer)
-	{
-		Log_Write("eval result: %d", *intvalue);
-	}
-	else
-	{
-		Log_Write("eval result: %f", *floatvalue);
-	}
-#endif	//DEBUG_EVAL
 		//
 	return true;
 }	//end of the function PC_Evaluate
@@ -2403,27 +2347,11 @@ int PC_DollarEvaluate(source_t* source, signed long int* intvalue,
 		return false;
 	}
 	//
-#ifdef DEBUG_EVAL
-	Log_Write("$eval:");
-#endif	//DEBUG_EVAL
 	for (t = firsttoken; t; t = nexttoken)
 	{
-#ifdef DEBUG_EVAL
-		Log_Write(" %s", t->string);
-#endif	//DEBUG_EVAL
 		nexttoken = t->next;
 		PC_FreeToken(t);
 	}	//end for
-#ifdef DEBUG_EVAL
-	if (integer)
-	{
-		Log_Write("$eval result: %d", *intvalue);
-	}
-	else
-	{
-		Log_Write("$eval result: %f", *floatvalue);
-	}
-#endif	//DEBUG_EVAL
 		//
 	return true;
 }	//end of the function PC_DollarEvaluate
