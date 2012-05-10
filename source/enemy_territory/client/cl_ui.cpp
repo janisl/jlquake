@@ -1280,7 +1280,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case UI_PC_FREE_SOURCE:
 		return botlib_export->PC_FreeSourceHandle(args[1]);
 	case UI_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle(args[1], (pc_token_t*)VMA(2));
+		return botlib_export->PC_ReadTokenHandle(args[1], (etpc_token_t*)VMA(2));
 	case UI_PC_SOURCE_FILE_AND_LINE:
 		return botlib_export->PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 	case UI_PC_UNREAD_TOKEN:

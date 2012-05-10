@@ -49,7 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 void botlib_stub(void);
 int PC_LoadSourceHandle(const char*);
 int PC_FreeSourceHandle(int);
-int PC_ReadTokenHandle(int, pc_token_t*);
+int PC_ReadTokenHandle(int, etpc_token_t*);
 int PC_SourceFileAndLine(int, char*, int*);
 void PC_UnreadLastTokenHandle(int);
 
@@ -237,7 +237,7 @@ int PC_FreeSourceHandle(int handle)
 	return 0;
 }
 
-int PC_ReadTokenHandle(int handle, pc_token_t* token)
+int PC_ReadTokenHandle(int handle, etpc_token_t* token)
 {
 	token_t t;
 	int ret;

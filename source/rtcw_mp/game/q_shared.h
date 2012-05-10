@@ -352,15 +352,6 @@ qboolean COM_BitCheck(const int array[], int bitNum);
 void COM_BitSet(int array[], int bitNum);
 void COM_BitClear(int array[], int bitNum);
 
-typedef struct pc_token_s
-{
-	int type;
-	int subtype;
-	int intvalue;
-	float floatvalue;
-	char string[MAX_TOKENLENGTH];
-} pc_token_t;
-
 //=============================================
 
 #ifdef _WIN32

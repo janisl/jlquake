@@ -448,7 +448,7 @@ typedef struct botlib_export_s
 	int (* PC_AddGlobalDefine)(char* string);
 	int (* PC_LoadSourceHandle)(const char* filename);
 	int (* PC_FreeSourceHandle)(int handle);
-	int (* PC_ReadTokenHandle)(int handle, pc_token_t* pc_token);
+	int (* PC_ReadTokenHandle)(int handle, q3pc_token_t* pc_token);
 	int (* PC_SourceFileAndLine)(int handle, char* filename, int* line);
 
 	//start a frame in the bot library

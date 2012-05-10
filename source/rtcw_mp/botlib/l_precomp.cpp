@@ -181,27 +181,6 @@ void PC_PushScript(source_t* source, script_t* script)
 // Returns:				-
 // Changes Globals:		-
 //============================================================================
-void PC_InitTokenHeap(void)
-{
-	/*
-	int i;
-
-	if (tokenheapinitialized) return;
-	freetokens = NULL;
-	for (i = 0; i < TOKEN_HEAP_SIZE; i++)
-	{
-	    token_heap[i].next = freetokens;
-	    freetokens = &token_heap[i];
-	} //end for
-	tokenheapinitialized = qtrue;
-	*/
-}	//end of the function PC_InitTokenHeap
-//============================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//============================================================================
 token_t* PC_CopyToken(token_t* token)
 {
 	token_t* t;
@@ -1353,8 +1332,6 @@ define_t* PC_DefineFromString(char* string)
 	token_t* t;
 	int res, i;
 	define_t* def;
-
-	PC_InitTokenHeap();
 
 	script = LoadScriptMemory(string, String::Length(string), "*extern");
 	//create a new source
@@ -3258,8 +3235,6 @@ source_t* LoadSourceFile(const char* filename)
 	source_t* source;
 	script_t* script;
 
-	PC_InitTokenHeap();
-
 	script = LoadScriptFile(filename);
 	if (!script)
 	{
@@ -3294,8 +3269,6 @@ source_t* LoadSourceMemory(char* ptr, int length, char* name)
 {
 	source_t* source;
 	script_t* script;
-
-	PC_InitTokenHeap();
 
 	script = LoadScriptMemory(ptr, length, name);
 	if (!script)
@@ -3448,7 +3421,7 @@ int PC_FreeSourceHandle(int handle)
 // Returns:				-
 // Changes Globals:		-
 //============================================================================
-int PC_ReadTokenHandle(int handle, pc_token_t* pc_token)
+int PC_ReadTokenHandle(int handle, q3pc_token_t* pc_token)
 {
 	token_t token;
 	int ret;

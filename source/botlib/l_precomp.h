@@ -29,19 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-//!!!!!!!!!!!!!!! Used by game VMs !!!!!!!!!!!!!!!!!!!!!
-//NOTE There were duplicate definitions in l_script.h, maybe move this there.
-
-struct pc_token_t
-{
-	int type;
-	int subtype;
-	int intvalue;
-	float floatvalue;
-	char string[MAX_TOKENLENGTH];
-};
-//!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
-
 #ifndef MAX_PATH
 	#define MAX_PATH            MAX_QPATH
 #endif
@@ -168,6 +155,6 @@ void SourceWarning(source_t* source, const char* str, ...);
 //
 int PC_LoadSourceHandle(const char* filename);
 int PC_FreeSourceHandle(int handle);
-int PC_ReadTokenHandle(int handle, pc_token_t* pc_token);
+int PC_ReadTokenHandle(int handle, q3pc_token_t* pc_token);
 int PC_SourceFileAndLine(int handle, char* filename, int* line);
 void PC_CheckOpenSourceHandles(void);

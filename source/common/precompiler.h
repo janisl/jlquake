@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-//!!!!!!!!!!!!!!! Used by game VMs !!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!! Used by game VMs, do not change !!!!!!!!!!!!!!!!!!!!!
 #define MAX_TOKENLENGTH     1024
 
 //token types
@@ -23,3 +23,24 @@
 #define TT_NUMBER           3			// number
 #define TT_NAME             4			// name
 #define TT_PUNCTUATION      5			// punctuation
+
+struct q3pc_token_t
+{
+	int type;
+	int subtype;
+	int intvalue;
+	float floatvalue;
+	char string[MAX_TOKENLENGTH];
+};
+
+struct etpc_token_t
+{
+	int type;
+	int subtype;
+	int intvalue;
+	float floatvalue;
+	char string[MAX_TOKENLENGTH];
+	int line;
+	int linescrossed;
+};
+//!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
