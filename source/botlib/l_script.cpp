@@ -779,9 +779,7 @@ int PS_ReadNumber(script_t* script, token_t* token)
 		}	//end if
 	}	//end for
 	token->string[len] = '\0';
-#ifdef NUMBERVALUE
 	NumberValue(token->string, token->subtype, &token->intvalue, &token->floatvalue);
-#endif	//NUMBERVALUE
 	if (!(token->subtype & TT_FLOAT))
 	{
 		token->subtype |= TT_INTEGER;

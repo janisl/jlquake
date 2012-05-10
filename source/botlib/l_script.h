@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //undef if binary numbers of the form 0b... or 0B... are not allowed
 #define BINARYNUMBERS
-//undef if not using the token.intvalue and token.floatvalue
-#define NUMBERVALUE
 
 //maximum token length
 #define MAX_TOKEN                   1024
@@ -146,10 +144,8 @@ typedef struct token_s
 	char string[MAX_TOKEN];			//available token
 	int type;						//last read token type
 	int subtype;					//last read token sub type
-#ifdef NUMBERVALUE
 	unsigned long int intvalue;	//integer value
 	long double floatvalue;			//floating point value
-#endif	//NUMBERVALUE
 	char* whitespace_p;				//start of white space before token
 	char* endwhitespace_p;			//start of white space before token
 	int line;						//line the token was on

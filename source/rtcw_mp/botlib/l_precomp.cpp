@@ -607,10 +607,8 @@ int PC_ExpandBuiltinDefine(source_t* source, token_t* deftoken, define_t* define
 	case BUILTIN_LINE:
 	{
 		sprintf(token->string, "%d", deftoken->line);
-#ifdef NUMBERVALUE
 		token->intvalue = deftoken->line;
 		token->floatvalue = deftoken->line;
-#endif	//NUMBERVALUE
 		token->type = TT_NUMBER;
 		token->subtype = TT_DECIMAL | TT_INTEGER;
 		*firsttoken = token;
@@ -2604,10 +2602,8 @@ int PC_DollarDirective_evalint(source_t* source)
 	sprintf(token.string, "%d", abs(value));
 	token.type = TT_NUMBER;
 	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
-#ifdef NUMBERVALUE
 	token.intvalue = value;
 	token.floatvalue = value;
-#endif	//NUMBERVALUE
 	PC_UnreadSourceToken(source, &token);
 	if (value < 0)
 	{
@@ -2637,10 +2633,8 @@ int PC_DollarDirective_evalfloat(source_t* source)
 	sprintf(token.string, "%1.2f", fabs(value));
 	token.type = TT_NUMBER;
 	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
-#ifdef NUMBERVALUE
 	token.intvalue = (unsigned long)value;
 	token.floatvalue = value;
-#endif	//NUMBERVALUE
 	PC_UnreadSourceToken(source, &token);
 	if (value < 0)
 	{
