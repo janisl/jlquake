@@ -52,8 +52,6 @@ If you have questions concerning this license or the applicable additional terms
 #define BINARYNUMBERS
 //undef if not using the token.intvalue and token.floatvalue
 #define NUMBERVALUE
-//use dollar sign also as punctuation
-#define DOLLAR
 
 //maximum token length
 #define MAX_TOKEN                   1024

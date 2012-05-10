@@ -114,9 +114,7 @@ punctuation_t default_punctuations[] =
 	{"\\",P_BACKSLASH, NULL},
 	//precompiler operator
 	{"#",P_PRECOMP, NULL},
-#ifdef DOLLAR
 	{"$",P_DOLLAR, NULL},
-#endif	//DOLLAR
 	{NULL, 0}
 };
 
