@@ -42,8 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_script.h"
 #include "l_memory.h"
 
-#define PUNCTABLE
-
 //longer punctuations first
 punctuation_t default_punctuations[] =
 {
@@ -248,7 +246,6 @@ void QDECL ScriptWarning(script_t* script, const char* str, ...)
 //===========================================================================
 void SetScriptPunctuations(script_t* script, punctuation_t* p)
 {
-#ifdef PUNCTABLE
 	if (p)
 	{
 		PS_CreatePunctuationTable(script, p);
@@ -257,7 +254,6 @@ void SetScriptPunctuations(script_t* script, punctuation_t* p)
 	{
 		PS_CreatePunctuationTable(script, default_punctuations);
 	}
-#endif	//PUNCTABLE
 	if (p)
 	{
 		script->punctuations = p;
@@ -864,16 +860,8 @@ int PS_ReadPunctuation(script_t* script, token_t* token)
 	const char* p;
 	punctuation_t* punc;
 
-#ifdef PUNCTABLE
 	for (punc = script->punctuationtable[(unsigned int)*script->script_p]; punc; punc = punc->next)
 	{
-#else
-	int i;
-
-	for (i = 0; script->punctuations[i].p; i++)
-	{
-		punc = &script->punctuations[i];
-#endif	//PUNCTABLE
 		p = punc->p;
 		len = String::Length(p);
 		//if the script contains at least as much characters as the punctuation
@@ -1527,12 +1515,10 @@ script_t* LoadScriptMemory(char* ptr, int length, const char* name)
 //============================================================================
 void FreeScript(script_t* script)
 {
-#ifdef PUNCTABLE
 	if (script->punctuationtable)
 	{
 		FreeMemory(script->punctuationtable);
 	}
-#endif	//PUNCTABLE
 	FreeMemory(script);
 }	//end of the function FreeScript
 //============================================================================
