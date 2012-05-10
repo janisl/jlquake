@@ -17,13 +17,6 @@
 //!!!!!!!!!!!!!!! Used by game VMs, do not change !!!!!!!!!!!!!!!!!!!!!
 #define MAX_TOKENLENGTH     1024
 
-//token types
-#define TT_STRING           1			// string
-#define TT_LITERAL          2			// literal
-#define TT_NUMBER           3			// number
-#define TT_NAME             4			// name
-#define TT_PUNCTUATION      5			// punctuation
-
 struct q3pc_token_t
 {
 	int type;
