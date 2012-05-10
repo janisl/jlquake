@@ -34,8 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib.h"
 #include "be_interface.h"
 #include "l_script.h"
-#include "l_precomp.h"
-#include "l_memory.h"
 
 //longer punctuations first
 punctuation_t default_punctuations[] =
@@ -130,7 +128,7 @@ void PS_CreatePunctuationTable(script_t* script, punctuation_t* punctuations)
 	if (!script->punctuationtable)
 	{
 		script->punctuationtable = (punctuation_t**)
-								   GetMemory(256 * sizeof(punctuation_t*));
+								   Mem_Alloc(256 * sizeof(punctuation_t*));
 	}
 	Com_Memset(script->punctuationtable, 0, 256 * sizeof(punctuation_t*));
 	//add the punctuations in the list to the punctuation table
@@ -1432,7 +1430,7 @@ script_t* LoadScriptFile(const char* filename)
 		return NULL;
 	}
 
-	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
+	buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
 	script = (script_t*)buffer;
 	Com_Memset(script, 0, sizeof(script_t));
 	String::Cpy(script->filename, filename);
@@ -1471,7 +1469,7 @@ script_t* LoadScriptMemory(const char* ptr, int length, const char* name)
 	void* buffer;
 	script_t* script;
 
-	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
+	buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
 	script = (script_t*)buffer;
 	Com_Memset(script, 0, sizeof(script_t));
 	String::Cpy(script->filename, name);
@@ -1506,9 +1504,9 @@ void FreeScript(script_t* script)
 {
 	if (script->punctuationtable)
 	{
-		FreeMemory(script->punctuationtable);
+		Mem_Free(script->punctuationtable);
 	}
-	FreeMemory(script);
+	Mem_Free(script);
 }	//end of the function FreeScript
 //============================================================================
 //

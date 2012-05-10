@@ -40,7 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
-#include "l_memory.h"
 #include "l_script.h"
 #include "l_precomp.h"
 
@@ -109,7 +108,7 @@ void PC_PushIndent(source_t* source, int type, int skip)
 {
 	indent_t* indent;
 
-	indent = (indent_t*)GetMemory(sizeof(indent_t));
+	indent = (indent_t*)Mem_Alloc(sizeof(indent_t));
 	indent->type = type;
 	indent->script = source->scriptstack;
 	indent->skip = (skip != 0);
@@ -146,7 +145,7 @@ void PC_PopIndent(source_t* source, int* type, int* skip)
 	*skip = indent->skip;
 	source->indentstack = source->indentstack->next;
 	source->skip -= indent->skip;
-	FreeMemory(indent);
+	Mem_Free(indent);
 }	//end of the function PC_PopIndent
 //============================================================================
 //
@@ -180,15 +179,12 @@ token_t* PC_CopyToken(token_t* token)
 {
 	token_t* t;
 
-//	t = (token_t *) malloc(sizeof(token_t));
-	t = (token_t*)GetMemory(sizeof(token_t));
-//	t = freetokens;
+	t = (token_t*)Mem_Alloc(sizeof(token_t));
 	if (!t)
 	{
 		Com_Error(ERR_FATAL, "out of token space\n");
 		return NULL;
 	}	//end if
-//	freetokens = freetokens->next;
 	memcpy(t, token, sizeof(token_t));
 	t->next = NULL;
 	numtokens++;
@@ -202,10 +198,7 @@ token_t* PC_CopyToken(token_t* token)
 //============================================================================
 void PC_FreeToken(token_t* token)
 {
-	//free(token);
-	FreeMemory(token);
-//	token->next = freetokens;
-//	freetokens = token;
+	Mem_Free(token);
 	numtokens--;
 }	//end of the function PC_FreeToken
 //============================================================================
@@ -551,7 +544,7 @@ void PC_FreeDefine(define_t* define)
 		PC_FreeToken(t);
 	}	//end for
 		//free the define
-	FreeMemory(define);
+	Mem_Free(define);
 }	//end of the function PC_FreeDefine
 //============================================================================
 //
@@ -578,7 +571,7 @@ void PC_AddBuiltinDefines(source_t* source)
 
 	for (i = 0; builtin[i].string; i++)
 	{
-		define = (define_t*)GetMemory(sizeof(define_t) + String::Length(builtin[i].string) + 1);
+		define = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(builtin[i].string) + 1);
 		memset(define, 0, sizeof(define_t));
 		define->name = (char*)define + sizeof(define_t);
 		String::Cpy(define->name, builtin[i].string);
@@ -1106,7 +1099,7 @@ int PC_Directive_define(source_t* source)
 		define = PC_FindHashedDefine(source->definehash, token.string);
 	}	//end if
 		//allocate define
-	define = (define_t*)GetMemory(sizeof(define_t) + String::Length(token.string) + 1);
+	define = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(token.string) + 1);
 	memset(define, 0, sizeof(define_t));
 	define->name = (char*)define + sizeof(define_t);
 	String::Cpy(define->name, token.string);
@@ -1236,7 +1229,7 @@ define_t* PC_DefineFromString(char* string)
 	memset(&src, 0, sizeof(source_t));
 	String::NCpy(src.filename, "*extern", _MAX_PATH);
 	src.scriptstack = script;
-	src.definehash = (define_t**)GetClearedMemory(DEFINEHASHSIZE * sizeof(define_t*));
+	src.definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
 		//create a define from the source
 	res = PC_Directive_define(&src);
 	//free any tokens if left
@@ -1255,7 +1248,7 @@ define_t* PC_DefineFromString(char* string)
 		}	//end if
 	}	//end for
 		//
-	FreeMemory(src.definehash);
+	Mem_Free(src.definehash);
 		//
 	FreeScript(script);
 	//if the define was created succesfully
@@ -1356,7 +1349,7 @@ define_t* PC_CopyDefine(source_t* source, define_t* define)
 	define_t* newdefine;
 	token_t* token, * newtoken, * lasttoken;
 
-	newdefine = (define_t*)GetMemory(sizeof(define_t) + String::Length(define->name) + 1);
+	newdefine = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(define->name) + 1);
 	//copy the define name
 	newdefine->name = (char*)newdefine + sizeof(define_t);
 	String::Cpy(newdefine->name, define->name);
@@ -3039,7 +3032,7 @@ source_t* LoadSourceFile(const char* filename)
 
 	script->next = NULL;
 
-	source = (source_t*)GetMemory(sizeof(source_t));
+	source = (source_t*)Mem_Alloc(sizeof(source_t));
 	memset(source, 0, sizeof(source_t));
 
 	String::NCpy(source->filename, filename, _MAX_PATH);
@@ -3049,7 +3042,7 @@ source_t* LoadSourceFile(const char* filename)
 	source->indentstack = NULL;
 	source->skip = 0;
 
-	source->definehash = (define_t**)GetClearedMemory(DEFINEHASHSIZE * sizeof(define_t*));
+	source->definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
 	PC_AddGlobalDefinesToSource(source);
 	return source;
 }	//end of the function LoadSourceFile
@@ -3071,7 +3064,7 @@ source_t* LoadSourceMemory(char* ptr, int length, char* name)
 	}
 	script->next = NULL;
 
-	source = (source_t*)GetMemory(sizeof(source_t));
+	source = (source_t*)Mem_Alloc(sizeof(source_t));
 	memset(source, 0, sizeof(source_t));
 
 	String::NCpy(source->filename, name, _MAX_PATH);
@@ -3081,7 +3074,7 @@ source_t* LoadSourceMemory(char* ptr, int length, char* name)
 	source->indentstack = NULL;
 	source->skip = 0;
 
-	source->definehash = (define_t**)GetClearedMemory(DEFINEHASHSIZE * sizeof(define_t*));
+	source->definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
 	PC_AddGlobalDefinesToSource(source);
 	return source;
 }	//end of the function LoadSourceMemory
@@ -3127,15 +3120,15 @@ void FreeSource(source_t* source)
 	{
 		indent = source->indentstack;
 		source->indentstack = source->indentstack->next;
-		FreeMemory(indent);
+		Mem_Free(indent);
 	}	//end for
 	//
 	if (source->definehash)
 	{
-		FreeMemory(source->definehash);
+		Mem_Free(source->definehash);
 	}
 		//free the source itself
-	FreeMemory(source);
+	Mem_Free(source);
 }	//end of the function FreeSource
 //============================================================================
 //
