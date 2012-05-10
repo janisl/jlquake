@@ -42,7 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_memory.h"
 #include "l_script.h"
 #include "l_precomp.h"
-#include "l_log.h"
 
 //#define DEBUG_EVAL
 
@@ -440,27 +439,6 @@ int PC_MergeTokens(token_t* t1, token_t* t2)
 		//FIXME: merging of two number of the same sub type
 	return qfalse;
 }	//end of the function PC_MergeTokens
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_PrintDefineHashTable(define_t** definehash)
-{
-	int i;
-	define_t* d;
-
-	for (i = 0; i < DEFINEHASHSIZE; i++)
-	{
-		Log_Write("%4d:", i);
-		for (d = definehash[i]; d; d = d->hashnext)
-		{
-			Log_Write(" %s", d->name);
-		}	//end for
-		Log_Write("\n");
-	}	//end for
-}	//end of the function PC_PrintDefineHashTable
 //============================================================================
 //
 // Parameter:				-
@@ -3209,7 +3187,6 @@ void FreeSource(source_t* source)
 	indent_t* indent;
 	int i;
 
-	//PC_PrintDefineHashTable(source->definehash);
 	//free all the scripts
 	while (source->scriptstack)
 	{
