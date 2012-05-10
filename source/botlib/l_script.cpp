@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //include files for usage in the bot library
 #include "../common/qcommon.h"
-#include "botlib.h"
-#include "be_interface.h"
 #include "l_script.h"
 
 char basefolder[MAX_QPATH];
@@ -75,7 +73,7 @@ void ScriptError(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", script->filename, script->line, text);
+	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", script->filename, script->line, text);
 }	//end of the function ScriptError
 //===========================================================================
 //
@@ -96,7 +94,7 @@ void ScriptWarning(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", script->filename, script->line, text);
+	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", script->filename, script->line, text);
 }	//end of the function ScriptWarning
 //============================================================================
 // Reads spaces, tabs, C-like comments etc.

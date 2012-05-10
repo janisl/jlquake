@@ -175,7 +175,7 @@ void BotImport_Print(int type, const char* fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	Q_vsnprintf(str, 2048, fmt, ap);
+	Q_vsnprintf(str, sizeof(str), fmt, ap);
 	va_end(ap);
 
 	switch (type)

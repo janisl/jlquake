@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //include files for usage in the bot library
 #include "../game/q_shared.h"
-#include "../game/botlib.h"
-#include "be_interface.h"
 #include "l_script.h"
 
 char basefolder[MAX_QPATH];
@@ -81,7 +79,7 @@ void QDECL ScriptError(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", script->filename, script->line, text);
+	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", script->filename, script->line, text);
 }	//end of the function ScriptError
 //===========================================================================
 //
@@ -102,7 +100,7 @@ void QDECL ScriptWarning(script_t* script, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", script->filename, script->line, text);
+	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", script->filename, script->line, text);
 }	//end of the function ScriptWarning
 //============================================================================
 // Reads spaces, tabs, C-like comments etc.

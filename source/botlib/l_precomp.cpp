@@ -34,8 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <time.h>
 #include "../common/qcommon.h"
-#include "botlib.h"
-#include "be_interface.h"
 #include "l_script.h"
 #include "l_precomp.h"
 
@@ -76,7 +74,7 @@ void SourceError(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
+	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }	//end of the function SourceError
 //===========================================================================
 //
@@ -92,7 +90,7 @@ void SourceWarning(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	Q_vsnprintf(text, 1024, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
+	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }	//end of the function ScriptWarning
 //============================================================================
 //
@@ -3266,7 +3264,7 @@ void PC_CheckOpenSourceHandles(void)
 	{
 		if (sourceFiles[i])
 		{
-			botimport.Print(PRT_ERROR, "file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
+			common->Printf(S_COLOR_RED "Error: file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
 		}	//end if
 	}	//end for
 }	//end of the function PC_CheckOpenSourceHandles

@@ -38,8 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 //Notes:			fix: PC_StringizeTokens
 
 #include "../game/q_shared.h"
-#include "../game/botlib.h"
-#include "be_interface.h"
 #include "l_script.h"
 #include "l_precomp.h"
 
@@ -80,7 +78,7 @@ void QDECL SourceError(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_ERROR, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
+	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }	//end of the function SourceError
 //===========================================================================
 //
@@ -96,7 +94,7 @@ void QDECL SourceWarning(source_t* source, const char* str, ...)
 	va_start(ap, str);
 	vsprintf(text, str, ap);
 	va_end(ap);
-	botimport.Print(PRT_WARNING, "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
+	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }	//end of the function ScriptWarning
 //============================================================================
 //
@@ -3271,7 +3269,7 @@ void PC_CheckOpenSourceHandles(void)
 	{
 		if (sourceFiles[i])
 		{
-			botimport.Print(PRT_ERROR, "file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
+			common->Printf(S_COLOR_RED "Error: file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
 		}	//end if
 	}	//end for
 }	//end of the function PC_CheckOpenSourceHandles
