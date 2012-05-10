@@ -37,3 +37,42 @@ struct etpc_token_t
 	int linescrossed;
 };
 //!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
+
+//macro definitions
+struct define_t
+{
+	char* name;					//define name
+	int flags;					//define flags
+	int builtin;				// > 0 if builtin define
+	int numparms;				//number of define parameters
+	token_t* parms;				//define parameters
+	token_t* tokens;			//macro tokens (possibly containing parm tokens)
+	define_t* next;				//next defined macro in a list
+	define_t* hashnext;			//next define in the hash chain
+};
+
+//indents
+//used for conditional compilation directives:
+//#if, #else, #elif, #ifdef, #ifndef
+struct indent_t
+{
+	int type;					//indent type
+	int skip;					//true if skipping current indent
+	script_t* script;			//script the indent was in
+	indent_t* next;				//next indent on the indent stack
+};
+
+//source file
+struct source_t
+{
+	char filename[MAX_QPATH];				//file name of the script
+	char includepath[MAX_QPATH];			//path to include files
+	punctuation_t* punctuations;			//punctuations to use
+	script_t* scriptstack;					//stack with scripts of the source
+	token_t* tokens;						//tokens to read first
+	define_t* defines;						//list with macro definitions
+	define_t** definehash;					//hash chain with defines
+	indent_t* indentstack;					//stack with indents
+	int skip;								// > 0 if skipping conditional code
+	token_t token;							//last read token
+};

@@ -3008,7 +3008,7 @@ void PC_UnreadToken(source_t* source, token_t* token)
 //============================================================================
 void PC_SetIncludePath(source_t* source, char* path)
 {
-	String::NCpy(source->includepath, path, _MAX_PATH);
+	String::NCpy(source->includepath, path, MAX_QPATH);
 	//add trailing path seperator
 	if (source->includepath[String::Length(source->includepath) - 1] != '\\' &&
 		source->includepath[String::Length(source->includepath) - 1] != '/')
@@ -3048,7 +3048,7 @@ source_t* LoadSourceFile(const char* filename)
 	source = (source_t*)Mem_Alloc(sizeof(source_t));
 	memset(source, 0, sizeof(source_t));
 
-	String::NCpy(source->filename, filename, _MAX_PATH);
+	String::NCpy(source->filename, filename, MAX_QPATH);
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;
@@ -3080,7 +3080,7 @@ source_t* LoadSourceMemory(char* ptr, int length, char* name)
 	source = (source_t*)Mem_Alloc(sizeof(source_t));
 	memset(source, 0, sizeof(source_t));
 
-	String::NCpy(source->filename, name, _MAX_PATH);
+	String::NCpy(source->filename, name, MAX_QPATH);
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;
