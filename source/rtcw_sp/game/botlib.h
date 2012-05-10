@@ -208,12 +208,6 @@ typedef struct botlib_import_s
 	void*(*GetMemory)(int size);
 	void (* FreeMemory)(void* ptr);
 	void*(*HunkAlloc)(int size);
-	//file system access
-	int (* FS_FOpenFile)(const char* qpath, fileHandle_t* file, fsMode_t mode);
-	int (* FS_Read)(void* buffer, int len, fileHandle_t f);
-	int (* FS_Write)(const void* buffer, int len, fileHandle_t f);
-	void (* FS_FCloseFile)(fileHandle_t f);
-	int (* FS_Seek)(fileHandle_t f, int offset, int origin);
 	//debug visualisation stuff
 	int (* DebugLineCreate)(void);
 	void (* DebugLineDelete)(int line);

@@ -1143,7 +1143,7 @@ void AAS_WriteRouteCache(void)
 	}	//end for
 		// open the file for writing
 	String::Sprintf(filename, MAX_QPATH, "maps/%s.rcd", aasworld->mapname);
-	botimport.FS_FOpenFile(filename, &fp, FS_WRITE);
+	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
 	if (!fp)
 	{
 		AAS_Error("Unable to open file: %s\n", filename);
@@ -1160,13 +1160,13 @@ void AAS_WriteRouteCache(void)
 	routecacheheader.numportalcache = numportalcache;
 	routecacheheader.numareacache = numareacache;
 	//write the header
-	botimport.FS_Write(&routecacheheader, sizeof(routecacheheader_t), fp);
+	FS_Write(&routecacheheader, sizeof(routecacheheader_t), fp);
 	//write all the cache
 	for (i = 0; i < aasworld->numareas; i++)
 	{
 		for (cache = aasworld->portalcache[i]; cache; cache = cache->next)
 		{
-			botimport.FS_Write(cache, cache->size, fp);
+			FS_Write(cache, cache->size, fp);
 		}	//end for
 	}	//end for
 	for (i = 0; i < aasworld->numclusters; i++)
@@ -1176,7 +1176,7 @@ void AAS_WriteRouteCache(void)
 		{
 			for (cache = aasworld->clusterareacache[i][j]; cache; cache = cache->next)
 			{
-				botimport.FS_Write(cache, cache->size, fp);
+				FS_Write(cache, cache->size, fp);
 			}	//end for
 		}	//end for
 	}	//end for
@@ -1186,18 +1186,18 @@ void AAS_WriteRouteCache(void)
 		if (!aasworld->areavisibility[i])
 		{
 			size = 0;
-			botimport.FS_Write(&size, sizeof(int), fp);
+			FS_Write(&size, sizeof(int), fp);
 			continue;
 		}
 		AAS_DecompressVis(aasworld->areavisibility[i], aasworld->numareas, aasworld->decompressedvis);
 		size = AAS_CompressVis(aasworld->decompressedvis, aasworld->numareas, buf);
-		botimport.FS_Write(&size, sizeof(int), fp);
-		botimport.FS_Write(buf, size, fp);
+		FS_Write(&size, sizeof(int), fp);
+		FS_Write(buf, size, fp);
 	}
 	// write the waypoints
-	botimport.FS_Write(aasworld->areawaypoints, sizeof(vec3_t) * aasworld->numareas, fp);
+	FS_Write(aasworld->areawaypoints, sizeof(vec3_t) * aasworld->numareas, fp);
 	//
-	botimport.FS_FCloseFile(fp);
+	FS_FCloseFile(fp);
 	botimport.Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
 }	//end of the function AAS_WriteRouteCache
 //===========================================================================
@@ -1211,11 +1211,11 @@ aas_routingcache_t* AAS_ReadCache(fileHandle_t fp)
 	int size, i;
 	aas_routingcache_t* cache;
 
-	botimport.FS_Read(&size, sizeof(size), fp);
+	FS_Read(&size, sizeof(size), fp);
 	size = LittleLong(size);
 	cache = (aas_routingcache_t*)AAS_RoutingGetMemory(size);
 	cache->size = size;
-	botimport.FS_Read((unsigned char*)cache + sizeof(size), size - sizeof(size), fp);
+	FS_Read((unsigned char*)cache + sizeof(size), size - sizeof(size), fp);
 
 	if (1 != LittleLong(1))
 	{
@@ -1257,33 +1257,33 @@ int AAS_ReadRouteCache(void)
 	aas_routingcache_t* cache;
 
 	String::Sprintf(filename, MAX_QPATH, "maps/%s.rcd", aasworld->mapname);
-	botimport.FS_FOpenFile(filename, &fp, FS_READ);
+	FS_FOpenFileByMode(filename, &fp, FS_READ);
 	if (!fp)
 	{
 		return qfalse;
 	}	//end if
-	botimport.FS_Read(&routecacheheader, sizeof(routecacheheader_t), fp);
+	FS_Read(&routecacheheader, sizeof(routecacheheader_t), fp);
 	if (routecacheheader.ident != RCID)
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		AAS_Error("%s is not a route cache dump\n");
 		return qfalse;
 	}	//end if
 	if (routecacheheader.version != RCVERSION)
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		AAS_Error("route cache dump has wrong version %d, should be %d", routecacheheader.version, RCVERSION);
 		return qfalse;
 	}	//end if
 	if (routecacheheader.numareas != aasworld->numareas)
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		//AAS_Error("route cache dump has wrong number of areas\n");
 		return qfalse;
 	}	//end if
 	if (routecacheheader.numclusters != aasworld->numclusters)
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		//AAS_Error("route cache dump has wrong number of clusters\n");
 		return qfalse;
 	}	//end if
@@ -1293,21 +1293,21 @@ int AAS_ReadRouteCache(void)
 	if (routecacheheader.areacrc !=
 		CRC_Block((unsigned char*)aasworld->areas, sizeof(aas_area_t) * aasworld->numareas))
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		//AAS_Error("route cache dump area CRC incorrect\n");
 		return qfalse;
 	}	//end if
 	if (routecacheheader.clustercrc !=
 		CRC_Block((unsigned char*)aasworld->clusters, sizeof(aas_cluster_t) * aasworld->numclusters))
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		//AAS_Error("route cache dump cluster CRC incorrect\n");
 		return qfalse;
 	}	//end if
 	if (routecacheheader.reachcrc !=
 		CRC_Block((unsigned char*)aasworld->reachability, sizeof(aas_reachability_t) * aasworld->reachabilitysize))
 	{
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		//AAS_Error("route cache dump reachability CRC incorrect\n");
 		return qfalse;
 	}	//end if
@@ -1342,18 +1342,18 @@ int AAS_ReadRouteCache(void)
 	aasworld->decompressedvis = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
 	for (i = 0; i < aasworld->numareas; i++)
 	{
-		botimport.FS_Read(&size, sizeof(size), fp);
+		FS_Read(&size, sizeof(size), fp);
 		if (size)
 		{
 			aasworld->areavisibility[i] = (byte*)GetMemory(size);
-			botimport.FS_Read(aasworld->areavisibility[i], size, fp);
+			FS_Read(aasworld->areavisibility[i], size, fp);
 		}
 	}
 	// read the area waypoints
 	aasworld->areawaypoints = (vec3_t*)GetClearedMemory(aasworld->numareas * sizeof(vec3_t));
-	botimport.FS_Read(aasworld->areawaypoints, aasworld->numareas * sizeof(vec3_t), fp);
+	FS_Read(aasworld->areawaypoints, aasworld->numareas * sizeof(vec3_t), fp);
 	//
-	botimport.FS_FCloseFile(fp);
+	FS_FCloseFile(fp);
 	return qtrue;
 }	//end of the function AAS_ReadRouteCache
 //===========================================================================

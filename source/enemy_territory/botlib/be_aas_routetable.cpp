@@ -231,7 +231,7 @@ void AAS_RT_WriteShort(unsigned short int si, fileHandle_t fp)
 	unsigned short int lsi;
 
 	lsi = LittleShort(si);
-	botimport.FS_Write(&lsi, sizeof(lsi), fp);
+	FS_Write(&lsi, sizeof(lsi), fp);
 }
 
 //===========================================================================
@@ -245,7 +245,7 @@ void AAS_RT_WriteByte(int si, fileHandle_t fp)
 	unsigned char uc;
 
 	uc = si;
-	botimport.FS_Write(&uc, sizeof(uc), fp);
+	FS_Write(&uc, sizeof(uc), fp);
 }
 
 //===========================================================================
@@ -265,7 +265,7 @@ void AAS_RT_WriteRouteTable()
 	// open the file for writing
 	String::Sprintf(filename, MAX_QPATH, "maps/%s.rtb", (*aasworld).mapname);
 	botimport.Print(PRT_MESSAGE, "\nsaving route-table to %s\n", filename);
-	botimport.FS_FOpenFile(filename, &fp, FS_WRITE);
+	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
 	if (!fp)
 	{
 		AAS_Error("Unable to open file: %s\n", filename);
@@ -274,39 +274,39 @@ void AAS_RT_WriteRouteTable()
 
 	// ident
 	ident = LittleLong(RTBID);
-	botimport.FS_Write(&ident, sizeof(ident), fp);
+	FS_Write(&ident, sizeof(ident), fp);
 
 	// version
 	version = LittleLong(RTBVERSION);
-	botimport.FS_Write(&version, sizeof(version), fp);
+	FS_Write(&version, sizeof(version), fp);
 
 	// crc
 	crc_aas = CRC_Block((unsigned char*)(*aasworld).areas, sizeof(aas_area_t) * (*aasworld).numareas);
-	botimport.FS_Write(&crc_aas, sizeof(crc_aas), fp);
+	FS_Write(&crc_aas, sizeof(crc_aas), fp);
 
 	// save the table data
 
 	// children
-	botimport.FS_Write(&(*aasworld).routetable->numChildren, sizeof(int), fp);
-	botimport.FS_Write((*aasworld).routetable->children, (*aasworld).routetable->numChildren * sizeof(aas_rt_child_t), fp);
+	FS_Write(&(*aasworld).routetable->numChildren, sizeof(int), fp);
+	FS_Write((*aasworld).routetable->children, (*aasworld).routetable->numChildren * sizeof(aas_rt_child_t), fp);
 
 	// parents
-	botimport.FS_Write(&(*aasworld).routetable->numParents, sizeof(int), fp);
-	botimport.FS_Write((*aasworld).routetable->parents, (*aasworld).routetable->numParents * sizeof(aas_rt_parent_t), fp);
+	FS_Write(&(*aasworld).routetable->numParents, sizeof(int), fp);
+	FS_Write((*aasworld).routetable->parents, (*aasworld).routetable->numParents * sizeof(aas_rt_parent_t), fp);
 
 	// parentChildren
-	botimport.FS_Write(&(*aasworld).routetable->numParentChildren, sizeof(int), fp);
-	botimport.FS_Write((*aasworld).routetable->parentChildren, (*aasworld).routetable->numParentChildren * sizeof(unsigned short int), fp);
+	FS_Write(&(*aasworld).routetable->numParentChildren, sizeof(int), fp);
+	FS_Write((*aasworld).routetable->parentChildren, (*aasworld).routetable->numParentChildren * sizeof(unsigned short int), fp);
 
 	// visibleParents
-	botimport.FS_Write(&(*aasworld).routetable->numVisibleParents, sizeof(int), fp);
-	botimport.FS_Write((*aasworld).routetable->visibleParents, (*aasworld).routetable->numVisibleParents * sizeof(unsigned short int), fp);
+	FS_Write(&(*aasworld).routetable->numVisibleParents, sizeof(int), fp);
+	FS_Write((*aasworld).routetable->visibleParents, (*aasworld).routetable->numVisibleParents * sizeof(unsigned short int), fp);
 
 	// parentLinks
-	botimport.FS_Write(&(*aasworld).routetable->numParentLinks, sizeof(int), fp);
-	botimport.FS_Write((*aasworld).routetable->parentLinks, (*aasworld).routetable->numParentLinks * sizeof(aas_rt_parent_link_t), fp);
+	FS_Write(&(*aasworld).routetable->numParentLinks, sizeof(int), fp);
+	FS_Write((*aasworld).routetable->parentLinks, (*aasworld).routetable->numParentLinks * sizeof(aas_rt_parent_link_t), fp);
 
-	botimport.FS_FCloseFile(fp);
+	FS_FCloseFile(fp);
 	return;
 }
 
@@ -318,7 +318,7 @@ void AAS_RT_WriteRouteTable()
 //===========================================================================
 void AAS_RT_DBG_Read(void* buf, int size, int fp)
 {
-	botimport.FS_Read(buf, size, fp);
+	FS_Read(buf, size, fp);
 }
 
 //===========================================================================
@@ -358,7 +358,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	if (ident != RTBID)
 	{
 		AAS_Error("File is not an RTB file\n");
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		return qfalse;
 	}
 
@@ -369,7 +369,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	if (version != RTBVERSION)
 	{
 		AAS_Error("File is version %i not %i\n", version, RTBVERSION);
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		return qfalse;
 	}
 
@@ -383,17 +383,17 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	if (crc != crc_aas)
 	{
 		AAS_Error("Route-table is from different AAS file, ignoring.\n");
-		botimport.FS_FCloseFile(fp);
+		FS_FCloseFile(fp);
 		return qfalse;
 	}
 
 	// read the route-table
 
 	// children
-	botimport.FS_Read(&routetable->numChildren, sizeof(int), fp);
+	FS_Read(&routetable->numChildren, sizeof(int), fp);
 	routetable->numChildren = LittleLong(routetable->numChildren);
 	routetable->children = (aas_rt_child_t*)AAS_RT_GetClearedMemory(routetable->numChildren * sizeof(aas_rt_child_t));
-	botimport.FS_Read(routetable->children, routetable->numChildren * sizeof(aas_rt_child_t), fp);
+	FS_Read(routetable->children, routetable->numChildren * sizeof(aas_rt_child_t), fp);
 	child = &routetable->children[0];
 	if (doswap)
 	{
@@ -406,10 +406,10 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	}
 
 	// parents
-	botimport.FS_Read(&routetable->numParents, sizeof(int), fp);
+	FS_Read(&routetable->numParents, sizeof(int), fp);
 	routetable->numParents = LittleLong(routetable->numParents);
 	routetable->parents = (aas_rt_parent_t*)AAS_RT_GetClearedMemory(routetable->numParents * sizeof(aas_rt_parent_t));
-	botimport.FS_Read(routetable->parents, routetable->numParents * sizeof(aas_rt_parent_t), fp);
+	FS_Read(routetable->parents, routetable->numParents * sizeof(aas_rt_parent_t), fp);
 	parent = &routetable->parents[0];
 	if (doswap)
 	{
@@ -424,10 +424,10 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	}
 
 	// parentChildren
-	botimport.FS_Read(&routetable->numParentChildren, sizeof(int), fp);
+	FS_Read(&routetable->numParentChildren, sizeof(int), fp);
 	routetable->numParentChildren = LittleLong(routetable->numParentChildren);
 	routetable->parentChildren = (unsigned short int*)AAS_RT_GetClearedMemory(routetable->numParentChildren * sizeof(unsigned short int));
-	botimport.FS_Read(routetable->parentChildren, routetable->numParentChildren * sizeof(unsigned short int), fp);
+	FS_Read(routetable->parentChildren, routetable->numParentChildren * sizeof(unsigned short int), fp);
 	psi = &routetable->parentChildren[0];
 	if (doswap)
 	{
@@ -438,10 +438,10 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	}
 
 	// visibleParents
-	botimport.FS_Read(&routetable->numVisibleParents, sizeof(int), fp);
+	FS_Read(&routetable->numVisibleParents, sizeof(int), fp);
 	routetable->numVisibleParents = LittleLong(routetable->numVisibleParents);
 	routetable->visibleParents = (unsigned short int*)AAS_RT_GetClearedMemory(routetable->numVisibleParents * sizeof(unsigned short int));
-	botimport.FS_Read(routetable->visibleParents, routetable->numVisibleParents * sizeof(unsigned short int), fp);
+	FS_Read(routetable->visibleParents, routetable->numVisibleParents * sizeof(unsigned short int), fp);
 	psi = &routetable->visibleParents[0];
 	if (doswap)
 	{
@@ -452,10 +452,10 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	}
 
 	// parentLinks
-	botimport.FS_Read(&routetable->numParentLinks, sizeof(int), fp);
+	FS_Read(&routetable->numParentLinks, sizeof(int), fp);
 	routetable->numParentLinks = LittleLong(routetable->numParentLinks);
 	routetable->parentLinks = (aas_rt_parent_link_t*)AAS_RT_GetClearedMemory(routetable->numParentLinks * sizeof(aas_rt_parent_link_t));
-	botimport.FS_Read(routetable->parentLinks, routetable->numParentLinks * sizeof(aas_parent_link_t), fp);
+	FS_Read(routetable->parentLinks, routetable->numParentLinks * sizeof(aas_parent_link_t), fp);
 	plink = &routetable->parentLinks[0];
 	if (doswap)
 	{
@@ -482,7 +482,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	botimport.Print(PRT_MESSAGE, "Route-Table read time: %i\n", Sys_MilliSeconds() - pretime);
 #endif
 
-	botimport.FS_FCloseFile(fp);
+	FS_FCloseFile(fp);
 	return qtrue;
 }
 
@@ -553,7 +553,7 @@ void AAS_RT_BuildRouteTable(void)
 	String::Sprintf(filename, MAX_QPATH, "maps/%s.rtb", (*aasworld).mapname);
 	botimport.Print(PRT_MESSAGE, "\n---------------------------------\n");
 	botimport.Print(PRT_MESSAGE, "\ntrying to load %s\n", filename);
-	botimport.FS_FOpenFile(filename, &fp, FS_READ);
+	FS_FOpenFileByMode(filename, &fp, FS_READ);
 	if (fp)
 	{
 		// read in the table..

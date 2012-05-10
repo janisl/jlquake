@@ -1282,7 +1282,7 @@ script_t* LoadScriptFile(const char* filename)
 	{
 		String::Sprintf(pathname, sizeof(pathname), "%s", filename);
 	}
-	length = botimport.FS_FOpenFile(pathname, &fp, FS_READ);
+	length = FS_FOpenFileByMode(pathname, &fp, FS_READ);
 	if (!fp)
 	{
 		return NULL;
@@ -1309,8 +1309,8 @@ script_t* LoadScriptFile(const char* filename)
 	//
 	SetScriptPunctuations(script, NULL);
 	//
-	botimport.FS_Read(script->buffer, length, fp);
-	botimport.FS_FCloseFile(fp);
+	FS_Read(script->buffer, length, fp);
+	FS_FCloseFile(fp);
 	//
 	script->length = String::Compress(script->buffer);
 
