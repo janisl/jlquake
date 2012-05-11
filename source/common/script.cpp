@@ -249,3 +249,81 @@ void FreeScript(script_t* script)
 	}
 	Mem_Free(script);
 }
+
+// Reads spaces, tabs, C-like comments etc.
+// When a newline character is found the scripts line counter is increased.
+int PS_ReadWhiteSpace(script_t* script)
+{
+	while (1)
+	{
+		//skip white space
+		while (*script->script_p <= ' ')
+		{
+			if (!*script->script_p)
+			{
+				return 0;
+			}
+			if (*script->script_p == '\n')
+			{
+				script->line++;
+			}
+			script->script_p++;
+		}	//end while
+			//skip comments
+		if (*script->script_p == '/')
+		{
+			//comments //
+			if (*(script->script_p + 1) == '/')
+			{
+				script->script_p++;
+				do
+				{
+					script->script_p++;
+					if (!*script->script_p)
+					{
+						return 0;
+					}
+				}	//end do
+				while (*script->script_p != '\n');
+				script->line++;
+				script->script_p++;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
+				continue;
+			}	//end if
+				//comments /* */
+			else if (*(script->script_p + 1) == '*')
+			{
+				script->script_p++;
+				do
+				{
+					script->script_p++;
+					if (!*script->script_p)
+					{
+						return 0;
+					}
+					if (*script->script_p == '\n')
+					{
+						script->line++;
+					}
+				}	//end do
+				while (!(*script->script_p == '*' && *(script->script_p + 1) == '/'));
+				script->script_p++;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
+				script->script_p++;
+				if (!*script->script_p)
+				{
+					return 0;
+				}
+				continue;
+			}	//end if
+		}	//end if
+		break;
+	}	//end while
+	return 1;
+}	//end of the function PS_ReadWhiteSpace

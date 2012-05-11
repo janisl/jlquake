@@ -140,3 +140,5 @@ script_t* LoadScriptFile(const char* filename);
 script_t* LoadScriptMemory(const char* ptr, int length, const char* name);
 //free a script
 void FreeScript(script_t* script);
+
+int PS_ReadWhiteSpace(script_t* script);
