@@ -84,3 +84,5 @@ void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(
 
 token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);
+void PC_PushIndent(source_t* source, int type, int skip);
+void PC_PopIndent(source_t* source, int* type, int* skip);

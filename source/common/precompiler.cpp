@@ -48,3 +48,38 @@ void SourceWarning(source_t* source, const char* str, ...)
 	va_end(ap);
 	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }
+
+void PC_PushIndent(source_t* source, int type, int skip)
+{
+	indent_t* indent = (indent_t*)Mem_Alloc(sizeof(indent_t));
+	indent->type = type;
+	indent->script = source->scriptstack;
+	indent->skip = (skip != 0);
+	source->skip += indent->skip;
+	indent->next = source->indentstack;
+	source->indentstack = indent;
+}
+
+void PC_PopIndent(source_t* source, int* type, int* skip)
+{
+	*type = 0;
+	*skip = 0;
+
+	indent_t* indent = source->indentstack;
+	if (!indent)
+	{
+		return;
+	}
+
+	//must be an indent from the current script
+	if (source->indentstack->script != source->scriptstack)
+	{
+		return;
+	}
+
+	*type = indent->type;
+	*skip = indent->skip;
+	source->indentstack = source->indentstack->next;
+	source->skip -= indent->skip;
+	Mem_Free(indent);
+}

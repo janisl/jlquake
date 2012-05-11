@@ -60,55 +60,6 @@ define_t* globaldefines;
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PC_PushIndent(source_t* source, int type, int skip)
-{
-	indent_t* indent;
-
-	indent = (indent_t*)Mem_Alloc(sizeof(indent_t));
-	indent->type = type;
-	indent->script = source->scriptstack;
-	indent->skip = (skip != 0);
-	source->skip += indent->skip;
-	indent->next = source->indentstack;
-	source->indentstack = indent;
-}	//end of the function PC_PushIndent
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_PopIndent(source_t* source, int* type, int* skip)
-{
-	indent_t* indent;
-
-	*type = 0;
-	*skip = 0;
-
-	indent = source->indentstack;
-	if (!indent)
-	{
-		return;
-	}
-
-	//must be an indent from the current script
-	if (source->indentstack->script != source->scriptstack)
-	{
-		return;
-	}
-
-	*type = indent->type;
-	*skip = indent->skip;
-	source->indentstack = source->indentstack->next;
-	source->skip -= indent->skip;
-	Mem_Free(indent);
-}	//end of the function PC_PopIndent
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 void PC_PushScript(source_t* source, script_t* script)
 {
 	script_t* s;
