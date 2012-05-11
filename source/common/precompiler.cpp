@@ -17,7 +17,7 @@
 #include "qcommon.h"
 
 //list with global defines added to every source loaded
-define_t* globaldefines;
+static define_t* globaldefines;
 
 token_t* PC_CopyToken(token_t* token)
 {
@@ -158,7 +158,7 @@ bool PC_ReadLine(source_t* source, token_t* token)
 	return true;
 }
 
-define_t* PC_CopyDefine(source_t* source, define_t* define)
+static define_t* PC_CopyDefine(source_t* source, define_t* define)
 {
 	define_t* newdefine = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(define->name) + 1);
 	//copy the define name
@@ -540,4 +540,22 @@ int PC_AddGlobalDefine(const char* string)
 	define->next = globaldefines;
 	globaldefines = define;
 	return true;
+}
+
+void PC_RemoveAllGlobalDefines()
+{
+	for (define_t* define = globaldefines; define; define = globaldefines)
+	{
+		globaldefines = globaldefines->next;
+		PC_FreeDefine(define);
+	}
+}
+
+void PC_AddGlobalDefinesToSource(source_t* source)
+{
+	for (define_t* define = globaldefines; define; define = define->next)
+	{
+		define_t* newdefine = PC_CopyDefine(source, define);
+		PC_AddDefineToHash(newdefine, source->definehash);
+	}
 }

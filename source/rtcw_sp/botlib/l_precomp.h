@@ -84,8 +84,6 @@ int PC_SkipUntilString(source_t* source, char* string);
 void PC_UnreadLastToken(source_t* source);
 //unread the given token
 void PC_UnreadToken(source_t* source, token_t* token);
-//remove all globals defines
-void PC_RemoveAllGlobalDefines(void);
 //add builtin defines
 void PC_AddBuiltinDefines(source_t* source);
 //set the source include path

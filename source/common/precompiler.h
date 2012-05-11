@@ -89,6 +89,8 @@ void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(
 bool PC_ReadLine(source_t* source, token_t* token);
 //add a globals define that will be added to all opened sources
 int PC_AddGlobalDefine(const char* string);
+//remove all globals defines
+void PC_RemoveAllGlobalDefines();
 
 token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);
@@ -96,7 +98,6 @@ void PC_PushIndent(source_t* source, int type, int skip);
 void PC_PopIndent(source_t* source, int* type, int* skip);
 bool PC_ReadSourceToken(source_t* source, token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
-define_t* PC_CopyDefine(source_t* source, define_t* define);
 void PC_FreeDefine(define_t* define);
 int PC_NameHash(const char* name);
 void PC_AddDefineToHash(define_t* define, define_t** definehash);
@@ -104,5 +105,4 @@ define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
 bool PC_Directive_undef(source_t* source);
 int PC_FindDefineParm(define_t* define, const char* name);
 bool PC_Directive_define(source_t* source);
-
-extern define_t* globaldefines;
+void PC_AddGlobalDefinesToSource(source_t* source);

@@ -659,41 +659,6 @@ bool PC_Directive_include(source_t* source)
 	return qtrue;
 }	//end of the function PC_Directive_include
 //============================================================================
-// remove all globals defines
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_RemoveAllGlobalDefines(void)
-{
-	define_t* define;
-
-	for (define = globaldefines; define; define = globaldefines)
-	{
-		globaldefines = globaldefines->next;
-		PC_FreeDefine(define);
-	}	//end for
-
-	globaldefines = NULL;
-}	//end of the function PC_RemoveAllGlobalDefines
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_AddGlobalDefinesToSource(source_t* source)
-{
-	define_t* define, * newdefine;
-
-	for (define = globaldefines; define; define = define->next)
-	{
-		newdefine = PC_CopyDefine(source, define);
-		PC_AddDefineToHash(newdefine, source->definehash);
-	}	//end for
-}	//end of the function PC_AddGlobalDefinesToSource
-//============================================================================
 //
 // Parameter:				-
 // Returns:					-

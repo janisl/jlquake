@@ -1273,7 +1273,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case UI_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
 	case UI_PC_REMOVE_ALL_GLOBAL_DEFINES:
-		botlib_export->PC_RemoveAllGlobalDefines();
+		PC_RemoveAllGlobalDefines();
 		return 0;
 	case UI_PC_LOAD_SOURCE:
 		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
