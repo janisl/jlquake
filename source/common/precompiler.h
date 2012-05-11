@@ -112,10 +112,11 @@ bool PC_Directive_undef(source_t* source);
 int PC_FindDefineParm(define_t* define, const char* name);
 bool PC_Directive_define(source_t* source);
 void PC_AddGlobalDefinesToSource(source_t* source);
-void PC_PushScript(source_t* source, script_t* script);
-void PC_ConvertPath(char* path);
 bool PC_Directive_include(source_t* source);
 bool PC_Directive_ifdef(source_t* source);
 bool PC_Directive_ifndef(source_t* source);
 bool PC_Directive_else(source_t* source);
 bool PC_Directive_endif(source_t* source);
+int PC_OperatorPriority(int op);
+bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
+	double* floatvalue, bool integer);

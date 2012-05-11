@@ -18,6 +18,22 @@
 
 #define PATHSEPERATOR_CHAR      '/'
 
+struct operator_t
+{
+	int oper;
+	int priority;
+	int parentheses;
+	operator_t* prev, * next;
+};
+
+struct value_t
+{
+	signed int intvalue;
+	double floatvalue;
+	int parentheses;
+	value_t* prev, * next;
+};
+
 //list with global defines added to every source loaded
 static define_t* globaldefines;
 
@@ -562,7 +578,7 @@ void PC_AddGlobalDefinesToSource(source_t* source)
 	}
 }
 
-void PC_PushScript(source_t* source, script_t* script)
+static void PC_PushScript(source_t* source, script_t* script)
 {
 	for (script_t* s = source->scriptstack; s; s = s->next)
 	{
@@ -577,7 +593,7 @@ void PC_PushScript(source_t* source, script_t* script)
 	source->scriptstack = script;
 }
 
-void PC_ConvertPath(char* path)
+static void PC_ConvertPath(char* path)
 {
 	char* ptr;
 
@@ -741,3 +757,579 @@ bool PC_Directive_endif(source_t* source)
 	}
 	return true;
 }
+
+int PC_OperatorPriority(int op)
+{
+	switch (op)
+	{
+	case P_MUL: return 15;
+	case P_DIV: return 15;
+	case P_MOD: return 15;
+	case P_ADD: return 14;
+	case P_SUB: return 14;
+
+	case P_LOGIC_AND: return 7;
+	case P_LOGIC_OR: return 6;
+	case P_LOGIC_GEQ: return 12;
+	case P_LOGIC_LEQ: return 12;
+	case P_LOGIC_EQ: return 11;
+	case P_LOGIC_UNEQ: return 11;
+
+	case P_LOGIC_NOT: return 16;
+	case P_LOGIC_GREATER: return 12;
+	case P_LOGIC_LESS: return 12;
+
+	case P_RSHIFT: return 13;
+	case P_LSHIFT: return 13;
+
+	case P_BIN_AND: return 10;
+	case P_BIN_OR: return 8;
+	case P_BIN_XOR: return 9;
+	case P_BIN_NOT: return 16;
+
+	case P_COLON: return 5;
+	case P_QUESTIONMARK: return 5;
+	}
+	return false;
+}
+
+#define MAX_VALUES      64
+#define MAX_OPERATORS   64
+#define AllocValue(val)									\
+	if (numvalues >= MAX_VALUES) {						\
+		SourceError(source, "out of value space\n");	\
+		error = 1;										\
+		break;											\
+	}													\
+	else {												\
+		val = &value_heap[numvalues++]; }
+#define FreeValue(val)
+//
+#define AllocOperator(op)								\
+	if (numoperators >= MAX_OPERATORS) {				\
+		SourceError(source, "out of operator space\n");	\
+		error = 1;										\
+		break;											\
+	}													\
+	else {												\
+		op = &operator_heap[numoperators++]; }
+#define FreeOperator(op)
+
+bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
+	double* floatvalue, bool integer)
+{
+	operator_t* o, * firstoperator, * lastoperator;
+	value_t* v, * firstvalue, * lastvalue, * v1, * v2;
+	token_t* t;
+	int brace = 0;
+	int parentheses = 0;
+	int error = 0;
+	int lastwasvalue = 0;
+	int negativevalue = 0;
+	int questmarkintvalue = 0;
+	double questmarkfloatvalue = 0;
+	int gotquestmarkvalue = false;
+	int lastoperatortype = 0;
+	//
+	operator_t operator_heap[MAX_OPERATORS];
+	int numoperators = 0;
+	value_t value_heap[MAX_VALUES];
+	int numvalues = 0;
+
+	firstoperator = lastoperator = NULL;
+	firstvalue = lastvalue = NULL;
+	if (intvalue)
+	{
+		*intvalue = 0;
+	}
+	if (floatvalue)
+	{
+		*floatvalue = 0;
+	}
+	for (t = tokens; t; t = t->next)
+	{
+		switch (t->type)
+		{
+		case TT_NAME:
+		{
+			if (lastwasvalue || negativevalue)
+			{
+				SourceError(source, "syntax error in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+			if (String::Cmp(t->string, "defined"))
+			{
+				SourceError(source, "undefined name %s in #if/#elif", t->string);
+				error = 1;
+				break;
+			}		//end if
+			t = t->next;
+			if (!String::Cmp(t->string, "("))
+			{
+				brace = true;
+				t = t->next;
+			}		//end if
+			if (!t || t->type != TT_NAME)
+			{
+				SourceError(source, "defined without name in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+					//v = (value_t *) GetClearedMemory(sizeof(value_t));
+			AllocValue(v);
+			if (PC_FindHashedDefine(source->definehash, t->string))
+			{
+				v->intvalue = 1;
+				v->floatvalue = 1;
+			}		//end if
+			else
+			{
+				v->intvalue = 0;
+				v->floatvalue = 0;
+			}		//end else
+			v->parentheses = parentheses;
+			v->next = NULL;
+			v->prev = lastvalue;
+			if (lastvalue)
+			{
+				lastvalue->next = v;
+			}
+			else
+			{
+				firstvalue = v;
+			}
+			lastvalue = v;
+			if (brace)
+			{
+				t = t->next;
+				if (!t || String::Cmp(t->string, ")"))
+				{
+					SourceError(source, "defined without ) in #if/#elif");
+					error = 1;
+					break;
+				}		//end if
+			}		//end if
+			brace = false;
+			// defined() creates a value
+			lastwasvalue = 1;
+			break;
+		}		//end case
+		case TT_NUMBER:
+		{
+			if (lastwasvalue)
+			{
+				SourceError(source, "syntax error in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+					//v = (value_t *) GetClearedMemory(sizeof(value_t));
+			AllocValue(v);
+			if (negativevalue)
+			{
+				v->intvalue = -(signed int)t->intvalue;
+				v->floatvalue = -t->floatvalue;
+			}		//end if
+			else
+			{
+				v->intvalue = t->intvalue;
+				v->floatvalue = t->floatvalue;
+			}		//end else
+			v->parentheses = parentheses;
+			v->next = NULL;
+			v->prev = lastvalue;
+			if (lastvalue)
+			{
+				lastvalue->next = v;
+			}
+			else
+			{
+				firstvalue = v;
+			}
+			lastvalue = v;
+			//last token was a value
+			lastwasvalue = 1;
+			//
+			negativevalue = 0;
+			break;
+		}		//end case
+		case TT_PUNCTUATION:
+		{
+			if (negativevalue)
+			{
+				SourceError(source, "misplaced minus sign in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+			if (t->subtype == P_PARENTHESESOPEN)
+			{
+				parentheses++;
+				break;
+			}		//end if
+			else if (t->subtype == P_PARENTHESESCLOSE)
+			{
+				parentheses--;
+				if (parentheses < 0)
+				{
+					SourceError(source, "too many ) in #if/#elsif");
+					error = 1;
+				}		//end if
+				break;
+			}		//end else if
+					//check for invalid operators on floating point values
+			if (!integer)
+			{
+				if (t->subtype == P_BIN_NOT || t->subtype == P_MOD ||
+					t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
+					t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
+					t->subtype == P_BIN_XOR)
+				{
+					SourceError(source, "illigal operator %s on floating point operands\n", t->string);
+					error = 1;
+					break;
+				}		//end if
+			}		//end if
+			switch (t->subtype)
+			{
+			case P_LOGIC_NOT:
+			case P_BIN_NOT:
+			{
+				if (lastwasvalue)
+				{
+					SourceError(source, "! or ~ after value in #if/#elif");
+					error = 1;
+					break;
+				}			//end if
+				break;
+			}			//end case
+			case P_INC:
+			case P_DEC:
+			{
+				SourceError(source, "++ or -- used in #if/#elif");
+				break;
+			}			//end case
+			case P_SUB:
+			{
+				if (!lastwasvalue)
+				{
+					negativevalue = 1;
+					break;
+				}			//end if
+			}			//end case
+
+			case P_MUL:
+			case P_DIV:
+			case P_MOD:
+			case P_ADD:
+
+			case P_LOGIC_AND:
+			case P_LOGIC_OR:
+			case P_LOGIC_GEQ:
+			case P_LOGIC_LEQ:
+			case P_LOGIC_EQ:
+			case P_LOGIC_UNEQ:
+
+			case P_LOGIC_GREATER:
+			case P_LOGIC_LESS:
+
+			case P_RSHIFT:
+			case P_LSHIFT:
+
+			case P_BIN_AND:
+			case P_BIN_OR:
+			case P_BIN_XOR:
+
+			case P_COLON:
+			case P_QUESTIONMARK:
+			{
+				if (!lastwasvalue)
+				{
+					SourceError(source, "operator %s after operator in #if/#elif", t->string);
+					error = 1;
+					break;
+				}			//end if
+				break;
+			}			//end case
+			default:
+			{
+				SourceError(source, "invalid operator %s in #if/#elif", t->string);
+				error = 1;
+				break;
+			}			//end default
+			}		//end switch
+			if (!error && !negativevalue)
+			{
+				//o = (operator_t *) GetClearedMemory(sizeof(operator_t));
+				AllocOperator(o);
+				o->oper = t->subtype;
+				o->priority = PC_OperatorPriority(t->subtype);
+				o->parentheses = parentheses;
+				o->next = NULL;
+				o->prev = lastoperator;
+				if (lastoperator)
+				{
+					lastoperator->next = o;
+				}
+				else
+				{
+					firstoperator = o;
+				}
+				lastoperator = o;
+				lastwasvalue = 0;
+			}		//end if
+			break;
+		}		//end case
+		default:
+		{
+			SourceError(source, "unknown %s in #if/#elif", t->string);
+			error = 1;
+			break;
+		}		//end default
+		}	//end switch
+		if (error)
+		{
+			break;
+		}
+	}	//end for
+	if (!error)
+	{
+		if (!lastwasvalue)
+		{
+			SourceError(source, "trailing operator in #if/#elif");
+			error = 1;
+		}	//end if
+		else if (parentheses)
+		{
+			SourceError(source, "too many ( in #if/#elif");
+			error = 1;
+		}	//end else if
+	}	//end if
+		//
+	gotquestmarkvalue = false;
+	questmarkintvalue = 0;
+	questmarkfloatvalue = 0;
+	//while there are operators
+	while (!error && firstoperator)
+	{
+		v = firstvalue;
+		for (o = firstoperator; o->next; o = o->next)
+		{
+			//if the current operator is nested deeper in parentheses
+			//than the next operator
+			if (o->parentheses > o->next->parentheses)
+			{
+				break;
+			}
+			//if the current and next operator are nested equally deep in parentheses
+			if (o->parentheses == o->next->parentheses)
+			{
+				//if the priority of the current operator is equal or higher
+				//than the priority of the next operator
+				if (o->priority >= o->next->priority)
+				{
+					break;
+				}
+			}	//end if
+				//if the arity of the operator isn't equal to 1
+			if (o->oper != P_LOGIC_NOT &&
+				o->oper != P_BIN_NOT)
+			{
+				v = v->next;
+			}
+			//if there's no value or no next value
+			if (!v)
+			{
+				SourceError(source, "mising values in #if/#elif");
+				error = 1;
+				break;
+			}	//end if
+		}	//end for
+		if (error)
+		{
+			break;
+		}
+		v1 = v;
+		v2 = v->next;
+		switch (o->oper)
+		{
+		case P_LOGIC_NOT:       v1->intvalue = !v1->intvalue;
+			v1->floatvalue = !v1->floatvalue; break;
+		case P_BIN_NOT:         v1->intvalue = ~v1->intvalue;
+			break;
+		case P_MUL:             v1->intvalue *= v2->intvalue;
+			v1->floatvalue *= v2->floatvalue; break;
+		case P_DIV:             if (!v2->intvalue || !v2->floatvalue)
+			{
+				SourceError(source, "divide by zero in #if/#elif\n");
+				error = 1;
+				break;
+			}
+			v1->intvalue /= v2->intvalue;
+			v1->floatvalue /= v2->floatvalue; break;
+		case P_MOD:             if (!v2->intvalue)
+			{
+				SourceError(source, "divide by zero in #if/#elif\n");
+				error = 1;
+				break;
+			}
+			v1->intvalue %= v2->intvalue; break;
+		case P_ADD:             v1->intvalue += v2->intvalue;
+			v1->floatvalue += v2->floatvalue; break;
+		case P_SUB:             v1->intvalue -= v2->intvalue;
+			v1->floatvalue -= v2->floatvalue; break;
+		case P_LOGIC_AND:       v1->intvalue = v1->intvalue && v2->intvalue;
+			v1->floatvalue = v1->floatvalue && v2->floatvalue; break;
+		case P_LOGIC_OR:        v1->intvalue = v1->intvalue || v2->intvalue;
+			v1->floatvalue = v1->floatvalue || v2->floatvalue; break;
+		case P_LOGIC_GEQ:       v1->intvalue = v1->intvalue >= v2->intvalue;
+			v1->floatvalue = v1->floatvalue >= v2->floatvalue; break;
+		case P_LOGIC_LEQ:       v1->intvalue = v1->intvalue <= v2->intvalue;
+			v1->floatvalue = v1->floatvalue <= v2->floatvalue; break;
+		case P_LOGIC_EQ:        v1->intvalue = v1->intvalue == v2->intvalue;
+			v1->floatvalue = v1->floatvalue == v2->floatvalue; break;
+		case P_LOGIC_UNEQ:      v1->intvalue = v1->intvalue != v2->intvalue;
+			v1->floatvalue = v1->floatvalue != v2->floatvalue; break;
+		case P_LOGIC_GREATER:   v1->intvalue = v1->intvalue > v2->intvalue;
+			v1->floatvalue = v1->floatvalue > v2->floatvalue; break;
+		case P_LOGIC_LESS:      v1->intvalue = v1->intvalue < v2->intvalue;
+			v1->floatvalue = v1->floatvalue < v2->floatvalue; break;
+		case P_RSHIFT:          v1->intvalue >>= v2->intvalue;
+			break;
+		case P_LSHIFT:          v1->intvalue <<= v2->intvalue;
+			break;
+		case P_BIN_AND:         v1->intvalue &= v2->intvalue;
+			break;
+		case P_BIN_OR:          v1->intvalue |= v2->intvalue;
+			break;
+		case P_BIN_XOR:         v1->intvalue ^= v2->intvalue;
+			break;
+		case P_COLON:
+		{
+			if (!gotquestmarkvalue)
+			{
+				SourceError(source, ": without ? in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+			if (integer)
+			{
+				if (!questmarkintvalue)
+				{
+					v1->intvalue = v2->intvalue;
+				}
+			}		//end if
+			else
+			{
+				if (!questmarkfloatvalue)
+				{
+					v1->floatvalue = v2->floatvalue;
+				}
+			}		//end else
+			gotquestmarkvalue = false;
+			break;
+		}		//end case
+		case P_QUESTIONMARK:
+		{
+			if (gotquestmarkvalue)
+			{
+				SourceError(source, "? after ? in #if/#elif");
+				error = 1;
+				break;
+			}		//end if
+			questmarkintvalue = v1->intvalue;
+			questmarkfloatvalue = v1->floatvalue;
+			gotquestmarkvalue = true;
+			break;
+		}		//end if
+		}	//end switch
+		if (error)
+		{
+			break;
+		}
+		lastoperatortype = o->oper;
+		//if not an operator with arity 1
+		if (o->oper != P_LOGIC_NOT &&
+			o->oper != P_BIN_NOT)
+		{
+			//remove the second value if not question mark operator
+			if (o->oper != P_QUESTIONMARK)
+			{
+				v = v->next;
+			}
+			//
+			if (v->prev)
+			{
+				v->prev->next = v->next;
+			}
+			else
+			{
+				firstvalue = v->next;
+			}
+			if (v->next)
+			{
+				v->next->prev = v->prev;
+			}
+			else
+			{
+				lastvalue = v->prev;
+			}
+			//FreeMemory(v);
+			FreeValue(v);
+		}	//end if
+			//remove the operator
+		if (o->prev)
+		{
+			o->prev->next = o->next;
+		}
+		else
+		{
+			firstoperator = o->next;
+		}
+		if (o->next)
+		{
+			o->next->prev = o->prev;
+		}
+		else
+		{
+			lastoperator = o->prev;
+		}
+		//FreeMemory(o);
+		FreeOperator(o);
+	}	//end while
+	if (firstvalue)
+	{
+		if (intvalue)
+		{
+			*intvalue = firstvalue->intvalue;
+		}
+		if (floatvalue)
+		{
+			*floatvalue = firstvalue->floatvalue;
+		}
+	}	//end if
+	for (o = firstoperator; o; o = lastoperator)
+	{
+		lastoperator = o->next;
+		//FreeMemory(o);
+		FreeOperator(o);
+	}	//end for
+	for (v = firstvalue; v; v = lastvalue)
+	{
+		lastvalue = v->next;
+		//FreeMemory(v);
+		FreeValue(v);
+	}	//end for
+	if (!error)
+	{
+		return true;
+	}
+	if (intvalue)
+	{
+		*intvalue = 0;
+	}
+	if (floatvalue)
+	{
+		*floatvalue = 0;
+	}
+	return false;
+}	//end of the function PC_EvaluateTokens
