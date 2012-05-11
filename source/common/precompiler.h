@@ -99,4 +99,6 @@ void PC_FreeDefine(define_t* define);
 int PC_NameHash(const char* name);
 void PC_AddDefineToHash(define_t* define, define_t** definehash);
 define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
-int PC_Directive_undef(source_t* source);
+bool PC_Directive_undef(source_t* source);
+int PC_FindDefineParm(define_t* define, const char* name);
+bool PC_Directive_define(source_t* source);

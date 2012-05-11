@@ -43,7 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 typedef struct directive_s
 {
 	const char* name;
-	int (* func)(source_t* source);
+	bool (* func)(source_t* source);
 } directive_t;
 
 //list with global defines added to every source loaded
@@ -247,29 +247,6 @@ define_t* PC_FindDefine(define_t* defines, char* name)
 	}	//end for
 	return NULL;
 }	//end of the function PC_FindDefine
-//============================================================================
-//
-// Parameter:				-
-// Returns:					number of the parm
-//								if no parm found with the given name -1 is returned
-// Changes Globals:		-
-//============================================================================
-int PC_FindDefineParm(define_t* define, char* name)
-{
-	token_t* p;
-	int i;
-
-	i = 0;
-	for (p = define->parms; p; p = p->next)
-	{
-		if (!String::Cmp(p->string, name))
-		{
-			return i;
-		}
-		i++;
-	}	//end for
-	return -1;
-}	//end of the function PC_FindDefineParm
 //============================================================================
 //
 // Parameter:				-
@@ -594,7 +571,7 @@ void PC_ConvertPath(char* path)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_include(source_t* source)
+bool PC_Directive_include(source_t* source)
 {
 	script_t* script;
 	token_t token;
@@ -668,186 +645,6 @@ int PC_Directive_include(source_t* source)
 	PC_PushScript(source, script);
 	return true;
 }	//end of the function PC_Directive_include
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_WhiteSpaceBeforeToken(token_t* token)
-{
-	return token->endwhitespace_p - token->whitespace_p > 0;
-}	//end of the function PC_WhiteSpaceBeforeToken
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_ClearTokenWhiteSpace(token_t* token)
-{
-	token->whitespace_p = NULL;
-	token->endwhitespace_p = NULL;
-	token->linescrossed = 0;
-}	//end of the function PC_ClearTokenWhiteSpace
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_Directive_define(source_t* source)
-{
-	token_t token, * t, * last;
-	define_t* define;
-
-	if (source->skip > 0)
-	{
-		return true;
-	}
-	//
-	if (!PC_ReadLine(source, &token))
-	{
-		SourceError(source, "#define without name");
-		return false;
-	}	//end if
-	if (token.type != TT_NAME)
-	{
-		PC_UnreadSourceToken(source, &token);
-		SourceError(source, "expected name after #define, found %s", token.string);
-		return false;
-	}	//end if
-		//check if the define already exists
-	define = PC_FindHashedDefine(source->definehash, token.string);
-	if (define)
-	{
-		if (define->flags & DEFINE_FIXED)
-		{
-			SourceError(source, "can't redefine %s", token.string);
-			return false;
-		}	//end if
-		SourceWarning(source, "redefinition of %s", token.string);
-		//unread the define name before executing the #undef directive
-		PC_UnreadSourceToken(source, &token);
-		if (!PC_Directive_undef(source))
-		{
-			return false;
-		}
-		//if the define was not removed (define->flags & DEFINE_FIXED)
-		define = PC_FindHashedDefine(source->definehash, token.string);
-	}	//end if
-		//allocate define
-	define = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(token.string) + 1);
-	Com_Memset(define, 0, sizeof(define_t));
-	define->name = (char*)define + sizeof(define_t);
-	String::Cpy(define->name, token.string);
-	//add the define to the source
-	PC_AddDefineToHash(define, source->definehash);
-		//if nothing is defined, just return
-	if (!PC_ReadLine(source, &token))
-	{
-		return true;
-	}
-	//if it is a define with parameters
-	if (!PC_WhiteSpaceBeforeToken(&token) && !String::Cmp(token.string, "("))
-	{
-		//read the define parameters
-		last = NULL;
-		if (!PC_CheckTokenString(source, ")"))
-		{
-			while (1)
-			{
-				if (!PC_ReadLine(source, &token))
-				{
-					SourceError(source, "expected define parameter");
-					return false;
-				}	//end if
-					//if it isn't a name
-				if (token.type != TT_NAME)
-				{
-					SourceError(source, "invalid define parameter");
-					return false;
-				}	//end if
-					//
-				if (PC_FindDefineParm(define, token.string) >= 0)
-				{
-					SourceError(source, "two the same define parameters");
-					return false;
-				}	//end if
-					//add the define parm
-				t = PC_CopyToken(&token);
-				PC_ClearTokenWhiteSpace(t);
-				t->next = NULL;
-				if (last)
-				{
-					last->next = t;
-				}
-				else
-				{
-					define->parms = t;
-				}
-				last = t;
-				define->numparms++;
-				//read next token
-				if (!PC_ReadLine(source, &token))
-				{
-					SourceError(source, "define parameters not terminated");
-					return false;
-				}	//end if
-					//
-				if (!String::Cmp(token.string, ")"))
-				{
-					break;
-				}
-				//then it must be a comma
-				if (String::Cmp(token.string, ","))
-				{
-					SourceError(source, "define not terminated");
-					return false;
-				}	//end if
-			}	//end while
-		}	//end if
-		if (!PC_ReadLine(source, &token))
-		{
-			return true;
-		}
-	}	//end if
-		//read the defined stuff
-	last = NULL;
-	do
-	{
-		t = PC_CopyToken(&token);
-		if (t->type == TT_NAME && !String::Cmp(t->string, define->name))
-		{
-			SourceError(source, "recursive define (removed recursion)");
-			continue;
-		}	//end if
-		PC_ClearTokenWhiteSpace(t);
-		t->next = NULL;
-		if (last)
-		{
-			last->next = t;
-		}
-		else
-		{
-			define->tokens = t;
-		}
-		last = t;
-	}
-	while (PC_ReadLine(source, &token));
-	//
-	if (last)
-	{
-		//check for merge operators at the beginning or end
-		if (!String::Cmp(define->tokens->string, "##") ||
-			!String::Cmp(last->string, "##"))
-		{
-			SourceError(source, "define with misplaced ##");
-			return false;
-		}	//end if
-	}	//end if
-	return true;
-}	//end of the function PC_Directive_define
 //============================================================================
 //
 // Parameter:				-
@@ -1026,7 +823,7 @@ int PC_Directive_if_def(source_t* source, int type)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_ifdef(source_t* source)
+bool PC_Directive_ifdef(source_t* source)
 {
 	return PC_Directive_if_def(source, INDENT_IFDEF);
 }	//end of the function PC_Directive_ifdef
@@ -1036,7 +833,7 @@ int PC_Directive_ifdef(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_ifndef(source_t* source)
+bool PC_Directive_ifndef(source_t* source)
 {
 	return PC_Directive_if_def(source, INDENT_IFNDEF);
 }	//end of the function PC_Directive_ifndef
@@ -1046,7 +843,7 @@ int PC_Directive_ifndef(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_else(source_t* source)
+bool PC_Directive_else(source_t* source)
 {
 	int type, skip;
 
@@ -1070,7 +867,7 @@ int PC_Directive_else(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_endif(source_t* source)
+bool PC_Directive_endif(source_t* source)
 {
 	int type, skip;
 
@@ -1940,7 +1737,7 @@ int PC_DollarEvaluate(source_t* source, signed long int* intvalue,
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_elif(source_t* source)
+bool PC_Directive_elif(source_t* source)
 {
 	signed long int value;
 	int type, skip;
@@ -1965,7 +1762,7 @@ int PC_Directive_elif(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_if(source_t* source)
+bool PC_Directive_if(source_t* source)
 {
 	signed long int value;
 	int skip;
@@ -1984,7 +1781,7 @@ int PC_Directive_if(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_line(source_t* source)
+bool PC_Directive_line(source_t* source)
 {
 	SourceError(source, "#line directive not supported");
 	return false;
@@ -1995,7 +1792,7 @@ int PC_Directive_line(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_error(source_t* source)
+bool PC_Directive_error(source_t* source)
 {
 	token_t token;
 
@@ -2010,7 +1807,7 @@ int PC_Directive_error(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_pragma(source_t* source)
+bool PC_Directive_pragma(source_t* source)
 {
 	token_t token;
 
@@ -2044,7 +1841,7 @@ void UnreadSignToken(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_eval(source_t* source)
+bool PC_Directive_eval(source_t* source)
 {
 	signed long int value;
 	token_t token;
@@ -2074,7 +1871,7 @@ int PC_Directive_eval(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_evalfloat(source_t* source)
+bool PC_Directive_evalfloat(source_t* source)
 {
 	double value;
 	token_t token;
@@ -2161,7 +1958,7 @@ int PC_ReadDirective(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_DollarDirective_evalint(source_t* source)
+bool PC_DollarDirective_evalint(source_t* source)
 {
 	signed long int value;
 	token_t token;
@@ -2193,7 +1990,7 @@ int PC_DollarDirective_evalint(source_t* source)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_DollarDirective_evalfloat(source_t* source)
+bool PC_DollarDirective_evalfloat(source_t* source)
 {
 	double value;
 	token_t token;

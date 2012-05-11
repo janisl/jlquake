@@ -252,7 +252,7 @@ define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
 	return NULL;
 }
 
-int PC_Directive_undef(source_t* source)
+bool PC_Directive_undef(source_t* source)
 {
 	if (source->skip > 0)
 	{
@@ -296,6 +296,189 @@ int PC_Directive_undef(source_t* source)
 			break;
 		}
 		lastdefine = define;
+	}
+	return true;
+}
+
+static bool PC_WhiteSpaceBeforeToken(token_t* token)
+{
+	return token->endwhitespace_p - token->whitespace_p > 0;
+}
+
+static void PC_ClearTokenWhiteSpace(token_t* token)
+{
+	token->whitespace_p = NULL;
+	token->endwhitespace_p = NULL;
+	token->linescrossed = 0;
+}
+
+int PC_FindDefineParm(define_t* define, const char* name)
+{
+	int i = 0;
+	for (token_t* p = define->parms; p; p = p->next)
+	{
+		if (!String::Cmp(p->string, name))
+		{
+			return i;
+		}
+		i++;
+	}
+	return -1;
+}
+
+bool PC_Directive_define(source_t* source)
+{
+	if (source->skip > 0)
+	{
+		return true;
+	}
+
+	token_t token;
+	if (!PC_ReadLine(source, &token))
+	{
+		SourceError(source, "#define without name");
+		return false;
+	}
+	if (token.type != TT_NAME)
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "expected name after #define, found %s", token.string);
+		return false;
+	}
+	//check if the define already exists
+	define_t* define = PC_FindHashedDefine(source->definehash, token.string);
+	if (define)
+	{
+		if (define->flags & DEFINE_FIXED)
+		{
+			SourceError(source, "can't redefine %s", token.string);
+			return false;
+		}
+		SourceWarning(source, "redefinition of %s", token.string);
+		//unread the define name before executing the #undef directive
+		PC_UnreadSourceToken(source, &token);
+		if (!PC_Directive_undef(source))
+		{
+			return false;
+		}
+		//if the define was not removed (define->flags & DEFINE_FIXED)
+		define = PC_FindHashedDefine(source->definehash, token.string);
+	}
+	//allocate define
+	define = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(token.string) + 1);
+	Com_Memset(define, 0, sizeof(define_t));
+	define->name = (char*)define + sizeof(define_t);
+	String::Cpy(define->name, token.string);
+	//add the define to the source
+	PC_AddDefineToHash(define, source->definehash);
+	//if nothing is defined, just return
+	if (!PC_ReadLine(source, &token))
+	{
+		return true;
+	}
+	//if it is a define with parameters
+	if (!PC_WhiteSpaceBeforeToken(&token) && !String::Cmp(token.string, "("))
+	{
+		//read the define parameters
+		token_t* last = NULL;
+		if (!PC_ReadLine(source, &token))
+		{
+			SourceError(source, "expected define parameter");
+			return false;
+		}
+		if (String::Cmp(token.string, ")"))
+		{
+			PC_UnreadSourceToken(source, &token);
+			while (1)
+			{
+				if (!PC_ReadLine(source, &token))
+				{
+					SourceError(source, "expected define parameter");
+					return false;
+				}
+				//if it isn't a name
+				if (token.type != TT_NAME)
+				{
+					SourceError(source, "invalid define parameter");
+					return false;
+				}
+
+				if (PC_FindDefineParm(define, token.string) >= 0)
+				{
+					SourceError(source, "two the same define parameters");
+					return false;
+				}
+				//add the define parm
+				token_t* t = PC_CopyToken(&token);
+				PC_ClearTokenWhiteSpace(t);
+				t->next = NULL;
+				if (last)
+				{
+					last->next = t;
+				}
+				else
+				{
+					define->parms = t;
+				}
+				last = t;
+				define->numparms++;
+				//read next token
+				if (!PC_ReadLine(source, &token))
+				{
+					SourceError(source, "define parameters not terminated");
+					return false;
+				}
+
+				if (!String::Cmp(token.string, ")"))
+				{
+					break;
+				}
+				//then it must be a comma
+				if (String::Cmp(token.string, ","))
+				{
+					SourceError(source, "define not terminated");
+					return false;
+				}
+			}
+		}
+		if (!PC_ReadLine(source, &token))
+		{
+			return true;
+		}
+	}
+	//read the defined stuff
+	token_t* last = NULL;
+	do
+	{
+		token_t* t = PC_CopyToken(&token);
+		if (t->type == TT_NAME && !String::Cmp(t->string, define->name))
+		{
+			SourceError(source, "recursive define (removed recursion)");
+			continue;
+		}
+		PC_ClearTokenWhiteSpace(t);
+		t->next = NULL;
+		if (last)
+		{
+			last->next = t;
+		}
+		else
+		{
+			define->tokens = t;
+		}
+		last = t;
+	}
+	while (PC_ReadLine(source, &token));
+
+	if (last)
+	{
+		//check for merge operators at the beginning or end
+		if (!String::Cmp(define->tokens->string, "##") ||
+			!String::Cmp(last->string, "##"))
+		{
+			SourceError(source, "define with misplaced ##");
+			return false;
+		}
 	}
 	return true;
 }
