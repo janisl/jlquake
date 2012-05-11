@@ -251,3 +251,51 @@ define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
 	}
 	return NULL;
 }
+
+int PC_Directive_undef(source_t* source)
+{
+	if (source->skip > 0)
+	{
+		return true;
+	}
+
+	token_t token;
+	if (!PC_ReadLine(source, &token))
+	{
+		SourceError(source, "undef without name");
+		return false;
+	}
+	if (token.type != TT_NAME)
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "expected name, found %s", token.string);
+		return false;
+	}
+
+	int hash = PC_NameHash(token.string);
+	for (define_t* lastdefine = NULL, * define = source->definehash[hash]; define; define = define->hashnext)
+	{
+		if (!String::Cmp(define->name, token.string))
+		{
+			if (define->flags & DEFINE_FIXED)
+			{
+				SourceWarning(source, "can't undef %s", token.string);
+			}
+			else
+			{
+				if (lastdefine)
+				{
+					lastdefine->hashnext = define->hashnext;
+				}
+				else
+				{
+					source->definehash[hash] = define->hashnext;
+				}
+				PC_FreeDefine(define);
+			}
+			break;
+		}
+		lastdefine = define;
+	}
+	return true;
+}

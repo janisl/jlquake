@@ -696,62 +696,6 @@ void PC_ClearTokenWhiteSpace(token_t* token)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_Directive_undef(source_t* source)
-{
-	token_t token;
-	define_t* define, * lastdefine;
-	int hash;
-
-	if (source->skip > 0)
-	{
-		return true;
-	}
-	//
-	if (!PC_ReadLine(source, &token))
-	{
-		SourceError(source, "undef without name");
-		return false;
-	}	//end if
-	if (token.type != TT_NAME)
-	{
-		PC_UnreadSourceToken(source, &token);
-		SourceError(source, "expected name, found %s", token.string);
-		return false;
-	}	//end if
-
-	hash = PC_NameHash(token.string);
-	for (lastdefine = NULL, define = source->definehash[hash]; define; define = define->hashnext)
-	{
-		if (!String::Cmp(define->name, token.string))
-		{
-			if (define->flags & DEFINE_FIXED)
-			{
-				SourceWarning(source, "can't undef %s", token.string);
-			}	//end if
-			else
-			{
-				if (lastdefine)
-				{
-					lastdefine->hashnext = define->hashnext;
-				}
-				else
-				{
-					source->definehash[hash] = define->hashnext;
-				}
-				PC_FreeDefine(define);
-			}	//end else
-			break;
-		}	//end if
-		lastdefine = define;
-	}	//end for
-	return true;
-}	//end of the function PC_Directive_undef
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 int PC_Directive_define(source_t* source)
 {
 	token_t token, * t, * last;

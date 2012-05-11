@@ -40,6 +40,8 @@ struct etpc_token_t
 
 #define DEFINEHASHSIZE      1024
 
+#define DEFINE_FIXED            0x0001
+
 //macro definitions
 struct define_t
 {
@@ -97,3 +99,4 @@ void PC_FreeDefine(define_t* define);
 int PC_NameHash(const char* name);
 void PC_AddDefineToHash(define_t* define, define_t** definehash);
 define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
+int PC_Directive_undef(source_t* source);
