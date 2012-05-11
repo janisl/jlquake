@@ -51,15 +51,6 @@ typedef struct directive_s
 
 #define DEFINEHASHSIZE      1024
 
-#define TOKEN_HEAP_SIZE     4096
-
-int numtokens;
-/*
-int tokenheapinitialized;				//true when the token heap is initialized
-token_t token_heap[TOKEN_HEAP_SIZE];	//heap with tokens
-token_t *freetokens;					//free tokens from the heap
-*/
-
 //list with global defines added to every source loaded
 define_t* globaldefines;
 
@@ -166,38 +157,6 @@ void PC_PushScript(source_t* source, script_t* script)
 	script->next = source->scriptstack;
 	source->scriptstack = script;
 }	//end of the function PC_PushScript
-//============================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//============================================================================
-token_t* PC_CopyToken(token_t* token)
-{
-	token_t* t;
-
-	t = (token_t*)Mem_Alloc(sizeof(token_t));
-	if (!t)
-	{
-		Com_Error(ERR_FATAL, "out of token space\n");
-		return NULL;
-	}	//end if
-	memcpy(t, token, sizeof(token_t));
-	t->next = NULL;
-	numtokens++;
-	return t;
-}	//end of the function PC_CopyToken
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_FreeToken(token_t* token)
-{
-	Mem_Free(token);
-	numtokens--;
-}	//end of the function PC_FreeToken
 //============================================================================
 //
 // Parameter:				-

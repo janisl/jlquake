@@ -15,3 +15,16 @@
 //**************************************************************************
 
 #include "qcommon.h"
+
+token_t* PC_CopyToken(token_t* token)
+{
+	token_t* t = (token_t*)Mem_Alloc(sizeof(token_t));
+	Com_Memcpy(t, token, sizeof(token_t));
+	t->next = NULL;
+	return t;
+}
+
+void PC_FreeToken(token_t* token)
+{
+	Mem_Free(token);
+}
