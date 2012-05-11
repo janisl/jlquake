@@ -50,8 +50,6 @@ typedef struct directive_s
 	int (* func)(source_t* source);
 } directive_t;
 
-#define DEFINEHASHSIZE      1024
-
 //list with global defines added to every source loaded
 define_t* globaldefines;
 
@@ -240,63 +238,6 @@ int PC_MergeTokens(token_t* t1, token_t* t2)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-//char primes[16] = {1, 3, 5, 7, 11, 13, 17, 19, 23, 27, 29, 31, 37, 41, 43, 47};
-
-int PC_NameHash(char* name)
-{
-	int register hash, i;
-
-	hash = 0;
-	for (i = 0; name[i] != '\0'; i++)
-	{
-		hash += name[i] * (119 + i);
-		//hash += (name[i] << 7) + i;
-		//hash += (name[i] << (i&15));
-	}	//end while
-	hash = (hash ^ (hash >> 10) ^ (hash >> 20)) & (DEFINEHASHSIZE - 1);
-	return hash;
-}	//end of the function PC_NameHash
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_AddDefineToHash(define_t* define, define_t** definehash)
-{
-	int hash;
-
-	hash = PC_NameHash(define->name);
-	define->hashnext = definehash[hash];
-	definehash[hash] = define;
-}	//end of the function PC_AddDefineToHash
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-define_t* PC_FindHashedDefine(define_t** definehash, char* name)
-{
-	define_t* d;
-	int hash;
-
-	hash = PC_NameHash(name);
-	for (d = definehash[hash]; d; d = d->hashnext)
-	{
-		if (!String::Cmp(d->name, name))
-		{
-			return d;
-		}
-	}	//end for
-	return NULL;
-}	//end of the function PC_FindHashedDefine
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 define_t* PC_FindDefine(define_t* defines, char* name)
 {
 	define_t* d;
@@ -333,31 +274,6 @@ int PC_FindDefineParm(define_t* define, char* name)
 	}	//end for
 	return -1;
 }	//end of the function PC_FindDefineParm
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_FreeDefine(define_t* define)
-{
-	token_t* t, * next;
-
-	//free the define parameters
-	for (t = define->parms; t; t = next)
-	{
-		next = t->next;
-		PC_FreeToken(t);
-	}	//end for
-		//free the define tokens
-	for (t = define->tokens; t; t = next)
-	{
-		next = t->next;
-		PC_FreeToken(t);
-	}	//end for
-		//free the define
-	Mem_Free(define);
-}	//end of the function PC_FreeDefine
 //============================================================================
 //
 // Parameter:				-
@@ -757,36 +673,6 @@ int PC_Directive_include(source_t* source)
 	return qtrue;
 }	//end of the function PC_Directive_include
 //============================================================================
-// reads a token from the current line, continues reading on the next
-// line only if a backslash '\' is encountered.
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_ReadLine(source_t* source, token_t* token)
-{
-	int crossline;
-
-	crossline = 0;
-	do
-	{
-		if (!PC_ReadSourceToken(source, token))
-		{
-			return qfalse;
-		}
-
-		if (token->linescrossed > crossline)
-		{
-			PC_UnreadSourceToken(source, token);
-			return qfalse;
-		}	//end if
-		crossline = 1;
-	}
-	while (!String::Cmp(token->string, "\\"));
-	return qtrue;
-}	//end of the function PC_ReadLine
-//============================================================================
 //
 // Parameter:				-
 // Returns:					-
@@ -1150,61 +1036,6 @@ void PC_RemoveAllGlobalDefines(void)
 		PC_FreeDefine(define);
 	}	//end for
 }	//end of the function PC_RemoveAllGlobalDefines
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-define_t* PC_CopyDefine(source_t* source, define_t* define)
-{
-	define_t* newdefine;
-	token_t* token, * newtoken, * lasttoken;
-
-	newdefine = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(define->name) + 1);
-	//copy the define name
-	newdefine->name = (char*)newdefine + sizeof(define_t);
-	String::Cpy(newdefine->name, define->name);
-	newdefine->flags = define->flags;
-	newdefine->builtin = define->builtin;
-	newdefine->numparms = define->numparms;
-	//the define is not linked
-	newdefine->next = NULL;
-	newdefine->hashnext = NULL;
-	//copy the define tokens
-	newdefine->tokens = NULL;
-	for (lasttoken = NULL, token = define->tokens; token; token = token->next)
-	{
-		newtoken = PC_CopyToken(token);
-		newtoken->next = NULL;
-		if (lasttoken)
-		{
-			lasttoken->next = newtoken;
-		}
-		else
-		{
-			newdefine->tokens = newtoken;
-		}
-		lasttoken = newtoken;
-	}	//end for
-		//copy the define parameters
-	newdefine->parms = NULL;
-	for (lasttoken = NULL, token = define->parms; token; token = token->next)
-	{
-		newtoken = PC_CopyToken(token);
-		newtoken->next = NULL;
-		if (lasttoken)
-		{
-			lasttoken->next = newtoken;
-		}
-		else
-		{
-			newdefine->parms = newtoken;
-		}
-		lasttoken = newtoken;
-	}	//end for
-	return newdefine;
-}	//end of the function PC_CopyDefine
 //============================================================================
 //
 // Parameter:				-

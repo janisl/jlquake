@@ -131,3 +131,123 @@ void PC_UnreadSourceToken(source_t* source, token_t* token)
 	t->next = source->tokens;
 	source->tokens = t;
 }
+
+// reads a token from the current line, continues reading on the next
+// line only if a backslash '\' is encountered.
+bool PC_ReadLine(source_t* source, token_t* token)
+{
+	bool crossline = false;
+	do
+	{
+		if (!PC_ReadSourceToken(source, token))
+		{
+			return false;
+		}
+
+		if (token->linescrossed > crossline)
+		{
+			PC_UnreadSourceToken(source, token);
+			return false;
+		}
+		crossline = true;
+	}
+	while (!String::Cmp(token->string, "\\"));
+	return true;
+}
+
+define_t* PC_CopyDefine(source_t* source, define_t* define)
+{
+	define_t* newdefine = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(define->name) + 1);
+	//copy the define name
+	newdefine->name = (char*)newdefine + sizeof(define_t);
+	String::Cpy(newdefine->name, define->name);
+	newdefine->flags = define->flags;
+	newdefine->builtin = define->builtin;
+	newdefine->numparms = define->numparms;
+	//the define is not linked
+	newdefine->next = NULL;
+	newdefine->hashnext = NULL;
+	//copy the define tokens
+	newdefine->tokens = NULL;
+	for (token_t* lasttoken = NULL, * token = define->tokens; token; token = token->next)
+	{
+		token_t* newtoken = PC_CopyToken(token);
+		newtoken->next = NULL;
+		if (lasttoken)
+		{
+			lasttoken->next = newtoken;
+		}
+		else
+		{
+			newdefine->tokens = newtoken;
+		}
+		lasttoken = newtoken;
+	}
+	//copy the define parameters
+	newdefine->parms = NULL;
+	for (token_t* lasttoken = NULL, * token = define->parms; token; token = token->next)
+	{
+		token_t* newtoken = PC_CopyToken(token);
+		newtoken->next = NULL;
+		if (lasttoken)
+		{
+			lasttoken->next = newtoken;
+		}
+		else
+		{
+			newdefine->parms = newtoken;
+		}
+		lasttoken = newtoken;
+	}
+	return newdefine;
+}
+
+void PC_FreeDefine(define_t* define)
+{
+	token_t* next;
+	//free the define parameters
+	for (token_t* t = define->parms; t; t = next)
+	{
+		next = t->next;
+		PC_FreeToken(t);
+	}
+	//free the define tokens
+	for (token_t* t = define->tokens; t; t = next)
+	{
+		next = t->next;
+		PC_FreeToken(t);
+	}
+	//free the define
+	Mem_Free(define);
+}
+
+int PC_NameHash(const char* name)
+{
+	int hash = 0;
+	for (int i = 0; name[i] != '\0'; i++)
+	{
+		hash += name[i] * (119 + i);
+	}
+	hash = (hash ^ (hash >> 10) ^ (hash >> 20)) & (DEFINEHASHSIZE - 1);
+	return hash;
+}
+
+void PC_AddDefineToHash(define_t* define, define_t** definehash)
+{
+	int hash = PC_NameHash(define->name);
+	define->hashnext = definehash[hash];
+	definehash[hash] = define;
+}
+
+define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
+{
+	int hash = PC_NameHash(name);
+	for (define_t* d = definehash[hash]; d; d = d->hashnext)
+	{
+		if (!String::Cmp(d->name, name))
+		{
+			return d;
+		}
+	}
+	return NULL;
+}

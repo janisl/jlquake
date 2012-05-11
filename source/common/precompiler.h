@@ -38,6 +38,8 @@ struct etpc_token_t
 };
 //!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
 
+#define DEFINEHASHSIZE      1024
+
 //macro definitions
 struct define_t
 {
@@ -81,6 +83,8 @@ struct source_t
 void SourceError(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //print a source warning
 void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
+//read a token only if on the same line, lines are concatenated with a slash
+bool PC_ReadLine(source_t* source, token_t* token);
 
 token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);
@@ -88,3 +92,8 @@ void PC_PushIndent(source_t* source, int type, int skip);
 void PC_PopIndent(source_t* source, int* type, int* skip);
 bool PC_ReadSourceToken(source_t* source, token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
+define_t* PC_CopyDefine(source_t* source, define_t* define);
+void PC_FreeDefine(define_t* define);
+int PC_NameHash(const char* name);
+void PC_AddDefineToHash(define_t* define, define_t** definehash);
+define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
