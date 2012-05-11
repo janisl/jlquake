@@ -72,10 +72,6 @@ void PS_UnreadLastToken(script_t* script);
 void PS_UnreadToken(script_t* script, token_t* token);
 //returns the next character of the read white space, returns NULL if none
 char PS_NextWhiteSpaceChar(script_t* script);
-//remove any leading and trailing double quotes from the token
-void StripDoubleQuotes(char* string);
-//remove any leading and trailing single quotes from the token
-void StripSingleQuotes(char* string);
 //read a possible signed integer
 signed long int ReadSignedInt(script_t* script);
 //read a possible signed floating point number

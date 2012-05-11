@@ -302,40 +302,6 @@ char PS_NextWhiteSpaceChar(script_t* script)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void StripDoubleQuotes(char* string)
-{
-	if (*string == '\"')
-	{
-		memmove(string, string + 1, String::Length(string));
-	}	//end if
-	if (string[String::Length(string) - 1] == '\"')
-	{
-		string[String::Length(string) - 1] = '\0';
-	}	//end if
-}	//end of the function StripDoubleQuotes
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void StripSingleQuotes(char* string)
-{
-	if (*string == '\'')
-	{
-		memmove(string, string + 1, String::Length(string));
-	}	//end if
-	if (string[String::Length(string) - 1] == '\'')
-	{
-		string[String::Length(string) - 1] = '\0';
-	}	//end if
-}	//end of the function StripSingleQuotes
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 long double ReadSignedFloat(script_t* script)
 {
 	token_t token;

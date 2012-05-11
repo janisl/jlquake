@@ -165,5 +165,9 @@ void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(
 bool PS_ReadToken(script_t* script, token_t* token);
 //returns true if at the end of the script
 bool EndOfScript(script_t* script);
+//remove any leading and trailing double quotes from the token
+void StripDoubleQuotes(char* string);
+//remove any leading and trailing single quotes from the token
+void StripSingleQuotes(char* string);
 
 bool PS_ReadWhiteSpace(script_t* script);

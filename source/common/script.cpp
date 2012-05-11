@@ -892,3 +892,27 @@ bool EndOfScript(script_t* script)
 {
 	return script->script_p >= script->end_p;
 }
+
+void StripDoubleQuotes(char* string)
+{
+	if (*string == '\"')
+	{
+		memmove(string, string + 1, String::Length(string));
+	}
+	if (string[String::Length(string) - 1] == '\"')
+	{
+		string[String::Length(string) - 1] = '\0';
+	}
+}
+
+void StripSingleQuotes(char* string)
+{
+	if (*string == '\'')
+	{
+		memmove(string, string + 1, String::Length(string));
+	}
+	if (string[String::Length(string) - 1] == '\'')
+	{
+		string[String::Length(string) - 1] = '\0';
+	}
+}
