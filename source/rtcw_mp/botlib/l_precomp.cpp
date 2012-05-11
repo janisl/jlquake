@@ -56,28 +56,6 @@ typedef struct directive_s
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PC_PushScript(source_t* source, script_t* script)
-{
-	script_t* s;
-
-	for (s = source->scriptstack; s; s = s->next)
-	{
-		if (!String::ICmp(s->filename, script->filename))
-		{
-			SourceError(source, "%s recursively included", script->filename);
-			return;
-		}	//end if
-	}	//end for
-		//push the script on the script stack
-	script->next = source->scriptstack;
-	source->scriptstack = script;
-}	//end of the function PC_PushScript
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 int PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms)
 {
 	token_t token, * t, * last;
@@ -533,39 +511,6 @@ int PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* def
 	}	//end if
 	return qfalse;
 }	//end of the function PC_ExpandDefineIntoSource
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-void PC_ConvertPath(char* path)
-{
-	char* ptr;
-
-	//remove double path seperators
-	for (ptr = path; *ptr; )
-	{
-		if ((*ptr == '\\' || *ptr == '/') &&
-			(*(ptr + 1) == '\\' || *(ptr + 1) == '/'))
-		{
-			memmove(ptr, ptr + 1, String::Length(ptr));
-		}	//end if
-		else
-		{
-			ptr++;
-		}	//end else
-	}	//end while
-		//set OS dependent path seperators
-	for (ptr = path; *ptr; )
-	{
-		if (*ptr == '/' || *ptr == '\\')
-		{
-			*ptr = PATHSEPERATOR_CHAR;
-		}
-		ptr++;
-	}	//end while
-}	//end of the function PC_ConvertPath
 //============================================================================
 //
 // Parameter:				-

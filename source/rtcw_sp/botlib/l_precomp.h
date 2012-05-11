@@ -46,13 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 		#define PATHSEPERATOR_STR       "/"
 	#endif
 #endif
-#ifndef PATH_SEPERATORCHAR
-	#if defined(WIN32) | defined(_WIN32) | defined(__NT__) | defined(__WINDOWS__) | defined(__WINDOWS_386__)
-		#define PATHSEPERATOR_CHAR      '\\'
-	#else
-		#define PATHSEPERATOR_CHAR      '/'
-	#endif
-#endif
 
 #define BUILTIN_LINE            1
 #define BUILTIN_FILE            2

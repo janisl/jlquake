@@ -106,3 +106,5 @@ bool PC_Directive_undef(source_t* source);
 int PC_FindDefineParm(define_t* define, const char* name);
 bool PC_Directive_define(source_t* source);
 void PC_AddGlobalDefinesToSource(source_t* source);
+void PC_PushScript(source_t* source, script_t* script);
+void PC_ConvertPath(char* path);

@@ -16,6 +16,8 @@
 
 #include "qcommon.h"
 
+#define PATHSEPERATOR_CHAR      '/'
+
 //list with global defines added to every source loaded
 static define_t* globaldefines;
 
@@ -557,5 +559,48 @@ void PC_AddGlobalDefinesToSource(source_t* source)
 	{
 		define_t* newdefine = PC_CopyDefine(source, define);
 		PC_AddDefineToHash(newdefine, source->definehash);
+	}
+}
+
+void PC_PushScript(source_t* source, script_t* script)
+{
+	for (script_t* s = source->scriptstack; s; s = s->next)
+	{
+		if (!String::ICmp(s->filename, script->filename))
+		{
+			SourceError(source, "%s recursively included", script->filename);
+			return;
+		}
+	}
+	//push the script on the script stack
+	script->next = source->scriptstack;
+	source->scriptstack = script;
+}
+
+void PC_ConvertPath(char* path)
+{
+	char* ptr;
+
+	//remove double path seperators
+	for (ptr = path; *ptr; )
+	{
+		if ((*ptr == '\\' || *ptr == '/') &&
+			(*(ptr + 1) == '\\' || *(ptr + 1) == '/'))
+		{
+			memmove(ptr, ptr + 1, String::Length(ptr));
+		}	//end if
+		else
+		{
+			ptr++;
+		}	//end else
+	}	//end while
+		//set OS dependent path seperators
+	for (ptr = path; *ptr; )
+	{
+		if (*ptr == '/' || *ptr == '\\')
+		{
+			*ptr = PATHSEPERATOR_CHAR;
+		}
+		ptr++;
 	}
 }
