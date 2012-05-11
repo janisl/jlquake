@@ -1229,7 +1229,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return FloatAsInt(ceil(VMF(1)));
 
 	case UI_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine((char*)VMA(1));
+		return PC_AddGlobalDefine((char*)VMA(1));
 	case UI_PC_LOAD_SOURCE:
 		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
 	case UI_PC_FREE_SOURCE:

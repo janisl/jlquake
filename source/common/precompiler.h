@@ -87,6 +87,8 @@ void SourceError(source_t* source, const char* str, ...) id_attribute((format(pr
 void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //read a token only if on the same line, lines are concatenated with a slash
 bool PC_ReadLine(source_t* source, token_t* token);
+//add a globals define that will be added to all opened sources
+int PC_AddGlobalDefine(const char* string);
 
 token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);
@@ -102,3 +104,5 @@ define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
 bool PC_Directive_undef(source_t* source);
 int PC_FindDefineParm(define_t* define, const char* name);
 bool PC_Directive_define(source_t* source);
+
+extern define_t* globaldefines;

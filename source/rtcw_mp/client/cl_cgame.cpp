@@ -968,7 +968,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return FloatAsInt(Q_acos(VMF(1)));
 
 	case CG_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine((char*)VMA(1));
+		return PC_AddGlobalDefine((char*)VMA(1));
 	case CG_PC_LOAD_SOURCE:
 		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
 	case CG_PC_FREE_SOURCE:

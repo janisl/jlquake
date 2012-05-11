@@ -46,9 +46,6 @@ typedef struct directive_s
 	bool (* func)(source_t* source);
 } directive_t;
 
-//list with global defines added to every source loaded
-define_t* globaldefines;
-
 //============================================================================
 //
 // Parameter:				-
@@ -645,117 +642,6 @@ bool PC_Directive_include(source_t* source)
 	PC_PushScript(source, script);
 	return true;
 }	//end of the function PC_Directive_include
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-define_t* PC_DefineFromString(char* string)
-{
-	script_t* script;
-	source_t src;
-	token_t* t;
-	int res, i;
-	define_t* def;
-
-	script = LoadScriptMemory(string, String::Length(string), "*extern");
-	//create a new source
-	Com_Memset(&src, 0, sizeof(source_t));
-	String::NCpy(src.filename, "*extern", MAX_PATH);
-	src.scriptstack = script;
-	src.definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
-		//create a define from the source
-	res = PC_Directive_define(&src);
-	//free any tokens if left
-	for (t = src.tokens; t; t = src.tokens)
-	{
-		src.tokens = src.tokens->next;
-		PC_FreeToken(t);
-	}	//end for
-	def = NULL;
-	for (i = 0; i < DEFINEHASHSIZE; i++)
-	{
-		if (src.definehash[i])
-		{
-			def = src.definehash[i];
-			break;
-		}	//end if
-	}	//end for
-		//
-	Mem_Free(src.definehash);
-		//
-	FreeScript(script);
-	//if the define was created succesfully
-	if (res > 0)
-	{
-		return def;
-	}
-	//free the define is created
-	if (src.defines)
-	{
-		PC_FreeDefine(def);
-	}
-	//
-	return NULL;
-}	//end of the function PC_DefineFromString
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_AddDefine(source_t* source, char* string)
-{
-	define_t* define;
-
-	define = PC_DefineFromString(string);
-	if (!define)
-	{
-		return false;
-	}
-	PC_AddDefineToHash(define, source->definehash);
-	return true;
-}	//end of the function PC_AddDefine
-//============================================================================
-// add a globals define that will be added to all opened sources
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_AddGlobalDefine(char* string)
-{
-	define_t* define;
-
-	define = PC_DefineFromString(string);
-	if (!define)
-	{
-		return false;
-	}
-	define->next = globaldefines;
-	globaldefines = define;
-	return true;
-}	//end of the function PC_AddGlobalDefine
-//============================================================================
-// remove the given global define
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_RemoveGlobalDefine(char* name)
-{
-	define_t* define;
-
-	define = PC_FindDefine(globaldefines, name);
-	if (define)
-	{
-		PC_FreeDefine(define);
-		return true;
-	}	//end if
-	return false;
-}	//end of the function PC_RemoveGlobalDefine
 //============================================================================
 // remove all globals defines
 //

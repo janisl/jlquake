@@ -1271,7 +1271,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return FloatAsInt(ceil(VMF(1)));
 
 	case UI_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine((char*)VMA(1));
+		return PC_AddGlobalDefine((char*)VMA(1));
 	case UI_PC_REMOVE_ALL_GLOBAL_DEFINES:
 		botlib_export->PC_RemoveAllGlobalDefines();
 		return 0;

@@ -16,6 +16,9 @@
 
 #include "qcommon.h"
 
+//list with global defines added to every source loaded
+define_t* globaldefines;
+
 token_t* PC_CopyToken(token_t* token)
 {
 	token_t* t = (token_t*)Mem_Alloc(sizeof(token_t));
@@ -480,5 +483,61 @@ bool PC_Directive_define(source_t* source)
 			return false;
 		}
 	}
+	return true;
+}
+
+static define_t* PC_DefineFromString(const char* string)
+{
+	script_t* script = LoadScriptMemory(string, String::Length(string), "*extern");
+	//create a new source
+	source_t src;
+	Com_Memset(&src, 0, sizeof(source_t));
+	String::NCpy(src.filename, "*extern", MAX_QPATH);
+	src.scriptstack = script;
+	src.definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
+		//create a define from the source
+	bool res = PC_Directive_define(&src);
+	//free any tokens if left
+	for (token_t* t = src.tokens; t; t = src.tokens)
+	{
+		src.tokens = src.tokens->next;
+		PC_FreeToken(t);
+	}
+	define_t* def = NULL;
+	for (int i = 0; i < DEFINEHASHSIZE; i++)
+	{
+		if (src.definehash[i])
+		{
+			def = src.definehash[i];
+			break;
+		}
+	}
+
+	Mem_Free(src.definehash);
+
+	FreeScript(script);
+	//if the define was created succesfully
+	if (res)
+	{
+		return def;
+	}
+	//free the define if created
+	if (src.defines)
+	{
+		PC_FreeDefine(def);
+	}
+	return NULL;
+}
+
+// add a globals define that will be added to all opened sources
+int PC_AddGlobalDefine(const char* string)
+{
+	define_t* define = PC_DefineFromString(string);
+	if (!define)
+	{
+		return false;
+	}
+	define->next = globaldefines;
+	globaldefines = define;
 	return true;
 }
