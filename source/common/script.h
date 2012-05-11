@@ -23,6 +23,16 @@
 #define TT_PUNCTUATION      5			// punctuation
 //!!!!!!!!!!!!!!! End of stuff used by game VMs !!!!!!!!!!!!!!!!!!!!!
 
+//number sub type
+#define TT_DECIMAL                  0x0008	// decimal number
+#define TT_HEX                      0x0100	// hexadecimal number
+#define TT_OCTAL                    0x0200	// octal number
+#define TT_BINARY                   0x0400	// binary number
+#define TT_FLOAT                    0x0800	// floating point number
+#define TT_INTEGER                  0x1000	// integer number
+#define TT_LONG                     0x2000	// long number
+#define TT_UNSIGNED                 0x4000	// unsigned number
+
 //punctuation sub type
 #define P_RSHIFT_ASSIGN             1
 #define P_LSHIFT_ASSIGN             2
@@ -151,5 +161,7 @@ void FreeScript(script_t* script);
 void ScriptError(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //print a script warning with filename and line number
 void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
+//read a token from the script
+bool PS_ReadToken(script_t* script, token_t* token);
 
-int PS_ReadWhiteSpace(script_t* script);
+bool PS_ReadWhiteSpace(script_t* script);

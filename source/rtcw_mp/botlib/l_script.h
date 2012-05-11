@@ -53,29 +53,6 @@ If you have questions concerning this license or the applicable additional terms
 	#define _MAX_PATH               MAX_QPATH
 #endif
 
-
-//string sub type
-//---------------
-//		the length of the string
-//literal sub type
-//----------------
-//		the ASCII code of the literal
-//number sub type
-//---------------
-#define TT_DECIMAL                  0x0008	// decimal number
-#define TT_HEX                          0x0100	// hexadecimal number
-#define TT_OCTAL                        0x0200	// octal number
-#define TT_BINARY                       0x0400	// binary number
-#define TT_FLOAT                        0x0800	// floating point number
-#define TT_INTEGER                  0x1000	// integer number
-#define TT_LONG                     0x2000	// long number
-#define TT_UNSIGNED                 0x4000	// unsigned number
-//name sub type
-//-------------
-//		the length of the name
-
-//read a token from the script
-int PS_ReadToken(script_t* script, token_t* token);
 //expect a certain token
 int PS_ExpectTokenString(script_t* script, char* string);
 //expect a certain token type
