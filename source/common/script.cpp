@@ -886,3 +886,9 @@ bool PS_ReadToken(script_t* script, token_t* token)
 	//succesfully read a token
 	return true;
 }
+
+// returns true if at the end of the script
+bool EndOfScript(script_t* script)
+{
+	return script->script_p >= script->end_p;
+}

@@ -61,7 +61,5 @@ void SetScriptFlags(script_t* script, int flags);
 int GetScriptFlags(script_t* script);
 //reset a script
 void ResetScript(script_t* script);
-//returns true if at the end of the script
-int EndOfScript(script_t* script);
 //returns a pointer to the punctuation with the given number
 const char* PunctuationFromNum(script_t* script, int num);

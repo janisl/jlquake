@@ -427,17 +427,6 @@ void ResetScript(script_t* script)
 	memset(&script->token, 0, sizeof(token_t));
 }	//end of the function ResetScript
 //============================================================================
-// returns true if at the end of the script
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int EndOfScript(script_t* script)
-{
-	return script->script_p >= script->end_p;
-}	//end of the function EndOfScript
-//============================================================================
 //
 // Parameter:				-
 // Returns:					-

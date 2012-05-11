@@ -163,5 +163,7 @@ void ScriptError(script_t* script, const char* str, ...) id_attribute((format(pr
 void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //read a token from the script
 bool PS_ReadToken(script_t* script, token_t* token);
+//returns true if at the end of the script
+bool EndOfScript(script_t* script);
 
 bool PS_ReadWhiteSpace(script_t* script);
