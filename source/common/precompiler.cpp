@@ -604,3 +604,77 @@ void PC_ConvertPath(char* path)
 		ptr++;
 	}
 }
+
+bool PC_Directive_include(source_t* source)
+{
+	if (source->skip > 0)
+	{
+		return true;
+	}
+
+	token_t token;
+	if (!PC_ReadSourceToken(source, &token))
+	{
+		SourceError(source, "#include without file name");
+		return false;
+	}
+	if (token.linescrossed > 0)
+	{
+		SourceError(source, "#include without file name");
+		return false;
+	}
+	char path[MAX_QPATH];
+	script_t* script;
+	if (token.type == TT_STRING)
+	{
+		StripDoubleQuotes(token.string);
+		PC_ConvertPath(token.string);
+		script = LoadScriptFile(token.string);
+		if (!script)
+		{
+			String::Cpy(path, source->includepath);
+			String::Cat(path, sizeof(path), token.string);
+			script = LoadScriptFile(path);
+		}
+	}
+	else if (token.type == TT_PUNCTUATION && *token.string == '<')
+	{
+		String::Cpy(path, source->includepath);
+		while (PC_ReadSourceToken(source, &token))
+		{
+			if (token.linescrossed > 0)
+			{
+				PC_UnreadSourceToken(source, &token);
+				break;
+			}
+			if (token.type == TT_PUNCTUATION && *token.string == '>')
+			{
+				break;
+			}
+			String::Cat(path, sizeof(path), token.string);
+		}
+		if (*token.string != '>')
+		{
+			SourceWarning(source, "#include missing trailing >");
+		}
+		if (!String::Length(path))
+		{
+			SourceError(source, "#include without file name between < >");
+			return false;
+		}
+		PC_ConvertPath(path);
+		script = LoadScriptFile(path);
+	}
+	else
+	{
+		SourceError(source, "#include without file name");
+		return false;
+	}
+	if (!script)
+	{
+		SourceError(source, "file %s not found", path);
+		return false;
+	}
+	PC_PushScript(source, script);
+	return true;
+}

@@ -108,3 +108,4 @@ bool PC_Directive_define(source_t* source);
 void PC_AddGlobalDefinesToSource(source_t* source);
 void PC_PushScript(source_t* source, script_t* script);
 void PC_ConvertPath(char* path);
+bool PC_Directive_include(source_t* source);
