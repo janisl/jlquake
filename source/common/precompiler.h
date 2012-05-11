@@ -77,6 +77,10 @@ struct source_t
 	token_t token;							//last read token
 };
 
+//print a source error
+void SourceError(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
+//print a source warning
+void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
 
 token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);

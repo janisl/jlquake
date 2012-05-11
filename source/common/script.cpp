@@ -204,19 +204,10 @@ script_t* LoadScriptFile(const char* filename)
 	return script;
 }
 
-//============================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//============================================================================
 script_t* LoadScriptMemory(const char* ptr, int length, const char* name)
 {
-	void* buffer;
-	script_t* script;
-
-	buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
-	script = (script_t*)buffer;
+	void* buffer = Mem_ClearedAlloc(sizeof(script_t) + length + 1);
+	script_t* script = (script_t*)buffer;
 	Com_Memset(script, 0, sizeof(script_t));
 	String::Cpy(script->filename, name);
 	script->buffer = (char*)buffer + sizeof(script_t);
@@ -230,16 +221,14 @@ script_t* LoadScriptMemory(const char* ptr, int length, const char* name)
 	script->end_p = &script->buffer[length];
 	//set if there's a token available in script->token
 	script->tokenavailable = 0;
-	//
 	script->line = 1;
 	script->lastline = 1;
-	//
+
 	SetScriptPunctuations(script, NULL);
-	//
+
 	Com_Memcpy(script->buffer, ptr, length);
-	//
 	return script;
-}	//end of the function LoadScriptMemory
+}
 
 void FreeScript(script_t* script)
 {
@@ -248,6 +237,36 @@ void FreeScript(script_t* script)
 		Mem_Free(script->punctuationtable);
 	}
 	Mem_Free(script);
+}
+
+void ScriptError(script_t* script, const char* str, ...)
+{
+	if (script->flags & SCFL_NOERRORS)
+	{
+		return;
+	}
+
+	va_list ap;
+	char text[1024];
+	va_start(ap, str);
+	Q_vsnprintf(text, sizeof(text), str, ap);
+	va_end(ap);
+	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", script->filename, script->line, text);
+}
+
+void ScriptWarning(script_t* script, const char* str, ...)
+{
+	if (script->flags & SCFL_NOWARNINGS)
+	{
+		return;
+	}
+
+	va_list ap;
+	char text[1024];
+	va_start(ap, str);
+	Q_vsnprintf(text, sizeof(text), str, ap);
+	va_end(ap);
+	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", script->filename, script->line, text);
 }
 
 // Reads spaces, tabs, C-like comments etc.
@@ -268,8 +287,8 @@ int PS_ReadWhiteSpace(script_t* script)
 				script->line++;
 			}
 			script->script_p++;
-		}	//end while
-			//skip comments
+		}
+		//skip comments
 		if (*script->script_p == '/')
 		{
 			//comments //
@@ -283,7 +302,7 @@ int PS_ReadWhiteSpace(script_t* script)
 					{
 						return 0;
 					}
-				}	//end do
+				}
 				while (*script->script_p != '\n');
 				script->line++;
 				script->script_p++;
@@ -292,8 +311,8 @@ int PS_ReadWhiteSpace(script_t* script)
 					return 0;
 				}
 				continue;
-			}	//end if
-				//comments /* */
+			}
+			//comments /* */
 			else if (*(script->script_p + 1) == '*')
 			{
 				script->script_p++;
@@ -308,7 +327,7 @@ int PS_ReadWhiteSpace(script_t* script)
 					{
 						script->line++;
 					}
-				}	//end do
+				}
 				while (!(*script->script_p == '*' && *(script->script_p + 1) == '/'));
 				script->script_p++;
 				if (!*script->script_p)
@@ -321,9 +340,9 @@ int PS_ReadWhiteSpace(script_t* script)
 					return 0;
 				}
 				continue;
-			}	//end if
-		}	//end if
+			}
+		}
 		break;
-	}	//end while
+	}
 	return 1;
-}	//end of the function PS_ReadWhiteSpace
+}

@@ -89,6 +89,13 @@
 //maximum token length
 #define MAX_TOKEN                   1024
 
+//script flags
+#define SCFL_NOERRORS               BIT(0)
+#define SCFL_NOWARNINGS             BIT(1)
+#define SCFL_NOSTRINGWHITESPACES    BIT(2)
+#define SCFL_NOSTRINGESCAPECHARS    BIT(3)
+#define SCFL_PRIMITIVE              BIT(4)
+
 struct punctuation_t
 {
 	const char* p;				//punctuation character(s)
@@ -140,5 +147,9 @@ script_t* LoadScriptFile(const char* filename);
 script_t* LoadScriptMemory(const char* ptr, int length, const char* name);
 //free a script
 void FreeScript(script_t* script);
+//print a script error with filename and line number
+void ScriptError(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
+//print a script warning with filename and line number
+void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
 
 int PS_ReadWhiteSpace(script_t* script);

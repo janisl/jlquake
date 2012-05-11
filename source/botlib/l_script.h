@@ -29,15 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-//script flags
-#define SCFL_NOERRORS               0x0001
-#define SCFL_NOWARNINGS             0x0002
-#define SCFL_NOSTRINGWHITESPACES    0x0004
-#define SCFL_NOSTRINGESCAPECHARS    0x0008
-#define SCFL_PRIMITIVE              0x0010
-#define SCFL_NOBINARYNUMBERS        0x0020
-#define SCFL_NONUMBERVALUES     0x0040
-
 //string sub type
 //---------------
 //		the length of the string
@@ -96,7 +87,3 @@ void ResetScript(script_t* script);
 int EndOfScript(script_t* script);
 //returns a pointer to the punctuation with the given number
 const char* PunctuationFromNum(script_t* script, int num);
-//print a script error with filename and line number
-void ScriptError(script_t* script, const char* str, ...);
-//print a script warning with filename and line number
-void ScriptWarning(script_t* script, const char* str, ...);

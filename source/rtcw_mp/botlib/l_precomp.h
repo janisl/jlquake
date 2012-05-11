@@ -113,10 +113,6 @@ source_t* LoadSourceFile(const char* filename);
 source_t* LoadSourceMemory(char* ptr, int length, char* name);
 //free the given source
 void FreeSource(source_t* source);
-//print a source error
-void QDECL SourceError(source_t* source, const char* str, ...);
-//print a source warning
-void QDECL SourceWarning(source_t* source, const char* str, ...);
 
 //
 int PC_LoadSourceHandle(const char* filename);

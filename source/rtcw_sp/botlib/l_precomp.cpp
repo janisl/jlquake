@@ -63,38 +63,6 @@ define_t* globaldefines;
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void QDECL SourceError(source_t* source, const char* str, ...)
-{
-	char text[1024];
-	va_list ap;
-
-	va_start(ap, str);
-	vsprintf(text, str, ap);
-	va_end(ap);
-	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-}	//end of the function SourceError
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void QDECL SourceWarning(source_t* source, const char* str, ...)
-{
-	char text[1024];
-	va_list ap;
-
-	va_start(ap, str);
-	vsprintf(text, str, ap);
-	va_end(ap);
-	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
-}	//end of the function ScriptWarning
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 void PC_PushIndent(source_t* source, int type, int skip)
 {
 	indent_t* indent;

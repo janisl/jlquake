@@ -58,48 +58,6 @@ const char* PunctuationFromNum(script_t* script, int num)
 	}	//end for
 	return "unkown punctuation";
 }	//end of the function PunctuationFromNum
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void QDECL ScriptError(script_t* script, const char* str, ...)
-{
-	char text[1024];
-	va_list ap;
-
-	if (script->flags & SCFL_NOERRORS)
-	{
-		return;
-	}
-
-	va_start(ap, str);
-	Q_vsnprintf(text, sizeof(text), str, ap);
-	va_end(ap);
-	common->Printf(S_COLOR_RED "Error: file %s, line %d: %s\n", script->filename, script->line, text);
-}	//end of the function ScriptError
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void QDECL ScriptWarning(script_t* script, const char* str, ...)
-{
-	char text[1024];
-	va_list ap;
-
-	if (script->flags & SCFL_NOWARNINGS)
-	{
-		return;
-	}
-
-	va_start(ap, str);
-	Q_vsnprintf(text, sizeof(text), str, ap);
-	va_end(ap);
-	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", script->filename, script->line, text);
-}	//end of the function ScriptWarning
 //============================================================================
 // Reads an escape character.
 //
