@@ -53,12 +53,6 @@ If you have questions concerning this license or the applicable additional terms
 #define BUILTIN_TIME            4
 #define BUILTIN_STDC            5
 
-#define INDENT_IF               0x0001
-#define INDENT_ELSE             0x0002
-#define INDENT_ELIF             0x0004
-#define INDENT_IFDEF            0x0008
-#define INDENT_IFNDEF           0x0010
-
 //read a token from the source
 int PC_ReadToken(source_t* source, token_t* token);
 //expect a certain token

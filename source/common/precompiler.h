@@ -42,6 +42,12 @@ struct etpc_token_t
 
 #define DEFINE_FIXED            0x0001
 
+#define INDENT_IF               0x0001
+#define INDENT_ELSE             0x0002
+#define INDENT_ELIF             0x0004
+#define INDENT_IFDEF            0x0008
+#define INDENT_IFNDEF           0x0010
+
 //macro definitions
 struct define_t
 {
@@ -109,3 +115,7 @@ void PC_AddGlobalDefinesToSource(source_t* source);
 void PC_PushScript(source_t* source, script_t* script);
 void PC_ConvertPath(char* path);
 bool PC_Directive_include(source_t* source);
+bool PC_Directive_ifdef(source_t* source);
+bool PC_Directive_ifndef(source_t* source);
+bool PC_Directive_else(source_t* source);
+bool PC_Directive_endif(source_t* source);

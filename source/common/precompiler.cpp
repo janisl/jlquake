@@ -678,3 +678,66 @@ bool PC_Directive_include(source_t* source)
 	PC_PushScript(source, script);
 	return true;
 }
+
+static int PC_Directive_if_def(source_t* source, int type)
+{
+	token_t token;
+	define_t* d;
+	int skip;
+
+	if (!PC_ReadLine(source, &token))
+	{
+		SourceError(source, "#ifdef without name");
+		return false;
+	}
+	if (token.type != TT_NAME)
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "expected name after #ifdef, found %s", token.string);
+		return false;
+	}
+	d = PC_FindHashedDefine(source->definehash, token.string);
+	skip = (type == INDENT_IFDEF) == (d == NULL);
+	PC_PushIndent(source, type, skip);
+	return true;
+}
+
+bool PC_Directive_ifdef(source_t* source)
+{
+	return PC_Directive_if_def(source, INDENT_IFDEF);
+}
+
+bool PC_Directive_ifndef(source_t* source)
+{
+	return PC_Directive_if_def(source, INDENT_IFNDEF);
+}
+
+bool PC_Directive_else(source_t* source)
+{
+	int type, skip;
+	PC_PopIndent(source, &type, &skip);
+	if (!type)
+	{
+		SourceError(source, "misplaced #else");
+		return false;
+	}
+	if (type == INDENT_ELSE)
+	{
+		SourceError(source, "#else after #else");
+		return false;
+	}
+	PC_PushIndent(source, INDENT_ELSE, !skip);
+	return true;
+}
+
+bool PC_Directive_endif(source_t* source)
+{
+	int type, skip;
+	PC_PopIndent(source, &type, &skip);
+	if (!type)
+	{
+		SourceError(source, "misplaced #endif");
+		return false;
+	}
+	return true;
+}
