@@ -86,3 +86,5 @@ token_t* PC_CopyToken(token_t* token);
 void PC_FreeToken(token_t* token);
 void PC_PushIndent(source_t* source, int type, int skip);
 void PC_PopIndent(source_t* source, int* type, int* skip);
+bool PC_ReadSourceToken(source_t* source, token_t* token);
+void PC_UnreadSourceToken(source_t* source, token_t* token);

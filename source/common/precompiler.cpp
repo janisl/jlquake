@@ -83,3 +83,51 @@ void PC_PopIndent(source_t* source, int* type, int* skip)
 	source->skip -= indent->skip;
 	Mem_Free(indent);
 }
+
+bool PC_ReadSourceToken(source_t* source, token_t* token)
+{
+	//if there's no token already available
+	while (!source->tokens)
+	{
+		//if there's a token to read from the script
+		if (PS_ReadToken(source->scriptstack, token))
+		{
+			return true;
+		}
+		//if at the end of the script
+		if (EndOfScript(source->scriptstack))
+		{
+			//remove all indents of the script
+			while (source->indentstack &&
+				   source->indentstack->script == source->scriptstack)
+			{
+				SourceWarning(source, "missing #endif");
+				int type, skip;
+				PC_PopIndent(source, &type, &skip);
+			}
+		}
+		//if this was the initial script
+		if (!source->scriptstack->next)
+		{
+			return false;
+		}
+		//remove the script and return to the last one
+		script_t* script = source->scriptstack;
+		source->scriptstack = source->scriptstack->next;
+		FreeScript(script);
+	}
+	//copy the already available token
+	Com_Memcpy(token, source->tokens, sizeof(token_t));
+	//free the read token
+	token_t* t = source->tokens;
+	source->tokens = source->tokens->next;
+	PC_FreeToken(t);
+	return true;
+}
+
+void PC_UnreadSourceToken(source_t* source, token_t* token)
+{
+	token_t* t = PC_CopyToken(token);
+	t->next = source->tokens;
+	source->tokens = t;
+}
