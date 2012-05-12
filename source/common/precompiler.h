@@ -117,6 +117,6 @@ bool PC_Directive_ifdef(source_t* source);
 bool PC_Directive_ifndef(source_t* source);
 bool PC_Directive_else(source_t* source);
 bool PC_Directive_endif(source_t* source);
-int PC_OperatorPriority(int op);
+bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms);
 bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
 	double* floatvalue, bool integer);

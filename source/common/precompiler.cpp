@@ -758,7 +758,110 @@ bool PC_Directive_endif(source_t* source)
 	return true;
 }
 
-int PC_OperatorPriority(int op)
+bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms)
+{
+	token_t token, * t, * last;
+	int i, done, lastcomma, numparms, indent;
+
+	if (!PC_ReadSourceToken(source, &token))
+	{
+		SourceError(source, "define %s missing parms", define->name);
+		return false;
+	}	//end if
+		//
+	if (define->numparms > maxparms)
+	{
+		SourceError(source, "define with more than %d parameters", maxparms);
+		return false;
+	}	//end if
+		//
+	for (i = 0; i < define->numparms; i++)
+		parms[i] = NULL;
+	//if no leading "("
+	if (String::Cmp(token.string, "("))
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "define %s missing parms", define->name);
+		return false;
+	}	//end if
+		//read the define parameters
+	for (done = 0, numparms = 0, indent = 1; !done; )
+	{
+		if (numparms >= maxparms)
+		{
+			SourceError(source, "define %s with too many parms", define->name);
+			return false;
+		}	//end if
+		if (numparms >= define->numparms)
+		{
+			SourceWarning(source, "define %s has too many parms", define->name);
+			return false;
+		}	//end if
+		parms[numparms] = NULL;
+		lastcomma = 1;
+		last = NULL;
+		while (!done)
+		{
+			//
+			if (!PC_ReadSourceToken(source, &token))
+			{
+				SourceError(source, "define %s incomplete", define->name);
+				return false;
+			}	//end if
+				//
+			if (!String::Cmp(token.string, ","))
+			{
+				if (indent <= 1)
+				{
+					if (lastcomma)
+					{
+						SourceWarning(source, "too many comma's");
+					}
+					lastcomma = 1;
+					break;
+				}	//end if
+			}	//end if
+			lastcomma = 0;
+			//
+			if (!String::Cmp(token.string, "("))
+			{
+				indent++;
+			}	//end if
+			else if (!String::Cmp(token.string, ")"))
+			{
+				if (--indent <= 0)
+				{
+					if (!parms[define->numparms - 1])
+					{
+						SourceWarning(source, "too few define parms");
+					}	//end if
+					done = 1;
+					break;
+				}	//end if
+			}	//end if
+				//
+			if (numparms < define->numparms)
+			{
+				//
+				t = PC_CopyToken(&token);
+				t->next = NULL;
+				if (last)
+				{
+					last->next = t;
+				}
+				else
+				{
+					parms[numparms] = t;
+				}
+				last = t;
+			}	//end if
+		}	//end while
+		numparms++;
+	}	//end for
+	return true;
+}	//end of the function PC_ReadDefineParms
+
+static int PC_OperatorPriority(int op)
 {
 	switch (op)
 	{

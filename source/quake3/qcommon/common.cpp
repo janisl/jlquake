@@ -2430,6 +2430,7 @@ static void Com_WriteCDKey(const char* filename, const char* ikey)
 Com_Init
 =================
 */
+void TestIfs();
 void Com_Init(char* commandLine)
 {
 	try
@@ -2597,6 +2598,7 @@ void Com_Init(char* commandLine)
 		fs_ProtectKeyFile = true;
 		com_fullyInitialized = qtrue;
 		Com_Printf("--- Common Initialization Complete ---\n");
+TestIfs();
 	}
 	catch (Exception& e)
 	{
