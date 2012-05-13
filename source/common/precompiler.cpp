@@ -18,6 +18,8 @@
 
 #define PATHSEPERATOR_CHAR      '/'
 
+#define MAX_DEFINEPARMS         128
+
 struct operator_t
 {
 	int oper;
@@ -241,7 +243,7 @@ void PC_FreeDefine(define_t* define)
 	Mem_Free(define);
 }
 
-int PC_NameHash(const char* name)
+static int PC_NameHash(const char* name)
 {
 	int hash = 0;
 	for (int i = 0; name[i] != '\0'; i++)
@@ -252,7 +254,7 @@ int PC_NameHash(const char* name)
 	return hash;
 }
 
-void PC_AddDefineToHash(define_t* define, define_t** definehash)
+static void PC_AddDefineToHash(define_t* define, define_t** definehash)
 {
 	int hash = PC_NameHash(define->name);
 	define->hashnext = definehash[hash];
@@ -757,57 +759,58 @@ bool PC_Directive_endif(source_t* source)
 	return true;
 }
 
-bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms)
+static bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms)
 {
-	token_t token, * t, * last;
-	int i, done, lastcomma, numparms, indent;
-
+	token_t token;
 	if (!PC_ReadSourceToken(source, &token))
 	{
 		SourceError(source, "define %s missing parms", define->name);
 		return false;
-	}	//end if
-		//
+	}
+
 	if (define->numparms > maxparms)
 	{
 		SourceError(source, "define with more than %d parameters", maxparms);
 		return false;
-	}	//end if
-		//
-	for (i = 0; i < define->numparms; i++)
+	}
+
+	for (int i = 0; i < define->numparms; i++)
+	{
 		parms[i] = NULL;
+	}
 	//if no leading "("
 	if (String::Cmp(token.string, "("))
 	{
 		PC_UnreadSourceToken(source, &token);
 		SourceError(source, "define %s missing parms", define->name);
 		return false;
-	}	//end if
-		//read the define parameters
-	for (done = 0, numparms = 0, indent = 1; !done; )
+	}
+	//read the define parameters
+	int numparms = 0;
+	int indent = 1;
+	for (bool done = false; !done; )
 	{
 		if (numparms >= maxparms)
 		{
 			SourceError(source, "define %s with too many parms", define->name);
 			return false;
-		}	//end if
+		}
 		if (numparms >= define->numparms)
 		{
 			SourceWarning(source, "define %s has too many parms", define->name);
 			return false;
-		}	//end if
+		}
 		parms[numparms] = NULL;
-		lastcomma = 1;
-		last = NULL;
+		int lastcomma = 1;
+		token_t* last = NULL;
 		while (!done)
 		{
-			//
 			if (!PC_ReadSourceToken(source, &token))
 			{
 				SourceError(source, "define %s incomplete", define->name);
 				return false;
-			}	//end if
-				//
+			}
+
 			if (!String::Cmp(token.string, ","))
 			{
 				if (indent <= 1)
@@ -818,14 +821,14 @@ bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int
 					}
 					lastcomma = 1;
 					break;
-				}	//end if
-			}	//end if
+				}
+			}
 			lastcomma = 0;
-			//
+
 			if (!String::Cmp(token.string, "("))
 			{
 				indent++;
-			}	//end if
+			}
 			else if (!String::Cmp(token.string, ")"))
 			{
 				if (--indent <= 0)
@@ -833,16 +836,15 @@ bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int
 					if (!parms[define->numparms - 1])
 					{
 						SourceWarning(source, "too few define parms");
-					}	//end if
-					done = 1;
+					}
+					done = true;
 					break;
-				}	//end if
-			}	//end if
-				//
+				}
+			}
+
 			if (numparms < define->numparms)
 			{
-				//
-				t = PC_CopyToken(&token);
+				token_t* t = PC_CopyToken(&token);
 				t->next = NULL;
 				if (last)
 				{
@@ -853,12 +855,207 @@ bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int
 					parms[numparms] = t;
 				}
 				last = t;
-			}	//end if
-		}	//end while
+			}
+		}
 		numparms++;
-	}	//end for
+	}
 	return true;
-}	//end of the function PC_ReadDefineParms
+}
+
+static bool PC_StringizeTokens(token_t* tokens, token_t* token)
+{
+	token->type = TT_STRING;
+	token->whitespace_p = NULL;
+	token->endwhitespace_p = NULL;
+	token->string[0] = '\0';
+	String::Cat(token->string, MAX_TOKEN, "\"");
+	for (token_t* t = tokens; t; t = t->next)
+	{
+		String::Cat(token->string, MAX_TOKEN, t->string);
+	}
+	String::Cat(token->string, MAX_TOKEN, "\"");
+	return true;
+}
+
+static bool PC_MergeTokens(token_t* t1, token_t* t2)
+{
+	//merging of a name with a name or number
+	if (t1->type == TT_NAME && (t2->type == TT_NAME || t2->type == TT_NUMBER))
+	{
+		String::Cat(t1->string, MAX_TOKEN, t2->string);
+		return true;
+	}
+	//merging of two strings
+	if (t1->type == TT_STRING && t2->type == TT_STRING)
+	{
+		//remove trailing double quote
+		t1->string[String::Length(t1->string) - 1] = '\0';
+		//concat without leading double quote
+		String::Cat(t1->string, MAX_TOKEN, &t2->string[1]);
+		return true;
+	}
+	//FIXME: merging of two number of the same sub type
+	return false;
+}
+
+static bool PC_ExpandDefine(source_t* source, token_t* deftoken, define_t* define,
+	token_t** firsttoken, token_t** lasttoken)
+{
+	//if the define has parameters
+	token_t* parms[MAX_DEFINEPARMS];
+	if (define->numparms)
+	{
+		if (!PC_ReadDefineParms(source, define, parms, MAX_DEFINEPARMS))
+		{
+			return false;
+		}
+	}
+	//empty list at first
+	token_t* first = NULL;
+	token_t* last = NULL;
+	//create a list with tokens of the expanded define
+	for (token_t* dt = define->tokens; dt; dt = dt->next)
+	{
+		int parmnum = -1;
+		//if the token is a name, it could be a define parameter
+		if (dt->type == TT_NAME)
+		{
+			parmnum = PC_FindDefineParm(define, dt->string);
+		}
+		//if it is a define parameter
+		if (parmnum >= 0)
+		{
+			for (token_t* pt = parms[parmnum]; pt; pt = pt->next)
+			{
+				token_t* t = PC_CopyToken(pt);
+				//add the token to the list
+				t->next = NULL;
+				if (last)
+				{
+					last->next = t;
+				}
+				else
+				{
+					first = t;
+				}
+				last = t;
+			}
+		}
+		else
+		{
+			token_t* t;
+			//if stringizing operator
+			if (dt->string[0] == '#' && dt->string[1] == '\0')
+			{
+				//the stringizing operator must be followed by a define parameter
+				if (dt->next)
+				{
+					parmnum = PC_FindDefineParm(define, dt->next->string);
+				}
+				else
+				{
+					parmnum = -1;
+				}
+				//
+				if (parmnum >= 0)
+				{
+					//step over the stringizing operator
+					dt = dt->next;
+					//stringize the define parameter tokens
+					token_t token;
+					if (!PC_StringizeTokens(parms[parmnum], &token))
+					{
+						SourceError(source, "can't stringize tokens");
+						return false;
+					}
+					t = PC_CopyToken(&token);
+				}
+				else
+				{
+					SourceWarning(source, "stringizing operator without define parameter");
+					continue;
+				}
+			}
+			else
+			{
+				t = PC_CopyToken(dt);
+			}
+			//add the token to the list
+			t->next = NULL;
+			if (last)
+			{
+				last->next = t;
+			}
+			else
+			{
+				first = t;
+			}
+			last = t;
+		}
+	}
+	//check for the merging operator
+	for (token_t* t = first; t; )
+	{
+		if (t->next)
+		{
+			//if the merging operator
+			if (t->next->string[0] == '#' && t->next->string[1] == '#')
+			{
+				token_t* t1 = t;
+				token_t* t2 = t->next->next;
+				if (t2)
+				{
+					if (!PC_MergeTokens(t1, t2))
+					{
+						SourceError(source, "can't merge %s with %s", t1->string, t2->string);
+						return false;
+					}
+					PC_FreeToken(t1->next);
+					t1->next = t2->next;
+					if (t2 == last)
+					{
+						last = t1;
+					}
+					PC_FreeToken(t2);
+					continue;
+				}
+			}
+		}
+		t = t->next;
+	}
+	//store the first and last token of the list
+	*firsttoken = first;
+	*lasttoken = last;
+	//free all the parameter tokens
+	for (int i = 0; i < define->numparms; i++)
+	{
+		token_t* nextpt;
+		for (token_t* pt = parms[i]; pt; pt = nextpt)
+		{
+			nextpt = pt->next;
+			PC_FreeToken(pt);
+		}
+	}
+
+	return true;
+}
+
+bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define)
+{
+	token_t* firsttoken, * lasttoken;
+	if (!PC_ExpandDefine(source, deftoken, define, &firsttoken, &lasttoken))
+	{
+		return false;
+	}
+
+	if (firsttoken && lasttoken)
+	{
+		lasttoken->next = source->tokens;
+		source->tokens = firsttoken;
+		return true;
+	}
+	return false;
+}
 
 static int PC_OperatorPriority(int op)
 {

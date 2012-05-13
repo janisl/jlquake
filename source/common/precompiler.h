@@ -104,8 +104,6 @@ void PC_PopIndent(source_t* source, int* type, int* skip);
 bool PC_ReadSourceToken(source_t* source, token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
 void PC_FreeDefine(define_t* define);
-int PC_NameHash(const char* name);
-void PC_AddDefineToHash(define_t* define, define_t** definehash);
 define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
 bool PC_Directive_undef(source_t* source);
 int PC_FindDefineParm(define_t* define, const char* name);
@@ -116,6 +114,6 @@ bool PC_Directive_ifdef(source_t* source);
 bool PC_Directive_ifndef(source_t* source);
 bool PC_Directive_else(source_t* source);
 bool PC_Directive_endif(source_t* source);
-bool PC_ReadDefineParms(source_t* source, define_t* define, token_t** parms, int maxparms);
+bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define);
 bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
 	double* floatvalue, bool integer);
