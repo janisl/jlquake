@@ -90,19 +90,14 @@ struct source_t
 void SourceError(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //print a source warning
 void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
-//read a token only if on the same line, lines are concatenated with a slash
-bool PC_ReadLine(source_t* source, token_t* token);
 //add a globals define that will be added to all opened sources
 int PC_AddGlobalDefine(const char* string);
 //remove all globals defines
 void PC_RemoveAllGlobalDefines();
+//read a token from the source
+int PC_ReadToken(source_t* source, token_t* token);
 
 void PC_FreeToken(token_t* token);
-bool PC_ReadSourceToken(source_t* source, token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
 void PC_FreeDefine(define_t* define);
-define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
 void PC_AddGlobalDefinesToSource(source_t* source);
-bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define);
-bool PC_ReadDirective(source_t* source);
-bool PC_ReadDollarDirective(source_t* source);

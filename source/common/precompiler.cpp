@@ -114,7 +114,7 @@ static void PC_PopIndent(source_t* source, int* type, int* skip)
 	Mem_Free(indent);
 }
 
-bool PC_ReadSourceToken(source_t* source, token_t* token)
+static bool PC_ReadSourceToken(source_t* source, token_t* token)
 {
 	//if there's no token already available
 	while (!source->tokens)
@@ -164,7 +164,7 @@ void PC_UnreadSourceToken(source_t* source, token_t* token)
 
 // reads a token from the current line, continues reading on the next
 // line only if a backslash '\' is encountered.
-bool PC_ReadLine(source_t* source, token_t* token)
+static bool PC_ReadLine(source_t* source, token_t* token)
 {
 	bool crossline = false;
 	do
@@ -268,7 +268,7 @@ static void PC_AddDefineToHash(define_t* define, define_t** definehash)
 	definehash[hash] = define;
 }
 
-define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
+static define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
 {
 	int hash = PC_NameHash(name);
 	for (define_t* d = definehash[hash]; d; d = d->hashnext)
@@ -1047,7 +1047,7 @@ static bool PC_ExpandDefine(source_t* source, token_t* deftoken, define_t* defin
 	return true;
 }
 
-bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define)
+static bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define)
 {
 	token_t* firsttoken, * lasttoken;
 	if (!PC_ExpandDefine(source, deftoken, define, &firsttoken, &lasttoken))
@@ -2003,7 +2003,7 @@ static directive_t directives[] =
 	{NULL, NULL}
 };
 
-bool PC_ReadDirective(source_t* source)
+static bool PC_ReadDirective(source_t* source)
 {
 	//read the directive name
 	token_t token;
@@ -2087,14 +2087,14 @@ static bool PC_DollarDirective_evalfloat(source_t* source)
 	return true;
 }
 
-directive_t dollardirectives[20] =
+static directive_t dollardirectives[20] =
 {
 	{"evalint", PC_DollarDirective_evalint},
 	{"evalfloat", PC_DollarDirective_evalfloat},
 	{NULL, NULL}
 };
 
-bool PC_ReadDollarDirective(source_t* source)
+static bool PC_ReadDollarDirective(source_t* source)
 {
 	//read the directive name
 	token_t token;
@@ -2126,3 +2126,82 @@ bool PC_ReadDollarDirective(source_t* source)
 	SourceError(source, "unknown precompiler directive %s", token.string);
 	return false;
 }
+
+int PC_ReadToken(source_t* source, token_t* token)
+{
+	define_t* define;
+
+	while (1)
+	{
+		if (!PC_ReadSourceToken(source, token))
+		{
+			return false;
+		}
+		//check for precompiler directives
+		if (token->type == TT_PUNCTUATION && *token->string == '#')
+		{
+			//read the precompiler directive
+			if (!PC_ReadDirective(source))
+			{
+				return false;
+			}
+			continue;
+		}	//end if
+		if (token->type == TT_PUNCTUATION && *token->string == '$')
+		{
+			//read the precompiler directive
+			if (!PC_ReadDollarDirective(source))
+			{
+				return false;
+			}
+			continue;
+		}	//end if
+		//if skipping source because of conditional compilation
+		if (source->skip)
+		{
+			continue;
+		}
+		// recursively concatenate strings that are behind each other still resolving defines
+		if (token->type == TT_STRING)
+		{
+			token_t newtoken;
+			if (PC_ReadToken(source, &newtoken))
+			{
+				if (newtoken.type == TT_STRING)
+				{
+					token->string[String::Length(token->string) - 1] = '\0';
+					if (String::Length(token->string) + String::Length(newtoken.string + 1) + 1 >= MAX_TOKEN)
+					{
+						SourceError(source, "string longer than MAX_TOKEN %d\n", MAX_TOKEN);
+						return false;
+					}
+					String::Cat(token->string, MAX_TOKEN, newtoken.string + 1);
+				}
+				else
+				{
+					PC_UnreadSourceToken(source, &newtoken);
+				}
+			}
+		}	//end if
+		//if the token is a name
+		if (token->type == TT_NAME)
+		{
+			//check if the name is a define macro
+			define = PC_FindHashedDefine(source->definehash, token->string);
+			//if it is a define macro
+			if (define)
+			{
+				//expand the defined macro
+				if (!PC_ExpandDefineIntoSource(source, token, define))
+				{
+					return false;
+				}
+				continue;
+			}	//end if
+		}	//end if
+			//copy token for unreading
+		Com_Memcpy(&source->token, token, sizeof(token_t));
+		//found a token
+		return true;
+	}	//end while
+}	//end of the function PC_ReadToken

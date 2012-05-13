@@ -47,8 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 	#endif
 #endif
 
-//read a token from the source
-int PC_ReadToken(source_t* source, token_t* token);
 //expect a certain token
 int PC_ExpectTokenString(source_t* source, const char* string);
 //expect a certain token type
