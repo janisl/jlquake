@@ -115,5 +115,7 @@ bool PC_Directive_ifndef(source_t* source);
 bool PC_Directive_else(source_t* source);
 bool PC_Directive_endif(source_t* source);
 bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define);
-bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
+bool PC_Evaluate(source_t* source, int* intvalue,
+	double* floatvalue, bool integer);
+bool PC_DollarEvaluate(source_t* source, int* intvalue,
 	double* floatvalue, bool integer);
