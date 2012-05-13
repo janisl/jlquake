@@ -39,7 +39,7 @@ struct value_t
 //list with global defines added to every source loaded
 static define_t* globaldefines;
 
-token_t* PC_CopyToken(token_t* token)
+static token_t* PC_CopyToken(token_t* token)
 {
 	token_t* t = (token_t*)Mem_Alloc(sizeof(token_t));
 	Com_Memcpy(t, token, sizeof(token_t));
@@ -72,7 +72,7 @@ void SourceWarning(source_t* source, const char* str, ...)
 	common->Printf(S_COLOR_YELLOW "Warning: file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text);
 }
 
-void PC_PushIndent(source_t* source, int type, int skip)
+static void PC_PushIndent(source_t* source, int type, int skip)
 {
 	indent_t* indent = (indent_t*)Mem_Alloc(sizeof(indent_t));
 	indent->type = type;
@@ -83,7 +83,7 @@ void PC_PushIndent(source_t* source, int type, int skip)
 	source->indentstack = indent;
 }
 
-void PC_PopIndent(source_t* source, int* type, int* skip)
+static void PC_PopIndent(source_t* source, int* type, int* skip)
 {
 	*type = 0;
 	*skip = 0;
@@ -274,7 +274,7 @@ define_t* PC_FindHashedDefine(define_t** definehash, const char* name)
 	return NULL;
 }
 
-bool PC_Directive_undef(source_t* source)
+static bool PC_Directive_undef(source_t* source)
 {
 	if (source->skip > 0)
 	{
@@ -334,7 +334,7 @@ static void PC_ClearTokenWhiteSpace(token_t* token)
 	token->linescrossed = 0;
 }
 
-int PC_FindDefineParm(define_t* define, const char* name)
+static int PC_FindDefineParm(define_t* define, const char* name)
 {
 	int i = 0;
 	for (token_t* p = define->parms; p; p = p->next)
@@ -348,7 +348,7 @@ int PC_FindDefineParm(define_t* define, const char* name)
 	return -1;
 }
 
-bool PC_Directive_define(source_t* source)
+static bool PC_Directive_define(source_t* source)
 {
 	if (source->skip > 0)
 	{
@@ -622,7 +622,7 @@ static void PC_ConvertPath(char* path)
 	}
 }
 
-bool PC_Directive_include(source_t* source)
+static bool PC_Directive_include(source_t* source)
 {
 	if (source->skip > 0)
 	{
@@ -719,17 +719,17 @@ static int PC_Directive_if_def(source_t* source, int type)
 	return true;
 }
 
-bool PC_Directive_ifdef(source_t* source)
+static bool PC_Directive_ifdef(source_t* source)
 {
 	return PC_Directive_if_def(source, INDENT_IFDEF);
 }
 
-bool PC_Directive_ifndef(source_t* source)
+static bool PC_Directive_ifndef(source_t* source)
 {
 	return PC_Directive_if_def(source, INDENT_IFNDEF);
 }
 
-bool PC_Directive_else(source_t* source)
+static bool PC_Directive_else(source_t* source)
 {
 	int type, skip;
 	PC_PopIndent(source, &type, &skip);
@@ -747,7 +747,7 @@ bool PC_Directive_else(source_t* source)
 	return true;
 }
 
-bool PC_Directive_endif(source_t* source)
+static bool PC_Directive_endif(source_t* source)
 {
 	int type, skip;
 	PC_PopIndent(source, &type, &skip);
@@ -1626,7 +1626,7 @@ static bool PC_EvaluateTokens(source_t* source, token_t* tokens, int* intvalue,
 	return false;
 }
 
-bool PC_Evaluate(source_t* source, int* intvalue,
+static bool PC_Evaluate(source_t* source, int* intvalue,
 	double* floatvalue, bool integer)
 {
 	if (intvalue)
@@ -1860,4 +1860,170 @@ bool PC_DollarEvaluate(source_t* source, int* intvalue,
 	}
 
 	return true;
+}
+
+static bool PC_Directive_if(source_t* source)
+{
+	int value;
+	if (!PC_Evaluate(source, &value, NULL, true))
+	{
+		return false;
+	}
+	int skip = (value == 0);
+	PC_PushIndent(source, INDENT_IF, skip);
+	return true;
+}
+
+static bool PC_Directive_elif(source_t* source)
+{
+	int type, skip;
+	PC_PopIndent(source, &type, &skip);
+	if (!type || type == INDENT_ELSE)
+	{
+		SourceError(source, "misplaced #elif");
+		return false;
+	}
+	int value;
+	if (!PC_Evaluate(source, &value, NULL, true))
+	{
+		return false;
+	}
+	skip = (value == 0);
+	PC_PushIndent(source, INDENT_ELIF, skip);
+	return true;
+}
+
+static bool PC_Directive_line(source_t* source)
+{
+	SourceError(source, "#line directive not supported");
+	return false;
+}
+
+static bool PC_Directive_error(source_t* source)
+{
+	token_t token;
+	String::Cpy(token.string, "");
+	PC_ReadSourceToken(source, &token);
+	SourceError(source, "#error directive: %s", token.string);
+	return false;
+}
+
+static bool PC_Directive_pragma(source_t* source)
+{
+	SourceWarning(source, "#pragma directive not supported");
+	token_t token;
+	while (PC_ReadLine(source, &token))
+		;
+	return true;
+}
+
+void UnreadSignToken(source_t* source)
+{
+	token_t token;
+	token.line = source->scriptstack->line;
+	token.whitespace_p = source->scriptstack->script_p;
+	token.endwhitespace_p = source->scriptstack->script_p;
+	token.linescrossed = 0;
+	String::Cpy(token.string, "-");
+	token.type = TT_PUNCTUATION;
+	token.subtype = P_SUB;
+	PC_UnreadSourceToken(source, &token);
+}
+
+static bool PC_Directive_eval(source_t* source)
+{
+	int value;
+	if (!PC_Evaluate(source, &value, NULL, true))
+	{
+		return false;
+	}
+
+	token_t token;
+	token.line = source->scriptstack->line;
+	token.whitespace_p = source->scriptstack->script_p;
+	token.endwhitespace_p = source->scriptstack->script_p;
+	token.linescrossed = 0;
+	sprintf(token.string, "%d", abs(value));
+	token.type = TT_NUMBER;
+	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
+	PC_UnreadSourceToken(source, &token);
+	if (value < 0)
+	{
+		UnreadSignToken(source);
+	}
+	return true;
+}
+
+static bool PC_Directive_evalfloat(source_t* source)
+{
+	double value;
+	if (!PC_Evaluate(source, NULL, &value, false))
+	{
+		return false;
+	}
+	token_t token;
+	token.line = source->scriptstack->line;
+	token.whitespace_p = source->scriptstack->script_p;
+	token.endwhitespace_p = source->scriptstack->script_p;
+	token.linescrossed = 0;
+	sprintf(token.string, "%1.2f", Q_fabs(value));
+	token.type = TT_NUMBER;
+	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
+	PC_UnreadSourceToken(source, &token);
+	if (value < 0)
+	{
+		UnreadSignToken(source);
+	}
+	return true;
+}
+
+static directive_t directives[] =
+{
+	{"if", PC_Directive_if},
+	{"ifdef", PC_Directive_ifdef},
+	{"ifndef", PC_Directive_ifndef},
+	{"elif", PC_Directive_elif},
+	{"else", PC_Directive_else},
+	{"endif", PC_Directive_endif},
+	{"include", PC_Directive_include},
+	{"define", PC_Directive_define},
+	{"undef", PC_Directive_undef},
+	{"line", PC_Directive_line},
+	{"error", PC_Directive_error},
+	{"pragma", PC_Directive_pragma},
+	{"eval", PC_Directive_eval},
+	{"evalfloat", PC_Directive_evalfloat},
+	{NULL, NULL}
+};
+
+int PC_ReadDirective(source_t* source)
+{
+	//read the directive name
+	token_t token;
+	if (!PC_ReadSourceToken(source, &token))
+	{
+		SourceError(source, "found # without name");
+		return false;
+	}
+	//directive name must be on the same line
+	if (token.linescrossed > 0)
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "found # at end of line");
+		return false;
+	}
+	//if if is a name
+	if (token.type == TT_NAME)
+	{
+		//find the precompiler directive
+		for (int i = 0; directives[i].name; i++)
+		{
+			if (!String::Cmp(directives[i].name, token.string))
+			{
+				return directives[i].func(source);
+			}
+		}
+	}
+	SourceError(source, "unknown precompiler directive %s", token.string);
+	return false;
 }

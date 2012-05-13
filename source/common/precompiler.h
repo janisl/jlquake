@@ -97,25 +97,21 @@ int PC_AddGlobalDefine(const char* string);
 //remove all globals defines
 void PC_RemoveAllGlobalDefines();
 
-token_t* PC_CopyToken(token_t* token);
+//directive name with parse function
+struct directive_t
+{
+	const char* name;
+	bool (*func)(source_t* source);
+};
+
 void PC_FreeToken(token_t* token);
-void PC_PushIndent(source_t* source, int type, int skip);
-void PC_PopIndent(source_t* source, int* type, int* skip);
 bool PC_ReadSourceToken(source_t* source, token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
 void PC_FreeDefine(define_t* define);
 define_t* PC_FindHashedDefine(define_t** definehash, const char* name);
-bool PC_Directive_undef(source_t* source);
-int PC_FindDefineParm(define_t* define, const char* name);
-bool PC_Directive_define(source_t* source);
 void PC_AddGlobalDefinesToSource(source_t* source);
-bool PC_Directive_include(source_t* source);
-bool PC_Directive_ifdef(source_t* source);
-bool PC_Directive_ifndef(source_t* source);
-bool PC_Directive_else(source_t* source);
-bool PC_Directive_endif(source_t* source);
 bool PC_ExpandDefineIntoSource(source_t* source, token_t* deftoken, define_t* define);
-bool PC_Evaluate(source_t* source, int* intvalue,
-	double* floatvalue, bool integer);
 bool PC_DollarEvaluate(source_t* source, int* intvalue,
 	double* floatvalue, bool integer);
+void UnreadSignToken(source_t* source);
+int PC_ReadDirective(source_t* source);
