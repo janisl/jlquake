@@ -36,6 +36,13 @@ struct value_t
 	value_t* prev, * next;
 };
 
+//directive name with parse function
+struct directive_t
+{
+	const char* name;
+	bool (*func)(source_t* source);
+};
+
 //list with global defines added to every source loaded
 static define_t* globaldefines;
 
@@ -1735,7 +1742,7 @@ static bool PC_Evaluate(source_t* source, int* intvalue,
 	return true;
 }
 
-bool PC_DollarEvaluate(source_t* source, int* intvalue,
+static bool PC_DollarEvaluate(source_t* source, int* intvalue,
 	double* floatvalue, bool integer)
 {
 	if (intvalue)
@@ -1917,7 +1924,7 @@ static bool PC_Directive_pragma(source_t* source)
 	return true;
 }
 
-void UnreadSignToken(source_t* source)
+static void UnreadSignToken(source_t* source)
 {
 	token_t token;
 	token.line = source->scriptstack->line;
@@ -1996,7 +2003,7 @@ static directive_t directives[] =
 	{NULL, NULL}
 };
 
-int PC_ReadDirective(source_t* source)
+bool PC_ReadDirective(source_t* source)
 {
 	//read the directive name
 	token_t token;
@@ -2024,6 +2031,98 @@ int PC_ReadDirective(source_t* source)
 			}
 		}
 	}
+	SourceError(source, "unknown precompiler directive %s", token.string);
+	return false;
+}
+
+static bool PC_DollarDirective_evalint(source_t* source)
+{
+	int value;
+	if (!PC_DollarEvaluate(source, &value, NULL, true))
+	{
+		return false;
+	}
+
+	token_t token;
+	token.line = source->scriptstack->line;
+	token.whitespace_p = source->scriptstack->script_p;
+	token.endwhitespace_p = source->scriptstack->script_p;
+	token.linescrossed = 0;
+	sprintf(token.string, "%d", abs(value));
+	token.type = TT_NUMBER;
+	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
+	token.intvalue = value;
+	token.floatvalue = value;
+	PC_UnreadSourceToken(source, &token);
+	if (value < 0)
+	{
+		UnreadSignToken(source);
+	}
+	return true;
+}
+
+static bool PC_DollarDirective_evalfloat(source_t* source)
+{
+	double value;
+	if (!PC_DollarEvaluate(source, NULL, &value, false))
+	{
+		return false;
+	}
+
+	token_t token;
+	token.line = source->scriptstack->line;
+	token.whitespace_p = source->scriptstack->script_p;
+	token.endwhitespace_p = source->scriptstack->script_p;
+	token.linescrossed = 0;
+	sprintf(token.string, "%1.2f", Q_fabs(value));
+	token.type = TT_NUMBER;
+	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
+	token.intvalue = (unsigned long)value;
+	token.floatvalue = value;
+	PC_UnreadSourceToken(source, &token);
+	if (value < 0)
+	{
+		UnreadSignToken(source);
+	}
+	return true;
+}
+
+directive_t dollardirectives[20] =
+{
+	{"evalint", PC_DollarDirective_evalint},
+	{"evalfloat", PC_DollarDirective_evalfloat},
+	{NULL, NULL}
+};
+
+bool PC_ReadDollarDirective(source_t* source)
+{
+	//read the directive name
+	token_t token;
+	if (!PC_ReadSourceToken(source, &token))
+	{
+		SourceError(source, "found $ without name");
+		return false;
+	}
+	//directive name must be on the same line
+	if (token.linescrossed > 0)
+	{
+		PC_UnreadSourceToken(source, &token);
+		SourceError(source, "found $ at end of line");
+		return false;
+	}
+	//if if is a name
+	if (token.type == TT_NAME)
+	{
+		//find the precompiler directive
+		for (int i = 0; dollardirectives[i].name; i++)
+		{
+			if (!String::Cmp(dollardirectives[i].name, token.string))
+			{
+				return dollardirectives[i].func(source);
+			}
+		}
+	}
+	PC_UnreadSourceToken(source, &token);
 	SourceError(source, "unknown precompiler directive %s", token.string);
 	return false;
 }
