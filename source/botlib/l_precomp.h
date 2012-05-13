@@ -41,12 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	#endif
 #endif
 
-#define BUILTIN_LINE            1
-#define BUILTIN_FILE            2
-#define BUILTIN_DATE            3
-#define BUILTIN_TIME            4
-#define BUILTIN_STDC            5
-
 //read a token from the source
 int PC_ReadToken(source_t* source, token_t* token);
 //expect a certain token
@@ -65,8 +59,6 @@ int PC_SkipUntilString(source_t* source, char* string);
 void PC_UnreadLastToken(source_t* source);
 //unread the given token
 void PC_UnreadToken(source_t* source, token_t* token);
-//add builtin defines
-void PC_AddBuiltinDefines(source_t* source);
 //set the source include path
 void PC_SetIncludePath(source_t* source, char* path);
 //set the punction set

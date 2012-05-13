@@ -53,7 +53,6 @@ struct define_t
 {
 	char* name;					//define name
 	int flags;					//define flags
-	int builtin;				// > 0 if builtin define
 	int numparms;				//number of define parameters
 	token_t* parms;				//define parameters
 	token_t* tokens;			//macro tokens (possibly containing parm tokens)

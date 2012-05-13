@@ -183,7 +183,6 @@ static define_t* PC_CopyDefine(source_t* source, define_t* define)
 	newdefine->name = (char*)newdefine + sizeof(define_t);
 	String::Cpy(newdefine->name, define->name);
 	newdefine->flags = define->flags;
-	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
 	//the define is not linked
 	newdefine->next = NULL;

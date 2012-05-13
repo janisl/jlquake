@@ -125,116 +125,6 @@ define_t* PC_FindDefine(define_t* defines, char* name)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void PC_AddBuiltinDefines(source_t* source)
-{
-	int i;
-	define_t* define;
-	struct _builtin
-	{
-		const char* string;
-		int builtin;
-	} builtin[] = {
-		{ "__LINE__",    BUILTIN_LINE },
-		{ "__FILE__",    BUILTIN_FILE },
-		{ "__DATE__",    BUILTIN_DATE },
-		{ "__TIME__",    BUILTIN_TIME },
-//		"__STDC__", BUILTIN_STDC,
-		{ NULL, 0 }
-	};
-
-	for (i = 0; builtin[i].string; i++)
-	{
-		define = (define_t*)Mem_Alloc(sizeof(define_t) + String::Length(builtin[i].string) + 1);
-		memset(define, 0, sizeof(define_t));
-		define->name = (char*)define + sizeof(define_t);
-		String::Cpy(define->name, builtin[i].string);
-		define->flags |= DEFINE_FIXED;
-		define->builtin = builtin[i].builtin;
-		//add the define to the source
-		PC_AddDefineToHash(define, source->definehash);
-	}	//end for
-}	//end of the function PC_AddBuiltinDefines
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
-int PC_ExpandBuiltinDefine(source_t* source, token_t* deftoken, define_t* define,
-	token_t** firsttoken, token_t** lasttoken)
-{
-	token_t* token;
-	time_t t;	//to prevent LCC warning
-	char* curtime;
-
-	token = PC_CopyToken(deftoken);
-	switch (define->builtin)
-	{
-	case BUILTIN_LINE:
-	{
-		sprintf(token->string, "%d", deftoken->line);
-		token->intvalue = deftoken->line;
-		token->floatvalue = deftoken->line;
-		token->type = TT_NUMBER;
-		token->subtype = TT_DECIMAL | TT_INTEGER;
-		*firsttoken = token;
-		*lasttoken = token;
-		break;
-	}		//end case
-	case BUILTIN_FILE:
-	{
-		String::Cpy(token->string, source->scriptstack->filename);
-		token->type = TT_NAME;
-		token->subtype = String::Length(token->string);
-		*firsttoken = token;
-		*lasttoken = token;
-		break;
-	}		//end case
-	case BUILTIN_DATE:
-	{
-		t = time(NULL);
-		curtime = ctime(&t);
-		String::Cpy(token->string, "\"");
-		strncat(token->string, curtime + 4, 7);
-		strncat(token->string + 7, curtime + 20, 4);
-		strcat(token->string, "\"");
-		free(curtime);
-		token->type = TT_NAME;
-		token->subtype = String::Length(token->string);
-		*firsttoken = token;
-		*lasttoken = token;
-		break;
-	}		//end case
-	case BUILTIN_TIME:
-	{
-		t = time(NULL);
-		curtime = ctime(&t);
-		String::Cpy(token->string, "\"");
-		strncat(token->string, curtime + 11, 8);
-		strcat(token->string, "\"");
-		free(curtime);
-		token->type = TT_NAME;
-		token->subtype = String::Length(token->string);
-		*firsttoken = token;
-		*lasttoken = token;
-		break;
-	}		//end case
-	case BUILTIN_STDC:
-	default:
-	{
-		*firsttoken = NULL;
-		*lasttoken = NULL;
-		break;
-	}		//end case
-	}	//end switch
-	return qtrue;
-}	//end of the function PC_ExpandBuiltinDefine
-//============================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//============================================================================
 int PC_ExpandDefine(source_t* source, token_t* deftoken, define_t* define,
 	token_t** firsttoken, token_t** lasttoken)
 {
@@ -242,12 +132,7 @@ int PC_ExpandDefine(source_t* source, token_t* deftoken, define_t* define,
 	token_t* t1, * t2, * first, * last, * nextpt, token;
 	int parmnum, i;
 
-	//if it is a builtin define
-	if (define->builtin)
-	{
-		return PC_ExpandBuiltinDefine(source, deftoken, define, firsttoken, lasttoken);
-	}	//end if
-		//if the define has parameters
+	//if the define has parameters
 	if (define->numparms)
 	{
 		if (!PC_ReadDefineParms(source, define, parms, MAX_DEFINEPARMS))
