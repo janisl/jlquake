@@ -194,7 +194,7 @@
       <Project>{e1056fe2-3d8c-4778-b075-f4da1c35858d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\progsvm\progsvm.vcxproj">
+    <ProjectReference Include="..\server\server.vcxproj">
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

@@ -32,4 +32,4 @@ add_executable(jlquake
 	zone.cpp
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlquake ${CLIENTS_LIBS} progsvm)
+target_link_libraries(jlquake ${CLIENTS_LIBS})

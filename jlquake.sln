@@ -21,7 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake3", "source\quake3\j
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "source\client\client.vcxproj", "{E1056FE2-3D8C-4778-B075-F4DA1C35858D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "progsvm", "source\progsvm\progsvm.vcxproj", "{DEDBF7CF-B614-4D3B-A990-71A43294F301}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "source\server\server.vcxproj", "{DEDBF7CF-B614-4D3B-A990-71A43294F301}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake3ded", "source\quake3\jlquake3ded.vcxproj", "{3A6BD840-13BD-4F51-83B0-5E582395B134}"
 EndProject

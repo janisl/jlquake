@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="progsvm/main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="edict.cpp">
+    <ClCompile Include="progsvm/edict.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="execute.cpp">
+    <ClCompile Include="progsvm/execute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="progs_file.h">
+    <ClInclude Include="progsvm/progs_file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="progsvm.h">
+    <ClInclude Include="progsvm/progsvm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

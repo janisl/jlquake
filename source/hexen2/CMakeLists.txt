@@ -33,4 +33,4 @@ add_executable(jlhexen2
 	snd_dma.cpp
 )
 set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlhexen2 ${CLIENTS_LIBS} progsvm)
+target_link_libraries(jlhexen2 ${CLIENTS_LIBS})

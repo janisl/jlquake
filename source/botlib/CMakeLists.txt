@@ -28,4 +28,4 @@ add_library(botlib STATIC
 	l_struct.cpp
 )
 set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-add_dependencies(botlib core)
+add_dependencies(botlib common)
