@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 //#include "../server/server.h"
 #include "l_memory.h"
 #include "l_libvar.h"
-#include "l_script.h"
 #include "l_precomp.h"
 #include "l_struct.h"
 #include "l_utils.h"

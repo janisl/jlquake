@@ -239,6 +239,11 @@ void FreeScript(script_t* script)
 	Mem_Free(script);
 }
 
+void SetScriptFlags(script_t* script, int flags)
+{
+	script->flags = flags;
+}
+
 void ScriptError(script_t* script, const char* str, ...)
 {
 	if (script->flags & SCFL_NOERRORS)
@@ -271,7 +276,7 @@ void ScriptWarning(script_t* script, const char* str, ...)
 
 // Reads spaces, tabs, C-like comments etc.
 // When a newline character is found the scripts line counter is increased.
-bool PS_ReadWhiteSpace(script_t* script)
+static bool PS_ReadWhiteSpace(script_t* script)
 {
 	while (1)
 	{
@@ -915,4 +920,96 @@ void StripSingleQuotes(char* string)
 	{
 		string[String::Length(string) - 1] = '\0';
 	}
+}
+
+bool PS_ExpectTokenType(script_t* script, int type, int subtype, token_t* token)
+{
+	if (!PS_ReadToken(script, token))
+	{
+		ScriptError(script, "couldn't read expected token");
+		return false;
+	}
+
+	if (token->type != type)
+	{
+		char str[MAX_TOKEN];
+		if (type == TT_STRING)
+		{
+			String::Cpy(str, "string");
+		}
+		if (type == TT_LITERAL)
+		{
+			String::Cpy(str, "literal");
+		}
+		if (type == TT_NUMBER)
+		{
+			String::Cpy(str, "number");
+		}
+		if (type == TT_NAME)
+		{
+			String::Cpy(str, "name");
+		}
+		if (type == TT_PUNCTUATION)
+		{
+			String::Cpy(str, "punctuation");
+		}
+		ScriptError(script, "expected a %s, found %s", str, token->string);
+		return false;
+	}
+	if (token->type == TT_NUMBER)
+	{
+		if ((token->subtype & subtype) != subtype)
+		{
+			char str[MAX_TOKEN];
+			if (subtype & TT_DECIMAL)
+			{
+				String::Cpy(str, "decimal");
+			}
+			if (subtype & TT_HEX)
+			{
+				String::Cpy(str, "hex");
+			}
+			if (subtype & TT_OCTAL)
+			{
+				String::Cpy(str, "octal");
+			}
+			if (subtype & TT_BINARY)
+			{
+				String::Cpy(str, "binary");
+			}
+			if (subtype & TT_LONG)
+			{
+				String::Cat(str, sizeof(str), " long");
+			}
+			if (subtype & TT_UNSIGNED)
+			{
+				String::Cat(str, sizeof(str), " unsigned");
+			}
+			if (subtype & TT_FLOAT)
+			{
+				String::Cat(str, sizeof(str), " float");
+			}
+			if (subtype & TT_INTEGER)
+			{
+				String::Cat(str, sizeof(str), " integer");
+			}
+			ScriptError(script, "expected %s, found %s", str, token->string);
+			return false;
+		}
+	}
+	else if (token->type == TT_PUNCTUATION)
+	{
+		if (subtype < 0)
+		{
+			ScriptError(script, "BUG: wrong punctuation subtype");
+			return false;
+		}
+		if (token->subtype != subtype)
+		{
+			ScriptError(script, "expected %s, found %s",
+				script->punctuations[subtype], token->string);
+			return false;
+		}
+	}
+	return true;
 }

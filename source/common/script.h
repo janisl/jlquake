@@ -157,17 +157,19 @@ script_t* LoadScriptFile(const char* filename);
 script_t* LoadScriptMemory(const char* ptr, int length, const char* name);
 //free a script
 void FreeScript(script_t* script);
+//set script flags
+void SetScriptFlags(script_t* script, int flags);
 //print a script error with filename and line number
 void ScriptError(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //print a script warning with filename and line number
 void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
 //read a token from the script
 bool PS_ReadToken(script_t* script, token_t* token);
+//expect a certain token type
+bool PS_ExpectTokenType(script_t* script, int type, int subtype, token_t* token);
 //returns true if at the end of the script
 bool EndOfScript(script_t* script);
 //remove any leading and trailing double quotes from the token
 void StripDoubleQuotes(char* string);
 //remove any leading and trailing single quotes from the token
 void StripSingleQuotes(char* string);
-
-bool PS_ReadWhiteSpace(script_t* script);

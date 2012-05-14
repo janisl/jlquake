@@ -40,7 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 //Notes:			fix: PC_StringizeTokens
 
 #include "../game/q_shared.h"
-#include "l_script.h"
 #include "l_precomp.h"
 
 //============================================================================
