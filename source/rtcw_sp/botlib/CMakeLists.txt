@@ -24,7 +24,6 @@ add_library(botlib-wolfsp STATIC
 	l_libvar.cpp
 	l_log.cpp
 	l_memory.cpp
-	l_precomp.cpp
 	l_struct.cpp
 )
 set_target_properties(botlib-wolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

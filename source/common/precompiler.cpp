@@ -20,6 +20,8 @@
 
 #define MAX_DEFINEPARMS         128
 
+#define MAX_SOURCEFILES         64
+
 struct operator_t
 {
 	int oper;
@@ -45,6 +47,8 @@ struct directive_t
 
 //list with global defines added to every source loaded
 static define_t* globaldefines;
+
+static source_t* sourceFiles[MAX_SOURCEFILES];
 
 static token_t* PC_CopyToken(token_t* token)
 {
@@ -155,7 +159,7 @@ static bool PC_ReadSourceToken(source_t* source, token_t* token)
 	return true;
 }
 
-void PC_UnreadSourceToken(source_t* source, token_t* token)
+static void PC_UnreadSourceToken(source_t* source, token_t* token)
 {
 	token_t* t = PC_CopyToken(token);
 	t->next = source->tokens;
@@ -2415,4 +2419,144 @@ void FreeSource(source_t* source)
 	}
 	//free the source itself
 	Mem_Free(source);
+}
+
+int PC_LoadSourceHandle(const char* filename)
+{
+	int i;
+	for (i = 1; i < MAX_SOURCEFILES; i++)
+	{
+		if (!sourceFiles[i])
+		{
+			break;
+		}
+	}
+	if (i >= MAX_SOURCEFILES)
+	{
+		return 0;
+	}
+	PS_SetBaseFolder("");
+	source_t* source = LoadSourceFile(filename);
+	if (!source)
+	{
+		return 0;
+	}
+	sourceFiles[i] = source;
+	return i;
+}
+
+int PC_FreeSourceHandle(int handle)
+{
+	if (handle < 1 || handle >= MAX_SOURCEFILES)
+	{
+		return false;
+	}
+	if (!sourceFiles[handle])
+	{
+		return false;
+	}
+
+	FreeSource(sourceFiles[handle]);
+	sourceFiles[handle] = NULL;
+	return true;
+}
+
+int PC_ReadTokenHandleQ3(int handle, q3pc_token_t* pc_token)
+{
+	if (handle < 1 || handle >= MAX_SOURCEFILES)
+	{
+		return 0;
+	}
+	if (!sourceFiles[handle])
+	{
+		return 0;
+	}
+
+	token_t token;
+	int ret = PC_ReadToken(sourceFiles[handle], &token);
+	String::Cpy(pc_token->string, token.string);
+	pc_token->type = token.type;
+	pc_token->subtype = token.subtype;
+	pc_token->intvalue = token.intvalue;
+	pc_token->floatvalue = token.floatvalue;
+	if (pc_token->type == TT_STRING)
+	{
+		StripDoubleQuotes(pc_token->string);
+	}
+	return ret;
+}
+
+int PC_ReadTokenHandleET(int handle, etpc_token_t* pc_token)
+{
+	if (handle < 1 || handle >= MAX_SOURCEFILES)
+	{
+		return 0;
+	}
+	if (!sourceFiles[handle])
+	{
+		return 0;
+	}
+
+	token_t token;
+	int ret = PC_ReadToken(sourceFiles[handle], &token);
+	String::Cpy(pc_token->string, token.string);
+	pc_token->type = token.type;
+	pc_token->subtype = token.subtype;
+	pc_token->intvalue = token.intvalue;
+	pc_token->floatvalue = token.floatvalue;
+	pc_token->line = token.line;
+	pc_token->linescrossed = token.linescrossed;
+	if (pc_token->type == TT_STRING)
+	{
+		StripDoubleQuotes(pc_token->string);
+	}
+	return ret;
+}
+
+void PC_UnreadLastTokenHandle(int handle)
+{
+	if (handle < 1 || handle >= MAX_SOURCEFILES)
+	{
+		return;
+	}
+	if (!sourceFiles[handle])
+	{
+		return;
+	}
+
+	PC_UnreadSourceToken(sourceFiles[handle], &sourceFiles[handle]->token);
+}
+
+int PC_SourceFileAndLine(int handle, char* filename, int* line)
+{
+	if (handle < 1 || handle >= MAX_SOURCEFILES)
+	{
+		return false;
+	}
+	if (!sourceFiles[handle])
+	{
+		return false;
+	}
+
+	String::Cpy(filename, sourceFiles[handle]->filename);
+	if (sourceFiles[handle]->scriptstack)
+	{
+		*line = sourceFiles[handle]->scriptstack->line;
+	}
+	else
+	{
+		*line = 0;
+	}
+	return true;
+}
+
+void PC_CheckOpenSourceHandles()
+{
+	for (int i = 1; i < MAX_SOURCEFILES; i++)
+	{
+		if (sourceFiles[i])
+		{
+			common->Printf(S_COLOR_RED "Error: file %s still open in precompiler\n", sourceFiles[i]->scriptstack->filename);
+		}
+	}
 }

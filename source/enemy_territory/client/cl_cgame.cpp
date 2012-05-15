@@ -30,10 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-#include "../game/botlib.h"
-
-extern botlib_export_t* botlib_export;
-
 // NERVE - SMF
 void Key_GetBindingBuf(int keynum, char* buf, int buflen);
 void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
@@ -1117,15 +1113,15 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	case CG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
 	case CG_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
+		return PC_LoadSourceHandle((char*)VMA(1));
 	case CG_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle(args[1]);
+		return PC_FreeSourceHandle(args[1]);
 	case CG_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle(args[1], (etpc_token_t*)VMA(2));
+		return PC_ReadTokenHandleET(args[1], (etpc_token_t*)VMA(2));
 	case CG_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
+		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 	case CG_PC_UNREAD_TOKEN:
-		botlib_export->PC_UnreadLastTokenHandle(args[1]);
+		PC_UnreadLastTokenHandle(args[1]);
 		return 0;
 
 	case CG_S_STOPBACKGROUNDTRACK:

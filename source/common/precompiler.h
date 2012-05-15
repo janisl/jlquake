@@ -113,4 +113,10 @@ source_t* LoadSourceFile(const char* filename);
 //free the given source
 void FreeSource(source_t* source);
 
-void PC_UnreadSourceToken(source_t* source, token_t* token);
+int PC_LoadSourceHandle(const char* filename);
+int PC_FreeSourceHandle(int handle);
+int PC_ReadTokenHandleQ3(int handle, q3pc_token_t* pc_token);
+int PC_ReadTokenHandleET(int handle, etpc_token_t* pc_token);
+void PC_UnreadLastTokenHandle(int handle);
+int PC_SourceFileAndLine(int handle, char* filename, int* line);
+void PC_CheckOpenSourceHandles();

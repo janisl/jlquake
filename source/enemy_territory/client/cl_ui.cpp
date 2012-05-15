@@ -29,10 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-#include "../game/botlib.h"
-
-extern botlib_export_t* botlib_export;
-
 vm_t* uivm;
 
 
@@ -1276,15 +1272,15 @@ qintptr CL_UISystemCalls(qintptr* args)
 		PC_RemoveAllGlobalDefines();
 		return 0;
 	case UI_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
+		return PC_LoadSourceHandle((char*)VMA(1));
 	case UI_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle(args[1]);
+		return PC_FreeSourceHandle(args[1]);
 	case UI_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle(args[1], (etpc_token_t*)VMA(2));
+		return PC_ReadTokenHandleET(args[1], (etpc_token_t*)VMA(2));
 	case UI_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
+		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 	case UI_PC_UNREAD_TOKEN:
-		botlib_export->PC_UnreadLastTokenHandle(args[1]);
+		PC_UnreadLastTokenHandle(args[1]);
 		return 0;
 
 	case UI_S_STOPBACKGROUNDTRACK:

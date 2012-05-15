@@ -30,10 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-#include "../game/botlib.h"
-
-extern botlib_export_t* botlib_export;
-
 // RF, this is only used when running a local server
 extern void SV_SendMoveSpeedsToGame(int entnum, char* text);
 
@@ -970,13 +966,13 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	case CG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
 	case CG_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle((char*)VMA(1));
+		return PC_LoadSourceHandle((char*)VMA(1));
 	case CG_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle(args[1]);
+		return PC_FreeSourceHandle(args[1]);
 	case CG_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle(args[1], (q3pc_token_t*)VMA(2));
+		return PC_ReadTokenHandleQ3(args[1], (q3pc_token_t*)VMA(2));
 	case CG_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
+		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 
 	case CG_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();

@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_memory.h"
 #include "l_log.h"
 #include "l_libvar.h"
-#include "l_precomp.h"
 #include "l_struct.h"
 #include "aasfile.h"
 #include "../game/botlib.h"
@@ -936,11 +935,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 	be_botlib_export.BotLibShutdown = Export_BotLibShutdown;
 	be_botlib_export.BotLibVarSet = Export_BotLibVarSet;
 	be_botlib_export.BotLibVarGet = Export_BotLibVarGet;
-	be_botlib_export.PC_LoadSourceHandle = PC_LoadSourceHandle;
-	be_botlib_export.PC_FreeSourceHandle = PC_FreeSourceHandle;
-	be_botlib_export.PC_ReadTokenHandle = PC_ReadTokenHandle;
-	be_botlib_export.PC_SourceFileAndLine = PC_SourceFileAndLine;
-	be_botlib_export.PC_UnreadLastTokenHandle = PC_UnreadLastTokenHandle;
 
 	be_botlib_export.BotLibStartFrame = Export_BotLibStartFrame;
 	be_botlib_export.BotLibLoadMap = Export_BotLibLoadMap;
