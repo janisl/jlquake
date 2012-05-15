@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_memory.h"
-#include "l_precomp.h"
 #include "l_struct.h"
 #include "l_log.h"
 #include "l_memory.h"

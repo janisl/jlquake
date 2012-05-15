@@ -54,7 +54,7 @@ static token_t* PC_CopyToken(token_t* token)
 	return t;
 }
 
-void PC_FreeToken(token_t* token)
+static void PC_FreeToken(token_t* token)
 {
 	Mem_Free(token);
 }
@@ -231,7 +231,7 @@ static define_t* PC_CopyDefine(source_t* source, define_t* define)
 	return newdefine;
 }
 
-void PC_FreeDefine(define_t* define)
+static void PC_FreeDefine(define_t* define)
 {
 	token_t* next;
 	//free the define parameters
@@ -577,7 +577,7 @@ void PC_RemoveAllGlobalDefines()
 	}
 }
 
-void PC_AddGlobalDefinesToSource(source_t* source)
+static void PC_AddGlobalDefinesToSource(source_t* source)
 {
 	for (define_t* define = globaldefines; define; define = define->next)
 	{
@@ -2341,4 +2341,78 @@ bool PC_CheckTokenString(source_t* source, const char* string)
 void PC_UnreadLastToken(source_t* source)
 {
 	PC_UnreadSourceToken(source, &source->token);
+}
+
+void PC_SetBaseFolder(const char* path)
+{
+	PS_SetBaseFolder(path);
+}
+
+source_t* LoadSourceFile(const char* filename)
+{
+	source_t* source;
+	script_t* script;
+
+	script = LoadScriptFile(filename);
+	if (!script)
+	{
+		return NULL;
+	}
+
+	script->next = NULL;
+
+	source = (source_t*)Mem_Alloc(sizeof(source_t));
+	Com_Memset(source, 0, sizeof(source_t));
+
+	String::NCpy(source->filename, filename, MAX_QPATH);
+	source->scriptstack = script;
+	source->tokens = NULL;
+	source->defines = NULL;
+	source->indentstack = NULL;
+	source->skip = 0;
+
+	source->definehash = (define_t**)Mem_ClearedAlloc(DEFINEHASHSIZE * sizeof(define_t*));
+	PC_AddGlobalDefinesToSource(source);
+	return source;
+}
+
+void FreeSource(source_t* source)
+{
+	//free all the scripts
+	while (source->scriptstack)
+	{
+		script_t* script = source->scriptstack;
+		source->scriptstack = source->scriptstack->next;
+		FreeScript(script);
+	}
+	//free all the tokens
+	while (source->tokens)
+	{
+		token_t* token = source->tokens;
+		source->tokens = source->tokens->next;
+		PC_FreeToken(token);
+	}
+	for (int i = 0; i < DEFINEHASHSIZE; i++)
+	{
+		while (source->definehash[i])
+		{
+			define_t* define = source->definehash[i];
+			source->definehash[i] = source->definehash[i]->hashnext;
+			PC_FreeDefine(define);
+		}
+	}
+	//free all indents
+	while (source->indentstack)
+	{
+		indent_t* indent = source->indentstack;
+		source->indentstack = source->indentstack->next;
+		Mem_Free(indent);
+	}
+
+	if (source->definehash)
+	{
+		Mem_Free(source->definehash);
+	}
+	//free the source itself
+	Mem_Free(source);
 }

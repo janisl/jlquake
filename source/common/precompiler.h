@@ -106,8 +106,11 @@ bool PC_ExpectAnyToken(source_t* source, token_t* token);
 bool PC_CheckTokenString(source_t* source, const char* string);
 //unread the last token read from the script
 void PC_UnreadLastToken(source_t* source);
+//set the base folder to load files from
+void PC_SetBaseFolder(const char* path);
+//load a source file
+source_t* LoadSourceFile(const char* filename);
+//free the given source
+void FreeSource(source_t* source);
 
-void PC_FreeToken(token_t* token);
 void PC_UnreadSourceToken(source_t* source, token_t* token);
-void PC_FreeDefine(define_t* define);
-void PC_AddGlobalDefinesToSource(source_t* source);

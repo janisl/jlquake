@@ -35,27 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifndef _MAX_PATH
-	#define MAX_PATH            MAX_QPATH
-#endif
-
-#ifndef PATH_SEPERATORSTR
-	#if defined(WIN32) | defined(_WIN32) | defined(__NT__) | defined(__WINDOWS__) | defined(__WINDOWS_386__)
-		#define PATHSEPERATOR_STR       "\\"
-	#else
-		#define PATHSEPERATOR_STR       "/"
-	#endif
-#endif
-
-//set the base folder to load files from
-void PC_SetBaseFolder(char* path);
-//load a source file
-source_t* LoadSourceFile(const char* filename);
-//load a source from memory
-source_t* LoadSourceMemory(char* ptr, int length, char* name);
-//free the given source
-void FreeSource(source_t* source);
-
 //
 int PC_LoadSourceHandle(const char* filename);
 int PC_FreeSourceHandle(int handle);
