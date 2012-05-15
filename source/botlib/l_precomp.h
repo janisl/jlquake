@@ -41,26 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	#endif
 #endif
 
-//expect a certain token
-int PC_ExpectTokenString(source_t* source, const char* string);
-//expect a certain token type
-int PC_ExpectTokenType(source_t* source, int type, int subtype, token_t* token);
-//expect a token
-int PC_ExpectAnyToken(source_t* source, token_t* token);
-//returns true when the token is available
-int PC_CheckTokenString(source_t* source, const char* string);
-//returns true an reads the token when a token with the given type is available
-int PC_CheckTokenType(source_t* source, int type, int subtype, token_t* token);
-//skip tokens until the given token string is read
-int PC_SkipUntilString(source_t* source, char* string);
-//unread the last token read from the script
-void PC_UnreadLastToken(source_t* source);
-//unread the given token
-void PC_UnreadToken(source_t* source, token_t* token);
-//set the source include path
-void PC_SetIncludePath(source_t* source, char* path);
-//set the punction set
-void PC_SetPunctuations(source_t* source, punctuation_t* p);
 //set the base folder to load files from
 void PC_SetBaseFolder(const char* path);
 //load a source file

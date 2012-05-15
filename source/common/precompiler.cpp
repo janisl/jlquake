@@ -2127,10 +2127,8 @@ static bool PC_ReadDollarDirective(source_t* source)
 	return false;
 }
 
-int PC_ReadToken(source_t* source, token_t* token)
+bool PC_ReadToken(source_t* source, token_t* token)
 {
-	define_t* define;
-
 	while (1)
 	{
 		if (!PC_ReadSourceToken(source, token))
@@ -2146,7 +2144,7 @@ int PC_ReadToken(source_t* source, token_t* token)
 				return false;
 			}
 			continue;
-		}	//end if
+		}
 		if (token->type == TT_PUNCTUATION && *token->string == '$')
 		{
 			//read the precompiler directive
@@ -2155,7 +2153,7 @@ int PC_ReadToken(source_t* source, token_t* token)
 				return false;
 			}
 			continue;
-		}	//end if
+		}
 		//if skipping source because of conditional compilation
 		if (source->skip)
 		{
@@ -2182,12 +2180,12 @@ int PC_ReadToken(source_t* source, token_t* token)
 					PC_UnreadSourceToken(source, &newtoken);
 				}
 			}
-		}	//end if
+		}
 		//if the token is a name
 		if (token->type == TT_NAME)
 		{
 			//check if the name is a define macro
-			define = PC_FindHashedDefine(source->definehash, token->string);
+			define_t* define = PC_FindHashedDefine(source->definehash, token->string);
 			//if it is a define macro
 			if (define)
 			{
@@ -2197,11 +2195,150 @@ int PC_ReadToken(source_t* source, token_t* token)
 					return false;
 				}
 				continue;
-			}	//end if
-		}	//end if
-			//copy token for unreading
+			}
+		}
+		//copy token for unreading
 		Com_Memcpy(&source->token, token, sizeof(token_t));
 		//found a token
 		return true;
-	}	//end while
-}	//end of the function PC_ReadToken
+	}
+}
+
+bool PC_ExpectTokenString(source_t* source, const char* string)
+{
+	token_t token;
+	if (!PC_ReadToken(source, &token))
+	{
+		SourceError(source, "couldn't find expected %s", string);
+		return false;
+	}
+
+	if (String::Cmp(token.string, string))
+	{
+		SourceError(source, "expected %s, found %s", string, token.string);
+		return false;
+	}
+	return true;
+}
+
+bool PC_ExpectTokenType(source_t* source, int type, int subtype, token_t* token)
+{
+	if (!PC_ReadToken(source, token))
+	{
+		SourceError(source, "couldn't read expected token");
+		return false;
+	}
+
+	if (token->type != type)
+	{
+		char str[MAX_TOKEN];
+		String::Cpy(str, "");
+		if (type == TT_STRING)
+		{
+			String::Cpy(str, "string");
+		}
+		if (type == TT_LITERAL)
+		{
+			String::Cpy(str, "literal");
+		}
+		if (type == TT_NUMBER)
+		{
+			String::Cpy(str, "number");
+		}
+		if (type == TT_NAME)
+		{
+			String::Cpy(str, "name");
+		}
+		if (type == TT_PUNCTUATION)
+		{
+			String::Cpy(str, "punctuation");
+		}
+		SourceError(source, "expected a %s, found %s", str, token->string);
+		return false;
+	}
+	if (token->type == TT_NUMBER)
+	{
+		if ((token->subtype & subtype) != subtype)
+		{
+			char str[MAX_TOKEN];
+			if (subtype & TT_DECIMAL)
+			{
+				String::Cpy(str, "decimal");
+			}
+			if (subtype & TT_HEX)
+			{
+				String::Cpy(str, "hex");
+			}
+			if (subtype & TT_OCTAL)
+			{
+				String::Cpy(str, "octal");
+			}
+			if (subtype & TT_BINARY)
+			{
+				String::Cpy(str, "binary");
+			}
+			if (subtype & TT_LONG)
+			{
+				String::Cat(str, sizeof(str), " long");
+			}
+			if (subtype & TT_UNSIGNED)
+			{
+				String::Cat(str, sizeof(str), " unsigned");
+			}
+			if (subtype & TT_FLOAT)
+			{
+				String::Cat(str, sizeof(str), " float");
+			}
+			if (subtype & TT_INTEGER)
+			{
+				String::Cat(str, sizeof(str), " integer");
+			}
+			SourceError(source, "expected %s, found %s", str, token->string);
+			return false;
+		}
+	}
+	else if (token->type == TT_PUNCTUATION)
+	{
+		if (token->subtype != subtype)
+		{
+			SourceError(source, "found %s", token->string);
+			return false;
+		}
+	}
+	return true;
+}
+
+bool PC_ExpectAnyToken(source_t* source, token_t* token)
+{
+	if (!PC_ReadToken(source, token))
+	{
+		SourceError(source, "couldn't read expected token");
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+bool PC_CheckTokenString(source_t* source, const char* string)
+{
+	token_t tok;
+	if (!PC_ReadToken(source, &tok))
+	{
+		return false;
+	}
+	//if the token is available
+	if (!String::Cmp(tok.string, string))
+	{
+		return true;
+	}
+
+	PC_UnreadSourceToken(source, &tok);
+	return false;
+}
+
+void PC_UnreadLastToken(source_t* source)
+{
+	PC_UnreadSourceToken(source, &source->token);
+}
