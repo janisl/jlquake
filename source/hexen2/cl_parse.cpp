@@ -84,31 +84,6 @@ extern Cvar* precache;
 //=============================================================================
 
 /*
-===============
-CL_EntityNum
-
-This error checks and tracks the total number of entities
-===============
-*/
-h2entity_t* CL_EntityNum(int num)
-{
-	if (num >= cl.qh_num_entities)
-	{
-		if (num >= MAX_EDICTS_H2)
-		{
-			Host_Error("CL_EntityNum: %i is an invalid number",num);
-		}
-		while (cl.qh_num_entities <= num)
-		{
-			cl.qh_num_entities++;
-		}
-	}
-
-	return &h2cl_entities[num];
-}
-
-
-/*
 ==================
 CL_ParseStartSoundPacket
 ==================
@@ -393,395 +368,6 @@ void CL_ParseServerInfo(void)
 
 /*
 ==================
-CL_ParseUpdate
-
-Parse an entity update message from the server
-If an entities model or origin changes from frame to frame, it must be
-relinked.  Other attributes can change without relinking.
-==================
-*/
-
-void CL_ParseUpdate(int bits)
-{
-	int i;
-	qhandle_t model;
-	int modnum;
-	qboolean forcelink;
-	h2entity_t* ent;
-	int num;
-	h2entity_state_t* ref_ent,* set_ent,build_ent,dummy;
-
-	if (clc.qh_signon == SIGNONS - 1)
-	{	// first update is the final signon stage
-		clc.qh_signon = SIGNONS;
-		CL_SignonReply();
-	}
-
-	if (bits & H2U_MOREBITS)
-	{
-		i = net_message.ReadByte();
-		bits |= (i << 8);
-	}
-
-	if (bits & H2U_MOREBITS2)
-	{
-		i = net_message.ReadByte();
-		bits |= (i << 16);
-	}
-
-	if (bits & H2U_LONGENTITY)
-	{
-		num = net_message.ReadShort();
-	}
-	else
-	{
-		num = net_message.ReadByte();
-	}
-	ent = CL_EntityNum(num);
-	h2entity_state_t& baseline = clh2_baselines[num];
-
-	baseline.flags |= BE_ON;
-
-	ref_ent = NULL;
-
-	for (i = 0; i < cl.h2_frames[0].count; i++)
-		if (cl.h2_frames[0].states[i].number == num)
-		{
-			ref_ent = &cl.h2_frames[0].states[i];
-//			if (num == 2) fprintf(FH,"Found Reference\n");
-			break;
-		}
-
-	if (!ref_ent)
-	{
-		ref_ent = &build_ent;
-
-		build_ent.number = num;
-		build_ent.origin[0] = baseline.origin[0];
-		build_ent.origin[1] = baseline.origin[1];
-		build_ent.origin[2] = baseline.origin[2];
-		build_ent.angles[0] = baseline.angles[0];
-		build_ent.angles[1] = baseline.angles[1];
-		build_ent.angles[2] = baseline.angles[2];
-		build_ent.modelindex = baseline.modelindex;
-		build_ent.frame = baseline.frame;
-		build_ent.colormap = baseline.colormap;
-		build_ent.skinnum = baseline.skinnum;
-		build_ent.effects = baseline.effects;
-		build_ent.scale = baseline.scale;
-		build_ent.drawflags = baseline.drawflags;
-		build_ent.abslight = baseline.abslight;
-	}
-
-	if (cl.h2_need_build)
-	{	// new sequence, first valid frame
-		set_ent = &cl.h2_frames[1].states[cl.h2_frames[1].count];
-		cl.h2_frames[1].count++;
-	}
-	else
-	{
-		set_ent = &dummy;
-	}
-
-	if (bits & H2U_CLEAR_ENT)
-	{
-		Com_Memset(ent, 0, sizeof(h2entity_t));
-		Com_Memset(ref_ent, 0, sizeof(*ref_ent));
-		ref_ent->number = num;
-	}
-
-	*set_ent = *ref_ent;
-
-	if (ent->msgtime != cl.qh_mtime[1])
-	{
-		forcelink = true;	// no previous frame to lerp from
-	}
-	else
-	{
-		forcelink = false;
-	}
-
-	ent->msgtime = cl.qh_mtime[0];
-
-	if (bits & H2U_MODEL)
-	{
-		modnum = net_message.ReadShort();
-		if (modnum >= MAX_MODELS_H2)
-		{
-			Host_Error("CL_ParseModel: bad modnum");
-		}
-	}
-	else
-	{
-		modnum = ref_ent->modelindex;
-	}
-
-	model = cl.model_draw[modnum];
-	set_ent->modelindex = modnum;
-	if (modnum != ent->state.modelindex)
-	{
-		ent->state.modelindex = modnum;
-
-		// automatic animation (torches, etc) can be either all together
-		// or randomized
-		if (model)
-		{
-			if (R_ModelSyncType(model) == ST_RAND)
-			{
-				ent->syncbase = rand() * (1.0 / RAND_MAX);	//(float)(rand()&0x7fff) / 0x7fff;
-			}
-			else
-			{
-				ent->syncbase = 0.0;
-			}
-		}
-		else
-		{
-			forcelink = true;	// hack to make null model players work
-		}
-		if (num > 0 && num <= cl.qh_maxclients)
-		{
-			CLH2_TranslatePlayerSkin(num - 1);
-		}
-	}
-
-	if (bits & H2U_FRAME)
-	{
-		set_ent->frame = ent->state.frame = net_message.ReadByte();
-	}
-	else
-	{
-		ent->state.frame = ref_ent->frame;
-	}
-
-	if (bits & H2U_COLORMAP)
-	{
-		set_ent->colormap = ent->state.colormap = net_message.ReadByte();
-	}
-	else
-	{
-		ent->state.colormap = ref_ent->colormap;
-	}
-
-	if (bits & H2U_SKIN)
-	{
-		set_ent->skinnum = ent->state.skinnum = net_message.ReadByte();
-		set_ent->drawflags = ent->state.drawflags = net_message.ReadByte();
-	}
-	else
-	{
-		ent->state.skinnum = ref_ent->skinnum;
-		ent->state.drawflags = ref_ent->drawflags;
-	}
-
-	if (bits & H2U_EFFECTS)
-	{
-		set_ent->effects = ent->state.effects = net_message.ReadByte();
-//		if (num == 2) fprintf(FH,"Read effects %d\n",set_ent->effects);
-	}
-	else
-	{
-		ent->state.effects = ref_ent->effects;
-		//if (num == 2) fprintf(FH,"restored effects %d\n",ref_ent->effects);
-	}
-
-// shift the known values for interpolation
-	VectorCopy(ent->msg_origins[0], ent->msg_origins[1]);
-	VectorCopy(ent->msg_angles[0], ent->msg_angles[1]);
-
-	if (bits & H2U_ORIGIN1)
-	{
-		set_ent->origin[0] = ent->msg_origins[0][0] = net_message.ReadCoord();
-		//if (num == 2) fprintf(FH,"Read origin[0] %f\n",set_ent->angles[0]);
-	}
-	else
-	{
-		ent->msg_origins[0][0] = ref_ent->origin[0];
-		//if (num == 2) fprintf(FH,"Restored origin[0] %f\n",ref_ent->angles[0]);
-	}
-	if (bits & H2U_ANGLE1)
-	{
-		set_ent->angles[0] = ent->msg_angles[0][0] = net_message.ReadAngle();
-	}
-	else
-	{
-		ent->msg_angles[0][0] = ref_ent->angles[0];
-	}
-
-	if (bits & H2U_ORIGIN2)
-	{
-		set_ent->origin[1] = ent->msg_origins[0][1] = net_message.ReadCoord();
-	}
-	else
-	{
-		ent->msg_origins[0][1] = ref_ent->origin[1];
-	}
-	if (bits & H2U_ANGLE2)
-	{
-		set_ent->angles[1] = ent->msg_angles[0][1] = net_message.ReadAngle();
-	}
-	else
-	{
-		ent->msg_angles[0][1] = ref_ent->angles[1];
-	}
-
-	if (bits & H2U_ORIGIN3)
-	{
-		set_ent->origin[2] = ent->msg_origins[0][2] = net_message.ReadCoord();
-	}
-	else
-	{
-		ent->msg_origins[0][2] = ref_ent->origin[2];
-	}
-	if (bits & H2U_ANGLE3)
-	{
-		set_ent->angles[2] = ent->msg_angles[0][2] = net_message.ReadAngle();
-	}
-	else
-	{
-		ent->msg_angles[0][2] = ref_ent->angles[2];
-	}
-
-	if (bits & H2U_SCALE)
-	{
-		set_ent->scale = ent->state.scale = net_message.ReadByte();
-		set_ent->abslight = ent->state.abslight = net_message.ReadByte();
-	}
-	else
-	{
-		ent->state.scale = ref_ent->scale;
-		ent->state.abslight = ref_ent->abslight;
-	}
-
-	if (bits & H2U_NOLERP)
-	{
-		forcelink = true;
-	}
-
-	if (forcelink)
-	{	// didn't have an update last message
-		VectorCopy(ent->msg_origins[0], ent->msg_origins[1]);
-		VectorCopy(ent->msg_origins[0], ent->state.origin);
-		VectorCopy(ent->msg_angles[0], ent->msg_angles[1]);
-		VectorCopy(ent->msg_angles[0], ent->state.angles);
-	}
-
-
-//	if (sv.active || num != 2)
-//		return;
-}
-
-void CL_ParseUpdate2(int bits)
-{
-	int i;
-
-	if (bits & H2U_MOREBITS)
-	{
-		i = net_message.ReadByte();
-		bits |= (i << 8);
-	}
-
-	if (bits & H2U_MOREBITS2)
-	{
-		i = net_message.ReadByte();
-		bits |= (i << 16);
-	}
-
-	if (bits & H2U_LONGENTITY)
-	{
-		net_message.ReadShort();
-	}
-	else
-	{
-		net_message.ReadByte();
-	}
-
-	if (bits & H2U_MODEL)
-	{
-		net_message.ReadShort();
-	}
-
-	if (bits & H2U_FRAME)
-	{
-		net_message.ReadByte();
-	}
-
-	if (bits & H2U_COLORMAP)
-	{
-		net_message.ReadByte();
-	}
-
-	if (bits & H2U_SKIN)
-	{
-		net_message.ReadByte();
-		net_message.ReadByte();
-	}
-
-	if (bits & H2U_EFFECTS)
-	{
-		net_message.ReadByte();
-	}
-
-	if (bits & H2U_ORIGIN1)
-	{
-		net_message.ReadCoord();
-	}
-	if (bits & H2U_ANGLE1)
-	{
-		net_message.ReadAngle();
-	}
-
-	if (bits & H2U_ORIGIN2)
-	{
-		net_message.ReadCoord();
-	}
-	if (bits & H2U_ANGLE2)
-	{
-		net_message.ReadAngle();
-	}
-
-	if (bits & H2U_ORIGIN3)
-	{
-		net_message.ReadCoord();
-	}
-	if (bits & H2U_ANGLE3)
-	{
-		net_message.ReadAngle();
-	}
-
-	if (bits & H2U_SCALE)
-	{
-		net_message.ReadByte();
-		net_message.ReadByte();
-	}
-}
-
-/*
-==================
-CL_ParseBaseline
-==================
-*/
-void CL_ParseBaseline(h2entity_state_t* ent)
-{
-	int i;
-
-	ent->modelindex = net_message.ReadShort();
-	ent->frame = net_message.ReadByte();
-	ent->colormap = net_message.ReadByte();
-	ent->skinnum = net_message.ReadByte();
-	ent->scale = net_message.ReadByte();
-	ent->drawflags = net_message.ReadByte();
-	ent->abslight = net_message.ReadByte();
-	for (i = 0; i < 3; i++)
-	{
-		ent->origin[i] = net_message.ReadCoord();
-		ent->angles[i] = net_message.ReadAngle();
-	}
-}
-
-
-/*
-==================
 CL_ParseClientdata
 
 Server information pertaining to this client only
@@ -1000,39 +586,6 @@ void CL_NewTranslation(int slot)
 }
 
 /*
-=====================
-CL_ParseStatic
-=====================
-*/
-void CL_ParseStatic(void)
-{
-	h2entity_t* ent;
-	h2entity_state_t baseline;
-	int i;
-
-	i = cl.qh_num_statics;
-	if (i >= MAX_STATIC_ENTITIES_H2)
-	{
-		Host_Error("Too many static entities");
-	}
-	ent = &h2cl_static_entities[i];
-	cl.qh_num_statics++;
-	CL_ParseBaseline(&baseline);
-
-// copy it to the current state
-	ent->state.modelindex = baseline.modelindex;
-	ent->state.frame = baseline.frame;
-	ent->state.skinnum = baseline.skinnum;
-	ent->state.scale = baseline.scale;
-	ent->state.effects = baseline.effects;
-	ent->state.drawflags = baseline.drawflags;
-	ent->state.abslight = baseline.abslight;
-
-	VectorCopy(baseline.origin, ent->state.origin);
-	VectorCopy(baseline.angles, ent->state.angles);
-}
-
-/*
 ===================
 CL_ParseStaticSound
 ===================
@@ -1141,7 +694,6 @@ void CL_ParseServerMessage(void)
 	int EntitySize = 0;
 	int before;
 	static double lasttime;
-	static qboolean packet_loss = false;
 	h2entity_t* ent;
 	short RemovePlace, OrigPlace, NewPlace, AddedIndex;
 	int sc1, sc2;
@@ -1197,14 +749,7 @@ void CL_ParseServerMessage(void)
 		{
 			before = net_message.readcount;
 			SHOWNET("fast update");
-			if (packet_loss)
-			{
-				CL_ParseUpdate2(cmd & 127);
-			}
-			else
-			{
-				CL_ParseUpdate(cmd & 127);
-			}
+			CLH2_ParseUpdate(net_message, cmd & 127);
 
 			EntityCount++;
 			EntitySize += net_message.readcount - before + 1;
@@ -1436,13 +981,10 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_spawnbaseline:
-			i = net_message.ReadShort();
-			// must use CL_EntityNum() to force cl.num_entities up
-			CL_EntityNum(i);
-			CL_ParseBaseline(&clh2_baselines[i]);
+			CLH2_ParseSpawnBaseline(net_message);
 			break;
 		case h2svc_spawnstatic:
-			CL_ParseStatic();
+			CLH2_ParseSpawnStatic(net_message);
 			break;
 
 		case h2svc_raineffect:
@@ -1475,7 +1017,7 @@ void CL_ParseServerMessage(void)
 				Host_Error("Received signon %i when at %i", i, clc.qh_signon);
 			}
 			clc.qh_signon = i;
-			CL_SignonReply();
+			CLH2_SignonReply();
 			break;
 
 		case h2svc_killedmonster:
@@ -1573,7 +1115,6 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_reference:
-			packet_loss = false;
 			cl.h2_last_sequence = cl.h2_current_sequence;
 			cl.h2_current_frame = net_message.ReadByte();
 			cl.h2_current_sequence = net_message.ReadByte();
@@ -1642,7 +1183,7 @@ void CL_ParseServerMessage(void)
 
 			for (i = 0; i < cl.h2_frames[0].count; i++)
 			{
-				ent = CL_EntityNum(cl.h2_frames[0].states[i].number);
+				ent = CLH2_EntityNum(cl.h2_frames[0].states[i].number);
 				ent->state.modelindex = cl.h2_frames[0].states[i].modelindex;
 				clh2_baselines[cl.h2_frames[0].states[i].number].flags |= BE_ON;
 			}
@@ -1661,7 +1202,7 @@ void CL_ParseServerMessage(void)
 				{
 					cl.h2_RemoveList[i] = k;
 				}
-				ent = CL_EntityNum(k);
+				ent = CLH2_EntityNum(k);
 				clh2_baselines[k].flags &= ~BE_ON;
 			}
 			break;

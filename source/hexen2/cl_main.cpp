@@ -15,8 +15,6 @@
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
-Cvar* cl_playerclass;
-
 static float save_sensitivity;
 
 /*
@@ -198,52 +196,6 @@ void CL_EstablishConnection(const char* host)
 	cls.qh_demonum = -1;			// not in the demo loop now
 	cls.state = CA_ACTIVE;
 	clc.qh_signon = 0;				// need all the signon messages before playing
-}
-
-/*
-=====================
-CL_SignonReply
-
-An h2svc_signonnum has been received, perform a client side setup
-=====================
-*/
-void CL_SignonReply(void)
-{
-	char str[8192];
-
-	Con_DPrintf("CL_SignonReply: %i\n", clc.qh_signon);
-
-	switch (clc.qh_signon)
-	{
-	case 1:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("prespawn");
-		break;
-
-	case 2:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("playerclass %i\n", (int)cl_playerclass->value));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("color %i %i\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 15));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		sprintf(str, "spawn %s", cls.qh_spawnparms);
-		clc.netchan.message.WriteString2(str);
-		break;
-
-	case 3:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("begin");
-		break;
-
-	case 4:
-		SCR_EndLoadingPlaque();			// allow normal screen updates
-		break;
-	}
 }
 
 /*
@@ -680,7 +632,7 @@ void CL_Init(void)
 //
 	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
 	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
-	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
+	clh2_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
 	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
 
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);

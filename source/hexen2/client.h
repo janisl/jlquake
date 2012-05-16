@@ -9,8 +9,6 @@
 //
 // cvars
 //
-extern Cvar* cl_playerclass;
-
 extern Cvar* cl_prettylights;
 
 //=============================================================================
@@ -25,7 +23,6 @@ void CL_Signon1(void);
 void CL_Signon2(void);
 void CL_Signon3(void);
 void CL_Signon4(void);
-void CL_SignonReply(void);
 
 void CL_Disconnect(void);
 void CL_Disconnect_f(void);

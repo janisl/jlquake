@@ -754,7 +754,7 @@ void M_Difficulty_Draw(void)
 
 	ScrollTitle("gfx/menu/title5.lmp");
 
-	setup_class = cl_playerclass->value;
+	setup_class = clh2_playerclass->value;
 
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 	{
@@ -1534,7 +1534,7 @@ void M_Menu_Setup_f(void)
 	setup_hostname.widthInChars = 16;
 	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
-	setup_class = cl_playerclass->value;
+	setup_class = clh2_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 	{
 		setup_class = NUM_CLASSES;
@@ -3089,7 +3089,7 @@ void M_Menu_LanConfig_f(void)
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
 
-	setup_class = cl_playerclass->value;
+	setup_class = clh2_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 	{
 		setup_class = NUM_CLASSES;
@@ -3456,7 +3456,7 @@ void M_Menu_GameOptions_f(void)
 		maxplayers = svs.maxclientslimit;
 	}
 
-	setup_class = cl_playerclass->value;
+	setup_class = clh2_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 	{
 		setup_class = NUM_CLASSES;

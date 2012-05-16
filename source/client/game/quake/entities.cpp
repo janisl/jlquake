@@ -29,7 +29,7 @@ image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];	// color translated skins
 int clq1_playerindex;
 
 //	This error checks and tracks the total number of entities
-q1entity_t* CLQ1_EntityNum(int number)
+static q1entity_t* CLQ1_EntityNum(int number)
 {
 	if (number >= cl.qh_num_entities)
 	{

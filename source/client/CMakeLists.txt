@@ -4,6 +4,7 @@ set(CLIENT_FILES
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
 	game/hexen2/chunk.cpp
+	game/hexen2/connection.cpp
 	game/hexen2/effects.cpp
 	game/hexen2/entities.cpp
 	game/hexen2/explosion.cpp

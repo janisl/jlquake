@@ -992,22 +992,22 @@ void ED_LoadFromFile(const char* data)
 
 /* rjr not supported in hexenworld
             if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_PALADIN) &&
-                cl_playerclass.value == CLASS_PALADIN)
+                clh2_playerclass.value == CLASS_PALADIN)
             {
                 skip = 1;
             }
             if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_CLERIC) &&
-                cl_playerclass.value == CLASS_CLERIC)
+                clh2_playerclass.value == CLASS_CLERIC)
             {
                 skip = 1;
             }
             if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_NECROMANCER) &&
-                cl_playerclass.value == CLASS_NECROMANCER)
+                clh2_playerclass.value == CLASS_NECROMANCER)
             {
                 skip = 1;
             }
             if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_THEIF) &&
-                cl_playerclass.value == CLASS_THEIF)
+                clh2_playerclass.value == CLASS_THEIF)
             {
                 skip = 1;
             }

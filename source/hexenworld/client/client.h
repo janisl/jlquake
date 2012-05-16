@@ -119,7 +119,6 @@ void V_ParseDamage(void);
 qboolean CL_CheckOrDownloadFile(char* filename);
 void CL_ParsePlayerinfo(void);
 void CL_SavePlayer(void);
-void CL_ParsePacketEntities(qboolean delta);
 void CL_SetSolidEntities(void);
 void CL_EmitEntities(void);
 void CL_WriteDemoCmd(hwusercmd_t* pcmd);

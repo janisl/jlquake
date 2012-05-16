@@ -658,68 +658,6 @@ void CL_ParseModellist(void)
 }
 
 /*
-==================
-CL_ParseBaseline
-==================
-*/
-void CL_ParseBaseline(h2entity_state_t* es)
-{
-	int i;
-
-	es->modelindex = net_message.ReadShort();
-	es->frame = net_message.ReadByte();
-	es->colormap = net_message.ReadByte();
-	es->skinnum = net_message.ReadByte();
-	es->scale = net_message.ReadByte();
-	es->drawflags = net_message.ReadByte();
-	es->abslight = net_message.ReadByte();
-
-	for (i = 0; i < 3; i++)
-	{
-		es->origin[i] = net_message.ReadCoord();
-		es->angles[i] = net_message.ReadAngle();
-	}
-}
-
-
-
-/*
-=====================
-CL_ParseStatic
-
-Static entities are non-interactive world objects
-like torches
-=====================
-*/
-void CL_ParseStatic(void)
-{
-	h2entity_t* ent;
-	int i;
-	h2entity_state_t es;
-
-	CL_ParseBaseline(&es);
-
-	i = cl.qh_num_statics;
-	if (i >= MAX_STATIC_ENTITIES_H2)
-	{
-		Host_EndGame("Too many static entities");
-	}
-	ent = &h2cl_static_entities[i];
-	cl.qh_num_statics++;
-
-// copy it to the current state
-	ent->state.modelindex = es.modelindex;
-	ent->state.frame = es.frame;
-	ent->state.skinnum = es.skinnum;
-	ent->state.scale = es.scale;
-	ent->state.drawflags = es.drawflags;
-	ent->state.abslight = es.abslight;
-
-	VectorCopy(es.origin, ent->state.origin);
-	VectorCopy(es.angles, ent->state.angles);
-}
-
-/*
 ===================
 CL_ParseStaticSound
 ===================
@@ -1286,11 +1224,10 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_spawnbaseline:
-			i = net_message.ReadShort();
-			CL_ParseBaseline(&clh2_baselines[i]);
+			CLH2_ParseSpawnBaseline(net_message);
 			break;
 		case h2svc_spawnstatic:
-			CL_ParseStatic();
+			CLH2_ParseSpawnStatic(net_message);
 			break;
 		case h2svc_temp_entity:
 			CLHW_ParseTEnt(net_message);
@@ -1386,7 +1323,6 @@ void CL_ParseServerMessage(void)
 		case hwsvc_nails:
 			CLHW_ParseNails(net_message);
 			break;
-
 		case hwsvc_packmissile:
 			CLHW_ParsePackMissiles(net_message);
 			break;
@@ -1406,11 +1342,10 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case hwsvc_packetentities:
-			CL_ParsePacketEntities(false);
+			CLHW_ParsePacketEntities(net_message);
 			break;
-
 		case hwsvc_deltapacketentities:
-			CL_ParsePacketEntities(true);
+			CLHW_ParseDeltaPacketEntities(net_message);
 			break;
 
 		case hwsvc_maxspeed:

@@ -6,8 +6,6 @@
 
 #define PROTOCOL_VERSION    19
 
-#define BE_ON           (1 << 0)
-
 #define SU_VIEWHEIGHT   (1 << 0)
 #define SU_IDEALPITCH   (1 << 1)
 #define SU_PUNCH1       (1 << 2)

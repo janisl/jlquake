@@ -20,6 +20,8 @@
 
 #define MAX_EFFECT_ENTITIES_H2      256
 
+#define BE_ON           (1 << 0)
+
 struct effect_entity_t
 {
 	h2entity_state_t state;
@@ -40,9 +42,17 @@ extern int clh2_raven2index;
 extern int clh2_ballindex;
 extern int clh2_missilestarindex;
 
+extern Cvar* clh2_playerclass;
+
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
+h2entity_t* CLH2_EntityNum(int num);
+void CLH2_ParseSpawnBaseline(QMsg& message);
+void CLH2_ParseSpawnStatic(QMsg& message);
+void CLH2_ParseUpdate(QMsg& message, int bits);
+void CLHW_ParsePacketEntities(QMsg& message);
+void CLHW_ParseDeltaPacketEntities(QMsg& message);
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
@@ -147,5 +157,7 @@ void CLHW_ParseNails(QMsg& message);
 void CLHW_ParsePackMissiles(QMsg& message);
 void CLH2_LinkProjectiles();
 void CLH2_LinkMissiles();
+
+void CLH2_SignonReply();
 
 #include "../quake_hexen2/predict.h"

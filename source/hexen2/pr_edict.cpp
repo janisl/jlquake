@@ -1027,7 +1027,7 @@ void ED_LoadFromFile(const char* data)
 
 			skip = 0;
 
-			switch ((int)cl_playerclass->value)
+			switch ((int)clh2_playerclass->value)
 			{
 			case CLASS_PALADIN:
 				if ((int)ent->GetSpawnFlags() & SPAWNFLAG_NOT_PALADIN)
@@ -1226,7 +1226,7 @@ void PR_LoadProgs(void)
 	ED_InitEntityFields();
 #ifdef MISSIONPACK
 	// set the cl_playerclass value after pr_global_struct has been created
-	pr_global_struct->cl_playerclass = cl_playerclass->value;
+	pr_global_struct->cl_playerclass = clh2_playerclass->value;
 #endif
 }
 

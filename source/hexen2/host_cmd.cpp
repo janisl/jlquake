@@ -561,7 +561,7 @@ void Host_Savegame_f(void)
 	FS_Printf(f, "%f\n",coop->value);
 	FS_Printf(f, "%f\n",teamplay->value);
 	FS_Printf(f, "%f\n",randomclass->value);
-	FS_Printf(f, "%f\n",cl_playerclass->value);
+	FS_Printf(f, "%f\n",clh2_playerclass->value);
 	FS_Printf(f, "%d\n",info_mask);
 	FS_Printf(f, "%d\n",info_mask2);
 
@@ -1141,13 +1141,13 @@ void Host_Class_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
-		if (!(int)cl_playerclass->value)
+		if (!(int)clh2_playerclass->value)
 		{
-			Con_Printf("\"playerclass\" is %d (\"unknown\")\n", (int)cl_playerclass->value);
+			Con_Printf("\"playerclass\" is %d (\"unknown\")\n", (int)clh2_playerclass->value);
 		}
 		else
 		{
-			Con_Printf("\"playerclass\" is %d (\"%s\")\n", (int)cl_playerclass->value,ClassNames[(int)cl_playerclass->value - 1]);
+			Con_Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,ClassNames[(int)clh2_playerclass->value - 1]);
 		}
 		return;
 	}

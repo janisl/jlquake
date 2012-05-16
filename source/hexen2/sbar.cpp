@@ -480,7 +480,7 @@ static void DrawLowerBar(void)
 	int ringhealth;
 
 	//playerClass = cl.h2_v.playerclass;
-	playerClass = cl_playerclass->value;
+	playerClass = clh2_playerclass->value;
 	if (playerClass < 1 || playerClass > NUM_CLASSES)
 	{	// Default to demoness
 		playerClass = NUM_CLASSES - 1;
@@ -652,7 +652,7 @@ static int CalcAC(void)
 	int playerClass;
 
 	//playerClass = cl.h2_v.playerclass;
-	playerClass = cl_playerclass->value - 1;
+	playerClass = clh2_playerclass->value - 1;
 	if (playerClass < 0 || playerClass >= NUM_CLASSES)
 	{
 		playerClass = NUM_CLASSES - 1;
