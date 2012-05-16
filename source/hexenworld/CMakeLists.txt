@@ -41,7 +41,6 @@ add_executable(jlhwcl
 	client/cl_input.cpp
 	client/cl_main.cpp
 	client/cl_parse.cpp
-	client/cl_pred.cpp
 	client/cl_screen.cpp
 	client/cmd.cpp
 	client/common.cpp

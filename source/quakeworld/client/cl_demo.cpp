@@ -683,16 +683,16 @@ void CL_Record_f(void)
 
 #if 0
 	buf.WriteByte(qwsvc_updatestatlong);
-	buf.WriteByte(STAT_TOTALMONSTERS);
-	buf.WriteLong(cl.stats[STAT_TOTALMONSTERS]);
+	buf.WriteByte(Q1STAT_TOTALMONSTERS);
+	buf.WriteLong(cl.stats[Q1STAT_TOTALMONSTERS]);
 
 	buf.WriteByte(qwsvc_updatestatlong);
-	buf.WriteByte(STAT_SECRETS);
-	buf.WriteLong(cl.stats[STAT_SECRETS]);
+	buf.WriteByte(Q1STAT_SECRETS);
+	buf.WriteLong(cl.stats[Q1STAT_SECRETS]);
 
 	buf.WriteByte(qwsvc_updatestatlong);
-	buf.WriteByte(STAT_MONSTERS);
-	buf.WriteLong(cl.stats[STAT_MONSTERS]);
+	buf.WriteByte(Q1STAT_MONSTERS);
+	buf.WriteLong(cl.stats[Q1STAT_MONSTERS]);
 #endif
 
 	// get the client to check and download skins

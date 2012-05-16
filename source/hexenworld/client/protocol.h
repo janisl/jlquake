@@ -32,29 +32,6 @@
 
 //==============================================
 
-// playerinfo flags from server
-// playerinfo allways sends: playernum, flags, origin[] and framenumber
-
-#define PF_MSEC         (1 << 0)
-#define PF_COMMAND      (1 << 1)
-#define PF_VELOCITY1    (1 << 2)
-#define PF_VELOCITY2    (1 << 3)
-#define PF_VELOCITY3    (1 << 4)
-#define PF_MODEL        (1 << 5)
-#define PF_SKINNUM      (1 << 6)
-#define PF_EFFECTS      (1 << 7)
-#define PF_WEAPONFRAME  (1 << 8)		// only sent for view player
-#define PF_DEAD         (1 << 9)		// don't block movement any more
-#define PF_CROUCH       (1 << 10)		// offset the view height differently
-//#define	PF_NOGRAV		(1<<11)		// don't apply gravity for prediction
-#define PF_EFFECTS2     (1 << 11)		// player has high byte of effects set...
-#define PF_DRAWFLAGS    (1 << 12)
-#define PF_SCALE        (1 << 13)
-#define PF_ABSLIGHT     (1 << 14)
-#define PF_SOUND        (1 << 15)		//play a sound in the weapon channel
-
-//==============================================
-
 // if the high bit of the client to server byte is set, the low bits are
 // client move cmd bits
 // ms and angle2 are allways sent, the others are optional

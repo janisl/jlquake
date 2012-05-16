@@ -147,3 +147,5 @@ void CLHW_ParseNails(QMsg& message);
 void CLHW_ParsePackMissiles(QMsg& message);
 void CLH2_LinkProjectiles();
 void CLH2_LinkMissiles();
+
+#include "../quake_hexen2/predict.h"

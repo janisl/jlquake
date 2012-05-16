@@ -826,3 +826,23 @@ struct h2client_entvars_t
 #define HWARTFLAG_STONED                32
 #define HWARTFLAG_DIVINE_INTERVENTION   64
 #define HWARTFLAG_BOOTS                 128
+
+// playerinfo flags from server
+// playerinfo allways sends: playernum, flags, origin[] and framenumber
+
+#define HWPF_MSEC         (1 << 0)
+#define HWPF_COMMAND      (1 << 1)
+#define HWPF_VELOCITY1    (1 << 2)
+#define HWPF_VELOCITY2    (1 << 3)
+#define HWPF_VELOCITY3    (1 << 4)
+#define HWPF_MODEL        (1 << 5)
+#define HWPF_SKINNUM      (1 << 6)
+#define HWPF_EFFECTS      (1 << 7)
+#define HWPF_WEAPONFRAME  (1 << 8)		// only sent for view player
+#define HWPF_DEAD         (1 << 9)		// don't block movement any more
+#define HWPF_CROUCH       (1 << 10)		// offset the view height differently
+#define HWPF_EFFECTS2     (1 << 11)		// player has high byte of effects set...
+#define HWPF_DRAWFLAGS    (1 << 12)
+#define HWPF_SCALE        (1 << 13)
+#define HWPF_ABSLIGHT     (1 << 14)
+#define HWPF_SOUND        (1 << 15)		//play a sound in the weapon channel

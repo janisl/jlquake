@@ -383,11 +383,11 @@ void CL_ParseClientdata(int bits)
 
 	if (bits & SU_WEAPONFRAME)
 	{
-		cl.qh_stats[STAT_WEAPONFRAME] = net_message.ReadByte();
+		cl.qh_stats[Q1STAT_WEAPONFRAME] = net_message.ReadByte();
 	}
 	else
 	{
-		cl.qh_stats[STAT_WEAPONFRAME] = 0;
+		cl.qh_stats[Q1STAT_WEAPONFRAME] = 0;
 	}
 
 	if (bits & SU_ARMOR)
@@ -398,9 +398,9 @@ void CL_ParseClientdata(int bits)
 	{
 		i = 0;
 	}
-	if (cl.qh_stats[STAT_ARMOR] != i)
+	if (cl.qh_stats[Q1STAT_ARMOR] != i)
 	{
-		cl.qh_stats[STAT_ARMOR] = i;
+		cl.qh_stats[Q1STAT_ARMOR] = i;
 	}
 
 	if (bits & SU_WEAPON)
@@ -411,29 +411,29 @@ void CL_ParseClientdata(int bits)
 	{
 		i = 0;
 	}
-	if (cl.qh_stats[STAT_WEAPON] != i)
+	if (cl.qh_stats[Q1STAT_WEAPON] != i)
 	{
-		cl.qh_stats[STAT_WEAPON] = i;
+		cl.qh_stats[Q1STAT_WEAPON] = i;
 	}
 
 	i = net_message.ReadShort();
-	if (cl.qh_stats[STAT_HEALTH] != i)
+	if (cl.qh_stats[Q1STAT_HEALTH] != i)
 	{
-		cl.qh_stats[STAT_HEALTH] = i;
+		cl.qh_stats[Q1STAT_HEALTH] = i;
 	}
 
 	i = net_message.ReadByte();
-	if (cl.qh_stats[STAT_AMMO] != i)
+	if (cl.qh_stats[Q1STAT_AMMO] != i)
 	{
-		cl.qh_stats[STAT_AMMO] = i;
+		cl.qh_stats[Q1STAT_AMMO] = i;
 	}
 
 	for (i = 0; i < 4; i++)
 	{
 		j = net_message.ReadByte();
-		if (cl.qh_stats[STAT_SHELLS + i] != j)
+		if (cl.qh_stats[Q1STAT_SHELLS + i] != j)
 		{
-			cl.qh_stats[STAT_SHELLS + i] = j;
+			cl.qh_stats[Q1STAT_SHELLS + i] = j;
 		}
 	}
 
@@ -441,16 +441,16 @@ void CL_ParseClientdata(int bits)
 
 	if (standard_quake)
 	{
-		if (cl.qh_stats[STAT_ACTIVEWEAPON] != i)
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != i)
 		{
-			cl.qh_stats[STAT_ACTIVEWEAPON] = i;
+			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = i;
 		}
 	}
 	else
 	{
-		if (cl.qh_stats[STAT_ACTIVEWEAPON] != (1 << i))
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != (1 << i))
 		{
-			cl.qh_stats[STAT_ACTIVEWEAPON] = (1 << i);
+			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = (1 << i);
 		}
 	}
 }
@@ -708,11 +708,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_killedmonster:
-			cl.qh_stats[STAT_MONSTERS]++;
+			cl.qh_stats[Q1STAT_MONSTERS]++;
 			break;
 
 		case q1svc_foundsecret:
-			cl.qh_stats[STAT_SECRETS]++;
+			cl.qh_stats[Q1STAT_SECRETS]++;
 			break;
 
 		case q1svc_updatestat:

@@ -39,9 +39,6 @@ Cvar* cl_hudswap;
 Cvar* cl_maxfps;
 
 Cvar* entlatency;
-Cvar* cl_predict_players;
-Cvar* cl_predict_players2;
-Cvar* cl_solid_players;
 
 Cvar* localid;
 
@@ -1065,7 +1062,7 @@ void CL_Init(void)
 	Info_SetValueForKey(cls.qh_userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
 	CL_InitInput();
-	CL_InitPrediction();
+	CLQHW_InitPrediction();
 	CL_InitCam();
 	PMQH_Init();
 
@@ -1082,9 +1079,6 @@ void CL_Init(void)
 	rcon_address = Cvar_Get("rcon_address", "", 0);
 
 	entlatency = Cvar_Get("entlatency", "20", 0);
-	cl_predict_players = Cvar_Get("cl_predict_players", "1", 0);
-	cl_predict_players2 = Cvar_Get("cl_predict_players2", "1", 0);
-	cl_solid_players = Cvar_Get("cl_solid_players", "1", 0);
 
 	localid = Cvar_Get("localid", "", 0);
 
@@ -1348,13 +1342,13 @@ void Host_Frame(float time)
 		}
 
 		// Set up prediction for other players
-		CL_SetUpPlayerPrediction(false);
+		CLQW_SetUpPlayerPrediction(false);
 
 		// do client side motion prediction
-		CL_PredictMove();
+		CLQW_PredictMove();
 
 		// Set up prediction for other players
-		CL_SetUpPlayerPrediction(true);
+		CLQW_SetUpPlayerPrediction(true);
 
 		// build a refresh entity list
 		CL_EmitEntities();

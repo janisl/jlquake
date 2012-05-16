@@ -423,7 +423,7 @@ void Host_SavegameComment(char* text)
 	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
 		text[i] = ' ';
 	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
-	sprintf(kills,"kills:%3i/%3i", cl.qh_stats[STAT_MONSTERS], cl.qh_stats[STAT_TOTALMONSTERS]);
+	sprintf(kills,"kills:%3i/%3i", cl.qh_stats[Q1STAT_MONSTERS], cl.qh_stats[Q1STAT_TOTALMONSTERS]);
 	Com_Memcpy(text + 22, kills, String::Length(kills));
 // convert space to _ to make stdio happy
 	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
@@ -1206,19 +1206,19 @@ void Host_Spawn_f(void)
 // send some stats
 //
 	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(STAT_TOTALSECRETS);
+	host_client->message.WriteByte(Q1STAT_TOTALSECRETS);
 	host_client->message.WriteLong(pr_global_struct->total_secrets);
 
 	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(STAT_TOTALMONSTERS);
+	host_client->message.WriteByte(Q1STAT_TOTALMONSTERS);
 	host_client->message.WriteLong(pr_global_struct->total_monsters);
 
 	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(STAT_SECRETS);
+	host_client->message.WriteByte(Q1STAT_SECRETS);
 	host_client->message.WriteLong(pr_global_struct->found_secrets);
 
 	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(STAT_MONSTERS);
+	host_client->message.WriteByte(Q1STAT_MONSTERS);
 	host_client->message.WriteLong(pr_global_struct->killed_monsters);
 
 

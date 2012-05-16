@@ -533,7 +533,7 @@ void Sbar_DrawInventory(void)
 // weapons
 	for (i = 0; i < 7; i++)
 	{
-		if (cl.qh_stats[STAT_ITEMS] & (IT_SHOTGUN << i))
+		if (cl.qh_stats[QWSTAT_ITEMS] & (IT_SHOTGUN << i))
 		{
 			time = cl.q1_item_gettime[i];
 			flashon = (int)((cl.qh_serverTimeFloat - time) * 10);
@@ -543,7 +543,7 @@ void Sbar_DrawInventory(void)
 			}
 			if (flashon >= 10)
 			{
-				if (cl.qh_stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
+				if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
 				{
 					flashon = 1;
 				}
@@ -575,7 +575,7 @@ void Sbar_DrawInventory(void)
 // ammo counts
 	for (i = 0; i < 4; i++)
 	{
-		sprintf(num, "%3i",cl.qh_stats[STAT_SHELLS + i]);
+		sprintf(num, "%3i",cl.qh_stats[Q1STAT_SHELLS + i]);
 		if (headsup)
 		{
 //			Sbar_DrawSubPic(3, -24, sb_ibar, 3, 0, 42,11);
@@ -613,7 +613,7 @@ void Sbar_DrawInventory(void)
 	flashon = 0;
 // items
 	for (i = 0; i < 6; i++)
-		if (cl.qh_stats[STAT_ITEMS] & (1 << (17 + i)))
+		if (cl.qh_stats[QWSTAT_ITEMS] & (1 << (17 + i)))
 		{
 			time = cl.q1_item_gettime[17 + i];
 			if (!(time &&   time > cl.qh_serverTimeFloat - 2 && flashon))
@@ -624,7 +624,7 @@ void Sbar_DrawInventory(void)
 
 // sigils
 	for (i = 0; i < 4; i++)
-		if (cl.qh_stats[STAT_ITEMS] & (1 << (28 + i)))
+		if (cl.qh_stats[QWSTAT_ITEMS] & (1 << (28 + i)))
 		{
 			time = cl.q1_item_gettime[28 + i];
 			if (!(time &&   time > cl.qh_serverTimeFloat - 2 && flashon))
@@ -714,35 +714,35 @@ void Sbar_DrawFace(void)
 {
 	int f, anim;
 
-	if ((cl.qh_stats[STAT_ITEMS] & (IT_INVISIBILITY | IT_INVULNERABILITY))
+	if ((cl.qh_stats[QWSTAT_ITEMS] & (IT_INVISIBILITY | IT_INVULNERABILITY))
 		== (IT_INVISIBILITY | IT_INVULNERABILITY))
 	{
 		Sbar_DrawPic(112, 0, sb_face_invis_invuln);
 		return;
 	}
-	if (cl.qh_stats[STAT_ITEMS] & IT_QUAD)
+	if (cl.qh_stats[QWSTAT_ITEMS] & IT_QUAD)
 	{
 		Sbar_DrawPic(112, 0, sb_face_quad);
 		return;
 	}
-	if (cl.qh_stats[STAT_ITEMS] & IT_INVISIBILITY)
+	if (cl.qh_stats[QWSTAT_ITEMS] & IT_INVISIBILITY)
 	{
 		Sbar_DrawPic(112, 0, sb_face_invis);
 		return;
 	}
-	if (cl.qh_stats[STAT_ITEMS] & IT_INVULNERABILITY)
+	if (cl.qh_stats[QWSTAT_ITEMS] & IT_INVULNERABILITY)
 	{
 		Sbar_DrawPic(112, 0, sb_face_invuln);
 		return;
 	}
 
-	if (cl.qh_stats[STAT_HEALTH] >= 100)
+	if (cl.qh_stats[Q1STAT_HEALTH] >= 100)
 	{
 		f = 4;
 	}
 	else
 	{
-		f = cl.qh_stats[STAT_HEALTH] / 20;
+		f = cl.qh_stats[Q1STAT_HEALTH] / 20;
 	}
 
 	if (cl.qh_serverTimeFloat <= cl.q1_faceanimtime)
@@ -769,24 +769,24 @@ void Sbar_DrawNormal(void)
 	}
 
 // armor
-	if (cl.qh_stats[STAT_ITEMS] & IT_INVULNERABILITY)
+	if (cl.qh_stats[QWSTAT_ITEMS] & IT_INVULNERABILITY)
 	{
 		Sbar_DrawNum(24, 0, 666, 3, 1);
 		Sbar_DrawPic(0, 0, draw_disc);
 	}
 	else
 	{
-		Sbar_DrawNum(24, 0, cl.qh_stats[STAT_ARMOR], 3,
-			cl.qh_stats[STAT_ARMOR] <= 25);
-		if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR3)
+		Sbar_DrawNum(24, 0, cl.qh_stats[Q1STAT_ARMOR], 3,
+			cl.qh_stats[Q1STAT_ARMOR] <= 25);
+		if (cl.qh_stats[QWSTAT_ITEMS] & IT_ARMOR3)
 		{
 			Sbar_DrawPic(0, 0, sb_armor[2]);
 		}
-		else if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR2)
+		else if (cl.qh_stats[QWSTAT_ITEMS] & IT_ARMOR2)
 		{
 			Sbar_DrawPic(0, 0, sb_armor[1]);
 		}
-		else if (cl.qh_stats[STAT_ITEMS] & IT_ARMOR1)
+		else if (cl.qh_stats[QWSTAT_ITEMS] & IT_ARMOR1)
 		{
 			Sbar_DrawPic(0, 0, sb_armor[0]);
 		}
@@ -796,29 +796,29 @@ void Sbar_DrawNormal(void)
 	Sbar_DrawFace();
 
 // health
-	Sbar_DrawNum(136, 0, cl.qh_stats[STAT_HEALTH], 3,
-		cl.qh_stats[STAT_HEALTH] <= 25);
+	Sbar_DrawNum(136, 0, cl.qh_stats[Q1STAT_HEALTH], 3,
+		cl.qh_stats[Q1STAT_HEALTH] <= 25);
 
 // ammo icon
-	if (cl.qh_stats[STAT_ITEMS] & IT_SHELLS)
+	if (cl.qh_stats[QWSTAT_ITEMS] & IT_SHELLS)
 	{
 		Sbar_DrawPic(224, 0, sb_ammo[0]);
 	}
-	else if (cl.qh_stats[STAT_ITEMS] & IT_NAILS)
+	else if (cl.qh_stats[QWSTAT_ITEMS] & IT_NAILS)
 	{
 		Sbar_DrawPic(224, 0, sb_ammo[1]);
 	}
-	else if (cl.qh_stats[STAT_ITEMS] & IT_ROCKETS)
+	else if (cl.qh_stats[QWSTAT_ITEMS] & IT_ROCKETS)
 	{
 		Sbar_DrawPic(224, 0, sb_ammo[2]);
 	}
-	else if (cl.qh_stats[STAT_ITEMS] & IT_CELLS)
+	else if (cl.qh_stats[QWSTAT_ITEMS] & IT_CELLS)
 	{
 		Sbar_DrawPic(224, 0, sb_ammo[3]);
 	}
 
-	Sbar_DrawNum(248, 0, cl.qh_stats[STAT_AMMO], 3,
-		cl.qh_stats[STAT_AMMO] <= 10);
+	Sbar_DrawNum(248, 0, cl.qh_stats[Q1STAT_AMMO], 3,
+		cl.qh_stats[Q1STAT_AMMO] <= 10);
 }
 
 /*
@@ -864,7 +864,7 @@ void Sbar_Draw(void)
 			}
 			else
 			{
-				if (sb_showscores || cl.qh_stats[STAT_HEALTH] <= 0)
+				if (sb_showscores || cl.qh_stats[Q1STAT_HEALTH] <= 0)
 				{
 					Sbar_SoloScoreboard();
 				}
@@ -879,7 +879,7 @@ void Sbar_Draw(void)
 				Sbar_DrawString(0, -8, st);
 			}
 		}
-		else if (sb_showscores || cl.qh_stats[STAT_HEALTH] <= 0)
+		else if (sb_showscores || cl.qh_stats[Q1STAT_HEALTH] <= 0)
 		{
 			Sbar_SoloScoreboard();
 		}
@@ -891,7 +891,7 @@ void Sbar_Draw(void)
 
 // main screen deathmatch rankings
 	// if we're dead show team scores in team games
-	if (cl.qh_stats[STAT_HEALTH] <= 0 && !cl.qh_spectator)
+	if (cl.qh_stats[Q1STAT_HEALTH] <= 0 && !cl.qh_spectator)
 	{
 		if (String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay")) > 0 &&
 			!sb_showscores)

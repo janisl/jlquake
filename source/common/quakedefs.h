@@ -270,3 +270,23 @@ struct qwpacket_entities_t
 #define MAX_LIGHTSTYLES_Q1  64
 #define MAX_MODELS_Q1       256			// these are sent over the net as bytes
 #define MAX_SOUNDS_Q1       256			// so they cannot be blindly increased
+
+//
+// stats are integers communicated to the client by the server
+//
+#define Q1STAT_HEALTH         0
+#define Q1STAT_FRAGS          1
+#define Q1STAT_WEAPON         2
+#define Q1STAT_AMMO           3
+#define Q1STAT_ARMOR          4
+#define Q1STAT_WEAPONFRAME    5
+#define Q1STAT_SHELLS         6
+#define Q1STAT_NAILS          7
+#define Q1STAT_ROCKETS        8
+#define Q1STAT_CELLS          9
+#define Q1STAT_ACTIVEWEAPON   10
+#define Q1STAT_TOTALSECRETS   11
+#define Q1STAT_TOTALMONSTERS  12
+#define Q1STAT_SECRETS        13		// bumped on client side by q1svc_foundsecret
+#define Q1STAT_MONSTERS       14		// bumped by q1svc_killedmonster
+#define QWSTAT_ITEMS          15

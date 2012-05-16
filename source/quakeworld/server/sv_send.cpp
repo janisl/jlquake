@@ -578,20 +578,20 @@ void SV_UpdateClientStats(client_t* client)
 		ent = svs.clients[client->spec_track - 1].edict;
 	}
 
-	stats[STAT_HEALTH] = ent->GetHealth();
-	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
-	stats[STAT_AMMO] = ent->GetCurrentAmmo();
-	stats[STAT_ARMOR] = ent->GetArmorValue();
-	stats[STAT_SHELLS] = ent->GetAmmoShells();
-	stats[STAT_NAILS] = ent->GetAmmoNails();
-	stats[STAT_ROCKETS] = ent->GetAmmoRockets();
-	stats[STAT_CELLS] = ent->GetAmmoCells();
+	stats[Q1STAT_HEALTH] = ent->GetHealth();
+	stats[Q1STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	stats[Q1STAT_AMMO] = ent->GetCurrentAmmo();
+	stats[Q1STAT_ARMOR] = ent->GetArmorValue();
+	stats[Q1STAT_SHELLS] = ent->GetAmmoShells();
+	stats[Q1STAT_NAILS] = ent->GetAmmoNails();
+	stats[Q1STAT_ROCKETS] = ent->GetAmmoRockets();
+	stats[Q1STAT_CELLS] = ent->GetAmmoCells();
 	if (!client->spectator)
 	{
-		stats[STAT_ACTIVEWEAPON] = ent->GetWeapon();
+		stats[Q1STAT_ACTIVEWEAPON] = ent->GetWeapon();
 	}
 	// stuff the sigil bits into the high bits of items for sbar
-	stats[STAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
+	stats[QWSTAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
 
 	for (i = 0; i < MAX_CL_STATS; i++)
 		if (stats[i] != client->stats[i])

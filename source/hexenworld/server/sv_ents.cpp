@@ -1398,7 +1398,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		ent = cl->edict;
 #endif
 
-		pflags = PF_MSEC | PF_COMMAND;
+		pflags = HWPF_MSEC | HWPF_COMMAND;
 
 		if (ent->v.modelindex != sv_playermodel[0] &&	//paladin
 			ent->v.modelindex != sv_playermodel[1] &&	//crusader
@@ -1407,7 +1407,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			ent->v.modelindex != sv_playermodel[4] &&	//succ
 			ent->v.modelindex != sv_playermodel[5])	//dwarf
 		{
-			pflags |= PF_MODEL;
+			pflags |= HWPF_MODEL;
 		}
 		else
 		{
@@ -1417,15 +1417,15 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		for (i = 0; i < 3; i++)
 			if (ent->GetVelocity()[i])
 			{
-				pflags |= PF_VELOCITY1 << i;
+				pflags |= HWPF_VELOCITY1 << i;
 			}
 		if (((long)ent->GetEffects() & 0xff))
 		{
-			pflags |= PF_EFFECTS;
+			pflags |= HWPF_EFFECTS;
 		}
 		if (((long)ent->GetEffects() & 0xff00))
 		{
-			pflags |= PF_EFFECTS2;
+			pflags |= HWPF_EFFECTS2;
 		}
 		if (ent->GetSkin())
 		{
@@ -1438,45 +1438,45 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			//us 1 byte per client per frame!
 			else
 			{
-				pflags |= PF_SKINNUM;
+				pflags |= HWPF_SKINNUM;
 			}
 		}
 		if (ent->GetHealth() <= 0)
 		{
-			pflags |= PF_DEAD;
+			pflags |= HWPF_DEAD;
 		}
 		if (ent->GetHull() == HULL_CROUCH)
 		{
-			pflags |= PF_CROUCH;
+			pflags |= HWPF_CROUCH;
 		}
 
 		if (cl->spectator)
 		{	// only sent origin and velocity to spectators
-			pflags &= PF_VELOCITY1 | PF_VELOCITY2 | PF_VELOCITY3;
+			pflags &= HWPF_VELOCITY1 | HWPF_VELOCITY2 | HWPF_VELOCITY3;
 		}
 		else if (ent == clent)
 		{	// don't send a lot of data on personal entity
-			pflags &= ~(PF_MSEC | PF_COMMAND);
+			pflags &= ~(HWPF_MSEC | HWPF_COMMAND);
 			if (ent->GetWeaponFrame())
 			{
-				pflags |= PF_WEAPONFRAME;
+				pflags |= HWPF_WEAPONFRAME;
 			}
 		}
 		if (ent->GetDrawFlags())
 		{
-			pflags |= PF_DRAWFLAGS;
+			pflags |= HWPF_DRAWFLAGS;
 		}
 		if (ent->GetScale() != 0 && ent->GetScale() != 1.0)
 		{
-			pflags |= PF_SCALE;
+			pflags |= HWPF_SCALE;
 		}
 		if (ent->GetAbsLight() != 0)
 		{
-			pflags |= PF_ABSLIGHT;
+			pflags |= HWPF_ABSLIGHT;
 		}
 		if (ent->GetWpnSound())
 		{
-			pflags |= PF_SOUND;
+			pflags |= HWPF_SOUND;
 		}
 
 		msg->WriteByte(hwsvc_playerinfo);
@@ -1488,7 +1488,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		msg->WriteByte(ent->GetFrame());
 
-		if (pflags & PF_MSEC)
+		if (pflags & HWPF_MSEC)
 		{
 			msec = 1000 * (sv.time - cl->localtime);
 			if (msec > 255)
@@ -1498,7 +1498,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			msg->WriteByte(msec);
 		}
 
-		if (pflags & PF_COMMAND)
+		if (pflags & HWPF_COMMAND)
 		{
 			cmd = cl->lastcmd;
 
@@ -1515,50 +1515,50 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		}
 
 		for (i = 0; i < 3; i++)
-			if (pflags & (PF_VELOCITY1 << i))
+			if (pflags & (HWPF_VELOCITY1 << i))
 			{
 				msg->WriteShort(ent->GetVelocity()[i]);
 			}
 
 //rjr
-		if (pflags & PF_MODEL)
+		if (pflags & HWPF_MODEL)
 		{
 			msg->WriteShort(ent->v.modelindex);
 		}
 
-		if (pflags & PF_SKINNUM)
+		if (pflags & HWPF_SKINNUM)
 		{
 			msg->WriteByte(ent->GetSkin());
 		}
 
-		if (pflags & PF_EFFECTS)
+		if (pflags & HWPF_EFFECTS)
 		{
 			msg->WriteByte(((long)ent->GetEffects() & 0xff));
 		}
 
-		if (pflags & PF_EFFECTS2)
+		if (pflags & HWPF_EFFECTS2)
 		{
 			msg->WriteByte(((long)ent->GetEffects() & 0xff00) >> 8);
 		}
 
-		if (pflags & PF_WEAPONFRAME)
+		if (pflags & HWPF_WEAPONFRAME)
 		{
 			msg->WriteByte(ent->GetWeaponFrame());
 		}
 
-		if (pflags & PF_DRAWFLAGS)
+		if (pflags & HWPF_DRAWFLAGS)
 		{
 			msg->WriteByte(ent->GetDrawFlags());
 		}
-		if (pflags & PF_SCALE)
+		if (pflags & HWPF_SCALE)
 		{
 			msg->WriteByte((int)(ent->GetScale() * 100.0) & 255);
 		}
-		if (pflags & PF_ABSLIGHT)
+		if (pflags & HWPF_ABSLIGHT)
 		{
 			msg->WriteByte((int)(ent->GetAbsLight() * 100.0) & 255);
 		}
-		if (pflags & PF_SOUND)
+		if (pflags & HWPF_SOUND)
 		{
 			msg->WriteShort(ent->GetWpnSound());
 		}

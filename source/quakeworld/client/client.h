@@ -106,16 +106,7 @@ void V_ParseDamage(void);
 //
 // cl_ents.c
 //
-void CL_SetSolidPlayers(int playernum);
-void CL_SetUpPlayerPrediction(qboolean dopred);
 void CL_EmitEntities(void);
 void CL_SetSolidEntities(void);
-
-//
-// cl_pred.c
-//
-void CL_InitPrediction(void);
-void CL_PredictMove(void);
-void CL_PredictUsercmd(qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t* u, qboolean spectator);
 
 extern int clq1_playerindex, cl_flagindex;

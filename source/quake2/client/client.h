@@ -167,8 +167,6 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org);
 //
 // cl_pred.c
 //
-void CL_InitPrediction(void);
-void CL_PredictMove(void);
 void CL_CheckPredictionError(void);
 
 //

@@ -755,11 +755,11 @@ static void V_CalcRefdef(void)
 	}
 	else
 	{
-		if (view_message->flags & PF_CROUCH)
+		if (view_message->flags & HWPF_CROUCH)
 		{
 			cl.refdef.vieworg[2] += 24;	// gib view height
 		}
-		else if (view_message->flags & PF_DEAD)
+		else if (view_message->flags & HWPF_DEAD)
 		{
 			cl.refdef.vieworg[2] += 8;	// corpse view height
 		}
@@ -768,7 +768,7 @@ static void V_CalcRefdef(void)
 			cl.refdef.vieworg[2] += 50;	// view height
 
 		}
-		if (view_message->flags & PF_DEAD)		// PF_GIB will also set PF_DEAD
+		if (view_message->flags & HWPF_DEAD)		// PF_GIB will also set HWPF_DEAD
 		{
 			viewangles[ROLL] = 80;	// dead view angle
 		}
@@ -813,7 +813,7 @@ static void V_CalcRefdef(void)
 		view->state.origin[2] += 0.5;
 	}
 
-	if (view_message->flags & (PF_DEAD))
+	if (view_message->flags & (HWPF_DEAD))
 	{
 		view->state.modelindex = 0;
 	}

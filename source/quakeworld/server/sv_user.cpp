@@ -394,19 +394,19 @@ void SV_Spawn_f(void)
 	Com_Memset(host_client->stats, 0, sizeof(host_client->stats));
 
 	ClientReliableWrite_Begin(host_client, qwsvc_updatestatlong, 6);
-	ClientReliableWrite_Byte(host_client, STAT_TOTALSECRETS);
+	ClientReliableWrite_Byte(host_client, Q1STAT_TOTALSECRETS);
 	ClientReliableWrite_Long(host_client, pr_global_struct->total_secrets);
 
 	ClientReliableWrite_Begin(host_client, qwsvc_updatestatlong, 6);
-	ClientReliableWrite_Byte(host_client, STAT_TOTALMONSTERS);
+	ClientReliableWrite_Byte(host_client, Q1STAT_TOTALMONSTERS);
 	ClientReliableWrite_Long(host_client, pr_global_struct->total_monsters);
 
 	ClientReliableWrite_Begin(host_client, qwsvc_updatestatlong, 6);
-	ClientReliableWrite_Byte(host_client, STAT_SECRETS);
+	ClientReliableWrite_Byte(host_client, Q1STAT_SECRETS);
 	ClientReliableWrite_Long(host_client, pr_global_struct->found_secrets);
 
 	ClientReliableWrite_Begin(host_client, qwsvc_updatestatlong, 6);
-	ClientReliableWrite_Byte(host_client, STAT_MONSTERS);
+	ClientReliableWrite_Byte(host_client, Q1STAT_MONSTERS);
 	ClientReliableWrite_Long(host_client, pr_global_struct->killed_monsters);
 
 	// get the client to check and download skins

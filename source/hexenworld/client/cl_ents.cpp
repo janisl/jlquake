@@ -2,17 +2,6 @@
 
 #include "quakedef.h"
 
-extern Cvar* cl_predict_players;
-extern Cvar* cl_predict_players2;
-extern Cvar* cl_solid_players;
-
-static struct predicted_player
-{
-	int flags;
-	qboolean active;
-	vec3_t origin;	// predicted origin
-} predicted_players[HWMAX_CLIENTS];
-
 #define HWU_MODEL       (1 << 16)
 #define HWU_SOUND       (1 << 17)
 #define HWU_DRAWFLAGS (1 << 18)
@@ -763,7 +752,7 @@ void CL_ParsePlayerinfo(void)
 	// the other player's last move was likely some time
 	// before the packet was sent out, so accurately track
 	// the exact time it was valid at
-	if (flags & PF_MSEC)
+	if (flags & HWPF_MSEC)
 	{
 		msec = net_message.ReadByte();
 		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime - msec * 0.001;
@@ -773,14 +762,14 @@ void CL_ParsePlayerinfo(void)
 		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
 	}
 
-	if (flags & PF_COMMAND)
+	if (flags & HWPF_COMMAND)
 	{
 		MSG_ReadUsercmd(&state->command, false);
 	}
 
 	for (i = 0; i < 3; i++)
 	{
-		if (flags & (PF_VELOCITY1 << i))
+		if (flags & (HWPF_VELOCITY1 << i))
 		{
 			state->velocity[i] = net_message.ReadShort();
 		}
@@ -790,7 +779,7 @@ void CL_ParsePlayerinfo(void)
 		}
 	}
 
-	if (flags & PF_MODEL)
+	if (flags & HWPF_MODEL)
 	{
 		state->modelindex = net_message.ReadShort();
 	}
@@ -808,7 +797,7 @@ void CL_ParsePlayerinfo(void)
 		}
 	}
 
-	if (flags & PF_SKINNUM)
+	if (flags & HWPF_SKINNUM)
 	{
 		state->skinnum = net_message.ReadByte();
 	}
@@ -824,7 +813,7 @@ void CL_ParsePlayerinfo(void)
 		}
 	}
 
-	if (flags & PF_EFFECTS)
+	if (flags & HWPF_EFFECTS)
 	{
 		state->effects = net_message.ReadByte();
 	}
@@ -833,7 +822,7 @@ void CL_ParsePlayerinfo(void)
 		state->effects = 0;
 	}
 
-	if (flags & PF_EFFECTS2)
+	if (flags & HWPF_EFFECTS2)
 	{
 		state->effects |= (net_message.ReadByte() << 8);
 	}
@@ -842,7 +831,7 @@ void CL_ParsePlayerinfo(void)
 		state->effects &= 0xff;
 	}
 
-	if (flags & PF_WEAPONFRAME)
+	if (flags & HWPF_WEAPONFRAME)
 	{
 		state->weaponframe = net_message.ReadByte();
 	}
@@ -851,7 +840,7 @@ void CL_ParsePlayerinfo(void)
 		state->weaponframe = 0;
 	}
 
-	if (flags & PF_DRAWFLAGS)
+	if (flags & HWPF_DRAWFLAGS)
 	{
 		state->drawflags = net_message.ReadByte();
 	}
@@ -860,7 +849,7 @@ void CL_ParsePlayerinfo(void)
 		state->drawflags = 0;
 	}
 
-	if (flags & PF_SCALE)
+	if (flags & HWPF_SCALE)
 	{
 		state->scale = net_message.ReadByte();
 	}
@@ -869,7 +858,7 @@ void CL_ParsePlayerinfo(void)
 		state->scale = 0;
 	}
 
-	if (flags & PF_ABSLIGHT)
+	if (flags & HWPF_ABSLIGHT)
 	{
 		state->abslight = net_message.ReadByte();
 	}
@@ -878,7 +867,7 @@ void CL_ParsePlayerinfo(void)
 		state->abslight = 0;
 	}
 
-	if (flags & PF_SOUND)
+	if (flags & HWPF_SOUND)
 	{
 		i = net_message.ReadShort();
 		S_StartSound(state->origin, num, 1, cl.sound_precache[i], 1.0, 1.0);
@@ -984,8 +973,8 @@ void CL_LinkPlayers(void)
 			//Con_DPrintf ("predict: %i\n", msec);
 
 			oldphysent = qh_pmove.numphysent;
-			CL_SetSolidPlayers(j);
-			CL_PredictUsercmd(state, &exact, &state->command, false);
+			CLQHW_SetSolidPlayers(j);
+			CLHW_PredictUsercmd(state, &exact, &state->command, false);
 			qh_pmove.numphysent = oldphysent;
 			VectorCopy(exact.origin, ent.origin);
 		}
@@ -1115,148 +1104,6 @@ void CL_SetSolidEntities(void)
 		qh_pmove.numphysent++;
 	}
 
-}
-
-/*
-===
-Calculate the new position of players, without other player clipping
-
-We do this to set up real player prediction.
-Players are predicted twice, first without clipping other players,
-then with clipping against them.
-This sets up the first phase.
-===
-*/
-void CL_SetUpPlayerPrediction(qboolean dopred)
-{
-	int j;
-
-	hwplayer_state_t* state;
-	hwplayer_state_t exact;
-	double playertime;
-	int msec;
-	hwframe_t* frame;
-	struct predicted_player* pplayer;
-
-	playertime = realtime - cls.qh_latency + 0.02;
-	if (playertime > realtime)
-	{
-		playertime = realtime;
-	}
-
-	frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
-
-	for (j = 0, pplayer = predicted_players, state = frame->playerstate;
-		 j < HWMAX_CLIENTS;
-		 j++, pplayer++, state++)
-	{
-
-		pplayer->active = false;
-
-		if (state->messagenum != cl.qh_parsecount)
-		{
-			continue;	// not present this frame
-
-		}
-		if (!state->modelindex)
-		{
-			continue;
-		}
-
-		pplayer->active = true;
-		pplayer->flags = state->flags;
-
-		// note that the local player is special, since he moves locally
-		// we use his last predicted postition
-		if (j == cl.playernum)
-		{
-			VectorCopy(cl.hw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_HW].playerstate[cl.playernum].origin,
-				pplayer->origin);
-		}
-		else
-		{
-			// only predict half the move to minimize overruns
-			msec = 500 * (playertime - state->state_time);
-			if (msec <= 0 ||
-				(!cl_predict_players->value && !cl_predict_players2->value) ||
-				!dopred)
-			{
-				VectorCopy(state->origin, pplayer->origin);
-				//Con_DPrintf ("nopredict\n");
-			}
-			else
-			{
-				// predict players movement
-				if (msec > 255)
-				{
-					msec = 255;
-				}
-				state->command.msec = msec;
-				//Con_DPrintf ("predict: %i\n", msec);
-
-				CL_PredictUsercmd(state, &exact, &state->command, false);
-				VectorCopy(exact.origin, pplayer->origin);
-			}
-		}
-	}
-}
-
-/*
-===============
-CL_SetSolid
-
-Builds all the qh_pmove physents for the current frame
-Note that CL_SetUpPlayerPrediction() must be called first!
-qh_pmove must be setup with world and solid entity hulls before calling
-(via CL_PredictMove)
-===============
-*/
-void CL_SetSolidPlayers(int playernum)
-{
-	int j;
-	struct predicted_player* pplayer;
-	qhphysent_t* pent;
-
-	if (!cl_solid_players->value)
-	{
-		return;
-	}
-
-	pent = qh_pmove.physents + qh_pmove.numphysent;
-
-	for (j = 0, pplayer = predicted_players; j < HWMAX_CLIENTS; j++, pplayer++)
-	{
-
-		if (!pplayer->active)
-		{
-			continue;	// not present this frame
-
-		}
-		// the player object never gets added
-		if (j == playernum)
-		{
-			continue;
-		}
-
-		if (pplayer->flags & PF_DEAD)
-		{
-			continue;	// dead players aren't solid
-
-		}
-		pent->model = -1;
-		VectorCopy(pplayer->origin, pent->origin);
-		VectorCopy(pmqh_player_mins, pent->mins);
-		if (pplayer->flags & PF_CROUCH)
-		{
-			VectorCopy(pmqh_player_maxs_crouch, pent->maxs);
-		}
-		else
-		{
-			VectorCopy(pmqh_player_maxs, pent->maxs);
-		}
-		qh_pmove.numphysent++;
-		pent++;
-	}
 }
 
 static void CL_LinkStaticEntities()

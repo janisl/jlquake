@@ -475,10 +475,10 @@ void Sbar_SoloScoreboard(void)
 	int minutes, seconds, tens, units;
 	int l;
 
-	sprintf(str,"Monsters:%3i /%3i", cl.qh_stats[STAT_MONSTERS], cl.qh_stats[STAT_TOTALMONSTERS]);
+	sprintf(str,"Monsters:%3i /%3i", cl.qh_stats[Q1STAT_MONSTERS], cl.qh_stats[Q1STAT_TOTALMONSTERS]);
 	Sbar_DrawString(8, 4, str);
 
-	sprintf(str,"Secrets :%3i /%3i", cl.qh_stats[STAT_SECRETS], cl.qh_stats[STAT_TOTALSECRETS]);
+	sprintf(str,"Secrets :%3i /%3i", cl.qh_stats[Q1STAT_SECRETS], cl.qh_stats[Q1STAT_TOTALSECRETS]);
 	Sbar_DrawString(8, 12, str);
 
 // time
@@ -573,7 +573,7 @@ void Sbar_DrawInventory(void)
 
 	if (rogue)
 	{
-		if (cl.qh_stats[STAT_ACTIVEWEAPON] >= RIT_LAVA_NAILGUN)
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] >= RIT_LAVA_NAILGUN)
 		{
 			Sbar_DrawPic(0, -24, rsb_invbar[0]);
 		}
@@ -596,7 +596,7 @@ void Sbar_DrawInventory(void)
 			flashon = (int)((cl.qh_serverTimeFloat - time) * 10);
 			if (flashon >= 10)
 			{
-				if (cl.qh_stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
+				if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
 				{
 					flashon = 1;
 				}
@@ -627,7 +627,7 @@ void Sbar_DrawInventory(void)
 				flashon = (int)((cl.qh_serverTimeFloat - time) * 10);
 				if (flashon >= 10)
 				{
-					if (cl.qh_stats[STAT_ACTIVEWEAPON] == (1 << hipweapons[i]))
+					if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] == (1 << hipweapons[i]))
 					{
 						flashon = 1;
 					}
@@ -682,11 +682,11 @@ void Sbar_DrawInventory(void)
 	if (rogue)
 	{
 		// check for powered up weapon.
-		if (cl.qh_stats[STAT_ACTIVEWEAPON] >= RIT_LAVA_NAILGUN)
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] >= RIT_LAVA_NAILGUN)
 		{
 			for (i = 0; i < 5; i++)
 			{
-				if (cl.qh_stats[STAT_ACTIVEWEAPON] == (RIT_LAVA_NAILGUN << i))
+				if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] == (RIT_LAVA_NAILGUN << i))
 				{
 					Sbar_DrawPic((i + 2) * 24, -16, rsb_weapons[i]);
 				}
@@ -697,7 +697,7 @@ void Sbar_DrawInventory(void)
 // ammo counts
 	for (i = 0; i < 4; i++)
 	{
-		sprintf(num, "%3i",cl.qh_stats[STAT_SHELLS + i]);
+		sprintf(num, "%3i",cl.qh_stats[Q1STAT_SHELLS + i]);
 		if (num[0] != ' ')
 		{
 			Sbar_DrawCharacter((6 * i + 1) * 8 - 2, -24, 18 + num[0] - '0');
@@ -938,13 +938,13 @@ void Sbar_DrawFace(void)
 		return;
 	}
 
-	if (cl.qh_stats[STAT_HEALTH] >= 100)
+	if (cl.qh_stats[Q1STAT_HEALTH] >= 100)
 	{
 		f = 4;
 	}
 	else
 	{
-		f = cl.qh_stats[STAT_HEALTH] / 20;
+		f = cl.qh_stats[Q1STAT_HEALTH] / 20;
 	}
 
 	if (cl.qh_serverTimeFloat <= cl.q1_faceanimtime)
@@ -984,7 +984,7 @@ void Sbar_Draw(void)
 		}
 	}
 
-	if (sb_showscores || cl.qh_stats[STAT_HEALTH] <= 0)
+	if (sb_showscores || cl.qh_stats[Q1STAT_HEALTH] <= 0)
 	{
 		Sbar_DrawPic(0, 0, sb_scorebar);
 		Sbar_DrawScoreboard();
@@ -1016,8 +1016,8 @@ void Sbar_Draw(void)
 		{
 			if (rogue)
 			{
-				Sbar_DrawNum(24, 0, cl.qh_stats[STAT_ARMOR], 3,
-					cl.qh_stats[STAT_ARMOR] <= 25);
+				Sbar_DrawNum(24, 0, cl.qh_stats[Q1STAT_ARMOR], 3,
+					cl.qh_stats[Q1STAT_ARMOR] <= 25);
 				if (cl.q1_items & RIT_ARMOR3)
 				{
 					Sbar_DrawPic(0, 0, sb_armor[2]);
@@ -1033,8 +1033,8 @@ void Sbar_Draw(void)
 			}
 			else
 			{
-				Sbar_DrawNum(24, 0, cl.qh_stats[STAT_ARMOR], 3,
-					cl.qh_stats[STAT_ARMOR] <= 25);
+				Sbar_DrawNum(24, 0, cl.qh_stats[Q1STAT_ARMOR], 3,
+					cl.qh_stats[Q1STAT_ARMOR] <= 25);
 				if (cl.q1_items & IT_ARMOR3)
 				{
 					Sbar_DrawPic(0, 0, sb_armor[2]);
@@ -1054,8 +1054,8 @@ void Sbar_Draw(void)
 		Sbar_DrawFace();
 
 		// health
-		Sbar_DrawNum(136, 0, cl.qh_stats[STAT_HEALTH], 3,
-			cl.qh_stats[STAT_HEALTH] <= 25);
+		Sbar_DrawNum(136, 0, cl.qh_stats[Q1STAT_HEALTH], 3,
+			cl.qh_stats[Q1STAT_HEALTH] <= 25);
 
 		// ammo icon
 		if (rogue)
@@ -1109,8 +1109,8 @@ void Sbar_Draw(void)
 			}
 		}
 
-		Sbar_DrawNum(248, 0, cl.qh_stats[STAT_AMMO], 3,
-			cl.qh_stats[STAT_AMMO] <= 10);
+		Sbar_DrawNum(248, 0, cl.qh_stats[Q1STAT_AMMO], 3,
+			cl.qh_stats[Q1STAT_AMMO] <= 10);
 	}
 
 	if (viddef.width > 320)
@@ -1389,13 +1389,13 @@ void Sbar_IntermissionOverlay(void)
 	UI_DrawPic(246,64,sb_nums[0][num / 10]);
 	UI_DrawPic(266,64,sb_nums[0][num % 10]);
 
-	Sbar_IntermissionNumber(160, 104, cl.qh_stats[STAT_SECRETS], 3, 0);
+	Sbar_IntermissionNumber(160, 104, cl.qh_stats[Q1STAT_SECRETS], 3, 0);
 	UI_DrawPic(232,104,sb_slash);
-	Sbar_IntermissionNumber(240, 104, cl.qh_stats[STAT_TOTALSECRETS], 3, 0);
+	Sbar_IntermissionNumber(240, 104, cl.qh_stats[Q1STAT_TOTALSECRETS], 3, 0);
 
-	Sbar_IntermissionNumber(160, 144, cl.qh_stats[STAT_MONSTERS], 3, 0);
+	Sbar_IntermissionNumber(160, 144, cl.qh_stats[Q1STAT_MONSTERS], 3, 0);
 	UI_DrawPic(232,144,sb_slash);
-	Sbar_IntermissionNumber(240, 144, cl.qh_stats[STAT_TOTALMONSTERS], 3, 0);
+	Sbar_IntermissionNumber(240, 144, cl.qh_stats[Q1STAT_TOTALMONSTERS], 3, 0);
 
 }
 

@@ -619,7 +619,7 @@ static void V_CalcViewRoll(vec3_t viewangles)
 		v_dmg_time -= host_frametime;
 	}
 
-	if (cl.qh_stats[STAT_HEALTH] <= 0)
+	if (cl.qh_stats[Q1STAT_HEALTH] <= 0)
 	{
 		viewangles[ROLL] = 80;	// dead view angle
 		return;
@@ -742,7 +742,7 @@ static void V_CalcRefdef(void)
 // roughly equal with different FOV
 
 #if 0
-	if (cl.model_precache[cl.stats[STAT_WEAPON]] && String::Cmp(cl.model_precache[cl.stats[STAT_WEAPON]]->name,  "progs/v_shot2.mdl"))
+	if (cl.model_precache[cl.stats[Q1STAT_WEAPON]] && String::Cmp(cl.model_precache[cl.stats[Q1STAT_WEAPON]]->name,  "progs/v_shot2.mdl"))
 #endif
 	if (scr_viewsize->value == 110)
 	{
@@ -761,8 +761,8 @@ static void V_CalcRefdef(void)
 		view->state.origin[2] += 0.5;
 	}
 
-	view->state.modelindex = cl.qh_stats[STAT_WEAPON];
-	view->state.frame = cl.qh_stats[STAT_WEAPONFRAME];
+	view->state.modelindex = cl.qh_stats[Q1STAT_WEAPON];
+	view->state.frame = cl.qh_stats[Q1STAT_WEAPONFRAME];
 	view->state.colormap = 0;
 
 // set up the refresh position
@@ -821,7 +821,7 @@ static void CL_AddViewModel()
 		return;
 	}
 
-	if (cl.qh_stats[STAT_HEALTH] <= 0)
+	if (cl.qh_stats[Q1STAT_HEALTH] <= 0)
 	{
 		return;
 	}

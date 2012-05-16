@@ -1007,7 +1007,7 @@ void CL_SetStat(int stat, int value)
 		Sys_Error("CL_SetStat: %i is invalid", stat);
 	}
 
-	if (stat == STAT_ITEMS)
+	if (stat == QWSTAT_ITEMS)
 	{	// set flash times
 		for (j = 0; j < 32; j++)
 			if ((value & (1 << j)) && !(cl.qh_stats[stat] & (1 << j)))
@@ -1219,11 +1219,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_killedmonster:
-			cl.qh_stats[STAT_MONSTERS]++;
+			cl.qh_stats[Q1STAT_MONSTERS]++;
 			break;
 
 		case q1svc_foundsecret:
-			cl.qh_stats[STAT_SECRETS]++;
+			cl.qh_stats[Q1STAT_SECRETS]++;
 			break;
 
 		case q1svc_updatestat:

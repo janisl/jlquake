@@ -62,3 +62,5 @@ byte* CLQW_SkinCache(qw_skin_t* skin);
 void CLQW_SkinNextDownload();
 void CLQW_SkinSkins_f();
 void CLQW_SkinAllSkins_f();
+
+#include "../quake_hexen2/predict.h"

@@ -21,17 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-extern Cvar* cl_predict_players;
-extern Cvar* cl_predict_players2;
-extern Cvar* cl_solid_players;
-
-static struct predicted_player
-{
-	int flags;
-	qboolean active;
-	vec3_t origin;	// predicted origin
-} predicted_players[MAX_CLIENTS_QW];
-
 /*
 =========================================================================
 
@@ -274,8 +263,8 @@ void CL_LinkPlayers(void)
 //Con_DPrintf ("predict: %i\n", msec);
 
 			oldphysent = qh_pmove.numphysent;
-			CL_SetSolidPlayers(j);
-			CL_PredictUsercmd(state, &exact, &state->command, false);
+			CLQHW_SetSolidPlayers(j);
+			CLQW_PredictUsercmd(state, &exact, &state->command, false);
 			qh_pmove.numphysent = oldphysent;
 			VectorCopy(exact.origin, ent.origin);
 		}
@@ -333,140 +322,6 @@ void CL_SetSolidEntities(void)
 		qh_pmove.numphysent++;
 	}
 
-}
-
-/*
-===
-Calculate the new position of players, without other player clipping
-
-We do this to set up real player prediction.
-Players are predicted twice, first without clipping other players,
-then with clipping against them.
-This sets up the first phase.
-===
-*/
-void CL_SetUpPlayerPrediction(qboolean dopred)
-{
-	int j;
-	qwplayer_state_t* state;
-	qwplayer_state_t exact;
-	double playertime;
-	int msec;
-	qwframe_t* frame;
-	struct predicted_player* pplayer;
-
-	playertime = realtime - cls.qh_latency + 0.02;
-	if (playertime > realtime)
-	{
-		playertime = realtime;
-	}
-
-	frame = &cl.qw_frames[cl.qh_parsecount & UPDATE_MASK_QW];
-
-	for (j = 0, pplayer = predicted_players, state = frame->playerstate;
-		 j < MAX_CLIENTS_QW;
-		 j++, pplayer++, state++)
-	{
-
-		pplayer->active = false;
-
-		if (state->messagenum != cl.qh_parsecount)
-		{
-			continue;	// not present this frame
-
-		}
-		if (!state->modelindex)
-		{
-			continue;
-		}
-
-		pplayer->active = true;
-		pplayer->flags = state->flags;
-
-		// note that the local player is special, since he moves locally
-		// we use his last predicted postition
-		if (j == cl.playernum)
-		{
-			VectorCopy(cl.qw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_QW].playerstate[cl.playernum].origin,
-				pplayer->origin);
-		}
-		else
-		{
-			// only predict half the move to minimize overruns
-			msec = 500 * (playertime - state->state_time);
-			if (msec <= 0 ||
-				(!cl_predict_players->value && !cl_predict_players2->value) ||
-				!dopred)
-			{
-				VectorCopy(state->origin, pplayer->origin);
-				//Con_DPrintf ("nopredict\n");
-			}
-			else
-			{
-				// predict players movement
-				if (msec > 255)
-				{
-					msec = 255;
-				}
-				state->command.msec = msec;
-				//Con_DPrintf ("predict: %i\n", msec);
-
-				CL_PredictUsercmd(state, &exact, &state->command, false);
-				VectorCopy(exact.origin, pplayer->origin);
-			}
-		}
-	}
-}
-
-/*
-===============
-CL_SetSolid
-
-Builds all the qh_pmove physents for the current frame
-Note that CL_SetUpPlayerPrediction() must be called first!
-qh_pmove must be setup with world and solid entity hulls before calling
-(via CL_PredictMove)
-===============
-*/
-void CL_SetSolidPlayers(int playernum)
-{
-	int j;
-	struct predicted_player* pplayer;
-	qhphysent_t* pent;
-
-	if (!cl_solid_players->value)
-	{
-		return;
-	}
-
-	pent = qh_pmove.physents + qh_pmove.numphysent;
-
-	for (j = 0, pplayer = predicted_players; j < MAX_CLIENTS_QW; j++, pplayer++)
-	{
-
-		if (!pplayer->active)
-		{
-			continue;	// not present this frame
-
-		}
-		// the player object never gets added
-		if (j == playernum)
-		{
-			continue;
-		}
-
-		if (pplayer->flags & QWPF_DEAD)
-		{
-			continue;	// dead players aren't solid
-
-		}
-		pent->model = -1;
-		VectorCopy(pplayer->origin, pent->origin);
-		VectorCopy(pmqh_player_mins, pent->mins);
-		VectorCopy(pmqh_player_maxs, pent->maxs);
-		qh_pmove.numphysent++;
-		pent++;
-	}
 }
 
 /*
