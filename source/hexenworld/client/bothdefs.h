@@ -103,10 +103,6 @@
 #define PRINT_CHAT          3		// chat messages
 #define PRINT_SOUND         4		// says a sound
 
-//Siege teams
-#define ST_DEFENDER                 1
-#define ST_ATTACKER                 2
-
 //Dm Modes
 #define DM_CAPTURE_THE_TOKEN        1
 #define DM_HUNTER                   2

@@ -104,7 +104,7 @@ const char* svc_strings[] =
 	"NEW PROTOCOL"
 };
 
-int cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
+int cl_spikeindex, cl_flagindex;
 
 //=============================================================================
 
@@ -568,12 +568,12 @@ void CL_ParseModellist(void)
 
 // precache models and note certain default indexes
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
-	cl_playerindex[0] = -1;
-	cl_playerindex[1] = -1;
-	cl_playerindex[2] = -1;
-	cl_playerindex[3] = -1;
-	cl_playerindex[4] = -1;
-	cl_playerindex[5] = -1;	//mg-siege
+	clhw_playerindex[0] = -1;
+	clhw_playerindex[1] = -1;
+	clhw_playerindex[2] = -1;
+	clhw_playerindex[3] = -1;
+	clhw_playerindex[4] = -1;
+	clhw_playerindex[5] = -1;	//mg-siege
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
 	clh2_ballindex = -1;
@@ -600,27 +600,27 @@ void CL_ParseModellist(void)
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/paladin.mdl"))
 		{
-			cl_playerindex[0] = nummodels;
+			clhw_playerindex[0] = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/crusader.mdl"))
 		{
-			cl_playerindex[1] = nummodels;
+			clhw_playerindex[1] = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/necro.mdl"))
 		{
-			cl_playerindex[2] = nummodels;
+			clhw_playerindex[2] = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/assassin.mdl"))
 		{
-			cl_playerindex[3] = nummodels;
+			clhw_playerindex[3] = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/succubus.mdl"))
 		{
-			cl_playerindex[4] = nummodels;
+			clhw_playerindex[4] = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/hank.mdl"))
 		{
-			cl_playerindex[5] = nummodels;	//mg-siege
+			clhw_playerindex[5] = nummodels;	//mg-siege
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
 		{
@@ -1315,7 +1315,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case hwsvc_playerinfo:
-			CL_ParsePlayerinfo();
+			CLHW_ParsePlayerinfo(net_message);
 			break;
 
 		case hwsvc_playerskipped:

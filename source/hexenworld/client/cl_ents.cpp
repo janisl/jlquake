@@ -311,11 +311,11 @@ void CL_LinkPacketEntities(void)
 
 //========================================
 
-extern int cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
+extern int cl_spikeindex, cl_flagindex;
 
 /*
 ===================
-CL_ParsePlayerinfo
+CLHW_ParsePlayerinfo
 ===================
 */
 void CL_SavePlayer(void)
@@ -328,7 +328,7 @@ void CL_SavePlayer(void)
 
 	if (num > HWMAX_CLIENTS)
 	{
-		Sys_Error("CL_ParsePlayerinfo: bad num");
+		Sys_Error("CLHW_ParsePlayerinfo: bad num");
 	}
 
 	info = &cl.h2_players[num];
@@ -336,163 +336,6 @@ void CL_SavePlayer(void)
 
 	state->messagenum = cl.qh_parsecount;
 	state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
-}
-
-void CL_ParsePlayerinfo(void)
-{
-	int msec;
-	int flags;
-	h2player_info_t* info;
-	hwplayer_state_t* state;
-	int num;
-	int i;
-	qboolean playermodel = false;
-
-	num = net_message.ReadByte();
-	if (num > HWMAX_CLIENTS)
-	{
-		Sys_Error("CL_ParsePlayerinfo: bad num");
-	}
-
-	info = &cl.h2_players[num];
-
-	state = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[num];
-
-	flags = state->flags = net_message.ReadShort();
-
-	state->messagenum = cl.qh_parsecount;
-	state->origin[0] = net_message.ReadCoord();
-	state->origin[1] = net_message.ReadCoord();
-	state->origin[2] = net_message.ReadCoord();
-	VectorCopy(state->origin, info->origin);
-
-	state->frame = net_message.ReadByte();
-
-	// the other player's last move was likely some time
-	// before the packet was sent out, so accurately track
-	// the exact time it was valid at
-	if (flags & HWPF_MSEC)
-	{
-		msec = net_message.ReadByte();
-		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime - msec * 0.001;
-	}
-	else
-	{
-		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
-	}
-
-	if (flags & HWPF_COMMAND)
-	{
-		MSG_ReadUsercmd(&state->command, false);
-	}
-
-	for (i = 0; i < 3; i++)
-	{
-		if (flags & (HWPF_VELOCITY1 << i))
-		{
-			state->velocity[i] = net_message.ReadShort();
-		}
-		else
-		{
-			state->velocity[i] = 0;
-		}
-	}
-
-	if (flags & HWPF_MODEL)
-	{
-		state->modelindex = net_message.ReadShort();
-	}
-	else
-	{
-		playermodel = true;
-		i = info->playerclass;
-		if (i >= 1 && i <= MAX_PLAYER_CLASS)
-		{
-			state->modelindex = cl_playerindex[i - 1];
-		}
-		else
-		{
-			state->modelindex = cl_playerindex[0];
-		}
-	}
-
-	if (flags & HWPF_SKINNUM)
-	{
-		state->skinnum = net_message.ReadByte();
-	}
-	else
-	{
-		if (info->siege_team == ST_ATTACKER && playermodel)
-		{
-			state->skinnum = 1;	//using a playermodel and attacker - skin is set to 1
-		}
-		else
-		{
-			state->skinnum = 0;
-		}
-	}
-
-	if (flags & HWPF_EFFECTS)
-	{
-		state->effects = net_message.ReadByte();
-	}
-	else
-	{
-		state->effects = 0;
-	}
-
-	if (flags & HWPF_EFFECTS2)
-	{
-		state->effects |= (net_message.ReadByte() << 8);
-	}
-	else
-	{
-		state->effects &= 0xff;
-	}
-
-	if (flags & HWPF_WEAPONFRAME)
-	{
-		state->weaponframe = net_message.ReadByte();
-	}
-	else
-	{
-		state->weaponframe = 0;
-	}
-
-	if (flags & HWPF_DRAWFLAGS)
-	{
-		state->drawflags = net_message.ReadByte();
-	}
-	else
-	{
-		state->drawflags = 0;
-	}
-
-	if (flags & HWPF_SCALE)
-	{
-		state->scale = net_message.ReadByte();
-	}
-	else
-	{
-		state->scale = 0;
-	}
-
-	if (flags & HWPF_ABSLIGHT)
-	{
-		state->abslight = net_message.ReadByte();
-	}
-	else
-	{
-		state->abslight = 0;
-	}
-
-	if (flags & HWPF_SOUND)
-	{
-		i = net_message.ReadShort();
-		S_StartSound(state->origin, num, 1, cl.sound_precache[i], 1.0, 1.0);
-	}
-
-	VectorCopy(state->command.angles, state->viewangles);
 }
 
 /*
@@ -651,7 +494,7 @@ void CL_LinkPlayers(void)
 					colorshade = 138 + (int)((ambientlight + shadelight) / 30);
 					info->shownames_off = false;
 				}
-				else if (ve_team == ST_DEFENDER)
+				else if (ve_team == HWST_DEFENDER)
 				{
 					//tint gold since we can't have seperate skins
 					colorshade = 165;

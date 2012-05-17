@@ -117,7 +117,6 @@ void V_ParseDamage(void);
 // cl_pred.c
 //
 qboolean CL_CheckOrDownloadFile(char* filename);
-void CL_ParsePlayerinfo(void);
 void CL_SavePlayer(void);
 void CL_SetSolidEntities(void);
 void CL_EmitEntities(void);

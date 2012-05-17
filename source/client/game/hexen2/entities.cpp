@@ -36,6 +36,8 @@ static image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated 
 
 static image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];	// generic textures for models
 
+int clhw_playerindex[MAX_PLAYER_CLASS];
+
 static const char* parsedelta_strings[] =
 {
 	"HWU_ANGLE1",	//0
@@ -848,6 +850,163 @@ void CLHW_ParsePacketEntities(QMsg& message)
 void CLHW_ParseDeltaPacketEntities(QMsg& message)
 {
 	CLHW_ParsePacketEntities(message, true);
+}
+
+void CLHW_ParsePlayerinfo(QMsg& message)
+{
+	int msec;
+	int flags;
+	h2player_info_t* info;
+	hwplayer_state_t* state;
+	int num;
+	int i;
+	qboolean playermodel = false;
+
+	num = message.ReadByte();
+	if (num > HWMAX_CLIENTS)
+	{
+		common->FatalError("CLHW_ParsePlayerinfo: bad num");
+	}
+
+	info = &cl.h2_players[num];
+
+	state = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[num];
+
+	flags = state->flags = message.ReadShort();
+
+	state->messagenum = cl.qh_parsecount;
+	state->origin[0] = message.ReadCoord();
+	state->origin[1] = message.ReadCoord();
+	state->origin[2] = message.ReadCoord();
+	VectorCopy(state->origin, info->origin);
+
+	state->frame = message.ReadByte();
+
+	// the other player's last move was likely some time
+	// before the packet was sent out, so accurately track
+	// the exact time it was valid at
+	if (flags & HWPF_MSEC)
+	{
+		msec = message.ReadByte();
+		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime - msec * 0.001;
+	}
+	else
+	{
+		state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
+	}
+
+	if (flags & HWPF_COMMAND)
+	{
+		MSGHW_ReadUsercmd(&message, &state->command, false);
+	}
+
+	for (i = 0; i < 3; i++)
+	{
+		if (flags & (HWPF_VELOCITY1 << i))
+		{
+			state->velocity[i] = message.ReadShort();
+		}
+		else
+		{
+			state->velocity[i] = 0;
+		}
+	}
+
+	if (flags & HWPF_MODEL)
+	{
+		state->modelindex = message.ReadShort();
+	}
+	else
+	{
+		playermodel = true;
+		i = info->playerclass;
+		if (i >= 1 && i <= MAX_PLAYER_CLASS)
+		{
+			state->modelindex = clhw_playerindex[i - 1];
+		}
+		else
+		{
+			state->modelindex = clhw_playerindex[0];
+		}
+	}
+
+	if (flags & HWPF_SKINNUM)
+	{
+		state->skinnum = message.ReadByte();
+	}
+	else
+	{
+		if (info->siege_team == HWST_ATTACKER && playermodel)
+		{
+			state->skinnum = 1;	//using a playermodel and attacker - skin is set to 1
+		}
+		else
+		{
+			state->skinnum = 0;
+		}
+	}
+
+	if (flags & HWPF_EFFECTS)
+	{
+		state->effects = message.ReadByte();
+	}
+	else
+	{
+		state->effects = 0;
+	}
+
+	if (flags & HWPF_EFFECTS2)
+	{
+		state->effects |= (message.ReadByte() << 8);
+	}
+	else
+	{
+		state->effects &= 0xff;
+	}
+
+	if (flags & HWPF_WEAPONFRAME)
+	{
+		state->weaponframe = message.ReadByte();
+	}
+	else
+	{
+		state->weaponframe = 0;
+	}
+
+	if (flags & HWPF_DRAWFLAGS)
+	{
+		state->drawflags = message.ReadByte();
+	}
+	else
+	{
+		state->drawflags = 0;
+	}
+
+	if (flags & HWPF_SCALE)
+	{
+		state->scale = message.ReadByte();
+	}
+	else
+	{
+		state->scale = 0;
+	}
+
+	if (flags & HWPF_ABSLIGHT)
+	{
+		state->abslight = message.ReadByte();
+	}
+	else
+	{
+		state->abslight = 0;
+	}
+
+	if (flags & HWPF_SOUND)
+	{
+		i = message.ReadShort();
+		S_StartSound(state->origin, num, 1, cl.sound_precache[i], 1.0, 1.0);
+	}
+
+	VectorCopy(state->command.angles, state->viewangles);
 }
 
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags)

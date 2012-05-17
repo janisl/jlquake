@@ -18,12 +18,6 @@ void InsertLinkAfter(qhlink_t* l, qhlink_t* after);
 
 //============================================================================
 
-void MSG_WriteUsercmd(QMsg* sb, hwusercmd_t* cmd, qboolean long_msg);
-
-void MSG_ReadUsercmd(hwusercmd_t* cmd, qboolean long_msg);
-
-//============================================================================
-
 void COM_Init(const char* path);
 void COM_InitArgv2(int argc, char** argv);
 

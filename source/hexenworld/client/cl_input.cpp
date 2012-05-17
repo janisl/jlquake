@@ -86,11 +86,11 @@ void CL_SendCmd(void)
 
 	buf.WriteByte(h2clc_move);
 	i = (clc.netchan.outgoingSequence - 2) & UPDATE_MASK_HW;
-	MSG_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
+	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
 	i = (clc.netchan.outgoingSequence - 1) & UPDATE_MASK_HW;
-	MSG_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
+	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
 	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_HW;
-	MSG_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, true);
+	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, true);
 
 //	Con_Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
 

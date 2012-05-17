@@ -592,10 +592,10 @@ void SV_Status_f(void)
 				}
 				switch (cl->siege_team)
 				{
-				case ST_DEFENDER:
+				case HWST_DEFENDER:
 					Con_Printf("D");
 					break;
-				case ST_ATTACKER:
+				case HWST_ATTACKER:
 					Con_Printf("A");
 					break;
 				default:

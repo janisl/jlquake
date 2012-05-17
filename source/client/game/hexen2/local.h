@@ -44,6 +44,8 @@ extern int clh2_missilestarindex;
 
 extern Cvar* clh2_playerclass;
 
+extern int clhw_playerindex[MAX_PLAYER_CLASS];
+
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -55,6 +57,7 @@ void CLH2_ParseUpdate(QMsg& message, int bits);
 void CLH2_ParseClearEdicts(QMsg& message);
 void CLHW_ParsePacketEntities(QMsg& message);
 void CLHW_ParseDeltaPacketEntities(QMsg& message);
+void CLHW_ParsePlayerinfo(QMsg& message);
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);

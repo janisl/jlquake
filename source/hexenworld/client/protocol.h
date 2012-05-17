@@ -32,20 +32,6 @@
 
 //==============================================
 
-// if the high bit of the client to server byte is set, the low bits are
-// client move cmd bits
-// ms and angle2 are allways sent, the others are optional
-#define CM_ANGLE1   (1 << 0)
-#define CM_ANGLE3   (1 << 1)
-#define CM_FORWARD  (1 << 2)
-#define CM_SIDE     (1 << 3)
-#define CM_UP       (1 << 4)
-#define CM_BUTTONS  (1 << 5)
-#define CM_IMPULSE  (1 << 6)
-#define CM_MSEC     (1 << 7)
-
-//==============================================
-
 // Bits to help send server info about the client's edict variables
 #define SC1_HEALTH              (1 << 0)		// changes stat bar
 #define SC1_LEVEL               (1 << 1)		// changes stat bar

@@ -848,3 +848,19 @@ struct h2client_entvars_t
 #define HWPF_SOUND        (1 << 15)		//play a sound in the weapon channel
 
 #define H2MAX_FRAMES 5
+
+//Siege teams
+#define HWST_DEFENDER                 1
+#define HWST_ATTACKER                 2
+
+// if the high bit of the client to server byte is set, the low bits are
+// client move cmd bits
+// ms and angle2 are allways sent, the others are optional
+#define HWCM_ANGLE1   (1 << 0)
+#define HWCM_ANGLE3   (1 << 1)
+#define HWCM_FORWARD  (1 << 2)
+#define HWCM_SIDE     (1 << 3)
+#define HWCM_UP       (1 << 4)
+#define HWCM_BUTTONS  (1 << 5)
+#define HWCM_IMPULSE  (1 << 6)
+#define HWCM_MSEC     (1 << 7)

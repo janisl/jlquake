@@ -1511,7 +1511,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 			cmd.buttons = 0;	// never send buttons
 			cmd.impulse = 0;	// never send impulses
-			MSG_WriteUsercmd(msg, &cmd, false);
+			MSGHW_WriteUsercmd(msg, &cmd, false);
 		}
 
 		for (i = 0; i < 3; i++)

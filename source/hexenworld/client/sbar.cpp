@@ -230,7 +230,7 @@ void SB_PlacePlayerNames(void)
 				if (cl_siege)
 				{
 					//why the fuck does GL fuck this up??!!!
-					if (cl.h2_players[i].siege_team == ST_ATTACKER)	//attacker
+					if (cl.h2_players[i].siege_team == HWST_ATTACKER)	//attacker
 					{
 						if (i == cl_keyholder)
 						{
@@ -241,7 +241,7 @@ void SB_PlacePlayerNames(void)
 							R_DrawName(cl.h2_players[i].origin, cl.h2_players[i].name,false);
 						}
 					}
-					else if (cl.h2_players[i].siege_team == ST_DEFENDER)//def
+					else if (cl.h2_players[i].siege_team == HWST_DEFENDER)//def
 					{
 						if (i == cl_keyholder && i == cl_doc)
 						{

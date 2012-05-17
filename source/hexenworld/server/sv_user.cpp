@@ -1501,9 +1501,9 @@ void SV_ExecuteClientMessage(client_t* cl)
 
 		case h2clc_move:
 		{
-			MSG_ReadUsercmd(&oldest, false);
-			MSG_ReadUsercmd(&oldcmd, false);
-			MSG_ReadUsercmd(&newcmd, true);
+			MSGHW_ReadUsercmd(&net_message, &oldest, false);
+			MSGHW_ReadUsercmd(&net_message, &oldcmd, false);
+			MSGHW_ReadUsercmd(&net_message, &newcmd, true);
 
 			if (cl->state != cs_spawned)
 			{

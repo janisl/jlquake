@@ -16,6 +16,8 @@
 
 void MSGQW_WriteDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
 void MSGQW_ReadDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
+void MSGHW_WriteUsercmd(QMsg* sb, hwusercmd_t* cmd, bool long_msg);
+void MSGHW_ReadUsercmd(QMsg* sb, hwusercmd_t* cmd, bool long_msg);
 
 void MSGQ2_WriteDeltaUsercmd(QMsg* sb, q2usercmd_t* from, q2usercmd_t* cmd);
 void MSGQ2_WriteDeltaEntity(q2entity_state_t* from, q2entity_state_t* to, QMsg* msg, bool force, bool newentity);
