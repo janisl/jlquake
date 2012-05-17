@@ -30,7 +30,6 @@ struct effect_entity_t
 
 extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 extern h2entity_t h2cl_entities[MAX_EDICTS_H2];
-extern h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
 extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
@@ -66,6 +65,7 @@ void CLHW_ParsePlayerinfo(QMsg& message);
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
+void CLH2_LinkStaticEntities();
 void CLH2_RelinkEntities();
 void CLHW_LinkPacketEntities();
 void CLHW_LinkPlayers();

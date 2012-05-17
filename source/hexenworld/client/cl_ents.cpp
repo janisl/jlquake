@@ -71,25 +71,6 @@ void CL_SetSolidEntities(void)
 
 }
 
-static void CL_LinkStaticEntities()
-{
-	h2entity_t* pent = h2cl_static_entities;
-	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
-	{
-		refEntity_t rent;
-		Com_Memset(&rent, 0, sizeof(rent));
-		rent.reType = RT_MODEL;
-		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_draw[pent->state.modelindex];
-		rent.frame = pent->state.frame;
-		rent.skinNum = pent->state.skinnum;
-		rent.syncBase = pent->syncbase;
-		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, 0, pent->state.abslight, pent->state.drawflags);
-		CLH2_HandleCustomSkin(&rent, -1);
-		R_AddRefEntityToScene(&rent);
-	}
-}
-
 /*
 ===============
 CL_EmitEntities
@@ -117,5 +98,5 @@ void CL_EmitEntities(void)
 	CLH2_LinkProjectiles();
 	CLH2_LinkMissiles();
 	CLH2_UpdateTEnts();
-	CL_LinkStaticEntities();
+	CLH2_LinkStaticEntities();
 }

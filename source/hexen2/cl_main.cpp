@@ -260,25 +260,6 @@ bool CL_IsServerActive()
 	return !!sv.active;
 }
 
-static void CL_LinkStaticEntities()
-{
-	h2entity_t* pent = h2cl_static_entities;
-	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
-	{
-		refEntity_t rent;
-		Com_Memset(&rent, 0, sizeof(rent));
-		rent.reType = RT_MODEL;
-		VectorCopy(pent->state.origin, rent.origin);
-		rent.hModel = cl.model_draw[pent->state.modelindex];
-		rent.frame = pent->state.frame;
-		rent.syncBase = pent->syncbase;
-		rent.skinNum = pent->state.skinnum;
-		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale, pent->state.colormap, pent->state.abslight, pent->state.drawflags);
-		CLH2_HandleCustomSkin(&rent, -1);
-		R_AddRefEntityToScene(&rent);
-	}
-}
-
 /*
 ===============
 CL_ReadFromServer
@@ -318,7 +299,7 @@ int CL_ReadFromServer(void)
 
 	CLH2_RelinkEntities();
 	CLH2_UpdateTEnts();
-	CL_LinkStaticEntities();
+	CLH2_LinkStaticEntities();
 
 //
 // bring the links up to date

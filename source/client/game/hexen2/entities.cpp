@@ -26,7 +26,7 @@ Cvar* clhw_teamcolor;
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
 h2entity_t h2cl_entities[MAX_EDICTS_H2];
-h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
+static h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
 
 static float RTint[256];
 static float GTint[256];
@@ -1232,6 +1232,26 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 
 			entity->customSkin = R_GetImageHandle(clh2_playertextures[playerIndex]);
 		}
+	}
+}
+
+void CLH2_LinkStaticEntities()
+{
+	h2entity_t* pent = h2cl_static_entities;
+	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
+	{
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(pent->state.origin, rent.origin);
+		rent.hModel = cl.model_draw[pent->state.modelindex];
+		rent.frame = pent->state.frame;
+		rent.skinNum = pent->state.skinnum;
+		rent.syncBase = pent->syncbase;
+		CLH2_SetRefEntAxis(&rent, pent->state.angles, vec3_origin, pent->state.scale,
+			pent->state.colormap, pent->state.abslight, pent->state.drawflags);
+		CLH2_HandleCustomSkin(&rent, -1);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 
