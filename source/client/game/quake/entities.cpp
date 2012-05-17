@@ -691,7 +691,7 @@ void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 }
 
-void CLQ1_LinkStaticEntities()
+static void CLQ1_LinkStaticEntities()
 {
 	q1entity_t* pent = clq1_static_entities;
 	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
@@ -794,7 +794,7 @@ static void CLQW_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 	Ent->customSkin = R_GetImageHandle(clq1_playertextures[PlayerNum]);
 }
 
-void CLQ1_RelinkEntities()
+static void CLQ1_RelinkEntities()
 {
 	// determine partial update time
 	float frac = CLQH_LerpPoint();
@@ -952,7 +952,7 @@ void CLQ1_RelinkEntities()
 	}
 }
 
-void CLQW_LinkPacketEntities()
+static void CLQW_LinkPacketEntities()
 {
 	qwpacket_entities_t* pack = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW].packet_entities;
 	qwpacket_entities_t* PrevPack = &cl.qw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_QW].packet_entities;
@@ -1223,7 +1223,7 @@ static void CLQW_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
 
 //	Create visible entities in the correct position
 // for all current players
-void CLQW_LinkPlayers()
+static void CLQW_LinkPlayers()
 {
 	double playertime = cls.realtime * 0.001 - cls.qh_latency + 0.02;
 	if (playertime > cls.realtime * 0.001)
@@ -1337,4 +1337,31 @@ void CLQW_LinkPlayers()
 			CLQW_AddFlagModels(&ent, 1, angles);
 		}
 	}
+}
+
+void CLQ1_EmitEntities()
+{
+	CLQ1_RelinkEntities();
+	CLQ1_UpdateTEnts();
+	CLQ1_LinkStaticEntities();
+}
+
+void CLQW_EmitEntities()
+{
+	if (cls.state != CA_ACTIVE)
+	{
+		return;
+	}
+	if (!cl.qh_validsequence)
+	{
+		return;
+	}
+
+	R_ClearScene();
+
+	CLQW_LinkPlayers();
+	CLQW_LinkPacketEntities();
+	CLQ1_LinkProjectiles();
+	CLQ1_UpdateTEnts();
+	CLQ1_LinkStaticEntities();
 }

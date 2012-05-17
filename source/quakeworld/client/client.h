@@ -106,5 +106,4 @@ void V_ParseDamage(void);
 //
 // cl_ents.c
 //
-void CL_EmitEntities(void);
 void CL_SetSolidEntities(void);

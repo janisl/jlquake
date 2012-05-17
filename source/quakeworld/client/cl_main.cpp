@@ -1351,7 +1351,7 @@ void Host_Frame(float time)
 		CLQW_SetUpPlayerPrediction(true);
 
 		// build a refresh entity list
-		CL_EmitEntities();
+		CLQW_EmitEntities();
 
 		// update video
 		if (host_speeds->value)

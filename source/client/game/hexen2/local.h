@@ -65,10 +65,8 @@ void CLHW_ParsePlayerinfo(QMsg& message);
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
-void CLH2_LinkStaticEntities();
-void CLH2_RelinkEntities();
-void CLHW_LinkPacketEntities();
-void CLHW_LinkPlayers();
+void CLH2_EmitEntities();
+void CLHW_EmitEntities();
 
 void CLH2_ClearStreams();
 void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);

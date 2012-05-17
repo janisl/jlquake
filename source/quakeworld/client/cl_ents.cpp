@@ -61,32 +61,3 @@ void CL_SetSolidEntities(void)
 	}
 
 }
-
-/*
-===============
-CL_EmitEntities
-
-Builds the visedicts array for cl.time
-
-Made up of: clients, packet_entities, nails, and tents
-===============
-*/
-void CL_EmitEntities(void)
-{
-	if (cls.state != CA_ACTIVE)
-	{
-		return;
-	}
-	if (!cl.qh_validsequence)
-	{
-		return;
-	}
-
-	R_ClearScene();
-
-	CLQW_LinkPlayers();
-	CLQW_LinkPacketEntities();
-	CLQ1_LinkProjectiles();
-	CLQ1_UpdateTEnts();
-	CLQ1_LinkStaticEntities();
-}

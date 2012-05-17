@@ -241,9 +241,7 @@ int CL_ReadFromServer(void)
 		Con_Printf("\n");
 	}
 
-	CLQ1_RelinkEntities();
-	CLQ1_UpdateTEnts();
-	CLQ1_LinkStaticEntities();
+	CLQ1_EmitEntities();
 
 //
 // bring the links up to date

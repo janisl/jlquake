@@ -297,9 +297,7 @@ int CL_ReadFromServer(void)
 		Con_Printf("\n");
 	}
 
-	CLH2_RelinkEntities();
-	CLH2_UpdateTEnts();
-	CLH2_LinkStaticEntities();
+	CLH2_EmitEntities();
 
 //
 // bring the links up to date

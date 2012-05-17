@@ -1235,7 +1235,7 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 	}
 }
 
-void CLH2_LinkStaticEntities()
+static void CLH2_LinkStaticEntities()
 {
 	h2entity_t* pent = h2cl_static_entities;
 	for (int i = 0; i < cl.qh_num_statics; i++, pent++)
@@ -1255,7 +1255,7 @@ void CLH2_LinkStaticEntities()
 	}
 }
 
-void CLH2_RelinkEntities()
+static void CLH2_RelinkEntities()
 {
 	h2entity_t* ent;
 	int i, j;
@@ -1572,7 +1572,7 @@ static void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_
 	}
 }
 
-void CLHW_LinkPacketEntities()
+static void CLHW_LinkPacketEntities()
 {
 	hwpacket_entities_t* pack = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
 	hwpacket_entities_t* PrevPack = &cl.hw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_HW].packet_entities;
@@ -1761,7 +1761,7 @@ void CLHW_LinkPacketEntities()
 
 //	Create visible entities in the correct position
 // for all current players
-void CLHW_LinkPlayers()
+static void CLHW_LinkPlayers()
 {
 	double playertime = cls.realtime * 0.001 - cls.qh_latency + 0.02;
 	if (playertime > cls.realtime * 0.001)
@@ -1928,4 +1928,32 @@ void CLHW_LinkPlayers()
 		CLH2_HandleCustomSkin(&ent, j);
 		R_AddRefEntityToScene(&ent);
 	}
+}
+
+void CLH2_EmitEntities()
+{
+	CLH2_RelinkEntities();
+	CLH2_UpdateTEnts();
+	CLH2_LinkStaticEntities();
+}
+
+void CLHW_EmitEntities()
+{
+	if (cls.state != CA_ACTIVE)
+	{
+		return;
+	}
+	if (!cl.qh_validsequence)
+	{
+		return;
+	}
+
+	R_ClearScene();
+
+	CLHW_LinkPlayers();
+	CLHW_LinkPacketEntities();
+	CLH2_LinkProjectiles();
+	CLH2_LinkMissiles();
+	CLH2_UpdateTEnts();
+	CLH2_LinkStaticEntities();
 }

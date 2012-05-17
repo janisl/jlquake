@@ -42,10 +42,8 @@ void CLQW_ParseDeltaPacketEntities(QMsg& message);
 void CLQW_ParsePlayerinfo(QMsg& message);
 void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
 void CLQ1_TranslatePlayerSkin(int playernum);
-void CLQ1_LinkStaticEntities();
-void CLQ1_RelinkEntities();
-void CLQW_LinkPacketEntities();
-void CLQW_LinkPlayers();
+void CLQ1_EmitEntities();
+void CLQW_EmitEntities();
 
 void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
