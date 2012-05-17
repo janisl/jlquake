@@ -6,8 +6,6 @@ qhedict_t* sv_player;
 
 hwusercmd_t cmd;
 
-Cvar* cl_rollspeed;
-Cvar* cl_rollangle;
 Cvar* sv_spectalk;
 Cvar* sv_allowtaunts;
 
@@ -1011,45 +1009,6 @@ USER CMD EXECUTION
 ===========================================================================
 */
 
-/*
-===============
-V_CalcRoll
-
-Used by view and sv_user
-===============
-*/
-float V_CalcRoll(vec3_t angles, vec3_t velocity)
-{
-	vec3_t forward, right, up;
-	float sign;
-	float side;
-	float value;
-
-	AngleVectors(angles, forward, right, up);
-	side = DotProduct(velocity, right);
-	sign = side < 0 ? -1 : 1;
-	side = Q_fabs(side);
-
-	value = cl_rollangle->value;
-
-	if (side < cl_rollspeed->value)
-	{
-		side = side * value / cl_rollspeed->value;
-	}
-	else
-	{
-		side = value;
-	}
-
-	return side * sign;
-
-}
-
-
-
-
-//============================================================================
-
 vec3_t pmove_mins, pmove_maxs;
 
 /*
@@ -1278,7 +1237,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 			sv_player->GetAngles()[YAW] = sv_player->GetVAngle()[YAW];
 		}
 		sv_player->GetAngles()[ROLL] =
-			V_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
+			VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
 	}
 
 	host_frametime = ucmd->msec * 0.001;
@@ -1580,8 +1539,7 @@ SV_UserInit
 */
 void SV_UserInit(void)
 {
-	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
-	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	VQH_InitRollCvars();
 	sv_spectalk = Cvar_Get("sv_spectalk", "1", 0);
 	sv_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
 }

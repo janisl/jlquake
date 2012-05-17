@@ -1,7 +1,6 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
-extern int cl_spikeindex, cl_flagindex;
 
 /*
 ===================
@@ -30,13 +29,13 @@ void CL_SavePlayer(void)
 
 /*
 =============
-CL_LinkPlayers
+CLHW_LinkPlayers
 
 Create visible entities in the correct position
 for all current players
 =============
 */
-void CL_LinkPlayers(void)
+void CLHW_LinkPlayers(void)
 {
 	int j;
 	h2player_info_t* info;
@@ -105,7 +104,7 @@ void CL_LinkPlayers(void)
 		angles[PITCH] = -state->viewangles[PITCH] / 3;
 		angles[YAW] = state->viewangles[YAW];
 		angles[ROLL] = 0;
-		angles[ROLL] = V_CalcRoll(angles, state->velocity) * 4;
+		angles[ROLL] = VQH_CalcRoll(angles, state->velocity) * 4;
 
 		// only predict half the move to minimize overruns
 		msec = 500 * (playertime - state->state_time);
@@ -299,7 +298,7 @@ void CL_EmitEntities(void)
 
 	R_ClearScene();
 
-	CL_LinkPlayers();
+	CLHW_LinkPlayers();
 	CLHW_LinkPacketEntities();
 	CLH2_LinkProjectiles();
 	CLH2_LinkMissiles();

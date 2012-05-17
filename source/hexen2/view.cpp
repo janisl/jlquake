@@ -19,9 +19,6 @@ static Cvar* scr_ofsx;
 static Cvar* scr_ofsy;
 static Cvar* scr_ofsz;
 
-static Cvar* cl_rollspeed;
-static Cvar* cl_rollangle;
-
 static Cvar* cl_bob;
 static Cvar* cl_bobcycle;
 static Cvar* cl_bobup;
@@ -57,44 +54,6 @@ static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
 
 static float v_blend[4];			// rgba 0.0 - 1.0
-
-/*
-===============
-V_CalcRoll
-
-Used by view and sv_user
-===============
-*/
-vec3_t forward, right, up;
-
-float V_CalcRoll(vec3_t angles, vec3_t velocity)
-{
-	float sign;
-	float side;
-	float value;
-
-	AngleVectors(angles, forward, right, up);
-	side = DotProduct(velocity, right);
-	sign = side < 0 ? -1 : 1;
-	side = Q_fabs(side);
-
-	value = cl_rollangle->value;
-//	if (cl.inwater)
-//		value *= 6;
-
-	if (side < cl_rollspeed->value)
-	{
-		side = side * value / cl_rollspeed->value;
-	}
-	else
-	{
-		side = value;
-	}
-
-	return side * sign;
-
-}
-
 
 /*
 ===============
@@ -681,7 +640,7 @@ static void V_CalcViewRoll(vec3_t viewangles)
 {
 	float side;
 
-	side = V_CalcRoll(h2cl_entities[cl.viewentity].state.angles, cl.qh_velocity);
+	side = VQH_CalcRoll(h2cl_entities[cl.viewentity].state.angles, cl.qh_velocity);
 	viewangles[ROLL] += side;
 
 	if (v_dmg_time > 0)
@@ -1058,8 +1017,7 @@ void V_Init(void)
 	scr_ofsx = Cvar_Get("scr_ofsx","0", 0);
 	scr_ofsy = Cvar_Get("scr_ofsy","0", 0);
 	scr_ofsz = Cvar_Get("scr_ofsz","0", 0);
-	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
-	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	VQH_InitRollCvars();
 	cl_bob = Cvar_Get("cl_bob","0.02", 0);
 	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
 	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);

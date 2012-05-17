@@ -26,6 +26,7 @@ extern image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];
 
 extern int clq1_spikeindex;
 extern int clq1_playerindex;
+extern int clqw_flagindex;
 
 extern Cvar* clqw_baseskin;
 extern Cvar* clqw_noskins;

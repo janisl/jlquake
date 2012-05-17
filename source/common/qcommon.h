@@ -58,6 +58,7 @@
 #include "message_utils.h"
 #include "script.h"
 #include "precompiler.h"
+#include "game_utils.h"
 
 int Com_Milliseconds();
 

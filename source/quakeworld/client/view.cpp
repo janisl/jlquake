@@ -30,9 +30,6 @@ when crossing a water boudnary.
 
 */
 
-static Cvar* cl_rollspeed;
-static Cvar* cl_rollangle;
-
 static Cvar* cl_bob;
 static Cvar* cl_bobcycle;
 static Cvar* cl_bobup;
@@ -77,40 +74,6 @@ static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
 
 static float v_blend[4];			// rgba 0.0 - 1.0
-
-/*
-===============
-V_CalcRoll
-
-===============
-*/
-float V_CalcRoll(vec3_t angles, vec3_t velocity)
-{
-	vec3_t forward, right, up;
-	float sign;
-	float side;
-	float value;
-
-	AngleVectors(angles, forward, right, up);
-	side = DotProduct(velocity, right);
-	sign = side < 0 ? -1 : 1;
-	side = fabs(side);
-
-	value = cl_rollangle->value;
-
-	if (side < cl_rollspeed->value)
-	{
-		side = side * value / cl_rollspeed->value;
-	}
-	else
-	{
-		side = value;
-	}
-
-	return side * sign;
-
-}
-
 
 /*
 ===============
@@ -583,7 +546,7 @@ static void V_CalcViewRoll(vec3_t viewangles)
 {
 	float side;
 
-	side = V_CalcRoll(cl.qh_simangles, cl.qh_simvel);
+	side = VQH_CalcRoll(cl.qh_simangles, cl.qh_simvel);
 	viewangles[ROLL] += side;
 
 	if (v_dmg_time > 0)
@@ -937,8 +900,7 @@ void V_Init(void)
 	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
 	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
 
-	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
-	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	VQH_InitRollCvars();
 	cl_bob = Cvar_Get("cl_bob","0.02", 0);
 	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
 	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);

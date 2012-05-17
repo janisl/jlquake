@@ -101,8 +101,6 @@ const char* svc_strings[] =
 	"NEW PROTOCOL"
 };
 
-int cl_flagindex;
-
 //=============================================================================
 
 int packet_latency[NET_TIMINGS];
@@ -307,7 +305,7 @@ void Sound_NextDownload(void)
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	clq1_playerindex = -1;
 	clq1_spikeindex = -1;
-	cl_flagindex = -1;
+	clqw_flagindex = -1;
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 //	clc.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
 	clc.netchan.message.WriteString2(va(modellist_name, cl.servercount, 0));
@@ -730,7 +728,7 @@ void CL_ParseModellist(void)
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
 		{
-			cl_flagindex = nummodels;
+			clqw_flagindex = nummodels;
 		}
 	}
 

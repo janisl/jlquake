@@ -29,23 +29,14 @@ PACKET ENTITY PARSING / LINKING
 =========================================================================
 */
 
-//========================================
-
-
-/*
-================
-CL_AddFlagModels
-
-Called when the CTF flags are set
-================
-*/
-void CL_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
+//	Called when the CTF flags are set
+static void CLQW_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
 {
 	int i;
 	float f;
 	vec3_t v_forward, v_right, v_up;
 
-	if (cl_flagindex == -1)
+	if (clqw_flagindex == -1)
 	{
 		return;
 	}
@@ -132,7 +123,7 @@ void CL_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
 	Com_Memset(&newent, 0, sizeof(newent));
 
 	newent.reType = RT_MODEL;
-	newent.hModel = cl.model_draw[cl_flagindex];
+	newent.hModel = cl.model_draw[clqw_flagindex];
 	newent.skinNum = team;
 
 	AngleVectors(angles, v_forward, v_right, v_up);
@@ -148,15 +139,9 @@ void CL_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
 	R_AddRefEntityToScene(&newent);
 }
 
-/*
-=============
-CL_LinkPlayers
-
-Create visible entities in the correct position
-for all current players
-=============
-*/
-void CL_LinkPlayers(void)
+//	Create visible entities in the correct position
+// for all current players
+void CLQW_LinkPlayers()
 {
 	int j;
 	q1player_info_t* info;
@@ -167,10 +152,10 @@ void CL_LinkPlayers(void)
 	qwframe_t* frame;
 	int oldphysent;
 
-	playertime = realtime - cls.qh_latency + 0.02;
-	if (playertime > realtime)
+	playertime = cls.realtime * 0.001 - cls.qh_latency + 0.02;
+	if (playertime > cls.realtime * 0.001)
 	{
-		playertime = realtime;
+		playertime = cls.realtime * 0.001;
 	}
 
 	frame = &cl.qw_frames[cl.qh_parsecount & UPDATE_MASK_QW];
@@ -242,7 +227,7 @@ void CL_LinkPlayers(void)
 		angles[PITCH] = -state->viewangles[PITCH] / 3;
 		angles[YAW] = state->viewangles[YAW];
 		angles[ROLL] = 0;
-		angles[ROLL] = V_CalcRoll(angles, state->velocity) * 4;
+		angles[ROLL] = VQH_CalcRoll(angles, state->velocity) * 4;
 		CLQ1_SetRefEntAxis(&ent, angles);
 
 		// only predict half the move to minimize overruns
@@ -250,7 +235,6 @@ void CL_LinkPlayers(void)
 		if (msec <= 0 || (!cl_predict_players->value && !cl_predict_players2->value))
 		{
 			VectorCopy(state->origin, ent.origin);
-//Con_DPrintf ("nopredict\n");
 		}
 		else
 		{
@@ -260,7 +244,6 @@ void CL_LinkPlayers(void)
 				msec = 255;
 			}
 			state->command.msec = msec;
-//Con_DPrintf ("predict: %i\n", msec);
 
 			oldphysent = qh_pmove.numphysent;
 			CLQHW_SetSolidPlayers(j);
@@ -272,11 +255,11 @@ void CL_LinkPlayers(void)
 
 		if (state->effects & QWEF_FLAG1)
 		{
-			CL_AddFlagModels(&ent, 0, angles);
+			CLQW_AddFlagModels(&ent, 0, angles);
 		}
 		else if (state->effects & QWEF_FLAG2)
 		{
-			CL_AddFlagModels(&ent, 1, angles);
+			CLQW_AddFlagModels(&ent, 1, angles);
 		}
 	}
 }
@@ -346,7 +329,7 @@ void CL_EmitEntities(void)
 
 	R_ClearScene();
 
-	CL_LinkPlayers();
+	CLQW_LinkPlayers();
 	CLQW_LinkPacketEntities();
 	CLQ1_LinkProjectiles();
 	CLQ1_UpdateTEnts();

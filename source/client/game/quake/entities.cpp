@@ -27,6 +27,7 @@ q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];	// color translated skins
 
 int clq1_playerindex;
+int clqw_flagindex;
 
 //	This error checks and tracks the total number of entities
 static q1entity_t* CLQ1_EntityNum(int number)

@@ -104,8 +104,6 @@ const char* svc_strings[] =
 	"NEW PROTOCOL"
 };
 
-int cl_spikeindex, cl_flagindex;
-
 //=============================================================================
 
 /*
@@ -574,8 +572,6 @@ void CL_ParseModellist(void)
 	clhw_playerindex[3] = -1;
 	clhw_playerindex[4] = -1;
 	clhw_playerindex[5] = -1;	//mg-siege
-	cl_spikeindex = -1;
-	cl_flagindex = -1;
 	clh2_ballindex = -1;
 	clh2_missilestarindex = -1;
 	clh2_ravenindex = -1;
@@ -594,10 +590,6 @@ void CL_ParseModellist(void)
 		}
 		String::Cpy(cl.qh_model_name[nummodels], str);
 
-		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/spike.mdl"))
-		{
-			cl_spikeindex = nummodels;
-		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/paladin.mdl"))
 		{
 			clhw_playerindex[0] = nummodels;
@@ -621,10 +613,6 @@ void CL_ParseModellist(void)
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/hank.mdl"))
 		{
 			clhw_playerindex[5] = nummodels;	//mg-siege
-		}
-		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
-		{
-			cl_flagindex = nummodels;
 		}
 		if (!String::Cmp(cl.qh_model_name[nummodels],"models/ball.mdl"))
 		{

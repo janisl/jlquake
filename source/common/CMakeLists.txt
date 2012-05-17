@@ -26,6 +26,7 @@ set(COMMON_FILES
 	event_queue.cpp
 	exception.cpp
 	files.cpp
+	game_utils1.cpp
 	huffman.cpp
 	info_string.cpp
 	log.cpp

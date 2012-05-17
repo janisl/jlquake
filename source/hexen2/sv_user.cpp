@@ -575,7 +575,7 @@ void SV_ClientThink(void)
 	angles = sv_player->GetAngles();
 
 	VectorAdd(sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
-	angles[ROLL] = V_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
+	angles[ROLL] = VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
 	if (!sv_player->GetFixAngle())
 	{
 		angles[PITCH] = -v_angle[PITCH] / 3;

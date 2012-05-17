@@ -108,5 +108,3 @@ void V_ParseDamage(void);
 //
 void CL_EmitEntities(void);
 void CL_SetSolidEntities(void);
-
-extern int clq1_playerindex, cl_flagindex;
