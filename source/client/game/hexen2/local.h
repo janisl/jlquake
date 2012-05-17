@@ -43,6 +43,7 @@ extern int clh2_ballindex;
 extern int clh2_missilestarindex;
 
 extern Cvar* clh2_playerclass;
+extern Cvar* clhw_teamcolor;
 
 extern int clhw_playerindex[MAX_PLAYER_CLASS];
 
@@ -66,8 +67,8 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 void CLH2_RelinkEntities();
-void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_t angles, vec3_t angleAdd);
 void CLHW_LinkPacketEntities();
+void CLHW_LinkPlayers();
 
 void CLH2_ClearStreams();
 void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);

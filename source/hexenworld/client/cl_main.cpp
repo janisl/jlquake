@@ -35,8 +35,6 @@ Cvar* noaim;
 Cvar* talksounds;
 Cvar* msg;
 
-Cvar* cl_teamcolor;
-
 double connect_time = -1;				// for connection retransmits
 
 quakeparms_t host_parms;
@@ -1007,7 +1005,7 @@ void CL_Init(void)
 	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE | CVAR_USERINFO);
 	talksounds = Cvar_Get("talksounds", "1", CVAR_ARCHIVE);
 
-	cl_teamcolor = Cvar_Get("cl_teamcolor", "187", CVAR_ARCHIVE);
+	clhw_teamcolor = Cvar_Get("clhw_teamcolor", "187", CVAR_ARCHIVE);
 
 	Cmd_AddCommand("version", CL_Version_f);
 

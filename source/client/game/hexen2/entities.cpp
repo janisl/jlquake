@@ -21,6 +21,7 @@
 #define H2MAX_EXTRA_TEXTURES 156	// 255-100+1
 
 Cvar* clh2_playerclass;
+Cvar* clhw_teamcolor;
 
 h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
 
@@ -1461,7 +1462,7 @@ void CLH2_RelinkEntities()
 	}
 }
 
-void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_t angles, vec3_t angleAdd)
+static void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_t angles, vec3_t angleAdd)
 {
 	bool rotateSet = false;
 
@@ -1735,5 +1736,176 @@ void CLHW_LinkPacketEntities()
 		{
 			CLH2_TrailParticles(old_origin, ent.origin, rt_bloodshot);
 		}
+	}
+}
+
+//	Create visible entities in the correct position
+// for all current players
+void CLHW_LinkPlayers()
+{
+	double playertime = cls.realtime * 0.001 - cls.qh_latency + 0.02;
+	if (playertime > cls.realtime * 0.001)
+	{
+		playertime = cls.realtime * 0.001;
+	}
+
+	hwframe_t* frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
+
+	h2player_info_t* info = cl.h2_players;
+	hwplayer_state_t* state = frame->playerstate;
+	for (int j = 0; j < HWMAX_CLIENTS; j++, info++, state++)
+	{
+		info->shownames_off = true;
+		if (state->messagenum != cl.qh_parsecount)
+		{
+			continue;	// not present this frame
+
+		}
+		if (!state->modelindex)
+		{
+			continue;
+		}
+
+		cl.h2_players[j].modelindex = state->modelindex;
+
+		// the player object never gets added
+		if (j == cl.playernum)
+		{
+			continue;
+		}
+
+		// grab an entity to fill in
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+
+		ent.hModel = cl.model_draw[state->modelindex];
+		ent.skinNum = state->skinnum;
+		ent.frame = state->frame;
+
+		int drawflags = state->drawflags;
+		if (ent.hModel == clh2_player_models[0] ||
+			ent.hModel == clh2_player_models[1] ||
+			ent.hModel == clh2_player_models[2] ||
+			ent.hModel == clh2_player_models[3] ||
+			ent.hModel == clh2_player_models[4] ||	//mg-siege
+			ent.hModel == clh2_player_models[5])
+		{
+			// use custom skin
+			info->shownames_off = false;
+		}
+
+		//
+		// angles
+		//
+		vec3_t angles;
+		angles[PITCH] = -state->viewangles[PITCH] / 3;
+		angles[YAW] = state->viewangles[YAW];
+		angles[ROLL] = 0;
+		angles[ROLL] = VQH_CalcRoll(angles, state->velocity) * 4;
+
+		// only predict half the move to minimize overruns
+		int msec = 500 * (playertime - state->state_time);
+		if (msec <= 0 || (!cl_predict_players->value && !cl_predict_players2->value) || j == cl.playernum)
+		{
+			VectorCopy(state->origin, ent.origin);
+		}
+		else
+		{
+			// predict players movement
+			if (msec > 255)
+			{
+				msec = 255;
+			}
+			state->command.msec = msec;
+
+			int oldphysent = qh_pmove.numphysent;
+			CLQHW_SetSolidPlayers(j);
+			hwplayer_state_t exact;
+			CLHW_PredictUsercmd(state, &exact, &state->command, false);
+			qh_pmove.numphysent = oldphysent;
+			VectorCopy(exact.origin, ent.origin);
+		}
+
+		if (clhw_siege)
+		{
+			if ((int)state->effects & H2EF_NODRAW)
+			{
+				ent.skinNum = 101;	//ice, but in siege will be invis skin for dwarf to see
+				drawflags |= H2DRF_TRANSLUCENT;
+				state->effects &= ~H2EF_NODRAW;
+			}
+		}
+
+		vec3_t angleAdd;
+		HandleEffects(state->effects, j + 1, &ent, angles, angleAdd);
+
+		//	This uses behavior of software renderer as GL version was fucked
+		// up because it didn't take into the account the fact that shadelight
+		// has divided by 200 at this point.
+		int colorshade = 0;
+		if (!info->shownames_off)
+		{
+			int my_team = cl.h2_players[cl.playernum].siege_team;
+			int ve_team = info->siege_team;
+			float ambientlight = R_CalcEntityLight(&ent);
+			float shadelight = ambientlight;
+
+			// clamp lighting so it doesn't overbright as much
+			if (ambientlight > 128)
+			{
+				ambientlight = 128;
+			}
+			if (ambientlight + shadelight > 192)
+			{
+				shadelight = 192 - ambientlight;
+			}
+			if ((ambientlight + shadelight) > 75 || (clhw_siege && my_team == ve_team))
+			{
+				info->shownames_off = false;
+			}
+			else
+			{
+				info->shownames_off = true;
+			}
+			if (clhw_siege)
+			{
+				if (cl.h2_players[cl.playernum].playerclass == CLASS_DWARF && ent.skinNum == 101)
+				{
+					colorshade = 141;
+					info->shownames_off = false;
+				}
+				else if (cl.h2_players[cl.playernum].playerclass == CLASS_DWARF && (ambientlight + shadelight) < 151)
+				{
+					colorshade = 138 + (int)((ambientlight + shadelight) / 30);
+					info->shownames_off = false;
+				}
+				else if (ve_team == HWST_DEFENDER)
+				{
+					//tint gold since we can't have seperate skins
+					colorshade = 165;
+				}
+			}
+			else
+			{
+				char client_team[16];
+				String::NCpy(client_team, Info_ValueForKey(cl.h2_players[cl.playernum].userinfo, "team"), 16);
+				client_team[15] = 0;
+				if (client_team[0])
+				{
+					char this_team[16];
+					String::NCpy(this_team, Info_ValueForKey(info->userinfo, "team"), 16);
+					this_team[15] = 0;
+					if (String::ICmp(client_team, this_team) == 0)
+					{
+						colorshade = clhw_teamcolor->value;
+					}
+				}
+			}
+		}
+
+		CLH2_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
+		CLH2_HandleCustomSkin(&ent, j);
+		R_AddRefEntityToScene(&ent);
 	}
 }

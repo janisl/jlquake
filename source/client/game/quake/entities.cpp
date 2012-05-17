@@ -782,7 +782,7 @@ static void CLQ1_HandleRefEntColormap(refEntity_t* entity, int colourMap)
 	}
 }
 
-void CLQW_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
+static void CLQW_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 {
 	//	We can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
@@ -1108,6 +1108,233 @@ void CLQW_LinkPacketEntities()
 		else if (ModelFlags & Q1MDLEF_TRACER3)
 		{
 			CLQ1_TrailParticles(old_origin, ent.origin, 6);
+		}
+	}
+}
+
+//	Called when the CTF flags are set
+static void CLQW_AddFlagModels(refEntity_t* ent, int team, vec3_t angles)
+{
+	if (clqw_flagindex == -1)
+	{
+		return;
+	}
+
+	float f = 14;
+	if (ent->frame >= 29 && ent->frame <= 40)
+	{
+		if (ent->frame >= 29 && ent->frame <= 34)	//axpain
+		{
+			if      (ent->frame == 29)
+			{
+				f = f + 2;
+			}
+			else if (ent->frame == 30)
+			{
+				f = f + 8;
+			}
+			else if (ent->frame == 31)
+			{
+				f = f + 12;
+			}
+			else if (ent->frame == 32)
+			{
+				f = f + 11;
+			}
+			else if (ent->frame == 33)
+			{
+				f = f + 10;
+			}
+			else if (ent->frame == 34)
+			{
+				f = f + 4;
+			}
+		}
+		else if (ent->frame >= 35 && ent->frame <= 40)		// pain
+		{
+			if      (ent->frame == 35)
+			{
+				f = f + 2;
+			}
+			else if (ent->frame == 36)
+			{
+				f = f + 10;
+			}
+			else if (ent->frame == 37)
+			{
+				f = f + 10;
+			}
+			else if (ent->frame == 38)
+			{
+				f = f + 8;
+			}
+			else if (ent->frame == 39)
+			{
+				f = f + 4;
+			}
+			else if (ent->frame == 40)
+			{
+				f = f + 2;
+			}
+		}
+	}
+	else if (ent->frame >= 103 && ent->frame <= 118)
+	{
+		if      (ent->frame >= 103 && ent->frame <= 104)
+		{
+			f = f + 6;												//nailattack
+		}
+		else if (ent->frame >= 105 && ent->frame <= 106)
+		{
+			f = f + 6;												//light
+		}
+		else if (ent->frame >= 107 && ent->frame <= 112)
+		{
+			f = f + 7;												//rocketattack
+		}
+		else if (ent->frame >= 112 && ent->frame <= 118)
+		{
+			f = f + 7;												//shotattack
+		}
+	}
+
+	refEntity_t newent;
+	Com_Memset(&newent, 0, sizeof(newent));
+
+	newent.reType = RT_MODEL;
+	newent.hModel = cl.model_draw[clqw_flagindex];
+	newent.skinNum = team;
+
+	vec3_t v_forward, v_right, v_up;
+	AngleVectors(angles, v_forward, v_right, v_up);
+	v_forward[2] = -v_forward[2];	// reverse z component
+	for (int i = 0; i < 3; i++)
+	{
+		newent.origin[i] = ent->origin[i] - f * v_forward[i] + 22 * v_right[i];
+	}
+	newent.origin[2] -= 16;
+
+	vec3_t flag_angles;
+	VectorCopy(angles, flag_angles);
+	flag_angles[2] -= 45;
+	CLQ1_SetRefEntAxis(&newent, flag_angles);
+	R_AddRefEntityToScene(&newent);
+}
+
+//	Create visible entities in the correct position
+// for all current players
+void CLQW_LinkPlayers()
+{
+	double playertime = cls.realtime * 0.001 - cls.qh_latency + 0.02;
+	if (playertime > cls.realtime * 0.001)
+	{
+		playertime = cls.realtime * 0.001;
+	}
+
+	qwframe_t* frame = &cl.qw_frames[cl.qh_parsecount & UPDATE_MASK_QW];
+
+	q1player_info_t* info = cl.q1_players;
+	qwplayer_state_t* state = frame->playerstate;
+	for (int j = 0; j < MAX_CLIENTS_QW; j++, info++, state++)
+	{
+		if (state->messagenum != cl.qh_parsecount)
+		{
+			continue;	// not present this frame
+
+		}
+		// spawn light flashes, even ones coming from invisible objects
+		if ((state->effects & (QWEF_BLUE | QWEF_RED)) == (QWEF_BLUE | QWEF_RED))
+		{
+			CLQ1_DimLight(j, state->origin, 3);
+		}
+		else if (state->effects & QWEF_BLUE)
+		{
+			CLQ1_DimLight(j, state->origin, 1);
+		}
+		else if (state->effects & QWEF_RED)
+		{
+			CLQ1_DimLight(j, state->origin, 2);
+		}
+		else if (state->effects & Q1EF_BRIGHTLIGHT)
+		{
+			CLQ1_BrightLight(j, state->origin);
+		}
+		else if (state->effects & Q1EF_DIMLIGHT)
+		{
+			CLQ1_DimLight(j, state->origin, 0);
+		}
+
+		// the player object never gets added
+		if (j == cl.playernum)
+		{
+			continue;
+		}
+
+		if (!state->modelindex)
+		{
+			continue;
+		}
+
+		if (!Cam_DrawPlayer(j))
+		{
+			continue;
+		}
+
+		// grab an entity to fill in
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+
+		ent.hModel = cl.model_draw[state->modelindex];
+		ent.skinNum = state->skinnum;
+		ent.frame = state->frame;
+		if (state->modelindex == clq1_playerindex)
+		{
+			// use custom skin
+			CLQW_HandlePlayerSkin(&ent, j);
+		}
+
+		//
+		// angles
+		//
+		vec3_t angles;
+		angles[PITCH] = -state->viewangles[PITCH] / 3;
+		angles[YAW] = state->viewangles[YAW];
+		angles[ROLL] = 0;
+		angles[ROLL] = VQH_CalcRoll(angles, state->velocity) * 4;
+		CLQ1_SetRefEntAxis(&ent, angles);
+
+		// only predict half the move to minimize overruns
+		int msec = 500 * (playertime - state->state_time);
+		if (msec <= 0 || (!cl_predict_players->value && !cl_predict_players2->value))
+		{
+			VectorCopy(state->origin, ent.origin);
+		}
+		else
+		{
+			// predict players movement
+			if (msec > 255)
+			{
+				msec = 255;
+			}
+			state->command.msec = msec;
+
+			int oldphysent = qh_pmove.numphysent;
+			CLQHW_SetSolidPlayers(j);
+			qwplayer_state_t exact;
+			CLQW_PredictUsercmd(state, &exact, &state->command, false);
+			qh_pmove.numphysent = oldphysent;
+			VectorCopy(exact.origin, ent.origin);
+		}
+		R_AddRefEntityToScene(&ent);
+
+		if (state->effects & QWEF_FLAG1)
+		{
+			CLQW_AddFlagModels(&ent, 0, angles);
+		}
+		else if (state->effects & QWEF_FLAG2)
+		{
+			CLQW_AddFlagModels(&ent, 1, angles);
 		}
 	}
 }
