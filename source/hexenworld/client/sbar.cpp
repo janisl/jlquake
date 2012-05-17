@@ -227,7 +227,7 @@ void SB_PlacePlayerNames(void)
 		{
 			if (!cl.h2_players[i].shownames_off)
 			{
-				if (cl_siege)
+				if (clhw_siege)
 				{
 					//why the fuck does GL fuck this up??!!!
 					if (cl.h2_players[i].siege_team == HWST_ATTACKER)	//attacker
@@ -1207,7 +1207,7 @@ void Sbar_DeathmatchOverlay(void)
 				break;
 			}
 
-			if (cl_siege)
+			if (clhw_siege)
 			{
 				Sbar_DrawRedString(x + 160, y, "6");
 				if (s->siege_team == 1)
@@ -1297,7 +1297,7 @@ void Sbar_DeathmatchOverlay(void)
 			UI_DrawString(x + 88, y, num);
 
 			// draw name
-			if (cl_siege && s->siege_team == 2)	//attacker
+			if (clhw_siege && s->siege_team == 2)	//attacker
 			{
 				UI_DrawString(x + 178, y, s->name);
 			}
@@ -1519,7 +1519,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		}
 		y = viddef.height - BAR_TOP_HEIGHT;
 	}
-	if (cl_siege)
+	if (clhw_siege)
 	{
 		if (l > i)
 		{
@@ -1550,7 +1550,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 			continue;
 		}
 
-		if (cl_siege)
+		if (clhw_siege)
 		{
 			if (s->siege_team == 1)
 			{	//defender
@@ -1598,7 +1598,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 			y += 10;
 		}
 	}
-	if (cl_siege)
+	if (clhw_siege)
 	{
 		if (cl.playernum == cl_keyholder)
 		{

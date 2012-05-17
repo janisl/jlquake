@@ -201,7 +201,6 @@ extern qboolean isDedicated;
 extern int minimum_memory;
 
 extern int sv_kingofhill;
-extern qboolean intro_playing;
 extern qboolean skip_start;
 extern int num_intro_msg;
 extern qboolean check_bottom;

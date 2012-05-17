@@ -1242,7 +1242,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		if (ent != clent &&
 			!(client->spec_track && client->spec_track - 1 == j))
 		{
-			if ((int)ent->GetEffects() & EF_NODRAW)
+			if ((int)ent->GetEffects() & H2EF_NODRAW)
 			{
 				if (dmMode->value == DM_SIEGE && clent->GetPlayerClass() == CLASS_DWARF)
 				{
@@ -1614,7 +1614,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 			continue;
 		}
 
-		if ((int)ent->GetEffects() & EF_NODRAW)
+		if ((int)ent->GetEffects() & H2EF_NODRAW)
 		{
 			continue;
 		}

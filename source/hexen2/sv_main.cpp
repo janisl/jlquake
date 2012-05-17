@@ -23,7 +23,6 @@ Cvar* sv_ce_max_size;
 
 extern unsigned int info_mask, info_mask2;
 int sv_kingofhill;
-qboolean intro_playing = false;
 qboolean skip_start = false;
 int num_intro_msg = 0;
 
@@ -822,7 +821,7 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	{
 		DoRemove = false;
 		// don't send if flagged for NODRAW and there are no lighting effects
-		if (ent->GetEffects() == EF_NODRAW)
+		if (ent->GetEffects() == H2EF_NODRAW)
 		{
 			DoRemove = true;
 			goto skipA;
@@ -1173,7 +1172,7 @@ void SV_CleanupEnts(void)
 	ent = NEXT_EDICT(sv.edicts);
 	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
-		ent->SetEffects((int)ent->GetEffects() & ~EF_MUZZLEFLASH);
+		ent->SetEffects((int)ent->GetEffects() & ~H2EF_MUZZLEFLASH);
 	}
 
 }

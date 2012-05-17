@@ -46,6 +46,10 @@ extern Cvar* clh2_playerclass;
 
 extern int clhw_playerindex[MAX_PLAYER_CLASS];
 
+extern bool h2intro_playing;
+
+extern bool clhw_siege;
+
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -61,6 +65,9 @@ void CLHW_ParsePlayerinfo(QMsg& message);
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags);
 void CLH2_TranslatePlayerSkin(int playernum);
 void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
+void CLH2_RelinkEntities();
+void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_t angles, vec3_t angleAdd);
+void CLHW_LinkPacketEntities();
 
 void CLH2_ClearStreams();
 void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
@@ -148,7 +155,7 @@ void CLHW_ChainLightningExplosion(const vec3_t pos);
 void CLHW_CreateExplosionWithSound(const vec3_t pos);
 void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles);
 void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles);
-void CLHW_UpdateOnFire(refEntity_t* ent, vec3_t angles, int edict_num);
+void CLHW_UpdateOnFire(refEntity_t* ent, const vec3_t angles, int edict_num);
 void CLHW_UpdatePowerFlameBurn(refEntity_t* ent, int edict_num);
 void CLHW_UpdateIceStorm(refEntity_t* ent, int edict_num);
 void CLH2_UpdateExplosions();

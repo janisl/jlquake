@@ -2789,7 +2789,7 @@ void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles)
 	}
 }
 
-void CLHW_UpdateOnFire(refEntity_t* ent, vec3_t angles, int edict_num)
+void CLHW_UpdateOnFire(refEntity_t* ent, const vec3_t angles, int edict_num)
 {
 	if (rand() % 100 < cls.frametime / 2)
 	{

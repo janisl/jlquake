@@ -982,7 +982,6 @@ CL_ParseServerMessage
 int received_framecount;
 int LastServerMessageSize = 0;
 
-qboolean cl_siege;
 byte cl_fraglimit;
 float cl_timelimit;
 float cl_server_time_offset;
@@ -1198,7 +1197,7 @@ void CL_ParseServerMessage(void)
 
 		case hwsvc_updatesiegeinfo:
 			// This dude killed someone, update his frags and level
-			cl_siege = true;
+			clhw_siege = true;
 			cl_timelimit = net_message.ReadByte() * 60;
 			cl_fraglimit = net_message.ReadByte();
 			break;
@@ -1265,7 +1264,7 @@ void CL_ParseServerMessage(void)
 		break;
 
 		case h2svc_intermission:
-//			if(cl_siege)
+//			if(clhw_siege)
 //			{//MG
 			cl.qh_intermission = net_message.ReadByte();
 			cl.qh_completed_time = realtime;

@@ -30,13 +30,13 @@ void CL_StopPlayback(void)
 		return;
 	}
 
-	if (intro_playing)
+	if (h2intro_playing)
 	{
 		M_ToggleMenu_f();
 	}
 
 
-	intro_playing = false;
+	h2intro_playing = false;
 	num_intro_msg = 0;
 
 	FS_FCloseFile(clc.demofile);
@@ -189,7 +189,7 @@ void CL_Stop_f(void)
 		return;
 	}
 
-	intro_playing = false;
+	h2intro_playing = false;
 	num_intro_msg = 0;
 // write a disconnect message to the demo file
 	net_message.Clear();
@@ -316,11 +316,11 @@ void CL_PlayDemo_f(void)
 	String::Cpy(name, Cmd_Argv(1));
 	if (!String::ICmp(name,"t9"))
 	{
-		intro_playing = true;
+		h2intro_playing = true;
 	}
 	else
 	{
-		intro_playing = false;
+		h2intro_playing = false;
 	}
 	String::DefaultExtension(name, sizeof(name), ".dem");
 

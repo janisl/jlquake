@@ -1439,7 +1439,7 @@ void M_Menu_Help_f(void)
 
 void M_Help_Draw(void)
 {
-	if (cl_siege)
+	if (clhw_siege)
 	{
 		M_DrawPic(0, 0, R_CachePic(va("gfx/menu/sghelp%02i.lmp", help_page + 1)));
 	}
@@ -1461,7 +1461,7 @@ void M_Help_Key(int key)
 	case K_UPARROW:
 	case K_RIGHTARROW:
 		m_entersound = true;
-		if (cl_siege)
+		if (clhw_siege)
 		{
 			if (++help_page >= NUM_SG_HELP_PAGES)
 			{
@@ -1479,7 +1479,7 @@ void M_Help_Key(int key)
 		m_entersound = true;
 		if (--help_page < 0)
 		{
-			if (cl_siege)
+			if (clhw_siege)
 			{
 				help_page = NUM_SG_HELP_PAGES - 1;
 			}
@@ -2425,7 +2425,7 @@ void M_Menu_Setup_f(void)
 
 	setup_class = playerclass->value;
 
-//	if (com_portals||cl_siege)//FIXME!!!
+//	if (com_portals||clhw_siege)//FIXME!!!
 //	{
 	class_limit = MAX_PLAYER_CLASS;
 //	}

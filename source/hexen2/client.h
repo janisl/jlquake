@@ -7,13 +7,6 @@
 #define NAME_LENGTH 64
 
 //
-// cvars
-//
-extern Cvar* cl_prettylights;
-
-//=============================================================================
-
-//
 // cl_main
 //
 void CL_Init(void);

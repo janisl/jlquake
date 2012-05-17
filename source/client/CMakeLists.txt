@@ -5,10 +5,12 @@ set(CLIENT_FILES
 	cinematic/roq.cpp
 	game/hexen2/chunk.cpp
 	game/hexen2/connection.cpp
+	game/hexen2/demo.cpp
 	game/hexen2/effects.cpp
 	game/hexen2/entities.cpp
 	game/hexen2/explosion.cpp
 	game/hexen2/light_effects.cpp
+	game/hexen2/parse.cpp
 	game/hexen2/particle_effects.cpp
 	game/hexen2/projectiles.cpp
 	game/hexen2/stream.cpp

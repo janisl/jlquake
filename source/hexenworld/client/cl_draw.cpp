@@ -264,7 +264,7 @@ void R_DrawName(vec3_t origin, char* Name, int Red)
 
 	u -= String::Length(Name) * 4;
 
-	if (cl_siege)
+	if (clhw_siege)
 	{
 		if (Red > 10)
 		{

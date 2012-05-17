@@ -156,17 +156,6 @@ typedef struct client_s
 
 #define FL2_CROUCHED            4096
 
-// entity effects
-
-#define EF_BRIGHTFIELD          1
-#define EF_MUZZLEFLASH          2
-#define EF_BRIGHTLIGHT          4
-#define EF_DIMLIGHT             8
-#define EF_DARKLIGHT            16
-#define EF_DARKFIELD            32
-#define EF_LIGHT                64
-#define EF_NODRAW               128
-
 // Built-in Spawn Flags
 #define SPAWNFLAG_NOT_PALADIN       0x00000100
 #define SPAWNFLAG_NOT_CLERIC        0x00000200

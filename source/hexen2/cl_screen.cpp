@@ -273,7 +273,7 @@ void SCR_CheckDrawCenterString(void)
 		return;
 	}
 
-	if (intro_playing)
+	if (h2intro_playing)
 	{
 		Bottom_Plaque_Draw(scr_centerstring);
 	}

@@ -74,8 +74,6 @@ static void InvOff_f(void);
 
 static void DrawArtifactInventory(void);
 
-extern qboolean intro_playing;
-
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
@@ -201,7 +199,7 @@ void SB_Draw(void)
 	int mana;
 	int maxMana;
 
-	if (intro_playing)
+	if (h2intro_playing)
 	{
 		return;
 	}

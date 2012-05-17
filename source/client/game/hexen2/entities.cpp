@@ -248,7 +248,7 @@ void CLH2_ParseClearEdicts(QMsg& message)
 		{
 			cl.h2_RemoveList[i] = k;
 		}
-		h2entity_t* ent = CLH2_EntityNum(k);
+		CLH2_EntityNum(k);
 		clh2_baselines[k].flags &= ~BE_ON;
 	}
 }
@@ -1230,6 +1230,510 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 			}
 
 			entity->customSkin = R_GetImageHandle(clh2_playertextures[playerIndex]);
+		}
+	}
+}
+
+void CLH2_RelinkEntities()
+{
+	h2entity_t* ent;
+	int i, j;
+	float frac, f, d;
+	vec3_t delta;
+	//float		bobjrotate;
+	vec3_t oldorg;
+	int c;
+
+	c = 0;
+	// determine partial update time
+	frac = CLQH_LerpPoint();
+
+	R_ClearScene();
+
+	//
+	// interpolate player info
+	//
+	for (i = 0; i < 3; i++)
+	{
+		cl.qh_velocity[i] = cl.qh_mvelocity[1][i] +
+			frac * (cl.qh_mvelocity[0][i] - cl.qh_mvelocity[1][i]);
+	}
+
+	if (clc.demoplaying && !h2intro_playing)
+	{
+		// interpolate the angles
+		for (j = 0; j < 3; j++)
+		{
+			d = cl.qh_mviewangles[0][j] - cl.qh_mviewangles[1][j];
+			if (d > 180)
+			{
+				d -= 360;
+			}
+			else if (d < -180)
+			{
+				d += 360;
+			}
+			cl.viewangles[j] = cl.qh_mviewangles[1][j] + frac * d;
+		}
+	}
+
+	// start on the entity after the world
+	for (i = 1,ent = h2cl_entities + 1; i < cl.qh_num_entities; i++,ent++)
+	{
+		if (!ent->state.modelindex)
+		{
+			// empty slot
+			continue;
+		}
+
+		// if the object wasn't included in the last packet, remove it
+		if (ent->msgtime != cl.qh_mtime[0] && !(clh2_baselines[i].flags & BE_ON))
+		{
+			ent->state.modelindex = 0;
+			continue;
+		}
+
+		VectorCopy(ent->state.origin, oldorg);
+
+		if (ent->msgtime != cl.qh_mtime[0])
+		{	// the entity was not updated in the last message
+			// so move to the final spot
+			VectorCopy(ent->msg_origins[0], ent->state.origin);
+			VectorCopy(ent->msg_angles[0], ent->state.angles);
+		}
+		else
+		{	// if the delta is large, assume a teleport and don't lerp
+			f = frac;
+			for (j = 0; j < 3; j++)
+			{
+				delta[j] = ent->msg_origins[0][j] - ent->msg_origins[1][j];
+
+				if (delta[j] > 100 || delta[j] < -100)
+				{
+					f = 1;		// assume a teleportation, not a motion
+				}
+			}
+
+			// interpolate the origin and angles
+			for (j = 0; j < 3; j++)
+			{
+				ent->state.origin[j] = ent->msg_origins[1][j] + f * delta[j];
+
+				d = ent->msg_angles[0][j] - ent->msg_angles[1][j];
+				if (d > 180)
+				{
+					d -= 360;
+				}
+				else if (d < -180)
+				{
+					d += 360;
+				}
+				ent->state.angles[j] = ent->msg_angles[1][j] + f * d;
+			}
+		}
+
+		c++;
+		if (ent->state.effects & H2EF_DARKFIELD)
+		{
+			CLH2_DarkFieldParticles(ent->state.origin);
+		}
+		if (ent->state.effects & H2EF_MUZZLEFLASH)
+		{
+			CLH2_MuzzleFlashLight(i, ent->state.origin, ent->state.angles, true);
+		}
+		if (ent->state.effects & H2EF_BRIGHTLIGHT)
+		{
+			CLH2_BrightLight(i, ent->state.origin);
+		}
+		if (ent->state.effects & H2EF_DIMLIGHT)
+		{
+			CLH2_DimLight(i, ent->state.origin);
+		}
+		if (ent->state.effects & H2EF_DARKLIGHT)
+		{
+			CLH2_DarkLight(i, ent->state.origin);
+		}
+		if (ent->state.effects & H2EF_LIGHT)
+		{
+			CLH2_Light(i, ent->state.origin);
+		}
+
+		int ModelFlags = R_ModelFlags(cl.model_draw[ent->state.modelindex]);
+		if (ModelFlags & H2MDLEF_GIB)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_blood);
+		}
+		else if (ModelFlags & H2MDLEF_ZOMGIB)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_slight_blood);
+		}
+		else if (ModelFlags & H2MDLEF_BLOODSHOT)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_bloodshot);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_tracer);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER2)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_tracer2);
+		}
+		else if (ModelFlags & H2MDLEF_ROCKET)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_rocket_trail);
+		}
+		else if (ModelFlags & H2MDLEF_FIREBALL)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_fireball);
+			CLH2_FireBallLight(i, ent->state.origin);
+		}
+		else if (ModelFlags & H2MDLEF_ACIDBALL)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_acidball);
+			CLH2_FireBallLight(i, ent->state.origin);
+		}
+		else if (ModelFlags & H2MDLEF_ICE)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_ice);
+		}
+		else if (ModelFlags & H2MDLEF_SPIT)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_spit);
+			CLH2_SpitLight(i, ent->state.origin);
+		}
+		else if (ModelFlags & H2MDLEF_SPELL)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_spell);
+		}
+		else if (ModelFlags & H2MDLEF_GRENADE)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_smoke);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER3)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_voor_trail);
+		}
+		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_vorpal);
+		}
+		else if (ModelFlags & H2MDLEF_SET_STAFF)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin,rt_setstaff);
+		}
+		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
+		{
+			if ((rand() & 3) < 1)
+			{
+				CLH2_TrailParticles(oldorg, ent->state.origin, rt_magicmissile);
+			}
+		}
+		else if (ModelFlags & H2MDLEF_BONESHARD)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_boneshard);
+		}
+		else if (ModelFlags & H2MDLEF_SCARAB)
+		{
+			CLH2_TrailParticles(oldorg, ent->state.origin, rt_scarab);
+		}
+
+		if (ent->state.effects & H2EF_NODRAW)
+		{
+			continue;
+		}
+
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(ent->state.origin, rent.origin);
+		rent.hModel = cl.model_draw[ent->state.modelindex];
+		rent.frame = ent->state.frame;
+		rent.syncBase = ent->syncbase;
+		rent.skinNum = ent->state.skinnum;
+		CLH2_SetRefEntAxis(&rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags);
+		CLH2_HandleCustomSkin(&rent, i <= cl.qh_maxclients ? i - 1 : -1);
+		if (i == cl.viewentity && !chase_active->value)
+		{
+			rent.renderfx |= RF_THIRD_PERSON;
+		}
+		R_AddRefEntityToScene(&rent);
+	}
+}
+
+void HandleEffects(int effects, int number, refEntity_t* ent, const vec3_t angles, vec3_t angleAdd)
+{
+	bool rotateSet = false;
+
+	// Effect Flags
+	if (effects & HWEF_BRIGHTFIELD)
+	{
+		// show that this guy is cool or something...
+		CLH2_BrightFieldLight(number, ent->origin);
+		CLHW_BrightFieldParticles(ent->origin);
+	}
+	if (effects & H2EF_DARKFIELD)
+	{
+		CLH2_DarkFieldParticles(ent->origin);
+	}
+	if (effects & H2EF_MUZZLEFLASH)
+	{
+		CLH2_MuzzleFlashLight(number, ent->origin, angles, true);
+	}
+	if (effects & H2EF_BRIGHTLIGHT)
+	{
+		CLH2_BrightLight(number, ent->origin);
+	}
+	if (effects & H2EF_DIMLIGHT)
+	{
+		CLH2_DimLight(number, ent->origin);
+	}
+	if (effects & H2EF_LIGHT)
+	{
+		CLH2_Light(number, ent->origin);
+	}
+
+	if (effects & HWEF_POISON_GAS)
+	{
+		CLHW_UpdatePoisonGas(ent->origin, angles);
+	}
+	if (effects & HWEF_ACIDBLOB)
+	{
+		angleAdd[0] = 0;
+		angleAdd[1] = 0;
+		angleAdd[2] = 200 * cl.qh_serverTimeFloat;
+
+		rotateSet = true;
+
+		CLHW_UpdateAcidBlob(ent->origin, angles);
+	}
+	if (effects & HWEF_ONFIRE)
+	{
+		CLHW_UpdateOnFire(ent, angles, number);
+	}
+	if (effects & HWEF_POWERFLAMEBURN)
+	{
+		CLHW_UpdatePowerFlameBurn(ent, number);
+	}
+	if (effects & HWEF_ICESTORM_EFFECT)
+	{
+		CLHW_UpdateIceStorm(ent, number);
+	}
+	if (effects & HWEF_HAMMER_EFFECTS)
+	{
+		angleAdd[0] = 200 * cl.qh_serverTimeFloat;
+		angleAdd[1] = 0;
+		angleAdd[2] = 0;
+
+		rotateSet = true;
+
+		CLHW_UpdateHammer(ent, number);
+	}
+	if (effects & HWEF_BEETLE_EFFECTS)
+	{
+		CLHW_UpdateBug(ent);
+	}
+	if (effects & H2EF_DARKLIGHT)	//EF_INVINC_CIRC)
+	{
+		CLHW_SuccubusInvincibleParticles(ent->origin);
+	}
+
+	if (effects & HWEF_UPDATESOUND)
+	{
+		S_UpdateSoundPos(number, 7, ent->origin);
+	}
+
+	if (!rotateSet)
+	{
+		angleAdd[0] = 0;
+		angleAdd[1] = 0;
+		angleAdd[2] = 0;
+	}
+}
+
+void CLHW_LinkPacketEntities()
+{
+	hwpacket_entities_t* pack = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
+	hwpacket_entities_t* PrevPack = &cl.hw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_HW].packet_entities;
+
+	float f = 0;		// FIXME: no interpolation right now
+
+	for (int pnum = 0; pnum < pack->num_entities; pnum++)
+	{
+		h2entity_state_t* s1 = &pack->entities[pnum];
+		h2entity_state_t* s2 = s1;	// FIXME: no interpolation right now
+
+		// if set to invisible, skip
+		if (!s1->modelindex)
+		{
+			continue;
+		}
+
+		// create a new entity
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+
+		ent.reType = RT_MODEL;
+		qhandle_t model = cl.model_draw[s1->modelindex];
+		ent.hModel = model;
+
+		// set skin
+		ent.skinNum = s1->skinnum;
+
+		// set frame
+		ent.frame = s1->frame;
+
+		int drawflags = s1->drawflags;
+
+		vec3_t angles;
+		for (int i = 0; i < 3; i++)
+		{
+			float a1 = s1->angles[i];
+			float a2 = s2->angles[i];
+			if (a1 - a2 > 180)
+			{
+				a1 -= 360;
+			}
+			if (a1 - a2 < -180)
+			{
+				a1 += 360;
+			}
+			angles[i] = a2 + f * (a1 - a2);
+		}
+
+		// calculate origin
+		for (int i = 0; i < 3; i++)
+		{
+			ent.origin[i] = s2->origin[i] + f * (s1->origin[i] - s2->origin[i]);
+		}
+
+		// scan the old entity display list for a matching
+		vec3_t old_origin;
+		int i;
+		for (i = 0; i < PrevPack->num_entities; i++)
+		{
+			if (PrevPack->entities[i].number == s1->number)
+			{
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
+				break;
+			}
+		}
+		if (i == PrevPack->num_entities)
+		{
+			CLH2_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
+			R_AddRefEntityToScene(&ent);
+			continue;		// not in last message
+		}
+
+		for (i = 0; i < 3; i++)
+			//if ( abs(old_origin[i] - ent->origin[i]) > 128)
+			if (abs(old_origin[i] - ent.origin[i]) > 512)	// this is an issue for laggy situations...
+			{	// no trail if too far
+				VectorCopy(ent.origin, old_origin);
+				break;
+			}
+
+		// some of the effects need to know how far the thing has moved...
+
+		if (clhw_siege)
+		{
+			if ((int)s1->effects & H2EF_NODRAW)
+			{
+				ent.skinNum = 101;	//ice, but in siege will be invis skin for dwarf to see
+				drawflags |= H2DRF_TRANSLUCENT;
+				s1->effects &= ~H2EF_NODRAW;
+			}
+		}
+
+		vec3_t angleAdd;
+		HandleEffects(s1->effects, s1->number, &ent, angles, angleAdd);
+		CLH2_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
+		R_AddRefEntityToScene(&ent);
+
+		// add automatic particle trails
+		int ModelFlags = R_ModelFlags(ent.hModel);
+		if (!ModelFlags)
+		{
+			continue;
+		}
+
+		// Model Flags
+		if (ModelFlags & H2MDLEF_GIB)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_blood);
+		}
+		else if (ModelFlags & H2MDLEF_ZOMGIB)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_slight_blood);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_tracer);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER2)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_tracer2);
+		}
+		else if (ModelFlags & H2MDLEF_ROCKET)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_rocket_trail);
+		}
+		else if (ModelFlags & H2MDLEF_FIREBALL)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_fireball);
+			CLH2_FireBallLight(i, ent.origin);
+		}
+		else if (ModelFlags & H2MDLEF_ICE)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_ice);
+		}
+		else if (ModelFlags & H2MDLEF_SPIT)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_spit);
+			CLH2_SpitLight(i, ent.origin);
+		}
+		else if (ModelFlags & H2MDLEF_SPELL)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_spell);
+		}
+		else if (ModelFlags & H2MDLEF_GRENADE)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_grensmoke);
+		}
+		else if (ModelFlags & H2MDLEF_TRACER3)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_voor_trail);
+		}
+		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_vorpal);
+		}
+		else if (ModelFlags & H2MDLEF_SET_STAFF)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin,rt_setstaff);
+		}
+		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
+		{
+			if ((rand() & 3) < 1)
+			{
+				CLH2_TrailParticles(old_origin, ent.origin, rt_magicmissile);
+			}
+		}
+		else if (ModelFlags & H2MDLEF_BONESHARD)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_boneshard);
+		}
+		else if (ModelFlags & H2MDLEF_SCARAB)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_scarab);
+		}
+		else if (ModelFlags & H2MDLEF_ACIDBALL)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_acidball);
+		}
+		else if (ModelFlags & H2MDLEF_BLOODSHOT)
+		{
+			CLH2_TrailParticles(old_origin, ent.origin, rt_bloodshot);
 		}
 	}
 }

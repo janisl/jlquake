@@ -16,7 +16,7 @@
 
 #include "../../client.h"
 
-void CLH2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, bool adjustZ)
+void CLH2_MuzzleFlashLight(int key, vec3_t origin, const vec3_t angles, bool adjustZ)
 {
 	cdlight_t* dl = CL_AllocDlight(key);
 	VectorCopy(origin,  dl->origin);

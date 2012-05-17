@@ -316,7 +316,7 @@ void CL_Disconnect(void)
 #endif
 
 // stop sounds (especially looping!)
-	cl_siege = false;	//no more siege display, etc.
+	clhw_siege = false;	//no more siege display, etc.
 	S_StopAllSounds();
 
 // if running a local server, shut it down

@@ -916,7 +916,7 @@ static qboolean ValidToShowName(qhedict_t* edict)
 	{
 		return false;
 	}
-	if ((int)edict->GetEffects() & EF_NODRAW)
+	if ((int)edict->GetEffects() & H2EF_NODRAW)
 	{
 		return false;
 	}
@@ -1115,7 +1115,7 @@ void SV_CleanupEnts(void)
 	ent = NEXT_EDICT(sv.edicts);
 	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
-		ent->SetEffects((int)ent->GetEffects() & ~EF_MUZZLEFLASH);
+		ent->SetEffects((int)ent->GetEffects() & ~H2EF_MUZZLEFLASH);
 		ent->SetWpnSound(0);
 	}
 

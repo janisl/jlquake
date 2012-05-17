@@ -1,316 +1,6 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
-
-void HandleEffects(int effects, int number, refEntity_t* ent, vec3_t angles, vec3_t angleAdd, vec3_t oldOrg)
-{
-	int rotateSet = 0;
-
-	// Effect Flags
-	if (effects & EF_BRIGHTFIELD)
-	{
-		// show that this guy is cool or something...
-		CLH2_BrightFieldLight(number, ent->origin);
-		CLHW_BrightFieldParticles(ent->origin);
-	}
-	if (effects & EF_DARKFIELD)
-	{
-		CLH2_DarkFieldParticles(ent->origin);
-	}
-	if (effects & EF_MUZZLEFLASH)
-	{
-		CLH2_MuzzleFlashLight(number, ent->origin, angles, true);
-	}
-	if (effects & EF_BRIGHTLIGHT)
-	{
-		CLH2_BrightLight(number, ent->origin);
-	}
-	if (effects & EF_DIMLIGHT)
-	{
-		CLH2_DimLight(number, ent->origin);
-	}
-	if (effects & EF_LIGHT)
-	{
-		CLH2_Light(number, ent->origin);
-	}
-
-
-	if (effects & EF_POISON_GAS)
-	{
-		CLHW_UpdatePoisonGas(ent->origin, angles);
-	}
-	if (effects & EF_ACIDBLOB)
-	{
-		angleAdd[0] = 0;
-		angleAdd[1] = 0;
-		angleAdd[2] = 200 * cl.qh_serverTimeFloat;
-
-		rotateSet = 1;
-
-		CLHW_UpdateAcidBlob(ent->origin, angles);
-	}
-	if (effects & EF_ONFIRE)
-	{
-		CLHW_UpdateOnFire(ent, angles, number);
-	}
-	if (effects & EF_POWERFLAMEBURN)
-	{
-		CLHW_UpdatePowerFlameBurn(ent, number);
-	}
-	if (effects & EF_ICESTORM_EFFECT)
-	{
-		CLHW_UpdateIceStorm(ent, number);
-	}
-	if (effects & EF_HAMMER_EFFECTS)
-	{
-		angleAdd[0] = 200 * cl.qh_serverTimeFloat;
-		angleAdd[1] = 0;
-		angleAdd[2] = 0;
-
-		rotateSet = 1;
-
-		CLHW_UpdateHammer(ent, number);
-	}
-	if (effects & EF_BEETLE_EFFECTS)
-	{
-		CLHW_UpdateBug(ent);
-	}
-	if (effects & EF_DARKLIGHT)	//EF_INVINC_CIRC)
-	{
-		CLHW_SuccubusInvincibleParticles(ent->origin);
-	}
-
-	if (effects & EF_UPDATESOUND)
-	{
-		S_UpdateSoundPos(number, 7, ent->origin);
-	}
-
-
-	if (!rotateSet)
-	{
-		angleAdd[0] = 0;
-		angleAdd[1] = 0;
-		angleAdd[2] = 0;
-	}
-}
-
-/*
-===============
-CL_LinkPacketEntities
-
-===============
-*/
-void CL_LinkPacketEntities(void)
-{
-	hwpacket_entities_t* pack;
-	h2entity_state_t* s1, * s2;
-	float f;
-	qhandle_t model;
-	vec3_t old_origin;
-	float autorotate;
-	int i;
-	int pnum;
-
-	pack = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW].packet_entities;
-	hwpacket_entities_t* PrevPack = &cl.hw_frames[(clc.netchan.incomingSequence - 1) & UPDATE_MASK_HW].packet_entities;
-
-	autorotate = AngleMod(100 * cl.qh_serverTimeFloat);
-
-	f = 0;		// FIXME: no interpolation right now
-
-	for (pnum = 0; pnum < pack->num_entities; pnum++)
-	{
-		s1 = &pack->entities[pnum];
-		s2 = s1;	// FIXME: no interpolation right now
-
-		// if set to invisible, skip
-		if (!s1->modelindex)
-		{
-			continue;
-		}
-
-		// create a new entity
-		refEntity_t ent;
-		Com_Memset(&ent, 0, sizeof(ent));
-
-		ent.reType = RT_MODEL;
-		model = cl.model_draw[s1->modelindex];
-		ent.hModel = model;
-
-		// set skin
-		ent.skinNum = s1->skinnum;
-
-		// set frame
-		ent.frame = s1->frame;
-
-		int drawflags = s1->drawflags;
-
-		vec3_t angles;
-		// rotate binary objects locally
-/*	rjr rotate them in renderer	if (model->flags & H2MDLEF_ROTATE)
-        {
-            ent->angles[0] = 0;
-            ent->angles[1] = autorotate;
-            ent->angles[2] = 0;
-        }
-        else*/
-		{
-			float a1, a2;
-
-			for (i = 0; i < 3; i++)
-			{
-				a1 = s1->angles[i];
-				a2 = s2->angles[i];
-				if (a1 - a2 > 180)
-				{
-					a1 -= 360;
-				}
-				if (a1 - a2 < -180)
-				{
-					a1 += 360;
-				}
-				angles[i] = a2 + f * (a1 - a2);
-			}
-		}
-
-		// calculate origin
-		for (i = 0; i < 3; i++)
-			ent.origin[i] = s2->origin[i] +
-							f * (s1->origin[i] - s2->origin[i]);
-
-		// scan the old entity display list for a matching
-		for (i = 0; i < PrevPack->num_entities; i++)
-		{
-			if (PrevPack->entities[i].number == s1->number)
-			{
-				VectorCopy(PrevPack->entities[i].origin, old_origin);
-				break;
-			}
-		}
-		if (i == PrevPack->num_entities)
-		{
-			CLH2_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
-			R_AddRefEntityToScene(&ent);
-			continue;		// not in last message
-		}
-
-		for (i = 0; i < 3; i++)
-			//if ( abs(old_origin[i] - ent->origin[i]) > 128)
-			if (abs(old_origin[i] - ent.origin[i]) > 512)	// this is an issue for laggy situations...
-			{	// no trail if too far
-				VectorCopy(ent.origin, old_origin);
-				break;
-			}
-
-		// some of the effects need to know how far the thing has moved...
-
-//		cl.h2_players[s1->number].invis=false;
-		if (cl_siege)
-		{
-			if ((int)s1->effects & EF_NODRAW)
-			{
-				ent.skinNum = 101;	//ice, but in siege will be invis skin for dwarf to see
-				drawflags |= H2DRF_TRANSLUCENT;
-				s1->effects &= ~EF_NODRAW;
-//				cl.h2_players[s1->number].invis=true;
-			}
-		}
-
-		vec3_t angleAdd;
-		HandleEffects(s1->effects, s1->number, &ent, angles, angleAdd, old_origin);
-		CLH2_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
-		R_AddRefEntityToScene(&ent);
-
-		// add automatic particle trails
-		int ModelFlags = R_ModelFlags(ent.hModel);
-		if (!ModelFlags)
-		{
-			continue;
-		}
-
-		// Model Flags
-		if (ModelFlags & H2MDLEF_GIB)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_blood);
-		}
-		else if (ModelFlags & H2MDLEF_ZOMGIB)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_slight_blood);
-		}
-		else if (ModelFlags & H2MDLEF_TRACER)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_tracer);
-		}
-		else if (ModelFlags & H2MDLEF_TRACER2)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_tracer2);
-		}
-		else if (ModelFlags & H2MDLEF_ROCKET)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_rocket_trail);
-		}
-		else if (ModelFlags & H2MDLEF_FIREBALL)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_fireball);
-			CLH2_FireBallLight(i, ent.origin);
-		}
-		else if (ModelFlags & H2MDLEF_ICE)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_ice);
-		}
-		else if (ModelFlags & H2MDLEF_SPIT)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_spit);
-			CLH2_SpitLight(i, ent.origin);
-		}
-		else if (ModelFlags & H2MDLEF_SPELL)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_spell);
-		}
-		else if (ModelFlags & H2MDLEF_GRENADE)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_grensmoke);
-		}
-		else if (ModelFlags & H2MDLEF_TRACER3)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_voor_trail);
-		}
-		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_vorpal);
-		}
-		else if (ModelFlags & H2MDLEF_SET_STAFF)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin,rt_setstaff);
-		}
-		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
-		{
-			if ((rand() & 3) < 1)
-			{
-				CLH2_TrailParticles(old_origin, ent.origin, rt_magicmissile);
-			}
-		}
-		else if (ModelFlags & H2MDLEF_BONESHARD)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_boneshard);
-		}
-		else if (ModelFlags & H2MDLEF_SCARAB)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_scarab);
-		}
-		else if (ModelFlags & H2MDLEF_ACIDBALL)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_acidball);
-		}
-		else if (ModelFlags & H2MDLEF_BLOODSHOT)
-		{
-			CLH2_TrailParticles(old_origin, ent.origin, rt_bloodshot);
-		}
-	}
-}
-
-//========================================
-
 extern int cl_spikeindex, cl_flagindex;
 
 /*
@@ -441,18 +131,18 @@ void CL_LinkPlayers(void)
 			VectorCopy(exact.origin, ent.origin);
 		}
 
-		if (cl_siege)
+		if (clhw_siege)
 		{
-			if ((int)state->effects & EF_NODRAW)
+			if ((int)state->effects & H2EF_NODRAW)
 			{
 				ent.skinNum = 101;	//ice, but in siege will be invis skin for dwarf to see
 				drawflags |= H2DRF_TRANSLUCENT;
-				state->effects &= ~EF_NODRAW;
+				state->effects &= ~H2EF_NODRAW;
 			}
 		}
 
 		vec3_t angleAdd;
-		HandleEffects(state->effects, j + 1, &ent, angles, angleAdd, NULL);
+		HandleEffects(state->effects, j + 1, &ent, angles, angleAdd);
 
 		//	This uses behavior of software renderer as GL version was fucked
 		// up because it didn't take into the account the fact that shadelight
@@ -474,7 +164,7 @@ void CL_LinkPlayers(void)
 			{
 				shadelight = 192 - ambientlight;
 			}
-			if ((ambientlight + shadelight) > 75 || (cl_siege && my_team == ve_team))
+			if ((ambientlight + shadelight) > 75 || (clhw_siege && my_team == ve_team))
 			{
 				info->shownames_off = false;
 			}
@@ -482,7 +172,7 @@ void CL_LinkPlayers(void)
 			{
 				info->shownames_off = true;
 			}
-			if (cl_siege)
+			if (clhw_siege)
 			{
 				if (cl.h2_players[cl.playernum].playerclass == CLASS_DWARF && ent.skinNum == 101)
 				{
@@ -610,7 +300,7 @@ void CL_EmitEntities(void)
 	R_ClearScene();
 
 	CL_LinkPlayers();
-	CL_LinkPacketEntities();
+	CLHW_LinkPacketEntities();
 	CLH2_LinkProjectiles();
 	CLH2_LinkMissiles();
 	CLH2_UpdateTEnts();

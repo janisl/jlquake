@@ -661,7 +661,7 @@ void CL_ParseRainEffect(void)
 static void CL_ParsePrint()
 {
 	const char* txt = net_message.ReadString2();
-	if (intro_playing)
+	if (h2intro_playing)
 	{
 		return;
 	}

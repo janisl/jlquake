@@ -31,10 +31,6 @@ state bit 2 is edge triggered on the down to up transition
 extern qboolean info_up;
 #endif
 
-//==========================================================================
-
-Cvar* cl_prettylights;
-
 void CL_MouseEvent(int mx, int my)
 {
 	cl.mouseDx[cl.mouseIndex] += mx;

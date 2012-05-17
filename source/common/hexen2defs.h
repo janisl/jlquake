@@ -864,3 +864,21 @@ struct h2client_entvars_t
 #define HWCM_BUTTONS  (1 << 5)
 #define HWCM_IMPULSE  (1 << 6)
 #define HWCM_MSEC     (1 << 7)
+
+// entity effects
+#define HWEF_ONFIRE               0x00000001
+#define H2EF_MUZZLEFLASH          0x00000002
+#define H2EF_BRIGHTLIGHT          0x00000004
+#define H2EF_DIMLIGHT             0x00000008
+#define H2EF_DARKLIGHT            0x00000010
+#define H2EF_DARKFIELD            0x00000020
+#define H2EF_LIGHT                0x00000040
+#define H2EF_NODRAW               0x00000080
+#define HWEF_BRIGHTFIELD          0x00000400
+#define HWEF_POWERFLAMEBURN       0x00000800
+#define HWEF_UPDATESOUND          0x00002000
+#define HWEF_POISON_GAS           0x00200000
+#define HWEF_ACIDBLOB             0x00400000
+#define HWEF_ICESTORM_EFFECT      0x02000000
+#define HWEF_HAMMER_EFFECTS       0x10000000
+#define HWEF_BEETLE_EFFECTS       0x20000000

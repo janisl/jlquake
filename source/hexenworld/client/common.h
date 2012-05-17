@@ -33,7 +33,6 @@ void COM_Gamedir(char* dir);
 extern Cvar* registered;
 extern qboolean standard_quake, rogue, hipnotic;
 
-extern qboolean cl_siege;
 extern byte cl_fraglimit;
 extern float cl_timelimit;
 extern float cl_server_time_offset;
