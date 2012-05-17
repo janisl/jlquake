@@ -1304,11 +1304,9 @@ void CL_ParseServerMessage(void)
 		case hwsvc_playerinfo:
 			CLHW_ParsePlayerinfo(net_message);
 			break;
-
 		case hwsvc_playerskipped:
-			CL_SavePlayer();
+			CLHW_SavePlayer(net_message);
 			break;
-
 		case hwsvc_nails:
 			CLHW_ParseNails(net_message);
 			break;

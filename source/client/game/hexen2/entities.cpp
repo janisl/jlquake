@@ -1010,6 +1010,21 @@ void CLHW_ParsePlayerinfo(QMsg& message)
 	VectorCopy(state->command.angles, state->viewangles);
 }
 
+void CLHW_SavePlayer(QMsg& message)
+{
+	int num = message.ReadByte();
+
+	if (num > HWMAX_CLIENTS)
+	{
+		common->Error("CLHW_ParsePlayerinfo: bad num");
+	}
+
+	hwplayer_state_t* state = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].playerstate[num];
+
+	state->messagenum = cl.qh_parsecount;
+	state->state_time = cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW].senttime;
+}
+
 void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags)
 {
 	if (drawFlags & H2DRF_TRANSLUCENT)

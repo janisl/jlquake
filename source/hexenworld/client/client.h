@@ -115,7 +115,6 @@ void V_ParseDamage(void);
 // cl_pred.c
 //
 qboolean CL_CheckOrDownloadFile(char* filename);
-void CL_SavePlayer(void);
 void CL_WriteDemoCmd(hwusercmd_t* pcmd);
 void CL_SendConnectPacket(void);
 void Host_WriteConfiguration(const char* fname);
