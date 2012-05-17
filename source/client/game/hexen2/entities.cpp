@@ -158,6 +158,99 @@ void CLH2_ParseSpawnStatic(QMsg& message)
 	ent->state.colormap = 0;
 }
 
+void CLH2_ParseReference(QMsg& message)
+{
+	cl.h2_last_sequence = cl.h2_current_sequence;
+	cl.h2_current_frame = message.ReadByte();
+	cl.h2_current_sequence = message.ReadByte();
+	if (cl.h2_need_build == 2)
+	{
+		cl.h2_frames[0].count = cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
+		cl.h2_need_build = 1;
+		cl.h2_reference_frame = cl.h2_current_frame;
+	}
+	else if (cl.h2_last_sequence != cl.h2_current_sequence)
+	{
+		if (cl.h2_reference_frame >= 1 && cl.h2_reference_frame <= H2MAX_FRAMES)
+		{
+			short RemovePlace, OrigPlace, NewPlace, AddedIndex;
+			RemovePlace = OrigPlace = NewPlace = AddedIndex = 0;
+			for (int i = 0; i < cl.qh_num_entities; i++)
+			{
+				if (RemovePlace >= cl.h2_NumToRemove || cl.h2_RemoveList[RemovePlace] != i)
+				{
+					if (NewPlace < cl.h2_frames[1].count &&
+						cl.h2_frames[1].states[NewPlace].number == i)
+					{
+						cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[1].states[NewPlace];
+						AddedIndex++;
+						cl.h2_frames[2].count++;
+					}
+					else if (OrigPlace < cl.h2_frames[0].count &&
+								cl.h2_frames[0].states[OrigPlace].number == i)
+					{
+						cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[0].states[OrigPlace];
+						AddedIndex++;
+						cl.h2_frames[2].count++;
+					}
+				}
+				else
+				{
+					RemovePlace++;
+				}
+
+				if (cl.h2_frames[0].states[OrigPlace].number == i)
+				{
+					OrigPlace++;
+				}
+				if (cl.h2_frames[1].states[NewPlace].number == i)
+				{
+					NewPlace++;
+				}
+			}
+			cl.h2_frames[0] = cl.h2_frames[2];
+		}
+		cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
+		cl.h2_need_build = 1;
+		cl.h2_reference_frame = cl.h2_current_frame;
+	}
+	else
+	{
+		cl.h2_need_build = 0;
+	}
+
+	for (int i = 1; i < cl.qh_num_entities; i++)
+	{
+		clh2_baselines[i].flags &= ~BE_ON;
+	}
+
+	for (int i = 0; i < cl.h2_frames[0].count; i++)
+	{
+		h2entity_t* ent = CLH2_EntityNum(cl.h2_frames[0].states[i].number);
+		ent->state.modelindex = cl.h2_frames[0].states[i].modelindex;
+		clh2_baselines[cl.h2_frames[0].states[i].number].flags |= BE_ON;
+	}
+}
+
+void CLH2_ParseClearEdicts(QMsg& message)
+{
+	int j = message.ReadByte();
+	if (cl.h2_need_build)
+	{
+		cl.h2_NumToRemove = j;
+	}
+	for (int i = 0; i < j; i++)
+	{
+		int k = message.ReadShort();
+		if (cl.h2_need_build)
+		{
+			cl.h2_RemoveList[i] = k;
+		}
+		h2entity_t* ent = CLH2_EntityNum(k);
+		clh2_baselines[k].flags &= ~BE_ON;
+	}
+}
+
 /*
 Parse an entity update message from the server
 If an entities model or origin changes from frame to frame, it must be

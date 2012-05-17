@@ -695,7 +695,6 @@ void CL_ParseServerMessage(void)
 	int before;
 	static double lasttime;
 	h2entity_t* ent;
-	short RemovePlace, OrigPlace, NewPlace, AddedIndex;
 	int sc1, sc2;
 	byte test;
 	float compangles[2][3];
@@ -1115,96 +1114,10 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_reference:
-			cl.h2_last_sequence = cl.h2_current_sequence;
-			cl.h2_current_frame = net_message.ReadByte();
-			cl.h2_current_sequence = net_message.ReadByte();
-			if (cl.h2_need_build == 2)
-			{
-//					Con_Printf("CL: NB2 CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-				cl.h2_frames[0].count = cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
-				cl.h2_need_build = 1;
-				cl.h2_reference_frame = cl.h2_current_frame;
-			}
-			else if (cl.h2_last_sequence != cl.h2_current_sequence)
-			{
-//					Con_Printf("CL: Sequence CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-				if (cl.h2_reference_frame >= 1 && cl.h2_reference_frame <= MAX_FRAMES)
-				{
-					RemovePlace = OrigPlace = NewPlace = AddedIndex = 0;
-					for (i = 0; i < cl.qh_num_entities; i++)
-					{
-						if (RemovePlace >= cl.h2_NumToRemove || cl.h2_RemoveList[RemovePlace] != i)
-						{
-							if (NewPlace < cl.h2_frames[1].count &&
-								cl.h2_frames[1].states[NewPlace].number == i)
-							{
-								cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[1].states[NewPlace];
-								AddedIndex++;
-								cl.h2_frames[2].count++;
-							}
-							else if (OrigPlace < cl.h2_frames[0].count &&
-									 cl.h2_frames[0].states[OrigPlace].number == i)
-							{
-								cl.h2_frames[2].states[AddedIndex] = cl.h2_frames[0].states[OrigPlace];
-								AddedIndex++;
-								cl.h2_frames[2].count++;
-							}
-						}
-						else
-						{
-							RemovePlace++;
-						}
-
-						if (cl.h2_frames[0].states[OrigPlace].number == i)
-						{
-							OrigPlace++;
-						}
-						if (cl.h2_frames[1].states[NewPlace].number == i)
-						{
-							NewPlace++;
-						}
-					}
-					cl.h2_frames[0] = cl.h2_frames[2];
-				}
-				cl.h2_frames[1].count = cl.h2_frames[2].count = 0;
-				cl.h2_need_build = 1;
-				cl.h2_reference_frame = cl.h2_current_frame;
-			}
-			else
-			{
-//					Con_Printf("CL: Normal CL(%d,%d) R(%d)\n", cl.current_sequence, cl.current_frame,cl.reference_frame);
-				cl.h2_need_build = 0;
-			}
-
-			for (i = 1; i < cl.qh_num_entities; i++)
-			{
-				clh2_baselines[i].flags &= ~BE_ON;
-			}
-
-			for (i = 0; i < cl.h2_frames[0].count; i++)
-			{
-				ent = CLH2_EntityNum(cl.h2_frames[0].states[i].number);
-				ent->state.modelindex = cl.h2_frames[0].states[i].modelindex;
-				clh2_baselines[cl.h2_frames[0].states[i].number].flags |= BE_ON;
-			}
+			CLH2_ParseReference(net_message);
 			break;
-
 		case h2svc_clear_edicts:
-			j = net_message.ReadByte();
-			if (cl.h2_need_build)
-			{
-				cl.h2_NumToRemove = j;
-			}
-			for (i = 0; i < j; i++)
-			{
-				k = net_message.ReadShort();
-				if (cl.h2_need_build)
-				{
-					cl.h2_RemoveList[i] = k;
-				}
-				ent = CLH2_EntityNum(k);
-				clh2_baselines[k].flags &= ~BE_ON;
-			}
+			CLH2_ParseClearEdicts(net_message);
 			break;
 
 		case h2svc_update_inv:

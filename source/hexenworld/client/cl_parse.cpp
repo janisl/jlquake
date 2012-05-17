@@ -1246,6 +1246,7 @@ void CL_ParseServerMessage(void)
 			j = net_message.ReadByte();
 			CL_SetStat(i, j);
 			break;
+
 		case hwsvc_updatestatlong:
 			i = net_message.ReadByte();
 			j = net_message.ReadLong();
@@ -1296,6 +1297,7 @@ void CL_ParseServerMessage(void)
 		case hwsvc_smallkick:
 			cl.qh_punchangle = -2;
 			break;
+
 		case hwsvc_bigkick:
 			cl.qh_punchangle = -4;
 			break;
@@ -1380,7 +1382,6 @@ void CL_ParseServerMessage(void)
 		case hwsvc_start_effect:
 			CLH2_ParseEffect(net_message);
 			break;
-
 		case hwsvc_end_effect:
 			CLH2_ParseEndEffect(net_message);
 			break;
@@ -1657,22 +1658,25 @@ void CL_ParseServerMessage(void)
 		case h2svc_particle:
 			R_ParseParticleEffect();
 			break;
+
 		case hwsvc_particle2:
 			R_ParseParticleEffect2();
 			break;
+
 		case hwsvc_particle3:
 			R_ParseParticleEffect3();
 			break;
+
 		case hwsvc_particle4:
 			R_ParseParticleEffect4();
 			break;
+
 		case hwsvc_turn_effect:
 			CLHW_ParseTurnEffect(net_message);
 			break;
 		case hwsvc_update_effect:
 			CLHW_ParseReviseEffect(net_message);
 			break;
-
 		case hwsvc_multieffect:
 			CLHW_ParseMultiEffect(net_message);
 			break;

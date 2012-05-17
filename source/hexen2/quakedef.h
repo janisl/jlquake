@@ -112,7 +112,6 @@
 //#define BASE_ENT_ON		1
 //#define BASE_ENT_SENT	2
 
-#define MAX_FRAMES 5
 #define CLEAR_LIMIT 2
 
 #define ENT_STATE_ON        1
@@ -126,7 +125,7 @@ typedef struct
 
 typedef struct
 {
-	client_frames_t frames[MAX_FRAMES + 2];	// 0 = base, 1-max = proposed, max+1 = too late
+	client_frames_t frames[H2MAX_FRAMES + 2];	// 0 = base, 1-max = proposed, max+1 = too late
 } client_state2_t;
 
 

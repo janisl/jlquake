@@ -846,3 +846,5 @@ struct h2client_entvars_t
 #define HWPF_SCALE        (1 << 13)
 #define HWPF_ABSLIGHT     (1 << 14)
 #define HWPF_SOUND        (1 << 15)		//play a sound in the weapon channel
+
+#define H2MAX_FRAMES 5

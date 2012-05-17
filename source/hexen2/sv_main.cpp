@@ -729,14 +729,14 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	{	// Old sequence
 //		Con_Printf("SV: Old sequence SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->current_frame++;
-		if (client->current_frame > MAX_FRAMES + 1)
+		if (client->current_frame > H2MAX_FRAMES + 1)
 		{
-			client->current_frame = MAX_FRAMES + 1;
+			client->current_frame = H2MAX_FRAMES + 1;
 		}
 	}
 	else if (client->last_frame == CLIENT_FRAME_INIT ||
 			 client->last_frame == 0 ||
-			 client->last_frame == MAX_FRAMES + 1)
+			 client->last_frame == H2MAX_FRAMES + 1)
 	{	// Reference expired in current sequence
 //		Con_Printf("SV: Expired SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->current_frame = 1;
@@ -769,9 +769,9 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	{	// Normal frame advance
 //		Con_Printf("SV: Normal SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->current_frame++;
-		if (client->current_frame > MAX_FRAMES + 1)
+		if (client->current_frame > H2MAX_FRAMES + 1)
 		{
-			client->current_frame = MAX_FRAMES + 1;
+			client->current_frame = H2MAX_FRAMES + 1;
 		}
 	}
 
