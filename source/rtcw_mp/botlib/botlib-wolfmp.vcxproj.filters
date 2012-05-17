@@ -86,12 +86,6 @@
     <ClCompile Include="l_memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="l_precomp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="l_script.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="l_struct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -185,12 +179,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="l_memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="l_precomp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="l_script.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="l_struct.h">

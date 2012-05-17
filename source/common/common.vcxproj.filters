@@ -97,6 +97,10 @@
     <ClInclude Include="system.h" />
     <ClInclude Include="system_windows.h" />
     <ClInclude Include="unzip.h" />
+    <ClInclude Include="game_utils.h" />
+    <ClInclude Include="message_utils.h" />
+    <ClInclude Include="precompiler.h" />
+    <ClInclude Include="script.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clip_map\main.cpp">
@@ -183,5 +187,11 @@
     <ClCompile Include="virtual_machine\none.cpp">
       <Filter>virtual_machine</Filter>
     </ClCompile>
+    <ClCompile Include="game_utils1.cpp" />
+    <ClCompile Include="message_utils1.cpp" />
+    <ClCompile Include="message_utils2.cpp" />
+    <ClCompile Include="message_utils3.cpp" />
+    <ClCompile Include="precompiler.cpp" />
+    <ClCompile Include="script.cpp" />
   </ItemGroup>
 </Project>

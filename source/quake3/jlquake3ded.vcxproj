@@ -97,13 +97,15 @@
     <ProjectReference Include="..\botlib\botlib.vcxproj">
       <Project>{a410161f-ae9f-485d-a01f-5294891430a6}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\common\common.vcxproj">
+      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="qcommon\msg.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="null\null_client.cpp" />
     <ClCompile Include="null\null_snddma.cpp" />
@@ -118,7 +120,6 @@
     <ClCompile Include="server\sv_net_chan.cpp" />
     <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="server\sv_world.cpp" />
-    <ClCompile Include="qcommon\vm.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>

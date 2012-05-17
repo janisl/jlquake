@@ -21,9 +21,6 @@
     <ClCompile Include="cl_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cl_ents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cl_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,9 +28,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cl_parse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_pred.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cl_screen.cpp">

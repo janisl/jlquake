@@ -119,8 +119,6 @@
     <ClCompile Include="l_libvar.cpp" />
     <ClCompile Include="l_log.cpp" />
     <ClCompile Include="l_memory.cpp" />
-    <ClCompile Include="l_precomp.cpp" />
-    <ClCompile Include="l_script.cpp" />
     <ClCompile Include="l_struct.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -141,22 +139,11 @@
     <ClInclude Include="be_aas_sample.h" />
     <ClInclude Include="be_ai_weight.h" />
     <ClInclude Include="be_interface.h" />
-    <ClInclude Include="..\game\bg_public.h" />
-    <ClInclude Include="..\qcommon\cm_public.h" />
-    <ClInclude Include="..\game\g_public.h" />
-    <ClInclude Include="l_crc.h" />
     <ClInclude Include="l_libvar.h" />
     <ClInclude Include="l_log.h" />
     <ClInclude Include="l_memory.h" />
-    <ClInclude Include="l_precomp.h" />
-    <ClInclude Include="l_script.h" />
     <ClInclude Include="l_struct.h" />
     <ClInclude Include="l_utils.h" />
-    <ClInclude Include="..\game\q_shared.h" />
-    <ClInclude Include="..\qcommon\qcommon.h" />
-    <ClInclude Include="..\qcommon\qfiles.h" />
-    <ClInclude Include="..\server\server.h" />
-    <ClInclude Include="..\game\surfaceflags.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.vcxproj">

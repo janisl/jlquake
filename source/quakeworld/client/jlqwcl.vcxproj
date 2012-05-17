@@ -101,11 +101,9 @@
   <ItemGroup>
     <ClCompile Include="cl_demo.cpp" />
     <ClCompile Include="cl_draw.cpp" />
-    <ClCompile Include="cl_ents.cpp" />
     <ClCompile Include="cl_input.cpp" />
     <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="cl_parse.cpp" />
-    <ClCompile Include="cl_pred.cpp" />
     <ClCompile Include="cl_screen.cpp" />
     <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />

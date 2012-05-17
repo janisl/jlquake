@@ -107,8 +107,6 @@
     <ClCompile Include="l_libvar.cpp" />
     <ClCompile Include="l_log.cpp" />
     <ClCompile Include="l_memory.cpp" />
-    <ClCompile Include="l_precomp.cpp" />
-    <ClCompile Include="l_script.cpp" />
     <ClCompile Include="l_struct.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -142,8 +140,6 @@
     <ClInclude Include="l_libvar.h" />
     <ClInclude Include="l_log.h" />
     <ClInclude Include="l_memory.h" />
-    <ClInclude Include="l_precomp.h" />
-    <ClInclude Include="l_script.h" />
     <ClInclude Include="l_struct.h" />
     <ClInclude Include="l_utils.h" />
     <ClInclude Include="..\game\q_shared.h" />

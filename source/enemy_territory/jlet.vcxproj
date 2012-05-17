@@ -116,7 +116,6 @@
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="qcommon\msg.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="game\q_math.cpp" />
     <ClCompile Include="game\q_shared.cpp" />
@@ -130,7 +129,6 @@
     <ClCompile Include="server\sv_net_chan.cpp" />
     <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="server\sv_world.cpp" />
-    <ClCompile Include="qcommon\vm.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
     <ClCompile Include="qcommon\dl_main.cpp">

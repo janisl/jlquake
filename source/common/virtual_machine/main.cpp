@@ -290,7 +290,7 @@ static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 	if (GGameType & GAME_WolfSP)
 	{
 		// On Windows instalations DLLs are in the same directory as exe file.
-		libHandle = Sys_LoadDll(filename);
+		libHandle = Sys_LoadDll(fname);
 	}
 #endif
 

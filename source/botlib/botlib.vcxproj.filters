@@ -83,12 +83,6 @@
     <ClCompile Include="l_memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="l_precomp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="l_script.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="l_struct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,18 +139,6 @@
     <ClInclude Include="be_interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\cm_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\g_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="l_crc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="l_libvar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -166,31 +148,10 @@
     <ClInclude Include="l_memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="l_precomp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="l_script.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="l_struct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="l_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\qcommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\surfaceflags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
