@@ -913,8 +913,15 @@ cl.refdef must be set before the first call
 */
 void V_RenderScene()
 {
-	// don't allow cheats in multiplayer
-	Cvar_Set("r_fullbright", "0");
+	R_ClearScene();
+
+	CLHW_EmitEntities();
+
+	CL_AddViewModel();
+
+	CLH2_UpdateEffects();
+
+	CL_AddDLights();
 
 	CL_RunLightStyles();
 
@@ -941,14 +948,18 @@ the entity origin, so any view position inside that will be valid
 */
 void V_RenderView(void)
 {
-//	if (cl.simangles[ROLL])
-//		Sys_Error ("cl.simangles[ROLL]");	// DEBUG
-//rjrcl.simangles[ROLL] = 0;	// FIXME @@@
-
 	if (cls.state != CA_ACTIVE)
 	{
 		return;
 	}
+
+	if (!cl.qh_validsequence)
+	{
+		return;
+	}
+
+	// don't allow cheats in multiplayer
+	Cvar_Set("r_fullbright", "0");
 
 	view_frame = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW];
 	view_message = &view_frame->playerstate[cl.playernum];
@@ -962,12 +973,6 @@ void V_RenderView(void)
 	{
 		V_CalcRefdef();
 	}
-	CL_AddViewModel();
-
-	CLH2_UpdateEffects();
-
-	CL_AddDLights();
-
 	V_RenderScene();
 }
 

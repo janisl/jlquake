@@ -1350,9 +1350,6 @@ void Host_Frame(float time)
 		// Set up prediction for other players
 		CLQW_SetUpPlayerPrediction(true);
 
-		// build a refresh entity list
-		CLQW_EmitEntities();
-
 		// update video
 		if (host_speeds->value)
 		{

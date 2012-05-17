@@ -838,11 +838,13 @@ cl.refdef must be set before the first call
 */
 void V_RenderScene()
 {
-	// don't allow cheats in multiplayer
-	if (cl.qh_maxclients > 1)
-	{
-		Cvar_Set("r_fullbright", "0");
-	}
+	R_ClearScene();
+
+	CLQ1_EmitEntities();
+
+	CL_AddViewModel();
+
+	CL_AddDLights();
 
 	CL_RunLightStyles();
 
@@ -866,12 +868,13 @@ void V_RenderView(void)
 		return;
 	}
 
-// don't allow cheats in multiplayer
+	// don't allow cheats in multiplayer
 	if (cl.qh_maxclients > 1)
 	{
 		Cvar_Set("scr_ofsx", "0");
 		Cvar_Set("scr_ofsy", "0");
 		Cvar_Set("scr_ofsz", "0");
+		Cvar_Set("r_fullbright", "0");
 	}
 
 	if (cl.qh_intermission)
@@ -885,10 +888,6 @@ void V_RenderView(void)
 			V_CalcRefdef();
 		}
 	}
-	CL_AddViewModel();
-
-	CL_AddDLights();
-
 	V_RenderScene();
 }
 

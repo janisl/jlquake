@@ -799,8 +799,6 @@ static void CLQ1_RelinkEntities()
 	// determine partial update time
 	float frac = CLQH_LerpPoint();
 
-	R_ClearScene();
-
 	//
 	// interpolate player info
 	//
@@ -1348,17 +1346,6 @@ void CLQ1_EmitEntities()
 
 void CLQW_EmitEntities()
 {
-	if (cls.state != CA_ACTIVE)
-	{
-		return;
-	}
-	if (!cl.qh_validsequence)
-	{
-		return;
-	}
-
-	R_ClearScene();
-
 	CLQW_LinkPlayers();
 	CLQW_LinkPacketEntities();
 	CLQ1_LinkProjectiles();

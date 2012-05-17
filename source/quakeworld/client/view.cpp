@@ -809,13 +809,13 @@ cl.refdef must be set before the first call
 */
 void V_RenderScene()
 {
-	// don't allow cheats in multiplayer
-	Cvar_Set("r_fullbright", "0");
-	Cvar_Set("r_lightmap", "0");
-	if (!String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "watervis")))
-	{
-		Cvar_Set("r_wateralpha", "1");
-	}
+	R_ClearScene();
+
+	CLQW_EmitEntities();
+
+	CL_AddViewModel();
+
+	CL_AddDLights();
 
 	CL_RunLightStyles();
 
@@ -842,13 +842,24 @@ the entity origin, so any view position inside that will be valid
 */
 void V_RenderView(void)
 {
-//	if (cl.simangles[ROLL])
-//		Sys_Error ("cl.simangles[ROLL]");	// DEBUG
 	cl.qh_simangles[ROLL] = 0;	// FIXME @@@
 
 	if (cls.state != CA_ACTIVE)
 	{
 		return;
+	}
+
+	if (!cl.qh_validsequence)
+	{
+		return;
+	}
+
+	// don't allow cheats in multiplayer
+	Cvar_Set("r_fullbright", "0");
+	Cvar_Set("r_lightmap", "0");
+	if (!String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "watervis")))
+	{
+		Cvar_Set("r_wateralpha", "1");
 	}
 
 	view_frame = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
@@ -863,10 +874,6 @@ void V_RenderView(void)
 	{
 		V_CalcRefdef();
 	}
-	CL_AddViewModel();
-
-	CL_AddDLights();
-
 	V_RenderScene();
 }
 
