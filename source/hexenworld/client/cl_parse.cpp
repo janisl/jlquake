@@ -1706,5 +1706,5 @@ void CL_ParseServerMessage(void)
 		}
 	}
 
-	CL_SetSolidEntities();
+	CLHW_SetSolidEntities();
 }

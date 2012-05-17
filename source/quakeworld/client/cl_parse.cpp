@@ -1346,5 +1346,5 @@ void CL_ParseServerMessage(void)
 		}
 	}
 
-	CL_SetSolidEntities();
+	CLQW_SetSolidEntities();
 }

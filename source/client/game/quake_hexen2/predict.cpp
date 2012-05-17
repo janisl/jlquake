@@ -34,6 +34,65 @@ Cvar* cl_predict_players2;
 
 static predicted_player predicted_players[MAX_CLIENTS_QW];
 
+//	Builds all the qh_pmove physents for the current frame
+void CLQW_SetSolidEntities()
+{
+	qh_pmove.physents[0].model = 0;
+	VectorCopy(vec3_origin, qh_pmove.physents[0].origin);
+	qh_pmove.physents[0].info = 0;
+	qh_pmove.numphysent = 1;
+
+	qwframe_t* frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
+	qwpacket_entities_t* pak = &frame->packet_entities;
+
+	for (int i = 0; i < pak->num_entities; i++)
+	{
+		q1entity_state_t* state = &pak->entities[i];
+
+		if (state->modelindex < 2)
+		{
+			continue;
+		}
+		if (!cl.model_clip[state->modelindex])
+		{
+			continue;
+		}
+		qh_pmove.physents[qh_pmove.numphysent].model = cl.model_clip[state->modelindex];
+		VectorCopy(state->origin, qh_pmove.physents[qh_pmove.numphysent].origin);
+		qh_pmove.numphysent++;
+	}
+}
+
+//	Builds all the qh_pmove physents for the current frame
+void CLHW_SetSolidEntities()
+{
+	qh_pmove.physents[0].model = 0;
+	VectorCopy(vec3_origin, qh_pmove.physents[0].origin);
+	qh_pmove.physents[0].info = 0;
+	qh_pmove.numphysent = 1;
+
+	hwframe_t* frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
+	hwpacket_entities_t* pak = &frame->packet_entities;
+
+	for (int i = 0; i < pak->num_entities; i++)
+	{
+		h2entity_state_t* state = &pak->entities[i];
+
+		if (state->modelindex < 2)
+		{
+			continue;
+		}
+		if (!cl.model_clip[state->modelindex])
+		{
+			continue;
+		}
+		qh_pmove.physents[qh_pmove.numphysent].model = cl.model_clip[state->modelindex];
+		VectorCopy(state->origin, qh_pmove.physents[qh_pmove.numphysent].origin);
+		VectorCopy(state->angles, qh_pmove.physents[qh_pmove.numphysent].angles);
+		qh_pmove.numphysent++;
+	}
+}
+
 //	If pmove.origin is in a solid position, try nudging slightly on all axis to
 // allow for the cut precision of the net coordinates
 static void CLQHW_NudgePosition()

@@ -102,8 +102,3 @@ void V_RenderView(void);
 void V_UpdatePalette(void);
 void V_Register(void);
 void V_ParseDamage(void);
-
-//
-// cl_ents.c
-//
-void CL_SetSolidEntities(void);
