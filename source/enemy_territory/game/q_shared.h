@@ -423,17 +423,6 @@ void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
 #define RELOAD_FAILED           0x08
 #define RELOAD_ENDGAME          0x10
 
-
-/*
-==============================================================
-
-COLLISION DETECTION
-
-==============================================================
-*/
-
-#define CPLANE
-
 /*
 ========================================================================
 

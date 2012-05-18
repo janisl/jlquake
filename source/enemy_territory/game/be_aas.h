@@ -189,20 +189,6 @@ typedef struct bsp_surface_s
 	int value;
 } bsp_surface_t;
 
-#ifndef CPLANE
-// plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
-typedef struct
-{
-	vec3_t normal;
-	float dist;
-	byte type;				// for fast side tests: 0,1,2 = axial, 3 = nonaxial
-	byte signbits;			// signx + (signy<<1) + (signz<<2), used as lookup during collision
-	byte pad[2];
-} cplane_t;
-#define CPLANE
-#endif
-
 //remove the bsp_trace_s structure definition l8r on
 //a trace is returned when a box is swept through the world
 typedef struct bsp_trace_s
