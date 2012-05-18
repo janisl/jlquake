@@ -313,16 +313,6 @@ int AAS_StartFrame(float time)
 		    AAS_RoutingInfo();
 		    LibVarSet("showcacheupdates", "0");
 		} //end if
-		if (LibVarGetValue("showmemoryusage"))
-		{
-		    PrintUsedMemorySize();
-		    LibVarSet("showmemoryusage", "0");
-		} //end if
-		if (LibVarGetValue("memorydump"))
-		{
-		    PrintMemoryLabels();
-		    LibVarSet("memorydump", "0");
-		} //end if
 		*/
 	}	//end if
 	(*aasworld).numframes++;

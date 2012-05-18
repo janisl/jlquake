@@ -65,4 +65,15 @@ const char* LibVarString(const char* var_name, const char* value);
 //sets the library variable
 void LibVarSet(const char* var_name, const char* value);
 
+/*#define MAX_LOGFILENAMESIZE     1024
+
+struct logfile_t
+{
+	char filename[MAX_LOGFILENAMESIZE];
+	FILE* fp;
+	int numwrites;
+};
+
+extern logfile_t logfile;*/
+
 #endif

@@ -211,11 +211,6 @@ int Export_BotLibShutdown(void)
 	//remove all global defines from the pre compiler
 	PC_RemoveAllGlobalDefines();
 
-	//dump all allocated memory
-//	DumpMemory();
-#ifdef DEBUG
-	PrintMemoryLabels();
-#endif
 	//shut down library log file
 	Log_Shutdown();
 	//

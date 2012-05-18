@@ -257,12 +257,6 @@ int Export_BotLibShutdown(void)
 	recursive = 0;
 	// print any files still open
 	PC_CheckOpenSourceHandles();
-	//
-#ifdef _DEBUG
-	Log_AlwaysOpen("memory.log");
-	PrintMemoryLabels();
-	Log_Shutdown();
-#endif
 	return BLERR_NOERROR;
 }	//end of the function Export_BotLibShutdown
 //===========================================================================

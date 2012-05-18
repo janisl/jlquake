@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //open a log file
 void Log_Open(const char* filename);
-//
-void Log_AlwaysOpen(const char* filename);
 //close the current log file
 void Log_Close(void);
 //close log file if present

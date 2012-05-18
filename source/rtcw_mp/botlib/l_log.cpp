@@ -60,8 +60,12 @@ static logfile_t logfile;
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_AlwaysOpen(const char* filename)
+void Log_Open(const char* filename)
 {
+	if (!LibVarValue("log", "0"))
+	{
+		return;
+	}
 	if (!filename || !String::Length(filename))
 	{
 		BotImport_Print(PRT_MESSAGE, "openlog <filename>\n");
@@ -80,21 +84,6 @@ void Log_AlwaysOpen(const char* filename)
 	}	//end if
 	String::NCpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
 	BotImport_Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
-}	//end of the function Log_Create
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void Log_Open(const char* filename)
-{
-	if (!LibVarValue("log", "0"))
-	{
-		return;
-	}
-	Log_AlwaysOpen(filename);
-
 }
 //===========================================================================
 //
