@@ -30,7 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 #include "../game/botlib.h"
-#include "../botai/botai.h"
 
 #define MAX_DEBUGPOLYS      128
 
