@@ -58,7 +58,7 @@ void AAS_Error(const char* fmt, ...)
 	va_start(arglist, fmt);
 	Q_vsnprintf(str, 1024, fmt, arglist);
 	va_end(arglist);
-	BotImport_Print(PRT_FATAL, str);
+	BotImport_Print(PRT_FATAL, "%s", str);
 }	//end of the function AAS_Error
 //===========================================================================
 //

@@ -748,7 +748,7 @@ bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 						StripDoubleQuotes(token.string);
 						if (String::Length(token.string) <= 0)
 						{
-							SourceError(source, "empty string", token.string);
+							SourceError(source, "empty string");
 							FreeSource(source);
 							return NULL;
 						}	//end if
@@ -1000,7 +1000,7 @@ int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 				SourceError(source, "chat message too long\n");
 				return qfalse;
 			}	//end if
-			sprintf(&ptr[String::Length(ptr)], "%cv%ld%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
+			sprintf(&ptr[String::Length(ptr)], "%cv%d%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
 		}	//end if
 			//random string
 		else if (token.type == TT_NAME)

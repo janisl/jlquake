@@ -869,7 +869,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 {
 	qassert(import);	// bk001129 - this wasn't set for baseq3/
 	botimport = *import;
-	qassert(BotImport_Print);	// bk001129 - pars pro toto
 
 	Com_Memset(&be_botlib_export, 0, sizeof(be_botlib_export));
 

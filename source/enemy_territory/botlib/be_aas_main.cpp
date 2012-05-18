@@ -64,7 +64,7 @@ void QDECL AAS_Error(const char* fmt, ...)
 	va_start(arglist, fmt);
 	Q_vsnprintf(str, sizeof(str), fmt, arglist);
 	va_end(arglist);
-	BotImport_Print(PRT_FATAL, str);
+	BotImport_Print(PRT_FATAL, "%s", str);
 }	//end of the function AAS_Error
 
 // Ridah, multiple AAS worlds

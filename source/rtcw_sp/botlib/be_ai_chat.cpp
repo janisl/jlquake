@@ -748,7 +748,7 @@ bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 						StripDoubleQuotes(token.string);
 						if (String::Length(token.string) <= 0)
 						{
-							SourceError(source, "empty string", token.string);
+							SourceError(source, "empty string");
 							FreeSource(source);
 							return NULL;
 						}	//end if
