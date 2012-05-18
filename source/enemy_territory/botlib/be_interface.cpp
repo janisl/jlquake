@@ -442,7 +442,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	{
 		if (!line[i])
 		{
-			line[i] = botimport.DebugLineCreate();
+			line[i] = BotImport_DebugLineCreate();
 		}
 	}
 

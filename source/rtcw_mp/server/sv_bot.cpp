@@ -30,18 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 #include "../game/botlib.h"
-
-#define MAX_DEBUGPOLYS      128
-
-typedef struct bot_debugpoly_s
-{
-	int inuse;
-	int color;
-	int numPoints;
-	vec3_t points[128];
-} bot_debugpoly_t;
-
-static bot_debugpoly_t debugpolygons[MAX_DEBUGPOLYS];
+#include "../../server/botlib/local.h"
 
 extern botlib_export_t* botlib_export;
 int bot_enable;
@@ -174,7 +163,7 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 		botlib_export->Test(parm0, NULL, svs.clients[0].gentity->r.currentOrigin,
 			svs.clients[0].gentity->r.currentAngles);
 	}	//end if
-	for (i = 0; i < MAX_DEBUGPOLYS; i++)
+	for (i = 0; i < bot_maxdebugpolys; i++)
 	{
 		poly = &debugpolygons[i];
 		if (!poly->inuse)
@@ -306,123 +295,6 @@ void* BotImport_HunkAlloc(int size)
 		Com_Error(ERR_DROP, "SV_Bot_HunkAlloc: Alloc with marks already set\n");
 	}
 	return Hunk_Alloc(size, h_high);
-}
-
-/*
-==================
-BotImport_DebugPolygonCreate
-==================
-*/
-int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t* points)
-{
-	bot_debugpoly_t* poly;
-	int i;
-
-	for (i = 1; i < MAX_DEBUGPOLYS; i++)
-	{
-		if (!debugpolygons[i].inuse)
-		{
-			break;
-		}
-	}
-	if (i >= MAX_DEBUGPOLYS)
-	{
-		return 0;
-	}
-	poly = &debugpolygons[i];
-	poly->inuse = qtrue;
-	poly->color = color;
-	poly->numPoints = numPoints;
-	memcpy(poly->points, points, numPoints * sizeof(vec3_t));
-	//
-	return i;
-}
-
-/*
-==================
-BotImport_DebugPolygonShow
-==================
-*/
-void BotImport_DebugPolygonShow(int id, int color, int numPoints, vec3_t* points)
-{
-	bot_debugpoly_t* poly;
-
-	poly = &debugpolygons[id];
-	poly->inuse = qtrue;
-	poly->color = color;
-	poly->numPoints = numPoints;
-	memcpy(poly->points, points, numPoints * sizeof(vec3_t));
-}
-
-/*
-==================
-BotImport_DebugPolygonDelete
-==================
-*/
-void BotImport_DebugPolygonDelete(int id)
-{
-	debugpolygons[id].inuse = qfalse;
-}
-
-/*
-==================
-BotImport_DebugLineCreate
-==================
-*/
-int BotImport_DebugLineCreate(void)
-{
-	vec3_t points[1];
-	return BotImport_DebugPolygonCreate(0, 0, points);
-}
-
-/*
-==================
-BotImport_DebugLineDelete
-==================
-*/
-void BotImport_DebugLineDelete(int line)
-{
-	BotImport_DebugPolygonDelete(line);
-}
-
-/*
-==================
-BotImport_DebugLineShow
-==================
-*/
-void BotImport_DebugLineShow(int line, vec3_t start, vec3_t end, int color)
-{
-	vec3_t points[4], dir, cross, up = {0, 0, 1};
-	float dot;
-
-	VectorCopy(start, points[0]);
-	VectorCopy(start, points[1]);
-	//points[1][2] -= 2;
-	VectorCopy(end, points[2]);
-	//points[2][2] -= 2;
-	VectorCopy(end, points[3]);
-
-
-	VectorSubtract(end, start, dir);
-	VectorNormalize(dir);
-	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99)
-	{
-		VectorSet(cross, 1, 0, 0);
-	}
-	else
-	{
-		CrossProduct(dir, up, cross);
-	}
-
-	VectorNormalize(cross);
-
-	VectorMA(points[0], 2, cross, points[0]);
-	VectorMA(points[1], -2, cross, points[1]);
-	VectorMA(points[2], -2, cross, points[2]);
-	VectorMA(points[3], 2, cross, points[3]);
-
-	BotImport_DebugPolygonShow(line, color, 4, points);
 }
 
 /*
@@ -561,6 +433,13 @@ void SV_BotInitBotLib(void)
 {
 	botlib_import_t botlib_import;
 
+	if (debugpolygons)
+	{
+		Z_Free(debugpolygons);
+	}
+	bot_maxdebugpolys = 128;
+	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
+
 	botlib_import.Trace = BotImport_Trace;
 	botlib_import.EntityTrace = BotImport_EntityTrace;
 	botlib_import.PointContents = BotImport_PointContents;
@@ -572,15 +451,6 @@ void SV_BotInitBotLib(void)
 	botlib_import.FreeMemory = BotImport_FreeMemory;
 	botlib_import.FreeZoneMemory = BotImport_FreeZoneMemory;
 	botlib_import.HunkAlloc = BotImport_HunkAlloc;
-
-	//debug lines
-	botlib_import.DebugLineCreate = BotImport_DebugLineCreate;
-	botlib_import.DebugLineDelete = BotImport_DebugLineDelete;
-	botlib_import.DebugLineShow = BotImport_DebugLineShow;
-
-	//debug polygons
-	botlib_import.DebugPolygonCreate = BotImport_DebugPolygonCreate;
-	botlib_import.DebugPolygonDelete = BotImport_DebugPolygonDelete;
 
 	// Ridah, Cast AI
 	botlib_import.AICast_VisibleFromPos = BotImport_AICast_VisibleFromPos;

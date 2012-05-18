@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef _BOTLIB_LOCAL_H
+#define _BOTLIB_LOCAL_H
+
 //Print types
 #define PRT_MESSAGE             1
 #define PRT_WARNING             2
@@ -21,5 +24,21 @@
 #define PRT_FATAL               4
 #define PRT_EXIT                5
 
+struct bot_debugpoly_t
+{
+	int inuse;
+	int color;
+	int numPoints;
+	vec3_t points[128];
+};
+
+extern bot_debugpoly_t* debugpolygons;
+extern int bot_maxdebugpolys;
+
 void BotImport_Print(int type, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin);
+int BotImport_DebugLineCreate();
+void BotImport_DebugLineDelete(int line);
+void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
+
+#endif

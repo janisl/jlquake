@@ -38,6 +38,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/be_aas.h"
 
+#include "../../server/botlib/local.h"
+
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
@@ -48,16 +50,6 @@ struct bot_goal_s;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 struct weaponinfo_s;
-
-#define MAX_DEBUGPOLYS      4096
-
-typedef struct bot_debugpoly_s
-{
-	int inuse;
-	int color;
-	int numPoints;
-	vec3_t points[128];
-} bot_debugpoly_t;
 
 // RF, these need to be here so the botlib also knows how many bot game entities there are
 #define NUM_BOTGAMEENTITIES 384
@@ -186,14 +178,8 @@ typedef struct botlib_import_s
 	void (* FreeMemory)(void* ptr);
 	void (* FreeZoneMemory)(void);
 	void*(*HunkAlloc)(int size);
-	//debug visualisation stuff
-	int (* DebugLineCreate)(void);
-	void (* DebugLineDelete)(int line);
-	void (* DebugLineShow)(int line, vec3_t start, vec3_t end, int color);
 	//
-	int (* DebugPolygonCreate)(int color, int numPoints, vec3_t* points);
 	bot_debugpoly_t*    (*DebugPolygonGetFree)(void);
-	void (* DebugPolygonDelete)(int id);
 	void (* DebugPolygonDeletePointer)(bot_debugpoly_t* pPoly);
 	//
 	// Ridah, Cast AI stuff

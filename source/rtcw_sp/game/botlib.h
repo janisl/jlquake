@@ -195,13 +195,6 @@ typedef struct botlib_import_s
 	void*(*GetMemory)(int size);
 	void (* FreeMemory)(void* ptr);
 	void*(*HunkAlloc)(int size);
-	//debug visualisation stuff
-	int (* DebugLineCreate)(void);
-	void (* DebugLineDelete)(int line);
-	void (* DebugLineShow)(int line, vec3_t start, vec3_t end, int color);
-	//
-	int (* DebugPolygonCreate)(int color, int numPoints, vec3_t* points);
-	void (* DebugPolygonDelete)(int id);
 	//
 	// Ridah, Cast AI stuff
 	qboolean (* AICast_VisibleFromPos)(vec3_t srcpos, int srcnum,

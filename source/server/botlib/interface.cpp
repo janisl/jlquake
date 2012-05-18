@@ -17,6 +17,9 @@
 #include "../server.h"
 #include "local.h"
 
+bot_debugpoly_t* debugpolygons;
+int bot_maxdebugpolys;
+
 void BotImport_Print(int type, const char* fmt, ...)
 {
 	char str[2048];
@@ -87,4 +90,102 @@ void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t 
 	{
 		VectorClear(origin);
 	}
+}
+
+int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points)
+{
+	if (!debugpolygons)
+	{
+		return 0;
+	}
+
+	int i;
+	for (i = 1; i < bot_maxdebugpolys; i++)
+	{
+		if (!debugpolygons[i].inuse)
+		{
+			break;
+		}
+	}
+	if (i >= bot_maxdebugpolys)
+	{
+		return 0;
+	}
+	bot_debugpoly_t* poly = &debugpolygons[i];
+	poly->inuse = true;
+	poly->color = color;
+	poly->numPoints = numPoints;
+	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
+
+	return i;
+}
+
+void BotImport_DebugPolygonDelete(int id)
+{
+	if (!debugpolygons)
+	{
+		return;
+	}
+	debugpolygons[id].inuse = false;
+}
+
+int BotImport_DebugLineCreate()
+{
+	vec3_t points[1];
+	return BotImport_DebugPolygonCreate(0, 0, points);
+}
+
+void BotImport_DebugLineDelete(int line)
+{
+	BotImport_DebugPolygonDelete(line);
+}
+
+static void BotImport_DebugPolygonShow(int id, int color, int numPoints, const vec3_t* points)
+{
+	bot_debugpoly_t* poly;
+
+	if (!debugpolygons)
+	{
+		return;
+	}
+	poly = &debugpolygons[id];
+	poly->inuse = true;
+	poly->color = color;
+	poly->numPoints = numPoints;
+	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
+}
+
+void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color)
+{
+	vec3_t points[4], dir, cross, up = {0, 0, 1};
+	float dot;
+
+	VectorCopy(start, points[0]);
+	VectorCopy(start, points[1]);
+	//points[1][2] -= 2;
+	VectorCopy(end, points[2]);
+	//points[2][2] -= 2;
+	VectorCopy(end, points[3]);
+
+
+	VectorSubtract(end, start, dir);
+	VectorNormalize(dir);
+	dot = DotProduct(dir, up);
+	if (dot > 0.99 || dot < -0.99)
+	{
+		VectorSet(cross, 1, 0, 0);
+	}
+	else
+	{
+		CrossProduct(dir, up, cross);
+	}
+
+	VectorNormalize(cross);
+
+	VectorMA(points[0], 2, cross, points[0]);
+	VectorMA(points[1], -2, cross, points[1]);
+	VectorMA(points[2], -2, cross, points[2]);
+	VectorMA(points[3], 2, cross, points[3]);
+
+	BotImport_DebugPolygonShow(line, color, 4, points);
 }

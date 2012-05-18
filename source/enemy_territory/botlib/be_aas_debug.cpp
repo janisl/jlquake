@@ -47,12 +47,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_def.h"
 
 #define MAX_DEBUGLINES              1024
+#define MAX_DEBUGPOLYS              4096
 
 int debuglines[MAX_DEBUGLINES];
 int debuglinevisible[MAX_DEBUGLINES];
 int numdebuglines;
 
-static bot_debugpoly_t* debugpolygons[MAX_DEBUGPOLYS];
+static bot_debugpoly_t* aas_debugpolygons[MAX_DEBUGPOLYS];
 
 //===========================================================================
 //
@@ -65,11 +66,11 @@ void AAS_ClearShownPolygons(void)
 	int i;
 	for (i = 0; i < MAX_DEBUGPOLYS; i++)
 	{
-		if (debugpolygons[i])
+		if (aas_debugpolygons[i])
 		{
-			botimport.DebugPolygonDeletePointer(debugpolygons[i]);
+			botimport.DebugPolygonDeletePointer(aas_debugpolygons[i]);
 		}
-		debugpolygons[i] = NULL;
+		aas_debugpolygons[i] = NULL;
 	}
 }	//end of the function AAS_ClearShownPolygons
 //===========================================================================
@@ -84,11 +85,11 @@ bot_debugpoly_t* AAS_GetDebugPolygon(void)
 
 	for (i = 0; i < MAX_DEBUGPOLYS; i++)
 	{
-		if (!debugpolygons[i])
+		if (!aas_debugpolygons[i])
 		{
-			debugpolygons[i] = botimport.DebugPolygonGetFree();
+			aas_debugpolygons[i] = botimport.DebugPolygonGetFree();
 
-			return debugpolygons[i];
+			return aas_debugpolygons[i];
 		}
 	}
 
@@ -106,12 +107,12 @@ void AAS_ShowPolygon(int color, int numpoints, vec3_t* points)
 
 	for (i = 0; i < MAX_DEBUGPOLYS; i++)
 	{
-		if (!debugpolygons[i])
+		if (!aas_debugpolygons[i])
 		{
-			debugpolygons[i] = botimport.DebugPolygonGetFree();
-			debugpolygons[i]->color = color;
-			debugpolygons[i]->numPoints = numpoints;
-			Com_Memcpy(debugpolygons[i]->points, points, numpoints * sizeof(vec3_t));
+			aas_debugpolygons[i] = botimport.DebugPolygonGetFree();
+			aas_debugpolygons[i]->color = color;
+			aas_debugpolygons[i]->numPoints = numpoints;
+			Com_Memcpy(aas_debugpolygons[i]->points, points, numpoints * sizeof(vec3_t));
 			break;
 		}	//end if
 	}	//end for
@@ -131,8 +132,8 @@ void AAS_ClearShownDebugLines(void)
 	{
 		if (debuglines[i])
 		{
-			//botimport.DebugLineShow(debuglines[i], NULL, NULL, LINECOLOR_NONE);
-			botimport.DebugLineDelete(debuglines[i]);
+			//BotImport_DebugLineShow(debuglines[i], NULL, NULL, LINECOLOR_NONE);
+			BotImport_DebugLineDelete(debuglines[i]);
 			debuglines[i] = 0;
 			debuglinevisible[i] = qfalse;
 		}	//end if
@@ -152,13 +153,13 @@ void AAS_DebugLine(vec3_t start, vec3_t end, int color)
 	{
 		if (!debuglines[line])
 		{
-			debuglines[line] = botimport.DebugLineCreate();
+			debuglines[line] = BotImport_DebugLineCreate();
 			debuglinevisible[line] = qfalse;
 			numdebuglines++;
 		}	//end if
 		if (!debuglinevisible[line])
 		{
-			botimport.DebugLineShow(debuglines[line], start, end, color);
+			BotImport_DebugLineShow(debuglines[line], start, end, color);
 			debuglinevisible[line] = qtrue;
 			return;
 		}	//end else
@@ -174,8 +175,8 @@ void AAS_PermanentLine(vec3_t start, vec3_t end, int color)
 {
 	int line;
 
-	line = botimport.DebugLineCreate();
-	botimport.DebugLineShow(line, start, end, color);
+	line = BotImport_DebugLineCreate();
+	BotImport_DebugLineShow(line, start, end, color);
 }	//end of the function AAS_PermenentLine
 //===========================================================================
 //
@@ -195,8 +196,8 @@ void AAS_DrawPermanentCross(vec3_t origin, float size, int color)
 		VectorCopy(origin, end);
 		end[i] -= size;
 		AAS_DebugLine(start, end, color);
-		debugline = botimport.DebugLineCreate();
-		botimport.DebugLineShow(debugline, start, end, color);
+		debugline = BotImport_DebugLineCreate();
+		BotImport_DebugLineShow(debugline, start, end, color);
 	}	//end for
 }	//end of the function AAS_DrawPermanentCross
 //===========================================================================
@@ -241,7 +242,7 @@ void AAS_DrawPlaneCross(vec3_t point, vec3_t normal, float dist, int type, int c
 	{
 		if (!debuglines[line])
 		{
-			debuglines[line] = botimport.DebugLineCreate();
+			debuglines[line] = BotImport_DebugLineCreate();
 			lines[j++] = debuglines[line];
 			debuglinevisible[line] = qtrue;
 			numdebuglines++;
@@ -252,8 +253,8 @@ void AAS_DrawPlaneCross(vec3_t point, vec3_t normal, float dist, int type, int c
 			debuglinevisible[line] = qtrue;
 		}	//end else
 	}	//end for
-	botimport.DebugLineShow(lines[0], start1, end1, color);
-	botimport.DebugLineShow(lines[1], start2, end2, color);
+	BotImport_DebugLineShow(lines[0], start1, end1, color);
+	BotImport_DebugLineShow(lines[1], start2, end2, color);
 }	//end of the function AAS_DrawPlaneCross
 //===========================================================================
 //
@@ -294,7 +295,7 @@ void AAS_ShowBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs)
 		{
 			if (!debuglines[line])
 			{
-				debuglines[line] = botimport.DebugLineCreate();
+				debuglines[line] = BotImport_DebugLineCreate();
 				lines[j++] = debuglines[line];
 				debuglinevisible[line] = qtrue;
 				numdebuglines++;
@@ -306,13 +307,13 @@ void AAS_ShowBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs)
 			}	//end else
 		}	//end for
 			//top plane
-		botimport.DebugLineShow(lines[0], bboxcorners[i],
+		BotImport_DebugLineShow(lines[0], bboxcorners[i],
 			bboxcorners[(i + 1) & 3], LINECOLOR_RED);
 		//bottom plane
-		botimport.DebugLineShow(lines[1], bboxcorners[4 + i],
+		BotImport_DebugLineShow(lines[1], bboxcorners[4 + i],
 			bboxcorners[4 + ((i + 1) & 3)], LINECOLOR_RED);
 		//vertical lines
-		botimport.DebugLineShow(lines[2], bboxcorners[i],
+		BotImport_DebugLineShow(lines[2], bboxcorners[i],
 			bboxcorners[4 + i], LINECOLOR_RED);
 	}	//end for
 }	//end of the function AAS_ShowBoundingBox
@@ -502,7 +503,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly)
 		{
 			if (!debuglines[line])
 			{
-				debuglines[line] = botimport.DebugLineCreate();
+				debuglines[line] = BotImport_DebugLineCreate();
 				debuglinevisible[line] = qfalse;
 				numdebuglines++;
 			}	//end if
@@ -532,7 +533,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly)
 		{
 			color = LINECOLOR_RED;
 		}
-		botimport.DebugLineShow(debuglines[line],
+		BotImport_DebugLineShow(debuglines[line],
 			(*aasworld).vertexes[edge->v[0]],
 			(*aasworld).vertexes[edge->v[1]],
 			color);

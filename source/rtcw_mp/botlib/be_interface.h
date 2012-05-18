@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 "a madman is just someone living in another reality which isn't shared among many people"
 */
 
+#include "../../server/server.h"
 #include "../../server/botlib/local.h"
 
 //#define DEBUG			//debug code

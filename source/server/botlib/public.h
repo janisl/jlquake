@@ -13,3 +13,6 @@
 //**  included (gnu.txt) GNU General Public License for more details.
 //**
 //**************************************************************************
+
+int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points);
+void BotImport_DebugPolygonDelete(int id);

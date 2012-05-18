@@ -178,13 +178,6 @@ typedef struct botlib_import_s
 	void (* FreeMemory)(void* ptr);				// free memory from Zone
 	int (* AvailableMemory)(void);				// available Zone memory
 	void*(*HunkAlloc)(int size);				// allocate from hunk
-	//debug visualisation stuff
-	int (* DebugLineCreate)(void);
-	void (* DebugLineDelete)(int line);
-	void (* DebugLineShow)(int line, vec3_t start, vec3_t end, int color);
-	//
-	int (* DebugPolygonCreate)(int color, int numPoints, vec3_t* points);
-	void (* DebugPolygonDelete)(int id);
 } botlib_import_t;
 
 typedef struct aas_export_s

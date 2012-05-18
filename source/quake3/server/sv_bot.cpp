@@ -23,17 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 #include "../../botlib/botlib.h"
-
-typedef struct bot_debugpoly_s
-{
-	int inuse;
-	int color;
-	int numPoints;
-	vec3_t points[128];
-} bot_debugpoly_t;
-
-static bot_debugpoly_t* debugpolygons;
-int bot_maxdebugpolys;
+#include "../../server/botlib/local.h"
 
 extern botlib_export_t* botlib_export;
 int bot_enable;
@@ -276,136 +266,6 @@ void* BotImport_HunkAlloc(int size)
 
 /*
 ==================
-BotImport_DebugPolygonCreate
-==================
-*/
-int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t* points)
-{
-	bot_debugpoly_t* poly;
-	int i;
-
-	if (!debugpolygons)
-	{
-		return 0;
-	}
-
-	for (i = 1; i < bot_maxdebugpolys; i++)
-	{
-		if (!debugpolygons[i].inuse)
-		{
-			break;
-		}
-	}
-	if (i >= bot_maxdebugpolys)
-	{
-		return 0;
-	}
-	poly = &debugpolygons[i];
-	poly->inuse = qtrue;
-	poly->color = color;
-	poly->numPoints = numPoints;
-	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
-	//
-	return i;
-}
-
-/*
-==================
-BotImport_DebugPolygonShow
-==================
-*/
-void BotImport_DebugPolygonShow(int id, int color, int numPoints, vec3_t* points)
-{
-	bot_debugpoly_t* poly;
-
-	if (!debugpolygons)
-	{
-		return;
-	}
-	poly = &debugpolygons[id];
-	poly->inuse = qtrue;
-	poly->color = color;
-	poly->numPoints = numPoints;
-	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
-}
-
-/*
-==================
-BotImport_DebugPolygonDelete
-==================
-*/
-void BotImport_DebugPolygonDelete(int id)
-{
-	if (!debugpolygons)
-	{
-		return;
-	}
-	debugpolygons[id].inuse = qfalse;
-}
-
-/*
-==================
-BotImport_DebugLineCreate
-==================
-*/
-int BotImport_DebugLineCreate(void)
-{
-	vec3_t points[1];
-	return BotImport_DebugPolygonCreate(0, 0, points);
-}
-
-/*
-==================
-BotImport_DebugLineDelete
-==================
-*/
-void BotImport_DebugLineDelete(int line)
-{
-	BotImport_DebugPolygonDelete(line);
-}
-
-/*
-==================
-BotImport_DebugLineShow
-==================
-*/
-void BotImport_DebugLineShow(int line, vec3_t start, vec3_t end, int color)
-{
-	vec3_t points[4], dir, cross, up = {0, 0, 1};
-	float dot;
-
-	VectorCopy(start, points[0]);
-	VectorCopy(start, points[1]);
-	//points[1][2] -= 2;
-	VectorCopy(end, points[2]);
-	//points[2][2] -= 2;
-	VectorCopy(end, points[3]);
-
-
-	VectorSubtract(end, start, dir);
-	VectorNormalize(dir);
-	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99)
-	{
-		VectorSet(cross, 1, 0, 0);
-	}
-	else
-	{
-		CrossProduct(dir, up, cross);
-	}
-
-	VectorNormalize(cross);
-
-	VectorMA(points[0], 2, cross, points[0]);
-	VectorMA(points[1], -2, cross, points[1]);
-	VectorMA(points[2], -2, cross, points[2]);
-	VectorMA(points[3], 2, cross, points[3]);
-
-	BotImport_DebugPolygonShow(line, color, 4, points);
-}
-
-/*
-==================
 SV_BotClientCommand
 ==================
 */
@@ -540,15 +400,6 @@ void SV_BotInitBotLib(void)
 	botlib_import.FreeMemory = BotImport_FreeMemory;
 	botlib_import.AvailableMemory = Z_AvailableMemory;
 	botlib_import.HunkAlloc = BotImport_HunkAlloc;
-
-	//debug lines
-	botlib_import.DebugLineCreate = BotImport_DebugLineCreate;
-	botlib_import.DebugLineDelete = BotImport_DebugLineDelete;
-	botlib_import.DebugLineShow = BotImport_DebugLineShow;
-
-	//debug polygons
-	botlib_import.DebugPolygonCreate = BotImport_DebugPolygonCreate;
-	botlib_import.DebugPolygonDelete = BotImport_DebugPolygonDelete;
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);
 	assert(botlib_export);	// bk001129 - somehow we end up with a zero import.

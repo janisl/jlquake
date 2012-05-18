@@ -412,7 +412,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	for (i = 0; i < 2; i++)
 		if (!line[i])
 		{
-			line[i] = botimport.DebugLineCreate();
+			line[i] = BotImport_DebugLineCreate();
 		}
 
 //	AAS_ClearShownDebugLines();
@@ -628,8 +628,8 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 //	AAS_TestMovementPrediction(1, parm2, forward);
 /*	//trace the line to find the hit point
     trace = AAS_TraceClientBBox(eye, end, PRESENCE_NORMAL, 1);
-    if (!line[0]) line[0] = botimport.DebugLineCreate();
-    botimport.DebugLineShow(line[0], eye, trace.endpos, LINECOLOR_BLUE);
+    if (!line[0]) line[0] = BotImport_DebugLineCreate();
+    BotImport_DebugLineShow(line[0], eye, trace.endpos, LINECOLOR_BLUE);
     //
     AAS_ClearShownDebugLines();
     if (trace.ent)
@@ -661,8 +661,8 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	AAS_ClearShownDebugLines();
 	//bsptrace = AAS_Trace(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
 	bsptrace = AAS_Trace(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-	if (!line[0]) line[0] = botimport.DebugLineCreate();
-	botimport.DebugLineShow(line[0], eye, bsptrace.endpos, LINECOLOR_YELLOW);
+	if (!line[0]) line[0] = BotImport_DebugLineCreate();
+	BotImport_DebugLineShow(line[0], eye, bsptrace.endpos, LINECOLOR_YELLOW);
 	if (bsptrace.fraction < 1.0)
 	{
 	    face = AAS_TraceEndFace(&trace);
@@ -684,7 +684,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	/*/
 	//bsptrace = AAS_Trace2(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
 	bsptrace = AAS_Trace2(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-	botimport.DebugLineShow(line[1], eye, bsptrace.endpos, LINECOLOR_BLUE);
+	BotImport_DebugLineShow(line[1], eye, bsptrace.endpos, LINECOLOR_BLUE);
 	if (bsptrace.fraction < 1.0)
 	{
 		AAS_DrawPlaneCross(bsptrace.endpos,

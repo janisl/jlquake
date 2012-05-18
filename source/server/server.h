@@ -14,5 +14,10 @@
 //**
 //**************************************************************************
 
+#ifndef _SERVER_H
+#define _SERVER_H
+
 #include "../common/qcommon.h"
 #include "botlib/public.h"
+
+#endif

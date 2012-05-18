@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../game/g_public.h"
 #include "../game/bg_public.h"
+#include "../../server/server.h"
 
 //=============================================================================
 
@@ -401,9 +402,6 @@ int         SV_BotLibSetup(void);
 int         SV_BotLibShutdown(void);
 int         SV_BotGetSnapshotEntity(int client, int ent);
 int         SV_BotGetConsoleMessage(int client, char* buf, int size);
-
-int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t* points);
-void BotImport_DebugPolygonDelete(int id);
 
 //============================================================
 //

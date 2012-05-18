@@ -2979,9 +2979,9 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	static int debugline;
 	if (!debugline)
 	{
-		debugline = botimport.DebugLineCreate();
+		debugline = BotImport_DebugLineCreate();
 	}
-	botimport.DebugLineShow(debugline, reach->start, reach->end, LINECOLOR_BLUE);
+	BotImport_DebugLineShow(debugline, reach->start, reach->end, LINECOLOR_BLUE);
 #endif	//DEBUG_GRAPPLE
 
 	BotClearMoveResult(&result);
@@ -3407,8 +3407,8 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
 		Vector2Angles(dir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_SWIMVIEW;
 	}	//end if
-		//if (!debugline) debugline = botimport.DebugLineCreate();
-		//botimport.DebugLineShow(debugline, ms->origin, goal->origin, LINECOLOR_BLUE);
+		//if (!debugline) debugline = BotImport_DebugLineCreate();
+		//BotImport_DebugLineShow(debugline, ms->origin, goal->origin, LINECOLOR_BLUE);
 		//
 	ms->lastreachnum = 0;
 	ms->lastareanum = 0;
