@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "botlib.h"
-#include "l_log.h"
 #include "be_interface.h"
 
 #define MEM_ID      0x12345678l

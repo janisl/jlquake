@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "l_log.h"
 #include "be_interface.h"
 
 #define MEM_ID      0x12345678l

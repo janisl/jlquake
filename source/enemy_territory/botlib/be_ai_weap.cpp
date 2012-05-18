@@ -36,7 +36,6 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #include "../game/q_shared.h"
-#include "l_log.h"
 #include "l_memory.h"
 #include "l_utils.h"
 #include "l_struct.h"
@@ -190,12 +189,10 @@ void DumpWeaponConfig(weaponconfig_t* wc)
 	for (i = 0; i < wc->numprojectiles; i++)
 	{
 		WriteStructure(fp, &projectileinfo_struct, (char*)&wc->projectileinfo[i]);
-		Log_Flush();
 	}	//end for
 	for (i = 0; i < wc->numweapons; i++)
 	{
 		WriteStructure(fp, &weaponinfo_struct, (char*)&wc->weaponinfo[i]);
-		Log_Flush();
 	}	//end for
 }	//end of the function DumpWeaponConfig
 #endif	//DEBUG_AI_WEAP

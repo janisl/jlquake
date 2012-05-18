@@ -40,7 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_memory.h"
 #include "l_struct.h"
 #include "l_utils.h"
-#include "l_log.h"
 #include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
@@ -649,37 +648,6 @@ void StringReplaceWords(char* string, char* synonym, char* replacement)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotDumpSynonymList(bot_synonymlist_t* synlist)
-{
-	FILE* fp;
-	bot_synonymlist_t* syn;
-	bot_synonym_t* synonym;
-
-	fp = Log_FilePointer();
-	if (!fp)
-	{
-		return;
-	}
-	for (syn = synlist; syn; syn = syn->next)
-	{
-		fprintf(fp, "%ld : [", syn->context);
-		for (synonym = syn->firstsynonym; synonym; synonym = synonym->next)
-		{
-			fprintf(fp, "(\"%s\", %1.2f)", synonym->string, synonym->weight);
-			if (synonym->next)
-			{
-				fprintf(fp, ", ");
-			}
-		}	//end for
-		fprintf(fp, "]\n");
-	}	//end for
-}	//end of the function BotDumpSynonymList
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 {
 	int pass, size, contextlevel, numsynonyms;
@@ -851,9 +819,6 @@ bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 		}	//end if
 	}	//end for
 	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
-	//
-	//BotDumpSynonymList(synlist);
-	//
 	return synlist;
 }	//end of the function BotLoadSynonyms
 //===========================================================================
@@ -1070,40 +1035,6 @@ int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotDumpRandomStringList(bot_randomlist_t* randomlist)
-{
-	FILE* fp;
-	bot_randomlist_t* random;
-	bot_randomstring_t* rs;
-
-	fp = Log_FilePointer();
-	if (!fp)
-	{
-		return;
-	}
-	for (random = randomlist; random; random = random->next)
-	{
-		fprintf(fp, "%s = {", random->string);
-		for (rs = random->firstrandomstring; rs; rs = rs->next)
-		{
-			fprintf(fp, "\"%s\"", rs->string);
-			if (rs->next)
-			{
-				fprintf(fp, ", ");
-			}
-			else
-			{
-				fprintf(fp, "}\n");
-			}
-		}	//end for
-	}	//end for
-}	//end of the function BotDumpRandomStringList
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 {
 	int pass, size;
@@ -1203,7 +1134,6 @@ bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 	//
 #ifdef DEBUG
 	BotImport_Print(PRT_MESSAGE, "random strings %d msec\n", Sys_MilliSeconds() - starttime);
-	//BotDumpRandomStringList(randomlist);
 #endif	//DEBUG
 		//
 	return randomlist;
@@ -1240,53 +1170,6 @@ char* RandomString(char* name)
 	}	//end for
 	return NULL;
 }	//end of the function RandomString
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void BotDumpMatchTemplates(bot_matchtemplate_t* matches)
-{
-	FILE* fp;
-	bot_matchtemplate_t* mt;
-	bot_matchpiece_t* mp;
-	bot_matchstring_t* ms;
-
-	fp = Log_FilePointer();
-	if (!fp)
-	{
-		return;
-	}
-	for (mt = matches; mt; mt = mt->next)
-	{
-		// TTimo ?
-		// fprintf(fp, "%8d { ");
-		for (mp = mt->first; mp; mp = mp->next)
-		{
-			if (mp->type == MT_STRING)
-			{
-				for (ms = mp->firststring; ms; ms = ms->next)
-				{
-					fprintf(fp, "\"%s\"", ms->string);
-					if (ms->next)
-					{
-						fprintf(fp, "|");
-					}
-				}	//end for
-			}	//end if
-			else if (mp->type == MT_VARIABLE)
-			{
-				fprintf(fp, "%d", mp->variable);
-			}	//end else if
-			if (mp->next)
-			{
-				fprintf(fp, ", ");
-			}
-		}	//end for
-		fprintf(fp, " = (%d, %d);}\n", mt->type, mt->subtype);
-	}	//end for
-}	//end of the function BotDumpMatchTemplates
 //===========================================================================
 //
 // Parameter:				-
@@ -1561,9 +1444,6 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 		//free the source
 	FreeSource(source);
 	BotImport_Print(PRT_MESSAGE, "loaded %s\n", matchfile);
-	//
-	//BotDumpMatchTemplates(matches);
-	//
 	return matches;
 }	//end of the function BotLoadMatchTemplates
 //===========================================================================
@@ -1866,97 +1746,6 @@ void BotCheckInitialChatIntegrety(bot_chat_t* chat)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotDumpReplyChat(bot_replychat_t* replychat)
-{
-	FILE* fp;
-	bot_replychat_t* rp;
-	bot_replychatkey_t* key;
-	bot_chatmessage_t* cm;
-	bot_matchpiece_t* mp;
-
-	fp = Log_FilePointer();
-	if (!fp)
-	{
-		return;
-	}
-	fprintf(fp, "BotDumpReplyChat:\n");
-	for (rp = replychat; rp; rp = rp->next)
-	{
-		fprintf(fp, "[");
-		for (key = rp->keys; key; key = key->next)
-		{
-			if (key->flags & RCKFL_AND)
-			{
-				fprintf(fp, "&");
-			}
-			else if (key->flags & RCKFL_NOT)
-			{
-				fprintf(fp, "!");
-			}
-			//
-			if (key->flags & RCKFL_NAME)
-			{
-				fprintf(fp, "name");
-			}
-			else if (key->flags & RCKFL_GENDERFEMALE)
-			{
-				fprintf(fp, "female");
-			}
-			else if (key->flags & RCKFL_GENDERMALE)
-			{
-				fprintf(fp, "male");
-			}
-			else if (key->flags & RCKFL_GENDERLESS)
-			{
-				fprintf(fp, "it");
-			}
-			else if (key->flags & RCKFL_VARIABLES)
-			{
-				fprintf(fp, "(");
-				for (mp = key->match; mp; mp = mp->next)
-				{
-					if (mp->type == MT_STRING)
-					{
-						fprintf(fp, "\"%s\"", mp->firststring->string);
-					}
-					else
-					{
-						fprintf(fp, "%d", mp->variable);
-					}
-					if (mp->next)
-					{
-						fprintf(fp, ", ");
-					}
-				}	//end for
-				fprintf(fp, ")");
-			}	//end if
-			else if (key->flags & RCKFL_STRING)
-			{
-				fprintf(fp, "\"%s\"", key->string);
-			}	//end if
-			if (key->next)
-			{
-				fprintf(fp, ", ");
-			}
-			else
-			{
-				fprintf(fp, "] = %1.0f\n", rp->priority);
-			}
-		}	//end for
-		fprintf(fp, "{\n");
-		for (cm = rp->firstchatmessage; cm; cm = cm->next)
-		{
-			fprintf(fp, "\t\"%s\";\n", cm->chatmessage);
-		}	//end for
-		fprintf(fp, "}\n");
-	}	//end for
-}	//end of the function BotDumpReplyChat
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void BotFreeReplyChat(bot_replychat_t* replychat)
 {
 	bot_replychat_t* rp, * nextrp;
@@ -2157,7 +1946,6 @@ bot_replychat_t* BotLoadReplyChat(const char* filename)
 	FreeSource(source);
 	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
 	//
-	//BotDumpReplyChat(replychatlist);
 	if (bot_developer)
 	{
 		BotCheckReplyChatIntegrety(replychatlist);
