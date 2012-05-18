@@ -2415,7 +2415,7 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 	cs = BotChatStateFromHandle(chatstate);
 	if (!cs)
 	{
-		return BLERR_CANNOTLOADICHAT;
+		return WOLFBLERR_CANNOTLOADICHAT;
 	}
 	BotFreeChatFile(chatstate);
 
@@ -2448,7 +2448,7 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 		if (avail == -1)
 		{
 			BotImport_Print(PRT_FATAL, "ichatdata table full; couldn't load chat %s from %s\n", chatname, chatfile);
-			return BLERR_CANNOTLOADICHAT;
+			return WOLFBLERR_CANNOTLOADICHAT;
 		}
 	}
 
@@ -2458,7 +2458,7 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 	if (!cs->chat)
 	{
 		BotImport_Print(PRT_FATAL, "couldn't load chat %s from %s\n", chatname, chatfile);
-		return BLERR_CANNOTLOADICHAT;
+		return WOLFBLERR_CANNOTLOADICHAT;
 	}	//end if
 	if (!LibVarGetValue("bot_reloadcharacters"))
 	{

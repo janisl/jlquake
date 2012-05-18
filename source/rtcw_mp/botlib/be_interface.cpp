@@ -312,7 +312,7 @@ int Export_BotLibUpdateEntity(int ent, bot_entitystate_t* state)
 	}
 	if (!ValidEntityNumber(ent, "BotUpdateEntity"))
 	{
-		return BLERR_INVALIDENTITYNUMBER;
+		return WOLFBLERR_INVALIDENTITYNUMBER;
 	}
 
 	return AAS_UpdateEntity(ent, state);

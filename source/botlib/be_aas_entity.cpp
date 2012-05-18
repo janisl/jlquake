@@ -67,7 +67,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t* state)
 	if (!aasworld.loaded)
 	{
 		BotImport_Print(PRT_MESSAGE, "AAS_UpdateEntity: not loaded\n");
-		return BLERR_NOAASFILE;
+		return Q3BLERR_NOAASFILE;
 	}	//end if
 
 	ent = &aasworld.entities[entnum];

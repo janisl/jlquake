@@ -68,39 +68,6 @@ struct weaponinfo_s;
 #define CMS_NORMAL              0
 #define CMS_CHAT                1
 
-#define BLERR_LIBRARYNOTSETUP           1	//library not setup
-#define BLERR_LIBRARYALREADYSETUP       2	//BotSetupLibrary: library already setup
-#define BLERR_INVALIDCLIENTNUMBER       3	//invalid client number
-#define BLERR_INVALIDENTITYNUMBER       4	//invalid entity number
-#define BLERR_NOAASFILE                 5	//BotLoadMap: no AAS file available
-#define BLERR_CANNOTOPENAASFILE         6	//BotLoadMap: cannot open AAS file
-#define BLERR_CANNOTSEEKTOAASFILE       7	//BotLoadMap: cannot seek to AAS file
-#define BLERR_CANNOTREADAASHEADER       8	//BotLoadMap: cannot read AAS header
-#define BLERR_WRONGAASFILEID            9	//BotLoadMap: incorrect AAS file id
-#define BLERR_WRONGAASFILEVERSION       10	//BotLoadMap: incorrect AAS file version
-#define BLERR_CANNOTREADAASLUMP         11	//BotLoadMap: cannot read AAS file lump
-#define BLERR_NOBSPFILE                 12	//BotLoadMap: no BSP file available
-#define BLERR_CANNOTOPENBSPFILE         13	//BotLoadMap: cannot open BSP file
-#define BLERR_CANNOTSEEKTOBSPFILE       14	//BotLoadMap: cannot seek to BSP file
-#define BLERR_CANNOTREADBSPHEADER       15	//BotLoadMap: cannot read BSP header
-#define BLERR_WRONGBSPFILEID            16	//BotLoadMap: incorrect BSP file id
-#define BLERR_WRONGBSPFILEVERSION       17	//BotLoadMap: incorrect BSP file version
-#define BLERR_CANNOTREADBSPLUMP         18	//BotLoadMap: cannot read BSP file lump
-#define BLERR_AICLIENTNOTSETUP          19	//BotAI: client not setup
-#define BLERR_AICLIENTALREADYSETUP      20	//BotSetupClient: client already setup
-#define BLERR_AIMOVEINACTIVECLIENT      21	//BotMoveClient: cannot move inactive client
-#define BLERR_AIMOVETOACTIVECLIENT      22	//BotMoveClient: cannot move to active client
-#define BLERR_AICLIENTALREADYSHUTDOWN   23	//BotShutdownClient: client not setup
-#define BLERR_AIUPDATEINACTIVECLIENT    24	//BotUpdateClient: called for inactive client
-#define BLERR_AICMFORINACTIVECLIENT     25	//BotConsoleMessage: called for inactive client
-#define BLERR_SETTINGSINACTIVECLIENT    26	//BotClientSettings: called for inactive client
-#define BLERR_CANNOTLOADICHAT           27	//BotSetupClient: cannot load initial chats
-#define BLERR_CANNOTLOADITEMWEIGHTS     28	//BotSetupClient: cannot load item weights
-#define BLERR_CANNOTLOADITEMCONFIG      29	//BotSetupLibrary: cannot load item config
-#define BLERR_CANNOTLOADWEAPONWEIGHTS   30	//BotSetupClient: cannot load weapon weights
-#define BLERR_CANNOTLOADWEAPONCONFIG    31	//BotSetupLibrary: cannot load weapon config
-#define BLERR_INVALIDSOUNDINDEX         32	//BotAddSound: invalid sound index value
-
 //action flags
 #define ACTION_ATTACK           1
 #define ACTION_USE              2

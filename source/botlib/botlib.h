@@ -58,19 +58,6 @@ struct q3pc_token_t;
 #define CMS_NORMAL              0
 #define CMS_CHAT                1
 
-#define BLERR_LIBRARYNOTSETUP           1	//library not setup
-#define BLERR_INVALIDENTITYNUMBER       2	//invalid entity number
-#define BLERR_NOAASFILE                 3	//no AAS file available
-#define BLERR_CANNOTOPENAASFILE         4	//cannot open AAS file
-#define BLERR_WRONGAASFILEID            5	//incorrect AAS file id
-#define BLERR_WRONGAASFILEVERSION       6	//incorrect AAS file version
-#define BLERR_CANNOTREADAASLUMP         7	//cannot read AAS file lump
-#define BLERR_CANNOTLOADICHAT           8	//cannot load initial chats
-#define BLERR_CANNOTLOADITEMWEIGHTS     9	//cannot load item weights
-#define BLERR_CANNOTLOADITEMCONFIG      10	//cannot load item config
-#define BLERR_CANNOTLOADWEAPONWEIGHTS   11	//cannot load weapon weights
-#define BLERR_CANNOTLOADWEAPONCONFIG    12	//cannot load weapon config
-
 //action flags
 #define ACTION_ATTACK           0x0000001
 #define ACTION_USE              0x0000002

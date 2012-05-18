@@ -1681,19 +1681,19 @@ int BotLoadItemWeights(int goalstate, char* filename)
 	gs = BotGoalStateFromHandle(goalstate);
 	if (!gs)
 	{
-		return BLERR_CANNOTLOADITEMWEIGHTS;
+		return WOLFBLERR_CANNOTLOADITEMWEIGHTS;
 	}
 	//load the weight configuration
 	gs->itemweightconfig = ReadWeightConfig(filename);
 	if (!gs->itemweightconfig)
 	{
 		BotImport_Print(PRT_FATAL, "couldn't load weights\n");
-		return BLERR_CANNOTLOADITEMWEIGHTS;
+		return WOLFBLERR_CANNOTLOADITEMWEIGHTS;
 	}	//end if
 		//if there's no item configuration
 	if (!itemconfig)
 	{
-		return BLERR_CANNOTLOADITEMWEIGHTS;
+		return WOLFBLERR_CANNOTLOADITEMWEIGHTS;
 	}
 	//create the item weight index
 	gs->itemweightindex = ItemWeightIndex(gs->itemweightconfig, itemconfig);
@@ -1786,7 +1786,7 @@ int BotSetupGoalAI(void)
 	if (!itemconfig)
 	{
 		BotImport_Print(PRT_FATAL, "couldn't load item config\n");
-		return BLERR_CANNOTLOADITEMCONFIG;
+		return WOLFBLERR_CANNOTLOADITEMCONFIG;
 	}	//end if
 		//everything went ok
 	return BLERR_NOERROR;

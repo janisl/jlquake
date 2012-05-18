@@ -383,7 +383,7 @@ int BotLoadWeaponWeights(int weaponstate, char* filename)
 	ws = BotWeaponStateFromHandle(weaponstate);
 	if (!ws)
 	{
-		return BLERR_CANNOTLOADWEAPONWEIGHTS;
+		return Q3BLERR_CANNOTLOADWEAPONWEIGHTS;
 	}
 	BotFreeWeaponWeights(weaponstate);
 	//
@@ -391,11 +391,11 @@ int BotLoadWeaponWeights(int weaponstate, char* filename)
 	if (!ws->weaponweightconfig)
 	{
 		BotImport_Print(PRT_FATAL, "couldn't load weapon config %s\n", filename);
-		return BLERR_CANNOTLOADWEAPONWEIGHTS;
+		return Q3BLERR_CANNOTLOADWEAPONWEIGHTS;
 	}	//end if
 	if (!weaponconfig)
 	{
-		return BLERR_CANNOTLOADWEAPONCONFIG;
+		return Q3BLERR_CANNOTLOADWEAPONCONFIG;
 	}
 	ws->weaponweightindex = WeaponWeightIndex(ws->weaponweightconfig, weaponconfig);
 	return BLERR_NOERROR;
@@ -558,7 +558,7 @@ int BotSetupWeaponAI(void)
 	if (!weaponconfig)
 	{
 		BotImport_Print(PRT_FATAL, "couldn't load the weapon config\n");
-		return BLERR_CANNOTLOADWEAPONCONFIG;
+		return Q3BLERR_CANNOTLOADWEAPONCONFIG;
 	}	//end if
 
 #ifdef DEBUG_AI_WEAP
