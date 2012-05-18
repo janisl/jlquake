@@ -496,9 +496,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_SHUTDOWN:
 		return SV_BotLibShutdown();
 	case BOTLIB_LIBVAR_SET:
-		return botlib_export->BotLibVarSet((char*)VMA(1), (char*)VMA(2));
+		return BotLibVarSet((char*)VMA(1), (char*)VMA(2));
 	case BOTLIB_LIBVAR_GET:
-		return botlib_export->BotLibVarGet((char*)VMA(1), (char*)VMA(2), args[3]);
+		return BotLibVarGet((char*)VMA(1), (char*)VMA(2), args[3]);
 
 	case BOTLIB_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));

@@ -58,8 +58,6 @@ struct q3pc_token_t;
 #define CMS_NORMAL              0
 #define CMS_CHAT                1
 
-//botlib error codes
-#define BLERR_NOERROR                   0	//no error
 #define BLERR_LIBRARYNOTSETUP           1	//library not setup
 #define BLERR_INVALIDENTITYNUMBER       2	//invalid entity number
 #define BLERR_NOAASFILE                 3	//no AAS file available
@@ -383,10 +381,6 @@ typedef struct botlib_export_s
 	int (* BotLibSetup)(void);
 	//shutdown the bot library, returns BLERR_
 	int (* BotLibShutdown)(void);
-	//sets a library variable returns BLERR_
-	int (* BotLibVarSet)(const char* var_name, char* value);
-	//gets a library variable returns BLERR_
-	int (* BotLibVarGet)(char* var_name, char* value, int size);
 
 	//start a frame in the bot library
 	int (* BotLibStartFrame)(float time);

@@ -14,5 +14,11 @@
 //**
 //**************************************************************************
 
+//botlib error codes
+#define BLERR_NOERROR                   0	//no error
+
 int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points);
 void BotImport_DebugPolygonDelete(int id);
+
+int BotLibVarSet(const char* var_name, const char* value);
+int BotLibVarGet(char* var_name, char* value, int size);

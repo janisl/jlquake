@@ -168,3 +168,16 @@ void LibVarSet(const char* var_name, const char* value)
 	//the value
 	v->value = LibVarStringValue(v->string);
 }
+
+int BotLibVarSet(const char* var_name, const char* value)
+{
+	LibVarSet(var_name, value);
+	return BLERR_NOERROR;
+}
+
+int BotLibVarGet(char* var_name, char* value, int size)
+{
+	const char* varvalue = LibVarGetString(var_name);
+	String::NCpyZ(value, varvalue, size);
+	return BLERR_NOERROR;
+}

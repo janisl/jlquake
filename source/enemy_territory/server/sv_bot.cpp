@@ -196,9 +196,9 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 		{
 			parm0 |= 8 | 16;
 		}
-		botlib_export->BotLibVarSet("bot_highlightarea", bot_highlightarea->string);
-		botlib_export->BotLibVarSet("bot_testhidepos", bot_testhidepos->string);
-		botlib_export->BotLibVarSet("bot_debug", bot_debug->string);
+		BotLibVarSet("bot_highlightarea", bot_highlightarea->string);
+		BotLibVarSet("bot_testhidepos", bot_testhidepos->string);
+		BotLibVarSet("bot_debug", bot_debug->string);
 		botlib_export->Test(parm0, NULL, svs.clients[0].gentity->r.currentOrigin, svs.clients[0].gentity->r.currentAngles);
 	}	//end if
 	for (i = 0; i < bot_maxdebugpolys; i++)
@@ -445,7 +445,7 @@ int SV_BotLibSetup(void)
 
 	// RF, set RCD calculation status
 	bot_norcd = Cvar_Get("bot_norcd", "0", 0);
-	botlib_export->BotLibVarSet("bot_norcd", bot_norcd->string);
+	BotLibVarSet("bot_norcd", bot_norcd->string);
 
 	// RF, set AAS routing max per frame
 	if (SV_GameIsSinglePlayer())
@@ -456,7 +456,7 @@ int SV_BotLibSetup(void)
 	{
 		bot_frameroutingupdates = Cvar_Get("bot_frameroutingupdates", "1000", 0);
 	}
-	botlib_export->BotLibVarSet("bot_frameroutingupdates", bot_frameroutingupdates->string);
+	BotLibVarSet("bot_frameroutingupdates", bot_frameroutingupdates->string);
 
 // START	Arnout changes, 28-08-2002.
 // added single player

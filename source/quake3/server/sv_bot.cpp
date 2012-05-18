@@ -137,7 +137,7 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 		{
 			parm0 |= 4;
 		}
-		botlib_export->BotLibVarSet("bot_highlightarea", bot_highlightarea->string);
+		BotLibVarSet("bot_highlightarea", bot_highlightarea->string);
 		botlib_export->Test(parm0, NULL, svs.clients[0].gentity->r.currentOrigin,
 			svs.clients[0].gentity->r.currentAngles);
 	}	//end if

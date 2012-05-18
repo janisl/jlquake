@@ -60,8 +60,6 @@ struct weaponinfo_s;
 #define CMS_NORMAL              0
 #define CMS_CHAT                1
 
-//botlib error codes
-#define BLERR_NOERROR                   0	//no error
 #define BLERR_LIBRARYNOTSETUP           1	//library not setup
 #define BLERR_LIBRARYALREADYSETUP       2	//BotSetupLibrary: library already setup
 #define BLERR_INVALIDCLIENTNUMBER       3	//invalid client number
@@ -413,10 +411,6 @@ typedef struct botlib_export_s
 	int (* BotLibSetup)(void);
 	//shutdown the bot library, returns BLERR_
 	int (* BotLibShutdown)(void);
-	//sets a library variable returns BLERR_
-	int (* BotLibVarSet)(const char* var_name, const char* value);
-	//gets a library variable returns BLERR_
-	int (* BotLibVarGet)(char* var_name, char* value, int size);
 
 	//start a frame in the bot library
 	int (* BotLibStartFrame)(float time);

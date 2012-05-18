@@ -232,32 +232,6 @@ int Export_BotLibShutdown(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibVarSet(const char* var_name, char* value)
-{
-	LibVarSet(var_name, value);
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibVarSet
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibVarGet(char* var_name, char* value, int size)
-{
-	const char* varvalue;
-
-	varvalue = LibVarGetString(var_name);
-	String::NCpy(value, varvalue, size - 1);
-	value[size - 1] = '\0';
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibVarGet
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int Export_BotLibStartFrame(float time)
 {
 	if (!BotLibSetup("BotStartFrame"))
@@ -917,8 +891,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 
 	be_botlib_export.BotLibSetup = Export_BotLibSetup;
 	be_botlib_export.BotLibShutdown = Export_BotLibShutdown;
-	be_botlib_export.BotLibVarSet = Export_BotLibVarSet;
-	be_botlib_export.BotLibVarGet = Export_BotLibVarGet;
 
 	be_botlib_export.BotLibStartFrame = Export_BotLibStartFrame;
 	be_botlib_export.BotLibLoadMap = Export_BotLibLoadMap;
