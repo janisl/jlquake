@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "botlib.h"
 #include "be_interface.h"			//for BotImport_Print
-#include "l_libvar.h"
 
 #define MAX_LOGFILENAMESIZE     1024
 

@@ -42,7 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"			//for BotImport_Print
-#include "l_libvar.h"
 
 #define MAX_LOGFILENAMESIZE     1024
 

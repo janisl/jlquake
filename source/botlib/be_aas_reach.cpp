@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/file_formats/bsp46.h"
 #include "l_log.h"
 #include "l_memory.h"
-#include "l_libvar.h"
 #include "l_struct.h"
 #include "aasfile.h"
 #include "botlib.h"

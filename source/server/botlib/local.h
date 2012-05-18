@@ -32,6 +32,15 @@ struct bot_debugpoly_t
 	vec3_t points[128];
 };
 
+//library variable
+struct libvar_t
+{
+	char* name;
+	char* string;
+	float value;
+	libvar_t* next;
+};
+
 extern bot_debugpoly_t* debugpolygons;
 extern int bot_maxdebugpolys;
 
@@ -40,5 +49,20 @@ void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t 
 int BotImport_DebugLineCreate();
 void BotImport_DebugLineDelete(int line);
 void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
+
+//removes all library variables
+void LibVarDeAllocAll();
+//gets the string of the library variable with the given name
+const char* LibVarGetString(const char* var_name);
+//gets the value of the library variable with the given name
+float LibVarGetValue(const char* var_name);
+//creates the library variable if not existing already and returns it
+libvar_t* LibVar(const char* var_name, const char* value);
+//creates the library variable if not existing already and returns the value
+float LibVarValue(const char* var_name, const char* value);
+//creates the library variable if not existing already and returns the value string
+const char* LibVarString(const char* var_name, const char* value);
+//sets the library variable
+void LibVarSet(const char* var_name, const char* value);
 
 #endif

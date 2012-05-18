@@ -21,7 +21,6 @@ add_library(botlib-wolfmp STATIC
 	be_ai_weight.cpp
 	be_ea.cpp
 	be_interface.cpp
-	l_libvar.cpp
 	l_log.cpp
 	l_memory.cpp
 	l_struct.cpp

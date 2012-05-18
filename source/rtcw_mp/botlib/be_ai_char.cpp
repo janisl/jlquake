@@ -40,7 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "l_memory.h"
 #include "l_utils.h"
 #include "l_struct.h"
-#include "l_libvar.h"
 #include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"

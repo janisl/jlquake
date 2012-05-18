@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "l_memory.h"
-#include "l_libvar.h"
 #include "l_struct.h"
 #include "l_utils.h"
 #include "l_log.h"
@@ -675,7 +674,7 @@ void BotDumpSynonymList(bot_synonymlist_t* synlist)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_synonymlist_t* BotLoadSynonyms(char* filename)
+bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 {
 	int pass, size, contextlevel, numsynonyms;
 	unsigned long int context, contextstack[32];
@@ -1100,7 +1099,7 @@ void BotDumpRandomStringList(bot_randomlist_t* randomlist)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_randomlist_t* BotLoadRandomStrings(char* filename)
+bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 {
 	int pass, size;
 	char* ptr = NULL, chatmessagestring[MAX_MESSAGE_SIZE];
@@ -1461,7 +1460,7 @@ void BotFreeMatchTemplates(bot_matchtemplate_t* mt)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_matchtemplate_t* BotLoadMatchTemplates(char* matchfile)
+bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 {
 	source_t* source;
 	token_t token;
@@ -2122,7 +2121,7 @@ void BotCheckValidReplyChatKeySet(source_t* source, bot_replychatkey_t* keys)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-bot_replychat_t* BotLoadReplyChat(char* filename)
+bot_replychat_t* BotLoadReplyChat(const char* filename)
 {
 	char chatmessagestring[MAX_MESSAGE_SIZE];
 	char namebuffer[MAX_MESSAGE_SIZE];
@@ -3425,7 +3424,7 @@ void BotFreeChatState(int handle)
 //===========================================================================
 int BotSetupChatAI(void)
 {
-	char* file;
+	const char* file;
 
 #ifdef DEBUG
 	int starttime = Sys_MilliSeconds();

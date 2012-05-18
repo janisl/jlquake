@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "l_utils.h"
-#include "l_libvar.h"
 #include "l_memory.h"
 #include "l_log.h"
 #include "l_struct.h"
@@ -262,7 +261,7 @@ void BotMutateGoalFuzzyLogic(int goalstate, float range)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-itemconfig_t* LoadItemConfig(char* filename)
+itemconfig_t* LoadItemConfig(const char* filename)
 {
 	int max_iteminfo;
 	token_t token;
@@ -2060,7 +2059,7 @@ void BotFreeGoalState(int handle)
 //===========================================================================
 int BotSetupGoalAI(void)
 {
-	char* filename;
+	const char* filename;
 
 	//check if teamplay is on
 	g_gametype = LibVarValue("g_gametype", "0");
