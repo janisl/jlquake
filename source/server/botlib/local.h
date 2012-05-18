@@ -22,3 +22,4 @@
 #define PRT_EXIT                5
 
 void BotImport_Print(int type, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin);

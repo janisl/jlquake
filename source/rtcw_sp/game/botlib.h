@@ -189,11 +189,7 @@ typedef struct botlib_import_s
 	int (* PointContents)(vec3_t point);
 	//check if the point is in potential visible sight
 	int (* inPVS)(vec3_t p1, vec3_t p2);
-	//retrieve the BSP entity data lump
-	const char*(*BSPEntityData)(void);
 	//
-	void (* BSPModelMinsMaxsOrigin)(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);
-	//send a bot client command
 	void (* BotClientCommand)(int client, const char* command);
 	//memory allocation
 	void*(*GetMemory)(int size);

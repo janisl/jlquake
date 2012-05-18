@@ -208,7 +208,7 @@ qboolean AAS_inPHS(vec3_t p1, vec3_t p2)
 //===========================================================================
 void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin)
 {
-	botimport.BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
+	BotImport_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
 }	//end of the function AAS_BSPModelMinsMaxs
 //===========================================================================
 // unlinks the entity from all leaves
@@ -502,9 +502,9 @@ void AAS_DumpBSPData(void)
 int AAS_LoadBSPFile(void)
 {
 	AAS_DumpBSPData();
-	bspworld.entdatasize = String::Length(botimport.BSPEntityData()) + 1;
+	bspworld.entdatasize = String::Length(CM_EntityString()) + 1;
 	bspworld.dentdata = (char*)GetClearedHunkMemory(bspworld.entdatasize);
-	Com_Memcpy(bspworld.dentdata, botimport.BSPEntityData(), bspworld.entdatasize);
+	Com_Memcpy(bspworld.dentdata, CM_EntityString(), bspworld.entdatasize);
 	AAS_ParseBSPEntities();
 	bspworld.loaded = true;
 	return BLERR_NOERROR;

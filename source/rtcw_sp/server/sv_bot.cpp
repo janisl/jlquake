@@ -266,56 +266,6 @@ int BotImport_inPVS(vec3_t p1, vec3_t p2)
 
 /*
 ==================
-BotImport_BSPEntityData
-==================
-*/
-const char* BotImport_BSPEntityData(void)
-{
-	return CM_EntityString();
-}
-
-/*
-==================
-BotImport_BSPModelMinsMaxsOrigin
-==================
-*/
-void BotImport_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin)
-{
-	clipHandle_t h;
-	vec3_t mins, maxs;
-	float max;
-	int i;
-
-	h = CM_InlineModel(modelnum);
-	CM_ModelBounds(h, mins, maxs);
-	//if the model is rotated
-	if ((angles[0] || angles[1] || angles[2]))
-	{
-		// expand for rotation
-
-		max = RadiusFromBounds(mins, maxs);
-		for (i = 0; i < 3; i++)
-		{
-			mins[i] = -max;
-			maxs[i] = max;
-		}
-	}
-	if (outmins)
-	{
-		VectorCopy(mins, outmins);
-	}
-	if (outmaxs)
-	{
-		VectorCopy(maxs, outmaxs);
-	}
-	if (origin)
-	{
-		VectorClear(origin);
-	}
-}
-
-/*
-==================
 BotImport_GetMemory
 ==================
 */
@@ -599,8 +549,6 @@ void SV_BotInitBotLib(void)
 	botlib_import.EntityTrace = BotImport_EntityTrace;
 	botlib_import.PointContents = BotImport_PointContents;
 	botlib_import.inPVS = BotImport_inPVS;
-	botlib_import.BSPEntityData = BotImport_BSPEntityData;
-	botlib_import.BSPModelMinsMaxsOrigin = BotImport_BSPModelMinsMaxsOrigin;
 	botlib_import.BotClientCommand = BotClientCommand;
 
 	//memory management
