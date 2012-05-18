@@ -41,11 +41,6 @@ static bool ReadNumber(source_t* source, const fielddef_t* fd, void* p)
 	bool negative = false;
 	if (token.type == TT_PUNCTUATION)
 	{
-		if (fd->type & FT_UNSIGNED)
-		{
-			SourceError(source, "expected unsigned value, found %s", token.string);
-			return false;
-		}
 		//if not a minus sign
 		if (String::Cmp(token.string, "-"))
 		{
@@ -78,14 +73,6 @@ static bool ReadNumber(source_t* source, const fielddef_t* fd, void* p)
 		{
 			floatval = -floatval;
 		}
-		if (fd->type & FT_BOUNDED)
-		{
-			if (floatval < fd->floatmin || floatval > fd->floatmax)
-			{
-				SourceError(source, "float out of range [%f, %f]", fd->floatmin, fd->floatmax);
-				return false;
-			}
-		}
 		*(float*)p = (float)floatval;
 		return true;
 	}
@@ -96,104 +83,24 @@ static bool ReadNumber(source_t* source, const fielddef_t* fd, void* p)
 		intval = -intval;
 	}
 	//check bounds
-	int intmin = 0, intmax = 0;
-	if ((fd->type & FT_TYPE) == FT_CHAR)
-	{
-		if (fd->type & FT_UNSIGNED)
-		{
-			intmin = 0; intmax = 255;
-		}
-		else
-		{
-			intmin = -128; intmax = 127;
-		}
-	}
 	if ((fd->type & FT_TYPE) == FT_INT)
 	{
-		if (fd->type & FT_UNSIGNED)
-		{
-			intmin = 0; intmax = 65535;
-		}
-		else
-		{
-			intmin = -32768; intmax = 32767;
-		}
-	}
-	if ((fd->type & FT_TYPE) == FT_CHAR || (fd->type & FT_TYPE) == FT_INT)
-	{
-		if (fd->type & FT_BOUNDED)
-		{
-			intmin = Max(intmin, (int)fd->floatmin);
-			intmax = Min(intmax, (int)fd->floatmax);
-		}
+		int intmin = -32768;
+		int intmax = 32767;
 		if (intval < intmin || intval > intmax)
 		{
 			SourceError(source, "value %d out of range [%d, %d]", intval, intmin, intmax);
 			return false;
 		}
 	}
-	else if ((fd->type & FT_TYPE) == FT_FLOAT)
-	{
-		if (fd->type & FT_BOUNDED)
-		{
-			if (intval < fd->floatmin || intval > fd->floatmax)
-			{
-				SourceError(source, "value %d out of range [%f, %f]", intval, fd->floatmin, fd->floatmax);
-				return false;
-			}
-		}
-	}
 	//store the value
-	if ((fd->type & FT_TYPE) == FT_CHAR)
+	if ((fd->type & FT_TYPE) == FT_INT)
 	{
-		if (fd->type & FT_UNSIGNED)
-		{
-			*(unsigned char*)p = (unsigned char)intval;
-		}
-		else
-		{
-			*(char*)p = (char)intval;
-		}
-	}
-	else if ((fd->type & FT_TYPE) == FT_INT)
-	{
-		if (fd->type & FT_UNSIGNED)
-		{
-			*(unsigned int*)p = (unsigned int)intval;
-		}
-		else
-		{
-			*(int*)p = (int)intval;
-		}
+		*(int*)p = (int)intval;
 	}
 	else if ((fd->type & FT_TYPE) == FT_FLOAT)
 	{
 		*(float*)p = (float)intval;
-	}
-	return true;
-}
-
-static bool ReadChar(source_t* source, const fielddef_t* fd, void* p)
-{
-	token_t token;
-	if (!PC_ExpectAnyToken(source, &token))
-	{
-		return false;
-	}
-
-	//take literals into account
-	if (token.type == TT_LITERAL)
-	{
-		StripSingleQuotes(token.string);
-		*(char*)p = token.string[0];
-	}
-	else
-	{
-		PC_UnreadLastToken(source);
-		if (!ReadNumber(source, fd, p))
-		{
-			return false;
-		}
 	}
 	return true;
 }
@@ -262,13 +169,6 @@ bool ReadStructure(source_t* source, const structdef_t* def, char* structure)
 			}
 			switch (fd->type & FT_TYPE)
 			{
-			case FT_CHAR:
-				if (!ReadChar(source, fd, p))
-				{
-					return false;
-				}
-				p = (char*)p + sizeof(char);
-				break;
 			case FT_INT:
 				if (!ReadNumber(source, fd, p))
 				{
@@ -289,15 +189,6 @@ bool ReadStructure(source_t* source, const structdef_t* def, char* structure)
 					return false;
 				}
 				p = (char*)p + MAX_STRINGFIELD;
-				break;
-			case FT_STRUCT:
-				if (!fd->substruct)
-				{
-					SourceError(source, "BUG: no sub structure defined");
-					return false;
-				}
-				ReadStructure(source, fd->substruct, (char*)p);
-				p = (char*)p + fd->substruct->size;
 				break;
 			}
 			if (fd->type & FT_ARRAY)
