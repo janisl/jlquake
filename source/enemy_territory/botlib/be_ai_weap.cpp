@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "l_struct.h"
 #include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
@@ -46,8 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 #include "be_ai_weight.h"		//fuzzy weights
 #include "../game/be_ai_weap.h"
-
-//#define DEBUG_AI_WEAP
 
 //structure field offsets
 #define WEAPON_OFS(x) (qintptr) & (((weaponinfo_t*)0)->x)
@@ -169,33 +166,6 @@ bot_weaponstate_t* BotWeaponStateFromHandle(int handle)
 	}	//end if
 	return botweaponstates[handle];
 }	//end of the function BotWeaponStateFromHandle
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-#ifdef DEBUG_AI_WEAP
-void DumpWeaponConfig(weaponconfig_t* wc)
-{
-	FILE* fp;
-	int i;
-
-	fp = Log_FileStruct();
-	if (!fp)
-	{
-		return;
-	}
-	for (i = 0; i < wc->numprojectiles; i++)
-	{
-		WriteStructure(fp, &projectileinfo_struct, (char*)&wc->projectileinfo[i]);
-	}	//end for
-	for (i = 0; i < wc->numweapons; i++)
-	{
-		WriteStructure(fp, &weaponinfo_struct, (char*)&wc->weaponinfo[i]);
-	}	//end for
-}	//end of the function DumpWeaponConfig
-#endif	//DEBUG_AI_WEAP
 //===========================================================================
 //
 // Parameter:				-
@@ -571,10 +541,6 @@ int BotSetupWeaponAI(void)
 		return WOLFBLERR_CANNOTLOADWEAPONCONFIG;
 	}	//end if
 
-#ifdef DEBUG_AI_WEAP
-	DumpWeaponConfig(weaponconfig);
-#endif	//DEBUG_AI_WEAP
-		//
 	return BLERR_NOERROR;
 }	//end of the function BotSetupWeaponAI
 //===========================================================================

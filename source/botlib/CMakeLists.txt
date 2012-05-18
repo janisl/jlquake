@@ -21,7 +21,6 @@ add_library(botlib STATIC
 	be_ea.cpp
 	be_interface.cpp
 	l_memory.cpp
-	l_struct.cpp
 )
 set_target_properties(botlib PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(botlib common)

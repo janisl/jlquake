@@ -2,6 +2,7 @@ add_library(server STATIC
 	botlib/interface.cpp
 	botlib/libvar.cpp
 	botlib/log.cpp
+	botlib/struct.cpp
 	progsvm/edict.cpp
 	progsvm/execute.cpp
 	progsvm/main.cpp

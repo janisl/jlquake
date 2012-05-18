@@ -22,6 +22,5 @@ add_library(botlib-wolfmp STATIC
 	be_ea.cpp
 	be_interface.cpp
 	l_memory.cpp
-	l_struct.cpp
 )
 set_target_properties(botlib-wolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

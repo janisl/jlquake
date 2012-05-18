@@ -17,6 +17,10 @@
 #ifndef _BOTLIB_LOCAL_H
 #define _BOTLIB_LOCAL_H
 
+//
+//	Imports
+//
+
 //Print types
 #define PRT_MESSAGE             1
 #define PRT_WARNING             2
@@ -32,15 +36,6 @@ struct bot_debugpoly_t
 	vec3_t points[128];
 };
 
-//library variable
-struct libvar_t
-{
-	char* name;
-	char* string;
-	float value;
-	libvar_t* next;
-};
-
 extern bot_debugpoly_t* debugpolygons;
 extern int bot_maxdebugpolys;
 
@@ -49,6 +44,19 @@ void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t 
 int BotImport_DebugLineCreate();
 void BotImport_DebugLineDelete(int line);
 void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
+
+//
+//	Libvars
+//
+
+//library variable
+struct libvar_t
+{
+	char* name;
+	char* string;
+	float value;
+	libvar_t* next;
+};
 
 //removes all library variables
 void LibVarDeAllocAll();
@@ -65,11 +73,55 @@ const char* LibVarString(const char* var_name, const char* value);
 //sets the library variable
 void LibVarSet(const char* var_name, const char* value);
 
+//
+//	Logging
+//
+
 //open a log file
 void Log_Open(const char* filename);
 //close log file if present
 void Log_Shutdown();
 //write to the current opened log file
 void Log_Write(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+
+//
+//	Struct
+//
+
+#define MAX_STRINGFIELD             80
+//field types
+#define FT_CHAR                     1		// char
+#define FT_INT                      2		// int
+#define FT_FLOAT                    3		// float
+#define FT_STRING                   4		// char [MAX_STRINGFIELD]
+#define FT_STRUCT                   6		// struct (sub structure)
+//type only mask
+#define FT_TYPE                     0x00FF	// only type, clear subtype
+//sub types
+#define FT_ARRAY                    0x0100	// array of type
+#define FT_BOUNDED                  0x0200	// bounded value
+#define FT_UNSIGNED                 0x0400
+
+//structure field definition
+struct fielddef_t
+{
+	const char* name;						//name of the field
+	int offset;								//offset in the structure
+	int type;								//type of the field
+	//type specific fields
+	int maxarray;							//maximum array size
+	float floatmin, floatmax;				//float min and max
+	struct structdef_t* substruct;			//sub structure
+};
+
+//structure definition
+struct structdef_t
+{
+	int size;
+	fielddef_t* fields;
+};
+
+//read a structure from a script
+bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
 
 #endif
