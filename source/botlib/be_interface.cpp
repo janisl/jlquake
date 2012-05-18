@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_interface.h"
 
 #include "be_ea.h"
-#include "be_ai_weight.h"
+#include "../server/botlib/ai_weight.h"
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 #include "be_ai_weap.h"
@@ -53,8 +53,6 @@ botlib_globals_t botlibglobals;
 
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
-//
-int bot_developer;
 //qtrue if the library is setup
 int botlibsetup = false;
 

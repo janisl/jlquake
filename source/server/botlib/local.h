@@ -17,6 +17,8 @@
 #ifndef _BOTLIB_LOCAL_H
 #define _BOTLIB_LOCAL_H
 
+#define BOTFILESBASEFOLDER      "botfiles"
+
 //
 //	Imports
 //
@@ -44,6 +46,12 @@ void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t 
 int BotImport_DebugLineCreate();
 void BotImport_DebugLineDelete(int line);
 void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
+
+//
+//	Interface
+//
+
+extern int bot_developer;					//true if developer is on
 
 //
 //	Libvars

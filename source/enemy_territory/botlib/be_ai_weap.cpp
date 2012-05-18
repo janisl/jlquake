@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
-#include "be_ai_weight.h"		//fuzzy weights
+#include "../../server/botlib/ai_weight.h"
 #include "../game/be_ai_weap.h"
 
 //structure field offsets
@@ -120,7 +120,7 @@ typedef struct weaponconfig_s
 //the bot weapon state
 typedef struct bot_weaponstate_s
 {
-	struct weightconfig_s* weaponweightconfig;		//weapon weight configuration
+	weightconfig_t* weaponweightconfig;		//weapon weight configuration
 	int* weaponweightindex;							//weapon weight index
 } bot_weaponstate_t;
 
@@ -463,7 +463,7 @@ int BotChooseBestFightWeapon(int weaponstate, int* inventory)
 //===========================================================================
 void BotResetWeaponState(int weaponstate)
 {
-	struct weightconfig_s* weaponweightconfig;
+	weightconfig_t* weaponweightconfig;
 	int* weaponweightindex;
 	bot_weaponstate_t* ws;
 

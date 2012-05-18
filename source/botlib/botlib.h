@@ -45,7 +45,6 @@ struct bot_initmove_s;
 struct weaponinfo_s;
 struct q3pc_token_t;
 
-#define BOTFILESBASEFOLDER      "botfiles"
 //debug line colors
 #define LINECOLOR_NONE          -1
 #define LINECOLOR_RED           1	//0xf2f2f0f0L

@@ -1,4 +1,5 @@
 add_library(server STATIC
+	botlib/ai_weight.cpp
 	botlib/interface.cpp
 	botlib/libvar.cpp
 	botlib/log.cpp

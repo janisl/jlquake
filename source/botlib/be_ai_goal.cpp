@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
-#include "be_ai_weight.h"
+#include "../server/botlib/ai_weight.h"
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 
@@ -158,7 +158,7 @@ typedef struct itemconfig_s
 //goal state
 typedef struct bot_goalstate_s
 {
-	struct weightconfig_s* itemweightconfig;	//weight config
+	weightconfig_t* itemweightconfig;	//weight config
 	int* itemweightindex;						//index from item to weight
 	//
 	int client;									//client using this goal state
@@ -236,8 +236,6 @@ void BotSaveGoalFuzzyLogic(int goalstate, char* filename)
 	bot_goalstate_t* gs;
 
 	gs = BotGoalStateFromHandle(goalstate);
-
-	//WriteWeightConfig(filename, gs->itemweightconfig);
 }	//end of the function BotSaveGoalFuzzyLogic
 //===========================================================================
 //
