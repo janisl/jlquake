@@ -17,12 +17,10 @@
 #include "../server.h"
 #include "local.h"
 
-#define MAX_LOGFILENAMESIZE     1024
-
 struct logfile_t
 {
-	char filename[MAX_LOGFILENAMESIZE];
-	FILE* fp;
+	char filename[MAX_QPATH];
+	fileHandle_t fp;
 };
 
 static logfile_t logfile;
@@ -43,13 +41,13 @@ void Log_Open(const char* filename)
 		BotImport_Print(PRT_ERROR, "log file %s is already opened\n", logfile.filename);
 		return;
 	}
-	logfile.fp = fopen(filename, "wb");
+	logfile.fp = FS_FOpenFileWrite(filename);
 	if (!logfile.fp)
 	{
 		BotImport_Print(PRT_ERROR, "can't open the log file %s\n", filename);
 		return;
 	}
-	String::NCpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
+	String::NCpy(logfile.filename, filename, MAX_QPATH);
 	BotImport_Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
 }
 
@@ -59,25 +57,22 @@ void Log_Shutdown()
 	{
 		return;
 	}
-	if (fclose(logfile.fp))
-	{
-		BotImport_Print(PRT_ERROR, "can't close log file %s\n", logfile.filename);
-		return;
-	}
-	logfile.fp = NULL;
+	FS_FCloseFile(logfile.fp);
+	logfile.fp = 0;
 	BotImport_Print(PRT_MESSAGE, "Closed log %s\n", logfile.filename);
 }
 
 void Log_Write(const char* fmt, ...)
 {
-	va_list ap;
-
 	if (!logfile.fp)
 	{
 		return;
 	}
+	va_list ap;
+	char buffer[MAXPRINTMSG];
 	va_start(ap, fmt);
-	vfprintf(logfile.fp, fmt, ap);
+	Q_vsnprintf(buffer, sizeof(buffer), fmt, ap);
 	va_end(ap);
-	fflush(logfile.fp);
+	FS_Write(buffer, String::Length(buffer), logfile.fp);
+	FS_Flush(logfile.fp);
 }
