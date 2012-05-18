@@ -382,5 +382,5 @@ void AAS_Optimize(void)
 		//store the optimized AAS data into (*aasworld)
 	AAS_OptimizeStore(&optimized);
 	//print some nice stuff :)
-	botimport.Print(PRT_MESSAGE, "AAS data optimized.\n");
+	BotImport_Print(PRT_MESSAGE, "AAS data optimized.\n");
 }	//end of the function AAS_Optimize

@@ -40,8 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-
-extern botlib_import_t botimport;
+#include "be_interface.h"
 
 #define AAS_MAX_PORTALS                 65536
 #define AAS_MAX_PORTALINDEXSIZE         65536
@@ -1089,7 +1088,7 @@ void AAS_FindPossiblePortals(void)
 	{
 		numpossibleportals += AAS_CheckAreaForPossiblePortals(i);
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "\r%6d possible portal areas\n", numpossibleportals);
+	BotImport_Print(PRT_MESSAGE, "\r%6d possible portal areas\n", numpossibleportals);
 }	//end of the function AAS_FindPossiblePortals
 //===========================================================================
 //
@@ -1342,7 +1341,7 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			}	//end if
 		}	//end for
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
+	BotImport_Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
 }	//end of the function AAS_RemoveNotClusterClosingPortals
 
 //===========================================================================
@@ -1443,7 +1442,7 @@ void AAS_RemoveNotClusterClosingPortals(void)
 			i = 0;
 		}	//end if
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
+	BotImport_Print(PRT_MESSAGE, "\r%6d non closing portals removed\n", nonclosingportals);
 }	//end of the function AAS_RemoveNotClusterClosingPortals
 
 //===========================================================================
@@ -1474,14 +1473,14 @@ void AAS_AddTeleporterPortals(void)
 		{
 			if (!AAS_VectorForBSPEpairKey(ent, "origin", origin))
 			{
-				botimport.Print(PRT_ERROR, "teleporter (%s) without origin\n", target);
+				BotImport_Print(PRT_ERROR, "teleporter (%s) without origin\n", target);
 				continue;
 			}	//end if
 				//
 			target = AAS_ValueForBSPEpairKey(ent, "target");
 			if (!target)
 			{
-				botimport.Print(PRT_ERROR, "teleporter (%s) without target\n", target);
+				BotImport_Print(PRT_ERROR, "teleporter (%s) without target\n", target);
 				continue;
 			}	//end if
 			for (dest = entities; dest; dest = dest->next)
@@ -1498,12 +1497,12 @@ void AAS_AddTeleporterPortals(void)
 			}	//end for
 			if (!dest)
 			{
-				botimport.Print(PRT_ERROR, "teleporter without destination (%s)\n", target);
+				BotImport_Print(PRT_ERROR, "teleporter without destination (%s)\n", target);
 				continue;
 			}	//end if
 			if (!AAS_VectorForBSPEpairKey(dest, "origin", destorigin))
 			{
-				botimport.Print(PRT_ERROR, "teleporter destination (%s) without origin\n", target);
+				BotImport_Print(PRT_ERROR, "teleporter destination (%s) without origin\n", target);
 				continue;
 			}	//end if
 			destorigin[2] += 24;//just for q2e1m2, the dork has put the telepads in the ground
@@ -1512,7 +1511,7 @@ void AAS_AddTeleporterPortals(void)
 			trace = AAS_TraceClientBBox(destorigin, end, PRESENCE_CROUCH, -1);
 			if (trace.startsolid)
 			{
-				botimport.Print(PRT_ERROR, "teleporter destination (%s) in solid\n", target);
+				BotImport_Print(PRT_ERROR, "teleporter destination (%s) in solid\n", target);
 				continue;
 			}	//end if
 			VectorCopy(trace.endpos, destorigin);
@@ -1676,7 +1675,7 @@ void AAS_CountForcedClusterPortals(void)
 			num++;
 		}	//end if
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "%6d forced portal areas\n", num);
+	BotImport_Print(PRT_MESSAGE, "%6d forced portal areas\n", num);
 }	//end of the function AAS_CountForcedClusterPortals
 //===========================================================================
 //
@@ -1771,10 +1770,10 @@ void AAS_InitClustering(void)
 	aasworld.clusters = (aas_cluster_t*)GetClearedMemory(AAS_MAX_CLUSTERS * sizeof(aas_cluster_t));
 	//
 	removedPortalAreas = 0;
-	botimport.Print(PRT_MESSAGE, "\r%6d removed portal areas", removedPortalAreas);
+	BotImport_Print(PRT_MESSAGE, "\r%6d removed portal areas", removedPortalAreas);
 	while (1)
 	{
-		botimport.Print(PRT_MESSAGE, "\r%6d", removedPortalAreas);
+		BotImport_Print(PRT_MESSAGE, "\r%6d", removedPortalAreas);
 		//initialize the number of portals and clusters
 		aasworld.numportals = 1;		//portal 0 is a dummy
 		aasworld.portalindexsize = 0;
@@ -1796,7 +1795,7 @@ void AAS_InitClustering(void)
 		//
 		break;
 	}	//end while
-	botimport.Print(PRT_MESSAGE, "\n");
+	BotImport_Print(PRT_MESSAGE, "\n");
 	//the AAS file should be saved
 	aasworld.savefile = true;
 	//write the portal areas to the log file
@@ -1805,11 +1804,11 @@ void AAS_InitClustering(void)
 		Log_Write("portal %d: area %d\r\n", i, aasworld.portals[i].areanum);
 	}	//end for
 		// report cluster info
-	botimport.Print(PRT_MESSAGE, "%6d portals created\n", aasworld.numportals);
-	botimport.Print(PRT_MESSAGE, "%6d clusters created\n", aasworld.numclusters);
+	BotImport_Print(PRT_MESSAGE, "%6d portals created\n", aasworld.numportals);
+	BotImport_Print(PRT_MESSAGE, "%6d clusters created\n", aasworld.numclusters);
 	for (i = 1; i < aasworld.numclusters; i++)
 	{
-		botimport.Print(PRT_MESSAGE, "cluster %d has %d reachability areas\n", i,
+		BotImport_Print(PRT_MESSAGE, "cluster %d has %d reachability areas\n", i,
 			aasworld.clusters[i].numreachabilityareas);
 	}	//end for
 		// report AAS file efficiency
@@ -1823,6 +1822,6 @@ void AAS_InitClustering(void)
 	}
 	total += numreachabilityareas * aasworld.numportals;
 	//
-	botimport.Print(PRT_MESSAGE, "%6i total reachability areas\n", numreachabilityareas);
-	botimport.Print(PRT_MESSAGE, "%6i AAS memory/CPU usage (the lower the better)\n", total * 3);
+	BotImport_Print(PRT_MESSAGE, "%6i total reachability areas\n", numreachabilityareas);
+	BotImport_Print(PRT_MESSAGE, "%6i AAS memory/CPU usage (the lower the better)\n", total * 3);
 }	//end of the function AAS_InitClustering

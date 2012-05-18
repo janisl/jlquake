@@ -226,12 +226,12 @@ bot_chatstate_t* BotChatStateFromHandle(int handle)
 {
 	if (handle <= 0 || handle > MAX_CLIENTS_WS)
 	{
-		botimport.Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
+		BotImport_Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
 		return NULL;
 	}	//end if
 	if (!botchatstates[handle])
 	{
-		botimport.Print(PRT_FATAL, "invalid chat state %d\n", handle);
+		BotImport_Print(PRT_FATAL, "invalid chat state %d\n", handle);
 		return NULL;
 	}	//end if
 	return botchatstates[handle];
@@ -370,7 +370,7 @@ void BotQueueConsoleMessage(int chatstate, int type, char* message)
 	m = AllocConsoleMessage();
 	if (!m)
 	{
-		botimport.Print(PRT_ERROR, "empty console message heap\n");
+		BotImport_Print(PRT_ERROR, "empty console message heap\n");
 		return;
 	}	//end if
 	cs->handle++;
@@ -707,7 +707,7 @@ bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 		source = LoadSourceFile(filename);
 		if (!source)
 		{
-			botimport.Print(PRT_ERROR, "counldn't load %s\n", filename);
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
 			return NULL;
 		}	//end if
 			//
@@ -851,7 +851,7 @@ bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 			return NULL;
 		}	//end if
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "loaded %s\n", filename);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
 	//
 	//BotDumpSynonymList(synlist);
 	//
@@ -1133,7 +1133,7 @@ bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 		source = LoadSourceFile(filename);
 		if (!source)
 		{
-			botimport.Print(PRT_ERROR, "counldn't load %s\n", filename);
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
 			return NULL;
 		}	//end if
 			//
@@ -1200,10 +1200,10 @@ bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 			//free the source after one pass
 		FreeSource(source);
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "loaded %s\n", filename);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
 	//
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "random strings %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "random strings %d msec\n", Sys_MilliSeconds() - starttime);
 	//BotDumpRandomStringList(randomlist);
 #endif	//DEBUG
 		//
@@ -1475,7 +1475,7 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 	source = LoadSourceFile(matchfile);
 	if (!source)
 	{
-		botimport.Print(PRT_ERROR, "counldn't load %s\n", matchfile);
+		BotImport_Print(PRT_ERROR, "counldn't load %s\n", matchfile);
 		return NULL;
 	}	//end if
 		//
@@ -1560,7 +1560,7 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 	}	//end while
 		//free the source
 	FreeSource(source);
-	botimport.Print(PRT_MESSAGE, "loaded %s\n", matchfile);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", matchfile);
 	//
 	//BotDumpMatchTemplates(matches);
 	//
@@ -1691,7 +1691,7 @@ void BotMatchVariable(bot_match_t* match, int variable, char* buf, int size)
 {
 	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
 	{
-		botimport.Print(PRT_FATAL, "BotMatchVariable: variable out of range\n");
+		BotImport_Print(PRT_FATAL, "BotMatchVariable: variable out of range\n");
 		String::Cpy(buf, "");
 		return;
 	}	//end if
@@ -1796,7 +1796,7 @@ bot_stringlist_t* BotCheckChatMessageIntegrety(char* message, bot_stringlist_t* 
 			}		//end case
 			default:
 			{
-				botimport.Print(PRT_FATAL, "BotCheckChatMessageIntegrety: message \"%s\" invalid escape char\n", message);
+				BotImport_Print(PRT_FATAL, "BotCheckChatMessageIntegrety: message \"%s\" invalid escape char\n", message);
 				break;
 			}		//end default
 			}	//end switch
@@ -2006,7 +2006,7 @@ bot_replychat_t* BotLoadReplyChat(const char* filename)
 	source = LoadSourceFile(filename);
 	if (!source)
 	{
-		botimport.Print(PRT_ERROR, "counldn't load %s\n", filename);
+		BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
 		return NULL;
 	}	//end if
 		//
@@ -2155,7 +2155,7 @@ bot_replychat_t* BotLoadReplyChat(const char* filename)
 		}	//end while
 	}	//end while
 	FreeSource(source);
-	botimport.Print(PRT_MESSAGE, "loaded %s\n", filename);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
 	//
 	//BotDumpReplyChat(replychatlist);
 	if (bot_developer)
@@ -2165,7 +2165,7 @@ bot_replychat_t* BotLoadReplyChat(const char* filename)
 		//
 	if (!replychatlist)
 	{
-		botimport.Print(PRT_MESSAGE, "no rchats\n");
+		BotImport_Print(PRT_MESSAGE, "no rchats\n");
 	}
 	//
 	return replychatlist;
@@ -2231,7 +2231,7 @@ bot_chat_t* BotLoadInitialChat(char* chatfile, char* chatname)
 		source = LoadSourceFile(chatfile);
 		if (!source)
 		{
-			botimport.Print(PRT_ERROR, "counldn't load %s\n", chatfile);
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", chatfile);
 			return NULL;
 		}	//end if
 			//chat structure
@@ -2360,12 +2360,12 @@ bot_chat_t* BotLoadInitialChat(char* chatfile, char* chatname)
 		//if the requested character is not found
 		if (!foundchat)
 		{
-			botimport.Print(PRT_ERROR, "couldn't find chat %s in %s\n", chatname, chatfile);
+			BotImport_Print(PRT_ERROR, "couldn't find chat %s in %s\n", chatname, chatfile);
 			return NULL;
 		}	//end if
 	}	//end for
 		//
-	botimport.Print(PRT_MESSAGE, "loaded %s from %s\n", chatname, chatfile);
+	BotImport_Print(PRT_MESSAGE, "loaded %s from %s\n", chatname, chatfile);
 	//
 	//BotDumpInitialChat(chat);
 	if (bot_developer)
@@ -2373,7 +2373,7 @@ bot_chat_t* BotLoadInitialChat(char* chatfile, char* chatname)
 		BotCheckInitialChatIntegrety(chat);
 	}	//end if
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "initial chats loaded in %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "initial chats loaded in %d msec\n", Sys_MilliSeconds() - starttime);
 #endif	//DEBUG
 		//character was read succesfully
 	return chat;
@@ -2439,13 +2439,13 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 				continue;
 			}
 			cs->chat = ichatdata[n].chat;
-			//		botimport.Print( PRT_MESSAGE, "retained %s from %s\n", chatname, chatfile );
+			//		BotImport_Print( PRT_MESSAGE, "retained %s from %s\n", chatname, chatfile );
 			return BLERR_NOERROR;
 		}
 
 		if (avail == -1)
 		{
-			botimport.Print(PRT_FATAL, "ichatdata table full; couldn't load chat %s from %s\n", chatname, chatfile);
+			BotImport_Print(PRT_FATAL, "ichatdata table full; couldn't load chat %s from %s\n", chatname, chatfile);
 			return BLERR_CANNOTLOADICHAT;
 		}
 	}
@@ -2453,7 +2453,7 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 	cs->chat = BotLoadInitialChat(chatfile, chatname);
 	if (!cs->chat)
 	{
-		botimport.Print(PRT_FATAL, "couldn't load chat %s from %s\n", chatname, chatfile);
+		BotImport_Print(PRT_FATAL, "couldn't load chat %s from %s\n", chatname, chatfile);
 		return BLERR_CANNOTLOADICHAT;
 	}	//end if
 	if (!LibVarGetValue("bot_reloadcharacters"))
@@ -2506,7 +2506,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 				}
 				if (num > MAX_MATCHVARIABLES)
 				{
-					botimport.Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
+					BotImport_Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
 					return qfalse;
 				}		//end if
 				ptr = variables[num].ptr;
@@ -2531,7 +2531,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 							//
 					if (len + String::Length(temp) >= MAX_MESSAGE_SIZE)
 					{
-						botimport.Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
+						BotImport_Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
 						return qfalse;
 					}		//end if
 					String::Cpy(&outputbuf[len], temp);
@@ -2556,12 +2556,12 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 				ptr = RandomString(temp);
 				if (!ptr)
 				{
-					botimport.Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
+					BotImport_Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
 					return qfalse;
 				}		//end if
 				if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE)
 				{
-					botimport.Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
+					BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
 					return qfalse;
 				}		//end if
 				String::Cpy(&outputbuf[len], ptr);
@@ -2571,7 +2571,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 			}		//end case
 			default:
 			{
-				botimport.Print(PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message);
+				BotImport_Print(PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message);
 				break;
 			}		//end default
 			}	//end switch
@@ -2581,7 +2581,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 			outputbuf[len++] = *msgptr++;
 			if (len >= MAX_MESSAGE_SIZE)
 			{
-				botimport.Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
+				BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
 				break;
 			}	//end if
 		}	//end else
@@ -2615,8 +2615,8 @@ void BotConstructChatMessage(bot_chatstate_t* chatstate, char* message, unsigned
 	}	//end for
 	if (i >= 10)
 	{
-		botimport.Print(PRT_WARNING, "too many expansions in chat message\n");
-		botimport.Print(PRT_WARNING, "%s\n", chatstate->chatmessage);
+		BotImport_Print(PRT_WARNING, "too many expansions in chat message\n");
+		BotImport_Print(PRT_WARNING, "%s\n", chatstate->chatmessage);
 	}	//end if
 }	//end of the function BotConstructChatMessage
 //===========================================================================
@@ -2710,8 +2710,8 @@ int BotNumInitialChats(int chatstate, char* type)
 		{
 			if (LibVarGetValue("bot_testichat"))
 			{
-				botimport.Print(PRT_MESSAGE, "%s has %d chat lines\n", type, t->numchatmessages);
-				botimport.Print(PRT_MESSAGE, "-------------------\n");
+				BotImport_Print(PRT_MESSAGE, "%s has %d chat lines\n", type, t->numchatmessages);
+				BotImport_Print(PRT_MESSAGE, "-------------------\n");
 			}
 			return t->numchatmessages;
 		}	//end if
@@ -2746,7 +2746,7 @@ void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* v
 	if (!message)
 	{
 #ifdef DEBUG
-		botimport.Print(PRT_MESSAGE, "no chat messages of type %s\n", type);
+		BotImport_Print(PRT_MESSAGE, "no chat messages of type %s\n", type);
 #endif	//DEBUG
 		return;
 	}	//end if
@@ -2806,68 +2806,68 @@ void BotPrintReplyChatKeys(bot_replychat_t* replychat)
 	bot_replychatkey_t* key;
 	bot_matchpiece_t* mp;
 
-	botimport.Print(PRT_MESSAGE, "[");
+	BotImport_Print(PRT_MESSAGE, "[");
 	for (key = replychat->keys; key; key = key->next)
 	{
 		if (key->flags & RCKFL_AND)
 		{
-			botimport.Print(PRT_MESSAGE, "&");
+			BotImport_Print(PRT_MESSAGE, "&");
 		}
 		else if (key->flags & RCKFL_NOT)
 		{
-			botimport.Print(PRT_MESSAGE, "!");
+			BotImport_Print(PRT_MESSAGE, "!");
 		}
 		//
 		if (key->flags & RCKFL_NAME)
 		{
-			botimport.Print(PRT_MESSAGE, "name");
+			BotImport_Print(PRT_MESSAGE, "name");
 		}
 		else if (key->flags & RCKFL_GENDERFEMALE)
 		{
-			botimport.Print(PRT_MESSAGE, "female");
+			BotImport_Print(PRT_MESSAGE, "female");
 		}
 		else if (key->flags & RCKFL_GENDERMALE)
 		{
-			botimport.Print(PRT_MESSAGE, "male");
+			BotImport_Print(PRT_MESSAGE, "male");
 		}
 		else if (key->flags & RCKFL_GENDERLESS)
 		{
-			botimport.Print(PRT_MESSAGE, "it");
+			BotImport_Print(PRT_MESSAGE, "it");
 		}
 		else if (key->flags & RCKFL_VARIABLES)
 		{
-			botimport.Print(PRT_MESSAGE, "(");
+			BotImport_Print(PRT_MESSAGE, "(");
 			for (mp = key->match; mp; mp = mp->next)
 			{
 				if (mp->type == MT_STRING)
 				{
-					botimport.Print(PRT_MESSAGE, "\"%s\"", mp->firststring->string);
+					BotImport_Print(PRT_MESSAGE, "\"%s\"", mp->firststring->string);
 				}
 				else
 				{
-					botimport.Print(PRT_MESSAGE, "%d", mp->variable);
+					BotImport_Print(PRT_MESSAGE, "%d", mp->variable);
 				}
 				if (mp->next)
 				{
-					botimport.Print(PRT_MESSAGE, ", ");
+					BotImport_Print(PRT_MESSAGE, ", ");
 				}
 			}	//end for
-			botimport.Print(PRT_MESSAGE, ")");
+			BotImport_Print(PRT_MESSAGE, ")");
 		}	//end if
 		else if (key->flags & RCKFL_STRING)
 		{
-			botimport.Print(PRT_MESSAGE, "\"%s\"", key->string);
+			BotImport_Print(PRT_MESSAGE, "\"%s\"", key->string);
 		}	//end if
 		if (key->next)
 		{
-			botimport.Print(PRT_MESSAGE, ", ");
+			BotImport_Print(PRT_MESSAGE, ", ");
 		}
 		else
 		{
-			botimport.Print(PRT_MESSAGE, "] = %1.0f\n", replychat->priority);
+			BotImport_Print(PRT_MESSAGE, "] = %1.0f\n", replychat->priority);
 		}
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "{\n");
+	BotImport_Print(PRT_MESSAGE, "{\n");
 }	//end of the function BotPrintReplyChatKeys
 //===========================================================================
 //
@@ -3040,7 +3040,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 			{
 				BotConstructChatMessage(cs, m->chatmessage, mcontext, bestmatch.variables, vcontext, qtrue);
 				BotRemoveTildes(cs->chatmessage);
-				botimport.Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
+				BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
 			}	//end if
 		}	//end if
 		else
@@ -3090,7 +3090,7 @@ void BotEnterChat(int chatstate, int client, int sendto)
 		BotRemoveTildes(cs->chatmessage);
 		if (LibVarGetValue("bot_testichat"))
 		{
-			botimport.Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
+			BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
 		}
 		else
 		{
@@ -3223,12 +3223,12 @@ void BotFreeChatState(int handle)
 
 	if (handle <= 0 || handle > MAX_CLIENTS_WS)
 	{
-		botimport.Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
+		BotImport_Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
 		return;
 	}	//end if
 	if (!botchatstates[handle])
 	{
-		botimport.Print(PRT_FATAL, "invalid chat state %d\n", handle);
+		BotImport_Print(PRT_FATAL, "invalid chat state %d\n", handle);
 		return;
 	}	//end if
 	cs = botchatstates[handle];
@@ -3275,7 +3275,7 @@ int BotSetupChatAI(void)
 	InitConsoleMessageHeap();
 
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "setup chat AI %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "setup chat AI %d msec\n", Sys_MilliSeconds() - starttime);
 #endif	//DEBUG
 	return BLERR_NOERROR;
 }	//end of the function BotSetupChatAI

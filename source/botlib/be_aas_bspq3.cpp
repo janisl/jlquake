@@ -37,8 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-
-extern botlib_import_t botimport;
+#include "be_interface.h"
 
 //#define TRACE_DEBUG
 
@@ -129,7 +128,7 @@ void PrintContents(int contents)
 	{
 		if (contents & contentnames[i].value)
 		{
-			botimport.Print(PRT_MESSAGE, "%s\n", contentnames[i].name);
+			BotImport_Print(PRT_MESSAGE, "%s\n", contentnames[i].name);
 		}	//end if
 	}	//end for
 }	//end of the function PrintContents
@@ -266,7 +265,7 @@ int AAS_BSPEntityInRange(int ent)
 {
 	if (ent <= 0 || ent >= bspworld.numentities)
 	{
-		botimport.Print(PRT_MESSAGE, "bsp entity out of range\n");
+		BotImport_Print(PRT_MESSAGE, "bsp entity out of range\n");
 		return false;
 	}	//end if
 	return true;
@@ -418,7 +417,7 @@ void AAS_ParseBSPEntities(void)
 		}	//end if
 		if (bspworld.numentities >= MAX_BSPENTITIES)
 		{
-			botimport.Print(PRT_MESSAGE, "too many entities in BSP file\n");
+			BotImport_Print(PRT_MESSAGE, "too many entities in BSP file\n");
 			break;
 		}	//end if
 		ent = &bspworld.entities[bspworld.numentities];

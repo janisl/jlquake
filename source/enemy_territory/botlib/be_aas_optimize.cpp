@@ -406,7 +406,7 @@ void AAS_Optimize(void)
 		//store the optimized AAS data into (*aasworld)
 	AAS_OptimizeStore(&optimized);
 	//print some nice stuff :)
-	botimport.Print(PRT_MESSAGE, "AAS data optimized.\n");
+	BotImport_Print(PRT_MESSAGE, "AAS data optimized.\n");
 }	//end of the function AAS_Optimize
 
 //===========================================================================
@@ -588,7 +588,7 @@ void AAS_RemoveNonReachability(void)
 	FreeMemory(optimized.removedareas);
 	FreeMemory(optimized.reachabilityremap);
 	//print some nice stuff :)
-	botimport.Print(PRT_MESSAGE, "%i non-reachability areas removed, %i remain.\n", removed, valid);
+	BotImport_Print(PRT_MESSAGE, "%i non-reachability areas removed, %i remain.\n", removed, valid);
 }	//end of the function AAS_Optimize
 //===========================================================================
 //
@@ -739,5 +739,5 @@ void AAS_RemoveNonGrounded(void)
 	FreeMemory(optimized.removedareas);
 	FreeMemory(optimized.reachabilityremap);
 	//print some nice stuff :)
-	botimport.Print(PRT_MESSAGE, "%i non-grounded areas removed, %i remain.\n", removed, valid);
+	BotImport_Print(PRT_MESSAGE, "%i non-grounded areas removed, %i remain.\n", removed, valid);
 }	//end of the function AAS_Optimize

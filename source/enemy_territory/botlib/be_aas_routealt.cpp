@@ -257,7 +257,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 		numaltroutegoals++;
 		//
 /*#ifdef DEBUG
-        botimport.Print(PRT_MESSAGE, "alternative route goal area %d, numclusterareas = %d\n", bestareanum, numclusterareas);
+        BotImport_Print(PRT_MESSAGE, "alternative route goal area %d, numclusterareas = %d\n", bestareanum, numclusterareas);
         if (color)
         {
             AAS_DrawPermanentCross((*aasworld).areas[bestareanum].center, 10, color);
@@ -270,9 +270,9 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 			break;
 		}
 	}	//end for
-		//botimport.Print(PRT_MESSAGE, "%d alternative route goals\n", numaltroutegoals);
+		//BotImport_Print(PRT_MESSAGE, "%d alternative route goals\n", numaltroutegoals);
 #ifdef DEBUG
-//	botimport.Print(PRT_MESSAGE, "alternative route goals in %d msec\n", Sys_MilliSeconds() - startmillisecs);
+//	BotImport_Print(PRT_MESSAGE, "alternative route goals in %d msec\n", Sys_MilliSeconds() - startmillisecs);
 #endif
 	return numaltroutegoals;
 #endif

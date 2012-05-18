@@ -218,49 +218,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 
 /*
 ==================
-BotImport_Print
-==================
-*/
-void QDECL BotImport_Print(int type, const char* fmt, ...)
-{
-	char str[2048];
-	va_list ap;
-
-	va_start(ap, fmt);
-	Q_vsnprintf(str, sizeof(str), fmt, ap);
-	va_end(ap);
-
-	switch (type)
-	{
-	case PRT_MESSAGE: {
-		Com_Printf("%s", str);
-		break;
-	}
-	case PRT_WARNING: {
-		Com_Printf(S_COLOR_YELLOW "Warning: %s", str);
-		break;
-	}
-	case PRT_ERROR: {
-		Com_Printf(S_COLOR_RED "Error: %s", str);
-		break;
-	}
-	case PRT_FATAL: {
-		Com_Printf(S_COLOR_RED "Fatal: %s", str);
-		break;
-	}
-	case PRT_EXIT: {
-		Com_Error(ERR_DROP, S_COLOR_RED "Exit: %s", str);
-		break;
-	}
-	default: {
-		Com_Printf("unknown print type\n");
-		break;
-	}
-	}
-}
-
-/*
-==================
 BotImport_Trace
 ==================
 */
@@ -731,7 +688,6 @@ void SV_BotInitBotLib(void)
 {
 	botlib_import_t botlib_import;
 
-	botlib_import.Print = BotImport_Print;
 	botlib_import.Trace = BotImport_Trace;
 	botlib_import.EntityTrace = BotImport_EntityTrace;
 	botlib_import.PointContents = BotImport_PointContents;

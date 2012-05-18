@@ -90,9 +90,9 @@ int max_routingcachesize;
 #ifdef ROUTING_DEBUG
 void AAS_RoutingInfo(void)
 {
-	botimport.Print(PRT_MESSAGE, "%d area cache updates\n", numareacacheupdates);
-	botimport.Print(PRT_MESSAGE, "%d portal cache updates\n", numportalcacheupdates);
-	botimport.Print(PRT_MESSAGE, "%d bytes routing cache\n", routingcachesize);
+	BotImport_Print(PRT_MESSAGE, "%d area cache updates\n", numareacacheupdates);
+	BotImport_Print(PRT_MESSAGE, "%d portal cache updates\n", numportalcacheupdates);
+	BotImport_Print(PRT_MESSAGE, "%d bytes routing cache\n", routingcachesize);
 }	//end of the function AAS_RoutingInfo
 #endif	//ROUTING_DEBUG
 //===========================================================================
@@ -118,7 +118,7 @@ __inline int AAS_ClusterAreaNum(int cluster, int areanum)
         if (aasworld.portals[-areacluster].frontcluster != cluster &&
                 aasworld.portals[-areacluster].backcluster != cluster)
         {
-            botimport.Print(PRT_ERROR, "portal %d: does not belong to cluster %d\n"
+            BotImport_Print(PRT_ERROR, "portal %d: does not belong to cluster %d\n"
                                             , -areacluster, cluster);
         } //end if
 #endif //ROUTING_DEBUG*/
@@ -333,7 +333,7 @@ int AAS_EnableRoutingArea(int areanum, int enable)
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_EnableRoutingArea: areanum %d out of range\n", areanum);
+			BotImport_Print(PRT_ERROR, "AAS_EnableRoutingArea: areanum %d out of range\n", areanum);
 		}	//end if
 		return 0;
 	}	//end if
@@ -494,7 +494,7 @@ void AAS_CreateReversedReachability(void)
 		//
 		if (settings->numreachableareas >= 128)
 		{
-			botimport.Print(PRT_WARNING, "area %d has more than 128 reachabilities\n", i);
+			BotImport_Print(PRT_WARNING, "area %d has more than 128 reachabilities\n", i);
 		}
 		//create reversed links for the reachabilities
 		for (n = 0; n < settings->numreachableareas && n < 128; n++)
@@ -513,7 +513,7 @@ void AAS_CreateReversedReachability(void)
 		}	//end for
 	}	//end for
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "reversed reachability %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "reversed reachability %d msec\n", Sys_MilliSeconds() - starttime);
 #endif
 }	//end of the function AAS_CreateReversedReachability
 //===========================================================================
@@ -620,7 +620,7 @@ void AAS_CalculateAreaTravelTimes(void)
 		}	//end for
 	}	//end for
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "area travel times %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "area travel times %d msec\n", Sys_MilliSeconds() - starttime);
 #endif
 }	//end of the function AAS_CalculateAreaTravelTimes
 //===========================================================================
@@ -677,7 +677,7 @@ void AAS_InitPortalMaxTravelTimes(void)
 	for (i = 0; i < aasworld.numportals; i++)
 	{
 		aasworld.portalmaxtraveltimes[i] = AAS_PortalMaxTravelTime(i);
-		//botimport.Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, aasworld.portalmaxtraveltimes[i]);
+		//BotImport_Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, aasworld.portalmaxtraveltimes[i]);
 	}	//end for
 }	//end of the function AAS_InitPortalMaxTravelTimes
 //===========================================================================
@@ -993,7 +993,7 @@ void AAS_CreateAllRoutingCache(void)
 	int i, j, t;
 
 	aasworld.initialized = true;
-	botimport.Print(PRT_MESSAGE, "AAS_CreateAllRoutingCache\n");
+	BotImport_Print(PRT_MESSAGE, "AAS_CreateAllRoutingCache\n");
 	for (i = 1; i < aasworld.numareas; i++)
 	{
 		if (!AAS_AreaReachability(i))
@@ -1132,8 +1132,8 @@ void AAS_WriteRouteCache(void)
 		*/
 		//
 	FS_FCloseFile(fp);
-	botimport.Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
-	botimport.Print(PRT_MESSAGE, "written %d bytes of routing cache\n", totalsize);
+	BotImport_Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
+	BotImport_Print(PRT_MESSAGE, "written %d bytes of routing cache\n", totalsize);
 }	//end of the function AAS_WriteRouteCache
 //===========================================================================
 //
@@ -1815,7 +1815,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: areanum %d out of range\n", areanum);
+			BotImport_Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: areanum %d out of range\n", areanum);
 		}	//end if
 		return false;
 	}	//end if
@@ -1823,7 +1823,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: goalareanum %d out of range\n", goalareanum);
+			BotImport_Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: goalareanum %d out of range\n", goalareanum);
 		}	//end if
 		return false;
 	}	//end if
@@ -2184,7 +2184,7 @@ int AAS_NextAreaReachability(int areanum, int reachnum)
 
 	if (areanum <= 0 || areanum >= aasworld.numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
+		BotImport_Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
 		return 0;
 	}	//end if
 
@@ -2195,7 +2195,7 @@ int AAS_NextAreaReachability(int areanum, int reachnum)
 	}	//end if
 	if (reachnum < settings->firstreachablearea)
 	{
-		botimport.Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
+		BotImport_Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
 		return 0;
 	}	//end if
 	reachnum++;
@@ -2286,7 +2286,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 				{
 					*goalareanum = n;
 					VectorCopy(aasworld.areas[n].center, goalorigin);
-					//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+					//BotImport_Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
 					return true;
 				}	//end if
 				VectorCopy(aasworld.areas[n].center, start);
@@ -2303,7 +2303,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 					{
 						*goalareanum = n;
 						VectorCopy(trace.endpos, goalorigin);
-						//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+						//BotImport_Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
 						return true;
 					}	//end if
 				}	//end if

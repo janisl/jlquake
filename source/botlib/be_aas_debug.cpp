@@ -313,7 +313,7 @@ void AAS_ShowFace(int facenum)
 	//check if face number is in range
 	if (facenum >= aasworld.numfaces)
 	{
-		botimport.Print(PRT_ERROR, "facenum %d out of range\n", facenum);
+		BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
 	}	//end if
 	face = &aasworld.faces[facenum];
 	//walk through the edges of the face
@@ -324,7 +324,7 @@ void AAS_ShowFace(int facenum)
 		//check if edge number is in range
 		if (edgenum >= aasworld.numedges)
 		{
-			botimport.Print(PRT_ERROR, "edgenum %d out of range\n", edgenum);
+			BotImport_Print(PRT_ERROR, "edgenum %d out of range\n", edgenum);
 		}	//end if
 		edge = &aasworld.edges[edgenum];
 		if (color == LINECOLOR_RED)
@@ -370,7 +370,7 @@ void AAS_ShowFacePolygon(int facenum, int color, int flip)
 	//check if face number is in range
 	if (facenum >= aasworld.numfaces)
 	{
-		botimport.Print(PRT_ERROR, "facenum %d out of range\n", facenum);
+		BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
 	}	//end if
 	face = &aasworld.faces[facenum];
 	//walk through the edges of the face
@@ -419,7 +419,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly)
 	//
 	if (areanum < 0 || areanum >= aasworld.numareas)
 	{
-		botimport.Print(PRT_ERROR, "area %d out of range [0, %d]\n",
+		BotImport_Print(PRT_ERROR, "area %d out of range [0, %d]\n",
 			areanum, aasworld.numareas);
 		return;
 	}	//end if
@@ -432,7 +432,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly)
 		//check if face number is in range
 		if (facenum >= aasworld.numfaces)
 		{
-			botimport.Print(PRT_ERROR, "facenum %d out of range\n", facenum);
+			BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
 		}	//end if
 		face = &aasworld.faces[facenum];
 		//ground faces only
@@ -451,7 +451,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly)
 			//check if edge number is in range
 			if (edgenum >= aasworld.numedges)
 			{
-				botimport.Print(PRT_ERROR, "edgenum %d out of range\n", edgenum);
+				BotImport_Print(PRT_ERROR, "edgenum %d out of range\n", edgenum);
 			}	//end if
 				//check if the edge is stored already
 			for (n = 0; n < numareaedges; n++)
@@ -527,7 +527,7 @@ void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly)
 	//
 	if (areanum < 0 || areanum >= aasworld.numareas)
 	{
-		botimport.Print(PRT_ERROR, "area %d out of range [0, %d]\n",
+		BotImport_Print(PRT_ERROR, "area %d out of range [0, %d]\n",
 			areanum, aasworld.numareas);
 		return;
 	}	//end if
@@ -540,7 +540,7 @@ void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly)
 		//check if face number is in range
 		if (facenum >= aasworld.numfaces)
 		{
-			botimport.Print(PRT_ERROR, "facenum %d out of range\n", facenum);
+			BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
 		}	//end if
 		face = &aasworld.faces[facenum];
 		//ground faces only
@@ -605,7 +605,7 @@ void AAS_PrintTravelType(int traveltype)
 	case TRAVEL_FUNCBOB: str = "TRAVEL_FUNCBOB"; break;
 	default: str = "UNKNOWN TRAVEL TYPE"; break;
 	}	//end switch
-	botimport.Print(PRT_MESSAGE, "%s", str);
+	BotImport_Print(PRT_MESSAGE, "%s", str);
 #endif
 }	//end of the function AAS_PrintTravelType
 //===========================================================================
@@ -755,7 +755,7 @@ void AAS_ShowReachableAreas(int areanum)
 		index++;
 		lasttime = AAS_Time();
 		AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
-		botimport.Print(PRT_MESSAGE, "\n");
+		BotImport_Print(PRT_MESSAGE, "\n");
 	}	//end if
 	AAS_ShowReachability(&reach);
 }	//end of the function ShowReachableAreas

@@ -43,8 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-
-extern botlib_import_t botimport;
+#include "be_interface.h"
 
 //#define AAS_SAMPLE_DEBUG
 
@@ -85,7 +84,7 @@ void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs)
 	}
 	else
 	{
-		botimport.Print(PRT_FATAL, "AAS_PresenceTypeBoundingBox: unknown presence type\n");
+		BotImport_Print(PRT_FATAL, "AAS_PresenceTypeBoundingBox: unknown presence type\n");
 		index = 2;
 	}	//end if
 	VectorCopy(boxmins[index], mins);
@@ -159,7 +158,7 @@ aas_link_t* AAS_AllocAASLink(void)
 	link = (*aasworld).freelinks;
 	if (!link)
 	{
-		botimport.Print(PRT_FATAL, "empty aas link heap\n");
+		BotImport_Print(PRT_FATAL, "empty aas link heap\n");
 		return NULL;
 	}	//end if
 	if ((*aasworld).freelinks)
@@ -246,7 +245,7 @@ int AAS_PointAreaNum(vec3_t inPoint)
 
 	if (!(*aasworld).loaded)
 	{
-		botimport.Print(PRT_ERROR, "AAS_PointAreaNum: aas not loaded\n");
+		BotImport_Print(PRT_ERROR, "AAS_PointAreaNum: aas not loaded\n");
 		return 0;
 	}	//end if
 
@@ -260,11 +259,11 @@ int AAS_PointAreaNum(vec3_t inPoint)
 //	closestPlane = NULL;
 	while (nodenum > 0)
 	{
-//		botimport.Print(PRT_MESSAGE, "[%d]", nodenum);
+//		BotImport_Print(PRT_MESSAGE, "[%d]", nodenum);
 #ifdef AAS_SAMPLE_DEBUG
 		if (nodenum >= (*aasworld).numnodes)
 		{
-			botimport.Print(PRT_ERROR, "nodenum = %d >= (*aasworld).numnodes = %d\n", nodenum, (*aasworld).numnodes);
+			BotImport_Print(PRT_ERROR, "nodenum = %d >= (*aasworld).numnodes = %d\n", nodenum, (*aasworld).numnodes);
 			return 0;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
@@ -272,7 +271,7 @@ int AAS_PointAreaNum(vec3_t inPoint)
 #ifdef AAS_SAMPLE_DEBUG
 		if (node->planenum < 0 || node->planenum >= (*aasworld).numplanes)
 		{
-			botimport.Print(PRT_ERROR, "node->planenum = %d >= (*aasworld).numplanes = %d\n", node->planenum, (*aasworld).numplanes);
+			BotImport_Print(PRT_ERROR, "node->planenum = %d >= (*aasworld).numplanes = %d\n", node->planenum, (*aasworld).numplanes);
 			return 0;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
@@ -297,7 +296,7 @@ int AAS_PointAreaNum(vec3_t inPoint)
 	if (!nodenum)
 	{
 #ifdef AAS_SAMPLE_DEBUG
-		botimport.Print(PRT_MESSAGE, "in solid\n");
+		BotImport_Print(PRT_MESSAGE, "in solid\n");
 #endif	//AAS_SAMPLE_DEBUG
 /*
         // RF (HACK), if we failed, move us to the other side of the closest plane
@@ -334,7 +333,7 @@ int AAS_AreaCluster(int areanum)
 {
 	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_AreaCluster: invalid area number\n");
+		BotImport_Print(PRT_ERROR, "AAS_AreaCluster: invalid area number\n");
 		return 0;
 	}	//end if
 	return (*aasworld).areasettings[areanum].cluster;
@@ -354,7 +353,7 @@ int AAS_AreaPresenceType(int areanum)
 	}
 	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_AreaPresenceType: invalid area number\n");
+		BotImport_Print(PRT_ERROR, "AAS_AreaPresenceType: invalid area number\n");
 		return 0;
 	}	//end if
 	return (*aasworld).areasettings[areanum].presencetype;
@@ -492,11 +491,11 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 #ifdef AAS_SAMPLE_DEBUG
 			if (-nodenum > (*aasworld).numareasettings)
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: -nodenum out of range\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: -nodenum out of range\n");
 				return trace;
 			}	//end if
 #endif	//AAS_SAMPLE_DEBUG
-			//botimport.Print(PRT_MESSAGE, "areanum = %d, must be %d\n", -nodenum, AAS_PointAreaNum(start));
+			//BotImport_Print(PRT_MESSAGE, "areanum = %d, must be %d\n", -nodenum, AAS_PointAreaNum(start));
 /*			//if can't enter the area because it hasn't got the right presence type
             if (!((*aasworld).areasettings[-nodenum].presencetype & presencetype))
             {
@@ -591,7 +590,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 #ifdef AAS_SAMPLE_DEBUG
 		if (nodenum > (*aasworld).numnodes)
 		{
-			botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: nodenum out of range\n");
+			BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: nodenum out of range\n");
 			return trace;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
@@ -653,7 +652,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
 				return trace;
 			}	//end if
 		}	//end if
@@ -667,7 +666,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
 				return trace;
 			}	//end if
 		}	//end if
@@ -702,7 +701,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
 				return trace;
 			}	//end if
 				//now put the part near the start of the line on the stack so we will
@@ -715,7 +714,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
 				return trace;
 			}	//end if
 		}	//end else
@@ -774,11 +773,11 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 #ifdef AAS_SAMPLE_DEBUG
 			if (-nodenum > (*aasworld).numareasettings)
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceAreas: -nodenum = %d out of range\n", -nodenum);
+				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: -nodenum = %d out of range\n", -nodenum);
 				return numareas;
 			}	//end if
 #endif	//AAS_SAMPLE_DEBUG
-			//botimport.Print(PRT_MESSAGE, "areanum = %d, must be %d\n", -nodenum, AAS_PointAreaNum(start));
+			//BotImport_Print(PRT_MESSAGE, "areanum = %d, must be %d\n", -nodenum, AAS_PointAreaNum(start));
 			areas[numareas] = -nodenum;
 			if (points)
 			{
@@ -799,7 +798,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 #ifdef AAS_SAMPLE_DEBUG
 		if (nodenum > (*aasworld).numnodes)
 		{
-			botimport.Print(PRT_ERROR, "AAS_TraceAreas: nodenum out of range\n");
+			BotImport_Print(PRT_ERROR, "AAS_TraceAreas: nodenum out of range\n");
 			return numareas;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
@@ -851,7 +850,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
 				return numareas;
 			}	//end if
 		}	//end if
@@ -865,7 +864,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
 				return numareas;
 			}	//end if
 		}	//end if
@@ -909,7 +908,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
 				return numareas;
 			}	//end if
 				//now put the part near the start of the line on the stack so we will
@@ -922,7 +921,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			tstack_p++;
 			if (tstack_p >= &tracestack[127])
 			{
-				botimport.Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
+				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: stack overflow\n");
 				return numareas;
 			}	//end if
 		}	//end else
@@ -978,7 +977,7 @@ qboolean AAS_InsideFace(aas_face_t* face, vec3_t pnormal, vec3_t point, float ep
 #ifdef AAS_SAMPLE_DEBUG
 		if (lastvertex && lastvertex != edge->v[firstvertex])
 		{
-			botimport.Print(PRT_MESSAGE, "winding not counter clockwise\n");
+			BotImport_Print(PRT_MESSAGE, "winding not counter clockwise\n");
 		}	//end if
 		lastvertex = edge->v[!firstvertex];
 #endif	//AAS_SAMPLE_DEBUG
@@ -1306,7 +1305,7 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 
 	if (!aasworld->loaded)
 	{
-		botimport.Print(PRT_ERROR, "AAS_LinkEntity: aas not loaded\n");
+		BotImport_Print(PRT_ERROR, "AAS_LinkEntity: aas not loaded\n");
 		return NULL;
 	}
 
@@ -1392,7 +1391,7 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 		}	//end if
 		if (lstack_p >= &linkstack[127])
 		{
-			botimport.Print(PRT_ERROR, "AAS_LinkEntity: stack overflow\n");
+			BotImport_Print(PRT_ERROR, "AAS_LinkEntity: stack overflow\n");
 			break;
 		}	//end if
 			//if on the back side of the node
@@ -1403,7 +1402,7 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 		}	//end if
 		if (lstack_p >= &linkstack[127])
 		{
-			botimport.Print(PRT_ERROR, "AAS_LinkEntity: stack overflow\n");
+			BotImport_Print(PRT_ERROR, "AAS_LinkEntity: stack overflow\n");
 			break;
 		}	//end if
 	}	//end while
@@ -1598,7 +1597,7 @@ void AAS_AreaCenter(int areanum, vec3_t center)
 {
 	if (areanum < 0 || areanum >= (*aasworld).numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_AreaCenter: invalid areanum\n");
+		BotImport_Print(PRT_ERROR, "AAS_AreaCenter: invalid areanum\n");
 		return;
 	}
 	VectorCopy((*aasworld).areas[areanum].center, center);
@@ -1614,7 +1613,7 @@ qboolean AAS_AreaWaypoint(int areanum, vec3_t center)
 {
 	if (areanum < 0 || areanum >= (*aasworld).numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_AreaWaypoint: invalid areanum\n");
+		BotImport_Print(PRT_ERROR, "AAS_AreaWaypoint: invalid areanum\n");
 		return qfalse;
 	}
 	if (!(*aasworld).areawaypoints)

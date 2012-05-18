@@ -142,12 +142,12 @@ void BotFreeMoveState(int handle)
 {
 	if (handle <= 0 || handle > MAX_CLIENTS_WM)
 	{
-		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
+		BotImport_Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return;
 	}	//end if
 	if (!botmovestates[handle])
 	{
-		botimport.Print(PRT_FATAL, "invalid move state %d\n", handle);
+		BotImport_Print(PRT_FATAL, "invalid move state %d\n", handle);
 		return;
 	}	//end if
 	FreeMemory(botmovestates[handle]);
@@ -163,12 +163,12 @@ bot_movestate_t* BotMoveStateFromHandle(int handle)
 {
 	if (handle <= 0 || handle > MAX_CLIENTS_WM)
 	{
-		botimport.Print(PRT_FATAL, "move state handle %d out of range\n", handle);
+		BotImport_Print(PRT_FATAL, "move state handle %d out of range\n", handle);
 		return NULL;
 	}	//end if
 	if (!botmovestates[handle])
 	{
-		botimport.Print(PRT_FATAL, "invalid move state %d\n", handle);
+		BotImport_Print(PRT_FATAL, "invalid move state %d\n", handle);
 		return NULL;
 	}	//end if
 	return botmovestates[handle];
@@ -482,7 +482,7 @@ int BotReachabilityArea(vec3_t origin, int testground)
         if (!testground) break;
     } //end for
 //#ifdef DEBUG
-    //botimport.Print(PRT_MESSAGE, "no reachability area\n");
+    //BotImport_Print(PRT_MESSAGE, "no reachability area\n");
 //#endif //DEBUG
     return firstareanum;
 } //end of the function BotReachabilityArea*/
@@ -506,7 +506,7 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t* reach)
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, modelorigin))
 	{
-		botimport.Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
+		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 		return qfalse;
 	}	//end if
 		//
@@ -556,7 +556,7 @@ int MoverDown(aas_reachability_t* reach)
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
 	{
-		botimport.Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
+		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 		return qfalse;
 	}	//end if
 		//if the top of the plat is below the reachability start point
@@ -600,7 +600,7 @@ void BotSetBrushModelTypes(void)
 
 		if (modelnum < 0 || modelnum > MAX_MODELS_Q3)
 		{
-			botimport.Print(PRT_MESSAGE, "entity %s model number out of range\n", classname);
+			BotImport_Print(PRT_MESSAGE, "entity %s model number out of range\n", classname);
 			continue;
 		}	//end if
 
@@ -746,7 +746,7 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 #ifdef DEBUG
 			if (bot_developer)
 			{
-				botimport.Print(PRT_MESSAGE, "avoiding reachability %d\n", avoidreach[i]);
+				BotImport_Print(PRT_MESSAGE, "avoiding reachability %d\n", avoidreach[i]);
 			}	//end if
 #endif	//DEBUG
 			continue;
@@ -996,7 +996,7 @@ void MoverBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter)
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
 	{
-		botimport.Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
+		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 	}	//end if
 		//get a point just above the plat in the bottom position
 	VectorAdd(mins, maxs, mids);
@@ -1051,7 +1051,7 @@ float BotGapDistance(vec3_t origin, vec3_t hordir, int entnum)
 				}
 //				if (AAS_PointContents(end) & BSP46CONTENTS_WATER) break;
 				//if a gap is found slow down
-				//botimport.Print(PRT_MESSAGE, "gap at %f\n", dist);
+				//BotImport_Print(PRT_MESSAGE, "gap at %f\n", dist);
 				return dist;
 			}	//end if
 			startz = trace.endpos[2];
@@ -1194,7 +1194,7 @@ int BotWalkInDirection(bot_movestate_t* ms, vec3_t dir, float speed, int type)
 		//
 		if (type & MOVE_JUMP)
 		{
-			//botimport.Print(PRT_MESSAGE, "trying jump\n");
+			//BotImport_Print(PRT_MESSAGE, "trying jump\n");
 			cmdmove[2] = 400;
 			maxframes = PREDICTIONTIME_JUMP / 0.1;
 			cmdframes = 1;
@@ -1218,16 +1218,16 @@ int BotWalkInDirection(bot_movestate_t* ms, vec3_t dir, float speed, int type)
 		//if prediction time wasn't enough to fully predict the movement
 		if (move.frames >= maxframes && (type & MOVE_JUMP))
 		{
-			//botimport.Print(PRT_MESSAGE, "client %d: max prediction frames\n", ms->client);
+			//BotImport_Print(PRT_MESSAGE, "client %d: max prediction frames\n", ms->client);
 			return qfalse;
 		}	//end if
 			//don't enter slime or lava and don't fall from too high
 		if (move.stopevent & (SE_ENTERLAVA | SE_HITGROUNDDAMAGE))			//----(SA)	modified since slime is no longer deadly
 		{	//		if (move.stopevent & (SE_ENTERSLIME|SE_ENTERLAVA|SE_HITGROUNDDAMAGE))
-			//botimport.Print(PRT_MESSAGE, "client %d: would be hurt ", ms->client);
-			//if (move.stopevent & SE_ENTERSLIME) botimport.Print(PRT_MESSAGE, "slime\n");
-			//if (move.stopevent & SE_ENTERLAVA) botimport.Print(PRT_MESSAGE, "lava\n");
-			//if (move.stopevent & SE_HITGROUNDDAMAGE) botimport.Print(PRT_MESSAGE, "hitground\n");
+			//BotImport_Print(PRT_MESSAGE, "client %d: would be hurt ", ms->client);
+			//if (move.stopevent & SE_ENTERSLIME) BotImport_Print(PRT_MESSAGE, "slime\n");
+			//if (move.stopevent & SE_ENTERLAVA) BotImport_Print(PRT_MESSAGE, "lava\n");
+			//if (move.stopevent & SE_HITGROUNDDAMAGE) BotImport_Print(PRT_MESSAGE, "hitground\n");
 			return qfalse;
 		}	//end if
 			//if ground was hit
@@ -1366,7 +1366,7 @@ void BotCheckBlocked(bot_movestate_t* ms, vec3_t dir, int checkbottom, bot_mover
 		result->blocked = qtrue;
 		result->blockentity = trace.ent;
 #ifdef DEBUG
-		//botimport.Print(PRT_MESSAGE, "%d: BotCheckBlocked: I'm blocked\n", ms->client);
+		//BotImport_Print(PRT_MESSAGE, "%d: BotCheckBlocked: I'm blocked\n", ms->client);
 #endif	//DEBUG
 	}	//end if
 		//if not in an area with reachability
@@ -1382,7 +1382,7 @@ void BotCheckBlocked(bot_movestate_t* ms, vec3_t dir, int checkbottom, bot_mover
 			result->blockentity = trace.ent;
 			result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
 #ifdef DEBUG
-			//botimport.Print(PRT_MESSAGE, "%d: BotCheckBlocked: I'm blocked\n", ms->client);
+			//BotImport_Print(PRT_MESSAGE, "%d: BotCheckBlocked: I'm blocked\n", ms->client);
 #endif	//DEBUG
 		}	//end if
 	}	//end else
@@ -1498,7 +1498,7 @@ bot_moveresult_t BotFinishTravel_Walk(bot_movestate_t* ms, aas_reachability_t* r
 	if (ms->areanum == reach->areanum)
 	{
 	#ifdef DEBUG
-	    botimport.Print(PRT_MESSAGE, "BotFinishTravel_Walk: already in reach area\n");
+	    BotImport_Print(PRT_MESSAGE, "BotFinishTravel_Walk: already in reach area\n");
 	#endif //DEBUG
 	    return result;
 	} //end if*/
@@ -1686,7 +1686,7 @@ bot_moveresult_t BotTravel_WaterJump(bot_movestate_t* ms, aas_reachability_t* re
 	VectorCopy(dir, hordir);
 	hordir[2] = 0;
 	dir[2] += 15 + crandom() * 40;
-	//botimport.Print(PRT_MESSAGE, "BotTravel_WaterJump: dir[2] = %f\n", dir[2]);
+	//BotImport_Print(PRT_MESSAGE, "BotTravel_WaterJump: dir[2] = %f\n", dir[2]);
 	VectorNormalize(dir);
 	dist = VectorNormalize(hordir);
 	//elemantary actions
@@ -1717,7 +1717,7 @@ bot_moveresult_t BotFinishTravel_WaterJump(bot_movestate_t* ms, aas_reachability
 	float dist;
 	bot_moveresult_t result;
 
-	//botimport.Print(PRT_MESSAGE, "BotFinishTravel_WaterJump\n");
+	//BotImport_Print(PRT_MESSAGE, "BotFinishTravel_WaterJump\n");
 	BotClearMoveResult(&result);
 	//if waterjumping there's nothing to do
 	if (ms->moveflags & MFL_WATERJUMP)
@@ -2019,7 +2019,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach)
     //if just before the reachability start
     if (DotProduct(dir1, dir2) < -0.8 || dist2 < 5)
     {
-        //botimport.Print(PRT_MESSAGE, "between jump start and run to point\n");
+        //BotImport_Print(PRT_MESSAGE, "between jump start and run to point\n");
         hordir[0] = reach->end[0] - ms->origin[0];
         hordir[1] = reach->end[1] - ms->origin[1];
         hordir[2] = 0;
@@ -2033,7 +2033,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach)
     } //end if
     else
     {
-        //botimport.Print(PRT_MESSAGE, "going towards run to point\n");
+        //BotImport_Print(PRT_MESSAGE, "going towards run to point\n");
         hordir[0] = trace.endpos[0] - ms->origin[0];
         hordir[1] = trace.endpos[1] - ms->origin[1];
         hordir[2] = 0;
@@ -2091,7 +2091,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, aas_reachability_t* reach)
 	//if just before the reachability start
 	if (DotProduct(dir1, dir2) < -0.8 || dist2 < 5)
 	{
-//		botimport.Print(PRT_MESSAGE, "between jump start and run start point\n");
+//		BotImport_Print(PRT_MESSAGE, "between jump start and run start point\n");
 		hordir[0] = reach->end[0] - ms->origin[0];
 		hordir[1] = reach->end[1] - ms->origin[1];
 		hordir[2] = 0;
@@ -2111,7 +2111,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, aas_reachability_t* reach)
 	}	//end if
 	else
 	{
-//		botimport.Print(PRT_MESSAGE, "going towards run start point\n");
+//		BotImport_Print(PRT_MESSAGE, "going towards run start point\n");
 		hordir[0] = runstart[0] - ms->origin[0];
 		hordir[1] = runstart[1] - ms->origin[1];
 		hordir[2] = 0;
@@ -2192,7 +2192,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 		//NOTE: not a good idea for ladders starting in water
 		|| !(ms->moveflags & MFL_ONGROUND))
 	{
-		//botimport.Print(PRT_MESSAGE, "against ladder or not on ground\n");
+		//BotImport_Print(PRT_MESSAGE, "against ladder or not on ground\n");
 		// RF, wolf has different ladder movement
 		VectorSubtract(reach->end, reach->start, dir);
 		VectorNormalize(dir);
@@ -2217,7 +2217,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 	}	//end if
 	else
 	{
-		//botimport.Print(PRT_MESSAGE, "moving towards ladder base\n");
+		//BotImport_Print(PRT_MESSAGE, "moving towards ladder base\n");
 		// find a postion back away from the base of the ladder
 		VectorSubtract(reach->end, reach->start, hordir);
 		hordir[2] = 0;
@@ -2229,7 +2229,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 		hordir[2] = 0;
 		dist = VectorNormalize(hordir);
 		if (dist < 32)			// within range, go for the end
-		{	//botimport.Print(PRT_MESSAGE, "found base, moving towards ladder top\n");
+		{	//BotImport_Print(PRT_MESSAGE, "found base, moving towards ladder top\n");
 			VectorSubtract(reach->end, ms->origin, dir);
 			//make sure the horizontal movement is large anough
 			VectorCopy(dir, hordir);
@@ -2320,13 +2320,13 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	if (BotOnMover(ms->origin, ms->entitynum, reach))
 	{
 #ifdef DEBUG_ELEVATOR
-		botimport.Print(PRT_MESSAGE, "bot on elevator\n");
+		BotImport_Print(PRT_MESSAGE, "bot on elevator\n");
 #endif	//DEBUG_ELEVATOR
 		//if vertically not too far from the end point
 		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier)
 		{
 #ifdef DEBUG_ELEVATOR
-			botimport.Print(PRT_MESSAGE, "bot moving to end\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to end\n");
 #endif	//DEBUG_ELEVATOR
 			//move to the end point
 			VectorSubtract(reach->end, ms->origin, hordir);
@@ -2349,7 +2349,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 			if (dist > 10)
 			{
 #ifdef DEBUG_ELEVATOR
-				botimport.Print(PRT_MESSAGE, "bot moving to center\n");
+				BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
 #endif	//DEBUG_ELEVATOR
 				//move to the center of the plat
 				if (dist > 100)
@@ -2366,7 +2366,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	else
 	{
 #ifdef DEBUG_ELEVATOR
-		botimport.Print(PRT_MESSAGE, "bot not on elevator\n");
+		BotImport_Print(PRT_MESSAGE, "bot not on elevator\n");
 #endif	//DEBUG_ELEVATOR
 		//if very near the reachability end
 		VectorSubtract(reach->end, ms->origin, dir);
@@ -2407,7 +2407,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		if (!MoverDown(reach))
 		{
 #ifdef DEBUG_ELEVATOR
-			botimport.Print(PRT_MESSAGE, "elevator not down\n");
+			BotImport_Print(PRT_MESSAGE, "elevator not down\n");
 #endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
@@ -2453,7 +2453,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
 		{
 #ifdef DEBUG_ELEVATOR
-			botimport.Print(PRT_MESSAGE, "bot moving to center\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
 #endif	//DEBUG_ELEVATOR
 			dist = dist2;
 			VectorCopy(dir2, dir);
@@ -2461,7 +2461,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		else//closer to the reachability start
 		{
 #ifdef DEBUG_ELEVATOR
-			botimport.Print(PRT_MESSAGE, "bot moving to start\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to start\n");
 #endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
@@ -2533,7 +2533,7 @@ void BotFuncBobStartEnd(aas_reachability_t* reach, vec3_t start, vec3_t end, vec
 	modelnum = reach->facenum & 0x0000FFFF;
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
 	{
-		botimport.Print(PRT_MESSAGE, "BotFuncBobStartEnd: no entity with model %d\n", modelnum);
+		BotImport_Print(PRT_MESSAGE, "BotFuncBobStartEnd: no entity with model %d\n", modelnum);
 		VectorSet(start, 0, 0, 0);
 		VectorSet(end, 0, 0, 0);
 		return;
@@ -2601,14 +2601,14 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 	if (BotOnMover(ms->origin, ms->entitynum, reach))
 	{
 #ifdef DEBUG_FUNCBOB
-		botimport.Print(PRT_MESSAGE, "bot on func_bobbing\n");
+		BotImport_Print(PRT_MESSAGE, "bot on func_bobbing\n");
 #endif
 		//if near end point of reachability
 		VectorSubtract(bob_origin, bob_end, dir);
 		if (VectorLength(dir) < 24)
 		{
 #ifdef DEBUG_FUNCBOB
-			botimport.Print(PRT_MESSAGE, "bot moving to reachability end\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to reachability end\n");
 #endif
 			//move to the end point
 			VectorSubtract(reach->end, ms->origin, hordir);
@@ -2631,7 +2631,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 			if (dist > 10)
 			{
 #ifdef DEBUG_FUNCBOB
-				botimport.Print(PRT_MESSAGE, "bot moving to func_bobbing center\n");
+				BotImport_Print(PRT_MESSAGE, "bot moving to func_bobbing center\n");
 #endif
 				//move to the center of the plat
 				if (dist > 100)
@@ -2648,7 +2648,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 	else
 	{
 #ifdef DEBUG_FUNCBOB
-		botimport.Print(PRT_MESSAGE, "bot not ontop of func_bobbing\n");
+		BotImport_Print(PRT_MESSAGE, "bot not ontop of func_bobbing\n");
 #endif
 		//if very near the reachability end
 		VectorSubtract(reach->end, ms->origin, dir);
@@ -2656,7 +2656,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 		if (dist < 64)
 		{
 #ifdef DEBUG_FUNCBOB
-			botimport.Print(PRT_MESSAGE, "bot moving to end\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to end\n");
 #endif
 			if (dist > 60)
 			{
@@ -2693,7 +2693,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 		if (VectorLength(dir) > 16)
 		{
 #ifdef DEBUG_FUNCBOB
-			botimport.Print(PRT_MESSAGE, "func_bobbing not at start\n");
+			BotImport_Print(PRT_MESSAGE, "func_bobbing not at start\n");
 #endif
 			dist = dist1;
 			VectorCopy(dir1, dir);
@@ -2738,7 +2738,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
 		{
 #ifdef DEBUG_FUNCBOB
-			botimport.Print(PRT_MESSAGE, "bot moving to func_bobbing center\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to func_bobbing center\n");
 #endif
 			dist = dist2;
 			VectorCopy(dir2, dir);
@@ -2746,7 +2746,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 		else//closer to the reachability start
 		{
 #ifdef DEBUG_FUNCBOB
-			botimport.Print(PRT_MESSAGE, "bot moving to reachability start\n");
+			BotImport_Print(PRT_MESSAGE, "bot moving to reachability start\n");
 #endif
 			dist = dist1;
 			VectorCopy(dir1, dir);
@@ -2957,7 +2957,7 @@ void BotResetGrapple(bot_movestate_t* ms)
 			ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
 			ms->grapplevisible_time = 0;
 #ifdef DEBUG_GRAPPLE
-			botimport.Print(PRT_MESSAGE, "reset grapple\n");
+			BotImport_Print(PRT_MESSAGE, "reset grapple\n");
 #endif	//DEBUG_GRAPPLE
 		}	//end if
 	}	//end if
@@ -2996,7 +2996,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	if (ms->moveflags & MFL_ACTIVEGRAPPLE)
 	{
 #ifdef DEBUG_GRAPPLE
-		botimport.Print(PRT_MESSAGE, "BotTravel_Grapple: active grapple\n");
+		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: active grapple\n");
 #endif	//DEBUG_GRAPPLE
 		//
 		state = GrappleState(ms, reach);
@@ -3015,7 +3015,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 				ms->moveflags |= MFL_GRAPPLERESET;
 				ms->reachability_time = 0;	//end the reachability
 #ifdef DEBUG_GRAPPLE
-				botimport.Print(PRT_ERROR, "grapple normal end\n");
+				BotImport_Print(PRT_ERROR, "grapple normal end\n");
 #endif	//DEBUG_GRAPPLE
 			}	//end if
 		}	//end if
@@ -3026,7 +3026,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			if (ms->grapplevisible_time < AAS_Time() - 0.4)
 			{
 #ifdef DEBUG_GRAPPLE
-				botimport.Print(PRT_ERROR, "grapple not visible\n");
+				BotImport_Print(PRT_ERROR, "grapple not visible\n");
 #endif	//DEBUG_GRAPPLE
 				EA_Command(ms->client, CMD_HOOKOFF);
 				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
@@ -3047,7 +3047,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	else
 	{
 #ifdef DEBUG_GRAPPLE
-		botimport.Print(PRT_MESSAGE, "BotTravel_Grapple: inactive grapple\n");
+		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: inactive grapple\n");
 #endif	//DEBUG_GRAPPLE
 		//
 		ms->grapplevisible_time = AAS_Time();
@@ -3069,7 +3069,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
 		{
 #ifdef DEBUG_GRAPPLE
-			botimport.Print(PRT_MESSAGE, "BotTravel_Grapple: activating grapple\n");
+			BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: activating grapple\n");
 #endif	//DEBUG_GRAPPLE
 			EA_Command(ms->client, CMD_HOOKON);
 			ms->moveflags |= MFL_ACTIVEGRAPPLE;
@@ -3112,7 +3112,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
 	float dist, speed;
 	bot_moveresult_t result;
 
-	//botimport.Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
+	//BotImport_Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
 	BotClearMoveResult(&result);
 	//
 	hordir[0] = reach->start[0] - ms->origin[0];
@@ -3123,7 +3123,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
 	//
 	if (dist < 5)
 	{
-//		botimport.Print(PRT_MESSAGE, "between jump start and run start point\n");
+//		BotImport_Print(PRT_MESSAGE, "between jump start and run start point\n");
 		hordir[0] = reach->end[0] - ms->origin[0];
 		hordir[1] = reach->end[1] - ms->origin[1];
 		hordir[2] = 0;
@@ -3150,7 +3150,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
     float dist1, dist2, speed;
     bot_moveresult_t result;
 
-    botimport.Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
+    BotImport_Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
     BotClearMoveResult(&result);
     AAS_JumpReachRunStart(reach, runstart);
     //
@@ -3180,7 +3180,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
     //if just before the reachability start
     if (DotProduct(dir1, dir2) < -0.8 || dist2 < 5)
     {
-//		botimport.Print(PRT_MESSAGE, "between jump start and run start point\n");
+//		BotImport_Print(PRT_MESSAGE, "between jump start and run start point\n");
         hordir[0] = reach->end[0] - ms->origin[0];
         hordir[1] = reach->end[1] - ms->origin[1];
         hordir[2] = 0;
@@ -3195,7 +3195,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
     } //end if
     else
     {
-//		botimport.Print(PRT_MESSAGE, "going towards run start point\n");
+//		BotImport_Print(PRT_MESSAGE, "going towards run start point\n");
         hordir[0] = runstart[0] - ms->origin[0];
         hordir[1] = runstart[1] - ms->origin[1];
         hordir[2] = 0;
@@ -3349,7 +3349,7 @@ int BotReachabilityTime(aas_reachability_t* reach)
 	case TRAVEL_FUNCBOB: return 10;
 	default:
 	{
-		botimport.Print(PRT_ERROR, "travel type %d not implemented yet\n", reach->traveltype);
+		BotImport_Print(PRT_ERROR, "travel type %d not implemented yet\n", reach->traveltype);
 		return 8;
 	}		//end case
 	}	//end switch
@@ -3367,7 +3367,7 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
 	float dist, speed;
 
 #ifdef DEBUG
-	//botimport.Print(PRT_MESSAGE, "%s: moving straight to goal\n", ClientName(ms->entitynum-1));
+	//BotImport_Print(PRT_MESSAGE, "%s: moving straight to goal\n", ClientName(ms->entitynum-1));
 	//AAS_ClearShownDebugLines();
 	//AAS_DebugLine(ms->origin, goal->origin, LINECOLOR_RED);
 #endif	//DEBUG
@@ -3450,12 +3450,12 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 	if (!goal)
 	{
 #ifdef DEBUG
-		botimport.Print(PRT_MESSAGE, "client %d: movetogoal -> no goal\n", ms->client);
+		BotImport_Print(PRT_MESSAGE, "client %d: movetogoal -> no goal\n", ms->client);
 #endif	//DEBUG
 		result->failure = qtrue;
 		return;
 	}	//end if
-		//botimport.Print(PRT_MESSAGE, "numavoidreach = %d\n", ms->numavoidreach);
+		//BotImport_Print(PRT_MESSAGE, "numavoidreach = %d\n", ms->numavoidreach);
 		//remove some of the move flags
 	ms->moveflags &= ~(MFL_SWIMMING | MFL_AGAINSTLADDER);
 	//set some of the move flags
@@ -3490,7 +3490,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 						reachnum = AAS_NextModelReachability(0, modelnum);
 						if (reachnum)
 						{
-							//botimport.Print(PRT_MESSAGE, "client %d: accidentally ended up on func_plat\n", ms->client);
+							//BotImport_Print(PRT_MESSAGE, "client %d: accidentally ended up on func_plat\n", ms->client);
 							AAS_ReachabilityFromNum(reachnum, &reach);
 							ms->lastreachnum = reachnum;
 							ms->reachability_time = AAS_Time() + BotReachabilityTime(&reach);
@@ -3499,7 +3499,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 						{
 							if (bot_developer)
 							{
-								botimport.Print(PRT_MESSAGE, "client %d: on func_plat without reachability\n", ms->client);
+								BotImport_Print(PRT_MESSAGE, "client %d: on func_plat without reachability\n", ms->client);
 							}	//end if
 							result->blocked = qtrue;
 							result->blockentity = ent;
@@ -3520,7 +3520,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 						reachnum = AAS_NextModelReachability(0, modelnum);
 						if (reachnum)
 						{
-							//botimport.Print(PRT_MESSAGE, "client %d: accidentally ended up on func_bobbing\n", ms->client);
+							//BotImport_Print(PRT_MESSAGE, "client %d: accidentally ended up on func_bobbing\n", ms->client);
 							AAS_ReachabilityFromNum(reachnum, &reach);
 							ms->lastreachnum = reachnum;
 							ms->reachability_time = AAS_Time() + BotReachabilityTime(&reach);
@@ -3529,7 +3529,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 						{
 							if (bot_developer)
 							{
-								botimport.Print(PRT_MESSAGE, "client %d: on func_bobbing without reachability\n", ms->client);
+								BotImport_Print(PRT_MESSAGE, "client %d: on func_bobbing without reachability\n", ms->client);
 							}	//end if
 							result->blocked = qtrue;
 							result->blockentity = ent;
@@ -3564,7 +3564,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 	//if the bot is on the ground, swimming or against a ladder
 	if (ms->moveflags & (MFL_ONGROUND | MFL_SWIMMING | MFL_AGAINSTLADDER))
 	{
-		//botimport.Print(PRT_MESSAGE, "%s: onground, swimming or against ladder\n", ClientName(ms->entitynum-1));
+		//BotImport_Print(PRT_MESSAGE, "%s: onground, swimming or against ladder\n", ClientName(ms->entitynum-1));
 		//
 		AAS_ReachabilityFromNum(ms->lastreachnum, &lastreach);
 		//reachability area the bot is in
@@ -3622,14 +3622,14 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 				{
 					if (ms->reachability_time < AAS_Time())
 					{
-						botimport.Print(PRT_MESSAGE, "client %d: reachability timeout in ", ms->client);
+						BotImport_Print(PRT_MESSAGE, "client %d: reachability timeout in ", ms->client);
 						AAS_PrintTravelType(reach.traveltype);
-						botimport.Print(PRT_MESSAGE, "\n");
+						BotImport_Print(PRT_MESSAGE, "\n");
 					}	//end if
 						/*
 						if (ms->lastareanum != ms->areanum)
 						{
-						    botimport.Print(PRT_MESSAGE, "changed from area %d to %d\n", ms->lastareanum, ms->areanum);
+						    BotImport_Print(PRT_MESSAGE, "changed from area %d to %d\n", ms->lastareanum, ms->areanum);
 						} //end if*/
 				}	//end if
 #endif	//DEBUG
@@ -3641,7 +3641,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 					((ms->lasttime > (AAS_Time() - 0.5)) && (VectorDistance(ms->origin, ms->lastorigin) < 20 * (AAS_Time() - ms->lasttime))))
 				{
 					reachnum = 0;
-					//botimport.Print(PRT_MESSAGE, "area change or timeout\n");
+					//BotImport_Print(PRT_MESSAGE, "area change or timeout\n");
 				}	//end else if
 			}	//end else
 		}	//end if
@@ -3654,7 +3654,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 #ifdef DEBUG
 				if (bot_developer)
 				{
-					botimport.Print(PRT_MESSAGE, "area %d no reachability\n", ms->areanum);
+					BotImport_Print(PRT_MESSAGE, "area %d no reachability\n", ms->areanum);
 				}	//end if
 #endif	//DEBUG
 			}	//end if
@@ -3684,7 +3684,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 
 			else if (bot_developer)
 			{
-				botimport.Print(PRT_MESSAGE, "goal not reachable\n");
+				BotImport_Print(PRT_MESSAGE, "goal not reachable\n");
 				memset(&reach, 0, sizeof(aas_reachability_t));		//make compiler happy
 			}	//end else
 			if (bot_developer)
@@ -3694,7 +3694,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 				{
 					if (ms->lastareanum == reach.areanum)
 					{
-						botimport.Print(PRT_MESSAGE, "same goal, going back to previous area\n");
+						BotImport_Print(PRT_MESSAGE, "same goal, going back to previous area\n");
 					}	//end if
 				}	//end if
 			}	//end if
@@ -3718,9 +3718,9 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 #endif	//DEBUG_AI_MOVE
 			//
 #ifdef DEBUG
-			//botimport.Print(PRT_MESSAGE, "client %d: ", ms->client);
+			//BotImport_Print(PRT_MESSAGE, "client %d: ", ms->client);
 			//AAS_PrintTravelType(reach.traveltype);
-			//botimport.Print(PRT_MESSAGE, "\n");
+			//BotImport_Print(PRT_MESSAGE, "\n");
 #endif	//DEBUG
 			switch (reach.traveltype)
 			{
@@ -3741,7 +3741,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 			case TRAVEL_FUNCBOB: *result = BotTravel_FuncBobbing(ms, &reach); break;
 			default:
 			{
-				botimport.Print(PRT_FATAL, "travel type %d not implemented yet\n", reach.traveltype);
+				BotImport_Print(PRT_FATAL, "travel type %d not implemented yet\n", reach.traveltype);
 				break;
 			}		//end case
 			}	//end switch
@@ -3756,9 +3756,9 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 		{
 			if (result->failure)
 			{
-				botimport.Print(PRT_MESSAGE, "client %d: movement failure in ", ms->client);
+				BotImport_Print(PRT_MESSAGE, "client %d: movement failure in ", ms->client);
 				AAS_PrintTravelType(reach.traveltype);
-				botimport.Print(PRT_MESSAGE, "\n");
+				BotImport_Print(PRT_MESSAGE, "\n");
 			}	//end if
 		}	//end if
 #endif	//DEBUG
@@ -3776,7 +3776,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 		{
 			if (AAS_AreaJumpPad(areas[i]))
 			{
-				//botimport.Print(PRT_MESSAGE, "client %d used a jumppad without knowing, area %d\n", ms->client, areas[i]);
+				//BotImport_Print(PRT_MESSAGE, "client %d used a jumppad without knowing, area %d\n", ms->client, areas[i]);
 				foundjumppad = qtrue;
 				lastreachnum = BotGetReachabilityToGoal(end, areas[i], ms->entitynum,
 					ms->lastgoalareanum, ms->lastareanum,
@@ -3786,7 +3786,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 				{
 					ms->lastreachnum = lastreachnum;
 					ms->lastareanum = areas[i];
-					//botimport.Print(PRT_MESSAGE, "found jumppad reachability\n");
+					//BotImport_Print(PRT_MESSAGE, "found jumppad reachability\n");
 					break;
 				}	//end if
 				else
@@ -3800,7 +3800,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 						{
 							ms->lastreachnum = lastreachnum;
 							ms->lastareanum = areas[i];
-							//botimport.Print(PRT_MESSAGE, "found jumppad reachability hard!!\n");
+							//BotImport_Print(PRT_MESSAGE, "found jumppad reachability hard!!\n");
 							break;
 						}	//end if
 					}	//end for
@@ -3816,19 +3816,19 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 			//if a jumppad is found with the trace but no reachability is found
 			if (foundjumppad && !ms->lastreachnum)
 			{
-				botimport.Print(PRT_MESSAGE, "client %d didn't find jumppad reachability\n", ms->client);
+				BotImport_Print(PRT_MESSAGE, "client %d didn't find jumppad reachability\n", ms->client);
 			}	//end if
 		}	//end if
 			//
 		if (ms->lastreachnum)
 		{
-			//botimport.Print(PRT_MESSAGE, "%s: NOT onground, swimming or against ladder\n", ClientName(ms->entitynum-1));
+			//BotImport_Print(PRT_MESSAGE, "%s: NOT onground, swimming or against ladder\n", ClientName(ms->entitynum-1));
 			AAS_ReachabilityFromNum(ms->lastreachnum, &reach);
 			result->traveltype = reach.traveltype;
 #ifdef DEBUG
-			//botimport.Print(PRT_MESSAGE, "client %d finish: ", ms->client);
+			//BotImport_Print(PRT_MESSAGE, "client %d finish: ", ms->client);
 			//AAS_PrintTravelType(reach.traveltype);
-			//botimport.Print(PRT_MESSAGE, "\n");
+			//BotImport_Print(PRT_MESSAGE, "\n");
 #endif	//DEBUG
 			//
 			switch (reach.traveltype)
@@ -3850,7 +3850,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 			case TRAVEL_FUNCBOB: *result = BotFinishTravel_FuncBobbing(ms, &reach); break;
 			default:
 			{
-				botimport.Print(PRT_FATAL, "(last) travel type %d not implemented yet\n", reach.traveltype);
+				BotImport_Print(PRT_FATAL, "(last) travel type %d not implemented yet\n", reach.traveltype);
 				break;
 			}		//end case
 			}	//end switch
@@ -3859,9 +3859,9 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, in
 			{
 				if (result->failure)
 				{
-					botimport.Print(PRT_MESSAGE, "client %d: movement failure in finish ", ms->client);
+					BotImport_Print(PRT_MESSAGE, "client %d: movement failure in finish ", ms->client);
 					AAS_PrintTravelType(reach.traveltype);
-					botimport.Print(PRT_MESSAGE, "\n");
+					BotImport_Print(PRT_MESSAGE, "\n");
 				}	//end if
 			}	//end if
 #endif	//DEBUG

@@ -111,9 +111,9 @@ void AAS_RoutingFreeMemory(void* ptr)
 #ifdef ROUTING_DEBUG
 void AAS_RoutingInfo(void)
 {
-	botimport.Print(PRT_MESSAGE, "%d area cache updates\n", numareacacheupdates);
-	botimport.Print(PRT_MESSAGE, "%d portal cache updates\n", numportalcacheupdates);
-	botimport.Print(PRT_MESSAGE, "%d bytes routing cache\n", routingcachesize);
+	BotImport_Print(PRT_MESSAGE, "%d area cache updates\n", numareacacheupdates);
+	BotImport_Print(PRT_MESSAGE, "%d portal cache updates\n", numportalcacheupdates);
+	BotImport_Print(PRT_MESSAGE, "%d bytes routing cache\n", routingcachesize);
 }	//end of the function AAS_RoutingInfo
 #endif	//ROUTING_DEBUG
 //===========================================================================
@@ -139,7 +139,7 @@ __inline int AAS_ClusterAreaNum(int cluster, int areanum)
         if ((*aasworld).portals[-areacluster].frontcluster != cluster &&
                 (*aasworld).portals[-areacluster].backcluster != cluster)
         {
-            botimport.Print(PRT_ERROR, "portal %d: does not belong to cluster %d\n"
+            BotImport_Print(PRT_ERROR, "portal %d: does not belong to cluster %d\n"
                                             , -areacluster, cluster);
         } //end if
 #endif //ROUTING_DEBUG*/
@@ -295,7 +295,7 @@ int AAS_EnableRoutingArea(int areanum, int enable)
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_EnableRoutingArea: areanum %d out of range\n", areanum);
+			BotImport_Print(PRT_ERROR, "AAS_EnableRoutingArea: areanum %d out of range\n", areanum);
 		}	//end if
 		return 0;
 	}	//end if
@@ -373,7 +373,7 @@ void AAS_CreateReversedReachability(void)
 		}	//end for
 	}	//end for
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "reversed reachability %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "reversed reachability %d msec\n", Sys_MilliSeconds() - starttime);
 #endif	//DEBUG
 }	//end of the function AAS_CreateReversedReachability
 //===========================================================================
@@ -493,7 +493,7 @@ void AAS_CalculateAreaTravelTimes(void)
 		}	//end for
 	}	//end for
 #ifdef DEBUG
-	botimport.Print(PRT_MESSAGE, "area travel times %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "area travel times %d msec\n", Sys_MilliSeconds() - starttime);
 #endif	//DEBUG
 }	//end of the function AAS_CalculateAreaTravelTimes
 //===========================================================================
@@ -550,7 +550,7 @@ void AAS_InitPortalMaxTravelTimes(void)
 	for (i = 0; i < (*aasworld).numportals; i++)
 	{
 		(*aasworld).portalmaxtraveltimes[i] = AAS_PortalMaxTravelTime(i);
-		//botimport.Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, (*aasworld).portalmaxtraveltimes[i]);
+		//BotImport_Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, (*aasworld).portalmaxtraveltimes[i]);
 	}	//end for
 }	//end of the function AAS_InitPortalMaxTravelTimes
 /*
@@ -902,7 +902,7 @@ void AAS_CreateAllRoutingCache(void)
 	numroutingareas = 0;
 	tfl = TFL_DEFAULT & ~(TFL_JUMPPAD | TFL_ROCKETJUMP | TFL_BFGJUMP | TFL_GRAPPLEHOOK | TFL_DOUBLEJUMP | TFL_RAMPJUMP | TFL_STRAFEJUMP | TFL_LAVA);	//----(SA)	modified since slime is no longer deadly
 //	tfl = TFL_DEFAULT & ~(TFL_JUMPPAD|TFL_ROCKETJUMP|TFL_BFGJUMP|TFL_GRAPPLEHOOK|TFL_DOUBLEJUMP|TFL_RAMPJUMP|TFL_STRAFEJUMP|TFL_SLIME|TFL_LAVA);
-	botimport.Print(PRT_MESSAGE, "AAS_CreateAllRoutingCache\n");
+	BotImport_Print(PRT_MESSAGE, "AAS_CreateAllRoutingCache\n");
 	//
 	for (i = 1; i < (*aasworld).numareas; i++)
 	{
@@ -1066,7 +1066,7 @@ void AAS_WriteRouteCache(void)
 	FS_Write((*aasworld).areawaypoints, sizeof(vec3_t) * (*aasworld).numareas, fp);
 	//
 	FS_FCloseFile(fp);
-	botimport.Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
+	BotImport_Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
 }	//end of the function AAS_WriteRouteCache
 //===========================================================================
 //
@@ -1752,7 +1752,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: areanum %d out of range\n", areanum);
+			BotImport_Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: areanum %d out of range\n", areanum);
 		}	//end if
 		return qfalse;
 	}	//end if
@@ -1760,7 +1760,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 	{
 		if (bot_developer)
 		{
-			botimport.Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: goalareanum %d out of range\n", goalareanum);
+			BotImport_Print(PRT_ERROR, "AAS_AreaTravelTimeToGoalArea: goalareanum %d out of range\n", goalareanum);
 		}	//end if
 		return qfalse;
 	}	//end if
@@ -1931,7 +1931,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 		*reachnum = (*aasworld).areasettings[areanum].firstreachablearea +
 					areacache->reachabilities[clusterareanum];
 
-//botimport.Print(PRT_MESSAGE, "portal reachability: %i\n", (int)areacache->reachabilities[clusterareanum] );
+//BotImport_Print(PRT_MESSAGE, "portal reachability: %i\n", (int)areacache->reachabilities[clusterareanum] );
 
 		if (origin)
 		{
@@ -2023,7 +2023,7 @@ int AAS_NextAreaReachability(int areanum, int reachnum)
 
 	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
-		botimport.Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
+		BotImport_Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
 		return 0;
 	}	//end if
 
@@ -2034,7 +2034,7 @@ int AAS_NextAreaReachability(int areanum, int reachnum)
 	}	//end if
 	if (reachnum < settings->firstreachablearea)
 	{
-		botimport.Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
+		BotImport_Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
 		return 0;
 	}	//end if
 	reachnum++;
@@ -2125,7 +2125,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 				{
 					*goalareanum = n;
 					VectorCopy((*aasworld).areas[n].center, goalorigin);
-					//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+					//BotImport_Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
 					return qtrue;
 				}	//end if
 				VectorCopy((*aasworld).areas[n].center, start);
@@ -2143,7 +2143,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 					{
 						*goalareanum = n;
 						VectorCopy(trace.endpos, goalorigin);
-						//botimport.Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
+						//BotImport_Print(PRT_MESSAGE, "found random goal area %d\n", *goalareanum);
 						return qtrue;
 					}	//end if
 				}	//end if
@@ -2357,7 +2357,7 @@ void AAS_CreateVisibility(void)
 		memcpy((*aasworld).areavisibility[i], buf, size);
 		totalsize += size;
 	}	//end for
-	botimport.Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
+	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
 }	//end of the function AAS_CreateVisibility
 //===========================================================================
 //
@@ -2578,7 +2578,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 				// getting down to here is bad for cpu usage
 				if (count++ > MAX_HIDEAREA_LOOPS)
 				{
-					//botimport.Print(PRT_MESSAGE, "AAS_NearestHideArea: exceeded max loops, aborting\n" );
+					//BotImport_Print(PRT_MESSAGE, "AAS_NearestHideArea: exceeded max loops, aborting\n" );
 					continue;
 				}
 				//
@@ -2610,7 +2610,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 			}	//end if
 		}	//end for
 	}	//end while
-		//botimport.Print(PRT_MESSAGE, "AAS_NearestHideArea: hidearea: %i, %i loops\n", bestarea, count );
+		//BotImport_Print(PRT_MESSAGE, "AAS_NearestHideArea: hidearea: %i, %i loops\n", bestarea, count );
 	return bestarea;
 }	//end of the function AAS_NearestHideArea
 
@@ -2735,7 +2735,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 			//the current area plus the travel time from the reachability
 			if (count++ > MAX_ATTACKAREA_LOOPS)
 			{
-				//botimport.Print(PRT_MESSAGE, "AAS_FindAttackSpotWithinRange: exceeded max loops, aborting\n" );
+				//BotImport_Print(PRT_MESSAGE, "AAS_FindAttackSpotWithinRange: exceeded max loops, aborting\n" );
 				if (bestarea)
 				{
 					VectorCopy((*aasworld).areawaypoints[bestarea], outpos);
@@ -2806,7 +2806,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 			}	//end if
 		}	//end for
 	}	//end while
-//botimport.Print(PRT_MESSAGE, "AAS_NearestHideArea: hidearea: %i, %i loops\n", bestarea, count );
+//BotImport_Print(PRT_MESSAGE, "AAS_NearestHideArea: hidearea: %i, %i loops\n", bestarea, count );
 	if (bestarea)
 	{
 		VectorCopy((*aasworld).areawaypoints[bestarea], outpos);

@@ -49,13 +49,10 @@ If you have questions concerning this license or the applicable additional terms
 "a madman is just someone living in another reality which isn't shared among many people"
 */
 
+#include "../../server/botlib/local.h"
+
 //#define DEBUG			//debug code
 #define RANDOMIZE		//randomize bot behaviour
-#if defined(WIN32) || defined(_WIN32)
-#define AASZIP			//allow reading directly from aasX.zip files
-#endif
-#define QUAKE2			//bot for Quake2
-//#define HALFLIFE		//bot for Half-Life
 
 //==========================================================
 //

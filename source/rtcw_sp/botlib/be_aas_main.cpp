@@ -66,7 +66,7 @@ void QDECL AAS_Error(const char* fmt, ...)
 	va_start(arglist, fmt);
 	vsprintf(str, fmt, arglist);
 	va_end(arglist);
-	botimport.Print(PRT_FATAL, str);
+	BotImport_Print(PRT_FATAL, str);
 }	//end of the function AAS_Error
 
 // Ridah, multiple AAS worlds
@@ -99,19 +99,19 @@ const char* AAS_StringFromIndex(const char* indexname, const char* stringindex[]
 {
 	if (!(*aasworld).indexessetup)
 	{
-		botimport.Print(PRT_ERROR, "%s: index %d not setup\n", indexname, index);
+		BotImport_Print(PRT_ERROR, "%s: index %d not setup\n", indexname, index);
 		return "";
 	}	//end if
 	if (index < 0 || index >= numindexes)
 	{
-		botimport.Print(PRT_ERROR, "%s: index %d out of range\n", indexname, index);
+		BotImport_Print(PRT_ERROR, "%s: index %d out of range\n", indexname, index);
 		return "";
 	}	//end if
 	if (!stringindex[index])
 	{
 		if (index)
 		{
-			botimport.Print(PRT_ERROR, "%s: reference to unused index %d\n", indexname, index);
+			BotImport_Print(PRT_ERROR, "%s: reference to unused index %d\n", indexname, index);
 		}	//end if
 		return "";
 	}	//end if
@@ -128,7 +128,7 @@ int AAS_IndexFromString(char* indexname, char* stringindex[], int numindexes, ch
 	int i;
 	if (!(*aasworld).indexessetup)
 	{
-		botimport.Print(PRT_ERROR, "%s: index not setup \"%s\"\n", indexname, string);
+		BotImport_Print(PRT_ERROR, "%s: index not setup \"%s\"\n", indexname, string);
 		return 0;
 	}	//end if
 	for (i = 0; i < numindexes; i++)
@@ -216,7 +216,7 @@ int AAS_Initialized(void)
 void AAS_SetInitialized(void)
 {
 	(*aasworld).initialized = qtrue;
-	botimport.Print(PRT_MESSAGE, "AAS initialized.\n");
+	BotImport_Print(PRT_MESSAGE, "AAS initialized.\n");
 #ifdef DEBUG
 	//create all the routing cache
 	//AAS_CreateAllRoutingCache();
@@ -266,11 +266,11 @@ void AAS_ContinueInit(float time)
 		//save the AAS file
 		if (AAS_WriteAASFile((*aasworld).filename))
 		{
-			botimport.Print(PRT_MESSAGE, "%s written succesfully\n", (*aasworld).filename);
+			BotImport_Print(PRT_MESSAGE, "%s written succesfully\n", (*aasworld).filename);
 		}	//end if
 		else
 		{
-			botimport.Print(PRT_ERROR, "couldn't write %s\n", (*aasworld).filename);
+			BotImport_Print(PRT_ERROR, "couldn't write %s\n", (*aasworld).filename);
 		}	//end else
 	}	//end if
 		//initialize the routing
@@ -366,7 +366,7 @@ int AAS_LoadFiles(const char* mapname)
 		return errnum;
 	}
 
-	botimport.Print(PRT_MESSAGE, "loaded %s\n", aasfile);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", aasfile);
 	String::NCpy((*aasworld).filename, aasfile, MAX_PATH);
 	return BLERR_NOERROR;
 }	//end of the function AAS_LoadFiles
@@ -519,5 +519,5 @@ void AAS_Shutdown(void)
 	//NOTE: as soon as a new .bsp file is loaded the .bsp file memory is
 	// freed an reallocated, so there's no need to free that memory here
 	//print shutdown
-	botimport.Print(PRT_MESSAGE, "AAS shutdown.\n");
+	BotImport_Print(PRT_MESSAGE, "AAS shutdown.\n");
 }	//end of the function AAS_Shutdown

@@ -41,7 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "be_interface.h"			//for botimport.Print
+#include "be_interface.h"			//for BotImport_Print
 #include "l_libvar.h"
 
 #define MAX_LOGFILENAMESIZE     1024
@@ -65,22 +65,22 @@ void Log_AlwaysOpen(const char* filename)
 {
 	if (!filename || !String::Length(filename))
 	{
-		botimport.Print(PRT_MESSAGE, "openlog <filename>\n");
+		BotImport_Print(PRT_MESSAGE, "openlog <filename>\n");
 		return;
 	}	//end if
 	if (logfile.fp)
 	{
-		botimport.Print(PRT_ERROR, "log file %s is already opened\n", logfile.filename);
+		BotImport_Print(PRT_ERROR, "log file %s is already opened\n", logfile.filename);
 		return;
 	}	//end if
 	logfile.fp = fopen(filename, "wb");
 	if (!logfile.fp)
 	{
-		botimport.Print(PRT_ERROR, "can't open the log file %s\n", filename);
+		BotImport_Print(PRT_ERROR, "can't open the log file %s\n", filename);
 		return;
 	}	//end if
 	String::NCpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
-	botimport.Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
+	BotImport_Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
 }	//end of the function Log_Create
 //===========================================================================
 //
@@ -111,11 +111,11 @@ void Log_Close(void)
 	}
 	if (fclose(logfile.fp))
 	{
-		botimport.Print(PRT_ERROR, "can't close log file %s\n", logfile.filename);
+		BotImport_Print(PRT_ERROR, "can't close log file %s\n", logfile.filename);
 		return;
 	}	//end if
 	logfile.fp = NULL;
-	botimport.Print(PRT_MESSAGE, "Closed log %s\n", logfile.filename);
+	BotImport_Print(PRT_MESSAGE, "Closed log %s\n", logfile.filename);
 }	//end of the function Log_Close
 //===========================================================================
 //

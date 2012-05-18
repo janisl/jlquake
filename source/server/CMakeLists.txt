@@ -1,4 +1,5 @@
 add_library(server STATIC
+	botlib/interface.cpp
 	progsvm/edict.cpp
 	progsvm/execute.cpp
 	progsvm/main.cpp
