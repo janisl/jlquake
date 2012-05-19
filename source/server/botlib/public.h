@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef _BOTLIB_PUBLIC_H
+#define _BOTLIB_PUBLIC_H
+
 //botlib error codes
 #define BLERR_NOERROR                   0	//no error
 #define BLERR_LIBRARYNOTSETUP           1	//library not setup
@@ -45,3 +48,5 @@ void BotImport_DebugPolygonDelete(int id);
 
 int BotLibVarSet(const char* var_name, const char* value);
 int BotLibVarGet(char* var_name, char* value, int size);
+
+#endif

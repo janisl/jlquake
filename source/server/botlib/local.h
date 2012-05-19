@@ -17,6 +17,8 @@
 #ifndef _BOTLIB_LOCAL_H
 #define _BOTLIB_LOCAL_H
 
+#include "public.h"
+
 #define BOTFILESBASEFOLDER      "botfiles"
 
 //
