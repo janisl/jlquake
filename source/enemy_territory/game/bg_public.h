@@ -355,31 +355,6 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_ET
 #endif
 
-//#ifndef GAMETYPES
-//#define GAMETYPES
-typedef enum {
-	GT_SINGLE_PLAYER,
-	GT_COOP,
-	GT_WOLF,
-	GT_WOLF_STOPWATCH,
-	GT_WOLF_CAMPAIGN,	// Exactly the same as GT_WOLF, but uses campaign roulation (multiple maps form one virtual map)
-	GT_WOLF_LMS,
-	GT_MAX_GAME_TYPE
-} gametype_t;
-//#define GAMETYPES
-
-// Rafael gameskill
-/*typedef enum {
-    GSKILL_EASY = 1,
-    GSKILL_MEDIUM,
-    GSKILL_MEDIUMHARD, // normal default level
-    GSKILL_HARD,
-    GSKILL_VERYHARD,
-    GSKILL_MAX		// must always be last
-} gameskill_t;*/
-
-//#endif // ifndef GAMETYPES
-
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 typedef enum {

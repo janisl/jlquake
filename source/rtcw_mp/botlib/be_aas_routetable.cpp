@@ -1178,7 +1178,7 @@ aas_rt_route_t* AAS_RT_GetRoute(int srcnum, vec3_t origin, int destnum)
 int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_t* goal, int travelflags, int movetravelflags);
+	bot_goal_q3_t* goal, int travelflags, int movetravelflags);
 
 void AAS_RT_ShowRoute(vec3_t srcpos, int srcnum, int destnum)
 {
@@ -1194,7 +1194,7 @@ void AAS_RT_ShowRoute(vec3_t srcpos, int srcnum, int destnum)
 		static float avoidreachtimes[MAX_RT_AVOID_REACH];
 		static int avoidreachtries[MAX_RT_AVOID_REACH];
 		int reachnum;
-		bot_goal_t goal;
+		bot_goal_q3_t goal;
 		aas_reachability_t reach;
 
 		goal.areanum = destnum;

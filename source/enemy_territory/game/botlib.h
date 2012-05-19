@@ -46,7 +46,7 @@ struct aas_clientmove_s;
 struct aas_entityinfo_s;
 struct bot_consolemessage_s;
 struct bot_match_s;
-struct bot_goal_s;
+struct bot_goal_et_t;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 struct weaponinfo_s;
@@ -306,46 +306,27 @@ typedef struct ai_export_s
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	void (* BotResetGoalState)(int goalstate);
-	void (* BotResetAvoidGoals)(int goalstate);
 	void (* BotRemoveFromAvoidGoals)(int goalstate, int number);
-	void (* BotPushGoal)(int goalstate, struct bot_goal_s* goal);
-	void (* BotPopGoal)(int goalstate);
-	void (* BotEmptyGoalStack)(int goalstate);
 	void (* BotDumpAvoidGoals)(int goalstate);
-	void (* BotDumpGoalStack)(int goalstate);
-	void (* BotGoalName)(int number, char* name, int size);
-	int (* BotGetTopGoal)(int goalstate, struct bot_goal_s* goal);
-	int (* BotGetSecondGoal)(int goalstate, struct bot_goal_s* goal);
 	int (* BotChooseLTGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags);
 	int (* BotChooseNBGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags,
-		struct bot_goal_s* ltg, float maxtime);
-	int (* BotTouchingGoal)(vec3_t origin, struct bot_goal_s* goal);
-	int (* BotItemGoalInVisButNotVisible)(int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_s* goal);
-	int (* BotGetLevelItemGoal)(int index, char* classname, struct bot_goal_s* goal);
-	int (* BotGetNextCampSpotGoal)(int num, struct bot_goal_s* goal);
-	int (* BotGetMapLocationGoal)(char* name, struct bot_goal_s* goal);
+		struct bot_goal_et_t* ltg, float maxtime);
+	int (* BotTouchingGoal)(vec3_t origin, struct bot_goal_et_t* goal);
+	int (* BotItemGoalInVisButNotVisible)(int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_et_t* goal);
 	float (* BotAvoidGoalTime)(int goalstate, int number);
 	void (* BotInitLevelItems)(void);
 	void (* BotUpdateEntityItems)(void);
-	int (* BotLoadItemWeights)(int goalstate, char* filename);
-	void (* BotFreeItemWeights)(int goalstate);
-	void (* BotInterbreedGoalFuzzyLogic)(int parent1, int parent2, int child);
-	void (* BotSaveGoalFuzzyLogic)(int goalstate, char* filename);
-	void (* BotMutateGoalFuzzyLogic)(int goalstate, float range);
-	int (* BotAllocGoalState)(int client);
-	void (* BotFreeGoalState)(int handle);
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
 	void (* BotResetMoveState)(int movestate);
-	void (* BotMoveToGoal)(struct bot_moveresult_s* result, int movestate, struct bot_goal_s* goal, int travelflags);
+	void (* BotMoveToGoal)(struct bot_moveresult_s* result, int movestate, struct bot_goal_et_t* goal, int travelflags);
 	int (* BotMoveInDirection)(int movestate, vec3_t dir, float speed, int type);
 	void (* BotResetAvoidReach)(int movestate);
 	void (* BotResetLastAvoidReach)(int movestate);
 	int (* BotReachabilityArea)(vec3_t origin, int testground);
-	int (* BotMovementViewTarget)(int movestate, struct bot_goal_s* goal, int travelflags, float lookahead, vec3_t target);
-	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_s* goal, int travelflags, vec3_t target);
+	int (* BotMovementViewTarget)(int movestate, struct bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target);
+	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_et_t* goal, int travelflags, vec3_t target);
 	int (* BotAllocMoveState)(void);
 	void (* BotFreeMoveState)(int handle);
 	void (* BotInitMoveState)(int handle, struct bot_initmove_s* initmove);

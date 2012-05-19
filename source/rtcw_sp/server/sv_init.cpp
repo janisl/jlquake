@@ -289,7 +289,7 @@ void SV_InitReliableCommands(client_t* clients)
 	int i;
 	client_t* cl;
 
-	if (sv_gametype->integer == GT_SINGLE_PLAYER)
+	if (sv_gametype->integer == WSGT_SINGLE_PLAYER)
 	{
 		// single player
 		// init the actual player
@@ -615,7 +615,7 @@ void SV_ChangeMaxClients(void)
 	// RF, allocate reliable commands for newly created client slots
 	if (oldMaxClients < sv_maxclients->integer)
 	{
-		if (sv_gametype->integer == GT_SINGLE_PLAYER)
+		if (sv_gametype->integer == WSGT_SINGLE_PLAYER)
 		{
 			for (i = oldMaxClients; i < sv_maxclients->integer; i++)
 			{
@@ -839,7 +839,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 //	Cvar_Set( "nextmap", va("map %s", server) );
 
 	// Ridah
-	if (sv_gametype->integer == GT_SINGLE_PLAYER)
+	if (sv_gametype->integer == WSGT_SINGLE_PLAYER)
 	{
 		SV_SetExpectedHunkUsage(va("maps/%s.bsp", server));
 	}
@@ -903,7 +903,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 			if (svs.clients[i].netchan.remoteAddress.type == NA_BOT)
 			{
-				if (killBots || Cvar_VariableValue("g_gametype") == GT_SINGLE_PLAYER)
+				if (killBots || Cvar_VariableValue("g_gametype") == WSGT_SINGLE_PLAYER)
 				{
 					SV_DropClient(&svs.clients[i], " gametype is Single Player");		//DAJ added message
 					continue;

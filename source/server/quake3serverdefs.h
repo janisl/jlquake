@@ -14,11 +14,10 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
-
-#include "../common/qcommon.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-
-#endif
+enum
+{
+	Q3GT_FFA,				// free for all
+	Q3GT_SINGLE_PLAYER = 2,	// single player ffa
+	//-- team games go after this --
+	Q3GT_TEAM,				// team deathmatch
+};

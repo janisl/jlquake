@@ -49,4 +49,6 @@ void BotImport_DebugPolygonDelete(int id);
 int BotLibVarSet(const char* var_name, const char* value);
 int BotLibVarGet(char* var_name, char* value, int size);
 
+#include "ai_public.h"
+
 #endif

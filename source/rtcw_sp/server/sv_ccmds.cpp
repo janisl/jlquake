@@ -274,7 +274,7 @@ static void SV_Map_f(void)
 	cmd = Cmd_Argv(0);
 	if (String::NICmp(cmd, "sp", 2) == 0)
 	{
-		Cvar_SetValue("g_gametype", GT_SINGLE_PLAYER);
+		Cvar_SetValue("g_gametype", WSGT_SINGLE_PLAYER);
 		Cvar_SetValue("g_doWarmup", 0);
 		// may not set sv_maxclients directly, always set latched
 		Cvar_SetLatched("sv_maxclients", "32");		// Ridah, modified this
@@ -301,9 +301,9 @@ static void SV_Map_f(void)
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if (sv_gametype->integer == GT_SINGLE_PLAYER)
+		if (sv_gametype->integer == WSGT_SINGLE_PLAYER)
 		{
-			Cvar_SetValue("g_gametype", GT_FFA);
+			Cvar_SetValue("g_gametype", WSGT_FFA);
 		}
 	}
 
@@ -370,7 +370,7 @@ static void SV_MapRestart_f(void)
 	}
 	else
 	{
-		if (sv_gametype->integer == GT_SINGLE_PLAYER)		// (SA) no pause by default in sp
+		if (sv_gametype->integer == WSGT_SINGLE_PLAYER)		// (SA) no pause by default in sp
 		{
 			delay = 0;
 		}

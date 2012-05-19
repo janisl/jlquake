@@ -87,7 +87,7 @@ void SV_SetConfigstring(int index, const char* val)
 			}
 
 			// RF, don't send to bot/AI
-			if (sv_gametype->integer == GT_SINGLE_PLAYER && client->gentity && (client->gentity->r.svFlags & SVF_CASTAI))
+			if (sv_gametype->integer == WMGT_SINGLE_PLAYER && client->gentity && (client->gentity->r.svFlags & SVF_CASTAI))
 			{
 				continue;
 			}
@@ -583,7 +583,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// Ridah
 	// DHM - Nerve :: We want to use the completion bar in multiplayer as well
-	if (sv_gametype->integer == GT_SINGLE_PLAYER || sv_gametype->integer >= GT_WOLF)
+	if (sv_gametype->integer == WMGT_SINGLE_PLAYER || sv_gametype->integer >= WMGT_WOLF)
 	{
 		SV_SetExpectedHunkUsage(va("maps/%s.bsp", server));
 	}
@@ -663,7 +663,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 			if (svs.clients[i].netchan.remoteAddress.type == NA_BOT)
 			{
-				if (killBots || Cvar_VariableValue("g_gametype") == GT_SINGLE_PLAYER)
+				if (killBots || Cvar_VariableValue("g_gametype") == WMGT_SINGLE_PLAYER)
 				{
 					SV_DropClient(&svs.clients[i], "");
 					continue;
@@ -883,7 +883,7 @@ void SV_Init(void)
 	Cvar_Get("dmflags", "0", /*CVAR_SERVERINFO*/ 0);
 	Cvar_Get("fraglimit", "0", /*CVAR_SERVERINFO*/ 0);
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
-	// DHM - Nerve :: default to GT_WOLF
+	// DHM - Nerve :: default to WMGT_WOLF
 	sv_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
 
 	// Rafael gameskill

@@ -133,8 +133,6 @@ weaponconfig_t* weaponconfig;
 // Returns:					-
 // Changes Globals:		-
 //========================================================================
-extern qboolean g_singleplayer;
-
 int BotValidWeaponNumber(int weaponnum)
 {
 	// Thanks Arnout! TDF

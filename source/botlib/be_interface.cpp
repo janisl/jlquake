@@ -155,7 +155,7 @@ int Export_BotLibSetup(void)
 	{
 		return errnum;
 	}
-	errnum = BotSetupGoalAI();		//be_ai_goal.c
+	errnum = BotSetupGoalAI(false);		//be_ai_goal.c
 	if (errnum != BLERR_NOERROR)
 	{
 		return errnum;
@@ -297,7 +297,7 @@ void ElevatorBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter);
 int BotGetReachabilityToGoal(vec3_t origin, int areanum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_t* goal, int travelflags, int movetravelflags,
+	bot_goal_q3_t* goal, int travelflags, int movetravelflags,
 	struct bot_avoidspot_s* avoidspots, int numavoidspots, int* flags);
 
 int AAS_PointLight(vec3_t origin, int* red, int* green, int* blue);
@@ -329,7 +329,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 //	aas_entity_t *ent;
 //	bsp_trace_t bsptrace;
 //	aas_reachability_t reach;
-//	bot_goal_t goal;
+//	bot_goal_q3_t goal;
 
 	// clock_t start_time, end_time;
 	vec3_t mins = {-16, -16, -24};
@@ -523,7 +523,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		static float avoidreachtimes[MAX_AVOIDREACH];
 		static int avoidreachtries[MAX_AVOIDREACH];
 		int reachnum, resultFlags;
-		bot_goal_t goal;
+		bot_goal_q3_t goal;
 		aas_reachability_t reach;
 
 		/*
@@ -797,35 +797,16 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	ai->BotResetGoalState = BotResetGoalState;
-	ai->BotResetAvoidGoals = BotResetAvoidGoals;
 	ai->BotRemoveFromAvoidGoals = BotRemoveFromAvoidGoals;
-	ai->BotPushGoal = BotPushGoal;
-	ai->BotPopGoal = BotPopGoal;
-	ai->BotEmptyGoalStack = BotEmptyGoalStack;
 	ai->BotDumpAvoidGoals = BotDumpAvoidGoals;
-	ai->BotDumpGoalStack = BotDumpGoalStack;
-	ai->BotGoalName = BotGoalName;
-	ai->BotGetTopGoal = BotGetTopGoal;
-	ai->BotGetSecondGoal = BotGetSecondGoal;
 	ai->BotChooseLTGItem = BotChooseLTGItem;
 	ai->BotChooseNBGItem = BotChooseNBGItem;
 	ai->BotTouchingGoal = BotTouchingGoal;
 	ai->BotItemGoalInVisButNotVisible = BotItemGoalInVisButNotVisible;
-	ai->BotGetLevelItemGoal = BotGetLevelItemGoal;
-	ai->BotGetNextCampSpotGoal = BotGetNextCampSpotGoal;
-	ai->BotGetMapLocationGoal = BotGetMapLocationGoal;
 	ai->BotAvoidGoalTime = BotAvoidGoalTime;
 	ai->BotSetAvoidGoalTime = BotSetAvoidGoalTime;
 	ai->BotInitLevelItems = BotInitLevelItems;
 	ai->BotUpdateEntityItems = BotUpdateEntityItems;
-	ai->BotLoadItemWeights = BotLoadItemWeights;
-	ai->BotFreeItemWeights = BotFreeItemWeights;
-	ai->BotInterbreedGoalFuzzyLogic = BotInterbreedGoalFuzzyLogic;
-	ai->BotSaveGoalFuzzyLogic = BotSaveGoalFuzzyLogic;
-	ai->BotMutateGoalFuzzyLogic = BotMutateGoalFuzzyLogic;
-	ai->BotAllocGoalState = BotAllocGoalState;
-	ai->BotFreeGoalState = BotFreeGoalState;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------

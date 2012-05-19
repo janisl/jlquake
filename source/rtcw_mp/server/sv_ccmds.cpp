@@ -188,7 +188,7 @@ static void SV_Map_f(void)
 	Cvar_Set("g_nextTimeLimit", "0");				// NERVE - SMF - reset the next time limit
 
 	// force latched values to get set
-	// DHM - Nerve :: default to GT_WOLF
+	// DHM - Nerve :: default to WMGT_WOLF
 	Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2);
 
 	// Rafael gameskill
@@ -198,7 +198,7 @@ static void SV_Map_f(void)
 	cmd = Cmd_Argv(0);
 	if (String::NICmp(cmd, "sp", 2) == 0)
 	{
-		Cvar_SetValue("g_gametype", GT_SINGLE_PLAYER);
+		Cvar_SetValue("g_gametype", WMGT_SINGLE_PLAYER);
 		Cvar_SetValue("g_doWarmup", 0);
 		// may not set sv_maxclients directly, always set latched
 #ifdef __MACOS__
@@ -229,9 +229,9 @@ static void SV_Map_f(void)
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if (sv_gametype->integer == GT_SINGLE_PLAYER)
+		if (sv_gametype->integer == WMGT_SINGLE_PLAYER)
 		{
-			Cvar_SetValue("g_gametype", GT_FFA);
+			Cvar_SetValue("g_gametype", WMGT_FFA);
 		}
 	}
 
@@ -377,9 +377,9 @@ static void SV_MapRestart_f(void)
 	world = SV_GentityNum(Q3ENTITYNUM_WORLD);
 	worldspawnflags = world->r.worldflags;
 	if  (
-		(nextgt == GT_WOLF && (worldspawnflags & 1)) ||
-		(nextgt == GT_WOLF_STOPWATCH && (worldspawnflags & 2)) ||
-		((nextgt == GT_WOLF_CP || nextgt == GT_WOLF_CPH) && (worldspawnflags & 4))
+		(nextgt == WMGT_WOLF && (worldspawnflags & 1)) ||
+		(nextgt == WMGT_WOLF_STOPWATCH && (worldspawnflags & 2)) ||
+		((nextgt == WMGT_WOLF_CP || nextgt == WMGT_WOLF_CPH) && (worldspawnflags & 4))
 		)
 	{
 

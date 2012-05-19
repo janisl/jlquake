@@ -21,6 +21,8 @@
 
 #define BOTFILESBASEFOLDER      "botfiles"
 
+#define MAX_EPAIRKEY        128
+
 //
 //	Imports
 //
@@ -127,5 +129,7 @@ struct structdef_t
 
 //read a structure from a script
 bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
+
+#include "ai_local.h"
 
 #endif

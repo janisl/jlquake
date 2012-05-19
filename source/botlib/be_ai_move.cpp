@@ -835,7 +835,7 @@ void BotAddAvoidSpot(int movestate, vec3_t origin, float radius, int type)
 int BotGetReachabilityToGoal(vec3_t origin, int areanum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_t* goal, int travelflags, int movetravelflags,
+	bot_goal_q3_t* goal, int travelflags, int movetravelflags,
 	struct bot_avoidspot_s* avoidspots, int numavoidspots, int* flags)
 {
 	int i, t, besttime, bestreachnum, reachnum;
@@ -948,7 +948,7 @@ int BotAddToTarget(vec3_t start, vec3_t end, float maxdist, float* dist, vec3_t 
 	}	//end else
 }	//end of the function BotAddToTarget
 
-int BotMovementViewTarget(int movestate, bot_goal_t* goal, int travelflags, float lookahead, vec3_t target)
+int BotMovementViewTarget(int movestate, bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target)
 {
 	aas_reachability_t reach;
 	int reachnum, lastareanum;
@@ -1041,7 +1041,7 @@ int BotVisible(int ent, vec3_t eye, vec3_t target)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_t* goal, int travelflags, vec3_t target)
+int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_q3_t* goal, int travelflags, vec3_t target)
 {
 	aas_reachability_t reach;
 	int reachnum, lastgoalareanum, lastareanum, i;
@@ -3398,7 +3398,7 @@ int BotReachabilityTime(aas_reachability_t* reach)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
+bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_q3_t* goal)
 {
 	bot_moveresult_t result;
 	vec3_t dir;
@@ -3461,7 +3461,7 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, int travelflags)
+void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal, int travelflags)
 {
 	int reachnum, lastreachnum, foundjumppad, ent, resultflags;
 	aas_reachability_t reach, lastreach;

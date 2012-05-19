@@ -195,28 +195,6 @@ typedef enum {
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_WS
 #endif
 
-typedef enum {
-	GT_FFA,				// free for all
-	GT_TOURNAMENT,		// one on one tournament
-	GT_SINGLE_PLAYER,	// single player tournament
-
-	//-- team games go after this --
-
-	GT_TEAM,			// team deathmatch
-	GT_CTF,				// capture the flag
-	GT_WOLF,			// DHM - Nerve :: Wolfenstein Multiplayer
-
-	GT_MAX_GAME_TYPE
-} gametype_t;
-
-// Rafael gameskill
-typedef enum {
-	GSKILL_EASY,
-	GSKILL_MEDIUM,
-	GSKILL_HARD,
-	GSKILL_MAX		// must always be last
-} gameskill_t;
-
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 typedef enum {

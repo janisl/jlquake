@@ -823,7 +823,7 @@ void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
 int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_t* goal, int travelflags, int movetravelflags)
+	bot_goal_et_t* goal, int travelflags, int movetravelflags)
 {
 	int t, besttime, bestreachnum, reachnum;
 	aas_reachability_t reach;
@@ -962,7 +962,7 @@ int BotAddToTarget(vec3_t start, vec3_t end, float maxdist, float* dist, vec3_t 
 	}	//end else
 }	//end of the function BotAddToTarget
 
-int BotMovementViewTarget(int movestate, bot_goal_t* goal, int travelflags, float lookahead, vec3_t target)
+int BotMovementViewTarget(int movestate, bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target)
 {
 	aas_reachability_t reach;
 	int reachnum, lastareanum;
@@ -1046,7 +1046,7 @@ int BotVisible(int ent, vec3_t eye, vec3_t target)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_t* goal, int travelflags, vec3_t target)
+int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_et_t* goal, int travelflags, vec3_t target)
 {
 	aas_reachability_t reach;
 	int reachnum, lastgoalareanum, lastareanum, i;
@@ -3702,7 +3702,7 @@ int BotReachabilityTime(aas_reachability_t* reach)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
+bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_et_t* goal)
 {
 	bot_moveresult_t result;
 	vec3_t dir;
@@ -3768,7 +3768,7 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_t* goal)
 //===========================================================================
 int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int travelflags, int* traveltime, int* reachnum);
 extern float VectorDistance(vec3_t v1, vec3_t v2);
-void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_t* goal, int travelflags)
+void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_et_t* goal, int travelflags)
 {
 	int reachnum = 0;	// TTimo (might be used uninitialized in this function)
 	int lastreachnum, foundjumppad, ent;

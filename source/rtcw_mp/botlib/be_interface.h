@@ -53,7 +53,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/botlib/local.h"
 
 //#define DEBUG			//debug code
-#define RANDOMIZE		//randomize bot behaviour
 
 //==========================================================
 //

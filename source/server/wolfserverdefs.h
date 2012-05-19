@@ -14,11 +14,22 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
+enum
+{
+	WSGT_FFA,				// free for all
+	WSGT_SINGLE_PLAYER = 2,	// single player tournament
+	//-- team games go after this --
+	WSGT_TEAM,				// team deathmatch
+};
 
-#include "../common/qcommon.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-
-#endif
+enum
+{
+	WMGT_FFA,				// free for all
+	WMGT_SINGLE_PLAYER = 2,	// single player tournament
+	//-- team games go after this --
+	WMGT_TEAM,				// team deathmatch
+	WMGT_WOLF = 5,			// DHM - Nerve :: Wolfenstein Multiplayer
+	WMGT_WOLF_STOPWATCH,	// NERVE - SMF - stopwatch gametype
+	WMGT_WOLF_CP,			// NERVE - SMF - checkpoint gametype
+	WMGT_WOLF_CPH,			// JPW NERVE - Capture & Hold gametype
+};

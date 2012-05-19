@@ -354,7 +354,7 @@ void ElevatorBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter);
 int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_t* goal, int travelflags, int movetravelflags);
+	bot_goal_et_t* goal, int travelflags, int movetravelflags);
 
 int AAS_PointLight(vec3_t origin, int* red, int* green, int* blue);
 
@@ -630,7 +630,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		static int avoidreachtries[MAX_AVOIDREACH];
 
 		int reachnum;
-		bot_goal_t goal;
+		bot_goal_et_t goal;
 		aas_reachability_t reach;
 		static int lastreach;
 
@@ -812,34 +812,15 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	ai->BotResetGoalState = BotResetGoalState;
-	ai->BotResetAvoidGoals = BotResetAvoidGoals;
 	ai->BotRemoveFromAvoidGoals = BotRemoveFromAvoidGoals;
-	ai->BotPushGoal = BotPushGoal;
-	ai->BotPopGoal = BotPopGoal;
-	ai->BotEmptyGoalStack = BotEmptyGoalStack;
 	ai->BotDumpAvoidGoals = BotDumpAvoidGoals;
-	ai->BotDumpGoalStack = BotDumpGoalStack;
-	ai->BotGoalName = BotGoalName;
-	ai->BotGetTopGoal = BotGetTopGoal;
-	ai->BotGetSecondGoal = BotGetSecondGoal;
 	ai->BotChooseLTGItem = BotChooseLTGItem;
 	ai->BotChooseNBGItem = BotChooseNBGItem;
 	ai->BotTouchingGoal = BotTouchingGoal;
 	ai->BotItemGoalInVisButNotVisible = BotItemGoalInVisButNotVisible;
-	ai->BotGetLevelItemGoal = BotGetLevelItemGoal;
-	ai->BotGetNextCampSpotGoal = BotGetNextCampSpotGoal;
-	ai->BotGetMapLocationGoal = BotGetMapLocationGoal;
 	ai->BotAvoidGoalTime = BotAvoidGoalTime;
 	ai->BotInitLevelItems = BotInitLevelItems;
 	ai->BotUpdateEntityItems = BotUpdateEntityItems;
-	ai->BotLoadItemWeights = BotLoadItemWeights;
-	ai->BotFreeItemWeights = BotFreeItemWeights;
-	ai->BotInterbreedGoalFuzzyLogic = BotInterbreedGoalFuzzyLogic;
-	ai->BotSaveGoalFuzzyLogic = BotSaveGoalFuzzyLogic;
-	ai->BotMutateGoalFuzzyLogic = BotMutateGoalFuzzyLogic;
-	ai->BotAllocGoalState = BotAllocGoalState;
-	ai->BotFreeGoalState = BotFreeGoalState;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------

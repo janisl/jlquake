@@ -861,50 +861,50 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AI_RESET_GOAL_STATE:
-		botlib_export->ai.BotResetGoalState(args[1]);
+		BotResetGoalState(args[1]);
 		return 0;
 	case BOTLIB_AI_RESET_AVOID_GOALS:
-		botlib_export->ai.BotResetAvoidGoals(args[1]);
+		BotResetAvoidGoals(args[1]);
 		return 0;
 	case BOTLIB_AI_REMOVE_FROM_AVOID_GOALS:
 		botlib_export->ai.BotRemoveFromAvoidGoals(args[1], args[2]);
 		return 0;
 	case BOTLIB_AI_PUSH_GOAL:
-		botlib_export->ai.BotPushGoal(args[1], (struct bot_goal_s*)VMA(2));
+		BotPushGoalET(args[1], (struct bot_goal_et_t*)VMA(2));
 		return 0;
 	case BOTLIB_AI_POP_GOAL:
-		botlib_export->ai.BotPopGoal(args[1]);
+		BotPopGoal(args[1]);
 		return 0;
 	case BOTLIB_AI_EMPTY_GOAL_STACK:
-		botlib_export->ai.BotEmptyGoalStack(args[1]);
+		BotEmptyGoalStack(args[1]);
 		return 0;
 	case BOTLIB_AI_DUMP_AVOID_GOALS:
 		botlib_export->ai.BotDumpAvoidGoals(args[1]);
 		return 0;
 	case BOTLIB_AI_DUMP_GOAL_STACK:
-		botlib_export->ai.BotDumpGoalStack(args[1]);
+		BotDumpGoalStack(args[1]);
 		return 0;
 	case BOTLIB_AI_GOAL_NAME:
-		botlib_export->ai.BotGoalName(args[1], (char*)VMA(2), args[3]);
+		BotGoalName(args[1], (char*)VMA(2), args[3]);
 		return 0;
 	case BOTLIB_AI_GET_TOP_GOAL:
-		return botlib_export->ai.BotGetTopGoal(args[1], (struct bot_goal_s*)VMA(2));
+		return BotGetTopGoalET(args[1], (struct bot_goal_et_t*)VMA(2));
 	case BOTLIB_AI_GET_SECOND_GOAL:
-		return botlib_export->ai.BotGetSecondGoal(args[1], (struct bot_goal_s*)VMA(2));
+		return BotGetSecondGoalET(args[1], (struct bot_goal_et_t*)VMA(2));
 	case BOTLIB_AI_CHOOSE_LTG_ITEM:
 		return botlib_export->ai.BotChooseLTGItem(args[1], (float*)VMA(2), (int*)VMA(3), args[4]);
 	case BOTLIB_AI_CHOOSE_NBG_ITEM:
-		return botlib_export->ai.BotChooseNBGItem(args[1], (float*)VMA(2), (int*)VMA(3), args[4], (struct bot_goal_s*)VMA(5), VMF(6));
+		return botlib_export->ai.BotChooseNBGItem(args[1], (float*)VMA(2), (int*)VMA(3), args[4], (struct bot_goal_et_t*)VMA(5), VMF(6));
 	case BOTLIB_AI_TOUCHING_GOAL:
-		return botlib_export->ai.BotTouchingGoal((float*)VMA(1), (struct bot_goal_s*)VMA(2));
+		return botlib_export->ai.BotTouchingGoal((float*)VMA(1), (struct bot_goal_et_t*)VMA(2));
 	case BOTLIB_AI_ITEM_GOAL_IN_VIS_BUT_NOT_VISIBLE:
-		return botlib_export->ai.BotItemGoalInVisButNotVisible(args[1], (float*)VMA(2), (float*)VMA(3), (struct bot_goal_s*)VMA(4));
+		return botlib_export->ai.BotItemGoalInVisButNotVisible(args[1], (float*)VMA(2), (float*)VMA(3), (struct bot_goal_et_t*)VMA(4));
 	case BOTLIB_AI_GET_LEVEL_ITEM_GOAL:
-		return botlib_export->ai.BotGetLevelItemGoal(args[1], (char*)VMA(2), (struct bot_goal_s*)VMA(3));
+		BotGetLevelItemGoalET(args[1], (char*)VMA(2), (struct bot_goal_et_t*)VMA(3));
 	case BOTLIB_AI_GET_NEXT_CAMP_SPOT_GOAL:
-		return botlib_export->ai.BotGetNextCampSpotGoal(args[1], (struct bot_goal_s*)VMA(2));
+		return BotGetNextCampSpotGoalET(args[1], (struct bot_goal_et_t*)VMA(2));
 	case BOTLIB_AI_GET_MAP_LOCATION_GOAL:
-		return botlib_export->ai.BotGetMapLocationGoal((char*)VMA(1), (struct bot_goal_s*)VMA(2));
+		return BotGetMapLocationGoalET((char*)VMA(1), (struct bot_goal_et_t*)VMA(2));
 	case BOTLIB_AI_AVOID_GOAL_TIME:
 		return FloatAsInt(botlib_export->ai.BotAvoidGoalTime(args[1], args[2]));
 	case BOTLIB_AI_INIT_LEVEL_ITEMS:
@@ -914,30 +914,29 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotUpdateEntityItems();
 		return 0;
 	case BOTLIB_AI_LOAD_ITEM_WEIGHTS:
-		return botlib_export->ai.BotLoadItemWeights(args[1], (char*)VMA(2));
+		return BotLoadItemWeights(args[1], (char*)VMA(2));
 	case BOTLIB_AI_FREE_ITEM_WEIGHTS:
-		botlib_export->ai.BotFreeItemWeights(args[1]);
+		BotFreeItemWeights(args[1]);
 		return 0;
 	case BOTLIB_AI_INTERBREED_GOAL_FUZZY_LOGIC:
-		botlib_export->ai.BotInterbreedGoalFuzzyLogic(args[1], args[2], args[3]);
+		BotInterbreedGoalFuzzyLogic(args[1], args[2], args[3]);
 		return 0;
 	case BOTLIB_AI_SAVE_GOAL_FUZZY_LOGIC:
-		botlib_export->ai.BotSaveGoalFuzzyLogic(args[1], (char*)VMA(2));
 		return 0;
 	case BOTLIB_AI_MUTATE_GOAL_FUZZY_LOGIC:
-		botlib_export->ai.BotMutateGoalFuzzyLogic(args[1], VMF(2));
+		BotMutateGoalFuzzyLogic(args[1], VMF(2));
 		return 0;
 	case BOTLIB_AI_ALLOC_GOAL_STATE:
-		return botlib_export->ai.BotAllocGoalState(args[1]);
+		return BotAllocGoalState(args[1]);
 	case BOTLIB_AI_FREE_GOAL_STATE:
-		botlib_export->ai.BotFreeGoalState(args[1]);
+		BotFreeGoalState(args[1]);
 		return 0;
 
 	case BOTLIB_AI_RESET_MOVE_STATE:
 		botlib_export->ai.BotResetMoveState(args[1]);
 		return 0;
 	case BOTLIB_AI_MOVE_TO_GOAL:
-		botlib_export->ai.BotMoveToGoal((struct bot_moveresult_s*)VMA(1), args[2], (struct bot_goal_s*)VMA(3), args[4]);
+		botlib_export->ai.BotMoveToGoal((struct bot_moveresult_s*)VMA(1), args[2], (struct bot_goal_et_t*)VMA(3), args[4]);
 		return 0;
 	case BOTLIB_AI_MOVE_IN_DIRECTION:
 		return botlib_export->ai.BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
@@ -950,9 +949,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_REACHABILITY_AREA:
 		return botlib_export->ai.BotReachabilityArea((float*)VMA(1), args[2]);
 	case BOTLIB_AI_MOVEMENT_VIEW_TARGET:
-		return botlib_export->ai.BotMovementViewTarget(args[1], (struct bot_goal_s*)VMA(2), args[3], VMF(4), (float*)VMA(5));
+		return botlib_export->ai.BotMovementViewTarget(args[1], (struct bot_goal_et_t*)VMA(2), args[3], VMF(4), (float*)VMA(5));
 	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
-		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (struct bot_goal_s*)VMA(3), args[4], (float*)VMA(5));
+		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (struct bot_goal_et_t*)VMA(3), args[4], (float*)VMA(5));
 	case BOTLIB_AI_ALLOC_MOVE_STATE:
 		return botlib_export->ai.BotAllocMoveState();
 	case BOTLIB_AI_FREE_MOVE_STATE:
