@@ -146,3 +146,8 @@ void BotShutdownGoalAI();
 
 //free cached bot characters
 void BotShutdownCharacters();
+
+//setup the weapon AI
+int BotSetupWeaponAI();
+//shut down the weapon AI
+void BotShutdownWeaponAI();

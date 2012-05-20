@@ -106,7 +106,6 @@ void Log_Write(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //	Struct
 //
 
-#define MAX_STRINGFIELD             80
 //field types
 #define FT_INT                      2		// int
 #define FT_FLOAT                    3		// float

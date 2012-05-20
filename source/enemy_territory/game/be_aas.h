@@ -38,10 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef MAX_AAS_WORLDS
 #define MAX_AAS_WORLDS      1	// one for each bounding box type
 
-#ifndef MAX_STRINGFIELD
-#define MAX_STRINGFIELD             80
-#endif
-
 //travel flags
 #define TFL_INVALID             0x0000001	//traveling temporary not possible
 #define TFL_WALK                0x0000002	//walking

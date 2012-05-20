@@ -39,11 +39,8 @@ struct aas_altroutegoal_s;
 struct aas_predictroute_s;
 struct bot_consolemessage_s;
 struct bot_match_s;
-struct bot_goal_q3_t;
 struct bot_moveresult_s;
 struct bot_initmove_s;
-struct weaponinfo_s;
-struct q3pc_token_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -310,15 +307,6 @@ typedef struct ai_export_s
 	void (* BotFreeMoveState)(int handle);
 	void (* BotInitMoveState)(int handle, struct bot_initmove_s* initmove);
 	void (* BotAddAvoidSpot)(int movestate, vec3_t origin, float radius, int type);
-	//-----------------------------------
-	// be_ai_weap.h
-	//-----------------------------------
-	int (* BotChooseBestFightWeapon)(int weaponstate, int* inventory);
-	void (* BotGetWeaponInfo)(int weaponstate, int weapon, struct weaponinfo_s* weaponinfo);
-	int (* BotLoadWeaponWeights)(int weaponstate, char* filename);
-	int (* BotAllocWeaponState)(void);
-	void (* BotFreeWeaponState)(int weaponstate);
-	void (* BotResetWeaponState)(int weaponstate);
 } ai_export_t;
 
 //bot AI library imported functions

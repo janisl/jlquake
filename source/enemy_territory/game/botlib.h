@@ -46,10 +46,8 @@ struct aas_clientmove_s;
 struct aas_entityinfo_s;
 struct bot_consolemessage_s;
 struct bot_match_s;
-struct bot_goal_et_t;
 struct bot_moveresult_s;
 struct bot_initmove_s;
-struct weaponinfo_s;
 
 // RF, these need to be here so the botlib also knows how many bot game entities there are
 #define NUM_BOTGAMEENTITIES 384
@@ -323,15 +321,6 @@ typedef struct ai_export_s
 	// Ridah
 	void (* BotInitAvoidReach)(int handle);
 	// done.
-	//-----------------------------------
-	// be_ai_weap.h
-	//-----------------------------------
-	int (* BotChooseBestFightWeapon)(int weaponstate, int* inventory);
-	void (* BotGetWeaponInfo)(int weaponstate, int weapon, struct weaponinfo_s* weaponinfo);
-	int (* BotLoadWeaponWeights)(int weaponstate, char* filename);
-	int (* BotAllocWeaponState)(void);
-	void (* BotFreeWeaponState)(int weaponstate);
-	void (* BotResetWeaponState)(int weaponstate);
 } ai_export_t;
 
 //bot AI library imported functions

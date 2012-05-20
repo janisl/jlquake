@@ -48,7 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/botlib/ai_weight.h"
 #include "../game/be_ai_goal.h"
 #include "../game/be_ai_move.h"
-#include "../game/be_ai_weap.h"
 #include "../game/be_ai_chat.h"
 
 //library globals in a structure
@@ -143,8 +142,6 @@ int Export_BotLibSetup(void)
 	{
 		return errnum;
 	}
-//	errnum = BotSetupWeaponAI();	//be_ai_weap.c
-//	if (errnum != BLERR_NOERROR)return errnum;
 //	errnum = BotSetupChatAI();		//be_ai_chat.c
 //	if (errnum != BLERR_NOERROR) return errnum;
 //	errnum = BotSetupMoveAI();		//be_ai_move.c
@@ -789,15 +786,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	// Ridah
 	ai->BotInitAvoidReach = BotInitAvoidReach;
 	// done.
-	//-----------------------------------
-	// be_ai_weap.h
-	//-----------------------------------
-	ai->BotChooseBestFightWeapon = BotChooseBestFightWeapon;
-	ai->BotGetWeaponInfo = BotGetWeaponInfo;
-	ai->BotLoadWeaponWeights = BotLoadWeaponWeights;
-	ai->BotAllocWeaponState = BotAllocWeaponState;
-	ai->BotFreeWeaponState = BotFreeWeaponState;
-	ai->BotResetWeaponState = BotResetWeaponState;
 }
 
 

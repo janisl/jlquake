@@ -31,10 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#ifndef MAX_STRINGFIELD
-#define MAX_STRINGFIELD             80
-#endif
-
 //travel flags
 #define TFL_INVALID             0x00000001	//traveling temporary not possible
 #define TFL_WALK                0x00000002	//walking

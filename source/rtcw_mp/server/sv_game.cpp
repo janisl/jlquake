@@ -856,19 +856,19 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	// done.
 
 	case BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON:
-		return botlib_export->ai.BotChooseBestFightWeapon(args[1], (int*)VMA(2));
+		return BotChooseBestFightWeapon(args[1], (int*)VMA(2));
 	case BOTLIB_AI_GET_WEAPON_INFO:
-		botlib_export->ai.BotGetWeaponInfo(args[1], args[2], (struct weaponinfo_s*)VMA(3));
+		BotGetWeaponInfo(args[1], args[2], (weaponinfo_t*)VMA(3));
 		return 0;
 	case BOTLIB_AI_LOAD_WEAPON_WEIGHTS:
-		return botlib_export->ai.BotLoadWeaponWeights(args[1], (char*)VMA(2));
+		return BotLoadWeaponWeights(args[1], (char*)VMA(2));
 	case BOTLIB_AI_ALLOC_WEAPON_STATE:
-		return botlib_export->ai.BotAllocWeaponState();
+		return BotAllocWeaponState();
 	case BOTLIB_AI_FREE_WEAPON_STATE:
-		botlib_export->ai.BotFreeWeaponState(args[1]);
+		BotFreeWeaponState(args[1]);
 		return 0;
 	case BOTLIB_AI_RESET_WEAPON_STATE:
-		botlib_export->ai.BotResetWeaponState(args[1]);
+		BotResetWeaponState(args[1]);
 		return 0;
 
 	case BOTLIB_AI_GENETIC_PARENTS_AND_CHILD_SELECTION:

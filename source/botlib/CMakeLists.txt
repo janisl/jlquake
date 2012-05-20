@@ -14,7 +14,6 @@ add_library(botlib STATIC
 	be_ai_chat.cpp
 	be_ai_goal.cpp
 	be_ai_move.cpp
-	be_ai_weap.cpp
 	be_ea.cpp
 	be_interface.cpp
 	l_memory.cpp
