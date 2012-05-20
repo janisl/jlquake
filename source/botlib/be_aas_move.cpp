@@ -154,29 +154,29 @@ int AAS_AgainstLadder(vec3_t origin)
 		return false;
 	}
 	//if not in a ladder area
-	if (!(aasworld.areasettings[areanum].areaflags & AREA_LADDER))
+	if (!((*aasworld).areasettings[areanum].areaflags & AREA_LADDER))
 	{
 		return false;
 	}
 	//if a crouch only area
-	if (!(aasworld.areasettings[areanum].presencetype & PRESENCE_NORMAL))
+	if (!((*aasworld).areasettings[areanum].presencetype & PRESENCE_NORMAL))
 	{
 		return false;
 	}
 	//
-	area = &aasworld.areas[areanum];
+	area = &(*aasworld).areas[areanum];
 	for (i = 0; i < area->numfaces; i++)
 	{
-		facenum = aasworld.faceindex[area->firstface + i];
+		facenum = (*aasworld).faceindex[area->firstface + i];
 		side = facenum < 0;
-		face = &aasworld.faces[abs(facenum)];
+		face = &(*aasworld).faces[abs(facenum)];
 		//if the face isn't a ladder face
 		if (!(face->faceflags & FACE_LADDER))
 		{
 			continue;
 		}
 		//get the plane the face is in
-		plane = &aasworld.planes[face->planenum ^ side];
+		plane = &(*aasworld).planes[face->planenum ^ side];
 		//if the origin is pretty close to the plane
 		if (abs(DotProduct(plane->normal, origin) - plane->dist) < 3)
 		{
@@ -749,7 +749,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 						//NOTE: if not the first frame
 					if ((stopevent & SE_TOUCHJUMPPAD) && n)
 					{
-						if (aasworld.areasettings[areas[i]].contents & AREACONTENTS_JUMPPAD)
+						if ((*aasworld).areasettings[areas[i]].contents & AREACONTENTS_JUMPPAD)
 						{
 							VectorCopy(points[i], move->endpos);
 							VectorScale(frame_test_vel, 1 / frametime, move->velocity);
@@ -765,7 +765,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 					}	//end if
 					if (stopevent & SE_TOUCHTELEPORTER)
 					{
-						if (aasworld.areasettings[areas[i]].contents & AREACONTENTS_TELEPORTER)
+						if ((*aasworld).areasettings[areas[i]].contents & AREACONTENTS_TELEPORTER)
 						{
 							VectorCopy(points[i], move->endpos);
 							move->endarea = areas[i];
@@ -781,7 +781,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 					}	//end if
 					if (stopevent & SE_TOUCHCLUSTERPORTAL)
 					{
-						if (aasworld.areasettings[areas[i]].contents & AREACONTENTS_CLUSTERPORTAL)
+						if ((*aasworld).areasettings[areas[i]].contents & AREACONTENTS_CLUSTERPORTAL)
 						{
 							VectorCopy(points[i], move->endpos);
 							move->endarea = areas[i];
@@ -971,15 +971,15 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 			}
 			//
 			areanum = AAS_PointAreaNum(org);
-			if (aasworld.areasettings[areanum].contents & AREACONTENTS_LAVA)
+			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_LAVA)
 			{
 				event |= SE_ENTERLAVA;
 			}
-			if (aasworld.areasettings[areanum].contents & AREACONTENTS_SLIME)
+			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_SLIME)
 			{
 				event |= SE_ENTERSLIME;
 			}
-			if (aasworld.areasettings[areanum].contents & AREACONTENTS_WATER)
+			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_WATER)
 			{
 				event |= SE_ENTERWATER;
 			}

@@ -39,7 +39,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_interface.h"
 #include "be_aas_def.h"
 
-aas_t aasworld;
+aas_t aasworld_local;
+aas_t* aasworld = &aasworld_local;
 
 libvar_t* saveroutingcache;
 
@@ -67,7 +68,7 @@ void AAS_Error(const char* fmt, ...)
 //===========================================================================
 const char* AAS_StringFromIndex(const char* indexname, char* stringindex[], int numindexes, int index)
 {
-	if (!aasworld.indexessetup)
+	if (!(*aasworld).indexessetup)
 	{
 		BotImport_Print(PRT_ERROR, "%s: index %d not setup\n", indexname, index);
 		return "";
@@ -96,7 +97,7 @@ const char* AAS_StringFromIndex(const char* indexname, char* stringindex[], int 
 int AAS_IndexFromString(const char* indexname, char* stringindex[], int numindexes, const char* string)
 {
 	int i;
-	if (!aasworld.indexessetup)
+	if (!(*aasworld).indexessetup)
 	{
 		BotImport_Print(PRT_ERROR, "%s: index not setup \"%s\"\n", indexname, string);
 		return 0;
@@ -128,12 +129,12 @@ void AAS_UpdateStringIndexes(int numconfigstrings, char* configstrings[])
 	{
 		if (configstrings[i])
 		{
-			//if (aasworld.configstrings[i]) FreeMemory(aasworld.configstrings[i]);
-			aasworld.configstrings[i] = (char*)GetMemory(String::Length(configstrings[i]) + 1);
-			String::Cpy(aasworld.configstrings[i], configstrings[i]);
+			//if ((*aasworld).configstrings[i]) FreeMemory((*aasworld).configstrings[i]);
+			(*aasworld).configstrings[i] = (char*)GetMemory(String::Length(configstrings[i]) + 1);
+			String::Cpy((*aasworld).configstrings[i], configstrings[i]);
 		}	//end if
 	}	//end for
-	aasworld.indexessetup = true;
+	(*aasworld).indexessetup = true;
 }	//end of the function AAS_UpdateStringIndexes
 //===========================================================================
 //
@@ -143,7 +144,7 @@ void AAS_UpdateStringIndexes(int numconfigstrings, char* configstrings[])
 //===========================================================================
 int AAS_Loaded(void)
 {
-	return aasworld.loaded;
+	return (*aasworld).loaded;
 }	//end of the function AAS_Loaded
 //===========================================================================
 //
@@ -153,7 +154,7 @@ int AAS_Loaded(void)
 //===========================================================================
 int AAS_Initialized(void)
 {
-	return aasworld.initialized;
+	return (*aasworld).initialized;
 }	//end of the function AAS_Initialized
 //===========================================================================
 //
@@ -163,7 +164,7 @@ int AAS_Initialized(void)
 //===========================================================================
 void AAS_SetInitialized(void)
 {
-	aasworld.initialized = true;
+	(*aasworld).initialized = true;
 	BotImport_Print(PRT_MESSAGE, "AAS initialized.\n");
 #ifdef DEBUG
 	//create all the routing cache
@@ -181,12 +182,12 @@ void AAS_SetInitialized(void)
 void AAS_ContinueInit(float time)
 {
 	//if no AAS file loaded
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return;
 	}
 	//if AAS is already initialized
-	if (aasworld.initialized)
+	if ((*aasworld).initialized)
 	{
 		return;
 	}
@@ -199,7 +200,7 @@ void AAS_ContinueInit(float time)
 	AAS_InitClustering();
 	//if reachability has been calculated and an AAS file should be written
 	//or there is a forced data optimization
-	if (aasworld.savefile || ((int)LibVarGetValue("forcewrite")))
+	if ((*aasworld).savefile || ((int)LibVarGetValue("forcewrite")))
 	{
 		//optimize the AAS data
 		if ((int)LibVarValue("aasoptimize", "0"))
@@ -207,13 +208,13 @@ void AAS_ContinueInit(float time)
 			AAS_Optimize();
 		}
 		//save the AAS file
-		if (AAS_WriteAASFile(aasworld.filename))
+		if (AAS_WriteAASFile((*aasworld).filename))
 		{
-			BotImport_Print(PRT_MESSAGE, "%s written succesfully\n", aasworld.filename);
+			BotImport_Print(PRT_MESSAGE, "%s written succesfully\n", (*aasworld).filename);
 		}	//end if
 		else
 		{
-			BotImport_Print(PRT_ERROR, "couldn't write %s\n", aasworld.filename);
+			BotImport_Print(PRT_ERROR, "couldn't write %s\n", (*aasworld).filename);
 		}	//end else
 	}	//end if
 		//initialize the routing
@@ -230,7 +231,7 @@ void AAS_ContinueInit(float time)
 //===========================================================================
 int AAS_StartFrame(float time)
 {
-	aasworld.time = time;
+	(*aasworld).time = time;
 	//unlink all entities that were not updated last frame
 	AAS_UnlinkInvalidEntities();
 	//invalidate the entities
@@ -238,7 +239,7 @@ int AAS_StartFrame(float time)
 	//initialize AAS
 	AAS_ContinueInit(time);
 	//
-	aasworld.frameroutingupdates = 0;
+	(*aasworld).frameroutingupdates = 0;
 	//
 	if (bot_developer)
 	{
@@ -255,7 +256,7 @@ int AAS_StartFrame(float time)
 		LibVarSet("saveroutingcache", "0");
 	}	//end if
 		//
-	aasworld.numframes++;
+	(*aasworld).numframes++;
 	return BLERR_NOERROR;
 }	//end of the function AAS_StartFrame
 //===========================================================================
@@ -266,7 +267,7 @@ int AAS_StartFrame(float time)
 //===========================================================================
 float AAS_Time(void)
 {
-	return aasworld.time;
+	return (*aasworld).time;
 }	//end of the function AAS_Time
 //===========================================================================
 //
@@ -296,7 +297,7 @@ int AAS_LoadFiles(const char* mapname)
 	char aasfile[MAX_PATH];
 //	char bspfile[MAX_PATH];
 
-	String::Cpy(aasworld.mapname, mapname);
+	String::Cpy((*aasworld).mapname, mapname);
 	//NOTE: first reset the entity links into the AAS areas and BSP leaves
 	// the AAS link heap and BSP link heap are reset after respectively the
 	// AAS file and BSP file are loaded
@@ -313,7 +314,7 @@ int AAS_LoadFiles(const char* mapname)
 	}
 
 	BotImport_Print(PRT_MESSAGE, "loaded %s\n", aasfile);
-	String::NCpy(aasworld.filename, aasfile, MAX_PATH);
+	String::NCpy((*aasworld).filename, aasfile, MAX_PATH);
 	return BLERR_NOERROR;
 }	//end of the function AAS_LoadFiles
 //===========================================================================
@@ -333,7 +334,7 @@ int AAS_LoadMap(const char* mapname)
 		return 0;
 	}	//end if
 		//
-	aasworld.initialized = false;
+	(*aasworld).initialized = false;
 	//NOTE: free the routing caches before loading a new map because
 	// to free the caches the old number of areas, number of clusters
 	// and number of areas in a clusters must be available
@@ -342,7 +343,7 @@ int AAS_LoadMap(const char* mapname)
 	errnum = AAS_LoadFiles(mapname);
 	if (errnum != BLERR_NOERROR)
 	{
-		aasworld.loaded = false;
+		(*aasworld).loaded = false;
 		return errnum;
 	}	//end if
 		//
@@ -367,22 +368,22 @@ int AAS_LoadMap(const char* mapname)
 //===========================================================================
 int AAS_Setup(void)
 {
-	aasworld.maxclients = (int)LibVarValue("maxclients", "128");
-	aasworld.maxentities = (int)LibVarValue("maxentities", "1024");
+	(*aasworld).maxclients = (int)LibVarValue("maxclients", "128");
+	(*aasworld).maxentities = (int)LibVarValue("maxentities", "1024");
 	// as soon as it's set to 1 the routing cache will be saved
 	saveroutingcache = LibVar("saveroutingcache", "0");
 	//allocate memory for the entities
-	if (aasworld.entities)
+	if ((*aasworld).entities)
 	{
-		FreeMemory(aasworld.entities);
+		FreeMemory((*aasworld).entities);
 	}
-	aasworld.entities = (aas_entity_t*)GetClearedHunkMemory(aasworld.maxentities * sizeof(aas_entity_t));
+	(*aasworld).entities = (aas_entity_t*)GetClearedHunkMemory((*aasworld).maxentities * sizeof(aas_entity_t));
 	//invalidate all the entities
 	AAS_InvalidateEntities();
 	//force some recalculations
 	//LibVarSet("forceclustering", "1");			//force clustering calculation
 	//LibVarSet("forcereachability", "1");		//force reachability calculation
-	aasworld.numframes = 0;
+	(*aasworld).numframes = 0;
 	return BLERR_NOERROR;
 }	//end of the function AAS_Setup
 //===========================================================================
@@ -405,14 +406,14 @@ void AAS_Shutdown(void)
 	//free the aas data
 	AAS_DumpAASData();
 	//free the entities
-	if (aasworld.entities)
+	if ((*aasworld).entities)
 	{
-		FreeMemory(aasworld.entities);
+		FreeMemory((*aasworld).entities);
 	}
-	//clear the aasworld structure
-	Com_Memset(&aasworld, 0, sizeof(aas_t));
+	//clear the (*aasworld) structure
+	Com_Memset(&(*aasworld), 0, sizeof(aas_t));
 	//aas has not been initialized
-	aasworld.initialized = false;
+	(*aasworld).initialized = false;
 	//NOTE: as soon as a new .bsp file is loaded the .bsp file memory is
 	// freed an reallocated, so there's no need to free that memory here
 	//print shutdown

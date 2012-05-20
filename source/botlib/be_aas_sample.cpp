@@ -97,30 +97,30 @@ void AAS_InitAASLinkHeap(void)
 {
 	int i, max_aaslinks;
 
-	max_aaslinks = aasworld.linkheapsize;
+	max_aaslinks = (*aasworld).linkheapsize;
 	//if there's no link heap present
-	if (!aasworld.linkheap)
+	if (!(*aasworld).linkheap)
 	{
 		max_aaslinks = (int)LibVarValue("max_aaslinks", "6144");
 		if (max_aaslinks < 0)
 		{
 			max_aaslinks = 0;
 		}
-		aasworld.linkheapsize = max_aaslinks;
-		aasworld.linkheap = (aas_link_t*)GetHunkMemory(max_aaslinks * sizeof(aas_link_t));
+		(*aasworld).linkheapsize = max_aaslinks;
+		(*aasworld).linkheap = (aas_link_t*)GetHunkMemory(max_aaslinks * sizeof(aas_link_t));
 	}	//end if
 		//link the links on the heap
-	aasworld.linkheap[0].prev_ent = NULL;
-	aasworld.linkheap[0].next_ent = &aasworld.linkheap[1];
+	(*aasworld).linkheap[0].prev_ent = NULL;
+	(*aasworld).linkheap[0].next_ent = &(*aasworld).linkheap[1];
 	for (i = 1; i < max_aaslinks - 1; i++)
 	{
-		aasworld.linkheap[i].prev_ent = &aasworld.linkheap[i - 1];
-		aasworld.linkheap[i].next_ent = &aasworld.linkheap[i + 1];
+		(*aasworld).linkheap[i].prev_ent = &(*aasworld).linkheap[i - 1];
+		(*aasworld).linkheap[i].next_ent = &(*aasworld).linkheap[i + 1];
 	}	//end for
-	aasworld.linkheap[max_aaslinks - 1].prev_ent = &aasworld.linkheap[max_aaslinks - 2];
-	aasworld.linkheap[max_aaslinks - 1].next_ent = NULL;
+	(*aasworld).linkheap[max_aaslinks - 1].prev_ent = &(*aasworld).linkheap[max_aaslinks - 2];
+	(*aasworld).linkheap[max_aaslinks - 1].next_ent = NULL;
 	//pointer to the first free link
-	aasworld.freelinks = &aasworld.linkheap[0];
+	(*aasworld).freelinks = &(*aasworld).linkheap[0];
 	//
 	numaaslinks = max_aaslinks;
 }	//end of the function AAS_InitAASLinkHeap
@@ -132,12 +132,12 @@ void AAS_InitAASLinkHeap(void)
 //===========================================================================
 void AAS_FreeAASLinkHeap(void)
 {
-	if (aasworld.linkheap)
+	if ((*aasworld).linkheap)
 	{
-		FreeMemory(aasworld.linkheap);
+		FreeMemory((*aasworld).linkheap);
 	}
-	aasworld.linkheap = NULL;
-	aasworld.linkheapsize = 0;
+	(*aasworld).linkheap = NULL;
+	(*aasworld).linkheapsize = 0;
 }	//end of the function AAS_FreeAASLinkHeap
 //===========================================================================
 //
@@ -149,7 +149,7 @@ aas_link_t* AAS_AllocAASLink(void)
 {
 	aas_link_t* link;
 
-	link = aasworld.freelinks;
+	link = (*aasworld).freelinks;
 	if (!link)
 	{
 		if (bot_developer)
@@ -158,13 +158,13 @@ aas_link_t* AAS_AllocAASLink(void)
 		}	//end if
 		return NULL;
 	}	//end if
-	if (aasworld.freelinks)
+	if ((*aasworld).freelinks)
 	{
-		aasworld.freelinks = aasworld.freelinks->next_ent;
+		(*aasworld).freelinks = (*aasworld).freelinks->next_ent;
 	}
-	if (aasworld.freelinks)
+	if ((*aasworld).freelinks)
 	{
-		aasworld.freelinks->prev_ent = NULL;
+		(*aasworld).freelinks->prev_ent = NULL;
 	}
 	numaaslinks--;
 	return link;
@@ -177,15 +177,15 @@ aas_link_t* AAS_AllocAASLink(void)
 //===========================================================================
 void AAS_DeAllocAASLink(aas_link_t* link)
 {
-	if (aasworld.freelinks)
+	if ((*aasworld).freelinks)
 	{
-		aasworld.freelinks->prev_ent = link;
+		(*aasworld).freelinks->prev_ent = link;
 	}
 	link->prev_ent = NULL;
-	link->next_ent = aasworld.freelinks;
+	link->next_ent = (*aasworld).freelinks;
 	link->prev_area = NULL;
 	link->next_area = NULL;
-	aasworld.freelinks = link;
+	(*aasworld).freelinks = link;
 	numaaslinks++;
 }	//end of the function AAS_DeAllocAASLink
 //===========================================================================
@@ -196,16 +196,16 @@ void AAS_DeAllocAASLink(aas_link_t* link)
 //===========================================================================
 void AAS_InitAASLinkedEntities(void)
 {
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return;
 	}
-	if (aasworld.arealinkedentities)
+	if ((*aasworld).arealinkedentities)
 	{
-		FreeMemory(aasworld.arealinkedentities);
+		FreeMemory((*aasworld).arealinkedentities);
 	}
-	aasworld.arealinkedentities = (aas_link_t**)GetClearedHunkMemory(
-		aasworld.numareas * sizeof(aas_link_t*));
+	(*aasworld).arealinkedentities = (aas_link_t**)GetClearedHunkMemory(
+		(*aasworld).numareas * sizeof(aas_link_t*));
 }	//end of the function AAS_InitAASLinkedEntities
 //===========================================================================
 //
@@ -215,11 +215,11 @@ void AAS_InitAASLinkedEntities(void)
 //===========================================================================
 void AAS_FreeAASLinkedEntities(void)
 {
-	if (aasworld.arealinkedentities)
+	if ((*aasworld).arealinkedentities)
 	{
-		FreeMemory(aasworld.arealinkedentities);
+		FreeMemory((*aasworld).arealinkedentities);
 	}
-	aasworld.arealinkedentities = NULL;
+	(*aasworld).arealinkedentities = NULL;
 }	//end of the function AAS_InitAASLinkedEntities
 //===========================================================================
 // returns the AAS area the point is in
@@ -235,7 +235,7 @@ int AAS_PointAreaNum(vec3_t point)
 	aas_node_t* node;
 	aas_plane_t* plane;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_PointAreaNum: aas not loaded\n");
 		return 0;
@@ -247,21 +247,21 @@ int AAS_PointAreaNum(vec3_t point)
 	{
 //		BotImport_Print(PRT_MESSAGE, "[%d]", nodenum);
 #ifdef AAS_SAMPLE_DEBUG
-		if (nodenum >= aasworld.numnodes)
+		if (nodenum >= (*aasworld).numnodes)
 		{
-			BotImport_Print(PRT_ERROR, "nodenum = %d >= aasworld.numnodes = %d\n", nodenum, aasworld.numnodes);
+			BotImport_Print(PRT_ERROR, "nodenum = %d >= (*aasworld).numnodes = %d\n", nodenum, (*aasworld).numnodes);
 			return 0;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
-		node = &aasworld.nodes[nodenum];
+		node = &(*aasworld).nodes[nodenum];
 #ifdef AAS_SAMPLE_DEBUG
-		if (node->planenum < 0 || node->planenum >= aasworld.numplanes)
+		if (node->planenum < 0 || node->planenum >= (*aasworld).numplanes)
 		{
-			BotImport_Print(PRT_ERROR, "node->planenum = %d >= aasworld.numplanes = %d\n", node->planenum, aasworld.numplanes);
+			BotImport_Print(PRT_ERROR, "node->planenum = %d >= (*aasworld).numplanes = %d\n", node->planenum, (*aasworld).numplanes);
 			return 0;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
-		plane = &aasworld.planes[node->planenum];
+		plane = &(*aasworld).planes[node->planenum];
 		dist = DotProduct(point, plane->normal) - plane->dist;
 		if (dist > 0)
 		{
@@ -291,7 +291,7 @@ int AAS_PointReachabilityAreaIndex(vec3_t origin)
 {
 	int areanum, cluster, i, index;
 
-	if (!aasworld.initialized)
+	if (!(*aasworld).initialized)
 	{
 		return 0;
 	}
@@ -299,9 +299,9 @@ int AAS_PointReachabilityAreaIndex(vec3_t origin)
 	if (!origin)
 	{
 		index = 0;
-		for (i = 0; i < aasworld.numclusters; i++)
+		for (i = 0; i < (*aasworld).numclusters; i++)
 		{
-			index += aasworld.clusters[i].numreachabilityareas;
+			index += (*aasworld).clusters[i].numreachabilityareas;
 		}	//end for
 		return index;
 	}	//end if
@@ -311,18 +311,18 @@ int AAS_PointReachabilityAreaIndex(vec3_t origin)
 	{
 		return 0;
 	}
-	cluster = aasworld.areasettings[areanum].cluster;
-	areanum = aasworld.areasettings[areanum].clusterareanum;
+	cluster = (*aasworld).areasettings[areanum].cluster;
+	areanum = (*aasworld).areasettings[areanum].clusterareanum;
 	if (cluster < 0)
 	{
-		cluster = aasworld.portals[-cluster].frontcluster;
-		areanum = aasworld.portals[-cluster].clusterareanum[0];
+		cluster = (*aasworld).portals[-cluster].frontcluster;
+		areanum = (*aasworld).portals[-cluster].clusterareanum[0];
 	}	//end if
 
 	index = 0;
 	for (i = 0; i < cluster; i++)
 	{
-		index += aasworld.clusters[i].numreachabilityareas;
+		index += (*aasworld).clusters[i].numreachabilityareas;
 	}	//end for
 	index += areanum;
 	return index;
@@ -335,12 +335,12 @@ int AAS_PointReachabilityAreaIndex(vec3_t origin)
 //===========================================================================
 int AAS_AreaCluster(int areanum)
 {
-	if (areanum <= 0 || areanum >= aasworld.numareas)
+	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_AreaCluster: invalid area number\n");
 		return 0;
 	}	//end if
-	return aasworld.areasettings[areanum].cluster;
+	return (*aasworld).areasettings[areanum].cluster;
 }	//end of the function AAS_AreaCluster
 //===========================================================================
 // returns the presence types of the given area
@@ -351,16 +351,16 @@ int AAS_AreaCluster(int areanum)
 //===========================================================================
 int AAS_AreaPresenceType(int areanum)
 {
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return 0;
 	}
-	if (areanum <= 0 || areanum >= aasworld.numareas)
+	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_AreaPresenceType: invalid area number\n");
 		return 0;
 	}	//end if
-	return aasworld.areasettings[areanum].presencetype;
+	return (*aasworld).areasettings[areanum].presencetype;
 }	//end of the function AAS_AreaPresenceType
 //===========================================================================
 // returns the presence type at the given point
@@ -373,7 +373,7 @@ int AAS_PointPresenceType(vec3_t point)
 {
 	int areanum;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return 0;
 	}
@@ -383,7 +383,7 @@ int AAS_PointPresenceType(vec3_t point)
 	{
 		return PRESENCE_NONE;
 	}
-	return aasworld.areasettings[areanum].presencetype;
+	return (*aasworld).areasettings[areanum].presencetype;
 }	//end of the function AAS_PointPresenceType
 //===========================================================================
 // calculates the minimum distance between the origin of the box and the
@@ -472,7 +472,7 @@ qboolean AAS_AreaEntityCollision(int areanum, vec3_t start, vec3_t end,
 	//assume no collision
 	bsptrace.fraction = 1;
 	collision = false;
-	for (link = aasworld.arealinkedentities[areanum]; link; link = link->next_ent)
+	for (link = (*aasworld).arealinkedentities[areanum]; link; link = link->next_ent)
 	{
 		//ignore the pass entity
 		if (link->entnum == passent)
@@ -519,7 +519,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 	//clear the trace structure
 	Com_Memset(&trace, 0, sizeof(aas_trace_t));
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return trace;
 	}
@@ -559,7 +559,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 		if (nodenum < 0)
 		{
 #ifdef AAS_SAMPLE_DEBUG
-			if (-nodenum > aasworld.numareasettings)
+			if (-nodenum > (*aasworld).numareasettings)
 			{
 				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: -nodenum out of range\n");
 				return trace;
@@ -567,7 +567,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 #endif	//AAS_SAMPLE_DEBUG
 			//BotImport_Print(PRT_MESSAGE, "areanum = %d, must be %d\n", -nodenum, AAS_PointAreaNum(start));
 			//if can't enter the area because it hasn't got the right presence type
-			if (!(aasworld.areasettings[-nodenum].presencetype & presencetype))
+			if (!((*aasworld).areasettings[-nodenum].presencetype & presencetype))
 			{
 				//if the start point is still the initial start point
 				//NOTE: no need for epsilons because the points will be
@@ -594,7 +594,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 //				VectorSubtract(end, start, v1);
 				trace.planenum = tstack_p->planenum;
 				//always take the plane with normal facing towards the trace start
-				plane = &aasworld.planes[trace.planenum];
+				plane = &(*aasworld).planes[trace.planenum];
 				if (DotProduct(v1, plane->normal) > 0)
 				{
 					trace.planenum ^= 1;
@@ -650,7 +650,7 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 //			VectorSubtract(end, start, v1);
 			trace.planenum = tstack_p->planenum;
 			//always take the plane with normal facing towards the trace start
-			plane = &aasworld.planes[trace.planenum];
+			plane = &(*aasworld).planes[trace.planenum];
 			if (DotProduct(v1, plane->normal) > 0)
 			{
 				trace.planenum ^= 1;
@@ -658,20 +658,20 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			return trace;
 		}	//end if
 #ifdef AAS_SAMPLE_DEBUG
-		if (nodenum > aasworld.numnodes)
+		if (nodenum > (*aasworld).numnodes)
 		{
 			BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: nodenum out of range\n");
 			return trace;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
 		//the node to test against
-		aasnode = &aasworld.nodes[nodenum];
+		aasnode = &(*aasworld).nodes[nodenum];
 		//start point of current line to test against node
 		VectorCopy(tstack_p->start, cur_start);
 		//end point of the current line to test against node
 		VectorCopy(tstack_p->end, cur_end);
 		//the current node plane
-		plane = &aasworld.planes[aasnode->planenum];
+		plane = &(*aasworld).planes[aasnode->planenum];
 
 		switch (plane->type)
 		{	/*FIXME: wtf doesn't this work? obviously the axial node planes aren't always facing positive!!!
@@ -816,7 +816,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 
 	numareas = 0;
 	areas[0] = 0;
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return numareas;
 	}
@@ -846,7 +846,7 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 		if (nodenum < 0)
 		{
 #ifdef AAS_SAMPLE_DEBUG
-			if (-nodenum > aasworld.numareasettings)
+			if (-nodenum > (*aasworld).numareasettings)
 			{
 				BotImport_Print(PRT_ERROR, "AAS_TraceAreas: -nodenum = %d out of range\n", -nodenum);
 				return numareas;
@@ -871,20 +871,20 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			continue;
 		}	//end if
 #ifdef AAS_SAMPLE_DEBUG
-		if (nodenum > aasworld.numnodes)
+		if (nodenum > (*aasworld).numnodes)
 		{
 			BotImport_Print(PRT_ERROR, "AAS_TraceAreas: nodenum out of range\n");
 			return numareas;
 		}	//end if
 #endif	//AAS_SAMPLE_DEBUG
 		//the node to test against
-		aasnode = &aasworld.nodes[nodenum];
+		aasnode = &(*aasworld).nodes[nodenum];
 		//start point of current line to test against node
 		VectorCopy(tstack_p->start, cur_start);
 		//end point of the current line to test against node
 		VectorCopy(tstack_p->end, cur_end);
 		//the current node plane
-		plane = &aasworld.planes[aasnode->planenum];
+		plane = &(*aasworld).planes[aasnode->planenum];
 
 		switch (plane->type)
 		{	/*FIXME: wtf doesn't this work? obviously the node planes aren't always facing positive!!!
@@ -1034,20 +1034,20 @@ qboolean AAS_InsideFace(aas_face_t* face, vec3_t pnormal, vec3_t point, float ep
 	int lastvertex = 0;
 #endif	//AAS_SAMPLE_DEBUG
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return false;
 	}
 
 	for (i = 0; i < face->numedges; i++)
 	{
-		edgenum = aasworld.edgeindex[face->firstedge + i];
-		edge = &aasworld.edges[abs(edgenum)];
+		edgenum = (*aasworld).edgeindex[face->firstedge + i];
+		edge = &(*aasworld).edges[abs(edgenum)];
 		//get the first vertex of the edge
 		firstvertex = edgenum < 0;
-		VectorCopy(aasworld.vertexes[edge->v[firstvertex]], v0);
+		VectorCopy((*aasworld).vertexes[edge->v[firstvertex]], v0);
 		//edge vector
-		VectorSubtract(aasworld.vertexes[edge->v[!firstvertex]], v0, edgevec);
+		VectorSubtract((*aasworld).vertexes[edge->v[!firstvertex]], v0, edgevec);
 		//
 #ifdef AAS_SAMPLE_DEBUG
 		if (lastvertex && lastvertex != edge->v[firstvertex])
@@ -1091,22 +1091,22 @@ qboolean AAS_PointInsideFace(int facenum, vec3_t point, float epsilon)
 	aas_plane_t* plane;
 	aas_face_t* face;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return false;
 	}
 
-	face = &aasworld.faces[facenum];
-	plane = &aasworld.planes[face->planenum];
+	face = &(*aasworld).faces[facenum];
+	plane = &(*aasworld).planes[face->planenum];
 	//
 	for (i = 0; i < face->numedges; i++)
 	{
-		edgenum = aasworld.edgeindex[face->firstedge + i];
-		edge = &aasworld.edges[abs(edgenum)];
+		edgenum = (*aasworld).edgeindex[face->firstedge + i];
+		edge = &(*aasworld).edges[abs(edgenum)];
 		//get the first vertex of the edge
 		firstvertex = edgenum < 0;
-		v1 = aasworld.vertexes[edge->v[firstvertex]];
-		v2 = aasworld.vertexes[edge->v[!firstvertex]];
+		v1 = (*aasworld).vertexes[edge->v[firstvertex]];
+		v2 = (*aasworld).vertexes[edge->v[!firstvertex]];
 		//edge vector
 		VectorSubtract(v2, v1, edgevec);
 		//vector from first edge point to point possible in face
@@ -1136,21 +1136,21 @@ aas_face_t* AAS_AreaGroundFace(int areanum, vec3_t point)
 	aas_area_t* area;
 	aas_face_t* face;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return NULL;
 	}
 
-	area = &aasworld.areas[areanum];
+	area = &(*aasworld).areas[areanum];
 	for (i = 0; i < area->numfaces; i++)
 	{
-		facenum = aasworld.faceindex[area->firstface + i];
-		face = &aasworld.faces[abs(facenum)];
+		facenum = (*aasworld).faceindex[area->firstface + i];
+		face = &(*aasworld).faces[abs(facenum)];
 		//if this is a ground face
 		if (face->faceflags & FACE_GROUND)
 		{
 			//get the up or down normal
-			if (aasworld.planes[face->planenum].normal[2] < 0)
+			if ((*aasworld).planes[face->planenum].normal[2] < 0)
 			{
 				VectorNegate(up, normal);
 			}
@@ -1178,7 +1178,7 @@ void AAS_FacePlane(int facenum, vec3_t normal, float* dist)
 {
 	aas_plane_t* plane;
 
-	plane = &aasworld.planes[aasworld.faces[facenum].planenum];
+	plane = &(*aasworld).planes[(*aasworld).faces[facenum].planenum];
 	VectorCopy(plane->normal, normal);
 	*dist = plane->dist;
 }	//end of the function AAS_FacePlane
@@ -1195,7 +1195,7 @@ aas_face_t* AAS_TraceEndFace(aas_trace_t* trace)
 	aas_area_t* area;
 	aas_face_t* face, * firstface = NULL;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return NULL;
 	}
@@ -1206,12 +1206,12 @@ aas_face_t* AAS_TraceEndFace(aas_trace_t* trace)
 		return NULL;
 	}
 	//trace->lastarea is the last area the trace was in
-	area = &aasworld.areas[trace->lastarea];
+	area = &(*aasworld).areas[trace->lastarea];
 	//check which face the trace.endpos was in
 	for (i = 0; i < area->numfaces; i++)
 	{
-		facenum = aasworld.faceindex[area->firstface + i];
-		face = &aasworld.faces[abs(facenum)];
+		facenum = (*aasworld).faceindex[area->firstface + i];
+		face = &(*aasworld).faces[abs(facenum)];
 		//if the face is in the same plane as the trace end point
 		if ((face->planenum & ~1) == (trace->planenum & ~1))
 		{
@@ -1224,7 +1224,7 @@ aas_face_t* AAS_TraceEndFace(aas_trace_t* trace)
                 if (firstface->numedges < face->numedges)
                 {
                     if (AAS_InsideFace(firstface,
-                        aasworld.planes[face->planenum].normal, trace->endpos))
+                        (*aasworld).planes[face->planenum].normal, trace->endpos))
                     {
                         return firstface;
                     } //end if
@@ -1233,7 +1233,7 @@ aas_face_t* AAS_TraceEndFace(aas_trace_t* trace)
                 else
                 {
                     if (AAS_InsideFace(face,
-                        aasworld.planes[face->planenum].normal, trace->endpos))
+                        (*aasworld).planes[face->planenum].normal, trace->endpos))
                     {
                         return face;
                     } //end if
@@ -1244,7 +1244,7 @@ aas_face_t* AAS_TraceEndFace(aas_trace_t* trace)
                 firstface = face;
             } //end else*/
 			if (AAS_InsideFace(face,
-					aasworld.planes[face->planenum].normal, trace->endpos, 0.01f))
+					(*aasworld).planes[face->planenum].normal, trace->endpos, 0.01f))
 			{
 				return face;
 			}
@@ -1344,7 +1344,7 @@ void AAS_UnlinkFromAreas(aas_link_t* areas)
 		}
 		else
 		{
-			aasworld.arealinkedentities[link->areanum] = link->next_ent;
+			(*aasworld).arealinkedentities[link->areanum] = link->next_ent;
 		}
 		if (link->next_ent)
 		{
@@ -1378,7 +1378,7 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 	aas_plane_t* plane;
 	aas_link_t* link, * areas;
 
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_LinkEntity: aas not loaded\n");
 		return NULL;
@@ -1409,7 +1409,7 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 		{
 			//NOTE: the entity might have already been linked into this area
 			// because several node children can point to the same area
-			for (link = aasworld.arealinkedentities[-nodenum]; link; link = link->next_ent)
+			for (link = (*aasworld).arealinkedentities[-nodenum]; link; link = link->next_ent)
 			{
 				if (link->entnum == entnum)
 				{
@@ -1438,12 +1438,12 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 			areas = link;
 			//put the link into the double linked entity list of the area
 			link->prev_ent = NULL;
-			link->next_ent = aasworld.arealinkedentities[-nodenum];
-			if (aasworld.arealinkedentities[-nodenum])
+			link->next_ent = (*aasworld).arealinkedentities[-nodenum];
+			if ((*aasworld).arealinkedentities[-nodenum])
 			{
-				aasworld.arealinkedentities[-nodenum]->prev_ent = link;
+				(*aasworld).arealinkedentities[-nodenum]->prev_ent = link;
 			}
-			aasworld.arealinkedentities[-nodenum] = link;
+			(*aasworld).arealinkedentities[-nodenum] = link;
 			//
 			continue;
 		}	//end if
@@ -1453,9 +1453,9 @@ aas_link_t* AAS_AASLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum)
 			continue;
 		}
 		//the node to test against
-		aasnode = &aasworld.nodes[nodenum];
+		aasnode = &(*aasworld).nodes[nodenum];
 		//the current node plane
-		plane = &aasworld.planes[aasnode->planenum];
+		plane = &(*aasworld).planes[aasnode->planenum];
 		//get the side(s) the box is situated relative to the plane
 		side = AAS_BoxOnPlaneSide2(absmins, absmaxs, plane);
 		//if on the front side of the node
@@ -1538,19 +1538,19 @@ int AAS_AreaInfo(int areanum, aas_areainfo_t* info)
 	{
 		return 0;
 	}
-	if (areanum <= 0 || areanum >= aasworld.numareas)
+	if (areanum <= 0 || areanum >= (*aasworld).numareas)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_AreaInfo: areanum %d out of range\n", areanum);
 		return 0;
 	}	//end if
-	settings = &aasworld.areasettings[areanum];
+	settings = &(*aasworld).areasettings[areanum];
 	info->cluster = settings->cluster;
 	info->contents = settings->contents;
 	info->flags = settings->areaflags;
 	info->presencetype = settings->presencetype;
-	VectorCopy(aasworld.areas[areanum].mins, info->mins);
-	VectorCopy(aasworld.areas[areanum].maxs, info->maxs);
-	VectorCopy(aasworld.areas[areanum].center, info->center);
+	VectorCopy((*aasworld).areas[areanum].mins, info->mins);
+	VectorCopy((*aasworld).areas[areanum].maxs, info->maxs);
+	VectorCopy((*aasworld).areas[areanum].center, info->center);
 	return sizeof(aas_areainfo_t);
 }	//end of the function AAS_AreaInfo
 //===========================================================================
@@ -1561,10 +1561,10 @@ int AAS_AreaInfo(int areanum, aas_areainfo_t* info)
 //===========================================================================
 aas_plane_t* AAS_PlaneFromNum(int planenum)
 {
-	if (!aasworld.loaded)
+	if (!(*aasworld).loaded)
 	{
 		return 0;
 	}
 
-	return &aasworld.planes[planenum];
+	return &(*aasworld).planes[planenum];
 }	//end of the function AAS_PlaneFromNum
