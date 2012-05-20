@@ -17,6 +17,9 @@
 #define CACHETYPE_PORTAL        0
 #define CACHETYPE_AREA          1
 
+#define MAX_AAS_WORLDS      2	// one for each bounding box type
+#define MAX_AAS_WORLDS_ET   1
+
 //area settings
 struct aas_areasettings_t
 {
@@ -324,3 +327,11 @@ typedef struct aas_s
 	// RF, areas that are influenced by a death count
 	byte* teamDeathAvoid;
 } aas_t;
+
+extern aas_t* aasworld;
+extern aas_t aasworlds[MAX_AAS_WORLDS];
+
+//AAS error message
+void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+//returns true if the AAS file is loaded
+bool AAS_Loaded();

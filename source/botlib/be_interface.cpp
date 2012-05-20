@@ -661,9 +661,7 @@ static void Init_AAS_Export(aas_export_t* aas)
 	//--------------------------------------------
 	// be_aas_main.c
 	//--------------------------------------------
-	aas->AAS_Initialized = AAS_Initialized;
 	aas->AAS_PresenceTypeBoundingBox = AAS_PresenceTypeBoundingBox;
-	aas->AAS_Time = AAS_Time;
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------

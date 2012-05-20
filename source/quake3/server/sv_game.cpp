@@ -534,12 +534,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AAS_INITIALIZED:
-		return botlib_export->aas.AAS_Initialized();
+		return AAS_Initialized();
 	case BOTLIB_AAS_PRESENCE_TYPE_BOUNDING_BOX:
 		botlib_export->aas.AAS_PresenceTypeBoundingBox(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 	case BOTLIB_AAS_TIME:
-		return FloatAsInt(botlib_export->aas.AAS_Time());
+		return FloatAsInt(AAS_Time());
 
 	case BOTLIB_AAS_POINT_AREA_NUM:
 		return botlib_export->aas.AAS_PointAreaNum((float*)VMA(1));

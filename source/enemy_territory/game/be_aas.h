@@ -35,8 +35,8 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifndef MAX_AAS_WORLDS
-#define MAX_AAS_WORLDS      1	// one for each bounding box type
+#ifndef _ET_BE_AAS_H
+#define _ET_BE_AAS_H
 
 //travel flags
 #define TFL_INVALID             0x0000001	//traveling temporary not possible

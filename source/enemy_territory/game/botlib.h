@@ -163,9 +163,7 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------
-	int (* AAS_Initialized)(void);
 	void (* AAS_PresenceTypeBoundingBox)(int presencetype, vec3_t mins, vec3_t maxs);
-	float (* AAS_Time)(void);
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------
@@ -221,11 +219,6 @@ typedef struct aas_export_s
 	int (* AAS_NearestHideArea)(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 	void (* AAS_RecordTeamDeathArea)(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
 	// done.
-
-	// Ridah
-	void (* AAS_SetCurrentWorld)(int index);
-	// done.
-
 } aas_export_t;
 
 typedef struct ea_export_s

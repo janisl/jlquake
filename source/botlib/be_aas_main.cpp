@@ -38,47 +38,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-aas_t aasworld_local;
-aas_t* aasworld = &aasworld_local;
-
 libvar_t* saveroutingcache;
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_Error(const char* fmt, ...)
-{
-	char str[1024];
-	va_list arglist;
-
-	va_start(arglist, fmt);
-	Q_vsnprintf(str, 1024, fmt, arglist);
-	va_end(arglist);
-	BotImport_Print(PRT_FATAL, "%s", str);
-}	//end of the function AAS_Error
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_Loaded(void)
-{
-	return (*aasworld).loaded;
-}	//end of the function AAS_Loaded
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_Initialized(void)
-{
-	return (*aasworld).initialized;
-}	//end of the function AAS_Initialized
 //===========================================================================
 //
 // Parameter:				-
@@ -184,16 +145,6 @@ int AAS_StartFrame(float time)
 }	//end of the function AAS_StartFrame
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-float AAS_Time(void)
-{
-	return (*aasworld).time;
-}	//end of the function AAS_Time
-//===========================================================================
-//
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
@@ -291,6 +242,8 @@ int AAS_LoadMap(const char* mapname)
 //===========================================================================
 int AAS_Setup(void)
 {
+	aasworld = &aasworlds[0];
+
 	(*aasworld).maxclients = (int)LibVarValue("maxclients", "128");
 	(*aasworld).maxentities = (int)LibVarValue("maxentities", "1024");
 	// as soon as it's set to 1 the routing cache will be saved

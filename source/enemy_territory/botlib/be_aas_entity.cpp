@@ -46,8 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MASK_SOLID      BSP46CONTENTS_PLAYERCLIP
 
 // Ridah, always use the default world for entities
-extern aas_t aasworlds[MAX_AAS_WORLDS];
-
 aas_t* defaultaasworld = aasworlds;
 
 //FIXME: these might change
@@ -509,7 +507,7 @@ void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, int blocking)
 	// check for resetting AAS blocking
 	if (VectorCompare(absmin, absmax) && blocking < 0)
 	{
-		for (w = 0; w < MAX_AAS_WORLDS; w++)
+		for (w = 0; w < MAX_AAS_WORLDS_ET; w++)
 		{
 			AAS_SetCurrentWorld(w);
 			//
@@ -539,7 +537,7 @@ void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, int blocking)
 	//
 areas_again:
 	//
-	for (w = 0; w < MAX_AAS_WORLDS; w++)
+	for (w = 0; w < MAX_AAS_WORLDS_ET; w++)
 	{
 		AAS_SetCurrentWorld(w);
 		//

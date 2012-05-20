@@ -60,9 +60,6 @@ If you have questions concerning this license or the applicable additional terms
 //maximum number of routing updates each frame
 #define MAX_FRAMEROUTINGUPDATES     100
 
-extern aas_t aasworlds[MAX_AAS_WORLDS];
-
-
 /*
 
   area routing cache:

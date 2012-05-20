@@ -174,9 +174,7 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------
-	int (* AAS_Initialized)(void);
 	void (* AAS_PresenceTypeBoundingBox)(int presencetype, vec3_t mins, vec3_t maxs);
-	float (* AAS_Time)(void);
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------
@@ -221,11 +219,6 @@ typedef struct aas_export_s
 	qboolean (* AAS_GetRouteFirstVisPos)(vec3_t srcpos, vec3_t destpos, int travelflags, vec3_t retpos);
 	void (* AAS_SetAASBlockingEntity)(vec3_t absmin, vec3_t absmax, qboolean blocking);
 	// done.
-
-	// Ridah
-	void (* AAS_SetCurrentWorld)(int index);
-	// done.
-
 } aas_export_t;
 
 typedef struct ea_export_s

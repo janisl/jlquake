@@ -169,9 +169,7 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------
-	int (* AAS_Initialized)(void);
 	void (* AAS_PresenceTypeBoundingBox)(int presencetype, vec3_t mins, vec3_t maxs);
-	float (* AAS_Time)(void);
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------

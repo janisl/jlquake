@@ -37,10 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef AASINTERN
 
-extern aas_t(*aasworld);
-
-//AAS error message
-void QDECL AAS_Error(const char* fmt, ...);
 //set AAS initialized
 void AAS_SetInitialized(void);
 //setup AAS with the given number of entities and clients
@@ -52,14 +48,3 @@ int AAS_LoadMap(const char* mapname);
 //start a new time frame
 int AAS_StartFrame(float time);
 #endif	//AASINTERN
-
-//returns true if AAS is initialized
-int AAS_Initialized(void);
-//returns true if the AAS file is loaded
-int AAS_Loaded(void);
-//returns the current time
-float AAS_Time(void);
-
-// Ridah
-void AAS_SetCurrentWorld(int index);
-// done.

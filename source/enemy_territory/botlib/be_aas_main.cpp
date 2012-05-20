@@ -44,67 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 #include "be_aas_def.h"
 
-aas_t aasworlds[MAX_AAS_WORLDS];
-
-aas_t* aasworld;
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void QDECL AAS_Error(const char* fmt, ...)
-{
-	char str[1024];
-	va_list arglist;
-
-	va_start(arglist, fmt);
-	Q_vsnprintf(str, sizeof(str), fmt, arglist);
-	va_end(arglist);
-	BotImport_Print(PRT_FATAL, "%s", str);
-}	//end of the function AAS_Error
-
 // Ridah, multiple AAS worlds
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_SetCurrentWorld(int index)
-{
-	if (index >= MAX_AAS_WORLDS || index < 0)
-	{
-		AAS_Error("AAS_SetCurrentWorld: index out of range\n");
-		return;
-	}
-
-	// set the current world pointer
-	aasworld = &aasworlds[index];
-}
-// done.
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_Loaded(void)
-{
-	return (*aasworld).loaded;
-}	//end of the function AAS_Loaded
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_Initialized(void)
-{
-	return (*aasworld).initialized;
-}	//end of the function AAS_Initialized
 //===========================================================================
 //
 // Parameter:				-
@@ -191,7 +131,7 @@ int AAS_StartFrame(float time)
 	// Ridah, do each of the aasworlds
 	int i;
 
-	for (i = 0; i < MAX_AAS_WORLDS; i++)
+	for (i = 0; i < MAX_AAS_WORLDS_ET; i++)
 	{
 		AAS_SetCurrentWorld(i);
 
@@ -218,16 +158,6 @@ int AAS_StartFrame(float time)
 
 	return BLERR_NOERROR;
 }	//end of the function AAS_StartFrame
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-float AAS_Time(void)
-{
-	return aasworld->time;
-}
 //===========================================================================
 // basedir	= Quake2 console basedir
 // gamedir	= Quake2 console gamedir
@@ -283,7 +213,7 @@ int AAS_LoadMap(const char* mapname)
 	qboolean loaded = qfalse;
 	int missingErrNum = 0;
 
-	for (i = 0; i < MAX_AAS_WORLDS; i++)
+	for (i = 0; i < MAX_AAS_WORLDS_ET; i++)
 	{
 		AAS_SetCurrentWorld(i);
 
@@ -378,7 +308,7 @@ void AAS_Shutdown(void)
 	// Ridah, do each of the worlds
 	int i;
 
-	for (i = 0; i < MAX_AAS_WORLDS; i++)
+	for (i = 0; i < MAX_AAS_WORLDS_ET; i++)
 	{
 		AAS_SetCurrentWorld(i);
 

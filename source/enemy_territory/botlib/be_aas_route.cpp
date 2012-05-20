@@ -59,9 +59,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
 
-extern aas_t aasworlds[MAX_AAS_WORLDS];
-
-
 /*
 
   area routing cache:

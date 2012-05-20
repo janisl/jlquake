@@ -47,8 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MASK_SOLID      BSP46CONTENTS_PLAYERCLIP
 
 // Ridah, always use the default world for entities
-extern aas_t aasworlds[2];
-
 aas_t* defaultaasworld = aasworlds;
 
 //FIXME: these might change

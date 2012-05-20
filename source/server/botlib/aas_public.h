@@ -43,3 +43,9 @@ struct aas_entityinfo_t
 	int legsAnim;			// mask off ANIM_TOGGLEBIT
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 };
+
+//returns true if AAS is initialized
+bool AAS_Initialized();
+//returns the current time
+float AAS_Time();
+void AAS_SetCurrentWorld(int index);
