@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_utils.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
@@ -292,29 +291,29 @@ int AAS_TeamTravelFlagsForAreaFlags(int areaflags)
 {
 	int travelflags = 0;
 	//
-	if (areaflags & AREA_TEAM_FLAGS)
+	if (areaflags & ETAREA_TEAM_FLAGS)
 	{
-		if (areaflags & AREA_TEAM_AXIS)
+		if (areaflags & ETAREA_TEAM_AXIS)
 		{
 			travelflags |= TFL_TEAM_AXIS;
 		}
-		if (areaflags & AREA_TEAM_ALLIES)
+		if (areaflags & ETAREA_TEAM_ALLIES)
 		{
 			travelflags |= TFL_TEAM_ALLIES;
 		}
-		if (areaflags & AREA_TEAM_AXIS_DISGUISED)
+		if (areaflags & ETAREA_TEAM_AXIS_DISGUISED)
 		{
 			travelflags |= TFL_TEAM_AXIS_DISGUISED;
 		}
-		if (areaflags & AREA_TEAM_ALLIES_DISGUISED)
+		if (areaflags & ETAREA_TEAM_ALLIES_DISGUISED)
 		{
 			travelflags |= TFL_TEAM_AXIS_DISGUISED;
 		}
-		if (areaflags & AREA_AVOID_AXIS)
+		if (areaflags & ETAREA_AVOID_AXIS)
 		{
 			travelflags |= TFL_TEAM_AXIS;
 		}
-		if (areaflags & AREA_AVOID_ALLIES)
+		if (areaflags & ETAREA_AVOID_ALLIES)
 		{
 			travelflags |= TFL_TEAM_ALLIES;
 		}
@@ -385,27 +384,27 @@ int AAS_EnableRoutingArea(int areanum, int enable)
 	if ((enable & 1) || (enable < 0))
 	{
 		// clear all flags
-		bitflag = AREA_AVOID | AREA_DISABLED | AREA_TEAM_AXIS | AREA_TEAM_ALLIES | AREA_TEAM_AXIS_DISGUISED | AREA_TEAM_ALLIES_DISGUISED;
+		bitflag = ETAREA_AVOID | AREA_DISABLED | ETAREA_TEAM_AXIS | ETAREA_TEAM_ALLIES | ETAREA_TEAM_AXIS_DISGUISED | ETAREA_TEAM_ALLIES_DISGUISED;
 	}
 	else if (enable & 0x10)
 	{
-		bitflag = AREA_AVOID;
+		bitflag = ETAREA_AVOID;
 	}
 	else if (enable & 0x20)
 	{
-		bitflag = AREA_TEAM_AXIS;
+		bitflag = ETAREA_TEAM_AXIS;
 	}
 	else if (enable & 0x40)
 	{
-		bitflag = AREA_TEAM_ALLIES;
+		bitflag = ETAREA_TEAM_ALLIES;
 	}
 	else if (enable & 0x80)
 	{
-		bitflag = AREA_TEAM_AXIS_DISGUISED;
+		bitflag = ETAREA_TEAM_AXIS_DISGUISED;
 	}
 	else if (enable & 0x100)
 	{
-		bitflag = AREA_TEAM_ALLIES_DISGUISED;
+		bitflag = ETAREA_TEAM_ALLIES_DISGUISED;
 	}
 	else
 	{
@@ -468,7 +467,7 @@ void AAS_CreateReversedReachability(void)
 	int i, n;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 	char* ptr;
 #ifdef DEBUG
 	int starttime;
@@ -584,7 +583,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 	int starttime;
 
 	starttime = Sys_Milliseconds();
@@ -654,7 +653,7 @@ int AAS_PortalMaxTravelTime(int portalnum)
 	aas_portal_t* portal;
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 
 	portal = &aasworld->portals[portalnum];
 	//reversed reachabilities of this portal area
@@ -1022,7 +1021,7 @@ void AAS_InitRoutingUpdate(void)
 void AAS_CreateAllRoutingCache(void)
 {
 	int i, j, k, t, tfl, numroutingareas;
-	aas_areasettings_t* areasettings;
+	aas8_areasettings_t* areasettings;
 	aas_reachability_t* reach;
 
 	numroutingareas = 0;
@@ -1049,12 +1048,12 @@ void AAS_CreateAllRoutingCache(void)
 		{
 			continue;
 		}
-		aasworld->areasettings[i].areaflags |= AREA_USEFORROUTING;
+		aasworld->areasettings[i].areaflags |= WOLFAREA_USEFORROUTING;
 		numroutingareas++;
 	}
 	for (i = 1; i < aasworld->numareas; i++)
 	{
-		if (!(aasworld->areasettings[i].areaflags & AREA_USEFORROUTING))
+		if (!(aasworld->areasettings[i].areaflags & WOLFAREA_USEFORROUTING))
 		{
 			continue;
 		}
@@ -1064,7 +1063,7 @@ void AAS_CreateAllRoutingCache(void)
 			{
 				continue;
 			}
-			if (!(aasworld->areasettings[j].areaflags & AREA_USEFORROUTING))
+			if (!(aasworld->areasettings[j].areaflags & WOLFAREA_USEFORROUTING))
 			{
 				continue;
 			}
@@ -1511,7 +1510,7 @@ int AAS_AreaContentsTravelFlag(int areanum)
 	{
 		tfl |= TFL_AIR;
 	}
-	if (contents & AREACONTENTS_DONOTENTER_LARGE)
+	if (contents & WOLFAREACONTENTS_DONOTENTER_LARGE)
 	{
 		tfl |= TFL_DONOTENTER_LARGE;
 	}
@@ -1629,15 +1628,15 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t* areacache)
 				curupdate->areatraveltimes[i] +
 				reach->traveltime;
 			//if trying to avoid this area
-			if (aasworld->areasettings[reach->areanum].areaflags & AREA_AVOID)
+			if (aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID)
 			{
 				t += 1000;
 			}
-			else if ((aasworld->areasettings[reach->areanum].areaflags & AREA_AVOID_AXIS) && (areacache->travelflags & TFL_TEAM_AXIS))
+			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_AXIS) && (areacache->travelflags & TFL_TEAM_AXIS))
 			{
 				t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
 			}
-			else if ((aasworld->areasettings[reach->areanum].areaflags & AREA_AVOID_ALLIES) && (areacache->travelflags & TFL_TEAM_ALLIES))
+			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_ALLIES) && (areacache->travelflags & TFL_TEAM_ALLIES))
 			{
 				t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
 			}
@@ -2166,7 +2165,7 @@ int AAS_AreaReachabilityToGoalArea(int areanum, vec3_t origin, int goalareanum, 
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
 {
 	if (!aasworld->initialized)
 	{
@@ -2188,7 +2187,7 @@ void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
 //===========================================================================
 int AAS_NextAreaReachability(int areanum, int reachnum)
 {
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 
 	if (!aasworld->initialized)
 	{
@@ -4057,11 +4056,11 @@ void AAS_UpdateTeamDeath(void)
 						// unmark this area
 						if (j == 0)
 						{
-							aasworld->areasettings[i].areaflags &= ~AREA_AVOID_AXIS;
+							aasworld->areasettings[i].areaflags &= ~ETAREA_AVOID_AXIS;
 						}
 						else
 						{
-							aasworld->areasettings[i].areaflags &= ~AREA_AVOID_ALLIES;
+							aasworld->areasettings[i].areaflags &= ~ETAREA_AVOID_ALLIES;
 						}
 						//remove all routing cache involving this area
 						AAS_RemoveRoutingCacheUsingArea(i);
@@ -4172,11 +4171,11 @@ void AAS_RecordTeamDeathArea(vec3_t srcpos, int srcarea, int team, int teamCount
 					// mark this area
 					if (team == 0)
 					{
-						aasworld->areasettings[k].areaflags |= AREA_AVOID_AXIS;
+						aasworld->areasettings[k].areaflags |= ETAREA_AVOID_AXIS;
 					}
 					else
 					{
-						aasworld->areasettings[k].areaflags |= AREA_AVOID_ALLIES;
+						aasworld->areasettings[k].areaflags |= ETAREA_AVOID_ALLIES;
 					}
 					//remove all routing cache involving this area
 					AAS_RemoveRoutingCacheUsingArea(k);

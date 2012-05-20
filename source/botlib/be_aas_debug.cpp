@@ -31,10 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "botlib.h"
-#include "be_aas.h"
 #include "be_interface.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -725,7 +724,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 //===========================================================================
 void AAS_ShowReachableAreas(int areanum)
 {
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 	static aas_reachability_t reach;
 	static int index, lastareanum;
 	static float lasttime;
@@ -763,7 +762,7 @@ void AAS_FloodAreas_r(int areanum, int cluster, int* done)
 	int nextareanum, i, facenum;
 	aas_area_t* area;
 	aas_face_t* face;
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 	aas_reachability_t* reach;
 
 	AAS_ShowAreaPolygons(areanum, 1, true);

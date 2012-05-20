@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
 #include "be_interface.h"
@@ -511,7 +510,7 @@ void AAS_RT_BuildRouteTable(void)
 {
 	int i,j,k;
 	aas_area_t* srcarea;
-	aas_areasettings_t* srcsettings;
+	aas8_areasettings_t* srcsettings;
 //	vec3_t	vec;
 	unsigned int totalcount;
 	unsigned int noroutecount;
@@ -595,7 +594,7 @@ void AAS_RT_BuildRouteTable(void)
 		srcsettings = &(*aasworld).areasettings[i];
 
 #ifdef FILTERAREAS
-		if (!(srcsettings->areaflags & (AREA_USEFORROUTING)))
+		if (!(srcsettings->areaflags & (WOLFAREA_USEFORROUTING)))
 		{
 			continue;
 		}

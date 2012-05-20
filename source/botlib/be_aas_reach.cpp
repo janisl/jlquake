@@ -32,12 +32,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "../common/file_formats/bsp46.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "botlib.h"
+#include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-#include "be_interface.h"
 
 extern int Sys_Milliseconds(void);
 
@@ -901,7 +900,7 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 {
 	int i, j, face1num, face2num, side1;
 	aas_area_t* area1, * area2;
-	aas_areasettings_t* areasettings;
+	aas5_areasettings_t* areasettings;
 	aas_lreachability_t* lreach;
 	aas_face_t* face1;
 	aas_plane_t* plane;
@@ -4966,7 +4965,7 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 void AAS_StoreReachability(void)
 {
 	int i;
-	aas_areasettings_t* areasettings;
+	aas5_areasettings_t* areasettings;
 	aas_lreachability_t* lreach;
 	aas_reachability_t* reach;
 

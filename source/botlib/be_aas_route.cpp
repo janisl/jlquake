@@ -32,11 +32,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "l_utils.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "botlib.h"
+#include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 #include "be_aas_def.h"
 
 #define ROUTING_DEBUG
@@ -398,15 +397,15 @@ int AAS_GetAreaContentsTravelFlags(int areanum)
 	{
 		tfl |= TFL_DONOTENTER;
 	}
-	if (contents & AREACONTENTS_NOTTEAM1)
+	if (contents & Q3AREACONTENTS_NOTTEAM1)
 	{
 		tfl |= TFL_NOTTEAM1;
 	}
-	if (contents & AREACONTENTS_NOTTEAM2)
+	if (contents & Q3AREACONTENTS_NOTTEAM2)
 	{
 		tfl |= TFL_NOTTEAM2;
 	}
-	if ((*aasworld).areasettings[areanum].areaflags & AREA_BRIDGE)
+	if ((*aasworld).areasettings[areanum].areaflags & Q3AREA_BRIDGE)
 	{
 		tfl |= TFL_BRIDGE;
 	}
@@ -464,7 +463,7 @@ void AAS_CreateReversedReachability(void)
 	int i, n;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 	char* ptr;
 #ifdef DEBUG
 	int starttime;
@@ -565,7 +564,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 	int starttime;
 
 	starttime = Sys_Milliseconds();
@@ -632,7 +631,7 @@ int AAS_PortalMaxTravelTime(int portalnum)
 	aas_portal_t* portal;
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 
 	portal = &(*aasworld).portals[portalnum];
 	//reversed reachabilities of this portal area
@@ -2150,7 +2149,7 @@ int AAS_BridgeWalkable(int areanum)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
 {
 	if (!(*aasworld).initialized)
 	{
@@ -2172,7 +2171,7 @@ void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
 //===========================================================================
 int AAS_NextAreaReachability(int areanum, int reachnum)
 {
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 
 	if (!(*aasworld).initialized)
 	{

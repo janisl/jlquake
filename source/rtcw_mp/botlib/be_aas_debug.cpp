@@ -37,10 +37,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
-#include "../game/be_aas.h"
 #include "be_interface.h"
+#include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -730,7 +729,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 //===========================================================================
 void AAS_ShowReachableAreas(int areanum)
 {
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 	static aas_reachability_t reach;
 	static int index, lastareanum;
 	static float lasttime;

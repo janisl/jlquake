@@ -52,7 +52,7 @@ int AAS_OnGround(vec3_t origin, int presencetype, int passent);
 //returns true if swimming at the given origin
 int AAS_Swimming(vec3_t origin);
 //returns the jump reachability run start point
-void AAS_JumpReachRunStart(struct aas_reachability_s* reach, vec3_t runstart);
+void AAS_JumpReachRunStart(aas_reachability_t* reach, vec3_t runstart);
 //returns true if against a ladder at the given origin
 int AAS_AgainstLadder(vec3_t origin, int ms_areanum);
 //rocket jump Z velocity when rocket-jumping at origin

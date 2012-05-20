@@ -38,11 +38,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
+#include "be_interface.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 
 #include "../game/be_ea.h"
 #include "../game/be_ai_goal.h"

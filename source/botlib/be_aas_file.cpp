@@ -32,11 +32,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "aasfile.h"
 #include "botlib.h"
+#include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 #include "be_aas_def.h"
 
 //#define AASFILEDEBUG
@@ -279,7 +278,7 @@ void AAS_FileInfo(void)
 {
 	int i, n, optimized;
 
-	BotImport_Print(PRT_MESSAGE, "version = %d\n", AASVERSION);
+	BotImport_Print(PRT_MESSAGE, "version = %d\n", AASVERSION5);
 	BotImport_Print(PRT_MESSAGE, "numvertexes = %d\n", (*aasworld).numvertexes);
 	BotImport_Print(PRT_MESSAGE, "numplanes = %d\n", (*aasworld).numplanes);
 	BotImport_Print(PRT_MESSAGE, "numedges = %d\n", (*aasworld).numedges);
@@ -305,7 +304,7 @@ void AAS_FileInfo(void)
 	//
 	BotImport_Print(PRT_MESSAGE, "planes size %d bytes\n", (*aasworld).numplanes * sizeof(aas_plane_t));
 	BotImport_Print(PRT_MESSAGE, "areas size %d bytes\n", (*aasworld).numareas * sizeof(aas_area_t));
-	BotImport_Print(PRT_MESSAGE, "areasettings size %d bytes\n", (*aasworld).numareasettings * sizeof(aas_areasettings_t));
+	BotImport_Print(PRT_MESSAGE, "areasettings size %d bytes\n", (*aasworld).numareasettings * sizeof(aas5_areasettings_t));
 	BotImport_Print(PRT_MESSAGE, "nodes size %d bytes\n", (*aasworld).numnodes * sizeof(aas_node_t));
 	BotImport_Print(PRT_MESSAGE, "reachability size %d bytes\n", (*aasworld).reachabilitysize * sizeof(aas_reachability_t));
 	BotImport_Print(PRT_MESSAGE, "portals size %d bytes\n", (*aasworld).numportals * sizeof(aas_portal_t));
@@ -313,7 +312,7 @@ void AAS_FileInfo(void)
 
 	optimized = (*aasworld).numplanes * sizeof(aas_plane_t) +
 				(*aasworld).numareas * sizeof(aas_area_t) +
-				(*aasworld).numareasettings * sizeof(aas_areasettings_t) +
+				(*aasworld).numareasettings * sizeof(aas5_areasettings_t) +
 				(*aasworld).numnodes * sizeof(aas_node_t) +
 				(*aasworld).reachabilitysize * sizeof(aas_reachability_t) +
 				(*aasworld).numportals * sizeof(aas_portal_t) +
@@ -411,14 +410,14 @@ int AAS_LoadAASFile(char* filename)
 		//check the version
 	header.version = LittleLong(header.version);
 	//
-	if (header.version != AASVERSION_OLD && header.version != AASVERSION)
+	if (header.version != AASVERSION4 && header.version != AASVERSION5)
 	{
-		AAS_Error("aas file %s is version %i, not %i\n", filename, header.version, AASVERSION);
+		AAS_Error("aas file %s is version %i, not %i\n", filename, header.version, AASVERSION5);
 		FS_FCloseFile(fp);
 		return Q3BLERR_WRONGAASFILEVERSION;
 	}	//end if
 		//
-	if (header.version == AASVERSION)
+	if (header.version == AASVERSION5)
 	{
 		AAS_DData((unsigned char*)&header + 8, sizeof(aas_header_t) - 8);
 	}	//end if
@@ -506,8 +505,8 @@ int AAS_LoadAASFile(char* filename)
 	//area settings
 	offset = LittleLong(header.lumps[AASLUMP_AREASETTINGS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_AREASETTINGS].filelen);
-	(*aasworld).areasettings = (aas_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_areasettings_t));
-	(*aasworld).numareasettings = length / sizeof(aas_areasettings_t);
+	(*aasworld).areasettings = (aas5_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas5_areasettings_t));
+	(*aasworld).numareasettings = length / sizeof(aas5_areasettings_t);
 	if ((*aasworld).numareasettings && !(*aasworld).areasettings)
 	{
 		return Q3BLERR_CANNOTREADAASLUMP;
@@ -614,7 +613,7 @@ qboolean AAS_WriteAASFile(char* filename)
 	//initialize the file header
 	Com_Memset(&header, 0, sizeof(aas_header_t));
 	header.ident = LittleLong(AASID);
-	header.version = LittleLong(AASVERSION);
+	header.version = LittleLong(AASVERSION5);
 	header.bspchecksum = LittleLong((*aasworld).bspchecksum);
 	//open a new file
 	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
@@ -668,7 +667,7 @@ qboolean AAS_WriteAASFile(char* filename)
 		return false;
 	}
 	if (!AAS_WriteAASLump(fp, &header, AASLUMP_AREASETTINGS, (*aasworld).areasettings,
-			(*aasworld).numareasettings * sizeof(aas_areasettings_t)))
+			(*aasworld).numareasettings * sizeof(aas5_areasettings_t)))
 	{
 		return false;
 	}

@@ -56,6 +56,6 @@ void AAS_PrintTravelType(int traveltype);
 //draw an arrow
 void AAS_DrawArrow(vec3_t start, vec3_t end, int linecolor, int arrowcolor);
 //visualize the given reachability
-void AAS_ShowReachability(struct aas_reachability_s* reach);
+void AAS_ShowReachability(aas_reachability_t* reach);
 //show the reachable areas from the given area
 void AAS_ShowReachableAreas(int areanum);

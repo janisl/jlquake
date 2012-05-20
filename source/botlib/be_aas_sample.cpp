@@ -31,10 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "botlib.h"
-#include "be_aas.h"
 #include "be_interface.h"
+#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -1533,7 +1532,7 @@ int AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int* areas, int maxareas)
 //===========================================================================
 int AAS_AreaInfo(int areanum, aas_areainfo_t* info)
 {
-	aas_areasettings_t* settings;
+	aas5_areasettings_t* settings;
 	if (!info)
 	{
 		return 0;

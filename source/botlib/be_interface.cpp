@@ -32,12 +32,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include <time.h>
 #include "l_memory.h"
-#include "aasfile.h"
 #include "botlib.h"
+#include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-#include "be_interface.h"
 
 #include "be_ea.h"
 #include "../server/botlib/ai_weight.h"
@@ -403,7 +402,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		{
 			BotImport_Print(PRT_MESSAGE, "do not enter &");
 		}	//end if
-		if ((*aasworld).areasettings[area].contents & AREACONTENTS_MOVER)
+		if ((*aasworld).areasettings[area].contents & Q3AREACONTENTS_MOVER)
 		{
 			BotImport_Print(PRT_MESSAGE, "mover &");
 		}	//end if

@@ -37,12 +37,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
+#include "be_interface.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-#include "be_interface.h"
 
 #include "../game/be_ea.h"
 #include "../../server/botlib/ai_weight.h"
@@ -420,7 +419,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		{
 			BotImport_Print(PRT_MESSAGE, "do not enter ");
 		}	//end if
-		if ((*aasworld).areasettings[area].contents & AREACONTENTS_DONOTENTER_LARGE)
+		if ((*aasworld).areasettings[area].contents & WOLFAREACONTENTS_DONOTENTER_LARGE)
 		{
 			BotImport_Print(PRT_MESSAGE, "do not enter large ");
 		}	//end if

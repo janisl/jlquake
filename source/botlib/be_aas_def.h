@@ -220,7 +220,7 @@ typedef struct aas_s
 	aas_area_t* areas;
 	//convex area settings
 	int numareasettings;
-	aas_areasettings_t* areasettings;
+	aas5_areasettings_t* areasettings;
 	//reachablity list
 	int reachabilitysize;
 	aas_reachability_t* reachability;

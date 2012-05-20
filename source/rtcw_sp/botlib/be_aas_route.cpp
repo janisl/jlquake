@@ -38,11 +38,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_utils.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
+#include "be_interface.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 #include "be_aas_def.h"
 
 #define ROUTING_DEBUG
@@ -331,7 +330,7 @@ void AAS_CreateReversedReachability(void)
 	int i, n;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 	char* ptr;
 #ifdef DEBUG
 	int starttime;
@@ -440,7 +439,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 	int starttime;
 
 	starttime = Sys_Milliseconds();
@@ -507,7 +506,7 @@ int AAS_PortalMaxTravelTime(int portalnum)
 	aas_portal_t* portal;
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 
 	portal = &(*aasworld).portals[portalnum];
 	//reversed reachabilities of this portal area
@@ -895,7 +894,7 @@ void AAS_InitRoutingUpdate(void)
 void AAS_CreateAllRoutingCache(void)
 {
 	int i, j, k, t, tfl, numroutingareas;
-	aas_areasettings_t* areasettings;
+	aas8_areasettings_t* areasettings;
 	aas_reachability_t* reach;
 
 	numroutingareas = 0;
@@ -922,12 +921,12 @@ void AAS_CreateAllRoutingCache(void)
 		{
 			continue;
 		}
-		(*aasworld).areasettings[i].areaflags |= AREA_USEFORROUTING;
+		(*aasworld).areasettings[i].areaflags |= WOLFAREA_USEFORROUTING;
 		numroutingareas++;
 	}
 	for (i = 1; i < (*aasworld).numareas; i++)
 	{
-		if (!((*aasworld).areasettings[i].areaflags & AREA_USEFORROUTING))
+		if (!((*aasworld).areasettings[i].areaflags & WOLFAREA_USEFORROUTING))
 		{
 			continue;
 		}
@@ -937,7 +936,7 @@ void AAS_CreateAllRoutingCache(void)
 			{
 				continue;
 			}
-			if (!((*aasworld).areasettings[j].areaflags & AREA_USEFORROUTING))
+			if (!((*aasworld).areasettings[j].areaflags & WOLFAREA_USEFORROUTING))
 			{
 				continue;
 			}
@@ -1417,7 +1416,7 @@ int AAS_AreaContentsTravelFlag(int areanum)
 	{
 		tfl |= TFL_AIR;
 	}
-	if (contents & AREACONTENTS_DONOTENTER_LARGE)
+	if (contents & WOLFAREACONTENTS_DONOTENTER_LARGE)
 	{
 		tfl |= TFL_DONOTENTER_LARGE;
 	}
@@ -2072,7 +2071,7 @@ int AAS_AreaReachabilityToGoalArea(int areanum, vec3_t origin, int goalareanum, 
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
 {
 	if (!(*aasworld).initialized)
 	{
@@ -2094,7 +2093,7 @@ void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach)
 //===========================================================================
 int AAS_NextAreaReachability(int areanum, int reachnum)
 {
-	aas_areasettings_t* settings;
+	aas8_areasettings_t* settings;
 
 	if (!(*aasworld).initialized)
 	{

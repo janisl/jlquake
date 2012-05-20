@@ -32,11 +32,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "aasfile.h"
 #include "botlib.h"
+#include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 
 #include "be_ea.h"
 #include "be_ai_goal.h"

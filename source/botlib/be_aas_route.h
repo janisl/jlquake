@@ -50,7 +50,7 @@ int AAS_AreaContentsTravelFlags(int areanum);
 //returns the index of the next reachability for the given area
 int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the reachability with the given index
-void AAS_ReachabilityFromNum(int num, struct aas_reachability_s* reach);
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
 //returns a random goal area and goal origin
 int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t goalorigin);
 //enable or disable an area for routing

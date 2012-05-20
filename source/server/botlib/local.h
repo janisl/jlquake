@@ -136,5 +136,6 @@ struct structdef_t
 bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
 
 #include "ai_local.h"
+#include "aasfile.h"
 
 #endif

@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
@@ -71,7 +70,7 @@ typedef struct optimized_s
 	//
 	//convex area settings
 	int numareasettings;
-	aas_areasettings_t* areasettings;
+	aas8_areasettings_t* areasettings;
 	//reachablity list
 	int reachabilitysize;
 	aas_reachability_t* reachability;
@@ -416,7 +415,7 @@ void AAS_RemoveNonReachabilityAlloc(optimized_t* optimized)
 {
 	optimized->areas = (aas_area_t*)GetClearedMemory((*aasworld).numareas * sizeof(aas_area_t));
 	//
-	optimized->areasettings = (aas_areasettings_t*)GetClearedMemory((*aasworld).numareas * sizeof(aas_areasettings_t));
+	optimized->areasettings = (aas8_areasettings_t*)GetClearedMemory((*aasworld).numareas * sizeof(aas8_areasettings_t));
 	//
 	optimized->reachability = (aas_reachability_t*)GetClearedMemory((*aasworld).reachabilitysize * sizeof(aas_reachability_t));
 	optimized->reachabilitysize = (*aasworld).reachabilitysize;

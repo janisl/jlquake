@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_memory.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
@@ -479,7 +478,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		}	//end if
 
 		BotImport_Print(PRT_MESSAGE, "area contents: ");
-		if (aasworld->areasettings[area].contents & AREACONTENTS_MOVER)
+		if (aasworld->areasettings[area].contents & WOLFAREACONTENTS_MOVER)
 		{
 			BotImport_Print(PRT_MESSAGE, "mover ");
 		}	//end if
@@ -508,7 +507,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		{
 			BotImport_Print(PRT_MESSAGE, "do not enter ");
 		}	//end if
-		if (aasworld->areasettings[area].contents & AREACONTENTS_DONOTENTER_LARGE)
+		if (aasworld->areasettings[area].contents & WOLFAREACONTENTS_DONOTENTER_LARGE)
 		{
 			BotImport_Print(PRT_MESSAGE, "do not enter large ");
 		}	//end if
@@ -536,7 +535,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		{
 			BotImport_Print(PRT_MESSAGE, "DISABLED ");
 		}
-		if (aasworld->areasettings[area].areaflags & AREA_AVOID)
+		if (aasworld->areasettings[area].areaflags & ETAREA_AVOID)
 		{
 			BotImport_Print(PRT_MESSAGE, "AVOID ");
 		}

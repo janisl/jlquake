@@ -38,11 +38,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "l_memory.h"
 #include "l_utils.h"
-#include "aasfile.h"
 #include "../game/botlib.h"
+#include "be_interface.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
-#include "be_interface.h"
 #include "be_aas_def.h"
 
 //#define AASFILEDEBUG
@@ -294,7 +293,7 @@ void AAS_FileInfo(void)
 {
 	int i, n, optimized;
 
-	BotImport_Print(PRT_MESSAGE, "version = %d\n", AASVERSION);
+	BotImport_Print(PRT_MESSAGE, "version = %d\n", AASVERSION8);
 	BotImport_Print(PRT_MESSAGE, "numvertexes = %d\n", (*aasworld).numvertexes);
 	BotImport_Print(PRT_MESSAGE, "numplanes = %d\n", (*aasworld).numplanes);
 	BotImport_Print(PRT_MESSAGE, "numedges = %d\n", (*aasworld).numedges);
@@ -320,7 +319,7 @@ void AAS_FileInfo(void)
 	//
 	BotImport_Print(PRT_MESSAGE, "planes size %d bytes\n", (*aasworld).numplanes * sizeof(aas_plane_t));
 	BotImport_Print(PRT_MESSAGE, "areas size %d bytes\n", (*aasworld).numareas * sizeof(aas_area_t));
-	BotImport_Print(PRT_MESSAGE, "areasettings size %d bytes\n", (*aasworld).numareasettings * sizeof(aas_areasettings_t));
+	BotImport_Print(PRT_MESSAGE, "areasettings size %d bytes\n", (*aasworld).numareasettings * sizeof(aas8_areasettings_t));
 	BotImport_Print(PRT_MESSAGE, "nodes size %d bytes\n", (*aasworld).numnodes * sizeof(aas_node_t));
 	BotImport_Print(PRT_MESSAGE, "reachability size %d bytes\n", (*aasworld).reachabilitysize * sizeof(aas_reachability_t));
 	BotImport_Print(PRT_MESSAGE, "portals size %d bytes\n", (*aasworld).numportals * sizeof(aas_portal_t));
@@ -328,7 +327,7 @@ void AAS_FileInfo(void)
 
 	optimized = (*aasworld).numplanes * sizeof(aas_plane_t) +
 				(*aasworld).numareas * sizeof(aas_area_t) +
-				(*aasworld).numareasettings * sizeof(aas_areasettings_t) +
+				(*aasworld).numareasettings * sizeof(aas8_areasettings_t) +
 				(*aasworld).numnodes * sizeof(aas_node_t) +
 				(*aasworld).reachabilitysize * sizeof(aas_reachability_t) +
 				(*aasworld).numportals * sizeof(aas_portal_t) +
@@ -425,14 +424,14 @@ int AAS_LoadAASFile(char* filename)
 		//check the version
 	header.version = LittleLong(header.version);
 	//
-	if (header.version != AASVERSION)
+	if (header.version != AASVERSION8)
 	{
-		AAS_Error("aas file %s is version %i, not %i\n", filename, header.version, AASVERSION);
+		AAS_Error("aas file %s is version %i, not %i\n", filename, header.version, AASVERSION8);
 		FS_FCloseFile(fp);
 		return WOLFBLERR_WRONGAASFILEVERSION;
 	}	//end if
 		//
-	if (header.version == AASVERSION)
+	if (header.version == AASVERSION8)
 	{
 		AAS_DData((unsigned char*)&header + 8, sizeof(aas_header_t) - 8);
 	}	//end if
@@ -520,8 +519,8 @@ int AAS_LoadAASFile(char* filename)
 	//area settings
 	offset = LittleLong(header.lumps[AASLUMP_AREASETTINGS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_AREASETTINGS].filelen);
-	(*aasworld).areasettings = (aas_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset);
-	(*aasworld).numareasettings = length / sizeof(aas_areasettings_t);
+	(*aasworld).areasettings = (aas8_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset);
+	(*aasworld).numareasettings = length / sizeof(aas8_areasettings_t);
 	if ((*aasworld).numareasettings && !(*aasworld).areasettings)
 	{
 		return WOLFBLERR_CANNOTREADAASLUMP;
@@ -628,7 +627,7 @@ qboolean AAS_WriteAASFile(char* filename)
 	//initialize the file header
 	memset(&header, 0, sizeof(aas_header_t));
 	header.ident = LittleLong(AASID);
-	header.version = LittleLong(AASVERSION);
+	header.version = LittleLong(AASVERSION8);
 	header.bspchecksum = LittleLong((*aasworld).bspchecksum);
 	//open a new file
 	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
@@ -682,7 +681,7 @@ qboolean AAS_WriteAASFile(char* filename)
 		return qfalse;
 	}
 	if (!AAS_WriteAASLump(fp, &header, AASLUMP_AREASETTINGS, (*aasworld).areasettings,
-			(*aasworld).numareasettings * sizeof(aas_areasettings_t)))
+			(*aasworld).numareasettings * sizeof(aas8_areasettings_t)))
 	{
 		return qfalse;
 	}
