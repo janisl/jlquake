@@ -336,9 +336,9 @@ void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
 
-void AAS_SwapAASData();
 //dumps the loaded AAS data
 void AAS_DumpAASData();
-void AAS_DData(unsigned char* data, int size);
 //loads the AAS file with the given name
 int AAS_LoadAASFile(const char* filename);
+//writes an AAS file with the given name
+bool AAS_WriteAASFile(const char* filename);

@@ -3,7 +3,6 @@ add_library(botlib-et STATIC
 	be_aas_cluster.cpp
 	be_aas_debug.cpp
 	be_aas_entity.cpp
-	be_aas_file.cpp
 	be_aas_main.cpp
 	be_aas_move.cpp
 	be_aas_optimize.cpp

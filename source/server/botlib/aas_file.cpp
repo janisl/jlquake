@@ -17,7 +17,9 @@
 #include "../server.h"
 #include "local.h"
 
-void AAS_SwapAASData()
+static int AAS_WriteAASLump_offset;
+
+static void AAS_SwapAASData()
 {
 	// Ridah, no need to do anything if this OS doesn't need byte swapping
 	if (LittleLong(1) == 1)
@@ -292,7 +294,7 @@ static aas_areasettings_t* AAS_LoadAreaSettings5Lump(fileHandle_t fp, int offset
 	return buf;
 }
 
-void AAS_DData(unsigned char* data, int size)
+static void AAS_DData(unsigned char* data, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
@@ -344,8 +346,8 @@ int AAS_LoadAASFile(const char* filename)
 	{
 		AAS_DData((unsigned char*)&header + 8, sizeof(aas_header_t) - 8);
 	}
-	(*aasworld).bspchecksum = String::Atoi(LibVarGetString("sv_mapChecksum"));
-	if (!nocrc && LittleLong(header.bspchecksum) != (*aasworld).bspchecksum)
+	aasworld->bspchecksum = String::Atoi(LibVarGetString("sv_mapChecksum"));
+	if (!nocrc && LittleLong(header.bspchecksum) != aasworld->bspchecksum)
 	{
 		AAS_Error("aas file %s is out of date\n", filename);
 		FS_FCloseFile(fp);
@@ -356,72 +358,72 @@ int AAS_LoadAASFile(const char* filename)
 	//bounding boxes
 	int offset = LittleLong(header.lumps[AASLUMP_BBOXES].fileofs);
 	int length = LittleLong(header.lumps[AASLUMP_BBOXES].filelen);
-	(*aasworld).bboxes = (aas_bbox_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_bbox_t));
-	(*aasworld).numbboxes = length / sizeof(aas_bbox_t);
-	if ((*aasworld).numbboxes && !(*aasworld).bboxes)
+	aasworld->bboxes = (aas_bbox_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_bbox_t));
+	aasworld->numbboxes = length / sizeof(aas_bbox_t);
+	if (aasworld->numbboxes && !aasworld->bboxes)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//vertexes
 	offset = LittleLong(header.lumps[AASLUMP_VERTEXES].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_VERTEXES].filelen);
-	(*aasworld).vertexes = (aas_vertex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_vertex_t));
-	(*aasworld).numvertexes = length / sizeof(aas_vertex_t);
-	if ((*aasworld).numvertexes && !(*aasworld).vertexes)
+	aasworld->vertexes = (aas_vertex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_vertex_t));
+	aasworld->numvertexes = length / sizeof(aas_vertex_t);
+	if (aasworld->numvertexes && !aasworld->vertexes)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//planes
 	offset = LittleLong(header.lumps[AASLUMP_PLANES].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_PLANES].filelen);
-	(*aasworld).planes = (aas_plane_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_plane_t));
-	(*aasworld).numplanes = length / sizeof(aas_plane_t);
-	if ((*aasworld).numplanes && !(*aasworld).planes)
+	aasworld->planes = (aas_plane_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_plane_t));
+	aasworld->numplanes = length / sizeof(aas_plane_t);
+	if (aasworld->numplanes && !aasworld->planes)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//edges
 	offset = LittleLong(header.lumps[AASLUMP_EDGES].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_EDGES].filelen);
-	(*aasworld).edges = (aas_edge_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_edge_t));
-	(*aasworld).numedges = length / sizeof(aas_edge_t);
-	if ((*aasworld).numedges && !(*aasworld).edges)
+	aasworld->edges = (aas_edge_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_edge_t));
+	aasworld->numedges = length / sizeof(aas_edge_t);
+	if (aasworld->numedges && !aasworld->edges)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//edgeindex
 	offset = LittleLong(header.lumps[AASLUMP_EDGEINDEX].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_EDGEINDEX].filelen);
-	(*aasworld).edgeindex = (aas_edgeindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_edgeindex_t));
-	(*aasworld).edgeindexsize = length / sizeof(aas_edgeindex_t);
-	if ((*aasworld).edgeindexsize && !(*aasworld).edgeindex)
+	aasworld->edgeindex = (aas_edgeindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_edgeindex_t));
+	aasworld->edgeindexsize = length / sizeof(aas_edgeindex_t);
+	if (aasworld->edgeindexsize && !aasworld->edgeindex)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//faces
 	offset = LittleLong(header.lumps[AASLUMP_FACES].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_FACES].filelen);
-	(*aasworld).faces = (aas_face_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_face_t));
-	(*aasworld).numfaces = length / sizeof(aas_face_t);
-	if ((*aasworld).numfaces && !(*aasworld).faces)
+	aasworld->faces = (aas_face_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_face_t));
+	aasworld->numfaces = length / sizeof(aas_face_t);
+	if (aasworld->numfaces && !aasworld->faces)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//faceindex
 	offset = LittleLong(header.lumps[AASLUMP_FACEINDEX].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_FACEINDEX].filelen);
-	(*aasworld).faceindex = (aas_faceindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_faceindex_t));
-	(*aasworld).faceindexsize = length / sizeof(aas_faceindex_t);
-	if ((*aasworld).faceindexsize && !(*aasworld).faceindex)
+	aasworld->faceindex = (aas_faceindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_faceindex_t));
+	aasworld->faceindexsize = length / sizeof(aas_faceindex_t);
+	if (aasworld->faceindexsize && !aasworld->faceindex)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//convex areas
 	offset = LittleLong(header.lumps[AASLUMP_AREAS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_AREAS].filelen);
-	(*aasworld).areas = (aas_area_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_area_t));
-	(*aasworld).numareas = length / sizeof(aas_area_t);
-	if ((*aasworld).numareas && !(*aasworld).areas)
+	aasworld->areas = (aas_area_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_area_t));
+	aasworld->numareas = length / sizeof(aas_area_t);
+	if (aasworld->numareas && !aasworld->areas)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
@@ -430,66 +432,66 @@ int AAS_LoadAASFile(const char* filename)
 	length = LittleLong(header.lumps[AASLUMP_AREASETTINGS].filelen);
 	if (header.version == AASVERSION4 || header.version == AASVERSION5)
 	{
-		(*aasworld).areasettings = AAS_LoadAreaSettings5Lump(fp, offset, length, &lastoffset);
+		aasworld->areasettings = AAS_LoadAreaSettings5Lump(fp, offset, length, &lastoffset);
 	}
 	else
 	{
-		(*aasworld).areasettings = (aas_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_areasettings_t));
+		aasworld->areasettings = (aas_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_areasettings_t));
 	}
-	(*aasworld).numareasettings = length / sizeof(aas5_areasettings_t);
-	if ((*aasworld).numareasettings && !(*aasworld).areasettings)
+	aasworld->numareasettings = length / sizeof(aas5_areasettings_t);
+	if (aasworld->numareasettings && !aasworld->areasettings)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//reachability list
 	offset = LittleLong(header.lumps[AASLUMP_REACHABILITY].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_REACHABILITY].filelen);
-	(*aasworld).reachability = (aas_reachability_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_reachability_t));
-	(*aasworld).reachabilitysize = length / sizeof(aas_reachability_t);
-	if ((*aasworld).reachabilitysize && !(*aasworld).reachability)
+	aasworld->reachability = (aas_reachability_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_reachability_t));
+	aasworld->reachabilitysize = length / sizeof(aas_reachability_t);
+	if (aasworld->reachabilitysize && !aasworld->reachability)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//nodes
 	offset = LittleLong(header.lumps[AASLUMP_NODES].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_NODES].filelen);
-	(*aasworld).nodes = (aas_node_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_node_t));
-	(*aasworld).numnodes = length / sizeof(aas_node_t);
-	if ((*aasworld).numnodes && !(*aasworld).nodes)
+	aasworld->nodes = (aas_node_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_node_t));
+	aasworld->numnodes = length / sizeof(aas_node_t);
+	if (aasworld->numnodes && !aasworld->nodes)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//cluster portals
 	offset = LittleLong(header.lumps[AASLUMP_PORTALS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_PORTALS].filelen);
-	(*aasworld).portals = (aas_portal_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_portal_t));
-	(*aasworld).numportals = length / sizeof(aas_portal_t);
-	if ((*aasworld).numportals && !(*aasworld).portals)
+	aasworld->portals = (aas_portal_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_portal_t));
+	aasworld->numportals = length / sizeof(aas_portal_t);
+	if (aasworld->numportals && !aasworld->portals)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//cluster portal index
 	offset = LittleLong(header.lumps[AASLUMP_PORTALINDEX].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_PORTALINDEX].filelen);
-	(*aasworld).portalindex = (aas_portalindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_portalindex_t));
-	(*aasworld).portalindexsize = length / sizeof(aas_portalindex_t);
-	if ((*aasworld).portalindexsize && !(*aasworld).portalindex)
+	aasworld->portalindex = (aas_portalindex_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_portalindex_t));
+	aasworld->portalindexsize = length / sizeof(aas_portalindex_t);
+	if (aasworld->portalindexsize && !aasworld->portalindex)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//clusters
 	offset = LittleLong(header.lumps[AASLUMP_CLUSTERS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_CLUSTERS].filelen);
-	(*aasworld).clusters = (aas_cluster_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_cluster_t));
-	(*aasworld).numclusters = length / sizeof(aas_cluster_t);
-	if ((*aasworld).numclusters && !(*aasworld).clusters)
+	aasworld->clusters = (aas_cluster_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas_cluster_t));
+	aasworld->numclusters = length / sizeof(aas_cluster_t);
+	if (aasworld->numclusters && !aasworld->clusters)
 	{
 		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTREADAASLUMP : WOLFBLERR_CANNOTREADAASLUMP;
 	}
 	//swap everything
 	AAS_SwapAASData();
 	//aas file is loaded
-	(*aasworld).loaded = true;
+	aasworld->loaded = true;
 	//close the file
 	FS_FCloseFile(fp);
 
@@ -507,4 +509,152 @@ int AAS_LoadAASFile(const char* filename)
 	}
 
 	return BLERR_NOERROR;
+}
+
+static int AAS_WriteAASLump(fileHandle_t fp, aas_header_t* h, int lumpnum, void* data, int length)
+{
+	aas_lump_t* lump = &h->lumps[lumpnum];
+
+	lump->fileofs = LittleLong(AAS_WriteAASLump_offset);	//LittleLong(ftell(fp));
+	lump->filelen = LittleLong(length);
+
+	if (length > 0)
+	{
+		FS_Write(data, length, fp);
+	}
+
+	AAS_WriteAASLump_offset += length;
+
+	return true;
+}
+
+static int AAS_WriteAreaSettings5Lump(fileHandle_t fp, aas_header_t* h)
+{
+	aas_lump_t* lump = &h->lumps[AASLUMP_AREASETTINGS];
+
+	lump->fileofs = LittleLong(AAS_WriteAASLump_offset);	//LittleLong(ftell(fp));
+	lump->filelen = LittleLong(aasworld->numareasettings * sizeof(aas5_areasettings_t));
+
+	for (int i = 0; i < aasworld->numareasettings; i++)
+	{
+		FS_Write(&aasworld->areasettings[i], sizeof(aas5_areasettings_t), fp);
+	}
+
+	AAS_WriteAASLump_offset += aasworld->numareasettings * sizeof(aas5_areasettings_t);
+
+	return true;
+}
+
+// aas data is useless after writing to file because it is byte swapped
+bool AAS_WriteAASFile(const char* filename)
+{
+	aas_header_t header;
+	fileHandle_t fp;
+
+	BotImport_Print(PRT_MESSAGE, "writing %s\n", filename);
+	//swap the aas data
+	AAS_SwapAASData();
+	//initialize the file header
+	Com_Memset(&header, 0, sizeof(aas_header_t));
+	header.ident = LittleLong(AASID);
+	header.version = LittleLong(GGameType & GAME_Quake3 ? AASVERSION5 : AASVERSION8);
+	header.bspchecksum = LittleLong(aasworld->bspchecksum);
+	//open a new file
+	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
+	if (!fp)
+	{
+		BotImport_Print(PRT_ERROR, "error opening %s\n", filename);
+		return false;
+	}	//end if
+		//write the header
+	FS_Write(&header, sizeof(aas_header_t), fp);
+	AAS_WriteAASLump_offset = sizeof(aas_header_t);
+	//add the data lumps to the file
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_BBOXES, aasworld->bboxes,
+			aasworld->numbboxes * sizeof(aas_bbox_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_VERTEXES, aasworld->vertexes,
+			aasworld->numvertexes * sizeof(aas_vertex_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_PLANES, aasworld->planes,
+			aasworld->numplanes * sizeof(aas_plane_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_EDGES, aasworld->edges,
+			aasworld->numedges * sizeof(aas_edge_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_EDGEINDEX, aasworld->edgeindex,
+			aasworld->edgeindexsize * sizeof(aas_edgeindex_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_FACES, aasworld->faces,
+			aasworld->numfaces * sizeof(aas_face_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_FACEINDEX, aasworld->faceindex,
+			aasworld->faceindexsize * sizeof(aas_faceindex_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_AREAS, aasworld->areas,
+			aasworld->numareas * sizeof(aas_area_t)))
+	{
+		return false;
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		if (!AAS_WriteAreaSettings5Lump(fp, &header))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!AAS_WriteAASLump(fp, &header, AASLUMP_AREASETTINGS, aasworld->areasettings,
+				aasworld->numareasettings * sizeof(aas8_areasettings_t)))
+		{
+			return false;
+		}
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_REACHABILITY, aasworld->reachability,
+			aasworld->reachabilitysize * sizeof(aas_reachability_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_NODES, aasworld->nodes,
+			aasworld->numnodes * sizeof(aas_node_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_PORTALS, aasworld->portals,
+			aasworld->numportals * sizeof(aas_portal_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_PORTALINDEX, aasworld->portalindex,
+			aasworld->portalindexsize * sizeof(aas_portalindex_t)))
+	{
+		return false;
+	}
+	if (!AAS_WriteAASLump(fp, &header, AASLUMP_CLUSTERS, aasworld->clusters,
+			aasworld->numclusters * sizeof(aas_cluster_t)))
+	{
+		return false;
+	}
+	//rewrite the header with the added lumps
+	FS_Seek(fp, 0, FS_SEEK_SET);
+	AAS_DData((unsigned char*)&header + 8, sizeof(aas_header_t) - 8);
+	FS_Write(&header, sizeof(aas_header_t), fp);
+	//close the file
+	FS_FCloseFile(fp);
+	return true;
 }
