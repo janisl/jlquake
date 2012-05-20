@@ -2904,48 +2904,6 @@ bot_moveresult_t BotFinishTravel_FuncBobbing(bot_movestate_t* ms, aas_reachabili
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-/*
-int GrappleState(bot_movestate_t *ms, aas_reachability_t *reach)
-{
-    static int grapplemodelindex;
-    int i;
-    vec3_t dir;
-    aas_entityinfo_t entinfo;
-
-    if (!grapplemodelindex)
-    {
-        grapplemodelindex = AAS_IndexFromModel("models/weapons/grapple/hook/tris.md2");
-    } //end if
-    for (i = AAS_NextEntity(0); i; i = AAS_NextEntity(i))
-    {
-        if (AAS_EntityModelindex(i) == grapplemodelindex)
-        {
-            AAS_EntityInfo(i, &entinfo);
-            if (VectorCompare(entinfo.origin, entinfo.old_origin))
-            {
-                VectorSubtract(entinfo.origin, reach->end, dir);
-                //if hooked near the reachability end
-                if (VectorLength(dir) < 32) return 2;
-            } //end if
-            else
-            {
-                //still shooting hook
-                return 1;
-            } //end else
-        } //end if
-    } //end if
-    //no valid grapple at all
-    return 0;
-} //end of the function GrappleState*/
-//===========================================================================
-// 0  no valid grapple hook visible
-// 1  the grapple hook is still flying
-// 2  the grapple hooked into a wall
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach)
 {
 	static int grapplemodelindex;
@@ -2960,7 +2918,7 @@ int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach)
 	}
 	if (!laserhook->value && !grapplemodelindex)
 	{
-		grapplemodelindex = AAS_IndexFromModel("models/weapons/grapple/hook/tris.md2");
+		grapplemodelindex = 0;
 	}	//end if
 	for (i = AAS_NextEntity(0); i; i = AAS_NextEntity(i))
 	{
