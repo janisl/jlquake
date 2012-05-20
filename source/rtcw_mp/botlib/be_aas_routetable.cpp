@@ -340,7 +340,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 #ifdef DEBUG_READING_TIME
 	int pretime;
 
-	pretime = Sys_MilliSeconds();
+	pretime = Sys_Milliseconds();
 #endif
 
 	routetable = (*aasworld).routetable;
@@ -475,7 +475,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	BotImport_Print(PRT_MESSAGE, "Total Memory Used: %d\n", memorycount);
 
 #ifdef DEBUG_READING_TIME
-	BotImport_Print(PRT_MESSAGE, "Route-Table read time: %i\n", Sys_MilliSeconds() - pretime);
+	BotImport_Print(PRT_MESSAGE, "Route-Table read time: %i\n", Sys_Milliseconds() - pretime);
 #endif
 
 	FS_FCloseFile(fp);
@@ -1231,18 +1231,18 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
 	//if (!srcarea || !destarea)
 	//	return qfalse;
 
-//	pretime = -Sys_MilliSeconds();
+//	pretime = -Sys_Milliseconds();
 
 	hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, tfl);
 	if (!hideareanum)
 	{
-//		BotImport_Print(PRT_MESSAGE, "Breadth First HidePos FAILED: %i ms\n", pretime + Sys_MilliSeconds());
+//		BotImport_Print(PRT_MESSAGE, "Breadth First HidePos FAILED: %i ms\n", pretime + Sys_Milliseconds());
 		return qfalse;
 	}
 	// we found a valid hiding area
 	VectorCopy((*aasworld).areawaypoints[hideareanum], returnPos);
 
-//	BotImport_Print(PRT_MESSAGE, "Breadth First HidePos: %i ms\n", pretime + Sys_MilliSeconds());
+//	BotImport_Print(PRT_MESSAGE, "Breadth First HidePos: %i ms\n", pretime + Sys_Milliseconds());
 
 	return qtrue;
 
@@ -1288,7 +1288,7 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
         lastTime = AAS_Time();
     }
 */
-	pretime = -Sys_MilliSeconds();
+	pretime = -Sys_Milliseconds();
 
 	// is the src area grounded?
 	if (!(srcChild = AAS_RT_GetChild(srcarea)))
@@ -1531,7 +1531,7 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
 		//
 		if (thisTravelTime < 300)
 		{
-			BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos: %i ms\n", pretime + Sys_MilliSeconds());
+			BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos: %i ms\n", pretime + Sys_Milliseconds());
 			return qtrue;
 		}
 	}
@@ -1539,12 +1539,12 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
 	// did we find something?
 	if (bestTravelTime < MAX_HIDE_TRAVELTIME)
 	{
-		BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos: %i ms\n", pretime + Sys_MilliSeconds());
+		BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos: %i ms\n", pretime + Sys_Milliseconds());
 		return qtrue;
 	}
 	//
 	// couldn't find anything
-	BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos FAILED: %i ms\n", pretime + Sys_MilliSeconds());
+	BotImport_Print(PRT_MESSAGE, "Fuzzy RT HidePos FAILED: %i ms\n", pretime + Sys_Milliseconds());
 	return qfalse;
 #endif
 }

@@ -50,7 +50,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_ai_move.h"
 #include "../game/be_ai_weap.h"
 #include "../game/be_ai_chat.h"
-#include "../game/be_ai_char.h"
 
 //library globals in a structure
 botlib_globals_t botlibglobals;
@@ -66,40 +65,6 @@ int botlibsetup = qfalse;
 //
 //===========================================================================
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-// Ridah, faster Win32 code
-#ifdef _WIN32
-#undef MAX_PATH		// this is an ugly hack, to temporarily ignore the current definition, since it's also defined in windows.h
-#include <windows.h>
-#undef MAX_PATH
-#define MAX_PATH    MAX_QPATH
-#endif
-
-int Sys_MilliSeconds(void)
-{
-// Ridah, faster Win32 code
-#ifdef _WIN32
-	int sys_curtime;
-	static qboolean initialized = qfalse;
-	static int sys_timeBase;
-
-	if (!initialized)
-	{
-		sys_timeBase = timeGetTime();
-		initialized = qtrue;
-	}
-	sys_curtime = timeGetTime() - sys_timeBase;
-
-	return sys_curtime;
-#else
-	return clock() * 1000 / CLOCKS_PER_SEC;
-#endif
-}	//end of the function Sys_MilliSeconds
 //===========================================================================
 //
 // Parameter:				-
@@ -262,7 +227,7 @@ int Export_BotLibStartFrame(float time)
 int Export_BotLibLoadMap(const char* mapname)
 {
 #ifdef DEBUG
-	int starttime = Sys_MilliSeconds();
+	int starttime = Sys_Milliseconds();
 #endif
 	int errnum;
 
@@ -284,7 +249,7 @@ int Export_BotLibLoadMap(const char* mapname)
 	//
 	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
 #ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
 #endif
 	//
 	return BLERR_NOERROR;
@@ -813,16 +778,6 @@ Init_AI_Export
 */
 static void Init_AI_Export(ai_export_t* ai)
 {
-	//-----------------------------------
-	// be_ai_char.h
-	//-----------------------------------
-	ai->BotLoadCharacter = BotLoadCharacter;
-	ai->BotFreeCharacter = BotFreeCharacter;
-	ai->Characteristic_Float = Characteristic_Float;
-	ai->Characteristic_BFloat = Characteristic_BFloat;
-	ai->Characteristic_Integer = Characteristic_Integer;
-	ai->Characteristic_BInteger = Characteristic_BInteger;
-	ai->Characteristic_String = Characteristic_String;
 	//-----------------------------------
 	// be_ai_chat.h
 	//-----------------------------------

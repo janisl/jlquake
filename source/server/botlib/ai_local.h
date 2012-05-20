@@ -143,3 +143,6 @@ void BotFreeInfoEntities();
 int BotSetupGoalAI(bool singleplayer);
 //shut down the goal AI
 void BotShutdownGoalAI();
+
+//free cached bot characters
+void BotShutdownCharacters();

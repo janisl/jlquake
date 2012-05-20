@@ -128,7 +128,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 /*#ifdef DEBUG
     int startmillisecs;
 
-    startmillisecs = Sys_MilliSeconds();
+    startmillisecs = Sys_Milliseconds();
 #endif*/
 
 	startareanum = AAS_PointAreaNum(start);
@@ -270,7 +270,7 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 	}	//end for
 		//BotImport_Print(PRT_MESSAGE, "%d alternative route goals\n", numaltroutegoals);
 #ifdef DEBUG
-//	BotImport_Print(PRT_MESSAGE, "alternative route goals in %d msec\n", Sys_MilliSeconds() - startmillisecs);
+//	BotImport_Print(PRT_MESSAGE, "alternative route goals in %d msec\n", Sys_Milliseconds() - startmillisecs);
 #endif
 	return numaltroutegoals;
 #endif

@@ -46,7 +46,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../common/file_formats/bsp47.h"
 #include "be_interface.h"
 
-extern int Sys_MilliSeconds(void);
+extern int Sys_Milliseconds(void);
 
 //#include "../../../gladiator/bspc/aas_store.h"
 
@@ -4757,7 +4757,7 @@ int AAS_ContinueInitReachability(float time)
 	}	//end if
 		//number of areas to calculate reachability for this cycle
 	todo = (*aasworld).reachabilityareas + (int)framereachability;
-	start_time = Sys_MilliSeconds();
+	start_time = Sys_Milliseconds();
 	//loop over the areas
 	for (i = (*aasworld).reachabilityareas; i < (*aasworld).numareas && i < todo; i++)
 	{
@@ -4838,7 +4838,7 @@ int AAS_ContinueInitReachability(float time)
 //			AAS_Reachability_WeaponJump(i, j);
 		}	//end for
 			//if the calculation took more time than the max reachability delay
-		if (Sys_MilliSeconds() - start_time > (int)reachability_delay)
+		if (Sys_Milliseconds() - start_time > (int)reachability_delay)
 		{
 			break;
 		}

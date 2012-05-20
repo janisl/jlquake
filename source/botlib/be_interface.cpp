@@ -45,7 +45,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_move.h"
 #include "be_ai_weap.h"
 #include "be_ai_chat.h"
-#include "be_ai_char.h"
 
 //library globals in a structure
 botlib_globals_t botlibglobals;
@@ -61,16 +60,6 @@ int botlibsetup = false;
 //
 //===========================================================================
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Sys_MilliSeconds(void)
-{
-	return clock() * 1000 / CLOCKS_PER_SEC;
-}	//end of the function Sys_MilliSeconds
 //===========================================================================
 //
 // Parameter:				-
@@ -239,7 +228,7 @@ int Export_BotLibStartFrame(float time)
 int Export_BotLibLoadMap(const char* mapname)
 {
 #ifdef DEBUG
-	int starttime = Sys_MilliSeconds();
+	int starttime = Sys_Milliseconds();
 #endif
 	int errnum;
 
@@ -261,7 +250,7 @@ int Export_BotLibLoadMap(const char* mapname)
 	//
 	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
 #ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_MilliSeconds() - starttime);
+	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
 #endif
 	//
 	return BLERR_NOERROR;
@@ -760,16 +749,6 @@ Init_AI_Export
 */
 static void Init_AI_Export(ai_export_t* ai)
 {
-	//-----------------------------------
-	// be_ai_char.h
-	//-----------------------------------
-	ai->BotLoadCharacter = BotLoadCharacter;
-	ai->BotFreeCharacter = BotFreeCharacter;
-	ai->Characteristic_Float = Characteristic_Float;
-	ai->Characteristic_BFloat = Characteristic_BFloat;
-	ai->Characteristic_Integer = Characteristic_Integer;
-	ai->Characteristic_BInteger = Characteristic_BInteger;
-	ai->Characteristic_String = Characteristic_String;
 	//-----------------------------------
 	// be_ai_chat.h
 	//-----------------------------------

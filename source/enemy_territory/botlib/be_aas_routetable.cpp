@@ -340,7 +340,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 #ifdef DEBUG_READING_TIME
 	int pretime;
 
-	pretime = Sys_MilliSeconds();
+	pretime = Sys_Milliseconds();
 #endif
 
 	routetable = (*aasworld).routetable;
@@ -475,7 +475,7 @@ qboolean AAS_RT_ReadRouteTable(fileHandle_t fp)
 	BotImport_Print(PRT_MESSAGE, "Total Memory Used: %d\n", memorycount);
 
 #ifdef DEBUG_READING_TIME
-	BotImport_Print(PRT_MESSAGE, "Route-Table read time: %i\n", Sys_MilliSeconds() - pretime);
+	BotImport_Print(PRT_MESSAGE, "Route-Table read time: %i\n", Sys_Milliseconds() - pretime);
 #endif
 
 	FS_FCloseFile(fp);

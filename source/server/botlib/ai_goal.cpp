@@ -38,7 +38,7 @@ static structdef_t iteminfo_struct =
 	sizeof(iteminfo_t), iteminfo_fields
 };
 
-static bot_goalstate_t* botgoalstates[MAX_CLIENTS_WS + 1];
+static bot_goalstate_t* botgoalstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 //item configuration
 itemconfig_t* itemconfig = NULL;
 //level items
@@ -58,10 +58,7 @@ libvar_t* droppedweight = NULL;
 
 bot_goalstate_t* BotGoalStateFromHandle(int handle)
 {
-	if (handle <= 0 || handle > (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS :
-		GGameType & GAME_WolfMP ? MAX_CLIENTS_WM :
-		GGameType & GAME_ET ? MAX_CLIENTS_ET :
-		MAX_CLIENTS_Q3))
+	if (handle <= 0 || handle > MAX_BOTLIB_CLIENTS)
 	{
 		BotImport_Print(PRT_FATAL, "goal state handle %d out of range\n", handle);
 		return NULL;
@@ -710,10 +707,7 @@ void BotFreeItemWeights(int goalstate)
 
 int BotAllocGoalState(int client)
 {
-	for (int i = 1; i <= (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS :
-		GGameType & GAME_WolfMP ? MAX_CLIENTS_WM :
-		GGameType & GAME_ET ? MAX_CLIENTS_ET :
-		MAX_CLIENTS_Q3); i++)
+	for (int i = 1; i <= MAX_BOTLIB_CLIENTS; i++)
 	{
 		if (!botgoalstates[i])
 		{
@@ -727,10 +721,7 @@ int BotAllocGoalState(int client)
 
 void BotFreeGoalState(int handle)
 {
-	if (handle <= 0 || handle > (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS :
-		GGameType & GAME_WolfMP ? MAX_CLIENTS_WM :
-		GGameType & GAME_ET ? MAX_CLIENTS_ET :
-		MAX_CLIENTS_Q3))
+	if (handle <= 0 || handle > MAX_BOTLIB_CLIENTS)
 	{
 		BotImport_Print(PRT_FATAL, "goal state handle %d out of range\n", handle);
 		return;

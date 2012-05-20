@@ -12,7 +12,6 @@ add_library(botlib-wolfsp STATIC
 	be_aas_routealt.cpp
 	be_aas_routetable.cpp
 	be_aas_sample.cpp
-	be_ai_char.cpp
 	be_ai_chat.cpp
 	be_ai_goal.cpp
 	be_ai_move.cpp

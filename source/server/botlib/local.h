@@ -23,6 +23,12 @@
 
 #define MAX_EPAIRKEY        128
 
+#define MAX_BOTLIB_CLIENTS  (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS : \
+							GGameType & GAME_WolfMP ? MAX_CLIENTS_WM : \
+							GGameType & GAME_ET ? MAX_CLIENTS_ET : \
+							MAX_CLIENTS_Q3)
+#define MAX_BOTLIB_CLIENTS_ARRAY	MAX_CLIENTS_WS
+
 //
 //	Imports
 //

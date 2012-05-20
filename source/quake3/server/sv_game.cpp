@@ -654,20 +654,20 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AI_LOAD_CHARACTER:
-		return botlib_export->ai.BotLoadCharacter((char*)VMA(1), VMF(2));
+		return BotLoadCharacter((char*)VMA(1), VMF(2));
 	case BOTLIB_AI_FREE_CHARACTER:
-		botlib_export->ai.BotFreeCharacter(args[1]);
+		BotFreeCharacter(args[1]);
 		return 0;
 	case BOTLIB_AI_CHARACTERISTIC_FLOAT:
-		return FloatAsInt(botlib_export->ai.Characteristic_Float(args[1], args[2]));
+		return FloatAsInt(Characteristic_Float(args[1], args[2]));
 	case BOTLIB_AI_CHARACTERISTIC_BFLOAT:
-		return FloatAsInt(botlib_export->ai.Characteristic_BFloat(args[1], args[2], VMF(3), VMF(4)));
+		return FloatAsInt(Characteristic_BFloat(args[1], args[2], VMF(3), VMF(4)));
 	case BOTLIB_AI_CHARACTERISTIC_INTEGER:
-		return botlib_export->ai.Characteristic_Integer(args[1], args[2]);
+		return Characteristic_Integer(args[1], args[2]);
 	case BOTLIB_AI_CHARACTERISTIC_BINTEGER:
-		return botlib_export->ai.Characteristic_BInteger(args[1], args[2], args[3], args[4]);
+		return Characteristic_BInteger(args[1], args[2], args[3], args[4]);
 	case BOTLIB_AI_CHARACTERISTIC_STRING:
-		botlib_export->ai.Characteristic_String(args[1], args[2], (char*)VMA(3), args[4]);
+		Characteristic_String(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
 	case BOTLIB_AI_ALLOC_CHAT_STATE:

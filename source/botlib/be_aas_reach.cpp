@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas_def.h"
 #include "be_interface.h"
 
-extern int Sys_MilliSeconds(void);
+extern int Sys_Milliseconds(void);
 
 //#define REACH_DEBUG
 
@@ -5048,7 +5048,7 @@ int AAS_ContinueInitReachability(float time)
 	}	//end if
 		//number of areas to calculate reachability for this cycle
 	todo = aasworld.numreachabilityareas + (int)framereachability;
-	start_time = Sys_MilliSeconds();
+	start_time = Sys_Milliseconds();
 	//loop over the areas
 	for (i = aasworld.numreachabilityareas; i < aasworld.numareas && i < todo; i++)
 	{
@@ -5130,7 +5130,7 @@ int AAS_ContinueInitReachability(float time)
 			AAS_Reachability_WeaponJump(i, j);
 		}	//end for
 			//if the calculation took more time than the max reachability delay
-		if (Sys_MilliSeconds() - start_time > (int)reachability_delay)
+		if (Sys_Milliseconds() - start_time > (int)reachability_delay)
 		{
 			break;
 		}
