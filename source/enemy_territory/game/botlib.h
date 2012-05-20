@@ -342,10 +342,6 @@ typedef struct ai_export_s
 	int (* BotAllocWeaponState)(void);
 	void (* BotFreeWeaponState)(int weaponstate);
 	void (* BotResetWeaponState)(int weaponstate);
-	//-----------------------------------
-	// be_ai_gen.h
-	//-----------------------------------
-	int (* GeneticParentsAndChildSelection)(int numranks, float* ranks, int* parent1, int* parent2, int* child);
 } ai_export_t;
 
 //bot AI library imported functions

@@ -983,7 +983,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AI_GENETIC_PARENTS_AND_CHILD_SELECTION:
-		return botlib_export->ai.GeneticParentsAndChildSelection(args[1], (float*)VMA(2), (int*)VMA(3), (int*)VMA(4), (int*)VMA(5));
+		return GeneticParentsAndChildSelection(args[1], (float*)VMA(2), (int*)VMA(3), (int*)VMA(4), (int*)VMA(5));
 
 	case TRAP_MEMSET:
 		memset(VMA(1), args[2], args[3]);

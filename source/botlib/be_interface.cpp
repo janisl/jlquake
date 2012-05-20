@@ -46,7 +46,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_weap.h"
 #include "be_ai_chat.h"
 #include "be_ai_char.h"
-#include "be_ai_gen.h"
 
 //library globals in a structure
 botlib_globals_t botlibglobals;
@@ -831,10 +830,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	ai->BotAllocWeaponState = BotAllocWeaponState;
 	ai->BotFreeWeaponState = BotFreeWeaponState;
 	ai->BotResetWeaponState = BotResetWeaponState;
-	//-----------------------------------
-	// be_ai_gen.h
-	//-----------------------------------
-	ai->GeneticParentsAndChildSelection = GeneticParentsAndChildSelection;
 }
 
 

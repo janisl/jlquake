@@ -96,3 +96,9 @@ void BotFreeItemWeights(int goalstate);
 int BotAllocGoalState(int client);
 //free the given goal state
 void BotFreeGoalState(int handle);
+
+//
+//	Gen
+//
+
+bool GeneticParentsAndChildSelection(int numranks, float* ranks, int* parent1, int* parent2, int* child);
