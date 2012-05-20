@@ -1532,7 +1532,7 @@ int AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int* areas, int maxareas)
 //===========================================================================
 int AAS_AreaInfo(int areanum, aas_areainfo_t* info)
 {
-	aas5_areasettings_t* settings;
+	aas_areasettings_t* settings;
 	if (!info)
 	{
 		return 0;

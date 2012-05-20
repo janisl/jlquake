@@ -467,7 +467,7 @@ void AAS_CreateReversedReachability(void)
 	int i, n;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas8_areasettings_t* settings;
+	aas_areasettings_t* settings;
 	char* ptr;
 #ifdef DEBUG
 	int starttime;
@@ -583,7 +583,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
 	aas_reachability_t* reach;
-	aas8_areasettings_t* settings;
+	aas_areasettings_t* settings;
 	int starttime;
 
 	starttime = Sys_Milliseconds();
@@ -653,7 +653,7 @@ int AAS_PortalMaxTravelTime(int portalnum)
 	aas_portal_t* portal;
 	aas_reversedreachability_t* revreach;
 	aas_reversedlink_t* revlink;
-	aas8_areasettings_t* settings;
+	aas_areasettings_t* settings;
 
 	portal = &aasworld->portals[portalnum];
 	//reversed reachabilities of this portal area
@@ -1021,7 +1021,7 @@ void AAS_InitRoutingUpdate(void)
 void AAS_CreateAllRoutingCache(void)
 {
 	int i, j, k, t, tfl, numroutingareas;
-	aas8_areasettings_t* areasettings;
+	aas_areasettings_t* areasettings;
 	aas_reachability_t* reach;
 
 	numroutingareas = 0;
@@ -2187,7 +2187,7 @@ void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
 //===========================================================================
 int AAS_NextAreaReachability(int areanum, int reachnum)
 {
-	aas8_areasettings_t* settings;
+	aas_areasettings_t* settings;
 
 	if (!aasworld->initialized)
 	{

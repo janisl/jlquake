@@ -510,7 +510,7 @@ void AAS_RT_BuildRouteTable(void)
 {
 	int i,j,k;
 	aas_area_t* srcarea;
-	aas8_areasettings_t* srcsettings;
+	aas_areasettings_t* srcsettings;
 //	vec3_t	vec;
 	unsigned int totalcount;
 	unsigned int noroutecount;

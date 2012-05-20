@@ -359,6 +359,43 @@ char* AAS_LoadAASLump(fileHandle_t fp, int offset, int length, int* lastoffset, 
 	return buf;
 }	//end of the function AAS_LoadAASLump
 //===========================================================================
+// allocate memory and read a lump of a AAS file
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
+aas_areasettings_t* AAS_LoadAreaSettingsLump(fileHandle_t fp, int offset, int length, int* lastoffset)
+{
+	if (!length)
+	{
+		//just alloc a dummy
+		return (aas_areasettings_t*)GetClearedHunkMemory(sizeof(aas_areasettings_t));
+	}	//end if
+		//seek to the data
+	if (offset != *lastoffset)
+	{
+		BotImport_Print(PRT_WARNING, "AAS file not sequentially read\n");
+		if (FS_Seek(fp, offset, FS_SEEK_SET))
+		{
+			AAS_Error("can't seek to aas lump\n");
+			AAS_DumpAASData();
+			FS_FCloseFile(fp);
+			return 0;
+		}	//end if
+	}	//end if
+	//allocate memory
+	int count = length / sizeof(aas5_areasettings_t);
+	aas_areasettings_t* buf = (aas_areasettings_t*)GetClearedHunkMemory(sizeof(aas_areasettings_t) * count);
+	//read the data
+	for (int i = 0; i < count; i++)
+	{
+		FS_Read(&buf[i], sizeof(aas5_areasettings_t), fp);
+	}
+	*lastoffset += count * sizeof(aas5_areasettings_t);
+	return buf;
+}	//end of the function AAS_LoadAASLump
+//===========================================================================
 //
 // Parameter:			-
 // Returns:				-
@@ -505,7 +542,7 @@ int AAS_LoadAASFile(char* filename)
 	//area settings
 	offset = LittleLong(header.lumps[AASLUMP_AREASETTINGS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_AREASETTINGS].filelen);
-	(*aasworld).areasettings = (aas5_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset, sizeof(aas5_areasettings_t));
+	(*aasworld).areasettings = AAS_LoadAreaSettingsLump(fp, offset, length, &lastoffset);
 	(*aasworld).numareasettings = length / sizeof(aas5_areasettings_t);
 	if ((*aasworld).numareasettings && !(*aasworld).areasettings)
 	{

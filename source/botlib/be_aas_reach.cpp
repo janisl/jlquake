@@ -900,7 +900,7 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 {
 	int i, j, face1num, face2num, side1;
 	aas_area_t* area1, * area2;
-	aas5_areasettings_t* areasettings;
+	aas_areasettings_t* areasettings;
 	aas_lreachability_t* lreach;
 	aas_face_t* face1;
 	aas_plane_t* plane;
@@ -4965,7 +4965,7 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 void AAS_StoreReachability(void)
 {
 	int i;
-	aas5_areasettings_t* areasettings;
+	aas_areasettings_t* areasettings;
 	aas_lreachability_t* lreach;
 	aas_reachability_t* reach;
 

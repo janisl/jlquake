@@ -527,7 +527,7 @@ int AAS_LoadAASFile(char* filename)
 	//area settings
 	offset = LittleLong(header.lumps[AASLUMP_AREASETTINGS].fileofs);
 	length = LittleLong(header.lumps[AASLUMP_AREASETTINGS].filelen);
-	(*aasworld).areasettings = (aas8_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset);
+	(*aasworld).areasettings = (aas_areasettings_t*)AAS_LoadAASLump(fp, offset, length, &lastoffset);
 	(*aasworld).numareasettings = length / sizeof(aas8_areasettings_t);
 	if ((*aasworld).numareasettings && !(*aasworld).areasettings)
 	{

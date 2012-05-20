@@ -729,7 +729,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 //===========================================================================
 void AAS_ShowReachableAreas(int areanum)
 {
-	aas8_areasettings_t* settings;
+	aas_areasettings_t* settings;
 	static aas_reachability_t reach;
 	static int index, lastareanum;
 	static float lasttime;
