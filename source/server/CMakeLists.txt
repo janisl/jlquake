@@ -1,4 +1,5 @@
 add_library(server STATIC
+	botlib/aas_file.cpp
 	botlib/aas_main.cpp
 	botlib/ai_character.cpp
 	botlib/ai_genetic.cpp
