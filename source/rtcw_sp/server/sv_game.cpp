@@ -536,7 +536,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AAS_ENTITY_INFO:
-		botlib_export->aas.AAS_EntityInfo(args[1], (struct aas_entityinfo_s*)VMA(2));
+		botlib_export->aas.AAS_EntityInfo(args[1], (aas_entityinfo_t*)VMA(2));
 		return 0;
 
 	case BOTLIB_AAS_INITIALIZED:

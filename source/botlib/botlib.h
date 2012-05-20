@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct aas_entityinfo_s;
 struct aas_areainfo_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
@@ -166,7 +165,7 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_entity.h
 	//-----------------------------------
-	void (* AAS_EntityInfo)(int entnum, struct aas_entityinfo_s* info);
+	void (* AAS_EntityInfo)(int entnum, struct aas_entityinfo_t* info);
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------

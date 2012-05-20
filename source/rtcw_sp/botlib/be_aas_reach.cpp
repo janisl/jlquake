@@ -500,7 +500,7 @@ int AAS_FallDamageDistance(void)
 	float maxzvelocity, gravity, t;
 
 	maxzvelocity = sqrt(30.0 * 10000);
-	gravity = aassettings.sv_gravity;
+	gravity = aassettings.phys_gravity;
 	t = maxzvelocity / gravity;
 	return 0.5 * gravity * t * t;
 }	//end of the function AAS_FallDamageDistance
@@ -517,7 +517,7 @@ float AAS_FallDelta(float distance)
 {
 	float t, delta, gravity;
 
-	gravity = aassettings.sv_gravity;
+	gravity = aassettings.phys_gravity;
 	t = sqrt(fabs(distance) * 2 / gravity);
 	delta = t * gravity;
 	return delta * delta * 0.0001;
@@ -532,7 +532,7 @@ float AAS_MaxJumpHeight(float sv_jumpvel)
 {
 	float sv_gravity;
 
-	sv_gravity = aassettings.sv_gravity;
+	sv_gravity = aassettings.phys_gravity;
 	//maximum height a player can jump with the given initial z velocity
 	return 0.5 * sv_gravity * (sv_jumpvel / sv_gravity) * (sv_jumpvel / sv_gravity);
 }	//end of the function MaxJumpHeight
@@ -547,8 +547,8 @@ float AAS_MaxJumpDistance(float sv_jumpvel)
 {
 	float sv_gravity, sv_maxvelocity, t;
 
-	sv_gravity = aassettings.sv_gravity;
-	sv_maxvelocity = aassettings.sv_maxvelocity;
+	sv_gravity = aassettings.phys_gravity;
+	sv_maxvelocity = aassettings.phys_maxvelocity;
 	//time a player takes to fall the height
 	t = sqrt(MAX_JUMPFALLHEIGHT / (0.5 * sv_gravity));
 	//maximum distance
@@ -699,7 +699,7 @@ int AAS_AreaDoNotEnterLarge(int areanum)
 //===========================================================================
 unsigned short int AAS_BarrierJumpTravelTime(void)
 {
-	return aassettings.sv_jumpvel / (aassettings.sv_gravity * 0.1);
+	return aassettings.phys_jumpvel / (aassettings.phys_gravity * 0.1);
 }	//end op the function AAS_BarrierJumpTravelTime
 //===========================================================================
 // returns true if there already exists a reachability from area1 to area2
@@ -1360,7 +1360,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	{
 		//if area2 is higher but lower than the maximum step height
 		//NOTE: ground_bestdist >= 0 also catches equal floor reachabilities
-		if (ground_bestdist >= 0 && ground_bestdist < aassettings.sv_maxstep)
+		if (ground_bestdist >= 0 && ground_bestdist < aassettings.phys_maxstep)
 		{
 			//create walk reachability from area1 to area2
 			lreach = AAS_AllocReachability();
@@ -1420,13 +1420,13 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 		//get a test point a little bit towards area1
 		VectorMA(water_bestend, -INSIDEUNITS, water_bestnormal, testpoint);
 		//go down the maximum waterjump height
-		testpoint[2] -= aassettings.sv_maxwaterjump;
+		testpoint[2] -= aassettings.phys_maxwaterjump;
 		//if there IS water the sv_maxwaterjump height below the bestend point
 		if ((*aasworld).areasettings[AAS_PointAreaNum(testpoint)].areaflags & AREA_LIQUID)
 		{
 			//don't create rediculous water jump reachabilities from areas very far below
 			//the water surface
-			if (water_bestdist < aassettings.sv_maxwaterjump + 24)
+			if (water_bestdist < aassettings.phys_maxwaterjump + 24)
 			{
 				//waterjumping from or towards a crouch only area is not possible in Quake2
 				if (((*aasworld).areasettings[area1num].presencetype & PRESENCE_NORMAL) &&
@@ -1475,7 +1475,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	if (ground_foundreach)
 	{
 		//if area2 is higher but lower than the maximum barrier jump height
-		if (ground_bestdist > 0 && ground_bestdist < aassettings.sv_maxbarrier)
+		if (ground_bestdist > 0 && ground_bestdist < aassettings.phys_maxbarrier)
 		{
 			//if no water in area1 or a very thin layer of water on the ground
 			if (!water_foundreach || (ground_bestdist - water_bestdist < 16))
@@ -1531,7 +1531,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	{
 		if (ground_bestdist < 0)
 		{
-			if (ground_bestdist > -aassettings.sv_maxstep)
+			if (ground_bestdist > -aassettings.phys_maxstep)
 			{
 				//create walk reachability from area1 to area2
 				lreach = AAS_AllocReachability();
@@ -1582,7 +1582,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 					VectorCopy(ground_beststart, lreach->start);
 					VectorCopy(ground_bestend, lreach->end);
 					lreach->traveltype = TRAVEL_WALKOFFLEDGE;
-					lreach->traveltime = STARTWALKOFFLEDGE_TIME + fabs(ground_bestdist) * 50 / aassettings.sv_gravity;
+					lreach->traveltime = STARTWALKOFFLEDGE_TIME + fabs(ground_bestdist) * 50 / aassettings.phys_gravity;
 					//if falling from too high and not falling into water
 					if (!AAS_AreaSwim(area2num) && !AAS_AreaJumpPad(area2num))
 					{
@@ -2193,7 +2193,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 	area1 = &(*aasworld).areas[area1num];
 	area2 = &(*aasworld).areas[area2num];
 	//
-	sv_jumpvel = aassettings.sv_jumpvel;
+	sv_jumpvel = aassettings.phys_jumpvel;
 	//maximum distance a player can jump
 	maxjumpdistance = 2 * AAS_MaxJumpDistance(sv_jumpvel);
 	//maximum height a player can jump with the given initial z velocity
@@ -2319,7 +2319,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			{
 				if (!(AAS_PointContents(trace.endpos) & BSP46CONTENTS_LAVA))		//----(SA)	modified since slime is no longer deadly
 				{	//				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME)))
-					if (teststart[2] - trace.endpos[2] <= aassettings.sv_maxbarrier)
+					if (teststart[2] - trace.endpos[2] <= aassettings.phys_maxbarrier)
 					{
 						return qfalse;
 					}
@@ -2344,7 +2344,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			{
 				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME)))
 				{
-					if (teststart[2] - trace.endpos[2] <= aassettings.sv_maxbarrier)
+					if (teststart[2] - trace.endpos[2] <= aassettings.phys_maxbarrier)
 					{
 						return qfalse;
 					}
@@ -2361,7 +2361,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		VectorClear(cmdmove);
 		if (traveltype == TRAVEL_JUMP)
 		{
-			cmdmove[2] = aassettings.sv_jumpvel;
+			cmdmove[2] = aassettings.phys_jumpvel;
 		}
 		else
 		{
@@ -2421,11 +2421,11 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		dir[2] = 0;
 		if (traveltype == TRAVEL_WALKOFFLEDGE && height > VectorLength(dir))
 		{
-			lreach->traveltime = STARTWALKOFFLEDGE_TIME +  height * 50 / aassettings.sv_gravity;
+			lreach->traveltime = STARTWALKOFFLEDGE_TIME +  height * 50 / aassettings.phys_gravity;
 		}
 		else
 		{
-			lreach->traveltime = STARTJUMP_TIME + VectorDistance(bestend, beststart) * 240 / aassettings.sv_maxwalkvelocity;
+			lreach->traveltime = STARTJUMP_TIME + VectorDistance(bestend, beststart) * 240 / aassettings.phys_maxwalkvelocity;
 		}	//end if
 			//
 		if (!AAS_AreaJumpPad(area2num))
@@ -2481,7 +2481,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 		return qfalse;
 	}
 	//
-	sv_jumpvel = aassettings.sv_jumpvel;
+	sv_jumpvel = aassettings.phys_jumpvel;
 	//maximum height a player can jump with the given initial z velocity
 	maxjumpheight = AAS_MaxJumpHeight(sv_jumpvel);
 
@@ -3386,7 +3386,7 @@ aas_lreachability_t* AAS_FindFaceReachabilities(vec3_t* facepoints, int numpoint
 		hordir[2] = 0;
 		hordist = VectorLength(hordir);
 		//
-		if (hordist > 2 * AAS_MaxJumpDistance(aassettings.sv_jumpvel))
+		if (hordist > 2 * AAS_MaxJumpDistance(aassettings.phys_jumpvel))
 		{
 			continue;
 		}
@@ -3799,7 +3799,7 @@ void AAS_Reachability_JumpPad(void)
 		AAS_VectorForBSPEpairKey(ent2, "origin", ent2origin);
 		//
 		height = ent2origin[2] - origin[2];
-		gravity = aassettings.sv_gravity;
+		gravity = aassettings.phys_gravity;
 		time = sqrt(height / (0.5 * gravity));
 		if (!time)
 		{
@@ -4650,7 +4650,7 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 						VectorCopy(mid, lreach->start);
 						VectorCopy(trace.endpos, lreach->end);
 						lreach->traveltype = TRAVEL_WALKOFFLEDGE;
-						lreach->traveltime = STARTWALKOFFLEDGE_TIME + fabs(mid[2] - trace.endpos[2]) * 50 / aassettings.sv_gravity;
+						lreach->traveltime = STARTWALKOFFLEDGE_TIME + fabs(mid[2] - trace.endpos[2]) * 50 / aassettings.phys_gravity;
 						if (!AAS_AreaSwim(reachareanum) && !AAS_AreaJumpPad(reachareanum))
 						{
 							if (AAS_FallDelta(mid[2] - trace.endpos[2]) > FALLDELTA_5DAMAGE)
@@ -4754,12 +4754,12 @@ int AAS_ContinueInitReachability(float time)
 		return qfalse;
 	}
 	//if reachability is calculated for all areas
-	if ((*aasworld).reachabilityareas >= (*aasworld).numareas + 2)
+	if ((*aasworld).numreachabilityareas >= (*aasworld).numareas + 2)
 	{
 		return qfalse;
 	}
 	//if starting with area 1 (area 0 is a dummy)
-	if ((*aasworld).reachabilityareas == 1)
+	if ((*aasworld).numreachabilityareas == 1)
 	{
 		BotImport_Print(PRT_MESSAGE, "calculating reachability...\n");
 		lastpercentage = 0;
@@ -4767,12 +4767,12 @@ int AAS_ContinueInitReachability(float time)
 		reachability_delay = 1000;
 	}	//end if
 		//number of areas to calculate reachability for this cycle
-	todo = (*aasworld).reachabilityareas + (int)framereachability;
+	todo = (*aasworld).numreachabilityareas + (int)framereachability;
 	start_time = Sys_Milliseconds();
 	//loop over the areas
-	for (i = (*aasworld).reachabilityareas; i < (*aasworld).numareas && i < todo; i++)
+	for (i = (*aasworld).numreachabilityareas; i < (*aasworld).numareas && i < todo; i++)
 	{
-		(*aasworld).reachabilityareas++;
+		(*aasworld).numreachabilityareas++;
 		//only create jumppad reachabilities from jumppad areas
 		if ((*aasworld).areasettings[i].contents & AREACONTENTS_JUMPPAD)
 		{
@@ -4854,20 +4854,20 @@ int AAS_ContinueInitReachability(float time)
 			break;
 		}
 		//
-		if ((*aasworld).reachabilityareas * 1000 / (*aasworld).numareas > lastpercentage)
+		if ((*aasworld).numreachabilityareas * 1000 / (*aasworld).numareas > lastpercentage)
 		{
 			break;
 		}
 	}	//end for
 		//
-	if ((*aasworld).reachabilityareas == (*aasworld).numareas)
+	if ((*aasworld).numreachabilityareas == (*aasworld).numareas)
 	{
 		BotImport_Print(PRT_MESSAGE, "\r%6.1f%%", (float)100.0);
 		BotImport_Print(PRT_MESSAGE, "\nplease wait while storing reachability...\n");
-		(*aasworld).reachabilityareas++;
+		(*aasworld).numreachabilityareas++;
 	}	//end if
 		//if this is the last step in the reachability calculations
-	else if ((*aasworld).reachabilityareas == (*aasworld).numareas + 1)
+	else if ((*aasworld).numreachabilityareas == (*aasworld).numareas + 1)
 	{
 		//create additional walk off ledge reachabilities for every area
 		for (i = 1; i < (*aasworld).numareas; i++)
@@ -4913,13 +4913,13 @@ int AAS_ContinueInitReachability(float time)
 		//
 		FreeMemory(areareachability);
 		//
-		(*aasworld).reachabilityareas++;
+		(*aasworld).numreachabilityareas++;
 		//
 		BotImport_Print(PRT_MESSAGE, "calculating clusters...\n");
 	}	//end if
 	else
 	{
-		lastpercentage = (*aasworld).reachabilityareas * 1000 / (*aasworld).numareas;
+		lastpercentage = (*aasworld).numreachabilityareas * 1000 / (*aasworld).numareas;
 		BotImport_Print(PRT_MESSAGE, "\r%6.1f%%", (float)lastpercentage / 10);
 	}	//end else
 		//not yet finished
@@ -4942,13 +4942,13 @@ void AAS_InitReachability(void)
 	{
 		if (!((int)LibVarGetValue("forcereachability")))
 		{
-			(*aasworld).reachabilityareas = (*aasworld).numareas + 2;
+			(*aasworld).numreachabilityareas = (*aasworld).numareas + 2;
 			return;
 		}	//end if
 	}	//end if
 	(*aasworld).savefile = qtrue;
 	//start with area 1 because area zero is a dummy
-	(*aasworld).reachabilityareas = 1;
+	(*aasworld).numreachabilityareas = 1;
 	//setup the heap with reachability links
 	AAS_SetupReachabilityHeap();
 	//allocate area reachability link array

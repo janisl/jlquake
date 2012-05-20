@@ -76,24 +76,24 @@ int AAS_DropToFloor(vec3_t origin, vec3_t mins, vec3_t maxs)
 //===========================================================================
 void AAS_InitSettings(void)
 {
-	aassettings.sv_friction             = 6;
-	aassettings.sv_stopspeed            = 100;
-	aassettings.sv_gravity              = 800;
-	aassettings.sv_waterfriction        = 1;
-	aassettings.sv_watergravity         = 400;
-	aassettings.sv_maxvelocity          = 320;
-	aassettings.sv_maxwalkvelocity      = 300;
-	aassettings.sv_maxcrouchvelocity    = 100;
-	aassettings.sv_maxswimvelocity      = 150;
-	aassettings.sv_walkaccelerate       = 10;
-	aassettings.sv_airaccelerate        = 1;
-	aassettings.sv_swimaccelerate       = 4;
-	aassettings.sv_maxstep              = 18;
-	aassettings.sv_maxsteepness         = 0.7;
-	aassettings.sv_maxwaterjump         = 17;
+	aassettings.phys_friction = 6;
+	aassettings.phys_stopspeed = 100;
+	aassettings.phys_gravity = 800;
+	aassettings.phys_waterfriction = 1;
+	aassettings.phys_watergravity = 400;
+	aassettings.phys_maxvelocity = 320;
+	aassettings.phys_maxwalkvelocity = 300;
+	aassettings.phys_maxcrouchvelocity = 100;
+	aassettings.phys_maxswimvelocity = 150;
+	aassettings.phys_walkaccelerate = 10;
+	aassettings.phys_airaccelerate = 1;
+	aassettings.phys_swimaccelerate = 4;
+	aassettings.phys_maxstep = 18;
+	aassettings.phys_maxsteepness = 0.7;
+	aassettings.phys_maxwaterjump = 17;
 	// Ridah, calculate maxbarrier according to jumpvel and gravity
-	aassettings.sv_jumpvel              = 270;
-	aassettings.sv_maxbarrier           = 49;	//-0.8 + (0.5 * aassettings.sv_gravity * (aassettings.sv_jumpvel / aassettings.sv_gravity) * (aassettings.sv_jumpvel / aassettings.sv_gravity));
+	aassettings.phys_jumpvel = 270;
+	aassettings.phys_maxbarrier = 49;	//-0.8 + (0.5 * aassettings.sv_gravity * (aassettings.sv_jumpvel / aassettings.sv_gravity) * (aassettings.sv_jumpvel / aassettings.sv_gravity));
 	// done.
 
 }	//end of the function AAS_InitSettings
@@ -217,7 +217,7 @@ int AAS_OnGround(vec3_t origin, int presencetype, int passent)
 	}
 	//check if the plane isn't too steep
 	//plane = AAS_PlaneFromNum(trace.planenum);
-	if (DotProduct(trace.plane.normal, up) < aassettings.sv_maxsteepness)
+	if (DotProduct(trace.plane.normal, up) < aassettings.phys_maxsteepness)
 	{
 		return qfalse;
 	}
@@ -355,7 +355,7 @@ float AAS_WeaponJumpZVelocity(vec3_t origin, float radiusdamage)
 	//damage velocity
 	VectorScale(dir, 1600.0 * (float)knockback / mass, kvel);		//the rocket jump hack...
 	//rocket impact velocity + jump velocity
-	return kvel[2] + aassettings.sv_jumpvel;
+	return kvel[2] + aassettings.phys_jumpvel;
 }	//end of the function AAS_WeaponJumpZVelocity
 //===========================================================================
 //
@@ -508,20 +508,20 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 		frametime = 0.1;
 	}
 	//
-	sv_friction = aassettings.sv_friction;
-	sv_stopspeed = aassettings.sv_stopspeed;
-	sv_gravity = aassettings.sv_gravity;
-	sv_waterfriction = aassettings.sv_waterfriction;
-	sv_watergravity = aassettings.sv_watergravity;
-	sv_maxwalkvelocity = aassettings.sv_maxwalkvelocity;// * frametime;
-	sv_maxcrouchvelocity = aassettings.sv_maxcrouchvelocity;// * frametime;
-	sv_maxswimvelocity = aassettings.sv_maxswimvelocity;// * frametime;
-	sv_walkaccelerate = aassettings.sv_walkaccelerate;
-	sv_airaccelerate = aassettings.sv_airaccelerate;
-	sv_swimaccelerate = aassettings.sv_swimaccelerate;
-	sv_maxstep = aassettings.sv_maxstep;
-	sv_maxsteepness = aassettings.sv_maxsteepness;
-	sv_jumpvel = aassettings.sv_jumpvel * frametime;
+	sv_friction = aassettings.phys_friction;
+	sv_stopspeed = aassettings.phys_stopspeed;
+	sv_gravity = aassettings.phys_gravity;
+	sv_waterfriction = aassettings.phys_waterfriction;
+	sv_watergravity = aassettings.phys_watergravity;
+	sv_maxwalkvelocity = aassettings.phys_maxwalkvelocity;// * frametime;
+	sv_maxcrouchvelocity = aassettings.phys_maxcrouchvelocity;// * frametime;
+	sv_maxswimvelocity = aassettings.phys_maxswimvelocity;// * frametime;
+	sv_walkaccelerate = aassettings.phys_walkaccelerate;
+	sv_airaccelerate = aassettings.phys_airaccelerate;
+	sv_swimaccelerate = aassettings.phys_swimaccelerate;
+	sv_maxstep = aassettings.phys_maxstep;
+	sv_maxsteepness = aassettings.phys_maxsteepness;
+	sv_jumpvel = aassettings.phys_jumpvel * frametime;
 	//
 	memset(move, 0, sizeof(aas_clientmove_t));
 	memset(&trace, 0, sizeof(bsp_trace_t));
@@ -971,14 +971,14 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 
 			VectorCopy(org, start);
 			VectorCopy(start, end);
-			end[2] -= 48 + aassettings.sv_maxbarrier;
+			end[2] -= 48 + aassettings.phys_maxbarrier;
 			//gaptrace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, -1);
 			gaptrace = AAS_Trace(start, mins, maxs, end, -1, (BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP) & ~BSP46CONTENTS_BODY);
 			//if solid is found the bot cannot walk any further and will not fall into a gap
 			if (!gaptrace.startsolid)
 			{
 				//if it is a gap (lower than one step height)
-				if (gaptrace.endpos[2] < org[2] - aassettings.sv_maxstep - 1)
+				if (gaptrace.endpos[2] < org[2] - aassettings.phys_maxstep - 1)
 				{
 					if (!(AAS_PointContents(end) & (BSP46CONTENTS_WATER | BSP46CONTENTS_SLIME)))			//----(SA)	modified since slime is no longer deadly
 					{	//					if (!(AAS_PointContents(end) & BSP46CONTENTS_WATER))
@@ -1094,8 +1094,8 @@ int AAS_HorizontalVelocityForJump(float zvel, vec3_t start, vec3_t end, float* v
 	float maxjump, height2fall, t, top;
 	vec3_t dir;
 
-	sv_gravity = aassettings.sv_gravity;
-	sv_maxvelocity = aassettings.sv_maxvelocity;
+	sv_gravity = aassettings.phys_gravity;
+	sv_maxvelocity = aassettings.phys_maxvelocity;
 
 	//maximum height a player can jump with the given initial z velocity
 	maxjump = 0.5 * sv_gravity * (zvel / sv_gravity) * (zvel / sv_gravity);

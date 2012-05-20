@@ -42,8 +42,6 @@ void AAS_InvalidateEntities(void);
 void AAS_ResetEntityLinks(void);
 //updates an entity
 int AAS_UpdateEntity(int ent, bot_entitystate_t* state);
-//gives the entity data used for collision detection
-void AAS_EntityBSPData(int entnum, bsp_entdata_t* entdata);
 #endif	//AASINTERN
 
 //returns the size of the entity bounding box in mins and maxs

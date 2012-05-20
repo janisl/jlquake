@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct aas_entityinfo_s;
 struct bot_consolemessage_s;
 struct bot_match_s;
 struct bot_moveresult_s;
@@ -171,7 +170,7 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_entity.h
 	//-----------------------------------
-	void (* AAS_EntityInfo)(int entnum, struct aas_entityinfo_s* info);
+	void (* AAS_EntityInfo)(int entnum, struct aas_entityinfo_t* info);
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------

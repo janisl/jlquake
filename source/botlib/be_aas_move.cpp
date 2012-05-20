@@ -70,9 +70,6 @@ int AAS_DropToFloor(vec3_t origin, vec3_t mins, vec3_t maxs)
 //===========================================================================
 void AAS_InitSettings(void)
 {
-	aassettings.phys_gravitydirection[0]    = 0;
-	aassettings.phys_gravitydirection[1]    = 0;
-	aassettings.phys_gravitydirection[2]    = -1;
 	aassettings.phys_friction               = LibVarValue("phys_friction", "6");
 	aassettings.phys_stopspeed              = LibVarValue("phys_stopspeed", "100");
 	aassettings.phys_gravity                = LibVarValue("phys_gravity", "800");

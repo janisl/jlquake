@@ -316,24 +316,6 @@ void AAS_EntitySize(int entnum, vec3_t mins, vec3_t maxs)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_EntityBSPData(int entnum, bsp_entdata_t* entdata)
-{
-	aas_entity_t* ent;
-
-	ent = &(*aasworld).entities[entnum];
-	VectorCopy(ent->i.origin, entdata->origin);
-	VectorCopy(ent->i.angles, entdata->angles);
-	VectorAdd(ent->i.origin, ent->i.mins, entdata->absmins);
-	VectorAdd(ent->i.origin, ent->i.maxs, entdata->absmaxs);
-	entdata->solid = ent->i.solid;
-	entdata->modelnum = ent->i.modelindex - 1;
-}	//end of the function AAS_EntityBSPData
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_ResetEntityLinks(void)
 {
 	int i;
