@@ -342,3 +342,37 @@ void AAS_DumpAASData();
 int AAS_LoadAASFile(const char* filename);
 //writes an AAS file with the given name
 bool AAS_WriteAASFile(const char* filename);
+
+#define MAX_BSPENTITIES     4096
+
+//bsp entity epair
+struct bsp_epair_t
+{
+	char* key;
+	char* value;
+	bsp_epair_t* next;
+};
+
+//bsp data entity
+struct bsp_entity_t
+{
+	bsp_epair_t* epairs;
+};
+
+//id Sofware BSP data
+struct bsp_t
+{
+	//true when bsp file is loaded
+	int loaded;
+	//entity data
+	int entdatasize;
+	char* dentdata;
+	//bsp entities
+	int numentities;
+	bsp_entity_t entities[MAX_BSPENTITIES];
+	//memory used for strings and epairs
+	byte* ebuffer;
+};
+
+//global bsp
+extern bsp_t bspworld;

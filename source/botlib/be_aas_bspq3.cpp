@@ -37,38 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-#define MAX_BSPENTITIES     2048
-
-//bsp entity epair
-typedef struct bsp_epair_s
-{
-	char* key;
-	char* value;
-	struct bsp_epair_s* next;
-} bsp_epair_t;
-
-//bsp data entity
-typedef struct bsp_entity_s
-{
-	bsp_epair_t* epairs;
-} bsp_entity_t;
-
-//id Sofware BSP data
-typedef struct bsp_s
-{
-	//true when bsp file is loaded
-	int loaded;
-	//entity data
-	int entdatasize;
-	char* dentdata;
-	//bsp entities
-	int numentities;
-	bsp_entity_t entities[MAX_BSPENTITIES];
-} bsp_t;
-
-//global bsp
-bsp_t bspworld;
-
 //===========================================================================
 // traces axial boxes of any size through the world
 //
