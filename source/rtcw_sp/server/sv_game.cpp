@@ -712,15 +712,15 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotFreeChatState(args[1]);
 		return 0;
 	case BOTLIB_AI_QUEUE_CONSOLE_MESSAGE:
-		botlib_export->ai.BotQueueConsoleMessage(args[1], args[2], (char*)VMA(3));
+		BotQueueConsoleMessage(args[1], args[2], (char*)VMA(3));
 		return 0;
 	case BOTLIB_AI_REMOVE_CONSOLE_MESSAGE:
-		botlib_export->ai.BotRemoveConsoleMessage(args[1], args[2]);
+		BotRemoveConsoleMessage(args[1], args[2]);
 		return 0;
 	case BOTLIB_AI_NEXT_CONSOLE_MESSAGE:
-		return botlib_export->ai.BotNextConsoleMessage(args[1], (struct bot_consolemessage_wolf_t*)VMA(2));
+		return BotNextConsoleMessageWolf(args[1], (struct bot_consolemessage_wolf_t*)VMA(2));
 	case BOTLIB_AI_NUM_CONSOLE_MESSAGE:
-		return botlib_export->ai.BotNumConsoleMessages(args[1]);
+		return BotNumConsoleMessages(args[1]);
 	case BOTLIB_AI_INITIAL_CHAT:
 		botlib_export->ai.BotInitialChat(args[1], (char*)VMA(2), args[3], (char*)VMA(4), (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11));
 		return 0;

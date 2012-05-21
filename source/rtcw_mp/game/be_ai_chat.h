@@ -43,14 +43,6 @@ void BotShutdownChatAI(void);
 int BotAllocChatState(void);
 //frees the chatstate
 void BotFreeChatState(int handle);
-//adds a console message to the chat state
-void BotQueueConsoleMessage(int chatstate, int type, char* message);
-//removes the console message from the chat state
-void BotRemoveConsoleMessage(int chatstate, int handle);
-//returns the next console message from the state
-int BotNextConsoleMessage(int chatstate, bot_consolemessage_wolf_t* cm);
-//returns the number of console messages currently stored in the state
-int BotNumConsoleMessages(int chatstate);
 //enters a chat message of the given type
 void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
 //returns the number of initial chat messages of the given type

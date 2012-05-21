@@ -263,3 +263,13 @@ struct bot_match_wolf_t
 	int subtype;
 	bot_matchvariable_wolf_t variables[MAX_MATCHVARIABLES];
 };
+
+//removes the console message from the chat state
+void BotRemoveConsoleMessage(int chatstate, int handle);
+//adds a console message to the chat state
+void BotQueueConsoleMessage(int chatstate, int type, const char* message);
+//returns the next console message from the state
+int BotNextConsoleMessageQ3(int chatstate, bot_consolemessage_q3_t* cm);
+int BotNextConsoleMessageWolf(int chatstate, bot_consolemessage_wolf_t* cm);
+//returns the number of console messages currently stored in the state
+int BotNumConsoleMessages(int chatstate);

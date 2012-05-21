@@ -328,3 +328,7 @@ extern bot_synonymlist_t* synonyms;
 extern bot_randomlist_t* randomstrings;
 extern bot_replychat_t* replychats;
 extern bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
+
+bot_chatstate_t* BotChatStateFromHandle(int handle);
+void InitConsoleMessageHeap();
+void FreeConsoleMessage(bot_consolemessage_t* message);

@@ -731,10 +731,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	ai->BotAllocChatState = BotAllocChatState;
 	ai->BotFreeChatState = BotFreeChatState;
-	ai->BotQueueConsoleMessage = BotQueueConsoleMessage;
-	ai->BotRemoveConsoleMessage = BotRemoveConsoleMessage;
-	ai->BotNextConsoleMessage = BotNextConsoleMessage;
-	ai->BotNumConsoleMessages = BotNumConsoleMessages;
 	ai->BotInitialChat = BotInitialChat;
 	ai->BotNumInitialChats = BotNumInitialChats;
 	ai->BotReplyChat = BotReplyChat;
