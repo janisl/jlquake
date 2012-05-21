@@ -151,3 +151,144 @@ void BotShutdownCharacters();
 int BotSetupWeaponAI();
 //shut down the weapon AI
 void BotShutdownWeaponAI();
+
+//escape character
+#define ESCAPE_CHAR             0x01	//'_'
+//
+// "hi ", people, " ", 0, " entered the game"
+//becomes:
+// "hi _rpeople_ _v0_ entered the game"
+//
+
+//match piece types
+#define MT_VARIABLE                 1		//variable match piece
+#define MT_STRING                   2		//string match piece
+//reply chat key flags
+#define RCKFL_AND                   1		//key must be present
+#define RCKFL_NOT                   2		//key must be absent
+#define RCKFL_NAME                  4		//name of bot must be present
+#define RCKFL_STRING                8		//key is a string
+#define RCKFL_VARIABLES             16		//key is a match template
+#define RCKFL_BOTNAMES              32		//key is a series of botnames
+#define RCKFL_GENDERFEMALE          64		//bot must be female
+#define RCKFL_GENDERMALE            128		//bot must be male
+#define RCKFL_GENDERLESS            256		//bot must be genderless
+//time to ignore a chat message after using it
+#define CHATMESSAGE_RECENTTIME  20
+
+//the actuall chat messages
+struct bot_chatmessage_t
+{
+	char* chatmessage;					//chat message string
+	float time;							//last time used
+	bot_chatmessage_t* next;		//next chat message in a list
+};
+
+//bot chat type with chat lines
+struct bot_chattype_t
+{
+	char name[MAX_CHATTYPE_NAME];
+	int numchatmessages;
+	bot_chatmessage_t* firstchatmessage;
+	bot_chattype_t* next;
+};
+
+//bot chat lines
+struct bot_chat_t
+{
+	bot_chattype_t* types;
+};
+
+//random string
+struct bot_randomstring_t
+{
+	char* string;
+	bot_randomstring_t* next;
+};
+
+//list with random strings
+struct bot_randomlist_t
+{
+	char* string;
+	int numstrings;
+	bot_randomstring_t* firstrandomstring;
+	bot_randomlist_t* next;
+};
+
+//synonym
+struct bot_synonym_t
+{
+	char* string;
+	float weight;
+	bot_synonym_t* next;
+};
+
+//list with synonyms
+struct bot_synonymlist_t
+{
+	unsigned long int context;
+	float totalweight;
+	bot_synonym_t* firstsynonym;
+	bot_synonymlist_t* next;
+};
+
+//fixed match string
+struct bot_matchstring_t
+{
+	char* string;
+	bot_matchstring_t* next;
+};
+
+//piece of a match template
+struct bot_matchpiece_t
+{
+	int type;
+	bot_matchstring_t* firststring;
+	int variable;
+	bot_matchpiece_t* next;
+};
+
+//match template
+struct bot_matchtemplate_t
+{
+	unsigned long int context;
+	int type;
+	int subtype;
+	bot_matchpiece_t* first;
+	bot_matchtemplate_t* next;
+};
+
+//reply chat key
+struct bot_replychatkey_t
+{
+	int flags;
+	char* string;
+	bot_matchpiece_t* match;
+	bot_replychatkey_t* next;
+};
+
+//reply chat
+struct bot_replychat_t
+{
+	bot_replychatkey_t* keys;
+	float priority;
+	int numchatmessages;
+	bot_chatmessage_t* firstchatmessage;
+	bot_replychat_t* next;
+};
+
+//string list
+struct bot_stringlist_t
+{
+	char* string;
+	bot_stringlist_t* next;
+};
+
+
+struct bot_ichatdata_t
+{
+	bot_chat_t* chat;
+	int inuse;
+	char filename[MAX_QPATH];
+	char chatname[MAX_QPATH];
+};
