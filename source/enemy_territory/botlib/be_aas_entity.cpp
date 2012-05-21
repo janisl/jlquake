@@ -126,7 +126,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t* state)
 			//FIXME: rotate mins and maxs
 
 		// RF, this is broken, just use the state bounds
-		//AAS_BSPModelMinsMaxsOrigin(ent->i.modelindex, ent->i.angles, ent->i.mins, ent->i.maxs, NULL);
+		//AAS_BSPModelMinsMaxs(ent->i.modelindex, ent->i.angles, ent->i.mins, ent->i.maxs, NULL);
 		VectorCopy(state->mins, ent->i.mins);
 		VectorCopy(state->maxs, ent->i.maxs);
 	}	//end if

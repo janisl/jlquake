@@ -499,7 +499,7 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t* reach)
 
 	modelnum = reach->facenum & 0x0000FFFF;
 	//get some bsp model info
-	AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, NULL);
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, modelorigin))
 	{
@@ -549,7 +549,7 @@ int MoverDown(aas_reachability_t* reach)
 
 	modelnum = reach->facenum & 0x0000FFFF;
 	//get some bsp model info
-	AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
 	{
@@ -989,7 +989,7 @@ void MoverBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter)
 
 	modelnum = reach->facenum & 0x0000FFFF;
 	//get some bsp model info
-	AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
 	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
 	{
@@ -2535,7 +2535,7 @@ void BotFuncBobStartEnd(aas_reachability_t* reach, vec3_t start, vec3_t end, vec
 		VectorSet(end, 0, 0, 0);
 		return;
 	}	//end if
-	AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, NULL);
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	VectorAdd(mins, maxs, mid);
 	VectorScale(mid, 0.5, mid);
 	VectorCopy(mid, start);

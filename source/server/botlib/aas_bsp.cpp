@@ -271,7 +271,7 @@ int AAS_LoadBSPFile()
 	return BLERR_NOERROR;
 }
 
-void AAS_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin)
+void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t outmins, vec3_t outmaxs)
 {
 	clipHandle_t h = CM_InlineModel(modelnum);
 	vec3_t mins, maxs;
@@ -294,9 +294,5 @@ void AAS_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t outmin
 	if (outmaxs)
 	{
 		VectorCopy(maxs, outmaxs);
-	}
-	if (origin)
-	{
-		VectorClear(origin);
 	}
 }

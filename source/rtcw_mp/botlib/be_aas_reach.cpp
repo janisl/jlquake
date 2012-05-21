@@ -2867,7 +2867,7 @@ void AAS_Reachability_Teleport(void)
 	char target[MAX_EPAIRKEY], targetname[MAX_EPAIRKEY];
 	char classname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
 	int ent, dest;
-	vec3_t origin, destorigin, mins, maxs, end, angles = {0, 0, 0};
+	vec3_t destorigin, mins, maxs, end, angles = {0, 0, 0};
 	vec3_t mid;
 	aas_lreachability_t* lreach;
 	aas_trace_t trace;
@@ -2885,12 +2885,11 @@ void AAS_Reachability_Teleport(void)
 //#ifdef REACHDEBUG
 			BotImport_Print(PRT_MESSAGE, "trigger_multiple model = \"%s\"\n", model);
 //#endif REACHDEBUG
-			AAS_BSPModelMinsMaxsOrigin(String::Atoi(model + 1), angles, mins, maxs, origin);
+			AAS_BSPModelMinsMaxs(String::Atoi(model + 1), angles, mins, maxs);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
 			{
-				BotImport_Print(PRT_ERROR, "trigger_multiple at %1.0f %1.0f %1.0f without target\n",
-					origin[0], origin[1], origin[2]);
+				BotImport_Print(PRT_ERROR, "trigger_multiple without target\n");
 				continue;
 			}	//end if
 			for (dest = AAS_NextBSPEntity(0); dest; dest = AAS_NextBSPEntity(dest))
@@ -2927,12 +2926,11 @@ void AAS_Reachability_Teleport(void)
 //#ifdef REACHDEBUG
 			BotImport_Print(PRT_MESSAGE, "trigger_teleport model = \"%s\"\n", model);
 //#endif REACHDEBUG
-			AAS_BSPModelMinsMaxsOrigin(String::Atoi(model + 1), angles, mins, maxs, origin);
+			AAS_BSPModelMinsMaxs(String::Atoi(model + 1), angles, mins, maxs);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
 			{
-				BotImport_Print(PRT_ERROR, "trigger_teleport at %1.0f %1.0f %1.0f without target\n",
-					origin[0], origin[1], origin[2]);
+				BotImport_Print(PRT_ERROR, "trigger_teleport without target\n");
 				continue;
 			}	//end if
 		}	//end if
@@ -2985,8 +2983,6 @@ void AAS_Reachability_Teleport(void)
 			//BotImport_Print(PRT_MESSAGE, "teleporter brush origin at %f %f %f\n", origin[0], origin[1], origin[2]);
 			//BotImport_Print(PRT_MESSAGE, "teleporter brush mins = %f %f %f\n", mins[0], mins[1], mins[2]);
 			//BotImport_Print(PRT_MESSAGE, "teleporter brush maxs = %f %f %f\n", maxs[0], maxs[1], maxs[2]);
-		VectorAdd(origin, mins, mins);
-		VectorAdd(origin, maxs, maxs);
 		//
 		VectorAdd(mins, maxs, mid);
 		VectorScale(mid, 0.5, mid);
@@ -3079,7 +3075,7 @@ void AAS_Reachability_Elevator(void)
 				//get the mins, maxs and origin of the model
 				//NOTE: the origin is usually (0,0,0) and the mins and maxs
 				//      are the absolute mins and maxs
-			AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
+			AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 			//
 			AAS_VectorForBSPEpairKey(ent, "origin", origin);
 			//pos1 is the top position, pos2 is the bottom
@@ -3498,7 +3494,7 @@ void AAS_Reachability_FuncBobbing(void)
 			continue;
 		}	//end if
 			//
-		AAS_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, NULL);
+		AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 		//
 		VectorAdd(mins, maxs, mid);
 		VectorScale(mid, 0.5, mid);
@@ -3744,9 +3740,7 @@ void AAS_Reachability_JumpPad(void)
 		{
 			modelnum = 0;
 		}
-		AAS_BSPModelMinsMaxsOrigin(modelnum, angles, absmins, absmaxs, origin);
-		VectorAdd(origin, absmins, absmins);
-		VectorAdd(origin, absmaxs, absmaxs);
+		AAS_BSPModelMinsMaxs(modelnum, angles, absmins, absmaxs);
 		//
 #ifdef REACHDEBUG
 		BotImport_Print(PRT_MESSAGE, "absmins = %f %f %f\n", absmins[0], absmins[1], absmins[2]);

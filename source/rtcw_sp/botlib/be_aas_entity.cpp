@@ -125,7 +125,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t* state)
 		}	//end if
 			//get the mins and maxs of the model
 			//FIXME: rotate mins and maxs
-		AAS_BSPModelMinsMaxsOrigin(ent->i.modelindex, ent->i.angles, ent->i.mins, ent->i.maxs, NULL);
+		AAS_BSPModelMinsMaxs(ent->i.modelindex, ent->i.angles, ent->i.mins, ent->i.maxs);
 	}	//end if
 	else if (ent->i.solid == SOLID_BBOX)
 	{
