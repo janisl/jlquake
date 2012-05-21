@@ -42,19 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 bot_ichatdata_t* ichatdata[MAX_CLIENTS_Q3];
 
-bot_chatstate_t* botchatstates[MAX_CLIENTS_Q3 + 1];
-//console message heap
-bot_consolemessage_t* consolemessageheap = NULL;
-bot_consolemessage_t* freeconsolemessages = NULL;
-//list with match strings
-bot_matchtemplate_t* matchtemplates = NULL;
-//list with synonyms
-bot_synonymlist_t* synonyms = NULL;
-//list with random strings
-bot_randomlist_t* randomstrings = NULL;
-//reply chats
-bot_replychat_t* replychats = NULL;
-
 //========================================================================
 //
 // Parameter:				-

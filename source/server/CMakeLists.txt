@@ -3,6 +3,7 @@ add_library(server STATIC
 	botlib/aas_file.cpp
 	botlib/aas_main.cpp
 	botlib/ai_character.cpp
+	botlib/ai_chat.cpp
 	botlib/ai_genetic.cpp
 	botlib/ai_goal.cpp
 	botlib/ai_weapon.cpp

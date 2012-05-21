@@ -320,3 +320,11 @@ struct bot_chatstate_t
 	//the bot chat lines
 	bot_chat_t* chat;
 };
+
+extern bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
+extern bot_consolemessage_t* consolemessageheap;
+extern bot_consolemessage_t* freeconsolemessages;
+extern bot_matchtemplate_t* matchtemplates;
+extern bot_synonymlist_t* synonyms;
+extern bot_randomlist_t* randomstrings;
+extern bot_replychat_t* replychats;
