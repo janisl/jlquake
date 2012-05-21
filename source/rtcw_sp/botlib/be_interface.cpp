@@ -689,11 +689,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	// be_aas_bspq3.c
 	//--------------------------------------------
 	aas->AAS_PointContents = AAS_PointContents;
-	aas->AAS_NextBSPEntity = AAS_NextBSPEntity;
-	aas->AAS_ValueForBSPEpairKey = AAS_ValueForBSPEpairKey;
-	aas->AAS_VectorForBSPEpairKey = AAS_VectorForBSPEpairKey;
-	aas->AAS_FloatForBSPEpairKey = AAS_FloatForBSPEpairKey;
-	aas->AAS_IntForBSPEpairKey = AAS_IntForBSPEpairKey;
 	//--------------------------------------------
 	// be_aas_reach.c
 	//--------------------------------------------

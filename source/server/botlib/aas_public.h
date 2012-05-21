@@ -49,3 +49,14 @@ bool AAS_Initialized();
 //returns the current time
 float AAS_Time();
 void AAS_SetCurrentWorld(int index);
+
+//handle to the next bsp entity
+int AAS_NextBSPEntity(int ent);
+//return the value of the BSP epair key
+bool AAS_ValueForBSPEpairKey(int ent, const char* key, char* value, int size);
+//get a vector for the BSP epair key
+bool AAS_VectorForBSPEpairKey(int ent, const char* key, vec3_t v);
+//get a float for the BSP epair key
+bool AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
+//get an integer for the BSP epair key
+bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);

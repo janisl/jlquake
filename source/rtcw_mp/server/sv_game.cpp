@@ -555,15 +555,15 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AAS_POINT_CONTENTS:
 		return botlib_export->aas.AAS_PointContents((float*)VMA(1));
 	case BOTLIB_AAS_NEXT_BSP_ENTITY:
-		return botlib_export->aas.AAS_NextBSPEntity(args[1]);
+		return AAS_NextBSPEntity(args[1]);
 	case BOTLIB_AAS_VALUE_FOR_BSP_EPAIR_KEY:
-		return botlib_export->aas.AAS_ValueForBSPEpairKey(args[1], (char*)VMA(2), (char*)VMA(3), args[4]);
+		return AAS_ValueForBSPEpairKey(args[1], (char*)VMA(2), (char*)VMA(3), args[4]);
 	case BOTLIB_AAS_VECTOR_FOR_BSP_EPAIR_KEY:
-		return botlib_export->aas.AAS_VectorForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
+		return AAS_VectorForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
 	case BOTLIB_AAS_FLOAT_FOR_BSP_EPAIR_KEY:
-		return botlib_export->aas.AAS_FloatForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
+		return AAS_FloatForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
 	case BOTLIB_AAS_INT_FOR_BSP_EPAIR_KEY:
-		return botlib_export->aas.AAS_IntForBSPEpairKey(args[1], (char*)VMA(2), (int*)VMA(3));
+		return AAS_IntForBSPEpairKey(args[1], (char*)VMA(2), (int*)VMA(3));
 
 	case BOTLIB_AAS_AREA_REACHABILITY:
 		return botlib_export->aas.AAS_AreaReachability(args[1]);
