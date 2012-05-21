@@ -762,7 +762,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_ITEM_GOAL_IN_VIS_BUT_NOT_VISIBLE:
 		return botlib_export->ai.BotItemGoalInVisButNotVisible(args[1], (float*)VMA(2), (float*)VMA(3), (bot_goal_q3_t*)VMA(4));
 	case BOTLIB_AI_GET_LEVEL_ITEM_GOAL:
-		BotGetLevelItemGoalQ3(args[1], (char*)VMA(2), (bot_goal_q3_t*)VMA(3));
+		return BotGetLevelItemGoalQ3(args[1], (char*)VMA(2), (bot_goal_q3_t*)VMA(3));
 	case BOTLIB_AI_GET_NEXT_CAMP_SPOT_GOAL:
 		return BotGetNextCampSpotGoalQ3(args[1], (bot_goal_q3_t*)VMA(2));
 	case BOTLIB_AI_GET_MAP_LOCATION_GOAL:
