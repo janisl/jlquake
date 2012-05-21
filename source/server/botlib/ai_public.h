@@ -273,3 +273,7 @@ int BotNextConsoleMessageQ3(int chatstate, bot_consolemessage_q3_t* cm);
 int BotNextConsoleMessageWolf(int chatstate, bot_consolemessage_wolf_t* cm);
 //returns the number of console messages currently stored in the state
 int BotNumConsoleMessages(int chatstate);
+//unify all the white spaces in the string
+void UnifyWhiteSpaces(char* string);
+//checks if the first string contains the second one, returns index into first string or -1 if not found
+int StringContains(const char* str1, const char* str2, bool casesensitive);

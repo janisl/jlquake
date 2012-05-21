@@ -226,3 +226,179 @@ int BotNumConsoleMessages(int chatstate)
 	}
 	return cs->numconsolemessages;
 }
+
+static int IsWhiteSpace(char c)
+{
+	if ((c >= 'a' && c <= 'z') ||
+		(c >= 'A' && c <= 'Z') ||
+		(c >= '0' && c <= '9') ||
+		c == '(' || c == ')' ||
+		c == '?' || c == ':' ||
+		c == '\'' || c == '/' ||
+		c == ',' || c == '.' ||
+		c == '[' || c == ']' ||
+		c == '-' || c == '_' ||
+		c == '+' || c == '=')
+	{
+		return false;
+	}
+	return true;
+}
+
+void UnifyWhiteSpaces(char* string)
+{
+	for (char* ptr = string; *ptr;)
+	{
+		char* oldptr = ptr;
+		while (*ptr && IsWhiteSpace(*ptr))
+		{
+			ptr++;
+		}
+		if (ptr > oldptr)
+		{
+			//if not at the start and not at the end of the string
+			//write only one space
+			if (oldptr > string && *ptr)
+			{
+				*oldptr++ = ' ';
+			}
+			//remove all other white spaces
+			if (ptr > oldptr)
+			{
+				memmove(oldptr, ptr, String::Length(ptr) + 1);
+			}
+		}
+		while (*ptr && !IsWhiteSpace(*ptr))
+		{
+			ptr++;
+		}
+	}
+}
+
+void BotRemoveTildes(char* message)
+{
+	//remove all tildes from the chat message
+	for (int i = 0; message[i]; i++)
+	{
+		if (message[i] == '~')
+		{
+			memmove(&message[i], &message[i + 1], String::Length(&message[i + 1]) + 1);
+		}
+	}
+}
+
+int StringContains(const char* str1, const char* str2, bool casesensitive)
+{
+	int len, i, j, index;
+
+	if (str1 == NULL || str2 == NULL)
+	{
+		return -1;
+	}
+
+	len = String::Length(str1) - String::Length(str2);
+	index = 0;
+	for (i = 0; i <= len; i++, str1++, index++)
+	{
+		for (j = 0; str2[j]; j++)
+		{
+			if (casesensitive)
+			{
+				if (str1[j] != str2[j])
+				{
+					break;
+				}
+			}
+			else
+			{
+				if (String::ToUpper(str1[j]) != String::ToUpper(str2[j]))
+				{
+					break;
+				}
+			}
+		}
+		if (!str2[j])
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
+char* StringContainsWord(char* str1, const char* str2, bool casesensitive)
+{
+	int len = String::Length(str1) - String::Length(str2);
+	for (int i = 0; i <= len; i++, str1++)
+	{
+		//if not at the start of the string
+		if (i)
+		{
+			//skip to the start of the next word
+			while (*str1 && *str1 != ' ' && *str1 != '.' && *str1 != ',' && *str1 != '!')
+				str1++;
+			if (!*str1)
+			{
+				break;
+			}
+			str1++;
+		}
+		//compare the word
+		int j;
+		for (j = 0; str2[j]; j++)
+		{
+			if (casesensitive)
+			{
+				if (str1[j] != str2[j])
+				{
+					break;
+				}
+			}
+			else
+			{
+				if (String::ToUpper(str1[j]) != String::ToUpper(str2[j]))
+				{
+					break;
+				}
+			}
+		}
+		//if there was a word match
+		if (!str2[j])
+		{
+			//if the first string has an end of word
+			if (!str1[j] || str1[j] == ' ' || str1[j] == '.' || str1[j] == ',' || str1[j] == '!')
+			{
+				return str1;
+			}
+		}
+	}
+	return NULL;
+}
+
+void StringReplaceWords(char* string, const char* synonym, const char* replacement)
+{
+	//find the synonym in the string
+	char* str = StringContainsWord(string, synonym, false);
+	//if the synonym occured in the string
+	while (str)
+	{
+		//if the synonym isn't part of the replacement which is already in the string
+		//usefull for abreviations
+		char* str2 = StringContainsWord(string, replacement, false);
+		while (str2)
+		{
+			if (str2 <= str && str < str2 + String::Length(replacement))
+			{
+				break;
+			}
+			str2 = StringContainsWord(str2 + 1, replacement, false);
+		}
+		if (!str2)
+		{
+			memmove(str + String::Length(replacement), str + String::Length(synonym), String::Length(str + String::Length(synonym)) + 1);
+			//append the synonum replacement
+			Com_Memcpy(str, replacement, String::Length(replacement));
+		}
+		//find the next synonym in the string
+		str = StringContainsWord(str + String::Length(replacement), synonym, false);
+	}
+}

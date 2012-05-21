@@ -839,14 +839,14 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotGetChatMessage(args[1], (char*)VMA(2), args[3]);
 		return 0;
 	case BOTLIB_AI_STRING_CONTAINS:
-		return botlib_export->ai.StringContains((char*)VMA(1), (char*)VMA(2), args[3]);
+		return StringContains((char*)VMA(1), (char*)VMA(2), args[3]);
 	case BOTLIB_AI_FIND_MATCH:
 		return botlib_export->ai.BotFindMatch((char*)VMA(1), (struct bot_match_wolf_t*)VMA(2), args[3]);
 	case BOTLIB_AI_MATCH_VARIABLE:
 		botlib_export->ai.BotMatchVariable((struct bot_match_wolf_t*)VMA(1), args[2], (char*)VMA(3), args[4]);
 		return 0;
 	case BOTLIB_AI_UNIFY_WHITE_SPACES:
-		botlib_export->ai.UnifyWhiteSpaces((char*)VMA(1));
+		UnifyWhiteSpaces((char*)VMA(1));
 		return 0;
 	case BOTLIB_AI_REPLACE_SYNONYMS:
 		botlib_export->ai.BotReplaceSynonyms((char*)VMA(1), args[2]);

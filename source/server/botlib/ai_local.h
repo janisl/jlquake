@@ -332,3 +332,6 @@ extern bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
 bot_chatstate_t* BotChatStateFromHandle(int handle);
 void InitConsoleMessageHeap();
 void FreeConsoleMessage(bot_consolemessage_t* message);
+void BotRemoveTildes(char* message);
+char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
+void StringReplaceWords(char* string, const char* synonym, const char* replacement);
