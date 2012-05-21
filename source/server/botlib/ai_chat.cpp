@@ -29,3 +29,4 @@ bot_synonymlist_t* synonyms = NULL;
 bot_randomlist_t* randomstrings = NULL;
 //reply chats
 bot_replychat_t* replychats = NULL;
+bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];

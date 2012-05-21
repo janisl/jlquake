@@ -290,7 +290,6 @@ struct bot_stringlist_t
 struct bot_ichatdata_t
 {
 	bot_chat_t* chat;
-	int inuse;
 	char filename[MAX_QPATH];
 	char chatname[MAX_QPATH];
 };
@@ -328,3 +327,4 @@ extern bot_matchtemplate_t* matchtemplates;
 extern bot_synonymlist_t* synonyms;
 extern bot_randomlist_t* randomstrings;
 extern bot_replychat_t* replychats;
+extern bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];

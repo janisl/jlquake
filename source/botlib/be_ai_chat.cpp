@@ -40,8 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_chat.h"
 
 
-bot_ichatdata_t* ichatdata[MAX_CLIENTS_Q3];
-
 //========================================================================
 //
 // Parameter:				-

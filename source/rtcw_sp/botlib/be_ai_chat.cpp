@@ -47,8 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_ai_chat.h"
 
 
-bot_ichatdata_t ichatdata[MAX_CLIENTS_WS];
-
 //========================================================================
 //
 // Parameter:				-
@@ -2049,7 +2047,7 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 		avail = -1;
 		for (n = 0; n < MAX_CLIENTS_WS; n++)
 		{
-			if (!ichatdata[n].inuse)
+			if (!ichatdata[n])
 			{
 				if (avail == -1)
 				{
@@ -2057,15 +2055,15 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 				}
 				continue;
 			}
-			if (String::Cmp(chatfile, ichatdata[n].filename) != 0)
+			if (String::Cmp(chatfile, ichatdata[n]->filename) != 0)
 			{
 				continue;
 			}
-			if (String::Cmp(chatname, ichatdata[n].chatname) != 0)
+			if (String::Cmp(chatname, ichatdata[n]->chatname) != 0)
 			{
 				continue;
 			}
-			cs->chat = ichatdata[n].chat;
+			cs->chat = ichatdata[n]->chat;
 			//		BotImport_Print( PRT_MESSAGE, "retained %s from %s\n", chatname, chatfile );
 			return BLERR_NOERROR;
 		}
@@ -2085,10 +2083,10 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 	}	//end if
 	if (!LibVarGetValue("bot_reloadcharacters"))
 	{
-		ichatdata[avail].chat = cs->chat;
-		String::NCpyZ(ichatdata[avail].chatname, chatname, sizeof(ichatdata[avail].chatname));
-		String::NCpyZ(ichatdata[avail].filename, chatfile, sizeof(ichatdata[avail].filename));
-		ichatdata[avail].inuse = qtrue;
+		ichatdata[avail] = (bot_ichatdata_t*)Mem_Alloc(sizeof(bot_ichatdata_t));
+		ichatdata[avail]->chat = cs->chat;
+		String::NCpyZ(ichatdata[avail]->chatname, chatname, sizeof(ichatdata[avail]->chatname));
+		String::NCpyZ(ichatdata[avail]->filename, chatfile, sizeof(ichatdata[avail]->filename));
 	}	//end if
 
 	return BLERR_NOERROR;
@@ -2927,10 +2925,11 @@ void BotShutdownChatAI(void)
 		//free all cached chats
 	for (i = 0; i < MAX_CLIENTS_WS; i++)
 	{
-		if (ichatdata[i].inuse)
+		if (ichatdata[i])
 		{
-			FreeMemory(ichatdata[i].chat);
-			ichatdata[i].inuse = qfalse;
+			FreeMemory(ichatdata[i]->chat);
+			Mem_Free(ichatdata[i]);
+			ichatdata[i] = NULL;
 		}	//end if
 	}	//end for
 	if (consolemessageheap)
