@@ -221,7 +221,8 @@ struct bot_consolemessage_q3_t
 	float time;									//message time
 	int type;									//message type
 	char message[MAX_MESSAGE_SIZE_Q3];				//message
-	bot_consolemessage_q3_t* prev, * next;	//prev and next in list
+	int prev;
+	int next;	//prev and next in list
 };
 
 struct bot_consolemessage_wolf_t
