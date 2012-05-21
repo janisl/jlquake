@@ -347,3 +347,5 @@ bool AAS_WriteAASFile(const char* filename);
 int AAS_LoadBSPFile();
 //dump the loaded BSP data
 void AAS_DumpBSPData();
+//gets the mins, maxs and origin of a BSP model
+void AAS_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);

@@ -59,41 +59,6 @@ void BotImport_Print(int type, const char* fmt, ...)
 	}
 }
 
-void BotImport_BSPModelMinsMaxsOrigin(int modelnum, const vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin)
-{
-	clipHandle_t h;
-	vec3_t mins, maxs;
-	float max;
-	int i;
-
-	h = CM_InlineModel(modelnum);
-	CM_ModelBounds(h, mins, maxs);
-	//if the model is rotated
-	if ((angles[0] || angles[1] || angles[2]))
-	{
-		// expand for rotation
-
-		max = RadiusFromBounds(mins, maxs);
-		for (i = 0; i < 3; i++)
-		{
-			mins[i] = -max;
-			maxs[i] = max;
-		}
-	}
-	if (outmins)
-	{
-		VectorCopy(mins, outmins);
-	}
-	if (outmaxs)
-	{
-		VectorCopy(maxs, outmaxs);
-	}
-	if (origin)
-	{
-		VectorClear(origin);
-	}
-}
-
 int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points)
 {
 	if (!debugpolygons)

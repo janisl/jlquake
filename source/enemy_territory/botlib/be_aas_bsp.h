@@ -62,5 +62,3 @@ int AAS_PointContents(vec3_t point);
 qboolean AAS_inPVS(vec3_t p1, vec3_t p2);
 //returns true if the given areas are connected
 qboolean AAS_AreasConnected(int area1, int area2);
-//gets the mins, maxs and origin of a BSP model
-void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);

@@ -98,13 +98,3 @@ qboolean AAS_inPVS(vec3_t p1, vec3_t p2)
 {
 	return botimport.inPVS(p1, p2);
 }	//end of the function AAS_InPVS
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin)
-{
-	BotImport_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
-}	//end of the function AAS_BSPModelMinsMaxs
