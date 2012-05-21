@@ -34,13 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int AAS_LoadBSPFile(void);
 //dump the loaded BSP data
 void AAS_DumpBSPData(void);
-//unlink the given entity from the bsp tree leaves
-void AAS_UnlinkFromBSPLeaves(bsp_link_t* leaves);
-//link the given entity to the bsp tree leaves of the given model
-bsp_link_t* AAS_BSPLinkEntity(vec3_t absmins,
-	vec3_t absmaxs,
-	int entnum,
-	int modelnum);
 
 //calculates collision with given entity
 qboolean AAS_EntityCollision(int entnum,
@@ -66,12 +59,8 @@ bsp_trace_t AAS_Trace(vec3_t start,
 int AAS_PointContents(vec3_t point);
 //returns true when p2 is in the PVS of p1
 qboolean AAS_inPVS(vec3_t p1, vec3_t p2);
-//returns true when p2 is in the PHS of p1
-qboolean AAS_inPHS(vec3_t p1, vec3_t p2);
 //returns true if the given areas are connected
 qboolean AAS_AreasConnected(int area1, int area2);
-//creates a list with entities totally or partly within the given box
-int AAS_BoxEntities(vec3_t absmins, vec3_t absmaxs, int* list, int maxcount);
 //gets the mins, maxs and origin of a BSP model
 void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin);
 //handle to the next bsp entity

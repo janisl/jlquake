@@ -43,21 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-extern botlib_import_t botimport;
-
-//#define TRACE_DEBUG
-
-#define ON_EPSILON      0.005
-//#define DEG2RAD( a ) (( a * M_PI ) / 180.0F)
-
 #define MAX_BSPENTITIES     2048
-
-typedef struct rgb_s
-{
-	int red;
-	int green;
-	int blue;
-} rgb_t;
 
 //bsp entity epair
 typedef struct bsp_epair_s
@@ -91,57 +77,6 @@ typedef struct bsp_s
 //global bsp
 bsp_t bspworld;
 
-
-#ifdef BSP_DEBUG
-typedef struct cname_s
-{
-	int value;
-	char* name;
-} cname_t;
-
-cname_t contentnames[] =
-{
-	{BSP46CONTENTS_SOLID,"CONTENTS_SOLID"},
-	{CONTENTS_WINDOW,"CONTENTS_WINDOW"},
-	{CONTENTS_AUX,"CONTENTS_AUX"},
-	{BSP46CONTENTS_LAVA,"BSP46CONTENTS_LAVA"},
-	{BSP46CONTENTS_SLIME,"BSP46CONTENTS_SLIME"},
-	{BSP46CONTENTS_WATER,"BSP46CONTENTS_WATER"},
-	{CONTENTS_MIST,"CONTENTS_MIST"},
-	{LAST_VISIBLE_CONTENTS,"LAST_VISIBLE_CONTENTS"},
-
-	{BSP46CONTENTS_AREAPORTAL,"BSP46CONTENTS_AREAPORTAL"},
-	{BSP46CONTENTS_PLAYERCLIP,"BSP46CONTENTS_PLAYERCLIP"},
-	{BSP46CONTENTS_MONSTERCLIP,"BSP46CONTENTS_MONSTERCLIP"},
-	{CONTENTS_CURRENT_0,"CONTENTS_CURRENT_0"},
-	{CONTENTS_CURRENT_90,"CONTENTS_CURRENT_90"},
-	{CONTENTS_CURRENT_180,"CONTENTS_CURRENT_180"},
-	{CONTENTS_CURRENT_270,"CONTENTS_CURRENT_270"},
-	{CONTENTS_CURRENT_UP,"CONTENTS_CURRENT_UP"},
-	{CONTENTS_CURRENT_DOWN,"CONTENTS_CURRENT_DOWN"},
-	{BSP46CONTENTS_ORIGIN,"BSP46CONTENTS_ORIGIN"},
-	{CONTENTS_MONSTER,"CONTENTS_MONSTER"},
-	{CONTENTS_DEADMONSTER,"CONTENTS_DEADMONSTER"},
-	{BSP46CONTENTS_DETAIL,"BSP46CONTENTS_DETAIL"},
-	{BSP46CONTENTS_TRANSLUCENT,"BSP46CONTENTS_TRANSLUCENT"},
-	{CONTENTS_LADDER,"CONTENTS_LADDER"},
-	{0, 0}
-};
-
-void PrintContents(int contents)
-{
-	int i;
-
-	for (i = 0; contentnames[i].value; i++)
-	{
-		if (contents & contentnames[i].value)
-		{
-			BotImport_Print(PRT_MESSAGE, "%s\n", contentnames[i].name);
-		}	//end if
-	}	//end for
-}	//end of the function PrintContents
-
-#endif	//BSP_DEBUG
 //===========================================================================
 // traces axial boxes of any size through the world
 //
@@ -198,17 +133,6 @@ qboolean AAS_inPVS(vec3_t p1, vec3_t p2)
 	return botimport.inPVS(p1, p2);
 }	//end of the function AAS_InPVS
 //===========================================================================
-// returns true if in Potentially Visible Set
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-qboolean AAS_inPHS(vec3_t p1, vec3_t p2)
-{
-	return qtrue;
-}	//end of the function AAS_inPHS
-//===========================================================================
 //
 // Parameter:				-
 // Returns:					-
@@ -218,36 +142,6 @@ void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t
 {
 	BotImport_BSPModelMinsMaxsOrigin(modelnum, angles, mins, maxs, origin);
 }	//end of the function AAS_BSPModelMinsMaxs
-//===========================================================================
-// unlinks the entity from all leaves
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_UnlinkFromBSPLeaves(bsp_link_t* leaves)
-{
-}	//end of the function AAS_UnlinkFromBSPLeaves
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-bsp_link_t* AAS_BSPLinkEntity(vec3_t absmins, vec3_t absmaxs, int entnum, int modelnum)
-{
-	return NULL;
-}	//end of the function AAS_BSPLinkEntity
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_BoxEntities(vec3_t absmins, vec3_t absmaxs, int* list, int maxcount)
-{
-	return 0;
-}	//end of the function AAS_BoxEntities
 //===========================================================================
 //
 // Parameter:			-
@@ -513,16 +407,6 @@ void AAS_ParseBSPEntities(void)
 	}	//end while
 	FreeScript(script);
 }	//end of the function AAS_ParseBSPEntities
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_BSPTraceLight(vec3_t start, vec3_t end, vec3_t endpos, int* red, int* green, int* blue)
-{
-	return 0;
-}	//end of the function AAS_BSPTraceLight
 //===========================================================================
 //
 // Parameter:				-
