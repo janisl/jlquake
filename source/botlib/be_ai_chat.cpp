@@ -40,29 +40,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_chat.h"
 
 
-//chat state of a bot
-typedef struct bot_chatstate_s
-{
-	int gender;											//0=it, 1=female, 2=male
-	int client;											//client number
-	char name[32];										//name of the bot
-	char chatmessage[MAX_MESSAGE_SIZE_Q3];
-	int handle;
-	//the console messages visible to the bot
-	bot_consolemessage_q3_t* firstmessage;			//first message is the first typed message
-	bot_consolemessage_q3_t* lastmessage;			//last message is the last typed message, bottom of console
-	//number of console messages stored in the state
-	int numconsolemessages;
-	//the bot chat lines
-	bot_chat_t* chat;
-} bot_chatstate_t;
-
 bot_ichatdata_t* ichatdata[MAX_CLIENTS_Q3];
 
 bot_chatstate_t* botchatstates[MAX_CLIENTS_Q3 + 1];
 //console message heap
-bot_consolemessage_q3_t* consolemessageheap = NULL;
-bot_consolemessage_q3_t* freeconsolemessages = NULL;
+bot_consolemessage_t* consolemessageheap = NULL;
+bot_consolemessage_t* freeconsolemessages = NULL;
 //list with match strings
 bot_matchtemplate_t* matchtemplates = NULL;
 //list with synonyms
@@ -109,8 +92,8 @@ void InitConsoleMessageHeap(void)
 	}
 	//
 	max_messages = (int)LibVarValue("max_messages", "1024");
-	consolemessageheap = (bot_consolemessage_q3_t*)GetClearedHunkMemory(max_messages *
-		sizeof(bot_consolemessage_q3_t));
+	consolemessageheap = (bot_consolemessage_t*)GetClearedHunkMemory(max_messages *
+		sizeof(bot_consolemessage_t));
 	consolemessageheap[0].prev = NULL;
 	consolemessageheap[0].next = &consolemessageheap[1];
 	for (i = 1; i < max_messages - 1; i++)
@@ -130,9 +113,9 @@ void InitConsoleMessageHeap(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_consolemessage_q3_t* AllocConsoleMessage(void)
+bot_consolemessage_t* AllocConsoleMessage(void)
 {
-	bot_consolemessage_q3_t* message;
+	bot_consolemessage_t* message;
 	message = freeconsolemessages;
 	if (freeconsolemessages)
 	{
@@ -151,7 +134,7 @@ bot_consolemessage_q3_t* AllocConsoleMessage(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void FreeConsoleMessage(bot_consolemessage_q3_t* message)
+void FreeConsoleMessage(bot_consolemessage_t* message)
 {
 	if (freeconsolemessages)
 	{
@@ -169,7 +152,7 @@ void FreeConsoleMessage(bot_consolemessage_q3_t* message)
 //===========================================================================
 void BotRemoveConsoleMessage(int chatstate, int handle)
 {
-	bot_consolemessage_q3_t* m, * nextm;
+	bot_consolemessage_t* m, * nextm;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -214,7 +197,7 @@ void BotRemoveConsoleMessage(int chatstate, int handle)
 //===========================================================================
 void BotQueueConsoleMessage(int chatstate, int type, char* message)
 {
-	bot_consolemessage_q3_t* m;
+	bot_consolemessage_t* m;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -270,8 +253,12 @@ int BotNextConsoleMessage(int chatstate, bot_consolemessage_q3_t* cm)
 	}
 	if (cs->firstmessage)
 	{
-		Com_Memcpy(cm, cs->firstmessage, sizeof(bot_consolemessage_q3_t));
-		cm->next = cm->prev = NULL;
+		cm->handle = cs->firstmessage->handle;
+		cm->time = cs->firstmessage->time;
+		cm->type = cs->firstmessage->type;
+		String::NCpyZ(cm->message, cs->firstmessage->message, MAX_MESSAGE_SIZE_Q3);
+		cm->next = NULL;
+		cm->prev = NULL;
 		return cm->handle;
 	}	//end if
 	return 0;

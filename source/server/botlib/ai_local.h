@@ -176,6 +176,8 @@ void BotShutdownWeaponAI();
 //time to ignore a chat message after using it
 #define CHATMESSAGE_RECENTTIME  20
 
+#define MAX_MESSAGE_SIZE        256
+
 //the actuall chat messages
 struct bot_chatmessage_t
 {
@@ -291,4 +293,30 @@ struct bot_ichatdata_t
 	int inuse;
 	char filename[MAX_QPATH];
 	char chatname[MAX_QPATH];
+};
+
+struct bot_consolemessage_t
+{
+	int handle;
+	float time;							//message time
+	int type;							//message type
+	char message[MAX_MESSAGE_SIZE];		//message
+	bot_consolemessage_t* prev, * next;	//prev and next in list
+};
+
+//chat state of a bot
+struct bot_chatstate_t
+{
+	int gender;											//0=it, 1=female, 2=male
+	int client;											//client number
+	char name[32];										//name of the bot
+	char chatmessage[MAX_MESSAGE_SIZE];
+	int handle;
+	//the console messages visible to the bot
+	bot_consolemessage_t* firstmessage;			//first message is the first typed message
+	bot_consolemessage_t* lastmessage;			//last message is the last typed message, bottom of console
+	//number of console messages stored in the state
+	int numconsolemessages;
+	//the bot chat lines
+	bot_chat_t* chat;
 };
