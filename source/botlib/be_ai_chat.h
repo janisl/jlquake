@@ -30,43 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#define MAX_MESSAGE_SIZE        256
-#define MAX_CHATTYPE_NAME       32
-#define MAX_MATCHVARIABLES      8
-
-#define CHAT_GENDERLESS         0
-#define CHAT_GENDERFEMALE       1
-#define CHAT_GENDERMALE         2
-
-#define CHAT_ALL                    0
-#define CHAT_TEAM                   1
-#define CHAT_TELL                   2
-
-//a console message
-typedef struct bot_consolemessage_s
-{
-	int handle;
-	float time;									//message time
-	int type;									//message type
-	char message[MAX_MESSAGE_SIZE];				//message
-	struct bot_consolemessage_s* prev, * next;	//prev and next in list
-} bot_consolemessage_t;
-
-//match variable
-typedef struct bot_matchvariable_s
-{
-	char offset;
-	int length;
-} bot_matchvariable_t;
-//returned to AI when a match is found
-typedef struct bot_match_s
-{
-	char string[MAX_MESSAGE_SIZE];
-	int type;
-	int subtype;
-	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
-} bot_match_t;
-
 //setup the chat AI
 int BotSetupChatAI(void);
 //shutdown the chat AI
@@ -80,7 +43,7 @@ void BotQueueConsoleMessage(int chatstate, int type, char* message);
 //removes the console message from the chat state
 void BotRemoveConsoleMessage(int chatstate, int handle);
 //returns the next console message from the state
-int BotNextConsoleMessage(int chatstate, bot_consolemessage_t* cm);
+int BotNextConsoleMessage(int chatstate, bot_consolemessage_q3_t* cm);
 //returns the number of console messages currently stored in the state
 int BotNumConsoleMessages(int chatstate);
 //selects a chat message of the given type
@@ -98,9 +61,9 @@ void BotGetChatMessage(int chatstate, char* buf, int size);
 //checks if the first string contains the second one, returns index into first string or -1 if not found
 int StringContains(char* str1, char* str2, int casesensitive);
 //finds a match for the given string using the match templates
-int BotFindMatch(char* str, bot_match_t* match, unsigned long int context);
+int BotFindMatch(char* str, bot_match_q3_t* match, unsigned long int context);
 //returns a variable from a match
-void BotMatchVariable(bot_match_t* match, int variable, char* buf, int size);
+void BotMatchVariable(bot_match_q3_t* match, int variable, char* buf, int size);
 //unify all the white spaces in the string
 void UnifyWhiteSpaces(char* string);
 //replace all the context related synonyms in the string

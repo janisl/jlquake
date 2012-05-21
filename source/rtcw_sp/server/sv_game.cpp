@@ -718,7 +718,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotRemoveConsoleMessage(args[1], args[2]);
 		return 0;
 	case BOTLIB_AI_NEXT_CONSOLE_MESSAGE:
-		return botlib_export->ai.BotNextConsoleMessage(args[1], (struct bot_consolemessage_s*)VMA(2));
+		return botlib_export->ai.BotNextConsoleMessage(args[1], (struct bot_consolemessage_wolf_t*)VMA(2));
 	case BOTLIB_AI_NUM_CONSOLE_MESSAGE:
 		return botlib_export->ai.BotNumConsoleMessages(args[1]);
 	case BOTLIB_AI_INITIAL_CHAT:
@@ -739,9 +739,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_STRING_CONTAINS:
 		return botlib_export->ai.StringContains((char*)VMA(1), (char*)VMA(2), args[3]);
 	case BOTLIB_AI_FIND_MATCH:
-		return botlib_export->ai.BotFindMatch((char*)VMA(1), (struct bot_match_s*)VMA(2), args[3]);
+		return botlib_export->ai.BotFindMatch((char*)VMA(1), (struct bot_match_wolf_t*)VMA(2), args[3]);
 	case BOTLIB_AI_MATCH_VARIABLE:
-		botlib_export->ai.BotMatchVariable((struct bot_match_s*)VMA(1), args[2], (char*)VMA(3), args[4]);
+		botlib_export->ai.BotMatchVariable((struct bot_match_wolf_t*)VMA(1), args[2], (char*)VMA(3), args[4]);
 		return 0;
 	case BOTLIB_AI_UNIFY_WHITE_SPACES:
 		botlib_export->ai.UnifyWhiteSpaces((char*)VMA(1));

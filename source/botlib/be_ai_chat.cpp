@@ -172,11 +172,11 @@ typedef struct bot_chatstate_s
 	int gender;											//0=it, 1=female, 2=male
 	int client;											//client number
 	char name[32];										//name of the bot
-	char chatmessage[MAX_MESSAGE_SIZE];
+	char chatmessage[MAX_MESSAGE_SIZE_Q3];
 	int handle;
 	//the console messages visible to the bot
-	bot_consolemessage_t* firstmessage;			//first message is the first typed message
-	bot_consolemessage_t* lastmessage;			//last message is the last typed message, bottom of console
+	bot_consolemessage_q3_t* firstmessage;			//first message is the first typed message
+	bot_consolemessage_q3_t* lastmessage;			//last message is the last typed message, bottom of console
 	//number of console messages stored in the state
 	int numconsolemessages;
 	//the bot chat lines
@@ -194,8 +194,8 @@ bot_ichatdata_t* ichatdata[MAX_CLIENTS_Q3];
 
 bot_chatstate_t* botchatstates[MAX_CLIENTS_Q3 + 1];
 //console message heap
-bot_consolemessage_t* consolemessageheap = NULL;
-bot_consolemessage_t* freeconsolemessages = NULL;
+bot_consolemessage_q3_t* consolemessageheap = NULL;
+bot_consolemessage_q3_t* freeconsolemessages = NULL;
 //list with match strings
 bot_matchtemplate_t* matchtemplates = NULL;
 //list with synonyms
@@ -242,8 +242,8 @@ void InitConsoleMessageHeap(void)
 	}
 	//
 	max_messages = (int)LibVarValue("max_messages", "1024");
-	consolemessageheap = (bot_consolemessage_t*)GetClearedHunkMemory(max_messages *
-		sizeof(bot_consolemessage_t));
+	consolemessageheap = (bot_consolemessage_q3_t*)GetClearedHunkMemory(max_messages *
+		sizeof(bot_consolemessage_q3_t));
 	consolemessageheap[0].prev = NULL;
 	consolemessageheap[0].next = &consolemessageheap[1];
 	for (i = 1; i < max_messages - 1; i++)
@@ -263,9 +263,9 @@ void InitConsoleMessageHeap(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_consolemessage_t* AllocConsoleMessage(void)
+bot_consolemessage_q3_t* AllocConsoleMessage(void)
 {
-	bot_consolemessage_t* message;
+	bot_consolemessage_q3_t* message;
 	message = freeconsolemessages;
 	if (freeconsolemessages)
 	{
@@ -284,7 +284,7 @@ bot_consolemessage_t* AllocConsoleMessage(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void FreeConsoleMessage(bot_consolemessage_t* message)
+void FreeConsoleMessage(bot_consolemessage_q3_t* message)
 {
 	if (freeconsolemessages)
 	{
@@ -302,7 +302,7 @@ void FreeConsoleMessage(bot_consolemessage_t* message)
 //===========================================================================
 void BotRemoveConsoleMessage(int chatstate, int handle)
 {
-	bot_consolemessage_t* m, * nextm;
+	bot_consolemessage_q3_t* m, * nextm;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -347,7 +347,7 @@ void BotRemoveConsoleMessage(int chatstate, int handle)
 //===========================================================================
 void BotQueueConsoleMessage(int chatstate, int type, char* message)
 {
-	bot_consolemessage_t* m;
+	bot_consolemessage_q3_t* m;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -370,7 +370,7 @@ void BotQueueConsoleMessage(int chatstate, int type, char* message)
 	m->handle = cs->handle;
 	m->time = AAS_Time();
 	m->type = type;
-	String::NCpy(m->message, message, MAX_MESSAGE_SIZE);
+	String::NCpy(m->message, message, MAX_MESSAGE_SIZE_Q3);
 	m->next = NULL;
 	if (cs->lastmessage)
 	{
@@ -392,7 +392,7 @@ void BotQueueConsoleMessage(int chatstate, int type, char* message)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int BotNextConsoleMessage(int chatstate, bot_consolemessage_t* cm)
+int BotNextConsoleMessage(int chatstate, bot_consolemessage_q3_t* cm)
 {
 	bot_chatstate_t* cs;
 
@@ -403,7 +403,7 @@ int BotNextConsoleMessage(int chatstate, bot_consolemessage_t* cm)
 	}
 	if (cs->firstmessage)
 	{
-		Com_Memcpy(cm, cs->firstmessage, sizeof(bot_consolemessage_t));
+		Com_Memcpy(cm, cs->firstmessage, sizeof(bot_consolemessage_q3_t));
 		cm->next = cm->prev = NULL;
 		return cm->handle;
 	}	//end if
@@ -978,17 +978,17 @@ int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 		if (token.type == TT_STRING)
 		{
 			StripDoubleQuotes(token.string);
-			if (String::Length(ptr) + String::Length(token.string) + 1 > MAX_MESSAGE_SIZE)
+			if (String::Length(ptr) + String::Length(token.string) + 1 > MAX_MESSAGE_SIZE_Q3)
 			{
 				SourceError(source, "chat message too long\n");
 				return false;
 			}	//end if
-			String::Cat(ptr, MAX_MESSAGE_SIZE, token.string);
+			String::Cat(ptr, MAX_MESSAGE_SIZE_Q3, token.string);
 		}	//end else if
 			//variable string
 		else if (token.type == TT_NUMBER && (token.subtype & TT_INTEGER))
 		{
-			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
+			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE_Q3)
 			{
 				SourceError(source, "chat message too long\n");
 				return false;
@@ -998,7 +998,7 @@ int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 			//random string
 		else if (token.type == TT_NAME)
 		{
-			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
+			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE_Q3)
 			{
 				SourceError(source, "chat message too long\n");
 				return false;
@@ -1031,7 +1031,7 @@ int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 {
 	int pass, size;
-	char* ptr = NULL, chatmessagestring[MAX_MESSAGE_SIZE];
+	char* ptr = NULL, chatmessagestring[MAX_MESSAGE_SIZE_Q3];
 	source_t* source;
 	token_t token;
 	bot_randomlist_t* randomlist, * lastrandom, * random;
@@ -1448,7 +1448,7 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
+int StringsMatch(bot_matchpiece_t* pieces, bot_match_q3_t* match)
 {
 	int lastvariable, index;
 	char* strptr, * newstrptr;
@@ -1528,12 +1528,12 @@ int StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int BotFindMatch(char* str, bot_match_t* match, unsigned long int context)
+int BotFindMatch(char* str, bot_match_q3_t* match, unsigned long int context)
 {
 	int i;
 	bot_matchtemplate_t* ms;
 
-	String::NCpy(match->string, str, MAX_MESSAGE_SIZE);
+	String::NCpy(match->string, str, MAX_MESSAGE_SIZE_Q3);
 	//remove any trailing enters
 	while (String::Length(match->string) &&
 		   match->string[String::Length(match->string) - 1] == '\n')
@@ -1566,7 +1566,7 @@ int BotFindMatch(char* str, bot_match_t* match, unsigned long int context)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotMatchVariable(bot_match_t* match, int variable, char* buf, int size)
+void BotMatchVariable(bot_match_q3_t* match, int variable, char* buf, int size)
 {
 	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
 	{
@@ -1620,7 +1620,7 @@ bot_stringlist_t* BotCheckChatMessageIntegrety(char* message, bot_stringlist_t* 
 {
 	int i;
 	char* msgptr;
-	char temp[MAX_MESSAGE_SIZE];
+	char temp[MAX_MESSAGE_SIZE_Q3];
 	bot_stringlist_t* s;
 
 	msgptr = message;
@@ -1912,8 +1912,8 @@ void BotCheckValidReplyChatKeySet(source_t* source, bot_replychatkey_t* keys)
 //===========================================================================
 bot_replychat_t* BotLoadReplyChat(const char* filename)
 {
-	char chatmessagestring[MAX_MESSAGE_SIZE];
-	char namebuffer[MAX_MESSAGE_SIZE];
+	char chatmessagestring[MAX_MESSAGE_SIZE_Q3];
+	char namebuffer[MAX_MESSAGE_SIZE_Q3];
 	source_t* source;
 	token_t token;
 	bot_chatmessage_t* chatmessage = NULL;
@@ -2124,7 +2124,7 @@ bot_chat_t* BotLoadInitialChat(char* chatfile, char* chatname)
 {
 	int pass, foundchat, indent, size;
 	char* ptr = NULL;
-	char chatmessagestring[MAX_MESSAGE_SIZE];
+	char chatmessagestring[MAX_MESSAGE_SIZE_Q3];
 	source_t* source;
 	token_t token;
 	bot_chat_t* chat = NULL;
@@ -2393,11 +2393,11 @@ int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
 // Changes Globals:		-
 //===========================================================================
 int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext,
-	bot_match_t* match, unsigned long vcontext, int reply)
+	bot_match_q3_t* match, unsigned long vcontext, int reply)
 {
 	int num, len, i, expansion;
 	char* outputbuf, * ptr, * msgptr;
-	char temp[MAX_MESSAGE_SIZE];
+	char temp[MAX_MESSAGE_SIZE_Q3];
 
 	expansion = false;
 	msgptr = message;
@@ -2450,7 +2450,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 						BotReplaceSynonyms(temp, vcontext);
 					}		//end else
 							//
-					if (len + String::Length(temp) >= MAX_MESSAGE_SIZE)
+					if (len + String::Length(temp) >= MAX_MESSAGE_SIZE_Q3)
 					{
 						BotImport_Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
 						return false;
@@ -2480,7 +2480,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 					BotImport_Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
 					return false;
 				}		//end if
-				if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE)
+				if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE_Q3)
 				{
 					BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
 					return false;
@@ -2500,7 +2500,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 		else
 		{
 			outputbuf[len++] = *msgptr++;
-			if (len >= MAX_MESSAGE_SIZE)
+			if (len >= MAX_MESSAGE_SIZE_Q3)
 			{
 				BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
 				break;
@@ -2520,10 +2520,10 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 // Changes Globals:		-
 //===========================================================================
 void BotConstructChatMessage(bot_chatstate_t* chatstate, char* message, unsigned long mcontext,
-	bot_match_t* match, unsigned long vcontext, int reply)
+	bot_match_q3_t* match, unsigned long vcontext, int reply)
 {
 	int i;
-	char srcmessage[MAX_MESSAGE_SIZE];
+	char srcmessage[MAX_MESSAGE_SIZE_Q3];
 
 	String::Cpy(srcmessage, message);
 	for (i = 0; i < 10; i++)
@@ -2649,7 +2649,7 @@ void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* v
 {
 	char* message;
 	int index;
-	bot_match_t match;
+	bot_match_q3_t match;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -2819,7 +2819,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	bot_replychat_t* rchat, * bestrchat;
 	bot_replychatkey_t* key;
 	bot_chatmessage_t* m, * bestchatmessage;
-	bot_match_t match, bestmatch;
+	bot_match_q3_t match, bestmatch;
 	int bestpriority, num, found, res, numchatmessages, index;
 	bot_chatstate_t* cs;
 
@@ -2828,7 +2828,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	{
 		return false;
 	}
-	Com_Memset(&match, 0, sizeof(bot_match_t));
+	Com_Memset(&match, 0, sizeof(bot_match_q3_t));
 	String::Cpy(match.string, message);
 	bestpriority = -1;
 	bestchatmessage = NULL;
@@ -2921,7 +2921,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 					//if the reply chat has a message
 				if (m)
 				{
-					Com_Memcpy(&bestmatch, &match, sizeof(bot_match_t));
+					Com_Memcpy(&bestmatch, &match, sizeof(bot_match_q3_t));
 					bestchatmessage = m;
 					bestrchat = rchat;
 					bestpriority = rchat->priority;
@@ -3177,7 +3177,7 @@ int BotAllocChatState(void)
 void BotFreeChatState(int handle)
 {
 	bot_chatstate_t* cs;
-	bot_consolemessage_t m;
+	bot_consolemessage_q3_t m;
 	int h;
 
 	if (handle <= 0 || handle > MAX_CLIENTS_Q3)

@@ -196,3 +196,69 @@ void BotResetWeaponState(int weaponstate);
 int BotAllocWeaponState();
 //frees the weapon state
 void BotFreeWeaponState(int weaponstate);
+
+//
+//	Chat
+//
+
+#define MAX_MESSAGE_SIZE_Q3     256
+#define MAX_MESSAGE_SIZE_WOLF   150			//limit in game dll
+#define MAX_CHATTYPE_NAME       32
+#define MAX_MATCHVARIABLES      8
+
+#define CHAT_GENDERLESS         0
+#define CHAT_GENDERFEMALE       1
+#define CHAT_GENDERMALE         2
+
+#define CHAT_ALL                0
+#define CHAT_TEAM               1
+#define CHAT_TELL               2
+
+//a console message
+struct bot_consolemessage_q3_t
+{
+	int handle;
+	float time;									//message time
+	int type;									//message type
+	char message[MAX_MESSAGE_SIZE_Q3];				//message
+	bot_consolemessage_q3_t* prev, * next;	//prev and next in list
+};
+
+struct bot_consolemessage_wolf_t
+{
+	int handle;
+	float time;											//message time
+	int type;											//message type
+	char message[MAX_MESSAGE_SIZE_WOLF];				//message
+	bot_consolemessage_wolf_t* prev, * next;	//prev and next in list
+};
+
+//match variable
+struct bot_matchvariable_q3_t
+{
+	char offset;
+	int length;
+};
+
+struct bot_matchvariable_wolf_t
+{
+	char* ptr;
+	int length;
+};
+
+//returned to AI when a match is found
+struct bot_match_q3_t
+{
+	char string[MAX_MESSAGE_SIZE_Q3];
+	int type;
+	int subtype;
+	bot_matchvariable_q3_t variables[MAX_MATCHVARIABLES];
+};
+
+struct bot_match_wolf_t
+{
+	char string[MAX_MESSAGE_SIZE_WOLF];
+	int type;
+	int subtype;
+	bot_matchvariable_wolf_t variables[MAX_MATCHVARIABLES];
+};

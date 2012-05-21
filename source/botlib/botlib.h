@@ -36,8 +36,8 @@ struct aas_clientmove_s;
 struct aas_areainfo_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
-struct bot_consolemessage_s;
-struct bot_match_s;
+struct bot_consolemessage_q3_t;
+struct bot_match_q3_t;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 
@@ -254,7 +254,7 @@ typedef struct ai_export_s
 	void (* BotFreeChatState)(int handle);
 	void (* BotQueueConsoleMessage)(int chatstate, int type, char* message);
 	void (* BotRemoveConsoleMessage)(int chatstate, int handle);
-	int (* BotNextConsoleMessage)(int chatstate, struct bot_consolemessage_s* cm);
+	int (* BotNextConsoleMessage)(int chatstate, struct bot_consolemessage_q3_t* cm);
 	int (* BotNumConsoleMessages)(int chatstate);
 	void (* BotInitialChat)(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
 	int (* BotNumInitialChats)(int chatstate, char* type);
@@ -263,8 +263,8 @@ typedef struct ai_export_s
 	void (* BotEnterChat)(int chatstate, int client, int sendto);
 	void (* BotGetChatMessage)(int chatstate, char* buf, int size);
 	int (* StringContains)(char* str1, char* str2, int casesensitive);
-	int (* BotFindMatch)(char* str, struct bot_match_s* match, unsigned long int context);
-	void (* BotMatchVariable)(struct bot_match_s* match, int variable, char* buf, int size);
+	int (* BotFindMatch)(char* str, struct bot_match_q3_t* match, unsigned long int context);
+	void (* BotMatchVariable)(struct bot_match_q3_t* match, int variable, char* buf, int size);
 	void (* UnifyWhiteSpaces)(char* string);
 	void (* BotReplaceSynonyms)(char* string, unsigned long int context);
 	int (* BotLoadChatFile)(int chatstate, char* chatfile, char* chatname);
