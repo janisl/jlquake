@@ -36,11 +36,6 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #ifdef AASINTERN
-//loads the given BSP file
-int AAS_LoadBSPFile(void);
-//dump the loaded BSP data
-void AAS_DumpBSPData(void);
-
 //calculates collision with given entity
 qboolean AAS_EntityCollision(int entnum,
 	vec3_t start,

@@ -17,8 +17,39 @@
 #include "../server.h"
 #include "local.h"
 
+#define MAX_BSPENTITIES     4096
+
+//bsp entity epair
+struct bsp_epair_t
+{
+	char* key;
+	char* value;
+	bsp_epair_t* next;
+};
+
+//bsp data entity
+struct bsp_entity_t
+{
+	bsp_epair_t* epairs;
+};
+
+//id Sofware BSP data
+struct bsp_t
+{
+	//true when bsp file is loaded
+	int loaded;
+	//entity data
+	int entdatasize;
+	char* dentdata;
+	//bsp entities
+	int numentities;
+	bsp_entity_t entities[MAX_BSPENTITIES];
+	//memory used for strings and epairs
+	byte* ebuffer;
+};
+
 //global bsp
-bsp_t bspworld;
+static bsp_t bspworld;
 
 int AAS_NextBSPEntity(int ent)
 {
@@ -98,4 +129,144 @@ bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value)
 	}
 	*value = String::Atoi(buf);
 	return true;
+}
+
+static void AAS_FreeBSPEntities()
+{
+	if (bspworld.ebuffer)
+	{
+		Mem_Free(bspworld.ebuffer);
+	}
+	bspworld.numentities = 0;
+}
+
+static void AAS_ParseBSPEntities()
+{
+	// RF, modified this, so that it first gathers up memory requirements, then allocates a single chunk,
+	// and places the strings all in there
+
+	bspworld.ebuffer = NULL;
+
+	script_t* script = LoadScriptMemory(bspworld.dentdata, bspworld.entdatasize, "entdata");
+	SetScriptFlags(script, SCFL_NOSTRINGWHITESPACES | SCFL_NOSTRINGESCAPECHARS);
+
+	int bufsize = 0;
+
+	token_t token;
+	while (PS_ReadToken(script, &token))
+	{
+		if (String::Cmp(token.string, "{"))
+		{
+			ScriptError(script, "invalid %s\n", token.string);
+			AAS_FreeBSPEntities();
+			FreeScript(script);
+			return;
+		}
+		if (bspworld.numentities >= MAX_BSPENTITIES)
+		{
+			BotImport_Print(PRT_MESSAGE, "too many entities in BSP file\n");
+			break;
+		}
+		while (PS_ReadToken(script, &token))
+		{
+			if (!String::Cmp(token.string, "}"))
+			{
+				break;
+			}
+			bufsize += sizeof(bsp_epair_t);
+			if (token.type != TT_STRING)
+			{
+				ScriptError(script, "invalid %s\n", token.string);
+				AAS_FreeBSPEntities();
+				FreeScript(script);
+				return;
+			}
+			StripDoubleQuotes(token.string);
+			bufsize += String::Length(token.string) + 1;
+			if (!PS_ExpectTokenType(script, TT_STRING, 0, &token))
+			{
+				AAS_FreeBSPEntities();
+				FreeScript(script);
+				return;
+			}
+			StripDoubleQuotes(token.string);
+			bufsize += String::Length(token.string) + 1;
+		}
+		if (String::Cmp(token.string, "}"))
+		{
+			ScriptError(script, "missing }\n");
+			AAS_FreeBSPEntities();
+			FreeScript(script);
+			return;
+		}
+	}
+	FreeScript(script);
+
+	byte* buffer = (byte*)Mem_ClearedAlloc(bufsize);
+	byte* buftrav = buffer;
+	bspworld.ebuffer = buffer;
+
+	// RF, now parse the entities into memory
+	// RF, NOTE: removed error checks for speed, no need to do them twice
+
+	script = LoadScriptMemory(bspworld.dentdata, bspworld.entdatasize, "entdata");
+	SetScriptFlags(script, SCFL_NOSTRINGWHITESPACES | SCFL_NOSTRINGESCAPECHARS);
+
+	bspworld.numentities = 1;
+
+	while (PS_ReadToken(script, &token))
+	{
+		bsp_entity_t* ent = &bspworld.entities[bspworld.numentities];
+		bspworld.numentities++;
+		ent->epairs = NULL;
+		while (PS_ReadToken(script, &token))
+		{
+			if (!String::Cmp(token.string, "}"))
+			{
+				break;
+			}
+			bsp_epair_t* epair = (bsp_epair_t*)buftrav; buftrav += sizeof(bsp_epair_t);
+			epair->next = ent->epairs;
+			ent->epairs = epair;
+			StripDoubleQuotes(token.string);
+			epair->key = (char*)buftrav; buftrav += (String::Length(token.string) + 1);
+			String::Cpy(epair->key, token.string);
+			if (!PS_ExpectTokenType(script, TT_STRING, 0, &token))
+			{
+				AAS_FreeBSPEntities();
+				FreeScript(script);
+				return;
+			}
+			StripDoubleQuotes(token.string);
+			epair->value = (char*)buftrav; buftrav += (String::Length(token.string) + 1);
+			String::Cpy(epair->value, token.string);
+		}
+	}
+	FreeScript(script);
+}
+
+void AAS_DumpBSPData()
+{
+	AAS_FreeBSPEntities();
+
+	if (bspworld.dentdata)
+	{
+		Mem_Free(bspworld.dentdata);
+	}
+	bspworld.dentdata = NULL;
+	bspworld.entdatasize = 0;
+
+	bspworld.loaded = false;
+	Com_Memset(&bspworld, 0, sizeof(bspworld));
+}
+
+int AAS_LoadBSPFile()
+{
+	AAS_DumpBSPData();
+	bspworld.entdatasize = String::Length(CM_EntityString()) + 1;
+	bspworld.dentdata = (char*)Mem_ClearedAlloc(bspworld.entdatasize);
+	Com_Memcpy(bspworld.dentdata, CM_EntityString(), bspworld.entdatasize);
+	AAS_ParseBSPEntities();
+	bspworld.loaded = true;
+	return BLERR_NOERROR;
 }
