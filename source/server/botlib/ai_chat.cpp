@@ -633,63 +633,252 @@ void BotReplaceWeightedSynonyms(char* string, unsigned int context)
 
 void BotReplaceReplySynonyms(char* string, unsigned int context)
 {
-	char* str1, * str2, * replacement;
-	bot_synonymlist_t* syn;
-	bot_synonym_t* synonym;
-
-	for (str1 = string; *str1; )
+	for (char* str1 = string; *str1; )
 	{
 		//go to the start of the next word
 		while (*str1 && *str1 <= ' ')
+		{
 			str1++;
+		}
 		if (!*str1)
 		{
 			break;
 		}
-		//
-		for (syn = synonyms; syn; syn = syn->next)
+
+		for (bot_synonymlist_t* syn = synonyms; syn; syn = syn->next)
 		{
 			if (!(syn->context & context))
 			{
 				continue;
 			}
+			bot_synonym_t* synonym;
 			for (synonym = syn->firstsynonym->next; synonym; synonym = synonym->next)
 			{
-				str2 = synonym->string;
+				char* str2 = synonym->string;
 				//if the synonym is not at the front of the string continue
 				str2 = StringContainsWord(str1, synonym->string, false);
 				if (!str2 || str2 != str1)
 				{
 					continue;
 				}
-				//
-				replacement = syn->firstsynonym->string;
+
+				char* replacement = syn->firstsynonym->string;
 				//if the replacement IS in front of the string continue
 				str2 = StringContainsWord(str1, replacement, false);
 				if (str2 && str2 == str1)
 				{
 					continue;
 				}
-				//
+
 				memmove(str1 + String::Length(replacement), str1 + String::Length(synonym->string),
 					String::Length(str1 + String::Length(synonym->string)) + 1);
 				//append the synonum replacement
 				Com_Memcpy(str1, replacement, String::Length(replacement));
-				//
 				break;
-			}	//end for
-				//if a synonym has been replaced
+			}
+			//if a synonym has been replaced
 			if (synonym)
 			{
 				break;
 			}
-		}	//end for
-			//skip over this word
+		}
+		//skip over this word
 		while (*str1 && *str1 > ' ')
+		{
 			str1++;
+		}
 		if (!*str1)
 		{
 			break;
 		}
-	}	//end while
+	}
+}
+
+int BotLoadChatMessage(source_t* source, char* chatmessagestring)
+{
+	char* ptr = chatmessagestring;
+	*ptr = 0;
+
+	while (1)
+	{
+		token_t token;
+		if (!PC_ExpectAnyToken(source, &token))
+		{
+			return false;
+		}
+		//fixed string
+		if (token.type == TT_STRING)
+		{
+			StripDoubleQuotes(token.string);
+			if (String::Length(ptr) + String::Length(token.string) + 1 > MAX_MESSAGE_SIZE)
+			{
+				SourceError(source, "chat message too long\n");
+				return false;
+			}
+			String::Cat(ptr, MAX_MESSAGE_SIZE, token.string);
+		}
+		//variable string
+		else if (token.type == TT_NUMBER && (token.subtype & TT_INTEGER))
+		{
+			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
+			{
+				SourceError(source, "chat message too long\n");
+				return false;
+			}
+			sprintf(&ptr[String::Length(ptr)], "%cv%d%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
+		}
+		//random string
+		else if (token.type == TT_NAME)
+		{
+			if (String::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
+			{
+				SourceError(source, "chat message too long\n");
+				return false;
+			}
+			sprintf(&ptr[String::Length(ptr)], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR);
+		}
+		else
+		{
+			SourceError(source, "unknown message component %s\n", token.string);
+			return false;
+		}
+		if (PC_CheckTokenString(source, ";"))
+		{
+			break;
+		}
+		if (!PC_ExpectTokenString(source, ","))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bot_randomlist_t* BotLoadRandomStrings(const char* filename)
+{
+#ifdef DEBUG
+	int starttime = Sys_Milliseconds();
+#endif
+
+	char* ptr = NULL;
+	int size = 0;
+	bot_randomlist_t* randomlist = NULL;
+	bot_randomlist_t* random = NULL;
+	//the synonyms are parsed in two phases
+	for (int pass = 0; pass < 2; pass++)
+	{
+		if (pass && size)
+		{
+			ptr = (char*)Mem_ClearedAlloc(size);
+		}
+
+		if (GGameType & GAME_Quake3)
+		{
+			PC_SetBaseFolder(BOTFILESBASEFOLDER);
+		}
+		source_t* source = LoadSourceFile(filename);
+		if (!source)
+		{
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
+			return NULL;
+		}
+
+		randomlist = NULL;	//list
+		bot_randomlist_t* lastrandom = NULL;	//last
+
+		token_t token;
+		while (PC_ReadToken(source, &token))
+		{
+			if (token.type != TT_NAME)
+			{
+				SourceError(source, "unknown random %s", token.string);
+				FreeSource(source);
+				return NULL;
+			}
+			size += sizeof(bot_randomlist_t) + String::Length(token.string) + 1;
+			if (pass)
+			{
+				random = (bot_randomlist_t*)ptr;
+				ptr += sizeof(bot_randomlist_t);
+				random->string = ptr;
+				ptr += String::Length(token.string) + 1;
+				String::Cpy(random->string, token.string);
+				random->firstrandomstring = NULL;
+				random->numstrings = 0;
+				//
+				if (lastrandom)
+				{
+					lastrandom->next = random;
+				}
+				else
+				{
+					randomlist = random;
+				}
+				lastrandom = random;
+			}
+			if (!PC_ExpectTokenString(source, "=") ||
+				!PC_ExpectTokenString(source, "{"))
+			{
+				FreeSource(source);
+				return NULL;
+			}
+			while (!PC_CheckTokenString(source, "}"))
+			{
+				char chatmessagestring[MAX_MESSAGE_SIZE];
+				if (!BotLoadChatMessage(source, chatmessagestring))
+				{
+					FreeSource(source);
+					return NULL;
+				}
+				size += sizeof(bot_randomstring_t) + String::Length(chatmessagestring) + 1;
+				if (pass)
+				{
+					bot_randomstring_t* randomstring = (bot_randomstring_t*)ptr;
+					ptr += sizeof(bot_randomstring_t);
+					randomstring->string = ptr;
+					ptr += String::Length(chatmessagestring) + 1;
+					String::Cpy(randomstring->string, chatmessagestring);
+
+					random->numstrings++;
+					randomstring->next = random->firstrandomstring;
+					random->firstrandomstring = randomstring;
+				}
+			}
+		}
+		//free the source after one pass
+		FreeSource(source);
+	}
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
+
+#ifdef DEBUG
+	BotImport_Print(PRT_MESSAGE, "random strings %d msec\n", Sys_Milliseconds() - starttime);
+#endif
+	return randomlist;
+}
+
+char* RandomString(const char* name)
+{
+	bot_randomlist_t* random;
+	bot_randomstring_t* rs;
+	int i;
+
+	for (random = randomstrings; random; random = random->next)
+	{
+		if (!String::Cmp(random->string, name))
+		{
+			i = random() * random->numstrings;
+			for (rs = random->firstrandomstring; rs; rs = rs->next)
+			{
+				if (--i < 0)
+				{
+					break;
+				}
+			}
+			if (rs)
+			{
+				return rs->string;
+			}
+		}
+	}
+	return NULL;
 }

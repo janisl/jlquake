@@ -337,3 +337,6 @@ char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
 bot_synonymlist_t* BotLoadSynonyms(const char* filename);
 void BotReplaceWeightedSynonyms(char* string, unsigned int context);
 void BotReplaceReplySynonyms(char* string, unsigned int context);
+int BotLoadChatMessage(source_t* source, char* chatmessagestring);
+bot_randomlist_t* BotLoadRandomStrings(const char* filename);
+char* RandomString(const char* name);
