@@ -190,8 +190,8 @@ int BotNextConsoleMessageQ3(int chatstate, bot_consolemessage_q3_t* cm)
 		cm->time = cs->firstmessage->time;
 		cm->type = cs->firstmessage->type;
 		String::NCpyZ(cm->message, cs->firstmessage->message, MAX_MESSAGE_SIZE_Q3);
-		cm->next = NULL;
-		cm->prev = NULL;
+		cm->next = 0;
+		cm->prev = 0;
 		return cm->handle;
 	}
 	return 0;
@@ -374,7 +374,7 @@ char* StringContainsWord(char* str1, const char* str2, bool casesensitive)
 	return NULL;
 }
 
-void StringReplaceWords(char* string, const char* synonym, const char* replacement)
+static void StringReplaceWords(char* string, const char* synonym, const char* replacement)
 {
 	//find the synonym in the string
 	char* str = StringContainsWord(string, synonym, false);
@@ -401,4 +401,295 @@ void StringReplaceWords(char* string, const char* synonym, const char* replaceme
 		//find the next synonym in the string
 		str = StringContainsWord(str + String::Length(replacement), synonym, false);
 	}
+}
+
+bot_synonymlist_t* BotLoadSynonyms(const char* filename)
+{
+	char* ptr = NULL;
+	int size = 0;
+	bot_synonymlist_t* synlist = NULL;	//make compiler happy
+	bot_synonymlist_t* syn = NULL;	//make compiler happy
+	bot_synonym_t* synonym = NULL;	//make compiler happy
+	//the synonyms are parsed in two phases
+	for (int pass = 0; pass < 2; pass++)
+	{
+		if (pass && size)
+		{
+			ptr = (char*)Mem_ClearedAlloc(size);
+		}
+
+		if (GGameType & GAME_Quake3)
+		{
+			PC_SetBaseFolder(BOTFILESBASEFOLDER);
+		}
+		source_t* source = LoadSourceFile(filename);
+		if (!source)
+		{
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
+			return NULL;
+		}
+
+		unsigned int context = 0;
+		int contextlevel = 0;
+		unsigned int contextstack[32];
+		synlist = NULL;	//list synonyms
+		bot_synonymlist_t* lastsyn = NULL;	//last synonym in the list
+
+		token_t token;
+		while (PC_ReadToken(source, &token))
+		{
+			if (token.type == TT_NUMBER)
+			{
+				context |= token.intvalue;
+				contextstack[contextlevel] = token.intvalue;
+				contextlevel++;
+				if (contextlevel >= 32)
+				{
+					SourceError(source, "more than 32 context levels");
+					FreeSource(source);
+					return NULL;
+				}
+				if (!PC_ExpectTokenString(source, "{"))
+				{
+					FreeSource(source);
+					return NULL;
+				}
+			}
+			else if (token.type == TT_PUNCTUATION)
+			{
+				if (!String::Cmp(token.string, "}"))
+				{
+					contextlevel--;
+					if (contextlevel < 0)
+					{
+						SourceError(source, "too many }");
+						FreeSource(source);
+						return NULL;
+					}
+					context &= ~contextstack[contextlevel];
+				}
+				else if (!String::Cmp(token.string, "["))
+				{
+					size += sizeof(bot_synonymlist_t);
+					if (pass)
+					{
+						syn = (bot_synonymlist_t*)ptr;
+						ptr += sizeof(bot_synonymlist_t);
+						syn->context = context;
+						syn->firstsynonym = NULL;
+						syn->next = NULL;
+						if (lastsyn)
+						{
+							lastsyn->next = syn;
+						}
+						else
+						{
+							synlist = syn;
+						}
+						lastsyn = syn;
+					}
+					int numsynonyms = 0;
+					bot_synonym_t* lastsynonym = NULL;
+					while (1)
+					{
+						if (!PC_ExpectTokenString(source, "(") ||
+							!PC_ExpectTokenType(source, TT_STRING, 0, &token))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+						StripDoubleQuotes(token.string);
+						if (String::Length(token.string) <= 0)
+						{
+							SourceError(source, "empty string");
+							FreeSource(source);
+							return NULL;
+						}
+						size += sizeof(bot_synonym_t) + String::Length(token.string) + 1;
+						if (pass)
+						{
+							synonym = (bot_synonym_t*)ptr;
+							ptr += sizeof(bot_synonym_t);
+							synonym->string = ptr;
+							ptr += String::Length(token.string) + 1;
+							String::Cpy(synonym->string, token.string);
+
+							if (lastsynonym)
+							{
+								lastsynonym->next = synonym;
+							}
+							else
+							{
+								syn->firstsynonym = synonym;
+							}
+							lastsynonym = synonym;
+						}
+						numsynonyms++;
+						if (!PC_ExpectTokenString(source, ",") ||
+							!PC_ExpectTokenType(source, TT_NUMBER, 0, &token) ||
+							!PC_ExpectTokenString(source, ")"))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+						if (pass)
+						{
+							synonym->weight = token.floatvalue;
+							syn->totalweight += synonym->weight;
+						}
+						if (PC_CheckTokenString(source, "]"))
+						{
+							break;
+						}
+						if (!PC_ExpectTokenString(source, ","))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+					}
+					if (numsynonyms < 2)
+					{
+						SourceError(source, "synonym must have at least two entries\n");
+						FreeSource(source);
+						return NULL;
+					}
+				}
+				else
+				{
+					SourceError(source, "unexpected %s", token.string);
+					FreeSource(source);
+					return NULL;
+				}
+			}
+		}
+
+		FreeSource(source);
+
+		if (contextlevel > 0)
+		{
+			SourceError(source, "missing }");
+			return NULL;
+		}
+	}
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
+	return synlist;
+}
+
+// replace all the synonyms in the string
+void BotReplaceSynonyms(char* string, unsigned int context)
+{
+	for (bot_synonymlist_t* syn = synonyms; syn; syn = syn->next)
+	{
+		if (!(syn->context & context))
+		{
+			continue;
+		}
+		for (bot_synonym_t* synonym = syn->firstsynonym->next; synonym; synonym = synonym->next)
+		{
+			StringReplaceWords(string, synonym->string, syn->firstsynonym->string);
+		}
+	}
+}
+
+void BotReplaceWeightedSynonyms(char* string, unsigned int context)
+{
+	for (bot_synonymlist_t* syn = synonyms; syn; syn = syn->next)
+	{
+		if (!(syn->context & context))
+		{
+			continue;
+		}
+		//choose a weighted random replacement synonym
+		float weight = random() * syn->totalweight;
+		if (!weight)
+		{
+			continue;
+		}
+		float curweight = 0;
+		bot_synonym_t* replacement;
+		for (replacement = syn->firstsynonym; replacement; replacement = replacement->next)
+		{
+			curweight += replacement->weight;
+			if (weight < curweight)
+			{
+				break;
+			}
+		}
+		if (!replacement)
+		{
+			continue;
+		}
+		//replace all synonyms with the replacement
+		for (bot_synonym_t* synonym = syn->firstsynonym; synonym; synonym = synonym->next)
+		{
+			if (synonym == replacement)
+			{
+				continue;
+			}
+			StringReplaceWords(string, synonym->string, replacement->string);
+		}
+	}
+}
+
+void BotReplaceReplySynonyms(char* string, unsigned int context)
+{
+	char* str1, * str2, * replacement;
+	bot_synonymlist_t* syn;
+	bot_synonym_t* synonym;
+
+	for (str1 = string; *str1; )
+	{
+		//go to the start of the next word
+		while (*str1 && *str1 <= ' ')
+			str1++;
+		if (!*str1)
+		{
+			break;
+		}
+		//
+		for (syn = synonyms; syn; syn = syn->next)
+		{
+			if (!(syn->context & context))
+			{
+				continue;
+			}
+			for (synonym = syn->firstsynonym->next; synonym; synonym = synonym->next)
+			{
+				str2 = synonym->string;
+				//if the synonym is not at the front of the string continue
+				str2 = StringContainsWord(str1, synonym->string, false);
+				if (!str2 || str2 != str1)
+				{
+					continue;
+				}
+				//
+				replacement = syn->firstsynonym->string;
+				//if the replacement IS in front of the string continue
+				str2 = StringContainsWord(str1, replacement, false);
+				if (str2 && str2 == str1)
+				{
+					continue;
+				}
+				//
+				memmove(str1 + String::Length(replacement), str1 + String::Length(synonym->string),
+					String::Length(str1 + String::Length(synonym->string)) + 1);
+				//append the synonum replacement
+				Com_Memcpy(str1, replacement, String::Length(replacement));
+				//
+				break;
+			}	//end for
+				//if a synonym has been replaced
+			if (synonym)
+			{
+				break;
+			}
+		}	//end for
+			//skip over this word
+		while (*str1 && *str1 > ' ')
+			str1++;
+		if (!*str1)
+		{
+			break;
+		}
+	}	//end while
 }

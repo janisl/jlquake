@@ -228,7 +228,7 @@ struct bot_synonym_t
 //list with synonyms
 struct bot_synonymlist_t
 {
-	unsigned long int context;
+	unsigned int context;
 	float totalweight;
 	bot_synonym_t* firstsynonym;
 	bot_synonymlist_t* next;
@@ -253,7 +253,7 @@ struct bot_matchpiece_t
 //match template
 struct bot_matchtemplate_t
 {
-	unsigned long int context;
+	unsigned int context;
 	int type;
 	int subtype;
 	bot_matchpiece_t* first;
@@ -334,4 +334,6 @@ void InitConsoleMessageHeap();
 void FreeConsoleMessage(bot_consolemessage_t* message);
 void BotRemoveTildes(char* message);
 char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
-void StringReplaceWords(char* string, const char* synonym, const char* replacement);
+bot_synonymlist_t* BotLoadSynonyms(const char* filename);
+void BotReplaceWeightedSynonyms(char* string, unsigned int context);
+void BotReplaceReplySynonyms(char* string, unsigned int context);

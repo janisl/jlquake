@@ -266,7 +266,6 @@ typedef struct ai_export_s
 	void (* BotGetChatMessage)(int chatstate, char* buf, int size);
 	int (* BotFindMatch)(char* str, struct bot_match_wolf_t* match, unsigned long int context);
 	void (* BotMatchVariable)(struct bot_match_wolf_t* match, int variable, char* buf, int size);
-	void (* BotReplaceSynonyms)(char* string, unsigned long int context);
 	int (* BotLoadChatFile)(int chatstate, char* chatfile, char* chatname);
 	void (* BotSetChatGender)(int chatstate, int gender);
 	void (* BotSetChatName)(int chatstate, char* name);

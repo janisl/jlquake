@@ -747,7 +747,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		UnifyWhiteSpaces((char*)VMA(1));
 		return 0;
 	case BOTLIB_AI_REPLACE_SYNONYMS:
-		botlib_export->ai.BotReplaceSynonyms((char*)VMA(1), args[2]);
+		BotReplaceSynonyms((char*)VMA(1), args[2]);
 		return 0;
 	case BOTLIB_AI_LOAD_CHAT_FILE:
 		return botlib_export->ai.BotLoadChatFile(args[1], (char*)VMA(2), (char*)VMA(3));

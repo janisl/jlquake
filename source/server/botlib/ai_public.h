@@ -277,3 +277,5 @@ int BotNumConsoleMessages(int chatstate);
 void UnifyWhiteSpaces(char* string);
 //checks if the first string contains the second one, returns index into first string or -1 if not found
 int StringContains(const char* str1, const char* str2, bool casesensitive);
+//replace all the context related synonyms in the string
+void BotReplaceSynonyms(char* string, unsigned int context);

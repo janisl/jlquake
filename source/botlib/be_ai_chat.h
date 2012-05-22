@@ -54,8 +54,6 @@ void BotGetChatMessage(int chatstate, char* buf, int size);
 int BotFindMatch(char* str, bot_match_q3_t* match, unsigned long int context);
 //returns a variable from a match
 void BotMatchVariable(bot_match_q3_t* match, int variable, char* buf, int size);
-//replace all the context related synonyms in the string
-void BotReplaceSynonyms(char* string, unsigned long int context);
 //loads a chat file for the chat state
 int BotLoadChatFile(int chatstate, char* chatfile, char* chatname);
 //store the gender of the bot in the chat state
