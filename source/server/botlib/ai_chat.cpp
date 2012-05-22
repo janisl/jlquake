@@ -1378,3 +1378,444 @@ void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int 
 	}
 	return;
 }
+
+static bot_stringlist_t* BotFindStringInList(bot_stringlist_t* list, const char* string)
+{
+	for (bot_stringlist_t* s = list; s; s = s->next)
+	{
+		if (!String::Cmp(s->string, string))
+		{
+			return s;
+		}
+	}
+	return NULL;
+}
+
+static bot_stringlist_t* BotCheckChatMessageIntegrety(const char* message, bot_stringlist_t* stringlist)
+{
+	int i;
+	char temp[MAX_MESSAGE_SIZE];
+
+	const char* msgptr = message;
+
+	while (*msgptr)
+	{
+		if (*msgptr == ESCAPE_CHAR)
+		{
+			msgptr++;
+			switch (*msgptr)
+			{
+			case 'v':	//variable
+				//step over the 'v'
+				msgptr++;
+				while (*msgptr && *msgptr != ESCAPE_CHAR)
+					msgptr++;
+				//step over the trailing escape char
+				if (*msgptr)
+				{
+					msgptr++;
+				}
+				break;
+			case 'r':	//random
+				//step over the 'r'
+				msgptr++;
+				for (i = 0; (*msgptr && *msgptr != ESCAPE_CHAR); i++)
+				{
+					temp[i] = *msgptr++;
+				}		//end while
+				temp[i] = '\0';
+				//step over the trailing escape char
+				if (*msgptr)
+				{
+					msgptr++;
+				}
+				//find the random keyword
+				if (!RandomString(temp))
+				{
+					if (!BotFindStringInList(stringlist, temp))
+					{
+						Log_Write("%s = {\"%s\"} //MISSING RANDOM\r\n", temp, temp);
+						bot_stringlist_t* s = (bot_stringlist_t*)Mem_ClearedAlloc(sizeof(bot_stringlist_t) + String::Length(temp) + 1);
+						s->string = (char*)s + sizeof(bot_stringlist_t);
+						String::Cpy(s->string, temp);
+						s->next = stringlist;
+						stringlist = s;
+					}
+				}
+				break;
+			default:
+				BotImport_Print(PRT_FATAL, "BotCheckChatMessageIntegrety: message \"%s\" invalid escape char\n", message);
+				break;
+			}
+		}
+		else
+		{
+			msgptr++;
+		}
+	}
+	return stringlist;
+}
+
+void BotCheckInitialChatIntegrety(bot_chat_t* chat)
+{
+	bot_stringlist_t* stringlist = NULL;
+	for (bot_chattype_t* t = chat->types; t; t = t->next)
+	{
+		for (bot_chatmessage_t* cm = t->firstchatmessage; cm; cm = cm->next)
+		{
+			stringlist = BotCheckChatMessageIntegrety(cm->chatmessage, stringlist);
+		}
+	}
+	bot_stringlist_t* nexts;
+	for (bot_stringlist_t* s = stringlist; s; s = nexts)
+	{
+		nexts = s->next;
+		Mem_Free(s);
+	}
+}
+
+static void BotCheckReplyChatIntegrety(bot_replychat_t* replychat)
+{
+	bot_stringlist_t* stringlist = NULL;
+	for (bot_replychat_t* rp = replychat; rp; rp = rp->next)
+	{
+		for (bot_chatmessage_t* cm = rp->firstchatmessage; cm; cm = cm->next)
+		{
+			stringlist = BotCheckChatMessageIntegrety(cm->chatmessage, stringlist);
+		}
+	}
+	bot_stringlist_t* nexts;
+	for (bot_stringlist_t* s = stringlist; s; s = nexts)
+	{
+		nexts = s->next;
+		Mem_Free(s);
+	}
+}
+
+void BotFreeReplyChat(bot_replychat_t* replychat)
+{
+	bot_replychat_t* nextrp;
+	for (bot_replychat_t* rp = replychat; rp; rp = nextrp)
+	{
+		nextrp = rp->next;
+		bot_replychatkey_t* nextkey;
+		for (bot_replychatkey_t* key = rp->keys; key; key = nextkey)
+		{
+			nextkey = key->next;
+			if (key->match)
+			{
+				BotFreeMatchPieces(key->match);
+			}
+			if (key->string)
+			{
+				Mem_Free(key->string);
+			}
+			Mem_Free(key);
+		}
+		bot_chatmessage_t* nextcm;
+		for (bot_chatmessage_t* cm = rp->firstchatmessage; cm; cm = nextcm)
+		{
+			nextcm = cm->next;
+			Mem_Free(cm);
+		}
+		Mem_Free(rp);
+	}
+}
+
+static void BotCheckValidReplyChatKeySet(source_t* source, bot_replychatkey_t* keys)
+{
+	bool allprefixed = true;
+	bool hasvariableskey =  false;
+	bool hasstringkey = false;
+	for (bot_replychatkey_t* key = keys; key; key = key->next)
+	{
+		if (!(key->flags & (RCKFL_AND | RCKFL_NOT)))
+		{
+			allprefixed = false;
+			if (key->flags & RCKFL_VARIABLES)
+			{
+				for (bot_matchpiece_t* m = key->match; m; m = m->next)
+				{
+					if (m->type == MT_VARIABLE)
+					{
+						hasvariableskey = true;
+					}
+				}
+			}
+			else if (key->flags & RCKFL_STRING)
+			{
+				hasstringkey = true;
+			}
+		}
+		else if ((key->flags & RCKFL_AND) && (key->flags & RCKFL_STRING))
+		{
+			for (bot_replychatkey_t* key2 = keys; key2; key2 = key2->next)
+			{
+				if (key2 == key)
+				{
+					continue;
+				}
+				if (key2->flags & RCKFL_NOT)
+				{
+					continue;
+				}
+				if (key2->flags & RCKFL_VARIABLES)
+				{
+					bot_matchpiece_t* m;
+					for (m = key2->match; m; m = m->next)
+					{
+						if (m->type == MT_STRING)
+						{
+							bot_matchstring_t* ms;
+							for (ms = m->firststring; ms; ms = ms->next)
+							{
+								if (StringContains(ms->string, key->string, false) != -1)
+								{
+									break;
+								}
+							}
+							if (ms)
+							{
+								break;
+							}
+						}
+						else if (m->type == MT_VARIABLE)
+						{
+							break;
+						}
+					}
+					if (!m)
+					{
+						SourceWarning(source, "one of the match templates does not "
+											  "leave space for the key %s with the & prefix", key->string);
+					}
+				}
+			}
+		}
+		if ((key->flags & RCKFL_NOT) && (key->flags & RCKFL_STRING))
+		{
+			for (bot_replychatkey_t* key2 = keys; key2; key2 = key2->next)
+			{
+				if (key2 == key)
+				{
+					continue;
+				}
+				if (key2->flags & RCKFL_NOT)
+				{
+					continue;
+				}
+				if (key2->flags & RCKFL_STRING)
+				{
+					if (StringContains(key2->string, key->string, false) != -1)
+					{
+						SourceWarning(source, "the key %s with prefix ! is inside the key %s", key->string, key2->string);
+					}
+				}
+				else if (key2->flags & RCKFL_VARIABLES)
+				{
+					for (bot_matchpiece_t* m = key2->match; m; m = m->next)
+					{
+						if (m->type == MT_STRING)
+						{
+							for (bot_matchstring_t* ms = m->firststring; ms; ms = ms->next)
+							{
+								if (StringContains(ms->string, key->string, false) != -1)
+								{
+									SourceWarning(source, "the key %s with prefix ! is inside "
+														  "the match template string %s", key->string, ms->string);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (allprefixed)
+	{
+		SourceWarning(source, "all keys have a & or ! prefix");
+	}
+	if (hasvariableskey && hasstringkey)
+	{
+		SourceWarning(source, "variables from the match template(s) could be "
+							  "invalid when outputting one of the chat messages");
+	}
+}
+
+bot_replychat_t* BotLoadReplyChat(const char* filename)
+{
+	if (GGameType & GAME_Quake3)
+	{
+		PC_SetBaseFolder(BOTFILESBASEFOLDER);
+	}
+	source_t* source = LoadSourceFile(filename);
+	if (!source)
+	{
+		BotImport_Print(PRT_ERROR, "counldn't load %s\n", filename);
+		return NULL;
+	}
+
+	bot_replychat_t* replychatlist = NULL;
+
+	token_t token;
+	while (PC_ReadToken(source, &token))
+	{
+		if (String::Cmp(token.string, "["))
+		{
+			SourceError(source, "expected [, found %s", token.string);
+			BotFreeReplyChat(replychatlist);
+			FreeSource(source);
+			return NULL;
+		}
+
+		bot_replychat_t* replychat = (bot_replychat_t*)Mem_ClearedAlloc(sizeof(bot_replychat_t));
+		replychat->keys = NULL;
+		replychat->next = replychatlist;
+		replychatlist = replychat;
+		//read the keys, there must be at least one key
+		do
+		{
+			//allocate a key
+			bot_replychatkey_t* key = (bot_replychatkey_t*)Mem_ClearedAlloc(sizeof(bot_replychatkey_t));
+			key->flags = 0;
+			key->string = NULL;
+			key->match = NULL;
+			key->next = replychat->keys;
+			replychat->keys = key;
+			//check for MUST BE PRESENT and MUST BE ABSENT keys
+			if (PC_CheckTokenString(source, "&"))
+			{
+				key->flags |= RCKFL_AND;
+			}
+			else if (PC_CheckTokenString(source, "!"))
+			{
+				key->flags |= RCKFL_NOT;
+			}
+			//special keys
+			if (PC_CheckTokenString(source, "name"))
+			{
+				key->flags |= RCKFL_NAME;
+			}
+			else if (PC_CheckTokenString(source, "female"))
+			{
+				key->flags |= RCKFL_GENDERFEMALE;
+			}
+			else if (PC_CheckTokenString(source, "male"))
+			{
+				key->flags |= RCKFL_GENDERMALE;
+			}
+			else if (PC_CheckTokenString(source, "it"))
+			{
+				key->flags |= RCKFL_GENDERLESS;
+			}
+			else if (PC_CheckTokenString(source, "("))	//match key
+			{
+				key->flags |= RCKFL_VARIABLES;
+				key->match = BotLoadMatchPieces(source, ")");
+				if (!key->match)
+				{
+					BotFreeReplyChat(replychatlist);
+					return NULL;
+				}
+			}
+			else if (PC_CheckTokenString(source, "<"))	//bot names
+			{
+				key->flags |= RCKFL_BOTNAMES;
+				char namebuffer[MAX_MESSAGE_SIZE];
+				String::Cpy(namebuffer, "");
+				do
+				{
+					if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
+					{
+						BotFreeReplyChat(replychatlist);
+						FreeSource(source);
+						return NULL;
+					}
+					StripDoubleQuotes(token.string);
+					if (String::Length(namebuffer))
+					{
+						String::Cat(namebuffer, sizeof(namebuffer), "\\");
+					}
+					String::Cat(namebuffer, sizeof(namebuffer), token.string);
+				}
+				while (PC_CheckTokenString(source, ","));
+				if (!PC_ExpectTokenString(source, ">"))
+				{
+					BotFreeReplyChat(replychatlist);
+					FreeSource(source);
+					return NULL;
+				}
+				key->string = (char*)Mem_ClearedAlloc(String::Length(namebuffer) + 1);
+				String::Cpy(key->string, namebuffer);
+			}
+			else//normal string key
+			{
+				key->flags |= RCKFL_STRING;
+				if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
+				{
+					BotFreeReplyChat(replychatlist);
+					FreeSource(source);
+					return NULL;
+				}
+				StripDoubleQuotes(token.string);
+				key->string = (char*)Mem_ClearedAlloc(String::Length(token.string) + 1);
+				String::Cpy(key->string, token.string);
+			}
+
+			PC_CheckTokenString(source, ",");
+		}
+		while (!PC_CheckTokenString(source, "]"));
+
+		BotCheckValidReplyChatKeySet(source, replychat->keys);
+		//read the = sign and the priority
+		if (!PC_ExpectTokenString(source, "=") ||
+			!PC_ExpectTokenType(source, TT_NUMBER, 0, &token))
+		{
+			BotFreeReplyChat(replychatlist);
+			FreeSource(source);
+			return NULL;
+		}
+		replychat->priority = token.floatvalue;
+		//read the leading {
+		if (!PC_ExpectTokenString(source, "{"))
+		{
+			BotFreeReplyChat(replychatlist);
+			FreeSource(source);
+			return NULL;
+		}
+		replychat->numchatmessages = 0;
+		//while the trailing } is not found
+		while (!PC_CheckTokenString(source, "}"))
+		{
+			char chatmessagestring[MAX_MESSAGE_SIZE];
+			if (!BotLoadChatMessage(source, chatmessagestring))
+			{
+				BotFreeReplyChat(replychatlist);
+				FreeSource(source);
+				return NULL;
+			}
+			bot_chatmessage_t* chatmessage = (bot_chatmessage_t*)Mem_ClearedAlloc(sizeof(bot_chatmessage_t) + String::Length(chatmessagestring) + 1);
+			chatmessage->chatmessage = (char*)chatmessage + sizeof(bot_chatmessage_t);
+			String::Cpy(chatmessage->chatmessage, chatmessagestring);
+			chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
+			chatmessage->next = replychat->firstchatmessage;
+			//add the chat message to the reply chat
+			replychat->firstchatmessage = chatmessage;
+			replychat->numchatmessages++;
+		}
+	}
+	FreeSource(source);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", filename);
+
+	if (bot_developer)
+	{
+		BotCheckReplyChatIntegrety(replychatlist);
+	}
+
+	if (!replychatlist)
+	{
+		BotImport_Print(PRT_MESSAGE, "no rchats\n");
+	}
+
+	return replychatlist;
+}

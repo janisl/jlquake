@@ -346,3 +346,6 @@ void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
 bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile);
 bool StringsMatchQ3(bot_matchpiece_t* pieces, bot_match_q3_t* match);
 bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match);
+void BotCheckInitialChatIntegrety(bot_chat_t* chat);
+void BotFreeReplyChat(bot_replychat_t* replychat);
+bot_replychat_t* BotLoadReplyChat(const char* filename);
