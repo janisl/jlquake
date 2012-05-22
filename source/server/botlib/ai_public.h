@@ -279,3 +279,9 @@ void UnifyWhiteSpaces(char* string);
 int StringContains(const char* str1, const char* str2, bool casesensitive);
 //replace all the context related synonyms in the string
 void BotReplaceSynonyms(char* string, unsigned int context);
+//finds a match for the given string using the match templates
+bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context);
+bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int context);
+//returns a variable from a match
+void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size);
+void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size);

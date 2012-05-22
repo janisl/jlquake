@@ -55,10 +55,6 @@ int BotChatLength(int chatstate);
 void BotEnterChat(int chatstate, int client, int sendto);
 //get the chat message ready to be output
 void BotGetChatMessage(int chatstate, char* buf, int size);
-//finds a match for the given string
-int BotFindMatch(char* str, bot_match_wolf_t* match, unsigned long int context);
-//returns a variable from a match
-void BotMatchVariable(bot_match_wolf_t* match, int variable, char* buf, int size);
 //loads a chat file for the chat state
 int BotLoadChatFile(int chatstate, char* chatfile, char* chatname);
 //store the gender of the bot in the chat state

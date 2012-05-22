@@ -1131,3 +1131,250 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 	BotImport_Print(PRT_MESSAGE, "loaded %s\n", matchfile);
 	return matches;
 }
+
+bool StringsMatchQ3(bot_matchpiece_t* pieces, bot_match_q3_t* match)
+{
+	//no last variable
+	int lastvariable = -1;
+	//pointer to the string to compare the match string with
+	char* strptr = match->string;
+	//compare the string with the current match string
+	bot_matchpiece_t* mp;
+	for (mp = pieces; mp; mp = mp->next)
+	{
+		//if it is a piece of string
+		if (mp->type == MT_STRING)
+		{
+			char* newstrptr = NULL;
+			bot_matchstring_t* ms;
+			for (ms = mp->firststring; ms; ms = ms->next)
+			{
+				if (!String::Length(ms->string))
+				{
+					newstrptr = strptr;
+					break;
+				}
+				int index = StringContains(strptr, ms->string, false);
+				if (index >= 0)
+				{
+					newstrptr = strptr + index;
+					if (lastvariable >= 0)
+					{
+						match->variables[lastvariable].length =
+							(newstrptr - match->string) - match->variables[lastvariable].offset;
+						lastvariable = -1;
+						break;
+					}
+					else if (index == 0)
+					{
+						break;
+					}
+					newstrptr = NULL;
+				}
+			}
+			if (!newstrptr)
+			{
+				return false;
+			}
+			strptr = newstrptr + String::Length(ms->string);
+		}
+		//if it is a variable piece of string
+		else if (mp->type == MT_VARIABLE)
+		{
+			match->variables[mp->variable].offset = strptr - match->string;
+			lastvariable = mp->variable;
+		}
+	}
+	//if a match was found
+	if (!mp && (lastvariable >= 0 || !String::Length(strptr)))
+	{
+		//if the last piece was a variable string
+		if (lastvariable >= 0)
+		{
+			qassert(match->variables[lastvariable].offset >= 0);
+			match->variables[lastvariable].length =
+				String::Length(&match->string[(int)match->variables[lastvariable].offset]);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match)
+{
+	//no last variable
+	int lastvariable = -1;
+	//pointer to the string to compare the match string with
+	char* strptr = match->string;
+	//compare the string with the current match string
+	bot_matchpiece_t* mp;
+	for (mp = pieces; mp; mp = mp->next)
+	{
+		//if it is a piece of string
+		if (mp->type == MT_STRING)
+		{
+			char* newstrptr = NULL;
+			bot_matchstring_t* ms;
+			for (ms = mp->firststring; ms; ms = ms->next)
+			{
+				if (!String::Length(ms->string))
+				{
+					newstrptr = strptr;
+					break;
+				}
+				int index = StringContains(strptr, ms->string, false);
+				if (index >= 0)
+				{
+					newstrptr = strptr + index;
+					if (lastvariable >= 0)
+					{
+						match->variables[lastvariable].length =
+							newstrptr - match->variables[lastvariable].ptr;
+						lastvariable = -1;
+						break;
+					}
+					else if (index == 0)
+					{
+						break;
+					}
+					newstrptr = NULL;
+				}
+			}
+			if (!newstrptr)
+			{
+				return false;
+			}
+			strptr = newstrptr + String::Length(ms->string);
+		}
+		//if it is a variable piece of string
+		else if (mp->type == MT_VARIABLE)
+		{
+			match->variables[mp->variable].ptr = strptr;
+			lastvariable = mp->variable;
+		}
+	}
+	//if a match was found
+	if (!mp && (lastvariable >= 0 || !String::Length(strptr)))
+	{
+		//if the last piece was a variable string
+		if (lastvariable >= 0)
+		{
+			match->variables[lastvariable].length = String::Length(match->variables[lastvariable].ptr);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context)
+{
+	String::NCpy(match->string, str, MAX_MESSAGE_SIZE_Q3);
+	//remove any trailing enters
+	while (String::Length(match->string) &&
+		match->string[String::Length(match->string) - 1] == '\n')
+	{
+		match->string[String::Length(match->string) - 1] = '\0';
+	}
+	//compare the string with all the match strings
+	for (bot_matchtemplate_t* ms = matchtemplates; ms; ms = ms->next)
+	{
+		if (!(ms->context & context))
+		{
+			continue;
+		}
+		//reset the match variable offsets
+		for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+		{
+			match->variables[i].offset = -1;
+		}
+
+		if (StringsMatchQ3(ms->first, match))
+		{
+			match->type = ms->type;
+			match->subtype = ms->subtype;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int context)
+{
+	String::NCpy(match->string, str, MAX_MESSAGE_SIZE_WOLF);
+	//remove any trailing enters
+	while (String::Length(match->string) &&
+		match->string[String::Length(match->string) - 1] == '\n')
+	{
+		match->string[String::Length(match->string) - 1] = '\0';
+	}
+	//compare the string with all the match strings
+	for (bot_matchtemplate_t* ms = matchtemplates; ms; ms = ms->next)
+	{
+		if (!(ms->context & context))
+		{
+			continue;
+		}
+		//reset the match variable pointers
+		for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+		{
+			match->variables[i].ptr = NULL;
+		}
+
+		if (StringsMatchWolf(ms->first, match))
+		{
+			match->type = ms->type;
+			match->subtype = ms->subtype;
+			return true;
+		}
+	}
+	return false;
+}
+
+void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size)
+{
+	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
+	{
+		BotImport_Print(PRT_FATAL, "BotMatchVariableQ3: variable out of range\n");
+		String::Cpy(buf, "");
+		return;
+	}
+
+	if (match->variables[variable].offset >= 0)
+	{
+		if (match->variables[variable].length < size)
+		{
+			size = match->variables[variable].length + 1;
+		}
+		qassert(match->variables[variable].offset >= 0);
+		String::NCpyZ(buf, &match->string[(int)match->variables[variable].offset], size);
+	}
+	else
+	{
+		String::Cpy(buf, "");
+	}
+	return;
+}
+
+void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size)
+{
+	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
+	{
+		BotImport_Print(PRT_FATAL, "BotMatchVariableWolf: variable out of range\n");
+		String::Cpy(buf, "");
+		return;
+	}
+
+	if (match->variables[variable].ptr)
+	{
+		if (match->variables[variable].length < size)
+		{
+			size = match->variables[variable].length + 1;
+		}
+		String::NCpyZ(buf, match->variables[variable].ptr, size);
+	}
+	else
+	{
+		String::Cpy(buf, "");
+	}
+	return;
+}

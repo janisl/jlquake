@@ -344,3 +344,5 @@ void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
 bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken);
 void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
 bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile);
+bool StringsMatchQ3(bot_matchpiece_t* pieces, bot_match_q3_t* match);
+bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match);
