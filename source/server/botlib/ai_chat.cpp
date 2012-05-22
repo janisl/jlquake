@@ -882,3 +882,252 @@ char* RandomString(const char* name)
 	}
 	return NULL;
 }
+
+void BotFreeMatchPieces(bot_matchpiece_t* matchpieces)
+{
+	bot_matchpiece_t* nextmp;
+	for (bot_matchpiece_t* mp = matchpieces; mp; mp = nextmp)
+	{
+		nextmp = mp->next;
+		if (mp->type == MT_STRING)
+		{
+			bot_matchstring_t* nextms;
+			for (bot_matchstring_t* ms = mp->firststring; ms; ms = nextms)
+			{
+				nextms = ms->next;
+				Mem_Free(ms);
+			}
+		}
+		Mem_Free(mp);
+	}
+}
+
+bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken)
+{
+	bot_matchpiece_t* firstpiece = NULL;
+	bot_matchpiece_t* lastpiece = NULL;
+
+	bool lastwasvariable = false;
+
+	token_t token;
+	while (PC_ReadToken(source, &token))
+	{
+		if (token.type == TT_NUMBER && (token.subtype & TT_INTEGER))
+		{
+			if (token.intvalue < 0 || token.intvalue >= MAX_MATCHVARIABLES)
+			{
+				SourceError(source, "can't have more than %d match variables\n", MAX_MATCHVARIABLES);
+				FreeSource(source);
+				BotFreeMatchPieces(firstpiece);
+				return NULL;
+			}
+			if (lastwasvariable)
+			{
+				SourceError(source, "not allowed to have adjacent variables\n");
+				FreeSource(source);
+				BotFreeMatchPieces(firstpiece);
+				return NULL;
+			}
+			lastwasvariable = true;
+
+			bot_matchpiece_t* matchpiece = (bot_matchpiece_t*)Mem_ClearedAlloc(sizeof(bot_matchpiece_t));
+			matchpiece->type = MT_VARIABLE;
+			matchpiece->variable = token.intvalue;
+			matchpiece->next = NULL;
+			if (lastpiece)
+			{
+				lastpiece->next = matchpiece;
+			}
+			else
+			{
+				firstpiece = matchpiece;
+			}
+			lastpiece = matchpiece;
+		}
+		else if (token.type == TT_STRING)
+		{
+			bot_matchpiece_t* matchpiece = (bot_matchpiece_t*)Mem_ClearedAlloc(sizeof(bot_matchpiece_t));
+			matchpiece->firststring = NULL;
+			matchpiece->type = MT_STRING;
+			matchpiece->variable = 0;
+			matchpiece->next = NULL;
+			if (lastpiece)
+			{
+				lastpiece->next = matchpiece;
+			}
+			else
+			{
+				firstpiece = matchpiece;
+			}
+			lastpiece = matchpiece;
+
+			bot_matchstring_t* lastmatchstring = NULL;
+			bool emptystring = false;
+
+			do
+			{
+				if (matchpiece->firststring)
+				{
+					if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
+					{
+						FreeSource(source);
+						BotFreeMatchPieces(firstpiece);
+						return NULL;
+					}
+				}
+				StripDoubleQuotes(token.string);
+				bot_matchstring_t* matchstring = (bot_matchstring_t*)Mem_ClearedAlloc(sizeof(bot_matchstring_t) + String::Length(token.string) + 1);
+				matchstring->string = (char*)matchstring + sizeof(bot_matchstring_t);
+				String::Cpy(matchstring->string, token.string);
+				if (!String::Length(token.string))
+				{
+					emptystring = true;
+				}
+				matchstring->next = NULL;
+				if (lastmatchstring)
+				{
+					lastmatchstring->next = matchstring;
+				}
+				else
+				{
+					matchpiece->firststring = matchstring;
+				}
+				lastmatchstring = matchstring;
+			}
+			while (PC_CheckTokenString(source, "|"));
+			//if there was no empty string found
+			if (!emptystring)
+			{
+				lastwasvariable = false;
+			}
+		}
+		else
+		{
+			SourceError(source, "invalid token %s\n", token.string);
+			FreeSource(source);
+			BotFreeMatchPieces(firstpiece);
+			return NULL;
+		}
+		if (PC_CheckTokenString(source, endtoken))
+		{
+			break;
+		}
+		if (!PC_ExpectTokenString(source, ","))
+		{
+			FreeSource(source);
+			BotFreeMatchPieces(firstpiece);
+			return NULL;
+		}
+	}
+	return firstpiece;
+}
+
+void BotFreeMatchTemplates(bot_matchtemplate_t* mt)
+{
+	bot_matchtemplate_t* nextmt;
+	for (; mt; mt = nextmt)
+	{
+		nextmt = mt->next;
+		BotFreeMatchPieces(mt->first);
+		Mem_Free(mt);
+	}
+}
+
+bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
+{
+	if (GGameType & GAME_Quake3)
+	{
+		PC_SetBaseFolder(BOTFILESBASEFOLDER);
+	}
+	source_t* source = LoadSourceFile(matchfile);
+	if (!source)
+	{
+		BotImport_Print(PRT_ERROR, "counldn't load %s\n", matchfile);
+		return NULL;
+	}
+
+	bot_matchtemplate_t* matches = NULL;	//list with matches
+	bot_matchtemplate_t* lastmatch = NULL;	//last match in the list
+
+	token_t token;
+	while (PC_ReadToken(source, &token))
+	{
+		if (token.type != TT_NUMBER || !(token.subtype & TT_INTEGER))
+		{
+			SourceError(source, "expected integer, found %s\n", token.string);
+			BotFreeMatchTemplates(matches);
+			FreeSource(source);
+			return NULL;
+		}
+		//the context
+		unsigned int context = token.intvalue;
+
+		if (!PC_ExpectTokenString(source, "{"))
+		{
+			BotFreeMatchTemplates(matches);
+			FreeSource(source);
+			return NULL;
+		}
+
+		while (PC_ReadToken(source, &token))
+		{
+			if (!String::Cmp(token.string, "}"))
+			{
+				break;
+			}
+
+			PC_UnreadLastToken(source);
+
+			bot_matchtemplate_t* matchtemplate = (bot_matchtemplate_t*)Mem_ClearedAlloc(sizeof(bot_matchtemplate_t));
+			matchtemplate->context = context;
+			matchtemplate->next = NULL;
+			//add the match template to the list
+			if (lastmatch)
+			{
+				lastmatch->next = matchtemplate;
+			}
+			else
+			{
+				matches = matchtemplate;
+			}
+			lastmatch = matchtemplate;
+			//load the match template
+			matchtemplate->first = BotLoadMatchPieces(source, "=");
+			if (!matchtemplate->first)
+			{
+				BotFreeMatchTemplates(matches);
+				return NULL;
+			}
+			//read the match type
+			if (!PC_ExpectTokenString(source, "(") ||
+				!PC_ExpectTokenType(source, TT_NUMBER, TT_INTEGER, &token))
+			{
+				BotFreeMatchTemplates(matches);
+				FreeSource(source);
+				return NULL;
+			}
+			matchtemplate->type = token.intvalue;
+			//read the match subtype
+			if (!PC_ExpectTokenString(source, ",") ||
+				!PC_ExpectTokenType(source, TT_NUMBER, TT_INTEGER, &token))
+			{
+				BotFreeMatchTemplates(matches);
+				FreeSource(source);
+				return NULL;
+			}
+			matchtemplate->subtype = token.intvalue;
+			//read trailing punctuations
+			if (!PC_ExpectTokenString(source, ")") ||
+				!PC_ExpectTokenString(source, ";"))
+			{
+				BotFreeMatchTemplates(matches);
+				FreeSource(source);
+				return NULL;
+			}
+		}
+	}
+	//free the source
+	FreeSource(source);
+	BotImport_Print(PRT_MESSAGE, "loaded %s\n", matchfile);
+	return matches;
+}

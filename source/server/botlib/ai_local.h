@@ -340,3 +340,7 @@ void BotReplaceReplySynonyms(char* string, unsigned int context);
 int BotLoadChatMessage(source_t* source, char* chatmessagestring);
 bot_randomlist_t* BotLoadRandomStrings(const char* filename);
 char* RandomString(const char* name);
+void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
+bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken);
+void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
+bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile);
