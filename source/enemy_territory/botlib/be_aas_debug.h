@@ -35,14 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//
-void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
-//draw a cros
-void AAS_DrawCross(vec3_t origin, float size, int color);
-//print the travel type
-void AAS_PrintTravelType(int traveltype);
-//draw an arrow
-void AAS_DrawArrow(vec3_t start, vec3_t end, int linecolor, int arrowcolor);
 //visualize the given reachability
 void AAS_ShowReachability(aas_reachability_t* reach);
 //show the reachable areas from the given area

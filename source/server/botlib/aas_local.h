@@ -360,3 +360,10 @@ void AAS_DebugLine(const vec3_t start, const vec3_t end, int color);
 void AAS_PermanentLine(const vec3_t start, const vec3_t end, int color);
 //show a permanent cross
 void AAS_DrawPermanentCross(const vec3_t origin, float size, int color);
+void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
+//draw a cros
+void AAS_DrawCross(const vec3_t origin, float size, int color);
+//print the travel type
+void AAS_PrintTravelType(int traveltype);
+//draw an arrow
+void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor);

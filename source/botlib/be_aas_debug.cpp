@@ -30,186 +30,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #include "../common/qcommon.h"
-#include "l_memory.h"
 #include "botlib.h"
 #include "be_interface.h"
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_ShowFacePolygon(int facenum, int color, int flip)
-{
-	int i, edgenum, numpoints;
-	vec3_t points[128];
-	aas_edge_t* edge;
-	aas_face_t* face;
-
-	//check if face number is in range
-	if (facenum >= (*aasworld).numfaces)
-	{
-		BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
-	}	//end if
-	face = &(*aasworld).faces[facenum];
-	//walk through the edges of the face
-	numpoints = 0;
-	if (flip)
-	{
-		for (i = face->numedges - 1; i >= 0; i--)
-		{
-			//edge number
-			edgenum = (*aasworld).edgeindex[face->firstedge + i];
-			edge = &(*aasworld).edges[abs(edgenum)];
-			VectorCopy((*aasworld).vertexes[edge->v[edgenum < 0]], points[numpoints]);
-			numpoints++;
-		}	//end for
-	}	//end if
-	else
-	{
-		for (i = 0; i < face->numedges; i++)
-		{
-			//edge number
-			edgenum = (*aasworld).edgeindex[face->firstedge + i];
-			edge = &(*aasworld).edges[abs(edgenum)];
-			VectorCopy((*aasworld).vertexes[edge->v[edgenum < 0]], points[numpoints]);
-			numpoints++;
-		}	//end for
-	}	//end else
-	AAS_ShowPolygon(color, numpoints, points);
-}	//end of the function AAS_ShowFacePolygon
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly)
-{
-	int i, facenum;
-	aas_area_t* area;
-	aas_face_t* face;
-
-	//
-	if (areanum < 0 || areanum >= (*aasworld).numareas)
-	{
-		BotImport_Print(PRT_ERROR, "area %d out of range [0, %d]\n",
-			areanum, (*aasworld).numareas);
-		return;
-	}	//end if
-		//pointer to the convex area
-	area = &(*aasworld).areas[areanum];
-	//walk through the faces of the area
-	for (i = 0; i < area->numfaces; i++)
-	{
-		facenum = abs((*aasworld).faceindex[area->firstface + i]);
-		//check if face number is in range
-		if (facenum >= (*aasworld).numfaces)
-		{
-			BotImport_Print(PRT_ERROR, "facenum %d out of range\n", facenum);
-		}	//end if
-		face = &(*aasworld).faces[facenum];
-		//ground faces only
-		if (groundfacesonly)
-		{
-			if (!(face->faceflags & (FACE_GROUND | FACE_LADDER)))
-			{
-				continue;
-			}
-		}	//end if
-		AAS_ShowFacePolygon(facenum, color, face->frontarea != areanum);
-	}	//end for
-}	//end of the function AAS_ShowAreaPolygons
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_DrawCross(vec3_t origin, float size, int color)
-{
-	int i;
-	vec3_t start, end;
-
-	for (i = 0; i < 3; i++)
-	{
-		VectorCopy(origin, start);
-		start[i] += size;
-		VectorCopy(origin, end);
-		end[i] -= size;
-		AAS_DebugLine(start, end, color);
-	}	//end for
-}	//end of the function AAS_DrawCross
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_PrintTravelType(int traveltype)
-{
-#ifdef DEBUG
-	char* str;
-	//
-	switch (traveltype & TRAVELTYPE_MASK)
-	{
-	case TRAVEL_INVALID: str = "TRAVEL_INVALID"; break;
-	case TRAVEL_WALK: str = "TRAVEL_WALK"; break;
-	case TRAVEL_CROUCH: str = "TRAVEL_CROUCH"; break;
-	case TRAVEL_BARRIERJUMP: str = "TRAVEL_BARRIERJUMP"; break;
-	case TRAVEL_JUMP: str = "TRAVEL_JUMP"; break;
-	case TRAVEL_LADDER: str = "TRAVEL_LADDER"; break;
-	case TRAVEL_WALKOFFLEDGE: str = "TRAVEL_WALKOFFLEDGE"; break;
-	case TRAVEL_SWIM: str = "TRAVEL_SWIM"; break;
-	case TRAVEL_WATERJUMP: str = "TRAVEL_WATERJUMP"; break;
-	case TRAVEL_TELEPORT: str = "TRAVEL_TELEPORT"; break;
-	case TRAVEL_ELEVATOR: str = "TRAVEL_ELEVATOR"; break;
-	case TRAVEL_ROCKETJUMP: str = "TRAVEL_ROCKETJUMP"; break;
-	case TRAVEL_BFGJUMP: str = "TRAVEL_BFGJUMP"; break;
-	case TRAVEL_GRAPPLEHOOK: str = "TRAVEL_GRAPPLEHOOK"; break;
-	case TRAVEL_JUMPPAD: str = "TRAVEL_JUMPPAD"; break;
-	case TRAVEL_FUNCBOB: str = "TRAVEL_FUNCBOB"; break;
-	default: str = "UNKNOWN TRAVEL TYPE"; break;
-	}	//end switch
-	BotImport_Print(PRT_MESSAGE, "%s", str);
-#endif
-}	//end of the function AAS_PrintTravelType
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_DrawArrow(vec3_t start, vec3_t end, int linecolor, int arrowcolor)
-{
-	vec3_t dir, cross, p1, p2, up = {0, 0, 1};
-	float dot;
-
-	VectorSubtract(end, start, dir);
-	VectorNormalize(dir);
-	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99)
-	{
-		VectorSet(cross, 1, 0, 0);
-	}
-	else
-	{
-		CrossProduct(dir, up, cross);
-	}
-
-	VectorMA(end, -6, dir, p1);
-	VectorCopy(p1, p2);
-	VectorMA(p1, 6, cross, p1);
-	VectorMA(p2, -6, cross, p2);
-
-	AAS_DebugLine(start, end, linecolor);
-	AAS_DebugLine(p1, end, arrowcolor);
-	AAS_DebugLine(p2, end, arrowcolor);
-}	//end of the function AAS_DrawArrow
 //===========================================================================
 //
 // Parameter:				-
@@ -306,7 +132,7 @@ void AAS_ShowReachableAreas(int areanum)
 		index = 0;
 		lastareanum = areanum;
 	}	//end if
-	settings = &(*aasworld).areasettings[areanum];
+	settings = &aasworld->areasettings[areanum];
 	//
 	if (!settings->numreachableareas)
 	{
@@ -320,7 +146,7 @@ void AAS_ShowReachableAreas(int areanum)
 	//
 	if (AAS_Time() - lasttime > 1.5)
 	{
-		Com_Memcpy(&reach, &(*aasworld).reachability[settings->firstreachablearea + index], sizeof(aas_reachability_t));
+		Com_Memcpy(&reach, &aasworld->reachability[settings->firstreachablearea + index], sizeof(aas_reachability_t));
 		index++;
 		lasttime = AAS_Time();
 		AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
@@ -339,13 +165,13 @@ void AAS_FloodAreas_r(int areanum, int cluster, int* done)
 
 	AAS_ShowAreaPolygons(areanum, 1, true);
 	//pointer to the convex area
-	area = &(*aasworld).areas[areanum];
-	settings = &(*aasworld).areasettings[areanum];
+	area = &aasworld->areas[areanum];
+	settings = &aasworld->areasettings[areanum];
 	//walk through the faces of the area
 	for (i = 0; i < area->numfaces; i++)
 	{
-		facenum = abs((*aasworld).faceindex[area->firstface + i]);
-		face = &(*aasworld).faces[facenum];
+		facenum = abs(aasworld->faceindex[area->firstface + i]);
+		face = &aasworld->faces[facenum];
 		if (face->frontarea == areanum)
 		{
 			nextareanum = face->backarea;
@@ -363,7 +189,7 @@ void AAS_FloodAreas_r(int areanum, int cluster, int* done)
 			continue;
 		}
 		done[nextareanum] = true;
-		if ((*aasworld).areasettings[nextareanum].contents & AREACONTENTS_VIEWPORTAL)
+		if (aasworld->areasettings[nextareanum].contents & AREACONTENTS_VIEWPORTAL)
 		{
 			continue;
 		}
@@ -376,7 +202,7 @@ void AAS_FloodAreas_r(int areanum, int cluster, int* done)
 		//
 	for (i = 0; i < settings->numreachableareas; i++)
 	{
-		reach = &(*aasworld).reachability[settings->firstreachablearea + i];
+		reach = &aasworld->reachability[settings->firstreachablearea + i];
 		nextareanum = reach->areanum;
 		if (!nextareanum)
 		{
@@ -387,7 +213,7 @@ void AAS_FloodAreas_r(int areanum, int cluster, int* done)
 			continue;
 		}
 		done[nextareanum] = true;
-		if ((*aasworld).areasettings[nextareanum].contents & AREACONTENTS_VIEWPORTAL)
+		if (aasworld->areasettings[nextareanum].contents & AREACONTENTS_VIEWPORTAL)
 		{
 			continue;
 		}
@@ -409,8 +235,9 @@ void AAS_FloodAreas(vec3_t origin)
 {
 	int areanum, cluster, * done;
 
-	done = (int*)GetClearedMemory((*aasworld).numareas * sizeof(int));
+	done = (int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(int));
 	areanum = AAS_PointAreaNum(origin);
 	cluster = AAS_AreaCluster(areanum);
 	AAS_FloodAreas_r(areanum, cluster, done);
+	Mem_Free(done);
 }
