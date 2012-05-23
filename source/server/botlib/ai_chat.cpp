@@ -1132,75 +1132,7 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 	return matches;
 }
 
-bool StringsMatchQ3(bot_matchpiece_t* pieces, bot_match_q3_t* match)
-{
-	//no last variable
-	int lastvariable = -1;
-	//pointer to the string to compare the match string with
-	char* strptr = match->string;
-	//compare the string with the current match string
-	bot_matchpiece_t* mp;
-	for (mp = pieces; mp; mp = mp->next)
-	{
-		//if it is a piece of string
-		if (mp->type == MT_STRING)
-		{
-			char* newstrptr = NULL;
-			bot_matchstring_t* ms;
-			for (ms = mp->firststring; ms; ms = ms->next)
-			{
-				if (!String::Length(ms->string))
-				{
-					newstrptr = strptr;
-					break;
-				}
-				int index = StringContains(strptr, ms->string, false);
-				if (index >= 0)
-				{
-					newstrptr = strptr + index;
-					if (lastvariable >= 0)
-					{
-						match->variables[lastvariable].length =
-							(newstrptr - match->string) - match->variables[lastvariable].offset;
-						lastvariable = -1;
-						break;
-					}
-					else if (index == 0)
-					{
-						break;
-					}
-					newstrptr = NULL;
-				}
-			}
-			if (!newstrptr)
-			{
-				return false;
-			}
-			strptr = newstrptr + String::Length(ms->string);
-		}
-		//if it is a variable piece of string
-		else if (mp->type == MT_VARIABLE)
-		{
-			match->variables[mp->variable].offset = strptr - match->string;
-			lastvariable = mp->variable;
-		}
-	}
-	//if a match was found
-	if (!mp && (lastvariable >= 0 || !String::Length(strptr)))
-	{
-		//if the last piece was a variable string
-		if (lastvariable >= 0)
-		{
-			qassert(match->variables[lastvariable].offset >= 0);
-			match->variables[lastvariable].length =
-				String::Length(&match->string[(int)match->variables[lastvariable].offset]);
-		}
-		return true;
-	}
-	return false;
-}
-
-bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match)
+bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
 {
 	//no last variable
 	int lastvariable = -1;
@@ -1259,7 +1191,8 @@ bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match)
 		//if the last piece was a variable string
 		if (lastvariable >= 0)
 		{
-			match->variables[lastvariable].length = String::Length(match->variables[lastvariable].ptr);
+			match->variables[lastvariable].length =
+				String::Length(match->variables[lastvariable].ptr);
 		}
 		return true;
 	}
@@ -1288,12 +1221,16 @@ bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context
 			match->variables[i].offset = -1;
 		}
 
-		if (StringsMatchQ3(ms->first, match))
+		bot_match_t imatch;
+		MatchQ3ToInt(match, &imatch);
+		if (StringsMatch(ms->first, &imatch))
 		{
+			MatchIntToQ3(&imatch, match);
 			match->type = ms->type;
 			match->subtype = ms->subtype;
 			return true;
 		}
+		MatchIntToQ3(&imatch, match);
 	}
 	return false;
 }
@@ -1320,12 +1257,16 @@ bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int con
 			match->variables[i].ptr = NULL;
 		}
 
-		if (StringsMatchWolf(ms->first, match))
+		bot_match_t imatch;
+		MatchWolfToInt(match, &imatch);
+		if (StringsMatch(ms->first, &imatch))
 		{
+			MatchIntToWolf(&imatch, match);
 			match->type = ms->type;
 			match->subtype = ms->subtype;
 			return true;
 		}
+		MatchIntToWolf(&imatch, match);
 	}
 	return false;
 }

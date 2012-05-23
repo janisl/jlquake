@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ea.h"
 #include "be_ai_chat.h"
 
-
 //===========================================================================
 //
 // Parameter:			-
@@ -513,7 +512,10 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 			}
 			else if (key->flags & RCKFL_VARIABLES)
 			{
-				res = StringsMatchQ3(key->match, &match);
+				bot_match_t imatch;
+				MatchQ3ToInt(&match, &imatch);
+				res = StringsMatch(key->match, &imatch);
+				MatchIntToQ3(&imatch, &match);
 			}
 			else if (key->flags & RCKFL_STRING)
 			{

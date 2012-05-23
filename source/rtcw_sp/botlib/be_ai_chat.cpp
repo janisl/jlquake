@@ -500,7 +500,10 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 			}
 			else if (key->flags & RCKFL_VARIABLES)
 			{
-				res = StringsMatchWolf(key->match, &match);
+				bot_match_t imatch;
+				MatchWolfToInt(&match, &imatch);
+				res = StringsMatch(key->match, &imatch);
+				MatchIntToWolf(&imatch, &match);
 			}
 			else if (key->flags & RCKFL_STRING)
 			{
