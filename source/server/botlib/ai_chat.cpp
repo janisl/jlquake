@@ -1248,36 +1248,11 @@ bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int con
 	return ret;
 }
 
-void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size)
+static void BotMatchVariable(bot_match_t* match, int variable, char* buf, int size)
 {
 	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
 	{
 		BotImport_Print(PRT_FATAL, "BotMatchVariableQ3: variable out of range\n");
-		String::Cpy(buf, "");
-		return;
-	}
-
-	if (match->variables[variable].offset >= 0)
-	{
-		if (match->variables[variable].length < size)
-		{
-			size = match->variables[variable].length + 1;
-		}
-		qassert(match->variables[variable].offset >= 0);
-		String::NCpyZ(buf, &match->string[(int)match->variables[variable].offset], size);
-	}
-	else
-	{
-		String::Cpy(buf, "");
-	}
-	return;
-}
-
-void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size)
-{
-	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
-	{
-		BotImport_Print(PRT_FATAL, "BotMatchVariableWolf: variable out of range\n");
 		String::Cpy(buf, "");
 		return;
 	}
@@ -1295,6 +1270,20 @@ void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int 
 		String::Cpy(buf, "");
 	}
 	return;
+}
+
+void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size)
+{
+	bot_match_t intMatch;
+	MatchQ3ToInt(match, &intMatch);
+	BotMatchVariable(&intMatch, variable, buf, size);
+}
+
+void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size)
+{
+	bot_match_t intMatch;
+	MatchWolfToInt(match, &intMatch);
+	BotMatchVariable(&intMatch, variable, buf, size);
 }
 
 static bot_stringlist_t* BotFindStringInList(bot_stringlist_t* list, const char* string)
