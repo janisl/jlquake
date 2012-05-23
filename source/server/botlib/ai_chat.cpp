@@ -591,7 +591,7 @@ void BotReplaceSynonyms(char* string, unsigned int context)
 	}
 }
 
-void BotReplaceWeightedSynonyms(char* string, unsigned int context)
+static void BotReplaceWeightedSynonyms(char* string, unsigned int context)
 {
 	for (bot_synonymlist_t* syn = synonyms; syn; syn = syn->next)
 	{
@@ -631,7 +631,7 @@ void BotReplaceWeightedSynonyms(char* string, unsigned int context)
 	}
 }
 
-void BotReplaceReplySynonyms(char* string, unsigned int context)
+static void BotReplaceReplySynonyms(char* string, unsigned int context)
 {
 	for (char* str1 = string; *str1; )
 	{
@@ -856,7 +856,7 @@ bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 	return randomlist;
 }
 
-char* RandomString(const char* name)
+static char* RandomString(const char* name)
 {
 	bot_randomlist_t* random;
 	bot_randomstring_t* rs;
@@ -2034,4 +2034,144 @@ int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname)
 	}	//end if
 
 	return BLERR_NOERROR;
+}
+
+static bool BotExpandChatMessage(char* outmessage, const char* message, unsigned mcontext,
+	bot_matchvariable_t* variables, unsigned vcontext, bool reply)
+{
+	bool expansion = false;
+	const char* msgptr = message;
+	char* outputbuf = outmessage;
+	int len = 0;
+
+	while (*msgptr)
+	{
+		if (*msgptr == ESCAPE_CHAR)
+		{
+			msgptr++;
+			switch (*msgptr)
+			{
+			case 'v':	//variable
+			{
+				msgptr++;
+				int num = 0;
+				while (*msgptr && *msgptr != ESCAPE_CHAR)
+				{
+					num = num * 10 + (*msgptr++) - '0';
+				}
+				//step over the trailing escape char
+				if (*msgptr)
+				{
+					msgptr++;
+				}
+				if (num > MAX_MATCHVARIABLES)
+				{
+					BotImport_Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
+					return false;
+				}
+				char* ptr = variables[num].ptr;
+				if (ptr)
+				{
+					char temp[MAX_MESSAGE_SIZE];
+					int i;
+					for (i = 0; i < variables[num].length; i++)
+					{
+						temp[i] = ptr[i];
+					}
+					temp[i] = 0;
+					//if it's a reply message
+					if (reply)
+					{
+						//replace the reply synonyms in the variables
+						BotReplaceReplySynonyms(temp, vcontext);
+					}
+					else
+					{
+						//replace synonyms in the variable context
+						BotReplaceSynonyms(temp, vcontext);
+					}
+
+					if (len + String::Length(temp) >= MAX_MESSAGE_SIZE)
+					{
+						BotImport_Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
+						return false;
+					}
+					String::Cpy(&outputbuf[len], temp);
+					len += String::Length(temp);
+				}
+				break;
+			}
+			case 'r':	//random
+			{
+				msgptr++;
+				char temp[MAX_MESSAGE_SIZE];
+				int i;
+				for (i = 0; (*msgptr && *msgptr != ESCAPE_CHAR); i++)
+				{
+					temp[i] = *msgptr++;
+				}
+				temp[i] = '\0';
+				//step over the trailing escape char
+				if (*msgptr)
+				{
+					msgptr++;
+				}
+				//find the random keyword
+				char* ptr = RandomString(temp);
+				if (!ptr)
+				{
+					BotImport_Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
+					return false;
+				}
+				if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE)
+				{
+					BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
+					return false;
+				}
+				String::Cpy(&outputbuf[len], ptr);
+				len += String::Length(ptr);
+				expansion = true;
+				break;
+			}
+			default:
+				BotImport_Print(PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message);
+				break;
+			}
+		}
+		else
+		{
+			outputbuf[len++] = *msgptr++;
+			if (len >= MAX_MESSAGE_SIZE)
+			{
+				BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
+				break;
+			}
+		}
+	}
+	outputbuf[len] = '\0';
+	//replace synonyms weighted in the message context
+	BotReplaceWeightedSynonyms(outputbuf, mcontext);
+	//return true if a random was expanded
+	return expansion;
+}
+
+void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, unsigned mcontext,
+	bot_matchvariable_t* variables, unsigned vcontext, bool reply)
+{
+	char srcmessage[MAX_MESSAGE_SIZE];
+	String::Cpy(srcmessage, message);
+	int i;
+	for (i = 0; i < 10; i++)
+	{
+		if (!BotExpandChatMessage(chatstate->chatmessage, srcmessage, mcontext, variables, vcontext, reply))
+		{
+			break;
+		}
+		String::Cpy(srcmessage, chatstate->chatmessage);
+	}
+	if (i >= 10)
+	{
+		BotImport_Print(PRT_WARNING, "too many expansions in chat message\n");
+		BotImport_Print(PRT_WARNING, "%s\n", chatstate->chatmessage);
+	}
 }

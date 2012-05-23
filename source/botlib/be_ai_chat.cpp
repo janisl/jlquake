@@ -36,159 +36,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_chat.h"
 
 //===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext,
-	bot_match_t* match, unsigned long vcontext, int reply)
-{
-	int num, len, i, expansion;
-	char* outputbuf, * ptr, * msgptr;
-	char temp[MAX_MESSAGE_SIZE_Q3];
-
-	expansion = false;
-	msgptr = message;
-	outputbuf = outmessage;
-	len = 0;
-	//
-	while (*msgptr)
-	{
-		if (*msgptr == ESCAPE_CHAR)
-		{
-			msgptr++;
-			switch (*msgptr)
-			{
-			case 'v':		//variable
-			{
-				msgptr++;
-				num = 0;
-				while (*msgptr && *msgptr != ESCAPE_CHAR)
-				{
-					num = num * 10 + (*msgptr++) - '0';
-				}		//end while
-						//step over the trailing escape char
-				if (*msgptr)
-				{
-					msgptr++;
-				}
-				if (num > MAX_MATCHVARIABLES)
-				{
-					BotImport_Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
-					return false;
-				}		//end if
-				if (match->variables[num].ptr)
-				{
-					ptr = match->variables[num].ptr;
-					for (i = 0; i < match->variables[num].length; i++)
-					{
-						temp[i] = ptr[i];
-					}		//end for
-					temp[i] = 0;
-					//if it's a reply message
-					if (reply)
-					{
-						//replace the reply synonyms in the variables
-						BotReplaceReplySynonyms(temp, vcontext);
-					}		//end if
-					else
-					{
-						//replace synonyms in the variable context
-						BotReplaceSynonyms(temp, vcontext);
-					}		//end else
-							//
-					if (len + String::Length(temp) >= MAX_MESSAGE_SIZE_Q3)
-					{
-						BotImport_Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
-						return false;
-					}		//end if
-					String::Cpy(&outputbuf[len], temp);
-					len += String::Length(temp);
-				}		//end if
-				break;
-			}		//end case
-			case 'r':		//random
-			{
-				msgptr++;
-				for (i = 0; (*msgptr && *msgptr != ESCAPE_CHAR); i++)
-				{
-					temp[i] = *msgptr++;
-				}		//end while
-				temp[i] = '\0';
-				//step over the trailing escape char
-				if (*msgptr)
-				{
-					msgptr++;
-				}
-				//find the random keyword
-				ptr = RandomString(temp);
-				if (!ptr)
-				{
-					BotImport_Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
-					return false;
-				}		//end if
-				if (len + String::Length(ptr) >= MAX_MESSAGE_SIZE_Q3)
-				{
-					BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
-					return false;
-				}		//end if
-				String::Cpy(&outputbuf[len], ptr);
-				len += String::Length(ptr);
-				expansion = true;
-				break;
-			}		//end case
-			default:
-			{
-				BotImport_Print(PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message);
-				break;
-			}		//end default
-			}	//end switch
-		}	//end if
-		else
-		{
-			outputbuf[len++] = *msgptr++;
-			if (len >= MAX_MESSAGE_SIZE_Q3)
-			{
-				BotImport_Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
-				break;
-			}	//end if
-		}	//end else
-	}	//end while
-	outputbuf[len] = '\0';
-	//replace synonyms weighted in the message context
-	BotReplaceWeightedSynonyms(outputbuf, mcontext);
-	//return true if a random was expanded
-	return expansion;
-}	//end of the function BotExpandChatMessage
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void BotConstructChatMessage(bot_chatstate_t* chatstate, char* message, unsigned long mcontext,
-	bot_match_t* match, unsigned long vcontext, int reply)
-{
-	int i;
-	char srcmessage[MAX_MESSAGE_SIZE_Q3];
-
-	String::Cpy(srcmessage, message);
-	for (i = 0; i < 10; i++)
-	{
-		if (!BotExpandChatMessage(chatstate->chatmessage, srcmessage, mcontext, match, vcontext, reply))
-		{
-			break;
-		}	//end if
-		String::Cpy(srcmessage, chatstate->chatmessage);
-	}	//end for
-	if (i >= 10)
-	{
-		BotImport_Print(PRT_WARNING, "too many expansions in chat message\n");
-		BotImport_Print(PRT_WARNING, "%s\n", chatstate->chatmessage);
-	}	//end if
-}	//end of the function BotConstructChatMessage
-//===========================================================================
 // randomly chooses one of the chat message of the given type
 //
 // Parameter:				-
@@ -380,82 +227,8 @@ void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* v
 		index += String::Length(var7);
 	}
 	//
-	BotConstructChatMessage(cs, message, mcontext, &match, 0, false);
+	BotConstructChatMessage(cs, message, mcontext, match.variables, 0, false);
 }	//end of the function BotInitialChat
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void BotPrintReplyChatKeys(bot_replychat_t* replychat)
-{
-	bot_replychatkey_t* key;
-	bot_matchpiece_t* mp;
-
-	BotImport_Print(PRT_MESSAGE, "[");
-	for (key = replychat->keys; key; key = key->next)
-	{
-		if (key->flags & RCKFL_AND)
-		{
-			BotImport_Print(PRT_MESSAGE, "&");
-		}
-		else if (key->flags & RCKFL_NOT)
-		{
-			BotImport_Print(PRT_MESSAGE, "!");
-		}
-		//
-		if (key->flags & RCKFL_NAME)
-		{
-			BotImport_Print(PRT_MESSAGE, "name");
-		}
-		else if (key->flags & RCKFL_GENDERFEMALE)
-		{
-			BotImport_Print(PRT_MESSAGE, "female");
-		}
-		else if (key->flags & RCKFL_GENDERMALE)
-		{
-			BotImport_Print(PRT_MESSAGE, "male");
-		}
-		else if (key->flags & RCKFL_GENDERLESS)
-		{
-			BotImport_Print(PRT_MESSAGE, "it");
-		}
-		else if (key->flags & RCKFL_VARIABLES)
-		{
-			BotImport_Print(PRT_MESSAGE, "(");
-			for (mp = key->match; mp; mp = mp->next)
-			{
-				if (mp->type == MT_STRING)
-				{
-					BotImport_Print(PRT_MESSAGE, "\"%s\"", mp->firststring->string);
-				}
-				else
-				{
-					BotImport_Print(PRT_MESSAGE, "%d", mp->variable);
-				}
-				if (mp->next)
-				{
-					BotImport_Print(PRT_MESSAGE, ", ");
-				}
-			}	//end for
-			BotImport_Print(PRT_MESSAGE, ")");
-		}	//end if
-		else if (key->flags & RCKFL_STRING)
-		{
-			BotImport_Print(PRT_MESSAGE, "\"%s\"", key->string);
-		}	//end if
-		if (key->next)
-		{
-			BotImport_Print(PRT_MESSAGE, ", ");
-		}
-		else
-		{
-			BotImport_Print(PRT_MESSAGE, "] = %1.0f\n", replychat->priority);
-		}
-	}	//end for
-	BotImport_Print(PRT_MESSAGE, "{\n");
-}	//end of the function BotPrintReplyChatKeys
 //===========================================================================
 //
 // Parameter:				-
@@ -640,7 +413,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 		{
 			for (m = bestrchat->firstchatmessage; m; m = m->next)
 			{
-				BotConstructChatMessage(cs, m->chatmessage, mcontext, &bestmatch, vcontext, true);
+				BotConstructChatMessage(cs, m->chatmessage, mcontext, bestmatch.variables, vcontext, true);
 				BotRemoveTildes(cs->chatmessage);
 				BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
 			}	//end if
@@ -648,7 +421,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 		else
 		{
 			bestchatmessage->time = AAS_Time() + CHATMESSAGE_RECENTTIME;
-			BotConstructChatMessage(cs, bestchatmessage->chatmessage, mcontext, &bestmatch, vcontext, true);
+			BotConstructChatMessage(cs, bestchatmessage->chatmessage, mcontext, bestmatch.variables, vcontext, true);
 		}	//end else
 		return true;
 	}	//end if

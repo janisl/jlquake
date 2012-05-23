@@ -348,10 +348,7 @@ void FreeConsoleMessage(bot_consolemessage_t* message);
 void BotRemoveTildes(char* message);
 char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
 bot_synonymlist_t* BotLoadSynonyms(const char* filename);
-void BotReplaceWeightedSynonyms(char* string, unsigned int context);
-void BotReplaceReplySynonyms(char* string, unsigned int context);
 bot_randomlist_t* BotLoadRandomStrings(const char* filename);
-char* RandomString(const char* name);
 void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
 bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken);
 void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
@@ -360,3 +357,5 @@ bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match);
 void BotFreeReplyChat(bot_replychat_t* replychat);
 bot_replychat_t* BotLoadReplyChat(const char* filename);
 void BotFreeChatFile(int chatstate);
+void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, unsigned mcontext,
+	bot_matchvariable_t* variables, unsigned vcontext, bool reply);
