@@ -1199,9 +1199,10 @@ bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
 	return false;
 }
 
-bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context)
+static bool BotFindMatch(const char* str, bot_match_t* match, unsigned int context)
 {
-	String::NCpy(match->string, str, MAX_MESSAGE_SIZE_Q3);
+	Com_Memset(match, 0, sizeof(*match));
+	String::NCpyZ(match->string, str, sizeof(match->string));
 	//remove any trailing enters
 	while (String::Length(match->string) &&
 		match->string[String::Length(match->string) - 1] == '\n')
@@ -1218,57 +1219,33 @@ bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context
 		//reset the match variable offsets
 		for (int i = 0; i < MAX_MATCHVARIABLES; i++)
 		{
-			match->variables[i].offset = -1;
+			match->variables[i].ptr = NULL;
 		}
 
-		bot_match_t imatch;
-		MatchQ3ToInt(match, &imatch);
-		if (StringsMatch(ms->first, &imatch))
+		if (StringsMatch(ms->first, match))
 		{
-			MatchIntToQ3(&imatch, match);
 			match->type = ms->type;
 			match->subtype = ms->subtype;
 			return true;
 		}
-		MatchIntToQ3(&imatch, match);
 	}
 	return false;
 }
 
+bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context)
+{
+	bot_match_t intMatch;
+	bool ret = BotFindMatch(str, &intMatch, context);
+	MatchIntToQ3(&intMatch, match);
+	return ret;
+}
+
 bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int context)
 {
-	String::NCpy(match->string, str, MAX_MESSAGE_SIZE_WOLF);
-	//remove any trailing enters
-	while (String::Length(match->string) &&
-		match->string[String::Length(match->string) - 1] == '\n')
-	{
-		match->string[String::Length(match->string) - 1] = '\0';
-	}
-	//compare the string with all the match strings
-	for (bot_matchtemplate_t* ms = matchtemplates; ms; ms = ms->next)
-	{
-		if (!(ms->context & context))
-		{
-			continue;
-		}
-		//reset the match variable pointers
-		for (int i = 0; i < MAX_MATCHVARIABLES; i++)
-		{
-			match->variables[i].ptr = NULL;
-		}
-
-		bot_match_t imatch;
-		MatchWolfToInt(match, &imatch);
-		if (StringsMatch(ms->first, &imatch))
-		{
-			MatchIntToWolf(&imatch, match);
-			match->type = ms->type;
-			match->subtype = ms->subtype;
-			return true;
-		}
-		MatchIntToWolf(&imatch, match);
-	}
-	return false;
+	bot_match_t intMatch;
+	bool ret = BotFindMatch(str, &intMatch, context);
+	MatchIntToWolf(&intMatch, match);
+	return ret;
 }
 
 void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size)
