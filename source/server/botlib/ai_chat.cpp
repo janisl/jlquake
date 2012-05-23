@@ -2080,3 +2080,51 @@ int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname)
 
 	return BLERR_NOERROR;
 }
+
+void MatchIntToQ3(bot_match_t* src, bot_match_q3_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].offset = src->variables[i].ptr ? src->variables[i].ptr - src->string : -1;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
+void MatchIntToWolf(bot_match_t* src, bot_match_wolf_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
+void MatchQ3ToInt(bot_match_q3_t* src, bot_match_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].offset >= 0 ? dst->string + src->variables[i].offset: NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
+void MatchWolfToInt(bot_match_wolf_t* src, bot_match_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
