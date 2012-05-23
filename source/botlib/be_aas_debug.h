@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //clear the shown debug lines
 void AAS_ClearShownDebugLines(void);
-//
-void AAS_ClearShownPolygons(void);
 //show a debug line
 void AAS_DebugLine(vec3_t start, vec3_t end, int color);
 //show a permenent line

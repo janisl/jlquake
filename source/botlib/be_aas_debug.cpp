@@ -37,61 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-#define MAX_DEBUGLINES              1024
-#define MAX_DEBUGPOLYGONS           8192
-
-int debuglines[MAX_DEBUGLINES];
-int debuglinevisible[MAX_DEBUGLINES];
-int numdebuglines;
-
-static int aas_debugpolygons[MAX_DEBUGPOLYGONS];
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_ClearShownPolygons(void)
-{
-	int i;
-//*
-	for (i = 0; i < MAX_DEBUGPOLYGONS; i++)
-	{
-		if (aas_debugpolygons[i])
-		{
-			BotImport_DebugPolygonDelete(aas_debugpolygons[i]);
-		}
-		aas_debugpolygons[i] = 0;
-	}	//end for
-//*/
-/*
-    for (i = 0; i < MAX_DEBUGPOLYGONS; i++)
-    {
-        BotImport_DebugPolygonDelete(i);
-        aas_debugpolygons[i] = 0;
-    } //end for
-*/
-}	//end of the function AAS_ClearShownPolygons
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_ShowPolygon(int color, int numpoints, vec3_t* points)
-{
-	int i;
-
-	for (i = 0; i < MAX_DEBUGPOLYGONS; i++)
-	{
-		if (!aas_debugpolygons[i])
-		{
-			aas_debugpolygons[i] = BotImport_DebugPolygonCreate(color, numpoints, points);
-			break;
-		}	//end if
-	}	//end for
-}	//end of the function AAS_ShowPolygon
 //===========================================================================
 //
 // Parameter:				-

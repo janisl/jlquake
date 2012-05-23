@@ -337,35 +337,6 @@ void* BotImport_HunkAlloc(int size)
 
 /*
 ==================
-BotImport_DebugPolygonCreate
-==================
-*/
-bot_debugpoly_t* BotImport_GetFreeDebugPolygon(void)
-{
-	int i;
-
-	for (i = 1; i < bot_maxdebugpolys; i++)
-	{
-		if (!debugpolygons[i].inuse)
-		{
-			return &debugpolygons[i];
-		}
-	}
-	return NULL;
-}
-
-/*
-==================
-BotImport_DebugPolygonDeletePointer
-==================
-*/
-void BotImport_DebugPolygonDeletePointer(bot_debugpoly_t* pPoly)
-{
-	pPoly->inuse = qfalse;
-}
-
-/*
-==================
 BotImport_BotVisibleFromPos
 ==================
 */
@@ -536,10 +507,6 @@ void SV_BotInitBotLib(void)
 	botlib_import.FreeMemory = BotImport_FreeMemory;
 	botlib_import.FreeZoneMemory = BotImport_FreeZoneMemory;
 	botlib_import.HunkAlloc = BotImport_HunkAlloc;
-
-	//debug polygons
-	botlib_import.DebugPolygonGetFree =         BotImport_GetFreeDebugPolygon;
-	botlib_import.DebugPolygonDeletePointer =   BotImport_DebugPolygonDeletePointer;
 
 	//bot routines
 	botlib_import.BotVisibleFromPos =   BotImport_BotVisibleFromPos;
