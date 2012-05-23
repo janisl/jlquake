@@ -38,12 +38,6 @@ void BotShutdownChatAI(void);
 int BotAllocChatState(void);
 //frees the chatstate
 void BotFreeChatState(int handle);
-//selects a chat message of the given type
-void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
-//returns the number of initial chat messages of the given type
-int BotNumInitialChats(int chatstate, char* type);
-//find and select a reply for the given message
-int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
 //returns the length of the currently selected chat message
 int BotChatLength(int chatstate);
 //enters the selected chat message

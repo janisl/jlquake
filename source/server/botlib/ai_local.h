@@ -322,7 +322,7 @@ struct bot_chatstate_t
 
 struct bot_matchvariable_t
 {
-	char* ptr;
+	const char* ptr;
 	int length;
 };
 
@@ -346,7 +346,6 @@ bot_chatstate_t* BotChatStateFromHandle(int handle);
 void InitConsoleMessageHeap();
 void FreeConsoleMessage(bot_consolemessage_t* message);
 void BotRemoveTildes(char* message);
-char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
 bot_synonymlist_t* BotLoadSynonyms(const char* filename);
 bot_randomlist_t* BotLoadRandomStrings(const char* filename);
 void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
@@ -357,5 +356,4 @@ bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match);
 void BotFreeReplyChat(bot_replychat_t* replychat);
 bot_replychat_t* BotLoadReplyChat(const char* filename);
 void BotFreeChatFile(int chatstate);
-void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, unsigned mcontext,
-	bot_matchvariable_t* variables, unsigned vcontext, bool reply);
+const char* BotChooseInitialChatMessage(bot_chatstate_t* cs, const char* type);

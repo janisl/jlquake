@@ -250,9 +250,6 @@ typedef struct ai_export_s
 	//-----------------------------------
 	int (* BotAllocChatState)(void);
 	void (* BotFreeChatState)(int handle);
-	void (* BotInitialChat)(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
-	int (* BotNumInitialChats)(int chatstate, char* type);
-	int (* BotReplyChat)(int chatstate, char* message, int mcontext, int vcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
 	int (* BotChatLength)(int chatstate);
 	void (* BotEnterChat)(int chatstate, int client, int sendto);
 	void (* BotGetChatMessage)(int chatstate, char* buf, int size);

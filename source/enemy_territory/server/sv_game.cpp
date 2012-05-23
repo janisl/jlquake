@@ -824,12 +824,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_NUM_CONSOLE_MESSAGE:
 		return BotNumConsoleMessages(args[1]);
 	case BOTLIB_AI_INITIAL_CHAT:
-		botlib_export->ai.BotInitialChat(args[1], (char*)VMA(2), args[3], (char*)VMA(4), (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11));
+		BotInitialChat(args[1], (char*)VMA(2), args[3], (char*)VMA(4), (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11));
 		return 0;
 	case BOTLIB_AI_NUM_INITIAL_CHATS:
-		return botlib_export->ai.BotNumInitialChats(args[1], (char*)VMA(2));
+		return BotNumInitialChats(args[1], (char*)VMA(2));
 	case BOTLIB_AI_REPLY_CHAT:
-		return botlib_export->ai.BotReplyChat(args[1], (char*)VMA(2), args[3], args[4], (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11), (char*)VMA(12));
+		return BotReplyChat(args[1], (char*)VMA(2), args[3], args[4], (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11), (char*)VMA(12));
 	case BOTLIB_AI_CHAT_LENGTH:
 		return botlib_export->ai.BotChatLength(args[1]);
 	case BOTLIB_AI_ENTER_CHAT:

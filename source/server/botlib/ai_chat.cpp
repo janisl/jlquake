@@ -325,7 +325,7 @@ int StringContains(const char* str1, const char* str2, bool casesensitive)
 	return -1;
 }
 
-char* StringContainsWord(char* str1, const char* str2, bool casesensitive)
+static char* StringContainsWord(char* str1, const char* str2, bool casesensitive)
 {
 	int len = String::Length(str1) - String::Length(str2);
 	for (int i = 0; i <= len; i++, str1++)
@@ -654,7 +654,7 @@ static void BotReplaceReplySynonyms(char* string, unsigned int context)
 			bot_synonym_t* synonym;
 			for (synonym = syn->firstsynonym->next; synonym; synonym = synonym->next)
 			{
-				char* str2 = synonym->string;
+				const char* str2 = synonym->string;
 				//if the synonym is not at the front of the string continue
 				str2 = StringContainsWord(str1, synonym->string, false);
 				if (!str2 || str2 != str1)
@@ -2069,7 +2069,7 @@ static bool BotExpandChatMessage(char* outmessage, const char* message, unsigned
 					BotImport_Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
 					return false;
 				}
-				char* ptr = variables[num].ptr;
+				const char* ptr = variables[num].ptr;
 				if (ptr)
 				{
 					char temp[MAX_MESSAGE_SIZE];
@@ -2155,7 +2155,7 @@ static bool BotExpandChatMessage(char* outmessage, const char* message, unsigned
 	return expansion;
 }
 
-void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, unsigned mcontext,
+static void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, unsigned mcontext,
 	bot_matchvariable_t* variables, unsigned vcontext, bool reply)
 {
 	char srcmessage[MAX_MESSAGE_SIZE];
@@ -2174,4 +2174,329 @@ void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* message, un
 		BotImport_Print(PRT_WARNING, "too many expansions in chat message\n");
 		BotImport_Print(PRT_WARNING, "%s\n", chatstate->chatmessage);
 	}
+}
+
+// randomly chooses one of the chat message of the given type
+const char* BotChooseInitialChatMessage(bot_chatstate_t* cs, const char* type)
+{
+	bot_chat_t* chat = cs->chat;
+	for (bot_chattype_t* t = chat->types; t; t = t->next)
+	{
+		if (!String::ICmp(t->name, type))
+		{
+			int numchatmessages = 0;
+			for (bot_chatmessage_t* m = t->firstchatmessage; m; m = m->next)
+			{
+				if (m->time > AAS_Time())
+				{
+					continue;
+				}
+				numchatmessages++;
+			}
+			//if all chat messages have been used recently
+			if (numchatmessages <= 0)
+			{
+				float besttime = 0;
+				bot_chatmessage_t* bestchatmessage = NULL;
+				for (bot_chatmessage_t* m = t->firstchatmessage; m; m = m->next)
+				{
+					if (!besttime || m->time < besttime)
+					{
+						bestchatmessage = m;
+						besttime = m->time;
+					}
+				}
+				if (bestchatmessage)
+				{
+					return bestchatmessage->chatmessage;
+				}
+			}
+			else//choose a chat message randomly
+			{
+				int n = random() * numchatmessages;
+				for (bot_chatmessage_t* m = t->firstchatmessage; m; m = m->next)
+				{
+					if (m->time > AAS_Time())
+					{
+						continue;
+					}
+					if (--n < 0)
+					{
+						m->time = AAS_Time() + CHATMESSAGE_RECENTTIME;
+						return m->chatmessage;
+					}
+				}
+			}
+			return NULL;
+		}
+	}
+	return NULL;
+}
+
+int BotNumInitialChats(int chatstate, const char* type)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return 0;
+	}
+
+	for (bot_chattype_t* t = cs->chat->types; t; t = t->next)
+	{
+		if (!String::ICmp(t->name, type))
+		{
+			if (LibVarGetValue("bot_testichat"))
+			{
+				BotImport_Print(PRT_MESSAGE, "%s has %d chat lines\n", type, t->numchatmessages);
+				BotImport_Print(PRT_MESSAGE, "-------------------\n");
+			}
+			return t->numchatmessages;
+		}
+	}
+	return 0;
+}
+
+void BotInitialChat(int chatstate, const char* type, int mcontext,
+	const char* var0, const char* var1, const char* var2, const char* var3,
+	const char* var4, const char* var5, const char* var6, const char* var7)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+	//if no chat file is loaded
+	if (!cs->chat)
+	{
+		return;
+	}
+	//choose a chat message randomly of the given type
+	const char* message = BotChooseInitialChatMessage(cs, type);
+	//if there's no message of the given type
+	if (!message)
+	{
+#ifdef DEBUG
+		BotImport_Print(PRT_MESSAGE, "no chat messages of type %s\n", type);
+#endif
+		return;
+	}
+
+	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
+	Com_Memset(variables, 0, sizeof(variables));
+	if (var0)
+	{
+		variables[0].ptr = var0;
+		variables[0].length = String::Length(var0);
+	}
+	if (var1)
+	{
+		variables[1].ptr = var1;
+		variables[1].length = String::Length(var1);
+	}
+	if (var2)
+	{
+		variables[2].ptr = var2;
+		variables[2].length = String::Length(var2);
+	}
+	if (var3)
+	{
+		variables[3].ptr = var3;
+		variables[3].length = String::Length(var3);
+	}
+	if (var4)
+	{
+		variables[4].ptr = var4;
+		variables[4].length = String::Length(var4);
+	}
+	if (var5)
+	{
+		variables[5].ptr = var5;
+		variables[5].length = String::Length(var5);
+	}
+	if (var6)
+	{
+		variables[6].ptr = var6;
+		variables[6].length = String::Length(var6);
+	}
+	if (var7)
+	{
+		variables[7].ptr = var7;
+		variables[7].length = String::Length(var7);
+	}
+
+	BotConstructChatMessage(cs, message, mcontext, variables, 0, false);
+}
+
+bool BotReplyChat(int chatstate, const char* message, int mcontext, int vcontext,
+	const char* var0, const char* var1, const char* var2, const char* var3,
+	const char* var4, const char* var5, const char* var6, const char* var7)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return false;
+	}
+	bot_match_t match;
+	Com_Memset(&match, 0, sizeof(bot_match_t));
+	String::Cpy(match.string, message);
+	int bestpriority = -1;
+	bot_chatmessage_t* bestchatmessage = NULL;
+	bot_replychat_t* bestrchat = NULL;
+	bot_match_t bestmatch;
+	//go through all the reply chats
+	for (bot_replychat_t* rchat = replychats; rchat; rchat = rchat->next)
+	{
+		bool found = false;
+		for (bot_replychatkey_t* key = rchat->keys; key; key = key->next)
+		{
+			bool res = false;
+			//get the match result
+			if (key->flags & RCKFL_NAME)
+			{
+				res = (StringContains(message, cs->name, false) != -1);
+			}
+			else if (key->flags & RCKFL_BOTNAMES)
+			{
+				res = (StringContains(key->string, cs->name, false) != -1);
+			}
+			else if (key->flags & RCKFL_GENDERFEMALE)
+			{
+				res = (cs->gender == CHAT_GENDERFEMALE);
+			}
+			else if (key->flags & RCKFL_GENDERMALE)
+			{
+				res = (cs->gender == CHAT_GENDERMALE);
+			}
+			else if (key->flags & RCKFL_GENDERLESS)
+			{
+				res = (cs->gender == CHAT_GENDERLESS);
+			}
+			else if (key->flags & RCKFL_VARIABLES)
+			{
+				res = StringsMatch(key->match, &match);
+			}
+			else if (key->flags & RCKFL_STRING)
+			{
+				res = (StringContainsWord(const_cast<char*>(message), key->string, false) != NULL);
+			}
+			//if the key must be present
+			if (key->flags & RCKFL_AND)
+			{
+				if (!res)
+				{
+					found = false;
+					break;
+				}
+			}
+			//if the key must be absent
+			else if (key->flags & RCKFL_NOT)
+			{
+				if (res)
+				{
+					found = false;
+					break;
+				}
+			}
+			else if (res)
+			{
+				found = true;
+			}
+		}
+
+		if (found)
+		{
+			if (rchat->priority > bestpriority)
+			{
+				int numchatmessages = 0;
+				bot_chatmessage_t* m;
+				for (m = rchat->firstchatmessage; m; m = m->next)
+				{
+					if (m->time > AAS_Time())
+					{
+						continue;
+					}
+					numchatmessages++;
+				}
+				int num = random() * numchatmessages;
+				for (m = rchat->firstchatmessage; m; m = m->next)
+				{
+					if (--num < 0)
+					{
+						break;
+					}
+					if (m->time > AAS_Time())
+					{
+						continue;
+					}
+				}
+				//if the reply chat has a message
+				if (m)
+				{
+					Com_Memcpy(&bestmatch, &match, sizeof(bot_match_t));
+					bestchatmessage = m;
+					bestrchat = rchat;
+					bestpriority = rchat->priority;
+				}
+			}
+		}
+	}
+	if (bestchatmessage)
+	{
+		if (var0)
+		{
+			bestmatch.variables[0].ptr = var0;
+			bestmatch.variables[0].length = String::Length(var0);
+		}
+		if (var1)
+		{
+			bestmatch.variables[1].ptr = var1;
+			bestmatch.variables[1].length = String::Length(var1);
+		}
+		if (var2)
+		{
+			bestmatch.variables[2].ptr = var2;
+			bestmatch.variables[2].length = String::Length(var2);
+		}
+		if (var3)
+		{
+			bestmatch.variables[3].ptr = var3;
+			bestmatch.variables[3].length = String::Length(var3);
+		}
+		if (var4)
+		{
+			bestmatch.variables[4].ptr = var4;
+			bestmatch.variables[4].length = String::Length(var4);
+		}
+		if (var5)
+		{
+			bestmatch.variables[5].ptr = var5;
+			bestmatch.variables[5].length = String::Length(var5);
+		}
+		if (var6)
+		{
+			bestmatch.variables[6].ptr = var6;
+			bestmatch.variables[6].length = String::Length(var6);
+		}
+		if (var7)
+		{
+			bestmatch.variables[7].ptr = var7;
+			bestmatch.variables[7].length = String::Length(var7);
+		}
+		if (LibVarGetValue("bot_testrchat"))
+		{
+			for (bot_chatmessage_t* m = bestrchat->firstchatmessage; m; m = m->next)
+			{
+				BotConstructChatMessage(cs, m->chatmessage, mcontext, bestmatch.variables, vcontext, true);
+				BotRemoveTildes(cs->chatmessage);
+				BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
+			}
+		}
+		else
+		{
+			bestchatmessage->time = AAS_Time() + CHATMESSAGE_RECENTTIME;
+			BotConstructChatMessage(cs, bestchatmessage->chatmessage, mcontext, bestmatch.variables, vcontext, true);
+		}
+		return true;
+	}
+	return false;
 }

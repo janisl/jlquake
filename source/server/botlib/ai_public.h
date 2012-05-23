@@ -287,3 +287,13 @@ void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size
 void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size);
 //loads a chat file for the chat state
 int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname);
+//returns the number of initial chat messages of the given type
+int BotNumInitialChats(int chatstate, const char* type);
+//selects a chat message of the given type
+void BotInitialChat(int chatstate, const char* type, int mcontext,
+	const char* var0, const char* var1, const char* var2, const char* var3,
+	const char* var4, const char* var5, const char* var6, const char* var7);
+//find and select a reply for the given message
+bool BotReplyChat(int chatstate, const char* message, int mcontext, int vcontext,
+	const char* var0, const char* var1, const char* var2, const char* var3,
+	const char* var4, const char* var5, const char* var6, const char* var7);
