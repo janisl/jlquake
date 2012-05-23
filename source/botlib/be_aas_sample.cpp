@@ -763,7 +763,6 @@ aas_trace_t AAS_TraceClientBBox(vec3_t start, vec3_t end, int presencetype,
 			cur_mid[1] = cur_start[1] + (cur_end[1] - cur_start[1]) * frac;
 			cur_mid[2] = cur_start[2] + (cur_end[2] - cur_start[2]) * frac;
 
-//			AAS_DrawPlaneCross(cur_mid, plane->normal, plane->dist, plane->type, LINECOLOR_RED);
 			//side the front part of the line is on
 			side = front < 0;
 			//first put the end part of the line on the stack (back side)
@@ -970,7 +969,6 @@ int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int max
 			cur_mid[1] = cur_start[1] + (cur_end[1] - cur_start[1]) * frac;
 			cur_mid[2] = cur_start[2] + (cur_end[2] - cur_start[2]) * frac;
 
-//			AAS_DrawPlaneCross(cur_mid, plane->normal, plane->dist, plane->type, LINECOLOR_RED);
 			//side the front part of the line is on
 			side = front < 0;
 			//first put the end part of the line on the stack (back side)

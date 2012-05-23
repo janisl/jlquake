@@ -253,14 +253,6 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 			goaltraveltime;
 		numaltroutegoals++;
 		//
-/*#ifdef DEBUG
-        BotImport_Print(PRT_MESSAGE, "alternative route goal area %d, numclusterareas = %d\n", bestareanum, numclusterareas);
-        if (color)
-        {
-            AAS_DrawPermanentCross((*aasworld).areas[bestareanum].center, 10, color);
-        } //end if
-        //AAS_ShowArea(bestarea, qtrue);
-#endif*/
 		//don't return more than the maximum alternative route goals
 		if (numaltroutegoals >= maxaltroutegoals)
 		{

@@ -456,53 +456,6 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		BotImport_Print(PRT_MESSAGE, "new goal %2.1f %2.1f %2.1f area %d\n",
 			origin[0], origin[1], origin[2], newarea);
 	}	//end if*/
-//	if (parm0 & BUTTON_USE)
-//	{
-//		botlibglobals.runai = !botlibglobals.runai;
-//		if (botlibglobals.runai) BotImport_Print(PRT_MESSAGE, "started AI\n");
-//		else BotImport_Print(PRT_MESSAGE, "stopped AI\n");
-	//* /
-	/*
-	goal.areanum = botlibglobals.goalareanum;
-	reachnum = BotGetReachabilityToGoal(parm2, newarea, 1,
-	                                ms.avoidreach, ms.avoidreachtimes,
-	                                &goal, TFL_DEFAULT);
-	if (!reachnum)
-	{
-	    BotImport_Print(PRT_MESSAGE, "goal not reachable\n");
-	} //end if
-	else
-	{
-	    AAS_ReachabilityFromNum(reachnum, &reach);
-	    AAS_ClearShownDebugLines();
-	    AAS_ShowArea(area, qtrue);
-	    AAS_ShowArea(reach.areanum, qtrue);
-	    AAS_DrawCross(reach.start, 6, LINECOLOR_BLUE);
-	    AAS_DrawCross(reach.end, 6, LINECOLOR_RED);
-	    //
-	    if (reach.traveltype == TRAVEL_ELEVATOR)
-	    {
-	        ElevatorBottomCenter(&reach, bottomcenter);
-	        AAS_DrawCross(bottomcenter, 10, LINECOLOR_GREEN);
-	    } //end if
-	} //end else*/
-//		BotImport_Print(PRT_MESSAGE, "travel time to goal = %d\n",
-//					AAS_AreaTravelTimeToGoalArea(area, origin, botlibglobals.goalareanum, TFL_DEFAULT));
-//		BotImport_Print(PRT_MESSAGE, "test rj from 703 to 716\n");
-//		AAS_Reachability_WeaponJump(703, 716);
-//	} //end if*/
-
-/*	face = AAS_AreaGroundFace(newarea, parm2);
-    if (face)
-    {
-        AAS_ShowFace(face - (*aasworld).faces);
-    } //end if*/
-	/*
-	AAS_ClearShownDebugLines();
-	AAS_ShowArea(newarea, parm0 & BUTTON_USE);
-	AAS_ShowReachableAreas(area);
-	//
-	*/
 	AAS_ClearShownPolygons();
 	AAS_ClearShownDebugLines();
 	AAS_ShowAreaPolygons(newarea, 1, parm0 & 4);
@@ -545,81 +498,6 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	eye[2] += 24;
 	//get the end point for the line to be traced
 	VectorMA(eye, 800, forward, end);
-
-//	AAS_TestMovementPrediction(1, parm2, forward);
-/*	//trace the line to find the hit point
-    trace = AAS_TraceClientBBox(eye, end, PRESENCE_NORMAL, 1);
-    if (!line[0]) line[0] = BotImport_DebugLineCreate();
-    BotImport_DebugLineShow(line[0], eye, trace.endpos, LINECOLOR_BLUE);
-    //
-    AAS_ClearShownDebugLines();
-    if (trace.ent)
-    {
-        ent = &(*aasworld).entities[trace.ent];
-        AAS_ShowBoundingBox(ent->origin, ent->mins, ent->maxs);
-    } //end if*/
-
-/*
-    start_time = clock();
-    for (i = 0; i < 2000; i++)
-    {
-        AAS_Trace2(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-//		AAS_TraceClientBBox(eye, end, PRESENCE_NORMAL, 1);
-    } //end for
-    end_time = clock();
-    BotImport_Print(PRT_MESSAGE, "me %lu clocks, %lu CLOCKS_PER_SEC\n", end_time - start_time, CLOCKS_PER_SEC);
-    start_time = clock();
-    for (i = 0; i < 2000; i++)
-    {
-        AAS_Trace(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-    } //end for
-    end_time = clock();
-    BotImport_Print(PRT_MESSAGE, "id %lu clocks, %lu CLOCKS_PER_SEC\n", end_time - start_time, CLOCKS_PER_SEC);
-//
-*/
-
-	/*
-	AAS_ClearShownDebugLines();
-	//bsptrace = AAS_Trace(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
-	bsptrace = AAS_Trace(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-	if (!line[0]) line[0] = BotImport_DebugLineCreate();
-	BotImport_DebugLineShow(line[0], eye, bsptrace.endpos, LINECOLOR_YELLOW);
-	if (bsptrace.fraction < 1.0)
-	{
-	    face = AAS_TraceEndFace(&trace);
-	    if (face)
-	    {
-	        AAS_ShowFace(face - (*aasworld).faces);
-	    } //end if*/
-	/*
-	AAS_DrawPlaneCross(bsptrace.endpos,
-	                            bsptrace.plane.normal,
-	                            bsptrace.plane.dist + bsptrace.exp_dist,
-	                            bsptrace.plane.type, LINECOLOR_GREEN);
-	if (trace.ent)
-	{
-	    ent = &(*aasworld).entities[trace.ent];
-	    AAS_ShowBoundingBox(ent->origin, ent->mins, ent->maxs);
-	} //end if* /
-	} //end if*/
-	/*/
-	//bsptrace = AAS_Trace2(eye, NULL, NULL, end, 1, MASK_PLAYERSOLID);
-	bsptrace = AAS_Trace2(eye, mins, maxs, end, 1, MASK_PLAYERSOLID);
-	BotImport_DebugLineShow(line[1], eye, bsptrace.endpos, LINECOLOR_BLUE);
-	if (bsptrace.fraction < 1.0)
-	{
-		AAS_DrawPlaneCross(bsptrace.endpos,
-			bsptrace.plane.normal,
-			bsptrace.plane.dist,						// + bsptrace.exp_dist,
-			bsptrace.plane.type, LINECOLOR_RED);
-		if (bsptrace.ent)
-		{
-			ent = &(*aasworld).entities[bsptrace.ent];
-			AAS_ShowBoundingBox(ent->origin, ent->mins, ent->maxs);
-		}	//end if* /
-	}	//end if*/
-
-	//*/
 #endif
 	return 0;
 }	//end of the function BotExportTest

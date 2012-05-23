@@ -232,14 +232,6 @@ int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalor
 			//it can very well happen that the AAS_PointAreaNum function tells that
 			//a point is in an area and that starting a AAS_TraceClientBBox from that
 			//point will return trace.startsolid qtrue
-			/*
-			if (AAS_PointAreaNum(start))
-			{
-			    Log_Write("point %f %f %f in area %d but trace startsolid", start[0], start[1], start[2], areanum);
-			    AAS_DrawPermanentCross(start, 4, LINECOLOR_RED);
-			} //end if
-			BotImport_Print(PRT_MESSAGE, "AAS_BestReachableArea: start solid\n");
-			*/
 			VectorCopy(start, goalorigin);
 			return areanum;
 		}	//end else
@@ -3764,7 +3756,6 @@ void AAS_Reachability_JumpPad(void)
 		}	//end else
 		areastart[2] += 0.125;
 		//
-		//AAS_DrawPermanentCross(origin, 4, 4);
 		//get the target entity
 		AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY);
 		for (ent2 = AAS_NextBSPEntity(0); ent2; ent2 = AAS_NextBSPEntity(ent2))
