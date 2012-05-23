@@ -152,30 +152,6 @@ int BotSetupWeaponAI();
 //shut down the weapon AI
 void BotShutdownWeaponAI();
 
-//escape character
-#define ESCAPE_CHAR             0x01	//'_'
-//
-// "hi ", people, " ", 0, " entered the game"
-//becomes:
-// "hi _rpeople_ _v0_ entered the game"
-//
-
-//match piece types
-#define MT_VARIABLE                 1		//variable match piece
-#define MT_STRING                   2		//string match piece
-//reply chat key flags
-#define RCKFL_AND                   1		//key must be present
-#define RCKFL_NOT                   2		//key must be absent
-#define RCKFL_NAME                  4		//name of bot must be present
-#define RCKFL_STRING                8		//key is a string
-#define RCKFL_VARIABLES             16		//key is a match template
-#define RCKFL_BOTNAMES              32		//key is a series of botnames
-#define RCKFL_GENDERFEMALE          64		//bot must be female
-#define RCKFL_GENDERMALE            128		//bot must be male
-#define RCKFL_GENDERLESS            256		//bot must be genderless
-//time to ignore a chat message after using it
-#define CHATMESSAGE_RECENTTIME  20
-
 #define MAX_MESSAGE_SIZE        256
 
 //the actuall chat messages
@@ -199,99 +175,6 @@ struct bot_chattype_t
 struct bot_chat_t
 {
 	bot_chattype_t* types;
-};
-
-//random string
-struct bot_randomstring_t
-{
-	char* string;
-	bot_randomstring_t* next;
-};
-
-//list with random strings
-struct bot_randomlist_t
-{
-	char* string;
-	int numstrings;
-	bot_randomstring_t* firstrandomstring;
-	bot_randomlist_t* next;
-};
-
-//synonym
-struct bot_synonym_t
-{
-	char* string;
-	float weight;
-	bot_synonym_t* next;
-};
-
-//list with synonyms
-struct bot_synonymlist_t
-{
-	unsigned int context;
-	float totalweight;
-	bot_synonym_t* firstsynonym;
-	bot_synonymlist_t* next;
-};
-
-//fixed match string
-struct bot_matchstring_t
-{
-	char* string;
-	bot_matchstring_t* next;
-};
-
-//piece of a match template
-struct bot_matchpiece_t
-{
-	int type;
-	bot_matchstring_t* firststring;
-	int variable;
-	bot_matchpiece_t* next;
-};
-
-//match template
-struct bot_matchtemplate_t
-{
-	unsigned int context;
-	int type;
-	int subtype;
-	bot_matchpiece_t* first;
-	bot_matchtemplate_t* next;
-};
-
-//reply chat key
-struct bot_replychatkey_t
-{
-	int flags;
-	char* string;
-	bot_matchpiece_t* match;
-	bot_replychatkey_t* next;
-};
-
-//reply chat
-struct bot_replychat_t
-{
-	bot_replychatkey_t* keys;
-	float priority;
-	int numchatmessages;
-	bot_chatmessage_t* firstchatmessage;
-	bot_replychat_t* next;
-};
-
-//string list
-struct bot_stringlist_t
-{
-	char* string;
-	bot_stringlist_t* next;
-};
-
-
-struct bot_ichatdata_t
-{
-	bot_chat_t* chat;
-	char filename[MAX_QPATH];
-	char chatname[MAX_QPATH];
 };
 
 struct bot_consolemessage_t
@@ -320,40 +203,9 @@ struct bot_chatstate_t
 	bot_chat_t* chat;
 };
 
-struct bot_matchvariable_t
-{
-	const char* ptr;
-	int length;
-};
-
-struct bot_match_t
-{
-	char string[MAX_MESSAGE_SIZE];
-	int type;
-	int subtype;
-	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
-};
-
-extern bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
-extern bot_consolemessage_t* consolemessageheap;
-extern bot_matchtemplate_t* matchtemplates;
-extern bot_synonymlist_t* synonyms;
-extern bot_randomlist_t* randomstrings;
-extern bot_replychat_t* replychats;
-extern bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
-
 bot_chatstate_t* BotChatStateFromHandle(int handle);
-void InitConsoleMessageHeap();
-void FreeConsoleMessage(bot_consolemessage_t* message);
 void BotRemoveTildes(char* message);
-bot_synonymlist_t* BotLoadSynonyms(const char* filename);
-bot_randomlist_t* BotLoadRandomStrings(const char* filename);
-void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
-bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken);
-void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
-bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile);
-bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match);
-void BotFreeReplyChat(bot_replychat_t* replychat);
-bot_replychat_t* BotLoadReplyChat(const char* filename);
-void BotFreeChatFile(int chatstate);
-const char* BotChooseInitialChatMessage(bot_chatstate_t* cs, const char* type);
+//setup the chat AI
+int BotSetupChatAI();
+//shutdown the chat AI
+void BotShutdownChatAI();

@@ -17,19 +17,149 @@
 #include "../server.h"
 #include "local.h"
 
-bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
+//escape character
+#define ESCAPE_CHAR             0x01	//'_'
+//
+// "hi ", people, " ", 0, " entered the game"
+//becomes:
+// "hi _rpeople_ _v0_ entered the game"
+//
+
+//match piece types
+#define MT_VARIABLE                 1		//variable match piece
+#define MT_STRING                   2		//string match piece
+//reply chat key flags
+#define RCKFL_AND                   1		//key must be present
+#define RCKFL_NOT                   2		//key must be absent
+#define RCKFL_NAME                  4		//name of bot must be present
+#define RCKFL_STRING                8		//key is a string
+#define RCKFL_VARIABLES             16		//key is a match template
+#define RCKFL_BOTNAMES              32		//key is a series of botnames
+#define RCKFL_GENDERFEMALE          64		//bot must be female
+#define RCKFL_GENDERMALE            128		//bot must be male
+#define RCKFL_GENDERLESS            256		//bot must be genderless
+//time to ignore a chat message after using it
+#define CHATMESSAGE_RECENTTIME  20
+
+//random string
+struct bot_randomstring_t
+{
+	char* string;
+	bot_randomstring_t* next;
+};
+
+//list with random strings
+struct bot_randomlist_t
+{
+	char* string;
+	int numstrings;
+	bot_randomstring_t* firstrandomstring;
+	bot_randomlist_t* next;
+};
+
+//synonym
+struct bot_synonym_t
+{
+	char* string;
+	float weight;
+	bot_synonym_t* next;
+};
+
+//list with synonyms
+struct bot_synonymlist_t
+{
+	unsigned int context;
+	float totalweight;
+	bot_synonym_t* firstsynonym;
+	bot_synonymlist_t* next;
+};
+
+//fixed match string
+struct bot_matchstring_t
+{
+	char* string;
+	bot_matchstring_t* next;
+};
+
+//piece of a match template
+struct bot_matchpiece_t
+{
+	int type;
+	bot_matchstring_t* firststring;
+	int variable;
+	bot_matchpiece_t* next;
+};
+
+//match template
+struct bot_matchtemplate_t
+{
+	unsigned int context;
+	int type;
+	int subtype;
+	bot_matchpiece_t* first;
+	bot_matchtemplate_t* next;
+};
+
+//reply chat key
+struct bot_replychatkey_t
+{
+	int flags;
+	char* string;
+	bot_matchpiece_t* match;
+	bot_replychatkey_t* next;
+};
+
+//reply chat
+struct bot_replychat_t
+{
+	bot_replychatkey_t* keys;
+	float priority;
+	int numchatmessages;
+	bot_chatmessage_t* firstchatmessage;
+	bot_replychat_t* next;
+};
+
+//string list
+struct bot_stringlist_t
+{
+	char* string;
+	bot_stringlist_t* next;
+};
+
+struct bot_ichatdata_t
+{
+	bot_chat_t* chat;
+	char filename[MAX_QPATH];
+	char chatname[MAX_QPATH];
+};
+
+struct bot_matchvariable_t
+{
+	const char* ptr;
+	int length;
+};
+
+struct bot_match_t
+{
+	char string[MAX_MESSAGE_SIZE];
+	int type;
+	int subtype;
+	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
+};
+
+static bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 //console message heap
-bot_consolemessage_t* consolemessageheap = NULL;
+static bot_consolemessage_t* consolemessageheap = NULL;
 static bot_consolemessage_t* freeconsolemessages = NULL;
 //list with match strings
-bot_matchtemplate_t* matchtemplates = NULL;
+static bot_matchtemplate_t* matchtemplates = NULL;
 //list with synonyms
-bot_synonymlist_t* synonyms = NULL;
+static bot_synonymlist_t* synonyms = NULL;
 //list with random strings
-bot_randomlist_t* randomstrings = NULL;
+static bot_randomlist_t* randomstrings = NULL;
 //reply chats
-bot_replychat_t* replychats = NULL;
-bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
+static bot_replychat_t* replychats = NULL;
+static bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
 
 bot_chatstate_t* BotChatStateFromHandle(int handle)
 {
@@ -47,7 +177,7 @@ bot_chatstate_t* BotChatStateFromHandle(int handle)
 }
 
 // initialize the heap with unused console messages
-void InitConsoleMessageHeap()
+static void InitConsoleMessageHeap()
 {
 	int i, max_messages;
 
@@ -89,7 +219,7 @@ static bot_consolemessage_t* AllocConsoleMessage()
 }
 
 // deallocate one console message from the heap
-void FreeConsoleMessage(bot_consolemessage_t* message)
+static void FreeConsoleMessage(bot_consolemessage_t* message)
 {
 	if (freeconsolemessages)
 	{
@@ -403,7 +533,7 @@ static void StringReplaceWords(char* string, const char* synonym, const char* re
 	}
 }
 
-bot_synonymlist_t* BotLoadSynonyms(const char* filename)
+static bot_synonymlist_t* BotLoadSynonyms(const char* filename)
 {
 	char* ptr = NULL;
 	int size = 0;
@@ -754,7 +884,7 @@ static int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 	return true;
 }
 
-bot_randomlist_t* BotLoadRandomStrings(const char* filename)
+static bot_randomlist_t* BotLoadRandomStrings(const char* filename)
 {
 #ifdef DEBUG
 	int starttime = Sys_Milliseconds();
@@ -883,7 +1013,7 @@ static char* RandomString(const char* name)
 	return NULL;
 }
 
-void BotFreeMatchPieces(bot_matchpiece_t* matchpieces)
+static void BotFreeMatchPieces(bot_matchpiece_t* matchpieces)
 {
 	bot_matchpiece_t* nextmp;
 	for (bot_matchpiece_t* mp = matchpieces; mp; mp = nextmp)
@@ -902,7 +1032,7 @@ void BotFreeMatchPieces(bot_matchpiece_t* matchpieces)
 	}
 }
 
-bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken)
+static bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken)
 {
 	bot_matchpiece_t* firstpiece = NULL;
 	bot_matchpiece_t* lastpiece = NULL;
@@ -1022,7 +1152,7 @@ bot_matchpiece_t* BotLoadMatchPieces(source_t* source, const char* endtoken)
 	return firstpiece;
 }
 
-void BotFreeMatchTemplates(bot_matchtemplate_t* mt)
+static void BotFreeMatchTemplates(bot_matchtemplate_t* mt)
 {
 	bot_matchtemplate_t* nextmt;
 	for (; mt; mt = nextmt)
@@ -1033,7 +1163,7 @@ void BotFreeMatchTemplates(bot_matchtemplate_t* mt)
 	}
 }
 
-bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
+static bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 {
 	if (GGameType & GAME_Quake3)
 	{
@@ -1132,7 +1262,7 @@ bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile)
 	return matches;
 }
 
-bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
+static bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match)
 {
 	//no last variable
 	int lastvariable = -1;
@@ -1447,7 +1577,7 @@ static void BotCheckReplyChatIntegrety(bot_replychat_t* replychat)
 	}
 }
 
-void BotFreeReplyChat(bot_replychat_t* replychat)
+static void BotFreeReplyChat(bot_replychat_t* replychat)
 {
 	bot_replychat_t* nextrp;
 	for (bot_replychat_t* rp = replychat; rp; rp = nextrp)
@@ -1597,7 +1727,7 @@ static void BotCheckValidReplyChatKeySet(source_t* source, bot_replychatkey_t* k
 	}
 }
 
-bot_replychat_t* BotLoadReplyChat(const char* filename)
+static bot_replychat_t* BotLoadReplyChat(const char* filename)
 {
 	if (GGameType & GAME_Quake3)
 	{
@@ -1952,7 +2082,7 @@ static bot_chat_t* BotLoadInitialChat(const char* chatfile, const char* chatname
 	return chat;
 }
 
-void BotFreeChatFile(int chatstate)
+static void BotFreeChatFile(int chatstate)
 {
 	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
 	if (!cs)
@@ -2177,7 +2307,7 @@ static void BotConstructChatMessage(bot_chatstate_t* chatstate, const char* mess
 }
 
 // randomly chooses one of the chat message of the given type
-const char* BotChooseInitialChatMessage(bot_chatstate_t* cs, const char* type)
+static const char* BotChooseInitialChatMessage(bot_chatstate_t* cs, const char* type)
 {
 	bot_chat_t* chat = cs->chat;
 	for (bot_chattype_t* t = chat->types; t; t = t->next)
@@ -2499,4 +2629,190 @@ bool BotReplyChat(int chatstate, const char* message, int mcontext, int vcontext
 		return true;
 	}
 	return false;
+}
+
+int BotChatLength(int chatstate)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return 0;
+	}
+	return String::Length(cs->chatmessage);
+}
+
+void BotGetChatMessage(int chatstate, char* buf, int size)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+
+	BotRemoveTildes(cs->chatmessage);
+	String::NCpy(buf, cs->chatmessage, size - 1);
+	buf[size - 1] = '\0';
+	//clear the chat message from the state
+	String::Cpy(cs->chatmessage, "");
+}
+
+void BotSetChatGender(int chatstate, int gender)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+	switch (gender)
+	{
+	case CHAT_GENDERFEMALE: cs->gender = CHAT_GENDERFEMALE; break;
+	case CHAT_GENDERMALE: cs->gender = CHAT_GENDERMALE; break;
+	default: cs->gender = CHAT_GENDERLESS; break;
+	}
+}
+
+void BotSetChatName(int chatstate, const char* name, int client)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+	cs->client = client;
+	Com_Memset(cs->name, 0, sizeof(cs->name));
+	String::NCpyZ(cs->name, name, sizeof(cs->name));
+}
+
+int BotAllocChatState()
+{
+	for (int i = 1; i <= MAX_BOTLIB_CLIENTS; i++)
+	{
+		if (!botchatstates[i])
+		{
+			botchatstates[i] = (bot_chatstate_t*)Mem_ClearedAlloc(sizeof(bot_chatstate_t));
+			return i;
+		}
+	}
+	return 0;
+}
+
+void BotFreeChatState(int handle)
+{
+	if (handle <= 0 || handle > MAX_BOTLIB_CLIENTS)
+	{
+		BotImport_Print(PRT_FATAL, "chat state handle %d out of range\n", handle);
+		return;
+	}
+	if (!botchatstates[handle])
+	{
+		BotImport_Print(PRT_FATAL, "invalid chat state %d\n", handle);
+		return;
+	}
+	if (LibVarGetValue("bot_reloadcharacters"))
+	{
+		BotFreeChatFile(handle);
+	}
+	//free all the console messages left in the chat state
+	if (GGameType & GAME_Quake3)
+	{
+		bot_consolemessage_q3_t m;
+		for (int h = BotNextConsoleMessageQ3(handle, &m); h; h = BotNextConsoleMessageQ3(handle, &m))
+		{
+			//remove the console message
+			BotRemoveConsoleMessage(handle, h);
+		}
+	}
+	else
+	{
+		bot_consolemessage_wolf_t m;
+		for (int h = BotNextConsoleMessageWolf(handle, &m); h; h = BotNextConsoleMessageWolf(handle, &m))
+		{
+			//remove the console message
+			BotRemoveConsoleMessage(handle, h);
+		}
+	}
+	Mem_Free(botchatstates[handle]);
+	botchatstates[handle] = NULL;
+}
+
+int BotSetupChatAI()
+{
+#ifdef DEBUG
+	int starttime = Sys_Milliseconds();
+#endif
+
+	if (GGameType & GAME_ET)
+	{
+		PS_SetBaseFolder(BOTFILESBASEFOLDER);
+	}
+	const char* file = LibVarString("synfile", "syn.c");
+	synonyms = BotLoadSynonyms(file);
+	file = LibVarString("rndfile", "rnd.c");
+	randomstrings = BotLoadRandomStrings(file);
+	file = LibVarString("matchfile", "match.c");
+	matchtemplates = BotLoadMatchTemplates(file);
+
+	if (!LibVarValue("nochat", "0"))
+	{
+		file = LibVarString("rchatfile", "rchat.c");
+		replychats = BotLoadReplyChat(file);
+	}
+	if (GGameType & GAME_ET)
+	{
+		PS_SetBaseFolder("");
+	}
+
+	InitConsoleMessageHeap();
+
+#ifdef DEBUG
+	BotImport_Print(PRT_MESSAGE, "setup chat AI %d msec\n", Sys_Milliseconds() - starttime);
+#endif
+	return BLERR_NOERROR;
+}
+
+void BotShutdownChatAI()
+{
+	//free all remaining chat states
+	for (int i = 0; i < MAX_BOTLIB_CLIENTS; i++)
+	{
+		if (botchatstates[i])
+		{
+			BotFreeChatState(i);
+		}
+	}
+	//free all cached chats
+	for (int i = 0; i < MAX_BOTLIB_CLIENTS; i++)
+	{
+		if (ichatdata[i])
+		{
+			Mem_Free(ichatdata[i]->chat);
+			Mem_Free(ichatdata[i]);
+			ichatdata[i] = NULL;
+		}
+	}
+	if (consolemessageheap)
+	{
+		Mem_Free(consolemessageheap);
+	}
+	consolemessageheap = NULL;
+	if (matchtemplates)
+	{
+		BotFreeMatchTemplates(matchtemplates);
+	}
+	matchtemplates = NULL;
+	if (randomstrings)
+	{
+		Mem_Free(randomstrings);
+	}
+	randomstrings = NULL;
+	if (synonyms)
+	{
+		Mem_Free(synonyms);
+	}
+	synonyms = NULL;
+	if (replychats)
+	{
+		BotFreeReplyChat(replychats);
+	}
+	replychats = NULL;
 }

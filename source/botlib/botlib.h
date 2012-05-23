@@ -248,13 +248,7 @@ typedef struct ai_export_s
 	//-----------------------------------
 	// be_ai_chat.h
 	//-----------------------------------
-	int (* BotAllocChatState)(void);
-	void (* BotFreeChatState)(int handle);
-	int (* BotChatLength)(int chatstate);
 	void (* BotEnterChat)(int chatstate, int client, int sendto);
-	void (* BotGetChatMessage)(int chatstate, char* buf, int size);
-	void (* BotSetChatGender)(int chatstate, int gender);
-	void (* BotSetChatName)(int chatstate, char* name, int client);
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------

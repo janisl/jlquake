@@ -707,9 +707,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AI_ALLOC_CHAT_STATE:
-		return botlib_export->ai.BotAllocChatState();
+		return BotAllocChatState();
 	case BOTLIB_AI_FREE_CHAT_STATE:
-		botlib_export->ai.BotFreeChatState(args[1]);
+		BotFreeChatState(args[1]);
 		return 0;
 	case BOTLIB_AI_QUEUE_CONSOLE_MESSAGE:
 		BotQueueConsoleMessage(args[1], args[2], (char*)VMA(3));
@@ -729,12 +729,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_REPLY_CHAT:
 		return BotReplyChat(args[1], (char*)VMA(2), args[3], args[4], (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11), (char*)VMA(12));
 	case BOTLIB_AI_CHAT_LENGTH:
-		return botlib_export->ai.BotChatLength(args[1]);
+		return BotChatLength(args[1]);
 	case BOTLIB_AI_ENTER_CHAT:
 		botlib_export->ai.BotEnterChat(args[1], args[2], args[3]);
 		return 0;
 	case BOTLIB_AI_GET_CHAT_MESSAGE:
-		botlib_export->ai.BotGetChatMessage(args[1], (char*)VMA(2), args[3]);
+		BotGetChatMessage(args[1], (char*)VMA(2), args[3]);
 		return 0;
 	case BOTLIB_AI_STRING_CONTAINS:
 		return StringContains((char*)VMA(1), (char*)VMA(2), args[3]);
@@ -752,10 +752,10 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_LOAD_CHAT_FILE:
 		return BotLoadChatFile(args[1], (char*)VMA(2), (char*)VMA(3));
 	case BOTLIB_AI_SET_CHAT_GENDER:
-		botlib_export->ai.BotSetChatGender(args[1], args[2]);
+		BotSetChatGender(args[1], args[2]);
 		return 0;
 	case BOTLIB_AI_SET_CHAT_NAME:
-		botlib_export->ai.BotSetChatName(args[1], (char*)VMA(2));
+		BotSetChatName(args[1], (char*)VMA(2), 0);
 		return 0;
 
 	case BOTLIB_AI_RESET_GOAL_STATE:

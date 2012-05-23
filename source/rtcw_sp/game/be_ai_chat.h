@@ -35,21 +35,5 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//setup the chat AI
-int BotSetupChatAI(void);
-//shutdown the chat AI
-void BotShutdownChatAI(void);
-//returns the handle to a newly allocated chat state
-int BotAllocChatState(void);
-//frees the chatstate
-void BotFreeChatState(int handle);
-//returns the length of the currently selected chat message
-int BotChatLength(int chatstate);
 //enters the selected chat message
 void BotEnterChat(int chatstate, int client, int sendto);
-//get the chat message ready to be output
-void BotGetChatMessage(int chatstate, char* buf, int size);
-//store the gender of the bot in the chat state
-void BotSetChatGender(int chatstate, int gender);
-//store the bot name in the chat state
-void BotSetChatName(int chatstate, char* name);

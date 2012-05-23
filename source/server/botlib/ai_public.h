@@ -297,3 +297,15 @@ void BotInitialChat(int chatstate, const char* type, int mcontext,
 bool BotReplyChat(int chatstate, const char* message, int mcontext, int vcontext,
 	const char* var0, const char* var1, const char* var2, const char* var3,
 	const char* var4, const char* var5, const char* var6, const char* var7);
+//returns the length of the currently selected chat message
+int BotChatLength(int chatstate);
+//get the chat message ready to be output
+void BotGetChatMessage(int chatstate, char* buf, int size);
+//store the gender of the bot in the chat state
+void BotSetChatGender(int chatstate, int gender);
+//store the bot name in the chat state
+void BotSetChatName(int chatstate, const char* name, int client);
+//returns the handle to a newly allocated chat state
+int BotAllocChatState();
+//frees the chatstate
+void BotFreeChatState(int handle);

@@ -743,13 +743,7 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	// be_ai_chat.h
 	//-----------------------------------
-	ai->BotAllocChatState = BotAllocChatState;
-	ai->BotFreeChatState = BotFreeChatState;
-	ai->BotChatLength = BotChatLength;
 	ai->BotEnterChat = BotEnterChat;
-	ai->BotGetChatMessage = BotGetChatMessage;
-	ai->BotSetChatGender = BotSetChatGender;
-	ai->BotSetChatName = BotSetChatName;
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
