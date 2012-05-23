@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Changes Globals:		-
 //===========================================================================
 int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext,
-	bot_match_q3_t* match, unsigned long vcontext, int reply)
+	bot_match_t* match, unsigned long vcontext, int reply)
 {
 	int num, len, i, expansion;
 	char* outputbuf, * ptr, * msgptr;
@@ -78,10 +78,9 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 					BotImport_Print(PRT_ERROR, "BotConstructChat: message %s variable %d out of range\n", message, num);
 					return false;
 				}		//end if
-				if (match->variables[num].offset >= 0)
+				if (match->variables[num].ptr)
 				{
-					qassert(match->variables[num].offset >= 0);				// bk001204
-					ptr = &match->string[(int)match->variables[num].offset];
+					ptr = match->variables[num].ptr;
 					for (i = 0; i < match->variables[num].length; i++)
 					{
 						temp[i] = ptr[i];
@@ -169,7 +168,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 // Changes Globals:		-
 //===========================================================================
 void BotConstructChatMessage(bot_chatstate_t* chatstate, char* message, unsigned long mcontext,
-	bot_match_q3_t* match, unsigned long vcontext, int reply)
+	bot_match_t* match, unsigned long vcontext, int reply)
 {
 	int i;
 	char srcmessage[MAX_MESSAGE_SIZE_Q3];
@@ -298,7 +297,7 @@ void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* v
 {
 	char* message;
 	int index;
-	bot_match_q3_t match;
+	bot_match_t match;
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -327,56 +326,56 @@ void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* v
 	if (var0)
 	{
 		String::Cat(match.string, sizeof(match.string), var0);
-		match.variables[0].offset = index;
+		match.variables[0].ptr = match.string + index;
 		match.variables[0].length = String::Length(var0);
 		index += String::Length(var0);
 	}
 	if (var1)
 	{
 		String::Cat(match.string, sizeof(match.string), var1);
-		match.variables[1].offset = index;
+		match.variables[1].ptr = match.string + index;
 		match.variables[1].length = String::Length(var1);
 		index += String::Length(var1);
 	}
 	if (var2)
 	{
 		String::Cat(match.string, sizeof(match.string), var2);
-		match.variables[2].offset = index;
+		match.variables[2].ptr = match.string + index;
 		match.variables[2].length = String::Length(var2);
 		index += String::Length(var2);
 	}
 	if (var3)
 	{
 		String::Cat(match.string, sizeof(match.string), var3);
-		match.variables[3].offset = index;
+		match.variables[3].ptr = match.string + index;
 		match.variables[3].length = String::Length(var3);
 		index += String::Length(var3);
 	}
 	if (var4)
 	{
 		String::Cat(match.string, sizeof(match.string), var4);
-		match.variables[4].offset = index;
+		match.variables[4].ptr = match.string + index;
 		match.variables[4].length = String::Length(var4);
 		index += String::Length(var4);
 	}
 	if (var5)
 	{
 		String::Cat(match.string, sizeof(match.string), var5);
-		match.variables[5].offset = index;
+		match.variables[5].ptr = match.string + index;
 		match.variables[5].length = String::Length(var5);
 		index += String::Length(var5);
 	}
 	if (var6)
 	{
 		String::Cat(match.string, sizeof(match.string), var6);
-		match.variables[6].offset = index;
+		match.variables[6].ptr = match.string + index;
 		match.variables[6].length = String::Length(var6);
 		index += String::Length(var6);
 	}
 	if (var7)
 	{
 		String::Cat(match.string, sizeof(match.string), var7);
-		match.variables[7].offset = index;
+		match.variables[7].ptr = match.string + index;
 		match.variables[7].length = String::Length(var7);
 		index += String::Length(var7);
 	}
@@ -468,7 +467,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	bot_replychat_t* rchat, * bestrchat;
 	bot_replychatkey_t* key;
 	bot_chatmessage_t* m, * bestchatmessage;
-	bot_match_q3_t match, bestmatch;
+	bot_match_t match, bestmatch;
 	int bestpriority, num, found, res, numchatmessages, index;
 	bot_chatstate_t* cs;
 
@@ -477,7 +476,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	{
 		return false;
 	}
-	Com_Memset(&match, 0, sizeof(bot_match_q3_t));
+	Com_Memset(&match, 0, sizeof(bot_match_t));
 	String::Cpy(match.string, message);
 	bestpriority = -1;
 	bestchatmessage = NULL;
@@ -512,10 +511,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 			}
 			else if (key->flags & RCKFL_VARIABLES)
 			{
-				bot_match_t imatch;
-				MatchQ3ToInt(&match, &imatch);
-				res = StringsMatch(key->match, &imatch);
-				MatchIntToQ3(&imatch, &match);
+				res = StringsMatch(key->match, &match);
 			}
 			else if (key->flags & RCKFL_STRING)
 			{
@@ -573,7 +569,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 					//if the reply chat has a message
 				if (m)
 				{
-					Com_Memcpy(&bestmatch, &match, sizeof(bot_match_q3_t));
+					Com_Memcpy(&bestmatch, &match, sizeof(bot_match_t));
 					bestchatmessage = m;
 					bestrchat = rchat;
 					bestpriority = rchat->priority;
@@ -587,56 +583,56 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 		if (var0)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var0);
-			bestmatch.variables[0].offset = index;
+			bestmatch.variables[0].ptr = bestmatch.string + index;
 			bestmatch.variables[0].length = String::Length(var0);
 			index += String::Length(var0);
 		}
 		if (var1)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var1);
-			bestmatch.variables[1].offset = index;
+			bestmatch.variables[1].ptr = bestmatch.string + index;
 			bestmatch.variables[1].length = String::Length(var1);
 			index += String::Length(var1);
 		}
 		if (var2)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var2);
-			bestmatch.variables[2].offset = index;
+			bestmatch.variables[2].ptr = bestmatch.string + index;
 			bestmatch.variables[2].length = String::Length(var2);
 			index += String::Length(var2);
 		}
 		if (var3)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var3);
-			bestmatch.variables[3].offset = index;
+			bestmatch.variables[3].ptr = bestmatch.string + index;
 			bestmatch.variables[3].length = String::Length(var3);
 			index += String::Length(var3);
 		}
 		if (var4)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var4);
-			bestmatch.variables[4].offset = index;
+			bestmatch.variables[4].ptr = bestmatch.string + index;
 			bestmatch.variables[4].length = String::Length(var4);
 			index += String::Length(var4);
 		}
 		if (var5)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var5);
-			bestmatch.variables[5].offset = index;
+			bestmatch.variables[5].ptr = bestmatch.string + index;
 			bestmatch.variables[5].length = String::Length(var5);
 			index += String::Length(var5);
 		}
 		if (var6)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var6);
-			bestmatch.variables[6].offset = index;
+			bestmatch.variables[6].ptr = bestmatch.string + index;
 			bestmatch.variables[6].length = String::Length(var6);
 			index += String::Length(var6);
 		}
 		if (var7)
 		{
 			String::Cat(bestmatch.string, sizeof(bestmatch.string), var7);
-			bestmatch.variables[7].offset = index;
+			bestmatch.variables[7].ptr = bestmatch.string + index;
 			bestmatch.variables[7].length = String::Length(var7);
 			index += String::Length(var7);
 		}

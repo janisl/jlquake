@@ -1232,6 +1232,30 @@ static bool BotFindMatch(const char* str, bot_match_t* match, unsigned int conte
 	return false;
 }
 
+static void MatchIntToQ3(bot_match_t* src, bot_match_q3_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].offset = src->variables[i].ptr ? src->variables[i].ptr - src->string : -1;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
+static void MatchIntToWolf(bot_match_t* src, bot_match_wolf_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
 bool BotFindMatchQ3(const char* str, bot_match_q3_t* match, unsigned int context)
 {
 	bot_match_t intMatch;
@@ -1270,6 +1294,30 @@ static void BotMatchVariable(bot_match_t* match, int variable, char* buf, int si
 		String::Cpy(buf, "");
 	}
 	return;
+}
+
+static void MatchQ3ToInt(bot_match_q3_t* src, bot_match_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].offset >= 0 ? dst->string + src->variables[i].offset: NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
+}
+
+static void MatchWolfToInt(bot_match_wolf_t* src, bot_match_t* dst)
+{
+	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
+	dst->type = src->type;
+	dst->subtype = src->subtype;
+	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
+	{
+		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
+		dst->variables[i].length = src->variables[i].length;
+	}
 }
 
 void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size)
@@ -1986,52 +2034,4 @@ int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname)
 	}	//end if
 
 	return BLERR_NOERROR;
-}
-
-void MatchIntToQ3(bot_match_t* src, bot_match_q3_t* dst)
-{
-	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
-	dst->type = src->type;
-	dst->subtype = src->subtype;
-	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
-	{
-		dst->variables[i].offset = src->variables[i].ptr ? src->variables[i].ptr - src->string : -1;
-		dst->variables[i].length = src->variables[i].length;
-	}
-}
-
-void MatchIntToWolf(bot_match_t* src, bot_match_wolf_t* dst)
-{
-	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
-	dst->type = src->type;
-	dst->subtype = src->subtype;
-	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
-	{
-		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
-		dst->variables[i].length = src->variables[i].length;
-	}
-}
-
-void MatchQ3ToInt(bot_match_q3_t* src, bot_match_t* dst)
-{
-	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
-	dst->type = src->type;
-	dst->subtype = src->subtype;
-	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
-	{
-		dst->variables[i].ptr = src->variables[i].offset >= 0 ? dst->string + src->variables[i].offset: NULL;
-		dst->variables[i].length = src->variables[i].length;
-	}
-}
-
-void MatchWolfToInt(bot_match_wolf_t* src, bot_match_t* dst)
-{
-	String::NCpyZ(dst->string, src->string, sizeof(dst->string));
-	dst->type = src->type;
-	dst->subtype = src->subtype;
-	for (int i = 0; i < MAX_MATCHVARIABLES; i++)
-	{
-		dst->variables[i].ptr = src->variables[i].ptr ? dst->string + (src->variables[i].ptr - src->string) : NULL;
-		dst->variables[i].length = src->variables[i].length;
-	}
 }

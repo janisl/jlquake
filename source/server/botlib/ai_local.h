@@ -360,7 +360,3 @@ bool StringsMatch(bot_matchpiece_t* pieces, bot_match_t* match);
 void BotFreeReplyChat(bot_replychat_t* replychat);
 bot_replychat_t* BotLoadReplyChat(const char* filename);
 void BotFreeChatFile(int chatstate);
-void MatchIntToQ3(bot_match_t* src, bot_match_q3_t* dst);
-void MatchIntToWolf(bot_match_t* src, bot_match_wolf_t* dst);
-void MatchQ3ToInt(bot_match_q3_t* src, bot_match_t* dst);
-void MatchWolfToInt(bot_match_wolf_t* src, bot_match_t* dst);

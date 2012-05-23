@@ -49,7 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 // Changes Globals:		-
 //===========================================================================
 int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext,
-	bot_matchvariable_wolf_t* variables, unsigned long vcontext, int reply)
+	bot_matchvariable_t* variables, unsigned long vcontext, int reply)
 {
 	int num, len, i, expansion;
 	char* outputbuf, * ptr, * msgptr;
@@ -175,7 +175,7 @@ int BotExpandChatMessage(char* outmessage, char* message, unsigned long mcontext
 // Changes Globals:		-
 //===========================================================================
 void BotConstructChatMessage(bot_chatstate_t* chatstate, char* message, unsigned long mcontext,
-	bot_matchvariable_wolf_t* variables, unsigned long vcontext, int reply)
+	bot_matchvariable_t* variables, unsigned long vcontext, int reply)
 {
 	int i;
 	char srcmessage[MAX_MESSAGE_SIZE_WOLF];
@@ -303,7 +303,7 @@ int BotNumInitialChats(int chatstate, char* type)
 void BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7)
 {
 	char* message;
-	bot_matchvariable_wolf_t variables[MAX_MATCHVARIABLES];
+	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
 	bot_chatstate_t* cs;
 
 	cs = BotChatStateFromHandle(chatstate);
@@ -456,7 +456,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	bot_replychat_t* rchat, * bestrchat;
 	bot_replychatkey_t* key;
 	bot_chatmessage_t* m, * bestchatmessage;
-	bot_match_wolf_t match, bestmatch;
+	bot_match_t match, bestmatch;
 	int bestpriority, num, found, res, numchatmessages;
 	bot_chatstate_t* cs;
 
@@ -465,7 +465,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 	{
 		return qfalse;
 	}
-	memset(&match, 0, sizeof(bot_match_wolf_t));
+	memset(&match, 0, sizeof(bot_match_t));
 	String::Cpy(match.string, message);
 	bestpriority = -1;
 	bestchatmessage = NULL;
@@ -500,10 +500,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 			}
 			else if (key->flags & RCKFL_VARIABLES)
 			{
-				bot_match_t imatch;
-				MatchWolfToInt(&match, &imatch);
-				res = StringsMatch(key->match, &imatch);
-				MatchIntToWolf(&imatch, &match);
+				res = StringsMatch(key->match, &match);
 			}
 			else if (key->flags & RCKFL_STRING)
 			{
@@ -563,7 +560,7 @@ int BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char*
 					//if the reply chat has a message
 				if (m)
 				{
-					memcpy(&bestmatch, &match, sizeof(bot_match_wolf_t));
+					memcpy(&bestmatch, &match, sizeof(bot_match_t));
 					bestchatmessage = m;
 					bestrchat = rchat;
 					bestpriority = rchat->priority;

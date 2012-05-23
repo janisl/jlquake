@@ -39,8 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct bot_consolemessage_wolf_t;
-struct bot_match_wolf_t;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 
