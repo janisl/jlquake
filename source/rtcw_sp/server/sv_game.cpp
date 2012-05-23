@@ -750,7 +750,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		BotReplaceSynonyms((char*)VMA(1), args[2]);
 		return 0;
 	case BOTLIB_AI_LOAD_CHAT_FILE:
-		return botlib_export->ai.BotLoadChatFile(args[1], (char*)VMA(2), (char*)VMA(3));
+		return BotLoadChatFile(args[1], (char*)VMA(2), (char*)VMA(3));
 	case BOTLIB_AI_SET_CHAT_GENDER:
 		botlib_export->ai.BotSetChatGender(args[1], args[2]);
 		return 0;

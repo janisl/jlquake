@@ -55,8 +55,6 @@ int BotChatLength(int chatstate);
 void BotEnterChat(int chatstate, int client, int sendto);
 //get the chat message ready to be output
 void BotGetChatMessage(int chatstate, char* buf, int size);
-//loads a chat file for the chat state
-int BotLoadChatFile(int chatstate, char* chatfile, char* chatname);
 //store the gender of the bot in the chat state
 void BotSetChatGender(int chatstate, int gender);
 //store the bot name in the chat state

@@ -737,7 +737,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	ai->BotChatLength = BotChatLength;
 	ai->BotEnterChat = BotEnterChat;
 	ai->BotGetChatMessage = BotGetChatMessage;
-	ai->BotLoadChatFile = BotLoadChatFile;
 	ai->BotSetChatGender = BotSetChatGender;
 	ai->BotSetChatName = BotSetChatName;
 	//-----------------------------------

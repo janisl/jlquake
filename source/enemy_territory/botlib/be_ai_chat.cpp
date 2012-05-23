@@ -36,290 +36,12 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #include "../game/q_shared.h"
-//#include "../server/server.h"
-#include "l_memory.h"
-#include "l_utils.h"
 #include "../game/botlib.h"
-#include "../game/be_aas.h"
-#include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "../game/be_ea.h"
 #include "../game/be_ai_chat.h"
 
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-bot_chat_t* BotLoadInitialChat(char* chatfile, char* chatname)
-{
-	int pass, foundchat, indent, size;
-	char* ptr = NULL;
-	char chatmessagestring[MAX_MESSAGE_SIZE_WOLF];
-	source_t* source;
-	token_t token;
-	bot_chat_t* chat = NULL;
-	bot_chattype_t* chattype = NULL;
-	bot_chatmessage_t* chatmessage = NULL;
-#ifdef DEBUG
-	int starttime;
-
-	starttime = Sys_Milliseconds();
-#endif	//DEBUG
-		//
-	size = 0;
-	foundchat = qfalse;
-	//a bot chat is parsed in two phases
-	for (pass = 0; pass < 2; pass++)
-	{
-		//allocate memory
-		if (pass && size)
-		{
-			ptr = (char*)GetClearedMemory(size);
-		}
-		//load the source file
-		source = LoadSourceFile(chatfile);
-		if (!source)
-		{
-			BotImport_Print(PRT_ERROR, "counldn't load %s\n", chatfile);
-			return NULL;
-		}	//end if
-			//chat structure
-		if (pass)
-		{
-			chat = (bot_chat_t*)ptr;
-			ptr += sizeof(bot_chat_t);
-		}	//end if
-		size = sizeof(bot_chat_t);
-		//
-		while (PC_ReadToken(source, &token))
-		{
-			if (!String::Cmp(token.string, "chat"))
-			{
-				if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
-				{
-					FreeSource(source);
-					return NULL;
-				}	//end if
-				StripDoubleQuotes(token.string);
-				//after the chat name we expect a opening brace
-				if (!PC_ExpectTokenString(source, "{"))
-				{
-					FreeSource(source);
-					return NULL;
-				}	//end if
-					//if the chat name is found
-				if (!String::ICmp(token.string, chatname))
-				{
-					foundchat = qtrue;
-					//read the chat types
-					while (1)
-					{
-						if (!PC_ExpectAnyToken(source, &token))
-						{
-							FreeSource(source);
-							return NULL;
-						}	//end if
-						if (!String::Cmp(token.string, "}"))
-						{
-							break;
-						}
-						if (String::Cmp(token.string, "type"))
-						{
-							SourceError(source, "expected type found %s\n", token.string);
-							FreeSource(source);
-							return NULL;
-						}	//end if
-							//expect the chat type name
-						if (!PC_ExpectTokenType(source, TT_STRING, 0, &token) ||
-							!PC_ExpectTokenString(source, "{"))
-						{
-							FreeSource(source);
-							return NULL;
-						}	//end if
-						StripDoubleQuotes(token.string);
-						if (pass)
-						{
-							chattype = (bot_chattype_t*)ptr;
-							String::NCpy(chattype->name, token.string, MAX_CHATTYPE_NAME);
-							chattype->firstchatmessage = NULL;
-							//add the chat type to the chat
-							chattype->next = chat->types;
-							chat->types = chattype;
-							//
-							ptr += sizeof(bot_chattype_t);
-						}	//end if
-						size += sizeof(bot_chattype_t);
-						//read the chat messages
-						while (!PC_CheckTokenString(source, "}"))
-						{
-							if (!BotLoadChatMessage(source, chatmessagestring))
-							{
-								FreeSource(source);
-								return NULL;
-							}	//end if
-							if (pass)
-							{
-								chatmessage = (bot_chatmessage_t*)ptr;
-								chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
-								//put the chat message in the list
-								chatmessage->next = chattype->firstchatmessage;
-								chattype->firstchatmessage = chatmessage;
-								//store the chat message
-								ptr += sizeof(bot_chatmessage_t);
-								chatmessage->chatmessage = ptr;
-								String::Cpy(chatmessage->chatmessage, chatmessagestring);
-								ptr += String::Length(chatmessagestring) + 1;
-								//the number of chat messages increased
-								chattype->numchatmessages++;
-							}	//end if
-							size += sizeof(bot_chatmessage_t) + String::Length(chatmessagestring) + 1;
-						}	//end if
-					}	//end while
-				}	//end if
-				else//skip the bot chat
-				{
-					indent = 1;
-					while (indent)
-					{
-						if (!PC_ExpectAnyToken(source, &token))
-						{
-							FreeSource(source);
-							return NULL;
-						}	//end if
-						if (!String::Cmp(token.string, "{"))
-						{
-							indent++;
-						}
-						else if (!String::Cmp(token.string, "}"))
-						{
-							indent--;
-						}
-					}	//end while
-				}	//end else
-			}	//end if
-			else
-			{
-				SourceError(source, "unknown definition %s\n", token.string);
-				FreeSource(source);
-				return NULL;
-			}	//end else
-		}	//end while
-			//free the source
-		FreeSource(source);
-		//if the requested character is not found
-		if (!foundchat)
-		{
-			BotImport_Print(PRT_ERROR, "couldn't find chat %s in %s\n", chatname, chatfile);
-			return NULL;
-		}	//end if
-	}	//end for
-		//
-#ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "loaded %s from %s\n", chatname, chatfile);
-#endif
-	if (bot_developer)
-	{
-		BotCheckInitialChatIntegrety(chat);
-	}	//end if
-#ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "initial chats loaded in %d msec\n", Sys_Milliseconds() - starttime);
-#endif	//DEBUG
-		//character was read succesfully
-	return chat;
-}	//end of the function BotLoadInitialChat
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void BotFreeChatFile(int chatstate)
-{
-	bot_chatstate_t* cs;
-
-	cs = BotChatStateFromHandle(chatstate);
-	if (!cs)
-	{
-		return;
-	}
-	if (cs->chat)
-	{
-		FreeMemory(cs->chat);
-	}
-	cs->chat = NULL;
-}	//end of the function BotFreeChatFile
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int BotLoadChatFile(int chatstate, char* chatfile, char* chatname)
-{
-	bot_chatstate_t* cs;
-	int n, avail = 0;
-
-	cs = BotChatStateFromHandle(chatstate);
-	if (!cs)
-	{
-		return WOLFBLERR_CANNOTLOADICHAT;
-	}
-	BotFreeChatFile(chatstate);
-
-	if (!LibVarGetValue("bot_reloadcharacters"))
-	{
-		avail = -1;
-		for (n = 0; n < MAX_CLIENTS_ET; n++)
-		{
-			if (!ichatdata[n])
-			{
-				if (avail == -1)
-				{
-					avail = n;
-				}
-				continue;
-			}
-			if (String::Cmp(chatfile, ichatdata[n]->filename) != 0)
-			{
-				continue;
-			}
-			if (String::Cmp(chatname, ichatdata[n]->chatname) != 0)
-			{
-				continue;
-			}
-			cs->chat = ichatdata[n]->chat;
-			//		BotImport_Print( PRT_MESSAGE, "retained %s from %s\n", chatname, chatfile );
-			return BLERR_NOERROR;
-		}
-
-		if (avail == -1)
-		{
-			BotImport_Print(PRT_FATAL, "ichatdata table full; couldn't load chat %s from %s\n", chatname, chatfile);
-			return WOLFBLERR_CANNOTLOADICHAT;
-		}
-	}
-
-	PS_SetBaseFolder("botfiles");
-	cs->chat = BotLoadInitialChat(chatfile, chatname);
-	PS_SetBaseFolder("");
-	if (!cs->chat)
-	{
-		BotImport_Print(PRT_FATAL, "couldn't load chat %s from %s\n", chatname, chatfile);
-		return WOLFBLERR_CANNOTLOADICHAT;
-	}	//end if
-	if (!LibVarGetValue("bot_reloadcharacters"))
-	{
-		ichatdata[avail] = (bot_ichatdata_t*)Mem_Alloc(sizeof(bot_ichatdata_t));
-		ichatdata[avail]->chat = cs->chat;
-		String::NCpyZ(ichatdata[avail]->chatname, chatname, sizeof(ichatdata[avail]->chatname));
-		String::NCpyZ(ichatdata[avail]->filename, chatfile, sizeof(ichatdata[avail]->filename));
-	}	//end if
-
-	return BLERR_NOERROR;
-}	//end of the function BotLoadChatFile
 //===========================================================================
 //
 // Parameter:			-
@@ -1057,7 +779,7 @@ int BotAllocChatState(void)
 	{
 		if (!botchatstates[i])
 		{
-			botchatstates[i] = (bot_chatstate_t*)GetClearedMemory(sizeof(bot_chatstate_t));
+			botchatstates[i] = (bot_chatstate_t*)Mem_ClearedAlloc(sizeof(bot_chatstate_t));
 			return i;
 		}	//end if
 	}	//end for
@@ -1096,7 +818,7 @@ void BotFreeChatState(int handle)
 		//remove the console message
 		BotRemoveConsoleMessage(handle, h);
 	}	//end for
-	FreeMemory(botchatstates[handle]);
+	Mem_Free(botchatstates[handle]);
 	botchatstates[handle] = NULL;
 }	//end of the function BotFreeChatState
 //===========================================================================
@@ -1113,7 +835,7 @@ int BotSetupChatAI(void)
 	int starttime = Sys_Milliseconds();
 #endif	//DEBUG
 
-	PS_SetBaseFolder("botfiles");
+	PS_SetBaseFolder(BOTFILESBASEFOLDER);
 	file = LibVarString("synfile", "syn.c");
 	synonyms = BotLoadSynonyms(file);
 	file = LibVarString("rndfile", "rnd.c");
@@ -1158,7 +880,7 @@ void BotShutdownChatAI(void)
 	{
 		if (ichatdata[i])
 		{
-			FreeMemory(ichatdata[i]->chat);
+			Mem_Free(ichatdata[i]->chat);
 			Mem_Free(ichatdata[i]);
 			ichatdata[i] = NULL;
 		}	//end if

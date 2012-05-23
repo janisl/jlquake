@@ -322,7 +322,6 @@ struct bot_chatstate_t
 
 extern bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 extern bot_consolemessage_t* consolemessageheap;
-extern bot_consolemessage_t* freeconsolemessages;
 extern bot_matchtemplate_t* matchtemplates;
 extern bot_synonymlist_t* synonyms;
 extern bot_randomlist_t* randomstrings;
@@ -337,7 +336,6 @@ char* StringContainsWord(char* str1, const char* str2, bool casesensitive);
 bot_synonymlist_t* BotLoadSynonyms(const char* filename);
 void BotReplaceWeightedSynonyms(char* string, unsigned int context);
 void BotReplaceReplySynonyms(char* string, unsigned int context);
-int BotLoadChatMessage(source_t* source, char* chatmessagestring);
 bot_randomlist_t* BotLoadRandomStrings(const char* filename);
 char* RandomString(const char* name);
 void BotFreeMatchPieces(bot_matchpiece_t* matchpieces);
@@ -346,6 +344,6 @@ void BotFreeMatchTemplates(bot_matchtemplate_t* mt);
 bot_matchtemplate_t* BotLoadMatchTemplates(const char* matchfile);
 bool StringsMatchQ3(bot_matchpiece_t* pieces, bot_match_q3_t* match);
 bool StringsMatchWolf(bot_matchpiece_t* pieces, bot_match_wolf_t* match);
-void BotCheckInitialChatIntegrety(bot_chat_t* chat);
 void BotFreeReplyChat(bot_replychat_t* replychat);
 bot_replychat_t* BotLoadReplyChat(const char* filename);
+void BotFreeChatFile(int chatstate);

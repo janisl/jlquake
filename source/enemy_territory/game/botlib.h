@@ -266,7 +266,6 @@ typedef struct ai_export_s
 	int (* BotChatLength)(int chatstate);
 	void (* BotEnterChat)(int chatstate, int client, int sendto);
 	void (* BotGetChatMessage)(int chatstate, char* buf, int size);
-	int (* BotLoadChatFile)(int chatstate, char* chatfile, char* chatname);
 	void (* BotSetChatGender)(int chatstate, int gender);
 	void (* BotSetChatName)(int chatstate, char* name);
 	//-----------------------------------

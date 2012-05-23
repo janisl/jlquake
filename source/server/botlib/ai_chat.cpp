@@ -20,7 +20,7 @@
 bot_chatstate_t* botchatstates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 //console message heap
 bot_consolemessage_t* consolemessageheap = NULL;
-bot_consolemessage_t* freeconsolemessages = NULL;
+static bot_consolemessage_t* freeconsolemessages = NULL;
 //list with match strings
 bot_matchtemplate_t* matchtemplates = NULL;
 //list with synonyms
@@ -694,7 +694,7 @@ void BotReplaceReplySynonyms(char* string, unsigned int context)
 	}
 }
 
-int BotLoadChatMessage(source_t* source, char* chatmessagestring)
+static int BotLoadChatMessage(source_t* source, char* chatmessagestring)
 {
 	char* ptr = chatmessagestring;
 	*ptr = 0;
@@ -1456,7 +1456,7 @@ static bot_stringlist_t* BotCheckChatMessageIntegrety(const char* message, bot_s
 	return stringlist;
 }
 
-void BotCheckInitialChatIntegrety(bot_chat_t* chat)
+static void BotCheckInitialChatIntegrety(bot_chat_t* chat)
 {
 	bot_stringlist_t* stringlist = NULL;
 	for (bot_chattype_t* t = chat->types; t; t = t->next)
@@ -1818,4 +1818,265 @@ bot_replychat_t* BotLoadReplyChat(const char* filename)
 	}
 
 	return replychatlist;
+}
+
+static bot_chat_t* BotLoadInitialChat(const char* chatfile, const char* chatname)
+{
+	char* ptr = NULL;
+	bot_chat_t* chat = NULL;
+	bot_chattype_t* chattype = NULL;
+	bot_chatmessage_t* chatmessage = NULL;
+#ifdef DEBUG
+	int starttime = Sys_Milliseconds();
+#endif
+
+	int size = 0;
+	bool foundchat = false;
+	//a bot chat is parsed in two phases
+	for (int pass = 0; pass < 2; pass++)
+	{
+		//allocate memory
+		if (pass && size)
+		{
+			ptr = (char*)Mem_ClearedAlloc(size);
+		}
+		//load the source file
+		if (GGameType & GAME_Quake3)
+		{
+			PC_SetBaseFolder(BOTFILESBASEFOLDER);
+		}
+		source_t* source = LoadSourceFile(chatfile);
+		if (!source)
+		{
+			BotImport_Print(PRT_ERROR, "counldn't load %s\n", chatfile);
+			return NULL;
+		}
+		//chat structure
+		if (pass)
+		{
+			chat = (bot_chat_t*)ptr;
+			ptr += sizeof(bot_chat_t);
+		}
+		size = sizeof(bot_chat_t);
+
+		token_t token;
+		while (PC_ReadToken(source, &token))
+		{
+			if (!String::Cmp(token.string, "chat"))
+			{
+				if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
+				{
+					FreeSource(source);
+					return NULL;
+				}
+				StripDoubleQuotes(token.string);
+				//after the chat name we expect a opening brace
+				if (!PC_ExpectTokenString(source, "{"))
+				{
+					FreeSource(source);
+					return NULL;
+				}
+				//if the chat name is found
+				if (!String::ICmp(token.string, chatname))
+				{
+					foundchat = true;
+					//read the chat types
+					while (1)
+					{
+						if (!PC_ExpectAnyToken(source, &token))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+						if (!String::Cmp(token.string, "}"))
+						{
+							break;
+						}
+						if (String::Cmp(token.string, "type"))
+						{
+							SourceError(source, "expected type found %s\n", token.string);
+							FreeSource(source);
+							return NULL;
+						}
+						//expect the chat type name
+						if (!PC_ExpectTokenType(source, TT_STRING, 0, &token) ||
+							!PC_ExpectTokenString(source, "{"))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+						StripDoubleQuotes(token.string);
+						if (pass)
+						{
+							chattype = (bot_chattype_t*)ptr;
+							String::NCpy(chattype->name, token.string, MAX_CHATTYPE_NAME);
+							chattype->firstchatmessage = NULL;
+							//add the chat type to the chat
+							chattype->next = chat->types;
+							chat->types = chattype;
+
+							ptr += sizeof(bot_chattype_t);
+						}
+						size += sizeof(bot_chattype_t);
+						//read the chat messages
+						while (!PC_CheckTokenString(source, "}"))
+						{
+							char chatmessagestring[MAX_MESSAGE_SIZE];
+							if (!BotLoadChatMessage(source, chatmessagestring))
+							{
+								FreeSource(source);
+								return NULL;
+							}
+							if (pass)
+							{
+								chatmessage = (bot_chatmessage_t*)ptr;
+								chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
+								//put the chat message in the list
+								chatmessage->next = chattype->firstchatmessage;
+								chattype->firstchatmessage = chatmessage;
+								//store the chat message
+								ptr += sizeof(bot_chatmessage_t);
+								chatmessage->chatmessage = ptr;
+								String::Cpy(chatmessage->chatmessage, chatmessagestring);
+								ptr += String::Length(chatmessagestring) + 1;
+								//the number of chat messages increased
+								chattype->numchatmessages++;
+							}
+							size += sizeof(bot_chatmessage_t) + String::Length(chatmessagestring) + 1;
+						}
+					}
+				}
+				else//skip the bot chat
+				{
+					int indent = 1;
+					while (indent)
+					{
+						if (!PC_ExpectAnyToken(source, &token))
+						{
+							FreeSource(source);
+							return NULL;
+						}
+						if (!String::Cmp(token.string, "{"))
+						{
+							indent++;
+						}
+						else if (!String::Cmp(token.string, "}"))
+						{
+							indent--;
+						}
+					}
+				}
+			}
+			else
+			{
+				SourceError(source, "unknown definition %s\n", token.string);
+				FreeSource(source);
+				return NULL;
+			}
+		}
+		//free the source
+		FreeSource(source);
+		//if the requested character is not found
+		if (!foundchat)
+		{
+			BotImport_Print(PRT_ERROR, "couldn't find chat %s in %s\n", chatname, chatfile);
+			return NULL;
+		}
+	}
+
+	BotImport_Print(PRT_MESSAGE, "loaded %s from %s\n", chatname, chatfile);
+
+	if (bot_developer)
+	{
+		BotCheckInitialChatIntegrety(chat);
+	}
+#ifdef DEBUG
+	BotImport_Print(PRT_MESSAGE, "initial chats loaded in %d msec\n", Sys_Milliseconds() - starttime);
+#endif
+	//character was read succesfully
+	return chat;
+}
+
+void BotFreeChatFile(int chatstate)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+	if (cs->chat)
+	{
+		Mem_Free(cs->chat);
+	}
+	cs->chat = NULL;
+}
+
+int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname)
+{
+	bot_chatstate_t* cs;
+	int n, avail = 0;
+
+	cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTLOADICHAT : WOLFBLERR_CANNOTLOADICHAT;
+	}
+	BotFreeChatFile(chatstate);
+
+	if (!LibVarGetValue("bot_reloadcharacters"))
+	{
+		avail = -1;
+		for (n = 0; n < MAX_BOTLIB_CLIENTS; n++)
+		{
+			if (!ichatdata[n])
+			{
+				if (avail == -1)
+				{
+					avail = n;
+				}
+				continue;
+			}
+			if (String::Cmp(chatfile, ichatdata[n]->filename) != 0)
+			{
+				continue;
+			}
+			if (String::Cmp(chatname, ichatdata[n]->chatname) != 0)
+			{
+				continue;
+			}
+			cs->chat = ichatdata[n]->chat;
+			//		BotImport_Print( PRT_MESSAGE, "retained %s from %s\n", chatname, chatfile );
+			return BLERR_NOERROR;
+		}
+
+		if (avail == -1)
+		{
+			BotImport_Print(PRT_FATAL, "ichatdata table full; couldn't load chat %s from %s\n", chatname, chatfile);
+			return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTLOADICHAT : WOLFBLERR_CANNOTLOADICHAT;
+		}
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		PS_SetBaseFolder(BOTFILESBASEFOLDER);
+	}
+	cs->chat = BotLoadInitialChat(chatfile, chatname);
+	if (GGameType & GAME_ET)
+	{
+		PS_SetBaseFolder("");
+	}
+	if (!cs->chat)
+	{
+		BotImport_Print(PRT_FATAL, "couldn't load chat %s from %s\n", chatname, chatfile);
+		return GGameType & GAME_Quake3 ? Q3BLERR_CANNOTLOADICHAT : WOLFBLERR_CANNOTLOADICHAT;
+	}	//end if
+	if (!LibVarGetValue("bot_reloadcharacters"))
+	{
+		ichatdata[avail] = (bot_ichatdata_t*)Mem_ClearedAlloc(sizeof(bot_ichatdata_t));
+		ichatdata[avail]->chat = cs->chat;
+		String::NCpyZ(ichatdata[avail]->chatname, chatname, sizeof(ichatdata[avail]->chatname));
+		String::NCpyZ(ichatdata[avail]->filename, chatfile, sizeof(ichatdata[avail]->filename));
+	}	//end if
+
+	return BLERR_NOERROR;
 }

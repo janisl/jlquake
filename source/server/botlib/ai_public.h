@@ -285,3 +285,5 @@ bool BotFindMatchWolf(const char* str, bot_match_wolf_t* match, unsigned int con
 //returns a variable from a match
 void BotMatchVariableQ3(bot_match_q3_t* match, int variable, char* buf, int size);
 void BotMatchVariableWolf(bot_match_wolf_t* match, int variable, char* buf, int size);
+//loads a chat file for the chat state
+int BotLoadChatFile(int chatstate, const char* chatfile, const char* chatname);
