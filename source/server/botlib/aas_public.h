@@ -132,3 +132,6 @@ bool AAS_Initialized();
 //returns the current time
 float AAS_Time();
 void AAS_SetCurrentWorld(int index);
+
+//enable or disable an area for routing
+int AAS_EnableRoutingArea(int areanum, int enable);

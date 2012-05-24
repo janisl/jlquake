@@ -567,7 +567,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AAS_AREA_TRAVEL_TIME_TO_GOAL_AREA:
 		return botlib_export->aas.AAS_AreaTravelTimeToGoalArea(args[1], (float*)VMA(2), args[3], args[4]);
 	case BOTLIB_AAS_ENABLE_ROUTING_AREA:
-		return botlib_export->aas.AAS_EnableRoutingArea(args[1], args[2]);
+		return AAS_EnableRoutingArea(args[1], args[2]);
 	case BOTLIB_AAS_PREDICT_ROUTE:
 		return botlib_export->aas.AAS_PredictRoute((aas_predictroute_s*)VMA(1), args[2], (float*)VMA(3), args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
 

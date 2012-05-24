@@ -442,3 +442,8 @@ int AAS_TravelFlagForType(int traveltype);
 float AAS_RoutingTime();
 void AAS_LinkCache(aas_routingcache_t* cache);
 void AAS_UnlinkCache(aas_routingcache_t* cache);
+aas_routingcache_t* AAS_AllocRoutingCache(int numtraveltimes);
+void AAS_FreeRoutingCache(aas_routingcache_t* cache);
+void AAS_RemoveRoutingCacheUsingArea(int areanum);
+void AAS_ClearClusterTeamFlags(int areanum);
+void AAS_EnableAllAreas();

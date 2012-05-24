@@ -49,8 +49,6 @@ int AAS_NextAreaReachability(int areanum, int reachnum);
 void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
 //returns a random goal area and goal origin
 int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t goalorigin);
-//enable or disable an area for routing
-int AAS_EnableRoutingArea(int areanum, int enable);
 //returns the travel time within the given area from start to end
 unsigned short int AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end);
 //returns the travel time from the area to the goal area using the given travel flags

@@ -237,8 +237,6 @@ int Export_BotLibStartFrame(float time)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_EnableAllAreas(void);
-
 int Export_BotLibLoadMap(const char* mapname)
 {
 #ifdef DEBUG

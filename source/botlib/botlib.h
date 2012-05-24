@@ -184,7 +184,6 @@ typedef struct aas_export_s
 	// be_aas_route.c
 	//--------------------------------------------
 	int (* AAS_AreaTravelTimeToGoalArea)(int areanum, vec3_t origin, int goalareanum, int travelflags);
-	int (* AAS_EnableRoutingArea)(int areanum, int enable);
 	int (* AAS_PredictRoute)(struct aas_predictroute_s* route, int areanum, vec3_t origin,
 		int goalareanum, int travelflags, int maxareas, int maxtime,
 		int stopevent, int stopcontents, int stoptfl, int stopareanum);

@@ -147,3 +147,176 @@ void AAS_UnlinkCache(aas_routingcache_t* cache)
 	cache->time_next = NULL;
 	cache->time_prev = NULL;
 }
+
+aas_routingcache_t* AAS_AllocRoutingCache(int numtraveltimes)
+{
+	int size = sizeof(aas_routingcache_t) +
+		numtraveltimes * sizeof(unsigned short int) +
+		numtraveltimes * sizeof(unsigned char);
+
+	routingcachesize += size;
+
+	aas_routingcache_t* cache = (aas_routingcache_t*)Mem_ClearedAlloc(size);
+	cache->reachabilities = (unsigned char*)cache + sizeof(aas_routingcache_t) +
+		numtraveltimes * sizeof(unsigned short int);
+	cache->size = size;
+	return cache;
+}
+
+void AAS_FreeRoutingCache(aas_routingcache_t* cache)
+{
+	AAS_UnlinkCache(cache);
+	routingcachesize -= cache->size;
+	Mem_Free(cache);
+}
+
+static void AAS_RemoveRoutingCacheInCluster(int clusternum)
+{
+	int i;
+	aas_routingcache_t* cache, * nextcache;
+	aas_cluster_t* cluster;
+
+	if (!aasworld->clusterareacache)
+	{
+		return;
+	}
+	cluster = &aasworld->clusters[clusternum];
+	for (i = 0; i < cluster->numareas; i++)
+	{
+		for (cache = aasworld->clusterareacache[clusternum][i]; cache; cache = nextcache)
+		{
+			nextcache = cache->next;
+			AAS_FreeRoutingCache(cache);
+		}
+		aasworld->clusterareacache[clusternum][i] = NULL;
+	}
+}
+
+void AAS_RemoveRoutingCacheUsingArea(int areanum)
+{
+	int clusternum = aasworld->areasettings[areanum].cluster;
+	if (clusternum > 0)
+	{
+		//remove all the cache in the cluster the area is in
+		AAS_RemoveRoutingCacheInCluster(clusternum);
+	}
+	else
+	{
+		// if this is a portal remove all cache in both the front and back cluster
+		AAS_RemoveRoutingCacheInCluster(aasworld->portals[-clusternum].frontcluster);
+		AAS_RemoveRoutingCacheInCluster(aasworld->portals[-clusternum].backcluster);
+	}
+	// remove all portal cache
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		//refresh portal cache
+		aas_routingcache_t* nextcache;
+		for (aas_routingcache_t* cache = aasworld->portalcache[i]; cache; cache = nextcache)
+		{
+			nextcache = cache->next;
+			AAS_FreeRoutingCache(cache);
+		}
+		aasworld->portalcache[i] = NULL;
+	}
+}
+
+void AAS_ClearClusterTeamFlags(int areanum)
+{
+	int clusternum = aasworld->areasettings[areanum].cluster;
+	if (clusternum > 0)
+	{
+		aasworld->clusterTeamTravelFlags[clusternum] = -1;	// recalculate
+	}
+}
+
+int AAS_EnableRoutingArea(int areanum, int enable)
+{
+	if (areanum <= 0 || areanum >= aasworld->numareas)
+	{
+		if (bot_developer)
+		{
+			BotImport_Print(PRT_ERROR, "AAS_EnableRoutingArea: areanum %d out of range\n", areanum);
+		}
+		return 0;
+	}
+
+	int bitflag;	// flag to set or clear
+	if (GGameType & GAME_ET)
+	{
+		if ((enable & 1) || (enable < 0))
+		{
+			// clear all flags
+			bitflag = ETAREA_AVOID | AREA_DISABLED | ETAREA_TEAM_AXIS | ETAREA_TEAM_ALLIES | ETAREA_TEAM_AXIS_DISGUISED | ETAREA_TEAM_ALLIES_DISGUISED;
+		}
+		else if (enable & 0x10)
+		{
+			bitflag = ETAREA_AVOID;
+		}
+		else if (enable & 0x20)
+		{
+			bitflag = ETAREA_TEAM_AXIS;
+		}
+		else if (enable & 0x40)
+		{
+			bitflag = ETAREA_TEAM_ALLIES;
+		}
+		else if (enable & 0x80)
+		{
+			bitflag = ETAREA_TEAM_AXIS_DISGUISED;
+		}
+		else if (enable & 0x100)
+		{
+			bitflag = ETAREA_TEAM_ALLIES_DISGUISED;
+		}
+		else
+		{
+			bitflag = AREA_DISABLED;
+		}
+
+		// remove avoidance flag
+		enable &= 1;
+	}
+	else
+	{
+		bitflag = AREA_DISABLED;
+	}
+
+	int flags = aasworld->areasettings[areanum].areaflags & bitflag;
+	if (enable < 0)
+	{
+		return !flags;
+	}
+
+	if (enable)
+	{
+		aasworld->areasettings[areanum].areaflags &= ~bitflag;
+	}
+	else
+	{
+		aasworld->areasettings[areanum].areaflags |= bitflag;
+	}
+
+	// if the status of the area changed
+	if ((flags & bitflag) != (aasworld->areasettings[areanum].areaflags & bitflag))
+	{
+		//remove all routing cache involving this area
+		AAS_RemoveRoutingCacheUsingArea(areanum);
+		if (GGameType & GAME_ET)
+		{
+			// recalculate the team flags that are used in this cluster
+			AAS_ClearClusterTeamFlags(areanum);
+		}
+	}
+	return !flags;
+}
+
+void AAS_EnableAllAreas()
+{
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		if (aasworld->areasettings[i].areaflags & AREA_DISABLED)
+		{
+			AAS_EnableRoutingArea(i, true);
+		}
+	}
+}

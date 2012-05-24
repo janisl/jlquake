@@ -172,7 +172,6 @@ int AAS_BestReachableEntityArea(int entnum)
 AAS_SetAASBlockingEntity
 =============
 */
-int AAS_EnableRoutingArea(int areanum, int enable);
 void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, int blocking)
 {
 	int areas[1024];
