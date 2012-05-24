@@ -93,32 +93,6 @@ void CLHW_SetSolidEntities()
 	}
 }
 
-//	If pmove.origin is in a solid position, try nudging slightly on all axis to
-// allow for the cut precision of the net coordinates
-static void CLQHW_NudgePosition()
-{
-	if (CM_PointContentsQ1(qh_pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
-	{
-		return;
-	}
-
-	vec3_t base;
-	VectorCopy(qh_pmove.origin, base);
-	for (int x = -1; x <= 1; x++)
-	{
-		for (int y = -1; y <= 1; y++)
-		{
-			qh_pmove.origin[0] = base[0] + x * 1.0 / 8;
-			qh_pmove.origin[1] = base[1] + y * 1.0 / 8;
-			if (CM_PointContentsQ1(qh_pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
-			{
-				return;
-			}
-		}
-	}
-	common->DPrintf("CLQHW_NudgePosition: stuck\n");
-}
-
 void CLQW_PredictUsercmd(qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t* u, bool spectator)
 {
 	// split up very long moves
