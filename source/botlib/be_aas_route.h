@@ -41,8 +41,6 @@ void AAS_CreateAllRoutingCache(void);
 void AAS_WriteRouteCache(void);
 #endif	//AASINTERN
 
-//return the travel flag(s) for traveling through this area
-int AAS_AreaContentsTravelFlags(int areanum);
 //returns the index of the next reachability for the given area
 int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the reachability with the given index

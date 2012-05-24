@@ -40,93 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_GetAreaContentsTravelFlags(int areanum)
-{
-	int contents, tfl;
-
-	contents = aasworld->areasettings[areanum].contents;
-	tfl = 0;
-	if (contents & AREACONTENTS_WATER)
-	{
-		tfl |= TFL_WATER;
-	}
-	else if (contents & AREACONTENTS_SLIME)
-	{
-		tfl |= TFL_SLIME;
-	}
-	else if (contents & AREACONTENTS_LAVA)
-	{
-		tfl |= TFL_LAVA;
-	}
-	else
-	{
-		tfl |= TFL_AIR;
-	}
-	if (contents & AREACONTENTS_DONOTENTER)
-	{
-		tfl |= TFL_DONOTENTER;
-	}
-	if (contents & Q3AREACONTENTS_NOTTEAM1)
-	{
-		tfl |= Q3TFL_NOTTEAM1;
-	}
-	if (contents & Q3AREACONTENTS_NOTTEAM2)
-	{
-		tfl |= Q3TFL_NOTTEAM2;
-	}
-	if (aasworld->areasettings[areanum].areaflags & Q3AREA_BRIDGE)
-	{
-		tfl |= Q3TFL_BRIDGE;
-	}
-	return tfl;
-}	//end of the function AAS_GetAreaContentsTravelFlags
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-__inline int AAS_AreaContentsTravelFlags_inline(int areanum)
-{
-	return aasworld->areacontentstravelflags[areanum];
-}	//end of the function AAS_AreaContentsTravelFlags
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_AreaContentsTravelFlags(int areanum)
-{
-	return aasworld->areacontentstravelflags[areanum];
-}	//end of the function AAS_AreaContentsTravelFlags
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_InitAreaContentsTravelFlags(void)
-{
-	int i;
-
-	if (aasworld->areacontentstravelflags)
-	{
-		FreeMemory(aasworld->areacontentstravelflags);
-	}
-	aasworld->areacontentstravelflags = (int*)GetClearedMemory(aasworld->numareas * sizeof(int));
-	//
-	for (i = 0; i < aasworld->numareas; i++)
-	{
-		aasworld->areacontentstravelflags[i] = AAS_GetAreaContentsTravelFlags(i);
-	}
-}	//end of the function AAS_InitAreaContentsTravelFlags
-//===========================================================================
-//
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
@@ -1064,7 +977,7 @@ void AAS_FreeRoutingCaches(void)
 	// free area contents travel flags look up table
 	if (aasworld->areacontentstravelflags)
 	{
-		FreeMemory(aasworld->areacontentstravelflags);
+		Mem_Free(aasworld->areacontentstravelflags);
 	}
 	aasworld->areacontentstravelflags = NULL;
 }	//end of the function AAS_FreeRoutingCaches
@@ -1151,7 +1064,7 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t* areacache)
 				continue;
 			}
 			//if the next area has a not allowed travel flag
-			if (AAS_AreaContentsTravelFlags_inline(reach->areanum) & badtravelflags)
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
 			{
 				continue;
 			}
@@ -1712,12 +1625,12 @@ int AAS_PredictRoute(struct aas_predictroute_s* route, int areanum, vec3_t origi
 				VectorCopy(reach->start, route->endpos);
 				return true;
 			}	//end if
-			if (AAS_AreaContentsTravelFlags_inline(reach->areanum) & stoptfl)
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & stoptfl)
 			{
 				route->stopevent = RSE_USETRAVELTYPE;
 				route->endarea = reach->areanum;
 				route->endcontents = aasworld->areasettings[reach->areanum].contents;
-				route->endtravelflags = AAS_AreaContentsTravelFlags_inline(reach->areanum);
+				route->endtravelflags = AAS_AreaContentsTravelFlags(reach->areanum);
 				VectorCopy(reach->end, route->endpos);
 				route->time += AAS_AreaTravelTime(areanum, origin, reach->start);
 				route->time += reach->traveltime;
@@ -2053,7 +1966,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 				continue;
 			}
 			//
-			if (AAS_AreaContentsTravelFlags_inline(reach->areanum) & badtravelflags)
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
 			{
 				continue;
 			}

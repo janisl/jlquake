@@ -320,3 +320,61 @@ void AAS_EnableAllAreas()
 		}
 	}
 }
+
+static int AAS_GetAreaContentsTravelFlags(int areanum)
+{
+	int contents = aasworld->areasettings[areanum].contents;
+	int tfl = 0;
+	if (contents & AREACONTENTS_WATER)
+	{
+		tfl |= TFL_WATER;
+	}
+	else if (contents & AREACONTENTS_SLIME)
+	{
+		tfl |= TFL_SLIME;
+	}
+	else if (contents & AREACONTENTS_LAVA)
+	{
+		tfl |= TFL_LAVA;
+	}
+	else
+	{
+		tfl |= TFL_AIR;
+	}
+	if (contents & AREACONTENTS_DONOTENTER)
+	{
+		tfl |= TFL_DONOTENTER;
+	}
+	if (contents & Q3AREACONTENTS_NOTTEAM1)
+	{
+		tfl |= Q3TFL_NOTTEAM1;
+	}
+	if (contents & Q3AREACONTENTS_NOTTEAM2)
+	{
+		tfl |= Q3TFL_NOTTEAM2;
+	}
+	if (aasworld->areasettings[areanum].areaflags & Q3AREA_BRIDGE)
+	{
+		tfl |= Q3TFL_BRIDGE;
+	}
+	return tfl;
+}
+
+void AAS_InitAreaContentsTravelFlags()
+{
+	if (aasworld->areacontentstravelflags)
+	{
+		Mem_Free(aasworld->areacontentstravelflags);
+	}
+	aasworld->areacontentstravelflags = (int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(int));
+
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		aasworld->areacontentstravelflags[i] = AAS_GetAreaContentsTravelFlags(i);
+	}
+}
+
+int AAS_AreaContentsTravelFlags(int areanum)
+{
+	return aasworld->areacontentstravelflags[areanum];
+}

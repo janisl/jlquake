@@ -447,3 +447,6 @@ void AAS_FreeRoutingCache(aas_routingcache_t* cache);
 void AAS_RemoveRoutingCacheUsingArea(int areanum);
 void AAS_ClearClusterTeamFlags(int areanum);
 void AAS_EnableAllAreas();
+void AAS_InitAreaContentsTravelFlags();
+//return the travel flag(s) for traveling through this area
+int AAS_AreaContentsTravelFlags(int areanum);
