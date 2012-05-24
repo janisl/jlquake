@@ -365,7 +365,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	}	//end else
 
 	BotImport_Print(PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum,
-		AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT));
+		AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, Q3TFL_DEFAULT));
 	//newarea = BotReachabilityArea(origin, qtrue);
 	if (newarea != area)
 	{
@@ -412,7 +412,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		}	//end if
 		BotImport_Print(PRT_MESSAGE, "\n");
 		BotImport_Print(PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum,
-			AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT | TFL_ROCKETJUMP));
+			AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, Q3TFL_DEFAULT | TFL_ROCKETJUMP));
 		/*
 		VectorCopy(origin, end);
 		end[2] += 5;
@@ -472,7 +472,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		reachnum = BotGetReachabilityToGoal(origin, newarea,
 		                              lastgoalareanum, lastareanum,
 		                              avoidreach, avoidreachtimes, avoidreachtries,
-		                              &goal, TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP, TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP,
+		                              &goal, Q3TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP, Q3TFL_DEFAULT|TFL_FUNCBOB|TFL_ROCKETJUMP,
 		                              NULL, 0, &resultFlags);
 		AAS_ReachabilityFromNum(reachnum, &reach);
 		AAS_ShowReachability(&reach);
@@ -493,7 +493,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 			reachnum = BotGetReachabilityToGoal(curorigin, curarea,
 				lastgoalareanum, lastareanum,
 				avoidreach, avoidreachtimes, avoidreachtries,
-				&goal, TFL_DEFAULT | TFL_FUNCBOB | TFL_ROCKETJUMP, TFL_DEFAULT | TFL_FUNCBOB | TFL_ROCKETJUMP,
+				&goal, Q3TFL_DEFAULT | TFL_FUNCBOB | TFL_ROCKETJUMP, Q3TFL_DEFAULT | TFL_FUNCBOB | TFL_ROCKETJUMP,
 				NULL, 0, &resultFlags);
 			AAS_ReachabilityFromNum(reachnum, &reach);
 			AAS_ShowReachability(&reach);

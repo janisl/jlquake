@@ -388,7 +388,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		AAS_ClearShownPolygons();
 		AAS_ClearShownDebugLines();
 		hideposarea = AAS_NearestHideArea(0, origin, AAS_PointAreaNum(origin), 0,
-			botlibglobals.goalorigin, botlibglobals.goalareanum, TFL_DEFAULT, 99999, NULL);
+			botlibglobals.goalorigin, botlibglobals.goalareanum, ETTFL_DEFAULT, 99999, NULL);
 
 		//area we are currently in
 		AAS_ShowAreaPolygons(newarea, 1, qtrue);
@@ -465,7 +465,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		return 0;
 	}
 
-	BotImport_Print(PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT));
+	BotImport_Print(PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, ETTFL_DEFAULT));
 	if (newarea != area)
 	{
 		BotImport_Print(PRT_MESSAGE, "origin = %f, %f, %f\n", origin[0], origin[1], origin[2]);
@@ -541,7 +541,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		}
 
 		BotImport_Print(PRT_MESSAGE, "\n");
-		BotImport_Print(PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT | TFL_ROCKETJUMP));
+		BotImport_Print(PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum, AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, ETTFL_DEFAULT | TFL_ROCKETJUMP));
 	}
 
 	if (parm0 & 1)
@@ -601,7 +601,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		reachnum = BotGetReachabilityToGoal(origin, newarea, -1,
 			lastgoalareanum, lastareanum,
 			avoidreach, avoidreachtimes, avoidreachtries,
-			&goal, TFL_DEFAULT | TFL_FUNCBOB, TFL_DEFAULT);
+			&goal, ETTFL_DEFAULT | TFL_FUNCBOB, ETTFL_DEFAULT);
 		AAS_ReachabilityFromNum(reachnum, &reach);
 		if (lastreach != reachnum)
 		{

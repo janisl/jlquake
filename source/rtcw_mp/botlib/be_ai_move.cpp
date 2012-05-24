@@ -718,8 +718,8 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 	}	//end if
 	if (AAS_AreaDoNotEnterLarge(areanum) || AAS_AreaDoNotEnterLarge(goal->areanum))
 	{
-		travelflags |= TFL_DONOTENTER_LARGE;
-		movetravelflags |= TFL_DONOTENTER_LARGE;
+		travelflags |= WOLFTFL_DONOTENTER_LARGE;
+		movetravelflags |= WOLFTFL_DONOTENTER_LARGE;
 	}	//end if
 		//use the routing to find the next area to go to
 	besttime = 0;

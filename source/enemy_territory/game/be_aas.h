@@ -38,49 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _ET_BE_AAS_H
 #define _ET_BE_AAS_H
 
-//travel flags
-#define TFL_INVALID             0x0000001	//traveling temporary not possible
-#define TFL_WALK                0x0000002	//walking
-#define TFL_CROUCH              0x0000004	//crouching
-#define TFL_BARRIERJUMP         0x0000008	//jumping onto a barrier
-#define TFL_JUMP                0x0000010	//jumping
-#define TFL_LADDER              0x0000020	//climbing a ladder
-#define TFL_WALKOFFLEDGE        0x0000080	//walking of a ledge
-#define TFL_SWIM                0x0000100	//swimming
-#define TFL_WATERJUMP           0x0000200	//jumping out of the water
-#define TFL_TELEPORT            0x0000400	//teleporting
-#define TFL_ELEVATOR            0x0000800	//elevator
-#define TFL_ROCKETJUMP          0x0001000	//rocket jumping
-#define TFL_BFGJUMP             0x0002000	//bfg jumping
-#define TFL_GRAPPLEHOOK         0x0004000	//grappling hook
-#define TFL_DOUBLEJUMP          0x0008000	//double jump
-#define TFL_RAMPJUMP            0x0010000	//ramp jump
-#define TFL_STRAFEJUMP          0x0020000	//strafe jump
-#define TFL_JUMPPAD             0x0040000	//jump pad
-#define TFL_AIR                 0x0080000	//travel through air
-#define TFL_WATER               0x0100000	//travel through water
-#define TFL_SLIME               0x0200000	//travel through slime
-#define TFL_LAVA                0x0400000	//travel through lava
-#define TFL_DONOTENTER          0x0800000	//travel through donotenter area
-#define TFL_FUNCBOB             0x1000000	//func bobbing
-#define TFL_DONOTENTER_LARGE    0x2000000	//travel through donotenter area
-#define TFL_TEAM_AXIS           0x4000000	//travel through axis-only areas
-#define TFL_TEAM_ALLIES         0x8000000	//travel through allies-only areas
-#define TFL_TEAM_AXIS_DISGUISED 0x10000000	//travel through axis+DISGUISED areas
-#define TFL_TEAM_ALLIES_DISGUISED   0x2000000	//travel through allies+DISGUISED areas
-
-#define TFL_TEAM_FLAGS      (TFL_TEAM_AXIS | TFL_TEAM_ALLIES | TFL_TEAM_AXIS_DISGUISED | TFL_TEAM_ALLIES_DISGUISED)
-
-//default travel flags
-
-//----(SA)	modified since slime is no longer deadly
-#define TFL_DEFAULT (TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | \
-					 TFL_JUMP | TFL_LADDER | \
-					 TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | \
-					 TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
-					 TFL_WATER | TFL_SLIME | \
-					 TFL_JUMPPAD | TFL_FUNCBOB)
-
 typedef enum
 {
 	SOLID_NOT,			// no interaction with other objects

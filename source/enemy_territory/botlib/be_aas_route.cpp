@@ -44,47 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 #include "be_aas_def.h"
 
-#define ROUTING_DEBUG
-
-//travel time in hundreths of a second = distance * 100 / speed
-#define DISTANCEFACTOR_CROUCH       1.3		//crouch speed = 100
-#define DISTANCEFACTOR_SWIM         1		//should be 0.66, swim speed = 150
-#define DISTANCEFACTOR_WALK         0.33	//walk speed = 300
-
-// Ridah, scale traveltimes with ground steepness of area
-#define GROUNDSTEEPNESS_TIMESCALE   1	// this is the maximum scale, 1 being the usual for a flat ground
-
-//cache refresh time
-#define CACHE_REFRESHTIME       15.0	//15 seconds refresh time
-
-#define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
-
-/*
-
-  area routing cache:
-  stores the distances within one cluster to a specific goal area
-  this goal area is in this same cluster and could be a cluster portal
-  for every cluster there's a list with routing cache for every area
-  in that cluster (including the portals of that cluster)
-  area cache stores aasworld->clusters[?].numreachabilityareas travel times
-
-  portal routing cache:
-  stores the distances of all portals to a specific goal area
-  this goal area could be in any cluster and could also be a cluster portal
-  for every area (aasworld->numareas) the portal cache stores
-  aasworld->numportals travel times
-
-*/
-
-#ifdef ROUTING_DEBUG
-int numareacacheupdates;
-int numportalcacheupdates;
-#endif	//ROUTING_DEBUG
-
-int routingcachesize;
-int max_routingcachesize;
-int max_frameroutingupdates;
-
 // Ridah, routing memory calls go here, so we can change between Hunk/Zone easily
 void* AAS_RoutingGetMemory(int size)
 {
@@ -96,111 +55,6 @@ void AAS_RoutingFreeMemory(void* ptr)
 	FreeMemory(ptr);
 }
 // done.
-
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-#ifdef ROUTING_DEBUG
-void AAS_RoutingInfo(void)
-{
-	BotImport_Print(PRT_MESSAGE, "%d area cache updates\n", numareacacheupdates);
-	BotImport_Print(PRT_MESSAGE, "%d portal cache updates\n", numportalcacheupdates);
-	BotImport_Print(PRT_MESSAGE, "%d bytes routing cache\n", routingcachesize);
-}	//end of the function AAS_RoutingInfo
-#endif	//ROUTING_DEBUG
-//===========================================================================
-// returns the number of the area in the cluster
-// assumes the given area is in the given cluster or a portal of the cluster
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-__inline int AAS_ClusterAreaNum(int cluster, int areanum)
-{
-	int side, areacluster;
-
-	areacluster = aasworld->areasettings[areanum].cluster;
-	if (areacluster > 0)
-	{
-		return aasworld->areasettings[areanum].clusterareanum;
-	}
-	else
-	{
-/*#ifdef ROUTING_DEBUG
-        if (aasworld->portals[-areacluster].frontcluster != cluster &&
-                aasworld->portals[-areacluster].backcluster != cluster)
-        {
-            BotImport_Print(PRT_ERROR, "portal %d: does not belong to cluster %d\n"
-                                            , -areacluster, cluster);
-        } //end if
-#endif //ROUTING_DEBUG*/
-		side = aasworld->portals[-areacluster].frontcluster != cluster;
-		return aasworld->portals[-areacluster].clusterareanum[side];
-	}	//end else
-}	//end of the function AAS_ClusterAreaNum
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_InitTravelFlagFromType(void)
-{
-	int i;
-
-	for (i = 0; i < MAX_TRAVELTYPES; i++)
-	{
-		aasworld->travelflagfortype[i] = TFL_INVALID;
-	}	//end for
-	aasworld->travelflagfortype[TRAVEL_INVALID] = TFL_INVALID;
-	aasworld->travelflagfortype[TRAVEL_WALK] = TFL_WALK;
-	aasworld->travelflagfortype[TRAVEL_CROUCH] = TFL_CROUCH;
-	aasworld->travelflagfortype[TRAVEL_BARRIERJUMP] = TFL_BARRIERJUMP;
-	aasworld->travelflagfortype[TRAVEL_JUMP] = TFL_JUMP;
-	aasworld->travelflagfortype[TRAVEL_LADDER] = TFL_LADDER;
-	aasworld->travelflagfortype[TRAVEL_WALKOFFLEDGE] = TFL_WALKOFFLEDGE;
-	aasworld->travelflagfortype[TRAVEL_SWIM] = TFL_SWIM;
-	aasworld->travelflagfortype[TRAVEL_WATERJUMP] = TFL_WATERJUMP;
-	aasworld->travelflagfortype[TRAVEL_TELEPORT] = TFL_TELEPORT;
-	aasworld->travelflagfortype[TRAVEL_ELEVATOR] = TFL_ELEVATOR;
-	aasworld->travelflagfortype[TRAVEL_ROCKETJUMP] = TFL_ROCKETJUMP;
-	aasworld->travelflagfortype[TRAVEL_BFGJUMP] = TFL_BFGJUMP;
-	aasworld->travelflagfortype[TRAVEL_GRAPPLEHOOK] = TFL_GRAPPLEHOOK;
-	aasworld->travelflagfortype[TRAVEL_DOUBLEJUMP] = TFL_DOUBLEJUMP;
-	aasworld->travelflagfortype[TRAVEL_RAMPJUMP] = TFL_RAMPJUMP;
-	aasworld->travelflagfortype[TRAVEL_STRAFEJUMP] = TFL_STRAFEJUMP;
-	aasworld->travelflagfortype[TRAVEL_JUMPPAD] = TFL_JUMPPAD;
-	aasworld->travelflagfortype[TRAVEL_FUNCBOB] = TFL_FUNCBOB;
-}	//end of the function AAS_InitTravelFlagFromType
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_TravelFlagForType(int traveltype)
-{
-	if (traveltype < 0 || traveltype >= MAX_TRAVELTYPES)
-	{
-		return TFL_INVALID;
-	}
-	return aasworld->travelflagfortype[traveltype];
-}	//end of the function AAS_TravelFlagForType
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-__inline float AAS_RoutingTime(void)
-{
-	return AAS_Time();
-}	//end of the function AAS_RoutingTime
 
 //===========================================================================
 //
@@ -292,27 +146,27 @@ int AAS_TeamTravelFlagsForAreaFlags(int areaflags)
 	{
 		if (areaflags & ETAREA_TEAM_AXIS)
 		{
-			travelflags |= TFL_TEAM_AXIS;
+			travelflags |= ETTFL_TEAM_AXIS;
 		}
 		if (areaflags & ETAREA_TEAM_ALLIES)
 		{
-			travelflags |= TFL_TEAM_ALLIES;
+			travelflags |= ETTFL_TEAM_ALLIES;
 		}
 		if (areaflags & ETAREA_TEAM_AXIS_DISGUISED)
 		{
-			travelflags |= TFL_TEAM_AXIS_DISGUISED;
+			travelflags |= ETTFL_TEAM_AXIS_DISGUISED;
 		}
 		if (areaflags & ETAREA_TEAM_ALLIES_DISGUISED)
 		{
-			travelflags |= TFL_TEAM_AXIS_DISGUISED;
+			travelflags |= ETTFL_TEAM_AXIS_DISGUISED;
 		}
 		if (areaflags & ETAREA_AVOID_AXIS)
 		{
-			travelflags |= TFL_TEAM_AXIS;
+			travelflags |= ETTFL_TEAM_AXIS;
 		}
 		if (areaflags & ETAREA_AVOID_ALLIES)
 		{
-			travelflags |= TFL_TEAM_ALLIES;
+			travelflags |= ETTFL_TEAM_ALLIES;
 		}
 	}
 	//
@@ -445,9 +299,9 @@ int AAS_EnableRoutingArea(int areanum, int enable)
 void AAS_EnableAllAreas(void)
 {
 	int i;
-	for (i = 0; i < (*aasworld).numareas; i++)
+	for (i = 0; i < aasworld->numareas; i++)
 	{
-		if ((*aasworld).areasettings[i].areaflags & AREA_DISABLED)
+		if (aasworld->areasettings[i].areaflags & AREA_DISABLED)
 		{
 			AAS_EnableRoutingArea(i, qtrue);
 		}
@@ -491,7 +345,7 @@ void AAS_CreateReversedReachability(void)
 		for (n = 0; n < settings->numreachableareas; n++)
 		{
 			// Gordon: Temp hack for b0rked last area in
-			if (settings->firstreachablearea < 0 || settings->firstreachablearea >= (*aasworld).reachabilitysize)
+			if (settings->firstreachablearea < 0 || settings->firstreachablearea >= aasworld->reachabilitysize)
 			{
 				Com_Printf("^1WARNING: settings->firstreachablearea out of range\n");
 				continue;
@@ -529,7 +383,7 @@ void AAS_CreateReversedReachability(void)
 // Gordon: always returns 1, so er?...
 float AAS_AreaGroundSteepnessScale(int areanum)
 {
-	return (1.0 + aasworld->areasettings[areanum].groundsteepness * (float)(GROUNDSTEEPNESS_TIMESCALE - 1));
+	return (1.0 + aasworld->areasettings[areanum].groundsteepness * (float)(GROUNDSTEEPNESS_TIMESCALE_ET - 1));
 }
 //===========================================================================
 //
@@ -1022,8 +876,8 @@ void AAS_CreateAllRoutingCache(void)
 	aas_reachability_t* reach;
 
 	numroutingareas = 0;
-	tfl = TFL_DEFAULT & ~(TFL_JUMPPAD | TFL_ROCKETJUMP | TFL_BFGJUMP | TFL_GRAPPLEHOOK | TFL_DOUBLEJUMP | TFL_RAMPJUMP | TFL_STRAFEJUMP | TFL_LAVA);	//----(SA)	modified since slime is no longer deadly
-//	tfl = TFL_DEFAULT & ~(TFL_JUMPPAD|TFL_ROCKETJUMP|TFL_BFGJUMP|TFL_GRAPPLEHOOK|TFL_DOUBLEJUMP|TFL_RAMPJUMP|TFL_STRAFEJUMP|TFL_SLIME|TFL_LAVA);
+	tfl = ETTFL_DEFAULT & ~(TFL_JUMPPAD | TFL_ROCKETJUMP | TFL_BFGJUMP | TFL_GRAPPLEHOOK | TFL_DOUBLEJUMP | TFL_RAMPJUMP | TFL_STRAFEJUMP | TFL_LAVA);	//----(SA)	modified since slime is no longer deadly
+//	tfl = ETTFL_DEFAULT & ~(TFL_JUMPPAD|TFL_ROCKETJUMP|TFL_BFGJUMP|TFL_GRAPPLEHOOK|TFL_DOUBLEJUMP|TFL_RAMPJUMP|TFL_STRAFEJUMP|TFL_SLIME|TFL_LAVA);
 	BotImport_Print(PRT_MESSAGE, "AAS_CreateAllRoutingCache\n");
 	//
 	for (i = 1; i < aasworld->numareas; i++)
@@ -1509,7 +1363,7 @@ int AAS_AreaContentsTravelFlag(int areanum)
 	}
 	if (contents & WOLFAREACONTENTS_DONOTENTER_LARGE)
 	{
-		tfl |= TFL_DONOTENTER_LARGE;
+		tfl |= WOLFTFL_DONOTENTER_LARGE;
 	}
 	if (contents & AREACONTENTS_DONOTENTER)
 	{
@@ -1629,11 +1483,11 @@ void AAS_UpdateAreaRoutingCache(aas_routingcache_t* areacache)
 			{
 				t += 1000;
 			}
-			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_AXIS) && (areacache->travelflags & TFL_TEAM_AXIS))
+			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_AXIS) && (areacache->travelflags & ETTFL_TEAM_AXIS))
 			{
 				t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
 			}
-			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_ALLIES) && (areacache->travelflags & TFL_TEAM_ALLIES))
+			else if ((aasworld->areasettings[reach->areanum].areaflags & ETAREA_AVOID_ALLIES) && (areacache->travelflags & ETTFL_TEAM_ALLIES))
 			{
 				t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
 			}
@@ -1688,7 +1542,7 @@ aas_routingcache_t* AAS_GetAreaRoutingCache(int clusternum, int areanum, int tra
 	clustercache = aasworld->clusterareacache[clusternum][clusterareanum];
 
 	// RF, remove team-specific flags which don't exist in this cluster
-	travelflags &= ~TFL_TEAM_FLAGS | aasworld->clusterTeamTravelFlags[clusternum];
+	travelflags &= ~ETTFL_TEAM_FLAGS | aasworld->clusterTeamTravelFlags[clusternum];
 
 	//find the cache without undesired travel flags
 	for (cache = clustercache; cache; cache = cache->next)
@@ -1935,7 +1789,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 	}	//end if
 	if (AAS_AreaDoNotEnterLarge(areanum) || AAS_AreaDoNotEnterLarge(goalareanum))
 	{
-		travelflags |= TFL_DONOTENTER_LARGE;
+		travelflags |= WOLFTFL_DONOTENTER_LARGE;
 	}	//end if
 		//
 	clusternum = aasworld->areasettings[areanum].cluster;

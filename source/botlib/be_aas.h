@@ -31,44 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-//travel flags
-#define TFL_INVALID             0x00000001	//traveling temporary not possible
-#define TFL_WALK                0x00000002	//walking
-#define TFL_CROUCH              0x00000004	//crouching
-#define TFL_BARRIERJUMP         0x00000008	//jumping onto a barrier
-#define TFL_JUMP                0x00000010	//jumping
-#define TFL_LADDER              0x00000020	//climbing a ladder
-#define TFL_WALKOFFLEDGE        0x00000080	//walking of a ledge
-#define TFL_SWIM                0x00000100	//swimming
-#define TFL_WATERJUMP           0x00000200	//jumping out of the water
-#define TFL_TELEPORT            0x00000400	//teleporting
-#define TFL_ELEVATOR            0x00000800	//elevator
-#define TFL_ROCKETJUMP          0x00001000	//rocket jumping
-#define TFL_BFGJUMP             0x00002000	//bfg jumping
-#define TFL_GRAPPLEHOOK         0x00004000	//grappling hook
-#define TFL_DOUBLEJUMP          0x00008000	//double jump
-#define TFL_RAMPJUMP            0x00010000	//ramp jump
-#define TFL_STRAFEJUMP          0x00020000	//strafe jump
-#define TFL_JUMPPAD             0x00040000	//jump pad
-#define TFL_AIR                 0x00080000	//travel through air
-#define TFL_WATER               0x00100000	//travel through water
-#define TFL_SLIME               0x00200000	//travel through slime
-#define TFL_LAVA                0x00400000	//travel through lava
-#define TFL_DONOTENTER          0x00800000	//travel through donotenter area
-#define TFL_FUNCBOB             0x01000000	//func bobbing
-#define TFL_FLIGHT              0x02000000	//flight
-#define TFL_BRIDGE              0x04000000	//move over a bridge
-//
-#define TFL_NOTTEAM1            0x08000000	//not team 1
-#define TFL_NOTTEAM2            0x10000000	//not team 2
-
-//default travel flags
-#define TFL_DEFAULT TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | \
-	TFL_JUMP | TFL_LADDER |	\
-	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | \
-	TFL_TELEPORT | TFL_ELEVATOR | \
-	TFL_AIR | TFL_WATER | TFL_JUMPPAD | TFL_FUNCBOB
-
 typedef enum
 {
 	SOLID_NOT,			// no interaction with other objects

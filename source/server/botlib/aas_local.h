@@ -404,3 +404,39 @@ bool AAS_WriteAASFile(const char* filename);
 void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
+
+#define ROUTING_DEBUG
+
+//travel time in hundreths of a second = distance * 100 / speed
+#define DISTANCEFACTOR_CROUCH       1.3f	//crouch speed = 100
+#define DISTANCEFACTOR_SWIM         1		//should be 0.66, swim speed = 150
+#define DISTANCEFACTOR_WALK         0.33f	//walk speed = 300
+
+// Ridah, scale traveltimes with ground steepness of area
+#define GROUNDSTEEPNESS_TIMESCALE       20	// this is the maximum scale, 1 being the usual for a flat ground
+#define GROUNDSTEEPNESS_TIMESCALE_ET    1
+
+//cache refresh time
+#define CACHE_REFRESHTIME       15.0f	//15 seconds refresh time
+
+//maximum number of routing updates each frame
+#define MAX_FRAMEROUTINGUPDATES_Q3      10
+#define MAX_FRAMEROUTINGUPDATES_WOLF    100
+
+#define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
+
+#ifdef ROUTING_DEBUG
+extern int numareacacheupdates;
+extern int numportalcacheupdates;
+#endif
+
+extern int routingcachesize;
+extern int max_routingcachesize;
+extern int max_frameroutingupdates;
+
+void AAS_RoutingInfo();
+int AAS_ClusterAreaNum(int cluster, int areanum);
+void AAS_InitTravelFlagFromType();
+//returns the travel flag for the given travel type
+int AAS_TravelFlagForType(int traveltype);
+float AAS_RoutingTime();

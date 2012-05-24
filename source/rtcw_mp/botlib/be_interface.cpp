@@ -352,7 +352,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		AAS_ClearShownPolygons();
 		AAS_ClearShownDebugLines();
 		hideposarea = AAS_NearestHideArea(0, origin, AAS_PointAreaNum(origin), 0,
-			botlibglobals.goalorigin, botlibglobals.goalareanum, TFL_DEFAULT);
+			botlibglobals.goalorigin, botlibglobals.goalareanum, WMTFL_DEFAULT);
 
 		//area we are currently in
 		AAS_ShowAreaPolygons(newarea, 1, qtrue);
@@ -381,7 +381,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 	}	//end else
 
 	BotImport_Print(PRT_MESSAGE, "\rtravel time to goal (%d) = %d  ", botlibglobals.goalareanum,
-		AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT));
+		AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, WMTFL_DEFAULT));
 	//newarea = BotReachabilityArea(origin, qtrue);
 	if (newarea != area)
 	{
@@ -433,7 +433,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		}	//end if
 		BotImport_Print(PRT_MESSAGE, "\n");
 		BotImport_Print(PRT_MESSAGE, "travel time to goal (%d) = %d\n", botlibglobals.goalareanum,
-			AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, TFL_DEFAULT | TFL_ROCKETJUMP));
+			AAS_AreaTravelTimeToGoalArea(newarea, origin, botlibglobals.goalareanum, WMTFL_DEFAULT | TFL_ROCKETJUMP));
 		/*
 		VectorCopy(origin, end);
 		end[2] += 5;
@@ -478,7 +478,7 @@ int BotExportTest(int parm0, char* parm1, vec3_t parm2, vec3_t parm3)
 		reachnum = BotGetReachabilityToGoal(origin, newarea, -1,
 			lastgoalareanum, lastareanum,
 			avoidreach, avoidreachtimes, avoidreachtries,
-			&goal, TFL_DEFAULT | TFL_FUNCBOB, TFL_DEFAULT | TFL_FUNCBOB);
+			&goal, WMTFL_DEFAULT | TFL_FUNCBOB, WMTFL_DEFAULT | TFL_FUNCBOB);
 		AAS_ReachabilityFromNum(reachnum, &reach);
 		AAS_ShowReachability(&reach);
 	}	//end else
