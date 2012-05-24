@@ -331,18 +331,6 @@ typedef struct aas_s
 extern aas_t* aasworld;
 extern aas_t aasworlds[MAX_AAS_WORLDS];
 
-//AAS error message
-void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
-//returns true if the AAS file is loaded
-bool AAS_Loaded();
-
-//dumps the loaded AAS data
-void AAS_DumpAASData();
-//loads the AAS file with the given name
-int AAS_LoadAASFile(const char* filename);
-//writes an AAS file with the given name
-bool AAS_WriteAASFile(const char* filename);
-
 //loads the given BSP file
 int AAS_LoadBSPFile();
 //dump the loaded BSP data
@@ -367,3 +355,15 @@ void AAS_DrawCross(const vec3_t origin, float size, int color);
 void AAS_PrintTravelType(int traveltype);
 //draw an arrow
 void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor);
+
+//dumps the loaded AAS data
+void AAS_DumpAASData();
+//loads the AAS file with the given name
+int AAS_LoadAASFile(const char* filename);
+//writes an AAS file with the given name
+bool AAS_WriteAASFile(const char* filename);
+
+//AAS error message
+void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+//returns true if the AAS file is loaded
+bool AAS_Loaded();

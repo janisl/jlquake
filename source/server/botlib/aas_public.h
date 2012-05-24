@@ -44,12 +44,6 @@ struct aas_entityinfo_t
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 };
 
-//returns true if AAS is initialized
-bool AAS_Initialized();
-//returns the current time
-float AAS_Time();
-void AAS_SetCurrentWorld(int index);
-
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -60,3 +54,9 @@ bool AAS_VectorForBSPEpairKey(int ent, const char* key, vec3_t v);
 bool AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
 //get an integer for the BSP epair key
 bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);
+
+//returns true if AAS is initialized
+bool AAS_Initialized();
+//returns the current time
+float AAS_Time();
+void AAS_SetCurrentWorld(int index);
