@@ -64,6 +64,7 @@ void AAS_RoutingFreeMemory(void* ptr)
 //===========================================================================
 void AAS_FreeRoutingCache(aas_routingcache_t* cache)
 {
+	AAS_UnlinkCache(cache);
 	routingcachesize -= cache->size;
 	AAS_RoutingFreeMemory(cache);
 }	//end of the function AAS_FreeRoutingCache
@@ -549,43 +550,6 @@ void AAS_InitPortalMaxTravelTimes(void)
 		//BotImport_Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, aasworld->portalmaxtraveltimes[i]);
 	}	//end for
 }	//end of the function AAS_InitPortalMaxTravelTimes
-/*
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_UnlinkCache(aas_routingcache_t *cache)
-{
-    if (cache->time_next) cache->time_next->time_prev = cache->time_prev;
-    else newestcache = cache->time_prev;
-    if (cache->time_prev) cache->time_prev->time_next = cache->time_next;
-    else oldestcache = cache->time_next;
-    cache->time_next = NULL;
-    cache->time_prev = NULL;
-} //end of the function AAS_UnlinkCache
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_LinkCache(aas_routingcache_t *cache)
-{
-    if (newestcache)
-    {
-        newestcache->time_next = cache;
-        cache->time_prev = cache;
-    } //end if
-    else
-    {
-        oldestcache = cache;
-        cache->time_prev = NULL;
-    } //end else
-    cache->time_next = NULL;
-    newestcache = cache;
-} //end of the function AAS_LinkCache*/
 //===========================================================================
 //
 // Parameter:			-
@@ -1577,8 +1541,13 @@ aas_routingcache_t* AAS_GetAreaRoutingCache(int clusternum, int areanum, int tra
 		aasworld->clusterareacache[clusternum][clusterareanum] = cache;
 		AAS_UpdateAreaRoutingCache(cache);
 	}	//end if
-		//the cache has been accessed
+	else
+	{
+		AAS_UnlinkCache(cache);
+	}
+	//the cache has been accessed
 	cache->time = AAS_RoutingTime();
+	AAS_LinkCache(cache);
 	return cache;
 }	//end of the function AAS_GetAreaRoutingCache
 //===========================================================================
@@ -1725,8 +1694,13 @@ aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 		//update the cache
 		AAS_UpdatePortalRoutingCache(cache);
 	}	//end if
-		//the cache has been accessed
+	else
+	{
+		AAS_UnlinkCache(cache);
+	}
+	//the cache has been accessed
 	cache->time = AAS_RoutingTime();
+	AAS_LinkCache(cache);
 	return cache;
 }	//end of the function AAS_GetPortalRoutingCache
 //===========================================================================

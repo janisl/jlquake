@@ -44,54 +44,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_UnlinkCache(aas_routingcache_t* cache)
-{
-	if (cache->time_next)
-	{
-		cache->time_next->time_prev = cache->time_prev;
-	}
-	else
-	{
-		aasworld->newestcache = cache->time_prev;
-	}
-	if (cache->time_prev)
-	{
-		cache->time_prev->time_next = cache->time_next;
-	}
-	else
-	{
-		aasworld->oldestcache = cache->time_next;
-	}
-	cache->time_next = NULL;
-	cache->time_prev = NULL;
-}	//end of the function AAS_UnlinkCache
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_LinkCache(aas_routingcache_t* cache)
-{
-	if (aasworld->newestcache)
-	{
-		aasworld->newestcache->time_next = cache;
-		cache->time_prev = aasworld->newestcache;
-	}	//end if
-	else
-	{
-		aasworld->oldestcache = cache;
-		cache->time_prev = NULL;
-	}	//end else
-	cache->time_next = NULL;
-	aasworld->newestcache = cache;
-}	//end of the function AAS_LinkCache
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 void AAS_FreeRoutingCache(aas_routingcache_t* cache)
 {
 	AAS_UnlinkCache(cache);
@@ -1608,8 +1560,8 @@ aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 	else
 	{
 		AAS_UnlinkCache(cache);
-	}	//end else
-		//the cache has been accessed
+	}
+	//the cache has been accessed
 	cache->time = AAS_RoutingTime();
 	cache->type = CACHETYPE_PORTAL;
 	AAS_LinkCache(cache);

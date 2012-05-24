@@ -440,3 +440,5 @@ void AAS_InitTravelFlagFromType();
 //returns the travel flag for the given travel type
 int AAS_TravelFlagForType(int traveltype);
 float AAS_RoutingTime();
+void AAS_LinkCache(aas_routingcache_t* cache);
+void AAS_UnlinkCache(aas_routingcache_t* cache);

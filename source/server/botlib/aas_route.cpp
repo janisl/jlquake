@@ -109,3 +109,41 @@ int AAS_TravelFlagForType(int traveltype)
 {
 	return AAS_Time();
 }
+
+void AAS_LinkCache(aas_routingcache_t* cache)
+{
+	if (aasworld->newestcache)
+	{
+		aasworld->newestcache->time_next = cache;
+		cache->time_prev = aasworld->newestcache;
+	}
+	else
+	{
+		aasworld->oldestcache = cache;
+		cache->time_prev = NULL;
+	}
+	cache->time_next = NULL;
+	aasworld->newestcache = cache;
+}
+
+void AAS_UnlinkCache(aas_routingcache_t* cache)
+{
+	if (cache->time_next)
+	{
+		cache->time_next->time_prev = cache->time_prev;
+	}
+	else
+	{
+		aasworld->newestcache = cache->time_prev;
+	}
+	if (cache->time_prev)
+	{
+		cache->time_prev->time_next = cache->time_next;
+	}
+	else
+	{
+		aasworld->oldestcache = cache->time_next;
+	}
+	cache->time_next = NULL;
+	cache->time_prev = NULL;
+}
