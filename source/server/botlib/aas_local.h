@@ -345,6 +345,16 @@ void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t mins, vec3_t
 
 #define MAX_PORTALAREAS         1024
 
+void AAS_RemoveClusterAreas();
+bool AAS_FloodClusterAreas_r(int areanum, int clusternum);
+bool AAS_FloodClusterAreasUsingReachabilities(int clusternum);
+void AAS_CreatePortals();
+void AAS_FindPossiblePortals();
+bool AAS_TestPortals();
+void AAS_CountForcedClusterPortals();
+void AAS_CreateViewPortals();
+void AAS_SetViewPortalsAsClusterPortals();
+
 void AAS_ClearShownPolygons();
 void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points);
 //clear the shown debug lines
