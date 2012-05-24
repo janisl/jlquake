@@ -46,9 +46,6 @@ struct aas_clientmove_s;
 struct bot_moveresult_s;
 struct bot_initmove_s;
 
-// RF, these need to be here so the botlib also knows how many bot game entities there are
-#define NUM_BOTGAMEENTITIES 384
-
 #define BLOCKINGFLAG_MOVER  (~0x7fffffff)
 
 //debug line colors
@@ -151,10 +148,6 @@ typedef struct botlib_import_s
 
 typedef struct aas_export_s
 {
-	//-----------------------------------
-	// be_aas_entity.h
-	//-----------------------------------
-	void (* AAS_EntityInfo)(int entnum, struct aas_entityinfo_t* info);
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------

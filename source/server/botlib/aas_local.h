@@ -373,6 +373,26 @@ void AAS_PrintTravelType(int traveltype);
 //draw an arrow
 void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor);
 
+extern aas_t* defaultaasworld;
+
+//returns the origin of the entity
+void AAS_EntityOrigin(int entnum, vec3_t origin);
+//returns the model index of the entity
+int AAS_EntityModelindex(int entnum);
+//returns the entity type
+int AAS_EntityType(int entnum);
+//returns the BSP model number of the entity
+int AAS_EntityModelNum(int entnum);
+//returns the origin of an entity with the given model number
+bool AAS_OriginOfMoverWithModelNum(int modelnum, vec3_t origin);
+//resets the entity AAS and BSP links (sets areas and leaves pointers to NULL)
+void AAS_ResetEntityLinks();
+//invalidates all entity infos
+void AAS_InvalidateEntities();
+//returns the next entity
+int AAS_NextEntity(int entnum);
+bool AAS_IsEntityInArea(int entnumIgnore, int entnumIgnore2, int areanum);
+
 //dumps the loaded AAS data
 void AAS_DumpAASData();
 //loads the AAS file with the given name

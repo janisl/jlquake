@@ -262,9 +262,6 @@ typedef struct
 	cpsCampaign_t campaigns[MAX_CAMPAIGNS];
 } cpsFile_t;
 
-qboolean BG_LoadCampaignSave(const char* filename, cpsFile_t* file, const char* profile);
-qboolean BG_StoreCampaignSave(const char* filename, cpsFile_t* file, const char* profile);
-
 // Random reinforcement seed settings
 #define MAX_REINFSEEDS  8
 #define REINF_RANGE     16		// (0 to n-1 second offset)
@@ -487,10 +484,6 @@ typedef struct
 	void (* trace)(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
 	int (* pointcontents)(const vec3_t point, int passEntityNum);
 } pmove_t;
-
-// if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles(etplayerState_t * ps, pmoveExt_t * pmext, etusercmd_t * cmd, void(trace) (q3trace_t * results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask), int tracemask);
-int Pmove(pmove_t* pmove);
 
 //===================================================================================
 
@@ -1417,26 +1410,7 @@ typedef struct gitem_s
 extern gitem_t bg_itemlist[];
 extern int bg_numItems;
 
-gitem_t* BG_FindItem(const char* pickupName);
-gitem_t* BG_FindItemForClassName(const char* className);
-gitem_t* BG_FindItemForWeapon(weapon_t weapon);
-gitem_t* BG_FindItemForPowerup(powerup_t pw);
-gitem_t* BG_FindItemForHoldable(holdable_t pw);
-gitem_t* BG_FindItemForAmmo(int weapon);
-//gitem_t *BG_FindItemForKey		( wkey_t k, int *index );
-weapon_t BG_FindAmmoForWeapon(weapon_t weapon);
-weapon_t BG_FindClipForWeapon(weapon_t weapon);
-
-qboolean BG_AkimboFireSequence(int weapon, int akimboClip, int mainClip);
-qboolean BG_IsAkimboWeapon(int weaponNum);
-qboolean BG_IsAkimboSideArm(int weaponNum, etplayerState_t* ps);
-int BG_AkimboSidearm(int weaponNum);
-
 #define ITEM_INDEX(x) ((x) - bg_itemlist)
-
-qboolean BG_CanUseWeapon(int classNum, int teamNum, weapon_t weapon);
-
-qboolean    BG_CanItemBeGrabbed(const etentityState_t* ent, const etplayerState_t* ps, int* skill, int teamNum);
 
 
 // content masks
@@ -1512,29 +1486,7 @@ typedef enum {
 
 
 
-void    BG_EvaluateTrajectory(const q3trajectory_t* tr, int atTime, vec3_t result, qboolean isAngle, int splinePath);
-void BG_EvaluateTrajectoryDelta(const q3trajectory_t* tr, int atTime, vec3_t result, qboolean isAngle, int splineData);
-void    BG_GetMarkDir(const vec3_t dir, const vec3_t normal, vec3_t out);
-
-void    BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, etplayerState_t* ps);
-
-//void	BG_TouchJumpPad( etplayerState_t *ps, etentityState_t *jumppad );
-
-void    BG_PlayerStateToEntityState(etplayerState_t* ps, etentityState_t* s, qboolean snap);
-void    BG_PlayerStateToEntityStateExtraPolate(etplayerState_t* ps, etentityState_t* s, int time, qboolean snap);
-weapon_t BG_DuplicateWeapon(weapon_t weap);
-gitem_t* BG_ValidStatWeapon(weapon_t weap);
-weapon_t BG_WeaponForMOD(int MOD);
-
-qboolean    BG_WeaponInWolfMP(int weapon);
-qboolean    BG_PlayerTouchesItem(etplayerState_t* ps, etentityState_t* item, int atTime);
-qboolean    BG_PlayerSeesItem(etplayerState_t* ps, etentityState_t* item, int atTime);
-qboolean    BG_AddMagicAmmo(etplayerState_t* ps, int* skill, int teamNum, int numOfClips);
-
 #define OVERCLIP        1.001
-
-//----(SA)	removed PM_ammoNeeded 11/27/00
-void PM_ClipVelocity(vec3_t in, vec3_t normal, vec3_t out, float overbounce);
 
 //#define ARENAS_PER_TIER		4
 #define MAX_ARENAS          64

@@ -531,10 +531,6 @@ Init_AAS_Export
 static void Init_AAS_Export(aas_export_t* aas)
 {
 	//--------------------------------------------
-	// be_aas_entity.c
-	//--------------------------------------------
-	aas->AAS_EntityInfo = AAS_EntityInfo;
-	//--------------------------------------------
 	// be_aas_main.c
 	//--------------------------------------------
 	aas->AAS_PresenceTypeBoundingBox = AAS_PresenceTypeBoundingBox;

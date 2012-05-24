@@ -502,7 +502,7 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t* reach)
 	//get some bsp model info
 	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
-	if (!AAS_OriginOfEntityWithModelNum(modelnum, modelorigin))
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, modelorigin))
 	{
 		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 		return qfalse;
@@ -552,7 +552,7 @@ int MoverDown(aas_reachability_t* reach)
 	//get some bsp model info
 	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
-	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
 	{
 		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 		return qfalse;
@@ -787,11 +787,6 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 		t += reach.traveltime;	// + AAS_AreaTravelTime(areanum, origin, reach.start);
 		//t += reach.traveltime + AAS_AreaTravelTime(areanum, origin, reach.start);
 
-		// Ridah, if there exists other entities in this area, avoid it
-//		if (reach.areanum != goal->areanum && AAS_IsEntityInArea( entnum, goal->entitynum, reach.areanum )) {
-//			t += 50;
-//		}
-
 		//if the travel time is better than the ones already found
 		if (!besttime || t < besttime)
 		{
@@ -998,7 +993,7 @@ void MoverBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter)
 	//get some bsp model info
 	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
 	//
-	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
 	{
 		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
 	}	//end if
@@ -2582,7 +2577,7 @@ void BotFuncBobStartEnd(aas_reachability_t* reach, vec3_t start, vec3_t end, vec
 	int num0, num1;
 
 	modelnum = reach->facenum & 0x0000FFFF;
-	if (!AAS_OriginOfEntityWithModelNum(modelnum, origin))
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
 	{
 		BotImport_Print(PRT_MESSAGE, "BotFuncBobStartEnd: no entity with model %d\n", modelnum);
 		VectorSet(start, 0, 0, 0);

@@ -16,6 +16,9 @@
 
 //!!!!!!!!!!!!!!! Used by game VM !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+// RF, these need to be here so the botlib also knows how many bot game entities there are
+#define NUM_BOTGAMEENTITIES 384
+
 //entity info
 struct aas_entityinfo_t
 {
@@ -54,6 +57,9 @@ bool AAS_VectorForBSPEpairKey(int ent, const char* key, vec3_t v);
 bool AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
 //get an integer for the BSP epair key
 bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);
+
+//returns the info of the given entity
+void AAS_EntityInfo(int entnum, aas_entityinfo_t* info);
 
 //returns true if AAS is initialized
 bool AAS_Initialized();

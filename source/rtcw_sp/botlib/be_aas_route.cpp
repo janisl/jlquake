@@ -2645,12 +2645,6 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 					continue;
 				}
 			}
-			// make sure the hide area doesn't have anyone else in it
-			if (AAS_IsEntityInArea(srcnum, -1, nextareanum))
-			{
-				t += 1000;	// avoid this path/area
-				//continue;
-			}
 			//
 			// if we weren't visible when starting, make sure we don't move into their view
 			if (enemyareanum && !startVisible && AAS_AreaVisible(enemyareanum, nextareanum))

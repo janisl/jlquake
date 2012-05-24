@@ -2,6 +2,7 @@ add_library(server STATIC
 	botlib/aas_bsp.cpp
 	botlib/aas_cluster.cpp
 	botlib/aas_debug.cpp
+	botlib/aas_entity.cpp
 	botlib/aas_file.cpp
 	botlib/aas_main.cpp
 	botlib/ai_character.cpp
