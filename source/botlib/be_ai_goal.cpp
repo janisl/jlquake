@@ -487,9 +487,6 @@ void BotFindEntityForLevelItem(levelitem_t* li)
 // Changes Globals:		-
 //===========================================================================
 
-//NOTE: enum entityType_t in bg_public.h
-#define ET_ITEM         2
-
 void BotUpdateEntityItems(void)
 {
 	int ent, i, modelindex;
@@ -522,7 +519,7 @@ void BotUpdateEntityItems(void)
 	//
 	for (ent = AAS_NextEntity(0); ent; ent = AAS_NextEntity(ent))
 	{
-		if (AAS_EntityType(ent) != ET_ITEM)
+		if (AAS_EntityType(ent) != Q3ET_ITEM)
 		{
 			continue;
 		}

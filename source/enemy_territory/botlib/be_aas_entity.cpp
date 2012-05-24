@@ -48,15 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 // Ridah, always use the default world for entities
 aas_t* defaultaasworld = aasworlds;
 
-//FIXME: these might change
-/*enum {
-    ET_GENERAL,
-    ET_PLAYER,
-    ET_ITEM,
-    ET_MISSILE,
-    ET_MOVER
-};*/
-
 //===========================================================================
 //
 // Parameter:				-
@@ -288,7 +279,7 @@ int AAS_OriginOfEntityWithModelNum(int modelnum, vec3_t origin)
 	for (i = 0; i < (*defaultaasworld).maxentities; i++)
 	{
 		ent = &(*defaultaasworld).entities[i];
-		if (ent->i.type == ET_MOVER)
+		if (ent->i.type == Q3ET_MOVER)
 		{
 			if (ent->i.modelindex == modelnum)
 			{

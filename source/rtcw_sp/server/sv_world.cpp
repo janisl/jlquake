@@ -659,7 +659,7 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 		}
 
 		// RF, special case, ignore chairs if we are carrying them
-		if (touch->s.eType == ET_PROP && touch->s.otherEntityNum == clip->passEntityNum + 1)
+		if (touch->s.eType == WSET_PROP && touch->s.otherEntityNum == clip->passEntityNum + 1)
 		{
 			continue;
 		}

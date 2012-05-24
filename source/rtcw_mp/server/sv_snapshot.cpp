@@ -584,7 +584,7 @@ notVisible:
 				ent->s.eFlags |= EF_NODRAW;		// don't draw, just process event
 				SV_AddEntToSnapshot(svEnt, ent, eNums);
 			}
-			else if (ent->s.eType == ET_PLAYER)
+			else if (ent->s.eType == Q3ET_PLAYER)
 			{
 				// keep players around if they are alive and active (so sounds dont get messed up)
 				if (!(ent->s.eFlags & EF_DEAD))

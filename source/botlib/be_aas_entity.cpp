@@ -40,15 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MASK_SOLID      CONTENTS_PLAYERCLIP
 
-//FIXME: these might change
-enum {
-	ET_GENERAL,
-	ET_PLAYER,
-	ET_ITEM,
-	ET_MISSILE,
-	ET_MOVER
-};
-
 //===========================================================================
 //
 // Parameter:				-
@@ -270,7 +261,7 @@ int AAS_OriginOfMoverWithModelNum(int modelnum, vec3_t origin)
 	for (i = 0; i < (*aasworld).maxentities; i++)
 	{
 		ent = &(*aasworld).entities[i];
-		if (ent->i.type == ET_MOVER)
+		if (ent->i.type == Q3ET_MOVER)
 		{
 			if (ent->i.modelindex == modelnum)
 			{

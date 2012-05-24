@@ -21,3 +21,12 @@ enum
 	//-- team games go after this --
 	Q3GT_TEAM,				// team deathmatch
 };
+
+enum
+{
+	Q3ET_PLAYER = 1,
+	Q3ET_ITEM = 2,
+	Q3ET_MOVER = 4,
+
+	WSET_PROP = 32,
+};
