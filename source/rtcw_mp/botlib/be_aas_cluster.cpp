@@ -44,9 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-// do not flood through area faces, only use reachabilities
-int nofaceflood = qtrue;
-
 //===========================================================================
 //
 // Parameter:				-
@@ -179,8 +176,7 @@ int AAS_UpdatePortal(int areanum, int clusternum)
 int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 {
 	aas_area_t* area;
-	aas_face_t* face;
-	int facenum, i;
+	int i;
 
 	//
 	if (areanum <= 0 || areanum >= (*aasworld).numareas)
@@ -215,35 +211,6 @@ int AAS_FloodClusterAreas_r(int areanum, int clusternum)
 	(*aasworld).clusters[clusternum].numareas++;
 
 	area = &(*aasworld).areas[areanum];
-	//use area faces to flood into adjacent areas
-	if (!nofaceflood)
-	{
-		for (i = 0; i < area->numfaces; i++)
-		{
-			facenum = abs((*aasworld).faceindex[area->firstface + i]);
-			face = &(*aasworld).faces[facenum];
-			if (face->frontarea == areanum)
-			{
-				if (face->backarea)
-				{
-					if (!AAS_FloodClusterAreas_r(face->backarea, clusternum))
-					{
-						return qfalse;
-					}
-				}
-			}	//end if
-			else
-			{
-				if (face->frontarea)
-				{
-					if (!AAS_FloodClusterAreas_r(face->frontarea, clusternum))
-					{
-						return qfalse;
-					}
-				}
-			}	//end else
-		}	//end for
-	}
 	//use the reachabilities to flood into other areas
 	for (i = 0; i < (*aasworld).areasettings[areanum].numreachableareas; i++)
 	{
@@ -447,14 +414,11 @@ int AAS_FindClusters(void)
 			continue;
 		}
 		// if not flooding through faces only use areas that have reachabilities
-		if (nofaceflood)
+		if (!(*aasworld).areasettings[i].numreachableareas)
 		{
-			if (!(*aasworld).areasettings[i].numreachableareas)
-			{
-				continue;
-			}
-		}	//end if
-			//if the area is a cluster portal
+			continue;
+		}
+		//if the area is a cluster portal
 		if ((*aasworld).areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)
 		{
 			continue;
