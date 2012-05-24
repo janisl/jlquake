@@ -38,12 +38,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-#define AAS_MAX_PORTALS                 65536
-#define AAS_MAX_PORTALINDEXSIZE         65536
-#define AAS_MAX_CLUSTERS                65536
-//
-#define MAX_PORTALAREAS         1024
-
 // do not flood through area faces, only use reachabilities
 int nofaceflood = true;
 

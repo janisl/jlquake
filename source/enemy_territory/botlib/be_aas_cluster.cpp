@@ -44,12 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_def.h"
 #include "be_interface.h"
 
-#define AAS_MAX_PORTALS                 65536
-#define AAS_MAX_PORTALINDEXSIZE         65536
-#define AAS_MAX_CLUSTERS                65536
-//
-#define MAX_PORTALAREAS         1024
-
 // do not flood through area faces, only use reachabilities
 int nofaceflood = qtrue;
 

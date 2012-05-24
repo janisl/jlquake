@@ -338,6 +338,13 @@ void AAS_DumpBSPData();
 //gets the mins, maxs and origin of a BSP model
 void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs);
 
+
+#define AAS_MAX_PORTALS                 65536
+#define AAS_MAX_PORTALINDEXSIZE         65536
+#define AAS_MAX_CLUSTERS                65536
+
+#define MAX_PORTALAREAS         1024
+
 void AAS_ClearShownPolygons();
 void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points);
 //clear the shown debug lines
