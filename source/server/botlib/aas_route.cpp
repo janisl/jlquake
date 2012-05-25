@@ -483,3 +483,58 @@ void AAS_InitPortalMaxTravelTimes()
 		aasworld->portalmaxtraveltimes[i] = AAS_PortalMaxTravelTime(i);
 	}
 }
+
+bool AAS_FreeOldestCache()
+{
+	aas_routingcache_t* cache;
+	for (cache = aasworld->oldestcache; cache; cache = cache->time_next)
+	{
+		// never free area cache leading towards a portal
+		if (cache->type == CACHETYPE_AREA && aasworld->areasettings[cache->areanum].cluster < 0)
+		{
+			continue;
+		}
+		break;
+	}
+	if (cache)
+	{
+		// unlink the cache
+		if (cache->type == CACHETYPE_AREA)
+		{
+			//number of the area in the cluster
+			int clusterareanum = AAS_ClusterAreaNum(cache->cluster, cache->areanum);
+			// unlink from cluster area cache
+			if (cache->prev)
+			{
+				cache->prev->next = cache->next;
+			}
+			else
+			{
+				aasworld->clusterareacache[cache->cluster][clusterareanum] = cache->next;
+			}
+			if (cache->next)
+			{
+				cache->next->prev = cache->prev;
+			}
+		}
+		else
+		{
+			// unlink from portal cache
+			if (cache->prev)
+			{
+				cache->prev->next = cache->next;
+			}
+			else
+			{
+				aasworld->portalcache[cache->areanum] = cache->next;
+			}
+			if (cache->next)
+			{
+				cache->next->prev = cache->prev;
+			}
+		}
+		AAS_FreeRoutingCache(cache);
+		return true;
+	}
+	return false;
+}

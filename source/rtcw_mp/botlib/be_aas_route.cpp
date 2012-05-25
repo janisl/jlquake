@@ -173,100 +173,6 @@ void AAS_CalculateAreaTravelTimes(void)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int AAS_FreeOldestCache(void)
-{
-	int i, j, bestcluster, bestarea, freed;
-	float besttime;
-	aas_routingcache_t* cache, * bestcache;
-
-	freed = qfalse;
-	besttime = 999999999;
-	bestcache = NULL;
-	bestcluster = 0;
-	bestarea = 0;
-	//refresh cluster cache
-	for (i = 0; i < aasworld->numclusters; i++)
-	{
-		for (j = 0; j < aasworld->clusters[i].numareas; j++)
-		{
-			for (cache = aasworld->clusterareacache[i][j]; cache; cache = cache->next)
-			{
-				//never remove cache leading towards a portal
-				if (aasworld->areasettings[cache->areanum].cluster < 0)
-				{
-					continue;
-				}
-				//if this cache is older than the cache we found so far
-				if (cache->time < besttime)
-				{
-					bestcache = cache;
-					bestcluster = i;
-					bestarea = j;
-					besttime = cache->time;
-				}	//end if
-			}	//end for
-		}	//end for
-	}	//end for
-	if (bestcache)
-	{
-		cache = bestcache;
-		if (cache->prev)
-		{
-			cache->prev->next = cache->next;
-		}
-		else
-		{
-			aasworld->clusterareacache[bestcluster][bestarea] = cache->next;
-		}
-		if (cache->next)
-		{
-			cache->next->prev = cache->prev;
-		}
-		AAS_FreeRoutingCache(cache);
-		freed = qtrue;
-	}	//end if
-	besttime = 999999999;
-	bestcache = NULL;
-	bestarea = 0;
-	for (i = 0; i < aasworld->numareas; i++)
-	{
-		//refresh portal cache
-		for (cache = aasworld->portalcache[i]; cache; cache = cache->next)
-		{
-			if (cache->time < besttime)
-			{
-				bestcache = cache;
-				bestarea = i;
-				besttime = cache->time;
-			}	//end if
-		}	//end for
-	}	//end for
-	if (bestcache)
-	{
-		cache = bestcache;
-		if (cache->prev)
-		{
-			cache->prev->next = cache->next;
-		}
-		else
-		{
-			aasworld->portalcache[bestarea] = cache->next;
-		}
-		if (cache->next)
-		{
-			cache->next->prev = cache->prev;
-		}
-		AAS_FreeRoutingCache(cache);
-		freed = qtrue;
-	}	//end if
-	return freed;
-}	//end of the function AAS_FreeOldestCache
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 void AAS_FreeAllClusterAreaCache(void)
 {
 	int i, j;
@@ -1116,6 +1022,7 @@ aas_routingcache_t* AAS_GetAreaRoutingCache(int clusternum, int areanum, int tra
 	}
 	//the cache has been accessed
 	cache->time = AAS_RoutingTime();
+	cache->type = CACHETYPE_AREA;
 	AAS_LinkCache(cache);
 	return cache;
 }	//end of the function AAS_GetAreaRoutingCache
@@ -1280,6 +1187,7 @@ aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 	}
 	//the cache has been accessed
 	cache->time = AAS_RoutingTime();
+	cache->type = CACHETYPE_PORTAL;
 	AAS_LinkCache(cache);
 	return cache;
 }	//end of the function AAS_GetPortalRoutingCache
