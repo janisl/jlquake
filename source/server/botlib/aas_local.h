@@ -414,7 +414,6 @@ bool AAS_Loaded();
 
 // Ridah, scale traveltimes with ground steepness of area
 #define GROUNDSTEEPNESS_TIMESCALE       20	// this is the maximum scale, 1 being the usual for a flat ground
-#define GROUNDSTEEPNESS_TIMESCALE_ET    1
 
 //cache refresh time
 #define CACHE_REFRESHTIME       15.0f	//15 seconds refresh time
@@ -450,3 +449,5 @@ void AAS_EnableAllAreas();
 void AAS_InitAreaContentsTravelFlags();
 //return the travel flag(s) for traveling through this area
 int AAS_AreaContentsTravelFlags(int areanum);
+void AAS_CreateReversedReachability();
+float AAS_AreaGroundSteepnessScale(int areanum);

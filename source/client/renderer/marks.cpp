@@ -697,7 +697,6 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 		}
 		else if (*surfaces[i] == SF_FACE)
 		{
-			extern float VectorDistance(vec3_t v1, vec3_t v2);
 			vec3_t axis[3];
 			float texCoordScale, dot;
 			vec3_t originalPoints[4];

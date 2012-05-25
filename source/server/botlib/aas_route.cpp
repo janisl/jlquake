@@ -378,3 +378,69 @@ int AAS_AreaContentsTravelFlags(int areanum)
 {
 	return aasworld->areacontentstravelflags[areanum];
 }
+
+void AAS_CreateReversedReachability()
+{
+#ifdef DEBUG
+	int starttime = Sys_Milliseconds();
+#endif
+	//free reversed links that have already been created
+	if (aasworld->reversedreachability)
+	{
+		Mem_Free(aasworld->reversedreachability);
+	}
+	//allocate memory for the reversed reachability links
+	char* ptr = (char*)Mem_ClearedAlloc(aasworld->numareas * sizeof(aas_reversedreachability_t) +
+		aasworld->reachabilitysize * sizeof(aas_reversedlink_t));
+	//
+	aasworld->reversedreachability = (aas_reversedreachability_t*)ptr;
+	//pointer to the memory for the reversed links
+	ptr += aasworld->numareas * sizeof(aas_reversedreachability_t);
+	//check all reachabilities of all areas
+	for (int i = 1; i < aasworld->numareas; i++)
+	{
+		//settings of the area
+		aas_areasettings_t* settings = &aasworld->areasettings[i];
+
+		if (GGameType & GAME_Quake3 && settings->numreachableareas >= 128)
+		{
+			BotImport_Print(PRT_WARNING, "area %d has more than 128 reachabilities\n", i);
+		}
+		//create reversed links for the reachabilities
+		for (int n = 0; n < settings->numreachableareas && (!(GGameType & GAME_Quake3) || n < 128); n++)
+		{
+			// Gordon: Temp hack for b0rked last area in
+			if (GGameType & GAME_ET && (settings->firstreachablearea < 0 || settings->firstreachablearea >= aasworld->reachabilitysize))
+			{
+				BotImport_Print(PRT_WARNING, "settings->firstreachablearea out of range\n");
+				continue;
+			}
+
+			//reachability link
+			aas_reachability_t* reach = &aasworld->reachability[settings->firstreachablearea + n];
+
+			if (GGameType & GAME_ET && (reach->areanum < 0 || reach->areanum >= aasworld->reachabilitysize))
+			{
+				BotImport_Print(PRT_WARNING, "reach->areanum out of range\n");
+				continue;
+			}
+
+			aas_reversedlink_t* revlink = (aas_reversedlink_t*)ptr;
+			ptr += sizeof(aas_reversedlink_t);
+
+			revlink->areanum = i;
+			revlink->linknum = settings->firstreachablearea + n;
+			revlink->next = aasworld->reversedreachability[reach->areanum].first;
+			aasworld->reversedreachability[reach->areanum].first = revlink;
+			aasworld->reversedreachability[reach->areanum].numlinks++;
+		}
+	}
+#ifdef DEBUG
+	BotImport_Print(PRT_MESSAGE, "reversed reachability %d msec\n", Sys_Milliseconds() - starttime);
+#endif
+}
+
+float AAS_AreaGroundSteepnessScale(int areanum)
+{
+	return (1.0 + aasworld->areasettings[areanum].groundsteepness * (float)(GROUNDSTEEPNESS_TIMESCALE - 1));
+}
