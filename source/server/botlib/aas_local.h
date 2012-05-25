@@ -438,7 +438,6 @@ int AAS_ClusterAreaNum(int cluster, int areanum);
 void AAS_InitTravelFlagFromType();
 //returns the travel flag for the given travel type
 int AAS_TravelFlagForType(int traveltype);
-float AAS_RoutingTime();
 void AAS_RemoveRoutingCacheUsingArea(int areanum);
 void AAS_ClearClusterTeamFlags(int areanum);
 void AAS_EnableAllAreas();

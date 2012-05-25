@@ -156,7 +156,7 @@ int AAS_TravelFlagForType(int traveltype)
 	return aasworld->travelflagfortype[traveltype];
 }
 
-/*__inline*/ float AAS_RoutingTime()
+static inline float AAS_RoutingTime()
 {
 	return AAS_Time();
 }
