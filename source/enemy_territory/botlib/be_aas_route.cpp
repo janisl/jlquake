@@ -37,24 +37,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_utils.h"
-#include "l_memory.h"
 #include "../game/botlib.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_interface.h"
 #include "be_aas_def.h"
-
-// Ridah, routing memory calls go here, so we can change between Hunk/Zone easily
-void* AAS_RoutingGetMemory(int size)
-{
-	return GetClearedMemory(size);
-}
-
-void AAS_RoutingFreeMemory(void* ptr)
-{
-	FreeMemory(ptr);
-}
-// done.
 
 //===========================================================================
 //
@@ -120,7 +107,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	//if there are still area travel times, free the memory
 	if (aasworld->areatraveltimes)
 	{
-		AAS_RoutingFreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	//get the total size of all the area travel times
 	size = aasworld->numareas * sizeof(unsigned short**);
@@ -135,7 +122,7 @@ void AAS_CalculateAreaTravelTimes(void)
 		size += settings->numreachableareas * revreach->numlinks * sizeof(unsigned short);
 	}	//end for
 		//allocate memory for the area travel times
-	ptr = (char*)AAS_RoutingGetMemory(size);
+	ptr = (char*)Mem_ClearedAlloc(size);
 	aasworld->areatraveltimes = (unsigned short***)ptr;
 	ptr += aasworld->numareas * sizeof(unsigned short**);
 	//calcluate the travel times for all the areas
@@ -305,7 +292,7 @@ void AAS_FreeRoutingCaches(void)
 	// free cached travel times within areas
 	if (aasworld->areatraveltimes)
 	{
-		AAS_RoutingFreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	aasworld->areatraveltimes = NULL;
 	// free cached maximum travel time through cluster portals
@@ -1271,7 +1258,7 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 
 	if (!waypointsOnly)
 	{
-		validareas = (byte*)GetClearedMemory(numAreas * sizeof(byte));
+		validareas = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
 	}
 
 	aasworld->areawaypoints = (vec3_t*)Mem_ClearedAlloc(numAreas * sizeof(vec3_t));
@@ -1319,9 +1306,9 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 
 	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
 
-	areaTable = (byte*)GetClearedMemory(numAreas * numAreaBits * sizeof(byte));
+	areaTable = (byte*)Mem_ClearedAlloc(numAreas * numAreaBits * sizeof(byte));
 
-	buf = (byte*)GetClearedMemory(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
+	buf = (byte*)Mem_ClearedAlloc(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
 
 	for (i = 1; i < numAreas; i++)
 	{
@@ -1390,7 +1377,7 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 
 	if (areaTable)
 	{
-		FreeMemory(areaTable);
+		Mem_Free(areaTable);
 	}
 
 	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
@@ -1440,7 +1427,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -1449,7 +1436,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 		//
 	if (!aasworld->visCache)
 	{
-		aasworld->visCache = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
 	}
 	else
 	{
@@ -1712,7 +1699,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -1721,7 +1708,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 		//
 	if (!aasworld->visCache)
 	{
-		aasworld->visCache = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
 	}
 	else
 	{
@@ -1982,7 +1969,7 @@ int AAS_ListAreasInRange(vec3_t srcpos, int srcarea, float range, int travelflag
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -2123,7 +2110,7 @@ int AAS_AvoidDangerArea(vec3_t srcpos, int srcarea, vec3_t dangerpos, int danger
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -2278,7 +2265,7 @@ void AAS_DangerPQInit
 	if (!aasworld->PQ_accumulator)
 	{
 		// Get memory for this array the safe way.
-		aasworld->PQ_accumulator = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->PQ_accumulator = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 
 	}	// if (!aasworld->distanceFromDanger) ...
 
@@ -2646,7 +2633,7 @@ int AAS_Retreat
 	// Init the hide travel time if needed
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	// Otherwise, it exists already, so just reset the values
 	else
@@ -2658,7 +2645,7 @@ int AAS_Retreat
 	if (!aasworld->distanceFromDanger)
 	{
 		// Get memory for this array the safe way.
-		aasworld->distanceFromDanger = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->distanceFromDanger = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 
 	}	// if (!aasworld->distanceFromDanger) ...
 
@@ -2810,19 +2797,19 @@ void AAS_InitTeamDeath(void)
 {
 	if (aasworld->teamDeathTime)
 	{
-		FreeMemory(aasworld->teamDeathTime);
+		Mem_Free(aasworld->teamDeathTime);
 	}
-	aasworld->teamDeathTime = (int*)GetClearedMemory(sizeof(int) * aasworld->numareas * 2);
+	aasworld->teamDeathTime = (int*)Mem_ClearedAlloc(sizeof(int) * aasworld->numareas * 2);
 	if (aasworld->teamDeathCount)
 	{
-		FreeMemory(aasworld->teamDeathCount);
+		Mem_Free(aasworld->teamDeathCount);
 	}
-	aasworld->teamDeathCount = (byte*)GetClearedMemory(sizeof(byte) * aasworld->numareas * 2);
+	aasworld->teamDeathCount = (byte*)Mem_ClearedAlloc(sizeof(byte) * aasworld->numareas * 2);
 	if (aasworld->teamDeathAvoid)
 	{
-		FreeMemory(aasworld->teamDeathAvoid);
+		Mem_Free(aasworld->teamDeathAvoid);
 	}
-	aasworld->teamDeathAvoid = (byte*)GetClearedMemory(sizeof(byte) * aasworld->numareas * 2);
+	aasworld->teamDeathAvoid = (byte*)Mem_ClearedAlloc(sizeof(byte) * aasworld->numareas * 2);
 }
 
 #define TEAM_DEATH_TIMEOUT              120.0

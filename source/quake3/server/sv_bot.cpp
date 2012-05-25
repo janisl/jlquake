@@ -398,7 +398,6 @@ void SV_BotInitBotLib(void)
 	//memory management
 	botlib_import.GetMemory = BotImport_GetMemory;
 	botlib_import.FreeMemory = BotImport_FreeMemory;
-	botlib_import.AvailableMemory = Z_AvailableMemory;
 	botlib_import.HunkAlloc = BotImport_HunkAlloc;
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);

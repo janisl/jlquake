@@ -37,24 +37,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "l_utils.h"
-#include "l_memory.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
 #include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-
-// Ridah, routing memory calls go here, so we can change between Hunk/Zone easily
-void* AAS_RoutingGetMemory(int size)
-{
-	return GetClearedMemory(size);
-}
-
-void AAS_RoutingFreeMemory(void* ptr)
-{
-	FreeMemory(ptr);
-}
-// done.
 
 //===========================================================================
 //
@@ -119,7 +106,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	//if there are still area travel times, free the memory
 	if (aasworld->areatraveltimes)
 	{
-		AAS_RoutingFreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	//get the total size of all the area travel times
 	size = aasworld->numareas * sizeof(unsigned short**);
@@ -134,7 +121,7 @@ void AAS_CalculateAreaTravelTimes(void)
 		size += settings->numreachableareas * revreach->numlinks * sizeof(unsigned short);
 	}	//end for
 		//allocate memory for the area travel times
-	ptr = (char*)AAS_RoutingGetMemory(size);
+	ptr = (char*)Mem_ClearedAlloc(size);
 	aasworld->areatraveltimes = (unsigned short***)ptr;
 	ptr += aasworld->numareas * sizeof(unsigned short**);
 	//calcluate the travel times for all the areas
@@ -290,7 +277,7 @@ void AAS_FreeRoutingCaches(void)
 	// free cached travel times within areas
 	if (aasworld->areatraveltimes)
 	{
-		AAS_RoutingFreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	aasworld->areatraveltimes = NULL;
 	// free cached maximum travel time through cluster portals
@@ -1248,10 +1235,10 @@ void AAS_CreateVisibility(void)
 
 	numAreas = aasworld->numareas;
 	numAreaBits = ((numAreas + 8) >> 3);
-	areaTable = (byte*)GetClearedMemory(numAreas * numAreaBits * sizeof(byte));
+	areaTable = (byte*)Mem_ClearedAlloc(numAreas * numAreaBits * sizeof(byte));
 
-	buf = (byte*)GetClearedMemory(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
-	validareas = (byte*)GetClearedMemory(numAreas * sizeof(byte));
+	buf = (byte*)Mem_ClearedAlloc(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
+	validareas = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
 
 	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(numAreas * sizeof(byte*));
 	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
@@ -1335,7 +1322,7 @@ void AAS_CreateVisibility(void)
 	}	//end for
 	if (areaTable)
 	{
-		FreeMemory(areaTable);
+		Mem_Free(areaTable);
 	}
 	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
 }	//end of the function AAS_CreateVisibility
@@ -1376,7 +1363,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -1385,7 +1372,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 		//
 	if (!aasworld->visCache)
 	{
-		aasworld->visCache = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
 	}
 	else
 	{
@@ -1631,7 +1618,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 	//
 	if (!aasworld->hidetraveltimes)
 	{
-		aasworld->hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}
 	else
 	{
@@ -1640,7 +1627,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 		//
 	if (!aasworld->visCache)
 	{
-		aasworld->visCache = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
 	}
 	else
 	{

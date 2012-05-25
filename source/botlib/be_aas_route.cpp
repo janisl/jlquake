@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "l_utils.h"
-#include "l_memory.h"
 #include "botlib.h"
 #include "be_interface.h"
 #include "be_aas.h"
@@ -101,7 +100,7 @@ void AAS_CalculateAreaTravelTimes(void)
 	//if there are still area travel times, free the memory
 	if (aasworld->areatraveltimes)
 	{
-		FreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	//get the total size of all the area travel times
 	size = aasworld->numareas * sizeof(unsigned short**);
@@ -116,7 +115,7 @@ void AAS_CalculateAreaTravelTimes(void)
 		size += settings->numreachableareas * revreach->numlinks * sizeof(unsigned short);
 	}	//end for
 		//allocate memory for the area travel times
-	ptr = (char*)GetClearedMemory(size);
+	ptr = (char*)Mem_ClearedAlloc(size);
 	aasworld->areatraveltimes = (unsigned short***)ptr;
 	ptr += aasworld->numareas * sizeof(unsigned short**);
 	//calcluate the travel times for all the areas
@@ -200,17 +199,17 @@ void AAS_InitReachabilityAreas(void)
 
 	if (aasworld->reachabilityareas)
 	{
-		FreeMemory(aasworld->reachabilityareas);
+		Mem_Free(aasworld->reachabilityareas);
 	}
 	if (aasworld->reachabilityareaindex)
 	{
-		FreeMemory(aasworld->reachabilityareaindex);
+		Mem_Free(aasworld->reachabilityareaindex);
 	}
 
 	aasworld->reachabilityareas = (aas_reachabilityareas_t*)
-								 GetClearedMemory(aasworld->reachabilitysize * sizeof(aas_reachabilityareas_t));
+								 Mem_ClearedAlloc(aasworld->reachabilitysize * sizeof(aas_reachabilityareas_t));
 	aasworld->reachabilityareaindex = (int*)
-									 GetClearedMemory(aasworld->reachabilitysize * MAX_REACHABILITYPASSAREAS * sizeof(int));
+									 Mem_ClearedAlloc(aasworld->reachabilitysize * MAX_REACHABILITYPASSAREAS * sizeof(int));
 	numreachareas = 0;
 	for (i = 0; i < aasworld->reachabilitysize; i++)
 	{
@@ -312,7 +311,7 @@ void AAS_FreeRoutingCaches(void)
 	// free cached travel times within areas
 	if (aasworld->areatraveltimes)
 	{
-		FreeMemory(aasworld->areatraveltimes);
+		Mem_Free(aasworld->areatraveltimes);
 	}
 	aasworld->areatraveltimes = NULL;
 	// free cached maximum travel time through cluster portals
@@ -341,13 +340,13 @@ void AAS_FreeRoutingCaches(void)
 	// free lists with areas the reachabilities go through
 	if (aasworld->reachabilityareas)
 	{
-		FreeMemory(aasworld->reachabilityareas);
+		Mem_Free(aasworld->reachabilityareas);
 	}
 	aasworld->reachabilityareas = NULL;
 	// free the reachability area index
 	if (aasworld->reachabilityareaindex)
 	{
-		FreeMemory(aasworld->reachabilityareaindex);
+		Mem_Free(aasworld->reachabilityareaindex);
 	}
 	aasworld->reachabilityareaindex = NULL;
 	// free area contents travel flags look up table
@@ -762,7 +761,7 @@ int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int tra
 		return false;
 	}	//end if
 		// make sure the routing cache doesn't grow to large
-	while (AvailableMemory() < 1 * 1024 * 1024)
+	while (routingcachesize > max_routingcachesize)
 	{
 		if (!AAS_FreeOldestCache())
 		{
@@ -1291,7 +1290,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	//
 	if (!hidetraveltimes)
 	{
-		hidetraveltimes = (unsigned short int*)GetClearedMemory(aasworld->numareas * sizeof(unsigned short int));
+		hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
 	}	//end if
 	else
 	{

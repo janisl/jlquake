@@ -154,7 +154,6 @@ typedef struct botlib_import_s
 	//memory allocation
 	void*(*GetMemory)(int size);				// allocate from Zone
 	void (* FreeMemory)(void* ptr);				// free memory from Zone
-	int (* AvailableMemory)(void);				// available Zone memory
 	void*(*HunkAlloc)(int size);				// allocate from hunk
 } botlib_import_t;
 

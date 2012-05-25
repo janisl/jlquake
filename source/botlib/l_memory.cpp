@@ -123,13 +123,3 @@ void FreeMemory(void* ptr)
 		botimport.FreeMemory(memid);
 	}	//end if
 }	//end of the function FreeMemory
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AvailableMemory(void)
-{
-	return botimport.AvailableMemory();
-}	//end of the function AvailableMemory

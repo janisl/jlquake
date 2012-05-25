@@ -41,5 +41,3 @@ void* GetClearedHunkMemory(unsigned long size);
 
 //free the given memory block
 void FreeMemory(void* ptr);
-//returns the amount available memory
-int AvailableMemory(void);
