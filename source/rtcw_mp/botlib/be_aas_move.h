@@ -35,10 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifdef AASINTERN
-extern aas_settings_t aassettings;
-#endif	//AASINTERN
-
 //movement prediction
 int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 	int entnum, vec3_t origin,

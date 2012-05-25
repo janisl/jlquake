@@ -165,10 +165,6 @@ typedef struct aas_export_s
 	//--------------------------------------------
 	int (* AAS_PointContents)(vec3_t point);
 	//--------------------------------------------
-	// be_aas_reach.c
-	//--------------------------------------------
-	int (* AAS_AreaLadder)(int areanum);
-	//--------------------------------------------
 	// be_aas_route.c
 	//--------------------------------------------
 	int (* AAS_AreaTravelTimeToGoalArea)(int areanum, vec3_t origin, int goalareanum, int travelflags);

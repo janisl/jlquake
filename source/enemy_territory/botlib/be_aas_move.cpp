@@ -43,8 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_def.h"
 #include "be_interface.h"
 
-aas_settings_t aassettings;
-
 //#define AAS_MOVE_DEBUG
 
 //===========================================================================
@@ -95,6 +93,7 @@ void AAS_InitSettings(void)
 	aassettings.phys_jumpvel = 270;
 	aassettings.phys_maxbarrier = 49;	//-0.8 + (0.5 * aassettings.sv_gravity * (aassettings.sv_jumpvel / aassettings.sv_gravity) * (aassettings.sv_jumpvel / aassettings.sv_gravity));
 	// done.
+	aassettings.rs_maxjumpfallheight = MAX_JUMPFALLHEIGHT;
 
 }	//end of the function AAS_InitSettings
 //===========================================================================

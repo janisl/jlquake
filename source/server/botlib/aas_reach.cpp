@@ -164,3 +164,148 @@ float AAS_AreaVolume(int areanum)
 	volume /= 3;
 	return volume;
 }
+
+// returns the surface area of all ground faces together of the area
+float AAS_AreaGroundFaceArea(int areanum)
+{
+	float total = 0;
+	aas_area_t* area = &aasworld->areas[areanum];
+	for (int i = 0; i < area->numfaces; i++)
+	{
+		aas_face_t* face = &aasworld->faces[abs(aasworld->faceindex[area->firstface + i])];
+		if (!(face->faceflags & FACE_GROUND))
+		{
+			continue;
+		}
+
+		total += AAS_FaceArea(face);
+	}
+	return total;
+}
+
+// returns the center of a face
+void AAS_FaceCenter(int facenum, vec3_t center)
+{
+	aas_face_t* face = &aasworld->faces[facenum];
+
+	VectorClear(center);
+	for (int i = 0; i < face->numedges; i++)
+	{
+		aas_edge_t* edge = &aasworld->edges[abs(aasworld->edgeindex[face->firstedge + i])];
+		VectorAdd(center, aasworld->vertexes[edge->v[0]], center);
+		VectorAdd(center, aasworld->vertexes[edge->v[1]], center);
+	}
+	float scale = 0.5 / face->numedges;
+	VectorScale(center, scale, center);
+}
+
+// returns the maximum distance a player can fall before being damaged
+// damage = deltavelocity*deltavelocity  * 0.0001
+int AAS_FallDamageDistance()
+{
+	float maxzvelocity = sqrt(30.0 * 10000);
+	float gravity = aassettings.phys_gravity;
+	float t = maxzvelocity / gravity;
+	return 0.5 * gravity * t * t;
+}
+
+// distance = 0.5 * gravity * t * t
+// vel = t * gravity
+// damage = vel * vel * 0.0001
+float AAS_FallDelta(float distance)
+{
+	float gravity = aassettings.phys_gravity;
+	float t = sqrt(Q_fabs(distance) * 2 / gravity);
+	float delta = t * gravity;
+	return delta * delta * 0.0001;
+}
+
+float AAS_MaxJumpHeight(float phys_jumpvel)
+{
+	float phys_gravity = aassettings.phys_gravity;
+	//maximum height a player can jump with the given initial z velocity
+	return 0.5 * phys_gravity * (phys_jumpvel / phys_gravity) * (phys_jumpvel / phys_gravity);
+}
+
+// returns true if a player can only crouch in the area
+float AAS_MaxJumpDistance(float phys_jumpvel)
+{
+	float phys_gravity = aassettings.phys_gravity;
+	float phys_maxvelocity = aassettings.phys_maxvelocity;
+	//time a player takes to fall the height
+	float t = sqrt(aassettings.rs_maxjumpfallheight / (0.5 * phys_gravity));
+	//maximum distance
+	return phys_maxvelocity * (t + phys_jumpvel / phys_gravity);
+}
+
+// returns true if a player can only crouch in the area
+int AAS_AreaCrouch(int areanum)
+{
+	return !(aasworld->areasettings[areanum].presencetype & PRESENCE_NORMAL);
+}
+
+// returns true if it is possible to swim in the area
+int AAS_AreaSwim(int areanum)
+{
+	return aasworld->areasettings[areanum].areaflags & AREA_LIQUID;
+}
+
+int AAS_AreaLava(int areanum)
+{
+	return aasworld->areasettings[areanum].contents & AREACONTENTS_LAVA;
+}
+
+int AAS_AreaSlime(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_SLIME);
+}
+
+// returns true if the area contains ground faces
+int AAS_AreaGrounded(int areanum)
+{
+	return (aasworld->areasettings[areanum].areaflags & AREA_GROUNDED);
+}
+
+// returns true if the area contains ladder faces
+int AAS_AreaLadder(int areanum)
+{
+	return (aasworld->areasettings[areanum].areaflags & AREA_LADDER);
+}
+
+int AAS_AreaJumpPad(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_JUMPPAD);
+}
+
+int AAS_AreaTeleporter(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_TELEPORTER);
+}
+
+int AAS_AreaClusterPortal(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_CLUSTERPORTAL);
+}
+
+int AAS_AreaDoNotEnter(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_DONOTENTER);
+}
+
+int AAS_AreaDoNotEnterLarge(int areanum)
+{
+	return (aasworld->areasettings[areanum].contents & WOLFAREACONTENTS_DONOTENTER_LARGE);
+}
+
+// returns true if there already exists a reachability from area1 to area2
+bool AAS_ReachabilityExists(int area1num, int area2num)
+{
+	for (aas_lreachability_t* r = areareachability[area1num]; r; r = r->next)
+	{
+		if (r->areanum == area2num)
+		{
+			return true;
+		}
+	}
+	return false;
+}

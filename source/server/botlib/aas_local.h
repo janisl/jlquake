@@ -405,6 +405,8 @@ void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
 
+extern aas_settings_t aassettings;
+
 //maximum number of reachability links
 #define AAS_MAX_REACHABILITYSIZE            128000
 //number of units reachability points are placed inside the areas
@@ -490,6 +492,32 @@ aas_lreachability_t* AAS_AllocReachability();
 void AAS_FreeReachability(aas_lreachability_t* lreach);
 float AAS_FaceArea(aas_face_t* face);
 float AAS_AreaVolume(int areanum);
+//returns the total area of the ground faces of the given area
+float AAS_AreaGroundFaceArea(int areanum);
+void AAS_FaceCenter(int facenum, vec3_t center);
+int AAS_FallDamageDistance();
+float AAS_FallDelta(float distance);
+float AAS_MaxJumpHeight(float phys_jumpvel);
+float AAS_MaxJumpDistance(float phys_jumpvel);
+//returns true if the area is crouch only
+int AAS_AreaCrouch(int areanum);
+//returns true if a player can swim in this area
+int AAS_AreaSwim(int areanum);
+//returns true if the area contains lava
+int AAS_AreaLava(int areanum);
+//returns true if the area contains slime
+int AAS_AreaSlime(int areanum);
+//returns true if the area has one or more ground faces
+int AAS_AreaGrounded(int areanum);
+//returns true if the area is a jump pad
+int AAS_AreaJumpPad(int areanum);
+int AAS_AreaTeleporter(int areanum);
+int AAS_AreaClusterPortal(int areanum);
+//returns true if the area is donotenter
+int AAS_AreaDoNotEnter(int areanum);
+//returns true if the area is donotenterlarge
+int AAS_AreaDoNotEnterLarge(int areanum);
+bool AAS_ReachabilityExists(int area1num, int area2num);
 
 #define ROUTING_DEBUG
 

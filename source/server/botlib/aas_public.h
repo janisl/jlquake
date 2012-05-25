@@ -135,6 +135,8 @@ void AAS_SetCurrentWorld(int index);
 
 //returns true if the are has reachabilities to other areas
 int AAS_AreaReachability(int areanum);
+//returns true if the area has one or more ladder faces
+int AAS_AreaLadder(int areanum);
 
 //enable or disable an area for routing
 int AAS_EnableRoutingArea(int areanum, int enable);

@@ -29,10 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#ifdef AASINTERN
-extern aas_settings_t aassettings;
-#endif	//AASINTERN
-
 //movement prediction
 int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 	int entnum, vec3_t origin,
