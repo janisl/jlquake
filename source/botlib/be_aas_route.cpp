@@ -47,11 +47,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 unsigned short int AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end)
 {
 	int intdist;
-	float dist;
-	vec3_t dir;
 
-	VectorSubtract(start, end, dir);
-	dist = VectorLength(dir);
+	float dist = VectorDistance(start, end);
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		// Ridah, factor in the groundsteepness now
+		dist *= AAS_AreaGroundSteepnessScale(areanum);
+	}
+
 	//if crouch only area
 	if (AAS_AreaCrouch(areanum))
 	{
@@ -145,63 +149,6 @@ void AAS_CalculateAreaTravelTimes(void)
 	BotImport_Print(PRT_MESSAGE, "area travel times %d msec\n", Sys_Milliseconds() - starttime);
 #endif
 }	//end of the function AAS_CalculateAreaTravelTimes
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_PortalMaxTravelTime(int portalnum)
-{
-	int l, n, t, maxt;
-	aas_portal_t* portal;
-	aas_reversedreachability_t* revreach;
-	aas_reversedlink_t* revlink;
-	aas_areasettings_t* settings;
-
-	portal = &aasworld->portals[portalnum];
-	//reversed reachabilities of this portal area
-	revreach = &aasworld->reversedreachability[portal->areanum];
-	//settings of the portal area
-	settings = &aasworld->areasettings[portal->areanum];
-	//
-	maxt = 0;
-	for (l = 0; l < settings->numreachableareas; l++)
-	{
-		for (n = 0, revlink = revreach->first; revlink; revlink = revlink->next, n++)
-		{
-			t = aasworld->areatraveltimes[portal->areanum][l][n];
-			if (t > maxt)
-			{
-				maxt = t;
-			}	//end if
-		}	//end for
-	}	//end for
-	return maxt;
-}	//end of the function AAS_PortalMaxTravelTime
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_InitPortalMaxTravelTimes(void)
-{
-	int i;
-
-	if (aasworld->portalmaxtraveltimes)
-	{
-		FreeMemory(aasworld->portalmaxtraveltimes);
-	}
-
-	aasworld->portalmaxtraveltimes = (int*)GetClearedMemory(aasworld->numportals * sizeof(int));
-
-	for (i = 0; i < aasworld->numportals; i++)
-	{
-		aasworld->portalmaxtraveltimes[i] = AAS_PortalMaxTravelTime(i);
-		//BotImport_Print(PRT_MESSAGE, "portal %d max tt = %d\n", i, aasworld->portalmaxtraveltimes[i]);
-	}	//end for
-}	//end of the function AAS_InitPortalMaxTravelTimes
 //===========================================================================
 //
 // Parameter:			-
@@ -882,7 +829,7 @@ void AAS_FreeRoutingCaches(void)
 	// free cached maximum travel time through cluster portals
 	if (aasworld->portalmaxtraveltimes)
 	{
-		FreeMemory(aasworld->portalmaxtraveltimes);
+		Mem_Free(aasworld->portalmaxtraveltimes);
 	}
 	aasworld->portalmaxtraveltimes = NULL;
 	// free reversed reachability links

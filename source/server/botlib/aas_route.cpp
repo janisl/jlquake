@@ -444,3 +444,42 @@ float AAS_AreaGroundSteepnessScale(int areanum)
 {
 	return (1.0 + aasworld->areasettings[areanum].groundsteepness * (float)(GROUNDSTEEPNESS_TIMESCALE - 1));
 }
+
+static int AAS_PortalMaxTravelTime(int portalnum)
+{
+	aas_portal_t* portal = &aasworld->portals[portalnum];
+	//reversed reachabilities of this portal area
+	aas_reversedreachability_t* revreach = &aasworld->reversedreachability[portal->areanum];
+	//settings of the portal area
+	aas_areasettings_t* settings = &aasworld->areasettings[portal->areanum];
+
+	int maxt = 0;
+	for (int l = 0; l < settings->numreachableareas; l++)
+	{
+		aas_reversedlink_t* revlink = revreach->first;
+		for (int n = 0; revlink; revlink = revlink->next, n++)
+		{
+			int t = aasworld->areatraveltimes[portal->areanum][l][n];
+			if (t > maxt)
+			{
+				maxt = t;
+			}
+		}
+	}
+	return maxt;
+}
+
+void AAS_InitPortalMaxTravelTimes()
+{
+	if (aasworld->portalmaxtraveltimes)
+	{
+		Mem_Free(aasworld->portalmaxtraveltimes);
+	}
+
+	aasworld->portalmaxtraveltimes = (int*)Mem_ClearedAlloc(aasworld->numportals * sizeof(int));
+
+	for (int i = 0; i < aasworld->numportals; i++)
+	{
+		aasworld->portalmaxtraveltimes[i] = AAS_PortalMaxTravelTime(i);
+	}
+}

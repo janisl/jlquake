@@ -451,3 +451,4 @@ void AAS_InitAreaContentsTravelFlags();
 int AAS_AreaContentsTravelFlags(int areanum);
 void AAS_CreateReversedReachability();
 float AAS_AreaGroundSteepnessScale(int areanum);
+void AAS_InitPortalMaxTravelTimes();
