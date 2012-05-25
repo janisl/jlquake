@@ -767,7 +767,7 @@ int BotValidTravel(vec3_t origin, aas_reachability_t* reach, int travelflags)
 		return qfalse;
 	}
 	//don't go into areas with bad travel types
-	if (AAS_AreaContentsTravelFlag(reach->areanum) & ~travelflags)
+	if (AAS_AreaContentsTravelFlags(reach->areanum) & ~travelflags)
 	{
 		return qfalse;
 	}
@@ -817,7 +817,7 @@ void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-//__inline int AAS_AreaContentsTravelFlag(int areanum);
+//__inline int AAS_AreaContentsTravelFlags(int areanum);
 
 int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 	int lastgoalareanum, int lastareanum,
@@ -884,7 +884,7 @@ again:
 		{
 			continue;
 		}
-		//if (AAS_AreaContentsTravelFlag(reach.areanum) & ~travelflags) continue;
+		//if (AAS_AreaContentsTravelFlags(reach.areanum) & ~travelflags) continue;
 		//if the travel isn't valid
 		if (!BotValidTravel(origin, &reach, movetravelflags))
 		{
