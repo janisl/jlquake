@@ -94,7 +94,7 @@ void AAS_InitSettings(void)
 	aassettings.phys_maxbarrier = 49;	//-0.8 + (0.5 * aassettings.sv_gravity * (aassettings.sv_jumpvel / aassettings.sv_gravity) * (aassettings.sv_jumpvel / aassettings.sv_gravity));
 	// done.
 	aassettings.rs_maxjumpfallheight = MAX_JUMPFALLHEIGHT;
-
+	aassettings.rs_startcrouch = STARTCROUCH_TIME;
 }	//end of the function AAS_InitSettings
 //===========================================================================
 // returns qtrue if the bot is against a ladder

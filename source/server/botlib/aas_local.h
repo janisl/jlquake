@@ -475,15 +475,10 @@ extern int reach_teleport;		//teleport
 extern int reach_elevator;		//use an elevator
 extern int reach_funcbob;		//use a func bob
 extern int reach_grapple;		//grapple hook
-extern int reach_doublejump;	//double jump
-extern int reach_rampjump;		//ramp jump
-extern int reach_strafejump;	//strafe jump (just normal jump but further)
 extern int reach_rocketjump;	//rocket jump
-extern int reach_bfgjump;		//bfg jump
 extern int reach_jumppad;		//jump pads
 extern int calcgrapplereach;
 extern aas_lreachability_t** areareachability;	//reachability links for every area
-extern int numlreachabilities;
 extern aas_jumplink_t* jumplinks;
 
 void AAS_SetupReachabilityHeap();
@@ -518,6 +513,13 @@ int AAS_AreaDoNotEnter(int areanum);
 //returns true if the area is donotenterlarge
 int AAS_AreaDoNotEnterLarge(int areanum);
 bool AAS_ReachabilityExists(int area1num, int area2num);
+bool AAS_Reachability_EqualFloorHeight(int area1num, int area2num);
+float AAS_ClosestEdgePoints(const vec3_t v1, const vec3_t v2, const vec3_t v3, const vec3_t v4,
+	const aas_plane_t* plane1, const aas_plane_t* plane2,
+	vec3_t beststart1, vec3_t bestend1,
+	vec3_t beststart2, vec3_t bestend2, float bestdist);
+int AAS_TravelFlagsForTeam(int ent);
+void AAS_StoreReachability();
 
 #define ROUTING_DEBUG
 
