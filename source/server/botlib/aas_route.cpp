@@ -614,3 +614,80 @@ void AAS_InitPortalCache()
 	aasworld->portalcache = (aas_routingcache_t**)Mem_ClearedAlloc(
 		aasworld->numareas * sizeof(aas_routingcache_t*));
 }
+
+// run-length compression on zeros
+int AAS_CompressVis(const byte* vis, int numareas, byte* dest)
+{
+	byte* dest_p = dest;
+
+	for (int j = 0; j < numareas; j++)
+	{
+		*dest_p++ = vis[j];
+		byte check = vis[j];
+
+		int rep = 1;
+		for (j++; j < numareas; j++)
+		{
+			if (vis[j] != check || rep == 255)
+			{
+				break;
+			}
+			else
+			{
+				rep++;
+			}
+		}
+		*dest_p++ = rep;
+		j--;
+	}
+	return dest_p - dest;
+}
+
+void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed)
+{
+	// initialize the vis data, only set those that are visible
+	Com_Memset(decompressed, 0, numareas);
+
+	byte* out = decompressed;
+	byte* end = decompressed + numareas;
+
+	do
+	{
+		byte c = in[1];
+		if (!c)
+		{
+			AAS_Error("DecompressVis: 0 repeat");
+		}
+		if (*in)	// we need to set these bits
+		{
+			Com_Memset(out, 1, c);
+		}
+		in += 2;
+		out += c;
+	}
+	while (out < end);
+}
+
+void AAS_FreeAreaVisibility()
+{
+	if (aasworld->areavisibility)
+	{
+		for (int i = 0; i < aasworld->numareas; i++)
+		{
+			if (aasworld->areavisibility[i])
+			{
+				Mem_Free(aasworld->areavisibility[i]);
+			}
+		}
+	}
+	if (aasworld->areavisibility)
+	{
+		Mem_Free(aasworld->areavisibility);
+	}
+	aasworld->areavisibility = NULL;
+	if (aasworld->decompressedvis)
+	{
+		Mem_Free(aasworld->decompressedvis);
+	}
+	aasworld->decompressedvis = NULL;
+}

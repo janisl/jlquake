@@ -456,3 +456,6 @@ void AAS_FreeAllClusterAreaCache();
 void AAS_InitClusterAreaCache();
 void AAS_FreeAllPortalCache();
 void AAS_InitPortalCache();
+int AAS_CompressVis(const byte* vis, int numareas, byte* dest);
+void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed);
+void AAS_FreeAreaVisibility();

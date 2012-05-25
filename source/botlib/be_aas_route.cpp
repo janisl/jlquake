@@ -244,9 +244,6 @@ typedef struct routecacheheader_s
 #define RCID                        (('C' << 24) + ('R' << 16) + ('E' << 8) + 'M')
 #define RCVERSION                   2
 
-//void AAS_DecompressVis(byte *in, int numareas, byte *decompressed);
-//int AAS_CompressVis(byte *vis, int numareas, byte *dest);
-
 void AAS_WriteRouteCache(void)
 {
 	int i, j, numportalcache, numareacache, totalsize;
@@ -318,22 +315,7 @@ void AAS_WriteRouteCache(void)
 			}	//end for
 		}	//end for
 	}	//end for
-		// write the visareas
-		/*
-		for (i = 0; i < aasworld->numareas; i++)
-		{
-		    if (!aasworld->areavisibility[i]) {
-		        size = 0;
-		        FS_Write(&size, sizeof(int), fp);
-		        continue;
-		    }
-		    AAS_DecompressVis( aasworld->areavisibility[i], aasworld->numareas, aasworld->decompressedvis );
-		    size = AAS_CompressVis( aasworld->decompressedvis, aasworld->numareas, aasworld->decompressedvis );
-		    FS_Write(&size, sizeof(int), fp);
-		    FS_Write(aasworld->decompressedvis, size, fp);
-		}
-		*/
-		//
+
 	FS_FCloseFile(fp);
 	BotImport_Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
 	BotImport_Print(PRT_MESSAGE, "written %d bytes of routing cache\n", totalsize);
@@ -435,20 +417,7 @@ int AAS_ReadRouteCache(void)
 		}
 		aasworld->clusterareacache[cache->cluster][clusterareanum] = cache;
 	}	//end for
-		// read the visareas
-		/*
-		aasworld->areavisibility = (byte **) GetClearedMemory(aasworld->numareas * sizeof(byte *));
-		aasworld->decompressedvis = (byte *) GetClearedMemory(aasworld->numareas * sizeof(byte));
-		for (i = 0; i < aasworld->numareas; i++)
-		{
-		    FS_Read(&size, sizeof(size), fp );
-		    if (size) {
-		        aasworld->areavisibility[i] = (byte *) GetMemory(size);
-		        FS_Read(aasworld->areavisibility[i], size, fp );
-		    }
-		}
-		*/
-		//
+
 	FS_FCloseFile(fp);
 	return true;
 }	//end of the function AAS_ReadRouteCache

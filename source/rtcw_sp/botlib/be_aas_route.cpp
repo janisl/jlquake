@@ -173,37 +173,6 @@ void AAS_CalculateAreaTravelTimes(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_FreeAreaVisibility(void)
-{
-	int i;
-
-	if (aasworld->areavisibility)
-	{
-		for (i = 0; i < aasworld->numareas; i++)
-		{
-			if (aasworld->areavisibility[i])
-			{
-				FreeMemory(aasworld->areavisibility[i]);
-			}
-		}
-	}
-	if (aasworld->areavisibility)
-	{
-		FreeMemory(aasworld->areavisibility);
-	}
-	aasworld->areavisibility = NULL;
-	if (aasworld->decompressedvis)
-	{
-		FreeMemory(aasworld->decompressedvis);
-	}
-	aasworld->decompressedvis = NULL;
-}
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_InitRoutingUpdate(void)
 {
 //	int i, maxreachabilityareas;
@@ -327,9 +296,6 @@ typedef struct routecacheheader_s
 
 #define RCID                        (('C' << 24) + ('R' << 16) + ('E' << 8) + 'M')
 #define RCVERSION                   15
-
-void AAS_DecompressVis(byte* in, int numareas, byte* decompressed);
-int AAS_CompressVis(byte* vis, int numareas, byte* dest);
 
 typedef struct
 {
@@ -594,15 +560,15 @@ int AAS_ReadRouteCache(void)
 		aasworld->clusterareacache[cache->cluster][clusterareanum] = cache;
 	}	//end for
 		// read the visareas
-	aasworld->areavisibility = (byte**)GetClearedMemory(aasworld->numareas * sizeof(byte*));
-	aasworld->decompressedvis = (byte*)GetClearedMemory(aasworld->numareas * sizeof(byte));
+	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte*));
+	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
 	for (i = 0; i < aasworld->numareas; i++)
 	{
 		FS_Read(&size, sizeof(size), fp);
 		size = LittleLong(size);
 		if (size)
 		{
-			aasworld->areavisibility[i] = (byte*)GetMemory(size);
+			aasworld->areavisibility[i] = (byte*)Mem_Alloc(size);
 			FS_Read(aasworld->areavisibility[i], size, fp);
 		}
 	}
@@ -1600,98 +1566,6 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 	return qfalse;
 }	//end of the function AAS_RandomGoalArea
 //===========================================================================
-// run-length compression on zeros
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_CompressVis(byte* vis, int numareas, byte* dest)
-{
-	int j;
-	int rep;
-	//int		visrow;
-	byte* dest_p;
-	byte check;
-
-	//
-	dest_p = dest;
-	//visrow = (numareas + 7)>>3;
-
-	for (j = 0; j < numareas /*visrow*/; j++)
-	{
-		*dest_p++ = vis[j];
-		check = vis[j];
-		//if (vis[j])
-		//	continue;
-
-		rep = 1;
-		for (j++; j < numareas /*visrow*/; j++)
-			if (vis[j] != check || rep == 255)
-			{
-				break;
-			}
-			else
-			{
-				rep++;
-			}
-		*dest_p++ = rep;
-		j--;
-	}
-	return dest_p - dest;
-}	//end of the function AAS_CompressVis
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_DecompressVis(byte* in, int numareas, byte* decompressed)
-{
-	byte c;
-	byte* out;
-	//int		row;
-	byte* end;
-
-	// initialize the vis data, only set those that are visible
-	memset(decompressed, 0, numareas);
-
-	//row = (numareas+7)>>3;
-	out = decompressed;
-	end = (byte*)((qintptr)decompressed + numareas);
-
-	do
-	{
-		/*
-		if (*in)
-		{
-		    *out++ = *in++;
-		    continue;
-		}
-		*/
-
-		c = in[1];
-		if (!c)
-		{
-			AAS_Error("DecompressVis: 0 repeat");
-		}
-		if (*in)	// we need to set these bits
-		{
-			memset(out, 1, c);
-		}
-		in += 2;
-		/*
-		while (c)
-		{
-		    *out++ = 0;
-		    c--;
-		}
-		*/
-		out += c;
-	}
-	while (out < end);
-}	//end of the function AAS_DecompressVis
-//===========================================================================
 //
 // Parameter:			-
 // Returns:				-
@@ -1737,8 +1611,8 @@ void AAS_CreateVisibility(void)
 	buf = (byte*)GetClearedMemory(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
 	validareas = (byte*)GetClearedMemory(numAreas * sizeof(byte));
 
-	aasworld->areavisibility = (byte**)GetClearedMemory(numAreas * sizeof(byte*));
-	aasworld->decompressedvis = (byte*)GetClearedMemory(numAreas * sizeof(byte));
+	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(numAreas * sizeof(byte*));
+	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
 	aasworld->areawaypoints = (vec3_t*)GetClearedMemory(numAreas * sizeof(vec3_t));
 	totalsize = numAreas * sizeof(byte*);
 	for (i = 1; i < numAreas; i++)
@@ -1813,7 +1687,7 @@ void AAS_CreateVisibility(void)
 			}	//end if
 		}	//end for
 		size = AAS_CompressVis(aasworld->decompressedvis, numAreas, buf);
-		aasworld->areavisibility[i] = (byte*)GetMemory(size);
+		aasworld->areavisibility[i] = (byte*)Mem_Alloc(size);
 		memcpy(aasworld->areavisibility[i], buf, size);
 		totalsize += size;
 	}	//end for
