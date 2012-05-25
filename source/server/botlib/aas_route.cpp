@@ -691,3 +691,41 @@ void AAS_FreeAreaVisibility()
 	}
 	aasworld->decompressedvis = NULL;
 }
+
+void AAS_InitRoutingUpdate()
+{
+	//free routing update fields if already existing
+	if (aasworld->areaupdate)
+	{
+		Mem_Free(aasworld->areaupdate);
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		int maxreachabilityareas = 0;
+		for (int i = 0; i < aasworld->numclusters; i++)
+		{
+			if (aasworld->clusters[i].numreachabilityareas > maxreachabilityareas)
+			{
+				maxreachabilityareas = aasworld->clusters[i].numreachabilityareas;
+			}
+		}
+		//allocate memory for the routing update fields
+		aasworld->areaupdate = (aas_routingupdate_t*)Mem_ClearedAlloc(
+			maxreachabilityareas * sizeof(aas_routingupdate_t));
+	}
+	else
+	{
+		// Ridah, had to change it to numareas for hidepos checking
+		aasworld->areaupdate = (aas_routingupdate_t*)Mem_ClearedAlloc(
+			aasworld->numareas * sizeof(aas_routingupdate_t));
+	}
+
+	if (aasworld->portalupdate)
+	{
+		Mem_Free(aasworld->portalupdate);
+	}
+	//allocate memory for the portal update fields
+	aasworld->portalupdate = (aas_routingupdate_t*)Mem_ClearedAlloc(
+		(aasworld->numportals + 1) * sizeof(aas_routingupdate_t));
+}

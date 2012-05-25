@@ -151,42 +151,6 @@ void AAS_CalculateAreaTravelTimes(void)
 }	//end of the function AAS_CalculateAreaTravelTimes
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_InitRoutingUpdate(void)
-{
-	int i, maxreachabilityareas;
-
-	//free routing update fields if already existing
-	if (aasworld->areaupdate)
-	{
-		FreeMemory(aasworld->areaupdate);
-	}
-	//
-	maxreachabilityareas = 0;
-	for (i = 0; i < aasworld->numclusters; i++)
-	{
-		if (aasworld->clusters[i].numreachabilityareas > maxreachabilityareas)
-		{
-			maxreachabilityareas = aasworld->clusters[i].numreachabilityareas;
-		}	//end if
-	}	//end for
-		//allocate memory for the routing update fields
-	aasworld->areaupdate = (aas_routingupdate_t*)GetClearedMemory(
-		maxreachabilityareas * sizeof(aas_routingupdate_t));
-	//
-	if (aasworld->portalupdate)
-	{
-		FreeMemory(aasworld->portalupdate);
-	}
-	//allocate memory for the portal update fields
-	aasworld->portalupdate = (aas_routingupdate_t*)GetClearedMemory(
-		(aasworld->numportals + 1) * sizeof(aas_routingupdate_t));
-}	//end of the function AAS_InitRoutingUpdate
-//===========================================================================
-//
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-
@@ -568,12 +532,12 @@ void AAS_FreeRoutingCaches(void)
 	// free routing algorithm memory
 	if (aasworld->areaupdate)
 	{
-		FreeMemory(aasworld->areaupdate);
+		Mem_Free(aasworld->areaupdate);
 	}
 	aasworld->areaupdate = NULL;
 	if (aasworld->portalupdate)
 	{
-		FreeMemory(aasworld->portalupdate);
+		Mem_Free(aasworld->portalupdate);
 	}
 	aasworld->portalupdate = NULL;
 	// free lists with areas the reachabilities go through
