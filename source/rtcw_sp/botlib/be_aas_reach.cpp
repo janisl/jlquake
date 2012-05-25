@@ -45,99 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_def.h"
 #include "../../common/file_formats/bsp47.h"
 
-extern int Sys_Milliseconds(void);
-
-//#include "../../../gladiator/bspc/aas_store.h"
-
-extern botlib_import_t botimport;
-
-//#define REACHDEBUG
-
-//NOTE: all travel times are in hundreth of a second
-//maximum fall delta before getting damaged
-
-// Ridah, tweaked for Wolf AI
-#define FALLDELTA_5DAMAGE                   25	//40
-#define FALLDELTA_10DAMAGE                  40	//60
-// done.
-
-//maximum number of reachability links
-#define AAS_MAX_REACHABILITYSIZE            65536
-//number of areas reachability is calculated for each frame
-#define REACHABILITYAREASPERCYCLE           15
-//number of units reachability points are placed inside the areas
-#define INSIDEUNITS                         2
-
-// Ridah, tweaked this, routing issues around small areas
-#define INSIDEUNITS_WALKEND             5	// original
-//#define INSIDEUNITS_WALKEND					0.2		// new
-
-// Ridah, added this for better walking off ledges
-#define INSIDEUNITS_WALKOFFLEDGEEND         15
-
-#define INSIDEUNITS_WALKSTART               0.1
-#define INSIDEUNITS_WATERJUMP               15
-//travel times in hundreth of a second
-
-// Ridah, tweaked these for Wolf AI
-#define REACH_MIN_TIME                      4	// always at least this much time for a reachability
-#define WATERJUMP_TIME                      700	//7 seconds
-#define TELEPORT_TIME                       50	//0.5 seconds
-#define BARRIERJUMP_TIME                    900	//fixed value?
-#define STARTCROUCH_TIME                    300	//3 sec to start crouching
-#define STARTGRAPPLE_TIME                   500	//using the grapple costs a lot of time
-#define STARTWALKOFFLEDGE_TIME              300	//3 seconds
-#define STARTJUMP_TIME                      500	//3 seconds for jumping
-
-#define FALLDAMAGE_5_TIME                   400	//extra travel time when falling hurts
-#define FALLDAMAGE_10_TIME                  900	//extra travel time when falling hurts
-// done.
-
-//maximum height the bot may fall down when jumping
-#define MAX_JUMPFALLHEIGHT                  450
-//area flag used for weapon jumping
-#define AREA_WEAPONJUMP                     8192	//valid area to weapon jump to
-//number of reachabilities of each type
-int reach_swim;			//swim
-int reach_equalfloor;	//walk on floors with equal height
-int reach_step;			//step up
-int reach_walk;			//walk of step
-int reach_barrier;		//jump up to a barrier
-int reach_waterjump;	//jump out of water
-int reach_walkoffledge;	//walk of a ledge
-int reach_jump;			//jump
-int reach_ladder;		//climb or descent a ladder
-int reach_teleport;		//teleport
-int reach_elevator;		//use an elevator
-int reach_funcbob;		//use a func bob
-int reach_grapple;		//grapple hook
-int reach_doublejump;	//double jump
-int reach_rampjump;		//ramp jump
-int reach_strafejump;	//strafe jump (just normal jump but further)
-int reach_rocketjump;	//rocket jump
-int reach_bfgjump;		//bfg jump
-int reach_jumppad;		//jump pads
-//if true grapple reachabilities are skipped
-int calcgrapplereach;
-//linked reachability
-typedef struct aas_lreachability_s
-{
-	int areanum;					//number of the reachable area
-	int facenum;					//number of the face towards the other area
-	int edgenum;					//number of the edge towards the other area
-	vec3_t start;					//start point of inter area movement
-	vec3_t end;						//end point of inter area movement
-	int traveltype;					//type of travel required to get to the area
-	unsigned short int traveltime;	//travel time of the inter area movement
-	//
-	struct aas_lreachability_s* next;
-} aas_lreachability_t;
-//temporary reachabilities
-aas_lreachability_t* reachabilityheap;	//heap with reachabilities
-aas_lreachability_t* nextreachability;	//next free reachability from the heap
-aas_lreachability_t** areareachability;	//reachability links for every area
-int numlreachabilities;
-
 //===========================================================================
 //
 // Parameter:				-
@@ -2348,10 +2255,6 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			return qfalse;
 		}
 		//
-#ifdef REACHDEBUG
-		//create the reachability
-		Log_Write("jump reachability between %d and %d\r\n", area1num, area2num);
-#endif	//REACHDEBUG
 		//create a new reachability link
 		lreach = AAS_AllocReachability();
 		if (!lreach)
@@ -2652,12 +2555,6 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 			trace = AAS_TraceClientBBox(start, end, PRESENCE_NORMAL, -1);
 			//
 			//
-#ifdef REACHDEBUG
-			if (trace.startsolid)
-			{
-				Log_Write("trace from area %d started in solid\r\n", area1num);
-			}	//end if
-#endif	//REACHDEBUG
 			//
 			trace.endpos[2] += 1;
 			area2num = AAS_PointAreaNum(trace.endpos);
@@ -2725,16 +2622,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 					reach_jump++;
 					//
 					return qtrue;
-#ifdef REACHDEBUG
-					Log_Write("jump up to ladder reach between %d and %d\r\n", area2num, area1num);
-#endif	//REACHDEBUG
 				}	//end if
-#ifdef REACHDEBUG
-				else
-				{
-					Log_Write("jump too high between area %d and %d\r\n", area2num, area1num);
-				}
-#endif	//REACHDEBUG
 			}	//end if
 			  /*/ / if slime or lava below the ladder
 			//try jump reachability from far towards the ladder
@@ -2839,9 +2727,7 @@ void AAS_Reachability_Teleport(void)
 		if (!String::Cmp(classname, "trigger_multiple"))
 		{
 			AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
-//#ifdef REACHDEBUG
 			BotImport_Print(PRT_MESSAGE, "trigger_multiple model = \"%s\"\n", model);
-//#endif REACHDEBUG
 			AAS_BSPModelMinsMaxs(String::Atoi(model + 1), angles, mins, maxs);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
@@ -2880,9 +2766,7 @@ void AAS_Reachability_Teleport(void)
 		else if (!String::Cmp(classname, "trigger_teleport"))
 		{
 			AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
-//#ifdef REACHDEBUG
 			BotImport_Print(PRT_MESSAGE, "trigger_teleport model = \"%s\"\n", model);
-//#endif REACHDEBUG
 			AAS_BSPModelMinsMaxs(String::Atoi(model + 1), angles, mins, maxs);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
@@ -2989,7 +2873,6 @@ void AAS_Reachability_Teleport(void)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-#define REACHDEBUG
 void AAS_Reachability_Elevator(void)
 {
 	int area1num, area2num, modelnum, i, j, k, l, n, p;
@@ -3003,9 +2886,6 @@ void AAS_Reachability_Elevator(void)
 	aas_lreachability_t* lreach;
 	aas_trace_t trace;
 
-#ifdef REACHDEBUG
-	Log_Write("AAS_Reachability_Elevator\r\n");
-#endif	//REACHDEBUG
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY))
@@ -3014,9 +2894,6 @@ void AAS_Reachability_Elevator(void)
 		}
 		if (!String::Cmp(classname, "func_plat"))
 		{
-#ifdef REACHDEBUG
-			Log_Write("found func plat\r\n");
-#endif	//REACHDEBUG
 			if (!AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY))
 			{
 				BotImport_Print(PRT_ERROR, "func_plat without model\n");
@@ -3234,9 +3111,6 @@ void AAS_Reachability_Elevator(void)
 						//don't go any further to the outside
 						n = 9999;
 						//
-#ifdef REACHDEBUG
-						Log_Write("elevator reach from %d to %d\r\n", area1num, area2num);
-#endif	//REACHDEBUG
 						//
 						reach_elevator++;
 					}	//end for
@@ -3698,10 +3572,6 @@ void AAS_Reachability_JumpPad(void)
 		}
 		AAS_BSPModelMinsMaxs(modelnum, angles, absmins, absmaxs);
 		//
-#ifdef REACHDEBUG
-		BotImport_Print(PRT_MESSAGE, "absmins = %f %f %f\n", absmins[0], absmins[1], absmins[2]);
-		BotImport_Print(PRT_MESSAGE, "absmaxs = %f %f %f\n", absmaxs[0], absmaxs[1], absmaxs[2]);
-#endif	//REACHDEBUG
 		VectorAdd(absmins, absmaxs, origin);
 		VectorScale(origin, 0.5, origin);
 

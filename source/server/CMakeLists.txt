@@ -5,6 +5,7 @@ add_library(server STATIC
 	botlib/aas_entity.cpp
 	botlib/aas_file.cpp
 	botlib/aas_main.cpp
+	botlib/aas_reach.cpp
 	botlib/aas_route.cpp
 	botlib/ai_character.cpp
 	botlib/ai_chat.cpp

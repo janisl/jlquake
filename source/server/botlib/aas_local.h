@@ -405,6 +405,89 @@ void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
 
+//maximum number of reachability links
+#define AAS_MAX_REACHABILITYSIZE            128000
+//number of units reachability points are placed inside the areas
+#define INSIDEUNITS                         2
+#define INSIDEUNITS_WALKEND                 5
+#define INSIDEUNITS_WALKSTART               0.1
+#define INSIDEUNITS_WATERJUMP               15
+// Ridah, added this for better walking off ledges
+#define INSIDEUNITS_WALKOFFLEDGEEND         15
+//area flag used for weapon jumping
+#define AREA_WEAPONJUMP                     8192	//valid area to weapon jump to
+
+//travel times in hundreth of a second
+// Ridah, tweaked these for Wolf AI
+#define REACH_MIN_TIME                      4	// always at least this much time for a reachability
+#define WATERJUMP_TIME                      700	//7 seconds
+#define TELEPORT_TIME                       50	//0.5 seconds
+#define BARRIERJUMP_TIME                    900	//fixed value?
+#define STARTCROUCH_TIME                    300	//3 sec to start crouching
+#define STARTGRAPPLE_TIME                   500	//using the grapple costs a lot of time
+#define STARTWALKOFFLEDGE_TIME              300	//3 seconds
+#define STARTJUMP_TIME                      500	//3 seconds for jumping
+
+//maximum fall delta before getting damaged
+#define FALLDELTA_5DAMAGE                   25
+#define FALLDELTA_10DAMAGE                  40
+
+#define FALLDAMAGE_5_TIME                   400	//extra travel time when falling hurts
+#define FALLDAMAGE_10_TIME                  900	//extra travel time when falling hurts
+
+//maximum height the bot may fall down when jumping
+#define MAX_JUMPFALLHEIGHT                  450
+
+#define AREA_JUMPSRC                        16384	//valid area to JUMP FROM
+
+//linked reachability
+struct aas_lreachability_t
+{
+	int areanum;					//number of the reachable area
+	int facenum;					//number of the face towards the other area
+	int edgenum;					//number of the edge towards the other area
+	vec3_t start;					//start point of inter area movement
+	vec3_t end;						//end point of inter area movement
+	int traveltype;					//type of travel required to get to the area
+	unsigned short int traveltime;	//travel time of the inter area movement
+	aas_lreachability_t* next;
+};
+
+struct aas_jumplink_t
+{
+	int destarea;
+	vec3_t srcpos;
+	vec3_t destpos;
+};
+
+extern int reach_swim;			//swim
+extern int reach_equalfloor;	//walk on floors with equal height
+extern int reach_step;			//step up
+extern int reach_walk;			//walk of step
+extern int reach_barrier;		//jump up to a barrier
+extern int reach_waterjump;	//jump out of water
+extern int reach_walkoffledge;	//walk of a ledge
+extern int reach_jump;			//jump
+extern int reach_ladder;		//climb or descent a ladder
+extern int reach_teleport;		//teleport
+extern int reach_elevator;		//use an elevator
+extern int reach_funcbob;		//use a func bob
+extern int reach_grapple;		//grapple hook
+extern int reach_doublejump;	//double jump
+extern int reach_rampjump;		//ramp jump
+extern int reach_strafejump;	//strafe jump (just normal jump but further)
+extern int reach_rocketjump;	//rocket jump
+extern int reach_bfgjump;		//bfg jump
+extern int reach_jumppad;		//jump pads
+extern int calcgrapplereach;
+extern aas_lreachability_t* reachabilityheap;	//heap with reachabilities
+extern aas_lreachability_t* nextreachability;	//next free reachability from the heap
+extern aas_lreachability_t** areareachability;	//reachability links for every area
+extern int numlreachabilities;
+extern aas_jumplink_t* jumplinks;
+
+
+
 #define ROUTING_DEBUG
 
 //travel time in hundreths of a second = distance * 100 / speed
