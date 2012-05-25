@@ -278,3 +278,8 @@ extern float bytedirs[NUMVERTEXNORMALS][3];
 
 int DirToByte(const vec3_t dir);
 void ByteToDir(int b, vec3_t dir);
+
+float VectorDistance(const vec3_t v1, const vec3_t v2);
+float VectorDistanceSquared(const vec3_t p1, const vec3_t p2);
+int VectorBetweenVectors(const vec3_t v, const vec3_t v1, const vec3_t v2);
+void VectorMiddle(const vec3_t v1, const vec3_t v2, vec3_t middle);

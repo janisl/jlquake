@@ -210,12 +210,3 @@ void AxisToAngles(vec3_t axis[3], vec3_t angles)
 
 	angles[ROLL] = -roll_angles[PITCH];
 }
-
-float VectorDistance(vec3_t v1, vec3_t v2)
-{
-	vec3_t dir;
-
-	VectorSubtract(v2, v1, dir);
-	return VectorLength(dir);
-}
-// done.

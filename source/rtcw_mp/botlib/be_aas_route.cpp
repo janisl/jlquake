@@ -1984,7 +1984,6 @@ void AAS_CreateVisibility(void)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-float VectorDistance(vec3_t v1, vec3_t v2);
 extern void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
 int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags)
 {

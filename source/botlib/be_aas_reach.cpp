@@ -1746,47 +1746,6 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	return false;
 }	//end of the function AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge
 //===========================================================================
-// returns the distance between the two vectors
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-float VectorDistance(vec3_t v1, vec3_t v2)
-{
-	vec3_t dir;
-
-	VectorSubtract(v2, v1, dir);
-	return VectorLength(dir);
-}	//end of the function VectorDistance
-//===========================================================================
-// returns true if the first vector is between the last two vectors
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int VectorBetweenVectors(vec3_t v, vec3_t v1, vec3_t v2)
-{
-	vec3_t dir1, dir2;
-
-	VectorSubtract(v, v1, dir1);
-	VectorSubtract(v, v2, dir2);
-	return (DotProduct(dir1, dir2) <= 0);
-}	//end of the function VectorBetweenVectors
-//===========================================================================
-// returns the mid point between the two vectors
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void VectorMiddle(vec3_t v1, vec3_t v2, vec3_t middle)
-{
-	VectorAdd(v1, v2, middle);
-	VectorScale(middle, 0.5, middle);
-}	//end of the function VectorMiddle
-//===========================================================================
 // calculate a range of points closest to each other on both edges
 //
 // Parameter:			beststart1		start of the range of points on edge v1-v2

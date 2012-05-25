@@ -352,8 +352,6 @@ float vectoyaw(const vec3_t vec);
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
 void AxisToAngles(/*const*/ vec3_t axis[3], vec3_t angles);
-float VectorDistance(vec3_t v1, vec3_t v2);
-float VectorDistanceSquared(vec3_t v1, vec3_t v2);
 
 // Ridah
 void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);

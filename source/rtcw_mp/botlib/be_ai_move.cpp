@@ -3379,7 +3379,6 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_q3_t* goal)
 // Changes Globals:		-
 //===========================================================================
 int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int travelflags, int* traveltime, int* reachnum);
-extern float VectorDistance(vec3_t v1, vec3_t v2);
 void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal, int travelflags)
 {
 	int reachnum = 0;	// TTimo (might be used uninitialized in this function)

@@ -720,18 +720,6 @@ float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-float VectorDistanceSquared(vec3_t p1, vec3_t p2)
-{
-	vec3_t dir;
-	VectorSubtract(p2, p1, dir);
-	return VectorLengthSquared(dir);
-}	//end of the function VectorDistanceSquared
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 int BotAvoidSpots(vec3_t origin, aas_reachability_t* reach, bot_avoidspot_t* avoidspots, int numavoidspots)
 {
 	int checkbetween, i, type;

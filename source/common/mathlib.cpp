@@ -1203,3 +1203,33 @@ void ByteToDir(int b, vec3_t dir)
 	}
 	VectorCopy(bytedirs[b], dir);
 }
+
+float VectorDistance(const vec3_t v1, const vec3_t v2)
+{
+	vec3_t dir;
+	VectorSubtract(v2, v1, dir);
+	return VectorLength(dir);
+}
+
+float VectorDistanceSquared(const vec3_t p1, const vec3_t p2)
+{
+	vec3_t dir;
+	VectorSubtract(p2, p1, dir);
+	return VectorLengthSquared(dir);
+}
+
+// returns true if the first vector is between the last two vectors
+int VectorBetweenVectors(const vec3_t v, const vec3_t v1, const vec3_t v2)
+{
+	vec3_t dir1, dir2;
+	VectorSubtract(v, v1, dir1);
+	VectorSubtract(v, v2, dir2);
+	return (DotProduct(dir1, dir2) <= 0);
+}
+
+// returns the mid point between the two vectors
+void VectorMiddle(const vec3_t v1, const vec3_t v2, vec3_t middle)
+{
+	VectorAdd(v1, v2, middle);
+	VectorScale(middle, 0.5, middle);
+}
