@@ -704,7 +704,7 @@ int AAS_CompressVis(const byte* vis, int numareas, byte* dest)
 	return dest_p - dest;
 }
 
-void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed)
+static void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed)
 {
 	// initialize the vis data, only set those that are visible
 	Com_Memset(decompressed, 0, numareas);
@@ -751,6 +751,29 @@ static void AAS_FreeAreaVisibility()
 		Mem_Free(aasworld->decompressedvis);
 	}
 	aasworld->decompressedvis = NULL;
+}
+
+int AAS_AreaVisible(int srcarea, int destarea)
+{
+	if (GGameType & GAME_Quake3)
+	{
+		return false;
+	}
+	if (GGameType & GAME_ET && !aasworld->areavisibility)
+	{
+		return true;
+	}
+	if (srcarea != aasworld->decompressedvisarea)
+	{
+		if (!aasworld->areavisibility[srcarea])
+		{
+			return false;
+		}
+		AAS_DecompressVis(aasworld->areavisibility[srcarea],
+			aasworld->numareas, aasworld->decompressedvis);
+		aasworld->decompressedvisarea = srcarea;
+	}
+	return aasworld->decompressedvis[destarea];
 }
 
 void AAS_InitRoutingUpdate()
@@ -1663,4 +1686,85 @@ aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int t
 	cache->type = CACHETYPE_PORTAL;
 	AAS_LinkCache(cache);
 	return cache;
+}
+
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
+{
+	if (!aasworld->initialized)
+	{
+		Com_Memset(reach, 0, sizeof(aas_reachability_t));
+		return;
+	}
+	if (num < 0 || num >= aasworld->reachabilitysize)
+	{
+		Com_Memset(reach, 0, sizeof(aas_reachability_t));
+		return;
+	}
+	Com_Memcpy(reach, &aasworld->reachability[num], sizeof(aas_reachability_t));;
+}
+
+int AAS_NextAreaReachability(int areanum, int reachnum)
+{
+	if (!aasworld->initialized)
+	{
+		return 0;
+	}
+
+	if (areanum <= 0 || areanum >= aasworld->numareas)
+	{
+		BotImport_Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
+		return 0;
+	}
+
+	aas_areasettings_t* settings = &aasworld->areasettings[areanum];
+	if (!reachnum)
+	{
+		return settings->firstreachablearea;
+	}
+	if (reachnum < settings->firstreachablearea)
+	{
+		BotImport_Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
+		return 0;
+	}
+	reachnum++;
+	if (reachnum >= settings->firstreachablearea + settings->numreachableareas)
+	{
+		return 0;
+	}
+	return reachnum;
+}
+
+int AAS_NextModelReachability(int num, int modelnum)
+{
+	if (num <= 0)
+	{
+		num = 1;
+	}
+	else if (num >= aasworld->reachabilitysize)
+	{
+		return 0;
+	}
+	else
+	{
+		num++;
+	}
+
+	for (int i = num; i < aasworld->reachabilitysize; i++)
+	{
+		if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_ELEVATOR)
+		{
+			if (aasworld->reachability[i].facenum == modelnum)
+			{
+				return i;
+			}
+		}
+		else if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_FUNCBOB)
+		{
+			if ((aasworld->reachability[i].facenum & 0x0000FFFF) == modelnum)
+			{
+				return i;
+			}
+		}
+	}
+	return 0;
 }

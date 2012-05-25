@@ -44,8 +44,6 @@ int AAS_AreaReachability(int areanum);
 int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin);
 //returns the best jumppad area from which the bbox at origin is reachable
 int AAS_BestReachableFromJumpPadArea(vec3_t origin, vec3_t mins, vec3_t maxs);
-//returns the next reachability using the given model
-int AAS_NextModelReachability(int num, int modelnum);
 //returns the total area of the ground faces of the given area
 float AAS_AreaGroundFaceArea(int areanum);
 //returns true if the area is crouch only

@@ -655,106 +655,6 @@ int AAS_PredictRoute(struct aas_predictroute_s* route, int areanum, vec3_t origi
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach)
-{
-	if (!aasworld->initialized)
-	{
-		Com_Memset(reach, 0, sizeof(aas_reachability_t));
-		return;
-	}	//end if
-	if (num < 0 || num >= aasworld->reachabilitysize)
-	{
-		Com_Memset(reach, 0, sizeof(aas_reachability_t));
-		return;
-	}	//end if
-	Com_Memcpy(reach, &aasworld->reachability[num], sizeof(aas_reachability_t));;
-}	//end of the function AAS_ReachabilityFromNum
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_NextAreaReachability(int areanum, int reachnum)
-{
-	aas_areasettings_t* settings;
-
-	if (!aasworld->initialized)
-	{
-		return 0;
-	}
-
-	if (areanum <= 0 || areanum >= aasworld->numareas)
-	{
-		BotImport_Print(PRT_ERROR, "AAS_NextAreaReachability: areanum %d out of range\n", areanum);
-		return 0;
-	}	//end if
-
-	settings = &aasworld->areasettings[areanum];
-	if (!reachnum)
-	{
-		return settings->firstreachablearea;
-	}	//end if
-	if (reachnum < settings->firstreachablearea)
-	{
-		BotImport_Print(PRT_FATAL, "AAS_NextAreaReachability: reachnum < settings->firstreachableara");
-		return 0;
-	}	//end if
-	reachnum++;
-	if (reachnum >= settings->firstreachablearea + settings->numreachableareas)
-	{
-		return 0;
-	}	//end if
-	return reachnum;
-}	//end of the function AAS_NextAreaReachability
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_NextModelReachability(int num, int modelnum)
-{
-	int i;
-
-	if (num <= 0)
-	{
-		num = 1;
-	}
-	else if (num >= aasworld->reachabilitysize)
-	{
-		return 0;
-	}
-	else
-	{
-		num++;
-	}
-	//
-	for (i = num; i < aasworld->reachabilitysize; i++)
-	{
-		if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_ELEVATOR)
-		{
-			if (aasworld->reachability[i].facenum == modelnum)
-			{
-				return i;
-			}
-		}	//end if
-		else if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_FUNCBOB)
-		{
-			if ((aasworld->reachability[i].facenum & 0x0000FFFF) == modelnum)
-			{
-				return i;
-			}
-		}	//end if
-	}	//end for
-	return 0;
-}	//end of the function AAS_NextModelReachability
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t goalorigin)
 {
 	int i, n, t;
@@ -815,30 +715,6 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 	}	//end for
 	return false;
 }	//end of the function AAS_RandomGoalArea
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int AAS_AreaVisible(int srcarea, int destarea)
-{
-	return false;
-}	//end of the function AAS_AreaVisible
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-float DistancePointToLine(vec3_t v1, vec3_t v2, vec3_t point)
-{
-	vec3_t vec, p2;
-
-	AAS_ProjectPointOntoVector(point, v1, v2, p2);
-	VectorSubtract(point, p2, vec);
-	return VectorLength(vec);
-}	//end of the function DistancePointToLine
 //===========================================================================
 //
 // Parameter:			-

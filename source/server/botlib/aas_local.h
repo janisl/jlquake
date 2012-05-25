@@ -452,9 +452,15 @@ bool AAS_FreeOldestCache();
 void AAS_InitClusterAreaCache();
 void AAS_InitPortalCache();
 int AAS_CompressVis(const byte* vis, int numareas, byte* dest);
-void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed);
+int AAS_AreaVisible(int srcarea, int destarea);
 void AAS_InitRoutingUpdate();
 void AAS_WriteRouteCache();
 int AAS_ReadRouteCache();
 aas_routingcache_t* AAS_GetAreaRoutingCache(int clusternum, int areanum, int travelflags, bool forceUpdate);
 aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int travelflags);
+//returns the reachability with the given index
+void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
+//returns the index of the next reachability for the given area
+int AAS_NextAreaReachability(int areanum, int reachnum);
+//returns the next reachability using the given model
+int AAS_NextModelReachability(int num, int modelnum);
