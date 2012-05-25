@@ -486,7 +486,8 @@ extern aas_lreachability_t** areareachability;	//reachability links for every ar
 extern int numlreachabilities;
 extern aas_jumplink_t* jumplinks;
 
-
+float AAS_FaceArea(aas_face_t* face);
+float AAS_AreaVolume(int areanum);
 
 #define ROUTING_DEBUG
 

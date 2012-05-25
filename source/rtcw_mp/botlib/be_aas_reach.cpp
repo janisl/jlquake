@@ -90,7 +90,7 @@ int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalor
 	vec3_t start, end;
 	aas_trace_t trace;
 
-	if (!(*aasworld).loaded)
+	if (!aasworld->loaded)
 	{
 		BotImport_Print(PRT_ERROR, "AAS_BestReachableArea: aas not loaded\n");
 		return 0;
@@ -247,86 +247,13 @@ void AAS_FreeReachability(aas_lreachability_t* lreach)
 //===========================================================================
 int AAS_AreaReachability(int areanum)
 {
-	if (areanum < 0 || areanum >= (*aasworld).numareas)
+	if (areanum < 0 || areanum >= aasworld->numareas)
 	{
 		AAS_Error("AAS_AreaReachability: areanum %d out of range", areanum);
 		return 0;
 	}	//end if
-	return (*aasworld).areasettings[areanum].numreachableareas;
+	return aasworld->areasettings[areanum].numreachableareas;
 }	//end of the function AAS_AreaReachability
-//===========================================================================
-// returns the surface area of the given face
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-float AAS_FaceArea(aas_face_t* face)
-{
-	int i, edgenum, side;
-	float total;
-	vec_t* v;
-	vec3_t d1, d2, cross;
-	aas_edge_t* edge;
-
-	edgenum = (*aasworld).edgeindex[face->firstedge];
-	side = edgenum < 0;
-	edge = &(*aasworld).edges[abs(edgenum)];
-	v = (*aasworld).vertexes[edge->v[side]];
-
-	total = 0;
-	for (i = 1; i < face->numedges - 1; i++)
-	{
-		edgenum = (*aasworld).edgeindex[face->firstedge + i];
-		side = edgenum < 0;
-		edge = &(*aasworld).edges[abs(edgenum)];
-		VectorSubtract((*aasworld).vertexes[edge->v[side]], v, d1);
-		VectorSubtract((*aasworld).vertexes[edge->v[!side]], v, d2);
-		CrossProduct(d1, d2, cross);
-		total += 0.5 * VectorLength(cross);
-	}	//end for
-	return total;
-}	//end of the function AAS_FaceArea
-//===========================================================================
-// returns the volume of an area
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-float AAS_AreaVolume(int areanum)
-{
-	int i, edgenum, facenum;
-	vec_t d, a, volume;
-	vec3_t corner;
-	aas_plane_t* plane;
-	aas_edge_t* edge;
-	aas_face_t* face;
-	aas_area_t* area;
-
-	area = &(*aasworld).areas[areanum];
-	facenum = (*aasworld).faceindex[area->firstface];
-	face = &(*aasworld).faces[abs(facenum)];
-	edgenum = (*aasworld).edgeindex[face->firstedge];
-	edge = &(*aasworld).edges[abs(edgenum)];
-	//
-	VectorCopy((*aasworld).vertexes[edge->v[0]], corner);
-
-	//make tetrahedrons to all other faces
-	volume = 0;
-	for (i = 0; i < area->numfaces; i++)
-	{
-		facenum = abs((*aasworld).faceindex[area->firstface + i]);
-		face = &(*aasworld).faces[facenum];
-		plane = &(*aasworld).planes[face->planenum];
-		d = -(DotProduct(corner, plane->normal) - plane->dist);
-		a = AAS_FaceArea(face);
-		volume += d * a;
-	}	//end for
-
-	volume /= 3;
-	return volume;
-}	//end of the function AAS_AreaVolume
 //===========================================================================
 // returns the surface area of all ground faces together of the area
 //
@@ -342,10 +269,10 @@ float AAS_AreaGroundFaceArea(int areanum)
 	aas_face_t* face;
 
 	total = 0;
-	area = &(*aasworld).areas[areanum];
+	area = &aasworld->areas[areanum];
 	for (i = 0; i < area->numfaces; i++)
 	{
-		face = &(*aasworld).faces[abs((*aasworld).faceindex[area->firstface + i])];
+		face = &aasworld->faces[abs(aasworld->faceindex[area->firstface + i])];
 		if (!(face->faceflags & FACE_GROUND))
 		{
 			continue;
@@ -369,14 +296,14 @@ void AAS_FaceCenter(int facenum, vec3_t center)
 	aas_face_t* face;
 	aas_edge_t* edge;
 
-	face = &(*aasworld).faces[facenum];
+	face = &aasworld->faces[facenum];
 
 	VectorClear(center);
 	for (i = 0; i < face->numedges; i++)
 	{
-		edge = &(*aasworld).edges[abs((*aasworld).edgeindex[face->firstedge + i])];
-		VectorAdd(center, (*aasworld).vertexes[edge->v[0]], center);
-		VectorAdd(center, (*aasworld).vertexes[edge->v[1]], center);
+		edge = &aasworld->edges[abs(aasworld->edgeindex[face->firstedge + i])];
+		VectorAdd(center, aasworld->vertexes[edge->v[0]], center);
+		VectorAdd(center, aasworld->vertexes[edge->v[1]], center);
 	}	//end for
 	scale = 0.5 / face->numedges;
 	VectorScale(center, scale, center);
@@ -457,7 +384,7 @@ float AAS_MaxJumpDistance(float sv_jumpvel)
 //===========================================================================
 int AAS_AreaCrouch(int areanum)
 {
-	if (!((*aasworld).areasettings[areanum].presencetype & PRESENCE_NORMAL))
+	if (!(aasworld->areasettings[areanum].presencetype & PRESENCE_NORMAL))
 	{
 		return qtrue;
 	}
@@ -475,7 +402,7 @@ int AAS_AreaCrouch(int areanum)
 //===========================================================================
 int AAS_AreaSwim(int areanum)
 {
-	if ((*aasworld).areasettings[areanum].areaflags & AREA_LIQUID)
+	if (aasworld->areasettings[areanum].areaflags & AREA_LIQUID)
 	{
 		return qtrue;
 	}
@@ -493,7 +420,7 @@ int AAS_AreaSwim(int areanum)
 //===========================================================================
 int AAS_AreaLiquid(int areanum)
 {
-	if ((*aasworld).areasettings[areanum].areaflags & AREA_LIQUID)
+	if (aasworld->areasettings[areanum].areaflags & AREA_LIQUID)
 	{
 		return qtrue;
 	}
@@ -510,7 +437,7 @@ int AAS_AreaLiquid(int areanum)
 //===========================================================================
 int AAS_AreaLava(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & AREACONTENTS_LAVA);
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_LAVA);
 }	//end of the function AAS_AreaLava
 //===========================================================================
 //
@@ -520,7 +447,7 @@ int AAS_AreaLava(int areanum)
 //===========================================================================
 int AAS_AreaSlime(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & AREACONTENTS_SLIME);
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_SLIME);
 }	//end of the function AAS_AreaSlime
 //===========================================================================
 // returns qtrue if the area contains ground faces
@@ -531,7 +458,7 @@ int AAS_AreaSlime(int areanum)
 //===========================================================================
 int AAS_AreaGrounded(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].areaflags & AREA_GROUNDED);
+	return (aasworld->areasettings[areanum].areaflags & AREA_GROUNDED);
 }	//end of the function AAS_AreaGround
 //===========================================================================
 // returns true if the area contains ladder faces
@@ -542,7 +469,7 @@ int AAS_AreaGrounded(int areanum)
 //===========================================================================
 int AAS_AreaLadder(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].areaflags & AREA_LADDER);
+	return (aasworld->areasettings[areanum].areaflags & AREA_LADDER);
 }	//end of the function AAS_AreaLadder
 //===========================================================================
 //
@@ -552,7 +479,7 @@ int AAS_AreaLadder(int areanum)
 //===========================================================================
 int AAS_AreaJumpPad(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & AREACONTENTS_JUMPPAD);
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_JUMPPAD);
 }	//end of the function AAS_AreaJumpPad
 //===========================================================================
 //
@@ -562,7 +489,7 @@ int AAS_AreaJumpPad(int areanum)
 //===========================================================================
 int AAS_AreaTeleporter(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & AREACONTENTS_TELEPORTER);
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_TELEPORTER);
 }	//end of the function AAS_AreaTeleporter
 //===========================================================================
 //
@@ -572,7 +499,7 @@ int AAS_AreaTeleporter(int areanum)
 //===========================================================================
 int AAS_AreaDoNotEnter(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & AREACONTENTS_DONOTENTER);
+	return (aasworld->areasettings[areanum].contents & AREACONTENTS_DONOTENTER);
 }	//end of the function AAS_AreaDoNotEnter
 //===========================================================================
 //
@@ -582,7 +509,7 @@ int AAS_AreaDoNotEnter(int areanum)
 //===========================================================================
 int AAS_AreaDoNotEnterLarge(int areanum)
 {
-	return ((*aasworld).areasettings[areanum].contents & WOLFAREACONTENTS_DONOTENTER_LARGE);
+	return (aasworld->areasettings[areanum].contents & WOLFAREACONTENTS_DONOTENTER_LARGE);
 }	//end of the function AAS_AreaDoNotEnter
 //===========================================================================
 // returns the time it takes perform a barrier jump
@@ -676,13 +603,13 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 		return qfalse;
 	}
 	//if the second area is crouch only
-	if (!((*aasworld).areasettings[area2num].presencetype & PRESENCE_NORMAL))
+	if (!(aasworld->areasettings[area2num].presencetype & PRESENCE_NORMAL))
 	{
 		return qfalse;
 	}
 
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 
 	//if the areas are not near anough
 	for (i = 0; i < 3; i++)
@@ -699,13 +626,13 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 		//find a shared face and create a reachability link
 	for (i = 0; i < area1->numfaces; i++)
 	{
-		face1num = (*aasworld).faceindex[area1->firstface + i];
+		face1num = aasworld->faceindex[area1->firstface + i];
 		side1 = face1num < 0;
 		face1num = abs(face1num);
 		//
 		for (j = 0; j < area2->numfaces; j++)
 		{
-			face2num = abs((*aasworld).faceindex[area2->firstface + j]);
+			face2num = abs(aasworld->faceindex[area2->firstface + j]);
 			//
 			if (face1num == face2num)
 			{
@@ -714,8 +641,8 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 				if (AAS_PointContents(start) & (BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER))
 				{
 					//
-					face1 = &(*aasworld).faces[face1num];
-					areasettings = &(*aasworld).areasettings[area1num];
+					face1 = &aasworld->faces[face1num];
+					areasettings = &aasworld->areasettings[area1num];
 					//create a new reachability link
 					lreach = AAS_AllocReachability();
 					if (!lreach)
@@ -726,7 +653,7 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 					lreach->facenum = face1num;
 					lreach->edgenum = 0;
 					VectorCopy(start, lreach->start);
-					plane = &(*aasworld).planes[face1->planenum ^ side1];
+					plane = &aasworld->planes[face1->planenum ^ side1];
 					VectorMA(lreach->start, INSIDEUNITS, plane->normal, lreach->end);
 					lreach->traveltype = TRAVEL_SWIM;
 					lreach->traveltime = 1;
@@ -772,8 +699,8 @@ int AAS_Reachability_EqualFloorHeight(int area1num, int area2num)
 		return qfalse;
 	}
 
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//if the areas are not near anough in the x-y direction
 	for (i = 0; i < 2; i++)
 	{
@@ -804,7 +731,7 @@ int AAS_Reachability_EqualFloorHeight(int area1num, int area2num)
 	//if existing use the lowest common edge for a reachability link
 	for (i = 0; i < area1->numfaces; i++)
 	{
-		face1 = &(*aasworld).faces[abs((*aasworld).faceindex[area1->firstface + i])];
+		face1 = &aasworld->faces[abs(aasworld->faceindex[area1->firstface + i])];
 		if (!(face1->faceflags & FACE_GROUND))
 		{
 			continue;
@@ -812,7 +739,7 @@ int AAS_Reachability_EqualFloorHeight(int area1num, int area2num)
 		//
 		for (j = 0; j < area2->numfaces; j++)
 		{
-			face2 = &(*aasworld).faces[abs((*aasworld).faceindex[area2->firstface + j])];
+			face2 = &aasworld->faces[abs(aasworld->faceindex[area2->firstface + j])];
 			if (!(face2->faceflags & FACE_GROUND))
 			{
 				continue;
@@ -822,30 +749,30 @@ int AAS_Reachability_EqualFloorHeight(int area1num, int area2num)
 			{
 				for (edgenum2 = 0; edgenum2 < face2->numedges; edgenum2++)
 				{
-					if (abs((*aasworld).edgeindex[face1->firstedge + edgenum1]) !=
-						abs((*aasworld).edgeindex[face2->firstedge + edgenum2]))
+					if (abs(aasworld->edgeindex[face1->firstedge + edgenum1]) !=
+						abs(aasworld->edgeindex[face2->firstedge + edgenum2]))
 					{
 						continue;
 					}
-					edgenum = (*aasworld).edgeindex[face1->firstedge + edgenum1];
+					edgenum = aasworld->edgeindex[face1->firstedge + edgenum1];
 					side = edgenum < 0;
-					edge = &(*aasworld).edges[abs(edgenum)];
+					edge = &aasworld->edges[abs(edgenum)];
 					//get the length of the edge
-					VectorSubtract((*aasworld).vertexes[edge->v[1]],
-						(*aasworld).vertexes[edge->v[0]], dir);
+					VectorSubtract(aasworld->vertexes[edge->v[1]],
+						aasworld->vertexes[edge->v[0]], dir);
 					length = VectorLength(dir);
 					//get the start point
-					VectorAdd((*aasworld).vertexes[edge->v[0]],
-						(*aasworld).vertexes[edge->v[1]], start);
+					VectorAdd(aasworld->vertexes[edge->v[0]],
+						aasworld->vertexes[edge->v[1]], start);
 					VectorScale(start, 0.5, start);
 					VectorCopy(start, end);
 					//get the end point several units inside area2
 					//and the start point several units inside area1
 					//NOTE: normal is pointing into area2 because the
 					//face edges are stored counter clockwise
-					VectorSubtract((*aasworld).vertexes[edge->v[side]],
-						(*aasworld).vertexes[edge->v[!side]], edgevec);
-					plane2 = &(*aasworld).planes[face2->planenum];
+					VectorSubtract(aasworld->vertexes[edge->v[side]],
+						aasworld->vertexes[edge->v[!side]], edgevec);
+					plane2 = &aasworld->planes[face2->planenum];
 					CrossProduct(edgevec, plane2->normal, normal);
 					VectorNormalize(normal);
 					//
@@ -957,8 +884,8 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 		return qfalse;
 	}
 	//
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//if the first area contains a liquid
 	area1swim = AAS_AreaSwim(area1num);
 	//if the areas are not near anough in the x-y direction
@@ -986,9 +913,9 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	//
 	for (i = 0; i < area1->numfaces; i++)
 	{
-		groundface1num = (*aasworld).faceindex[area1->firstface + i];
+		groundface1num = aasworld->faceindex[area1->firstface + i];
 		faceside1 = groundface1num < 0;
-		groundface1 = &(*aasworld).faces[abs(groundface1num)];
+		groundface1 = &aasworld->faces[abs(groundface1num)];
 		//if this isn't a ground face
 		if (!(groundface1->faceflags & FACE_GROUND))
 		{
@@ -996,7 +923,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 			if (area1swim)
 			{
 				//face plane must be more or less horizontal
-				plane = &(*aasworld).planes[groundface1->planenum ^ (!faceside1)];
+				plane = &aasworld->planes[groundface1->planenum ^ (!faceside1)];
 				if (DotProduct(plane->normal, invgravity) < 0.7)
 				{
 					continue;
@@ -1011,7 +938,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 			//
 		for (k = 0; k < groundface1->numedges; k++)
 		{
-			edge1num = (*aasworld).edgeindex[groundface1->firstedge + k];
+			edge1num = aasworld->edgeindex[groundface1->firstedge + k];
 			side1 = (edge1num < 0);
 			//NOTE: for water faces we must take the side area 1 is
 			// on into account because the face is shared and doesn't
@@ -1021,10 +948,10 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 				side1 = (side1 == faceside1);
 			}
 			edge1num = abs(edge1num);
-			edge1 = &(*aasworld).edges[edge1num];
+			edge1 = &aasworld->edges[edge1num];
 			//vertexes of the edge
-			VectorCopy((*aasworld).vertexes[edge1->v[!side1]], v1);
-			VectorCopy((*aasworld).vertexes[edge1->v[side1]], v2);
+			VectorCopy(aasworld->vertexes[edge1->v[!side1]], v1);
+			VectorCopy(aasworld->vertexes[edge1->v[side1]], v2);
 			//get a vertical plane through the edge
 			//NOTE: normal is pointing into area 2 because the
 			//face edges are stored counter clockwise
@@ -1035,7 +962,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 			//check the faces from the second area
 			for (j = 0; j < area2->numfaces; j++)
 			{
-				groundface2 = &(*aasworld).faces[abs((*aasworld).faceindex[area2->firstface + j])];
+				groundface2 = &aasworld->faces[abs(aasworld->faceindex[area2->firstface + j])];
 				//must be a ground face
 				if (!(groundface2->faceflags & FACE_GROUND))
 				{
@@ -1044,11 +971,11 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 				//check the edges of this ground face
 				for (l = 0; l < groundface2->numedges; l++)
 				{
-					edge2num = abs((*aasworld).edgeindex[groundface2->firstedge + l]);
-					edge2 = &(*aasworld).edges[edge2num];
+					edge2num = abs(aasworld->edgeindex[groundface2->firstedge + l]);
+					edge2 = &aasworld->edges[edge2num];
 					//vertexes of the edge
-					VectorCopy((*aasworld).vertexes[edge2->v[0]], v3);
-					VectorCopy((*aasworld).vertexes[edge2->v[1]], v4);
+					VectorCopy(aasworld->vertexes[edge2->v[0]], v3);
+					VectorCopy(aasworld->vertexes[edge2->v[1]], v4);
 					//check the distance between the two points and the vertical plane
 					//through the edge of area1
 					diff = DotProduct(normal, v3) - dist;
@@ -1316,15 +1243,15 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 		//go down the maximum waterjump height
 		testpoint[2] -= aassettings.phys_maxwaterjump;
 		//if there IS water the sv_maxwaterjump height below the bestend point
-		if ((*aasworld).areasettings[AAS_PointAreaNum(testpoint)].areaflags & AREA_LIQUID)
+		if (aasworld->areasettings[AAS_PointAreaNum(testpoint)].areaflags & AREA_LIQUID)
 		{
 			//don't create rediculous water jump reachabilities from areas very far below
 			//the water surface
 			if (water_bestdist < aassettings.phys_maxwaterjump + 24)
 			{
 				//waterjumping from or towards a crouch only area is not possible in Quake2
-				if (((*aasworld).areasettings[area1num].presencetype & PRESENCE_NORMAL) &&
-					((*aasworld).areasettings[area2num].presencetype & PRESENCE_NORMAL))
+				if ((aasworld->areasettings[area1num].presencetype & PRESENCE_NORMAL) &&
+					(aasworld->areasettings[area2num].presencetype & PRESENCE_NORMAL))
 				{
 					//create water jump reachability from area1 to area2
 					lreach = AAS_AllocReachability();
@@ -2041,8 +1968,8 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		return qfalse;
 	}
 	//
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//
 	sv_jumpvel = aassettings.phys_jumpvel;
 	//maximum distance a player can jump
@@ -2072,8 +1999,8 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 	//
 	for (i = 0; i < area1->numfaces; i++)
 	{
-		face1num = (*aasworld).faceindex[area1->firstface + i];
-		face1 = &(*aasworld).faces[abs(face1num)];
+		face1num = aasworld->faceindex[area1->firstface + i];
+		face1 = &aasworld->faces[abs(face1num)];
 		//if not a ground face
 		if (!(face1->faceflags & FACE_GROUND))
 		{
@@ -2082,8 +2009,8 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		//
 		for (j = 0; j < area2->numfaces; j++)
 		{
-			face2num = (*aasworld).faceindex[area2->firstface + j];
-			face2 = &(*aasworld).faces[abs(face2num)];
+			face2num = aasworld->faceindex[area2->firstface + j];
+			face2 = &aasworld->faces[abs(face2num)];
 			//if not a ground face
 			if (!(face2->faceflags & FACE_GROUND))
 			{
@@ -2092,20 +2019,20 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			//
 			for (k = 0; k < face1->numedges; k++)
 			{
-				edge1num = abs((*aasworld).edgeindex[face1->firstedge + k]);
-				edge1 = &(*aasworld).edges[edge1num];
+				edge1num = abs(aasworld->edgeindex[face1->firstedge + k]);
+				edge1 = &aasworld->edges[edge1num];
 				for (l = 0; l < face2->numedges; l++)
 				{
-					edge2num = abs((*aasworld).edgeindex[face2->firstedge + l]);
-					edge2 = &(*aasworld).edges[edge2num];
+					edge2num = abs(aasworld->edgeindex[face2->firstedge + l]);
+					edge2 = &aasworld->edges[edge2num];
 					//calculate the minimum distance between the two edges
-					v1 = (*aasworld).vertexes[edge1->v[0]];
-					v2 = (*aasworld).vertexes[edge1->v[1]];
-					v3 = (*aasworld).vertexes[edge2->v[0]];
-					v4 = (*aasworld).vertexes[edge2->v[1]];
+					v1 = aasworld->vertexes[edge1->v[0]];
+					v2 = aasworld->vertexes[edge1->v[1]];
+					v3 = aasworld->vertexes[edge2->v[0]];
+					v4 = aasworld->vertexes[edge2->v[1]];
 					//get the ground planes
-					plane1 = &(*aasworld).planes[face1->planenum];
-					plane2 = &(*aasworld).planes[face2->planenum];
+					plane1 = &aasworld->planes[face1->planenum];
+					plane2 = &aasworld->planes[face2->planenum];
 					//
 					bestdist = AAS_ClosestEdgePoints(v1, v2, v3, v4, plane1, plane2,
 						beststart, bestend,
@@ -2165,7 +2092,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		}
 		if (trace.fraction < 1)
 		{
-			plane = &(*aasworld).planes[trace.planenum];
+			plane = &aasworld->planes[trace.planenum];
 			if (DotProduct(plane->normal, up) >= 0.7)
 			{
 				if (!(AAS_PointContents(trace.endpos) & BSP46CONTENTS_LAVA))		//----(SA)	modified since slime is no longer deadly
@@ -2190,7 +2117,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		}
 		if (trace.fraction < 1)
 		{
-			plane = &(*aasworld).planes[trace.planenum];
+			plane = &aasworld->planes[trace.planenum];
 			if (DotProduct(plane->normal, up) >= 0.7)
 			{
 				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME)))
@@ -2332,8 +2259,8 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 	//maximum height a player can jump with the given initial z velocity
 	maxjumpheight = AAS_MaxJumpHeight(sv_jumpvel);
 
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//
 	ladderface1 = NULL;
 	ladderface2 = NULL;
@@ -2346,8 +2273,8 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 	//
 	for (i = 0; i < area1->numfaces; i++)
 	{
-		face1num = (*aasworld).faceindex[area1->firstface + i];
-		face1 = &(*aasworld).faces[abs(face1num)];
+		face1num = aasworld->faceindex[area1->firstface + i];
+		face1 = &aasworld->faces[abs(face1num)];
 		//if not a ladder face
 		if (!(face1->faceflags & FACE_LADDER))
 		{
@@ -2356,8 +2283,8 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 		//
 		for (j = 0; j < area2->numfaces; j++)
 		{
-			face2num = (*aasworld).faceindex[area2->firstface + j];
-			face2 = &(*aasworld).faces[abs(face2num)];
+			face2num = aasworld->faceindex[area2->firstface + j];
+			face2 = &aasworld->faces[abs(face2num)];
 			//if not a ladder face
 			if (!(face2->faceflags & FACE_LADDER))
 			{
@@ -2366,10 +2293,10 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 			//check if the faces share an edge
 			for (k = 0; k < face1->numedges; k++)
 			{
-				edge1num = (*aasworld).edgeindex[face1->firstedge + k];
+				edge1num = aasworld->edgeindex[face1->firstedge + k];
 				for (l = 0; l < face2->numedges; l++)
 				{
-					edge2num = (*aasworld).edgeindex[face2->firstedge + l];
+					edge2num = aasworld->edgeindex[face2->firstedge + l];
 					if (abs(edge1num) == abs(edge2num))
 					{
 						//get the face with the largest area
@@ -2399,18 +2326,18 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 	if (ladderface1 && ladderface2)
 	{
 		//get the middle of the shared edge
-		sharededge = &(*aasworld).edges[abs(sharededgenum)];
+		sharededge = &aasworld->edges[abs(sharededgenum)];
 		firstv = sharededgenum < 0;
 		//
-		VectorCopy((*aasworld).vertexes[sharededge->v[firstv]], v1);
-		VectorCopy((*aasworld).vertexes[sharededge->v[!firstv]], v2);
+		VectorCopy(aasworld->vertexes[sharededge->v[firstv]], v1);
+		VectorCopy(aasworld->vertexes[sharededge->v[!firstv]], v2);
 		VectorAdd(v1, v2, area1point);
 		VectorScale(area1point, 0.5, area1point);
 		VectorCopy(area1point, area2point);
 		//
 		//if the face plane in area 1 is pretty much vertical
-		plane1 = &(*aasworld).planes[ladderface1->planenum ^ (ladderface1num < 0)];
-		plane2 = &(*aasworld).planes[ladderface2->planenum ^ (ladderface2num < 0)];
+		plane1 = &aasworld->planes[ladderface1->planenum ^ (ladderface1num < 0)];
+		plane2 = &aasworld->planes[ladderface2->planenum ^ (ladderface2num < 0)];
 		//
 		//get the points really into the areas
 		VectorSubtract(v2, v1, sharededgevec);
@@ -2524,11 +2451,11 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 			lowestpoint[2] = 99999;
 			for (i = 0; i < ladderface1->numedges; i++)
 			{
-				edge1num = abs((*aasworld).edgeindex[ladderface1->firstedge + i]);
-				edge1 = &(*aasworld).edges[edge1num];
+				edge1num = abs(aasworld->edgeindex[ladderface1->firstedge + i]);
+				edge1 = &aasworld->edges[edge1num];
 				//
-				VectorCopy((*aasworld).vertexes[edge1->v[0]], v1);
-				VectorCopy((*aasworld).vertexes[edge1->v[1]], v2);
+				VectorCopy(aasworld->vertexes[edge1->v[0]], v1);
+				VectorCopy(aasworld->vertexes[edge1->v[1]], v2);
 				//
 				VectorAdd(v1, v2, mid);
 				VectorScale(mid, 0.5, mid);
@@ -2540,7 +2467,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 				}	//end if
 			}	//end for
 				//
-			plane1 = &(*aasworld).planes[ladderface1->planenum];
+			plane1 = &aasworld->planes[ladderface1->planenum];
 			//trace down in the middle of this edge
 			VectorMA(lowestpoint, 5, plane1->normal, start);
 			VectorCopy(start, end);
@@ -2554,15 +2481,15 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 			trace.endpos[2] += 1;
 			area2num = AAS_PointAreaNum(trace.endpos);
 			//
-			area2 = &(*aasworld).areas[area2num];
+			area2 = &aasworld->areas[area2num];
 			for (i = 0; i < area2->numfaces; i++)
 			{
-				face2num = (*aasworld).faceindex[area2->firstface + i];
-				face2 = &(*aasworld).faces[abs(face2num)];
+				face2num = aasworld->faceindex[area2->firstface + i];
+				face2 = &aasworld->faces[abs(face2num)];
 				//
 				if (face2->faceflags & FACE_LADDER)
 				{
-					plane2 = &(*aasworld).planes[face2->planenum];
+					plane2 = &aasworld->planes[face2->planenum];
 					if (abs(DotProduct(plane2->normal, up)) < 0.1)
 					{
 						break;
@@ -2621,7 +2548,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 			}	//end if
 			  /*/ / if slime or lava below the ladder
 			//try jump reachability from far towards the ladder
-			if ((*aasworld).areasettings[area2num].contents & (AREACONTENTS_SLIME
+			if (aasworld->areasettings[area2num].contents & (AREACONTENTS_SLIME
 															   | AREACONTENTS_LAVA))
 			{
 				for (i = 20; i <= 120; i += 20)
@@ -2649,7 +2576,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 					{
 						continue;
 					}
-					if ((*aasworld).areasettings[area2num].contents & (AREACONTENTS_SLIME
+					if (aasworld->areasettings[area2num].contents & (AREACONTENTS_SLIME
 																	   | AREACONTENTS_LAVA))
 					{
 						continue;
@@ -3138,31 +3065,31 @@ aas_lreachability_t* AAS_FindFaceReachabilities(vec3_t* facepoints, int numpoint
 	bestfacenum = 0;
 	bestfaceplane = NULL;
 	//
-	for (i = 1; i < (*aasworld).numareas; i++)
+	for (i = 1; i < aasworld->numareas; i++)
 	{
-		area = &(*aasworld).areas[i];
+		area = &aasworld->areas[i];
 		// get the shortest distance between one of the func_bob start edges and
 		// one of the face edges of area1
 		bestdist = 999999;
 		for (j = 0; j < area->numfaces; j++)
 		{
-			facenum = (*aasworld).faceindex[area->firstface + j];
-			face = &(*aasworld).faces[abs(facenum)];
+			facenum = aasworld->faceindex[area->firstface + j];
+			face = &aasworld->faces[abs(facenum)];
 			//if not a ground face
 			if (!(face->faceflags & FACE_GROUND))
 			{
 				continue;
 			}
 			//get the ground planes
-			faceplane = &(*aasworld).planes[face->planenum];
+			faceplane = &aasworld->planes[face->planenum];
 			//
 			for (k = 0; k < face->numedges; k++)
 			{
-				edgenum = abs((*aasworld).edgeindex[face->firstedge + k]);
-				edge = &(*aasworld).edges[edgenum];
+				edgenum = abs(aasworld->edgeindex[face->firstedge + k]);
+				edge = &aasworld->edges[edgenum];
 				//calculate the minimum distance between the two edges
-				v1 = (*aasworld).vertexes[edge->v[0]];
-				v2 = (*aasworld).vertexes[edge->v[1]];
+				v1 = aasworld->vertexes[edge->v[0]];
+				v2 = aasworld->vertexes[edge->v[1]];
 				//
 				for (l = 0; l < numpoints; l++)
 				{
@@ -3721,7 +3648,7 @@ void AAS_Reachability_JumpPad(void)
 			continue;
 		}
 		//check for areas we can reach with air control
-		for (area2num = 1; area2num < (*aasworld).numareas; area2num++)
+		for (area2num = 1; area2num < aasworld->numareas; area2num++)
 		{
 			visualize = qfalse;
 			/*
@@ -3757,11 +3684,11 @@ void AAS_Reachability_JumpPad(void)
 				continue;
 			}
 			//
-			area2 = &(*aasworld).areas[area2num];
+			area2 = &aasworld->areas[area2num];
 			for (i = 0; i < area2->numfaces; i++)
 			{
-				face2num = (*aasworld).faceindex[area2->firstface + i];
-				face2 = &(*aasworld).faces[abs(face2num)];
+				face2num = aasworld->faceindex[area2->firstface + i];
+				face2 = &aasworld->faces[abs(face2num)];
 				//if it is not a ground face
 				if (!(face2->faceflags & FACE_GROUND))
 				{
@@ -3876,15 +3803,15 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		return qfalse;
 	}
 	//
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//don't grapple towards way lower areas
 	if (area2->maxs[2] < area1->mins[2])
 	{
 		return qfalse;
 	}
 	//
-	VectorCopy((*aasworld).areas[area1num].center, start);
+	VectorCopy(aasworld->areas[area1num].center, start);
 	//if not a swim area
 	if (!AAS_AreaSwim(area1num))
 	{
@@ -3914,18 +3841,18 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		//
 	for (i = 0; i < area2->numfaces; i++)
 	{
-		face2num = (*aasworld).faceindex[area2->firstface + i];
-		face2 = &(*aasworld).faces[abs(face2num)];
+		face2num = aasworld->faceindex[area2->firstface + i];
+		face2 = &aasworld->faces[abs(face2num)];
 		//if it is not a solid face
 		if (!(face2->faceflags & FACE_SOLID))
 		{
 			continue;
 		}
 		//direction towards the first vertex of the face
-		v = (*aasworld).vertexes[(*aasworld).edges[abs((*aasworld).edgeindex[face2->firstedge])].v[0]];
+		v = aasworld->vertexes[aasworld->edges[abs(aasworld->edgeindex[face2->firstedge])].v[0]];
 		VectorSubtract(v, areastart, dir);
 		//if the face plane is facing away
-		if (DotProduct((*aasworld).planes[face2->planenum].normal, dir) > 0)
+		if (DotProduct(aasworld->planes[face2->planenum].normal, dir) > 0)
 		{
 			continue;
 		}
@@ -3937,7 +3864,7 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 			continue;
 		}
 		//only use vertical faces or downward facing faces
-		if (DotProduct((*aasworld).planes[face2->planenum].normal, down) < 0)
+		if (DotProduct(aasworld->planes[face2->planenum].normal, down) < 0)
 		{
 			continue;
 		}
@@ -3964,7 +3891,7 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		}
 		//
 		VectorCopy(facecenter, start);
-		VectorMA(facecenter, -500, (*aasworld).planes[face2->planenum].normal, end);
+		VectorMA(facecenter, -500, aasworld->planes[face2->planenum].normal, end);
 		//
 		bsptrace = AAS_Trace(start, NULL, NULL, end, 0, BSP46CONTENTS_SOLID);
 		//the grapple won't stick to the sky and the grapple point should be near the AAS wall
@@ -3996,8 +3923,8 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		//area to end in
 		areanum = AAS_PointAreaNum(trace.endpos);
 		//if not in lava or slime
-		if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_LAVA)			//----(SA)	modified since slime is no longer deadly
-		{	//		if ((*aasworld).areasettings[areanum].contents & (AREACONTENTS_SLIME|AREACONTENTS_LAVA))
+		if (aasworld->areasettings[areanum].contents & AREACONTENTS_LAVA)			//----(SA)	modified since slime is no longer deadly
+		{	//		if (aasworld->areasettings[areanum].contents & (AREACONTENTS_SLIME|AREACONTENTS_LAVA))
 			continue;
 		}	//end if
 			//do not go the the source area
@@ -4023,7 +3950,7 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		}
 		for (j = 0; j < numareas; j++)
 		{
-			if ((*aasworld).areasettings[areas[j]].contents & AREACONTENTS_CLUSTERPORTAL)
+			if (aasworld->areasettings[areas[j]].contents & AREACONTENTS_CLUSTERPORTAL)
 			{
 				break;
 			}
@@ -4106,7 +4033,7 @@ void AAS_SetWeaponJumpAreaFlags(void)
 					//areanum = AAS_PointAreaNum(origin);
 				areanum = AAS_BestReachableArea(origin, mins, maxs, origin);
 				//the bot may rocket jump towards this area
-				(*aasworld).areasettings[areanum].areaflags |= AREA_WEAPONJUMP;
+				aasworld->areasettings[areanum].areaflags |= AREA_WEAPONJUMP;
 				//
 				if (!AAS_AreaGrounded(areanum))
 				{
@@ -4117,11 +4044,11 @@ void AAS_SetWeaponJumpAreaFlags(void)
 			}	//end if
 		}	//end if
 	}	//end for
-	for (i = 1; i < (*aasworld).numareas; i++)
+	for (i = 1; i < aasworld->numareas; i++)
 	{
-		if ((*aasworld).areasettings[i].contents & AREACONTENTS_JUMPPAD)
+		if (aasworld->areasettings[i].contents & AREACONTENTS_JUMPPAD)
 		{
-			(*aasworld).areasettings[i].areaflags |= AREA_WEAPONJUMP;
+			aasworld->areasettings[i].areaflags |= AREA_WEAPONJUMP;
 			weaponjumpareas++;
 		}	//end if
 	}	//end for
@@ -4159,20 +4086,20 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 		return qfalse;
 	}
 	//NOTE: only weapon jump towards areas with an interesting item in it??
-	if (!((*aasworld).areasettings[area2num].areaflags & AREA_WEAPONJUMP))
+	if (!(aasworld->areasettings[area2num].areaflags & AREA_WEAPONJUMP))
 	{
 		return qfalse;
 	}
 	//
-	area1 = &(*aasworld).areas[area1num];
-	area2 = &(*aasworld).areas[area2num];
+	area1 = &aasworld->areas[area1num];
+	area2 = &aasworld->areas[area2num];
 	//don't weapon jump towards way lower areas
 	if (area2->maxs[2] < area1->mins[2])
 	{
 		return qfalse;
 	}
 	//
-	VectorCopy((*aasworld).areas[area1num].center, start);
+	VectorCopy(aasworld->areas[area1num].center, start);
 	//if not a swim area
 	if (!AAS_PointAreaNum(start))
 	{
@@ -4192,8 +4119,8 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 	//
 	for (i = 0; i < area2->numfaces; i++)
 	{
-		face2num = (*aasworld).faceindex[area2->firstface + i];
-		face2 = &(*aasworld).faces[abs(face2num)];
+		face2num = aasworld->faceindex[area2->firstface + i];
+		face2 = &aasworld->faces[abs(face2num)];
 		//if it is not a solid face
 		if (!(face2->faceflags & FACE_GROUND))
 		{
@@ -4309,12 +4236,12 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 		return;
 	}
 	//
-	area = &(*aasworld).areas[areanum];
+	area = &aasworld->areas[areanum];
 	//
 	for (i = 0; i < area->numfaces; i++)
 	{
-		face1num = (*aasworld).faceindex[area->firstface + i];
-		face1 = &(*aasworld).faces[abs(face1num)];
+		face1num = aasworld->faceindex[area->firstface + i];
+		face1 = &aasworld->faces[abs(face1num)];
 		//face 1 must be a ground face
 		if (!(face1->faceflags & FACE_GROUND))
 		{
@@ -4323,12 +4250,12 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 		//go through all the edges of this ground face
 		for (k = 0; k < face1->numedges; k++)
 		{
-			edge1num = (*aasworld).edgeindex[face1->firstedge + k];
+			edge1num = aasworld->edgeindex[face1->firstedge + k];
 			//find another not ground face using this same edge
 			for (j = 0; j < area->numfaces; j++)
 			{
-				face2num = (*aasworld).faceindex[area->firstface + j];
-				face2 = &(*aasworld).faces[abs(face2num)];
+				face2num = aasworld->faceindex[area->firstface + j];
+				face2 = &aasworld->faces[abs(face2num)];
 				//face 2 may not be a ground face
 				if (face2->faceflags & FACE_GROUND)
 				{
@@ -4337,7 +4264,7 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 				//compare all the edges
 				for (l = 0; l < face2->numedges; l++)
 				{
-					edge2num = (*aasworld).edgeindex[face2->firstedge + l];
+					edge2num = aasworld->edgeindex[face2->firstedge + l];
 					if (abs(edge1num) == abs(edge2num))
 					{
 						//get the area at the other side of the face
@@ -4350,26 +4277,26 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 							otherareanum = face2->frontarea;
 						}
 						//
-						area2 = &(*aasworld).areas[otherareanum];
+						area2 = &aasworld->areas[otherareanum];
 						//if the other area is grounded!
-						if ((*aasworld).areasettings[otherareanum].areaflags & AREA_GROUNDED)
+						if (aasworld->areasettings[otherareanum].areaflags & AREA_GROUNDED)
 						{
 							//check for a possible gap
 							gap = qfalse;
 							for (n = 0; n < area2->numfaces; n++)
 							{
-								face3num = (*aasworld).faceindex[area2->firstface + n];
+								face3num = aasworld->faceindex[area2->firstface + n];
 								//may not be the shared face of the two areas
 								if (abs(face3num) == abs(face2num))
 								{
 									continue;
 								}
 								//
-								face3 = &(*aasworld).faces[abs(face3num)];
+								face3 = &aasworld->faces[abs(face3num)];
 								//find an edge shared by all three faces
 								for (m = 0; m < face3->numedges; m++)
 								{
-									edge3num = (*aasworld).edgeindex[face3->firstedge + m];
+									edge3num = aasworld->edgeindex[face3->firstedge + m];
 									//but the edge should be shared by all three faces
 									if (abs(edge3num) == abs(edge1num))
 									{
@@ -4400,13 +4327,13 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 							}
 						}	//end if
 							//check for a walk off ledge reachability
-						edge = &(*aasworld).edges[abs(edge1num)];
+						edge = &aasworld->edges[abs(edge1num)];
 						side = edge1num < 0;
 						//
-						v1 = (*aasworld).vertexes[edge->v[side]];
-						v2 = (*aasworld).vertexes[edge->v[!side]];
+						v1 = aasworld->vertexes[edge->v[side]];
+						v2 = aasworld->vertexes[edge->v[!side]];
 						//
-						plane = &(*aasworld).planes[face1->planenum];
+						plane = &aasworld->planes[face1->planenum];
 						//get the points really into the areas
 						VectorSubtract(v2, v1, sharededgevec);
 						CrossProduct(plane->normal, sharededgevec, dir);
@@ -4442,8 +4369,8 @@ void AAS_Reachability_WalkOffLedge(int areanum)
 							break;
 						}	//end if
 							//
-						if ((*aasworld).areasettings[reachareanum].contents & AREACONTENTS_LAVA)		//----(SA)	modified since slime is no longer deadly
-						{	//						if ((*aasworld).areasettings[reachareanum].contents & (AREACONTENTS_SLIME | AREACONTENTS_LAVA))
+						if (aasworld->areasettings[reachareanum].contents & AREACONTENTS_LAVA)		//----(SA)	modified since slime is no longer deadly
+						{	//						if (aasworld->areasettings[reachareanum].contents & (AREACONTENTS_SLIME | AREACONTENTS_LAVA))
 							//Log_Write("area %d, reach area %d: lava or slime\r\n", areanum, reachareanum);
 							break;
 						}	//end if
@@ -4493,20 +4420,20 @@ void AAS_StoreReachability(void)
 	aas_lreachability_t* lreach;
 	aas_reachability_t* reach;
 
-	if ((*aasworld).reachability)
+	if (aasworld->reachability)
 	{
-		FreeMemory((*aasworld).reachability);
+		FreeMemory(aasworld->reachability);
 	}
-	(*aasworld).reachability = (aas_reachability_t*)GetClearedMemory((numlreachabilities + 10) * sizeof(aas_reachability_t));
-	(*aasworld).reachabilitysize = 1;
-	for (i = 0; i < (*aasworld).numareas; i++)
+	aasworld->reachability = (aas_reachability_t*)GetClearedMemory((numlreachabilities + 10) * sizeof(aas_reachability_t));
+	aasworld->reachabilitysize = 1;
+	for (i = 0; i < aasworld->numareas; i++)
 	{
-		areasettings = &(*aasworld).areasettings[i];
-		areasettings->firstreachablearea = (*aasworld).reachabilitysize;
+		areasettings = &aasworld->areasettings[i];
+		areasettings->firstreachablearea = aasworld->reachabilitysize;
 		areasettings->numreachableareas = 0;
 		for (lreach = areareachability[i]; lreach; lreach = lreach->next)
 		{
-			reach = &(*aasworld).reachability[areasettings->firstreachablearea +
+			reach = &aasworld->reachability[areasettings->firstreachablearea +
 											  areasettings->numreachableareas];
 			reach->areanum = lreach->areanum;
 			reach->facenum = lreach->facenum;
@@ -4518,7 +4445,7 @@ void AAS_StoreReachability(void)
 			//
 			areasettings->numreachableareas++;
 		}	//end for
-		(*aasworld).reachabilitysize += areasettings->numreachableareas;
+		aasworld->reachabilitysize += areasettings->numreachableareas;
 	}	//end for
 }	//end of the function AAS_StoreReachability
 //===========================================================================
@@ -4552,17 +4479,17 @@ int AAS_ContinueInitReachability(float time)
 	static float framereachability, reachability_delay;
 	static int lastpercentage;
 
-	if (!(*aasworld).loaded)
+	if (!aasworld->loaded)
 	{
 		return qfalse;
 	}
 	//if reachability is calculated for all areas
-	if ((*aasworld).numreachabilityareas >= (*aasworld).numareas + 2)
+	if (aasworld->numreachabilityareas >= aasworld->numareas + 2)
 	{
 		return qfalse;
 	}
 	//if starting with area 1 (area 0 is a dummy)
-	if ((*aasworld).numreachabilityareas == 1)
+	if (aasworld->numreachabilityareas == 1)
 	{
 		BotImport_Print(PRT_MESSAGE, "calculating reachability...\n");
 		lastpercentage = 0;
@@ -4570,28 +4497,28 @@ int AAS_ContinueInitReachability(float time)
 		reachability_delay = 1000;
 	}	//end if
 		//number of areas to calculate reachability for this cycle
-	todo = (*aasworld).numreachabilityareas + (int)framereachability;
+	todo = aasworld->numreachabilityareas + (int)framereachability;
 	start_time = Sys_Milliseconds();
 	//loop over the areas
-	for (i = (*aasworld).numreachabilityareas; i < (*aasworld).numareas && i < todo; i++)
+	for (i = aasworld->numreachabilityareas; i < aasworld->numareas && i < todo; i++)
 	{
-		(*aasworld).numreachabilityareas++;
+		aasworld->numreachabilityareas++;
 		//only create jumppad reachabilities from jumppad areas
-		if ((*aasworld).areasettings[i].contents & AREACONTENTS_JUMPPAD)
+		if (aasworld->areasettings[i].contents & AREACONTENTS_JUMPPAD)
 		{
 			continue;
 		}	//end if
 			//loop over the areas
-		for (j = 1; j < (*aasworld).numareas; j++)
+		for (j = 1; j < aasworld->numareas; j++)
 		{
 			if (i == j)
 			{
 				continue;
 			}
 			//never create reachabilities from teleporter or jumppad areas to regular areas
-			if ((*aasworld).areasettings[i].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD))
+			if (aasworld->areasettings[i].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD))
 			{
-				if (!((*aasworld).areasettings[j].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD)))
+				if (!(aasworld->areasettings[j].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD)))
 				{
 					continue;
 				}	//end if
@@ -4628,12 +4555,12 @@ int AAS_ContinueInitReachability(float time)
 			}
 		}	//end for
 			//never create these reachabilities from teleporter or jumppad areas
-		if ((*aasworld).areasettings[i].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD))
+		if (aasworld->areasettings[i].contents & (AREACONTENTS_TELEPORTER | AREACONTENTS_JUMPPAD))
 		{
 			continue;
 		}	//end if
 			//loop over the areas
-		for (j = 1; j < (*aasworld).numareas; j++)
+		for (j = 1; j < aasworld->numareas; j++)
 		{
 			if (i == j)
 			{
@@ -4657,26 +4584,26 @@ int AAS_ContinueInitReachability(float time)
 			break;
 		}
 		//
-		if ((*aasworld).numreachabilityareas * 1000 / (*aasworld).numareas > lastpercentage)
+		if (aasworld->numreachabilityareas * 1000 / aasworld->numareas > lastpercentage)
 		{
 			break;
 		}
 	}	//end for
 		//
-	if ((*aasworld).numreachabilityareas == (*aasworld).numareas)
+	if (aasworld->numreachabilityareas == aasworld->numareas)
 	{
 		BotImport_Print(PRT_MESSAGE, "\r%6.1f%%", (float)100.0);
 		BotImport_Print(PRT_MESSAGE, "\nplease wait while storing reachability...\n");
-		(*aasworld).numreachabilityareas++;
+		aasworld->numreachabilityareas++;
 	}	//end if
 		//if this is the last step in the reachability calculations
-	else if ((*aasworld).numreachabilityareas == (*aasworld).numareas + 1)
+	else if (aasworld->numreachabilityareas == aasworld->numareas + 1)
 	{
 		//create additional walk off ledge reachabilities for every area
-		for (i = 1; i < (*aasworld).numareas; i++)
+		for (i = 1; i < aasworld->numareas; i++)
 		{
 			//only create jumppad reachabilities from jumppad areas
-			if ((*aasworld).areasettings[i].contents & AREACONTENTS_JUMPPAD)
+			if (aasworld->areasettings[i].contents & AREACONTENTS_JUMPPAD)
 			{
 				continue;
 			}	//end if
@@ -4716,13 +4643,13 @@ int AAS_ContinueInitReachability(float time)
 		//
 		FreeMemory(areareachability);
 		//
-		(*aasworld).numreachabilityareas++;
+		aasworld->numreachabilityareas++;
 		//
 		BotImport_Print(PRT_MESSAGE, "calculating clusters...\n");
 	}	//end if
 	else
 	{
-		lastpercentage = (*aasworld).numreachabilityareas * 1000 / (*aasworld).numareas;
+		lastpercentage = aasworld->numreachabilityareas * 1000 / aasworld->numareas;
 		BotImport_Print(PRT_MESSAGE, "\r%6.1f%%", (float)lastpercentage / 10);
 	}	//end else
 		//not yet finished
@@ -4736,27 +4663,27 @@ int AAS_ContinueInitReachability(float time)
 //===========================================================================
 void AAS_InitReachability(void)
 {
-	if (!(*aasworld).loaded)
+	if (!aasworld->loaded)
 	{
 		return;
 	}
 
-	if ((*aasworld).reachabilitysize)
+	if (aasworld->reachabilitysize)
 	{
 		if (!((int)LibVarGetValue("forcereachability")))
 		{
-			(*aasworld).numreachabilityareas = (*aasworld).numareas + 2;
+			aasworld->numreachabilityareas = aasworld->numareas + 2;
 			return;
 		}	//end if
 	}	//end if
-	(*aasworld).savefile = qtrue;
+	aasworld->savefile = qtrue;
 	//start with area 1 because area zero is a dummy
-	(*aasworld).numreachabilityareas = 1;
+	aasworld->numreachabilityareas = 1;
 	//setup the heap with reachability links
 	AAS_SetupReachabilityHeap();
 	//allocate area reachability link array
 	areareachability = (aas_lreachability_t**)GetClearedMemory(
-		(*aasworld).numareas * sizeof(aas_lreachability_t*));
+		aasworld->numareas * sizeof(aas_lreachability_t*));
 	//
 	AAS_SetWeaponJumpAreaFlags();
 }	//end of the function AAS_InitReachable

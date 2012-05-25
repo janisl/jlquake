@@ -47,3 +47,57 @@ aas_lreachability_t** areareachability;	//reachability links for every area
 int numlreachabilities;
 
 aas_jumplink_t* jumplinks;
+
+// returns the surface area of the given face
+float AAS_FaceArea(aas_face_t* face)
+{
+	int edgenum = aasworld->edgeindex[face->firstedge];
+	int side = edgenum < 0;
+	aas_edge_t* edge = &aasworld->edges[abs(edgenum)];
+	vec_t* v = aasworld->vertexes[edge->v[side]];
+
+	float total = 0;
+	for (int i = 1; i < face->numedges - 1; i++)
+	{
+		edgenum = aasworld->edgeindex[face->firstedge + i];
+		side = edgenum < 0;
+		edge = &aasworld->edges[abs(edgenum)];
+		vec3_t d1;
+		VectorSubtract(aasworld->vertexes[edge->v[side]], v, d1);
+		vec3_t d2;
+		VectorSubtract(aasworld->vertexes[edge->v[!side]], v, d2);
+		vec3_t cross;
+		CrossProduct(d1, d2, cross);
+		total += 0.5 * VectorLength(cross);
+	}
+	return total;
+}
+
+// returns the volume of an area
+float AAS_AreaVolume(int areanum)
+{
+	aas_area_t* area = &aasworld->areas[areanum];
+	int facenum = aasworld->faceindex[area->firstface];
+	aas_face_t* face = &aasworld->faces[abs(facenum)];
+	int edgenum = aasworld->edgeindex[face->firstedge];
+	aas_edge_t* edge = &aasworld->edges[abs(edgenum)];
+
+	vec3_t corner;
+	VectorCopy(aasworld->vertexes[edge->v[0]], corner);
+
+	//make tetrahedrons to all other faces
+	vec_t volume = 0;
+	for (int i = 0; i < area->numfaces; i++)
+	{
+		facenum = abs(aasworld->faceindex[area->firstface + i]);
+		face = &aasworld->faces[facenum];
+		int side = face->backarea != areanum;
+		aas_plane_t* plane = &aasworld->planes[face->planenum ^ side];
+		vec_t d = -(DotProduct(corner, plane->normal) - plane->dist);
+		vec_t a = AAS_FaceArea(face);
+		volume += d * a;
+	}
+
+	volume /= 3;
+	return volume;
+}
