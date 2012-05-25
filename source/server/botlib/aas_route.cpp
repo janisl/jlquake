@@ -163,7 +163,7 @@ aas_routingcache_t* AAS_AllocRoutingCache(int numtraveltimes)
 	return cache;
 }
 
-void AAS_FreeRoutingCache(aas_routingcache_t* cache)
+static void AAS_FreeRoutingCache(aas_routingcache_t* cache)
 {
 	AAS_UnlinkCache(cache);
 	routingcachesize -= cache->size;
@@ -537,4 +537,80 @@ bool AAS_FreeOldestCache()
 		return true;
 	}
 	return false;
+}
+
+void AAS_FreeAllClusterAreaCache()
+{
+	//free all cluster cache if existing
+	if (!aasworld->clusterareacache)
+	{
+		return;
+	}
+	//free caches
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		aas_cluster_t* cluster = &aasworld->clusters[i];
+		for (int j = 0; j < cluster->numareas; j++)
+		{
+			aas_routingcache_t* nextcache;
+			for (aas_routingcache_t* cache = aasworld->clusterareacache[i][j]; cache; cache = nextcache)
+			{
+				nextcache = cache->next;
+				AAS_FreeRoutingCache(cache);
+			}
+			aasworld->clusterareacache[i][j] = NULL;
+		}
+	}
+	//free the cluster cache array
+	Mem_Free(aasworld->clusterareacache);
+	aasworld->clusterareacache = NULL;
+}
+
+void AAS_InitClusterAreaCache()
+{
+	int size = 0;
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		size += aasworld->clusters[i].numareas;
+	}
+	//two dimensional array with pointers for every cluster to routing cache
+	//for every area in that cluster
+	char* ptr = (char*)Mem_ClearedAlloc(
+		aasworld->numclusters * sizeof(aas_routingcache_t * *) +
+		size * sizeof(aas_routingcache_t*));
+	aasworld->clusterareacache = (aas_routingcache_t***)ptr;
+	ptr += aasworld->numclusters * sizeof(aas_routingcache_t * *);
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		aasworld->clusterareacache[i] = (aas_routingcache_t**)ptr;
+		ptr += aasworld->clusters[i].numareas * sizeof(aas_routingcache_t*);
+	}
+}
+
+void AAS_FreeAllPortalCache()
+{
+	//free all portal cache if existing
+	if (!aasworld->portalcache)
+	{
+		return;
+	}
+	//free portal caches
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		aas_routingcache_t* nextcache;
+		for (aas_routingcache_t* cache = aasworld->portalcache[i]; cache; cache = nextcache)
+		{
+			nextcache = cache->next;
+			AAS_FreeRoutingCache(cache);
+		}
+		aasworld->portalcache[i] = NULL;
+	}
+	Mem_Free(aasworld->portalcache);
+	aasworld->portalcache = NULL;
+}
+
+void AAS_InitPortalCache()
+{
+	aasworld->portalcache = (aas_routingcache_t**)Mem_ClearedAlloc(
+		aasworld->numareas * sizeof(aas_routingcache_t*));
 }
