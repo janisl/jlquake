@@ -40,13 +40,76 @@ int reach_bfgjump;		//bfg jump
 int reach_jumppad;		//jump pads
 //if true grapple reachabilities are skipped
 int calcgrapplereach;
+
 //temporary reachabilities
-aas_lreachability_t* reachabilityheap;	//heap with reachabilities
-aas_lreachability_t* nextreachability;	//next free reachability from the heap
+static aas_lreachability_t* reachabilityheap;	//heap with reachabilities
+static aas_lreachability_t* nextreachability;	//next free reachability from the heap
 aas_lreachability_t** areareachability;	//reachability links for every area
 int numlreachabilities;
 
 aas_jumplink_t* jumplinks;
+
+void AAS_SetupReachabilityHeap()
+{
+	reachabilityheap = (aas_lreachability_t*)Mem_ClearedAlloc(
+		AAS_MAX_REACHABILITYSIZE * sizeof(aas_lreachability_t));
+	for (int i = 0; i < AAS_MAX_REACHABILITYSIZE - 1; i++)
+	{
+		reachabilityheap[i].next = &reachabilityheap[i + 1];
+	}
+	reachabilityheap[AAS_MAX_REACHABILITYSIZE - 1].next = NULL;
+	nextreachability = reachabilityheap;
+	numlreachabilities = 0;
+}
+
+void AAS_ShutDownReachabilityHeap()
+{
+	Mem_Free(reachabilityheap);
+	numlreachabilities = 0;
+}
+
+aas_lreachability_t* AAS_AllocReachability()
+{
+	if (!nextreachability)
+	{
+		return NULL;
+	}
+	//make sure the error message only shows up once
+	if (!nextreachability->next)
+	{
+		AAS_Error("AAS_MAX_REACHABILITYSIZE");
+	}
+
+	aas_lreachability_t* r = nextreachability;
+	nextreachability = nextreachability->next;
+	numlreachabilities++;
+	return r;
+}
+
+void AAS_FreeReachability(aas_lreachability_t* lreach)
+{
+	Com_Memset(lreach, 0, sizeof(aas_lreachability_t));
+
+	lreach->next = nextreachability;
+	nextreachability = lreach;
+	numlreachabilities--;
+}
+
+// returns true if the area has reachability links
+int AAS_AreaReachability(int areanum)
+{
+	if (areanum < 0 || areanum >= aasworld->numareas)
+	{
+		AAS_Error("AAS_AreaReachability: areanum %d out of range", areanum);
+		return 0;
+	}
+	// RF, if this area is disabled, then fail
+	if ((GGameType & (GAME_WolfSP | GAME_ET)) && aasworld->areasettings[areanum].areaflags & AREA_DISABLED)
+	{
+		return 0;
+	}
+	return aasworld->areasettings[areanum].numreachableareas;
+}
 
 // returns the surface area of the given face
 float AAS_FaceArea(aas_face_t* face)

@@ -133,5 +133,8 @@ bool AAS_Initialized();
 float AAS_Time();
 void AAS_SetCurrentWorld(int index);
 
+//returns true if the are has reachabilities to other areas
+int AAS_AreaReachability(int areanum);
+
 //enable or disable an area for routing
 int AAS_EnableRoutingArea(int areanum, int enable);

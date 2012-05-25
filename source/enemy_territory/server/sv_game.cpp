@@ -650,7 +650,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return AAS_IntForBSPEpairKey(args[1], (char*)VMA(2), (int*)VMA(3));
 
 	case BOTLIB_AAS_AREA_REACHABILITY:
-		return botlib_export->aas.AAS_AreaReachability(args[1]);
+		return AAS_AreaReachability(args[1]);
 	case BOTLIB_AAS_AREA_LADDER:
 		return botlib_export->aas.AAS_AreaLadder(args[1]);
 

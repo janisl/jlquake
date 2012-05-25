@@ -44,8 +44,6 @@ int AAS_ContinueInitReachability(float time);
 int AAS_BestReachableLinkArea(aas_link_t* areas);
 #endif	//AASINTERN
 
-//returns true if the are has reachabilities to other areas
-int AAS_AreaReachability(int areanum);
 //returns the best reachable area and goal origin for a bounding box at the given origin
 int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin);
 //returns the total area of the ground faces of the given area

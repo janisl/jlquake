@@ -480,12 +480,14 @@ extern int reach_rocketjump;	//rocket jump
 extern int reach_bfgjump;		//bfg jump
 extern int reach_jumppad;		//jump pads
 extern int calcgrapplereach;
-extern aas_lreachability_t* reachabilityheap;	//heap with reachabilities
-extern aas_lreachability_t* nextreachability;	//next free reachability from the heap
 extern aas_lreachability_t** areareachability;	//reachability links for every area
 extern int numlreachabilities;
 extern aas_jumplink_t* jumplinks;
 
+void AAS_SetupReachabilityHeap();
+void AAS_ShutDownReachabilityHeap();
+aas_lreachability_t* AAS_AllocReachability();
+void AAS_FreeReachability(aas_lreachability_t* lreach);
 float AAS_FaceArea(aas_face_t* face);
 float AAS_AreaVolume(int areanum);
 
