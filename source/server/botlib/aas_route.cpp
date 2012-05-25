@@ -34,6 +34,57 @@
 
 */
 
+#define RCID                        (('C' << 24) + ('R' << 16) + ('E' << 8) + 'M')
+#define RCVERSION_Q3                2
+#define RCVERSION_WS                15
+#define RCVERSION_WM                12
+#define RCVERSION_ET                16
+
+//the route cache header
+//this header is followed by numportalcache + numareacache aas_routingcache_t
+//structures that store routing cache
+struct routecacheheader_q3_t
+{
+	int ident;
+	int version;
+	int numareas;
+	int numclusters;
+	int areacrc;
+	int clustercrc;
+	int numportalcache;
+	int numareacache;
+};
+
+//the route cache header
+//this header is followed by numportalcache + numareacache aas_routingcache_t
+//structures that store routing cache
+struct routecacheheader_wolf_t
+{
+	int ident;
+	int version;
+	int numareas;
+	int numclusters;
+	int areacrc;
+	int clustercrc;
+	int reachcrc;
+	int numportalcache;
+	int numareacache;
+};
+
+struct aas_routingcache_f_t
+{
+	int size;									//size of the routing cache
+	float time;									//last time accessed or updated
+	int cluster;								//cluster the cache is for
+	int areanum;								//area the cache is created for
+	vec3_t origin;								//origin within the area
+	float starttraveltime;						//travel time to start with
+	int travelflags;							//combinations of the travel flags
+	int prev, next;
+	int reachabilities;				//reachabilities used for routing
+	unsigned short int traveltimes[1];			//travel time for every area (variable sized)
+};
+
 #ifdef ROUTING_DEBUG
 int numareacacheupdates;
 int numportalcacheupdates;
@@ -728,4 +779,445 @@ void AAS_InitRoutingUpdate()
 	//allocate memory for the portal update fields
 	aasworld->portalupdate = (aas_routingupdate_t*)Mem_ClearedAlloc(
 		(aasworld->numportals + 1) * sizeof(aas_routingupdate_t));
+}
+
+void AAS_WriteRouteCache()
+{
+	int numportalcache = 0;
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		for (aas_routingcache_t* cache = aasworld->portalcache[i]; cache; cache = cache->next)
+		{
+			numportalcache++;
+		}
+	}
+	int numareacache = 0;
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		aas_cluster_t* cluster = &aasworld->clusters[i];
+		for (int j = 0; j < cluster->numareas; j++)
+		{
+			for (aas_routingcache_t* cache = aasworld->clusterareacache[i][j]; cache; cache = cache->next)
+			{
+				numareacache++;
+			}
+		}
+	}
+	// open the file for writing
+	char filename[MAX_QPATH];
+	String::Sprintf(filename, MAX_QPATH, "maps/%s.rcd", aasworld->mapname);
+	fileHandle_t fp;
+	FS_FOpenFileByMode(filename, &fp, FS_WRITE);
+	if (!fp)
+	{
+		AAS_Error("Unable to open file: %s\n", filename);
+		return;
+	}
+
+	//create the header
+	if (GGameType & GAME_Quake3)
+	{
+		routecacheheader_q3_t routecacheheader;
+		routecacheheader.ident = RCID;
+		routecacheheader.version = RCVERSION_Q3;
+		routecacheheader.numareas = aasworld->numareas;
+		routecacheheader.numclusters = aasworld->numclusters;
+		routecacheheader.areacrc = CRC_Block((unsigned char*)aasworld->areas, sizeof(aas_area_t) * aasworld->numareas);
+		routecacheheader.clustercrc = CRC_Block((unsigned char*)aasworld->clusters, sizeof(aas_cluster_t) * aasworld->numclusters);
+		routecacheheader.numportalcache = numportalcache;
+		routecacheheader.numareacache = numareacache;
+		//write the header
+		FS_Write(&routecacheheader, sizeof(routecacheheader_q3_t), fp);
+	}
+	else
+	{
+		routecacheheader_wolf_t routecacheheader;
+		routecacheheader.ident = RCID;
+		if (GGameType & GAME_WolfSP)
+		{
+			routecacheheader.version = RCVERSION_WS;
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			routecacheheader.version = RCVERSION_WM;
+		}
+		else
+		{
+			routecacheheader.version = RCVERSION_ET;
+		}
+		routecacheheader.numareas = aasworld->numareas;
+		routecacheheader.numclusters = aasworld->numclusters;
+		routecacheheader.areacrc = CRC_Block((unsigned char*)aasworld->areas, sizeof(aas_area_t) * aasworld->numareas);
+		routecacheheader.clustercrc = CRC_Block((unsigned char*)aasworld->clusters, sizeof(aas_cluster_t) * aasworld->numclusters);
+		routecacheheader.reachcrc = CRC_Block((unsigned char*)aasworld->reachability, sizeof(aas_reachability_t) * aasworld->reachabilitysize);
+		routecacheheader.numportalcache = numportalcache;
+		routecacheheader.numareacache = numareacache;
+		//write the header
+		FS_Write(&routecacheheader, sizeof(routecacheheader_wolf_t), fp);
+	}
+
+	//write all the cache
+	for (int i = 0; i < aasworld->numareas; i++)
+	{
+		for (aas_routingcache_t* cache = aasworld->portalcache[i]; cache; cache = cache->next)
+		{
+			FS_Write(cache, cache->size, fp);
+		}
+	}
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		aas_cluster_t* cluster = &aasworld->clusters[i];
+		for (int j = 0; j < cluster->numareas; j++)
+		{
+			for (aas_routingcache_t* cache = aasworld->clusterareacache[i][j]; cache; cache = cache->next)
+			{
+				FS_Write(cache, cache->size, fp);
+			}
+		}
+	}
+
+	if (!(GGameType & GAME_Quake3))
+	{
+		// in case it ends up bigger than the decompressedvis, which is rare but possible
+		byte* buf = (byte*)Mem_ClearedAlloc(aasworld->numareas * 2 * sizeof(byte));
+		// write the visareas
+		for (int i = 0; i < aasworld->numareas; i++)
+		{
+			if (!aasworld->areavisibility[i])
+			{
+				int size = 0;
+				FS_Write(&size, sizeof(int), fp);
+				continue;
+			}
+			AAS_DecompressVis(aasworld->areavisibility[i], aasworld->numareas, aasworld->decompressedvis);
+			int size = AAS_CompressVis(aasworld->decompressedvis, aasworld->numareas, buf);
+			FS_Write(&size, sizeof(int), fp);
+			FS_Write(buf, size, fp);
+		}
+		Mem_Free(buf);
+		// write the waypoints
+		FS_Write(aasworld->areawaypoints, sizeof(vec3_t) * aasworld->numareas, fp);
+	}
+
+	FS_FCloseFile(fp);
+	BotImport_Print(PRT_MESSAGE, "\nroute cache written to %s\n", filename);
+}
+
+static aas_routingcache_t* AAS_ReadCache(fileHandle_t fp)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		int i, size, realSize, numtraveltimes;
+		aas_routingcache_t* cache;
+
+		FS_Read(&size, sizeof(size), fp);
+		size = LittleLong(size);
+		numtraveltimes = (size - sizeof(aas_routingcache_f_t)) / 3;
+		realSize = size - sizeof(aas_routingcache_f_t) + sizeof(aas_routingcache_t);
+		cache = (aas_routingcache_t*)Mem_ClearedAlloc(realSize);
+		cache->size = realSize;
+		aas_routingcache_f_t* fcache = (aas_routingcache_f_t*)Mem_ClearedAlloc(size);
+		FS_Read((unsigned char*)fcache + sizeof(size), size - sizeof(size), fp);
+
+		//	Can't really use sizeof(aas_routingcache_f_t) - sizeof(short) because
+		// size of aas_routingcache_f_t is 4 byte aligned.
+		Com_Memcpy(cache->traveltimes, fcache->traveltimes, size - 48);
+
+		cache->time = LittleFloat(fcache->time);
+		cache->cluster = LittleLong(fcache->cluster);
+		cache->areanum = LittleLong(fcache->areanum);
+		cache->origin[0] = LittleFloat(fcache->origin[0]);
+		cache->origin[1] = LittleFloat(fcache->origin[1]);
+		cache->origin[2] = LittleFloat(fcache->origin[2]);
+		cache->starttraveltime = LittleFloat(fcache->starttraveltime);
+		cache->travelflags = LittleLong(fcache->travelflags);
+		Mem_Free(fcache);
+
+		//	The way pointer was assigned created 4 wasted bytes after traveltimes.
+		// Can't use sizeof(aas_routingcache_t) because on 64 bit it's
+		// 8 byte aligned.
+		cache->reachabilities = (unsigned char*)cache->traveltimes + 4 + numtraveltimes * 2;
+
+		//DAJ BUGFIX for missing byteswaps for traveltimes
+		size = (size - sizeof(aas_routingcache_f_t)) / 3 + 1;
+		for (i = 0; i < size; i++)
+		{
+			cache->traveltimes[i] = LittleShort(cache->traveltimes[i]);
+		}
+		AAS_LinkCache(cache);
+		return cache;
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		int size, i;
+		aas_routingcache_t* cache;
+
+		FS_Read(&size, sizeof(size), fp);
+		cache = (aas_routingcache_t*)Mem_ClearedAlloc(size);
+		cache->size = size;
+		FS_Read((unsigned char*)cache + sizeof(size), size - sizeof(size), fp);
+	//	cache->reachabilities = (unsigned char *) cache + sizeof(aas_routingcache_t) - sizeof(unsigned short) +
+	//		(size - sizeof(aas_routingcache_t) + sizeof(unsigned short)) / 3 * 2;
+		cache->reachabilities = (unsigned char*)cache + sizeof(aas_routingcache_t) +
+								((size - sizeof(aas_routingcache_t)) / 3) * 2;
+
+		//DAJ BUGFIX for missing byteswaps for traveltimes
+		size = (size - sizeof(aas_routingcache_t)) / 3 + 1;
+		for (i = 0; i < size; i++)
+		{
+			cache->traveltimes[i] = LittleShort(cache->traveltimes[i]);
+		}
+		return cache;
+	}
+	else if (GGameType & GAME_ET)
+	{
+		int size, i;
+		aas_routingcache_t* cache;
+
+		FS_Read(&size, sizeof(size), fp);
+		size = LittleLong(size);
+		cache = (aas_routingcache_t*)Mem_ClearedAlloc(size);
+		cache->size = size;
+		FS_Read((unsigned char*)cache + sizeof(size), size - sizeof(size), fp);
+
+		if (1 != LittleLong(1))
+		{
+			cache->time = LittleFloat(cache->time);
+			cache->cluster = LittleLong(cache->cluster);
+			cache->areanum = LittleLong(cache->areanum);
+			cache->origin[0] = LittleFloat(cache->origin[0]);
+			cache->origin[1] = LittleFloat(cache->origin[1]);
+			cache->origin[2] = LittleFloat(cache->origin[2]);
+			cache->starttraveltime = LittleFloat(cache->starttraveltime);
+			cache->travelflags = LittleLong(cache->travelflags);
+		}
+
+	//	cache->reachabilities = (unsigned char *) cache + sizeof(aas_routingcache_t) - sizeof(unsigned short) +
+	//		(size - sizeof(aas_routingcache_t) + sizeof(unsigned short)) / 3 * 2;
+		cache->reachabilities = (unsigned char*)cache + sizeof(aas_routingcache_t) +
+								((size - sizeof(aas_routingcache_t)) / 3) * 2;
+
+		//DAJ BUGFIX for missing byteswaps for traveltimes
+		size = (size - sizeof(aas_routingcache_t)) / 3 + 1;
+		for (i = 0; i < size; i++)
+		{
+			cache->traveltimes[i] = LittleShort(cache->traveltimes[i]);
+		}
+		return cache;
+	}
+	else
+	{
+		int size;
+		aas_routingcache_t* cache;
+
+		FS_Read(&size, sizeof(size), fp);
+		cache = (aas_routingcache_t*)Mem_ClearedAlloc(size);
+		cache->size = size;
+		FS_Read((unsigned char*)cache + sizeof(size), size - sizeof(size), fp);
+		cache->reachabilities = (unsigned char*)cache + sizeof(aas_routingcache_t) - sizeof(unsigned short) +
+								(size - sizeof(aas_routingcache_t) + sizeof(unsigned short)) / 3 * 2;
+		return cache;
+	}
+}
+
+static bool ReadRouteCacheHeaderQ3(const char* filename, fileHandle_t fp, int& numportalcache, int& numareacache)
+{
+	routecacheheader_q3_t routecacheheader;
+	FS_Read(&routecacheheader, sizeof(routecacheheader_q3_t), fp);
+	if (routecacheheader.ident != RCID)
+	{
+		AAS_Error("%s is not a route cache dump\n", filename);
+		return false;
+	}
+	if (routecacheheader.version != RCVERSION_Q3)
+	{
+		AAS_Error("route cache dump has wrong version %d, should be %d", routecacheheader.version, RCVERSION_Q3);
+		return false;
+	}
+	if (routecacheheader.numareas != aasworld->numareas)
+	{
+		return false;
+	}
+	if (routecacheheader.numclusters != aasworld->numclusters)
+	{
+		return false;
+	}
+	if (routecacheheader.areacrc !=
+		CRC_Block((unsigned char*)aasworld->areas, sizeof(aas_area_t) * aasworld->numareas))
+	{
+		return false;
+	}
+	if (routecacheheader.clustercrc !=
+		CRC_Block((unsigned char*)aasworld->clusters, sizeof(aas_cluster_t) * aasworld->numclusters))
+	{
+		return false;
+	}
+	numportalcache = routecacheheader.numportalcache;
+	numareacache = routecacheheader.numareacache;
+	return true;
+}
+
+static bool ReadRouteCacheHeaderWolf(const char* filename, fileHandle_t fp, int& numportalcache, int& numareacache)
+{
+	routecacheheader_wolf_t routecacheheader;
+	FS_Read(&routecacheheader, sizeof(routecacheheader_wolf_t), fp);
+
+	if (GGameType & GAME_WolfSP)
+	{
+		// GJD: route cache data MUST be written on a PC because I've not altered the writing code.
+
+		routecacheheader.areacrc = LittleLong(routecacheheader.areacrc);
+		routecacheheader.clustercrc = LittleLong(routecacheheader.clustercrc);
+		routecacheheader.ident = LittleLong(routecacheheader.ident);
+		routecacheheader.numareacache = LittleLong(routecacheheader.numareacache);
+		routecacheheader.numareas = LittleLong(routecacheheader.numareas);
+		routecacheheader.numclusters = LittleLong(routecacheheader.numclusters);
+		routecacheheader.numportalcache = LittleLong(routecacheheader.numportalcache);
+		routecacheheader.reachcrc = LittleLong(routecacheheader.reachcrc);
+		routecacheheader.version = LittleLong(routecacheheader.version);
+	}
+
+	if (routecacheheader.ident != RCID)
+	{
+		common->Printf("%s is not a route cache dump\n", filename);			// not an aas_error because we want to continue
+		return false;												// and remake them by returning false here
+	}
+	if (GGameType & GAME_WolfSP && routecacheheader.version != RCVERSION_WS)
+	{
+		common->Printf("route cache dump has wrong version %d, should be %d", routecacheheader.version, RCVERSION_WS);
+		return false;
+	}
+	if (GGameType & GAME_WolfMP && routecacheheader.version != RCVERSION_WM)
+	{
+		common->Printf("route cache dump has wrong version %d, should be %d", routecacheheader.version, RCVERSION_WM);
+		return false;
+	}
+	if (GGameType & GAME_ET && routecacheheader.version != RCVERSION_ET)
+	{
+		common->Printf("route cache dump has wrong version %d, should be %d", routecacheheader.version, RCVERSION_ET);
+		return false;
+	}
+	if (routecacheheader.numareas != aasworld->numareas)
+	{
+		return false;
+	}
+	if (routecacheheader.numclusters != aasworld->numclusters)
+	{
+		return false;
+	}
+	// the crc table stuff is endian orientated....
+	if (LittleLong(1) == 1)
+	{
+		if (routecacheheader.areacrc !=
+			CRC_Block((unsigned char*)aasworld->areas, sizeof(aas_area_t) * aasworld->numareas))
+		{
+			return false;
+		}
+		if (routecacheheader.clustercrc !=
+			CRC_Block((unsigned char*)aasworld->clusters, sizeof(aas_cluster_t) * aasworld->numclusters))
+		{
+			return false;
+		}
+		if (routecacheheader.reachcrc !=
+			CRC_Block((unsigned char*)aasworld->reachability, sizeof(aas_reachability_t) * aasworld->reachabilitysize))
+		{
+			return false;
+		}
+	}
+	numportalcache = routecacheheader.numportalcache;
+	numareacache = routecacheheader.numareacache;
+	return true;
+}
+
+int AAS_ReadRouteCache()
+{
+	int i, clusterareanum, size;
+	fileHandle_t fp;
+	char filename[MAX_QPATH];
+	aas_routingcache_t* cache;
+
+	String::Sprintf(filename, MAX_QPATH, "maps/%s.rcd", aasworld->mapname);
+	FS_FOpenFileByMode(filename, &fp, FS_READ);
+	if (!fp)
+	{
+		return false;
+	}	//end if
+	int numportalcache;
+	int numareacache;
+	if (GGameType & GAME_Quake3)
+	{
+		if (!ReadRouteCacheHeaderQ3(filename, fp, numportalcache, numareacache))
+		{
+			FS_FCloseFile(fp);
+			return false;
+		}
+	}
+	else
+	{
+		if (!ReadRouteCacheHeaderWolf(filename, fp, numportalcache, numareacache))
+		{
+			FS_FCloseFile(fp);
+			return false;
+		}
+	}
+	//read all the portal cache
+	for (i = 0; i < numportalcache; i++)
+	{
+		cache = AAS_ReadCache(fp);
+		cache->next = aasworld->portalcache[cache->areanum];
+		cache->prev = NULL;
+		if (aasworld->portalcache[cache->areanum])
+		{
+			aasworld->portalcache[cache->areanum]->prev = cache;
+		}
+		aasworld->portalcache[cache->areanum] = cache;
+	}	//end for
+		//read all the cluster area cache
+	for (i = 0; i < numareacache; i++)
+	{
+		cache = AAS_ReadCache(fp);
+		clusterareanum = AAS_ClusterAreaNum(cache->cluster, cache->areanum);
+		cache->next = aasworld->clusterareacache[cache->cluster][clusterareanum];
+		cache->prev = NULL;
+		if (aasworld->clusterareacache[cache->cluster][clusterareanum])
+		{
+			aasworld->clusterareacache[cache->cluster][clusterareanum]->prev = cache;
+		}
+		aasworld->clusterareacache[cache->cluster][clusterareanum] = cache;
+	}	//end for
+
+	if (!(GGameType & GAME_Quake3))
+	{
+		// read the visareas
+		aasworld->areavisibility = (byte**)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte*));
+		aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
+		for (i = 0; i < aasworld->numareas; i++)
+		{
+			FS_Read(&size, sizeof(size), fp);
+			if (GGameType & GAME_WolfSP)
+			{
+				size = LittleLong(size);
+			}
+			if (size)
+			{
+				aasworld->areavisibility[i] = (byte*)Mem_Alloc(size);
+				FS_Read(aasworld->areavisibility[i], size, fp);
+			}
+		}
+		// read the area waypoints
+		aasworld->areawaypoints = (vec3_t*)Mem_ClearedAlloc(aasworld->numareas * sizeof(vec3_t));
+		FS_Read(aasworld->areawaypoints, aasworld->numareas * sizeof(vec3_t), fp);
+		if (GGameType & GAME_WolfSP && 1 != LittleLong(1))
+		{
+			for (i = 0; i < aasworld->numareas; i++)
+			{
+				aasworld->areawaypoints[i][0] = LittleFloat(aasworld->areawaypoints[i][0]);
+				aasworld->areawaypoints[i][1] = LittleFloat(aasworld->areawaypoints[i][1]);
+				aasworld->areawaypoints[i][2] = LittleFloat(aasworld->areawaypoints[i][2]);
+			}
+		}
+	}
+
+	FS_FCloseFile(fp);
+	return true;
 }

@@ -38,7 +38,6 @@ void AAS_FreeRoutingCaches(void);
 unsigned short int AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end);
 //
 void AAS_CreateAllRoutingCache(void);
-void AAS_WriteRouteCache(void);
 #endif	//AASINTERN
 
 //returns the index of the next reachability for the given area
