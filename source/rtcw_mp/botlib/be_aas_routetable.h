@@ -48,8 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_LOCALTRAVELTIME 60		// use this to tweak memory usage (reduces parent count, increases local count (and cpu usage) - find a balance)
 #define MAX_PARENTS         8192
 
-extern int disable_routetable;
-
 //....................................................................
 // Permanent structures (in order of highest to lowest count)
 typedef struct
@@ -98,7 +96,5 @@ typedef struct
 //....................................................................
 
 void AAS_RT_ShowRoute(vec3_t srcpos, int srcnum, int destnum);
-aas_rt_route_t* AAS_RT_GetRoute(int srcnum, vec3_t origin, int destnum);
 void AAS_RT_ShutdownRouteTable(void);
 qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
-int AAS_RT_GetReachabilityIndex(int areanum, int reachIndex);
