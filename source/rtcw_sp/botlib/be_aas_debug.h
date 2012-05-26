@@ -37,5 +37,3 @@ If you have questions concerning this license or the applicable additional terms
 
 //visualize the given reachability
 void AAS_ShowReachability(aas_reachability_t* reach);
-//show the reachable areas from the given area
-void AAS_ShowReachableAreas(int areanum);

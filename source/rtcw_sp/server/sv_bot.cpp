@@ -107,7 +107,7 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 	static Cvar* bot_debug, * bot_groundonly, * bot_reachability, * bot_highlightarea;
 	static Cvar* bot_testhidepos, * bot_testroutevispos;
 	bot_debugpoly_t* poly;
-	int i, parm0;
+	int i;
 
 	if (!bot_enable)
 	{
@@ -146,24 +146,9 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 	//
 	if (bot_debug->integer)
 	{
-		parm0 = 0;
-		if (svs.clients[0].lastUsercmd.buttons & Q3BUTTON_ATTACK)
-		{
-			parm0 |= 1;
-		}
-		if (bot_reachability->integer)
-		{
-			parm0 |= 2;
-		}
-		if (bot_groundonly->integer)
-		{
-			parm0 |= 4;
-		}
 		BotLibVarSet("bot_highlightarea", bot_highlightarea->string);
 		BotLibVarSet("bot_testhidepos", bot_testhidepos->string);
 		BotLibVarSet("bot_testroutevispos", bot_testroutevispos->string);
-		botlib_export->Test(parm0, NULL, svs.clients[0].gentity->r.currentOrigin,
-			svs.clients[0].gentity->r.currentAngles);
 	}	//end if
 	for (i = 0; i < bot_maxdebugpolys; i++)
 	{

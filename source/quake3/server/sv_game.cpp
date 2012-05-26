@@ -513,7 +513,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_UPDATENTITY:
 		return botlib_export->BotLibUpdateEntity(args[1], (bot_entitystate_t*)VMA(2));
 	case BOTLIB_TEST:
-		return botlib_export->Test(args[1], (char*)VMA(2), (float*)VMA(3), (float*)VMA(4));
+		return 0;
 
 	case BOTLIB_GET_SNAPSHOT_ENTITY:
 		return SV_BotGetSnapshotEntity(args[1], args[2]);
