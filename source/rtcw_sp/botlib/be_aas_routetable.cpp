@@ -91,49 +91,6 @@ void AAS_RT_ShutdownRouteTable(void)
 	AAS_RT_FreeMemory(aasworld->routetable);
 	aasworld->routetable = NULL;
 }
-
-//===========================================================================
-//	draws the route-table from src to dest
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-#include "../game/be_ai_goal.h"
-int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
-	int lastgoalareanum, int lastareanum,
-	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_q3_t* goal, int travelflags, int movetravelflags);
-
-void AAS_RT_ShowRoute(vec3_t srcpos, int srcnum, int destnum)
-{
-#ifdef DEBUG
-#define MAX_RT_AVOID_REACH 1
-	AAS_ClearShownPolygons();
-	AAS_ClearShownDebugLines();
-	AAS_ShowAreaPolygons(srcnum, 1, qtrue);
-	AAS_ShowAreaPolygons(destnum, 4, qtrue);
-	{
-		static int lastgoalareanum, lastareanum;
-		static int avoidreach[MAX_RT_AVOID_REACH];
-		static float avoidreachtimes[MAX_RT_AVOID_REACH];
-		static int avoidreachtries[MAX_RT_AVOID_REACH];
-		int reachnum;
-		bot_goal_q3_t goal;
-		aas_reachability_t reach;
-
-		goal.areanum = destnum;
-		VectorCopy(botlibglobals.goalorigin, goal.origin);
-		reachnum = BotGetReachabilityToGoal(srcpos, srcnum, -1,
-			lastgoalareanum, lastareanum,
-			avoidreach, avoidreachtimes, avoidreachtries,
-			&goal, WSTFL_DEFAULT | TFL_FUNCBOB, WSTFL_DEFAULT | TFL_FUNCBOB);
-		AAS_ReachabilityFromNum(reachnum, &reach);
-		AAS_ShowReachability(&reach);
-	}
-#endif
-}
-
 /*
 =================
 AAS_RT_GetHidePos

@@ -328,7 +328,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	//--------------------------------------------
 	// be_aas_routetable.c
 	//--------------------------------------------
-	aas->AAS_RT_ShowRoute = AAS_RT_ShowRoute;
 	aas->AAS_RT_GetHidePos = AAS_RT_GetHidePos;
 	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
 	aas->AAS_SetAASBlockingEntity = AAS_SetAASBlockingEntity;

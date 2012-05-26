@@ -585,7 +585,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 
 	// Ridah, route-tables
 	case BOTLIB_AAS_RT_SHOWROUTE:
-		botlib_export->aas.AAS_RT_ShowRoute((float*)VMA(1), args[2], args[3]);
 		return 0;
 
 	case BOTLIB_AAS_RT_GETHIDEPOS:

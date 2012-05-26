@@ -199,7 +199,6 @@ typedef struct aas_export_s
 	//--------------------------------------------
 	// be_aas_routetable.c
 	//--------------------------------------------
-	void (* AAS_RT_ShowRoute)(vec3_t srcpos, int srcnum, int destnum);
 	qboolean (* AAS_RT_GetHidePos)(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
 	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 	void (* AAS_SetAASBlockingEntity)(vec3_t absmin, vec3_t absmax, qboolean blocking);
