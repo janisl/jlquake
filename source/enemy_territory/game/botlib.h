@@ -180,11 +180,6 @@ typedef struct aas_export_s
 		int maxframes, float frametime,
 		int stopevent, int stopareanum, int visualize);
 
-	// Ridah, route-tables
-	//--------------------------------------------
-	// be_aas_routetable.c
-	//--------------------------------------------
-	qboolean (* AAS_RT_GetHidePos)(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
 	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 	int (* AAS_ListAreasInRange)(vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
 	int (* AAS_AvoidDangerArea)(vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, int travelflags);

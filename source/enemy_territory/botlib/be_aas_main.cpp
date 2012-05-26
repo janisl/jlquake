@@ -308,9 +308,6 @@ void AAS_Shutdown(void)
 	{
 		AAS_SetCurrentWorld(i);
 
-		// Ridah, kill the route-table data
-		AAS_RT_ShutdownRouteTable();
-
 		AAS_ShutdownAlternativeRouting();
 		AAS_DumpBSPData();
 		//free routing caches

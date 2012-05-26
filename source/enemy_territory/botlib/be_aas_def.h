@@ -39,10 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 	#define MAX_PATH                MAX_QPATH
 #endif
 
-// Ridah, route-tables
-#include "be_aas_routetable.h"
-// done.
-
 #define AASINTERN
 
 #ifndef BSPCINCLUDE
@@ -58,8 +54,5 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_optimize.h"
 #include "be_aas_bsp.h"
 #include "be_aas_move.h"
-
-// Ridah, route-tables
-#include "be_aas_routetable.h"
 
 #endif	//BSPCINCLUDE

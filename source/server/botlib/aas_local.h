@@ -162,49 +162,6 @@ struct aas_reachabilityareas_t
 	int numareas;
 };
 
-struct aas_rt_parent_link_t
-{
-	unsigned short int parent;				// parent we belong to
-	unsigned short int childIndex;			// our index in the parent's list of children
-};
-
-struct aas_rt_child_t
-{
-	unsigned short int areanum;
-	int numParentLinks;
-	int startParentLinks;
-};
-
-struct aas_rt_parent_t
-{
-	unsigned short int areanum;						// out area number in the global list
-	int numParentChildren;
-	int startParentChildren;
-	int numVisibleParents;
-	int startVisibleParents;						// list of other parents that we can see (used for fast hide/retreat checks)
-};
-
-// this is what each aasworld attaches itself to
-struct aas_rt_t
-{
-	unsigned short int* areaChildIndexes;			// each aas area that is part of the Route-Table has a pointer here to their position in the list of children
-
-	int numChildren;
-	aas_rt_child_t* children;
-
-	int numParents;
-	aas_rt_parent_t* parents;
-
-	int numParentChildren;
-	unsigned short int* parentChildren;
-
-	int numVisibleParents;
-	unsigned short int* visibleParents;
-
-	int numParentLinks;
-	aas_rt_parent_link_t* parentLinks;				// links from each child to the parent's it belongs to
-};
-
 typedef struct aas_s
 {
 	int loaded;									//true when an AAS file is loaded
@@ -295,8 +252,6 @@ typedef struct aas_s
 	//areas the reachabilities go through
 	int* reachabilityareaindex;
 	aas_reachabilityareas_t* reachabilityareas;
-	// Ridah, pointer to Route-Table information
-	aas_rt_t* routetable;
 	//hide travel times
 	unsigned short int* hidetraveltimes;
 

@@ -43,7 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #define HUNK_ID     0x87654321l
 
 int allocatedmemory;
-int totalmemorysize;
 int numblocks;
 
 //===========================================================================

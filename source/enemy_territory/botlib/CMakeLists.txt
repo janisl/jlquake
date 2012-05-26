@@ -9,7 +9,6 @@ add_library(botlib-et STATIC
 	be_aas_reach.cpp
 	be_aas_route.cpp
 	be_aas_routealt.cpp
-	be_aas_routetable.cpp
 	be_aas_sample.cpp
 	be_ai_chat.cpp
 	be_ai_goal.cpp

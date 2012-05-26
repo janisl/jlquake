@@ -37,7 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUNK_ID     0x87654321l
 
 int allocatedmemory;
-int totalmemorysize;
 int numblocks;
 
 //===========================================================================

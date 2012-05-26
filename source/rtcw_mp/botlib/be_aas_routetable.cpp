@@ -42,55 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_aas.h"
 #include "be_aas_def.h"
 
-// hmm, is there a cleaner way of finding out memory usage?
-extern int totalmemorysize;
-static int memorycount;
-
-//===========================================================================
-// Memory debugging/optimization
-
-void AAS_RT_FreeMemory(void* ptr)
-{
-	int before;
-
-	before = totalmemorysize;
-
-	// FreeMemory( ptr );
-	// Ryan - 01102k
-	free(ptr);
-
-	memorycount -= before - totalmemorysize;
-}
-//===========================================================================
-//	free permanent memory used by route-table system
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_RT_ShutdownRouteTable(void)
-{
-	if (!aasworld->routetable)
-	{
-		return;
-	}
-
-	// free the dynamic lists
-	AAS_RT_FreeMemory(aasworld->routetable->areaChildIndexes);
-	AAS_RT_FreeMemory(aasworld->routetable->children);
-	AAS_RT_FreeMemory(aasworld->routetable->parents);
-	AAS_RT_FreeMemory(aasworld->routetable->parentChildren);
-	AAS_RT_FreeMemory(aasworld->routetable->visibleParents);
-//	AAS_RT_FreeMemory( aasworld->routetable->localRoutes );
-//	AAS_RT_FreeMemory( aasworld->routetable->parentRoutes );
-	AAS_RT_FreeMemory(aasworld->routetable->parentLinks);
-//	AAS_RT_FreeMemory( aasworld->routetable->routeIndexes );
-//	AAS_RT_FreeMemory( aasworld->routetable->parentTravelTimes );
-
-	// kill the table
-	AAS_RT_FreeMemory(aasworld->routetable);
-	aasworld->routetable = NULL;
-}
 /*
 =================
 AAS_RT_GetHidePos
@@ -104,9 +55,7 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
 	static int tfl = WMTFL_DEFAULT & ~(TFL_JUMPPAD | TFL_ROCKETJUMP | TFL_BFGJUMP | TFL_GRAPPLEHOOK | TFL_DOUBLEJUMP | TFL_RAMPJUMP | TFL_STRAFEJUMP | TFL_LAVA);		//----(SA)	modified since slime is no longer deadly
 
 	// use MrE's breadth first method
-	int hideareanum;
-
-	hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, tfl);
+	int hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, tfl);
 	if (!hideareanum)
 	{
 		return qfalse;
