@@ -97,7 +97,6 @@ typedef struct
 
 //....................................................................
 
-void AAS_RT_BuildRouteTable(void);
 void AAS_RT_ShowRoute(vec3_t srcpos, int srcnum, int destnum);
 aas_rt_route_t* AAS_RT_GetRoute(int srcnum, vec3_t origin, int destnum);
 void AAS_RT_ShutdownRouteTable(void);

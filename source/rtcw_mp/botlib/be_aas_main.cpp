@@ -62,10 +62,6 @@ void AAS_SetInitialized(void)
 	//AAS_RoutingInfo();
 #endif
 
-	// Ridah, build/load the route-table
-	AAS_RT_BuildRouteTable();
-	// done.
-
 }	//end of the function AAS_SetInitialized
 //===========================================================================
 //
