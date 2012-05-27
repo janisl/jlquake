@@ -262,11 +262,8 @@ typedef struct ai_export_s
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
-	void (* BotResetMoveState)(int movestate);
 	void (* BotMoveToGoal)(struct bot_moveresult_t* result, int movestate, struct bot_goal_q3_t* goal, int travelflags);
 	int (* BotMoveInDirection)(int movestate, vec3_t dir, float speed, int type);
-	void (* BotResetAvoidReach)(int movestate);
-	void (* BotResetLastAvoidReach)(int movestate);
 	int (* BotReachabilityArea)(vec3_t origin, int testground);
 	int (* BotMovementViewTarget)(int movestate, struct bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target);
 	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_q3_t* goal, int travelflags, vec3_t target);

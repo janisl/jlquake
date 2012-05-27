@@ -830,7 +830,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AI_RESET_MOVE_STATE:
-		botlib_export->ai.BotResetMoveState(args[1]);
+		BotResetMoveState(args[1]);
 		return 0;
 	case BOTLIB_AI_MOVE_TO_GOAL:
 		botlib_export->ai.BotMoveToGoal((struct bot_moveresult_t*)VMA(1), args[2], (struct bot_goal_q3_t*)VMA(3), args[4]);
@@ -838,10 +838,10 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_MOVE_IN_DIRECTION:
 		return botlib_export->ai.BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
 	case BOTLIB_AI_RESET_AVOID_REACH:
-		botlib_export->ai.BotResetAvoidReach(args[1]);
+		BotResetAvoidReachAndMove(args[1]);
 		return 0;
 	case BOTLIB_AI_RESET_LAST_AVOID_REACH:
-		botlib_export->ai.BotResetLastAvoidReach(args[1]);
+		BotResetLastAvoidReach(args[1]);
 		return 0;
 	case BOTLIB_AI_REACHABILITY_AREA:
 		return botlib_export->ai.BotReachabilityArea((float*)VMA(1), args[2]);
@@ -859,7 +859,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 	// Ridah
 	case BOTLIB_AI_INIT_AVOID_REACH:
-		BotInitAvoidReach(args[1]);
+		BotResetAvoidReach(args[1]);
 		return 0;
 	// done.
 

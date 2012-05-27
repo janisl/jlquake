@@ -336,12 +336,19 @@ struct bot_moveresult_t
 int BotAllocMoveState();
 //frees the movestate with the given handle
 void BotFreeMoveState(int handle);
-//initialize avoid reachabilities
-void BotInitAvoidReach(int handle);
 //initialize movement state before performing any movement
 void BotInitMoveStateQ3(int handle, bot_initmove_q3_t* initmove);
 //initialize movement state
 void BotInitMoveStateET(int handle, bot_initmove_et_t* initmove);
+//add a spot to avoid (if type == AVOID_CLEAR all spots are removed)
+void BotAddAvoidSpot(int movestate, const vec3_t origin, float radius, int type);
+//reset avoid reachability
+void BotResetAvoidReach(int movestate);
+void BotResetAvoidReachAndMove(int movestate);
+//resets the last avoid reachability
+void BotResetLastAvoidReach(int movestate);
+//resets the whole move state
+void BotResetMoveState(int movestate);
 
 //
 //	Weapon

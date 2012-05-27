@@ -31,25 +31,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-//resets the whole move state
-void BotResetMoveState(int movestate);
 //moves the bot to the given goal
 void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal, int travelflags);
 //moves the bot in the specified direction using the specified type of movement
 int BotMoveInDirection(int movestate, vec3_t dir, float speed, int type);
-//reset avoid reachability
-void BotResetAvoidReach(int movestate);
-//resets the last avoid reachability
-void BotResetLastAvoidReach(int movestate);
 //returns a reachability area if the origin is in one
 int BotReachabilityArea(vec3_t origin, int client);
 //view target based on movement
 int BotMovementViewTarget(int movestate, bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target);
 //predict the position of a player based on movement towards a goal
 int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_q3_t* goal, int travelflags, vec3_t target);
-//add a spot to avoid (if type == AVOID_CLEAR all spots are removed)
-void BotAddAvoidSpot(int movestate, vec3_t origin, float radius, int type);
-//setup movement AI
-int BotSetupMoveAI(void);
-//shutdown movement AI
-void BotShutdownMoveAI(void);

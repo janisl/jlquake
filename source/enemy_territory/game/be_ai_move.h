@@ -35,23 +35,13 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//resets the whole movestate
-void BotResetMoveState(int movestate);
 //moves the bot to the given goal
 void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_et_t* goal, int travelflags);
 //moves the bot in the specified direction
 int BotMoveInDirection(int movestate, vec3_t dir, float speed, int type);
-//reset avoid reachability
-void BotResetAvoidReach(int movestate);
-//resets the last avoid reachability
-void BotResetLastAvoidReach(int movestate);
 //returns a reachability area if the origin is in one
 int BotReachabilityArea(vec3_t origin, int client);
 //view target based on movement
 int BotMovementViewTarget(int movestate, bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target);
 //predict the position of a player
 int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_et_t* goal, int travelflags, vec3_t target);
-//setup movement AI
-int BotSetupMoveAI(void);
-//shutdown movement AI
-void BotShutdownMoveAI(void);

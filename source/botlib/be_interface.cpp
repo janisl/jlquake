@@ -377,15 +377,11 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
-	ai->BotResetMoveState = BotResetMoveState;
 	ai->BotMoveToGoal = BotMoveToGoal;
 	ai->BotMoveInDirection = BotMoveInDirection;
-	ai->BotResetAvoidReach = BotResetAvoidReach;
-	ai->BotResetLastAvoidReach = BotResetLastAvoidReach;
 	ai->BotReachabilityArea = BotReachabilityArea;
 	ai->BotMovementViewTarget = BotMovementViewTarget;
 	ai->BotPredictVisiblePosition = BotPredictVisiblePosition;
-	ai->BotAddAvoidSpot = BotAddAvoidSpot;
 }
 
 
