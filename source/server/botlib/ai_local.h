@@ -285,7 +285,6 @@ extern int modeltypes[MAX_MODELS_Q3];
 extern bot_movestate_t* botmovestates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 
 bot_movestate_t* BotMoveStateFromHandle(int handle);
-float AngleDiff(float ang1, float ang2);
 //must be called every map change
 void BotSetBrushModelTypes();
 bool BotValidTravel(const aas_reachability_t* reach, int travelflags);

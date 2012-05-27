@@ -1831,7 +1831,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 		VectorNormalize(vec);
 		VectorMA(v1, -32, vec, v1);
 		VectorMA(v2,  32, vec, v2);
-		ProjectPointOntoVector(p, v1, v2, pos);
+		ProjectPointOntoVectorFromPoints(p, v1, v2, pos);
 		VectorSubtract(pos, p, vec);
 		if (VectorLength(vec) > 2)
 		{
@@ -1857,7 +1857,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 		VectorNormalize(hordir);
 		VectorMA(reach->start, -24, hordir, pos);
 		// project our position onto the vector
-		ProjectPointOntoVector(ms->origin, pos, reach->start, p);
+		ProjectPointOntoVectorFromPoints(ms->origin, pos, reach->start, p);
 		VectorSubtract(p, ms->origin, dir);
 		//make sure the horizontal movement is large anough
 		VectorCopy(dir, hordir);

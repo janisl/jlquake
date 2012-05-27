@@ -1113,24 +1113,6 @@ bot_moveresult_t BotTravel_Walk(bot_movestate_t* ms, aas_reachability_t* reach)
 		hordir[1] = reach->end[1] - ms->origin[1];
 		hordir[2] = 0;
 		dist = VectorNormalize(hordir);
-/*
-        // if we are really close to the line, then move towards the center of the reach area
-        VectorCopy( reach->start, v1 );
-        VectorCopy( reach->end, v2 );
-        VectorCopy( ms->origin, p );
-        v1[2] = 0;
-        v2[2] = 0;
-        p[2] = 0;
-        if (DistanceFromVectorSquared( p, v1, v2 ) < 4) {
-            if (!AAS_AreaWaypoint( reach->areanum, p ))
-                AAS_AreaCenter( reach->areanum, p );
-            if (VectorDistance( ms->origin, p ) > 32) {
-            VectorSubtract( p, ms->origin, hordir );
-            hordir[2] = 0;
-            dist = VectorNormalize(hordir);
-        }
-        }
-*/
 	}
 	else
 	{
@@ -1937,7 +1919,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 			VectorNormalize(vec);
 			VectorMA(v1, -32, vec, v1);
 			VectorMA(v2,  32, vec, v2);
-			ProjectPointOntoVector(p, v1, v2, pos);
+			ProjectPointOntoVectorFromPoints(p, v1, v2, pos);
 			VectorSubtract(pos, p, vec);
 			if (VectorLength(vec) > 2)
 			{

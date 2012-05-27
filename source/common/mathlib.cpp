@@ -1233,3 +1233,104 @@ void VectorMiddle(const vec3_t v1, const vec3_t v2, vec3_t middle)
 	VectorAdd(v1, v2, middle);
 	VectorScale(middle, 0.5, middle);
 }
+
+float AngleDiff(float ang1, float ang2)
+{
+	float diff = ang1 - ang2;
+	if (ang1 > ang2)
+	{
+		if (diff > 180.0)
+		{
+			diff -= 360.0;
+		}
+	}
+	else
+	{
+		if (diff < -180.0)
+		{
+			diff += 360.0;
+		}
+	}
+	return diff;
+}
+
+void ProjectPointOntoVector(const vec3_t point, const vec3_t vStart, const vec3_t vDir, vec3_t vProj)
+{
+	vec3_t pVec;
+	VectorSubtract(point, vStart, pVec);
+	// project onto the directional vector for this segment
+	VectorMA(vStart, DotProduct(pVec, vDir), vDir, vProj);
+}
+
+void ProjectPointOntoVectorFromPoints(const vec3_t point, const vec3_t vStart, const vec3_t vEnd, vec3_t vProj)
+{
+	vec3_t vec;
+	VectorSubtract(vEnd, vStart, vec);
+	VectorNormalize(vec);
+	ProjectPointOntoVector(point, vStart, vec, vProj);
+}
+
+void ProjectPointOntoVectorBounded(const vec3_t point, const vec3_t vStart, const vec3_t vEnd, vec3_t vProj)
+{
+	ProjectPointOntoVectorFromPoints(point, vStart, vEnd, vProj);
+	// check bounds
+	int j;
+	for (j = 0; j < 3; j++)
+	{
+		if ((vProj[j] > vStart[j] && vProj[j] > vEnd[j]) ||
+			(vProj[j] < vStart[j] && vProj[j] < vEnd[j]))
+		{
+			break;
+		}
+	}
+	if (j < 3)
+	{
+		if (Q_fabs(vProj[j] - vStart[j]) < Q_fabs(vProj[j] - vEnd[j]))
+		{
+			VectorCopy(vStart, vProj);
+		}
+		else
+		{
+			VectorCopy(vEnd, vProj);
+		}
+	}
+}
+
+float DistanceFromLineSquaredDir(const vec3_t p, const vec3_t lp1, const vec3_t lp2, const vec3_t dir)
+{
+	vec3_t proj;
+	ProjectPointOntoVector(p, lp1, dir, proj);
+	int j;
+	for (j = 0; j < 3; j++)
+	{
+		if ((proj[j] > lp1[j] && proj[j] > lp2[j]) ||
+			(proj[j] < lp1[j] && proj[j] < lp2[j]))
+		{
+			break;
+		}
+	}
+	if (j < 3)
+	{
+		vec3_t t;
+		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
+		{
+			VectorSubtract(p, lp1, t);
+		}
+		else
+		{
+			VectorSubtract(p, lp2, t);
+		}
+		return VectorLengthSquared(t);
+	}
+	vec3_t t;
+	VectorSubtract(p, proj, t);
+	return VectorLengthSquared(t);
+}
+
+float DistanceFromLineSquared(const vec3_t p, const vec3_t lp1, const vec3_t lp2)
+{
+	vec3_t dir;
+	VectorSubtract(lp2, lp1, dir);
+	VectorNormalize(dir);
+	return DistanceFromLineSquaredDir(p, lp1, lp2, dir);
+}

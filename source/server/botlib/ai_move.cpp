@@ -185,26 +185,6 @@ void BotInitMoveStateET(int handle, bot_initmove_et_t* initmove)
 	}
 }
 
-float AngleDiff(float ang1, float ang2)
-{
-	float diff = ang1 - ang2;
-	if (ang1 > ang2)
-	{
-		if (diff > 180.0)
-		{
-			diff -= 360.0;
-		}
-	}
-	else
-	{
-		if (diff < -180.0)
-		{
-			diff += 360.0;
-		}
-	}
-	return diff;
-}
-
 void BotSetBrushModelTypes()
 {
 	Com_Memset(modeltypes, 0, MAX_MODELS_Q3 * sizeof(int));

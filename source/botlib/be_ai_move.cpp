@@ -288,39 +288,6 @@ int BotOnTopOfEntity(bot_movestate_t* ms)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2)
-{
-	vec3_t proj, dir;
-	int j;
-
-	AAS_ProjectPointOntoVector(p, lp1, lp2, proj);
-	for (j = 0; j < 3; j++)
-		if ((proj[j] > lp1[j] && proj[j] > lp2[j]) ||
-			(proj[j] < lp1[j] && proj[j] < lp2[j]))
-		{
-			break;
-		}
-	if (j < 3)
-	{
-		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
-		{
-			VectorSubtract(p, lp1, dir);
-		}
-		else
-		{
-			VectorSubtract(p, lp2, dir);
-		}
-		return VectorLengthSquared(dir);
-	}
-	VectorSubtract(p, proj, dir);
-	return VectorLengthSquared(dir);
-}	//end of the function DistanceFromLineSquared
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 int BotAvoidSpots(vec3_t origin, aas_reachability_t* reach, bot_avoidspot_t* avoidspots, int numavoidspots)
 {
 	int checkbetween, i, type;

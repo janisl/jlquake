@@ -244,8 +244,6 @@ private:
 	static void TestBoxInBrush(traceWork_t* tw, cbrush_t* brush);
 	void TestBoundingBoxInCapsule(traceWork_t* tw, clipHandle_t model);
 	void TestCapsuleInCapsule(traceWork_t* tw, clipHandle_t model);
-	static float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3_t dir);
-	static void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vDir, vec3_t vProj);
 	static float SquareRootFloat(float number);
 
 public:

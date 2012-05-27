@@ -42,6 +42,3 @@ int AAS_LoadMap(const char* mapname);
 //start a new time frame
 int AAS_StartFrame(float time);
 #endif	//AASINTERN
-
-//
-void AAS_ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);

@@ -778,7 +778,6 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-extern void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
 int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos)
 {
 	int i, j, nextareanum, badtravelflags, numreach, bestarea;
@@ -939,7 +938,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 			}
 			//
 			//avoid going near the enemy
-			ProjectPointOntoVector(enemyorigin, curupdate->start, reach->end, p);
+			ProjectPointOntoVectorFromPoints(enemyorigin, curupdate->start, reach->end, p);
 			for (j = 0; j < 3; j++)
 			{
 				if ((p[j] > curupdate->start[j] + 0.1 && p[j] > reach->end[j] + 0.1) ||

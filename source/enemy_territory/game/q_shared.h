@@ -353,13 +353,6 @@ float vectoyaw(const vec3_t vec);
 // see unix/const-arg.c
 void AxisToAngles(/*const*/ vec3_t axis[3], vec3_t angles);
 
-// Ridah
-void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
-void ProjectPointOntoVectorBounded(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj);
-float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2);
-float DistanceFromVectorSquared(vec3_t p, vec3_t lp1, vec3_t lp2);
-// done.
-
 //=============================================
 
 float Com_Clamp(float min, float max, float value);

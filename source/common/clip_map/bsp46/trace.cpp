@@ -1253,7 +1253,7 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t* tw, vec3_t origin, fl
 	VectorSubtract(end2d, start2d, dir);
 	length = VectorNormalize(dir);
 	//
-	l1 = DistanceFromLineSquared(org2d, start2d, end2d, dir);
+	l1 = DistanceFromLineSquaredDir(org2d, start2d, end2d, dir);
 	VectorSubtract(end2d, org2d, v1);
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the cylinder and the end point is at least an epsilon away
@@ -1361,7 +1361,7 @@ void QClipMap46::TraceThroughSphere(traceWork_t* tw, vec3_t origin, float radius
 	VectorSubtract(end, start, dir);
 	length = VectorNormalize(dir);
 	//
-	l1 = DistanceFromLineSquared(origin, start, end, dir);
+	l1 = DistanceFromLineSquaredDir(origin, start, end, dir);
 	VectorSubtract(end, origin, v1);
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the sphere and the end point is at least an epsilon away
@@ -1762,55 +1762,6 @@ BASIC MATH
 
 ===============================================================================
 */
-
-//==========================================================================
-//
-//	QClipMap46::DistanceFromLineSquared
-//
-//==========================================================================
-
-float QClipMap46::DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3_t dir)
-{
-	vec3_t proj, t;
-	int j;
-
-	ProjectPointOntoVector(p, lp1, dir, proj);
-	for (j = 0; j < 3; j++)
-		if ((proj[j] > lp1[j] && proj[j] > lp2[j]) ||
-			(proj[j] < lp1[j] && proj[j] < lp2[j]))
-		{
-			break;
-		}
-	if (j < 3)
-	{
-		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
-		{
-			VectorSubtract(p, lp1, t);
-		}
-		else
-		{
-			VectorSubtract(p, lp2, t);
-		}
-		return VectorLengthSquared(t);
-	}
-	VectorSubtract(p, proj, t);
-	return VectorLengthSquared(t);
-}
-
-//==========================================================================
-//
-//	QClipMap46::ProjectPointOntoVector
-//
-//==========================================================================
-
-void QClipMap46::ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vDir, vec3_t vProj)
-{
-	vec3_t pVec;
-
-	VectorSubtract(point, vStart, pVec);
-	// project onto the directional vector for this segment
-	VectorMA(vStart, DotProduct(pVec, vDir), vDir, vProj);
-}
 
 //==========================================================================
 //
