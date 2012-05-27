@@ -804,7 +804,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotAddAvoidSpot(args[1], (float*)VMA(2), VMF(3), args[4]);
 		return 0;
 	case BOTLIB_AI_MOVE_TO_GOAL:
-		botlib_export->ai.BotMoveToGoal((bot_moveresult_s*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4]);
+		botlib_export->ai.BotMoveToGoal((bot_moveresult_t*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4]);
 		return 0;
 	case BOTLIB_AI_MOVE_IN_DIRECTION:
 		return botlib_export->ai.BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
@@ -826,7 +826,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotFreeMoveState(args[1]);
 		return 0;
 	case BOTLIB_AI_INIT_MOVE_STATE:
-		botlib_export->ai.BotInitMoveState(args[1], (bot_initmove_s*)VMA(2));
+		botlib_export->ai.BotInitMoveState(args[1], (bot_initmove_q3_t*)VMA(2));
 		return 0;
 
 	case BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON:

@@ -43,8 +43,8 @@ If you have questions concerning this license or the applicable additional terms
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct bot_moveresult_s;
-struct bot_initmove_s;
+struct bot_moveresult_t;
+struct bot_initmove_et_t;
 
 #define BLOCKINGFLAG_MOVER  (~0x7fffffff)
 
@@ -253,7 +253,7 @@ typedef struct ai_export_s
 	// be_ai_move.h
 	//-----------------------------------
 	void (* BotResetMoveState)(int movestate);
-	void (* BotMoveToGoal)(struct bot_moveresult_s* result, int movestate, struct bot_goal_et_t* goal, int travelflags);
+	void (* BotMoveToGoal)(struct bot_moveresult_t* result, int movestate, struct bot_goal_et_t* goal, int travelflags);
 	int (* BotMoveInDirection)(int movestate, vec3_t dir, float speed, int type);
 	void (* BotResetAvoidReach)(int movestate);
 	void (* BotResetLastAvoidReach)(int movestate);
@@ -262,7 +262,7 @@ typedef struct ai_export_s
 	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_et_t* goal, int travelflags, vec3_t target);
 	int (* BotAllocMoveState)(void);
 	void (* BotFreeMoveState)(int handle);
-	void (* BotInitMoveState)(int handle, struct bot_initmove_s* initmove);
+	void (* BotInitMoveState)(int handle, struct bot_initmove_et_t* initmove);
 	// Ridah
 	void (* BotInitAvoidReach)(int handle);
 	// done.

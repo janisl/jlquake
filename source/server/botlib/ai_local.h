@@ -205,6 +205,72 @@ int BotSetupGoalAI(bool singleplayer);
 //shut down the goal AI
 void BotShutdownGoalAI();
 
+#define MAX_AVOIDREACH                  1
+#define MAX_AVOIDSPOTS                  32
+
+//used to avoid reachability links for some time after being used
+#define AVOIDREACH_TIME_Q3      6		//avoid links for 6 seconds after use
+#define AVOIDREACH_TIME_ET      4
+#define AVOIDREACH_TRIES        4
+
+//prediction times
+#define PREDICTIONTIME_JUMP 3		//in seconds
+#define PREDICTIONTIME_MOVE 2		//in seconds
+
+//hook commands
+#define CMD_HOOKOFF             "hookoff"
+#define CMD_HOOKON              "hookon"
+
+//weapon indexes for weapon jumping
+#define WEAPONINDEX_ROCKET_LAUNCHER     5
+#define WEAPONINDEX_BFG                 9
+
+#define MODELTYPE_FUNC_PLAT     1
+#define MODELTYPE_FUNC_BOB      2
+#define MODELTYPE_FUNC_DOOR     3
+#define MODELTYPE_FUNC_STATIC   4
+
+struct bot_avoidspot_t
+{
+	vec3_t origin;
+	float radius;
+	int type;
+};
+
+//movement state
+//NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP and
+//		MFL_GRAPPLEPULL must be set outside the movement code
+struct bot_movestate_t
+{
+	//input vars (all set outside the movement code)
+	vec3_t origin;								//origin of the bot
+	vec3_t velocity;							//velocity of the bot
+	vec3_t viewoffset;							//view offset
+	int entitynum;								//entity number of the bot
+	int client;									//client number of the bot
+	float thinktime;							//time the bot thinks
+	int presencetype;							//presencetype of the bot
+	vec3_t viewangles;							//view angles of the bot
+	//state vars
+	int areanum;								//area the bot is in
+	int lastareanum;							//last area the bot was in
+	int lastgoalareanum;						//last goal area number
+	int lastreachnum;							//last reachability number
+	vec3_t lastorigin;							//origin previous cycle
+	float lasttime;
+	int reachareanum;							//area number of the reachabilty
+	int moveflags;								//movement flags
+	int jumpreach;								//set when jumped
+	float grapplevisible_time;					//last time the grapple was visible
+	float lastgrappledist;						//last distance to the grapple end
+	float reachability_time;					//time to use current reachability
+	int avoidreach[MAX_AVOIDREACH];				//reachabilities to avoid
+	float avoidreachtimes[MAX_AVOIDREACH];		//times to avoid the reachabilities
+	int avoidreachtries[MAX_AVOIDREACH];		//number of tries before avoiding
+	bot_avoidspot_t avoidspots[MAX_AVOIDSPOTS];	//spots to avoid
+	int numavoidspots;
+};
+
 //setup the weapon AI
 int BotSetupWeaponAI();
 //shut down the weapon AI

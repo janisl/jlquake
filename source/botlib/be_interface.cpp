@@ -272,29 +272,6 @@ int Export_BotLibUpdateEntity(int ent, bot_entitystate_t* state)
 
 	return AAS_UpdateEntity(ent, state);
 }	//end of the function Export_BotLibUpdateEntity
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_TestMovementPrediction(int entnum, vec3_t origin, vec3_t dir);
-void ElevatorBottomCenter(aas_reachability_t* reach, vec3_t bottomcenter);
-int BotGetReachabilityToGoal(vec3_t origin, int areanum,
-	int lastgoalareanum, int lastareanum,
-	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_q3_t* goal, int travelflags, int movetravelflags,
-	struct bot_avoidspot_s* avoidspots, int numavoidspots, int* flags);
-
-int AAS_PointLight(vec3_t origin, int* red, int* green, int* blue);
-
-int AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, int maxareas);
-
-int AAS_Reachability_WeaponJump(int area1num, int area2num);
-
-int BotFuzzyPointReachabilityArea(vec3_t origin);
-
-float BotGapDistance(vec3_t origin, vec3_t hordir, int entnum);
 
 /*
 ============

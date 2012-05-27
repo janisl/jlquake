@@ -47,59 +47,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_ai_goal.h"
 #include "../game/be_ai_move.h"
 
-
-//#define DEBUG_AI_MOVE
-//#define DEBUG_ELEVATOR
-//#define DEBUG_GRAPPLE
-//movement state
-
-//NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED and MFL_WATERJUMP must be set outside the movement code
-typedef struct bot_movestate_s
-{
-	//input vars (all set outside the movement code)
-	vec3_t origin;								//origin of the bot
-	vec3_t velocity;							//velocity of the bot
-	vec3_t viewoffset;							//view offset
-	int entitynum;								//entity number of the bot
-	int client;									//client number of the bot
-	float thinktime;							//time the bot thinks
-	int presencetype;							//presencetype of the bot
-	vec3_t viewangles;							//view angles of the bot
-	//state vars
-	int areanum;								//area the bot is in
-	int lastareanum;							//last area the bot was in
-	int lastgoalareanum;						//last goal area number
-	int lastreachnum;							//last reachability number
-	vec3_t lastorigin;							//origin previous cycle
-	float lasttime;
-	int reachareanum;							//area number of the reachabilty
-	int moveflags;								//movement flags
-	int jumpreach;								//set when jumped
-	float grapplevisible_time;					//last time the grapple was visible
-	float lastgrappledist;						//last distance to the grapple end
-	float reachability_time;					//time to use current reachability
-	int avoidreach[MAX_AVOIDREACH];				//reachabilities to avoid
-	float avoidreachtimes[MAX_AVOIDREACH];		//times to avoid the reachabilities
-	int avoidreachtries[MAX_AVOIDREACH];		//number of tries before avoiding
-} bot_movestate_t;
-
-//used to avoid reachability links for some time after being used
 // Ridah, disabled this to prevent wierd navigational behaviour (mostly by Zombie, since it's so slow)
 //#define AVOIDREACH
-#define AVOIDREACH_TIME         6		//avoid links for 6 seconds after use
-#define AVOIDREACH_TRIES        4
-//prediction times
-#define PREDICTIONTIME_JUMP 3		//in seconds
-#define PREDICTIONTIME_MOVE 2		//in seconds
-//hook commands
-#define CMD_HOOKOFF             "hookoff"
-#define CMD_HOOKON              "hookon"
-//weapon indexes for weapon jumping
-#define WEAPONINDEX_ROCKET_LAUNCHER     5
-#define WEAPONINDEX_BFG                 9
-
-#define MODELTYPE_FUNC_PLAT     1
-#define MODELTYPE_FUNC_BOB      2
 
 float sv_maxstep;
 float sv_maxbarrier;
@@ -200,7 +149,7 @@ void BotInitAvoidReach(int handle)
 // Returns:					-
 // Changes Globals:		-
 //========================================================================
-void BotInitMoveState(int handle, bot_initmove_t* initmove)
+void BotInitMoveState(int handle, bot_initmove_q3_t* initmove)
 {
 	bot_movestate_t* ms;
 
@@ -233,10 +182,10 @@ void BotInitMoveState(int handle, bot_initmove_t* initmove)
 	{
 		ms->moveflags |= MFL_WATERJUMP;
 	}
-	ms->moveflags &= ~MFL_WALK;
-	if (initmove->or_moveflags & MFL_WALK)
+	ms->moveflags &= ~WOLFMFL_WALK;
+	if (initmove->or_moveflags & WOLFMFL_WALK)
 	{
-		ms->moveflags |= MFL_WALK;
+		ms->moveflags |= WOLFMFL_WALK;
 	}
 }	//end of the function BotInitMoveState
 //========================================================================
@@ -1450,7 +1399,7 @@ bot_moveresult_t BotTravel_Walk(bot_movestate_t* ms, aas_reachability_t* reach)
 		//
 	dist = BotGapDistance(ms->origin, hordir, ms->entitynum);
 	//
-	if (ms->moveflags & MFL_WALK)
+	if (ms->moveflags & WOLFMFL_WALK)
 	{
 		if (dist > 0)
 		{
@@ -2365,15 +2314,9 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	//if standing on the plat
 	if (BotOnMover(ms->origin, ms->entitynum, reach))
 	{
-#ifdef DEBUG_ELEVATOR
-		BotImport_Print(PRT_MESSAGE, "bot on elevator\n");
-#endif	//DEBUG_ELEVATOR
 		//if vertically not too far from the end point
 		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier)
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to end\n");
-#endif	//DEBUG_ELEVATOR
 			//move to the end point
 			VectorSubtract(reach->end, ms->origin, hordir);
 			hordir[2] = 0;
@@ -2394,9 +2337,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 			//
 			if (dist > 10)
 			{
-#ifdef DEBUG_ELEVATOR
-				BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
-#endif	//DEBUG_ELEVATOR
 				//move to the center of the plat
 				if (dist > 100)
 				{
@@ -2411,9 +2351,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	}	//end if
 	else
 	{
-#ifdef DEBUG_ELEVATOR
-		BotImport_Print(PRT_MESSAGE, "bot not on elevator\n");
-#endif	//DEBUG_ELEVATOR
 		//if very near the reachability end
 		VectorSubtract(reach->end, ms->origin, dir);
 		dist = VectorLength(dir);
@@ -2452,9 +2389,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		//if the elevator isn't down
 		if (!MoverDown(reach))
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "elevator not down\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
 			//
@@ -2498,17 +2432,11 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		//between reachability start and elevator center
 		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist2;
 			VectorCopy(dir2, dir);
 		}	//end if
 		else//closer to the reachability start
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to start\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
 		}	//end else
@@ -2955,14 +2883,11 @@ void BotResetGrapple(bot_movestate_t* ms)
 	//if not using the grapple hook reachability anymore
 	if (reach.traveltype != TRAVEL_GRAPPLEHOOK)
 	{
-		if ((ms->moveflags & MFL_ACTIVEGRAPPLE) || ms->grapplevisible_time)
+		if ((ms->moveflags & WOLFMFL_ACTIVEGRAPPLE) || ms->grapplevisible_time)
 		{
 			EA_Command(ms->client, CMD_HOOKOFF);
-			ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
+			ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
 			ms->grapplevisible_time = 0;
-#ifdef DEBUG_GRAPPLE
-			BotImport_Print(PRT_MESSAGE, "reset grapple\n");
-#endif	//DEBUG_GRAPPLE
 		}	//end if
 	}	//end if
 }	//end of the function BotResetGrapple
@@ -2979,30 +2904,17 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	vec3_t dir, viewdir, org;
 	int state, areanum;
 
-#ifdef DEBUG_GRAPPLE
-	static int debugline;
-	if (!debugline)
-	{
-		debugline = BotImport_DebugLineCreate();
-	}
-	BotImport_DebugLineShow(debugline, reach->start, reach->end, LINECOLOR_BLUE);
-#endif	//DEBUG_GRAPPLE
-
 	BotClearMoveResult(&result);
 	//
-	if (ms->moveflags & MFL_GRAPPLERESET)
+	if (ms->moveflags & WOLFMFL_GRAPPLERESET)
 	{
 		EA_Command(ms->client, CMD_HOOKOFF);
-		ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
+		ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
 		return result;
 	}	//end if
 		//
-	if (ms->moveflags & MFL_ACTIVEGRAPPLE)
+	if (ms->moveflags & WOLFMFL_ACTIVEGRAPPLE)
 	{
-#ifdef DEBUG_GRAPPLE
-		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: active grapple\n");
-#endif	//DEBUG_GRAPPLE
-		//
 		state = GrappleState(ms, reach);
 		//
 		VectorSubtract(reach->end, ms->origin, dir);
@@ -3015,12 +2927,9 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			if (ms->lastgrappledist - dist < 1)
 			{
 				EA_Command(ms->client, CMD_HOOKOFF);
-				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
-				ms->moveflags |= MFL_GRAPPLERESET;
+				ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+				ms->moveflags |= WOLFMFL_GRAPPLERESET;
 				ms->reachability_time = 0;	//end the reachability
-#ifdef DEBUG_GRAPPLE
-				BotImport_Print(PRT_ERROR, "grapple normal end\n");
-#endif	//DEBUG_GRAPPLE
 			}	//end if
 		}	//end if
 			//if no valid grapple at all, or the grapple hooked and the bot
@@ -3029,15 +2938,12 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		{
 			if (ms->grapplevisible_time < AAS_Time() - 0.4)
 			{
-#ifdef DEBUG_GRAPPLE
-				BotImport_Print(PRT_ERROR, "grapple not visible\n");
-#endif	//DEBUG_GRAPPLE
 				EA_Command(ms->client, CMD_HOOKOFF);
-				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
-				ms->moveflags |= MFL_GRAPPLERESET;
+				ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+				ms->moveflags |= WOLFMFL_GRAPPLERESET;
 				ms->reachability_time = 0;	//end the reachability
 				//result.failure = qtrue;
-				//result.type = RESULTTYPE_INVISIBLEGRAPPLE;
+				//result.type = WOLFRESULTTYPE_INVISIBLEGRAPPLE;
 				return result;
 			}	//end if
 		}	//end if
@@ -3050,10 +2956,6 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	}	//end if
 	else
 	{
-#ifdef DEBUG_GRAPPLE
-		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: inactive grapple\n");
-#endif	//DEBUG_GRAPPLE
-		//
 		ms->grapplevisible_time = AAS_Time();
 		//
 		VectorSubtract(reach->start, ms->origin, dir);
@@ -3072,11 +2974,8 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 &&
 			fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
 		{
-#ifdef DEBUG_GRAPPLE
-			BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: activating grapple\n");
-#endif	//DEBUG_GRAPPLE
 			EA_Command(ms->client, CMD_HOOKON);
-			ms->moveflags |= MFL_ACTIVEGRAPPLE;
+			ms->moveflags |= WOLFMFL_ACTIVEGRAPPLE;
 			ms->lastgrappledist = 999999;
 		}	//end if
 		else
@@ -3596,7 +3495,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			else if (reach.traveltype == TRAVEL_GRAPPLEHOOK)
 			{
 				if (ms->reachability_time < AAS_Time() ||
-					(ms->moveflags & MFL_GRAPPLERESET))
+					(ms->moveflags & WOLFMFL_GRAPPLERESET))
 				{
 					reachnum = 0;
 				}	//end if
@@ -3668,7 +3567,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			ms->reachareanum = ms->areanum;
 			//reset some state variables
 			ms->jumpreach = 0;						//for TRAVEL_JUMP
-			ms->moveflags &= ~MFL_GRAPPLERESET;	//for TRAVEL_GRAPPLEHOOK
+			ms->moveflags &= ~WOLFMFL_GRAPPLERESET;	//for TRAVEL_GRAPPLEHOOK
 			//if there is a reachability to the goal
 			if (reachnum)
 			{
@@ -3678,7 +3577,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 				//
 #ifdef AVOIDREACH
 				//add the reachability to the reachabilities to avoid for a while
-				BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME);
+				BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME_Q3);
 #endif	//AVOIDREACH
 			}	//end if
 #ifdef DEBUG
@@ -3712,17 +3611,6 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			AAS_ReachabilityFromNum(reachnum, &reach);
 			result->traveltype = reach.traveltype;
 			//
-#ifdef DEBUG_AI_MOVE
-			AAS_ClearShownDebugLines();
-			AAS_PrintTravelType(reach.traveltype);
-			AAS_ShowReachability(&reach);
-#endif	//DEBUG_AI_MOVE
-			//
-#ifdef DEBUG
-			//BotImport_Print(PRT_MESSAGE, "client %d: ", ms->client);
-			//AAS_PrintTravelType(reach.traveltype);
-			//BotImport_Print(PRT_MESSAGE, "\n");
-#endif	//DEBUG
 			switch (reach.traveltype)
 			{
 			case TRAVEL_WALK: *result = BotTravel_Walk(ms, &reach); break;
@@ -3904,7 +3792,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 						VectorSubtract(goal->origin, ms->origin, dir);
 						VectorNormalize(dir);
 						vectoangles(dir, result->ideal_viewangles);
-						result->flags |= MOVERESULT_FUTUREVIEW;
+						result->flags |= WOLFMOVERESULT_FUTUREVIEW;
 						break;
 					}
 					if (straveltime - ftraveltime > 120)
@@ -3912,7 +3800,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 						VectorSubtract(reach.end, ms->origin, dir);
 						VectorNormalize(dir);
 						vectoangles(dir, result->ideal_viewangles);
-						result->flags |= MOVERESULT_FUTUREVIEW;
+						result->flags |= WOLFMOVERESULT_FUTUREVIEW;
 						break;
 					}
 				}
@@ -3923,7 +3811,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			VectorSubtract(goal->origin, ms->origin, dir);
 			VectorNormalize(dir);
 			vectoangles(dir, result->ideal_viewangles);
-			result->flags |= MOVERESULT_FUTUREVIEW;
+			result->flags |= WOLFMOVERESULT_FUTUREVIEW;
 		}
 	}
 

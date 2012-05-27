@@ -36,8 +36,8 @@ struct aas_clientmove_s;
 struct aas_areainfo_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
-struct bot_moveresult_s;
-struct bot_initmove_s;
+struct bot_moveresult_t;
+struct bot_initmove_q3_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -257,7 +257,7 @@ typedef struct ai_export_s
 	// be_ai_move.h
 	//-----------------------------------
 	void (* BotResetMoveState)(int movestate);
-	void (* BotMoveToGoal)(struct bot_moveresult_s* result, int movestate, struct bot_goal_q3_t* goal, int travelflags);
+	void (* BotMoveToGoal)(struct bot_moveresult_t* result, int movestate, struct bot_goal_q3_t* goal, int travelflags);
 	int (* BotMoveInDirection)(int movestate, vec3_t dir, float speed, int type);
 	void (* BotResetAvoidReach)(int movestate);
 	void (* BotResetLastAvoidReach)(int movestate);
@@ -266,7 +266,7 @@ typedef struct ai_export_s
 	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_q3_t* goal, int travelflags, vec3_t target);
 	int (* BotAllocMoveState)(void);
 	void (* BotFreeMoveState)(int handle);
-	void (* BotInitMoveState)(int handle, struct bot_initmove_s* initmove);
+	void (* BotInitMoveState)(int handle, struct bot_initmove_q3_t* initmove);
 	void (* BotAddAvoidSpot)(int movestate, vec3_t origin, float radius, int type);
 } ai_export_t;
 

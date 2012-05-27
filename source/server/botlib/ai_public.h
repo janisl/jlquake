@@ -238,6 +238,101 @@ int BotAllocGoalState(int client);
 void BotFreeGoalState(int handle);
 
 //
+//	Move
+//
+
+//movement types
+#define MOVE_WALK                       1
+#define MOVE_CROUCH                     2
+#define MOVE_JUMP                       4
+#define MOVE_GRAPPLE                    8
+#define MOVE_ROCKETJUMP                 16
+#define MOVE_BFGJUMP                    32
+
+//move flags
+#define MFL_BARRIERJUMP                 1		//bot is performing a barrier jump
+#define MFL_ONGROUND                    2		//bot is in the ground
+#define MFL_SWIMMING                    4		//bot is swimming
+#define MFL_AGAINSTLADDER               8		//bot is against a ladder
+#define MFL_WATERJUMP                   16		//bot is waterjumping
+#define MFL_TELEPORTED                  32		//bot is being teleported
+#define Q3MFL_GRAPPLEPULL               64		//bot is being pulled by the grapple
+#define Q3MFL_ACTIVEGRAPPLE             128		//bot is using the grapple hook
+#define Q3MFL_GRAPPLERESET              256		//bot has reset the grapple
+#define Q3MFL_WALK                      512		//bot should walk slowly
+#define WOLFMFL_ACTIVEGRAPPLE           64		//bot is using the grapple hook
+#define WOLFMFL_GRAPPLERESET            128		//bot has reset the grapple
+#define WOLFMFL_WALK                    256		//bot should walk slowly
+
+// move result flags
+#define MOVERESULT_MOVEMENTVIEW         1		//bot uses view for movement
+#define MOVERESULT_SWIMVIEW             2		//bot uses view for swimming
+#define MOVERESULT_WAITING              4		//bot is waiting for something
+#define MOVERESULT_MOVEMENTVIEWSET      8		//bot has set the view in movement code
+#define MOVERESULT_MOVEMENTWEAPON       16		//bot uses weapon for movement
+#define MOVERESULT_ONTOPOFOBSTACLE      32		//bot is ontop of obstacle
+#define MOVERESULT_ONTOPOF_FUNCBOB      64		//bot is ontop of a func_bobbing
+#define MOVERESULT_ONTOPOF_ELEVATOR     128		//bot is ontop of an elevator (func_plat)
+#define Q3MOVERESULT_BLOCKEDBYAVOIDSPOT 256		//bot is blocked by an avoid spot
+#define WOLFMOVERESULT_FUTUREVIEW       256		// RF, if we want to look ahead of time, this is a good direction
+
+// avoid spot types
+#define AVOID_CLEAR                     0		//clear all avoid spots
+#define AVOID_ALWAYS                    1		//avoid always
+#define AVOID_DONTBLOCK                 2		//never totally block
+
+// restult types
+#define RESULTTYPE_ELEVATORUP           1		//elevator is up
+#define Q3RESULTTYPE_WAITFORFUNCBOBBING 2		//waiting for func bobbing to arrive
+#define Q3RESULTTYPE_INSOLIDAREA        8		//stuck in solid area, this is bad
+#define WOLFRESULTTYPE_INVISIBLEGRAPPLE 2
+
+//structure used to initialize the movement state
+//the or_moveflags MFL_ONGROUND, MFL_TELEPORTED and MFL_WATERJUMP come from the playerstate
+struct bot_initmove_q3_t
+{
+	vec3_t origin;				//origin of the bot
+	vec3_t velocity;			//velocity of the bot
+	vec3_t viewoffset;			//view offset
+	int entitynum;				//entity number of the bot
+	int client;					//client number of the bot
+	float thinktime;			//time the bot thinks
+	int presencetype;			//presencetype of the bot
+	vec3_t viewangles;			//view angles of the bot
+	int or_moveflags;			//values ored to the movement flags
+};
+
+//structure used to initialize the movement state
+//the or_moveflags MFL_ONGROUND, MFL_TELEPORTED and MFL_WATERJUMP come from the playerstate
+struct bot_initmove_et_t
+{
+	vec3_t origin;				//origin of the bot
+	vec3_t velocity;			//velocity of the bot
+	vec3_t viewoffset;			//view offset
+	int entitynum;				//entity number of the bot
+	int client;					//client number of the bot
+	float thinktime;			//time the bot thinks
+	int presencetype;			//presencetype of the bot
+	vec3_t viewangles;			//view angles of the bot
+	int or_moveflags;			//values ored to the movement flags
+	int areanum;
+};
+
+//NOTE: the ideal_viewangles are only valid if MFL_MOVEMENTVIEW is set
+struct bot_moveresult_t
+{
+	int failure;				//true if movement failed all together
+	int type;					//failure or blocked type
+	int blocked;				//true if blocked by an entity
+	int blockentity;			//entity blocking the bot
+	int traveltype;				//last executed travel type
+	int flags;					//result flags
+	int weapon;					//weapon used for movement
+	vec3_t movedir;				//movement direction
+	vec3_t ideal_viewangles;	//ideal viewangles for the movement
+};
+
+//
 //	Weapon
 //
 

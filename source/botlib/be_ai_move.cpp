@@ -41,62 +41,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 
-
-//#define DEBUG_AI_MOVE
-//#define DEBUG_ELEVATOR
-//#define DEBUG_GRAPPLE
-
-// bk001204 - redundant bot_avoidspot_t, see be_ai_move.h
-
-//movement state
-//NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP and
-//		MFL_GRAPPLEPULL must be set outside the movement code
-typedef struct bot_movestate_s
-{
-	//input vars (all set outside the movement code)
-	vec3_t origin;								//origin of the bot
-	vec3_t velocity;							//velocity of the bot
-	vec3_t viewoffset;							//view offset
-	int entitynum;								//entity number of the bot
-	int client;									//client number of the bot
-	float thinktime;							//time the bot thinks
-	int presencetype;							//presencetype of the bot
-	vec3_t viewangles;							//view angles of the bot
-	//state vars
-	int areanum;								//area the bot is in
-	int lastareanum;							//last area the bot was in
-	int lastgoalareanum;						//last goal area number
-	int lastreachnum;							//last reachability number
-	vec3_t lastorigin;							//origin previous cycle
-	int reachareanum;							//area number of the reachabilty
-	int moveflags;								//movement flags
-	int jumpreach;								//set when jumped
-	float grapplevisible_time;					//last time the grapple was visible
-	float lastgrappledist;						//last distance to the grapple end
-	float reachability_time;					//time to use current reachability
-	int avoidreach[MAX_AVOIDREACH];				//reachabilities to avoid
-	float avoidreachtimes[MAX_AVOIDREACH];		//times to avoid the reachabilities
-	int avoidreachtries[MAX_AVOIDREACH];		//number of tries before avoiding
-	//
-	bot_avoidspot_t avoidspots[MAX_AVOIDSPOTS];	//spots to avoid
-	int numavoidspots;
-} bot_movestate_t;
-
-//used to avoid reachability links for some time after being used
 #define AVOIDREACH
-#define AVOIDREACH_TIME         6		//avoid links for 6 seconds after use
-#define AVOIDREACH_TRIES        4
-//prediction times
-#define PREDICTIONTIME_JUMP 3		//in seconds
-#define PREDICTIONTIME_MOVE 2		//in seconds
-//weapon indexes for weapon jumping
-#define WEAPONINDEX_ROCKET_LAUNCHER     5
-#define WEAPONINDEX_BFG                 9
-
-#define MODELTYPE_FUNC_PLAT     1
-#define MODELTYPE_FUNC_BOB      2
-#define MODELTYPE_FUNC_DOOR     3
-#define MODELTYPE_FUNC_STATIC   4
 
 libvar_t* sv_maxstep;
 libvar_t* sv_maxbarrier;
@@ -180,7 +125,7 @@ bot_movestate_t* BotMoveStateFromHandle(int handle)
 // Returns:				-
 // Changes Globals:		-
 //========================================================================
-void BotInitMoveState(int handle, bot_initmove_t* initmove)
+void BotInitMoveState(int handle, bot_initmove_q3_t* initmove)
 {
 	bot_movestate_t* ms;
 
@@ -213,15 +158,15 @@ void BotInitMoveState(int handle, bot_initmove_t* initmove)
 	{
 		ms->moveflags |= MFL_WATERJUMP;
 	}
-	ms->moveflags &= ~MFL_WALK;
-	if (initmove->or_moveflags & MFL_WALK)
+	ms->moveflags &= ~Q3MFL_WALK;
+	if (initmove->or_moveflags & Q3MFL_WALK)
 	{
-		ms->moveflags |= MFL_WALK;
+		ms->moveflags |= Q3MFL_WALK;
 	}
-	ms->moveflags &= ~MFL_GRAPPLEPULL;
-	if (initmove->or_moveflags & MFL_GRAPPLEPULL)
+	ms->moveflags &= ~Q3MFL_GRAPPLEPULL;
+	if (initmove->or_moveflags & Q3MFL_GRAPPLEPULL)
 	{
-		ms->moveflags |= MFL_GRAPPLEPULL;
+		ms->moveflags |= Q3MFL_GRAPPLEPULL;
 	}
 }	//end of the function BotInitMoveState
 //========================================================================
@@ -823,7 +768,7 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum,
 	int lastgoalareanum, int lastareanum,
 	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
 	bot_goal_q3_t* goal, int travelflags, int movetravelflags,
-	struct bot_avoidspot_s* avoidspots, int numavoidspots, int* flags)
+	struct bot_avoidspot_t* avoidspots, int numavoidspots, int* flags)
 {
 	int i, t, besttime, bestreachnum, reachnum;
 	aas_reachability_t reach;
@@ -892,7 +837,7 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum,
 		{
 			if (flags)
 			{
-				*flags |= MOVERESULT_BLOCKEDBYAVOIDSPOT;
+				*flags |= Q3MOVERESULT_BLOCKEDBYAVOIDSPOT;
 			}
 			continue;
 		}
@@ -1564,7 +1509,7 @@ bot_moveresult_t BotTravel_Walk(bot_movestate_t* ms, aas_reachability_t* reach)
 		//
 	dist = BotGapDistance(ms->origin, hordir, ms->entitynum);
 	//
-	if (ms->moveflags & MFL_WALK)
+	if (ms->moveflags & Q3MFL_WALK)
 	{
 		if (dist > 0)
 		{
@@ -2354,15 +2299,9 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	//if standing on the plat
 	if (BotOnMover(ms->origin, ms->entitynum, reach))
 	{
-#ifdef DEBUG_ELEVATOR
-		BotImport_Print(PRT_MESSAGE, "bot on elevator\n");
-#endif	//DEBUG_ELEVATOR
 		//if vertically not too far from the end point
 		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier->value)
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to end\n");
-#endif	//DEBUG_ELEVATOR
 			//move to the end point
 			VectorSubtract(reach->end, ms->origin, hordir);
 			hordir[2] = 0;
@@ -2383,9 +2322,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 			//
 			if (dist > 10)
 			{
-#ifdef DEBUG_ELEVATOR
-				BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
-#endif	//DEBUG_ELEVATOR
 				//move to the center of the plat
 				if (dist > 100)
 				{
@@ -2400,9 +2336,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	}	//end if
 	else
 	{
-#ifdef DEBUG_ELEVATOR
-		BotImport_Print(PRT_MESSAGE, "bot not on elevator\n");
-#endif	//DEBUG_ELEVATOR
 		//if very near the reachability end
 		VectorSubtract(reach->end, ms->origin, dir);
 		dist = VectorLength(dir);
@@ -2441,9 +2374,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		//if the elevator isn't down
 		if (!MoverDown(reach))
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "elevator not down\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
 			//
@@ -2486,17 +2416,11 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 		//between reachability start and elevator center
 		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to center\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist2;
 			VectorCopy(dir2, dir);
 		}	//end if
 		else//closer to the reachability start
 		{
-#ifdef DEBUG_ELEVATOR
-			BotImport_Print(PRT_MESSAGE, "bot moving to start\n");
-#endif	//DEBUG_ELEVATOR
 			dist = dist1;
 			VectorCopy(dir1, dir);
 		}	//end else
@@ -2754,7 +2678,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, aas_reachability_t* 
 				result.flags |= MOVERESULT_SWIMVIEW;
 			}
 			//this isn't a failure... just wait till the func_bobbing arrives
-			result.type = RESULTTYPE_WAITFORFUNCBOBBING;
+			result.type = Q3RESULTTYPE_WAITFORFUNCBOBBING;
 			result.flags |= MOVERESULT_WAITING;
 			return result;
 		}	//end if
@@ -2892,7 +2816,7 @@ int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach)
 	aas_entityinfo_t entinfo;
 
 	//if the grapple hook is pulling
-	if (ms->moveflags & MFL_GRAPPLEPULL)
+	if (ms->moveflags & Q3MFL_GRAPPLEPULL)
 	{
 		return 2;
 	}
@@ -2926,17 +2850,14 @@ void BotResetGrapple(bot_movestate_t* ms)
 	//if not using the grapple hook reachability anymore
 	if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_GRAPPLEHOOK)
 	{
-		if ((ms->moveflags & MFL_ACTIVEGRAPPLE) || ms->grapplevisible_time)
+		if ((ms->moveflags & Q3MFL_ACTIVEGRAPPLE) || ms->grapplevisible_time)
 		{
 			if (offhandgrapple->value)
 			{
 				EA_Command(ms->client, cmd_grappleoff->string);
 			}
-			ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
+			ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
 			ms->grapplevisible_time = 0;
-#ifdef DEBUG_GRAPPLE
-			BotImport_Print(PRT_MESSAGE, "reset grapple\n");
-#endif	//DEBUG_GRAPPLE
 		}	//end if
 	}	//end if
 }	//end of the function BotResetGrapple
@@ -2954,24 +2875,15 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	int state, areanum;
 	bsp_trace_t trace;
 
-#ifdef DEBUG_GRAPPLE
-	static int debugline;
-	if (!debugline)
-	{
-		debugline = BotImport_DebugLineCreate();
-	}
-	BotImport_DebugLineShow(debugline, reach->start, reach->end, LINECOLOR_BLUE);
-#endif	//DEBUG_GRAPPLE
-
 	BotClearMoveResult(&result);
 	//
-	if (ms->moveflags & MFL_GRAPPLERESET)
+	if (ms->moveflags & Q3MFL_GRAPPLERESET)
 	{
 		if (offhandgrapple->value)
 		{
 			EA_Command(ms->client, cmd_grappleoff->string);
 		}
-		ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
+		ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
 		return result;
 	}	//end if
 		//
@@ -2981,12 +2893,8 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		result.flags |= MOVERESULT_MOVEMENTWEAPON;
 	}	//end if
 		//
-	if (ms->moveflags & MFL_ACTIVEGRAPPLE)
+	if (ms->moveflags & Q3MFL_ACTIVEGRAPPLE)
 	{
-#ifdef DEBUG_GRAPPLE
-		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: active grapple\n");
-#endif	//DEBUG_GRAPPLE
-		//
 		state = GrappleState(ms, reach);
 		//
 		VectorSubtract(reach->end, ms->origin, dir);
@@ -2998,15 +2906,12 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		{
 			if (ms->lastgrappledist - dist < 1)
 			{
-#ifdef DEBUG_GRAPPLE
-				BotImport_Print(PRT_ERROR, "grapple normal end\n");
-#endif	//DEBUG_GRAPPLE
 				if (offhandgrapple->value)
 				{
 					EA_Command(ms->client, cmd_grappleoff->string);
 				}
-				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
-				ms->moveflags |= MFL_GRAPPLERESET;
+				ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+				ms->moveflags |= Q3MFL_GRAPPLERESET;
 				ms->reachability_time = 0;	//end the reachability
 				return result;
 			}	//end if
@@ -3017,15 +2922,12 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		{
 			if (ms->grapplevisible_time < AAS_Time() - 0.4)
 			{
-#ifdef DEBUG_GRAPPLE
-				BotImport_Print(PRT_ERROR, "grapple not visible\n");
-#endif	//DEBUG_GRAPPLE
 				if (offhandgrapple->value)
 				{
 					EA_Command(ms->client, cmd_grappleoff->string);
 				}
-				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
-				ms->moveflags |= MFL_GRAPPLERESET;
+				ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+				ms->moveflags |= Q3MFL_GRAPPLERESET;
 				ms->reachability_time = 0;	//end the reachability
 				return result;
 			}	//end if
@@ -3044,10 +2946,6 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 	}	//end if
 	else
 	{
-#ifdef DEBUG_GRAPPLE
-		BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: inactive grapple\n");
-#endif	//DEBUG_GRAPPLE
-		//
 		ms->grapplevisible_time = AAS_Time();
 		//
 		VectorSubtract(reach->start, ms->origin, dir);
@@ -3066,9 +2964,6 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 &&
 			fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
 		{
-#ifdef DEBUG_GRAPPLE
-			BotImport_Print(PRT_MESSAGE, "BotTravel_Grapple: activating grapple\n");
-#endif	//DEBUG_GRAPPLE
 			//check if the grapple missile path is clear
 			VectorAdd(ms->origin, ms->viewoffset, org);
 			trace = AAS_Trace(org, NULL, NULL, reach->end, ms->entitynum, BSP46CONTENTS_SOLID);
@@ -3087,7 +2982,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 			{
 				EA_Attack(ms->client);
 			}	//end else
-			ms->moveflags |= MFL_ACTIVEGRAPPLE;
+			ms->moveflags |= Q3MFL_ACTIVEGRAPPLE;
 			ms->lastgrappledist = 999999;
 		}	//end if
 		else
@@ -3607,7 +3502,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			result->failure = true;
 			result->blocked = true;
 			result->blockentity = 0;
-			result->type = RESULTTYPE_INSOLIDAREA;
+			result->type = Q3RESULTTYPE_INSOLIDAREA;
 			return;
 		}	//end if
 			//if the bot is in the goal area
@@ -3631,7 +3526,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			else if ((reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_GRAPPLEHOOK)
 			{
 				if (ms->reachability_time < AAS_Time() ||
-					(ms->moveflags & MFL_GRAPPLERESET))
+					(ms->moveflags & Q3MFL_GRAPPLERESET))
 				{
 					reachnum = 0;
 				}	//end if
@@ -3705,7 +3600,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			ms->reachareanum = ms->areanum;
 			//reset some state variables
 			ms->jumpreach = 0;						//for TRAVEL_JUMP
-			ms->moveflags &= ~MFL_GRAPPLERESET;	//for TRAVEL_GRAPPLEHOOK
+			ms->moveflags &= ~Q3MFL_GRAPPLERESET;	//for TRAVEL_GRAPPLEHOOK
 			//if there is a reachability to the goal
 			if (reachnum)
 			{
@@ -3715,7 +3610,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 				//
 #ifdef AVOIDREACH
 				//add the reachability to the reachabilities to avoid for a while
-				BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME);
+				BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME_Q3);
 #endif	//AVOIDREACH
 			}	//end if
 #ifdef DEBUG
@@ -3749,17 +3644,6 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			AAS_ReachabilityFromNum(reachnum, &reach);
 			result->traveltype = reach.traveltype;
 			//
-#ifdef DEBUG_AI_MOVE
-			AAS_ClearShownDebugLines();
-			AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
-			AAS_ShowReachability(&reach);
-#endif	//DEBUG_AI_MOVE
-			//
-#ifdef DEBUG
-			//BotImport_Print(PRT_MESSAGE, "client %d: ", ms->client);
-			//AAS_PrintTravelType(reach.traveltype);
-			//BotImport_Print(PRT_MESSAGE, "\n");
-#endif	//DEBUG
 			switch (reach.traveltype & TRAVELTYPE_MASK)
 			{
 			case TRAVEL_WALK: *result = BotTravel_Walk(ms, &reach); break;
