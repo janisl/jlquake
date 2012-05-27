@@ -12,6 +12,7 @@ add_library(server STATIC
 	botlib/ai_chat.cpp
 	botlib/ai_genetic.cpp
 	botlib/ai_goal.cpp
+	botlib/ai_move.cpp
 	botlib/ai_weapon.cpp
 	botlib/ai_weight.cpp
 	botlib/interface.cpp

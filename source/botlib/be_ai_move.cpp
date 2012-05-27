@@ -43,21 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define AVOIDREACH
 
-libvar_t* sv_maxstep;
-libvar_t* sv_maxbarrier;
-libvar_t* sv_gravity;
-libvar_t* weapindex_rocketlauncher;
-libvar_t* weapindex_bfg10k;
-libvar_t* weapindex_grapple;
-libvar_t* entitytypemissile;
-libvar_t* offhandgrapple;
-libvar_t* cmd_grappleoff;
-libvar_t* cmd_grappleon;
-//type of model, func_plat or func_bobbing
-int modeltypes[MAX_MODELS_Q3];
-
-bot_movestate_t* botmovestates[MAX_CLIENTS_Q3 + 1];
-
 //========================================================================
 //
 // Parameter:			-

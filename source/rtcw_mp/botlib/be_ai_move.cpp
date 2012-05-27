@@ -50,14 +50,6 @@ If you have questions concerning this license or the applicable additional terms
 // Ridah, disabled this to prevent wierd navigational behaviour (mostly by Zombie, since it's so slow)
 //#define AVOIDREACH
 
-float sv_maxstep;
-float sv_maxbarrier;
-float sv_gravity;
-//type of model, func_plat or func_bobbing
-int modeltypes[MAX_MODELS_Q3];
-
-bot_movestate_t* botmovestates[MAX_CLIENTS_WM + 1];
-
 //========================================================================
 //
 // Parameter:				-
@@ -981,13 +973,13 @@ float BotGapDistance(vec3_t origin, vec3_t hordir, int entnum)
 		VectorMA(origin, dist, hordir, start);
 		start[2] = startz + 24;
 		VectorCopy(start, end);
-		end[2] -= 48 + sv_maxbarrier;
+		end[2] -= 48 + sv_maxbarrier->value;
 		trace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, entnum);
 		//if solid is found the bot can't walk any further and fall into a gap
 		if (!trace.startsolid)
 		{
 			//if it is a gap
-			if (trace.endpos[2] < startz - sv_maxstep - 8)
+			if (trace.endpos[2] < startz - sv_maxstep->value - 8)
 			{
 				VectorCopy(trace.endpos, end);
 				end[2] -= 20;
@@ -1017,7 +1009,7 @@ int BotCheckBarrierJump(bot_movestate_t* ms, vec3_t dir, float speed)
 	aas_trace_t trace;
 
 	VectorCopy(ms->origin, end);
-	end[2] += sv_maxbarrier;
+	end[2] += sv_maxbarrier->value;
 	//trace right up
 	trace = AAS_TraceClientBBox(ms->origin, end, PRESENCE_NORMAL, ms->entitynum);
 	//this shouldn't happen... but we check anyway
@@ -1026,7 +1018,7 @@ int BotCheckBarrierJump(bot_movestate_t* ms, vec3_t dir, float speed)
 		return qfalse;
 	}
 	//if very low ceiling it isn't possible to jump up to a barrier
-	if (trace.endpos[2] - ms->origin[2] < sv_maxstep)
+	if (trace.endpos[2] - ms->origin[2] < sv_maxstep->value)
 	{
 		return qfalse;
 	}
@@ -1062,7 +1054,7 @@ int BotCheckBarrierJump(bot_movestate_t* ms, vec3_t dir, float speed)
 		return qfalse;
 	}
 	//if less than the maximum step height
-	if (trace.endpos[2] - ms->origin[2] < sv_maxstep)
+	if (trace.endpos[2] - ms->origin[2] < sv_maxstep->value)
 	{
 		return qfalse;
 	}
@@ -1300,7 +1292,7 @@ void BotCheckBlocked(bot_movestate_t* ms, vec3_t dir, int checkbottom, bot_mover
 	//
 	if (fabs(DotProduct(dir, up)) < 0.7)
 	{
-		mins[2] += sv_maxstep;	//if the bot can step on
+		mins[2] += sv_maxstep->value;	//if the bot can step on
 		maxs[2] -= 10;	//a little lower to avoid low ceiling
 	}	//end if
 	VectorMA(ms->origin, 3, dir, end);
@@ -1795,7 +1787,7 @@ int BotAirControl(vec3_t origin, vec3_t velocity, vec3_t goal, vec3_t dir, float
 	VectorScale(velocity, 0.1, vel);
 	for (i = 0; i < 50; i++)
 	{
-		vel[2] -= sv_gravity * 0.01;
+		vel[2] -= sv_gravity->value * 0.01;
 		//if going down and next position would be below the goal
 		if (vel[2] < 0 && org[2] + vel[2] < goal[2])
 		{
@@ -2265,7 +2257,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, aas_reachability_t* rea
 	if (BotOnMover(ms->origin, ms->entitynum, reach))
 	{
 		//if vertically not too far from the end point
-		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier)
+		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier->value)
 		{
 			//move to the end point
 			VectorSubtract(reach->end, ms->origin, hordir);
@@ -3833,9 +3825,9 @@ void BotResetMoveState(int movestate)
 int BotSetupMoveAI(void)
 {
 	BotSetBrushModelTypes();
-	sv_maxstep = LibVarValue("sv_step", "18");
-	sv_maxbarrier = LibVarValue("sv_maxbarrier", "32");
-	sv_gravity = LibVarValue("sv_gravity", "800");
+	sv_maxstep = LibVar("sv_step", "18");
+	sv_maxbarrier = LibVar("sv_maxbarrier", "32");
+	sv_gravity = LibVar("sv_gravity", "800");
 	return BLERR_NOERROR;
 }	//end of the function BotSetupMoveAI
 //===========================================================================

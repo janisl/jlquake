@@ -271,6 +271,19 @@ struct bot_movestate_t
 	int numavoidspots;
 };
 
+extern libvar_t* sv_maxstep;
+extern libvar_t* sv_maxbarrier;
+extern libvar_t* sv_gravity;
+extern libvar_t* weapindex_rocketlauncher;
+extern libvar_t* weapindex_bfg10k;
+extern libvar_t* weapindex_grapple;
+extern libvar_t* entitytypemissile;
+extern libvar_t* offhandgrapple;
+extern libvar_t* cmd_grappleoff;
+extern libvar_t* cmd_grappleon;
+extern int modeltypes[MAX_MODELS_Q3];
+extern bot_movestate_t* botmovestates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
+
 //setup the weapon AI
 int BotSetupWeaponAI();
 //shut down the weapon AI
