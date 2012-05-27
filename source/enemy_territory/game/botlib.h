@@ -260,12 +260,6 @@ typedef struct ai_export_s
 	int (* BotReachabilityArea)(vec3_t origin, int testground);
 	int (* BotMovementViewTarget)(int movestate, struct bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target);
 	int (* BotPredictVisiblePosition)(vec3_t origin, int areanum, struct bot_goal_et_t* goal, int travelflags, vec3_t target);
-	int (* BotAllocMoveState)(void);
-	void (* BotFreeMoveState)(int handle);
-	void (* BotInitMoveState)(int handle, struct bot_initmove_et_t* initmove);
-	// Ridah
-	void (* BotInitAvoidReach)(int handle);
-	// done.
 } ai_export_t;
 
 //bot AI library imported functions

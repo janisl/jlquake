@@ -821,12 +821,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
 		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4], (float*)VMA(5));
 	case BOTLIB_AI_ALLOC_MOVE_STATE:
-		return botlib_export->ai.BotAllocMoveState();
+		return BotAllocMoveState();
 	case BOTLIB_AI_FREE_MOVE_STATE:
-		botlib_export->ai.BotFreeMoveState(args[1]);
+		BotFreeMoveState(args[1]);
 		return 0;
 	case BOTLIB_AI_INIT_MOVE_STATE:
-		botlib_export->ai.BotInitMoveState(args[1], (bot_initmove_q3_t*)VMA(2));
+		BotInitMoveStateQ3(args[1], (bot_initmove_q3_t*)VMA(2));
 		return 0;
 
 	case BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON:

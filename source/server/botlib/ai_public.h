@@ -332,6 +332,17 @@ struct bot_moveresult_t
 	vec3_t ideal_viewangles;	//ideal viewangles for the movement
 };
 
+//returns the handle of a newly allocated movestate
+int BotAllocMoveState();
+//frees the movestate with the given handle
+void BotFreeMoveState(int handle);
+//initialize avoid reachabilities
+void BotInitAvoidReach(int handle);
+//initialize movement state before performing any movement
+void BotInitMoveStateQ3(int handle, bot_initmove_q3_t* initmove);
+//initialize movement state
+void BotInitMoveStateET(int handle, bot_initmove_et_t* initmove);
+
 //
 //	Weapon
 //

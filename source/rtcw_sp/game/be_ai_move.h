@@ -51,20 +51,7 @@ int BotReachabilityArea(vec3_t origin, int client);
 int BotMovementViewTarget(int movestate, bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target);
 //predict the position of a player
 int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_q3_t* goal, int travelflags, vec3_t target);
-//returns the handle of a newly allocated movestate
-int BotAllocMoveState(void);
-//frees the movestate with the given handle
-void BotFreeMoveState(int handle);
-//initialize movement state
-void BotInitMoveState(int handle, bot_initmove_q3_t* initmove);
-//must be called every map change
-void BotSetBrushModelTypes(void);
 //setup movement AI
 int BotSetupMoveAI(void);
 //shutdown movement AI
 void BotShutdownMoveAI(void);
-
-// Ridah
-//initialize avoid reachabilities
-void BotInitAvoidReach(int handle);
-// done.

@@ -398,12 +398,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	ai->BotReachabilityArea = BotReachabilityArea;
 	ai->BotMovementViewTarget = BotMovementViewTarget;
 	ai->BotPredictVisiblePosition = BotPredictVisiblePosition;
-	ai->BotAllocMoveState = BotAllocMoveState;
-	ai->BotFreeMoveState = BotFreeMoveState;
-	ai->BotInitMoveState = BotInitMoveState;
-	// Ridah
-	ai->BotInitAvoidReach = BotInitAvoidReach;
-	// done.
 }
 
 

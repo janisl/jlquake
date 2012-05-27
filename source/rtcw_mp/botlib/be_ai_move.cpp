@@ -36,7 +36,6 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #include "../game/q_shared.h"
-#include "l_memory.h"
 #include "l_utils.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
@@ -50,163 +49,6 @@ If you have questions concerning this license or the applicable additional terms
 // Ridah, disabled this to prevent wierd navigational behaviour (mostly by Zombie, since it's so slow)
 //#define AVOIDREACH
 
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-int BotAllocMoveState(void)
-{
-	int i;
-
-	for (i = 1; i <= MAX_CLIENTS_WM; i++)
-	{
-		if (!botmovestates[i])
-		{
-			botmovestates[i] = (bot_movestate_t*)GetClearedMemory(sizeof(bot_movestate_t));
-			return i;
-		}	//end if
-	}	//end for
-	return 0;
-}	//end of the function BotAllocMoveState
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-void BotFreeMoveState(int handle)
-{
-	if (handle <= 0 || handle > MAX_CLIENTS_WM)
-	{
-		BotImport_Print(PRT_FATAL, "move state handle %d out of range\n", handle);
-		return;
-	}	//end if
-	if (!botmovestates[handle])
-	{
-		BotImport_Print(PRT_FATAL, "invalid move state %d\n", handle);
-		return;
-	}	//end if
-	FreeMemory(botmovestates[handle]);
-	botmovestates[handle] = NULL;
-}	//end of the function BotFreeMoveState
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-bot_movestate_t* BotMoveStateFromHandle(int handle)
-{
-	if (handle <= 0 || handle > MAX_CLIENTS_WM)
-	{
-		BotImport_Print(PRT_FATAL, "move state handle %d out of range\n", handle);
-		return NULL;
-	}	//end if
-	if (!botmovestates[handle])
-	{
-		BotImport_Print(PRT_FATAL, "invalid move state %d\n", handle);
-		return NULL;
-	}	//end if
-	return botmovestates[handle];
-}	//end of the function BotMoveStateFromHandle
-
-// Ridah, provide a means of resetting the avoidreach, so if a bot stops moving, they don't avoid the area they were heading for
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-void BotInitAvoidReach(int handle)
-{
-	bot_movestate_t* ms;
-
-	ms = BotMoveStateFromHandle(handle);
-	if (!ms)
-	{
-		return;
-	}
-
-	memset(ms->avoidreach, 0, sizeof(ms->avoidreach));
-	memset(ms->avoidreachtries, 0, sizeof(ms->avoidreachtries));
-	memset(ms->avoidreachtimes, 0, sizeof(ms->avoidreachtimes));
-}
-// done.
-
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-void BotInitMoveState(int handle, bot_initmove_q3_t* initmove)
-{
-	bot_movestate_t* ms;
-
-	ms = BotMoveStateFromHandle(handle);
-	if (!ms)
-	{
-		return;
-	}
-	VectorCopy(initmove->origin, ms->origin);
-	VectorCopy(initmove->velocity, ms->velocity);
-	VectorCopy(initmove->viewoffset, ms->viewoffset);
-	ms->entitynum = initmove->entitynum;
-	ms->client = initmove->client;
-	ms->thinktime = initmove->thinktime;
-	ms->presencetype = initmove->presencetype;
-	VectorCopy(initmove->viewangles, ms->viewangles);
-	//
-	ms->moveflags &= ~MFL_ONGROUND;
-	if (initmove->or_moveflags & MFL_ONGROUND)
-	{
-		ms->moveflags |= MFL_ONGROUND;
-	}
-	ms->moveflags &= ~MFL_TELEPORTED;
-	if (initmove->or_moveflags & MFL_TELEPORTED)
-	{
-		ms->moveflags |= MFL_TELEPORTED;
-	}
-	ms->moveflags &= ~MFL_WATERJUMP;
-	if (initmove->or_moveflags & MFL_WATERJUMP)
-	{
-		ms->moveflags |= MFL_WATERJUMP;
-	}
-	ms->moveflags &= ~WOLFMFL_WALK;
-	if (initmove->or_moveflags & WOLFMFL_WALK)
-	{
-		ms->moveflags |= WOLFMFL_WALK;
-	}
-}	//end of the function BotInitMoveState
-//========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//========================================================================
-float AngleDiff(float ang1, float ang2)
-{
-	float diff;
-
-	diff = ang1 - ang2;
-	if (ang1 > ang2)
-	{
-		if (diff > 180.0)
-		{
-			diff -= 360.0;
-		}
-	}	//end if
-	else
-	{
-		if (diff < -180.0)
-		{
-			diff += 360.0;
-		}
-	}	//end else
-	return diff;
-}	//end of the function AngleDiff
 //===========================================================================
 //
 // Parameter:			-
@@ -349,82 +191,6 @@ int BotReachabilityArea(vec3_t origin, int client)
 	return BotFuzzyPointReachabilityArea(origin);
 }	//end of the function BotReachabilityArea
 //===========================================================================
-// returns the reachability area the bot is in
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-/*
-int BotReachabilityArea(vec3_t origin, int testground)
-{
-    int firstareanum, i, j, x, y, z;
-    int areas[10], numareas, areanum, bestareanum;
-    float dist, bestdist;
-    vec3_t org, end, points[10], v;
-    aas_trace_t trace;
-
-    firstareanum = 0;
-    for (i = 0; i < 2; i++)
-    {
-        VectorCopy(origin, org);
-        //if test at the ground (used when bot is standing on an entity)
-        if (i > 0)
-        {
-            VectorCopy(origin, end);
-            end[2] -= 800;
-            trace = AAS_TraceClientBBox(origin, end, PRESENCE_CROUCH, -1);
-            if (!trace.startsolid)
-            {
-                VectorCopy(trace.endpos, org);
-            } //end if
-        } //end if
-
-        firstareanum = 0;
-        areanum = AAS_PointAreaNum(org);
-        if (areanum)
-        {
-            firstareanum = areanum;
-            if (AAS_AreaReachability(areanum)) return areanum;
-        } //end if
-        bestdist = 999999;
-        bestareanum = 0;
-        for (z = 1; z >= -1; z -= 1)
-        {
-            for (x = 1; x >= -1; x -= 1)
-            {
-                for (y = 1; y >= -1; y -= 1)
-                {
-                    VectorCopy(org, end);
-                    end[0] += x * 8;
-                    end[1] += y * 8;
-                    end[2] += z * 12;
-                    numareas = AAS_TraceAreas(org, end, areas, points, 10);
-                    for (j = 0; j < numareas; j++)
-                    {
-                        if (AAS_AreaReachability(areas[j]))
-                        {
-                            VectorSubtract(points[j], org, v);
-                            dist = VectorLength(v);
-                            if (dist < bestdist)
-                            {
-                                bestareanum = areas[j];
-                                bestdist = dist;
-                            } //end if
-                        } //end if
-                    } //end for
-                } //end for
-            } //end for
-            if (bestareanum) return bestareanum;
-        } //end for
-        if (!testground) break;
-    } //end for
-//#ifdef DEBUG
-    //BotImport_Print(PRT_MESSAGE, "no reachability area\n");
-//#endif //DEBUG
-    return firstareanum;
-} //end of the function BotReachabilityArea*/
-//===========================================================================
 //
 // Parameter:			-
 // Returns:				-
@@ -504,54 +270,6 @@ int MoverDown(aas_reachability_t* reach)
 	}
 	return qfalse;
 }	//end of the function MoverDown
-//========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//========================================================================
-void BotSetBrushModelTypes(void)
-{
-	int ent, modelnum;
-	char classname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
-
-	memset(modeltypes, 0, MAX_MODELS_Q3 * sizeof(int));
-	//
-	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
-	{
-		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY))
-		{
-			continue;
-		}
-		if (!AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY))
-		{
-			continue;
-		}
-		if (model[0])
-		{
-			modelnum = String::Atoi(model + 1);
-		}
-		else
-		{
-			modelnum = 0;
-		}
-
-		if (modelnum < 0 || modelnum > MAX_MODELS_Q3)
-		{
-			BotImport_Print(PRT_MESSAGE, "entity %s model number out of range\n", classname);
-			continue;
-		}	//end if
-
-		if (!String::Cmp(classname, "func_bobbing"))
-		{
-			modeltypes[modelnum] = MODELTYPE_FUNC_BOB;
-		}
-		else if (!String::Cmp(classname, "func_plat"))
-		{
-			modeltypes[modelnum] = MODELTYPE_FUNC_PLAT;
-		}
-	}	//end for
-}	//end of the function BotSetBrushModelTypes
 //===========================================================================
 //
 // Parameter:			-
@@ -572,64 +290,6 @@ int BotOnTopOfEntity(bot_movestate_t* ms)
 	}	//end if
 	return -1;
 }	//end of the function BotOnTopOfEntity
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-int BotValidTravel(vec3_t origin, aas_reachability_t* reach, int travelflags)
-{
-	//if the reachability uses an unwanted travel type
-	if (AAS_TravelFlagForType(reach->traveltype) & ~travelflags)
-	{
-		return qfalse;
-	}
-	//don't go into areas with bad travel types
-	if (AAS_AreaContentsTravelFlags(reach->areanum) & ~travelflags)
-	{
-		return qfalse;
-	}
-	return qtrue;
-}	//end of the function BotValidTravel
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
-{
-	int i;
-
-	for (i = 0; i < MAX_AVOIDREACH; i++)
-	{
-		if (ms->avoidreach[i] == number)
-		{
-			if (ms->avoidreachtimes[i] > AAS_Time())
-			{
-				ms->avoidreachtries[i]++;
-			}
-			else
-			{
-				ms->avoidreachtries[i] = 1;
-			}
-			ms->avoidreachtimes[i] = AAS_Time() + avoidtime;
-			return;
-		}	//end if
-	}	//end for
-		//add the reachability to the reachabilities to avoid for a while
-	for (i = 0; i < MAX_AVOIDREACH; i++)
-	{
-		if (ms->avoidreachtimes[i] < AAS_Time())
-		{
-			ms->avoidreach[i] = number;
-			ms->avoidreachtimes[i] = AAS_Time() + avoidtime;
-			ms->avoidreachtries[i] = 1;
-			return;
-		}	//end if
-	}	//end for
-}	//end of the function BotAddToAvoidReach
 //===========================================================================
 //
 // Parameter:				-
@@ -700,7 +360,7 @@ int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
 		}
 		//if (AAS_AreaContentsTravelFlags(reach.areanum) & ~travelflags) continue;
 		//if the travel isn't valid
-		if (!BotValidTravel(origin, &reach, movetravelflags))
+		if (!BotValidTravel(&reach, movetravelflags))
 		{
 			continue;
 		}
@@ -3844,7 +3504,7 @@ void BotShutdownMoveAI(void)
 	{
 		if (botmovestates[i])
 		{
-			FreeMemory(botmovestates[i]);
+			Mem_Free(botmovestates[i]);
 			botmovestates[i] = NULL;
 		}	//end if
 	}	//end for

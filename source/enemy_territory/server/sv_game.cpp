@@ -952,16 +952,16 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
 		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (struct bot_goal_et_t*)VMA(3), args[4], (float*)VMA(5));
 	case BOTLIB_AI_ALLOC_MOVE_STATE:
-		return botlib_export->ai.BotAllocMoveState();
+		return BotAllocMoveState();
 	case BOTLIB_AI_FREE_MOVE_STATE:
-		botlib_export->ai.BotFreeMoveState(args[1]);
+		BotFreeMoveState(args[1]);
 		return 0;
 	case BOTLIB_AI_INIT_MOVE_STATE:
-		botlib_export->ai.BotInitMoveState(args[1], (struct bot_initmove_et_t*)VMA(2));
+		BotInitMoveStateET(args[1], (struct bot_initmove_et_t*)VMA(2));
 		return 0;
 	// Ridah
 	case BOTLIB_AI_INIT_AVOID_REACH:
-		botlib_export->ai.BotInitAvoidReach(args[1]);
+		BotInitAvoidReach(args[1]);
 		return 0;
 	// done.
 
