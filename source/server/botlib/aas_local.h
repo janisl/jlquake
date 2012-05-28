@@ -534,3 +534,17 @@ void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
 int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the next reachability using the given model
 int AAS_NextModelReachability(int num, int modelnum);
+
+#define BBOX_NORMAL_EPSILON     0.001
+
+#define ON_EPSILON                  0	//0.0005
+
+#define TRACEPLANE_EPSILON          0.125
+
+struct aas_tracestack_t
+{
+	vec3_t start;		//start point of the piece of line to trace
+	vec3_t end;			//end point of the piece of line to trace
+	int planenum;		//last plane used as splitter
+	int nodenum;		//node found after splitting with planenum
+};

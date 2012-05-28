@@ -8,6 +8,7 @@ add_library(server STATIC
 	botlib/aas_move.cpp
 	botlib/aas_reach.cpp
 	botlib/aas_route.cpp
+	botlib/aas_sample.cpp
 	botlib/ai_character.cpp
 	botlib/ai_chat.cpp
 	botlib/ai_genetic.cpp
