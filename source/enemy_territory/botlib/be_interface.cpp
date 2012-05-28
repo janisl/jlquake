@@ -335,10 +335,6 @@ Init_AAS_Export
 static void Init_AAS_Export(aas_export_t* aas)
 {
 	//--------------------------------------------
-	// be_aas_main.c
-	//--------------------------------------------
-	aas->AAS_PresenceTypeBoundingBox = AAS_PresenceTypeBoundingBox;
-	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------
 	aas->AAS_PointAreaNum = AAS_PointAreaNum;

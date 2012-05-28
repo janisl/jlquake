@@ -166,10 +166,6 @@ typedef struct botlib_import_s
 
 typedef struct aas_export_s
 {
-	//-----------------------------------
-	// be_aas_main.h
-	//-----------------------------------
-	void (* AAS_PresenceTypeBoundingBox)(int presencetype, vec3_t mins, vec3_t maxs);
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------

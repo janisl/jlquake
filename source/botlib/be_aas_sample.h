@@ -30,10 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 #ifdef AASINTERN
-void AAS_InitAASLinkHeap(void);
-void AAS_InitAASLinkedEntities(void);
-void AAS_FreeAASLinkHeap(void);
-void AAS_FreeAASLinkedEntities(void);
 aas_face_t* AAS_AreaGroundFace(int areanum, vec3_t point);
 aas_face_t* AAS_TraceEndFace(aas_trace_t* trace);
 aas_plane_t* AAS_PlaneFromNum(int planenum);
@@ -44,8 +40,6 @@ qboolean AAS_InsideFace(aas_face_t* face, vec3_t pnormal, vec3_t point, float ep
 void AAS_UnlinkFromAreas(aas_link_t* areas);
 #endif	//AASINTERN
 
-//returns the mins and maxs of the bounding box for the given presence type
-void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);
 //returns the cluster the area is in (negative portal number if the area is a portal)
 int AAS_AreaCluster(int areanum);
 //returns the presence type(s) of the area

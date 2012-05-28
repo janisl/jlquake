@@ -140,3 +140,6 @@ int AAS_AreaLadder(int areanum);
 
 //enable or disable an area for routing
 int AAS_EnableRoutingArea(int areanum, int enable);
+
+//returns the mins and maxs of the bounding box for the given presence type
+void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);

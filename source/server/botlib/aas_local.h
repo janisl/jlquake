@@ -548,3 +548,10 @@ struct aas_tracestack_t
 	int planenum;		//last plane used as splitter
 	int nodenum;		//node found after splitting with planenum
 };
+
+void AAS_InitAASLinkHeap();
+void AAS_FreeAASLinkHeap();
+aas_link_t* AAS_AllocAASLink();
+void AAS_DeAllocAASLink(aas_link_t* link);
+void AAS_InitAASLinkedEntities();
+void AAS_FreeAASLinkedEntities();
