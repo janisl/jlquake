@@ -335,14 +335,6 @@ Init_AAS_Export
 static void Init_AAS_Export(aas_export_t* aas)
 {
 	//--------------------------------------------
-	// be_aas_sample.c
-	//--------------------------------------------
-	aas->AAS_PointAreaNum = AAS_PointAreaNum;
-	aas->AAS_TraceAreas = AAS_TraceAreas;
-	aas->AAS_BBoxAreas = AAS_BBoxAreas;
-	aas->AAS_AreaCenter = AAS_AreaCenter;
-	aas->AAS_AreaWaypoint = AAS_AreaWaypoint;
-	//--------------------------------------------
 	// be_aas_bspq3.c
 	//--------------------------------------------
 	aas->AAS_PointContents = AAS_PointContents;

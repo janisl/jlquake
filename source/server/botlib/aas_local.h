@@ -535,8 +535,6 @@ int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the next reachability using the given model
 int AAS_NextModelReachability(int num, int modelnum);
 
-#define BBOX_NORMAL_EPSILON     0.001
-
 #define ON_EPSILON                  0	//0.0005
 
 #define TRACEPLANE_EPSILON          0.125
@@ -551,7 +549,14 @@ struct aas_tracestack_t
 
 void AAS_InitAASLinkHeap();
 void AAS_FreeAASLinkHeap();
-aas_link_t* AAS_AllocAASLink();
-void AAS_DeAllocAASLink(aas_link_t* link);
 void AAS_InitAASLinkedEntities();
 void AAS_FreeAASLinkedEntities();
+//returns the presence type(s) of the area
+int AAS_AreaPresenceType(int areanum);
+//returns the presence type(s) at the given point
+int AAS_PointPresenceType(const vec3_t point);
+bool AAS_PointInsideFace(int facenum, const vec3_t point, float epsilon);
+void AAS_UnlinkFromAreas(aas_link_t* areas);
+aas_link_t* AAS_AASLinkEntity(const vec3_t absmins, const vec3_t absmaxs, int entnum);
+aas_link_t* AAS_LinkEntityClientBBox(const vec3_t absmins, const vec3_t absmaxs, int entnum, int presencetype);
+aas_plane_t* AAS_PlaneFromNum(int planenum);

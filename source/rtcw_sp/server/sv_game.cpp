@@ -554,9 +554,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	// done.
 
 	case BOTLIB_AAS_POINT_AREA_NUM:
-		return botlib_export->aas.AAS_PointAreaNum((float*)VMA(1));
+		return AAS_PointAreaNum((float*)VMA(1));
 	case BOTLIB_AAS_TRACE_AREAS:
-		return botlib_export->aas.AAS_TraceAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), (vec3_t*)VMA(4), args[5]);
+		return AAS_TraceAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), (vec3_t*)VMA(4), args[5]);
 
 	case BOTLIB_AAS_POINT_CONTENTS:
 		return botlib_export->aas.AAS_PointContents((float*)VMA(1));

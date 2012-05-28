@@ -113,6 +113,18 @@ struct aas_entityinfo_t
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 };
 
+// area info
+struct aas_areainfo_t
+{
+	int contents;
+	int flags;
+	int presencetype;
+	int cluster;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t center;
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -143,3 +155,14 @@ int AAS_EnableRoutingArea(int areanum, int enable);
 
 //returns the mins and maxs of the bounding box for the given presence type
 void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);
+//returns the area the point is in
+int AAS_PointAreaNum(const vec3_t point);
+int AAS_PointReachabilityAreaIndex(const vec3_t point);
+//stores the areas the trace went through and returns the number of passed areas
+int AAS_TraceAreas(const vec3_t start, const vec3_t end, int* areas, vec3_t* points, int maxareas);
+//returns the areas the bounding box is in
+int AAS_BBoxAreas(const vec3_t absmins, const vec3_t absmaxs, int* areas, int maxareas);
+//return area information
+int AAS_AreaInfo(int areanum, aas_areainfo_t* info);
+void AAS_AreaCenter(int areanum, vec3_t center);
+bool AAS_AreaWaypoint(int areanum, vec3_t center);

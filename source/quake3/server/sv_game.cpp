@@ -524,9 +524,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AAS_BBOX_AREAS:
-		return botlib_export->aas.AAS_BBoxAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
+		return AAS_BBoxAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
 	case BOTLIB_AAS_AREA_INFO:
-		return botlib_export->aas.AAS_AreaInfo(args[1], (aas_areainfo_s*)VMA(2));
+		return AAS_AreaInfo(args[1], (aas_areainfo_t*)VMA(2));
 	case BOTLIB_AAS_ALTERNATIVE_ROUTE_GOAL:
 		return botlib_export->aas.AAS_AlternativeRouteGoals((float*)VMA(1), args[2], (float*)VMA(3), args[4], args[5], (aas_altroutegoal_s*)VMA(6), args[7], args[8]);
 	case BOTLIB_AAS_ENTITY_INFO:
@@ -542,11 +542,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return FloatAsInt(AAS_Time());
 
 	case BOTLIB_AAS_POINT_AREA_NUM:
-		return botlib_export->aas.AAS_PointAreaNum((float*)VMA(1));
+		return AAS_PointAreaNum((float*)VMA(1));
 	case BOTLIB_AAS_POINT_REACHABILITY_AREA_INDEX:
-		return botlib_export->aas.AAS_PointReachabilityAreaIndex((float*)VMA(1));
+		return AAS_PointReachabilityAreaIndex((float*)VMA(1));
 	case BOTLIB_AAS_TRACE_AREAS:
-		return botlib_export->aas.AAS_TraceAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), (vec3_t*)VMA(4), args[5]);
+		return AAS_TraceAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), (vec3_t*)VMA(4), args[5]);
 
 	case BOTLIB_AAS_POINT_CONTENTS:
 		return botlib_export->aas.AAS_PointContents((float*)VMA(1));

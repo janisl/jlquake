@@ -33,11 +33,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct aas_areainfo_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
-struct bot_moveresult_t;
-struct bot_initmove_q3_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -159,14 +156,6 @@ typedef struct botlib_import_s
 
 typedef struct aas_export_s
 {
-	//--------------------------------------------
-	// be_aas_sample.c
-	//--------------------------------------------
-	int (* AAS_PointAreaNum)(vec3_t point);
-	int (* AAS_PointReachabilityAreaIndex)(vec3_t point);
-	int (* AAS_TraceAreas)(vec3_t start, vec3_t end, int* areas, vec3_t* points, int maxareas);
-	int (* AAS_BBoxAreas)(vec3_t absmins, vec3_t absmaxs, int* areas, int maxareas);
-	int (* AAS_AreaInfo)(int areanum, struct aas_areainfo_s* info);
 	//--------------------------------------------
 	// be_aas_bspq3.c
 	//--------------------------------------------

@@ -167,11 +167,6 @@ typedef struct botlib_import_s
 typedef struct aas_export_s
 {
 	//--------------------------------------------
-	// be_aas_sample.c
-	//--------------------------------------------
-	int (* AAS_PointAreaNum)(vec3_t point);
-	int (* AAS_TraceAreas)(vec3_t start, vec3_t end, int* areas, vec3_t* points, int maxareas);
-	//--------------------------------------------
 	// be_aas_bspq3.c
 	//--------------------------------------------
 	int (* AAS_PointContents)(vec3_t point);
