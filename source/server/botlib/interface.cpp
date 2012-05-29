@@ -22,6 +22,9 @@ int bot_maxdebugpolys;
 
 int bot_developer;
 
+//library globals in a structure
+botlib_globals_t botlibglobals;
+
 void BotImport_Print(int type, const char* fmt, ...)
 {
 	char str[2048];

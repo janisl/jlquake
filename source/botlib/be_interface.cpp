@@ -44,9 +44,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_move.h"
 #include "be_ai_chat.h"
 
-//library globals in a structure
-botlib_globals_t botlibglobals;
-
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
 //qtrue if the library is setup
@@ -312,10 +309,6 @@ static void Init_EA_Export(ea_export_t* ea)
 	ea->EA_Command = EA_Command;
 	ea->EA_Say = EA_Say;
 	ea->EA_SayTeam = EA_SayTeam;
-
-	ea->EA_GetInput = EA_GetInput;
-	ea->EA_EndRegular = EA_EndRegular;
-	ea->EA_ResetInput = EA_ResetInput;
 }
 
 

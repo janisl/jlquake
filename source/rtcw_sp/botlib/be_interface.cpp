@@ -49,9 +49,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_ai_move.h"
 #include "../game/be_ai_chat.h"
 
-//library globals in a structure
-botlib_globals_t botlibglobals;
-
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
 //qtrue if the library is setup
@@ -331,9 +328,6 @@ static void Init_EA_Export(ea_export_t* ea)
 	ea->EA_UseInv = EA_UseInv;
 	ea->EA_DropInv = EA_DropInv;
 	ea->EA_Command = EA_Command;
-	ea->EA_GetInput = EA_GetInput;
-	ea->EA_EndRegular = EA_EndRegular;
-	ea->EA_ResetInput = EA_ResetInput;
 }
 
 

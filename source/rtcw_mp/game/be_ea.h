@@ -43,10 +43,3 @@ void EA_DropItem(int client, char* it);
 void EA_UseInv(int client, char* inv);
 void EA_DropInv(int client, char* inv);
 void EA_Command(int client, const char* command);
-//send regular input to the server
-void EA_EndRegular(int client, float thinktime);
-void EA_GetInput(int client, float thinktime, bot_input_t* input);
-void EA_ResetInput(int client, bot_input_t* init);
-//setup and shutdown routines
-int EA_Setup(void);
-void EA_Shutdown(void);

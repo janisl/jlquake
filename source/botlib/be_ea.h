@@ -34,11 +34,3 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void EA_Say(int client, char* str);
 void EA_SayTeam(int client, char* str);
 void EA_Command(int client, char* command);
-
-//send regular input to the server
-void EA_EndRegular(int client, float thinktime);
-void EA_GetInput(int client, float thinktime, bot_input_t* input);
-void EA_ResetInput(int client);
-//setup and shutdown routines
-int EA_Setup(void);
-void EA_Shutdown(void);

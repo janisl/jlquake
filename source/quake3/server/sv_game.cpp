@@ -644,13 +644,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_EA_END_REGULAR:
-		botlib_export->ea.EA_EndRegular(args[1], VMF(2));
 		return 0;
 	case BOTLIB_EA_GET_INPUT:
-		botlib_export->ea.EA_GetInput(args[1], VMF(2), (bot_input_t*)VMA(3));
+		EA_GetInput(args[1], VMF(2), (bot_input_t*)VMA(3));
 		return 0;
 	case BOTLIB_EA_RESET_INPUT:
-		botlib_export->ea.EA_ResetInput(args[1]);
+		EA_ResetInputQ3(args[1]);
 		return 0;
 
 	case BOTLIB_AI_LOAD_CHARACTER:

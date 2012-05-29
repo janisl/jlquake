@@ -60,7 +60,16 @@ void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int
 //	Interface
 //
 
+//FIXME: get rid of this global structure
+struct botlib_globals_t
+{
+	int botlibsetup;						//true when the bot library has been setup
+	int maxentities;						//maximum number of entities
+	int maxclients;							//maximum number of clients
+};
+
 extern int bot_developer;					//true if developer is on
+extern botlib_globals_t botlibglobals;
 
 //
 //	Libvars
@@ -143,5 +152,9 @@ bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
 #define ACTION_JUMPEDLASTFRAME      128
 
 extern bot_input_t* botinputs;
+
+//setup and shutdown routines
+int EA_Setup();
+void EA_Shutdown();
 
 #endif

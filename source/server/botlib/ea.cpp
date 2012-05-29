@@ -169,3 +169,66 @@ void EA_View(int client, vec3_t viewangles)
 	bot_input_t* bi = &botinputs[client];
 	VectorCopy(viewangles, bi->viewangles);
 }
+
+void EA_GetInput(int client, float thinktime, bot_input_t* input)
+{
+	bot_input_t* bi = &botinputs[client];
+	bi->thinktime = thinktime;
+	Com_Memcpy(input, bi, sizeof(bot_input_t));
+}
+
+void EA_ResetInputQ3(int client)
+{
+	bot_input_t* bi;
+	int jumped = false;
+
+	bi = &botinputs[client];
+	bi->actionflags &= ~ACTION_JUMPEDLASTFRAME;
+
+	bi->thinktime = 0;
+	VectorClear(bi->dir);
+	bi->speed = 0;
+	jumped = bi->actionflags & Q3ACTION_JUMP;
+	bi->actionflags = 0;
+	if (jumped)
+	{
+		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
+	}
+}
+
+void EA_ResetInputWolf(int client, bot_input_t* init)
+{
+	bot_input_t* bi;
+	int jumped = false;
+
+	bi = &botinputs[client];
+	bi->actionflags &= ~ACTION_JUMPEDLASTFRAME;
+
+	bi->thinktime = 0;
+	VectorClear(bi->dir);
+	bi->speed = 0;
+	jumped = bi->actionflags & WOLFACTION_JUMP;
+	bi->actionflags = 0;
+	if (jumped)
+	{
+		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
+	}
+
+	if (init)
+	{
+		memcpy(bi, init, sizeof(bot_input_t));
+	}
+}
+
+int EA_Setup()
+{
+	//initialize the bot inputs
+	botinputs = (bot_input_t*)Mem_ClearedAlloc(botlibglobals.maxclients * sizeof(bot_input_t));
+	return BLERR_NOERROR;
+}
+
+void EA_Shutdown()
+{
+	Mem_Free(botinputs);
+	botinputs = NULL;
+}

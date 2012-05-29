@@ -81,3 +81,6 @@ void EA_Prone(int client);
 void EA_Action(int client, int action);
 void EA_Move(int client, vec3_t dir, float speed);
 void EA_View(int client, vec3_t viewangles);
+void EA_GetInput(int client, float thinktime, bot_input_t* input);
+void EA_ResetInputQ3(int client);
+void EA_ResetInputWolf(int client, bot_input_t* init);
