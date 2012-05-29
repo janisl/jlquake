@@ -313,25 +313,6 @@ static void Init_EA_Export(ea_export_t* ea)
 	ea->EA_Say = EA_Say;
 	ea->EA_SayTeam = EA_SayTeam;
 
-	ea->EA_Action = EA_Action;
-	ea->EA_Gesture = EA_Gesture;
-	ea->EA_Talk = EA_Talk;
-	ea->EA_Attack = EA_Attack;
-	ea->EA_Use = EA_Use;
-	ea->EA_Respawn = EA_Respawn;
-	ea->EA_Crouch = EA_Crouch;
-	ea->EA_MoveUp = EA_MoveUp;
-	ea->EA_MoveDown = EA_MoveDown;
-	ea->EA_MoveForward = EA_MoveForward;
-	ea->EA_MoveBack = EA_MoveBack;
-	ea->EA_MoveLeft = EA_MoveLeft;
-	ea->EA_MoveRight = EA_MoveRight;
-
-	ea->EA_SelectWeapon = EA_SelectWeapon;
-	ea->EA_Jump = EA_Jump;
-	ea->EA_DelayedJump = EA_DelayedJump;
-	ea->EA_Move = EA_Move;
-	ea->EA_View = EA_View;
 	ea->EA_GetInput = EA_GetInput;
 	ea->EA_EndRegular = EA_EndRegular;
 	ea->EA_ResetInput = EA_ResetInput;

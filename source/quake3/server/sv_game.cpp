@@ -588,59 +588,59 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_EA_ACTION:
-		botlib_export->ea.EA_Action(args[1], args[2]);
+		EA_Action(args[1], args[2]);
 		break;
 	case BOTLIB_EA_GESTURE:
-		botlib_export->ea.EA_Gesture(args[1]);
+		EA_Gesture(args[1]);
 		return 0;
 	case BOTLIB_EA_TALK:
-		botlib_export->ea.EA_Talk(args[1]);
+		EA_Talk(args[1]);
 		return 0;
 	case BOTLIB_EA_ATTACK:
-		botlib_export->ea.EA_Attack(args[1]);
+		EA_Attack(args[1]);
 		return 0;
 	case BOTLIB_EA_USE:
-		botlib_export->ea.EA_Use(args[1]);
+		EA_Use(args[1]);
 		return 0;
 	case BOTLIB_EA_RESPAWN:
-		botlib_export->ea.EA_Respawn(args[1]);
+		EA_Respawn(args[1]);
 		return 0;
 	case BOTLIB_EA_CROUCH:
-		botlib_export->ea.EA_Crouch(args[1]);
+		EA_Crouch(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_UP:
-		botlib_export->ea.EA_MoveUp(args[1]);
+		EA_MoveUp(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_DOWN:
-		botlib_export->ea.EA_MoveDown(args[1]);
+		EA_MoveDown(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_FORWARD:
-		botlib_export->ea.EA_MoveForward(args[1]);
+		EA_MoveForward(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_BACK:
-		botlib_export->ea.EA_MoveBack(args[1]);
+		EA_MoveBack(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_LEFT:
-		botlib_export->ea.EA_MoveLeft(args[1]);
+		EA_MoveLeft(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE_RIGHT:
-		botlib_export->ea.EA_MoveRight(args[1]);
+		EA_MoveRight(args[1]);
 		return 0;
 
 	case BOTLIB_EA_SELECT_WEAPON:
-		botlib_export->ea.EA_SelectWeapon(args[1], args[2]);
+		EA_SelectWeapon(args[1], args[2]);
 		return 0;
 	case BOTLIB_EA_JUMP:
-		botlib_export->ea.EA_Jump(args[1]);
+		EA_Jump(args[1]);
 		return 0;
 	case BOTLIB_EA_DELAYED_JUMP:
-		botlib_export->ea.EA_DelayedJump(args[1]);
+		EA_DelayedJump(args[1]);
 		return 0;
 	case BOTLIB_EA_MOVE:
-		botlib_export->ea.EA_Move(args[1], (float*)VMA(2), VMF(3));
+		EA_Move(args[1], (float*)VMA(2), VMF(3));
 		return 0;
 	case BOTLIB_EA_VIEW:
-		botlib_export->ea.EA_View(args[1], (float*)VMA(2));
+		EA_View(args[1], (float*)VMA(2));
 		return 0;
 
 	case BOTLIB_EA_END_REGULAR:

@@ -58,3 +58,26 @@ struct bot_input_t
 	int actionflags;		//one of the ACTION_? flags
 	int weapon;				//weapon to use
 };
+
+//regular elementary actions
+void EA_Gesture(int client);
+void EA_SelectWeapon(int client, int weapon);
+void EA_Attack(int client);
+void EA_Talk(int client);
+void EA_Use(int client);
+void EA_Respawn(int client);
+void EA_Jump(int client);
+void EA_DelayedJump(int client);
+void EA_Crouch(int client);
+void EA_Walk(int client);
+void EA_MoveUp(int client);
+void EA_MoveDown(int client);
+void EA_MoveForward(int client);
+void EA_MoveBack(int client);
+void EA_MoveLeft(int client);
+void EA_MoveRight(int client);
+void EA_Reload(int client);
+void EA_Prone(int client);
+void EA_Action(int client, int action);
+void EA_Move(int client, vec3_t dir, float speed);
+void EA_View(int client, vec3_t viewangles);
