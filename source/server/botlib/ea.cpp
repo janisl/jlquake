@@ -17,7 +17,12 @@
 #include "../server.h"
 #include "local.h"
 
-bot_input_t* botinputs;
+#define MAX_USERMOVE                400
+
+//JL BUG BUG BUG In Quake 3 this overlaps with crouch, in Wold games with move left.
+#define ACTION_JUMPEDLASTFRAME      128
+
+static bot_input_t* botinputs;
 
 void EA_Gesture(int client)
 {
