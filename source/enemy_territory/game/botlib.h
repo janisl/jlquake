@@ -56,42 +56,6 @@ struct bot_initmove_et_t;
 #define LINECOLOR_YELLOW        4	//0xdcdddedfL
 #define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
 
-//console message types
-#define CMS_NORMAL              0
-#define CMS_CHAT                1
-
-//action flags
-#define ACTION_ATTACK           1
-#define ACTION_USE              2
-#define ACTION_RESPAWN          4
-#define ACTION_JUMP             8
-#define ACTION_MOVEUP           8
-#define ACTION_CROUCH           16
-#define ACTION_MOVEDOWN         16
-#define ACTION_MOVEFORWARD      32
-#define ACTION_MOVEBACK         64
-#define ACTION_MOVELEFT         128
-#define ACTION_MOVERIGHT        256
-#define ACTION_DELAYEDJUMP      512
-#define ACTION_TALK             1024
-#define ACTION_GESTURE          2048
-#define ACTION_WALK             4096
-#define ACTION_RELOAD           8192
-// START	xkan, 9/16/2002
-#define ACTION_PRONE            16384
-// END		xkan, 9/16/2002
-
-//the bot input, will be converted to an etusercmd_t
-typedef struct bot_input_s
-{
-	float thinktime;		//time since last output (in seconds)
-	vec3_t dir;				//movement direction
-	float speed;			//speed in the range [0, 400]
-	vec3_t viewangles;		//the view angles
-	int actionflags;		//one of the ACTION_? flags
-	int weapon;				//weapon to use
-} bot_input_t;
-
 //entity state
 typedef struct bot_entitystate_s
 {

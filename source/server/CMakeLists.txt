@@ -16,6 +16,7 @@ add_library(server STATIC
 	botlib/ai_move.cpp
 	botlib/ai_weapon.cpp
 	botlib/ai_weight.cpp
+	botlib/ea.cpp
 	botlib/interface.cpp
 	botlib/libvar.cpp
 	botlib/log.cpp

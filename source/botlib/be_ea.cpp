@@ -34,12 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib.h"
 #include "be_interface.h"
 
-#define MAX_USERMOVE                400
-#define MAX_COMMANDARGUMENTS        10
-#define ACTION_JUMPEDLASTFRAME      128
-
-bot_input_t* botinputs;
-
 //===========================================================================
 //
 // Parameter:				-
@@ -122,7 +116,7 @@ void EA_Gesture(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_GESTURE;
+	bi->actionflags |= Q3ACTION_GESTURE;
 }	//end of the function EA_Gesture
 //===========================================================================
 //
@@ -174,7 +168,7 @@ void EA_Talk(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_TALK;
+	bi->actionflags |= Q3ACTION_TALK;
 }	//end of the function EA_Talk
 //===========================================================================
 //
@@ -202,7 +196,7 @@ void EA_Respawn(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_RESPAWN;
+	bi->actionflags |= Q3ACTION_RESPAWN;
 }	//end of the function EA_Respawn
 //===========================================================================
 //
@@ -218,11 +212,11 @@ void EA_Jump(int client)
 
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
 	{
-		bi->actionflags &= ~ACTION_JUMP;
+		bi->actionflags &= ~Q3ACTION_JUMP;
 	}	//end if
 	else
 	{
-		bi->actionflags |= ACTION_JUMP;
+		bi->actionflags |= Q3ACTION_JUMP;
 	}	//end if
 }	//end of the function EA_Jump
 //===========================================================================
@@ -239,11 +233,11 @@ void EA_DelayedJump(int client)
 
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
 	{
-		bi->actionflags &= ~ACTION_DELAYEDJUMP;
+		bi->actionflags &= ~Q3ACTION_DELAYEDJUMP;
 	}	//end if
 	else
 	{
-		bi->actionflags |= ACTION_DELAYEDJUMP;
+		bi->actionflags |= Q3ACTION_DELAYEDJUMP;
 	}	//end if
 }	//end of the function EA_DelayedJump
 //===========================================================================
@@ -258,7 +252,7 @@ void EA_Crouch(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_CROUCH;
+	bi->actionflags |= Q3ACTION_CROUCH;
 }	//end of the function EA_Crouch
 //===========================================================================
 //
@@ -272,7 +266,7 @@ void EA_Walk(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_WALK;
+	bi->actionflags |= Q3ACTION_WALK;
 }	//end of the function EA_Walk
 //===========================================================================
 //
@@ -300,7 +294,7 @@ void EA_MoveUp(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVEUP;
+	bi->actionflags |= Q3ACTION_MOVEUP;
 }	//end of the function EA_MoveUp
 //===========================================================================
 //
@@ -314,7 +308,7 @@ void EA_MoveDown(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVEDOWN;
+	bi->actionflags |= Q3ACTION_MOVEDOWN;
 }	//end of the function EA_MoveDown
 //===========================================================================
 //
@@ -328,7 +322,7 @@ void EA_MoveForward(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVEFORWARD;
+	bi->actionflags |= Q3ACTION_MOVEFORWARD;
 }	//end of the function EA_MoveForward
 //===========================================================================
 //
@@ -342,7 +336,7 @@ void EA_MoveBack(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVEBACK;
+	bi->actionflags |= Q3ACTION_MOVEBACK;
 }	//end of the function EA_MoveBack
 //===========================================================================
 //
@@ -356,7 +350,7 @@ void EA_MoveLeft(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVELEFT;
+	bi->actionflags |= Q3ACTION_MOVELEFT;
 }	//end of the function EA_MoveLeft
 //===========================================================================
 //
@@ -370,7 +364,7 @@ void EA_MoveRight(int client)
 
 	bi = &botinputs[client];
 
-	bi->actionflags |= ACTION_MOVERIGHT;
+	bi->actionflags |= Q3ACTION_MOVERIGHT;
 }	//end of the function EA_MoveRight
 //===========================================================================
 //
@@ -432,7 +426,7 @@ void EA_EndRegular(int client, float thinktime)
     bi->thinktime = 0;
     VectorClear(bi->dir);
     bi->speed = 0;
-    jumped = bi->actionflags & ACTION_JUMP;
+    jumped = bi->actionflags & Q3ACTION_JUMP;
     bi->actionflags = 0;
     if (jumped) bi->actionflags |= ACTION_JUMPEDLASTFRAME;
 */
@@ -459,7 +453,7 @@ void EA_GetInput(int client, float thinktime, bot_input_t* input)
 	bi->thinktime = 0;
 	VectorClear(bi->dir);
 	bi->speed = 0;
-	jumped = bi->actionflags & ACTION_JUMP;
+	jumped = bi->actionflags & Q3ACTION_JUMP;
 	bi->actionflags = 0;
 	if (jumped) bi->actionflags |= ACTION_JUMPEDLASTFRAME;
 	*/
@@ -481,7 +475,7 @@ void EA_ResetInput(int client)
 	bi->thinktime = 0;
 	VectorClear(bi->dir);
 	bi->speed = 0;
-	jumped = bi->actionflags & ACTION_JUMP;
+	jumped = bi->actionflags & Q3ACTION_JUMP;
 	bi->actionflags = 0;
 	if (jumped)
 	{

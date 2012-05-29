@@ -51,5 +51,6 @@ int BotLibVarGet(char* var_name, char* value, int size);
 
 #include "ai_public.h"
 #include "aas_public.h"
+#include "ea_public.h"
 
 #endif

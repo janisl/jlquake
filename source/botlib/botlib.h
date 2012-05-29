@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 struct aas_clientmove_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
+struct bot_input_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -43,44 +44,6 @@ struct aas_predictroute_s;
 #define LINECOLOR_BLUE          3	//0xf3f3f1f1L
 #define LINECOLOR_YELLOW        4	//0xdcdddedfL
 #define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
-
-//console message types
-#define CMS_NORMAL              0
-#define CMS_CHAT                1
-
-//action flags
-#define ACTION_ATTACK           0x0000001
-#define ACTION_USE              0x0000002
-#define ACTION_RESPAWN          0x0000008
-#define ACTION_JUMP             0x0000010
-#define ACTION_MOVEUP           0x0000020
-#define ACTION_CROUCH           0x0000080
-#define ACTION_MOVEDOWN         0x0000100
-#define ACTION_MOVEFORWARD      0x0000200
-#define ACTION_MOVEBACK         0x0000800
-#define ACTION_MOVELEFT         0x0001000
-#define ACTION_MOVERIGHT        0x0002000
-#define ACTION_DELAYEDJUMP      0x0008000
-#define ACTION_TALK             0x0010000
-#define ACTION_GESTURE          0x0020000
-#define ACTION_WALK             0x0080000
-#define ACTION_AFFIRMATIVE      0x0100000
-#define ACTION_NEGATIVE         0x0200000
-#define ACTION_GETFLAG          0x0800000
-#define ACTION_GUARDBASE        0x1000000
-#define ACTION_PATROL           0x2000000
-#define ACTION_FOLLOWME         0x8000000
-
-//the bot input, will be converted to an usercmd_t
-typedef struct bot_input_s
-{
-	float thinktime;		//time since last output (in seconds)
-	vec3_t dir;				//movement direction
-	float speed;			//speed in the range [0, 400]
-	vec3_t viewangles;		//the view angles
-	int actionflags;		//one of the ACTION_? flags
-	int weapon;				//weapon to use
-} bot_input_t;
 
 #ifndef BSPTRACE
 

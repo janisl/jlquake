@@ -138,4 +138,10 @@ bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
 #include "ai_local.h"
 #include "aas_local.h"
 
+#define MAX_USERMOVE                400
+#define MAX_COMMANDARGUMENTS        10
+#define ACTION_JUMPEDLASTFRAME      128
+
+extern bot_input_t* botinputs;
+
 #endif
