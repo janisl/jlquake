@@ -6,6 +6,7 @@ add_library(server STATIC
 	botlib/aas_file.cpp
 	botlib/aas_main.cpp
 	botlib/aas_move.cpp
+	botlib/aas_optimize.cpp
 	botlib/aas_reach.cpp
 	botlib/aas_route.cpp
 	botlib/aas_routealt.cpp

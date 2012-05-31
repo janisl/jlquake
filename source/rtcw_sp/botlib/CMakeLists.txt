@@ -5,7 +5,6 @@ add_library(botlib-wolfsp STATIC
 	be_aas_entity.cpp
 	be_aas_main.cpp
 	be_aas_move.cpp
-	be_aas_optimize.cpp
 	be_aas_reach.cpp
 	be_aas_route.cpp
 	be_aas_routetable.cpp

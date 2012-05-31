@@ -372,6 +372,8 @@ bool AAS_ClipToBBox(aas_trace_t* trace, const vec3_t start, const vec3_t end,
 //calculates the horizontal velocity needed for a jump and returns true this velocity could be calculated
 bool AAS_HorizontalVelocityForJump(float zvel, const vec3_t start, const vec3_t end, float* velocity);
 
+void AAS_Optimize();
+
 //maximum number of reachability links
 #define AAS_MAX_REACHABILITYSIZE            128000
 //number of units reachability points are placed inside the areas

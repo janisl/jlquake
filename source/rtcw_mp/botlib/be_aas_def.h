@@ -54,7 +54,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_reach.h"
 #include "be_aas_route.h"
 #include "be_aas_debug.h"
-#include "be_aas_optimize.h"
 #include "be_aas_bsp.h"
 #include "be_aas_move.h"
 

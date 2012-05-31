@@ -154,7 +154,7 @@ int AAS_NextEntity(int entnum)
 // Ridah, used to find out if there is an entity touching the given area, if so, try and avoid it
 bool AAS_IsEntityInArea(int entnumIgnore, int entnumIgnore2, int areanum)
 {
-	for (aas_link_t* link = (*aasworld).arealinkedentities[areanum]; link; link = link->next_ent)
+	for (aas_link_t* link = aasworld->arealinkedentities[areanum]; link; link = link->next_ent)
 	{
 		//ignore the pass entity
 		if (link->entnum == entnumIgnore)
