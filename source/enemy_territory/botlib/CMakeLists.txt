@@ -1,6 +1,5 @@
 add_library(botlib-et STATIC
 	be_aas_bspq3.cpp
-	be_aas_cluster.cpp
 	be_aas_debug.cpp
 	be_aas_entity.cpp
 	be_aas_main.cpp

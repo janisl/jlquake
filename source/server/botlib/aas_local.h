@@ -162,7 +162,7 @@ struct aas_reachabilityareas_t
 	int numareas;
 };
 
-typedef struct aas_s
+struct aas_t
 {
 	int loaded;									//true when an AAS file is loaded
 	int initialized;							//true when AAS has been initialized
@@ -281,7 +281,7 @@ typedef struct aas_s
 	byte* teamDeathCount;
 	// RF, areas that are influenced by a death count
 	byte* teamDeathAvoid;
-} aas_t;
+};
 
 extern aas_t* aasworld;
 extern aas_t aasworlds[MAX_AAS_WORLDS];
@@ -293,22 +293,8 @@ void AAS_DumpBSPData();
 //gets the mins, maxs and origin of a BSP model
 void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs);
 
-
-#define AAS_MAX_PORTALS                 65536
-#define AAS_MAX_PORTALINDEXSIZE         65536
-#define AAS_MAX_CLUSTERS                65536
-
-#define MAX_PORTALAREAS         1024
-
-void AAS_RemoveClusterAreas();
-bool AAS_FloodClusterAreas_r(int areanum, int clusternum);
-bool AAS_FloodClusterAreasUsingReachabilities(int clusternum);
-void AAS_CreatePortals();
-void AAS_FindPossiblePortals();
-bool AAS_TestPortals();
-void AAS_CountForcedClusterPortals();
-void AAS_CreateViewPortals();
-void AAS_SetViewPortalsAsClusterPortals();
+//initialize the AAS clustering
+void AAS_InitClustering();
 
 void AAS_ClearShownPolygons();
 void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points);

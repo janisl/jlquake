@@ -17,7 +17,13 @@
 #include "../server.h"
 #include "local.h"
 
-void AAS_RemoveClusterAreas()
+#define AAS_MAX_PORTALS                 65536
+#define AAS_MAX_PORTALINDEXSIZE         65536
+#define AAS_MAX_CLUSTERS                65536
+
+#define MAX_PORTALAREAS         1024
+
+static void AAS_RemoveClusterAreas()
 {
 	for (int i = 1; i < aasworld->numareas; i++)
 	{
@@ -85,7 +91,7 @@ static bool AAS_UpdatePortal(int areanum, int clusternum)
 	return true;
 }
 
-bool AAS_FloodClusterAreas_r(int areanum, int clusternum)
+static bool AAS_FloodClusterAreas_r(int areanum, int clusternum)
 {
 	if (areanum <= 0 || areanum >= aasworld->numareas)
 	{
@@ -136,7 +142,7 @@ bool AAS_FloodClusterAreas_r(int areanum, int clusternum)
 }
 
 // try to flood from all areas without cluster into areas with a cluster set
-bool AAS_FloodClusterAreasUsingReachabilities(int clusternum)
+static bool AAS_FloodClusterAreasUsingReachabilities(int clusternum)
 {
 	for (int i = 1; i < aasworld->numareas; i++)
 	{
@@ -175,7 +181,141 @@ bool AAS_FloodClusterAreasUsingReachabilities(int clusternum)
 	return true;
 }
 
-void AAS_CreatePortals()
+static void AAS_NumberClusterAreas(int clusternum)
+{
+	int i, portalnum;
+	aas_cluster_t* cluster;
+	aas_portal_t* portal;
+
+	aasworld->clusters[clusternum].numareas = 0;
+	aasworld->clusters[clusternum].numreachabilityareas = 0;
+	//number all areas in this cluster WITH reachabilities
+	for (i = 1; i < aasworld->numareas; i++)
+	{
+		//
+		if (aasworld->areasettings[i].cluster != clusternum)
+		{
+			continue;
+		}
+		//
+		if (!AAS_AreaReachability(i))
+		{
+			continue;
+		}
+		//
+		aasworld->areasettings[i].clusterareanum = aasworld->clusters[clusternum].numareas;
+		//the cluster has an extra area
+		aasworld->clusters[clusternum].numareas++;
+		aasworld->clusters[clusternum].numreachabilityareas++;
+	}	//end for
+		//number all portals in this cluster WITH reachabilities
+	cluster = &aasworld->clusters[clusternum];
+	for (i = 0; i < cluster->numportals; i++)
+	{
+		portalnum = aasworld->portalindex[cluster->firstportal + i];
+		portal = &aasworld->portals[portalnum];
+		if (!AAS_AreaReachability(portal->areanum))
+		{
+			continue;
+		}
+		if (portal->frontcluster == clusternum)
+		{
+			portal->clusterareanum[0] = cluster->numareas++;
+			aasworld->clusters[clusternum].numreachabilityareas++;
+		}	//end if
+		else
+		{
+			portal->clusterareanum[1] = cluster->numareas++;
+			aasworld->clusters[clusternum].numreachabilityareas++;
+		}	//end else
+	}	//end for
+		//number all areas in this cluster WITHOUT reachabilities
+	for (i = 1; i < aasworld->numareas; i++)
+	{
+		//
+		if (aasworld->areasettings[i].cluster != clusternum)
+		{
+			continue;
+		}
+		//
+		if (AAS_AreaReachability(i))
+		{
+			continue;
+		}
+		//
+		aasworld->areasettings[i].clusterareanum = aasworld->clusters[clusternum].numareas;
+		//the cluster has an extra area
+		aasworld->clusters[clusternum].numareas++;
+	}	//end for
+		//number all portals in this cluster WITHOUT reachabilities
+	cluster = &aasworld->clusters[clusternum];
+	for (i = 0; i < cluster->numportals; i++)
+	{
+		portalnum = aasworld->portalindex[cluster->firstportal + i];
+		portal = &aasworld->portals[portalnum];
+		if (AAS_AreaReachability(portal->areanum))
+		{
+			continue;
+		}
+		if (portal->frontcluster == clusternum)
+		{
+			portal->clusterareanum[0] = cluster->numareas++;
+		}	//end if
+		else
+		{
+			portal->clusterareanum[1] = cluster->numareas++;
+		}
+	}
+}
+
+static bool AAS_FindClusters()
+{
+	AAS_RemoveClusterAreas();
+
+	for (int i = 1; i < aasworld->numareas; i++)
+	{
+		//if the area is already part of a cluster
+		if (aasworld->areasettings[i].cluster)
+		{
+			continue;
+		}
+		// if not flooding through faces only use areas that have reachabilities
+		if (!aasworld->areasettings[i].numreachableareas)
+		{
+			continue;
+		}
+		//if the area is a cluster portal
+		if (aasworld->areasettings[i].contents & AREACONTENTS_CLUSTERPORTAL)
+		{
+			continue;
+		}
+		if (aasworld->numclusters >= AAS_MAX_CLUSTERS)
+		{
+			AAS_Error("AAS_MAX_CLUSTERS");
+			return false;
+		}
+		aas_cluster_t* cluster = &aasworld->clusters[aasworld->numclusters];
+		cluster->numareas = 0;
+		cluster->numreachabilityareas = 0;
+		cluster->firstportal = aasworld->portalindexsize;
+		cluster->numportals = 0;
+		//flood the areas in this cluster
+		if (!AAS_FloodClusterAreas_r(i, aasworld->numclusters))
+		{
+			return false;
+		}
+		if (!AAS_FloodClusterAreasUsingReachabilities(aasworld->numclusters))
+		{
+			return false;
+		}
+		//number the cluster areas
+		AAS_NumberClusterAreas(aasworld->numclusters);
+		aasworld->numclusters++;
+	}
+	return true;
+}
+
+static void AAS_CreatePortals()
 {
 	for (int i = 1; i < aasworld->numareas; i++)
 	{
@@ -507,7 +647,7 @@ static int AAS_CheckAreaForPossiblePortals(int areanum)
 	return numareas;
 }
 
-void AAS_FindPossiblePortals()
+static void AAS_FindPossiblePortals()
 {
 	int numpossibleportals = 0;
 	for (int i = 1; i < aasworld->numareas; i++)
@@ -517,7 +657,7 @@ void AAS_FindPossiblePortals()
 	BotImport_Print(PRT_MESSAGE, "\r%6d possible portal areas\n", numpossibleportals);
 }
 
-bool AAS_TestPortals()
+static bool AAS_TestPortals()
 {
 	for (int i = 1; i < aasworld->numportals; i++)
 	{
@@ -538,7 +678,7 @@ bool AAS_TestPortals()
 	return true;
 }
 
-void AAS_CountForcedClusterPortals()
+static void AAS_CountForcedClusterPortals()
 {
 	int num = 0;
 	for (int i = 1; i < aasworld->numareas; i++)
@@ -552,7 +692,7 @@ void AAS_CountForcedClusterPortals()
 	BotImport_Print(PRT_MESSAGE, "%6d forced portal areas\n", num);
 }
 
-void AAS_CreateViewPortals()
+static void AAS_CreateViewPortals()
 {
 	for (int i = 1; i < aasworld->numareas; i++)
 	{
@@ -563,7 +703,7 @@ void AAS_CreateViewPortals()
 	}
 }
 
-void AAS_SetViewPortalsAsClusterPortals()
+static void AAS_SetViewPortalsAsClusterPortals()
 {
 	for (int i = 1; i < aasworld->numareas; i++)
 	{
@@ -572,4 +712,128 @@ void AAS_SetViewPortalsAsClusterPortals()
 			aasworld->areasettings[i].contents |= AREACONTENTS_CLUSTERPORTAL;
 		}
 	}
+}
+
+void AAS_InitClustering()
+{
+	if (!aasworld->loaded)
+	{
+		return;
+	}
+	//if there are clusters
+	if (aasworld->numclusters >= 1)
+	{
+		if (GGameType & GAME_ET)
+		{
+			if (aasworld->clusterTeamTravelFlags)
+			{
+				Mem_Free(aasworld->clusterTeamTravelFlags);
+			}
+			aasworld->clusterTeamTravelFlags = (int*)Mem_ClearedAlloc(aasworld->numclusters * sizeof(int));
+		}
+
+		//if clustering isn't forced
+		if (!((int)LibVarGetValue("forceclustering")) &&
+			!((int)LibVarGetValue("forcereachability")))
+		{
+			return;
+		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		//set all view portals as cluster portals in case we re-calculate the reachabilities and clusters (with -reach)
+		AAS_SetViewPortalsAsClusterPortals();
+	}
+	//count the number of forced cluster portals
+	AAS_CountForcedClusterPortals();
+	//remove all area cluster marks
+	AAS_RemoveClusterAreas();
+	//find possible cluster portals
+	AAS_FindPossiblePortals();
+	//craete portals to for the bot view
+	AAS_CreateViewPortals();
+
+	//initialize portal memory
+	if (aasworld->portals)
+	{
+		Mem_Free(aasworld->portals);
+	}
+	aasworld->portals = (aas_portal_t*)Mem_ClearedAlloc(AAS_MAX_PORTALS * sizeof(aas_portal_t));
+	//initialize portal index memory
+	if (aasworld->portalindex)
+	{
+		Mem_Free(aasworld->portalindex);
+	}
+	aasworld->portalindex = (aas_portalindex_t*)Mem_ClearedAlloc(AAS_MAX_PORTALINDEXSIZE * sizeof(aas_portalindex_t));
+	//initialize cluster memory
+	if (aasworld->clusters)
+	{
+		Mem_Free(aasworld->clusters);
+	}
+	aasworld->clusters = (aas_cluster_t*)Mem_ClearedAlloc(AAS_MAX_CLUSTERS * sizeof(aas_cluster_t));
+	if (GGameType & GAME_ET)
+	{
+		if (aasworld->clusterTeamTravelFlags)
+		{
+			Mem_Free(aasworld->clusterTeamTravelFlags);
+		}
+		aasworld->clusterTeamTravelFlags = (int*)Mem_ClearedAlloc(AAS_MAX_CLUSTERS * sizeof(int));
+	}
+
+	int removedPortalAreas = 0;
+	BotImport_Print(PRT_MESSAGE, "\r%6d removed portal areas", removedPortalAreas);
+	while (1)
+	{
+		BotImport_Print(PRT_MESSAGE, "\r%6d", removedPortalAreas);
+		//initialize the number of portals and clusters
+		aasworld->numportals = 1;		//portal 0 is a dummy
+		aasworld->portalindexsize = 0;
+		aasworld->numclusters = 1;		//cluster 0 is a dummy
+		//create the portals from the portal areas
+		AAS_CreatePortals();
+
+		removedPortalAreas++;
+		//find the clusters
+		if (!AAS_FindClusters())
+		{
+			continue;
+		}
+		//test the portals
+		if (!AAS_TestPortals())
+		{
+			continue;
+		}
+
+		break;
+	}
+	BotImport_Print(PRT_MESSAGE, "\n");
+	//the AAS file should be saved
+	aasworld->savefile = true;
+	//write the portal areas to the log file
+	for (int i = 1; i < aasworld->numportals; i++)
+	{
+		Log_Write("portal %d: area %d\r\n", i, aasworld->portals[i].areanum);
+	}
+	// report cluster info
+	BotImport_Print(PRT_MESSAGE, "%6d portals created\n", aasworld->numportals);
+	BotImport_Print(PRT_MESSAGE, "%6d clusters created\n", aasworld->numclusters);
+	for (int i = 1; i < aasworld->numclusters; i++)
+	{
+		BotImport_Print(PRT_MESSAGE, "cluster %d has %d reachability areas\n", i,
+			aasworld->clusters[i].numreachabilityareas);
+	}
+	// report AAS file efficiency
+	int numreachabilityareas = 0;
+	int total = 0;
+	for (int i = 0; i < aasworld->numclusters; i++)
+	{
+		int n = aasworld->clusters[i].numreachabilityareas;
+		numreachabilityareas += n;
+		total += n * n;
+	}
+	total += numreachabilityareas * aasworld->numportals;
+
+	BotImport_Print(PRT_MESSAGE, "%6i total reachability areas\n", numreachabilityareas);
+	BotImport_Print(PRT_MESSAGE, "%6i AAS memory/CPU usage (the lower the better)\n", total * 3);
 }
