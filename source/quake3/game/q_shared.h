@@ -225,27 +225,12 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-extern vec4_t colorBlack;
-extern vec4_t colorRed;
-extern vec4_t colorGreen;
-extern vec4_t colorBlue;
-extern vec4_t colorYellow;
-extern vec4_t colorMagenta;
-extern vec4_t colorCyan;
-extern vec4_t colorWhite;
-extern vec4_t colorLtGrey;
-extern vec4_t colorMdGrey;
-extern vec4_t colorDkGrey;
-
 #define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
 
 int     Q_rand(int* seed);
 float   Q_random(int* seed);
-float   Q_crandom(int* seed);
-
-
 
 //=============================================
 

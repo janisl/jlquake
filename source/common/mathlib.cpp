@@ -724,199 +724,199 @@ initialized:
 		fld dword ptr[0 + edx]
 		fld st(0)
 		jmp dword ptr[Ljmptab + eax * 4]
-		Lcase0
-			: fmul dword ptr[ebx]
-			fld dword ptr[0 + 4 + edx]
-			fxch st(2)
-			fmul dword ptr[ecx]
-			fxch st(2)
-			fld st(0)
-			fmul dword ptr[4 + ebx]
-			fld dword ptr[0 + 8 + edx]
-			fxch st(2)
-			fmul dword ptr[4 + ecx]
-			fxch st(2)
-			fld st(0)
-			fmul dword ptr[8 + ebx]
-			fxch st(5)
-			faddp st(3),st(0)
-			fmul dword ptr[8 + ecx]
-			fxch st(1)
-			faddp st(3),st(0)
-			fxch st(3)
-			faddp st(2),st(0)
-			jmp LSetSides
-			Lcase1
-				: fmul dword ptr[ecx]
-				fld dword ptr[0 + 4 + edx]
-				fxch st(2)
-				fmul dword ptr[ebx]
-				fxch st(2)
-				fld st(0)
-				fmul dword ptr[4 + ebx]
-				fld dword ptr[0 + 8 + edx]
-				fxch st(2)
-				fmul dword ptr[4 + ecx]
-				fxch st(2)
-				fld st(0)
-				fmul dword ptr[8 + ebx]
-				fxch st(5)
-				faddp st(3),st(0)
-				fmul dword ptr[8 + ecx]
-				fxch st(1)
-				faddp st(3),st(0)
-				fxch st(3)
-				faddp st(2),st(0)
-				jmp LSetSides
-				Lcase2
-					: fmul dword ptr[ebx]
-					fld dword ptr[0 + 4 + edx]
-					fxch st(2)
-					fmul dword ptr[ecx]
-					fxch st(2)
-					fld st(0)
-					fmul dword ptr[4 + ecx]
-					fld dword ptr[0 + 8 + edx]
-					fxch st(2)
-					fmul dword ptr[4 + ebx]
-					fxch st(2)
-					fld st(0)
-					fmul dword ptr[8 + ebx]
-					fxch st(5)
-					faddp st(3),st(0)
-					fmul dword ptr[8 + ecx]
-					fxch st(1)
-					faddp st(3),st(0)
-					fxch st(3)
-					faddp st(2),st(0)
-					jmp LSetSides
-					Lcase3
-						: fmul dword ptr[ecx]
-						fld dword ptr[0 + 4 + edx]
-						fxch st(2)
-						fmul dword ptr[ebx]
-						fxch st(2)
-						fld st(0)
-						fmul dword ptr[4 + ecx]
-						fld dword ptr[0 + 8 + edx]
-						fxch st(2)
-						fmul dword ptr[4 + ebx]
-						fxch st(2)
-						fld st(0)
-						fmul dword ptr[8 + ebx]
-						fxch st(5)
-						faddp st(3),st(0)
-						fmul dword ptr[8 + ecx]
-						fxch st(1)
-						faddp st(3),st(0)
-						fxch st(3)
-						faddp st(2),st(0)
-						jmp LSetSides
-						Lcase4
-							: fmul dword ptr[ebx]
-							fld dword ptr[0 + 4 + edx]
-							fxch st(2)
-							fmul dword ptr[ecx]
-							fxch st(2)
-							fld st(0)
-							fmul dword ptr[4 + ebx]
-							fld dword ptr[0 + 8 + edx]
-							fxch st(2)
-							fmul dword ptr[4 + ecx]
-							fxch st(2)
-							fld st(0)
-							fmul dword ptr[8 + ecx]
-							fxch st(5)
-							faddp st(3),st(0)
-							fmul dword ptr[8 + ebx]
-							fxch st(1)
-							faddp st(3),st(0)
-							fxch st(3)
-							faddp st(2),st(0)
-							jmp LSetSides
-							Lcase5
-								: fmul dword ptr[ecx]
-								fld dword ptr[0 + 4 + edx]
-								fxch st(2)
-								fmul dword ptr[ebx]
-								fxch st(2)
-								fld st(0)
-								fmul dword ptr[4 + ebx]
-								fld dword ptr[0 + 8 + edx]
-								fxch st(2)
-								fmul dword ptr[4 + ecx]
-								fxch st(2)
-								fld st(0)
-								fmul dword ptr[8 + ecx]
-								fxch st(5)
-								faddp st(3),st(0)
-								fmul dword ptr[8 + ebx]
-								fxch st(1)
-								faddp st(3),st(0)
-								fxch st(3)
-								faddp st(2),st(0)
-								jmp LSetSides
-								Lcase6
-									: fmul dword ptr[ebx]
-									fld dword ptr[0 + 4 + edx]
-									fxch st(2)
-									fmul dword ptr[ecx]
-									fxch st(2)
-									fld st(0)
-									fmul dword ptr[4 + ecx]
-									fld dword ptr[0 + 8 + edx]
-									fxch st(2)
-									fmul dword ptr[4 + ebx]
-									fxch st(2)
-									fld st(0)
-									fmul dword ptr[8 + ecx]
-									fxch st(5)
-									faddp st(3),st(0)
-									fmul dword ptr[8 + ebx]
-									fxch st(1)
-									faddp st(3),st(0)
-									fxch st(3)
-									faddp st(2),st(0)
-									jmp LSetSides
-									Lcase7
-										: fmul dword ptr[ecx]
-										fld dword ptr[0 + 4 + edx]
-										fxch st(2)
-										fmul dword ptr[ebx]
-										fxch st(2)
-										fld st(0)
-										fmul dword ptr[4 + ecx]
-										fld dword ptr[0 + 8 + edx]
-										fxch st(2)
-										fmul dword ptr[4 + ebx]
-										fxch st(2)
-										fld st(0)
-										fmul dword ptr[8 + ecx]
-										fxch st(5)
-										faddp st(3),st(0)
-										fmul dword ptr[8 + ebx]
-										fxch st(1)
-										faddp st(3),st(0)
-										fxch st(3)
-										faddp st(2),st(0)
-										LSetSides
-											: faddp st(2),st(0)
-											fcomp dword ptr[12 + edx]
-											xor ecx,ecx
-											fnstsw ax
-											fcomp dword ptr[12 + edx]
-											and ah,1
-											xor ah,1
-											add cl,ah
-											fnstsw ax
-											and ah,1
-											add ah,ah
-											add cl,ah
-											pop ebx
-											mov eax,ecx
-											ret
-											Lerror
-												: int 3
+Lcase0:
+		fmul dword ptr[ebx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ebx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase1:
+		fmul dword ptr[ecx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ebx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase2:
+		fmul dword ptr[ebx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ecx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase3:
+		fmul dword ptr[ecx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ecx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase4:
+		fmul dword ptr[ebx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ebx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase5:
+		fmul dword ptr[ecx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ebx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase6:
+		fmul dword ptr[ebx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ecx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ecx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+		jmp LSetSides
+Lcase7:
+		fmul dword ptr[ecx]
+		fld dword ptr[0 + 4 + edx]
+		fxch st(2)
+		fmul dword ptr[ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[4 + ecx]
+		fld dword ptr[0 + 8 + edx]
+		fxch st(2)
+		fmul dword ptr[4 + ebx]
+		fxch st(2)
+		fld st(0)
+		fmul dword ptr[8 + ecx]
+		fxch st(5)
+		faddp st(3),st(0)
+		fmul dword ptr[8 + ebx]
+		fxch st(1)
+		faddp st(3),st(0)
+		fxch st(3)
+		faddp st(2),st(0)
+LSetSides:
+		faddp st(2),st(0)
+		fcomp dword ptr[12 + edx]
+		xor ecx,ecx
+		fnstsw ax
+		fcomp dword ptr[12 + edx]
+		and ah,1
+		xor ah,1
+		add cl,ah
+		fnstsw ax
+		and ah,1
+		add ah,ah
+		add cl,ah
+		pop ebx
+		mov eax,ecx
+		ret
+Lerror:
+		int 3
 	}
 }
 #pragma warning( default: 4035 )

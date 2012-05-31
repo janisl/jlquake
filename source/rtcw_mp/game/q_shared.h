@@ -311,33 +311,11 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-extern vec4_t colorBlack;
-extern vec4_t colorRed;
-extern vec4_t colorGreen;
-extern vec4_t colorBlue;
-extern vec4_t colorYellow;
-extern vec4_t colorMagenta;
-extern vec4_t colorCyan;
-extern vec4_t colorWhite;
-extern vec4_t colorLtGrey;
-extern vec4_t colorMdGrey;
-extern vec4_t colorDkGrey;
-
 #define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
 #define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
 
-unsigned ColorBytes3(float r, float g, float b);
-
-float NormalizeColor(const vec3_t in, vec3_t out);
-
 int     Q_rand(int* seed);
 float   Q_random(int* seed);
-float   Q_crandom(int* seed);
-
-void vectoangles(const vec3_t value1, vec3_t angles);
-// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
-// see unix/const-arg.c
-void AxisToAngles(/*const*/ vec3_t axis[3], vec3_t angles);
 
 //=============================================
 

@@ -174,6 +174,7 @@ void CIN_DrawCinematic(int handle)
 
 		barheight = ((float)LETTERBOX_OFFSET / 480.0f) * vh;	//----(SA)	added
 
+		vec4_t colorBlack  = {0, 0, 0, 1};
 		R_SetColor(&colorBlack[0]);
 //		R_StretchPic( 0, 0, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );
 //		R_StretchPic( 0, SCREEN_HEIGHT-LETTERBOX_OFFSET, SCREEN_WIDTH, LETTERBOX_OFFSET, 0, 0, 0, 0, cls.whiteShader );

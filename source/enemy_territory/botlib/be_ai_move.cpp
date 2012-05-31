@@ -1242,7 +1242,7 @@ bot_moveresult_t BotTravel_Swim(bot_movestate_t* ms, aas_reachability_t* reach)
 	EA_Move(ms->client, dir, 400);
 	//
 	VectorCopy(dir, result.movedir);
-	vectoangles(dir, result.ideal_viewangles);
+	VecToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_SWIMVIEW;
 	//
 	return result;
@@ -1277,7 +1277,7 @@ bot_moveresult_t BotTravel_WaterJump(bot_movestate_t* ms, aas_reachability_t* re
 		EA_MoveUp(ms->client);
 	}
 	//set the ideal view angles
-	vectoangles(dir, result.ideal_viewangles);
+	VecToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 	//
 	VectorCopy(dir, result.movedir);
@@ -1320,7 +1320,7 @@ bot_moveresult_t BotFinishTravel_WaterJump(bot_movestate_t* ms, aas_reachability
 	//elemantary actions
 	EA_Move(ms->client, dir, 400);
 	//set the ideal view angles
-	vectoangles(dir, result.ideal_viewangles);
+	VecToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 	//
 	VectorCopy(dir, result.movedir);
@@ -1624,7 +1624,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 				VectorInverse(viewdir);
 			}
 			VectorNormalize(viewdir);
-			vectoangles(viewdir, result.ideal_viewangles);
+			VecToAngles(viewdir, result.ideal_viewangles);
 			//elemantary action
 			EA_Move(ms->client, origin, 0);
 			// RF, disabled this check, if we're not on ground, then it shouldn't be a problem, and the ladder flag is unreliable
@@ -1688,7 +1688,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 				viewdir[2] = 0;
 				VectorInverse(viewdir);
 				VectorNormalize(viewdir);
-				vectoangles(viewdir, result.ideal_viewangles);
+				VecToAngles(viewdir, result.ideal_viewangles);
 				result.flags |= MOVERESULT_MOVEMENTVIEW;
 				// if we are still on ground, then start moving backwards until we are in air
 				if ((dist < 4) && (ms->moveflags & MFL_ONGROUND))
@@ -1736,7 +1736,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 			}
 			viewdir[2] = 0;	// straight forward goes up
 			VectorNormalize(viewdir);
-			vectoangles(viewdir, result.ideal_viewangles);
+			VecToAngles(viewdir, result.ideal_viewangles);
 			//elemantary action
 			EA_Move(ms->client, origin, 0);
 			if (dir[2] < 0)			// going down, so face the other way
@@ -1806,7 +1806,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 				viewdir[1] = dir[1];
 				viewdir[2] = 0;
 				VectorNormalize(viewdir);
-				vectoangles(viewdir, result.ideal_viewangles);
+				VecToAngles(viewdir, result.ideal_viewangles);
 				result.flags |= MOVERESULT_MOVEMENTVIEW;
 			}
 			//
@@ -2430,7 +2430,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		VectorSubtract(reach->end, org, viewdir);
 		//
 		dist = VectorNormalize(dir);
-		vectoangles(viewdir, result.ideal_viewangles);
+		VecToAngles(viewdir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_MOVEMENTVIEW;
 		//
 		if (dist < 5 &&
@@ -2573,7 +2573,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
     } //end else
   */
 	//look in the movement direction
-	vectoangles(hordir, result.ideal_viewangles);
+	VecToAngles(hordir, result.ideal_viewangles);
 	//look straight down
 	result.ideal_viewangles[PITCH] = 90;
 	//set the view angles directly
@@ -2737,7 +2737,7 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_et_t* goal)
 	//
 	if (ms->moveflags & MFL_SWIMMING)
 	{
-		vectoangles(dir, result.ideal_viewangles);
+		VecToAngles(dir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_SWIMVIEW;
 	}	//end if
 		//if (!debugline) debugline = BotImport_DebugLineCreate();
@@ -3246,13 +3246,13 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_et_t* goal,
                     AAS_ReachabilityFromNum( freachnum, &reach);
                         VectorSubtract( reach.end, ms->origin, dir );
                         VectorNormalize( dir );
-                        vectoangles( dir, result->ideal_viewangles );
+                        VecToAngles( dir, result->ideal_viewangles );
                         result->flags |= WOLFMOVERESULT_FUTUREVIEW;
                     }
         } else {
             VectorSubtract( goal->origin, ms->origin, dir );
             VectorNormalize( dir );
-            vectoangles( dir, result->ideal_viewangles );
+            VecToAngles( dir, result->ideal_viewangles );
             result->flags |= WOLFMOVERESULT_FUTUREVIEW;
         }
     }
