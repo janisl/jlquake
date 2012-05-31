@@ -362,6 +362,16 @@ bool AAS_Loaded();
 
 extern aas_settings_t aassettings;
 
+void AAS_InitSettings();
+//returns true if against a ladder at the given origin
+bool AAS_AgainstLadder(const vec3_t origin, int ms_areanum);
+void AAS_Accelerate(vec3_t velocity, float frametime, const vec3_t wishdir, float wishspeed, float accel);
+void AAS_ApplyFriction(vec3_t vel, float friction, float stopspeed, float frametime);
+bool AAS_ClipToBBox(aas_trace_t* trace, const vec3_t start, const vec3_t end,
+	int presencetype, const vec3_t mins, const vec3_t maxs);
+//calculates the horizontal velocity needed for a jump and returns true this velocity could be calculated
+bool AAS_HorizontalVelocityForJump(float zvel, const vec3_t start, const vec3_t end, float* velocity);
+
 //maximum number of reachability links
 #define AAS_MAX_REACHABILITYSIZE            128000
 //number of units reachability points are placed inside the areas
@@ -391,9 +401,6 @@ extern aas_settings_t aassettings;
 
 #define FALLDAMAGE_5_TIME                   400	//extra travel time when falling hurts
 #define FALLDAMAGE_10_TIME                  900	//extra travel time when falling hurts
-
-//maximum height the bot may fall down when jumping
-#define MAX_JUMPFALLHEIGHT                  450
 
 #define AREA_JUMPSRC                        16384	//valid area to JUMP FROM
 

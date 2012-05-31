@@ -43,8 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
-//#define AAS_MOVE_DEBUG
-
 //===========================================================================
 //
 // Parameter:				-
@@ -66,115 +64,6 @@ int AAS_DropToFloor(vec3_t origin, vec3_t mins, vec3_t maxs)
 	VectorCopy(trace.endpos, origin);
 	return qtrue;
 }	//end of the function AAS_DropToFloor
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_InitSettings(void)
-{
-	aassettings.phys_friction = 6;
-	aassettings.phys_stopspeed = 100;
-	aassettings.phys_gravity = 800;
-	aassettings.phys_waterfriction = 1;
-	aassettings.phys_watergravity = 400;
-	aassettings.phys_maxvelocity = 320;
-	aassettings.phys_maxwalkvelocity = 300;
-	aassettings.phys_maxcrouchvelocity = 100;
-	aassettings.phys_maxswimvelocity = 150;
-	aassettings.phys_walkaccelerate = 10;
-	aassettings.phys_airaccelerate = 1;
-	aassettings.phys_swimaccelerate = 4;
-	aassettings.phys_maxstep = 18;
-	aassettings.phys_maxsteepness = 0.7;
-	aassettings.phys_maxwaterjump = 17;
-	// Ridah, calculate maxbarrier according to jumpvel and gravity
-	aassettings.phys_jumpvel = 270;
-	aassettings.phys_maxbarrier = -0.8 + (0.5 * aassettings.phys_gravity * (aassettings.phys_jumpvel / aassettings.phys_gravity) * (aassettings.phys_jumpvel / aassettings.phys_gravity));
-	// done.
-	aassettings.rs_maxjumpfallheight = MAX_JUMPFALLHEIGHT;
-	aassettings.rs_startcrouch = STARTCROUCH_TIME;
-}	//end of the function AAS_InitSettings
-//===========================================================================
-// returns qtrue if the bot is against a ladder
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_AgainstLadder(vec3_t origin, int ms_areanum)
-{
-	int areanum, i, facenum, side;
-	vec3_t org;
-	aas_plane_t* plane;
-	aas_face_t* face;
-	aas_area_t* area;
-
-	VectorCopy(origin, org);
-	areanum = AAS_PointAreaNum(org);
-	if (!areanum)
-	{
-		org[0] += 1;
-		areanum = AAS_PointAreaNum(org);
-		if (!areanum)
-		{
-			org[1] += 1;
-			areanum = AAS_PointAreaNum(org);
-			if (!areanum)
-			{
-				org[0] -= 2;
-				areanum = AAS_PointAreaNum(org);
-				if (!areanum)
-				{
-					org[1] -= 2;
-					areanum = AAS_PointAreaNum(org);
-				}	//end if
-			}	//end if
-		}	//end if
-	}	//end if
-		//if in solid... wrrr shouldn't happen
-		//if (!areanum) return qfalse;
-		// RF, it does if they're in a monsterclip brush
-	if (!areanum)
-	{
-		areanum = ms_areanum;
-	}
-	//if not in a ladder area
-	if (!((*aasworld).areasettings[areanum].areaflags & AREA_LADDER))
-	{
-		return qfalse;
-	}
-	//if a crouch only area
-	if (!((*aasworld).areasettings[areanum].presencetype & PRESENCE_NORMAL))
-	{
-		return qfalse;
-	}
-	//
-	area = &(*aasworld).areas[areanum];
-	for (i = 0; i < area->numfaces; i++)
-	{
-		facenum = (*aasworld).faceindex[area->firstface + i];
-		side = facenum < 0;
-		face = &(*aasworld).faces[abs(facenum)];
-		//if the face isn't a ladder face
-		if (!(face->faceflags & FACE_LADDER))
-		{
-			continue;
-		}
-		//get the plane the face is in
-		plane = &(*aasworld).planes[face->planenum ^ side];
-		//if the origin is pretty close to the plane
-		if (abs(DotProduct(plane->normal, origin) - plane->dist) < 3)
-		{
-			if (AAS_PointInsideFace(abs(facenum), origin, 0.1))
-			{
-				return qtrue;
-			}
-		}	//end if
-	}	//end for
-	return qfalse;
-}	//end of the function AAS_AgainstLadder
 //===========================================================================
 // returns qtrue if the bot is on the ground
 //
@@ -236,32 +125,6 @@ int AAS_Swimming(vec3_t origin)
 	}
 	return qfalse;
 }	//end of the function AAS_Swimming
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-vec3_t VEC_UP           = {0, -1,  0};
-vec3_t MOVEDIR_UP       = {0,  0,  1};
-vec3_t VEC_DOWN     = {0, -2,  0};
-vec3_t MOVEDIR_DOWN = {0,  0, -1};
-
-void AAS_SetMovedir(vec3_t angles, vec3_t movedir)
-{
-	if (VectorCompare(angles, VEC_UP))
-	{
-		VectorCopy(MOVEDIR_UP, movedir);
-	}	//end if
-	else if (VectorCompare(angles, VEC_DOWN))
-	{
-		VectorCopy(MOVEDIR_DOWN, movedir);
-	}	//end else if
-	else
-	{
-		AngleVectors(angles, movedir, NULL, NULL);
-	}	//end else
-}	//end of the function AAS_SetMovedir
 //===========================================================================
 //
 // Parameter:				-
@@ -372,75 +235,6 @@ float AAS_BFGJumpZVelocity(vec3_t origin)
 	//bfg radius damage is 1000 (p_weapon.c: weapon_bfg_fire)
 	return AAS_WeaponJumpZVelocity(origin, 120);
 }	//end of the function AAS_BFGJumpZVelocity
-//===========================================================================
-// applies ground friction to the given velocity
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_Accelerate(vec3_t velocity, float frametime, vec3_t wishdir, float wishspeed, float accel)
-{
-	// q2 style
-	int i;
-	float addspeed, accelspeed, currentspeed;
-
-	currentspeed = DotProduct(velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
-	if (addspeed <= 0)
-	{
-		return;
-	}
-	accelspeed = accel * frametime * wishspeed;
-	if (accelspeed > addspeed)
-	{
-		accelspeed = addspeed;
-	}
-
-	for (i = 0; i < 3; i++)
-	{
-		velocity[i] += accelspeed * wishdir[i];
-	}
-}	//end of the function AAS_Accelerate
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
-void AAS_AirControl(vec3_t start, vec3_t end, vec3_t velocity, vec3_t cmdmove)
-{
-	vec3_t dir;
-
-	VectorSubtract(end, start, dir);
-}	//end of the function AAS_AirControl
-//===========================================================================
-// applies ground friction to the given velocity
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_ApplyFriction(vec3_t vel, float friction, float stopspeed,
-	float frametime)
-{
-	float speed, control, newspeed;
-
-	//horizontal speed
-	speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
-	if (speed)
-	{
-		control = speed < stopspeed ? stopspeed : speed;
-		newspeed = speed - frametime * control * friction;
-		if (newspeed < 0)
-		{
-			newspeed = 0;
-		}
-		newspeed /= speed;
-		vel[0] *= newspeed;
-		vel[1] *= newspeed;
-	}	//end if
-}	//end of the function AAS_ApplyFriction
 //===========================================================================
 // predicts the movement
 // assumes regular bounding box sizes
@@ -614,7 +408,6 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 			//trace a bounding box
 			trace = AAS_TraceClientBBox(org, end, presencetype, entnum);
 			//
-//#ifdef AAS_MOVE_DEBUG
 			if (visualize)
 			{
 				if (trace.startsolid)
@@ -623,7 +416,6 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 				}
 				AAS_DebugLine(org, trace.endpos, LINECOLOR_RED);
 			}	//end if
-//#endif //AAS_MOVE_DEBUG
 			//
 			if (stopevent & SE_ENTERAREA)
 			{
@@ -691,7 +483,6 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 							VectorSubtract(end, steptrace.endpos, left_test_vel);
 							left_test_vel[2] = 0;
 							frame_test_vel[2] = 0;
-//#ifdef AAS_MOVE_DEBUG
 							if (visualize)
 							{
 								if (steptrace.endpos[2] - org[2] > 0.125)
@@ -701,7 +492,6 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 									AAS_DebugLine(org, start, LINECOLOR_BLUE);
 								}	//end if
 							}	//end if
-//#endif //AAS_MOVE_DEBUG
 							org[2] = steptrace.endpos[2];
 							step = qtrue;
 						}	//end if
@@ -799,15 +589,15 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 			}
 			//
 			areanum = AAS_PointAreaNum(org);
-			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_LAVA)
+			if (aasworld->areasettings[areanum].contents & AREACONTENTS_LAVA)
 			{
 				event |= SE_ENTERLAVA;
 			}
-			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_SLIME)
+			if (aasworld->areasettings[areanum].contents & AREACONTENTS_SLIME)
 			{
 				event |= SE_ENTERSLIME;
 			}
-			if ((*aasworld).areasettings[areanum].contents & AREACONTENTS_WATER)
+			if (aasworld->areasettings[areanum].contents & AREACONTENTS_WATER)
 			{
 				event |= SE_ENTERWATER;
 			}
@@ -885,7 +675,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 		}	//end else if
 		if (stopevent & SE_TOUCHJUMPPAD)
 		{
-			if ((*aasworld).areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_JUMPPAD)
+			if (aasworld->areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_JUMPPAD)
 			{
 				VectorCopy(org, move->endpos);
 				VectorScale(frame_test_vel, 1 / frametime, move->velocity);
@@ -900,7 +690,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 		}	//end if
 		if (stopevent & SE_TOUCHTELEPORTER)
 		{
-			if ((*aasworld).areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_TELEPORTER)
+			if (aasworld->areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_TELEPORTER)
 			{
 				VectorCopy(org, move->endpos);
 				VectorScale(frame_test_vel, 1 / frametime, move->velocity);
@@ -925,76 +715,3 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 	//
 	return qtrue;
 }	//end of the function AAS_PredictClientMovement
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_TestMovementPrediction(int entnum, vec3_t origin, vec3_t dir)
-{
-	vec3_t velocity, cmdmove;
-	aas_clientmove_t move;
-
-	VectorClear(velocity);
-	if (!AAS_Swimming(origin))
-	{
-		dir[2] = 0;
-	}
-	VectorNormalize(dir);
-	VectorScale(dir, 400, cmdmove);
-	cmdmove[2] = 224;
-	AAS_ClearShownDebugLines();
-	AAS_PredictClientMovement(&move, entnum, origin, PRESENCE_NORMAL, qtrue,
-		velocity, cmdmove, 13, 13, 0.1, SE_HITGROUND, 0, qtrue);							//SE_LEAVEGROUND);
-	if (move.stopevent & SE_LEAVEGROUND)
-	{
-		BotImport_Print(PRT_MESSAGE, "leave ground\n");
-	}	//end if
-}	//end of the function TestMovementPrediction
-//===========================================================================
-// calculates the horizontal velocity needed to perform a jump from start
-// to end
-//
-// Parameter:				zvel		: z velocity for jump
-//								start		: start position of jump
-//								end		: end position of jump
-//								*speed	: returned speed for jump
-// Returns:					qfalse if too high or too far from start to end
-// Changes Globals:		-
-//===========================================================================
-int AAS_HorizontalVelocityForJump(float zvel, vec3_t start, vec3_t end, float* velocity)
-{
-	float sv_gravity, sv_maxvelocity;
-	float maxjump, height2fall, t, top;
-	vec3_t dir;
-
-	sv_gravity = aassettings.phys_gravity;
-	sv_maxvelocity = aassettings.phys_maxvelocity;
-
-	//maximum height a player can jump with the given initial z velocity
-	maxjump = 0.5 * sv_gravity * (zvel / sv_gravity) * (zvel / sv_gravity);
-	//top of the parabolic jump
-	top = start[2] + maxjump;
-	//height the bot will fall from the top
-	height2fall = top - end[2];
-	//if the goal is to high to jump to
-	if (height2fall < 0)
-	{
-		*velocity = sv_maxvelocity;
-		return 0;
-	}	//end if
-		//time a player takes to fall the height
-	t = sqrt(height2fall / (0.5 * sv_gravity));
-	//direction from start to end
-	VectorSubtract(end, start, dir);
-	//calculate horizontal speed
-	*velocity = sqrt(dir[0] * dir[0] + dir[1] * dir[1]) / (t + zvel / sv_gravity);
-	//the horizontal speed must be lower than the max speed
-	if (*velocity > sv_maxvelocity)
-	{
-		*velocity = sv_maxvelocity;
-		return 0;
-	}	//end if
-	return 1;
-}	//end of the function AAS_HorizontalVelocityForJump

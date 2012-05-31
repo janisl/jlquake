@@ -125,6 +125,18 @@ struct aas_areainfo_t
 	vec3_t center;
 };
 
+//a trace is returned when a box is swept through the AAS world
+struct aas_trace_t
+{
+	qboolean startsolid;	// if true, the initial point was in a solid area
+	float fraction;			// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;			// final position
+	int ent;				// entity blocking the trace
+	int lastarea;			// last area the trace was in (zero if none)
+	int area;				// area blocking the trace (zero if none)
+	int planenum;			// number of the plane that was hit
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key

@@ -2593,7 +2593,7 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 		ms->moveflags |= MFL_SWIMMING;
 	}
 	//if against a ladder
-	if (AAS_AgainstLadder(ms->origin))
+	if (AAS_AgainstLadder(ms->origin, ms->areanum))
 	{
 		ms->moveflags |= MFL_AGAINSTLADDER;
 	}
