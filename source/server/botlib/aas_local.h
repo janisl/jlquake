@@ -542,6 +542,21 @@ int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the next reachability using the given model
 int AAS_NextModelReachability(int num, int modelnum);
 
+struct midrangearea_t
+{
+	bool valid;
+	unsigned short starttime;
+	unsigned short goaltime;
+};
+
+extern midrangearea_t* midrangeareas;
+extern int* clusterareas;
+extern int numclusterareas;
+
+void AAS_AltRoutingFloodCluster_r(int areanum);
+void AAS_InitAlternativeRouting();
+void AAS_ShutdownAlternativeRouting();
+
 #define ON_EPSILON                  0	//0.0005
 
 #define TRACEPLANE_EPSILON          0.125
