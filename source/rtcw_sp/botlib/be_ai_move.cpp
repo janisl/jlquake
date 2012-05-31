@@ -36,7 +36,6 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #include "../game/q_shared.h"
-#include "l_utils.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
 #include "../game/be_aas.h"
@@ -1168,7 +1167,7 @@ bot_moveresult_t BotTravel_Swim(bot_movestate_t* ms, aas_reachability_t* reach)
 	EA_Move(ms->client, dir, 400);
 	//
 	VectorCopy(dir, result.movedir);
-	Vector2Angles(dir, result.ideal_viewangles);
+	vectoangles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_SWIMVIEW;
 	//
 	return result;
@@ -1203,7 +1202,7 @@ bot_moveresult_t BotTravel_WaterJump(bot_movestate_t* ms, aas_reachability_t* re
 		EA_MoveUp(ms->client);
 	}
 	//set the ideal view angles
-	Vector2Angles(dir, result.ideal_viewangles);
+	vectoangles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 	//
 	VectorCopy(dir, result.movedir);
@@ -1246,7 +1245,7 @@ bot_moveresult_t BotFinishTravel_WaterJump(bot_movestate_t* ms, aas_reachability
 	//elemantary actions
 	EA_Move(ms->client, dir, 400);
 	//set the ideal view angles
-	Vector2Angles(dir, result.ideal_viewangles);
+	vectoangles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 	//
 	VectorCopy(dir, result.movedir);
@@ -1551,7 +1550,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 		}
 		viewdir[2] = 0;	// straight forward goes up
 		VectorNormalize(viewdir);
-		Vector2Angles(viewdir, result.ideal_viewangles);
+		vectoangles(viewdir, result.ideal_viewangles);
 		//elemantary action
 		EA_Move(ms->client, origin, 0);
 		if (dir[2] < 0)			// going down, so face the other way
@@ -1621,7 +1620,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t* ms, aas_reachability_t* reach
 			}
 			viewdir[2] = 0;
 			VectorNormalize(viewdir);
-			Vector2Angles(viewdir, result.ideal_viewangles);
+			vectoangles(viewdir, result.ideal_viewangles);
 			result.flags |= MOVERESULT_MOVEMENTVIEW;
 		}
 		//
@@ -2244,7 +2243,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, aas_reachability_t* reac
 		VectorSubtract(reach->end, org, viewdir);
 		//
 		dist = VectorNormalize(dir);
-		Vector2Angles(viewdir, result.ideal_viewangles);
+		vectoangles(viewdir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_MOVEMENTVIEW;
 		//
 		if (dist < 5 &&
@@ -2386,7 +2385,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, aas_reachability_t* r
         EA_Move(ms->client, hordir, speed);
     } //end else*/
 	//look in the movement direction
-	Vector2Angles(hordir, result.ideal_viewangles);
+	vectoangles(hordir, result.ideal_viewangles);
 	//look straight down
 	result.ideal_viewangles[PITCH] = 90;
 	//set the view angles directly
@@ -2550,7 +2549,7 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, bot_goal_q3_t* goal)
 	//
 	if (ms->moveflags & MFL_SWIMMING)
 	{
-		Vector2Angles(dir, result.ideal_viewangles);
+		vectoangles(dir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_SWIMVIEW;
 	}	//end if
 		//if (!debugline) debugline = BotImport_DebugLineCreate();

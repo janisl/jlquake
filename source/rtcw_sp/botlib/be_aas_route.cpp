@@ -36,7 +36,6 @@ If you have questions concerning this license or the applicable additional terms
  *****************************************************************************/
 
 #include "../game/q_shared.h"
-#include "l_utils.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
 #include "../game/be_aas.h"
