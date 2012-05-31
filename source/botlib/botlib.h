@@ -111,10 +111,6 @@ typedef struct botlib_import_s
 	int (* inPVS)(vec3_t p1, vec3_t p2);
 	//
 	void (* BotClientCommand)(int client, const char* command);
-	//memory allocation
-	void*(*GetMemory)(int size);				// allocate from Zone
-	void (* FreeMemory)(void* ptr);				// free memory from Zone
-	void*(*HunkAlloc)(int size);				// allocate from hunk
 } botlib_import_t;
 
 typedef struct aas_export_s

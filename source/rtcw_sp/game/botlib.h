@@ -116,10 +116,6 @@ typedef struct botlib_import_s
 	int (* inPVS)(vec3_t p1, vec3_t p2);
 	//
 	void (* BotClientCommand)(int client, const char* command);
-	//memory allocation
-	void*(*GetMemory)(int size);
-	void (* FreeMemory)(void* ptr);
-	void*(*HunkAlloc)(int size);
 	//
 	// Ridah, Cast AI stuff
 	qboolean (* AICast_VisibleFromPos)(vec3_t srcpos, int srcnum,

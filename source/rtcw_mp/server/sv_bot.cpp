@@ -237,53 +237,6 @@ int BotImport_inPVS(vec3_t p1, vec3_t p2)
 
 /*
 ==================
-BotImport_GetMemory
-==================
-*/
-void* BotImport_GetMemory(int size)
-{
-	void* ptr;
-
-	ptr = Z_TagMalloc(size, TAG_BOTLIB);
-	return ptr;
-}
-
-/*
-==================
-BotImport_FreeMemory
-==================
-*/
-void BotImport_FreeMemory(void* ptr)
-{
-	Z_Free(ptr);
-}
-
-/*
-==================
-BotImport_FreeZoneMemory
-==================
-*/
-void BotImport_FreeZoneMemory(void)
-{
-	Z_FreeTags(TAG_BOTLIB);
-}
-
-/*
-=================
-BotImport_HunkAlloc
-=================
-*/
-void* BotImport_HunkAlloc(int size)
-{
-	if (Hunk_CheckMark())
-	{
-		Com_Error(ERR_DROP, "SV_Bot_HunkAlloc: Alloc with marks already set\n");
-	}
-	return Hunk_Alloc(size, h_high);
-}
-
-/*
-==================
 SV_BotClientCommand
 ==================
 */
@@ -430,12 +383,6 @@ void SV_BotInitBotLib(void)
 	botlib_import.PointContents = BotImport_PointContents;
 	botlib_import.inPVS = BotImport_inPVS;
 	botlib_import.BotClientCommand = BotClientCommand;
-
-	//memory management
-	botlib_import.GetMemory = BotImport_GetMemory;
-	botlib_import.FreeMemory = BotImport_FreeMemory;
-	botlib_import.FreeZoneMemory = BotImport_FreeZoneMemory;
-	botlib_import.HunkAlloc = BotImport_HunkAlloc;
 
 	// Ridah, Cast AI
 	botlib_import.AICast_VisibleFromPos = BotImport_AICast_VisibleFromPos;

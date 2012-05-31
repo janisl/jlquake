@@ -13,6 +13,5 @@ add_library(botlib-wolfsp STATIC
 	be_ai_move.cpp
 	be_ea.cpp
 	be_interface.cpp
-	l_memory.cpp
 )
 set_target_properties(botlib-wolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
