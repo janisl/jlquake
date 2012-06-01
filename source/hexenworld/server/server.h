@@ -1,5 +1,7 @@
 // server.h
 
+#include "../../server/server.h"
+
 #define QW_SERVER
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
@@ -92,7 +94,7 @@ typedef struct
 	hwpacket_entities_t entities;
 } client_frame_t;
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	client_state_t state;
 
@@ -157,7 +159,7 @@ typedef struct client_s
 
 	unsigned PIV, LastPIV;				// people in view
 	qboolean skipsend;					// Skip sending this frame, guaranteed to send next frame
-} client_t;
+};
 
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting

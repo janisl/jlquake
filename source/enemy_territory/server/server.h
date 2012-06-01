@@ -147,7 +147,7 @@ typedef struct netchan_buffer_s
 	struct netchan_buffer_s* next;
 } netchan_buffer_t;
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
@@ -217,7 +217,7 @@ typedef struct client_s
 
 	//bani
 	int downloadnotify;
-} client_t;
+};
 
 //=============================================================================
 

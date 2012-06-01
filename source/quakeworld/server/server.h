@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // server.h
 
+#include "../../server/server.h"
+
 #define QW_SERVER
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
@@ -111,7 +113,7 @@ typedef struct
 
 #define MAX_BACK_BUFFERS 4
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	client_state_t state;
 
@@ -186,7 +188,7 @@ typedef struct client_s
 	int chokecount;
 	int delta_sequence;					// -1 = no compression
 	netchan_t netchan;
-} client_t;
+};
 
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting

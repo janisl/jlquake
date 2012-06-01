@@ -14,12 +14,6 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
-
-#include "../common/qcommon.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "global.h"
-
-#endif
+struct client_common_t
+{
+};

@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // server.h
 
-#include "../../common/qcommon.h"
+#include "../../server/server.h"
+
 #include "../../common/file_formats/bsp38.h"
 
 //define	PARANOID			// speed sapping error checking
@@ -94,7 +95,7 @@ typedef struct
 #define LATENCY_COUNTS  16
 #define RATE_MESSAGES   10
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	client_state_t state;
 
@@ -134,7 +135,7 @@ typedef struct client_s
 	int challenge;						// challenge of this user, randomly generated
 
 	netchan_t netchan;
-} client_t;
+};
 
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting

@@ -127,7 +127,7 @@ typedef struct
 	char* rover;
 } reliableCommands_t;
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
@@ -175,7 +175,7 @@ typedef struct client_s
 	int snapshotMsec;					// requests a snapshot every snapshotMsec unless rate choked
 	int pureAuthentic;
 	netchan_t netchan;
-} client_t;
+};
 
 //=============================================================================
 

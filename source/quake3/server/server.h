@@ -113,7 +113,7 @@ typedef struct netchan_buffer_s
 	struct netchan_buffer_s* next;
 } netchan_buffer_t;
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
@@ -167,7 +167,7 @@ typedef struct client_s
 	// buffer them into this queue, and hand them out to netchan as needed
 	netchan_buffer_t* netchan_start_queue;
 	netchan_buffer_t** netchan_end_queue;
-} client_t;
+};
 
 //=============================================================================
 

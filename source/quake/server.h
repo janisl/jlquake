@@ -19,11 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // server.h
 
+#include "../server/server.h"
+
 typedef struct
 {
 	int maxclients;
 	int maxclientslimit;
-	struct client_s* clients;		// [maxclients]
+	struct client_t* clients;		// [maxclients]
 	int serverflags;				// episode completion information
 	qboolean changelevel_issued;	// cleared when at SV_SpawnServer
 } server_static_t;
@@ -71,7 +73,7 @@ typedef struct
 #define NUM_PING_TIMES      16
 #define NUM_SPAWN_PARMS     16
 
-typedef struct client_s
+struct client_t : public client_common_t
 {
 	qboolean active;					// false = client is free
 	qboolean spawned;					// false = don't send datagrams
@@ -103,7 +105,7 @@ typedef struct client_s
 
 // client known data for deltas
 	int old_frags;
-} client_t;
+};
 
 
 //=============================================================================
