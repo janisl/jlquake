@@ -38,8 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef AASINTERN
 //initialize the AAS routing
 void AAS_InitRouting(void);
-//free the AAS routing caches
-void AAS_FreeRoutingCaches(void);
 #endif	//AASINTERN
 
 //returns a random goal area and goal origin

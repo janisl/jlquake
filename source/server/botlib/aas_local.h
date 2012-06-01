@@ -339,10 +339,19 @@ int AAS_LoadAASFile(const char* filename);
 //writes an AAS file with the given name
 bool AAS_WriteAASFile(const char* filename);
 
+extern libvar_t* saveroutingcache;
+
 //AAS error message
 void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
+//set AAS initialized
+void AAS_SetInitialized();
+int AAS_LoadFiles(const char* mapname);
+//setup AAS with the given number of entities and clients
+int AAS_Setup();
+//shutdown AAS
+void AAS_Shutdown();
 
 extern aas_settings_t aassettings;
 
@@ -537,6 +546,8 @@ bool AAS_AreaRouteToGoalArea(int areanum, const vec3_t origin, int goalareanum, 
 //returns the travel time from the area to the goal area using the given travel flags
 int AAS_AreaTravelTimeToGoalAreaCheckLoop(int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum);
 void AAS_CreateAllRoutingCache();
+//free the AAS routing caches
+void AAS_FreeRoutingCaches();
 
 void AAS_InitAlternativeRouting();
 void AAS_ShutdownAlternativeRouting();

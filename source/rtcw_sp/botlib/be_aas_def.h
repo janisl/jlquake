@@ -35,10 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifndef MAX_PATH
-	#define MAX_PATH                MAX_QPATH
-#endif
-
 // Ridah, route-tables
 #include "be_aas_routetable.h"
 // done.

@@ -29,10 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-#ifndef MAX_PATH
-	#define MAX_PATH                MAX_QPATH
-#endif
-
 #define AASINTERN
 
 #include "be_aas_main.h"

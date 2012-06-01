@@ -32,8 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef AASINTERN
 //initialize the AAS routing
 void AAS_InitRouting(void);
-//free the AAS routing caches
-void AAS_FreeRoutingCaches(void);
 #endif	//AASINTERN
 
 //returns a random goal area and goal origin

@@ -31,12 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifdef AASINTERN
 
-//set AAS initialized
-void AAS_SetInitialized(void);
-//setup AAS with the given number of entities and clients
-int AAS_Setup(void);
-//shutdown AAS
-void AAS_Shutdown(void);
 //start a new map
 int AAS_LoadMap(const char* mapname);
 //start a new time frame

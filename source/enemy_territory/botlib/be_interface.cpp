@@ -250,15 +250,15 @@ int Export_BotLibLoadMap(const char* mapname)
 	{
 		// START	Arnout changes, 29-08-2002.
 		// don't init the heap if no aas loaded, causes "SV_Bot_HunkAlloc: Alloc with marks already set"
-		if ((*aasworld).loaded)
+		if (aasworld->loaded)
 		{
 			AAS_InitAASLinkHeap();
 			AAS_EnableAllAreas();
 		}
 		// END	Arnout changes, 29-08-2002.
-		(*aasworld).numframes = 0;
-		memset((*aasworld).arealinkedentities, 0, (*aasworld).numareas * sizeof(aas_link_t*));
-		memset((*aasworld).entities, 0, (*aasworld).maxentities * sizeof(aas_entity_t));
+		aasworld->numframes = 0;
+		memset(aasworld->arealinkedentities, 0, aasworld->numareas * sizeof(aas_link_t*));
+		memset(aasworld->entities, 0, aasworld->maxentities * sizeof(aas_entity_t));
 		return BLERR_NOERROR;
 	}
 	//

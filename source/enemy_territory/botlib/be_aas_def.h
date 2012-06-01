@@ -35,10 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#ifndef MAX_PATH
-	#define MAX_PATH                MAX_QPATH
-#endif
-
 #define AASINTERN
 
 #ifndef BSPCINCLUDE

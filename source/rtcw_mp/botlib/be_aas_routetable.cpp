@@ -59,7 +59,7 @@ qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpo
 		return qfalse;
 	}
 	// we found a valid hiding area
-	VectorCopy((*aasworld).areawaypoints[hideareanum], returnPos);
+	VectorCopy(aasworld->areawaypoints[hideareanum], returnPos);
 
 	return qtrue;
 }

@@ -48,17 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AAS_SetInitialized(void)
-{
-	aasworld->initialized = qtrue;
-	BotImport_Print(PRT_MESSAGE, "AAS initialized.\n");
-}	//end of the function AAS_SetInitialized
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 void AAS_ContinueInit(float time)
 {
 	//if no AAS file loaded
@@ -138,43 +127,6 @@ int AAS_StartFrame(float time)
 	return BLERR_NOERROR;
 }	//end of the function AAS_StartFrame
 //===========================================================================
-// basedir	= Quake2 console basedir
-// gamedir	= Quake2 console gamedir
-//	mapname	= name of the map without extension (.bsp)
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_LoadFiles(const char* mapname)
-{
-	int errnum;
-	char aasfile[MAX_PATH];
-//	char bspfile[MAX_PATH];
-
-	String::Cpy(aasworld->mapname, mapname);
-	//NOTE: first reset the entity links into the AAS areas and BSP leaves
-	// the AAS link heap and BSP link heap are reset after respectively the
-	// AAS file and BSP file are loaded
-	AAS_ResetEntityLinks();
-	//
-
-	// load bsp info
-	AAS_LoadBSPFile();
-
-	//load the aas file
-	String::Sprintf(aasfile, MAX_PATH, "maps/%s.aas", mapname);
-	errnum = AAS_LoadAASFile(aasfile);
-	if (errnum != BLERR_NOERROR)
-	{
-		return errnum;
-	}
-
-	BotImport_Print(PRT_MESSAGE, "loaded %s\n", aasfile);
-	String::NCpy(aasworld->filename, aasfile, MAX_PATH);
-	return BLERR_NOERROR;
-}	//end of the function AAS_LoadFiles
-//===========================================================================
 // called everytime a map changes
 //
 // Parameter:				-
@@ -244,81 +196,3 @@ int AAS_LoadMap(const char* mapname)
 	//everything went ok
 	return 0;
 }	//end of the function AAS_LoadMap
-
-// done.
-
-//===========================================================================
-// called when the library is first loaded
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_Setup(void)
-{
-	// Ridah, just use the default world for entities
-	AAS_SetCurrentWorld(0);
-
-	(*aasworlds).maxclients = (int)LibVarValue("maxclients", "128");
-	(*aasworlds).maxentities = (int)LibVarValue("maxentities", "1024");
-	//allocate memory for the entities
-	if (aasworld->entities)
-	{
-		Mem_Free(aasworld->entities);
-	}
-	aasworld->entities = (aas_entity_t*)Mem_ClearedAlloc(aasworld->maxentities * sizeof(aas_entity_t));
-	//invalidate all the entities
-	AAS_InvalidateEntities();
-
-	//force some recalculations
-	//LibVarSet("forceclustering", "1");			//force clustering calculation
-	//LibVarSet("forcereachability", "1");		//force reachability calculation
-	aasworld->numframes = 0;
-	return BLERR_NOERROR;
-}	//end of the function AAS_Setup
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_Shutdown(void)
-{
-	// Ridah, do each of the worlds
-	int i;
-
-	for (i = 0; i < MAX_AAS_WORLDS; i++)
-	{
-		AAS_SetCurrentWorld(i);
-
-		AAS_ShutdownAlternativeRouting();
-		AAS_DumpBSPData();
-		//free routing caches
-		AAS_FreeRoutingCaches();
-		//free aas link heap
-		AAS_FreeAASLinkHeap();
-		//free aas linked entities
-		AAS_FreeAASLinkedEntities();
-		//free the aas data
-		AAS_DumpAASData();
-
-		if (i == 0)
-		{
-			//free the entities
-			if (aasworld->entities)
-			{
-				Mem_Free(aasworld->entities);
-			}
-		}
-
-		//clear the (*aasworld) structure
-		memset(&(*aasworld), 0, sizeof(aas_t));
-		//aas has not been initialized
-		aasworld->initialized = qfalse;
-	}
-
-	//NOTE: as soon as a new .bsp file is loaded the .bsp file memory is
-	// freed an reallocated, so there's no need to free that memory here
-	//print shutdown
-	BotImport_Print(PRT_MESSAGE, "AAS shutdown.\n");
-}	//end of the function AAS_Shutdown
