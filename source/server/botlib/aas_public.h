@@ -81,6 +81,11 @@ enum
 #define RSE_ENTERCONTENTS       4	//stop when entering the given contents
 #define RSE_ENTERAREA           8	//stop when entering the given area
 
+// alternate route goals
+#define ALTROUTEGOAL_ALL                1
+#define ALTROUTEGOAL_CLUSTERPORTALS     2
+#define ALTROUTEGOAL_VIEWPORTALS        4
+
 //entity info
 struct aas_entityinfo_t
 {
@@ -167,6 +172,15 @@ struct aas_predictroute_t
 	int time;				//time predicted ahead (in hundreth of a sec)
 };
 
+struct aas_altroutegoal_t
+{
+	vec3_t origin;
+	int areanum;
+	unsigned short starttraveltime;
+	unsigned short goaltraveltime;
+	unsigned short extratraveltime;
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -201,6 +215,12 @@ int AAS_AreaTravelTimeToGoalArea(int areanum, const vec3_t origin, int goalarean
 bool AAS_PredictRoute(aas_predictroute_t* route, int areanum, const vec3_t origin,
 	int goalareanum, int travelflags, int maxareas, int maxtime,
 	int stopevent, int stopcontents, int stoptfl, int stopareanum);
+
+int AAS_AlternativeRouteGoalsQ3(const vec3_t start, int startareanum,
+	const vec3_t goal, int goalareanum, int travelflags,
+	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int type);
+int AAS_AlternativeRouteGoalsET(const vec3_t start, const vec3_t goal, int travelflags,
+	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int color);
 
 //returns the mins and maxs of the bounding box for the given presence type
 void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);

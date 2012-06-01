@@ -59,17 +59,3 @@ typedef struct aas_clientmove_s
 	float time;				//time predicted ahead
 	int frames;				//number of frames predicted ahead
 } aas_clientmove_t;
-
-// alternate route goals
-#define ALTROUTEGOAL_ALL                1
-#define ALTROUTEGOAL_CLUSTERPORTALS     2
-#define ALTROUTEGOAL_VIEWPORTALS        4
-
-typedef struct aas_altroutegoal_s
-{
-	vec3_t origin;
-	int areanum;
-	unsigned short starttraveltime;
-	unsigned short goaltraveltime;
-	unsigned short extratraveltime;
-} aas_altroutegoal_t;

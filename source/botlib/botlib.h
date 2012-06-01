@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BOTLIB_API_VERSION      2
 
 struct aas_clientmove_s;
-struct aas_altroutegoal_s;
+struct aas_altroutegoal_t;
 struct bot_entitystate_t;
 
 //debug line colors
@@ -95,12 +95,6 @@ typedef struct aas_export_s
 	// be_aas_bspq3.c
 	//--------------------------------------------
 	int (* AAS_PointContents)(vec3_t point);
-	//--------------------------------------------
-	// be_aas_altroute.c
-	//--------------------------------------------
-	int (* AAS_AlternativeRouteGoals)(vec3_t start, int startareanum, vec3_t goal, int goalareanum, int travelflags,
-		struct aas_altroutegoal_s* altroutegoals, int maxaltroutegoals,
-		int type);
 	//--------------------------------------------
 	// be_aas_move.c
 	//--------------------------------------------

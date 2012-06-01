@@ -528,7 +528,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AAS_AREA_INFO:
 		return AAS_AreaInfo(args[1], (aas_areainfo_t*)VMA(2));
 	case BOTLIB_AAS_ALTERNATIVE_ROUTE_GOAL:
-		return botlib_export->aas.AAS_AlternativeRouteGoals((float*)VMA(1), args[2], (float*)VMA(3), args[4], args[5], (aas_altroutegoal_s*)VMA(6), args[7], args[8]);
+		return AAS_AlternativeRouteGoalsQ3((float*)VMA(1), args[2], (float*)VMA(3), args[4], args[5], (aas_altroutegoal_t*)VMA(6), args[7], args[8]);
 	case BOTLIB_AAS_ENTITY_INFO:
 		AAS_EntityInfo(args[1], (aas_entityinfo_t*)VMA(2));
 		return 0;

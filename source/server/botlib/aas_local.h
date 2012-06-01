@@ -540,18 +540,6 @@ bool AAS_AreaRouteToGoalArea(int areanum, const vec3_t origin, int goalareanum, 
 int AAS_AreaTravelTimeToGoalAreaCheckLoop(int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum);
 void AAS_CreateAllRoutingCache();
 
-struct midrangearea_t
-{
-	bool valid;
-	unsigned short starttime;
-	unsigned short goaltime;
-};
-
-extern midrangearea_t* midrangeareas;
-extern int* clusterareas;
-extern int numclusterareas;
-
-void AAS_AltRoutingFloodCluster_r(int areanum);
 void AAS_InitAlternativeRouting();
 void AAS_ShutdownAlternativeRouting();
 
