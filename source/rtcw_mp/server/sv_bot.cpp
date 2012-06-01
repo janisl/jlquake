@@ -292,7 +292,7 @@ int SV_BotLibSetup(void)
 		return -1;
 	}
 
-	return botlib_export->BotLibSetup();
+	return BotLibSetup(false);
 }
 
 /*
@@ -311,7 +311,7 @@ int SV_BotLibShutdown(void)
 		return -1;
 	}
 
-	return botlib_export->BotLibShutdown();
+	return BotLibShutdown();
 }
 
 /*

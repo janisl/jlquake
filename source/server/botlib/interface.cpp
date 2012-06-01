@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "local.h"
+#include "ai_weight.h"
 
 bot_debugpoly_t* debugpolygons;
 int bot_maxdebugpolys;
@@ -24,6 +25,9 @@ int bot_developer;
 
 //library globals in a structure
 botlib_globals_t botlibglobals;
+
+//true if the library is setup
+static bool botlibsetup = false;
 
 void BotImport_Print(int type, const char* fmt, ...)
 {
@@ -158,4 +162,131 @@ void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int
 	VectorMA(points[3], 2, cross, points[3]);
 
 	BotImport_DebugPolygonShow(line, color, 4, points);
+}
+
+static bool ValidEntityNumber(int num, const char* str)
+{
+	if (num < 0 || num > botlibglobals.maxentities)
+	{
+		BotImport_Print(PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
+			str, num, botlibglobals.maxentities);
+		return false;
+	}
+	return true;
+}
+
+bool IsBotLibSetup(const char* str)
+{
+	if (!botlibglobals.botlibsetup)
+	{
+		BotImport_Print(PRT_ERROR, "%s: bot library used before being setup\n", str);
+		return false;
+	}
+	return true;
+}
+
+int BotLibSetup(bool singleplayer)
+{
+	bot_developer = LibVarGetValue("bot_developer");
+	Com_Memset(&botlibglobals, 0, sizeof(botlibglobals));
+	Log_Open("botlib.log");
+
+	BotImport_Print(PRT_MESSAGE, "------- BotLib Initialization -------\n");
+
+	botlibglobals.maxclients = (int)LibVarValue("maxclients", "128");
+	botlibglobals.maxentities = (int)LibVarValue("maxentities", GGameType & GAME_WolfSP ? "2048" : "1024");
+
+	int errnum = AAS_Setup();			//be_aas_main.c
+	if (errnum != BLERR_NOERROR)
+	{
+		return errnum;
+	}
+	errnum = EA_Setup();			//be_ea.c
+	if (errnum != BLERR_NOERROR)
+	{
+		return errnum;
+	}
+	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+	{
+		errnum = BotSetupWeaponAI();	//be_ai_weap.c
+		if (errnum != BLERR_NOERROR)
+		{
+			return errnum;
+		}
+		errnum = BotSetupGoalAI(singleplayer);		//be_ai_goal.c
+		if (errnum != BLERR_NOERROR)
+		{
+			return errnum;
+		}
+		errnum = BotSetupChatAI();		//be_ai_chat.c
+		if (errnum != BLERR_NOERROR)
+		{
+			return errnum;
+		}
+	}
+	if (!(GGameType & GAME_WolfMP))
+	{
+		errnum = BotSetupMoveAI();		//be_ai_move.c
+		if (errnum != BLERR_NOERROR)
+		{
+			return errnum;
+		}
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		PC_RemoveAllGlobalDefines();
+	}
+
+	botlibsetup = true;
+	botlibglobals.botlibsetup = true;
+
+	return BLERR_NOERROR;
+}
+
+int BotLibShutdown()
+{
+	if (!IsBotLibSetup("BotLibShutdown"))
+	{
+		return BLERR_LIBRARYNOTSETUP;
+	}
+
+	// shutdown all AI subsystems
+	BotShutdownChatAI();		//be_ai_chat.c
+	BotShutdownMoveAI();		//be_ai_move.c
+	BotShutdownGoalAI();		//be_ai_goal.c
+	BotShutdownWeaponAI();		//be_ai_weap.c
+	BotShutdownWeights();		//be_ai_weight.c
+	BotShutdownCharacters();	//be_ai_char.c
+	// shut down aas
+	AAS_Shutdown();
+	// shut down bot elemantary actions
+	EA_Shutdown();
+	// free all libvars
+	LibVarDeAllocAll();
+	// remove all global defines from the pre compiler
+	PC_RemoveAllGlobalDefines();
+
+	// shut down library log file
+	Log_Shutdown();
+
+	botlibsetup = false;
+	botlibglobals.botlibsetup = false;
+	// print any files still open
+	PC_CheckOpenSourceHandles();
+	return BLERR_NOERROR;
+}
+
+int BotLibUpdateEntity(int ent, bot_entitystate_t* state)
+{
+	if (!IsBotLibSetup("BotUpdateEntity"))
+	{
+		return BLERR_LIBRARYNOTSETUP;
+	}
+	if (!ValidEntityNumber(ent, "BotUpdateEntity"))
+	{
+		return GGameType & GAME_Quake3 ? Q3BLERR_INVALIDENTITYNUMBER : WOLFBLERR_INVALIDENTITYNUMBER;
+	}
+
+	return AAS_UpdateEntity(ent, state);
 }

@@ -171,17 +171,11 @@ typedef struct botlib_export_s
 	ea_export_t ea;
 	//AI functions
 	ai_export_t ai;
-	//setup the bot library, returns BLERR_
-	int (* BotLibSetup)(void);
-	//shutdown the bot library, returns BLERR_
-	int (* BotLibShutdown)(void);
 
 	//start a frame in the bot library
 	int (* BotLibStartFrame)(float time);
 	//load a new map in the bot library
 	int (* BotLibLoadMap)(const char* mapname);
-	//entity updates
-	int (* BotLibUpdateEntity)(int ent, bot_entitystate_t* state);
 } botlib_export_t;
 
 //linking of bot library

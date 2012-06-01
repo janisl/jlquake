@@ -358,7 +358,7 @@ int SV_BotLibSetup(void)
 
 // START	Arnout changes, 28-08-2002.
 // added single player
-	return botlib_export->BotLibSetup((SV_GameIsSinglePlayer() || SV_GameIsCoop()));
+	return BotLibSetup((SV_GameIsSinglePlayer() || SV_GameIsCoop()));
 // END	Arnout changes, 28-08-2002.
 }
 
@@ -378,7 +378,7 @@ int SV_BotLibShutdown(void)
 		return -1;
 	}
 
-	return botlib_export->BotLibShutdown();
+	return BotLibShutdown();
 }
 
 /*

@@ -50,148 +50,7 @@ If you have questions concerning this license or the applicable additional terms
 
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
-//qtrue if the library is setup
-int botlibsetup = qfalse;
 
-//===========================================================================
-//
-// several functions used by the exported functions
-//
-//===========================================================================
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-qboolean ValidClientNumber(int num, char* str)
-{
-	if (num < 0 || num > botlibglobals.maxclients)
-	{
-		//weird: the disabled stuff results in a crash
-		BotImport_Print(PRT_ERROR, "%s: invalid client number %d, [0, %d]\n",
-			str, num, botlibglobals.maxclients);
-		return qfalse;
-	}	//end if
-	return qtrue;
-}	//end of the function BotValidateClientNumber
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-qboolean ValidEntityNumber(int num, const char* str)
-{
-	if (num < 0 || num > botlibglobals.maxentities)
-	{
-		BotImport_Print(PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
-			str, num, botlibglobals.maxentities);
-		return qfalse;
-	}	//end if
-	return qtrue;
-}	//end of the function BotValidateClientNumber
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-qboolean BotLibSetup(const char* str)
-{
-//	return qtrue;
-
-	if (!botlibglobals.botlibsetup)
-	{
-		BotImport_Print(PRT_ERROR, "%s: bot library used before being setup\n", str);
-		return qfalse;
-	}	//end if
-	return qtrue;
-}	//end of the function BotLibSetup
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibSetup(void)
-{
-	int errnum;
-
-	bot_developer = LibVarGetValue("bot_developer");
-	Log_Open("botlib.log");
-	//
-	BotImport_Print(PRT_MESSAGE, "------- BotLib Initialization -------\n");
-	//
-	botlibglobals.maxclients = (int)LibVarValue("maxclients", "128");
-	botlibglobals.maxentities = (int)LibVarValue("maxentities", "1024");
-
-	errnum = AAS_Setup();			//be_aas_main.c
-	if (errnum != BLERR_NOERROR)
-	{
-		return errnum;
-	}
-	errnum = EA_Setup();			//be_ea.c
-	if (errnum != BLERR_NOERROR)
-	{
-		return errnum;
-	}
-//	errnum = BotSetupChatAI();		//be_ai_chat.c
-//	if (errnum != BLERR_NOERROR) return errnum;
-//	errnum = BotSetupMoveAI();		//be_ai_move.c
-//	if (errnum != BLERR_NOERROR) return errnum;
-
-	botlibsetup = qtrue;
-	botlibglobals.botlibsetup = qtrue;
-
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibSetup
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibShutdown(void)
-{
-	static int recursive = 0;
-
-	if (!BotLibSetup("BotLibShutdown"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	//
-	if (recursive)
-	{
-		return BLERR_NOERROR;
-	}
-	recursive = 1;
-	// shutdown all AI subsystems
-	BotShutdownChatAI();		//be_ai_chat.c
-	BotShutdownMoveAI();		//be_ai_move.c
-	BotShutdownGoalAI();		//be_ai_goal.c
-	BotShutdownWeaponAI();		//be_ai_weap.c
-	BotShutdownWeights();		//be_ai_weight.c
-	BotShutdownCharacters();	//be_ai_char.c
-	// shutdown AAS
-	AAS_Shutdown();
-	// shutdown bot elemantary actions
-	EA_Shutdown();
-	// free all libvars
-	LibVarDeAllocAll();
-	// remove all global defines from the pre compiler
-	PC_RemoveAllGlobalDefines();
-	// shut down library log file
-	Log_Shutdown();
-	//
-	botlibsetup = qfalse;
-	botlibglobals.botlibsetup = qfalse;
-	recursive = 0;
-	// print any files still open
-	PC_CheckOpenSourceHandles();
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibShutdown
 //===========================================================================
 //
 // Parameter:				-
@@ -200,7 +59,7 @@ int Export_BotLibShutdown(void)
 //===========================================================================
 int Export_BotLibStartFrame(float time)
 {
-	if (!BotLibSetup("BotStartFrame"))
+	if (!IsBotLibSetup("BotStartFrame"))
 	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
@@ -219,7 +78,7 @@ int Export_BotLibLoadMap(const char* mapname)
 #endif
 	int errnum;
 
-	if (!BotLibSetup("BotLoadMap"))
+	if (!IsBotLibSetup("BotLoadMap"))
 	{
 		return BLERR_LIBRARYNOTSETUP;
 	}
@@ -242,25 +101,6 @@ int Export_BotLibLoadMap(const char* mapname)
 	//
 	return BLERR_NOERROR;
 }	//end of the function Export_BotLibLoadMap
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibUpdateEntity(int ent, bot_entitystate_t* state)
-{
-	if (!BotLibSetup("BotUpdateEntity"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	if (!ValidEntityNumber(ent, "BotUpdateEntity"))
-	{
-		return WOLFBLERR_INVALIDENTITYNUMBER;
-	}
-
-	return AAS_UpdateEntity(ent, state);
-}	//end of the function Export_BotLibUpdateEntity
 //===========================================================================
 //
 // Parameter:				-
@@ -365,12 +205,8 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 
-	be_botlib_export.BotLibSetup = Export_BotLibSetup;
-	be_botlib_export.BotLibShutdown = Export_BotLibShutdown;
-
 	be_botlib_export.BotLibStartFrame = Export_BotLibStartFrame;
 	be_botlib_export.BotLibLoadMap = Export_BotLibLoadMap;
-	be_botlib_export.BotLibUpdateEntity = Export_BotLibUpdateEntity;
 
 	return &be_botlib_export;
 }

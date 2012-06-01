@@ -594,7 +594,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_LOAD_MAP:
 		return botlib_export->BotLibLoadMap((char*)VMA(1));
 	case BOTLIB_UPDATENTITY:
-		return botlib_export->BotLibUpdateEntity(args[1], (bot_entitystate_t*)VMA(2));
+		return BotLibUpdateEntity(args[1], (bot_entitystate_t*)VMA(2));
 	case BOTLIB_TEST:
 		return 0;
 

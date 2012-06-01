@@ -49,8 +49,13 @@ void BotImport_DebugPolygonDelete(int id);
 int BotLibVarSet(const char* var_name, const char* value);
 int BotLibVarGet(char* var_name, char* value, int size);
 
+int BotLibSetup(bool singleplayer);
+int BotLibShutdown();
+
 #include "ai_public.h"
 #include "aas_public.h"
 #include "ea_public.h"
+
+int BotLibUpdateEntity(int ent, bot_entitystate_t* state);
 
 #endif
