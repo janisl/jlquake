@@ -201,6 +201,14 @@ void BotMutateGoalFuzzyLogic(int goalstate, float range);
 void BotGoalName(int number, char* name, int size);
 //reset avoid goals
 void BotResetAvoidGoals(int goalstate);
+//dump the avoid goals
+void BotDumpAvoidGoals(int goalstate);
+//remove the goal with the given number from the avoid goals
+void BotRemoveFromAvoidGoals(int goalstate, int number);
+//returns the avoid goal time
+float BotAvoidGoalTime(int goalstate, int number);
+//set the avoid goal time
+void BotSetAvoidGoalTime(int goalstate, int number, float avoidtime);
 //search for a goal for the given classname, the index can be used
 //as a start point for the search when multiple goals are available with that same classname
 int BotGetLevelItemGoalQ3(int index, const char* classname, bot_goal_q3_t* goal);
@@ -236,6 +244,9 @@ void BotFreeItemWeights(int goalstate);
 int BotAllocGoalState(int client);
 //free the given goal state
 void BotFreeGoalState(int handle);
+//returns true if the bot touches the goal
+bool BotTouchingGoalQ3(const vec3_t origin, const bot_goal_q3_t* goal);
+bool BotTouchingGoalET(const vec3_t origin, const bot_goal_et_t* goal);
 
 //
 //	Move

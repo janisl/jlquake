@@ -18,6 +18,28 @@
 #include "local.h"
 #include "ai_weight.h"
 
+//location in the map "target_location"
+struct maplocation_t
+{
+	vec3_t origin;
+	int areanum;
+	char name[MAX_EPAIRKEY];
+	maplocation_t* next;
+};
+
+//camp spots "info_camp"
+struct campspot_t
+{
+	vec3_t origin;
+	int areanum;
+	char name[MAX_EPAIRKEY];
+	float range;
+	float weight;
+	float wait;
+	float random;
+	campspot_t* next;
+};
+
 #define ITEMINFO_OFS(x) (qintptr) & (((iteminfo_t*)0)->x)
 
 static fielddef_t iteminfo_fields[] =
@@ -47,9 +69,9 @@ static levelitem_t* freelevelitems = NULL;
 levelitem_t* levelitems = NULL;
 int numlevelitems = 0;
 //map locations
-maplocation_t* maplocations = NULL;
+static maplocation_t* maplocations = NULL;
 //camp spots
-campspot_t* campspots = NULL;
+static campspot_t* campspots = NULL;
 //the game type
 int g_gametype = 0;
 bool g_singleplayer;
@@ -294,6 +316,123 @@ void BotResetAvoidGoals(int goalstate)
 	}
 	Com_Memset(gs->avoidgoals, 0, MAX_AVOIDGOALS * sizeof(int));
 	Com_Memset(gs->avoidgoaltimes, 0, MAX_AVOIDGOALS * sizeof(float));
+}
+
+void BotDumpAvoidGoals(int goalstate)
+{
+	bot_goalstate_t* gs = BotGoalStateFromHandle(goalstate);
+	if (!gs)
+	{
+		return;
+	}
+	for (int i = 0; i < MAX_AVOIDGOALS; i++)
+	{
+		if (gs->avoidgoaltimes[i] >= AAS_Time())
+		{
+			char name[32];
+			BotGoalName(gs->avoidgoals[i], name, 32);
+			Log_Write("avoid goal %s, number %d for %f seconds", name,
+				gs->avoidgoals[i], gs->avoidgoaltimes[i] - AAS_Time());
+		}
+	}
+}
+
+void BotAddToAvoidGoals(bot_goalstate_t* gs, int number, float avoidtime)
+{
+	for (int i = 0; i < MAX_AVOIDGOALS; i++)
+	{
+		//if the avoid goal is already stored
+		if (gs->avoidgoals[i] == number)
+		{
+			gs->avoidgoals[i] = number;
+			gs->avoidgoaltimes[i] = AAS_Time() + avoidtime;
+			return;
+		}
+	}
+
+	for (int i = 0; i < MAX_AVOIDGOALS; i++)
+	{
+		//if this avoid goal has expired
+		if (gs->avoidgoaltimes[i] < AAS_Time())
+		{
+			gs->avoidgoals[i] = number;
+			gs->avoidgoaltimes[i] = AAS_Time() + avoidtime;
+			return;
+		}
+	}
+}
+
+void BotRemoveFromAvoidGoals(int goalstate, int number)
+{
+	bot_goalstate_t* gs = BotGoalStateFromHandle(goalstate);
+	if (!gs)
+	{
+		return;
+	}
+	for (int i = 0; i < MAX_AVOIDGOALS; i++)
+	{
+		if (gs->avoidgoals[i] == number && gs->avoidgoaltimes[i] >= AAS_Time())
+		{
+			gs->avoidgoaltimes[i] = 0;
+			return;
+		}
+	}
+}
+
+float BotAvoidGoalTime(int goalstate, int number)
+{
+	bot_goalstate_t* gs = BotGoalStateFromHandle(goalstate);
+	if (!gs)
+	{
+		return 0;
+	}
+	for (int i = 0; i < MAX_AVOIDGOALS; i++)
+	{
+		if (gs->avoidgoals[i] == number && gs->avoidgoaltimes[i] >= AAS_Time())
+		{
+			return gs->avoidgoaltimes[i] - AAS_Time();
+		}
+	}
+	return 0;
+}
+
+void BotSetAvoidGoalTime(int goalstate, int number, float avoidtime)
+{
+	bot_goalstate_t* gs = BotGoalStateFromHandle(goalstate);
+	if (!gs)
+	{
+		return;
+	}
+	if (avoidtime < 0)
+	{
+		if (!itemconfig)
+		{
+			return;
+		}
+
+		for (levelitem_t* li = levelitems; li; li = li->next)
+		{
+			if (li->number == number)
+			{
+				avoidtime = itemconfig->iteminfo[li->iteminfo].respawntime;
+				if (!avoidtime)
+				{
+					avoidtime = AVOID_DEFAULT_TIME;
+				}
+				if (avoidtime < AVOID_MINIMUM_TIME)
+				{
+					avoidtime = AVOID_MINIMUM_TIME;
+				}
+				BotAddToAvoidGoals(gs, number, avoidtime);
+				return;
+			}
+		}
+		return;
+	}
+	else
+	{
+		BotAddToAvoidGoals(gs, number, avoidtime);
+	}
 }
 
 int BotGetLevelItemGoalQ3(int index, const char* name, bot_goal_q3_t* goal)
@@ -798,4 +937,95 @@ void BotShutdownGoalAI()
 			BotFreeGoalState(i);
 		}
 	}
+}
+
+void BotInitInfoEntities()
+{
+	BotFreeInfoEntities();
+
+	int numlocations = 0;
+	int numcampspots = 0;
+	for (int ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
+	{
+		char classname[MAX_EPAIRKEY];
+		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY))
+		{
+			continue;
+		}
+
+		//map locations
+		if (!String::Cmp(classname, "target_location"))
+		{
+			maplocation_t* ml = (maplocation_t*)Mem_ClearedAlloc(sizeof(maplocation_t));
+			AAS_VectorForBSPEpairKey(ent, "origin", ml->origin);
+			AAS_ValueForBSPEpairKey(ent, "message", ml->name, sizeof(ml->name));
+			ml->areanum = AAS_PointAreaNum(ml->origin);
+			ml->next = maplocations;
+			maplocations = ml;
+			numlocations++;
+		}
+		//camp spots
+		else if (!String::Cmp(classname, "info_camp"))
+		{
+			campspot_t* cs = (campspot_t*)Mem_ClearedAlloc(sizeof(campspot_t));
+			AAS_VectorForBSPEpairKey(ent, "origin", cs->origin);
+			AAS_ValueForBSPEpairKey(ent, "message", cs->name, sizeof(cs->name));
+			AAS_FloatForBSPEpairKey(ent, "range", &cs->range);
+			AAS_FloatForBSPEpairKey(ent, "weight", &cs->weight);
+			AAS_FloatForBSPEpairKey(ent, "wait", &cs->wait);
+			AAS_FloatForBSPEpairKey(ent, "random", &cs->random);
+			cs->areanum = AAS_PointAreaNum(cs->origin);
+			if (!cs->areanum)
+			{
+				BotImport_Print(PRT_MESSAGE, "camp spot at %1.1f %1.1f %1.1f in solid\n", cs->origin[0], cs->origin[1], cs->origin[2]);
+				Mem_Free(cs);
+				continue;
+			}
+			cs->next = campspots;
+			campspots = cs;
+			numcampspots++;
+		}
+	}
+	if (bot_developer)
+	{
+		BotImport_Print(PRT_MESSAGE, "%d map locations\n", numlocations);
+		BotImport_Print(PRT_MESSAGE, "%d camp spots\n", numcampspots);
+	}
+}
+
+static bool BotTouchingGoal(const vec3_t origin, const bot_goal_t* goal)
+{
+	int i;
+	vec3_t boxmins, boxmaxs;
+	vec3_t absmins, absmaxs;
+	vec3_t safety_maxs = {0, 0, 0};	//{4, 4, 10};
+	vec3_t safety_mins = {0, 0, 0};	//{-4, -4, 0};
+
+	AAS_PresenceTypeBoundingBox(PRESENCE_NORMAL, boxmins, boxmaxs);
+	VectorSubtract(goal->mins, boxmaxs, absmins);
+	VectorSubtract(goal->maxs, boxmins, absmaxs);
+	VectorAdd(absmins, goal->origin, absmins);
+	VectorAdd(absmaxs, goal->origin, absmaxs);
+	//make the box a little smaller for safety
+	VectorSubtract(absmaxs, safety_maxs, absmaxs);
+	VectorSubtract(absmins, safety_mins, absmins);
+
+	for (i = 0; i < 3; i++)
+	{
+		if (origin[i] < absmins[i] || origin[i] > absmaxs[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool BotTouchingGoalQ3(const vec3_t origin, const bot_goal_q3_t* goal)
+{
+	return BotTouchingGoal(origin, reinterpret_cast<const bot_goal_t*>(goal));
+}
+
+bool BotTouchingGoalET(const vec3_t origin, const bot_goal_et_t* goal)
+{
+	return BotTouchingGoal(origin, reinterpret_cast<const bot_goal_t*>(goal));
 }

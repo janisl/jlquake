@@ -110,28 +110,6 @@ struct bot_goal_t
 #define IFL_NOTBOT              8		//bot should never go for this
 #define IFL_ROAM                16		//bot roam goal
 
-//location in the map "target_location"
-struct maplocation_t
-{
-	vec3_t origin;
-	int areanum;
-	char name[MAX_EPAIRKEY];
-	maplocation_t* next;
-};
-
-//camp spots "info_camp"
-struct campspot_t
-{
-	vec3_t origin;
-	int areanum;
-	char name[MAX_EPAIRKEY];
-	float range;
-	float weight;
-	float wait;
-	float random;
-	campspot_t* next;
-};
-
 struct levelitem_t
 {
 	int number;							//number of the level item
@@ -187,8 +165,6 @@ struct bot_goalstate_t
 extern itemconfig_t* itemconfig;
 extern levelitem_t* levelitems;
 extern int numlevelitems;
-extern maplocation_t* maplocations;
-extern campspot_t* campspots;
 extern int g_gametype;
 extern bool g_singleplayer;
 extern libvar_t* droppedweight;
@@ -204,6 +180,8 @@ void BotFreeInfoEntities();
 int BotSetupGoalAI(bool singleplayer);
 //shut down the goal AI
 void BotShutdownGoalAI();
+void BotInitInfoEntities();
+void BotAddToAvoidGoals(bot_goalstate_t* gs, int number, float avoidtime);
 
 #define MAX_AVOIDREACH                  1
 #define MAX_AVOIDSPOTS                  32

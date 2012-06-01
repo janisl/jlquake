@@ -728,7 +728,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		BotResetAvoidGoals(args[1]);
 		return 0;
 	case BOTLIB_AI_REMOVE_FROM_AVOID_GOALS:
-		botlib_export->ai.BotRemoveFromAvoidGoals(args[1], args[2]);
+		BotRemoveFromAvoidGoals(args[1], args[2]);
 		return 0;
 	case BOTLIB_AI_PUSH_GOAL:
 		BotPushGoalQ3(args[1], (bot_goal_q3_t*)VMA(2));
@@ -740,7 +740,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		BotEmptyGoalStack(args[1]);
 		return 0;
 	case BOTLIB_AI_DUMP_AVOID_GOALS:
-		botlib_export->ai.BotDumpAvoidGoals(args[1]);
+		BotDumpAvoidGoals(args[1]);
 		return 0;
 	case BOTLIB_AI_DUMP_GOAL_STACK:
 		BotDumpGoalStack(args[1]);
@@ -757,7 +757,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_CHOOSE_NBG_ITEM:
 		return botlib_export->ai.BotChooseNBGItem(args[1], (float*)VMA(2), (int*)VMA(3), args[4], (bot_goal_q3_t*)VMA(5), VMF(6));
 	case BOTLIB_AI_TOUCHING_GOAL:
-		return botlib_export->ai.BotTouchingGoal((float*)VMA(1), (bot_goal_q3_t*)VMA(2));
+		return BotTouchingGoalQ3((float*)VMA(1), (bot_goal_q3_t*)VMA(2));
 	case BOTLIB_AI_ITEM_GOAL_IN_VIS_BUT_NOT_VISIBLE:
 		return botlib_export->ai.BotItemGoalInVisButNotVisible(args[1], (float*)VMA(2), (float*)VMA(3), (bot_goal_q3_t*)VMA(4));
 	case BOTLIB_AI_GET_LEVEL_ITEM_GOAL:
@@ -767,9 +767,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_GET_MAP_LOCATION_GOAL:
 		return BotGetMapLocationGoalQ3((char*)VMA(1), (bot_goal_q3_t*)VMA(2));
 	case BOTLIB_AI_AVOID_GOAL_TIME:
-		return FloatAsInt(botlib_export->ai.BotAvoidGoalTime(args[1], args[2]));
+		return FloatAsInt(BotAvoidGoalTime(args[1], args[2]));
 	case BOTLIB_AI_SET_AVOID_GOAL_TIME:
-		botlib_export->ai.BotSetAvoidGoalTime(args[1], args[2], VMF(3));
+		BotSetAvoidGoalTime(args[1], args[2], VMF(3));
 		return 0;
 	case BOTLIB_AI_INIT_LEVEL_ITEMS:
 		botlib_export->ai.BotInitLevelItems();

@@ -140,15 +140,10 @@ typedef struct ai_export_s
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	void (* BotRemoveFromAvoidGoals)(int goalstate, int number);
-	void (* BotDumpAvoidGoals)(int goalstate);
 	int (* BotChooseLTGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags);
 	int (* BotChooseNBGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags,
 		struct bot_goal_q3_t* ltg, float maxtime);
-	int (* BotTouchingGoal)(vec3_t origin, struct bot_goal_q3_t* goal);
 	int (* BotItemGoalInVisButNotVisible)(int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_q3_t* goal);
-	float (* BotAvoidGoalTime)(int goalstate, int number);
-	void (* BotSetAvoidGoalTime)(int goalstate, int number, float avoidtime);
 	void (* BotInitLevelItems)(void);
 	void (* BotUpdateEntityItems)(void);
 	//-----------------------------------

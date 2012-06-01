@@ -35,21 +35,13 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//remove the goal with the given number from the avoid goals
-void BotRemoveFromAvoidGoals(int goalstate, int number);
-//dump the avoid goals
-void BotDumpAvoidGoals(int goalstate);
 //choose the best long term goal item for the bot
 int BotChooseLTGItem(int goalstate, vec3_t origin, int* inventory, int travelflags);
 //choose the best nearby goal item for the bot
 int BotChooseNBGItem(int goalstate, vec3_t origin, int* inventory, int travelflags,
 	bot_goal_et_t* ltg, float maxtime);
-//returns true if the bot touches the goal
-int BotTouchingGoal(vec3_t origin, bot_goal_et_t* goal);
 //returns true if the goal should be visible but isn't
 int BotItemGoalInVisButNotVisible(int viewer, vec3_t eye, vec3_t viewangles, bot_goal_et_t* goal);
-//returns the avoid goal time
-float BotAvoidGoalTime(int goalstate, int number);
 //initializes the items in the level
 void BotInitLevelItems(void);
 //regularly update dynamic entity items (dropped weapons, flags etc.)

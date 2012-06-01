@@ -333,13 +333,9 @@ static void Init_AI_Export(ai_export_t* ai)
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	ai->BotRemoveFromAvoidGoals = BotRemoveFromAvoidGoals;
-	ai->BotDumpAvoidGoals = BotDumpAvoidGoals;
 	ai->BotChooseLTGItem = BotChooseLTGItem;
 	ai->BotChooseNBGItem = BotChooseNBGItem;
-	ai->BotTouchingGoal = BotTouchingGoal;
 	ai->BotItemGoalInVisButNotVisible = BotItemGoalInVisButNotVisible;
-	ai->BotAvoidGoalTime = BotAvoidGoalTime;
 	ai->BotInitLevelItems = BotInitLevelItems;
 	ai->BotUpdateEntityItems = BotUpdateEntityItems;
 	//-----------------------------------
