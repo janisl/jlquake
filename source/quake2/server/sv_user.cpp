@@ -65,7 +65,7 @@ void SV_New_f(void)
 
 	Com_DPrintf("New() from %s\n", sv_client->name);
 
-	if (sv_client->state != cs_connected)
+	if (sv_client->state != CS_CONNECTED)
 	{
 		Com_Printf("New not valid -- already spawned\n");
 		return;
@@ -133,7 +133,7 @@ void SV_Configstrings_f(void)
 
 	Com_DPrintf("Configstrings() from %s\n", sv_client->name);
 
-	if (sv_client->state != cs_connected)
+	if (sv_client->state != CS_CONNECTED)
 	{
 		Com_Printf("configstrings not valid -- already spawned\n");
 		return;
@@ -190,7 +190,7 @@ void SV_Baselines_f(void)
 
 	Com_DPrintf("Baselines() from %s\n", sv_client->name);
 
-	if (sv_client->state != cs_connected)
+	if (sv_client->state != CS_CONNECTED)
 	{
 		Com_Printf("baselines not valid -- already spawned\n");
 		return;
@@ -253,7 +253,7 @@ void SV_Begin_f(void)
 		return;
 	}
 
-	sv_client->state = cs_spawned;
+	sv_client->state = CS_ACTIVE;
 
 	// call the game begin function
 	ge->ClientBegin(sv_player);
@@ -634,7 +634,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			MSGQ2_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
 			MSGQ2_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
 
-			if (cl->state != cs_spawned)
+			if (cl->state != CS_ACTIVE)
 			{
 				cl->lastframe = -1;
 				break;
@@ -695,7 +695,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				SV_ExecuteUserCommand(s);
 			}
 
-			if (cl->state == cs_zombie)
+			if (cl->state == CS_ZOMBIE)
 			{
 				return;	// disconnect command
 			}

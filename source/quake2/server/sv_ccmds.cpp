@@ -719,11 +719,11 @@ void SV_Status_f(void)
 		Com_Printf("%3i ", i);
 		Com_Printf("%5i ", cl->edict->client->ps.stats[Q2STAT_FRAGS]);
 
-		if (cl->state == cs_connected)
+		if (cl->state == CS_CONNECTED)
 		{
 			Com_Printf("CNCT ");
 		}
-		else if (cl->state == cs_zombie)
+		else if (cl->state == CS_ZOMBIE)
 		{
 			Com_Printf("ZMBI ");
 		}
@@ -783,7 +783,7 @@ void SV_ConSay_f(void)
 
 	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}

@@ -163,13 +163,13 @@ void SV_SaveSpawnparms(void)
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
-		if (host_client->state != cs_spawned)
+		if (host_client->state != CS_ACTIVE)
 		{
 			continue;
 		}
 
 		// needs to reconnect
-		host_client->state = cs_connected;
+		host_client->state = CS_CONNECTED;
 
 		// call the progs to get default spawn parms for the new client
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);

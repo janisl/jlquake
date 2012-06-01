@@ -97,15 +97,6 @@ typedef struct
 	int messageSize;					// used to rate drop packets
 } clientSnapshot_t;
 
-typedef enum {
-	CS_FREE,		// can be reused for a new connection
-	CS_ZOMBIE,		// client has been disconnected, but don't reuse
-					// connection for a couple seconds
-	CS_CONNECTED,	// has been assigned to a client_t, but no gamestate yet
-	CS_PRIMED,		// gamestate has been sent, but client hasn't sent a usercmd
-	CS_ACTIVE		// client is fully in game
-} clientState_t;
-
 typedef struct netchan_buffer_s
 {
 	QMsg msg;
@@ -115,7 +106,6 @@ typedef struct netchan_buffer_s
 
 struct client_t : public client_common_t
 {
-	clientState_t state;
 	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
 
 	char reliableCommands[MAX_RELIABLE_COMMANDS_Q3][MAX_STRING_CHARS];

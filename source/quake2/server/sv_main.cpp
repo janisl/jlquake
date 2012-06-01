@@ -72,7 +72,7 @@ void SV_DropClient(client_t* drop)
 	// add the disconnect
 	drop->netchan.message.WriteByte(q2svc_disconnect);
 
-	if (drop->state == cs_spawned)
+	if (drop->state == CS_ACTIVE)
 	{
 		// call the prog function for removing a client
 		// this will remove the body, among other things
@@ -85,7 +85,7 @@ void SV_DropClient(client_t* drop)
 		drop->download = NULL;
 	}
 
-	drop->state = cs_zombie;		// become free in a few seconds
+	drop->state = CS_ZOMBIE;		// become free in a few seconds
 	drop->name[0] = 0;
 }
 
@@ -123,7 +123,7 @@ char* SV_StatusString(void)
 	for (i = 0; i < maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
-		if (cl->state == cs_connected || cl->state == cs_spawned)
+		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
 		{
 			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
 				cl->edict->client->ps.stats[Q2STAT_FRAGS], cl->ping, cl->name);
@@ -197,7 +197,7 @@ void SVC_Info(void)
 	{
 		count = 0;
 		for (i = 0; i < maxclients->value; i++)
-			if (svs.clients[i].state >= cs_connected)
+			if (svs.clients[i].state >= CS_CONNECTED)
 			{
 				count++;
 			}
@@ -350,7 +350,7 @@ void SVC_DirectConnect(void)
 	// if there is already a slot for this ip, reuse it
 	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
 	{
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			continue;
 		}
@@ -373,7 +373,7 @@ void SVC_DirectConnect(void)
 	newcl = NULL;
 	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
 	{
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			newcl = cl;
 			break;
@@ -422,7 +422,7 @@ gotnewcl:
 
 	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 
-	newcl->state = cs_connected;
+	newcl->state = CS_CONNECTED;
 
 	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
 	newcl->datagram.allowoverflow = true;
@@ -571,7 +571,7 @@ void SV_CalcPings(void)
 	for (i = 0; i < maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
-		if (cl->state != cs_spawned)
+		if (cl->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -635,7 +635,7 @@ void SV_GiveMsec(void)
 	for (i = 0; i < maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			continue;
 		}
@@ -675,7 +675,7 @@ void SV_ReadPackets(void)
 		// check for packets from connected clients
 		for (i = 0, cl = svs.clients; i < maxclients->value; i++,cl++)
 		{
-			if (cl->state == cs_free)
+			if (cl->state == CS_FREE)
 			{
 				continue;
 			}
@@ -695,7 +695,7 @@ void SV_ReadPackets(void)
 
 			if (Netchan_Process(&cl->netchan, &net_message))
 			{	// this is a valid, sequenced packet, so process it
-				if (cl->state != cs_zombie)
+				if (cl->state != CS_ZOMBIE)
 				{
 					cl->lastmessage = svs.realtime;	// don't timeout
 					SV_ExecuteClientMessage(cl);
@@ -742,18 +742,18 @@ void SV_CheckTimeouts(void)
 			cl->lastmessage = svs.realtime;
 		}
 
-		if (cl->state == cs_zombie &&
+		if (cl->state == CS_ZOMBIE &&
 			cl->lastmessage < zombiepoint)
 		{
-			cl->state = cs_free;	// can now be reused
+			cl->state = CS_FREE;	// can now be reused
 			continue;
 		}
-		if ((cl->state == cs_connected || cl->state == cs_spawned) &&
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
 			cl->lastmessage < droppoint)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 			SV_DropClient(cl);
-			cl->state = cs_free;	// don't bother with zombie state
+			cl->state = CS_FREE;	// don't bother with zombie state
 		}
 	}
 }
@@ -1109,14 +1109,14 @@ void SV_FinalMessage(const char* message, qboolean reconnect)
 	// stagger the packets to crutch operating system limited buffers
 
 	for (i = 0, cl = svs.clients; i < maxclients->value; i++, cl++)
-		if (cl->state >= cs_connected)
+		if (cl->state >= CS_CONNECTED)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
 		}
 
 	for (i = 0, cl = svs.clients; i < maxclients->value; i++, cl++)
-		if (cl->state >= cs_connected)
+		if (cl->state >= CS_CONNECTED)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);

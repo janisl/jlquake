@@ -289,7 +289,7 @@ void SV_Multicast(vec3_t origin, int to)
 	// send the data to all relevent clients
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -342,7 +342,7 @@ void SV_MulticastSpecific(unsigned clients, qboolean reliable)
 	// send the data to all relevent clients
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -938,7 +938,7 @@ static void UpdatePIV(void)
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
-		if (host_client->state != cs_spawned || host_client->spectator)
+		if (host_client->state != CS_ACTIVE || host_client->spectator)
 		{
 			continue;
 		}
@@ -951,7 +951,7 @@ static void UpdatePIV(void)
 
 		for (j = i + 1, client = host_client + 1; j < HWMAX_CLIENTS; j++, client++)
 		{
-			if (client->state != cs_spawned || client->spectator)
+			if (client->state != CS_ACTIVE || client->spectator)
 			{
 				continue;
 			}
@@ -1008,7 +1008,7 @@ void SV_UpdateToReliableMessages(void)
 // check for changes to be sent over the reliable streams to all clients
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
-		if (host_client->state != cs_spawned)
+		if (host_client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -1021,7 +1021,7 @@ void SV_UpdateToReliableMessages(void)
 		{
 			for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 			{
-				if (client->state < cs_connected)
+				if (client->state < CS_CONNECTED)
 				{
 					continue;
 				}
@@ -1079,7 +1079,7 @@ void SV_UpdateToReliableMessages(void)
 	// append the broadcast messages to each client messages
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state < cs_connected)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;	// reliables go to all connected or spawned
 		}
@@ -1087,7 +1087,7 @@ void SV_UpdateToReliableMessages(void)
 			sv.reliable_datagram._data,
 			sv.reliable_datagram.cursize);
 
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;	// datagrams only go to spawned
 		}
@@ -1167,7 +1167,7 @@ void SV_SendClientMessages(void)
 			continue;		// bandwidth choke
 		}
 
-		if (c->state == cs_spawned)
+		if (c->state == CS_ACTIVE)
 		{
 			SV_SendClientDatagram(c);
 		}

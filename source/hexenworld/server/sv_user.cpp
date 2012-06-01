@@ -34,12 +34,12 @@ void SV_New_f(void)
 	const char* gamedir;
 	int playernum;
 
-	if (host_client->state == cs_spawned)
+	if (host_client->state == CS_ACTIVE)
 	{
 		return;
 	}
 
-	host_client->state = cs_connected;
+	host_client->state = CS_CONNECTED;
 	host_client->connection_started = realtime;
 
 	// send the info about the new client to all connected clients
@@ -109,7 +109,7 @@ void SV_Soundlist_f(void)
 {
 	const char** s;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("soundlist not valid -- allready spawned\n");
 		return;
@@ -138,7 +138,7 @@ void SV_Modellist_f(void)
 {
 	const char** s;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("modellist not valid -- allready spawned\n");
 		return;
@@ -167,7 +167,7 @@ void SV_PreSpawn_f(void)
 {
 	int buf;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("prespawn not valid -- allready spawned\n");
 		return;
@@ -217,7 +217,7 @@ void SV_Spawn_f(void)
 	qhedict_t* ent;
 	eval_t* val;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("Spawn not valid -- allready spawned\n");
 		return;
@@ -345,7 +345,7 @@ void SV_Begin_f(void)
 {
 	int i;
 
-	host_client->state = cs_spawned;
+	host_client->state = CS_ACTIVE;
 
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
@@ -653,7 +653,7 @@ void SV_Say(qboolean team)
 
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -753,7 +753,7 @@ void SV_Pings_f(void)
 
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -820,7 +820,7 @@ void SV_PTrack_f(void)
 	}
 
 	i = String::Atoi(Cmd_Argv(1));
-	if (i < 0 || i >= HWMAX_CLIENTS || svs.clients[i].state != cs_spawned ||
+	if (i < 0 || i >= HWMAX_CLIENTS || svs.clients[i].state != CS_ACTIVE ||
 		svs.clients[i].spectator)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
@@ -1464,7 +1464,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			MSGHW_ReadUsercmd(&net_message, &oldcmd, false);
 			MSGHW_ReadUsercmd(&net_message, &newcmd, true);
 
-			if (cl->state != cs_spawned)
+			if (cl->state != CS_ACTIVE)
 			{
 				break;
 			}

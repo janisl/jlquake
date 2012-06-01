@@ -182,7 +182,7 @@ void SV_FinalMessage(const char* message)
 	net_message.WriteByte(q1svc_disconnect);
 
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
-		if (cl->state >= cs_spawned)
+		if (cl->state >= CS_ACTIVE)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
@@ -205,7 +205,7 @@ void SV_DropClient(client_t* drop)
 	// add the disconnect
 	drop->netchan.message.WriteByte(q1svc_disconnect);
 
-	if (drop->state == cs_spawned)
+	if (drop->state == CS_ACTIVE)
 	{
 		if (!drop->spectator)
 		{
@@ -244,7 +244,7 @@ void SV_DropClient(client_t* drop)
 	}
 	*drop->uploadfn = 0;
 
-	drop->state = cs_zombie;		// become free in a few seconds
+	drop->state = CS_ZOMBIE;		// become free in a few seconds
 	drop->connection_started = realtime;	// for zombie timeout
 
 	drop->old_frags = 0;
@@ -383,7 +383,7 @@ void SVC_Status(void)
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
 		cl = &svs.clients[i];
-		if ((cl->state == cs_connected || cl->state == cs_spawned) && !cl->spectator)
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->spectator)
 		{
 			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
@@ -648,7 +648,7 @@ void SVC_DirectConnect(void)
 	// if there is allready a slot for this ip, drop it
 	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
 	{
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			continue;
 		}
@@ -656,7 +656,7 @@ void SVC_DirectConnect(void)
 			(cl->netchan.qport == qport ||
 			 adr.port == cl->netchan.remoteAddress.port))
 		{
-			if (cl->state == cs_connected)
+			if (cl->state == CS_CONNECTED)
 			{
 				Con_Printf("%s:dup connect\n", SOCK_AdrToString(adr));
 				userid--;
@@ -674,7 +674,7 @@ void SVC_DirectConnect(void)
 	spectators = 0;
 	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
 	{
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			continue;
 		}
@@ -713,7 +713,7 @@ void SVC_DirectConnect(void)
 	newcl = NULL;
 	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
 	{
-		if (cl->state == cs_free)
+		if (cl->state == CS_FREE)
 		{
 			newcl = cl;
 			break;
@@ -737,7 +737,7 @@ void SVC_DirectConnect(void)
 
 	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 
-	newcl->state = cs_connected;
+	newcl->state = CS_CONNECTED;
 
 	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
 	newcl->datagram.allowoverflow = true;
@@ -1183,7 +1183,7 @@ void SV_ReadPackets(void)
 		// check for packets from connected clients
 		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
 		{
-			if (cl->state == cs_free)
+			if (cl->state == CS_FREE)
 			{
 				continue;
 			}
@@ -1205,7 +1205,7 @@ void SV_ReadPackets(void)
 				svs.stats.packets++;
 				good = true;
 				cl->send_message = true;	// reply at end of frame
-				if (cl->state != cs_zombie)
+				if (cl->state != CS_ZOMBIE)
 				{
 					SV_ExecuteClientMessage(cl);
 				}
@@ -1247,7 +1247,7 @@ void SV_CheckTimeouts(void)
 
 	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
 	{
-		if (cl->state == cs_connected || cl->state == cs_spawned)
+		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
 		{
 			if (!cl->spectator)
 			{
@@ -1257,13 +1257,13 @@ void SV_CheckTimeouts(void)
 			{
 				SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 				SV_DropClient(cl);
-				cl->state = cs_free;	// don't bother with zombie state
+				cl->state = CS_FREE;	// don't bother with zombie state
 			}
 		}
-		if (cl->state == cs_zombie &&
+		if (cl->state == CS_ZOMBIE &&
 			realtime - cl->connection_started > zombietime->value)
 		{
-			cl->state = cs_free;	// can now be reused
+			cl->state = CS_FREE;	// can now be reused
 		}
 	}
 	if (sv.paused && !nclients)
@@ -1547,8 +1547,8 @@ void Master_Heartbeat(void)
 	//
 	active = 0;
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
-		if (svs.clients[i].state == cs_connected ||
-			svs.clients[i].state == cs_spawned)
+		if (svs.clients[i].state == CS_CONNECTED ||
+			svs.clients[i].state == CS_ACTIVE)
 		{
 			active++;
 		}
@@ -1652,7 +1652,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 	{
 		for (i = 0, client = svs.clients; i < MAX_CLIENTS_QW; i++, client++)
 		{
-			if (client->state != cs_spawned || client == cl)
+			if (client->state != CS_ACTIVE || client == cl)
 			{
 				continue;
 			}
@@ -1712,7 +1712,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			}
 		}
 
-		if (cl->state >= cs_spawned && !cl->spectator)
+		if (cl->state >= CS_ACTIVE && !cl->spectator)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
 		}

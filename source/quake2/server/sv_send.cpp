@@ -118,7 +118,7 @@ void SV_BroadcastPrintf(int level, const char* fmt, ...)
 		{
 			continue;
 		}
-		if (cl->state != cs_spawned)
+		if (cl->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -227,11 +227,11 @@ void SV_Multicast(vec3_t origin, multicast_t to)
 	// send the data to all relevent clients
 	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
 	{
-		if (client->state == cs_free || client->state == cs_zombie)
+		if (client->state == CS_FREE || client->state == CS_ZOMBIE)
 		{
 			continue;
 		}
-		if (client->state != cs_spawned && !reliable)
+		if (client->state != CS_ACTIVE && !reliable)
 		{
 			continue;
 		}
@@ -620,7 +620,7 @@ void SV_SendClientMessages(void)
 		{
 			Netchan_Transmit(&c->netchan, msglen, msgbuf);
 		}
-		else if (c->state == cs_spawned)
+		else if (c->state == CS_ACTIVE)
 		{
 			// don't overrun bandwidth
 			if (SV_RateDrop(c))

@@ -92,15 +92,6 @@ typedef struct
 
 #define NUM_SPAWN_PARMS         16
 
-typedef enum
-{
-	cs_free,		// can be reused for a new connection
-	cs_zombie,		// client has been disconnected, but don't reuse
-					// connection for a couple seconds
-	cs_connected,	// has been assigned to a client_t, but not in game yet
-	cs_spawned		// client is fully in game
-} client_state_t;
-
 typedef struct
 {
 	// received from client
@@ -115,8 +106,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	client_state_t state;
-
 	int spectator;						// non-interactive
 
 	qboolean sendinfo;					// at end of frame, send info to all

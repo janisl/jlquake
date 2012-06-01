@@ -1089,7 +1089,7 @@ void PF_lightstyle(void)
 	}
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
-		if (client->state == cs_spawned)
+		if (client->state == CS_ACTIVE)
 		{
 			ClientReliableWrite_Begin(client, q1svc_lightstyle, String::Length(val) + 3);
 			ClientReliableWrite_Char(client, style);

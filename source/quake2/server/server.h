@@ -73,15 +73,6 @@ typedef struct
 #define NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 
 
-typedef enum
-{
-	cs_free,		// can be reused for a new connection
-	cs_zombie,		// client has been disconnected, but don't reuse
-					// connection for a couple seconds
-	cs_connected,	// has been assigned to a client_t, but not in game yet
-	cs_spawned		// client is fully in game
-} client_state_t;
-
 typedef struct
 {
 	int areabytes;
@@ -97,8 +88,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	client_state_t state;
-
 	char userinfo[MAX_INFO_STRING];					// name, etc
 
 	int lastframe;						// for delta compression

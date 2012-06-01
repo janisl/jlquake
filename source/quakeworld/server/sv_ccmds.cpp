@@ -444,12 +444,12 @@ void SV_Status_f(void)
 
 			s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
 			Con_Printf("  %-16.16s", s);
-			if (cl->state == cs_connected)
+			if (cl->state == CS_CONNECTED)
 			{
 				Con_Printf("CONNECTING\n");
 				continue;
 			}
-			if (cl->state == cs_zombie)
+			if (cl->state == CS_ZOMBIE)
 			{
 				Con_Printf("ZOMBIE\n");
 				continue;
@@ -482,12 +482,12 @@ void SV_Status_f(void)
 			l = 16 - String::Length(cl->name);
 			for (j = 0; j < l; j++)
 				Con_Printf(" ");
-			if (cl->state == cs_connected)
+			if (cl->state == CS_CONNECTED)
 			{
 				Con_Printf("CONNECTING\n");
 				continue;
 			}
-			if (cl->state == cs_zombie)
+			if (cl->state == CS_ZOMBIE)
 			{
 				Con_Printf("ZOMBIE\n");
 				continue;
@@ -542,7 +542,7 @@ void SV_ConSay_f(void)
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -900,7 +900,7 @@ void SV_SnapAll_f(void)
 
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
 	{
-		if (cl->state < cs_connected || cl->spectator)
+		if (cl->state < CS_CONNECTED || cl->spectator)
 		{
 			continue;
 		}

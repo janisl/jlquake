@@ -435,7 +435,7 @@ void PF_name_print(void)
 			{
 				continue;
 			}
-			if (cl->state != cs_spawned)//should i be checking cs_connected too?
+			if (cl->state != CS_ACTIVE)//should i be checking CS_CONNECTED too?
 			{
 				if (cl->state)	//not fully in so won't know name yet, explicitly say the name
 				{
@@ -1794,7 +1794,7 @@ void PF_lightstyle(void)
 	}
 
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
-		if (client->state == cs_spawned)
+		if (client->state == CS_ACTIVE)
 		{
 			client->netchan.message.WriteChar(h2svc_lightstyle);
 			client->netchan.message.WriteChar(style);
@@ -1878,7 +1878,7 @@ void PF_lightstylestatic(void)
 
 	// Send message to all clients on this server
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
-		if (client->state == cs_spawned)
+		if (client->state == CS_ACTIVE)
 		{
 			client->netchan.message.WriteChar(h2svc_lightstyle);
 			client->netchan.message.WriteChar(styleNumber);
@@ -2938,7 +2938,7 @@ void PF_updateSiegeInfo(void)
 
 	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 	{
-		if (client->state < cs_connected)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}

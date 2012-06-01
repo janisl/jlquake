@@ -230,9 +230,9 @@ void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, 
 	for (i = 0; i < maxclients->value; i++)
 	{
 		// needs to reconnect
-		if (svs.clients[i].state > cs_connected)
+		if (svs.clients[i].state > CS_CONNECTED)
 		{
-			svs.clients[i].state = cs_connected;
+			svs.clients[i].state = CS_CONNECTED;
 		}
 		svs.clients[i].lastframe = -1;
 	}

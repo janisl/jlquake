@@ -55,12 +55,12 @@ void SV_New_f(void)
 	const char* gamedir;
 	int playernum;
 
-	if (host_client->state == cs_spawned)
+	if (host_client->state == CS_ACTIVE)
 	{
 		return;
 	}
 
-	host_client->state = cs_connected;
+	host_client->state = CS_CONNECTED;
 	host_client->connection_started = realtime;
 
 	// send the info about the new client to all connected clients
@@ -129,7 +129,7 @@ void SV_Soundlist_f(void)
 	const char** s;
 	int n;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("soundlist not valid -- allready spawned\n");
 		return;
@@ -184,7 +184,7 @@ void SV_Modellist_f(void)
 	const char** s;
 	int n;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("modellist not valid -- allready spawned\n");
 		return;
@@ -238,7 +238,7 @@ void SV_PreSpawn_f(void)
 	int buf;
 	int check;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("prespawn not valid -- allready spawned\n");
 		return;
@@ -320,7 +320,7 @@ void SV_Spawn_f(void)
 	eval_t* val;
 	int n;
 
-	if (host_client->state != cs_connected)
+	if (host_client->state != CS_CONNECTED)
 	{
 		Con_Printf("Spawn not valid -- allready spawned\n");
 		return;
@@ -451,12 +451,12 @@ void SV_Begin_f(void)
 	unsigned pmodel = 0, emodel = 0;
 	int i;
 
-	if (host_client->state == cs_spawned)
+	if (host_client->state == CS_ACTIVE)
 	{
 		return;	// don't begin again
 
 	}
-	host_client->state = cs_spawned;
+	host_client->state = CS_ACTIVE;
 
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
@@ -853,7 +853,7 @@ void SV_Say(qboolean team)
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -927,7 +927,7 @@ void SV_Pings_f(void)
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 	{
-		if (client->state != cs_spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -1070,7 +1070,7 @@ void SV_PTrack_f(void)
 	}
 
 	i = String::Atoi(Cmd_Argv(1));
-	if (i < 0 || i >= MAX_CLIENTS_QW || svs.clients[i].state != cs_spawned ||
+	if (i < 0 || i >= MAX_CLIENTS_QW || svs.clients[i].state != CS_ACTIVE ||
 		svs.clients[i].spectator)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
@@ -1745,7 +1745,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			MSGQW_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
 			MSGQW_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
 
-			if (cl->state != cs_spawned)
+			if (cl->state != CS_ACTIVE)
 			{
 				break;
 			}

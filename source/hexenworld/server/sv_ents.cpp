@@ -1229,7 +1229,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 	for (j = 0,cl = svs.clients; j < HWMAX_CLIENTS; j++,cl++)
 	{
-		if (cl->state != cs_spawned)
+		if (cl->state != CS_ACTIVE)
 		{
 			continue;
 		}
