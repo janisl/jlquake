@@ -836,3 +836,29 @@ void AAS_StoreReachability()
 		aasworld->reachabilitysize += areasettings->numreachableareas;
 	}	//end for
 }
+
+int AAS_BestReachableLinkArea(aas_link_t* areas)
+{
+	for (aas_link_t* link = areas; link; link = link->next_area)
+	{
+		if (AAS_AreaGrounded(link->areanum) || AAS_AreaSwim(link->areanum))
+		{
+			return link->areanum;
+		}
+	}
+
+	for (aas_link_t* link = areas; link; link = link->next_area)
+	{
+		if (link->areanum)
+		{
+			return link->areanum;
+		}
+		//FIXME: this is a bad idea when the reachability is not yet
+		// calculated when the level items are loaded
+		if (GGameType & GAME_Quake3 && AAS_AreaReachability(link->areanum))
+		{
+			return link->areanum;
+		}
+	}
+	return 0;
+}

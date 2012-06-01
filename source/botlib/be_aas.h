@@ -31,14 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
 
-typedef enum
-{
-	SOLID_NOT,			// no interaction with other objects
-	SOLID_TRIGGER,		// only touch when inside, after moving
-	SOLID_BBOX,			// touch on edge
-	SOLID_BSP			// bsp clip, touch on edge
-} solid_t;
-
 // client movement prediction stop events, stop as soon as:
 #define SE_NONE                 0
 #define SE_HITGROUND            1		// the ground is hit

@@ -314,8 +314,6 @@ void AAS_PrintTravelType(int traveltype);
 //draw an arrow
 void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor);
 
-extern aas_t* defaultaasworld;
-
 //returns the origin of the entity
 void AAS_EntityOrigin(int entnum, vec3_t origin);
 //returns the model index of the entity
@@ -333,6 +331,12 @@ void AAS_InvalidateEntities();
 //returns the next entity
 int AAS_NextEntity(int entnum);
 bool AAS_IsEntityInArea(int entnumIgnore, int entnumIgnore2, int areanum);
+//updates an entity
+int AAS_UpdateEntity(int ent, const bot_entitystate_t* state);
+//unlink not updated entities
+void AAS_UnlinkInvalidEntities();
+//returns the best reachable area the entity is situated in
+int AAS_BestReachableEntityArea(int entnum);
 
 //dumps the loaded AAS data
 void AAS_DumpAASData();
@@ -470,6 +474,7 @@ float AAS_ClosestEdgePoints(const vec3_t v1, const vec3_t v2, const vec3_t v3, c
 	vec3_t beststart2, vec3_t bestend2, float bestdist);
 int AAS_TravelFlagsForTeam(int ent);
 void AAS_StoreReachability();
+int AAS_BestReachableLinkArea(aas_link_t* areas);
 
 #define ROUTING_DEBUG
 

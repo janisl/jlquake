@@ -85,6 +85,16 @@
 	TFL_WATER | TFL_SLIME | \
 	TFL_JUMPPAD | TFL_FUNCBOB)
 
+enum
+{
+	Q3SOLID_NOT,			// no interaction with other objects
+	Q3SOLID_TRIGGER,		// only touch when inside, after moving
+	Q3SOLID_BBOX,			// touch on edge
+	Q3SOLID_BSP			// bsp clip, touch on edge
+};
+
+#define BLOCKINGFLAG_MOVER  (~0x7fffffff)
+
 //entity info
 struct aas_entityinfo_t
 {
@@ -137,6 +147,29 @@ struct aas_trace_t
 	int planenum;			// number of the plane that was hit
 };
 
+//entity state
+struct bot_entitystate_t
+{
+	int type;				// entity type
+	int flags;				// entity flags
+	vec3_t origin;			// origin of the entity
+	vec3_t angles;			// angles of the model
+	vec3_t old_origin;		// for lerping
+	vec3_t mins;			// bounding box minimums
+	vec3_t maxs;			// bounding box maximums
+	int groundent;			// ground entity
+	int solid;				// solid type
+	int modelindex;			// model used
+	int modelindex2;		// weapons, CTF flags, etc
+	int frame;				// model frame number
+	int event;				// impulse events -- muzzle flashes, footsteps, etc
+	int eventParm;			// even parameter
+	int powerups;			// bit flags
+	int weapon;				// determines weapon and flash model, etc
+	int legsAnim;			// mask off ANIM_TOGGLEBIT
+	int torsoAnim;			// mask off ANIM_TOGGLEBIT
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -150,6 +183,7 @@ bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);
 
 //returns the info of the given entity
 void AAS_EntityInfo(int entnum, aas_entityinfo_t* info);
+void AAS_SetAASBlockingEntity(const vec3_t absmin, const vec3_t absmax, int blocking);
 
 //returns true if AAS is initialized
 bool AAS_Initialized();

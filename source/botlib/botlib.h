@@ -36,6 +36,7 @@ struct aas_clientmove_s;
 struct aas_altroutegoal_s;
 struct aas_predictroute_s;
 struct bot_input_t;
+struct bot_entitystate_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -74,29 +75,6 @@ typedef struct bsp_trace_s
 } bsp_trace_t;
 
 #endif	// BSPTRACE
-
-//entity state
-typedef struct bot_entitystate_s
-{
-	int type;				// entity type
-	int flags;				// entity flags
-	vec3_t origin;			// origin of the entity
-	vec3_t angles;			// angles of the model
-	vec3_t old_origin;		// for lerping
-	vec3_t mins;			// bounding box minimums
-	vec3_t maxs;			// bounding box maximums
-	int groundent;			// ground entity
-	int solid;				// solid type
-	int modelindex;			// model used
-	int modelindex2;		// weapons, CTF flags, etc
-	int frame;				// model frame number
-	int event;				// impulse events -- muzzle flashes, footsteps, etc
-	int eventParm;			// even parameter
-	int powerups;			// bit flags
-	int weapon;				// determines weapon and flash model, etc
-	int legsAnim;			// mask off ANIM_TOGGLEBIT
-	int torsoAnim;			// mask off ANIM_TOGGLEBIT
-} bot_entitystate_t;
 
 //bot AI library exported functions
 typedef struct botlib_import_s

@@ -319,8 +319,6 @@ int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
 	int color);
 
-void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, int blocking);
-
 void AAS_RecordTeamDeathArea(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
 
 /*
@@ -354,7 +352,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	aas->AAS_AvoidDangerArea = AAS_AvoidDangerArea;
 	aas->AAS_Retreat = AAS_Retreat;
 	aas->AAS_AlternativeRouteGoals = AAS_AlternativeRouteGoals;
-	aas->AAS_SetAASBlockingEntity = AAS_SetAASBlockingEntity;
 	aas->AAS_RecordTeamDeathArea = AAS_RecordTeamDeathArea;
 	// done.
 }

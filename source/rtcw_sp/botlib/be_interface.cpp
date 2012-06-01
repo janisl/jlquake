@@ -277,8 +277,6 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 
 qboolean AAS_GetRouteFirstVisPos(vec3_t srcpos, vec3_t destpos, int travelflags, vec3_t retpos);
 
-void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, qboolean blocking);
-
 /*
 ============
 Init_AAS_Export
@@ -307,8 +305,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	aas->AAS_RT_GetHidePos = AAS_RT_GetHidePos;
 	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
 	aas->AAS_GetRouteFirstVisPos = AAS_GetRouteFirstVisPos;
-	aas->AAS_SetAASBlockingEntity = AAS_SetAASBlockingEntity;
-	// done.
 }
 
 

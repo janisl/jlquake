@@ -40,8 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 void AAS_InitReachability(void);
 //continue calculating the reachabilities
 int AAS_ContinueInitReachability(float time);
-//
-int AAS_BestReachableLinkArea(aas_link_t* areas);
 #endif	//AASINTERN
 
 //returns the best reachable area and goal origin for a bounding box at the given origin

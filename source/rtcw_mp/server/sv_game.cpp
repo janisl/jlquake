@@ -588,7 +588,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return botlib_export->aas.AAS_FindAttackSpotWithinRange(args[1], args[2], args[3], VMF(4), args[5], (float*)VMA(6));
 
 	case BOTLIB_AAS_SETAASBLOCKINGENTITY:
-		botlib_export->aas.AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);
+		AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);
 		return 0;
 	// done.
 

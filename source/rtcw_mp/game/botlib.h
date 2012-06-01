@@ -40,6 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 
 struct aas_clientmove_s;
 struct bot_input_t;
+struct bot_entitystate_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -77,31 +78,6 @@ typedef struct bsp_trace_s
 
 #define BSPTRACE
 #endif	// BSPTRACE
-
-//entity state
-typedef struct bot_entitystate_s
-{
-	int type;				// entity type
-	int flags;				// entity flags
-	vec3_t origin;			// origin of the entity
-	vec3_t angles;			// angles of the model
-	vec3_t old_origin;		// for lerping
-	vec3_t mins;			// bounding box minimums
-	vec3_t maxs;			// bounding box maximums
-	int groundent;			// ground entity
-	int solid;				// solid type
-	int modelindex;			// model used
-	int modelindex2;		// weapons, CTF flags, etc
-	int frame;				// model frame number
-	int event;				// impulse events -- muzzle flashes, footsteps, etc
-	int eventParm;			// even parameter
-	int powerups;			// bit flags
-	int weapon;				// determines weapon and flash model, etc
-	int legsAnim;			// mask off ANIM_TOGGLEBIT
-	int torsoAnim;			// mask off ANIM_TOGGLEBIT
-//	int		weapAnim;		// mask off ANIM_TOGGLEBIT	//----(SA)	added
-//----(SA)	didn't want to comment in as I wasn't sure of any implications of changing this structure.
-} bot_entitystate_t;
 
 //bot AI library exported functions
 typedef struct botlib_import_s
@@ -152,8 +128,6 @@ typedef struct aas_export_s
 	//--------------------------------------------
 	qboolean (* AAS_RT_GetHidePos)(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
 	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-	void (* AAS_SetAASBlockingEntity)(vec3_t absmin, vec3_t absmax, qboolean blocking);
-	// done.
 } aas_export_t;
 
 typedef struct ea_export_s

@@ -271,8 +271,6 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 
 int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 
-void AAS_SetAASBlockingEntity(vec3_t absmin, vec3_t absmax, qboolean blocking);
-
 /*
 ============
 Init_AAS_Export
@@ -300,8 +298,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	//--------------------------------------------
 	aas->AAS_RT_GetHidePos = AAS_RT_GetHidePos;
 	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
-	aas->AAS_SetAASBlockingEntity = AAS_SetAASBlockingEntity;
-	// done.
 }
 
 

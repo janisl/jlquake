@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define AASINTERN
 
 #include "be_aas_main.h"
-#include "be_aas_entity.h"
 #include "be_aas_sample.h"
 #include "be_aas_reach.h"
 #include "be_aas_route.h"

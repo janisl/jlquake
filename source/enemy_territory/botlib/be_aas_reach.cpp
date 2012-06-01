@@ -50,36 +50,6 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_BestReachableLinkArea(aas_link_t* areas)
-{
-	aas_link_t* link;
-
-	for (link = areas; link; link = link->next_area)
-	{
-		if (AAS_AreaGrounded(link->areanum) || AAS_AreaSwim(link->areanum))
-		{
-			return link->areanum;
-		}	//end if
-	}	//end for
-		//
-	for (link = areas; link; link = link->next_area)
-	{
-		if (link->areanum)
-		{
-			return link->areanum;
-		}
-		//FIXME: cannot enable next line right now because the reachability
-		// does not have to be calculated when the level items are loaded
-		//if (AAS_AreaReachability(link->areanum)) return link->areanum;
-	}	//end for
-	return 0;
-}	//end of the function AAS_BestReachableLinkArea
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin)
 {
 	int areanum, i, j, k, l;

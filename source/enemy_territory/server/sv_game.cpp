@@ -689,7 +689,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return botlib_export->aas.AAS_AlternativeRouteGoals((float*)VMA(1), (float*)VMA(2), args[3], (aas_altroutegoal_t*)VMA(4), args[5], args[6]);
 
 	case BOTLIB_AAS_SETAASBLOCKINGENTITY:
-		botlib_export->aas.AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);
+		AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);
 		return 0;
 
 	case BOTLIB_AAS_RECORDTEAMDEATHAREA:

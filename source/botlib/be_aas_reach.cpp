@@ -39,39 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_BestReachableLinkArea(aas_link_t* areas)
-{
-	aas_link_t* link;
-
-	for (link = areas; link; link = link->next_area)
-	{
-		if (AAS_AreaGrounded(link->areanum) || AAS_AreaSwim(link->areanum))
-		{
-			return link->areanum;
-		}	//end if
-	}	//end for
-		//
-	for (link = areas; link; link = link->next_area)
-	{
-		if (link->areanum)
-		{
-			return link->areanum;
-		}
-		//FIXME: this is a bad idea when the reachability is not yet
-		// calculated when the level items are loaded
-		if (AAS_AreaReachability(link->areanum))
-		{
-			return link->areanum;
-		}
-	}	//end for
-	return 0;
-}	//end of the function AAS_BestReachableLinkArea
-//===========================================================================
-//
 // Parameter:			-
 // Returns:				-
 // Changes Globals:		-

@@ -46,8 +46,6 @@ struct aas_clientmove_s;
 struct bot_moveresult_t;
 struct bot_initmove_et_t;
 
-#define BLOCKINGFLAG_MOVER  (~0x7fffffff)
-
 //debug line colors
 #define LINECOLOR_NONE          -1
 #define LINECOLOR_RED           1	//0xf2f2f0f0L
@@ -55,31 +53,6 @@ struct bot_initmove_et_t;
 #define LINECOLOR_BLUE          3	//0xf3f3f1f1L
 #define LINECOLOR_YELLOW        4	//0xdcdddedfL
 #define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
-
-//entity state
-typedef struct bot_entitystate_s
-{
-	int type;				// entity type
-	int flags;				// entity flags
-	vec3_t origin;			// origin of the entity
-	vec3_t angles;			// angles of the model
-	vec3_t old_origin;		// for lerping
-	vec3_t mins;			// bounding box minimums
-	vec3_t maxs;			// bounding box maximums
-	int groundent;			// ground entity
-	int solid;				// solid type
-	int modelindex;			// model used
-	int modelindex2;		// weapons, CTF flags, etc
-	int frame;				// model frame number
-	int event;				// impulse events -- muzzle flashes, footsteps, etc
-	int eventParm;			// even parameter
-	int powerups;			// bit flags
-	int weapon;				// determines weapon and flash model, etc
-	int legsAnim;			// mask off ANIM_TOGGLEBIT
-	int torsoAnim;			// mask off ANIM_TOGGLEBIT
-//	int		weapAnim;		// mask off ANIM_TOGGLEBIT	//----(SA)	added
-//----(SA)	didn't want to comment in as I wasn't sure of any implications of changing this structure.
-} bot_entitystate_t;
 
 //bot AI library exported functions
 typedef struct botlib_import_s
@@ -134,7 +107,6 @@ typedef struct aas_export_s
 	int (* AAS_AlternativeRouteGoals)(vec3_t start, vec3_t goal, int travelflags,
 		aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
 		int color);
-	void (* AAS_SetAASBlockingEntity)(vec3_t absmin, vec3_t absmax, int blocking);
 	int (* AAS_NearestHideArea)(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 	void (* AAS_RecordTeamDeathArea)(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
 	// done.
