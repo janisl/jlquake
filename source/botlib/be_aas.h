@@ -73,21 +73,3 @@ typedef struct aas_altroutegoal_s
 	unsigned short goaltraveltime;
 	unsigned short extratraveltime;
 } aas_altroutegoal_t;
-
-// route prediction stop events
-#define RSE_NONE                0
-#define RSE_NOROUTE             1	//no route to goal
-#define RSE_USETRAVELTYPE       2	//stop as soon as on of the given travel types is used
-#define RSE_ENTERCONTENTS       4	//stop when entering the given contents
-#define RSE_ENTERAREA           8	//stop when entering the given area
-
-typedef struct aas_predictroute_s
-{
-	vec3_t endpos;			//position at the end of movement prediction
-	int endarea;			//area at end of movement prediction
-	int stopevent;			//event that made the prediction stop
-	int endcontents;		//contents at the end of movement prediction
-	int endtravelflags;		//end travel flags
-	int numareas;			//number of areas predicted ahead
-	int time;				//time predicted ahead (in hundreth of a sec)
-} aas_predictroute_t;

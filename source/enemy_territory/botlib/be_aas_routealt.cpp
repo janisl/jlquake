@@ -48,8 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_AreaRouteToGoalArea(int areanum, vec3_t origin, int goalareanum, int travelflags, int* traveltime, int* reachnum);
-
 int AAS_AlternativeRouteGoals(vec3_t start, vec3_t goal, int travelflags,
 	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
 	int color)

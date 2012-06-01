@@ -281,11 +281,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	//--------------------------------------------
 	aas->AAS_PointContents = AAS_PointContents;
 	//--------------------------------------------
-	// be_aas_route.c
-	//--------------------------------------------
-	aas->AAS_AreaTravelTimeToGoalArea = AAS_AreaTravelTimeToGoalArea;
-	aas->AAS_PredictRoute = AAS_PredictRoute;
-	//--------------------------------------------
 	// be_aas_altroute.c
 	//--------------------------------------------
 	aas->AAS_AlternativeRouteGoals = AAS_AlternativeRouteGoals;

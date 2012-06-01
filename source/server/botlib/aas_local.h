@@ -492,7 +492,6 @@ void AAS_Reachability_FuncBobbing();
 #define CACHE_REFRESHTIME       15.0f	//15 seconds refresh time
 
 //maximum number of routing updates each frame
-#define MAX_FRAMEROUTINGUPDATES_Q3      10
 #define MAX_FRAMEROUTINGUPDATES_WOLF    100
 
 #define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
@@ -507,7 +506,6 @@ extern int max_routingcachesize;
 extern int max_frameroutingupdates;
 
 void AAS_RoutingInfo();
-int AAS_ClusterAreaNum(int cluster, int areanum);
 void AAS_InitTravelFlagFromType();
 //returns the travel flag for the given travel type
 int AAS_TravelFlagForType(int traveltype);
@@ -518,9 +516,7 @@ void AAS_InitAreaContentsTravelFlags();
 //return the travel flag(s) for traveling through this area
 int AAS_AreaContentsTravelFlags(int areanum);
 void AAS_CreateReversedReachability();
-float AAS_AreaGroundSteepnessScale(int areanum);
 void AAS_InitPortalMaxTravelTimes();
-bool AAS_FreeOldestCache();
 void AAS_InitClusterAreaCache();
 void AAS_InitPortalCache();
 int AAS_CompressVis(const byte* vis, int numareas, byte* dest);
@@ -528,14 +524,21 @@ int AAS_AreaVisible(int srcarea, int destarea);
 void AAS_InitRoutingUpdate();
 void AAS_WriteRouteCache();
 int AAS_ReadRouteCache();
-aas_routingcache_t* AAS_GetAreaRoutingCache(int clusternum, int areanum, int travelflags, bool forceUpdate);
-aas_routingcache_t* AAS_GetPortalRoutingCache(int clusternum, int areanum, int travelflags);
 //returns the reachability with the given index
 void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
 //returns the index of the next reachability for the given area
 int AAS_NextAreaReachability(int areanum, int reachnum);
 //returns the next reachability using the given model
 int AAS_NextModelReachability(int num, int modelnum);
+//returns the travel time from start to end in the given area
+unsigned short int AAS_AreaTravelTime(int areanum, const vec3_t start, const vec3_t end);
+void AAS_CalculateAreaTravelTimes();
+void AAS_InitReachabilityAreas();
+bool AAS_AreaRouteToGoalArea(int areanum, const vec3_t origin, int goalareanum, int travelflags,
+	int* traveltime, int* reachnum);
+//returns the travel time from the area to the goal area using the given travel flags
+int AAS_AreaTravelTimeToGoalAreaCheckLoop(int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum);
+void AAS_CreateAllRoutingCache();
 
 struct midrangearea_t
 {

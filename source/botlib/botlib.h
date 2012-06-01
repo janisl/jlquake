@@ -34,8 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 struct aas_clientmove_s;
 struct aas_altroutegoal_s;
-struct aas_predictroute_s;
-struct bot_input_t;
 struct bot_entitystate_t;
 
 //debug line colors
@@ -97,13 +95,6 @@ typedef struct aas_export_s
 	// be_aas_bspq3.c
 	//--------------------------------------------
 	int (* AAS_PointContents)(vec3_t point);
-	//--------------------------------------------
-	// be_aas_route.c
-	//--------------------------------------------
-	int (* AAS_AreaTravelTimeToGoalArea)(int areanum, vec3_t origin, int goalareanum, int travelflags);
-	int (* AAS_PredictRoute)(struct aas_predictroute_s* route, int areanum, vec3_t origin,
-		int goalareanum, int travelflags, int maxareas, int maxtime,
-		int stopevent, int stopcontents, int stoptfl, int stopareanum);
 	//--------------------------------------------
 	// be_aas_altroute.c
 	//--------------------------------------------

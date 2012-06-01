@@ -56,34 +56,13 @@
 #define ETTFL_TEAM_FLAGS    (ETTFL_TEAM_AXIS | ETTFL_TEAM_ALLIES | ETTFL_TEAM_AXIS_DISGUISED | ETTFL_TEAM_ALLIES_DISGUISED)
 
 //default travel flags
-#define Q3TFL_DEFAULT TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | \
-	TFL_JUMP | TFL_LADDER |	\
-	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | \
-	TFL_TELEPORT | TFL_ELEVATOR | \
-	TFL_AIR | TFL_WATER | TFL_JUMPPAD | TFL_FUNCBOB
 //----(SA)	modified since slime is no longer deadly
-#define WSTFL_DEFAULT ((TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP |	\
+#define WOLFTFL_DEFAULT (TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP |	\
 	TFL_JUMP | TFL_LADDER | \
 	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP |	\
 	TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
 	TFL_WATER | TFL_SLIME | \
-	TFL_JUMPPAD | TFL_FUNCBOB) \
-	& ~(TFL_JUMPPAD | TFL_ROCKETJUMP | TFL_BFGJUMP | TFL_GRAPPLEHOOK | TFL_DOUBLEJUMP | TFL_RAMPJUMP | TFL_STRAFEJUMP | TFL_LAVA))
-// RF, added that bottom line so it's the same as AICAST_TFL_DEFAULT
-//----(SA)	modified since slime is no longer deadly
-#define WMTFL_DEFAULT (TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | \
-	TFL_JUMP | TFL_LADDER | \
-	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | \
-	TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
-	TFL_WATER | TFL_SLIME | \
-	TFL_JUMPPAD | TFL_FUNCBOB)
-//----(SA)	modified since slime is no longer deadly
-#define ETTFL_DEFAULT (TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP | \
-	TFL_JUMP | TFL_LADDER | \
-	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP | \
-	TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
-	TFL_WATER | TFL_SLIME | \
-	TFL_JUMPPAD | TFL_FUNCBOB)
+	TFL_FUNCBOB)
 
 enum
 {
@@ -94,6 +73,13 @@ enum
 };
 
 #define BLOCKINGFLAG_MOVER  (~0x7fffffff)
+
+// route prediction stop events
+#define RSE_NONE                0
+#define RSE_NOROUTE             1	//no route to goal
+#define RSE_USETRAVELTYPE       2	//stop as soon as on of the given travel types is used
+#define RSE_ENTERCONTENTS       4	//stop when entering the given contents
+#define RSE_ENTERAREA           8	//stop when entering the given area
 
 //entity info
 struct aas_entityinfo_t
@@ -170,6 +156,17 @@ struct bot_entitystate_t
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 };
 
+struct aas_predictroute_t
+{
+	vec3_t endpos;			//position at the end of movement prediction
+	int endarea;			//area at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	int endcontents;		//contents at the end of movement prediction
+	int endtravelflags;		//end travel flags
+	int numareas;			//number of areas predicted ahead
+	int time;				//time predicted ahead (in hundreth of a sec)
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -198,6 +195,12 @@ int AAS_AreaLadder(int areanum);
 
 //enable or disable an area for routing
 int AAS_EnableRoutingArea(int areanum, int enable);
+//returns the travel time from the area to the goal area using the given travel flags
+int AAS_AreaTravelTimeToGoalArea(int areanum, const vec3_t origin, int goalareanum, int travelflags);
+//predict a route up to a stop event
+bool AAS_PredictRoute(aas_predictroute_t* route, int areanum, const vec3_t origin,
+	int goalareanum, int travelflags, int maxareas, int maxtime,
+	int stopevent, int stopcontents, int stoptfl, int stopareanum);
 
 //returns the mins and maxs of the bounding box for the given presence type
 void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);

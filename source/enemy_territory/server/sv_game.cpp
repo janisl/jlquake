@@ -655,7 +655,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return AAS_AreaLadder(args[1]);
 
 	case BOTLIB_AAS_AREA_TRAVEL_TIME_TO_GOAL_AREA:
-		return botlib_export->aas.AAS_AreaTravelTimeToGoalArea(args[1], (float*)VMA(2), args[3], args[4]);
+		return AAS_AreaTravelTimeToGoalArea(args[1], (float*)VMA(2), args[3], args[4]);
 
 	case BOTLIB_AAS_SWIMMING:
 		return botlib_export->aas.AAS_Swimming((float*)VMA(1));

@@ -48,12 +48,6 @@ void AAS_SetInitialized(void)
 {
 	aasworld->initialized = true;
 	BotImport_Print(PRT_MESSAGE, "AAS initialized.\n");
-#ifdef DEBUG
-	//create all the routing cache
-	//AAS_CreateAllRoutingCache();
-	//
-	//AAS_RoutingInfo();
-#endif
 }	//end of the function AAS_SetInitialized
 //===========================================================================
 //
