@@ -266,8 +266,6 @@ bot_movestate_t* BotMoveStateFromHandle(int handle);
 void BotSetBrushModelTypes();
 bool BotValidTravel(const aas_reachability_t* reach, int travelflags);
 void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime);
-int BotAvoidSpots(vec3_t origin, aas_reachability_t* reach, bot_avoidspot_t* avoidspots, int numavoidspots);
-int BotAddToTarget(const vec3_t start, const vec3_t end, float maxdist, float* dist, vec3_t target);
 void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcenter);
 void BotClearMoveResult(bot_moveresult_t* moveresult);
 bool BotAirControl(const vec3_t origin, const vec3_t velocity, const vec3_t goal, vec3_t dir, float* speed);
@@ -278,6 +276,12 @@ int BotReachabilityTime(aas_reachability_t* reach);
 int BotSetupMoveAI();
 //shutdown movement AI
 void BotShutdownMoveAI();
+bool MoverDown(const aas_reachability_t* reach);
+int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
+	int lastgoalareanum, int lastareanum,
+	const int* avoidreach, const float* avoidreachtimes, const int* avoidreachtries,
+	const bot_goal_t* goal, int travelflags, int movetravelflags,
+	const bot_avoidspot_t* avoidspots, int numavoidspots, int* flags);
 
 //setup the weapon AI
 int BotSetupWeaponAI();

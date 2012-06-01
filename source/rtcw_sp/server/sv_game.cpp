@@ -845,7 +845,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case BOTLIB_AI_REACHABILITY_AREA:
 		return botlib_export->ai.BotReachabilityArea((float*)VMA(1), args[2]);
 	case BOTLIB_AI_MOVEMENT_VIEW_TARGET:
-		return botlib_export->ai.BotMovementViewTarget(args[1], (struct bot_goal_q3_t*)VMA(2), args[3], VMF(4), (float*)VMA(5));
+		return BotMovementViewTargetQ3(args[1], (struct bot_goal_q3_t*)VMA(2), args[3], VMF(4), (float*)VMA(5));
 	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
 		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (struct bot_goal_q3_t*)VMA(3), args[4], (float*)VMA(5));
 	case BOTLIB_AI_ALLOC_MOVE_STATE:

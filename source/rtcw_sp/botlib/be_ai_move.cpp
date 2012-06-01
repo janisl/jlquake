@@ -83,7 +83,6 @@ int BotFuzzyPointReachabilityArea(vec3_t origin)
 	}	//end for
 	bestdist = 999999;
 	bestareanum = 0;
-	//z = 0;
 	for (z = 1; z >= -1; z -= 1)
 	{
 		for (x = 1; x >= -1; x -= 2)
@@ -248,34 +247,6 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t* reach)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int MoverDown(aas_reachability_t* reach)
-{
-	int modelnum;
-	vec3_t mins, maxs, origin;
-	vec3_t angles = {0, 0, 0};
-
-	modelnum = reach->facenum & 0x0000FFFF;
-	//get some bsp model info
-	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
-	//
-	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
-	{
-		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
-		return qfalse;
-	}	//end if
-		//if the top of the plat is below the reachability start point
-	if (origin[2] + maxs[2] < reach->start[2])
-	{
-		return qtrue;
-	}
-	return qfalse;
-}	//end of the function MoverDown
-//===========================================================================
-//
-// Parameter:			-
-// Returns:				-
-// Changes Globals:		-
-//===========================================================================
 int BotOnTopOfEntity(bot_movestate_t* ms)
 {
 	vec3_t mins, maxs, end, up = {0, 0, 1};
@@ -290,173 +261,6 @@ int BotOnTopOfEntity(bot_movestate_t* ms)
 	}	//end if
 	return -1;
 }	//end of the function BotOnTopOfEntity
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int BotGetReachabilityToGoal(vec3_t origin, int areanum, int entnum,
-	int lastgoalareanum, int lastareanum,
-	int* avoidreach, float* avoidreachtimes, int* avoidreachtries,
-	bot_goal_q3_t* goal, int travelflags, int movetravelflags)
-{
-	int t, besttime, bestreachnum, reachnum;
-	aas_reachability_t reach;
-
-	//if not in a valid area
-	if (!areanum)
-	{
-		return 0;
-	}
-	//
-	if (AAS_AreaDoNotEnter(areanum) || AAS_AreaDoNotEnter(goal->areanum))
-	{
-		travelflags |= TFL_DONOTENTER;
-		movetravelflags |= TFL_DONOTENTER;
-	}	//end if
-	if (AAS_AreaDoNotEnterLarge(areanum) || AAS_AreaDoNotEnterLarge(goal->areanum))
-	{
-		travelflags |= WOLFTFL_DONOTENTER_LARGE;
-		movetravelflags |= WOLFTFL_DONOTENTER_LARGE;
-	}	//end if
-		//use the routing to find the next area to go to
-	besttime = 0;
-	bestreachnum = 0;
-	//
-	for (reachnum = AAS_NextAreaReachability(areanum, 0); reachnum;
-		 reachnum = AAS_NextAreaReachability(areanum, reachnum))
-	{
-#ifdef AVOIDREACH
-		int i;
-		//check if it isn't an reachability to avoid
-		for (i = 0; i < MAX_AVOIDREACH; i++)
-		{
-			if (avoidreach[i] == reachnum && avoidreachtimes[i] >= AAS_Time())
-			{
-				break;
-			}
-		}	//end for
-		if (i != MAX_AVOIDREACH && avoidreachtries[i] > AVOIDREACH_TRIES)
-		{
-#ifdef DEBUG
-			if (bot_developer)
-			{
-				BotImport_Print(PRT_MESSAGE, "avoiding reachability %d\n", avoidreach[i]);
-			}	//end if
-#endif	//DEBUG
-			continue;
-		}	//end if
-#endif	//AVOIDREACH
-		//get the reachability from the number
-		AAS_ReachabilityFromNum(reachnum, &reach);
-		//NOTE: do not go back to the previous area if the goal didn't change
-		//NOTE: is this actually avoidance of local routing minima between two areas???
-		if (lastgoalareanum == goal->areanum && reach.areanum == lastareanum)
-		{
-			continue;
-		}
-		//if (AAS_AreaContentsTravelFlags(reach.areanum) & ~travelflags) continue;
-		//if the travel isn't valid
-		if (!BotValidTravel(&reach, movetravelflags))
-		{
-			continue;
-		}
-		//RF, ignore disabled areas
-		if (!AAS_AreaReachability(reach.areanum))
-		{
-			continue;
-		}
-		//get the travel time (ignore routes that leads us back our current area)
-		t = AAS_AreaTravelTimeToGoalAreaCheckLoop(reach.areanum, reach.end, goal->areanum, travelflags, areanum);
-		//if the goal area isn't reachable from the reachable area
-		if (!t)
-		{
-			continue;
-		}
-
-		// Ridah, if this sends us to a looped route, ignore it
-		//if (AAS_AreaTravelTimeToGoalArea(areanum, reach.start, goal->areanum, travelflags) + reach.traveltime < t)
-		//	continue;
-
-		//add the travel time towards the area
-		// Ridah, not sure why this was disabled, but it causes looped links in the route-cache
-		// RF, update.. seems to work better like this....
-		t += reach.traveltime;	// + AAS_AreaTravelTime(areanum, origin, reach.start);
-		//t += reach.traveltime + AAS_AreaTravelTime(areanum, origin, reach.start);
-
-		//if the travel time is better than the ones already found
-		if (!besttime || t < besttime)
-		{
-			besttime = t;
-			bestreachnum = reachnum;
-		}	//end if
-	}	//end for
-		//
-	return bestreachnum;
-}	//end of the function BotGetReachabilityToGoal
-
-int BotMovementViewTarget(int movestate, bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target)
-{
-	aas_reachability_t reach;
-	int reachnum, lastareanum;
-	bot_movestate_t* ms;
-	vec3_t end;
-	float dist;
-
-	ms = BotMoveStateFromHandle(movestate);
-	if (!ms)
-	{
-		return qfalse;
-	}
-	reachnum = 0;
-	//if the bot has no goal or no last reachability
-	if (!ms->lastreachnum || !goal)
-	{
-		return qfalse;
-	}
-
-	reachnum = ms->lastreachnum;
-	VectorCopy(ms->origin, end);
-	lastareanum = ms->lastareanum;
-	dist = 0;
-	while (reachnum && dist < lookahead)
-	{
-		AAS_ReachabilityFromNum(reachnum, &reach);
-		if (BotAddToTarget(end, reach.start, lookahead, &dist, target))
-		{
-			return qtrue;
-		}
-		//never look beyond teleporters
-		if (reach.traveltype == TRAVEL_TELEPORT)
-		{
-			return qtrue;
-		}
-		//don't add jump pad distances
-		if (reach.traveltype != TRAVEL_JUMPPAD &&
-			reach.traveltype != TRAVEL_ELEVATOR &&
-			reach.traveltype != TRAVEL_FUNCBOB)
-		{
-			if (BotAddToTarget(reach.start, reach.end, lookahead, &dist, target))
-			{
-				return qtrue;
-			}
-		}	//end if
-		reachnum = BotGetReachabilityToGoal(reach.end, reach.areanum, -1,
-			ms->lastgoalareanum, lastareanum,
-			ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
-			goal, travelflags, travelflags);
-		VectorCopy(reach.end, end);
-		lastareanum = reach.areanum;
-		if (lastareanum == goal->areanum)
-		{
-			BotAddToTarget(reach.end, goal->origin, lookahead, &dist, target);
-			return qtrue;
-		}	//end if
-	}	//end while
-		//
-	return qfalse;
-}	//end of the function BotMovementViewTarget
 //===========================================================================
 //
 // Parameter:			-
@@ -513,10 +317,10 @@ int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_q3_t* goal, i
 	for (i = 0; i < 20 && (areanum != goal->areanum); i++)
 	{
 		//
-		reachnum = BotGetReachabilityToGoal(end, areanum, -1,
+		reachnum = BotGetReachabilityToGoal(end, areanum,
 			lastgoalareanum, lastareanum,
 			avoidreach, avoidreachtimes, avoidreachtries,
-			goal, travelflags, travelflags);
+			reinterpret_cast<bot_goal_t*>(goal), travelflags, travelflags, NULL, 0, NULL);
 		if (!reachnum)
 		{
 			return qfalse;
@@ -2801,10 +2605,10 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 #endif	//DEBUG
 			}	//end if
 				//get a new reachability leading towards the goal
-			reachnum = BotGetReachabilityToGoal(ms->origin, ms->areanum, ms->entitynum,
+			reachnum = BotGetReachabilityToGoal(ms->origin, ms->areanum,
 				ms->lastgoalareanum, ms->lastareanum,
 				ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
-				goal, travelflags, travelflags);
+				reinterpret_cast<bot_goal_t*>(goal), travelflags, travelflags, NULL, 0, NULL);
 			//the area number the reachability starts in
 			ms->reachareanum = ms->areanum;
 			//reset some state variables
@@ -2909,10 +2713,10 @@ void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_q3_t* goal,
 			{
 				//BotImport_Print(PRT_MESSAGE, "client %d used a jumppad without knowing, area %d\n", ms->client, areas[i]);
 				foundjumppad = qtrue;
-				lastreachnum = BotGetReachabilityToGoal(end, areas[i], ms->entitynum,
+				lastreachnum = BotGetReachabilityToGoal(end, areas[i],
 					ms->lastgoalareanum, ms->lastareanum,
 					ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
-					goal, travelflags, TFL_JUMPPAD);
+					reinterpret_cast<bot_goal_t*>(goal), travelflags, TFL_JUMPPAD, NULL, 0, NULL);
 				if (lastreachnum)
 				{
 					ms->lastreachnum = lastreachnum;

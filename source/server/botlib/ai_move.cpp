@@ -267,7 +267,7 @@ void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
 	}
 }
 
-int BotAvoidSpots(vec3_t origin, aas_reachability_t* reach, bot_avoidspot_t* avoidspots, int numavoidspots)
+static int BotAvoidSpots(const vec3_t origin, const aas_reachability_t* reach, const bot_avoidspot_t* avoidspots, int numavoidspots)
 {
 	bool checkbetween;
 	switch (reach->traveltype & TRAVELTYPE_MASK)
@@ -694,4 +694,234 @@ void BotShutdownMoveAI()
 			botmovestates[i] = NULL;
 		}
 	}
+}
+
+bool MoverDown(const aas_reachability_t* reach)
+{
+	int modelnum = reach->facenum & 0x0000FFFF;
+	//get some bsp model info
+	vec3_t angles = {0, 0, 0};
+	vec3_t mins, maxs;
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
+
+	vec3_t origin;
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
+	{
+		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
+		return false;
+	}
+	//if the top of the plat is below the reachability start point
+	if (origin[2] + maxs[2] < reach->start[2])
+	{
+		return true;
+	}
+	return false;
+}
+
+int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
+	int lastgoalareanum, int lastareanum,
+	const int* avoidreach, const float* avoidreachtimes, const int* avoidreachtries,
+	const bot_goal_t* goal, int travelflags, int movetravelflags,
+	const bot_avoidspot_t* avoidspots, int numavoidspots, int* flags)
+{
+	bool useAvoidPass = false;
+
+again:
+
+	//if not in a valid area
+	if (!areanum)
+	{
+		return 0;
+	}
+
+	if (AAS_AreaDoNotEnter(areanum) || AAS_AreaDoNotEnter(goal->areanum))
+	{
+		travelflags |= TFL_DONOTENTER;
+		movetravelflags |= TFL_DONOTENTER;
+	}
+	if (!(GGameType & GAME_Quake3) && (AAS_AreaDoNotEnterLarge(areanum) || AAS_AreaDoNotEnterLarge(goal->areanum)))
+	{
+		travelflags |= WOLFTFL_DONOTENTER_LARGE;
+		movetravelflags |= WOLFTFL_DONOTENTER_LARGE;
+	}
+	//use the routing to find the next area to go to
+	int besttime = 0;
+	int bestreachnum = 0;
+
+	for (int reachnum = AAS_NextAreaReachability(areanum, 0); reachnum;
+		 reachnum = AAS_NextAreaReachability(areanum, reachnum))
+	{
+		if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
+		{
+			int i;
+			//check if it isn't an reachability to avoid
+			for (i = 0; i < MAX_AVOIDREACH; i++)
+			{
+				if (avoidreach[i] == reachnum && avoidreachtimes[i] >= AAS_Time())
+				{
+					break;
+				}
+			}
+			// RF, if this is a "useAvoidPass" then we should only accept avoidreach reachabilities
+			if ((!useAvoidPass && i != MAX_AVOIDREACH && avoidreachtries[i] > AVOIDREACH_TRIES) ||
+				(useAvoidPass && !(i != MAX_AVOIDREACH && avoidreachtries[i] > AVOIDREACH_TRIES)))
+			{
+#ifdef DEBUG
+				if (bot_developer)
+				{
+					BotImport_Print(PRT_MESSAGE, "avoiding reachability %d\n", avoidreach[i]);
+				}
+#endif
+				continue;
+			}
+		}
+		//get the reachability from the number
+		aas_reachability_t reach;
+		AAS_ReachabilityFromNum(reachnum, &reach);
+		//NOTE: do not go back to the previous area if the goal didn't change
+		//NOTE: is this actually avoidance of local routing minima between two areas???
+		if (lastgoalareanum == goal->areanum && reach.areanum == lastareanum)
+		{
+			continue;
+		}
+		//if the travel isn't valid
+		if (!BotValidTravel(&reach, movetravelflags))
+		{
+			continue;
+		}
+		// if the area is disabled
+		if (GGameType & (GAME_WolfSP | GAME_ET) && !AAS_AreaReachability(reach.areanum))
+		{
+			continue;
+		}
+		int t;
+		if (GGameType & GAME_WolfSP)
+		{
+			//get the travel time (ignore routes that leads us back our current area)
+			t = AAS_AreaTravelTimeToGoalAreaCheckLoop(reach.areanum, reach.end, goal->areanum, travelflags, areanum);
+		}
+		else
+		{
+			//get the travel time
+			t = AAS_AreaTravelTimeToGoalArea(reach.areanum, reach.end, goal->areanum, travelflags);
+		}
+		//if the goal area isn't reachable from the reachable area
+		if (!t)
+		{
+			continue;
+		}
+
+		//if the bot should not use this reachability to avoid bad spots
+		if (GGameType & GAME_Quake3 && BotAvoidSpots(origin, &reach, avoidspots, numavoidspots))
+		{
+			if (flags)
+			{
+				*flags |= Q3MOVERESULT_BLOCKEDBYAVOIDSPOT;
+			}
+			continue;
+		}
+
+		//add the travel time towards the area
+		if (GGameType & (GAME_WolfMP | GAME_ET))
+		{
+			// Ridah, not sure why this was disabled, but it causes looped links in the route-cache
+			t += reach.traveltime + AAS_AreaTravelTime(areanum, origin, reach.start);
+		}
+		else
+		{
+			t += reach.traveltime;
+		}
+		//if the travel time is better than the ones already found
+		if (!besttime || t < besttime)
+		{
+			besttime = t;
+			bestreachnum = reachnum;
+		}
+	}
+
+	// RF, if we didnt find a route, then try again only looking through avoidreach reachabilities
+	if (GGameType & GAME_ET && !bestreachnum && !useAvoidPass)
+	{
+		useAvoidPass = true;
+		goto again;
+	}
+
+	return bestreachnum;
+}
+
+static int BotMovementViewTarget(int movestate, const bot_goal_t* goal, int travelflags, float lookahead, vec3_t target)
+{
+	bot_movestate_t* ms = BotMoveStateFromHandle(movestate);
+	if (!ms)
+	{
+		return false;
+	}
+	int reachnum = 0;
+	//if the bot has no goal or no last reachability
+	if (!ms->lastreachnum || !goal)
+	{
+		return false;
+	}
+
+	reachnum = ms->lastreachnum;
+	vec3_t end;
+	VectorCopy(ms->origin, end);
+	int lastareanum = ms->lastareanum;
+	float dist = 0;
+	while (reachnum && dist < lookahead)
+	{
+		aas_reachability_t reach;
+		AAS_ReachabilityFromNum(reachnum, &reach);
+		if (BotAddToTarget(end, reach.start, lookahead, &dist, target))
+		{
+			return true;
+		}
+		//never look beyond teleporters
+		if ((reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_TELEPORT)
+		{
+			return true;
+		}
+		//never look beyond the weapon jump point
+		if (GGameType & GAME_Quake3 && (reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_ROCKETJUMP)
+		{
+			return true;
+		}
+		if (GGameType & GAME_Quake3 && (reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_BFGJUMP)
+		{
+			return true;
+		}
+		//don't add jump pad distances
+		if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_JUMPPAD &&
+			(reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_ELEVATOR &&
+			(reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_FUNCBOB)
+		{
+			if (BotAddToTarget(reach.start, reach.end, lookahead, &dist, target))
+			{
+				return true;
+			}
+		}
+		reachnum = BotGetReachabilityToGoal(reach.end, reach.areanum,
+			ms->lastgoalareanum, lastareanum,
+			ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
+			goal, travelflags, travelflags, NULL, 0, NULL);
+		VectorCopy(reach.end, end);
+		lastareanum = reach.areanum;
+		if (lastareanum == goal->areanum)
+		{
+			BotAddToTarget(reach.end, goal->origin, lookahead, &dist, target);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int BotMovementViewTargetQ3(int movestate, const bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target)
+{
+	return BotMovementViewTarget(movestate, reinterpret_cast<const bot_goal_t*>(goal), travelflags, lookahead, target);
+}
+
+int BotMovementViewTargetET(int movestate, const bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target)
+{
+	return BotMovementViewTarget(movestate, reinterpret_cast<const bot_goal_t*>(goal), travelflags, lookahead, target);
 }

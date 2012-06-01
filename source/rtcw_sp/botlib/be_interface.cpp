@@ -347,7 +347,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	ai->BotMoveToGoal = BotMoveToGoal;
 	ai->BotMoveInDirection = BotMoveInDirection;
 	ai->BotReachabilityArea = BotReachabilityArea;
-	ai->BotMovementViewTarget = BotMovementViewTarget;
 	ai->BotPredictVisiblePosition = BotPredictVisiblePosition;
 }
 

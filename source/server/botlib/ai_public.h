@@ -360,6 +360,9 @@ void BotResetAvoidReachAndMove(int movestate);
 void BotResetLastAvoidReach(int movestate);
 //resets the whole move state
 void BotResetMoveState(int movestate);
+//view target based on movement
+int BotMovementViewTargetQ3(int movestate, const bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target);
+int BotMovementViewTargetET(int movestate, const bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target);
 
 //
 //	Weapon
