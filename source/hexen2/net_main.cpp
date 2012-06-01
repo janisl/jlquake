@@ -719,7 +719,7 @@ int NET_SendToAll(QMsg* data, int blocktime)
 		{
 			continue;
 		}
-		if (host_client->active)
+		if (host_client->state >= CS_CONNECTED)
 		{
 			if (host_client->netconnection->driver == 0)
 			{
@@ -884,7 +884,7 @@ void        NET_Shutdown(void)
 		{
 			continue;
 		}
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}

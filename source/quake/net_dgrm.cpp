@@ -941,7 +941,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		activeNumber = -1;
 		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
 		{
-			if (client->active)
+			if (client->state >= CS_CONNECTED)
 			{
 				activeNumber++;
 				if (activeNumber == playerNumber)
@@ -1072,7 +1072,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		{
 			continue;
 		}
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}

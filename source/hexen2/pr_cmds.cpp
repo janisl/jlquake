@@ -1640,7 +1640,7 @@ void PF_lightstyle(void)
 	}
 
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
-		if (client->active || client->spawned)
+		if (client->state >= CS_CONNECTED)
 		{
 			client->message.WriteChar(h2svc_lightstyle);
 			client->message.WriteChar(style);
@@ -1716,7 +1716,7 @@ void PF_lightstylestatic(void)
 	// Send message to all clients on this server
 	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
-		if (client->active || client->spawned)
+		if (client->state >= CS_CONNECTED)
 		{
 			client->message.WriteChar(h2svc_lightstyle);
 			client->message.WriteChar(styleNumber);

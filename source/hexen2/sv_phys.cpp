@@ -1534,7 +1534,7 @@ Player character actions
 */
 void SV_Physics_Client(qhedict_t* ent, int num)
 {
-	if (!svs.clients[num - 1].active)
+	if (svs.clients[num - 1].state < CS_CONNECTED)
 	{
 		return;		// unconnected slot
 

@@ -188,7 +188,7 @@ void SV_SendEffect(QMsg* sb, int index)
 	{
 		if (DoTest)
 		{
-			if (svs.clients[i].active)
+			if (svs.clients[i].state >= CS_CONNECTED)
 			{
 				sb = &svs.clients[i].datagram;
 				VectorSubtract(svs.clients[i].edict->GetOrigin(),TestO1,Diff);

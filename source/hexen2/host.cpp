@@ -385,7 +385,7 @@ void SV_BroadcastPrintf(const char* fmt, ...)
 	va_end(argptr);
 
 	for (i = 0; i < svs.maxclients; i++)
-		if (svs.clients[i].active && svs.clients[i].spawned)
+		if (svs.clients[i].state == CS_ACTIVE)
 		{
 			svs.clients[i].message.WriteByte(h2svc_print);
 			svs.clients[i].message.WriteString2(string);
@@ -435,7 +435,7 @@ void SV_DropClient(qboolean crash)
 			NET_SendMessage(host_client->netconnection, &host_client->netchan, &host_client->message);
 		}
 
-		if (host_client->edict && host_client->spawned)
+		if (host_client->edict && host_client->state == CS_ACTIVE)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
@@ -453,7 +453,7 @@ void SV_DropClient(qboolean crash)
 	host_client->netconnection = NULL;
 
 // free the client (the body stays around)
-	host_client->active = false;
+	host_client->state = CS_FREE;
 	host_client->name[0] = 0;
 	host_client->old_frags = -999999;
 	Com_Memset(&host_client->old_v,0,sizeof(host_client->old_v));
@@ -464,7 +464,7 @@ void SV_DropClient(qboolean crash)
 // send notification to all clients
 	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -515,7 +515,7 @@ void Host_ShutdownServer(qboolean crash)
 		count = 0;
 		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		{
-			if (host_client->active && host_client->message.cursize)
+			if (host_client->state >= CS_CONNECTED && host_client->message.cursize)
 			{
 				if (NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
 				{
@@ -546,7 +546,7 @@ void Host_ShutdownServer(qboolean crash)
 	}
 
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
-		if (host_client->active)
+		if (host_client->state >= CS_CONNECTED)
 		{
 			SV_DropClient(crash);
 		}
@@ -903,7 +903,7 @@ void Host_Frame(float time)
 		c = 0;
 		for (i = 0; i < svs.maxclients; i++)
 		{
-			if (svs.clients[i].active)
+			if (svs.clients[i].state >= CS_CONNECTED)
 			{
 				c++;
 			}

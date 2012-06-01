@@ -66,8 +66,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	qboolean active;					// false = client is free
-	qboolean spawned;					// false = don't send datagrams
 	qboolean dropasap;					// has been told to go to another level
 	qboolean privileged;				// can execute any host command
 	qboolean sendsignon;				// only valid before spawned

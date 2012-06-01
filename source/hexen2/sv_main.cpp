@@ -479,7 +479,7 @@ void SV_SendServerinfo(client_t* client)
 	client->message.WriteByte(1);
 
 	client->sendsignon = true;
-	client->spawned = false;		// need prespawn, spawn, etc
+	client->state = CS_CONNECTED;		// need prespawn, spawn, etc
 }
 
 /*
@@ -522,8 +522,7 @@ void SV_ConnectClient(int clientnum)
 	client->netchan = netchan;
 
 	String::Cpy(client->name, "unconnected");
-	client->active = true;
-	client->spawned = false;
+	client->state = CS_CONNECTED;
 	client->edict = ent;
 
 	client->message.InitOOB(client->msgbuf, sizeof(client->msgbuf));
@@ -587,7 +586,7 @@ void SV_CheckForNewClients(void)
 		// init a new client structure
 		//
 		for (i = 0; i < svs.maxclients; i++)
-			if (!svs.clients[i].active)
+			if (svs.clients[i].state < CS_CONNECTED)
 			{
 				break;
 			}
@@ -2043,7 +2042,7 @@ void SV_UpdateToReliableMessages(void)
 		{
 			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 			{
-				if (!client->active)
+				if (client->state < CS_CONNECTED)
 				{
 					continue;
 				}
@@ -2059,7 +2058,7 @@ void SV_UpdateToReliableMessages(void)
 
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -2109,12 +2108,12 @@ void SV_SendClientMessages(void)
 // build individual updates
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (!host_client->active)
+		if (host_client->state < CS_CONNECTED)
 		{
 			continue;
 		}
 
-		if (host_client->spawned)
+		if (host_client->state == CS_ACTIVE)
 		{
 			if (!SV_SendClientDatagram(host_client))
 			{
@@ -2329,7 +2328,7 @@ void SV_SaveSpawnparms(void)
 
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (!host_client->active)
+		if (host_client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -2537,7 +2536,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 // send serverinfo to all connected clients
 	for (i = 0,host_client = svs.clients; i < svs.maxclients; i++, host_client++)
-		if (host_client->active)
+		if (host_client->state >= CS_CONNECTED)
 		{
 			SV_SendServerinfo(host_client);
 		}

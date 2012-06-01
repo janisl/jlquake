@@ -560,7 +560,7 @@ nextmsg:
 
 		while (1)
 		{
-			if (!host_client->active)
+			if (host_client->state < CS_CONNECTED)
 			{
 				return false;	// a command caused an error
 
@@ -713,7 +713,7 @@ void SV_RunClients(void)
 
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (!host_client->active)
+		if (host_client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -726,7 +726,7 @@ void SV_RunClients(void)
 			continue;
 		}
 
-		if (!host_client->spawned)
+		if (host_client->state != CS_ACTIVE)
 		{
 			// clear client movement until a new packet is received
 			Com_Memset(&host_client->cmd, 0, sizeof(host_client->cmd));

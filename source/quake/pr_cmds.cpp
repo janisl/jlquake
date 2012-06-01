@@ -1195,7 +1195,7 @@ void PF_lightstyle(void)
 	}
 
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
-		if (client->active || client->spawned)
+		if (client->state >= CS_CONNECTED)
 		{
 			client->message.WriteChar(q1svc_lightstyle);
 			client->message.WriteChar(style);

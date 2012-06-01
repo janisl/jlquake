@@ -82,7 +82,7 @@ void Host_Status_f(void)
 	print("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients);
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -211,7 +211,7 @@ void Host_Ping_f(void)
 	SV_ClientPrintf("Client ping times:\n");
 	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
-		if (!client->active)
+		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
@@ -520,7 +520,7 @@ void Host_Savegame_f(void)
 
 	for (i = 0; i < svs.maxclients; i++)
 	{
-		if (svs.clients[i].active && (svs.clients[i].edict->GetHealth() <= 0))
+		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].edict->GetHealth() <= 0))
 		{
 			Con_Printf("Can't savegame with a dead player\n");
 			return;
@@ -802,7 +802,7 @@ void SaveGamestate(qboolean ClientsOnly)
 		}
 		if (ClientsOnly)
 		{
-			if (host_client->active)
+			if (host_client->state >= CS_CONNECTED)
 			{
 				FS_Printf(f, "%i\n",i);
 				ED_Write(f, ent);
@@ -835,7 +835,7 @@ void RestoreClients(void)
 	time_diff = sv.time - old_time;
 
 	for (i = 0,host_client = svs.clients; i < svs.maxclients; i++, host_client++)
-		if (host_client->active)
+		if (host_client->state >= CS_CONNECTED)
 		{
 			ent = host_client->edict;
 
@@ -1388,7 +1388,7 @@ void Host_Say(qboolean teamonly)
 
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
-		if (!client || !client->active || !client->spawned)
+		if (!client || client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -1461,7 +1461,7 @@ void Host_Tell_f(void)
 	save = host_client;
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
-		if (!client->active || !client->spawned)
+		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
@@ -1614,7 +1614,7 @@ void Host_PreSpawn_f(void)
 		return;
 	}
 
-	if (host_client->spawned)
+	if (host_client->state == CS_ACTIVE)
 	{
 		Con_Printf("prespawn not valid -- allready spawned\n");
 		return;
@@ -1643,7 +1643,7 @@ void Host_Spawn_f(void)
 		return;
 	}
 
-	if (host_client->spawned)
+	if (host_client->state == CS_ACTIVE)
 	{
 		Con_Printf("Spawn not valid -- allready spawned\n");
 		return;
@@ -1896,7 +1896,7 @@ void Host_Begin_f(void)
 		return;
 	}
 
-	host_client->spawned = true;
+	host_client->state = CS_ACTIVE;
 }
 
 //===========================================================================
@@ -1939,7 +1939,7 @@ void Host_Kick_f(void)
 		{
 			return;
 		}
-		if (!svs.clients[i].active)
+		if (svs.clients[i].state < CS_CONNECTED)
 		{
 			return;
 		}
@@ -1950,7 +1950,7 @@ void Host_Kick_f(void)
 	{
 		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		{
-			if (!host_client->active)
+			if (host_client->state < CS_CONNECTED)
 			{
 				continue;
 			}
