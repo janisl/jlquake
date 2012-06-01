@@ -780,6 +780,10 @@ float AAS_ClosestEdgePoints(const vec3_t v1, const vec3_t v2, const vec3_t v3, c
 
 int AAS_TravelFlagsForTeam(int ent)
 {
+	if (!(GGameType & GAME_Quake3))
+	{
+		return 0;
+	}
 	int notteam;
 	if (!AAS_IntForBSPEpairKey(ent, "bot_notteam", &notteam))
 	{
@@ -861,4 +865,434 @@ int AAS_BestReachableLinkArea(aas_link_t* areas)
 		}
 	}
 	return 0;
+}
+
+// returns true if there is a solid just after the end point when going
+// from start to end
+bool AAS_NearbySolidOrGap(const vec3_t start, const vec3_t end)
+{
+	vec3_t dir, testpoint;
+	int areanum;
+
+	VectorSubtract(end, start, dir);
+	dir[2] = 0;
+	VectorNormalize(dir);
+	VectorMA(end, 48, dir, testpoint);
+
+	areanum = AAS_PointAreaNum(testpoint);
+	if (!areanum)
+	{
+		testpoint[2] += 16;
+		areanum = AAS_PointAreaNum(testpoint);
+		if (!areanum)
+		{
+			return true;
+		}
+	}
+	VectorMA(end, 64, dir, testpoint);
+	areanum = AAS_PointAreaNum(testpoint);
+	if (areanum)
+	{
+		if (!AAS_AreaSwim(areanum) && !AAS_AreaGrounded(areanum))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static aas_lreachability_t* AAS_FindFaceReachabilities(const vec3_t* facepoints, int numpoints,
+	const aas_plane_t* plane, int towardsface)
+{
+	aas_lreachability_t* lreachabilities = NULL;
+	int bestfacenum = 0;
+	aas_plane_t* bestfaceplane = NULL;
+
+	for (int i = 1; i < aasworld->numareas; i++)
+	{
+		aas_area_t* area = &aasworld->areas[i];
+		// get the shortest distance between one of the func_bob start edges and
+		// one of the face edges of area1
+		vec3_t beststart, beststart2, bestend, bestend2;
+		float bestdist = 999999;
+		for (int j = 0; j < area->numfaces; j++)
+		{
+			int facenum = aasworld->faceindex[area->firstface + j];
+			aas_face_t* face = &aasworld->faces[abs(facenum)];
+			//if not a ground face
+			if (!(face->faceflags & FACE_GROUND))
+			{
+				continue;
+			}
+			//get the ground planes
+			aas_plane_t* faceplane = &aasworld->planes[face->planenum];
+
+			for (int k = 0; k < face->numedges; k++)
+			{
+				int edgenum = abs(aasworld->edgeindex[face->firstedge + k]);
+				aas_edge_t* edge = &aasworld->edges[edgenum];
+				//calculate the minimum distance between the two edges
+				const float* v1 = aasworld->vertexes[edge->v[0]];
+				const float* v2 = aasworld->vertexes[edge->v[1]];
+
+				for (int l = 0; l < numpoints; l++)
+				{
+					const float* v3 = facepoints[l];
+					const float* v4 = facepoints[(l + 1) % numpoints];
+					float dist = AAS_ClosestEdgePoints(v1, v2, v3, v4, faceplane, plane,
+						beststart, bestend,
+						beststart2, bestend2, bestdist);
+					if (dist < bestdist)
+					{
+						bestfacenum = facenum;
+						bestfaceplane = faceplane;
+						bestdist = dist;
+					}
+				}
+			}
+		}
+
+		if (bestdist > 192)
+		{
+			continue;
+		}
+
+		VectorMiddle(beststart, beststart2, beststart);
+		VectorMiddle(bestend, bestend2, bestend);
+
+		if (!towardsface)
+		{
+			vec3_t tmp;
+			VectorCopy(beststart, tmp);
+			VectorCopy(bestend, beststart);
+			VectorCopy(tmp, bestend);
+		}
+
+		vec3_t hordir;
+		VectorSubtract(bestend, beststart, hordir);
+		hordir[2] = 0;
+		float hordist = VectorLength(hordir);
+
+		if (hordist > 2 * AAS_MaxJumpDistance(aassettings.phys_jumpvel))
+		{
+			continue;
+		}
+		//the end point should not be significantly higher than the start point
+		if (bestend[2] - 32 > beststart[2])
+		{
+			continue;
+		}
+		//don't fall down too far
+		if (bestend[2] < beststart[2] - 128)
+		{
+			continue;
+		}
+		//the distance should not be too far
+		if (hordist > 32)
+		{
+			//check for walk off ledge
+			float speed;
+			if (!AAS_HorizontalVelocityForJump(0, beststart, bestend, &speed))
+			{
+				continue;
+			}
+		}
+
+		beststart[2] += 1;
+		bestend[2] += 1;
+
+		vec3_t testpoint;
+		if (towardsface)
+		{
+			VectorCopy(bestend, testpoint);
+		}
+		else
+		{
+			VectorCopy(beststart, testpoint);
+		}
+		testpoint[2] = 0;
+		testpoint[2] = (bestfaceplane->dist - DotProduct(bestfaceplane->normal, testpoint)) / bestfaceplane->normal[2];
+
+		if (!AAS_PointInsideFace(bestfacenum, testpoint, 0.1f))
+		{
+			//if the faces are not overlapping then only go down
+			if (bestend[2] - 16 > beststart[2])
+			{
+				continue;
+			}
+		}
+		aas_lreachability_t* lreach = AAS_AllocReachability();
+		if (!lreach)
+		{
+			return lreachabilities;
+		}
+		lreach->areanum = i;
+		lreach->facenum = 0;
+		lreach->edgenum = 0;
+		VectorCopy(beststart, lreach->start);
+		VectorCopy(bestend, lreach->end);
+		lreach->traveltype = 0;
+		lreach->traveltime = 0;
+		lreach->next = lreachabilities;
+		lreachabilities = lreach;
+		if (towardsface)
+		{
+			AAS_PermanentLine(lreach->start, lreach->end, 1);
+		}
+		else
+		{
+			AAS_PermanentLine(lreach->start, lreach->end, 2);
+		}
+	}
+	return lreachabilities;
+}
+
+void AAS_Reachability_FuncBobbing()
+{
+	for (int ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
+	{
+		char classname[MAX_EPAIRKEY];
+		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY))
+		{
+			continue;
+		}
+		if (String::Cmp(classname, "func_bobbing"))
+		{
+			continue;
+		}
+		float height;
+		AAS_FloatForBSPEpairKey(ent, "height", &height);
+		if (!height)
+		{
+			height = 32;
+		}
+
+		char model[MAX_EPAIRKEY];
+		if (!AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY))
+		{
+			BotImport_Print(PRT_ERROR, "func_bobbing without model\n");
+			continue;
+		}
+		//get the model number, and skip the leading *
+		int modelnum = String::Atoi(model + 1);
+		if (modelnum <= 0)
+		{
+			BotImport_Print(PRT_ERROR, "func_bobbing with invalid model number\n");
+			continue;
+		}
+
+		vec3_t mins, maxs, angles = {0, 0, 0};
+		AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
+
+		//if the entity has an origin set then use it
+		vec3_t origin;
+		if (GGameType & GAME_Quake3 && AAS_VectorForBSPEpairKey(ent, "origin", origin))
+		{
+			VectorAdd(mins, origin, mins);
+			VectorAdd(maxs, origin, maxs);
+		}
+
+		vec3_t mid;
+		VectorAdd(mins, maxs, mid);
+		VectorScale(mid, 0.5, mid);
+		VectorCopy(mid, origin);
+
+		vec3_t move_end;
+		VectorCopy(origin, move_end);
+		vec3_t move_start;
+		VectorCopy(origin, move_start);
+
+		int spawnflags;
+		AAS_IntForBSPEpairKey(ent, "spawnflags", &spawnflags);
+		// set the axis of bobbing
+		int axis;
+		if (spawnflags & 1)
+		{
+			axis = 0;
+		}
+		else if (spawnflags & 2)
+		{
+			axis = 1;
+		}
+		else
+		{
+			axis = 2;
+		}
+
+		move_start[axis] -= height;
+		move_end[axis] += height;
+
+		Log_Write("funcbob model %d, start = {%1.1f, %1.1f, %1.1f} end = {%1.1f, %1.1f, %1.1f}\n",
+			modelnum, move_start[0], move_start[1], move_start[2], move_end[0], move_end[1], move_end[2]);
+
+		vec3_t start_edgeverts[4];
+		for (int i = 0; i < 4; i++)
+		{
+			VectorCopy(move_start, start_edgeverts[i]);
+			start_edgeverts[i][2] += maxs[2] - mid[2];	//+ bbox maxs z
+			start_edgeverts[i][2] += 24;	//+ player origin to ground dist
+		}
+		start_edgeverts[0][0] += maxs[0] - mid[0];
+		start_edgeverts[0][1] += maxs[1] - mid[1];
+		start_edgeverts[1][0] += maxs[0] - mid[0];
+		start_edgeverts[1][1] += mins[1] - mid[1];
+		start_edgeverts[2][0] += mins[0] - mid[0];
+		start_edgeverts[2][1] += mins[1] - mid[1];
+		start_edgeverts[3][0] += mins[0] - mid[0];
+		start_edgeverts[3][1] += maxs[1] - mid[1];
+
+		aas_plane_t start_plane;
+		start_plane.dist = start_edgeverts[0][2];
+		VectorSet(start_plane.normal, 0, 0, 1);
+
+		vec3_t end_edgeverts[4];
+		for (int i = 0; i < 4; i++)
+		{
+			VectorCopy(move_end, end_edgeverts[i]);
+			end_edgeverts[i][2] += maxs[2] - mid[2];//+ bbox maxs z
+			end_edgeverts[i][2] += 24;	//+ player origin to ground dist
+		}
+		end_edgeverts[0][0] += maxs[0] - mid[0];
+		end_edgeverts[0][1] += maxs[1] - mid[1];
+		end_edgeverts[1][0] += maxs[0] - mid[0];
+		end_edgeverts[1][1] += mins[1] - mid[1];
+		end_edgeverts[2][0] += mins[0] - mid[0];
+		end_edgeverts[2][1] += mins[1] - mid[1];
+		end_edgeverts[3][0] += mins[0] - mid[0];
+		end_edgeverts[3][1] += maxs[1] - mid[1];
+
+		aas_plane_t end_plane;
+		end_plane.dist = end_edgeverts[0][2];
+		VectorSet(end_plane.normal, 0, 0, 1);
+
+		vec3_t move_start_top;
+		VectorCopy(move_start, move_start_top);
+		move_start_top[2] += maxs[2] - mid[2] + 24;	//+ bbox maxs z
+		vec3_t move_end_top;
+		VectorCopy(move_end, move_end_top);
+		move_end_top[2] += maxs[2] - mid[2] + 24;	//+ bbox maxs z
+
+		if (!AAS_PointAreaNum(move_start_top))
+		{
+			continue;
+		}
+		if (!AAS_PointAreaNum(move_end_top))
+		{
+			continue;
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			aas_lreachability_t* firststartreach;
+			aas_lreachability_t* firstendreach;
+
+			if (i == 0)
+			{
+				firststartreach = AAS_FindFaceReachabilities(start_edgeverts, 4, &start_plane, true);
+				firstendreach = AAS_FindFaceReachabilities(end_edgeverts, 4, &end_plane, false);
+			}
+			else
+			{
+				firststartreach = AAS_FindFaceReachabilities(end_edgeverts, 4, &end_plane, true);
+				firstendreach = AAS_FindFaceReachabilities(start_edgeverts, 4, &start_plane, false);
+			}
+
+			//create reachabilities from start to end
+			aas_lreachability_t* nextstartreach;
+			for (aas_lreachability_t* startreach = firststartreach; startreach; startreach = nextstartreach)
+			{
+				nextstartreach = startreach->next;
+
+				aas_lreachability_t* nextendreach;
+				for (aas_lreachability_t* endreach = firstendreach; endreach; endreach = nextendreach)
+				{
+					nextendreach = endreach->next;
+
+					Log_Write("funcbob reach from area %d to %d\n", startreach->areanum, endreach->areanum);
+
+					vec3_t org;
+					if (i == 0)
+					{
+						VectorCopy(move_start_top, org);
+					}
+					else
+					{
+						VectorCopy(move_end_top, org);
+					}
+					vec3_t dir;
+					VectorSubtract(startreach->start, org, dir);
+					dir[2] = 0;
+					VectorNormalize(dir);
+					vec3_t start;
+					VectorCopy(startreach->start, start);
+					VectorMA(startreach->start, 1, dir, start);
+					start[2] += 1;
+					vec3_t end;
+					VectorMA(startreach->start, 16, dir, end);
+					end[2] += 1;
+
+					int areas[10];
+					vec3_t points[10];
+					int numareas = AAS_TraceAreas(start, end, areas, points, 10);
+					if (numareas <= 0)
+					{
+						continue;
+					}
+					if (numareas > 1)
+					{
+						VectorCopy(points[1], startreach->start);
+					}
+					else
+					{
+						VectorCopy(end, startreach->start);
+					}
+
+					if (!AAS_PointAreaNum(startreach->start))
+					{
+						continue;
+					}
+					if (!AAS_PointAreaNum(endreach->end))
+					{
+						continue;
+					}
+
+					aas_lreachability_t* lreach = AAS_AllocReachability();
+					lreach->areanum = endreach->areanum;
+					if (i == 0)
+					{
+						lreach->edgenum = ((int)move_start[axis] << 16) | ((int)move_end[axis] & 0x0000ffff);
+					}
+					else
+					{
+						lreach->edgenum = ((int)move_end[axis] << 16) | ((int)move_start[axis] & 0x0000ffff);
+					}
+					lreach->facenum = (spawnflags << 16) | modelnum;
+					VectorCopy(startreach->start, lreach->start);
+					VectorCopy(endreach->end, lreach->end);
+					lreach->traveltype = TRAVEL_FUNCBOB;
+					lreach->traveltype |= AAS_TravelFlagsForTeam(ent);
+					lreach->traveltime = aassettings.rs_funcbob;
+					reach_funcbob++;
+					lreach->next = areareachability[startreach->areanum];
+					areareachability[startreach->areanum] = lreach;
+				}
+			}
+			for (aas_lreachability_t* startreach = firststartreach; startreach; startreach = nextstartreach)
+			{
+				nextstartreach = startreach->next;
+				AAS_FreeReachability(startreach);
+			}
+			aas_lreachability_t* nextendreach;
+			for (aas_lreachability_t* endreach = firstendreach; endreach; endreach = nextendreach)
+			{
+				nextendreach = endreach->next;
+				AAS_FreeReachability(endreach);
+			}
+			//only go up with func_bobbing entities that go up and down
+			if (!(spawnflags & 1) && !(spawnflags & 2))
+			{
+				break;
+			}
+		}
+	}
 }

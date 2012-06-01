@@ -88,6 +88,7 @@ static void AAS_InitSettingsWolf()
 	}
 	aassettings.rs_maxjumpfallheight = 450;
 	aassettings.rs_startcrouch = STARTCROUCH_TIME;
+	aassettings.rs_funcbob = 300;
 }
 
 void AAS_InitSettings()

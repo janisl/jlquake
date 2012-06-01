@@ -475,6 +475,8 @@ float AAS_ClosestEdgePoints(const vec3_t v1, const vec3_t v2, const vec3_t v3, c
 int AAS_TravelFlagsForTeam(int ent);
 void AAS_StoreReachability();
 int AAS_BestReachableLinkArea(aas_link_t* areas);
+bool AAS_NearbySolidOrGap(const vec3_t start, const vec3_t end);
+void AAS_Reachability_FuncBobbing();
 
 #define ROUTING_DEBUG
 
