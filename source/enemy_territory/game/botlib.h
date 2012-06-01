@@ -97,12 +97,7 @@ typedef struct aas_export_s
 		int stopevent, int stopareanum, int visualize);
 
 	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-	int (* AAS_ListAreasInRange)(vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
-	int (* AAS_AvoidDangerArea)(vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, int travelflags);
-	int (* AAS_Retreat)(int* dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
 	int (* AAS_NearestHideArea)(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
-	void (* AAS_RecordTeamDeathArea)(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
-	// done.
 } aas_export_t;
 
 typedef struct ea_export_s

@@ -53,9 +53,6 @@ void AAS_SetInitialized(void)
 {
 	aasworld->initialized = qtrue;
 	BotImport_Print(PRT_MESSAGE, "AAS initialized.\n");
-
-	AAS_InitTeamDeath();
-
 }	//end of the function AAS_SetInitialized
 //===========================================================================
 //
@@ -129,8 +126,6 @@ int AAS_StartFrame(float time)
 		AAS_InvalidateEntities();
 		//initialize AAS
 		AAS_ContinueInit(time);
-		//update team deaths
-		AAS_UpdateTeamDeath();
 		//
 		aasworld->frameroutingupdates = 0;
 		//

@@ -215,6 +215,11 @@ int AAS_AreaTravelTimeToGoalArea(int areanum, const vec3_t origin, int goalarean
 bool AAS_PredictRoute(aas_predictroute_t* route, int areanum, const vec3_t origin,
 	int goalareanum, int travelflags, int maxareas, int maxtime,
 	int stopevent, int stopcontents, int stoptfl, int stopareanum);
+int AAS_ListAreasInRange(const vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
+int AAS_AvoidDangerArea(const vec3_t srcpos, int srcarea, const vec3_t dangerpos, int dangerarea,
+	float range, int travelflags);
+int AAS_Retreat(const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos, int srcarea,
+	const vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
 
 int AAS_AlternativeRouteGoalsQ3(const vec3_t start, int startareanum,
 	const vec3_t goal, int goalareanum, int travelflags,

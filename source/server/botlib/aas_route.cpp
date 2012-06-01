@@ -2347,3 +2347,601 @@ void AAS_CreateAllRoutingCache()
 		}
 	}
 }
+
+int AAS_ListAreasInRange(const vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas)
+{
+	if (!aasworld->hidetraveltimes)
+	{
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+	else
+	{
+		memset(aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	int badtravelflags = ~travelflags;
+
+	aas_routingupdate_t* curupdate = &aasworld->areaupdate[srcarea];
+	curupdate->areanum = srcarea;
+	VectorCopy(srcpos, curupdate->start);
+	// GORDON: TEMP: FIXME: temp to stop crash
+	if (srcarea == 0)
+	{
+		return 0;
+	}
+	curupdate->areatraveltimes = aasworld->areatraveltimes[srcarea][0];
+	curupdate->tmptraveltime = 0;
+	//put the area to start with in the current read list
+	curupdate->next = NULL;
+	curupdate->prev = NULL;
+	aas_routingupdate_t* updateliststart = curupdate;
+	aas_routingupdate_t* updatelistend = curupdate;
+	//while there are updates in the current list, flip the lists
+	int count = 0;
+	while (updateliststart)
+	{
+		curupdate = updateliststart;
+		//
+		if (curupdate->next)
+		{
+			curupdate->next->prev = NULL;
+		}
+		else
+		{
+			updatelistend = NULL;
+		}
+		updateliststart = curupdate->next;
+		//
+		curupdate->inlist = false;
+		//check all reversed reachability links
+		int numreach = aasworld->areasettings[curupdate->areanum].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[curupdate->areanum].firstreachablearea];
+
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			//if an undesired travel type is used
+			if (aasworld->travelflagfortype[reach->traveltype] & badtravelflags)
+			{
+				continue;
+			}
+			//
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
+			{
+				continue;
+			}
+			//number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+			// if we've already been to this area
+			if (aasworld->hidetraveltimes[nextareanum])
+			{
+				continue;
+			}
+			aasworld->hidetraveltimes[nextareanum] = 1;
+			// if it's too far from srcpos, ignore
+			if (Distance(srcpos, aasworld->areawaypoints[nextareanum]) > range)
+			{
+				continue;
+			}
+
+			// if visible from srcarea
+			if (!(aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER) &&
+				!(aasworld->areasettings[reach->areanum].areaflags & AREA_DISABLED) &&
+				(AAS_AreaVisible(srcarea, nextareanum)))
+			{
+				VectorCopy(aasworld->areawaypoints[nextareanum], outareas[count]);
+				count++;
+				if (count >= maxareas)
+				{
+					break;
+				}
+			}
+
+			aas_routingupdate_t* nextupdate = &aasworld->areaupdate[nextareanum];
+			nextupdate->areanum = nextareanum;
+			//remember where we entered this area
+			VectorCopy(reach->end, nextupdate->start);
+			//if this update is not in the list yet
+			if (!nextupdate->inlist)
+			{
+				//add the new update to the end of the list
+				nextupdate->next = NULL;
+				nextupdate->prev = updatelistend;
+				if (updatelistend)
+				{
+					updatelistend->next = nextupdate;
+				}
+				else
+				{
+					updateliststart = nextupdate;
+				}
+				updatelistend = nextupdate;
+				nextupdate->inlist = true;
+			}
+		}
+	}
+	return count;
+}
+
+int AAS_AvoidDangerArea(const vec3_t srcpos, int srcarea, const vec3_t dangerpos, int dangerarea, float range, int travelflags)
+{
+	if (!aasworld->areavisibility)
+	{
+		return 0;
+	}
+	if (!srcarea)
+	{
+		return 0;
+	}
+
+	if (!aasworld->hidetraveltimes)
+	{
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+	else
+	{
+		memset(aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	int badtravelflags = ~travelflags;
+
+	aas_routingupdate_t* curupdate = &aasworld->areaupdate[srcarea];
+	curupdate->areanum = srcarea;
+	VectorCopy(srcpos, curupdate->start);
+	curupdate->areatraveltimes = aasworld->areatraveltimes[srcarea][0];
+	curupdate->tmptraveltime = 0;
+	//put the area to start with in the current read list
+	curupdate->next = NULL;
+	curupdate->prev = NULL;
+	aas_routingupdate_t* updateliststart = curupdate;
+	aas_routingupdate_t* updatelistend = curupdate;
+
+	// Mad Doctor I, 11/3/2002.  The source area never needs to be expanded
+	// again, so mark it as cut off
+	aasworld->hidetraveltimes[srcarea] = 1;
+
+	int bestarea = 0;
+	int bestTravel = 999999;
+	const int maxTime = 5000;
+	const int goodTime = 1000;
+	vec_t dangerDistance = 0;
+
+	//while there are updates in the current list, flip the lists
+	while (updateliststart)
+	{
+		curupdate = updateliststart;
+		//
+		if (curupdate->next)
+		{
+			curupdate->next->prev = NULL;
+		}
+		else
+		{
+			updatelistend = NULL;
+		}
+		updateliststart = curupdate->next;
+
+		curupdate->inlist = false;
+		//check all reversed reachability links
+		int numreach = aasworld->areasettings[curupdate->areanum].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[curupdate->areanum].firstreachablearea];
+
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			//if an undesired travel type is used
+			if (aasworld->travelflagfortype[reach->traveltype] & badtravelflags)
+			{
+				continue;
+			}
+
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
+			{
+				continue;
+			}
+			// dont pass through ladder areas
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			{
+				continue;
+			}
+
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_DISABLED)
+			{
+				continue;
+			}
+			//number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+			// if we've already been to this area
+			if (aasworld->hidetraveltimes[nextareanum])
+			{
+				continue;
+			}
+			aasworld->hidetraveltimes[nextareanum] = 1;
+			// calc traveltime from srcpos
+			int t = curupdate->tmptraveltime +
+				AAS_AreaTravelTime(curupdate->areanum, curupdate->start, reach->start) +
+				reach->traveltime;
+			if (t > maxTime)
+			{
+				continue;
+			}
+			if (t > bestTravel)
+			{
+				continue;
+			}
+
+			// How far is it
+			dangerDistance = Distance(dangerpos, aasworld->areawaypoints[nextareanum]);
+
+			// if it's safe from dangerpos
+			if (aasworld->areavisibility[nextareanum] && (dangerDistance > range))
+			{
+				if (t < goodTime)
+				{
+					return nextareanum;
+				}
+				if (t < bestTravel)
+				{
+					bestTravel = t;
+					bestarea = nextareanum;
+				}
+			}
+
+			aas_routingupdate_t* nextupdate = &aasworld->areaupdate[nextareanum];
+			nextupdate->areanum = nextareanum;
+			//remember where we entered this area
+			VectorCopy(reach->end, nextupdate->start);
+			//if this update is not in the list yet
+
+			// Mad Doctor I, 11/3/2002.  The inlist field seems to not be inited properly for this function.
+			// It causes certain routes to be excluded unnecessarily, so I'm trying to do without it.
+			// Note that the hidetraveltimes array seems to cut off duplicates already.
+			//if (!nextupdate->inlist)
+			{
+				//add the new update to the end of the list
+				nextupdate->next = NULL;
+				nextupdate->prev = updatelistend;
+				if (updatelistend)
+				{
+					updatelistend->next = nextupdate;
+				}
+				else
+				{
+					updateliststart = nextupdate;
+				}
+				updatelistend = nextupdate;
+				nextupdate->inlist = true;
+			}
+		}
+	}
+	return bestarea;
+}
+
+// Init the priority queue
+static void AAS_DangerPQInit()
+{
+	// Init the distanceFromDanger array if needed
+	if (!aasworld->PQ_accumulator)
+	{
+		// Get memory for this array the safe way.
+		aasworld->PQ_accumulator = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	// There are no items in the PQ right now
+	aasworld->PQ_size = 0;
+
+}
+
+// Put an area into the PQ.  ASSUMES the dangerdistance for the
+// area is set ahead of time.
+static void AAS_DangerPQInsert(int areaNum)
+{
+	// Increment the count in the accum
+	aasworld->PQ_size++;
+
+	// Put this one at the end
+	aasworld->PQ_accumulator[aasworld->PQ_size] = areaNum;
+}
+
+// Is the Danger Priority Queue empty?
+static bool AAS_DangerPQEmpty()
+{
+	// It's not empty if anything is in the accumulator
+	if (aasworld->PQ_size > 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+// Pull the smallest distance area off of the danger Priority Queue.
+static int AAS_DangerPQRemove()
+{
+	int nearest = 1;
+	int nearestArea = aasworld->PQ_accumulator[nearest];
+	int nearestDistance = aasworld->distanceFromDanger[nearestArea];
+
+	// Just loop through the items in the PQ
+	for (int j = 2; j <= aasworld->PQ_size; j++)
+	{
+		// What's the next area?
+		int currentArea = aasworld->PQ_accumulator[j];
+
+		// What's the danerg distance of it
+		int distance = aasworld->distanceFromDanger[currentArea];
+
+		// Is this element the best one? Top of the heap, so to speak
+		if (distance < nearestDistance)
+		{
+			// Save this one
+			nearest = j;
+
+			// This has the best distance
+			nearestDistance = distance;
+
+			// This one is the nearest region so far
+			nearestArea = currentArea;
+		}
+	}
+
+	// Save out the old end of list
+	int temp = aasworld->PQ_accumulator[aasworld->PQ_size];
+
+	// Put this where the old one was
+	aasworld->PQ_accumulator[nearest] = temp;
+
+	// Decrement the count
+	aasworld->PQ_size--;
+
+	return nearestArea;
+}
+
+static void AAS_CalculateDangerZones(const int* dangerSpots, int dangerSpotCount,
+	// What is the furthest danger range we care about? (Everything further is safe)
+	float dangerRange,
+	// A safe distance to init distanceFromDanger to
+	unsigned short int definitelySafe)
+{
+	// Initialize all of the starting danger zones.
+	for (int i = 0; i < dangerSpotCount; i++)
+	{
+		// Get the area number of this danger spot
+		int dangerAreaNum = dangerSpots[i];
+
+		// Set it's distance to 0, meaning it's 0 units to danger
+		aasworld->distanceFromDanger[dangerAreaNum] = 0;
+
+		// Add the zone to the PQ.
+		AAS_DangerPQInsert(dangerAreaNum);
+	}
+
+	// Go through the Priority Queue, pop off the smallest distance, and expand
+	// to the neighboring nodes.  Stop when the PQ is empty.
+	while (!AAS_DangerPQEmpty())
+	{
+		// Get the smallest distance in the PQ.
+		int currentArea = AAS_DangerPQRemove();
+
+		// Check all reversed reachability links
+		int numreach = aasworld->areasettings[currentArea].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[currentArea].firstreachablearea];
+
+		// Loop through the neighbors to this node.
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			// Number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+
+			// How far was it from the last node to this one?
+			float distanceFromCurrentNode = Distance(aasworld->areawaypoints[currentArea],
+				aasworld->areawaypoints[nextareanum]);
+
+			// Calculate the distance from danger to this neighbor along the
+			// current route.
+			int dangerDistance = aasworld->distanceFromDanger[currentArea]
+							 + (int)distanceFromCurrentNode;
+
+			// Skip this neighbor if the distance is bigger than we care about.
+			if (dangerDistance > dangerRange)
+			{
+				continue;
+			}
+
+			// Store the distance from danger if it's smaller than any previous
+			// distance to this node (note that unvisited nodes are inited with
+			// a big distance, so this check will be satisfied).
+			if (dangerDistance < aasworld->distanceFromDanger[nextareanum])
+			{
+				// How far was this node from danger before this visit?
+				int oldDistance = aasworld->distanceFromDanger[nextareanum];
+
+				// Store the new value
+				aasworld->distanceFromDanger[nextareanum] = dangerDistance;
+
+				// If the neighbor has been calculated already, see if we need to
+				// update the priority.
+				// Otherwise, insert the neighbor into the PQ.
+				if (oldDistance == definitelySafe)
+				{
+					// Insert this node into the PQ
+					AAS_DangerPQInsert(nextareanum);
+				}
+			}
+		}
+	}
+
+	// At this point, all of the nodes within our danger range have their
+	// distance from danger calculated.
+}
+
+// Use this to find a safe spot away from a dangerous situation/enemy.
+// This differs from AAS_AvoidDangerArea in the following ways:
+// * AAS_Retreat will return the farthest location found even if it does not
+//   exceed the desired minimum distance.
+// * AAS_Retreat will give preference to nodes on the "safe" side of the danger
+int AAS_Retreat(const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos, int srcarea,
+	const vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags)
+{
+	// Choose a safe distance to init distanceFromDanger to
+	unsigned short int definitelySafe = 0xFFFF;
+
+	if (!aasworld->areavisibility)
+	{
+		return 0;
+	}
+
+	// Init the hide travel time if needed
+	if (!aasworld->hidetraveltimes)
+	{
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+	// Otherwise, it exists already, so just reset the values
+	else
+	{
+		Com_Memset(aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	// Init the distanceFromDanger array if needed
+	if (!aasworld->distanceFromDanger)
+	{
+		// Get memory for this array the safe way.
+		aasworld->distanceFromDanger = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	// Set all the values in the distanceFromDanger array to a safe value
+	Com_Memset(aasworld->distanceFromDanger, 0xFF, aasworld->numareas * sizeof(unsigned short int));
+
+	// Init the priority queue
+	AAS_DangerPQInit();
+
+	// Set up the distanceFromDanger array
+	AAS_CalculateDangerZones(dangerSpots, dangerSpotCount, dangerRange, definitelySafe);
+
+	int badtravelflags = ~travelflags;
+
+	aas_routingupdate_t* curupdate = &aasworld->areaupdate[srcarea];
+	curupdate->areanum = srcarea;
+	VectorCopy(srcpos, curupdate->start);
+	curupdate->areatraveltimes = aasworld->areatraveltimes[srcarea][0];
+	curupdate->tmptraveltime = 0;
+	//put the area to start with in the current read list
+	curupdate->next = NULL;
+	curupdate->prev = NULL;
+	aas_routingupdate_t* updateliststart = curupdate;
+	aas_routingupdate_t* updatelistend = curupdate;
+
+	// Mad Doctor I, 11/3/2002.  The source area never needs to be expanded
+	// again, so mark it as cut off
+	aasworld->hidetraveltimes[srcarea] = 1;
+
+	int bestarea = 0;
+	const int maxTime = 5000;
+	vec_t dangerDistance = 0;
+	vec_t sourceDistance = 0;
+	float bestDistanceSoFar = 0;
+
+	//while there are updates in the current list, flip the lists
+	while (updateliststart)
+	{
+		curupdate = updateliststart;
+		//
+		if (curupdate->next)
+		{
+			curupdate->next->prev = NULL;
+		}
+		else
+		{
+			updatelistend = NULL;
+		}
+		updateliststart = curupdate->next;
+
+		curupdate->inlist = false;
+		//check all reversed reachability links
+		int numreach = aasworld->areasettings[curupdate->areanum].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[curupdate->areanum].firstreachablearea];
+
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			//if an undesired travel type is used
+			if (aasworld->travelflagfortype[reach->traveltype] & badtravelflags)
+			{
+				continue;
+			}
+
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
+			{
+				continue;
+			}
+			// dont pass through ladder areas
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			{
+				continue;
+			}
+
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_DISABLED)
+			{
+				continue;
+			}
+			//number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+			// if we've already been to this area
+			if (aasworld->hidetraveltimes[nextareanum])
+			{
+				continue;
+			}
+			aasworld->hidetraveltimes[nextareanum] = 1;
+			// calc traveltime from srcpos
+			int t = curupdate->tmptraveltime +
+				AAS_AreaTravelTime(curupdate->areanum, curupdate->start, reach->start) +
+				reach->traveltime;
+			if (t > maxTime)
+			{
+				continue;
+			}
+
+			// How far is it from a danger area?
+			dangerDistance = aasworld->distanceFromDanger[nextareanum];
+
+			// How far is it from our starting position?
+			sourceDistance = Distance(srcpos, aasworld->areawaypoints[nextareanum]);
+
+			// If it's safe from dangerpos
+			if (aasworld->areavisibility[nextareanum] &&
+				(sourceDistance > range) &&
+				((dangerDistance > dangerRange) ||
+				 (dangerDistance == definitelySafe)))
+			{
+				// Just use this area
+				return nextareanum;
+			}
+
+			// In case we don't find a perfect one, save the best
+			if (dangerDistance > bestDistanceSoFar)
+			{
+				bestarea = nextareanum;
+				bestDistanceSoFar = dangerDistance;
+			}
+
+			aas_routingupdate_t* nextupdate = &aasworld->areaupdate[nextareanum];
+			nextupdate->areanum = nextareanum;
+			//remember where we entered this area
+			VectorCopy(reach->end, nextupdate->start);
+			//if this update is not in the list yet
+
+			//add the new update to the end of the list
+			nextupdate->next = NULL;
+			nextupdate->prev = updatelistend;
+			if (updatelistend)
+			{
+				updatelistend->next = nextupdate;
+			}
+			else
+			{
+				updateliststart = nextupdate;
+			}
+			updatelistend = nextupdate;
+			nextupdate->inlist = true;
+		}
+	}
+
+	return bestarea;
+}

@@ -677,13 +677,13 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return botlib_export->aas.AAS_NearestHideArea(args[1], (float*)VMA(2), args[3], args[4], (float*)VMA(5), args[6], args[7], VMF(8), (float*)VMA(9));
 
 	case BOTLIB_AAS_LISTAREASINRANGE:
-		return botlib_export->aas.AAS_ListAreasInRange((float*)VMA(1), args[2], VMF(3), args[4], (vec3_t*)VMA(5), args[6]);
+		return AAS_ListAreasInRange((float*)VMA(1), args[2], VMF(3), args[4], (vec3_t*)VMA(5), args[6]);
 
 	case BOTLIB_AAS_AVOIDDANGERAREA:
-		return botlib_export->aas.AAS_AvoidDangerArea((float*)VMA(1), args[2], (float*)VMA(3), args[4], VMF(5), args[6]);
+		return AAS_AvoidDangerArea((float*)VMA(1), args[2], (float*)VMA(3), args[4], VMF(5), args[6]);
 
 	case BOTLIB_AAS_RETREAT:
-		return botlib_export->aas.AAS_Retreat((int*)VMA(1), args[2], (float*)VMA(3), args[4], (float*)VMA(5), args[6], VMF(7), VMF(8), args[9]);
+		return AAS_Retreat((int*)VMA(1), args[2], (float*)VMA(3), args[4], (float*)VMA(5), args[6], VMF(7), VMF(8), args[9]);
 
 	case BOTLIB_AAS_ALTROUTEGOALS:
 		return AAS_AlternativeRouteGoalsET((float*)VMA(1), (float*)VMA(2), args[3], (aas_altroutegoal_t*)VMA(4), args[5], args[6]);
@@ -693,9 +693,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case BOTLIB_AAS_RECORDTEAMDEATHAREA:
-		botlib_export->aas.AAS_RecordTeamDeathArea((float*)VMA(1), args[2], args[3], args[4], args[5]);
 		return 0;
-	// done.
 
 	case BOTLIB_EA_SAY:
 		botlib_export->ea.EA_Say(args[1], (char*)VMA(2));

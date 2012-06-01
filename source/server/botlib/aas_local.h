@@ -275,12 +275,6 @@ struct aas_t
 	byte* visCache;
 	// RF, cluster team flags (-1 means not calculated)
 	int* clusterTeamTravelFlags;
-	// RF, last time a death influenced this area. Seperate lists for axis/allies
-	int* teamDeathTime;
-	// RF, number of deaths accumulated before the time expired
-	byte* teamDeathCount;
-	// RF, areas that are influenced by a death count
-	byte* teamDeathAvoid;
 };
 
 extern aas_t* aasworld;
@@ -495,6 +489,10 @@ void AAS_Reachability_FuncBobbing();
 #define MAX_FRAMEROUTINGUPDATES_WOLF    100
 
 #define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
+
+#define TEAM_DEATH_TIMEOUT              120.0
+#define TEAM_DEATH_AVOID_COUNT_SCALE    0.5		// so if there are 12 players, then if count reaches (12 * scale) then AVOID
+#define TEAM_DEATH_RANGE                512.0
 
 #ifdef ROUTING_DEBUG
 extern int numareacacheupdates;

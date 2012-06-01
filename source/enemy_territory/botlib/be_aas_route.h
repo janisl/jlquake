@@ -44,7 +44,3 @@ void AAS_FreeRoutingCaches(void);
 
 //returns a random goal area and goal origin
 int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t goalorigin);
-
-void AAS_InitTeamDeath(void);
-void AAS_RecordTeamDeathArea(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
-void AAS_UpdateTeamDeath(void);

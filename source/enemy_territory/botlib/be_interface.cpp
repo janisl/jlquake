@@ -309,17 +309,9 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 
 int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 
-int AAS_ListAreasInRange(vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
-
-int AAS_AvoidDangerArea(vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, int travelflags);
-
-int AAS_Retreat(int* dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
-
 int AAS_AlternativeRouteGoalsET(vec3_t start, vec3_t goal, int travelflags,
 	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
 	int color);
-
-void AAS_RecordTeamDeathArea(vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags);
 
 /*
 ============
@@ -344,11 +336,6 @@ static void Init_AAS_Export(aas_export_t* aas)
 	//--------------------------------------------
 	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
 	aas->AAS_NearestHideArea = AAS_NearestHideArea;
-	aas->AAS_ListAreasInRange = AAS_ListAreasInRange;
-	aas->AAS_AvoidDangerArea = AAS_AvoidDangerArea;
-	aas->AAS_Retreat = AAS_Retreat;
-	aas->AAS_RecordTeamDeathArea = AAS_RecordTeamDeathArea;
-	// done.
 }
 
 
