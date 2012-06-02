@@ -421,8 +421,8 @@ void CL_SendConnectPacket(void)
 
 	Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
 		PROTOCOL_VERSION, port, cls.challenge,
-		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
-			MAX_INFO_VALUE, true, false));
+		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
 }
 
 /*
@@ -1096,8 +1096,8 @@ CL_Userinfo_f
 void CL_Userinfo_f(void)
 {
 	Com_Printf("User info settings:\n");
-	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
-			MAX_INFO_VALUE, true, false));
+	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
 }
 
 /*

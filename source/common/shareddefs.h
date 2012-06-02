@@ -27,6 +27,7 @@
 
 #define BIGGEST_MAX_MODELS      512
 #define BIGGEST_MAX_SOUNDS      512
+#define BIGGEST_MAX_INFO_STRING 1024
 
 #define MAX_CL_STATS        32
 

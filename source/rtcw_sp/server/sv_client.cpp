@@ -462,7 +462,7 @@ gotnewcl:
 	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport);
 
 	// save the userinfo
-	String::NCpyZ(newcl->userinfo, userinfo, sizeof(newcl->userinfo));
+	String::NCpyZ(newcl->userinfo, userinfo, MAX_INFO_STRING_Q3);
 
 	// get the game a chance to reject this connection or modify the userinfo
 	denied = VM_Call(gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse);	// firstTime = qtrue
@@ -1318,7 +1318,7 @@ SV_UpdateUserinfo_f
 */
 static void SV_UpdateUserinfo_f(client_t* cl)
 {
-	String::NCpyZ(cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo));
+	String::NCpyZ(cl->userinfo, Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
 	SV_UserinfoChanged(cl);
 	// call prog code to allow overrides

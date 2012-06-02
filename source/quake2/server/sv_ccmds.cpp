@@ -813,8 +813,8 @@ SV_Serverinfo_f
 void SV_Serverinfo_f(void)
 {
 	Com_Printf("Server info settings:\n");
-	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
-			MAX_INFO_VALUE, true, false));
+	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
 }
 
 

@@ -634,7 +634,7 @@ void SVC_DirectConnect(void)
 		byte* p, * q;
 
 		for (p = (byte*)newcl->userinfo, q = (byte*)userinfo;
-			 *q && p < (byte*)newcl->userinfo + sizeof(newcl->userinfo) - 1; q++)
+			 *q && p < (byte*)newcl->userinfo + MAX_INFO_STRING_QW - 1; q++)
 			if (*q > 31 && *q <= 127)
 			{
 				*p++ = *q;
@@ -642,7 +642,7 @@ void SVC_DirectConnect(void)
 	}
 	else
 	{
-		String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo) - 1);
+		String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_QW - 1);
 	}
 
 	// if there is allready a slot for this ip, drop it

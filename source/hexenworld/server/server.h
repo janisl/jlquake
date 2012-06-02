@@ -93,7 +93,6 @@ struct client_t : public client_common_t
 										// this prevents malicious multiple broadcasts
 	qboolean portals;					// They have portals mission pack installed
 	int userid;										// identifying number
-	char userinfo[HWMAX_INFO_STRING];					// infostring
 
 	hwusercmd_t lastcmd;				// for filling in big drops and partial predictions
 	double localtime;					// of last message

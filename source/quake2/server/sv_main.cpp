@@ -115,8 +115,8 @@ char* SV_StatusString(void)
 	int statusLength;
 	int playerLength;
 
-	String::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
-			MAX_INFO_VALUE, true, false));
+	String::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
 	String::Cat(status, sizeof(status), "\n");
 	statusLength = String::Length(status);
 
@@ -277,7 +277,7 @@ A connection request that did not come from the master
 */
 void SVC_DirectConnect(void)
 {
-	char userinfo[MAX_INFO_STRING];
+	char userinfo[MAX_INFO_STRING_Q2];
 	netadr_t adr;
 	int i;
 	client_t* cl, * newcl;
@@ -308,8 +308,8 @@ void SVC_DirectConnect(void)
 	userinfo[sizeof(userinfo) - 1] = 0;
 
 	// force the IP key/value pair so the game can filter based on ip
-	Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(net_from), MAX_INFO_STRING, MAX_INFO_KEY,
-		MAX_INFO_VALUE, true, false);
+	Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(net_from), MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+		MAX_INFO_VALUE_Q2, true, false);
 
 	// attractloop servers are ONLY for local clients
 	if (sv.attractloop)
@@ -414,7 +414,7 @@ gotnewcl:
 	}
 
 	// parse some info from the info strings
-	String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo) - 1);
+	String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_Q2 - 1);
 	SV_UserinfoChanged(newcl);
 
 	// send the connect packet to the client

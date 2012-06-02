@@ -418,8 +418,8 @@ Dumps the serverinfo info string
 */
 void SV_ShowServerinfo_f(void)
 {
-	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
-			MAX_INFO_VALUE, true, false));
+	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
 }
 
 
@@ -605,7 +605,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			break;
 
 		case q2clc_userinfo:
-			String::NCpy(cl->userinfo, net_message.ReadString2(), sizeof(cl->userinfo) - 1);
+			String::NCpy(cl->userinfo, net_message.ReadString2(), MAX_INFO_STRING_Q2 - 1);
 			SV_UserinfoChanged(cl);
 			break;
 

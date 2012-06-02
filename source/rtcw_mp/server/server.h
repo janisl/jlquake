@@ -130,7 +130,6 @@ typedef struct netchan_buffer_s
 
 struct client_t : public client_common_t
 {
-	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
 
 	char reliableCommands[MAX_RELIABLE_COMMANDS_WM][MAX_STRING_CHARS];
 	int reliableSequence;					// last added reliable message, not necesarily sent or acknowledged yet

@@ -120,7 +120,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	char userinfo[MAX_INFO_STRING_Q3];					// name, etc
 
 	//char			reliableCommands[MAX_RELIABLE_COMMANDS_WS][MAX_STRING_CHARS];
 	reliableCommands_t reliableCommands;

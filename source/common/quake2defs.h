@@ -717,3 +717,10 @@ enum
 #define Q2CM_UP         BIT(5)
 #define Q2CM_BUTTONS    BIT(6)
 #define Q2CM_IMPULSE    BIT(7)
+
+//
+// key / value info strings
+//
+#define MAX_INFO_KEY_Q2     64
+#define MAX_INFO_VALUE_Q2   64
+#define MAX_INFO_STRING_Q2  512

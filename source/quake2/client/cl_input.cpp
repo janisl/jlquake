@@ -130,7 +130,7 @@ void CL_SendCmd(void)
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
 		clc.netchan.message.WriteByte(q2clc_userinfo);
 		clc.netchan.message.WriteString2(Cvar_InfoString(
-				CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
+				CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2, MAX_INFO_VALUE_Q2, true, false));
 	}
 
 	buf.InitOOB(data, sizeof(data));

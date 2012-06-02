@@ -216,7 +216,7 @@ void SV_SetUserinfo(int index, const char* val)
 		val = "";
 	}
 
-	String::NCpyZ(svs.clients[index].userinfo, val, sizeof(svs.clients[index].userinfo));
+	String::NCpyZ(svs.clients[index].userinfo, val, MAX_INFO_STRING_Q3);
 	String::NCpyZ(svs.clients[index].name, Info_ValueForKey(val, "name"), sizeof(svs.clients[index].name));
 }
 

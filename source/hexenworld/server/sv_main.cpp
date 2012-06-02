@@ -558,7 +558,7 @@ void SVC_DirectConnect(void)
 	}
 	else
 	{
-		String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo) - 1);
+		String::NCpy(newcl->userinfo, userinfo, HWMAX_INFO_STRING - 1);
 	}
 
 	// if there is allready a slot for this ip, drop it

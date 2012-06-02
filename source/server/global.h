@@ -26,4 +26,5 @@ enum clientState_t
 struct client_common_t
 {
 	clientState_t state;
+	char userinfo[BIGGEST_MAX_INFO_STRING];					// name, etc
 };

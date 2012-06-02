@@ -88,7 +88,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	char userinfo[MAX_INFO_STRING];					// name, etc
 
 	int lastframe;						// for delta compression
 	q2usercmd_t lastcmd;				// for filling in big drops

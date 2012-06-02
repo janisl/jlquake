@@ -55,13 +55,6 @@ void Com_PageInMemory(byte* buffer, int size);
 
 //=============================================
 
-//
-// key / value info strings
-//
-#define MAX_INFO_KEY        64
-#define MAX_INFO_VALUE      64
-#define MAX_INFO_STRING     512
-
 /*
 ==============================================================
 
