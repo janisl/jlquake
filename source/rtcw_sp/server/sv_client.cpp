@@ -251,7 +251,7 @@ void SV_DirectConnect(netadr_t from)
 	int i;
 	client_t* cl, * newcl;
 	MAC_STATIC client_t temp;
-	sharedEntity_t* ent;
+	wssharedEntity_t* ent;
 	int clientNum;
 	int version;
 	int qport;
@@ -453,7 +453,7 @@ gotnewcl:
 	*newcl = temp;
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum(clientNum);
-	newcl->gentity = ent;
+	newcl->ws_gentity = ent;
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -542,7 +542,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	SV_CloseDownload(drop);
 
 	// Ridah, no need to tell the player if an AI drops
-	if (!(drop->gentity && drop->gentity->r.svFlags & SVF_CASTAI))
+	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & SVF_CASTAI))
 	{
 		// tell everyone why they got dropped
 		SV_SendServerCommand(NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason);
@@ -562,7 +562,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	VM_Call(gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients);
 
 	// Ridah, no need to tell the player if an AI drops
-	if (!(drop->gentity && drop->gentity->r.svFlags & SVF_CASTAI))
+	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & SVF_CASTAI))
 	{
 		// add the disconnect command
 		SV_SendServerCommand(drop, "disconnect");
@@ -685,7 +685,7 @@ SV_ClientEnterWorld
 void SV_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
 {
 	int clientNum;
-	sharedEntity_t* ent;
+	wssharedEntity_t* ent;
 
 	Com_DPrintf("Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name);
 	client->state = CS_ACTIVE;
@@ -694,7 +694,7 @@ void SV_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
 	clientNum = client - svs.clients;
 	ent = SV_GentityNum(clientNum);
 	ent->s.number = clientNum;
-	client->gentity = ent;
+	client->ws_gentity = ent;
 
 	client->q3_deltaMessage = -1;
 	client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately

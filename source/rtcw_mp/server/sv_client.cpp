@@ -283,7 +283,7 @@ void SV_DirectConnect(netadr_t from)
 	int i;
 	client_t* cl, * newcl;
 	MAC_STATIC client_t temp;
-	sharedEntity_t* ent;
+	wmsharedEntity_t* ent;
 	int clientNum;
 #ifndef UPDATE_SERVER
 	int version;
@@ -495,7 +495,7 @@ gotnewcl:
 	*newcl = temp;
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum(clientNum);
-	newcl->gentity = ent;
+	newcl->wm_gentity = ent;
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -576,7 +576,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 		return;		// already dropped
 	}
 
-	if (!drop->gentity || !(drop->gentity->r.svFlags & SVF_BOT))
+	if (!drop->wm_gentity || !(drop->wm_gentity->r.svFlags & SVF_BOT))
 	{
 		// see if we already have a challenge for this ip
 		challenge = &svs.challenges[0];
@@ -731,7 +731,7 @@ SV_ClientEnterWorld
 void SV_ClientEnterWorld(client_t* client, wmusercmd_t* cmd)
 {
 	int clientNum;
-	sharedEntity_t* ent;
+	wmsharedEntity_t* ent;
 
 	Com_DPrintf("Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name);
 	client->state = CS_ACTIVE;
@@ -740,7 +740,7 @@ void SV_ClientEnterWorld(client_t* client, wmusercmd_t* cmd)
 	clientNum = client - svs.clients;
 	ent = SV_GentityNum(clientNum);
 	ent->s.number = clientNum;
-	client->gentity = ent;
+	client->wm_gentity = ent;
 
 	client->q3_deltaMessage = -1;
 	client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately

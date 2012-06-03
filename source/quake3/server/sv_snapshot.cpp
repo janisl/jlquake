@@ -293,7 +293,7 @@ static int SV_QsortEntityNumbers(const void* a, const void* b)
 SV_AddEntToSnapshot
 ===============
 */
-static void SV_AddEntToSnapshot(svEntity_t* svEnt, sharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
+static void SV_AddEntToSnapshot(svEntity_t* svEnt, q3sharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
 {
 	// if we have already added this entity to this snapshot, don't add again
 	if (svEnt->snapshotCounter == sv.snapshotCounter)
@@ -321,7 +321,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 	snapshotEntityNumbers_t* eNums, qboolean portal)
 {
 	int e, i;
-	sharedEntity_t* ent;
+	q3sharedEntity_t* ent;
 	svEntity_t* svEnt;
 	int l;
 	int clientarea, clientcluster;
@@ -508,10 +508,10 @@ static void SV_BuildClientSnapshot(client_t* client)
 	q3clientSnapshot_t* frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int i;
-	sharedEntity_t* ent;
+	q3sharedEntity_t* ent;
 	q3entityState_t* state;
 	svEntity_t* svEnt;
-	sharedEntity_t* clent;
+	q3sharedEntity_t* clent;
 	int clientNum;
 	q3playerState_t* ps;
 
@@ -528,7 +528,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=62
 	frame->num_entities = 0;
 
-	clent = client->gentity;
+	clent = client->q3_gentity;
 	if (!clent || client->state == CS_ZOMBIE)
 	{
 		return;
@@ -704,7 +704,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// bots need to have their snapshots build, but
 	// the query them directly without needing to be sent
-	if (client->gentity && client->gentity->r.svFlags & SVF_BOT)
+	if (client->q3_gentity && client->q3_gentity->r.svFlags & SVF_BOT)
 	{
 		return;
 	}

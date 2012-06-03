@@ -294,7 +294,7 @@ void SV_DirectConnect(netadr_t from)
 	int i;
 	client_t* cl, * newcl;
 	MAC_STATIC client_t temp;
-	sharedEntity_t* ent;
+	etsharedEntity_t* ent;
 	int clientNum;
 	int version;
 	int qport;
@@ -512,7 +512,7 @@ gotnewcl:
 	*newcl = temp;
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum(clientNum);
-	newcl->gentity = ent;
+	newcl->et_gentity = ent;
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -592,7 +592,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 		return;		// already dropped
 	}
 
-	if (drop->gentity && (drop->gentity->r.svFlags & SVF_BOT))
+	if (drop->et_gentity && (drop->et_gentity->r.svFlags & SVF_BOT))
 	{
 		isBot = qtrue;
 	}
@@ -765,7 +765,7 @@ SV_ClientEnterWorld
 void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
 {
 	int clientNum;
-	sharedEntity_t* ent;
+	etsharedEntity_t* ent;
 
 	Com_DPrintf("Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name);
 	client->state = CS_ACTIVE;
@@ -774,7 +774,7 @@ void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
 	clientNum = client - svs.clients;
 	ent = SV_GentityNum(clientNum);
 	ent->s.number = clientNum;
-	client->gentity = ent;
+	client->et_gentity = ent;
 
 	client->q3_deltaMessage = -1;
 	client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately

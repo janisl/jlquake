@@ -115,7 +115,7 @@ void SV_UpdateConfigStrings(void)
 					continue;
 				}
 				// do not always send server info to all clients
-				if (index == Q3CS_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO))
+				if (index == Q3CS_SERVERINFO && client->et_gentity && (client->et_gentity->r.svFlags & SVF_NOSERVERINFO))
 				{
 					continue;
 				}
@@ -125,7 +125,7 @@ void SV_UpdateConfigStrings(void)
 				// RF, re-enabled
 				// Arnout: removed hardcoded gametype
 				// Arnout: added coop
-				if ((SV_GameIsSinglePlayer() || SV_GameIsCoop()) && client->gentity && (client->gentity->r.svFlags & SVF_BOT))
+				if ((SV_GameIsSinglePlayer() || SV_GameIsCoop()) && client->et_gentity && (client->et_gentity->r.svFlags & SVF_BOT))
 				{
 					continue;
 				}
@@ -253,7 +253,7 @@ baseline will be transmitted
 */
 void SV_CreateBaseline(void)
 {
-	sharedEntity_t* svent;
+	etsharedEntity_t* svent;
 	int entnum;
 
 	for (entnum = 1; entnum < sv.num_entities; entnum++)
@@ -754,13 +754,13 @@ void SV_SpawnServer(char* server, qboolean killBots)
 				else
 				{
 					client_t* client;
-					sharedEntity_t* ent;
+					etsharedEntity_t* ent;
 
 					client = &svs.clients[i];
 					client->state = CS_ACTIVE;
 					ent = SV_GentityNum(i);
 					ent->s.number = i;
-					client->gentity = ent;
+					client->et_gentity = ent;
 
 					client->q3_deltaMessage = -1;
 					client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately

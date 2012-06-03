@@ -350,7 +350,7 @@ static void SV_MapRestart_f(void)
 	gamestate_t new_gs, old_gs;		// NERVE - SMF
 	int worldspawnflags;			// DHM - Nerve
 	int nextgt;						// DHM - Nerve
-	sharedEntity_t* world;
+	wmsharedEntity_t* world;
 
 	// make sure we aren't restarting twice in the same frame
 	if (com_frameTime == sv.serverId)

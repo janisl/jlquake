@@ -309,7 +309,7 @@ static int QDECL SV_QsortEntityNumbers(const void* a, const void* b)
 SV_AddEntToSnapshot
 ===============
 */
-static void SV_AddEntToSnapshot(sharedEntity_t* clientEnt, svEntity_t* svEnt, sharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
+static void SV_AddEntToSnapshot(etsharedEntity_t* clientEnt, svEntity_t* svEnt, etsharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
 {
 	// if we have already added this entity to this snapshot, don't add again
 	if (svEnt->snapshotCounter == sv.snapshotCounter)
@@ -347,7 +347,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 	snapshotEntityNumbers_t* eNums /*, qboolean portal, qboolean localClient*/)
 {
 	int e, i;
-	sharedEntity_t* ent, * playerEnt;
+	etsharedEntity_t* ent, * playerEnt;
 	svEntity_t* svEnt;
 	int l;
 	int clientarea, clientcluster;
@@ -501,7 +501,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		//----(SA) added "visibility dummies"
 		if (ent->r.svFlags & SVF_VISDUMMY)
 		{
-			sharedEntity_t* ment = 0;
+			etsharedEntity_t* ment = 0;
 
 			//find master;
 			ment = SV_GentityNum(ent->s.otherEntityNum);
@@ -525,7 +525,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		{
 			{
 				int h;
-				sharedEntity_t* ment = 0;
+				etsharedEntity_t* ment = 0;
 				svEntity_t* master = 0;
 
 				for (h = 0; h < sv.num_entities; h++)
@@ -610,10 +610,10 @@ static void SV_BuildClientSnapshot(client_t* client)
 	q3clientSnapshot_t* frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int i;
-	sharedEntity_t* ent;
+	etsharedEntity_t* ent;
 	etentityState_t* state;
 	svEntity_t* svEnt;
-	sharedEntity_t* clent;
+	etsharedEntity_t* clent;
 	int clientNum;
 	etplayerState_t* ps;
 
@@ -630,7 +630,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	// show_bug.cgi?id=62
 	frame->num_entities = 0;
 
-	clent = client->gentity;
+	clent = client->et_gentity;
 	if (!clent || client->state == CS_ZOMBIE)
 	{
 		return;
@@ -899,7 +899,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// bots need to have their snapshots build, but
 	// the query them directly without needing to be sent
-	if (client->gentity && client->gentity->r.svFlags & SVF_BOT)
+	if (client->et_gentity && client->et_gentity->r.svFlags & SVF_BOT)
 	{
 		return;
 	}
@@ -970,7 +970,7 @@ void SV_SendClientMessages(void)
 
 		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
 		// --> "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n"
-		if (c->gentity && c->gentity->r.svFlags & SVF_BOT)
+		if (c->et_gentity && c->et_gentity->r.svFlags & SVF_BOT)
 		{
 			continue;
 		}

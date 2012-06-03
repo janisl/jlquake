@@ -81,13 +81,13 @@ void SV_SetConfigstring(int index, const char* val)
 				continue;
 			}
 			// do not always send server info to all clients
-			if (index == Q3CS_SERVERINFO && client->gentity && (client->gentity->r.svFlags & SVF_NOSERVERINFO))
+			if (index == Q3CS_SERVERINFO && client->ws_gentity && (client->ws_gentity->r.svFlags & SVF_NOSERVERINFO))
 			{
 				continue;
 			}
 
 			// RF, don't send to bot/AI
-			if (client->gentity && (client->gentity->r.svFlags & SVF_CASTAI))
+			if (client->ws_gentity && (client->ws_gentity->r.svFlags & SVF_CASTAI))
 			{
 				continue;
 			}
@@ -216,7 +216,7 @@ baseline will be transmitted
 */
 void SV_CreateBaseline(void)
 {
-	sharedEntity_t* svent;
+	wssharedEntity_t* svent;
 	int entnum;
 
 	for (entnum = 1; entnum < sv.num_entities; entnum++)
@@ -934,13 +934,13 @@ void SV_SpawnServer(char* server, qboolean killBots)
 				else
 				{
 					client_t* client;
-					sharedEntity_t* ent;
+					wssharedEntity_t* ent;
 
 					client = &svs.clients[i];
 					client->state = CS_ACTIVE;
 					ent = SV_GentityNum(i);
 					ent->s.number = i;
-					client->gentity = ent;
+					client->ws_gentity = ent;
 
 					client->q3_deltaMessage = -1;
 					client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately

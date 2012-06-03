@@ -47,7 +47,7 @@ void SV_GamePrint(const char* string)
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
-int SV_NumForGentity(sharedEntity_t* ent)
+int SV_NumForGentity(wmsharedEntity_t* ent)
 {
 	int num;
 
@@ -56,11 +56,11 @@ int SV_NumForGentity(sharedEntity_t* ent)
 	return num;
 }
 
-sharedEntity_t* SV_GentityNum(int num)
+wmsharedEntity_t* SV_GentityNum(int num)
 {
-	sharedEntity_t* ent;
+	wmsharedEntity_t* ent;
 
-	ent = (sharedEntity_t*)((byte*)sv.gentities + sv.gentitySize * (num));
+	ent = (wmsharedEntity_t*)((byte*)sv.gentities + sv.gentitySize * (num));
 
 	return ent;
 }
@@ -74,7 +74,7 @@ wmplayerState_t* SV_GameClientNum(int num)
 	return ps;
 }
 
-svEntity_t* SV_SvEntityForGentity(sharedEntity_t* gEnt)
+svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt)
 {
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
 	{
@@ -83,7 +83,7 @@ svEntity_t* SV_SvEntityForGentity(sharedEntity_t* gEnt)
 	return &sv.svEntities[gEnt->s.number];
 }
 
-sharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt)
+wmsharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt)
 {
 	int num;
 
@@ -139,7 +139,7 @@ SV_SetBrushModel
 sets mins and maxs for inline bmodels
 =================
 */
-void SV_SetBrushModel(sharedEntity_t* ent, const char* name)
+void SV_SetBrushModel(wmsharedEntity_t* ent, const char* name)
 {
 	clipHandle_t h;
 	vec3_t mins, maxs;
@@ -241,7 +241,7 @@ qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 SV_AdjustAreaPortalState
 ========================
 */
-void SV_AdjustAreaPortalState(sharedEntity_t* ent, qboolean open)
+void SV_AdjustAreaPortalState(wmsharedEntity_t* ent, qboolean open)
 {
 	svEntity_t* svEnt;
 
@@ -259,7 +259,7 @@ void SV_AdjustAreaPortalState(sharedEntity_t* ent, qboolean open)
 SV_GameAreaEntities
 ==================
 */
-qboolean    SV_EntityContact(const vec3_t mins, const vec3_t maxs, const sharedEntity_t* gEnt, const int capsule)
+qboolean    SV_EntityContact(const vec3_t mins, const vec3_t maxs, const wmsharedEntity_t* gEnt, const int capsule)
 {
 	const float* origin, * angles;
 	clipHandle_t ch;
@@ -298,7 +298,7 @@ SV_LocateGameData
 
 ===============
 */
-void SV_LocateGameData(sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
+void SV_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {
 	sv.gentities = gEnts;
@@ -395,7 +395,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
 	case G_LOCATE_GAME_DATA:
-		SV_LocateGameData((sharedEntity_t*)VMA(1), args[2], args[3], (wmplayerState_t*)VMA(4), args[5]);
+		SV_LocateGameData((wmsharedEntity_t*)VMA(1), args[2], args[3], (wmplayerState_t*)VMA(4), args[5]);
 		return 0;
 	case G_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2));
@@ -404,17 +404,17 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
 		return 0;
 	case G_LINKENTITY:
-		SV_LinkEntity((sharedEntity_t*)VMA(1));
+		SV_LinkEntity((wmsharedEntity_t*)VMA(1));
 		return 0;
 	case G_UNLINKENTITY:
-		SV_UnlinkEntity((sharedEntity_t*)VMA(1));
+		SV_UnlinkEntity((wmsharedEntity_t*)VMA(1));
 		return 0;
 	case G_ENTITIES_IN_BOX:
 		return SV_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
 	case G_ENTITY_CONTACT:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (sharedEntity_t*)VMA(3), /* int capsule */ qfalse);
+		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wmsharedEntity_t*)VMA(3), /* int capsule */ qfalse);
 	case G_ENTITY_CONTACTCAPSULE:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (sharedEntity_t*)VMA(3), /* int capsule */ qtrue);
+		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wmsharedEntity_t*)VMA(3), /* int capsule */ qtrue);
 	case G_TRACE:
 		SV_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /* int capsule */ qfalse);
 		return 0;
@@ -424,7 +424,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case G_POINT_CONTENTS:
 		return SV_PointContents((float*)VMA(1), args[2]);
 	case G_SET_BRUSH_MODEL:
-		SV_SetBrushModel((sharedEntity_t*)VMA(1), (char*)VMA(2));
+		SV_SetBrushModel((wmsharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
 	case G_IN_PVS:
 		return SV_inPVS((float*)VMA(1), (float*)VMA(2));
@@ -447,7 +447,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetServerinfo((char*)VMA(1), args[2]);
 		return 0;
 	case G_ADJUST_AREA_PORTAL_STATE:
-		SV_AdjustAreaPortalState((sharedEntity_t*)VMA(1), args[2]);
+		SV_AdjustAreaPortalState((wmsharedEntity_t*)VMA(1), args[2]);
 		return 0;
 	case G_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
@@ -957,7 +957,7 @@ static void SV_InitGameVM(qboolean restart)
 	// a previous level
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
-		svs.clients[i].gentity = NULL;
+		svs.clients[i].wm_gentity = NULL;
 	}
 
 	// use the current msec count for a random seed

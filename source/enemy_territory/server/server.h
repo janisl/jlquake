@@ -83,7 +83,7 @@ typedef struct
 	const char* entityParsePoint;				// used during game VM init
 
 	// the game virtual machine will update these on init and changes
-	sharedEntity_t* gentities;
+	etsharedEntity_t* gentities;
 	int gentitySize;
 	int num_entities;					// current number, <= MAX_GENTITIES_Q3
 
@@ -119,7 +119,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	sharedEntity_t* gentity;			// SV_GentityNum(clientnum)
 };
 
 //=============================================================================
@@ -339,16 +338,16 @@ void SV_SendClientIdle(client_t* client);
 //
 // sv_game.c
 //
-int SV_NumForGentity(sharedEntity_t* ent);
+int SV_NumForGentity(etsharedEntity_t* ent);
 
-//#define SV_GentityNum( num ) ((sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
+//#define SV_GentityNum( num ) ((etsharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
 //#define SV_GameClientNum( num ) ((etplayerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
 
-sharedEntity_t* SV_GentityNum(int num);
+etsharedEntity_t* SV_GentityNum(int num);
 etplayerState_t* SV_GameClientNum(int num);
 
-svEntity_t* SV_SvEntityForGentity(sharedEntity_t* gEnt);
-sharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt);
+svEntity_t* SV_SvEntityForGentity(etsharedEntity_t* gEnt);
+etsharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);
@@ -380,11 +379,11 @@ int         SV_BotGetConsoleMessage(int client, char* buf, int size);
 void SV_ClearWorld(void);
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEntity(sharedEntity_t* ent);
+void SV_UnlinkEntity(etsharedEntity_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 
-void SV_LinkEntity(sharedEntity_t* ent);
+void SV_LinkEntity(etsharedEntity_t* ent);
 // Needs to be called any time an entity changes origin, mins, maxs,
 // or solid.  Automatically unlinks if needed.
 // sets ent->v.absmin and ent->v.absmax
@@ -392,7 +391,7 @@ void SV_LinkEntity(sharedEntity_t* ent);
 // is not solid
 
 
-clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t* ent);
+clipHandle_t SV_ClipHandleForEntity(const etsharedEntity_t* ent);
 
 
 void SV_SectorList_f(void);

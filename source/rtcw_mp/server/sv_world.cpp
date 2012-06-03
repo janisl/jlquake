@@ -39,7 +39,7 @@ given entity.  If the entity is a bsp model, the headnode will
 be returned, otherwise a custom box tree will be constructed.
 ================
 */
-clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t* ent)
+clipHandle_t SV_ClipHandleForEntity(const wmsharedEntity_t* ent)
 {
 	if (ent->r.bmodel)
 	{
@@ -184,7 +184,7 @@ SV_UnlinkEntity
 
 ===============
 */
-void SV_UnlinkEntity(sharedEntity_t* gEnt)
+void SV_UnlinkEntity(wmsharedEntity_t* gEnt)
 {
 	svEntity_t* ent;
 	svEntity_t* scan;
@@ -227,7 +227,7 @@ SV_LinkEntity
 ===============
 */
 #define MAX_TOTAL_ENT_LEAFS     128
-void SV_LinkEntity(sharedEntity_t* gEnt)
+void SV_LinkEntity(wmsharedEntity_t* gEnt)
 {
 	worldSector_t* node;
 	int leafs[MAX_TOTAL_ENT_LEAFS];
@@ -456,7 +456,7 @@ SV_AreaEntities_r
 void SV_AreaEntities_r(worldSector_t* node, areaParms_t* ap)
 {
 	svEntity_t* check, * next;
-	sharedEntity_t* gcheck;
+	wmsharedEntity_t* gcheck;
 	int count;
 
 	count = 0;
@@ -550,7 +550,7 @@ SV_ClipToEntity
 */
 void SV_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule)
 {
-	sharedEntity_t* touch;
+	wmsharedEntity_t* touch;
 	clipHandle_t clipHandle;
 	float* origin, * angles;
 
@@ -607,7 +607,7 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 {
 	int i, num;
 	int touchlist[MAX_GENTITIES_Q3];
-	sharedEntity_t* touch;
+	wmsharedEntity_t* touch;
 	int passOwnerNum;
 	q3trace_t trace;
 	clipHandle_t clipHandle;
@@ -796,7 +796,7 @@ SV_PointContents
 int SV_PointContents(const vec3_t p, int passEntityNum)
 {
 	int touch[MAX_GENTITIES_Q3];
-	sharedEntity_t* hit;
+	wmsharedEntity_t* hit;
 	int i, num;
 	int contents, c2;
 	clipHandle_t clipHandle;
