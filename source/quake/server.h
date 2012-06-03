@@ -32,41 +32,6 @@ typedef struct
 
 //=============================================================================
 
-struct server_t : server_common_t
-{
-
-	qboolean paused;
-	qboolean loadgame;				// handle connections specially
-
-	double time;
-
-	int lastcheck;					// used by PF_checkclient
-	double lastchecktime;
-
-	char name[64];					// map name
-	char modelname[64];				// maps/<name>.bsp, for model_precache[0]
-	const char* model_precache[MAX_MODELS_Q1];	// NULL terminated
-	clipHandle_t models[MAX_MODELS_Q1];
-	const char* sound_precache[MAX_SOUNDS_Q1];	// NULL terminated
-	const char* lightstyles[MAX_LIGHTSTYLES_Q1];
-	int num_edicts;
-	int max_edicts;
-	qhedict_t* edicts;				// can NOT be array indexed, because
-									// qhedict_t is variable sized, but can
-									// be used to reference the world ent
-
-	QMsg datagram;
-	byte datagram_buf[MAX_DATAGRAM_Q1];
-
-	QMsg reliable_datagram;			// copied to all clients at end of frame
-	byte reliable_datagram_buf[MAX_DATAGRAM_Q1];
-
-	QMsg signon;
-	byte signon_buf[MAX_MSGLEN_Q1];
-};
-
-//=============================================================================
-
 // edict->solid values
 #define SOLID_NOT               0		// no interaction with other objects
 #define SOLID_TRIGGER           1		// touch on edge, but not blocking

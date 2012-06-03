@@ -312,7 +312,7 @@ void SVC_DirectConnect(void)
 		MAX_INFO_VALUE_Q2, true, false);
 
 	// attractloop servers are ONLY for local clients
-	if (sv.attractloop)
+	if (sv.q2_attractloop)
 	{
 		if (!SOCK_IsLocalAddress(adr))
 		{
@@ -627,7 +627,7 @@ void SV_GiveMsec(void)
 	int i;
 	client_t* cl;
 
-	if (sv.framenum & 15)
+	if (sv.q2_framenum & 15)
 	{
 		return;
 	}
@@ -797,8 +797,8 @@ void SV_RunGameFrame(void)
 	// don't run the world, otherwise the delta
 	// compression can get confused when a client
 	// has the "current" frame
-	sv.framenum++;
-	sv.time = sv.framenum * 100;
+	sv.q2_framenum++;
+	sv.q2_time = sv.q2_framenum * 100;
 
 	// don't run if paused
 	if (!sv_paused->value || maxclients->value > 1)
@@ -806,13 +806,13 @@ void SV_RunGameFrame(void)
 		ge->RunFrame();
 
 		// never get more than one tic behind
-		if (sv.time < (unsigned)svs.realtime)
+		if (sv.q2_time < (unsigned)svs.realtime)
 		{
 			if (sv_showclamp->value)
 			{
 				Com_Printf("sv highclamp\n");
 			}
-			svs.realtime = sv.time;
+			svs.realtime = sv.q2_time;
 		}
 	}
 
@@ -851,18 +851,18 @@ void SV_Frame(int msec)
 	SV_ReadPackets();
 
 	// move autonomous things around if enough time has passed
-	if (!sv_timedemo->value && (unsigned)svs.realtime < sv.time)
+	if (!sv_timedemo->value && (unsigned)svs.realtime < sv.q2_time)
 	{
 		// never let the time get too far off
-		if (sv.time - svs.realtime > 100)
+		if (sv.q2_time - svs.realtime > 100)
 		{
 			if (sv_showclamp->value)
 			{
 				Com_Printf("sv lowclamp\n");
 			}
-			svs.realtime = sv.time - 100;
+			svs.realtime = sv.q2_time - 100;
 		}
-		NET_Sleep(sv.time - svs.realtime);
+		NET_Sleep(sv.q2_time - svs.realtime);
 		return;
 	}
 
@@ -1144,9 +1144,9 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 	SV_ShutdownGameProgs();
 
 	// free current level
-	if (sv.demofile)
+	if (sv.q2_demofile)
 	{
-		FS_FCloseFile(sv.demofile);
+		FS_FCloseFile(sv.q2_demofile);
 	}
 	Com_Memset(&sv, 0, sizeof(sv));
 	Com_SetServerState(sv.state);

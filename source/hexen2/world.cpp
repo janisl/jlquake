@@ -96,7 +96,7 @@ clipHandle_t SV_HullForEntity(qhedict_t* ent, vec3_t mins, vec3_t maxs, vec3_t o
 				hull = CM_ModelHull(model, 0, clip_mins, clip_maxs);
 			}
 #ifdef MISSIONPACK
-			else if ((size[0] <= 8) && ((int)(sv.edicts->GetSpawnFlags()) & 1))	// Pentacles
+			else if ((size[0] <= 8) && ((int)(sv.qh_edicts->GetSpawnFlags()) & 1))	// Pentacles
 			{
 				hull = CM_ModelHull(model, 4, clip_mins, clip_maxs);
 			}
@@ -292,7 +292,7 @@ void SV_TouchLinks(qhedict_t* ent, areanode_t* node)
 
 		pr_global_struct->self = EDICT_TO_PROG(touch);
 		pr_global_struct->other = EDICT_TO_PROG(ent);
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		PR_ExecuteProgram(touch->GetTouch());
 
 		pr_global_struct->self = old_self;
@@ -330,7 +330,7 @@ void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers)
 		SV_UnlinkEdict(ent);	// unlink from old position
 
 	}
-	if (ent == sv.edicts)
+	if (ent == sv.qh_edicts)
 	{
 		return;		// don't add the world
 
@@ -486,7 +486,7 @@ qhedict_t* SV_TestEntityPosition(qhedict_t* ent)
 	if (trace.startsolid)
 	{
 //		Con_DPrintf("%s inside check\n", PR_GetString(trace.ent->v.classname));
-		return sv.edicts;
+		return sv.qh_edicts;
 	}
 
 	return NULL;
@@ -759,7 +759,7 @@ q1trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, 
 
 	move_type = type;
 // clip to world
-	clip.trace = SV_ClipMoveToEntity(sv.edicts, start, mins, maxs, end, passedict);
+	clip.trace = SV_ClipMoveToEntity(sv.qh_edicts, start, mins, maxs, end, passedict);
 
 	clip.start = start;
 	clip.end = end;

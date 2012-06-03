@@ -169,3 +169,15 @@ struct etsharedEntity_t
 	etentityState_t s;					// communicated by server to clients
 	etentityShared_t r;				// shared by both the server system and game
 };
+
+#define MAX_BPS_WINDOW      20			// NERVE - SMF - net debugging
+
+#define MAX_SERVER_TAGS_ET  256
+#define MAX_TAG_FILES_ET    64
+
+struct ettagHeaderExt_t
+{
+	char filename[MAX_QPATH];
+	int start;
+	int count;
+};

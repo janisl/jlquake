@@ -36,68 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-#define MAX_ENT_CLUSTERS_Q3    16
-
-#define MAX_BPS_WINDOW      20			// NERVE - SMF - net debugging
-
-typedef struct svEntity_s
-{
-	struct worldSector_s* worldSector;
-	struct svEntity_s* nextEntityInWorldSector;
-
-	wmentityState_t baseline;			// for delta compression of initial sighting
-	int numClusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS_Q3];
-	int lastCluster;				// if all the clusters don't fit in clusternums
-	int areanum, areanum2;
-	int snapshotCounter;			// used to prevent double adding from portal views
-} svEntity_t;
-
-struct server_t : server_common_t
-{
-	qboolean restarting;				// if true, send configstring changes during SS_LOADING
-	int serverId;						// changes each server start
-	int restartedServerId;				// serverId before a map_restart
-	int checksumFeed;					// the feed key that we use to compute the pure checksum strings
-	// show_bug.cgi?id=475
-	// the serverId associated with the current checksumFeed (always <= serverId)
-	int checksumFeedServerId;
-	int snapshotCounter;				// incremented for each snapshot built
-	int timeResidual;					// <= 1000 / sv_frame->value
-	int nextFrameTime;					// when time > nextFrameTime, process world
-	struct cmodel_s* models[MAX_MODELS_Q3];
-	char* configstrings[MAX_CONFIGSTRINGS_WM];
-	svEntity_t svEntities[MAX_GENTITIES_Q3];
-
-	const char* entityParsePoint;				// used during game VM init
-
-	// the game virtual machine will update these on init and changes
-	wmsharedEntity_t* gentities;
-	int gentitySize;
-	int num_entities;					// current number, <= MAX_GENTITIES_Q3
-
-	wmplayerState_t* gameClients;
-	int gameClientSize;					// will be > sizeof(wmplayerState_t) due to game private data
-
-	int restartTime;
-
-	// NERVE - SMF - net debugging
-	int bpsWindow[MAX_BPS_WINDOW];
-	int bpsWindowSteps;
-	int bpsTotalBytes;
-	int bpsMaxBytes;
-
-	int ubpsWindow[MAX_BPS_WINDOW];
-	int ubpsTotalBytes;
-	int ubpsMaxBytes;
-
-	float ucompAve;
-	int ucompNum;
-	// -NERVE - SMF
-};
-
-//=============================================================================
-
 
 // MAX_CHALLENGES is made large to prevent a denial
 // of service attack that could cycle all of them
@@ -286,8 +224,8 @@ void SV_SendClientSnapshot(client_t* client);
 int SV_NumForGentity(wmsharedEntity_t* ent);
 wmsharedEntity_t* SV_GentityNum(int num);
 wmplayerState_t* SV_GameClientNum(int num);
-svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt);
-wmsharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt);
+q3svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt);
+wmsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);

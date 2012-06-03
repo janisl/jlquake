@@ -472,7 +472,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & QWPF_MSEC)
 		{
-			msec = 1000 * (sv.time - cl->qh_localtime);
+			msec = 1000 * (sv.qh_time - cl->qh_localtime);
 			if (msec > 255)
 			{
 				msec = 255;
@@ -564,7 +564,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 
 	numnails = 0;
 
-	for (e = MAX_CLIENTS_QW + 1, ent = EDICT_NUM(e); e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	for (e = MAX_CLIENTS_QW + 1, ent = EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))

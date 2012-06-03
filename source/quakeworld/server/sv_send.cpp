@@ -247,8 +247,8 @@ void SV_BroadcastCommand(const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	sv.reliable_datagram.WriteByte(q1svc_stufftext);
-	sv.reliable_datagram.WriteString2(string);
+	sv.qh_reliable_datagram.WriteByte(q1svc_stufftext);
+	sv.qh_reliable_datagram.WriteString2(string);
 }
 
 
@@ -389,13 +389,13 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 // find precache number for sound
 	for (sound_num = 1; sound_num < MAX_SOUNDS_Q1 &&
-		 sv.sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.sound_precache[sound_num]))
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
 		{
 			break;
 		}
 
-	if (sound_num == MAX_SOUNDS_Q1 || !sv.sound_precache[sound_num])
+	if (sound_num == MAX_SOUNDS_Q1 || !sv.qh_sound_precache[sound_num])
 	{
 		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
 		return;
@@ -488,19 +488,19 @@ void SV_FindModelNumbers(void)
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 	{
-		if (!sv.model_precache[i])
+		if (!sv.qh_model_precache[i])
 		{
 			break;
 		}
-		if (!String::Cmp(sv.model_precache[i],"progs/spike.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/spike.mdl"))
 		{
 			sv_nailmodel = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/s_spike.mdl"))
 		{
 			sv_supernailmodel = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"progs/player.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/player.mdl"))
 		{
 			sv_playermodel = i;
 		}
@@ -685,7 +685,7 @@ void SV_UpdateToReliableMessages(void)
 		if (host_client->qh_sendinfo)
 		{
 			host_client->qh_sendinfo = false;
-			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
+			SV_FullClientUpdate(host_client, &sv.qh_reliable_datagram);
 		}
 		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
@@ -723,9 +723,9 @@ void SV_UpdateToReliableMessages(void)
 
 	}
 
-	if (sv.datagram.overflowed)
+	if (sv.qh_datagram.overflowed)
 	{
-		sv.datagram.Clear();
+		sv.qh_datagram.Clear();
 	}
 
 	// append the broadcast messages to each client messages
@@ -736,18 +736,18 @@ void SV_UpdateToReliableMessages(void)
 			continue;	// reliables go to all connected or spawned
 
 		}
-		ClientReliableCheckBlock(client, sv.reliable_datagram.cursize);
-		ClientReliableWrite_SZ(client, sv.reliable_datagram._data, sv.reliable_datagram.cursize);
+		ClientReliableCheckBlock(client, sv.qh_reliable_datagram.cursize);
+		ClientReliableWrite_SZ(client, sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
 
 		if (client->state != CS_ACTIVE)
 		{
 			continue;	// datagrams only go to spawned
 		}
-		client->datagram.WriteData(sv.datagram._data, sv.datagram.cursize);
+		client->datagram.WriteData(sv.qh_datagram._data, sv.qh_datagram.cursize);
 	}
 
-	sv.reliable_datagram.Clear();
-	sv.datagram.Clear();
+	sv.qh_reliable_datagram.Clear();
+	sv.qh_datagram.Clear();
 }
 
 #ifdef _WIN32
@@ -836,7 +836,7 @@ void SV_SendClientMessages(void)
 			continue;
 		}
 		c->qh_send_message = false;	// try putting this after choke?
-		if (!sv.paused && !Netchan_CanPacket(&c->netchan))
+		if (!sv.qh_paused && !Netchan_CanPacket(&c->netchan))
 		{
 			c->qh_chokecount++;
 			continue;		// bandwidth choke

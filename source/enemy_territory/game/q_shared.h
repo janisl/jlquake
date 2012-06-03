@@ -394,8 +394,6 @@ void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
 #define MAX_CSSTRINGS       32
 
 #define MAX_CS_SHADERS      32
-#define MAX_SERVER_TAGS     256
-#define MAX_TAG_FILES       64
 
 #define MAX_MULTI_SPAWNTARGETS  16	// JPW NERVE
 

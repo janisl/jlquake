@@ -221,7 +221,7 @@ void PF_Configstring(int index, const char* val)
 	}
 
 	// change the string in sv
-	String::Cpy(sv.configstrings[index], val);
+	String::Cpy(sv.q2_configstrings[index], val);
 
 	if (sv.state != SS_LOADING)
 	{	// send the update to everyone

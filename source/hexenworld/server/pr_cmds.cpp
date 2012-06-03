@@ -247,7 +247,7 @@ void PF_setmodel(void)
 	m = G_STRING(OFS_PARM1);
 
 // check to see if model was properly precached
-	for (i = 0, check = sv.model_precache; *check; i++, check++)
+	for (i = 0, check = sv.qh_model_precache; *check; i++, check++)
 		if (!String::Cmp(*check, m))
 		{
 			break;
@@ -289,7 +289,7 @@ void PF_setpuzzlemodel(void)
 
 	sprintf(NewName,"models/puzzle/%s.mdl",m);
 // check to see if model was properly precached
-	for (i = 0, check = sv.model_precache; *check; i++, check++)
+	for (i = 0, check = sv.qh_model_precache; *check; i++, check++)
 		if (!String::Cmp(*check, NewName))
 		{
 			break;
@@ -303,7 +303,7 @@ void PF_setpuzzlemodel(void)
 		Con_Printf("**** NO PRECACHE FOR PUZZLE PIECE:");
 		Con_Printf("**** %s\n",NewName);
 
-		sv.model_precache[i] = PR_GetString(e->GetModel());
+		sv.qh_model_precache[i] = PR_GetString(e->GetModel());
 	}
 
 	e->v.modelindex = i;
@@ -850,7 +850,7 @@ void PF_ambientsound(void)
 	attenuation = G_FLOAT(OFS_PARM3);
 
 // check to see if samp was properly precached
-	for (soundnum = 0, check = sv.sound_precache; *check; check++, soundnum++)
+	for (soundnum = 0, check = sv.qh_sound_precache; *check; check++, soundnum++)
 		if (!String::Cmp(*check,samp))
 		{
 			break;
@@ -864,14 +864,14 @@ void PF_ambientsound(void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(h2svc_spawnstaticsound);
+	sv.qh_signon.WriteByte(h2svc_spawnstaticsound);
 	for (i = 0; i < 3; i++)
-		sv.signon.WriteCoord(pos[i]);
+		sv.qh_signon.WriteCoord(pos[i]);
 
-	sv.signon.WriteByte(soundnum);
+	sv.qh_signon.WriteByte(soundnum);
 
-	sv.signon.WriteByte(vol * 255);
-	sv.signon.WriteByte(attenuation * 64);
+	sv.qh_signon.WriteByte(vol * 255);
+	sv.qh_signon.WriteByte(attenuation * 64);
 
 }
 
@@ -1019,7 +1019,7 @@ void PF_traceline(void)
 	}
 	else
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.qh_edicts);
 	}
 }
 
@@ -1068,7 +1068,7 @@ void PF_tracearea(void)
 	}
 	else
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.qh_edicts);
 	}
 }
 
@@ -1180,17 +1180,17 @@ void PF_checkclient(void)
 	vec3_t view;
 
 // find a new check if on a new frame
-	if (sv.time - sv.lastchecktime >= HX_FRAME_TIME)
+	if (sv.qh_time - sv.qh_lastchecktime >= HX_FRAME_TIME)
 	{
-		sv.lastcheck = PF_newcheckclient(sv.lastcheck);
-		sv.lastchecktime = sv.time;
+		sv.qh_lastcheck = PF_newcheckclient(sv.qh_lastcheck);
+		sv.qh_lastchecktime = sv.qh_time;
 	}
 
 // return check if it might be visible
-	ent = EDICT_NUM(sv.lastcheck);
+	ent = EDICT_NUM(sv.qh_lastcheck);
 	if (ent->free || ent->GetHealth() <= 0)
 	{
-		RETURN_EDICT(sv.edicts);
+		RETURN_EDICT(sv.qh_edicts);
 		return;
 	}
 
@@ -1202,7 +1202,7 @@ void PF_checkclient(void)
 	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
 	{
 		c_notvis++;
-		RETURN_EDICT(sv.edicts);
+		RETURN_EDICT(sv.qh_edicts);
 		return;
 	}
 
@@ -1312,13 +1312,13 @@ void PF_findradius(void)
 	vec3_t eorg;
 	int i, j;
 
-	chain = (qhedict_t*)sv.edicts;
+	chain = (qhedict_t*)sv.qh_edicts;
 
 	org = G_VECTOR(OFS_PARM0);
 	rad = G_FLOAT(OFS_PARM1);
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (i = 1; i < sv.num_edicts; i++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (i = 1; i < sv.qh_num_edicts; i++, ent = NEXT_EDICT(ent))
 	{
 		if (ent->free)
 		{
@@ -1434,7 +1434,7 @@ void PF_Remove(void)
 	int i;
 
 	ed = G_EDICT(OFS_PARM0);
-	if (ed == sv.edicts)
+	if (ed == sv.qh_edicts)
 	{
 		Con_Printf("Tried to remove the world at %s in %s!\n",
 			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
@@ -1468,7 +1468,7 @@ void PF_Find(void)
 		PR_RunError("PF_Find: bad search string");
 	}
 
-	for (e++; e < sv.num_edicts; e++)
+	for (e++; e < sv.qh_num_edicts; e++)
 	{
 		ed = EDICT_NUM(e);
 		if (ed->free)
@@ -1487,7 +1487,7 @@ void PF_Find(void)
 		}
 	}
 
-	RETURN_EDICT(sv.edicts);
+	RETURN_EDICT(sv.qh_edicts);
 }
 
 void PF_FindFloat(void)
@@ -1505,7 +1505,7 @@ void PF_FindFloat(void)
 		PR_RunError("PF_Find: bad search string");
 	}
 
-	for (e++; e < sv.num_edicts; e++)
+	for (e++; e < sv.qh_num_edicts; e++)
 	{
 		ed = EDICT_NUM(e);
 		if (ed->free)
@@ -1520,7 +1520,7 @@ void PF_FindFloat(void)
 		}
 	}
 
-	RETURN_EDICT(sv.edicts);
+	RETURN_EDICT(sv.qh_edicts);
 }
 
 void PR_CheckEmptyString(const char* s)
@@ -1552,12 +1552,12 @@ void PF_precache_sound(void)
 
 	for (i = 0; i < MAX_SOUNDS_HW; i++)
 	{
-		if (!sv.sound_precache[i])
+		if (!sv.qh_sound_precache[i])
 		{
-			sv.sound_precache[i] = s;
+			sv.qh_sound_precache[i] = s;
 			return;
 		}
-		if (!String::Cmp(sv.sound_precache[i], s))
+		if (!String::Cmp(sv.qh_sound_precache[i], s))
 		{
 			return;
 		}
@@ -1601,12 +1601,12 @@ void PF_precache_model(void)
 
 	for (i = 0; i < MAX_MODELS_H2; i++)
 	{
-		if (!sv.model_precache[i])
+		if (!sv.qh_model_precache[i])
 		{
-			sv.model_precache[i] = s;
+			sv.qh_model_precache[i] = s;
 			return;
 		}
-		if (!String::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.qh_model_precache[i], s))
 		{
 			return;
 		}
@@ -1655,12 +1655,12 @@ void PF_precache_puzzle_model(void)
 
 	for (i = 0; i < MAX_MODELS_H2; i++)
 	{
-		if (!sv.model_precache[i])
+		if (!sv.qh_model_precache[i])
 		{
-			sv.model_precache[i] = s;
+			sv.qh_model_precache[i] = s;
 			return;
 		}
-		if (!String::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.qh_model_precache[i], s))
 		{
 			return;
 		}
@@ -1785,7 +1785,7 @@ void PF_lightstyle(void)
 	val = G_STRING(OFS_PARM1);
 
 // change the string in sv
-	sv.lightstyles[style] = val;
+	sv.qh_lightstyles[style] = val;
 
 // send message to all clients on this server
 	if (sv.state != SS_GAME)
@@ -1868,7 +1868,7 @@ void PF_lightstylestatic(void)
 	styleString = styleDefs[value];
 
 	// Change the string in sv
-	sv.lightstyles[styleNumber] = styleString;
+	sv.qh_lightstyles[styleNumber] = styleString;
 	cl_lightstylevalue[styleNumber] = value;
 
 	if (sv.state != SS_GAME)
@@ -1953,9 +1953,9 @@ void PF_nextent(void)
 	while (1)
 	{
 		i++;
-		if (i == sv.num_edicts)
+		if (i == sv.qh_num_edicts)
 		{
-			RETURN_EDICT(sv.edicts);
+			RETURN_EDICT(sv.qh_edicts);
 			return;
 		}
 		ent = EDICT_NUM(i);
@@ -2015,8 +2015,8 @@ void PF_aim(void)
 	bestdist = sv_aim->value;
 	bestent = NULL;
 
-	check = NEXT_EDICT(sv.edicts);
-	for (i = 1; i < sv.num_edicts; i++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (i = 1; i < sv.qh_num_edicts; i++, check = NEXT_EDICT(check))
 	{
 		if (check->GetTakeDamage() != DAMAGE_YES)
 		{
@@ -2148,7 +2148,7 @@ QMsg* WriteDest(void)
 	switch (dest)
 	{
 	case MSG_BROADCAST:
-		return &sv.datagram;
+		return &sv.qh_datagram;
 
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
@@ -2160,14 +2160,14 @@ QMsg* WriteDest(void)
 		return &svs.clients[entnum - 1].netchan.message;
 
 	case MSG_ALL:
-		return &sv.reliable_datagram;
+		return &sv.qh_reliable_datagram;
 
 	case MSG_INIT:
 		if (sv.state != SS_LOADING)
 		{
 			PR_RunError("PF_Write_*: MSG_INIT can only be written in spawn functions");
 		}
-		return &sv.signon;
+		return &sv.qh_signon;
 
 	case MSG_MULTICAST:
 		return &sv.multicast;
@@ -2230,20 +2230,20 @@ void PF_makestatic(void)
 
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(h2svc_spawnstatic);
+	sv.qh_signon.WriteByte(h2svc_spawnstatic);
 
-	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->GetModel())));
+	sv.qh_signon.WriteShort(SV_ModelIndex(PR_GetString(ent->GetModel())));
 
-	sv.signon.WriteByte(ent->GetFrame());
-	sv.signon.WriteByte(ent->GetColorMap());
-	sv.signon.WriteByte(ent->GetSkin());
-	sv.signon.WriteByte((int)(ent->GetScale() * 100.0) & 255);
-	sv.signon.WriteByte(ent->GetDrawFlags());
-	sv.signon.WriteByte((int)(ent->GetAbsLight() * 255.0) & 255);
+	sv.qh_signon.WriteByte(ent->GetFrame());
+	sv.qh_signon.WriteByte(ent->GetColorMap());
+	sv.qh_signon.WriteByte(ent->GetSkin());
+	sv.qh_signon.WriteByte((int)(ent->GetScale() * 100.0) & 255);
+	sv.qh_signon.WriteByte(ent->GetDrawFlags());
+	sv.qh_signon.WriteByte((int)(ent->GetAbsLight() * 255.0) & 255);
 	for (i = 0; i < 3; i++)
 	{
-		sv.signon.WriteCoord(ent->GetOrigin()[i]);
-		sv.signon.WriteAngle(ent->GetAngles()[i]);
+		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
+		sv.qh_signon.WriteAngle(ent->GetAngles()[i]);
 	}
 
 // throw the entity away now
@@ -2486,13 +2486,13 @@ void PF_particleexplosion(void)
 	radius = G_FLOAT(OFS_PARM2);
 	counter = G_FLOAT(OFS_PARM3);
 
-	sv.datagram.WriteByte(hwsvc_particle_explosion);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
-	sv.datagram.WriteShort(color);
-	sv.datagram.WriteShort(radius);
-	sv.datagram.WriteShort(counter);
+	sv.qh_datagram.WriteByte(hwsvc_particle_explosion);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteShort(color);
+	sv.qh_datagram.WriteShort(radius);
+	sv.qh_datagram.WriteShort(counter);
 }
 
 void PF_movestep(void)
@@ -2886,9 +2886,9 @@ void PF_setclass(void)
 //	SV_ExtractFromUserinfo (host_client);
 
 	//update everyone else about playerclass change
-	sv.reliable_datagram.WriteByte(hwsvc_updatepclass);
-	sv.reliable_datagram.WriteByte(entnum - 1);
-	sv.reliable_datagram.WriteByte(((host_client->h2_playerclass << 5) | ((int)e->GetLevel() & 31)));
+	sv.qh_reliable_datagram.WriteByte(hwsvc_updatepclass);
+	sv.qh_reliable_datagram.WriteByte(entnum - 1);
+	sv.qh_reliable_datagram.WriteByte(((host_client->h2_playerclass << 5) | ((int)e->GetLevel() & 31)));
 	host_client = old;
 }
 
@@ -2925,9 +2925,9 @@ void PF_setsiegeteam(void)
 //	host_client->sendinfo = true;
 
 	//update everyone else about playerclass change
-	sv.reliable_datagram.WriteByte(hwsvc_updatesiegeteam);
-	sv.reliable_datagram.WriteByte(entnum - 1);
-	sv.reliable_datagram.WriteByte(host_client->hw_siege_team);
+	sv.qh_reliable_datagram.WriteByte(hwsvc_updatesiegeteam);
+	sv.qh_reliable_datagram.WriteByte(entnum - 1);
+	sv.qh_reliable_datagram.WriteByte(host_client->hw_siege_team);
 	host_client = old;
 }
 
@@ -2960,12 +2960,12 @@ void PF_endeffect(void)
 	index = G_FLOAT(OFS_PARM0);
 	index = G_FLOAT(OFS_PARM1);
 
-	if (!sv.Effects[index].type)
+	if (!sv.h2_Effects[index].type)
 	{
 		return;
 	}
 
-	sv.Effects[index].type = 0;
+	sv.h2_Effects[index].type = 0;
 	sv.multicast.WriteByte(hwsvc_end_effect);
 	sv.multicast.WriteByte(index);
 	SV_Multicast(vec3_origin, MULTICAST_ALL_R);
@@ -2980,16 +2980,16 @@ void PF_turneffect(void)
 	pos = G_VECTOR(OFS_PARM1);
 	dir = G_VECTOR(OFS_PARM2);
 
-	if (!sv.Effects[index].type)
+	if (!sv.h2_Effects[index].type)
 	{
 		return;
 	}
-	VectorCopy(pos, sv.Effects[index].Missile.origin);
-	VectorCopy(dir, sv.Effects[index].Missile.velocity);
+	VectorCopy(pos, sv.h2_Effects[index].Missile.origin);
+	VectorCopy(dir, sv.h2_Effects[index].Missile.velocity);
 
 	sv.multicast.WriteByte(hwsvc_turn_effect);
 	sv.multicast.WriteByte(index);
-	sv.multicast.WriteFloat(sv.time);
+	sv.multicast.WriteFloat(sv.qh_time);
 	sv.multicast.WriteCoord(pos[0]);
 	sv.multicast.WriteCoord(pos[1]);
 	sv.multicast.WriteCoord(pos[2]);
@@ -2997,7 +2997,7 @@ void PF_turneffect(void)
 	sv.multicast.WriteCoord(dir[1]);
 	sv.multicast.WriteCoord(dir[2]);
 
-	SV_MulticastSpecific(sv.Effects[index].client_list, true);
+	SV_MulticastSpecific(sv.h2_Effects[index].client_list, true);
 }
 
 void PF_updateeffect(void)	//type-specific what this will send
@@ -3008,12 +3008,12 @@ void PF_updateeffect(void)	//type-specific what this will send
 	index = G_FLOAT(OFS_PARM0);	// the effect we're lookin to change is parm 0
 	type = G_FLOAT(OFS_PARM1);	// the type of effect that it had better be is parm 1
 
-	if (!sv.Effects[index].type)
+	if (!sv.h2_Effects[index].type)
 	{
 		return;
 	}
 
-	if (sv.Effects[index].type != type)
+	if (sv.h2_Effects[index].type != type)
 	{
 		return;
 	}
@@ -3026,16 +3026,16 @@ void PF_updateeffect(void)	//type-specific what this will send
 	switch (type)
 	{
 	case HWCE_SCARABCHAIN:	//new ent to be attached to--pass in 0 for chain retract
-		sv.Effects[index].Chain.owner = G_INT(OFS_PARM2) & 0x0fff;
-		sv.Effects[index].Chain.material = G_INT(OFS_PARM2) >> 12;
+		sv.h2_Effects[index].Chain.owner = G_INT(OFS_PARM2) & 0x0fff;
+		sv.h2_Effects[index].Chain.material = G_INT(OFS_PARM2) >> 12;
 
-		if (sv.Effects[index].Chain.owner)
+		if (sv.h2_Effects[index].Chain.owner)
 		{
-			sv.Effects[index].Chain.state = 1;
+			sv.h2_Effects[index].Chain.state = 1;
 		}
 		else
 		{
-			sv.Effects[index].Chain.state = 2;
+			sv.h2_Effects[index].Chain.state = 2;
 		}
 
 		sv.multicast.WriteShort(G_EDICTNUM(OFS_PARM2));
@@ -3046,24 +3046,24 @@ void PF_updateeffect(void)	//type-specific what this will send
 		sv.multicast.WriteByte(cmd);
 		if (cmd & 1)
 		{
-			sv.Effects[index].Xbow.activebolts &= ~(1 << ((cmd >> 4) & 7));
+			sv.h2_Effects[index].Xbow.activebolts &= ~(1 << ((cmd >> 4) & 7));
 			sv.multicast.WriteCoord(G_FLOAT(OFS_PARM3));
 		}
 		else
 		{
-			sv.Effects[index].Xbow.vel[(cmd >> 4) & 7][0] = G_FLOAT(OFS_PARM3);
-			sv.Effects[index].Xbow.vel[(cmd >> 4) & 7][1] = G_FLOAT(OFS_PARM4);
-			sv.Effects[index].Xbow.vel[(cmd >> 4) & 7][2] = 0;
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][0] = G_FLOAT(OFS_PARM3);
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][1] = G_FLOAT(OFS_PARM4);
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][2] = 0;
 
 			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM3));
 			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM4));
 			if (cmd & 128)	//send origin too
 			{
-				sv.Effects[index].Xbow.turnedbolts |= 1 << ((cmd >> 4) & 7);
-				VectorCopy(G_VECTOR(OFS_PARM5), sv.Effects[index].Xbow.origin[(cmd >> 4) & 7]);
-				sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[(cmd >> 4) & 7][0]);
-				sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[(cmd >> 4) & 7][1]);
-				sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[(cmd >> 4) & 7][2]);
+				sv.h2_Effects[index].Xbow.turnedbolts |= 1 << ((cmd >> 4) & 7);
+				VectorCopy(G_VECTOR(OFS_PARM5), sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][0]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][1]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][2]);
 			}
 		}
 		break;
@@ -3080,20 +3080,20 @@ void PF_updateeffect(void)	//type-specific what this will send
 		}
 		else
 		{
-			sv.Effects[index].Missile.angle[0] = G_FLOAT(OFS_PARM3);
+			sv.h2_Effects[index].Missile.angle[0] = G_FLOAT(OFS_PARM3);
 			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM3));
-			sv.Effects[index].Missile.angle[1] = G_FLOAT(OFS_PARM4);
+			sv.h2_Effects[index].Missile.angle[1] = G_FLOAT(OFS_PARM4);
 			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM4));
 
-			VectorCopy(G_VECTOR(OFS_PARM5), sv.Effects[index].Missile.origin);
-			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[0]);
-			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[1]);
-			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[2]);
+			VectorCopy(G_VECTOR(OFS_PARM5), sv.h2_Effects[index].Missile.origin);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[0]);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[1]);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[2]);
 		}
 		break;
 	}
 
-	SV_MulticastSpecific(sv.Effects[index].client_list, true);
+	SV_MulticastSpecific(sv.h2_Effects[index].client_list, true);
 }
 
 void PF_randomrange(void)
@@ -3283,7 +3283,7 @@ void PF_seedrand(void)
 
 void PF_multieffect(void)
 {
-	SV_ParseMultiEffect(&sv.reliable_datagram);
+	SV_ParseMultiEffect(&sv.qh_reliable_datagram);
 
 }
 
@@ -3302,13 +3302,13 @@ void PF_weapon_sound(void)
 	sample = G_STRING(OFS_PARM1);
 
 	for (sound_num = 1; sound_num < MAX_SOUNDS_HW &&
-		 sv.sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.sound_precache[sound_num]))
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
 		{
 			break;
 		}
 
-	if (sound_num == MAX_SOUNDS_HW || !sv.sound_precache[sound_num])
+	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
 	{
 		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
 		return;

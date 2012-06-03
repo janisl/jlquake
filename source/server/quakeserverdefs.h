@@ -19,6 +19,8 @@
 
 #define MAX_BACK_BUFFERS 4
 
+#define MAX_SIGNON_BUFFERS  8
+
 struct qwclient_frame_t
 {
 	double senttime;

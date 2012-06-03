@@ -1121,18 +1121,18 @@ void SV_Frame(int msec)
 	}
 	frameMsec = 1000 / sv_fps->integer;
 
-	sv.timeResidual += msec;
+	sv.q3_timeResidual += msec;
 
 	if (!com_dedicated->integer)
 	{
-		SV_BotFrame(svs.time + sv.timeResidual);
+		SV_BotFrame(svs.time + sv.q3_timeResidual);
 	}
 
-	if (com_dedicated->integer && sv.timeResidual < frameMsec)
+	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
 	{
 		// NET_Sleep will give the OS time slices until either get a packet
 		// or time enough for a server frame has gone by
-		NET_Sleep(frameMsec - sv.timeResidual);
+		NET_Sleep(frameMsec - sv.q3_timeResidual);
 		return;
 	}
 
@@ -1162,9 +1162,9 @@ void SV_Frame(int msec)
 		return;
 	}
 
-	if (sv.restartTime && svs.time >= sv.restartTime)
+	if (sv.q3_restartTime && svs.time >= sv.q3_restartTime)
 	{
-		sv.restartTime = 0;
+		sv.q3_restartTime = 0;
 		Cbuf_AddText("map_restart 0\n");
 		return;
 	}
@@ -1210,9 +1210,9 @@ void SV_Frame(int msec)
 	}
 
 	// run the game simulation in chunks
-	while (sv.timeResidual >= frameMsec)
+	while (sv.q3_timeResidual >= frameMsec)
 	{
-		sv.timeResidual -= frameMsec;
+		sv.q3_timeResidual -= frameMsec;
 		svs.time += frameMsec;
 
 		// let everything in the world think and move
@@ -1298,9 +1298,9 @@ int SV_LoadTag(const char* mod_name)
 	md3Tag_t* readTag;
 	int i, j;
 
-	for (i = 0; i < sv.num_tagheaders; i++)
+	for (i = 0; i < sv.et_num_tagheaders; i++)
 	{
-		if (!String::ICmp(mod_name, sv.tagHeadersExt[i].filename))
+		if (!String::ICmp(mod_name, sv.et_tagHeadersExt[i].filename))
 		{
 			return i + 1;
 		}
@@ -1322,9 +1322,9 @@ int SV_LoadTag(const char* mod_name)
 		return 0;
 	}
 
-	if (sv.num_tagheaders >= MAX_TAG_FILES)
+	if (sv.et_num_tagheaders >= MAX_TAG_FILES_ET)
 	{
-		Com_Error(ERR_DROP, "MAX_TAG_FILES reached\n");
+		Com_Error(ERR_DROP, "MAX_TAG_FILES_ET reached\n");
 
 		FS_FreeFile(buffer);
 		return 0;
@@ -1335,21 +1335,21 @@ int SV_LoadTag(const char* mod_name)
 	LL(pinmodel->ofsEnd);
 	LL(pinmodel->version);
 
-	String::NCpyZ(sv.tagHeadersExt[sv.num_tagheaders].filename, mod_name, MAX_QPATH);
-	sv.tagHeadersExt[sv.num_tagheaders].start = sv.num_tags;
-	sv.tagHeadersExt[sv.num_tagheaders].count = pinmodel->numTags;
+	String::NCpyZ(sv.et_tagHeadersExt[sv.et_num_tagheaders].filename, mod_name, MAX_QPATH);
+	sv.et_tagHeadersExt[sv.et_num_tagheaders].start = sv.et_num_tags;
+	sv.et_tagHeadersExt[sv.et_num_tagheaders].count = pinmodel->numTags;
 
-	if (sv.num_tags + pinmodel->numTags >= MAX_SERVER_TAGS)
+	if (sv.et_num_tags + pinmodel->numTags >= MAX_SERVER_TAGS_ET)
 	{
-		Com_Error(ERR_DROP, "MAX_SERVER_TAGS reached\n");
+		Com_Error(ERR_DROP, "MAX_SERVER_TAGS_ET reached\n");
 
 		FS_FreeFile(buffer);
 		return qfalse;
 	}
 
 	// swap all the tags
-	tag = &sv.tags[sv.num_tags];
-	sv.num_tags += pinmodel->numTags;
+	tag = &sv.et_tags[sv.et_num_tags];
+	sv.et_num_tags += pinmodel->numTags;
 	readTag = (md3Tag_t*)(buffer + sizeof(tagHeader_t));
 	for (i = 0; i < pinmodel->numTags; i++, tag++, readTag++)
 	{
@@ -1364,7 +1364,7 @@ int SV_LoadTag(const char* mod_name)
 	}
 
 	FS_FreeFile(buffer);
-	return ++sv.num_tagheaders;
+	return ++sv.et_num_tagheaders;
 }
 
 //============================================================================

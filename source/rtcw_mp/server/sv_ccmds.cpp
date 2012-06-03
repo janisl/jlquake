@@ -353,7 +353,7 @@ static void SV_MapRestart_f(void)
 	wmsharedEntity_t* world;
 
 	// make sure we aren't restarting twice in the same frame
-	if (com_frameTime == sv.serverId)
+	if (com_frameTime == sv.q3_serverId)
 	{
 		return;
 	}
@@ -365,7 +365,7 @@ static void SV_MapRestart_f(void)
 		return;
 	}
 
-	if (sv.restartTime)
+	if (sv.q3_restartTime)
 	{
 		return;
 	}
@@ -403,8 +403,8 @@ static void SV_MapRestart_f(void)
 
 	if (delay)
 	{
-		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.restartTime));
+		sv.q3_restartTime = svs.time + delay * 1000;
+		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
 
@@ -445,14 +445,14 @@ static void SV_MapRestart_f(void)
 
 	// generate a new serverid
 	// TTimo - don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
-	sv.serverId = com_frameTime;
-	Cvar_Set("sv_serverid", va("%i", sv.serverId));
+	sv.q3_serverId = com_frameTime;
+	Cvar_Set("sv_serverid", va("%i", sv.q3_serverId));
 
 	// reset all the vm data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
-	sv.restarting = qtrue;
+	sv.q3_restarting = qtrue;
 
 	Cvar_Set("sv_serverRestarting", "1");
 
@@ -466,7 +466,7 @@ static void SV_MapRestart_f(void)
 	}
 
 	sv.state = SS_GAME;
-	sv.restarting = qfalse;
+	sv.q3_restarting = qfalse;
 
 	// connect and begin all the clients
 	for (i = 0; i < sv_maxclients->integer; i++)
@@ -552,7 +552,7 @@ void    SV_LoadGame_f(void)
 	// read the mapname, if it is the same as the current map, then do a fast load
 	String::Sprintf(mapname, sizeof(mapname), buffer + sizeof(int));
 
-	if (com_sv_running->integer && (com_frameTime != sv.serverId))
+	if (com_sv_running->integer && (com_frameTime != sv.q3_serverId))
 	{
 		// check mapname
 		if (!String::ICmp(mapname, sv_mapname->string))			// same

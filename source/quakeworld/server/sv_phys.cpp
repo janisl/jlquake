@@ -67,8 +67,8 @@ void SV_CheckAllEnts(void)
 	qhedict_t* check;
 
 // see if any solid entities are inside the final position
-	check = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, check = NEXT_EDICT(check))
 	{
 		if (check->free)
 		{
@@ -144,21 +144,21 @@ qboolean SV_RunThink(qhedict_t* ent)
 		{
 			return true;
 		}
-		if (thinktime > sv.time + host_frametime)
+		if (thinktime > sv.qh_time + host_frametime)
 		{
 			return true;
 		}
 
-		if (thinktime < sv.time)
+		if (thinktime < sv.qh_time)
 		{
-			thinktime = sv.time;	// don't let things stay in the past.
+			thinktime = sv.qh_time;	// don't let things stay in the past.
 		}
 		// it is possible to start that way
 		// by a trigger with a local time.
 		ent->SetNextThink(0);
 		pr_global_struct->time = thinktime;
 		pr_global_struct->self = EDICT_TO_PROG(ent);
-		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->other = EDICT_TO_PROG(sv.qh_edicts);
 		PR_ExecuteProgram(ent->GetThink());
 
 		if (ent->free)
@@ -185,7 +185,7 @@ void SV_Impact(qhedict_t* e1, qhedict_t* e2)
 	old_self = pr_global_struct->self;
 	old_other = pr_global_struct->other;
 
-	pr_global_struct->time = sv.time;
+	pr_global_struct->time = sv.qh_time;
 	if (e1->GetTouch() && e1->GetSolid() != SOLID_NOT)
 	{
 		pr_global_struct->self = EDICT_TO_PROG(e1);
@@ -451,8 +451,8 @@ qboolean SV_Push(qhedict_t* pusher, vec3_t move)
 
 // see if any solid entities are inside the final position
 	num_moved = 0;
-	check = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, check = NEXT_EDICT(check))
 	{
 		if (check->free)
 		{
@@ -620,9 +620,9 @@ void SV_Physics_Pusher(qhedict_t* ent)
 	{
 		VectorCopy(ent->GetOrigin(), oldorg);
 		ent->SetNextThink(0);
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(ent);
-		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->other = EDICT_TO_PROG(sv.qh_edicts);
 		PR_ExecuteProgram(ent->GetThink());
 		if (ent->free)
 		{
@@ -865,9 +865,9 @@ void SV_Physics_Step(qhedict_t* ent)
 void SV_ProgStartFrame(void)
 {
 // let the progs know that a new frame has started
-	pr_global_struct->self = EDICT_TO_PROG(sv.edicts);
-	pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
-	pr_global_struct->time = sv.time;
+	pr_global_struct->self = EDICT_TO_PROG(sv.qh_edicts);
+	pr_global_struct->other = EDICT_TO_PROG(sv.qh_edicts);
+	pr_global_struct->time = sv.qh_time;
 	PR_ExecuteProgram(pr_global_struct->StartFrame);
 }
 
@@ -963,8 +963,8 @@ void SV_Physics(void)
 // treat each object in turn
 // even the world gets a chance to think
 //
-	ent = sv.edicts;
-	for (i = 0; i < sv.num_edicts; i++, ent = NEXT_EDICT(ent))
+	ent = sv.qh_edicts;
+	for (i = 0; i < sv.qh_num_edicts; i++, ent = NEXT_EDICT(ent))
 	{
 		if (ent->free)
 		{

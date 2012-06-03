@@ -75,12 +75,12 @@ qhedict_t* ED_Alloc(void)
 	int i;
 	qhedict_t* e;
 
-	for (i = svs.maxclients + 1 + max_temp_edicts->value; i < sv.num_edicts; i++)
+	for (i = svs.maxclients + 1 + max_temp_edicts->value; i < sv.qh_num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.time - e->freetime > 0.5))
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
 		{
 			ED_ClearEdict(e);
 			return e;
@@ -93,7 +93,7 @@ qhedict_t* ED_Alloc(void)
 		Sys_Error("ED_Alloc: no free edicts");
 	}
 
-	sv.num_edicts++;
+	sv.qh_num_edicts++;
 	e = EDICT_NUM(i);
 	ED_ClearEdict(e);
 
@@ -114,10 +114,10 @@ qhedict_t* ED_Alloc_Temp(void)
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.time - e->freetime > 0.5))
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
 		{
 			ED_ClearEdict(e);
-			e->alloctime = sv.time;
+			e->alloctime = sv.qh_time;
 
 			return e;
 		}
@@ -132,7 +132,7 @@ qhedict_t* ED_Alloc_Temp(void)
 
 	ED_Free(Least);
 	ED_ClearEdict(Least);
-	Least->alloctime = sv.time;
+	Least->alloctime = sv.qh_time;
 
 	return Least;
 }
@@ -161,7 +161,7 @@ void ED_Free(qhedict_t* ed)
 	ed->SetNextThink(-1);
 	ed->SetSolid(0);
 
-	ed->freetime = sv.time;
+	ed->freetime = sv.qh_time;
 	ed->alloctime = -1;
 }
 
@@ -518,8 +518,8 @@ void ED_PrintEdicts(void)
 {
 	int i;
 
-	Con_Printf("%i entities\n", sv.num_edicts);
-	for (i = 0; i < sv.num_edicts; i++)
+	Con_Printf("%i entities\n", sv.qh_num_edicts);
+	for (i = 0; i < sv.qh_num_edicts; i++)
 		ED_PrintNum(i);
 }
 
@@ -535,7 +535,7 @@ void ED_PrintEdict_f(void)
 	int i;
 
 	i = String::Atoi(Cmd_Argv(1));
-	if (i >= sv.num_edicts)
+	if (i >= sv.qh_num_edicts)
 	{
 		Con_Printf("Bad edict number\n");
 		return;
@@ -557,7 +557,7 @@ void ED_Count(void)
 	int active, models, solid, step;
 
 	active = models = solid = step = 0;
-	for (i = 0; i < sv.num_edicts; i++)
+	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
 		ent = EDICT_NUM(i);
 		if (ent->free)
@@ -579,7 +579,7 @@ void ED_Count(void)
 		}
 	}
 
-	Con_Printf("num_edicts:%3i\n", sv.num_edicts);
+	Con_Printf("num_edicts:%3i\n", sv.qh_num_edicts);
 	Con_Printf("active    :%3i\n", active);
 	Con_Printf("view      :%3i\n", models);
 	Con_Printf("touch     :%3i\n", solid);
@@ -819,7 +819,7 @@ const char* ED_ParseEdict(const char* data, qhedict_t* ent)
 	init = false;
 
 // clear it
-	if (ent != sv.edicts)	// hack
+	if (ent != sv.qh_edicts)	// hack
 	{
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	}
@@ -889,12 +889,12 @@ const char* ED_ParseEdict(const char* data, qhedict_t* ent)
 
 		if (String::ICmp(keyname,"MIDI") == 0)
 		{
-			String::Cpy(sv.midi_name,token);
+			String::Cpy(sv.h2_midi_name,token);
 			continue;
 		}
 		else if (String::ICmp(keyname,"CD") == 0)
 		{
-			sv.cd_track = (byte)atol(token);
+			sv.h2_cd_track = (byte)atol(token);
 			continue;
 		}
 
@@ -952,7 +952,7 @@ void ED_LoadFromFile(const char* data)
 
 	ent = NULL;
 	inhibit = 0;
-	pr_global_struct->time = sv.time;
+	pr_global_struct->time = sv.qh_time;
 	orig = data;
 	int entity_file_size = String::Length(data);
 
@@ -1374,25 +1374,25 @@ void PR_Init(void)
 
 qhedict_t* EDICT_NUM(int n)
 {
-	if (n < 0 || n >= sv.max_edicts)
+	if (n < 0 || n >= sv.qh_max_edicts)
 	{
 		Sys_Error("EDICT_NUM: bad number %i", n);
 	}
-	return (qhedict_t*)((byte*)sv.edicts + (n) * pr_edict_size);
+	return (qhedict_t*)((byte*)sv.qh_edicts + (n) * pr_edict_size);
 }
 
 int NUM_FOR_EDICT(qhedict_t* e)
 {
 	int b;
 
-	b = (byte*)e - (byte*)sv.edicts;
+	b = (byte*)e - (byte*)sv.qh_edicts;
 	b = b / pr_edict_size;
 
-	if (b < 0 || b >= sv.num_edicts)
+	if (b < 0 || b >= sv.qh_num_edicts)
 	{
 		if (!RemoveBadReferences)
 		{
-			Con_DPrintf("NUM_FOR_EDICT: bad pointer, Class: %s Field: %s, Index %d, Total %d",class_name,field_name,b,sv.num_edicts);
+			Con_DPrintf("NUM_FOR_EDICT: bad pointer, Class: %s Field: %s, Index %d, Total %d",class_name,field_name,b,sv.qh_num_edicts);
 		}
 		return(0);
 	}

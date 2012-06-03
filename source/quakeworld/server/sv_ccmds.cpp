@@ -568,9 +568,9 @@ void SV_SendServerInfoChange(char* key, char* value)
 		return;
 	}
 
-	sv.reliable_datagram.WriteByte(qwsvc_serverinfo);
-	sv.reliable_datagram.WriteString2(key);
-	sv.reliable_datagram.WriteString2(value);
+	sv.qh_reliable_datagram.WriteByte(qwsvc_serverinfo);
+	sv.qh_reliable_datagram.WriteString2(key);
+	sv.qh_reliable_datagram.WriteString2(value);
 }
 
 /*

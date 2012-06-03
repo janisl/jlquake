@@ -83,14 +83,14 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 {
 	int i, v;
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_Q1 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_Q1 - 16)
 	{
 		return;
 	}
-	sv.datagram.WriteByte(q1svc_particle);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteByte(q1svc_particle);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
 	for (i = 0; i < 3; i++)
 	{
 		v = dir[i] * 16;
@@ -102,10 +102,10 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 		{
 			v = -128;
 		}
-		sv.datagram.WriteChar(v);
+		sv.qh_datagram.WriteChar(v);
 	}
-	sv.datagram.WriteByte(count);
-	sv.datagram.WriteByte(color);
+	sv.qh_datagram.WriteByte(count);
+	sv.qh_datagram.WriteByte(color);
 }
 
 /*
@@ -146,20 +146,20 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		Sys_Error("SV_StartSound: channel = %i", channel);
 	}
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_Q1 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_Q1 - 16)
 	{
 		return;
 	}
 
 // find precache number for sound
 	for (sound_num = 1; sound_num < MAX_SOUNDS_Q1 &&
-		 sv.sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.sound_precache[sound_num]))
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
 		{
 			break;
 		}
 
-	if (sound_num == MAX_SOUNDS_Q1 || !sv.sound_precache[sound_num])
+	if (sound_num == MAX_SOUNDS_Q1 || !sv.qh_sound_precache[sound_num])
 	{
 		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
 		return;
@@ -180,20 +180,20 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 	}
 
 // directed messages go only to the entity the are targeted on
-	sv.datagram.WriteByte(q1svc_sound);
-	sv.datagram.WriteByte(field_mask);
+	sv.qh_datagram.WriteByte(q1svc_sound);
+	sv.qh_datagram.WriteByte(field_mask);
 	if (field_mask & SND_VOLUME)
 	{
-		sv.datagram.WriteByte(volume);
+		sv.qh_datagram.WriteByte(volume);
 	}
 	if (field_mask & SND_ATTENUATION)
 	{
-		sv.datagram.WriteByte(attenuation * 64);
+		sv.qh_datagram.WriteByte(attenuation * 64);
 	}
-	sv.datagram.WriteShort(channel);
-	sv.datagram.WriteByte(sound_num);
+	sv.qh_datagram.WriteShort(channel);
+	sv.qh_datagram.WriteByte(sound_num);
 	for (i = 0; i < 3; i++)
-		sv.datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
+		sv.qh_datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
 }
 
 /*
@@ -234,22 +234,22 @@ void SV_SendServerinfo(client_t* client)
 		client->qh_message.WriteByte(GAME_COOP);
 	}
 
-	String::Cpy(message, PR_GetString(sv.edicts->GetMessage()));
+	String::Cpy(message, PR_GetString(sv.qh_edicts->GetMessage()));
 
 	client->qh_message.WriteString2(message);
 
-	for (s = sv.model_precache + 1; *s; s++)
+	for (s = sv.qh_model_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);
 	client->qh_message.WriteByte(0);
 
-	for (s = sv.sound_precache + 1; *s; s++)
+	for (s = sv.qh_sound_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);
 	client->qh_message.WriteByte(0);
 
 // send music
 	client->qh_message.WriteByte(q1svc_cdtrack);
-	client->qh_message.WriteByte(sv.edicts->GetSounds());
-	client->qh_message.WriteByte(sv.edicts->GetSounds());
+	client->qh_message.WriteByte(sv.qh_edicts->GetSounds());
+	client->qh_message.WriteByte(sv.qh_edicts->GetSounds());
 
 // set view
 	client->qh_message.WriteByte(q1svc_setview);
@@ -392,7 +392,7 @@ SV_ClearDatagram
 */
 void SV_ClearDatagram(void)
 {
-	sv.datagram.Clear();
+	sv.qh_datagram.Clear();
 }
 
 /*
@@ -475,8 +475,8 @@ void SV_WriteEntitiesToClient(qhedict_t* clent, QMsg* msg)
 	pvs = SV_FatPVS(org);
 
 // send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 // ignore if not touching a PV leaf
 		if (ent != clent)	// clent is ALLWAYS sent
@@ -651,8 +651,8 @@ void SV_CleanupEnts(void)
 	int e;
 	qhedict_t* ent;
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		ent->SetEffects((int)ent->GetEffects() & ~Q1EF_MUZZLEFLASH);
 	}
@@ -845,7 +845,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.InitOOB(buf, sizeof(buf));
 
 	msg.WriteByte(q1svc_time);
-	msg.WriteFloat(sv.time);
+	msg.WriteFloat(sv.qh_time);
 
 // add the client specific data to the datagram
 	SV_WriteClientdataToMessage(client->qh_edict, &msg);
@@ -853,9 +853,9 @@ qboolean SV_SendClientDatagram(client_t* client)
 	SV_WriteEntitiesToClient(client->qh_edict, &msg);
 
 // copy the server datagram if there is space
-	if (msg.cursize + sv.datagram.cursize < msg.maxsize)
+	if (msg.cursize + sv.qh_datagram.cursize < msg.maxsize)
 	{
-		msg.WriteData(sv.datagram._data, sv.datagram.cursize);
+		msg.WriteData(sv.qh_datagram._data, sv.qh_datagram.cursize);
 	}
 
 // send the datagram
@@ -904,10 +904,10 @@ void SV_UpdateToReliableMessages(void)
 		{
 			continue;
 		}
-		client->qh_message.WriteData(sv.reliable_datagram._data, sv.reliable_datagram.cursize);
+		client->qh_message.WriteData(sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
 	}
 
-	sv.reliable_datagram.Clear();
+	sv.qh_reliable_datagram.Clear();
 }
 
 
@@ -1044,12 +1044,12 @@ int SV_ModelIndex(const char* name)
 		return 0;
 	}
 
-	for (i = 0; i < MAX_MODELS_Q1 && sv.model_precache[i]; i++)
-		if (!String::Cmp(sv.model_precache[i], name))
+	for (i = 0; i < MAX_MODELS_Q1 && sv.qh_model_precache[i]; i++)
+		if (!String::Cmp(sv.qh_model_precache[i], name))
 		{
 			return i;
 		}
-	if (i == MAX_MODELS_Q1 || !sv.model_precache[i])
+	if (i == MAX_MODELS_Q1 || !sv.qh_model_precache[i])
 	{
 		Sys_Error("SV_ModelIndex: model %s not precached", name);
 	}
@@ -1068,7 +1068,7 @@ void SV_CreateBaseline(void)
 	qhedict_t* svent;
 	int entnum;
 
-	for (entnum = 0; entnum < sv.num_edicts; entnum++)
+	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		// get the current server version
 		svent = EDICT_NUM(entnum);
@@ -1103,17 +1103,17 @@ void SV_CreateBaseline(void)
 		//
 		// add to the message
 		//
-		sv.signon.WriteByte(q1svc_spawnbaseline);
-		sv.signon.WriteShort(entnum);
+		sv.qh_signon.WriteByte(q1svc_spawnbaseline);
+		sv.qh_signon.WriteShort(entnum);
 
-		sv.signon.WriteByte(svent->q1_baseline.modelindex);
-		sv.signon.WriteByte(svent->q1_baseline.frame);
-		sv.signon.WriteByte(svent->q1_baseline.colormap);
-		sv.signon.WriteByte(svent->q1_baseline.skinnum);
+		sv.qh_signon.WriteByte(svent->q1_baseline.modelindex);
+		sv.qh_signon.WriteByte(svent->q1_baseline.frame);
+		sv.qh_signon.WriteByte(svent->q1_baseline.colormap);
+		sv.qh_signon.WriteByte(svent->q1_baseline.skinnum);
 		for (i = 0; i < 3; i++)
 		{
-			sv.signon.WriteCoord(svent->q1_baseline.origin[i]);
-			sv.signon.WriteAngle(svent->q1_baseline.angles[i]);
+			sv.qh_signon.WriteCoord(svent->q1_baseline.origin[i]);
+			sv.qh_signon.WriteAngle(svent->q1_baseline.angles[i]);
 		}
 	}
 }
@@ -1238,18 +1238,18 @@ void SV_SpawnServer(char* server)
 	PR_LoadProgs();
 
 // allocate server memory
-	sv.max_edicts = MAX_EDICTS_Q1;
+	sv.qh_max_edicts = MAX_EDICTS_Q1;
 
-	sv.edicts = (qhedict_t*)Hunk_AllocName(sv.max_edicts * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(sv.qh_max_edicts * pr_edict_size, "edicts");
 
-	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
+	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_DATAGRAM_Q1);
 
-	sv.reliable_datagram.InitOOB(sv.reliable_datagram_buf, sizeof(sv.reliable_datagram_buf));
+	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_DATAGRAM_Q1);
 
-	sv.signon.InitOOB(sv.signon_buf, sizeof(sv.signon_buf));
+	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_Q1);
 
 // leave slots at start for clients only
-	sv.num_edicts = svs.maxclients + 1;
+	sv.qh_num_edicts = svs.maxclients + 1;
 	for (i = 0; i < svs.maxclients; i++)
 	{
 		ent = EDICT_NUM(i + 1);
@@ -1257,13 +1257,13 @@ void SV_SpawnServer(char* server)
 	}
 
 	sv.state = SS_LOADING;
-	sv.paused = false;
+	sv.qh_paused = false;
 
-	sv.time = 1.0;
+	sv.qh_time = 1.0;
 
 	String::Cpy(sv.name, server);
-	sprintf(sv.modelname,"maps/%s.bsp", server);
-	CM_LoadMap(sv.modelname, false, NULL);
+	sprintf(sv.qh_modelname,"maps/%s.bsp", server);
+	CM_LoadMap(sv.qh_modelname, false, NULL);
 	sv.models[1] = 0;
 
 //
@@ -1271,13 +1271,13 @@ void SV_SpawnServer(char* server)
 //
 	SV_ClearWorld();
 
-	sv.sound_precache[0] = PR_GetString(0);
+	sv.qh_sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = PR_GetString(0);
-	sv.model_precache[1] = sv.modelname;
+	sv.qh_model_precache[0] = PR_GetString(0);
+	sv.qh_model_precache[1] = sv.qh_modelname;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.model_precache[1 + i] = localmodels[i];
+		sv.qh_model_precache[1 + i] = localmodels[i];
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
@@ -1287,7 +1287,7 @@ void SV_SpawnServer(char* server)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->SetModel(PR_SetString(sv.modelname));
+	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);

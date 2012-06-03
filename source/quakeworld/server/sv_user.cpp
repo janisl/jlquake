@@ -64,7 +64,7 @@ void SV_New_f(void)
 	host_client->qh_connection_started = realtime;
 
 	// send the info about the new client to all connected clients
-//	SV_FullClientUpdate (host_client, &sv.reliable_datagram);
+//	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
 //	host_client->sendinfo = true;
 
 	gamedir = Info_ValueForKey(svs.info, "*gamedir");
@@ -96,7 +96,7 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->GetMessage()));
+	host_client->netchan.message.WriteString2(PR_GetString(sv.qh_edicts->GetMessage()));
 
 	// send the movevars
 	host_client->netchan.message.WriteFloat(movevars.gravity);
@@ -112,7 +112,7 @@ void SV_New_f(void)
 
 	// send music
 	host_client->netchan.message.WriteByte(q1svc_cdtrack);
-	host_client->netchan.message.WriteByte(sv.edicts->GetSounds());
+	host_client->netchan.message.WriteByte(sv.qh_edicts->GetSounds());
 
 	// send server info string
 	host_client->netchan.message.WriteByte(q1svc_stufftext);
@@ -156,7 +156,7 @@ void SV_Soundlist_f(void)
 
 	host_client->netchan.message.WriteByte(qwsvc_soundlist);
 	host_client->netchan.message.WriteByte(n);
-	for (s = sv.sound_precache + 1 + n;
+	for (s = sv.qh_sound_precache + 1 + n;
 		 *s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW / 2);
 		 s++, n++)
 		host_client->netchan.message.WriteString2(*s);
@@ -211,7 +211,7 @@ void SV_Modellist_f(void)
 
 	host_client->netchan.message.WriteByte(qwsvc_modellist);
 	host_client->netchan.message.WriteByte(n);
-	for (s = sv.model_precache + 1 + n;
+	for (s = sv.qh_model_precache + 1 + n;
 		 *s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW / 2);
 		 s++, n++)
 		host_client->netchan.message.WriteString2(*s);
@@ -253,7 +253,7 @@ void SV_PreSpawn_f(void)
 	}
 
 	buf = String::Atoi(Cmd_Argv(2));
-	if (buf >= sv.num_signon_buffers)
+	if (buf >= sv.qh_num_signon_buffers)
 	{
 		buf = 0;
 	}
@@ -273,7 +273,7 @@ void SV_PreSpawn_f(void)
 			SV_ClientPrintf(host_client, PRINT_HIGH,
 				"Map model file does not match (%s), %i != %i/%i.\n"
 				"You may need a new version of the map, or the proper install files.\n",
-				sv.modelname, check, map_checksum, map_checksum2);
+				sv.qh_modelname, check, map_checksum, map_checksum2);
 			SV_DropClient(host_client);
 			return;
 		}
@@ -290,11 +290,11 @@ void SV_PreSpawn_f(void)
 	}
 
 	host_client->netchan.message.WriteData(
-		sv.signon_buffers[buf],
-		sv.signon_buffer_size[buf]);
+		sv.qh_signon_buffers[buf],
+		sv.qh_signon_buffer_size[buf]);
 
 	buf++;
-	if (buf == sv.num_signon_buffers)
+	if (buf == sv.qh_num_signon_buffers)
 	{	// all done prespawning
 		host_client->netchan.message.WriteByte(q1svc_stufftext);
 		host_client->netchan.message.WriteString2(va("cmd spawn %i 0\n",svs.spawncount));
@@ -360,9 +360,9 @@ void SV_Spawn_f(void)
 	for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		ClientReliableWrite_Begin(host_client, q1svc_lightstyle,
-			3 + (sv.lightstyles[i] ? String::Length(sv.lightstyles[i]) : 1));
+			3 + (sv.qh_lightstyles[i] ? String::Length(sv.qh_lightstyles[i]) : 1));
 		ClientReliableWrite_Byte(host_client, (char)i);
-		ClientReliableWrite_String(host_client, sv.lightstyles[i]);
+		ClientReliableWrite_String(host_client, sv.qh_lightstyles[i]);
 	}
 
 	// set up the edict
@@ -429,7 +429,7 @@ void SV_SpawnSpectator(void)
 	sv_player->GetViewOfs()[2] = 22;
 
 	// search for an info_playerstart to spawn the spectator at
-	for (i = MAX_CLIENTS_QW - 1; i < sv.num_edicts; i++)
+	for (i = MAX_CLIENTS_QW - 1; i < sv.qh_num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
@@ -477,7 +477,7 @@ void SV_Begin_f(void)
 				(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
 
 			// call the spawn function
-			pr_global_struct->time = sv.time;
+			pr_global_struct->time = sv.qh_time;
 			pr_global_struct->self = EDICT_TO_PROG(sv_player);
 			PR_ExecuteProgram(SpectatorConnect);
 		}
@@ -489,12 +489,12 @@ void SV_Begin_f(void)
 			(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
 
 		// call the spawn function
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->ClientConnect);
 
 		// actually spawn the player
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->PutClientInServer);
 	}
@@ -508,17 +508,17 @@ void SV_Begin_f(void)
 	pmodel = String::Atoi(Info_ValueForKey(host_client->userinfo, "pmodel"));
 	emodel = String::Atoi(Info_ValueForKey(host_client->userinfo, "emodel"));
 
-	if (pmodel != sv.model_player_checksum ||
-		emodel != sv.eyes_player_checksum)
+	if (pmodel != sv.qw_model_player_checksum ||
+		emodel != sv.qw_eyes_player_checksum)
 	{
 		SV_BroadcastPrintf(PRINT_HIGH, "%s WARNING: non standard player/eyes model detected\n", host_client->name);
 	}
 
 	// if we are paused, tell the client
-	if (sv.paused)
+	if (sv.qh_paused)
 	{
 		ClientReliableWrite_Begin(host_client, q1svc_setpause, 2);
-		ClientReliableWrite_Byte(host_client, sv.paused);
+		ClientReliableWrite_Byte(host_client, sv.qh_paused);
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Server is paused.\n");
 	}
 
@@ -802,7 +802,7 @@ void SV_Say(qboolean team)
 
 	if (fp_messages)
 	{
-		if (!sv.paused && realtime < host_client->qh_lockedtill)
+		if (!sv.qh_paused && realtime < host_client->qh_lockedtill)
 		{
 			SV_ClientPrintf(host_client, PRINT_CHAT,
 				"You can't talk for %d more seconds\n",
@@ -814,7 +814,7 @@ void SV_Say(qboolean team)
 		{
 			tmp = 10 + tmp;
 		}
-		if (!sv.paused &&
+		if (!sv.qh_paused &&
 			host_client->qh_whensaid[tmp] && (realtime - host_client->qh_whensaid[tmp] < fp_persecond))
 		{
 			host_client->qh_lockedtill = realtime + fp_secondsdead;
@@ -956,7 +956,7 @@ void SV_Kill_f(void)
 		return;
 	}
 
-	pr_global_struct->time = sv.time;
+	pr_global_struct->time = sv.qh_time;
 	pr_global_struct->self = EDICT_TO_PROG(sv_player);
 	PR_ExecuteProgram(pr_global_struct->ClientKill);
 }
@@ -971,7 +971,7 @@ void SV_TogglePause(const char* msg)
 	int i;
 	client_t* cl;
 
-	sv.paused ^= 1;
+	sv.qh_paused ^= 1;
 
 	if (msg)
 	{
@@ -986,7 +986,7 @@ void SV_TogglePause(const char* msg)
 			continue;
 		}
 		ClientReliableWrite_Begin(cl, q1svc_setpause, 2);
-		ClientReliableWrite_Byte(cl, sv.paused);
+		ClientReliableWrite_Byte(cl, sv.qh_paused);
 	}
 }
 
@@ -1012,7 +1012,7 @@ void SV_Pause_f(void)
 		return;
 	}
 
-	if (sv.paused)
+	if (sv.qh_paused)
 	{
 		sprintf(st, "%s paused the game\n", host_client->name);
 	}
@@ -1179,7 +1179,7 @@ void SV_SetInfo_f(void)
 // name is extracted below in ExtractFromUserInfo
 //	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 //		, sizeof(host_client->name)-1);
-//	SV_FullClientUpdate (host_client, &sv.reliable_datagram);
+//	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
 //	host_client->sendinfo = true;
 
 	if (!String::Cmp(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)), oldval))
@@ -1191,10 +1191,10 @@ void SV_SetInfo_f(void)
 	SV_ExtractFromUserinfo(host_client);
 
 	i = host_client - svs.clients;
-	sv.reliable_datagram.WriteByte(qwsvc_setinfo);
-	sv.reliable_datagram.WriteByte(i);
-	sv.reliable_datagram.WriteString2(Cmd_Argv(1));
-	sv.reliable_datagram.WriteString2(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
+	sv.qh_reliable_datagram.WriteByte(qwsvc_setinfo);
+	sv.qh_reliable_datagram.WriteByte(i);
+	sv.qh_reliable_datagram.WriteString2(Cmd_Argv(1));
+	sv.qh_reliable_datagram.WriteString2(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
 }
 
 /*
@@ -1398,8 +1398,8 @@ void AddAllEntsToPmove(void)
 	int pl;
 
 	pl = EDICT_TO_PROG(sv_player);
-	check = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, check = NEXT_EDICT(check))
 	{
 		if (check->free)
 		{
@@ -1525,7 +1525,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 	{
 		pr_global_struct->frametime = host_frametime;
 
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->PlayerPreThink);
 
@@ -1636,14 +1636,14 @@ void SV_PostRunCmd(void)
 
 	if (!host_client->qh_spectator)
 	{
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->PlayerPostThink);
 		SV_RunNewmis();
 	}
 	else if (SpectatorThink)
 	{
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(SpectatorThink);
 	}
@@ -1696,7 +1696,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 
 	// mark time so clients will know how much to predict
 	// other players
-	cl->qh_localtime = sv.time;
+	cl->qh_localtime = sv.qh_time;
 	cl->qh_delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{
@@ -1763,7 +1763,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				return;
 			}
 
-			if (!sv.paused)
+			if (!sv.qh_paused)
 			{
 				SV_PreRunCmd();
 

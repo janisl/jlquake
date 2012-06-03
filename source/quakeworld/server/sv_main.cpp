@@ -100,7 +100,7 @@ void S_ClearSoundBuffer(bool killStreaming)
 
 qboolean ServerPaused(void)
 {
-	return sv.paused;
+	return sv.qh_paused;
 }
 
 /*
@@ -253,7 +253,7 @@ void SV_DropClient(client_t* drop)
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
 // send notification to all remaining clients
-	SV_FullClientUpdate(drop, &sv.reliable_datagram);
+	SV_FullClientUpdate(drop, &sv.qh_reliable_datagram);
 }
 
 
@@ -1266,7 +1266,7 @@ void SV_CheckTimeouts(void)
 			cl->state = CS_FREE;	// can now be reused
 		}
 	}
-	if (sv.paused && !nclients)
+	if (sv.qh_paused && !nclients)
 	{
 		// nobody left, unpause the server
 		SV_TogglePause("Pause released since no players are left.\n");
@@ -1353,10 +1353,10 @@ void SV_Frame(float time)
 		rand();
 
 // decide the simulation time
-		if (!sv.paused)
+		if (!sv.qh_paused)
 		{
 			realtime += time;
-			sv.time += time;
+			sv.qh_time += time;
 		}
 
 		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
@@ -1385,7 +1385,7 @@ void SV_Frame(float time)
 		SV_CheckLog();
 
 // move autonomous things around if enough time has passed
-		if (!sv.paused)
+		if (!sv.qh_paused)
 		{
 			SV_Physics();
 		}
@@ -1696,7 +1696,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 
 	if (String::NCmp(val, cl->name, String::Length(cl->name)))
 	{
-		if (!sv.paused)
+		if (!sv.qh_paused)
 		{
 			if (!cl->qw_lastnametime || realtime - cl->qw_lastnametime > 5)
 			{

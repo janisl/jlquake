@@ -116,7 +116,7 @@ static void SV_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t* 
 		if (newnum < oldnum)
 		{
 			// this is a new entity, send it from the baseline
-			MSGWM_WriteDeltaEntity(msg, &sv.svEntities[newnum].baseline, newent, qtrue);
+			MSGWM_WriteDeltaEntity(msg, &sv.q3_svEntities[newnum].wm_baseline, newent, qtrue);
 			newindex++;
 			continue;
 		}
@@ -302,14 +302,14 @@ static int QDECL SV_QsortEntityNumbers(const void* a, const void* b)
 SV_AddEntToSnapshot
 ===============
 */
-static void SV_AddEntToSnapshot(svEntity_t* svEnt, wmsharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
+static void SV_AddEntToSnapshot(q3svEntity_t* svEnt, wmsharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
 {
 	// if we have already added this entity to this snapshot, don't add again
-	if (svEnt->snapshotCounter == sv.snapshotCounter)
+	if (svEnt->snapshotCounter == sv.q3_snapshotCounter)
 	{
 		return;
 	}
-	svEnt->snapshotCounter = sv.snapshotCounter;
+	svEnt->snapshotCounter = sv.q3_snapshotCounter;
 
 	// if we are full, silently discard entities
 	if (eNums->numSnapshotEntities == MAX_SNAPSHOT_ENTITIES)
@@ -333,7 +333,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 {
 	int e, i;
 	wmsharedEntity_t* ent, * playerEnt;
-	svEntity_t* svEnt;
+	q3svEntity_t* svEnt;
 	int l;
 	int clientarea, clientcluster;
 	int leafnum;
@@ -362,7 +362,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 	playerEnt = SV_GentityNum(frame->wm_ps.clientNum);
 
-	for (e = 0; e < sv.num_entities; e++)
+	for (e = 0; e < sv.q3_num_entities; e++)
 	{
 		ent = SV_GentityNum(e);
 
@@ -404,7 +404,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		svEnt = SV_SvEntityForGentity(ent);
 
 		// don't double add an entity through portals
-		if (svEnt->snapshotCounter == sv.snapshotCounter)
+		if (svEnt->snapshotCounter == sv.q3_snapshotCounter)
 		{
 			continue;
 		}
@@ -491,10 +491,10 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 			if (ment)
 			{
-				svEntity_t* master = 0;
+				q3svEntity_t* master = 0;
 				master = SV_SvEntityForGentity(ment);
 
-				if (master->snapshotCounter == sv.snapshotCounter || !ment->r.linked)
+				if (master->snapshotCounter == sv.q3_snapshotCounter || !ment->r.linked)
 				{
 					goto notVisible;
 					//continue;
@@ -511,9 +511,9 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			{
 				int h;
 				wmsharedEntity_t* ment = 0;
-				svEntity_t* master = 0;
+				q3svEntity_t* master = 0;
 
-				for (h = 0; h < sv.num_entities; h++)
+				for (h = 0; h < sv.q3_num_entities; h++)
 				{
 					ment = SV_GentityNum(h);
 
@@ -547,7 +547,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 						continue;
 					}
 
-					if (master->snapshotCounter == sv.snapshotCounter)
+					if (master->snapshotCounter == sv.q3_snapshotCounter)
 					{
 						continue;
 					}
@@ -620,13 +620,13 @@ static void SV_BuildClientSnapshot(client_t* client)
 	int i;
 	wmsharedEntity_t* ent;
 	wmentityState_t* state;
-	svEntity_t* svEnt;
+	q3svEntity_t* svEnt;
 	wmsharedEntity_t* clent;
 	int clientNum;
 	wmplayerState_t* ps;
 
 	// bump the counter used to prevent double adding
-	sv.snapshotCounter++;
+	sv.q3_snapshotCounter++;
 
 	// this is the frame we are creating
 	frame = &client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
@@ -655,9 +655,9 @@ static void SV_BuildClientSnapshot(client_t* client)
 	{
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 	}
-	svEnt = &sv.svEntities[clientNum];
+	svEnt = &sv.q3_svEntities[clientNum];
 
-	svEnt->snapshotCounter = sv.snapshotCounter;
+	svEnt->snapshotCounter = sv.q3_snapshotCounter;
 
 	// find the client's viewpoint
 	VectorCopy(ps->origin, org);
@@ -872,8 +872,8 @@ void SV_SendClientSnapshot(client_t* client)
 
 	SV_SendMessageToClient(&msg, client);
 
-	sv.bpsTotalBytes += msg.cursize;			// NERVE - SMF - net debugging
-	sv.ubpsTotalBytes += msg.uncompsize / 8;	// NERVE - SMF - net debugging
+	sv.wm_bpsTotalBytes += msg.cursize;			// NERVE - SMF - net debugging
+	sv.wm_ubpsTotalBytes += msg.uncompsize / 8;	// NERVE - SMF - net debugging
 }
 
 
@@ -889,8 +889,8 @@ void SV_SendClientMessages(void)
 	client_t* c;
 	int numclients = 0;			// NERVE - SMF - net debugging
 
-	sv.bpsTotalBytes = 0;		// NERVE - SMF - net debugging
-	sv.ubpsTotalBytes = 0;		// NERVE - SMF - net debugging
+	sv.wm_bpsTotalBytes = 0;		// NERVE - SMF - net debugging
+	sv.wm_ubpsTotalBytes = 0;		// NERVE - SMF - net debugging
 
 	// send a message to each connected client
 	for (i = 0, c = svs.clients; i < sv_maxclients->integer; i++, c++)
@@ -928,46 +928,46 @@ void SV_SendClientMessages(void)
 
 		for (i = 0; i < MAX_BPS_WINDOW - 1; i++)
 		{
-			sv.bpsWindow[i] = sv.bpsWindow[i + 1];
-			ave += sv.bpsWindow[i];
+			sv.wm_bpsWindow[i] = sv.wm_bpsWindow[i + 1];
+			ave += sv.wm_bpsWindow[i];
 
-			sv.ubpsWindow[i] = sv.ubpsWindow[i + 1];
-			uave += sv.ubpsWindow[i];
+			sv.wm_ubpsWindow[i] = sv.wm_ubpsWindow[i + 1];
+			uave += sv.wm_ubpsWindow[i];
 		}
 
-		sv.bpsWindow[MAX_BPS_WINDOW - 1] = sv.bpsTotalBytes;
-		ave += sv.bpsTotalBytes;
+		sv.wm_bpsWindow[MAX_BPS_WINDOW - 1] = sv.wm_bpsTotalBytes;
+		ave += sv.wm_bpsTotalBytes;
 
-		sv.ubpsWindow[MAX_BPS_WINDOW - 1] = sv.ubpsTotalBytes;
-		uave += sv.ubpsTotalBytes;
+		sv.wm_ubpsWindow[MAX_BPS_WINDOW - 1] = sv.wm_ubpsTotalBytes;
+		uave += sv.wm_ubpsTotalBytes;
 
-		if (sv.bpsTotalBytes >= sv.bpsMaxBytes)
+		if (sv.wm_bpsTotalBytes >= sv.wm_bpsMaxBytes)
 		{
-			sv.bpsMaxBytes = sv.bpsTotalBytes;
+			sv.wm_bpsMaxBytes = sv.wm_bpsTotalBytes;
 		}
 
-		if (sv.ubpsTotalBytes >= sv.ubpsMaxBytes)
+		if (sv.wm_ubpsTotalBytes >= sv.wm_ubpsMaxBytes)
 		{
-			sv.ubpsMaxBytes = sv.ubpsTotalBytes;
+			sv.wm_ubpsMaxBytes = sv.wm_ubpsTotalBytes;
 		}
 
-		sv.bpsWindowSteps++;
+		sv.wm_bpsWindowSteps++;
 
-		if (sv.bpsWindowSteps >= MAX_BPS_WINDOW)
+		if (sv.wm_bpsWindowSteps >= MAX_BPS_WINDOW)
 		{
 			float comp_ratio;
 
-			sv.bpsWindowSteps = 0;
+			sv.wm_bpsWindowSteps = 0;
 
 			ave = (ave / (float)MAX_BPS_WINDOW);
 			uave = (uave / (float)MAX_BPS_WINDOW);
 
 			comp_ratio = (1 - ave / uave) * 100.f;
-			sv.ucompAve += comp_ratio;
-			sv.ucompNum++;
+			sv.wm_ucompAve += comp_ratio;
+			sv.wm_ucompNum++;
 
 			Com_DPrintf("bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
-				ave / (float)numclients, ave, sv.bpsMaxBytes, uave, sv.ubpsMaxBytes, comp_ratio, sv.ucompAve / sv.ucompNum);
+				ave / (float)numclients, ave, sv.wm_bpsMaxBytes, uave, sv.wm_ubpsMaxBytes, comp_ratio, sv.wm_ucompAve / sv.wm_ucompNum);
 		}
 	}
 	// -NERVE - SMF

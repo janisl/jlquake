@@ -45,18 +45,18 @@ void SV_SetConfigstring(int index, const char* val)
 	}
 
 	// don't bother broadcasting an update if no change
-	if (!String::Cmp(val, sv.configstrings[index]))
+	if (!String::Cmp(val, sv.q3_configstrings[index]))
 	{
 		return;
 	}
 
 	// change the string in sv
-	Z_Free(sv.configstrings[index]);
-	sv.configstrings[index] = CopyString(val);
+	Z_Free(sv.q3_configstrings[index]);
+	sv.q3_configstrings[index] = CopyString(val);
 
 	// send it to all the clients if we aren't
 	// spawning a new server
-	if (sv.state == SS_GAME || sv.restarting)
+	if (sv.state == SS_GAME || sv.q3_restarting)
 	{
 
 		// send the data to all relevent clients
@@ -129,13 +129,13 @@ void SV_GetConfigstring(int index, char* buffer, int bufferSize)
 	{
 		Com_Error(ERR_DROP, "SV_GetConfigstring: bad index %i\n", index);
 	}
-	if (!sv.configstrings[index])
+	if (!sv.q3_configstrings[index])
 	{
 		buffer[0] = 0;
 		return;
 	}
 
-	String::NCpyZ(buffer, sv.configstrings[index], bufferSize);
+	String::NCpyZ(buffer, sv.q3_configstrings[index], bufferSize);
 }
 
 
@@ -197,7 +197,7 @@ void SV_CreateBaseline(void)
 	q3sharedEntity_t* svent;
 	int entnum;
 
-	for (entnum = 1; entnum < sv.num_entities; entnum++)
+	for (entnum = 1; entnum < sv.q3_num_entities; entnum++)
 	{
 		svent = SV_GentityNum(entnum);
 		if (!svent->r.linked)
@@ -209,7 +209,7 @@ void SV_CreateBaseline(void)
 		//
 		// take current state as baseline
 		//
-		sv.svEntities[entnum].baseline = svent->s;
+		sv.q3_svEntities[entnum].q3_baseline = svent->s;
 	}
 }
 
@@ -363,9 +363,9 @@ void SV_ClearServer(void)
 
 	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
 	{
-		if (sv.configstrings[i])
+		if (sv.q3_configstrings[i])
 		{
-			Z_Free(sv.configstrings[i]);
+			Z_Free(sv.q3_configstrings[i]);
 		}
 	}
 	Com_Memset(&sv, 0, sizeof(sv));
@@ -458,7 +458,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	SV_ClearServer();
 	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
 	{
-		sv.configstrings[i] = CopyString("");
+		sv.q3_configstrings[i] = CopyString("");
 	}
 
 	// make sure we are not paused
@@ -466,8 +466,8 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// get a new checksum feed and restart the file system
 	srand(Com_Milliseconds());
-	sv.checksumFeed = (((int)rand() << 16) ^ rand()) ^ Com_Milliseconds();
-	FS_Restart(sv.checksumFeed);
+	sv.q3_checksumFeed = (((int)rand() << 16) ^ rand()) ^ Com_Milliseconds();
+	FS_Restart(sv.q3_checksumFeed);
 
 	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
 
@@ -477,10 +477,10 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	Cvar_Set("sv_mapChecksum", va("%i",checksum));
 
 	// serverid should be different each time
-	sv.serverId = com_frameTime;
-	sv.restartedServerId = sv.serverId;	// I suppose the init here is just to be safe
-	sv.checksumFeedServerId = sv.serverId;
-	Cvar_Set("sv_serverid", va("%i", sv.serverId));
+	sv.q3_serverId = com_frameTime;
+	sv.q3_restartedServerId = sv.q3_serverId;	// I suppose the init here is just to be safe
+	sv.q3_checksumFeedServerId = sv.q3_serverId;
+	Cvar_Set("sv_serverid", va("%i", sv.q3_serverId));
 
 	// clear physics interaction links
 	SV_ClearWorld();

@@ -17,47 +17,6 @@ typedef struct
 
 //=============================================================================
 
-struct server_t : server_common_t
-{
-
-	qboolean paused;
-	qboolean loadgame;				// handle connections specially
-
-	double time;
-
-	int lastcheck;					// used by PF_checkclient
-	double lastchecktime;
-
-	char name[64];					// map name
-	char midi_name[128];			// midi file name
-	byte cd_track;					// cd track number
-
-	char startspot[64];
-	char modelname[64];				// maps/<name>.bsp, for model_precache[0]
-	const char* model_precache[MAX_MODELS_H2];	// NULL terminated
-	clipHandle_t models[MAX_MODELS_H2];
-	const char* sound_precache[MAX_SOUNDS_H2];	// NULL terminated
-	const char* lightstyles[MAX_LIGHTSTYLES_H2];
-	struct h2EffectT Effects[MAX_EFFECTS_H2];
-	client_state2_t* states;
-	int num_edicts;
-	int max_edicts;
-	qhedict_t* edicts;					// can NOT be array indexed, because
-	// qhedict_t is variable sized, but can
-	// be used to reference the world ent
-
-	QMsg datagram;
-	byte datagram_buf[MAX_MSGLEN_H2];
-
-	QMsg reliable_datagram;			// copied to all clients at end of frame
-	byte reliable_datagram_buf[MAX_MSGLEN_H2];
-
-	QMsg signon;
-	byte signon_buf[MAX_MSGLEN_H2];
-};
-
-//=============================================================================
-
 // edict->solid values
 #define SOLID_NOT               0		// no interaction with other objects
 #define SOLID_TRIGGER           1		// touch on edge, but not blocking

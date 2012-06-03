@@ -356,7 +356,7 @@ void SV_WaterMove(void)
 
 void SV_WaterJump(void)
 {
-	if (sv.time > sv_player->GetTeleportTime() ||
+	if (sv.qh_time > sv_player->GetTeleportTime() ||
 		!sv_player->GetWaterLevel())
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
@@ -385,7 +385,7 @@ void SV_AirMove(void)
 	smove = cmd.sidemove;
 
 // hack to not let you back into teleporter
-	if (sv.time < sv_player->GetTeleportTime() && fmove < 0)
+	if (sv.qh_time < sv_player->GetTeleportTime() && fmove < 0)
 	{
 		fmove = 0;
 	}
@@ -503,7 +503,7 @@ void SV_ReadClientMove(q1usercmd_t* move)
 
 // read ping time
 	host_client->qh_ping_times[host_client->qh_num_pings % NUM_PING_TIMES]
-		= sv.time - net_message.ReadFloat();
+		= sv.qh_time - net_message.ReadFloat();
 	host_client->qh_num_pings++;
 
 // read current angles
@@ -734,7 +734,7 @@ void SV_RunClients(void)
 		}
 
 // always pause in single player if in console or menus
-		if (!sv.paused && (svs.maxclients > 1 || in_keyCatchers == 0))
+		if (!sv.qh_paused && (svs.maxclients > 1 || in_keyCatchers == 0))
 		{
 			SV_ClientThink();
 		}

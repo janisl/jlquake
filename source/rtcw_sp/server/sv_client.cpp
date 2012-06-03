@@ -644,11 +644,11 @@ void SV_SendClientGameState(client_t* client)
 	// write the configstrings
 	for (start = 0; start < MAX_CONFIGSTRINGS_WS; start++)
 	{
-		if (sv.configstrings[start][0])
+		if (sv.q3_configstrings[start][0])
 		{
 			msg.WriteByte(q3svc_configstring);
 			msg.WriteShort(start);
-			msg.WriteBigString(sv.configstrings[start]);
+			msg.WriteBigString(sv.q3_configstrings[start]);
 		}
 	}
 
@@ -656,7 +656,7 @@ void SV_SendClientGameState(client_t* client)
 	memset(&nullstate, 0, sizeof(nullstate));
 	for (start = 0; start < MAX_GENTITIES_Q3; start++)
 	{
-		base = &sv.svEntities[start].baseline;
+		base = &sv.q3_svEntities[start].ws_baseline;
 		if (!base->number)
 		{
 			continue;
@@ -670,7 +670,7 @@ void SV_SendClientGameState(client_t* client)
 	msg.WriteLong(client - svs.clients);
 
 	// write the checksum feed
-	msg.WriteLong(sv.checksumFeed);
+	msg.WriteLong(sv.q3_checksumFeed);
 
 	// deliver this to the client
 	SV_SendMessageToClient(&msg, client);
@@ -1193,7 +1193,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			}
 
 			// check if the number of checksums was correct
-			nChkSum1 = sv.checksumFeed;
+			nChkSum1 = sv.q3_checksumFeed;
 			for (i = 0; i < nClientPaks; i++)
 			{
 				nChkSum1 ^= nClientChkSum[i];
@@ -1505,7 +1505,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// use the checksum feed in the key
-	key = sv.checksumFeed;
+	key = sv.q3_checksumFeed;
 	// also use the message acknowledge
 	key ^= cl->q3_messageAcknowledge;
 	// also use the last acknowledged server command in the key
@@ -1624,10 +1624,10 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	// gamestate it was at.  This allows it to keep downloading even when
 	// the gamestate changes.  After the download is finished, we'll
 	// notice and send it a new game state
-	if (serverId != sv.serverId &&
+	if (serverId != sv.q3_serverId &&
 		!*cl->downloadName)
 	{
-		if (serverId == sv.restartedServerId)
+		if (serverId == sv.q3_restartedServerId)
 		{
 			// they just haven't caught the map_restart yet
 			return;

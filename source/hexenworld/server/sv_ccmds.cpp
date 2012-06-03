@@ -375,7 +375,7 @@ void SV_Kick_f(void)
 			SV_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
 			SV_DropClient(cl);
 
-			pr_global_struct->time = sv.time;
+			pr_global_struct->time = sv.qh_time;
 			pr_global_struct->self = EDICT_TO_PROG(sv_player);
 			PR_ExecuteProgram(pr_global_struct->ClientKill);
 			return;
@@ -419,7 +419,7 @@ void SV_Smite_f(void)
 			old_self = pr_global_struct->self;
 
 //call the hc SmitePlayer function
-			pr_global_struct->time = sv.time;
+			pr_global_struct->time = sv.qh_time;
 			pr_global_struct->self = EDICT_TO_PROG(cl->qh_edict);
 			PR_ExecuteProgram(pr_global_struct->SmitePlayer);
 
@@ -462,7 +462,7 @@ void SV_Status_f(void)
 	f_limit = Cvar_VariableValue("fraglimit");
 	if (dmMode->value == DM_SIEGE)
 	{
-		num_min = floor((t_limit * 60) - sv.time);
+		num_min = floor((t_limit * 60) - sv.qh_time);
 		num_sec = (int)(t_limit - num_min) % 60;
 		num_min = (num_min - num_sec) / 60;
 		Con_Printf("timeleft         : %i:", num_min);
@@ -472,7 +472,7 @@ void SV_Status_f(void)
 	}
 	else
 	{
-		Con_Printf("time             : %5.2f\n", sv.time);
+		Con_Printf("time             : %5.2f\n", sv.qh_time);
 		Con_Printf("timelimit        : %i\n", t_limit);
 		Con_Printf("fraglimit        : %i\n", f_limit);
 	}

@@ -117,17 +117,6 @@
 #define ENT_STATE_ON        1
 #define ENT_CLEARED         2
 
-typedef struct
-{
-	h2entity_state_t states[MAX_CLIENT_STATES_H2];
-	int count;
-} client_frames_t;
-
-typedef struct
-{
-	client_frames_t frames[H2MAX_FRAMES + 2];	// 0 = base, 1-max = proposed, max+1 = too late
-} client_state2_t;
-
 
 #include "draw.h"
 #include "screen.h"

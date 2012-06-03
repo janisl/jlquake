@@ -109,7 +109,7 @@ static void SV_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t* 
 		if (newnum < oldnum)
 		{
 			// this is a new entity, send it from the baseline
-			MSGQ3_WriteDeltaEntity(msg, &sv.svEntities[newnum].baseline, newent, qtrue);
+			MSGQ3_WriteDeltaEntity(msg, &sv.q3_svEntities[newnum].q3_baseline, newent, qtrue);
 			newindex++;
 			continue;
 		}
@@ -293,14 +293,14 @@ static int SV_QsortEntityNumbers(const void* a, const void* b)
 SV_AddEntToSnapshot
 ===============
 */
-static void SV_AddEntToSnapshot(svEntity_t* svEnt, q3sharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
+static void SV_AddEntToSnapshot(q3svEntity_t* svEnt, q3sharedEntity_t* gEnt, snapshotEntityNumbers_t* eNums)
 {
 	// if we have already added this entity to this snapshot, don't add again
-	if (svEnt->snapshotCounter == sv.snapshotCounter)
+	if (svEnt->snapshotCounter == sv.q3_snapshotCounter)
 	{
 		return;
 	}
-	svEnt->snapshotCounter = sv.snapshotCounter;
+	svEnt->snapshotCounter = sv.q3_snapshotCounter;
 
 	// if we are full, silently discard entities
 	if (eNums->numSnapshotEntities == MAX_SNAPSHOT_ENTITIES)
@@ -322,7 +322,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 {
 	int e, i;
 	q3sharedEntity_t* ent;
-	svEntity_t* svEnt;
+	q3svEntity_t* svEnt;
 	int l;
 	int clientarea, clientcluster;
 	int leafnum;
@@ -349,7 +349,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 	c_fullsend = 0;
 
-	for (e = 0; e < sv.num_entities; e++)
+	for (e = 0; e < sv.q3_num_entities; e++)
 	{
 		ent = SV_GentityNum(e);
 
@@ -403,7 +403,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		svEnt = SV_SvEntityForGentity(ent);
 
 		// don't double add an entity through portals
-		if (svEnt->snapshotCounter == sv.snapshotCounter)
+		if (svEnt->snapshotCounter == sv.q3_snapshotCounter)
 		{
 			continue;
 		}
@@ -510,13 +510,13 @@ static void SV_BuildClientSnapshot(client_t* client)
 	int i;
 	q3sharedEntity_t* ent;
 	q3entityState_t* state;
-	svEntity_t* svEnt;
+	q3svEntity_t* svEnt;
 	q3sharedEntity_t* clent;
 	int clientNum;
 	q3playerState_t* ps;
 
 	// bump the counter used to prevent double adding
-	sv.snapshotCounter++;
+	sv.q3_snapshotCounter++;
 
 	// this is the frame we are creating
 	frame = &client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
@@ -545,9 +545,9 @@ static void SV_BuildClientSnapshot(client_t* client)
 	{
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 	}
-	svEnt = &sv.svEntities[clientNum];
+	svEnt = &sv.q3_svEntities[clientNum];
 
-	svEnt->snapshotCounter = sv.snapshotCounter;
+	svEnt->snapshotCounter = sv.q3_snapshotCounter;
 
 	// find the client's viewpoint
 	VectorCopy(ps->origin, org);

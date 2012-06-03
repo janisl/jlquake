@@ -488,7 +488,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	Netchan_Transmit(&client->netchan, msg.cursize, msg._data);
 
 	// record the size for rate estimation
-	client->q2_message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
+	client->q2_message_size[sv.q2_framenum % RATE_MESSAGES] = msg.cursize;
 
 	return true;
 }
@@ -501,10 +501,10 @@ SV_DemoCompleted
 */
 void SV_DemoCompleted(void)
 {
-	if (sv.demofile)
+	if (sv.q2_demofile)
 	{
-		FS_FCloseFile(sv.demofile);
-		sv.demofile = 0;
+		FS_FCloseFile(sv.q2_demofile);
+		sv.q2_demofile = 0;
 	}
 	SV_Nextserver();
 }
@@ -539,7 +539,7 @@ qboolean SV_RateDrop(client_t* c)
 	if (total > c->rate)
 	{
 		c->q2_surpressCount++;
-		c->q2_message_size[sv.framenum % RATE_MESSAGES] = 0;
+		c->q2_message_size[sv.q2_framenum % RATE_MESSAGES] = 0;
 		return true;
 	}
 
@@ -562,7 +562,7 @@ void SV_SendClientMessages(void)
 	msglen = 0;
 
 	// read the next demo message if needed
-	if (sv.state == SS_DEMO && sv.demofile)
+	if (sv.state == SS_DEMO && sv.q2_demofile)
 	{
 		if (sv_paused->value)
 		{
@@ -571,7 +571,7 @@ void SV_SendClientMessages(void)
 		else
 		{
 			// get the next message
-			r = FS_Read(&msglen, 4, sv.demofile);
+			r = FS_Read(&msglen, 4, sv.q2_demofile);
 			if (r != 4)
 			{
 				SV_DemoCompleted();
@@ -587,7 +587,7 @@ void SV_SendClientMessages(void)
 			{
 				Com_Error(ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN_Q2");
 			}
-			r = FS_Read(msgbuf, msglen, sv.demofile);
+			r = FS_Read(msgbuf, msglen, sv.q2_demofile);
 			if (r != msglen)
 			{
 				SV_DemoCompleted();

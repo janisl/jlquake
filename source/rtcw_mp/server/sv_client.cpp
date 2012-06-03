@@ -687,11 +687,11 @@ void SV_SendClientGameState(client_t* client)
 	// write the configstrings
 	for (start = 0; start < MAX_CONFIGSTRINGS_WM; start++)
 	{
-		if (sv.configstrings[start][0])
+		if (sv.q3_configstrings[start][0])
 		{
 			msg.WriteByte(q3svc_configstring);
 			msg.WriteShort(start);
-			msg.WriteBigString(sv.configstrings[start]);
+			msg.WriteBigString(sv.q3_configstrings[start]);
 		}
 	}
 
@@ -699,7 +699,7 @@ void SV_SendClientGameState(client_t* client)
 	memset(&nullstate, 0, sizeof(nullstate));
 	for (start = 0; start < MAX_GENTITIES_Q3; start++)
 	{
-		base = &sv.svEntities[start].baseline;
+		base = &sv.q3_svEntities[start].wm_baseline;
 		if (!base->number)
 		{
 			continue;
@@ -713,7 +713,7 @@ void SV_SendClientGameState(client_t* client)
 	msg.WriteLong(client - svs.clients);
 
 	// write the checksum feed
-	msg.WriteLong(sv.checksumFeed);
+	msg.WriteLong(sv.q3_checksumFeed);
 
 	// NERVE - SMF - debug info
 	Com_DPrintf("Sending %i bytes in gamestate to client: %i\n", msg.cursize, client - svs.clients);
@@ -1194,7 +1194,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			// show_bug.cgi?id=475
 			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
 			// since serverId is a frame count, it always goes up
-			if (String::Atoi(pArg) < sv.checksumFeedServerId)
+			if (String::Atoi(pArg) < sv.q3_checksumFeedServerId)
 			{
 				Com_DPrintf("ignoring outdated cp command from client %s\n", cl->name);
 				return;
@@ -1304,7 +1304,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			}
 
 			// check if the number of checksums was correct
-			nChkSum1 = sv.checksumFeed;
+			nChkSum1 = sv.q3_checksumFeed;
 			for (i = 0; i < nClientPaks; i++)
 			{
 				nChkSum1 ^= nClientChkSum[i];
@@ -1655,7 +1655,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// use the checksum feed in the key
-	key = sv.checksumFeed;
+	key = sv.q3_checksumFeed;
 	// also use the message acknowledge
 	key ^= cl->q3_messageAcknowledge;
 	// also use the last acknowledged server command in the key
@@ -1798,9 +1798,9 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	// don't drop as long as previous command was a nextdl, after a dl is done, downloadName is set back to ""
 	// but we still need to read the next message to move to next download or send gamestate
 	// I don't like this hack though, it must have been working fine at some point, suspecting the fix is somewhere else
-	if (serverId != sv.serverId && !*cl->downloadName && !strstr(cl->q3_lastClientCommandString, "nextdl"))
+	if (serverId != sv.q3_serverId && !*cl->downloadName && !strstr(cl->q3_lastClientCommandString, "nextdl"))
 	{
-		if (serverId >= sv.restartedServerId && serverId < sv.serverId)		// TTimo - use a comparison here to catch multiple map_restart
+		if (serverId >= sv.q3_restartedServerId && serverId < sv.q3_serverId)		// TTimo - use a comparison here to catch multiple map_restart
 		{	// they just haven't caught the map_restart yet
 			Com_DPrintf("%s : ignoring pre map_restart / outdated client message\n", cl->name);
 			return;

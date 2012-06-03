@@ -1100,18 +1100,18 @@ void SV_Frame(int msec)
 	}
 	frameMsec = 1000 / sv_fps->integer;
 
-	sv.timeResidual += msec;
+	sv.q3_timeResidual += msec;
 
 	if (!com_dedicated->integer)
 	{
-		SV_BotFrame(svs.time + sv.timeResidual);
+		SV_BotFrame(svs.time + sv.q3_timeResidual);
 	}
 
-	if (com_dedicated->integer && sv.timeResidual < frameMsec)
+	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
 	{
 		// NET_Sleep will give the OS time slices until either get a packet
 		// or time enough for a server frame has gone by
-		NET_Sleep(frameMsec - sv.timeResidual);
+		NET_Sleep(frameMsec - sv.q3_timeResidual);
 		return;
 	}
 
@@ -1141,9 +1141,9 @@ void SV_Frame(int msec)
 		return;
 	}
 
-	if (sv.restartTime && svs.time >= sv.restartTime)
+	if (sv.q3_restartTime && svs.time >= sv.q3_restartTime)
 	{
-		sv.restartTime = 0;
+		sv.q3_restartTime = 0;
 		Cbuf_AddText("map_restart 0\n");
 		return;
 	}
@@ -1184,9 +1184,9 @@ void SV_Frame(int msec)
 	}
 
 	// run the game simulation in chunks
-	while (sv.timeResidual >= frameMsec)
+	while (sv.q3_timeResidual >= frameMsec)
 	{
-		sv.timeResidual -= frameMsec;
+		sv.q3_timeResidual -= frameMsec;
 		svs.time += frameMsec;
 
 		// let everything in the world think and move

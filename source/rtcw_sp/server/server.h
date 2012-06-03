@@ -34,53 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/bg_public.h"
 #include "../../server/server.h"
 
-//=============================================================================
-
-#define MAX_ENT_CLUSTERS_Q3    16
-
-typedef struct svEntity_s
-{
-	struct worldSector_s* worldSector;
-	struct svEntity_s* nextEntityInWorldSector;
-
-	wsentityState_t baseline;			// for delta compression of initial sighting
-	int numClusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS_Q3];
-	int lastCluster;				// if all the clusters don't fit in clusternums
-	int areanum, areanum2;
-	int snapshotCounter;			// used to prevent double adding from portal views
-} svEntity_t;
-
-struct server_t : server_common_t
-{
-	qboolean restarting;				// if true, send configstring changes during SS_LOADING
-	int serverId;						// changes each server start
-	int restartedServerId;				// serverId before a map_restart
-	int checksumFeed;					//
-	int snapshotCounter;				// incremented for each snapshot built
-	int timeResidual;					// <= 1000 / sv_frame->value
-	int nextFrameTime;					// when time > nextFrameTime, process world
-	struct cmodel_s* models[MAX_MODELS_Q3];
-	char* configstrings[MAX_CONFIGSTRINGS_WS];
-	svEntity_t svEntities[MAX_GENTITIES_Q3];
-
-	const char* entityParsePoint;				// used during game VM init
-
-	// the game virtual machine will update these on init and changes
-	wssharedEntity_t* gentities;
-	int gentitySize;
-	int num_entities;					// current number, <= MAX_GENTITIES_Q3
-
-	wsplayerState_t* gameClients;
-	int gameClientSize;					// will be > sizeof(wsplayerState_t) due to game private data
-
-	int restartTime;
-};
-
-
-
-
-
 #define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
 
 //=============================================================================
@@ -245,8 +198,8 @@ void SV_SendClientSnapshot(client_t* client);
 int SV_NumForGentity(wssharedEntity_t* ent);
 wssharedEntity_t* SV_GentityNum(int num);
 wsplayerState_t* SV_GameClientNum(int num);
-svEntity_t* SV_SvEntityForGentity(wssharedEntity_t* gEnt);
-wssharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt);
+q3svEntity_t* SV_SvEntityForGentity(wssharedEntity_t* gEnt);
+wssharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);

@@ -76,7 +76,7 @@ typedef struct worldSector_s
 	int axis;			// -1 = leaf node
 	float dist;
 	struct worldSector_s* children[2];
-	svEntity_t* entities;
+	q3svEntity_t* entities;
 } worldSector_t;
 
 #define AREA_DEPTH  4
@@ -95,7 +95,7 @@ void SV_SectorList_f(void)
 {
 	int i, c;
 	worldSector_t* sec;
-	svEntity_t* ent;
+	q3svEntity_t* ent;
 
 	for (i = 0; i < AREA_NODES; i++)
 	{
@@ -186,8 +186,8 @@ SV_UnlinkEntity
 */
 void SV_UnlinkEntity(wssharedEntity_t* gEnt)
 {
-	svEntity_t* ent;
-	svEntity_t* scan;
+	q3svEntity_t* ent;
+	q3svEntity_t* scan;
 	worldSector_t* ws;
 
 	ent = SV_SvEntityForGentity(gEnt);
@@ -238,7 +238,7 @@ void SV_LinkEntity(wssharedEntity_t* gEnt)
 	int area;
 	int lastLeaf;
 	float* origin, * angles;
-	svEntity_t* ent;
+	q3svEntity_t* ent;
 
 	ent = SV_SvEntityForGentity(gEnt);
 
@@ -456,7 +456,7 @@ SV_AreaEntities_r
 */
 void SV_AreaEntities_r(worldSector_t* node, areaParms_t* ap)
 {
-	svEntity_t* check, * next;
+	q3svEntity_t* check, * next;
 	wssharedEntity_t* gcheck;
 	int count;
 
@@ -484,7 +484,7 @@ void SV_AreaEntities_r(worldSector_t* node, areaParms_t* ap)
 			return;
 		}
 
-		ap->list[ap->count] = check - sv.svEntities;
+		ap->list[ap->count] = check - sv.q3_svEntities;
 		ap->count++;
 	}
 

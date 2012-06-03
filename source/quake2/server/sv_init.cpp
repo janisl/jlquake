@@ -38,8 +38,8 @@ int SV_FindIndex(char* name, int start, int max, qboolean create)
 		return 0;
 	}
 
-	for (i = 1; i < max && sv.configstrings[start + i][0]; i++)
-		if (!String::Cmp(sv.configstrings[start + i], name))
+	for (i = 1; i < max && sv.q2_configstrings[start + i][0]; i++)
+		if (!String::Cmp(sv.q2_configstrings[start + i], name))
 		{
 			return i;
 		}
@@ -54,7 +54,7 @@ int SV_FindIndex(char* name, int start, int max, qboolean create)
 		Com_Error(ERR_DROP, "*Index: overflow");
 	}
 
-	String::NCpy(sv.configstrings[start + i], name, sizeof(sv.configstrings[i]));
+	String::NCpy(sv.q2_configstrings[start + i], name, sizeof(sv.q2_configstrings[i]));
 
 	if (sv.state != SS_LOADING)
 	{	// send the update to everyone
@@ -116,7 +116,7 @@ void SV_CreateBaseline(void)
 		// take current state as baseline
 		//
 		VectorCopy(svent->s.origin, svent->s.old_origin);
-		sv.baselines[entnum] = svent->s;
+		sv.q2_baselines[entnum] = svent->s;
 	}
 }
 
@@ -193,9 +193,9 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	Com_Printf("------- Server Initialization -------\n");
 
 	Com_DPrintf("SpawnServer: %s\n",server);
-	if (sv.demofile)
+	if (sv.q2_demofile)
 	{
-		FS_FCloseFile(sv.demofile);
+		FS_FCloseFile(sv.q2_demofile);
 	}
 
 	svs.spawncount++;		// any partially connected client will be
@@ -207,22 +207,22 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	Com_Memset(&sv, 0, sizeof(sv));
 	svs.realtime = 0;
 	sv.loadgame = loadgame;
-	sv.attractloop = attractloop;
+	sv.q2_attractloop = attractloop;
 
 	// save name for levels that don't set message
-	String::Cpy(sv.configstrings[Q2CS_NAME], server);
+	String::Cpy(sv.q2_configstrings[Q2CS_NAME], server);
 	if (Cvar_VariableValue("deathmatch"))
 	{
-		sprintf(sv.configstrings[Q2CS_AIRACCEL], "%g", sv_airaccelerate->value);
+		sprintf(sv.q2_configstrings[Q2CS_AIRACCEL], "%g", sv_airaccelerate->value);
 		pm_airaccelerate = sv_airaccelerate->value;
 	}
 	else
 	{
-		String::Cpy(sv.configstrings[Q2CS_AIRACCEL], "0");
+		String::Cpy(sv.q2_configstrings[Q2CS_AIRACCEL], "0");
 		pm_airaccelerate = 0;
 	}
 
-	sv.multicast.InitOOB(sv.multicast_buf, sizeof(sv.multicast_buf));
+	sv.multicast.InitOOB(sv.multicastBuffer, MAX_MSGLEN_Q2);
 
 	String::Cpy(sv.name, server);
 
@@ -237,10 +237,10 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 		svs.clients[i].q2_lastframe = -1;
 	}
 
-	sv.time = 1000;
+	sv.q2_time = 1000;
 
 	String::Cpy(sv.name, server);
-	String::Cpy(sv.configstrings[Q2CS_NAME], server);
+	String::Cpy(sv.q2_configstrings[Q2CS_NAME], server);
 
 	if (serverstate != SS_GAME)
 	{
@@ -248,12 +248,12 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	}
 	else
 	{
-		String::Sprintf(sv.configstrings[Q2CS_MODELS + 1],sizeof(sv.configstrings[Q2CS_MODELS + 1]),
+		String::Sprintf(sv.q2_configstrings[Q2CS_MODELS + 1],sizeof(sv.q2_configstrings[Q2CS_MODELS + 1]),
 			"maps/%s.bsp", server);
-		CM_LoadMap(sv.configstrings[Q2CS_MODELS + 1], false, &checksum);
+		CM_LoadMap(sv.q2_configstrings[Q2CS_MODELS + 1], false, &checksum);
 	}
 	sv.models[1] = 0;
-	String::Sprintf(sv.configstrings[Q2CS_MAPCHECKSUM],sizeof(sv.configstrings[Q2CS_MAPCHECKSUM]),
+	String::Sprintf(sv.q2_configstrings[Q2CS_MAPCHECKSUM],sizeof(sv.q2_configstrings[Q2CS_MAPCHECKSUM]),
 		"%i", (unsigned)checksum);
 
 	//
@@ -263,7 +263,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		String::Sprintf(sv.configstrings[Q2CS_MODELS + 1 + i], sizeof(sv.configstrings[Q2CS_MODELS + 1 + i]),
+		String::Sprintf(sv.q2_configstrings[Q2CS_MODELS + 1 + i], sizeof(sv.q2_configstrings[Q2CS_MODELS + 1 + i]),
 			"*%i", i);
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
@@ -418,7 +418,7 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame)
 	char spawnpoint[MAX_QPATH];
 
 	sv.loadgame = loadgame;
-	sv.attractloop = attractloop;
+	sv.q2_attractloop = attractloop;
 
 	if (sv.state == SS_DEAD && !sv.loadgame)
 	{

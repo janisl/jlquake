@@ -42,12 +42,12 @@ int SV_ModelIndex(const char* name)
 		return 0;
 	}
 
-	for (i = 0; i < MAX_MODELS_Q1 && sv.model_precache[i]; i++)
-		if (!String::Cmp(sv.model_precache[i], name))
+	for (i = 0; i < MAX_MODELS_Q1 && sv.qh_model_precache[i]; i++)
+		if (!String::Cmp(sv.qh_model_precache[i], name))
 		{
 			return i;
 		}
-	if (i == MAX_MODELS_Q1 || !sv.model_precache[i])
+	if (i == MAX_MODELS_Q1 || !sv.qh_model_precache[i])
 	{
 		SV_Error("SV_ModelIndex: model %s not precached", name);
 	}
@@ -63,20 +63,20 @@ Moves to the next signon buffer if needed
 */
 void SV_FlushSignon(void)
 {
-	if (sv.signon.cursize < sv.signon.maxsize - 512)
+	if (sv.qh_signon.cursize < sv.qh_signon.maxsize - 512)
 	{
 		return;
 	}
 
-	if (sv.num_signon_buffers == MAX_SIGNON_BUFFERS - 1)
+	if (sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS - 1)
 	{
-		SV_Error("sv.num_signon_buffers == MAX_SIGNON_BUFFERS-1");
+		SV_Error("sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS-1");
 	}
 
-	sv.signon_buffer_size[sv.num_signon_buffers - 1] = sv.signon.cursize;
-	sv.signon._data = sv.signon_buffers[sv.num_signon_buffers];
-	sv.num_signon_buffers++;
-	sv.signon.cursize = 0;
+	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
+	sv.qh_signon._data = sv.qh_signon_buffers[sv.qh_num_signon_buffers];
+	sv.qh_num_signon_buffers++;
+	sv.qh_signon.cursize = 0;
 }
 
 /*
@@ -94,7 +94,7 @@ void SV_CreateBaseline(void)
 	qhedict_t* svent;
 	int entnum;
 
-	for (entnum = 0; entnum < sv.num_edicts; entnum++)
+	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
 		if (svent->free)
@@ -136,17 +136,17 @@ void SV_CreateBaseline(void)
 		//
 		// add to the message
 		//
-		sv.signon.WriteByte(q1svc_spawnbaseline);
-		sv.signon.WriteShort(entnum);
+		sv.qh_signon.WriteByte(q1svc_spawnbaseline);
+		sv.qh_signon.WriteShort(entnum);
 
-		sv.signon.WriteByte(svent->q1_baseline.modelindex);
-		sv.signon.WriteByte(svent->q1_baseline.frame);
-		sv.signon.WriteByte(svent->q1_baseline.colormap);
-		sv.signon.WriteByte(svent->q1_baseline.skinnum);
+		sv.qh_signon.WriteByte(svent->q1_baseline.modelindex);
+		sv.qh_signon.WriteByte(svent->q1_baseline.frame);
+		sv.qh_signon.WriteByte(svent->q1_baseline.colormap);
+		sv.qh_signon.WriteByte(svent->q1_baseline.skinnum);
 		for (i = 0; i < 3; i++)
 		{
-			sv.signon.WriteCoord(svent->q1_baseline.origin[i]);
-			sv.signon.WriteAngle(svent->q1_baseline.angles[i]);
+			sv.qh_signon.WriteCoord(svent->q1_baseline.origin[i]);
+			sv.qh_signon.WriteAngle(svent->q1_baseline.angles[i]);
 		}
 	}
 }
@@ -235,17 +235,15 @@ void SV_SpawnServer(char* server)
 	// wipe the entire per-level structure
 	Com_Memset(&sv, 0, sizeof(sv));
 
-	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
-	sv.datagram.allowoverflow = true;
+	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_DATAGRAM_QW);
+	sv.qh_datagram.allowoverflow = true;
 
-	sv.reliable_datagram.InitOOB(sv.reliable_datagram_buf, sizeof(sv.reliable_datagram_buf));
+	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_MSGLEN_QW);
 
-	sv.multicast.InitOOB(sv.multicast_buf, sizeof(sv.multicast_buf));
+	sv.multicast.InitOOB(sv.multicastBuffer, MAX_MSGLEN_QW);
 
-	sv.master.InitOOB(sv.master_buf, sizeof(sv.master_buf));
-
-	sv.signon.InitOOB(sv.signon_buffers[0], sizeof(sv.signon_buffers[0]));
-	sv.num_signon_buffers = 1;
+	sv.qh_signon.InitOOB(sv.qh_signon_buffers[0], MAX_DATAGRAM_QW);
+	sv.qh_num_signon_buffers = 1;
 
 	String::Cpy(sv.name, server);
 
@@ -254,10 +252,10 @@ void SV_SpawnServer(char* server)
 	PR_LoadProgs();
 
 	// allocate edicts
-	sv.edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_Q1 * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_Q1 * pr_edict_size, "edicts");
 
 	// leave slots at start for clients only
-	sv.num_edicts = MAX_CLIENTS_QW + 1;
+	sv.qh_num_edicts = MAX_CLIENTS_QW + 1;
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
 		ent = EDICT_NUM(i + 1);
@@ -266,31 +264,31 @@ void SV_SpawnServer(char* server)
 		svs.clients[i].qh_old_frags = 0;
 	}
 
-	sv.time = 1.0;
+	sv.qh_time = 1.0;
 
 	String::Cpy(sv.name, server);
-	sprintf(sv.modelname,"maps/%s.bsp", server);
-	CM_LoadMap(sv.modelname, false, NULL);
+	sprintf(sv.qh_modelname,"maps/%s.bsp", server);
+	CM_LoadMap(sv.qh_modelname, false, NULL);
 
 	//
 	// clear physics interaction links
 	//
 	SV_ClearWorld();
 
-	sv.sound_precache[0] = PR_GetString(0);
+	sv.qh_sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = PR_GetString(0);
-	sv.model_precache[1] = sv.modelname;
+	sv.qh_model_precache[0] = PR_GetString(0);
+	sv.qh_model_precache[1] = sv.qh_modelname;
 	sv.models[1] = 0;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.model_precache[1 + i] = localmodels[i];
+		sv.qh_model_precache[1 + i] = localmodels[i];
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
 	//check player/eyes models for hacks
-	sv.model_player_checksum = SV_CheckModel("progs/player.mdl");
-	sv.eyes_player_checksum = SV_CheckModel("progs/eyes.mdl");
+	sv.qw_model_player_checksum = SV_CheckModel("progs/player.mdl");
+	sv.qw_eyes_player_checksum = SV_CheckModel("progs/eyes.mdl");
 
 	//
 	// spawn the rest of the entities on the map
@@ -302,7 +300,7 @@ void SV_SpawnServer(char* server)
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
-	ent->SetModel(PR_SetString(sv.modelname));
+	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
@@ -334,7 +332,7 @@ void SV_SpawnServer(char* server)
 
 	// create a baseline for more efficient communications
 	SV_CreateBaseline();
-	sv.signon_buffer_size[sv.num_signon_buffers - 1] = sv.signon.cursize;
+	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
 
 	Info_SetValueForKey(svs.info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	Con_DPrintf("Server spawned.\n");

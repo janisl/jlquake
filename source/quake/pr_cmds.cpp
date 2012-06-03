@@ -249,7 +249,7 @@ void PF_setmodel(void)
 	m = G_STRING(OFS_PARM1);
 
 // check to see if model was properly precached
-	for (i = 0, check = sv.model_precache; *check; i++, check++)
+	for (i = 0, check = sv.qh_model_precache; *check; i++, check++)
 		if (!String::Cmp(*check, m))
 		{
 			break;
@@ -505,7 +505,7 @@ void PF_ambientsound(void)
 	attenuation = G_FLOAT(OFS_PARM3);
 
 // check to see if samp was properly precached
-	for (soundnum = 0, check = sv.sound_precache; *check; check++, soundnum++)
+	for (soundnum = 0, check = sv.qh_sound_precache; *check; check++, soundnum++)
 		if (!String::Cmp(*check,samp))
 		{
 			break;
@@ -519,14 +519,14 @@ void PF_ambientsound(void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	sv.signon.WriteByte(q1svc_spawnstaticsound);
+	sv.qh_signon.WriteByte(q1svc_spawnstaticsound);
 	for (i = 0; i < 3; i++)
-		sv.signon.WriteCoord(pos[i]);
+		sv.qh_signon.WriteCoord(pos[i]);
 
-	sv.signon.WriteByte(soundnum);
+	sv.qh_signon.WriteByte(soundnum);
 
-	sv.signon.WriteByte(vol * 255);
-	sv.signon.WriteByte(attenuation * 64);
+	sv.qh_signon.WriteByte(vol * 255);
+	sv.qh_signon.WriteByte(attenuation * 64);
 
 }
 
@@ -630,7 +630,7 @@ void PF_traceline(void)
 	}
 	else
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.qh_edicts);
 	}
 }
 
@@ -743,17 +743,17 @@ void PF_checkclient(void)
 	vec3_t view;
 
 // find a len check if on a len frame
-	if (sv.time - sv.lastchecktime >= 0.1)
+	if (sv.qh_time - sv.qh_lastchecktime >= 0.1)
 	{
-		sv.lastcheck = PF_newcheckclient(sv.lastcheck);
-		sv.lastchecktime = sv.time;
+		sv.qh_lastcheck = PF_newcheckclient(sv.qh_lastcheck);
+		sv.qh_lastchecktime = sv.qh_time;
 	}
 
 // return check if it might be visible
-	ent = EDICT_NUM(sv.lastcheck);
+	ent = EDICT_NUM(sv.qh_lastcheck);
 	if (ent->free || ent->GetHealth() <= 0)
 	{
-		RETURN_EDICT(sv.edicts);
+		RETURN_EDICT(sv.qh_edicts);
 		return;
 	}
 
@@ -765,7 +765,7 @@ void PF_checkclient(void)
 	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
 	{
 		c_notvis++;
-		RETURN_EDICT(sv.edicts);
+		RETURN_EDICT(sv.qh_edicts);
 		return;
 	}
 
@@ -872,13 +872,13 @@ void PF_findradius(void)
 	vec3_t eorg;
 	int i, j;
 
-	chain = (qhedict_t*)sv.edicts;
+	chain = (qhedict_t*)sv.qh_edicts;
 
 	org = G_VECTOR(OFS_PARM0);
 	rad = G_FLOAT(OFS_PARM1);
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (i = 1; i < sv.num_edicts; i++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (i = 1; i < sv.qh_num_edicts; i++, ent = NEXT_EDICT(ent))
 	{
 		if (ent->free)
 		{
@@ -976,7 +976,7 @@ void PF_Find(void)
 		PR_RunError("PF_Find: bad search string");
 	}
 
-	for (e++; e < sv.num_edicts; e++)
+	for (e++; e < sv.qh_num_edicts; e++)
 	{
 		ed = EDICT_NUM(e);
 		if (ed->free)
@@ -995,7 +995,7 @@ void PF_Find(void)
 		}
 	}
 
-	RETURN_EDICT(sv.edicts);
+	RETURN_EDICT(sv.qh_edicts);
 }
 
 void PR_CheckEmptyString(const char* s)
@@ -1027,12 +1027,12 @@ void PF_precache_sound(void)
 
 	for (i = 0; i < MAX_SOUNDS_Q1; i++)
 	{
-		if (!sv.sound_precache[i])
+		if (!sv.qh_sound_precache[i])
 		{
-			sv.sound_precache[i] = s;
+			sv.qh_sound_precache[i] = s;
 			return;
 		}
-		if (!String::Cmp(sv.sound_precache[i], s))
+		if (!String::Cmp(sv.qh_sound_precache[i], s))
 		{
 			return;
 		}
@@ -1056,13 +1056,13 @@ void PF_precache_model(void)
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 	{
-		if (!sv.model_precache[i])
+		if (!sv.qh_model_precache[i])
 		{
-			sv.model_precache[i] = s;
+			sv.qh_model_precache[i] = s;
 			sv.models[i] = CM_PrecacheModel(s);
 			return;
 		}
-		if (!String::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.qh_model_precache[i], s))
 		{
 			return;
 		}
@@ -1186,7 +1186,7 @@ void PF_lightstyle(void)
 	val = G_STRING(OFS_PARM1);
 
 // change the string in sv
-	sv.lightstyles[style] = val;
+	sv.qh_lightstyles[style] = val;
 
 // send message to all clients on this server
 	if (sv.state != SS_GAME)
@@ -1270,9 +1270,9 @@ void PF_nextent(void)
 	while (1)
 	{
 		i++;
-		if (i == sv.num_edicts)
+		if (i == sv.qh_num_edicts)
 		{
-			RETURN_EDICT(sv.edicts);
+			RETURN_EDICT(sv.qh_edicts);
 			return;
 		}
 		ent = EDICT_NUM(i);
@@ -1325,8 +1325,8 @@ void PF_aim(void)
 	bestdist = sv_aim->value;
 	bestent = NULL;
 
-	check = NEXT_EDICT(sv.edicts);
-	for (i = 1; i < sv.num_edicts; i++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (i = 1; i < sv.qh_num_edicts; i++, check = NEXT_EDICT(check))
 	{
 		if (check->GetTakeDamage() != DAMAGE_AIM)
 		{
@@ -1450,7 +1450,7 @@ QMsg* WriteDest(void)
 	switch (dest)
 	{
 	case MSG_BROADCAST:
-		return &sv.datagram;
+		return &sv.qh_datagram;
 
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
@@ -1462,10 +1462,10 @@ QMsg* WriteDest(void)
 		return &svs.clients[entnum - 1].qh_message;
 
 	case MSG_ALL:
-		return &sv.reliable_datagram;
+		return &sv.qh_reliable_datagram;
 
 	case MSG_INIT:
-		return &sv.signon;
+		return &sv.qh_signon;
 
 	default:
 		PR_RunError("WriteDest: bad destination");
@@ -1525,17 +1525,17 @@ void PF_makestatic(void)
 
 	ent = G_EDICT(OFS_PARM0);
 
-	sv.signon.WriteByte(q1svc_spawnstatic);
+	sv.qh_signon.WriteByte(q1svc_spawnstatic);
 
-	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->GetModel())));
+	sv.qh_signon.WriteByte(SV_ModelIndex(PR_GetString(ent->GetModel())));
 
-	sv.signon.WriteByte(ent->GetFrame());
-	sv.signon.WriteByte(ent->GetColorMap());
-	sv.signon.WriteByte(ent->GetSkin());
+	sv.qh_signon.WriteByte(ent->GetFrame());
+	sv.qh_signon.WriteByte(ent->GetColorMap());
+	sv.qh_signon.WriteByte(ent->GetSkin());
 	for (i = 0; i < 3; i++)
 	{
-		sv.signon.WriteCoord(ent->GetOrigin()[i]);
-		sv.signon.WriteAngle(ent->GetAngles()[i]);
+		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
+		sv.qh_signon.WriteAngle(ent->GetAngles()[i]);
 	}
 
 // throw the entity away now

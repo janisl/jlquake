@@ -252,7 +252,138 @@ enum serverState_t
 	SS_PIC
 };
 
-struct server_common_t
+struct server_t
 {
 	serverState_t state;
+
+	//	Only in Quake/Hexen 2 and Quake 2
+	char name[MAX_QPATH];				// map name, or cinematic name
+
+	clipHandle_t models[BIGGEST_MAX_MODELS];
+
+	//	Only NetQuake/Hexen 2 and Quake 2
+	bool loadgame;						// client begins should reuse existing entity
+
+	// Only in QuakeWorld, HexenWorld and Quake 2
+	// the multicast buffer is used to send a message to a set of clients
+	// it is only used to marshall data until SV_Multicast is called
+	QMsg multicast;
+	byte multicastBuffer[MAX_MSGLEN];
+
+	bool qh_paused;
+
+	double qh_time;
+
+	int qh_lastcheck;					// used by PF_checkclient
+	double qh_lastchecktime;
+
+	char qh_modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
+	const char* qh_model_precache[BIGGEST_MAX_MODELS];	// NULL terminated
+	const char* qh_sound_precache[BIGGEST_MAX_SOUNDS];	// NULL terminated
+	const char* qh_lightstyles[MAX_LIGHTSTYLES_Q1];
+
+	int qh_num_edicts;
+	int qh_max_edicts;
+	qhedict_t* qh_edicts;				// can NOT be array indexed, because
+										// qhedict_t is variable sized, but can
+										// be used to reference the world ent
+
+	// added to every client's unreliable buffer each frame, then cleared
+	QMsg qh_datagram;
+	byte qh_datagramBuffer[MAX_MSGLEN];
+
+	// added to every client's reliable buffer each frame, then cleared
+	QMsg qh_reliable_datagram;
+	byte qh_reliable_datagramBuffer[MAX_MSGLEN];
+
+	// the signon buffer will be sent to each client as they connect
+	// includes the entity baselines, the static entities, etc
+	// large levels will have >MAX_DATAGRAM_QW sized signons, so
+	// multiple signon messages are kept
+	QMsg qh_signon;
+	byte qh_signonBuffer[MAX_MSGLEN];
+	//	Only QuakeWorld and hexenWorld
+	int qh_num_signon_buffers;
+	int qh_signon_buffer_size[MAX_SIGNON_BUFFERS];
+	byte qh_signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM];
+
+	//check player/eyes models for hacks
+	unsigned qw_model_player_checksum;
+	unsigned qw_eyes_player_checksum;
+
+	char h2_midi_name[MAX_QPATH];		// midi file name
+	byte h2_cd_track;					// cd track number
+
+	char h2_startspot[64];
+
+	h2EffectT h2_Effects[MAX_EFFECTS_H2];
+
+	h2client_state2_t* h2_states;
+
+	double hw_next_PIV_time;			// Last Player In View time
+
+	int hw_current_skill;
+
+	bool q2_attractloop;				// running cinematics and demos for the local system only
+
+	unsigned q2_time;					// always sv.framenum * 100 msec
+	int q2_framenum;
+
+	char q2_configstrings[MAX_CONFIGSTRINGS_Q2][MAX_QPATH];
+	q2entity_state_t q2_baselines[MAX_EDICTS_Q2];
+
+	// demo server information
+	fileHandle_t q2_demofile;
+
+	bool q3_restarting;					// if true, send configstring changes during SS_LOADING
+	int q3_serverId;					// changes each server start
+	int q3_restartedServerId;			// serverId before a map_restart
+	int q3_checksumFeed;				// the feed key that we use to compute the pure checksum strings
+	// the serverId associated with the current checksumFeed (always <= serverId)
+	int q3_checksumFeedServerId;
+	int q3_snapshotCounter;				// incremented for each snapshot built
+	int q3_timeResidual;				// <= 1000 / sv_frame->value
+
+	char* q3_configstrings[MAX_CONFIGSTRINGS_Q3];
+	q3svEntity_t q3_svEntities[MAX_GENTITIES_Q3];
+
+	const char* q3_entityParsePoint;	// used during game VM init
+
+	// the game virtual machine will update these on init and changes
+	q3sharedEntity_t* q3_gentities;
+	wssharedEntity_t* ws_gentities;
+	wmsharedEntity_t* wm_gentities;
+	etsharedEntity_t* et_gentities;
+	int q3_gentitySize;
+	int q3_num_entities;				// current number, <= MAX_GENTITIES_Q3
+
+	q3playerState_t* q3_gameClients;
+	wsplayerState_t* ws_gameClients;
+	wmplayerState_t* wm_gameClients;
+	etplayerState_t* et_gameClients;
+	int q3_gameClientSize;					// will be > sizeof(q3playerState_t) due to game private data
+
+	int q3_restartTime;
+
+	bool et_configstringsmodified[MAX_CONFIGSTRINGS_ET];
+
+	// NERVE - SMF - net debugging
+	int wm_bpsWindow[MAX_BPS_WINDOW];
+	int wm_bpsWindowSteps;
+	int wm_bpsTotalBytes;
+	int wm_bpsMaxBytes;
+
+	int wm_ubpsWindow[MAX_BPS_WINDOW];
+	int wm_ubpsTotalBytes;
+	int wm_ubpsMaxBytes;
+
+	float wm_ucompAve;
+	int wm_ucompNum;
+	// -NERVE - SMF
+
+	md3Tag_t et_tags[MAX_SERVER_TAGS_ET];
+	ettagHeaderExt_t et_tagHeadersExt[MAX_TAG_FILES_ET];
+
+	int et_num_tagheaders;
+	int et_num_tags;
 };

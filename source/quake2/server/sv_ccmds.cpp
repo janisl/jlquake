@@ -247,7 +247,7 @@ void SV_WriteLevelFile(void)
 		Com_Printf("Failed to open %s\n", name);
 		return;
 	}
-	FS_Write(sv.configstrings, sizeof(sv.configstrings), f);
+	FS_Write(sv.q2_configstrings, sizeof(sv.q2_configstrings), f);
 	CM_WritePortalState(f);
 	FS_FCloseFile(f);
 
@@ -275,7 +275,7 @@ void SV_ReadLevelFile(void)
 		Com_Printf("Failed to open %s\n", name);
 		return;
 	}
-	FS_Read(sv.configstrings, sizeof(sv.configstrings), f);
+	FS_Read(sv.q2_configstrings, sizeof(sv.q2_configstrings), f);
 	CM_ReadPortalState(f);
 	FS_FCloseFile(f);
 
@@ -317,11 +317,11 @@ void SV_WriteServerFile(qboolean autosave)
 		String::Sprintf(comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour,
 			newtime->tm_min / 10, newtime->tm_min % 10,
 			newtime->tm_mon + 1, newtime->tm_mday);
-		String::Cat(comment, sizeof(comment), sv.configstrings[Q2CS_NAME]);
+		String::Cat(comment, sizeof(comment), sv.q2_configstrings[Q2CS_NAME]);
 	}
 	else
 	{	// autosaved
-		String::Sprintf(comment, sizeof(comment), "ENTERING %s", sv.configstrings[Q2CS_NAME]);
+		String::Sprintf(comment, sizeof(comment), "ENTERING %s", sv.q2_configstrings[Q2CS_NAME]);
 	}
 
 	FS_Write(comment, sizeof(comment), f);
@@ -913,14 +913,14 @@ void SV_ServerRecord_f(void)
 	buf.WriteString2(Cvar_VariableString("gamedir"));
 	buf.WriteShort(-1);
 	// send full levelname
-	buf.WriteString2(sv.configstrings[Q2CS_NAME]);
+	buf.WriteString2(sv.q2_configstrings[Q2CS_NAME]);
 
 	for (i = 0; i < MAX_CONFIGSTRINGS_Q2; i++)
-		if (sv.configstrings[i][0])
+		if (sv.q2_configstrings[i][0])
 		{
 			buf.WriteByte(q2svc_configstring);
 			buf.WriteShort(i);
-			buf.WriteString2(sv.configstrings[i]);
+			buf.WriteString2(sv.q2_configstrings[i]);
 		}
 
 	// write it to the demo file

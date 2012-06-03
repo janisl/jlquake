@@ -28,53 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //=============================================================================
 
-#define MAX_ENT_CLUSTERS_Q3    16
-
-typedef struct svEntity_s
-{
-	struct worldSector_s* worldSector;
-	struct svEntity_s* nextEntityInWorldSector;
-
-	q3entityState_t baseline;		// for delta compression of initial sighting
-	int numClusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS_Q3];
-	int lastCluster;				// if all the clusters don't fit in clusternums
-	int areanum, areanum2;
-	int snapshotCounter;			// used to prevent double adding from portal views
-} svEntity_t;
-
-struct server_t : server_common_t
-{
-	qboolean restarting;				// if true, send configstring changes during SS_LOADING
-	int serverId;						// changes each server start
-	int restartedServerId;				// serverId before a map_restart
-	int checksumFeed;					// the feed key that we use to compute the pure checksum strings
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
-	// the serverId associated with the current checksumFeed (always <= serverId)
-	int checksumFeedServerId;
-	int snapshotCounter;				// incremented for each snapshot built
-	int timeResidual;					// <= 1000 / sv_frame->value
-	int nextFrameTime;					// when time > nextFrameTime, process world
-	struct cmodel_s* models[MAX_MODELS_Q3];
-	char* configstrings[MAX_CONFIGSTRINGS_Q3];
-	svEntity_t svEntities[MAX_GENTITIES_Q3];
-
-	const char* entityParsePoint;		// used during game VM init
-
-	// the game virtual machine will update these on init and changes
-	q3sharedEntity_t* gentities;
-	int gentitySize;
-	int num_entities;					// current number, <= MAX_GENTITIES_Q3
-
-	q3playerState_t* gameClients;
-	int gameClientSize;					// will be > sizeof(q3playerState_t) due to game private data
-
-	int restartTime;
-};
-
-//=============================================================================
-
-
 // MAX_CHALLENGES is made large to prevent a denial
 // of service attack that could cycle all of them
 // out before legitimate users connected
@@ -225,8 +178,8 @@ void SV_SendClientSnapshot(client_t* client);
 int SV_NumForGentity(q3sharedEntity_t* ent);
 q3sharedEntity_t* SV_GentityNum(int num);
 q3playerState_t* SV_GameClientNum(int num);
-svEntity_t* SV_SvEntityForGentity(q3sharedEntity_t* gEnt);
-q3sharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt);
+q3svEntity_t* SV_SvEntityForGentity(q3sharedEntity_t* gEnt);
+q3sharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);

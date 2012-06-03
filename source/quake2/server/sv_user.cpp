@@ -42,8 +42,8 @@ void SV_BeginDemoserver(void)
 	char name[MAX_OSPATH];
 
 	String::Sprintf(name, sizeof(name), "demos/%s", sv.name);
-	FS_FOpenFileRead(name, &sv.demofile, true);
-	if (!sv.demofile)
+	FS_FOpenFileRead(name, &sv.q2_demofile, true);
+	if (!sv.q2_demofile)
 	{
 		Com_Error(ERR_DROP, "Couldn't open %s\n", name);
 	}
@@ -88,7 +88,7 @@ void SV_New_f(void)
 	sv_client->netchan.message.WriteByte(q2svc_serverdata);
 	sv_client->netchan.message.WriteLong(PROTOCOL_VERSION);
 	sv_client->netchan.message.WriteLong(svs.spawncount);
-	sv_client->netchan.message.WriteByte(sv.attractloop);
+	sv_client->netchan.message.WriteByte(sv.q2_attractloop);
 	sv_client->netchan.message.WriteString2(gamedir);
 
 	if (sv.state == SS_CINEMATIC || sv.state == SS_PIC)
@@ -102,7 +102,7 @@ void SV_New_f(void)
 	sv_client->netchan.message.WriteShort(playernum);
 
 	// send full levelname
-	sv_client->netchan.message.WriteString2(sv.configstrings[Q2CS_NAME]);
+	sv_client->netchan.message.WriteString2(sv.q2_configstrings[Q2CS_NAME]);
 
 	//
 	// game server
@@ -154,11 +154,11 @@ void SV_Configstrings_f(void)
 	while (sv_client->netchan.message.cursize < MAX_MSGLEN_Q2 / 2 &&
 		   start < MAX_CONFIGSTRINGS_Q2)
 	{
-		if (sv.configstrings[start][0])
+		if (sv.q2_configstrings[start][0])
 		{
 			sv_client->netchan.message.WriteByte(q2svc_configstring);
 			sv_client->netchan.message.WriteShort(start);
-			sv_client->netchan.message.WriteString2(sv.configstrings[start]);
+			sv_client->netchan.message.WriteString2(sv.q2_configstrings[start]);
 		}
 		start++;
 	}
@@ -213,7 +213,7 @@ void SV_Baselines_f(void)
 	while (sv_client->netchan.message.cursize <  MAX_MSGLEN_Q2 / 2 &&
 		   start < MAX_EDICTS_Q2)
 	{
-		base = &sv.baselines[start];
+		base = &sv.q2_baselines[start];
 		if (base->modelindex || base->sound || base->effects)
 		{
 			sv_client->netchan.message.WriteByte(q2svc_spawnbaseline);

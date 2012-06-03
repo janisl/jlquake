@@ -51,7 +51,7 @@ int SV_NumForGentity(wmsharedEntity_t* ent)
 {
 	int num;
 
-	num = ((byte*)ent - (byte*)sv.gentities) / sv.gentitySize;
+	num = ((byte*)ent - (byte*)sv.wm_gentities) / sv.q3_gentitySize;
 
 	return num;
 }
@@ -60,7 +60,7 @@ wmsharedEntity_t* SV_GentityNum(int num)
 {
 	wmsharedEntity_t* ent;
 
-	ent = (wmsharedEntity_t*)((byte*)sv.gentities + sv.gentitySize * (num));
+	ent = (wmsharedEntity_t*)((byte*)sv.wm_gentities + sv.q3_gentitySize * (num));
 
 	return ent;
 }
@@ -69,25 +69,25 @@ wmplayerState_t* SV_GameClientNum(int num)
 {
 	wmplayerState_t* ps;
 
-	ps = (wmplayerState_t*)((byte*)sv.gameClients + sv.gameClientSize * (num));
+	ps = (wmplayerState_t*)((byte*)sv.wm_gameClients + sv.q3_gameClientSize * (num));
 
 	return ps;
 }
 
-svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt)
+q3svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt)
 {
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
 	{
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 	}
-	return &sv.svEntities[gEnt->s.number];
+	return &sv.q3_svEntities[gEnt->s.number];
 }
 
-wmsharedEntity_t* SV_GEntityForSvEntity(svEntity_t* svEnt)
+wmsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt)
 {
 	int num;
 
-	num = svEnt - sv.svEntities;
+	num = svEnt - sv.q3_svEntities;
 	return SV_GentityNum(num);
 }
 
@@ -243,7 +243,7 @@ SV_AdjustAreaPortalState
 */
 void SV_AdjustAreaPortalState(wmsharedEntity_t* ent, qboolean open)
 {
-	svEntity_t* svEnt;
+	q3svEntity_t* svEnt;
 
 	svEnt = SV_SvEntityForGentity(ent);
 	if (svEnt->areanum2 == -1)
@@ -301,12 +301,12 @@ SV_LocateGameData
 void SV_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {
-	sv.gentities = gEnts;
-	sv.gentitySize = sizeofGEntity_t;
-	sv.num_entities = numGEntities;
+	sv.wm_gentities = gEnts;
+	sv.q3_gentitySize = sizeofGEntity_t;
+	sv.q3_num_entities = numGEntities;
 
-	sv.gameClients = clients;
-	sv.gameClientSize = sizeofGameClient;
+	sv.wm_gameClients = clients;
+	sv.q3_gameClientSize = sizeofGameClient;
 }
 
 
@@ -465,9 +465,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	{
 		const char* s;
 
-		s = String::Parse3(&sv.entityParsePoint);
+		s = String::Parse3(&sv.q3_entityParsePoint);
 		String::NCpyZ((char*)VMA(1), s, args[2]);
-		if (!sv.entityParsePoint && !s[0])
+		if (!sv.q3_entityParsePoint && !s[0])
 		{
 			return qfalse;
 		}
@@ -951,7 +951,7 @@ static void SV_InitGameVM(qboolean restart)
 	int i;
 
 	// start the entity parsing at the beginning
-	sv.entityParsePoint = CM_EntityString();
+	sv.q3_entityParsePoint = CM_EntityString();
 
 	// clear all gentity pointers that might still be set from
 	// a previous level

@@ -32,31 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
-struct server_t : server_common_t
-{
-
-	qboolean attractloop;			// running cinematics and demos for the local system only
-	qboolean loadgame;				// client begins should reuse existing entity
-
-	unsigned time;					// always sv.framenum * 100 msec
-	int framenum;
-
-	char name[MAX_QPATH];					// map name, or cinematic name
-	clipHandle_t models[MAX_MODELS_Q2];
-
-	char configstrings[MAX_CONFIGSTRINGS_Q2][MAX_QPATH];
-	q2entity_state_t baselines[MAX_EDICTS_Q2];
-
-	// the multicast buffer is used to send a message to a set of clients
-	// it is only used to marshall data until SV_Multicast is called
-	QMsg multicast;
-	byte multicast_buf[MAX_MSGLEN_Q2];
-
-	// demo server information
-	fileHandle_t demofile;
-	qboolean timedemo;			// don't time sync
-};
-
 #define EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
 #define NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 

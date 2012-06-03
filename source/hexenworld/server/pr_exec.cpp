@@ -197,7 +197,7 @@ void PR_ExecuteProgram(func_t fnum)
 			c->_float = !a->function;
 			break;
 		case OP_NOT_ENT:
-			c->_float = (PROG_TO_EDICT(a->edict) == sv.edicts);
+			c->_float = (PROG_TO_EDICT(a->edict) == sv.qh_edicts);
 			break;
 
 		case OP_EQ_F:
@@ -254,11 +254,11 @@ void PR_ExecuteProgram(func_t fnum)
 		case OP_STOREP_FLD:	// integers
 		case OP_STOREP_S:
 		case OP_STOREP_FNC:	// pointers
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			ptr->_int = a->_int;
 			break;
 		case OP_STOREP_V:
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			ptr->vector[0] = a->vector[0];
 			ptr->vector[1] = a->vector[1];
 			ptr->vector[2] = a->vector[2];
@@ -273,11 +273,11 @@ void PR_ExecuteProgram(func_t fnum)
 			b->vector[2] *= a->_float;
 			break;
 		case OP_MULSTOREP_F:// e.f *= f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->_float = (ptr->_float *= a->_float);
 			break;
 		case OP_MULSTOREP_V:// e.v *= f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->vector[0] = (ptr->vector[0] *= a->_float);
 			c->vector[0] = (ptr->vector[1] *= a->_float);
 			c->vector[0] = (ptr->vector[2] *= a->_float);
@@ -287,7 +287,7 @@ void PR_ExecuteProgram(func_t fnum)
 			b->_float /= a->_float;
 			break;
 		case OP_DIVSTOREP_F:// e.f /= f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->_float = (ptr->_float /= a->_float);
 			break;
 
@@ -300,11 +300,11 @@ void PR_ExecuteProgram(func_t fnum)
 			b->vector[2] += a->vector[2];
 			break;
 		case OP_ADDSTOREP_F:// e.f += f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->_float = (ptr->_float += a->_float);
 			break;
 		case OP_ADDSTOREP_V:// e.v += v
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->vector[0] = (ptr->vector[0] += a->vector[0]);
 			c->vector[1] = (ptr->vector[1] += a->vector[1]);
 			c->vector[2] = (ptr->vector[2] += a->vector[2]);
@@ -319,11 +319,11 @@ void PR_ExecuteProgram(func_t fnum)
 			b->vector[2] -= a->vector[2];
 			break;
 		case OP_SUBSTOREP_F:// e.f -= f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->_float = (ptr->_float -= a->_float);
 			break;
 		case OP_SUBSTOREP_V:// e.v -= v
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			c->vector[0] = (ptr->vector[0] -= a->vector[0]);
 			c->vector[1] = (ptr->vector[1] -= a->vector[1]);
 			c->vector[2] = (ptr->vector[2] -= a->vector[2]);
@@ -334,11 +334,11 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 			NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
-			if (ed == (qhedict_t*)sv.edicts && sv.state == SS_GAME)
+			if (ed == (qhedict_t*)sv.qh_edicts && sv.state == SS_GAME)
 			{
 				PR_RunError("assignment to world entity");
 			}
-			c->_int = (byte*)((int*)&ed->v + b->_int) - (byte*)sv.edicts;
+			c->_int = (byte*)((int*)&ed->v + b->_int) - (byte*)sv.qh_edicts;
 			break;
 
 		case OP_LOAD_F:
@@ -546,7 +546,7 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 			NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
-			if (ed == (qhedict_t*)sv.edicts && sv.state == SS_GAME)
+			if (ed == (qhedict_t*)sv.qh_edicts && sv.state == SS_GAME)
 			{
 				PR_RunError("assignment to world entity");
 			}
@@ -557,14 +557,14 @@ void PR_ExecuteProgram(func_t fnum)
 			b->_float = (int)b->_float | (int)a->_float;
 			break;
 		case OP_BITSETP:// e.f (+) f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			ptr->_float = (int)ptr->_float | (int)a->_float;
 			break;
 		case OP_BITCLR:	// f (-) f
 			b->_float = (int)b->_float & ~((int)a->_float);
 			break;
 		case OP_BITCLRP:// e.f (-) f
-			ptr = (eval_t*)((byte*)sv.edicts + b->_int);
+			ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
 			ptr->_float = (int)ptr->_float & ~((int)a->_float);
 			break;
 

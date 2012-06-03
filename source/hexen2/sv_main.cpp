@@ -94,13 +94,13 @@ void SV_Edicts(const char* Name)
 		return;
 	}
 
-	FS_Printf(FH,"Number of Edicts: %d\n",sv.num_edicts);
-	FS_Printf(FH,"Server Time: %f\n",sv.time);
+	FS_Printf(FH,"Number of Edicts: %d\n",sv.qh_num_edicts);
+	FS_Printf(FH,"Server Time: %f\n",sv.qh_time);
 	FS_Printf(FH,"\n");
 	FS_Printf(FH,"Num.     Time Class Name                     Model                          Think                                    Touch                                    Use\n");
 	FS_Printf(FH,"---- -------- ------------------------------ ------------------------------ ---------------------------------------- ---------------------------------------- ----------------------------------------\n");
 
-	for (i = 1; i < sv.num_edicts; i++)
+	for (i = 1; i < sv.qh_num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
 		FS_Printf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
@@ -152,14 +152,14 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 {
 	int i, v;
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 16)
 	{
 		return;
 	}
-	sv.datagram.WriteByte(h2svc_particle);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteByte(h2svc_particle);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
 	for (i = 0; i < 3; i++)
 	{
 		v = dir[i] * 16;
@@ -171,10 +171,10 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 		{
 			v = -128;
 		}
-		sv.datagram.WriteChar(v);
+		sv.qh_datagram.WriteChar(v);
 	}
-	sv.datagram.WriteByte(count);
-	sv.datagram.WriteByte(color);
+	sv.qh_datagram.WriteByte(count);
+	sv.qh_datagram.WriteByte(color);
 }
 
 /*
@@ -186,24 +186,24 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
 {
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 36)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 36)
 	{
 		return;
 	}
-	sv.datagram.WriteByte(h2svc_particle2);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
-	sv.datagram.WriteFloat(dmin[0]);
-	sv.datagram.WriteFloat(dmin[1]);
-	sv.datagram.WriteFloat(dmin[2]);
-	sv.datagram.WriteFloat(dmax[0]);
-	sv.datagram.WriteFloat(dmax[1]);
-	sv.datagram.WriteFloat(dmax[2]);
+	sv.qh_datagram.WriteByte(h2svc_particle2);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteFloat(dmin[0]);
+	sv.qh_datagram.WriteFloat(dmin[1]);
+	sv.qh_datagram.WriteFloat(dmin[2]);
+	sv.qh_datagram.WriteFloat(dmax[0]);
+	sv.qh_datagram.WriteFloat(dmax[1]);
+	sv.qh_datagram.WriteFloat(dmax[2]);
 
-	sv.datagram.WriteShort(color);
-	sv.datagram.WriteByte(count);
-	sv.datagram.WriteByte(effect);
+	sv.qh_datagram.WriteShort(color);
+	sv.qh_datagram.WriteByte(count);
+	sv.qh_datagram.WriteByte(effect);
 }
 
 /*
@@ -215,21 +215,21 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count)
 {
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 15)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 15)
 	{
 		return;
 	}
-	sv.datagram.WriteByte(h2svc_particle3);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
-	sv.datagram.WriteByte(box[0]);
-	sv.datagram.WriteByte(box[1]);
-	sv.datagram.WriteByte(box[2]);
+	sv.qh_datagram.WriteByte(h2svc_particle3);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteByte(box[0]);
+	sv.qh_datagram.WriteByte(box[1]);
+	sv.qh_datagram.WriteByte(box[2]);
 
-	sv.datagram.WriteShort(color);
-	sv.datagram.WriteByte(count);
-	sv.datagram.WriteByte(effect);
+	sv.qh_datagram.WriteShort(color);
+	sv.qh_datagram.WriteByte(count);
+	sv.qh_datagram.WriteByte(effect);
 }
 
 /*
@@ -241,19 +241,19 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count)
 {
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 13)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 13)
 	{
 		return;
 	}
-	sv.datagram.WriteByte(h2svc_particle4);
-	sv.datagram.WriteCoord(org[0]);
-	sv.datagram.WriteCoord(org[1]);
-	sv.datagram.WriteCoord(org[2]);
-	sv.datagram.WriteByte(radius);
+	sv.qh_datagram.WriteByte(h2svc_particle4);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteByte(radius);
 
-	sv.datagram.WriteShort(color);
-	sv.datagram.WriteByte(count);
-	sv.datagram.WriteByte(effect);
+	sv.qh_datagram.WriteShort(color);
+	sv.qh_datagram.WriteByte(count);
+	sv.qh_datagram.WriteByte(effect);
 }
 
 /*
@@ -265,7 +265,7 @@ void SV_StopSound(qhedict_t* entity, int channel)
 {
 	int ent;
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 4)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 4)
 	{
 		return;
 	}
@@ -273,8 +273,8 @@ void SV_StopSound(qhedict_t* entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
-	sv.datagram.WriteByte(h2svc_stopsound);
-	sv.datagram.WriteShort(channel);
+	sv.qh_datagram.WriteByte(h2svc_stopsound);
+	sv.qh_datagram.WriteShort(channel);
 }
 
 /*
@@ -287,7 +287,7 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 	int ent;
 	int i;
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 4)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 4)
 	{
 		return;
 	}
@@ -295,10 +295,10 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
-	sv.datagram.WriteByte(h2svc_sound_update_pos);
-	sv.datagram.WriteShort(channel);
+	sv.qh_datagram.WriteByte(h2svc_sound_update_pos);
+	sv.qh_datagram.WriteShort(channel);
 	for (i = 0; i < 3; i++)
-		sv.datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
+		sv.qh_datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
 }
 
 /*
@@ -349,20 +349,20 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		Sys_Error("SV_StartSound: channel = %i", channel);
 	}
 
-	if (sv.datagram.cursize > MAX_DATAGRAM_H2 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 16)
 	{
 		return;
 	}
 
 // find precache number for sound
 	for (sound_num = 1; sound_num < MAX_SOUNDS_H2 &&
-		 sv.sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.sound_precache[sound_num]))
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
 		{
 			break;
 		}
 
-	if (sound_num == MAX_SOUNDS_H2 || !sv.sound_precache[sound_num])
+	if (sound_num == MAX_SOUNDS_H2 || !sv.qh_sound_precache[sound_num])
 	{
 		Con_Printf("SV_StartSound: %s not precached\n", sample);
 		return;
@@ -388,20 +388,20 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 	}
 
 // directed messages go only to the entity the are targeted on
-	sv.datagram.WriteByte(h2svc_sound);
-	sv.datagram.WriteByte(field_mask);
+	sv.qh_datagram.WriteByte(h2svc_sound);
+	sv.qh_datagram.WriteByte(field_mask);
 	if (field_mask & SND_VOLUME)
 	{
-		sv.datagram.WriteByte(volume);
+		sv.qh_datagram.WriteByte(volume);
 	}
 	if (field_mask & SND_ATTENUATION)
 	{
-		sv.datagram.WriteByte(attenuation * 64);
+		sv.qh_datagram.WriteByte(attenuation * 64);
 	}
-	sv.datagram.WriteShort(channel);
-	sv.datagram.WriteByte(sound_num);
+	sv.qh_datagram.WriteShort(channel);
+	sv.qh_datagram.WriteByte(sound_num);
 	for (i = 0; i < 3; i++)
-		sv.datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
+		sv.qh_datagram.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
 }
 
 /*
@@ -443,33 +443,33 @@ void SV_SendServerinfo(client_t* client)
 		client->qh_message.WriteByte(GAME_COOP);
 	}
 
-	if (sv.edicts->GetMessage() > 0 && sv.edicts->GetMessage() <= pr_string_count)
+	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= pr_string_count)
 	{
-		client->qh_message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->GetMessage() - 1]]);
+		client->qh_message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
 	}
 	else
 	{
 //		client->message.WriteString2("");
-		client->qh_message.WriteString2(PR_GetString(sv.edicts->GetNetName()));
+		client->qh_message.WriteString2(PR_GetString(sv.qh_edicts->GetNetName()));
 	}
 
-	for (s = sv.model_precache + 1; *s; s++)
+	for (s = sv.qh_model_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);
 	client->qh_message.WriteByte(0);
 
-	for (s = sv.sound_precache + 1; *s; s++)
+	for (s = sv.qh_sound_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);
 	client->qh_message.WriteByte(0);
 
 // send music
 	client->qh_message.WriteByte(h2svc_cdtrack);
-//	client->message.WriteByte(sv.edicts->v.soundtype);
-//	client->message.WriteByte(sv.edicts->v.soundtype);
-	client->qh_message.WriteByte(sv.cd_track);
-	client->qh_message.WriteByte(sv.cd_track);
+//	client->message.WriteByte(sv.qh_edicts->v.soundtype);
+//	client->message.WriteByte(sv.qh_edicts->v.soundtype);
+	client->qh_message.WriteByte(sv.h2_cd_track);
+	client->qh_message.WriteByte(sv.h2_cd_track);
 
 	client->qh_message.WriteByte(h2svc_midi_name);
-	client->qh_message.WriteString2(sv.midi_name);
+	client->qh_message.WriteString2(sv.h2_midi_name);
 
 // set view
 	client->qh_message.WriteByte(h2svc_setview);
@@ -530,12 +530,12 @@ void SV_ConnectClient(int clientnum)
 
 	client->datagram.InitOOB(client->datagramBuffer, MAX_MSGLEN_H2);
 
-	for (entnum = 0; entnum < sv.num_edicts; entnum++)
+	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
 //		Com_Memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(h2entity_state_t));
 	}
-	Com_Memset(&sv.states[clientnum],0,sizeof(client_state2_t));
+	Com_Memset(&sv.h2_states[clientnum],0,sizeof(h2client_state2_t));
 
 #ifdef IDGODS
 	client->qh_privileged = IsID(&client->netconnection->addr);
@@ -624,7 +624,7 @@ SV_ClearDatagram
 */
 void SV_ClearDatagram(void)
 {
-	sv.datagram.Clear();
+	sv.qh_datagram.Clear();
 }
 
 /*
@@ -711,8 +711,8 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	int position = 0;
 	int client_num;
 	unsigned long client_bit;
-	client_frames_t* reference, * build;
-	client_state2_t* state;
+	h2client_frames_t* reference, * build;
+	h2client_state2_t* state;
 	h2entity_state_t* ref_ent,* set_ent,build_ent;
 	qboolean FoundInList,DoRemove,DoPlayer,DoMonsters,DoMissiles,DoMisc,IgnoreEnt;
 	short RemoveList[MAX_CLIENT_STATES_H2],NumToRemove;
@@ -720,7 +720,7 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 
 	client_num = client - svs.clients;
 	client_bit = 1 << client_num;
-	state = &sv.states[client_num];
+	state = &sv.h2_states[client_num];
 	reference = &state->frames[0];
 
 	if (client->h2_last_sequence != client->h2_current_sequence)
@@ -815,8 +815,8 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	pvs = SV_FatPVS(org);
 
 	// send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		DoRemove = false;
 		// don't send if flagged for NODRAW and there are no lighting effects
@@ -1168,8 +1168,8 @@ void SV_CleanupEnts(void)
 	int e;
 	qhedict_t* ent;
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		ent->SetEffects((int)ent->GetEffects() & ~H2EF_MUZZLEFLASH);
 	}
@@ -1983,7 +1983,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.InitOOB(buf, sizeof(buf));
 
 	msg.WriteByte(h2svc_time);
-	msg.WriteFloat(sv.time);
+	msg.WriteFloat(sv.qh_time);
 
 // add the client specific data to the datagram
 	SV_WriteClientdataToMessage(client, client->qh_edict, &msg);
@@ -1996,9 +1996,9 @@ qboolean SV_SendClientDatagram(client_t* client)
     }*/
 
 // copy the server datagram if there is space
-	if (msg.cursize + sv.datagram.cursize < msg.maxsize)
+	if (msg.cursize + sv.qh_datagram.cursize < msg.maxsize)
 	{
-		msg.WriteData(sv.datagram._data, sv.datagram.cursize);
+		msg.WriteData(sv.qh_datagram._data, sv.qh_datagram.cursize);
 	}
 
 	if (msg.cursize + client->datagram.cursize < msg.maxsize)
@@ -2062,10 +2062,10 @@ void SV_UpdateToReliableMessages(void)
 		{
 			continue;
 		}
-		client->qh_message.WriteData(sv.reliable_datagram._data, sv.reliable_datagram.cursize);
+		client->qh_message.WriteData(sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
 	}
 
-	sv.reliable_datagram.Clear();
+	sv.qh_reliable_datagram.Clear();
 }
 
 
@@ -2202,12 +2202,12 @@ int SV_ModelIndex(const char* name)
 		return 0;
 	}
 
-	for (i = 0; i < MAX_MODELS_H2 && sv.model_precache[i]; i++)
-		if (!String::Cmp(sv.model_precache[i], name))
+	for (i = 0; i < MAX_MODELS_H2 && sv.qh_model_precache[i]; i++)
+		if (!String::Cmp(sv.qh_model_precache[i], name))
 		{
 			return i;
 		}
-	if (i == MAX_MODELS_H2 || !sv.model_precache[i])
+	if (i == MAX_MODELS_H2 || !sv.qh_model_precache[i])
 	{
 		Con_Printf("SV_ModelIndex: model %s not precached\n", name);
 		return 0;
@@ -2229,7 +2229,7 @@ void SV_CreateBaseline(void)
 	int entnum;
 //	int client_num = 1<<(MAX_BASELINES-1);
 
-	for (entnum = 0; entnum < sv.num_edicts; entnum++)
+	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		// get the current server version
 		svent = EDICT_NUM(entnum);
@@ -2268,20 +2268,20 @@ void SV_CreateBaseline(void)
 		//
 		// add to the message
 		//
-		sv.signon.WriteByte(h2svc_spawnbaseline);
-		sv.signon.WriteShort(entnum);
+		sv.qh_signon.WriteByte(h2svc_spawnbaseline);
+		sv.qh_signon.WriteShort(entnum);
 
-		sv.signon.WriteShort(svent->h2_baseline.modelindex);
-		sv.signon.WriteByte(svent->h2_baseline.frame);
-		sv.signon.WriteByte(svent->h2_baseline.colormap);
-		sv.signon.WriteByte(svent->h2_baseline.skinnum);
-		sv.signon.WriteByte(svent->h2_baseline.scale);
-		sv.signon.WriteByte(svent->h2_baseline.drawflags);
-		sv.signon.WriteByte(svent->h2_baseline.abslight);
+		sv.qh_signon.WriteShort(svent->h2_baseline.modelindex);
+		sv.qh_signon.WriteByte(svent->h2_baseline.frame);
+		sv.qh_signon.WriteByte(svent->h2_baseline.colormap);
+		sv.qh_signon.WriteByte(svent->h2_baseline.skinnum);
+		sv.qh_signon.WriteByte(svent->h2_baseline.scale);
+		sv.qh_signon.WriteByte(svent->h2_baseline.drawflags);
+		sv.qh_signon.WriteByte(svent->h2_baseline.abslight);
 		for (i = 0; i < 3; i++)
 		{
-			sv.signon.WriteCoord(svent->h2_baseline.origin[i]);
-			sv.signon.WriteAngle(svent->h2_baseline.angles[i]);
+			sv.qh_signon.WriteCoord(svent->h2_baseline.origin[i]);
+			sv.qh_signon.WriteAngle(svent->h2_baseline.angles[i]);
 		}
 	}
 }
@@ -2413,7 +2413,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	String::Cpy(sv.name, server);
 	if (startspot)
 	{
-		String::Cpy(sv.startspot, startspot);
+		String::Cpy(sv.h2_startspot, startspot);
 	}
 
 // load progs to get entity field count
@@ -2430,23 +2430,24 @@ void SV_SpawnServer(char* server, char* startspot)
 	SCR_UpdateScreen();
 
 // allocate server memory
-	Com_Memset(sv.Effects,0,sizeof(sv.Effects));
+	Com_Memset(sv.h2_Effects,0,sizeof(sv.h2_Effects));
 
-	sv.states = (client_state2_t*)Hunk_AllocName(svs.maxclients * sizeof(client_state2_t), "states");
-	Com_Memset(sv.states,0,svs.maxclients * sizeof(client_state2_t));
+	sv.h2_states = (h2client_state2_t*)Hunk_AllocName(svs.maxclients * sizeof(h2client_state2_t), "states");
+	Com_Memset(sv.h2_states,0,svs.maxclients * sizeof(h2client_state2_t));
 
-	sv.max_edicts = MAX_EDICTS_H2;
+	sv.qh_max_edicts = MAX_EDICTS_H2;
 
-	sv.edicts = (qhedict_t*)Hunk_AllocName(sv.max_edicts * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(sv.qh_max_edicts * pr_edict_size, "edicts");
 
-	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
+	//JL WTF????
+	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_MSGLEN_H2);
 
-	sv.reliable_datagram.InitOOB(sv.reliable_datagram_buf, sizeof(sv.reliable_datagram_buf));
+	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_MSGLEN_H2);
 
-	sv.signon.InitOOB(sv.signon_buf, sizeof(sv.signon_buf));
+	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_H2);
 
 // leave slots at start for clients only
-	sv.num_edicts = svs.maxclients + 1 + max_temp_edicts->value;
+	sv.qh_num_edicts = svs.maxclients + 1 + max_temp_edicts->value;
 	for (i = 0; i < svs.maxclients; i++)
 	{
 		ent = EDICT_NUM(i + 1);
@@ -2464,14 +2465,14 @@ void SV_SpawnServer(char* server, char* startspot)
 	}
 
 	sv.state = SS_LOADING;
-	sv.paused = false;
+	sv.qh_paused = false;
 
-	sv.time = 1.0;
+	sv.qh_time = 1.0;
 
 	String::Cpy(sv.name, server);
-	sprintf(sv.modelname,"maps/%s.bsp", server);
+	sprintf(sv.qh_modelname,"maps/%s.bsp", server);
 
-	CM_LoadMap(sv.modelname, false, NULL);
+	CM_LoadMap(sv.qh_modelname, false, NULL);
 	sv.models[1] = 0;
 
 //
@@ -2479,13 +2480,13 @@ void SV_SpawnServer(char* server, char* startspot)
 //
 	SV_ClearWorld();
 
-	sv.sound_precache[0] = PR_GetString(0);
+	sv.qh_sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = PR_GetString(0);
-	sv.model_precache[1] = sv.modelname;
+	sv.qh_model_precache[0] = PR_GetString(0);
+	sv.qh_model_precache[1] = sv.qh_modelname;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.model_precache[1 + i] = localmodels[i];
+		sv.qh_model_precache[1 + i] = localmodels[i];
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
@@ -2495,7 +2496,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->SetModel(PR_SetString(sv.modelname));
+	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
 	ent->SetSolid(SOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
@@ -2512,7 +2513,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	pr_global_struct->randomclass = randomclass->value;
 
 	pr_global_struct->mapname = PR_SetString(sv.name);
-	pr_global_struct->startspot = PR_SetString(sv.startspot);
+	pr_global_struct->startspot = PR_SetString(sv.h2_startspot);
 
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;

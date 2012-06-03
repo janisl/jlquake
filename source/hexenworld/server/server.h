@@ -6,62 +6,6 @@
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
-#define MAX_SIGNON_BUFFERS  8
-
-struct server_t : server_common_t
-{
-
-	double time;
-
-	int lastcheck;					// used by PF_checkclient
-	double lastchecktime;			// for monster ai
-	double next_PIV_time;			// Last Player In View time
-
-	char name[64];					// map name
-	char midi_name[128];			// midi file name
-	byte cd_track;					// cd track number
-	int current_skill;
-
-	char startspot[64];
-	char modelname[MAX_QPATH];				// maps/<name>.bsp, for model_precache[0]
-	const char* model_precache[MAX_MODELS_H2];	// NULL terminated
-	const char* sound_precache[MAX_SOUNDS_HW];	// NULL terminated
-	const char* lightstyles[MAX_LIGHTSTYLES_H2];
-	clipHandle_t models[MAX_MODELS_H2];
-
-	struct h2EffectT Effects[MAX_EFFECTS_H2];
-
-	int num_edicts;					// increases towards MAX_EDICTS_H2
-	qhedict_t* edicts;					// can NOT be array indexed, because
-	// qhedict_t is variable sized, but can
-	// be used to reference the world ent
-
-	// added to every client's unreliable buffer each frame, then cleared
-	QMsg datagram;
-	byte datagram_buf[MAX_DATAGRAM_HW];
-
-	// added to every client's reliable buffer each frame, then cleared
-	QMsg reliable_datagram;
-	byte reliable_datagram_buf[MAX_MSGLEN_HW];
-
-	// the multicast buffer is used to send a message to a set of clients
-	QMsg multicast;
-	byte multicast_buf[MAX_MSGLEN_HW];
-
-	// the master buffer is used for building log packets
-	QMsg master;
-	byte master_buf[MAX_DATAGRAM_HW];
-
-	// the signon buffer will be sent to each client as they connect
-	// includes the entity baselines, the static entities, etc
-	// large levels will have >MAX_DATAGRAM_HW sized signons, so
-	// multiple signon messages are kept
-	QMsg signon;
-	int num_signon_buffers;
-	int signon_buffer_size[MAX_SIGNON_BUFFERS];
-	byte signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_HW];
-};
-
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting
 // timing out if no valid messages are received for timeout.value seconds

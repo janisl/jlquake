@@ -609,7 +609,7 @@ void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 		{
 			sc1 |= SC1_DEXTERITY;
 		}
-		if (ent->GetTeleportTime() > sv.time)
+		if (ent->GetTeleportTime() > sv.qh_time)
 		{
 //			Con_Printf ("Teleport_time>time, sending bit\n");
 			sc1 |= SC1_TELEPORT_TIME;
@@ -1490,7 +1490,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & HWPF_MSEC)
 		{
-			msec = 1000 * (sv.time - cl->qh_localtime);
+			msec = 1000 * (sv.qh_time - cl->qh_localtime);
 			if (msec > 255)
 			{
 				msec = 255;
@@ -1606,7 +1606,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	numravens = 0;
 	numraven2s = 0;
 
-	for (e = HWMAX_CLIENTS + 1, ent = EDICT_NUM(e); e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	for (e = HWMAX_CLIENTS + 1, ent = EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))

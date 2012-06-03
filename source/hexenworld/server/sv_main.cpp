@@ -258,7 +258,7 @@ void SV_DropClient(client_t* drop)
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
 // send notification to all remaining clients
-	SV_FullClientUpdate(drop, &sv.reliable_datagram);
+	SV_FullClientUpdate(drop, &sv.qh_reliable_datagram);
 }
 
 
@@ -335,7 +335,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 		buf->WriteByte(pr_global_struct->attLosses);
 
 		buf->WriteByte(h2svc_time);	//send server time upon connection
-		buf->WriteFloat(sv.time);
+		buf->WriteFloat(sv.qh_time);
 	}
 
 	buf->WriteByte(hwsvc_updateping);
@@ -1239,7 +1239,7 @@ void SV_Frame(float time)
 
 // decide the simulation time
 		realtime += time;
-		sv.time += time;
+		sv.qh_time += time;
 
 		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
 		{

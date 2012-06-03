@@ -55,11 +55,4 @@ typedef struct
 	int ofsEnd;
 } tagHeader_t;
 
-typedef struct
-{
-	char filename[MAX_QPATH];
-	int start;
-	int count;
-} tagHeaderExt_t;
-
 #endif

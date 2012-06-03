@@ -508,15 +508,15 @@ void Host_Savegame_f(void)
 		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
 	FS_Printf(f, "%d\n", current_skill);
 	FS_Printf(f, "%s\n", sv.name);
-	FS_Printf(f, "%f\n",sv.time);
+	FS_Printf(f, "%f\n",sv.qh_time);
 
 // write the light styles
 
 	for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
-		if (sv.lightstyles[i])
+		if (sv.qh_lightstyles[i])
 		{
-			FS_Printf(f, "%s\n", sv.lightstyles[i]);
+			FS_Printf(f, "%s\n", sv.qh_lightstyles[i]);
 		}
 		else
 		{
@@ -526,7 +526,7 @@ void Host_Savegame_f(void)
 
 
 	ED_WriteGlobals(f);
-	for (i = 0; i < sv.num_edicts; i++)
+	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
 		ED_Write(f, EDICT_NUM(i));
 		FS_Flush(f);
@@ -629,7 +629,7 @@ void Host_Loadgame_f(void)
 		Con_Printf("Couldn't load map\n");
 		return;
 	}
-	sv.paused = true;		// pause until all clients connect
+	sv.qh_paused = true;		// pause until all clients connect
 	sv.loadgame = true;
 
 	// load the light styles
@@ -639,7 +639,7 @@ void Host_Loadgame_f(void)
 		char* Style = GetLine(ReadPos);
 		char* Tmp = (char*)Hunk_Alloc(String::Length(Style) + 1);
 		String::Cpy(Tmp, Style);
-		sv.lightstyles[i] = Tmp;
+		sv.qh_lightstyles[i] = Tmp;
 	}
 
 	// load the edicts out of the savegame file
@@ -679,8 +679,8 @@ void Host_Loadgame_f(void)
 		entnum++;
 	}
 
-	sv.num_edicts = entnum;
-	sv.time = time;
+	sv.qh_num_edicts = entnum;
+	sv.qh_time = time;
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		svs.clients->qh_spawn_parms[i] = spawn_parms[i];
@@ -744,9 +744,9 @@ void Host_Name_f(void)
 
 // send notification to all clients
 
-	sv.reliable_datagram.WriteByte(q1svc_updatename);
-	sv.reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.reliable_datagram.WriteString2(host_client->name);
+	sv.qh_reliable_datagram.WriteByte(q1svc_updatename);
+	sv.qh_reliable_datagram.WriteByte(host_client - svs.clients);
+	sv.qh_reliable_datagram.WriteString2(host_client->name);
 }
 
 
@@ -1021,9 +1021,9 @@ void Host_Color_f(void)
 	host_client->qh_edict->SetTeam(bottom + 1);
 
 // send notification to all clients
-	sv.reliable_datagram.WriteByte(q1svc_updatecolors);
-	sv.reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.reliable_datagram.WriteByte(host_client->qh_colors);
+	sv.qh_reliable_datagram.WriteByte(q1svc_updatecolors);
+	sv.qh_reliable_datagram.WriteByte(host_client - svs.clients);
+	sv.qh_reliable_datagram.WriteByte(host_client->qh_colors);
 }
 
 /*
@@ -1045,7 +1045,7 @@ void Host_Kill_f(void)
 		return;
 	}
 
-	pr_global_struct->time = sv.time;
+	pr_global_struct->time = sv.qh_time;
 	pr_global_struct->self = EDICT_TO_PROG(sv_player);
 	PR_ExecuteProgram(pr_global_struct->ClientKill);
 }
@@ -1070,9 +1070,9 @@ void Host_Pause_f(void)
 	}
 	else
 	{
-		sv.paused ^= 1;
+		sv.qh_paused ^= 1;
 
-		if (sv.paused)
+		if (sv.qh_paused)
 		{
 			SV_BroadcastPrintf("%s paused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
@@ -1082,8 +1082,8 @@ void Host_Pause_f(void)
 		}
 
 		// send notification to all clients
-		sv.reliable_datagram.WriteByte(q1svc_setpause);
-		sv.reliable_datagram.WriteByte(sv.paused);
+		sv.qh_reliable_datagram.WriteByte(q1svc_setpause);
+		sv.qh_reliable_datagram.WriteByte(sv.qh_paused);
 	}
 }
 
@@ -1109,7 +1109,7 @@ void Host_PreSpawn_f(void)
 		return;
 	}
 
-	host_client->qh_message.WriteData(sv.signon._data, sv.signon.cursize);
+	host_client->qh_message.WriteData(sv.qh_signon._data, sv.qh_signon.cursize);
 	host_client->qh_message.WriteByte(q1svc_signonnum);
 	host_client->qh_message.WriteByte(2);
 	host_client->qh_sendsignon = true;
@@ -1142,7 +1142,7 @@ void Host_Spawn_f(void)
 	if (sv.loadgame)
 	{	// loaded games are fully inited allready
 		// if this is the last client to be connected, unpause
-		sv.paused = false;
+		sv.qh_paused = false;
 	}
 	else
 	{
@@ -1161,11 +1161,11 @@ void Host_Spawn_f(void)
 
 		// call the spawn function
 
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->ClientConnect);
 
-		if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.time)
+		if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
 		{
 			Con_Printf("%s entered the game\n", host_client->name);
 		}
@@ -1179,7 +1179,7 @@ void Host_Spawn_f(void)
 
 // send time of update
 	host_client->qh_message.WriteByte(q1svc_time);
-	host_client->qh_message.WriteFloat(sv.time);
+	host_client->qh_message.WriteFloat(sv.qh_time);
 
 	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
@@ -1199,7 +1199,7 @@ void Host_Spawn_f(void)
 	{
 		host_client->qh_message.WriteByte(q1svc_lightstyle);
 		host_client->qh_message.WriteByte((char)i);
-		host_client->qh_message.WriteString2(sv.lightstyles[i]);
+		host_client->qh_message.WriteString2(sv.qh_lightstyles[i]);
 	}
 
 //
@@ -1571,7 +1571,7 @@ qhedict_t* FindViewthing(void)
 	int i;
 	qhedict_t* e;
 
-	for (i = 0; i < sv.num_edicts; i++)
+	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "viewthing"))

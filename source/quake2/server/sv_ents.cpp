@@ -200,7 +200,7 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 
 		if (newnum < oldnum)
 		{	// this is a new entity, send it from the baseline
-			MSGQ2_WriteDeltaEntity(&sv.baselines[newnum], newent, msg, true, true);
+			MSGQ2_WriteDeltaEntity(&sv.q2_baselines[newnum], newent, msg, true, true);
 			newindex++;
 			continue;
 		}
@@ -497,14 +497,14 @@ void SV_WriteFrameToClient(client_t* client, QMsg* msg)
 
 //Com_Printf ("%i -> %i\n", client->lastframe, sv.framenum);
 	// this is the frame we are creating
-	frame = &client->q2_frames[sv.framenum & UPDATE_MASK_Q2];
+	frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
 	if (client->q2_lastframe <= 0)
 	{	// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = -1;
 	}
-	else if (sv.framenum - client->q2_lastframe >= (UPDATE_BACKUP_Q2 - 3))
+	else if (sv.q2_framenum - client->q2_lastframe >= (UPDATE_BACKUP_Q2 - 3))
 	{	// client hasn't gotten a good message through in a long time
 //		Com_Printf ("%s: Delta request from out-of-date packet.\n", client->name);
 		oldframe = NULL;
@@ -517,7 +517,7 @@ void SV_WriteFrameToClient(client_t* client, QMsg* msg)
 	}
 
 	msg->WriteByte(q2svc_frame);
-	msg->WriteLong(sv.framenum);
+	msg->WriteLong(sv.q2_framenum);
 	msg->WriteLong(lastframe);	// what we are delta'ing from
 	msg->WriteByte(client->q2_surpressCount);	// rate dropped packets
 	client->q2_surpressCount = 0;
@@ -631,7 +631,7 @@ void SV_BuildClientFrame(client_t* client)
 #endif
 
 	// this is the frame we are creating
-	frame = &client->q2_frames[sv.framenum & UPDATE_MASK_Q2];
+	frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
 	frame->senttime = svs.realtime;	// save it for ping calc later
 
@@ -806,7 +806,7 @@ void SV_RecordDemoMessage(void)
 
 	// write a frame message that doesn't contain a q2player_state_t
 	buf.WriteByte(q2svc_frame);
-	buf.WriteLong(sv.framenum);
+	buf.WriteLong(sv.q2_framenum);
 
 	buf.WriteByte(q2svc_packetentities);
 

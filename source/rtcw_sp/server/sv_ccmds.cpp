@@ -347,7 +347,7 @@ static void SV_MapRestart_f(void)
 	int delay;
 
 	// make sure we aren't restarting twice in the same frame
-	if (com_frameTime == sv.serverId)
+	if (com_frameTime == sv.q3_serverId)
 	{
 		return;
 	}
@@ -359,7 +359,7 @@ static void SV_MapRestart_f(void)
 		return;
 	}
 
-	if (sv.restartTime)
+	if (sv.q3_restartTime)
 	{
 		return;
 	}
@@ -381,8 +381,8 @@ static void SV_MapRestart_f(void)
 	}
 	if (delay && !Cvar_VariableValue("g_doWarmup"))
 	{
-		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.restartTime));
+		sv.q3_restartTime = svs.time + delay * 1000;
+		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
 
@@ -435,15 +435,15 @@ static void SV_MapRestart_f(void)
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
 	// generate a new serverid
-	sv.restartedServerId = sv.serverId;
-	sv.serverId = com_frameTime;
-	Cvar_Set("sv_serverid", va("%i", sv.serverId));
+	sv.q3_restartedServerId = sv.q3_serverId;
+	sv.q3_serverId = com_frameTime;
+	Cvar_Set("sv_serverid", va("%i", sv.q3_serverId));
 
 	// reset all the vm data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
-	sv.restarting = qtrue;
+	sv.q3_restarting = qtrue;
 
 	SV_RestartGameProgs();
 
@@ -455,7 +455,7 @@ static void SV_MapRestart_f(void)
 	}
 
 	sv.state = SS_GAME;
-	sv.restarting = qfalse;
+	sv.q3_restarting = qfalse;
 
 	// connect and begin all the clients
 	for (i = 0; i < sv_maxclients->integer; i++)
@@ -558,7 +558,7 @@ void    SV_LoadGame_f(void)
 	// read the mapname, if it is the same as the current map, then do a fast load
 	String::Sprintf(mapname, sizeof(mapname), (const char*)(buffer + sizeof(int)));
 
-	if (com_sv_running->integer && (com_frameTime != sv.serverId))
+	if (com_sv_running->integer && (com_frameTime != sv.q3_serverId))
 	{
 		// check mapname
 		if (!String::ICmp(mapname, sv_mapname->string))			// same

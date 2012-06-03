@@ -101,3 +101,22 @@ struct q3sharedEntity_t
 	q3entityState_t s;				// communicated by server to clients
 	q3entityShared_t r;				// shared by both the server system and game
 };
+
+#define MAX_ENT_CLUSTERS_Q3    16
+
+struct q3svEntity_t
+{
+	struct worldSector_s* worldSector;
+	q3svEntity_t* nextEntityInWorldSector;
+
+	q3entityState_t q3_baseline;	// for delta compression of initial sighting
+	wsentityState_t ws_baseline;	// for delta compression of initial sighting
+	wmentityState_t wm_baseline;	// for delta compression of initial sighting
+	etentityState_t et_baseline;	// for delta compression of initial sighting
+	int numClusters;				// if -1, use headnode instead
+	int clusternums[MAX_ENT_CLUSTERS_Q3];
+	int lastCluster;				// if all the clusters don't fit in clusternums
+	int areanum, areanum2;
+	int snapshotCounter;			// used to prevent double adding from portal views
+	int originCluster;				// Gordon: calced upon linking, for origin only bmodel vis checks
+};

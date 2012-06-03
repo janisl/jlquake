@@ -30,7 +30,7 @@ qboolean SV_CheckBottom(qhedict_t* ent)
 	VectorAdd(ent->GetOrigin(), ent->GetMaxs(), maxs);
 
 /*/ / Make it use the clipping hull 's size, not their bounding box...
-	model = sv.models[ (int)sv.edicts->v.modelindex ];
+	model = sv.models[ (int)sv.qh_edicts->v.modelindex ];
 	VectorSubtract (ent->v.maxs, ent->v.mins, size);
 	if(ent->v.hull)
 	{
@@ -212,7 +212,7 @@ void set_move_trace(q1trace_t* trace)
 	}
 	else
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
+		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.qh_edicts);
 	}
 }
 
@@ -249,7 +249,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 			if (!noenemy)
 			{
 				enemy = PROG_TO_EDICT(ent->GetEnemy());
-				if (i == 0 && enemy != sv.edicts)
+				if (i == 0 && enemy != sv.qh_edicts)
 				{
 					if ((int)ent->GetFlags() & FL_HUNTFACE)	//Go for face
 					{
@@ -304,7 +304,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 				return true;
 			}
 
-			if (noenemy || enemy == sv.edicts)
+			if (noenemy || enemy == sv.qh_edicts)
 			{
 				break;
 			}
@@ -649,7 +649,7 @@ void SV_MoveToGoal(void)
 	}
 
 // if the next step hits the enemy, return immediately
-	if (PROG_TO_EDICT(ent->GetEnemy()) != sv.edicts &&  SV_CloseEnough(ent, goal, dist))
+	if (PROG_TO_EDICT(ent->GetEnemy()) != sv.qh_edicts &&  SV_CloseEnough(ent, goal, dist))
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;

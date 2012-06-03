@@ -229,8 +229,8 @@ void SV_BroadcastCommand(const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	sv.reliable_datagram.WriteByte(h2svc_stufftext);
-	sv.reliable_datagram.WriteString2(string);
+	sv.qh_reliable_datagram.WriteByte(h2svc_stufftext);
+	sv.qh_reliable_datagram.WriteString2(string);
 }
 
 
@@ -469,13 +469,13 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 // find precache number for sound
 	for (sound_num = 1; sound_num < MAX_SOUNDS_HW &&
-		 sv.sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.sound_precache[sound_num]))
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
 		{
 			break;
 		}
 
-	if (sound_num == MAX_SOUNDS_HW || !sv.sound_precache[sound_num])
+	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
 	{
 		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
 		return;
@@ -702,7 +702,7 @@ void SV_FindModelNumbers(void)
 
 	for (i = 0; i < MAX_MODELS_H2; i++)
 	{
-		if (!sv.model_precache[i])
+		if (!sv.qh_model_precache[i])
 		{
 			break;
 		}
@@ -710,35 +710,35 @@ void SV_FindModelNumbers(void)
 //			sv_nailmodel = i;
 //		if (!String::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
 //			sv_supernailmodel = i;
-		if (!String::Cmp(sv.model_precache[i],"models/paladin.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/paladin.mdl"))
 		{
 			sv_playermodel[0] = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/crusader.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/crusader.mdl"))
 		{
 			sv_playermodel[1] = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/necro.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/necro.mdl"))
 		{
 			sv_playermodel[2] = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/assassin.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/assassin.mdl"))
 		{
 			sv_playermodel[3] = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/succubus.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/succubus.mdl"))
 		{
 			sv_playermodel[4] = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/ball.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/ball.mdl"))
 		{
 			sv_magicmissmodel = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/ravproj.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/ravproj.mdl"))
 		{
 			sv_ravenmodel = i;
 		}
-		if (!String::Cmp(sv.model_precache[i],"models/vindsht1.mdl"))
+		if (!String::Cmp(sv.qh_model_precache[i],"models/vindsht1.mdl"))
 		{
 			sv_raven2model = i;
 		}
@@ -998,9 +998,9 @@ void SV_UpdateToReliableMessages(void)
 	qboolean CheckPIV = false;
 
 //	Con_Printf("SV_UpdateToReliableMessages\n");
-	if (sv.time - sv.next_PIV_time >= 1)
+	if (sv.qh_time - sv.hw_next_PIV_time >= 1)
 	{
-		sv.next_PIV_time = sv.time + 1;
+		sv.hw_next_PIV_time = sv.qh_time + 1;
 		CheckPIV = true;
 		UpdatePIV();
 	}
@@ -1015,7 +1015,7 @@ void SV_UpdateToReliableMessages(void)
 		if (host_client->qh_sendinfo)
 		{
 			host_client->qh_sendinfo = false;
-			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
+			SV_FullClientUpdate(host_client, &sv.qh_reliable_datagram);
 		}
 		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
@@ -1071,9 +1071,9 @@ void SV_UpdateToReliableMessages(void)
 
 	}
 
-	if (sv.datagram.overflowed)
+	if (sv.qh_datagram.overflowed)
 	{
-		sv.datagram.Clear();
+		sv.qh_datagram.Clear();
 	}
 
 	// append the broadcast messages to each client messages
@@ -1084,20 +1084,20 @@ void SV_UpdateToReliableMessages(void)
 			continue;	// reliables go to all connected or spawned
 		}
 		client->netchan.message.WriteData(
-			sv.reliable_datagram._data,
-			sv.reliable_datagram.cursize);
+			sv.qh_reliable_datagram._data,
+			sv.qh_reliable_datagram.cursize);
 
 		if (client->state != CS_ACTIVE)
 		{
 			continue;	// datagrams only go to spawned
 		}
 		client->datagram.WriteData(
-			sv.datagram._data,
-			sv.datagram.cursize);
+			sv.qh_datagram._data,
+			sv.qh_datagram.cursize);
 	}
 
-	sv.reliable_datagram.Clear();
-	sv.datagram.Clear();
+	sv.qh_reliable_datagram.Clear();
+	sv.qh_datagram.Clear();
 }
 
 
@@ -1112,8 +1112,8 @@ void SV_CleanupEnts(void)
 	int e;
 	qhedict_t* ent;
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	ent = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		ent->SetEffects((int)ent->GetEffects() & ~H2EF_MUZZLEFLASH);
 		ent->SetWpnSound(0);

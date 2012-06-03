@@ -251,7 +251,7 @@ void SV_TouchLinks(qhedict_t* ent, areanode_t* node)
 
 		pr_global_struct->self = EDICT_TO_PROG(touch);
 		pr_global_struct->other = EDICT_TO_PROG(ent);
-		pr_global_struct->time = sv.time;
+		pr_global_struct->time = sv.qh_time;
 		PR_ExecuteProgram(touch->GetTouch());
 
 		pr_global_struct->self = old_self;
@@ -290,7 +290,7 @@ void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers)
 		SV_UnlinkEdict(ent);	// unlink from old position
 
 	}
-	if (ent == sv.edicts)
+	if (ent == sv.qh_edicts)
 	{
 		return;		// don't add the world
 
@@ -417,7 +417,7 @@ qhedict_t* SV_TestEntityPosition(qhedict_t* ent)
 
 	if (trace.startsolid)
 	{
-		return sv.edicts;
+		return sv.qh_edicts;
 	}
 
 	return NULL;
@@ -627,7 +627,7 @@ q1trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, 
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
 
 // clip to world
-	clip.trace = SV_ClipMoveToEntity(sv.edicts, start, mins, maxs, end);
+	clip.trace = SV_ClipMoveToEntity(sv.qh_edicts, start, mins, maxs, end);
 
 	clip.start = start;
 	clip.end = end;
@@ -679,15 +679,15 @@ qhedict_t* SV_TestPlayerPosition(qhedict_t* ent, vec3_t origin)
 	hull = CM_ModelHull(0, 1);
 	if (CM_PointContentsQ1(origin, hull) != BSP29CONTENTS_EMPTY)
 	{
-		return sv.edicts;
+		return sv.qh_edicts;
 	}
 
 // check all entities
 	VectorAdd(origin, ent->GetMins(), boxmins);
 	VectorAdd(origin, ent->GetMaxs(), boxmaxs);
 
-	check = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = NEXT_EDICT(sv.qh_edicts);
+	for (e = 1; e < sv.qh_num_edicts; e++, check = NEXT_EDICT(check))
 	{
 		if (check->free)
 		{

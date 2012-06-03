@@ -19,6 +19,7 @@
 
 #include "../common/qcommon.h"
 #include "../common/file_formats/bsp38.h"
+#include "../common/file_formats/md3.h"
 #include "link.h"
 #include "progsvm/edict.h"
 #include "quakeserverdefs.h"
