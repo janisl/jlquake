@@ -67,7 +67,7 @@ void SV_New_f(void)
 //	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
 //	host_client->sendinfo = true;
 
-	gamedir = Info_ValueForKey(svs.info, "*gamedir");
+	gamedir = Info_ValueForKey(svs.qh_info, "*gamedir");
 	if (!gamedir[0])
 	{
 		gamedir = "qw";
@@ -116,7 +116,7 @@ void SV_New_f(void)
 
 	// send server info string
 	host_client->netchan.message.WriteByte(q1svc_stufftext);
-	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.info));
+	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.qh_info));
 }
 
 /*
@@ -1206,7 +1206,7 @@ Dumps the serverinfo info string
 */
 void SV_ShowServerinfo_f(void)
 {
-	Info_Print(svs.info);
+	Info_Print(svs.qh_info);
 }
 
 void SV_NoSnap_f(void)

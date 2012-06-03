@@ -189,9 +189,9 @@ void SV_Multicast(vec3_t origin, multicast_t to)
 	}
 
 	// if doing a serverrecord, store everything
-	if (svs.demofile)
+	if (svs.q2_demofile)
 	{
-		svs.demo_multicast.WriteData(sv.multicast._data, sv.multicast.cursize);
+		svs.q2_demo_multicast.WriteData(sv.multicast._data, sv.multicast.cursize);
 	}
 
 	switch (to)

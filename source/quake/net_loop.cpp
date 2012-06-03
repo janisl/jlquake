@@ -71,7 +71,7 @@ void Loop_SearchForHosts(qboolean xmit)
 	}
 	String::Cpy(hostcache[0].map, sv.name);
 	hostcache[0].users = net_activeconnections;
-	hostcache[0].maxusers = svs.maxclients;
+	hostcache[0].maxusers = svs.qh_maxclients;
 	hostcache[0].driver = net_driverlevel;
 	String::Cpy(hostcache[0].cname, "local");
 }

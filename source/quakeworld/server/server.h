@@ -35,53 +35,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #define STATFRAMES  100
-typedef struct
-{
-	double active;
-	double idle;
-	int count;
-	int packets;
-
-	double latched_active;
-	double latched_idle;
-	int latched_packets;
-} svstats_t;
-
-// MAX_CHALLENGES is made large to prevent a denial
-// of service attack that could cycle all of them
-// out before legitimate users connected
-#define MAX_CHALLENGES  1024
-
-typedef struct
-{
-	netadr_t adr;
-	int challenge;
-	int time;
-} challenge_t;
-
-typedef struct
-{
-	int spawncount;					// number of servers spawned since start,
-									// used to check late spawns
-	client_t* clients;
-	int serverflags;				// episode completion information
-
-	double last_heartbeat;
-	int heartbeat_sequence;
-	svstats_t stats;
-
-	char info[MAX_SERVERINFO_STRING];
-
-	// log messages are used so that fraglog processes can get stats
-	int logsequence;			// the message currently being filled
-	double logtime;				// time of last swap
-	QMsg log[2];
-	byte log_buf[2][MAX_DATAGRAM_QW];
-
-	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
-} serverStatic_t;
-
-//=============================================================================
 
 // edict->solid values
 #define SOLID_NOT               0		// no interaction with other objects

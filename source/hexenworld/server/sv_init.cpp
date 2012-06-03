@@ -159,7 +159,7 @@ void SV_SaveSpawnparms(void)
 
 	}
 	// serverflags is the only game related thing maintained
-	svs.serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = pr_global_struct->serverflags;
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
@@ -319,7 +319,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	pr_global_struct->mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.serverflags;
+	pr_global_struct->serverflags = svs.qh_serverflags;
 
 	// run the frame start qc function to let progs check cvars
 	SV_ProgStartFrame();
@@ -346,8 +346,8 @@ void SV_SpawnServer(char* server, char* startspot)
 	SV_CreateBaseline();
 	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
 
-	Info_SetValueForKey(svs.info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	Con_DPrintf("Server spawned.\n");
 
-	svs.changelevel_issued = false;		// now safe to issue another
+	svs.qh_changelevel_issued = false;		// now safe to issue another
 }

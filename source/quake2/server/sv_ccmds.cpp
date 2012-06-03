@@ -76,7 +76,7 @@ void SV_SetMaster_f(void)
 		slot++;
 	}
 
-	svs.last_heartbeat = -9999999;
+	svs.q2_last_heartbeat = -9999999;
 }
 
 
@@ -327,7 +327,7 @@ void SV_WriteServerFile(qboolean autosave)
 	FS_Write(comment, sizeof(comment), f);
 
 	// write the mapcmd
-	FS_Write(svs.mapcmd, sizeof(svs.mapcmd), f);
+	FS_Write(svs.q2_mapcmd, sizeof(svs.q2_mapcmd), f);
 
 	// write all CVAR_LATCH cvars
 	// these will be things like coop, skill, deathmatch, etc
@@ -403,7 +403,7 @@ void SV_ReadServerFile(void)
 	// start a new game fresh with new cvars
 	SV_InitGame();
 
-	String::Cpy(svs.mapcmd, mapcmd);
+	String::Cpy(svs.q2_mapcmd, mapcmd);
 
 	// read game state
 	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
@@ -495,7 +495,7 @@ void SV_GameMap_f(void)
 	SV_Map(false, Cmd_Argv(1), false);
 
 	// archive server state
-	String::NCpy(svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd) - 1);
+	String::NCpy(svs.q2_mapcmd, Cmd_Argv(1), sizeof(svs.q2_mapcmd) - 1);
 
 	// copy off the level to the autosave slot
 	if (!com_dedicated->value)
@@ -586,7 +586,7 @@ void SV_Loadgame_f(void)
 
 	// go to the map
 	sv.state = SS_DEAD;		// don't save current level when changing
-	SV_Map(false, svs.mapcmd, true);
+	SV_Map(false, svs.q2_mapcmd, true);
 }
 
 
@@ -686,7 +686,7 @@ void SV_Kick_f(void)
 	// SV_BroadcastPrintf message
 	SV_ClientPrintf(sv_client, PRINT_HIGH, "You were kicked from the game\n");
 	SV_DropClient(sv_client);
-	sv_client->q2_lastmessage = svs.realtime;	// min case there is a funny zombie
+	sv_client->q2_lastmessage = svs.q2_realtime;	// min case there is a funny zombie
 }
 
 
@@ -738,7 +738,7 @@ void SV_Status_f(void)
 		for (j = 0; j < l; j++)
 			Com_Printf(" ");
 
-		Com_Printf("%7i ", svs.realtime - cl->q2_lastmessage);
+		Com_Printf("%7i ", svs.q2_realtime - cl->q2_lastmessage);
 
 		s = SOCK_AdrToString(cl->netchan.remoteAddress);
 		Com_Printf("%s", s);
@@ -799,7 +799,7 @@ SV_Heartbeat_f
 */
 void SV_Heartbeat_f(void)
 {
-	svs.last_heartbeat = -9999999;
+	svs.q2_last_heartbeat = -9999999;
 }
 
 
@@ -867,7 +867,7 @@ void SV_ServerRecord_f(void)
 		return;
 	}
 
-	if (svs.demofile)
+	if (svs.q2_demofile)
 	{
 		Com_Printf("Already recording.\n");
 		return;
@@ -885,15 +885,15 @@ void SV_ServerRecord_f(void)
 	String::Sprintf(name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf("recording to %s.\n", name);
-	svs.demofile = FS_FOpenFileWrite(name);
-	if (!svs.demofile)
+	svs.q2_demofile = FS_FOpenFileWrite(name);
+	if (!svs.q2_demofile)
 	{
 		Com_Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
 	// setup a buffer to catch all multicasts
-	svs.demo_multicast.InitOOB(svs.demo_multicast_buf, sizeof(svs.demo_multicast_buf));
+	svs.q2_demo_multicast.InitOOB(svs.q2_demo_multicast_buf, sizeof(svs.q2_demo_multicast_buf));
 
 	//
 	// write a single giant fake message with all the startup info
@@ -926,8 +926,8 @@ void SV_ServerRecord_f(void)
 	// write it to the demo file
 	Com_DPrintf("signon message length: %i\n", buf.cursize);
 	len = LittleLong(buf.cursize);
-	FS_Write(&len, 4, svs.demofile);
-	FS_Write(buf._data, buf.cursize, svs.demofile);
+	FS_Write(&len, 4, svs.q2_demofile);
+	FS_Write(buf._data, buf.cursize, svs.q2_demofile);
 
 	// the rest of the demo file will be individual frames
 }
@@ -942,13 +942,13 @@ Ends server demo recording
 */
 void SV_ServerStop_f(void)
 {
-	if (!svs.demofile)
+	if (!svs.q2_demofile)
 	{
 		Com_Printf("Not doing a serverrecord.\n");
 		return;
 	}
-	FS_FCloseFile(svs.demofile);
-	svs.demofile = 0;
+	FS_FCloseFile(svs.q2_demofile);
+	svs.q2_demofile = 0;
 	Com_Printf("Recording completed.\n");
 }
 

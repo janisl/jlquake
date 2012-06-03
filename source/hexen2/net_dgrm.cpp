@@ -902,7 +902,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
-		net_message.WriteByte(svs.maxclients);
+		net_message.WriteByte(svs.qh_maxclients);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
@@ -919,7 +919,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 
 		playerNumber = net_message.ReadByte();
 		activeNumber = -1;
-		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
+		for (clientNumber = 0, client = svs.clients; clientNumber < svs.qh_maxclients; clientNumber++, client++)
 		{
 			if (client->state >= CS_CONNECTED)
 			{
@@ -930,7 +930,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 				}
 			}
 		}
-		if (clientNumber == svs.maxclients)
+		if (clientNumber == svs.qh_maxclients)
 		{
 			return NULL;
 		}
@@ -1046,7 +1046,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 
 	// see if this guy is already connected
 	client_t* client = svs.clients;
-	for (int i = 0; i < svs.maxclients; i++, client++)
+	for (int i = 0; i < svs.qh_maxclients; i++, client++)
 	{
 		if (!client->qh_netconnection)
 		{

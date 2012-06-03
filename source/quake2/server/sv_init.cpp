@@ -205,7 +205,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 
 	// wipe the entire per-level structure
 	Com_Memset(&sv, 0, sizeof(sv));
-	svs.realtime = 0;
+	svs.q2_realtime = 0;
 	sv.loadgame = loadgame;
 	sv.q2_attractloop = attractloop;
 
@@ -372,14 +372,14 @@ void SV_InitGame(void)
 
 	svs.spawncount = rand();
 	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * maxclients->value);
-	svs.num_client_entities = maxclients->value * UPDATE_BACKUP_Q2 * 64;
-	svs.client_entities = (q2entity_state_t*)Z_Malloc(sizeof(q2entity_state_t) * svs.num_client_entities);
+	svs.q2_num_client_entities = maxclients->value * UPDATE_BACKUP_Q2 * 64;
+	svs.q2_client_entities = (q2entity_state_t*)Z_Malloc(sizeof(q2entity_state_t) * svs.q2_num_client_entities);
 
 	// init network stuff
 	NET_Config((maxclients->value > 1));
 
 	// heartbeats will always be sent to the id master
-	svs.last_heartbeat = -99999;		// send immediately
+	svs.q2_last_heartbeat = -99999;		// send immediately
 	SOCK_StringToAdr("192.246.40.37", &master_adr[0], PORT_MASTER);
 
 	// init game

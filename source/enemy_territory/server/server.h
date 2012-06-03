@@ -38,67 +38,12 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-
-// MAX_CHALLENGES is made large to prevent a denial
-// of service attack that could cycle all of them
-// out before legitimate users connected
-#define MAX_CHALLENGES  1024
-
 #define AUTHORIZE_TIMEOUT   5000
-
-typedef struct
-{
-	netadr_t adr;
-	int challenge;
-	int time;						// time the last packet was sent to the autherize server
-	int pingTime;					// time the challenge response was sent to client
-	int firstTime;					// time the adr was first used, for authorize timeout checks
-	int firstPing;					// Used for min and max ping checks
-	qboolean connected;
-} challenge_t;
-
-typedef struct tempBan_s
-{
-	netadr_t adr;
-	int endtime;
-} tempBan_t;
 
 
 #define MAX_MASTERS                         8				// max recipients for heartbeat packets
-#define MAX_TEMPBAN_ADDRESSES               MAX_CLIENTS_ET
 
 #define SERVER_PERFORMANCECOUNTER_FRAMES    600
-#define SERVER_PERFORMANCECOUNTER_SAMPLES   6
-
-// this structure will be cleared only when the game dll changes
-typedef struct
-{
-	qboolean initialized;					// sv_init has completed
-
-	int time;								// will be strictly increasing across level changes
-
-	int snapFlagServerBit;					// ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
-
-	client_t* clients;						// [sv_maxclients->integer];
-	int numSnapshotEntities;				// sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
-	int nextSnapshotEntities;				// next snapshotEntities to use
-	etentityState_t* snapshotEntities;			// [numSnapshotEntities]
-	int nextHeartbeatTime;
-	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
-	netadr_t redirectAddress;				// for rcon return messages
-	tempBan_t tempBanAddresses[MAX_TEMPBAN_ADDRESSES];
-
-#ifdef AUTHORIZE_SUPPORT
-	netadr_t authorizeAddress;
-#endif	// AUTHORIZE_SUPPORT
-
-	int sampleTimes[SERVER_PERFORMANCECOUNTER_SAMPLES];
-	int currentSampleIndex;
-	int totalFrameTime;
-	int currentFrameIndex;
-	int serverLoad;
-} serverStatic_t;
-
 
 //=============================================================================
 

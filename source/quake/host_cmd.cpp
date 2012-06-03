@@ -78,8 +78,8 @@ void Host_Status_f(void)
 	print("version: %4.2f\n", VERSION);
 	SOCK_ShowIP();
 	print("map:     %s\n", sv.name);
-	print("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients);
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	print("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -238,7 +238,7 @@ void Host_Ping_f(void)
 	}
 
 	SV_ClientPrintf("Client ping times:\n");
-	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -288,7 +288,7 @@ void Host_Map_f(void)
 	in_keyCatchers = 0;			// remove console or menu
 	SCR_BeginLoadingPlaque();
 
-	svs.serverflags = 0;			// haven't completed an episode yet
+	svs.qh_serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
 	SV_SpawnServer(name);
 	if (sv.state == SS_DEAD)
@@ -463,7 +463,7 @@ void Host_Savegame_f(void)
 		return;
 	}
 
-	if (svs.maxclients != 1)
+	if (svs.qh_maxclients != 1)
 	{
 		Con_Printf("Can't save multiplayer games.\n");
 		return;
@@ -481,7 +481,7 @@ void Host_Savegame_f(void)
 		return;
 	}
 
-	for (i = 0; i < svs.maxclients; i++)
+	for (i = 0; i < svs.qh_maxclients; i++)
 	{
 		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
 		{
@@ -770,7 +770,7 @@ void Host_Please_f(void)
 	if ((Cmd_Argc() == 3) && String::Cmp(Cmd_Argv(1), "#") == 0)
 	{
 		j = String::Atof(Cmd_Argv(2)) - 1;
-		if (j < 0 || j >= svs.maxclients)
+		if (j < 0 || j >= svs.qh_maxclients)
 		{
 			return;
 		}
@@ -796,7 +796,7 @@ void Host_Please_f(void)
 		return;
 	}
 
-	for (j = 0, cl = svs.clients; j < svs.maxclients; j++, cl++)
+	for (j = 0, cl = svs.clients; j < svs.qh_maxclients; j++, cl++)
 	{
 		if (!cl->active)
 		{
@@ -878,7 +878,7 @@ void Host_Say(qboolean teamonly)
 	String::Cat(text, sizeof(text), p);
 	String::Cat(text, sizeof(text), "\n");
 
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -949,7 +949,7 @@ void Host_Tell_f(void)
 	String::Cat(text, sizeof(text), "\n");
 
 	save = host_client;
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -1181,7 +1181,7 @@ void Host_Spawn_f(void)
 	host_client->qh_message.WriteByte(q1svc_time);
 	host_client->qh_message.WriteFloat(sv.qh_time);
 
-	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
 		host_client->qh_message.WriteByte(q1svc_updatename);
 		host_client->qh_message.WriteByte(i);
@@ -1293,7 +1293,7 @@ void Host_Kick_f(void)
 	if (Cmd_Argc() > 2 && String::Cmp(Cmd_Argv(1), "#") == 0)
 	{
 		i = String::Atof(Cmd_Argv(2)) - 1;
-		if (i < 0 || i >= svs.maxclients)
+		if (i < 0 || i >= svs.qh_maxclients)
 		{
 			return;
 		}
@@ -1306,7 +1306,7 @@ void Host_Kick_f(void)
 	}
 	else
 	{
-		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+		for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		{
 			if (host_client->state < CS_CONNECTED)
 			{
@@ -1319,7 +1319,7 @@ void Host_Kick_f(void)
 		}
 	}
 
-	if (i < svs.maxclients)
+	if (i < svs.qh_maxclients)
 	{
 		if (cmd_source == src_command)
 		{

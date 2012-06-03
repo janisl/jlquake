@@ -201,10 +201,10 @@ struct client_t
 	char q3_lastClientCommandString[MAX_STRING_CHARS];
 
 	int q3_deltaMessage;				// frame last client usercmd message
-	int q3_nextReliableTime;			// svs.time when another reliable command will be allowed
-	int q3_lastPacketTime;				// svs.time when packet was last received
-	int q3_lastConnectTime;				// svs.time when connection started
-	int q3_nextSnapshotTime;			// send another snapshot when svs.time >= nextSnapshotTime
+	int q3_nextReliableTime;			// svs.q3_time when another reliable command will be allowed
+	int q3_lastPacketTime;				// svs.q3_time when packet was last received
+	int q3_lastConnectTime;				// svs.q3_time when connection started
+	int q3_nextSnapshotTime;			// send another snapshot when svs.q3_time >= nextSnapshotTime
 	bool q3_rateDelayed;				// true if nextSnapshotTime was set based on rate instead of snapshotMsec
 	int q3_timeoutCount;				// must timeout a few frames in a row so debugging doesn't break
 	q3clientSnapshot_t q3_frames[PACKET_BACKUP_Q3];	// updates can be delta'd from here
@@ -361,7 +361,7 @@ struct server_t
 	wsplayerState_t* ws_gameClients;
 	wmplayerState_t* wm_gameClients;
 	etplayerState_t* et_gameClients;
-	int q3_gameClientSize;					// will be > sizeof(q3playerState_t) due to game private data
+	int q3_gameClientSize;				// will be > sizeof(q3playerState_t) due to game private data
 
 	int q3_restartTime;
 
@@ -386,4 +386,104 @@ struct server_t
 
 	int et_num_tagheaders;
 	int et_num_tags;
+};
+
+struct svstats_t
+{
+	double active;
+	double idle;
+	int count;
+	int packets;
+
+	double latched_active;
+	double latched_idle;
+	int latched_packets;
+};
+
+// MAX_CHALLENGES is made large to prevent a denial
+// of service attack that could cycle all of them
+// out before legitimate users connected
+#define MAX_CHALLENGES  1024
+
+struct challenge_t
+{
+	netadr_t adr;
+	int challenge;
+	int time;						// time the last packet was sent to the autherize server
+	int pingTime;					// time the challenge response was sent to client
+	int firstTime;					// time the adr was first used, for authorize timeout checks
+	int firstPing;					// Used for min and max ping checks
+	bool connected;
+};
+
+// this structure will be cleared only when the game dll changes
+struct serverStatic_t
+{
+	bool initialized;					// sv_init has completed
+
+	client_t* clients;					// [sv_maxclients->integer];
+
+	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+
+	// Only QuakeWorld, HexenWorld, and Quake 2.
+	int spawncount;						// incremented each server start
+										// used to check late spawns
+
+	int qh_serverflags;					// episode completion information
+
+	// Only NetQuake/Hexen2
+	int qh_maxclients;
+	int qh_maxclientslimit;
+	bool qh_changelevel_issued;			// cleared when at SV_SpawnServer
+
+	// Only QuakeWorld and HexenWorld
+	double qh_last_heartbeat;
+	int qh_heartbeat_sequence;
+	svstats_t qh_stats;
+
+	char qh_info[MAX_SERVERINFO_STRING];
+
+	// log messages are used so that fraglog processes can get stats
+	int qh_logsequence;					// the message currently being filled
+	double qh_logtime;					// time of last swap
+	QMsg qh_log[2];
+	byte qh_log_buf[2][MAX_DATAGRAM];
+
+	int q2_realtime;					// always increasing, no clamping, etc
+
+	char q2_mapcmd[MAX_TOKEN_CHARS_Q2];	// ie: *intro.cin+base
+
+	int q2_num_client_entities;			// maxclients->value*UPDATE_BACKUP_Q2*MAX_PACKET_ENTITIES
+	int q2_next_client_entities;		// next client_entity to use
+	q2entity_state_t* q2_client_entities;	// [num_client_entities]
+
+	int q2_last_heartbeat;
+
+	// serverrecord values
+	fileHandle_t q2_demofile;
+	QMsg q2_demo_multicast;
+	byte q2_demo_multicast_buf[MAX_MSGLEN_Q2];
+
+	int q3_time;						// will be strictly increasing across level changes
+
+	int q3_snapFlagServerBit;			// ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
+
+	int q3_numSnapshotEntities;			// sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
+	int q3_nextSnapshotEntities;		// next snapshotEntities to use
+	q3entityState_t* q3_snapshotEntities;	// [numSnapshotEntities]
+	wsentityState_t* ws_snapshotEntities;	// [numSnapshotEntities]
+	wmentityState_t* wm_snapshotEntities;	// [numSnapshotEntities]
+	etentityState_t* et_snapshotEntities;	// [numSnapshotEntities]
+	int q3_nextHeartbeatTime;
+	netadr_t q3_redirectAddress;		// for rcon return messages
+
+	netadr_t q3_authorizeAddress;		// for rcon return messages
+
+	tempBan_t et_tempBanAddresses[MAX_TEMPBAN_ADDRESSES];
+
+	int et_sampleTimes[SERVER_PERFORMANCECOUNTER_SAMPLES];
+	int et_currentSampleIndex;
+	int et_totalFrameTime;
+	int et_currentFrameIndex;
+	int et_serverLoad;
 };

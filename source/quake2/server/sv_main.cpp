@@ -358,7 +358,7 @@ void SVC_DirectConnect(void)
 			(cl->netchan.qport == qport ||
 			 adr.port == cl->netchan.remoteAddress.port))
 		{
-			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->q2_lastconnect) < ((int)sv_reconnect_limit->value * 1000))
+			if (!SOCK_IsLocalAddress(adr) && (svs.q2_realtime - cl->q2_lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
 				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(adr));
 				return;
@@ -426,8 +426,8 @@ gotnewcl:
 
 	newcl->datagram.InitOOB(newcl->datagramBuffer, MAX_MSGLEN_Q2);
 	newcl->datagram.allowoverflow = true;
-	newcl->q2_lastmessage = svs.realtime;	// don't timeout
-	newcl->q2_lastconnect = svs.realtime;
+	newcl->q2_lastmessage = svs.q2_realtime;	// don't timeout
+	newcl->q2_lastconnect = svs.q2_realtime;
 }
 
 int Rcon_Validate(void)
@@ -697,7 +697,7 @@ void SV_ReadPackets(void)
 			{	// this is a valid, sequenced packet, so process it
 				if (cl->state != CS_ZOMBIE)
 				{
-					cl->q2_lastmessage = svs.realtime;	// don't timeout
+					cl->q2_lastmessage = svs.q2_realtime;	// don't timeout
 					SV_ExecuteClientMessage(cl);
 				}
 			}
@@ -731,15 +731,15 @@ void SV_CheckTimeouts(void)
 	int droppoint;
 	int zombiepoint;
 
-	droppoint = svs.realtime - 1000 * timeout->value;
-	zombiepoint = svs.realtime - 1000 * zombietime->value;
+	droppoint = svs.q2_realtime - 1000 * timeout->value;
+	zombiepoint = svs.q2_realtime - 1000 * zombietime->value;
 
 	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
-		if (cl->q2_lastmessage > svs.realtime)
+		if (cl->q2_lastmessage > svs.q2_realtime)
 		{
-			cl->q2_lastmessage = svs.realtime;
+			cl->q2_lastmessage = svs.q2_realtime;
 		}
 
 		if (cl->state == CS_ZOMBIE &&
@@ -806,13 +806,13 @@ void SV_RunGameFrame(void)
 		ge->RunFrame();
 
 		// never get more than one tic behind
-		if (sv.q2_time < (unsigned)svs.realtime)
+		if (sv.q2_time < (unsigned)svs.q2_realtime)
 		{
 			if (sv_showclamp->value)
 			{
 				Com_Printf("sv highclamp\n");
 			}
-			svs.realtime = sv.q2_time;
+			svs.q2_realtime = sv.q2_time;
 		}
 	}
 
@@ -839,7 +839,7 @@ void SV_Frame(int msec)
 		return;
 	}
 
-	svs.realtime += msec;
+	svs.q2_realtime += msec;
 
 	// keep the random time dependent
 	rand();
@@ -851,18 +851,18 @@ void SV_Frame(int msec)
 	SV_ReadPackets();
 
 	// move autonomous things around if enough time has passed
-	if (!sv_timedemo->value && (unsigned)svs.realtime < sv.q2_time)
+	if (!sv_timedemo->value && (unsigned)svs.q2_realtime < sv.q2_time)
 	{
 		// never let the time get too far off
-		if (sv.q2_time - svs.realtime > 100)
+		if (sv.q2_time - svs.q2_realtime > 100)
 		{
 			if (sv_showclamp->value)
 			{
 				Com_Printf("sv lowclamp\n");
 			}
-			svs.realtime = sv.q2_time - 100;
+			svs.q2_realtime = sv.q2_time - 100;
 		}
-		NET_Sleep(sv.q2_time - svs.realtime);
+		NET_Sleep(sv.q2_time - svs.q2_realtime);
 		return;
 	}
 
@@ -917,17 +917,17 @@ void Master_Heartbeat(void)
 
 	}
 	// check for time wraparound
-	if (svs.last_heartbeat > svs.realtime)
+	if (svs.q2_last_heartbeat > svs.q2_realtime)
 	{
-		svs.last_heartbeat = svs.realtime;
+		svs.q2_last_heartbeat = svs.q2_realtime;
 	}
 
-	if (svs.realtime - svs.last_heartbeat < HEARTBEAT_SECONDS * 1000)
+	if (svs.q2_realtime - svs.q2_last_heartbeat < HEARTBEAT_SECONDS * 1000)
 	{
 		return;		// not time to send yet
 
 	}
-	svs.last_heartbeat = svs.realtime;
+	svs.q2_last_heartbeat = svs.q2_realtime;
 
 	// send the same string that we would give for a status OOB command
 	string = SV_StatusString();
@@ -1156,13 +1156,13 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 	{
 		Z_Free(svs.clients);
 	}
-	if (svs.client_entities)
+	if (svs.q2_client_entities)
 	{
-		Z_Free(svs.client_entities);
+		Z_Free(svs.q2_client_entities);
 	}
-	if (svs.demofile)
+	if (svs.q2_demofile)
 	{
-		FS_FCloseFile(svs.demofile);
+		FS_FCloseFile(svs.q2_demofile);
 	}
 	Com_Memset(&svs, 0, sizeof(svs));
 }

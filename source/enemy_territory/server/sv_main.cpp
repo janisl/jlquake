@@ -274,11 +274,11 @@ void SV_MasterHeartbeat(const char* hbname)
 	}
 
 	// if not time yet, don't send anything
-	if (svs.time < svs.nextHeartbeatTime)
+	if (svs.q3_time < svs.q3_nextHeartbeatTime)
 	{
 		return;
 	}
-	svs.nextHeartbeatTime = svs.time + HEARTBEAT_MSEC;
+	svs.q3_nextHeartbeatTime = svs.q3_time + HEARTBEAT_MSEC;
 
 
 	// send to group masters
@@ -389,11 +389,11 @@ Informs all masters that this server is going down
 void SV_MasterShutdown(void)
 {
 	// send a hearbeat right now
-	svs.nextHeartbeatTime = -9999;
+	svs.q3_nextHeartbeatTime = -9999;
 	SV_MasterHeartbeat(HEARTBEAT_DEAD);					// NERVE - SMF - changed to flatline
 
 	// send it again to minimize chance of drops
-//	svs.nextHeartbeatTime = -9999;
+//	svs.q3_nextHeartbeatTime = -9999;
 //	SV_MasterHeartbeat( HEARTBEAT_DEAD );
 
 	// when the master tries to poll the server, it won't respond, so
@@ -613,7 +613,7 @@ void SVC_Info(netadr_t from)
 
 	Info_SetValueForKey(infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(infostring, "serverload", va("%i", svs.serverLoad), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "serverload", va("%i", svs.et_serverLoad), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "mapname", sv_mapname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "sv_maxclients", va("%i", sv_maxclients->integer - sv_privateClients->integer), MAX_INFO_STRING_Q3);
@@ -675,7 +675,7 @@ SV_FlushRedirect
 */
 void SV_FlushRedirect(char* outputbuf)
 {
-	NET_OutOfBandPrint(NS_SERVER, svs.redirectAddress, "print\n%s", outputbuf);
+	NET_OutOfBandPrint(NS_SERVER, svs.q3_redirectAddress, "print\n%s", outputbuf);
 }
 
 /*
@@ -723,7 +723,7 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 	}
 
 	// start redirecting all print outputs to the packet
-	svs.redirectAddress = from;
+	svs.q3_redirectAddress = from;
 	// FIXME TTimo our rcon redirection could be improved
 	//   big rcon commands such as status lead to sending
 	//   out of band packets on every single call to Com_Printf
@@ -896,7 +896,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 			// reliable message, but they don't do any other processing
 			if (cl->state != CS_ZOMBIE)
 			{
-				cl->q3_lastPacketTime = svs.time;	// don't timeout
+				cl->q3_lastPacketTime = svs.q3_time;	// don't timeout
 				SV_ExecuteClientMessage(cl, msg);
 			}
 		}
@@ -995,15 +995,15 @@ void SV_CheckTimeouts(void)
 	int droppoint;
 	int zombiepoint;
 
-	droppoint = svs.time - 1000 * sv_timeout->integer;
-	zombiepoint = svs.time - 1000 * sv_zombietime->integer;
+	droppoint = svs.q3_time - 1000 * sv_timeout->integer;
+	zombiepoint = svs.q3_time - 1000 * sv_zombietime->integer;
 
 	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
-		if (cl->q3_lastPacketTime > svs.time)
+		if (cl->q3_lastPacketTime > svs.q3_time)
 		{
-			cl->q3_lastPacketTime = svs.time;
+			cl->q3_lastPacketTime = svs.q3_time;
 		}
 
 		if (cl->state == CS_ZOMBIE && cl->q3_lastPacketTime < zombiepoint)
@@ -1125,7 +1125,7 @@ void SV_Frame(int msec)
 
 	if (!com_dedicated->integer)
 	{
-		SV_BotFrame(svs.time + sv.q3_timeResidual);
+		SV_BotFrame(svs.q3_time + sv.q3_timeResidual);
 	}
 
 	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
@@ -1140,7 +1140,7 @@ void SV_Frame(int msec)
 	// and clear sv.time, rather
 	// than checking for negative time wraparound everywhere.
 	// 2giga-milliseconds = 23 days, so it won't be too often
-	if (svs.time > 0x70000000)
+	if (svs.q3_time > 0x70000000)
 	{
 		String::NCpyZ(mapname, sv_mapname->string, MAX_QPATH);
 		SV_Shutdown("Restarting server due to time wrapping");
@@ -1153,7 +1153,7 @@ void SV_Frame(int msec)
 		return;
 	}
 	// this can happen considerably earlier when lots of clients play and the map doesn't change
-	if (svs.nextSnapshotEntities >= 0x7FFFFFFE - svs.numSnapshotEntities)
+	if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE - svs.q3_numSnapshotEntities)
 	{
 		String::NCpyZ(mapname, sv_mapname->string, MAX_QPATH);
 		SV_Shutdown("Restarting server due to numSnapshotEntities wrapping");
@@ -1162,7 +1162,7 @@ void SV_Frame(int msec)
 		return;
 	}
 
-	if (sv.q3_restartTime && svs.time >= sv.q3_restartTime)
+	if (sv.q3_restartTime && svs.q3_time >= sv.q3_restartTime)
 	{
 		sv.q3_restartTime = 0;
 		Cbuf_AddText("map_restart 0\n");
@@ -1206,17 +1206,17 @@ void SV_Frame(int msec)
 
 	if (com_dedicated->integer)
 	{
-		SV_BotFrame(svs.time);
+		SV_BotFrame(svs.q3_time);
 	}
 
 	// run the game simulation in chunks
 	while (sv.q3_timeResidual >= frameMsec)
 	{
 		sv.q3_timeResidual -= frameMsec;
-		svs.time += frameMsec;
+		svs.q3_time += frameMsec;
 
 		// let everything in the world think and move
-		VM_Call(gvm, GAME_RUN_FRAME, svs.time);
+		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
 	}
 
 	if (com_speeds->integer)
@@ -1237,29 +1237,29 @@ void SV_Frame(int msec)
 	{
 		frameEndTime = Sys_Milliseconds();
 
-		svs.totalFrameTime += (frameEndTime - frameStartTime);
-		svs.currentFrameIndex++;
+		svs.et_totalFrameTime += (frameEndTime - frameStartTime);
+		svs.et_currentFrameIndex++;
 
-		//if( svs.currentFrameIndex % 50 == 0 )
-		//	Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+		//if( svs.et_currentFrameIndex % 50 == 0 )
+		//	Com_Printf( "currentFrameIndex: %i\n", svs.et_currentFrameIndex );
 
-		if (svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES)
+		if (svs.et_currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES)
 		{
 			int averageFrameTime;
 
-			averageFrameTime = svs.totalFrameTime / SERVER_PERFORMANCECOUNTER_FRAMES;
+			averageFrameTime = svs.et_totalFrameTime / SERVER_PERFORMANCECOUNTER_FRAMES;
 
-			svs.sampleTimes[svs.currentSampleIndex % SERVER_PERFORMANCECOUNTER_SAMPLES] = averageFrameTime;
-			svs.currentSampleIndex++;
+			svs.et_sampleTimes[svs.et_currentSampleIndex % SERVER_PERFORMANCECOUNTER_SAMPLES] = averageFrameTime;
+			svs.et_currentSampleIndex++;
 
-			if (svs.currentSampleIndex > SERVER_PERFORMANCECOUNTER_SAMPLES)
+			if (svs.et_currentSampleIndex > SERVER_PERFORMANCECOUNTER_SAMPLES)
 			{
 				int totalTime, i;
 
 				totalTime = 0;
 				for (i = 0; i < SERVER_PERFORMANCECOUNTER_SAMPLES; i++)
 				{
-					totalTime += svs.sampleTimes[i];
+					totalTime += svs.et_sampleTimes[i];
 				}
 
 				if (!totalTime)
@@ -1269,18 +1269,18 @@ void SV_Frame(int msec)
 
 				averageFrameTime = totalTime / SERVER_PERFORMANCECOUNTER_SAMPLES;
 
-				svs.serverLoad = (averageFrameTime / (float)frameMsec) * 100;
+				svs.et_serverLoad = (averageFrameTime / (float)frameMsec) * 100;
 			}
 
-			//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+			//Com_Printf( "serverload: %i (%i/%i)\n", svs.et_serverLoad, averageFrameTime, frameMsec );
 
-			svs.totalFrameTime = 0;
-			svs.currentFrameIndex = 0;
+			svs.et_totalFrameTime = 0;
+			svs.et_currentFrameIndex = 0;
 		}
 	}
 	else
 	{
-		svs.serverLoad = -1;
+		svs.et_serverLoad = -1;
 	}
 }
 

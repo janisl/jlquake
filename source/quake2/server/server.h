@@ -41,48 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // getting kicked off by the server operator
 // a program error, like an overflowed reliable buffer
 
-//=============================================================================
-
-// MAX_CHALLENGES is made large to prevent a denial
-// of service attack that could cycle all of them
-// out before legitimate users connected
-#define MAX_CHALLENGES  1024
-
-typedef struct
-{
-	netadr_t adr;
-	int challenge;
-	int time;
-} challenge_t;
-
-
-typedef struct
-{
-	qboolean initialized;					// sv_init has completed
-	int realtime;							// always increasing, no clamping, etc
-
-	char mapcmd[MAX_TOKEN_CHARS_Q2];		// ie: *intro.cin+base
-
-	int spawncount;							// incremented each server start
-											// used to check late spawns
-
-	client_t* clients;						// [maxclients->value];
-	int num_client_entities;				// maxclients->value*UPDATE_BACKUP_Q2*MAX_PACKET_ENTITIES
-	int next_client_entities;				// next client_entity to use
-	q2entity_state_t* client_entities;			// [num_client_entities]
-
-	int last_heartbeat;
-
-	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
-
-	// serverrecord values
-	fileHandle_t demofile;
-	QMsg demo_multicast;
-	byte demo_multicast_buf[MAX_MSGLEN_Q2];
-} serverStatic_t;
-
-//=============================================================================
-
 extern netadr_t net_from;
 extern QMsg net_message;
 

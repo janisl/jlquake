@@ -853,7 +853,7 @@ void SV_RunClients(void)
 {
 	int i;
 
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->state < CS_CONNECTED)
 		{
@@ -876,7 +876,7 @@ void SV_RunClients(void)
 		}
 
 // always pause in single player if in console or menus
-		if (!sv.qh_paused && (svs.maxclients > 1 || in_keyCatchers == 0))
+		if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
 		{
 			SV_ClientThink();
 		}

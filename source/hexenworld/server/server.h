@@ -16,42 +16,6 @@
 
 
 #define STATFRAMES  100
-typedef struct
-{
-	double active;
-	double idle;
-	int count;
-	int packets;
-
-	double latched_active;
-	double latched_idle;
-	int latched_packets;
-} svstats_t;
-
-
-typedef struct
-{
-	int spawncount;					// number of servers spawned since start,
-									// used to check late spawns
-	client_t* clients;
-	int serverflags;				// episode completion information
-	qboolean changelevel_issued;	// cleared when at SV_SpawnServer
-
-	double last_heartbeat;
-	int heartbeat_sequence;
-	svstats_t stats;
-
-	char info[MAX_SERVERINFO_STRING];
-
-	// log messages are used so that fraglog processes can get stats
-	int logsequence;			// the message currently being filled
-	double logtime;				// time of last swap
-	QMsg log[2];
-	byte log_buf[2][MAX_DATAGRAM_HW];
-} serverStatic_t;
-
-//=============================================================================
-
 
 // edict->solid values
 #define SOLID_NOT               0		// no interaction with other objects

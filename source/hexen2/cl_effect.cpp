@@ -178,7 +178,7 @@ void SV_SendEffect(QMsg* sb, int index)
 	}
 	else
 	{
-		count = svs.maxclients;
+		count = svs.qh_maxclients;
 		TestDistance = (float)TestDistance * sv_ce_scale->value;
 		TestDistance *= TestDistance;
 	}

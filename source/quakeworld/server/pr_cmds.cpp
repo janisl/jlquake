@@ -1621,7 +1621,7 @@ void PF_logfrag(void)
 
 	s = va("\\%s\\%s\\\n",svs.clients[e1 - 1].name, svs.clients[e2 - 1].name);
 
-	svs.log[svs.logsequence & 1].Print(s);
+	svs.qh_log[svs.qh_logsequence & 1].Print(s);
 	if (sv_fraglogfile)
 	{
 		FS_Printf(sv_fraglogfile, s);
@@ -1651,7 +1651,7 @@ void PF_infokey(void)
 
 	if (e1 == 0)
 	{
-		if ((value = Info_ValueForKey(svs.info, key)) == NULL ||
+		if ((value = Info_ValueForKey(svs.qh_info, key)) == NULL ||
 			!*value)
 		{
 			value = Info_ValueForKey(localinfo, key);

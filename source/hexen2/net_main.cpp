@@ -116,7 +116,7 @@ qsocket_t* NET_NewQSocket(void)
 		return NULL;
 	}
 
-	if (net_activeconnections >= svs.maxclients)
+	if (net_activeconnections >= svs.qh_maxclients)
 	{
 		return NULL;
 	}
@@ -199,7 +199,7 @@ static void MaxPlayers_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("\"maxplayers\" is \"%u\"\n", svs.maxclients);
+		Con_Printf("\"maxplayers\" is \"%u\"\n", svs.qh_maxclients);
 		return;
 	}
 
@@ -214,9 +214,9 @@ static void MaxPlayers_f(void)
 	{
 		n = 1;
 	}
-	if (n > svs.maxclientslimit)
+	if (n > svs.qh_maxclientslimit)
 	{
-		n = svs.maxclientslimit;
+		n = svs.qh_maxclientslimit;
 		Con_Printf("\"maxplayers\" set to \"%u\"\n", n);
 	}
 
@@ -230,7 +230,7 @@ static void MaxPlayers_f(void)
 		Cbuf_AddText("listen 1\n");
 	}
 
-	svs.maxclients = n;
+	svs.qh_maxclients = n;
 	if (n == 1)
 	{
 		Cvar_Set("deathmatch", "0");
@@ -713,7 +713,7 @@ int NET_SendToAll(QMsg* data, int blocktime)
 	qboolean state1 [H2MAX_CLIENTS];
 	qboolean state2 [H2MAX_CLIENTS];
 
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (!host_client->qh_netconnection)
 		{
@@ -743,7 +743,7 @@ int NET_SendToAll(QMsg* data, int blocktime)
 	while (count)
 	{
 		count = 0;
-		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+		for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		{
 			if (!state1[i])
 			{
@@ -820,7 +820,7 @@ void NET_Init(void)
 	{
 		listening = true;
 	}
-	net_numsockets = svs.maxclientslimit;
+	net_numsockets = svs.qh_maxclientslimit;
 	if (cls.state != CA_DEDICATED)
 	{
 		net_numsockets++;
@@ -878,7 +878,7 @@ void        NET_Shutdown(void)
 	SetNetTime();
 
 	client_t* client = svs.clients;
-	for (int i = 0; i < svs.maxclients; i++, client++)
+	for (int i = 0; i < svs.qh_maxclients; i++, client++)
 	{
 		if (!client->qh_netconnection)
 		{

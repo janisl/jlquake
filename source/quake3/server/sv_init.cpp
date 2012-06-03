@@ -259,12 +259,12 @@ void SV_Startup(void)
 	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * sv_maxclients->integer);
 	if (com_dedicated->integer)
 	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
+		svs.q3_numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	}
 	else
 	{
 		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
+		svs.q3_numSnapshotEntities = sv_maxclients->integer * 4 * 64;
 	}
 	svs.initialized = qtrue;
 
@@ -343,12 +343,12 @@ void SV_ChangeMaxClients(void)
 	// allocate new snapshot entities
 	if (com_dedicated->integer)
 	{
-		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
+		svs.q3_numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
 	}
 	else
 	{
 		// we don't need nearly as many when playing locally
-		svs.numSnapshotEntities = sv_maxclients->integer * 4 * 64;
+		svs.q3_numSnapshotEntities = sv_maxclients->integer * 4 * 64;
 	}
 }
 
@@ -424,7 +424,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
 
-	// init client structures and svs.numSnapshotEntities
+	// init client structures and svs.q3_numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running"))
 	{
 		SV_Startup();
@@ -442,12 +442,12 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	FS_ClearPakReferences(0);
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = (q3entityState_t*)Hunk_Alloc(sizeof(q3entityState_t) * svs.numSnapshotEntities, h_high);
-	svs.nextSnapshotEntities = 0;
+	svs.q3_snapshotEntities = (q3entityState_t*)Hunk_Alloc(sizeof(q3entityState_t) * svs.q3_numSnapshotEntities, h_high);
+	svs.q3_nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
 	// server has changed
-	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
+	svs.q3_snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
 	// set nextmap to the same map, but it may be overriden
 	// by the game startup or another console command
@@ -499,9 +499,9 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)
 	{
-		VM_Call(gvm, GAME_RUN_FRAME, svs.time);
-		SV_BotFrame(svs.time);
-		svs.time += 100;
+		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+		SV_BotFrame(svs.q3_time);
+		svs.q3_time += 100;
 	}
 
 	// create a baseline for more efficient communications
@@ -556,7 +556,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					client->q3_gentity = ent;
 
 					client->q3_deltaMessage = -1;
-					client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately
+					client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
 
 					VM_Call(gvm, GAME_CLIENT_BEGIN, i);
 				}
@@ -565,9 +565,9 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call(gvm, GAME_RUN_FRAME, svs.time);
-	SV_BotFrame(svs.time);
-	svs.time += 100;
+	VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+	SV_BotFrame(svs.q3_time);
+	svs.q3_time += 100;
 
 	if (sv_pure->integer)
 	{

@@ -179,7 +179,7 @@ void    Host_FindMaxClients(void)
 {
 	int i;
 
-	svs.maxclients = 1;
+	svs.qh_maxclients = 1;
 
 	i = COM_CheckParm("-dedicated");
 	if (i)
@@ -189,11 +189,11 @@ void    Host_FindMaxClients(void)
 		cls.state = CA_DEDICATED;
 		if (i != (COM_Argc() - 1))
 		{
-			svs.maxclients = String::Atoi(COM_Argv(i + 1));
+			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
 		}
 		else
 		{
-			svs.maxclients = 8;
+			svs.qh_maxclients = 8;
 		}
 	}
 	else
@@ -212,30 +212,30 @@ void    Host_FindMaxClients(void)
 		}
 		if (i != (COM_Argc() - 1))
 		{
-			svs.maxclients = String::Atoi(COM_Argv(i + 1));
+			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
 		}
 		else
 		{
-			svs.maxclients = 8;
+			svs.qh_maxclients = 8;
 		}
 	}
-	if (svs.maxclients < 1)
+	if (svs.qh_maxclients < 1)
 	{
-		svs.maxclients = 8;
+		svs.qh_maxclients = 8;
 	}
-	else if (svs.maxclients > MAX_CLIENTS_Q1)
+	else if (svs.qh_maxclients > MAX_CLIENTS_Q1)
 	{
-		svs.maxclients = MAX_CLIENTS_Q1;
+		svs.qh_maxclients = MAX_CLIENTS_Q1;
 	}
 
-	svs.maxclientslimit = svs.maxclients;
-	if (svs.maxclientslimit < 4)
+	svs.qh_maxclientslimit = svs.qh_maxclients;
+	if (svs.qh_maxclientslimit < 4)
 	{
-		svs.maxclientslimit = 4;
+		svs.qh_maxclientslimit = 4;
 	}
-	svs.clients = (client_t*)Hunk_AllocName(svs.maxclientslimit * sizeof(client_t), "clients");
+	svs.clients = (client_t*)Hunk_AllocName(svs.qh_maxclientslimit * sizeof(client_t), "clients");
 
-	if (svs.maxclients > 1)
+	if (svs.qh_maxclients > 1)
 	{
 		Cvar_SetValue("deathmatch", 1.0);
 	}
@@ -348,7 +348,7 @@ void SV_BroadcastPrintf(const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	for (i = 0; i < svs.maxclients; i++)
+	for (i = 0; i < svs.qh_maxclients; i++)
 		if (svs.clients[i].state == CS_ACTIVE)
 		{
 			svs.clients[i].qh_message.WriteByte(q1svc_print);
@@ -423,7 +423,7 @@ void SV_DropClient(qboolean crash)
 	net_activeconnections--;
 
 // send notification to all clients
-	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -474,7 +474,7 @@ void Host_ShutdownServer(qboolean crash)
 	do
 	{
 		count = 0;
-		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+		for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		{
 			if (host_client->state >= CS_CONNECTED && host_client->qh_message.cursize)
 			{
@@ -506,7 +506,7 @@ void Host_ShutdownServer(qboolean crash)
 		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
 	}
 
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		if (host_client->state >= CS_CONNECTED)
 		{
 			SV_DropClient(crash);
@@ -516,7 +516,7 @@ void Host_ShutdownServer(qboolean crash)
 // clear structures
 //
 	Com_Memset(&sv, 0, sizeof(sv));
-	Com_Memset(svs.clients, 0, svs.maxclientslimit * sizeof(client_t));
+	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
 }
 
 
@@ -650,7 +650,7 @@ void Host_ServerFrame(void)
 
 // move things around and think
 // always pause in single player if in console or menus
-	if (!sv.qh_paused && (svs.maxclients > 1 || in_keyCatchers == 0))
+	if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
 	{
 		SV_Physics();
 	}
@@ -825,7 +825,7 @@ void Host_Frame(float time)
 		timecount = 0;
 		timetotal = 0;
 		c = 0;
-		for (i = 0; i < svs.maxclients; i++)
+		for (i = 0; i < svs.qh_maxclients; i++)
 		{
 			if (svs.clients[i].state >= CS_CONNECTED)
 			{

@@ -431,7 +431,7 @@ void SV_SendServerinfo(client_t* client)
 
 	client->qh_message.WriteByte(h2svc_serverinfo);
 	client->qh_message.WriteLong(PROTOCOL_VERSION);
-	client->qh_message.WriteByte(svs.maxclients);
+	client->qh_message.WriteByte(svs.qh_maxclients);
 
 	if (!coop->value && deathmatch->value)
 	{
@@ -585,12 +585,12 @@ void SV_CheckForNewClients(void)
 		//
 		// init a new client structure
 		//
-		for (i = 0; i < svs.maxclients; i++)
+		for (i = 0; i < svs.qh_maxclients; i++)
 			if (svs.clients[i].state < CS_CONNECTED)
 			{
 				break;
 			}
-		if (i == svs.maxclients)
+		if (i == svs.qh_maxclients)
 		{
 			Sys_Error("Host_CheckForNewClients: no free clients");
 		}
@@ -2035,12 +2035,12 @@ void SV_UpdateToReliableMessages(void)
 	qhedict_t* ent;
 
 // check for changes to be sent over the reliable streams
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		ent = host_client->qh_edict;
 		if (host_client->qh_old_frags != ent->GetFrags())
 		{
-			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+			for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 			{
 				if (client->state < CS_CONNECTED)
 				{
@@ -2056,7 +2056,7 @@ void SV_UpdateToReliableMessages(void)
 		}
 	}
 
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -2106,7 +2106,7 @@ void SV_SendClientMessages(void)
 	SV_UpdateToReliableMessages();
 
 // build individual updates
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->state < CS_CONNECTED)
 		{
@@ -2237,7 +2237,7 @@ void SV_CreateBaseline(void)
 		{
 			continue;
 		}
-		if (entnum > svs.maxclients && !svent->v.modelindex)
+		if (entnum > svs.qh_maxclients && !svent->v.modelindex)
 		{
 			continue;
 		}
@@ -2252,7 +2252,7 @@ void SV_CreateBaseline(void)
 		svent->h2_baseline.scale = (int)(svent->GetScale() * 100.0) & 255;
 		svent->h2_baseline.drawflags = svent->GetDrawFlags();
 		svent->h2_baseline.abslight = (int)(svent->GetAbsLight() * 255.0) & 255;
-		if (entnum > 0  && entnum <= svs.maxclients)
+		if (entnum > 0  && entnum <= svs.qh_maxclients)
 		{
 			svent->h2_baseline.colormap = entnum;
 			svent->h2_baseline.modelindex = 0;	//SV_ModelIndex("models/paladin.mdl");
@@ -2324,9 +2324,9 @@ void SV_SaveSpawnparms(void)
 {
 	int i;
 
-	svs.serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = pr_global_struct->serverflags;
 
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->state < CS_CONNECTED)
 		{
@@ -2365,7 +2365,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	scr_centertime_off = 0;
 
 	Con_DPrintf("SpawnServer: %s\n",server);
-	if (svs.changelevel_issued)
+	if (svs.qh_changelevel_issued)
 	{
 		stats_restored = true;
 		SaveGamestate(true);
@@ -2432,8 +2432,8 @@ void SV_SpawnServer(char* server, char* startspot)
 // allocate server memory
 	Com_Memset(sv.h2_Effects,0,sizeof(sv.h2_Effects));
 
-	sv.h2_states = (h2client_state2_t*)Hunk_AllocName(svs.maxclients * sizeof(h2client_state2_t), "states");
-	Com_Memset(sv.h2_states,0,svs.maxclients * sizeof(h2client_state2_t));
+	sv.h2_states = (h2client_state2_t*)Hunk_AllocName(svs.qh_maxclients * sizeof(h2client_state2_t), "states");
+	Com_Memset(sv.h2_states,0,svs.qh_maxclients * sizeof(h2client_state2_t));
 
 	sv.qh_max_edicts = MAX_EDICTS_H2;
 
@@ -2447,8 +2447,8 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_H2);
 
 // leave slots at start for clients only
-	sv.qh_num_edicts = svs.maxclients + 1 + max_temp_edicts->value;
-	for (i = 0; i < svs.maxclients; i++)
+	sv.qh_num_edicts = svs.qh_maxclients + 1 + max_temp_edicts->value;
+	for (i = 0; i < svs.qh_maxclients; i++)
 	{
 		ent = EDICT_NUM(i + 1);
 		svs.clients[i].qh_edict = ent;
@@ -2457,7 +2457,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	for (i = 0; i < max_temp_edicts->value; i++)
 	{
-		ent = EDICT_NUM(i + svs.maxclients + 1);
+		ent = EDICT_NUM(i + svs.qh_maxclients + 1);
 		ED_ClearEdict(ent);
 
 		ent->free = true;
@@ -2516,7 +2516,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	pr_global_struct->startspot = PR_SetString(sv.h2_startspot);
 
 	// serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.serverflags;
+	pr_global_struct->serverflags = svs.qh_serverflags;
 
 	current_loading_size += 5;
 	SCR_UpdateScreen();
@@ -2534,13 +2534,13 @@ void SV_SpawnServer(char* server, char* startspot)
 	SV_CreateBaseline();
 
 // send serverinfo to all connected clients
-	for (i = 0,host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0,host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		if (host_client->state >= CS_CONNECTED)
 		{
 			SV_SendServerinfo(host_client);
 		}
 
-	svs.changelevel_issued = false;		// now safe to issue another
+	svs.qh_changelevel_issued = false;		// now safe to issue another
 
 	Con_DPrintf("Server spawned.\n");
 

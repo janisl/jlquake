@@ -486,7 +486,7 @@ void M_Menu_Save_f(void)
 	{
 		return;
 	}
-	if (svs.maxclients != 1)
+	if (svs.qh_maxclients != 1)
 	{
 		return;
 	}
@@ -2113,11 +2113,11 @@ void M_Menu_GameOptions_f(void)
 	m_entersound = true;
 	if (maxplayers == 0)
 	{
-		maxplayers = svs.maxclients;
+		maxplayers = svs.qh_maxclients;
 	}
 	if (maxplayers < 2)
 	{
-		maxplayers = svs.maxclientslimit;
+		maxplayers = svs.qh_maxclientslimit;
 	}
 }
 
@@ -2285,9 +2285,9 @@ void M_NetStart_Change(int dir)
 	{
 	case 1:
 		maxplayers += dir;
-		if (maxplayers > svs.maxclientslimit)
+		if (maxplayers > svs.qh_maxclientslimit)
 		{
-			maxplayers = svs.maxclientslimit;
+			maxplayers = svs.qh_maxclientslimit;
 			m_serverInfoMessage = true;
 			m_serverInfoMessageTime = realtime;
 		}

@@ -313,7 +313,7 @@ void PF_sprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -344,7 +344,7 @@ void PF_centerprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -666,12 +666,12 @@ int PF_newcheckclient(int check)
 	{
 		check = 1;
 	}
-	if (check > svs.maxclients)
+	if (check > svs.qh_maxclients)
 	{
-		check = svs.maxclients;
+		check = svs.qh_maxclients;
 	}
 
-	if (check == svs.maxclients)
+	if (check == svs.qh_maxclients)
 	{
 		i = 1;
 	}
@@ -682,7 +682,7 @@ int PF_newcheckclient(int check)
 
 	for (;; i++)
 	{
-		if (i == svs.maxclients + 1)
+		if (i == svs.qh_maxclients + 1)
 		{
 			i = 1;
 		}
@@ -793,7 +793,7 @@ void PF_stuffcmd(void)
 	client_t* old;
 
 	entnum = G_EDICTNUM(OFS_PARM0);
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		PR_RunError("Parm 0 not a client");
 	}
@@ -1194,7 +1194,7 @@ void PF_lightstyle(void)
 		return;
 	}
 
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 		if (client->state >= CS_CONNECTED)
 		{
 			client->qh_message.WriteChar(q1svc_lightstyle);
@@ -1455,7 +1455,7 @@ QMsg* WriteDest(void)
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
 		entnum = NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > svs.maxclients)
+		if (entnum < 1 || entnum > svs.qh_maxclients)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
@@ -1557,7 +1557,7 @@ void PF_setspawnparms(void)
 
 	ent = G_EDICT(OFS_PARM0);
 	i = NUM_FOR_EDICT(ent);
-	if (i < 1 || i > svs.maxclients)
+	if (i < 1 || i > svs.qh_maxclients)
 	{
 		PR_RunError("Entity is not a client");
 	}
@@ -1579,11 +1579,11 @@ void PF_changelevel(void)
 	const char* s;
 
 // make sure we don't issue two changelevels
-	if (svs.changelevel_issued)
+	if (svs.qh_changelevel_issued)
 	{
 		return;
 	}
-	svs.changelevel_issued = true;
+	svs.qh_changelevel_issued = true;
 
 	s = G_STRING(OFS_PARM0);
 	Cbuf_AddText(va("changelevel %s\n",s));

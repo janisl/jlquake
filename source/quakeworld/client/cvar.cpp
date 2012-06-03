@@ -34,10 +34,10 @@ void Cvar_Changed(Cvar* var)
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')
 	{
-		Info_SetValueForKey(svs.info, var->name, var->string, MAX_SERVERINFO_STRING,
+		Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
 			64, 64, !sv_highchars || !sv_highchars->value, false);
 		SV_SendServerInfoChange(var->name, var->string);
-//		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
+//		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.qh_info);
 	}
 #else
 	if (var->flags & CVAR_USERINFO && var->name[0] != '*')

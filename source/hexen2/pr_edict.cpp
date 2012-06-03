@@ -75,7 +75,7 @@ qhedict_t* ED_Alloc(void)
 	int i;
 	qhedict_t* e;
 
-	for (i = svs.maxclients + 1 + max_temp_edicts->value; i < sv.qh_num_edicts; i++)
+	for (i = svs.qh_maxclients + 1 + max_temp_edicts->value; i < sv.qh_num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -109,7 +109,7 @@ qhedict_t* ED_Alloc_Temp(void)
 
 	LeastTime = -1;
 	LeastSet = false;
-	for (i = svs.maxclients + 1,j = 0; j < max_temp_edicts->value; i++,j++)
+	for (i = svs.qh_maxclients + 1,j = 0; j < max_temp_edicts->value; i++,j++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of

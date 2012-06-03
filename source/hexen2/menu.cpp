@@ -1101,7 +1101,7 @@ void M_Menu_Save_f(void)
 	{
 		return;
 	}
-	if (svs.maxclients != 1)
+	if (svs.qh_maxclients != 1)
 	{
 		return;
 	}
@@ -1293,7 +1293,7 @@ void M_Menu_MLoad_f(void)
 
 void M_Menu_MSave_f(void)
 {
-	if (sv.state == SS_DEAD || cl.qh_intermission || svs.maxclients == 1)
+	if (sv.state == SS_DEAD || cl.qh_intermission || svs.qh_maxclients == 1)
 	{
 		message = "Only a network server";
 		message2 = "can save a multiplayer game";
@@ -3449,11 +3449,11 @@ void M_Menu_GameOptions_f(void)
 	m_entersound = true;
 	if (maxplayers == 0)
 	{
-		maxplayers = svs.maxclients;
+		maxplayers = svs.qh_maxclients;
 	}
 	if (maxplayers < 2)
 	{
-		maxplayers = svs.maxclientslimit;
+		maxplayers = svs.qh_maxclientslimit;
 	}
 
 	setup_class = clh2_playerclass->value;
@@ -3616,9 +3616,9 @@ void M_NetStart_Change(int dir)
 	{
 	case 1:
 		maxplayers += dir;
-		if (maxplayers > svs.maxclientslimit)
+		if (maxplayers > svs.qh_maxclientslimit)
 		{
-			maxplayers = svs.maxclientslimit;
+			maxplayers = svs.qh_maxclientslimit;
 			m_serverInfoMessage = true;
 			m_serverInfoMessageTime = realtime;
 		}

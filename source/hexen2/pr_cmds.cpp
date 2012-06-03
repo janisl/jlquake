@@ -352,7 +352,7 @@ void PF_sprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -383,7 +383,7 @@ void PF_centerprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -926,12 +926,12 @@ int PF_newcheckclient(int check)
 	{
 		check = 1;
 	}
-	if (check > svs.maxclients)
+	if (check > svs.qh_maxclients)
 	{
-		check = svs.maxclients;
+		check = svs.qh_maxclients;
 	}
 
-	if (check == svs.maxclients)
+	if (check == svs.qh_maxclients)
 	{
 		i = 1;
 	}
@@ -942,7 +942,7 @@ int PF_newcheckclient(int check)
 
 	for (;; i++)
 	{
-		if (i == svs.maxclients + 1)
+		if (i == svs.qh_maxclients + 1)
 		{
 			i = 1;
 		}
@@ -1053,7 +1053,7 @@ void PF_stuffcmd(void)
 	client_t* old;
 
 	entnum = G_EDICTNUM(OFS_PARM0);
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		PR_RunError("Parm 0 not a client");
 	}
@@ -1264,7 +1264,7 @@ void PF_Remove(void)
 	}
 
 	i = NUM_FOR_EDICT(ed);
-	if (i <= svs.maxclients)
+	if (i <= svs.qh_maxclients)
 	{
 		Con_DPrintf("Tried to remove a client at %s in %s!\n",
 			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
@@ -1639,7 +1639,7 @@ void PF_lightstyle(void)
 		return;
 	}
 
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 		if (client->state >= CS_CONNECTED)
 		{
 			client->qh_message.WriteChar(h2svc_lightstyle);
@@ -1714,7 +1714,7 @@ void PF_lightstylestatic(void)
 	}
 
 	// Send message to all clients on this server
-	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
 		if (client->state >= CS_CONNECTED)
 		{
@@ -1999,7 +1999,7 @@ QMsg* WriteDest(void)
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
 		entnum = NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > svs.maxclients)
+		if (entnum < 1 || entnum > svs.qh_maxclients)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
@@ -2105,7 +2105,7 @@ void PF_setspawnparms(void)
 
 	ent = G_EDICT(OFS_PARM0);
 	i = NUM_FOR_EDICT(ent);
-	if (i < 1 || i > svs.maxclients)
+	if (i < 1 || i > svs.qh_maxclients)
 	{
 		PR_RunError("Entity is not a client");
 	}
@@ -2126,11 +2126,11 @@ void PF_changelevel(void)
 {
 	const char* s1, * s2;
 
-	if (svs.changelevel_issued)
+	if (svs.qh_changelevel_issued)
 	{
 		return;
 	}
-	svs.changelevel_issued = true;
+	svs.qh_changelevel_issued = true;
 
 	s1 = G_STRING(OFS_PARM0);
 	s2 = G_STRING(OFS_PARM1);
@@ -2407,7 +2407,7 @@ void PF_AwardExperience(void)
             ToEnt->v.level = AfterLevel;
             entnum = NUM_FOR_EDICT(ToEnt);
 
-            if (entnum >= 1 && entnum <= svs.maxclients)
+            if (entnum >= 1 && entnum <= svs.qh_maxclients)
             {
                 pr_save = *pr_global_struct;
                 pr_global_struct->time = sv.time;
@@ -2584,7 +2584,7 @@ void PF_setclass(void)
 	e = G_EDICT(OFS_PARM0);
 	NewClass = G_FLOAT(OFS_PARM1);
 
-	if (entnum < 1 || entnum > svs.maxclients)
+	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;

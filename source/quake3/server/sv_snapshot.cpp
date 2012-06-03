@@ -81,7 +81,7 @@ static void SV_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t* 
 		}
 		else
 		{
-			newent = &svs.snapshotEntities[(to->first_entity + newindex) % svs.numSnapshotEntities];
+			newent = &svs.q3_snapshotEntities[(to->first_entity + newindex) % svs.q3_numSnapshotEntities];
 			newnum = newent->number;
 		}
 
@@ -91,7 +91,7 @@ static void SV_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t* 
 		}
 		else
 		{
-			oldent = &svs.snapshotEntities[(from->first_entity + oldindex) % svs.numSnapshotEntities];
+			oldent = &svs.q3_snapshotEntities[(from->first_entity + oldindex) % svs.q3_numSnapshotEntities];
 			oldnum = oldent->number;
 		}
 
@@ -165,7 +165,7 @@ static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 		lastframe = client->netchan.outgoingSequence - client->q3_deltaMessage;
 
 		// the snapshot's entities may still have rolled off the buffer, though
-		if (oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities)
+		if (oldframe->first_entity <= svs.q3_nextSnapshotEntities - svs.q3_numSnapshotEntities)
 		{
 			Com_DPrintf("%s: Delta request from out of date entities.\n", client->name);
 			oldframe = NULL;
@@ -181,12 +181,12 @@ static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 
 	// send over the current server time so the client can drift
 	// its view of time to try to match
-	msg->WriteLong(svs.time);
+	msg->WriteLong(svs.q3_time);
 
 	// what we are delta'ing from
 	msg->WriteByte(lastframe);
 
-	snapFlags = svs.snapFlagServerBit;
+	snapFlags = svs.q3_snapFlagServerBit;
 	if (client->q3_rateDelayed)
 	{
 		snapFlags |= SNAPFLAG_RATE_DELAYED;
@@ -573,17 +573,17 @@ static void SV_BuildClientSnapshot(client_t* client)
 
 	// copy the entity states out
 	frame->num_entities = 0;
-	frame->first_entity = svs.nextSnapshotEntities;
+	frame->first_entity = svs.q3_nextSnapshotEntities;
 	for (i = 0; i < entityNumbers.numSnapshotEntities; i++)
 	{
 		ent = SV_GentityNum(entityNumbers.snapshotEntities[i]);
-		state = &svs.snapshotEntities[svs.nextSnapshotEntities % svs.numSnapshotEntities];
+		state = &svs.q3_snapshotEntities[svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities];
 		*state = ent->s;
-		svs.nextSnapshotEntities++;
+		svs.q3_nextSnapshotEntities++;
 		// this should never hit, map should always be restarted first in SV_Frame
-		if (svs.nextSnapshotEntities >= 0x7FFFFFFE)
+		if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE)
 		{
-			Com_Error(ERR_FATAL, "svs.nextSnapshotEntities wrapped");
+			Com_Error(ERR_FATAL, "svs.q3_nextSnapshotEntities wrapped");
 		}
 		frame->num_entities++;
 	}
@@ -639,7 +639,7 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 
 	// record information about the message
 	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
-	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.time;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.q3_time;
 	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
@@ -652,7 +652,7 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	// added sv_lanForceRate check
 	if (client->netchan.remoteAddress.type == NA_LOOPBACK || (sv_lanForceRate->integer && SOCK_IsLANAddress(client->netchan.remoteAddress)))
 	{
-		client->q3_nextSnapshotTime = svs.time - 1;
+		client->q3_nextSnapshotTime = svs.q3_time - 1;
 		return;
 	}
 
@@ -670,7 +670,7 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 		client->q3_rateDelayed = qtrue;
 	}
 
-	client->q3_nextSnapshotTime = svs.time + rateMsec;
+	client->q3_nextSnapshotTime = svs.q3_time + rateMsec;
 
 	// don't pile up empty snapshots while connecting
 	if (client->state != CS_ACTIVE)
@@ -678,9 +678,9 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 		// a gigantic connection message may have already put the nextSnapshotTime
 		// more than a second away, so don't shorten it
 		// do shorten if client is downloading
-		if (!*client->downloadName && client->q3_nextSnapshotTime < svs.time + 1000)
+		if (!*client->downloadName && client->q3_nextSnapshotTime < svs.q3_time + 1000)
 		{
-			client->q3_nextSnapshotTime = svs.time + 1000;
+			client->q3_nextSnapshotTime = svs.q3_time + 1000;
 		}
 	}
 }
@@ -754,7 +754,7 @@ void SV_SendClientMessages(void)
 			continue;		// not connected
 		}
 
-		if (svs.time < c->q3_nextSnapshotTime)
+		if (svs.q3_time < c->q3_nextSnapshotTime)
 		{
 			continue;		// not time yet
 		}
@@ -763,7 +763,7 @@ void SV_SendClientMessages(void)
 		// was too large to send at once
 		if (c->netchan.unsentFragments)
 		{
-			c->q3_nextSnapshotTime = svs.time +
+			c->q3_nextSnapshotTime = svs.q3_time +
 								  SV_RateMsec(c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart);
 			SV_Netchan_TransmitNextFragment(c);
 			continue;

@@ -42,7 +42,7 @@ Cvar* sv_namedistance;
 
 
 //
-// game rules mirrored in svs.info
+// game rules mirrored in svs.qh_info
 //
 Cvar* fraglimit;
 Cvar* timelimit;
@@ -381,7 +381,7 @@ void SVC_Status(void)
 
 	Cmd_TokenizeString("status");
 	SV_BeginRedirect(RD_PACKET);
-	Con_Printf("%s\n", svs.info);
+	Con_Printf("%s\n", svs.qh_info);
 	for (i = 0; i < HWMAX_CLIENTS; i++)
 	{
 		cl = &svs.clients[i];
@@ -410,19 +410,19 @@ void SV_CheckLog(void)
 {
 	QMsg* sz;
 
-	sz = &svs.log[svs.logsequence & 1];
+	sz = &svs.qh_log[svs.qh_logsequence & 1];
 
 	// bump sequence if allmost full, or ten minutes have passed and
 	// there is something still sitting there
 	if (sz->cursize > LOG_HIGHWATER ||
-		(realtime - svs.logtime > LOG_FLUSH && sz->cursize))
+		(realtime - svs.qh_logtime > LOG_FLUSH && sz->cursize))
 	{
 		// swap buffers and bump sequence
-		svs.logtime = realtime;
-		svs.logsequence++;
-		sz = &svs.log[svs.logsequence & 1];
+		svs.qh_logtime = realtime;
+		svs.qh_logsequence++;
+		sz = &svs.qh_log[svs.qh_logsequence & 1];
 		sz->cursize = 0;
-		Con_Printf("beginning fraglog sequence %i\n", svs.logsequence);
+		Con_Printf("beginning fraglog sequence %i\n", svs.qh_logsequence);
 	}
 
 }
@@ -451,17 +451,17 @@ void SVC_Log(void)
 		seq = -1;
 	}
 
-	if (seq == svs.logsequence - 1 || !sv_fraglogfile)
+	if (seq == svs.qh_logsequence - 1 || !sv_fraglogfile)
 	{	// they allready have this data, or we aren't logging frags
 		data[0] = A2A_NACK;
 		NET_SendPacket(1, data, net_from);
 		return;
 	}
 
-	Con_DPrintf("sending log %i to %s\n", svs.logsequence - 1, SOCK_AdrToString(net_from));
+	Con_DPrintf("sending log %i to %s\n", svs.qh_logsequence - 1, SOCK_AdrToString(net_from));
 
-	sprintf(data, "stdlog %i\n", svs.logsequence - 1);
-	String::Cat(data, sizeof(data), (char*)svs.log_buf[((svs.logsequence - 1) & 1)]);
+	sprintf(data, "stdlog %i\n", svs.qh_logsequence - 1);
+	String::Cat(data, sizeof(data), (char*)svs.qh_log_buf[((svs.qh_logsequence - 1) & 1)]);
 
 	NET_SendPacket(String::Length(data) + 1, data, net_from);
 }
@@ -1100,7 +1100,7 @@ void SV_ReadPackets(void)
 			}
 			if (Netchan_Process(&cl->netchan))
 			{	// this is a valid, sequenced packet, so process it
-				svs.stats.packets++;
+				svs.qh_stats.packets++;
 				good = true;
 				cl->qh_send_message = true;	// reply at end of frame
 				if (cl->state != CS_ZOMBIE)
@@ -1211,11 +1211,11 @@ void SV_CheckVars(void)
 	Con_Printf("Updated needpass.\n");
 	if (!v)
 	{
-		Info_SetValueForKey(svs.info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	}
 	else
 	{
-		Info_SetValueForKey(svs.info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(svs.qh_info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	}
 }
 
@@ -1232,7 +1232,7 @@ void SV_Frame(float time)
 		static double start, end;
 
 		start = Sys_DoubleTime();
-		svs.stats.idle += start - end;
+		svs.qh_stats.idle += start - end;
 
 // keep the random time dependent
 		rand();
@@ -1288,16 +1288,16 @@ void SV_Frame(float time)
 
 // collect timing statistics
 		end = Sys_DoubleTime();
-		svs.stats.active += end - start;
-		if (++svs.stats.count == STATFRAMES)
+		svs.qh_stats.active += end - start;
+		if (++svs.qh_stats.count == STATFRAMES)
 		{
-			svs.stats.latched_active = svs.stats.active;
-			svs.stats.latched_idle = svs.stats.idle;
-			svs.stats.latched_packets = svs.stats.packets;
-			svs.stats.active = 0;
-			svs.stats.idle = 0;
-			svs.stats.packets = 0;
-			svs.stats.count = 0;
+			svs.qh_stats.latched_active = svs.qh_stats.active;
+			svs.qh_stats.latched_idle = svs.qh_stats.idle;
+			svs.qh_stats.latched_packets = svs.qh_stats.packets;
+			svs.qh_stats.active = 0;
+			svs.qh_stats.idle = 0;
+			svs.qh_stats.packets = 0;
+			svs.qh_stats.count = 0;
 		}
 	}
 	catch (Exception& e)
@@ -1404,18 +1404,18 @@ void SV_InitLocal(void)
 	for (i = 0; i < MAX_MODELS_H2; i++)
 		sprintf(localmodels[i], "*%i", i);
 
-	Info_SetValueForKey(svs.info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
 	svs.clients = new client_t[HWMAX_CLIENTS];
 	Com_Memset(svs.clients, 0, sizeof(client_t) * HWMAX_CLIENTS);
 
 	// init fraglog stuff
-	svs.logsequence = 1;
-	svs.logtime = realtime;
-	svs.log[0].InitOOB(svs.log_buf[0], sizeof(svs.log_buf[0]));
-	svs.log[0].allowoverflow = true;
-	svs.log[1].InitOOB(svs.log_buf[1], sizeof(svs.log_buf[1]));
-	svs.log[1].allowoverflow = true;
+	svs.qh_logsequence = 1;
+	svs.qh_logtime = realtime;
+	svs.qh_log[0].InitOOB(svs.qh_log_buf[0], sizeof(svs.qh_log_buf[0]));
+	svs.qh_log[0].allowoverflow = true;
+	svs.qh_log[1].InitOOB(svs.qh_log_buf[1], sizeof(svs.qh_log_buf[1]));
+	svs.qh_log[1].allowoverflow = true;
 }
 
 
@@ -1436,12 +1436,12 @@ void Master_Heartbeat(void)
 	int active;
 	int i;
 
-	if (realtime - svs.last_heartbeat < HEARTBEAT_SECONDS)
+	if (realtime - svs.qh_last_heartbeat < HEARTBEAT_SECONDS)
 	{
 		return;		// not time to send yet
 
 	}
-	svs.last_heartbeat = realtime;
+	svs.qh_last_heartbeat = realtime;
 
 	//
 	// count active users
@@ -1454,9 +1454,9 @@ void Master_Heartbeat(void)
 			active++;
 		}
 
-	svs.heartbeat_sequence++;
+	svs.qh_heartbeat_sequence++;
 	sprintf(string, "%c\n%i\n%i\n", S2M_HEARTBEAT,
-		svs.heartbeat_sequence, active);
+		svs.qh_heartbeat_sequence, active);
 
 
 	// send to group master
@@ -1670,7 +1670,7 @@ void SV_InitNet(void)
 	Netchan_Init();
 
 	// heartbeats will allways be sent to the id master
-	svs.last_heartbeat = -99999;		// send immediately
+	svs.qh_last_heartbeat = -99999;		// send immediately
 
 	SOCK_StringToAdr("208.135.137.23", &idmaster_adr, 26900);
 }

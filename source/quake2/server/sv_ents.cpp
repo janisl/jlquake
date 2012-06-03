@@ -172,7 +172,7 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 		}
 		else
 		{
-			newent = &svs.client_entities[(to->first_entity + newindex) % svs.num_client_entities];
+			newent = &svs.q2_client_entities[(to->first_entity + newindex) % svs.q2_num_client_entities];
 			newnum = newent->number;
 		}
 
@@ -182,7 +182,7 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 		}
 		else
 		{
-			oldent = &svs.client_entities[(from->first_entity + oldindex) % svs.num_client_entities];
+			oldent = &svs.q2_client_entities[(from->first_entity + oldindex) % svs.q2_num_client_entities];
 			oldnum = oldent->number;
 		}
 
@@ -633,7 +633,7 @@ void SV_BuildClientFrame(client_t* client)
 	// this is the frame we are creating
 	frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
-	frame->senttime = svs.realtime;	// save it for ping calc later
+	frame->senttime = svs.q2_realtime;	// save it for ping calc later
 
 	// find the client's PVS
 	for (i = 0; i < 3; i++)
@@ -655,7 +655,7 @@ void SV_BuildClientFrame(client_t* client)
 
 	// build up the list of visible entities
 	frame->num_entities = 0;
-	frame->first_entity = svs.next_client_entities;
+	frame->first_entity = svs.q2_next_client_entities;
 
 	c_fullsend = 0;
 
@@ -759,7 +759,7 @@ void SV_BuildClientFrame(client_t* client)
 #endif
 
 		// add it to the circular client_entities array
-		state = &svs.client_entities[svs.next_client_entities % svs.num_client_entities];
+		state = &svs.q2_client_entities[svs.q2_next_client_entities % svs.q2_num_client_entities];
 		if (ent->s.number != e)
 		{
 			Com_DPrintf("FIXING ENT->S.NUMBER!!!\n");
@@ -773,7 +773,7 @@ void SV_BuildClientFrame(client_t* client)
 			state->solid = 0;
 		}
 
-		svs.next_client_entities++;
+		svs.q2_next_client_entities++;
 		frame->num_entities++;
 	}
 }
@@ -796,7 +796,7 @@ void SV_RecordDemoMessage(void)
 	byte buf_data[32768];
 	int len;
 
-	if (!svs.demofile)
+	if (!svs.q2_demofile)
 	{
 		return;
 	}
@@ -830,11 +830,11 @@ void SV_RecordDemoMessage(void)
 	buf.WriteShort(0);		// end of packetentities
 
 	// now add the accumulated multicast information
-	buf.WriteData(svs.demo_multicast._data, svs.demo_multicast.cursize);
-	svs.demo_multicast.Clear();
+	buf.WriteData(svs.q2_demo_multicast._data, svs.q2_demo_multicast.cursize);
+	svs.q2_demo_multicast.Clear();
 
 	// now write the entire message to the file, prefixed by the length
 	len = LittleLong(buf.cursize);
-	FS_Write(&len, 4, svs.demofile);
-	FS_Write(buf._data, buf.cursize, svs.demofile);
+	FS_Write(&len, 4, svs.q2_demofile);
+	FS_Write(buf._data, buf.cursize, svs.q2_demofile);
 }

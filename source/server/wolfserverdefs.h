@@ -181,3 +181,13 @@ struct ettagHeaderExt_t
 	int start;
 	int count;
 };
+
+#define MAX_TEMPBAN_ADDRESSES               MAX_CLIENTS_ET
+
+struct tempBan_t
+{
+	netadr_t adr;
+	int endtime;
+};
+
+#define SERVER_PERFORMANCECOUNTER_SAMPLES   6

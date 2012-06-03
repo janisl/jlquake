@@ -223,7 +223,7 @@ void SV_SendServerinfo(client_t* client)
 
 	client->qh_message.WriteByte(q1svc_serverinfo);
 	client->qh_message.WriteLong(PROTOCOL_VERSION);
-	client->qh_message.WriteByte(svs.maxclients);
+	client->qh_message.WriteByte(svs.qh_maxclients);
 
 	if (!coop->value && deathmatch->value)
 	{
@@ -353,12 +353,12 @@ void SV_CheckForNewClients(void)
 		//
 		// init a new client structure
 		//
-		for (i = 0; i < svs.maxclients; i++)
+		for (i = 0; i < svs.qh_maxclients; i++)
 			if (svs.clients[i].state == CS_FREE)
 			{
 				break;
 			}
-		if (i == svs.maxclients)
+		if (i == svs.qh_maxclients)
 		{
 			Sys_Error("Host_CheckForNewClients: no free clients");
 		}
@@ -879,11 +879,11 @@ void SV_UpdateToReliableMessages(void)
 	client_t* client;
 
 // check for changes to be sent over the reliable streams
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
-			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+			for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 			{
 				if (client->state < CS_CONNECTED)
 				{
@@ -898,7 +898,7 @@ void SV_UpdateToReliableMessages(void)
 		}
 	}
 
-	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -948,7 +948,7 @@ void SV_SendClientMessages(void)
 	SV_UpdateToReliableMessages();
 
 // build individual updates
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->state < CS_CONNECTED)
 		{
@@ -1076,7 +1076,7 @@ void SV_CreateBaseline(void)
 		{
 			continue;
 		}
-		if (entnum > svs.maxclients && !svent->v.modelindex)
+		if (entnum > svs.qh_maxclients && !svent->v.modelindex)
 		{
 			continue;
 		}
@@ -1088,7 +1088,7 @@ void SV_CreateBaseline(void)
 		VectorCopy(svent->GetAngles(), svent->q1_baseline.angles);
 		svent->q1_baseline.frame = svent->GetFrame();
 		svent->q1_baseline.skinnum = svent->GetSkin();
-		if (entnum > 0 && entnum <= svs.maxclients)
+		if (entnum > 0 && entnum <= svs.qh_maxclients)
 		{
 			svent->q1_baseline.colormap = entnum;
 			svent->q1_baseline.modelindex = SV_ModelIndex("progs/player.mdl");
@@ -1156,9 +1156,9 @@ void SV_SaveSpawnparms(void)
 {
 	int i, j;
 
-	svs.serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = pr_global_struct->serverflags;
 
-	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
 		if (host_client->state < CS_CONNECTED)
 		{
@@ -1196,7 +1196,7 @@ void SV_SpawnServer(char* server)
 	scr_centertime_off = 0;
 
 	Con_DPrintf("SpawnServer: %s\n",server);
-	svs.changelevel_issued = false;		// now safe to issue another
+	svs.qh_changelevel_issued = false;		// now safe to issue another
 
 //
 // tell all connected clients that we are going to a new level
@@ -1249,8 +1249,8 @@ void SV_SpawnServer(char* server)
 	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_Q1);
 
 // leave slots at start for clients only
-	sv.qh_num_edicts = svs.maxclients + 1;
-	for (i = 0; i < svs.maxclients; i++)
+	sv.qh_num_edicts = svs.qh_maxclients + 1;
+	for (i = 0; i < svs.qh_maxclients; i++)
 	{
 		ent = EDICT_NUM(i + 1);
 		svs.clients[i].qh_edict = ent;
@@ -1304,7 +1304,7 @@ void SV_SpawnServer(char* server)
 	pr_global_struct->mapname = PR_SetString(sv.name);
 
 // serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.serverflags;
+	pr_global_struct->serverflags = svs.qh_serverflags;
 
 	ED_LoadFromFile(CM_EntityString());
 
@@ -1320,7 +1320,7 @@ void SV_SpawnServer(char* server)
 	SV_CreateBaseline();
 
 // send serverinfo to all connected clients
-	for (i = 0,host_client = svs.clients; i < svs.maxclients; i++, host_client++)
+	for (i = 0,host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		if (host_client->state >= CS_CONNECTED)
 		{
 			SV_SendServerinfo(host_client);

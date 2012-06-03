@@ -2286,11 +2286,11 @@ void PF_changelevel(void)
 {
 	const char* s1, * s2;
 
-	if (svs.changelevel_issued)
+	if (svs.qh_changelevel_issued)
 	{
 		return;
 	}
-	svs.changelevel_issued = true;
+	svs.qh_changelevel_issued = true;
 
 	s1 = G_STRING(OFS_PARM0);
 	s2 = G_STRING(OFS_PARM1);
@@ -2333,7 +2333,7 @@ void PF_logfrag(void)
 
 	s = va("\\%s\\%s\\\n",svs.clients[e1 - 1].name, svs.clients[e2 - 1].name);
 
-	svs.log[svs.logsequence & 1].Print(s);
+	svs.qh_log[svs.qh_logsequence & 1].Print(s);
 	if (sv_fraglogfile)
 	{
 		FS_Printf(sv_fraglogfile, s);
@@ -2361,7 +2361,7 @@ void PF_infokey(void)
 
 	if (e1 == 0)
 	{
-		if ((value = Info_ValueForKey(svs.info, key)) == NULL ||
+		if ((value = Info_ValueForKey(svs.qh_info, key)) == NULL ||
 			!*value)
 		{
 			value = Info_ValueForKey(localinfo, key);
@@ -2661,7 +2661,7 @@ void PF_AwardExperience(void)
             ToEnt->v.level = AfterLevel;
             entnum = NUM_FOR_EDICT(ToEnt);
 
-            if (entnum >= 1 && entnum <= svs.maxclients)
+            if (entnum >= 1 && entnum <= svs.qh_maxclients)
             {
                 pr_save = *pr_global_struct;
                 pr_global_struct->time = sv.time;

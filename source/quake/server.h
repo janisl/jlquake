@@ -21,17 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../server/server.h"
 
-typedef struct
-{
-	int maxclients;
-	int maxclientslimit;
-	struct client_t* clients;		// [maxclients]
-	int serverflags;				// episode completion information
-	qboolean changelevel_issued;	// cleared when at SV_SpawnServer
-} serverStatic_t;
-
-//=============================================================================
-
 // edict->solid values
 #define SOLID_NOT               0		// no interaction with other objects
 #define SOLID_TRIGGER           1		// touch on edge, but not blocking

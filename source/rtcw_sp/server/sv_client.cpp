@@ -86,51 +86,51 @@ void SV_GetChallenge(netadr_t from)
 		// this is the first time this client has asked for a challenge
 		challenge = &svs.challenges[oldest];
 
-		challenge->challenge = ((rand() << 16) ^ rand()) ^ svs.time;
+		challenge->challenge = ((rand() << 16) ^ rand()) ^ svs.q3_time;
 		challenge->adr = from;
-		challenge->time = svs.time;
-		challenge->firstTime = svs.time;
+		challenge->time = svs.q3_time;
+		challenge->firstTime = svs.q3_time;
 		i = oldest;
 	}
 
 	// if they are on a lan address, send the challengeResponse immediately
 	if (SOCK_IsLANAddress(from))
 	{
-		challenge->pingTime = svs.time;
+		challenge->pingTime = svs.q3_time;
 		NET_OutOfBandPrint(NS_SERVER, from, "challengeResponse %i", challenge->challenge);
 		return;
 	}
 
 	// look up the authorize server's IP
-	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
 		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
 		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort(svs.authorizeAddress.port));
+			svs.q3_authorizeAddress.ip[0], svs.q3_authorizeAddress.ip[1],
+			svs.q3_authorizeAddress.ip[2], svs.q3_authorizeAddress.ip[3],
+			BigShort(svs.q3_authorizeAddress.port));
 	}
 
 	// if they have been challenging for a long time and we
 	// haven't heard anything from the authoirze server, go ahead and
 	// let them in, assuming the id server is down
-	if (svs.time - challenge->firstTime > AUTHORIZE_TIMEOUT)
+	if (svs.q3_time - challenge->firstTime > AUTHORIZE_TIMEOUT)
 	{
 		Com_DPrintf("authorize server timed out\n");
 
-		challenge->pingTime = svs.time;
+		challenge->pingTime = svs.q3_time;
 		NET_OutOfBandPrint(NS_SERVER, challenge->adr,
 			"challengeResponse %i", challenge->challenge);
 		return;
 	}
 
 	// otherwise send their ip to the authorize server
-	if (svs.authorizeAddress.type != NA_BAD)
+	if (svs.q3_authorizeAddress.type != NA_BAD)
 	{
 		Cvar* fs;
 		char game[1024];
@@ -144,7 +144,7 @@ void SV_GetChallenge(netadr_t from)
 		Com_DPrintf("sending getIpAuthorize for %s\n", SOCK_AdrToString(from));
 		fs = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
 
-		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"getIpAuthorize %i %i.%i.%i.%i %s %s",  svs.challenges[i].challenge,
 			from.ip[0], from.ip[1], from.ip[2], from.ip[3], game, fs->integer);
 	}
@@ -167,7 +167,7 @@ void SV_AuthorizeIpPacket(netadr_t from)
 	char* r;
 	char ret[1024];
 
-	if (!SOCK_CompareBaseAdr(from, svs.authorizeAddress))
+	if (!SOCK_CompareBaseAdr(from, svs.q3_authorizeAddress))
 	{
 		Com_Printf("SV_AuthorizeIpPacket: not from authorize server\n");
 		return;
@@ -189,7 +189,7 @@ void SV_AuthorizeIpPacket(netadr_t from)
 	}
 
 	// send a packet back to the original client
-	svs.challenges[i].pingTime = svs.time;
+	svs.challenges[i].pingTime = svs.q3_time;
 	s = Cmd_Argv(2);
 	r = Cmd_Argv(3);			// reason
 
@@ -287,7 +287,7 @@ void SV_DirectConnect(netadr_t from)
 			(cl->netchan.qport == qport ||
 			 from.port == cl->netchan.remoteAddress.port))
 		{
-			if ((svs.time - cl->q3_lastConnectTime)
+			if ((svs.q3_time - cl->q3_lastConnectTime)
 				< (sv_reconnectlimit->integer * 1000))
 			{
 				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
@@ -322,7 +322,7 @@ void SV_DirectConnect(netadr_t from)
 		// force the IP key/value pair so the game can filter based on ip
 		Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(from), MAX_INFO_STRING_Q3);
 
-		ping = svs.time - svs.challenges[i].pingTime;
+		ping = svs.q3_time - svs.challenges[i].pingTime;
 		Com_Printf("Client %i connecting with %i challenge ping\n", i, ping);
 
 		// never reject a LAN client based on ping
@@ -494,9 +494,9 @@ gotnewcl:
 	Com_DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
 
 	newcl->state = CS_CONNECTED;
-	newcl->q3_nextSnapshotTime = svs.time;
-	newcl->q3_lastPacketTime = svs.time;
-	newcl->q3_lastConnectTime = svs.time;
+	newcl->q3_nextSnapshotTime = svs.q3_time;
+	newcl->q3_lastPacketTime = svs.q3_time;
+	newcl->q3_lastConnectTime = svs.q3_time;
 
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
@@ -697,7 +697,7 @@ void SV_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
 	client->ws_gentity = ent;
 
 	client->q3_deltaMessage = -1;
-	client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately
+	client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
 	client->ws_lastUsercmd = *cmd;
 
 	// call the game begin function
@@ -798,7 +798,7 @@ void SV_NextDownload_f(client_t* cl)
 			return;
 		}
 
-		cl->downloadSendTime = svs.time;
+		cl->downloadSendTime = svs.q3_time;
 		cl->downloadClientBlock++;
 		return;
 	}
@@ -996,7 +996,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 
 			//FIXME:  This uses a hardcoded one second timeout for lost blocks
 			//the timeout should be based on client rate somehow
-			if (svs.time - cl->downloadSendTime > 1000)
+			if (svs.q3_time - cl->downloadSendTime > 1000)
 			{
 				cl->downloadXmitBlock = cl->downloadClientBlock;
 			}
@@ -1032,7 +1032,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 		// It will get sent with next snap shot.  The rate will keep us in line.
 		cl->downloadXmitBlock++;
 
-		cl->downloadSendTime = svs.time;
+		cl->downloadSendTime = svs.q3_time;
 	}
 }
 
@@ -1419,7 +1419,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	if (!com_cl_running->integer &&
 		cl->state >= CS_ACTIVE &&		// (SA) this was commented out in Wolf.  Did we do that?
 		sv_floodProtect->integer &&
-		svs.time < cl->q3_nextReliableTime)
+		svs.q3_time < cl->q3_nextReliableTime)
 	{
 		// ignore any other text messages from this client but let them keep playing
 		clientOk = qfalse;
@@ -1428,7 +1428,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	}
 
 	// don't allow another command for one second
-	cl->q3_nextReliableTime = svs.time + 1000;
+	cl->q3_nextReliableTime = svs.q3_time + 1000;
 
 	SV_ExecuteClientCommand(cl, s, clientOk);
 
@@ -1522,7 +1522,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// save time for ping calculation
-	cl->q3_frames[cl->q3_messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.time;
+	cl->q3_frames[cl->q3_messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.q3_time;
 
 	// if this is the first usercmd we have received
 	// this gamestate, put the client into the world
@@ -1555,7 +1555,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 			continue;
 		}
 		// extremely lagged or cmd from before a map_restart
-		//if ( cmds[i].serverTime > svs.time + 3000 ) {
+		//if ( cmds[i].serverTime > svs.q3_time + 3000 ) {
 		//	continue;
 		//}
 		if (sv_gametype->integer != WSGT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check

@@ -240,7 +240,7 @@ static void SV_Map_f(void)
 
 		if (savegameTime >= 0)
 		{
-			svs.time = savegameTime;
+			svs.q3_time = savegameTime;
 		}
 
 		FS_FreeFile(buffer);
@@ -381,7 +381,7 @@ static void SV_MapRestart_f(void)
 	}
 	if (delay && !Cvar_VariableValue("g_doWarmup"))
 	{
-		sv.q3_restartTime = svs.time + delay * 1000;
+		sv.q3_restartTime = svs.q3_time + delay * 1000;
 		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
@@ -423,7 +423,7 @@ static void SV_MapRestart_f(void)
 
 		if (savegameTime >= 0)
 		{
-			svs.time = savegameTime;
+			svs.q3_time = savegameTime;
 		}
 
 		FS_FreeFile(buffer);
@@ -432,7 +432,7 @@ static void SV_MapRestart_f(void)
 
 	// toggle the server bit so clients can detect that a
 	// map_restart has happened
-	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
+	svs.q3_snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
 	// generate a new serverid
 	sv.q3_restartedServerId = sv.q3_serverId;
@@ -450,8 +450,8 @@ static void SV_MapRestart_f(void)
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)
 	{
-		VM_Call(gvm, GAME_RUN_FRAME, svs.time);
-		svs.time += 100;
+		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+		svs.q3_time += 100;
 	}
 
 	sv.state = SS_GAME;
@@ -497,8 +497,8 @@ static void SV_MapRestart_f(void)
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call(gvm, GAME_RUN_FRAME, svs.time);
-	svs.time += 100;
+	VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+	svs.q3_time += 100;
 }
 
 /*
@@ -639,7 +639,7 @@ static void SV_Kick_f(void)
 					continue;
 				}
 				SV_DropClient(cl, "was kicked");
-				cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
+				cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 			}
 		}
 		else if (!String::ICmp(Cmd_Argv(1), "allbots"))
@@ -655,7 +655,7 @@ static void SV_Kick_f(void)
 					continue;
 				}
 				SV_DropClient(cl, "was kicked");
-				cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
+				cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 			}
 		}
 		return;
@@ -667,7 +667,7 @@ static void SV_Kick_f(void)
 	}
 
 	SV_DropClient(cl, "was kicked");
-	cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
+	cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
 
 /*
@@ -709,24 +709,24 @@ static void SV_Ban_f(void)
 	}
 
 	// look up the authorize server's IP
-	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
 		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
 		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort(svs.authorizeAddress.port));
+			svs.q3_authorizeAddress.ip[0], svs.q3_authorizeAddress.ip[1],
+			svs.q3_authorizeAddress.ip[2], svs.q3_authorizeAddress.ip[3],
+			BigShort(svs.q3_authorizeAddress.port));
 	}
 
 	// otherwise send their ip to the authorize server
-	if (svs.authorizeAddress.type != NA_BAD)
+	if (svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
 			cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3]);
 		Com_Printf("%s was banned from coming back\n", cl->name);
@@ -770,24 +770,24 @@ static void SV_BanNum_f(void)
 	}
 
 	// look up the authorize server's IP
-	if (!svs.authorizeAddress.ip[0] && svs.authorizeAddress.type != NA_BAD)
+	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
 		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, PORT_AUTHORIZE))
+		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
 		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort(svs.authorizeAddress.port));
+			svs.q3_authorizeAddress.ip[0], svs.q3_authorizeAddress.ip[1],
+			svs.q3_authorizeAddress.ip[2], svs.q3_authorizeAddress.ip[3],
+			BigShort(svs.q3_authorizeAddress.port));
 	}
 
 	// otherwise send their ip to the authorize server
-	if (svs.authorizeAddress.type != NA_BAD)
+	if (svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		NET_OutOfBandPrint(NS_SERVER, svs.authorizeAddress,
+		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
 			cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3]);
 		Com_Printf("%s was banned from coming back\n", cl->name);
@@ -830,7 +830,7 @@ static void SV_KickNum_f(void)
 	}
 
 	SV_DropClient(cl, "was kicked");
-	cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
+	cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
 
 /*
@@ -886,7 +886,7 @@ static void SV_Status_f(void)
 		for (j = 0; j < l; j++)
 			Com_Printf(" ");
 
-		Com_Printf("%7i ", svs.time - cl->q3_lastPacketTime);
+		Com_Printf("%7i ", svs.q3_time - cl->q3_lastPacketTime);
 
 		s = SOCK_AdrToString(cl->netchan.remoteAddress);
 		Com_Printf("%s", s);
@@ -949,7 +949,7 @@ Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
 */
 void SV_Heartbeat_f(void)
 {
-	svs.nextHeartbeatTime = -9999999;
+	svs.q3_nextHeartbeatTime = -9999999;
 }
 
 
