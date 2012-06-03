@@ -187,7 +187,7 @@ void SV_SaveSpawnparms(void)
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
+			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
 }
 
@@ -263,7 +263,7 @@ void SV_SpawnServer(char* server)
 		ent = EDICT_NUM(i + 1);
 		svs.clients[i].edict = ent;
 //ZOID - make sure we update frags right
-		svs.clients[i].old_frags = 0;
+		svs.clients[i].qh_old_frags = 0;
 	}
 
 	sv.time = 1.0;

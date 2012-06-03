@@ -66,7 +66,7 @@ void NET_Ban_f(void)
 	}
 	else
 	{
-		if (pr_global_struct->deathmatch && !host_client->privileged)
+		if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 		{
 			return;
 		}
@@ -941,10 +941,10 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteByte(CCREP_PLAYER_INFO);
 		net_message.WriteByte(playerNumber);
 		net_message.WriteString2(client->name);
-		net_message.WriteLong(client->colors);
+		net_message.WriteLong(client->qh_colors);
 		net_message.WriteLong((int)client->edict->GetFrags());
-		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
-		net_message.WriteString2(client->netconnection->address);
+		net_message.WriteLong((int)(net_time - client->qh_netconnection->connecttime));
+		net_message.WriteString2(client->qh_netconnection->address);
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
@@ -1048,7 +1048,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.maxclients; i++, client++)
 	{
-		if (!client->netconnection)
+		if (!client->qh_netconnection)
 		{
 			continue;
 		}
@@ -1056,7 +1056,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		{
 			continue;
 		}
-		s = client->netconnection;
+		s = client->qh_netconnection;
 		if (s->driver != net_driverlevel)
 		{
 			continue;

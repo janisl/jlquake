@@ -523,11 +523,11 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
 	ent = client->edict;
 
 	// send the chokecount for cl_netgraph
-	if (client->chokecount)
+	if (client->qh_chokecount)
 	{
 		msg->WriteByte(qwsvc_chokecount);
-		msg->WriteByte(client->chokecount);
-		client->chokecount = 0;
+		msg->WriteByte(client->qh_chokecount);
+		client->qh_chokecount = 0;
 	}
 
 	// send a damage message if the player got hit this frame
@@ -573,9 +573,9 @@ void SV_UpdateClientStats(client_t* client)
 
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his
-	if (client->spectator && client->spec_track > 0)
+	if (client->qh_spectator && client->qh_spec_track > 0)
 	{
-		ent = svs.clients[client->spec_track - 1].edict;
+		ent = svs.clients[client->qh_spec_track - 1].edict;
 	}
 
 	stats[Q1STAT_HEALTH] = ent->GetHealth();
@@ -586,7 +586,7 @@ void SV_UpdateClientStats(client_t* client)
 	stats[Q1STAT_NAILS] = ent->GetAmmoNails();
 	stats[Q1STAT_ROCKETS] = ent->GetAmmoRockets();
 	stats[Q1STAT_CELLS] = ent->GetAmmoCells();
-	if (!client->spectator)
+	if (!client->qh_spectator)
 	{
 		stats[Q1STAT_ACTIVEWEAPON] = ent->GetWeapon();
 	}
@@ -594,9 +594,9 @@ void SV_UpdateClientStats(client_t* client)
 	stats[QWSTAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
 
 	for (i = 0; i < MAX_CL_STATS; i++)
-		if (stats[i] != client->stats[i])
+		if (stats[i] != client->qh_stats[i])
 		{
-			client->stats[i] = stats[i];
+			client->qh_stats[i] = stats[i];
 			if (stats[i] >= 0 && stats[i] <= 255)
 			{
 				ClientReliableWrite_Begin(client, q1svc_updatestat, 3);
@@ -682,12 +682,12 @@ void SV_UpdateToReliableMessages(void)
 		{
 			continue;
 		}
-		if (host_client->sendinfo)
+		if (host_client->qh_sendinfo)
 		{
-			host_client->sendinfo = false;
+			host_client->qh_sendinfo = false;
 			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
 		}
-		if (host_client->old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 			{
@@ -700,25 +700,25 @@ void SV_UpdateToReliableMessages(void)
 				ClientReliableWrite_Short(client, host_client->edict->GetFrags());
 			}
 
-			host_client->old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->edict->GetFrags();
 		}
 
 		// maxspeed/entgravity changes
 		ent = host_client->edict;
 
 		val = GetEdictFieldValue(ent, "gravity");
-		if (val && host_client->entgravity != val->_float)
+		if (val && host_client->qh_entgravity != val->_float)
 		{
-			host_client->entgravity = val->_float;
+			host_client->qh_entgravity = val->_float;
 			ClientReliableWrite_Begin(host_client, qwsvc_entgravity, 5);
-			ClientReliableWrite_Float(host_client, host_client->entgravity);
+			ClientReliableWrite_Float(host_client, host_client->qh_entgravity);
 		}
 		val = GetEdictFieldValue(ent, "maxspeed");
-		if (val && host_client->maxspeed != val->_float)
+		if (val && host_client->qh_maxspeed != val->_float)
 		{
-			host_client->maxspeed = val->_float;
+			host_client->qh_maxspeed = val->_float;
 			ClientReliableWrite_Begin(host_client, qwsvc_maxspeed, 5);
-			ClientReliableWrite_Float(host_client, host_client->maxspeed);
+			ClientReliableWrite_Float(host_client, host_client->qh_maxspeed);
 		}
 
 	}
@@ -777,41 +777,41 @@ void SV_SendClientMessages(void)
 			continue;
 		}
 
-		if (c->drop)
+		if (c->qw_drop)
 		{
 			SV_DropClient(c);
-			c->drop = false;
+			c->qw_drop = false;
 			continue;
 		}
 
 		// check to see if we have a backbuf to stick in the reliable
-		if (c->num_backbuf)
+		if (c->qw_num_backbuf)
 		{
 			// will it fit?
-			if (c->netchan.message.cursize + c->backbuf_size[0] <
+			if (c->netchan.message.cursize + c->qw_backbuf_size[0] <
 				c->netchan.message.maxsize)
 			{
 
 				Con_DPrintf("%s: backbuf %d bytes\n",
-					c->name, c->backbuf_size[0]);
+					c->name, c->qw_backbuf_size[0]);
 
 				// it'll fit
-				c->netchan.message.WriteData(c->backbuf_data[0],
-					c->backbuf_size[0]);
+				c->netchan.message.WriteData(c->qw_backbuf_data[0],
+					c->qw_backbuf_size[0]);
 
 				//move along, move along
-				for (j = 1; j < c->num_backbuf; j++)
+				for (j = 1; j < c->qw_num_backbuf; j++)
 				{
-					Com_Memcpy(c->backbuf_data[j - 1], c->backbuf_data[j],
-						c->backbuf_size[j]);
-					c->backbuf_size[j - 1] = c->backbuf_size[j];
+					Com_Memcpy(c->qw_backbuf_data[j - 1], c->qw_backbuf_data[j],
+						c->qw_backbuf_size[j]);
+					c->qw_backbuf_size[j - 1] = c->qw_backbuf_size[j];
 				}
 
-				c->num_backbuf--;
-				if (c->num_backbuf)
+				c->qw_num_backbuf--;
+				if (c->qw_num_backbuf)
 				{
-					c->backbuf.InitOOB(c->backbuf_data[c->num_backbuf - 1], sizeof(c->backbuf_data[c->num_backbuf - 1]));
-					c->backbuf.cursize = c->backbuf_size[c->num_backbuf - 1];
+					c->qw_backbuf.InitOOB(c->qw_backbuf_data[c->qw_num_backbuf - 1], sizeof(c->qw_backbuf_data[c->qw_num_backbuf - 1]));
+					c->qw_backbuf.cursize = c->qw_backbuf_size[c->qw_num_backbuf - 1];
 				}
 			}
 		}
@@ -825,20 +825,20 @@ void SV_SendClientMessages(void)
 			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
 			Con_Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
-			c->send_message = true;
+			c->qh_send_message = true;
 			c->netchan.clearTime = 0;	// don't choke this message
 		}
 
 		// only send messages if the client has sent one
 		// and the bandwidth is not choked
-		if (!c->send_message)
+		if (!c->qh_send_message)
 		{
 			continue;
 		}
-		c->send_message = false;	// try putting this after choke?
+		c->qh_send_message = false;	// try putting this after choke?
 		if (!sv.paused && !Netchan_CanPacket(&c->netchan))
 		{
-			c->chokecount++;
+			c->qh_chokecount++;
 			continue;		// bandwidth choke
 		}
 
@@ -875,7 +875,7 @@ void SV_SendMessagesToAll(void)
 	for (i = 0, c = svs.clients; i < MAX_CLIENTS_QW; i++, c++)
 		if (c->state)		// FIXME: should this only send to active?
 		{
-			c->send_message = true;
+			c->qh_send_message = true;
 		}
 
 	SV_SendClientMessages();

@@ -136,7 +136,7 @@ SV_EmitPacketEntities
 Writes a delta update of an q2entity_state_t list to the message.
 =============
 */
-void SV_EmitPacketEntities(client_frame_t* from, client_frame_t* to, QMsg* msg)
+void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* msg)
 {
 	q2entity_state_t* oldent, * newent;
 	int oldindex, newindex;
@@ -251,7 +251,7 @@ SV_WritePlayerstateToClient
 
 =============
 */
-void SV_WritePlayerstateToClient(client_frame_t* from, client_frame_t* to, QMsg* msg)
+void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, QMsg* msg)
 {
 	int i;
 	int pflags;
@@ -492,19 +492,19 @@ SV_WriteFrameToClient
 */
 void SV_WriteFrameToClient(client_t* client, QMsg* msg)
 {
-	client_frame_t* frame, * oldframe;
+	q2client_frame_t* frame, * oldframe;
 	int lastframe;
 
 //Com_Printf ("%i -> %i\n", client->lastframe, sv.framenum);
 	// this is the frame we are creating
-	frame = &client->frames[sv.framenum & UPDATE_MASK_Q2];
+	frame = &client->q2_frames[sv.framenum & UPDATE_MASK_Q2];
 
-	if (client->lastframe <= 0)
+	if (client->q2_lastframe <= 0)
 	{	// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = -1;
 	}
-	else if (sv.framenum - client->lastframe >= (UPDATE_BACKUP_Q2 - 3))
+	else if (sv.framenum - client->q2_lastframe >= (UPDATE_BACKUP_Q2 - 3))
 	{	// client hasn't gotten a good message through in a long time
 //		Com_Printf ("%s: Delta request from out-of-date packet.\n", client->name);
 		oldframe = NULL;
@@ -512,15 +512,15 @@ void SV_WriteFrameToClient(client_t* client, QMsg* msg)
 	}
 	else
 	{	// we have a valid message to delta from
-		oldframe = &client->frames[client->lastframe & UPDATE_MASK_Q2];
-		lastframe = client->lastframe;
+		oldframe = &client->q2_frames[client->q2_lastframe & UPDATE_MASK_Q2];
+		lastframe = client->q2_lastframe;
 	}
 
 	msg->WriteByte(q2svc_frame);
 	msg->WriteLong(sv.framenum);
 	msg->WriteLong(lastframe);	// what we are delta'ing from
-	msg->WriteByte(client->surpressCount);	// rate dropped packets
-	client->surpressCount = 0;
+	msg->WriteByte(client->q2_surpressCount);	// rate dropped packets
+	client->q2_surpressCount = 0;
 
 	// send over the areabits
 	msg->WriteByte(frame->areabytes);
@@ -611,7 +611,7 @@ void SV_BuildClientFrame(client_t* client)
 	vec3_t org;
 	edict_t* ent;
 	edict_t* clent;
-	client_frame_t* frame;
+	q2client_frame_t* frame;
 	q2entity_state_t* state;
 	int l;
 	int clientarea, clientcluster;
@@ -631,7 +631,7 @@ void SV_BuildClientFrame(client_t* client)
 #endif
 
 	// this is the frame we are creating
-	frame = &client->frames[sv.framenum & UPDATE_MASK_Q2];
+	frame = &client->q2_frames[sv.framenum & UPDATE_MASK_Q2];
 
 	frame->senttime = svs.realtime;	// save it for ping calc later
 

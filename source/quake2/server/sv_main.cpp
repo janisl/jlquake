@@ -79,10 +79,10 @@ void SV_DropClient(client_t* drop)
 		ge->ClientDisconnect(drop->edict);
 	}
 
-	if (drop->download)
+	if (drop->q2_downloadData)
 	{
-		FS_FreeFile(drop->download);
-		drop->download = NULL;
+		FS_FreeFile(drop->q2_downloadData);
+		drop->q2_downloadData = NULL;
 	}
 
 	drop->state = CS_ZOMBIE;		// become free in a few seconds
@@ -358,7 +358,7 @@ void SVC_DirectConnect(void)
 			(cl->netchan.qport == qport ||
 			 adr.port == cl->netchan.remoteAddress.port))
 		{
-			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
+			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->q2_lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
 				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(adr));
 				return;
@@ -424,10 +424,10 @@ gotnewcl:
 
 	newcl->state = CS_CONNECTED;
 
-	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
+	newcl->datagram.InitOOB(newcl->datagramBuffer, MAX_MSGLEN_Q2);
 	newcl->datagram.allowoverflow = true;
-	newcl->lastmessage = svs.realtime;	// don't timeout
-	newcl->lastconnect = svs.realtime;
+	newcl->q2_lastmessage = svs.realtime;	// don't timeout
+	newcl->q2_lastconnect = svs.realtime;
 }
 
 int Rcon_Validate(void)
@@ -591,10 +591,10 @@ void SV_CalcPings(void)
 		count = 0;
 		for (j = 0; j < LATENCY_COUNTS; j++)
 		{
-			if (cl->frame_latency[j] > 0)
+			if (cl->q2_frame_latency[j] > 0)
 			{
 				count++;
-				total += cl->frame_latency[j];
+				total += cl->q2_frame_latency[j];
 			}
 		}
 		if (!count)
@@ -640,7 +640,7 @@ void SV_GiveMsec(void)
 			continue;
 		}
 
-		cl->commandMsec = 1800;		// 1600 + some slop
+		cl->q2_commandMsec = 1800;		// 1600 + some slop
 	}
 }
 
@@ -697,7 +697,7 @@ void SV_ReadPackets(void)
 			{	// this is a valid, sequenced packet, so process it
 				if (cl->state != CS_ZOMBIE)
 				{
-					cl->lastmessage = svs.realtime;	// don't timeout
+					cl->q2_lastmessage = svs.realtime;	// don't timeout
 					SV_ExecuteClientMessage(cl);
 				}
 			}
@@ -737,19 +737,19 @@ void SV_CheckTimeouts(void)
 	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
-		if (cl->lastmessage > svs.realtime)
+		if (cl->q2_lastmessage > svs.realtime)
 		{
-			cl->lastmessage = svs.realtime;
+			cl->q2_lastmessage = svs.realtime;
 		}
 
 		if (cl->state == CS_ZOMBIE &&
-			cl->lastmessage < zombiepoint)
+			cl->q2_lastmessage < zombiepoint)
 		{
 			cl->state = CS_FREE;	// can now be reused
 			continue;
 		}
 		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
-			cl->lastmessage < droppoint)
+			cl->q2_lastmessage < droppoint)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 			SV_DropClient(cl);

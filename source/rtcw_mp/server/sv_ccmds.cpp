@@ -504,7 +504,7 @@ static void SV_MapRestart_f(void)
 
 		client->state = CS_ACTIVE;
 
-		SV_ClientEnterWorld(client, &client->lastUsercmd);
+		SV_ClientEnterWorld(client, &client->wm_lastUsercmd);
 	}
 
 	// run another frame to allow things to look at all the players
@@ -630,7 +630,7 @@ static void SV_Kick_f(void)
 					continue;
 				}
 				SV_DropClient(cl, "player kicked");		// JPW NERVE to match front menu message
-				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+				cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
 		}
 		else if (!String::ICmp(Cmd_Argv(1), "allbots"))
@@ -646,7 +646,7 @@ static void SV_Kick_f(void)
 					continue;
 				}
 				SV_DropClient(cl, "was kicked");
-				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+				cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
 		}
 		return;
@@ -658,7 +658,7 @@ static void SV_Kick_f(void)
 	}
 
 	SV_DropClient(cl, "player kicked");		// JPW NERVE to match front menu message
-	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+	cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 
 /*
@@ -821,7 +821,7 @@ static void SV_KickNum_f(void)
 	}
 
 	SV_DropClient(cl, "player kicked");
-	cl->lastPacketTime = svs.time;	// in case there is a funny zombie
+	cl->q3_lastPacketTime = svs.time;	// in case there is a funny zombie
 }
 
 /*
@@ -877,7 +877,7 @@ static void SV_Status_f(void)
 		for (j = 0; j < l; j++)
 			Com_Printf(" ");
 
-		Com_Printf("%7i ", svs.time - cl->lastPacketTime);
+		Com_Printf("%7i ", svs.time - cl->q3_lastPacketTime);
 
 		s = SOCK_AdrToString(cl->netchan.remoteAddress);
 		Com_Printf("%s", s);

@@ -72,81 +72,9 @@ typedef struct
 	byte signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_HW];
 } server_t;
 
-
-#define NUM_SPAWN_PARMS         16
-
-typedef struct
-{
-	// received from client
-
-	// reply
-	double senttime;
-	float ping_time;
-	hwpacket_entities_t entities;
-} client_frame_t;
-
 struct client_t : public client_common_t
 {
-	int spectator;						// non-interactive
-
-	qboolean sendinfo;					// at end of frame, send info to all
-										// this prevents malicious multiple broadcasts
-	qboolean portals;					// They have portals mission pack installed
-	int userid;										// identifying number
-
-	hwusercmd_t lastcmd;				// for filling in big drops and partial predictions
-	double localtime;					// of last message
-	int oldbuttons;
-
-	float maxspeed;						// localized maxspeed
-	float entgravity;					// localized ent gravity
-
 	qhedict_t* edict;						// EDICT_NUM(clientnum+1)
-	char name[32];						// for printing to other people
-										// extracted from userinfo
-	int playerclass;
-	int siege_team;
-	int next_playerclass;
-	int messagelevel;					// for filtering printed messages
-
-	// the datagram is written to after every frame, but only cleared
-	// when it is sent out to the client.  overflow is tolerated.
-	QMsg datagram;
-	byte datagram_buf[MAX_DATAGRAM_HW];
-
-	double connection_started;			// or time of disconnect for zombies
-	qboolean send_message;				// set on frames a datagram arived on
-
-// spawn parms are carried from level to level
-	float spawn_parms[NUM_SPAWN_PARMS];
-
-// client known data for deltas
-	int old_frags;
-
-	int stats[MAX_CL_STATS];
-
-	client_frame_t frames[UPDATE_BACKUP_HW];	// updates can be deltad from here
-
-	fileHandle_t download;				// file being downloaded
-	int downloadsize;					// total bytes
-	int downloadcount;					// bytes sent
-
-	int spec_track;						// entnum of player tracking
-
-	double whensaid[10];				// JACK: For floodprots
-	int whensaidhead;					// Head value for floodprots
-	double lockedtill;
-
-//===== NETWORK ============
-	int chokecount;
-	int delta_sequence;					// -1 = no compression
-	netchan_t netchan;
-
-	h2client_entvars_t old_v;
-	qboolean send_all_v;
-
-	unsigned PIV, LastPIV;				// people in view
-	qboolean skipsend;					// Skip sending this frame, guaranteed to send next frame
 };
 
 // a client can leave the server in one of four ways:

@@ -234,7 +234,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, 
 		{
 			svs.clients[i].state = CS_CONNECTED;
 		}
-		svs.clients[i].lastframe = -1;
+		svs.clients[i].q2_lastframe = -1;
 	}
 
 	sv.time = 1000;
@@ -389,7 +389,7 @@ void SV_InitGame(void)
 		ent = EDICT_NUM(i + 1);
 		ent->s.number = i + 1;
 		svs.clients[i].edict = ent;
-		Com_Memset(&svs.clients[i].lastcmd, 0, sizeof(svs.clients[i].lastcmd));
+		Com_Memset(&svs.clients[i].q2_lastUsercmd, 0, sizeof(svs.clients[i].q2_lastUsercmd));
 	}
 }
 

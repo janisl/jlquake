@@ -122,7 +122,7 @@ static void SV_Netchan_Decode(client_t* client, QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)client->reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)];
+	string = (byte*)client->q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)];
 	index = 0;
 	//
 	key = client->challenge ^ serverId ^ messageAcknowledge;
@@ -155,20 +155,20 @@ SV_Netchan_TransmitNextFragment
 void SV_Netchan_TransmitNextFragment(client_t* client)
 {
 	Netchan_TransmitNextFragment(&client->netchan);
-	while (!client->netchan.unsentFragments && client->netchan_start_queue)
+	while (!client->netchan.unsentFragments && client->q3_netchan_start_queue)
 	{
 		// make sure the netchan queue has been properly initialized (you never know)
 		//%	if (!client->netchan_end_queue) {
 		//%		Com_Error(ERR_DROP, "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n");
 		//%	}
 		// the last fragment was transmitted, check wether we have queued messages
-		netchan_buffer_t* netbuf = client->netchan_start_queue;
+		netchan_buffer_t* netbuf = client->q3_netchan_start_queue;
 
 		// pop from queue
-		client->netchan_start_queue = netbuf->next;
-		if (!client->netchan_start_queue)
+		client->q3_netchan_start_queue = netbuf->next;
+		if (!client->q3_netchan_start_queue)
 		{
-			client->netchan_end_queue = NULL;
+			client->et_netchan_end_queue = NULL;
 		}
 
 		if (!SV_GameIsSinglePlayer())
@@ -188,22 +188,22 @@ SV_WriteBinaryMessage
 */
 static void SV_WriteBinaryMessage(QMsg* msg, client_t* cl)
 {
-	if (!cl->binaryMessageLength)
+	if (!cl->et_binaryMessageLength)
 	{
 		return;
 	}
 
 	msg->Uncompressed();
 
-	if ((msg->cursize + cl->binaryMessageLength) >= msg->maxsize)
+	if ((msg->cursize + cl->et_binaryMessageLength) >= msg->maxsize)
 	{
-		cl->binaryMessageOverflowed = qtrue;
+		cl->et_binaryMessageOverflowed = qtrue;
 		return;
 	}
 
-	msg->WriteData(cl->binaryMessage, cl->binaryMessageLength);
-	cl->binaryMessageLength = 0;
-	cl->binaryMessageOverflowed = qfalse;
+	msg->WriteData(cl->et_binaryMessage, cl->et_binaryMessageLength);
+	cl->et_binaryMessageLength = 0;
+	cl->et_binaryMessageOverflowed = qfalse;
 }
 
 /*
@@ -234,21 +234,21 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 		// copy the command, since the command number used for encryption is
 		// already compressed in the buffer, and receiving a new command would
 		// otherwise lose the proper encryption key
-		String::Cpy(netbuf->lastClientCommandString, client->lastClientCommandString);
+		String::Cpy(netbuf->lastClientCommandString, client->q3_lastClientCommandString);
 
 		// insert it in the queue, the message will be encoded and sent later
 		//%	*client->netchan_end_queue = netbuf;
 		//%	client->netchan_end_queue = &(*client->netchan_end_queue)->next;
 		netbuf->next = NULL;
-		if (!client->netchan_start_queue)
+		if (!client->q3_netchan_start_queue)
 		{
-			client->netchan_start_queue = netbuf;
+			client->q3_netchan_start_queue = netbuf;
 		}
 		else
 		{
-			client->netchan_end_queue->next = netbuf;
+			client->et_netchan_end_queue->next = netbuf;
 		}
-		client->netchan_end_queue = netbuf;
+		client->et_netchan_end_queue = netbuf;
 
 		// emit the next fragment of the current message for now
 		Netchan_TransmitNextFragment(&client->netchan);
@@ -257,7 +257,7 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 	{
 		if (!SV_GameIsSinglePlayer())
 		{
-			SV_Netchan_Encode(client, msg, client->lastClientCommandString);
+			SV_Netchan_Encode(client, msg, client->q3_lastClientCommandString);
 		}
 		Netchan_Transmit(&client->netchan, msg->cursize, msg->_data);
 	}

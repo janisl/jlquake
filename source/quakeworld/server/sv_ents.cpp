@@ -303,21 +303,21 @@ Writes a delta update of a qwpacket_entities_t to the message.
 void SV_EmitPacketEntities(client_t* client, qwpacket_entities_t* to, QMsg* msg)
 {
 	qhedict_t* ent;
-	client_frame_t* fromframe;
+	qwclient_frame_t* fromframe;
 	qwpacket_entities_t* from;
 	int oldindex, newindex;
 	int oldnum, newnum;
 	int oldmax;
 
 	// this is the frame that we are going to delta update from
-	if (client->delta_sequence != -1)
+	if (client->qh_delta_sequence != -1)
 	{
-		fromframe = &client->frames[client->delta_sequence & UPDATE_MASK_QW];
+		fromframe = &client->qw_frames[client->qh_delta_sequence & UPDATE_MASK_QW];
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
 		msg->WriteByte(qwsvc_deltapacketentities);
-		msg->WriteByte(client->delta_sequence);
+		msg->WriteByte(client->qh_delta_sequence);
 	}
 	else
 	{
@@ -392,9 +392,9 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		// ZOID visibility tracking
 		if (ent != clent &&
-			!(client->spec_track && client->spec_track - 1 == j))
+			!(client->qh_spec_track && client->qh_spec_track - 1 == j))
 		{
-			if (cl->spectator)
+			if (cl->qh_spectator)
 			{
 				continue;
 			}
@@ -442,7 +442,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			pflags |= QWPF_GIB;
 		}
 
-		if (cl->spectator)
+		if (cl->qh_spectator)
 		{	// only sent origin and velocity to spectators
 			pflags &= QWPF_VELOCITY1ND | QWPF_VELOCITY2 | QWPF_VELOCITY3;
 		}
@@ -455,7 +455,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			}
 		}
 
-		if (client->spec_track && client->spec_track - 1 == j &&
+		if (client->qh_spec_track && client->qh_spec_track - 1 == j &&
 			ent->GetWeaponFrame())
 		{
 			pflags |= QWPF_WEAPONFRAME;
@@ -472,7 +472,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & QWPF_MSEC)
 		{
-			msec = 1000 * (sv.time - cl->localtime);
+			msec = 1000 * (sv.time - cl->qh_localtime);
 			if (msec > 255)
 			{
 				msec = 255;
@@ -482,7 +482,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & QWPF_COMMAND)
 		{
-			cmd = cl->lastcmd;
+			cmd = cl->qw_lastUsercmd;
 
 			if (ent->GetHealth() <= 0)
 			{	// don't show the corpse looking around...
@@ -544,11 +544,11 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	qhedict_t* ent;
 	qwpacket_entities_t* pack;
 	qhedict_t* clent;
-	client_frame_t* frame;
+	qwclient_frame_t* frame;
 	q1entity_state_t* state;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK_QW];
+	frame = &client->qw_frames[client->netchan.incomingSequence & UPDATE_MASK_QW];
 
 	// find the client's PVS
 	clent = client->edict;

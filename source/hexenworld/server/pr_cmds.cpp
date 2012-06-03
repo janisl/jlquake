@@ -2274,7 +2274,7 @@ void PF_setspawnparms(void)
 	client = svs.clients + (i - 1);
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		(&pr_global_struct->parm1)[i] = client->spawn_parms[i];
+		(&pr_global_struct->parm1)[i] = client->qh_spawn_parms[i];
 }
 
 /*
@@ -2874,13 +2874,13 @@ void PF_setclass(void)
 	}
 
 	e->SetPlayerClass(NewClass);
-	host_client->playerclass = NewClass;
+	host_client->h2_playerclass = NewClass;
 
 	sprintf(temp,"%d",(int)NewClass);
 	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 	String::NCpy(host_client->name, Info_ValueForKey(host_client->userinfo, "name"),
 		sizeof(host_client->name) - 1);
-	host_client->sendinfo = true;
+	host_client->qh_sendinfo = true;
 
 	// process any changed values
 //	SV_ExtractFromUserinfo (host_client);
@@ -2888,7 +2888,7 @@ void PF_setclass(void)
 	//update everyone else about playerclass change
 	sv.reliable_datagram.WriteByte(hwsvc_updatepclass);
 	sv.reliable_datagram.WriteByte(entnum - 1);
-	sv.reliable_datagram.WriteByte(((host_client->playerclass << 5) | ((int)e->GetLevel() & 31)));
+	sv.reliable_datagram.WriteByte(((host_client->h2_playerclass << 5) | ((int)e->GetLevel() & 31)));
 	host_client = old;
 }
 
@@ -2915,7 +2915,7 @@ void PF_setsiegeteam(void)
 	host_client = client;
 
 	e->SetSiegeTeam(NewTeam);
-	host_client->siege_team = NewTeam;
+	host_client->hw_siege_team = NewTeam;
 
 //???
 //	sprintf(temp,"%d",(int)NewTeam);
@@ -2927,7 +2927,7 @@ void PF_setsiegeteam(void)
 	//update everyone else about playerclass change
 	sv.reliable_datagram.WriteByte(hwsvc_updatesiegeteam);
 	sv.reliable_datagram.WriteByte(entnum - 1);
-	sv.reliable_datagram.WriteByte(host_client->siege_team);
+	sv.reliable_datagram.WriteByte(host_client->hw_siege_team);
 	host_client = old;
 }
 

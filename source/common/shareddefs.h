@@ -52,3 +52,5 @@
 
 #define QHBUTTON_ATTACK 1
 #define QHBUTTON_JUMP   2
+
+#define MAX_NAME_LENGTH        36		// max length of a client name

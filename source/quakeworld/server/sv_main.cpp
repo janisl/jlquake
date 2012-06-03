@@ -207,7 +207,7 @@ void SV_DropClient(client_t* drop)
 
 	if (drop->state == CS_ACTIVE)
 	{
-		if (!drop->spectator)
+		if (!drop->qh_spectator)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
@@ -223,7 +223,7 @@ void SV_DropClient(client_t* drop)
 		}
 	}
 
-	if (drop->spectator)
+	if (drop->qh_spectator)
 	{
 		Con_Printf("Spectator %s removed\n",drop->name);
 	}
@@ -237,17 +237,17 @@ void SV_DropClient(client_t* drop)
 		FS_FCloseFile(drop->download);
 		drop->download = 0;
 	}
-	if (drop->upload)
+	if (drop->qw_upload)
 	{
-		FS_FCloseFile(drop->upload);
-		drop->upload = 0;
+		FS_FCloseFile(drop->qw_upload);
+		drop->qw_upload = 0;
 	}
-	*drop->uploadfn = 0;
+	*drop->qw_uploadfn = 0;
 
 	drop->state = CS_ZOMBIE;		// become free in a few seconds
-	drop->connection_started = realtime;	// for zombie timeout
+	drop->qh_connection_started = realtime;	// for zombie timeout
 
-	drop->old_frags = 0;
+	drop->qh_old_frags = 0;
 	drop->edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
@@ -270,11 +270,11 @@ int SV_CalcPing(client_t* cl)
 	float ping;
 	int i;
 	int count;
-	register client_frame_t* frame;
+	register qwclient_frame_t* frame;
 
 	ping = 0;
 	count = 0;
-	for (frame = cl->frames, i = 0; i < UPDATE_BACKUP_QW; i++, frame++)
+	for (frame = cl->qw_frames, i = 0; i < UPDATE_BACKUP_QW; i++, frame++)
 	{
 		if (frame->ping_time > 0)
 		{
@@ -309,7 +309,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(q1svc_updatefrags);
 	buf->WriteByte(i);
-	buf->WriteShort(client->old_frags);
+	buf->WriteShort(client->qh_old_frags);
 
 	buf->WriteByte(qwsvc_updateping);
 	buf->WriteByte(i);
@@ -317,18 +317,18 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(qwsvc_updatepl);
 	buf->WriteByte(i);
-	buf->WriteByte(client->lossage);
+	buf->WriteByte(client->qw_lossage);
 
 	buf->WriteByte(qwsvc_updateentertime);
 	buf->WriteByte(i);
-	buf->WriteFloat(realtime - client->connection_started);
+	buf->WriteFloat(realtime - client->qh_connection_started);
 
 	String::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys(info, '_', MAX_INFO_STRING_QW);		// server passwords, etc
 
 	buf->WriteByte(qwsvc_updateuserinfo);
 	buf->WriteByte(i);
-	buf->WriteLong(client->userid);
+	buf->WriteLong(client->qh_userid);
 	buf->WriteString2(info);
 }
 
@@ -342,9 +342,9 @@ Writes all update values to a client's reliable stream
 void SV_FullClientUpdateToClient(client_t* client, client_t* cl)
 {
 	ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
-	if (cl->num_backbuf)
+	if (cl->qw_num_backbuf)
 	{
-		SV_FullClientUpdate(client, &cl->backbuf);
+		SV_FullClientUpdate(client, &cl->qw_backbuf);
 		ClientReliable_FinishWrite(cl);
 	}
 	else
@@ -383,15 +383,15 @@ void SVC_Status(void)
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
 		cl = &svs.clients[i];
-		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->spectator)
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->qh_spectator)
 		{
 			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
 			top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
 			bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
 			ping = SV_CalcPing(cl);
-			Con_Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->userid,
-				cl->old_frags, (int)(realtime - cl->connection_started) / 60,
+			Con_Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
+				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
 		}
 	}
@@ -626,7 +626,7 @@ void SVC_DirectConnect(void)
 	newcl = &temp;
 	Com_Memset(newcl, 0, sizeof(client_t));
 
-	newcl->userid = userid;
+	newcl->qh_userid = userid;
 
 	// works properly
 	if (!sv_highchars->value)
@@ -678,7 +678,7 @@ void SVC_DirectConnect(void)
 		{
 			continue;
 		}
-		if (cl->spectator)
+		if (cl->qh_spectator)
 		{
 			spectators++;
 		}
@@ -739,11 +739,11 @@ void SVC_DirectConnect(void)
 
 	newcl->state = CS_CONNECTED;
 
-	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
+	newcl->datagram.InitOOB(newcl->datagramBuffer, MAX_DATAGRAM_QW);
 	newcl->datagram.allowoverflow = true;
 
 	// spectator mode can ONLY be set at join time
-	newcl->spectator = spectator;
+	newcl->qh_spectator = spectator;
 
 	ent = EDICT_NUM(edictnum);
 	newcl->edict = ent;
@@ -753,16 +753,16 @@ void SVC_DirectConnect(void)
 
 	// JACK: Init the floodprot stuff.
 	for (i = 0; i < 10; i++)
-		newcl->whensaid[i] = 0.0;
-	newcl->whensaidhead = 0;
-	newcl->lockedtill = 0;
+		newcl->qh_whensaid[i] = 0.0;
+	newcl->qh_whensaidhead = 0;
+	newcl->qh_lockedtill = 0;
 
 	// call the progs to get default spawn parms for the new client
 	PR_ExecuteProgram(pr_global_struct->SetNewParms);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		newcl->spawn_parms[i] = (&pr_global_struct->parm1)[i];
+		newcl->qh_spawn_parms[i] = (&pr_global_struct->parm1)[i];
 
-	if (newcl->spectator)
+	if (newcl->qh_spectator)
 	{
 		Con_Printf("Spectator %s connected\n", newcl->name);
 	}
@@ -770,7 +770,7 @@ void SVC_DirectConnect(void)
 	{
 		Con_DPrintf("Client %s connected\n", newcl->name);
 	}
-	newcl->sendinfo = true;
+	newcl->qh_sendinfo = true;
 }
 
 int Rcon_Validate(void)
@@ -1204,7 +1204,7 @@ void SV_ReadPackets(void)
 			{	// this is a valid, sequenced packet, so process it
 				svs.stats.packets++;
 				good = true;
-				cl->send_message = true;	// reply at end of frame
+				cl->qh_send_message = true;	// reply at end of frame
 				if (cl->state != CS_ZOMBIE)
 				{
 					SV_ExecuteClientMessage(cl);
@@ -1249,7 +1249,7 @@ void SV_CheckTimeouts(void)
 	{
 		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
 		{
-			if (!cl->spectator)
+			if (!cl->qh_spectator)
 			{
 				nclients++;
 			}
@@ -1261,7 +1261,7 @@ void SV_CheckTimeouts(void)
 			}
 		}
 		if (cl->state == CS_ZOMBIE &&
-			realtime - cl->connection_started > zombietime->value)
+			realtime - cl->qh_connection_started > zombietime->value)
 		{
 			cl->state = CS_FREE;	// can now be reused
 		}
@@ -1698,12 +1698,12 @@ void SV_ExtractFromUserinfo(client_t* cl)
 	{
 		if (!sv.paused)
 		{
-			if (!cl->lastnametime || realtime - cl->lastnametime > 5)
+			if (!cl->qw_lastnametime || realtime - cl->qw_lastnametime > 5)
 			{
-				cl->lastnamecount = 0;
-				cl->lastnametime = realtime;
+				cl->qw_lastnamecount = 0;
+				cl->qw_lastnametime = realtime;
 			}
-			else if (cl->lastnamecount++ > 4)
+			else if (cl->qw_lastnamecount++ > 4)
 			{
 				SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked for name spam\n", cl->name);
 				SV_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game for name spamming\n");
@@ -1712,7 +1712,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			}
 		}
 
-		if (cl->state >= CS_ACTIVE && !cl->spectator)
+		if (cl->state >= CS_ACTIVE && !cl->qh_spectator)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
 		}

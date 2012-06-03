@@ -89,93 +89,9 @@ typedef struct
 	byte signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_QW];
 } server_t;
 
-
-#define NUM_SPAWN_PARMS         16
-
-typedef struct
-{
-	// received from client
-
-	// reply
-	double senttime;
-	float ping_time;
-	qwpacket_entities_t entities;
-} client_frame_t;
-
-#define MAX_BACK_BUFFERS 4
-
 struct client_t : public client_common_t
 {
-	int spectator;						// non-interactive
-
-	qboolean sendinfo;					// at end of frame, send info to all
-										// this prevents malicious multiple broadcasts
-	float lastnametime;					// time of last name change
-	int lastnamecount;					// time of last name change
-	unsigned checksum;					// checksum for calcs
-	qboolean drop;						// lose this guy next opportunity
-	int lossage;						// loss percentage
-
-	int userid;										// identifying number
-
-	qwusercmd_t lastcmd;				// for filling in big drops and partial predictions
-	double localtime;					// of last message
-	int oldbuttons;
-
-	float maxspeed;						// localized maxspeed
-	float entgravity;					// localized ent gravity
-
 	qhedict_t* edict;						// EDICT_NUM(clientnum+1)
-	char name[32];						// for printing to other people
-										// extracted from userinfo
-	int messagelevel;					// for filtering printed messages
-
-	// the datagram is written to after every frame, but only cleared
-	// when it is sent out to the client.  overflow is tolerated.
-	QMsg datagram;
-	byte datagram_buf[MAX_DATAGRAM_QW];
-
-	// back buffers for client reliable data
-	QMsg backbuf;
-	int num_backbuf;
-	int backbuf_size[MAX_BACK_BUFFERS];
-	byte backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN_QW];
-
-	double connection_started;			// or time of disconnect for zombies
-	qboolean send_message;				// set on frames a datagram arived on
-
-// spawn parms are carried from level to level
-	float spawn_parms[NUM_SPAWN_PARMS];
-
-// client known data for deltas
-	int old_frags;
-
-	int stats[MAX_CL_STATS];
-
-
-	client_frame_t frames[UPDATE_BACKUP_QW];	// updates can be deltad from here
-
-	fileHandle_t download;				// file being downloaded
-	int downloadsize;					// total bytes
-	int downloadcount;					// bytes sent
-
-	int spec_track;						// entnum of player tracking
-
-	double whensaid[10];				// JACK: For floodprots
-	int whensaidhead;				// Head value for floodprots
-	double lockedtill;
-
-	qboolean upgradewarn;				// did we warn him?
-
-	fileHandle_t upload;
-	char uploadfn[MAX_QPATH];
-	netadr_t snap_from;
-	qboolean remote_snap;
-
-//===== NETWORK ============
-	int chokecount;
-	int delta_sequence;					// -1 = no compression
-	netchan_t netchan;
 };
 
 // a client can leave the server in one of four ways:

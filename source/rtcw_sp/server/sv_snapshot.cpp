@@ -59,7 +59,7 @@ SV_EmitPacketEntities
 Writes a delta update of an wsentityState_t list to the message.
 =============
 */
-static void SV_EmitPacketEntities(clientSnapshot_t* from, clientSnapshot_t* to, QMsg* msg)
+static void SV_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t* to, QMsg* msg)
 {
 	wsentityState_t* oldent, * newent;
 	int oldindex, newindex;
@@ -142,22 +142,22 @@ SV_WriteSnapshotToClient
 */
 static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 {
-	clientSnapshot_t* frame, * oldframe;
+	q3clientSnapshot_t* frame, * oldframe;
 	int lastframe;
 	int i;
 	int snapFlags;
 
 	// this is the snapshot we are creating
-	frame = &client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
+	frame = &client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
 
 	// try to use a previous frame as the source for delta compressing the snapshot
-	if (client->deltaMessage <= 0 || client->state != CS_ACTIVE)
+	if (client->q3_deltaMessage <= 0 || client->state != CS_ACTIVE)
 	{
 		// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = 0;
 	}
-	else if (client->netchan.outgoingSequence - client->deltaMessage
+	else if (client->netchan.outgoingSequence - client->q3_deltaMessage
 			 >= (PACKET_BACKUP_Q3 - 3))
 	{
 		// client hasn't gotten a good message through in a long time
@@ -168,8 +168,8 @@ static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 	else
 	{
 		// we have a valid snapshot to delta from
-		oldframe = &client->frames[client->deltaMessage & PACKET_MASK_Q3];
-		lastframe = client->netchan.outgoingSequence - client->deltaMessage;
+		oldframe = &client->q3_frames[client->q3_deltaMessage & PACKET_MASK_Q3];
+		lastframe = client->netchan.outgoingSequence - client->q3_deltaMessage;
 
 		// the snapshot's entities may still have rolled off the buffer, though
 		if (oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities)
@@ -194,7 +194,7 @@ static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 	msg->WriteByte(lastframe);
 
 	snapFlags = svs.snapFlagServerBit;
-	if (client->rateDelayed)
+	if (client->q3_rateDelayed)
 	{
 		snapFlags |= SNAPFLAG_RATE_DELAYED;
 	}
@@ -212,11 +212,11 @@ static void SV_WriteSnapshotToClient(client_t* client, QMsg* msg)
 	// delta encode the playerstate
 	if (oldframe)
 	{
-		MSGWS_WriteDeltaPlayerstate(msg, &oldframe->ps, &frame->ps);
+		MSGWS_WriteDeltaPlayerstate(msg, &oldframe->ws_ps, &frame->ws_ps);
 	}
 	else
 	{
-		MSGWS_WriteDeltaPlayerstate(msg, NULL, &frame->ps);
+		MSGWS_WriteDeltaPlayerstate(msg, NULL, &frame->ws_ps);
 	}
 
 	// delta encode the entities
@@ -245,14 +245,14 @@ void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg)
 	int i;
 
 	// write any unacknowledged serverCommands
-	for (i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++)
+	for (i = client->q3_reliableAcknowledge + 1; i <= client->q3_reliableSequence; i++)
 	{
 		msg->WriteByte(q3svc_serverCommand);
 		msg->WriteLong(i);
 		//MSG_WriteString( msg, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_WS-1) ] );
 		msg->WriteString(SV_GetReliableCommand(client, i & (MAX_RELIABLE_COMMANDS_WS - 1)));
 	}
-	client->reliableSent = client->reliableSequence;
+	client->q3_reliableSent = client->q3_reliableSequence;
 }
 
 /*
@@ -327,8 +327,8 @@ static void SV_AddEntToSnapshot(svEntity_t* svEnt, sharedEntity_t* gEnt, snapsho
 SV_AddEntitiesVisibleFromPoint
 ===============
 */
-static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t* frame,
-//									snapshotEntityNumbers_t *eNums, qboolean portal, clientSnapshot_t *oldframe, qboolean localClient ) {
+static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* frame,
+//									snapshotEntityNumbers_t *eNums, qboolean portal, q3clientSnapshot_t *oldframe, qboolean localClient ) {
 //									snapshotEntityNumbers_t *eNums, qboolean portal ) {
 	snapshotEntityNumbers_t* eNums, qboolean portal, qboolean localClient)
 {
@@ -361,7 +361,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t* fram
 
 	c_fullsend = 0;
 
-	playerEnt = SV_GentityNum(frame->ps.clientNum);
+	playerEnt = SV_GentityNum(frame->ws_ps.clientNum);
 
 	for (e = 0; e < sv.num_entities; e++)
 	{
@@ -388,7 +388,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t* fram
 		// entities can be flagged to be sent to only one client
 		if (ent->r.svFlags & SVF_SINGLECLIENT)
 		{
-			if (ent->r.singleClient != frame->ps.clientNum)
+			if (ent->r.singleClient != frame->ws_ps.clientNum)
 			{
 				continue;
 			}
@@ -396,7 +396,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t* fram
 		// entities can be flagged to be sent to everyone but one client
 		if (ent->r.svFlags & SVF_NOTSINGLECLIENT)
 		{
-			if (ent->r.singleClient == frame->ps.clientNum)
+			if (ent->r.singleClient == frame->ws_ps.clientNum)
 			{
 				continue;
 			}
@@ -615,8 +615,8 @@ For viewing through other player's eyes, clent can be something other than clien
 static void SV_BuildClientSnapshot(client_t* client)
 {
 	vec3_t org;
-//	clientSnapshot_t			*frame, *oldframe;
-	clientSnapshot_t* frame;
+//	q3clientSnapshot_t			*frame, *oldframe;
+	q3clientSnapshot_t* frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int i;
 	sharedEntity_t* ent;
@@ -630,7 +630,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	sv.snapshotCounter++;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
+	frame = &client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3];
 
 //	// try to use a previous frame as the source for delta compressing the snapshot
 //	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE ) {
@@ -664,11 +664,11 @@ static void SV_BuildClientSnapshot(client_t* client)
 
 	// grab the current wsplayerState_t
 	ps = SV_GameClientNum(client - svs.clients);
-	frame->ps = *ps;
+	frame->ws_ps = *ps;
 
 	// never send client's own entity, because it can
 	// be regenerated from the playerstate
-	clientNum = frame->ps.clientNum;
+	clientNum = frame->ws_ps.clientNum;
 	if (clientNum < 0 || clientNum >= MAX_GENTITIES_Q3)
 	{
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
@@ -683,13 +683,13 @@ static void SV_BuildClientSnapshot(client_t* client)
 
 //----(SA)	added for 'lean'
 	// need to account for lean, so areaportal doors draw properly
-	if (frame->ps.leanf != 0)
+	if (frame->ws_ps.leanf != 0)
 	{
 		vec3_t right, v3ViewAngles;
 		VectorCopy(ps->viewangles, v3ViewAngles);
-		v3ViewAngles[2] += frame->ps.leanf / 2.0f;
+		v3ViewAngles[2] += frame->ws_ps.leanf / 2.0f;
 		AngleVectors(v3ViewAngles, NULL, right, NULL);
-		VectorMA(org, frame->ps.leanf, right, org);
+		VectorMA(org, frame->ws_ps.leanf, right, org);
 	}
 //----(SA)	end
 
@@ -779,9 +779,9 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	int rateMsec;
 
 	// record information about the message
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.time;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.time;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
 	SV_Netchan_Transmit(client, msg);	//msg->cursize, msg->data );
@@ -791,25 +791,25 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	// local clients get snapshots every frame
 	if (client->netchan.remoteAddress.type == NA_LOOPBACK || SOCK_IsLANAddress(client->netchan.remoteAddress))
 	{
-		client->nextSnapshotTime = svs.time - 1;
+		client->q3_nextSnapshotTime = svs.time - 1;
 		return;
 	}
 
 	// normal rate / snapshotMsec calculation
 	rateMsec = SV_RateMsec(client, msg->cursize);
 
-	if (rateMsec < client->snapshotMsec)
+	if (rateMsec < client->q3_snapshotMsec)
 	{
 		// never send more packets than this, no matter what the rate is at
-		rateMsec = client->snapshotMsec;
-		client->rateDelayed = qfalse;
+		rateMsec = client->q3_snapshotMsec;
+		client->q3_rateDelayed = qfalse;
 	}
 	else
 	{
-		client->rateDelayed = qtrue;
+		client->q3_rateDelayed = qtrue;
 	}
 
-	client->nextSnapshotTime = svs.time + rateMsec;
+	client->q3_nextSnapshotTime = svs.time + rateMsec;
 
 	// don't pile up empty snapshots while connecting
 	if (client->state != CS_ACTIVE)
@@ -817,9 +817,9 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 		// a gigantic connection message may have already put the nextSnapshotTime
 		// more than a second away, so don't shorten it
 		// do shorten if client is downloading
-		if (!*client->downloadName && client->nextSnapshotTime < svs.time + 1000)
+		if (!*client->downloadName && client->q3_nextSnapshotTime < svs.time + 1000)
 		{
-			client->nextSnapshotTime = svs.time + 1000;
+			client->q3_nextSnapshotTime = svs.time + 1000;
 		}
 	}
 }
@@ -859,7 +859,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
-	msg.WriteLong(client->lastClientCommand);
+	msg.WriteLong(client->q3_lastClientCommand);
 
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient(client, &msg);
@@ -900,7 +900,7 @@ void SV_SendClientMessages(void)
 			continue;		// not connected
 		}
 
-		if (svs.time < c->nextSnapshotTime)
+		if (svs.time < c->q3_nextSnapshotTime)
 		{
 			continue;		// not time yet
 		}
@@ -909,7 +909,7 @@ void SV_SendClientMessages(void)
 		// was too large to send at once
 		if (c->netchan.unsentFragments)
 		{
-			c->nextSnapshotTime = svs.time +
+			c->q3_nextSnapshotTime = svs.time +
 								  SV_RateMsec(c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart);
 			SV_Netchan_TransmitNextFragment(&c->netchan);
 			continue;

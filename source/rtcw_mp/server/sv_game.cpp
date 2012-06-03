@@ -322,7 +322,7 @@ void SV_GetUsercmd(int clientNum, wmusercmd_t* cmd)
 	{
 		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
 	}
-	*cmd = svs.clients[clientNum].lastUsercmd;
+	*cmd = svs.clients[clientNum].wm_lastUsercmd;
 }
 
 //==============================================

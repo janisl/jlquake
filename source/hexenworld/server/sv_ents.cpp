@@ -346,13 +346,13 @@ void SV_WriteDelta(h2entity_state_t* from, h2entity_state_t* to, QMsg* msg, qboo
 	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
 	{
 		String::Cpy(NewName, PR_GetString(ent->GetModel()));
-		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
+		if (client->h2_playerclass <= 0 || client->h2_playerclass > MAX_PLAYER_CLASS)
 		{
 			NewName[String::Length(NewName) - 5] = '1';
 		}
 		else
 		{
-			NewName[String::Length(NewName) - 5] = client->playerclass + 48;
+			NewName[String::Length(NewName) - 5] = client->h2_playerclass + 48;
 		}
 		temp_index = SV_ModelIndex(NewName);
 	}
@@ -502,21 +502,21 @@ Writes a delta update of a hwpacket_entities_t to the message.
 void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 {
 	qhedict_t* ent;
-	client_frame_t* fromframe;
+	hwclient_frame_t* fromframe;
 	hwpacket_entities_t* from;
 	int oldindex, newindex;
 	int oldnum, newnum;
 	int oldmax;
 
 	// this is the frame that we are going to delta update from
-	if (client->delta_sequence != -1)
+	if (client->qh_delta_sequence != -1)
 	{
-		fromframe = &client->frames[client->delta_sequence & UPDATE_MASK_HW];
+		fromframe = &client->hw_frames[client->qh_delta_sequence & UPDATE_MASK_HW];
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
 		msg->WriteByte(hwsvc_deltapacketentities);
-		msg->WriteByte(client->delta_sequence);
+		msg->WriteByte(client->qh_delta_sequence);
 	}
 	else
 	{
@@ -576,36 +576,36 @@ void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 	int sc1,sc2;
 	byte test;
 
-	if (host_client->send_all_v)
+	if (host_client->h2_send_all_v)
 	{
 		sc1 = sc2 = 0xffffffff;
-		host_client->send_all_v = false;
+		host_client->h2_send_all_v = false;
 	}
 	else
 	{
 		sc1 = sc2 = 0;
 
-		if (ent->GetHealth() != host_client->old_v.health)
+		if (ent->GetHealth() != host_client->h2_old_v.health)
 		{
 			sc1 |= SC1_HEALTH;
 		}
-		if (ent->GetLevel() != host_client->old_v.level)
+		if (ent->GetLevel() != host_client->h2_old_v.level)
 		{
 			sc1 |= SC1_LEVEL;
 		}
-		if (ent->GetIntelligence() != host_client->old_v.intelligence)
+		if (ent->GetIntelligence() != host_client->h2_old_v.intelligence)
 		{
 			sc1 |= SC1_INTELLIGENCE;
 		}
-		if (ent->GetWisdom() != host_client->old_v.wisdom)
+		if (ent->GetWisdom() != host_client->h2_old_v.wisdom)
 		{
 			sc1 |= SC1_WISDOM;
 		}
-		if (ent->GetStrength() != host_client->old_v.strength)
+		if (ent->GetStrength() != host_client->h2_old_v.strength)
 		{
 			sc1 |= SC1_STRENGTH;
 		}
-		if (ent->GetDexterity() != host_client->old_v.dexterity)
+		if (ent->GetDexterity() != host_client->h2_old_v.dexterity)
 		{
 			sc1 |= SC1_DEXTERITY;
 		}
@@ -616,190 +616,190 @@ void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 //			ent->v.teleport_time = 0;
 		}
 
-//		if (ent->v.weapon != host_client->old_v.weapon)
+//		if (ent->v.weapon != host_client->h2_old_v.weapon)
 //			sc1 |= SC1_WEAPON;
-		if (ent->GetBlueMana() != host_client->old_v.bluemana)
+		if (ent->GetBlueMana() != host_client->h2_old_v.bluemana)
 		{
 			sc1 |= SC1_BLUEMANA;
 		}
-		if (ent->GetGreenMana() != host_client->old_v.greenmana)
+		if (ent->GetGreenMana() != host_client->h2_old_v.greenmana)
 		{
 			sc1 |= SC1_GREENMANA;
 		}
-		if (ent->GetExperience() != host_client->old_v.experience)
+		if (ent->GetExperience() != host_client->h2_old_v.experience)
 		{
 			sc1 |= SC1_EXPERIENCE;
 		}
-		if (ent->GetCntTorch() != host_client->old_v.cnt_torch)
+		if (ent->GetCntTorch() != host_client->h2_old_v.cnt_torch)
 		{
 			sc1 |= SC1_CNT_TORCH;
 		}
-		if (ent->GetCntHBoost() != host_client->old_v.cnt_h_boost)
+		if (ent->GetCntHBoost() != host_client->h2_old_v.cnt_h_boost)
 		{
 			sc1 |= SC1_CNT_H_BOOST;
 		}
-		if (ent->GetCntSHBoost() != host_client->old_v.cnt_sh_boost)
+		if (ent->GetCntSHBoost() != host_client->h2_old_v.cnt_sh_boost)
 		{
 			sc1 |= SC1_CNT_SH_BOOST;
 		}
-		if (ent->GetCntManaBoost() != host_client->old_v.cnt_mana_boost)
+		if (ent->GetCntManaBoost() != host_client->h2_old_v.cnt_mana_boost)
 		{
 			sc1 |= SC1_CNT_MANA_BOOST;
 		}
-		if (ent->GetCntTeleport() != host_client->old_v.cnt_teleport)
+		if (ent->GetCntTeleport() != host_client->h2_old_v.cnt_teleport)
 		{
 			sc1 |= SC1_CNT_TELEPORT;
 		}
-		if (ent->GetCntTome() != host_client->old_v.cnt_tome)
+		if (ent->GetCntTome() != host_client->h2_old_v.cnt_tome)
 		{
 			sc1 |= SC1_CNT_TOME;
 		}
-		if (ent->GetCntSummon() != host_client->old_v.cnt_summon)
+		if (ent->GetCntSummon() != host_client->h2_old_v.cnt_summon)
 		{
 			sc1 |= SC1_CNT_SUMMON;
 		}
-		if (ent->GetCntInvisibility() != host_client->old_v.cnt_invisibility)
+		if (ent->GetCntInvisibility() != host_client->h2_old_v.cnt_invisibility)
 		{
 			sc1 |= SC1_CNT_INVISIBILITY;
 		}
-		if (ent->GetCntGlyph() != host_client->old_v.cnt_glyph)
+		if (ent->GetCntGlyph() != host_client->h2_old_v.cnt_glyph)
 		{
 			sc1 |= SC1_CNT_GLYPH;
 		}
-		if (ent->GetCntHaste() != host_client->old_v.cnt_haste)
+		if (ent->GetCntHaste() != host_client->h2_old_v.cnt_haste)
 		{
 			sc1 |= SC1_CNT_HASTE;
 		}
-		if (ent->GetCntBlast() != host_client->old_v.cnt_blast)
+		if (ent->GetCntBlast() != host_client->h2_old_v.cnt_blast)
 		{
 			sc1 |= SC1_CNT_BLAST;
 		}
-		if (ent->GetCntPolyMorph() != host_client->old_v.cnt_polymorph)
+		if (ent->GetCntPolyMorph() != host_client->h2_old_v.cnt_polymorph)
 		{
 			sc1 |= SC1_CNT_POLYMORPH;
 		}
-		if (ent->GetCntFlight() != host_client->old_v.cnt_flight)
+		if (ent->GetCntFlight() != host_client->h2_old_v.cnt_flight)
 		{
 			sc1 |= SC1_CNT_FLIGHT;
 		}
-		if (ent->GetCntCubeOfForce() != host_client->old_v.cnt_cubeofforce)
+		if (ent->GetCntCubeOfForce() != host_client->h2_old_v.cnt_cubeofforce)
 		{
 			sc1 |= SC1_CNT_CUBEOFFORCE;
 		}
-		if (ent->GetCntInvincibility() != host_client->old_v.cnt_invincibility)
+		if (ent->GetCntInvincibility() != host_client->h2_old_v.cnt_invincibility)
 		{
 			sc1 |= SC1_CNT_INVINCIBILITY;
 		}
-		if (ent->GetArtifactActive() != host_client->old_v.artifact_active)
+		if (ent->GetArtifactActive() != host_client->h2_old_v.artifact_active)
 		{
 			sc1 |= SC1_ARTIFACT_ACTIVE;
 		}
-		if (ent->GetArtifactLow() != host_client->old_v.artifact_low)
+		if (ent->GetArtifactLow() != host_client->h2_old_v.artifact_low)
 		{
 			sc1 |= SC1_ARTIFACT_LOW;
 		}
-		if (ent->GetMoveType() != host_client->old_v.movetype)
+		if (ent->GetMoveType() != host_client->h2_old_v.movetype)
 		{
 			sc1 |= SC1_MOVETYPE;
 		}
-		if (ent->GetCameraMode() != host_client->old_v.cameramode)
+		if (ent->GetCameraMode() != host_client->h2_old_v.cameramode)
 		{
 			sc1 |= SC1_CAMERAMODE;
 		}
-		if (ent->GetHasted() != host_client->old_v.hasted)
+		if (ent->GetHasted() != host_client->h2_old_v.hasted)
 		{
 			sc1 |= SC1_HASTED;
 		}
-		if (ent->GetInventory() != host_client->old_v.inventory)
+		if (ent->GetInventory() != host_client->h2_old_v.inventory)
 		{
 			sc1 |= SC1_INVENTORY;
 		}
-		if (ent->GetRingsActive() != host_client->old_v.rings_active)
+		if (ent->GetRingsActive() != host_client->h2_old_v.rings_active)
 		{
 			sc1 |= SC1_RINGS_ACTIVE;
 		}
 
-		if (ent->GetRingsLow() != host_client->old_v.rings_low)
+		if (ent->GetRingsLow() != host_client->h2_old_v.rings_low)
 		{
 			sc2 |= SC2_RINGS_LOW;
 		}
-		if (ent->GetArmorAmulet() != host_client->old_v.armor_amulet)
+		if (ent->GetArmorAmulet() != host_client->h2_old_v.armor_amulet)
 		{
 			sc2 |= SC2_AMULET;
 		}
-		if (ent->GetArmorBracer() != host_client->old_v.armor_bracer)
+		if (ent->GetArmorBracer() != host_client->h2_old_v.armor_bracer)
 		{
 			sc2 |= SC2_BRACER;
 		}
-		if (ent->GetArmorBreastPlate() != host_client->old_v.armor_breastplate)
+		if (ent->GetArmorBreastPlate() != host_client->h2_old_v.armor_breastplate)
 		{
 			sc2 |= SC2_BREASTPLATE;
 		}
-		if (ent->GetArmorHelmet() != host_client->old_v.armor_helmet)
+		if (ent->GetArmorHelmet() != host_client->h2_old_v.armor_helmet)
 		{
 			sc2 |= SC2_HELMET;
 		}
-		if (ent->GetRingFlight() != host_client->old_v.ring_flight)
+		if (ent->GetRingFlight() != host_client->h2_old_v.ring_flight)
 		{
 			sc2 |= SC2_FLIGHT_T;
 		}
-		if (ent->GetRingWater() != host_client->old_v.ring_water)
+		if (ent->GetRingWater() != host_client->h2_old_v.ring_water)
 		{
 			sc2 |= SC2_WATER_T;
 		}
-		if (ent->GetRingTurning() != host_client->old_v.ring_turning)
+		if (ent->GetRingTurning() != host_client->h2_old_v.ring_turning)
 		{
 			sc2 |= SC2_TURNING_T;
 		}
-		if (ent->GetRingRegeneration() != host_client->old_v.ring_regeneration)
+		if (ent->GetRingRegeneration() != host_client->h2_old_v.ring_regeneration)
 		{
 			sc2 |= SC2_REGEN_T;
 		}
-//		if (ent->v.haste_time != host_client->old_v.haste_time)
+//		if (ent->v.haste_time != host_client->h2_old_v.haste_time)
 //			sc2 |= SC2_HASTE_T;
-//		if (ent->v.tome_time != host_client->old_v.tome_time)
+//		if (ent->v.tome_time != host_client->h2_old_v.tome_time)
 //			sc2 |= SC2_TOME_T;
-		if (ent->GetPuzzleInv1() != host_client->old_v.puzzle_inv1)
+		if (ent->GetPuzzleInv1() != host_client->h2_old_v.puzzle_inv1)
 		{
 			sc2 |= SC2_PUZZLE1;
 		}
-		if (ent->GetPuzzleInv2() != host_client->old_v.puzzle_inv2)
+		if (ent->GetPuzzleInv2() != host_client->h2_old_v.puzzle_inv2)
 		{
 			sc2 |= SC2_PUZZLE2;
 		}
-		if (ent->GetPuzzleInv3() != host_client->old_v.puzzle_inv3)
+		if (ent->GetPuzzleInv3() != host_client->h2_old_v.puzzle_inv3)
 		{
 			sc2 |= SC2_PUZZLE3;
 		}
-		if (ent->GetPuzzleInv4() != host_client->old_v.puzzle_inv4)
+		if (ent->GetPuzzleInv4() != host_client->h2_old_v.puzzle_inv4)
 		{
 			sc2 |= SC2_PUZZLE4;
 		}
-		if (ent->GetPuzzleInv5() != host_client->old_v.puzzle_inv5)
+		if (ent->GetPuzzleInv5() != host_client->h2_old_v.puzzle_inv5)
 		{
 			sc2 |= SC2_PUZZLE5;
 		}
-		if (ent->GetPuzzleInv6() != host_client->old_v.puzzle_inv6)
+		if (ent->GetPuzzleInv6() != host_client->h2_old_v.puzzle_inv6)
 		{
 			sc2 |= SC2_PUZZLE6;
 		}
-		if (ent->GetPuzzleInv7() != host_client->old_v.puzzle_inv7)
+		if (ent->GetPuzzleInv7() != host_client->h2_old_v.puzzle_inv7)
 		{
 			sc2 |= SC2_PUZZLE7;
 		}
-		if (ent->GetPuzzleInv8() != host_client->old_v.puzzle_inv8)
+		if (ent->GetPuzzleInv8() != host_client->h2_old_v.puzzle_inv8)
 		{
 			sc2 |= SC2_PUZZLE8;
 		}
-		if (ent->GetMaxHealth() != host_client->old_v.max_health)
+		if (ent->GetMaxHealth() != host_client->h2_old_v.max_health)
 		{
 			sc2 |= SC2_MAXHEALTH;
 		}
-		if (ent->GetMaxMana() != host_client->old_v.max_mana)
+		if (ent->GetMaxMana() != host_client->h2_old_v.max_mana)
 		{
 			sc2 |= SC2_MAXMANA;
 		}
-		if (ent->GetFlags() != host_client->old_v.flags)
+		if (ent->GetFlags() != host_client->h2_old_v.flags)
 		{
 			sc2 |= SC2_FLAGS;
 		}
@@ -1093,58 +1093,58 @@ void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 	}
 
 end:
-	host_client->old_v.movetype = ent->GetMoveType();
-	host_client->old_v.health = ent->GetHealth();
-	host_client->old_v.max_health = ent->GetMaxHealth();
-	host_client->old_v.bluemana = ent->GetBlueMana();
-	host_client->old_v.greenmana = ent->GetGreenMana();
-	host_client->old_v.max_mana = ent->GetMaxMana();
-	host_client->old_v.armor_amulet = ent->GetArmorAmulet();
-	host_client->old_v.armor_bracer = ent->GetArmorBracer();
-	host_client->old_v.armor_breastplate = ent->GetArmorBreastPlate();
-	host_client->old_v.armor_helmet = ent->GetArmorHelmet();
-	host_client->old_v.level = ent->GetLevel();
-	host_client->old_v.intelligence = ent->GetIntelligence();
-	host_client->old_v.wisdom = ent->GetWisdom();
-	host_client->old_v.dexterity = ent->GetDexterity();
-	host_client->old_v.strength = ent->GetStrength();
-	host_client->old_v.experience = ent->GetExperience();
-	host_client->old_v.ring_flight = ent->GetRingFlight();
-	host_client->old_v.ring_water = ent->GetRingWater();
-	host_client->old_v.ring_turning = ent->GetRingTurning();
-	host_client->old_v.ring_regeneration = ent->GetRingRegeneration();
-	host_client->old_v.puzzle_inv1 = ent->GetPuzzleInv1();
-	host_client->old_v.puzzle_inv2 = ent->GetPuzzleInv2();
-	host_client->old_v.puzzle_inv3 = ent->GetPuzzleInv3();
-	host_client->old_v.puzzle_inv4 = ent->GetPuzzleInv4();
-	host_client->old_v.puzzle_inv5 = ent->GetPuzzleInv5();
-	host_client->old_v.puzzle_inv6 = ent->GetPuzzleInv6();
-	host_client->old_v.puzzle_inv7 = ent->GetPuzzleInv7();
-	host_client->old_v.puzzle_inv8 = ent->GetPuzzleInv8();
-	host_client->old_v.flags = ent->GetFlags();
-	host_client->old_v.flags2 = ent->GetFlags2();
-	host_client->old_v.rings_active = ent->GetRingsActive();
-	host_client->old_v.rings_low = ent->GetRingsLow();
-	host_client->old_v.artifact_active = ent->GetArtifactActive();
-	host_client->old_v.artifact_low = ent->GetArtifactLow();
-	host_client->old_v.hasted = ent->GetHasted();
-	host_client->old_v.inventory = ent->GetInventory();
-	host_client->old_v.cnt_torch = ent->GetCntTorch();
-	host_client->old_v.cnt_h_boost = ent->GetCntHBoost();
-	host_client->old_v.cnt_sh_boost = ent->GetCntSHBoost();
-	host_client->old_v.cnt_mana_boost = ent->GetCntManaBoost();
-	host_client->old_v.cnt_teleport = ent->GetCntTeleport();
-	host_client->old_v.cnt_tome = ent->GetCntTome();
-	host_client->old_v.cnt_summon = ent->GetCntSummon();
-	host_client->old_v.cnt_invisibility = ent->GetCntInvisibility();
-	host_client->old_v.cnt_glyph = ent->GetCntGlyph();
-	host_client->old_v.cnt_haste = ent->GetCntHaste();
-	host_client->old_v.cnt_blast = ent->GetCntBlast();
-	host_client->old_v.cnt_polymorph = ent->GetCntPolyMorph();
-	host_client->old_v.cnt_flight = ent->GetCntFlight();
-	host_client->old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
-	host_client->old_v.cnt_invincibility = ent->GetCntInvincibility();
-	host_client->old_v.cameramode = ent->GetCameraMode();
+	host_client->h2_old_v.movetype = ent->GetMoveType();
+	host_client->h2_old_v.health = ent->GetHealth();
+	host_client->h2_old_v.max_health = ent->GetMaxHealth();
+	host_client->h2_old_v.bluemana = ent->GetBlueMana();
+	host_client->h2_old_v.greenmana = ent->GetGreenMana();
+	host_client->h2_old_v.max_mana = ent->GetMaxMana();
+	host_client->h2_old_v.armor_amulet = ent->GetArmorAmulet();
+	host_client->h2_old_v.armor_bracer = ent->GetArmorBracer();
+	host_client->h2_old_v.armor_breastplate = ent->GetArmorBreastPlate();
+	host_client->h2_old_v.armor_helmet = ent->GetArmorHelmet();
+	host_client->h2_old_v.level = ent->GetLevel();
+	host_client->h2_old_v.intelligence = ent->GetIntelligence();
+	host_client->h2_old_v.wisdom = ent->GetWisdom();
+	host_client->h2_old_v.dexterity = ent->GetDexterity();
+	host_client->h2_old_v.strength = ent->GetStrength();
+	host_client->h2_old_v.experience = ent->GetExperience();
+	host_client->h2_old_v.ring_flight = ent->GetRingFlight();
+	host_client->h2_old_v.ring_water = ent->GetRingWater();
+	host_client->h2_old_v.ring_turning = ent->GetRingTurning();
+	host_client->h2_old_v.ring_regeneration = ent->GetRingRegeneration();
+	host_client->h2_old_v.puzzle_inv1 = ent->GetPuzzleInv1();
+	host_client->h2_old_v.puzzle_inv2 = ent->GetPuzzleInv2();
+	host_client->h2_old_v.puzzle_inv3 = ent->GetPuzzleInv3();
+	host_client->h2_old_v.puzzle_inv4 = ent->GetPuzzleInv4();
+	host_client->h2_old_v.puzzle_inv5 = ent->GetPuzzleInv5();
+	host_client->h2_old_v.puzzle_inv6 = ent->GetPuzzleInv6();
+	host_client->h2_old_v.puzzle_inv7 = ent->GetPuzzleInv7();
+	host_client->h2_old_v.puzzle_inv8 = ent->GetPuzzleInv8();
+	host_client->h2_old_v.flags = ent->GetFlags();
+	host_client->h2_old_v.flags2 = ent->GetFlags2();
+	host_client->h2_old_v.rings_active = ent->GetRingsActive();
+	host_client->h2_old_v.rings_low = ent->GetRingsLow();
+	host_client->h2_old_v.artifact_active = ent->GetArtifactActive();
+	host_client->h2_old_v.artifact_low = ent->GetArtifactLow();
+	host_client->h2_old_v.hasted = ent->GetHasted();
+	host_client->h2_old_v.inventory = ent->GetInventory();
+	host_client->h2_old_v.cnt_torch = ent->GetCntTorch();
+	host_client->h2_old_v.cnt_h_boost = ent->GetCntHBoost();
+	host_client->h2_old_v.cnt_sh_boost = ent->GetCntSHBoost();
+	host_client->h2_old_v.cnt_mana_boost = ent->GetCntManaBoost();
+	host_client->h2_old_v.cnt_teleport = ent->GetCntTeleport();
+	host_client->h2_old_v.cnt_tome = ent->GetCntTome();
+	host_client->h2_old_v.cnt_summon = ent->GetCntSummon();
+	host_client->h2_old_v.cnt_invisibility = ent->GetCntInvisibility();
+	host_client->h2_old_v.cnt_glyph = ent->GetCntGlyph();
+	host_client->h2_old_v.cnt_haste = ent->GetCntHaste();
+	host_client->h2_old_v.cnt_blast = ent->GetCntBlast();
+	host_client->h2_old_v.cnt_polymorph = ent->GetCntPolyMorph();
+	host_client->h2_old_v.cnt_flight = ent->GetCntFlight();
+	host_client->h2_old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
+	host_client->h2_old_v.cnt_invincibility = ent->GetCntInvincibility();
+	host_client->h2_old_v.cameramode = ent->GetCameraMode();
 }
 
 
@@ -1240,7 +1240,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		// ZOID visibility tracking
 		invis_level = false;
 		if (ent != clent &&
-			!(client->spec_track && client->spec_track - 1 == j))
+			!(client->qh_spec_track && client->qh_spec_track - 1 == j))
 		{
 			if ((int)ent->GetEffects() & H2EF_NODRAW)
 			{
@@ -1255,9 +1255,9 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			}
 #ifdef MGNET
 			//could be invisiblenow and still sent, cull out by other methods as well
-			if (cl->spectator)
+			if (cl->qh_spectator)
 #else
-			else if (cl->spectator)
+			else if (cl->qh_spectator)
 #endif
 			{
 				invis_level = 2;//no vis or weaponsound
@@ -1450,7 +1450,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			pflags |= HWPF_CROUCH;
 		}
 
-		if (cl->spectator)
+		if (cl->qh_spectator)
 		{	// only sent origin and velocity to spectators
 			pflags &= HWPF_VELOCITY1 | HWPF_VELOCITY2 | HWPF_VELOCITY3;
 		}
@@ -1490,7 +1490,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & HWPF_MSEC)
 		{
-			msec = 1000 * (sv.time - cl->localtime);
+			msec = 1000 * (sv.time - cl->qh_localtime);
 			if (msec > 255)
 			{
 				msec = 255;
@@ -1500,7 +1500,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 		if (pflags & HWPF_COMMAND)
 		{
-			cmd = cl->lastcmd;
+			cmd = cl->hw_lastUsercmd;
 
 			if (ent->GetHealth() <= 0)
 			{	// don't show the corpse looking around...
@@ -1583,11 +1583,11 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	qhedict_t* ent;
 	hwpacket_entities_t* pack;
 	qhedict_t* clent;
-	client_frame_t* frame;
+	hwclient_frame_t* frame;
 	h2entity_state_t* state;
 
 	// this is the frame we are creating
-	frame = &client->frames[client->netchan.incomingSequence & UPDATE_MASK_HW];
+	frame = &client->hw_frames[client->netchan.incomingSequence & UPDATE_MASK_HW];
 
 	// find the client's PVS
 	clent = client->edict;

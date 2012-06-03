@@ -693,7 +693,7 @@ void PF_stuffcmd(void)
 	if (String::Cmp(str, "disconnect\n") == 0)
 	{
 		// so long and thanks for all the fish
-		cl->drop = true;
+		cl->qw_drop = true;
 		return;
 	}
 
@@ -1569,7 +1569,7 @@ void PF_setspawnparms(void)
 	client = svs.clients + (i - 1);
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		(&pr_global_struct->parm1)[i] = client->spawn_parms[i];
+		(&pr_global_struct->parm1)[i] = client->qh_spawn_parms[i];
 }
 
 /*

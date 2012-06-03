@@ -460,7 +460,7 @@ void SV_ClientThink(void)
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle
-	cmd = host_client->cmd;
+	cmd = host_client->q1_lastUsercmd;
 	angles = sv_player->GetAngles();
 
 	VectorAdd(sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
@@ -502,9 +502,9 @@ void SV_ReadClientMove(q1usercmd_t* move)
 	int bits;
 
 // read ping time
-	host_client->ping_times[host_client->num_pings % NUM_PING_TIMES]
+	host_client->qh_ping_times[host_client->qh_num_pings % NUM_PING_TIMES]
 		= sv.time - net_message.ReadFloat();
-	host_client->num_pings++;
+	host_client->qh_num_pings++;
 
 // read current angles
 	for (i = 0; i < 3; i++)
@@ -545,7 +545,7 @@ qboolean SV_ReadClientMessage(void)
 	do
 	{
 nextmsg:
-		ret = NET_GetMessage(host_client->netconnection, &host_client->netchan);
+		ret = NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
 		if (ret == -1)
 		{
 			Con_Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
@@ -588,7 +588,7 @@ nextmsg:
 
 			case q1clc_stringcmd:
 				s = net_message.ReadString2();
-				if (host_client->privileged)
+				if (host_client->qh_privileged)
 				{
 					ret = 2;
 				}
@@ -691,7 +691,7 @@ nextmsg:
 				return false;
 
 			case q1clc_move:
-				SV_ReadClientMove(&host_client->cmd);
+				SV_ReadClientMove(&host_client->q1_lastUsercmd);
 				break;
 			}
 		}
@@ -729,7 +729,7 @@ void SV_RunClients(void)
 		if (host_client->state != CS_ACTIVE)
 		{
 			// clear client movement until a new packet is received
-			Com_Memset(&host_client->cmd, 0, sizeof(host_client->cmd));
+			Com_Memset(&host_client->q1_lastUsercmd, 0, sizeof(host_client->q1_lastUsercmd));
 			continue;
 		}
 

@@ -49,10 +49,6 @@ void        NET_Sleep(int msec);
 qboolean    Sys_GetPacket(netadr_t* net_from, QMsg* net_message);
 
 
-#define MAX_DOWNLOAD_WINDOW         8		// max of eight download frames
-#define MAX_DOWNLOAD_BLKSIZE        2048	// 2048 byte block chunks
-
-
 /*
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */

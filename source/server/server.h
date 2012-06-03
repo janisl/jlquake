@@ -18,6 +18,10 @@
 #define _SERVER_H
 
 #include "../common/qcommon.h"
+#include "../common/file_formats/bsp38.h"
+#include "quakeserverdefs.h"
+#include "hexen2serverdefs.h"
+#include "quake2serverdefs.h"
 #include "quake3serverdefs.h"
 #include "wolfserverdefs.h"
 #include "global.h"

@@ -761,11 +761,11 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
 	ent = client->edict;
 
 	// send the chokecount for cl_netgraph
-	if (client->chokecount)
+	if (client->qh_chokecount)
 	{
 		msg->WriteByte(hwsvc_chokecount);
-		msg->WriteByte(client->chokecount);
-		client->chokecount = 0;
+		msg->WriteByte(client->qh_chokecount);
+		client->qh_chokecount = 0;
 	}
 
 	// send a damage message if the player got hit this frame
@@ -820,9 +820,9 @@ void SV_UpdateClientStats(client_t* client)
 
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his
-	if (client->spectator && client->spec_track > 0)
+	if (client->qh_spectator && client->qh_spec_track > 0)
 	{
-		ent = svs.clients[client->spec_track - 1].edict;
+		ent = svs.clients[client->qh_spec_track - 1].edict;
 	}
 
 	stats[STAT_HEALTH] = 0;	//ent->v.health;
@@ -833,7 +833,7 @@ void SV_UpdateClientStats(client_t* client)
 	stats[STAT_NAILS] = 0;	//ent->v.ammo_nails;
 	stats[STAT_ROCKETS] = 0;//ent->v.ammo_rockets;
 	stats[STAT_CELLS] = 0;	//ent->v.ammo_cells;
-	if (!client->spectator)
+	if (!client->qh_spectator)
 	{
 		stats[STAT_ACTIVEWEAPON] = 0;	//ent->v.weapon;
 	}
@@ -841,9 +841,9 @@ void SV_UpdateClientStats(client_t* client)
 	stats[STAT_ITEMS] = 0;	//(int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
 
 	for (i = 0; i < MAX_CL_STATS; i++)
-		if (stats[i] != client->stats[i])
+		if (stats[i] != client->qh_stats[i])
 		{
-			client->stats[i] = stats[i];
+			client->qh_stats[i] = stats[i];
 			if (stats[i] >= 0 && stats[i] <= 255)
 			{
 				client->netchan.message.WriteByte(h2svc_updatestat);
@@ -933,12 +933,12 @@ static void UpdatePIV(void)
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
-		host_client->PIV = 0;
+		host_client->hw_PIV = 0;
 	}
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
-		if (host_client->state != CS_ACTIVE || host_client->spectator)
+		if (host_client->state != CS_ACTIVE || host_client->qh_spectator)
 		{
 			continue;
 		}
@@ -951,7 +951,7 @@ static void UpdatePIV(void)
 
 		for (j = i + 1, client = host_client + 1; j < HWMAX_CLIENTS; j++, client++)
 		{
-			if (client->state != CS_ACTIVE || client->spectator)
+			if (client->state != CS_ACTIVE || client->qh_spectator)
 			{
 				continue;
 			}
@@ -972,11 +972,11 @@ static void UpdatePIV(void)
 			{	//can see each other, check for invisible, dead
 				if (ValidToShowName(client->edict))
 				{
-					host_client->PIV |= 1 << j;
+					host_client->hw_PIV |= 1 << j;
 				}
 				if (ValidToShowName(host_client->edict))
 				{
-					client->PIV |= 1 << i;
+					client->hw_PIV |= 1 << i;
 				}
 			}
 		}
@@ -1012,12 +1012,12 @@ void SV_UpdateToReliableMessages(void)
 		{
 			continue;
 		}
-		if (host_client->sendinfo)
+		if (host_client->qh_sendinfo)
 		{
-			host_client->sendinfo = false;
+			host_client->qh_sendinfo = false;
 			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
 		}
-		if (host_client->old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 			{
@@ -1029,7 +1029,7 @@ void SV_UpdateToReliableMessages(void)
 				client->netchan.message.WriteByte(hwsvc_updatedminfo);
 				client->netchan.message.WriteByte(i);
 				client->netchan.message.WriteShort(host_client->edict->GetFrags());
-				client->netchan.message.WriteByte((host_client->playerclass << 5) | ((int)host_client->edict->GetLevel() & 31));
+				client->netchan.message.WriteByte((host_client->h2_playerclass << 5) | ((int)host_client->edict->GetLevel() & 31));
 
 				if (dmMode->value == DM_SIEGE)
 				{
@@ -1039,34 +1039,34 @@ void SV_UpdateToReliableMessages(void)
 				}
 			}
 
-			host_client->old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->edict->GetFrags();
 		}
 
 		SV_WriteInventory(host_client, host_client->edict, &host_client->netchan.message);
 
-		if (CheckPIV && host_client->PIV != host_client->LastPIV)
+		if (CheckPIV && host_client->hw_PIV != host_client->hw_LastPIV)
 		{
 			host_client->netchan.message.WriteByte(hwsvc_update_piv);
-			host_client->netchan.message.WriteLong(host_client->PIV);
-			host_client->LastPIV = host_client->PIV;
+			host_client->netchan.message.WriteLong(host_client->hw_PIV);
+			host_client->hw_LastPIV = host_client->hw_PIV;
 		}
 
 		// maxspeed/entgravity changes
 		ent = host_client->edict;
 
 		val = GetEdictFieldValue(ent, "gravity");
-		if (val && host_client->entgravity != val->_float)
+		if (val && host_client->qh_entgravity != val->_float)
 		{
-			host_client->entgravity = val->_float;
+			host_client->qh_entgravity = val->_float;
 			host_client->netchan.message.WriteByte(hwsvc_entgravity);
-			host_client->netchan.message.WriteFloat(host_client->entgravity);
+			host_client->netchan.message.WriteFloat(host_client->qh_entgravity);
 		}
 		val = GetEdictFieldValue(ent, "maxspeed");
-		if (val && host_client->maxspeed != val->_float)
+		if (val && host_client->qh_maxspeed != val->_float)
 		{
-			host_client->maxspeed = val->_float;
+			host_client->qh_maxspeed = val->_float;
 			host_client->netchan.message.WriteByte(hwsvc_maxspeed);
-			host_client->netchan.message.WriteFloat(host_client->maxspeed);
+			host_client->netchan.message.WriteFloat(host_client->qh_maxspeed);
 		}
 
 	}
@@ -1150,20 +1150,20 @@ void SV_SendClientMessages(void)
 			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
 			Con_Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
-			c->send_message = true;
+			c->qh_send_message = true;
 			c->netchan.clearTime = 0;	// don't choke this message
 		}
 
 		// only send messages if the client has sent one
 		// and the bandwidth is not choked
-		if (!c->send_message)
+		if (!c->qh_send_message)
 		{
 			continue;
 		}
-		c->send_message = false;	// try putting this after choke?
+		c->qh_send_message = false;	// try putting this after choke?
 		if (!Netchan_CanPacket(&c->netchan))
 		{
-			c->chokecount++;
+			c->qh_chokecount++;
 			continue;		// bandwidth choke
 		}
 
@@ -1198,7 +1198,7 @@ void SV_SendMessagesToAll(void)
 	for (i = 0, c = svs.clients; i < HWMAX_CLIENTS; i++, c++)
 		if (c->state)		// FIXME: should this only send to active?
 		{
-			c->send_message = true;
+			c->qh_send_message = true;
 		}
 
 	SV_SendClientMessages();

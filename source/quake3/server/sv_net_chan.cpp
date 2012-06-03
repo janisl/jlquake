@@ -58,7 +58,7 @@ static void SV_Netchan_Encode(client_t* client, QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)client->lastClientCommandString;
+	string = (byte*)client->q3_lastClientCommandString;
 	index = 0;
 	// xor the client challenge with the netchan sequence number
 	key = client->challenge ^ client->netchan.outgoingSequence;
@@ -114,7 +114,7 @@ static void SV_Netchan_Decode(client_t* client, QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)client->reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_Q3 - 1)];
+	string = (byte*)client->q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_Q3 - 1)];
 	index = 0;
 	//
 	key = client->challenge ^ serverId ^ messageAcknowledge;
@@ -150,24 +150,24 @@ void SV_Netchan_TransmitNextFragment(client_t* client)
 	if (!client->netchan.unsentFragments)
 	{
 		// make sure the netchan queue has been properly initialized (you never know)
-		if (!client->netchan_end_queue)
+		if (!client->q3_netchan_end_queue)
 		{
 			Com_Error(ERR_DROP, "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n");
 		}
 		// the last fragment was transmitted, check wether we have queued messages
-		if (client->netchan_start_queue)
+		if (client->q3_netchan_start_queue)
 		{
 			netchan_buffer_t* netbuf;
 			Com_DPrintf("#462 Netchan_TransmitNextFragment: popping a queued message for transmit\n");
-			netbuf = client->netchan_start_queue;
+			netbuf = client->q3_netchan_start_queue;
 			SV_Netchan_Encode(client, &netbuf->msg);
 			Netchan_Transmit(&client->netchan, netbuf->msg.cursize, netbuf->msg._data);
 			// pop from queue
-			client->netchan_start_queue = netbuf->next;
-			if (!client->netchan_start_queue)
+			client->q3_netchan_start_queue = netbuf->next;
+			if (!client->q3_netchan_start_queue)
 			{
 				Com_DPrintf("#462 Netchan_TransmitNextFragment: emptied queue\n");
-				client->netchan_end_queue = &client->netchan_start_queue;
+				client->q3_netchan_end_queue = &client->q3_netchan_start_queue;
 			}
 			else
 			{
@@ -202,8 +202,8 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 		netbuf->msg.Copy(netbuf->msgBuffer, sizeof(netbuf->msgBuffer), *msg);
 		netbuf->next = NULL;
 		// insert it in the queue, the message will be encoded and sent later
-		*client->netchan_end_queue = netbuf;
-		client->netchan_end_queue = &(*client->netchan_end_queue)->next;
+		*client->q3_netchan_end_queue = netbuf;
+		client->q3_netchan_end_queue = &(*client->q3_netchan_end_queue)->next;
 		// emit the next fragment of the current message for now
 		Netchan_TransmitNextFragment(&client->netchan);
 	}

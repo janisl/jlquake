@@ -207,7 +207,7 @@ void SV_DropClient(client_t* drop)
 
 	if (drop->state == CS_ACTIVE)
 	{
-		if (!drop->spectator)
+		if (!drop->qh_spectator)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
@@ -234,7 +234,7 @@ void SV_DropClient(client_t* drop)
 		}
 	}
 
-	if (drop->spectator)
+	if (drop->qh_spectator)
 	{
 		Con_Printf("Spectator %s removed\n",drop->name);
 	}
@@ -250,9 +250,9 @@ void SV_DropClient(client_t* drop)
 	}
 
 	drop->state = CS_ZOMBIE;		// become free in a few seconds
-	drop->connection_started = realtime;	// for zombie timeout
+	drop->qh_connection_started = realtime;	// for zombie timeout
 
-	drop->old_frags = 0;
+	drop->qh_old_frags = 0;
 	drop->edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
@@ -275,11 +275,11 @@ int SV_CalcPing(client_t* cl)
 	float ping;
 	int i;
 	int count;
-	register client_frame_t* frame;
+	register hwclient_frame_t* frame;
 
 	ping = 0;
 	count = 0;
-	for (frame = cl->frames, i = 0; i < UPDATE_BACKUP_HW; i++, frame++)
+	for (frame = cl->hw_frames, i = 0; i < UPDATE_BACKUP_HW; i++, frame++)
 	{
 		if (frame->ping_time > 0)
 		{
@@ -317,8 +317,8 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
-	buf->WriteShort(client->old_frags);
-	buf->WriteByte((client->playerclass << 5) | ((int)client->edict->GetLevel() & 31));
+	buf->WriteShort(client->qh_old_frags);
+	buf->WriteByte((client->h2_playerclass << 5) | ((int)client->edict->GetLevel() & 31));
 
 	if (dmMode->value == DM_SIEGE)
 	{
@@ -328,7 +328,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 		buf->WriteByte(hwsvc_updatesiegeteam);
 		buf->WriteByte(i);
-		buf->WriteByte(client->siege_team);
+		buf->WriteByte(client->hw_siege_team);
 
 		buf->WriteByte(hwsvc_updatesiegelosses);
 		buf->WriteByte(pr_global_struct->defLosses);
@@ -344,14 +344,14 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(hwsvc_updateentertime);
 	buf->WriteByte(i);
-	buf->WriteFloat(realtime - client->connection_started);
+	buf->WriteFloat(realtime - client->qh_connection_started);
 
 	String::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys(info, '_', HWMAX_INFO_STRING);	// server passwords, etc
 
 	buf->WriteByte(hwsvc_updateuserinfo);
 	buf->WriteByte(i);
-	buf->WriteLong(client->userid);
+	buf->WriteLong(client->qh_userid);
 	buf->WriteString2(info);
 }
 
@@ -385,13 +385,13 @@ void SVC_Status(void)
 	for (i = 0; i < HWMAX_CLIENTS; i++)
 	{
 		cl = &svs.clients[i];
-		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->spectator)
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->qh_spectator)
 		{
 			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
 			ping = SV_CalcPing(cl);
-			Con_Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->userid,
-				cl->old_frags, (int)(realtime - cl->connection_started) / 60,
+			Con_Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
+				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
 		}
 	}
@@ -542,8 +542,8 @@ void SVC_DirectConnect(void)
 	newcl = &temp;
 	Com_Memset(newcl, 0, sizeof(client_t));
 
-	newcl->userid = userid;
-	newcl->portals = atol(Cmd_Argv(1));
+	newcl->qh_userid = userid;
+	newcl->hw_portals = atol(Cmd_Argv(1));
 
 	// works properly
 	if (!sv_highchars->value)
@@ -585,7 +585,7 @@ void SVC_DirectConnect(void)
 		{
 			continue;
 		}
-		if (cl->spectator)
+		if (cl->qh_spectator)
 		{
 			spectators++;
 		}
@@ -646,11 +646,11 @@ void SVC_DirectConnect(void)
 
 	newcl->state = CS_CONNECTED;
 
-	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
+	newcl->datagram.InitOOB(newcl->datagramBuffer, MAX_DATAGRAM_HW);
 	newcl->datagram.allowoverflow = true;
 
 	// spectator mode can ONLY be set at join time
-	newcl->spectator = spectator;
+	newcl->qh_spectator = spectator;
 
 	ent = EDICT_NUM(edictnum);
 	newcl->edict = ent;
@@ -661,16 +661,16 @@ void SVC_DirectConnect(void)
 
 	// JACK: Init the floodprot stuff.
 	for (i = 0; i < 10; i++)
-		newcl->whensaid[i] = 0.0;
-	newcl->whensaidhead = 0;
-	newcl->lockedtill = 0;
+		newcl->qh_whensaid[i] = 0.0;
+	newcl->qh_whensaidhead = 0;
+	newcl->qh_lockedtill = 0;
 
 	// call the progs to get default spawn parms for the new client
 	PR_ExecuteProgram(pr_global_struct->SetNewParms);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		newcl->spawn_parms[i] = (&pr_global_struct->parm1)[i];
+		newcl->qh_spawn_parms[i] = (&pr_global_struct->parm1)[i];
 
-	if (newcl->spectator)
+	if (newcl->qh_spectator)
 	{
 		Con_Printf("Spectator %s connected\n", newcl->name);
 	}
@@ -1102,7 +1102,7 @@ void SV_ReadPackets(void)
 			{	// this is a valid, sequenced packet, so process it
 				svs.stats.packets++;
 				good = true;
-				cl->send_message = true;	// reply at end of frame
+				cl->qh_send_message = true;	// reply at end of frame
 				if (cl->state != CS_ZOMBIE)
 				{
 					SV_ExecuteClientMessage(cl);
@@ -1151,7 +1151,7 @@ void SV_CheckTimeouts(void)
 			cl->state = CS_FREE;	// don't bother with zombie state
 		}
 		if (cl->state == CS_ZOMBIE &&
-			realtime - cl->connection_started > zombietime->value)
+			realtime - cl->qh_connection_started > zombietime->value)
 		{
 			cl->state = CS_FREE;	// can now be reused
 		}
@@ -1620,16 +1620,16 @@ void SV_ExtractFromUserinfo(client_t* cl)
 		{
 			i = CLASS_PALADIN;
 		}
-		if (i < 0 || i > MAX_PLAYER_CLASS || (!cl->portals && i == CLASS_DEMON))
+		if (i < 0 || i > MAX_PLAYER_CLASS || (!cl->hw_portals && i == CLASS_DEMON))
 		{
 			i = 0;
 		}
-		cl->next_playerclass =  i;
+		cl->hw_next_playerclass =  i;
 		cl->edict->SetNextPlayerClass(i);
 
 		if (cl->edict->GetHealth() > 0)
 		{
-			sprintf(newname,"%d",cl->playerclass);
+			sprintf(newname,"%d",cl->h2_playerclass);
 			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		}
 	}

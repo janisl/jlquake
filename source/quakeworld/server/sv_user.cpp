@@ -61,7 +61,7 @@ void SV_New_f(void)
 	}
 
 	host_client->state = CS_CONNECTED;
-	host_client->connection_started = realtime;
+	host_client->qh_connection_started = realtime;
 
 	// send the info about the new client to all connected clients
 //	SV_FullClientUpdate (host_client, &sv.reliable_datagram);
@@ -75,10 +75,10 @@ void SV_New_f(void)
 
 //NOTE:  This doesn't go through ClientReliableWrite since it's before the user
 //spawns.  These functions are written to not overflow
-	if (host_client->num_backbuf)
+	if (host_client->qw_num_backbuf)
 	{
 		Con_Printf("WARNING %s: [SV_New] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->num_backbuf = 0;
+		host_client->qw_num_backbuf = 0;
 		host_client->netchan.message.Clear();
 	}
 
@@ -89,7 +89,7 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteString2(gamedir);
 
 	playernum = NUM_FOR_EDICT(host_client->edict) - 1;
-	if (host_client->spectator)
+	if (host_client->qh_spectator)
 	{
 		playernum |= 128;
 	}
@@ -147,10 +147,10 @@ void SV_Soundlist_f(void)
 
 //NOTE:  This doesn't go through ClientReliableWrite since it's before the user
 //spawns.  These functions are written to not overflow
-	if (host_client->num_backbuf)
+	if (host_client->qw_num_backbuf)
 	{
 		Con_Printf("WARNING %s: [SV_Soundlist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->num_backbuf = 0;
+		host_client->qw_num_backbuf = 0;
 		host_client->netchan.message.Clear();
 	}
 
@@ -202,10 +202,10 @@ void SV_Modellist_f(void)
 
 //NOTE:  This doesn't go through ClientReliableWrite since it's before the user
 //spawns.  These functions are written to not overflow
-	if (host_client->num_backbuf)
+	if (host_client->qw_num_backbuf)
 	{
 		Con_Printf("WARNING %s: [SV_Modellist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->num_backbuf = 0;
+		host_client->qw_num_backbuf = 0;
 		host_client->netchan.message.Clear();
 	}
 
@@ -277,15 +277,15 @@ void SV_PreSpawn_f(void)
 			SV_DropClient(host_client);
 			return;
 		}
-		host_client->checksum = check;
+		host_client->qw_checksum = check;
 	}
 
 //NOTE:  This doesn't go through ClientReliableWrite since it's before the user
 //spawns.  These functions are written to not overflow
-	if (host_client->num_backbuf)
+	if (host_client->qw_num_backbuf)
 	{
 		Con_Printf("WARNING %s: [SV_PreSpawn] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->num_backbuf = 0;
+		host_client->qw_num_backbuf = 0;
 		host_client->netchan.message.Clear();
 	}
 
@@ -373,13 +373,13 @@ void SV_Spawn_f(void)
 	ent->SetTeam(0);	// FIXME
 	ent->SetNetName(PR_SetString(host_client->name));
 
-	host_client->entgravity = 1.0;
+	host_client->qh_entgravity = 1.0;
 	val = GetEdictFieldValue(ent, "gravity");
 	if (val)
 	{
 		val->_float = 1.0;
 	}
-	host_client->maxspeed = sv_maxspeed->value;
+	host_client->qh_maxspeed = sv_maxspeed->value;
 	val = GetEdictFieldValue(ent, "maxspeed");
 	if (val)
 	{
@@ -389,7 +389,7 @@ void SV_Spawn_f(void)
 //
 // force stats to be updated
 //
-	Com_Memset(host_client->stats, 0, sizeof(host_client->stats));
+	Com_Memset(host_client->qh_stats, 0, sizeof(host_client->qh_stats));
 
 	ClientReliableWrite_Begin(host_client, qwsvc_updatestatlong, 6);
 	ClientReliableWrite_Byte(host_client, Q1STAT_TOTALSECRETS);
@@ -466,7 +466,7 @@ void SV_Begin_f(void)
 		return;
 	}
 
-	if (host_client->spectator)
+	if (host_client->qh_spectator)
 	{
 		SV_SpawnSpectator();
 
@@ -474,7 +474,7 @@ void SV_Begin_f(void)
 		{
 			// copy spawn parms out of the client_t
 			for (i = 0; i < NUM_SPAWN_PARMS; i++)
-				(&pr_global_struct->parm1)[i] = host_client->spawn_parms[i];
+				(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
 
 			// call the spawn function
 			pr_global_struct->time = sv.time;
@@ -486,7 +486,7 @@ void SV_Begin_f(void)
 	{
 		// copy spawn parms out of the client_t
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			(&pr_global_struct->parm1)[i] = host_client->spawn_parms[i];
+			(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
 
 		// call the spawn function
 		pr_global_struct->time = sv.time;
@@ -556,7 +556,7 @@ void SV_NextDownload_f(void)
 		return;
 	}
 
-	r = host_client->downloadsize - host_client->downloadcount;
+	r = host_client->downloadSize - host_client->downloadCount;
 	if (r > 768)
 	{
 		r = 768;
@@ -565,17 +565,17 @@ void SV_NextDownload_f(void)
 	ClientReliableWrite_Begin(host_client, qwsvc_download, 6 + r);
 	ClientReliableWrite_Short(host_client, r);
 
-	host_client->downloadcount += r;
-	size = host_client->downloadsize;
+	host_client->downloadCount += r;
+	size = host_client->downloadSize;
 	if (!size)
 	{
 		size = 1;
 	}
-	percent = host_client->downloadcount * 100 / size;
+	percent = host_client->downloadCount * 100 / size;
 	ClientReliableWrite_Byte(host_client, percent);
 	ClientReliableWrite_SZ(host_client, buffer, r);
 
-	if (host_client->downloadcount != host_client->downloadsize)
+	if (host_client->downloadCount != host_client->downloadSize)
 	{
 		return;
 	}
@@ -612,7 +612,7 @@ void SV_NextUpload(void)
 	int percent;
 	int size;
 
-	if (!*host_client->uploadfn)
+	if (!*host_client->qw_uploadfn)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Upload denied\n");
 		ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
@@ -627,25 +627,25 @@ void SV_NextUpload(void)
 	size = net_message.ReadShort();
 	percent = net_message.ReadByte();
 
-	if (!host_client->upload)
+	if (!host_client->qw_upload)
 	{
-		host_client->upload = FS_FOpenFileWrite(host_client->uploadfn);
-		if (!host_client->upload)
+		host_client->qw_upload = FS_FOpenFileWrite(host_client->qw_uploadfn);
+		if (!host_client->qw_upload)
 		{
-			Con_Printf("Can't create %s\n", host_client->uploadfn);
+			Con_Printf("Can't create %s\n", host_client->qw_uploadfn);
 			ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
 			ClientReliableWrite_String(host_client, "stopul");
-			*host_client->uploadfn = 0;
+			*host_client->qw_uploadfn = 0;
 			return;
 		}
-		Con_Printf("Receiving %s from %d...\n", host_client->uploadfn, host_client->userid);
-		if (host_client->remote_snap)
+		Con_Printf("Receiving %s from %d...\n", host_client->qw_uploadfn, host_client->qh_userid);
+		if (host_client->qw_remote_snap)
 		{
-			OutofBandPrintf(host_client->snap_from, "Server receiving %s from %d...\n", host_client->uploadfn, host_client->userid);
+			OutofBandPrintf(host_client->qw_snap_from, "Server receiving %s from %d...\n", host_client->qw_uploadfn, host_client->qh_userid);
 		}
 	}
 
-	FS_Write(net_message._data + net_message.readcount, size, host_client->upload);
+	FS_Write(net_message._data + net_message.readcount, size, host_client->qw_upload);
 	net_message.readcount += size;
 
 	Con_DPrintf("UPLOAD: %d received\n", size);
@@ -657,25 +657,25 @@ void SV_NextUpload(void)
 	}
 	else
 	{
-		FS_FCloseFile(host_client->upload);
-		host_client->upload = 0;
+		FS_FCloseFile(host_client->qw_upload);
+		host_client->qw_upload = 0;
 
-		Con_Printf("%s upload completed.\n", host_client->uploadfn);
+		Con_Printf("%s upload completed.\n", host_client->qw_uploadfn);
 
-		if (host_client->remote_snap)
+		if (host_client->qw_remote_snap)
 		{
 			char* p;
 
-			if ((p = strchr(host_client->uploadfn, '/')) != NULL)
+			if ((p = strchr(host_client->qw_uploadfn, '/')) != NULL)
 			{
 				p++;
 			}
 			else
 			{
-				p = host_client->uploadfn;
+				p = host_client->qw_uploadfn;
 			}
-			OutofBandPrintf(host_client->snap_from, "%s upload completed.\nTo download, enter:\ndownload %s\n",
-				host_client->uploadfn, p);
+			OutofBandPrintf(host_client->qw_snap_from, "%s upload completed.\nTo download, enter:\ndownload %s\n",
+				host_client->qw_uploadfn, p);
 		}
 	}
 
@@ -735,8 +735,8 @@ void SV_BeginDownload_f(void)
 	}
 
 
-	host_client->downloadsize = FS_FOpenFileRead(name, &host_client->download, true);
-	host_client->downloadcount = 0;
+	host_client->downloadSize = FS_FOpenFileRead(name, &host_client->download, true);
+	host_client->downloadCount = 0;
 
 	if (!host_client->download
 		// special check for maps, if it came from a pak file, don't allow
@@ -787,7 +787,7 @@ void SV_Say(qboolean team)
 		t1[31] = 0;
 	}
 
-	if (host_client->spectator && (!sv_spectalk->value || team))
+	if (host_client->qh_spectator && (!sv_spectalk->value || team))
 	{
 		sprintf(text, "[SPEC] %s: ", host_client->name);
 	}
@@ -802,22 +802,22 @@ void SV_Say(qboolean team)
 
 	if (fp_messages)
 	{
-		if (!sv.paused && realtime < host_client->lockedtill)
+		if (!sv.paused && realtime < host_client->qh_lockedtill)
 		{
 			SV_ClientPrintf(host_client, PRINT_CHAT,
 				"You can't talk for %d more seconds\n",
-				(int)(host_client->lockedtill - realtime));
+				(int)(host_client->qh_lockedtill - realtime));
 			return;
 		}
-		tmp = host_client->whensaidhead - fp_messages + 1;
+		tmp = host_client->qh_whensaidhead - fp_messages + 1;
 		if (tmp < 0)
 		{
 			tmp = 10 + tmp;
 		}
 		if (!sv.paused &&
-			host_client->whensaid[tmp] && (realtime - host_client->whensaid[tmp] < fp_persecond))
+			host_client->qh_whensaid[tmp] && (realtime - host_client->qh_whensaid[tmp] < fp_persecond))
 		{
-			host_client->lockedtill = realtime + fp_secondsdead;
+			host_client->qh_lockedtill = realtime + fp_secondsdead;
 			if (fp_msg[0])
 			{
 				SV_ClientPrintf(host_client, PRINT_CHAT,
@@ -830,12 +830,12 @@ void SV_Say(qboolean team)
 			}
 			return;
 		}
-		host_client->whensaidhead++;
-		if (host_client->whensaidhead > 9)
+		host_client->qh_whensaidhead++;
+		if (host_client->qh_whensaidhead > 9)
 		{
-			host_client->whensaidhead = 0;
+			host_client->qh_whensaidhead = 0;
 		}
-		host_client->whensaid[host_client->whensaidhead] = realtime;
+		host_client->qh_whensaid[host_client->qh_whensaidhead] = realtime;
 	}
 
 	p = Cmd_ArgsUnmodified();
@@ -857,9 +857,9 @@ void SV_Say(qboolean team)
 		{
 			continue;
 		}
-		if (host_client->spectator && !sv_spectalk->value)
+		if (host_client->qh_spectator && !sv_spectalk->value)
 		{
-			if (!client->spectator)
+			if (!client->qh_spectator)
 			{
 				continue;
 			}
@@ -868,9 +868,9 @@ void SV_Say(qboolean team)
 		if (team)
 		{
 			// the spectator team
-			if (host_client->spectator)
+			if (host_client->qh_spectator)
 			{
-				if (!client->spectator)
+				if (!client->qh_spectator)
 				{
 					continue;
 				}
@@ -878,7 +878,7 @@ void SV_Say(qboolean team)
 			else
 			{
 				t2 = Info_ValueForKey(client->userinfo, "team");
-				if (String::Cmp(t1, t2) || client->spectator)
+				if (String::Cmp(t1, t2) || client->qh_spectator)
 				{
 					continue;	// on different teams
 				}
@@ -937,7 +937,7 @@ void SV_Pings_f(void)
 		ClientReliableWrite_Short(host_client, SV_CalcPing(client));
 		ClientReliableWrite_Begin(host_client, qwsvc_updatepl, 4);
 		ClientReliableWrite_Byte(host_client, j);
-		ClientReliableWrite_Byte(host_client, client->lossage);
+		ClientReliableWrite_Byte(host_client, client->qw_lossage);
 	}
 }
 
@@ -1006,7 +1006,7 @@ void SV_Pause_f(void)
 		return;
 	}
 
-	if (host_client->spectator)
+	if (host_client->qh_spectator)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Spectators can not pause.\n");
 		return;
@@ -1035,7 +1035,7 @@ The client is going to disconnect, so remove the connection immediately
 void SV_Drop_f(void)
 {
 	SV_EndRedirect();
-	if (!host_client->spectator)
+	if (!host_client->qh_spectator)
 	{
 		SV_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
 	}
@@ -1054,7 +1054,7 @@ void SV_PTrack_f(void)
 	int i;
 	qhedict_t* ent, * tent;
 
-	if (!host_client->spectator)
+	if (!host_client->qh_spectator)
 	{
 		return;
 	}
@@ -1062,7 +1062,7 @@ void SV_PTrack_f(void)
 	if (Cmd_Argc() != 2)
 	{
 		// turn off tracking
-		host_client->spec_track = 0;
+		host_client->qh_spec_track = 0;
 		ent = EDICT_NUM(host_client - svs.clients + 1);
 		tent = EDICT_NUM(0);
 		ent->SetGoalEntity(EDICT_TO_PROG(tent));
@@ -1071,16 +1071,16 @@ void SV_PTrack_f(void)
 
 	i = String::Atoi(Cmd_Argv(1));
 	if (i < 0 || i >= MAX_CLIENTS_QW || svs.clients[i].state != CS_ACTIVE ||
-		svs.clients[i].spectator)
+		svs.clients[i].qh_spectator)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
-		host_client->spec_track = 0;
+		host_client->qh_spec_track = 0;
 		ent = EDICT_NUM(host_client - svs.clients + 1);
 		tent = EDICT_NUM(0);
 		ent->SetGoalEntity(EDICT_TO_PROG(tent));
 		return;
 	}
-	host_client->spec_track = i + 1;// now tracking
+	host_client->qh_spec_track = i + 1;// now tracking
 
 	ent = EDICT_NUM(host_client - svs.clients + 1);
 	tent = EDICT_NUM(i + 1);
@@ -1211,9 +1211,9 @@ void SV_ShowServerinfo_f(void)
 
 void SV_NoSnap_f(void)
 {
-	if (*host_client->uploadfn)
+	if (*host_client->qw_uploadfn)
 	{
-		*host_client->uploadfn = 0;
+		*host_client->qw_uploadfn = 0;
 		SV_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", host_client->name);
 	}
 }
@@ -1521,7 +1521,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 		host_frametime = 0.1;
 	}
 
-	if (!host_client->spectator)
+	if (!host_client->qh_spectator)
 	{
 		pr_global_struct->frametime = host_frametime;
 
@@ -1537,16 +1537,16 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 	VectorCopy(sv_player->GetVelocity(), qh_pmove.velocity);
 	VectorCopy(sv_player->GetVAngle(), qh_pmove.angles);
 
-	qh_pmove.spectator = host_client->spectator;
+	qh_pmove.spectator = host_client->qh_spectator;
 	qh_pmove.waterjumptime = sv_player->GetTeleportTime();
 	qh_pmove.numphysent = 1;
 	qh_pmove.physents[0].model = 0;
 	qh_pmove.cmd.Set(*ucmd);
 	qh_pmove.dead = sv_player->GetHealth() <= 0;
-	qh_pmove.oldbuttons = host_client->oldbuttons;
+	qh_pmove.oldbuttons = host_client->qh_oldbuttons;
 
-	movevars.entgravity = host_client->entgravity;
-	movevars.maxspeed = host_client->maxspeed;
+	movevars.entgravity = host_client->qh_entgravity;
+	movevars.maxspeed = host_client->qh_maxspeed;
 
 	for (i = 0; i < 3; i++)
 	{
@@ -1576,7 +1576,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 	PMQH_PlayerMove();
 #endif
 
-	host_client->oldbuttons = qh_pmove.oldbuttons;
+	host_client->qh_oldbuttons = qh_pmove.oldbuttons;
 	sv_player->SetTeleportTime(qh_pmove.waterjumptime);
 	sv_player->SetWaterLevel(qh_pmove.waterlevel);
 	sv_player->SetWaterType(qh_pmove.watertype);
@@ -1602,7 +1602,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 
 	sv_player->SetVAngle(qh_pmove.angles);
 
-	if (!host_client->spectator)
+	if (!host_client->qh_spectator)
 	{
 		// link into place and touch triggers
 		SV_LinkEdict(sv_player, true);
@@ -1634,7 +1634,7 @@ void SV_PostRunCmd(void)
 {
 	// run post-think
 
-	if (!host_client->spectator)
+	if (!host_client->qh_spectator)
 	{
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
@@ -1662,7 +1662,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	int c;
 	char* s;
 	qwusercmd_t oldest, oldcmd, newcmd;
-	client_frame_t* frame;
+	qwclient_frame_t* frame;
 	vec3_t o;
 	qboolean move_issued = false;	//only allow one move command
 	int checksumIndex;
@@ -1670,7 +1670,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	int seq_hash;
 
 	// calc ping time
-	frame = &cl->frames[cl->netchan.incomingAcknowledged & UPDATE_MASK_QW];
+	frame = &cl->qw_frames[cl->netchan.incomingAcknowledged & UPDATE_MASK_QW];
 	frame->ping_time = realtime - frame->senttime;
 
 	// make sure the reply sequence number matches the incoming
@@ -1681,12 +1681,12 @@ void SV_ExecuteClientMessage(client_t* cl)
 	}
 	else
 	{
-		cl->send_message = false;	// don't reply, sequences have slipped
+		cl->qh_send_message = false;	// don't reply, sequences have slipped
 
 	}
 	// save time for ping calculations
-	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].senttime = realtime;
-	cl->frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].ping_time = -1;
+	cl->qw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].senttime = realtime;
+	cl->qw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].ping_time = -1;
 
 	host_client = cl;
 	sv_player = host_client->edict;
@@ -1696,8 +1696,8 @@ void SV_ExecuteClientMessage(client_t* cl)
 
 	// mark time so clients will know how much to predict
 	// other players
-	cl->localtime = sv.time;
-	cl->delta_sequence = -1;	// no delta unless requested
+	cl->qh_localtime = sv.time;
+	cl->qh_delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{
 		if (net_message.badread)
@@ -1724,7 +1724,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			break;
 
 		case qwclc_delta:
-			cl->delta_sequence = net_message.ReadByte();
+			cl->qh_delta_sequence = net_message.ReadByte();
 			break;
 
 		case q1clc_move:
@@ -1739,7 +1739,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			checksum = (byte)net_message.ReadByte();
 
 			// read loss percentage
-			cl->lossage = net_message.ReadByte();
+			cl->qw_lossage = net_message.ReadByte();
 
 			MSGQW_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
 			MSGQW_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
@@ -1772,7 +1772,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				{
 					while (net_drop > 2)
 					{
-						SV_RunCmd(&cl->lastcmd);
+						SV_RunCmd(&cl->qw_lastUsercmd);
 						net_drop--;
 					}
 					if (net_drop > 1)
@@ -1789,8 +1789,8 @@ void SV_ExecuteClientMessage(client_t* cl)
 				SV_PostRunCmd();
 			}
 
-			cl->lastcmd = newcmd;
-			cl->lastcmd.buttons = 0;// avoid multiple fires on lag
+			cl->qw_lastUsercmd = newcmd;
+			cl->qw_lastUsercmd.buttons = 0;// avoid multiple fires on lag
 			break;
 
 
@@ -1804,7 +1804,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			o[1] = net_message.ReadCoord();
 			o[2] = net_message.ReadCoord();
 			// only allowed by spectators
-			if (host_client->spectator)
+			if (host_client->qh_spectator)
 			{
 				VectorCopy(o, sv_player->GetOrigin());
 				SV_LinkEdict(sv_player, false);

@@ -762,8 +762,8 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					ent->s.number = i;
 					client->gentity = ent;
 
-					client->deltaMessage = -1;
-					client->nextSnapshotTime = svs.time;	// generate a snapshot immediately
+					client->q3_deltaMessage = -1;
+					client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately
 
 					VM_Call(gvm, GAME_CLIENT_BEGIN, i);
 				}
@@ -1008,7 +1008,7 @@ void SV_FinalCommand(const char* cmd, qboolean disconnect)
 					}
 				}
 				// force a snapshot to be sent
-				cl->nextSnapshotTime = -1;
+				cl->q3_nextSnapshotTime = -1;
 				SV_SendClientSnapshot(cl);
 			}
 		}

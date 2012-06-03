@@ -70,39 +70,9 @@ typedef struct
 } server_t;
 
 
-#define NUM_PING_TIMES      16
-#define NUM_SPAWN_PARMS     16
-
 struct client_t : public client_common_t
 {
-	qboolean dropasap;					// has been told to go to another level
-	qboolean privileged;				// can execute any host command
-	qboolean sendsignon;				// only valid before spawned
-
-	double last_message;				// reliable messages must be sent
-										// periodically
-
-	qsocket_t* netconnection;	// communications handle
-	netchan_t netchan;
-
-	q1usercmd_t cmd;					// movement
-	vec3_t wishdir;						// intended motion calced from cmd
-
-	QMsg message;						// can be added to at any time,
-										// copied and clear once per frame
-	byte msgbuf[MAX_MSGLEN_Q1];
 	qhedict_t* edict;						// EDICT_NUM(clientnum+1)
-	char name[32];						// for printing to other people
-	int colors;
-
-	float ping_times[NUM_PING_TIMES];
-	int num_pings;						// ping_times[num_pings%NUM_PING_TIMES]
-
-// spawn parms are carried from level to level
-	float spawn_parms[NUM_SPAWN_PARMS];
-
-// client known data for deltas
-	int old_frags;
 };
 
 

@@ -117,96 +117,9 @@ typedef struct
 
 
 
-typedef struct
-{
-	int areabytes;
-	byte areabits[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
-	etplayerState_t ps;
-	int num_entities;
-	int first_entity;					// into the circular sv_packet_entities[]
-										// the entities MUST be in increasing state number
-										// order, otherwise the delta compression will fail
-	int messageSent;					// time the message was transmitted
-	int messageAcked;					// time the message was acked
-	int messageSize;					// used to rate drop packets
-} clientSnapshot_t;
-
-typedef struct netchan_buffer_s
-{
-	QMsg msg;
-	byte msgBuffer[MAX_MSGLEN_WOLF];
-	char lastClientCommandString[MAX_STRING_CHARS];
-	struct netchan_buffer_s* next;
-} netchan_buffer_t;
-
 struct client_t : public client_common_t
 {
-
-	char reliableCommands[MAX_RELIABLE_COMMANDS_ET][MAX_STRING_CHARS];
-	int reliableSequence;					// last added reliable message, not necesarily sent or acknowledged yet
-	int reliableAcknowledge;				// last acknowledged reliable message
-	int reliableSent;						// last sent reliable message, not necesarily acknowledged yet
-	int messageAcknowledge;
-
-	int binaryMessageLength;
-	char binaryMessage[MAX_BINARY_MESSAGE_ET];
-	qboolean binaryMessageOverflowed;
-
-	int gamestateMessageNum;				// netchan->outgoingSequence of gamestate
-	int challenge;
-
-	etusercmd_t lastUsercmd;
-	int lastMessageNum;					// for delta compression
-	int lastClientCommand;				// reliable client message sequence
-	char lastClientCommandString[MAX_STRING_CHARS];
 	sharedEntity_t* gentity;			// SV_GentityNum(clientnum)
-	char name[MAX_NAME_LENGTH_ET];						// extracted from userinfo, high bits masked
-
-	// downloading
-	char downloadName[MAX_QPATH];			// if not empty string, we are downloading
-	fileHandle_t download;				// file being downloaded
-	int downloadSize;					// total bytes (can't use EOF because of paks)
-	int downloadCount;					// bytes sent
-	int downloadClientBlock;				// last block we sent to the client, awaiting ack
-	int downloadCurrentBlock;				// current block number
-	int downloadXmitBlock;				// last block we xmited
-	unsigned char* downloadBlocks[MAX_DOWNLOAD_WINDOW];		// the buffers for the download blocks
-	int downloadBlockSize[MAX_DOWNLOAD_WINDOW];
-	qboolean downloadEOF;				// We have sent the EOF block
-	int downloadSendTime;				// time we last got an ack from the client
-
-	// www downloading
-	qboolean bDlOK;		// passed from cl_wwwDownload CVAR_USERINFO, wether this client supports www dl
-	char downloadURL[MAX_OSPATH];			// the URL we redirected the client to
-	qboolean bWWWDl;	// we have a www download going
-	qboolean bWWWing;	// the client is doing an ftp/http download
-	qboolean bFallback;		// last www download attempt failed, fallback to regular download
-	// note: this is one-shot, multiple downloads would cause a www download to be attempted again
-
-	int deltaMessage;					// frame last client usercmd message
-	int nextReliableTime;				// svs.time when another reliable command will be allowed
-	int lastPacketTime;					// svs.time when packet was last received
-	int lastConnectTime;				// svs.time when connection started
-	int nextSnapshotTime;				// send another snapshot when svs.time >= nextSnapshotTime
-	qboolean rateDelayed;				// true if nextSnapshotTime was set based on rate instead of snapshotMsec
-	int timeoutCount;					// must timeout a few frames in a row so debugging doesn't break
-	clientSnapshot_t frames[PACKET_BACKUP_Q3];		// updates can be delta'd from here
-	int ping;
-	int rate;							// bytes / second
-	int snapshotMsec;					// requests a snapshot every snapshotMsec unless rate choked
-	int pureAuthentic;
-	qboolean gotCP;	// TTimo - additional flag to distinguish between a bad pure checksum, and no cp command at all
-	netchan_t netchan;
-	// TTimo
-	// queuing outgoing fragmented messages to send them properly, without udp packet bursts
-	// in case large fragmented messages are stacking up
-	// buffer them into this queue, and hand them out to netchan as needed
-	netchan_buffer_t* netchan_start_queue;
-	//%	netchan_buffer_t **netchan_end_queue;
-	netchan_buffer_t* netchan_end_queue;
-
-	//bani
-	int downloadnotify;
 };
 
 //=============================================================================

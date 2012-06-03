@@ -325,7 +325,7 @@ void SV_GetUsercmd(int clientNum, etusercmd_t* cmd)
 	{
 		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
 	}
-	*cmd = svs.clients[clientNum].lastUsercmd;
+	*cmd = svs.clients[clientNum].et_lastUsercmd;
 }
 
 /*
@@ -344,12 +344,12 @@ static void SV_SendBinaryMessage(int cno, char* buf, int buflen)
 	if (buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET)
 	{
 		Com_Error(ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen);
-		svs.clients[cno].binaryMessageLength = 0;
+		svs.clients[cno].et_binaryMessageLength = 0;
 		return;
 	}
 
-	svs.clients[cno].binaryMessageLength = buflen;
-	memcpy(svs.clients[cno].binaryMessage, buf, buflen);
+	svs.clients[cno].et_binaryMessageLength = buflen;
+	memcpy(svs.clients[cno].et_binaryMessage, buf, buflen);
 }
 
 /*
@@ -364,12 +364,12 @@ static int SV_BinaryMessageStatus(int cno)
 		return qfalse;
 	}
 
-	if (svs.clients[cno].binaryMessageLength == 0)
+	if (svs.clients[cno].et_binaryMessageLength == 0)
 	{
 		return MESSAGE_EMPTY;
 	}
 
-	if (svs.clients[cno].binaryMessageOverflowed)
+	if (svs.clients[cno].et_binaryMessageOverflowed)
 	{
 		return MESSAGE_WAITING_OVERFLOW;
 	}

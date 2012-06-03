@@ -177,7 +177,7 @@ qboolean SV_SetPlayer(void)
 		{
 			continue;
 		}
-		if (cl->userid == idnum)
+		if (cl->qh_userid == idnum)
 		{
 			host_client = cl;
 			sv_player = host_client->edict;
@@ -373,7 +373,7 @@ void SV_Kick_f(void)
 		{
 			continue;
 		}
-		if (cl->userid == uid)
+		if (cl->qh_userid == uid)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", cl->name);
 			// print directly, because the dropped client won't get the
@@ -432,8 +432,8 @@ void SV_Status_f(void)
 
 			Con_Printf("%-16.16s  ", cl->name);
 
-			Con_Printf("%6i %5i", cl->userid, (int)cl->edict->GetFrags());
-			if (cl->spectator)
+			Con_Printf("%6i %5i", cl->qh_userid, (int)cl->edict->GetFrags());
+			if (cl->qh_spectator)
 			{
 				Con_Printf(" (s)\n");
 			}
@@ -470,7 +470,7 @@ void SV_Status_f(void)
 			{
 				continue;
 			}
-			Con_Printf("%5i %6i ", (int)cl->edict->GetFrags(),  cl->userid);
+			Con_Printf("%5i %6i ", (int)cl->edict->GetFrags(),  cl->qh_userid);
 
 			s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
 			Con_Printf("%s", s);
@@ -497,7 +497,7 @@ void SV_Status_f(void)
 				(int)SV_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence,
 				cl->netchan.qport);
-			if (cl->spectator)
+			if (cl->qh_spectator)
 			{
 				Con_Printf(" (s)\n");
 			}
@@ -822,7 +822,7 @@ void SV_Snap(int uid)
 		{
 			continue;
 		}
-		if (cl->userid == uid)
+		if (cl->qh_userid == uid)
 		{
 			break;
 		}
@@ -851,16 +851,16 @@ void SV_Snap(int uid)
 		return;
 	}
 	sprintf(checkname, "snap/%s", pcxname);
-	String::Cpy(cl->uploadfn, checkname);
+	String::Cpy(cl->qw_uploadfn, checkname);
 
-	Com_Memcpy(&cl->snap_from, &net_from, sizeof(net_from));
+	Com_Memcpy(&cl->qw_snap_from, &net_from, sizeof(net_from));
 	if (sv_redirected != RD_NONE)
 	{
-		cl->remote_snap = true;
+		cl->qw_remote_snap = true;
 	}
 	else
 	{
-		cl->remote_snap = false;
+		cl->qw_remote_snap = false;
 	}
 
 	ClientReliableWrite_Begin(cl, q1svc_stufftext, 24);
@@ -900,11 +900,11 @@ void SV_SnapAll_f(void)
 
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
 	{
-		if (cl->state < CS_CONNECTED || cl->spectator)
+		if (cl->state < CS_CONNECTED || cl->qh_spectator)
 		{
 			continue;
 		}
-		SV_Snap(cl->userid);
+		SV_Snap(cl->qh_userid);
 	}
 }
 

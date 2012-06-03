@@ -85,7 +85,7 @@ void Host_Status_f(void)
 		{
 			continue;
 		}
-		seconds = (int)(net_time - client->netconnection->connecttime);
+		seconds = (int)(net_time - client->qh_netconnection->connecttime);
 		minutes = seconds / 60;
 		if (minutes)
 		{
@@ -101,7 +101,7 @@ void Host_Status_f(void)
 			hours = 0;
 		}
 		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
-		print("   %s\n", client->netconnection->address);
+		print("   %s\n", client->qh_netconnection->address);
 	}
 }
 
@@ -121,7 +121,7 @@ void Host_God_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->privileged)
+	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -145,7 +145,7 @@ void Host_Notarget_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->privileged)
+	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -169,7 +169,7 @@ void Host_Noclip_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->privileged)
+	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -201,7 +201,7 @@ void Host_Fly_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->privileged)
+	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -246,7 +246,7 @@ void Host_Ping_f(void)
 		}
 		total = 0;
 		for (j = 0; j < NUM_PING_TIMES; j++)
-			total += client->ping_times[j];
+			total += client->qh_ping_times[j];
 		total /= NUM_PING_TIMES;
 		SV_ClientPrintf("%4i %s\n", (int)(total * 1000), client->name);
 	}
@@ -505,7 +505,7 @@ void Host_Savegame_f(void)
 	Host_SavegameComment(comment);
 	FS_Printf(f, "%s\n", comment);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		FS_Printf(f, "%f\n", svs.clients->spawn_parms[i]);
+		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
 	FS_Printf(f, "%d\n", current_skill);
 	FS_Printf(f, "%s\n", sv.name);
 	FS_Printf(f, "%f\n",sv.time);
@@ -683,7 +683,7 @@ void Host_Loadgame_f(void)
 	sv.time = time;
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		svs.clients->spawn_parms[i] = spawn_parms[i];
+		svs.clients->qh_spawn_parms[i] = spawn_parms[i];
 
 	if (cls.state != CA_DEDICATED)
 	{
@@ -1017,13 +1017,13 @@ void Host_Color_f(void)
 		return;
 	}
 
-	host_client->colors = playercolor;
+	host_client->qh_colors = playercolor;
 	host_client->edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(q1svc_updatecolors);
 	sv.reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.reliable_datagram.WriteByte(host_client->colors);
+	sv.reliable_datagram.WriteByte(host_client->qh_colors);
 }
 
 /*
@@ -1109,10 +1109,10 @@ void Host_PreSpawn_f(void)
 		return;
 	}
 
-	host_client->message.WriteData(sv.signon._data, sv.signon.cursize);
-	host_client->message.WriteByte(q1svc_signonnum);
-	host_client->message.WriteByte(2);
-	host_client->sendsignon = true;
+	host_client->qh_message.WriteData(sv.signon._data, sv.signon.cursize);
+	host_client->qh_message.WriteByte(q1svc_signonnum);
+	host_client->qh_message.WriteByte(2);
+	host_client->qh_sendsignon = true;
 }
 
 /*
@@ -1151,13 +1151,13 @@ void Host_Spawn_f(void)
 
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		ent->SetColorMap(NUM_FOR_EDICT(ent));
-		ent->SetTeam((host_client->colors & 15) + 1);
+		ent->SetTeam((host_client->qh_colors & 15) + 1);
 		ent->SetNetName(PR_SetString(host_client->name));
 
 		// copy spawn parms out of the client_t
 
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			(&pr_global_struct->parm1)[i] = host_client->spawn_parms[i];
+			(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
 
 		// call the spawn function
 
@@ -1165,7 +1165,7 @@ void Host_Spawn_f(void)
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(pr_global_struct->ClientConnect);
 
-		if ((Sys_DoubleTime() - host_client->netconnection->connecttime) <= sv.time)
+		if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.time)
 		{
 			Con_Printf("%s entered the game\n", host_client->name);
 		}
@@ -1175,51 +1175,51 @@ void Host_Spawn_f(void)
 
 
 // send all current names, colors, and frag counts
-	host_client->message.Clear();
+	host_client->qh_message.Clear();
 
 // send time of update
-	host_client->message.WriteByte(q1svc_time);
-	host_client->message.WriteFloat(sv.time);
+	host_client->qh_message.WriteByte(q1svc_time);
+	host_client->qh_message.WriteFloat(sv.time);
 
 	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
-		host_client->message.WriteByte(q1svc_updatename);
-		host_client->message.WriteByte(i);
-		host_client->message.WriteString2(client->name);
-		host_client->message.WriteByte(q1svc_updatefrags);
-		host_client->message.WriteByte(i);
-		host_client->message.WriteShort(client->old_frags);
-		host_client->message.WriteByte(q1svc_updatecolors);
-		host_client->message.WriteByte(i);
-		host_client->message.WriteByte(client->colors);
+		host_client->qh_message.WriteByte(q1svc_updatename);
+		host_client->qh_message.WriteByte(i);
+		host_client->qh_message.WriteString2(client->name);
+		host_client->qh_message.WriteByte(q1svc_updatefrags);
+		host_client->qh_message.WriteByte(i);
+		host_client->qh_message.WriteShort(client->qh_old_frags);
+		host_client->qh_message.WriteByte(q1svc_updatecolors);
+		host_client->qh_message.WriteByte(i);
+		host_client->qh_message.WriteByte(client->qh_colors);
 	}
 
 // send all current light styles
 	for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
-		host_client->message.WriteByte(q1svc_lightstyle);
-		host_client->message.WriteByte((char)i);
-		host_client->message.WriteString2(sv.lightstyles[i]);
+		host_client->qh_message.WriteByte(q1svc_lightstyle);
+		host_client->qh_message.WriteByte((char)i);
+		host_client->qh_message.WriteString2(sv.lightstyles[i]);
 	}
 
 //
 // send some stats
 //
-	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(Q1STAT_TOTALSECRETS);
-	host_client->message.WriteLong(pr_global_struct->total_secrets);
+	host_client->qh_message.WriteByte(q1svc_updatestat);
+	host_client->qh_message.WriteByte(Q1STAT_TOTALSECRETS);
+	host_client->qh_message.WriteLong(pr_global_struct->total_secrets);
 
-	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(Q1STAT_TOTALMONSTERS);
-	host_client->message.WriteLong(pr_global_struct->total_monsters);
+	host_client->qh_message.WriteByte(q1svc_updatestat);
+	host_client->qh_message.WriteByte(Q1STAT_TOTALMONSTERS);
+	host_client->qh_message.WriteLong(pr_global_struct->total_monsters);
 
-	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(Q1STAT_SECRETS);
-	host_client->message.WriteLong(pr_global_struct->found_secrets);
+	host_client->qh_message.WriteByte(q1svc_updatestat);
+	host_client->qh_message.WriteByte(Q1STAT_SECRETS);
+	host_client->qh_message.WriteLong(pr_global_struct->found_secrets);
 
-	host_client->message.WriteByte(q1svc_updatestat);
-	host_client->message.WriteByte(Q1STAT_MONSTERS);
-	host_client->message.WriteLong(pr_global_struct->killed_monsters);
+	host_client->qh_message.WriteByte(q1svc_updatestat);
+	host_client->qh_message.WriteByte(Q1STAT_MONSTERS);
+	host_client->qh_message.WriteLong(pr_global_struct->killed_monsters);
 
 
 //
@@ -1229,16 +1229,16 @@ void Host_Spawn_f(void)
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
 	ent = EDICT_NUM(1 + (host_client - svs.clients));
-	host_client->message.WriteByte(q1svc_setangle);
+	host_client->qh_message.WriteByte(q1svc_setangle);
 	for (i = 0; i < 2; i++)
-		host_client->message.WriteAngle(ent->GetAngles()[i]);
-	host_client->message.WriteAngle(0);
+		host_client->qh_message.WriteAngle(ent->GetAngles()[i]);
+	host_client->qh_message.WriteAngle(0);
 
-	SV_WriteClientdataToMessage(sv_player, &host_client->message);
+	SV_WriteClientdataToMessage(sv_player, &host_client->qh_message);
 
-	host_client->message.WriteByte(q1svc_signonnum);
-	host_client->message.WriteByte(3);
-	host_client->sendsignon = true;
+	host_client->qh_message.WriteByte(q1svc_signonnum);
+	host_client->qh_message.WriteByte(3);
+	host_client->qh_sendsignon = true;
 }
 
 /*
@@ -1283,7 +1283,7 @@ void Host_Kick_f(void)
 			return;
 		}
 	}
-	else if (pr_global_struct->deathmatch && !host_client->privileged)
+	else if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -1396,7 +1396,7 @@ void Host_Give_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->privileged)
+	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}

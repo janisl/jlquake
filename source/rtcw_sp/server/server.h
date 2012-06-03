@@ -88,82 +88,11 @@ typedef struct
 
 
 
-typedef struct
-{
-	int areabytes;
-	byte areabits[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
-	wsplayerState_t ps;
-	int num_entities;
-	int first_entity;					// into the circular sv_packet_entities[]
-										// the entities MUST be in increasing state number
-										// order, otherwise the delta compression will fail
-	int messageSent;					// time the message was transmitted
-	int messageAcked;					// time the message was acked
-	int messageSize;					// used to rate drop packets
-} clientSnapshot_t;
-
-// RF, now using a global string buffer to hold all reliable commands
-//#define	RELIABLE_COMMANDS_MULTI		128
-//#define	RELIABLE_COMMANDS_SINGLE	256		// need more for loadgame situations
-
 #define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
-
-typedef struct
-{
-	int bufSize;
-	char* buf;					// actual strings
-	char** commands;			// pointers to actual strings
-	int* commandLengths;		// lengths of actual strings
-	//
-	char* rover;
-} reliableCommands_t;
 
 struct client_t : public client_common_t
 {
-
-	//char			reliableCommands[MAX_RELIABLE_COMMANDS_WS][MAX_STRING_CHARS];
-	reliableCommands_t reliableCommands;
-	int reliableSequence;					// last added reliable message, not necesarily sent or acknowledged yet
-	int reliableAcknowledge;				// last acknowledged reliable message
-	int reliableSent;						// last sent reliable message, not necesarily acknowledged yet
-	int messageAcknowledge;
-
-	int gamestateMessageNum;				// netchan->outgoingSequence of gamestate
-	int challenge;
-
-	wsusercmd_t lastUsercmd;
-	int lastMessageNum;					// for delta compression
-	int lastClientCommand;				// reliable client message sequence
-	char lastClientCommandString[MAX_STRING_CHARS];
 	sharedEntity_t* gentity;			// SV_GentityNum(clientnum)
-	char name[MAX_NAME_LENGTH_WS];						// extracted from userinfo, high bits masked
-
-	// downloading
-	char downloadName[MAX_QPATH];			// if not empty string, we are downloading
-	fileHandle_t download;				// file being downloaded
-	int downloadSize;					// total bytes (can't use EOF because of paks)
-	int downloadCount;					// bytes sent
-	int downloadClientBlock;				// last block we sent to the client, awaiting ack
-	int downloadCurrentBlock;				// current block number
-	int downloadXmitBlock;				// last block we xmited
-	unsigned char* downloadBlocks[MAX_DOWNLOAD_WINDOW];		// the buffers for the download blocks
-	int downloadBlockSize[MAX_DOWNLOAD_WINDOW];
-	qboolean downloadEOF;				// We have sent the EOF block
-	int downloadSendTime;				// time we last got an ack from the client
-
-	int deltaMessage;					// frame last client usercmd message
-	int nextReliableTime;				// svs.time when another reliable command will be allowed
-	int lastPacketTime;					// svs.time when packet was last received
-	int lastConnectTime;				// svs.time when connection started
-	int nextSnapshotTime;				// send another snapshot when svs.time >= nextSnapshotTime
-	qboolean rateDelayed;				// true if nextSnapshotTime was set based on rate instead of snapshotMsec
-	int timeoutCount;					// must timeout a few frames in a row so debugging doesn't break
-	clientSnapshot_t frames[PACKET_BACKUP_Q3];		// updates can be delta'd from here
-	int ping;
-	int rate;							// bytes / second
-	int snapshotMsec;					// requests a snapshot every snapshotMsec unless rate choked
-	int pureAuthentic;
-	netchan_t netchan;
 };
 
 //=============================================================================

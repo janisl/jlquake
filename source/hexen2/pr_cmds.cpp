@@ -360,8 +360,8 @@ void PF_sprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->message.WriteChar(h2svc_print);
-	client->message.WriteString2(s);
+	client->qh_message.WriteChar(h2svc_print);
+	client->qh_message.WriteString2(s);
 }
 
 
@@ -391,8 +391,8 @@ void PF_centerprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->message.WriteChar(h2svc_centerprint);
-	client->message.WriteString2(s);
+	client->qh_message.WriteChar(h2svc_centerprint);
+	client->qh_message.WriteString2(s);
 }
 
 
@@ -1642,9 +1642,9 @@ void PF_lightstyle(void)
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 		if (client->state >= CS_CONNECTED)
 		{
-			client->message.WriteChar(h2svc_lightstyle);
-			client->message.WriteChar(style);
-			client->message.WriteString2(val);
+			client->qh_message.WriteChar(h2svc_lightstyle);
+			client->qh_message.WriteChar(style);
+			client->qh_message.WriteString2(val);
 		}
 }
 
@@ -1718,9 +1718,9 @@ void PF_lightstylestatic(void)
 	{
 		if (client->state >= CS_CONNECTED)
 		{
-			client->message.WriteChar(h2svc_lightstyle);
-			client->message.WriteChar(styleNumber);
-			client->message.WriteString2(styleString);
+			client->qh_message.WriteChar(h2svc_lightstyle);
+			client->qh_message.WriteChar(styleNumber);
+			client->qh_message.WriteString2(styleString);
 		}
 	}
 }
@@ -2003,7 +2003,7 @@ QMsg* WriteDest(void)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
-		return &svs.clients[entnum - 1].message;
+		return &svs.clients[entnum - 1].qh_message;
 
 	case MSG_ALL:
 		return &sv.reliable_datagram;
@@ -2114,7 +2114,7 @@ void PF_setspawnparms(void)
 	client = svs.clients + (i - 1);
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		(&pr_global_struct->parm1)[i] = client->spawn_parms[i];
+		(&pr_global_struct->parm1)[i] = client->qh_spawn_parms[i];
 }
 
 /*
@@ -2600,7 +2600,7 @@ void PF_setclass(void)
 	// These will get set again after the message has filtered its way
 	// but it wouldn't take affect right away
 	e->SetPlayerClass(NewClass);
-	client->playerclass = NewClass;
+	client->h2_playerclass = NewClass;
 }
 
 void PF_starteffect(void)

@@ -113,7 +113,7 @@ void SV_New_f(void)
 		ent = EDICT_NUM(playernum + 1);
 		ent->s.number = playernum + 1;
 		sv_client->edict = ent;
-		Com_Memset(&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
+		Com_Memset(&sv_client->q2_lastUsercmd, 0, sizeof(sv_client->q2_lastUsercmd));
 
 		// begin fetching configstrings
 		sv_client->netchan.message.WriteByte(q2svc_stufftext);
@@ -274,12 +274,12 @@ void SV_NextDownload_f(void)
 	int percent;
 	int size;
 
-	if (!sv_client->download)
+	if (!sv_client->q2_downloadData)
 	{
 		return;
 	}
 
-	r = sv_client->downloadsize - sv_client->downloadcount;
+	r = sv_client->downloadSize - sv_client->downloadCount;
 	if (r > 1024)
 	{
 		r = 1024;
@@ -288,24 +288,24 @@ void SV_NextDownload_f(void)
 	sv_client->netchan.message.WriteByte(q2svc_download);
 	sv_client->netchan.message.WriteShort(r);
 
-	sv_client->downloadcount += r;
-	size = sv_client->downloadsize;
+	sv_client->downloadCount += r;
+	size = sv_client->downloadSize;
 	if (!size)
 	{
 		size = 1;
 	}
-	percent = sv_client->downloadcount * 100 / size;
+	percent = sv_client->downloadCount * 100 / size;
 	sv_client->netchan.message.WriteByte(percent);
 	sv_client->netchan.message.WriteData(
-		sv_client->download + sv_client->downloadcount - r, r);
+		sv_client->q2_downloadData + sv_client->downloadCount - r, r);
 
-	if (sv_client->downloadcount != sv_client->downloadsize)
+	if (sv_client->downloadCount != sv_client->downloadSize)
 	{
 		return;
 	}
 
-	FS_FreeFile(sv_client->download);
-	sv_client->download = NULL;
+	FS_FreeFile(sv_client->q2_downloadData);
+	sv_client->q2_downloadData = NULL;
 }
 
 /*
@@ -355,29 +355,29 @@ void SV_BeginDownload_f(void)
 	}
 
 
-	if (sv_client->download)
+	if (sv_client->q2_downloadData)
 	{
-		FS_FreeFile(sv_client->download);
+		FS_FreeFile(sv_client->q2_downloadData);
 	}
 
-	sv_client->downloadsize = FS_ReadFile(name, (void**)&sv_client->download);
-	sv_client->downloadcount = offset;
+	sv_client->downloadSize = FS_ReadFile(name, (void**)&sv_client->q2_downloadData);
+	sv_client->downloadCount = offset;
 
-	if (offset > sv_client->downloadsize)
+	if (offset > sv_client->downloadSize)
 	{
-		sv_client->downloadcount = sv_client->downloadsize;
+		sv_client->downloadCount = sv_client->downloadSize;
 	}
 
-	if (!sv_client->download
+	if (!sv_client->q2_downloadData
 		// special check for maps, if it came from a pak file, don't allow
 		// download  ZOID
 		|| (String::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
 	{
 		Com_DPrintf("Couldn't download %s to %s\n", name, sv_client->name);
-		if (sv_client->download)
+		if (sv_client->q2_downloadData)
 		{
-			FS_FreeFile(sv_client->download);
-			sv_client->download = NULL;
+			FS_FreeFile(sv_client->q2_downloadData);
+			sv_client->q2_downloadData = NULL;
 		}
 
 		sv_client->netchan.message.WriteByte(q2svc_download);
@@ -537,9 +537,9 @@ USER CMD EXECUTION
 void SV_ClientThink(client_t* cl, q2usercmd_t* cmd)
 
 {
-	cl->commandMsec -= cmd->msec;
+	cl->q2_commandMsec -= cmd->msec;
 
-	if (cl->commandMsec < 0 && sv_enforcetime->value)
+	if (cl->q2_commandMsec < 0 && sv_enforcetime->value)
 	{
 		Com_DPrintf("commandMsec underflow from %s\n", cl->name);
 		return;
@@ -619,13 +619,13 @@ void SV_ExecuteClientMessage(client_t* cl)
 			checksumIndex = net_message.readcount;
 			checksum = net_message.ReadByte();
 			lastframe = net_message.ReadLong();
-			if (lastframe != cl->lastframe)
+			if (lastframe != cl->q2_lastframe)
 			{
-				cl->lastframe = lastframe;
-				if (cl->lastframe > 0)
+				cl->q2_lastframe = lastframe;
+				if (cl->q2_lastframe > 0)
 				{
-					cl->frame_latency[cl->lastframe & (LATENCY_COUNTS - 1)] =
-						svs.realtime - cl->frames[cl->lastframe & UPDATE_MASK_Q2].senttime;
+					cl->q2_frame_latency[cl->q2_lastframe & (LATENCY_COUNTS - 1)] =
+						svs.realtime - cl->q2_frames[cl->q2_lastframe & UPDATE_MASK_Q2].senttime;
 				}
 			}
 
@@ -636,7 +636,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 
 			if (cl->state != CS_ACTIVE)
 			{
-				cl->lastframe = -1;
+				cl->q2_lastframe = -1;
 				break;
 			}
 
@@ -665,7 +665,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 //	Com_Printf ("drop %i\n", net_drop);
 					while (net_drop > 2)
 					{
-						SV_ClientThink(cl, &cl->lastcmd);
+						SV_ClientThink(cl, &cl->q2_lastUsercmd);
 
 						net_drop--;
 					}
@@ -683,7 +683,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 				SV_ClientThink(cl, &newcmd);
 			}
 
-			cl->lastcmd = newcmd;
+			cl->q2_lastUsercmd = newcmd;
 			break;
 
 		case q2clc_stringcmd:

@@ -284,7 +284,7 @@ void SV_DirectConnect(netadr_t from)
 			(cl->netchan.qport == qport ||
 			 from.port == cl->netchan.remoteAddress.port))
 		{
-			if ((svs.time - cl->lastConnectTime)
+			if ((svs.time - cl->q3_lastConnectTime)
 				< (sv_reconnectlimit->integer * 1000))
 			{
 				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
@@ -442,8 +442,8 @@ void SV_DirectConnect(netadr_t from)
 	}
 
 	// we got a newcl, so reset the reliableSequence and reliableAcknowledge
-	cl->reliableAcknowledge = 0;
-	cl->reliableSequence = 0;
+	cl->q3_reliableAcknowledge = 0;
+	cl->q3_reliableSequence = 0;
 
 gotnewcl:
 	// build a new connection
@@ -460,7 +460,7 @@ gotnewcl:
 	// save the address
 	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport);
 	// init the netchan queue
-	newcl->netchan_end_queue = &newcl->netchan_start_queue;
+	newcl->q3_netchan_end_queue = &newcl->q3_netchan_start_queue;
 
 	// save the userinfo
 	String::NCpyZ(newcl->userinfo, userinfo, MAX_INFO_STRING_Q3);
@@ -485,14 +485,14 @@ gotnewcl:
 	Com_DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
 
 	newcl->state = CS_CONNECTED;
-	newcl->nextSnapshotTime = svs.time;
-	newcl->lastPacketTime = svs.time;
-	newcl->lastConnectTime = svs.time;
+	newcl->q3_nextSnapshotTime = svs.time;
+	newcl->q3_lastPacketTime = svs.time;
+	newcl->q3_lastConnectTime = svs.time;
 
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
 	// gamestate message was not just sent, forcing a retransmit
-	newcl->gamestateMessageNum = -1;
+	newcl->q3_gamestateMessageNum = -1;
 
 	// if this was the first client on the server, or the last client
 	// the server can hold, send a heartbeat to the master.
@@ -613,19 +613,19 @@ void SV_SendClientGameState(client_t* client)
 	Com_DPrintf("SV_SendClientGameState() for %s\n", client->name);
 	Com_DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
 	client->state = CS_PRIMED;
-	client->pureAuthentic = 0;
-	client->gotCP = qfalse;
+	client->q3_pureAuthentic = 0;
+	client->q3_gotCP = qfalse;
 
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
 	// gamestate message was not just sent, forcing a retransmit
-	client->gamestateMessageNum = client->netchan.outgoingSequence;
+	client->q3_gamestateMessageNum = client->netchan.outgoingSequence;
 
 	msg.Init(msgBuffer, sizeof(msgBuffer));
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
-	msg.WriteLong(client->lastClientCommand);
+	msg.WriteLong(client->q3_lastClientCommand);
 
 	// send any server commands waiting to be sent first.
 	// we have to do this cause we send the client->reliableSequence
@@ -635,7 +635,7 @@ void SV_SendClientGameState(client_t* client)
 
 	// send the gamestate
 	msg.WriteByte(q3svc_gamestate);
-	msg.WriteLong(client->reliableSequence);
+	msg.WriteLong(client->q3_reliableSequence);
 
 	// write the configstrings
 	for (start = 0; start < MAX_CONFIGSTRINGS_Q3; start++)
@@ -692,9 +692,9 @@ void SV_ClientEnterWorld(client_t* client, q3usercmd_t* cmd)
 	ent->s.number = clientNum;
 	client->gentity = ent;
 
-	client->deltaMessage = -1;
-	client->nextSnapshotTime = svs.time;	// generate a snapshot immediately
-	client->lastUsercmd = *cmd;
+	client->q3_deltaMessage = -1;
+	client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately
+	client->q3_lastUsercmd = *cmd;
 
 	// call the game begin function
 	VM_Call(gvm, GAME_CLIENT_BEGIN, client - svs.clients);
@@ -969,7 +969,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 	}
 	else
 	{
-		blockspersnap = ((rate * cl->snapshotMsec) / 1000 + MAX_DOWNLOAD_BLKSIZE) /
+		blockspersnap = ((rate * cl->q3_snapshotMsec) / 1000 + MAX_DOWNLOAD_BLKSIZE) /
 						MAX_DOWNLOAD_BLKSIZE;
 	}
 
@@ -1225,16 +1225,16 @@ static void SV_VerifyPaks_f(client_t* cl)
 			break;
 		}
 
-		cl->gotCP = qtrue;
+		cl->q3_gotCP = qtrue;
 
 		if (bGood)
 		{
-			cl->pureAuthentic = 1;
+			cl->q3_pureAuthentic = 1;
 		}
 		else
 		{
-			cl->pureAuthentic = 0;
-			cl->nextSnapshotTime = -1;
+			cl->q3_pureAuthentic = 0;
+			cl->q3_nextSnapshotTime = -1;
 			cl->state = CS_ACTIVE;
 			SV_SendClientSnapshot(cl);
 			SV_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
@@ -1249,8 +1249,8 @@ SV_ResetPureClient_f
 */
 static void SV_ResetPureClient_f(client_t* cl)
 {
-	cl->pureAuthentic = 0;
-	cl->gotCP = qfalse;
+	cl->q3_pureAuthentic = 0;
+	cl->q3_gotCP = qfalse;
 }
 
 /*
@@ -1321,11 +1321,11 @@ void SV_UserinfoChanged(client_t* cl)
 		{
 			i = 30;
 		}
-		cl->snapshotMsec = 1000 / i;
+		cl->q3_snapshotMsec = 1000 / i;
 	}
 	else
 	{
-		cl->snapshotMsec = 50;
+		cl->q3_snapshotMsec = 50;
 	}
 
 	// TTimo
@@ -1436,7 +1436,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	s = msg->ReadString();
 
 	// see if we have already executed it
-	if (cl->lastClientCommand >= seq)
+	if (cl->q3_lastClientCommand >= seq)
 	{
 		return qtrue;
 	}
@@ -1444,10 +1444,10 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	Com_DPrintf("clientCommand: %s : %i : %s\n", cl->name, seq, s);
 
 	// drop the connection if we have somehow lost commands
-	if (seq > cl->lastClientCommand + 1)
+	if (seq > cl->q3_lastClientCommand + 1)
 	{
 		Com_Printf("Client %s lost %i clientCommands\n", cl->name,
-			seq - cl->lastClientCommand + 1);
+			seq - cl->q3_lastClientCommand + 1);
 		SV_DropClient(cl, "Lost reliable commands");
 		return qfalse;
 	}
@@ -1462,7 +1462,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	if (!com_cl_running->integer &&
 		cl->state >= CS_ACTIVE &&
 		sv_floodProtect->integer &&
-		svs.time < cl->nextReliableTime)
+		svs.time < cl->q3_nextReliableTime)
 	{
 		// ignore any other text messages from this client but let them keep playing
 		// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept
@@ -1470,12 +1470,12 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	}
 
 	// don't allow another command for one second
-	cl->nextReliableTime = svs.time + 1000;
+	cl->q3_nextReliableTime = svs.time + 1000;
 
 	SV_ExecuteClientCommand(cl, s, clientOk);
 
-	cl->lastClientCommand = seq;
-	String::Sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
+	cl->q3_lastClientCommand = seq;
+	String::Sprintf(cl->q3_lastClientCommandString, sizeof(cl->q3_lastClientCommandString), "%s", s);
 
 	return qtrue;		// continue procesing
 }
@@ -1493,7 +1493,7 @@ Also called by bot code
 */
 void SV_ClientThink(client_t* cl, q3usercmd_t* cmd)
 {
-	cl->lastUsercmd = *cmd;
+	cl->q3_lastUsercmd = *cmd;
 
 	if (cl->state != CS_ACTIVE)
 	{
@@ -1525,11 +1525,11 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 
 	if (delta)
 	{
-		cl->deltaMessage = cl->messageAcknowledge;
+		cl->q3_deltaMessage = cl->q3_messageAcknowledge;
 	}
 	else
 	{
-		cl->deltaMessage = -1;
+		cl->q3_deltaMessage = -1;
 	}
 
 	cmdCount = msg->ReadByte();
@@ -1549,9 +1549,9 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	// use the checksum feed in the key
 	key = sv.checksumFeed;
 	// also use the message acknowledge
-	key ^= cl->messageAcknowledge;
+	key ^= cl->q3_messageAcknowledge;
 	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey(cl->reliableCommands[cl->reliableAcknowledge & (MAX_RELIABLE_COMMANDS_Q3 - 1)], 32);
+	key ^= Com_HashKey(cl->q3_reliableCommands[cl->q3_reliableAcknowledge & (MAX_RELIABLE_COMMANDS_Q3 - 1)], 32);
 
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
@@ -1563,13 +1563,13 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// save time for ping calculation
-	cl->frames[cl->messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.time;
+	cl->q3_frames[cl->q3_messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.time;
 
 	// TTimo
 	// catch the no-cp-yet situation before SV_ClientEnterWorld
 	// if CS_ACTIVE, then it's time to trigger a new gamestate emission
 	// if not, then we are getting remaining parasite usermove commands, which we should ignore
-	if (sv_pure->integer != 0 && cl->pureAuthentic == 0 && !cl->gotCP)
+	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0 && !cl->q3_gotCP)
 	{
 		if (cl->state == CS_ACTIVE)
 		{
@@ -1589,7 +1589,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// a bad cp command was sent, drop the client
-	if (sv_pure->integer != 0 && cl->pureAuthentic == 0)
+	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0)
 	{
 		SV_DropClient(cl, "Cannot validate pure client!");
 		return;
@@ -1597,7 +1597,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 
 	if (cl->state != CS_ACTIVE)
 	{
-		cl->deltaMessage = -1;
+		cl->q3_deltaMessage = -1;
 		return;
 	}
 
@@ -1617,7 +1617,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		//}
 		// don't execute if this is an old cmd which is already executed
 		// these old cmds are included when cl_packetdup > 0
-		if (cmds[i].serverTime <= cl->lastUsercmd.serverTime)
+		if (cmds[i].serverTime <= cl->q3_lastUsercmd.serverTime)
 		{
 			continue;
 		}
@@ -1649,9 +1649,9 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	msg->Bitstream();
 
 	serverId = msg->ReadLong();
-	cl->messageAcknowledge = msg->ReadLong();
+	cl->q3_messageAcknowledge = msg->ReadLong();
 
-	if (cl->messageAcknowledge < 0)
+	if (cl->q3_messageAcknowledge < 0)
 	{
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
@@ -1661,19 +1661,19 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 		return;
 	}
 
-	cl->reliableAcknowledge = msg->ReadLong();
+	cl->q3_reliableAcknowledge = msg->ReadLong();
 
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
 	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
-	if (cl->reliableAcknowledge < cl->reliableSequence - MAX_RELIABLE_COMMANDS_Q3)
+	if (cl->q3_reliableAcknowledge < cl->q3_reliableSequence - MAX_RELIABLE_COMMANDS_Q3)
 	{
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
 		SV_DropClient(cl, "DEBUG: illegible client message");
 #endif
-		cl->reliableAcknowledge = cl->reliableSequence;
+		cl->q3_reliableAcknowledge = cl->q3_reliableSequence;
 		return;
 	}
 	// if this is a usercmd from a previous gamestate,
@@ -1688,7 +1688,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	// don't drop as long as previous command was a nextdl, after a dl is done, downloadName is set back to ""
 	// but we still need to read the next message to move to next download or send gamestate
 	// I don't like this hack though, it must have been working fine at some point, suspecting the fix is somewhere else
-	if (serverId != sv.serverId && !*cl->downloadName && !strstr(cl->lastClientCommandString, "nextdl"))
+	if (serverId != sv.serverId && !*cl->downloadName && !strstr(cl->q3_lastClientCommandString, "nextdl"))
 	{
 		if (serverId >= sv.restartedServerId && serverId < sv.serverId)		// TTimo - use a comparison here to catch multiple map_restart
 		{	// they just haven't caught the map_restart yet
@@ -1697,7 +1697,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 		}
 		// if we can tell that the client has dropped the last
 		// gamestate we sent them, resend it
-		if (cl->messageAcknowledge > cl->gamestateMessageNum)
+		if (cl->q3_messageAcknowledge > cl->q3_gamestateMessageNum)
 		{
 			Com_DPrintf("%s : dropped gamestate, resending\n", cl->name);
 			SV_SendClientGameState(cl);

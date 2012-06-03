@@ -160,15 +160,15 @@ void SV_AddServerCommand(client_t* client, const char* cmd)
 
 
 
-	client->reliableSequence++;
+	client->q3_reliableSequence++;
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
 	// we check == instead of >= so a broadcast print added by SV_DropClient()
 	// doesn't cause a recursive drop client
-	if (client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS_WS + 1)
+	if (client->q3_reliableSequence - client->q3_reliableAcknowledge == MAX_RELIABLE_COMMANDS_WS + 1)
 	{
 		Com_Printf("===== pending server commands =====\n");
-		for (i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++)
+		for (i = client->q3_reliableAcknowledge + 1; i <= client->q3_reliableSequence; i++)
 		{
 			//Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_WS-1) ] );
 			Com_Printf("cmd %5d: %s\n", i, SV_GetReliableCommand(client, i & (MAX_RELIABLE_COMMANDS_WS - 1)));
@@ -177,7 +177,7 @@ void SV_AddServerCommand(client_t* client, const char* cmd)
 		SV_DropClient(client, "Server command overflow");
 		return;
 	}
-	index = client->reliableSequence & (MAX_RELIABLE_COMMANDS_WS - 1);
+	index = client->q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WS - 1);
 	//String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 	SV_AddReliableCommand(client, index, cmd);
 }
@@ -656,7 +656,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 			// reliable message, but they don't do any other processing
 			if (cl->state != CS_ZOMBIE)
 			{
-				cl->lastPacketTime = svs.time;	// don't timeout
+				cl->q3_lastPacketTime = svs.time;	// don't timeout
 				SV_ExecuteClientMessage(cl, msg);
 			}
 		}
@@ -707,11 +707,11 @@ void SV_CalcPings(void)
 		count = 0;
 		for (j = 0; j < PACKET_BACKUP_Q3; j++)
 		{
-			if (cl->frames[j].messageAcked <= 0)
+			if (cl->q3_frames[j].messageAcked <= 0)
 			{
 				continue;
 			}
-			delta = cl->frames[j].messageAcked - cl->frames[j].messageSent;
+			delta = cl->q3_frames[j].messageAcked - cl->q3_frames[j].messageSent;
 			count++;
 			total += delta;
 		}
@@ -760,13 +760,13 @@ void SV_CheckTimeouts(void)
 	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
-		if (cl->lastPacketTime > svs.time)
+		if (cl->q3_lastPacketTime > svs.time)
 		{
-			cl->lastPacketTime = svs.time;
+			cl->q3_lastPacketTime = svs.time;
 		}
 
 		if (cl->state == CS_ZOMBIE &&
-			cl->lastPacketTime < zombiepoint)
+			cl->q3_lastPacketTime < zombiepoint)
 		{
 			Com_DPrintf("Going from CS_ZOMBIE to CS_FREE for %s\n", cl->name);
 			cl->state = CS_FREE;	// can now be reused
@@ -775,11 +775,11 @@ void SV_CheckTimeouts(void)
 		// Ridah, AI's don't time out
 		if (cl->gentity && !(cl->gentity->r.svFlags & SVF_CASTAI))
 		{
-			if (cl->state >= CS_CONNECTED && cl->lastPacketTime < droppoint)
+			if (cl->state >= CS_CONNECTED && cl->q3_lastPacketTime < droppoint)
 			{
 				// wait several frames so a debugger session doesn't
 				// cause a timeout
-				if (++cl->timeoutCount > 5)
+				if (++cl->q3_timeoutCount > 5)
 				{
 					SV_DropClient(cl, "timed out");
 					cl->state = CS_FREE;	// don't bother with zombie state
@@ -787,7 +787,7 @@ void SV_CheckTimeouts(void)
 			}
 			else
 			{
-				cl->timeoutCount = 0;
+				cl->q3_timeoutCount = 0;
 			}
 		}
 	}

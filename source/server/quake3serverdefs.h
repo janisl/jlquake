@@ -30,3 +30,31 @@ enum
 
 	WSET_PROP = 32,
 };
+
+#define MAX_DOWNLOAD_WINDOW         8		// max of eight download frames
+#define MAX_DOWNLOAD_BLKSIZE        2048	// 2048 byte block chunks
+
+struct q3clientSnapshot_t
+{
+	int areabytes;
+	byte areabits[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	q3playerState_t q3_ps;
+	wsplayerState_t ws_ps;
+	wmplayerState_t wm_ps;
+	etplayerState_t et_ps;
+	int num_entities;
+	int first_entity;					// into the circular sv_packet_entities[]
+										// the entities MUST be in increasing state number
+										// order, otherwise the delta compression will fail
+	int messageSent;					// time the message was transmitted
+	int messageAcked;					// time the message was acked
+	int messageSize;					// used to rate drop packets
+};
+
+struct netchan_buffer_t
+{
+	QMsg msg;
+	byte msgBuffer[MAX_MSGLEN];
+	char lastClientCommandString[MAX_STRING_CHARS];
+	netchan_buffer_t* next;
+};

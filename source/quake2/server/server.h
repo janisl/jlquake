@@ -72,57 +72,9 @@ typedef struct
 #define EDICT_NUM(n) ((edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
 #define NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 
-
-typedef struct
-{
-	int areabytes;
-	byte areabits[BSP38MAX_MAP_AREAS / 8];					// portalarea visibility bits
-	q2player_state_t ps;
-	int num_entities;
-	int first_entity;						// into the circular sv_packet_entities[]
-	int senttime;							// for ping calculations
-} client_frame_t;
-
-#define LATENCY_COUNTS  16
-#define RATE_MESSAGES   10
-
 struct client_t : public client_common_t
 {
-
-	int lastframe;						// for delta compression
-	q2usercmd_t lastcmd;				// for filling in big drops
-
-	int commandMsec;					// every seconds this is reset, if user
-										// commands exhaust it, assume time cheating
-
-	int frame_latency[LATENCY_COUNTS];
-	int ping;
-
-	int message_size[RATE_MESSAGES];				// used to rate drop packets
-	int rate;
-	int surpressCount;					// number of messages rate supressed
-
 	edict_t* edict;						// EDICT_NUM(clientnum+1)
-	char name[32];						// extracted from userinfo, high bits masked
-	int messagelevel;					// for filtering printed messages
-
-	// The datagram is written to by sound calls, prints, temp ents, etc.
-	// It can be harmlessly overflowed.
-	QMsg datagram;
-	byte datagram_buf[MAX_MSGLEN_Q2];
-
-	client_frame_t frames[UPDATE_BACKUP_Q2];	// updates can be delta'd from here
-
-	byte* download;						// file being downloaded
-	int downloadsize;					// total bytes (can't use EOF because of paks)
-	int downloadcount;					// bytes sent
-
-	int lastmessage;					// sv.framenum when packet was last received
-	int lastconnect;
-
-	int challenge;						// challenge of this user, randomly generated
-
-	netchan_t netchan;
 };
 
 // a client can leave the server in one of four ways:

@@ -14,31 +14,14 @@
 //**
 //**************************************************************************
 
-enum
-{
-	WSGT_FFA,				// free for all
-	WSGT_SINGLE_PLAYER = 2,	// single player tournament
-	//-- team games go after this --
-	WSGT_TEAM,				// team deathmatch
-};
+#define NUM_SPAWN_PARMS     16
+#define NUM_PING_TIMES      16
 
-enum
-{
-	WMGT_FFA,				// free for all
-	WMGT_SINGLE_PLAYER = 2,	// single player tournament
-	//-- team games go after this --
-	WMGT_TEAM,				// team deathmatch
-	WMGT_WOLF = 5,			// DHM - Nerve :: Wolfenstein Multiplayer
-	WMGT_WOLF_STOPWATCH,	// NERVE - SMF - stopwatch gametype
-	WMGT_WOLF_CP,			// NERVE - SMF - checkpoint gametype
-	WMGT_WOLF_CPH,			// JPW NERVE - Capture & Hold gametype
-};
+#define MAX_BACK_BUFFERS 4
 
-struct wsreliableCommands_t
+struct qwclient_frame_t
 {
-	int bufSize;
-	char* buf;					// actual strings
-	char** commands;			// pointers to actual strings
-	int* commandLengths;		// lengths of actual strings
-	char* rover;
+	double senttime;
+	float ping_time;
+	qwpacket_entities_t entities;
 };

@@ -88,7 +88,7 @@ int SV_BotAllocateClient(int clientNum)
 	cl->gentity = SV_GentityNum(i);
 	cl->gentity->s.number = i;
 	cl->state = CS_ACTIVE;
-	cl->lastPacketTime = svs.time;
+	cl->q3_lastPacketTime = svs.time;
 	cl->netchan.remoteAddress.type = NA_BOT;
 	cl->rate = 16384;
 
@@ -456,17 +456,17 @@ int SV_BotGetConsoleMessage(int client, char* buf, int size)
 	int index;
 
 	cl = &svs.clients[client];
-	cl->lastPacketTime = svs.time;
+	cl->q3_lastPacketTime = svs.time;
 
-	if (cl->reliableAcknowledge == cl->reliableSequence)
+	if (cl->q3_reliableAcknowledge == cl->q3_reliableSequence)
 	{
 		return qfalse;
 	}
 
-	cl->reliableAcknowledge++;
-	index = cl->reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1);
+	cl->q3_reliableAcknowledge++;
+	index = cl->q3_reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1);
 
-	if (!cl->reliableCommands[index][0])
+	if (!cl->q3_reliableCommands[index][0])
 	{
 		return qfalse;
 	}
@@ -484,7 +484,7 @@ EntityInPVS
 int EntityInPVS(int client, int entityNum)
 {
 	client_t* cl;
-	clientSnapshot_t* frame;
+	q3clientSnapshot_t* frame;
 	int i;
 
 	cl = &svs.clients[client];
@@ -508,10 +508,10 @@ SV_BotGetSnapshotEntity
 int SV_BotGetSnapshotEntity(int client, int sequence)
 {
 	client_t* cl;
-	clientSnapshot_t* frame;
+	q3clientSnapshot_t* frame;
 
 	cl = &svs.clients[client];
-	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK_Q3];
+	frame = &cl->q3_frames[cl->netchan.outgoingSequence & PACKET_MASK_Q3];
 	if (sequence < 0 || sequence >= frame->num_entities)
 	{
 		return -1;

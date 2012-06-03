@@ -158,7 +158,7 @@ qboolean SV_SetPlayer(void)
 		{
 			continue;
 		}
-		if (cl->userid == idnum)
+		if (cl->qh_userid == idnum)
 		{
 			host_client = cl;
 			sv_player = host_client->edict;
@@ -367,7 +367,7 @@ void SV_Kick_f(void)
 		{
 			continue;
 		}
-		if (cl->userid == uid)
+		if (cl->qh_userid == uid)
 		{
 			SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", cl->name);
 			// print directly, because the dropped client won't get the
@@ -406,9 +406,9 @@ void SV_Smite_f(void)
 		{
 			continue;
 		}
-		if (cl->userid == uid)
+		if (cl->qh_userid == uid)
 		{
-			if (cl->old_v.health <= 0)
+			if (cl->h2_old_v.health <= 0)
 			{
 				Con_Printf("%s is already dead!\n", cl->name);
 				return;
@@ -494,8 +494,8 @@ void SV_Status_f(void)
 
 			Con_Printf("%-16.16s  ", cl->name);
 
-			Con_Printf("%6i %5i", cl->userid, (int)cl->edict->GetFrags());
-			if (cl->spectator)
+			Con_Printf("%6i %5i", cl->qh_userid, (int)cl->edict->GetFrags());
+			if (cl->qh_spectator)
 			{
 				Con_Printf(" (s)\n");
 			}
@@ -532,7 +532,7 @@ void SV_Status_f(void)
 			{
 				continue;
 			}
-			Con_Printf("%5i %6i ", (int)cl->edict->GetFrags(),  cl->userid);
+			Con_Printf("%5i %6i ", (int)cl->edict->GetFrags(),  cl->qh_userid);
 
 			s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
 			Con_Printf("%s", s);
@@ -559,14 +559,14 @@ void SV_Status_f(void)
 				(int)SV_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence);
 
-			if (cl->spectator)
+			if (cl->qh_spectator)
 			{
 				Con_Printf(" (s)\n");
 			}
 			else
 			{
 				Con_Printf(" ");
-				switch (cl->playerclass)
+				switch (cl->h2_playerclass)
 				{
 				case CLASS_PALADIN:
 					Con_Printf("P");
@@ -590,7 +590,7 @@ void SV_Status_f(void)
 					Con_Printf("?");
 					break;
 				}
-				switch (cl->siege_team)
+				switch (cl->hw_siege_team)
 				{
 				case HWST_DEFENDER:
 					Con_Printf("D");
@@ -602,7 +602,7 @@ void SV_Status_f(void)
 					Con_Printf("?");
 					break;
 				}
-				if ((int)cl->old_v.flags2 & 65536)	//defender of crown
+				if ((int)cl->h2_old_v.flags2 & 65536)	//defender of crown
 				{
 					Con_Printf("D");
 				}
@@ -610,7 +610,7 @@ void SV_Status_f(void)
 				{
 					Con_Printf("-");
 				}
-				if ((int)cl->old_v.flags2 & 524288)	//has siege key
+				if ((int)cl->h2_old_v.flags2 & 524288)	//has siege key
 				{
 					Con_Printf("K");
 				}

@@ -321,8 +321,8 @@ void PF_sprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->message.WriteChar(q1svc_print);
-	client->message.WriteString2(s);
+	client->qh_message.WriteChar(q1svc_print);
+	client->qh_message.WriteString2(s);
 }
 
 
@@ -352,8 +352,8 @@ void PF_centerprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->message.WriteChar(q1svc_centerprint);
-	client->message.WriteString2(s);
+	client->qh_message.WriteChar(q1svc_centerprint);
+	client->qh_message.WriteString2(s);
 }
 
 
@@ -1197,9 +1197,9 @@ void PF_lightstyle(void)
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 		if (client->state >= CS_CONNECTED)
 		{
-			client->message.WriteChar(q1svc_lightstyle);
-			client->message.WriteChar(style);
-			client->message.WriteString2(val);
+			client->qh_message.WriteChar(q1svc_lightstyle);
+			client->qh_message.WriteChar(style);
+			client->qh_message.WriteString2(val);
 		}
 }
 
@@ -1459,7 +1459,7 @@ QMsg* WriteDest(void)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
-		return &svs.clients[entnum - 1].message;
+		return &svs.clients[entnum - 1].qh_message;
 
 	case MSG_ALL:
 		return &sv.reliable_datagram;
@@ -1566,7 +1566,7 @@ void PF_setspawnparms(void)
 	client = svs.clients + (i - 1);
 
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		(&pr_global_struct->parm1)[i] = client->spawn_parms[i];
+		(&pr_global_struct->parm1)[i] = client->qh_spawn_parms[i];
 }
 
 /*

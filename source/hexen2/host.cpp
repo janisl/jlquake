@@ -363,8 +363,8 @@ void SV_ClientPrintf(const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	host_client->message.WriteByte(h2svc_print);
-	host_client->message.WriteString2(string);
+	host_client->qh_message.WriteByte(h2svc_print);
+	host_client->qh_message.WriteString2(string);
 }
 
 /*
@@ -387,8 +387,8 @@ void SV_BroadcastPrintf(const char* fmt, ...)
 	for (i = 0; i < svs.maxclients; i++)
 		if (svs.clients[i].state == CS_ACTIVE)
 		{
-			svs.clients[i].message.WriteByte(h2svc_print);
-			svs.clients[i].message.WriteString2(string);
+			svs.clients[i].qh_message.WriteByte(h2svc_print);
+			svs.clients[i].qh_message.WriteString2(string);
 		}
 }
 
@@ -408,8 +408,8 @@ void Host_ClientCommands(const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	host_client->message.WriteByte(h2svc_stufftext);
-	host_client->message.WriteString2(string);
+	host_client->qh_message.WriteByte(h2svc_stufftext);
+	host_client->qh_message.WriteString2(string);
 }
 
 /*
@@ -429,10 +429,10 @@ void SV_DropClient(qboolean crash)
 	if (!crash)
 	{
 		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
+		if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
 		{
-			host_client->message.WriteByte(h2svc_disconnect);
-			NET_SendMessage(host_client->netconnection, &host_client->netchan, &host_client->message);
+			host_client->qh_message.WriteByte(h2svc_disconnect);
+			NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
 		}
 
 		if (host_client->edict && host_client->state == CS_ACTIVE)
@@ -449,16 +449,16 @@ void SV_DropClient(qboolean crash)
 	}
 
 // break the net connection
-	NET_Close(host_client->netconnection, &host_client->netchan);
-	host_client->netconnection = NULL;
+	NET_Close(host_client->qh_netconnection, &host_client->netchan);
+	host_client->qh_netconnection = NULL;
 
 // free the client (the body stays around)
 	host_client->state = CS_FREE;
 	host_client->name[0] = 0;
-	host_client->old_frags = -999999;
-	Com_Memset(&host_client->old_v,0,sizeof(host_client->old_v));
+	host_client->qh_old_frags = -999999;
+	Com_Memset(&host_client->h2_old_v,0,sizeof(host_client->h2_old_v));
 	ED_ClearEdict(host_client->edict);
-	host_client->send_all_v = true;
+	host_client->h2_send_all_v = true;
 	net_activeconnections--;
 
 // send notification to all clients
@@ -468,15 +468,15 @@ void SV_DropClient(qboolean crash)
 		{
 			continue;
 		}
-		client->message.WriteByte(h2svc_updatename);
-		client->message.WriteByte(host_client - svs.clients);
-		client->message.WriteString2("");
-		client->message.WriteByte(h2svc_updatefrags);
-		client->message.WriteByte(host_client - svs.clients);
-		client->message.WriteShort(0);
-		client->message.WriteByte(h2svc_updatecolors);
-		client->message.WriteByte(host_client - svs.clients);
-		client->message.WriteByte(0);
+		client->qh_message.WriteByte(h2svc_updatename);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteString2("");
+		client->qh_message.WriteByte(h2svc_updatefrags);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteShort(0);
+		client->qh_message.WriteByte(h2svc_updatecolors);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteByte(0);
 	}
 }
 
@@ -515,16 +515,16 @@ void Host_ShutdownServer(qboolean crash)
 		count = 0;
 		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		{
-			if (host_client->state >= CS_CONNECTED && host_client->message.cursize)
+			if (host_client->state >= CS_CONNECTED && host_client->qh_message.cursize)
 			{
-				if (NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
+				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
 				{
-					NET_SendMessage(host_client->netconnection, &host_client->netchan, &host_client->message);
-					host_client->message.Clear();
+					NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
+					host_client->qh_message.Clear();
 				}
 				else
 				{
-					NET_GetMessage(host_client->netconnection, &host_client->netchan);
+					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
 					count++;
 				}
 			}

@@ -734,15 +734,15 @@ int NET_SendToAll(QMsg* data, int blocktime)
 
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (!host_client->netconnection)
+		if (!host_client->qh_netconnection)
 		{
 			continue;
 		}
 		if (host_client->state >= CS_CONNECTED)
 		{
-			if (host_client->netconnection->driver == 0)
+			if (host_client->qh_netconnection->driver == 0)
 			{
-				NET_SendMessage(host_client->netconnection, &host_client->netchan, data);
+				NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, data);
 				state1[i] = true;
 				state2[i] = true;
 				continue;
@@ -766,14 +766,14 @@ int NET_SendToAll(QMsg* data, int blocktime)
 		{
 			if (!state1[i])
 			{
-				if (NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
+				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
 				{
 					state1[i] = true;
-					NET_SendMessage(host_client->netconnection, &host_client->netchan, data);
+					NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, data);
 				}
 				else
 				{
-					NET_GetMessage(host_client->netconnection, &host_client->netchan);
+					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
 				}
 				count++;
 				continue;
@@ -781,13 +781,13 @@ int NET_SendToAll(QMsg* data, int blocktime)
 
 			if (!state2[i])
 			{
-				if (NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
+				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
 				{
 					state2[i] = true;
 				}
 				else
 				{
-					NET_GetMessage(host_client->netconnection, &host_client->netchan);
+					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
 				}
 				count++;
 				continue;
@@ -899,7 +899,7 @@ void        NET_Shutdown(void)
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.maxclients; i++, client++)
 	{
-		if (!client->netconnection)
+		if (!client->qh_netconnection)
 		{
 			continue;
 		}
@@ -907,7 +907,7 @@ void        NET_Shutdown(void)
 		{
 			continue;
 		}
-		NET_Close(client->netconnection, &client->netchan);
+		NET_Close(client->qh_netconnection, &client->netchan);
 	}
 	if (cls.qh_netcon)
 	{

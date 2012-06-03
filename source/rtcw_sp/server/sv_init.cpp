@@ -268,15 +268,15 @@ void SV_InitReliableCommandsForClient(client_t* cl, int commands)
 {
 	if (!commands)
 	{
-		Com_Memset(&cl->reliableCommands, 0, sizeof(cl->reliableCommands));
+		Com_Memset(&cl->ws_reliableCommands, 0, sizeof(cl->ws_reliableCommands));
 	}
 	//
-	cl->reliableCommands.bufSize = commands * RELIABLE_COMMANDS_CHARS;
-	cl->reliableCommands.buf = (char*)Z_Malloc(cl->reliableCommands.bufSize);
-	cl->reliableCommands.commandLengths = (int*)Z_Malloc(commands * sizeof(*cl->reliableCommands.commandLengths));
-	cl->reliableCommands.commands = (char**)Z_Malloc(commands * sizeof(*cl->reliableCommands.commands));
+	cl->ws_reliableCommands.bufSize = commands * RELIABLE_COMMANDS_CHARS;
+	cl->ws_reliableCommands.buf = (char*)Z_Malloc(cl->ws_reliableCommands.bufSize);
+	cl->ws_reliableCommands.commandLengths = (int*)Z_Malloc(commands * sizeof(*cl->ws_reliableCommands.commandLengths));
+	cl->ws_reliableCommands.commands = (char**)Z_Malloc(commands * sizeof(*cl->ws_reliableCommands.commands));
 	//
-	cl->reliableCommands.rover = cl->reliableCommands.buf;
+	cl->ws_reliableCommands.rover = cl->ws_reliableCommands.buf;
 }
 
 /*
@@ -317,15 +317,15 @@ SV_FreeReliableCommandsForClient
 */
 void SV_FreeReliableCommandsForClient(client_t* cl)
 {
-	if (!cl->reliableCommands.bufSize)
+	if (!cl->ws_reliableCommands.bufSize)
 	{
 		return;
 	}
-	Z_Free(cl->reliableCommands.buf);
-	Z_Free(cl->reliableCommands.commandLengths);
-	Z_Free(cl->reliableCommands.commands);
+	Z_Free(cl->ws_reliableCommands.buf);
+	Z_Free(cl->ws_reliableCommands.commandLengths);
+	Z_Free(cl->ws_reliableCommands.commands);
 	//
-	Com_Memset(&cl->reliableCommands, 0, sizeof(cl->reliableCommands.bufSize));
+	Com_Memset(&cl->ws_reliableCommands, 0, sizeof(cl->ws_reliableCommands.bufSize));
 }
 
 /*
@@ -336,17 +336,17 @@ SV_GetReliableCommand
 const char* SV_GetReliableCommand(client_t* cl, int index)
 {
 	static const char* nullStr = "";
-	if (!cl->reliableCommands.bufSize)
+	if (!cl->ws_reliableCommands.bufSize)
 	{
 		return nullStr;
 	}
 	//
-	if (!cl->reliableCommands.commandLengths[index])
+	if (!cl->ws_reliableCommands.commandLengths[index])
 	{
 		return nullStr;
 	}
 	//
-	return cl->reliableCommands.commands[index];
+	return cl->ws_reliableCommands.commands[index];
 }
 
 /*
@@ -359,21 +359,21 @@ qboolean SV_AddReliableCommand(client_t* cl, int index, const char* cmd)
 	int length, i, j;
 	char* ch, * ch2;
 	//
-	if (!cl->reliableCommands.bufSize)
+	if (!cl->ws_reliableCommands.bufSize)
 	{
 		return qfalse;
 	}
 	//
 	length = String::Length(cmd);
 	//
-	if ((cl->reliableCommands.rover - cl->reliableCommands.buf) + length + 1 >= cl->reliableCommands.bufSize)
+	if ((cl->ws_reliableCommands.rover - cl->ws_reliableCommands.buf) + length + 1 >= cl->ws_reliableCommands.bufSize)
 	{
 		// go back to the start
-		cl->reliableCommands.rover = cl->reliableCommands.buf;
+		cl->ws_reliableCommands.rover = cl->ws_reliableCommands.buf;
 	}
 	//
 	// make sure this position won't overwrite another command
-	for (i = length, ch = cl->reliableCommands.rover; i && !*ch; i--, ch++)
+	for (i = length, ch = cl->ws_reliableCommands.rover; i && !*ch; i--, ch++)
 	{
 		// keep going until we find a bad character, or enough space is found
 	}
@@ -382,11 +382,11 @@ qboolean SV_AddReliableCommand(client_t* cl, int index, const char* cmd)
 	{
 		// find a valid spot to place the new string
 		// start at the beginning (keep it simple)
-		for (i = 0, ch = cl->reliableCommands.buf; i < cl->reliableCommands.bufSize; i++, ch++)
+		for (i = 0, ch = cl->ws_reliableCommands.buf; i < cl->ws_reliableCommands.bufSize; i++, ch++)
 		{
 			if (!*ch && (!i || !*(ch - 1)))			// make sure we dont start at the terminator of another string
 			{	// see if this is the start of a valid segment
-				for (ch2 = ch, j = 0; i < cl->reliableCommands.bufSize - 1 && j < length + 1 && !*ch2; i++, ch2++, j++)
+				for (ch2 = ch, j = 0; i < cl->ws_reliableCommands.bufSize - 1 && j < length + 1 && !*ch2; i++, ch2++, j++)
 				{
 					// loop
 				}
@@ -394,28 +394,28 @@ qboolean SV_AddReliableCommand(client_t* cl, int index, const char* cmd)
 				if (j == length + 1)
 				{
 					// valid segment found
-					cl->reliableCommands.rover = ch;
+					cl->ws_reliableCommands.rover = ch;
 					break;
 				}
 				//
-				if (i == cl->reliableCommands.bufSize - 1)
+				if (i == cl->ws_reliableCommands.bufSize - 1)
 				{
 					// ran out of room, not enough space for string
 					return qfalse;
 				}
 				//
-				ch = &cl->reliableCommands.buf[i];	// continue where ch2 left off
+				ch = &cl->ws_reliableCommands.buf[i];	// continue where ch2 left off
 			}
 		}
 	}
 	//
 	// insert the command at the rover
-	cl->reliableCommands.commands[index] = cl->reliableCommands.rover;
-	String::NCpyZ(cl->reliableCommands.commands[index], cmd, length + 1);
-	cl->reliableCommands.commandLengths[index] = length;
+	cl->ws_reliableCommands.commands[index] = cl->ws_reliableCommands.rover;
+	String::NCpyZ(cl->ws_reliableCommands.commands[index], cmd, length + 1);
+	cl->ws_reliableCommands.commandLengths[index] = length;
 	//
 	// move the rover along
-	cl->reliableCommands.rover += length + 1;
+	cl->ws_reliableCommands.rover += length + 1;
 	//
 	return qtrue;
 }
@@ -429,28 +429,28 @@ void SV_FreeAcknowledgedReliableCommands(client_t* cl)
 {
 	int ack, realAck;
 	//
-	if (!cl->reliableCommands.bufSize)
+	if (!cl->ws_reliableCommands.bufSize)
 	{
 		return;
 	}
 	//
-	realAck = (cl->reliableAcknowledge) & (MAX_RELIABLE_COMMANDS_WS - 1);
+	realAck = (cl->q3_reliableAcknowledge) & (MAX_RELIABLE_COMMANDS_WS - 1);
 	// move backwards one command, since we need the most recently acknowledged
 	// command for netchan decoding
-	ack = (cl->reliableAcknowledge - 1) & (MAX_RELIABLE_COMMANDS_WS - 1);
+	ack = (cl->q3_reliableAcknowledge - 1) & (MAX_RELIABLE_COMMANDS_WS - 1);
 	//
-	if (!cl->reliableCommands.commands[ack])
+	if (!cl->ws_reliableCommands.commands[ack])
 	{
 		return;	// no new commands acknowledged
 	}
 	//
-	while (cl->reliableCommands.commands[ack])
+	while (cl->ws_reliableCommands.commands[ack])
 	{
 		// clear the string
-		memset(cl->reliableCommands.commands[ack], 0, cl->reliableCommands.commandLengths[ack]);
+		memset(cl->ws_reliableCommands.commands[ack], 0, cl->ws_reliableCommands.commandLengths[ack]);
 		// clear the pointer
-		cl->reliableCommands.commands[ack] = NULL;
-		cl->reliableCommands.commandLengths[ack] = 0;
+		cl->ws_reliableCommands.commands[ack] = NULL;
+		cl->ws_reliableCommands.commandLengths[ack] = 0;
 		// move the the previous command
 		ack--;
 		if (ack < 0)
@@ -942,8 +942,8 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					ent->s.number = i;
 					client->gentity = ent;
 
-					client->deltaMessage = -1;
-					client->nextSnapshotTime = svs.time;	// generate a snapshot immediately
+					client->q3_deltaMessage = -1;
+					client->q3_nextSnapshotTime = svs.time;	// generate a snapshot immediately
 
 					VM_Call(gvm, GAME_CLIENT_BEGIN, i);
 				}
@@ -1127,7 +1127,7 @@ void SV_FinalMessage(const char* message)
 					SV_SendServerCommand(cl, "disconnect");
 				}
 				// force a snapshot to be sent
-				cl->nextSnapshotTime = -1;
+				cl->q3_nextSnapshotTime = -1;
 				SV_SendClientSnapshot(cl);
 			}
 		}

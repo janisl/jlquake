@@ -217,48 +217,48 @@ void SV_SendServerinfo(client_t* client)
 	const char** s;
 	char message[2048];
 
-	client->message.WriteByte(q1svc_print);
+	client->qh_message.WriteByte(q1svc_print);
 	sprintf(message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
-	client->message.WriteString2(message);
+	client->qh_message.WriteString2(message);
 
-	client->message.WriteByte(q1svc_serverinfo);
-	client->message.WriteLong(PROTOCOL_VERSION);
-	client->message.WriteByte(svs.maxclients);
+	client->qh_message.WriteByte(q1svc_serverinfo);
+	client->qh_message.WriteLong(PROTOCOL_VERSION);
+	client->qh_message.WriteByte(svs.maxclients);
 
 	if (!coop->value && deathmatch->value)
 	{
-		client->message.WriteByte(GAME_DEATHMATCH);
+		client->qh_message.WriteByte(GAME_DEATHMATCH);
 	}
 	else
 	{
-		client->message.WriteByte(GAME_COOP);
+		client->qh_message.WriteByte(GAME_COOP);
 	}
 
 	String::Cpy(message, PR_GetString(sv.edicts->GetMessage()));
 
-	client->message.WriteString2(message);
+	client->qh_message.WriteString2(message);
 
 	for (s = sv.model_precache + 1; *s; s++)
-		client->message.WriteString2(*s);
-	client->message.WriteByte(0);
+		client->qh_message.WriteString2(*s);
+	client->qh_message.WriteByte(0);
 
 	for (s = sv.sound_precache + 1; *s; s++)
-		client->message.WriteString2(*s);
-	client->message.WriteByte(0);
+		client->qh_message.WriteString2(*s);
+	client->qh_message.WriteByte(0);
 
 // send music
-	client->message.WriteByte(q1svc_cdtrack);
-	client->message.WriteByte(sv.edicts->GetSounds());
-	client->message.WriteByte(sv.edicts->GetSounds());
+	client->qh_message.WriteByte(q1svc_cdtrack);
+	client->qh_message.WriteByte(sv.edicts->GetSounds());
+	client->qh_message.WriteByte(sv.edicts->GetSounds());
 
 // set view
-	client->message.WriteByte(q1svc_setview);
-	client->message.WriteShort(NUM_FOR_EDICT(client->edict));
+	client->qh_message.WriteByte(q1svc_setview);
+	client->qh_message.WriteShort(NUM_FOR_EDICT(client->edict));
 
-	client->message.WriteByte(q1svc_signonnum);
-	client->message.WriteByte(1);
+	client->qh_message.WriteByte(q1svc_signonnum);
+	client->qh_message.WriteByte(1);
 
-	client->sendsignon = true;
+	client->qh_sendsignon = true;
 	client->state = CS_CONNECTED;		// need prespawn, spawn, etc
 }
 
@@ -281,46 +281,46 @@ void SV_ConnectClient(int clientnum)
 
 	client = svs.clients + clientnum;
 
-	Con_DPrintf("Client %s connected\n", client->netconnection->address);
+	Con_DPrintf("Client %s connected\n", client->qh_netconnection->address);
 
 	edictnum = clientnum + 1;
 
 	ent = EDICT_NUM(edictnum);
 
 // set up the client_t
-	netconnection = client->netconnection;
+	netconnection = client->qh_netconnection;
 	netchan_t netchan = client->netchan;
 
 	if (sv.loadgame)
 	{
-		Com_Memcpy(spawn_parms, client->spawn_parms, sizeof(spawn_parms));
+		Com_Memcpy(spawn_parms, client->qh_spawn_parms, sizeof(spawn_parms));
 	}
 	Com_Memset(client, 0, sizeof(*client));
-	client->netconnection = netconnection;
+	client->qh_netconnection = netconnection;
 	client->netchan = netchan;
 
 	String::Cpy(client->name, "unconnected");
 	client->state = CS_CONNECTED;
 	client->edict = ent;
-	client->message.InitOOB(client->msgbuf, sizeof(client->msgbuf));
-	client->message.allowoverflow = true;		// we can catch it
+	client->qh_message.InitOOB(client->qh_messageBuffer, MAX_MSGLEN_Q1);
+	client->qh_message.allowoverflow = true;		// we can catch it
 
 #ifdef IDGODS
-	client->privileged = IsID(&client->netconnection->addr);
+	client->qh_privileged = IsID(&client->netconnection->addr);
 #else
-	client->privileged = false;
+	client->qh_privileged = false;
 #endif
 
 	if (sv.loadgame)
 	{
-		Com_Memcpy(client->spawn_parms, spawn_parms, sizeof(spawn_parms));
+		Com_Memcpy(client->qh_spawn_parms, spawn_parms, sizeof(spawn_parms));
 	}
 	else
 	{
 		// call the progs to get default spawn parms for the new client
 		PR_ExecuteProgram(pr_global_struct->SetNewParms);
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			client->spawn_parms[i] = (&pr_global_struct->parm1)[i];
+			client->qh_spawn_parms[i] = (&pr_global_struct->parm1)[i];
 	}
 
 	SV_SendServerinfo(client);
@@ -367,7 +367,7 @@ void SV_CheckForNewClients(void)
 		svs.clients[i].netchan.sock = NS_SERVER;
 		svs.clients[i].netchan.remoteAddress = addr;
 		svs.clients[i].netchan.lastReceived = net_time * 1000;
-		svs.clients[i].netconnection = ret;
+		svs.clients[i].qh_netconnection = ret;
 		SV_ConnectClient(i);
 
 		net_activeconnections++;
@@ -859,7 +859,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	}
 
 // send the datagram
-	if (NET_SendUnreliableMessage(client->netconnection, &client->netchan, &msg) == -1)
+	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
 	{
 		SV_DropClient(true);// if the message couldn't send, kick off
 		return false;
@@ -881,7 +881,7 @@ void SV_UpdateToReliableMessages(void)
 // check for changes to be sent over the reliable streams
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (host_client->old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 			{
@@ -889,12 +889,12 @@ void SV_UpdateToReliableMessages(void)
 				{
 					continue;
 				}
-				client->message.WriteByte(q1svc_updatefrags);
-				client->message.WriteByte(i);
-				client->message.WriteShort(host_client->edict->GetFrags());
+				client->qh_message.WriteByte(q1svc_updatefrags);
+				client->qh_message.WriteByte(i);
+				client->qh_message.WriteShort(host_client->edict->GetFrags());
 			}
 
-			host_client->old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->edict->GetFrags();
 		}
 	}
 
@@ -904,7 +904,7 @@ void SV_UpdateToReliableMessages(void)
 		{
 			continue;
 		}
-		client->message.WriteData(sv.reliable_datagram._data, sv.reliable_datagram.cursize);
+		client->qh_message.WriteData(sv.reliable_datagram._data, sv.reliable_datagram.cursize);
 	}
 
 	sv.reliable_datagram.Clear();
@@ -928,11 +928,11 @@ void SV_SendNop(client_t* client)
 
 	msg.WriteChar(q1svc_nop);
 
-	if (NET_SendUnreliableMessage(client->netconnection, &client->netchan, &msg) == -1)
+	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
 	{
 		SV_DropClient(true);	// if the message couldn't send, kick off
 	}
-	client->last_message = realtime;
+	client->qh_last_message = realtime;
 }
 
 /*
@@ -969,9 +969,9 @@ void SV_SendClientMessages(void)
 			// send a full message when the next signon stage has been requested
 			// some other message data (name changes, etc) may accumulate
 			// between signon stages
-			if (!host_client->sendsignon)
+			if (!host_client->qh_sendsignon)
 			{
-				if (realtime - host_client->last_message > 5)
+				if (realtime - host_client->qh_last_message > 5)
 				{
 					SV_SendNop(host_client);
 				}
@@ -982,35 +982,35 @@ void SV_SendClientMessages(void)
 		// check for an overflowed message.  Should only happen
 		// on a very fucked up connection that backs up a lot, then
 		// changes level
-		if (host_client->message.overflowed)
+		if (host_client->qh_message.overflowed)
 		{
 			SV_DropClient(true);
-			host_client->message.overflowed = false;
+			host_client->qh_message.overflowed = false;
 			continue;
 		}
 
-		if (host_client->message.cursize || host_client->dropasap)
+		if (host_client->qh_message.cursize || host_client->qh_dropasap)
 		{
-			if (!NET_CanSendMessage(host_client->netconnection, &host_client->netchan))
+			if (!NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
 			{
 //				I_Printf ("can't write\n");
 				continue;
 			}
 
-			if (host_client->dropasap)
+			if (host_client->qh_dropasap)
 			{
 				SV_DropClient(false);	// went to another level
 			}
 			else
 			{
-				if (NET_SendMessage(host_client->netconnection,
-						&host_client->netchan, &host_client->message) == -1)
+				if (NET_SendMessage(host_client->qh_netconnection,
+						&host_client->netchan, &host_client->qh_message) == -1)
 				{
 					SV_DropClient(true);	// if the message couldn't send, kick off
 				}
-				host_client->message.Clear();
-				host_client->last_message = realtime;
-				host_client->sendsignon = false;
+				host_client->qh_message.Clear();
+				host_client->qh_last_message = realtime;
+				host_client->qh_sendsignon = false;
 			}
 		}
 	}
@@ -1169,7 +1169,7 @@ void SV_SaveSpawnparms(void)
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
+			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
 }
 

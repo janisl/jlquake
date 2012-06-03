@@ -488,7 +488,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	Netchan_Transmit(&client->netchan, msg.cursize, msg._data);
 
 	// record the size for rate estimation
-	client->message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
+	client->q2_message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
 
 	return true;
 }
@@ -533,13 +533,13 @@ qboolean SV_RateDrop(client_t* c)
 
 	for (i = 0; i < RATE_MESSAGES; i++)
 	{
-		total += c->message_size[i];
+		total += c->q2_message_size[i];
 	}
 
 	if (total > c->rate)
 	{
-		c->surpressCount++;
-		c->message_size[sv.framenum % RATE_MESSAGES] = 0;
+		c->q2_surpressCount++;
+		c->q2_message_size[sv.framenum % RATE_MESSAGES] = 0;
 		return true;
 	}
 
