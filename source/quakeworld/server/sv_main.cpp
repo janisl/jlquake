@@ -1508,6 +1508,9 @@ void SV_InitLocal(void)
 
 	Info_SetValueForKey(svs.info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
+	svs.clients = new client_t[MAX_CLIENTS_QW];
+	Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QW);
+
 	// init fraglog stuff
 	svs.logsequence = 1;
 	svs.logtime = realtime;

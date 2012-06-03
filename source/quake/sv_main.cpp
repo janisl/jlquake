@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../common/file_formats/bsp29.h"
 
 server_t sv;
-server_static_t svs;
+serverStatic_t svs;
 
 char localmodels[MAX_MODELS_Q1][5];				// inline model names for precache
 

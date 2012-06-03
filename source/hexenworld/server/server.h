@@ -33,7 +33,7 @@ typedef struct
 {
 	int spawncount;					// number of servers spawned since start,
 									// used to check late spawns
-	client_t clients[HWMAX_CLIENTS];
+	client_t* clients;
 	int serverflags;				// episode completion information
 	qboolean changelevel_issued;	// cleared when at SV_SpawnServer
 
@@ -48,7 +48,7 @@ typedef struct
 	double logtime;				// time of last swap
 	QMsg log[2];
 	byte log_buf[2][MAX_DATAGRAM_HW];
-} server_static_t;
+} serverStatic_t;
 
 //=============================================================================
 
@@ -157,7 +157,7 @@ extern Cvar* fraglimit;
 extern Cvar* timelimit;
 extern Cvar* noexit;
 
-extern server_static_t svs;					// persistant server info
+extern serverStatic_t svs;					// persistant server info
 extern server_t sv;							// local server
 
 extern client_t* host_client;

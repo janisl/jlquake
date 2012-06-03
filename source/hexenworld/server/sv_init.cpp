@@ -1,7 +1,7 @@
 
 #include "qwsvdef.h"
 
-server_static_t svs;				// persistant server info
+serverStatic_t svs;				// persistant server info
 server_t sv;						// local server
 
 char localmodels[MAX_MODELS_H2][5];		// inline model names for precache

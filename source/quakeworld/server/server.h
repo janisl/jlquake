@@ -63,7 +63,7 @@ typedef struct
 {
 	int spawncount;					// number of servers spawned since start,
 									// used to check late spawns
-	client_t clients[MAX_CLIENTS_QW];
+	client_t* clients;
 	int serverflags;				// episode completion information
 
 	double last_heartbeat;
@@ -79,7 +79,7 @@ typedef struct
 	byte log_buf[2][MAX_DATAGRAM_QW];
 
 	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
-} server_static_t;
+} serverStatic_t;
 
 //=============================================================================
 
@@ -142,7 +142,7 @@ extern Cvar* deathmatch;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
-extern server_static_t svs;					// persistant server info
+extern serverStatic_t svs;					// persistant server info
 extern server_t sv;							// local server
 
 extern client_t* host_client;

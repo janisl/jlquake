@@ -79,7 +79,7 @@ typedef struct
 	fileHandle_t demofile;
 	QMsg demo_multicast;
 	byte demo_multicast_buf[MAX_MSGLEN_Q2];
-} server_static_t;
+} serverStatic_t;
 
 //=============================================================================
 
@@ -88,7 +88,7 @@ extern QMsg net_message;
 
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
-extern server_static_t svs;					// persistant server info
+extern serverStatic_t svs;					// persistant server info
 extern server_t sv;							// local server
 
 extern Cvar* sv_paused;

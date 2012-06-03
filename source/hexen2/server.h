@@ -13,7 +13,7 @@ typedef struct
 	struct client_t* clients;		// [maxclients]
 	int serverflags;				// episode completion information
 	qboolean changelevel_issued;	// cleared when at SV_SpawnServer
-} server_static_t;
+} serverStatic_t;
 
 //=============================================================================
 
@@ -95,7 +95,7 @@ extern Cvar* coop;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
-extern server_static_t svs;					// persistant server info
+extern serverStatic_t svs;					// persistant server info
 extern server_t sv;							// local server
 
 extern client_t* host_client;

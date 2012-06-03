@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qwsvdef.h"
 
-server_static_t svs;				// persistant server info
+serverStatic_t svs;				// persistant server info
 server_t sv;						// local server
 
 char localmodels[MAX_MODELS_Q1][5];		// inline model names for precache
