@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct server_t : server_common_t
 {
-	qboolean active;				// false when server is going down
 
 	double time;
 

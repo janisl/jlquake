@@ -138,7 +138,7 @@ void CL_KeepaliveMessage(void)
 	QMsg old;
 	byte olddata[8192];
 
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		return;		// no need if server is local
 	}

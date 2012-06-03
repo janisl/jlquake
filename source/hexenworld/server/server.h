@@ -10,7 +10,6 @@
 
 struct server_t : server_common_t
 {
-	qboolean active;					// false when server is going down
 
 	double time;
 

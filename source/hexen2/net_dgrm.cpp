@@ -57,7 +57,7 @@ void NET_Ban_f(void)
 
 	if (cmd_source == src_command)
 	{
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			Cmd_ForwardToServer();
 			return;

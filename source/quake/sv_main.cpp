@@ -1201,7 +1201,7 @@ void SV_SpawnServer(char* server)
 //
 // tell all connected clients that we are going to a new level
 //
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		SV_SendReconnect();
 	}
@@ -1307,8 +1307,6 @@ void SV_SpawnServer(char* server)
 	pr_global_struct->serverflags = svs.serverflags;
 
 	ED_LoadFromFile(CM_EntityString());
-
-	sv.active = true;
 
 // all setup is completed, any further precache statements are errors
 	sv.state = SS_GAME;

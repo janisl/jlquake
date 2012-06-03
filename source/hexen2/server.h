@@ -19,7 +19,6 @@ typedef struct
 
 struct server_t : server_common_t
 {
-	qboolean active;				// false if only a net client
 
 	qboolean paused;
 	qboolean loadgame;				// handle connections specially

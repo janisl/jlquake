@@ -36,7 +36,7 @@ void Loop_Listen(qboolean state)
 
 void Loop_SearchForHosts(qboolean xmit)
 {
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		return;
 	}

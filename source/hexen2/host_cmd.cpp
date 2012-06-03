@@ -63,7 +63,7 @@ void Host_Status_f(void)
 
 	if (cmd_source == src_command)
 	{
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			Cmd_ForwardToServer();
 			return;
@@ -278,7 +278,7 @@ void Host_Map_f(void)
 	svs.serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
 	SV_SpawnServer(name, NULL);
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		return;
 	}
@@ -317,7 +317,7 @@ void Host_Changelevel_f(void)
 		Con_Printf("changelevel <levelname> : continue game on a new level\n");
 		return;
 	}
-	if (!sv.active || clc.demoplaying)
+	if (sv.state == SS_DEAD || clc.demoplaying)
 	{
 		Con_Printf("Only the server may changelevel\n");
 		return;
@@ -352,7 +352,7 @@ void Host_Restart_f(void)
 	char mapname[MAX_QPATH];
 	char startspot[MAX_QPATH];
 
-	if (clc.demoplaying || !sv.active)
+	if (clc.demoplaying || sv.state == SS_DEAD)
 	{
 		return;
 	}
@@ -486,7 +486,7 @@ void Host_Savegame_f(void)
 		return;
 	}
 
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		Con_Printf("Not playing a local game.\n");
 		return;
@@ -918,7 +918,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 
 		SV_SpawnServer(mapname, startspot);
 
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			Con_Printf("Couldn't load map\n");
 			return -1;
@@ -1036,7 +1036,7 @@ void Host_Changelevel2_f(void)
 		Con_Printf("changelevel2 <levelname> : continue game on a new level in the unit\n");
 		return;
 	}
-	if (!sv.active || clc.demoplaying)
+	if (sv.state == SS_DEAD || clc.demoplaying)
 	{
 		Con_Printf("Only the server may changelevel\n");
 		return;
@@ -1791,7 +1791,7 @@ void Host_Create_f(void)
 	qhedict_t* ent;
 	int i,Length,NumFound,Diff,NewDiff;
 
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		Con_Printf("server is not active!\n");
 		return;
@@ -1919,7 +1919,7 @@ void Host_Kick_f(void)
 
 	if (cmd_source == src_command)
 	{
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			Cmd_ForwardToServer();
 			return;
@@ -2327,7 +2327,7 @@ void Host_Startdemos_f(void)
 
 	if (cls.state == CA_DEDICATED)
 	{
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			Cbuf_AddText("map start\n");
 		}
@@ -2345,7 +2345,7 @@ void Host_Startdemos_f(void)
 	for (i = 1; i < c + 1; i++)
 		String::NCpy(cls.qh_demos[i - 1], Cmd_Argv(i), sizeof(cls.qh_demos[0]) - 1);
 
-	if (!sv.active && cls.qh_demonum != -1 && !clc.demoplaying)
+	if (sv.state == SS_DEAD && cls.qh_demonum != -1 && !clc.demoplaying)
 	{
 		cls.qh_demonum = 0;
 		CL_NextDemo();

@@ -992,7 +992,7 @@ void M_SinglePlayer_Key(int key)
 			m_enter_portals = 1;
 
 		case 3:
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
 				{
@@ -1000,7 +1000,7 @@ void M_SinglePlayer_Key(int key)
 				}
 			}
 			in_keyCatchers &= ~KEYCATCH_UI;
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				Cbuf_AddText("disconnect\n");
 			}
@@ -1093,7 +1093,7 @@ void M_Menu_Load_f(void)
 
 void M_Menu_Save_f(void)
 {
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		return;
 	}
@@ -1293,7 +1293,7 @@ void M_Menu_MLoad_f(void)
 
 void M_Menu_MSave_f(void)
 {
-	if (!sv.active || cl.qh_intermission || svs.maxclients == 1)
+	if (sv.state == SS_DEAD || cl.qh_intermission || svs.maxclients == 1)
 	{
 		message = "Only a network server";
 		message2 = "can save a multiplayer game";
@@ -1324,7 +1324,7 @@ void M_MLoad_Key(int k)
 		m_state = m_none;
 		in_keyCatchers &= ~KEYCATCH_UI;
 
-		if (sv.active)
+		if (sv.state != SS_DEAD)
 		{
 			Cbuf_AddText("disconnect\n");
 		}
@@ -3855,7 +3855,7 @@ void M_GameOptions_Key(int key)
 		S_StartLocalSound("raven/menu2.wav");
 		if (gameoptions_cursor == 0)
 		{
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				Cbuf_AddText("disconnect\n");
 			}

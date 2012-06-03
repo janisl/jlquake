@@ -381,7 +381,7 @@ void M_SinglePlayer_Key(int key)
 		switch (m_singleplayer_cursor)
 		{
 		case 0:
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
 				{
@@ -389,7 +389,7 @@ void M_SinglePlayer_Key(int key)
 				}
 			}
 			in_keyCatchers &= ~KEYCATCH_UI;
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				Cbuf_AddText("disconnect\n");
 			}
@@ -478,7 +478,7 @@ void M_Menu_Load_f(void)
 
 void M_Menu_Save_f(void)
 {
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		return;
 	}
@@ -2471,7 +2471,7 @@ void M_GameOptions_Key(int key)
 		S_StartLocalSound("misc/menu2.wav");
 		if (gameoptions_cursor == 0)
 		{
-			if (sv.active)
+			if (sv.state != SS_DEAD)
 			{
 				Cbuf_AddText("disconnect\n");
 			}

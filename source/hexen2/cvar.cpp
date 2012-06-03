@@ -6,7 +6,7 @@ void Cvar_Changed(Cvar* var)
 {
 	if ((var->flags & CVAR_SERVERINFO))
 	{
-		if (sv.active)
+		if (sv.state != SS_DEAD)
 		{
 			SV_BroadcastPrintf("\"%s\" changed to \"%s\"\n", var->name, var->string);
 		}

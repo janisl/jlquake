@@ -104,7 +104,7 @@ void Host_EndGame(const char* message, ...)
 	va_end(argptr);
 	Con_DPrintf("Host_EndGame: %s\n",string);
 
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		Host_ShutdownServer(false);
 	}
@@ -152,7 +152,7 @@ void Host_Error(const char* error, ...)
 	va_end(argptr);
 	Con_Printf("Host_Error: %s\n",string);
 
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		Host_ShutdownServer(false);
 	}
@@ -456,12 +456,12 @@ void Host_ShutdownServer(qboolean crash)
 	byte message[4];
 	double start;
 
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		return;
 	}
 
-	sv.active = false;
+	sv.state = SS_DEAD;
 
 // stop all client sounds immediately
 	if (cls.state == CA_ACTIVE)
@@ -703,7 +703,7 @@ void _Host_Frame(float time)
 		NET_Poll();
 
 // if running the server locally, make intentions now
-		if (sv.active)
+		if (sv.state != SS_DEAD)
 		{
 			CL_SendCmd();
 		}
@@ -717,7 +717,7 @@ void _Host_Frame(float time)
 // check for commands typed to the host
 		Host_GetConsoleCommands();
 
-		if (sv.active)
+		if (sv.state != SS_DEAD)
 		{
 			Host_ServerFrame();
 		}
@@ -730,7 +730,7 @@ void _Host_Frame(float time)
 
 // if running the server remotely, send intentions now after
 // the incoming messages have been read
-		if (!sv.active)
+		if (sv.state == SS_DEAD)
 		{
 			CL_SendCmd();
 		}

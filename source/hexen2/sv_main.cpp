@@ -115,7 +115,7 @@ void Sv_Edicts_f(void)
 {
 	const char* Name;
 
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		Con_Printf("This command can only be executed on a server running a map\n");
 		return;
@@ -2378,7 +2378,7 @@ void SV_SpawnServer(char* server, char* startspot)
 //
 // tell all connected clients that we are going to a new level
 //
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		SV_SendReconnect();
 	}
@@ -2520,8 +2520,6 @@ void SV_SpawnServer(char* server, char* startspot)
 	current_loading_size += 5;
 	SCR_UpdateScreen();
 	ED_LoadFromFile(CM_EntityString());
-
-	sv.active = true;
 
 // all setup is completed, any further precache statements are errors
 	sv.state = SS_GAME;

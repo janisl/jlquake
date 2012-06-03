@@ -32,7 +32,7 @@ CL_ClearState
 */
 void CL_ClearState(void)
 {
-	if (!sv.active)
+	if (sv.state == SS_DEAD)
 	{
 		Host_ClearMemory();
 	}
@@ -83,7 +83,7 @@ void CL_Disconnect(void)
 		NET_Close(cls.qh_netcon, &clc.netchan);
 
 		cls.state = CA_DISCONNECTED;
-		if (sv.active)
+		if (sv.state != SS_DEAD)
 		{
 			Host_ShutdownServer(false);
 		}
@@ -96,7 +96,7 @@ void CL_Disconnect(void)
 void CL_Disconnect_f(void)
 {
 	CL_Disconnect();
-	if (sv.active)
+	if (sv.state != SS_DEAD)
 	{
 		Host_ShutdownServer(false);
 	}
@@ -201,7 +201,7 @@ void CL_PrintEntities_f(void)
 
 bool CL_IsServerActive()
 {
-	return !!sv.active;
+	return sv.state != SS_DEAD;
 }
 
 /*
