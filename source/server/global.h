@@ -487,3 +487,6 @@ struct serverStatic_t
 	int et_currentFrameIndex;
 	int et_serverLoad;
 };
+
+extern serverStatic_t svs;					// persistant server info across maps
+extern server_t sv;							// cleared each map

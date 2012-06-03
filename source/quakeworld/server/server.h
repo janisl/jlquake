@@ -95,9 +95,6 @@ extern Cvar* deathmatch;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
-extern serverStatic_t svs;					// persistant server info
-extern server_t sv;							// local server
-
 extern client_t* host_client;
 
 extern qhedict_t* sv_player;

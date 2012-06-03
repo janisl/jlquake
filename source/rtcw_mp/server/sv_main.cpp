@@ -29,8 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-serverStatic_t svs;					// persistant server info
-server_t sv;						// local server
 vm_t* gvm = NULL;							// game virtual machine // bk001212 init
 
 #ifdef UPDATE_SERVER

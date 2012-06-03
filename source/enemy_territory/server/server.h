@@ -47,8 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-extern serverStatic_t svs;					// persistant server info across maps
-extern server_t sv;							// cleared each map
 extern vm_t* gvm;							// game virtual machine
 
 

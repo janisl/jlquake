@@ -7,8 +7,6 @@
 #include "quakedef.h"
 #include "../common/file_formats/bsp29.h"
 
-server_t sv;
-serverStatic_t svs;
 char localmodels[MAX_MODELS_H2][5];				// inline model names for precache
 
 Cvar* sv_sound_distance;

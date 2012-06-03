@@ -46,9 +46,6 @@ extern QMsg net_message;
 
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
-extern serverStatic_t svs;					// persistant server info
-extern server_t sv;							// local server
-
 extern Cvar* sv_paused;
 extern Cvar* maxclients;
 extern Cvar* sv_noreload;					// don't reload level state when reentering

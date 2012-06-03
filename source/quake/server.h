@@ -67,9 +67,6 @@ extern Cvar* coop;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
-extern serverStatic_t svs;					// persistant server info
-extern server_t sv;							// local server
-
 extern client_t* host_client;
 
 extern jmp_buf host_abortserver;
