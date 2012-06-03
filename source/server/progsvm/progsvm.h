@@ -20,7 +20,6 @@
 #include "../server.h"
 
 #include "progs_file.h"
-#include "edict.h"
 
 #define MAX_STACK_DEPTH 32
 #define LOCALSTACK_SIZE 2048

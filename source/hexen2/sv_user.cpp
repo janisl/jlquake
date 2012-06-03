@@ -626,7 +626,7 @@ void SV_ReadClientMove(h2usercmd_t* move)
 	for (i = 0; i < 3; i++)
 		angle[i] = net_message.ReadAngle();
 
-	host_client->edict->SetVAngle(angle);
+	host_client->qh_edict->SetVAngle(angle);
 
 // read movement
 	move->forwardmove = net_message.ReadShort();
@@ -635,26 +635,26 @@ void SV_ReadClientMove(h2usercmd_t* move)
 
 // read buttons
 	bits = net_message.ReadByte();
-	host_client->edict->SetButton0(bits & 1);
-	host_client->edict->SetButton2((bits & 2) >> 1);
+	host_client->qh_edict->SetButton0(bits & 1);
+	host_client->qh_edict->SetButton2((bits & 2) >> 1);
 
 	if (bits & 4)	// crouched?
 	{
-		host_client->edict->SetFlags2(((int)host_client->edict->GetFlags2()) | FL2_CROUCHED);
+		host_client->qh_edict->SetFlags2(((int)host_client->qh_edict->GetFlags2()) | FL2_CROUCHED);
 	}
 	else
 	{
-		host_client->edict->SetFlags2(((int)host_client->edict->GetFlags2()) & (~FL2_CROUCHED));
+		host_client->qh_edict->SetFlags2(((int)host_client->qh_edict->GetFlags2()) & (~FL2_CROUCHED));
 	}
 
 	i = net_message.ReadByte();
 	if (i)
 	{
-		host_client->edict->SetImpulse(i);
+		host_client->qh_edict->SetImpulse(i);
 	}
 
 // read light level
-	host_client->edict->SetLightLevel(net_message.ReadByte());
+	host_client->qh_edict->SetLightLevel(net_message.ReadByte());
 }
 
 /*
@@ -828,7 +828,7 @@ nextmsg:
 				break;
 
 			case h2clc_inv_select:
-				host_client->edict->SetInventory(net_message.ReadByte());
+				host_client->qh_edict->SetInventory(net_message.ReadByte());
 				break;
 
 			case h2clc_frame:
@@ -860,7 +860,7 @@ void SV_RunClients(void)
 			continue;
 		}
 
-		sv_player = host_client->edict;
+		sv_player = host_client->qh_edict;
 
 		if (!SV_ReadClientMessage())
 		{

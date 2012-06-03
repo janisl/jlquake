@@ -211,25 +211,25 @@ void SV_DropClient(client_t* drop)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
+			pr_global_struct->self = EDICT_TO_PROG(drop->qh_edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 		}
 		else if (SpectatorDisconnect)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
+			pr_global_struct->self = EDICT_TO_PROG(drop->qh_edict);
 			PR_ExecuteProgram(SpectatorDisconnect);
 		}
 	}
 	else if (dmMode->value == DM_SIEGE)
 	{
-		if (String::ICmp(PR_GetString(drop->edict->GetPuzzleInv1()),""))
+		if (String::ICmp(PR_GetString(drop->qh_edict->GetPuzzleInv1()),""))
 		{
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind
 			Con_Printf("Client in unspawned state had puzzle piece, forcing drop\n");
-			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
+			pr_global_struct->self = EDICT_TO_PROG(drop->qh_edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 		}
 	}
@@ -253,7 +253,7 @@ void SV_DropClient(client_t* drop)
 	drop->qh_connection_started = realtime;	// for zombie timeout
 
 	drop->qh_old_frags = 0;
-	drop->edict->SetFrags(0);
+	drop->qh_edict->SetFrags(0);
 	drop->name[0] = 0;
 	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
@@ -318,7 +318,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
 	buf->WriteShort(client->qh_old_frags);
-	buf->WriteByte((client->h2_playerclass << 5) | ((int)client->edict->GetLevel() & 31));
+	buf->WriteByte((client->h2_playerclass << 5) | ((int)client->qh_edict->GetLevel() & 31));
 
 	if (dmMode->value == DM_SIEGE)
 	{
@@ -653,7 +653,7 @@ void SVC_DirectConnect(void)
 	newcl->qh_spectator = spectator;
 
 	ent = EDICT_NUM(edictnum);
-	newcl->edict = ent;
+	newcl->qh_edict = ent;
 	ED_ClearEdict(ent);
 
 	// parse some info from the info strings
@@ -1625,9 +1625,9 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			i = 0;
 		}
 		cl->hw_next_playerclass =  i;
-		cl->edict->SetNextPlayerClass(i);
+		cl->qh_edict->SetNextPlayerClass(i);
 
-		if (cl->edict->GetHealth() > 0)
+		if (cl->qh_edict->GetHealth() > 0)
 		{
 			sprintf(newname,"%d",cl->h2_playerclass);
 			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);

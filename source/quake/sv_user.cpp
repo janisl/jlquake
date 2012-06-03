@@ -510,7 +510,7 @@ void SV_ReadClientMove(q1usercmd_t* move)
 	for (i = 0; i < 3; i++)
 		angle[i] = net_message.ReadAngle();
 
-	host_client->edict->SetVAngle(angle);
+	host_client->qh_edict->SetVAngle(angle);
 
 // read movement
 	move->forwardmove = net_message.ReadShort();
@@ -519,13 +519,13 @@ void SV_ReadClientMove(q1usercmd_t* move)
 
 // read buttons
 	bits = net_message.ReadByte();
-	host_client->edict->SetButton0(bits & 1);
-	host_client->edict->SetButton2((bits & 2) >> 1);
+	host_client->qh_edict->SetButton0(bits & 1);
+	host_client->qh_edict->SetButton2((bits & 2) >> 1);
 
 	i = net_message.ReadByte();
 	if (i)
 	{
-		host_client->edict->SetImpulse(i);
+		host_client->qh_edict->SetImpulse(i);
 	}
 }
 
@@ -718,7 +718,7 @@ void SV_RunClients(void)
 			continue;
 		}
 
-		sv_player = host_client->edict;
+		sv_player = host_client->qh_edict;
 
 		if (!SV_ReadClientMessage())
 		{

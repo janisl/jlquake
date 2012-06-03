@@ -253,7 +253,7 @@ void SV_SendServerinfo(client_t* client)
 
 // set view
 	client->qh_message.WriteByte(q1svc_setview);
-	client->qh_message.WriteShort(NUM_FOR_EDICT(client->edict));
+	client->qh_message.WriteShort(NUM_FOR_EDICT(client->qh_edict));
 
 	client->qh_message.WriteByte(q1svc_signonnum);
 	client->qh_message.WriteByte(1);
@@ -301,7 +301,7 @@ void SV_ConnectClient(int clientnum)
 
 	String::Cpy(client->name, "unconnected");
 	client->state = CS_CONNECTED;
-	client->edict = ent;
+	client->qh_edict = ent;
 	client->qh_message.InitOOB(client->qh_messageBuffer, MAX_MSGLEN_Q1);
 	client->qh_message.allowoverflow = true;		// we can catch it
 
@@ -848,9 +848,9 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.WriteFloat(sv.time);
 
 // add the client specific data to the datagram
-	SV_WriteClientdataToMessage(client->edict, &msg);
+	SV_WriteClientdataToMessage(client->qh_edict, &msg);
 
-	SV_WriteEntitiesToClient(client->edict, &msg);
+	SV_WriteEntitiesToClient(client->qh_edict, &msg);
 
 // copy the server datagram if there is space
 	if (msg.cursize + sv.datagram.cursize < msg.maxsize)
@@ -881,7 +881,7 @@ void SV_UpdateToReliableMessages(void)
 // check for changes to be sent over the reliable streams
 	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
-		if (host_client->qh_old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 			{
@@ -891,10 +891,10 @@ void SV_UpdateToReliableMessages(void)
 				}
 				client->qh_message.WriteByte(q1svc_updatefrags);
 				client->qh_message.WriteByte(i);
-				client->qh_message.WriteShort(host_client->edict->GetFrags());
+				client->qh_message.WriteShort(host_client->qh_edict->GetFrags());
 			}
 
-			host_client->qh_old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
 		}
 	}
 
@@ -1166,7 +1166,7 @@ void SV_SaveSpawnparms(void)
 		}
 
 		// call the progs to get default spawn parms for the new client
-		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+		pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
 		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
@@ -1253,7 +1253,7 @@ void SV_SpawnServer(char* server)
 	for (i = 0; i < svs.maxclients; i++)
 	{
 		ent = EDICT_NUM(i + 1);
-		svs.clients[i].edict = ent;
+		svs.clients[i].qh_edict = ent;
 	}
 
 	sv.state = ss_loading;

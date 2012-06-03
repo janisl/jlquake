@@ -88,7 +88,7 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteLong(svs.spawncount);
 	host_client->netchan.message.WriteString2(gamedir);
 
-	playernum = NUM_FOR_EDICT(host_client->edict) - 1;
+	playernum = NUM_FOR_EDICT(host_client->qh_edict) - 1;
 	if (host_client->qh_spectator)
 	{
 		playernum |= 128;
@@ -366,7 +366,7 @@ void SV_Spawn_f(void)
 	}
 
 	// set up the edict
-	ent = host_client->edict;
+	ent = host_client->qh_edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->SetColorMap(NUM_FOR_EDICT(ent));
@@ -1269,7 +1269,7 @@ void SV_ExecuteUserCommand(char* s)
 	ucmd_t* u;
 
 	Cmd_TokenizeString(s);
-	sv_player = host_client->edict;
+	sv_player = host_client->qh_edict;
 
 	SV_BeginRedirect(RD_CLIENT);
 
@@ -1689,7 +1689,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	cl->qw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].ping_time = -1;
 
 	host_client = cl;
-	sv_player = host_client->edict;
+	sv_player = host_client->qh_edict;
 
 //	seq_hash = (cl->netchan.incoming_sequence & 0xffff) ; // ^ QW_CHECK_HASH;
 	seq_hash = cl->netchan.incomingSequence;

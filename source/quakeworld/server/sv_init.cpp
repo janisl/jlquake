@@ -184,7 +184,7 @@ void SV_SaveSpawnparms(void)
 		host_client->state = CS_CONNECTED;
 
 		// call the progs to get default spawn parms for the new client
-		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+		pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
 		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
@@ -261,7 +261,7 @@ void SV_SpawnServer(char* server)
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
 		ent = EDICT_NUM(i + 1);
-		svs.clients[i].edict = ent;
+		svs.clients[i].qh_edict = ent;
 //ZOID - make sure we update frags right
 		svs.clients[i].qh_old_frags = 0;
 	}

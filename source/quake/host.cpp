@@ -399,12 +399,12 @@ void SV_DropClient(qboolean crash)
 			NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
 		}
 
-		if (host_client->edict && host_client->state == CS_ACTIVE)
+		if (host_client->qh_edict && host_client->state == CS_ACTIVE)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
 			saveSelf = pr_global_struct->self;
-			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+			pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 			pr_global_struct->self = saveSelf;
 		}

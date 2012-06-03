@@ -16,6 +16,9 @@
 
 #define MAX_ENT_LEAFS   16
 
+typedef int func_t;
+typedef int string_t;
+
 class idEntVarDef
 {
 public:

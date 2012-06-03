@@ -91,7 +91,6 @@ typedef struct
 
 struct client_t : public client_common_t
 {
-	qhedict_t* edict;						// EDICT_NUM(clientnum+1)
 };
 
 // a client can leave the server in one of four ways:

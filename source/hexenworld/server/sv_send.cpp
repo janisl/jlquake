@@ -294,7 +294,7 @@ void SV_Multicast(vec3_t origin, int to)
 			continue;
 		}
 
-		VectorCopy(client->edict->GetOrigin(), adjust_origin);
+		VectorCopy(client->qh_edict->GetOrigin(), adjust_origin);
 		adjust_origin[2] += 16;
 		if (mask)
 		{
@@ -758,7 +758,7 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
 	qhedict_t* other;
 	qhedict_t* ent;
 
-	ent = client->edict;
+	ent = client->qh_edict;
 
 	// send the chokecount for cl_netgraph
 	if (client->qh_chokecount)
@@ -815,14 +815,14 @@ void SV_UpdateClientStats(client_t* client)
 	int stats[MAX_CL_STATS];
 	int i;
 
-	ent = client->edict;
+	ent = client->qh_edict;
 	Com_Memset(stats, 0, sizeof(stats));
 
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his
 	if (client->qh_spectator && client->qh_spec_track > 0)
 	{
-		ent = svs.clients[client->qh_spec_track - 1].edict;
+		ent = svs.clients[client->qh_spec_track - 1].qh_edict;
 	}
 
 	stats[STAT_HEALTH] = 0;	//ent->v.health;
@@ -943,11 +943,11 @@ static void UpdatePIV(void)
 			continue;
 		}
 
-		VectorCopy(host_client->edict->GetOrigin(), adjust_org1);
+		VectorCopy(host_client->qh_edict->GetOrigin(), adjust_org1);
 		adjust_org1[2] += 24;
 
-		save_hull = host_client->edict->GetHull();
-		host_client->edict->SetHull(0);
+		save_hull = host_client->qh_edict->GetHull();
+		host_client->qh_edict->SetHull(0);
 
 		for (j = i + 1, client = host_client + 1; j < HWMAX_CLIENTS; j++, client++)
 		{
@@ -956,7 +956,7 @@ static void UpdatePIV(void)
 				continue;
 			}
 
-			VectorSubtract(client->edict->GetOrigin(), host_client->edict->GetOrigin(), distvec);
+			VectorSubtract(client->qh_edict->GetOrigin(), host_client->qh_edict->GetOrigin(), distvec);
 			dist = VectorNormalize(distvec);
 			if (dist > sv_namedistance->value)
 			{
@@ -964,23 +964,23 @@ static void UpdatePIV(void)
 				continue;
 			}
 
-			VectorCopy(client->edict->GetOrigin(), adjust_org2);
+			VectorCopy(client->qh_edict->GetOrigin(), adjust_org2);
 			adjust_org2[2] += 24;
 
-			trace = SV_Move(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->edict);
-			if (EDICT_NUM(trace.entityNum) == client->edict)
+			trace = SV_Move(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict);
+			if (EDICT_NUM(trace.entityNum) == client->qh_edict)
 			{	//can see each other, check for invisible, dead
-				if (ValidToShowName(client->edict))
+				if (ValidToShowName(client->qh_edict))
 				{
 					host_client->hw_PIV |= 1 << j;
 				}
-				if (ValidToShowName(host_client->edict))
+				if (ValidToShowName(host_client->qh_edict))
 				{
 					client->hw_PIV |= 1 << i;
 				}
 			}
 		}
-		host_client->edict->SetHull(save_hull);
+		host_client->qh_edict->SetHull(save_hull);
 	}
 }
 
@@ -1017,7 +1017,7 @@ void SV_UpdateToReliableMessages(void)
 			host_client->qh_sendinfo = false;
 			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
 		}
-		if (host_client->qh_old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
 			{
@@ -1028,8 +1028,8 @@ void SV_UpdateToReliableMessages(void)
 //Con_Printf("SV_UpdateToReliableMessages:  Updated frags for client %d to %d\n", i, j);
 				client->netchan.message.WriteByte(hwsvc_updatedminfo);
 				client->netchan.message.WriteByte(i);
-				client->netchan.message.WriteShort(host_client->edict->GetFrags());
-				client->netchan.message.WriteByte((host_client->h2_playerclass << 5) | ((int)host_client->edict->GetLevel() & 31));
+				client->netchan.message.WriteShort(host_client->qh_edict->GetFrags());
+				client->netchan.message.WriteByte((host_client->h2_playerclass << 5) | ((int)host_client->qh_edict->GetLevel() & 31));
 
 				if (dmMode->value == DM_SIEGE)
 				{
@@ -1039,10 +1039,10 @@ void SV_UpdateToReliableMessages(void)
 				}
 			}
 
-			host_client->qh_old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
 		}
 
-		SV_WriteInventory(host_client, host_client->edict, &host_client->netchan.message);
+		SV_WriteInventory(host_client, host_client->qh_edict, &host_client->netchan.message);
 
 		if (CheckPIV && host_client->hw_PIV != host_client->hw_LastPIV)
 		{
@@ -1052,7 +1052,7 @@ void SV_UpdateToReliableMessages(void)
 		}
 
 		// maxspeed/entgravity changes
-		ent = host_client->edict;
+		ent = host_client->qh_edict;
 
 		val = GetEdictFieldValue(ent, "gravity");
 		if (val && host_client->qh_entgravity != val->_float)

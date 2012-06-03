@@ -180,7 +180,7 @@ qboolean SV_SetPlayer(void)
 		if (cl->qh_userid == idnum)
 		{
 			host_client = cl;
-			sv_player = host_client->edict;
+			sv_player = host_client->qh_edict;
 			return true;
 		}
 	}
@@ -432,7 +432,7 @@ void SV_Status_f(void)
 
 			Con_Printf("%-16.16s  ", cl->name);
 
-			Con_Printf("%6i %5i", cl->qh_userid, (int)cl->edict->GetFrags());
+			Con_Printf("%6i %5i", cl->qh_userid, (int)cl->qh_edict->GetFrags());
 			if (cl->qh_spectator)
 			{
 				Con_Printf(" (s)\n");
@@ -470,7 +470,7 @@ void SV_Status_f(void)
 			{
 				continue;
 			}
-			Con_Printf("%5i %6i ", (int)cl->edict->GetFrags(),  cl->qh_userid);
+			Con_Printf("%5i %6i ", (int)cl->qh_edict->GetFrags(),  cl->qh_userid);
 
 			s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
 			Con_Printf("%s", s);

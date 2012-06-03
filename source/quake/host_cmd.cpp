@@ -100,7 +100,7 @@ void Host_Status_f(void)
 		{
 			hours = 0;
 		}
-		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
+		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
 		print("   %s\n", client->qh_netconnection->address);
 	}
 }
@@ -483,7 +483,7 @@ void Host_Savegame_f(void)
 
 	for (i = 0; i < svs.maxclients; i++)
 	{
-		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].edict->GetHealth() <= 0))
+		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
 		{
 			Con_Printf("Can't savegame with a dead player\n");
 			return;
@@ -740,7 +740,7 @@ void Host_Name_f(void)
 		}
 	}
 	String::Cpy(host_client->name, newName);
-	host_client->edict->SetNetName(PR_SetString(host_client->name));
+	host_client->qh_edict->SetNetName(PR_SetString(host_client->name));
 
 // send notification to all clients
 
@@ -884,7 +884,7 @@ void Host_Say(qboolean teamonly)
 		{
 			continue;
 		}
-		if (teamplay->value && teamonly && client->edict->GetTeam() != save->edict->GetTeam())
+		if (teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
 		{
 			continue;
 		}
@@ -1018,7 +1018,7 @@ void Host_Color_f(void)
 	}
 
 	host_client->qh_colors = playercolor;
-	host_client->edict->SetTeam(bottom + 1);
+	host_client->qh_edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(q1svc_updatecolors);
@@ -1147,7 +1147,7 @@ void Host_Spawn_f(void)
 	else
 	{
 		// set up the edict
-		ent = host_client->edict;
+		ent = host_client->qh_edict;
 
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		ent->SetColorMap(NUM_FOR_EDICT(ent));

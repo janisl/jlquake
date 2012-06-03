@@ -16,9 +16,6 @@
 
 #pragma pack(push, 1)
 
-typedef int func_t;
-typedef int string_t;
-
 enum etype_t
 {
 	ev_void,

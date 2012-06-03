@@ -312,7 +312,7 @@ void SV_Multicast(vec3_t origin, int to)
 		if (to == MULTICAST_PHS_R || to == MULTICAST_PHS)
 		{
 			vec3_t delta;
-			VectorSubtract(origin, client->edict->GetOrigin(), delta);
+			VectorSubtract(origin, client->qh_edict->GetOrigin(), delta);
 			if (VectorLength(delta) <= 1024)
 			{
 				goto inrange;
@@ -321,7 +321,7 @@ void SV_Multicast(vec3_t origin, int to)
 
 		if (mask)
 		{
-			leafnum = CM_PointLeafnum(client->edict->GetOrigin());
+			leafnum = CM_PointLeafnum(client->qh_edict->GetOrigin());
 			leafnum = CM_LeafCluster(leafnum);
 			if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
 			{
@@ -520,7 +520,7 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
 	qhedict_t* other;
 	qhedict_t* ent;
 
-	ent = client->edict;
+	ent = client->qh_edict;
 
 	// send the chokecount for cl_netgraph
 	if (client->qh_chokecount)
@@ -568,14 +568,14 @@ void SV_UpdateClientStats(client_t* client)
 	int stats[MAX_CL_STATS];
 	int i;
 
-	ent = client->edict;
+	ent = client->qh_edict;
 	Com_Memset(stats, 0, sizeof(stats));
 
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his
 	if (client->qh_spectator && client->qh_spec_track > 0)
 	{
-		ent = svs.clients[client->qh_spec_track - 1].edict;
+		ent = svs.clients[client->qh_spec_track - 1].qh_edict;
 	}
 
 	stats[Q1STAT_HEALTH] = ent->GetHealth();
@@ -687,7 +687,7 @@ void SV_UpdateToReliableMessages(void)
 			host_client->qh_sendinfo = false;
 			SV_FullClientUpdate(host_client, &sv.reliable_datagram);
 		}
-		if (host_client->qh_old_frags != host_client->edict->GetFrags())
+		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
 			for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 			{
@@ -697,14 +697,14 @@ void SV_UpdateToReliableMessages(void)
 				}
 				ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
 				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Short(client, host_client->edict->GetFrags());
+				ClientReliableWrite_Short(client, host_client->qh_edict->GetFrags());
 			}
 
-			host_client->qh_old_frags = host_client->edict->GetFrags();
+			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
 		}
 
 		// maxspeed/entgravity changes
-		ent = host_client->edict;
+		ent = host_client->qh_edict;
 
 		val = GetEdictFieldValue(ent, "gravity");
 		if (val && host_client->qh_entgravity != val->_float)

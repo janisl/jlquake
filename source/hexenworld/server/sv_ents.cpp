@@ -1234,7 +1234,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 			continue;
 		}
 
-		ent = cl->edict;
+		ent = cl->qh_edict;
 
 
 		// ZOID visibility tracking
@@ -1590,7 +1590,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	frame = &client->hw_frames[client->netchan.incomingSequence & UPDATE_MASK_HW];
 
 	// find the client's PVS
-	clent = client->edict;
+	clent = client->qh_edict;
 	VectorAdd(clent->GetOrigin(), clent->GetViewOfs(), org);
 	pvs = SV_FatPVS(org);
 

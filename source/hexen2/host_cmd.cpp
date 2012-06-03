@@ -101,7 +101,7 @@ void Host_Status_f(void)
 		{
 			hours = 0;
 		}
-		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->edict->GetFrags(), hours, minutes, seconds);
+		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
 		print("   %s\n", client->qh_netconnection->address);
 	}
 }
@@ -520,7 +520,7 @@ void Host_Savegame_f(void)
 
 	for (i = 0; i < svs.maxclients; i++)
 	{
-		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].edict->GetHealth() <= 0))
+		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
 		{
 			Con_Printf("Can't savegame with a dead player\n");
 			return;
@@ -837,7 +837,7 @@ void RestoreClients(void)
 	for (i = 0,host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		if (host_client->state >= CS_CONNECTED)
 		{
-			ent = host_client->edict;
+			ent = host_client->qh_edict;
 
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
 			ent->SetTeam((host_client->qh_colors & 15) + 1);
@@ -1125,7 +1125,7 @@ void Host_Name_f(void)
 		}
 	}
 	String::Cpy(host_client->name, newName);
-	host_client->edict->SetNetName(PR_SetString(host_client->name));
+	host_client->qh_edict->SetNetName(PR_SetString(host_client->name));
 
 // send notification to all clients
 
@@ -1182,9 +1182,9 @@ void Host_Class_f(void)
 
 	if (sv.loadgame || host_client->h2_playerclass)
 	{
-		if (host_client->edict->GetPlayerClass())
+		if (host_client->qh_edict->GetPlayerClass())
 		{
-			newClass = host_client->edict->GetPlayerClass();
+			newClass = host_client->qh_edict->GetPlayerClass();
 		}
 		else if (host_client->h2_playerclass)
 		{
@@ -1193,10 +1193,10 @@ void Host_Class_f(void)
 	}
 
 	host_client->h2_playerclass = newClass;
-	host_client->edict->SetPlayerClass(newClass);
+	host_client->qh_edict->SetPlayerClass(newClass);
 
 	// Change the weapon model used
-	pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+	pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
 	PR_ExecuteProgram(pr_global_struct->ClassChangeWeapon);
 
 // send notification to all clients
@@ -1392,7 +1392,7 @@ void Host_Say(qboolean teamonly)
 		{
 			continue;
 		}
-		if (teamplay->value && teamonly && client->edict->GetTeam() != save->edict->GetTeam())
+		if (teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
 		{
 			continue;
 		}
@@ -1529,7 +1529,7 @@ void Host_Color_f(void)
 	}
 
 	host_client->qh_colors = playercolor;
-	host_client->edict->SetTeam(bottom + 1);
+	host_client->qh_edict->SetTeam(bottom + 1);
 
 // send notification to all clients
 	sv.reliable_datagram.WriteByte(h2svc_updatecolors);
@@ -1661,7 +1661,7 @@ void Host_Spawn_f(void)
 	else
 	{
 		// set up the edict
-		ent = host_client->edict;
+		ent = host_client->qh_edict;
 		sv.paused = false;
 
 		if (!ent->GetStatsRestored() || deathmatch->value)

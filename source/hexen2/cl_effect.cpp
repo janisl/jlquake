@@ -191,7 +191,7 @@ void SV_SendEffect(QMsg* sb, int index)
 			if (svs.clients[i].state >= CS_CONNECTED)
 			{
 				sb = &svs.clients[i].datagram;
-				VectorSubtract(svs.clients[i].edict->GetOrigin(),TestO1,Diff);
+				VectorSubtract(svs.clients[i].qh_edict->GetOrigin(),TestO1,Diff);
 				Size = (Diff[0] * Diff[0]) + (Diff[1] * Diff[1]) + (Diff[2] * Diff[2]);
 
 				if (Size > TestDistance)

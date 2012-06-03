@@ -63,6 +63,8 @@ struct client_common_t
 	int ping;
 	int rate;							// bytes / second
 
+	qhedict_t* qh_edict;				// EDICT_NUM(clientnum+1)
+
 	// spawn parms are carried from level to level
 	float qh_spawn_parms[NUM_SPAWN_PARMS];
 
