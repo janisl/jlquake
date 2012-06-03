@@ -92,36 +92,6 @@ command line.
 
 //============================================================================
 
-
-// ClearLink is used for new headnodes
-void ClearLink(qhlink_t* l)
-{
-	l->prev = l->next = l;
-}
-
-void RemoveLink(qhlink_t* l)
-{
-	l->next->prev = l->prev;
-	l->prev->next = l->next;
-}
-
-void InsertLinkBefore(qhlink_t* l, qhlink_t* before)
-{
-	l->next = before;
-	l->prev = before->prev;
-	l->prev->next = l;
-	l->next->prev = l;
-}
-void InsertLinkAfter(qhlink_t* l, qhlink_t* after)
-{
-	l->next = after->next;
-	l->prev = after;
-	l->prev->next = l;
-	l->next->prev = l;
-}
-
-//============================================================================
-
 /*
 ================
 COM_CheckRegistered

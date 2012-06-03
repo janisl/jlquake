@@ -25,12 +25,6 @@ public:
 	int offset;
 };
 
-struct qhlink_t
-{
-	qhlink_t* prev;
-	qhlink_t* next;
-};
-
 struct entvars_t
 {
 	float modelindex;
@@ -180,7 +174,7 @@ extern idEntVarDef entFieldSiegeTeam;
 struct qhedict_t
 {
 	bool free;
-	qhlink_t area;			// linked to a division node or leaf
+	link_t area;			// linked to a division node or leaf
 
 	int num_leafs;
 	int LeafNums[MAX_ENT_LEAFS];

@@ -14,17 +14,19 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
+//!!!!! Used by Quake 2 game DLLs, do not change.
+// link_t is only used for entity area links now
+struct link_t
+{
+	link_t* prev;
+	link_t* next;
+};
 
-#include "../common/qcommon.h"
-#include "../common/file_formats/bsp38.h"
-#include "link.h"
-#include "quakeserverdefs.h"
-#include "hexen2serverdefs.h"
-#include "quake2serverdefs.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "global.h"
+// (type *)STRUCT_FROM_LINK(link_t *link, type, member)
+// ent = STRUCT_FROM_LINK(link,entity_t,order)
+// FIXME: remove this mess!
+#define STRUCT_FROM_LINK(l,t,m) ((t*)((byte*)l - (qintptr) & (((t*)0)->m)))
 
-#endif
+void ClearLink(link_t* l);
+void RemoveLink(link_t* l);
+void InsertLinkBefore(link_t* l, link_t* before);

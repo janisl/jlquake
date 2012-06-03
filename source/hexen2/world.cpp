@@ -156,8 +156,8 @@ typedef struct areanode_s
 	int axis;			// -1 = leaf node
 	float dist;
 	struct areanode_s* children[2];
-	qhlink_t trigger_edicts;
-	qhlink_t solid_edicts;
+	link_t trigger_edicts;
+	link_t solid_edicts;
 } areanode_t;
 
 #define AREA_DEPTH  4
@@ -256,7 +256,7 @@ SV_TouchLinks
 */
 void SV_TouchLinks(qhedict_t* ent, areanode_t* node)
 {
-	qhlink_t* l, * lnext;
+	link_t* l, * lnext;
 	qhedict_t* touch;
 	int old_self, old_other;
 
@@ -609,7 +609,7 @@ Mins and maxs enclose the entire area swept by the move
 */
 void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
 {
-	qhlink_t* l, * next;
+	link_t* l, * next;
 	qhedict_t* touch;
 	q1trace_t trace;
 

@@ -14,17 +14,24 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
+#include "server.h"
 
-#include "../common/qcommon.h"
-#include "../common/file_formats/bsp38.h"
-#include "link.h"
-#include "quakeserverdefs.h"
-#include "hexen2serverdefs.h"
-#include "quake2serverdefs.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "global.h"
+// ClearLink is used for new headnodes
+void ClearLink(link_t* l)
+{
+	l->prev = l->next = l;
+}
 
-#endif
+void RemoveLink(link_t* l)
+{
+	l->next->prev = l->prev;
+	l->prev->next = l->next;
+}
+
+void InsertLinkBefore(link_t* l, link_t* before)
+{
+	l->next = before;
+	l->prev = before->prev;
+	l->prev->next = l;
+	l->next->prev = l;
+}

@@ -28,8 +28,8 @@ typedef struct areanode_s
 	int axis;			// -1 = leaf node
 	float dist;
 	struct areanode_s* children[2];
-	qhlink_t trigger_edicts;
-	qhlink_t solid_edicts;
+	link_t trigger_edicts;
+	link_t solid_edicts;
 } areanode_t;
 
 #define AREA_DEPTH  4

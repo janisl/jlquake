@@ -59,12 +59,6 @@ typedef enum
 
 //===============================================================
 
-// link_t is only used for entity area links now
-typedef struct link_s
-{
-	struct link_s* prev, * next;
-} link_t;
-
 #define MAX_ENT_CLUSTERS    16
 
 struct gclient_t

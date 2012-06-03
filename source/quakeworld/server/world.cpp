@@ -129,34 +129,6 @@ ENTITY AREA CHECKING
 areanode_t sv_areanodes[AREA_NODES];
 int sv_numareanodes;
 
-
-// ClearLink is used for new headnodes
-void ClearLink(qhlink_t* l)
-{
-	l->prev = l->next = l;
-}
-
-void RemoveLink(qhlink_t* l)
-{
-	l->next->prev = l->prev;
-	l->prev->next = l->next;
-}
-
-void InsertLinkBefore(qhlink_t* l, qhlink_t* before)
-{
-	l->next = before;
-	l->prev = before->prev;
-	l->prev->next = l;
-	l->next->prev = l;
-}
-void InsertLinkAfter(qhlink_t* l, qhlink_t* after)
-{
-	l->next = after->next;
-	l->prev = after;
-	l->prev->next = l;
-	l->next->prev = l;
-}
-
 /*
 ===============
 SV_CreateAreaNode
@@ -247,7 +219,7 @@ SV_TouchLinks
 */
 void SV_TouchLinks(qhedict_t* ent, areanode_t* node)
 {
-	qhlink_t* l, * next;
+	link_t* l, * next;
 	qhedict_t* touch;
 	int old_self, old_other;
 
@@ -508,7 +480,7 @@ Mins and maxs enclose the entire area swept by the move
 */
 void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
 {
-	qhlink_t* l, * next;
+	link_t* l, * next;
 	qhedict_t* touch;
 	q1trace_t trace;
 
