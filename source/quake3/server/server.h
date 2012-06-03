@@ -43,15 +43,8 @@ typedef struct svEntity_s
 	int snapshotCounter;			// used to prevent double adding from portal views
 } svEntity_t;
 
-typedef enum {
-	SS_DEAD,			// no map loaded
-	SS_LOADING,			// spawning level entities
-	SS_GAME				// actively running
-} serverState_t;
-
-typedef struct
+struct server_t : server_common_t
 {
-	serverState_t state;
 	qboolean restarting;				// if true, send configstring changes during SS_LOADING
 	int serverId;						// changes each server start
 	int restartedServerId;				// serverId before a map_restart
@@ -77,14 +70,6 @@ typedef struct
 	int gameClientSize;					// will be > sizeof(q3playerState_t) due to game private data
 
 	int restartTime;
-} server_t;
-
-
-
-
-
-struct client_t : public client_common_t
-{
 };
 
 //=============================================================================

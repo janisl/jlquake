@@ -911,7 +911,7 @@ void PF_precache_sound(void)
 	const char* s;
 	int i;
 
-	if (sv.state != ss_loading)
+	if (sv.state != SS_LOADING)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -940,7 +940,7 @@ void PF_precache_model(void)
 	const char* s;
 	int i;
 
-	if (sv.state != ss_loading)
+	if (sv.state != SS_LOADING)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1083,7 +1083,7 @@ void PF_lightstyle(void)
 	sv.lightstyles[style] = val;
 
 // send message to all clients on this server
-	if (sv.state != ss_active)
+	if (sv.state != SS_GAME)
 	{
 		return;
 	}
@@ -1374,7 +1374,7 @@ QMsg* WriteDest(void)
 		return &sv.reliable_datagram;
 
 	case MSG_INIT:
-		if (sv.state != ss_loading)
+		if (sv.state != SS_LOADING)
 		{
 			PR_RunError("PF_Write_*: MSG_INIT can only be written in spawn functions");
 		}

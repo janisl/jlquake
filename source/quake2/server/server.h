@@ -32,20 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
-typedef enum {
-	ss_dead,			// no map loaded
-	ss_loading,			// spawning level edicts
-	ss_game,			// actively running
-	ss_cinematic,
-	ss_demo,
-	ss_pic
-} server_state_t;
-// some qc commands are only valid before the server has finished
-// initializing (precache commands, static sounds / objects, etc)
-
-typedef struct
+struct server_t : server_common_t
 {
-	server_state_t state;			// precache commands are only valid during load
 
 	qboolean attractloop;			// running cinematics and demos for the local system only
 	qboolean loadgame;				// client begins should reuse existing entity
@@ -67,14 +55,10 @@ typedef struct
 	// demo server information
 	fileHandle_t demofile;
 	qboolean timedemo;			// don't time sync
-} server_t;
+};
 
 #define EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
 #define NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
-
-struct client_t : public client_common_t
-{
-};
 
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting

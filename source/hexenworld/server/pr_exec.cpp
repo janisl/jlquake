@@ -334,7 +334,7 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 			NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
-			if (ed == (qhedict_t*)sv.edicts && sv.state == ss_active)
+			if (ed == (qhedict_t*)sv.edicts && sv.state == SS_GAME)
 			{
 				PR_RunError("assignment to world entity");
 			}
@@ -546,7 +546,7 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 			NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
-			if (ed == (qhedict_t*)sv.edicts && sv.state == ss_active)
+			if (ed == (qhedict_t*)sv.edicts && sv.state == SS_GAME)
 			{
 				PR_RunError("assignment to world entity");
 			}

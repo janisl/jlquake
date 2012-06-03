@@ -2040,5 +2040,5 @@ float* CL_GetSimOrg()
 #include "../server/server.h"
 bool CL_IsServerActive()
 {
-	return sv.state == ss_game;
+	return sv.state == SS_GAME;
 }

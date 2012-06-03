@@ -2463,7 +2463,7 @@ void SV_SpawnServer(char* server, char* startspot)
 		ent->freetime = -999;
 	}
 
-	sv.state = ss_loading;
+	sv.state = SS_LOADING;
 	sv.paused = false;
 
 	sv.time = 1.0;
@@ -2524,7 +2524,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.active = true;
 
 // all setup is completed, any further precache statements are errors
-	sv.state = ss_active;
+	sv.state = SS_GAME;
 
 // run two frames to allow everything to settle
 	host_frametime = 0.1;

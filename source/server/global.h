@@ -23,7 +23,7 @@ enum clientState_t
 	CS_ACTIVE		// client is fully in game
 };
 
-struct client_common_t
+struct client_t
 {
 	clientState_t state;
 	char userinfo[BIGGEST_MAX_INFO_STRING];			// name, etc
@@ -238,4 +238,21 @@ struct client_common_t
 
 	//bani
 	int et_downloadnotify;
+};
+
+// some qc commands are only valid before the server has finished
+// initializing (precache commands, static sounds / objects, etc)
+enum serverState_t
+{
+	SS_DEAD,			// no map loaded
+	SS_LOADING,			// spawning level entities
+	SS_GAME,			// actively running
+	SS_CINEMATIC,
+	SS_DEMO,
+	SS_PIC
+};
+
+struct server_common_t
+{
+	serverState_t state;
 };

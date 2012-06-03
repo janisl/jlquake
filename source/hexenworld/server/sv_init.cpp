@@ -201,7 +201,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
 
-	sv.state = ss_dead;
+	sv.state = SS_DEAD;
 
 	Hunk_FreeToLowMark(host_hunklevel);
 
@@ -272,7 +272,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	// precache and static commands can be issued during
 	// map initialization
-	sv.state = ss_loading;
+	sv.state = SS_LOADING;
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
@@ -334,7 +334,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	// all spawning is completed, any further precache statements
 	// or prog writes to the signon message are errors
-	sv.state = ss_active;
+	sv.state = SS_GAME;
 
 	// run two frames to allow everything to settle
 	host_frametime = HX_FRAME_TIME;

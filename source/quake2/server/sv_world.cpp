@@ -281,7 +281,7 @@ void SV_LinkEdict(q2edict_t* ent)
 			// but nothing should evern need more than that
 			if (ent->areanum && ent->areanum != area)
 			{
-				if (ent->areanum2 && ent->areanum2 != area && sv.state == ss_loading)
+				if (ent->areanum2 && ent->areanum2 != area && sv.state == SS_LOADING)
 				{
 					Com_DPrintf("Object touching 3 areas at %f %f %f\n",
 						ent->absmin[0], ent->absmin[1], ent->absmin[2]);

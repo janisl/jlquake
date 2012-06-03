@@ -562,7 +562,7 @@ void SV_SendClientMessages(void)
 	msglen = 0;
 
 	// read the next demo message if needed
-	if (sv.state == ss_demo && sv.demofile)
+	if (sv.state == SS_DEMO && sv.demofile)
 	{
 		if (sv_paused->value)
 		{
@@ -613,9 +613,9 @@ void SV_SendClientMessages(void)
 			SV_DropClient(c);
 		}
 
-		if (sv.state == ss_cinematic ||
-			sv.state == ss_demo ||
-			sv.state == ss_pic
+		if (sv.state == SS_CINEMATIC ||
+			sv.state == SS_DEMO ||
+			sv.state == SS_PIC
 			)
 		{
 			Netchan_Transmit(&c->netchan, msglen, msgbuf);

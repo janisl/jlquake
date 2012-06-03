@@ -1736,11 +1736,11 @@ void SV_Init(quakeparms_t* parms)
 
 // if a map wasn't specified on the command line, spawn start.map
 
-		if (sv.state == ss_dead)
+		if (sv.state == SS_DEAD)
 		{
 			Cmd_ExecuteString("map demo1");
 		}
-		if (sv.state == ss_dead)
+		if (sv.state == SS_DEAD)
 		{
 			SV_Error("Couldn't spawn a server");
 		}

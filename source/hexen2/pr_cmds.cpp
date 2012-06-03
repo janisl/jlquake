@@ -1363,7 +1363,7 @@ void PF_precache_sound(void)
 	const char* s;
 	int i;
 
-	if (sv.state != ss_loading && !ignore_precache)
+	if (sv.state != SS_LOADING && !ignore_precache)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1422,7 +1422,7 @@ void PF_precache_model(void)
 	const char* s;
 	int i;
 
-	if (sv.state != ss_loading && !ignore_precache)
+	if (sv.state != SS_LOADING && !ignore_precache)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1484,7 +1484,7 @@ void PF_precache_puzzle_model(void)
 	char temp[256];
 	const char* m;
 
-	if (sv.state != ss_loading && !ignore_precache)
+	if (sv.state != SS_LOADING && !ignore_precache)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1634,7 +1634,7 @@ void PF_lightstyle(void)
 	sv.lightstyles[style] = val;
 
 // send message to all clients on this server
-	if (sv.state != ss_active)
+	if (sv.state != SS_GAME)
 	{
 		return;
 	}
@@ -1708,7 +1708,7 @@ void PF_lightstylestatic(void)
 	// Change the string in sv
 	sv.lightstyles[styleNumber] = styleString;
 
-	if (sv.state != ss_active)
+	if (sv.state != SS_GAME)
 	{
 		return;
 	}

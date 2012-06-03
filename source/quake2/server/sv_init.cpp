@@ -56,7 +56,7 @@ int SV_FindIndex(char* name, int start, int max, qboolean create)
 
 	String::NCpy(sv.configstrings[start + i], name, sizeof(sv.configstrings[i]));
 
-	if (sv.state != ss_loading)
+	if (sv.state != SS_LOADING)
 	{	// send the update to everyone
 		sv.multicast.Clear();
 		sv.multicast.WriteChar(q2svc_configstring);
@@ -159,10 +159,10 @@ void SV_CheckForSavegame(void)
 		// rlava2 was sending too many lightstyles, and overflowing the
 		// reliable data. temporarily changing the server state to loading
 		// prevents these from being passed down.
-		server_state_t previousState;			// PGM
+		serverState_t previousState;			// PGM
 
 		previousState = sv.state;				// PGM
-		sv.state = ss_loading;					// PGM
+		sv.state = SS_LOADING;					// PGM
 		for (i = 0; i < 100; i++)
 			ge->RunFrame();
 
@@ -180,7 +180,7 @@ clients along with it.
 
 ================
 */
-void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
+void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, qboolean attractloop, qboolean loadgame)
 {
 	int i;
 	int checksum;
@@ -200,7 +200,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, 
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
-	sv.state = ss_dead;
+	sv.state = SS_DEAD;
 	Com_SetServerState(sv.state);
 
 	// wipe the entire per-level structure
@@ -242,7 +242,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, 
 	String::Cpy(sv.name, server);
 	String::Cpy(sv.configstrings[Q2CS_NAME], server);
 
-	if (serverstate != ss_game)
+	if (serverstate != SS_GAME)
 	{
 		CM_LoadMap("", false, &checksum);	// no real map
 	}
@@ -274,7 +274,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, server_state_t serverstate, 
 
 	// precache and static commands can be issued during
 	// map initialization
-	sv.state = ss_loading;
+	sv.state = SS_LOADING;
 	Com_SetServerState(sv.state);
 
 	// load and spawn all other entities
@@ -420,7 +420,7 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame)
 	sv.loadgame = loadgame;
 	sv.attractloop = attractloop;
 
-	if (sv.state == ss_dead && !sv.loadgame)
+	if (sv.state == SS_DEAD && !sv.loadgame)
 	{
 		SV_InitGame();	// the game is just starting
 
@@ -468,26 +468,26 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame)
 	{
 		SCR_BeginLoadingPlaque();			// for local system
 		SV_BroadcastCommand("changing\n");
-		SV_SpawnServer(level, spawnpoint, ss_cinematic, attractloop, loadgame);
+		SV_SpawnServer(level, spawnpoint, SS_CINEMATIC, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".dm2"))
 	{
 		SCR_BeginLoadingPlaque();			// for local system
 		SV_BroadcastCommand("changing\n");
-		SV_SpawnServer(level, spawnpoint, ss_demo, attractloop, loadgame);
+		SV_SpawnServer(level, spawnpoint, SS_DEMO, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".pcx"))
 	{
 		SCR_BeginLoadingPlaque();			// for local system
 		SV_BroadcastCommand("changing\n");
-		SV_SpawnServer(level, spawnpoint, ss_pic, attractloop, loadgame);
+		SV_SpawnServer(level, spawnpoint, SS_PIC, attractloop, loadgame);
 	}
 	else
 	{
 		SCR_BeginLoadingPlaque();			// for local system
 		SV_BroadcastCommand("changing\n");
 		SV_SendClientMessages();
-		SV_SpawnServer(level, spawnpoint, ss_game, attractloop, loadgame);
+		SV_SpawnServer(level, spawnpoint, SS_GAME, attractloop, loadgame);
 		Cbuf_CopyToDefer();
 	}
 

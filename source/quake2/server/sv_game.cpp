@@ -223,7 +223,7 @@ void PF_Configstring(int index, const char* val)
 	// change the string in sv
 	String::Cpy(sv.configstrings[index], val);
 
-	if (sv.state != ss_loading)
+	if (sv.state != SS_LOADING)
 	{	// send the update to everyone
 		sv.multicast.Clear();
 		sv.multicast.WriteChar(q2svc_configstring);

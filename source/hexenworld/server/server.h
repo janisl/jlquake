@@ -8,18 +8,9 @@
 
 #define MAX_SIGNON_BUFFERS  8
 
-typedef enum {
-	ss_dead,			// no map loaded
-	ss_loading,			// spawning level edicts
-	ss_active			// actively running
-} server_state_t;
-// some qc commands are only valid before the server has finished
-// initializing (precache commands, static sounds / objects, etc)
-
-typedef struct
+struct server_t : server_common_t
 {
 	qboolean active;					// false when server is going down
-	server_state_t state;			// precache commands are only valid during load
 
 	double time;
 
@@ -70,10 +61,6 @@ typedef struct
 	int num_signon_buffers;
 	int signon_buffer_size[MAX_SIGNON_BUFFERS];
 	byte signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM_HW];
-} server_t;
-
-struct client_t : public client_common_t
-{
 };
 
 // a client can leave the server in one of four ways:

@@ -72,7 +72,7 @@ void SV_New_f(void)
 	}
 
 	// demo servers just dump the file message
-	if (sv.state == ss_demo)
+	if (sv.state == SS_DEMO)
 	{
 		SV_BeginDemoserver();
 		return;
@@ -91,7 +91,7 @@ void SV_New_f(void)
 	sv_client->netchan.message.WriteByte(sv.attractloop);
 	sv_client->netchan.message.WriteString2(gamedir);
 
-	if (sv.state == ss_cinematic || sv.state == ss_pic)
+	if (sv.state == SS_CINEMATIC || sv.state == SS_PIC)
 	{
 		playernum = -1;
 	}
@@ -107,7 +107,7 @@ void SV_New_f(void)
 	//
 	// game server
 	//
-	if (sv.state == ss_game)
+	if (sv.state == SS_GAME)
 	{
 		// set up the entity for the client
 		ent = EDICT_NUM(playernum + 1);
@@ -427,8 +427,8 @@ void SV_Nextserver(void)
 {
 	const char* v;
 
-	//ZOID, ss_pic can be nextserver'd in coop mode
-	if (sv.state == ss_game || (sv.state == ss_pic && !Cvar_VariableValue("coop")))
+	//ZOID, SS_PIC can be nextserver'd in coop mode
+	if (sv.state == SS_GAME || (sv.state == SS_PIC && !Cvar_VariableValue("coop")))
 	{
 		return;		// can't nextserver while playing a normal game
 
@@ -516,7 +516,7 @@ void SV_ExecuteUserCommand(char* s)
 			break;
 		}
 
-	if (!u->name && sv.state == ss_game)
+	if (!u->name && sv.state == SS_GAME)
 	{
 		ge->ClientCommand(sv_player);
 	}

@@ -470,7 +470,7 @@ void SV_GameMap_f(void)
 	}
 	else
 	{	// save the map just exited
-		if (sv.state == ss_game)
+		if (sv.state == SS_GAME)
 		{
 			// clear all the client inuse flags before saving so that
 			// when the level is re-entered, the clients will spawn
@@ -530,7 +530,7 @@ void SV_Map_f(void)
 		}
 	}
 
-	sv.state = ss_dead;		// don't save current level when changing
+	sv.state = SS_DEAD;		// don't save current level when changing
 	SV_WipeSavegame("current");
 	SV_GameMap_f();
 }
@@ -585,7 +585,7 @@ void SV_Loadgame_f(void)
 	SV_ReadServerFile();
 
 	// go to the map
-	sv.state = ss_dead;		// don't save current level when changing
+	sv.state = SS_DEAD;		// don't save current level when changing
 	SV_Map(false, svs.mapcmd, true);
 }
 
@@ -601,7 +601,7 @@ void SV_Savegame_f(void)
 {
 	char* dir;
 
-	if (sv.state != ss_game)
+	if (sv.state != SS_GAME)
 	{
 		Com_Printf("You must be in a game to save.\n");
 		return;
@@ -873,7 +873,7 @@ void SV_ServerRecord_f(void)
 		return;
 	}
 
-	if (sv.state != ss_game)
+	if (sv.state != SS_GAME)
 	{
 		Com_Printf("You must be in a level to record.\n");
 		return;

@@ -56,15 +56,8 @@ typedef struct svEntity_s
 	int originCluster;				// Gordon: calced upon linking, for origin only bmodel vis checks
 } svEntity_t;
 
-typedef enum {
-	SS_DEAD,			// no map loaded
-	SS_LOADING,			// spawning level entities
-	SS_GAME				// actively running
-} serverState_t;
-
-typedef struct
+struct server_t : server_common_t
 {
-	serverState_t state;
 	qboolean restarting;				// if true, send configstring changes during SS_LOADING
 	int serverId;						// changes each server start
 	int restartedServerId;				// serverId before a map_restart
@@ -111,14 +104,6 @@ typedef struct
 
 	int num_tagheaders;
 	int num_tags;
-} server_t;
-
-
-
-
-
-struct client_t : public client_common_t
-{
 };
 
 //=============================================================================

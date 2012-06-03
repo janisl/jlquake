@@ -17,9 +17,7 @@ typedef struct
 
 //=============================================================================
 
-typedef enum {ss_loading, ss_active} server_state_t;
-
-typedef struct
+struct server_t : server_common_t
 {
 	qboolean active;				// false if only a net client
 
@@ -48,7 +46,6 @@ typedef struct
 	qhedict_t* edicts;					// can NOT be array indexed, because
 	// qhedict_t is variable sized, but can
 	// be used to reference the world ent
-	server_state_t state;			// some actions are only valid during load
 
 	QMsg datagram;
 	byte datagram_buf[MAX_MSGLEN_H2];
@@ -58,13 +55,7 @@ typedef struct
 
 	QMsg signon;
 	byte signon_buf[MAX_MSGLEN_H2];
-} server_t;
-
-
-struct client_t : public client_common_t
-{
 };
-
 
 //=============================================================================
 
