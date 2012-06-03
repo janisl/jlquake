@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 
-edict_t* sv_player;
+q2edict_t* sv_player;
 
 /*
 ============================================================
@@ -61,7 +61,7 @@ void SV_New_f(void)
 {
 	const char* gamedir;
 	int playernum;
-	edict_t* ent;
+	q2edict_t* ent;
 
 	Com_DPrintf("New() from %s\n", sv_client->name);
 
@@ -112,7 +112,7 @@ void SV_New_f(void)
 		// set up the entity for the client
 		ent = EDICT_NUM(playernum + 1);
 		ent->s.number = playernum + 1;
-		sv_client->edict = ent;
+		sv_client->q2_edict = ent;
 		Com_Memset(&sv_client->q2_lastUsercmd, 0, sizeof(sv_client->q2_lastUsercmd));
 
 		// begin fetching configstrings
@@ -505,7 +505,7 @@ void SV_ExecuteUserCommand(char* s)
 	ucmd_t* u;
 
 	Cmd_TokenizeString(s, true);
-	sv_player = sv_client->edict;
+	sv_player = sv_client->q2_edict;
 
 //	SV_BeginRedirect (RD_CLIENT);
 
@@ -545,7 +545,7 @@ void SV_ClientThink(client_t* cl, q2usercmd_t* cmd)
 		return;
 	}
 
-	ge->ClientThink(cl->edict, cmd);
+	ge->ClientThink(cl->q2_edict, cmd);
 }
 
 
@@ -573,7 +573,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	int lastframe;
 
 	sv_client = cl;
-	sv_player = sv_client->edict;
+	sv_player = sv_client->q2_edict;
 
 	// only allow one move command
 	move_issued = false;

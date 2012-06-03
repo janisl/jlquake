@@ -383,7 +383,7 @@ void SV_LinkEntity(sharedEntity_t* gEnt)
 		if (cluster != -1)
 		{
 			ent->clusternums[ent->numClusters++] = cluster;
-			if (ent->numClusters == MAX_ENT_CLUSTERS)
+			if (ent->numClusters == MAX_ENT_CLUSTERS_Q3)
 			{
 				break;
 			}

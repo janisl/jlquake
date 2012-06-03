@@ -135,7 +135,7 @@ void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q
 		if (trace.allsolid || trace.startsolid ||
 			trace.fraction < tr->fraction)
 		{
-			trace.ent = (struct edict_t*)ent;
+			trace.ent = (struct q2edict_t*)ent;
 			if (tr->startsolid)
 			{
 				*tr = trace;
@@ -167,7 +167,7 @@ q2trace_t       CL_PMTrace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 	t = CM_BoxTraceQ2(start, end, mins, maxs, 0, MASK_PLAYERSOLID);
 	if (t.fraction < 1.0)
 	{
-		t.ent = (struct edict_t*)1;
+		t.ent = (struct q2edict_t*)1;
 	}
 
 	// check all other solid models

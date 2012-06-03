@@ -33,11 +33,11 @@ Encode a client frame onto the network channel
 // because there can be a lot of projectiles, there is a special
 // network protocol for them
 #define MAX_PROJECTILES     64
-edict_t* projectiles[MAX_PROJECTILES];
+q2edict_t* projectiles[MAX_PROJECTILES];
 int numprojs;
 Cvar* sv_projectiles;
 
-qboolean SV_AddProjectileUpdate(edict_t* ent)
+qboolean SV_AddProjectileUpdate(q2edict_t* ent)
 {
 	if (!sv_projectiles)
 	{
@@ -66,7 +66,7 @@ void SV_EmitProjectileUpdate(QMsg* msg)
 {
 	byte bits[16];		// [modelindex] [48 bits] xyz p y 12 12 12 8 8 [entitynum] [e2]
 	int n, i;
-	edict_t* ent;
+	q2edict_t* ent;
 	int x, y, z, p, yaw;
 	int len;
 
@@ -609,8 +609,8 @@ void SV_BuildClientFrame(client_t* client)
 {
 	int e, i;
 	vec3_t org;
-	edict_t* ent;
-	edict_t* clent;
+	q2edict_t* ent;
+	q2edict_t* clent;
 	q2client_frame_t* frame;
 	q2entity_state_t* state;
 	int l;
@@ -620,7 +620,7 @@ void SV_BuildClientFrame(client_t* client)
 	byte* clientphs;
 	byte* bitvector;
 
-	clent = client->edict;
+	clent = client->q2_edict;
 	if (!clent->client)
 	{
 		return;		// not in game yet
@@ -664,7 +664,7 @@ void SV_BuildClientFrame(client_t* client)
 		ent = EDICT_NUM(e);
 
 		// ignore ents without visible models
-		if (ent->svflags & SVF_NOCLIENT)
+		if (ent->svflags & Q2SVF_NOCLIENT)
 		{
 			continue;
 		}
@@ -768,7 +768,7 @@ void SV_BuildClientFrame(client_t* client)
 		*state = ent->s;
 
 		// don't mark players missiles as solid
-		if (ent->owner == client->edict)
+		if (ent->owner == client->q2_edict)
 		{
 			state->solid = 0;
 		}
@@ -790,7 +790,7 @@ Used for recording footage for merged or assembled demos
 void SV_RecordDemoMessage(void)
 {
 	int e;
-	edict_t* ent;
+	q2edict_t* ent;
 	q2entity_state_t nostate;
 	QMsg buf;
 	byte buf_data[32768];
@@ -818,7 +818,7 @@ void SV_RecordDemoMessage(void)
 		if (ent->inuse &&
 			ent->s.number &&
 			(ent->s.modelindex || ent->s.effects || ent->s.sound || ent->s.event) &&
-			!(ent->svflags & SVF_NOCLIENT))
+			!(ent->svflags & Q2SVF_NOCLIENT))
 		{
 			MSGQ2_WriteDeltaEntity(&nostate, &ent->s, &buf, false, true);
 		}

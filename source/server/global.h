@@ -165,6 +165,8 @@ struct client_common_t
 
 	unsigned hw_PIV, hw_LastPIV;		// people in view
 
+	q2edict_t* q2_edict;				// EDICT_NUM(clientnum+1)
+
 	int q2_lastframe;					// for delta compression
 	q2usercmd_t q2_lastUsercmd;			// for filling in big drops
 

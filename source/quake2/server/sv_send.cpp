@@ -238,7 +238,7 @@ void SV_Multicast(vec3_t origin, multicast_t to)
 
 		if (mask)
 		{
-			leafnum = CM_PointLeafnum(client->edict->s.origin);
+			leafnum = CM_PointLeafnum(client->q2_edict->s.origin);
 			cluster = CM_LeafCluster(leafnum);
 			area2 = CM_LeafArea(leafnum);
 			if (!CM_AreasConnected(area1, area2))
@@ -291,7 +291,7 @@ If origin is NULL, the origin is determined from the entity origin
 or the midpoint of the entity box for bmodels.
 ==================
 */
-void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
+void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
 	int soundindex, float volume,
 	float attenuation, float timeofs)
 {
@@ -346,8 +346,8 @@ void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
 
 	// the client doesn't know that bmodels have weird origins
 	// the origin can also be explicitly set
-	if ((entity->svflags & SVF_NOCLIENT) ||
-		(entity->solid == SOLID_BSP) ||
+	if ((entity->svflags & Q2SVF_NOCLIENT) ||
+		(entity->solid == Q2SOLID_BSP) ||
 		origin)
 	{
 		flags |= SND_POS;
@@ -365,7 +365,7 @@ void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
 	if (!origin)
 	{
 		origin = origin_v;
-		if (entity->solid == SOLID_BSP)
+		if (entity->solid == Q2SOLID_BSP)
 		{
 			for (i = 0; i < 3; i++)
 				origin_v[i] = entity->s.origin[i] + 0.5 * (entity->mins[i] + entity->maxs[i]);

@@ -26,3 +26,60 @@ struct q2client_frame_t
 	int first_entity;						// into the circular sv_packet_entities[]
 	int senttime;							// for ping calculations
 };
+
+// edict->svflags
+
+#define Q2SVF_NOCLIENT          0x00000001	// don't send entity to clients, even if it has effects
+#define Q2SVF_DEADMONSTER       0x00000002	// treat as CONTENTS_DEADMONSTER for collision
+#define Q2SVF_MONSTER           0x00000004	// treat as CONTENTS_MONSTER for collision
+
+// edict->solid values
+
+enum q2solid_t
+{
+	Q2SOLID_NOT,		// no interaction with other objects
+	Q2SOLID_TRIGGER,	// only touch when inside, after moving
+	Q2SOLID_BBOX,		// touch on edge
+	Q2SOLID_BSP			// bsp clip, touch on edge
+};
+
+//===============================================================
+
+#define MAX_ENT_CLUSTERS_Q2    16
+
+struct q2gclient_t
+{
+	q2player_state_t ps;		// communicated by server to clients
+	int ping;
+	// the game dll can add anything it wants after
+	// this point in the structure
+};
+
+
+struct q2edict_t
+{
+	q2entity_state_t s;
+	q2gclient_t* client;
+	qboolean inuse;
+	int linkcount;
+
+	// FIXME: move these fields to a server private sv_entity_t
+	link_t area;					// linked to a division node or leaf
+
+	int num_clusters;				// if -1, use headnode instead
+	int clusternums[MAX_ENT_CLUSTERS_Q2];
+	int headnode;					// unused if num_clusters != -1
+	int areanum, areanum2;
+
+	//================================
+
+	int svflags;					// Q2SVF_NOCLIENT, Q2SVF_DEADMONSTER, Q2SVF_MONSTER, etc
+	vec3_t mins, maxs;
+	vec3_t absmin, absmax, size;
+	q2solid_t solid;
+	int clipmask;
+	q2edict_t* owner;
+
+	// the game dll can add anything it wants after
+	// this point in the structure
+};

@@ -69,12 +69,11 @@ typedef struct
 	qboolean timedemo;			// don't time sync
 } server_t;
 
-#define EDICT_NUM(n) ((edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
+#define EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
 #define NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 
 struct client_t : public client_common_t
 {
-	edict_t* edict;						// EDICT_NUM(clientnum+1)
 };
 
 // a client can leave the server in one of four ways:
@@ -141,7 +140,7 @@ extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 extern Cvar* sv_enforcetime;
 
 extern client_t* sv_client;
-extern edict_t* sv_player;
+extern q2edict_t* sv_player;
 
 //===========================================================
 
@@ -193,7 +192,7 @@ void SV_DemoCompleted(void);
 void SV_SendClientMessages(void);
 
 void SV_Multicast(vec3_t origin, multicast_t to);
-void SV_StartSound(vec3_t origin, edict_t* entity, int channel,
+void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
 	int soundindex, float volume,
 	float attenuation, float timeofs);
 void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
@@ -227,7 +226,7 @@ extern game_export_t* ge;
 
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
-void SV_InitEdict(edict_t* e);
+void SV_InitEdict(q2edict_t* e);
 
 
 
@@ -240,18 +239,18 @@ void SV_InitEdict(edict_t* e);
 void SV_ClearWorld(void);
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEdict(edict_t* ent);
+void SV_UnlinkEdict(q2edict_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 
-void SV_LinkEdict(edict_t* ent);
+void SV_LinkEdict(q2edict_t* ent);
 // Needs to be called any time an entity changes origin, mins, maxs,
 // or solid.  Automatically unlinks if needed.
 // sets ent->v.absmin and ent->v.absmax
 // sets ent->leafnums[] for pvs determination even if the entity
 // is not solid
 
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
+int SV_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list, int maxcount, int areatype);
 // fills in a table of edict pointers with edicts that have bounding boxes
 // that intersect the given area.  It is possible for a non-axial bmodel
 // to be returned that doesn't actually intersect the area on an exact
@@ -269,7 +268,7 @@ int SV_PointContents(vec3_t p);
 // Quake 2 extends this to also check entities, to allow moving liquids
 
 
-q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passedict, int contentmask);
+q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passedict, int contentmask);
 // mins and maxs are relative
 
 // if the entire move stays in a solid volume, trace.allsolid will be set,

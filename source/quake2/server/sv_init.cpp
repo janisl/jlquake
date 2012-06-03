@@ -96,7 +96,7 @@ baseline will be transmitted
 */
 void SV_CreateBaseline(void)
 {
-	edict_t* svent;
+	q2edict_t* svent;
 	int entnum;
 
 	for (entnum = 1; entnum < ge->num_edicts; entnum++)
@@ -311,7 +311,7 @@ A brand new game has been started
 void SV_InitGame(void)
 {
 	int i;
-	edict_t* ent;
+	q2edict_t* ent;
 
 	if (svs.initialized)
 	{
@@ -388,7 +388,7 @@ void SV_InitGame(void)
 	{
 		ent = EDICT_NUM(i + 1);
 		ent->s.number = i + 1;
-		svs.clients[i].edict = ent;
+		svs.clients[i].q2_edict = ent;
 		Com_Memset(&svs.clients[i].q2_lastUsercmd, 0, sizeof(svs.clients[i].q2_lastUsercmd));
 	}
 }

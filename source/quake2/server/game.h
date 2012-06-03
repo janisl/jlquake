@@ -41,63 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define GAME_API_VERSION    3
 
-// edict->svflags
-
-#define SVF_NOCLIENT            0x00000001	// don't send entity to clients, even if it has effects
-#define SVF_DEADMONSTER         0x00000002	// treat as CONTENTS_DEADMONSTER for collision
-#define SVF_MONSTER             0x00000004	// treat as CONTENTS_MONSTER for collision
-
-// edict->solid values
-
-typedef enum
-{
-	SOLID_NOT,			// no interaction with other objects
-	SOLID_TRIGGER,		// only touch when inside, after moving
-	SOLID_BBOX,			// touch on edge
-	SOLID_BSP			// bsp clip, touch on edge
-} solid_t;
-
-//===============================================================
-
-#define MAX_ENT_CLUSTERS    16
-
-struct gclient_t
-{
-	q2player_state_t ps;		// communicated by server to clients
-	int ping;
-	// the game dll can add anything it wants after
-	// this point in the structure
-};
-
-
-struct edict_t
-{
-	q2entity_state_t s;
-	gclient_t* client;
-	qboolean inuse;
-	int linkcount;
-
-	// FIXME: move these fields to a server private sv_entity_t
-	link_t area;					// linked to a division node or leaf
-
-	int num_clusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS];
-	int headnode;					// unused if num_clusters != -1
-	int areanum, areanum2;
-
-	//================================
-
-	int svflags;					// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
-	vec3_t mins, maxs;
-	vec3_t absmin, absmax, size;
-	solid_t solid;
-	int clipmask;
-	edict_t* owner;
-
-	// the game dll can add anything it wants after
-	// this point in the structure
-};
-
 //===============================================================
 
 //
@@ -108,10 +51,10 @@ typedef struct
 	// special messages
 	void (* bprintf)(int printlevel, const char* fmt, ...);
 	void (* dprintf)(const char* fmt, ...);
-	void (* cprintf)(edict_t* ent, int printlevel, const char* fmt, ...);
-	void (* centerprintf)(edict_t* ent, const char* fmt, ...);
-	void (* sound)(edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void (* positioned_sound)(vec3_t origin, edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
+	void (* cprintf)(q2edict_t* ent, int printlevel, const char* fmt, ...);
+	void (* centerprintf)(q2edict_t* ent, const char* fmt, ...);
+	void (* sound)(q2edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
+	void (* positioned_sound)(vec3_t origin, q2edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
 
 	// config strings hold all the index strings, the lightstyles,
 	// and misc data like the sky definition and cdtrack.
@@ -126,10 +69,10 @@ typedef struct
 	int (* soundindex)(char* name);
 	int (* imageindex)(char* name);
 
-	void (* setmodel)(edict_t* ent, char* name);
+	void (* setmodel)(q2edict_t* ent, char* name);
 
 	// collision detection
-	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t* passent, int contentmask);
+	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passent, int contentmask);
 	int (* pointcontents)(vec3_t point);
 	qboolean (* inPVS)(vec3_t p1, vec3_t p2);
 	qboolean (* inPHS)(vec3_t p1, vec3_t p2);
@@ -139,14 +82,14 @@ typedef struct
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
-	void (* linkentity)(edict_t* ent);
-	void (* unlinkentity)(edict_t* ent);		// call before removing an interactive edict
-	int (* BoxEdicts)(vec3_t mins, vec3_t maxs, edict_t** list, int maxcount, int areatype);
+	void (* linkentity)(q2edict_t* ent);
+	void (* unlinkentity)(q2edict_t* ent);		// call before removing an interactive edict
+	int (* BoxEdicts)(vec3_t mins, vec3_t maxs, q2edict_t** list, int maxcount, int areatype);
 	void (* Pmove)(pmove_t* pmove);			// player movement code common with client prediction
 
 	// network messaging
 	void (* multicast)(vec3_t origin, multicast_t to);
-	void (* unicast)(edict_t* ent, qboolean reliable);
+	void (* unicast)(q2edict_t* ent, qboolean reliable);
 	void (* WriteChar)(int c);
 	void (* WriteByte)(int c);
 	void (* WriteShort)(int c);
@@ -207,12 +150,12 @@ typedef struct
 	void (* WriteLevel)(char* filename);
 	void (* ReadLevel)(char* filename);
 
-	qboolean (* ClientConnect)(edict_t* ent, char* userinfo);
-	void (* ClientBegin)(edict_t* ent);
-	void (* ClientUserinfoChanged)(edict_t* ent, char* userinfo);
-	void (* ClientDisconnect)(edict_t* ent);
-	void (* ClientCommand)(edict_t* ent);
-	void (* ClientThink)(edict_t* ent, q2usercmd_t* cmd);
+	qboolean (* ClientConnect)(q2edict_t* ent, char* userinfo);
+	void (* ClientBegin)(q2edict_t* ent);
+	void (* ClientUserinfoChanged)(q2edict_t* ent, char* userinfo);
+	void (* ClientDisconnect)(q2edict_t* ent);
+	void (* ClientCommand)(q2edict_t* ent);
+	void (* ClientThink)(q2edict_t* ent, q2usercmd_t* cmd);
 
 	void (* RunFrame)(void);
 
@@ -230,7 +173,7 @@ typedef struct
 	// can vary in size from one game to another.
 	//
 	// The size will be fixed when ge->Init() is called
-	edict_t* edicts;
+	q2edict_t* edicts;
 	int edict_size;
 	int num_edicts;				// current number, <= max_edicts
 	int max_edicts;

@@ -33,7 +33,7 @@ PF_Unicast
 Sends the contents of the mutlicast buffer to a single client
 ===============
 */
-void PF_Unicast(edict_t* ent, qboolean reliable)
+void PF_Unicast(q2edict_t* ent, qboolean reliable)
 {
 	int p;
 	client_t* client;
@@ -91,7 +91,7 @@ PF_cprintf
 Print to a single client
 ===============
 */
-void PF_cprintf(edict_t* ent, int level, const char* fmt, ...)
+void PF_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -128,7 +128,7 @@ PF_centerprintf
 centerprint to a single client
 ===============
 */
-void PF_centerprintf(edict_t* ent, const char* fmt, ...)
+void PF_centerprintf(q2edict_t* ent, const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -177,7 +177,7 @@ PF_setmodel
 Also sets mins and maxs for inline bmodels
 =================
 */
-void PF_setmodel(edict_t* ent, char* name)
+void PF_setmodel(q2edict_t* ent, char* name)
 {
 	int i;
 	clipHandle_t mod;
@@ -315,7 +315,7 @@ qboolean PF_inPHS(vec3_t p1, vec3_t p2)
 	return true;
 }
 
-void PF_StartSound(edict_t* entity, int channel, int sound_num, float volume,
+void PF_StartSound(q2edict_t* entity, int channel, int sound_num, float volume,
 	float attenuation, float timeofs)
 {
 	if (!entity)

@@ -127,14 +127,14 @@ typedef struct
 
 	// results (out)
 	int numtouch;
-	struct edict_t* touchents[MAXTOUCH];
+	struct q2edict_t* touchents[MAXTOUCH];
 
 	vec3_t viewangles;				// clamped
 	float viewheight;
 
 	vec3_t mins, maxs;				// bounding box size
 
-	struct edict_t* groundentity;
+	struct q2edict_t* groundentity;
 	int watertype;
 	int waterlevel;
 

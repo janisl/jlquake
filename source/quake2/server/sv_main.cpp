@@ -76,7 +76,7 @@ void SV_DropClient(client_t* drop)
 	{
 		// call the prog function for removing a client
 		// this will remove the body, among other things
-		ge->ClientDisconnect(drop->edict);
+		ge->ClientDisconnect(drop->q2_edict);
 	}
 
 	if (drop->q2_downloadData)
@@ -126,7 +126,7 @@ char* SV_StatusString(void)
 		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
 		{
 			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-				cl->edict->client->ps.stats[Q2STAT_FRAGS], cl->ping, cl->name);
+				cl->q2_edict->client->ps.stats[Q2STAT_FRAGS], cl->ping, cl->name);
 			playerLength = String::Length(player);
 			if (statusLength + playerLength >= (int)sizeof(status))
 			{
@@ -282,7 +282,7 @@ void SVC_DirectConnect(void)
 	int i;
 	client_t* cl, * newcl;
 	client_t temp;
-	edict_t* ent;
+	q2edict_t* ent;
 	int edictnum;
 	int version;
 	int qport;
@@ -394,7 +394,7 @@ gotnewcl:
 	sv_client = newcl;
 	edictnum = (newcl - svs.clients) + 1;
 	ent = EDICT_NUM(edictnum);
-	newcl->edict = ent;
+	newcl->q2_edict = ent;
 	newcl->challenge = challenge;	// save challenge for checksumming
 
 	// get the game a chance to reject this connection or modify the userinfo
@@ -609,7 +609,7 @@ void SV_CalcPings(void)
 #endif
 
 		// let the game dll know about the ping
-		cl->edict->client->ping = cl->ping;
+		cl->q2_edict->client->ping = cl->ping;
 	}
 }
 
@@ -768,7 +768,7 @@ player processing happens outside RunWorldFrame
 */
 void SV_PrepWorldFrame(void)
 {
-	edict_t* ent;
+	q2edict_t* ent;
 	int i;
 
 	for (i = 0; i < ge->num_edicts; i++, ent++)
@@ -991,7 +991,7 @@ void SV_UserinfoChanged(client_t* cl)
 	int i;
 
 	// call prog code to allow overrides
-	ge->ClientUserinfoChanged(cl->edict, cl->userinfo);
+	ge->ClientUserinfoChanged(cl->q2_edict, cl->userinfo);
 
 	// name for C code
 	String::NCpy(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name) - 1);
