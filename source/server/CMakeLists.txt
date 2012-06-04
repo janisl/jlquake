@@ -28,6 +28,7 @@ add_library(server STATIC
 	progsvm/main.cpp
 	link.cpp
 	server_main.cpp
+	worldsector.cpp
 )
 set_target_properties(server PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(server common)

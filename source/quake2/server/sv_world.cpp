@@ -32,94 +32,12 @@ FIXME: this use of "area" is different from the bsp file use
 
 #define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,q2edict_t,area)
 
-typedef struct areanode_s
-{
-	int axis;			// -1 = leaf node
-	float dist;
-	struct areanode_s* children[2];
-	link_t trigger_edicts;
-	link_t solid_edicts;
-} areanode_t;
-
-#define AREA_DEPTH  4
-#define AREA_NODES  32
-
-areanode_t sv_areanodes[AREA_NODES];
-int sv_numareanodes;
-
 float* area_mins, * area_maxs;
 q2edict_t** area_list;
 int area_count, area_maxcount;
 int area_type;
 
 clipHandle_t SV_HullForEntity(q2edict_t* ent);
-
-
-/*
-===============
-SV_CreateAreaNode
-
-Builds a uniformly subdivided tree for the given world size
-===============
-*/
-areanode_t* SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
-{
-	areanode_t* anode;
-	vec3_t size;
-	vec3_t mins1, maxs1, mins2, maxs2;
-
-	anode = &sv_areanodes[sv_numareanodes];
-	sv_numareanodes++;
-
-	ClearLink(&anode->trigger_edicts);
-	ClearLink(&anode->solid_edicts);
-
-	if (depth == AREA_DEPTH)
-	{
-		anode->axis = -1;
-		anode->children[0] = anode->children[1] = NULL;
-		return anode;
-	}
-
-	VectorSubtract(maxs, mins, size);
-	if (size[0] > size[1])
-	{
-		anode->axis = 0;
-	}
-	else
-	{
-		anode->axis = 1;
-	}
-
-	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
-	VectorCopy(mins, mins1);
-	VectorCopy(mins, mins2);
-	VectorCopy(maxs, maxs1);
-	VectorCopy(maxs, maxs2);
-
-	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
-
-	anode->children[0] = SV_CreateAreaNode(depth + 1, mins2, maxs2);
-	anode->children[1] = SV_CreateAreaNode(depth + 1, mins1, maxs1);
-
-	return anode;
-}
-
-/*
-===============
-SV_ClearWorld
-
-===============
-*/
-void SV_ClearWorld(void)
-{
-	Com_Memset(sv_areanodes, 0, sizeof(sv_areanodes));
-	sv_numareanodes = 0;
-	vec3_t mins;
-	vec3_t maxs;
-	CM_ModelBounds(0, mins, maxs);
-	SV_CreateAreaNode(0, mins, maxs);
-}
 
 
 /*
@@ -148,7 +66,7 @@ SV_LinkEdict
 #define MAX_TOTAL_ENT_LEAFS     128
 void SV_LinkEdict(q2edict_t* ent)
 {
-	areanode_t* node;
+	worldSector_t* node;
 	int leafs[MAX_TOTAL_ENT_LEAFS];
 	int clusters[MAX_TOTAL_ENT_LEAFS];
 	int num_leafs;
@@ -341,7 +259,7 @@ void SV_LinkEdict(q2edict_t* ent)
 	}
 
 // find the first node that the ent's box crosses
-	node = sv_areanodes;
+	node = sv_worldSectors;
 	while (1)
 	{
 		if (node->axis == -1)
@@ -381,7 +299,7 @@ SV_AreaEdicts_r
 
 ====================
 */
-void SV_AreaEdicts_r(areanode_t* node)
+void SV_AreaEdicts_r(worldSector_t* node)
 {
 	link_t* l, * next, * start;
 	q2edict_t* check;
@@ -459,7 +377,7 @@ int SV_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list,
 	area_maxcount = maxcount;
 	area_type = areatype;
 
-	SV_AreaEdicts_r(sv_areanodes);
+	SV_AreaEdicts_r(sv_worldSectors);
 
 	return area_count;
 }

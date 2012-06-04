@@ -24,9 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MOVE_MISSILE    2
 
 
-void SV_ClearWorld(void);
-// called after the world model has been loaded, before linking any entities
-
 void SV_UnlinkEdict(qhedict_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself

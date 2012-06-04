@@ -23,23 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MOVE_NOMONSTERS 1
 #define MOVE_MISSILE    2
 
-typedef struct areanode_s
-{
-	int axis;			// -1 = leaf node
-	float dist;
-	struct areanode_s* children[2];
-	link_t trigger_edicts;
-	link_t solid_edicts;
-} areanode_t;
-
-#define AREA_DEPTH  4
-#define AREA_NODES  32
-
-extern areanode_t sv_areanodes[AREA_NODES];
-
-
-void SV_ClearWorld(void);
-// called after the world model has been loaded, before linking any entities
 
 void SV_UnlinkEdict(qhedict_t* ent);
 // call before removing an entity, and before trying to move one,

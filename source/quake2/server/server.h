@@ -150,9 +150,6 @@ void SV_InitEdict(q2edict_t* e);
 // high level object sorting to reduce interaction tests
 //
 
-void SV_ClearWorld(void);
-// called after the world model has been loaded, before linking any entities
-
 void SV_UnlinkEdict(q2edict_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself

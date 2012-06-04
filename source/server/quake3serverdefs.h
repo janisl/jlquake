@@ -104,9 +104,11 @@ struct q3sharedEntity_t
 
 #define MAX_ENT_CLUSTERS_Q3    16
 
+struct worldSector_t;
+
 struct q3svEntity_t
 {
-	struct worldSector_s* worldSector;
+	worldSector_t* worldSector;
 	q3svEntity_t* nextEntityInWorldSector;
 
 	q3entityState_t q3_baseline;	// for delta compression of initial sighting

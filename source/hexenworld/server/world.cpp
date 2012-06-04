@@ -125,76 +125,6 @@ ENTITY AREA CHECKING
 ===============================================================================
 */
 
-
-areanode_t sv_areanodes[AREA_NODES];
-int sv_numareanodes;
-
-/*
-===============
-SV_CreateAreaNode
-
-===============
-*/
-areanode_t* SV_CreateAreaNode(int depth, vec3_t mins, vec3_t maxs)
-{
-	areanode_t* anode;
-	vec3_t size;
-	vec3_t mins1, maxs1, mins2, maxs2;
-
-	anode = &sv_areanodes[sv_numareanodes];
-	sv_numareanodes++;
-
-	ClearLink(&anode->trigger_edicts);
-	ClearLink(&anode->solid_edicts);
-
-	if (depth == AREA_DEPTH)
-	{
-		anode->axis = -1;
-		anode->children[0] = anode->children[1] = NULL;
-		return anode;
-	}
-
-	VectorSubtract(maxs, mins, size);
-	if (size[0] > size[1])
-	{
-		anode->axis = 0;
-	}
-	else
-	{
-		anode->axis = 1;
-	}
-
-	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
-	VectorCopy(mins, mins1);
-	VectorCopy(mins, mins2);
-	VectorCopy(maxs, maxs1);
-	VectorCopy(maxs, maxs2);
-
-	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
-
-	anode->children[0] = SV_CreateAreaNode(depth + 1, mins2, maxs2);
-	anode->children[1] = SV_CreateAreaNode(depth + 1, mins1, maxs1);
-
-	return anode;
-}
-
-/*
-===============
-SV_ClearWorld
-
-===============
-*/
-void SV_ClearWorld(void)
-{
-	Com_Memset(sv_areanodes, 0, sizeof(sv_areanodes));
-	sv_numareanodes = 0;
-	vec3_t mins;
-	vec3_t maxs;
-	CM_ModelBounds(0, mins, maxs);
-	SV_CreateAreaNode(0, mins, maxs);
-}
-
-
 /*
 ===============
 SV_UnlinkEdict
@@ -217,7 +147,7 @@ void SV_UnlinkEdict(qhedict_t* ent)
 SV_TouchLinks
 ====================
 */
-void SV_TouchLinks(qhedict_t* ent, areanode_t* node)
+void SV_TouchLinks(qhedict_t* ent, worldSector_t* node)
 {
 	link_t* l, * next;
 	qhedict_t* touch;
@@ -282,7 +212,7 @@ SV_LinkEdict
 */
 void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers)
 {
-	areanode_t* node;
+	worldSector_t* node;
 
 	if (ent->area.prev)
 	{
@@ -367,7 +297,7 @@ void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers)
 	}
 
 // find the first node that the ent's box crosses
-	node = sv_areanodes;
+	node = sv_worldSectors;
 	while (1)
 	{
 		if (node->axis == -1)
@@ -402,7 +332,7 @@ void SV_LinkEdict(qhedict_t* ent, qboolean touch_triggers)
 // if touch_triggers, touch all entities at this node and decend for more
 	if (touch_triggers)
 	{
-		SV_TouchLinks(ent, sv_areanodes);
+		SV_TouchLinks(ent, sv_worldSectors);
 	}
 }
 
@@ -557,7 +487,7 @@ SV_ClipToLinks
 Mins and maxs enclose the entire area swept by the move
 ====================
 */
-void SV_ClipToLinks(areanode_t* node, moveclip_t* clip)
+void SV_ClipToLinks(worldSector_t* node, moveclip_t* clip)
 {
 	link_t* l, * next;
 	qhedict_t* touch;
@@ -735,7 +665,7 @@ q1trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, 
 	SV_MoveBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
 
 // clip to entities
-	SV_ClipToLinks(sv_areanodes, &clip);
+	SV_ClipToLinks(sv_worldSectors, &clip);
 
 	return clip.trace;
 }

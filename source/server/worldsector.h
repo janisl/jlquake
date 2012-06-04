@@ -14,20 +14,20 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
+#define AREA_DEPTH  4
+#define AREA_NODES  32
 
-#include "../common/qcommon.h"
-#include "../common/file_formats/bsp38.h"
-#include "../common/file_formats/md3.h"
-#include "link.h"
-#include "progsvm/edict.h"
-#include "quakeserverdefs.h"
-#include "hexen2serverdefs.h"
-#include "quake2serverdefs.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "global.h"
-#include "worldsector.h"
+struct worldSector_t
+{
+	int axis;			// -1 = leaf node
+	float dist;
+	worldSector_t* children[2];
+	link_t trigger_edicts;
+	link_t solid_edicts;
+	q3svEntity_t* entities;
+};
 
-#endif
+extern worldSector_t sv_worldSectors[AREA_NODES];
+
+// called after the world model has been loaded, before linking any entities
+void SV_ClearWorld();

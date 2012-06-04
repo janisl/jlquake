@@ -1304,7 +1304,7 @@ AddLinksToPmove
 
 ====================
 */
-void AddLinksToPmove(areanode_t* node)
+void AddLinksToPmove(worldSector_t* node)
 {
 	link_t* l, * next;
 	qhedict_t* check;
@@ -1554,7 +1554,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 		pmove_maxs[i] = qh_pmove.origin[i] + 256;
 	}
 #if 1
-	AddLinksToPmove(sv_areanodes);
+	AddLinksToPmove(sv_worldSectors);
 #else
 	AddAllEntsToPmove();
 #endif
