@@ -20,6 +20,18 @@
 #define NUM_BBOXAREASCACHE          128
 #define BBOXAREASCACHE_MAXAREAS     128
 
+#define TRACEPLANE_EPSILON          0.125
+
+#define ON_EPSILON                  0	//0.0005
+
+struct aas_tracestack_t
+{
+	vec3_t start;		//start point of the piece of line to trace
+	vec3_t end;			//end point of the piece of line to trace
+	int planenum;		//last plane used as splitter
+	int nodenum;		//node found after splitting with planenum
+};
+
 struct bboxAreasCache_t
 {
 	float lastUsedTime;
@@ -825,7 +837,7 @@ bool AAS_AreaWaypoint(int areanum, vec3_t center)
 	return true;
 }
 
-bool AAS_AreaEntityCollision(int areanum, const vec3_t start, const vec3_t end,
+static bool AAS_AreaEntityCollision(int areanum, const vec3_t start, const vec3_t end,
 	int presencetype, int passent, aas_trace_t* trace)
 {
 	vec3_t boxmins, boxmaxs;

@@ -558,18 +558,6 @@ void AAS_FreeRoutingCaches();
 void AAS_InitAlternativeRouting();
 void AAS_ShutdownAlternativeRouting();
 
-#define ON_EPSILON                  0	//0.0005
-
-#define TRACEPLANE_EPSILON          0.125
-
-struct aas_tracestack_t
-{
-	vec3_t start;		//start point of the piece of line to trace
-	vec3_t end;			//end point of the piece of line to trace
-	int planenum;		//last plane used as splitter
-	int nodenum;		//node found after splitting with planenum
-};
-
 void AAS_InitAASLinkHeap();
 void AAS_FreeAASLinkHeap();
 void AAS_InitAASLinkedEntities();
@@ -583,7 +571,5 @@ void AAS_UnlinkFromAreas(aas_link_t* areas);
 aas_link_t* AAS_AASLinkEntity(const vec3_t absmins, const vec3_t absmaxs, int entnum);
 aas_link_t* AAS_LinkEntityClientBBox(const vec3_t absmins, const vec3_t absmaxs, int entnum, int presencetype);
 aas_plane_t* AAS_PlaneFromNum(int planenum);
-bool AAS_AreaEntityCollision(int areanum, const vec3_t start, const vec3_t end,
-	int presencetype, int passent, aas_trace_t* trace);
 //returns the result of the trace of a client bbox
 aas_trace_t AAS_TraceClientBBox(const vec3_t start, const vec3_t end, int presencetype, int passent);
