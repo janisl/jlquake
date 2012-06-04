@@ -66,10 +66,10 @@ struct q3entityShared_t
 	qboolean linked;				// qfalse if not in any good cluster
 	int linkcount;
 
-	int svFlags;					// SVF_NOCLIENT, SVF_BROADCAST, etc
+	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
 
 	// only send to this client when SVF_SINGLECLIENT is set
-	// if SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
+	// if Q3SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
 	int singleClient;
 
 	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
@@ -122,3 +122,22 @@ struct q3svEntity_t
 	int snapshotCounter;			// used to prevent double adding from portal views
 	int originCluster;				// Gordon: calced upon linking, for origin only bmodel vis checks
 };
+
+// entity->svFlags
+// the server does not know how to interpret most of the values
+// in entityStates (level eType), so the game must explicitly flag
+// special server behaviors
+//	Common with Wolf.
+#define Q3SVF_NOCLIENT          0x00000001	// don't send entity to clients, even if it has effects
+#define Q3SVF_BOT               0x00000008	// set if the entity is a bot
+#define Q3SVF_BROADCAST         0x00000020	// send to all connected clients
+#define Q3SVF_PORTAL            0x00000040	// merge a second pvs at origin2 into snapshots
+
+#define Q3SVF_CLIENTMASK        0x00000002
+#define Q3SVF_SINGLECLIENT      0x00000100	// only send to a single client (q3entityShared_t->singleClient)
+#define Q3SVF_NOSERVERINFO      0x00000200	// don't send Q3CS_SERVERINFO updates to this client
+											// so that it can be updated for ping tools without
+											// lagging clients
+#define Q3SVF_CAPSULE           0x00000400	// use capsule for collision detection instead of bbox
+#define Q3SVF_NOTSINGLECLIENT   0x00000800	// send entity to everyone but one client
+											// (q3entityShared_t->singleClient)

@@ -17,10 +17,29 @@
 #ifndef _WOLFSP_LOCAL_H
 #define _WOLFSP_LOCAL_H
 
+//
+//	Game
+//
 int SVWS_NumForGentity(const wssharedEntity_t* ent);
 wssharedEntity_t* SVWS_GentityNum(int num);
 wsplayerState_t* SVWS_GameClientNum(int num);
 q3svEntity_t* SVWS_SvEntityForGentity(const wssharedEntity_t* gEnt);
 wssharedEntity_t* SVWS_GEntityForSvEntity(const q3svEntity_t* svEnt);
+
+//
+//	World
+//
+// call before removing an entity, and before trying to move one,
+// so it doesn't clip against itself
+void SVWS_UnlinkEntity(wssharedEntity_t* ent);
+// Needs to be called any time an entity changes origin, mins, maxs,
+// or solid.  Automatically unlinks if needed.
+// sets ent->v.absmin and ent->v.absmax
+// sets ent->leafnums[] for pvs determination even if the entity
+// is not solid
+void SVWS_LinkEntity(wssharedEntity_t* ent);
+clipHandle_t SVWS_ClipHandleForEntity(const wssharedEntity_t* ent);
+// clip to a specific entity
+void SVWS_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule);
 
 #endif

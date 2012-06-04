@@ -112,7 +112,7 @@ void SV_SetBrushModel(q3sharedEntity_t* ent, const char* name)
 
 	ent->r.contents = -1;		// we don't know exactly what is in the brushes
 
-	SV_LinkEntity(ent);			// FIXME: remove
+	SVQ3_LinkEntity(ent);			// FIXME: remove
 }
 
 
@@ -216,7 +216,7 @@ qboolean    SV_EntityContact(vec3_t mins, vec3_t maxs, const q3sharedEntity_t* g
 	origin = gEnt->r.currentOrigin;
 	angles = gEnt->r.currentAngles;
 
-	ch = SV_ClipHandleForEntity(gEnt);
+	ch = SVQ3_ClipHandleForEntity(gEnt);
 	CM_TransformedBoxTraceQ3(&trace, vec3_origin, vec3_origin, mins, maxs,
 		ch, -1, origin, angles, capsule);
 
@@ -354,13 +354,13 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
 		return 0;
 	case G_LINKENTITY:
-		SV_LinkEntity((q3sharedEntity_t*)VMA(1));
+		SVQ3_LinkEntity((q3sharedEntity_t*)VMA(1));
 		return 0;
 	case G_UNLINKENTITY:
-		SV_UnlinkEntity((q3sharedEntity_t*)VMA(1));
+		SVQ3_UnlinkEntity((q3sharedEntity_t*)VMA(1));
 		return 0;
 	case G_ENTITIES_IN_BOX:
-		return SV_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
+		return SVT3_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
 	case G_ENTITY_CONTACT:
 		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), /*int capsule*/ qfalse);
 	case G_ENTITY_CONTACTCAPSULE:

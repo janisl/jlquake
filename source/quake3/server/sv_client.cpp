@@ -530,7 +530,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 		return;		// already dropped
 	}
 
-	if (!drop->q3_gentity || !(drop->q3_gentity->r.svFlags & SVF_BOT))
+	if (!drop->q3_gentity || !(drop->q3_gentity->r.svFlags & Q3SVF_BOT))
 	{
 		// see if we already have a challenge for this ip
 		challenge = &svs.challenges[0];

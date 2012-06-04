@@ -380,13 +380,13 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// entities can be flagged to explicitly not be sent to the client
-		if (ent->r.svFlags & SVF_NOCLIENT)
+		if (ent->r.svFlags & Q3SVF_NOCLIENT)
 		{
 			continue;
 		}
 
 		// entities can be flagged to be sent to only one client
-		if (ent->r.svFlags & SVF_SINGLECLIENT)
+		if (ent->r.svFlags & WOLFSVF_SINGLECLIENT)
 		{
 			if (ent->r.singleClient != frame->ws_ps.clientNum)
 			{
@@ -394,7 +394,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			}
 		}
 		// entities can be flagged to be sent to everyone but one client
-		if (ent->r.svFlags & SVF_NOTSINGLECLIENT)
+		if (ent->r.svFlags & WOLFSVF_NOTSINGLECLIENT)
 		{
 			if (ent->r.singleClient == frame->ws_ps.clientNum)
 			{
@@ -413,7 +413,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		// if this client is viewing from a camera, only add ents visible from portal ents
 		if ((playerEnt->s.eFlags & EF_VIEWING_CAMERA) && !portal)
 		{
-			if (ent->r.svFlags & SVF_PORTAL)
+			if (ent->r.svFlags & Q3SVF_PORTAL)
 			{
 				SV_AddEntToSnapshot(svEnt, ent, eNums);
 //				SV_AddEntitiesVisibleFromPoint( ent->s.origin2, frame, eNums, qtrue, oldframe, localClient );
@@ -423,7 +423,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// broadcast entities are always sent
-		if (ent->r.svFlags & SVF_BROADCAST)
+		if (ent->r.svFlags & Q3SVF_BROADCAST)
 		{
 			SV_AddEntToSnapshot(svEnt, ent, eNums);
 			continue;
@@ -483,7 +483,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		//----(SA) added "visibility dummies"
-		if (ent->r.svFlags & SVF_VISDUMMY)
+		if (ent->r.svFlags & WOLFSVF_VISDUMMY)
 		{
 			wssharedEntity_t* ment = 0;
 
@@ -507,7 +507,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			//continue;	// master needs to be added, but not this dummy ent
 		}
 		//----(SA) end
-		else if (ent->r.svFlags & SVF_VISDUMMY_MULTIPLE)
+		else if (ent->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE)
 		{
 			{
 				int h;
@@ -543,7 +543,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 						ment->s.number = h;
 					}
 
-					if (ment->r.svFlags & SVF_NOCLIENT)
+					if (ment->r.svFlags & Q3SVF_NOCLIENT)
 					{
 						continue;
 					}
@@ -566,7 +566,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		SV_AddEntToSnapshot(svEnt, ent, eNums);
 
 		// if its a portal entity, add everything visible from its camera position
-		if (ent->r.svFlags & SVF_PORTAL)
+		if (ent->r.svFlags & Q3SVF_PORTAL)
 		{
 //			SV_AddEntitiesVisibleFromPoint( ent->s.origin2, frame, eNums, qtrue, oldframe, localClient );
 			SV_AddEntitiesVisibleFromPoint(ent->s.origin2, frame, eNums, qtrue, localClient);
@@ -839,7 +839,7 @@ void SV_SendClientSnapshot(client_t* client)
 	QMsg msg;
 
 	//RF, AI don't need snapshots built
-	if (client->ws_gentity && client->ws_gentity->r.svFlags & SVF_CASTAI)
+	if (client->ws_gentity && client->ws_gentity->r.svFlags & WSSVF_CASTAI)
 	{
 		return;
 	}
@@ -849,7 +849,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// bots need to have their snapshots build, but
 	// the query them directly without needing to be sent
-	if (client->ws_gentity && client->ws_gentity->r.svFlags & SVF_BOT)
+	if (client->ws_gentity && client->ws_gentity->r.svFlags & Q3SVF_BOT)
 	{
 		return;
 	}

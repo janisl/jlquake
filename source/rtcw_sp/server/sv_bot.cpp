@@ -93,7 +93,7 @@ void SV_BotFreeClient(int clientNum)
 	cl->name[0] = 0;
 	if (cl->ws_gentity)
 	{
-		cl->ws_gentity->r.svFlags &= ~SVF_BOT;
+		cl->ws_gentity->r.svFlags &= ~Q3SVF_BOT;
 	}
 }
 
@@ -199,7 +199,7 @@ void BotImport_EntityTrace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec
 	q3trace_t trace;
 
 	// always use bounding box for bot stuff ?
-	SV_ClipToEntity(&trace, start, mins, maxs, end, entnum, contentmask, qfalse);
+	SVWS_ClipToEntity(&trace, start, mins, maxs, end, entnum, contentmask, qfalse);
 	//copy the trace information
 	bsptrace->allsolid = trace.allsolid;
 	bsptrace->startsolid = trace.startsolid;

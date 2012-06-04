@@ -376,7 +376,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 	c_fullsend = 0;
 
 	playerEnt = SVET_GentityNum(frame->et_ps.clientNum);
-	if (playerEnt->r.svFlags & SVF_SELF_PORTAL)
+	if (playerEnt->r.svFlags & ETSVF_SELF_PORTAL)
 	{
 		SV_AddEntitiesVisibleFromPoint(playerEnt->s.origin2, frame, eNums);
 	}
@@ -398,13 +398,13 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// entities can be flagged to explicitly not be sent to the client
-		if (ent->r.svFlags & SVF_NOCLIENT)
+		if (ent->r.svFlags & Q3SVF_NOCLIENT)
 		{
 			continue;
 		}
 
 		// entities can be flagged to be sent to only one client
-		if (ent->r.svFlags & SVF_SINGLECLIENT)
+		if (ent->r.svFlags & WOLFSVF_SINGLECLIENT)
 		{
 			if (ent->r.singleClient != frame->et_ps.clientNum)
 			{
@@ -412,7 +412,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			}
 		}
 		// entities can be flagged to be sent to everyone but one client
-		if (ent->r.svFlags & SVF_NOTSINGLECLIENT)
+		if (ent->r.svFlags & WOLFSVF_NOTSINGLECLIENT)
 		{
 			if (ent->r.singleClient == frame->et_ps.clientNum)
 			{
@@ -429,7 +429,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// broadcast entities are always sent
-		if (ent->r.svFlags & SVF_BROADCAST)
+		if (ent->r.svFlags & Q3SVF_BROADCAST)
 		{
 			SV_AddEntToSnapshot(playerEnt, svEnt, ent, eNums);
 			continue;
@@ -438,7 +438,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		bitvector = clientpvs;
 
 		// Gordon: just check origin for being in pvs, ignore bmodel extents
-		if (ent->r.svFlags & SVF_IGNOREBMODELEXTENTS)
+		if (ent->r.svFlags & ETSVF_IGNOREBMODELEXTENTS)
 		{
 			if (bitvector[svEnt->originCluster >> 3] & (1 << (svEnt->originCluster & 7)))
 			{
@@ -499,7 +499,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		//----(SA) added "visibility dummies"
-		if (ent->r.svFlags & SVF_VISDUMMY)
+		if (ent->r.svFlags & WOLFSVF_VISDUMMY)
 		{
 			etsharedEntity_t* ment = 0;
 
@@ -521,7 +521,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			continue;	// master needs to be added, but not this dummy ent
 		}
 		//----(SA) end
-		else if (ent->r.svFlags & SVF_VISDUMMY_MULTIPLE)
+		else if (ent->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE)
 		{
 			{
 				int h;
@@ -557,7 +557,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 						ment->s.number = h;
 					}
 
-					if (ment->r.svFlags & SVF_NOCLIENT)
+					if (ment->r.svFlags & Q3SVF_NOCLIENT)
 					{
 						continue;
 					}
@@ -580,7 +580,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		SV_AddEntToSnapshot(playerEnt, svEnt, ent, eNums);
 
 		// if its a portal entity, add everything visible from its camera position
-		if (ent->r.svFlags & SVF_PORTAL)
+		if (ent->r.svFlags & Q3SVF_PORTAL)
 		{
 //			SV_AddEntitiesVisibleFromPoint( ent->s.origin2, frame, eNums, qtrue, oldframe, localClient );
 			SV_AddEntitiesVisibleFromPoint(ent->s.origin2, frame, eNums	/*, qtrue, localClient*/);
@@ -651,7 +651,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 
 	svEnt->snapshotCounter = sv.q3_snapshotCounter;
 
-	if (clent->r.svFlags & SVF_SELF_PORTAL_EXCLUSIVE)
+	if (clent->r.svFlags & ETSVF_SELF_PORTAL_EXCLUSIVE)
 	{
 		// find the client's viewpoint
 		VectorCopy(clent->s.origin2, org);
@@ -899,7 +899,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// bots need to have their snapshots build, but
 	// the query them directly without needing to be sent
-	if (client->et_gentity && client->et_gentity->r.svFlags & SVF_BOT)
+	if (client->et_gentity && client->et_gentity->r.svFlags & Q3SVF_BOT)
 	{
 		return;
 	}
@@ -970,7 +970,7 @@ void SV_SendClientMessages(void)
 
 		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
 		// --> "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n"
-		if (c->et_gentity && c->et_gentity->r.svFlags & SVF_BOT)
+		if (c->et_gentity && c->et_gentity->r.svFlags & Q3SVF_BOT)
 		{
 			continue;
 		}

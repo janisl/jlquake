@@ -50,7 +50,7 @@ struct wsentityShared_t
 	qboolean linked;				// qfalse if not in any good cluster
 	int linkcount;
 
-	int svFlags;					// SVF_NOCLIENT, SVF_BROADCAST, etc
+	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 
 	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
@@ -91,7 +91,7 @@ struct wmentityShared_t
 	qboolean linked;				// qfalse if not in any good cluster
 	int linkcount;
 
-	int svFlags;					// SVF_NOCLIENT, SVF_BROADCAST, etc
+	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 
 	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
@@ -132,7 +132,7 @@ struct etentityShared_t
 	qboolean linked;				// qfalse if not in any good cluster
 	int linkcount;
 
-	int svFlags;					// SVF_NOCLIENT, SVF_BROADCAST, etc
+	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 
 	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
@@ -191,3 +191,21 @@ struct tempBan_t
 };
 
 #define SERVER_PERFORMANCECOUNTER_SAMPLES   6
+
+#define WOLFSVF_VISDUMMY            0x00000004	// this ent is a "visibility dummy" and needs it's master to be sent to clients that can see it even if they can't see the master ent
+#define WOLFSVF_CAPSULE             0x00000200	// use capsule for collision detection
+#define WOLFSVF_VISDUMMY_MULTIPLE   0x00000400	// so that one vis dummy can add to snapshot multiple speakers
+#define WOLFSVF_SINGLECLIENT        0x00000800	// only send to a single client (wsentityShared_t->singleClient)
+#define WOLFSVF_NOSERVERINFO        0x00001000	// don't send Q3CS_SERVERINFO updates to this client
+												// so that it can be updated for ping tools without
+												// lagging clients
+#define WOLFSVF_NOTSINGLECLIENT     0x00002000	// send entity to everyone but one client
+												// (wsentityShared_t->singleClient)
+
+#define WSSVF_CASTAI                0x00000010
+
+#define WMSVF_CASTAI                0x00000010
+
+#define ETSVF_IGNOREBMODELEXTENTS   0x00004000	// just use origin for in pvs check for snapshots, ignore the bmodel extents
+#define ETSVF_SELF_PORTAL           0x00008000	// use self->origin2 as portal
+#define ETSVF_SELF_PORTAL_EXCLUSIVE 0x00010000	// use self->origin2 as portal and DONT add self->origin PVS ents

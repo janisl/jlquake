@@ -542,7 +542,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	SV_CloseDownload(drop);
 
 	// Ridah, no need to tell the player if an AI drops
-	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & SVF_CASTAI))
+	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & WSSVF_CASTAI))
 	{
 		// tell everyone why they got dropped
 		SV_SendServerCommand(NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason);
@@ -562,7 +562,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	VM_Call(gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients);
 
 	// Ridah, no need to tell the player if an AI drops
-	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & SVF_CASTAI))
+	if (!(drop->ws_gentity && drop->ws_gentity->r.svFlags & WSSVF_CASTAI))
 	{
 		// add the disconnect command
 		SV_SendServerCommand(drop, "disconnect");

@@ -592,7 +592,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 		return;		// already dropped
 	}
 
-	if (drop->et_gentity && (drop->et_gentity->r.svFlags & SVF_BOT))
+	if (drop->et_gentity && (drop->et_gentity->r.svFlags & Q3SVF_BOT))
 	{
 		isBot = qtrue;
 	}

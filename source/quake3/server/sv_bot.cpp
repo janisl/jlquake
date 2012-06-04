@@ -81,7 +81,7 @@ void SV_BotFreeClient(int clientNum)
 	cl->name[0] = 0;
 	if (cl->q3_gentity)
 	{
-		cl->q3_gentity->r.svFlags &= ~SVF_BOT;
+		cl->q3_gentity->r.svFlags &= ~Q3SVF_BOT;
 	}
 }
 
@@ -187,7 +187,7 @@ void BotImport_EntityTrace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec
 {
 	q3trace_t trace;
 
-	SV_ClipToEntity(&trace, start, mins, maxs, end, entnum, contentmask, qfalse);
+	SVQ3_ClipToEntity(&trace, start, mins, maxs, end, entnum, contentmask, qfalse);
 	//copy the trace information
 	bsptrace->allsolid = trace.allsolid;
 	bsptrace->startsolid = trace.startsolid;

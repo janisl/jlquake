@@ -67,7 +67,7 @@ void SV_SetConfigstring(int index, const char* val)
 				continue;
 			}
 			// do not always send server info to all clients
-			if (index == Q3CS_SERVERINFO && client->q3_gentity && (client->q3_gentity->r.svFlags & SVF_NOSERVERINFO))
+			if (index == Q3CS_SERVERINFO && client->q3_gentity && (client->q3_gentity->r.svFlags & Q3SVF_NOSERVERINFO))
 			{
 				continue;
 			}

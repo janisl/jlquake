@@ -221,7 +221,7 @@ void QDECL SV_SendServerCommand(client_t* cl, const char* fmt, ...)
 			continue;
 		}
 		// Ridah, don't need to send messages to AI
-		if (client->ws_gentity && client->ws_gentity->r.svFlags & SVF_CASTAI)
+		if (client->ws_gentity && client->ws_gentity->r.svFlags & WSSVF_CASTAI)
 		{
 			continue;
 		}
@@ -695,7 +695,7 @@ void SV_CalcPings(void)
 			cl->ping = 999;
 			continue;
 		}
-		if (cl->ws_gentity->r.svFlags & SVF_BOT)
+		if (cl->ws_gentity->r.svFlags & Q3SVF_BOT)
 		{
 			cl->ping = 0;
 			continue;
@@ -771,7 +771,7 @@ void SV_CheckTimeouts(void)
 			continue;
 		}
 		// Ridah, AI's don't time out
-		if (cl->ws_gentity && !(cl->ws_gentity->r.svFlags & SVF_CASTAI))
+		if (cl->ws_gentity && !(cl->ws_gentity->r.svFlags & WSSVF_CASTAI))
 		{
 			if (cl->state >= CS_CONNECTED && cl->q3_lastPacketTime < droppoint)
 			{

@@ -115,7 +115,7 @@ void SV_UpdateConfigStrings(void)
 					continue;
 				}
 				// do not always send server info to all clients
-				if (index == Q3CS_SERVERINFO && client->et_gentity && (client->et_gentity->r.svFlags & SVF_NOSERVERINFO))
+				if (index == Q3CS_SERVERINFO && client->et_gentity && (client->et_gentity->r.svFlags & WOLFSVF_NOSERVERINFO))
 				{
 					continue;
 				}
@@ -125,7 +125,7 @@ void SV_UpdateConfigStrings(void)
 				// RF, re-enabled
 				// Arnout: removed hardcoded gametype
 				// Arnout: added coop
-				if ((SV_GameIsSinglePlayer() || SV_GameIsCoop()) && client->et_gentity && (client->et_gentity->r.svFlags & SVF_BOT))
+				if ((SV_GameIsSinglePlayer() || SV_GameIsCoop()) && client->et_gentity && (client->et_gentity->r.svFlags & Q3SVF_BOT))
 				{
 					continue;
 				}

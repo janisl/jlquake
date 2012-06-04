@@ -220,7 +220,7 @@ void QDECL SV_SendServerCommand(client_t* cl, const char* fmt, ...)
 			continue;
 		}
 		// Ridah, don't need to send messages to AI
-		if (client->et_gentity && client->et_gentity->r.svFlags & SVF_BOT)
+		if (client->et_gentity && client->et_gentity->r.svFlags & Q3SVF_BOT)
 		{
 			continue;
 		}
@@ -936,7 +936,7 @@ void SV_CalcPings(void)
 			cl->ping = 999;
 			continue;
 		}
-		if (cl->et_gentity->r.svFlags & SVF_BOT)
+		if (cl->et_gentity->r.svFlags & Q3SVF_BOT)
 		{
 			cl->ping = 0;
 			continue;

@@ -1290,7 +1290,7 @@ void SV_AddOperatorCommands(void)
 	Cmd_AddCommand("dumpuser", SV_DumpUser_f);
 	Cmd_AddCommand("map_restart", SV_MapRestart_f);
 	Cmd_AddCommand("fieldinfo", SV_FieldInfo_f);
-	Cmd_AddCommand("sectorlist", SV_SectorList_f);
+	Cmd_AddCommand("sectorlist", SVT3_SectorList_f);
 	Cmd_AddCommand("map", SV_Map_f);
 	Cmd_AddCommand("gameCompleteStatus", SV_GameCompleteStatus_f);			// NERVE - SMF
 #ifndef PRE_RELEASE_DEMO_NODEVMAP

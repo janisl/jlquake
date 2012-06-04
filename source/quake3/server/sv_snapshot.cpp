@@ -366,13 +366,13 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// entities can be flagged to explicitly not be sent to the client
-		if (ent->r.svFlags & SVF_NOCLIENT)
+		if (ent->r.svFlags & Q3SVF_NOCLIENT)
 		{
 			continue;
 		}
 
 		// entities can be flagged to be sent to only one client
-		if (ent->r.svFlags & SVF_SINGLECLIENT)
+		if (ent->r.svFlags & Q3SVF_SINGLECLIENT)
 		{
 			if (ent->r.singleClient != frame->q3_ps.clientNum)
 			{
@@ -380,7 +380,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			}
 		}
 		// entities can be flagged to be sent to everyone but one client
-		if (ent->r.svFlags & SVF_NOTSINGLECLIENT)
+		if (ent->r.svFlags & Q3SVF_NOTSINGLECLIENT)
 		{
 			if (ent->r.singleClient == frame->q3_ps.clientNum)
 			{
@@ -388,11 +388,11 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			}
 		}
 		// entities can be flagged to be sent to a given mask of clients
-		if (ent->r.svFlags & SVF_CLIENTMASK)
+		if (ent->r.svFlags & Q3SVF_CLIENTMASK)
 		{
 			if (frame->q3_ps.clientNum >= 32)
 			{
-				Com_Error(ERR_DROP, "SVF_CLIENTMASK: cientNum > 32\n");
+				Com_Error(ERR_DROP, "Q3SVF_CLIENTMASK: cientNum > 32\n");
 			}
 			if (~ent->r.singleClient & (1 << frame->q3_ps.clientNum))
 			{
@@ -409,7 +409,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// broadcast entities are always sent
-		if (ent->r.svFlags & SVF_BROADCAST)
+		if (ent->r.svFlags & Q3SVF_BROADCAST)
 		{
 			SV_AddEntToSnapshot(svEnt, ent, eNums);
 			continue;
@@ -472,7 +472,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		SV_AddEntToSnapshot(svEnt, ent, eNums);
 
 		// if its a portal entity, add everything visible from its camera position
-		if (ent->r.svFlags & SVF_PORTAL)
+		if (ent->r.svFlags & Q3SVF_PORTAL)
 		{
 			if (ent->s.generic1)
 			{
@@ -704,7 +704,7 @@ void SV_SendClientSnapshot(client_t* client)
 
 	// bots need to have their snapshots build, but
 	// the query them directly without needing to be sent
-	if (client->q3_gentity && client->q3_gentity->r.svFlags & SVF_BOT)
+	if (client->q3_gentity && client->q3_gentity->r.svFlags & Q3SVF_BOT)
 	{
 		return;
 	}

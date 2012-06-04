@@ -81,13 +81,13 @@ void SV_SetConfigstring(int index, const char* val)
 				continue;
 			}
 			// do not always send server info to all clients
-			if (index == Q3CS_SERVERINFO && client->wm_gentity && (client->wm_gentity->r.svFlags & SVF_NOSERVERINFO))
+			if (index == Q3CS_SERVERINFO && client->wm_gentity && (client->wm_gentity->r.svFlags & WOLFSVF_NOSERVERINFO))
 			{
 				continue;
 			}
 
 			// RF, don't send to bot/AI
-			if (sv_gametype->integer == WMGT_SINGLE_PLAYER && client->wm_gentity && (client->wm_gentity->r.svFlags & SVF_CASTAI))
+			if (sv_gametype->integer == WMGT_SINGLE_PLAYER && client->wm_gentity && (client->wm_gentity->r.svFlags & WMSVF_CASTAI))
 			{
 				continue;
 			}
