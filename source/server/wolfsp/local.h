@@ -17,7 +17,10 @@
 #ifndef _WOLFSP_LOCAL_H
 #define _WOLFSP_LOCAL_H
 
-int SVWS_NumForGentity(wssharedEntity_t* ent);
+int SVWS_NumForGentity(const wssharedEntity_t* ent);
 wssharedEntity_t* SVWS_GentityNum(int num);
+wsplayerState_t* SVWS_GameClientNum(int num);
+q3svEntity_t* SVWS_SvEntityForGentity(const wssharedEntity_t* gEnt);
+wssharedEntity_t* SVWS_GEntityForSvEntity(const q3svEntity_t* svEnt);
 
 #endif

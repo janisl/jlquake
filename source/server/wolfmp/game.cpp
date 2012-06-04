@@ -20,7 +20,7 @@
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
-int SVWM_NumForGentity(wmsharedEntity_t* ent)
+int SVWM_NumForGentity(const wmsharedEntity_t* ent)
 {
 	return ((byte*)ent - (byte*)sv.wm_gentities) / sv.q3_gentitySize;
 }
@@ -28,4 +28,24 @@ int SVWM_NumForGentity(wmsharedEntity_t* ent)
 wmsharedEntity_t* SVWM_GentityNum(int num)
 {
 	return (wmsharedEntity_t*)((byte*)sv.wm_gentities + sv.q3_gentitySize * num);
+}
+
+wmplayerState_t* SVWM_GameClientNum(int num)
+{
+	return (wmplayerState_t*)((byte*)sv.wm_gameClients + sv.q3_gameClientSize * (num));
+}
+
+q3svEntity_t* SVWM_SvEntityForGentity(const wmsharedEntity_t* gEnt)
+{
+	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
+	{
+		common->Error("SVWM_SvEntityForGentity: bad gEnt");
+	}
+	return &sv.q3_svEntities[gEnt->s.number];
+}
+
+wmsharedEntity_t* SVWM_GEntityForSvEntity(const q3svEntity_t* svEnt)
+{
+	int num = svEnt - sv.q3_svEntities;
+	return SVWM_GentityNum(num);
 }

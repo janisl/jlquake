@@ -17,7 +17,10 @@
 #ifndef _ET_LOCAL_H
 #define _ET_LOCAL_H
 
-int SVET_NumForGentity(etsharedEntity_t* ent);
+int SVET_NumForGentity(const etsharedEntity_t* ent);
 etsharedEntity_t* SVET_GentityNum(int num);
+etplayerState_t* SVET_GameClientNum(int num);
+q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
+etsharedEntity_t* SVET_GEntityForSvEntity(const q3svEntity_t* svEnt);
 
 #endif

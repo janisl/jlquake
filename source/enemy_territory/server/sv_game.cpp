@@ -44,32 +44,6 @@ void SV_GamePrint(const char* string)
 	Com_Printf("%s", string);
 }
 
-etplayerState_t* SV_GameClientNum(int num)
-{
-	etplayerState_t* ps;
-
-	ps = (etplayerState_t*)((byte*)sv.et_gameClients + sv.q3_gameClientSize * (num));
-
-	return ps;
-}
-
-q3svEntity_t* SV_SvEntityForGentity(etsharedEntity_t* gEnt)
-{
-	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
-	{
-		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
-	}
-	return &sv.q3_svEntities[gEnt->s.number];
-}
-
-etsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt)
-{
-	int num;
-
-	num = svEnt - sv.q3_svEntities;
-	return SVET_GentityNum(num);
-}
-
 /*
 ===============
 SV_GameSendServerCommand
@@ -228,7 +202,7 @@ void SV_AdjustAreaPortalState(etsharedEntity_t* ent, qboolean open)
 {
 	q3svEntity_t* svEnt;
 
-	svEnt = SV_SvEntityForGentity(ent);
+	svEnt = SVET_SvEntityForGentity(ent);
 	if (svEnt->areanum2 == -1)
 	{
 		return;

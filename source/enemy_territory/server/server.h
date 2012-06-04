@@ -198,9 +198,6 @@ void SV_SendClientIdle(client_t* client);
 //
 // sv_game.c
 //
-etplayerState_t* SV_GameClientNum(int num);
-q3svEntity_t* SV_SvEntityForGentity(etsharedEntity_t* gEnt);
-etsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);

@@ -400,7 +400,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			}
 		}
 
-		svEnt = SV_SvEntityForGentity(ent);
+		svEnt = SVQ3_SvEntityForGentity(ent);
 
 		// don't double add an entity through portals
 		if (svEnt->snapshotCounter == sv.q3_snapshotCounter)
@@ -535,7 +535,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	}
 
 	// grab the current q3playerState_t
-	ps = SV_GameClientNum(client - svs.clients);
+	ps = SVQ3_GameClientNum(client - svs.clients);
 	frame->q3_ps = *ps;
 
 	// never send client's own entity, because it can
@@ -543,7 +543,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	clientNum = frame->q3_ps.clientNum;
 	if (clientNum < 0 || clientNum >= MAX_GENTITIES_Q3)
 	{
-		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
+		Com_Error(ERR_DROP, "SVQ3_SvEntityForGentity: bad gEnt");
 	}
 	svEnt = &sv.q3_svEntities[clientNum];
 

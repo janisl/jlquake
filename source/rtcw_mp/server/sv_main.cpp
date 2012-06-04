@@ -428,7 +428,7 @@ void SVC_Status(netadr_t from)
 		cl = &svs.clients[i];
 		if (cl->state >= CS_CONNECTED)
 		{
-			ps = SV_GameClientNum(i);
+			ps = SVWM_GameClientNum(i);
 			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
 				ps->persistant[WMPERS_SCORE], cl->ping, cl->name);
 			playerLength = String::Length(player);
@@ -483,7 +483,7 @@ void SVC_GameCompleteStatus(netadr_t from)
 		cl = &svs.clients[i];
 		if (cl->state >= CS_CONNECTED)
 		{
-			ps = SV_GameClientNum(i);
+			ps = SVWM_GameClientNum(i);
 			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
 				ps->persistant[WMPERS_SCORE], cl->ping, cl->name);
 			playerLength = String::Length(player);
@@ -953,7 +953,7 @@ void SV_CalcPings(void)
 		}
 
 		// let the game dll know about the ping
-		ps = SV_GameClientNum(i);
+		ps = SVWM_GameClientNum(i);
 		ps->ping = cl->ping;
 	}
 }

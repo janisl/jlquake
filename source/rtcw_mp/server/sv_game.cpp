@@ -45,32 +45,6 @@ void SV_GamePrint(const char* string)
 	Com_Printf("%s", string);
 }
 
-wmplayerState_t* SV_GameClientNum(int num)
-{
-	wmplayerState_t* ps;
-
-	ps = (wmplayerState_t*)((byte*)sv.wm_gameClients + sv.q3_gameClientSize * (num));
-
-	return ps;
-}
-
-q3svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt)
-{
-	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
-	{
-		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
-	}
-	return &sv.q3_svEntities[gEnt->s.number];
-}
-
-wmsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt)
-{
-	int num;
-
-	num = svEnt - sv.q3_svEntities;
-	return SVWM_GentityNum(num);
-}
-
 /*
 ===============
 SV_GameSendServerCommand
@@ -225,7 +199,7 @@ void SV_AdjustAreaPortalState(wmsharedEntity_t* ent, qboolean open)
 {
 	q3svEntity_t* svEnt;
 
-	svEnt = SV_SvEntityForGentity(ent);
+	svEnt = SVWM_SvEntityForGentity(ent);
 	if (svEnt->areanum2 == -1)
 	{
 		return;

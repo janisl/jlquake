@@ -103,7 +103,7 @@ SV_UnlinkEntity
 */
 void SV_UnlinkEntity(etsharedEntity_t* gEnt)
 {
-	q3svEntity_t* ent = SV_SvEntityForGentity(gEnt);
+	q3svEntity_t* ent = SVET_SvEntityForGentity(gEnt);
 
 	gEnt->r.linked = qfalse;
 
@@ -130,7 +130,7 @@ void SV_LinkEntity(etsharedEntity_t* gEnt)
 	float* origin, * angles;
 	q3svEntity_t* ent;
 
-	ent = SV_SvEntityForGentity(gEnt);
+	ent = SVET_SvEntityForGentity(gEnt);
 
 	// Ridah, sanity check for possible currentOrigin being reset bug
 	if (!gEnt->r.bmodel && VectorCompare(gEnt->r.currentOrigin, vec3_origin))
@@ -359,7 +359,7 @@ void SV_AreaEntities_r(worldSector_t* node, areaParms_t* ap)
 	{
 		next = check->nextEntityInWorldSector;
 
-		gcheck = SV_GEntityForSvEntity(check);
+		gcheck = SVET_GEntityForSvEntity(check);
 
 		if (!gcheck->r.linked)
 		{

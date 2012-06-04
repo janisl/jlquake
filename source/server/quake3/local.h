@@ -17,7 +17,10 @@
 #ifndef _QUAKE3_LOCAL_H
 #define _QUAKE3_LOCAL_H
 
-int SVQ3_NumForGentity(q3sharedEntity_t* ent);
+int SVQ3_NumForGentity(const q3sharedEntity_t* ent);
 q3sharedEntity_t* SVQ3_GentityNum(int num);
+q3playerState_t* SVQ3_GameClientNum(int num);
+q3svEntity_t* SVQ3_SvEntityForGentity(const q3sharedEntity_t* gEnt);
+q3sharedEntity_t* SVQ3_GEntityForSvEntity(const q3svEntity_t* svEnt);
 
 #endif
