@@ -374,7 +374,7 @@ static void SV_MapRestart_f(void)
 	sv_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
 	nextgt = sv_gametype->integer;
 
-	world = SV_GentityNum(Q3ENTITYNUM_WORLD);
+	world = SVWM_GentityNum(Q3ENTITYNUM_WORLD);
 	worldspawnflags = world->r.worldflags;
 	if  (
 		(nextgt == WMGT_WOLF && (worldspawnflags & 1)) ||

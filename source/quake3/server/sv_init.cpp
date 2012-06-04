@@ -199,7 +199,7 @@ void SV_CreateBaseline(void)
 
 	for (entnum = 1; entnum < sv.q3_num_entities; entnum++)
 	{
-		svent = SV_GentityNum(entnum);
+		svent = SVQ3_GentityNum(entnum);
 		if (!svent->r.linked)
 		{
 			continue;
@@ -551,7 +551,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 					client = &svs.clients[i];
 					client->state = CS_ACTIVE;
-					ent = SV_GentityNum(i);
+					ent = SVQ3_GentityNum(i);
 					ent->s.number = i;
 					client->q3_gentity = ent;
 

@@ -33,6 +33,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/g_public.h"
 #include "../game/bg_public.h"
 #include "../../server/server.h"
+#include "../../server/tech3/local.h"
+#include "../../server/wolfsp/local.h"
 
 #define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
 
@@ -155,8 +157,6 @@ void SV_SendClientSnapshot(client_t* client);
 //
 // sv_game.c
 //
-int SV_NumForGentity(wssharedEntity_t* ent);
-wssharedEntity_t* SV_GentityNum(int num);
 wsplayerState_t* SV_GameClientNum(int num);
 q3svEntity_t* SV_SvEntityForGentity(wssharedEntity_t* gEnt);
 wssharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);

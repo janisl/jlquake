@@ -219,10 +219,10 @@ struct client_t
 	netchan_buffer_t** q3_netchan_end_queue;
 	netchan_buffer_t* et_netchan_end_queue;
 
-	q3sharedEntity_t* q3_gentity;		// SV_GentityNum(clientnum)
-	wssharedEntity_t* ws_gentity;		// SV_GentityNum(clientnum)
-	wmsharedEntity_t* wm_gentity;		// SV_GentityNum(clientnum)
-	etsharedEntity_t* et_gentity;		// SV_GentityNum(clientnum)
+	q3sharedEntity_t* q3_gentity;		// SVWS_GentityNum(clientnum)
+	wssharedEntity_t* ws_gentity;		// SVWS_GentityNum(clientnum)
+	wmsharedEntity_t* wm_gentity;		// SVWS_GentityNum(clientnum)
+	etsharedEntity_t* et_gentity;		// SVWS_GentityNum(clientnum)
 
 	int et_binaryMessageLength;
 	char et_binaryMessage[MAX_BINARY_MESSAGE_ET];

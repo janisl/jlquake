@@ -38,26 +38,6 @@ void SV_GamePrint(const char* string)
 	Com_Printf("%s", string);
 }
 
-// these functions must be used instead of pointer arithmetic, because
-// the game allocates gentities with private information after the server shared part
-int SV_NumForGentity(q3sharedEntity_t* ent)
-{
-	int num;
-
-	num = ((byte*)ent - (byte*)sv.q3_gentities) / sv.q3_gentitySize;
-
-	return num;
-}
-
-q3sharedEntity_t* SV_GentityNum(int num)
-{
-	q3sharedEntity_t* ent;
-
-	ent = (q3sharedEntity_t*)((byte*)sv.q3_gentities + sv.q3_gentitySize * (num));
-
-	return ent;
-}
-
 q3playerState_t* SV_GameClientNum(int num)
 {
 	q3playerState_t* ps;
@@ -81,7 +61,7 @@ q3sharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt)
 	int num;
 
 	num = svEnt - sv.q3_svEntities;
-	return SV_GentityNum(num);
+	return SVQ3_GentityNum(num);
 }
 
 /*

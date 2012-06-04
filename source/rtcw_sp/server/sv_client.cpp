@@ -452,7 +452,7 @@ gotnewcl:
 	// this is the only place a client_t is ever initialized
 	*newcl = temp;
 	clientNum = newcl - svs.clients;
-	ent = SV_GentityNum(clientNum);
+	ent = SVWS_GentityNum(clientNum);
 	newcl->ws_gentity = ent;
 
 	// save the challenge
@@ -692,7 +692,7 @@ void SV_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
 
 	// set up the entity for the client
 	clientNum = client - svs.clients;
-	ent = SV_GentityNum(clientNum);
+	ent = SVWS_GentityNum(clientNum);
 	ent->s.number = clientNum;
 	client->ws_gentity = ent;
 

@@ -35,6 +35,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../common/file_formats/md3.h"
 #include "../qcommon/qfiles.h"
 #include "../../server/server.h"
+#include "../../server/tech3/local.h"
+#include "../../server/et/local.h"
 
 //=============================================================================
 
@@ -196,14 +198,7 @@ void SV_SendClientIdle(client_t* client);
 //
 // sv_game.c
 //
-int SV_NumForGentity(etsharedEntity_t* ent);
-
-//#define SV_GentityNum( num ) ((etsharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
-//#define SV_GameClientNum( num ) ((etplayerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
-
-etsharedEntity_t* SV_GentityNum(int num);
 etplayerState_t* SV_GameClientNum(int num);
-
 q3svEntity_t* SV_SvEntityForGentity(etsharedEntity_t* gEnt);
 etsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);
 void        SV_InitGameProgs(void);

@@ -65,7 +65,7 @@ int SV_BotAllocateClient(void)
 		return -1;
 	}
 
-	cl->wm_gentity = SV_GentityNum(i);
+	cl->wm_gentity = SVWM_GentityNum(i);
 	cl->wm_gentity->s.number = i;
 	cl->state = CS_ACTIVE;
 	cl->q3_lastPacketTime = svs.q3_time;

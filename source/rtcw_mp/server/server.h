@@ -33,6 +33,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/g_public.h"
 #include "../game/bg_public.h"
 #include "../../server/server.h"
+#include "../../server/tech3/local.h"
+#include "../../server/wolfmp/local.h"
 
 //=============================================================================
 
@@ -181,8 +183,6 @@ void SV_SendClientSnapshot(client_t* client);
 //
 // sv_game.c
 //
-int SV_NumForGentity(wmsharedEntity_t* ent);
-wmsharedEntity_t* SV_GentityNum(int num);
 wmplayerState_t* SV_GameClientNum(int num);
 q3svEntity_t* SV_SvEntityForGentity(wmsharedEntity_t* gEnt);
 wmsharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);

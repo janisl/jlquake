@@ -103,37 +103,11 @@ SV_UnlinkEntity
 */
 void SV_UnlinkEntity(wmsharedEntity_t* gEnt)
 {
-	q3svEntity_t* ent;
-	q3svEntity_t* scan;
-	worldSector_t* ws;
-
-	ent = SV_SvEntityForGentity(gEnt);
+	q3svEntity_t* ent = SV_SvEntityForGentity(gEnt);
 
 	gEnt->r.linked = qfalse;
 
-	ws = ent->worldSector;
-	if (!ws)
-	{
-		return;		// not linked in anywhere
-	}
-	ent->worldSector = NULL;
-
-	if (ws->entities == ent)
-	{
-		ws->entities = ent->nextEntityInWorldSector;
-		return;
-	}
-
-	for (scan = ws->entities; scan; scan = scan->nextEntityInWorldSector)
-	{
-		if (scan->nextEntityInWorldSector == ent)
-		{
-			scan->nextEntityInWorldSector = ent->nextEntityInWorldSector;
-			return;
-		}
-	}
-
-	Com_Printf("WARNING: SV_UnlinkEntity: not found in worldSector\n");
+	SVT3_UnlinkSvEntity(ent);
 }
 
 
@@ -471,7 +445,7 @@ void SV_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, co
 	clipHandle_t clipHandle;
 	float* origin, * angles;
 
-	touch = SV_GentityNum(entityNum);
+	touch = SVWM_GentityNum(entityNum);
 
 	memset(trace, 0, sizeof(q3trace_t));
 
@@ -534,7 +508,7 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 
 	if (clip->passEntityNum != Q3ENTITYNUM_NONE)
 	{
-		passOwnerNum = (SV_GentityNum(clip->passEntityNum))->r.ownerNum;
+		passOwnerNum = (SVWM_GentityNum(clip->passEntityNum))->r.ownerNum;
 		if (passOwnerNum == Q3ENTITYNUM_NONE)
 		{
 			passOwnerNum = -1;
@@ -551,7 +525,7 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 		{
 			return;
 		}
-		touch = SV_GentityNum(touchlist[i]);
+		touch = SVWM_GentityNum(touchlist[i]);
 
 		// see if we should ignore this entity
 		if (clip->passEntityNum != Q3ENTITYNUM_NONE)
@@ -731,7 +705,7 @@ int SV_PointContents(const vec3_t p, int passEntityNum)
 		{
 			continue;
 		}
-		hit = SV_GentityNum(touch[i]);
+		hit = SVWM_GentityNum(touch[i]);
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity(hit);
 		angles = hit->s.angles;

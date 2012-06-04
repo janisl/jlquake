@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "../game/g_public.h"
 #include "../../server/server.h"
+#include "../../server/tech3/local.h"
+#include "../../server/quake3/local.h"
 
 //=============================================================================
 
@@ -135,8 +137,6 @@ void SV_SendClientSnapshot(client_t* client);
 //
 // sv_game.c
 //
-int SV_NumForGentity(q3sharedEntity_t* ent);
-q3sharedEntity_t* SV_GentityNum(int num);
 q3playerState_t* SV_GameClientNum(int num);
 q3svEntity_t* SV_SvEntityForGentity(q3sharedEntity_t* gEnt);
 q3sharedEntity_t* SV_GEntityForSvEntity(q3svEntity_t* svEnt);

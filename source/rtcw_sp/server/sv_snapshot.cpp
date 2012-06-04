@@ -361,11 +361,11 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 	c_fullsend = 0;
 
-	playerEnt = SV_GentityNum(frame->ws_ps.clientNum);
+	playerEnt = SVWS_GentityNum(frame->ws_ps.clientNum);
 
 	for (e = 0; e < sv.q3_num_entities; e++)
 	{
-		ent = SV_GentityNum(e);
+		ent = SVWS_GentityNum(e);
 
 		// never send entities that aren't linked in
 		if (!ent->r.linked)
@@ -488,7 +488,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 			wssharedEntity_t* ment = 0;
 
 			//find master;
-			ment = SV_GentityNum(ent->s.otherEntityNum);
+			ment = SVWS_GentityNum(ent->s.otherEntityNum);
 
 			if (ment)
 			{
@@ -516,7 +516,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 				for (h = 0; h < sv.q3_num_entities; h++)
 				{
-					ment = SV_GentityNum(h);
+					ment = SVWS_GentityNum(h);
 
 					if (ment == ent)
 					{
@@ -717,7 +717,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	frame->first_entity = svs.q3_nextSnapshotEntities;
 	for (i = 0; i < entityNumbers.numSnapshotEntities; i++)
 	{
-		ent = SV_GentityNum(entityNumbers.snapshotEntities[i]);
+		ent = SVWS_GentityNum(entityNumbers.snapshotEntities[i]);
 		state = &svs.ws_snapshotEntities[svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities];
 		*state = ent->s;
 		svs.q3_nextSnapshotEntities++;

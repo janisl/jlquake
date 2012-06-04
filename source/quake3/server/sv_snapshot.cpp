@@ -351,7 +351,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 
 	for (e = 0; e < sv.q3_num_entities; e++)
 	{
-		ent = SV_GentityNum(e);
+		ent = SVQ3_GentityNum(e);
 
 		// never send entities that aren't linked in
 		if (!ent->r.linked)
@@ -576,7 +576,7 @@ static void SV_BuildClientSnapshot(client_t* client)
 	frame->first_entity = svs.q3_nextSnapshotEntities;
 	for (i = 0; i < entityNumbers.numSnapshotEntities; i++)
 	{
-		ent = SV_GentityNum(entityNumbers.snapshotEntities[i]);
+		ent = SVQ3_GentityNum(entityNumbers.snapshotEntities[i]);
 		state = &svs.q3_snapshotEntities[svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities];
 		*state = ent->s;
 		svs.q3_nextSnapshotEntities++;
