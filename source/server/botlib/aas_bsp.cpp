@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../tech3/local.h"
 
 #define MAX_BSPENTITIES     4096
 
@@ -298,29 +299,57 @@ void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t outmins, vec
 }
 
 // traces axial boxes of any size through the world
-bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask)
+bsp_trace_t AAS_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int passent, int contentmask)
 {
+	q3trace_t trace;
+	SVT3_Trace(&trace, start, mins, maxs, end, passent, contentmask, false);
 	bsp_trace_t bsptrace;
-	BotImport_Trace(&bsptrace, start, mins, maxs, end, passent, contentmask);
+	//copy the trace information
+	bsptrace.allsolid = trace.allsolid;
+	bsptrace.startsolid = trace.startsolid;
+	bsptrace.fraction = trace.fraction;
+	VectorCopy(trace.endpos, bsptrace.endpos);
+	bsptrace.plane.dist = trace.plane.dist;
+	VectorCopy(trace.plane.normal, bsptrace.plane.normal);
+	bsptrace.plane.signbits = trace.plane.signbits;
+	bsptrace.plane.type = trace.plane.type;
+	bsptrace.surface.value = trace.surfaceFlags;
+	bsptrace.ent = trace.entityNum;
+	bsptrace.exp_dist = 0;
+	bsptrace.sidenum = 0;
+	bsptrace.contents = 0;
 	return bsptrace;
 }
 
-bool AAS_EntityCollision(int entnum,
-	vec3_t start, vec3_t boxmins, vec3_t boxmaxs, vec3_t end,
-	int contentmask, bsp_trace_t* trace)
+bool AAS_EntityCollision(int entnum, const vec3_t start, const vec3_t boxmins, const vec3_t boxmaxs,
+	const vec3_t end, int contentmask, bsp_trace_t* trace)
 {
-	bsp_trace_t enttrace;
-	BotImport_EntityTrace(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask);
-	if (enttrace.fraction < trace->fraction)
+	q3trace_t enttrace;
+	SVT3_ClipToEntity(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask, false);
+	if (enttrace.fraction >= trace->fraction)
 	{
-		Com_Memcpy(trace, &enttrace, sizeof(bsp_trace_t));
-		return true;
+		return false;
 	}
-	return false;
+	//copy the trace information
+	trace->allsolid = enttrace.allsolid;
+	trace->startsolid = enttrace.startsolid;
+	trace->fraction = enttrace.fraction;
+	VectorCopy(enttrace.endpos, trace->endpos);
+	trace->plane.dist = enttrace.plane.dist;
+	VectorCopy(enttrace.plane.normal, trace->plane.normal);
+	trace->plane.signbits = enttrace.plane.signbits;
+	trace->plane.type = enttrace.plane.type;
+	trace->surface.value = enttrace.surfaceFlags;
+	trace->ent = enttrace.entityNum;
+	trace->exp_dist = 0;
+	trace->sidenum = 0;
+	trace->contents = 0;
+	return true;
 }
 
 // returns the contents at the given point
-int AAS_PointContents(vec3_t point)
+int AAS_PointContents(const vec3_t point)
 {
-	return BotImport_PointContents(point);
+	return SVT3_PointContents(point, -1);
 }

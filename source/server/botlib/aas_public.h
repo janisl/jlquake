@@ -215,6 +215,8 @@ bool AAS_VectorForBSPEpairKey(int ent, const char* key, vec3_t v);
 bool AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
 //get an integer for the BSP epair key
 bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);
+//returns the contents at the given point
+int AAS_PointContents(const vec3_t point);
 
 //returns the info of the given entity
 void AAS_EntityInfo(int entnum, aas_entityinfo_t* info);

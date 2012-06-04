@@ -119,10 +119,6 @@ Init_AAS_Export
 static void Init_AAS_Export(aas_export_t* aas)
 {
 	//--------------------------------------------
-	// be_aas_bspq3.c
-	//--------------------------------------------
-	aas->AAS_PointContents = AAS_PointContents;
-	//--------------------------------------------
 	// be_aas_move.c
 	//--------------------------------------------
 	aas->AAS_Swimming = AAS_Swimming;

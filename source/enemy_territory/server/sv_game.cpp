@@ -591,7 +591,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return AAS_AreaWaypoint(args[1], (float*)VMA(2));
 
 	case BOTLIB_AAS_POINT_CONTENTS:
-		return botlib_export->aas.AAS_PointContents((float*)VMA(1));
+		return AAS_PointContents((float*)VMA(1));
 	case BOTLIB_AAS_NEXT_BSP_ENTITY:
 		return AAS_NextBSPEntity(args[1]);
 	case BOTLIB_AAS_VALUE_FOR_BSP_EPAIR_KEY:

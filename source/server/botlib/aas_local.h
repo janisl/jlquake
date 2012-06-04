@@ -287,13 +287,11 @@ void AAS_DumpBSPData();
 //gets the mins, maxs and origin of a BSP model
 void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs);
 //trace through the world
-bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
+bsp_trace_t AAS_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 	int passent, int contentmask);
 //calculates collision with given entity
-bool AAS_EntityCollision(int entnum, vec3_t start, vec3_t boxmins, vec3_t boxmaxs,
-	vec3_t end, int contentmask, bsp_trace_t* trace);
-//returns the contents at the given point
-int AAS_PointContents(vec3_t point);
+bool AAS_EntityCollision(int entnum, const vec3_t start, const vec3_t boxmins, const vec3_t boxmaxs,
+	const vec3_t end, int contentmask, bsp_trace_t* trace);
 
 //initialize the AAS clustering
 void AAS_InitClustering();

@@ -55,9 +55,6 @@ void BotImport_Print(int type, const char* fmt, ...) id_attribute((format(printf
 int BotImport_DebugLineCreate();
 void BotImport_DebugLineDelete(int line);
 void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
-void BotImport_Trace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
-void BotImport_EntityTrace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum, int contentmask);
-int BotImport_PointContents(vec3_t point);
 
 //
 //	Interface
