@@ -296,3 +296,31 @@ void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t outmins, vec
 		VectorCopy(maxs, outmaxs);
 	}
 }
+
+// traces axial boxes of any size through the world
+bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask)
+{
+	bsp_trace_t bsptrace;
+	BotImport_Trace(&bsptrace, start, mins, maxs, end, passent, contentmask);
+	return bsptrace;
+}
+
+bool AAS_EntityCollision(int entnum,
+	vec3_t start, vec3_t boxmins, vec3_t boxmaxs, vec3_t end,
+	int contentmask, bsp_trace_t* trace)
+{
+	bsp_trace_t enttrace;
+	BotImport_EntityTrace(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask);
+	if (enttrace.fraction < trace->fraction)
+	{
+		Com_Memcpy(trace, &enttrace, sizeof(bsp_trace_t));
+		return true;
+	}
+	return false;
+}
+
+// returns the contents at the given point
+int AAS_PointContents(vec3_t point)
+{
+	return BotImport_PointContents(point);
+}

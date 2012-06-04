@@ -43,50 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 
 //===========================================================================
-// traces axial boxes of any size through the world
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask)
-{
-	bsp_trace_t bsptrace;
-	BotImport_Trace(&bsptrace, start, mins, maxs, end, passent, contentmask);
-	return bsptrace;
-}	//end of the function AAS_Trace
-//===========================================================================
-// returns the contents at the given point
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int AAS_PointContents(vec3_t point)
-{
-	return BotImport_PointContents(point);
-}	//end of the function AAS_PointContents
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-qboolean AAS_EntityCollision(int entnum,
-	vec3_t start, vec3_t boxmins, vec3_t boxmaxs, vec3_t end,
-	int contentmask, bsp_trace_t* trace)
-{
-	bsp_trace_t enttrace;
-
-	BotImport_EntityTrace(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask);
-	if (enttrace.fraction < trace->fraction)
-	{
-		memcpy(trace, &enttrace, sizeof(bsp_trace_t));
-		return qtrue;
-	}	//end if
-	return qfalse;
-}	//end of the function AAS_EntityCollision
-//===========================================================================
 // returns true if in Potentially Hearable Set
 //
 // Parameter:				-
