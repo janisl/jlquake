@@ -366,13 +366,13 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case G_ENTITY_CONTACTCAPSULE:
 		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), /*int capsule*/ qtrue);
 	case G_TRACE:
-		SV_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /*int capsule*/ qfalse);
+		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /*int capsule*/ qfalse);
 		return 0;
 	case G_TRACECAPSULE:
-		SV_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /*int capsule*/ qtrue);
+		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /*int capsule*/ qtrue);
 		return 0;
 	case G_POINT_CONTENTS:
-		return SV_PointContents((float*)VMA(1), args[2]);
+		return SVT3_PointContents((float*)VMA(1), args[2]);
 	case G_SET_BRUSH_MODEL:
 		SV_SetBrushModel((q3sharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;

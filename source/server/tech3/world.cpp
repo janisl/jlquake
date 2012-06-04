@@ -206,3 +206,165 @@ int SVT3_AreaEntities(const vec3_t mins, const vec3_t maxs, int* entityList, int
 
 	return ap.count;
 }
+
+//	Moves the given mins/maxs volume through the world from start to end.
+// passEntityNum and entities owned by passEntityNum are explicitly not checked.
+void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+	const vec3_t end, int passEntityNum, int contentmask, int capsule)
+{
+	q3moveclip_t clip;
+	int i;
+
+	if (!mins)
+	{
+		mins = vec3_origin;
+	}
+	if (!maxs)
+	{
+		maxs = vec3_origin;
+	}
+
+	Com_Memset(&clip, 0, sizeof(q3moveclip_t));
+
+	// clip to world
+	CM_BoxTraceQ3(&clip.trace, start, end, mins, maxs, 0, contentmask, capsule);
+	clip.trace.entityNum = clip.trace.fraction != 1.0 ? Q3ENTITYNUM_WORLD : Q3ENTITYNUM_NONE;
+	if (clip.trace.fraction == 0 || (GGameType & GAME_ET && passEntityNum == -2))
+	{
+		*results = clip.trace;
+		return;		// blocked immediately by the world
+	}
+
+	clip.contentmask = contentmask;
+	clip.start = start;
+	VectorCopy(end, clip.end);
+	clip.mins = mins;
+	clip.maxs = maxs;
+	clip.passEntityNum = passEntityNum;
+	clip.capsule = capsule;
+
+	// create the bounding box of the entire move
+	// we can limit it to the part of the move not
+	// already clipped off by the world, which can be
+	// a significant savings for line of sight and shot traces
+	for (i = 0; i < 3; i++)
+	{
+		if (end[i] > start[i])
+		{
+			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;
+			clip.boxmaxs[i] = clip.end[i] + clip.maxs[i] + 1;
+		}
+		else
+		{
+			clip.boxmins[i] = clip.end[i] + clip.mins[i] - 1;
+			clip.boxmaxs[i] = clip.start[i] + clip.maxs[i] + 1;
+		}
+	}
+
+	// clip to other solid entities
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_ClipMoveToEntities(&clip);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_ClipMoveToEntities(&clip);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_ClipMoveToEntities(&clip);
+	}
+	else
+	{
+		SVQ3_ClipMoveToEntities(&clip);
+	}
+
+	*results = clip.trace;
+}
+
+int SVT3_PointContents(const vec3_t p, int passEntityNum)
+{
+	// get base contents from world
+	int contents = CM_PointContentsQ3(p, 0);
+
+	// or in contents from all the other entities
+	int touch[MAX_GENTITIES_Q3];
+	int num = SVT3_AreaEntities(p, p, touch, MAX_GENTITIES_Q3);
+
+	for (int i = 0; i < num; i++)
+	{
+		if (touch[i] == passEntityNum)
+		{
+			continue;
+		}
+		if (GGameType & GAME_WolfSP)
+		{
+			wssharedEntity_t* hit = SVWS_GentityNum(touch[i]);
+			// might intersect, so do an exact clip
+			clipHandle_t clipHandle = SVWS_ClipHandleForEntity(hit);
+			float* angles = hit->s.angles;
+			if (!hit->r.bmodel)
+			{
+				angles = vec3_origin;	// boxes don't rotate
+			}
+
+			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
+
+			contents |= c2;
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			wmsharedEntity_t* hit = SVWM_GentityNum(touch[i]);
+			// might intersect, so do an exact clip
+			clipHandle_t clipHandle = SVWM_ClipHandleForEntity(hit);
+			float* angles = hit->s.angles;
+			if (!hit->r.bmodel)
+			{
+				angles = vec3_origin;	// boxes don't rotate
+			}
+
+			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
+
+			contents |= c2;
+		}
+		else if (GGameType & GAME_ET)
+		{
+			etsharedEntity_t* hit = SVET_GentityNum(touch[i]);
+			// might intersect, so do an exact clip
+			clipHandle_t clipHandle = SVET_ClipHandleForEntity(hit);
+
+			// ydnar: non-worldspawn entities must not use world as clip model!
+			if (clipHandle == 0)
+			{
+				continue;
+			}
+
+			float* angles = hit->r.currentAngles;
+			if (!hit->r.bmodel)
+			{
+				angles = vec3_origin;	// boxes don't rotate
+			}
+
+			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->r.currentOrigin, hit->r.currentAngles);
+
+			contents |= c2;
+		}
+		else
+		{
+			q3sharedEntity_t* hit = SVQ3_GentityNum(touch[i]);
+			// might intersect, so do an exact clip
+			clipHandle_t clipHandle = SVQ3_ClipHandleForEntity(hit);
+			float* angles = hit->s.angles;
+			if (!hit->r.bmodel)
+			{
+				angles = vec3_origin;	// boxes don't rotate
+			}
+
+			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
+
+			contents |= c2;
+		}
+	}
+
+	return contents;
+}

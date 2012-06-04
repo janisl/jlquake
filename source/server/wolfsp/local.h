@@ -41,5 +41,6 @@ void SVWS_LinkEntity(wssharedEntity_t* ent);
 clipHandle_t SVWS_ClipHandleForEntity(const wssharedEntity_t* ent);
 // clip to a specific entity
 void SVWS_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule);
+void SVWS_ClipMoveToEntities(q3moveclip_t* clip);
 
 #endif

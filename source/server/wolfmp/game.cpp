@@ -15,8 +15,8 @@
 //**************************************************************************
 
 #include "../server.h"
-#include "local.h"
 #include "../tech3/local.h"
+#include "local.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part

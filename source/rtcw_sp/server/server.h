@@ -181,22 +181,6 @@ int         SV_BotGetConsoleMessage(int client, char* buf, int size);
 // high level object sorting to reduce interaction tests
 //
 
-int SV_PointContents(const vec3_t p, int passEntityNum);
-// returns the CONTENTS_* value from the world and all entities at the given point.
-
-
-void SV_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule);
-// mins and maxs are relative
-
-// if the entire move stays in a solid volume, trace.allsolid will be set,
-// trace.startsolid will be set, and trace.fraction will be 0
-
-// if the starting point is in a solid, it will be allowed to move out
-// to an open area
-
-// passEntityNum is explicitly excluded from clipping checks (normally Q3ENTITYNUM_NONE)
-
-
 //
 // sv_net_chan.c
 //

@@ -161,7 +161,7 @@ void BotImport_Trace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec3_t ma
 {
 	q3trace_t trace;
 
-	SV_Trace(&trace, start, mins, maxs, end, passent, contentmask, qfalse);
+	SVT3_Trace(&trace, start, mins, maxs, end, passent, contentmask, qfalse);
 	//copy the trace information
 	bsptrace->allsolid = trace.allsolid;
 	bsptrace->startsolid = trace.startsolid;
@@ -212,7 +212,7 @@ BotImport_PointContents
 */
 int BotImport_PointContents(vec3_t point)
 {
-	return SV_PointContents(point, -1);
+	return SVT3_PointContents(point, -1);
 }
 
 /*

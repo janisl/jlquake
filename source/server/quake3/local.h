@@ -41,5 +41,6 @@ void SVQ3_LinkEntity(q3sharedEntity_t* ent);
 clipHandle_t SVQ3_ClipHandleForEntity(const q3sharedEntity_t* ent);
 // clip to a specific entity
 void SVQ3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule);
+void SVQ3_ClipMoveToEntities(q3moveclip_t* clip);
 
 #endif

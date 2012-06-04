@@ -276,3 +276,102 @@ void SVWS_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, 
 		trace->entityNum = touch->s.number;
 	}
 }
+
+void SVWS_ClipMoveToEntities(q3moveclip_t* clip)
+{
+	int touchlist[MAX_GENTITIES_Q3];
+	int num = SVT3_AreaEntities(clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES_Q3);
+
+	int passOwnerNum;
+	if (clip->passEntityNum != Q3ENTITYNUM_NONE)
+	{
+		passOwnerNum = (SVWS_GentityNum(clip->passEntityNum))->r.ownerNum;
+		if (passOwnerNum == Q3ENTITYNUM_NONE)
+		{
+			passOwnerNum = -1;
+		}
+	}
+	else
+	{
+		passOwnerNum = -1;
+	}
+
+	for (int i = 0; i < num; i++)
+	{
+		if (clip->trace.allsolid)
+		{
+			return;
+		}
+		wssharedEntity_t* touch = SVWS_GentityNum(touchlist[i]);
+
+		// see if we should ignore this entity
+		if (clip->passEntityNum != Q3ENTITYNUM_NONE)
+		{
+			if (touchlist[i] == clip->passEntityNum)
+			{
+				continue;	// don't clip against the pass entity
+			}
+			if (touch->r.ownerNum == clip->passEntityNum)
+			{
+				continue;	// don't clip against own missiles
+			}
+			if (touch->r.ownerNum == passOwnerNum)
+			{
+				continue;	// don't clip against other missiles from our owner
+			}
+		}
+
+		// if it doesn't have any brushes of a type we
+		// are looking for, ignore it
+		if (!(clip->contentmask & touch->r.contents))
+		{
+			continue;
+		}
+
+		// RF, special case, ignore chairs if we are carrying them
+		if (touch->s.eType == WSET_PROP && touch->s.otherEntityNum == clip->passEntityNum + 1)
+		{
+			continue;
+		}
+
+		// might intersect, so do an exact clip
+		clipHandle_t clipHandle = SVWS_ClipHandleForEntity(touch);
+
+		float* origin = touch->r.currentOrigin;
+		float* angles = touch->r.currentAngles;
+
+
+		if (!touch->r.bmodel)
+		{
+			angles = vec3_origin;	// boxes don't rotate
+		}
+
+		q3trace_t trace;
+		CM_TransformedBoxTraceQ3(&trace, clip->start, clip->end,
+			clip->mins, clip->maxs, clipHandle,  clip->contentmask,
+			origin, angles, clip->capsule);
+
+		if (trace.allsolid)
+		{
+			clip->trace.allsolid = true;
+			trace.entityNum = touch->s.number;
+		}
+		else if (trace.startsolid)
+		{
+			clip->trace.startsolid = true;
+			trace.entityNum = touch->s.number;
+		}
+
+		if (trace.fraction < clip->trace.fraction)
+		{
+			qboolean oldStart;
+
+			// make sure we keep a startsolid from a previous trace
+			oldStart = clip->trace.startsolid;
+
+			trace.entityNum = touch->s.number;
+			clip->trace = trace;
+			clip->trace.startsolid |= oldStart;
+		}
+	}
+}

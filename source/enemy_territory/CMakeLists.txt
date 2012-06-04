@@ -25,7 +25,6 @@ set (ET_FILES
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
-	server/sv_world.cpp
 
 	qcommon/cmd.cpp
 	qcommon/common.cpp
@@ -83,7 +82,6 @@ set (ETDED_FILES
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
-	server/sv_world.cpp
 
 	qcommon/cmd.cpp
 	qcommon/common.cpp

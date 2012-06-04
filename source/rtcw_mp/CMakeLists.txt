@@ -47,7 +47,6 @@ set(WOLFMP_FILES
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
-	server/sv_world.cpp
 
 	game/q_math.cpp
 	game/q_shared.cpp
@@ -83,7 +82,6 @@ set(WOLFMPDED_FILES
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
-	server/sv_world.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp
