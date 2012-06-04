@@ -824,3 +824,290 @@ bool AAS_AreaWaypoint(int areanum, vec3_t center)
 	VectorCopy(aasworld->areawaypoints[areanum], center);
 	return true;
 }
+
+bool AAS_AreaEntityCollision(int areanum, const vec3_t start, const vec3_t end,
+	int presencetype, int passent, aas_trace_t* trace)
+{
+	vec3_t boxmins, boxmaxs;
+	AAS_PresenceTypeBoundingBox(presencetype, boxmins, boxmaxs);
+
+	bsp_trace_t bsptrace;
+	Com_Memset(&bsptrace, 0, sizeof(bsp_trace_t));	//make compiler happy
+	//assume no collision
+	bsptrace.fraction = 1;
+	bool collision = false;
+	for (aas_link_t* link = aasworld->arealinkedentities[areanum]; link; link = link->next_ent)
+	{
+		//ignore the pass entity
+		if (link->entnum == passent)
+		{
+			continue;
+		}
+
+		if (AAS_EntityCollision(link->entnum, start, boxmins, boxmaxs, end,
+				BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP, &bsptrace))
+		{
+			collision = true;
+		}
+	}
+	if (collision)
+	{
+		trace->startsolid = bsptrace.startsolid;
+		trace->ent = bsptrace.ent;
+		VectorCopy(bsptrace.endpos, trace->endpos);
+		trace->area = 0;
+		trace->planenum = 0;
+		return true;
+	}
+	return false;
+}
+
+// recursive subdivision of the line by the BSP tree.
+aas_trace_t AAS_TraceClientBBox(const vec3_t start, const vec3_t end, int presencetype,
+	int passent)
+{
+	//clear the trace structure
+	aas_trace_t trace;
+	Com_Memset(&trace, 0, sizeof(aas_trace_t));
+	if (GGameType & GAME_ET)
+	{
+		trace.ent = Q3ENTITYNUM_NONE;
+	}
+
+	if (!aasworld->loaded)
+	{
+		return trace;
+	}
+
+	aas_tracestack_t tracestack[127];
+	aas_tracestack_t* tstack_p = tracestack;
+	//we start with the whole line on the stack
+	VectorCopy(start, tstack_p->start);
+	VectorCopy(end, tstack_p->end);
+	tstack_p->planenum = 0;
+	//start with node 1 because node zero is a dummy for a solid leaf
+	tstack_p->nodenum = 1;		//starting at the root of the tree
+	tstack_p++;
+
+	while (1)
+	{
+		//pop up the stack
+		tstack_p--;
+		//if the trace stack is empty (ended up with a piece of the
+		//line to be traced in an area)
+		if (tstack_p < tracestack)
+		{
+			tstack_p++;
+			//nothing was hit
+			trace.startsolid = false;
+			trace.fraction = 1.0;
+			//endpos is the end of the line
+			VectorCopy(end, trace.endpos);
+			//nothing hit
+			trace.ent = GGameType & GAME_ET ? Q3ENTITYNUM_NONE : 0;
+			trace.area = 0;
+			trace.planenum = 0;
+			return trace;
+		}
+		//number of the current node to test the line against
+		int nodenum = tstack_p->nodenum;
+		//if it is an area
+		if (nodenum < 0)
+		{
+			//if can't enter the area because it hasn't got the right presence type
+			if (!(GGameType & GAME_ET) && !(aasworld->areasettings[-nodenum].presencetype & presencetype))
+			{
+				//if the start point is still the initial start point
+				//NOTE: no need for epsilons because the points will be
+				//exactly the same when they're both the start point
+				vec3_t v1, v2;
+				if (tstack_p->start[0] == start[0] &&
+					tstack_p->start[1] == start[1] &&
+					tstack_p->start[2] == start[2])
+				{
+					trace.startsolid = true;
+					trace.fraction = 0.0;
+					VectorClear(v1);
+				}
+				else
+				{
+					trace.startsolid = false;
+					VectorSubtract(end, start, v1);
+					VectorSubtract(tstack_p->start, start, v2);
+					trace.fraction = VectorLength(v2) / VectorNormalize(v1);
+					VectorMA(tstack_p->start, -0.125, v1, tstack_p->start);
+				}
+				VectorCopy(tstack_p->start, trace.endpos);
+				trace.ent = 0;
+				trace.area = -nodenum;
+				trace.planenum = tstack_p->planenum;
+				//always take the plane with normal facing towards the trace start
+				aas_plane_t* plane = &aasworld->planes[trace.planenum];
+				if (DotProduct(v1, plane->normal) > 0)
+				{
+					trace.planenum ^= 1;
+				}
+				return trace;
+			}
+			else
+			{
+				if (passent >= 0)
+				{
+					if (AAS_AreaEntityCollision(-nodenum, tstack_p->start,
+							tstack_p->end, presencetype, passent, &trace))
+					{
+						if (!trace.startsolid)
+						{
+							vec3_t v1, v2;
+							VectorSubtract(end, start, v1);
+							VectorSubtract(trace.endpos, start, v2);
+							trace.fraction = VectorLength(v2) / VectorLength(v1);
+						}
+						return trace;
+					}
+				}
+			}
+			trace.lastarea = -nodenum;
+			continue;
+		}
+		//if it is a solid leaf
+		if (!nodenum)
+		{
+			//if the start point is still the initial start point
+			//NOTE: no need for epsilons because the points will be
+			//exactly the same when they're both the start point
+			vec3_t v1;
+			if (tstack_p->start[0] == start[0] &&
+				tstack_p->start[1] == start[1] &&
+				tstack_p->start[2] == start[2])
+			{
+				trace.startsolid = true;
+				trace.fraction = 0.0;
+				VectorClear(v1);
+			}
+			else
+			{
+				trace.startsolid = false;
+				VectorSubtract(end, start, v1);
+				vec3_t v2;
+				VectorSubtract(tstack_p->start, start, v2);
+				trace.fraction = VectorLength(v2) / VectorNormalize(v1);
+				VectorMA(tstack_p->start, -0.125, v1, tstack_p->start);
+			}
+			VectorCopy(tstack_p->start, trace.endpos);
+			trace.ent = GGameType & GAME_ET ? Q3ENTITYNUM_NONE : 0;
+			trace.area = 0;	//hit solid leaf
+			trace.planenum = tstack_p->planenum;
+			//always take the plane with normal facing towards the trace start
+			aas_plane_t* plane = &aasworld->planes[trace.planenum];
+			if (DotProduct(v1, plane->normal) > 0)
+			{
+				trace.planenum ^= 1;
+			}
+			return trace;
+		}
+		//the node to test against
+		aas_node_t* aasnode = &aasworld->nodes[nodenum];
+		//start point of current line to test against node
+		vec3_t cur_start;
+		VectorCopy(tstack_p->start, cur_start);
+		//end point of the current line to test against node
+		vec3_t cur_end;
+		VectorCopy(tstack_p->end, cur_end);
+		//the current node plane
+		aas_plane_t* plane = &aasworld->planes[aasnode->planenum];
+
+		float front = DotProduct(cur_start, plane->normal) - plane->dist;
+		float back = DotProduct(cur_end, plane->normal) - plane->dist;
+
+		//if the whole to be traced line is totally at the front of this node
+		//only go down the tree with the front child
+		if ((front >= -ON_EPSILON && back >= -ON_EPSILON))
+		{
+			//keep the current start and end point on the stack
+			//and go down the tree with the front child
+			tstack_p->nodenum = aasnode->children[0];
+			tstack_p++;
+			if (tstack_p >= &tracestack[127])
+			{
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				return trace;
+			}
+		}
+		//if the whole to be traced line is totally at the back of this node
+		//only go down the tree with the back child
+		else if ((front < ON_EPSILON && back < ON_EPSILON))
+		{
+			//keep the current start and end point on the stack
+			//and go down the tree with the back child
+			tstack_p->nodenum = aasnode->children[1];
+			tstack_p++;
+			if (tstack_p >= &tracestack[127])
+			{
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				return trace;
+			}
+		}
+		//go down the tree both at the front and back of the node
+		else
+		{
+			int tmpplanenum = tstack_p->planenum;
+			if (front == back)
+			{
+				front -= 0.001f;
+			}
+			//calculate the hitpoint with the node (split point of the line)
+			//put the crosspoint TRACEPLANE_EPSILON pixels on the near side
+			float frac;
+			if (front < 0)
+			{
+				frac = (front + TRACEPLANE_EPSILON) / (front - back);
+			}
+			else
+			{
+				frac = (front - TRACEPLANE_EPSILON) / (front - back);
+			}
+			if (frac < 0)
+			{
+				frac = 0.001f;
+			}
+			else if (frac > 1)
+			{
+				frac = 0.999f;
+			}
+
+			vec3_t cur_mid;
+			cur_mid[0] = cur_start[0] + (cur_end[0] - cur_start[0]) * frac;
+			cur_mid[1] = cur_start[1] + (cur_end[1] - cur_start[1]) * frac;
+			cur_mid[2] = cur_start[2] + (cur_end[2] - cur_start[2]) * frac;
+
+			//side the front part of the line is on
+			int side = front < 0;
+			//first put the end part of the line on the stack (back side)
+			VectorCopy(cur_mid, tstack_p->start);
+			//not necesary to store because still on stack
+			//VectorCopy(cur_end, tstack_p->end);
+			tstack_p->planenum = aasnode->planenum;
+			tstack_p->nodenum = aasnode->children[!side];
+			tstack_p++;
+			if (tstack_p >= &tracestack[127])
+			{
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				return trace;
+			}
+			//now put the part near the start of the line on the stack so we will
+			//continue with thats part first. This way we'll find the first
+			//hit of the bbox
+			VectorCopy(cur_start, tstack_p->start);
+			VectorCopy(cur_mid, tstack_p->end);
+			tstack_p->planenum = tmpplanenum;
+			tstack_p->nodenum = aasnode->children[side];
+			tstack_p++;
+			if (tstack_p >= &tracestack[127])
+			{
+				BotImport_Print(PRT_ERROR, "AAS_TraceBoundingBox: stack overflow\n");
+				return trace;
+			}
+		}
+	}
+}

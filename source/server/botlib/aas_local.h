@@ -583,3 +583,7 @@ void AAS_UnlinkFromAreas(aas_link_t* areas);
 aas_link_t* AAS_AASLinkEntity(const vec3_t absmins, const vec3_t absmaxs, int entnum);
 aas_link_t* AAS_LinkEntityClientBBox(const vec3_t absmins, const vec3_t absmaxs, int entnum, int presencetype);
 aas_plane_t* AAS_PlaneFromNum(int planenum);
+bool AAS_AreaEntityCollision(int areanum, const vec3_t start, const vec3_t end,
+	int presencetype, int passent, aas_trace_t* trace);
+//returns the result of the trace of a client bbox
+aas_trace_t AAS_TraceClientBBox(const vec3_t start, const vec3_t end, int presencetype, int passent);

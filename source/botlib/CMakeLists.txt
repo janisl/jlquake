@@ -5,7 +5,6 @@ add_library(botlib STATIC
 	be_aas_move.cpp
 	be_aas_reach.cpp
 	be_aas_route.cpp
-	be_aas_sample.cpp
 	be_ai_chat.cpp
 	be_ai_goal.cpp
 	be_ai_move.cpp

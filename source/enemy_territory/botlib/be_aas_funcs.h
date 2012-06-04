@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef BSPCINCLUDE
 
 #include "be_aas_main.h"
-#include "be_aas_sample.h"
 #include "be_aas_reach.h"
 #include "be_aas_route.h"
 #include "be_aas_debug.h"
