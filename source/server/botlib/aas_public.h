@@ -86,6 +86,24 @@ enum
 #define ALTROUTEGOAL_CLUSTERPORTALS     2
 #define ALTROUTEGOAL_VIEWPORTALS        4
 
+// client movement prediction stop events, stop as soon as:
+#define SE_NONE                 0
+#define SE_HITGROUND            1		// the ground is hit
+#define SE_LEAVEGROUND          2		// there's no ground
+#define SE_ENTERWATER           4		// water is entered
+#define SE_ENTERSLIME           8		// slime is entered
+#define SE_ENTERLAVA            16		// lava is entered
+#define SE_HITGROUNDDAMAGE      32		// the ground is hit with damage
+#define SE_GAP                  64		// there's a gap
+#define SE_TOUCHJUMPPAD         128		// touching a jump pad area
+#define SE_TOUCHTELEPORTER      256		// touching teleporter
+#define SE_ENTERAREA            512		// the given stoparea is entered
+#define SE_HITGROUNDAREA        1024	// a ground face in the area is hit
+#define Q3SE_HITBOUNDINGBOX     2048	// hit the specified bounding box
+#define Q3SE_TOUCHCLUSTERPORTAL 4096	// touching a cluster portal
+#define ETSE_HITENT             2048	// hit specified entity
+#define ETSE_STUCK              4096
+
 //entity info
 struct aas_entityinfo_t
 {

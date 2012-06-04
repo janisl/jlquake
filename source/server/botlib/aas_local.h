@@ -388,10 +388,6 @@ void AAS_Optimize();
 //travel times in hundreth of a second
 // Ridah, tweaked these for Wolf AI
 #define REACH_MIN_TIME                      4	// always at least this much time for a reachability
-#define WATERJUMP_TIME                      700	//7 seconds
-#define TELEPORT_TIME                       50	//0.5 seconds
-#define BARRIERJUMP_TIME                    900	//fixed value?
-#define STARTCROUCH_TIME                    300	//3 sec to start crouching
 #define STARTGRAPPLE_TIME                   500	//using the grapple costs a lot of time
 #define STARTWALKOFFLEDGE_TIME              300	//3 seconds
 #define STARTJUMP_TIME                      500	//3 seconds for jumping
@@ -486,6 +482,12 @@ void AAS_StoreReachability();
 int AAS_BestReachableLinkArea(aas_link_t* areas);
 bool AAS_NearbySolidOrGap(const vec3_t start, const vec3_t end);
 void AAS_Reachability_FuncBobbing();
+bool AAS_GetJumpPadInfo(int ent, vec3_t areastart, vec3_t absmins, vec3_t absmaxs, vec3_t velocity);
+//returns the best reachable area and goal origin for a bounding box at the given origin
+int AAS_BestReachableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec3_t goalorigin);
+bool AAS_Reachability_Swim(int area1num, int area2num);
+bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2num);
+bool AAS_Reachability_Ladder(int area1num, int area2num);
 
 #define ROUTING_DEBUG
 

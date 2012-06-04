@@ -41,6 +41,3 @@ void AAS_InitReachability(void);
 //continue calculating the reachabilities
 int AAS_ContinueInitReachability(float time);
 #endif	//AASINTERN
-
-//returns the best reachable area and goal origin for a bounding box at the given origin
-int AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin);

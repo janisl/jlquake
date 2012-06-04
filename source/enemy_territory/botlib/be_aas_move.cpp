@@ -461,7 +461,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 				AAS_DebugLine(org, trace.endpos, LINECOLOR_RED);
 			}	//end if
 			//
-			if (stopevent & SE_HITENT)
+			if (stopevent & ETSE_HITENT)
 			{
 				if (trace.fraction < 1.0 && trace.ent == hitent)
 				{
@@ -469,7 +469,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 					VectorCopy(org, move->endpos);
 					VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 					move->trace = trace;
-					move->stopevent = SE_HITENT;
+					move->stopevent = ETSE_HITENT;
 					move->presencetype = aasworld->areasettings[areanum].presencetype;
 					move->endcontents = 0;
 					move->time = n * frametime;
@@ -498,7 +498,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 				}	//end for
 			}	//end if
 
-			if (stopevent & SE_STUCK)
+			if (stopevent & ETSE_STUCK)
 			{
 				if (trace.fraction < 1.0)
 				{
@@ -511,7 +511,7 @@ int AAS_PredictClientMovement(struct aas_clientmove_s* move,
 						VectorCopy(org, move->endpos);
 						VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 						move->trace = trace;
-						move->stopevent = SE_STUCK;
+						move->stopevent = ETSE_STUCK;
 						move->presencetype = aasworld->areasettings[areanum].presencetype;
 						move->endcontents = 0;
 						move->time = n * frametime;

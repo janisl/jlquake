@@ -35,20 +35,6 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-//client movement prediction stop events, stop as soon as:
-#define SE_NONE                 0
-#define SE_HITGROUND            1		// the ground is hit
-#define SE_LEAVEGROUND          2		// there's no ground
-#define SE_ENTERWATER           4		// water is entered
-#define SE_ENTERSLIME           8		// slime is entered
-#define SE_ENTERLAVA            16		// lava is entered
-#define SE_HITGROUNDDAMAGE      32		// the ground is hit with damage
-#define SE_GAP                  64		// there's a gap
-#define SE_TOUCHJUMPPAD         128		// touching a jump pad area
-#define SE_TOUCHTELEPORTER      256		// touching teleporter
-#define SE_ENTERAREA            512		// the given stoparea is entered
-#define SE_HITGROUNDAREA        1024	// a ground face in the area is hit
-
 typedef struct aas_clientmove_s
 {
 	vec3_t endpos;			//position at the end of movement prediction

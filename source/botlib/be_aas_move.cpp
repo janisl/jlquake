@@ -411,7 +411,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 				AAS_DebugLine(org, trace.endpos, LINECOLOR_RED);
 			}	//end if
 			//
-			if (stopevent & (SE_ENTERAREA | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER | SE_TOUCHCLUSTERPORTAL))
+			if (stopevent & (SE_ENTERAREA | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER | Q3SE_TOUCHCLUSTERPORTAL))
 			{
 				numareas = AAS_TraceAreas(org, trace.endpos, areas, points, 20);
 				for (i = 0; i < numareas; i++)
@@ -465,7 +465,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 							return true;
 						}	//end if
 					}	//end if
-					if (stopevent & SE_TOUCHCLUSTERPORTAL)
+					if (stopevent & Q3SE_TOUCHCLUSTERPORTAL)
 					{
 						if (aasworld->areasettings[areas[i]].contents & AREACONTENTS_CLUSTERPORTAL)
 						{
@@ -473,7 +473,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 							move->endarea = areas[i];
 							VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 							move->trace = trace;
-							move->stopevent = SE_TOUCHCLUSTERPORTAL;
+							move->stopevent = Q3SE_TOUCHCLUSTERPORTAL;
 							move->presencetype = presencetype;
 							move->endcontents = 0;
 							move->time = n * frametime;
@@ -484,7 +484,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 				}	//end for
 			}	//end if
 				//
-			if (stopevent & SE_HITBOUNDINGBOX)
+			if (stopevent & Q3SE_HITBOUNDINGBOX)
 			{
 				if (AAS_ClipToBBox(&trace, org, trace.endpos, presencetype, mins, maxs))
 				{
@@ -492,7 +492,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s* move,
 					move->endarea = AAS_PointAreaNum(move->endpos);
 					VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 					move->trace = trace;
-					move->stopevent = SE_HITBOUNDINGBOX;
+					move->stopevent = Q3SE_HITBOUNDINGBOX;
 					move->presencetype = presencetype;
 					move->endcontents = 0;
 					move->time = n * frametime;
@@ -792,6 +792,6 @@ int AAS_ClientMovementHitBBox(struct aas_clientmove_s* move,
 {
 	return AAS_ClientMovementPrediction(move, entnum, origin, presencetype, onground,
 		velocity, cmdmove, cmdframes, maxframes,
-		frametime, SE_HITBOUNDINGBOX, 0,
+		frametime, Q3SE_HITBOUNDINGBOX, 0,
 		mins, maxs, visualize);
 }	//end of the function AAS_ClientMovementHitBBox

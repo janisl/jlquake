@@ -77,6 +77,8 @@ static void AAS_InitSettingsWolf()
 	aassettings.phys_maxsteepness = 0.7;
 	aassettings.phys_maxwaterjump = 17;
 	aassettings.phys_jumpvel = 270;
+	aassettings.phys_falldelta5 = FALLDELTA_5DAMAGE;
+	aassettings.phys_falldelta10 = FALLDELTA_10DAMAGE;
 	if (GGameType & GAME_WolfMP)
 	{
 		// Ridah, calculate maxbarrier according to jumpvel and gravity
@@ -87,8 +89,16 @@ static void AAS_InitSettingsWolf()
 		aassettings.phys_maxbarrier = 49;
 	}
 	aassettings.rs_maxjumpfallheight = 450;
-	aassettings.rs_startcrouch = STARTCROUCH_TIME;
+	aassettings.rs_startcrouch = 300;
 	aassettings.rs_funcbob = 300;
+	aassettings.rs_waterjump = 700;
+	aassettings.rs_barrierjump = 900;
+	aassettings.rs_maxfallheight = 0;
+	aassettings.rs_startwalkoffledge = STARTWALKOFFLEDGE_TIME;
+	aassettings.rs_falldamage5 = FALLDAMAGE_5_TIME;
+	aassettings.rs_falldamage10 = FALLDAMAGE_10_TIME;
+	aassettings.rs_startjump = STARTJUMP_TIME;
+	aassettings.rs_teleport = 50;
 }
 
 void AAS_InitSettings()
