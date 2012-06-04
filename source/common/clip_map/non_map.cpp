@@ -78,7 +78,7 @@ public:
 	{ return NULL; }
 	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 	{ return 0; }
-	void SetTempBoxModelContents(int contents)
+	void SetTempBoxModelContents(clipHandle_t handle, int contents)
 	{}
 	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
 	{ throw QNonBspModelException(); }

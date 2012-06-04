@@ -55,7 +55,7 @@ public:
 	virtual int GetNumTextures() const = 0;
 	virtual const char* GetTextureName(int Index) const = 0;
 	virtual clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule) = 0;
-	virtual void SetTempBoxModelContents(int contents) = 0;
+	virtual void SetTempBoxModelContents(clipHandle_t handle, int contents) = 0;
 	virtual clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs) = 0;
 	virtual int PointLeafnum(const vec3_t p) const = 0;
 	virtual int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const = 0;

@@ -340,7 +340,7 @@ clipHandle_t QClipMap29::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 	return BOX_HULL_HANDLE;
 }
 
-void QClipMap29::SetTempBoxModelContents(int contents)
+void QClipMap29::SetTempBoxModelContents(clipHandle_t handle, int contents)
 {
 }
 

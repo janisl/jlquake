@@ -30,9 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-// FIXME: Copied from cm_local.h
-#define BOX_MODEL_HANDLE        511
-
 /*
 ====================
 SV_ClipMoveToEntities
@@ -106,10 +103,7 @@ void SV_ClipMoveToEntities(q3moveclip_t* clip)
 		}
 
 		// DHM - Nerve :: If clipping against BBOX, set to correct contents
-		if (clipHandle == BOX_MODEL_HANDLE)
-		{
-			CM_SetTempBoxModelContents(touch->r.contents);
-		}
+		CM_SetTempBoxModelContents(clipHandle, touch->r.contents);
 
 		origin = touch->r.currentOrigin;
 		angles = touch->r.currentAngles;
@@ -154,10 +148,7 @@ void SV_ClipMoveToEntities(q3moveclip_t* clip)
 		}
 
 		// DHM - Nerve :: Reset contents to default
-		if (clipHandle == BOX_MODEL_HANDLE)
-		{
-			CM_SetTempBoxModelContents(BSP46CONTENTS_BODY);
-		}
+		CM_SetTempBoxModelContents(clipHandle, BSP46CONTENTS_BODY);
 	}
 }
 

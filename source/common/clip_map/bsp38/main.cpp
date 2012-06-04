@@ -377,7 +377,7 @@ clipHandle_t QClipMap38::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 	return BOX_HANDLE;
 }
 
-void QClipMap38::SetTempBoxModelContents(int contents)
+void QClipMap38::SetTempBoxModelContents(clipHandle_t handle, int contents)
 {
 	box_brush->contents = contents;
 }
