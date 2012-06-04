@@ -46,7 +46,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask)
 {
 	bsp_trace_t bsptrace;
-	botimport.Trace(&bsptrace, start, mins, maxs, end, passent, contentmask);
+	BotImport_Trace(&bsptrace, start, mins, maxs, end, passent, contentmask);
 	return bsptrace;
 }	//end of the function AAS_Trace
 //===========================================================================
@@ -58,7 +58,7 @@ bsp_trace_t AAS_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int pa
 //===========================================================================
 int AAS_PointContents(vec3_t point)
 {
-	return botimport.PointContents(point);
+	return BotImport_PointContents(point);
 }	//end of the function AAS_PointContents
 //===========================================================================
 //
@@ -72,7 +72,7 @@ qboolean AAS_EntityCollision(int entnum,
 {
 	bsp_trace_t enttrace;
 
-	botimport.EntityTrace(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask);
+	BotImport_EntityTrace(&enttrace, start, boxmins, boxmaxs, end, entnum, contentmask);
 	if (enttrace.fraction < trace->fraction)
 	{
 		Com_Memcpy(trace, &enttrace, sizeof(bsp_trace_t));

@@ -41,6 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 struct aas_clientmove_s;
 struct bot_input_t;
 struct bot_entitystate_t;
+struct bsp_trace_t;
 
 //debug line colors
 #define LINECOLOR_NONE          -1
@@ -50,44 +51,9 @@ struct bot_entitystate_t;
 #define LINECOLOR_YELLOW        4	//0xdcdddedfL
 #define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
 
-#ifndef BSPTRACE
-
-//bsp_trace_t hit surface
-typedef struct bsp_surface_s
-{
-	char name[16];
-	int flags;
-	int value;
-} bsp_surface_t;
-
-//remove the bsp_trace_s structure definition l8r on
-//a trace is returned when a box is swept through the world
-typedef struct bsp_trace_s
-{
-	qboolean allsolid;			// if true, plane is not valid
-	qboolean startsolid;		// if true, the initial point was in a solid area
-	float fraction;				// time completed, 1.0 = didn't hit anything
-	vec3_t endpos;				// final position
-	cplane_t plane;				// surface normal at impact
-	float exp_dist;				// expanded plane distance
-	int sidenum;				// number of the brush side hit
-	bsp_surface_t surface;		// the hit point surface
-	int contents;				// contents on other side of surface hit
-	int ent;					// number of entity hit
-} bsp_trace_t;
-
-#define BSPTRACE
-#endif	// BSPTRACE
-
 //bot AI library exported functions
 typedef struct botlib_import_s
 {
-	//trace a bbox through the world
-	void (* Trace)(bsp_trace_t* trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
-	//trace a bbox against a specific entity
-	void (* EntityTrace)(bsp_trace_t* trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum, int contentmask);
-	//retrieve the contents at the given point
-	int (* PointContents)(vec3_t point);
 	//check if the point is in potential visible sight
 	int (* inPVS)(vec3_t p1, vec3_t p2);
 	//

@@ -207,6 +207,26 @@ int SVT3_AreaEntities(const vec3_t mins, const vec3_t maxs, int* entityList, int
 	return ap.count;
 }
 
+void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+	}
+	else
+	{
+		SVQ3_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+	}
+}
+
 //	Moves the given mins/maxs volume through the world from start to end.
 // passEntityNum and entities owned by passEntityNum are explicitly not checked.
 void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs,

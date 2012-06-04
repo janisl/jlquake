@@ -138,6 +138,30 @@ struct aas_trace_t
 	int planenum;			// number of the plane that was hit
 };
 
+//bsp_trace_t hit surface
+struct bsp_surface_t
+{
+	char name[16];
+	int flags;
+	int value;
+};
+
+//remove the bsp_trace_t structure definition l8r on
+//a trace is returned when a box is swept through the world
+struct bsp_trace_t
+{
+	qboolean allsolid;			// if true, plane is not valid
+	qboolean startsolid;		// if true, the initial point was in a solid area
+	float fraction;				// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;				// final position
+	cplane_t plane;				// surface normal at impact
+	float exp_dist;				// expanded plane distance
+	int sidenum;				// number of the brush side hit
+	bsp_surface_t surface;		// the hit point surface
+	int contents;				// contents on other side of surface hit
+	int ent;					// number of entity hit
+};
+
 //entity state
 struct bot_entitystate_t
 {

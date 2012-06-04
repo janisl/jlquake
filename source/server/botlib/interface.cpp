@@ -17,6 +17,7 @@
 #include "../server.h"
 #include "local.h"
 #include "ai_weight.h"
+#include "../tech3/local.h"
 
 bot_debugpoly_t* debugpolygons;
 int bot_maxdebugpolys;
@@ -289,4 +290,49 @@ int BotLibUpdateEntity(int ent, bot_entitystate_t* state)
 	}
 
 	return AAS_UpdateEntity(ent, state);
+}
+
+void BotImport_Trace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask)
+{
+	q3trace_t trace;
+	SVT3_Trace(&trace, start, mins, maxs, end, passent, contentmask, false);
+	//copy the trace information
+	bsptrace->allsolid = trace.allsolid;
+	bsptrace->startsolid = trace.startsolid;
+	bsptrace->fraction = trace.fraction;
+	VectorCopy(trace.endpos, bsptrace->endpos);
+	bsptrace->plane.dist = trace.plane.dist;
+	VectorCopy(trace.plane.normal, bsptrace->plane.normal);
+	bsptrace->plane.signbits = trace.plane.signbits;
+	bsptrace->plane.type = trace.plane.type;
+	bsptrace->surface.value = trace.surfaceFlags;
+	bsptrace->ent = trace.entityNum;
+	bsptrace->exp_dist = 0;
+	bsptrace->sidenum = 0;
+	bsptrace->contents = 0;
+}
+
+void BotImport_EntityTrace(bsp_trace_t* bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum, int contentmask)
+{
+	q3trace_t trace;
+	SVT3_ClipToEntity(&trace, start, mins, maxs, end, entnum, contentmask, false);
+	//copy the trace information
+	bsptrace->allsolid = trace.allsolid;
+	bsptrace->startsolid = trace.startsolid;
+	bsptrace->fraction = trace.fraction;
+	VectorCopy(trace.endpos, bsptrace->endpos);
+	bsptrace->plane.dist = trace.plane.dist;
+	VectorCopy(trace.plane.normal, bsptrace->plane.normal);
+	bsptrace->plane.signbits = trace.plane.signbits;
+	bsptrace->plane.type = trace.plane.type;
+	bsptrace->surface.value = trace.surfaceFlags;
+	bsptrace->ent = trace.entityNum;
+	bsptrace->exp_dist = 0;
+	bsptrace->sidenum = 0;
+	bsptrace->contents = 0;
+}
+
+int BotImport_PointContents(vec3_t point)
+{
+	return SVT3_PointContents(point, -1);
 }

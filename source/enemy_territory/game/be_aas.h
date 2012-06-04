@@ -38,6 +38,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _ET_BE_AAS_H
 #define _ET_BE_AAS_H
 
+#include "../../server/botlib/public.h"
+
 //client movement prediction stop events, stop as soon as:
 #define SE_NONE                 0
 #define SE_HITGROUND            1		// the ground is hit
@@ -54,40 +56,11 @@ If you have questions concerning this license or the applicable additional terms
 #define SE_HITENT               2048	// hit specified entity
 #define SE_STUCK                4096
 
-#ifndef BSPTRACE
-
-//bsp_trace_t hit surface
-typedef struct bsp_surface_s
-{
-	char name[16];
-	int flags;
-	int value;
-} bsp_surface_t;
-
-//remove the bsp_trace_s structure definition l8r on
-//a trace is returned when a box is swept through the world
-typedef struct bsp_trace_s
-{
-	qboolean allsolid;			// if true, plane is not valid
-	qboolean startsolid;		// if true, the initial point was in a solid area
-	float fraction;				// time completed, 1.0 = didn't hit anything
-	vec3_t endpos;				// final position
-	cplane_t plane;				// surface normal at impact
-	float exp_dist;				// expanded plane distance
-	int sidenum;				// number of the brush side hit
-	bsp_surface_t surface;		// the hit point surface
-	int contents;				// contents on other side of surface hit
-	int ent;					// number of entity hit
-} bsp_trace_t;
-
-#define BSPTRACE
-#endif	// BSPTRACE
-
 typedef struct aas_clientmove_s
 {
 	vec3_t endpos;			//position at the end of movement prediction
 	vec3_t velocity;		//velocity at the end of movement prediction
-	struct bsp_trace_s trace;		//last trace
+	bsp_trace_t trace;		//last trace
 	int presencetype;		//presence type at end of movement prediction
 	int stopevent;			//event that made the prediction stop
 	float endcontents;		//contents at the end of movement prediction
