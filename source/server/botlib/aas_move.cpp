@@ -77,8 +77,8 @@ static void AAS_InitSettingsWolf()
 	aassettings.phys_maxsteepness = 0.7;
 	aassettings.phys_maxwaterjump = 17;
 	aassettings.phys_jumpvel = 270;
-	aassettings.phys_falldelta5 = FALLDELTA_5DAMAGE;
-	aassettings.phys_falldelta10 = FALLDELTA_10DAMAGE;
+	aassettings.phys_falldelta5 = 25;
+	aassettings.phys_falldelta10 = 40;
 	if (GGameType & GAME_WolfMP)
 	{
 		// Ridah, calculate maxbarrier according to jumpvel and gravity
@@ -88,17 +88,23 @@ static void AAS_InitSettingsWolf()
 	{
 		aassettings.phys_maxbarrier = 49;
 	}
-	aassettings.rs_maxjumpfallheight = 450;
-	aassettings.rs_startcrouch = 300;
-	aassettings.rs_funcbob = 300;
 	aassettings.rs_waterjump = 700;
-	aassettings.rs_barrierjump = 900;
-	aassettings.rs_maxfallheight = 0;
-	aassettings.rs_startwalkoffledge = STARTWALKOFFLEDGE_TIME;
-	aassettings.rs_falldamage5 = FALLDAMAGE_5_TIME;
-	aassettings.rs_falldamage10 = FALLDAMAGE_10_TIME;
-	aassettings.rs_startjump = STARTJUMP_TIME;
 	aassettings.rs_teleport = 50;
+	aassettings.rs_barrierjump = 900;
+	aassettings.rs_startcrouch = 300;
+	aassettings.rs_startgrapple = 500;
+	aassettings.rs_startwalkoffledge = 300;
+	aassettings.rs_startjump = 500;
+	aassettings.rs_rocketjump = 300;
+	aassettings.rs_bfgjump = 300;
+	aassettings.rs_jumppad = 200;
+	aassettings.rs_aircontrolledjumppad = 250;
+	aassettings.rs_funcbob = 300;
+	aassettings.rs_startelevator = 0;
+	aassettings.rs_falldamage5 = 400;
+	aassettings.rs_falldamage10 = 900;
+	aassettings.rs_maxfallheight = 0;
+	aassettings.rs_maxjumpfallheight = 450;
 }
 
 void AAS_InitSettings()
@@ -765,6 +771,7 @@ static bool AAS_ClientMovementPrediction(aas_clientmove_t* move,
 				{
 					int areanum = AAS_PointAreaNum(org);
 					VectorCopy(org, move->endpos);
+					move->endarea = areanum;
 					VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 					move->aasTrace = trace;
 					move->bspTrace = bsptrace;
@@ -1256,16 +1263,16 @@ static bool AAS_ClientMovementPrediction(aas_clientmove_t* move,
 			if (aasworld->areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_JUMPPAD)
 			{
 				VectorCopy(org, move->endpos);
+				move->endarea = AAS_PointAreaNum(org);
 				VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 				move->aasTrace = trace;
 				move->bspTrace = bsptrace;
 				move->stopevent = SE_TOUCHJUMPPAD;
 				if (GGameType & GAME_ET)
 				{
-					int areanum = AAS_PointAreaNum(org);
-					if (areanum)
+					if (move->endarea)
 					{
-						move->presencetype = aasworld->areasettings[areanum].presencetype;
+						move->presencetype = aasworld->areasettings[move->endarea].presencetype;
 					}
 				}
 				else
@@ -1283,16 +1290,16 @@ static bool AAS_ClientMovementPrediction(aas_clientmove_t* move,
 			if (aasworld->areasettings[AAS_PointAreaNum(org)].contents & AREACONTENTS_TELEPORTER)
 			{
 				VectorCopy(org, move->endpos);
+				move->endarea = AAS_PointAreaNum(org);
 				VectorScale(frame_test_vel, 1 / frametime, move->velocity);
 				move->aasTrace = trace;
 				move->bspTrace = bsptrace;
 				move->stopevent = SE_TOUCHTELEPORTER;
 				if (GGameType & GAME_ET)
 				{
-					int areanum = AAS_PointAreaNum(org);
-					if (areanum)
+					if (move->endarea)
 					{
-						move->presencetype = aasworld->areasettings[areanum].presencetype;
+						move->presencetype = aasworld->areasettings[move->endarea].presencetype;
 					}
 				}
 				else

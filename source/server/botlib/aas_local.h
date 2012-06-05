@@ -407,86 +407,8 @@ void AAS_JumpReachRunStart(const aas_reachability_t* reach, vec3_t runstart);
 
 void AAS_Optimize();
 
-//maximum number of reachability links
-#define AAS_MAX_REACHABILITYSIZE            128000
-//number of units reachability points are placed inside the areas
-#define INSIDEUNITS                         2
-#define INSIDEUNITS_WALKEND                 5
-#define INSIDEUNITS_WALKSTART               0.1
-#define INSIDEUNITS_WATERJUMP               15
-// Ridah, added this for better walking off ledges
-#define INSIDEUNITS_WALKOFFLEDGEEND         15
-//area flag used for weapon jumping
-#define AREA_WEAPONJUMP                     8192	//valid area to weapon jump to
-
-//travel times in hundreth of a second
-// Ridah, tweaked these for Wolf AI
-#define REACH_MIN_TIME                      4	// always at least this much time for a reachability
-#define STARTGRAPPLE_TIME                   500	//using the grapple costs a lot of time
-#define STARTWALKOFFLEDGE_TIME              300	//3 seconds
-#define STARTJUMP_TIME                      500	//3 seconds for jumping
-
-//maximum fall delta before getting damaged
-#define FALLDELTA_5DAMAGE                   25
-#define FALLDELTA_10DAMAGE                  40
-
-#define FALLDAMAGE_5_TIME                   400	//extra travel time when falling hurts
-#define FALLDAMAGE_10_TIME                  900	//extra travel time when falling hurts
-
-#define AREA_JUMPSRC                        16384	//valid area to JUMP FROM
-
-//linked reachability
-struct aas_lreachability_t
-{
-	int areanum;					//number of the reachable area
-	int facenum;					//number of the face towards the other area
-	int edgenum;					//number of the edge towards the other area
-	vec3_t start;					//start point of inter area movement
-	vec3_t end;						//end point of inter area movement
-	int traveltype;					//type of travel required to get to the area
-	unsigned short int traveltime;	//travel time of the inter area movement
-	aas_lreachability_t* next;
-};
-
-struct aas_jumplink_t
-{
-	int destarea;
-	vec3_t srcpos;
-	vec3_t destpos;
-};
-
-extern int reach_swim;			//swim
-extern int reach_equalfloor;	//walk on floors with equal height
-extern int reach_step;			//step up
-extern int reach_walk;			//walk of step
-extern int reach_barrier;		//jump up to a barrier
-extern int reach_waterjump;	//jump out of water
-extern int reach_walkoffledge;	//walk of a ledge
-extern int reach_jump;			//jump
-extern int reach_ladder;		//climb or descent a ladder
-extern int reach_teleport;		//teleport
-extern int reach_elevator;		//use an elevator
-extern int reach_funcbob;		//use a func bob
-extern int reach_grapple;		//grapple hook
-extern int reach_rocketjump;	//rocket jump
-extern int reach_jumppad;		//jump pads
-extern int calcgrapplereach;
-extern aas_lreachability_t** areareachability;	//reachability links for every area
-extern aas_jumplink_t* jumplinks;
-
-void AAS_SetupReachabilityHeap();
-void AAS_ShutDownReachabilityHeap();
-aas_lreachability_t* AAS_AllocReachability();
-void AAS_FreeReachability(aas_lreachability_t* lreach);
-float AAS_FaceArea(aas_face_t* face);
-float AAS_AreaVolume(int areanum);
 //returns the total area of the ground faces of the given area
 float AAS_AreaGroundFaceArea(int areanum);
-void AAS_FaceCenter(int facenum, vec3_t center);
-int AAS_FallDamageDistance();
-float AAS_FallDelta(float distance);
-float AAS_MaxJumpHeight(float phys_jumpvel);
-float AAS_MaxJumpDistance(float phys_jumpvel);
 //returns true if the area is crouch only
 int AAS_AreaCrouch(int areanum);
 //returns true if a player can swim in this area
@@ -495,33 +417,21 @@ int AAS_AreaSwim(int areanum);
 int AAS_AreaLava(int areanum);
 //returns true if the area contains slime
 int AAS_AreaSlime(int areanum);
-//returns true if the area has one or more ground faces
-int AAS_AreaGrounded(int areanum);
 //returns true if the area is a jump pad
 int AAS_AreaJumpPad(int areanum);
-int AAS_AreaTeleporter(int areanum);
-int AAS_AreaClusterPortal(int areanum);
 //returns true if the area is donotenter
 int AAS_AreaDoNotEnter(int areanum);
 //returns true if the area is donotenterlarge
 int AAS_AreaDoNotEnterLarge(int areanum);
-bool AAS_ReachabilityExists(int area1num, int area2num);
-bool AAS_Reachability_EqualFloorHeight(int area1num, int area2num);
-float AAS_ClosestEdgePoints(const vec3_t v1, const vec3_t v2, const vec3_t v3, const vec3_t v4,
-	const aas_plane_t* plane1, const aas_plane_t* plane2,
-	vec3_t beststart1, vec3_t bestend1,
-	vec3_t beststart2, vec3_t bestend2, float bestdist);
-int AAS_TravelFlagsForTeam(int ent);
-void AAS_StoreReachability();
 int AAS_BestReachableLinkArea(aas_link_t* areas);
-bool AAS_NearbySolidOrGap(const vec3_t start, const vec3_t end);
-void AAS_Reachability_FuncBobbing();
-bool AAS_GetJumpPadInfo(int ent, vec3_t areastart, vec3_t absmins, vec3_t absmaxs, vec3_t velocity);
 //returns the best reachable area and goal origin for a bounding box at the given origin
 int AAS_BestReachableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec3_t goalorigin);
-bool AAS_Reachability_Swim(int area1num, int area2num);
-bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2num);
-bool AAS_Reachability_Ladder(int area1num, int area2num);
+//returns the best jumppad area from which the bbox at origin is reachable
+int AAS_BestReachableFromJumpPadArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs);
+//continue calculating the reachabilities
+bool AAS_ContinueInitReachability(float time);
+//initialize calculating the reachabilities
+void AAS_InitReachability();
 
 #define ROUTING_DEBUG
 
