@@ -277,8 +277,24 @@ struct aas_t
 	int* clusterTeamTravelFlags;
 };
 
+struct aas_clientmove_t
+{
+	vec3_t endpos;			//position at the end of movement prediction
+	int endarea;			//area at end of movement prediction
+	vec3_t velocity;		//velocity at the end of movement prediction
+	aas_trace_t aasTrace;	//last trace
+	bsp_trace_t bspTrace;	//last trace
+	int presencetype;		//presence type at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	int endcontents;		//contents at the end of movement prediction
+	float time;				//time predicted ahead
+	int frames;				//number of frames predicted ahead
+};
+
 extern aas_t* aasworld;
 extern aas_t aasworlds[MAX_AAS_WORLDS];
+
+extern aas_settings_t aassettings;
 
 //loads the given BSP file
 int AAS_LoadBSPFile();
@@ -359,17 +375,35 @@ int AAS_Setup();
 //shutdown AAS
 void AAS_Shutdown();
 
-extern aas_settings_t aassettings;
-
 void AAS_InitSettings();
 //returns true if against a ladder at the given origin
 bool AAS_AgainstLadder(const vec3_t origin, int ms_areanum);
-void AAS_Accelerate(vec3_t velocity, float frametime, const vec3_t wishdir, float wishspeed, float accel);
-void AAS_ApplyFriction(vec3_t vel, float friction, float stopspeed, float frametime);
-bool AAS_ClipToBBox(aas_trace_t* trace, const vec3_t start, const vec3_t end,
-	int presencetype, const vec3_t mins, const vec3_t maxs);
 //calculates the horizontal velocity needed for a jump and returns true this velocity could be calculated
 bool AAS_HorizontalVelocityForJump(float zvel, const vec3_t start, const vec3_t end, float* velocity);
+bool AAS_DropToFloor(vec3_t origin, const vec3_t mins, const vec3_t maxs);
+//returns true if on the ground at the given origin
+bool AAS_OnGround(const vec3_t origin, int presencetype, int passent);
+//rocket jump Z velocity when rocket-jumping at origin
+float AAS_RocketJumpZVelocity(const vec3_t origin);
+//bfg jump Z velocity when bfg-jumping at origin
+float AAS_BFGJumpZVelocity(const vec3_t origin);
+bool AAS_PredictClientMovement(aas_clientmove_t* move,
+	int entnum, const vec3_t origin,
+	int presencetype, int hitent, bool onground,
+	const vec3_t velocity, const vec3_t cmdmove,
+	int cmdframes,
+	int maxframes, float frametime,
+	int stopevent, int stopareanum, bool visualize);
+//predict movement until bounding box is hit
+bool AAS_ClientMovementHitBBox(aas_clientmove_t* move,
+	int entnum, const vec3_t origin,
+	int presencetype, bool onground,
+	const vec3_t velocity, const vec3_t cmdmove,
+	int cmdframes,
+	int maxframes, float frametime,
+	const vec3_t mins, const vec3_t maxs, bool visualize);
+//returns the jump reachability run start point
+void AAS_JumpReachRunStart(const aas_reachability_t* reach, vec3_t runstart);
 
 void AAS_Optimize();
 

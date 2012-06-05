@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
-#include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -52,7 +51,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 {
 	vec3_t dir, cmdmove, velocity;
 	float speed, zvel;
-	aas_clientmove_t move;
+	aas_clientmove_rtcw_t move;
 
 	AAS_ShowAreaPolygons(reach->areanum, 5, qtrue);
 	AAS_DrawArrow(reach->start, reach->end, LINECOLOR_BLUE, LINECOLOR_YELLOW);
@@ -71,7 +70,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 		VectorClear(cmdmove);
 		cmdmove[2] = aassettings.phys_jumpvel;
 		//
-		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
+		AAS_PredictClientMovementWolf(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
 			velocity, cmdmove, 3, 30, 0.1,
 			SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 			SE_ENTERLAVA | SE_HITGROUNDDAMAGE, 0, qtrue);
@@ -94,7 +93,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 		VectorScale(dir, speed, cmdmove);
 		VectorSet(velocity, 0, 0, zvel);
 		//
-		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
+		AAS_PredictClientMovementWolf(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
 			velocity, cmdmove, 30, 30, 0.1,
 			SE_ENTERWATER | SE_ENTERSLIME |
 			SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
@@ -113,7 +112,7 @@ void AAS_ShowReachability(aas_reachability_t* reach)
 		//NOTE: the facenum is the Z velocity
 		velocity[2] = reach->facenum;
 		//
-		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
+		AAS_PredictClientMovementWolf(&move, -1, reach->start, PRESENCE_NORMAL, qtrue,
 			velocity, cmdmove, 30, 30, 0.1,
 			SE_ENTERWATER | SE_ENTERSLIME |
 			SE_ENTERLAVA | SE_HITGROUNDDAMAGE |

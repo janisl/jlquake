@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <time.h>
 #include "botlib.h"
 #include "be_interface.h"
-#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -99,21 +98,6 @@ int Export_BotLibLoadMap(const char* mapname)
 
 /*
 ============
-Init_AAS_Export
-============
-*/
-static void Init_AAS_Export(aas_export_t* aas)
-{
-	//--------------------------------------------
-	// be_aas_move.c
-	//--------------------------------------------
-	aas->AAS_Swimming = AAS_Swimming;
-	aas->AAS_PredictClientMovement = AAS_PredictClientMovement;
-}
-
-
-/*
-============
 Init_EA_Export
 ============
 */
@@ -173,7 +157,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 		return NULL;
 	}
 
-	Init_AAS_Export(&be_botlib_export.aas);
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 

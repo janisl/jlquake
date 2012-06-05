@@ -612,9 +612,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return AAS_AreaTravelTimeToGoalArea(args[1], (float*)VMA(2), args[3], args[4]);
 
 	case BOTLIB_AAS_SWIMMING:
-		return botlib_export->aas.AAS_Swimming((float*)VMA(1));
+		return AAS_Swimming((float*)VMA(1));
 	case BOTLIB_AAS_PREDICT_CLIENT_MOVEMENT:
-		return botlib_export->aas.AAS_PredictClientMovement((aas_clientmove_t*)VMA(1), args[2], (float*)VMA(3), args[4], args[5],
+		return AAS_PredictClientMovementET((aas_clientmove_et_t*)VMA(1), args[2], (float*)VMA(3), args[4], args[5],
 			(float*)VMA(6), (float*)VMA(7), args[8], args[9], VMF(10), args[11], args[12], args[13]);
 
 	// Ridah, route-tables

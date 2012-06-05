@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include "botlib.h"
 #include "be_interface.h"
-#include "be_aas.h"
 #include "be_aas_funcs.h"
 
 #include "be_ea.h"
@@ -493,7 +492,7 @@ int BotWalkInDirection(bot_movestate_t* ms, vec3_t dir, float speed, int type)
 {
 	vec3_t hordir, cmdmove, velocity, tmpdir, origin;
 	int presencetype, maxframes, cmdframes, stopevent;
-	aas_clientmove_t move;
+	aas_clientmove_q3_t move;
 	float dist;
 
 	if (AAS_OnGround(ms->origin, ms->presencetype, ms->entitynum))
@@ -557,7 +556,7 @@ int BotWalkInDirection(bot_movestate_t* ms, vec3_t dir, float speed, int type)
 			//
 		VectorCopy(ms->origin, origin);
 		origin[2] += 0.5;
-		AAS_PredictClientMovement(&move, ms->entitynum, origin, presencetype, true,
+		AAS_PredictClientMovementQ3(&move, ms->entitynum, origin, presencetype, true,
 			velocity, cmdmove, cmdframes, maxframes, 0.1f,
 			stopevent, 0, false);						//qtrue);
 		//if prediction time wasn't enough to fully predict the movement

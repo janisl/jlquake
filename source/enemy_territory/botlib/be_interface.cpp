@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 #include "be_interface.h"
@@ -139,13 +138,6 @@ Init_AAS_Export
 */
 static void Init_AAS_Export(aas_export_t* aas)
 {
-	//--------------------------------------------
-	// be_aas_move.c
-	//--------------------------------------------
-	aas->AAS_Swimming = AAS_Swimming;
-	aas->AAS_PredictClientMovement = AAS_PredictClientMovement;
-
-	// Ridah, route-tables
 	//--------------------------------------------
 	// be_aas_routetable.c
 	//--------------------------------------------

@@ -36,23 +36,13 @@ If you have questions concerning this license or the applicable additional terms
  *
  *****************************************************************************/
 
-#include "../game/be_aas.h"
-
 #include "../../server/botlib/local.h"
 
 #define BOTLIB_API_VERSION      2
 
-struct aas_clientmove_s;
+struct aas_clientmove_et_t;
 struct bot_moveresult_t;
 struct bot_initmove_et_t;
-
-//debug line colors
-#define LINECOLOR_NONE          -1
-#define LINECOLOR_RED           1	//0xf2f2f0f0L
-#define LINECOLOR_GREEN         2	//0xd0d1d2d3L
-#define LINECOLOR_BLUE          3	//0xf3f3f1f1L
-#define LINECOLOR_YELLOW        4	//0xdcdddedfL
-#define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
 
 //bot AI library exported functions
 typedef struct botlib_import_s
@@ -74,18 +64,6 @@ typedef struct botlib_import_s
 
 typedef struct aas_export_s
 {
-	//--------------------------------------------
-	// be_aas_move.c
-	//--------------------------------------------
-	int (* AAS_Swimming)(vec3_t origin);
-	int (* AAS_PredictClientMovement)(struct aas_clientmove_s* move,
-		int entnum, vec3_t origin,
-		int presencetype, int onground,
-		vec3_t velocity, vec3_t cmdmove,
-		int cmdframes,
-		int maxframes, float frametime,
-		int stopevent, int stopareanum, int visualize);
-
 	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 	int (* AAS_NearestHideArea)(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 } aas_export_t;

@@ -526,9 +526,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return AAS_PredictRoute((aas_predictroute_t*)VMA(1), args[2], (float*)VMA(3), args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
 
 	case BOTLIB_AAS_SWIMMING:
-		return botlib_export->aas.AAS_Swimming((float*)VMA(1));
+		return AAS_Swimming((float*)VMA(1));
 	case BOTLIB_AAS_PREDICT_CLIENT_MOVEMENT:
-		return botlib_export->aas.AAS_PredictClientMovement((aas_clientmove_s*)VMA(1), args[2], (float*)VMA(3), args[4], args[5],
+		return AAS_PredictClientMovementQ3((aas_clientmove_q3_t*)VMA(1), args[2], (float*)VMA(3), args[4], args[5],
 			(float*)VMA(6), (float*)VMA(7), args[8], args[9], VMF(10), args[11], args[12], args[13]);
 
 	case BOTLIB_EA_SAY:

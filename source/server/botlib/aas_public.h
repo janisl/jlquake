@@ -223,6 +223,43 @@ struct aas_altroutegoal_t
 	unsigned short extratraveltime;
 };
 
+struct aas_clientmove_q3_t
+{
+	vec3_t endpos;			//position at the end of movement prediction
+	int endarea;			//area at end of movement prediction
+	vec3_t velocity;		//velocity at the end of movement prediction
+	aas_trace_t trace;		//last trace
+	int presencetype;		//presence type at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	int endcontents;		//contents at the end of movement prediction
+	float time;				//time predicted ahead
+	int frames;				//number of frames predicted ahead
+};
+
+struct aas_clientmove_rtcw_t
+{
+	vec3_t endpos;			//position at the end of movement prediction
+	vec3_t velocity;		//velocity at the end of movement prediction
+	aas_trace_t trace;		//last trace
+	int presencetype;		//presence type at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	float endcontents;		//contents at the end of movement prediction
+	float time;				//time predicted ahead
+	int frames;				//number of frames predicted ahead
+};
+
+struct aas_clientmove_et_t
+{
+	vec3_t endpos;			//position at the end of movement prediction
+	vec3_t velocity;		//velocity at the end of movement prediction
+	bsp_trace_t trace;		//last trace
+	int presencetype;		//presence type at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	float endcontents;		//contents at the end of movement prediction
+	float time;				//time predicted ahead
+	int frames;				//number of frames predicted ahead
+};
+
 //handle to the next bsp entity
 int AAS_NextBSPEntity(int ent);
 //return the value of the BSP epair key
@@ -245,6 +282,31 @@ bool AAS_Initialized();
 //returns the current time
 float AAS_Time();
 void AAS_SetCurrentWorld(int index);
+
+//returns true if swimming at the given origin
+bool AAS_Swimming(const vec3_t origin);
+//movement prediction
+bool AAS_PredictClientMovementQ3(aas_clientmove_q3_t* move,
+	int entnum, const vec3_t origin,
+	int presencetype, bool onground,
+	const vec3_t velocity, const vec3_t cmdmove,
+	int cmdframes,
+	int maxframes, float frametime,
+	int stopevent, int stopareanum, bool visualize);
+bool AAS_PredictClientMovementWolf(aas_clientmove_rtcw_t* move,
+	int entnum, const vec3_t origin,
+	int presencetype, bool onground,
+	const vec3_t velocity, const vec3_t cmdmove,
+	int cmdframes,
+	int maxframes, float frametime,
+	int stopevent, int stopareanum, bool visualize);
+bool AAS_PredictClientMovementET(aas_clientmove_et_t* move,
+	int entnum, const vec3_t origin,
+	int presencetype, bool onground,
+	const vec3_t velocity, const vec3_t cmdmove,
+	int cmdframes,
+	int maxframes, float frametime,
+	int stopevent, int stopareanum, bool visualize);
 
 //returns true if the are has reachabilities to other areas
 int AAS_AreaReachability(int areanum);

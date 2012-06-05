@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/file_formats/bsp46.h"
 #include "botlib.h"
 #include "be_interface.h"
-#include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
@@ -90,7 +89,7 @@ int AAS_BestReachableFromJumpPadArea(vec3_t origin, vec3_t mins, vec3_t maxs)
 			//BotImport_Print(PRT_MESSAGE, "found a trigger_push with velocity %f %f %f\n", velocity[0], velocity[1], velocity[2]);
 			//
 		VectorSet(cmdmove, 0, 0, 0);
-		Com_Memset(&move, 0, sizeof(aas_clientmove_t));
+		Com_Memset(&move, 0, sizeof(aas_clientmove_q3_t));
 		area2num = 0;
 		AAS_ClientMovementHitBBox(&move, -1, areastart, PRESENCE_NORMAL, false,
 			velocity, cmdmove, 0, 30, 0.1f, bboxmins, bboxmaxs, bot_visualizejumppads);
@@ -146,7 +145,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 	aas_edge_t* edge1, * edge2;
 	aas_plane_t* plane1, * plane2, * plane;
 	aas_trace_t trace;
-	aas_clientmove_t move;
+	aas_clientmove_q3_t move;
 	aas_lreachability_t* lreach;
 
 	if (!AAS_AreaGrounded(area1num) || !AAS_AreaGrounded(area2num))
@@ -415,7 +414,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 				VectorNormalize(dir);
 				VectorScale(dir, speed, velocity);
 				//
-				AAS_PredictClientMovement(&move, -1, beststart, PRESENCE_NORMAL, true,
+				AAS_PredictClientMovementQ3(&move, -1, beststart, PRESENCE_NORMAL, true,
 					velocity, cmdmove, 3, 30, 0.1f,
 					stopevent, 0, false);
 				// if prediction time wasn't enough to fully predict the movement
@@ -458,7 +457,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		else
 		{
 			VectorScale(dir, speed, velocity);
-			AAS_PredictClientMovement(&move, -1, beststart, PRESENCE_NORMAL, true,
+			AAS_PredictClientMovementQ3(&move, -1, beststart, PRESENCE_NORMAL, true,
 				velocity, cmdmove, 3, 30, 0.1,
 				SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 				SE_ENTERLAVA | SE_HITGROUNDDAMAGE, 0, false);
@@ -573,7 +572,7 @@ void AAS_Reachability_Teleport(void)
 	vec3_t destorigin, mins, maxs, end, angles;
 	vec3_t mid, velocity, cmdmove;
 	aas_lreachability_t* lreach;
-	aas_clientmove_t move;
+	aas_clientmove_q3_t move;
 	aas_trace_t trace;
 	aas_link_t* areas, * link;
 
@@ -705,7 +704,7 @@ void AAS_Reachability_Teleport(void)
 					VectorClear(velocity);
 				}	//end else
 				VectorClear(cmdmove);
-				AAS_PredictClientMovement(&move, -1, destorigin, PRESENCE_NORMAL, false,
+				AAS_PredictClientMovementQ3(&move, -1, destorigin, PRESENCE_NORMAL, false,
 					velocity, cmdmove, 0, 30, 0.1f,
 					SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 					SE_ENTERLAVA | SE_HITGROUNDDAMAGE | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER, 0, false);				//true);
@@ -1034,7 +1033,7 @@ void AAS_Reachability_JumpPad(void)
 	vec3_t areastart, facecenter, dir, cmdmove;
 	vec3_t velocity, absmins, absmaxs;
 	//vec3_t origin, ent2origin, angles, teststart;
-	aas_clientmove_t move;
+	aas_clientmove_q3_t move;
 	//aas_trace_t trace;
 	aas_link_t* areas, * link;
 	//char target[MAX_EPAIRKEY], targetname[MAX_EPAIRKEY], model[MAX_EPAIRKEY];
@@ -1088,11 +1087,11 @@ void AAS_Reachability_JumpPad(void)
 			VectorSet(cmdmove, 0, 0, 0);
 			//VectorCopy(velocity, cmdmove);
 			//cmdmove[2] = 0;
-			Com_Memset(&move, 0, sizeof(aas_clientmove_t));
+			Com_Memset(&move, 0, sizeof(aas_clientmove_q3_t));
 			area2num = 0;
 			for (i = 0; i < 20; i++)
 			{
-				AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, false,
+				AAS_PredictClientMovementQ3(&move, -1, areastart, PRESENCE_NORMAL, false,
 					velocity, cmdmove, 0, 30, 0.1f,
 					SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 					SE_ENTERLAVA | SE_HITGROUNDDAMAGE | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER, 0, bot_visualizejumppads);
@@ -1226,7 +1225,7 @@ void AAS_Reachability_JumpPad(void)
 						//get command movement
 						VectorScale(dir, speed, cmdmove);
 						//
-						AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, false,
+						AAS_PredictClientMovementQ3(&move, -1, areastart, PRESENCE_NORMAL, false,
 							velocity, cmdmove, 30, 30, 0.1f,
 							SE_ENTERWATER | SE_ENTERSLIME |
 							SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
@@ -1593,7 +1592,7 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 	aas_lreachability_t* lreach;
 	vec3_t areastart, facecenter, start, end, dir, cmdmove;	// teststart;
 	vec3_t velocity;
-	aas_clientmove_t move;
+	aas_clientmove_q3_t move;
 	aas_trace_t trace;
 
 	visualize = false;
@@ -1690,7 +1689,7 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 					VectorSet(cmdmove, 0, 0, 0);
 					*/
 					//
-					AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, true,
+					AAS_PredictClientMovementQ3(&move, -1, areastart, PRESENCE_NORMAL, true,
 						velocity, cmdmove, 30, 30, 0.1f,
 						SE_ENTERWATER | SE_ENTERSLIME |
 						SE_ENTERLAVA | SE_HITGROUNDDAMAGE |

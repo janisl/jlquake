@@ -43,6 +43,14 @@
 #define WOLFBLERR_CANNOTLOADWEAPONWEIGHTS   30	//BotSetupClient: cannot load weapon weights
 #define WOLFBLERR_CANNOTLOADWEAPONCONFIG    31	//BotSetupLibrary: cannot load weapon config
 
+//debug line colors
+#define LINECOLOR_NONE          -1
+#define LINECOLOR_RED           1	//0xf2f2f0f0L
+#define LINECOLOR_GREEN         2	//0xd0d1d2d3L
+#define LINECOLOR_BLUE          3	//0xf3f3f1f1L
+#define LINECOLOR_YELLOW        4	//0xdcdddedfL
+#define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
+
 int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points);
 void BotImport_DebugPolygonDelete(int id);
 

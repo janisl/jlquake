@@ -38,18 +38,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #define BOTLIB_API_VERSION      2
 
-struct aas_clientmove_s;
+struct aas_clientmove_rtcw_t;
 struct bot_input_t;
 struct bot_entitystate_t;
 struct bsp_trace_t;
-
-//debug line colors
-#define LINECOLOR_NONE          -1
-#define LINECOLOR_RED           1	//0xf2f2f0f0L
-#define LINECOLOR_GREEN         2	//0xd0d1d2d3L
-#define LINECOLOR_BLUE          3	//0xf3f3f1f1L
-#define LINECOLOR_YELLOW        4	//0xdcdddedfL
-#define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
 
 //bot AI library exported functions
 typedef struct botlib_import_s
@@ -68,19 +60,6 @@ typedef struct botlib_import_s
 
 typedef struct aas_export_s
 {
-	//--------------------------------------------
-	// be_aas_move.c
-	//--------------------------------------------
-	int (* AAS_Swimming)(vec3_t origin);
-	int (* AAS_PredictClientMovement)(struct aas_clientmove_s* move,
-		int entnum, vec3_t origin,
-		int presencetype, int onground,
-		vec3_t velocity, vec3_t cmdmove,
-		int cmdframes,
-		int maxframes, float frametime,
-		int stopevent, int stopareanum, int visualize);
-
-	// Ridah, route-tables
 	//--------------------------------------------
 	// be_aas_routetable.c
 	//--------------------------------------------

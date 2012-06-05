@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "../game/be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 #include "../../common/file_formats/bsp47.h"
@@ -72,7 +71,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 	aas_edge_t* edge1, * edge2;
 	aas_plane_t* plane1, * plane2, * plane;
 	aas_trace_t trace;
-	aas_clientmove_t move;
+	aas_clientmove_et_t move;
 	aas_lreachability_t* lreach;
 
 	if (!AAS_AreaGrounded(area1num) || !AAS_AreaGrounded(area2num))
@@ -341,7 +340,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 				VectorNormalize(dir);
 				VectorScale(dir, speed, velocity);
 				//
-				AAS_PredictClientMovement(&move, -1, beststart, PRESENCE_NORMAL, true,
+				AAS_PredictClientMovementET(&move, -1, beststart, PRESENCE_NORMAL, true,
 					velocity, cmdmove, 3, 30, 0.1f,
 					stopevent, 0, false);
 				// if prediction time wasn't enough to fully predict the movement
@@ -384,7 +383,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		else
 		{
 			VectorScale(dir, speed, velocity);
-			AAS_PredictClientMovement(&move, -1, beststart, PRESENCE_NORMAL, qtrue,
+			AAS_PredictClientMovementET(&move, -1, beststart, PRESENCE_NORMAL, qtrue,
 				velocity, cmdmove, 3, 30, 0.1,
 				SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 				SE_ENTERLAVA | SE_HITGROUNDDAMAGE, 0, qfalse);
@@ -499,7 +498,7 @@ void AAS_Reachability_Teleport(void)
 	vec3_t destorigin, mins, maxs, end, angles;
 	vec3_t mid, velocity, cmdmove;
 	aas_lreachability_t* lreach;
-	aas_clientmove_t move;
+	aas_clientmove_et_t move;
 	aas_trace_t trace;
 	aas_link_t* areas, * link;
 
@@ -631,7 +630,7 @@ void AAS_Reachability_Teleport(void)
 					VectorClear(velocity);
 				}	//end else
 				VectorClear(cmdmove);
-				AAS_PredictClientMovement(&move, -1, destorigin, PRESENCE_NORMAL, false,
+				AAS_PredictClientMovementET(&move, -1, destorigin, PRESENCE_NORMAL, false,
 					velocity, cmdmove, 0, 30, 0.1f,
 					SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 					SE_ENTERLAVA | SE_HITGROUNDDAMAGE | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER, 0, false);				//true);
@@ -963,7 +962,7 @@ void AAS_Reachability_JumpPad(void)
 	aas_lreachability_t* lreach;
 	vec3_t areastart, facecenter, dir, cmdmove, teststart;
 	vec3_t velocity, origin, ent2origin, angles, absmins, absmaxs;
-	aas_clientmove_t move;
+	aas_clientmove_et_t move;
 	aas_trace_t trace;
 	int ent, ent2;
 	aas_link_t* areas, * link;
@@ -1084,11 +1083,11 @@ void AAS_Reachability_JumpPad(void)
 			VectorSet(cmdmove, 0, 0, 0);
 			//VectorCopy(velocity, cmdmove);
 			//cmdmove[2] = 0;
-			memset(&move, 0, sizeof(aas_clientmove_t));
+			memset(&move, 0, sizeof(aas_clientmove_et_t));
 			area2num = 0;
 			for (i = 0; i < 20; i++)
 			{
-				AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, qfalse,
+				AAS_PredictClientMovementET(&move, -1, areastart, PRESENCE_NORMAL, qfalse,
 					velocity, cmdmove, 0, 30, 0.1,
 					SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
 					SE_ENTERLAVA | SE_HITGROUNDDAMAGE | SE_TOUCHJUMPPAD | SE_TOUCHTELEPORTER, 0, qfalse);							//qtrue);
@@ -1221,7 +1220,7 @@ void AAS_Reachability_JumpPad(void)
 						//get command movement
 						VectorScale(dir, speed, cmdmove);
 						//
-						AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, qfalse,
+						AAS_PredictClientMovementET(&move, -1, areastart, PRESENCE_NORMAL, qfalse,
 							velocity, cmdmove, 30, 30, 0.1,
 							SE_ENTERWATER | SE_ENTERSLIME |
 							SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
@@ -1686,7 +1685,7 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 	aas_lreachability_t* lreach;
 	vec3_t areastart, facecenter, start, end, dir, cmdmove;	// teststart;
 	vec3_t velocity;
-	aas_clientmove_t move;
+	aas_clientmove_et_t move;
 	aas_trace_t trace;
 
 	if (!AAS_AreaGrounded(area1num) || AAS_AreaSwim(area1num))
@@ -1778,7 +1777,7 @@ int AAS_Reachability_WeaponJump(int area1num, int area2num)
 					VectorSet(cmdmove, 0, 0, 0);
 					*/
 					//
-					AAS_PredictClientMovement(&move, -1, areastart, PRESENCE_NORMAL, qtrue,
+					AAS_PredictClientMovementET(&move, -1, areastart, PRESENCE_NORMAL, qtrue,
 						velocity, cmdmove, 30, 30, 0.1,
 						SE_ENTERWATER | SE_ENTERSLIME |
 						SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
