@@ -34,6 +34,19 @@
 
 */
 
+#define ROUTING_DEBUG
+
+//travel time in hundreths of a second = distance * 100 / speed
+#define DISTANCEFACTOR_CROUCH       1.3f	//crouch speed = 100
+#define DISTANCEFACTOR_SWIM         1		//should be 0.66, swim speed = 150
+#define DISTANCEFACTOR_WALK         0.33f	//walk speed = 300
+
+// Ridah, scale traveltimes with ground steepness of area
+#define GROUNDSTEEPNESS_TIMESCALE       20	// this is the maximum scale, 1 being the usual for a flat ground
+
+//maximum number of routing updates each frame
+#define MAX_FRAMEROUTINGUPDATES_WOLF    100
+
 #define RCID                        (('C' << 24) + ('R' << 16) + ('E' << 8) + 'M')
 #define RCVERSION_Q3                2
 #define RCVERSION_WS                15
@@ -86,13 +99,13 @@ struct aas_routingcache_f_t
 };
 
 #ifdef ROUTING_DEBUG
-int numareacacheupdates;
-int numportalcacheupdates;
-#endif	//ROUTING_DEBUG
+static int numareacacheupdates;
+static int numportalcacheupdates;
+#endif
 
-int routingcachesize;
-int max_routingcachesize;
-int max_frameroutingupdates;
+static int routingcachesize;
+static int max_routingcachesize;
+static int max_frameroutingupdates;
 
 void AAS_RoutingInfo()
 {
@@ -119,7 +132,7 @@ static inline int AAS_ClusterAreaNum(int cluster, int areanum)
 	}
 }
 
-void AAS_InitTravelFlagFromType()
+static void AAS_InitTravelFlagFromType()
 {
 	for (int i = 0; i < MAX_TRAVELTYPES; i++)
 	{
@@ -243,7 +256,7 @@ static void AAS_RemoveRoutingCacheInCluster(int clusternum)
 	}
 }
 
-void AAS_RemoveRoutingCacheUsingArea(int areanum)
+static void AAS_RemoveRoutingCacheUsingArea(int areanum)
 {
 	int clusternum = aasworld->areasettings[areanum].cluster;
 	if (clusternum > 0)
@@ -271,7 +284,7 @@ void AAS_RemoveRoutingCacheUsingArea(int areanum)
 	}
 }
 
-void AAS_ClearClusterTeamFlags(int areanum)
+static void AAS_ClearClusterTeamFlags(int areanum)
 {
 	int clusternum = aasworld->areasettings[areanum].cluster;
 	if (clusternum > 0)
@@ -421,7 +434,7 @@ static int AAS_GetAreaContentsTravelFlags(int areanum)
 	return tfl;
 }
 
-void AAS_InitAreaContentsTravelFlags()
+static void AAS_InitAreaContentsTravelFlags()
 {
 	if (aasworld->areacontentstravelflags)
 	{
@@ -440,7 +453,7 @@ int AAS_AreaContentsTravelFlags(int areanum)
 	return aasworld->areacontentstravelflags[areanum];
 }
 
-void AAS_CreateReversedReachability()
+static void AAS_CreateReversedReachability()
 {
 #ifdef DEBUG
 	int starttime = Sys_Milliseconds();
@@ -541,7 +554,7 @@ unsigned short int AAS_AreaTravelTime(int areanum, const vec3_t start, const vec
 	return intdist;
 }
 
-void AAS_CalculateAreaTravelTimes()
+static void AAS_CalculateAreaTravelTimes()
 {
 #ifdef DEBUG
 	int starttime = Sys_Milliseconds();
@@ -626,7 +639,7 @@ static int AAS_PortalMaxTravelTime(int portalnum)
 	return maxt;
 }
 
-void AAS_InitPortalMaxTravelTimes()
+static void AAS_InitPortalMaxTravelTimes()
 {
 	if (aasworld->portalmaxtraveltimes)
 	{
@@ -723,7 +736,7 @@ static void AAS_FreeAllClusterAreaCache()
 	aasworld->clusterareacache = NULL;
 }
 
-void AAS_InitClusterAreaCache()
+static void AAS_InitClusterAreaCache()
 {
 	int size = 0;
 	for (int i = 0; i < aasworld->numclusters; i++)
@@ -766,14 +779,14 @@ static void AAS_FreeAllPortalCache()
 	aasworld->portalcache = NULL;
 }
 
-void AAS_InitPortalCache()
+static void AAS_InitPortalCache()
 {
 	aasworld->portalcache = (aas_routingcache_t**)Mem_ClearedAlloc(
 		aasworld->numareas * sizeof(aas_routingcache_t*));
 }
 
 // run-length compression on zeros
-int AAS_CompressVis(const byte* vis, int numareas, byte* dest)
+static int AAS_CompressVis(const byte* vis, int numareas, byte* dest)
 {
 	byte* dest_p = dest;
 
@@ -825,6 +838,152 @@ static void AAS_DecompressVis(const byte* in, int numareas, byte* decompressed)
 	while (out < end);
 }
 
+// just center to center visibility checking...
+// FIXME: implement a correct full vis
+static void AAS_CreateVisibility(bool waypointsOnly)
+{
+	int numAreas = aasworld->numareas;
+	int numAreaBits = ((numAreas + 8) >> 3);
+
+	byte* validareas = NULL;
+	if (!waypointsOnly)
+	{
+		validareas = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
+	}
+
+	aasworld->areawaypoints = (vec3_t*)Mem_ClearedAlloc(numAreas * sizeof(vec3_t));
+	int totalsize = numAreas * sizeof(byte*);
+
+	vec3_t endpos, mins, maxs;
+	int numvalid = 0;
+	for (int i = 1; i < numAreas; i++)
+	{
+		if (!AAS_AreaReachability(i))
+		{
+			continue;
+		}
+
+		// find the waypoint
+		VectorCopy(aasworld->areas[i].center, endpos);
+		endpos[2] -= 256;
+		AAS_PresenceTypeBoundingBox(PRESENCE_NORMAL, mins, maxs);
+		bsp_trace_t trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID |
+			(GGameType & GAME_WolfMP ? 0 : BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP));
+		if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+		{
+			trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent,
+				BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
+		}
+		if (!trace.startsolid && trace.fraction < 1 && AAS_PointAreaNum(trace.endpos) == i)
+		{
+			VectorCopy(trace.endpos, aasworld->areawaypoints[i]);
+			if (!waypointsOnly)
+			{
+				validareas[i] = 1;
+			}
+			numvalid++;
+		}
+		else
+		{
+			VectorClear(aasworld->areawaypoints[i]);
+		}
+	}
+
+	if (waypointsOnly)
+	{
+		return;
+	}
+
+	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(numAreas * sizeof(byte*));
+	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
+
+	byte* areaTable = (byte*)Mem_ClearedAlloc(numAreas * numAreaBits * sizeof(byte));
+	// in case it ends up bigger than the decompressedvis, which is rare but possible
+	byte* buf = (byte*)Mem_ClearedAlloc(numAreas * 2 * sizeof(byte));
+
+	for (int i = 1; i < numAreas; i++)
+	{
+		if (!validareas[i])
+		{
+			continue;
+		}
+
+		if (GGameType & GAME_WolfMP && !AAS_AreaReachability(i))
+		{
+			continue;
+		}
+
+		for (int j = 1; j < numAreas; j++)
+		{
+			aasworld->decompressedvis[j] = 0;
+			if (i == j)
+			{
+				aasworld->decompressedvis[j] = 1;
+				areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
+				continue;
+			}
+
+			if (!validareas[j] || (GGameType & GAME_WolfMP && !AAS_AreaReachability(j)))
+			{
+				if (GGameType & GAME_WolfMP)
+				{
+					aasworld->decompressedvis[j] = 0;
+				}
+				continue;
+			}
+
+			// if we have already checked this combination, copy the result
+			if (!(GGameType & GAME_WolfMP) && areaTable && (i > j))
+			{
+				// use the reverse result stored in the table
+				if (areaTable[(j * numAreaBits) + (i >> 3)] & (1 << (i & 7)))
+				{
+					aasworld->decompressedvis[j] = 1;
+				}
+				// done, move to the next area
+				continue;
+			}
+
+			// RF, check PVS first, since it's much faster
+			if (!(GGameType & GAME_WolfMP) && !AAS_inPVS(aasworld->areawaypoints[i], aasworld->areawaypoints[j]))
+			{
+				continue;
+			}
+
+			bsp_trace_t trace = AAS_Trace(aasworld->areawaypoints[i], NULL, NULL, aasworld->areawaypoints[j],
+				-1, BSP46CONTENTS_SOLID);
+			if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+			{
+				trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent,
+					BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
+			}
+
+			if (trace.fraction >= 1)
+			{
+				if (GGameType & GAME_ET)
+				{
+					areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
+				}
+				aasworld->decompressedvis[j] = 1;
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				aasworld->decompressedvis[j] = 0;
+			}
+		}
+
+		int size = AAS_CompressVis(aasworld->decompressedvis, numAreas, buf);
+		aasworld->areavisibility[i] = (byte*)Mem_Alloc(size);
+		Com_Memcpy(aasworld->areavisibility[i], buf, size);
+		totalsize += size;
+	}
+
+	Mem_Free(validareas);
+	Mem_Free(buf);
+	Mem_Free(areaTable);
+	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
+}
+
 static void AAS_FreeAreaVisibility()
 {
 	if (aasworld->areavisibility)
@@ -872,7 +1031,7 @@ int AAS_AreaVisible(int srcarea, int destarea)
 	return aasworld->decompressedvis[destarea];
 }
 
-void AAS_InitRoutingUpdate()
+static void AAS_InitRoutingUpdate()
 {
 	//free routing update fields if already existing
 	if (aasworld->areaupdate)
@@ -1258,7 +1417,7 @@ static bool ReadRouteCacheHeaderWolf(const char* filename, fileHandle_t fp, int&
 	return true;
 }
 
-int AAS_ReadRouteCache()
+static bool AAS_ReadRouteCache()
 {
 	int i, clusterareanum, size;
 	fileHandle_t fp;
@@ -1300,8 +1459,8 @@ int AAS_ReadRouteCache()
 			aasworld->portalcache[cache->areanum]->prev = cache;
 		}
 		aasworld->portalcache[cache->areanum] = cache;
-	}	//end for
-		//read all the cluster area cache
+	}
+	//read all the cluster area cache
 	for (i = 0; i < numareacache; i++)
 	{
 		cache = AAS_ReadCache(fp);
@@ -1313,7 +1472,7 @@ int AAS_ReadRouteCache()
 			aasworld->clusterareacache[cache->cluster][clusterareanum]->prev = cache;
 		}
 		aasworld->clusterareacache[cache->cluster][clusterareanum] = cache;
-	}	//end for
+	}
 
 	if (!(GGameType & GAME_Quake3))
 	{
@@ -1865,8 +2024,7 @@ int AAS_NextModelReachability(int num, int modelnum)
 	return 0;
 }
 
-
-void AAS_InitReachabilityAreas()
+static void AAS_InitReachabilityAreas()
 {
 	enum { MAX_REACHABILITYPASSAREAS = 32 };
 	if (aasworld->reachabilityareas)
@@ -2297,7 +2455,7 @@ bool AAS_PredictRoute(aas_predictroute_t* route, int areanum, const vec3_t origi
 	return true;
 }
 
-void AAS_CreateAllRoutingCache()
+static void AAS_CreateAllRoutingCache()
 {
 	int numroutingareas = 0;
 	int tfl = WOLFTFL_DEFAULT;
@@ -2944,4 +3102,62 @@ int AAS_Retreat(const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos
 	}
 
 	return bestarea;
+}
+
+void AAS_InitRouting()
+{
+	AAS_InitTravelFlagFromType();
+	AAS_InitAreaContentsTravelFlags();
+	//initialize the routing update fields
+	AAS_InitRoutingUpdate();
+	//create reversed reachability links used by the routing update algorithm
+	AAS_CreateReversedReachability();
+	//initialize the cluster cache
+	AAS_InitClusterAreaCache();
+	//initialize portal cache
+	AAS_InitPortalCache();
+	//initialize the area travel times
+	AAS_CalculateAreaTravelTimes();
+	//calculate the maximum travel times through portals
+	AAS_InitPortalMaxTravelTimes();
+	if (GGameType & GAME_Quake3)
+	{
+		//get the areas reachabilities go through
+		AAS_InitReachabilityAreas();
+	}
+
+#ifdef ROUTING_DEBUG
+	numareacacheupdates = 0;
+	numportalcacheupdates = 0;
+#endif
+
+	routingcachesize = 0;
+	max_routingcachesize = 1024 * (int)LibVarValue("max_routingcache", GGameType & GAME_ET ? "16384" : "4096");
+	max_frameroutingupdates = GGameType & GAME_ET ? (int)LibVarGetValue("bot_frameroutingupdates") : MAX_FRAMEROUTINGUPDATES_WOLF;
+
+	// enable this for quick testing of maps without enemies
+	if (GGameType & GAME_ET && LibVarGetValue("bot_norcd"))
+	{
+		// RF, create the waypoints for each area
+		AAS_CreateVisibility(true);
+	}
+	else
+	{
+		// read any routing cache if available
+		if (!AAS_ReadRouteCache())
+		{
+			if (!(GGameType & GAME_Quake3))
+			{
+				aasworld->initialized = true;	// Hack, so routing can compute traveltimes
+				AAS_CreateVisibility(false);
+				if (!(GGameType & GAME_ET))
+				{
+					AAS_CreateAllRoutingCache();
+				}
+				aasworld->initialized = false;
+
+				AAS_WriteRouteCache();	// save it so we don't have to create it again
+			}
+		}
+	}
 }

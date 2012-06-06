@@ -430,56 +430,14 @@ bool AAS_ContinueInitReachability(float time);
 //initialize calculating the reachabilities
 void AAS_InitReachability();
 
-#define ROUTING_DEBUG
-
-//travel time in hundreths of a second = distance * 100 / speed
-#define DISTANCEFACTOR_CROUCH       1.3f	//crouch speed = 100
-#define DISTANCEFACTOR_SWIM         1		//should be 0.66, swim speed = 150
-#define DISTANCEFACTOR_WALK         0.33f	//walk speed = 300
-
-// Ridah, scale traveltimes with ground steepness of area
-#define GROUNDSTEEPNESS_TIMESCALE       20	// this is the maximum scale, 1 being the usual for a flat ground
-
-//cache refresh time
-#define CACHE_REFRESHTIME       15.0f	//15 seconds refresh time
-
-//maximum number of routing updates each frame
-#define MAX_FRAMEROUTINGUPDATES_WOLF    100
-
-#define DEFAULT_MAX_ROUTINGCACHESIZE        "16384"
-
-#define TEAM_DEATH_TIMEOUT              120.0
-#define TEAM_DEATH_AVOID_COUNT_SCALE    0.5		// so if there are 12 players, then if count reaches (12 * scale) then AVOID
-#define TEAM_DEATH_RANGE                512.0
-
-#ifdef ROUTING_DEBUG
-extern int numareacacheupdates;
-extern int numportalcacheupdates;
-#endif
-
-extern int routingcachesize;
-extern int max_routingcachesize;
-extern int max_frameroutingupdates;
-
 void AAS_RoutingInfo();
-void AAS_InitTravelFlagFromType();
 //returns the travel flag for the given travel type
 int AAS_TravelFlagForType(int traveltype);
-void AAS_RemoveRoutingCacheUsingArea(int areanum);
-void AAS_ClearClusterTeamFlags(int areanum);
 void AAS_EnableAllAreas();
-void AAS_InitAreaContentsTravelFlags();
 //return the travel flag(s) for traveling through this area
 int AAS_AreaContentsTravelFlags(int areanum);
-void AAS_CreateReversedReachability();
-void AAS_InitPortalMaxTravelTimes();
-void AAS_InitClusterAreaCache();
-void AAS_InitPortalCache();
-int AAS_CompressVis(const byte* vis, int numareas, byte* dest);
 int AAS_AreaVisible(int srcarea, int destarea);
-void AAS_InitRoutingUpdate();
 void AAS_WriteRouteCache();
-int AAS_ReadRouteCache();
 //returns the reachability with the given index
 void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
 //returns the index of the next reachability for the given area
@@ -488,15 +446,14 @@ int AAS_NextAreaReachability(int areanum, int reachnum);
 int AAS_NextModelReachability(int num, int modelnum);
 //returns the travel time from start to end in the given area
 unsigned short int AAS_AreaTravelTime(int areanum, const vec3_t start, const vec3_t end);
-void AAS_CalculateAreaTravelTimes();
-void AAS_InitReachabilityAreas();
 bool AAS_AreaRouteToGoalArea(int areanum, const vec3_t origin, int goalareanum, int travelflags,
 	int* traveltime, int* reachnum);
 //returns the travel time from the area to the goal area using the given travel flags
 int AAS_AreaTravelTimeToGoalAreaCheckLoop(int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum);
-void AAS_CreateAllRoutingCache();
 //free the AAS routing caches
 void AAS_FreeRoutingCaches();
+//initialize the AAS routing
+void AAS_InitRouting();
 
 void AAS_InitAlternativeRouting();
 void AAS_ShutdownAlternativeRouting();
