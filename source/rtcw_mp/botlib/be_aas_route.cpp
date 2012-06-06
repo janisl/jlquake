@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_CreateVisibility(void);
+void AAS_CreateVisibility(bool waypointsOnly);
 void AAS_InitRouting(void)
 {
 	AAS_InitTravelFlagFromType();
@@ -78,7 +78,7 @@ void AAS_InitRouting(void)
 	if (!AAS_ReadRouteCache())
 	{
 		aasworld->initialized = qtrue;		// Hack, so routing can compute traveltimes
-		AAS_CreateVisibility();
+		AAS_CreateVisibility(false);
 		AAS_CreateAllRoutingCache();
 		aasworld->initialized = qfalse;
 
@@ -161,23 +161,29 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_CreateVisibility(void)
+void AAS_CreateVisibility(bool waypointsOnly)
 {
 	int i, j, size, totalsize;
 	vec3_t endpos, mins, maxs;
 	bsp_trace_t trace;
 	byte* buf;
-	byte* validareas;
+	byte* validareas = NULL;
 	int numvalid = 0;
+	byte* areaTable = NULL;
+	int numAreas, numAreaBits;
 
-	buf = (byte*)Mem_ClearedAlloc(aasworld->numareas * 2 * sizeof(byte));				// in case it ends up bigger than the decompressedvis, which is rare but possible
-	validareas = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
+	numAreas = aasworld->numareas;
+	numAreaBits = ((numAreas + 8) >> 3);
 
-	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte*));
-	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
-	aasworld->areawaypoints = (vec3_t*)Mem_ClearedAlloc(aasworld->numareas * sizeof(vec3_t));
-	totalsize = aasworld->numareas * sizeof(byte*);
-	for (i = 1; i < aasworld->numareas; i++)
+	if (!waypointsOnly)
+	{
+		validareas = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
+	}
+
+	aasworld->areawaypoints = (vec3_t*)Mem_ClearedAlloc(numAreas * sizeof(vec3_t));
+	totalsize = numAreas * sizeof(byte*);
+
+	for (i = 1; i < numAreas; i++)
 	{
 		if (!AAS_AreaReachability(i))
 		{
@@ -188,65 +194,116 @@ void AAS_CreateVisibility(void)
 		VectorCopy(aasworld->areas[i].center, endpos);
 		endpos[2] -= 256;
 		AAS_PresenceTypeBoundingBox(PRESENCE_NORMAL, mins, maxs);
-//		maxs[2] = 0;
-		trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID);
+		trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID |
+			(GGameType & GAME_WolfMP ? 0 : BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP));
+		if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+		{
+			trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
+		}
 		if (!trace.startsolid && trace.fraction < 1 && AAS_PointAreaNum(trace.endpos) == i)
 		{
 			VectorCopy(trace.endpos, aasworld->areawaypoints[i]);
-			validareas[i] = 1;
+			if (!waypointsOnly)
+			{
+				validareas[i] = 1;
+			}
 			numvalid++;
 		}
 		else
 		{
-			continue;
+			VectorClear(aasworld->areawaypoints[i]);
 		}
 	}
 
-	for (i = 1; i < aasworld->numareas; i++)
+	if (waypointsOnly)
+	{
+		return;
+	}
+
+	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(numAreas * sizeof(byte*));
+	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
+
+	areaTable = (byte*)Mem_ClearedAlloc(numAreas * numAreaBits * sizeof(byte));
+	buf = (byte*)Mem_ClearedAlloc(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
+
+	for (i = 1; i < numAreas; i++)
 	{
 		if (!validareas[i])
 		{
 			continue;
 		}
 
-		if (!AAS_AreaReachability(i))
+		if (GGameType & GAME_WolfMP && !AAS_AreaReachability(i))
 		{
 			continue;
 		}
 
-		for (j = 1; j < aasworld->numareas; j++)
+		for (j = 1; j < numAreas; j++)
 		{
+			aasworld->decompressedvis[j] = 0;
 			if (i == j)
 			{
 				aasworld->decompressedvis[j] = 1;
+				areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
 				continue;
 			}
-			if (!validareas[j] || !AAS_AreaReachability(j))
-			{
-				aasworld->decompressedvis[j] = 0;
-				continue;
-			}	//end if
 
-			// Ridah, this always returns false?!
-			//if (AAS_inPVS( aasworld->areawaypoints[i], aasworld->areawaypoints[j] ))
+			if (!validareas[j] || (GGameType & GAME_WolfMP && !AAS_AreaReachability(j)))
+			{
+				if (GGameType & GAME_WolfMP)
+				{
+					aasworld->decompressedvis[j] = 0;
+				}
+				continue;
+			}
+
+			// if we have already checked this combination, copy the result
+			if (!(GGameType & GAME_WolfMP) && areaTable && (i > j))
+			{
+				// use the reverse result stored in the table
+				if (areaTable[(j * numAreaBits) + (i >> 3)] & (1 << (i & 7)))
+				{
+					aasworld->decompressedvis[j] = 1;
+				}
+				// done, move to the next area
+				continue;
+			}
+
+			// RF, check PVS first, since it's much faster
+			if (!(GGameType & GAME_WolfMP) && !AAS_inPVS(aasworld->areawaypoints[i], aasworld->areawaypoints[j]))
+			{
+				continue;
+			}
+
 			trace = AAS_Trace(aasworld->areawaypoints[i], NULL, NULL, aasworld->areawaypoints[j], -1, BSP46CONTENTS_SOLID);
+			if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+			{
+				trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
+			}
+
 			if (trace.fraction >= 1)
 			{
-				//if (botimport.inPVS( aasworld->areawaypoints[i], aasworld->areawaypoints[j] ))
+				if (GGameType & GAME_ET)
+				{
+					areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
+				}
 				aasworld->decompressedvis[j] = 1;
-			}	//end if
-			else
+			}
+			else if (GGameType & GAME_WolfMP)
 			{
 				aasworld->decompressedvis[j] = 0;
-			}	//end else
-		}	//end for
-		size = AAS_CompressVis(aasworld->decompressedvis, aasworld->numareas, buf);
+			}
+		}
+
+		size = AAS_CompressVis(aasworld->decompressedvis, numAreas, buf);
 		aasworld->areavisibility[i] = (byte*)Mem_Alloc(size);
 		memcpy(aasworld->areavisibility[i], buf, size);
 		totalsize += size;
-	}	//end for
+	}
+
+	Mem_Free(areaTable);
 	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
-}	//end of the function AAS_CreateVisibility
+}
 //===========================================================================
 //
 // Parameter:			-

@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_CreateVisibility(qboolean waypointsOnly);
+void AAS_CreateVisibility(bool waypointsOnly);
 void AAS_InitRouting(void)
 {
 	AAS_InitTravelFlagFromType();
@@ -169,7 +169,7 @@ int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t go
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AAS_CreateVisibility(qboolean waypointsOnly)
+void AAS_CreateVisibility(bool waypointsOnly)
 {
 	int i, j, size, totalsize;
 	vec3_t endpos, mins, maxs;
@@ -202,20 +202,19 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 		VectorCopy(aasworld->areas[i].center, endpos);
 		endpos[2] -= 256;
 		AAS_PresenceTypeBoundingBox(PRESENCE_NORMAL, mins, maxs);
-		trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
-		if (trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+		trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, -1, BSP46CONTENTS_SOLID |
+			(GGameType & GAME_WolfMP ? 0 : BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP));
+		if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
 		{
 			trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
 		}
 		if (!trace.startsolid && trace.fraction < 1 && AAS_PointAreaNum(trace.endpos) == i)
 		{
 			VectorCopy(trace.endpos, aasworld->areawaypoints[i]);
-
 			if (!waypointsOnly)
 			{
 				validareas[i] = 1;
 			}
-
 			numvalid++;
 		}
 		else
@@ -230,16 +229,19 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 	}
 
 	aasworld->areavisibility = (byte**)Mem_ClearedAlloc(numAreas * sizeof(byte*));
-
 	aasworld->decompressedvis = (byte*)Mem_ClearedAlloc(numAreas * sizeof(byte));
 
 	areaTable = (byte*)Mem_ClearedAlloc(numAreas * numAreaBits * sizeof(byte));
-
 	buf = (byte*)Mem_ClearedAlloc(numAreas * 2 * sizeof(byte));			// in case it ends up bigger than the decompressedvis, which is rare but possible
 
 	for (i = 1; i < numAreas; i++)
 	{
 		if (!validareas[i])
+		{
+			continue;
+		}
+
+		if (GGameType & GAME_WolfMP && !AAS_AreaReachability(i))
 		{
 			continue;
 		}
@@ -250,20 +252,21 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 			if (i == j)
 			{
 				aasworld->decompressedvis[j] = 1;
-				if (areaTable)
+				areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
+				continue;
+			}
+
+			if (!validareas[j] || (GGameType & GAME_WolfMP && !AAS_AreaReachability(j)))
+			{
+				if (GGameType & GAME_WolfMP)
 				{
-					areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
+					aasworld->decompressedvis[j] = 0;
 				}
 				continue;
 			}
 
-			if (!validareas[j])
-			{
-				continue;
-			}
-
 			// if we have already checked this combination, copy the result
-			if (areaTable && (i > j))
+			if (!(GGameType & GAME_WolfMP) && areaTable && (i > j))
 			{
 				// use the reverse result stored in the table
 				if (areaTable[(j * numAreaBits) + (i >> 3)] & (1 << (i & 7)))
@@ -275,24 +278,28 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 			}
 
 			// RF, check PVS first, since it's much faster
-			if (!AAS_inPVS(aasworld->areawaypoints[i], aasworld->areawaypoints[j]))
+			if (!(GGameType & GAME_WolfMP) && !AAS_inPVS(aasworld->areawaypoints[i], aasworld->areawaypoints[j]))
 			{
 				continue;
 			}
 
 			trace = AAS_Trace(aasworld->areawaypoints[i], NULL, NULL, aasworld->areawaypoints[j], -1, BSP46CONTENTS_SOLID);
-			if (trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
+			if (GGameType & GAME_ET && trace.startsolid && trace.ent < Q3ENTITYNUM_WORLD)
 			{
 				trace = AAS_Trace(aasworld->areas[i].center, mins, maxs, endpos, trace.ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_MONSTERCLIP);
 			}
 
 			if (trace.fraction >= 1)
 			{
-				if (areaTable)
+				if (GGameType & GAME_ET)
 				{
 					areaTable[(i * numAreaBits) + (j >> 3)] |= (1 << (j & 7));
 				}
 				aasworld->decompressedvis[j] = 1;
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				aasworld->decompressedvis[j] = 0;
 			}
 		}
 
@@ -302,11 +309,7 @@ void AAS_CreateVisibility(qboolean waypointsOnly)
 		totalsize += size;
 	}
 
-	if (areaTable)
-	{
-		Mem_Free(areaTable);
-	}
-
+	Mem_Free(areaTable);
 	BotImport_Print(PRT_MESSAGE, "AAS_CreateVisibility: compressed vis size = %i\n", totalsize);
 }
 //===========================================================================
