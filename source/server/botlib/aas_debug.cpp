@@ -38,7 +38,7 @@ void AAS_ClearShownPolygons()
 	}
 }
 
-void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points)
+static void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points)
 {
 	for (int i = 0; i < MAX_DEBUGPOLYGONS; i++)
 	{
@@ -87,22 +87,6 @@ void AAS_PermanentLine(const vec3_t start, const vec3_t end, int color)
 {
 	int line = BotImport_DebugLineCreate();
 	BotImport_DebugLineShow(line, start, end, color);
-}
-
-void AAS_DrawPermanentCross(const vec3_t origin, float size, int color)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		vec3_t start;
-		VectorCopy(origin, start);
-		start[i] += size;
-		vec3_t end;
-		VectorCopy(origin, end);
-		end[i] -= size;
-		AAS_DebugLine(start, end, color);
-		int debugline = BotImport_DebugLineCreate();
-		BotImport_DebugLineShow(debugline, start, end, color);
-	}
 }
 
 static void AAS_ShowFacePolygon(int facenum, int color, int flip)
@@ -179,7 +163,7 @@ void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly)
 	}	//end for
 }
 
-void AAS_DrawCross(const vec3_t origin, float size, int color)
+static void AAS_DrawCross(const vec3_t origin, float size, int color)
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -221,7 +205,7 @@ void AAS_PrintTravelType(int traveltype)
 #endif
 }
 
-void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor)
+static void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor)
 {
 	vec3_t dir;
 	VectorSubtract(end, start, dir);
@@ -250,3 +234,84 @@ void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arro
 	AAS_DebugLine(p2, end, arrowcolor);
 }
 
+void AAS_ShowReachability(const aas_reachability_t* reach)
+{
+	AAS_ShowAreaPolygons(reach->areanum, 5, true);
+	AAS_DrawArrow(reach->start, reach->end, LINECOLOR_BLUE, LINECOLOR_YELLOW);
+
+	if (reach->traveltype == TRAVEL_JUMP || reach->traveltype == TRAVEL_WALKOFFLEDGE)
+	{
+		float speed;
+		AAS_HorizontalVelocityForJump(aassettings.phys_jumpvel, reach->start, reach->end, &speed);
+
+		vec3_t dir;
+		VectorSubtract(reach->end, reach->start, dir);
+		dir[2] = 0;
+		VectorNormalize(dir);
+		//set the velocity
+		vec3_t velocity;
+		VectorScale(dir, speed, velocity);
+		//set the command movement
+		vec3_t cmdmove;
+		VectorClear(cmdmove);
+		cmdmove[2] = aassettings.phys_jumpvel;
+
+		aas_clientmove_t move;
+		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, 0, true,
+			velocity, cmdmove, 3, 30, 0.1,
+			SE_HITGROUND | SE_ENTERWATER | SE_ENTERSLIME |
+			SE_ENTERLAVA | SE_HITGROUNDDAMAGE, 0, true);
+
+		if (reach->traveltype == TRAVEL_JUMP)
+		{
+			AAS_JumpReachRunStart(reach, dir);
+			AAS_DrawCross(dir, 4, LINECOLOR_BLUE);
+		}
+	}
+	else if (reach->traveltype == TRAVEL_ROCKETJUMP)
+	{
+		float zvel = AAS_RocketJumpZVelocity(reach->start);
+		float speed;
+		AAS_HorizontalVelocityForJump(zvel, reach->start, reach->end, &speed);
+
+		vec3_t dir;
+		VectorSubtract(reach->end, reach->start, dir);
+		dir[2] = 0;
+		VectorNormalize(dir);
+		//get command movement
+		vec3_t cmdmove;
+		VectorScale(dir, speed, cmdmove);
+		vec3_t velocity;
+		VectorSet(velocity, 0, 0, zvel);
+
+		aas_clientmove_t move;
+		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, 0, true,
+			velocity, cmdmove, 30, 30, 0.1,
+			SE_ENTERWATER | SE_ENTERSLIME |
+			SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
+			SE_TOUCHJUMPPAD | SE_HITGROUNDAREA, reach->areanum, true);
+	}
+	else if (reach->traveltype == TRAVEL_JUMPPAD)
+	{
+		vec3_t cmdmove;
+		VectorSet(cmdmove, 0, 0, 0);
+
+		vec3_t dir;
+		VectorSubtract(reach->end, reach->start, dir);
+		dir[2] = 0;
+		VectorNormalize(dir);
+		//set the velocity
+		//NOTE: the edgenum is the horizontal velocity
+		vec3_t velocity;
+		VectorScale(dir, reach->edgenum, velocity);
+		//NOTE: the facenum is the Z velocity
+		velocity[2] = reach->facenum;
+
+		aas_clientmove_t move;
+		AAS_PredictClientMovement(&move, -1, reach->start, PRESENCE_NORMAL, 0, true,
+			velocity, cmdmove, 30, 30, 0.1,
+			SE_ENTERWATER | SE_ENTERSLIME |
+			SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
+			SE_TOUCHJUMPPAD | SE_HITGROUNDAREA, reach->areanum, true);
+	}
+}

@@ -313,22 +313,17 @@ bool AAS_EntityCollision(int entnum, const vec3_t start, const vec3_t boxmins, c
 void AAS_InitClustering();
 
 void AAS_ClearShownPolygons();
-void AAS_ShowPolygon(int color, int numpoints, const vec3_t* points);
 //clear the shown debug lines
 void AAS_ClearShownDebugLines();
 //show a debug line
 void AAS_DebugLine(const vec3_t start, const vec3_t end, int color);
 //show a permenent line
 void AAS_PermanentLine(const vec3_t start, const vec3_t end, int color);
-//show a permanent cross
-void AAS_DrawPermanentCross(const vec3_t origin, float size, int color);
 void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
-//draw a cros
-void AAS_DrawCross(const vec3_t origin, float size, int color);
 //print the travel type
 void AAS_PrintTravelType(int traveltype);
-//draw an arrow
-void AAS_DrawArrow(const vec3_t start, const vec3_t end, int linecolor, int arrowcolor);
+//visualize the given reachability
+void AAS_ShowReachability(const aas_reachability_t* reach);
 
 //returns the origin of the entity
 void AAS_EntityOrigin(int entnum, vec3_t origin);
