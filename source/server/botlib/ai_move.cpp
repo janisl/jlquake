@@ -17,13 +17,13 @@
 #include "../server.h"
 #include "local.h"
 
-libvar_t* sv_maxstep;
-libvar_t* sv_maxbarrier;
-libvar_t* sv_gravity;
-libvar_t* weapindex_rocketlauncher;
-libvar_t* weapindex_bfg10k;
+static libvar_t* sv_maxstep;
+static libvar_t* sv_maxbarrier;
+static libvar_t* sv_gravity;
+static libvar_t* weapindex_rocketlauncher;
+static libvar_t* weapindex_bfg10k;
 libvar_t* weapindex_grapple;
-libvar_t* entitytypemissile;
+static libvar_t* entitytypemissile;
 libvar_t* offhandgrapple;
 libvar_t* cmd_grappleoff;
 libvar_t* cmd_grappleon;
@@ -371,7 +371,7 @@ int BotAddToTarget(const vec3_t start, const vec3_t end, float maxdist, float* d
 	}
 }
 
-void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcenter)
+static void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcenter)
 {
 	vec3_t mins, maxs, origin, mids;
 	vec3_t angles = {0, 0, 0};
@@ -400,7 +400,7 @@ void BotClearMoveResult(bot_moveresult_t* moveresult)
 	moveresult->flags = 0;
 }
 
-bool BotAirControl(const vec3_t origin, const vec3_t velocity, const vec3_t goal, vec3_t dir, float* speed)
+static bool BotAirControl(const vec3_t origin, const vec3_t velocity, const vec3_t goal, vec3_t dir, float* speed)
 {
 	vec3_t org, vel;
 	float dist;
@@ -435,7 +435,7 @@ bool BotAirControl(const vec3_t origin, const vec3_t velocity, const vec3_t goal
 	return false;
 }
 
-void BotFuncBobStartEnd(const aas_reachability_t* reach, vec3_t start, vec3_t end, vec3_t origin)
+static void BotFuncBobStartEnd(const aas_reachability_t* reach, vec3_t start, vec3_t end, vec3_t origin)
 {
 	int modelnum = reach->facenum & 0x0000FFFF;
 	if (!AAS_OriginOfMoverWithModelNum(modelnum, origin))
@@ -696,7 +696,7 @@ void BotShutdownMoveAI()
 	}
 }
 
-bool MoverDown(const aas_reachability_t* reach)
+static bool MoverDown(const aas_reachability_t* reach)
 {
 	int modelnum = reach->facenum & 0x0000FFFF;
 	//get some bsp model info
@@ -1186,7 +1186,7 @@ int BotReachabilityArea(const vec3_t origin, int client)
 	return BotFuzzyPointReachabilityArea(origin);
 }
 
-bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t* reach)
+static bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t* reach)
 {
 	vec3_t angles = {0, 0, 0};
 	vec3_t boxmins = {-16, -16, -8}, boxmaxs = {16, 16, 8};
@@ -1337,7 +1337,7 @@ bool BotPredictVisiblePositionET(const vec3_t origin, int areanum, const bot_goa
 	return BotPredictVisiblePosition(origin, areanum, reinterpret_cast<const bot_goal_t*>(goal), travelflags, target);
 }
 
-float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum)
+static float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum)
 {
 	//do gap checking
 	float startz = origin[2];
@@ -1382,7 +1382,7 @@ float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum)
 	return 0;
 }
 
-bool BotCheckBarrierJump(bot_movestate_t* ms, const vec3_t dir, float speed)
+static bool BotCheckBarrierJump(bot_movestate_t* ms, const vec3_t dir, float speed)
 {
 	aas_trace_t trace;
 
@@ -2099,6 +2099,1167 @@ bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const a
 	}
 	EA_Move(ms->client, hordir, speed);
 	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	float dist1, dist2, speed;
+	bot_moveresult_t result;
+
+	BotClearMoveResult(&result);
+
+	vec3_t runstart;
+	AAS_JumpReachRunStart(reach, runstart);
+
+	vec3_t hordir;
+	hordir[0] = runstart[0] - reach->start[0];
+	hordir[1] = runstart[1] - reach->start[1];
+	hordir[2] = 0;
+	VectorNormalize(hordir);
+
+	vec3_t start;
+	VectorCopy(reach->start, start);
+	start[2] += 1;
+	VectorMA(reach->start, 80, hordir, runstart);
+	//check for a gap
+	for (dist1 = 0; dist1 < 80; dist1 += 10)
+	{
+		vec3_t end;
+		VectorMA(start, dist1 + 10, hordir, end);
+		end[2] += 1;
+		if (AAS_PointAreaNum(end) != ms->reachareanum)
+		{
+			break;
+		}
+	}
+	if (dist1 < 80)
+	{
+		VectorMA(reach->start, dist1, hordir, runstart);
+	}
+
+	vec3_t dir1;
+	VectorSubtract(ms->origin, reach->start, dir1);
+	dir1[2] = 0;
+	dist1 = VectorNormalize(dir1);
+	vec3_t dir2;
+	VectorSubtract(ms->origin, runstart, dir2);
+	dir2[2] = 0;
+	dist2 = VectorNormalize(dir2);
+	//if just before the reachability start
+	if (DotProduct(dir1, dir2) < -0.8 || dist2 < (GGameType & GAME_ET ? 12 : 5))
+	{
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		//elemantary action jump
+		if (dist1 < 24)
+		{
+			EA_Jump(ms->client);
+		}
+		else if (dist1 < 32)
+		{
+			EA_DelayedJump(ms->client);
+		}
+		EA_Move(ms->client, hordir, 600);
+
+		ms->jumpreach = ms->lastreachnum;
+	}
+	else
+	{
+		hordir[0] = runstart[0] - ms->origin[0];
+		hordir[1] = runstart[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+
+		if (dist2 > 80)
+		{
+			dist2 = 80;
+		}
+		speed = 400 - (400 - 5 * dist2);
+		EA_Move(ms->client, hordir, speed);
+	}
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_Jump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//if not jumped yet
+	if (!ms->jumpreach)
+	{
+		return result;
+	}
+	//go straight to the reachability end
+	vec3_t hordir;
+	hordir[0] = reach->end[0] - ms->origin[0];
+	hordir[1] = reach->end[1] - ms->origin[1];
+	hordir[2] = 0;
+	float dist = VectorNormalize(hordir);
+
+	vec3_t hordir2;
+	hordir2[0] = reach->end[0] - reach->start[0];
+	hordir2[1] = reach->end[1] - reach->start[1];
+	hordir2[2] = 0;
+	VectorNormalize(hordir2);
+
+	if (DotProduct(hordir, hordir2) < -0.5 && dist < 24)
+	{
+		return result;
+	}
+	//always use max speed when traveling through the air
+	float speed = 800;
+
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+static bot_moveresult_t BotTravel_LadderQ3(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t dir;
+	VectorSubtract(reach->end, ms->origin, dir);
+	VectorNormalize(dir);
+	//set the ideal view angles, facing the ladder up or down
+	vec3_t viewdir;
+	viewdir[0] = dir[0];
+	viewdir[1] = dir[1];
+	viewdir[2] = 3 * dir[2];
+	VecToAngles(viewdir, result.ideal_viewangles);
+	//elemantary action
+	vec3_t origin = {0, 0, 0};
+	EA_Move(ms->client, origin, 0);
+	EA_MoveForward(ms->client);
+	//set movement view flag so the AI can see the view is focussed
+	result.flags |= MOVERESULT_MOVEMENTVIEW;
+	//save the movement direction
+	VectorCopy(dir, result.movedir);
+
+	return result;
+}
+
+static bot_moveresult_t BotTravel_LadderWolf(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	vec3_t origin = {0, 0, 0};
+
+	// RF, heavily modified, wolf has different ladder movement
+
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	// if it's a descend reachability
+	vec3_t dir;
+	if (GGameType & GAME_ET && reach->start[2] > reach->end[2])
+	{
+		if (!(ms->moveflags & MFL_ONGROUND))
+		{
+			VectorSubtract(reach->end, reach->start, dir);
+			dir[2] = 0;
+			float dist = VectorNormalize(dir);
+			//set the ideal view angles, facing the ladder up or down
+			vec3_t viewdir;
+			viewdir[0] = dir[0];
+			viewdir[1] = dir[1];
+			viewdir[2] = 0;	// straight forward goes up
+			if (dist >= 3.1)			// vertical ladder -> ladder reachability has length 3, dont inverse in this case
+			{
+				VectorInverse(viewdir);
+			}
+			VectorNormalize(viewdir);
+			VecToAngles(viewdir, result.ideal_viewangles);
+			//elemantary action
+			EA_Move(ms->client, origin, 0);
+			EA_MoveBack(ms->client);		// only move back if we are touching the ladder brush
+			// check for sideways adjustments to stay on the center of the ladder
+			vec3_t p;
+			VectorMA(ms->origin, 18, viewdir, p);
+			vec3_t v1;
+			VectorCopy(reach->start, v1);
+			v1[2] = ms->origin[2];
+			vec3_t v2;
+			VectorCopy(reach->end, v2);
+			v2[2] = ms->origin[2];
+			vec3_t vec;
+			VectorSubtract(v2, v1, vec);
+			VectorNormalize(vec);
+			VectorMA(v1, -32, vec, v1);
+			VectorMA(v2,  32, vec, v2);
+			vec3_t pos;
+			ProjectPointOntoVectorFromPoints(p, v1, v2, pos);
+			VectorSubtract(pos, p, vec);
+			if (VectorLength(vec) > 2)
+			{
+				vec3_t right;
+				AngleVectors(result.ideal_viewangles, NULL, right, NULL);
+				if (DotProduct(vec, right) > 0)
+				{
+					EA_MoveRight(ms->client);
+				}
+				else
+				{
+					EA_MoveLeft(ms->client);
+				}
+			}
+			//set movement view flag so the AI can see the view is focussed
+			result.flags |= MOVERESULT_MOVEMENTVIEW;
+		}
+		else
+		{
+			// find a postion back away from the edge of the ladder
+			vec3_t hordir;
+			VectorSubtract(reach->end, reach->start, hordir);
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+			vec3_t pos;
+			VectorMA(reach->start, -24, hordir, pos);
+			vec3_t v1;
+			VectorCopy(reach->end, v1);
+			v1[2] = pos[2];
+			// project our position onto the vector
+			vec3_t p;
+			ProjectPointOntoVectorBounded(ms->origin, pos, v1, p);
+			VectorSubtract(p, ms->origin, dir);
+			//make sure the horizontal movement is large anough
+			VectorCopy(dir, hordir);
+			hordir[2] = 0;
+			float dist = VectorNormalize(hordir);
+			if (dist < 64)			// within range, go for the end
+			{
+				VectorSubtract(reach->end, reach->start, dir);
+				//make sure the horizontal movement is large anough
+				dir[2] = 0;
+				VectorNormalize(dir);
+				//set the ideal view angles, facing the ladder up or down
+				vec3_t viewdir;
+				viewdir[0] = dir[0];
+				viewdir[1] = dir[1];
+				viewdir[2] = 0;
+				VectorInverse(viewdir);
+				VectorNormalize(viewdir);
+				VecToAngles(viewdir, result.ideal_viewangles);
+				result.flags |= MOVERESULT_MOVEMENTVIEW;
+				// if we are still on ground, then start moving backwards until we are in air
+				if ((dist < 4) && (ms->moveflags & MFL_ONGROUND))
+				{
+					vec3_t vec;
+					VectorSubtract(reach->end, ms->origin, vec);
+					vec[2] = 0;
+					VectorNormalize(vec);
+					EA_Move(ms->client, vec, 100);
+					VectorCopy(vec, result.movedir);
+					result.ideal_viewangles[PITCH] = 45;	// face downwards
+					return result;
+				}
+			}
+
+			dir[0] = hordir[0];
+			dir[1] = hordir[1];
+			dir[2] = 0;
+			if (dist > 150)
+			{
+				dist = 150;
+			}
+			float speed = 400 - (300 - 2 * dist);
+			EA_Move(ms->client, dir, speed);
+		}
+	}
+	else
+	{
+		if ((ms->moveflags & MFL_AGAINSTLADDER)
+			//NOTE: not a good idea for ladders starting in water
+			|| !(ms->moveflags & MFL_ONGROUND))
+		{
+			VectorSubtract(reach->end, reach->start, dir);
+			VectorNormalize(dir);
+			//set the ideal view angles, facing the ladder up or down
+			vec3_t viewdir;
+			viewdir[0] = dir[0];
+			viewdir[1] = dir[1];
+			viewdir[2] = dir[2];
+			if (dir[2] < 0)			// going down, so face the other way (towards ladder)
+			{
+				VectorInverse(viewdir);
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				viewdir[2] = 0;	// straight forward goes up
+			}
+			if (!(GGameType & GAME_WolfMP))
+			{
+				viewdir[2] = 0;	// straight forward goes up
+				VectorNormalize(viewdir);
+			}
+			VecToAngles(viewdir, result.ideal_viewangles);
+			//elemantary action
+			EA_Move(ms->client, origin, 0);
+			if (!(GGameType & GAME_WolfMP) && dir[2] < 0)			// going down, so face the other way
+			{
+				EA_MoveBack(ms->client);
+			}
+			else
+			{
+				EA_MoveForward(ms->client);
+			}
+			if (!(GGameType & GAME_WolfMP))
+			{
+				// check for sideways adjustments to stay on the center of the ladder
+				vec3_t p;
+				VectorMA(ms->origin, 18, viewdir, p);
+				vec3_t v1;
+				VectorCopy(reach->start, v1);
+				v1[2] = ms->origin[2];
+				vec3_t v2;
+				VectorCopy(reach->end, v2);
+				v2[2] = ms->origin[2];
+				vec3_t vec;
+				VectorSubtract(v2, v1, vec);
+				VectorNormalize(vec);
+				VectorMA(v1, -32, vec, v1);
+				VectorMA(v2,  32, vec, v2);
+				vec3_t pos;
+				if (GGameType & GAME_ET)
+				{
+					ProjectPointOntoVectorBounded(p, v1, v2, pos);
+				}
+				else
+				{
+					ProjectPointOntoVectorFromPoints(p, v1, v2, pos);
+				}
+				VectorSubtract(pos, p, vec);
+				if (VectorLength(vec) > 2)
+				{
+					vec3_t right;
+					AngleVectors(result.ideal_viewangles, NULL, right, NULL);
+					if (DotProduct(vec, right) > 0)
+					{
+						EA_MoveRight(ms->client);
+					}
+					else
+					{
+						EA_MoveLeft(ms->client);
+					}
+				}
+			}
+			//set movement view flag so the AI can see the view is focussed
+			result.flags |= MOVERESULT_MOVEMENTVIEW;
+		}
+		else
+		{
+			// find a postion back away from the base of the ladder
+			vec3_t hordir;
+			VectorSubtract(reach->end, reach->start, hordir);
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+			vec3_t pos;
+			VectorMA(reach->start, -24, hordir, pos);
+			if (GGameType & GAME_WolfSP)
+			{
+				// project our position onto the vector
+				vec3_t p;
+				ProjectPointOntoVectorFromPoints(ms->origin, pos, reach->start, p);
+				VectorSubtract(p, ms->origin, dir);
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				VectorSubtract(pos, ms->origin, dir);
+			}
+			else
+			{
+				vec3_t v1;
+				VectorCopy(reach->end, v1);
+				v1[2] = pos[2];
+				// project our position onto the vector
+				vec3_t p;
+				ProjectPointOntoVectorBounded(ms->origin, pos, v1, p);
+				VectorSubtract(p, ms->origin, dir);
+			}
+			//make sure the horizontal movement is large anough
+			VectorCopy(dir, hordir);
+			hordir[2] = 0;
+			float dist = VectorNormalize(hordir);
+			if (dist < (GGameType & GAME_WolfSP ? 8 : GGameType & GAME_WolfMP ? 32 : 16))	// within range, go for the end
+			{
+				VectorSubtract(reach->end, ms->origin, dir);
+				//make sure the horizontal movement is large anough
+				VectorCopy(dir, hordir);
+				hordir[2] = 0;
+				dist = VectorNormalize(hordir);
+				if (!(GGameType & GAME_WolfMP))
+				{
+					//set the ideal view angles, facing the ladder up or down
+					vec3_t viewdir;
+					viewdir[0] = dir[0];
+					viewdir[1] = dir[1];
+					viewdir[2] = 0;
+					if (GGameType & GAME_WolfSP && dir[2] < 0)	// going down, so face the other way
+					{
+						VectorInverse(viewdir);
+					}
+					VectorNormalize(viewdir);
+					VecToAngles(viewdir, result.ideal_viewangles);
+					result.flags |= MOVERESULT_MOVEMENTVIEW;
+				}
+			}
+
+			dir[0] = hordir[0];
+			dir[1] = hordir[1];
+			dir[2] = 0;
+			if (dist > 50)
+			{
+				dist = 50;
+			}
+			float speed;
+			if (GGameType & GAME_WolfMP)
+			{
+				speed = 400 - (200 - 4 * dist);
+			}
+			else
+			{
+				speed = 400 - (300 - 6 * dist);
+			}
+			EA_Move(ms->client, dir, speed);
+		}
+	}
+	//save the movement direction
+	VectorCopy(dir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_Ladder(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	if (GGameType & GAME_Quake3)
+	{
+		return BotTravel_LadderQ3(ms, reach);
+	}
+	else
+	{
+		return BotTravel_LadderWolf(ms, reach);
+	}
+}
+
+bot_moveresult_t BotTravel_Teleport(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//if the bot is being teleported
+	if (ms->moveflags & MFL_TELEPORTED)
+	{
+		return result;
+	}
+
+	//walk straight to center of the teleporter
+	vec3_t hordir;
+	VectorSubtract(reach->start, ms->origin, hordir);
+	if (!(ms->moveflags & MFL_SWIMMING))
+	{
+		hordir[2] = 0;
+	}
+	float dist = VectorNormalize(hordir);
+
+	BotCheckBlocked(ms, hordir, true, &result);
+
+	if (dist < 30)
+	{
+		EA_Move(ms->client, hordir, 200);
+	}
+	else
+	{
+		EA_Move(ms->client, hordir, 400);
+	}
+
+	if (ms->moveflags & MFL_SWIMMING)
+	{
+		result.flags |= MOVERESULT_SWIMVIEW;
+	}
+
+	VectorCopy(hordir, result.movedir);
+	return result;
+}
+
+bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	float dist, dist1, dist2, speed;
+	bot_moveresult_t result;
+
+	BotClearMoveResult(&result);
+	//if standing on the plat
+	if (BotOnMover(ms->origin, ms->entitynum, reach))
+	{
+		//if vertically not too far from the end point
+		if (abs(ms->origin[2] - reach->end[2]) < sv_maxbarrier->value)
+		{
+			//move to the end point
+			vec3_t hordir;
+			VectorSubtract(reach->end, ms->origin, hordir);
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+			if (!BotCheckBarrierJump(ms, hordir, 100))
+			{
+				EA_Move(ms->client, hordir, 400);
+			}
+			VectorCopy(hordir, result.movedir);
+		}
+		//if not really close to the center of the elevator
+		else
+		{
+			vec3_t bottomcenter;
+			MoverBottomCenter(reach, bottomcenter);
+			vec3_t hordir;
+			VectorSubtract(bottomcenter, ms->origin, hordir);
+			hordir[2] = 0;
+			dist = VectorNormalize(hordir);
+
+			if (dist > 10)
+			{
+				//move to the center of the plat
+				if (dist > 100)
+				{
+					dist = 100;
+				}
+				speed = 400 - (400 - 4 * dist);
+
+				EA_Move(ms->client, hordir, speed);
+				VectorCopy(hordir, result.movedir);
+			}
+		}
+	}
+	else
+	{
+		//if very near the reachability end
+		vec3_t dir;
+		VectorSubtract(reach->end, ms->origin, dir);
+		dist = VectorLength(dir);
+		if (dist < 64)
+		{
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			speed = 360 - (360 - 6 * dist);
+
+			if ((ms->moveflags & MFL_SWIMMING) || !BotCheckBarrierJump(ms, dir, 50))
+			{
+				if (speed > 5)
+				{
+					EA_Move(ms->client, dir, speed);
+				}
+			}
+			VectorCopy(dir, result.movedir);
+
+			if (ms->moveflags & MFL_SWIMMING)
+			{
+				result.flags |= MOVERESULT_SWIMVIEW;
+			}
+			//stop using this reachability
+			ms->reachability_time = 0;
+			return result;
+		}
+		//get direction and distance to reachability start
+		vec3_t dir1;
+		VectorSubtract(reach->start, ms->origin, dir1);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			dir1[2] = 0;
+		}
+		dist1 = VectorNormalize(dir1);
+		//if the elevator isn't down
+		if (!MoverDown(reach))
+		{
+			dist = dist1;
+			VectorCopy(dir1, dir);
+
+			BotCheckBlocked(ms, dir, false, &result);
+
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			speed = 360 - (360 - 6 * dist);
+
+			if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50))
+			{
+				if (speed > 5)
+				{
+					EA_Move(ms->client, dir, speed);
+				}
+			}
+			VectorCopy(dir, result.movedir);
+
+			if (ms->moveflags & MFL_SWIMMING)
+			{
+				result.flags |= MOVERESULT_SWIMVIEW;
+			}
+			//this isn't a failure... just wait till the elevator comes down
+			result.type = RESULTTYPE_ELEVATORUP;
+			result.flags |= MOVERESULT_WAITING;
+			return result;
+		}
+		//get direction and distance to elevator bottom center
+		vec3_t bottomcenter;
+		MoverBottomCenter(reach, bottomcenter);
+		vec3_t dir2;
+		VectorSubtract(bottomcenter, ms->origin, dir2);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			dir2[2] = 0;
+		}
+		dist2 = VectorNormalize(dir2);
+		//if very close to the reachability start or
+		//closer to the elevator center or
+		//between reachability start and elevator center
+		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
+		{
+			dist = dist2;
+			VectorCopy(dir2, dir);
+		}
+		else//closer to the reachability start
+		{
+			dist = dist1;
+			VectorCopy(dir1, dir);
+		}
+
+		BotCheckBlocked(ms, dir, false, &result);
+
+		if (dist > 60)
+		{
+			dist = 60;
+		}
+		speed = 400 - (400 - 6 * dist);
+	
+		if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50))
+		{
+			EA_Move(ms->client, dir, speed);
+		}
+		VectorCopy(dir, result.movedir);
+
+		if (ms->moveflags & MFL_SWIMMING)
+		{
+			result.flags |= MOVERESULT_SWIMVIEW;
+		}
+	}
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+
+	BotClearMoveResult(&result);
+
+	vec3_t bottomcenter;
+	MoverBottomCenter(reach, bottomcenter);
+	vec3_t bottomdir;
+	VectorSubtract(bottomcenter, ms->origin, bottomdir);
+
+	vec3_t topdir;
+	VectorSubtract(reach->end, ms->origin, topdir);
+
+	if (Q_fabs(bottomdir[2]) < Q_fabs(topdir[2]))
+	{
+		VectorNormalize(bottomdir);
+		EA_Move(ms->client, bottomdir, 300);
+	}
+	else
+	{
+		VectorNormalize(topdir);
+		EA_Move(ms->client, topdir, 300);
+	}
+	return result;
+}
+
+bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t bob_start, bob_end, bob_origin;
+	BotFuncBobStartEnd(reach, bob_start, bob_end, bob_origin);
+	//if standing ontop of the func_bobbing
+	if (BotOnMover(ms->origin, ms->entitynum, reach))
+	{
+		//if near end point of reachability
+		vec3_t dir;
+		VectorSubtract(bob_origin, bob_end, dir);
+		if (VectorLength(dir) < 24)
+		{
+			//move to the end point
+			vec3_t hordir;
+			VectorSubtract(reach->end, ms->origin, hordir);
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+			if (!BotCheckBarrierJump(ms, hordir, 100))
+			{
+				EA_Move(ms->client, hordir, 400);
+			}
+			VectorCopy(hordir, result.movedir);
+		}
+		//if not really close to the center of the elevator
+		else
+		{
+			vec3_t bottomcenter;
+			MoverBottomCenter(reach, bottomcenter);
+			vec3_t hordir;
+			VectorSubtract(bottomcenter, ms->origin, hordir);
+			hordir[2] = 0;
+			float dist = VectorNormalize(hordir);
+
+			if (dist > 10)
+			{
+				//move to the center of the plat
+				if (dist > 100)
+				{
+					dist = 100;
+				}
+				float speed = 400 - (400 - 4 * dist);
+				//
+				EA_Move(ms->client, hordir, speed);
+				VectorCopy(hordir, result.movedir);
+			}
+		}
+	}
+	else
+	{
+		//if very near the reachability end
+		vec3_t dir;
+		VectorSubtract(reach->end, ms->origin, dir);
+		float dist = VectorLength(dir);
+		if (dist < 64)
+		{
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			float speed = 360 - (360 - 6 * dist);
+			//if swimming or no barrier jump
+			if ((ms->moveflags & MFL_SWIMMING) || !BotCheckBarrierJump(ms, dir, 50))
+			{
+				if (speed > 5)
+				{
+					EA_Move(ms->client, dir, speed);
+				}
+			}
+			VectorCopy(dir, result.movedir);
+
+			if (ms->moveflags & MFL_SWIMMING)
+			{
+				result.flags |= MOVERESULT_SWIMVIEW;
+			}
+			//stop using this reachability
+			ms->reachability_time = 0;
+			return result;
+		}
+		//get direction and distance to reachability start
+		vec3_t dir1;
+		VectorSubtract(reach->start, ms->origin, dir1);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			dir1[2] = 0;
+		}
+		float dist1 = VectorNormalize(dir1);
+		//if func_bobbing is Not it's start position
+		VectorSubtract(bob_origin, bob_start, dir);
+		if (VectorLength(dir) > 16)
+		{
+			dist = dist1;
+			VectorCopy(dir1, dir);
+
+			BotCheckBlocked(ms, dir, false, &result);
+
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			float speed = 360 - (360 - 6 * dist);
+
+			if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50))
+			{
+				if (speed > 5)
+				{
+					EA_Move(ms->client, dir, speed);
+				}
+			}
+			VectorCopy(dir, result.movedir);
+
+			if (ms->moveflags & MFL_SWIMMING)
+			{
+				result.flags |= MOVERESULT_SWIMVIEW;
+			}
+			//this isn't a failure... just wait till the func_bobbing arrives
+			result.type = GGameType & GAME_Quake3 ? Q3RESULTTYPE_WAITFORFUNCBOBBING : RESULTTYPE_ELEVATORUP;
+			result.flags |= MOVERESULT_WAITING;
+			return result;
+		}
+		//get direction and distance to func_bob bottom center
+		vec3_t bottomcenter;
+		MoverBottomCenter(reach, bottomcenter);
+		vec3_t dir2;
+		VectorSubtract(bottomcenter, ms->origin, dir2);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			dir2[2] = 0;
+		}
+		float dist2 = VectorNormalize(dir2);
+		//if very close to the reachability start or
+		//closer to the elevator center or
+		//between reachability start and func_bobbing center
+		if (dist1 < 20 || dist2 < dist1 || DotProduct(dir1, dir2) < 0)
+		{
+			dist = dist2;
+			VectorCopy(dir2, dir);
+		}
+		else//closer to the reachability start
+		{
+			dist = dist1;
+			VectorCopy(dir1, dir);
+		}
+
+		BotCheckBlocked(ms, dir, false, &result);
+
+		if (dist > 60)
+		{
+			dist = 60;
+		}
+		float speed = 400 - (400 - 6 * dist);
+
+		if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50))
+		{
+			EA_Move(ms->client, dir, speed);
+		}
+		VectorCopy(dir, result.movedir);
+
+		if (ms->moveflags & MFL_SWIMMING)
+		{
+			result.flags |= MOVERESULT_SWIMVIEW;
+		}
+	}
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_FuncBobbing(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t bob_start, bob_end, bob_origin;
+	BotFuncBobStartEnd(reach, bob_start, bob_end, bob_origin);
+
+	vec3_t dir;
+	VectorSubtract(bob_origin, bob_end, dir);
+	float dist = VectorLength(dir);
+	//if the func_bobbing is near the end
+	if (dist < 16)
+	{
+		vec3_t hordir;
+		VectorSubtract(reach->end, ms->origin, hordir);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			hordir[2] = 0;
+		}
+		dist = VectorNormalize(hordir);
+
+		if (dist > 60)
+		{
+			dist = 60;
+		}
+		float speed = 360 - (360 - 6 * dist);
+
+		if (speed > 5)
+		{
+			EA_Move(ms->client, dir, speed);
+		}
+		VectorCopy(dir, result.movedir);
+
+		if (ms->moveflags & MFL_SWIMMING)
+		{
+			result.flags |= MOVERESULT_SWIMVIEW;
+		}
+	}
+	else
+	{
+		vec3_t bottomcenter;
+		MoverBottomCenter(reach, bottomcenter);
+		vec3_t hordir;
+		VectorSubtract(bottomcenter, ms->origin, hordir);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			hordir[2] = 0;
+		}
+		dist = VectorNormalize(hordir);
+
+		if (dist > 5)
+		{
+			//move to the center of the plat
+			if (dist > 100)
+			{
+				dist = 100;
+			}
+			float speed = 400 - (400 - 4 * dist);
+
+			EA_Move(ms->client, hordir, speed);
+			VectorCopy(hordir, result.movedir);
+		}
+	}
+	return result;
+}
+
+bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+
+	float dist = VectorNormalize(hordir);
+	if (GGameType & GAME_Quake3)
+	{
+		//look in the movement direction
+		VecToAngles(hordir, result.ideal_viewangles);
+		//look straight down
+		result.ideal_viewangles[PITCH] = 90;
+	}
+
+	if (dist < 5 && (!(GGameType & GAME_Quake3) ||
+		(Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
+		Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)))
+	{
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		//elemantary action jump
+		EA_Jump(ms->client);
+		EA_Attack(ms->client);
+		EA_Move(ms->client, hordir, 800);
+
+		ms->jumpreach = ms->lastreachnum;
+	}
+	else
+	{
+		if (dist > 80)
+		{
+			dist = 80;
+		}
+		float speed = 400 - (400 - 5 * dist);
+		EA_Move(ms->client, hordir, speed);
+	}
+
+	//look in the movement direction
+	VecToAngles(hordir, result.ideal_viewangles);
+	//look straight down
+	result.ideal_viewangles[PITCH] = 90;
+	//set the view angles directly
+	EA_View(ms->client, result.ideal_viewangles);
+	//view is important for the movment
+	result.flags |= MOVERESULT_MOVEMENTVIEWSET;
+	//select the rocket launcher
+	EA_SelectWeapon(ms->client, GGameType & GAME_Quake3 ? (int)weapindex_rocketlauncher->value : WEAPONINDEX_ROCKET_LAUNCHER);
+	//weapon is used for movement
+	result.weapon = GGameType & GAME_Quake3 ? (int)weapindex_rocketlauncher->value : WEAPONINDEX_ROCKET_LAUNCHER;
+	result.flags |= MOVERESULT_MOVEMENTWEAPON;
+
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+
+	float dist = VectorNormalize(hordir);
+
+	if (dist < 5 &&
+		Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
+		Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)
+	{
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		//elemantary action jump
+		EA_Jump(ms->client);
+		EA_Attack(ms->client);
+		EA_Move(ms->client, hordir, 800);
+
+		ms->jumpreach = ms->lastreachnum;
+	}
+	else
+	{
+		if (dist > 80)
+		{
+			dist = 80;
+		}
+		float speed = 400 - (400 - 5 * dist);
+		EA_Move(ms->client, hordir, speed);
+	}
+	//look in the movement direction
+	VecToAngles(hordir, result.ideal_viewangles);
+	//look straight down
+	result.ideal_viewangles[PITCH] = 90;
+	//set the view angles directly
+	EA_View(ms->client, result.ideal_viewangles);
+	//view is important for the movment
+	result.flags |= MOVERESULT_MOVEMENTVIEWSET;
+	//select the rocket launcher
+	EA_SelectWeapon(ms->client, (int)weapindex_bfg10k->value);
+	//weapon is used for movement
+	result.weapon = (int)weapindex_bfg10k->value;
+	result.flags |= MOVERESULT_MOVEMENTWEAPON;
+
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//if not jumped yet
+	if (!ms->jumpreach)
+	{
+		return result;
+	}
+
+	vec3_t hordir;
+	if (GGameType & GAME_Quake3)
+	{
+		float speed;
+		if (!BotAirControl(ms->origin, ms->velocity, reach->end, hordir, &speed))
+		{
+			//go straight to the reachability end
+			VectorSubtract(reach->end, ms->origin, hordir);
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+			speed = 400;
+		}
+		EA_Move(ms->client, hordir, speed);
+	}
+	else
+	{
+		//go straight to the reachability end
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		//always use max speed when traveling through the air
+		EA_Move(ms->client, hordir, 800);
+	}
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//first walk straight to the reachability start
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+	VectorNormalize(hordir);
+
+	BotCheckBlocked(ms, hordir, true, &result);
+	float speed = 400;
+	//elemantary action move in direction
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	vec3_t hordir;
+	float speed;
+	if (!BotAirControl(ms->origin, ms->velocity, reach->end, hordir, &speed))
+	{
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		speed = 400;
+	}
+	BotCheckBlocked(ms, hordir, true, &result);
+	//elemantary action move in direction
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//walk straight to the goal origin
+	vec3_t dir;
+	dir[0] = goal->origin[0] - ms->origin[0];
+	dir[1] = goal->origin[1] - ms->origin[1];
+	if (ms->moveflags & MFL_SWIMMING)
+	{
+		dir[2] = goal->origin[2] - ms->origin[2];
+		result.traveltype = TRAVEL_SWIM;
+	}
+	else
+	{
+		dir[2] = 0;
+		result.traveltype = TRAVEL_WALK;
+	}
+
+	float dist = VectorNormalize(dir);
+	if (dist > 100 || (!(GGameType & GAME_Quake3) && goal->flags & GFL_NOSLOWAPPROACH))
+	{
+		dist = 100;
+	}
+	float speed = 400 - (400 - 4 * dist);
+	if (speed < 10)
+	{
+		speed = 0;
+	}
+
+	BotCheckBlocked(ms, dir, true, &result);
+	//elemantary action move in direction
+	EA_Move(ms->client, dir, speed);
+	VectorCopy(dir, result.movedir);
+
+	if (ms->moveflags & MFL_SWIMMING)
+	{
+		VecToAngles(dir, result.ideal_viewangles);
+		result.flags |= MOVERESULT_SWIMVIEW;
+	}
+
+	ms->lastreachnum = 0;
+	ms->lastareanum = 0;
+	ms->lastgoalareanum = goal->areanum;
+	VectorCopy(ms->origin, ms->lastorigin);
+	if (!(GGameType & GAME_Quake3))
+	{
+		ms->lasttime = AAS_Time();
+	}
 
 	return result;
 }

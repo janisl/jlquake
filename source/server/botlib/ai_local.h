@@ -249,13 +249,7 @@ struct bot_movestate_t
 	int numavoidspots;
 };
 
-extern libvar_t* sv_maxstep;
-extern libvar_t* sv_maxbarrier;
-extern libvar_t* sv_gravity;
-extern libvar_t* weapindex_rocketlauncher;
-extern libvar_t* weapindex_bfg10k;
 extern libvar_t* weapindex_grapple;
-extern libvar_t* entitytypemissile;
 extern libvar_t* offhandgrapple;
 extern libvar_t* cmd_grappleoff;
 extern libvar_t* cmd_grappleon;
@@ -265,27 +259,20 @@ bot_movestate_t* BotMoveStateFromHandle(int handle);
 //must be called every map change
 void BotSetBrushModelTypes();
 void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime);
-void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcenter);
 void BotClearMoveResult(bot_moveresult_t* moveresult);
-bool BotAirControl(const vec3_t origin, const vec3_t velocity, const vec3_t goal, vec3_t dir, float* speed);
-void BotFuncBobStartEnd(const aas_reachability_t* reach, vec3_t start, vec3_t end, vec3_t origin);
 int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach);
 int BotReachabilityTime(aas_reachability_t* reach);
 //setup movement AI
 int BotSetupMoveAI();
 //shutdown movement AI
 void BotShutdownMoveAI();
-bool MoverDown(const aas_reachability_t* reach);
 int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
 	int lastgoalareanum, int lastareanum,
 	const int* avoidreach, const float* avoidreachtimes, const int* avoidreachtries,
 	const bot_goal_t* goal, int travelflags, int movetravelflags,
 	const bot_avoidspot_t* avoidspots, int numavoidspots, int* flags);
 int BotFuzzyPointReachabilityArea(const vec3_t origin);
-bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t* reach);
 int BotOnTopOfEntity(const bot_movestate_t* ms);
-float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum);
-bool BotCheckBarrierJump(bot_movestate_t* ms, const vec3_t dir, float speed);
 void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbottom, bot_moveresult_t* result);
 bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach);
 bot_moveresult_t BotFinishTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach);
@@ -297,6 +284,20 @@ bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reacha
 bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
 bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach);
 bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_Jump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Ladder(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Teleport(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_FuncBobbing(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal);
 
 //setup the weapon AI
 int BotSetupWeaponAI();
