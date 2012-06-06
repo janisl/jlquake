@@ -55,8 +55,8 @@ void FreeWeightConfig(weightconfig_t* config);
 //find the fuzzy weight with the given name
 int FindFuzzyWeight(weightconfig_t* wc, const char* name);
 //returns the fuzzy weight for the given inventory and weight
-float FuzzyWeight(int* inventory, weightconfig_t* wc, int weightnum);
-float FuzzyWeightUndecided(int* inventory, weightconfig_t* wc, int weightnum);
+float FuzzyWeight(const int* inventory, const weightconfig_t* wc, int weightnum);
+float FuzzyWeightUndecided(const int* inventory, const weightconfig_t* wc, int weightnum);
 //evolves the weight configuration
 void EvolveWeightConfig(weightconfig_t* config);
 //interbreed the weight configurations and stores the interbreeded one in configout

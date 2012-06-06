@@ -41,7 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "be_interface.h"
 
 #include "../game/be_ea.h"
-#include "../game/be_ai_goal.h"
 #include "../game/be_ai_move.h"
 
 #define AVOIDREACH

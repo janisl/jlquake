@@ -198,7 +198,7 @@ static void SV_Map_f(void)
 	cmd = Cmd_Argv(0);
 	if (String::NICmp(cmd, "sp", 2) == 0)
 	{
-		Cvar_SetValue("g_gametype", WMGT_SINGLE_PLAYER);
+		Cvar_SetValue("g_gametype", Q3GT_SINGLE_PLAYER);
 		Cvar_SetValue("g_doWarmup", 0);
 		// may not set sv_maxclients directly, always set latched
 #ifdef __MACOS__
@@ -229,9 +229,9 @@ static void SV_Map_f(void)
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if (sv_gametype->integer == WMGT_SINGLE_PLAYER)
+		if (sv_gametype->integer == Q3GT_SINGLE_PLAYER)
 		{
-			Cvar_SetValue("g_gametype", WMGT_FFA);
+			Cvar_SetValue("g_gametype", Q3GT_FFA);
 		}
 	}
 

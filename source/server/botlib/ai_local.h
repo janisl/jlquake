@@ -93,95 +93,10 @@ struct bot_goal_t
 	int goalEndTime;			// When is the shortest time this can end?
 };
 
-//minimum avoid goal time
-#define AVOID_MINIMUM_TIME      10
-//default avoid goal time
-#define AVOID_DEFAULT_TIME      30
-//avoid dropped goal time
-#define AVOID_DROPPED_TIME      10
-//avoid dropped goal time
-#define AVOID_DROPPED_TIME_WOLF 5
-#define TRAVELTIME_SCALE        0.01
-
-//item flags
-#define IFL_NOTFREE             1		//not in free for all
-#define IFL_NOTTEAM             2		//not in team play
-#define IFL_NOTSINGLE           4		//not in single player
-#define IFL_NOTBOT              8		//bot should never go for this
-#define IFL_ROAM                16		//bot roam goal
-
-struct levelitem_t
-{
-	int number;							//number of the level item
-	int iteminfo;						//index into the item info
-	int flags;							//item flags
-	float weight;						//fixed roam weight
-	vec3_t origin;						//origin of the item
-	int goalareanum;					//area the item is in
-	vec3_t goalorigin;					//goal origin within the area
-	int entitynum;						//entity number
-	float timeout;						//item is removed after this time
-	levelitem_t* prev;
-	levelitem_t* next;
-};
-
-struct iteminfo_t
-{
-	char classname[32];					//classname of the item
-	char name[MAX_STRINGFIELD];			//name of the item
-	char model[MAX_STRINGFIELD];		//model of the item
-	int modelindex;						//model index
-	int type;							//item type
-	int index;							//index in the inventory
-	float respawntime;					//respawn time
-	vec3_t mins;						//mins of the item
-	vec3_t maxs;						//maxs of the item
-	int number;							//number of the item info
-};
-
-struct itemconfig_t
-{
-	int numiteminfo;
-	iteminfo_t* iteminfo;
-};
-
-//goal state
-struct weightconfig_t;
-struct bot_goalstate_t
-{
-	weightconfig_t* itemweightconfig;	//weight config
-	int* itemweightindex;						//index from item to weight
-	//
-	int client;									//client using this goal state
-	int lastreachabilityarea;					//last area with reachabilities the bot was in
-	//
-	bot_goal_t goalstack[MAX_GOALSTACK];		//goal stack
-	int goalstacktop;							//the top of the goal stack
-	//
-	int avoidgoals[MAX_AVOIDGOALS];				//goals to avoid
-	float avoidgoaltimes[MAX_AVOIDGOALS];		//times to avoid the goals
-};
-
-extern itemconfig_t* itemconfig;
-extern levelitem_t* levelitems;
-extern int numlevelitems;
-extern int g_gametype;
-extern bool g_singleplayer;
-extern libvar_t* droppedweight;
-
-bot_goalstate_t* BotGoalStateFromHandle(int handle);
-void InitLevelItemHeap();
-levelitem_t* AllocLevelItem();
-void FreeLevelItem(levelitem_t* li);
-void AddLevelItemToList(levelitem_t* li);
-void RemoveLevelItemFromList(levelitem_t* li);
-void BotFreeInfoEntities();
 //setup the goal AI
 int BotSetupGoalAI(bool singleplayer);
 //shut down the goal AI
 void BotShutdownGoalAI();
-void BotInitInfoEntities();
-void BotAddToAvoidGoals(bot_goalstate_t* gs, int number, float avoidtime);
 
 #define MAX_AVOIDREACH                  1
 #define MAX_AVOIDSPOTS                  32
@@ -298,6 +213,7 @@ bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas
 bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach);
 bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach);
 bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal);
+void BotPushGoal(int goalstate, const bot_goal_t* goal, size_t size);
 
 //setup the weapon AI
 int BotSetupWeaponAI();

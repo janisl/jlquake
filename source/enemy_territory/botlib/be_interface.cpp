@@ -43,7 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/be_ea.h"
 #include "../../server/botlib/ai_weight.h"
-#include "../game/be_ai_goal.h"
 #include "../game/be_ai_move.h"
 #include "../game/be_ai_chat.h"
 
@@ -175,14 +174,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	// be_ai_chat.h
 	//-----------------------------------
 	ai->BotEnterChat = BotEnterChat;
-	//-----------------------------------
-	// be_ai_goal.h
-	//-----------------------------------
-	ai->BotChooseLTGItem = BotChooseLTGItem;
-	ai->BotChooseNBGItem = BotChooseNBGItem;
-	ai->BotItemGoalInVisButNotVisible = BotItemGoalInVisButNotVisible;
-	ai->BotInitLevelItems = BotInitLevelItems;
-	ai->BotUpdateEntityItems = BotUpdateEntityItems;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------

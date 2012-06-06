@@ -61,15 +61,6 @@ typedef struct ai_export_s
 	//-----------------------------------
 	void (* BotEnterChat)(int chatstate, int client, int sendto);
 	//-----------------------------------
-	// be_ai_goal.h
-	//-----------------------------------
-	int (* BotChooseLTGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags);
-	int (* BotChooseNBGItem)(int goalstate, vec3_t origin, int* inventory, int travelflags,
-		struct bot_goal_q3_t* ltg, float maxtime);
-	int (* BotItemGoalInVisButNotVisible)(int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_q3_t* goal);
-	void (* BotInitLevelItems)(void);
-	void (* BotUpdateEntityItems)(void);
-	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
 	void (* BotMoveToGoal)(struct bot_moveresult_t* result, int movestate, struct bot_goal_q3_t* goal, int travelflags);

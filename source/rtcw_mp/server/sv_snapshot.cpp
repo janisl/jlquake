@@ -577,7 +577,7 @@ notVisible:
 
 		// Ridah, if this entity has changed events, then send it regardless of whether we can see it or not
 		// DHM - Nerve :: not in multiplayer please
-		if (sv_gametype->integer == WMGT_SINGLE_PLAYER && localClient)
+		if (sv_gametype->integer == Q3GT_SINGLE_PLAYER && localClient)
 		{
 			if (ent->r.eventTime == svs.q3_time)
 			{

@@ -222,8 +222,8 @@ int BotGetNextCampSpotGoalET(int num, bot_goal_et_t* goal);
 //dump the goal stack
 void BotDumpGoalStack(int goalstate);
 //push a goal onto the goal stack
-void BotPushGoalQ3(int goalstate, bot_goal_q3_t* goal);
-void BotPushGoalET(int goalstate, bot_goal_et_t* goal);
+void BotPushGoalQ3(int goalstate, const bot_goal_q3_t* goal);
+void BotPushGoalET(int goalstate, const bot_goal_et_t* goal);
 //pop a goal from the goal stack
 void BotPopGoal(int goalstate);
 //empty the bot's goal stack
@@ -247,6 +247,23 @@ void BotFreeGoalState(int handle);
 //returns true if the bot touches the goal
 bool BotTouchingGoalQ3(const vec3_t origin, const bot_goal_q3_t* goal);
 bool BotTouchingGoalET(const vec3_t origin, const bot_goal_et_t* goal);
+//initializes the items in the level
+void BotInitLevelItems();
+//regularly update dynamic entity items (dropped weapons, flags etc.)
+void BotUpdateEntityItems();
+//choose the best long term goal item for the bot
+bool BotChooseLTGItem(int goalstate, const vec3_t origin, const int* inventory, int travelflags);
+//choose the best nearby goal item for the bot
+//the item may not be further away from the current bot position than maxtime
+//also the travel time from the nearby goal towards the long term goal may not
+//be larger than the travel time towards the long term goal from the current bot position
+bool BotChooseNBGItemQ3(int goalstate, const vec3_t origin, const int* inventory, int travelflags,
+	const bot_goal_q3_t* ltg, float maxtime);
+bool BotChooseNBGItemET(int goalstate, const vec3_t origin, const int* inventory, int travelflags,
+	const bot_goal_et_t* ltg, float maxtime);
+//returns true if the goal should be visible but isn't
+bool BotItemGoalInVisButNotVisibleQ3(int viewer, const vec3_t eye, const vec3_t viewangles, const bot_goal_q3_t* goal);
+bool BotItemGoalInVisButNotVisibleET(int viewer, const vec3_t eye, const vec3_t viewangles, const bot_goal_et_t* goal);
 
 //
 //	Move

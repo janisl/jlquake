@@ -16,18 +16,6 @@
 
 enum
 {
-	WSGT_FFA,				// free for all
-	WSGT_SINGLE_PLAYER = 2,	// single player tournament
-	//-- team games go after this --
-	WSGT_TEAM,				// team deathmatch
-};
-
-enum
-{
-	WMGT_FFA,				// free for all
-	WMGT_SINGLE_PLAYER = 2,	// single player tournament
-	//-- team games go after this --
-	WMGT_TEAM,				// team deathmatch
 	WMGT_WOLF = 5,			// DHM - Nerve :: Wolfenstein Multiplayer
 	WMGT_WOLF_STOPWATCH,	// NERVE - SMF - stopwatch gametype
 	WMGT_WOLF_CP,			// NERVE - SMF - checkpoint gametype

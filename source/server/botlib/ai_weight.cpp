@@ -454,7 +454,7 @@ int FindFuzzyWeight(weightconfig_t* wc, const char* name)
 	return -1;
 }
 
-static float FuzzyWeight_r(int* inventory, fuzzyseperator_t* fs)
+static float FuzzyWeight_r(const int* inventory, fuzzyseperator_t* fs)
 {
 	if (inventory[fs->index] < fs->value)
 	{
@@ -501,7 +501,7 @@ static float FuzzyWeight_r(int* inventory, fuzzyseperator_t* fs)
 	return fs->weight;
 }
 
-static float FuzzyWeightUndecided_r(int* inventory, fuzzyseperator_t* fs)
+static float FuzzyWeightUndecided_r(const int* inventory, fuzzyseperator_t* fs)
 {
 	if (inventory[fs->index] < fs->value)
 	{
@@ -548,12 +548,12 @@ static float FuzzyWeightUndecided_r(int* inventory, fuzzyseperator_t* fs)
 	return fs->weight;
 }
 
-float FuzzyWeight(int* inventory, weightconfig_t* wc, int weightnum)
+float FuzzyWeight(const int* inventory, const weightconfig_t* wc, int weightnum)
 {
 	return FuzzyWeight_r(inventory, wc->weights[weightnum].firstseperator);
 }
 
-float FuzzyWeightUndecided(int* inventory, weightconfig_t* wc, int weightnum)
+float FuzzyWeightUndecided(const int* inventory, const weightconfig_t* wc, int weightnum)
 {
 	return FuzzyWeightUndecided_r(inventory, wc->weights[weightnum].firstseperator);
 }

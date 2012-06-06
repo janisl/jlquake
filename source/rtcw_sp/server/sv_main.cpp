@@ -360,7 +360,7 @@ void SVC_Status(netadr_t from)
 	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
-	if (Cvar_VariableValue("g_gametype") == WSGT_SINGLE_PLAYER)
+	if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
 	{
 		return;
 	}
@@ -410,7 +410,7 @@ void SVC_Info(netadr_t from)
 	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
-	if (Cvar_VariableValue("g_gametype") == WSGT_SINGLE_PLAYER)
+	if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
 	{
 		return;
 	}

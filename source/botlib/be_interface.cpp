@@ -38,7 +38,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "be_ea.h"
 #include "../server/botlib/ai_weight.h"
-#include "be_ai_goal.h"
 #include "be_ai_move.h"
 #include "be_ai_chat.h"
 
@@ -121,14 +120,6 @@ static void Init_AI_Export(ai_export_t* ai)
 	// be_ai_chat.h
 	//-----------------------------------
 	ai->BotEnterChat = BotEnterChat;
-	//-----------------------------------
-	// be_ai_goal.h
-	//-----------------------------------
-	ai->BotChooseLTGItem = BotChooseLTGItem;
-	ai->BotChooseNBGItem = BotChooseNBGItem;
-	ai->BotItemGoalInVisButNotVisible = BotItemGoalInVisButNotVisible;
-	ai->BotInitLevelItems = BotInitLevelItems;
-	ai->BotUpdateEntityItems = BotUpdateEntityItems;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------

@@ -58,7 +58,7 @@ void SV_GetChallenge(netadr_t from)
 	challenge_t* challenge;
 
 	// ignore if we are in single player
-	if (Cvar_VariableValue("g_gametype") == WSGT_SINGLE_PLAYER)
+	if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
 	{
 		return;
 	}
@@ -1558,7 +1558,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		//if ( cmds[i].serverTime > svs.q3_time + 3000 ) {
 		//	continue;
 		//}
-		if (sv_gametype->integer != WSGT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+		if (sv_gametype->integer != Q3GT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
 		{	// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if (cmds[i].serverTime <= cl->ws_lastUsercmd.serverTime)		// Q3_MISSIONPACK
