@@ -44,5 +44,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //===========================================================================
 qboolean AAS_inPVS(vec3_t p1, vec3_t p2)
 {
-	return botimport.inPVS(p1, p2);
+	return BotImport_inPVS(p1, p2);
 }	//end of the function AAS_InPVS

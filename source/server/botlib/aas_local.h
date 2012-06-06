@@ -308,6 +308,7 @@ bsp_trace_t AAS_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, 
 //calculates collision with given entity
 bool AAS_EntityCollision(int entnum, const vec3_t start, const vec3_t boxmins, const vec3_t boxmaxs,
 	const vec3_t end, int contentmask, bsp_trace_t* trace);
+bool BotImport_inPVS(const vec3_t p1, const vec3_t p2);
 
 //initialize the AAS clustering
 void AAS_InitClustering();

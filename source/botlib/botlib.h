@@ -40,9 +40,6 @@ struct bsp_trace_t;
 //bot AI library exported functions
 typedef struct botlib_import_s
 {
-	//check if the point is in potential visible sight
-	int (* inPVS)(vec3_t p1, vec3_t p2);
-	//
 	void (* BotClientCommand)(int client, const char* command);
 } botlib_import_t;
 

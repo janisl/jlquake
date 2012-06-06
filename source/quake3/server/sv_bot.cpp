@@ -154,16 +154,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 
 /*
 ==================
-BotImport_inPVS
-==================
-*/
-int BotImport_inPVS(vec3_t p1, vec3_t p2)
-{
-	return SVT3_inPVS(p1, p2);
-}
-
-/*
-==================
 SV_BotClientCommand
 ==================
 */
@@ -287,7 +277,6 @@ void SV_BotInitBotLib(void)
 	bot_maxdebugpolys = Cvar_VariableIntegerValue("bot_maxdebugpolys");
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
 
-	botlib_import.inPVS = BotImport_inPVS;
 	botlib_import.BotClientCommand = BotClientCommand;
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);

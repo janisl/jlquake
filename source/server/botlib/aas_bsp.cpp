@@ -353,3 +353,8 @@ int AAS_PointContents(const vec3_t point)
 {
 	return SVT3_PointContents(point, -1);
 }
+
+bool BotImport_inPVS(const vec3_t p1, const vec3_t p2)
+{
+	return SVT3_inPVS(p1, p2);
+}
