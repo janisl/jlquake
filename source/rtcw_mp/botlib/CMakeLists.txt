@@ -1,5 +1,4 @@
 add_library(botlib-wolfmp STATIC
-	be_aas_bspq3.cpp
 	be_aas_main.cpp
 	be_aas_route.cpp
 	be_aas_routetable.cpp
