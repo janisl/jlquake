@@ -125,72 +125,6 @@ void SV_SetBrushModel(wmsharedEntity_t* ent, const char* name)
 
 
 /*
-=================
-SV_inPVS
-
-Also checks portalareas so that doors block sight
-=================
-*/
-qboolean SV_inPVS(const vec3_t p1, const vec3_t p2)
-{
-	int leafnum;
-	int cluster;
-	int area1, area2;
-	byte* mask;
-
-	leafnum = CM_PointLeafnum(p1);
-	cluster = CM_LeafCluster(leafnum);
-	area1 = CM_LeafArea(leafnum);
-	mask = CM_ClusterPVS(cluster);
-
-	leafnum = CM_PointLeafnum(p2);
-	cluster = CM_LeafCluster(leafnum);
-	area2 = CM_LeafArea(leafnum);
-	if (mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
-	{
-		return qfalse;
-	}
-	if (!CM_AreasConnected(area1, area2))
-	{
-		return qfalse;		// a door blocks sight
-	}
-	return qtrue;
-}
-
-
-/*
-=================
-SV_inPVSIgnorePortals
-
-Does NOT check portalareas
-=================
-*/
-qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
-{
-	int leafnum;
-	int cluster;
-	int area1, area2;
-	byte* mask;
-
-	leafnum = CM_PointLeafnum(p1);
-	cluster = CM_LeafCluster(leafnum);
-	area1 = CM_LeafArea(leafnum);
-	mask = CM_ClusterPVS(cluster);
-
-	leafnum = CM_PointLeafnum(p2);
-	cluster = CM_LeafCluster(leafnum);
-	area2 = CM_LeafArea(leafnum);
-
-	if (mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-
-/*
 ========================
 SV_AdjustAreaPortalState
 ========================
@@ -381,9 +315,9 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_SetBrushModel((wmsharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
 	case G_IN_PVS:
-		return SV_inPVS((float*)VMA(1), (float*)VMA(2));
+		return SVT3_inPVS((float*)VMA(1), (float*)VMA(2));
 	case G_IN_PVS_IGNORE_PORTALS:
-		return SV_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
+		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
 	case G_SET_CONFIGSTRING:
 		SV_SetConfigstring(args[1], (char*)VMA(2));

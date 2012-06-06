@@ -18,6 +18,12 @@
 #define _TECH3_LOCAL_H
 
 //
+//	Game
+//
+bool SVT3_inPVS(const vec3_t p1, const vec3_t p2);
+bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
+
+//
 //	World
 //
 struct q3moveclip_t

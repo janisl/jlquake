@@ -186,7 +186,6 @@ void SV_SendClientSnapshot(client_t* client);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);
-qboolean    SV_inPVS(const vec3_t p1, const vec3_t p2);
 qboolean SV_GetTag(int clientNum, char* tagname, orientation_t* _or);
 
 //

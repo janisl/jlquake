@@ -194,7 +194,7 @@ BotImport_inPVS
 */
 int BotImport_inPVS(vec3_t p1, vec3_t p2)
 {
-	return SV_inPVS(p1, p2);
+	return SVT3_inPVS(p1, p2);
 }
 
 /*

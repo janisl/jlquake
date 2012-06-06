@@ -30,6 +30,7 @@ add_library(server STATIC
 	progsvm/main.cpp
 	quake3/game.cpp
 	quake3/world.cpp
+	tech3/game.cpp
 	tech3/world.cpp
 	wolfmp/game.cpp
 	wolfmp/world.cpp
