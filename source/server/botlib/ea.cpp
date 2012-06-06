@@ -152,7 +152,7 @@ void EA_Action(int client, int action)
 	bi->actionflags |= action;
 }
 
-void EA_Move(int client, vec3_t dir, float speed)
+void EA_Move(int client, const vec3_t dir, float speed)
 {
 	bot_input_t* bi = &botinputs[client];
 

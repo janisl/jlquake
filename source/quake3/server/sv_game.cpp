@@ -760,7 +760,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		botlib_export->ai.BotMoveToGoal((bot_moveresult_t*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4]);
 		return 0;
 	case BOTLIB_AI_MOVE_IN_DIRECTION:
-		return botlib_export->ai.BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
+		return BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
 	case BOTLIB_AI_RESET_AVOID_REACH:
 		BotResetAvoidReach(args[1]);
 		return 0;
@@ -768,11 +768,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		BotResetLastAvoidReach(args[1]);
 		return 0;
 	case BOTLIB_AI_REACHABILITY_AREA:
-		return botlib_export->ai.BotReachabilityArea((float*)VMA(1), args[2]);
+		return BotReachabilityArea((float*)VMA(1), args[2]);
 	case BOTLIB_AI_MOVEMENT_VIEW_TARGET:
 		return BotMovementViewTargetQ3(args[1], (bot_goal_q3_t*)VMA(2), args[3], VMF(4), (float*)VMA(5));
 	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
-		return botlib_export->ai.BotPredictVisiblePosition((float*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4], (float*)VMA(5));
+		return BotPredictVisiblePositionQ3((float*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4], (float*)VMA(5));
 	case BOTLIB_AI_ALLOC_MOVE_STATE:
 		return BotAllocMoveState();
 	case BOTLIB_AI_FREE_MOVE_STATE:

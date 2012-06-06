@@ -37,9 +37,3 @@ If you have questions concerning this license or the applicable additional terms
 
 //moves the bot to the given goal
 void BotMoveToGoal(bot_moveresult_t* result, int movestate, bot_goal_et_t* goal, int travelflags);
-//moves the bot in the specified direction
-int BotMoveInDirection(int movestate, vec3_t dir, float speed, int type);
-//returns a reachability area if the origin is in one
-int BotReachabilityArea(vec3_t origin, int client);
-//predict the position of a player
-int BotPredictVisiblePosition(vec3_t origin, int areanum, bot_goal_et_t* goal, int travelflags, vec3_t target);

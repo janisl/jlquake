@@ -264,7 +264,6 @@ extern int modeltypes[MAX_MODELS_Q3];
 bot_movestate_t* BotMoveStateFromHandle(int handle);
 //must be called every map change
 void BotSetBrushModelTypes();
-bool BotValidTravel(const aas_reachability_t* reach, int travelflags);
 void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime);
 void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcenter);
 void BotClearMoveResult(bot_moveresult_t* moveresult);
@@ -282,6 +281,22 @@ int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
 	const int* avoidreach, const float* avoidreachtimes, const int* avoidreachtries,
 	const bot_goal_t* goal, int travelflags, int movetravelflags,
 	const bot_avoidspot_t* avoidspots, int numavoidspots, int* flags);
+int BotFuzzyPointReachabilityArea(const vec3_t origin);
+bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t* reach);
+int BotOnTopOfEntity(const bot_movestate_t* ms);
+float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum);
+bool BotCheckBarrierJump(bot_movestate_t* ms, const vec3_t dir, float speed);
+void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbottom, bot_moveresult_t* result);
+bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Crouch(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_Swim(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach);
+bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach);
 
 //setup the weapon AI
 int BotSetupWeaponAI();

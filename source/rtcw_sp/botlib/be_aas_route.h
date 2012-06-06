@@ -42,5 +42,3 @@ void AAS_InitRouting(void);
 
 //returns a random goal area and goal origin
 int AAS_RandomGoalArea(int areanum, int travelflags, int* goalareanum, vec3_t goalorigin);
-
-extern int BotFuzzyPointReachabilityArea(vec3_t origin);

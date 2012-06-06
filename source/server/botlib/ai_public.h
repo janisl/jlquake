@@ -363,6 +363,13 @@ void BotResetMoveState(int movestate);
 //view target based on movement
 int BotMovementViewTargetQ3(int movestate, const bot_goal_q3_t* goal, int travelflags, float lookahead, vec3_t target);
 int BotMovementViewTargetET(int movestate, const bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target);
+//returns a reachability area if the origin is in one
+int BotReachabilityArea(const vec3_t origin, int client);
+//predict the position of a player based on movement towards a goal
+bool BotPredictVisiblePositionQ3(const vec3_t origin, int areanum, const bot_goal_q3_t* goal, int travelflags, vec3_t target);
+bool BotPredictVisiblePositionET(const vec3_t origin, int areanum, const bot_goal_et_t* goal, int travelflags, vec3_t target);
+//moves the bot in the specified direction using the specified type of movement
+bool BotMoveInDirection(int movestate, const vec3_t dir, float speed, int type);
 
 //
 //	Weapon

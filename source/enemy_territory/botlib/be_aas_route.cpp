@@ -592,8 +592,6 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 		//BotImport_Print(PRT_MESSAGE, "AAS_NearestHideArea: hidearea: %i, %i loops\n", bestarea, count );
 	return bestarea;
 }	//end of the function AAS_NearestHideArea
-
-int BotFuzzyPointReachabilityArea(vec3_t origin);
 //===========================================================================
 //
 // Parameter:			-

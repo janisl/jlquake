@@ -221,7 +221,7 @@ void BotSetBrushModelTypes()
 	}
 }
 
-bool BotValidTravel(const aas_reachability_t* reach, int travelflags)
+static bool BotValidTravel(const aas_reachability_t* reach, int travelflags)
 {
 	//if the reachability uses an unwanted travel type
 	if (AAS_TravelFlagForType(reach->traveltype) & ~travelflags)
@@ -924,4 +924,1181 @@ int BotMovementViewTargetQ3(int movestate, const bot_goal_q3_t* goal, int travel
 int BotMovementViewTargetET(int movestate, const bot_goal_et_t* goal, int travelflags, float lookahead, vec3_t target)
 {
 	return BotMovementViewTarget(movestate, reinterpret_cast<const bot_goal_t*>(goal), travelflags, lookahead, target);
+}
+
+static int BotFirstReachabilityArea(const vec3_t origin, const int* areas, int numareas, bool distCheck)
+{
+	int best = 0;
+	float bestDist = 999999;
+	for (int i = 0; i < numareas; i++)
+	{
+		if (AAS_AreaReachability(areas[i]))
+		{
+			// make sure this area is visible
+			vec3_t center;
+			if (!AAS_AreaWaypoint(areas[i], center))
+			{
+				AAS_AreaCenter(areas[i], center);
+			}
+			if (distCheck)
+			{
+				float dist = VectorDistance(center, origin);
+				if (center[2] > origin[2])
+				{
+					dist += 32 * (center[2] - origin[2]);
+				}
+				if (dist < bestDist)
+				{
+					bsp_trace_t tr = AAS_Trace(origin, NULL, NULL, center, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+					if (tr.fraction == 1.0 && !tr.startsolid && !tr.allsolid)
+					{
+						best = areas[i];
+						bestDist = dist;
+					}
+				}
+			}
+			else
+			{
+				bsp_trace_t tr = AAS_Trace(origin, NULL, NULL, center, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+				if (tr.fraction == 1.0 && !tr.startsolid && !tr.allsolid)
+				{
+					best = areas[i];
+					break;
+				}
+			}
+		}
+	}
+
+	return best;
+}
+
+static int BotFuzzyPointReachabilityAreaET(const vec3_t origin)
+{
+	int areanum = AAS_PointAreaNum(origin);
+	if (!AAS_AreaReachability(areanum))
+	{
+		areanum = 0;
+	}
+	if (areanum)
+	{
+		return areanum;
+	}
+
+	// try a line trace from beneath to above
+	vec3_t start;
+	VectorCopy(origin, start);
+	vec3_t end;
+	VectorCopy(origin, end);
+	start[2] -= 30;
+	end[2] += 40;
+	int areas[100];
+	int numareas = AAS_TraceAreas(start, end, areas, NULL, 100);
+	int bestarea = 0;
+	if (numareas > 0)
+	{
+		bestarea = BotFirstReachabilityArea(origin, areas, numareas, false);
+	}
+	if (bestarea)
+	{
+		return bestarea;
+	}
+
+	// try a small box around the origin
+	vec3_t maxs;
+	maxs[0] = 4;
+	maxs[1] = 4;
+	maxs[2] = 4;
+	vec3_t mins;
+	VectorSubtract(origin, maxs, mins);
+	VectorAdd(origin, maxs, maxs);
+	numareas = AAS_BBoxAreas(mins, maxs, areas, 100);
+	if (numareas > 0)
+	{
+		bestarea = BotFirstReachabilityArea(origin, areas, numareas, true);
+	}
+	if (bestarea)
+	{
+		return bestarea;
+	}
+
+	AAS_PresenceTypeBoundingBox(PRESENCE_NORMAL, mins, maxs);
+	VectorAdd(mins, origin, mins);
+	VectorAdd(maxs, origin, maxs);
+	numareas = AAS_BBoxAreas(mins, maxs, areas, 100);
+	if (numareas > 0)
+	{
+		bestarea = BotFirstReachabilityArea(origin, areas, numareas, true);
+	}
+	if (bestarea)
+	{
+		return bestarea;
+	}
+	return 0;
+}
+
+int BotFuzzyPointReachabilityArea(const vec3_t origin)
+{
+	if (GGameType & GAME_ET)
+	{
+		return BotFuzzyPointReachabilityAreaET(origin);
+	}
+
+	int firstareanum = 0;
+	int areanum = AAS_PointAreaNum(origin);
+	if (areanum)
+	{
+		firstareanum = areanum;
+		if (AAS_AreaReachability(areanum))
+		{
+			return areanum;
+		}
+	}
+	vec3_t end;
+	VectorCopy(origin, end);
+	end[2] += 4;
+	int areas[10];
+	vec3_t points[10];
+	int numareas = AAS_TraceAreas(origin, end, areas, points, 10);
+	for (int j = 0; j < numareas; j++)
+	{
+		if (AAS_AreaReachability(areas[j]))
+		{
+			return areas[j];
+		}
+	}
+	float bestdist = 999999;
+	int bestareanum = 0;
+	for (int z = 1; z >= -1; z -= 1)
+	{
+		for (int x = 1; x >= -1; x -= (GGameType & GAME_WolfSP ? 2 : 1))
+		{
+			for (int y = 1; y >= -1; y -= (GGameType & GAME_WolfSP ? 2 : 1))
+			{
+				VectorCopy(origin, end);
+				if (GGameType & GAME_WolfSP)
+				{
+					// Ridah, increased this for Wolf larger bounding boxes
+					end[0] += x * 256;
+					end[1] += y * 256;
+					end[2] += z * 200;
+				}
+				else if (GGameType & GAME_WolfMP)
+				{
+					// Ridah, increased this for Wolf larger bounding boxes
+					end[0] += x * 16;
+					end[1] += y * 16;
+					end[2] += z * 24;
+				}
+				else
+				{
+					end[0] += x * 8;
+					end[1] += y * 8;
+					end[2] += z * 12;
+				}
+				numareas = AAS_TraceAreas(origin, end, areas, points, 10);
+				for (int j = 0; j < numareas; j++)
+				{
+					if (AAS_AreaReachability(areas[j]))
+					{
+						vec3_t v;
+						VectorSubtract(points[j], origin, v);
+						float dist = VectorLength(v);
+						if (dist < bestdist)
+						{
+							bestareanum = areas[j];
+							bestdist = dist;
+						}
+					}
+					if (!firstareanum)
+					{
+						firstareanum = areas[j];
+					}
+				}
+			}
+		}
+		if (bestareanum)
+		{
+			return bestareanum;
+		}
+	}
+	return firstareanum;
+}
+
+int BotReachabilityArea(const vec3_t origin, int client)
+{
+	//check if the bot is standing on something
+	vec3_t mins, maxs;
+	AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, mins, maxs);
+	vec3_t up = {0, 0, 1};
+	vec3_t end;
+	VectorMA(origin, -3, up, end);
+	bsp_trace_t bsptrace = AAS_Trace(origin, mins, maxs, end, client, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+	if (!bsptrace.startsolid && bsptrace.fraction < 1 && bsptrace.ent != Q3ENTITYNUM_NONE)
+	{
+		//if standing on the world the bot should be in a valid area
+		if (bsptrace.ent == Q3ENTITYNUM_WORLD)
+		{
+			return BotFuzzyPointReachabilityArea(origin);
+		}
+
+		int modelnum = AAS_EntityModelindex(bsptrace.ent);
+		int modeltype = modeltypes[modelnum];
+
+		//if standing on a func_plat or func_bobbing then the bot is assumed to be
+		//in the area the reachability points to
+		if (modeltype == MODELTYPE_FUNC_PLAT || modeltype == MODELTYPE_FUNC_BOB)
+		{
+			int reachnum = AAS_NextModelReachability(0, modelnum);
+			if (reachnum)
+			{
+				aas_reachability_t reach;
+				AAS_ReachabilityFromNum(reachnum, &reach);
+				return reach.areanum;
+			}
+		}
+
+		//if the bot is swimming the bot should be in a valid area
+		if (AAS_Swimming(origin))
+		{
+			return BotFuzzyPointReachabilityArea(origin);
+		}
+
+		int areanum = BotFuzzyPointReachabilityArea(origin);
+		//if the bot is in an area with reachabilities
+		if (areanum && AAS_AreaReachability(areanum))
+		{
+			return areanum;
+		}
+		//trace down till the ground is hit because the bot is standing on some other entity
+		vec3_t org;
+		VectorCopy(origin, org);
+		VectorCopy(org, end);
+		end[2] -= 800;
+		aas_trace_t trace = AAS_TraceClientBBox(org, end, PRESENCE_CROUCH, -1);
+		if (!trace.startsolid)
+		{
+			VectorCopy(trace.endpos, org);
+		}
+
+		return BotFuzzyPointReachabilityArea(org);
+	}
+
+	return BotFuzzyPointReachabilityArea(origin);
+}
+
+bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t* reach)
+{
+	vec3_t angles = {0, 0, 0};
+	vec3_t boxmins = {-16, -16, -8}, boxmaxs = {16, 16, 8};
+	bsp_trace_t trace;
+
+	int modelnum = reach->facenum & 0x0000FFFF;
+	//get some bsp model info
+	vec3_t mins, maxs;
+	AAS_BSPModelMinsMaxs(modelnum, angles, mins, maxs);
+
+	vec3_t modelorigin;
+	if (!AAS_OriginOfMoverWithModelNum(modelnum, modelorigin))
+	{
+		BotImport_Print(PRT_MESSAGE, "no entity with model %d\n", modelnum);
+		return false;
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (origin[i] > modelorigin[i] + maxs[i] + 16)
+		{
+			return false;
+		}
+		if (origin[i] < modelorigin[i] + mins[i] - 16)
+		{
+			return false;
+		}
+	}
+
+	vec3_t org;
+	VectorCopy(origin, org);
+	org[2] += 24;
+	vec3_t end;
+	VectorCopy(origin, end);
+	end[2] -= 48;
+
+	trace = AAS_Trace(org, boxmins, boxmaxs, end, entnum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+	if (!trace.startsolid && !trace.allsolid)
+	{
+		//NOTE: the reachability face number is the model number of the elevator
+		if (trace.ent != Q3ENTITYNUM_NONE && AAS_EntityModelNum(trace.ent) == modelnum)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+int BotOnTopOfEntity(const bot_movestate_t* ms)
+{
+	vec3_t mins, maxs, end, up = {0, 0, 1};
+	AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
+	VectorMA(ms->origin, -3, up, end);
+	bsp_trace_t trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+	if (!trace.startsolid && (trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE))
+	{
+		return trace.ent;
+	}
+	return -1;
+}
+
+static bool BotVisible(int ent, const vec3_t eye, const vec3_t target)
+{
+	bsp_trace_t trace = AAS_Trace(eye, NULL, NULL, target, ent, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+	if (trace.fraction >= 1)
+	{
+		return true;
+	}
+	return false;
+}
+
+static bool BotPredictVisiblePosition(const vec3_t origin, int areanum, const bot_goal_t* goal, int travelflags, vec3_t target)
+{
+	aas_reachability_t reach;
+	int reachnum, lastgoalareanum, lastareanum, i;
+	int avoidreach[MAX_AVOIDREACH];
+	float avoidreachtimes[MAX_AVOIDREACH];
+	int avoidreachtries[MAX_AVOIDREACH];
+	vec3_t end;
+
+	//if the bot has no goal or no last reachability
+	if (!goal)
+	{
+		return false;
+	}
+	//if the areanum is not valid
+	if (!areanum)
+	{
+		return false;
+	}
+	//if the goal areanum is not valid
+	if (!goal->areanum)
+	{
+		return false;
+	}
+
+	Com_Memset(avoidreach, 0, MAX_AVOIDREACH * sizeof(int));
+	lastgoalareanum = goal->areanum;
+	lastareanum = areanum;
+	VectorCopy(origin, end);
+	//only do 20 hops
+	for (i = 0; i < 20 && (areanum != goal->areanum); i++)
+	{
+		//
+		reachnum = BotGetReachabilityToGoal(end, areanum,
+			lastgoalareanum, lastareanum,
+			avoidreach, avoidreachtimes, avoidreachtries,
+			goal, travelflags, travelflags, NULL, 0, NULL);
+		if (!reachnum)
+		{
+			return false;
+		}
+		AAS_ReachabilityFromNum(reachnum, &reach);
+		//
+		if (BotVisible(goal->entitynum, goal->origin, reach.start))
+		{
+			VectorCopy(reach.start, target);
+			return true;
+		}	//end if
+			//
+		if (BotVisible(goal->entitynum, goal->origin, reach.end))
+		{
+			VectorCopy(reach.end, target);
+			return true;
+		}	//end if
+			//
+		if (reach.areanum == goal->areanum)
+		{
+			VectorCopy(reach.end, target);
+			return true;
+		}	//end if
+			//
+		lastareanum = areanum;
+		areanum = reach.areanum;
+		VectorCopy(reach.end, end);
+	}
+
+	return false;
+}
+
+bool BotPredictVisiblePositionQ3(const vec3_t origin, int areanum, const bot_goal_q3_t* goal, int travelflags, vec3_t target)
+{
+	return BotPredictVisiblePosition(origin, areanum, reinterpret_cast<const bot_goal_t*>(goal), travelflags, target);
+}
+
+bool BotPredictVisiblePositionET(const vec3_t origin, int areanum, const bot_goal_et_t* goal, int travelflags, vec3_t target)
+{
+	return BotPredictVisiblePosition(origin, areanum, reinterpret_cast<const bot_goal_t*>(goal), travelflags, target);
+}
+
+float BotGapDistance(const vec3_t origin, const vec3_t hordir, int entnum)
+{
+	//do gap checking
+	float startz = origin[2];
+	//this enables walking down stairs more fluidly
+	vec3_t start;
+	VectorCopy(origin, start);
+	vec3_t end;
+	VectorCopy(origin, end);
+	end[2] -= 60;
+	aas_trace_t trace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, entnum);
+	if (trace.fraction >= 1)
+	{
+		return 1;
+	}
+	startz = trace.endpos[2] + 1;
+
+	for (float dist = 8; dist <= 100; dist += 8)
+	{
+		VectorMA(origin, dist, hordir, start);
+		start[2] = startz + 24;
+		VectorCopy(start, end);
+		end[2] -= 48 + sv_maxbarrier->value;
+		trace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, entnum);
+		//if solid is found the bot can't walk any further and fall into a gap
+		if (!trace.startsolid)
+		{
+			//if it is a gap
+			if (trace.endpos[2] < startz - sv_maxstep->value - 8)
+			{
+				VectorCopy(trace.endpos, end);
+				end[2] -= 20;
+				if (AAS_PointContents(end) & (GGameType & GAME_Quake3 ? BSP46CONTENTS_WATER : BSP46CONTENTS_WATER | BSP46CONTENTS_SLIME))
+				{
+					break;
+				}
+				//if a gap is found slow down
+				return dist;
+			}
+			startz = trace.endpos[2];
+		}
+	}
+	return 0;
+}
+
+bool BotCheckBarrierJump(bot_movestate_t* ms, const vec3_t dir, float speed)
+{
+	aas_trace_t trace;
+
+	vec3_t end;
+	VectorCopy(ms->origin, end);
+	end[2] += sv_maxbarrier->value;
+	//trace right up
+	trace = AAS_TraceClientBBox(ms->origin, end, PRESENCE_NORMAL, ms->entitynum);
+	//this shouldn't happen... but we check anyway
+	if (trace.startsolid)
+	{
+		return false;
+	}
+	//if very low ceiling it isn't possible to jump up to a barrier
+	if (trace.endpos[2] - ms->origin[2] < sv_maxstep->value)
+	{
+		return false;
+	}
+
+	vec3_t hordir;
+	hordir[0] = dir[0];
+	hordir[1] = dir[1];
+	hordir[2] = 0;
+	VectorNormalize(hordir);
+	VectorMA(ms->origin, ms->thinktime * speed * 0.5, hordir, end);
+	vec3_t start;
+	VectorCopy(trace.endpos, start);
+	end[2] = trace.endpos[2];
+	//trace from previous trace end pos horizontally in the move direction
+	trace = AAS_TraceClientBBox(start, end, PRESENCE_NORMAL, ms->entitynum);
+	//again this shouldn't happen
+	if (trace.startsolid)
+	{
+		return false;
+	}
+
+	VectorCopy(trace.endpos, start);
+	VectorCopy(trace.endpos, end);
+	end[2] = ms->origin[2];
+	//trace down from the previous trace end pos
+	trace = AAS_TraceClientBBox(start, end, PRESENCE_NORMAL, ms->entitynum);
+	//if solid
+	if (trace.startsolid)
+	{
+		return false;
+	}
+	//if no obstacle at all
+	if (trace.fraction >= 1.0)
+	{
+		return false;
+	}
+	//if less than the maximum step height
+	if (trace.endpos[2] - ms->origin[2] < sv_maxstep->value)
+	{
+		return false;
+	}
+
+	EA_Jump(ms->client);
+	EA_Move(ms->client, hordir, speed);
+	ms->moveflags |= MFL_BARRIERJUMP;
+	//there is a barrier
+	return true;
+}
+
+static bool BotSwimInDirection(const bot_movestate_t* ms, const vec3_t dir, float speed, int type)
+{
+	vec3_t normdir;
+	VectorCopy(dir, normdir);
+	VectorNormalize(normdir);
+	EA_Move(ms->client, normdir, speed);
+	return true;
+}
+
+static bool BotWalkInDirection(bot_movestate_t* ms, const vec3_t dir, float speed, int type)
+{
+	if (GGameType & GAME_Quake3 && AAS_OnGround(ms->origin, ms->presencetype, ms->entitynum))
+	{
+		ms->moveflags |= MFL_ONGROUND;
+	}
+	//if the bot is on the ground
+	if (ms->moveflags & MFL_ONGROUND)
+	{
+		//if there is a barrier the bot can jump on
+		if (BotCheckBarrierJump(ms, dir, speed))
+		{
+			return true;
+		}
+		//remove barrier jump flag
+		ms->moveflags &= ~MFL_BARRIERJUMP;
+		//get the presence type for the movement
+		int presencetype;
+		if ((type & MOVE_CROUCH) && !(type & MOVE_JUMP))
+		{
+			presencetype = PRESENCE_CROUCH;
+		}
+		else
+		{
+			presencetype = PRESENCE_NORMAL;
+		}
+		//horizontal direction
+		vec3_t hordir;
+		hordir[0] = dir[0];
+		hordir[1] = dir[1];
+		hordir[2] = 0;
+		VectorNormalize(hordir);
+		//if the bot is not supposed to jump
+		if (!(type & MOVE_JUMP))
+		{
+			//if there is a gap, try to jump over it
+			if (BotGapDistance(ms->origin, hordir, ms->entitynum) > 0)
+			{
+				type |= MOVE_JUMP;
+			}
+		}
+		//get command movement
+		vec3_t cmdmove;
+		VectorScale(hordir, speed, cmdmove);
+		vec3_t velocity;
+		VectorCopy(ms->velocity, velocity);
+
+		int maxframes, cmdframes, stopevent;
+		if (type & MOVE_JUMP)
+		{
+			//BotImport_Print(PRT_MESSAGE, "trying jump\n");
+			cmdmove[2] = 400;
+			maxframes = PREDICTIONTIME_JUMP / 0.1;
+			cmdframes = 1;
+			stopevent = SE_HITGROUND | SE_HITGROUNDDAMAGE |
+						SE_ENTERWATER | SE_ENTERSLIME | SE_ENTERLAVA;
+		}
+		else
+		{
+			maxframes = 2;
+			cmdframes = 2;
+			stopevent = SE_HITGROUNDDAMAGE |
+						SE_ENTERWATER | SE_ENTERSLIME | SE_ENTERLAVA;
+		}
+
+		vec3_t origin;
+		VectorCopy(ms->origin, origin);
+		origin[2] += 0.5;
+		aas_clientmove_t move;
+		AAS_PredictClientMovement(&move, ms->entitynum, origin, presencetype, 0, true,
+			velocity, cmdmove, cmdframes, maxframes, 0.1f,
+			stopevent, 0, false);						//qtrue);
+		//if prediction time wasn't enough to fully predict the movement
+		if (move.frames >= maxframes && (type & MOVE_JUMP))
+		{
+			return false;
+		}
+		//don't enter slime or lava and don't fall from too high
+		if (move.stopevent & (GGameType & GAME_Quake3 ?
+			SE_ENTERSLIME | SE_ENTERLAVA | SE_HITGROUNDDAMAGE : SE_ENTERLAVA | SE_HITGROUNDDAMAGE))
+		{
+			return false;
+		}
+		//if ground was hit
+		if (move.stopevent & SE_HITGROUND)
+		{
+			//check for nearby gap
+			vec3_t tmpdir;
+			VectorNormalize2(move.velocity, tmpdir);
+			float dist = BotGapDistance(move.endpos, tmpdir, ms->entitynum);
+			if (dist > 0)
+			{
+				return false;
+			}
+			//
+			dist = BotGapDistance(move.endpos, hordir, ms->entitynum);
+			if (dist > 0)
+			{
+				return false;
+			}
+		}
+		//get horizontal movement
+		vec3_t tmpdir;
+		tmpdir[0] = move.endpos[0] - ms->origin[0];
+		tmpdir[1] = move.endpos[1] - ms->origin[1];
+		tmpdir[2] = 0;
+
+		//the bot is blocked by something
+		if (VectorLength(tmpdir) < speed * ms->thinktime * 0.5)
+		{
+			return false;
+		}
+		//perform the movement
+		if (type & MOVE_JUMP)
+		{
+			EA_Jump(ms->client);
+		}
+		if (type & MOVE_CROUCH)
+		{
+			EA_Crouch(ms->client);
+		}
+		EA_Move(ms->client, hordir, speed);
+		//movement was succesfull
+		return true;
+	}
+	else
+	{
+		if (ms->moveflags & MFL_BARRIERJUMP)
+		{
+			//if near the top or going down
+			if (ms->velocity[2] < 50)
+			{
+				EA_Move(ms->client, dir, speed);
+			}
+		}
+		//FIXME: do air control to avoid hazards
+		return true;
+	}
+}
+
+bool BotMoveInDirection(int movestate, const vec3_t dir, float speed, int type)
+{
+	bot_movestate_t* ms = BotMoveStateFromHandle(movestate);
+	if (!ms)
+	{
+		return false;
+	}
+	//if swimming
+	if (AAS_Swimming(ms->origin))
+	{
+		return BotSwimInDirection(ms, dir, speed, type);
+	}
+	else
+	{
+		return BotWalkInDirection(ms, dir, speed, type);
+	}
+}
+
+void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbottom, bot_moveresult_t* result)
+{
+	vec3_t mins, maxs, end, up = {0, 0, 1};
+	bsp_trace_t trace;
+
+	if (GGameType & GAME_WolfSP)
+	{
+		// RF, not required for Wolf AI
+		return;
+	}
+
+	//test for entities obstructing the bot's path
+	AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
+	//
+	if (Q_fabs(DotProduct(dir, up)) < 0.7)
+	{
+		mins[2] += sv_maxstep->value;	//if the bot can step on
+		maxs[2] -= 10;	//a little lower to avoid low ceiling
+	}
+	VectorMA(ms->origin, GGameType & GAME_ET ? 16 : 3, dir, end);
+	trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP | BSP46CONTENTS_BODY);
+	//if not started in solid and not hitting the world entity
+	if (!trace.startsolid && (trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE))
+	{
+		result->blocked = true;
+		result->blockentity = trace.ent;
+	}
+	//if not in an area with reachability
+	else if (checkbottom && !AAS_AreaReachability(ms->areanum))
+	{
+		//check if the bot is standing on something
+		AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
+		VectorMA(ms->origin, -3, up, end);
+		trace = AAS_Trace(ms->origin, mins, maxs, end, ms->entitynum, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP);
+		if (!trace.startsolid && (trace.ent != Q3ENTITYNUM_WORLD && trace.ent != Q3ENTITYNUM_NONE))
+		{
+			result->blocked = true;
+			result->blockentity = trace.ent;
+			result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
+		}
+	}
+}
+
+bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//first walk straight to the reachability start
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+	float dist = VectorNormalize(hordir);
+
+	BotCheckBlocked(ms, hordir, true, &result);
+
+	if (dist < (GGameType & GAME_Quake3 ? 10 : 32))
+	{
+		//walk straight to the reachability end
+		hordir[0] = reach->end[0] - ms->origin[0];
+		hordir[1] = reach->end[1] - ms->origin[1];
+		hordir[2] = 0;
+		dist = VectorNormalize(hordir);
+	}
+
+	//if going towards a crouch area
+	// Ridah, some areas have a 0 presence (!?!)
+	if ((GGameType & GAME_Quake3 || AAS_AreaPresenceType(reach->areanum) & PRESENCE_CROUCH) &&
+		!(AAS_AreaPresenceType(reach->areanum) & PRESENCE_NORMAL))
+	{
+		//if pretty close to the reachable area
+		if (dist < 20)
+		{
+			EA_Crouch(ms->client);
+		}
+	}
+
+	dist = BotGapDistance(ms->origin, hordir, ms->entitynum);
+
+	float speed;
+	if (ms->moveflags & (GGameType & GAME_Quake3 ? Q3MFL_WALK : WOLFMFL_WALK))
+	{
+		if (dist > 0)
+		{
+			speed = 200 - (180 - 1 * dist);
+		}
+		else
+		{
+			speed = 200;
+		}
+		EA_Walk(ms->client);
+	}
+	else
+	{
+		if (dist > 0)
+		{
+			speed = 400 - (360 - 2 * dist);
+		}
+		else
+		{
+			speed = 400;
+		}
+	}
+	//elemantary action move in direction
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//go straight to the reachability end
+	vec3_t hordir;
+	hordir[0] = reach->end[0] - ms->origin[0];
+	hordir[1] = reach->end[1] - ms->origin[1];
+	hordir[2] = 0;
+	float dist = VectorNormalize(hordir);
+
+	if (dist > 100)
+	{
+		dist = 100;
+	}
+	float speed = 400 - (400 - 3 * dist);
+
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_Crouch(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	float speed = 400;
+	//walk straight to reachability end
+	vec3_t hordir;
+	hordir[0] = reach->end[0] - ms->origin[0];
+	hordir[1] = reach->end[1] - ms->origin[1];
+	hordir[2] = 0;
+	VectorNormalize(hordir);
+
+	BotCheckBlocked(ms, hordir, true, &result);
+	//elemantary actions
+	EA_Crouch(ms->client);
+	EA_Move(ms->client, hordir, speed);
+
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//walk straight to reachability start
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+	float dist = VectorNormalize(hordir);
+
+	BotCheckBlocked(ms, hordir, true, &result);
+	//if pretty close to the barrier
+	if (dist < (GGameType & GAME_ET ? 12 : 9))
+	{
+		EA_Jump(ms->client);
+		if (!(GGameType & GAME_Quake3))
+		{
+			// Ridah, do the movement also, so we have momentum to get onto the barrier
+			hordir[0] = reach->end[0] - reach->start[0];
+			hordir[1] = reach->end[1] - reach->start[1];
+			hordir[2] = 0;
+			VectorNormalize(hordir);
+
+			float speed;
+			if (GGameType & GAME_ET)
+			{
+				dist = 90;
+				speed = 400 - (360 - 4 * dist);
+			}
+			else
+			{
+				dist = 60;
+				speed = 360 - (360 - 6 * dist);
+			}
+			EA_Move(ms->client, hordir, speed);
+		}
+	}
+	else
+	{
+		float speed;
+		if (GGameType & GAME_ET)
+		{
+			if (dist > 90)
+			{
+				dist = 90;
+			}
+			speed = 400 - (360 - 4 * dist);
+		}
+		else
+		{
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			speed = 360 - (360 - 6 * dist);
+		}
+		EA_Move(ms->client, hordir, speed);
+	}
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//if near the top or going down
+	if (ms->velocity[2] < 250)
+	{
+		vec3_t hordir;
+		if (GGameType & GAME_Quake3)
+		{
+			hordir[0] = reach->end[0] - ms->origin[0];
+			hordir[1] = reach->end[1] - ms->origin[1];
+		}
+		else
+		{
+			// Ridah, extend the end point a bit, so we strive to get over the ledge more
+			vec3_t end;
+			VectorSubtract(reach->end, reach->start, end);
+			end[2] = 0;
+			VectorNormalize(end);
+			VectorMA(reach->end, 32, end, end);
+			hordir[0] = end[0] - ms->origin[0];
+			hordir[1] = end[1] - ms->origin[1];
+		}
+		hordir[2] = 0;
+		float dist = VectorNormalize(hordir);
+
+		BotCheckBlocked(ms, hordir, true, &result);
+
+		if (GGameType & GAME_Quake3)
+		{
+			EA_Move(ms->client, hordir, 400);
+		}
+		else
+		{
+			if (dist > 60)
+			{
+				dist = 60;
+			}
+			float speed = 400 - (400 - 6 * dist);
+			EA_Move(ms->client, hordir, speed);
+		}
+		VectorCopy(hordir, result.movedir);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		// hold crouch in case we are going for a crouch area
+		if (AAS_AreaPresenceType(reach->areanum) & PRESENCE_CROUCH)
+		{
+			EA_Crouch(ms->client);
+		}
+	}
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_Swim(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//swim straight to reachability end
+	vec3_t dir;
+	VectorSubtract(reach->start, ms->origin, dir);
+	VectorNormalize(dir);
+
+	BotCheckBlocked(ms, dir, true, &result);
+	//elemantary actions
+	EA_Move(ms->client, dir, 400);
+
+	VectorCopy(dir, result.movedir);
+	VecToAngles(dir, result.ideal_viewangles);
+	result.flags |= MOVERESULT_SWIMVIEW;
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//swim straight to reachability end
+	vec3_t dir;
+	VectorSubtract(reach->end, ms->origin, dir);
+	vec3_t hordir;
+	VectorCopy(dir, hordir);
+	hordir[2] = 0;
+	dir[2] += 15 + crandom() * 40;
+	VectorNormalize(dir);
+	float dist = VectorNormalize(hordir);
+	//elemantary actions
+	EA_MoveForward(ms->client);
+	//move up if close to the actual out of water jump spot
+	if (dist < 40)
+	{
+		EA_MoveUp(ms->client);
+	}
+	//set the ideal view angles
+	VecToAngles(dir, result.ideal_viewangles);
+	result.flags |= MOVERESULT_MOVEMENTVIEW;
+
+	VectorCopy(dir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//if waterjumping there's nothing to do
+	if (ms->moveflags & MFL_WATERJUMP)
+	{
+		return result;
+	}
+	//if not touching any water anymore don't do anything
+	//otherwise the bot sometimes keeps jumping?
+	vec3_t pnt;
+	VectorCopy(ms->origin, pnt);
+	pnt[2] -= 32;	//extra for q2dm4 near red armor/mega health
+	if (!(AAS_PointContents(pnt) & (BSP46CONTENTS_LAVA | BSP46CONTENTS_SLIME | BSP46CONTENTS_WATER)))
+	{
+		return result;
+	}
+	//swim straight to reachability end
+	vec3_t dir;
+	VectorSubtract(reach->end, ms->origin, dir);
+	dir[0] += crandom() * 10;
+	dir[1] += crandom() * 10;
+	dir[2] += 70 + crandom() * 10;
+	VectorNormalize(dir);
+	//elemantary actions
+	EA_Move(ms->client, dir, 400);
+	//set the ideal view angles
+	VecToAngles(dir, result.ideal_viewangles);
+	result.flags |= MOVERESULT_MOVEMENTVIEW;
+
+	VectorCopy(dir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+	//check if the bot is blocked by anything
+	vec3_t dir;
+	VectorSubtract(reach->start, ms->origin, dir);
+	VectorNormalize(dir);
+	BotCheckBlocked(ms, dir, true, &result);
+	//if the reachability start and end are practially above each other
+	VectorSubtract(reach->end, reach->start, dir);
+	dir[2] = 0;
+	float reachhordist = VectorLength(dir);
+	//walk straight to the reachability start
+	vec3_t hordir;
+	hordir[0] = reach->start[0] - ms->origin[0];
+	hordir[1] = reach->start[1] - ms->origin[1];
+	hordir[2] = 0;
+	float dist = VectorNormalize(hordir);
+
+	//if pretty close to the start focus on the reachability end
+	// Ridah, tweaked this
+	float speed;
+	if (GGameType & GAME_Quake3 ? (dist < 48) :
+		(dist < 72 && DotProduct(dir, hordir) < 0))			// walk in the direction of start -> end
+	{
+		if (GGameType & GAME_Quake3)
+		{
+			hordir[0] = reach->end[0] - ms->origin[0];
+			hordir[1] = reach->end[1] - ms->origin[1];
+			hordir[2] = 0;
+		}
+		else
+		{
+			VectorCopy(dir, hordir);
+		}
+		VectorNormalize(hordir);
+		//
+		if (reachhordist < 20)
+		{
+			// RF, increased this to speed up travel speed down steps
+			speed = GGameType & GAME_WolfSP ? 200 : 100;
+		}	//end if
+		else if (!AAS_HorizontalVelocityForJump(0, reach->start, reach->end, &speed))
+		{
+			speed = 400;
+		}	//end if
+		if (!(GGameType & GAME_Quake3))
+		{
+			// looks better crouching off a ledge
+			EA_Crouch(ms->client);
+		}
+	}	//end if
+	else
+	{
+		if (reachhordist < 20)
+		{
+			if (dist > 64)
+			{
+				dist = 64;
+			}
+			speed = 400 - (256 - 4 * dist) * (GGameType & GAME_WolfSP ? 0.5: 1);		// RF changed this for steps
+		}	//end if
+		else
+		{
+			speed = 400;
+			// Ridah, tweaked this
+			if (!(GGameType & GAME_Quake3) && dist < 128)
+			{
+				speed *= GGameType & GAME_WolfSP ? 0.5 + 0.5 * (dist / 128) : (dist / 128);
+			}
+		}	//end else
+	}	//end else
+		//
+	BotCheckBlocked(ms, hordir, true, &result);
+	//elemantary action
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
+}
+
+bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	BotClearMoveResult(&result);
+
+	vec3_t dir;
+	VectorSubtract(reach->end, ms->origin, dir);
+	BotCheckBlocked(ms, dir, true, &result);
+
+	vec3_t v;
+	VectorSubtract(reach->end, ms->origin, v);
+	v[2] = 0;
+	float dist = VectorNormalize(v);
+	vec3_t end;
+	if (dist > 16)
+	{
+		VectorMA(reach->end, 16, v, end);
+	}
+	else
+	{
+		VectorCopy(reach->end, end);
+	}
+
+	vec3_t hordir;
+	float speed;
+	if (!BotAirControl(ms->origin, ms->velocity, end, hordir, &speed))
+	{
+		//go straight to the reachability end
+		VectorCopy(dir, hordir);
+		hordir[2] = 0;
+
+		dist = VectorNormalize(hordir);
+		speed = 400;
+	}
+
+	if (!(GGameType & GAME_Quake3))
+	{
+		// looks better crouching off a ledge
+		EA_Crouch(ms->client);
+	}
+	EA_Move(ms->client, hordir, speed);
+	VectorCopy(hordir, result.movedir);
+
+	return result;
 }
