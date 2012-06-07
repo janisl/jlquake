@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <time.h>
 #include "botlib.h"
 #include "be_interface.h"
-#include "be_aas_funcs.h"
-#include "be_aas_def.h"
 
 #include "be_ea.h"
 #include "../server/botlib/ai_weight.h"
@@ -43,57 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibStartFrame(float time)
-{
-	if (!IsBotLibSetup("BotStartFrame"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	return AAS_StartFrame(time);
-}	//end of the function Export_BotLibStartFrame
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibLoadMap(const char* mapname)
-{
-#ifdef DEBUG
-	int starttime = Sys_Milliseconds();
-#endif
-	int errnum;
-
-	if (!IsBotLibSetup("BotLoadMap"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	//
-	BotImport_Print(PRT_MESSAGE, "------------ Map Loading ------------\n");
-	//startup AAS for the current map, model and sound index
-	errnum = AAS_LoadMap(mapname);
-	if (errnum != BLERR_NOERROR)
-	{
-		return errnum;
-	}
-	//initialize the items in the level
-	BotInitLevelItems();		//be_ai_goal.h
-	BotSetBrushModelTypes();	//be_ai_move.h
-	//
-	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
-#ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
-#endif
-	//
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibLoadMap
 
 /*
 ============
@@ -147,9 +94,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
-
-	be_botlib_export.BotLibStartFrame = Export_BotLibStartFrame;
-	be_botlib_export.BotLibLoadMap = Export_BotLibLoadMap;
 
 	return &be_botlib_export;
 }

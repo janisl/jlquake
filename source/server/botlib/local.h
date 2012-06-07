@@ -71,8 +71,6 @@ struct botlib_globals_t
 extern int bot_developer;					//true if developer is on
 extern botlib_globals_t botlibglobals;
 
-bool IsBotLibSetup(const char* str);
-
 //
 //	Libvars
 //

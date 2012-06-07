@@ -311,7 +311,7 @@ int AAS_BestReachableEntityArea(int entnum)
 
 void AAS_SetAASBlockingEntity(const vec3_t absmin, const vec3_t absmax, int blocking)
 {
-	int maxWorlds = GGameType & GAME_ET ? MAX_AAS_WORLDS_ET : MAX_AAS_WORLDS;
+	int maxWorlds = GGameType & GAME_ET ? 1 : MAX_AAS_WORLDS;
 	int areas[1024];
 	int numareas, i, w;
 	//

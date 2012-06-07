@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "be_aas_funcs.h"
-#include "be_aas_def.h"
 #include "be_interface.h"
 
 #include "../game/be_ea.h"
@@ -49,79 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
 
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibStartFrame(float time)
-{
-	if (!IsBotLibSetup("BotStartFrame"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	return AAS_StartFrame(time);
-}	//end of the function Export_BotLibStartFrame
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-int Export_BotLibLoadMap(const char* mapname)
-{
-#ifdef DEBUG
-	int starttime = Sys_Milliseconds();
-#endif
-	int errnum;
-
-	if (!IsBotLibSetup("BotLoadMap"))
-	{
-		return BLERR_LIBRARYNOTSETUP;
-	}
-	//
-	// if the mapname is NULL, then this is a restart
-	if (!mapname)
-	{
-		// START	Arnout changes, 29-08-2002.
-		// don't init the heap if no aas loaded, causes "SV_Bot_HunkAlloc: Alloc with marks already set"
-		if (aasworld->loaded)
-		{
-			AAS_InitAASLinkHeap();
-			AAS_EnableAllAreas();
-		}
-		// END	Arnout changes, 29-08-2002.
-		aasworld->numframes = 0;
-		memset(aasworld->arealinkedentities, 0, aasworld->numareas * sizeof(aas_link_t*));
-		memset(aasworld->entities, 0, aasworld->maxentities * sizeof(aas_entity_t));
-		return BLERR_NOERROR;
-	}
-	//
-	BotImport_Print(PRT_MESSAGE, "------------ Map Loading ------------\n");
-	//startup AAS for the current map, model and sound index
-	errnum = AAS_LoadMap(mapname);
-	if (errnum != BLERR_NOERROR)
-	{
-		return errnum;
-	}
-	//initialize the items in the level
-	BotInitLevelItems();		//be_ai_goal.h
-	BotSetBrushModelTypes();	//be_ai_move.h
-	//
-	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
-#ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
-#endif
-	//
-	return BLERR_NOERROR;
-}	//end of the function Export_BotLibLoadMap
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
 int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 
 int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
@@ -201,9 +126,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 	Init_AAS_Export(&be_botlib_export.aas);
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
-
-	be_botlib_export.BotLibStartFrame = Export_BotLibStartFrame;
-	be_botlib_export.BotLibLoadMap = Export_BotLibLoadMap;
 
 	return &be_botlib_export;
 }

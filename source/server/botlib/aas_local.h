@@ -18,7 +18,6 @@
 #define CACHETYPE_AREA          1
 
 #define MAX_AAS_WORLDS      2	// one for each bounding box type
-#define MAX_AAS_WORLDS_ET   1
 
 //area settings
 struct aas_areasettings_t
@@ -358,19 +357,18 @@ int AAS_LoadAASFile(const char* filename);
 //writes an AAS file with the given name
 bool AAS_WriteAASFile(const char* filename);
 
-extern libvar_t* saveroutingcache;
-
 //AAS error message
 void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
-//set AAS initialized
-void AAS_SetInitialized();
-int AAS_LoadFiles(const char* mapname);
 //setup AAS with the given number of entities and clients
 int AAS_Setup();
 //shutdown AAS
 void AAS_Shutdown();
+//start a new time frame
+int AAS_StartFrame(float time);
+//start a new map
+int AAS_LoadMap(const char* mapname);
 
 void AAS_InitSettings();
 //returns true if against a ladder at the given origin

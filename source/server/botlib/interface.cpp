@@ -175,7 +175,7 @@ static bool ValidEntityNumber(int num, const char* str)
 	return true;
 }
 
-bool IsBotLibSetup(const char* str)
+static bool IsBotLibSetup(const char* str)
 {
 	if (!botlibglobals.botlibsetup)
 	{
@@ -274,6 +274,58 @@ int BotLibShutdown()
 	botlibglobals.botlibsetup = false;
 	// print any files still open
 	PC_CheckOpenSourceHandles();
+	return BLERR_NOERROR;
+}
+
+int BotLibStartFrame(float time)
+{
+	if (!IsBotLibSetup("BotStartFrame"))
+	{
+		return BLERR_LIBRARYNOTSETUP;
+	}
+	return AAS_StartFrame(time);
+}
+
+int BotLibLoadMap(const char* mapname)
+{
+#ifdef DEBUG
+	int starttime = Sys_Milliseconds();
+#endif
+	if (!IsBotLibSetup("BotLoadMap"))
+	{
+		return BLERR_LIBRARYNOTSETUP;
+	}
+
+	// if the mapname is NULL, then this is a restart
+	if (GGameType & GAME_ET && !mapname)
+	{
+		// don't init the heap if no aas loaded, causes "SV_Bot_HunkAlloc: Alloc with marks already set"
+		if (aasworld->loaded)
+		{
+			AAS_InitAASLinkHeap();
+			AAS_EnableAllAreas();
+		}
+		aasworld->numframes = 0;
+		memset(aasworld->arealinkedentities, 0, aasworld->numareas * sizeof(aas_link_t*));
+		memset(aasworld->entities, 0, aasworld->maxentities * sizeof(aas_entity_t));
+		return BLERR_NOERROR;
+	}
+
+	BotImport_Print(PRT_MESSAGE, "------------ Map Loading ------------\n");
+	//startup AAS for the current map, model and sound index
+	int errnum = AAS_LoadMap(mapname);
+	if (errnum != BLERR_NOERROR)
+	{
+		return errnum;
+	}
+	//initialize the items in the level
+	BotInitLevelItems();
+	BotSetBrushModelTypes();
+
+	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
+#ifdef DEBUG
+	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
+#endif
 	return BLERR_NOERROR;
 }
 

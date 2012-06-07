@@ -70,11 +70,6 @@ typedef struct botlib_export_s
 	ea_export_t ea;
 	//AI functions
 	ai_export_t ai;
-
-	//start a frame in the bot library
-	int (* BotLibStartFrame)(float time);
-	//load a new map in the bot library
-	int (* BotLibLoadMap)(const char* mapname);
 } botlib_export_t;
 
 //linking of bot library

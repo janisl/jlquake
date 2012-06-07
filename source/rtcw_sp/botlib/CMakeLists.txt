@@ -1,5 +1,4 @@
 add_library(botlib-wolfsp STATIC
-	be_aas_main.cpp
 	be_aas_route.cpp
 	be_aas_routetable.cpp
 	be_ai_chat.cpp
