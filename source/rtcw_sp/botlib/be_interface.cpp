@@ -105,8 +105,6 @@ int Export_BotLibLoadMap(const char* mapname)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags);
-
 int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
 
 qboolean AAS_GetRouteFirstVisPos(vec3_t srcpos, vec3_t destpos, int travelflags, vec3_t retpos);

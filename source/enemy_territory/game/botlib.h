@@ -52,11 +52,6 @@ typedef struct botlib_import_s
 	// Ridah, Cast AI stuff
 	qboolean (* BotVisibleFromPos)(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, qboolean updateVisPos);
 	qboolean (* BotCheckAttackAtPos)(int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld);
-	// done.
-	// Gordon: ability for botlib to check for singleplayer
-	// Arnout: removed again, botlibsetup already has a parameter 'singleplayer'
-	//qboolean	(*BotGameIsSinglePlayer) ( void );
-
 } botlib_import_t;
 
 typedef struct aas_export_s

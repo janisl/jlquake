@@ -47,7 +47,8 @@ If you have questions concerning this license or the applicable additional terms
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos)
+int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum,
+	vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos)
 {
 	int i, j, nextareanum, badtravelflags, numreach, bestarea;
 	unsigned short int t, besttraveltime, enemytraveltime;
@@ -58,26 +59,26 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	vec3_t enemyVec;
 	qboolean startVisible;
 	vec3_t v1, v2, p;
-	#define MAX_HIDEAREA_LOOPS  3000
+	#define MAX_HIDEAREA_LOOPS  (GGameType & GAME_WolfMP ? 4000 : 3000)
 	static float lastTime;
 	static int loopCount;
-	//
+
 	if (!aasworld->areavisibility)
 	{
 		return 0;
 	}
-	//
-	if (srcnum < 0)			// hack to force run this call
+
+	if (!(GGameType & GAME_WolfMP) && srcnum < 0)			// hack to force run this call
 	{
 		srcnum = -srcnum - 1;
 		lastTime = 0;
 	}
 	// don't run this more than once per frame
-	if (lastTime == AAS_Time() && loopCount >= MAX_HIDEAREA_LOOPS)
+	if (lastTime == AAS_Time() && (GGameType & GAME_WolfMP || loopCount >= MAX_HIDEAREA_LOOPS))
 	{
 		return 0;
 	}
-	if (lastTime != AAS_Time())
+	if (!(GGameType & GAME_ET) || lastTime != AAS_Time())
 	{
 		loopCount = 0;
 	}
@@ -116,7 +117,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 	curupdate->areanum = areanum;
 	VectorCopy(origin, curupdate->start);
 	// GORDON: TEMP: FIXME: just avoiding a crash for the moment
-	if (areanum == 0)
+	if (GGameType & GAME_ET && areanum == 0)
 	{
 		return 0;
 	}
@@ -160,7 +161,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 				continue;
 			}
 			// dont pass through ladder areas
-			if (aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			if (!(GGameType & GAME_WolfMP) && aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
 			{
 				continue;
 			}
@@ -186,8 +187,11 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 			t = curupdate->tmptraveltime +
 				AAS_AreaTravelTime(curupdate->areanum, curupdate->start, reach->start) +
 				reach->traveltime;
-			// inc the loopCount, we are starting to use a bit of cpu time
-			loopCount++;
+			if (!(GGameType & GAME_WolfMP))
+			{
+				// inc the loopCount, we are starting to use a bit of cpu time
+				loopCount++;
+			}
 			// if this isn't the fastest route to this area, ignore
 			if (aasworld->hidetraveltimes[nextareanum] && aasworld->hidetraveltimes[nextareanum] < t)
 			{
@@ -250,7 +254,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 				}
 			}
 			// make sure the hide area doesn't have anyone else in it
-			if (AAS_IsEntityInArea(srcnum, -1, nextareanum))
+			if (!(GGameType & GAME_WolfSP) && AAS_IsEntityInArea(srcnum, -1, nextareanum))
 			{
 				t += 1000;	// avoid this path/area
 				//continue;
@@ -330,7 +334,8 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, ve
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos)
+int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist,
+	int travelflags, float* outpos)
 {
 	int i, nextareanum, badtravelflags, numreach, bestarea;
 	unsigned short int t, besttraveltime, enemytraveltime;
@@ -342,9 +347,6 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 	int count = 0;
 	#define MAX_ATTACKAREA_LOOPS    200
 	static float lastTime;
-	//
-	// RF, currently doesn't work with multiple AAS worlds, so only enable for the default world
-	//if (aasworld != aasworlds) return 0;
 	//
 	// don't run this more than once per frame
 	if (lastTime == AAS_Time())
@@ -375,9 +377,18 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 	AAS_EntityOrigin(rangenum, rangeorg);
 	AAS_EntityOrigin(enemynum, enemyorg);
 	//
-	srcarea = BotFuzzyPointReachabilityArea(srcorg);
-	rangearea = BotFuzzyPointReachabilityArea(rangeorg);
-	enemyarea = BotFuzzyPointReachabilityArea(enemyorg);
+	if (GGameType & GAME_WolfMP)
+	{
+		srcarea = AAS_BestReachableEntityArea(srcnum);
+		rangearea = AAS_BestReachableEntityArea(rangenum);
+		enemyarea = AAS_BestReachableEntityArea(enemynum);
+	}
+	else
+	{
+		srcarea = BotFuzzyPointReachabilityArea(srcorg);
+		rangearea = BotFuzzyPointReachabilityArea(rangeorg);
+		enemyarea = BotFuzzyPointReachabilityArea(enemyorg);
+	}
 	//
 	besttraveltime = 0;
 	bestarea = 0;
@@ -428,7 +439,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 				continue;
 			}
 			// dont pass through ladder areas
-			if (aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			if (!(GGameType & GAME_WolfMP) && aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
 			{
 				continue;
 			}

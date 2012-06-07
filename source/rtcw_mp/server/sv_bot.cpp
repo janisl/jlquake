@@ -306,8 +306,8 @@ void SV_BotInitBotLib(void)
 	botlib_import.BotClientCommand = BotClientCommand;
 
 	// Ridah, Cast AI
-	botlib_import.AICast_VisibleFromPos = BotImport_AICast_VisibleFromPos;
-	botlib_import.AICast_CheckAttackAtPos = BotImport_AICast_CheckAttackAtPos;
+	botlib_import.BotVisibleFromPos = BotImport_AICast_VisibleFromPos;
+	botlib_import.BotCheckAttackAtPos = BotImport_AICast_CheckAttackAtPos;
 	// done.
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);

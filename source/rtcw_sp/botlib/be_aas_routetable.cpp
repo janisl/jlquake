@@ -46,13 +46,13 @@ AAS_RT_GetHidePos
   "src" is hiding ent, "dest" is the enemy
 =================
 */
-int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags);
+int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
 qboolean AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos)
 {
 	static int tfl = WOLFTFL_DEFAULT;
 
 	// use MrE's breadth first method
-	int hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, tfl);
+	int hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, tfl, 0, NULL);
 	if (!hideareanum)
 	{
 		return qfalse;
