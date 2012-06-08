@@ -17,6 +17,8 @@
 #ifndef _WOLFMP_LOCAL_H
 #define _WOLFMP_LOCAL_H
 
+#include "WolfMPEntity.h"
+
 //
 //	Game
 //

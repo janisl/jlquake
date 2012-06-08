@@ -17,6 +17,8 @@
 #ifndef _QUAKE3_LOCAL_H
 #define _QUAKE3_LOCAL_H
 
+#include "Quake3Entity.h"
+
 //
 //	Game
 //

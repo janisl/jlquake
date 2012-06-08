@@ -17,6 +17,14 @@
 #include "../server.h"
 #include "local.h"
 
+idEntity3* SVT3_EntityNum(int number)
+{
+	qassert(number >= 0);
+	qassert(number < MAX_GENTITIES_Q3);
+	qassert(sv.q3_entities[number]);
+	return sv.q3_entities[number];
+}
+
 //	Also checks portalareas so that doors block sight
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2)
 {

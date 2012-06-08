@@ -346,6 +346,7 @@ struct server_t
 
 	char* q3_configstrings[MAX_CONFIGSTRINGS_Q3];
 	q3svEntity_t q3_svEntities[MAX_GENTITIES_Q3];
+	idEntity3* q3_entities[MAX_GENTITIES_Q3];
 
 	const char* q3_entityParsePoint;	// used during game VM init
 

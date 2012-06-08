@@ -359,13 +359,18 @@ SV_ClearServer
 */
 void SV_ClearServer(void)
 {
-	int i;
-
-	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
+	for (int i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
 	{
 		if (sv.q3_configstrings[i])
 		{
 			Z_Free(sv.q3_configstrings[i]);
+		}
+	}
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		if (sv.q3_entities[i])
+		{
+			delete sv.q3_entities[i];
 		}
 	}
 	Com_Memset(&sv, 0, sizeof(sv));
@@ -459,6 +464,11 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
 	{
 		sv.q3_configstrings[i] = CopyString("");
+	}
+
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		sv.q3_entities[i] = new idQuake3Entity();
 	}
 
 	// make sure we are not paused

@@ -14,21 +14,6 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
-
-#include "../common/qcommon.h"
-#include "../common/file_formats/bsp38.h"
-#include "../common/file_formats/md3.h"
-#include "link.h"
-#include "progsvm/edict.h"
-#include "quakeserverdefs.h"
-#include "hexen2serverdefs.h"
-#include "quake2serverdefs.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "tech3/Entity3.h"
-#include "global.h"
-#include "worldsector.h"
-
-#endif
+class idETEntity : public idEntity3
+{
+};

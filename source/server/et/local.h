@@ -17,6 +17,8 @@
 #ifndef _ET_LOCAL_H
 #define _ET_LOCAL_H
 
+#include "ETEntity.h"
+
 //
 //	Game
 //

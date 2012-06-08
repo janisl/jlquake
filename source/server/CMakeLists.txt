@@ -23,18 +23,23 @@ add_library(server STATIC
 	botlib/libvar.cpp
 	botlib/log.cpp
 	botlib/struct.cpp
+	et/ETEntity.cpp
 	et/game.cpp
 	et/world.cpp
 	progsvm/edict.cpp
 	progsvm/execute.cpp
 	progsvm/main.cpp
 	quake3/game.cpp
+	quake3/Quake3Entity.cpp
 	quake3/world.cpp
+	tech3/Entity3.cpp
 	tech3/game.cpp
 	tech3/world.cpp
 	wolfmp/game.cpp
+	wolfmp/WolfMPEntity.cpp
 	wolfmp/world.cpp
 	wolfsp/game.cpp
+	wolfsp/WolfSPEntity.cpp
 	wolfsp/world.cpp
 	link.cpp
 	server_main.cpp

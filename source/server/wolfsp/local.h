@@ -17,6 +17,8 @@
 #ifndef _WOLFSP_LOCAL_H
 #define _WOLFSP_LOCAL_H
 
+#include "WolfSPEntity.h"
+
 //
 //	Game
 //
