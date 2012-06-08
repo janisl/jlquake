@@ -16,4 +16,79 @@
 
 class idETEntity : public idEntity3
 {
+	/*
+	int dl_intensity;		// used for coronas
+	int loopSound;			// constantly loop this sound
+
+	int modelindex;
+	int modelindex2;
+	int clientNum;			// 0 to (MAX_CLIENTS_ET - 1), for players and corpses
+	int frame;
+
+	int solid;				// for client side prediction, trap_linkentity sets this properly
+
+	// old style events, in for compatibility only
+	int event;
+	int eventParm;
+
+	int eventSequence;		// pmove generated events
+	int events[MAX_EVENTS_ET];
+	int eventParms[MAX_EVENTS_ET];
+
+	// for players
+	int powerups;			// bit flags	// Arnout: used to store entState_t for non-player entities (so we know to draw them translucent clientsided)
+	int weapon;				// determines weapon and flash model, etc
+	int legsAnim;			// mask off ANIM_TOGGLEBIT
+	int torsoAnim;			// mask off ANIM_TOGGLEBIT
+//	int		weapAnim;		// mask off ANIM_TOGGLEBIT	//----(SA)	removed (weap anims will be client-side only)
+
+	int density;			// for particle effects
+
+	int dmgFlags;			// to pass along additional information for damage effects for players/ Also used for cursorhints for non-player entities
+
+	// Ridah
+	int onFireStart, onFireEnd;
+
+	int nextWeapon;
+	int teamNum;
+
+	int effect1Time, effect2Time, effect3Time;
+
+	int aiState;		// xkan, 1/10/2003
+	int animMovetype;		// clients can't derive movetype of other clients for anim scripting system
+	 */
+	/*
+	qboolean linked;				// qfalse if not in any good cluster
+	int linkcount;
+
+	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
+	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
+
+	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
+									// only set by trap_SetBrushModel
+	vec3_t mins, maxs;
+	int contents;					// BSP46CONTENTS_TRIGGER, BSP46CONTENTS_SOLID, BSP46CONTENTS_BODY, etc
+									// a non-solid entity should set to 0
+
+	vec3_t absmin, absmax;			// derived from mins/maxs and origin + rotation
+
+	// currentOrigin will be used for all collision detection and world linking.
+	// it will not necessarily be the same as the trajectory evaluation for the current
+	// time, because each entity must be moved one at a time after time is advanced
+	// to avoid simultanious collision issues
+	vec3_t currentOrigin;
+	vec3_t currentAngles;
+
+	// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
+	// an ent will be excluded from testing if:
+	// ent->s.number == passEntityNum	(don't interact with self)
+	// ent->s.ownerNum = passEntityNum	(don't interact with your own missiles)
+	// entity[ent->s.ownerNum].ownerNum = passEntityNum	(don't interact with other missiles from owner)
+	int ownerNum;
+	int eventTime;
+
+	int worldflags;				// DHM - Nerve
+
+	qboolean snapshotCallback;
+	 */
 };
