@@ -27,6 +27,7 @@ wmsharedEntity_t* SVWM_GentityNum(int num);
 wmplayerState_t* SVWM_GameClientNum(int num);
 q3svEntity_t* SVWM_SvEntityForGentity(const wmsharedEntity_t* gEnt);
 wmsharedEntity_t* SVWM_GEntityForSvEntity(const q3svEntity_t* svEnt);
+idEntity3* SVWM_EntityForGentity(const wmsharedEntity_t* gEnt);
 
 //
 //	World

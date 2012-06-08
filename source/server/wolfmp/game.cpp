@@ -44,6 +44,15 @@ q3svEntity_t* SVWM_SvEntityForGentity(const wmsharedEntity_t* gEnt)
 	return &sv.q3_svEntities[gEnt->s.number];
 }
 
+idEntity3* SVWM_EntityForGentity(const wmsharedEntity_t* gEnt)
+{
+	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
+	{
+		common->Error("SVWM_SvEntityForGentity: bad gEnt");
+	}
+	return sv.q3_entities[gEnt->s.number];
+}
+
 wmsharedEntity_t* SVWM_GEntityForSvEntity(const q3svEntity_t* svEnt)
 {
 	int num = svEnt - sv.q3_svEntities;

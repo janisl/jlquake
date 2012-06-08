@@ -27,6 +27,7 @@ etsharedEntity_t* SVET_GentityNum(int num);
 etplayerState_t* SVET_GameClientNum(int num);
 q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
 etsharedEntity_t* SVET_GEntityForSvEntity(const q3svEntity_t* svEnt);
+idEntity3* SVET_EntityForGentity(const etsharedEntity_t* gEnt);
 
 //
 //	World

@@ -23,9 +23,10 @@ class idQuake3Entity : public idEntity3
 	int modelindex2;
 	int clientNum;		// 0 to (MAX_CLIENTS_Q3 - 1), for players and corpses
 	int frame;
-
-	int solid;			// for client side prediction, trap_linkentity sets this properly
-
+*/
+	virtual int GetSolid() const;
+	virtual void SetSolid(int value);
+/*
 	int event;			// impulse events -- muzzle flashes, footsteps, etc
 	int eventParm;
 
@@ -39,31 +40,34 @@ class idQuake3Entity : public idEntity3
 	 */
 	/*
 	q3entityState_t s;				// communicated by server to clients
-
-	qboolean linked;				// qfalse if not in any good cluster
-	int linkcount;
-
+*/
+	virtual bool GetLinked() const;
+	virtual void SetLinked(bool value);
+	virtual void IncLinkCount();
+/*
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
 
 	// only send to this client when SVF_SINGLECLIENT is set
 	// if Q3SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
 	int singleClient;
-
-	qboolean bmodel;				// if false, assume an explicit mins / maxs bounding box
-									// only set by trap_SetBrushModel
-	vec3_t mins, maxs;
-	int contents;					// CONTENTS_TRIGGER, BSP46CONTENTS_SOLID, BSP46CONTENTS_BODY, etc
-									// a non-solid entity should set to 0
-
-	vec3_t absmin, absmax;			// derived from mins/maxs and origin + rotation
-
-	// currentOrigin will be used for all collision detection and world linking.
-	// it will not necessarily be the same as the trajectory evaluation for the current
-	// time, because each entity must be moved one at a time after time is advanced
-	// to avoid simultanious collision issues
-	vec3_t currentOrigin;
-	vec3_t currentAngles;
-
+*/
+	virtual bool GetBModel() const;
+	virtual void SetBModel(bool value);
+	virtual const float* GetMins() const;
+	virtual void SetMins(const vec3_t value);
+	virtual const float* GetMaxs() const;
+	virtual void SetMaxs(const vec3_t value);
+	virtual int GetContents() const;
+	virtual void SetContents(int value);
+	virtual float* GetAbsMin();
+	virtual void SetAbsMin(const vec3_t value);
+	virtual float* GetAbsMax();
+	virtual void SetAbsMax(const vec3_t value);
+	virtual const float* GetCurrentOrigin() const;
+	virtual void SetCurrentOrigin(const vec3_t value);
+	virtual const float* GetCurrentAngles() const;
+	virtual void SetCurrentAngles(const vec3_t value);
+	/*
 	// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
 	// an ent will be excluded from testing if:
 	// ent->s.number == passEntityNum	(don't interact with self)

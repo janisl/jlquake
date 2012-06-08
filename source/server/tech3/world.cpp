@@ -49,34 +49,229 @@ void SVT3_SectorList_f()
 	}
 }
 
-void SVT3_UnlinkSvEntity(q3svEntity_t* ent)
+void SVT3_UnlinkEntity(idEntity3* ent, q3svEntity_t* svent)
 {
-	q3svEntity_t* scan;
-	worldSector_t* ws;
+	ent->SetLinked(false);
 
-	ws = ent->worldSector;
+	worldSector_t* ws = svent->worldSector;
 	if (!ws)
 	{
 		return;		// not linked in anywhere
 	}
-	ent->worldSector = NULL;
+	svent->worldSector = NULL;
 
-	if (ws->entities == ent)
+	if (ws->entities == svent)
 	{
-		ws->entities = ent->nextEntityInWorldSector;
+		ws->entities = svent->nextEntityInWorldSector;
 		return;
 	}
 
-	for (scan = ws->entities; scan; scan = scan->nextEntityInWorldSector)
+	for (q3svEntity_t* scan = ws->entities; scan; scan = scan->nextEntityInWorldSector)
 	{
-		if (scan->nextEntityInWorldSector == ent)
+		if (scan->nextEntityInWorldSector == svent)
 		{
-			scan->nextEntityInWorldSector = ent->nextEntityInWorldSector;
+			scan->nextEntityInWorldSector = svent->nextEntityInWorldSector;
 			return;
 		}
 	}
 
 	common->Printf("WARNING: SV_UnlinkEntity: not found in worldSector\n");
+}
+
+void SVT3_LinkEntity(idEntity3* ent, q3svEntity_t* svent)
+{
+	// Ridah, sanity check for possible currentOrigin being reset bug
+	if (!ent->GetBModel() && VectorCompare(ent->GetCurrentOrigin(), vec3_origin))
+	{
+		common->DPrintf("WARNING: BBOX entity is being linked at world origin, this is probably a bug\n");
+	}
+
+	if (svent->worldSector)
+	{
+		SVT3_UnlinkEntity(ent, svent);		// unlink from old position
+	}
+
+	// encode the size into the q3entityState_t for client prediction
+	if (ent->GetBModel())
+	{
+		ent->SetSolid(Q3SOLID_BMODEL);		// a solid_box will never create this value
+
+		// Gordon: for the origin only bmodel checks
+		svent->originCluster = CM_LeafCluster(CM_PointLeafnum(ent->GetCurrentOrigin()));
+	}
+	else if (ent->GetContents() & (BSP46CONTENTS_SOLID | BSP46CONTENTS_BODY))
+	{
+		// assume that x/y are equal and symetric
+		int i = ent->GetMaxs()[0];
+		if (i < 1)
+		{
+			i = 1;
+		}
+		if (i > 255)
+		{
+			i = 255;
+		}
+
+		// z is not symetric
+		int j = (-ent->GetMins()[2]);
+		if (j < 1)
+		{
+			j = 1;
+		}
+		if (j > 255)
+		{
+			j = 255;
+		}
+
+		// and z maxs can be negative...
+		int k = (ent->GetMaxs()[2] + 32);
+		if (k < 1)
+		{
+			k = 1;
+		}
+		if (k > 255)
+		{
+			k = 255;
+		}
+
+		ent->SetSolid((k << 16) | (j << 8) | i);
+	}
+	else
+	{
+		ent->SetSolid(0);
+	}
+
+	// get the position
+	const float* origin = ent->GetCurrentOrigin();
+	const float* angles = ent->GetCurrentAngles();
+
+	// set the abs box
+	if (ent->GetBModel() && (angles[0] || angles[1] || angles[2]))
+	{
+		// expand for rotation
+		float max;
+		int i;
+
+		max = RadiusFromBounds(ent->GetMins(), ent->GetMaxs());
+		for (i = 0; i < 3; i++)
+		{
+			ent->GetAbsMin()[i] = origin[i] - max;
+			ent->GetAbsMax()[i] = origin[i] + max;
+		}
+	}
+	else
+	{
+		// normal
+		VectorAdd(origin, ent->GetMins(), ent->GetAbsMin());
+		VectorAdd(origin, ent->GetMaxs(), ent->GetAbsMax());
+	}
+
+	// because movement is clipped an epsilon away from an actual edge,
+	// we must fully check even when bounding boxes don't quite touch
+	ent->GetAbsMin()[0] -= 1;
+	ent->GetAbsMin()[1] -= 1;
+	ent->GetAbsMin()[2] -= 1;
+	ent->GetAbsMax()[0] += 1;
+	ent->GetAbsMax()[1] += 1;
+	ent->GetAbsMax()[2] += 1;
+
+	// link to PVS leafs
+	svent->numClusters = 0;
+	svent->lastCluster = 0;
+	svent->areanum = -1;
+	svent->areanum2 = -1;
+
+	//get all leafs, including solids
+	enum { MAX_TOTAL_ENT_LEAFS = 128 };
+	int leafs[MAX_TOTAL_ENT_LEAFS];
+	int lastLeaf;
+	int num_leafs = CM_BoxLeafnums(ent->GetAbsMin(), ent->GetAbsMax(),
+		leafs, MAX_TOTAL_ENT_LEAFS, NULL, &lastLeaf);
+
+	// if none of the leafs were inside the map, the
+	// entity is outside the world and can be considered unlinked
+	if (!num_leafs)
+	{
+		return;
+	}
+
+	// set areas, even from clusters that don't fit in the entity array
+	for (int i = 0; i < num_leafs; i++)
+	{
+		int area = CM_LeafArea(leafs[i]);
+		if (area != -1)
+		{
+			// doors may legally straggle two areas,
+			// but nothing should evern need more than that
+			if (svent->areanum != -1 && svent->areanum != area)
+			{
+				if (svent->areanum2 != -1 && svent->areanum2 != area && sv.state == SS_LOADING)
+				{
+					common->DPrintf("Object %i touching 3 areas at %f %f %f\n",
+						ent->GetNumber(),
+						ent->GetAbsMin()[0], ent->GetAbsMin()[1], ent->GetAbsMin()[2]);
+				}
+				svent->areanum2 = area;
+			}
+			else
+			{
+				svent->areanum = area;
+			}
+		}
+	}
+
+	// store as many explicit clusters as we can
+	svent->numClusters = 0;
+	int i;
+	for (i = 0; i < num_leafs; i++)
+	{
+		int cluster = CM_LeafCluster(leafs[i]);
+		if (cluster != -1)
+		{
+			svent->clusternums[svent->numClusters++] = cluster;
+			if (svent->numClusters == MAX_ENT_CLUSTERS_Q3)
+			{
+				break;
+			}
+		}
+	}
+
+	// store off a last cluster if we need to
+	if (i != num_leafs)
+	{
+		svent->lastCluster = CM_LeafCluster(lastLeaf);
+	}
+
+	ent->IncLinkCount();
+
+	// find the first world sector node that the ent's box crosses
+	worldSector_t* node = sv_worldSectors;
+	while (1)
+	{
+		if (node->axis == -1)
+		{
+			break;
+		}
+		if (ent->GetAbsMin()[node->axis] > node->dist)
+		{
+			node = node->children[0];
+		}
+		else if (ent->GetAbsMax()[node->axis] < node->dist)
+		{
+			node = node->children[1];
+		}
+		else
+		{
+			break;		// crosses the node
+		}
+	}
+
+	// link it in
+	svent->worldSector = node;
+	svent->nextEntityInWorldSector = node->entities;
+	node->entities = svent;
+
+	ent->SetLinked(true);
 }
 
 /*

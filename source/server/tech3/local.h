@@ -41,7 +41,15 @@ struct q3moveclip_t
 };
 
 void SVT3_SectorList_f();
-void SVT3_UnlinkSvEntity(q3svEntity_t* ent);
+// call before removing an entity, and before trying to move one,
+// so it doesn't clip against itself
+void SVT3_UnlinkEntity(idEntity3* ent, q3svEntity_t* svent);
+// Needs to be called any time an entity changes origin, mins, maxs,
+// or solid.  Automatically unlinks if needed.
+// sets ent->v.absmin and ent->v.absmax
+// sets ent->leafnums[] for pvs determination even if the entity
+// is not solid
+void SVT3_LinkEntity(idEntity3* ent, q3svEntity_t* svent);
 // fills in a table of entity numbers with entities that have bounding boxes
 // that intersect the given area.  It is possible for a non-axial bmodel
 // to be returned that doesn't actually intersect the area on an exact

@@ -45,10 +45,13 @@ struct sharedEntityCommon_t
 class idEntity3 : public Interface
 {
 public:
+	idEntity3();
+
 	void SetGEntity(void* newGEntity);
 
+	int GetNumber() const;
+	void SetNumber(int value);
 	/*
-	int number;			// entity index
 	int eType;			// entityType_t
 	int eFlags;
 
@@ -71,11 +74,48 @@ public:
 
 	int constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
 	 */
-private:
+	virtual int GetSolid() const = 0;
+	virtual void SetSolid(int value) = 0;
+	virtual bool GetLinked() const = 0;
+	virtual void SetLinked(bool value) = 0;
+	virtual void IncLinkCount() = 0;
+	virtual bool GetBModel() const = 0;
+	virtual void SetBModel(bool value) = 0;
+	virtual const float* GetMins() const = 0;
+	virtual void SetMins(const vec3_t value) = 0;
+	virtual const float* GetMaxs() const = 0;
+	virtual void SetMaxs(const vec3_t value) = 0;
+	virtual int GetContents() const = 0;
+	virtual void SetContents(int value) = 0;
+	virtual float* GetAbsMin() = 0;
+	virtual void SetAbsMin(const vec3_t value) = 0;
+	virtual float* GetAbsMax() = 0;
+	virtual void SetAbsMax(const vec3_t value) = 0;
+	virtual const float* GetCurrentOrigin() const = 0;
+	virtual void SetCurrentOrigin(const vec3_t value) = 0;
+	virtual const float* GetCurrentAngles() const = 0;
+	virtual void SetCurrentAngles(const vec3_t value) = 0;
+
+protected:
 	sharedEntityCommon_t* gentity;
 };
+
+inline idEntity3::idEntity3()
+: gentity(NULL)
+{
+}
 
 inline void idEntity3::SetGEntity(void* newGEntity)
 {
 	gentity = reinterpret_cast<sharedEntityCommon_t*>(newGEntity);
+}
+
+inline int idEntity3::GetNumber() const
+{
+	return gentity->number;
+}
+
+inline void idEntity3::SetNumber(int value)
+{
+	gentity->number = value;
 }

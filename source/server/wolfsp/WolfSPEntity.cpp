@@ -17,3 +17,108 @@
 #include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
+
+int idWolfSPEntity::GetSolid() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->s.solid;
+}
+
+void idWolfSPEntity::SetSolid(int value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->s.solid = value;
+}
+
+bool idWolfSPEntity::GetLinked() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.linked;
+}
+
+void idWolfSPEntity::SetLinked(bool value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.linked = value;
+}
+
+void idWolfSPEntity::IncLinkCount()
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.linkcount++;
+}
+
+bool idWolfSPEntity::GetBModel() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.bmodel;
+}
+
+void idWolfSPEntity::SetBModel(bool value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.bmodel = value;
+}
+
+const float* idWolfSPEntity::GetMins() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.mins;
+}
+
+void idWolfSPEntity::SetMins(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.mins);
+}
+
+const float* idWolfSPEntity::GetMaxs() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.maxs;
+}
+
+void idWolfSPEntity::SetMaxs(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.maxs);
+}
+
+int idWolfSPEntity::GetContents() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.contents;
+}
+
+void idWolfSPEntity::SetContents(int value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.contents = value;
+}
+
+float* idWolfSPEntity::GetAbsMin()
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.absmin;
+}
+
+void idWolfSPEntity::SetAbsMin(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.absmin);
+}
+
+float* idWolfSPEntity::GetAbsMax()
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.absmax;
+}
+
+void idWolfSPEntity::SetAbsMax(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.absmax);
+}
+
+const float* idWolfSPEntity::GetCurrentOrigin() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.currentOrigin;
+}
+
+void idWolfSPEntity::SetCurrentOrigin(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.currentOrigin);
+}
+
+const float* idWolfSPEntity::GetCurrentAngles() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.currentAngles;
+}
+
+void idWolfSPEntity::SetCurrentAngles(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.currentAngles);
+}
