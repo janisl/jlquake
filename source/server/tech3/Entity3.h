@@ -16,4 +16,14 @@
 
 class idEntity3 : public Interface
 {
+public:
+	void SetGEntity(void* newGEntity);
+
+private:
+	void* gentity;
 };
+
+inline void idEntity3::SetGEntity(void* newGEntity)
+{
+	gentity = newGEntity;
+}

@@ -193,6 +193,11 @@ void SV_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEnt
 	sv.q3_gentitySize = sizeofGEntity_t;
 	sv.q3_num_entities = numGEntities;
 
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		SVT3_EntityNum(i)->SetGEntity(SVWS_GentityNum(i));
+	}
+
 	sv.ws_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
 }

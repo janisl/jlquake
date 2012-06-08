@@ -20,6 +20,7 @@
 //
 //	Game
 //
+idEntity3* SVT3_EntityNum(int number);
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2);
 bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
 
