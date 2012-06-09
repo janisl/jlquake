@@ -21,6 +21,19 @@
 #include "../wolfmp//local.h"
 #include "../et/local.h"
 
+struct q3moveclip_t
+{
+	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
+	const float* mins;
+	const float* maxs;	// size of the moving object
+	const float* start;
+	vec3_t end;
+	q3trace_t trace;
+	int passEntityNum;
+	int contentmask;
+	int capsule;
+};
+
 /*
 ===============================================================================
 
@@ -295,70 +308,21 @@ struct areaParms_t
 
 static void SVT3_AreaEntities_r(worldSector_t* node, areaParms_t* ap)
 {
-	q3svEntity_t* check, * next;
-	int count;
-
-	count = 0;
-
-	for (check = node->entities; check; check = next)
+	q3svEntity_t* next;
+	for (q3svEntity_t* check = node->entities; check; check = next)
 	{
 		next = check->nextEntityInWorldSector;
 
-		if (GGameType & GAME_WolfSP)
-		{
-			wssharedEntity_t* gcheck = SVWS_GEntityForSvEntity(check);
+		idEntity3* gcheck = SVT3_EntityForSvEntity(check);
 
-			if (gcheck->r.absmin[0] > ap->maxs[0] ||
-				gcheck->r.absmin[1] > ap->maxs[1] ||
-				gcheck->r.absmin[2] > ap->maxs[2] ||
-				gcheck->r.absmax[0] < ap->mins[0] ||
-				gcheck->r.absmax[1] < ap->mins[1] ||
-				gcheck->r.absmax[2] < ap->mins[2])
-			{
-				continue;
-			}
-		}
-		else if (GGameType & GAME_WolfMP)
+		if (gcheck->GetAbsMin()[0] > ap->maxs[0] ||
+			gcheck->GetAbsMin()[1] > ap->maxs[1] ||
+			gcheck->GetAbsMin()[2] > ap->maxs[2] ||
+			gcheck->GetAbsMax()[0] < ap->mins[0] ||
+			gcheck->GetAbsMax()[1] < ap->mins[1] ||
+			gcheck->GetAbsMax()[2] < ap->mins[2])
 		{
-			wmsharedEntity_t* gcheck = SVWM_GEntityForSvEntity(check);
-
-			if (gcheck->r.absmin[0] > ap->maxs[0] ||
-				gcheck->r.absmin[1] > ap->maxs[1] ||
-				gcheck->r.absmin[2] > ap->maxs[2] ||
-				gcheck->r.absmax[0] < ap->mins[0] ||
-				gcheck->r.absmax[1] < ap->mins[1] ||
-				gcheck->r.absmax[2] < ap->mins[2])
-			{
-				continue;
-			}
-		}
-		else if (GGameType & GAME_ET)
-		{
-			etsharedEntity_t* gcheck = SVET_GEntityForSvEntity(check);
-
-			if (gcheck->r.absmin[0] > ap->maxs[0] ||
-				gcheck->r.absmin[1] > ap->maxs[1] ||
-				gcheck->r.absmin[2] > ap->maxs[2] ||
-				gcheck->r.absmax[0] < ap->mins[0] ||
-				gcheck->r.absmax[1] < ap->mins[1] ||
-				gcheck->r.absmax[2] < ap->mins[2])
-			{
-				continue;
-			}
-		}
-		else
-		{
-			q3sharedEntity_t* gcheck = SVQ3_GEntityForSvEntity(check);
-
-			if (gcheck->r.absmin[0] > ap->maxs[0] ||
-				gcheck->r.absmin[1] > ap->maxs[1] ||
-				gcheck->r.absmin[2] > ap->maxs[2] ||
-				gcheck->r.absmax[0] < ap->mins[0] ||
-				gcheck->r.absmax[1] < ap->mins[1] ||
-				gcheck->r.absmax[2] < ap->mins[2])
-			{
-				continue;
-			}
+			continue;
 		}
 
 		if (ap->count == ap->maxcount)
@@ -402,23 +366,168 @@ int SVT3_AreaEntities(const vec3_t mins, const vec3_t maxs, int* entityList, int
 	return ap.count;
 }
 
+//	Returns a headnode that can be used for testing or clipping to a
+// given entity.  If the entity is a bsp model, the headnode will
+// be returned, otherwise a custom box tree will be constructed.
+clipHandle_t SVT3_ClipHandleForEntity(const idEntity3* ent)
+{
+	if (ent->GetBModel())
+	{
+		// explicit hulls in the BSP model
+		return CM_InlineModel(ent->GetModelIndex());
+	}
+	if (ent->GetSvFlagCapsule())
+	{
+		// create a temp capsule from bounding box sizes
+		return CM_TempBoxModel(ent->GetMins(), ent->GetMaxs(), true);
+	}
+
+	// create a temp tree from bounding box sizes
+	return CM_TempBoxModel(ent->GetMins(), ent->GetMaxs(), false);
+}
+
 void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule)
 {
-	if (GGameType & GAME_WolfSP)
+	idEntity3* touch = SVT3_EntityNum(entityNum);
+
+	Com_Memset(trace, 0, sizeof(q3trace_t));
+
+	// if it doesn't have any brushes of a type we
+	// are looking for, ignore it
+	if (!(contentmask & touch->GetContents()))
 	{
-		SVWS_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+		trace->fraction = 1.0;
+		return;
 	}
-	else if (GGameType & GAME_WolfMP)
+
+	// might intersect, so do an exact clip
+	clipHandle_t clipHandle = SVT3_ClipHandleForEntity(touch);
+
+	const float* origin = touch->GetCurrentOrigin();
+	const float* angles = touch->GetCurrentAngles();
+
+	if (!touch->GetBModel())
 	{
-		SVWM_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+		angles = vec3_origin;	// boxes don't rotate
 	}
-	else if (GGameType & GAME_ET)
+
+	CM_TransformedBoxTraceQ3(trace, start, end,
+		mins, maxs, clipHandle, contentmask,
+		origin, angles, capsule);
+
+	if (trace->fraction < 1)
 	{
-		SVET_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+		trace->entityNum = touch->GetNumber();
+	}
+}
+
+static void SVT3_ClipMoveToEntities(q3moveclip_t* clip)
+{
+	int touchlist[MAX_GENTITIES_Q3];
+	int num = SVT3_AreaEntities(clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES_Q3);
+
+	int passOwnerNum;
+	if (clip->passEntityNum != Q3ENTITYNUM_NONE && clip->passEntityNum != -1)
+	{
+		passOwnerNum = SVT3_EntityNum(clip->passEntityNum)->GetOwnerNum();
+		if (passOwnerNum == Q3ENTITYNUM_NONE)
+		{
+			passOwnerNum = -1;
+		}
 	}
 	else
 	{
-		SVQ3_ClipToEntity(trace, start, mins, maxs, end, entityNum, contentmask, capsule);
+		passOwnerNum = -1;
+	}
+
+	for (int i = 0; i < num; i++)
+	{
+		if (clip->trace.allsolid)
+		{
+			return;
+		}
+		idEntity3* touch = SVT3_EntityNum(touchlist[i]);
+
+		// see if we should ignore this entity
+		if (clip->passEntityNum != Q3ENTITYNUM_NONE)
+		{
+			if (touchlist[i] == clip->passEntityNum)
+			{
+				continue;	// don't clip against the pass entity
+			}
+			if (touch->GetOwnerNum() == clip->passEntityNum)
+			{
+				continue;	// don't clip against own missiles
+			}
+			if (touch->GetOwnerNum() == passOwnerNum)
+			{
+				continue;	// don't clip against other missiles from our owner
+			}
+		}
+
+		// if it doesn't have any brushes of a type we
+		// are looking for, ignore it
+		if (!(clip->contentmask & touch->GetContents()))
+		{
+			continue;
+		}
+
+		// RF, special case, ignore chairs if we are carrying them
+		if (touch->IsETypeProp() && touch->GetOtherEntityNum() == clip->passEntityNum + 1)
+		{
+			continue;
+		}
+
+		// might intersect, so do an exact clip
+		clipHandle_t clipHandle = SVT3_ClipHandleForEntity(touch);
+
+		// ydnar: non-worldspawn entities must not use world as clip model!
+		if (clipHandle == 0)
+		{
+			continue;
+		}
+
+		// DHM - Nerve :: If clipping against BBOX, set to correct contents
+		touch->SetTempBoxModelContents(clipHandle);
+
+		const float* origin = touch->GetCurrentOrigin();
+		const float* angles = touch->GetCurrentAngles();
+
+		if (!touch->GetBModel())
+		{
+			angles = vec3_origin;	// boxes don't rotate
+		}
+
+		q3trace_t trace;
+		CM_TransformedBoxTraceQ3(&trace, clip->start, clip->end,
+			clip->mins, clip->maxs, clipHandle,  clip->contentmask,
+			origin, angles, clip->capsule);
+
+		if (trace.allsolid)
+		{
+			clip->trace.allsolid = true;
+			trace.entityNum = touch->GetNumber();
+		}
+		else if (trace.startsolid)
+		{
+			clip->trace.startsolid = true;
+			trace.entityNum = touch->GetNumber();
+		}
+
+		if (trace.fraction < clip->trace.fraction)
+		{
+			qboolean oldStart;
+
+			// make sure we keep a startsolid from a previous trace
+			oldStart = clip->trace.startsolid;
+
+			trace.entityNum = touch->GetNumber();
+			clip->trace = trace;
+			clip->trace.startsolid |= oldStart;
+		}
+
+		// DHM - Nerve :: Reset contents to default
+		CM_SetTempBoxModelContents(clipHandle, BSP46CONTENTS_BODY);
 	}
 }
 
@@ -477,22 +586,7 @@ void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const
 	}
 
 	// clip to other solid entities
-	if (GGameType & GAME_WolfSP)
-	{
-		SVWS_ClipMoveToEntities(&clip);
-	}
-	else if (GGameType & GAME_WolfMP)
-	{
-		SVWM_ClipMoveToEntities(&clip);
-	}
-	else if (GGameType & GAME_ET)
-	{
-		SVET_ClipMoveToEntities(&clip);
-	}
-	else
-	{
-		SVQ3_ClipMoveToEntities(&clip);
-	}
+	SVT3_ClipMoveToEntities(&clip);
 
 	*results = clip.trace;
 }
@@ -512,73 +606,21 @@ int SVT3_PointContents(const vec3_t p, int passEntityNum)
 		{
 			continue;
 		}
-		if (GGameType & GAME_WolfSP)
+		idEntity3* hit = SVT3_EntityNum(touch[i]);
+		// might intersect, so do an exact clip
+		clipHandle_t clipHandle = SVT3_ClipHandleForEntity(hit);
+
+		// ydnar: non-worldspawn entities must not use world as clip model!
+		if (clipHandle == 0)
 		{
-			wssharedEntity_t* hit = SVWS_GentityNum(touch[i]);
-			// might intersect, so do an exact clip
-			clipHandle_t clipHandle = SVWS_ClipHandleForEntity(hit);
-			float* angles = hit->s.angles;
-			if (!hit->r.bmodel)
-			{
-				angles = vec3_origin;	// boxes don't rotate
-			}
-
-			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
-
-			contents |= c2;
+			continue;
 		}
-		else if (GGameType & GAME_WolfMP)
-		{
-			wmsharedEntity_t* hit = SVWM_GentityNum(touch[i]);
-			// might intersect, so do an exact clip
-			clipHandle_t clipHandle = SVWM_ClipHandleForEntity(hit);
-			float* angles = hit->s.angles;
-			if (!hit->r.bmodel)
-			{
-				angles = vec3_origin;	// boxes don't rotate
-			}
 
-			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
+		int c2 = CM_TransformedPointContentsQ3(p, clipHandle,
+			GGameType & GAME_ET ? hit->GetCurrentOrigin() : hit->GetOrigin(),
+			GGameType & GAME_ET ? hit->GetCurrentAngles() : hit->GetAngles());
 
-			contents |= c2;
-		}
-		else if (GGameType & GAME_ET)
-		{
-			etsharedEntity_t* hit = SVET_GentityNum(touch[i]);
-			// might intersect, so do an exact clip
-			clipHandle_t clipHandle = SVET_ClipHandleForEntity(hit);
-
-			// ydnar: non-worldspawn entities must not use world as clip model!
-			if (clipHandle == 0)
-			{
-				continue;
-			}
-
-			float* angles = hit->r.currentAngles;
-			if (!hit->r.bmodel)
-			{
-				angles = vec3_origin;	// boxes don't rotate
-			}
-
-			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->r.currentOrigin, hit->r.currentAngles);
-
-			contents |= c2;
-		}
-		else
-		{
-			q3sharedEntity_t* hit = SVQ3_GentityNum(touch[i]);
-			// might intersect, so do an exact clip
-			clipHandle_t clipHandle = SVQ3_ClipHandleForEntity(hit);
-			float* angles = hit->s.angles;
-			if (!hit->r.bmodel)
-			{
-				angles = vec3_origin;	// boxes don't rotate
-			}
-
-			int c2 = CM_TransformedPointContentsQ3(p, clipHandle, hit->s.origin, hit->s.angles);
-
-			contents |= c2;
-		}
+		contents |= c2;
 	}
 
 	return contents;

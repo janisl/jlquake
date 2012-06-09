@@ -21,25 +21,13 @@
 //	Game
 //
 idEntity3* SVT3_EntityNum(int number);
+idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt);
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2);
 bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
 
 //
 //	World
 //
-struct q3moveclip_t
-{
-	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
-	const float* mins;
-	const float* maxs;	// size of the moving object
-	const float* start;
-	vec3_t end;
-	q3trace_t trace;
-	int passEntityNum;
-	int contentmask;
-	int capsule;
-};
-
 void SVT3_SectorList_f();
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
@@ -57,6 +45,8 @@ void SVT3_LinkEntity(idEntity3* ent, q3svEntity_t* svent);
 // returns the number of pointers filled in
 // The world entity is never returned in this list.
 int SVT3_AreaEntities(const vec3_t mins, const vec3_t maxs, int* entityList, int maxcount);
+clipHandle_t SVT3_ClipHandleForEntity(const idEntity3* ent);
+// clip to a specific entity
 void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule);
 //	mins and maxs are relative
 //	if the entire move stays in a solid volume, trace.allsolid will be set,

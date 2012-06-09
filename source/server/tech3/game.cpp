@@ -25,6 +25,12 @@ idEntity3* SVT3_EntityNum(int number)
 	return sv.q3_entities[number];
 }
 
+idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt)
+{
+	int num = svEnt - sv.q3_svEntities;
+	return SVT3_EntityNum(num);
+}
+
 //	Also checks portalareas so that doors block sight
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2)
 {

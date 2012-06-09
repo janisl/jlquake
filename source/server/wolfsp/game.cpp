@@ -58,3 +58,21 @@ wssharedEntity_t* SVWS_GEntityForSvEntity(const q3svEntity_t* svEnt)
 	int num = svEnt - sv.q3_svEntities;
 	return SVWS_GentityNum(num);
 }
+
+void SVWS_UnlinkEntity(wssharedEntity_t* gEnt)
+{
+	SVT3_UnlinkEntity(SVWS_EntityForGentity(gEnt), SVWS_SvEntityForGentity(gEnt));
+}
+
+void SVWS_LinkEntity(wssharedEntity_t* gEnt)
+{
+	SVT3_LinkEntity(SVWS_EntityForGentity(gEnt), SVWS_SvEntityForGentity(gEnt));
+}
+
+//	Returns a headnode that can be used for testing or clipping to a
+// given entity.  If the entity is a bsp model, the headnode will
+// be returned, otherwise a custom box tree will be constructed.
+clipHandle_t SVWS_ClipHandleForEntity(const wssharedEntity_t* gent)
+{
+	return SVT3_ClipHandleForEntity(SVWS_EntityForGentity(gent));
+}

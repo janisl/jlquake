@@ -18,6 +18,16 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+int idQuake3Entity::GetModelIndex() const
+{
+	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.modelindex;
+}
+
+void idQuake3Entity::SetModelIndex(int value)
+{
+	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.modelindex = value;
+}
+
 int idQuake3Entity::GetSolid() const
 {
 	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.solid;
@@ -41,6 +51,11 @@ void idQuake3Entity::SetLinked(bool value)
 void idQuake3Entity::IncLinkCount()
 {
 	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.linkcount++;
+}
+
+bool idQuake3Entity::GetSvFlagCapsule() const
+{
+	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CAPSULE);
 }
 
 bool idQuake3Entity::GetBModel() const
@@ -121,4 +136,23 @@ const float* idQuake3Entity::GetCurrentAngles() const
 void idQuake3Entity::SetCurrentAngles(const vec3_t value)
 {
 	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.currentAngles);
+}
+
+int idQuake3Entity::GetOwnerNum() const
+{
+	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.ownerNum;
+}
+
+void idQuake3Entity::SetOwnerNum(int value)
+{
+	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+void idQuake3Entity::SetTempBoxModelContents(clipHandle_t) const
+{
+}
+
+bool idQuake3Entity::IsETypeProp() const
+{
+	return false;
 }

@@ -18,8 +18,10 @@ class idQuake3Entity : public idEntity3
 {
 	/*
 	int loopSound;		// constantly loop this sound
-
-	int modelindex;
+*/
+	virtual int GetModelIndex() const;
+	virtual void SetModelIndex(int value);
+	/*
 	int modelindex2;
 	int clientNum;		// 0 to (MAX_CLIENTS_Q3 - 1), for players and corpses
 	int frame;
@@ -46,7 +48,9 @@ class idQuake3Entity : public idEntity3
 	virtual void IncLinkCount();
 /*
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
-
+*/
+	virtual bool GetSvFlagCapsule() const;
+/*
 	// only send to this client when SVF_SINGLECLIENT is set
 	// if Q3SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
 	int singleClient;
@@ -67,12 +71,9 @@ class idQuake3Entity : public idEntity3
 	virtual void SetCurrentOrigin(const vec3_t value);
 	virtual const float* GetCurrentAngles() const;
 	virtual void SetCurrentAngles(const vec3_t value);
-	/*
-	// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
-	// an ent will be excluded from testing if:
-	// ent->s.number == passEntityNum	(don't interact with self)
-	// ent->s.ownerNum = passEntityNum	(don't interact with your own missiles)
-	// entity[ent->s.ownerNum].ownerNum = passEntityNum	(don't interact with other missiles from owner)
-	int ownerNum;
-	 */
+	virtual int GetOwnerNum() const;
+	virtual void SetOwnerNum(int value);
+
+	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const;
+	virtual bool IsETypeProp() const;
 };

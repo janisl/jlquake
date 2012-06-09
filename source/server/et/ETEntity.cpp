@@ -18,6 +18,16 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+int idETEntity::GetModelIndex() const
+{
+	return reinterpret_cast<etsharedEntity_t*>(gentity)->s.modelindex;
+}
+
+void idETEntity::SetModelIndex(int value)
+{
+	reinterpret_cast<etsharedEntity_t*>(gentity)->s.modelindex = value;
+}
+
 int idETEntity::GetSolid() const
 {
 	return reinterpret_cast<etsharedEntity_t*>(gentity)->s.solid;
@@ -41,6 +51,11 @@ void idETEntity::SetLinked(bool value)
 void idETEntity::IncLinkCount()
 {
 	reinterpret_cast<etsharedEntity_t*>(gentity)->r.linkcount++;
+}
+
+bool idETEntity::GetSvFlagCapsule() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_CAPSULE);
 }
 
 bool idETEntity::GetBModel() const
@@ -121,4 +136,24 @@ const float* idETEntity::GetCurrentAngles() const
 void idETEntity::SetCurrentAngles(const vec3_t value)
 {
 	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.currentAngles);
+}
+
+int idETEntity::GetOwnerNum() const
+{
+	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.ownerNum;
+}
+
+void idETEntity::SetOwnerNum(int value)
+{
+	reinterpret_cast<etsharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+void idETEntity::SetTempBoxModelContents(clipHandle_t clipHandle) const
+{
+	CM_SetTempBoxModelContents(clipHandle, reinterpret_cast<etsharedEntity_t*>(gentity)->r.contents);
+}
+
+bool idETEntity::IsETypeProp() const
+{
+	return false;
 }

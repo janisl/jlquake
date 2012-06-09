@@ -42,8 +42,5 @@ void SVET_UnlinkEntity(etsharedEntity_t* ent);
 // is not solid
 void SVET_LinkEntity(etsharedEntity_t* ent);
 clipHandle_t SVET_ClipHandleForEntity(const etsharedEntity_t* ent);
-// clip to a specific entity
-void SVET_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, int capsule);
-void SVET_ClipMoveToEntities(q3moveclip_t* clip);
 
 #endif

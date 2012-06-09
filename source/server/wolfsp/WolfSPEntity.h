@@ -19,9 +19,10 @@ class idWolfSPEntity : public idEntity3
 	/*
 	int dl_intensity;		// used for coronas
 	int loopSound;			// constantly loop this sound
-
-	int modelindex;
-	int modelindex2;
+*/
+	virtual int GetModelIndex() const;
+	virtual void SetModelIndex(int value);
+/*	int modelindex2;
 	int clientNum;			// 0 to (MAX_CLIENTS_WS - 1), for players and corpses
 	int frame;
 */
@@ -66,6 +67,9 @@ class idWolfSPEntity : public idEntity3
 	virtual void IncLinkCount();
 	/*
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
+	*/
+	virtual bool GetSvFlagCapsule() const;
+	/*
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 */
 	virtual bool GetBModel() const;
@@ -84,12 +88,12 @@ class idWolfSPEntity : public idEntity3
 	virtual void SetCurrentOrigin(const vec3_t value);
 	virtual const float* GetCurrentAngles() const;
 	virtual void SetCurrentAngles(const vec3_t value);
-/*// when a trace call is made and passEntityNum != Q3ENTITYNUM_NONE,
-	// an ent will be excluded from testing if:
-	// ent->s.number == passEntityNum	(don't interact with self)
-	// ent->s.ownerNum = passEntityNum	(don't interact with your own missiles)
-	// entity[ent->s.ownerNum].ownerNum = passEntityNum	(don't interact with other missiles from owner)
-	int ownerNum;
+	virtual int GetOwnerNum() const;
+	virtual void SetOwnerNum(int value);
+/*
 	int eventTime;
 	 */
+
+	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const;
+	virtual bool IsETypeProp() const;
 };

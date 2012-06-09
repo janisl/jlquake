@@ -33,4 +33,4 @@ public:
 	{}
 };
 
-#define qassert(x)      if (x) {} else {throw Exception("Assertion failed"); }
+#define qassert(x)      if (x) {} else {throw Exception("Assertion failed " #x); }

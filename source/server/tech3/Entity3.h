@@ -60,25 +60,34 @@ public:
 
 	int time;
 	int time2;
-
-	vec3_t origin;
+*/
+	const float* GetOrigin() const;
+	void SetOrigin(const vec3_t value);
+	/*
 	vec3_t origin2;
-
-	vec3_t angles;
+*/
+	const float* GetAngles() const;
+	void SetAngles(const vec3_t value);
+	/*
 	vec3_t angles2;
-
-	int otherEntityNum;	// shotgun sources, etc
+*/
+	int GetOtherEntityNum() const;
+	void SetOtherEntityNum(int value);
+	/*
 	int otherEntityNum2;
 
 	int groundEntityNum;	// -1 = in air
 
 	int constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
 	 */
+	virtual int GetModelIndex() const = 0;
+	virtual void SetModelIndex(int value) = 0;
 	virtual int GetSolid() const = 0;
 	virtual void SetSolid(int value) = 0;
 	virtual bool GetLinked() const = 0;
 	virtual void SetLinked(bool value) = 0;
 	virtual void IncLinkCount() = 0;
+	virtual bool GetSvFlagCapsule() const = 0;
 	virtual bool GetBModel() const = 0;
 	virtual void SetBModel(bool value) = 0;
 	virtual const float* GetMins() const = 0;
@@ -95,6 +104,11 @@ public:
 	virtual void SetCurrentOrigin(const vec3_t value) = 0;
 	virtual const float* GetCurrentAngles() const = 0;
 	virtual void SetCurrentAngles(const vec3_t value) = 0;
+	virtual int GetOwnerNum() const = 0;
+	virtual void SetOwnerNum(int value) = 0;
+
+	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const = 0;
+	virtual bool IsETypeProp() const = 0;
 
 protected:
 	sharedEntityCommon_t* gentity;
@@ -118,4 +132,34 @@ inline int idEntity3::GetNumber() const
 inline void idEntity3::SetNumber(int value)
 {
 	gentity->number = value;
+}
+
+inline const float* idEntity3::GetOrigin() const
+{
+	return gentity->origin;
+}
+
+inline void idEntity3::SetOrigin(const vec3_t value)
+{
+	VectorCopy(value, gentity->origin);
+}
+
+inline const float* idEntity3::GetAngles() const
+{
+	return gentity->angles;
+}
+
+inline void idEntity3::SetAngles(const vec3_t value)
+{
+	VectorCopy(value, gentity->angles);
+}
+
+inline int idEntity3::GetOtherEntityNum() const
+{
+	return gentity->otherEntityNum;
+}
+
+inline void idEntity3::SetOtherEntityNum(int value)
+{
+	gentity->otherEntityNum = value;
 }

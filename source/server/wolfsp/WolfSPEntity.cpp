@@ -18,6 +18,16 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+int idWolfSPEntity::GetModelIndex() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->s.modelindex;
+}
+
+void idWolfSPEntity::SetModelIndex(int value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->s.modelindex = value;
+}
+
 int idWolfSPEntity::GetSolid() const
 {
 	return reinterpret_cast<wssharedEntity_t*>(gentity)->s.solid;
@@ -41,6 +51,11 @@ void idWolfSPEntity::SetLinked(bool value)
 void idWolfSPEntity::IncLinkCount()
 {
 	reinterpret_cast<wssharedEntity_t*>(gentity)->r.linkcount++;
+}
+
+bool idWolfSPEntity::GetSvFlagCapsule() const
+{
+	return !!(reinterpret_cast<wssharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_CAPSULE);
 }
 
 bool idWolfSPEntity::GetBModel() const
@@ -121,4 +136,23 @@ const float* idWolfSPEntity::GetCurrentAngles() const
 void idWolfSPEntity::SetCurrentAngles(const vec3_t value)
 {
 	VectorCopy(value, reinterpret_cast<wssharedEntity_t*>(gentity)->r.currentAngles);
+}
+
+int idWolfSPEntity::GetOwnerNum() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.ownerNum;
+}
+
+void idWolfSPEntity::SetOwnerNum(int value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+void idWolfSPEntity::SetTempBoxModelContents(clipHandle_t) const
+{
+}
+
+bool idWolfSPEntity::IsETypeProp() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->s.eType == WSET_PROP;
 }
