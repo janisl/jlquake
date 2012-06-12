@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../tech3/local.h"
 
 /*
 
@@ -3160,4 +3161,570 @@ void AAS_InitRouting()
 			}
 		}
 	}
+}
+
+int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum,
+	vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, const vec3_t distpos)
+{
+	int MAX_HIDEAREA_LOOPS = (GGameType & GAME_WolfMP ? 4000 : 3000);
+	static float lastTime;
+	static int loopCount;
+
+	if (!aasworld->areavisibility)
+	{
+		return 0;
+	}
+
+	if (!(GGameType & GAME_WolfMP) && srcnum < 0)			// hack to force run this call
+	{
+		srcnum = -srcnum - 1;
+		lastTime = 0;
+	}
+	// don't run this more than once per frame
+	if (lastTime == AAS_Time() && (GGameType & GAME_WolfMP || loopCount >= MAX_HIDEAREA_LOOPS))
+	{
+		return 0;
+	}
+	if (!(GGameType & GAME_ET) || lastTime != AAS_Time())
+	{
+		loopCount = 0;
+	}
+	lastTime = AAS_Time();
+
+	if (!aasworld->hidetraveltimes)
+	{
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+	else
+	{
+		memset(aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	if (!aasworld->visCache)
+	{
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
+	}
+	else
+	{
+		memset(aasworld->visCache, 0, aasworld->numareas * sizeof(byte));
+	}
+	unsigned short int besttraveltime = 0;
+	int bestarea = 0;
+	if (enemyareanum)
+	{
+		//JL this looks useless.
+		AAS_AreaTravelTimeToGoalArea(areanum, origin, enemyareanum, travelflags);
+	}
+	vec3_t enemyVec;
+	VectorSubtract(enemyorigin, origin, enemyVec);
+	float enemytraveldist = VectorNormalize(enemyVec);
+	bool startVisible = SVT3_BotVisibleFromPos(enemyorigin, enemynum, origin, srcnum, false);
+
+	int badtravelflags = ~travelflags;
+
+	aas_routingupdate_t* curupdate = &aasworld->areaupdate[areanum];
+	curupdate->areanum = areanum;
+	VectorCopy(origin, curupdate->start);
+	// GORDON: TEMP: FIXME: just avoiding a crash for the moment
+	if (GGameType & GAME_ET && areanum == 0)
+	{
+		return 0;
+	}
+	curupdate->areatraveltimes = aasworld->areatraveltimes[areanum][0];
+	curupdate->tmptraveltime = 0;
+	//put the area to start with in the current read list
+	curupdate->next = NULL;
+	curupdate->prev = NULL;
+	aas_routingupdate_t* updateliststart = curupdate;
+	aas_routingupdate_t* updatelistend = curupdate;
+	//while there are updates in the current list, flip the lists
+	while (updateliststart)
+	{
+		curupdate = updateliststart;
+
+		if (curupdate->next)
+		{
+			curupdate->next->prev = NULL;
+		}
+		else
+		{
+			updatelistend = NULL;
+		}
+		updateliststart = curupdate->next;
+
+		curupdate->inlist = false;
+		//check all reversed reachability links
+		int numreach = aasworld->areasettings[curupdate->areanum].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[curupdate->areanum].firstreachablearea];
+
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			//if an undesired travel type is used
+			if (aasworld->travelflagfortype[reach->traveltype] & badtravelflags)
+			{
+				continue;
+			}
+
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
+			{
+				continue;
+			}
+			// dont pass through ladder areas
+			if (!(GGameType & GAME_WolfMP) && aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			{
+				continue;
+			}
+
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_DISABLED)
+			{
+				continue;
+			}
+			//number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+			// if this moves us into the enemies area, skip it
+			if (nextareanum == enemyareanum)
+			{
+				continue;
+			}
+			// if this moves us outside maxdist
+			if (distpos && (VectorDistance(reach->end, distpos) > maxdist))
+			{
+				continue;
+			}
+			//time already travelled plus the traveltime through
+			//the current area plus the travel time from the reachability
+			unsigned short int t = curupdate->tmptraveltime +
+				AAS_AreaTravelTime(curupdate->areanum, curupdate->start, reach->start) +
+				reach->traveltime;
+			if (!(GGameType & GAME_WolfMP))
+			{
+				// inc the loopCount, we are starting to use a bit of cpu time
+				loopCount++;
+			}
+			// if this isn't the fastest route to this area, ignore
+			if (aasworld->hidetraveltimes[nextareanum] && aasworld->hidetraveltimes[nextareanum] < t)
+			{
+				continue;
+			}
+			aasworld->hidetraveltimes[nextareanum] = t;
+			// if the bestarea is this area, then it must be a longer route, so ignore it
+			if (bestarea == nextareanum)
+			{
+				bestarea = 0;
+				besttraveltime = 0;
+			}
+			// do this test now, so we can reject the route if it starts out too long
+			if (besttraveltime && t >= besttraveltime)
+			{
+				continue;
+			}
+
+			//avoid going near the enemy
+			vec3_t p;
+			ProjectPointOntoVectorFromPoints(enemyorigin, curupdate->start, reach->end, p);
+			int j;
+			for (j = 0; j < 3; j++)
+			{
+				if ((p[j] > curupdate->start[j] + 0.1 && p[j] > reach->end[j] + 0.1) ||
+					(p[j] < curupdate->start[j] - 0.1 && p[j] < reach->end[j] - 0.1))
+				{
+					break;
+				}
+			}
+			vec3_t v2;
+			if (j < 3)
+			{
+				VectorSubtract(enemyorigin, reach->end, v2);
+			}
+			else
+			{
+				VectorSubtract(enemyorigin, p, v2);
+			}
+			float dist2 = VectorLength(v2);
+			//never go through the enemy
+			if (enemytraveldist > 32 && dist2 < enemytraveldist && dist2 < 256)
+			{
+				continue;
+			}
+
+			VectorSubtract(reach->end, origin, v2);
+			if (enemytraveldist > 32 && DotProduct(v2, enemyVec) > enemytraveldist / 2)
+			{
+				continue;
+			}
+
+			vec3_t v1;
+			VectorSubtract(enemyorigin, curupdate->start, v1);
+			float dist1 = VectorLength(v1);
+
+			if (enemytraveldist > 32 && dist2 < dist1)
+			{
+				t += (dist1 - dist2) * 10;
+				// test it again after modifying it
+				if (besttraveltime && t >= besttraveltime)
+				{
+					continue;
+				}
+			}
+			// make sure the hide area doesn't have anyone else in it
+			if (!(GGameType & GAME_WolfSP) && AAS_IsEntityInArea(srcnum, -1, nextareanum))
+			{
+				t += 1000;	// avoid this path/area
+			}
+			//
+			// if we weren't visible when starting, make sure we don't move into their view
+			if (enemyareanum && !startVisible && AAS_AreaVisible(enemyareanum, nextareanum))
+			{
+				continue;
+			}
+
+			if (!besttraveltime || besttraveltime > t)
+			{
+				// if this area doesn't have a vis list, ignore it
+				if (aasworld->areavisibility[nextareanum])
+				{
+					//if the nextarea is not visible from the enemy area
+					if (!AAS_AreaVisible(enemyareanum, nextareanum))		// now last of all, check that this area is a safe hiding spot
+					{
+						if ((aasworld->visCache[nextareanum] == 2) ||
+							(!aasworld->visCache[nextareanum] && !SVT3_BotVisibleFromPos(enemyorigin, enemynum, aasworld->areawaypoints[nextareanum], srcnum, false)))
+						{
+							aasworld->visCache[nextareanum] = 2;
+							besttraveltime = t;
+							bestarea = nextareanum;
+						}
+						else
+						{
+							aasworld->visCache[nextareanum] = 1;
+						}
+					}
+				}
+
+				// getting down to here is bad for cpu usage
+				if (loopCount++ > MAX_HIDEAREA_LOOPS)
+				{
+					continue;
+				}
+
+				// otherwise, add this to the list so we check is reachables
+				// disabled, this should only store the raw traveltime, not the adjusted time
+				//aasworld->hidetraveltimes[nextareanum] = t;
+				aas_routingupdate_t* nextupdate = &aasworld->areaupdate[nextareanum];
+				nextupdate->areanum = nextareanum;
+				nextupdate->tmptraveltime = t;
+				//remember where we entered this area
+				VectorCopy(reach->end, nextupdate->start);
+				//if this update is not in the list yet
+				if (!nextupdate->inlist)
+				{
+					//add the new update to the end of the list
+					nextupdate->next = NULL;
+					nextupdate->prev = updatelistend;
+					if (updatelistend)
+					{
+						updatelistend->next = nextupdate;
+					}
+					else
+					{
+						updateliststart = nextupdate;
+					}
+					updatelistend = nextupdate;
+					nextupdate->inlist = true;
+				}
+			}
+		}
+	}
+	return bestarea;
+}
+
+//	"src" is hiding ent, "dest" is the enemy
+bool AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos)
+{
+	// use MrE's breadth first method
+	int hideareanum = AAS_NearestHideArea(srcnum, srcpos, srcarea, destnum, destpos, destarea, WOLFTFL_DEFAULT, 0, NULL);
+	if (!hideareanum)
+	{
+		return false;
+	}
+	// we found a valid hiding area
+	VectorCopy(aasworld->areawaypoints[hideareanum], returnPos);
+
+	return true;
+}
+
+int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist,
+	int travelflags, float* outpos)
+{
+	enum { MAX_ATTACKAREA_LOOPS = 200 };
+	static float lastTime;
+
+	// don't run this more than once per frame
+	if (lastTime == AAS_Time())
+	{
+		return 0;
+	}
+	lastTime = AAS_Time();
+
+	if (!aasworld->hidetraveltimes)
+	{
+		aasworld->hidetraveltimes = (unsigned short int*)Mem_ClearedAlloc(aasworld->numareas * sizeof(unsigned short int));
+	}
+	else
+	{
+		memset(aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof(unsigned short int));
+	}
+
+	if (!aasworld->visCache)
+	{
+		aasworld->visCache = (byte*)Mem_ClearedAlloc(aasworld->numareas * sizeof(byte));
+	}
+	else
+	{
+		memset(aasworld->visCache, 0, aasworld->numareas * sizeof(byte));
+	}
+
+	vec3_t srcorg;
+	AAS_EntityOrigin(srcnum, srcorg);
+	vec3_t rangeorg;
+	AAS_EntityOrigin(rangenum, rangeorg);
+	vec3_t enemyorg;
+	AAS_EntityOrigin(enemynum, enemyorg);
+
+	int srcarea, rangearea, enemyarea;
+	if (GGameType & GAME_WolfMP)
+	{
+		srcarea = AAS_BestReachableEntityArea(srcnum);
+		rangearea = AAS_BestReachableEntityArea(rangenum);
+		enemyarea = AAS_BestReachableEntityArea(enemynum);
+	}
+	else
+	{
+		srcarea = BotFuzzyPointReachabilityArea(srcorg);
+		rangearea = BotFuzzyPointReachabilityArea(rangeorg);
+		enemyarea = BotFuzzyPointReachabilityArea(enemyorg);
+	}
+
+	unsigned short int besttraveltime = 0;
+	int bestarea = 0;
+	//JL looks useless
+	AAS_AreaTravelTimeToGoalArea(srcarea, srcorg, enemyarea, travelflags);
+
+	int badtravelflags = ~travelflags;
+
+	aas_routingupdate_t* curupdate = &aasworld->areaupdate[rangearea];
+	curupdate->areanum = rangearea;
+	VectorCopy(rangeorg, curupdate->start);
+	curupdate->areatraveltimes = aasworld->areatraveltimes[srcarea][0];
+	curupdate->tmptraveltime = 0;
+	//put the area to start with in the current read list
+	curupdate->next = NULL;
+	curupdate->prev = NULL;
+	aas_routingupdate_t* updateliststart = curupdate;
+	aas_routingupdate_t* updatelistend = curupdate;
+	//while there are updates in the current list, flip the lists
+	int count = 0;
+	while (updateliststart)
+	{
+		curupdate = updateliststart;
+
+		if (curupdate->next)
+		{
+			curupdate->next->prev = NULL;
+		}
+		else
+		{
+			updatelistend = NULL;
+		}
+		updateliststart = curupdate->next;
+
+		curupdate->inlist = false;
+		//check all reversed reachability links
+		int numreach = aasworld->areasettings[curupdate->areanum].numreachableareas;
+		aas_reachability_t* reach = &aasworld->reachability[aasworld->areasettings[curupdate->areanum].firstreachablearea];
+
+		for (int i = 0; i < numreach; i++, reach++)
+		{
+			//if an undesired travel type is used
+			if (aasworld->travelflagfortype[reach->traveltype] & badtravelflags)
+			{
+				continue;
+			}
+			//
+			if (AAS_AreaContentsTravelFlags(reach->areanum) & badtravelflags)
+			{
+				continue;
+			}
+			// dont pass through ladder areas
+			if (!(GGameType & GAME_WolfMP) && aasworld->areasettings[reach->areanum].areaflags & AREA_LADDER)
+			{
+				continue;
+			}
+
+			if (aasworld->areasettings[reach->areanum].areaflags & AREA_DISABLED)
+			{
+				continue;
+			}
+			//number of the area the reachability leads to
+			int nextareanum = reach->areanum;
+			// if this moves us into the enemies area, skip it
+			if (nextareanum == enemyarea)
+			{
+				continue;
+			}
+			// if we've already been to this area
+			if (aasworld->hidetraveltimes[nextareanum])
+			{
+				continue;
+			}
+			//time already travelled plus the traveltime through
+			//the current area plus the travel time from the reachability
+			if (count++ > MAX_ATTACKAREA_LOOPS)
+			{
+				//BotImport_Print(PRT_MESSAGE, "AAS_FindAttackSpotWithinRange: exceeded max loops, aborting\n" );
+				if (bestarea)
+				{
+					VectorCopy(aasworld->areawaypoints[bestarea], outpos);
+				}
+				return bestarea;
+			}
+			unsigned short int t = curupdate->tmptraveltime +
+				AAS_AreaTravelTime(curupdate->areanum, curupdate->start, reach->start) +
+				reach->traveltime;
+
+			// if it's too far from rangenum, ignore
+			if (Distance(rangeorg, aasworld->areawaypoints[nextareanum]) > rangedist)
+			{
+				continue;
+			}
+
+			// find the traveltime from srcnum
+			unsigned short int srctraveltime = AAS_AreaTravelTimeToGoalArea(srcarea, srcorg, nextareanum, travelflags);
+			// do this test now, so we can reject the route if it starts out too long
+			if (besttraveltime && srctraveltime >= besttraveltime)
+			{
+				continue;
+			}
+			//
+			// if this area doesn't have a vis list, ignore it
+			if (aasworld->areavisibility[nextareanum])
+			{
+				//if the nextarea can see the enemy area
+				if (AAS_AreaVisible(enemyarea, nextareanum))		// now last of all, check that this area is a good attacking spot
+				{
+					if ((aasworld->visCache[nextareanum] == 2) ||
+						(!aasworld->visCache[nextareanum] &&
+						 (count += 10) &&				// we are about to use lots of CPU time
+						 SVT3_BotCheckAttackAtPos(srcnum, enemynum, aasworld->areawaypoints[nextareanum], false, false)))
+					{
+						aasworld->visCache[nextareanum] = 2;
+						besttraveltime = srctraveltime;
+						bestarea = nextareanum;
+					}
+					else
+					{
+						aasworld->visCache[nextareanum] = 1;
+					}
+				}
+			}
+			aasworld->hidetraveltimes[nextareanum] = t;
+			aas_routingupdate_t* nextupdate = &aasworld->areaupdate[nextareanum];
+			nextupdate->areanum = nextareanum;
+			nextupdate->tmptraveltime = t;
+			//remember where we entered this area
+			VectorCopy(reach->end, nextupdate->start);
+			//if this update is not in the list yet
+			if (!nextupdate->inlist)
+			{
+				//add the new update to the end of the list
+				nextupdate->next = NULL;
+				nextupdate->prev = updatelistend;
+				if (updatelistend)
+				{
+					updatelistend->next = nextupdate;
+				}
+				else
+				{
+					updateliststart = nextupdate;
+				}
+				updatelistend = nextupdate;
+				nextupdate->inlist = true;
+			}
+		}
+	}
+	if (bestarea)
+	{
+		VectorCopy(aasworld->areawaypoints[bestarea], outpos);
+	}
+	return bestarea;
+}
+
+bool AAS_GetRouteFirstVisPos(const vec3_t srcpos, const vec3_t destpos, int travelflags, vec3_t retpos)
+{
+	enum { MAX_GETROUTE_VISPOS_LOOPS = 200 };
+	//
+	// SRCPOS: enemy
+	// DESTPOS: self
+	// RETPOS: first area that is visible from destpos, in route from srcpos to destpos
+	int srcarea = BotFuzzyPointReachabilityArea(srcpos);
+	if (!srcarea)
+	{
+		return false;
+	}
+	int destarea = BotFuzzyPointReachabilityArea(destpos);
+	if (!destarea)
+	{
+		return false;
+	}
+	if (destarea == srcarea)
+	{
+		VectorCopy(srcpos, retpos);
+		return true;
+	}
+
+	//if the srcarea can see the destarea
+	if (AAS_AreaVisible(srcarea, destarea))
+	{
+		VectorCopy(srcpos, retpos);
+		return true;
+	}
+	// if this area doesn't have a vis list, ignore it
+	if (!aasworld->areavisibility[destarea])
+	{
+		return false;
+	}
+
+	int travarea = srcarea;
+	vec3_t travpos;
+	VectorCopy(srcpos, travpos);
+	int lasttraveltime = -1;
+	int loops = 0;
+	int ftraveltime, freachnum;
+	while ((loops++ < MAX_GETROUTE_VISPOS_LOOPS) && AAS_AreaRouteToGoalArea(travarea, travpos, destarea, travelflags, &ftraveltime, &freachnum))
+	{
+		if (lasttraveltime >= 0 && ftraveltime >= lasttraveltime)
+		{
+			return false;	// we may be in a loop
+		}
+		lasttraveltime = ftraveltime;
+
+		aas_reachability_t reach;
+		AAS_ReachabilityFromNum(freachnum, &reach);
+		if (reach.areanum == destarea)
+		{
+			VectorCopy(travpos, retpos);
+			return true;
+		}
+		//if the reach area can see the destarea
+		if (AAS_AreaVisible(reach.areanum, destarea))
+		{
+			VectorCopy(reach.end, retpos);
+			return true;
+		}
+
+		travarea = reach.areanum;
+		VectorCopy(reach.end, travpos);
+	}
+
+	// unsuccessful
+	return false;
 }

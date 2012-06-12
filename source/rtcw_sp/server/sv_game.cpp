@@ -481,13 +481,13 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 
 	case WSBOTLIB_AAS_RT_GETHIDEPOS:
-		return botlib_export->aas.AAS_RT_GetHidePos((float*)VMA(1), args[2], args[3], (float*)VMA(4), args[5], args[6], (float*)VMA(7));
+		return AAS_RT_GetHidePos((float*)VMA(1), args[2], args[3], (float*)VMA(4), args[5], args[6], (float*)VMA(7));
 
 	case WSBOTLIB_AAS_FINDATTACKSPOTWITHINRANGE:
-		return botlib_export->aas.AAS_FindAttackSpotWithinRange(args[1], args[2], args[3], VMF(4), args[5], (float*)VMA(6));
+		return AAS_FindAttackSpotWithinRange(args[1], args[2], args[3], VMF(4), args[5], (float*)VMA(6));
 
 	case WSBOTLIB_AAS_GETROUTEFIRSTVISPOS:
-		return botlib_export->aas.AAS_GetRouteFirstVisPos((float*)VMA(1), (float*)VMA(2), args[3], (float*)VMA(4));
+		return AAS_GetRouteFirstVisPos((float*)VMA(1), (float*)VMA(2), args[3], (float*)VMA(4));
 
 	case WSBOTLIB_AAS_SETAASBLOCKINGENTITY:
 		AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);

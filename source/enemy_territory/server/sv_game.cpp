@@ -560,14 +560,8 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case ETBOTLIB_AAS_RT_SHOWROUTE:
 		return 0;
 
-	//case BOTLIB_AAS_RT_GETHIDEPOS:
-	//	return botlib_export->aas.AAS_RT_GetHidePos( VMA(1), args[2], args[3], VMA(4), args[5], args[6], VMA(7) );
-
-	//case BOTLIB_AAS_FINDATTACKSPOTWITHINRANGE:
-	//	return botlib_export->aas.AAS_FindAttackSpotWithinRange( args[1], args[2], args[3], VMF(4), args[5], VMA(6) );
-
 	case ETBOTLIB_AAS_NEARESTHIDEAREA:
-		return botlib_export->aas.AAS_NearestHideArea(args[1], (float*)VMA(2), args[3], args[4], (float*)VMA(5), args[6], args[7], VMF(8), (float*)VMA(9));
+		return AAS_NearestHideArea(args[1], (float*)VMA(2), args[3], args[4], (float*)VMA(5), args[6], args[7], VMF(8), (float*)VMA(9));
 
 	case ETBOTLIB_AAS_LISTAREASINRANGE:
 		return AAS_ListAreasInRange((float*)VMA(1), args[2], VMF(3), args[4], (vec3_t*)VMA(5), args[6]);

@@ -49,16 +49,6 @@ typedef struct botlib_import_s
 	void (* BotClientCommand)(int client, const char* command);
 } botlib_import_t;
 
-typedef struct aas_export_s
-{
-	//--------------------------------------------
-	// be_aas_routetable.c
-	//--------------------------------------------
-	qboolean (* AAS_RT_GetHidePos)(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
-	int (* AAS_FindAttackSpotWithinRange)(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-	qboolean (* AAS_GetRouteFirstVisPos)(vec3_t srcpos, vec3_t destpos, int travelflags, vec3_t retpos);
-} aas_export_t;
-
 typedef struct ea_export_s
 {
 	//ClientCommand elementary actions
@@ -86,8 +76,6 @@ typedef struct ai_export_s
 //bot AI library imported functions
 typedef struct botlib_export_s
 {
-	//Area Awareness System functions
-	aas_export_t aas;
 	//Elementary Action functions
 	ea_export_t ea;
 	//AI functions

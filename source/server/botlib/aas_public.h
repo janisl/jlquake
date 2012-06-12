@@ -326,6 +326,11 @@ int AAS_AvoidDangerArea(const vec3_t srcpos, int srcarea, const vec3_t dangerpos
 	float range, int travelflags);
 int AAS_Retreat(const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos, int srcarea,
 	const vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
+int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum,
+	int travelflags, float maxdist, const vec3_t distpos);
+bool AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
+int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
+bool AAS_GetRouteFirstVisPos(const vec3_t srcpos, const vec3_t destpos, int travelflags, vec3_t retpos);
 
 int AAS_AlternativeRouteGoalsQ3(const vec3_t start, int startareanum,
 	const vec3_t goal, int goalareanum, int travelflags,

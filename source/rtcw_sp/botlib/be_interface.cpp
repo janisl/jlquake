@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
-#include "be_aas_routetable.h"
 
 #include "../game/be_ea.h"
 #include "../../server/botlib/ai_weight.h"
@@ -47,27 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
-
-int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-
-qboolean AAS_GetRouteFirstVisPos(vec3_t srcpos, vec3_t destpos, int travelflags, vec3_t retpos);
-
-/*
-============
-Init_AAS_Export
-============
-*/
-static void Init_AAS_Export(aas_export_t* aas)
-{
-	// Ridah, route-tables
-	//--------------------------------------------
-	// be_aas_routetable.c
-	//--------------------------------------------
-	aas->AAS_RT_GetHidePos = AAS_RT_GetHidePos;
-	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
-	aas->AAS_GetRouteFirstVisPos = AAS_GetRouteFirstVisPos;
-}
-
 
 /*
 ============
@@ -122,7 +100,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 		return NULL;
 	}
 
-	Init_AAS_Export(&be_botlib_export.aas);
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 

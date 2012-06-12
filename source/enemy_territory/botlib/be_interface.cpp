@@ -47,29 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
 
-int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum, int travelflags, float maxdist, vec3_t distpos);
-
-int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-
-int AAS_AlternativeRouteGoalsET(vec3_t start, vec3_t goal, int travelflags,
-	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals,
-	int color);
-
-/*
-============
-Init_AAS_Export
-============
-*/
-static void Init_AAS_Export(aas_export_t* aas)
-{
-	//--------------------------------------------
-	// be_aas_routetable.c
-	//--------------------------------------------
-	aas->AAS_FindAttackSpotWithinRange = AAS_FindAttackSpotWithinRange;
-	aas->AAS_NearestHideArea = AAS_NearestHideArea;
-}
-
-
 /*
 ============
 Init_EA_Export
@@ -123,7 +100,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
 		return NULL;
 	}
 
-	Init_AAS_Export(&be_botlib_export.aas);
 	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 

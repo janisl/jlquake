@@ -1,5 +1,4 @@
 add_library(botlib-et STATIC
-	be_aas_route.cpp
 	be_ai_chat.cpp
 	be_ai_move.cpp
 	be_ea.cpp
