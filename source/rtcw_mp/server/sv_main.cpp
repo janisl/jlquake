@@ -1187,7 +1187,7 @@ void SV_Frame(int msec)
 
 		// let everything in the world think and move
 #ifndef UPDATE_SERVER
-		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+		VM_Call(gvm, WMGAME_RUN_FRAME, svs.q3_time);
 #endif
 	}
 

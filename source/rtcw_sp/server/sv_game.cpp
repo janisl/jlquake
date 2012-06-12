@@ -240,127 +240,127 @@ qintptr SV_GameSystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-	case G_PRINT:
+	case WSG_PRINT:
 		Com_Printf("%s", VMA(1));
 		return 0;
-	case G_ERROR:
+	case WSG_ERROR:
 		Com_Error(ERR_DROP, "%s", VMA(1));
 		return 0;
-	case G_ENDGAME:
+	case WSG_ENDGAME:
 		Com_Error(ERR_ENDGAME, "endgame");		// no message, no error print
 		return 0;
-	case G_MILLISECONDS:
+	case WSG_MILLISECONDS:
 		return Sys_Milliseconds();
-	case G_CVAR_REGISTER:
+	case WSG_CVAR_REGISTER:
 		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
-	case G_CVAR_UPDATE:
+	case WSG_CVAR_UPDATE:
 		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
-	case G_CVAR_SET:
+	case WSG_CVAR_SET:
 		Cvar_Set((const char*)VMA(1), (const char*)VMA(2));
 		return 0;
-	case G_CVAR_VARIABLE_INTEGER_VALUE:
+	case WSG_CVAR_VARIABLE_INTEGER_VALUE:
 		return Cvar_VariableIntegerValue((const char*)VMA(1));
-	case G_CVAR_VARIABLE_STRING_BUFFER:
+	case WSG_CVAR_VARIABLE_STRING_BUFFER:
 		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
-	case G_ARGC:
+	case WSG_ARGC:
 		return Cmd_Argc();
-	case G_ARGV:
+	case WSG_ARGV:
 		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case G_SEND_CONSOLE_COMMAND:
+	case WSG_SEND_CONSOLE_COMMAND:
 		Cbuf_ExecuteText(args[1], (char*)VMA(2));
 		return 0;
 
-	case G_FS_FOPEN_FILE:
+	case WSG_FS_FOPEN_FILE:
 		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
-	case G_FS_READ:
+	case WSG_FS_READ:
 		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
-	case G_FS_WRITE:
+	case WSG_FS_WRITE:
 		return FS_Write(VMA(1), args[2], args[3]);
-	case G_FS_RENAME:
+	case WSG_FS_RENAME:
 		FS_Rename((char*)VMA(1), (char*)VMA(2));
 		return 0;
-	case G_FS_FCLOSE_FILE:
+	case WSG_FS_FCLOSE_FILE:
 		FS_FCloseFile(args[1]);
 		return 0;
-	case G_FS_COPY_FILE:
+	case WSG_FS_COPY_FILE:
 		FS_CopyFileOS((char*)VMA(1), (char*)VMA(2));			//DAJ
 		return 0;
-	case G_FS_GETFILELIST:
+	case WSG_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
-	case G_LOCATE_GAME_DATA:
+	case WSG_LOCATE_GAME_DATA:
 		SV_LocateGameData((wssharedEntity_t*)VMA(1), args[2], args[3], (wsplayerState_t*)VMA(4), args[5]);
 		return 0;
-	case G_DROP_CLIENT:
+	case WSG_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2));
 		return 0;
-	case G_SEND_SERVER_COMMAND:
+	case WSG_SEND_SERVER_COMMAND:
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
 		return 0;
-	case G_LINKENTITY:
+	case WSG_LINKENTITY:
 		SVWS_LinkEntity((wssharedEntity_t*)VMA(1));
 		return 0;
-	case G_UNLINKENTITY:
+	case WSG_UNLINKENTITY:
 		SVWS_UnlinkEntity((wssharedEntity_t*)VMA(1));
 		return 0;
-	case G_ENTITIES_IN_BOX:
+	case WSG_ENTITIES_IN_BOX:
 		return SVT3_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
-	case G_ENTITY_CONTACT:
+	case WSG_ENTITY_CONTACT:
 		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wssharedEntity_t*)VMA(3), /* int capsule */ qfalse);
-	case G_ENTITY_CONTACTCAPSULE:
+	case WSG_ENTITY_CONTACTCAPSULE:
 		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wssharedEntity_t*)VMA(3), /* int capsule */ qtrue);
-	case G_TRACE:
+	case WSG_TRACE:
 		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /* int capsule */ qfalse);
 		return 0;
-	case G_TRACECAPSULE:
+	case WSG_TRACECAPSULE:
 		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], /* int capsule */ qtrue);
 		return 0;
-	case G_POINT_CONTENTS:
+	case WSG_POINT_CONTENTS:
 		return SVT3_PointContents((float*)VMA(1), args[2]);
-	case G_SET_BRUSH_MODEL:
+	case WSG_SET_BRUSH_MODEL:
 		SV_SetBrushModel((wssharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
-	case G_IN_PVS:
+	case WSG_IN_PVS:
 		return SVT3_inPVS((float*)VMA(1), (float*)VMA(2));
-	case G_IN_PVS_IGNORE_PORTALS:
+	case WSG_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
-	case G_SET_CONFIGSTRING:
+	case WSG_SET_CONFIGSTRING:
 		SV_SetConfigstring(args[1], (char*)VMA(2));
 		return 0;
-	case G_GET_CONFIGSTRING:
+	case WSG_GET_CONFIGSTRING:
 		SV_GetConfigstring(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case G_SET_USERINFO:
+	case WSG_SET_USERINFO:
 		SV_SetUserinfo(args[1], (char*)VMA(2));
 		return 0;
-	case G_GET_USERINFO:
+	case WSG_GET_USERINFO:
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case G_GET_SERVERINFO:
+	case WSG_GET_SERVERINFO:
 		SV_GetServerinfo((char*)VMA(1), args[2]);
 		return 0;
-	case G_ADJUST_AREA_PORTAL_STATE:
+	case WSG_ADJUST_AREA_PORTAL_STATE:
 		SV_AdjustAreaPortalState((wssharedEntity_t*)VMA(1), args[2]);
 		return 0;
-	case G_AREAS_CONNECTED:
+	case WSG_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
-	case G_BOT_ALLOCATE_CLIENT:
+	case WSG_BOT_ALLOCATE_CLIENT:
 		return SV_BotAllocateClient();
-	case G_BOT_FREE_CLIENT:
+	case WSG_BOT_FREE_CLIENT:
 		SV_BotFreeClient(args[1]);
 		return 0;
 
-	case G_GET_USERCMD:
+	case WSG_GET_USERCMD:
 		SV_GetUsercmd(args[1], (wsusercmd_t*)VMA(2));
 		return 0;
-	case G_GET_ENTITY_TOKEN:
+	case WSG_GET_ENTITY_TOKEN:
 	{
 		const char* s;
 
@@ -376,402 +376,402 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		}
 	}
 
-	case G_DEBUG_POLYGON_CREATE:
+	case WSG_DEBUG_POLYGON_CREATE:
 		return BotImport_DebugPolygonCreate(args[1], args[2], (vec3_t*)VMA(3));
-	case G_DEBUG_POLYGON_DELETE:
+	case WSG_DEBUG_POLYGON_DELETE:
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
-	case G_REAL_TIME:
+	case WSG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
-	case G_SNAPVECTOR:
+	case WSG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
-	case G_GETTAG:
+	case WSG_GETTAG:
 		return SV_GetTag(args[1], (char*)VMA(2), (orientation_t*)VMA(3));
 
 	//====================================
 
-	case BOTLIB_SETUP:
+	case WSBOTLIB_SETUP:
 		return SV_BotLibSetup();
-	case BOTLIB_SHUTDOWN:
+	case WSBOTLIB_SHUTDOWN:
 		return SV_BotLibShutdown();
-	case BOTLIB_LIBVAR_SET:
+	case WSBOTLIB_LIBVAR_SET:
 		return BotLibVarSet((char*)VMA(1), (char*)VMA(2));
-	case BOTLIB_LIBVAR_GET:
+	case WSBOTLIB_LIBVAR_GET:
 		return BotLibVarGet((char*)VMA(1), (char*)VMA(2), args[3]);
 
-	case BOTLIB_PC_ADD_GLOBAL_DEFINE:
+	case WSBOTLIB_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
-	case BOTLIB_PC_LOAD_SOURCE:
+	case WSBOTLIB_PC_LOAD_SOURCE:
 		return PC_LoadSourceHandle((char*)VMA(1));
-	case BOTLIB_PC_FREE_SOURCE:
+	case WSBOTLIB_PC_FREE_SOURCE:
 		return PC_FreeSourceHandle(args[1]);
-	case BOTLIB_PC_READ_TOKEN:
+	case WSBOTLIB_PC_READ_TOKEN:
 		return PC_ReadTokenHandleQ3(args[1], (q3pc_token_t*)VMA(2));
-	case BOTLIB_PC_SOURCE_FILE_AND_LINE:
+	case WSBOTLIB_PC_SOURCE_FILE_AND_LINE:
 		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 
-	case BOTLIB_START_FRAME:
+	case WSBOTLIB_START_FRAME:
 		return BotLibStartFrame(VMF(1));
-	case BOTLIB_LOAD_MAP:
+	case WSBOTLIB_LOAD_MAP:
 		return BotLibLoadMap((char*)VMA(1));
-	case BOTLIB_UPDATENTITY:
+	case WSBOTLIB_UPDATENTITY:
 		return BotLibUpdateEntity(args[1], (bot_entitystate_t*)VMA(2));
-	case BOTLIB_TEST:
+	case WSBOTLIB_TEST:
 		return 0;
 
-	case BOTLIB_GET_SNAPSHOT_ENTITY:
+	case WSBOTLIB_GET_SNAPSHOT_ENTITY:
 		return SV_BotGetSnapshotEntity(args[1], args[2]);
-	case BOTLIB_GET_CONSOLE_MESSAGE:
+	case WSBOTLIB_GET_CONSOLE_MESSAGE:
 		return SV_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
-	case BOTLIB_USER_COMMAND:
+	case WSBOTLIB_USER_COMMAND:
 		SV_ClientThink(&svs.clients[args[1]], (wsusercmd_t*)VMA(2));
 		return 0;
 
-	case BOTLIB_AAS_ENTITY_INFO:
+	case WSBOTLIB_AAS_ENTITY_INFO:
 		AAS_EntityInfo(args[1], (aas_entityinfo_t*)VMA(2));
 		return 0;
 
-	case BOTLIB_AAS_INITIALIZED:
+	case WSBOTLIB_AAS_INITIALIZED:
 		return AAS_Initialized();
-	case BOTLIB_AAS_PRESENCE_TYPE_BOUNDING_BOX:
+	case WSBOTLIB_AAS_PRESENCE_TYPE_BOUNDING_BOX:
 		AAS_PresenceTypeBoundingBox(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
-	case BOTLIB_AAS_TIME:
+	case WSBOTLIB_AAS_TIME:
 		return FloatAsInt(AAS_Time());
 
 	// Ridah
-	case BOTLIB_AAS_SETCURRENTWORLD:
+	case WSBOTLIB_AAS_SETCURRENTWORLD:
 		AAS_SetCurrentWorld(args[1]);
 		return 0;
 	// done.
 
-	case BOTLIB_AAS_POINT_AREA_NUM:
+	case WSBOTLIB_AAS_POINT_AREA_NUM:
 		return AAS_PointAreaNum((float*)VMA(1));
-	case BOTLIB_AAS_TRACE_AREAS:
+	case WSBOTLIB_AAS_TRACE_AREAS:
 		return AAS_TraceAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), (vec3_t*)VMA(4), args[5]);
 
-	case BOTLIB_AAS_POINT_CONTENTS:
+	case WSBOTLIB_AAS_POINT_CONTENTS:
 		return AAS_PointContents((float*)VMA(1));
-	case BOTLIB_AAS_NEXT_BSP_ENTITY:
+	case WSBOTLIB_AAS_NEXT_BSP_ENTITY:
 		return AAS_NextBSPEntity(args[1]);
-	case BOTLIB_AAS_VALUE_FOR_BSP_EPAIR_KEY:
+	case WSBOTLIB_AAS_VALUE_FOR_BSP_EPAIR_KEY:
 		return AAS_ValueForBSPEpairKey(args[1], (char*)VMA(2), (char*)VMA(3), args[4]);
-	case BOTLIB_AAS_VECTOR_FOR_BSP_EPAIR_KEY:
+	case WSBOTLIB_AAS_VECTOR_FOR_BSP_EPAIR_KEY:
 		return AAS_VectorForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
-	case BOTLIB_AAS_FLOAT_FOR_BSP_EPAIR_KEY:
+	case WSBOTLIB_AAS_FLOAT_FOR_BSP_EPAIR_KEY:
 		return AAS_FloatForBSPEpairKey(args[1], (char*)VMA(2), (float*)VMA(3));
-	case BOTLIB_AAS_INT_FOR_BSP_EPAIR_KEY:
+	case WSBOTLIB_AAS_INT_FOR_BSP_EPAIR_KEY:
 		return AAS_IntForBSPEpairKey(args[1], (char*)VMA(2), (int*)VMA(3));
 
-	case BOTLIB_AAS_AREA_REACHABILITY:
+	case WSBOTLIB_AAS_AREA_REACHABILITY:
 		return AAS_AreaReachability(args[1]);
 
-	case BOTLIB_AAS_AREA_TRAVEL_TIME_TO_GOAL_AREA:
+	case WSBOTLIB_AAS_AREA_TRAVEL_TIME_TO_GOAL_AREA:
 		return AAS_AreaTravelTimeToGoalArea(args[1], (float*)VMA(2), args[3], args[4]);
 
-	case BOTLIB_AAS_SWIMMING:
+	case WSBOTLIB_AAS_SWIMMING:
 		return AAS_Swimming((float*)VMA(1));
-	case BOTLIB_AAS_PREDICT_CLIENT_MOVEMENT:
+	case WSBOTLIB_AAS_PREDICT_CLIENT_MOVEMENT:
 		return AAS_PredictClientMovementWolf((struct aas_clientmove_rtcw_t*)VMA(1), args[2], (float*)VMA(3), args[4], args[5],
 			(float*)VMA(6), (float*)VMA(7), args[8], args[9], VMF(10), args[11], args[12], args[13]);
 
 	// Ridah, route-tables
-	case BOTLIB_AAS_RT_SHOWROUTE:
+	case WSBOTLIB_AAS_RT_SHOWROUTE:
 		return 0;
 
-	case BOTLIB_AAS_RT_GETHIDEPOS:
+	case WSBOTLIB_AAS_RT_GETHIDEPOS:
 		return botlib_export->aas.AAS_RT_GetHidePos((float*)VMA(1), args[2], args[3], (float*)VMA(4), args[5], args[6], (float*)VMA(7));
 
-	case BOTLIB_AAS_FINDATTACKSPOTWITHINRANGE:
+	case WSBOTLIB_AAS_FINDATTACKSPOTWITHINRANGE:
 		return botlib_export->aas.AAS_FindAttackSpotWithinRange(args[1], args[2], args[3], VMF(4), args[5], (float*)VMA(6));
 
-	case BOTLIB_AAS_GETROUTEFIRSTVISPOS:
+	case WSBOTLIB_AAS_GETROUTEFIRSTVISPOS:
 		return botlib_export->aas.AAS_GetRouteFirstVisPos((float*)VMA(1), (float*)VMA(2), args[3], (float*)VMA(4));
 
-	case BOTLIB_AAS_SETAASBLOCKINGENTITY:
+	case WSBOTLIB_AAS_SETAASBLOCKINGENTITY:
 		AAS_SetAASBlockingEntity((float*)VMA(1), (float*)VMA(2), args[3]);
 		return 0;
 	// done.
 
-	case BOTLIB_EA_SAY:
+	case WSBOTLIB_EA_SAY:
 		botlib_export->ea.EA_Say(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_SAY_TEAM:
+	case WSBOTLIB_EA_SAY_TEAM:
 		botlib_export->ea.EA_SayTeam(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_USE_ITEM:
+	case WSBOTLIB_EA_USE_ITEM:
 		botlib_export->ea.EA_UseItem(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_DROP_ITEM:
+	case WSBOTLIB_EA_DROP_ITEM:
 		botlib_export->ea.EA_DropItem(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_USE_INV:
+	case WSBOTLIB_EA_USE_INV:
 		botlib_export->ea.EA_UseInv(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_DROP_INV:
+	case WSBOTLIB_EA_DROP_INV:
 		botlib_export->ea.EA_DropInv(args[1], (char*)VMA(2));
 		return 0;
-	case BOTLIB_EA_GESTURE:
+	case WSBOTLIB_EA_GESTURE:
 		EA_Gesture(args[1]);
 		return 0;
-	case BOTLIB_EA_COMMAND:
+	case WSBOTLIB_EA_COMMAND:
 		botlib_export->ea.EA_Command(args[1], (char*)VMA(2));
 		return 0;
 
-	case BOTLIB_EA_SELECT_WEAPON:
+	case WSBOTLIB_EA_SELECT_WEAPON:
 		EA_SelectWeapon(args[1], args[2]);
 		return 0;
-	case BOTLIB_EA_TALK:
+	case WSBOTLIB_EA_TALK:
 		EA_Talk(args[1]);
 		return 0;
-	case BOTLIB_EA_ATTACK:
+	case WSBOTLIB_EA_ATTACK:
 		EA_Attack(args[1]);
 		return 0;
-	case BOTLIB_EA_RELOAD:
+	case WSBOTLIB_EA_RELOAD:
 		EA_Reload(args[1]);
 		return 0;
-	case BOTLIB_EA_USE:
+	case WSBOTLIB_EA_USE:
 		EA_Use(args[1]);
 		return 0;
-	case BOTLIB_EA_RESPAWN:
+	case WSBOTLIB_EA_RESPAWN:
 		EA_Respawn(args[1]);
 		return 0;
-	case BOTLIB_EA_JUMP:
+	case WSBOTLIB_EA_JUMP:
 		EA_Jump(args[1]);
 		return 0;
-	case BOTLIB_EA_DELAYED_JUMP:
+	case WSBOTLIB_EA_DELAYED_JUMP:
 		EA_DelayedJump(args[1]);
 		return 0;
-	case BOTLIB_EA_CROUCH:
+	case WSBOTLIB_EA_CROUCH:
 		EA_Crouch(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_UP:
+	case WSBOTLIB_EA_MOVE_UP:
 		EA_MoveUp(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_DOWN:
+	case WSBOTLIB_EA_MOVE_DOWN:
 		EA_MoveDown(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_FORWARD:
+	case WSBOTLIB_EA_MOVE_FORWARD:
 		EA_MoveForward(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_BACK:
+	case WSBOTLIB_EA_MOVE_BACK:
 		EA_MoveBack(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_LEFT:
+	case WSBOTLIB_EA_MOVE_LEFT:
 		EA_MoveLeft(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE_RIGHT:
+	case WSBOTLIB_EA_MOVE_RIGHT:
 		EA_MoveRight(args[1]);
 		return 0;
-	case BOTLIB_EA_MOVE:
+	case WSBOTLIB_EA_MOVE:
 		EA_Move(args[1], (float*)VMA(2), VMF(3));
 		return 0;
-	case BOTLIB_EA_VIEW:
+	case WSBOTLIB_EA_VIEW:
 		EA_View(args[1], (float*)VMA(2));
 		return 0;
 
-	case BOTLIB_EA_END_REGULAR:
+	case WSBOTLIB_EA_END_REGULAR:
 		return 0;
-	case BOTLIB_EA_GET_INPUT:
+	case WSBOTLIB_EA_GET_INPUT:
 		EA_GetInput(args[1], VMF(2), (bot_input_t*)VMA(3));
 		return 0;
-	case BOTLIB_EA_RESET_INPUT:
+	case WSBOTLIB_EA_RESET_INPUT:
 		EA_ResetInputWolf(args[1], (bot_input_t*)VMA(2));
 		return 0;
 
-	case BOTLIB_AI_LOAD_CHARACTER:
+	case WSBOTLIB_AI_LOAD_CHARACTER:
 		return BotLoadCharacter((char*)VMA(1), args[2]);
-	case BOTLIB_AI_FREE_CHARACTER:
+	case WSBOTLIB_AI_FREE_CHARACTER:
 		BotFreeCharacter(args[1]);
 		return 0;
-	case BOTLIB_AI_CHARACTERISTIC_FLOAT:
+	case WSBOTLIB_AI_CHARACTERISTIC_FLOAT:
 		return FloatAsInt(Characteristic_Float(args[1], args[2]));
-	case BOTLIB_AI_CHARACTERISTIC_BFLOAT:
+	case WSBOTLIB_AI_CHARACTERISTIC_BFLOAT:
 		return FloatAsInt(Characteristic_BFloat(args[1], args[2], VMF(3), VMF(4)));
-	case BOTLIB_AI_CHARACTERISTIC_INTEGER:
+	case WSBOTLIB_AI_CHARACTERISTIC_INTEGER:
 		return Characteristic_Integer(args[1], args[2]);
-	case BOTLIB_AI_CHARACTERISTIC_BINTEGER:
+	case WSBOTLIB_AI_CHARACTERISTIC_BINTEGER:
 		return Characteristic_BInteger(args[1], args[2], args[3], args[4]);
-	case BOTLIB_AI_CHARACTERISTIC_STRING:
+	case WSBOTLIB_AI_CHARACTERISTIC_STRING:
 		Characteristic_String(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
-	case BOTLIB_AI_ALLOC_CHAT_STATE:
+	case WSBOTLIB_AI_ALLOC_CHAT_STATE:
 		return BotAllocChatState();
-	case BOTLIB_AI_FREE_CHAT_STATE:
+	case WSBOTLIB_AI_FREE_CHAT_STATE:
 		BotFreeChatState(args[1]);
 		return 0;
-	case BOTLIB_AI_QUEUE_CONSOLE_MESSAGE:
+	case WSBOTLIB_AI_QUEUE_CONSOLE_MESSAGE:
 		BotQueueConsoleMessage(args[1], args[2], (char*)VMA(3));
 		return 0;
-	case BOTLIB_AI_REMOVE_CONSOLE_MESSAGE:
+	case WSBOTLIB_AI_REMOVE_CONSOLE_MESSAGE:
 		BotRemoveConsoleMessage(args[1], args[2]);
 		return 0;
-	case BOTLIB_AI_NEXT_CONSOLE_MESSAGE:
+	case WSBOTLIB_AI_NEXT_CONSOLE_MESSAGE:
 		return BotNextConsoleMessageWolf(args[1], (struct bot_consolemessage_wolf_t*)VMA(2));
-	case BOTLIB_AI_NUM_CONSOLE_MESSAGE:
+	case WSBOTLIB_AI_NUM_CONSOLE_MESSAGE:
 		return BotNumConsoleMessages(args[1]);
-	case BOTLIB_AI_INITIAL_CHAT:
+	case WSBOTLIB_AI_INITIAL_CHAT:
 		BotInitialChat(args[1], (char*)VMA(2), args[3], (char*)VMA(4), (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11));
 		return 0;
-	case BOTLIB_AI_NUM_INITIAL_CHATS:
+	case WSBOTLIB_AI_NUM_INITIAL_CHATS:
 		return BotNumInitialChats(args[1], (char*)VMA(2));
-	case BOTLIB_AI_REPLY_CHAT:
+	case WSBOTLIB_AI_REPLY_CHAT:
 		return BotReplyChat(args[1], (char*)VMA(2), args[3], args[4], (char*)VMA(5), (char*)VMA(6), (char*)VMA(7), (char*)VMA(8), (char*)VMA(9), (char*)VMA(10), (char*)VMA(11), (char*)VMA(12));
-	case BOTLIB_AI_CHAT_LENGTH:
+	case WSBOTLIB_AI_CHAT_LENGTH:
 		return BotChatLength(args[1]);
-	case BOTLIB_AI_ENTER_CHAT:
+	case WSBOTLIB_AI_ENTER_CHAT:
 		botlib_export->ai.BotEnterChat(args[1], args[2], args[3]);
 		return 0;
-	case BOTLIB_AI_GET_CHAT_MESSAGE:
+	case WSBOTLIB_AI_GET_CHAT_MESSAGE:
 		BotGetChatMessage(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case BOTLIB_AI_STRING_CONTAINS:
+	case WSBOTLIB_AI_STRING_CONTAINS:
 		return StringContains((char*)VMA(1), (char*)VMA(2), args[3]);
-	case BOTLIB_AI_FIND_MATCH:
+	case WSBOTLIB_AI_FIND_MATCH:
 		return BotFindMatchWolf((char*)VMA(1), (bot_match_wolf_t*)VMA(2), args[3]);
-	case BOTLIB_AI_MATCH_VARIABLE:
+	case WSBOTLIB_AI_MATCH_VARIABLE:
 		BotMatchVariableWolf((bot_match_wolf_t*)VMA(1), args[2], (char*)VMA(3), args[4]);
 		return 0;
-	case BOTLIB_AI_UNIFY_WHITE_SPACES:
+	case WSBOTLIB_AI_UNIFY_WHITE_SPACES:
 		UnifyWhiteSpaces((char*)VMA(1));
 		return 0;
-	case BOTLIB_AI_REPLACE_SYNONYMS:
+	case WSBOTLIB_AI_REPLACE_SYNONYMS:
 		BotReplaceSynonyms((char*)VMA(1), args[2]);
 		return 0;
-	case BOTLIB_AI_LOAD_CHAT_FILE:
+	case WSBOTLIB_AI_LOAD_CHAT_FILE:
 		return BotLoadChatFile(args[1], (char*)VMA(2), (char*)VMA(3));
-	case BOTLIB_AI_SET_CHAT_GENDER:
+	case WSBOTLIB_AI_SET_CHAT_GENDER:
 		BotSetChatGender(args[1], args[2]);
 		return 0;
-	case BOTLIB_AI_SET_CHAT_NAME:
+	case WSBOTLIB_AI_SET_CHAT_NAME:
 		BotSetChatName(args[1], (char*)VMA(2), 0);
 		return 0;
 
-	case BOTLIB_AI_RESET_GOAL_STATE:
+	case WSBOTLIB_AI_RESET_GOAL_STATE:
 		BotResetGoalState(args[1]);
 		return 0;
-	case BOTLIB_AI_RESET_AVOID_GOALS:
+	case WSBOTLIB_AI_RESET_AVOID_GOALS:
 		BotResetAvoidGoals(args[1]);
 		return 0;
-	case BOTLIB_AI_REMOVE_FROM_AVOID_GOALS:
+	case WSBOTLIB_AI_REMOVE_FROM_AVOID_GOALS:
 		BotRemoveFromAvoidGoals(args[1], args[2]);
 		return 0;
-	case BOTLIB_AI_PUSH_GOAL:
+	case WSBOTLIB_AI_PUSH_GOAL:
 		BotPushGoalQ3(args[1], (struct bot_goal_q3_t*)VMA(2));
 		return 0;
-	case BOTLIB_AI_POP_GOAL:
+	case WSBOTLIB_AI_POP_GOAL:
 		BotPopGoal(args[1]);
 		return 0;
-	case BOTLIB_AI_EMPTY_GOAL_STACK:
+	case WSBOTLIB_AI_EMPTY_GOAL_STACK:
 		BotEmptyGoalStack(args[1]);
 		return 0;
-	case BOTLIB_AI_DUMP_AVOID_GOALS:
+	case WSBOTLIB_AI_DUMP_AVOID_GOALS:
 		BotDumpAvoidGoals(args[1]);
 		return 0;
-	case BOTLIB_AI_DUMP_GOAL_STACK:
+	case WSBOTLIB_AI_DUMP_GOAL_STACK:
 		BotDumpGoalStack(args[1]);
 		return 0;
-	case BOTLIB_AI_GOAL_NAME:
+	case WSBOTLIB_AI_GOAL_NAME:
 		BotGoalName(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case BOTLIB_AI_GET_TOP_GOAL:
+	case WSBOTLIB_AI_GET_TOP_GOAL:
 		return BotGetTopGoalQ3(args[1], (struct bot_goal_q3_t*)VMA(2));
-	case BOTLIB_AI_GET_SECOND_GOAL:
+	case WSBOTLIB_AI_GET_SECOND_GOAL:
 		return BotGetSecondGoalQ3(args[1], (struct bot_goal_q3_t*)VMA(2));
-	case BOTLIB_AI_CHOOSE_LTG_ITEM:
+	case WSBOTLIB_AI_CHOOSE_LTG_ITEM:
 		return BotChooseLTGItem(args[1], (float*)VMA(2), (int*)VMA(3), args[4]);
-	case BOTLIB_AI_CHOOSE_NBG_ITEM:
+	case WSBOTLIB_AI_CHOOSE_NBG_ITEM:
 		return BotChooseNBGItemQ3(args[1], (float*)VMA(2), (int*)VMA(3), args[4], (struct bot_goal_q3_t*)VMA(5), VMF(6));
-	case BOTLIB_AI_TOUCHING_GOAL:
+	case WSBOTLIB_AI_TOUCHING_GOAL:
 		return BotTouchingGoalQ3((float*)VMA(1), (struct bot_goal_q3_t*)VMA(2));
-	case BOTLIB_AI_ITEM_GOAL_IN_VIS_BUT_NOT_VISIBLE:
+	case WSBOTLIB_AI_ITEM_GOAL_IN_VIS_BUT_NOT_VISIBLE:
 		return BotItemGoalInVisButNotVisibleQ3(args[1], (float*)VMA(2), (float*)VMA(3), (struct bot_goal_q3_t*)VMA(4));
-	case BOTLIB_AI_GET_LEVEL_ITEM_GOAL:
+	case WSBOTLIB_AI_GET_LEVEL_ITEM_GOAL:
 		return BotGetLevelItemGoalQ3(args[1], (char*)VMA(2), (struct bot_goal_q3_t*)VMA(3));
-	case BOTLIB_AI_GET_NEXT_CAMP_SPOT_GOAL:
+	case WSBOTLIB_AI_GET_NEXT_CAMP_SPOT_GOAL:
 		return BotGetNextCampSpotGoalQ3(args[1], (struct bot_goal_q3_t*)VMA(2));
-	case BOTLIB_AI_GET_MAP_LOCATION_GOAL:
+	case WSBOTLIB_AI_GET_MAP_LOCATION_GOAL:
 		return BotGetMapLocationGoalQ3((char*)VMA(1), (struct bot_goal_q3_t*)VMA(2));
-	case BOTLIB_AI_AVOID_GOAL_TIME:
+	case WSBOTLIB_AI_AVOID_GOAL_TIME:
 		return FloatAsInt(BotAvoidGoalTime(args[1], args[2]));
-	case BOTLIB_AI_INIT_LEVEL_ITEMS:
+	case WSBOTLIB_AI_INIT_LEVEL_ITEMS:
 		BotInitLevelItems();
 		return 0;
-	case BOTLIB_AI_UPDATE_ENTITY_ITEMS:
+	case WSBOTLIB_AI_UPDATE_ENTITY_ITEMS:
 		BotUpdateEntityItems();
 		return 0;
-	case BOTLIB_AI_LOAD_ITEM_WEIGHTS:
+	case WSBOTLIB_AI_LOAD_ITEM_WEIGHTS:
 		return BotLoadItemWeights(args[1], (char*)VMA(2));
-	case BOTLIB_AI_FREE_ITEM_WEIGHTS:
+	case WSBOTLIB_AI_FREE_ITEM_WEIGHTS:
 		BotFreeItemWeights(args[1]);
 		return 0;
-	case BOTLIB_AI_INTERBREED_GOAL_FUZZY_LOGIC:
+	case WSBOTLIB_AI_INTERBREED_GOAL_FUZZY_LOGIC:
 		BotInterbreedGoalFuzzyLogic(args[1], args[2], args[3]);
 		return 0;
-	case BOTLIB_AI_SAVE_GOAL_FUZZY_LOGIC:
+	case WSBOTLIB_AI_SAVE_GOAL_FUZZY_LOGIC:
 		return 0;
-	case BOTLIB_AI_MUTATE_GOAL_FUZZY_LOGIC:
+	case WSBOTLIB_AI_MUTATE_GOAL_FUZZY_LOGIC:
 		BotMutateGoalFuzzyLogic(args[1], VMF(2));
 		return 0;
-	case BOTLIB_AI_ALLOC_GOAL_STATE:
+	case WSBOTLIB_AI_ALLOC_GOAL_STATE:
 		return BotAllocGoalState(args[1]);
-	case BOTLIB_AI_FREE_GOAL_STATE:
+	case WSBOTLIB_AI_FREE_GOAL_STATE:
 		BotFreeGoalState(args[1]);
 		return 0;
 
-	case BOTLIB_AI_RESET_MOVE_STATE:
+	case WSBOTLIB_AI_RESET_MOVE_STATE:
 		BotResetMoveState(args[1]);
 		return 0;
-	case BOTLIB_AI_MOVE_TO_GOAL:
+	case WSBOTLIB_AI_MOVE_TO_GOAL:
 		botlib_export->ai.BotMoveToGoal((struct bot_moveresult_t*)VMA(1), args[2], (struct bot_goal_q3_t*)VMA(3), args[4]);
 		return 0;
-	case BOTLIB_AI_MOVE_IN_DIRECTION:
+	case WSBOTLIB_AI_MOVE_IN_DIRECTION:
 		return BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);
-	case BOTLIB_AI_RESET_AVOID_REACH:
+	case WSBOTLIB_AI_RESET_AVOID_REACH:
 		BotResetAvoidReachAndMove(args[1]);
 		return 0;
-	case BOTLIB_AI_RESET_LAST_AVOID_REACH:
+	case WSBOTLIB_AI_RESET_LAST_AVOID_REACH:
 		BotResetLastAvoidReach(args[1]);
 		return 0;
-	case BOTLIB_AI_REACHABILITY_AREA:
+	case WSBOTLIB_AI_REACHABILITY_AREA:
 		return BotReachabilityArea((float*)VMA(1), args[2]);
-	case BOTLIB_AI_MOVEMENT_VIEW_TARGET:
+	case WSBOTLIB_AI_MOVEMENT_VIEW_TARGET:
 		return BotMovementViewTargetQ3(args[1], (struct bot_goal_q3_t*)VMA(2), args[3], VMF(4), (float*)VMA(5));
-	case BOTLIB_AI_PREDICT_VISIBLE_POSITION:
+	case WSBOTLIB_AI_PREDICT_VISIBLE_POSITION:
 		return BotPredictVisiblePositionQ3((float*)VMA(1), args[2], (struct bot_goal_q3_t*)VMA(3), args[4], (float*)VMA(5));
-	case BOTLIB_AI_ALLOC_MOVE_STATE:
+	case WSBOTLIB_AI_ALLOC_MOVE_STATE:
 		return BotAllocMoveState();
-	case BOTLIB_AI_FREE_MOVE_STATE:
+	case WSBOTLIB_AI_FREE_MOVE_STATE:
 		BotFreeMoveState(args[1]);
 		return 0;
-	case BOTLIB_AI_INIT_MOVE_STATE:
+	case WSBOTLIB_AI_INIT_MOVE_STATE:
 		BotInitMoveStateQ3(args[1], (struct bot_initmove_q3_t*)VMA(2));
 		return 0;
 	// Ridah
-	case BOTLIB_AI_INIT_AVOID_REACH:
+	case WSBOTLIB_AI_INIT_AVOID_REACH:
 		BotResetAvoidReach(args[1]);
 		return 0;
 	// done.
 
-	case BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON:
+	case WSBOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON:
 		return BotChooseBestFightWeapon(args[1], (int*)VMA(2));
-	case BOTLIB_AI_GET_WEAPON_INFO:
+	case WSBOTLIB_AI_GET_WEAPON_INFO:
 		BotGetWeaponInfo(args[1], args[2], (weaponinfo_t*)VMA(3));
 		return 0;
-	case BOTLIB_AI_LOAD_WEAPON_WEIGHTS:
+	case WSBOTLIB_AI_LOAD_WEAPON_WEIGHTS:
 		return BotLoadWeaponWeights(args[1], (char*)VMA(2));
-	case BOTLIB_AI_ALLOC_WEAPON_STATE:
+	case WSBOTLIB_AI_ALLOC_WEAPON_STATE:
 		return BotAllocWeaponState();
-	case BOTLIB_AI_FREE_WEAPON_STATE:
+	case WSBOTLIB_AI_FREE_WEAPON_STATE:
 		BotFreeWeaponState(args[1]);
 		return 0;
-	case BOTLIB_AI_RESET_WEAPON_STATE:
+	case WSBOTLIB_AI_RESET_WEAPON_STATE:
 		BotResetWeaponState(args[1]);
 		return 0;
 
-	case BOTLIB_AI_GENETIC_PARENTS_AND_CHILD_SELECTION:
+	case WSBOTLIB_AI_GENETIC_PARENTS_AND_CHILD_SELECTION:
 		return GeneticParentsAndChildSelection(args[1], (float*)VMA(2), (int*)VMA(3), (int*)VMA(4), (int*)VMA(5));
 
 	case TRAP_MEMSET:
@@ -836,7 +836,7 @@ void SV_ShutdownGameProgs(void)
 	{
 		return;
 	}
-	VM_Call(gvm, GAME_SHUTDOWN, qfalse);
+	VM_Call(gvm, WSGAME_SHUTDOWN, qfalse);
 	VM_Free(gvm);
 	gvm = NULL;
 }
@@ -857,7 +857,7 @@ static void SV_InitGameVM(qboolean restart)
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	VM_Call(gvm, GAME_INIT, svs.q3_time, Com_Milliseconds(), restart);
+	VM_Call(gvm, WSGAME_INIT, svs.q3_time, Com_Milliseconds(), restart);
 
 	// clear all gentity pointers that might still be set from
 	// a previous level
@@ -882,7 +882,7 @@ void SV_RestartGameProgs(void)
 	{
 		return;
 	}
-	VM_Call(gvm, GAME_SHUTDOWN, qtrue);
+	VM_Call(gvm, WSGAME_SHUTDOWN, qtrue);
 
 	// do a restart instead of a free
 	gvm = VM_Restart(gvm);
@@ -943,7 +943,7 @@ qboolean SV_GameCommand(void)
 		return qfalse;
 	}
 
-	return VM_Call(gvm, GAME_CONSOLE_COMMAND);
+	return VM_Call(gvm, WSGAME_CONSOLE_COMMAND);
 }
 
 
@@ -958,7 +958,7 @@ void SV_SendMoveSpeedsToGame(int entnum, char* text)
 	{
 		return;
 	}
-	VM_Call(gvm, GAME_RETRIEVE_MOVESPEEDS_FROM_CLIENT, entnum, text);
+	VM_Call(gvm, WSGAME_RETRIEVE_MOVESPEEDS_FROM_CLIENT, entnum, text);
 }
 
 /*
@@ -989,5 +989,5 @@ SV_GetModelInfo
 */
 qboolean SV_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo)
 {
-	return VM_Call(gvm, GAME_GETMODELINFO, clientNum, modelName, modelInfo);
+	return VM_Call(gvm, WSGAME_GETMODELINFO, clientNum, modelName, modelInfo);
 }

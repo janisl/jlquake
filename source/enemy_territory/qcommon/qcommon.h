@@ -145,33 +145,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 									// PORT_SERVER so a single machine can
 									// run multiple servers
 
-
-/*
-==============================================================
-
-VIRTUAL MACHINE
-
-==============================================================
-*/
-
-typedef enum {
-	TRAP_MEMSET = 100,
-	TRAP_MEMCPY,
-	TRAP_STRNCPY,
-	TRAP_SIN,
-	TRAP_COS,
-	TRAP_ATAN2,
-	TRAP_SQRT,
-	TRAP_MATRIXMULTIPLY,
-	TRAP_ANGLEVECTORS,
-	TRAP_PERPENDICULARVECTOR,
-	TRAP_FLOOR,
-	TRAP_CEIL,
-
-	TRAP_TESTPRINTINT,
-	TRAP_TESTPRINTFLOAT
-} sharedTraps_t;
-
 /*
 ==============================================================
 

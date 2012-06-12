@@ -188,7 +188,7 @@ void SV_BotFrame(int time)
 	{
 		return;
 	}
-	VM_Call(gvm, BOTAI_START_FRAME, time);
+	VM_Call(gvm, WSBOTAI_START_FRAME, time);
 }
 
 /*
@@ -264,7 +264,7 @@ BotImport_AICast_VisibleFromPos
 qboolean BotImport_AICast_VisibleFromPos(vec3_t srcpos, int srcnum,
 	vec3_t destpos, int destnum, qboolean updateVisPos)
 {
-	return VM_Call(gvm, AICAST_VISIBLEFROMPOS, (qintptr)srcpos, srcnum, (qintptr)destpos, destnum, updateVisPos);
+	return VM_Call(gvm, WSAICAST_VISIBLEFROMPOS, (qintptr)srcpos, srcnum, (qintptr)destpos, destnum, updateVisPos);
 }
 
 /*
@@ -274,7 +274,7 @@ BotImport_AICast_CheckAttackAtPos
 */
 qboolean BotImport_AICast_CheckAttackAtPos(int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld)
 {
-	return VM_Call(gvm, AICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
+	return VM_Call(gvm, WSAICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
 }
 // done.
 

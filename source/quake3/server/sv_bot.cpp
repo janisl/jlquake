@@ -178,7 +178,7 @@ void SV_BotFrame(int time)
 	{
 		return;
 	}
-	VM_Call(gvm, BOTAI_START_FRAME, time);
+	VM_Call(gvm, Q3BOTAI_START_FRAME, time);
 }
 
 /*

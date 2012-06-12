@@ -1212,7 +1212,7 @@ void SV_Frame(int msec)
 		svs.q3_time += frameMsec;
 
 		// let everything in the world think and move
-		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+		VM_Call(gvm, ETGAME_RUN_FRAME, svs.q3_time);
 	}
 
 	if (com_speeds->integer)

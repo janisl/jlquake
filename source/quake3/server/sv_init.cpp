@@ -509,7 +509,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)
 	{
-		VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+		VM_Call(gvm, Q3GAME_RUN_FRAME, svs.q3_time);
 		SV_BotFrame(svs.q3_time);
 		svs.q3_time += 100;
 	}
@@ -539,7 +539,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 			}
 
 			// connect the client again
-			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot));		// firstTime = qfalse
+			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, Q3GAME_CLIENT_CONNECT, i, qfalse, isBot));		// firstTime = qfalse
 			if (denied)
 			{
 				// this generally shouldn't happen, because the client
@@ -568,14 +568,14 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					client->q3_deltaMessage = -1;
 					client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
 
-					VM_Call(gvm, GAME_CLIENT_BEGIN, i);
+					VM_Call(gvm, Q3GAME_CLIENT_BEGIN, i);
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call(gvm, GAME_RUN_FRAME, svs.q3_time);
+	VM_Call(gvm, Q3GAME_RUN_FRAME, svs.q3_time);
 	SV_BotFrame(svs.q3_time);
 	svs.q3_time += 100;
 

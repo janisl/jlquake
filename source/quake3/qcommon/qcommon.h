@@ -96,34 +96,6 @@ extern int demo_protocols[];
 									// PORT_SERVER so a single machine can
 									// run multiple servers
 
-/*
-==============================================================
-
-VIRTUAL MACHINE
-
-==============================================================
-*/
-
-struct vm_t;
-
-typedef enum {
-	TRAP_MEMSET = 100,
-	TRAP_MEMCPY,
-	TRAP_STRNCPY,
-	TRAP_SIN,
-	TRAP_COS,
-	TRAP_ATAN2,
-	TRAP_SQRT,
-	TRAP_MATRIXMULTIPLY,
-	TRAP_ANGLEVECTORS,
-	TRAP_PERPENDICULARVECTOR,
-	TRAP_FLOOR,
-	TRAP_CEIL,
-
-	TRAP_TESTPRINTINT,
-	TRAP_TESTPRINTFLOAT
-} sharedTraps_t;
-
 //===========================================================================
 
 void    Cmd_Init(void);
