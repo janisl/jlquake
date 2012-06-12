@@ -29,8 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-vm_t* gvm = NULL;							// game virtual machine // bk001212 init
-
 #ifdef UPDATE_SERVER
 versionMapping_t versionMap[MAX_UPDATE_VERSIONS];
 int numVersions = 0;

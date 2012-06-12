@@ -45,8 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
 
-extern vm_t* gvm;							// game virtual machine
-
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;

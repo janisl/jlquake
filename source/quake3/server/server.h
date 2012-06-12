@@ -35,8 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
 
-extern vm_t* gvm;							// game virtual machine
-
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;

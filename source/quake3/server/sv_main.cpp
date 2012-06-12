@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 
-vm_t* gvm = NULL;							// game virtual machine // bk001212 init
-
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_timeout;				// seconds without any message
 Cvar* sv_zombietime;			// seconds to sink messages after disconnect

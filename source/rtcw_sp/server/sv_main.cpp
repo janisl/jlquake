@@ -29,8 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-vm_t* gvm = NULL;							// game virtual machine // bk001212 init
-
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_timeout;				// seconds without any message
 Cvar* sv_zombietime;			// seconds to sink messages after disconnect

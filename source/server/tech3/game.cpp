@@ -17,6 +17,8 @@
 #include "../server.h"
 #include "local.h"
 
+vm_t* gvm = NULL;							// game virtual machine
+
 idEntity3* SVT3_EntityNum(int number)
 {
 	qassert(number >= 0);
