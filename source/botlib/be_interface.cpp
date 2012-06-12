@@ -34,27 +34,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib.h"
 #include "../server/server.h"
 #include "../server/botlib/local.h"
-
-#include "be_ea.h"
 #include "../server/botlib/ai_weight.h"
 #include "be_ai_move.h"
 #include "be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
-
-/*
-============
-Init_EA_Export
-============
-*/
-static void Init_EA_Export(ea_export_t* ea)
-{
-	//ClientCommand elementary actions
-	ea->EA_Command = EA_Command;
-	ea->EA_Say = EA_Say;
-	ea->EA_SayTeam = EA_SayTeam;
-}
-
 
 /*
 ============
@@ -89,7 +73,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion)
 		return NULL;
 	}
 
-	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 
 	return &be_botlib_export;

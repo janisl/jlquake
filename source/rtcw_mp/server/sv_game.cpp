@@ -486,28 +486,28 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	// done.
 
 	case WMBOTLIB_EA_SAY:
-		botlib_export->ea.EA_Say(args[1], (char*)VMA(2));
+		EA_Say(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_SAY_TEAM:
-		botlib_export->ea.EA_SayTeam(args[1], (char*)VMA(2));
+		EA_SayTeam(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_USE_ITEM:
-		botlib_export->ea.EA_UseItem(args[1], (char*)VMA(2));
+		EA_UseItem(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_DROP_ITEM:
-		botlib_export->ea.EA_DropItem(args[1], (char*)VMA(2));
+		EA_DropItem(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_USE_INV:
-		botlib_export->ea.EA_UseInv(args[1], (char*)VMA(2));
+		EA_UseInv(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_DROP_INV:
-		botlib_export->ea.EA_DropInv(args[1], (char*)VMA(2));
+		EA_DropInv(args[1], (char*)VMA(2));
 		return 0;
 	case WMBOTLIB_EA_GESTURE:
 		EA_Gesture(args[1]);
 		return 0;
 	case WMBOTLIB_EA_COMMAND:
-		botlib_export->ea.EA_Command(args[1], (char*)VMA(2));
+		EA_Command(args[1], (char*)VMA(2));
 		return 0;
 
 	case WMBOTLIB_EA_SELECT_WEAPON:

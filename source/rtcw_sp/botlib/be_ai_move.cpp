@@ -39,8 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/botlib.h"
 #include "../../server/server.h"
 #include "../../server/botlib/local.h"
-
-#include "../game/be_ea.h"
 #include "../game/be_ai_move.h"
 
 // Ridah, disabled this to prevent wierd navigational behaviour (mostly by Zombie, since it's so slow)

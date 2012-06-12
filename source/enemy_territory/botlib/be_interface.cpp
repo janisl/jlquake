@@ -39,31 +39,11 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/botlib.h"
 #include "../../server/server.h"
 #include "../../server/botlib/local.h"
-
-#include "../game/be_ea.h"
 #include "../../server/botlib/ai_weight.h"
 #include "../game/be_ai_move.h"
 #include "../game/be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
-
-/*
-============
-Init_EA_Export
-============
-*/
-static void Init_EA_Export(ea_export_t* ea)
-{
-	//ClientCommand elementary actions
-	ea->EA_Say = EA_Say;
-	ea->EA_SayTeam = EA_SayTeam;
-	ea->EA_UseItem = EA_UseItem;
-	ea->EA_DropItem = EA_DropItem;
-	ea->EA_UseInv = EA_UseInv;
-	ea->EA_DropInv = EA_DropInv;
-	ea->EA_Command = EA_Command;
-}
-
 
 /*
 ============
@@ -98,7 +78,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion)
 		return NULL;
 	}
 
-	Init_EA_Export(&be_botlib_export.ea);
 	Init_AI_Export(&be_botlib_export.ai);
 
 	return &be_botlib_export;

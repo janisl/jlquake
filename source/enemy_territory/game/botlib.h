@@ -44,19 +44,6 @@ struct aas_clientmove_et_t;
 struct bot_moveresult_t;
 struct bot_initmove_et_t;
 
-//bot AI library exported functions
-typedef struct ea_export_s
-{
-	//ClientCommand elementary actions
-	void (* EA_Say)(int client, char* str);
-	void (* EA_SayTeam)(int client, char* str);
-	void (* EA_UseItem)(int client, char* it);
-	void (* EA_DropItem)(int client, char* it);
-	void (* EA_UseInv)(int client, char* inv);
-	void (* EA_DropInv)(int client, char* inv);
-	void (* EA_Command)(int client, const char* command);
-} ea_export_t;
-
 typedef struct ai_export_s
 {
 	//-----------------------------------
@@ -72,8 +59,6 @@ typedef struct ai_export_s
 //bot AI library imported functions
 typedef struct botlib_export_s
 {
-	//Elementary Action functions
-	ea_export_t ea;
 	//AI functions
 	ai_export_t ai;
 } botlib_export_t;

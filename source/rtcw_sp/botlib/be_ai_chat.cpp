@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "../game/be_ea.h"
 #include "../game/be_ai_chat.h"
 #include "../../server/server.h"
 #include "../../server/botlib/local.h"

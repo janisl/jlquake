@@ -84,3 +84,11 @@ void EA_View(int client, vec3_t viewangles);
 void EA_GetInput(int client, float thinktime, bot_input_t* input);
 void EA_ResetInputQ3(int client);
 void EA_ResetInputWolf(int client, bot_input_t* init);
+//ClientCommand elementary actions
+void EA_Say(int client, const char* str);
+void EA_SayTeam(int client, const char* str);
+void EA_UseItem(int client, const char* it);
+void EA_DropItem(int client, const char* it);
+void EA_UseInv(int client, const char* inv);
+void EA_DropInv(int client, const char* inv);
+void EA_Command(int client, const char* command);

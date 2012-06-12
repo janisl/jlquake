@@ -37,15 +37,6 @@ struct aas_altroutegoal_t;
 struct bot_entitystate_t;
 struct bsp_trace_t;
 
-//bot AI library exported functions
-typedef struct ea_export_s
-{
-	//ClientCommand elementary actions
-	void (* EA_Command)(int client, char* command);
-	void (* EA_Say)(int client, char* str);
-	void (* EA_SayTeam)(int client, char* str);
-} ea_export_t;
-
 typedef struct ai_export_s
 {
 	//-----------------------------------
@@ -61,8 +52,6 @@ typedef struct ai_export_s
 //bot AI library imported functions
 typedef struct botlib_export_s
 {
-	//Elementary Action functions
-	ea_export_t ea;
 	//AI functions
 	ai_export_t ai;
 } botlib_export_t;

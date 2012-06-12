@@ -237,3 +237,38 @@ void EA_Shutdown()
 	Mem_Free(botinputs);
 	botinputs = NULL;
 }
+
+void EA_Say(int client, const char* str)
+{
+	BotClientCommand(client, va("say %s", str));
+}
+
+void EA_SayTeam(int client, const char* str)
+{
+	BotClientCommand(client, va("say_team %s", str));
+}
+
+void EA_UseItem(int client, const char* it)
+{
+	BotClientCommand(client, va("use %s", it));
+}
+
+void EA_DropItem(int client, const char* it)
+{
+	BotClientCommand(client, va("drop %s", it));
+}
+
+void EA_UseInv(int client, const char* inv)
+{
+	BotClientCommand(client, va("invuse %s", inv));
+}
+
+void EA_DropInv(int client, const char* inv)
+{
+	BotClientCommand(client, va("invdrop %s", inv));
+}
+
+void EA_Command(int client, const char* command)
+{
+	BotClientCommand(client, command);
+}

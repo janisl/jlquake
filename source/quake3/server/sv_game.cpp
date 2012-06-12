@@ -471,13 +471,13 @@ qintptr SV_GameSystemCalls(qintptr* args)
 			(float*)VMA(6), (float*)VMA(7), args[8], args[9], VMF(10), args[11], args[12], args[13]);
 
 	case Q3BOTLIB_EA_SAY:
-		botlib_export->ea.EA_Say(args[1], (char*)VMA(2));
+		EA_Say(args[1], (char*)VMA(2));
 		return 0;
 	case Q3BOTLIB_EA_SAY_TEAM:
-		botlib_export->ea.EA_SayTeam(args[1], (char*)VMA(2));
+		EA_SayTeam(args[1], (char*)VMA(2));
 		return 0;
 	case Q3BOTLIB_EA_COMMAND:
-		botlib_export->ea.EA_Command(args[1], (char*)VMA(2));
+		EA_Command(args[1], (char*)VMA(2));
 		return 0;
 
 	case Q3BOTLIB_EA_ACTION:
