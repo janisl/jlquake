@@ -14,62 +14,6 @@
 //**
 //**************************************************************************
 
-#define MAX_AVOIDGOALS          256
-#define MAX_GOALSTACK           8
-
-#define MAX_MESSAGE_SIZE        256
-
-//the actuall chat messages
-struct bot_chatmessage_t
-{
-	char* chatmessage;					//chat message string
-	float time;							//last time used
-	bot_chatmessage_t* next;		//next chat message in a list
-};
-
-//bot chat type with chat lines
-struct bot_chattype_t
-{
-	char name[MAX_CHATTYPE_NAME];
-	int numchatmessages;
-	bot_chatmessage_t* firstchatmessage;
-	bot_chattype_t* next;
-};
-
-//bot chat lines
-struct bot_chat_t
-{
-	bot_chattype_t* types;
-};
-
-struct bot_consolemessage_t
-{
-	int handle;
-	float time;							//message time
-	int type;							//message type
-	char message[MAX_MESSAGE_SIZE];		//message
-	bot_consolemessage_t* prev, * next;	//prev and next in list
-};
-
-//chat state of a bot
-struct bot_chatstate_t
-{
-	int gender;											//0=it, 1=female, 2=male
-	int client;											//client number
-	char name[32];										//name of the bot
-	char chatmessage[MAX_MESSAGE_SIZE];
-	int handle;
-	//the console messages visible to the bot
-	bot_consolemessage_t* firstmessage;			//first message is the first typed message
-	bot_consolemessage_t* lastmessage;			//last message is the last typed message, bottom of console
-	//number of console messages stored in the state
-	int numconsolemessages;
-	//the bot chat lines
-	bot_chat_t* chat;
-};
-
-bot_chatstate_t* BotChatStateFromHandle(int handle);
-void BotRemoveTildes(char* message);
 //setup the chat AI
 int BotSetupChatAI();
 //shutdown the chat AI

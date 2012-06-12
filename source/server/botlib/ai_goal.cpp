@@ -35,6 +35,9 @@
 #define IFL_NOTBOT              8		//bot should never go for this
 #define IFL_ROAM                16		//bot roam goal
 
+#define MAX_AVOIDGOALS          256
+#define MAX_GOALSTACK           8
+
 struct levelitem_t
 {
 	int number;							//number of the level item

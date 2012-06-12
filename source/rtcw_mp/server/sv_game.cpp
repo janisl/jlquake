@@ -613,7 +613,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case WMBOTLIB_AI_CHAT_LENGTH:
 		return BotChatLength(args[1]);
 	case WMBOTLIB_AI_ENTER_CHAT:
-		botlib_export->ai.BotEnterChat(args[1], args[2], args[3]);
+		BotEnterChatWolf(args[1], args[2], args[3]);
 		return 0;
 	case WMBOTLIB_AI_GET_CHAT_MESSAGE:
 		BotGetChatMessage(args[1], (char*)VMA(2), args[3]);

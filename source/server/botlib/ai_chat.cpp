@@ -41,6 +41,57 @@
 //time to ignore a chat message after using it
 #define CHATMESSAGE_RECENTTIME  20
 
+#define MAX_MESSAGE_SIZE        256
+
+//the actuall chat messages
+struct bot_chatmessage_t
+{
+	char* chatmessage;					//chat message string
+	float time;							//last time used
+	bot_chatmessage_t* next;		//next chat message in a list
+};
+
+//bot chat type with chat lines
+struct bot_chattype_t
+{
+	char name[MAX_CHATTYPE_NAME];
+	int numchatmessages;
+	bot_chatmessage_t* firstchatmessage;
+	bot_chattype_t* next;
+};
+
+//bot chat lines
+struct bot_chat_t
+{
+	bot_chattype_t* types;
+};
+
+struct bot_consolemessage_t
+{
+	int handle;
+	float time;							//message time
+	int type;							//message type
+	char message[MAX_MESSAGE_SIZE];		//message
+	bot_consolemessage_t* prev, * next;	//prev and next in list
+};
+
+//chat state of a bot
+struct bot_chatstate_t
+{
+	int gender;											//0=it, 1=female, 2=male
+	int client;											//client number
+	char name[32];										//name of the bot
+	char chatmessage[MAX_MESSAGE_SIZE];
+	int handle;
+	//the console messages visible to the bot
+	bot_consolemessage_t* firstmessage;			//first message is the first typed message
+	bot_consolemessage_t* lastmessage;			//last message is the last typed message, bottom of console
+	//number of console messages stored in the state
+	int numconsolemessages;
+	//the bot chat lines
+	bot_chat_t* chat;
+};
+
 //random string
 struct bot_randomstring_t
 {
@@ -161,7 +212,7 @@ static bot_randomlist_t* randomstrings = NULL;
 static bot_replychat_t* replychats = NULL;
 static bot_ichatdata_t* ichatdata[MAX_BOTLIB_CLIENTS_ARRAY];
 
-bot_chatstate_t* BotChatStateFromHandle(int handle)
+static bot_chatstate_t* BotChatStateFromHandle(int handle)
 {
 	if (handle <= 0 || handle > MAX_BOTLIB_CLIENTS)
 	{
@@ -405,7 +456,7 @@ void UnifyWhiteSpaces(char* string)
 	}
 }
 
-void BotRemoveTildes(char* message)
+static void BotRemoveTildes(char* message)
 {
 	//remove all tildes from the chat message
 	for (int i = 0; message[i]; i++)
@@ -2815,4 +2866,70 @@ void BotShutdownChatAI()
 		BotFreeReplyChat(replychats);
 	}
 	replychats = NULL;
+}
+
+void BotEnterChatQ3(int chatstate, int clientto, int sendto)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+
+	if (String::Length(cs->chatmessage))
+	{
+		BotRemoveTildes(cs->chatmessage);
+		if (LibVarGetValue("bot_testichat"))
+		{
+			BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
+		}
+		else
+		{
+			switch (sendto)
+			{
+			case CHAT_TEAM:
+				EA_Command(cs->client, va("say_team %s", cs->chatmessage));
+				break;
+			case CHAT_TELL:
+				EA_Command(cs->client, va("tell %d %s", clientto, cs->chatmessage));
+				break;
+			default:	//CHAT_ALL
+				EA_Command(cs->client, va("say %s", cs->chatmessage));
+				break;
+			}
+		}
+		//clear the chat message from the state
+		String::Cpy(cs->chatmessage, "");
+	}
+}
+
+void BotEnterChatWolf(int chatstate, int client, int sendto)
+{
+	bot_chatstate_t* cs = BotChatStateFromHandle(chatstate);
+	if (!cs)
+	{
+		return;
+	}
+
+	if (String::Length(cs->chatmessage))
+	{
+		BotRemoveTildes(cs->chatmessage);
+		if (LibVarGetValue("bot_testichat"))
+		{
+			BotImport_Print(PRT_MESSAGE, "%s\n", cs->chatmessage);
+		}
+		else
+		{
+			if (sendto == CHAT_TEAM)
+			{
+				EA_SayTeam(client, cs->chatmessage);
+			}
+			else
+			{
+				EA_Say(client, cs->chatmessage);
+			}
+		}
+		//clear the chat message from the state
+		String::Cpy(cs->chatmessage, "");
+	}
 }

@@ -1,5 +1,4 @@
 add_library(botlib-wolfmp STATIC
-	be_ai_chat.cpp
 	be_ai_move.cpp
 	be_interface.cpp
 )

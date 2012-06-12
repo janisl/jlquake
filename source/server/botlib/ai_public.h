@@ -149,6 +149,9 @@ void BotSetChatName(int chatstate, const char* name, int client);
 int BotAllocChatState();
 //frees the chatstate
 void BotFreeChatState(int handle);
+//enters the selected chat message
+void BotEnterChatQ3(int chatstate, int clientto, int sendto);
+void BotEnterChatWolf(int chatstate, int client, int sendto);
 
 //
 //	Genetic

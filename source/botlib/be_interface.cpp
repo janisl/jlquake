@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../server/botlib/local.h"
 #include "../server/botlib/ai_weight.h"
 #include "be_ai_move.h"
-#include "be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
 
@@ -47,10 +46,6 @@ Init_AI_Export
 */
 static void Init_AI_Export(ai_export_t* ai)
 {
-	//-----------------------------------
-	// be_ai_chat.h
-	//-----------------------------------
-	ai->BotEnterChat = BotEnterChat;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------

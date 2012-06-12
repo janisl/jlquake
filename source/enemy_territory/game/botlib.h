@@ -47,10 +47,6 @@ struct bot_initmove_et_t;
 typedef struct ai_export_s
 {
 	//-----------------------------------
-	// be_ai_chat.h
-	//-----------------------------------
-	void (* BotEnterChat)(int chatstate, int client, int sendto);
-	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
 	void (* BotMoveToGoal)(struct bot_moveresult_t* result, int movestate, struct bot_goal_et_t* goal, int travelflags);

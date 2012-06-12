@@ -41,7 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/botlib/local.h"
 #include "../../server/botlib/ai_weight.h"
 #include "../game/be_ai_move.h"
-#include "../game/be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
 
@@ -52,10 +51,6 @@ Init_AI_Export
 */
 static void Init_AI_Export(ai_export_t* ai)
 {
-	//-----------------------------------
-	// be_ai_chat.h
-	//-----------------------------------
-	ai->BotEnterChat = BotEnterChat;
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
