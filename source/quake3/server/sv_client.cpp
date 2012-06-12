@@ -1389,7 +1389,7 @@ SV_ExecuteClientCommand
 Also called by bot code
 ==================
 */
-void SV_ExecuteClientCommand(client_t* cl, const char* s, qboolean clientOK)
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
 	ucmd_t* u;
 	qboolean bProcessed = qfalse;
@@ -1472,7 +1472,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	// don't allow another command for one second
 	cl->q3_nextReliableTime = svs.q3_time + 1000;
 
-	SV_ExecuteClientCommand(cl, s, clientOk);
+	SV_ExecuteClientCommand(cl, s, clientOk, false);
 
 	cl->q3_lastClientCommand = seq;
 	String::Sprintf(cl->q3_lastClientCommandString, sizeof(cl->q3_lastClientCommandString), "%s", s);

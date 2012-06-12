@@ -497,10 +497,10 @@ ucmd_t ucmds[] =
 
 /*
 ==================
-SV_ExecuteUserCommand
+SV_ExecuteClientCommand
 ==================
 */
-void SV_ExecuteUserCommand(char* s)
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
 	ucmd_t* u;
 
@@ -692,7 +692,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			// malicious users may try using too many string commands
 			if (++stringCmdCount < MAX_STRINGCMDS)
 			{
-				SV_ExecuteUserCommand(s);
+				SV_ExecuteClientCommand(sv_client, s, true, false);
 			}
 
 			if (cl->state == CS_ZOMBIE)

@@ -1694,7 +1694,7 @@ SV_ExecuteClientCommand
 Also called by bot code
 ==================
 */
-void SV_ExecuteClientCommand(client_t* cl, const char* s, qboolean clientOK, qboolean premaprestart)
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
 	ucmd_t* u;
 	qboolean bProcessed = qfalse;
@@ -1706,7 +1706,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, qboolean clientOK, qbo
 	{
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
-			if (premaprestart && !u->allowedpostmapchange)
+			if (preMapRestart && !u->allowedpostmapchange)
 			{
 				continue;
 			}

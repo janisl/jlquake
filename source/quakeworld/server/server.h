@@ -135,7 +135,6 @@ void SV_SaveSpawnparms(void);
 
 void SV_Physics_Client(qhedict_t* ent);
 
-void SV_ExecuteUserCommand(char* s);
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);

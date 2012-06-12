@@ -31,4 +31,9 @@
 #include "global.h"
 #include "worldsector.h"
 
+//
+// Must be provided
+//
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
+
 #endif

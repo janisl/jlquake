@@ -70,7 +70,6 @@ int SV_ImageIndex(char* name);
 
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
-void SV_ExecuteUserCommand(char* s);
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);

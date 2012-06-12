@@ -529,6 +529,107 @@ void SV_ReadClientMove(q1usercmd_t* move)
 	}
 }
 
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
+{
+	int ret;
+	if (cl->qh_privileged)
+	{
+		ret = 2;
+	}
+	else
+	{
+		ret = 0;
+	}
+	if (String::NICmp(s, "status", 6) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "god", 3) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "notarget", 8) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "fly", 3) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "name", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "noclip", 6) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "say", 3) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "say_team", 8) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "tell", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "color", 5) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "kill", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "pause", 5) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "spawn", 5) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "begin", 5) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "prespawn", 8) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "kick", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "ping", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "give", 4) == 0)
+	{
+		ret = 1;
+	}
+	else if (String::NICmp(s, "ban", 3) == 0)
+	{
+		ret = 1;
+	}
+	if (ret == 2)
+	{
+		Cbuf_InsertText(s);
+	}
+	else if (ret == 1)
+	{
+		Cmd_ExecuteString(s, src_client);
+	}
+	else
+	{
+		Con_DPrintf("%s tried to %s\n", cl->name, s);
+	}
+}
+
 /*
 ===================
 SV_ReadClientMessage
@@ -588,102 +689,7 @@ nextmsg:
 
 			case q1clc_stringcmd:
 				s = net_message.ReadString2();
-				if (host_client->qh_privileged)
-				{
-					ret = 2;
-				}
-				else
-				{
-					ret = 0;
-				}
-				if (String::NICmp(s, "status", 6) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "god", 3) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "notarget", 8) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "fly", 3) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "name", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "noclip", 6) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "say", 3) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "say_team", 8) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "tell", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "color", 5) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "kill", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "pause", 5) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "spawn", 5) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "begin", 5) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "prespawn", 8) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "kick", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "ping", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "give", 4) == 0)
-				{
-					ret = 1;
-				}
-				else if (String::NICmp(s, "ban", 3) == 0)
-				{
-					ret = 1;
-				}
-				if (ret == 2)
-				{
-					Cbuf_InsertText(s);
-				}
-				else if (ret == 1)
-				{
-					Cmd_ExecuteString(s, src_client);
-				}
-				else
-				{
-					Con_DPrintf("%s tried to %s\n", host_client->name, s);
-				}
+				SV_ExecuteClientCommand(host_client, s, true, false);
 				break;
 
 			case q1clc_disconnect:
