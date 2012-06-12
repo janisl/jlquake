@@ -38,6 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
 #include "be_interface.h"
+#include "../../server/tech3/local.h"
 
 //===========================================================================
 //
@@ -107,7 +108,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum,
 	}
 	VectorSubtract(enemyorigin, origin, enemyVec);
 	enemytraveldist = VectorNormalize(enemyVec);
-	startVisible = botimport.BotVisibleFromPos(enemyorigin, enemynum, origin, srcnum, qfalse);
+	startVisible = SVT3_BotVisibleFromPos(enemyorigin, enemynum, origin, srcnum, qfalse);
 	//
 	badtravelflags = ~travelflags;
 	//
@@ -275,7 +276,7 @@ int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum,
 					if (!AAS_AreaVisible(enemyareanum, nextareanum))		// now last of all, check that this area is a safe hiding spot
 					{
 						if ((aasworld->visCache[nextareanum] == 2) ||
-							(!aasworld->visCache[nextareanum] && !botimport.BotVisibleFromPos(enemyorigin, enemynum, aasworld->areawaypoints[nextareanum], srcnum, qfalse)))
+							(!aasworld->visCache[nextareanum] && !SVT3_BotVisibleFromPos(enemyorigin, enemynum, aasworld->areawaypoints[nextareanum], srcnum, qfalse)))
 						{
 							aasworld->visCache[nextareanum] = 2;
 							besttraveltime = t;
@@ -497,7 +498,7 @@ int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float 
 					if ((aasworld->visCache[nextareanum] == 2) ||
 						(!aasworld->visCache[nextareanum] &&
 						 (count += 10) &&				// we are about to use lots of CPU time
-						 botimport.BotCheckAttackAtPos(srcnum, enemynum, aasworld->areawaypoints[nextareanum], qfalse, qfalse)))
+						 SVT3_BotCheckAttackAtPos(srcnum, enemynum, aasworld->areawaypoints[nextareanum], qfalse, qfalse)))
 					{
 						aasworld->visCache[nextareanum] = 2;
 						besttraveltime = srctraveltime;

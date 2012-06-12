@@ -189,26 +189,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 
 /*
 ==================
-BotImport_BotVisibleFromPos
-==================
-*/
-qboolean BotImport_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, qboolean dummy)
-{
-	return VM_Call(gvm, ETBOT_VISIBLEFROMPOS, srcorigin, srcnum, destorigin, destent, dummy);
-}
-
-/*
-==================
-BotImport_BotCheckAttackAtPos
-==================
-*/
-qboolean BotImport_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld)
-{
-	return VM_Call(gvm, ETBOT_CHECKATTACKATPOS, entnum, enemy, pos, ducking, allowHitWorld);
-}
-
-/*
-==================
 SV_BotClientCommand
 ==================
 */
@@ -349,14 +329,6 @@ void SV_BotInitBotLib(void)
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
 
 	botlib_import.BotClientCommand = BotClientCommand;
-
-	//bot routines
-	botlib_import.BotVisibleFromPos =   BotImport_BotVisibleFromPos;
-	botlib_import.BotCheckAttackAtPos = BotImport_BotCheckAttackAtPos;
-
-	// singleplayer check
-	// Arnout: no need for this
-	//botlib_import.BotGameIsSinglePlayer = SV_GameIsSinglePlayer;
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);
 }

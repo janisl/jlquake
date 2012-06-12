@@ -17,6 +17,7 @@
 #include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
+#include "g_public.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -75,4 +76,14 @@ void SVWS_LinkEntity(wssharedEntity_t* gEnt)
 clipHandle_t SVWS_ClipHandleForEntity(const wssharedEntity_t* gent)
 {
 	return SVT3_ClipHandleForEntity(SVWS_EntityForGentity(gent));
+}
+
+bool SVWS_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos)
+{
+	return VM_Call(gvm, WSAICAST_VISIBLEFROMPOS, (qintptr)srcpos, srcnum, (qintptr)destpos, destnum, updateVisPos);
+}
+
+bool SVWS_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld)
+{
+	return VM_Call(gvm, WSAICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
 }

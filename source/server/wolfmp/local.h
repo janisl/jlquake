@@ -29,6 +29,9 @@ q3svEntity_t* SVWM_SvEntityForGentity(const wmsharedEntity_t* gEnt);
 wmsharedEntity_t* SVWM_GEntityForSvEntity(const q3svEntity_t* svEnt);
 idEntity3* SVWM_EntityForGentity(const wmsharedEntity_t* gEnt);
 
+bool SVWM_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
+bool SVWM_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
+
 //
 //	World
 //

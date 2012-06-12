@@ -264,29 +264,6 @@ void SV_BotInitCvars(void)
 	Cvar_Get("bot_miniplayers", "0", 0);		//minimum players in a team or the game
 }
 
-// Ridah, Cast AI
-/*
-===============
-BotImport_AICast_VisibleFromPos
-===============
-*/
-qboolean BotImport_AICast_VisibleFromPos(vec3_t srcpos, int srcnum,
-	vec3_t destpos, int destnum, qboolean updateVisPos)
-{
-	return VM_Call(gvm, WMAICAST_VISIBLEFROMPOS, (qintptr)srcpos, srcnum, (qintptr)destpos, destnum, updateVisPos);
-}
-
-/*
-===============
-BotImport_AICast_CheckAttackAtPos
-===============
-*/
-qboolean BotImport_AICast_CheckAttackAtPos(int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld)
-{
-	return VM_Call(gvm, WMAICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
-}
-// done.
-
 /*
 ==================
 SV_BotInitBotLib
@@ -304,11 +281,6 @@ void SV_BotInitBotLib(void)
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
 
 	botlib_import.BotClientCommand = BotClientCommand;
-
-	// Ridah, Cast AI
-	botlib_import.BotVisibleFromPos = BotImport_AICast_VisibleFromPos;
-	botlib_import.BotCheckAttackAtPos = BotImport_AICast_CheckAttackAtPos;
-	// done.
 
 	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);
 }

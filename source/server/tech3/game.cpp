@@ -16,6 +16,10 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../quake3/local.h"
+#include "../wolfsp//local.h"
+#include "../wolfmp//local.h"
+#include "../et/local.h"
 
 vm_t* gvm = NULL;							// game virtual machine
 
@@ -70,4 +74,38 @@ bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 		return false;
 	}
 	return true;
+}
+
+bool SVT3_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		return SVWS_BotVisibleFromPos(srcpos, srcnum, destpos, destnum, updateVisPos);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		return SVWM_BotVisibleFromPos(srcpos, srcnum, destpos, destnum, updateVisPos);
+	}
+	if (GGameType & GAME_ET)
+	{
+		return SVET_BotVisibleFromPos(srcpos, srcnum, destpos, destnum, updateVisPos);
+	}
+	return false;
+}
+
+bool SVT3_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		return SVWS_BotCheckAttackAtPos(entnum, enemy, pos, ducking, allowHitWorld);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		return SVWM_BotCheckAttackAtPos(entnum, enemy, pos, ducking, allowHitWorld);
+	}
+	if (GGameType & GAME_ET)
+	{
+		return SVET_BotCheckAttackAtPos(entnum, enemy, pos, ducking, allowHitWorld);
+	}
+	return false;
 }

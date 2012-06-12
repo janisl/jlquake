@@ -27,6 +27,9 @@ idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt);
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2);
 bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
 
+bool SVT3_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
+bool SVT3_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
+
 //
 //	World
 //

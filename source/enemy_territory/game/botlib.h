@@ -48,10 +48,6 @@ struct bot_initmove_et_t;
 typedef struct botlib_import_s
 {
 	void (* BotClientCommand)(int client, const char* command);
-	//
-	// Ridah, Cast AI stuff
-	qboolean (* BotVisibleFromPos)(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, qboolean updateVisPos);
-	qboolean (* BotCheckAttackAtPos)(int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld);
 } botlib_import_t;
 
 typedef struct aas_export_s
