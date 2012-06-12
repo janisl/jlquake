@@ -44,11 +44,6 @@ struct bot_entitystate_t;
 struct bsp_trace_t;
 
 //bot AI library exported functions
-typedef struct botlib_import_s
-{
-	void (* BotClientCommand)(int client, const char* command);
-} botlib_import_t;
-
 typedef struct ea_export_s
 {
 	//ClientCommand elementary actions
@@ -83,7 +78,7 @@ typedef struct botlib_export_s
 } botlib_export_t;
 
 //linking of bot library
-botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import);
+botlib_export_t* GetBotLibAPI(int apiVersion);
 
 /* Library variables:
 

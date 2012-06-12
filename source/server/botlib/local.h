@@ -29,6 +29,8 @@
 							MAX_CLIENTS_Q3)
 #define MAX_BOTLIB_CLIENTS_ARRAY	MAX_CLIENTS_WS
 
+//#define DEBUG			//debug code
+
 //
 //	Imports
 //
@@ -55,6 +57,7 @@ void BotImport_Print(int type, const char* fmt, ...) id_attribute((format(printf
 int BotImport_DebugLineCreate();
 void BotImport_DebugLineDelete(int line);
 void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
+void BotClientCommand(int client, const char* command);
 
 //
 //	Interface

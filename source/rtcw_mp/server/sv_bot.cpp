@@ -162,16 +162,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 
 /*
 ==================
-SV_BotClientCommand
-==================
-*/
-void BotClientCommand(int client, const char* command)
-{
-	SV_ExecuteClientCommand(&svs.clients[client], command, qtrue, false);
-}
-
-/*
-==================
 SV_BotFrame
 ==================
 */
@@ -271,8 +261,6 @@ SV_BotInitBotLib
 */
 void SV_BotInitBotLib(void)
 {
-	botlib_import_t botlib_import;
-
 	if (debugpolygons)
 	{
 		Z_Free(debugpolygons);
@@ -280,9 +268,7 @@ void SV_BotInitBotLib(void)
 	bot_maxdebugpolys = 128;
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
 
-	botlib_import.BotClientCommand = BotClientCommand;
-
-	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);
+	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION);
 }
 
 

@@ -37,7 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "../game/botlib.h"
-#include "be_interface.h"
+#include "../../server/server.h"
+#include "../../server/botlib/local.h"
 
 #include "../game/be_ea.h"
 #include "../../server/botlib/ai_weight.h"
@@ -45,7 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
-botlib_import_t botimport;
 
 /*
 ============
@@ -88,10 +88,8 @@ static void Init_AI_Export(ai_export_t* ai)
 GetBotLibAPI
 ============
 */
-botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
+botlib_export_t* GetBotLibAPI(int apiVersion)
 {
-	botimport = *import;
-
 	memset(&be_botlib_export, 0, sizeof(be_botlib_export));
 
 	if (apiVersion != BOTLIB_API_VERSION)

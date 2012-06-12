@@ -342,3 +342,8 @@ int BotLibUpdateEntity(int ent, bot_entitystate_t* state)
 
 	return AAS_UpdateEntity(ent, state);
 }
+
+void BotClientCommand(int client, const char* command)
+{
+	SV_ExecuteClientCommand(&svs.clients[client], command, true, false);
+}

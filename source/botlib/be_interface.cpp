@@ -32,7 +32,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../common/qcommon.h"
 #include <time.h>
 #include "botlib.h"
-#include "be_interface.h"
+#include "../server/server.h"
+#include "../server/botlib/local.h"
 
 #include "be_ea.h"
 #include "../server/botlib/ai_weight.h"
@@ -40,7 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_chat.h"
 
 botlib_export_t be_botlib_export;
-botlib_import_t botimport;
 
 /*
 ============
@@ -79,11 +79,8 @@ static void Init_AI_Export(ai_export_t* ai)
 GetBotLibAPI
 ============
 */
-botlib_export_t* GetBotLibAPI(int apiVersion, botlib_import_t* import)
+botlib_export_t* GetBotLibAPI(int apiVersion)
 {
-	qassert(import);	// bk001129 - this wasn't set for baseq3/
-	botimport = *import;
-
 	Com_Memset(&be_botlib_export, 0, sizeof(be_botlib_export));
 
 	if (apiVersion != BOTLIB_API_VERSION)

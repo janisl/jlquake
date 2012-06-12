@@ -31,7 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../common/qcommon.h"
 #include "botlib.h"
-#include "be_interface.h"
+#include "../server/server.h"
+#include "../server/botlib/local.h"
 
 //===========================================================================
 //
@@ -41,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //===========================================================================
 void EA_Say(int client, char* str)
 {
-	botimport.BotClientCommand(client, va("say %s", str));
+	BotClientCommand(client, va("say %s", str));
 }	//end of the function EA_Say
 //===========================================================================
 //
@@ -51,7 +52,7 @@ void EA_Say(int client, char* str)
 //===========================================================================
 void EA_SayTeam(int client, char* str)
 {
-	botimport.BotClientCommand(client, va("say_team %s", str));
+	BotClientCommand(client, va("say_team %s", str));
 }	//end of the function EA_SayTeam
 //===========================================================================
 //
@@ -61,5 +62,5 @@ void EA_SayTeam(int client, char* str)
 //===========================================================================
 void EA_Command(int client, char* command)
 {
-	botimport.BotClientCommand(client, command);
+	BotClientCommand(client, command);
 }	//end of the function EA_Command
