@@ -314,14 +314,6 @@ float   Q_random(int* seed);
 
 //=============================================
 
-float Com_Clamp(float min, float max, float value);
-
-qboolean COM_BitCheck(const int array[], int bitNum);
-void COM_BitSet(int array[], int bitNum);
-void COM_BitClear(int array[], int bitNum);
-
-//=============================================
-
 #ifdef _WIN32
 #define Q_putenv _putenv
 #else
@@ -330,8 +322,6 @@ void COM_BitClear(int array[], int bitNum);
 
 // removes color sequences from string
 char* Q_CleanStr(char* string);
-// removes whitespaces and other bad directory characters
-char* Q_CleanDirName(char* dirname);
 
 //=============================================
 
@@ -348,10 +338,6 @@ typedef struct
 	byte b6;
 	byte b7;
 } qint64;
-
-//=============================================
-
-float* tv(float x, float y, float z);
 
 //=============================================
 

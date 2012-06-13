@@ -234,10 +234,6 @@ float   Q_random(int* seed);
 
 //=============================================
 
-float Com_Clamp(float min, float max, float value);
-
-//=============================================
-
 // removes color sequences from string
 char* Q_CleanStr(char* string);
 
