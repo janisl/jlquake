@@ -2068,6 +2068,31 @@ int String::LengthWithoutColours(const char* string)
 	return len;
 }
 
+char* String::CleanStr(char* string)
+{
+	char* d;
+	char* s;
+	int c;
+
+	s = string;
+	d = string;
+	while ((c = *s) != 0)
+	{
+		if (Q_IsColorString(s))
+		{
+			s++;
+		}
+		else if (c >= 0x20 && c <= 0x7E)
+		{
+			*d++ = c;
+		}
+		s++;
+	}
+	*d = '\0';
+
+	return string;
+}
+
 //	Does a varargs printf into a temp buffer, so I don't need to have
 // varargs versions of all text functions.
 //	FIXME: make this buffer size safe someday

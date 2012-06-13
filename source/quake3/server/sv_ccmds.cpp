@@ -73,7 +73,7 @@ static client_t* SV_GetPlayerByName(void)
 		}
 
 		String::NCpyZ(cleanName, cl->name, sizeof(cleanName));
-		Q_CleanStr(cleanName);
+		String::CleanStr(cleanName);
 		if (!String::ICmp(cleanName, s))
 		{
 			return cl;

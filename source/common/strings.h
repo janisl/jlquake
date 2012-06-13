@@ -376,6 +376,7 @@ public:
 	static bool FilterPath(const char* Filter, const char* Name, bool CaseSensitive);
 
 	static int LengthWithoutColours(const char* string);
+	static char* CleanStr(char* string);
 };
 
 char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));

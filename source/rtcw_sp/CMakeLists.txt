@@ -38,7 +38,6 @@ set(WOLFSP_FILES
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
 
-	game/q_shared.cpp
 	game/q_math.cpp
 )
 

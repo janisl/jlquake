@@ -479,9 +479,9 @@ static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int 
 	case SORT_HOST:
 		//%	res = String::ICmp( server1->hostName, server2->hostName );
 		String::NCpyZ(name1, server1->hostName, sizeof(name1));
-		Q_CleanStr(name1);
+		String::CleanStr(name1);
 		String::NCpyZ(name2, server2->hostName, sizeof(name2));
-		Q_CleanStr(name2);
+		String::CleanStr(name2);
 		res = String::ICmp(name1, name2);
 		break;
 

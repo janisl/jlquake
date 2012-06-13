@@ -320,11 +320,6 @@ float   Q_random(int* seed);
 #define Q_putenv putenv
 #endif
 
-// removes color sequences from string
-char* Q_CleanStr(char* string);
-
-//=============================================
-
 // 64-bit integers for global rankings interface
 // implemented as a struct for qvm compatibility
 typedef struct
