@@ -46,7 +46,6 @@ set (ET_FILES
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	game/q_math.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
@@ -89,7 +88,6 @@ set (ETDED_FILES
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	game/q_math.cpp
 
 	null/null_client.cpp
 	null/null_snddma.cpp

@@ -1334,3 +1334,14 @@ float DistanceFromLineSquared(const vec3_t p, const vec3_t lp1, const vec3_t lp2
 	VectorNormalize(dir);
 	return DistanceFromLineSquaredDir(p, lp1, lp2, dir);
 }
+
+static int Q_rand(int* seed)
+{
+	*seed = (69069 * *seed + 1);
+	return *seed;
+}
+
+float Q_random(int* seed)
+{
+	return (Q_rand(seed) & 0xffff) / (float)0x10000;
+}

@@ -244,9 +244,6 @@ MATHLIB
 #define GAME_INIT_FRAMES    6
 #define FRAMETIME           100					// msec
 
-int     Q_rand(int* seed);
-float   Q_random(int* seed);
-
 //=============================================
 
 #ifdef _WIN32

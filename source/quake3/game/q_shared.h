@@ -180,9 +180,6 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-int     Q_rand(int* seed);
-float   Q_random(int* seed);
-
 //=============================================
 
 // this is only here so the functions in q_shared.c and bg_*.c can link

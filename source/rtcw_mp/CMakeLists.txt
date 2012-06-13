@@ -44,8 +44,6 @@ set(WOLFMP_FILES
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
 	server/sv_snapshot.cpp
-
-	game/q_math.cpp
 )
 
 if(${SIZEOF_VOID_PTR} MATCHES "^4$")
@@ -83,7 +81,6 @@ set(WOLFMPDED_FILES
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp
-	game/q_math.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp

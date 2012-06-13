@@ -289,3 +289,4 @@ void ProjectPointOntoVectorFromPoints(const vec3_t point, const vec3_t vStart, c
 void ProjectPointOntoVectorBounded(const vec3_t point, const vec3_t vStart, const vec3_t vEnd, vec3_t vProj);
 float DistanceFromLineSquaredDir(const vec3_t p, const vec3_t lp1, const vec3_t lp2, const vec3_t dir);
 float DistanceFromLineSquared(const vec3_t p, const vec3_t lp1, const vec3_t lp2);
+float Q_random(int* seed);

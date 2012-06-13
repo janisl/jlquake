@@ -249,9 +249,6 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-int     Q_rand(int* seed);
-float   Q_random(int* seed);
-
 //=============================================
 
 #ifdef _WIN32
