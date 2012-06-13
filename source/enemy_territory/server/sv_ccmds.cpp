@@ -1293,11 +1293,9 @@ void SV_AddOperatorCommands(void)
 	Cmd_AddCommand("sectorlist", SVT3_SectorList_f);
 	Cmd_AddCommand("map", SV_Map_f);
 	Cmd_AddCommand("gameCompleteStatus", SV_GameCompleteStatus_f);			// NERVE - SMF
-#ifndef PRE_RELEASE_DEMO_NODEVMAP
 	Cmd_AddCommand("devmap", SV_Map_f);
 	Cmd_AddCommand("spmap", SV_Map_f);
 	Cmd_AddCommand("spdevmap", SV_Map_f);
-#endif
 	Cmd_AddCommand("loadgame", SV_LoadGame_f);
 	Cmd_AddCommand("killserver", SV_KillServer_f);
 	if (com_dedicated->integer)

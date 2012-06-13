@@ -135,11 +135,6 @@ extern vec3_t playerlegsProneMaxs;
 #define AAGUN_RATE_OF_FIRE  100
 #define MG42_YAWSPEED       300.f		// degrees per second
 
-#define SAY_ALL     0
-#define SAY_TEAM    1
-#define SAY_BUDDY   2
-#define SAY_TEAMNL  3
-
 // RF, client damage identifiers
 
 // Arnout: different entity states
@@ -283,74 +278,7 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 
 #define MAX_CHARACTERS  16
 
-//
-// config strings are a general means of communicating variable length strings
-// from the server to all connected clients.
-//
-
-// Q3CS_SERVERINFO and Q3CS_SYSTEMINFO are defined in q_shared.h
-#define CS_MUSIC                        2
-#define CS_MESSAGE                      3		// from the map worldspawn's message field
-#define CS_MOTD                         4		// g_motd string for server message of the day
-#define CS_VOTE_TIME                    6
-#define CS_VOTE_STRING                  7
-#define CS_VOTE_YES                     8
-#define CS_VOTE_NO                      9
-#define CS_GAME_VERSION                 10
-
-#define CS_LEVEL_START_TIME             11		// so the timer only shows the current level
-#define CS_INTERMISSION                 12		// when 1, intermission will start in a second or two
-#define CS_MULTI_INFO                   13
-#define CS_MULTI_MAPWINNER              14
-#define CS_MULTI_OBJECTIVE              15
-//
-#define CS_SCREENFADE                   17		// Ridah, used to tell clients to fade their screen to black/normal
-#define CS_FOGVARS                      18		//----(SA) used for saving the current state/settings of the fog
-#define CS_SKYBOXORG                    19		// this is where we should view the skybox from
-
-#define CS_TARGETEFFECT                 20		//----(SA)
 #define CS_WOLFINFO                     21		// NERVE - SMF
-#define CS_FIRSTBLOOD                   22		// Team that has first blood
-#define CS_ROUNDSCORES1                 23		// Axis round wins
-#define CS_ROUNDSCORES2                 24		// Allied round wins
-#define CS_MAIN_AXIS_OBJECTIVE          25		// Most important current objective
-#define CS_MAIN_ALLIES_OBJECTIVE        26		// Most important current objective
-#define CS_MUSIC_QUEUE                  27
-#define CS_SCRIPT_MOVER_NAMES           28
-#define CS_CONSTRUCTION_NAMES           29
-
-#define CS_VERSIONINFO                  30		// Versioning info for demo playback compatibility
-#define CS_REINFSEEDS                   31		// Reinforcement seeds
-#define CS_SERVERTOGGLES                32		// Shows current enable/disabled settings (for voting UI)
-#define CS_GLOBALFOGVARS                33
-#define CS_AXIS_MAPS_XP                 34
-#define CS_ALLIED_MAPS_XP               35
-#define CS_INTERMISSION_START_TIME      36		//
-#define CS_ENDGAME_STATS                37
-#define CS_CHARGETIMES                  38
-#define CS_FILTERCAMS                   39
-
-#define CS_MODELS                       64
-#define CS_SOUNDS                       (CS_MODELS +               MAX_MODELS_Q3)
-#define CS_SHADERS                      (CS_SOUNDS +               MAX_SOUNDS)
-#define CS_SHADERSTATE                  (CS_SHADERS +              MAX_CS_SHADERS)					// Gordon: this MUST be after CS_SHADERS
-#define CS_SKINS                        (CS_SHADERSTATE +          1)
-#define CS_CHARACTERS                   (CS_SKINS +                MAX_CS_SKINS)
-#define CS_PLAYERS                      (CS_CHARACTERS +           MAX_CHARACTERS)
-#define CS_MULTI_SPAWNTARGETS           (CS_PLAYERS +              MAX_CLIENTS_ET)
-#define CS_OID_TRIGGERS                 (CS_MULTI_SPAWNTARGETS +   MAX_MULTI_SPAWNTARGETS)
-#define CS_OID_DATA                     (CS_OID_TRIGGERS +         MAX_OID_TRIGGERS)
-#define CS_DLIGHTS                      (CS_OID_DATA +             MAX_OID_TRIGGERS)
-#define CS_SPLINES                      (CS_DLIGHTS +              MAX_DLIGHT_CONFIGSTRINGS)
-#define CS_TAGCONNECTS                  (CS_SPLINES +              MAX_SPLINE_CONFIGSTRINGS)
-#define CS_FIRETEAMS                    (CS_TAGCONNECTS +          MAX_TAGCONNECTS)
-#define CS_CUSTMOTD                     (CS_FIRETEAMS +            MAX_FIRETEAMS)
-#define CS_STRINGS                      (CS_CUSTMOTD +             MAX_MOTDLINES)
-#define CS_MAX                          (CS_STRINGS +              MAX_CSSTRINGS)
-
-#if (CS_MAX) > MAX_CONFIGSTRINGS_ET
-#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_ET
-#endif
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -494,11 +422,6 @@ typedef struct
 #define PC_COVERTOPS            4	//	sneak about ;o
 
 #define NUM_PLAYER_CLASSES      5
-
-// JPW NERVE
-#define MAX_WEAPS_IN_BANK_MP    12
-#define MAX_WEAP_BANKS_MP       10
-// jpw
 
 // player_state->stats[] indexes
 typedef enum {
@@ -717,10 +640,6 @@ typedef enum {
 	WP_NUM_WEAPONS			// WolfMP: 32 WolfXP: 50
 							// NOTE: this cannot be larger than 64 for AI/player weapons!
 } weapon_t;
-
-// JPW NERVE moved from cg_weapons (now used in g_active) for drop command, actual array in bg_misc.c
-extern int weapBanksMultiPlayer[MAX_WEAP_BANKS_MP][MAX_WEAPS_IN_BANK_MP];
-// jpw
 
 // TAT 10/4/2002
 //		Using one unified list for which weapons can received ammo
@@ -1824,28 +1743,6 @@ typedef struct bg_character_s
 
 	animModelInfo_t* animModelInfo;
 } bg_character_t;
-
-/*
-==============================================================
-
-SAVE
-
-    12 -
-    13 - (SA) added 'episode' tracking to savegame
-    14 - RF added 'skill'
-    15 - (SA) moved time info above the main game reading
-    16 - (SA) added fog
-    17 - (SA) rats, changed fog.
-    18 - TTimo targetdeath fix
-       show_bug.cgi?id=434
-    30 - Arnout: initial Enemy Territory implementation
-    31 - Arnout: added new global fog
-
-==============================================================
-*/
-
-#define SAVE_VERSION            31
-#define SAVE_INFOSTRING_LENGTH  256
 
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];

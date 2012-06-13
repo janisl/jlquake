@@ -130,7 +130,6 @@ static void FS_Startup(const char* gameName)
 		FS_AddGameDirectory(fs_homepath->string, gameName, ADDPACKS_None);
 	}
 
-#ifndef PRE_RELEASE_DEMO
 	// check for additional base game so mods can be based upon other mods
 	if (fs_basegame->string[0] && !String::ICmp(gameName, BASEGAME) && String::ICmp(fs_basegame->string, gameName))
 	{
@@ -156,7 +155,6 @@ static void FS_Startup(const char* gameName)
 			FS_AddGameDirectory(fs_homepath->string, fs_gamedirvar->string, ADDPACKS_None);
 		}
 	}
-#endif	// PRE_RELEASE_DEMO
 
 	Com_ReadCDKey(BASEGAME);
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);

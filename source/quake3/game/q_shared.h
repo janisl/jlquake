@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define Q3_VERSION      "Q3 1.32b"
 // 1.32 released 7-10-2002
 
-#define MAX_TEAMNAME 32
-
 #include <assert.h>
 #include <time.h>
 #include <limits.h>
@@ -40,14 +38,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if (defined(powerc) || defined(powerpc) || defined(ppc) || defined(__ppc) || defined(__ppc__)) && !defined(C_ONLY)
 #define idppc   1
-#if defined(__VEC__)
-#define idppc_altivec 1
-#else
-#define idppc_altivec 0
-#endif
 #else
 #define idppc   0
-#define idppc_altivec 0
 #endif
 
 //======================= WIN32 DEFINES =================================
@@ -82,8 +74,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if defined(MACOS_X)
 
 #define MAC_STATIC
-#define __cdecl
-#define __declspec(x)
 
 #ifdef __ppc__
 #define CPUSTRING   "MacOSX-ppc"
@@ -95,34 +85,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CPUSTRING   "MacOSX-other"
 #endif
 
-#define __rlwimi(out, in, shift, maskBegin, maskEnd) asm ("rlwimi %0,%1,%2,%3,%4" : "=r" (out) : "r" (in), "i" (shift), "i" (maskBegin), "i" (maskEnd))
-#define __dcbt(addr, offset) asm ("dcbt %0,%1" : : "b" (addr), "r" (offset))
-
-static inline unsigned int __lwbrx(register void* addr, register int offset)
-{
-	register unsigned int word;
-
-	asm ("lwbrx %0,%2,%1" : "=r" (word) : "r" (addr), "b" (offset));
-	return word;
-}
-
-static inline unsigned short __lhbrx(register void* addr, register int offset)
-{
-	register unsigned short halfword;
-
-	asm ("lhbrx %0,%2,%1" : "=r" (halfword) : "r" (addr), "b" (offset));
-	return halfword;
-}
-
-static inline float __fctiw(register float f)
-{
-	register float fi;
-
-	asm ("fctiw %0,%1" : "=f" (fi) : "f" (f));
-
-	return fi;
-}
-
 #endif
 
 //======================= MAC DEFINES =================================
@@ -133,8 +95,6 @@ static inline float __fctiw(register float f)
 #define MAC_STATIC
 
 #define CPUSTRING   "MacOS-PPC"
-
-void Sys_PumpEvents(void);
 
 #endif
 
@@ -180,8 +140,6 @@ void Sys_PumpEvents(void);
 enum {qfalse, qtrue};
 
 
-#define MAX_SAY_TEXT    150
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL			// this is be defined in malloc.h
 #endif
@@ -192,7 +150,6 @@ typedef enum {
 	ERR_DROP,					// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,		// don't kill server
 	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_NEED_CD					// pop up the need-cd dialog
 } errorParm_t;
 
 #if defined(_DEBUG)
@@ -201,8 +158,6 @@ typedef enum {
 
 typedef enum {
 	h_high,
-	h_low,
-	h_dontcare
 } ha_pref;
 
 #ifdef HUNK_DEBUG
@@ -225,28 +180,8 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-#define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
-#define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
-
-
 int     Q_rand(int* seed);
 float   Q_random(int* seed);
-
-//=============================================
-
-// 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
-typedef struct
-{
-	byte b0;
-	byte b1;
-	byte b2;
-	byte b3;
-	byte b4;
-	byte b5;
-	byte b6;
-	byte b7;
-} qint64;
 
 //=============================================
 
@@ -292,23 +227,8 @@ typedef struct qtime_s
 #define AS_GLOBAL           2
 #define AS_FAVORITES    3
 
-
-typedef enum _flag_status {
-	FLAG_ATBASE = 0,
-	FLAG_TAKEN,			// CTF
-	FLAG_TAKEN_RED,		// One Flag CTF
-	FLAG_TAKEN_BLUE,	// One Flag CTF
-	FLAG_DROPPED
-} flagStatus_t;
-
-
-
 #define MAX_PINGREQUESTS                    32
 #define MAX_SERVERSTATUSREQUESTS    16
-
-#define SAY_ALL     0
-#define SAY_TEAM    1
-#define SAY_TELL    2
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2

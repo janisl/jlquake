@@ -124,72 +124,7 @@ typedef enum {
 #define MAX_OID_TRIGGERS    16
 // dhm
 
-//
-// config strings are a general means of communicating variable length strings
-// from the server to all connected clients.
-//
-
-// Q3CS_SERVERINFO and Q3CS_SYSTEMINFO are defined in q_shared.h
-#define CS_MUSIC                2
-#define CS_MESSAGE              3		// from the map worldspawn's message field
-#define CS_MOTD                 4		// g_motd string for server message of the day
-#define CS_SCORES1              6
-#define CS_SCORES2              7
-#define CS_VOTE_TIME            8
-#define CS_VOTE_STRING          9
-#define CS_VOTE_YES             10
-#define CS_VOTE_NO              11
-#define CS_GAME_VERSION         12
-#define CS_LEVEL_START_TIME     13		// so the timer only shows the current level
-#define CS_INTERMISSION         14		// when 1, intermission will start in a second or two
-// DHM - Nerve :: Wolf Multiplayer information
-#define CS_MULTI_INFO           15
-#define CS_MULTI_MAPWINNER      16
-#define CS_MULTI_MAPDESC        17
-#define CS_MULTI_OBJECTIVE1     18
-#define CS_MULTI_OBJECTIVE2     19
-#define CS_MULTI_OBJECTIVE3     20
-#define CS_MULTI_OBJECTIVE4     21
-#define CS_MULTI_OBJECTIVE5     22
-#define CS_MULTI_OBJECTIVE6     23
-
-#define CS_MULTI_OBJ1_STATUS    24
-#define CS_MULTI_OBJ2_STATUS    25
-#define CS_MULTI_OBJ3_STATUS    26
-#define CS_MULTI_OBJ4_STATUS    27
-#define CS_MULTI_OBJ5_STATUS    28
-#define CS_MULTI_OBJ6_STATUS    29
-
-// dhm
-#define CS_SHADERSTATE          30
-#define CS_ITEMS                31		// string of 0's and 1's that tell which items are present
-
-#define CS_SCREENFADE           32		// Ridah, used to tell clients to fade their screen to black/normal
-#define CS_FOGVARS              33		//----(SA) used for saving the current state/settings of the fog
-#define CS_SKYBOXORG            34		// this is where we should view the skybox from
-#define CS_TARGETEFFECT         35		//----(SA)
-
 #define CS_WOLFINFO             36		// NERVE - SMF
-
-#define CS_MODELS               64
-#define CS_SOUNDS               (CS_MODELS + MAX_MODELS_Q3)
-#define CS_PLAYERS              (CS_SOUNDS + MAX_SOUNDS)
-#define CS_LOCATIONS            (CS_PLAYERS + MAX_CLIENTS_WM)
-#define CS_PARTICLES            (CS_LOCATIONS + MAX_LOCATIONS)
-// JPW NERVE -- for spawnpoint selection
-#define CS_MULTI_SPAWNTARGETS   (CS_PARTICLES + MAX_PARTICLES_AREAS)
-#define CS_OID_TRIGGERS         (CS_MULTI_SPAWNTARGETS + MAX_MULTI_SPAWNTARGETS)
-// jpw
-#define CS_DLIGHTS              (CS_OID_TRIGGERS + MAX_OID_TRIGGERS)
-#define CS_CLIPBOARDS           (CS_DLIGHTS + MAX_DLIGHT_CONFIGSTRINGS)
-#define CS_SPLINES              (CS_CLIPBOARDS + MAX_CLIPBOARD_CONFIGSTRINGS)
-#define CS_TAGCONNECTS          (CS_SPLINES + MAX_SPLINE_CONFIGSTRINGS)
-
-#define CS_MAX                  (CS_TAGCONNECTS + MAX_TAGCONNECTS)
-
-#if (CS_MAX) > MAX_CONFIGSTRINGS_WM
-#error overflow: (CS_MAX) > MAX_CONFIGSTRINGS_WM
-#endif
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -542,10 +477,6 @@ typedef enum {
 	WP_NUM_WEAPONS			// 47   NOTE: this cannot be larger than 64 for AI/player weapons!
 
 } weapon_t;
-
-// JPW NERVE moved from cg_weapons (now used in g_active) for drop command, actual array in bg_misc.c
-extern int weapBanksMultiPlayer[MAX_WEAP_BANKS_MP][MAX_WEAPS_IN_BANK_MP];
-// jpw
 
 typedef struct ammotable_s
 {

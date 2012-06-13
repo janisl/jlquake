@@ -41,52 +41,15 @@ If you have questions concerning this license or the applicable additional terms
 // 1.1b - TTimo SP linux release (+ MP updates)
 // 1.1b5 - Mac update merge in
 
-#define NEW_ANIMS
-#define MAX_TEAMNAME    32
-
-// DHM - Nerve
-//#define PRE_RELEASE_DEMO
-
 #if defined(ppc) || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 #define idppc 1
 #endif
-
-/**********************************************************************
-  VM Considerations
-
-  The VM can not use the standard system headers because we aren't really
-  using the compiler they were meant for.  We use bg_lib.h which contains
-  prototypes for the functions we define for our own use in bg_lib.c.
-
-  When writing mods, please add needed headers HERE, do not start including
-  stuff like <stdio.h> in the various .c files that make up each of the VMs
-  since you will be including system headers files can will have issues.
-
-  Remember, if you use a C library function that is not defined in bg_lib.c,
-  you will have to add your own version for support in the VM.
-
- **********************************************************************/
-
-#ifdef Q3_VM
-
-#include "bg_lib.h"
-
-#else
 
 #include <assert.h>
 #include <time.h>
 #include <ctype.h>
 #include <limits.h>
 #include <stdint.h>
-
-#endif
-
-#ifdef _WIN32
-
-//#pragma intrinsic( memset, memcpy )
-
-#endif
-
 
 // for windows fastcall option
 
@@ -182,8 +145,6 @@ static inline float idSqrt(float x)
 
 #define CPUSTRING   "MacOS-PPC"
 
-void Sys_PumpEvents(void);
-
 static inline float idSqrt(float x)
 {
 	const float half = 0.5;
@@ -241,31 +202,11 @@ static inline float idSqrt(float x)
 
 enum {qfalse, qtrue};
 
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
-
-#define MAX_QINT            0x7fffffff
-#define MIN_QINT            (-MAX_QINT - 1)
-
 // TTimo gcc: was missing, added from Q3 source
 #ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
-
-// RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS      64		// increasing this will increase memory usage significantly
-
-#define MAX_SAY_TEXT        150
-
-// print levels from renderer (FIXME: set up for game / cgame?)
-typedef enum {
-	PRINT_ALL,
-	PRINT_DEVELOPER,		// only print when "developer 1"
-	PRINT_WARNING,
-	PRINT_ERROR
-} printParm_t;
 
 #ifdef  ERR_FATAL
 #undef  ERR_FATAL				// this is be defined in malloc.h
@@ -277,7 +218,6 @@ typedef enum {
 	ERR_DROP,					// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,		// don't kill server
 	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_NEED_CD					// pop up the need-cd dialog
 } errorParm_t;
 
 #if defined(_DEBUG)
@@ -286,8 +226,6 @@ typedef enum {
 
 typedef enum {
 	h_high,
-	h_low,
-	h_dontcare
 } ha_pref;
 
 #ifdef HUNK_DEBUG
@@ -311,9 +249,6 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-#define MAKERGB(v, r, g, b) v[0] = r; v[1] = g; v[2] = b
-#define MAKERGBA(v, r, g, b, a) v[0] = r; v[1] = g; v[2] = b; v[3] = a
-
 int     Q_rand(int* seed);
 float   Q_random(int* seed);
 
@@ -324,20 +259,6 @@ float   Q_random(int* seed);
 #else
 #define Q_putenv putenv
 #endif
-
-// 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
-typedef struct
-{
-	byte b0;
-	byte b1;
-	byte b2;
-	byte b3;
-	byte b4;
-	byte b5;
-	byte b6;
-	byte b7;
-} qint64;
 
 //=============================================
 
@@ -352,39 +273,10 @@ void QDECL Com_Printf(const char* msg, ...);
 
 ========================================================================
 */
-#define ANIM_BITS       10
 
 #define SNAPFLAG_RATE_DELAYED   1
 #define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
-
-//
-// per-level limits
-//
-#define MAX_LOCATIONS       64
-
-#define MAX_SOUNDS          256		// so they cannot be blindly increased
-
-
-#define MAX_PARTICLES_AREAS     128
-
-#define MAX_MULTI_SPAWNTARGETS  16	// JPW NERVE
-
-#define MAX_DLIGHT_CONFIGSTRINGS    128
-#define MAX_CLIPBOARD_CONFIGSTRINGS 64
-#define MAX_SPLINE_CONFIGSTRINGS    64
-
-#define PARTICLE_SNOW128    1
-#define PARTICLE_SNOW64     2
-#define PARTICLE_SNOW32     3
-#define PARTICLE_SNOW256    0
-
-#define PARTICLE_BUBBLE8    4
-#define PARTICLE_BUBBLE16   5
-#define PARTICLE_BUBBLE32   6
-#define PARTICLE_BUBBLE64   7
-
-#define RESERVED_CONFIGSTRINGS  2	// game can't modify below this, only the system can
 
 //=========================================================
 // shared by AI and animation scripting
@@ -400,43 +292,6 @@ typedef enum
 
 	MAX_AISTATES
 } aistateEnum_t;
-
-//=========================================================
-
-
-// weapon grouping
-#define MAX_WEAP_BANKS      12
-#define MAX_WEAPS_IN_BANK   3
-// JPW NERVE
-#define MAX_WEAPS_IN_BANK_MP    8
-#define MAX_WEAP_BANKS_MP   7
-// jpw
-#define MAX_WEAP_ALTS       WP_DYNAMITE2
-
-
-//====================================================================
-
-//----(SA) wolf buttons
-#define WBUTTON_LEANLEFT    16
-#define WBUTTON_LEANRIGHT   32
-
-#define MP_TEAM_OFFSET      6
-#define MP_CLASS_OFFSET     4
-#define MP_WEAPON_OFFSET    0
-
-#define MP_TEAM_BITS        2
-#define MP_CLASS_BITS       2
-#define MP_WEAPON_BITS      4
-
-#define MP_TEAM_MASK        0xC0
-#define MP_CLASS_MASK       0x30
-#define MP_WEAPON_MASK      0x0F
-
-//===================================================================
-
-// RF, put this here so we have a central means of defining a Zombie (kind of a hack, but this is to minimize bandwidth usage)
-#define SET_FLAMING_ZOMBIE(x,y) (x.frame = y)
-#define IS_FLAMING_ZOMBIE(x)    (x.frame == 1)
 
 // real time
 //=============================================
@@ -462,22 +317,8 @@ typedef struct qtime_s
 #define AS_FAVORITES    2
 #define AS_MPLAYER      3
 
-typedef enum _flag_status {
-	FLAG_ATBASE = 0,
-	FLAG_TAKEN,			// CTF
-	FLAG_TAKEN_RED,		// One Flag CTF
-	FLAG_TAKEN_BLUE,	// One Flag CTF
-	FLAG_DROPPED
-} flagStatus_t;
-
-
-
 #define MAX_PINGREQUESTS            16
 #define MAX_SERVERSTATUSREQUESTS    16
-
-#define SAY_ALL     0
-#define SAY_TEAM    1
-#define SAY_TELL    2
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
@@ -492,15 +333,5 @@ typedef enum {
 	GS_WAITING_FOR_PLAYERS,
 	GS_RESET
 } gamestate_t;
-
-// TTimo - voting config flags
-#define VOTEFLAGS_RESTART           (1 << 0)
-#define VOTEFLAGS_RESETMATCH    (1 << 1)
-#define VOTEFLAGS_STARTMATCH    (1 << 2)
-#define VOTEFLAGS_NEXTMAP           (1 << 3)
-#define VOTEFLAGS_SWAP              (1 << 4)
-#define VOTEFLAGS_TYPE              (1 << 5)
-#define VOTEFLAGS_KICK              (1 << 6)
-#define VOTEFLAGS_MAP                   (1 << 7)
 
 #endif	// __Q_SHARED_H

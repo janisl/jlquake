@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _QCOMMON_H_
 #define _QCOMMON_H_
 
-//#define	PRE_RELEASE_DEMO
-
 /*
 ==============================================================
 
@@ -87,15 +85,10 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-#ifndef PRE_RELEASE_DEMO
 // 1.33 - protocol 59
 // 1.4 - protocol 60
 #define PROTOCOL_VERSION 60
 #define GAMENAME_STRING     "wolfmp"
-#else
-// the demo uses a different protocol version for independant browsing
-  #define   PROTOCOL_VERSION    50	// NERVE - SMF - wolfMP protocol version
-#endif
 
 // NERVE - SMF - wolf multiplayer master servers
 #define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65

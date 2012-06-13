@@ -283,7 +283,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	int currentTime;
 
 #if 0	//#if defined(_WIN32) && defined(_DEBUG)
-	if (code != ERR_DISCONNECT && code != ERR_NEED_CD)
+	if (code != ERR_DISCONNECT)
 	{
 		if (!com_noErrorInterrupt->integer)
 		{
@@ -335,7 +335,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	Q_vsnprintf(com_errorMessage, sizeof(com_errorMessage), fmt, argptr);
 	va_end(argptr);
 
-	if (code != ERR_DISCONNECT && code != ERR_NEED_CD)
+	if (code != ERR_DISCONNECT)
 	{
 		Cvar_Set("com_errorMessage", com_errorMessage);
 	}
@@ -356,23 +356,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		com_errorEntered = qfalse;
 		longjmp(abortframe, -1);
 	}
-	else if (code == ERR_NEED_CD)
-	{
-		SV_Shutdown("Server didn't have CD\n");
-		if (com_cl_running && com_cl_running->integer)
-		{
-			CL_Disconnect(qtrue);
-			CL_FlushMemory();
-			com_errorEntered = qfalse;
-			CL_CDDialog();
-		}
-		else
-		{
-			Com_Printf("Server didn't have CD\n");
-		}
-		longjmp(abortframe, -1);
 #ifndef DEDICATED
-	}
 	else if (code == ERR_AUTOUPDATE)
 	{
 		CL_Disconnect(qtrue);
@@ -386,8 +370,8 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		{
 			longjmp(abortframe, -1);
 		}
-#endif
 	}
+#endif
 	else
 	{
 		CL_Shutdown();

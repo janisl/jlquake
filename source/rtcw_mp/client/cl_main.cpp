@@ -1694,7 +1694,6 @@ and determine if we need to download them
 */
 void CL_InitDownloads(void)
 {
-#ifndef PRE_RELEASE_DEMO
 	char missingfiles[1024];
 	char* dir = FS_ShiftStr(AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT);
 
@@ -1735,9 +1734,6 @@ void CL_InitDownloads(void)
 			}
 		}
 	}
-
-#endif
-
 
 	CL_DownloadsComplete();
 }
