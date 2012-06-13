@@ -1,4 +1,3 @@
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wc++-compat")
 #  $DEDICATED_NAME = 'wolfupdate.' . $cpu;
 
 #  $COMMON_CFLAGS = '-pipe -fsigned-char -DPRE_RELEASE_DEMO ';
@@ -12,8 +11,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wc++-compat")
 # NOTE TTimo using -fshort-enums increases warnings on enum issues
 #   this is for debugging and QA ONLY, the flag has ABI issues (OpenGL headers)
 #$COMMON_CFLAGS = $COMMON_CFLAGS . '-fshort-enums ';
-
-add_subdirectory(botlib)
 
 set(WOLFMP_FILES
 	client/cl_cgame.cpp
@@ -69,7 +66,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
 set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlwolfmp botlib-wolfmp ${CLIENTS_LIBS})
+target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
@@ -111,4 +108,4 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})
 set_target_properties(jlwolfmpded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O -DDEDICATED -DC_ONLY")
-target_link_libraries(jlwolfmpded botlib-wolfmp ${SERVERS_LIBS} m)
+target_link_libraries(jlwolfmpded ${SERVERS_LIBS} m)

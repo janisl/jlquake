@@ -22,10 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // sv_bot.c
 
 #include "server.h"
-#include "../../botlib/botlib.h"
 #include "../../server/botlib/local.h"
 
-extern botlib_export_t* botlib_export;
 int bot_enable;
 
 
@@ -183,12 +181,6 @@ int SV_BotLibSetup(void)
 		return 0;
 	}
 
-	if (!botlib_export)
-	{
-		Com_Printf(S_COLOR_RED "Error: SV_BotLibSetup without SV_BotInitBotLib\n");
-		return -1;
-	}
-
 	return BotLibSetup(false);
 }
 
@@ -202,12 +194,6 @@ it is changing to a different game directory.
 */
 int SV_BotLibShutdown(void)
 {
-
-	if (!botlib_export)
-	{
-		return -1;
-	}
-
 	return BotLibShutdown();
 }
 
@@ -264,9 +250,6 @@ void SV_BotInitBotLib(void)
 	}
 	bot_maxdebugpolys = Cvar_VariableIntegerValue("bot_maxdebugpolys");
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
-
-	botlib_export = (botlib_export_t*)GetBotLibAPI(BOTLIB_API_VERSION);
-	assert(botlib_export);	// bk001129 - somehow we end up with a zero import.
 }
 
 

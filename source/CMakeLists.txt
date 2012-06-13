@@ -13,7 +13,6 @@ include_directories(/usr/include/freetype2)
 add_subdirectory(common)
 add_subdirectory(client)
 add_subdirectory(server)
-add_subdirectory(botlib)
 
 add_subdirectory(quake)
 add_subdirectory(quakeworld)

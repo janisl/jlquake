@@ -30,9 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-#include "../game/botlib.h"
-
-botlib_export_t* botlib_export;
+#include "../../server/botlib/public.h"
 
 void SV_GameError(const char* string)
 {
