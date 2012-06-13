@@ -67,9 +67,8 @@ void SV_ClearWorld()
 	sv_numworldSectors = 0;
 
 	// get world map bounds
-	clipHandle_t h = CM_InlineModel(0);
 	vec3_t mins;
 	vec3_t maxs;
-	CM_ModelBounds(h, mins, maxs);
+	CM_ModelBounds(0, mins, maxs);
 	SV_CreateworldSector(0, mins, maxs);
 }
