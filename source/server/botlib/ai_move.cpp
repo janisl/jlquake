@@ -17,19 +17,83 @@
 #include "../server.h"
 #include "local.h"
 
+#define MAX_AVOIDREACH                  1
+#define MAX_AVOIDSPOTS                  32
+
+//used to avoid reachability links for some time after being used
+#define AVOIDREACH_TIME_Q3      6		//avoid links for 6 seconds after use
+#define AVOIDREACH_TIME_ET      4
+#define AVOIDREACH_TRIES        4
+
+//prediction times
+#define PREDICTIONTIME_JUMP 3		//in seconds
+
+//hook commands
+#define CMD_HOOKOFF             "hookoff"
+#define CMD_HOOKON              "hookon"
+
+//weapon indexes for weapon jumping
+#define WEAPONINDEX_ROCKET_LAUNCHER     5
+
+#define MODELTYPE_FUNC_PLAT     1
+#define MODELTYPE_FUNC_BOB      2
+#define MODELTYPE_FUNC_DOOR     3
+#define MODELTYPE_FUNC_STATIC   4
+
+struct bot_avoidspot_t
+{
+	vec3_t origin;
+	float radius;
+	int type;
+};
+
+//movement state
+//NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP and
+//		MFL_GRAPPLEPULL must be set outside the movement code
+struct bot_movestate_t
+{
+	//input vars (all set outside the movement code)
+	vec3_t origin;								//origin of the bot
+	vec3_t velocity;							//velocity of the bot
+	vec3_t viewoffset;							//view offset
+	int entitynum;								//entity number of the bot
+	int client;									//client number of the bot
+	float thinktime;							//time the bot thinks
+	int presencetype;							//presencetype of the bot
+	vec3_t viewangles;							//view angles of the bot
+	//state vars
+	int areanum;								//area the bot is in
+	int lastareanum;							//last area the bot was in
+	int lastgoalareanum;						//last goal area number
+	int lastreachnum;							//last reachability number
+	vec3_t lastorigin;							//origin previous cycle
+	float lasttime;
+	int reachareanum;							//area number of the reachabilty
+	int moveflags;								//movement flags
+	int jumpreach;								//set when jumped
+	float grapplevisible_time;					//last time the grapple was visible
+	float lastgrappledist;						//last distance to the grapple end
+	float reachability_time;					//time to use current reachability
+	int avoidreach[MAX_AVOIDREACH];				//reachabilities to avoid
+	float avoidreachtimes[MAX_AVOIDREACH];		//times to avoid the reachabilities
+	int avoidreachtries[MAX_AVOIDREACH];		//number of tries before avoiding
+	bot_avoidspot_t avoidspots[MAX_AVOIDSPOTS];	//spots to avoid
+	int numavoidspots;
+};
+
 static libvar_t* sv_maxstep;
 static libvar_t* sv_maxbarrier;
 static libvar_t* sv_gravity;
 static libvar_t* weapindex_rocketlauncher;
 static libvar_t* weapindex_bfg10k;
-libvar_t* weapindex_grapple;
+static libvar_t* weapindex_grapple;
 static libvar_t* entitytypemissile;
-libvar_t* offhandgrapple;
-libvar_t* cmd_grappleoff;
-libvar_t* cmd_grappleon;
+static libvar_t* offhandgrapple;
+static libvar_t* cmd_grappleoff;
+static libvar_t* cmd_grappleon;
 
 //type of model, func_plat or func_bobbing
-int modeltypes[MAX_MODELS_Q3];
+static int modeltypes[MAX_MODELS_Q3];
 
 static bot_movestate_t* botmovestates[MAX_BOTLIB_CLIENTS_ARRAY + 1];
 
@@ -62,7 +126,7 @@ void BotFreeMoveState(int handle)
 	botmovestates[handle] = NULL;
 }
 
-bot_movestate_t* BotMoveStateFromHandle(int handle)
+static bot_movestate_t* BotMoveStateFromHandle(int handle)
 {
 	if (handle <= 0 || handle > MAX_BOTLIB_CLIENTS)
 	{
@@ -236,7 +300,7 @@ static bool BotValidTravel(const aas_reachability_t* reach, int travelflags)
 	return true;
 }
 
-void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
+static void BotAddToAvoidReach(bot_movestate_t* ms, int number, float avoidtime)
 {
 	for (int i = 0; i < MAX_AVOIDREACH; i++)
 	{
@@ -390,7 +454,7 @@ static void MoverBottomCenter(const aas_reachability_t* reach, vec3_t bottomcent
 	bottomcenter[2] = reach->start[2];
 }
 
-void BotClearMoveResult(bot_moveresult_t* moveresult)
+static void BotClearMoveResult(bot_moveresult_t* moveresult)
 {
 	moveresult->failure = false;
 	moveresult->type = 0;
@@ -493,7 +557,7 @@ static void BotFuncBobStartEnd(const aas_reachability_t* reach, vec3_t start, ve
 	}
 }
 
-static int GrappleStateQ3(bot_movestate_t* ms, aas_reachability_t* reach)
+static int GrappleStateQ3(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	//if the grapple hook is pulling
 	if (ms->moveflags & Q3MFL_GRAPPLEPULL)
@@ -518,7 +582,7 @@ static int GrappleStateQ3(bot_movestate_t* ms, aas_reachability_t* reach)
 	return 0;
 }
 
-static int GrappleStateWolf(bot_movestate_t* ms, aas_reachability_t* reach)
+static int GrappleStateWolf(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	//JL Always 0
 	static int grapplemodelindex;
@@ -563,7 +627,7 @@ static int GrappleStateWolf(bot_movestate_t* ms, aas_reachability_t* reach)
 // 0  no valid grapple hook visible
 // 1  the grapple hook is still flying
 // 2  the grapple hooked into a wall
-int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach)
+static int GrappleState(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	if (GGameType & GAME_Quake3)
 	{
@@ -576,7 +640,7 @@ int GrappleState(bot_movestate_t* ms, aas_reachability_t* reach)
 }
 
 // time before the reachability times out
-int BotReachabilityTime(aas_reachability_t* reach)
+static int BotReachabilityTime(aas_reachability_t* reach)
 {
 	switch (reach->traveltype & TRAVELTYPE_MASK)
 	{
@@ -718,7 +782,7 @@ static bool MoverDown(const aas_reachability_t* reach)
 	return false;
 }
 
-int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
+static int BotGetReachabilityToGoal(const vec3_t origin, int areanum,
 	int lastgoalareanum, int lastareanum,
 	const int* avoidreach, const float* avoidreachtimes, const int* avoidreachtries,
 	const bot_goal_t* goal, int travelflags, int movetravelflags,
@@ -1235,7 +1299,7 @@ static bool BotOnMover(const vec3_t origin, int entnum, const aas_reachability_t
 	return false;
 }
 
-int BotOnTopOfEntity(const bot_movestate_t* ms)
+static int BotOnTopOfEntity(const bot_movestate_t* ms)
 {
 	vec3_t mins, maxs, end, up = {0, 0, 1};
 	AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
@@ -1614,7 +1678,7 @@ bool BotMoveInDirection(int movestate, const vec3_t dir, float speed, int type)
 	}
 }
 
-void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbottom, bot_moveresult_t* result)
+static void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbottom, bot_moveresult_t* result)
 {
 	vec3_t mins, maxs, end, up = {0, 0, 1};
 	bsp_trace_t trace;
@@ -1657,7 +1721,7 @@ void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int checkbotto
 	}
 }
 
-bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1724,30 +1788,7 @@ bot_moveresult_t BotTravel_Walk(const bot_movestate_t* ms, const aas_reachabilit
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_Walk(const bot_movestate_t* ms, const aas_reachability_t* reach)
-{
-	bot_moveresult_t result;
-	BotClearMoveResult(&result);
-	//go straight to the reachability end
-	vec3_t hordir;
-	hordir[0] = reach->end[0] - ms->origin[0];
-	hordir[1] = reach->end[1] - ms->origin[1];
-	hordir[2] = 0;
-	float dist = VectorNormalize(hordir);
-
-	if (dist > 100)
-	{
-		dist = 100;
-	}
-	float speed = 400 - (400 - 3 * dist);
-
-	EA_Move(ms->client, hordir, speed);
-	VectorCopy(hordir, result.movedir);
-
-	return result;
-}
-
-bot_moveresult_t BotTravel_Crouch(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Crouch(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1770,7 +1811,7 @@ bot_moveresult_t BotTravel_Crouch(const bot_movestate_t* ms, const aas_reachabil
 	return result;
 }
 
-bot_moveresult_t BotTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1834,7 +1875,7 @@ bot_moveresult_t BotTravel_BarrierJump(const bot_movestate_t* ms, const aas_reac
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_BarrierJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1890,7 +1931,7 @@ bot_moveresult_t BotFinishTravel_BarrierJump(const bot_movestate_t* ms, const aa
 	return result;
 }
 
-bot_moveresult_t BotTravel_Swim(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Swim(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1910,7 +1951,7 @@ bot_moveresult_t BotTravel_Swim(const bot_movestate_t* ms, const aas_reachabilit
 	return result;
 }
 
-bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1939,7 +1980,7 @@ bot_moveresult_t BotTravel_WaterJump(const bot_movestate_t* ms, const aas_reacha
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -1975,7 +2016,7 @@ bot_moveresult_t BotFinishTravel_WaterJump(const bot_movestate_t* ms, const aas_
 	return result;
 }
 
-bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -2057,7 +2098,7 @@ bot_moveresult_t BotTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_rea
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -2103,7 +2144,7 @@ bot_moveresult_t BotFinishTravel_WalkOffLedge(const bot_movestate_t* ms, const a
 	return result;
 }
 
-bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	float dist1, dist2, speed;
 	bot_moveresult_t result;
@@ -2186,7 +2227,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t* ms, const aas_reachability_t* r
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_Jump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_Jump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -2535,7 +2576,7 @@ static bot_moveresult_t BotTravel_LadderWolf(const bot_movestate_t* ms, const aa
 	return result;
 }
 
-bot_moveresult_t BotTravel_Ladder(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Ladder(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	if (GGameType & GAME_Quake3)
 	{
@@ -2547,7 +2588,7 @@ bot_moveresult_t BotTravel_Ladder(const bot_movestate_t* ms, const aas_reachabil
 	}
 }
 
-bot_moveresult_t BotTravel_Teleport(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Teleport(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -2586,7 +2627,7 @@ bot_moveresult_t BotTravel_Teleport(const bot_movestate_t* ms, const aas_reachab
 	return result;
 }
 
-bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	float dist, dist1, dist2, speed;
 	bot_moveresult_t result;
@@ -2750,10 +2791,9 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t* ms, const aas_reachability_
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
-
 	BotClearMoveResult(&result);
 
 	vec3_t bottomcenter;
@@ -2777,7 +2817,7 @@ bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, const aas_r
 	return result;
 }
 
-bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -2945,7 +2985,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t* ms, const aas_reachabili
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_FuncBobbing(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_FuncBobbing(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3012,7 +3052,7 @@ bot_moveresult_t BotFinishTravel_FuncBobbing(const bot_movestate_t* ms, const aa
 	return result;
 }
 
-bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3075,7 +3115,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reachabilit
 	return result;
 }
 
-bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3130,7 +3170,7 @@ bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachability_t
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3169,7 +3209,7 @@ bot_moveresult_t BotFinishTravel_WeaponJump(const bot_movestate_t* ms, const aas
 	return result;
 }
 
-bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3189,7 +3229,7 @@ bot_moveresult_t BotTravel_JumpPad(const bot_movestate_t* ms, const aas_reachabi
 	return result;
 }
 
-bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
+static bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_reachability_t* reach)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3211,7 +3251,7 @@ bot_moveresult_t BotFinishTravel_JumpPad(const bot_movestate_t* ms, const aas_re
 	return result;
 }
 
-bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal)
+static bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal)
 {
 	bot_moveresult_t result;
 	BotClearMoveResult(&result);
@@ -3262,4 +3302,799 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t* ms, const bot_goal_t* goal)
 	}
 
 	return result;
+}
+
+static void BotResetGrapple(bot_movestate_t* ms)
+{
+	aas_reachability_t reach;
+	AAS_ReachabilityFromNum(ms->lastreachnum, &reach);
+	//if not using the grapple hook reachability anymore
+	if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_GRAPPLEHOOK)
+	{
+		if ((ms->moveflags & (GGameType & GAME_Quake3 ? Q3MFL_ACTIVEGRAPPLE :
+			WOLFMFL_ACTIVEGRAPPLE)) || ms->grapplevisible_time)
+		{
+			if (GGameType & GAME_Quake3)
+			{
+				if (offhandgrapple->value)
+				{
+					EA_Command(ms->client, cmd_grappleoff->string);
+				}
+				ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+			}
+			else
+			{
+				EA_Command(ms->client, CMD_HOOKOFF);
+				ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+			}
+			ms->grapplevisible_time = 0;
+		}
+	}
+}
+
+static bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, const aas_reachability_t* reach)
+{
+	bot_moveresult_t result;
+	float dist, speed;
+	vec3_t dir, viewdir, org;
+	int state, areanum;
+	bsp_trace_t trace;
+
+	BotClearMoveResult(&result);
+
+	if (GGameType & GAME_Quake3)
+	{
+		if (ms->moveflags & Q3MFL_GRAPPLERESET)
+		{
+			if (offhandgrapple->value)
+			{
+				EA_Command(ms->client, cmd_grappleoff->string);
+			}
+			ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+			return result;
+		}
+
+		if (!(int)offhandgrapple->value)
+		{
+			result.weapon = weapindex_grapple->value;
+			result.flags |= MOVERESULT_MOVEMENTWEAPON;
+		}
+	}
+	else
+	{
+		if (ms->moveflags & WOLFMFL_GRAPPLERESET)
+		{
+			EA_Command(ms->client, CMD_HOOKOFF);
+			ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+			return result;
+		}
+	}
+
+	if (ms->moveflags & (GGameType & GAME_Quake3 ? Q3MFL_ACTIVEGRAPPLE : WOLFMFL_ACTIVEGRAPPLE))
+	{
+		state = GrappleState(ms, reach);
+
+		VectorSubtract(reach->end, ms->origin, dir);
+		dir[2] = 0;
+		dist = VectorLength(dir);
+		//if very close to the grapple end or the grappled is hooked and
+		//the bot doesn't get any closer
+		if (state && dist < 48)
+		{
+			if (ms->lastgrappledist - dist < 1)
+			{
+				if (GGameType & GAME_Quake3)
+				{
+					if (offhandgrapple->value)
+					{
+						EA_Command(ms->client, cmd_grappleoff->string);
+					}
+					ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+					ms->moveflags |= Q3MFL_GRAPPLERESET;
+				}
+				else
+				{
+					EA_Command(ms->client, CMD_HOOKOFF);
+					ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+					ms->moveflags |= WOLFMFL_GRAPPLERESET;
+				}
+				ms->reachability_time = 0;	//end the reachability
+				if (GGameType & GAME_Quake3)
+				{
+					return result;
+				}
+			}
+		}
+		//if no valid grapple at all, or the grapple hooked and the bot
+		//isn't moving anymore
+		else if (!state || (state == 2 && dist > ms->lastgrappledist - 2))
+		{
+			if (ms->grapplevisible_time < AAS_Time() - 0.4)
+			{
+				if (GGameType & GAME_Quake3)
+				{
+					if (offhandgrapple->value)
+					{
+						EA_Command(ms->client, cmd_grappleoff->string);
+					}
+					ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
+					ms->moveflags |= Q3MFL_GRAPPLERESET;
+				}
+				else
+				{
+					EA_Command(ms->client, CMD_HOOKOFF);
+					ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
+					ms->moveflags |= WOLFMFL_GRAPPLERESET;
+				}
+				ms->reachability_time = 0;	//end the reachability
+				return result;
+			}
+		}
+		else
+		{
+			ms->grapplevisible_time = AAS_Time();
+		}
+
+		if (GGameType & GAME_Quake3 && !(int)offhandgrapple->value)
+		{
+			EA_Attack(ms->client);
+		}
+		//remember the current grapple distance
+		ms->lastgrappledist = dist;
+	}
+	else
+	{
+		ms->grapplevisible_time = AAS_Time();
+
+		VectorSubtract(reach->start, ms->origin, dir);
+		if (!(ms->moveflags & MFL_SWIMMING))
+		{
+			dir[2] = 0;
+		}
+		VectorAdd(ms->origin, ms->viewoffset, org);
+		VectorSubtract(reach->end, org, viewdir);
+
+		dist = VectorNormalize(dir);
+		VecToAngles(viewdir, result.ideal_viewangles);
+		result.flags |= MOVERESULT_MOVEMENTVIEW;
+
+		if (dist < 5 &&
+			Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 &&
+			Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
+		{
+			if (GGameType & GAME_Quake3)
+			{
+				//check if the grapple missile path is clear
+				VectorAdd(ms->origin, ms->viewoffset, org);
+				trace = AAS_Trace(org, NULL, NULL, reach->end, ms->entitynum, BSP46CONTENTS_SOLID);
+				VectorSubtract(reach->end, trace.endpos, dir);
+				if (VectorLength(dir) > 16)
+				{
+					result.failure = true;
+					return result;
+				}
+				//activate the grapple
+				if (offhandgrapple->value)
+				{
+					EA_Command(ms->client, cmd_grappleon->string);
+				}
+				else
+				{
+					EA_Attack(ms->client);
+				}
+				ms->moveflags |= Q3MFL_ACTIVEGRAPPLE;
+			}
+			else
+			{
+				EA_Command(ms->client, CMD_HOOKON);
+				ms->moveflags |= WOLFMFL_ACTIVEGRAPPLE;
+			}
+			ms->lastgrappledist = 999999;
+		}
+		else
+		{
+			if (dist < 70)
+			{
+				speed = 300 - (300 - 4 * dist);
+			}
+			else
+			{
+				speed = 400;
+			}
+
+			BotCheckBlocked(ms, dir, true, &result);
+			//elemantary action move in direction
+			EA_Move(ms->client, dir, speed);
+			VectorCopy(dir, result.movedir);
+		}
+		//if in another area before actually grappling
+		areanum = AAS_PointAreaNum(ms->origin);
+		if (areanum && areanum != ms->reachareanum)
+		{
+			ms->reachability_time = 0;
+		}
+	}
+	return result;
+}
+
+void BotMoveToGoal(bot_moveresult_t* result, int movestate, const bot_goal_t* goal, int travelflags)
+{
+	BotClearMoveResult(result);
+
+	bot_movestate_t* ms = BotMoveStateFromHandle(movestate);
+	if (!ms)
+	{
+		return;
+	}
+	//reset the grapple before testing if the bot has a valid goal
+	//because the bot could loose all it's goals when stuck to a wall
+	BotResetGrapple(ms);
+	//
+	if (!goal)
+	{
+#ifdef DEBUG
+		BotImport_Print(PRT_MESSAGE, "client %d: movetogoal -> no goal\n", ms->client);
+#endif
+		result->failure = true;
+		return;
+	}
+	//remove some of the move flags
+	ms->moveflags &= ~(MFL_SWIMMING | MFL_AGAINSTLADDER);
+	//set some of the move flags
+	//NOTE: the MFL_ONGROUND flag is also set in the higher AI
+	if (AAS_OnGround(ms->origin, ms->presencetype, ms->entitynum))
+	{
+		ms->moveflags |= MFL_ONGROUND;
+	}
+
+	int reachnum = 0;
+	if (ms->moveflags & MFL_ONGROUND)
+	{
+		int modeltype, modelnum;
+
+		int ent = BotOnTopOfEntity(ms);
+
+		if (ent != -1)
+		{
+			modelnum = AAS_EntityModelindex(ent);
+			if (modelnum >= 0 && modelnum < MAX_MODELS_Q3)
+			{
+				modeltype = modeltypes[modelnum];
+
+				if (modeltype == MODELTYPE_FUNC_PLAT)
+				{
+					aas_reachability_t reach;
+					AAS_ReachabilityFromNum(ms->lastreachnum, &reach);
+					//if the bot is Not using the elevator
+					if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_ELEVATOR ||
+						//NOTE: the face number is the plat model number
+						(reach.facenum & 0x0000FFFF) != modelnum)
+					{
+						reachnum = AAS_NextModelReachability(0, modelnum);
+						if (reachnum)
+						{
+							//BotImport_Print(PRT_MESSAGE, "client %d: accidentally ended up on func_plat\n", ms->client);
+							AAS_ReachabilityFromNum(reachnum, &reach);
+							ms->lastreachnum = reachnum;
+							ms->reachability_time = AAS_Time() + BotReachabilityTime(&reach);
+						}
+						else
+						{
+							if (bot_developer)
+							{
+								BotImport_Print(PRT_MESSAGE, "client %d: on func_plat without reachability\n", ms->client);
+							}
+							result->blocked = true;
+							result->blockentity = ent;
+							result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
+							return;
+						}
+					}
+					result->flags |= MOVERESULT_ONTOPOF_ELEVATOR;
+				}
+				else if (modeltype == MODELTYPE_FUNC_BOB)
+				{
+					aas_reachability_t reach;
+					AAS_ReachabilityFromNum(ms->lastreachnum, &reach);
+					//if the bot is Not using the func bobbing
+					if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_FUNCBOB ||
+						//NOTE: the face number is the func_bobbing model number
+						(reach.facenum & 0x0000FFFF) != modelnum)
+					{
+						reachnum = AAS_NextModelReachability(0, modelnum);
+						if (reachnum)
+						{
+							//BotImport_Print(PRT_MESSAGE, "client %d: accidentally ended up on func_bobbing\n", ms->client);
+							AAS_ReachabilityFromNum(reachnum, &reach);
+							ms->lastreachnum = reachnum;
+							ms->reachability_time = AAS_Time() + BotReachabilityTime(&reach);
+						}
+						else
+						{
+							if (bot_developer)
+							{
+								BotImport_Print(PRT_MESSAGE, "client %d: on func_bobbing without reachability\n", ms->client);
+							}
+							result->blocked = true;
+							result->blockentity = ent;
+							result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
+							return;
+						}
+					}
+					result->flags |= MOVERESULT_ONTOPOF_FUNCBOB;
+				}
+				else if (GGameType & GAME_Quake3)
+				{
+					if (modeltype == MODELTYPE_FUNC_STATIC || modeltype == MODELTYPE_FUNC_DOOR)
+					{
+						// check if ontop of a door bridge ?
+						ms->areanum = BotFuzzyPointReachabilityArea(ms->origin);
+						// if not in a reachability area
+						if (!AAS_AreaReachability(ms->areanum))
+						{
+							result->blocked = true;
+							result->blockentity = ent;
+							result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
+							return;
+						}
+					}
+					else
+					{
+						result->blocked = true;
+						result->blockentity = ent;
+						result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
+						return;
+					}
+				}
+			}
+		}
+	}
+	//if swimming
+	if (AAS_Swimming(ms->origin))
+	{
+		ms->moveflags |= MFL_SWIMMING;
+	}
+	//if against a ladder
+	if (AAS_AgainstLadder(ms->origin, ms->areanum))
+	{
+		ms->moveflags |= MFL_AGAINSTLADDER;
+	}
+	//if the bot is on the ground, swimming or against a ladder
+	if (ms->moveflags & (MFL_ONGROUND | MFL_SWIMMING | MFL_AGAINSTLADDER))
+	{
+		aas_reachability_t lastreach;
+		AAS_ReachabilityFromNum(ms->lastreachnum, &lastreach);
+		//reachability area the bot is in
+		if (GGameType & GAME_ET)
+		{
+			if (!ms->areanum)
+			{
+				result->failure = true;
+				return;
+			}
+		}
+		else
+		{
+			ms->areanum = BotFuzzyPointReachabilityArea(ms->origin);
+
+			if (GGameType & GAME_Quake3 && !ms->areanum)
+			{
+				result->failure = true;
+				result->blocked = true;
+				result->blockentity = 0;
+				result->type = Q3RESULTTYPE_INSOLIDAREA;
+				return;
+			}
+		}
+		//if the bot is in the goal area
+		if (ms->areanum == goal->areanum)
+		{
+			*result = BotMoveInGoalArea(ms, goal);
+			return;
+		}
+		//assume we can use the reachability from the last frame
+		reachnum = ms->lastreachnum;
+		//if there is a last reachability
+		if (reachnum)
+		{
+			aas_reachability_t reach;
+			AAS_ReachabilityFromNum(reachnum, &reach);
+			//check if the reachability is still valid
+			if (!(AAS_TravelFlagForType(reach.traveltype) & travelflags))
+			{
+				reachnum = 0;
+			}
+			//special grapple hook case
+			else if ((reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_GRAPPLEHOOK)
+			{
+				if (ms->reachability_time < AAS_Time() ||
+					(ms->moveflags & (GGameType & GAME_Quake3 ? Q3MFL_GRAPPLERESET : WOLFMFL_GRAPPLERESET)))
+				{
+					reachnum = 0;
+				}
+			}
+			//special elevator case
+			else if ((reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_ELEVATOR ||
+				(reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_FUNCBOB)
+			{
+				if ((result->flags & MOVERESULT_ONTOPOF_FUNCBOB) ||
+					(result->flags & MOVERESULT_ONTOPOF_FUNCBOB))
+				{
+					ms->reachability_time = AAS_Time() + 5;
+				}
+				//if the bot was going for an elevator and reached the reachability area
+				if (ms->areanum == reach.areanum ||
+					ms->reachability_time < AAS_Time())
+				{
+					reachnum = 0;
+				}
+			}
+			else
+			{
+				if (GGameType & GAME_ET && ms->reachability_time < AAS_Time())
+				{
+					// the reachability timed out, add it to the ignore list
+					BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME_ET + 4);
+				}
+#ifdef DEBUG
+				if (bot_developer)
+				{
+					if (ms->reachability_time < AAS_Time())
+					{
+						BotImport_Print(PRT_MESSAGE, "client %d: reachability timeout in ", ms->client);
+						AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
+						BotImport_Print(PRT_MESSAGE, "\n");
+					}
+				}
+#endif
+				//if the goal area changed or the reachability timed out
+				//or the area changed
+				if (ms->lastgoalareanum != goal->areanum ||
+					ms->reachability_time < AAS_Time() ||
+					ms->lastareanum != ms->areanum ||
+					//@TODO.  The hardcoded distance here should actually be tied to speed.  As it was, 20 was too big for
+					// slow moving walking Nazis.
+					(!(GGameType & GAME_Quake3) && (ms->lasttime > (AAS_Time() - 0.5)) &&
+					(VectorDistance(ms->origin, ms->lastorigin) < (GGameType & GAME_ET ? 5 : 20) * (AAS_Time() - ms->lasttime))))
+				{
+					reachnum = 0;
+				}
+			}
+		}
+		int resultflags = 0;
+		//if the bot needs a new reachability
+		if (!reachnum)
+		{
+			//if the area has no reachability links
+			if (!AAS_AreaReachability(ms->areanum))
+			{
+#ifdef DEBUG
+				if (bot_developer)
+				{
+					BotImport_Print(PRT_MESSAGE, "area %d no reachability\n", ms->areanum);
+				}
+#endif
+			}
+			//get a new reachability leading towards the goal
+			reachnum = BotGetReachabilityToGoal(ms->origin, ms->areanum,
+				ms->lastgoalareanum, ms->lastareanum,
+				ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
+				goal, travelflags, travelflags,
+				ms->avoidspots, ms->numavoidspots, &resultflags);
+			//the area number the reachability starts in
+			ms->reachareanum = ms->areanum;
+			//reset some state variables
+			ms->jumpreach = 0;						//for TRAVEL_JUMP
+			ms->moveflags &= ~(GGameType & GAME_Quake3 ? Q3MFL_GRAPPLERESET : WOLFMFL_GRAPPLERESET);	//for TRAVEL_GRAPPLEHOOK
+			//if there is a reachability to the goal
+			aas_reachability_t reach;
+			if (reachnum)
+			{
+				AAS_ReachabilityFromNum(reachnum, &reach);
+				//set a timeout for this reachability
+				ms->reachability_time = AAS_Time() + BotReachabilityTime(&reach) + (GGameType & GAME_ET ?
+					0.01 * (AAS_AreaTravelTime(ms->areanum, ms->origin, reach.start) * 2) + 100 : 0);
+
+				if (GGameType & GAME_Quake3)
+				{
+					//add the reachability to the reachabilities to avoid for a while
+					BotAddToAvoidReach(ms, reachnum, AVOIDREACH_TIME_Q3);
+				}
+				if (GGameType & GAME_ET)
+				{
+					if (reach.traveltype == TRAVEL_LADDER)
+					{
+						ms->reachability_time += 4.0;	// allow more time to navigate ladders
+					}
+					//
+					if (reach.traveltype != TRAVEL_LADDER)			// don't avoid ladders unless we were unable to reach them in time
+					{
+						BotAddToAvoidReach(ms, reachnum, 3);		// add a short avoid reach time
+					}
+				}
+			}
+#ifdef DEBUG
+			else if (bot_developer)
+			{
+				BotImport_Print(PRT_MESSAGE, "goal not reachable\n");
+				Com_Memset(&reach, 0, sizeof(aas_reachability_t));	//make compiler happy
+			}
+			if (bot_developer)
+			{
+				//if still going for the same goal
+				if (ms->lastgoalareanum == goal->areanum)
+				{
+					if (ms->lastareanum == reach.areanum)
+					{
+						BotImport_Print(PRT_MESSAGE, "same goal, going back to previous area\n");
+					}
+				}
+			}
+#endif
+		}
+
+		ms->lastreachnum = reachnum;
+		ms->lastgoalareanum = goal->areanum;
+		ms->lastareanum = ms->areanum;
+		//if the bot has a reachability
+		aas_reachability_t reach;
+		if (reachnum)
+		{
+			//get the reachability from the number
+			AAS_ReachabilityFromNum(reachnum, &reach);
+			result->traveltype = reach.traveltype;
+
+			if (GGameType & GAME_ET && goal->flags & GFL_DEBUGPATH)
+			{
+				AAS_ClearShownPolygons();
+				AAS_ClearShownDebugLines();
+				AAS_PrintTravelType(reach.traveltype);
+				// src area
+				AAS_ShowAreaPolygons(ms->areanum, 1, true);
+				// dest area
+				AAS_ShowAreaPolygons(goal->areanum, 3, true);
+				// reachability
+				AAS_ShowReachability(&reach);
+				AAS_ShowAreaPolygons(reach.areanum, 2, true);
+			}
+
+			switch (reach.traveltype & TRAVELTYPE_MASK)
+			{
+			case TRAVEL_WALK: *result = BotTravel_Walk(ms, &reach); break;
+			case TRAVEL_CROUCH: *result = BotTravel_Crouch(ms, &reach); break;
+			case TRAVEL_BARRIERJUMP: *result = BotTravel_BarrierJump(ms, &reach); break;
+			case TRAVEL_LADDER: *result = BotTravel_Ladder(ms, &reach); break;
+			case TRAVEL_WALKOFFLEDGE: *result = BotTravel_WalkOffLedge(ms, &reach); break;
+			case TRAVEL_JUMP: *result = BotTravel_Jump(ms, &reach); break;
+			case TRAVEL_SWIM: *result = BotTravel_Swim(ms, &reach); break;
+			case TRAVEL_WATERJUMP: *result = BotTravel_WaterJump(ms, &reach); break;
+			case TRAVEL_TELEPORT: *result = BotTravel_Teleport(ms, &reach); break;
+			case TRAVEL_ELEVATOR: *result = BotTravel_Elevator(ms, &reach); break;
+			case TRAVEL_GRAPPLEHOOK: *result = BotTravel_Grapple(ms, &reach); break;
+			case TRAVEL_ROCKETJUMP: *result = BotTravel_RocketJump(ms, &reach); break;
+			case TRAVEL_JUMPPAD: *result = BotTravel_JumpPad(ms, &reach); break;
+			case TRAVEL_FUNCBOB: *result = BotTravel_FuncBobbing(ms, &reach); break;
+			case TRAVEL_BFGJUMP: if (GGameType & GAME_Quake3) { *result = BotTravel_BFGJump(ms, &reach); break; }
+			default:
+				BotImport_Print(PRT_FATAL, "travel type %d not implemented yet\n", (reach.traveltype & TRAVELTYPE_MASK));
+				break;
+			}
+			if (GGameType & GAME_Quake3)
+			{
+				result->traveltype = reach.traveltype;
+				result->flags |= resultflags;
+			}
+		}
+		else
+		{
+			result->failure = true;
+			if (GGameType & GAME_Quake3)
+			{
+				result->flags |= resultflags;
+			}
+			Com_Memset(&reach, 0, sizeof(aas_reachability_t));
+		}
+#ifdef DEBUG
+		if (bot_developer)
+		{
+			if (result->failure)
+			{
+				BotImport_Print(PRT_MESSAGE, "client %d: movement failure in ", ms->client);
+				AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
+				BotImport_Print(PRT_MESSAGE, "\n");
+			}
+		}
+#endif
+	}
+	else
+	{
+		//special handling of jump pads when the bot uses a jump pad without knowing it
+		bool foundjumppad = false;
+		vec3_t end;
+		VectorMA(ms->origin, -2 * ms->thinktime, ms->velocity, end);
+		int areas[16];
+		int numareas = AAS_TraceAreas(ms->origin, end, areas, NULL, 16);
+		for (int i = numareas - 1; i >= 0; i--)
+		{
+			if (AAS_AreaJumpPad(areas[i]))
+			{
+				foundjumppad = true;
+				int lastreachnum = BotGetReachabilityToGoal(end, areas[i],
+					ms->lastgoalareanum, ms->lastareanum,
+					ms->avoidreach, ms->avoidreachtimes, ms->avoidreachtries,
+					goal, travelflags, TFL_JUMPPAD, ms->avoidspots, ms->numavoidspots, NULL);
+				if (lastreachnum)
+				{
+					ms->lastreachnum = lastreachnum;
+					ms->lastareanum = areas[i];
+					break;
+				}
+				else
+				{
+					for (lastreachnum = AAS_NextAreaReachability(areas[i], 0); lastreachnum;
+						 lastreachnum = AAS_NextAreaReachability(areas[i], lastreachnum))
+					{
+						//get the reachability from the number
+						aas_reachability_t reach;
+						AAS_ReachabilityFromNum(lastreachnum, &reach);
+						if ((reach.traveltype & TRAVELTYPE_MASK) == TRAVEL_JUMPPAD)
+						{
+							ms->lastreachnum = lastreachnum;
+							ms->lastareanum = areas[i];
+							break;
+						}
+					}
+					if (lastreachnum)
+					{
+						break;
+					}
+				}
+			}
+		}
+		if (bot_developer)
+		{
+			//if a jumppad is found with the trace but no reachability is found
+			if (foundjumppad && !ms->lastreachnum)
+			{
+				BotImport_Print(PRT_MESSAGE, "client %d didn't find jumppad reachability\n", ms->client);
+			}
+		}
+
+		if (ms->lastreachnum)
+		{
+			aas_reachability_t reach;
+			AAS_ReachabilityFromNum(ms->lastreachnum, &reach);
+			result->traveltype = reach.traveltype;
+
+			switch (reach.traveltype & TRAVELTYPE_MASK)
+			{
+			case TRAVEL_WALK: *result = BotTravel_Walk(ms, &reach); break;
+			case TRAVEL_CROUCH:	/*do nothing*/ break;
+			case TRAVEL_BARRIERJUMP: *result = BotFinishTravel_BarrierJump(ms, &reach); break;
+			case TRAVEL_LADDER: *result = BotTravel_Ladder(ms, &reach); break;
+			case TRAVEL_WALKOFFLEDGE: *result = BotFinishTravel_WalkOffLedge(ms, &reach); break;
+			case TRAVEL_JUMP: *result = BotFinishTravel_Jump(ms, &reach); break;
+			case TRAVEL_SWIM: *result = BotTravel_Swim(ms, &reach); break;
+			case TRAVEL_WATERJUMP: *result = BotFinishTravel_WaterJump(ms, &reach); break;
+			case TRAVEL_TELEPORT: /*do nothing*/ break;
+			case TRAVEL_ELEVATOR: *result = BotFinishTravel_Elevator(ms, &reach); break;
+			case TRAVEL_GRAPPLEHOOK: *result = BotTravel_Grapple(ms, &reach); break;
+			case TRAVEL_ROCKETJUMP: *result = BotFinishTravel_WeaponJump(ms, &reach); break;
+			case TRAVEL_JUMPPAD: *result = BotFinishTravel_JumpPad(ms, &reach); break;
+			case TRAVEL_FUNCBOB: *result = BotFinishTravel_FuncBobbing(ms, &reach); break;
+			case TRAVEL_BFGJUMP: if (GGameType & GAME_Quake3) { *result = BotFinishTravel_WeaponJump(ms, &reach); break; }
+			default:
+				BotImport_Print(PRT_FATAL, "(last) travel type %d not implemented yet\n", (reach.traveltype & TRAVELTYPE_MASK));
+				break;
+			}
+			if (GGameType & GAME_Quake3)
+			{
+				result->traveltype = reach.traveltype;
+			}
+#ifdef DEBUG
+			if (bot_developer)
+			{
+				if (result->failure)
+				{
+					BotImport_Print(PRT_MESSAGE, "client %d: movement failure in finish ", ms->client);
+					AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
+					BotImport_Print(PRT_MESSAGE, "\n");
+				}
+			}
+#endif
+		}
+	}
+	//FIXME: is it right to do this here?
+	if (result->blocked)
+	{
+		ms->reachability_time -= 10 * ms->thinktime;
+	}
+	//copy the last origin
+	VectorCopy(ms->origin, ms->lastorigin);
+	ms->lasttime = AAS_Time();
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		// RF, try to look in the direction we will be moving ahead of time
+		if (reachnum > 0 && !(result->flags & (MOVERESULT_MOVEMENTVIEW | MOVERESULT_SWIMVIEW)))
+		{
+			aas_reachability_t reach;
+			AAS_ReachabilityFromNum(reachnum, &reach);
+			if (reach.areanum != goal->areanum)
+			{
+				if (GGameType & GAME_WolfSP)
+				{
+					int freachnum, straveltime;
+					if (AAS_AreaRouteToGoalArea(reach.areanum, reach.end, goal->areanum, travelflags, &straveltime, &freachnum))
+					{
+						int ltraveltime = 999999;
+						int ftraveltime;
+						while (AAS_AreaRouteToGoalArea(reach.areanum, reach.end, goal->areanum, travelflags, &ftraveltime, &freachnum))
+						{
+							// make sure we are not in a loop
+							if (ftraveltime > ltraveltime)
+							{
+								break;
+							}
+							ltraveltime = ftraveltime;
+							//
+							AAS_ReachabilityFromNum(freachnum, &reach);
+							if (reach.areanum == goal->areanum)
+							{
+								vec3_t dir;
+								VectorSubtract(goal->origin, ms->origin, dir);
+								VectorNormalize(dir);
+								VecToAngles(dir, result->ideal_viewangles);
+								result->flags |= WOLFMOVERESULT_FUTUREVIEW;
+								break;
+							}
+							if (straveltime - ftraveltime > 120)
+							{
+								vec3_t dir;
+								VectorSubtract(reach.end, ms->origin, dir);
+								VectorNormalize(dir);
+								VecToAngles(dir, result->ideal_viewangles);
+								result->flags |= WOLFMOVERESULT_FUTUREVIEW;
+								break;
+							}
+						}
+					}
+				}
+				else
+				{
+					int ftraveltime, freachnum;
+					if (AAS_AreaRouteToGoalArea(reach.areanum, reach.end, goal->areanum, travelflags, &ftraveltime, &freachnum))
+					{
+						AAS_ReachabilityFromNum(freachnum, &reach);
+						vec3_t dir;
+						VectorSubtract(reach.end, ms->origin, dir);
+						VectorNormalize(dir);
+						VecToAngles(dir, result->ideal_viewangles);
+						result->flags |= WOLFMOVERESULT_FUTUREVIEW;
+					}
+				}
+			}
+			else
+			{
+				vec3_t dir;
+				VectorSubtract(goal->origin, ms->origin, dir);
+				VectorNormalize(dir);
+				VecToAngles(dir, result->ideal_viewangles);
+				result->flags |= WOLFMOVERESULT_FUTUREVIEW;
+			}
+		}
+	}
+
+	//return the movement result
+	return;
+}
+
+void BotMoveToGoalQ3(bot_moveresult_t* result, int movestate, const bot_goal_q3_t* goal, int travelflags)
+{
+	BotMoveToGoal(result, movestate, reinterpret_cast<const bot_goal_t*>(goal), travelflags);
+}
+
+void BotMoveToGoalET(bot_moveresult_t* result, int movestate, const bot_goal_et_t* goal, int travelflags)
+{
+	BotMoveToGoal(result, movestate, reinterpret_cast<const bot_goal_t*>(goal), travelflags);
 }

@@ -40,23 +40,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/server.h"
 #include "../../server/botlib/local.h"
 #include "../../server/botlib/ai_weight.h"
-#include "../game/be_ai_move.h"
 
 botlib_export_t be_botlib_export;
-
-/*
-============
-Init_AI_Export
-============
-*/
-static void Init_AI_Export(ai_export_t* ai)
-{
-	//-----------------------------------
-	// be_ai_move.h
-	//-----------------------------------
-	ai->BotMoveToGoal = BotMoveToGoal;
-}
-
 
 /*
 ============
@@ -72,8 +57,6 @@ botlib_export_t* GetBotLibAPI(int apiVersion)
 		BotImport_Print(PRT_ERROR, "Mismatched BOTLIB_API_VERSION: expected %i, got %i\n", BOTLIB_API_VERSION, apiVersion);
 		return NULL;
 	}
-
-	Init_AI_Export(&be_botlib_export.ai);
 
 	return &be_botlib_export;
 }

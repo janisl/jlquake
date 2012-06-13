@@ -316,7 +316,6 @@ bool BotItemGoalInVisButNotVisibleET(int viewer, const vec3_t eye, const vec3_t 
 #define RESULTTYPE_ELEVATORUP           1		//elevator is up
 #define Q3RESULTTYPE_WAITFORFUNCBOBBING 2		//waiting for func bobbing to arrive
 #define Q3RESULTTYPE_INSOLIDAREA        8		//stuck in solid area, this is bad
-#define WOLFRESULTTYPE_INVISIBLEGRAPPLE 2
 
 //structure used to initialize the movement state
 //the or_moveflags MFL_ONGROUND, MFL_TELEPORTED and MFL_WATERJUMP come from the playerstate
@@ -390,6 +389,9 @@ bool BotPredictVisiblePositionQ3(const vec3_t origin, int areanum, const bot_goa
 bool BotPredictVisiblePositionET(const vec3_t origin, int areanum, const bot_goal_et_t* goal, int travelflags, vec3_t target);
 //moves the bot in the specified direction using the specified type of movement
 bool BotMoveInDirection(int movestate, const vec3_t dir, float speed, int type);
+//moves the bot to the given goal
+void BotMoveToGoalQ3(bot_moveresult_t* result, int movestate, const bot_goal_q3_t* goal, int travelflags);
+void BotMoveToGoalET(bot_moveresult_t* result, int movestate, const bot_goal_et_t* goal, int travelflags);
 
 //
 //	Weapon

@@ -716,7 +716,7 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		BotResetMoveState(args[1]);
 		return 0;
 	case WMBOTLIB_AI_MOVE_TO_GOAL:
-		botlib_export->ai.BotMoveToGoal((struct bot_moveresult_t*)VMA(1), args[2], (struct bot_goal_q3_t*)VMA(3), args[4]);
+		BotMoveToGoalQ3((bot_moveresult_t*)VMA(1), args[2], (bot_goal_q3_t*)VMA(3), args[4]);
 		return 0;
 	case WMBOTLIB_AI_MOVE_IN_DIRECTION:
 		return BotMoveInDirection(args[1], (float*)VMA(2), VMF(3), args[4]);

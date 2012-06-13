@@ -736,7 +736,7 @@ void BotDumpGoalStack(int goalstate)
 	}
 }
 
-void BotPushGoal(int goalstate, const bot_goal_t* goal, size_t size)
+static void BotPushGoal(int goalstate, const bot_goal_t* goal, size_t size)
 {
 	bot_goalstate_t* gs = BotGoalStateFromHandle(goalstate);
 	if (!gs)
