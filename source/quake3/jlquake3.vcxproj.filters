@@ -93,9 +93,6 @@
     <ClCompile Include="server\sv_snapshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_world.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

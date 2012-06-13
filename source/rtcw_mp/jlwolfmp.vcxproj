@@ -112,7 +112,6 @@
     <ClCompile Include="server\sv_main.cpp" />
     <ClCompile Include="server\sv_net_chan.cpp" />
     <ClCompile Include="server\sv_snapshot.cpp" />
-    <ClCompile Include="server\sv_world.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>
@@ -140,9 +139,11 @@
     <ProjectReference Include="..\client\client.vcxproj">
       <Project>{e1056fe2-3d8c-4778-b075-f4da1c35858d}</Project>
     </ProjectReference>
-    <ProjectReference Include="botlib\botlib-wolfmp.vcxproj">
-      <Project>{4e5f4e34-0e6a-4200-916f-d33805505b54}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    <ProjectReference Include="..\common\common.vcxproj">
+      <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\server\server.vcxproj">
+      <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

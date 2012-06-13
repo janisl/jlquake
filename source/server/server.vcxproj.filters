@@ -1,36 +1,238 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="progsvm">
+      <UniqueIdentifier>{b53bcedd-4c29-4ac3-97cb-da52fa7bc64e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="botlib">
+      <UniqueIdentifier>{51127a83-d884-4cf6-8a3d-948b7658839e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="et">
+      <UniqueIdentifier>{83faafd3-19fc-4cae-a710-1230c78cdde6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="quake3">
+      <UniqueIdentifier>{a903b9e0-57d3-43a8-b105-273bae225224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wolfsp">
+      <UniqueIdentifier>{073cb2f7-dcb1-471b-9d0f-d4cf5c6af5ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wolfmp">
+      <UniqueIdentifier>{6cb5c332-c114-494b-b4ff-3223b7a04bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tech3">
+      <UniqueIdentifier>{7cbde4ec-86b6-4d57-bda2-5959bae0e0aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="progsvm/main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="progsvm/edict.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>progsvm</Filter>
+    </ClCompile>
+    <ClCompile Include="progsvm/main.cpp">
+      <Filter>progsvm</Filter>
     </ClCompile>
     <ClCompile Include="progsvm/execute.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>progsvm</Filter>
+    </ClCompile>
+    <ClCompile Include="link.cpp" />
+    <ClCompile Include="server_main.cpp" />
+    <ClCompile Include="worldsector.cpp" />
+    <ClCompile Include="botlib\aas_bsp.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_cluster.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_debug.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_entity.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_file.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_main.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_move.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_optimize.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_reach.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_route.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_routealt.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\aas_sample.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_character.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_chat.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_genetic.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_goal.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_move.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_weapon.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ai_weight.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\ea.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\interface.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\libvar.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\log.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="botlib\struct.cpp">
+      <Filter>botlib</Filter>
+    </ClCompile>
+    <ClCompile Include="et\ETEntity.cpp">
+      <Filter>et</Filter>
+    </ClCompile>
+    <ClCompile Include="et\game.cpp">
+      <Filter>et</Filter>
+    </ClCompile>
+    <ClCompile Include="quake3\game.cpp">
+      <Filter>quake3</Filter>
+    </ClCompile>
+    <ClCompile Include="quake3\Quake3Entity.cpp">
+      <Filter>quake3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\Entity3.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\game.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\world.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfmp\game.cpp">
+      <Filter>wolfmp</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfmp\WolfMPEntity.cpp">
+      <Filter>wolfmp</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfsp\game.cpp">
+      <Filter>wolfsp</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfsp\WolfSPEntity.cpp">
+      <Filter>wolfsp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="progsvm/progs_file.h">
-      <Filter>Header Files</Filter>
+      <Filter>progsvm</Filter>
     </ClInclude>
     <ClInclude Include="progsvm/progsvm.h">
-      <Filter>Header Files</Filter>
+      <Filter>progsvm</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h" />
+    <ClInclude Include="hexen2serverdefs.h" />
+    <ClInclude Include="link.h" />
+    <ClInclude Include="quake2serverdefs.h" />
+    <ClInclude Include="quake3serverdefs.h" />
+    <ClInclude Include="quakeserverdefs.h" />
+    <ClInclude Include="server.h" />
+    <ClInclude Include="wolfserverdefs.h" />
+    <ClInclude Include="worldsector.h" />
+    <ClInclude Include="botlib\aas_local.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\aas_public.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\aasfile.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\ai_local.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\ai_public.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\ai_weight.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\ea_public.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\local.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="botlib\public.h">
+      <Filter>botlib</Filter>
+    </ClInclude>
+    <ClInclude Include="et\ETEntity.h">
+      <Filter>et</Filter>
+    </ClInclude>
+    <ClInclude Include="et\g_public.h">
+      <Filter>et</Filter>
+    </ClInclude>
+    <ClInclude Include="et\local.h">
+      <Filter>et</Filter>
+    </ClInclude>
+    <ClInclude Include="quake3\g_public.h">
+      <Filter>quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="quake3\local.h">
+      <Filter>quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="quake3\Quake3Entity.h">
+      <Filter>quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="progsvm\edict.h">
+      <Filter>progsvm</Filter>
+    </ClInclude>
+    <ClInclude Include="tech3\Entity3.h">
+      <Filter>tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="tech3\local.h">
+      <Filter>tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfmp\g_public.h">
+      <Filter>wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfmp\local.h">
+      <Filter>wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfmp\WolfMPEntity.h">
+      <Filter>wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfsp\g_public.h">
+      <Filter>wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfsp\local.h">
+      <Filter>wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfsp\WolfSPEntity.h">
+      <Filter>wolfsp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

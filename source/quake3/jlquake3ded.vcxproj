@@ -94,11 +94,11 @@
     <Link />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\botlib\botlib.vcxproj">
-      <Project>{a410161f-ae9f-485d-a01f-5294891430a6}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\common\common.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\server\server.vcxproj">
+      <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +119,6 @@
     <ClCompile Include="server\sv_main.cpp" />
     <ClCompile Include="server\sv_net_chan.cpp" />
     <ClCompile Include="server\sv_snapshot.cpp" />
-    <ClCompile Include="server\sv_world.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>
