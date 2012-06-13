@@ -326,11 +326,11 @@ void Sys_Init(void)
 
 	if (osversion.dwMajorVersion < 5)
 	{
-		Sys_Error(GAME_VERSION " requires Windows version 4 or greater");
+		Sys_Error("JLQuake requires Windows version 4 or greater");
 	}
 	if (osversion.dwPlatformId == VER_PLATFORM_WIN32s)
 	{
-		Sys_Error(GAME_VERSION " doesn't run on Win32s");
+		Sys_Error("JLQuake doesn't run on Win32s");
 	}
 
 	if (osversion.dwPlatformId == VER_PLATFORM_WIN32_NT)

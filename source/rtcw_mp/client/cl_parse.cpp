@@ -223,13 +223,13 @@ void CL_DeltaEntity(QMsg* msg, wmclSnapshot_t* frame, int newnum, wmentityState_
 			if (isEntVisible(state))
 			{
 				entLastVisible[state->number] = frame->serverTime;
-				state->eFlags &= ~EF_NODRAW;
+				state->eFlags &= ~WMEF_NODRAW;
 			}
 			else
 			{
 				if (entLastVisible[state->number] < (frame->serverTime - 600))
 				{
-					state->eFlags |= EF_NODRAW;
+					state->eFlags |= WMEF_NODRAW;
 				}
 			}
 		}

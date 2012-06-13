@@ -850,3 +850,19 @@ enum
 	// Rafael - mg42		// (SA) I don't understand these here.  can someone explain?
 	ETPERS_HWEAPON_USE = 12,
 };
+
+// wsentityState_t->eFlags
+#define WSEF_DEAD           0x00000001		// don't draw a foe marker over players with WSEF_DEAD
+#define WSEF_NODRAW         0x00000080		// may have an event, but no model (unspawned items)
+#define WSEF_VIEWING_CAMERA 0x00040000
+// wmentityState_t->eFlags
+#define WMEF_DEAD           0x00000001		// don't draw a foe marker over players with WMEF_DEAD
+#define WMEF_NODRAW         0x00000080		// may have an event, but no model (unspawned items)
+#define WMEF_VIEWING_CAMERA 0x00040000
+// etentityState_t->eFlags
+#define ETEF_NODRAW         0x00000040		// may have an event, but no model (unspawned items)
+
+#define WMCS_WOLFINFO       36		// NERVE - SMF
+#define ETCS_WOLFINFO       21		// NERVE - SMF
+
+struct animModelInfo_t;

@@ -1158,7 +1158,7 @@ void SV_Frame(int msec)
 	// NERVE - SMF
 	if (cvar_modifiedFlags & CVAR_WOLFINFO)
 	{
-		SV_SetConfigstring(CS_WOLFINFO, Cvar_InfoString(CVAR_WOLFINFO, MAX_INFO_STRING_Q3));
+		SV_SetConfigstring(WMCS_WOLFINFO, Cvar_InfoString(CVAR_WOLFINFO, MAX_INFO_STRING_Q3));
 		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
 	}
 

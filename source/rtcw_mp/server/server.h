@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../../server/wolfmp/g_public.h"
-#include "../game/bg_public.h"
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 #include "../../server/wolfmp/local.h"

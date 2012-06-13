@@ -34,7 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../ui/ui_public.h"
 #include "keys.h"
 #include "../cgame/cg_public.h"
-#include "../game/bg_public.h"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 

@@ -410,7 +410,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, q3clientSnapshot_t* fr
 		}
 
 		// if this client is viewing from a camera, only add ents visible from portal ents
-		if ((playerEnt->s.eFlags & EF_VIEWING_CAMERA) && !portal)
+		if ((playerEnt->s.eFlags & WMEF_VIEWING_CAMERA) && !portal)
 		{
 			if (ent->r.svFlags & Q3SVF_PORTAL)
 			{
@@ -581,15 +581,15 @@ notVisible:
 		{
 			if (ent->r.eventTime == svs.q3_time)
 			{
-				ent->s.eFlags |= EF_NODRAW;		// don't draw, just process event
+				ent->s.eFlags |= WMEF_NODRAW;		// don't draw, just process event
 				SV_AddEntToSnapshot(svEnt, ent, eNums);
 			}
 			else if (ent->s.eType == Q3ET_PLAYER)
 			{
 				// keep players around if they are alive and active (so sounds dont get messed up)
-				if (!(ent->s.eFlags & EF_DEAD))
+				if (!(ent->s.eFlags & WMEF_DEAD))
 				{
-					ent->s.eFlags |= EF_NODRAW;		// don't draw, just process events and sounds
+					ent->s.eFlags |= WMEF_NODRAW;		// don't draw, just process events and sounds
 					SV_AddEntToSnapshot(svEnt, ent, eNums);
 				}
 			}

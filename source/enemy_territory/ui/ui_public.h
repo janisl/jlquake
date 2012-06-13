@@ -31,6 +31,31 @@ If you have questions concerning this license or the applicable additional terms
 
 #define UI_API_VERSION  4
 
+typedef enum {
+	UIMENU_NONE,
+	UIMENU_MAIN,
+	UIMENU_INGAME,
+	UIMENU_NEED_CD,
+	UIMENU_BAD_CD_KEY,
+	UIMENU_TEAM,
+	UIMENU_POSTGAME,
+	UIMENU_HELP,
+
+	UIMENU_WM_QUICKMESSAGE,
+	UIMENU_WM_QUICKMESSAGEALT,
+
+	UIMENU_WM_FTQUICKMESSAGE,
+	UIMENU_WM_FTQUICKMESSAGEALT,
+
+	UIMENU_WM_TAPOUT,
+	UIMENU_WM_TAPOUT_LMS,
+
+	UIMENU_WM_AUTOUPDATE,
+
+	// ydnar: say, team say, etc
+	UIMENU_INGAME_MESSAGEMODE,
+} uiMenuCommand_t;
+
 typedef struct
 {
 	connstate_t connState;

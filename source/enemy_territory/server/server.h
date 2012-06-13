@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../../server/et/g_public.h"
-#include "../game/bg_public.h"
 #include "../../common/file_formats/md3.h"
 #include "../qcommon/qfiles.h"
 #include "../../server/server.h"

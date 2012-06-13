@@ -224,13 +224,13 @@ void CL_DeltaEntity(QMsg* msg, etclSnapshot_t* frame, int newnum, etentityState_
 			if (isEntVisible(state))
 			{
 				entLastVisible[state->number] = frame->serverTime;
-				state->eFlags &= ~EF_NODRAW;
+				state->eFlags &= ~ETEF_NODRAW;
 			}
 			else
 			{
 				if (entLastVisible[state->number] < (frame->serverTime - 600))
 				{
-					state->eFlags |= EF_NODRAW;
+					state->eFlags |= ETEF_NODRAW;
 				}
 			}
 		}
