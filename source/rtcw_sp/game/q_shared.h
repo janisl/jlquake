@@ -231,19 +231,6 @@ void QDECL Com_Printf(const char* msg, ...);
 #define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
 
-//=========================================================
-// shared by AI and animation scripting
-//
-typedef enum
-{
-	AISTATE_RELAXED,
-	AISTATE_QUERY,
-	AISTATE_ALERT,
-	AISTATE_COMBAT,
-
-	MAX_AISTATES
-} aistateEnum_t;
-
 // real time
 //=============================================
 
