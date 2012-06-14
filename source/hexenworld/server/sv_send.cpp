@@ -375,7 +375,7 @@ void SV_StopSound(qhedict_t* entity, int channel)
 	int ent,i;
 	vec3_t origin;
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
 	// use the entity origin unless it is a bmodel
@@ -405,7 +405,7 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 	int i;
 	vec3_t origin;
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
 	// use the entity origin unless it is a bmodel
@@ -481,7 +481,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 
 	if ((channel & PHS_OVERRIDE_R) || !sv_phs->value)	// no PHS flag
 	{
@@ -968,7 +968,7 @@ static void UpdatePIV(void)
 			adjust_org2[2] += 24;
 
 			trace = SV_Move(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict);
-			if (EDICT_NUM(trace.entityNum) == client->qh_edict)
+			if (QH_EDICT_NUM(trace.entityNum) == client->qh_edict)
 			{	//can see each other, check for invisible, dead
 				if (ValidToShowName(client->qh_edict))
 				{

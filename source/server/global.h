@@ -63,7 +63,7 @@ struct client_t
 	int ping;
 	int rate;							// bytes / second
 
-	qhedict_t* qh_edict;				// EDICT_NUM(clientnum+1)
+	qhedict_t* qh_edict;				// QH_EDICT_NUM(clientnum+1)
 
 	// spawn parms are carried from level to level
 	float qh_spawn_parms[NUM_SPAWN_PARMS];
@@ -165,7 +165,7 @@ struct client_t
 
 	unsigned hw_PIV, hw_LastPIV;		// people in view
 
-	q2edict_t* q2_edict;				// EDICT_NUM(clientnum+1)
+	q2edict_t* q2_edict;				// Q2_EDICT_NUM(clientnum+1)
 
 	int q2_lastframe;					// for delta compression
 	q2usercmd_t q2_lastUsercmd;			// for filling in big drops
@@ -283,7 +283,6 @@ struct server_t
 	const char* qh_lightstyles[MAX_LIGHTSTYLES_Q1];
 
 	int qh_num_edicts;
-	int qh_max_edicts;
 	qhedict_t* qh_edicts;				// can NOT be array indexed, because
 										// qhedict_t is variable sized, but can
 										// be used to reference the world ent

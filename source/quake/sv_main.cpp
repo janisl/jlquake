@@ -162,7 +162,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 
 	channel = (ent << 3) | channel;
 
@@ -250,7 +250,7 @@ void SV_SendServerinfo(client_t* client)
 
 // set view
 	client->qh_message.WriteByte(q1svc_setview);
-	client->qh_message.WriteShort(NUM_FOR_EDICT(client->qh_edict));
+	client->qh_message.WriteShort(QH_NUM_FOR_EDICT(client->qh_edict));
 
 	client->qh_message.WriteByte(q1svc_signonnum);
 	client->qh_message.WriteByte(1);
@@ -282,7 +282,7 @@ void SV_ConnectClient(int clientnum)
 
 	edictnum = clientnum + 1;
 
-	ent = EDICT_NUM(edictnum);
+	ent = QH_EDICT_NUM(edictnum);
 
 // set up the client_t
 	netconnection = client->qh_netconnection;
@@ -1068,7 +1068,7 @@ void SV_CreateBaseline(void)
 	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		// get the current server version
-		svent = EDICT_NUM(entnum);
+		svent = QH_EDICT_NUM(entnum);
 		if (svent->free)
 		{
 			continue;
@@ -1235,9 +1235,7 @@ void SV_SpawnServer(char* server)
 	PR_LoadProgs();
 
 // allocate server memory
-	sv.qh_max_edicts = MAX_EDICTS_Q1;
-
-	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(sv.qh_max_edicts * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
 
 	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_DATAGRAM_Q1);
 
@@ -1249,7 +1247,7 @@ void SV_SpawnServer(char* server)
 	sv.qh_num_edicts = svs.qh_maxclients + 1;
 	for (i = 0; i < svs.qh_maxclients; i++)
 	{
-		ent = EDICT_NUM(i + 1);
+		ent = QH_EDICT_NUM(i + 1);
 		svs.clients[i].qh_edict = ent;
 	}
 
@@ -1281,7 +1279,7 @@ void SV_SpawnServer(char* server)
 //
 // load the rest of the entities
 //
-	ent = EDICT_NUM(0);
+	ent = QH_EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));

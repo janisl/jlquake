@@ -24,15 +24,18 @@
 #define MAX_STACK_DEPTH 32
 #define LOCALSTACK_SIZE 2048
 
-union eval_t
-{
-	string_t string;
-	float _float;
-	float vector[3];
-	func_t function;
-	int _int;
-	int edict;
-};
+#define G_FLOAT(o) (pr_globals[o])
+#define G_INT(o) (*(int*)&pr_globals[o])
+#define G_EDICT(o) ((qhedict_t*)((byte*)sv.qh_edicts + *(int*)&pr_globals[o]))
+#define G_EDICTNUM(o) QH_NUM_FOR_EDICT(G_EDICT(o))
+#define G_VECTOR(o) (&pr_globals[o])
+#define G_STRING(o) (PR_GetString(*(string_t*)&pr_globals[o]))
+#define G_FUNCTION(o) (*(func_t*)&pr_globals[o])
+
+#define E_FLOAT(e,o) (((float*)&e->v)[o])
+#define E_INT(e,o) (*(int*)&((float*)&e->v)[o])
+#define E_VECTOR(e,o) (&((float*)&e->v)[o])
+#define E_STRING(e,o) (PR_GetString(*(string_t*)&((float*)&e->v)[o]))
 
 struct prstack_t
 {
@@ -47,6 +50,7 @@ extern ddef_t* pr_globaldefs;
 extern ddef_t* pr_fielddefs;
 extern dstatement_t* pr_statements;
 extern float* pr_globals;			// same as pr_global_struct
+extern int pr_edict_size;			// in bytes
 
 extern prstack_t pr_stack[MAX_STACK_DEPTH];
 extern int pr_depth;
@@ -61,13 +65,23 @@ extern const char* pr_opnames[];
 void PR_ClearStringMap();
 int PR_SetString(const char* string);
 const char* PR_GetString(int number);
+// returns a copy of the string allocated from the server's string heap
+const char* ED_NewString(const char* string);
 
-ddef_t* ED_GlobalAtOfs(int offset);
 ddef_t* ED_FieldAtOfs(int offset);
 ddef_t* ED_FindField(const char* name);
 ddef_t* ED_FindGlobal(const char* name);
 dfunction_t* ED_FindFunction(const char* name);
 dfunction_t* ED_FindFunctioni(const char* name);
+
+const char* PR_ValueString(etype_t type, const eval_t* val);
+const char* PR_UglyValueString(etype_t type, const eval_t* val);
+const char* PR_GlobalString(int ofs);
+const char* PR_GlobalStringNoContents(int ofs);
+
+void ED_WriteGlobals(fileHandle_t f);
+bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
+const char* ED_ParseGlobals(const char* data);
 
 void PR_PrintStatement(dstatement_t* s);
 

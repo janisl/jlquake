@@ -717,7 +717,7 @@ void CL_ParseStartSoundPacket(void)
 	ent = (channel >> 3) & 1023;
 	channel &= 7;
 
-	if (ent > MAX_EDICTS_H2)
+	if (ent > MAX_EDICTS_QH)
 	{
 		Host_EndGame("CL_ParseStartSoundPacket: ent = %i", ent);
 	}
@@ -1096,7 +1096,7 @@ void CL_ParseServerMessage(void)
 			ent = channel >> 3;
 			channel &= 7;
 
-			if (ent > MAX_EDICTS_H2)
+			if (ent > MAX_EDICTS_QH)
 			{
 				Host_FatalError("hwsvc_sound_update_pos: ent = %i", ent);
 			}

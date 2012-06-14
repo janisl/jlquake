@@ -233,7 +233,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink)
 //		Con_Printf ("back on ground\n");
 		ent->SetFlags((int)ent->GetFlags() & ~FL_PARTIALGROUND);
 	}
-	ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+	ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 
 // the move is ok
 	if (relink)

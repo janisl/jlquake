@@ -16,6 +16,15 @@
 
 #include "progsvm.h"
 
+#define MAX_FIELD_LEN   64
+#define GEFV_CACHESIZE  2
+
+struct gefv_cache
+{
+	ddef_t* pcache;
+	char field[MAX_FIELD_LEN];
+};
+
 idEntVarDef entFieldLastRunTime;
 idEntVarDef entFieldMoveType;
 idEntVarDef entFieldSolid;
@@ -153,6 +162,12 @@ idEntVarDef entFieldMoveChain;
 idEntVarDef entFieldChainMoved;
 idEntVarDef entFieldGravity;
 idEntVarDef entFieldSiegeTeam;
+
+static bool RemoveBadReferences;
+
+static gefv_cache gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
+
+static int type_size[8] = { 1, 1, 1, 3, 1, 1, 1, 1 };
 
 void idEntVarDef::Init(const char* name, int offset)
 {
@@ -533,4 +548,375 @@ int ED_InitEntityFields()
 		}
 	}
 	return offset;
+}
+
+qhedict_t* QH_EDICT_NUM(int n)
+{
+	if (n < 0 || n >= MAX_EDICTS_QH)
+	{
+		common->Error("QH_EDICT_NUM: bad number %i", n);
+	}
+	return (qhedict_t*)((byte*)sv.qh_edicts + (n) * pr_edict_size);
+}
+
+int QH_NUM_FOR_EDICT(const qhedict_t* e)
+{
+	int b = (byte*)e - (byte*)sv.qh_edicts;
+	b = b / pr_edict_size;
+
+	if (b < 0 || b >= sv.qh_num_edicts)
+	{
+		if (GGameType & GAME_Hexen2)
+		{
+			if (!RemoveBadReferences)
+			{
+				common->DPrintf("QH_NUM_FOR_EDICT: bad pointer, Index %d, Total %d", b, sv.qh_num_edicts);
+			}
+			return 0;
+		}
+		common->Error("QH_NUM_FOR_EDICT: bad pointer");
+	}
+	if (e->free && RemoveBadReferences)
+	{
+		return 0;
+	}
+	return b;
+}
+
+eval_t* GetEdictFieldValue(qhedict_t* ed, const char* field)
+{
+	ddef_t* def = NULL;
+	static int rep = 0;
+
+	for (int i = 0; i < GEFV_CACHESIZE; i++)
+	{
+		if (!String::Cmp(field, gefvCache[i].field))
+		{
+			def = gefvCache[i].pcache;
+			goto Done;
+		}
+	}
+
+	def = ED_FindField(field);
+
+	if (String::Length(field) < MAX_FIELD_LEN)
+	{
+		gefvCache[rep].pcache = def;
+		String::Cpy(gefvCache[rep].field, field);
+		rep ^= 1;
+	}
+
+Done:
+	if (!def)
+	{
+		return NULL;
+	}
+
+	return (eval_t*)((char*)&ed->v + def->ofs * 4);
+}
+
+void ED_ClearGEFVCache()
+{
+	for (int i = 0; i < GEFV_CACHESIZE; i++)
+	{
+		gefvCache[i].field[0] = 0;
+	}
+}
+
+//	Sets everything to NULL
+void ED_ClearEdict(qhedict_t* e)
+{
+	Com_Memset(&e->v, 0, progs->entityfields * 4);
+	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
+	{
+		Com_Memset(&e->h2_baseline, 0, sizeof(e->h2_baseline));
+	}
+	e->free = false;
+}
+
+//	For debugging
+void ED_Print(const qhedict_t* ed)
+{
+	if (ed->free)
+	{
+		common->Printf("FREE\n");
+		return;
+	}
+
+	common->Printf("\nEDICT %i:\n", QH_NUM_FOR_EDICT(ed));
+	for (int i = 1; i < progs->numfielddefs; i++)
+	{
+		ddef_t* d = &pr_fielddefs[i];
+		const char* name = PR_GetString(d->s_name);
+		int l = String::Length(name);
+		if ((name[l - 2] == '_') && ((name[l - 1] == 'x') || (name[l - 1] == 'y') || (name[l - 1] == 'z')))
+		{
+			continue;	// skip _x, _y, _z vars
+
+		}
+		int* v = (int*)((char*)&ed->v + d->ofs * 4);
+
+		// if the value is still all 0, skip the field
+		int type = d->type & ~DEF_SAVEGLOBAL;
+		int j;
+		for (j = 0; j < type_size[type]; j++)
+		{
+			if (v[j])
+			{
+				break;
+			}
+		}
+		if (j == type_size[type])
+		{
+			continue;
+		}
+
+		common->Printf("%s",name);
+		while (l++ < 15)
+		{
+			common->Printf(" ");
+		}
+
+		common->Printf("%s\n", PR_ValueString((etype_t)d->type, (eval_t*)v));
+	}
+}
+
+void ED_PrintNum(int ent)
+{
+	ED_Print(QH_EDICT_NUM(ent));
+}
+
+//	For debugging, prints all the entities in the current server
+void ED_PrintEdicts()
+{
+	common->Printf("%i entities\n", sv.qh_num_edicts);
+	for (int i = 0; i < sv.qh_num_edicts; i++)
+	{
+		ED_PrintNum(i);
+	}
+}
+
+//	For debugging, prints a single edicy
+void ED_PrintEdict_f()
+{
+	int i = String::Atoi(Cmd_Argv(1));
+	if (i >= sv.qh_num_edicts)
+	{
+		common->Printf("Bad edict number\n");
+		return;
+	}
+	ED_PrintNum(i);
+}
+
+//	For savegames
+void ED_Write(fileHandle_t f, const qhedict_t* ed)
+{
+	FS_Printf(f, "{\n");
+
+	if (ed->free)
+	{
+		FS_Printf(f, "}\n");
+		return;
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		RemoveBadReferences = true;
+	}
+
+	for (int i = 1; i < progs->numfielddefs; i++)
+	{
+		ddef_t* d = &pr_fielddefs[i];
+		const char* name = PR_GetString(d->s_name);
+		int length = String::Length(name);
+		if (name[length - 2] == '_' && name[length - 1] >= 'x' && name[length - 1] <= 'z')
+		{
+			continue;	// skip _x, _y, _z vars
+
+		}
+		int* v = (int*)((char*)&ed->v + d->ofs * 4);
+
+		// if the value is still all 0, skip the field
+		int type = d->type & ~DEF_SAVEGLOBAL;
+		int j;
+		for (j = 0; j < type_size[type]; j++)
+		{
+			if (v[j])
+			{
+				break;
+			}
+		}
+		if (j == type_size[type])
+		{
+			continue;
+		}
+
+		FS_Printf(f,"\"%s\" ", name);
+		FS_Printf(f,"\"%s\"\n", PR_UglyValueString((etype_t)d->type, (eval_t*)v));
+	}
+
+	FS_Printf(f, "}\n");
+
+	RemoveBadReferences = false;
+}
+
+//	Parses an edict out of the given string, returning the new position
+// ed should be a properly initialized empty edict.
+// Used for initial level load and for savegames.
+const char* ED_ParseEdict(const char* data, qhedict_t* ent)
+{
+	ddef_t* key;
+	qboolean anglehack;
+	qboolean init;
+	char keyname[256];
+	int n;
+
+	init = false;
+
+// clear it
+	if (ent != sv.qh_edicts)	// hack
+	{
+		Com_Memset(&ent->v, 0, progs->entityfields * 4);
+	}
+
+// go through all the dictionary pairs
+	while (1)
+	{
+		// parse key
+		char* token = String::Parse2(&data);
+		if (token[0] == '}')
+		{
+			break;
+		}
+		if (!data)
+		{
+			common->Error("ED_ParseEntity: EOF without closing brace");
+		}
+
+// anglehack is to allow QuakeEd to write single scalar angles
+// and allow them to be turned into vectors. (FIXME...)
+		if (!String::Cmp(token, "angle"))
+		{
+			String::Cpy(token, "angles");
+			anglehack = true;
+		}
+		else
+		{
+			anglehack = false;
+		}
+
+// FIXME: change light to _light to get rid of this hack
+		if (!String::Cmp(token, "light"))
+		{
+			String::Cpy(token, "light_lev");// hack for single light def
+
+		}
+		String::Cpy(keyname, token);
+
+		// another hack to fix heynames with trailing spaces
+		n = String::Length(keyname);
+		while (n && keyname[n - 1] == ' ')
+		{
+			keyname[n - 1] = 0;
+			n--;
+		}
+
+		// parse value
+		token = String::Parse2(&data);
+		if (!data)
+		{
+			common->Error("ED_ParseEntity: EOF without closing brace");
+		}
+
+		if (token[0] == '}')
+		{
+			common->Error("ED_ParseEntity: closing brace without data");
+		}
+
+		init = true;
+
+// keynames with a leading underscore are used for utility comments,
+// and are immediately discarded by quake
+		if (keyname[0] == '_')
+		{
+			continue;
+		}
+
+		if (GGameType & GAME_Hexen2)
+		{
+			if (String::ICmp(keyname,"MIDI") == 0)
+			{
+				String::Cpy(sv.h2_midi_name,token);
+				continue;
+			}
+			else if (String::ICmp(keyname,"CD") == 0)
+			{
+				sv.h2_cd_track = (byte)atol(token);
+				continue;
+			}
+		}
+
+		key = ED_FindField(keyname);
+		if (!key)
+		{
+			common->Printf("'%s' is not a field\n", keyname);
+			continue;
+		}
+
+		if (anglehack)
+		{
+			char temp[32];
+			String::Cpy(temp, token);
+			sprintf(token, "0 %s 0", temp);
+		}
+
+		if (!ED_ParseEpair((void*)&ent->v, key, token))
+		{
+			common->Error("ED_ParseEdict: parse error");
+		}
+	}
+
+	if (!init)
+	{
+		ent->free = true;
+	}
+
+	return data;
+}
+
+//	For debugging
+void ED_Count()
+{
+	int active = 0;
+	int models = 0;
+	int solid = 0;
+	int step = 0;
+	for (int i = 0; i < sv.qh_num_edicts; i++)
+	{
+		qhedict_t* ent = QH_EDICT_NUM(i);
+		if (ent->free)
+		{
+			continue;
+		}
+		active++;
+		if (ent->GetSolid())
+		{
+			solid++;
+		}
+		if (ent->GetModel())
+		{
+			models++;
+		}
+		if (ent->GetMoveType() == QHMOVETYPE_STEP)
+		{
+			step++;
+		}
+	}
+
+	common->Printf("num_edicts:%3i\n", sv.qh_num_edicts);
+	common->Printf("active    :%3i\n", active);
+	common->Printf("view      :%3i\n", models);
+	common->Printf("touch     :%3i\n", solid);
+	common->Printf("step      :%3i\n", step);
+
 }

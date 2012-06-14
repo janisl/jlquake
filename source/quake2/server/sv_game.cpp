@@ -43,7 +43,7 @@ void PF_Unicast(q2edict_t* ent, qboolean reliable)
 		return;
 	}
 
-	p = NUM_FOR_EDICT(ent);
+	p = Q2_NUM_FOR_EDICT(ent);
 	if (p < 1 || p > maxclients->value)
 	{
 		return;
@@ -99,7 +99,7 @@ void PF_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 
 	if (ent)
 	{
-		n = NUM_FOR_EDICT(ent);
+		n = Q2_NUM_FOR_EDICT(ent);
 		if (n < 1 || n > maxclients->value)
 		{
 			Com_Error(ERR_DROP, "cprintf to a non-client");
@@ -134,7 +134,7 @@ void PF_centerprintf(q2edict_t* ent, const char* fmt, ...)
 	va_list argptr;
 	int n;
 
-	n = NUM_FOR_EDICT(ent);
+	n = Q2_NUM_FOR_EDICT(ent);
 	if (n < 1 || n > maxclients->value)
 	{
 		return;	// Com_Error (ERR_DROP, "centerprintf to a non-client");

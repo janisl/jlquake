@@ -1015,7 +1015,7 @@ void PF_traceline(void)
 	pr_global_struct->trace_plane_dist =  trace.plane.dist;
 	if (trace.entityNum >= 0)
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+		pr_global_struct->trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum));
 	}
 	else
 	{
@@ -1064,7 +1064,7 @@ void PF_tracearea(void)
 	pr_global_struct->trace_plane_dist =  trace.plane.dist;
 	if (trace.entityNum >= 0)
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+		pr_global_struct->trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum));
 	}
 	else
 	{
@@ -1124,7 +1124,7 @@ int PF_newcheckclient(int check)
 			i = 1;
 		}
 
-		ent = EDICT_NUM(i);
+		ent = QH_EDICT_NUM(i);
 
 		if (i == check)
 		{
@@ -1187,7 +1187,7 @@ void PF_checkclient(void)
 	}
 
 // return check if it might be visible
-	ent = EDICT_NUM(sv.qh_lastcheck);
+	ent = QH_EDICT_NUM(sv.qh_lastcheck);
 	if (ent->free || ent->GetHealth() <= 0)
 	{
 		RETURN_EDICT(sv.qh_edicts);
@@ -1441,7 +1441,7 @@ void PF_Remove(void)
 		return;
 	}
 
-	i = NUM_FOR_EDICT(ed);
+	i = QH_NUM_FOR_EDICT(ed);
 	if (i <= HWMAX_CLIENTS)
 	{
 		Con_Printf("Tried to remove a client at %s in %s!\n",
@@ -1470,7 +1470,7 @@ void PF_Find(void)
 
 	for (e++; e < sv.qh_num_edicts; e++)
 	{
-		ed = EDICT_NUM(e);
+		ed = QH_EDICT_NUM(e);
 		if (ed->free)
 		{
 			continue;
@@ -1507,7 +1507,7 @@ void PF_FindFloat(void)
 
 	for (e++; e < sv.qh_num_edicts; e++)
 	{
-		ed = EDICT_NUM(e);
+		ed = QH_EDICT_NUM(e);
 		if (ed->free)
 		{
 			continue;
@@ -1637,7 +1637,8 @@ void PF_precache_model3(void)
 void PF_precache_puzzle_model(void)
 {
 	int i;
-	char* s,temp[256];
+	const char* s;
+	char temp[256];
 	const char* m;
 
 	if (sv.state != SS_LOADING && !ignore_precache)
@@ -1762,7 +1763,7 @@ void PF_droptofloor(void)
 		VectorCopy(trace.endpos, ent->GetOrigin());
 		SV_LinkEdict(ent, false);
 		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-		ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+		ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
 }
@@ -1958,7 +1959,7 @@ void PF_nextent(void)
 			RETURN_EDICT(sv.qh_edicts);
 			return;
 		}
-		ent = EDICT_NUM(i);
+		ent = QH_EDICT_NUM(i);
 		if (!ent->free)
 		{
 			RETURN_EDICT(ent);
@@ -2002,8 +2003,8 @@ void PF_aim(void)
 	ent->SetHull(0);
 	tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
 	ent->SetHull(save_hull);
-	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_YES &&
-		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != EDICT_NUM(tr.entityNum)->GetTeam()))
+	if (tr.entityNum >= 0 && QH_EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_YES &&
+		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != QH_EDICT_NUM(tr.entityNum)->GetTeam()))
 	{
 		VectorCopy(pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -2044,7 +2045,7 @@ void PF_aim(void)
 		ent->SetHull(0);
 		tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
 		ent->SetHull(save_hull);
-		if (EDICT_NUM(tr.entityNum) == check)
+		if (QH_EDICT_NUM(tr.entityNum) == check)
 		{	// can shoot at this one
 			bestdist = dist;
 			bestent = check;
@@ -2152,7 +2153,7 @@ QMsg* WriteDest(void)
 
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
-		entnum = NUM_FOR_EDICT(ent);
+		entnum = QH_NUM_FOR_EDICT(ent);
 		if (entnum < 1 || entnum > HWMAX_CLIENTS)
 		{
 			PR_RunError("WriteDest: not a client");
@@ -2264,7 +2265,7 @@ void PF_setspawnparms(void)
 	client_t* client;
 
 	ent = G_EDICT(OFS_PARM0);
-	i = NUM_FOR_EDICT(ent);
+	i = QH_NUM_FOR_EDICT(ent);
 	if (i < 1 || i > HWMAX_CLIENTS)
 	{
 		PR_RunError("Entity is not a client");
@@ -2322,8 +2323,8 @@ void PF_logfrag(void)
 	ent1 = G_EDICT(OFS_PARM0);
 	ent2 = G_EDICT(OFS_PARM1);
 
-	e1 = NUM_FOR_EDICT(ent1);
-	e2 = NUM_FOR_EDICT(ent2);
+	e1 = QH_NUM_FOR_EDICT(ent1);
+	e2 = QH_NUM_FOR_EDICT(ent2);
 
 	if (e1 < 1 || e1 > HWMAX_CLIENTS ||
 		e2 < 1 || e2 > HWMAX_CLIENTS)
@@ -2356,7 +2357,7 @@ void PF_infokey(void)
 	const char* key;
 
 	e = G_EDICT(OFS_PARM0);
-	e1 = NUM_FOR_EDICT(e);
+	e1 = QH_NUM_FOR_EDICT(e);
 	key = G_STRING(OFS_PARM1);
 
 	if (e1 == 0)
@@ -2659,7 +2660,7 @@ void PF_AwardExperience(void)
         if (ToEnt->v.level != AfterLevel)
         {
             ToEnt->v.level = AfterLevel;
-            entnum = NUM_FOR_EDICT(ToEnt);
+            entnum = QH_NUM_FOR_EDICT(ToEnt);
 
             if (entnum >= 1 && entnum <= svs.qh_maxclients)
             {

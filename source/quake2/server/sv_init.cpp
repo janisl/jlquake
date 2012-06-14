@@ -98,7 +98,7 @@ void SV_CreateBaseline(void)
 
 	for (entnum = 1; entnum < ge->num_edicts; entnum++)
 	{
-		svent = EDICT_NUM(entnum);
+		svent = Q2_EDICT_NUM(entnum);
 		if (!svent->inuse)
 		{
 			continue;
@@ -383,7 +383,7 @@ void SV_InitGame(void)
 	SV_InitGameProgs();
 	for (i = 0; i < maxclients->value; i++)
 	{
-		ent = EDICT_NUM(i + 1);
+		ent = Q2_EDICT_NUM(i + 1);
 		ent->s.number = i + 1;
 		svs.clients[i].q2_edict = ent;
 		Com_Memset(&svs.clients[i].q2_lastUsercmd, 0, sizeof(svs.clients[i].q2_lastUsercmd));

@@ -320,7 +320,7 @@ void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
 		Com_Error(ERR_FATAL, "SV_StartSound: timeofs = %f", timeofs);
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = Q2_NUM_FOR_EDICT(entity);
 
 	if (channel & 8)	// no PHS flag
 	{

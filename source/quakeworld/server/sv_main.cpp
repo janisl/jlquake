@@ -745,7 +745,7 @@ void SVC_DirectConnect(void)
 	// spectator mode can ONLY be set at join time
 	newcl->qh_spectator = spectator;
 
-	ent = EDICT_NUM(edictnum);
+	ent = QH_EDICT_NUM(edictnum);
 	newcl->qh_edict = ent;
 
 	// parse some info from the info strings

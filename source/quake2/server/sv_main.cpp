@@ -393,7 +393,7 @@ gotnewcl:
 	*newcl = temp;
 	sv_client = newcl;
 	edictnum = (newcl - svs.clients) + 1;
-	ent = EDICT_NUM(edictnum);
+	ent = Q2_EDICT_NUM(edictnum);
 	newcl->q2_edict = ent;
 	newcl->challenge = challenge;	// save challenge for checksumming
 
@@ -773,7 +773,7 @@ void SV_PrepWorldFrame(void)
 
 	for (i = 0; i < ge->num_edicts; i++, ent++)
 	{
-		ent = EDICT_NUM(i);
+		ent = Q2_EDICT_NUM(i);
 		// events only last for a single message
 		ent->s.event = 0;
 	}

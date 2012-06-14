@@ -516,7 +516,7 @@ void PF_traceline(void)
 	pr_global_struct->trace_plane_dist =  trace.plane.dist;
 	if (trace.entityNum >= 0)
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
+		pr_global_struct->trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum));
 	}
 	else
 	{
@@ -576,7 +576,7 @@ int PF_newcheckclient(int check)
 			i = 1;
 		}
 
-		ent = EDICT_NUM(i);
+		ent = QH_EDICT_NUM(i);
 
 		if (i == check)
 		{
@@ -639,7 +639,7 @@ void PF_checkclient(void)
 	}
 
 // return check if it might be visible
-	ent = EDICT_NUM(sv.qh_lastcheck);
+	ent = QH_EDICT_NUM(sv.qh_lastcheck);
 	if (ent->free || ent->GetHealth() <= 0)
 	{
 		RETURN_EDICT(sv.qh_edicts);
@@ -873,7 +873,7 @@ void PF_Find(void)
 
 	for (e++; e < sv.qh_num_edicts; e++)
 	{
-		ed = EDICT_NUM(e);
+		ed = QH_EDICT_NUM(e);
 		if (ed->free)
 		{
 			continue;
@@ -1057,7 +1057,7 @@ void PF_droptofloor(void)
 		VectorCopy(trace.endpos, ent->GetOrigin());
 		SV_LinkEdict(ent, false);
 		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-		ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+		ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
 }
@@ -1169,7 +1169,7 @@ void PF_nextent(void)
 			RETURN_EDICT(sv.qh_edicts);
 			return;
 		}
-		ent = EDICT_NUM(i);
+		ent = QH_EDICT_NUM(i);
 		if (!ent->free)
 		{
 			RETURN_EDICT(ent);
@@ -1204,7 +1204,7 @@ void PF_aim(void)
 	start[2] += 20;
 
 // noaim option
-	i = NUM_FOR_EDICT(ent);
+	i = QH_NUM_FOR_EDICT(ent);
 	if (i > 0 && i < MAX_CLIENTS_QW)
 	{
 		noaim = Info_ValueForKey(svs.clients[i - 1].userinfo, "noaim");
@@ -1219,8 +1219,8 @@ void PF_aim(void)
 	VectorCopy(pr_global_struct->v_forward, dir);
 	VectorMA(start, 2048, dir, end);
 	tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
-	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_AIM &&
-		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != EDICT_NUM(tr.entityNum)->GetTeam()))
+	if (tr.entityNum >= 0 && QH_EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_AIM &&
+		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != QH_EDICT_NUM(tr.entityNum)->GetTeam()))
 	{
 		VectorCopy(pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -1258,7 +1258,7 @@ void PF_aim(void)
 			continue;	// to far to turn
 		}
 		tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
-		if (EDICT_NUM(tr.entityNum) == check)
+		if (QH_EDICT_NUM(tr.entityNum) == check)
 		{	// can shoot at this one
 			bestdist = dist;
 			bestent = check;
@@ -1362,7 +1362,7 @@ QMsg* WriteDest(void)
 		SV_Error("Shouldn't be at MSG_ONE");
 #if 0
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
-		entnum = NUM_FOR_EDICT(ent);
+		entnum = QH_NUM_FOR_EDICT(ent);
 		if (entnum < 1 || entnum > MAX_CLIENTS_QW)
 		{
 			PR_RunError("WriteDest: not a client");
@@ -1397,7 +1397,7 @@ static client_t* Write_GetClient(void)
 	qhedict_t* ent;
 
 	ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
-	entnum = NUM_FOR_EDICT(ent);
+	entnum = QH_NUM_FOR_EDICT(ent);
 	if (entnum < 1 || entnum > MAX_CLIENTS_QW)
 	{
 		PR_RunError("WriteDest: not a client");
@@ -1559,7 +1559,7 @@ void PF_setspawnparms(void)
 	client_t* client;
 
 	ent = G_EDICT(OFS_PARM0);
-	i = NUM_FOR_EDICT(ent);
+	i = QH_NUM_FOR_EDICT(ent);
 	if (i < 1 || i > MAX_CLIENTS_QW)
 	{
 		PR_RunError("Entity is not a client");
@@ -1610,8 +1610,8 @@ void PF_logfrag(void)
 	ent1 = G_EDICT(OFS_PARM0);
 	ent2 = G_EDICT(OFS_PARM1);
 
-	e1 = NUM_FOR_EDICT(ent1);
-	e2 = NUM_FOR_EDICT(ent2);
+	e1 = QH_NUM_FOR_EDICT(ent1);
+	e2 = QH_NUM_FOR_EDICT(ent2);
 
 	if (e1 < 1 || e1 > MAX_CLIENTS_QW ||
 		e2 < 1 || e2 > MAX_CLIENTS_QW)
@@ -1646,7 +1646,7 @@ void PF_infokey(void)
 	static char ov[256];
 
 	e = G_EDICT(OFS_PARM0);
-	e1 = NUM_FOR_EDICT(e);
+	e1 = QH_NUM_FOR_EDICT(e);
 	key = G_STRING(OFS_PARM1);
 
 	if (e1 == 0)

@@ -393,7 +393,7 @@ q1trace_t SV_ClipMoveToEntity(qhedict_t* ent, vec3_t start, vec3_t mins, vec3_t 
 // did we clip the move?
 	if (trace.fraction < 1 || trace.startsolid)
 	{
-		trace.entityNum = NUM_FOR_EDICT(ent);
+		trace.entityNum = QH_NUM_FOR_EDICT(ent);
 	}
 
 	return trace;
@@ -480,7 +480,7 @@ void SV_ClipToLinks(worldSector_t* node, moveclip_t* clip)
 		if (trace.allsolid || trace.startsolid ||
 			trace.fraction < clip->trace.fraction)
 		{
-			trace.entityNum = NUM_FOR_EDICT(touch);
+			trace.entityNum = QH_NUM_FOR_EDICT(touch);
 			if (clip->trace.startsolid)
 			{
 				clip->trace = trace;

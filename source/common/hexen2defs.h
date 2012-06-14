@@ -18,8 +18,6 @@
 #define HWMAX_CLIENTS           32
 #define H2BIGGEST_MAX_CLIENTS   32	//	For common arrays
 
-#define MAX_EDICTS_H2       768			// FIXME: ouch! ouch! ouch!
-
 #define MAX_CLIENT_STATES_H2    150
 
 // Timing macros

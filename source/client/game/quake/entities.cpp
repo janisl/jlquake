@@ -20,8 +20,8 @@
 
 Cvar* cl_doubleeyes;
 
-q1entity_state_t clq1_baselines[MAX_EDICTS_Q1];
-q1entity_t clq1_entities[MAX_EDICTS_Q1];
+q1entity_state_t clq1_baselines[MAX_EDICTS_QH];
+q1entity_t clq1_entities[MAX_EDICTS_QH];
 q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
 image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];	// color translated skins
@@ -34,7 +34,7 @@ static q1entity_t* CLQ1_EntityNum(int number)
 {
 	if (number >= cl.qh_num_entities)
 	{
-		if (number >= MAX_EDICTS_Q1)
+		if (number >= MAX_EDICTS_QH)
 		{
 			throw DropException(va("CLQ1_EntityNum: %i is an invalid number", number));
 		}

@@ -102,7 +102,7 @@ void set_move_trace(q1trace_t* trace)
 	pr_global_struct->trace_plane_dist =  trace->plane.dist;
 	if (trace->entityNum >= 0)
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace->entityNum));
+		pr_global_struct->trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace->entityNum));
 	}
 	else
 	{
@@ -256,7 +256,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 //		Con_Printf ("back on ground\n");
 		ent->SetFlags((int)ent->GetFlags() & ~FL_PARTIALGROUND);
 	}
-	ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+	ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 
 // the move is ok
 	if (relink)

@@ -591,7 +591,7 @@ void CL_Record_f(void)
 // baselines
 
 	Com_Memset(&blankes, 0, sizeof(blankes));
-	for (i = 0; i < MAX_EDICTS_Q1; i++)
+	for (i = 0; i < MAX_EDICTS_QH; i++)
 	{
 		es = clq1_baselines + i;
 

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#define MAX_EDICTS_Q1       768			// FIXME: ouch! ouch! ouch!
+#define MAX_EDICTS_QH       768			// FIXME: ouch! ouch! ouch!
 
 // entity effects
 enum

@@ -93,7 +93,7 @@ void SV_CreateBaseline(void)
 
 	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
-		svent = EDICT_NUM(entnum);
+		svent = QH_EDICT_NUM(entnum);
 		if (svent->free)
 		{
 			continue;
@@ -249,13 +249,13 @@ void SV_SpawnServer(char* server)
 	PR_LoadProgs();
 
 	// allocate edicts
-	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_Q1 * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
 
 	// leave slots at start for clients only
 	sv.qh_num_edicts = MAX_CLIENTS_QW + 1;
 	for (i = 0; i < MAX_CLIENTS_QW; i++)
 	{
-		ent = EDICT_NUM(i + 1);
+		ent = QH_EDICT_NUM(i + 1);
 		svs.clients[i].qh_edict = ent;
 //ZOID - make sure we update frags right
 		svs.clients[i].qh_old_frags = 0;
@@ -295,7 +295,7 @@ void SV_SpawnServer(char* server)
 	// map initialization
 	sv.state = SS_LOADING;
 
-	ent = EDICT_NUM(0);
+	ent = QH_EDICT_NUM(0);
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model

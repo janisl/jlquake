@@ -401,7 +401,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 
 	if ((channel & 8) || !sv_phs->value)	// no PHS flag
 	{

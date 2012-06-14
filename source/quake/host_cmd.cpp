@@ -528,7 +528,7 @@ void Host_Savegame_f(void)
 	ED_WriteGlobals(f);
 	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
-		ED_Write(f, EDICT_NUM(i));
+		ED_Write(f, QH_EDICT_NUM(i));
 		FS_Flush(f);
 	}
 	FS_FCloseFile(f);
@@ -664,7 +664,7 @@ void Host_Loadgame_f(void)
 		else
 		{	// parse an edict
 
-			ent = EDICT_NUM(entnum);
+			ent = QH_EDICT_NUM(entnum);
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 			ent->free = false;
 			start = ED_ParseEdict(start, ent);
@@ -1150,7 +1150,7 @@ void Host_Spawn_f(void)
 		ent = host_client->qh_edict;
 
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
-		ent->SetColorMap(NUM_FOR_EDICT(ent));
+		ent->SetColorMap(QH_NUM_FOR_EDICT(ent));
 		ent->SetTeam((host_client->qh_colors & 15) + 1);
 		ent->SetNetName(PR_SetString(host_client->name));
 
@@ -1228,7 +1228,7 @@ void Host_Spawn_f(void)
 // in a state where it is expecting the client to correct the angle
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
-	ent = EDICT_NUM(1 + (host_client - svs.clients));
+	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
 	host_client->qh_message.WriteByte(q1svc_setangle);
 	for (i = 0; i < 2; i++)
 		host_client->qh_message.WriteAngle(ent->GetAngles()[i]);
@@ -1573,7 +1573,7 @@ qhedict_t* FindViewthing(void)
 
 	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
-		e = EDICT_NUM(i);
+		e = QH_EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "viewthing"))
 		{
 			return e;

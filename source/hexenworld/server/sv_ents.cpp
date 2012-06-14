@@ -538,7 +538,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 		if (newnum == oldnum)
 		{	// delta update from old position
 //Con_Printf ("delta %i\n", newnum);
-			SV_WriteDelta(&from->entities[oldindex], &to->entities[newindex], msg, false, EDICT_NUM(newnum), client);
+			SV_WriteDelta(&from->entities[oldindex], &to->entities[newindex], msg, false, QH_EDICT_NUM(newnum), client);
 			oldindex++;
 			newindex++;
 			continue;
@@ -546,7 +546,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 
 		if (newnum < oldnum)
 		{	// this is a new entity, send it from the baseline
-			ent = EDICT_NUM(newnum);
+			ent = QH_EDICT_NUM(newnum);
 //Con_Printf ("baseline %i\n", newnum);
 			SV_WriteDelta(&ent->h2_baseline, &to->entities[newindex], msg, true, ent, client);
 			newindex++;
@@ -1606,7 +1606,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	numravens = 0;
 	numraven2s = 0;
 
-	for (e = HWMAX_CLIENTS + 1, ent = EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
+	for (e = HWMAX_CLIENTS + 1, ent = QH_EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))

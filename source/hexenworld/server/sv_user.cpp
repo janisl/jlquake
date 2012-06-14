@@ -58,7 +58,7 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteLong(svs.spawncount);
 	host_client->netchan.message.WriteString2(gamedir);
 
-	playernum = NUM_FOR_EDICT(host_client->qh_edict) - 1;
+	playernum = QH_NUM_FOR_EDICT(host_client->qh_edict) - 1;
 	if (host_client->qh_spectator)
 	{
 		playernum |= 128;
@@ -236,7 +236,7 @@ void SV_Spawn_f(void)
 	ent = host_client->qh_edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->SetColorMap(NUM_FOR_EDICT(ent));
+	ent->SetColorMap(QH_NUM_FOR_EDICT(ent));
 	if (dmMode->value == DM_SIEGE)
 	{
 		ent->SetTeam(ent->GetSiegeTeam());	// FIXME
@@ -326,7 +326,7 @@ void SV_SpawnSpectator(void)
 	// search for an info_playerstart to spawn the spectator at
 	for (i = HWMAX_CLIENTS - 1; i < sv.qh_num_edicts; i++)
 	{
-		e = EDICT_NUM(i);
+		e = QH_EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
 		{
 			VectorCopy(e->GetOrigin(), sv_player->GetOrigin());
@@ -400,7 +400,7 @@ void SV_Begin_f(void)
 // in a state where it is expecting the client to correct the angle
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
-	ent = EDICT_NUM(1 + (host_client - svs.clients));
+	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
 	host_client->netchan.message.WriteByte(h2svc_setangle);
 	for (i = 0; i < 2; i++)
 		host_client->netchan.message.WriteAngle(ent->v.angles[i]);
@@ -1065,7 +1065,7 @@ void AddLinksToPmove(worldSector_t* node)
 
 			VectorCopy(check->GetOrigin(), pe->origin);
 			VectorCopy(check->GetAngles(), pe->angles);
-			pe->info = NUM_FOR_EDICT(check);
+			pe->info = QH_NUM_FOR_EDICT(check);
 			if (check->GetSolid() == SOLID_BSP)
 			{
 				pe->model = sv.models[(int)(check->v.modelindex)];
@@ -1172,7 +1172,7 @@ SV_PreRunCmd
 ===========
 Done before running a player command.  Clears the touch array
 */
-byte playertouch[(MAX_EDICTS_H2 + 7) / 8];
+byte playertouch[(MAX_EDICTS_QH + 7) / 8];
 
 void SV_PreRunCmd(void)
 {
@@ -1313,7 +1313,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 	if (qh_pmove.onground != -1)
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
-		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
+		sv_player->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
 	}
 	else
 	{
@@ -1341,7 +1341,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 		for (i = 0; i < qh_pmove.numtouch; i++)
 		{
 			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
-			ent = EDICT_NUM(n);
+			ent = QH_EDICT_NUM(n);
 //Why not just do an SV_Impact here?
 //			SV_Impact(sv_player,ent);
 			if (sv_player->GetTouch())

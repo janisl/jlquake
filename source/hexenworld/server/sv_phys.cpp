@@ -254,10 +254,10 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if (EDICT_NUM(trace.entityNum)->GetSolid() == SOLID_BSP)
+			if (QH_EDICT_NUM(trace.entityNum)->GetSolid() == SOLID_BSP)
 			{
 				ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-				ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+				ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			}
 		}
 		if (!trace.plane.normal[2])
@@ -272,7 +272,7 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 //
 // run the impact function
 //
-		SV_Impact(ent, EDICT_NUM(trace.entityNum));
+		SV_Impact(ent, QH_EDICT_NUM(trace.entityNum));
 		if (ent->free)
 		{
 			break;		// removed by the impact function
@@ -449,11 +449,11 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 	{
 		if (trace.entityNum >= 0)
 		{	// Go through MONSTERS and PLAYERS, can't use FL_CLIENT cause rotating brushes do
-			if (((int)EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) ||
-				(EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK))
+			if (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) ||
+				(QH_EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK))
 			{
 				VectorCopy(trace.endpos, impact);
-				impact_e = EDICT_NUM(trace.entityNum);
+				impact_e = QH_EDICT_NUM(trace.entityNum);
 
 				trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_PHASE, ent);
 
@@ -477,7 +477,7 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 
 	if (trace.entityNum >= 0)
 	{
-		SV_Impact(ent, EDICT_NUM(trace.entityNum));
+		SV_Impact(ent, QH_EDICT_NUM(trace.entityNum));
 	}
 
 	return trace;
@@ -497,8 +497,8 @@ qboolean SV_Push(qhedict_t* pusher, vec3_t move)
 	vec3_t mins, maxs;
 	vec3_t pushorig;
 	int num_moved;
-	qhedict_t* moved_edict[MAX_EDICTS_H2];
-	vec3_t moved_from[MAX_EDICTS_H2];
+	qhedict_t* moved_edict[MAX_EDICTS_QH];
+	vec3_t moved_from[MAX_EDICTS_QH];
 
 	for (i = 0; i < 3; i++)
 	{
@@ -664,8 +664,8 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
     vec3_t		move, a, amove;
     vec3_t		entorig, pushorig;
     int			num_moved;
-    qhedict_t		*moved_edict[MAX_EDICTS_H2];
-    vec3_t		moved_from[MAX_EDICTS_H2];
+    qhedict_t		*moved_edict[MAX_EDICTS_QH];
+    vec3_t		moved_from[MAX_EDICTS_QH];
     vec3_t		org, org2;
     vec3_t		forward, right, up;
     qhedict_t		*ground;
@@ -676,7 +676,7 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
 
 
 #if 0
-Con_DPrintf("SV_PushRotate entity %i (time=%f)\n", NUM_FOR_EDICT(pusher), movetime);
+Con_DPrintf("SV_PushRotate entity %i (time=%f)\n", QH_NUM_FOR_EDICT(pusher), movetime);
 Con_DPrintf("%f %f %f (avelocity)\n", pusher->v.avelocity[0], pusher->v.avelocity[1], pusher->v.avelocity[2]);
 Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 #endif
@@ -702,12 +702,12 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
     {
         slave = PROG_TO_EDICT(master->v.aiment);
 #if 0
-        Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
+        Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], QH_NUM_FOR_EDICT(slave));
 #endif
 
         slaves_moved++;
-        VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_H2 - slaves_moved]);
-        moved_edict[MAX_EDICTS_H2 - slaves_moved] = slave;
+        VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_QH - slaves_moved]);
+        moved_edict[MAX_EDICTS_QH - slaves_moved] = slave;
 
         if (slave->v.movedir[PITCH])
             slave->v.angles[PITCH] = master->v.angles[PITCH];
@@ -757,7 +757,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
             {
                 for (i=0; i<slaves_moved; i++)
                 {
-                    if (ground == moved_edict[MAX_EDICTS_H2 - i - 1])
+                    if (ground == moved_edict[MAX_EDICTS_QH - i - 1])
                     {
                         moveit = true;
                         break;
@@ -777,7 +777,7 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
             {
                 for (i=0; i<slaves_moved; i++)
                 {
-                    slave = moved_edict[MAX_EDICTS_H2 - i - 1];
+                    slave = moved_edict[MAX_EDICTS_QH - i - 1];
                     if ( check->v.absmin[0] >= slave->v.absmax[0]
                     || check->v.absmin[1] >= slave->v.absmax[1]
                     || check->v.absmin[2] >= slave->v.absmax[2]
@@ -843,8 +843,8 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 
             for (i=0; i<slaves_moved; i++)
             {
-                slave = moved_edict[MAX_EDICTS_H2 - i - 1];
-                VectorCopy (moved_from[MAX_EDICTS_H2 - i - 1], slave->v.angles);
+                slave = moved_edict[MAX_EDICTS_QH - i - 1];
+                VectorCopy (moved_from[MAX_EDICTS_QH - i - 1], slave->v.angles);
                 SV_LinkEdict (slave, false);
                 slave->v.ltime -= movetime;
             }
@@ -878,8 +878,8 @@ Con_DPrintf("result:\n");
 Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 for (i=0; i<slaves_moved; i++)
 {
-    slave = moved_edict[MAX_EDICTS_H2 - i - 1];
-    Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
+    slave = moved_edict[MAX_EDICTS_QH - i - 1];
+    Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], QH_NUM_FOR_EDICT(slave));
 }
 Con_DPrintf("\n");
 #endif
@@ -893,8 +893,8 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 	vec3_t move, a, amove,mins,maxs,move2,move3,testmove /*,amove_norm*/;
 	vec3_t entorig, pushorig,pushorigangles;
 	int num_moved;
-	qhedict_t* moved_edict[MAX_EDICTS_H2];
-	vec3_t moved_from[MAX_EDICTS_H2];
+	qhedict_t* moved_edict[MAX_EDICTS_QH];
+	vec3_t moved_from[MAX_EDICTS_QH];
 	vec3_t org, org2, check_center;
 	vec3_t forward, right, up;
 	//vec3_t		dir2push,push_vel;
@@ -906,7 +906,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 	//float		amove_mag,turn_away;
 
 #if 0
-	Con_DPrintf("SV_PushRotate entity %i (time=%f)\n", NUM_FOR_EDICT(pusher), movetime);
+	Con_DPrintf("SV_PushRotate entity %i (time=%f)\n", QH_NUM_FOR_EDICT(pusher), movetime);
 	Con_DPrintf("%f %f %f (avelocity)\n", pusher->v.avelocity[0], pusher->v.avelocity[1], pusher->v.avelocity[2]);
 	Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 #endif
@@ -939,12 +939,12 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
     {
         slave = PROG_TO_EDICT(master->v.aiment);
 #if 0
-        Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
+        Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], QH_NUM_FOR_EDICT(slave));
 #endif
 
         slaves_moved++;
-        VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_H2 - slaves_moved]);
-        moved_edict[MAX_EDICTS_H2 - slaves_moved] = slave;
+        VectorCopy (slave->v.angles, moved_from[MAX_EDICTS_QH - slaves_moved]);
+        moved_edict[MAX_EDICTS_QH - slaves_moved] = slave;
 
         if (slave->v.movedir[PITCH])
             slave->v.angles[PITCH] = master->v.angles[PITCH];
@@ -998,7 +998,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			{
 				for (i = 0; i < slaves_moved; i++)
 				{
-					if (ground == moved_edict[MAX_EDICTS_H2 - i - 1])
+					if (ground == moved_edict[MAX_EDICTS_QH - i - 1])
 					{
 						moveit = true;
 						break;
@@ -1018,7 +1018,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			{
 				for (i = 0; i < slaves_moved; i++)
 				{
-					slave = moved_edict[MAX_EDICTS_H2 - i - 1];
+					slave = moved_edict[MAX_EDICTS_QH - i - 1];
 					if (check->v.absmin[0] >= slave->v.absmax[0] ||
 						check->v.absmin[1] >= slave->v.absmax[1] ||
 						check->v.absmin[2] >= slave->v.absmax[2] ||
@@ -1222,8 +1222,8 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 
 			for (i = 0; i < slaves_moved; i++)
 			{
-				slave = moved_edict[MAX_EDICTS_H2 - i - 1];
-				slave->SetAngles(moved_from[MAX_EDICTS_H2 - i - 1]);
+				slave = moved_edict[MAX_EDICTS_QH - i - 1];
+				slave->SetAngles(moved_from[MAX_EDICTS_QH - i - 1]);
 				SV_LinkEdict(slave, false);
 				slave->v.ltime -= movetime;
 			}
@@ -1260,8 +1260,8 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 	Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.angles[2]);
 	for (i = 0; i < slaves_moved; i++)
 	{
-		slave = moved_edict[MAX_EDICTS_H2 - i - 1];
-		Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], NUM_FOR_EDICT(slave));
+		slave = moved_edict[MAX_EDICTS_QH - i - 1];
+		Con_DPrintf("%f %f %f   slave entity %i\n", slave->v.angles[0], slave->v.angles[1], slave->v.angles[2], QH_NUM_FOR_EDICT(slave));
 	}
 	Con_DPrintf("\n");
 #endif
@@ -1617,7 +1617,7 @@ void SV_WalkMove(qhedict_t* ent)
 		if (ent->GetSolid() == SOLID_BSP)
 		{
 			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-			ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(downtrace.entityNum)));
+			ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(downtrace.entityNum)));
 		}
 	}
 	else
@@ -1671,7 +1671,7 @@ void SV_Physics_Client(qhedict_t* ent)	//, int num)
 
 	if (trace.entityNum >= 0)
 	{
-		SV_Impact(ent, EDICT_NUM(trace.entityNum));
+		SV_Impact(ent, QH_EDICT_NUM(trace.entityNum));
 	}
 
 	return;
@@ -1888,7 +1888,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 	}
 	else if (ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE)
 	{	// Solid phased missiles don't bounce on monsters or players
-		if ((ent->GetSolid() == SOLID_PHASE) && (((int)EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) || ((int)EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK)))
+		if ((ent->GetSolid() == SOLID_PHASE) && (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) || ((int)QH_EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK)))
 		{
 			return;
 		}
@@ -1907,7 +1907,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 		if (ent->GetVelocity()[2] < 60 || ent->GetMoveType() != QHMOVETYPE_BOUNCE)
 		{
 			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-			ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+			ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			ent->SetVelocity(vec3_origin);
 			ent->SetAVelocity(vec3_origin);
 		}

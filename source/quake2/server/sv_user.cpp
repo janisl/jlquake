@@ -110,7 +110,7 @@ void SV_New_f(void)
 	if (sv.state == SS_GAME)
 	{
 		// set up the entity for the client
-		ent = EDICT_NUM(playernum + 1);
+		ent = Q2_EDICT_NUM(playernum + 1);
 		ent->s.number = playernum + 1;
 		sv_client->q2_edict = ent;
 		Com_Memset(&sv_client->q2_lastUsercmd, 0, sizeof(sv_client->q2_lastUsercmd));

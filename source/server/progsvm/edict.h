@@ -19,6 +19,16 @@
 typedef int func_t;
 typedef int string_t;
 
+union eval_t
+{
+	string_t string;
+	float _float;
+	float vector[3];
+	func_t function;
+	int _int;
+	int edict;
+};
+
 class idEntVarDef
 {
 public:
@@ -417,6 +427,27 @@ struct qhedict_t
 };
 
 int ED_InitEntityFields();
+
+qhedict_t* QH_EDICT_NUM(int n);
+int QH_NUM_FOR_EDICT(const qhedict_t* e);
+
+#define NEXT_EDICT(e) ((qhedict_t*)((byte*)e + pr_edict_size))
+
+#define EDICT_TO_PROG(e) ((byte*)e - (byte*)sv.qh_edicts)
+#define PROG_TO_EDICT(e) ((qhedict_t*)((byte*)sv.qh_edicts + e))
+
+eval_t* GetEdictFieldValue(qhedict_t* ed, const char* field);
+void ED_ClearGEFVCache();
+
+void ED_ClearEdict(qhedict_t* e);
+
+void ED_Print(const qhedict_t* ed);
+void ED_PrintNum(int ent);
+void ED_PrintEdicts();
+void ED_PrintEdict_f();
+void ED_Write(fileHandle_t f, const qhedict_t* ed);
+const char* ED_ParseEdict(const char* data, qhedict_t* ent);
+void ED_Count();
 
 inline int qhedict_t::GetIntField(idEntVarDef& field)
 {

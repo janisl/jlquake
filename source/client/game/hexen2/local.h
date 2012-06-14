@@ -28,8 +28,8 @@ struct effect_entity_t
 	qhandle_t model;			// 0 = no model
 };
 
-extern h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
-extern h2entity_t h2cl_entities[MAX_EDICTS_H2];
+extern h2entity_state_t clh2_baselines[MAX_EDICTS_QH];
+extern h2entity_t h2cl_entities[MAX_EDICTS_QH];
 extern qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
 
 extern effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];

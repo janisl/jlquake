@@ -23,9 +23,9 @@
 Cvar* clh2_playerclass;
 Cvar* clhw_teamcolor;
 
-h2entity_state_t clh2_baselines[MAX_EDICTS_H2];
+h2entity_state_t clh2_baselines[MAX_EDICTS_QH];
 
-h2entity_t h2cl_entities[MAX_EDICTS_H2];
+h2entity_t h2cl_entities[MAX_EDICTS_QH];
 static h2entity_t h2cl_static_entities[MAX_STATIC_ENTITIES_H2];
 
 static float RTint[256];
@@ -106,7 +106,7 @@ h2entity_t* CLH2_EntityNum(int num)
 {
 	if (num >= cl.qh_num_entities)
 	{
-		if (num >= MAX_EDICTS_H2)
+		if (num >= MAX_EDICTS_QH)
 		{
 			common->Error("CLH2_EntityNum: %i is an invalid number",num);
 		}

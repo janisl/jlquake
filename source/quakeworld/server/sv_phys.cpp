@@ -272,10 +272,10 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if (EDICT_NUM(trace.entityNum)->GetSolid() == SOLID_BSP)
+			if (QH_EDICT_NUM(trace.entityNum)->GetSolid() == SOLID_BSP)
 			{
 				ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-				ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+				ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			}
 		}
 		if (!trace.plane.normal[2])
@@ -290,7 +290,7 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 //
 // run the impact function
 //
-		SV_Impact(ent, EDICT_NUM(trace.entityNum));
+		SV_Impact(ent, QH_EDICT_NUM(trace.entityNum));
 		if (ent->free)
 		{
 			break;		// removed by the impact function
@@ -413,7 +413,7 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 
 	if (trace.entityNum >= 0)
 	{
-		SV_Impact(ent, EDICT_NUM(trace.entityNum));
+		SV_Impact(ent, QH_EDICT_NUM(trace.entityNum));
 	}
 
 	return trace;
@@ -433,8 +433,8 @@ qboolean SV_Push(qhedict_t* pusher, vec3_t move)
 	vec3_t mins, maxs;
 	vec3_t pushorig;
 	int num_moved;
-	qhedict_t* moved_edict[MAX_EDICTS_Q1];
-	vec3_t moved_from[MAX_EDICTS_Q1];
+	qhedict_t* moved_edict[MAX_EDICTS_QH];
+	vec3_t moved_from[MAX_EDICTS_QH];
 
 	for (i = 0; i < 3; i++)
 	{
@@ -794,7 +794,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 		if (ent->GetVelocity()[2] < 60 || ent->GetMoveType() != QHMOVETYPE_BOUNCE)
 		{
 			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
-			ent->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(trace.entityNum)));
+			ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			ent->SetVelocity(vec3_origin);
 			ent->SetAVelocity(vec3_origin);
 		}

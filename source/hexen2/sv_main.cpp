@@ -100,7 +100,7 @@ void SV_Edicts(const char* Name)
 
 	for (i = 1; i < sv.qh_num_edicts; i++)
 	{
-		e = EDICT_NUM(i);
+		e = QH_EDICT_NUM(i);
 		FS_Printf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
 			i,e->GetNextThink(),PR_GetString(e->GetClassName()),PR_GetString(e->GetModel()),
 			PR_GetString(pr_functions[e->GetThink()].s_name),PR_GetString(pr_functions[e->GetTouch()].s_name),
@@ -268,7 +268,7 @@ void SV_StopSound(qhedict_t* entity, int channel)
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
 	sv.qh_datagram.WriteByte(h2svc_stopsound);
@@ -290,7 +290,7 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 	channel = (ent << 3) | channel;
 
 	sv.qh_datagram.WriteByte(h2svc_sound_update_pos);
@@ -366,7 +366,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 		return;
 	}
 
-	ent = NUM_FOR_EDICT(entity);
+	ent = QH_NUM_FOR_EDICT(entity);
 
 	channel = (ent << 3) | channel;
 
@@ -471,7 +471,7 @@ void SV_SendServerinfo(client_t* client)
 
 // set view
 	client->qh_message.WriteByte(h2svc_setview);
-	client->qh_message.WriteShort(NUM_FOR_EDICT(client->qh_edict));
+	client->qh_message.WriteShort(QH_NUM_FOR_EDICT(client->qh_edict));
 
 	client->qh_message.WriteByte(h2svc_signonnum);
 	client->qh_message.WriteByte(1);
@@ -504,7 +504,7 @@ void SV_ConnectClient(int clientnum)
 
 	edictnum = clientnum + 1;
 
-	ent = EDICT_NUM(edictnum);
+	ent = QH_EDICT_NUM(edictnum);
 
 // set up the client_t
 	netconnection = client->qh_netconnection;
@@ -530,7 +530,7 @@ void SV_ConnectClient(int clientnum)
 
 	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
-		svent = EDICT_NUM(entnum);
+		svent = QH_EDICT_NUM(entnum);
 //		Com_Memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(h2entity_state_t));
 	}
 	Com_Memset(&sv.h2_states[clientnum],0,sizeof(h2client_state2_t));
@@ -747,7 +747,7 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 			if (reference->states[i].flags & ENT_CLEARED)
 			{
 				e = reference->states[i].number;
-				ent = EDICT_NUM(e);
+				ent = QH_EDICT_NUM(e);
 				if (ent->h2_baseline.ClearCount[client_num] < CLEAR_LIMIT)
 				{
 					ent->h2_baseline.ClearCount[client_num]++;
@@ -2230,7 +2230,7 @@ void SV_CreateBaseline(void)
 	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
 	{
 		// get the current server version
-		svent = EDICT_NUM(entnum);
+		svent = QH_EDICT_NUM(entnum);
 		if (svent->free)
 		{
 			continue;
@@ -2433,9 +2433,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.h2_states = (h2client_state2_t*)Hunk_AllocName(svs.qh_maxclients * sizeof(h2client_state2_t), "states");
 	Com_Memset(sv.h2_states,0,svs.qh_maxclients * sizeof(h2client_state2_t));
 
-	sv.qh_max_edicts = MAX_EDICTS_H2;
-
-	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(sv.qh_max_edicts * pr_edict_size, "edicts");
+	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
 
 	//JL WTF????
 	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_MSGLEN_H2);
@@ -2448,14 +2446,14 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.qh_num_edicts = svs.qh_maxclients + 1 + max_temp_edicts->value;
 	for (i = 0; i < svs.qh_maxclients; i++)
 	{
-		ent = EDICT_NUM(i + 1);
+		ent = QH_EDICT_NUM(i + 1);
 		svs.clients[i].qh_edict = ent;
 		svs.clients[i].h2_send_all_v = true;
 	}
 
 	for (i = 0; i < max_temp_edicts->value; i++)
 	{
-		ent = EDICT_NUM(i + svs.qh_maxclients + 1);
+		ent = QH_EDICT_NUM(i + svs.qh_maxclients + 1);
 		ED_ClearEdict(ent);
 
 		ent->free = true;
@@ -2491,7 +2489,7 @@ void SV_SpawnServer(char* server, char* startspot)
 //
 // load the rest of the entities
 //
-	ent = EDICT_NUM(0);
+	ent = QH_EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));

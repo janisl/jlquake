@@ -707,7 +707,7 @@ void Host_Loadgame_f(void)
 
 	SV_SaveSpawnparms();
 
-	ent = EDICT_NUM(1);
+	ent = QH_EDICT_NUM(1);
 
 	Cvar_SetValue("_cl_playerclass", ent->GetPlayerClass());//this better be the same as above...
 
@@ -795,7 +795,7 @@ void SaveGamestate(qboolean ClientsOnly)
 //  to save the client states
 	for (i = start; i < end; i++)
 	{
-		ent = EDICT_NUM(i);
+		ent = QH_EDICT_NUM(i);
 		if ((int)ent->GetFlags() & FL_ARCHIVE_OVERRIDE)
 		{
 			continue;
@@ -839,7 +839,7 @@ void RestoreClients(void)
 		{
 			ent = host_client->qh_edict;
 
-			//ent->v.colormap = NUM_FOR_EDICT(ent);
+			//ent->v.colormap = QH_NUM_FOR_EDICT(ent);
 			ent->SetTeam((host_client->qh_colors & 15) + 1);
 			ent->SetNetName(PR_SetString(host_client->name));
 			ent->SetPlayerClass(host_client->h2_playerclass);
@@ -963,7 +963,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		}
 		else
 		{
-			ent = EDICT_NUM(entnum);
+			ent = QH_EDICT_NUM(entnum);
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 			//ent->free = false;
 			start = ED_ParseEdict(start, ent);
@@ -1668,7 +1668,7 @@ void Host_Spawn_f(void)
 		{
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 
-			//ent->v.colormap = NUM_FOR_EDICT(ent);
+			//ent->v.colormap = QH_NUM_FOR_EDICT(ent);
 			ent->SetTeam((host_client->qh_colors & 15) + 1);
 			ent->SetNetName(PR_SetString(host_client->name));
 			ent->SetPlayerClass(host_client->h2_playerclass);
@@ -1753,7 +1753,7 @@ void Host_Spawn_f(void)
 // in a state where it is expecting the client to correct the angle
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
-	ent = EDICT_NUM(1 + (host_client - svs.clients));
+	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
 	host_client->qh_message.WriteByte(h2svc_setangle);
 	for (i = 0; i < 2; i++)
 		host_client->qh_message.WriteAngle(ent->GetAngles()[i]);
@@ -2190,7 +2190,7 @@ qhedict_t* FindViewthing(void)
 
 	for (i = 0; i < sv.qh_num_edicts; i++)
 	{
-		e = EDICT_NUM(i);
+		e = QH_EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "viewthing"))
 		{
 			return e;

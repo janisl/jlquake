@@ -88,7 +88,7 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteLong(svs.spawncount);
 	host_client->netchan.message.WriteString2(gamedir);
 
-	playernum = NUM_FOR_EDICT(host_client->qh_edict) - 1;
+	playernum = QH_NUM_FOR_EDICT(host_client->qh_edict) - 1;
 	if (host_client->qh_spectator)
 	{
 		playernum |= 128;
@@ -369,7 +369,7 @@ void SV_Spawn_f(void)
 	ent = host_client->qh_edict;
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->SetColorMap(NUM_FOR_EDICT(ent));
+	ent->SetColorMap(QH_NUM_FOR_EDICT(ent));
 	ent->SetTeam(0);	// FIXME
 	ent->SetNetName(PR_SetString(host_client->name));
 
@@ -431,7 +431,7 @@ void SV_SpawnSpectator(void)
 	// search for an info_playerstart to spawn the spectator at
 	for (i = MAX_CLIENTS_QW - 1; i < sv.qh_num_edicts; i++)
 	{
-		e = EDICT_NUM(i);
+		e = QH_EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
 		{
 			VectorCopy(e->GetOrigin(), sv_player->GetOrigin());
@@ -529,7 +529,7 @@ void SV_Begin_f(void)
 // in a state where it is expecting the client to correct the angle
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
-	ent = EDICT_NUM(1 + (host_client - svs.clients));
+	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
 	host_client->netchan.message.WriteByte(q1svc_setangle);
 	for (i = 0; i < 2; i++)
 		host_client->netchan.message.WriteAngle(ent->v.angles[i]);
@@ -1063,8 +1063,8 @@ void SV_PTrack_f(void)
 	{
 		// turn off tracking
 		host_client->qh_spec_track = 0;
-		ent = EDICT_NUM(host_client - svs.clients + 1);
-		tent = EDICT_NUM(0);
+		ent = QH_EDICT_NUM(host_client - svs.clients + 1);
+		tent = QH_EDICT_NUM(0);
 		ent->SetGoalEntity(EDICT_TO_PROG(tent));
 		return;
 	}
@@ -1075,15 +1075,15 @@ void SV_PTrack_f(void)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
 		host_client->qh_spec_track = 0;
-		ent = EDICT_NUM(host_client - svs.clients + 1);
-		tent = EDICT_NUM(0);
+		ent = QH_EDICT_NUM(host_client - svs.clients + 1);
+		tent = QH_EDICT_NUM(0);
 		ent->SetGoalEntity(EDICT_TO_PROG(tent));
 		return;
 	}
 	host_client->qh_spec_track = i + 1;// now tracking
 
-	ent = EDICT_NUM(host_client - svs.clients + 1);
-	tent = EDICT_NUM(i + 1);
+	ent = QH_EDICT_NUM(host_client - svs.clients + 1);
+	tent = QH_EDICT_NUM(i + 1);
 	ent->SetGoalEntity(EDICT_TO_PROG(tent));
 }
 
@@ -1351,7 +1351,7 @@ void AddLinksToPmove(worldSector_t* node)
 			qh_pmove.numphysent++;
 
 			VectorCopy(check->GetOrigin(), pe->origin);
-			pe->info = NUM_FOR_EDICT(check);
+			pe->info = QH_NUM_FOR_EDICT(check);
 			if (check->GetSolid() == SOLID_BSP)
 			{
 				pe->model = sv.models[(int)(check->v.modelindex)];
@@ -1457,7 +1457,7 @@ SV_PreRunCmd
 ===========
 Done before running a player command.  Clears the touch array
 */
-byte playertouch[(MAX_EDICTS_Q1 + 7) / 8];
+byte playertouch[(MAX_EDICTS_QH + 7) / 8];
 
 void SV_PreRunCmd(void)
 {
@@ -1583,7 +1583,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 	if (qh_pmove.onground != -1)
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
-		sv_player->SetGroundEntity(EDICT_TO_PROG(EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
+		sv_player->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
 	}
 	else
 	{
@@ -1611,7 +1611,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 		for (i = 0; i < qh_pmove.numtouch; i++)
 		{
 			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
-			ent = EDICT_NUM(n);
+			ent = QH_EDICT_NUM(n);
 			if (!ent->GetTouch() || (playertouch[n / 8] & (1 << (n % 8))))
 			{
 				continue;

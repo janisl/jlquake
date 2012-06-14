@@ -29,9 +29,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-char* PR_GlobalString(int ofs);
-char* PR_GlobalStringNoContents(int ofs);
-
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
@@ -341,7 +338,7 @@ void PR_ExecuteProgram(func_t fnum)
 		case OP_ADDRESS:
 			ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-			NUM_FOR_EDICT(ed);	// Make sure it's in range
+			QH_NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
 			if (ed == (qhedict_t*)sv.qh_edicts && sv.state == SS_GAME)
 			{
@@ -357,7 +354,7 @@ void PR_ExecuteProgram(func_t fnum)
 		case OP_LOAD_FNC:
 			ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-			NUM_FOR_EDICT(ed);	// Make sure it's in range
+			QH_NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
 			a = (eval_t*)((int*)&ed->v + b->_int);
 			c->_int = a->_int;
@@ -366,7 +363,7 @@ void PR_ExecuteProgram(func_t fnum)
 		case OP_LOAD_V:
 			ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-			NUM_FOR_EDICT(ed);	// Make sure it's in range
+			QH_NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
 			a = (eval_t*)((int*)&ed->v + b->_int);
 			c->vector[0] = a->vector[0];
@@ -553,7 +550,7 @@ void PR_ExecuteProgram(func_t fnum)
 		case OP_THINKTIME:
 			ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-			NUM_FOR_EDICT(ed);	// Make sure it's in range
+			QH_NUM_FOR_EDICT(ed);	// Make sure it's in range
 #endif
 			if (ed == (qhedict_t*)sv.qh_edicts && sv.state == SS_GAME)
 			{

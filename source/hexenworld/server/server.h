@@ -239,6 +239,5 @@ void SV_StopSound(qhedict_t* entity, int channel);
 void SV_ParseEffect(QMsg* sb);
 void SV_FlushSignon(void);
 void SV_SetMoveVars(void);
-void ED_ClearEdict(qhedict_t* e);
 void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
 void SV_SendEffect(QMsg* sb, int index);

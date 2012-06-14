@@ -128,7 +128,7 @@ void CL_ParseStartSoundPacket(void)
 	ent = channel >> 3;
 	channel &= 7;
 
-	if (ent > MAX_EDICTS_H2)
+	if (ent > MAX_EDICTS_QH)
 	{
 		Host_Error("CL_ParseStartSoundPacket: ent = %i", ent);
 	}
@@ -904,7 +904,7 @@ void CL_ParseServerMessage(void)
 			ent = channel >> 3;
 			channel &= 7;
 
-			if (ent > MAX_EDICTS_H2)
+			if (ent > MAX_EDICTS_QH)
 			{
 				Host_Error("h2svc_sound_update_pos: ent = %i", ent);
 			}
