@@ -168,7 +168,44 @@ void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
 void PR_ExecuteProgram(func_t fnum);
 void PR_Profile_f();
 
-//switch types
-enum {SWITCH_F,SWITCH_V,SWITCH_S,SWITCH_E,SWITCH_FNC};
+const char* PF_VarString(int first);
+void PF_Fixme();
+void PF_error();
+void PF_makevectors();
+void PF_normalize();
+void PF_vlen();
+void PF_vhlen();
+void PF_vectoyaw();
+void PF_vectoangles();
+void PF_random();
+void PF_break();
+void PF_localcmd();
+void PF_cvar();
+void PF_cvar_set();
+void PF_dprint();
+void PF_dprintf();
+void PF_dprintv();
+void PF_ftos();
+void PF_vtos();
+void PF_fabs();
+void PF_coredump();
+void PF_traceon();
+void PF_traceoff();
+void PF_eprint();
+void PF_rint();
+void PFH2_rint();
+void PF_floor();
+void PF_ceil();
+void PF_sqrt();
+void PF_stof();
+void PF_Cos();
+void PF_Sin();
+void PF_randomrange();
+void PF_randomvalue();
+void PF_randomvrange();
+void PF_randomvvalue();
+void PF_concatv();
+void PF_v_factor();
+void PF_v_factorrange();
 
 #endif

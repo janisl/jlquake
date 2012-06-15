@@ -25,6 +25,7 @@ add_library(server STATIC
 	botlib/struct.cpp
 	et/ETEntity.cpp
 	et/game.cpp
+	progsvm/common_builtins.cpp
 	progsvm/edict.cpp
 	progsvm/execute.cpp
 	progsvm/main.cpp

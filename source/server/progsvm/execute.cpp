@@ -257,6 +257,9 @@ void PR_ExecuteProgram(func_t fnum)
 
 	int s = PR_EnterFunction(f);
 
+	//switch types
+	enum { SWITCH_F, SWITCH_V, SWITCH_S, SWITCH_E, SWITCH_FNC };
+
 	int runaway = 100000;
 	int case_type = -1;
 	float switch_float;

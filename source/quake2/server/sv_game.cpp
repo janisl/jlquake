@@ -152,12 +152,12 @@ void PF_centerprintf(q2edict_t* ent, const char* fmt, ...)
 
 /*
 ===============
-PF_error
+PFQ2_error
 
 Abort the server with a game error
 ===============
 */
-void PF_error(const char* fmt, ...)
+void PFQ2_error(const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -420,7 +420,7 @@ void SV_InitGameProgs(void)
 	import.dprintf = PF_dprintf;
 	import.cprintf = PF_cprintf;
 	import.centerprintf = PF_centerprintf;
-	import.error = PF_error;
+	import.error = PFQ2_error;
 
 	import.linkentity = SV_LinkEdict;
 	import.unlinkentity = SV_UnlinkEdict;

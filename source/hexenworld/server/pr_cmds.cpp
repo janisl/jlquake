@@ -24,44 +24,6 @@ QMsg* WriteDest(void);
 ===============================================================================
 */
 
-char* PF_VarString(int first)
-{
-	int i;
-	static char out[256];
-
-	out[0] = 0;
-	for (i = first; i < pr_argc; i++)
-	{
-		String::Cat(out, sizeof(out), G_STRING((OFS_PARM0 + i * 3)));
-	}
-	return out;
-}
-
-
-/*
-=================
-PF_errror
-
-This is a TERMINAL error, which will kill off the entire server.
-Dumps self.
-
-error(value)
-=================
-*/
-void PF_error(void)
-{
-	char* s;
-	qhedict_t* ed;
-
-	s = PF_VarString(0);
-	Con_Printf("======SERVER ERROR in %s:\n%s\n",
-		PR_GetString(pr_xfunction->s_name),s);
-	ed = PROG_TO_EDICT(*pr_globalVars.self);
-	ED_Print(ed);
-
-	SV_Error("Program error");
-}
-
 /*
 =================
 PF_objerror
@@ -74,7 +36,7 @@ objerror(value)
 */
 void PF_objerror(void)
 {
-	char* s;
+	const char* s;
 	qhedict_t* ed;
 
 	s = PF_VarString(0);
@@ -88,19 +50,6 @@ void PF_objerror(void)
 }
 
 
-
-/*
-==============
-PF_makevectors
-
-Writes new values for v_forward, v_up, and v_right based on angles
-makevectors(vector)
-==============
-*/
-void PF_makevectors(void)
-{
-	AngleVectors(G_VECTOR(OFS_PARM0), pr_globalVars.v_forward, pr_globalVars.v_right, pr_globalVars.v_up);
-}
 
 /*
 =================
@@ -334,7 +283,7 @@ bprint(value)
 */
 void PF_bprint(void)
 {
-	char* s;
+	const char* s;
 	int level;
 
 	level = G_FLOAT(OFS_PARM0);
@@ -360,7 +309,7 @@ sprint(clientent, value)
 */
 void PF_sprint(void)
 {
-	char* s;
+	const char* s;
 	client_t* client;
 	int entnum;
 	int level;
@@ -534,7 +483,7 @@ centerprint(clientent, value)
 */
 void PF_centerprint(void)
 {
-	char* s;
+	const char* s;
 	client_t* client;
 	int entnum;
 
@@ -565,7 +514,7 @@ bcenterprint2(value, value)
 */
 void PF_bcenterprint2(void)
 {
-	char* s;
+	const char* s;
 	client_t* cl;
 	int i;
 
@@ -593,7 +542,7 @@ centerprint(clientent, value, value)
 */
 void PF_centerprint2(void)
 {
-	char* s;
+	const char* s;
 	client_t* client;
 	int entnum;
 
@@ -612,133 +561,6 @@ void PF_centerprint2(void)
 	client->netchan.message.WriteString2(s);
 }
 
-
-/*
-=================
-PF_normalize
-
-vector normalize(vector)
-=================
-*/
-void PF_normalize(void)
-{
-	float* value1;
-	vec3_t newvalue;
-	float newl;
-
-	value1 = G_VECTOR(OFS_PARM0);
-
-	newl = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
-	newl = sqrt(newl);
-
-	if (newl == 0)
-	{
-		newvalue[0] = newvalue[1] = newvalue[2] = 0;
-	}
-	else
-	{
-		newl = 1 / newl;
-		newvalue[0] = value1[0] * newl;
-		newvalue[1] = value1[1] * newl;
-		newvalue[2] = value1[2] * newl;
-	}
-
-	VectorCopy(newvalue, G_VECTOR(OFS_RETURN));
-}
-
-/*
-=================
-PF_vlen
-
-scalar vlen(vector)
-=================
-*/
-void PF_vlen(void)
-{
-	float* value1;
-	float newl;
-
-	value1 = G_VECTOR(OFS_PARM0);
-
-	newl = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
-	newl = sqrt(newl);
-
-	G_FLOAT(OFS_RETURN) = newl;
-}
-
-/*
-=================
-PF_vhlen
-
-scalar vhlen(vector)
-=================
-*/
-void PF_vhlen(void)
-{
-	float* value1;
-	float newl;
-
-	value1 = G_VECTOR(OFS_PARM0);
-
-	newl = value1[0] * value1[0] + value1[1] * value1[1];
-	newl = sqrt(newl);
-
-	G_FLOAT(OFS_RETURN) = newl;
-}
-
-/*
-=================
-PF_vectoyaw
-
-float vectoyaw(vector)
-=================
-*/
-void PF_vectoyaw()
-{
-	float* value1 = G_VECTOR(OFS_PARM0);
-
-	float yaw = VecToYaw(value1);
-
-	G_FLOAT(OFS_RETURN) = (int)yaw;
-}
-
-
-/*
-=================
-PF_vectoangles
-
-vector vectoangles(vector)
-=================
-*/
-void PF_vectoangles()
-{
-	float* value1 = G_VECTOR(OFS_PARM0);
-
-	vec3_t angles;
-	VecToAnglesBuggy(value1, angles);
-
-	G_FLOAT(OFS_RETURN + 0) = (int)angles[0];
-	G_FLOAT(OFS_RETURN + 1) = (int)angles[1];
-	G_FLOAT(OFS_RETURN + 2) = (int)angles[2];
-}
-
-/*
-=================
-PF_Random
-
-Returns a number from 0<= num < 1
-
-random()
-=================
-*/
-void PF_random(void)
-{
-	float num;
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-
-	G_FLOAT(OFS_RETURN) = num;
-}
 
 /*
 =================
@@ -949,31 +771,6 @@ void PF_sound(void)
 	attenuation = G_FLOAT(OFS_PARM4);
 
 	SV_StartSound(entity, channel, sample, volume, attenuation);
-}
-
-/*
-=================
-PF_break
-
-break()
-=================
-*/
-void PF_break(void)
-{
-	static qboolean DidIt = false;
-
-	if (!DidIt)
-	{
-		DidIt = true;
-
-		Con_Printf("break statement\n");
-#ifdef _WIN32
-		DebugBreak();
-#else
-		*(int*)-4 = 0;	// dump to debugger
-#endif
-	}
-//	PR_RunError ("break statement");
 }
 
 /*
@@ -1247,56 +1044,6 @@ void PF_stuffcmd(void)
 
 /*
 =================
-PF_localcmd
-
-Sends text over to the client's execution buffer
-
-localcmd (string)
-=================
-*/
-void PF_localcmd(void)
-{
-	const char* str;
-
-	str = G_STRING(OFS_PARM0);
-	Cbuf_AddText(str);
-}
-
-/*
-=================
-PF_cvar
-
-float cvar (string)
-=================
-*/
-void PF_cvar(void)
-{
-	const char* str;
-
-	str = G_STRING(OFS_PARM0);
-
-	G_FLOAT(OFS_RETURN) = Cvar_VariableValue(str);
-}
-
-/*
-=================
-PF_cvar_set
-
-float cvar (string)
-=================
-*/
-void PF_cvar_set(void)
-{
-	const char* var, * val;
-
-	var = G_STRING(OFS_PARM0);
-	val = G_STRING(OFS_PARM1);
-
-	Cvar_Set(var, val);
-}
-
-/*
-=================
 PF_findradius
 
 Returns a chain of entities that have origins within a spherical area
@@ -1342,75 +1089,6 @@ void PF_findradius(void)
 	RETURN_EDICT(chain);
 }
 
-
-/*
-=========
-PF_dprint
-=========
-*/
-void PF_dprint(void)
-{
-	Con_Printf("%s",PF_VarString(0));
-}
-
-void PF_dprintf(void)
-{
-	char temp[256];
-	float v;
-
-	v = G_FLOAT(OFS_PARM1);
-
-	if (v == (int)v)
-	{
-		sprintf(temp, "%d",(int)v);
-	}
-	else
-	{
-		sprintf(temp, "%5.1f",v);
-	}
-
-	Con_Printf(G_STRING(OFS_PARM0),temp);
-}
-
-void PF_dprintv(void)
-{
-	char temp[256];
-
-	sprintf(temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM1)[0], G_VECTOR(OFS_PARM1)[1], G_VECTOR(OFS_PARM1)[2]);
-
-	Con_Printf(G_STRING(OFS_PARM0),temp);
-}
-
-char pr_string_temp[1024];
-
-void PF_ftos(void)
-{
-	float v;
-	v = G_FLOAT(OFS_PARM0);
-
-	if (v == (int)v)
-	{
-		sprintf(pr_string_temp, "%d",(int)v);
-	}
-	else
-	{
-		sprintf(pr_string_temp, "%5.1f",v);
-	}
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
-}
-
-void PF_fabs(void)
-{
-	float v;
-	v = G_FLOAT(OFS_PARM0);
-	G_FLOAT(OFS_RETURN) = Q_fabs(v);
-}
-
-void PF_vtos(void)
-{
-	sprintf(pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
-}
 
 void PF_Spawn(void)
 {
@@ -1669,26 +1347,6 @@ void PF_precache_puzzle_model(void)
 	PR_RunError("PF_precache_puzzle_model: overflow");
 }
 
-void PF_coredump(void)
-{
-	ED_PrintEdicts();
-}
-
-void PF_traceon(void)
-{
-	pr_trace = true;
-}
-
-void PF_traceoff(void)
-{
-	pr_trace = false;
-}
-
-void PF_eprint(void)
-{
-	ED_PrintNum(G_EDICTNUM(OFS_PARM0));
-}
-
 /*
 ===============
 PF_walkmove
@@ -1886,29 +1544,6 @@ void PF_lightstylestatic(void)
 			client->netchan.message.WriteString2(styleString);
 		}
 }
-
-void PF_rint(void)
-{
-	float f;
-	f = G_FLOAT(OFS_PARM0);
-	if (f > 0)
-	{
-		G_FLOAT(OFS_RETURN) = (int)(f + 0.5);
-	}
-	else
-	{
-		G_FLOAT(OFS_RETURN) = (int)(f - 0.5);
-	}
-}
-void PF_floor(void)
-{
-	G_FLOAT(OFS_RETURN) = floor(G_FLOAT(OFS_PARM0));
-}
-void PF_ceil(void)
-{
-	G_FLOAT(OFS_RETURN) = ceil(G_FLOAT(OFS_PARM0));
-}
-
 
 /*
 =============
@@ -2382,23 +2017,6 @@ void PF_infokey(void)
 
 /*
 ==============
-PF_stof
-
-float(string s) stof
-==============
-*/
-void PF_stof(void)
-{
-	const char* s;
-
-	s = G_STRING(OFS_PARM0);
-
-	G_FLOAT(OFS_RETURN) = String::Atof(s);
-}
-
-
-/*
-==============
 PF_multicast
 
 void(vector where, float set) multicast
@@ -2413,17 +2031,6 @@ void PF_multicast(void)
 	to = G_FLOAT(OFS_PARM1);
 
 	SV_Multicast(o, to);
-}
-
-
-void PF_sqrt(void)
-{
-	G_FLOAT(OFS_RETURN) = sqrt(G_FLOAT(OFS_PARM0));
-}
-
-void PF_Fixme(void)
-{
-	PR_RunError("unimplemented builtin");
 }
 
 
@@ -2520,192 +2127,6 @@ void PF_movestep(void)
 // restore program state
 	pr_xfunction = oldf;
 	*pr_globalVars.self = oldself;
-}
-
-/*
-#define MAX_LEVELS 10
-
-int PaladinExp[MAX_LEVELS+1] =
-{
-    0,				// Level 1
-    500,        // Level 2
-    1000,       // Level 3
-    1500,       // Level 4
-    2000,       // Level 5
-    2500,       // Level 6
-    3000,       // Level 7
-    3500,       // Level 8
-    4000,       // Level 9
-    4500,       // Level 10
-    1000        // Required amount for each level afterwards
-};
-
-int ClericExp[MAX_LEVELS+1] =
-{
-    0,				// Level 1
-    500,        // Level 2
-    1000,       // Level 3
-    1500,       // Level 4
-    2000,       // Level 5
-    2500,       // Level 6
-    3000,       // Level 7
-    3500,       // Level 8
-    4000,       // Level 9
-    4500,       // Level 10
-    1000        // Required amount for each level afterwards
-};
-
-int NecroExp[MAX_LEVELS+1] =
-{
-    0,				// Level 1
-    500,        // Level 2
-    1000,       // Level 3
-    1500,       // Level 4
-    2000,       // Level 5
-    2500,       // Level 6
-    3000,       // Level 7
-    3500,       // Level 8
-    4000,       // Level 9
-    4500,       // Level 10
-    1000        // Required amount for each level afterwards
-};
-
-int TheifExp[MAX_LEVELS+1] =
-{
-    0,				// Level 1
-    500,        // Level 2
-    1000,       // Level 3
-    1500,       // Level 4
-    2000,       // Level 5
-    2500,       // Level 6
-    3000,       // Level 7
-    3500,       // Level 8
-    4000,       // Level 9
-    4500,       // Level 10
-    1000        // Required amount for each level afterwards
-};
-
-int FindLevel(qhedict_t *WhichPlayer)
-{
-    int *Chart;
-    int Amount,counter,Level;
-
-    switch((int)WhichPlayer->v.playerclass)
-    {
-        case CLASS_PALADIN:
-            Chart = PaladinExp;
-            break;
-        case CLASS_CLERIC:
-            Chart = ClericExp;
-            break;
-        case CLASS_NECROMANCER:
-            Chart = NecroExp;
-            break;
-        case CLASS_THEIF:
-            Chart = TheifExp;
-            break;
-    }
-
-    Level = 0;
-    for(counter=0;counter<MAX_LEVELS;counter++)
-    {
-        if (WhichPlayer->v.experience <= Chart[counter])
-        {
-            Level = counter+1;
-            break;
-        }
-    }
-
-    if (!Level)
-    {
-        Amount = WhichPlayer->v.experience - Chart[MAX_LEVELS-1];
-        Level = (Amount % Chart[MAX_LEVELS]) + MAX_LEVELS;
-    }
-
-    return Level;
-}
-
-void PF_AwardExperience(void)
-{
-    qhedict_t	*ToEnt, *FromEnt;
-    float Amount;
-    int AfterLevel;
-    qboolean IsPlayer;
-//	client_t	*client;
-    int			entnum;
-//	char temp[200];
-    globalvars_t	pr_save;
-
-    ToEnt = G_EDICT(OFS_PARM0);
-    FromEnt = G_EDICT(OFS_PARM1);
-    Amount = G_FLOAT(OFS_PARM2);
-
-    if (!Amount) return;
-
-    IsPlayer = (String::ICmp(PR_GetString(ToEnt->v.classname), "player") == 0);
-
-    if (FromEnt && Amount == 0.0)
-    {
-        Amount = FromEnt->v.experience_value;
-    }
-
-    ToEnt->v.experience += Amount;
-
-    if (IsPlayer)
-    {
-        AfterLevel = FindLevel(ToEnt);
-
-        Con_Printf("Total Experience: %d\n",(int)ToEnt->v.experience);
-
-        if (ToEnt->v.level != AfterLevel)
-        {
-            ToEnt->v.level = AfterLevel;
-            entnum = QH_NUM_FOR_EDICT(ToEnt);
-
-            if (entnum >= 1 && entnum <= svs.qh_maxclients)
-            {
-                pr_save = *pr_global_struct;
-                *pr_globalVars.time = sv.time;
-                *pr_globalVars.self = EDICT_TO_PROG(ToEnt);
-                PR_ExecuteProgram (pr_global_struct->PlayerAdvanceLevel);
-
-                *pr_global_struct = pr_save;
-
-            }
-        }
-    }
-}
-
-*/
-
-/*				client = &svs.clients[entnum-1];
-
-                sprintf(temp,"You are now level %d\n",AfterLevel);
-
-                client->message.WriteChar(h2svc_print);
-                client->message.WriteString2(temp );
-*/
-
-void PF_Cos(void)
-{
-	float angle;
-
-	angle = G_FLOAT(OFS_PARM0);
-
-	angle = angle * M_PI * 2 / 360;
-
-	G_FLOAT(OFS_RETURN) = cos(angle);
-}
-
-void PF_Sin(void)
-{
-	float angle;
-
-	angle = G_FLOAT(OFS_PARM0);
-
-	angle = angle * M_PI * 2 / 360;
-
-	G_FLOAT(OFS_RETURN) = sin(angle);
 }
 
 void PF_AdvanceFrame(void)
@@ -3097,101 +2518,6 @@ void PF_updateeffect(void)	//type-specific what this will send
 	SV_MulticastSpecific(sv.h2_Effects[index].client_list, true);
 }
 
-void PF_randomrange(void)
-{
-	float num,minv,maxv;
-
-	minv = G_FLOAT(OFS_PARM0);
-	maxv = G_FLOAT(OFS_PARM1);
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-
-	G_FLOAT(OFS_RETURN) = ((maxv - minv) * num) + minv;
-}
-
-void PF_randomvalue(void)
-{
-	float num,range;
-
-	range = G_FLOAT(OFS_PARM0);
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-
-	G_FLOAT(OFS_RETURN) = range * num;
-}
-
-void PF_randomvrange(void)
-{
-	float num,* minv,* maxv;
-	vec3_t result;
-
-	minv = G_VECTOR(OFS_PARM0);
-	maxv = G_VECTOR(OFS_PARM1);
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[0] = ((maxv[0] - minv[0]) * num) + minv[0];
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[1] = ((maxv[1] - minv[1]) * num) + minv[1];
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[2] = ((maxv[2] - minv[2]) * num) + minv[2];
-
-	VectorCopy(result, G_VECTOR(OFS_RETURN));
-}
-
-void PF_randomvvalue(void)
-{
-	float num,* range;
-	vec3_t result;
-
-	range = G_VECTOR(OFS_PARM0);
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[0] = range[0] * num;
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[1] = range[1] * num;
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[2] = range[2] * num;
-
-	VectorCopy(result, G_VECTOR(OFS_RETURN));
-}
-
-void PF_concatv(void)
-{
-	float* in,* range;
-	vec3_t result;
-
-	in = G_VECTOR(OFS_PARM0);
-	range = G_VECTOR(OFS_PARM1);
-
-	VectorCopy(in, result);
-	if (result[0] < -range[0])
-	{
-		result[0] = -range[0];
-	}
-	if (result[0] > range[0])
-	{
-		result[0] = range[0];
-	}
-	if (result[1] < -range[1])
-	{
-		result[1] = -range[1];
-	}
-	if (result[1] > range[1])
-	{
-		result[1] = range[1];
-	}
-	if (result[2] < -range[2])
-	{
-		result[2] = -range[2];
-	}
-	if (result[2] > range[2])
-	{
-		result[2] = range[2];
-	}
-
-	VectorCopy(result, G_VECTOR(OFS_RETURN));
-}
-
 void PF_GetString(void)
 {
 	int Index;
@@ -3211,60 +2537,6 @@ void PF_GetString(void)
 	G_INT(OFS_RETURN) = PR_SetString(&pr_global_strings[pr_string_index[Index]]);
 }
 
-
-void PF_v_factor(void)
-// returns (v_right * factor_x) + (v_forward * factor_y) + (v_up * factor_z)
-{
-	float* range;
-	vec3_t result;
-
-	range = G_VECTOR(OFS_PARM0);
-
-	result[0] = (pr_globalVars.v_right[0] * range[0]) +
-				(pr_globalVars.v_forward[0] * range[1]) +
-				(pr_globalVars.v_up[0] * range[2]);
-
-	result[1] = (pr_globalVars.v_right[1] * range[0]) +
-				(pr_globalVars.v_forward[1] * range[1]) +
-				(pr_globalVars.v_up[1] * range[2]);
-
-	result[2] = (pr_globalVars.v_right[2] * range[0]) +
-				(pr_globalVars.v_forward[2] * range[1]) +
-				(pr_globalVars.v_up[2] * range[2]);
-
-	VectorCopy(result, G_VECTOR(OFS_RETURN));
-}
-
-void PF_v_factorrange(void)
-// returns (v_right * factor_x) + (v_forward * factor_y) + (v_up * factor_z)
-{
-	float num,* minv,* maxv;
-	vec3_t result,r2;
-
-	minv = G_VECTOR(OFS_PARM0);
-	maxv = G_VECTOR(OFS_PARM1);
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[0] = ((maxv[0] - minv[0]) * num) + minv[0];
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[1] = ((maxv[1] - minv[1]) * num) + minv[1];
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-	result[2] = ((maxv[2] - minv[2]) * num) + minv[2];
-
-	r2[0] = (pr_globalVars.v_right[0] * result[0]) +
-			(pr_globalVars.v_forward[0] * result[1]) +
-			(pr_globalVars.v_up[0] * result[2]);
-
-	r2[1] = (pr_globalVars.v_right[1] * result[0]) +
-			(pr_globalVars.v_forward[1] * result[1]) +
-			(pr_globalVars.v_up[1] * result[2]);
-
-	r2[2] = (pr_globalVars.v_right[2] * result[0]) +
-			(pr_globalVars.v_forward[2] * result[1]) +
-			(pr_globalVars.v_up[2] * result[2]);
-
-	VectorCopy(r2, G_VECTOR(OFS_RETURN));
-}
 
 void SV_setseed(int seed);
 float SV_seedrand(void);

@@ -31,44 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ===============================================================================
 */
 
-char* PF_VarString(int first)
-{
-	int i;
-	static char out[256];
-
-	out[0] = 0;
-	for (i = first; i < pr_argc; i++)
-	{
-		String::Cat(out, sizeof(out), G_STRING((OFS_PARM0 + i * 3)));
-	}
-	return out;
-}
-
-
-/*
-=================
-PF_errror
-
-This is a TERMINAL error, which will kill off the entire server.
-Dumps self.
-
-error(value)
-=================
-*/
-void PF_error(void)
-{
-	char* s;
-	qhedict_t* ed;
-
-	s = PF_VarString(0);
-	Con_Printf("======SERVER ERROR in %s:\n%s\n",
-		PR_GetString(pr_xfunction->s_name),s);
-	ed = PROG_TO_EDICT(*pr_globalVars.self);
-	ED_Print(ed);
-
-	Host_Error("Program error");
-}
-
 /*
 =================
 PF_objerror
@@ -81,7 +43,7 @@ objerror(value)
 */
 void PF_objerror(void)
 {
-	char* s;
+	const char* s;
 	qhedict_t* ed;
 
 	s = PF_VarString(0);
@@ -95,19 +57,6 @@ void PF_objerror(void)
 }
 
 
-
-/*
-==============
-PF_makevectors
-
-Writes len values for v_forward, v_up, and v_right based on angles
-makevectors(vector)
-==============
-*/
-void PF_makevectors(void)
-{
-	AngleVectors(G_VECTOR(OFS_PARM0), pr_globalVars.v_forward, pr_globalVars.v_right, pr_globalVars.v_up);
-}
 
 /*
 =================
@@ -289,7 +238,7 @@ bprint(value)
 */
 void PF_bprint(void)
 {
-	char* s;
+	const char* s;
 
 	s = PF_VarString(0);
 	SV_BroadcastPrintf("%s", s);
@@ -306,7 +255,7 @@ sprint(clientent, value)
 */
 void PF_sprint(void)
 {
-	char* s;
+	const char* s;
 	client_t* client;
 	int entnum;
 
@@ -337,7 +286,7 @@ centerprint(clientent, value)
 */
 void PF_centerprint(void)
 {
-	char* s;
+	const char* s;
 	client_t* client;
 	int entnum;
 
@@ -356,113 +305,6 @@ void PF_centerprint(void)
 	client->qh_message.WriteString2(s);
 }
 
-
-/*
-=================
-PF_normalize
-
-vector normalize(vector)
-=================
-*/
-void PF_normalize(void)
-{
-	float* value1;
-	vec3_t newvalue;
-	float len;
-
-	value1 = G_VECTOR(OFS_PARM0);
-
-	len = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
-	len = sqrt(len);
-
-	if (len == 0)
-	{
-		newvalue[0] = newvalue[1] = newvalue[2] = 0;
-	}
-	else
-	{
-		len = 1 / len;
-		newvalue[0] = value1[0] * len;
-		newvalue[1] = value1[1] * len;
-		newvalue[2] = value1[2] * len;
-	}
-
-	VectorCopy(newvalue, G_VECTOR(OFS_RETURN));
-}
-
-/*
-=================
-PF_vlen
-
-scalar vlen(vector)
-=================
-*/
-void PF_vlen(void)
-{
-	float* value1;
-	float len;
-
-	value1 = G_VECTOR(OFS_PARM0);
-
-	len = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
-	len = sqrt(len);
-
-	G_FLOAT(OFS_RETURN) = len;
-}
-
-/*
-=================
-PF_vectoyaw
-
-float vectoyaw(vector)
-=================
-*/
-void PF_vectoyaw()
-{
-	float* value1 = G_VECTOR(OFS_PARM0);
-
-	float yaw = VecToYaw(value1);
-
-	G_FLOAT(OFS_RETURN) = (int)yaw;
-}
-
-
-/*
-=================
-PF_vectoangles
-
-vector vectoangles(vector)
-=================
-*/
-void PF_vectoangles()
-{
-	float* value1 = G_VECTOR(OFS_PARM0);
-
-	vec3_t angles;
-	VecToAnglesBuggy(value1, angles);
-
-	G_FLOAT(OFS_RETURN + 0) = (int)angles[0];
-	G_FLOAT(OFS_RETURN + 1) = (int)angles[1];
-	G_FLOAT(OFS_RETURN + 2) = (int)angles[2];
-}
-
-/*
-=================
-PF_Random
-
-Returns a number from 0<= num < 1
-
-random()
-=================
-*/
-void PF_random(void)
-{
-	float num;
-
-	num = (rand() & 0x7fff) / ((float)0x7fff);
-
-	G_FLOAT(OFS_RETURN) = num;
-}
 
 /*
 =================
@@ -575,20 +417,6 @@ void PF_sound(void)
 	}
 
 	SV_StartSound(entity, channel, sample, volume, attenuation);
-}
-
-/*
-=================
-PF_break
-
-break()
-=================
-*/
-void PF_break(void)
-{
-	Con_Printf("break statement\n");
-	*(int*)-4 = 0;	// dump to debugger
-//	PR_RunError ("break statement");
 }
 
 /*
@@ -807,56 +635,6 @@ void PF_stuffcmd(void)
 
 /*
 =================
-PF_localcmd
-
-Sends text over to the client's execution buffer
-
-localcmd (string)
-=================
-*/
-void PF_localcmd(void)
-{
-	const char* str;
-
-	str = G_STRING(OFS_PARM0);
-	Cbuf_AddText(str);
-}
-
-/*
-=================
-PF_cvar
-
-float cvar (string)
-=================
-*/
-void PF_cvar(void)
-{
-	const char* str;
-
-	str = G_STRING(OFS_PARM0);
-
-	G_FLOAT(OFS_RETURN) = Cvar_VariableValue(str);
-}
-
-/*
-=================
-PF_cvar_set
-
-float cvar (string)
-=================
-*/
-void PF_cvar_set(void)
-{
-	const char* var, * val;
-
-	var = G_STRING(OFS_PARM0);
-	val = G_STRING(OFS_PARM1);
-
-	Cvar_Set(var, val);
-}
-
-/*
-=================
 PF_findradius
 
 Returns a chain of entities that have origins within a spherical area
@@ -902,47 +680,6 @@ void PF_findradius(void)
 	RETURN_EDICT(chain);
 }
 
-
-/*
-=========
-PF_dprint
-=========
-*/
-void PF_dprint(void)
-{
-	Con_DPrintf("%s",PF_VarString(0));
-}
-
-char pr_string_temp[128];
-
-void PF_ftos(void)
-{
-	float v;
-	v = G_FLOAT(OFS_PARM0);
-
-	if (v == (int)v)
-	{
-		sprintf(pr_string_temp, "%d",(int)v);
-	}
-	else
-	{
-		sprintf(pr_string_temp, "%5.1f",v);
-	}
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
-}
-
-void PF_fabs(void)
-{
-	float v;
-	v = G_FLOAT(OFS_PARM0);
-	G_FLOAT(OFS_RETURN) = fabs(v);
-}
-
-void PF_vtos(void)
-{
-	sprintf(pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
-}
 
 void PF_Spawn(void)
 {
@@ -1071,26 +808,6 @@ void PF_precache_model(void)
 }
 
 
-void PF_coredump(void)
-{
-	ED_PrintEdicts();
-}
-
-void PF_traceon(void)
-{
-	pr_trace = true;
-}
-
-void PF_traceoff(void)
-{
-	pr_trace = false;
-}
-
-void PF_eprint(void)
-{
-	ED_PrintNum(G_EDICTNUM(OFS_PARM0));
-}
-
 /*
 ===============
 PF_walkmove
@@ -1202,29 +919,6 @@ void PF_lightstyle(void)
 			client->qh_message.WriteString2(val);
 		}
 }
-
-void PF_rint(void)
-{
-	float f;
-	f = G_FLOAT(OFS_PARM0);
-	if (f > 0)
-	{
-		G_FLOAT(OFS_RETURN) = (int)(f + 0.5);
-	}
-	else
-	{
-		G_FLOAT(OFS_RETURN) = (int)(f - 0.5);
-	}
-}
-void PF_floor(void)
-{
-	G_FLOAT(OFS_RETURN) = floor(G_FLOAT(OFS_PARM0));
-}
-void PF_ceil(void)
-{
-	G_FLOAT(OFS_RETURN) = ceil(G_FLOAT(OFS_PARM0));
-}
-
 
 /*
 =============
@@ -1588,14 +1282,6 @@ void PF_changelevel(void)
 	s = G_STRING(OFS_PARM0);
 	Cbuf_AddText(va("changelevel %s\n",s));
 }
-
-
-void PF_Fixme(void)
-{
-	PR_RunError("unimplemented bulitin");
-}
-
-
 
 builtin_t pr_builtin[] =
 {
