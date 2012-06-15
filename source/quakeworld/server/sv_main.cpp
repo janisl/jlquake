@@ -1421,6 +1421,10 @@ void SV_Frame(float time)
 			svs.qh_stats.count = 0;
 		}
 	}
+	catch (DropException& e)
+	{
+		SV_Error("%s", e.What());
+	}
 	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());

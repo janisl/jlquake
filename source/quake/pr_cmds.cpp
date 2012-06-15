@@ -1688,5 +1688,8 @@ builtin_t pr_builtin[] =
 	PF_setspawnparms
 };
 
-builtin_t* pr_builtins = pr_builtin;
-int pr_numbuiltins = sizeof(pr_builtin) / sizeof(pr_builtin[0]);
+void PR_InitBuiltins()
+{
+	pr_builtins = pr_builtin;
+	pr_numbuiltins = sizeof(pr_builtin) / sizeof(pr_builtin[0]);
+}

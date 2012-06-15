@@ -26,18 +26,13 @@ qhedict_t* ED_Alloc_Temp(void);
 void ED_Free(qhedict_t* ed);
 
 void ED_LoadFromFile(const char* data);
+void PR_InitBuiltins();
 
 //============================================================================
-
-typedef void (*builtin_t)(void);
-extern builtin_t* pr_builtins;
-extern int pr_numbuiltins;
 
 extern func_t SpectatorConnect;
 extern func_t SpectatorThink;
 extern func_t SpectatorDisconnect;
-
-void PR_RunError(const char* error, ...);
 
 extern Cvar* max_temp_edicts;
 

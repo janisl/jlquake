@@ -302,6 +302,7 @@ PR_Init
 */
 void PR_Init(void)
 {
+	PR_InitBuiltins();
 	Cmd_AddCommand("edict", ED_PrintEdict_f);
 	Cmd_AddCommand("edicts", ED_PrintEdicts);
 	Cmd_AddCommand("edictcount", ED_Count);

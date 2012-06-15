@@ -43,6 +43,8 @@ struct prstack_t
 	dfunction_t* f;
 };
 
+typedef void (*builtin_t)();
+
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
 extern char* pr_strings;
@@ -52,6 +54,8 @@ extern dstatement_t* pr_statements;
 extern float* pr_globals;			// same as pr_global_struct
 extern int pr_edict_size;			// in bytes
 
+extern builtin_t* pr_builtins;
+extern int pr_numbuiltins;
 extern prstack_t pr_stack[MAX_STACK_DEPTH];
 extern int pr_depth;
 extern int localstack[LOCALSTACK_SIZE];
@@ -60,7 +64,6 @@ extern bool pr_trace;
 extern dfunction_t* pr_xfunction;
 extern int pr_xstatement;
 extern int pr_argc;
-extern const char* pr_opnames[];
 
 void PR_ClearStringMap();
 int PR_SetString(const char* string);
@@ -83,6 +86,10 @@ void ED_WriteGlobals(fileHandle_t f);
 bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
 const char* ED_ParseGlobals(const char* data);
 
-void PR_PrintStatement(dstatement_t* s);
+void PR_PrintStatement(const dstatement_t* s);
+void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
+int PR_EnterFunction(dfunction_t* f);
+int PR_LeaveFunction();
+bool PR_ExecuteProgramCommon(const dstatement_t* st, eval_t* a, eval_t* b, eval_t* c, int& s, int exitdepth);
 
 #endif
