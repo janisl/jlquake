@@ -211,14 +211,14 @@ void SV_DropClient(client_t* drop)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
+			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
 		}
 		else if (SpectatorDisconnect)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->qh_edict);
+			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
 			PR_ExecuteProgram(SpectatorDisconnect);
 		}
 	}
@@ -758,9 +758,9 @@ void SVC_DirectConnect(void)
 	newcl->qh_lockedtill = 0;
 
 	// call the progs to get default spawn parms for the new client
-	PR_ExecuteProgram(pr_global_struct->SetNewParms);
+	PR_ExecuteProgram(*pr_globalVars.SetNewParms);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		newcl->qh_spawn_parms[i] = (&pr_global_struct->parm1)[i];
+		newcl->qh_spawn_parms[i] = pr_globalVars.parm1[i];
 
 	if (newcl->qh_spectator)
 	{

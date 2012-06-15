@@ -24,6 +24,7 @@ ddef_t* pr_globaldefs;
 dstatement_t* pr_statements;
 float* pr_globals;			// same as pr_global_struct
 int pr_edict_size;			// in bytes
+progGlobalVars_t pr_globalVars;
 
 static Array<const char*> pr_strtbl;
 
@@ -446,4 +447,149 @@ const char* ED_ParseGlobals(const char* data)
 		}
 	}
 	return data;
+}
+
+void PR_InitGlobals()
+{
+	Com_Memset(&pr_globalVars, 0, sizeof(pr_globalVars));
+	//pad
+	int index = 28;
+	pr_globalVars.self = reinterpret_cast<int*>(&pr_globals[index++]);
+	pr_globalVars.other = reinterpret_cast<int*>(&pr_globals[index++]);
+	//world
+	index++;
+	pr_globalVars.time = &pr_globals[index++];
+	pr_globalVars.frametime = &pr_globals[index++];
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		pr_globalVars.newmis = reinterpret_cast<int*>(&pr_globals[index++]);
+	}
+	pr_globalVars.force_retouch = &pr_globals[index++];
+	pr_globalVars.mapname = reinterpret_cast<string_t*>(&pr_globals[index++]);
+	if (GGameType & GAME_Hexen2)
+	{
+		pr_globalVars.startspot = reinterpret_cast<string_t*>(&pr_globals[index++]);
+	}
+	if (!(GGameType & GAME_QuakeWorld))
+	{
+		pr_globalVars.deathmatch = &pr_globals[index++];
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		pr_globalVars.randomclass = &pr_globals[index++];
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		pr_globalVars.damageScale = &pr_globals[index++];
+		pr_globalVars.meleeDamScale = &pr_globals[index++];
+		pr_globalVars.shyRespawn = &pr_globals[index++];
+		pr_globalVars.spartanPrint = &pr_globals[index++];
+		pr_globalVars.manaScale = &pr_globals[index++];
+		pr_globalVars.tomeMode = &pr_globals[index++];
+		pr_globalVars.tomeRespawn = &pr_globals[index++];
+		pr_globalVars.w2Respawn = &pr_globals[index++];
+		pr_globalVars.altRespawn = &pr_globals[index++];
+		pr_globalVars.fixedLevel = &pr_globals[index++];
+		pr_globalVars.autoItems = &pr_globals[index++];
+		pr_globalVars.dmMode = &pr_globals[index++];
+		pr_globalVars.easyFourth = &pr_globals[index++];
+		pr_globalVars.patternRunner = &pr_globals[index++];
+	}
+	if (!(GGameType & GAME_QuakeWorld))
+	{
+		pr_globalVars.coop = &pr_globals[index++];
+		//teamplay
+		index++;
+	}
+	if (GGameType & GAME_Hexen2 && GGameType & GAME_H2Portals)
+	{
+		pr_globalVars.cl_playerclass = &pr_globals[index++];
+	}
+	pr_globalVars.serverflags = &pr_globals[index++];
+	pr_globalVars.total_secrets = &pr_globals[index++];
+	pr_globalVars.total_monsters = &pr_globals[index++];
+	pr_globalVars.found_secrets = &pr_globals[index++];
+	pr_globalVars.killed_monsters = &pr_globals[index++];
+	if (GGameType & GAME_Hexen2)
+	{
+		//chunk_cnt
+		index++;
+		//done_precache
+		index++;
+	}
+	pr_globalVars.parm1 = &pr_globals[index++];
+	//param2-param16
+	index += 15;
+	pr_globalVars.v_forward = &pr_globals[index];
+	index += 3;
+	pr_globalVars.v_up = &pr_globals[index];
+	index += 3;
+	pr_globalVars.v_right = &pr_globals[index];
+	index += 3;
+	pr_globalVars.trace_allsolid = &pr_globals[index++];
+	pr_globalVars.trace_startsolid = &pr_globals[index++];
+	pr_globalVars.trace_fraction = &pr_globals[index++];
+	pr_globalVars.trace_endpos = &pr_globals[index];
+	index += 3;
+	pr_globalVars.trace_plane_normal = &pr_globals[index];
+	index += 3;
+	pr_globalVars.trace_plane_dist = &pr_globals[index++];
+	pr_globalVars.trace_ent = reinterpret_cast<int*>(&pr_globals[index++]);
+	pr_globalVars.trace_inopen = &pr_globals[index++];
+	pr_globalVars.trace_inwater = &pr_globals[index++];
+	pr_globalVars.msg_entity = reinterpret_cast<int*>(&pr_globals[index++]);
+	if (GGameType & GAME_Hexen2)
+	{
+		pr_globalVars.cycle_wrapped = &pr_globals[index++];
+		//crouch_cnt
+		index++;
+		if (!(GGameType & GAME_H2Portals) || GGameType & GAME_HexenWorld)
+		{
+			//modelindex_assassin
+			index++;
+			//modelindex_crusader
+			index++;
+			//modelindex_paladin
+			index++;
+			//modelindex_necromancer
+			index++;
+		}
+		//modelindex_sheep
+		index++;
+		//num_players
+		index++;
+		//exp_mult
+		index++;
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		pr_globalVars.max_players = &pr_globals[index++];
+		pr_globalVars.defLosses = &pr_globals[index++];
+		pr_globalVars.attLosses = &pr_globals[index++];
+	}
+	pr_globalVars.main = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.StartFrame = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.PlayerPreThink = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.PlayerPostThink = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.ClientKill = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.ClientConnect = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	pr_globalVars.PutClientInServer = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	if (GGameType & GAME_Hexen2)
+	{
+		pr_globalVars.ClientReEnter = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	}
+	pr_globalVars.ClientDisconnect = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	if (GGameType & GAME_Hexen2)
+	{
+		pr_globalVars.ClassChangeWeapon = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	}
+	if (!(GGameType & GAME_Hexen2) || GGameType & GAME_HexenWorld)
+	{
+		pr_globalVars.SetNewParms = reinterpret_cast<func_t*>(&pr_globals[index++]);
+		pr_globalVars.SetChangeParms = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		pr_globalVars.SmitePlayer = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	}
 }

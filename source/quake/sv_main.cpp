@@ -315,9 +315,9 @@ void SV_ConnectClient(int clientnum)
 	else
 	{
 		// call the progs to get default spawn parms for the new client
-		PR_ExecuteProgram(pr_global_struct->SetNewParms);
+		PR_ExecuteProgram(*pr_globalVars.SetNewParms);
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			client->qh_spawn_parms[i] = (&pr_global_struct->parm1)[i];
+			client->qh_spawn_parms[i] = pr_globalVars.parm1[i];
 	}
 
 	SV_SendServerinfo(client);
@@ -722,7 +722,7 @@ void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
 	}
 	else
 	{
-		items = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
+		items = (int)ent->GetItems() | ((int)*pr_globalVars.serverflags << 28);
 	}
 
 	bits |= SU_ITEMS;
@@ -1153,7 +1153,7 @@ void SV_SaveSpawnparms(void)
 {
 	int i, j;
 
-	svs.qh_serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = *pr_globalVars.serverflags;
 
 	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
@@ -1163,10 +1163,10 @@ void SV_SaveSpawnparms(void)
 		}
 
 		// call the progs to get default spawn parms for the new client
-		pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
-		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
+		*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
+		PR_ExecuteProgram(*pr_globalVars.SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
+			host_client->qh_spawn_parms[j] = pr_globalVars.parm1[j];
 	}
 }
 
@@ -1289,17 +1289,17 @@ void SV_SpawnServer(char* server)
 
 	if (coop->value)
 	{
-		pr_global_struct->coop = coop->value;
+		*pr_globalVars.coop = coop->value;
 	}
 	else
 	{
-		pr_global_struct->deathmatch = deathmatch->value;
+		*pr_globalVars.deathmatch = deathmatch->value;
 	}
 
-	pr_global_struct->mapname = PR_SetString(sv.name);
+	*pr_globalVars.mapname = PR_SetString(sv.name);
 
 // serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.qh_serverflags;
+	*pr_globalVars.serverflags = svs.qh_serverflags;
 
 	ED_LoadFromFile(CM_EntityString());
 

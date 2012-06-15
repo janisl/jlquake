@@ -591,7 +591,7 @@ void SV_UpdateClientStats(client_t* client)
 		stats[Q1STAT_ACTIVEWEAPON] = ent->GetWeapon();
 	}
 	// stuff the sigil bits into the high bits of items for sbar
-	stats[QWSTAT_ITEMS] = (int)ent->GetItems() | ((int)pr_global_struct->serverflags << 28);
+	stats[QWSTAT_ITEMS] = (int)ent->GetItems() | ((int)*pr_globalVars.serverflags << 28);
 
 	for (i = 0; i < MAX_CL_STATS; i++)
 		if (stats[i] != client->qh_stats[i])

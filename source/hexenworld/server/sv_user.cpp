@@ -287,19 +287,19 @@ void SV_Spawn_f(void)
 
 	host_client->netchan.message.WriteByte(hwsvc_updatestatlong);
 	host_client->netchan.message.WriteByte(STAT_TOTALSECRETS);
-	host_client->netchan.message.WriteLong(pr_global_struct->total_secrets);
+	host_client->netchan.message.WriteLong(*pr_globalVars.total_secrets);
 
 	host_client->netchan.message.WriteByte(hwsvc_updatestatlong);
 	host_client->netchan.message.WriteByte(STAT_TOTALMONSTERS);
-	host_client->netchan.message.WriteLong(pr_global_struct->total_monsters);
+	host_client->netchan.message.WriteLong(*pr_globalVars.total_monsters);
 
 	host_client->netchan.message.WriteByte(hwsvc_updatestatlong);
 	host_client->netchan.message.WriteByte(STAT_SECRETS);
-	host_client->netchan.message.WriteLong(pr_global_struct->found_secrets);
+	host_client->netchan.message.WriteLong(*pr_globalVars.found_secrets);
 
 	host_client->netchan.message.WriteByte(hwsvc_updatestatlong);
 	host_client->netchan.message.WriteByte(STAT_MONSTERS);
-	host_client->netchan.message.WriteLong(pr_global_struct->killed_monsters);
+	host_client->netchan.message.WriteLong(*pr_globalVars.killed_monsters);
 
 
 	// get the client to check and download skins
@@ -363,11 +363,11 @@ void SV_Begin_f(void)
 		{
 			// copy spawn parms out of the client_t
 			for (i = 0; i < NUM_SPAWN_PARMS; i++)
-				(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
+				pr_globalVars.parm1[i] = host_client->qh_spawn_parms[i];
 
 			// call the spawn function
-			pr_global_struct->time = sv.qh_time;
-			pr_global_struct->self = EDICT_TO_PROG(sv_player);
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 			PR_ExecuteProgram(SpectatorConnect);
 		}
 	}
@@ -375,19 +375,19 @@ void SV_Begin_f(void)
 	{
 		// copy spawn parms out of the client_t
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
+			pr_globalVars.parm1[i] = host_client->qh_spawn_parms[i];
 
 		host_client->h2_send_all_v = true;
 
 		// call the spawn function
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(pr_global_struct->ClientConnect);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
 		// actually spawn the player
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(pr_global_struct->PutClientInServer);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
 	}
 
 	// clear the net statistics, because connecting gives a bogus picture
@@ -779,9 +779,9 @@ void SV_Kill_f(void)
 		return;
 	}
 
-	pr_global_struct->time = sv.qh_time;
-	pr_global_struct->self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram(pr_global_struct->ClientKill);
+	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+	PR_ExecuteProgram(*pr_globalVars.ClientKill);
 }
 
 /*
@@ -1248,11 +1248,11 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 
 	if (!host_client->qh_spectator)
 	{
-		pr_global_struct->frametime = host_frametime;
+		*pr_globalVars.frametime = host_frametime;
 
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(pr_global_struct->PlayerPreThink);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
 		SV_RunThink(sv_player);
 	}
@@ -1346,16 +1346,16 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 //			SV_Impact(sv_player,ent);
 			if (sv_player->GetTouch())
 			{
-				pr_global_struct->self = EDICT_TO_PROG(sv_player);
-				pr_global_struct->other = EDICT_TO_PROG(ent);
+				*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+				*pr_globalVars.other = EDICT_TO_PROG(ent);
 				PR_ExecuteProgram(sv_player->GetTouch());
 			}
 			if (!ent->GetTouch() || (playertouch[n / 8] & (1 << (n % 8))))
 			{
 				continue;
 			}
-			pr_global_struct->self = EDICT_TO_PROG(ent);
-			pr_global_struct->other = EDICT_TO_PROG(sv_player);
+			*pr_globalVars.self = EDICT_TO_PROG(ent);
+			*pr_globalVars.other = EDICT_TO_PROG(sv_player);
 			PR_ExecuteProgram(ent->GetTouch());
 			playertouch[n / 8] |= 1 << (n % 8);
 		}
@@ -1374,15 +1374,15 @@ void SV_PostRunCmd(void)
 
 	if (!host_client->qh_spectator)
 	{
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(pr_global_struct->PlayerPostThink);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
 		SV_RunNewmis();
 	}
 	else if (SpectatorThink)
 	{
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(SpectatorThink);
 	}
 }

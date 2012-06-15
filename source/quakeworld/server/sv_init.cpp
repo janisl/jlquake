@@ -168,7 +168,7 @@ void SV_SaveSpawnparms(void)
 
 	}
 	// serverflags is the only game related thing maintained
-	svs.qh_serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = *pr_globalVars.serverflags;
 
 	for (i = 0, host_client = svs.clients; i < MAX_CLIENTS_QW; i++, host_client++)
 	{
@@ -181,10 +181,10 @@ void SV_SaveSpawnparms(void)
 		host_client->state = CS_CONNECTED;
 
 		// call the progs to get default spawn parms for the new client
-		pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
-		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
+		*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
+		PR_ExecuteProgram(*pr_globalVars.SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
+			host_client->qh_spawn_parms[j] = pr_globalVars.parm1[j];
 	}
 }
 
@@ -302,9 +302,9 @@ void SV_SpawnServer(char* server)
 	ent->SetSolid(SOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
-	pr_global_struct->mapname = PR_SetString(sv.name);
+	*pr_globalVars.mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.qh_serverflags;
+	*pr_globalVars.serverflags = svs.qh_serverflags;
 
 	// run the frame start qc function to let progs check cvars
 	SV_ProgStartFrame();

@@ -66,7 +66,7 @@ void NET_Ban_f(void)
 	}
 	else
 	{
-		if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+		if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 		{
 			return;
 		}

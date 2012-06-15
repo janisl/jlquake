@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-globalvars_t* pr_global_struct;
-
 unsigned short pr_crc;
 
 Cvar* nomonsters;
@@ -129,7 +127,7 @@ void ED_LoadFromFile(const char* data)
 
 	ent = NULL;
 	inhibit = 0;
-	pr_global_struct->time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time;
 
 // parse ents
 	while (1)
@@ -196,7 +194,7 @@ void ED_LoadFromFile(const char* data)
 			continue;
 		}
 
-		pr_global_struct->self = EDICT_TO_PROG(ent);
+		*pr_globalVars.self = EDICT_TO_PROG(ent);
 		PR_ExecuteProgram(func - pr_functions);
 	}
 
@@ -246,8 +244,7 @@ void PR_LoadProgs(void)
 	pr_fielddefs = (ddef_t*)((byte*)progs + progs->ofs_fielddefs);
 	pr_statements = (dstatement_t*)((byte*)progs + progs->ofs_statements);
 
-	pr_global_struct = (globalvars_t*)((byte*)progs + progs->ofs_globals);
-	pr_globals = (float*)pr_global_struct;
+	pr_globals = (float*)((byte*)progs + progs->ofs_globals);
 
 	pr_edict_size = progs->entityfields * 4 + sizeof(qhedict_t) - sizeof(entvars_t);
 
@@ -292,6 +289,7 @@ void PR_LoadProgs(void)
 		((int*)pr_globals)[i] = LittleLong(((int*)pr_globals)[i]);
 
 	ED_InitEntityFields();
+	PR_InitGlobals();
 }
 
 

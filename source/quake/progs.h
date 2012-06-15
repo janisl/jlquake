@@ -23,12 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,qhedict_t,area)
 
-//============================================================================
-
-extern globalvars_t* pr_global_struct;
-
-//============================================================================
-
 void PR_Init(void);
 
 void PR_ExecuteProgram(func_t fnum);

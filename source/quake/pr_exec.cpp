@@ -87,9 +87,9 @@ void PR_ExecuteProgram(func_t fnum)
 
 	if (!fnum || fnum >= progs->numfunctions)
 	{
-		if (pr_global_struct->self)
+		if (*pr_globalVars.self)
 		{
-			ED_Print(PROG_TO_EDICT(pr_global_struct->self));
+			ED_Print(PROG_TO_EDICT(*pr_globalVars.self));
 		}
 		Host_Error("PR_ExecuteProgram: NULL function");
 	}
@@ -129,8 +129,8 @@ void PR_ExecuteProgram(func_t fnum)
 		switch (st->op)
 		{
 		case OP_STATE:
-			ed = PROG_TO_EDICT(pr_global_struct->self);
-			ed->SetNextThink(pr_global_struct->time + (GGameType & GAME_Hexen2 ? HX_FRAME_TIME : 0.1));
+			ed = PROG_TO_EDICT(*pr_globalVars.self);
+			ed->SetNextThink(*pr_globalVars.time + (GGameType & GAME_Hexen2 ? HX_FRAME_TIME : 0.1));
 			if (a->_float != ed->GetFrame())
 			{
 				ed->SetFrame(a->_float);

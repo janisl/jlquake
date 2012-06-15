@@ -2322,7 +2322,7 @@ void SV_SaveSpawnparms(void)
 {
 	int i;
 
-	svs.qh_serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = *pr_globalVars.serverflags;
 
 	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 	{
@@ -2332,7 +2332,7 @@ void SV_SaveSpawnparms(void)
 		}
 
 		// call the progs to get default spawn parms for the new client
-//		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
+//		*pr_globalVars.self = EDICT_TO_PROG(host_client->edict);
 //		PR_ExecuteProgram (pr_global_struct->SetChangeParms);
 //		for (j=0 ; j<NUM_SPAWN_PARMS ; j++)
 //			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
@@ -2499,20 +2499,20 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	if (coop->value)
 	{
-		pr_global_struct->coop = coop->value;
+		*pr_globalVars.coop = coop->value;
 	}
 	else
 	{
-		pr_global_struct->deathmatch = deathmatch->value;
+		*pr_globalVars.deathmatch = deathmatch->value;
 	}
 
-	pr_global_struct->randomclass = randomclass->value;
+	*pr_globalVars.randomclass = randomclass->value;
 
-	pr_global_struct->mapname = PR_SetString(sv.name);
-	pr_global_struct->startspot = PR_SetString(sv.h2_startspot);
+	*pr_globalVars.mapname = PR_SetString(sv.name);
+	*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
 
 	// serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.qh_serverflags;
+	*pr_globalVars.serverflags = svs.qh_serverflags;
 
 	current_loading_size += 5;
 	SCR_UpdateScreen();

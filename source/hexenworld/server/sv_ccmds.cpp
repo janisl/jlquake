@@ -375,9 +375,9 @@ void SV_Kick_f(void)
 			SV_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
 			SV_DropClient(cl);
 
-			pr_global_struct->time = sv.qh_time;
-			pr_global_struct->self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram(pr_global_struct->ClientKill);
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+			PR_ExecuteProgram(*pr_globalVars.ClientKill);
 			return;
 		}
 	}
@@ -416,15 +416,15 @@ void SV_Smite_f(void)
 			SV_BroadcastPrintf(PRINT_HIGH, "%s was Smitten by GOD!\n", cl->name);
 
 //save this state
-			old_self = pr_global_struct->self;
+			old_self = *pr_globalVars.self;
 
 //call the hc SmitePlayer function
-			pr_global_struct->time = sv.qh_time;
-			pr_global_struct->self = EDICT_TO_PROG(cl->qh_edict);
-			PR_ExecuteProgram(pr_global_struct->SmitePlayer);
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(cl->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.SmitePlayer);
 
 //restore current state
-			pr_global_struct->self = old_self;
+			*pr_globalVars.self = old_self;
 			return;
 		}
 	}
@@ -467,8 +467,8 @@ void SV_Status_f(void)
 		num_min = (num_min - num_sec) / 60;
 		Con_Printf("timeleft         : %i:", num_min);
 		Con_Printf("%2i\n", num_sec);
-		Con_Printf("deflosses        : %3i/%3i\n", floor(pr_global_struct->defLosses),floor(f_limit));
-		Con_Printf("attlosses        : %3i/%3i\n", floor(pr_global_struct->attLosses),floor(f_limit * 2));
+		Con_Printf("deflosses        : %3i/%3i\n", floor(*pr_globalVars.defLosses),floor(f_limit));
+		Con_Printf("attlosses        : %3i/%3i\n", floor(*pr_globalVars.attLosses),floor(f_limit * 2));
 	}
 	else
 	{

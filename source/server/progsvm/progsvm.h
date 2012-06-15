@@ -43,6 +43,90 @@ struct prstack_t
 	dfunction_t* f;
 };
 
+struct progGlobalVars_t
+{
+	//	All games
+	int* self;
+	int* other;
+	float* time;
+	float* frametime;
+	//	QuakeWorld, HexenWorld
+	int* newmis;
+	//	All games
+	float* force_retouch;
+	string_t* mapname;
+	//	Hexen 2, HexenWorld
+	string_t* startspot;
+	//	Quake, Hexen 2, HexenWorld
+	float* deathmatch;
+	//	Hexen 2, HexenWorld
+	float* randomclass;
+	//	HexenWorld
+	float* damageScale;
+	float* meleeDamScale;
+	float* shyRespawn;
+	float* spartanPrint;
+	float* manaScale;
+	float* tomeMode;
+	float* tomeRespawn;
+	float* w2Respawn;
+	float* altRespawn;
+	float* fixedLevel;
+	float* autoItems;
+	float* dmMode;
+	float* easyFourth;
+	float* patternRunner;
+	//	Quake, Hexen 2, HexenWorld
+	float* coop;
+	//	Hexen 2 portals
+	float* cl_playerclass;
+	//	All games
+	float* serverflags;
+	const float* total_secrets;
+	const float* total_monsters;
+	const float* found_secrets;
+	const float* killed_monsters;
+	float* parm1;
+	float* v_forward;
+	float* v_up;
+	float* v_right;
+	float* trace_allsolid;
+	float* trace_startsolid;
+	float* trace_fraction;
+	float* trace_endpos;
+	float* trace_plane_normal;
+	float* trace_plane_dist;
+	int* trace_ent;
+	float* trace_inopen;
+	float* trace_inwater;
+	const int* msg_entity;
+	//	Hexen 2, HexenWorld
+	float* cycle_wrapped;
+	//	HexenWorld
+	float* max_players;
+	const float* defLosses;
+	const float* attLosses;
+	//	All games
+	const func_t* main;
+	const func_t* StartFrame;
+	const func_t* PlayerPreThink;
+	const func_t* PlayerPostThink;
+	const func_t* ClientKill;
+	const func_t* ClientConnect;
+	const func_t* PutClientInServer;
+	//	Hexen 2, HexenWorld
+	const func_t* ClientReEnter;
+	//	All games
+	const func_t* ClientDisconnect;
+	//	Hexen 2, HexenWorld
+	const func_t* ClassChangeWeapon;
+	//	Quake, QuakeWorld, HexenWorld
+	const func_t* SetNewParms;
+	const func_t* SetChangeParms;
+	//	HexenWorld
+	const func_t* SmitePlayer;
+};
+
 typedef void (*builtin_t)();
 
 extern dprograms_t* progs;
@@ -53,6 +137,7 @@ extern ddef_t* pr_fielddefs;
 extern dstatement_t* pr_statements;
 extern float* pr_globals;			// same as pr_global_struct
 extern int pr_edict_size;			// in bytes
+extern progGlobalVars_t pr_globalVars;
 
 extern builtin_t* pr_builtins;
 extern int pr_numbuiltins;
@@ -85,6 +170,7 @@ const char* PR_GlobalStringNoContents(int ofs);
 void ED_WriteGlobals(fileHandle_t f);
 bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
 const char* ED_ParseGlobals(const char* data);
+void PR_InitGlobals();
 
 void PR_PrintStatement(const dstatement_t* s);
 void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));

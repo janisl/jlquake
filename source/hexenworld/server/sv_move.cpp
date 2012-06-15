@@ -92,21 +92,21 @@ realcheck:
 
 void set_move_trace(q1trace_t* trace)
 {
-	pr_global_struct->trace_allsolid = trace->allsolid;
-	pr_global_struct->trace_startsolid = trace->startsolid;
-	pr_global_struct->trace_fraction = trace->fraction;
-	pr_global_struct->trace_inwater = trace->inwater;
-	pr_global_struct->trace_inopen = trace->inopen;
-	VectorCopy(trace->endpos, pr_global_struct->trace_endpos);
-	VectorCopy(trace->plane.normal, pr_global_struct->trace_plane_normal);
-	pr_global_struct->trace_plane_dist =  trace->plane.dist;
+	*pr_globalVars.trace_allsolid = trace->allsolid;
+	*pr_globalVars.trace_startsolid = trace->startsolid;
+	*pr_globalVars.trace_fraction = trace->fraction;
+	*pr_globalVars.trace_inwater = trace->inwater;
+	*pr_globalVars.trace_inopen = trace->inopen;
+	VectorCopy(trace->endpos, pr_globalVars.trace_endpos);
+	VectorCopy(trace->plane.normal, pr_globalVars.trace_plane_normal);
+	*pr_globalVars.trace_plane_dist =  trace->plane.dist;
 	if (trace->entityNum >= 0)
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace->entityNum));
+		*pr_globalVars.trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace->entityNum));
 	}
 	else
 	{
-		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.qh_edicts);
+		*pr_globalVars.trace_ent = EDICT_TO_PROG(sv.qh_edicts);
 	}
 }
 
@@ -480,7 +480,7 @@ void SV_MoveToGoal(void)
 	qhedict_t* ent, * goal;
 	float dist;
 
-	ent = PROG_TO_EDICT(pr_global_struct->self);
+	ent = PROG_TO_EDICT(*pr_globalVars.self);
 	goal = PROG_TO_EDICT(ent->GetGoalEntity());
 	dist = G_FLOAT(OFS_PARM0);
 

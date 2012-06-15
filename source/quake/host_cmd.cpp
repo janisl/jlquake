@@ -121,7 +121,7 @@ void Host_God_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -145,7 +145,7 @@ void Host_Notarget_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -169,7 +169,7 @@ void Host_Noclip_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -201,7 +201,7 @@ void Host_Fly_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -1045,9 +1045,9 @@ void Host_Kill_f(void)
 		return;
 	}
 
-	pr_global_struct->time = sv.qh_time;
-	pr_global_struct->self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram(pr_global_struct->ClientKill);
+	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+	PR_ExecuteProgram(*pr_globalVars.ClientKill);
 }
 
 
@@ -1157,20 +1157,20 @@ void Host_Spawn_f(void)
 		// copy spawn parms out of the client_t
 
 		for (i = 0; i < NUM_SPAWN_PARMS; i++)
-			(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
+			pr_globalVars.parm1[i] = host_client->qh_spawn_parms[i];
 
 		// call the spawn function
 
-		pr_global_struct->time = sv.qh_time;
-		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(pr_global_struct->ClientConnect);
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
 		if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
 		{
 			Con_Printf("%s entered the game\n", host_client->name);
 		}
 
-		PR_ExecuteProgram(pr_global_struct->PutClientInServer);
+		PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
 	}
 
 
@@ -1207,19 +1207,19 @@ void Host_Spawn_f(void)
 //
 	host_client->qh_message.WriteByte(q1svc_updatestat);
 	host_client->qh_message.WriteByte(Q1STAT_TOTALSECRETS);
-	host_client->qh_message.WriteLong(pr_global_struct->total_secrets);
+	host_client->qh_message.WriteLong(*pr_globalVars.total_secrets);
 
 	host_client->qh_message.WriteByte(q1svc_updatestat);
 	host_client->qh_message.WriteByte(Q1STAT_TOTALMONSTERS);
-	host_client->qh_message.WriteLong(pr_global_struct->total_monsters);
+	host_client->qh_message.WriteLong(*pr_globalVars.total_monsters);
 
 	host_client->qh_message.WriteByte(q1svc_updatestat);
 	host_client->qh_message.WriteByte(Q1STAT_SECRETS);
-	host_client->qh_message.WriteLong(pr_global_struct->found_secrets);
+	host_client->qh_message.WriteLong(*pr_globalVars.found_secrets);
 
 	host_client->qh_message.WriteByte(q1svc_updatestat);
 	host_client->qh_message.WriteByte(Q1STAT_MONSTERS);
-	host_client->qh_message.WriteLong(pr_global_struct->killed_monsters);
+	host_client->qh_message.WriteLong(*pr_globalVars.killed_monsters);
 
 
 //
@@ -1283,7 +1283,7 @@ void Host_Kick_f(void)
 			return;
 		}
 	}
-	else if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	else if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -1396,7 +1396,7 @@ void Host_Give_f(void)
 		return;
 	}
 
-	if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}

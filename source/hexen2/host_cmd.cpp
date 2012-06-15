@@ -122,8 +122,8 @@ void Host_God_f(void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch ||
-		 pr_global_struct->coop || skill->value > 2) && !host_client->qh_privileged)
+	if ((*pr_globalVars.deathmatch ||
+		 *pr_globalVars.coop || skill->value > 2) && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -147,7 +147,7 @@ void Host_Notarget_f(void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch || skill->value > 2) && !host_client->qh_privileged)
+	if ((*pr_globalVars.deathmatch || skill->value > 2) && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -171,8 +171,8 @@ void Host_Noclip_f(void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch ||
-		 pr_global_struct->coop || skill->value > 2) && !host_client->qh_privileged)
+	if ((*pr_globalVars.deathmatch ||
+		 *pr_globalVars.coop || skill->value > 2) && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -713,7 +713,7 @@ void Host_Loadgame_f(void)
 
 #ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
-	pr_global_struct->cl_playerclass = ent->GetPlayerClass();
+	*pr_globalVars.cl_playerclass = ent->GetPlayerClass();
 #endif
 
 	svs.clients->h2_playerclass = ent->GetPlayerClass();
@@ -847,14 +847,14 @@ void RestoreClients(void)
 			// copy spawn parms out of the client_t
 
 			for (j = 0; j < NUM_SPAWN_PARMS; j++)
-				(&pr_global_struct->parm1)[j] = host_client->qh_spawn_parms[j];
+				pr_globalVars.parm1[j] = host_client->qh_spawn_parms[j];
 
 			// call the spawn function
 
-			pr_global_struct->time = sv.qh_time;
-			pr_global_struct->self = EDICT_TO_PROG(ent);
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(ent);
 			G_FLOAT(OFS_PARM0) = time_diff;
-			PR_ExecuteProgram(pr_global_struct->ClientReEnter);
+			PR_ExecuteProgram(*pr_globalVars.ClientReEnter);
 		}
 	SaveGamestate(true);
 }
@@ -959,7 +959,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		{
 			start = ED_ParseGlobals(start);
 			// Need to restore this
-			pr_global_struct->startspot = PR_SetString(sv.h2_startspot);
+			*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
 		}
 		else
 		{
@@ -996,7 +996,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		sv.qh_time = time;
 		sv.qh_paused = true;
 
-		pr_global_struct->serverflags = svs.qh_serverflags;
+		*pr_globalVars.serverflags = svs.qh_serverflags;
 
 		RestoreClients();
 	}
@@ -1008,7 +1008,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 	{
 		sv.qh_time = time;
 
-		pr_global_struct->serverflags = svs.qh_serverflags;
+		*pr_globalVars.serverflags = svs.qh_serverflags;
 
 		RestoreClients();
 	}
@@ -1167,9 +1167,9 @@ void Host_Class_f(void)
 #ifdef MISSIONPACK
 		// when classes changes after map load, update cl_playerclass, cl_playerclass should
 		// probably only be used in worldspawn, though
-		if (pr_global_struct)
+		if (pr_globalVars.cl_playerclass)
 		{
-			pr_global_struct->cl_playerclass = newClass;
+			*pr_globalVars.cl_playerclass = newClass;
 		}
 #endif
 
@@ -1196,8 +1196,8 @@ void Host_Class_f(void)
 	host_client->qh_edict->SetPlayerClass(newClass);
 
 	// Change the weapon model used
-	pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
-	PR_ExecuteProgram(pr_global_struct->ClassChangeWeapon);
+	*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
+	PR_ExecuteProgram(*pr_globalVars.ClassChangeWeapon);
 
 // send notification to all clients
 
@@ -1556,9 +1556,9 @@ void Host_Kill_f(void)
 		return;
 	}
 
-	pr_global_struct->time = sv.qh_time;
-	pr_global_struct->self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram(pr_global_struct->ClientKill);
+	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+	PR_ExecuteProgram(*pr_globalVars.ClientKill);
 }
 
 
@@ -1676,20 +1676,20 @@ void Host_Spawn_f(void)
 			// copy spawn parms out of the client_t
 
 			for (i = 0; i < NUM_SPAWN_PARMS; i++)
-				(&pr_global_struct->parm1)[i] = host_client->qh_spawn_parms[i];
+				pr_globalVars.parm1[i] = host_client->qh_spawn_parms[i];
 
 			// call the spawn function
 
-			pr_global_struct->time = sv.qh_time;
-			pr_global_struct->self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram(pr_global_struct->ClientConnect);
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+			PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
 			if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
 			{
 				Con_Printf("%s entered the game\n", host_client->name);
 			}
 
-			PR_ExecuteProgram(pr_global_struct->PutClientInServer);
+			PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
 		}
 	}
 
@@ -1730,19 +1730,19 @@ void Host_Spawn_f(void)
 //
 	host_client->qh_message.WriteByte(h2svc_updatestat);
 	host_client->qh_message.WriteByte(STAT_TOTALSECRETS);
-	host_client->qh_message.WriteLong(pr_global_struct->total_secrets);
+	host_client->qh_message.WriteLong(*pr_globalVars.total_secrets);
 
 	host_client->qh_message.WriteByte(h2svc_updatestat);
 	host_client->qh_message.WriteByte(STAT_TOTALMONSTERS);
-	host_client->qh_message.WriteLong(pr_global_struct->total_monsters);
+	host_client->qh_message.WriteLong(*pr_globalVars.total_monsters);
 
 	host_client->qh_message.WriteByte(h2svc_updatestat);
 	host_client->qh_message.WriteByte(STAT_SECRETS);
-	host_client->qh_message.WriteLong(pr_global_struct->found_secrets);
+	host_client->qh_message.WriteLong(*pr_globalVars.found_secrets);
 
 	host_client->qh_message.WriteByte(h2svc_updatestat);
 	host_client->qh_message.WriteByte(STAT_MONSTERS);
-	host_client->qh_message.WriteLong(pr_global_struct->killed_monsters);
+	host_client->qh_message.WriteLong(*pr_globalVars.killed_monsters);
 
 
 	SV_UpdateEffects(&host_client->qh_message);
@@ -1877,7 +1877,7 @@ void Host_Create_f(void)
 	ent->v.absmax[1] += 16;
 	ent->v.absmax[2] += 16;
 
-	pr_global_struct->self = EDICT_TO_PROG(ent);
+	*pr_globalVars.self = EDICT_TO_PROG(ent);
 	ignore_precache = true;
 	PR_ExecuteProgram(func - pr_functions);
 	ignore_precache = false;
@@ -1925,7 +1925,7 @@ void Host_Kick_f(void)
 			return;
 		}
 	}
-	else if (pr_global_struct->deathmatch && !host_client->qh_privileged)
+	else if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
 	{
 		return;
 	}
@@ -2037,7 +2037,7 @@ void Host_Give_f(void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch || skill->value > 2) && !host_client->qh_privileged)
+	if ((*pr_globalVars.deathmatch || skill->value > 2) && !host_client->qh_privileged)
 	{
 		return;
 	}

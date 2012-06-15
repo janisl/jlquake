@@ -156,7 +156,7 @@ void SV_SaveSpawnparms(void)
 
 	}
 	// serverflags is the only game related thing maintained
-	svs.qh_serverflags = pr_global_struct->serverflags;
+	svs.qh_serverflags = *pr_globalVars.serverflags;
 
 	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
 	{
@@ -169,10 +169,10 @@ void SV_SaveSpawnparms(void)
 		host_client->state = CS_CONNECTED;
 
 		// call the progs to get default spawn parms for the new client
-		pr_global_struct->self = EDICT_TO_PROG(host_client->qh_edict);
-		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
+		*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
+		PR_ExecuteProgram(*pr_globalVars.SetChangeParms);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->qh_spawn_parms[j] = (&pr_global_struct->parm1)[j];
+			host_client->qh_spawn_parms[j] = pr_globalVars.parm1[j];
 	}
 }
 
@@ -281,26 +281,26 @@ void SV_SpawnServer(char* server, char* startspot)
 		Cvar_SetValue("deathmatch", 0);
 	}
 
-	pr_global_struct->coop = coop->value;
-	pr_global_struct->deathmatch = deathmatch->value;
-	pr_global_struct->randomclass = randomclass->value;
-	pr_global_struct->damageScale = damageScale->value;
-	pr_global_struct->shyRespawn = shyRespawn->value;
-	pr_global_struct->spartanPrint = spartanPrint->value;
-	pr_global_struct->meleeDamScale = meleeDamScale->value;
-	pr_global_struct->manaScale = manaScale->value;
-	pr_global_struct->tomeMode = tomeMode->value;
-	pr_global_struct->tomeRespawn = tomeRespawn->value;
-	pr_global_struct->w2Respawn = w2Respawn->value;
-	pr_global_struct->altRespawn = altRespawn->value;
-	pr_global_struct->fixedLevel = fixedLevel->value;
-	pr_global_struct->autoItems = autoItems->value;
-	pr_global_struct->dmMode = dmMode->value;
-	pr_global_struct->easyFourth = easyFourth->value;
-	pr_global_struct->patternRunner = patternRunner->value;
-	pr_global_struct->max_players = maxclients->value;
+	*pr_globalVars.coop = coop->value;
+	*pr_globalVars.deathmatch = deathmatch->value;
+	*pr_globalVars.randomclass = randomclass->value;
+	*pr_globalVars.damageScale = damageScale->value;
+	*pr_globalVars.shyRespawn = shyRespawn->value;
+	*pr_globalVars.spartanPrint = spartanPrint->value;
+	*pr_globalVars.meleeDamScale = meleeDamScale->value;
+	*pr_globalVars.manaScale = manaScale->value;
+	*pr_globalVars.tomeMode = tomeMode->value;
+	*pr_globalVars.tomeRespawn = tomeRespawn->value;
+	*pr_globalVars.w2Respawn = w2Respawn->value;
+	*pr_globalVars.altRespawn = altRespawn->value;
+	*pr_globalVars.fixedLevel = fixedLevel->value;
+	*pr_globalVars.autoItems = autoItems->value;
+	*pr_globalVars.dmMode = dmMode->value;
+	*pr_globalVars.easyFourth = easyFourth->value;
+	*pr_globalVars.patternRunner = patternRunner->value;
+	*pr_globalVars.max_players = maxclients->value;
 
-	pr_global_struct->startspot = PR_SetString(sv.h2_startspot);
+	*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
 
 	sv.hw_current_skill = (int)(skill->value + 0.5);
 	if (sv.hw_current_skill < 0)
@@ -314,9 +314,9 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	Cvar_SetValue("skill", (float)sv.hw_current_skill);
 
-	pr_global_struct->mapname = PR_SetString(sv.name);
+	*pr_globalVars.mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)
-	pr_global_struct->serverflags = svs.qh_serverflags;
+	*pr_globalVars.serverflags = svs.qh_serverflags;
 
 	// run the frame start qc function to let progs check cvars
 	SV_ProgStartFrame();

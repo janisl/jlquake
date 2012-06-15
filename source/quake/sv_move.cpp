@@ -457,7 +457,7 @@ void SV_MoveToGoal(void)
 	qhedict_t* ent, * goal;
 	float dist;
 
-	ent = PROG_TO_EDICT(pr_global_struct->self);
+	ent = PROG_TO_EDICT(*pr_globalVars.self);
 	goal = PROG_TO_EDICT(ent->GetGoalEntity());
 	dist = G_FLOAT(OFS_PARM0);
 

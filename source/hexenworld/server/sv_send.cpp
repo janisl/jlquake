@@ -1034,8 +1034,8 @@ void SV_UpdateToReliableMessages(void)
 				if (dmMode->value == DM_SIEGE)
 				{
 					client->netchan.message.WriteByte(hwsvc_updatesiegelosses);
-					client->netchan.message.WriteByte(pr_global_struct->defLosses);
-					client->netchan.message.WriteByte(pr_global_struct->attLosses);
+					client->netchan.message.WriteByte(*pr_globalVars.defLosses);
+					client->netchan.message.WriteByte(*pr_globalVars.attLosses);
 				}
 			}
 

@@ -206,16 +206,16 @@ void SV_TouchLinks(qhedict_t* ent, worldSector_t* node)
 			continue;
 		}
 
-		old_self = pr_global_struct->self;
-		old_other = pr_global_struct->other;
+		old_self = *pr_globalVars.self;
+		old_other = *pr_globalVars.other;
 
-		pr_global_struct->self = EDICT_TO_PROG(touch);
-		pr_global_struct->other = EDICT_TO_PROG(ent);
-		pr_global_struct->time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(touch);
+		*pr_globalVars.other = EDICT_TO_PROG(ent);
+		*pr_globalVars.time = sv.qh_time;
 		PR_ExecuteProgram(touch->GetTouch());
 
-		pr_global_struct->self = old_self;
-		pr_global_struct->other = old_other;
+		*pr_globalVars.self = old_self;
+		*pr_globalVars.other = old_other;
 	}
 
 // recurse down both sides
