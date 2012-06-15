@@ -16,19 +16,22 @@
 
 #include "progsvm.h"
 
+#define MAX_STACK_DEPTH 32
+#define LOCALSTACK_SIZE 2048
+
 builtin_t* pr_builtins;
 int pr_numbuiltins;
 
 bool pr_trace;
 dfunction_t* pr_xfunction;
-int pr_xstatement;
+static int pr_xstatement;
 int pr_argc;
 
-prstack_t pr_stack[MAX_STACK_DEPTH];
-int pr_depth;
+static prstack_t pr_stack[MAX_STACK_DEPTH];
+static int pr_depth;
 
-int localstack[LOCALSTACK_SIZE];
-int localstack_used;
+static int localstack[LOCALSTACK_SIZE];
+static int localstack_used;
 
 static const char* pr_opnames[] =
 {
@@ -79,7 +82,7 @@ static const char* pr_opnames[] =
 	"OP_CASERANGE"
 };
 
-void PR_PrintStatement(const dstatement_t* s)
+static void PR_PrintStatement(const dstatement_t* s)
 {
 	if ((unsigned)s->op < sizeof(pr_opnames) / sizeof(pr_opnames[0]))
 	{
@@ -165,7 +168,7 @@ void PR_RunError(const char* error, ...)
 }
 
 //	Returns the new program statement counter
-int PR_EnterFunction(dfunction_t* f)
+static int PR_EnterFunction(dfunction_t* f)
 {
 	int i, j, c, o;
 
@@ -205,7 +208,7 @@ int PR_EnterFunction(dfunction_t* f)
 	return f->first_statement - 1;	// offset the s++
 }
 
-int PR_LeaveFunction()
+static int PR_LeaveFunction()
 {
 	int i, c;
 
@@ -233,8 +236,52 @@ int PR_LeaveFunction()
 	return pr_stack[pr_depth].s;
 }
 
-bool PR_ExecuteProgramCommon(const dstatement_t* st, eval_t* a, eval_t* b, eval_t* c, int& s, int exitdepth)
+//	The interpretation main loop
+void PR_ExecuteProgram(func_t fnum)
 {
+	if (!fnum || fnum >= progs->numfunctions)
+	{
+		if (*pr_globalVars.self)
+		{
+			ED_Print(PROG_TO_EDICT(*pr_globalVars.self));
+		}
+		common->Error("PR_ExecuteProgram: NULL function");
+	}
+
+	dfunction_t* f = &pr_functions[fnum];
+
+	pr_trace = false;
+
+	// make a stack frame
+	int exitdepth = pr_depth;
+
+	int s = PR_EnterFunction(f);
+
+	int runaway = 100000;
+	int case_type = -1;
+	float switch_float;
+	while (1)
+	{
+		s++;// next statement
+
+		const dstatement_t* st = &pr_statements[s];
+		eval_t* a = (eval_t*)&pr_globals[(unsigned short)st->a];
+		eval_t* b = (eval_t*)&pr_globals[(unsigned short)st->b];
+		eval_t* c = (eval_t*)&pr_globals[(unsigned short)st->c];
+
+		if (!--runaway)
+		{
+			PR_RunError("runaway loop error");
+		}
+
+		pr_xfunction->profile++;
+		pr_xstatement = s;
+
+		if (pr_trace)
+		{
+			PR_PrintStatement(st);
+		}
+
 		switch (st->op)
 		{
 		case OP_ADD_F:
@@ -610,12 +657,426 @@ bool PR_ExecuteProgramCommon(const dstatement_t* st, eval_t* a, eval_t* b, eval_
 			s = PR_LeaveFunction();
 			if (pr_depth == exitdepth)
 			{
-				return true;	// all done
+				return;	// all done
+			}
+			break;
+
+		case OP_STATE:
+		{
+			qhedict_t* ed = PROG_TO_EDICT(*pr_globalVars.self);
+			ed->SetNextThink(*pr_globalVars.time + (GGameType & GAME_Hexen2 ? HX_FRAME_TIME : 0.1));
+			if (a->_float != ed->GetFrame())
+			{
+				ed->SetFrame(a->_float);
+			}
+			ed->SetThink(b->function);
+			break;
+		}
+
+		case OP_CSTATE:	// Cycle state
+		{
+			qhedict_t* ed = PROG_TO_EDICT(*pr_globalVars.self);
+			ed->SetNextThink(*pr_globalVars.time + HX_FRAME_TIME);
+			ed->SetThink(pr_xfunction - pr_functions);
+			*pr_globalVars.cycle_wrapped = false;
+			int startFrame = (int)a->_float;
+			int endFrame = (int)b->_float;
+			if (startFrame <= endFrame)
+			{	// Increment
+				if (ed->GetFrame() < startFrame || ed->GetFrame() > endFrame)
+				{
+					ed->SetFrame(startFrame);
+					break;
+				}
+				ed->SetFrame(ed->GetFrame() + 1);
+				if (ed->GetFrame() > endFrame)
+				{
+					*pr_globalVars.cycle_wrapped = true;
+					ed->SetFrame(startFrame);
+				}
+				break;
+			}
+			// Decrement
+			if (ed->GetFrame() > startFrame || ed->GetFrame() < endFrame)
+			{
+				ed->SetFrame(startFrame);
+				break;
+			}
+			ed->SetFrame(ed->GetFrame() - 1);
+			if (ed->GetFrame() < endFrame)
+			{
+				*pr_globalVars.cycle_wrapped = true;
+				ed->SetFrame(startFrame);
+			}
+			break;
+		}
+
+		case OP_CWSTATE:// Cycle weapon state
+		{
+			qhedict_t* ed = PROG_TO_EDICT(*pr_globalVars.self);
+			ed->SetNextThink(*pr_globalVars.time + HX_FRAME_TIME);
+			ed->SetThink(pr_xfunction - pr_functions);
+			*pr_globalVars.cycle_wrapped = false;
+			int startFrame = (int)a->_float;
+			int endFrame = (int)b->_float;
+			if (startFrame <= endFrame)
+			{	// Increment
+				if (ed->GetWeaponFrame() < startFrame ||
+					ed->GetWeaponFrame() > endFrame)
+				{
+					ed->SetWeaponFrame(startFrame);
+					break;
+				}
+				ed->SetWeaponFrame(ed->GetWeaponFrame() + 1);
+				if (ed->GetWeaponFrame() > endFrame)
+				{
+					*pr_globalVars.cycle_wrapped = true;
+					ed->SetWeaponFrame(startFrame);
+				}
+				break;
+			}
+			// Decrement
+			if (ed->GetWeaponFrame() > startFrame ||
+				ed->GetWeaponFrame() < endFrame)
+			{
+				ed->SetWeaponFrame(startFrame);
+				break;
+			}
+			ed->SetWeaponFrame(ed->GetWeaponFrame() - 1);
+			if (ed->GetWeaponFrame() < endFrame)
+			{
+				*pr_globalVars.cycle_wrapped = true;
+				ed->SetWeaponFrame(startFrame);
+			}
+			break;
+		}
+
+		case OP_THINKTIME:
+		{
+			qhedict_t* ed = PROG_TO_EDICT(a->edict);
+#ifdef PARANOID
+			QH_NUM_FOR_EDICT(ed);	// Make sure it's in range
+#endif
+			if (ed == (qhedict_t*)sv.qh_edicts && sv.state == SS_GAME)
+			{
+				PR_RunError("assignment to world entity");
+			}
+			ed->SetNextThink(*pr_globalVars.time + b->_float);
+			break;
+		}
+
+		case OP_BITSET:	// f (+) f
+			b->_float = (int)b->_float | (int)a->_float;
+			break;
+		case OP_BITSETP:// e.f (+) f
+		{
+			eval_t* ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
+			ptr->_float = (int)ptr->_float | (int)a->_float;
+			break;
+		}
+		case OP_BITCLR:	// f (-) f
+			b->_float = (int)b->_float & ~((int)a->_float);
+			break;
+		case OP_BITCLRP:// e.f (-) f
+		{
+			eval_t* ptr = (eval_t*)((byte*)sv.qh_edicts + b->_int);
+			ptr->_float = (int)ptr->_float & ~((int)a->_float);
+			break;
+		}
+
+		case OP_RAND0:
+		{
+			float val = rand() * (1.0 / RAND_MAX);
+			G_FLOAT(OFS_RETURN) = val;
+			break;
+		}
+		case OP_RAND1:
+		{
+			float val = rand() * (1.0 / RAND_MAX) * a->_float;
+			G_FLOAT(OFS_RETURN) = val;
+			break;
+		}
+		case OP_RAND2:
+		{
+			float val;
+			if (a->_float < b->_float)
+			{
+				val = a->_float + (rand() * (1.0 / RAND_MAX)
+								   * (b->_float - a->_float));
+			}
+			else
+			{
+				val = b->_float + (rand() * (1.0 / RAND_MAX)
+								   * (a->_float - b->_float));
+			}
+			G_FLOAT(OFS_RETURN) = val;
+			break;
+		}
+		case OP_RANDV0:
+		{
+			float val = rand() * (1.0 / RAND_MAX);
+			G_FLOAT(OFS_RETURN + 0) = val;
+			val = rand() * (1.0 / RAND_MAX);
+			G_FLOAT(OFS_RETURN + 1) = val;
+			val = rand() * (1.0 / RAND_MAX);
+			G_FLOAT(OFS_RETURN + 2) = val;
+			break;
+		}
+		case OP_RANDV1:
+		{
+			float val = rand() * (1.0 / RAND_MAX) * a->vector[0];
+			G_FLOAT(OFS_RETURN + 0) = val;
+			val = rand() * (1.0 / RAND_MAX) * a->vector[1];
+			G_FLOAT(OFS_RETURN + 1) = val;
+			val = rand() * (1.0 / RAND_MAX) * a->vector[2];
+			G_FLOAT(OFS_RETURN + 2) = val;
+			break;
+		}
+		case OP_RANDV2:
+			for (int i = 0; i < 3; i++)
+			{
+				float val;
+				if (a->vector[i] < b->vector[i])
+				{
+					val = a->vector[i] + (rand() * (1.0 / RAND_MAX)
+										  * (b->vector[i] - a->vector[i]));
+				}
+				else
+				{
+					val = b->vector[i] + (rand() * (1.0 / RAND_MAX)
+										  * (a->vector[i] - b->vector[i]));
+				}
+				G_FLOAT(OFS_RETURN + i) = val;
+			}
+			break;
+
+		case OP_SWITCH_F:
+			case_type = SWITCH_F;
+			switch_float = a->_float;
+			s += st->b - 1;	// -1 to offset the s++
+			break;
+		case OP_SWITCH_V:
+			PR_RunError("switch v not done yet!");
+			break;
+		case OP_SWITCH_S:
+			PR_RunError("switch s not done yet!");
+			break;
+		case OP_SWITCH_E:
+			PR_RunError("switch e not done yet!");
+			break;
+		case OP_SWITCH_FNC:
+			PR_RunError("switch fnc not done yet!");
+			break;
+
+		case OP_CASERANGE:
+			if (case_type != SWITCH_F)
+			{
+				PR_RunError("caserange fucked!");
+			}
+			if ((switch_float >= a->_float) && (switch_float <= b->_float))
+			{
+				s += st->c - 1;	// -1 to offset the s++
+			}
+			break;
+		case OP_CASE:
+			switch (case_type)
+			{
+			case SWITCH_F:
+				if (switch_float == a->_float)
+				{
+					s += st->b - 1;	// -1 to offset the s++
+				}
+				break;
+			case SWITCH_V:
+			case SWITCH_S:
+			case SWITCH_E:
+			case SWITCH_FNC:
+				PR_RunError("case not done yet!");
+				break;
+			default:
+				PR_RunError("fucked case!");
+
 			}
 			break;
 
 		default:
 			PR_RunError("Bad opcode %i", st->op);
 		}
-	return false;
+	}
+}
+
+void PR_Profile_f()
+{
+	bool byHC = false;
+	int funcCount = 10;
+	char saveName[128];
+	*saveName = 0;
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		const char* s = Cmd_Argv(i);
+		if (String::ToLower(*s) == 'h')
+		{	// Sort by HC source file
+			byHC = true;
+		}
+		else if (String::ToLower(*s) == 's')
+		{	// Save to file
+			if (i + 1 < Cmd_Argc() && !String::IsDigit(*Cmd_Argv(i + 1)))
+			{
+				i++;
+				sprintf(saveName, "%s", Cmd_Argv(i));
+			}
+			else
+			{
+				String::Cpy(saveName, "profile.txt");
+			}
+		}
+		else if (String::IsDigit(*s))
+		{	// Specify function count
+			funcCount = String::Atoi(Cmd_Argv(i));
+			if (funcCount < 1)
+			{
+				funcCount = 1;
+			}
+		}
+	}
+
+	int total = 0;
+	for (int i = 0; i < progs->numfunctions; i++)
+	{
+		total += pr_functions[i].profile;
+	}
+
+	fileHandle_t saveFile;
+	if (*saveName)
+	{
+		// Create the output file
+		if ((saveFile = FS_FOpenFileWrite(saveName)) == 0)
+		{
+			common->Printf("Could not open %s\n", saveName);
+			return;
+		}
+	}
+
+	if (byHC == false)
+	{
+		int j = 0;
+		dfunction_t* bestFunc;
+		do
+		{
+			int max = 0;
+			bestFunc = NULL;
+			for (int i = 0; i < progs->numfunctions; i++)
+			{
+				dfunction_t* f = &pr_functions[i];
+				if (f->profile > max)
+				{
+					max = f->profile;
+					bestFunc = f;
+				}
+			}
+			if (bestFunc)
+			{
+				if (j < funcCount)
+				{
+					if (*saveName)
+					{
+						FS_Printf(saveFile, "%05.2f %s\n",
+							((float)bestFunc->profile / (float)total) * 100.0,
+							PR_GetString(bestFunc->s_name));
+					}
+					else
+					{
+						common->Printf("%05.2f %s\n",
+							((float)bestFunc->profile / (float)total) * 100.0,
+							PR_GetString(bestFunc->s_name));
+					}
+				}
+				j++;
+				bestFunc->profile = 0;
+			}
+		}
+		while (bestFunc);
+		if (*saveName)
+		{
+			FS_FCloseFile(saveFile);
+		}
+		return;
+	}
+
+	int currentFile = -1;
+	do
+	{
+		int tally = 0;
+		int bestFile = MAX_QINT32;
+		for (int i = 0; i < progs->numfunctions; i++)
+		{
+			if (pr_functions[i].s_file > currentFile &&
+				pr_functions[i].s_file < bestFile)
+			{
+				bestFile = pr_functions[i].s_file;
+				tally = pr_functions[i].profile;
+				continue;
+			}
+			if (pr_functions[i].s_file == bestFile)
+			{
+				tally += pr_functions[i].profile;
+			}
+		}
+		currentFile = bestFile;
+		if (tally && currentFile != MAX_QINT32)
+		{
+			if (*saveName)
+			{
+				FS_Printf(saveFile, "\"%s\"\n", PR_GetString(currentFile));
+			}
+			else
+			{
+				common->Printf("\"%s\"\n", PR_GetString(currentFile));
+			}
+			int j = 0;
+			dfunction_t* bestFunc;
+			do
+			{
+				int max = 0;
+				bestFunc = NULL;
+				for (int i = 0; i < progs->numfunctions; i++)
+				{
+					dfunction_t* f = &pr_functions[i];
+					if (f->s_file == currentFile && f->profile > max)
+					{
+						max = f->profile;
+						bestFunc = f;
+					}
+				}
+				if (bestFunc)
+				{
+					if (j < funcCount)
+					{
+						if (*saveName)
+						{
+							FS_Printf(saveFile, "   %05.2f %s\n",
+								((float)bestFunc->profile
+								 / (float)total) * 100.0,
+								PR_GetString(bestFunc->s_name));
+						}
+						else
+						{
+							common->Printf("   %05.2f %s\n",
+								((float)bestFunc->profile
+								 / (float)total) * 100.0,
+								PR_GetString(bestFunc->s_name));
+						}
+					}
+					j++;
+					bestFunc->profile = 0;
+				}
+			}
+			while (bestFunc);
+		}
+	}
+	while (currentFile != MAX_QINT32);
+	if (*saveName)
+	{
+		FS_FCloseFile(saveFile);
+	}
 }

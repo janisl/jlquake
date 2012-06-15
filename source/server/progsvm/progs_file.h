@@ -239,4 +239,10 @@ struct dprograms_t
 	qint32 entityfields;
 };
 
+#define Q1PROGHEADER_CRC	5927
+#define QWPROGHEADER_CRC	54730
+#define H2MPPROGHEADER_CRC	26905
+#define H2PROGHEADER_CRC	38488
+#define HWPROGHEADER_CRC	25203
+
 #pragma pack(pop)

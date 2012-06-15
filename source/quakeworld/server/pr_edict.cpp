@@ -222,7 +222,7 @@ void PR_LoadProgs(void)
 	{
 		SV_Error("progs.dat has wrong version number (%i should be %i)", progs->version, PROG_VERSION);
 	}
-	if (progs->crc != PROGHEADER_CRC)
+	if (progs->crc != QWPROGHEADER_CRC)
 	{
 		SV_Error("You must have the progs.dat from QuakeWorld installed");
 	}

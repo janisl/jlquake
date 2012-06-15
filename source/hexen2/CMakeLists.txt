@@ -19,7 +19,6 @@ add_executable(jlhexen2
 	net_main.cpp
 	pr_cmds.cpp
 	pr_edict.cpp
-	pr_exec.cpp
 	r_part.cpp
 	sbar.cpp
 	sv_main.cpp

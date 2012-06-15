@@ -21,9 +21,6 @@
 
 #include "progs_file.h"
 
-#define MAX_STACK_DEPTH 32
-#define LOCALSTACK_SIZE 2048
-
 #define G_FLOAT(o) (pr_globals[o])
 #define G_INT(o) (*(int*)&pr_globals[o])
 #define G_EDICT(o) ((qhedict_t*)((byte*)sv.qh_edicts + *(int*)&pr_globals[o]))
@@ -141,13 +138,8 @@ extern progGlobalVars_t pr_globalVars;
 
 extern builtin_t* pr_builtins;
 extern int pr_numbuiltins;
-extern prstack_t pr_stack[MAX_STACK_DEPTH];
-extern int pr_depth;
-extern int localstack[LOCALSTACK_SIZE];
-extern int localstack_used;
 extern bool pr_trace;
 extern dfunction_t* pr_xfunction;
-extern int pr_xstatement;
 extern int pr_argc;
 
 void PR_ClearStringMap();
@@ -172,10 +164,11 @@ bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
 const char* ED_ParseGlobals(const char* data);
 void PR_InitGlobals();
 
-void PR_PrintStatement(const dstatement_t* s);
 void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
-int PR_EnterFunction(dfunction_t* f);
-int PR_LeaveFunction();
-bool PR_ExecuteProgramCommon(const dstatement_t* st, eval_t* a, eval_t* b, eval_t* c, int& s, int exitdepth);
+void PR_ExecuteProgram(func_t fnum);
+void PR_Profile_f();
+
+//switch types
+enum {SWITCH_F,SWITCH_V,SWITCH_S,SWITCH_E,SWITCH_FNC};
 
 #endif

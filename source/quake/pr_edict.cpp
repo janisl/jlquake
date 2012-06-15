@@ -233,7 +233,7 @@ void PR_LoadProgs(void)
 	{
 		Sys_Error("progs.dat has wrong version number (%i should be %i)", progs->version, PROG_VERSION);
 	}
-	if (progs->crc != PROGHEADER_CRC)
+	if (progs->crc != Q1PROGHEADER_CRC)
 	{
 		Sys_Error("progs.dat system vars have been modified, progdefs.h is out of date");
 	}
