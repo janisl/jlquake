@@ -944,6 +944,9 @@ void Host_Init(quakeparms_t* parms)
 	try
 	{
 		GGameType = GAME_Hexen2;
+#ifdef MISSIONPACK
+		GGameType |= GAME_H2Portals;
+#endif
 		Sys_SetHomePathSuffix("jlhexen2");
 		Log::addListener(&MainLog);
 
