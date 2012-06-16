@@ -27,7 +27,6 @@ add_executable(jlquake
 	sv_user.cpp
 	sys_linux.cpp
 	view.cpp
-	world.cpp
 	zone.cpp
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

@@ -854,14 +854,14 @@ skipA:
 		flagtest = (long)ent->GetFlags();
 		if (!DoRemove)
 		{
-			if (flagtest & FL_CLIENT)
+			if (flagtest & QHFL_CLIENT)
 			{
 				if (!DoPlayer)
 				{
 					IgnoreEnt = true;
 				}
 			}
-			else if (flagtest & FL_MONSTER)
+			else if (flagtest & QHFL_MONSTER)
 			{
 				if (!DoMonsters)
 				{
@@ -1017,7 +1017,7 @@ skipA:
 		}
 
 		temp_index = ent->v.modelindex;
-		if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
+		if (((int)ent->GetFlags() & H2FL_CLASS_DEPENDENT) && ent->GetModel())
 		{
 			String::Cpy(NewName, PR_GetString(ent->GetModel()));
 			NewName[String::Length(NewName) - 5] = client->h2_playerclass + 48;
@@ -1277,7 +1277,7 @@ void SV_WriteClientdataToMessage(client_t* client, qhedict_t* ent, QMsg* msg)
 
 
 	//fjm: this wasn't in here b4, and the centerview command requires it.
-	if ((int)ent->GetFlags() & FL_ONGROUND)
+	if ((int)ent->GetFlags() & QHFL_ONGROUND)
 	{
 		bits |= SU_ONGROUND;
 	}
@@ -2494,7 +2494,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->SetSolid(SOLID_BSP);
+	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)

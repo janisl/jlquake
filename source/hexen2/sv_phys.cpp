@@ -13,12 +13,12 @@ pushmove objects do not obey gravity, and do not interact with each other or tri
 
 onground is set for toss objects when they come to a complete rest.  it is set for steping or walking objects
 
-doors, plats, etc are SOLID_BSP, and QHMOVETYPE_PUSH
-bonus items are SOLID_TRIGGER touch, and QHMOVETYPE_TOSS
-corpses are SOLID_NOT and QHMOVETYPE_TOSS
-crates are SOLID_BBOX and QHMOVETYPE_TOSS
-walking monsters are SOLID_SLIDEBOX and QHMOVETYPE_STEP
-flying/floating monsters are SOLID_SLIDEBOX and QHMOVETYPE_FLY
+doors, plats, etc are QHSOLID_BSP, and QHMOVETYPE_PUSH
+bonus items are QHSOLID_TRIGGER touch, and QHMOVETYPE_TOSS
+corpses are QHSOLID_NOT and QHMOVETYPE_TOSS
+crates are QHSOLID_BBOX and QHMOVETYPE_TOSS
+walking monsters are QHSOLID_SLIDEBOX and QHMOVETYPE_STEP
+flying/floating monsters are QHSOLID_SLIDEBOX and QHMOVETYPE_FLY
 
 solid_edge items only clip against bsp models.
 
@@ -61,7 +61,7 @@ void SV_CheckAllEnts(void)
 			continue;
 		}
 
-		if (SV_TestEntityPosition(check))
+		if (SVQH_TestEntityPosition(check))
 		{
 			Con_Printf("entity in invalid position\n");
 		}
@@ -152,14 +152,14 @@ void SV_Impact(qhedict_t* e1, qhedict_t* e2)
 	old_other = *pr_globalVars.other;
 
 	*pr_globalVars.time = sv.qh_time;
-	if (e1->GetTouch() && e1->GetSolid() != SOLID_NOT)
+	if (e1->GetTouch() && e1->GetSolid() != QHSOLID_NOT)
 	{
 		*pr_globalVars.self = EDICT_TO_PROG(e1);
 		*pr_globalVars.other = EDICT_TO_PROG(e2);
 		PR_ExecuteProgram(e1->GetTouch());
 	}
 
-	if (e2->GetTouch() && e2->GetSolid() != SOLID_NOT)
+	if (e2->GetTouch() && e2->GetSolid() != QHSOLID_NOT)
 	{
 		*pr_globalVars.self = EDICT_TO_PROG(e2);
 		*pr_globalVars.other = EDICT_TO_PROG(e1);
@@ -217,7 +217,7 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 		for (i = 0; i < 3; i++)
 			end[i] = ent->GetOrigin()[i] + time_left* ent->GetVelocity()[i];
 
-		trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
+		trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 		if (trace.allsolid)
 		{	// entity is trapped in another solid
@@ -245,9 +245,9 @@ int SV_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace)
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if (QH_EDICT_NUM(trace.entityNum)->GetSolid() == SOLID_BSP)
+			if (QH_EDICT_NUM(trace.entityNum)->GetSolid() == QHSOLID_BSP)
 			{
-				ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
+				ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);
 				ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			}
 		}
@@ -351,7 +351,7 @@ void SV_FlyExtras(qhedict_t* ent, float time, q1trace_t* steptrace)
 {
 	const float hoverinc = 0.4;
 
-	ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);	// Jumping makes you loose this flag so reset it
+	ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);	// Jumping makes you loose this flag so reset it
 
 	if ((ent->GetVelocity()[2] <= 6) && (ent->GetVelocity()[2] >= -6))
 	{
@@ -427,23 +427,23 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 
 	if (ent->GetMoveType() == QHMOVETYPE_FLYMISSILE  || ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE)
 	{
-		trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_MISSILE, ent);
+		trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_MISSILE, ent);
 	}
-	else if (ent->GetSolid() == SOLID_TRIGGER || ent->GetSolid() == SOLID_NOT)
+	else if (ent->GetSolid() == QHSOLID_TRIGGER || ent->GetSolid() == QHSOLID_NOT)
 	{
 // only clip against bmodels
-		trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_NOMONSTERS, ent);
+		trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_NOMONSTERS, ent);
 	}
 	else if (ent->GetMoveType() == H2MOVETYPE_SWIM)
 	{
-		trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_WATER, ent);
+		trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, H2MOVE_WATER, ent);
 	}
 	else
 	{
-		trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_NORMAL, ent);
+		trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_NORMAL, ent);
 	}
 
-	if (ent->GetSolid() != SOLID_PHASE)
+	if (ent->GetSolid() != H2SOLID_PHASE)
 	{
 		if (ent->GetMoveType() != QHMOVETYPE_BOUNCE || (trace.allsolid == 0 && trace.startsolid == 0))
 		{
@@ -459,14 +459,14 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 	else	// Entity is PHASED so bounce off walls and other entities, go through monsters and players
 	{
 		if (trace.entityNum >= 0)
-		{	// Go through MONSTERS and PLAYERS, can't use FL_CLIENT cause rotating brushes do
-			if (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) ||
+		{	// Go through MONSTERS and PLAYERS, can't use QHFL_CLIENT cause rotating brushes do
+			if (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & QHFL_MONSTER) ||
 				(QH_EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK))
 			{
 				VectorCopy(trace.endpos, impact);
 				impact_e = QH_EDICT_NUM(trace.entityNum);
 
-				trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, MOVE_PHASE, ent);
+				trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, H2MOVE_PHASE, ent);
 
 				VectorCopy(impact, ent->GetOrigin());
 				SV_Impact(ent, impact_e);
@@ -484,7 +484,7 @@ q1trace_t SV_PushEntity(qhedict_t* ent, vec3_t push)
 		}
 	}
 
-	SV_LinkEdict(ent, true);
+	SVQH_LinkEdict(ent, true);
 
 	if (trace.entityNum >= 0)
 	{
@@ -536,7 +536,7 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 	{
 		pusher->v.ltime += movetime;
 	}
-	SV_LinkEdict(pusher, false);
+	SVQH_LinkEdict(pusher, false);
 
 
 // see if any solid entities are inside the final position
@@ -556,7 +556,7 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 		}
 
 		// if the entity is standing on the pusher, it will definately be moved
-		if (!(((int)check->GetFlags() & FL_ONGROUND) &&
+		if (!(((int)check->GetFlags() & QHFL_ONGROUND) &&
 			  PROG_TO_EDICT(check->GetGroundEntity()) == pusher))
 		{
 			if (check->v.absmin[0] >= maxs[0] ||
@@ -570,7 +570,7 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 			}
 
 			// see if the ent's bbox is inside the pusher's final position
-			if (!SV_TestEntityPosition(check))
+			if (!SVQH_TestEntityPosition(check))
 			{
 				continue;
 			}
@@ -579,7 +579,7 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 		// remove the onground flag for non-players
 		if (check->GetMoveType() != QHMOVETYPE_WALK)
 		{
-			check->SetFlags((int)check->GetFlags() & ~FL_ONGROUND);
+			check->SetFlags((int)check->GetFlags() & ~QHFL_ONGROUND);
 		}
 
 		VectorCopy(check->GetOrigin(), entorig);
@@ -588,19 +588,19 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 		num_moved++;
 
 		// try moving the contacted entity
-		pusher->SetSolid(SOLID_NOT);
+		pusher->SetSolid(QHSOLID_NOT);
 		SV_PushEntity(check, move);
-		pusher->SetSolid(SOLID_BSP);
+		pusher->SetSolid(QHSOLID_BSP);
 
 		// if it is still inside the pusher, block
-		block = SV_TestEntityPosition(check);
+		block = SVQH_TestEntityPosition(check);
 		if (block)
 		{	// fail the move
 			if (check->GetMins()[0] == check->GetMaxs()[0])
 			{
 				continue;
 			}
-			if (check->GetSolid() == SOLID_NOT || check->GetSolid() == SOLID_TRIGGER)
+			if (check->GetSolid() == QHSOLID_NOT || check->GetSolid() == QHSOLID_TRIGGER)
 			{	// corpse
 				check->GetMins()[0] = check->GetMins()[1] = 0;
 				check->SetMaxs(check->GetMins());
@@ -608,10 +608,10 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 			}
 
 			VectorCopy(entorig, check->GetOrigin());
-			SV_LinkEdict(check, true);
+			SVQH_LinkEdict(check, true);
 
 			VectorCopy(pushorig, pusher->GetOrigin());
-			SV_LinkEdict(pusher, false);
+			SVQH_LinkEdict(pusher, false);
 			if (update_time)
 			{
 				pusher->v.ltime -= movetime;
@@ -630,7 +630,7 @@ void SV_PushMove(qhedict_t* pusher, float movetime, qboolean update_time)
 			for (i = 0; i < num_moved; i++)
 			{
 				VectorCopy(moved_from[i], moved_edict[i]->GetOrigin());
-				SV_LinkEdict(moved_edict[i], false);
+				SVQH_LinkEdict(moved_edict[i], false);
 			}
 			return;
 		}
@@ -676,7 +676,7 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
 
     VectorAdd (pusher->v.angles, amove, pusher->v.angles);
     pusher->v.ltime += movetime;
-    SV_LinkEdict (pusher, false);
+    SVQH_LinkEdict (pusher, false);
 
 
 // see if any solid entities are inside the final position
@@ -693,7 +693,7 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
             continue;
 
     // if the entity is standing on the pusher, it will definately be moved
-        if ( ! ( ((int)check->v.flags & FL_ONGROUND)
+        if ( ! ( ((int)check->v.flags & QHFL_ONGROUND)
         && PROG_TO_EDICT(check->v.groundentity) == pusher) )
         {
             if ( check->v.absmin[0] >= pusher->v.absmax[0]
@@ -705,13 +705,13 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
                 continue;
 
         // see if the ent's bbox is inside the pusher's final position
-            if (!SV_TestEntityPosition (check))
+            if (!SVQH_TestEntityPosition (check))
                 continue;
         }
 
     // remove the onground flag for non-players
         if (check->v.movetype != QHMOVETYPE_WALK)
-            check->v.flags = (int)check->v.flags & ~FL_ONGROUND;
+            check->v.flags = (int)check->v.flags & ~QHFL_ONGROUND;
 
         VectorCopy (check->v.origin, entorig);
         VectorCopy (check->v.origin, moved_from[num_moved]);
@@ -726,17 +726,17 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
         VectorSubtract (org2, org, move);
 
         // try moving the contacted entity
-        pusher->v.solid = SOLID_NOT;
+        pusher->v.solid = QHSOLID_NOT;
         SV_PushEntity (check, move);
-        pusher->v.solid = SOLID_BSP;
+        pusher->v.solid = QHSOLID_BSP;
 
     // if it is still inside the pusher, block
-        block = SV_TestEntityPosition (check);
+        block = SVQH_TestEntityPosition (check);
         if (block)
         {	// fail the move
             if (check->v.mins[0] == check->v.maxs[0])
                 continue;
-            if (check->v.solid == SOLID_NOT || check->v.solid == SOLID_TRIGGER)
+            if (check->v.solid == QHSOLID_NOT || check->v.solid == QHSOLID_TRIGGER)
             {	// corpse
                 check->v.mins[0] = check->v.mins[1] = 0;
                 VectorCopy (check->v.mins, check->v.maxs);
@@ -744,10 +744,10 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
             }
 
             VectorCopy (entorig, check->v.origin);
-            SV_LinkEdict (check, true);
+            SVQH_LinkEdict (check, true);
 
             VectorCopy (pushorig, pusher->v.angles);
-            SV_LinkEdict (pusher, false);
+            SVQH_LinkEdict (pusher, false);
             pusher->v.ltime -= movetime;
 
             // if the pusher has a "blocked" function, call it
@@ -764,7 +764,7 @@ void SV_PushRotate (qhedict_t *pusher, float movetime)
             {
                 VectorCopy (moved_from[i], moved_edict[i]->v.origin);
                 VectorSubtract (moved_edict[i]->v.angles, amove, moved_edict[i]->v.angles);
-                SV_LinkEdict (moved_edict[i], false);
+                SVQH_LinkEdict (moved_edict[i], false);
             }
             return;
         }
@@ -830,7 +830,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 	VectorAdd(pusher->GetAngles(), amove, pusher->GetAngles());
 
 	pusher->v.ltime += movetime;
-	SV_LinkEdict(pusher, false);
+	SVQH_LinkEdict(pusher, false);
 
 	master = pusher;
 	slaves_moved = 0;
@@ -861,7 +861,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
             slave->v.angles[ROLL] += slave->v.avelocity[ROLL] * movetime;
 
         slave->v.ltime = master->v.ltime;
-        SV_LinkEdict (slave, false);
+        SVQH_LinkEdict (slave, false);
 
         master = slave;
     }
@@ -887,7 +887,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 		// if the entity is standing on the pusher, it will definitely be moved
 		moveit = false;
 		ground = PROG_TO_EDICT(check->GetGroundEntity());
-		if ((int)check->GetFlags() & FL_ONGROUND)
+		if ((int)check->GetFlags() & QHFL_ONGROUND)
 		{
 			if (ground == pusher)
 			{
@@ -935,7 +935,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			}
 
 			// see if the ent's bbox is inside the pusher's final position
-			if (!SV_TestEntityPosition(check))
+			if (!SVQH_TestEntityPosition(check))
 			{
 				continue;
 			}
@@ -944,7 +944,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 		// remove the onground flag for non-players
 		if (check->GetMoveType() != QHMOVETYPE_WALK)
 		{
-			check->SetFlags((int)check->GetFlags() & ~FL_ONGROUND);
+			check->SetFlags((int)check->GetFlags() & ~QHFL_ONGROUND);
 		}
 
 		VectorCopy(check->GetOrigin(), entorig);
@@ -1077,16 +1077,16 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			if (t != 3)
 			{
 				//THIS IS VERY BAD BAD HACK...
-				pusher->SetSolid(SOLID_NOT);
+				pusher->SetSolid(QHSOLID_NOT);
 				SV_PushEntity(check, move3);
 				//@@TODO: do we ever want to do anybody's angles?  maybe just yaw???
-				//		if (!((int)check->v.flags & (FL_CLIENT | FL_MONSTER)))
+				//		if (!((int)check->v.flags & (QHFL_CLIENT | QHFL_MONSTER)))
 				//			VectorAdd (check->v.angles, amove, check->v.angles);
 				check->GetAngles()[YAW] += amove[YAW];
-				pusher->SetSolid(SOLID_BSP);
+				pusher->SetSolid(QHSOLID_BSP);
 			}
 			// if it is still inside the pusher, block
-			block = SV_TestEntityPosition(check);
+			block = SVQH_TestEntityPosition(check);
 			if (!block)
 			{
 				break;
@@ -1104,7 +1104,7 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			{
 				continue;
 			}
-			if (check->GetSolid() == SOLID_NOT || check->GetSolid() == SOLID_TRIGGER)
+			if (check->GetSolid() == QHSOLID_NOT || check->GetSolid() == QHSOLID_TRIGGER)
 			{		// corpse
 				check->GetMins()[0] = check->GetMins()[1] = 0;
 				check->SetMaxs(check->GetMins());
@@ -1112,18 +1112,18 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			}
 
 			VectorCopy(entorig, check->GetOrigin());
-			SV_LinkEdict(check, true);
+			SVQH_LinkEdict(check, true);
 
 			VectorCopy(pushorig, pusher->GetOrigin());
 			pusher->SetAngles(pushorigangles);
-			SV_LinkEdict(pusher, false);
+			SVQH_LinkEdict(pusher, false);
 			pusher->v.ltime -= movetime;
 
 			for (i = 0; i < slaves_moved; i++)
 			{
 				slave = moved_edict[MAX_EDICTS_QH - i - 1];
 				slave->SetAngles(moved_from[MAX_EDICTS_QH - i - 1]);
-				SV_LinkEdict(slave, false);
+				SVQH_LinkEdict(slave, false);
 				slave->v.ltime -= movetime;
 			}
 
@@ -1141,11 +1141,11 @@ void SV_PushRotate(qhedict_t* pusher, float movetime)
 			{
 				VectorCopy(moved_from[i], moved_edict[i]->GetOrigin());
 				//@@TODO:: see above
-				//				if (!((int)moved_edict[i]->v.flags & (FL_CLIENT | FL_MONSTER)))
+				//				if (!((int)moved_edict[i]->v.flags & (QHFL_CLIENT | QHFL_MONSTER)))
 				//					VectorSubtract (moved_edict[i]->v.angles, amove, moved_edict[i]->v.angles);
 				moved_edict[i]->GetAngles()[YAW] -= amove[YAW];
 
-				SV_LinkEdict(moved_edict[i], false);
+				SVQH_LinkEdict(moved_edict[i], false);
 			}
 			return;
 		}
@@ -1245,7 +1245,7 @@ void SV_CheckStuck(qhedict_t* ent)
 	int z;
 	vec3_t org;
 
-	if (!SV_TestEntityPosition(ent))
+	if (!SVQH_TestEntityPosition(ent))
 	{
 		VectorCopy(ent->GetOrigin(), ent->GetOldOrigin());
 		return;
@@ -1253,10 +1253,10 @@ void SV_CheckStuck(qhedict_t* ent)
 
 	VectorCopy(ent->GetOrigin(), org);
 	VectorCopy(ent->GetOldOrigin(), ent->GetOrigin());
-	if (!SV_TestEntityPosition(ent))
+	if (!SVQH_TestEntityPosition(ent))
 	{
 		Con_DPrintf("moved back Unstuck.\n");
-		SV_LinkEdict(ent, true);
+		SVQH_LinkEdict(ent, true);
 		return;
 	}
 
@@ -1267,10 +1267,10 @@ void SV_CheckStuck(qhedict_t* ent)
 				ent->GetOrigin()[0] = org[0] + i;
 				ent->GetOrigin()[1] = org[1] + j;
 				ent->GetOrigin()[2] = org[2] + z;
-				if (!SV_TestEntityPosition(ent))
+				if (!SVQH_TestEntityPosition(ent))
 				{
 					Con_DPrintf("scooted Unstuck.\n");
-					SV_LinkEdict(ent, true);
+					SVQH_LinkEdict(ent, true);
 					return;
 				}
 			}
@@ -1299,18 +1299,18 @@ qboolean SV_CheckWater(qhedict_t* ent)
 
 	ent->SetWaterLevel(0);
 	ent->SetWaterType(BSP29CONTENTS_EMPTY);
-	cont = SV_PointContents(point);
+	cont = SVQH_PointContents(point);
 	if (cont <= BSP29CONTENTS_WATER)
 	{
 		ent->SetWaterType(cont);
 		ent->SetWaterLevel(1);
 		point[2] = ent->GetOrigin()[2] + (ent->GetMins()[2] + ent->GetMaxs()[2]) * 0.5;
-		cont = SV_PointContents(point);
+		cont = SVQH_PointContents(point);
 		if (cont <= BSP29CONTENTS_WATER)
 		{
 			ent->SetWaterLevel(2);
 			point[2] = ent->GetOrigin()[2] + ent->GetViewOfs()[2];
-			cont = SV_PointContents(point);
+			cont = SVQH_PointContents(point);
 			if (cont <= BSP29CONTENTS_WATER)
 			{
 				ent->SetWaterLevel(3);
@@ -1431,8 +1431,8 @@ void SV_WalkMove(qhedict_t* ent)
 //
 // do a regular slide move unless it looks like you ran into a step
 //
-	oldonground = (int)ent->GetFlags() & FL_ONGROUND;
-	ent->SetFlags((int)ent->GetFlags() & ~FL_ONGROUND);
+	oldonground = (int)ent->GetFlags() & QHFL_ONGROUND;
+	ent->SetFlags((int)ent->GetFlags() & ~QHFL_ONGROUND);
 
 	VectorCopy(ent->GetOrigin(), oldorg);
 	VectorCopy(ent->GetVelocity(), oldvel);
@@ -1459,7 +1459,7 @@ void SV_WalkMove(qhedict_t* ent)
 		return;
 	}
 
-	if ((int)sv_player->GetFlags() & FL_WATERJUMP)
+	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
 	{
 		return;
 	}
@@ -1508,9 +1508,9 @@ void SV_WalkMove(qhedict_t* ent)
 
 	if (downtrace.plane.normal[2] > 0.7)
 	{
-		if (ent->GetSolid() == SOLID_BSP)
+		if (ent->GetSolid() == QHSOLID_BSP)
 		{
-			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
+			ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);
 			ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(downtrace.entityNum)));
 		}
 	}
@@ -1568,7 +1568,7 @@ void SV_Physics_Client(qhedict_t* ent, int num)
 		{
 			return;
 		}
-		if (!SV_CheckWater(ent) && !((int)ent->GetFlags() & FL_WATERJUMP))
+		if (!SV_CheckWater(ent) && !((int)ent->GetFlags() & QHFL_WATERJUMP))
 		{
 			SV_AddGravity(ent);
 		}
@@ -1607,7 +1607,7 @@ void SV_Physics_Client(qhedict_t* ent, int num)
 //
 // call standard player post-think
 //
-	SV_LinkEdict(ent, true);
+	SVQH_LinkEdict(ent, true);
 
 	*pr_globalVars.time = sv.qh_time;
 	*pr_globalVars.self = EDICT_TO_PROG(ent);
@@ -1647,7 +1647,7 @@ void SV_Physics_Noclip(qhedict_t* ent)
 	VectorMA(ent->GetAngles(), host_frametime, ent->GetAVelocity(), ent->GetAngles());
 	VectorMA(ent->GetOrigin(), host_frametime, ent->GetVelocity(), ent->GetOrigin());
 
-	SV_LinkEdict(ent, false);
+	SVQH_LinkEdict(ent, false);
 }
 
 /*
@@ -1667,7 +1667,7 @@ SV_CheckWaterTransition
 void SV_CheckWaterTransition(qhedict_t* ent)
 {
 	int cont;
-	cont = SV_PointContents(ent->GetOrigin());
+	cont = SVQH_PointContents(ent->GetOrigin());
 	if (!ent->GetWaterType())
 	{	// just spawned here
 		ent->SetWaterType(cont);
@@ -1715,7 +1715,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 	}
 
 // if onground, return without moving
-	if (((int)ent->GetFlags() & FL_ONGROUND))
+	if (((int)ent->GetFlags() & QHFL_ONGROUND))
 	{
 		return;
 	}
@@ -1753,7 +1753,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 	}
 	else if (ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE)
 	{	// Solid phased missiles don't bounce on monsters or players
-		if ((ent->GetSolid() == SOLID_PHASE) && (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & FL_MONSTER) || ((int)QH_EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK)))
+		if ((ent->GetSolid() == H2SOLID_PHASE) && (((int)QH_EDICT_NUM(trace.entityNum)->GetFlags() & QHFL_MONSTER) || ((int)QH_EDICT_NUM(trace.entityNum)->GetMoveType() == QHMOVETYPE_WALK)))
 		{
 			return;
 		}
@@ -1771,7 +1771,7 @@ void SV_Physics_Toss(qhedict_t* ent)
 	{
 		if (ent->GetVelocity()[2] < 60 || ent->GetMoveType() != QHMOVETYPE_BOUNCE)
 		{
-			ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
+			ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);
 			ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 			VectorCopy(vec3_origin, ent->GetVelocity());
 			ent->SetAVelocity(vec3_origin);
@@ -1806,7 +1806,7 @@ void SV_Physics_Step(qhedict_t* ent)
 	qboolean hitsound;
 
 // freefall if not onground
-	if (!((int)ent->GetFlags() & (FL_ONGROUND | FL_FLY | FL_SWIM)))
+	if (!((int)ent->GetFlags() & (QHFL_ONGROUND | QHFL_FLY | QHFL_SWIM)))
 	{
 		if (ent->GetVelocity()[2] < sv_gravity->value * -0.1)
 		{
@@ -1820,10 +1820,10 @@ void SV_Physics_Step(qhedict_t* ent)
 		SV_AddGravity(ent);
 		SV_CheckVelocity(ent);
 		SV_FlyMove(ent, host_frametime, NULL);
-		SV_LinkEdict(ent, true);
+		SVQH_LinkEdict(ent, true);
 
-//		if ( (int)ent->v.flags & FL_ONGROUND )	// just hit ground
-		if (((int)ent->GetFlags() & FL_ONGROUND) && (!ent->GetFlags() & FL_MONSTER))
+//		if ( (int)ent->v.flags & QHFL_ONGROUND )	// just hit ground
+		if (((int)ent->GetFlags() & QHFL_ONGROUND) && (!ent->GetFlags() & QHFL_MONSTER))
 		{
 			if (hitsound)
 			{
@@ -1880,7 +1880,7 @@ void SV_Physics(void)
 
 		if (*pr_globalVars.force_retouch)
 		{
-			SV_LinkEdict(ent, true);	// force retouch even for stationary
+			SVQH_LinkEdict(ent, true);	// force retouch even for stationary
 		}
 
 		if (i > 0 && i <= svs.qh_maxclients)
@@ -1934,7 +1934,7 @@ void SV_Physics(void)
 					}
 
 					VectorAdd(oldOrigin,ent2->GetOrigin(),ent2->GetOrigin());
-					if ((int)ent2->GetFlags() & FL_MOVECHAIN_ANGLE)
+					if ((int)ent2->GetFlags() & H2FL_MOVECHAIN_ANGLE)
 					{
 						VectorAdd(oldAngle,ent2->GetAngles(),ent2->GetAngles());
 					}
@@ -1959,7 +1959,7 @@ void SV_Physics(void)
 
 	if (*pr_globalVars.force_retouch)
 	{
-		*pr_globalVars.force_retouch--;
+		(*pr_globalVars.force_retouch)--;
 	}
 
 	sv.qh_time += host_frametime;

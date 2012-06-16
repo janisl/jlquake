@@ -123,7 +123,7 @@ FIXME: walk all entities and NULL out references to this entity
 */
 void ED_Free(qhedict_t* ed)
 {
-	SV_UnlinkEdict(ed);			// unlink from world bsp
+	SVQH_UnlinkEdict(ed);			// unlink from world bsp
 
 	ed->free = true;
 	ed->SetModel(0);

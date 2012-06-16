@@ -1,7 +1,4 @@
 
-#include "../server/progsvm/progsvm.h"	// defs shared with qcc
-
-#define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,qhedict_t,area)
 
 //============================================================================
 

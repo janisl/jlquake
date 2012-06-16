@@ -1,10 +1,4 @@
 
-#include "../../server/progsvm/progsvm.h"	// defs shared with qcc
-
-#define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,qhedict_t,area)
-
-//============================================================================
-
 extern int* pr_string_index;
 extern char* pr_global_strings;
 extern int pr_string_count;

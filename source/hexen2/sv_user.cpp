@@ -46,7 +46,7 @@ void SV_SetIdealPitch(void)
 	int step, dir, steps;
 	float save_hull;
 
-	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
+	if (!((int)sv_player->GetFlags() & QHFL_ONGROUND))
 	{
 		return;
 	}
@@ -73,7 +73,7 @@ void SV_SetIdealPitch(void)
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		tr = SV_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
+		tr = SVQH_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
 		if ((tr.allsolid) ||// looking at a wall, leave ideal the way is was
 			(tr.fraction == 1))	// near a dropoff
 		{
@@ -150,7 +150,7 @@ void SV_UserFriction(void)
 
 	save_hull = sv_player->GetHull();
 	sv_player->SetHull(0);
-	trace = SV_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
+	trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
 	sv_player->SetHull(save_hull);
 
 #ifndef MISSIONPACK
@@ -470,7 +470,7 @@ void SV_WaterJump(void)
 	if (sv.qh_time > sv_player->GetTeleportTime() ||
 		!sv_player->GetWaterLevel())
 	{
-		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_WATERJUMP);
 		sv_player->SetTeleportTime(0);
 	}
 	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
@@ -553,7 +553,7 @@ void SV_ClientThink(void)
 		return;
 	}
 
-	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
+	onground = (int)sv_player->GetFlags() & QHFL_ONGROUND;
 
 	origin = sv_player->GetOrigin();
 	velocity = sv_player->GetVelocity();
@@ -582,7 +582,7 @@ void SV_ClientThink(void)
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if ((int)sv_player->GetFlags() & FL_WATERJUMP)
+	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
 	{
 		SV_WaterJump();
 		return;

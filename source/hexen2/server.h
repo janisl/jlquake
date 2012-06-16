@@ -4,16 +4,6 @@
 
 // server.h
 
-#include "../server/server.h"
-
-// edict->solid values
-#define SOLID_NOT               0		// no interaction with other objects
-#define SOLID_TRIGGER           1		// touch on edge, but not blocking
-#define SOLID_BBOX              2		// touch on edge, block
-#define SOLID_SLIDEBOX          3		// touch on edge, but not an onground
-#define SOLID_BSP               4		// bsp clip, touch on edge, block
-#define SOLID_PHASE             5		// won't slow down when hitting entities flagged as FL_MONSTER
-
 // edict->deadflag values
 #define DEAD_NO                 0
 #define DEAD_DYING              1
@@ -22,32 +12,6 @@
 #define DAMAGE_NO               0		// Cannot be damaged
 #define DAMAGE_YES              1		// Can be damaged
 #define DAMAGE_NO_GRENADE       2		// Will not set off grenades
-
-// edict->flags
-#define FL_FLY                  1
-#define FL_SWIM                 2
-//#define	FL_GLIMPSE				4
-#define FL_CONVEYOR             4
-#define FL_CLIENT               8
-#define FL_INWATER              16
-#define FL_MONSTER              32
-#define FL_GODMODE              64
-#define FL_NOTARGET             128
-#define FL_ITEM                 256
-#define FL_ONGROUND             512
-#define FL_PARTIALGROUND        1024	// not all corners are valid
-#define FL_WATERJUMP            2048	// player jumping out of water
-#define FL_JUMPRELEASED         4096	// for jump debouncing
-#define FL_FLASHLIGHT           8192
-#define FL_ARCHIVE_OVERRIDE     1048576
-#define FL_ARTIFACTUSED         16384
-#define FL_MOVECHAIN_ANGLE      32768	// when in a move chain, will update the angle
-#define FL_HUNTFACE             65536	//Makes monster go for enemy view_ofs thwn moving
-#define FL_NOZ                  131072	//Monster will not automove on Z if flying or swimming
-#define FL_SET_TRACE            262144	//Trace will always be set for this monster (pentacles)
-#define FL_CLASS_DEPENDENT      2097152	// model will appear different to each player
-#define FL_SPECIAL_ABILITY1     4194304	// has 1st special ability
-#define FL_SPECIAL_ABILITY2     8388608	// has 2nd special ability
 
 #define FL2_CROUCHED            4096
 

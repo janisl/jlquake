@@ -1,6 +1,8 @@
 // quakedef.h -- primary header for server
 
-#include "../../common/qcommon.h"
+#include "../../server/server.h"
+#include "../../server/quake_hexen/local.h"
+#include "../../server/progsvm/progsvm.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -18,7 +20,6 @@
 #include "progs.h"
 
 #include "server.h"
-#include "world.h"
 
 //=============================================================================
 

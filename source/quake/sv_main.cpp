@@ -727,7 +727,7 @@ void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
 
 	bits |= SU_ITEMS;
 
-	if ((int)ent->GetFlags() & FL_ONGROUND)
+	if ((int)ent->GetFlags() & QHFL_ONGROUND)
 	{
 		bits |= SU_ONGROUND;
 	}
@@ -1284,7 +1284,7 @@ void SV_SpawnServer(char* server)
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->SetSolid(SOLID_BSP);
+	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)

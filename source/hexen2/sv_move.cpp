@@ -83,7 +83,7 @@ qboolean SV_CheckBottom(qhedict_t* ent)
 			}
 //			start[0] = x ? maxs[0] : mins[0];
 //			start[1] = y ? maxs[1] : mins[1];
-			if (SV_PointContents(start) != BSP29CONTENTS_SOLID)
+			if (SVQH_PointContents(start) != BSP29CONTENTS_SOLID)
 			{
 				goto realcheck;
 			}
@@ -103,8 +103,8 @@ realcheck:	// check it for real...
 	stop[2] = start[2] - 2 * STEPSIZE;
 //do a trace from the bottom center of the ent down
 //to 36 below the bottom center of the ent, using a point hull
-//the "true" in this function is telling SV_Move to consider
-//this ent's movement as MOVE_NOMONSTERS - means it will
+//the "true" in this function is telling SVQH_Move to consider
+//this ent's movement as QHMOVE_NOMONSTERS - means it will
 //not clip against entities in this move
 //NOTE: these don't check for trace_allsolid of trace_startsolid.
 //Technically, these can't possibly be a valid result since
@@ -112,10 +112,10 @@ realcheck:	// check it for real...
 
 	save_hull = ent->GetHull();	//temp hack so it HullForEntity doesn't calculate the wrong offset
 	ent->SetHull(0);
-	trace = SV_Move(start, vec3_origin, vec3_origin, stop, true, ent);
+	trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, ent);
 	ent->SetHull(save_hull);
 
-/*	if((int)ent->v.flags&FL_MONSTER)
+/*	if((int)ent->v.flags&QHFL_MONSTER)
     {
         if(trace.allsolid)
             Con_DPrintf("Checkbottom midpoint check was all solid!!!\n");
@@ -162,10 +162,10 @@ realcheck:	// check it for real...
 			//same check as above, just from the 4 corners down 36
 			save_hull = ent->GetHull();	//temp hack so it HullForEntity doesn't calculate the wrong offset
 			ent->SetHull(0);
-			trace = SV_Move(start, vec3_origin, vec3_origin, stop, true, ent);
+			trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, ent);
 			ent->SetHull(save_hull);
 
-/*			if((int)ent->v.flags&FL_MONSTER)
+/*			if((int)ent->v.flags&QHFL_MONSTER)
             {
                 if(trace.allsolid)
                     Con_DPrintf("Checkbottom (x=%d,y=%d) check was all solid!!!\n",x,y);
@@ -240,7 +240,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 	VectorAdd(ent->GetOrigin(), move, neworg);
 
 // flying monsters don't step up, unless no_z turned on
-	if (((int)ent->GetFlags() & (FL_SWIM | FL_FLY)) && !((int)ent->GetFlags() & FL_NOZ) && !((int)ent->GetFlags() & FL_HUNTFACE))
+	if (((int)ent->GetFlags() & (QHFL_SWIM | QHFL_FLY)) && !((int)ent->GetFlags() & H2FL_NOZ) && !((int)ent->GetFlags() & H2FL_HUNTFACE))
 	{
 		// try one move with vertical motion, then one without
 		for (i = 0; i < 2; i++)
@@ -251,7 +251,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 				enemy = PROG_TO_EDICT(ent->GetEnemy());
 				if (i == 0 && enemy != sv.qh_edicts)
 				{
-					if ((int)ent->GetFlags() & FL_HUNTFACE)	//Go for face
+					if ((int)ent->GetFlags() & H2FL_HUNTFACE)	//Go for face
 					{
 						dz = ent->GetOrigin()[2] - PROG_TO_EDICT(ent->GetEnemy())->GetOrigin()[2] + PROG_TO_EDICT(ent->GetEnemy())->GetViewOfs()[2];
 					}
@@ -271,22 +271,22 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 				}
 			}
 
-			if (((int)ent->GetFlags() & FL_SWIM) && SV_PointContents(neworg) == BSP29CONTENTS_EMPTY)
+			if (((int)ent->GetFlags() & QHFL_SWIM) && SVQH_PointContents(neworg) == BSP29CONTENTS_EMPTY)
 			{	//Would end up out of water, don't do z move
 				neworg[2] = ent->GetOrigin()[2];
-				trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), neworg, false, ent);
+				trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), neworg, false, ent);
 				if (set_trace)
 				{
 					set_move_trace(&trace);
 				}
-				if (trace.fraction < 1 || SV_PointContents(trace.endpos) == BSP29CONTENTS_EMPTY)
+				if (trace.fraction < 1 || SVQH_PointContents(trace.endpos) == BSP29CONTENTS_EMPTY)
 				{
 					return false;	// swim monster left water
 				}
 			}
 			else
 			{
-				trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), neworg, false, ent);
+				trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), neworg, false, ent);
 				if (set_trace)
 				{
 					set_move_trace(&trace);
@@ -298,7 +298,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 				VectorCopy(trace.endpos, ent->GetOrigin());
 				if (relink)
 				{
-					SV_LinkEdict(ent, true);
+					SVQH_LinkEdict(ent, true);
 				}
 
 				return true;
@@ -318,7 +318,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 	VectorCopy(neworg, end);
 	end[2] -= STEPSIZE * 2;
 
-	trace = SV_Move(neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
+	trace = SVQH_Move(neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 	if (set_trace)
 	{
@@ -333,7 +333,7 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 	if (trace.startsolid)
 	{
 		neworg[2] -= STEPSIZE;
-		trace = SV_Move(neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
+		trace = SVQH_Move(neworg, ent->GetMins(), ent->GetMaxs(), end, false, ent);
 		if (set_trace)
 		{
 			set_move_trace(&trace);
@@ -346,14 +346,14 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 	if (trace.fraction == 1)
 	{
 		// if monster had the ground pulled out, go ahead and fall
-		if ((int)ent->GetFlags() & FL_PARTIALGROUND)
+		if ((int)ent->GetFlags() & QHFL_PARTIALGROUND)
 		{
 			VectorAdd(ent->GetOrigin(), move, ent->GetOrigin());
 			if (relink)
 			{
-				SV_LinkEdict(ent, true);
+				SVQH_LinkEdict(ent, true);
 			}
-			ent->SetFlags((int)ent->GetFlags() & ~FL_ONGROUND);
+			ent->SetFlags((int)ent->GetFlags() & ~QHFL_ONGROUND);
 //	Con_Printf ("fall down\n");
 			return true;
 		}
@@ -366,12 +366,12 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 
 	if (!SV_CheckBottom(ent))
 	{
-		if ((int)ent->GetFlags() & FL_PARTIALGROUND)
+		if ((int)ent->GetFlags() & QHFL_PARTIALGROUND)
 		{	// entity had floor mostly pulled out from underneath it
 			// and is trying to correct
 			if (relink)
 			{
-				SV_LinkEdict(ent, true);
+				SVQH_LinkEdict(ent, true);
 			}
 			return true;
 		}
@@ -380,17 +380,17 @@ qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noen
 		return false;
 	}
 
-	if ((int)ent->GetFlags() & FL_PARTIALGROUND)
+	if ((int)ent->GetFlags() & QHFL_PARTIALGROUND)
 	{
 //		Con_Printf ("back on ground\n");
-		ent->SetFlags((int)ent->GetFlags() & ~FL_PARTIALGROUND);
+		ent->SetFlags((int)ent->GetFlags() & ~QHFL_PARTIALGROUND);
 	}
 	ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 
 // the move is ok
 	if (relink)
 	{
-		SV_LinkEdict(ent, true);
+		SVQH_LinkEdict(ent, true);
 	}
 	return true;
 }
@@ -423,7 +423,7 @@ qboolean SV_StepDirection(qhedict_t* ent, float yaw, float dist)
 	move[2] = 0;//FIXME: Make wallcrawlers and flying monsters use this!
 
 	VectorCopy(ent->GetOrigin(), oldorigin);
-	if ((int)ent->GetFlags() & FL_SET_TRACE)
+	if ((int)ent->GetFlags() & H2FL_SET_TRACE)
 	{
 		set_trace_plane = true;
 	}
@@ -439,10 +439,10 @@ qboolean SV_StepDirection(qhedict_t* ent, float yaw, float dist)
 		{		// not turned far enough, so don't take the step
 			VectorCopy(oldorigin, ent->GetOrigin());
 		}
-		SV_LinkEdict(ent, true);
+		SVQH_LinkEdict(ent, true);
 		return true;
 	}
-	SV_LinkEdict(ent, true);
+	SVQH_LinkEdict(ent, true);
 
 	return false;
 }
@@ -457,7 +457,7 @@ void SV_FixCheckBottom(qhedict_t* ent)
 {
 //	Con_Printf ("SV_FixCheckBottom\n");
 
-	ent->SetFlags((int)ent->GetFlags() | FL_PARTIALGROUND);
+	ent->SetFlags((int)ent->GetFlags() | QHFL_PARTIALGROUND);
 }
 
 
@@ -481,7 +481,7 @@ void SV_NewChaseDir(qhedict_t* actor, qhedict_t* enemy, float dist)
 	deltax = enemy->GetOrigin()[0] - actor->GetOrigin()[0];
 	deltay = enemy->GetOrigin()[1] - actor->GetOrigin()[1];
 
-	if ((int)actor->GetFlags() & FL_FLY)//Pentacles
+	if ((int)actor->GetFlags() & QHFL_FLY)//Pentacles
 	{
 		deltaz = enemy->GetOrigin()[2] + enemy->GetViewOfs()[2] - actor->GetOrigin()[2];
 	}
@@ -642,7 +642,7 @@ void SV_MoveToGoal(void)
 
 //Reset trace_plane_normal
 	VectorCopy(vec3_origin, pr_globalVars.trace_plane_normal);
-	if (!((int)ent->GetFlags() & (FL_ONGROUND | FL_FLY | FL_SWIM)))
+	if (!((int)ent->GetFlags() & (QHFL_ONGROUND | QHFL_FLY | QHFL_SWIM)))
 	{	//If not onground, flying, or swimming, return 0
 		G_FLOAT(OFS_RETURN) = 0;
 		return;

@@ -59,7 +59,7 @@ void SV_SetIdealPitch(void)
 	int i, j;
 	int step, dir, steps;
 
-	if (!((int)sv_player->GetFlags() & FL_ONGROUND))
+	if (!((int)sv_player->GetFlags() & QHFL_ONGROUND))
 	{
 		return;
 	}
@@ -78,7 +78,7 @@ void SV_SetIdealPitch(void)
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		tr = SV_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
+		tr = SVQH_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
 		if (tr.allsolid)
 		{
 			return;	// looking at a wall, leave ideal the way is was
@@ -153,7 +153,7 @@ void SV_UserFriction(void)
 	start[2] = origin[2] + sv_player->GetMins()[2];
 	stop[2] = start[2] - 34;
 
-	trace = SV_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
+	trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
 
 	if (trace.fraction == 1.0)
 	{
@@ -359,7 +359,7 @@ void SV_WaterJump(void)
 	if (sv.qh_time > sv_player->GetTeleportTime() ||
 		!sv_player->GetWaterLevel())
 	{
-		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_WATERJUMP);
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_WATERJUMP);
 		sv_player->SetTeleportTime(0);
 	}
 	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
@@ -442,7 +442,7 @@ void SV_ClientThink(void)
 		return;
 	}
 
-	onground = (int)sv_player->GetFlags() & FL_ONGROUND;
+	onground = (int)sv_player->GetFlags() & QHFL_ONGROUND;
 
 	origin = sv_player->GetOrigin();
 	velocity = sv_player->GetVelocity();
@@ -471,7 +471,7 @@ void SV_ClientThink(void)
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if ((int)sv_player->GetFlags() & FL_WATERJUMP)
+	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
 	{
 		SV_WaterJump();
 		return;

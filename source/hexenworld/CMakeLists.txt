@@ -17,7 +17,6 @@ add_executable(jlhwsv
 	server/sv_phys.cpp
 	server/sv_user.cpp
 	server/sv_ccmds.cpp
-	server/world.cpp
 	server/sys_unix.cpp
 	client/cmd.cpp
 	client/common.cpp

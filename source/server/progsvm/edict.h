@@ -200,15 +200,15 @@ struct qhedict_t
 	entvars_t v;			// C exported fields from progs
 	// other fields from progs come immediately after
 
-	int GetIntField(idEntVarDef& field);
+	int GetIntField(idEntVarDef& field) const;
 	void SetIntField(idEntVarDef& field, int value);
-	float GetFloatField(idEntVarDef& field);
+	float GetFloatField(idEntVarDef& field) const;
 	void SetFloatField(idEntVarDef& field, float value);
 	float* GetVectorField(idEntVarDef& field);
 	void SetVectorField(idEntVarDef& field, vec3_t value);
 
 #define FIELD_FLOAT(name) \
-	float Get ## name()	\
+	float Get ## name() const	\
 	{ \
 		return GetFloatField(entField ## name);	\
 	} \
@@ -226,7 +226,7 @@ struct qhedict_t
 		SetVectorField(entField ## name, value); \
 	}
 #define FIELD_STRING(name) \
-	string_t Get ## name() \
+	string_t Get ## name() const \
 	{ \
 		return GetIntField(entField ## name); \
 	} \
@@ -235,7 +235,7 @@ struct qhedict_t
 		SetIntField(entField ## name, value); \
 	}
 #define FIELD_FUNC(name) \
-	func_t Get ## name() \
+	func_t Get ## name() const \
 	{ \
 		return GetIntField(entField ## name); \
 	} \
@@ -244,7 +244,7 @@ struct qhedict_t
 		SetIntField(entField ## name, value); \
 	}
 #define FIELD_ENTITY(name) \
-	int Get ## name() \
+	int Get ## name() const \
 	{ \
 		return GetIntField(entField ## name); \
 	} \
@@ -449,7 +449,7 @@ void ED_Write(fileHandle_t f, const qhedict_t* ed);
 const char* ED_ParseEdict(const char* data, qhedict_t* ent);
 void ED_Count();
 
-inline int qhedict_t::GetIntField(idEntVarDef& field)
+inline int qhedict_t::GetIntField(idEntVarDef& field) const
 {
 	return *(int*)((byte*)&v + field.offset);
 }
@@ -459,7 +459,7 @@ inline void qhedict_t::SetIntField(idEntVarDef& field, int value)
 	*(int*)((byte*)&v + field.offset) = value;
 }
 
-inline float qhedict_t::GetFloatField(idEntVarDef& field)
+inline float qhedict_t::GetFloatField(idEntVarDef& field) const
 {
 	return *(float*)((byte*)&v + field.offset);
 }

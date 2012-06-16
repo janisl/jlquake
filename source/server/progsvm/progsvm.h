@@ -17,8 +17,6 @@
 #ifndef _PROGSVM_H
 #define _PROGSVM_H
 
-#include "../server.h"
-
 #include "progs_file.h"
 
 #define G_FLOAT(o) (pr_globals[o])

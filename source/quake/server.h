@@ -19,15 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // server.h
 
-#include "../server/server.h"
-
-// edict->solid values
-#define SOLID_NOT               0		// no interaction with other objects
-#define SOLID_TRIGGER           1		// touch on edge, but not blocking
-#define SOLID_BBOX              2		// touch on edge, block
-#define SOLID_SLIDEBOX          3		// touch on edge, but not an onground
-#define SOLID_BSP               4		// bsp clip, touch on edge, block
-
 // edict->deadflag values
 #define DEAD_NO                 0
 #define DEAD_DYING              1
@@ -36,22 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DAMAGE_NO               0
 #define DAMAGE_YES              1
 #define DAMAGE_AIM              2
-
-// edict->flags
-#define FL_FLY                  1
-#define FL_SWIM                 2
-//#define	FL_GLIMPSE				4
-#define FL_CONVEYOR             4
-#define FL_CLIENT               8
-#define FL_INWATER              16
-#define FL_MONSTER              32
-#define FL_GODMODE              64
-#define FL_NOTARGET             128
-#define FL_ITEM                 256
-#define FL_ONGROUND             512
-#define FL_PARTIALGROUND        1024	// not all corners are valid
-#define FL_WATERJUMP            2048	// player jumping out of water
-#define FL_JUMPRELEASED         4096	// for jump debouncing
 
 #define SPAWNFLAG_NOT_EASY          256
 #define SPAWNFLAG_NOT_MEDIUM        512

@@ -40,8 +40,6 @@ client_t* host_client;				// current client
 
 jmp_buf host_abortserver;
 
-extern Cvar* sys_quake2;
-
 Cvar* host_framerate;	// set for slow motion
 Cvar* host_speeds;				// set for running times
 

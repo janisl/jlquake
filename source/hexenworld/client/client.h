@@ -1,28 +1,5 @@
 // client.h
 
-// edict->flags
-#define FL_FLY                  1
-#define FL_SWIM                 2
-//#define	FL_GLIMPSE				4
-#define FL_CONVEYOR             4
-#define FL_CLIENT               8
-#define FL_INWATER              16
-#define FL_MONSTER              32
-#define FL_GODMODE              64
-#define FL_NOTARGET             128
-#define FL_ITEM                 256
-#define FL_ONGROUND             512
-#define FL_PARTIALGROUND        1024	// not all corners are valid
-#define FL_WATERJUMP            2048	// player jumping out of water
-#define FL_JUMPRELEASED         4096	// for jump debouncing
-#define FL_FLASHLIGHT           8192
-#define FL_ARCHIVE_OVERRIDE     1048576
-#define FL_ARTIFACTUSED         16384
-#define FL_MOVECHAIN_ANGLE      32768	// when in a move chain, will update the angle
-#define FL_CLASS_DEPENDENT      2097152	// model will appear different to each player
-#define FL_SPECIAL_ABILITY1     4194304	// has 1st special ability
-#define FL_SPECIAL_ABILITY2     8388608	// has 2nd special ability
-
 #define FL2_CROUCHED            4096
 
 // edict->movetype values

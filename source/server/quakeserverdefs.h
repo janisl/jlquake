@@ -27,3 +27,17 @@ struct qwclient_frame_t
 	float ping_time;
 	qwpacket_entities_t entities;
 };
+
+// edict->solid values
+#define QHSOLID_NOT             0		// no interaction with other objects
+#define QHSOLID_TRIGGER         1		// touch on edge, but not blocking
+#define QHSOLID_BBOX            2		// touch on edge, block
+#define QHSOLID_SLIDEBOX        3		// touch on edge, but not an onground
+#define QHSOLID_BSP             4		// bsp clip, touch on edge, block
+#define H2SOLID_PHASE           5		// won't slow down when hitting entities flagged as QHFL_MONSTER
+
+#define QHMOVE_NORMAL       0
+#define QHMOVE_NOMONSTERS   1
+#define QHMOVE_MISSILE      2
+#define H2MOVE_WATER        3
+#define H2MOVE_PHASE        4

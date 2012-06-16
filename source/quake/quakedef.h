@@ -20,7 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // quakedef.h -- primary header for client
 
 #include "../client/client.h"
+#include "../server/server.h"
 #include "../client/game/quake/local.h"
+#include "../server/quake_hexen/local.h"
+#include "../server/progsvm/progsvm.h"
 
 #define VERSION             1.09
 #define GLQUAKE_VERSION     1.00
@@ -141,7 +144,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "progs.h"
 #include "server.h"
-#include "world.h"
 #include "keys.h"
 #include "console.h"
 #include "view.h"

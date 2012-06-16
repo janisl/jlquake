@@ -5,7 +5,10 @@
  */
 
 #include "../client/client.h"
+#include "../server/server.h"
 #include "../client/game/hexen2/local.h"
+#include "../server/quake_hexen/local.h"
+#include "../server/progsvm/progsvm.h"
 
 //#define MISSIONPACK
 
@@ -128,7 +131,6 @@
 #include "progs.h"
 #include "client.h"
 #include "server.h"
-#include "world.h"
 #include "keys.h"
 #include "console.h"
 #include "view.h"

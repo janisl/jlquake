@@ -18,10 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "../server/progsvm/progsvm.h"	// defs shared with qcc
-
-#define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,qhedict_t,area)
-
 void PR_Init(void);
 
 void PR_LoadProgs(void);

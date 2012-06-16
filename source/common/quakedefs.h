@@ -274,19 +274,39 @@ struct qwpacket_entities_t
 //
 // stats are integers communicated to the client by the server
 //
-#define Q1STAT_HEALTH         0
-#define Q1STAT_FRAGS          1
-#define Q1STAT_WEAPON         2
-#define Q1STAT_AMMO           3
-#define Q1STAT_ARMOR          4
-#define Q1STAT_WEAPONFRAME    5
-#define Q1STAT_SHELLS         6
-#define Q1STAT_NAILS          7
-#define Q1STAT_ROCKETS        8
-#define Q1STAT_CELLS          9
-#define Q1STAT_ACTIVEWEAPON   10
-#define Q1STAT_TOTALSECRETS   11
-#define Q1STAT_TOTALMONSTERS  12
-#define Q1STAT_SECRETS        13		// bumped on client side by q1svc_foundsecret
-#define Q1STAT_MONSTERS       14		// bumped by q1svc_killedmonster
-#define QWSTAT_ITEMS          15
+#define Q1STAT_HEALTH           0
+#define Q1STAT_FRAGS            1
+#define Q1STAT_WEAPON           2
+#define Q1STAT_AMMO             3
+#define Q1STAT_ARMOR            4
+#define Q1STAT_WEAPONFRAME      5
+#define Q1STAT_SHELLS           6
+#define Q1STAT_NAILS            7
+#define Q1STAT_ROCKETS          8
+#define Q1STAT_CELLS            9
+#define Q1STAT_ACTIVEWEAPON     10
+#define Q1STAT_TOTALSECRETS     11
+#define Q1STAT_TOTALMONSTERS    12
+#define Q1STAT_SECRETS          13		// bumped on client side by q1svc_foundsecret
+#define Q1STAT_MONSTERS         14		// bumped by q1svc_killedmonster
+#define QWSTAT_ITEMS            15
+
+// edict->flags
+#define QHFL_FLY                1
+#define QHFL_SWIM               2
+#define QHFL_CLIENT             8
+#define QHFL_MONSTER            32
+#define QHFL_GODMODE            64
+#define QHFL_NOTARGET           128
+#define QHFL_ITEM               256
+#define QHFL_ONGROUND           512
+#define QHFL_PARTIALGROUND      1024	// not all corners are valid
+#define QHFL_WATERJUMP          2048	// player jumping out of water
+#define H2FL_ARCHIVE_OVERRIDE   1048576
+#define H2FL_MOVECHAIN_ANGLE    32768	// when in a move chain, will update the angle
+#define H2FL_HUNTFACE           65536	//Makes monster go for enemy view_ofs thwn moving
+#define H2FL_NOZ                131072	//Monster will not automove on Z if flying or swimming
+#define H2FL_SET_TRACE          262144	//Trace will always be set for this monster (pentacles)
+#define H2FL_CLASS_DEPENDENT    2097152	// model will appear different to each player
+#define H2FL_SPECIAL_ABILITY1   4194304	// has 1st special ability
+#define H2FL_SPECIAL_ABILITY2   8388608	// has 2nd special ability

@@ -75,7 +75,7 @@ void PF_setorigin(void)
 	e = G_EDICT(OFS_PARM0);
 	org = G_VECTOR(OFS_PARM1);
 	VectorCopy(org, e->GetOrigin());
-	SV_LinkEdict(e, false);
+	SVQH_LinkEdict(e, false);
 }
 
 
@@ -156,7 +156,7 @@ void SetMinMaxSize(qhedict_t* e, float* min, float* max, qboolean rotate)
 	e->SetMaxs(rmax);
 	VectorSubtract(max, min, e->GetSize());
 
-	SV_LinkEdict(e, false);
+	SVQH_LinkEdict(e, false);
 }
 
 /*
@@ -442,7 +442,7 @@ void PF_traceline(void)
 	nomonsters = G_FLOAT(OFS_PARM2);
 	ent = G_EDICT(OFS_PARM3);
 
-	trace = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
+	trace = SVQH_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
 
 	*pr_globalVars.trace_allsolid = trace.allsolid;
 	*pr_globalVars.trace_startsolid = trace.startsolid;
@@ -530,7 +530,7 @@ int PF_newcheckclient(int check)
 		{
 			continue;
 		}
-		if ((int)ent->GetFlags() & FL_NOTARGET)
+		if ((int)ent->GetFlags() & QHFL_NOTARGET)
 		{
 			continue;
 		}
@@ -662,7 +662,7 @@ void PF_findradius(void)
 		{
 			continue;
 		}
-		if (ent->GetSolid() == SOLID_NOT)
+		if (ent->GetSolid() == QHSOLID_NOT)
 		{
 			continue;
 		}
@@ -827,7 +827,7 @@ void PF_walkmove(void)
 	yaw = G_FLOAT(OFS_PARM0);
 	dist = G_FLOAT(OFS_PARM1);
 
-	if (!((int)ent->GetFlags() & (FL_ONGROUND | FL_FLY | FL_SWIM)))
+	if (!((int)ent->GetFlags() & (QHFL_ONGROUND | QHFL_FLY | QHFL_SWIM)))
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;
@@ -869,7 +869,7 @@ void PF_droptofloor(void)
 	VectorCopy(ent->GetOrigin(), end);
 	end[2] -= 256;
 
-	trace = SV_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
+	trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
 
 	if (trace.fraction == 1 || trace.allsolid)
 	{
@@ -878,8 +878,8 @@ void PF_droptofloor(void)
 	else
 	{
 		VectorCopy(trace.endpos, ent->GetOrigin());
-		SV_LinkEdict(ent, false);
-		ent->SetFlags((int)ent->GetFlags() | FL_ONGROUND);
+		SVQH_LinkEdict(ent, false);
+		ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);
 		ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
@@ -945,7 +945,7 @@ void PF_pointcontents(void)
 
 	v = G_VECTOR(OFS_PARM0);
 
-	G_FLOAT(OFS_RETURN) = SV_PointContents(v);
+	G_FLOAT(OFS_RETURN) = SVQH_PointContents(v);
 }
 
 /*
@@ -1005,7 +1005,7 @@ void PF_aim(void)
 // try sending a trace straight
 	VectorCopy(pr_globalVars.v_forward, dir);
 	VectorMA(start, 2048, dir, end);
-	tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
+	tr = SVQH_Move(start, vec3_origin, vec3_origin, end, false, ent);
 	if (tr.entityNum >= 0 && QH_EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_AIM &&
 		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != QH_EDICT_NUM(tr.entityNum)->GetTeam()))
 	{
@@ -1044,7 +1044,7 @@ void PF_aim(void)
 		{
 			continue;	// to far to turn
 		}
-		tr = SV_Move(start, vec3_origin, vec3_origin, end, false, ent);
+		tr = SVQH_Move(start, vec3_origin, vec3_origin, end, false, ent);
 		if (QH_EDICT_NUM(tr.entityNum) == check)
 		{	// can shoot at this one
 			bestdist = dist;

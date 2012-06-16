@@ -209,8 +209,8 @@ void SV_God_f(void)
 		return;
 	}
 
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
-	if (!((int)sv_player->GetFlags() & FL_GODMODE))
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
+	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "godmode OFF\n");
 	}

@@ -1031,15 +1031,15 @@ void AddLinksToPmove(worldSector_t* node)
 	for (l = node->solid_edicts.next; l != &node->solid_edicts; l = next)
 	{
 		next = l->next;
-		check = EDICT_FROM_AREA(l);
+		check = QHEDICT_FROM_AREA(l);
 
 		if (check->GetOwner() == pl)
 		{
 			continue;		// player's own missile
 		}
-		if (check->GetSolid() == SOLID_BSP ||
-			check->GetSolid() == SOLID_BBOX ||
-			check->GetSolid() == SOLID_SLIDEBOX)
+		if (check->GetSolid() == QHSOLID_BSP ||
+			check->GetSolid() == QHSOLID_BBOX ||
+			check->GetSolid() == QHSOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 			{
@@ -1066,7 +1066,7 @@ void AddLinksToPmove(worldSector_t* node)
 			VectorCopy(check->GetOrigin(), pe->origin);
 			VectorCopy(check->GetAngles(), pe->angles);
 			pe->info = QH_NUM_FOR_EDICT(check);
-			if (check->GetSolid() == SOLID_BSP)
+			if (check->GetSolid() == QHSOLID_BSP)
 			{
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			}
@@ -1123,9 +1123,9 @@ void AddAllEntsToPmove(void)
 		{
 			continue;
 		}
-		if (check->GetSolid() == SOLID_BSP ||
-			check->GetSolid() == SOLID_BBOX ||
-			check->GetSolid() == SOLID_SLIDEBOX)
+		if (check->GetSolid() == QHSOLID_BSP ||
+			check->GetSolid() == QHSOLID_BBOX ||
+			check->GetSolid() == QHSOLID_SLIDEBOX)
 		{
 			if (check == sv_player)
 			{
@@ -1147,7 +1147,7 @@ void AddAllEntsToPmove(void)
 			VectorCopy(check->GetOrigin(), pe->origin);
 			VectorCopy(check->GetAngles(), pe->angles);
 			qh_pmove.physents[qh_pmove.numphysent].info = e;
-			if (check->GetSolid() == SOLID_BSP)
+			if (check->GetSolid() == QHSOLID_BSP)
 			{
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			}
@@ -1312,12 +1312,12 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 	sv_player->SetWaterType(qh_pmove.watertype);
 	if (qh_pmove.onground != -1)
 	{
-		sv_player->SetFlags((int)sv_player->GetFlags() | FL_ONGROUND);
+		sv_player->SetFlags((int)sv_player->GetFlags() | QHFL_ONGROUND);
 		sv_player->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
 	}
 	else
 	{
-		sv_player->SetFlags((int)sv_player->GetFlags() & ~FL_ONGROUND);
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_ONGROUND);
 	}
 	for (i = 0; i < 3; i++)
 		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - pmqh_player_mins[i]);
@@ -1335,7 +1335,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 	if (!host_client->qh_spectator)
 	{
 		// link into place and touch triggers
-		SV_LinkEdict(sv_player, true);
+		SVQH_LinkEdict(sv_player, true);
 
 		// touch other objects
 		for (i = 0; i < qh_pmove.numtouch; i++)
@@ -1511,7 +1511,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			if (host_client->qh_spectator)
 			{
 				VectorCopy(o, sv_player->GetOrigin());
-				SV_LinkEdict(sv_player, false);
+				SVQH_LinkEdict(sv_player, false);
 			}
 			break;
 

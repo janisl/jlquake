@@ -126,8 +126,8 @@ void Host_God_f(void)
 		return;
 	}
 
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_GODMODE);
-	if (!((int)sv_player->GetFlags() & FL_GODMODE))
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
+	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
 	{
 		SV_ClientPrintf("godmode OFF\n");
 	}
@@ -150,8 +150,8 @@ void Host_Notarget_f(void)
 		return;
 	}
 
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ FL_NOTARGET);
-	if (!((int)sv_player->GetFlags() & FL_NOTARGET))
+	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_NOTARGET);
+	if (!((int)sv_player->GetFlags() & QHFL_NOTARGET))
 	{
 		SV_ClientPrintf("notarget OFF\n");
 	}
@@ -672,7 +672,7 @@ void Host_Loadgame_f(void)
 			// link it into the bsp tree
 			if (!ent->free)
 			{
-				SV_LinkEdict(ent, false);
+				SVQH_LinkEdict(ent, false);
 			}
 		}
 
@@ -782,7 +782,7 @@ void Host_Please_f(void)
 		if (cl->privileged)
 		{
 			cl->privileged = false;
-			cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE | FL_NOTARGET);
+			cl->edict->v.flags = (int)cl->edict->v.flags & ~(QHFL_GODMODE | QHFL_NOTARGET);
 			cl->edict->v.movetype = QHMOVETYPE_WALK;
 		}
 		else
@@ -807,7 +807,7 @@ void Host_Please_f(void)
 			if (cl->privileged)
 			{
 				cl->privileged = false;
-				cl->edict->v.flags = (int)cl->edict->v.flags & ~(FL_GODMODE | FL_NOTARGET);
+				cl->edict->v.flags = (int)cl->edict->v.flags & ~(QHFL_GODMODE | QHFL_NOTARGET);
 				cl->edict->v.movetype = QHMOVETYPE_WALK;
 			}
 			else

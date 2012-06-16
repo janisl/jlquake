@@ -273,7 +273,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->SetSolid(SOLID_BSP);
+	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	if (coop->value)

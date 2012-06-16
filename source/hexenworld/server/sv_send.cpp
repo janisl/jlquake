@@ -379,7 +379,7 @@ void SV_StopSound(qhedict_t* entity, int channel)
 	channel = (ent << 3) | channel;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == SOLID_BSP)
+	if (entity->GetSolid() == QHSOLID_BSP)
 	{
 		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
 			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
@@ -409,7 +409,7 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 	channel = (ent << 3) | channel;
 
 	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == SOLID_BSP)
+	if (entity->GetSolid() == QHSOLID_BSP)
 	{
 		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
 			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
@@ -513,7 +513,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 	}
 
 	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == SOLID_BSP)
+	if (entity->GetSolid() == QHSOLID_BSP)
 	{
 		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
 			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
@@ -967,7 +967,7 @@ static void UpdatePIV(void)
 			VectorCopy(client->qh_edict->GetOrigin(), adjust_org2);
 			adjust_org2[2] += 24;
 
-			trace = SV_Move(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict);
+			trace = SVQH_Move(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict);
 			if (QH_EDICT_NUM(trace.entityNum) == client->qh_edict)
 			{	//can see each other, check for invisible, dead
 				if (ValidToShowName(client->qh_edict))

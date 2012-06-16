@@ -299,7 +299,7 @@ void SV_SpawnServer(char* server)
 	ent->free = false;
 	ent->SetModel(PR_SetString(sv.qh_modelname));
 	ent->v.modelindex = 1;		// world model
-	ent->SetSolid(SOLID_BSP);
+	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
 	*pr_globalVars.mapname = PR_SetString(sv.name);

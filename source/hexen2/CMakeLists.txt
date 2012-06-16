@@ -27,7 +27,6 @@ add_executable(jlhexen2
 	sv_user.cpp
 	zone.cpp
 	view.cpp
-	world.cpp
 	sys_linux.cpp
 	snd_dma.cpp
 )

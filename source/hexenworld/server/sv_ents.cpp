@@ -343,7 +343,7 @@ void SV_WriteDelta(h2entity_state_t* from, h2entity_state_t* to, QMsg* msg, qboo
 	}
 
 	temp_index = to->modelindex;
-	if (((int)ent->GetFlags() & FL_CLASS_DEPENDENT) && ent->GetModel())
+	if (((int)ent->GetFlags() & H2FL_CLASS_DEPENDENT) && ent->GetModel())
 	{
 		String::Cpy(NewName, PR_GetString(ent->GetModel()));
 		if (client->h2_playerclass <= 0 || client->h2_playerclass > MAX_PLAYER_CLASS)

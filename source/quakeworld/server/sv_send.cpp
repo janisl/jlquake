@@ -433,7 +433,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 	}
 
 	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == SOLID_BSP)
+	if (entity->GetSolid() == QHSOLID_BSP)
 	{
 		for (i = 0; i < 3; i++)
 			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
