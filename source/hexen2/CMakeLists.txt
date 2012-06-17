@@ -23,7 +23,6 @@ add_executable(jlhexen2
 	sbar.cpp
 	sv_main.cpp
 	sv_phys.cpp
-	sv_move.cpp
 	sv_user.cpp
 	zone.cpp
 	view.cpp

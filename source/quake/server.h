@@ -77,12 +77,7 @@ void SV_BroadcastPrintf(const char* fmt, ...);
 
 void SV_Physics(void);
 
-qboolean SV_CheckBottom(qhedict_t* ent);
-qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink);
-
 void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg);
-
-void SV_MoveToGoal(void);
 
 void SV_CheckForNewClients(void);
 void SV_RunClients(void);

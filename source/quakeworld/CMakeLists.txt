@@ -13,7 +13,6 @@ add_executable(jlqwsv
 	server/sv_nchan.cpp
 	server/sv_ents.cpp
 	server/sv_send.cpp
-	server/sv_move.cpp
 	server/sv_phys.cpp
 	server/sv_user.cpp      
 	server/sv_ccmds.cpp

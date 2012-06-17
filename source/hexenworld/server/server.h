@@ -118,12 +118,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf);
 
 int SV_ModelIndex(const char* name);
 
-qboolean SV_CheckBottom(qhedict_t* ent);
-qboolean SV_movestep(qhedict_t* ent, vec3_t move, qboolean relink, qboolean noenemy, qboolean set_trace);
-
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
-
-void SV_MoveToGoal(void);
 
 void SV_SaveSpawnparms(void);
 

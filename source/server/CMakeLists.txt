@@ -29,6 +29,8 @@ add_library(server STATIC
 	progsvm/edict.cpp
 	progsvm/execute.cpp
 	progsvm/main.cpp
+	quake_hexen/game.cpp
+	quake_hexen/move.cpp
 	quake_hexen/world.cpp
 	quake3/game.cpp
 	quake3/Quake3Entity.cpp

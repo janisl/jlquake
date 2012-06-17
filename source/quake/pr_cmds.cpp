@@ -444,22 +444,7 @@ void PF_traceline(void)
 
 	trace = SVQH_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
 
-	*pr_globalVars.trace_allsolid = trace.allsolid;
-	*pr_globalVars.trace_startsolid = trace.startsolid;
-	*pr_globalVars.trace_fraction = trace.fraction;
-	*pr_globalVars.trace_inwater = trace.inwater;
-	*pr_globalVars.trace_inopen = trace.inopen;
-	VectorCopy(trace.endpos, pr_globalVars.trace_endpos);
-	VectorCopy(trace.plane.normal, pr_globalVars.trace_plane_normal);
-	*pr_globalVars.trace_plane_dist =  trace.plane.dist;
-	if (trace.entityNum >= 0)
-	{
-		*pr_globalVars.trace_ent = EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum));
-	}
-	else
-	{
-		*pr_globalVars.trace_ent = EDICT_TO_PROG(sv.qh_edicts);
-	}
+	SVQH_SetMoveTrace(trace);
 }
 
 
@@ -839,11 +824,11 @@ void PF_walkmove(void)
 	move[1] = sin(yaw) * dist;
 	move[2] = 0;
 
-// save program state, because SV_movestep may call other progs
+// save program state, because SVQH_movestep may call other progs
 	oldf = pr_xfunction;
 	oldself = *pr_globalVars.self;
 
-	G_FLOAT(OFS_RETURN) = SV_movestep(ent, move, true);
+	G_FLOAT(OFS_RETURN) = SVQH_movestep(ent, move, true, false, false);
 
 
 // restore program state
@@ -931,7 +916,7 @@ void PF_checkbottom(void)
 
 	ent = G_EDICT(OFS_PARM0);
 
-	G_FLOAT(OFS_RETURN) = SV_CheckBottom(ent);
+	G_FLOAT(OFS_RETURN) = SVQH_CheckBottom(ent);
 }
 
 /*
@@ -1065,60 +1050,6 @@ void PF_aim(void)
 	{
 		VectorCopy(bestdir, G_VECTOR(OFS_RETURN));
 	}
-}
-
-/*
-==============
-PF_changeyaw
-
-This was a major timewaster in progs, so it was converted to C
-==============
-*/
-void PF_changeyaw(void)
-{
-	qhedict_t* ent;
-	float ideal, current, move, speed;
-
-	ent = PROG_TO_EDICT(*pr_globalVars.self);
-	current = AngleMod(ent->GetAngles()[1]);
-	ideal = ent->GetIdealYaw();
-	speed = ent->GetYawSpeed();
-
-	if (current == ideal)
-	{
-		return;
-	}
-	move = ideal - current;
-	if (ideal > current)
-	{
-		if (move >= 180)
-		{
-			move = move - 360;
-		}
-	}
-	else
-	{
-		if (move <= -180)
-		{
-			move = move + 360;
-		}
-	}
-	if (move > 0)
-	{
-		if (move > speed)
-		{
-			move = speed;
-		}
-	}
-	else
-	{
-		if (move < -speed)
-		{
-			move = -speed;
-		}
-	}
-
-	ent->GetAngles()[1] = AngleMod(current + move);
 }
 
 /*
@@ -1355,7 +1286,7 @@ builtin_t pr_builtin[] =
 	PF_Fixme,
 	PF_Fixme,
 
-	SV_MoveToGoal,
+	SVQH_MoveToGoal,
 	PF_precache_file,
 	PF_makestatic,
 

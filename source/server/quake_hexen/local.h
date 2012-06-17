@@ -20,6 +20,19 @@
 #define QHEDICT_FROM_AREA(l) STRUCT_FROM_LINK(l, qhedict_t, area)
 
 //
+//	Game
+//
+void PF_changeyaw();
+
+//
+//	Move
+//
+bool SVQH_CheckBottom(qhedict_t* ent);
+void SVQH_SetMoveTrace(const q1trace_t& trace);
+bool SVQH_movestep(qhedict_t* ent, const vec3_t move, bool relink, bool noenemy, bool set_trace);
+void SVQH_MoveToGoal();
+
+//
 //	World
 //
 extern Cvar* sys_quake2;
