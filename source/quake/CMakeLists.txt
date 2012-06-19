@@ -22,7 +22,6 @@ add_executable(jlquake
 	sbar.cpp
 	snd_dma.cpp
 	sv_main.cpp
-	sv_phys.cpp
 	sv_user.cpp
 	sys_linux.cpp
 	view.cpp

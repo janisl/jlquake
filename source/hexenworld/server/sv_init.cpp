@@ -319,7 +319,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	*pr_globalVars.serverflags = svs.qh_serverflags;
 
 	// run the frame start qc function to let progs check cvars
-	SV_ProgStartFrame();
+	SVQH_ProgStartFrame();
 
 	// load and spawn all other entities
 	ED_LoadFromFile(CM_EntityString());
@@ -333,8 +333,8 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	// run two frames to allow everything to settle
 	host_frametime = HX_FRAME_TIME;
-	SV_Physics();
-	SV_Physics();
+	SVQH_RunPhysicsForTime(realtime);
+	SVQH_RunPhysicsForTime(realtime);
 
 	// save movement vars
 	SVQH_SetMoveVars();

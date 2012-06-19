@@ -13,7 +13,6 @@ add_executable(jlhwsv
 	server/sv_effect.cpp
 	server/sv_ents.cpp
 	server/sv_send.cpp
-	server/sv_phys.cpp
 	server/sv_user.cpp
 	server/sv_ccmds.cpp
 	server/sys_unix.cpp

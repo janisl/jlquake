@@ -22,7 +22,6 @@ add_executable(jlhexen2
 	r_part.cpp
 	sbar.cpp
 	sv_main.cpp
-	sv_phys.cpp
 	sv_user.cpp
 	zone.cpp
 	view.cpp

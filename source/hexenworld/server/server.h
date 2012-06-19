@@ -49,8 +49,6 @@
 
 //============================================================================
 
-extern Cvar* sv_mintic;
-extern Cvar* sv_maxtic;
 extern Cvar* sv_highchars;
 
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
@@ -113,8 +111,6 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
 void SV_SaveSpawnparms(void);
 
-void SV_Physics_Client(qhedict_t* ent);
-
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);
@@ -128,14 +124,6 @@ void Master_Packet(void);
 // sv_init.c
 //
 void SV_SpawnServer(char* server, char* startspot);
-
-
-//
-// sv_phys.c
-//
-void SV_ProgStartFrame(void);
-void SV_Physics(void);
-void SV_RunNewmis(void);
 
 //
 // sv_send.c

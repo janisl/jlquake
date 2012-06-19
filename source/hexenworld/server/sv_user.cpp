@@ -1377,7 +1377,7 @@ void SV_PostRunCmd(void)
 		*pr_globalVars.time = sv.qh_time;
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
-		SV_RunNewmis();
+		SVQH_RunNewmis(realtime);
 	}
 	else if (SpectatorThink)
 	{

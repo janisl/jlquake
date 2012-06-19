@@ -70,18 +70,15 @@ extern Cvar* svqh_accelerate;
 extern Cvar* svqh_airaccelerate;
 extern Cvar* svqh_wateraccelerate;
 extern Cvar* svqh_waterfriction;
+extern Cvar* svqh_mintic;
+extern Cvar* svqh_maxtic;
 
 void SVQH_SetMoveVars();
-void SVQH_CheckVelocity(qhedict_t* ent);
 bool SVQH_RunThink(qhedict_t* ent, float frametime);
-void SVQH_Impact(qhedict_t* e1, qhedict_t* e2);
-int SVQH_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace);
-void SVQH_FlyExtras(qhedict_t* ent);
-void SVQH_AddGravity(qhedict_t* ent, float frametime);
-q1trace_t SVQH_PushEntity(qhedict_t* ent, const vec3_t push);
-void SVQH_Physics_Pusher(qhedict_t* ent, float frametime);
-void SVQH_Physics_None(qhedict_t* ent, float frametime);
-void SVQH_Physics_Noclip(qhedict_t* ent, float frametime);
+void SVQH_ProgStartFrame();
+void SVQH_RunNewmis(float realtime);
+void SVQH_RunPhysicsAndUpdateTime(float frametime, float realtime);
+void SVQH_RunPhysicsForTime(float realtime);
 
 //
 //	Send

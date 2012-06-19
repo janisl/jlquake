@@ -33,9 +33,6 @@ netadr_t master_adr[MAX_MASTERS];		// address of group servers
 
 client_t* host_client;				// current client
 
-Cvar* sv_mintic;
-Cvar* sv_maxtic;
-
 Cvar* timeout;
 Cvar* zombietime;
 
@@ -1385,7 +1382,7 @@ void SV_Frame(float time)
 // move autonomous things around if enough time has passed
 		if (!sv.qh_paused)
 		{
-			SV_Physics();
+			SVQH_RunPhysicsForTime(realtime);
 		}
 
 // get packets
@@ -1446,8 +1443,8 @@ void SV_InitLocal(void)
 	password = Cvar_Get("password", "", 0);	// password for entering the game
 	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
-	sv_mintic = Cvar_Get("sv_mintic", "0.03", 0);	// bound the size of the
-	sv_maxtic = Cvar_Get("sv_maxtic", "0.1", 0);	// physics time tic
+	svqh_mintic = Cvar_Get("sv_mintic", "0.03", 0);	// bound the size of the
+	svqh_maxtic = Cvar_Get("sv_maxtic", "0.1", 0);	// physics time tic
 
 	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);

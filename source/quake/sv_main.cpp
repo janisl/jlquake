@@ -1213,8 +1213,8 @@ void SV_SpawnServer(char* server)
 
 // run two frames to allow everything to settle
 	host_frametime = 0.1;
-	SV_Physics();
-	SV_Physics();
+	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
+	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 
 // create a baseline for more efficient communications
 	SV_CreateBaseline();

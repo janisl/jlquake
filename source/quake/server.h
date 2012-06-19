@@ -73,8 +73,6 @@ void SV_AddClientToServer(qsocket_t* ret);
 void SV_ClientPrintf(const char* fmt, ...);
 void SV_BroadcastPrintf(const char* fmt, ...);
 
-void SV_Physics(void);
-
 void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg);
 
 void SV_CheckForNewClients(void);

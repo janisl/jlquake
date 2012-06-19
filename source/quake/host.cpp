@@ -650,7 +650,7 @@ void Host_ServerFrame(void)
 // always pause in single player if in console or menus
 	if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
 	{
-		SV_Physics();
+		SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 	}
 
 // send all messages to the clients
