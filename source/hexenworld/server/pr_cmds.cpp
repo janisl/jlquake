@@ -713,10 +713,10 @@ void PF_StopSound(void)
 
 	if (channel < 0 || channel > 7)
 	{
-		Sys_Error("SV_StartSound: channel = %i", channel);
+		Sys_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
-	SV_StopSound(entity, channel);
+	SVH2_StopSound(entity, channel);
 }
 
 /*
@@ -735,7 +735,7 @@ void PF_UpdateSoundPos(void)
 
 	if (channel < 0 || channel > 7)
 	{
-		Sys_Error("SV_StartSound: channel = %i", channel);
+		Sys_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
 	SV_UpdateSoundPos(entity, channel);
@@ -770,7 +770,7 @@ void PF_sound(void)
 	volume = G_FLOAT(OFS_PARM3) * 255;
 	attenuation = G_FLOAT(OFS_PARM4);
 
-	SV_StartSound(entity, channel, sample, volume, attenuation);
+	SVQH_StartSound(entity, channel, sample, volume, attenuation);
 }
 
 /*
@@ -2493,7 +2493,7 @@ void PF_weapon_sound(void)
 
 	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
 	{
-		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
+		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
 		return;
 	}
 	entity->SetWpnSound(sound_num);

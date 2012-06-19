@@ -341,11 +341,11 @@ Writes all update values to a client's reliable stream
 */
 void SV_FullClientUpdateToClient(client_t* client, client_t* cl)
 {
-	ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
+	SVQH_ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
 	if (cl->qw_num_backbuf)
 	{
 		SV_FullClientUpdate(client, &cl->qw_backbuf);
-		ClientReliable_FinishWrite(cl);
+		SVQH_ClientReliable_FinishWrite(cl);
 	}
 	else
 	{

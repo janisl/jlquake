@@ -10,7 +10,6 @@ add_executable(jlqwsv
 	server/pr_edict.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
-	server/sv_nchan.cpp
 	server/sv_ents.cpp
 	server/sv_send.cpp
 	server/sv_phys.cpp

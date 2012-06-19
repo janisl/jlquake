@@ -49,7 +49,7 @@ void SV_CheckWaterTransition(qhedict_t* ent)
 	{
 		if (ent->GetWaterType() == BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
-			SV_StartSound(ent, 0, GGameType & GAME_Hexen2 ? "misc/hith2o.wav" : "misc/h2ohit1.wav", 255, 1);
+			SVQH_StartSound(ent, 0, GGameType & GAME_Hexen2 ? "misc/hith2o.wav" : "misc/h2ohit1.wav", 255, 1);
 		}
 		ent->SetWaterType(cont);
 		ent->SetWaterLevel(1);
@@ -58,7 +58,7 @@ void SV_CheckWaterTransition(qhedict_t* ent)
 	{
 		if (ent->GetWaterType() != BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
-			SV_StartSound(ent, 0, GGameType & GAME_Hexen2 ? "misc/hith2o.wav" : "misc/h2ohit1.wav", 255, 1);
+			SVQH_StartSound(ent, 0, GGameType & GAME_Hexen2 ? "misc/hith2o.wav" : "misc/h2ohit1.wav", 255, 1);
 		}
 		ent->SetWaterType(BSP29CONTENTS_EMPTY);
 		ent->SetWaterLevel(cont);
@@ -191,7 +191,7 @@ void SV_Physics_Step(qhedict_t* ent)
 		{
 			if (hitsound)
 			{
-				SV_StartSound(ent, 0, "demon/dland2.wav", 255, 1);
+				SVQH_StartSound(ent, 0, "demon/dland2.wav", 255, 1);
 			}
 		}
 	}

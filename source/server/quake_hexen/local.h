@@ -33,6 +33,23 @@ bool SVQH_movestep(qhedict_t* ent, const vec3_t move, bool relink, bool noenemy,
 void SVQH_MoveToGoal();
 
 //
+//	NChan
+//
+void SVQH_ClientReliableCheckBlock(client_t* cl, int maxsize);
+void SVQH_ClientReliableWrite_Begin(client_t* cl, int c, int maxsize);
+void SVQH_ClientReliable_FinishWrite(client_t* cl);
+void SVQH_ClientReliableWrite_Angle(client_t* cl, float f);
+void SVQH_ClientReliableWrite_Angle16(client_t* cl, float f);
+void SVQH_ClientReliableWrite_Byte(client_t* cl, int c);
+void SVQH_ClientReliableWrite_Char(client_t* cl, int c);
+void SVQH_ClientReliableWrite_Float(client_t* cl, float f);
+void SVQH_ClientReliableWrite_Coord(client_t* cl, float f);
+void SVQH_ClientReliableWrite_Long(client_t* cl, int c);
+void SVQH_ClientReliableWrite_Short(client_t* cl, int c);
+void SVQH_ClientReliableWrite_String(client_t* cl, const char* s);
+void SVQH_ClientReliableWrite_SZ(client_t* cl, const void* data, int len);
+
+//
 //	Physics
 //
 extern Cvar* svqh_friction;

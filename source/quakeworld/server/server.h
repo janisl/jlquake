@@ -134,7 +134,7 @@ void SV_RunNewmis(void);
 void SV_SendClientMessages(void);
 
 void SV_Multicast(vec3_t origin, int to);
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation);
 void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
 void SV_BroadcastPrintf(int level, const char* fmt, ...);
@@ -166,23 +166,5 @@ void SV_Status_f(void);
 // sv_ents.c
 //
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
-
-//
-// sv_nchan.c
-//
-
-void ClientReliableCheckBlock(client_t* cl, int maxsize);
-void ClientReliable_FinishWrite(client_t* cl);
-void ClientReliableWrite_Begin(client_t* cl, int c, int maxsize);
-void ClientReliableWrite_Angle(client_t* cl, float f);
-void ClientReliableWrite_Angle16(client_t* cl, float f);
-void ClientReliableWrite_Byte(client_t* cl, int c);
-void ClientReliableWrite_Char(client_t* cl, int c);
-void ClientReliableWrite_Float(client_t* cl, float f);
-void ClientReliableWrite_Coord(client_t* cl, float f);
-void ClientReliableWrite_Long(client_t* cl, int c);
-void ClientReliableWrite_Short(client_t* cl, int c);
-void ClientReliableWrite_String(client_t* cl, const char* s);
-void ClientReliableWrite_SZ(client_t* cl, void* data, int len);
 
 void SV_FullClientUpdateToClient(client_t* client, client_t* cl);

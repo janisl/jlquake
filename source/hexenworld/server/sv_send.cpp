@@ -367,10 +367,10 @@ void SV_MulticastSpecific(unsigned clients, qboolean reliable)
 
 /*
 ==================
-SV_StopSound
+SVH2_StopSound
 ==================
 */
-void SV_StopSound(qhedict_t* entity, int channel)
+void SVH2_StopSound(qhedict_t* entity, int channel)
 {
 	int ent,i;
 	vec3_t origin;
@@ -428,7 +428,7 @@ void SV_UpdateSoundPos(qhedict_t* entity, int channel)
 
 /*
 ==================
-SV_StartSound
+SVQH_StartSound
 
 Each entity can have eight independant sound sources, like voice,
 weapon, feet, etc.
@@ -441,7 +441,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation)
 {
 	int sound_num;
@@ -454,17 +454,17 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 	if (volume < 0 || volume > 255)
 	{
-		SV_Error("SV_StartSound: volume = %i", volume);
+		SV_Error("SVQH_StartSound: volume = %i", volume);
 	}
 
 	if (attenuation < 0 || attenuation > 4)
 	{
-		SV_Error("SV_StartSound: attenuation = %f", attenuation);
+		SV_Error("SVQH_StartSound: attenuation = %f", attenuation);
 	}
 
 	if (channel < 0 || channel > 15)
 	{
-		SV_Error("SV_StartSound: channel = %i", channel);
+		SV_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
 // find precache number for sound
@@ -477,7 +477,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
 	{
-		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
+		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
 		return;
 	}
 

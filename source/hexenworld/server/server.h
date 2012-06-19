@@ -154,7 +154,7 @@ void SV_SendClientMessages(void);
 
 void SV_Multicast(vec3_t origin, int to);
 void SV_MulticastSpecific(unsigned clients, qboolean reliable);
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation);
 void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
@@ -192,7 +192,7 @@ void SV_Status_f(void);
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
 
 void SV_UpdateSoundPos(qhedict_t* entity, int channel);
-void SV_StopSound(qhedict_t* entity, int channel);
+void SVH2_StopSound(qhedict_t* entity, int channel);
 void SV_ParseEffect(QMsg* sb);
 void SV_FlushSignon(void);
 void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);

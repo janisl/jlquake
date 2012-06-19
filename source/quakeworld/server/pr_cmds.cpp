@@ -228,8 +228,8 @@ void PF_centerprint(void)
 
 	cl = &svs.clients[entnum - 1];
 
-	ClientReliableWrite_Begin(cl, q1svc_centerprint, 2 + String::Length(s));
-	ClientReliableWrite_String(cl, s);
+	SVQH_ClientReliableWrite_Begin(cl, q1svc_centerprint, 2 + String::Length(s));
+	SVQH_ClientReliableWrite_String(cl, s);
 }
 
 
@@ -307,7 +307,7 @@ void PF_sound(void)
 	volume = G_FLOAT(OFS_PARM3) * 255;
 	attenuation = G_FLOAT(OFS_PARM4);
 
-	SV_StartSound(entity, channel, sample, volume, attenuation);
+	SVQH_StartSound(entity, channel, sample, volume, attenuation);
 }
 
 /*
@@ -511,8 +511,8 @@ void PF_stuffcmd(void)
 		return;
 	}
 
-	ClientReliableWrite_Begin(cl, q1svc_stufftext, 2 + String::Length(str));
-	ClientReliableWrite_String(cl, str);
+	SVQH_ClientReliableWrite_Begin(cl, q1svc_stufftext, 2 + String::Length(str));
+	SVQH_ClientReliableWrite_String(cl, str);
 }
 
 /*
@@ -796,9 +796,9 @@ void PF_lightstyle(void)
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
 		if (client->state == CS_ACTIVE)
 		{
-			ClientReliableWrite_Begin(client, q1svc_lightstyle, String::Length(val) + 3);
-			ClientReliableWrite_Char(client, style);
-			ClientReliableWrite_String(client, val);
+			SVQH_ClientReliableWrite_Begin(client, q1svc_lightstyle, String::Length(val) + 3);
+			SVQH_ClientReliableWrite_Char(client, style);
+			SVQH_ClientReliableWrite_String(client, val);
 		}
 }
 
@@ -1039,8 +1039,8 @@ void PF_WriteByte(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1);
-		ClientReliableWrite_Byte(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 1);
+		SVQH_ClientReliableWrite_Byte(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1053,8 +1053,8 @@ void PF_WriteChar()
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1);
-		ClientReliableWrite_Char(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 1);
+		SVQH_ClientReliableWrite_Char(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1067,8 +1067,8 @@ void PF_WriteShort(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 2);
-		ClientReliableWrite_Short(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 2);
+		SVQH_ClientReliableWrite_Short(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1081,8 +1081,8 @@ void PF_WriteLong(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 4);
-		ClientReliableWrite_Long(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 4);
+		SVQH_ClientReliableWrite_Long(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1095,8 +1095,8 @@ void PF_WriteAngle(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1);
-		ClientReliableWrite_Angle(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 1);
+		SVQH_ClientReliableWrite_Angle(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1109,8 +1109,8 @@ void PF_WriteCoord(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 2);
-		ClientReliableWrite_Coord(cl, G_FLOAT(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 2);
+		SVQH_ClientReliableWrite_Coord(cl, G_FLOAT(OFS_PARM1));
 	}
 	else
 	{
@@ -1123,8 +1123,8 @@ void PF_WriteString(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1 + String::Length(G_STRING(OFS_PARM1)));
-		ClientReliableWrite_String(cl, G_STRING(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 1 + String::Length(G_STRING(OFS_PARM1)));
+		SVQH_ClientReliableWrite_String(cl, G_STRING(OFS_PARM1));
 	}
 	else
 	{
@@ -1138,8 +1138,8 @@ void PF_WriteEntity(void)
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
 	{
 		client_t* cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 2);
-		ClientReliableWrite_Short(cl, G_EDICTNUM(OFS_PARM1));
+		SVQH_ClientReliableCheckBlock(cl, 2);
+		SVQH_ClientReliableWrite_Short(cl, G_EDICTNUM(OFS_PARM1));
 	}
 	else
 	{

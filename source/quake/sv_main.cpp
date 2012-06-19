@@ -100,7 +100,7 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 
 /*
 ==================
-SV_StartSound
+SVQH_StartSound
 
 Each entity can have eight independant sound sources, like voice,
 weapon, feet, etc.
@@ -113,27 +113,30 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation)
 {
 	int sound_num;
 	int field_mask;
 	int i;
 	int ent;
+	vec3_t origin;
+	qboolean use_phs;
+	qboolean reliable = false;
 
 	if (volume < 0 || volume > 255)
 	{
-		Sys_Error("SV_StartSound: volume = %i", volume);
+		Sys_Error("SVQH_StartSound: volume = %i", volume);
 	}
 
 	if (attenuation < 0 || attenuation > 4)
 	{
-		Sys_Error("SV_StartSound: attenuation = %f", attenuation);
+		Sys_Error("SVQH_StartSound: attenuation = %f", attenuation);
 	}
 
 	if (channel < 0 || channel > 7)
 	{
-		Sys_Error("SV_StartSound: channel = %i", channel);
+		Sys_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
 	if (sv.qh_datagram.cursize > MAX_DATAGRAM_Q1 - 16)
@@ -151,7 +154,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 	if (sound_num == MAX_SOUNDS_Q1 || !sv.qh_sound_precache[sound_num])
 	{
-		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
+		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
 		return;
 	}
 

@@ -63,9 +63,9 @@ void SV_FlushRedirect(void)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		ClientReliableWrite_Begin(host_client, q1svc_print, String::Length(outputbuf) + 3);
-		ClientReliableWrite_Byte(host_client, PRINT_HIGH);
-		ClientReliableWrite_String(host_client, outputbuf);
+		SVQH_ClientReliableWrite_Begin(host_client, q1svc_print, String::Length(outputbuf) + 3);
+		SVQH_ClientReliableWrite_Byte(host_client, PRINT_HIGH);
+		SVQH_ClientReliableWrite_String(host_client, outputbuf);
 	}
 
 	// clear it
@@ -162,9 +162,9 @@ EVENT MESSAGES
 
 static void SV_PrintToClient(client_t* cl, int level, char* string)
 {
-	ClientReliableWrite_Begin(cl, q1svc_print, String::Length(string) + 3);
-	ClientReliableWrite_Byte(cl, level);
-	ClientReliableWrite_String(cl, string);
+	SVQH_ClientReliableWrite_Begin(cl, q1svc_print, String::Length(string) + 3);
+	SVQH_ClientReliableWrite_Byte(cl, level);
+	SVQH_ClientReliableWrite_String(cl, string);
 }
 
 
@@ -333,8 +333,8 @@ void SV_Multicast(vec3_t origin, int to)
 inrange:
 		if (reliable)
 		{
-			ClientReliableCheckBlock(client, sv.multicast.cursize);
-			ClientReliableWrite_SZ(client, sv.multicast._data, sv.multicast.cursize);
+			SVQH_ClientReliableCheckBlock(client, sv.multicast.cursize);
+			SVQH_ClientReliableWrite_SZ(client, sv.multicast._data, sv.multicast.cursize);
 		}
 		else
 		{
@@ -348,7 +348,7 @@ inrange:
 
 /*
 ==================
-SV_StartSound
+SVQH_StartSound
 
 Each entity can have eight independant sound sources, like voice,
 weapon, feet, etc.
@@ -361,7 +361,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation)
 {
 	int sound_num;
@@ -374,17 +374,17 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 	if (volume < 0 || volume > 255)
 	{
-		SV_Error("SV_StartSound: volume = %i", volume);
+		SV_Error("SVQH_StartSound: volume = %i", volume);
 	}
 
 	if (attenuation < 0 || attenuation > 4)
 	{
-		SV_Error("SV_StartSound: attenuation = %f", attenuation);
+		SV_Error("SVQH_StartSound: attenuation = %f", attenuation);
 	}
 
 	if (channel < 0 || channel > 15)
 	{
-		SV_Error("SV_StartSound: channel = %i", channel);
+		SV_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
 // find precache number for sound
@@ -397,7 +397,7 @@ void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volum
 
 	if (sound_num == MAX_SOUNDS_Q1 || !sv.qh_sound_precache[sound_num])
 	{
-		Con_Printf("SV_StartSound: %s not precacheed\n", sample);
+		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
 		return;
 	}
 
@@ -599,15 +599,15 @@ void SV_UpdateClientStats(client_t* client)
 			client->qh_stats[i] = stats[i];
 			if (stats[i] >= 0 && stats[i] <= 255)
 			{
-				ClientReliableWrite_Begin(client, q1svc_updatestat, 3);
-				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Byte(client, stats[i]);
+				SVQH_ClientReliableWrite_Begin(client, q1svc_updatestat, 3);
+				SVQH_ClientReliableWrite_Byte(client, i);
+				SVQH_ClientReliableWrite_Byte(client, stats[i]);
 			}
 			else
 			{
-				ClientReliableWrite_Begin(client, qwsvc_updatestatlong, 6);
-				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Long(client, stats[i]);
+				SVQH_ClientReliableWrite_Begin(client, qwsvc_updatestatlong, 6);
+				SVQH_ClientReliableWrite_Byte(client, i);
+				SVQH_ClientReliableWrite_Long(client, stats[i]);
 			}
 		}
 }
@@ -695,9 +695,9 @@ void SV_UpdateToReliableMessages(void)
 				{
 					continue;
 				}
-				ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
-				ClientReliableWrite_Byte(client, i);
-				ClientReliableWrite_Short(client, host_client->qh_edict->GetFrags());
+				SVQH_ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
+				SVQH_ClientReliableWrite_Byte(client, i);
+				SVQH_ClientReliableWrite_Short(client, host_client->qh_edict->GetFrags());
 			}
 
 			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
@@ -710,15 +710,15 @@ void SV_UpdateToReliableMessages(void)
 		if (val && host_client->qh_entgravity != val->_float)
 		{
 			host_client->qh_entgravity = val->_float;
-			ClientReliableWrite_Begin(host_client, qwsvc_entgravity, 5);
-			ClientReliableWrite_Float(host_client, host_client->qh_entgravity);
+			SVQH_ClientReliableWrite_Begin(host_client, qwsvc_entgravity, 5);
+			SVQH_ClientReliableWrite_Float(host_client, host_client->qh_entgravity);
 		}
 		val = GetEdictFieldValue(ent, "maxspeed");
 		if (val && host_client->qh_maxspeed != val->_float)
 		{
 			host_client->qh_maxspeed = val->_float;
-			ClientReliableWrite_Begin(host_client, qwsvc_maxspeed, 5);
-			ClientReliableWrite_Float(host_client, host_client->qh_maxspeed);
+			SVQH_ClientReliableWrite_Begin(host_client, qwsvc_maxspeed, 5);
+			SVQH_ClientReliableWrite_Float(host_client, host_client->qh_maxspeed);
 		}
 
 	}
@@ -736,8 +736,8 @@ void SV_UpdateToReliableMessages(void)
 			continue;	// reliables go to all connected or spawned
 
 		}
-		ClientReliableCheckBlock(client, sv.qh_reliable_datagram.cursize);
-		ClientReliableWrite_SZ(client, sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
+		SVQH_ClientReliableCheckBlock(client, sv.qh_reliable_datagram.cursize);
+		SVQH_ClientReliableWrite_SZ(client, sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
 
 		if (client->state != CS_ACTIVE)
 		{

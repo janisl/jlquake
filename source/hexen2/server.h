@@ -64,7 +64,7 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count);
 void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count);
-void SV_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation);
 
 void SV_DropClient(qboolean crash);
@@ -93,7 +93,7 @@ void SV_RunClients(void);
 void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server, char* startspot);
 
-void SV_StopSound(qhedict_t* entity, int channel);
+void SVH2_StopSound(qhedict_t* entity, int channel);
 void SV_UpdateSoundPos(qhedict_t* entity, int channel);
 void SV_ParseEffect(QMsg* sb);
 void SV_Edicts(const char* Name);
