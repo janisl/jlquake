@@ -33,6 +33,33 @@ bool SVQH_movestep(qhedict_t* ent, const vec3_t move, bool relink, bool noenemy,
 void SVQH_MoveToGoal();
 
 //
+//	Physics
+//
+extern Cvar* svqh_friction;
+extern Cvar* svqh_stopspeed;
+extern Cvar* svqh_gravity;
+extern Cvar* svqh_maxvelocity;
+extern Cvar* svqh_nostep;
+extern Cvar* svqh_maxspeed;
+extern Cvar* svqh_spectatormaxspeed;
+extern Cvar* svqh_accelerate;
+extern Cvar* svqh_airaccelerate;
+extern Cvar* svqh_wateraccelerate;
+extern Cvar* svqh_waterfriction;
+
+void SVQH_SetMoveVars();
+void SVQH_CheckVelocity(qhedict_t* ent);
+bool SVQH_RunThink(qhedict_t* ent, float frametime);
+void SVQH_Impact(qhedict_t* e1, qhedict_t* e2);
+int SVQH_FlyMove(qhedict_t* ent, float time, q1trace_t* steptrace);
+void SVQH_FlyExtras(qhedict_t* ent);
+void SVQH_AddGravity(qhedict_t* ent, float frametime);
+q1trace_t SVQH_PushEntity(qhedict_t* ent, const vec3_t push);
+void SVQH_Physics_Pusher(qhedict_t* ent, float frametime);
+void SVQH_Physics_None(qhedict_t* ent, float frametime);
+void SVQH_Physics_Noclip(qhedict_t* ent, float frametime);
+
+//
 //	World
 //
 extern Cvar* sys_quake2;

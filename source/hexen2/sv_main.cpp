@@ -28,6 +28,9 @@ int num_intro_msg = 0;
 
 void Sv_Edicts_f(void);
 
+//JL Used in progs
+Cvar* sv_walkpitch;
+
 /*
 ===============
 SV_Init
@@ -36,33 +39,23 @@ SV_Init
 void SV_Init(void)
 {
 	int i;
-	extern Cvar* sv_maxvelocity;
-	extern Cvar* sv_gravity;
-	extern Cvar* sv_nostep;
-	extern Cvar* sv_friction;
 	extern Cvar* sv_edgefriction;
-	extern Cvar* sv_stopspeed;
-	extern Cvar* sv_maxspeed;
-	extern Cvar* sv_accelerate;
 	extern Cvar* sv_idealpitchscale;
 	extern Cvar* sv_idealrollscale;
 	extern Cvar* sv_aim;
-	extern Cvar* sv_walkpitch;
-	extern Cvar* sv_flypitch;
 
-	sv_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
-	sv_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
-	sv_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
+	svqh_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
+	svqh_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
+	svqh_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
 	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
-	sv_stopspeed = Cvar_Get("sv_stopspeed", "100", 0);
-	sv_maxspeed = Cvar_Get("sv_maxspeed", "640", CVAR_SERVERINFO);
-	sv_accelerate = Cvar_Get("sv_accelerate", "10", 0);
+	svqh_stopspeed = Cvar_Get("sv_stopspeed", "100", 0);
+	svqh_maxspeed = Cvar_Get("sv_maxspeed", "640", CVAR_SERVERINFO);
+	svqh_accelerate = Cvar_Get("sv_accelerate", "10", 0);
 	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);
 	sv_idealrollscale = Cvar_Get("sv_idealrollscale","0.8", 0);
 	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
-	sv_nostep = Cvar_Get("sv_nostep", "0", 0);
+	svqh_nostep = Cvar_Get("sv_nostep", "0", 0);
 	sv_walkpitch = Cvar_Get("sv_walkpitch", "0", 0);
-	sv_flypitch = Cvar_Get("sv_flypitch", "20", 0);
 	sv_sound_distance = Cvar_Get("sv_sound_distance","800", CVAR_ARCHIVE);
 	sv_update_player    = Cvar_Get("sv_update_player","1", CVAR_ARCHIVE);
 	sv_update_monsters  = Cvar_Get("sv_update_monsters","1", CVAR_ARCHIVE);

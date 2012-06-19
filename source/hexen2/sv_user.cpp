@@ -8,9 +8,7 @@
 
 qhedict_t* sv_player = NULL;
 
-extern Cvar* sv_friction;
 Cvar* sv_edgefriction;
-extern Cvar* sv_stopspeed;
 
 static vec3_t forward, right, up;
 
@@ -162,15 +160,15 @@ void SV_UserFriction(void)
 
 	if (trace.fraction == 1.0)
 	{
-		friction = sv_friction->value * sv_edgefriction->value * sv_player->GetFriction();
+		friction = svqh_friction->value * sv_edgefriction->value * sv_player->GetFriction();
 	}
 	else
 	{
-		friction = sv_friction->value * sv_player->GetFriction();
+		friction = svqh_friction->value * sv_player->GetFriction();
 	}
 
 // apply friction
-	control = speed < sv_stopspeed->value ? sv_stopspeed->value : speed;
+	control = speed < svqh_stopspeed->value ? svqh_stopspeed->value : speed;
 	newspeed = speed - host_frametime * control * friction;
 
 	if (newspeed < 0)
@@ -189,8 +187,6 @@ void SV_UserFriction(void)
 SV_Accelerate
 ==============
 */
-Cvar* sv_maxspeed;
-Cvar* sv_accelerate;
 
 #if 0
 void SV_Accelerate(vec3_t wishvel)
@@ -207,7 +203,7 @@ void SV_Accelerate(vec3_t wishvel)
 	VectorSubtract(wishvel, velocity, pushvec);
 	addspeed = VectorNormalize(pushvec);
 
-	accelspeed = sv_accelerate.value * host_frametime * addspeed;
+	accelspeed = svqh_accelerate.value * host_frametime * addspeed;
 	if (accelspeed > addspeed)
 	{
 		accelspeed = addspeed;
@@ -228,7 +224,7 @@ void SV_Accelerate(void)
 	{
 		return;
 	}
-	accelspeed = sv_accelerate->value * host_frametime * wishspeed;
+	accelspeed = svqh_accelerate->value * host_frametime * wishspeed;
 	if (accelspeed > addspeed)
 	{
 		accelspeed = addspeed;
@@ -254,8 +250,8 @@ void SV_AirAccelerate(vec3_t wishveloc)
 	{
 		return;
 	}
-//	accelspeed = sv_accelerate.value * host_frametime;
-	accelspeed = sv_accelerate->value * wishspeed * host_frametime;
+//	accelspeed = svqh_accelerate.value * host_frametime;
+	accelspeed = svqh_accelerate->value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 	{
 		accelspeed = addspeed;
@@ -304,10 +300,10 @@ void SV_FlightMove(void)
 		wishvel[i] = forward[i] * cmd.forwardmove + right[i] * cmd.sidemove + up[i] * cmd.upmove;
 
 	wishspeed = VectorLength(wishvel);
-	if (wishspeed > sv_maxspeed->value)
+	if (wishspeed > svqh_maxspeed->value)
 	{
-		VectorScale(wishvel, sv_maxspeed->value / wishspeed, wishvel);
-		wishspeed = sv_maxspeed->value;
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
 	}
 
 //
@@ -316,7 +312,7 @@ void SV_FlightMove(void)
 	speed = VectorLength(velocity);
 	if (speed)
 	{
-		newspeed = speed - host_frametime * speed * sv_friction->value;
+		newspeed = speed - host_frametime * speed * svqh_friction->value;
 		if (newspeed < 0)
 		{
 			newspeed = 0;
@@ -343,7 +339,7 @@ void SV_FlightMove(void)
 	}
 
 	VectorNormalize(wishvel);
-	accelspeed = sv_accelerate->value * wishspeed * host_frametime;
+	accelspeed = svqh_accelerate->value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 	{
 		accelspeed = addspeed;
@@ -382,10 +378,10 @@ void SV_WaterMove(void)
 	}
 
 	wishspeed = VectorLength(wishvel);
-	if (wishspeed > sv_maxspeed->value)
+	if (wishspeed > svqh_maxspeed->value)
 	{
-		VectorScale(wishvel, sv_maxspeed->value / wishspeed, wishvel);
-		wishspeed = sv_maxspeed->value;
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
 	}
 
 	if (sv_player->GetPlayerClass() == CLASS_DEMON)		// Paladin Special Ability #1 - unrestricted movement in water
@@ -428,7 +424,7 @@ void SV_WaterMove(void)
 	speed = VectorLength(velocity);
 	if (speed)
 	{
-		newspeed = speed - host_frametime * speed * sv_friction->value;
+		newspeed = speed - host_frametime * speed * svqh_friction->value;
 		if (newspeed < 0)
 		{
 			newspeed = 0;
@@ -455,7 +451,7 @@ void SV_WaterMove(void)
 	}
 
 	VectorNormalize(wishvel);
-	accelspeed = sv_accelerate->value * wishspeed * host_frametime;
+	accelspeed = svqh_accelerate->value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 	{
 		accelspeed = addspeed;
@@ -515,10 +511,10 @@ void SV_AirMove(void)
 
 	VectorCopy(wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
-	if (wishspeed > sv_maxspeed->value)
+	if (wishspeed > svqh_maxspeed->value)
 	{
-		VectorScale(wishvel, sv_maxspeed->value / wishspeed, wishvel);
-		wishspeed = sv_maxspeed->value;
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
 	}
 
 	if (sv_player->GetMoveType() == QHMOVETYPE_NOCLIP)

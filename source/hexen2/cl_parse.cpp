@@ -10,9 +10,6 @@
 #include <windows.h>
 #endif
 
-extern Cvar* sv_flypitch;
-extern Cvar* sv_walkpitch;
-
 const char* svc_strings[] =
 {
 	"h2svc_bad",
@@ -388,11 +385,6 @@ void CL_ParseClientdata(int bits)
 	}
 	else
 	{
-		//rjr   is sv_flypitch   useable on the client's end?
-//rjr		if (cl.h2_v.movetype==QHMOVETYPE_FLY)
-//rjr			cl.idealpitch = sv_flypitch.value;
-//rjr		else
-//rjr			cl.idealpitch = sv_walkpitch.value;
 	}
 
 	if (bits & SU_IDEALROLL)
@@ -689,12 +681,11 @@ CL_ParseServerMessage
 void CL_ParseServerMessage(void)
 {
 	int cmd;
-	int i,j,k;
+	int i,j;
 	int EntityCount = 0;
 	int EntitySize = 0;
 	int before;
 	static double lasttime;
-	h2entity_t* ent;
 	int sc1, sc2;
 	byte test;
 	float compangles[2][3];

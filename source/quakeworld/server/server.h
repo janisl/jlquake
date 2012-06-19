@@ -60,7 +60,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* sv_mintic;
 extern Cvar* sv_maxtic;
-extern Cvar* sv_maxspeed;
 extern Cvar* sv_highchars;
 
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
@@ -127,13 +126,7 @@ void SV_FlushSignon(void);
 //
 void SV_ProgStartFrame(void);
 void SV_Physics(void);
-void SV_CheckVelocity(qhedict_t* ent);
-void SV_AddGravity(qhedict_t* ent, float scale);
-qboolean SV_RunThink(qhedict_t* ent);
-void SV_Physics_Toss(qhedict_t* ent);
 void SV_RunNewmis(void);
-void SV_Impact(qhedict_t* e1, qhedict_t* e2);
-void SV_SetMoveVars(void);
 
 //
 // sv_send.c

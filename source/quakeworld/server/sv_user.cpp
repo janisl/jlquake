@@ -379,11 +379,11 @@ void SV_Spawn_f(void)
 	{
 		val->_float = 1.0;
 	}
-	host_client->qh_maxspeed = sv_maxspeed->value;
+	host_client->qh_maxspeed = svqh_maxspeed->value;
 	val = GetEdictFieldValue(ent, "maxspeed");
 	if (val)
 	{
-		val->_float = sv_maxspeed->value;
+		val->_float = svqh_maxspeed->value;
 	}
 
 //
@@ -1529,7 +1529,7 @@ void SV_RunCmd(qwusercmd_t* ucmd)
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
-		SV_RunThink(sv_player);
+		SVQH_RunThink(sv_player, host_frametime);
 	}
 
 	for (i = 0; i < 3; i++)

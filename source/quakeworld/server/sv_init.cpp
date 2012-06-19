@@ -325,7 +325,7 @@ void SV_SpawnServer(char* server)
 	SV_Physics();
 
 	// save movement vars
-	SV_SetMoveVars();
+	SVQH_SetMoveVars();
 
 	// create a baseline for more efficient communications
 	SV_CreateBaseline();

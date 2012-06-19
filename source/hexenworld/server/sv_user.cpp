@@ -256,11 +256,11 @@ void SV_Spawn_f(void)
 	{
 		val->_float = 1.0;
 	}
-	host_client->qh_maxspeed = sv_maxspeed->value;
+	host_client->qh_maxspeed = svqh_maxspeed->value;
 	val = GetEdictFieldValue(ent, "maxspeed");
 	if (val)
 	{
-		val->_float = sv_maxspeed->value;
+		val->_float = svqh_maxspeed->value;
 	}
 
 // send all current names, colors, and frag counts
@@ -1254,7 +1254,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
-		SV_RunThink(sv_player);
+		SVQH_RunThink(sv_player, host_frametime);
 	}
 
 	for (i = 0; i < 3; i++)
@@ -1342,8 +1342,8 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 		{
 			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
 			ent = QH_EDICT_NUM(n);
-//Why not just do an SV_Impact here?
-//			SV_Impact(sv_player,ent);
+//Why not just do an SVQH_Impact here?
+//			SVQH_Impact(sv_player,ent);
 			if (sv_player->GetTouch())
 			{
 				*pr_globalVars.self = EDICT_TO_PROG(sv_player);

@@ -1439,16 +1439,7 @@ SV_InitLocal
 void SV_InitLocal(void)
 {
 	int i;
-	extern Cvar* sv_maxvelocity;
-	extern Cvar* sv_gravity;
 	extern Cvar* sv_aim;
-	extern Cvar* sv_stopspeed;
-	extern Cvar* sv_spectatormaxspeed;
-	extern Cvar* sv_accelerate;
-	extern Cvar* sv_airaccelerate;
-	extern Cvar* sv_wateraccelerate;
-	extern Cvar* sv_friction;
-	extern Cvar* sv_waterfriction;
 
 	SV_InitOperatorCommands();
 	SV_UserInit();
@@ -1475,16 +1466,16 @@ void SV_InitLocal(void)
 	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
 	// after disconnect
 
-	sv_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
-	sv_gravity           = Cvar_Get("sv_gravity", "800", 0);
-	sv_stopspeed         = Cvar_Get("sv_stopspeed", "100", 0);
-	sv_maxspeed          = Cvar_Get("sv_maxspeed", "320", 0);
-	sv_spectatormaxspeed = Cvar_Get("sv_spectatormaxspeed", "500", 0);
-	sv_accelerate        = Cvar_Get("sv_accelerate", "10", 0);
-	sv_airaccelerate     = Cvar_Get("sv_airaccelerate", "0.7", 0);
-	sv_wateraccelerate   = Cvar_Get("sv_wateraccelerate", "10", 0);
-	sv_friction          = Cvar_Get("sv_friction", "4", 0);
-	sv_waterfriction     = Cvar_Get("sv_waterfriction", "4", 0);
+	svqh_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
+	svqh_gravity           = Cvar_Get("sv_gravity", "800", 0);
+	svqh_stopspeed         = Cvar_Get("sv_stopspeed", "100", 0);
+	svqh_maxspeed          = Cvar_Get("sv_maxspeed", "320", 0);
+	svqh_spectatormaxspeed = Cvar_Get("sv_spectatormaxspeed", "500", 0);
+	svqh_accelerate        = Cvar_Get("sv_accelerate", "10", 0);
+	svqh_airaccelerate     = Cvar_Get("sv_airaccelerate", "0.7", 0);
+	svqh_wateraccelerate   = Cvar_Get("sv_wateraccelerate", "10", 0);
+	svqh_friction          = Cvar_Get("sv_friction", "4", 0);
+	svqh_waterfriction     = Cvar_Get("sv_waterfriction", "4", 0);
 
 	sv_aim = Cvar_Get("sv_aim", "2", 0);
 
