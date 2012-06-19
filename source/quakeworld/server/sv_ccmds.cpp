@@ -171,7 +171,7 @@ qboolean SV_SetPlayer(void)
 
 	idnum = String::Atoi(Cmd_Argv(1));
 
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (!cl->state)
 		{
@@ -367,7 +367,7 @@ void SV_Kick_f(void)
 
 	uid = String::Atoi(Cmd_Argv(1));
 
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (!cl->state)
 		{
@@ -423,7 +423,7 @@ void SV_Status_f(void)
 		Con_Printf("name               userid frags\n");
 		Con_Printf("  address          rate ping drop\n");
 		Con_Printf("  ---------------- ---- ---- -----\n");
-		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
 			{
@@ -464,7 +464,7 @@ void SV_Status_f(void)
 	{
 		Con_Printf("frags userid address         name            rate ping drop  qport\n");
 		Con_Printf("----- ------ --------------- --------------- ---- ---- ----- -----\n");
-		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
 			{
@@ -540,7 +540,7 @@ void SV_ConSay_f(void)
 
 	String::Cat(text, sizeof(text), p);
 
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -816,7 +816,7 @@ void SV_Snap(int uid)
 	char checkname[MAX_OSPATH];
 	int i;
 
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (!cl->state)
 		{
@@ -827,7 +827,7 @@ void SV_Snap(int uid)
 			break;
 		}
 	}
-	if (i >= MAX_CLIENTS_QW)
+	if (i >= MAX_CLIENTS_QHW)
 	{
 		Con_Printf("userid not found\n");
 		return;
@@ -898,7 +898,7 @@ void SV_SnapAll_f(void)
 	client_t* cl;
 	int i;
 
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (cl->state < CS_CONNECTED || cl->qh_spectator)
 		{

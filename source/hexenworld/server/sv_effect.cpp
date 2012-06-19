@@ -470,11 +470,11 @@ void SV_SendEffect(QMsg* sb, int index)
 	{
 		if (DoTest)
 		{
-			SV_Multicast(TestO, MULTICAST_PVS_R);
+			SVQH_Multicast(TestO, MULTICAST_PVS_R);
 		}
 		else
 		{
-			SV_Multicast(TestO, MULTICAST_ALL_R);
+			SVQH_Multicast(TestO, MULTICAST_ALL_R);
 		}
 		sv.h2_Effects[index].client_list = clients_multicast;
 	}

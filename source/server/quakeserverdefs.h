@@ -41,3 +41,5 @@ struct qwclient_frame_t
 #define QHMOVE_MISSILE      2
 #define H2MOVE_WATER        3
 #define H2MOVE_PHASE        4
+
+#define QHPHS_OVERRIDE_R    8

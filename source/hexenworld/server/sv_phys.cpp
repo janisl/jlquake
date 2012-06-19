@@ -702,7 +702,7 @@ void SV_Physics(void)
 			SVQH_LinkEdict(ent, true);	// force retouch even for stationary
 
 		}
-		if (i > 0 && i <= HWMAX_CLIENTS)
+		if (i > 0 && i <= MAX_CLIENTS_QHW)
 		{
 //			SV_Physics_Client(ent);
 //			VectorCopy (ent->v.origin,ent->v.oldorigin);

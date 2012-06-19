@@ -113,7 +113,7 @@ struct hwframe_t
 
 	// received from server
 	double receivedtime;	// time message was received, or -1
-	hwplayer_state_t playerstate[HWMAX_CLIENTS];	// message received that reflects performing
+	hwplayer_state_t playerstate[MAX_CLIENTS_QHW];	// message received that reflects performing
 	// the usercmd
 	hwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid

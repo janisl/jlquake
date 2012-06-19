@@ -319,7 +319,7 @@ void PF_sprint(void)
 
 	s = PF_VarString(2);
 
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -365,9 +365,9 @@ void PF_name_print(void)
 		PR_RunError("PF_name_print: index(%d) <= 0",Index);
 	}
 
-	if (Index > HWMAX_CLIENTS)
+	if (Index > MAX_CLIENTS_QHW)
 	{
-		PR_RunError("PF_name_print: index(%d) > HWMAX_CLIENTS",Index);
+		PR_RunError("PF_name_print: index(%d) > MAX_CLIENTS_QHW",Index);
 	}
 
 
@@ -378,7 +378,7 @@ void PF_name_print(void)
 
 		Con_Printf("%s",&svs.clients[Index - 1].name);
 
-		for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		{
 			if (Style < cl->messagelevel)
 			{
@@ -448,7 +448,7 @@ void PF_print_indexed(void)
 
 		Con_Printf("%s",&pr_global_strings[pr_string_index[Index - 1]]);
 
-		for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		{
 			if (Style < cl->messagelevel)
 			{
@@ -490,7 +490,7 @@ void PF_centerprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -520,7 +520,7 @@ void PF_bcenterprint2(void)
 
 	s = PF_VarString(0);
 
-	for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (!cl->state)
 		{
@@ -549,7 +549,7 @@ void PF_centerprint2(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -738,7 +738,7 @@ void PF_UpdateSoundPos(void)
 		Sys_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
-	SV_UpdateSoundPos(entity, channel);
+	SVH2_UpdateSoundPos(entity, channel);
 }
 
 /*
@@ -870,12 +870,12 @@ int PF_newcheckclient(int check)
 	{
 		check = 1;
 	}
-	if (check > HWMAX_CLIENTS)
+	if (check > MAX_CLIENTS_QHW)
 	{
-		check = HWMAX_CLIENTS;
+		check = MAX_CLIENTS_QHW;
 	}
 
-	if (check == HWMAX_CLIENTS)
+	if (check == MAX_CLIENTS_QHW)
 	{
 		i = 1;
 	}
@@ -886,7 +886,7 @@ int PF_newcheckclient(int check)
 
 	for (;; i++)
 	{
-		if (i == HWMAX_CLIENTS + 1)
+		if (i == MAX_CLIENTS_QHW + 1)
 		{
 			i = 1;
 		}
@@ -997,7 +997,7 @@ void PF_stuffcmd(void)
 	client_t* old;
 
 	entnum = G_EDICTNUM(OFS_PARM0);
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		PR_RunError("Parm 0 not a client");
 	}
@@ -1090,7 +1090,7 @@ void PF_Remove(void)
 	}
 
 	i = QH_NUM_FOR_EDICT(ed);
-	if (i <= HWMAX_CLIENTS)
+	if (i <= MAX_CLIENTS_QHW)
 	{
 		Con_Printf("Tried to remove a client at %s in %s!\n",
 			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
@@ -1422,7 +1422,7 @@ void PF_lightstyle(void)
 		return;
 	}
 
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 		if (client->state == CS_ACTIVE)
 		{
 			client->netchan.message.WriteChar(h2svc_lightstyle);
@@ -1506,7 +1506,7 @@ void PF_lightstylestatic(void)
 	}
 
 	// Send message to all clients on this server
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 		if (client->state == CS_ACTIVE)
 		{
 			client->netchan.message.WriteChar(h2svc_lightstyle);
@@ -1699,7 +1699,7 @@ QMsg* WriteDest(void)
 	case MSG_ONE:
 		ent = PROG_TO_EDICT(*pr_globalVars.msg_entity);
 		entnum = QH_NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > HWMAX_CLIENTS)
+		if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
@@ -1811,7 +1811,7 @@ void PF_setspawnparms(void)
 
 	ent = G_EDICT(OFS_PARM0);
 	i = QH_NUM_FOR_EDICT(ent);
-	if (i < 1 || i > HWMAX_CLIENTS)
+	if (i < 1 || i > MAX_CLIENTS_QHW)
 	{
 		PR_RunError("Entity is not a client");
 	}
@@ -1871,8 +1871,8 @@ void PF_logfrag(void)
 	e1 = QH_NUM_FOR_EDICT(ent1);
 	e2 = QH_NUM_FOR_EDICT(ent2);
 
-	if (e1 < 1 || e1 > HWMAX_CLIENTS ||
-		e2 < 1 || e2 > HWMAX_CLIENTS)
+	if (e1 < 1 || e1 > MAX_CLIENTS_QHW ||
+		e2 < 1 || e2 > MAX_CLIENTS_QHW)
 	{
 		return;
 	}
@@ -1913,7 +1913,7 @@ void PF_infokey(void)
 			value = Info_ValueForKey(localinfo, key);
 		}
 	}
-	else if (e1 <= HWMAX_CLIENTS)
+	else if (e1 <= MAX_CLIENTS_QHW)
 	{
 		value = Info_ValueForKey(svs.clients[e1 - 1].userinfo, key);
 	}
@@ -1940,7 +1940,7 @@ void PF_multicast(void)
 	o = G_VECTOR(OFS_PARM0);
 	to = G_FLOAT(OFS_PARM1);
 
-	SV_Multicast(o, to);
+	SVQH_Multicast(o, to);
 }
 
 
@@ -2189,7 +2189,7 @@ void PF_setclass(void)
 	e = G_EDICT(OFS_PARM0);
 	NewClass = G_FLOAT(OFS_PARM1);
 
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to change class of a non-client\n");
 		return;
@@ -2235,7 +2235,7 @@ void PF_setsiegeteam(void)
 	e = G_EDICT(OFS_PARM0);
 	NewTeam = G_FLOAT(OFS_PARM1);
 
-	if (entnum < 1 || entnum > HWMAX_CLIENTS)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to change siege_team of a non-client\n");
 		return;
@@ -2268,7 +2268,7 @@ void PF_updateSiegeInfo(void)
 	int j;
 	client_t* client;
 
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -2300,7 +2300,7 @@ void PF_endeffect(void)
 	sv.h2_Effects[index].type = 0;
 	sv.multicast.WriteByte(hwsvc_end_effect);
 	sv.multicast.WriteByte(index);
-	SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+	SVQH_Multicast(vec3_origin, MULTICAST_ALL_R);
 }
 
 void PF_turneffect(void)

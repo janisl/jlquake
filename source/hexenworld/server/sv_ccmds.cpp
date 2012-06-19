@@ -152,7 +152,7 @@ qboolean SV_SetPlayer(void)
 
 	idnum = String::Atoi(Cmd_Argv(1));
 
-	for (i = 0,cl = svs.clients; i < HWMAX_CLIENTS; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (!cl->state)
 		{
@@ -361,7 +361,7 @@ void SV_Kick_f(void)
 
 	uid = String::Atoi(Cmd_Argv(1));
 
-	for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (!cl->state)
 		{
@@ -400,7 +400,7 @@ void SV_Smite_f(void)
 
 	uid = String::Atoi(Cmd_Argv(1));
 
-	for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (cl->state != CS_ACTIVE)
 		{
@@ -485,7 +485,7 @@ void SV_Status_f(void)
 		Con_Printf("name               userid frags\n");
 		Con_Printf("  address          rate ping drop\n");
 		Con_Printf("  ---------------- ---- ---- -----\n");
-		for (i = 0,cl = svs.clients; i < HWMAX_CLIENTS; i++,cl++)
+		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
 			{
@@ -526,7 +526,7 @@ void SV_Status_f(void)
 	{
 		Con_Printf("frags userid address         name            rate ping drop  siege\n");
 		Con_Printf("----- ------ --------------- --------------- ---- ---- ----- -----\n");
-		for (i = 0,cl = svs.clients; i < HWMAX_CLIENTS; i++,cl++)
+		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
 			{
@@ -663,7 +663,7 @@ void SV_ConSay_f(void)
 
 	String::Cat(text, sizeof(text), p);
 
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{

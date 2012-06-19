@@ -318,7 +318,7 @@ void SV_Physics(void)
 			SVQH_LinkEdict(ent, true);	// force retouch even for stationary
 
 		}
-		if (i > 0 && i <= MAX_CLIENTS_QW)
+		if (i > 0 && i <= MAX_CLIENTS_QHW)
 		{
 			continue;		// clients are run directly from packets
 

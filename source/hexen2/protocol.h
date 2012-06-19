@@ -24,15 +24,6 @@
 #define SU_WEAPON       (1 << 14)
 #define SU_SC2          (1 << 15)
 
-#define DEFAULT_SOUND_PACKET_VOLUME 255
-#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
-
-// a sound with no channel is a local only sound
-#define SND_VOLUME      (1 << 0)		// a byte
-#define SND_ATTENUATION (1 << 1)		// a byte
-#define SND_OVERFLOW    (1 << 2)		// add 255 to snd num
-//gonna use the rest of the bits to pack the ent+channel
-
 // Bits to help send server info about the client's edict variables
 #define SC1_HEALTH              (1 << 0)		// changes stat bar
 #define SC1_LEVEL               (1 << 1)		// changes stat bar

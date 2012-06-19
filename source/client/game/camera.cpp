@@ -67,7 +67,7 @@ static void Cam_CheckHighTargetQW()
 {
 	int j = -1;
 	int max = -9999;
-	for (int i = 0; i < MAX_CLIENTS_QW; i++)
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		q1player_info_t* s = &cl.q1_players[i];
 		if (s->name[0] && !s->spectator && s->frags > max)
@@ -93,7 +93,7 @@ static void Cam_CheckHighTargetHW()
 {
 	int j = -1;
 	int max = -9999;
-	for (int i = 0; i < HWMAX_CLIENTS; i++)
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		h2player_info_t* s = &cl.h2_players[i];
 		if (s->name[0] && !s->spectator && s->frags > max)
@@ -482,7 +482,7 @@ void Cam_FinishMove(const in_usercmd_t* cmd)
 	int end;
 	if (locked && autocam)
 	{
-		end = (spec_track + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
+		end = (spec_track + 1) % MAX_CLIENTS_QHW;
 	}
 	else
 	{
@@ -509,7 +509,7 @@ void Cam_FinishMove(const in_usercmd_t* cmd)
 				return;
 			}
 		}
-		i = (i + 1) % (GGameType & GAME_HexenWorld ? HWMAX_CLIENTS : MAX_CLIENTS_QW);
+		i = (i + 1) % MAX_CLIENTS_QHW;
 	}
 	while (i != end);
 	// stay on same guy?

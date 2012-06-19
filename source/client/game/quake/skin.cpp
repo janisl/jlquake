@@ -146,7 +146,7 @@ void CLQW_SkinNextDownload()
 	}
 	clc.downloadType = dl_skin;
 
-	for (; clc.downloadNumber != MAX_CLIENTS_QW; clc.downloadNumber++)
+	for (; clc.downloadNumber != MAX_CLIENTS_QHW; clc.downloadNumber++)
 	{
 		sc = &cl.q1_players[clc.downloadNumber];
 		if (!sc->name[0])
@@ -167,7 +167,7 @@ void CLQW_SkinNextDownload()
 	clc.downloadType = dl_none;
 
 	// now load them in for real
-	for (i = 0; i < MAX_CLIENTS_QW; i++)
+	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		sc = &cl.q1_players[i];
 		if (!sc->name[0])

@@ -32,7 +32,7 @@ static Cvar* cl_solid_players;
 Cvar* cl_predict_players;
 Cvar* cl_predict_players2;
 
-static predicted_player predicted_players[MAX_CLIENTS_QW];
+static predicted_player predicted_players[MAX_CLIENTS_QHW];
 
 //	Builds all the qh_pmove physents for the current frame
 void CLQW_SetSolidEntities()
@@ -200,7 +200,7 @@ void CLQW_SetUpPlayerPrediction(bool dopred)
 	frame = &cl.qw_frames[cl.qh_parsecount & UPDATE_MASK_QW];
 
 	for (j = 0, pplayer = predicted_players, state = frame->playerstate;
-		 j < MAX_CLIENTS_QW;
+		 j < MAX_CLIENTS_QHW;
 		 j++, pplayer++, state++)
 	{
 
@@ -282,7 +282,7 @@ void CLHW_SetUpPlayerPrediction(bool dopred)
 	frame = &cl.hw_frames[cl.qh_parsecount & UPDATE_MASK_HW];
 
 	for (j = 0, pplayer = predicted_players, state = frame->playerstate;
-		 j < HWMAX_CLIENTS;
+		 j < MAX_CLIENTS_QHW;
 		 j++, pplayer++, state++)
 	{
 
@@ -355,7 +355,7 @@ void CLQHW_SetSolidPlayers(int playernum)
 
 	pent = qh_pmove.physents + qh_pmove.numphysent;
 
-	for (j = 0, pplayer = predicted_players; j < (GGameType & GAME_Hexen2 ? HWMAX_CLIENTS : MAX_CLIENTS_QW); j++, pplayer++)
+	for (j = 0, pplayer = predicted_players; j < MAX_CLIENTS_QHW; j++, pplayer++)
 	{
 
 		if (!pplayer->active)

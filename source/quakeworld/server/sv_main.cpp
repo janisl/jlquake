@@ -51,8 +51,6 @@ Cvar* allow_download_maps;
 
 Cvar* sv_highchars;
 
-Cvar* sv_phs;
-
 Cvar* pausable;
 
 
@@ -181,7 +179,7 @@ void SV_FinalMessage(const char* message)
 	net_message.WriteString2(message);
 	net_message.WriteByte(q1svc_disconnect);
 
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		if (cl->state >= CS_ACTIVE)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
@@ -380,7 +378,7 @@ void SVC_Status(void)
 	Cmd_TokenizeString("status");
 	SV_BeginRedirect(RD_PACKET);
 	Con_Printf("%s\n", svs.qh_info);
-	for (i = 0; i < MAX_CLIENTS_QW; i++)
+	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		cl = &svs.clients[i];
 		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->qh_spectator)
@@ -646,7 +644,7 @@ void SVC_DirectConnect(void)
 	}
 
 	// if there is allready a slot for this ip, drop it
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (cl->state == CS_FREE)
 		{
@@ -672,7 +670,7 @@ void SVC_DirectConnect(void)
 	// count up the clients and spectators
 	clients = 0;
 	spectators = 0;
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (cl->state == CS_FREE)
 		{
@@ -689,17 +687,17 @@ void SVC_DirectConnect(void)
 	}
 
 	// if at server limits, refuse connection
-	if (maxclients->value > MAX_CLIENTS_QW)
+	if (maxclients->value > MAX_CLIENTS_QHW)
 	{
-		Cvar_SetValue("maxclients", MAX_CLIENTS_QW);
+		Cvar_SetValue("maxclients", MAX_CLIENTS_QHW);
 	}
-	if (maxspectators->value > MAX_CLIENTS_QW)
+	if (maxspectators->value > MAX_CLIENTS_QHW)
 	{
-		Cvar_SetValue("maxspectators", MAX_CLIENTS_QW);
+		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW);
 	}
-	if (maxspectators->value + maxclients->value > MAX_CLIENTS_QW)
+	if (maxspectators->value + maxclients->value > MAX_CLIENTS_QHW)
 	{
-		Cvar_SetValue("maxspectators", MAX_CLIENTS_QW - maxspectators->value + maxclients->value);
+		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW - maxspectators->value + maxclients->value);
 	}
 	if ((spectator && spectators >= (int)maxspectators->value) ||
 		(!spectator && clients >= (int)maxclients->value))
@@ -711,7 +709,7 @@ void SVC_DirectConnect(void)
 
 	// find a client slot
 	newcl = NULL;
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (cl->state == CS_FREE)
 		{
@@ -1181,7 +1179,7 @@ void SV_ReadPackets(void)
 		qport = net_message.ReadShort() & 0xffff;
 
 		// check for packets from connected clients
-		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (cl->state == CS_FREE)
 			{
@@ -1213,7 +1211,7 @@ void SV_ReadPackets(void)
 			break;
 		}
 
-		if (i != MAX_CLIENTS_QW)
+		if (i != MAX_CLIENTS_QHW)
 		{
 			continue;
 		}
@@ -1245,7 +1243,7 @@ void SV_CheckTimeouts(void)
 	int droptime = realtime * 1000 - timeout->value * 1000;
 	nclients = 0;
 
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QW; i++,cl++)
+	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 	{
 		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
 		{
@@ -1503,8 +1501,8 @@ void SV_InitLocal(void)
 
 	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
-	svs.clients = new client_t[MAX_CLIENTS_QW];
-	Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QW);
+	svs.clients = new client_t[MAX_CLIENTS_QHW];
+	Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QHW);
 
 	// init fraglog stuff
 	svs.qh_logsequence = 1;
@@ -1544,7 +1542,7 @@ void Master_Heartbeat(void)
 	// count active users
 	//
 	active = 0;
-	for (i = 0; i < MAX_CLIENTS_QW; i++)
+	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 		if (svs.clients[i].state == CS_CONNECTED ||
 			svs.clients[i].state == CS_ACTIVE)
 		{
@@ -1648,7 +1646,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 	// check to see if another user by the same name exists
 	while (1)
 	{
-		for (i = 0, client = svs.clients; i < MAX_CLIENTS_QW; i++, client++)
+		for (i = 0, client = svs.clients; i < MAX_CLIENTS_QHW; i++, client++)
 		{
 			if (client->state != CS_ACTIVE || client == cl)
 			{
@@ -1659,7 +1657,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 				break;
 			}
 		}
-		if (i != MAX_CLIENTS_QW)
+		if (i != MAX_CLIENTS_QHW)
 		{
 			// dup name
 			char tmp[80];

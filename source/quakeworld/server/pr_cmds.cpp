@@ -190,7 +190,7 @@ void PF_sprint(void)
 
 	s = PF_VarString(2);
 
-	if (entnum < 1 || entnum > MAX_CLIENTS_QW)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -220,7 +220,7 @@ void PF_centerprint(void)
 	entnum = G_EDICTNUM(OFS_PARM0);
 	s = PF_VarString(1);
 
-	if (entnum < 1 || entnum > MAX_CLIENTS_QW)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		Con_Printf("tried to sprint to a non-client\n");
 		return;
@@ -369,12 +369,12 @@ int PF_newcheckclient(int check)
 	{
 		check = 1;
 	}
-	if (check > MAX_CLIENTS_QW)
+	if (check > MAX_CLIENTS_QHW)
 	{
-		check = MAX_CLIENTS_QW;
+		check = MAX_CLIENTS_QHW;
 	}
 
-	if (check == MAX_CLIENTS_QW)
+	if (check == MAX_CLIENTS_QHW)
 	{
 		i = 1;
 	}
@@ -385,7 +385,7 @@ int PF_newcheckclient(int check)
 
 	for (;; i++)
 	{
-		if (i == MAX_CLIENTS_QW + 1)
+		if (i == MAX_CLIENTS_QHW + 1)
 		{
 			i = 1;
 		}
@@ -496,7 +496,7 @@ void PF_stuffcmd(void)
 	client_t* cl;
 
 	entnum = G_EDICTNUM(OFS_PARM0);
-	if (entnum < 1 || entnum > MAX_CLIENTS_QW)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		PR_RunError("Parm 0 not a client");
 	}
@@ -793,7 +793,7 @@ void PF_lightstyle(void)
 		return;
 	}
 
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QW; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 		if (client->state == CS_ACTIVE)
 		{
 			SVQH_ClientReliableWrite_Begin(client, q1svc_lightstyle, String::Length(val) + 3);
@@ -887,7 +887,7 @@ void PF_aim(void)
 
 // noaim option
 	i = QH_NUM_FOR_EDICT(ent);
-	if (i > 0 && i < MAX_CLIENTS_QW)
+	if (i > 0 && i < MAX_CLIENTS_QHW)
 	{
 		noaim = Info_ValueForKey(svs.clients[i - 1].userinfo, "noaim");
 		if (String::Atoi(noaim) > 0)
@@ -991,7 +991,7 @@ QMsg* WriteDest(void)
 #if 0
 		ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
 		entnum = QH_NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > MAX_CLIENTS_QW)
+		if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 		{
 			PR_RunError("WriteDest: not a client");
 		}
@@ -1026,7 +1026,7 @@ static client_t* Write_GetClient(void)
 
 	ent = PROG_TO_EDICT(*pr_globalVars.msg_entity);
 	entnum = QH_NUM_FOR_EDICT(ent);
-	if (entnum < 1 || entnum > MAX_CLIENTS_QW)
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
 		PR_RunError("WriteDest: not a client");
 	}
@@ -1188,7 +1188,7 @@ void PF_setspawnparms(void)
 
 	ent = G_EDICT(OFS_PARM0);
 	i = QH_NUM_FOR_EDICT(ent);
-	if (i < 1 || i > MAX_CLIENTS_QW)
+	if (i < 1 || i > MAX_CLIENTS_QHW)
 	{
 		PR_RunError("Entity is not a client");
 	}
@@ -1241,8 +1241,8 @@ void PF_logfrag(void)
 	e1 = QH_NUM_FOR_EDICT(ent1);
 	e2 = QH_NUM_FOR_EDICT(ent2);
 
-	if (e1 < 1 || e1 > MAX_CLIENTS_QW ||
-		e2 < 1 || e2 > MAX_CLIENTS_QW)
+	if (e1 < 1 || e1 > MAX_CLIENTS_QHW ||
+		e2 < 1 || e2 > MAX_CLIENTS_QHW)
 	{
 		return;
 	}
@@ -1285,7 +1285,7 @@ void PF_infokey(void)
 			value = Info_ValueForKey(localinfo, key);
 		}
 	}
-	else if (e1 <= MAX_CLIENTS_QW)
+	else if (e1 <= MAX_CLIENTS_QHW)
 	{
 		if (!String::Cmp(key, "ip"))
 		{
@@ -1326,7 +1326,7 @@ void PF_multicast(void)
 	o = G_VECTOR(OFS_PARM0);
 	to = G_FLOAT(OFS_PARM1);
 
-	SV_Multicast(o, to);
+	SVQH_Multicast(o, to);
 }
 
 builtin_t pr_builtin[] =

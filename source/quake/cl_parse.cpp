@@ -87,22 +87,22 @@ void CL_ParseStartSoundPacket(void)
 
 	field_mask = net_message.ReadByte();
 
-	if (field_mask & SND_VOLUME)
+	if (field_mask & QHSND_VOLUME)
 	{
 		volume = net_message.ReadByte();
 	}
 	else
 	{
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
 	}
 
-	if (field_mask & SND_ATTENUATION)
+	if (field_mask & QHSND_ATTENUATION)
 	{
 		attenuation = net_message.ReadByte() / 64.0;
 	}
 	else
 	{
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
+		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
 	channel = net_message.ReadShort();

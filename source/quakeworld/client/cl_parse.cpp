@@ -793,22 +793,22 @@ void CL_ParseStartSoundPacket(void)
 
 	channel = net_message.ReadShort();
 
-	if (channel & SND_VOLUME)
+	if (channel & QHWSND_VOLUME)
 	{
 		volume = net_message.ReadByte();
 	}
 	else
 	{
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
 	}
 
-	if (channel & SND_ATTENUATION)
+	if (channel & QHWSND_ATTENUATION)
 	{
 		attenuation = net_message.ReadByte() / 64.0;
 	}
 	else
 	{
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
+		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
 	sound_num = net_message.ReadByte();
@@ -874,9 +874,9 @@ CL_NewTranslation
 */
 void CL_NewTranslation(int slot)
 {
-	if (slot > MAX_CLIENTS_QW)
+	if (slot > MAX_CLIENTS_QHW)
 	{
-		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS_QW");
+		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
 	}
 
 	CLQ1_TranslatePlayerSkin(slot);
@@ -920,9 +920,9 @@ void CL_UpdateUserinfo(void)
 	q1player_info_t* player;
 
 	slot = net_message.ReadByte();
-	if (slot >= MAX_CLIENTS_QW)
+	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QW");
+		Host_EndGame("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.q1_players[slot];
@@ -945,9 +945,9 @@ void CL_SetInfo(void)
 	char value[MAX_MSGLEN_QW];
 
 	slot = net_message.ReadByte();
-	if (slot >= MAX_CLIENTS_QW)
+	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QW");
+		Host_EndGame("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.q1_players[slot];
@@ -1026,7 +1026,7 @@ void CL_MuzzleFlash(void)
 {
 	int i = net_message.ReadShort();
 
-	if ((unsigned)(i - 1) >= MAX_CLIENTS_QW)
+	if ((unsigned)(i - 1) >= MAX_CLIENTS_QHW)
 	{
 		return;
 	}
@@ -1171,27 +1171,27 @@ void CL_ParseServerMessage(void)
 
 		case q1svc_updatefrags:
 			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QW)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QW");
+				Host_EndGame("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].frags = net_message.ReadShort();
 			break;
 
 		case qwsvc_updateping:
 			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QW)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QW");
+				Host_EndGame("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].ping = net_message.ReadShort();
 			break;
 
 		case qwsvc_updatepl:
 			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QW)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QW");
+				Host_EndGame("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].pl = net_message.ReadByte();
 			break;
@@ -1199,9 +1199,9 @@ void CL_ParseServerMessage(void)
 		case qwsvc_updateentertime:
 			// time is sent over as seconds ago
 			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QW)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QW");
+				Host_EndGame("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].entertime = realtime - net_message.ReadFloat();
 			break;

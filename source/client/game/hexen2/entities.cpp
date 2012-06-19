@@ -864,7 +864,7 @@ void CLHW_ParsePlayerinfo(QMsg& message)
 	qboolean playermodel = false;
 
 	num = message.ReadByte();
-	if (num > HWMAX_CLIENTS)
+	if (num > MAX_CLIENTS_QHW)
 	{
 		common->FatalError("CLHW_ParsePlayerinfo: bad num");
 	}
@@ -1014,7 +1014,7 @@ void CLHW_SavePlayer(QMsg& message)
 {
 	int num = message.ReadByte();
 
-	if (num > HWMAX_CLIENTS)
+	if (num > MAX_CLIENTS_QHW)
 	{
 		common->Error("CLHW_ParsePlayerinfo: bad num");
 	}
@@ -1786,7 +1786,7 @@ static void CLHW_LinkPlayers()
 
 	h2player_info_t* info = cl.h2_players;
 	hwplayer_state_t* state = frame->playerstate;
-	for (int j = 0; j < HWMAX_CLIENTS; j++, info++, state++)
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, info++, state++)
 	{
 		info->shownames_off = true;
 		if (state->messagenum != cl.qh_parsecount)

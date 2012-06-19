@@ -95,7 +95,7 @@ struct qwpacket_entities_t
 };
 
 #define MAX_CLIENTS_Q1          16
-#define MAX_CLIENTS_QW          32
+#define MAX_CLIENTS_QHW         32
 #define BIGGEST_MAX_CLIENTS_Q1  32	//	For common arrays
 
 #define UPDATE_BACKUP_QW    64	// copies of entity_state_t to keep buffered
@@ -310,3 +310,16 @@ struct qwpacket_entities_t
 #define H2FL_CLASS_DEPENDENT    2097152	// model will appear different to each player
 #define H2FL_SPECIAL_ABILITY1   4194304	// has 1st special ability
 #define H2FL_SPECIAL_ABILITY2   8388608	// has 2nd special ability
+
+#define QHDEFAULT_SOUND_PACKET_VOLUME 255
+#define QHDEFAULT_SOUND_PACKET_ATTENUATION 1.0
+
+// a sound with no channel is a local only sound
+#define QHSND_VOLUME        BIT(0)		// a byte
+#define QHSND_ATTENUATION   BIT(1)		// a byte
+#define H2SND_OVERFLOW      BIT(2)		// add 255 to snd num
+//gonna use the rest of the bits to pack the ent+channel
+
+// the sound field has bits 0-2: channel, 3-12: entity
+#define QHWSND_VOLUME       BIT(15)		// a byte
+#define QHWSND_ATTENUATION  BIT(14)		// a byte

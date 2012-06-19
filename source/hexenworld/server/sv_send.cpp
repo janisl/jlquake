@@ -2,14 +2,11 @@
 
 #include "qwsvdef.h"
 
-unsigned clients_multicast;
-
 #define CHAN_AUTO   0
 #define CHAN_WEAPON 1
 #define CHAN_VOICE  2
 #define CHAN_ITEM   3
 #define CHAN_BODY   4
-#define PHS_OVERRIDE_R 8
 
 /*
 =============================================================================
@@ -23,7 +20,6 @@ char outputbuf[8000];
 
 redirect_t sv_redirected;
 
-extern Cvar* sv_phs;
 extern Cvar* sv_namedistance;
 
 /*
@@ -193,7 +189,7 @@ void SV_BroadcastPrintf(int level, const char* fmt, ...)
 
 	Con_Printf("%s", string);	// print to the console
 
-	for (i = 0, cl = svs.clients; i < HWMAX_CLIENTS; i++, cl++)
+	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
 		if (level < cl->messagelevel)
 		{
@@ -233,97 +229,6 @@ void SV_BroadcastCommand(const char* fmt, ...)
 	sv.qh_reliable_datagram.WriteString2(string);
 }
 
-
-/*
-=================
-SV_Multicast
-
-Sends the contents of sv.multicast to a subset of the clients,
-then clears sv.multicast.
-
-MULTICAST_ALL	same as broadcast
-MULTICAST_PVS	send to clients potentially visible from org
-MULTICAST_PHS	send to clients potentially hearable from org
-=================
-*/
-void SV_Multicast(vec3_t origin, int to)
-{
-	client_t* client;
-	byte* mask;
-	int leafnum;
-	int j;
-	qboolean reliable;
-	vec3_t adjust_origin;
-
-	clients_multicast = 0;
-
-	leafnum = CM_PointLeafnum(origin);
-
-	reliable = false;
-
-	switch (to)
-	{
-	case MULTICAST_ALL_R:
-		reliable = true;	// intentional fallthrough
-	case MULTICAST_ALL:
-		mask = NULL;
-		break;
-
-	case MULTICAST_PHS_R:
-		reliable = true;	// intentional fallthrough
-	case MULTICAST_PHS:
-		mask = CM_ClusterPHS(CM_LeafCluster(leafnum));
-		break;
-
-	case MULTICAST_PVS_R:
-		reliable = true;	// intentional fallthrough
-	case MULTICAST_PVS:
-		mask = CM_ClusterPVS(CM_LeafCluster(leafnum));
-		break;
-
-	default:
-		mask = NULL;
-		SV_Error("SV_Multicast: bad to:%i", to);
-	}
-
-	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-
-		VectorCopy(client->qh_edict->GetOrigin(), adjust_origin);
-		adjust_origin[2] += 16;
-		if (mask)
-		{
-			leafnum = CM_PointLeafnum(adjust_origin);
-			// if (leaf != sv.worldmodel->leafs)
-			{
-				leafnum = CM_LeafCluster(leafnum);
-				if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
-				{
-					continue;
-				}
-			}
-		}
-
-		clients_multicast |= 1l << j;
-
-		if (reliable)
-		{
-			client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
-		}
-		else
-		{
-			client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
-		}
-	}
-
-	sv.multicast.Clear();
-}
-
 /*
 =================
 SV_MulticastSpecific
@@ -340,7 +245,7 @@ void SV_MulticastSpecific(unsigned clients, qboolean reliable)
 	clients_multicast = 0;
 
 	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -364,189 +269,6 @@ void SV_MulticastSpecific(unsigned clients, qboolean reliable)
 
 	sv.multicast.Clear();
 }
-
-/*
-==================
-SVH2_StopSound
-==================
-*/
-void SVH2_StopSound(qhedict_t* entity, int channel)
-{
-	int ent,i;
-	vec3_t origin;
-
-	ent = QH_NUM_FOR_EDICT(entity);
-	channel = (ent << 3) | channel;
-
-	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == QHSOLID_BSP)
-	{
-		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
-	}
-	else
-	{
-		VectorCopy(entity->GetOrigin(), origin);
-	}
-
-	sv.multicast.WriteByte(h2svc_stopsound);
-	sv.multicast.WriteShort(channel);
-	SV_Multicast(origin, MULTICAST_ALL_R);
-}
-
-/*
-==================
-SV_UpdateSoundPos
-==================
-*/
-void SV_UpdateSoundPos(qhedict_t* entity, int channel)
-{
-	int ent;
-	int i;
-	vec3_t origin;
-
-	ent = QH_NUM_FOR_EDICT(entity);
-	channel = (ent << 3) | channel;
-
-	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == QHSOLID_BSP)
-	{
-		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
-	}
-	else
-	{
-		VectorCopy(entity->GetOrigin(), origin);
-	}
-
-	sv.multicast.WriteByte(hwsvc_sound_update_pos);
-	sv.multicast.WriteShort(channel);
-	for (i = 0; i < 3; i++)
-		sv.multicast.WriteCoord(entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]));
-	SV_Multicast(origin, MULTICAST_PHS);
-}
-
-/*
-==================
-SVQH_StartSound
-
-Each entity can have eight independant sound sources, like voice,
-weapon, feet, etc.
-
-Channel 0 is an auto-allocate channel, the others override anything
-allready running on that entity/channel pair.
-
-An attenuation of 0 will play full volume everywhere in the level.
-Larger attenuations will drop off.  (max 4 attenuation)
-
-==================
-*/
-void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
-	float attenuation)
-{
-	int sound_num;
-	int field_mask;
-	int i;
-	int ent;
-	vec3_t origin;
-	qboolean use_phs;
-	qboolean reliable = false;
-
-	if (volume < 0 || volume > 255)
-	{
-		SV_Error("SVQH_StartSound: volume = %i", volume);
-	}
-
-	if (attenuation < 0 || attenuation > 4)
-	{
-		SV_Error("SVQH_StartSound: attenuation = %f", attenuation);
-	}
-
-	if (channel < 0 || channel > 15)
-	{
-		SV_Error("SVQH_StartSound: channel = %i", channel);
-	}
-
-// find precache number for sound
-	for (sound_num = 1; sound_num < MAX_SOUNDS_HW &&
-		 sv.qh_sound_precache[sound_num]; sound_num++)
-		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
-		{
-			break;
-		}
-
-	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
-	{
-		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
-		return;
-	}
-
-	ent = QH_NUM_FOR_EDICT(entity);
-
-	if ((channel & PHS_OVERRIDE_R) || !sv_phs->value)	// no PHS flag
-	{
-		if (channel & PHS_OVERRIDE_R)	//PHS_OVERRIDE_R = 8
-		{
-			reliable = true;// sounds that break the phs are reliable
-		}
-		use_phs = false;
-		channel &= 7;	//clear out the PHS_OVERRIDE_R flag
-	}
-	else
-	{
-		use_phs = true;
-	}
-
-//	if (channel == CHAN_BODY || channel == CHAN_VOICE)
-//		reliable = true;
-
-	channel = (ent << 3) | channel;
-
-	field_mask = 0;
-	if (volume != DEFAULT_SOUND_PACKET_VOLUME)
-	{
-		channel |= SND_VOLUME;
-	}
-	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
-	{
-		channel |= SND_ATTENUATION;
-	}
-
-	// use the entity origin unless it is a bmodel
-	if (entity->GetSolid() == QHSOLID_BSP)
-	{
-		for (i = 0; i < 3; i++)	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
-			origin[i] = entity->GetOrigin()[i] + 0.5 * (entity->GetMins()[i] + entity->GetMaxs()[i]);
-	}
-	else
-	{
-		VectorCopy(entity->GetOrigin(), origin);
-	}
-
-	sv.multicast.WriteByte(h2svc_sound);
-	sv.multicast.WriteShort(channel);
-	if (channel & SND_VOLUME)
-	{
-		sv.multicast.WriteByte(volume);
-	}
-	if (channel & SND_ATTENUATION)
-	{
-		sv.multicast.WriteByte(attenuation * 32);
-	}
-	sv.multicast.WriteByte(sound_num);
-	for (i = 0; i < 3; i++)
-		sv.multicast.WriteCoord(origin[i]);
-
-	if (use_phs)
-	{
-		SV_Multicast(origin, reliable ? MULTICAST_PHS_R : MULTICAST_PHS);
-	}
-	else
-	{
-		SV_Multicast(origin, reliable ? MULTICAST_ALL_R : MULTICAST_ALL);
-	}
-}
-
 
 /*
 ==================
@@ -579,7 +301,7 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 	sv.multicast.WriteByte(count);
 	sv.multicast.WriteByte(color);
 
-	SV_Multicast(org, MULTICAST_PVS);
+	SVQH_Multicast(org, MULTICAST_PVS);
 }
 
 /*
@@ -606,7 +328,7 @@ void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effe
 	sv.multicast.WriteByte(count);
 	sv.multicast.WriteByte(effect);
 
-	SV_Multicast(org, MULTICAST_PVS);
+	SVQH_Multicast(org, MULTICAST_PVS);
 }
 
 /*
@@ -630,7 +352,7 @@ void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count)
 	sv.multicast.WriteByte(count);
 	sv.multicast.WriteByte(effect);
 
-	SV_Multicast(org, MULTICAST_PVS);
+	SVQH_Multicast(org, MULTICAST_PVS);
 }
 
 /*
@@ -652,7 +374,7 @@ void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int coun
 	sv.multicast.WriteByte(count);
 	sv.multicast.WriteByte(effect);
 
-	SV_Multicast(org, MULTICAST_PVS);
+	SVQH_Multicast(org, MULTICAST_PVS);
 }
 
 void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
@@ -669,7 +391,7 @@ void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int col
 	sv.multicast.WriteShort(color);
 	sv.multicast.WriteShort(count);
 
-	SV_Multicast(org, MULTICAST_PVS);
+	SVQH_Multicast(org, MULTICAST_PVS);
 }
 
 
@@ -931,12 +653,12 @@ static void UpdatePIV(void)
 	vec3_t adjust_org1, adjust_org2, distvec;
 	float save_hull, dist;
 
-	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < MAX_CLIENTS_QHW; i++, host_client++)
 	{
 		host_client->hw_PIV = 0;
 	}
 
-	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < MAX_CLIENTS_QHW; i++, host_client++)
 	{
 		if (host_client->state != CS_ACTIVE || host_client->qh_spectator)
 		{
@@ -949,7 +671,7 @@ static void UpdatePIV(void)
 		save_hull = host_client->qh_edict->GetHull();
 		host_client->qh_edict->SetHull(0);
 
-		for (j = i + 1, client = host_client + 1; j < HWMAX_CLIENTS; j++, client++)
+		for (j = i + 1, client = host_client + 1; j < MAX_CLIENTS_QHW; j++, client++)
 		{
 			if (client->state != CS_ACTIVE || client->qh_spectator)
 			{
@@ -1006,7 +728,7 @@ void SV_UpdateToReliableMessages(void)
 	}
 
 // check for changes to be sent over the reliable streams to all clients
-	for (i = 0, host_client = svs.clients; i < HWMAX_CLIENTS; i++, host_client++)
+	for (i = 0, host_client = svs.clients; i < MAX_CLIENTS_QHW; i++, host_client++)
 	{
 		if (host_client->state != CS_ACTIVE)
 		{
@@ -1019,7 +741,7 @@ void SV_UpdateToReliableMessages(void)
 		}
 		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
-			for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+			for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 			{
 				if (client->state < CS_CONNECTED)
 				{
@@ -1077,7 +799,7 @@ void SV_UpdateToReliableMessages(void)
 	}
 
 	// append the broadcast messages to each client messages
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
 		{
@@ -1135,7 +857,7 @@ void SV_SendClientMessages(void)
 	SV_UpdateToReliableMessages();
 
 // build individual updates
-	for (i = 0, c = svs.clients; i < HWMAX_CLIENTS; i++, c++)
+	for (i = 0, c = svs.clients; i < MAX_CLIENTS_QHW; i++, c++)
 	{
 		if (!c->state)
 		{
@@ -1195,7 +917,7 @@ void SV_SendMessagesToAll(void)
 	int i;
 	client_t* c;
 
-	for (i = 0, c = svs.clients; i < HWMAX_CLIENTS; i++, c++)
+	for (i = 0, c = svs.clients; i < MAX_CLIENTS_QHW; i++, c++)
 		if (c->state)		// FIXME: should this only send to active?
 		{
 			c->qh_send_message = true;

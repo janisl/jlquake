@@ -42,7 +42,7 @@ qhedict_t* ED_Alloc(void)
 	int i;
 	qhedict_t* e;
 
-	for (i = MAX_CLIENTS_QW + 1; i < sv.qh_num_edicts; i++)
+	for (i = MAX_CLIENTS_QHW + 1; i < sv.qh_num_edicts; i++)
 	{
 		e = QH_EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of

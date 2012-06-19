@@ -48,14 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SPAWNFLAG_NOT_HARD          1024
 #define SPAWNFLAG_NOT_DEATHMATCH    2048
 
-#define MULTICAST_ALL           0
-#define MULTICAST_PHS           1
-#define MULTICAST_PVS           2
-
-#define MULTICAST_ALL_R         3
-#define MULTICAST_PHS_R         4
-#define MULTICAST_PVS_R         5
-
 //============================================================================
 
 extern Cvar* sv_mintic;
@@ -133,9 +125,6 @@ void SV_RunNewmis(void);
 //
 void SV_SendClientMessages(void);
 
-void SV_Multicast(vec3_t origin, int to);
-void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
-	float attenuation);
 void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
 void SV_BroadcastPrintf(int level, const char* fmt, ...);
 void SV_BroadcastCommand(const char* fmt, ...);

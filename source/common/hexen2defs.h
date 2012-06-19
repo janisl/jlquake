@@ -15,7 +15,6 @@
 //**************************************************************************
 
 #define H2MAX_CLIENTS           16
-#define HWMAX_CLIENTS           32
 #define H2BIGGEST_MAX_CLIENTS   32	//	For common arrays
 
 #define MAX_CLIENT_STATES_H2    150

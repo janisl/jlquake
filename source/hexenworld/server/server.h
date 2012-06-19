@@ -47,14 +47,6 @@
 #define SFL_NEW_EPISODE     32
 #define SFL_CROSS_TRIGGERS  65280
 
-#define MULTICAST_ALL           0
-#define MULTICAST_PHS           1
-#define MULTICAST_PVS           2
-
-#define MULTICAST_ALL_R         3
-#define MULTICAST_PHS_R         4
-#define MULTICAST_PVS_R         5
-
 //============================================================================
 
 extern Cvar* sv_mintic;
@@ -148,14 +140,9 @@ void SV_RunNewmis(void);
 //
 // sv_send.c
 //
-extern unsigned clients_multicast;
-
 void SV_SendClientMessages(void);
 
-void SV_Multicast(vec3_t origin, int to);
 void SV_MulticastSpecific(unsigned clients, qboolean reliable);
-void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
-	float attenuation);
 void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count);
@@ -191,8 +178,6 @@ void SV_Status_f(void);
 //
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
 
-void SV_UpdateSoundPos(qhedict_t* entity, int channel);
-void SVH2_StopSound(qhedict_t* entity, int channel);
 void SV_ParseEffect(QMsg* sb);
 void SV_FlushSignon(void);
 void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);

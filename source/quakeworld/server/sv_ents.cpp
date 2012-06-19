@@ -381,7 +381,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 	qwusercmd_t cmd;
 	int pflags;
 
-	for (j = 0,cl = svs.clients; j < MAX_CLIENTS_QW; j++,cl++)
+	for (j = 0,cl = svs.clients; j < MAX_CLIENTS_QHW; j++,cl++)
 	{
 		if (cl->state != CS_ACTIVE)
 		{
@@ -564,7 +564,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 
 	numnails = 0;
 
-	for (e = MAX_CLIENTS_QW + 1, ent = QH_EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
+	for (e = MAX_CLIENTS_QHW + 1, ent = QH_EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))

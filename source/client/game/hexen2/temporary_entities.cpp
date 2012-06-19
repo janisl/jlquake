@@ -82,7 +82,7 @@ h2entity_state_t* CLH2_FindState(int entityNumber)
 		return &h2cl_entities[entityNumber].state;
 	}
 
-	if (entityNumber >= 1 && entityNumber <= HWMAX_CLIENTS)
+	if (entityNumber >= 1 && entityNumber <= MAX_CLIENTS_QHW)
 	{
 		if (entityNumber == cl.viewentity)
 		{

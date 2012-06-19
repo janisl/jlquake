@@ -629,7 +629,7 @@ void CL_Record_f(void)
 
 // send current status of all other players
 
-	for (i = 0; i < MAX_CLIENTS_QW; i++)
+	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		player = cl.q1_players + i;
 

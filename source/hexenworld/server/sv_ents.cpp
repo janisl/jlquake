@@ -1217,17 +1217,17 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 
 #ifdef MGNET
 	int k, l;
-	int visclient[HWMAX_CLIENTS];
-	int forcevisclient[HWMAX_CLIENTS];
-	int cl_v_priority[HWMAX_CLIENTS];
-	int cl_v_psort[HWMAX_CLIENTS];
+	int visclient[MAX_CLIENTS_QHW];
+	int forcevisclient[MAX_CLIENTS_QHW];
+	int cl_v_priority[MAX_CLIENTS_QHW];
+	int cl_v_psort[MAX_CLIENTS_QHW];
 	int totalvc,num_eliminated;
 
 	int numvc = 0;
 	int forcevc = 0;
 #endif
 
-	for (j = 0,cl = svs.clients; j < HWMAX_CLIENTS; j++,cl++)
+	for (j = 0,cl = svs.clients; j < MAX_CLIENTS_QHW; j++,cl++)
 	{
 		if (cl->state != CS_ACTIVE)
 		{
@@ -1373,7 +1373,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		//priority 5 - send less info on clients
 	}
 
-	for (j = 0, l = 0, k = 0, cl = svs.clients; j < HWMAX_CLIENTS; j++,cl++)
+	for (j = 0, l = 0, k = 0, cl = svs.clients; j < MAX_CLIENTS_QHW; j++,cl++)
 	{	//priority 1 - if behind, cull out
 		if (forcevisclient[l] == j && l <= forcevc)
 		{
@@ -1606,7 +1606,7 @@ void SV_WriteEntitiesToClient(client_t* client, QMsg* msg)
 	numravens = 0;
 	numraven2s = 0;
 
-	for (e = HWMAX_CLIENTS + 1, ent = QH_EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
+	for (e = MAX_CLIENTS_QHW + 1, ent = QH_EDICT_NUM(e); e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
 		if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))

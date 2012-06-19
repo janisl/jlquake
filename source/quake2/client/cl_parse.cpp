@@ -619,7 +619,7 @@ void CL_ParseStartSoundPacket(void)
 	}
 	else
 	{
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
+		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
 	if (flags & SND_OFFSET)

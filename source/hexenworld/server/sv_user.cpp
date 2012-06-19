@@ -269,7 +269,7 @@ void SV_Spawn_f(void)
 
 // send current status of all other players
 
-	for (i = 0, client = svs.clients; i < HWMAX_CLIENTS; i++, client++)
+	for (i = 0, client = svs.clients; i < MAX_CLIENTS_QHW; i++, client++)
 		SV_FullClientUpdate(client, &host_client->netchan.message);
 
 // send all current light styles
@@ -324,7 +324,7 @@ void SV_SpawnSpectator(void)
 	sv_player->GetViewOfs()[2] = 22;
 
 	// search for an info_playerstart to spawn the spectator at
-	for (i = HWMAX_CLIENTS - 1; i < sv.qh_num_edicts; i++)
+	for (i = MAX_CLIENTS_QHW - 1; i < sv.qh_num_edicts; i++)
 	{
 		e = QH_EDICT_NUM(i);
 		if (!String::Cmp(PR_GetString(e->GetClassName()), "info_player_start"))
@@ -651,7 +651,7 @@ void SV_Say(qboolean team)
 
 	Con_Printf("%s", text);
 
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -751,7 +751,7 @@ void SV_Pings_f(void)
 	client_t* client;
 	int j;
 
-	for (j = 0, client = svs.clients; j < HWMAX_CLIENTS; j++, client++)
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
@@ -820,7 +820,7 @@ void SV_PTrack_f(void)
 	}
 
 	i = String::Atoi(Cmd_Argv(1));
-	if (i < 0 || i >= HWMAX_CLIENTS || svs.clients[i].state != CS_ACTIVE ||
+	if (i < 0 || i >= MAX_CLIENTS_QHW || svs.clients[i].state != CS_ACTIVE ||
 		svs.clients[i].qh_spectator)
 	{
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");

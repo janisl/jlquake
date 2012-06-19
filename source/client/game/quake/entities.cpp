@@ -564,7 +564,7 @@ void CLQW_ParseDeltaPacketEntities(QMsg& message)
 void CLQW_ParsePlayerinfo(QMsg& message)
 {
 	int num = message.ReadByte();
-	if (num > MAX_CLIENTS_QW)
+	if (num > MAX_CLIENTS_QHW)
 	{
 		throw Exception("CLQW_ParsePlayerinfo: bad num");
 	}
@@ -1001,7 +1001,7 @@ static void CLQW_LinkPacketEntities()
 		ent.hModel = model;
 
 		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QW) && s1->modelindex == clq1_playerindex)
+		if (s1->colormap && (s1->colormap < MAX_CLIENTS_QHW) && s1->modelindex == clq1_playerindex)
 		{
 			CLQW_HandlePlayerSkin(&ent, s1->colormap - 1);
 		}
@@ -1233,7 +1233,7 @@ static void CLQW_LinkPlayers()
 
 	q1player_info_t* info = cl.q1_players;
 	qwplayer_state_t* state = frame->playerstate;
-	for (int j = 0; j < MAX_CLIENTS_QW; j++, info++, state++)
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, info++, state++)
 	{
 		if (state->messagenum != cl.qh_parsecount)
 		{

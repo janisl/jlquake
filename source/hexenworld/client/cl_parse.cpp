@@ -691,22 +691,22 @@ void CL_ParseStartSoundPacket(void)
 
 	channel = net_message.ReadShort();
 
-	if (channel & SND_VOLUME)
+	if (channel & QHWSND_VOLUME)
 	{
 		volume = net_message.ReadByte();
 	}
 	else
 	{
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
 	}
 
-	if (channel & SND_ATTENUATION)
+	if (channel & QHWSND_ATTENUATION)
 	{
 		attenuation = net_message.ReadByte() / 32.0;
 	}
 	else
 	{
-		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
+		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
 	sound_num = net_message.ReadByte();
@@ -772,9 +772,9 @@ CL_NewTranslation
 */
 void CL_NewTranslation(int slot)
 {
-	if (slot > HWMAX_CLIENTS)
+	if (slot > MAX_CLIENTS_QHW)
 	{
-		Sys_Error("CL_NewTranslation: slot > HWMAX_CLIENTS");
+		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
 	}
 
 	CLH2_TranslatePlayerSkin(slot);
@@ -791,9 +791,9 @@ void CL_UpdateUserinfo(void)
 	h2player_info_t* player;
 
 	slot = net_message.ReadByte();
-	if (slot >= HWMAX_CLIENTS)
+	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: hwsvc_updateuserinfo > HWMAX_CLIENTS");
+		Host_EndGame("CL_ParseServerMessage: hwsvc_updateuserinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.h2_players[slot];
@@ -849,7 +849,7 @@ CL_MuzzleFlash
 void CL_MuzzleFlash()
 {
 	int i = net_message.ReadShort();
-	if ((unsigned)(i - 1) >= HWMAX_CLIENTS)
+	if ((unsigned)(i - 1) >= MAX_CLIENTS_QHW)
 	{
 		return;
 	}
@@ -906,7 +906,7 @@ void CL_NamePrint(void)
 		S_StartLocalSound("misc/talk.wav");
 	}
 
-	if (index >= 0 && index < HWMAX_CLIENTS)
+	if (index >= 0 && index < MAX_CLIENTS_QHW)
 	{
 		if (i == PRINT_CHAT)
 		{
@@ -1116,18 +1116,18 @@ void CL_ParseServerMessage(void)
 		case h2svc_updatefrags:
 			Sbar_Changed();
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: h2svc_updatefrags > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: h2svc_updatefrags > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].frags = net_message.ReadShort();
 			break;
 
 		case hwsvc_updateping:
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updateping > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: hwsvc_updateping > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].ping = net_message.ReadShort();
 			break;
@@ -1135,9 +1135,9 @@ void CL_ParseServerMessage(void)
 		case hwsvc_updateentertime:
 			// time is sent over as seconds ago
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updateentertime > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: hwsvc_updateentertime > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].entertime = realtime - net_message.ReadFloat();
 			break;
@@ -1145,9 +1145,9 @@ void CL_ParseServerMessage(void)
 		case hwsvc_updatepclass:
 			// playerclass has changed for this dude
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatepclass > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: hwsvc_updatepclass > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].playerclass = net_message.ReadByte();
 			cl.h2_players[i].level = cl.h2_players[i].playerclass & 31;
@@ -1157,9 +1157,9 @@ void CL_ParseServerMessage(void)
 		case hwsvc_updatedminfo:
 			// This dude killed someone, update his frags and level
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatedminfo > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: hwsvc_updatedminfo > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].frags = net_message.ReadShort();
 			cl.h2_players[i].playerclass = net_message.ReadByte();
@@ -1176,9 +1176,9 @@ void CL_ParseServerMessage(void)
 		case hwsvc_updatesiegeteam:
 			// This dude killed someone, update his frags and level
 			i = net_message.ReadByte();
-			if (i >= HWMAX_CLIENTS)
+			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatesiegeteam > HWMAX_CLIENTS");
+				Host_EndGame("CL_ParseServerMessage: hwsvc_updatesiegeteam > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].siege_team = net_message.ReadByte();
 			break;

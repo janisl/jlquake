@@ -19,6 +19,13 @@
 
 #define QHEDICT_FROM_AREA(l) STRUCT_FROM_LINK(l, qhedict_t, area)
 
+#define MULTICAST_ALL           0
+#define MULTICAST_PHS           1
+#define MULTICAST_PVS           2
+#define MULTICAST_ALL_R         3
+#define MULTICAST_PHS_R         4
+#define MULTICAST_PVS_R         5
+
 //
 //	Game
 //
@@ -75,6 +82,18 @@ q1trace_t SVQH_PushEntity(qhedict_t* ent, const vec3_t push);
 void SVQH_Physics_Pusher(qhedict_t* ent, float frametime);
 void SVQH_Physics_None(qhedict_t* ent, float frametime);
 void SVQH_Physics_Noclip(qhedict_t* ent, float frametime);
+
+//
+//	Send
+//
+extern unsigned clients_multicast;
+extern Cvar* sv_phs;
+
+void SVQH_Multicast(const vec3_t origin, int to);
+void SVH2_StopSound(qhedict_t* entity, int channel);
+void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
+	float attenuation);
+void SVH2_UpdateSoundPos(qhedict_t* entity, int channel);
 
 //
 //	World

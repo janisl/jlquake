@@ -75,7 +75,7 @@ struct qwframe_t
 
 	// received from server
 	double receivedtime;	// time message was received, or -1
-	qwplayer_state_t playerstate[MAX_CLIENTS_QW];	// message received that reflects performing
+	qwplayer_state_t playerstate[MAX_CLIENTS_QHW];	// message received that reflects performing
 	// the usercmd
 	qwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid

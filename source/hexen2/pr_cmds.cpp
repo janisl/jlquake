@@ -522,7 +522,7 @@ void PF_UpdateSoundPos(void)
 		Sys_Error("SVQH_StartSound: channel = %i", channel);
 	}
 
-	SV_UpdateSoundPos(entity, channel);
+	SVH2_UpdateSoundPos(entity, channel);
 }
 
 /*
