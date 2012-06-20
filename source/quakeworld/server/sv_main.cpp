@@ -1443,9 +1443,6 @@ void SV_InitLocal(void)
 	password = Cvar_Get("password", "", 0);	// password for entering the game
 	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
-	svqh_mintic = Cvar_Get("sv_mintic", "0.03", 0);	// bound the size of the
-	svqh_maxtic = Cvar_Get("sv_maxtic", "0.1", 0);	// physics time tic
-
 	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
 	teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
@@ -1461,16 +1458,7 @@ void SV_InitLocal(void)
 	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
 	// after disconnect
 
-	svqh_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
-	svqh_gravity           = Cvar_Get("sv_gravity", "800", 0);
-	svqh_stopspeed         = Cvar_Get("sv_stopspeed", "100", 0);
-	svqh_maxspeed          = Cvar_Get("sv_maxspeed", "320", 0);
-	svqh_spectatormaxspeed = Cvar_Get("sv_spectatormaxspeed", "500", 0);
-	svqh_accelerate        = Cvar_Get("sv_accelerate", "10", 0);
-	svqh_airaccelerate     = Cvar_Get("sv_airaccelerate", "0.7", 0);
-	svqh_wateraccelerate   = Cvar_Get("sv_wateraccelerate", "10", 0);
-	svqh_friction          = Cvar_Get("sv_friction", "4", 0);
-	svqh_waterfriction     = Cvar_Get("sv_waterfriction", "4", 0);
+	SVQH_RegisterPhysicsCvars();
 
 	sv_aim = Cvar_Get("sv_aim", "2", 0);
 

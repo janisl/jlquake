@@ -34,20 +34,63 @@ solid_edge items only clip against bsp models.
 #include "../progsvm/progsvm.h"
 #include "local.h"
 
-Cvar* svqh_friction;
-Cvar* svqh_stopspeed;
 Cvar* svqh_gravity;
-Cvar* svqh_maxvelocity;
-Cvar* svqh_nostep;
+Cvar* svqh_stopspeed;
 Cvar* svqh_maxspeed;
-Cvar* svqh_spectatormaxspeed;
 Cvar* svqh_accelerate;
-Cvar* svqh_airaccelerate;
-Cvar* svqh_wateraccelerate;
-Cvar* svqh_waterfriction;
+Cvar* svqh_friction;
+static Cvar* svqh_maxvelocity;
+static Cvar* svqh_spectatormaxspeed;
+static Cvar* svqh_airaccelerate;
+static Cvar* svqh_wateraccelerate;
+static Cvar* svqh_waterfriction;
+static Cvar* svqh_nostep;
 
-Cvar* svqh_mintic;
-Cvar* svqh_maxtic;
+static Cvar* svqh_mintic;
+static Cvar* svqh_maxtic;
+
+void SVQH_RegisterPhysicsCvars()
+{
+	svqh_stopspeed = Cvar_Get("sv_stopspeed", "100", 0);
+	svqh_accelerate = Cvar_Get("sv_accelerate", "10", 0);
+	svqh_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		svqh_gravity = Cvar_Get("sv_gravity", "800", 0);
+		svqh_friction = Cvar_Get("sv_friction", "4", 0);
+		svqh_spectatormaxspeed = Cvar_Get("sv_spectatormaxspeed", "500", 0);
+		svqh_airaccelerate = Cvar_Get("sv_airaccelerate", "0.7", 0);
+		svqh_wateraccelerate = Cvar_Get("sv_wateraccelerate", "10", 0);
+		// bound the size of the physics time tic
+		svqh_mintic = Cvar_Get("sv_mintic", "0.03", 0);
+		svqh_maxtic = Cvar_Get("sv_maxtic", "0.1", 0);
+		if (GGameType & GAME_Hexen2)
+		{
+			svqh_maxspeed = Cvar_Get("sv_maxspeed", "360", CVAR_SERVERINFO);
+			svqh_waterfriction = Cvar_Get("sv_waterfriction", "1", 0);
+		}
+		else
+		{
+			svqh_maxspeed = Cvar_Get("sv_maxspeed", "320", 0);
+			svqh_waterfriction = Cvar_Get("sv_waterfriction", "4", 0);
+		}
+	}
+	else
+	{
+		svqh_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
+		svqh_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
+		svqh_nostep = Cvar_Get("sv_nostep", "0", 0);
+		if (GGameType & GAME_Hexen2)
+		{
+			svqh_maxspeed = Cvar_Get("sv_maxspeed", "640", CVAR_SERVERINFO);
+		}
+		else
+		{
+			svqh_maxspeed = Cvar_Get("sv_maxspeed", "320", CVAR_SERVERINFO);
+		}
+	}
+
+}
 
 void SVQH_SetMoveVars()
 {

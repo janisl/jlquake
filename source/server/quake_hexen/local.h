@@ -62,17 +62,10 @@ void SVQH_ClientReliableWrite_SZ(client_t* cl, const void* data, int len);
 extern Cvar* svqh_friction;
 extern Cvar* svqh_stopspeed;
 extern Cvar* svqh_gravity;
-extern Cvar* svqh_maxvelocity;
-extern Cvar* svqh_nostep;
 extern Cvar* svqh_maxspeed;
-extern Cvar* svqh_spectatormaxspeed;
 extern Cvar* svqh_accelerate;
-extern Cvar* svqh_airaccelerate;
-extern Cvar* svqh_wateraccelerate;
-extern Cvar* svqh_waterfriction;
-extern Cvar* svqh_mintic;
-extern Cvar* svqh_maxtic;
 
+void SVQH_RegisterPhysicsCvars();
 void SVQH_SetMoveVars();
 bool SVQH_RunThink(qhedict_t* ent, float frametime);
 void SVQH_ProgStartFrame();
