@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "progsvm.h"
+#include "../quake_hexen/local.h"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;
@@ -26,10 +27,11 @@ dstatement_t* pr_statements;
 float* pr_globals;			// same as pr_global_struct
 int pr_edict_size;			// in bytes
 progGlobalVars_t pr_globalVars;
+unsigned short pr_crc;
 
 static Array<const char*> pr_strtbl;
 
-void PR_ClearStringMap()
+static void PR_ClearStringMap()
 {
 	pr_strtbl.Clear();
 }
@@ -592,5 +594,147 @@ void PR_InitGlobals()
 	if (GGameType & GAME_HexenWorld)
 	{
 		pr_globalVars.SmitePlayer = reinterpret_cast<func_t*>(&pr_globals[index++]);
+	}
+}
+
+static void PR_LoadProgsFile(const char* name, int expectedHeaderCrc)
+{
+	ED_ClearGEFVCache();
+	PR_ClearStringMap();
+
+	int filesize = FS_ReadFile(name, (void**)&progs);
+	if (!progs)
+	{
+		common->Error("PR_LoadProgs: couldn't load %s", name);
+	}
+	common->DPrintf("Programs occupy %iK.\n", filesize / 1024);
+	pr_crc = CRC_Block((byte*)progs, filesize);
+
+	// byte swap the header
+	for (int i = 0; i < (int)sizeof(*progs) / 4; i++)
+	{
+		((int*)progs)[i] = LittleLong(((int*)progs)[i]);
+	}
+
+	if (progs->version != PROG_VERSION)
+	{
+		common->FatalError("%s has wrong version number (%i should be %i)", name, progs->version, PROG_VERSION);
+	}
+	if (progs->crc != expectedHeaderCrc)
+	{
+		common->FatalError("%s system vars have been modified.", name);
+	}
+
+	pr_functions = (dfunction_t*)((byte*)progs + progs->ofs_functions);
+	pr_strings = (char*)progs + progs->ofs_strings;
+	pr_globaldefs = (ddef_t*)((byte*)progs + progs->ofs_globaldefs);
+	pr_fielddefs = (ddef_t*)((byte*)progs + progs->ofs_fielddefs);
+	pr_statements = (dstatement_t*)((byte*)progs + progs->ofs_statements);
+	pr_globals = (float*)((byte*)progs + progs->ofs_globals);
+
+	pr_edict_size = progs->entityfields * 4 + sizeof(qhedict_t) - sizeof(entvars_t);
+
+	// byte swap the lumps
+	for (int i = 0; i < progs->numstatements; i++)
+	{
+		pr_statements[i].op = LittleShort(pr_statements[i].op);
+		pr_statements[i].a = LittleShort(pr_statements[i].a);
+		pr_statements[i].b = LittleShort(pr_statements[i].b);
+		pr_statements[i].c = LittleShort(pr_statements[i].c);
+	}
+
+	for (int i = 0; i < progs->numfunctions; i++)
+	{
+		pr_functions[i].first_statement = LittleLong(pr_functions[i].first_statement);
+		pr_functions[i].parm_start = LittleLong(pr_functions[i].parm_start);
+		pr_functions[i].s_name = LittleLong(pr_functions[i].s_name);
+		pr_functions[i].s_file = LittleLong(pr_functions[i].s_file);
+		pr_functions[i].numparms = LittleLong(pr_functions[i].numparms);
+		pr_functions[i].locals = LittleLong(pr_functions[i].locals);
+	}
+
+	for (int i = 0; i < progs->numglobaldefs; i++)
+	{
+		pr_globaldefs[i].type = LittleShort(pr_globaldefs[i].type);
+		pr_globaldefs[i].ofs = LittleShort(pr_globaldefs[i].ofs);
+		pr_globaldefs[i].s_name = LittleLong(pr_globaldefs[i].s_name);
+	}
+
+	for (int i = 0; i < progs->numfielddefs; i++)
+	{
+		pr_fielddefs[i].type = LittleShort(pr_fielddefs[i].type);
+		if (pr_fielddefs[i].type & DEF_SAVEGLOBAL)
+		{
+			common->FatalError("PR_LoadProgs: pr_fielddefs[i].type & DEF_SAVEGLOBAL");
+		}
+		pr_fielddefs[i].ofs = LittleShort(pr_fielddefs[i].ofs);
+		pr_fielddefs[i].s_name = LittleLong(pr_fielddefs[i].s_name);
+	}
+
+	for (int i = 0; i < progs->numglobals; i++)
+	{
+		((int*)pr_globals)[i] = LittleLong(((int*)pr_globals)[i]);
+	}
+
+	ED_InitEntityFields();
+	PR_InitGlobals();
+}
+
+static void GetHexen2ProgsName(char* finalprogname)
+{
+	String::Cpy(finalprogname, "progs.dat");
+	Array<byte> MapList;
+	FS_ReadFile("maplist.txt", MapList);
+	MapList.Append(0);
+	const char* p = (char*)MapList.Ptr();
+	const char* token = String::Parse2(&p);
+	int NumMaps = String::Atoi(token);
+	for (int i = 0; i < NumMaps; i++)
+	{
+		token = String::Parse2(&p);
+		if (!String::ICmp(token, sv.name))
+		{
+			token = String::Parse2(&p);
+			String::Cpy(finalprogname, token);
+		}
+		else
+		{
+			token = String::Parse2(&p);
+		}
+	}
+}
+
+void PR_LoadProgs()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			PR_LoadProgsFile("hwprogs.dat", HWPROGHEADER_CRC);
+		}
+		else
+		{
+			char finalprogname[MAX_OSPATH];
+			GetHexen2ProgsName(finalprogname);
+
+			PR_LoadProgsFile(finalprogname, (GGameType & GAME_H2Portals ? H2MPPROGHEADER_CRC : H2PROGHEADER_CRC));
+
+			if (GGameType & GAME_H2Portals)
+			{
+				// set the cl_playerclass value after pr_global_struct has been created
+				*pr_globalVars.cl_playerclass = Cvar_VariableValue("_cl_playerclass");
+			}
+		}
+	}
+	else
+	{
+		if (GGameType & GAME_QuakeWorld)
+		{
+			PR_LoadProgsFile("qwprogs.dat", QWPROGHEADER_CRC);
+		}
+		else
+		{
+			PR_LoadProgsFile("progs.dat", Q1PROGHEADER_CRC);
+		}
 	}
 }

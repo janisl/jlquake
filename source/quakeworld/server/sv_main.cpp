@@ -46,8 +46,6 @@ Cvar* allow_download_models;
 Cvar* allow_download_sounds;
 Cvar* allow_download_maps;
 
-Cvar* sv_highchars;
-
 Cvar* pausable;
 
 
@@ -596,7 +594,7 @@ void SVC_DirectConnect(void)
 			return;
 		}
 		Info_RemoveKey(userinfo, "spectator", MAX_INFO_STRING_QW);	// remove passwd
-		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		spectator = true;
 	}
 	else
@@ -623,7 +621,7 @@ void SVC_DirectConnect(void)
 	newcl->qh_userid = userid;
 
 	// works properly
-	if (!sv_highchars->value)
+	if (!svqh_highchars->value)
 	{
 		byte* p, * q;
 
@@ -1320,11 +1318,11 @@ void SV_CheckVars(void)
 	Con_Printf("Updated needpass.\n");
 	if (!v)
 	{
-		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	}
 	else
 	{
-		Info_SetValueForKey(svs.qh_info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(svs.qh_info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	}
 }
 
@@ -1469,7 +1467,7 @@ void SV_InitLocal(void)
 	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
 	allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
 
-	sv_highchars = Cvar_Get("sv_highchars", "1", 0);
+	svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
 
 	sv_phs = Cvar_Get("sv_phs", "1", 0);
 
@@ -1483,7 +1481,7 @@ void SV_InitLocal(void)
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 		sprintf(localmodels[i], "*%i", i);
 
-	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 
 	svs.clients = new client_t[MAX_CLIENTS_QHW];
 	Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QHW);
@@ -1617,13 +1615,13 @@ void SV_ExtractFromUserinfo(client_t* cl)
 
 	if (String::Cmp(val, newname))
 	{
-		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		val = Info_ValueForKey(cl->userinfo, "name");
 	}
 
 	if (!val[0] || !String::ICmp(val, "console"))
 	{
-		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		val = Info_ValueForKey(cl->userinfo, "name");
 	}
 
@@ -1665,7 +1663,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			}
 
 			sprintf(newname, "(%d)%-.40s", dupc++, p);
-			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value);
+			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 			val = Info_ValueForKey(cl->userinfo, "name");
 		}
 		else

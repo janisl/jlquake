@@ -912,7 +912,7 @@ void SV_SetInfo_f(void)
 		return;		// don't set priveledged values
 
 	}
-	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), HWMAX_INFO_STRING, 64, 64, !sv_highchars->value, false);
+	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value, false);
 	String::NCpy(host_client->name, Info_ValueForKey(host_client->userinfo, "name"),
 		sizeof(host_client->name) - 1);
 //	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);

@@ -1175,7 +1175,7 @@ void SV_SetInfo_f(void)
 	}
 	String::Cpy(oldval, Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
 
-	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !sv_highchars->value, false);
+	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value, false);
 // name is extracted below in ExtractFromUserInfo
 //	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 //		, sizeof(host_client->name)-1);

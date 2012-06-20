@@ -600,7 +600,7 @@ void SV_Serverinfo_f(void)
 		Con_Printf("Star variables cannot be changed.\n");
 		return;
 	}
-	Info_SetValueForKey(svs.qh_info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value, false);
+	Info_SetValueForKey(svs.qh_info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value, false);
 
 	// if this is a cvar, change it too
 	Cvar_UpdateIfExists(Cmd_Argv(1), Cmd_Argv(2));
@@ -636,7 +636,7 @@ void SV_Localinfo_f(void)
 		Con_Printf("Star variables cannot be changed.\n");
 		return;
 	}
-	Info_SetValueForKey(localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_LOCALINFO_STRING, 64, 64, !sv_highchars->value, false);
+	Info_SetValueForKey(localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_LOCALINFO_STRING, 64, 64, !svqh_highchars->value, false);
 }
 
 
@@ -695,7 +695,7 @@ void SV_Gamedir(void)
 		return;
 	}
 
-	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 }
 
 /*
@@ -801,7 +801,7 @@ void SV_Gamedir_f(void)
 	}
 
 	COM_Gamedir(dir);
-	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 }
 
 /*
@@ -918,7 +918,7 @@ void SV_InitOperatorCommands(void)
 	if (COM_CheckParm("-cheats"))
 	{
 		sv_allow_cheats = true;
-		Info_SetValueForKey(svs.qh_info, "*cheats", "ON", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+		Info_SetValueForKey(svs.qh_info, "*cheats", "ON", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	}
 
 	Cmd_AddCommand("logfile", SV_Logfile_f);

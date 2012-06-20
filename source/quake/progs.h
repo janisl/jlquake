@@ -20,10 +20,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void PR_Init(void);
 
-void PR_LoadProgs(void);
-
 void PR_InitBuiltins();
-
-//============================================================================
-
-extern unsigned short pr_crc;

@@ -45,7 +45,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-extern Cvar* sv_highchars;
+extern func_t SpectatorConnect;
+extern func_t SpectatorThink;
+extern func_t SpectatorDisconnect;
 
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 

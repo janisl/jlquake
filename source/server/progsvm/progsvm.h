@@ -133,6 +133,7 @@ extern dstatement_t* pr_statements;
 extern float* pr_globals;			// same as pr_global_struct
 extern int pr_edict_size;			// in bytes
 extern progGlobalVars_t pr_globalVars;
+extern unsigned short pr_crc;
 
 extern builtin_t* pr_builtins;
 extern int pr_numbuiltins;
@@ -140,7 +141,6 @@ extern bool pr_trace;
 extern dfunction_t* pr_xfunction;
 extern int pr_argc;
 
-void PR_ClearStringMap();
 int PR_SetString(const char* string);
 const char* PR_GetString(int number);
 // returns a copy of the string allocated from the server's string heap
@@ -161,6 +161,7 @@ void ED_WriteGlobals(fileHandle_t f);
 bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
 const char* ED_ParseGlobals(const char* data);
 void PR_InitGlobals();
+void PR_LoadProgs();
 
 void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
 void PR_ExecuteProgram(func_t fnum);

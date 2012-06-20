@@ -35,7 +35,7 @@ void Cvar_Changed(Cvar* var)
 	if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')
 	{
 		Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
-			64, 64, !sv_highchars || !sv_highchars->value, false);
+			64, 64, !svqh_highchars || !svqh_highchars->value, false);
 		SV_SendServerInfoChange(var->name, var->string);
 //		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.qh_info);
 	}

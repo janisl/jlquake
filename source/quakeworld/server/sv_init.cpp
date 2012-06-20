@@ -24,6 +24,10 @@ char localmodels[MAX_MODELS_Q1][5];		// inline model names for precache
 
 char localinfo[MAX_LOCALINFO_STRING + 1];	// local game info
 
+func_t SpectatorConnect;
+func_t SpectatorThink;
+func_t SpectatorDisconnect;
+
 /*
 ================
 SV_ModelIndex
@@ -178,6 +182,32 @@ unsigned SV_CheckModel(const char* mdl)
 	return crc;
 }
 
+void SV_AddProgCrcTotheServerInfo()
+{
+	char num[32];
+	sprintf(num, "%i", pr_crc);
+	Info_SetValueForKey(svs.qh_info, "*progs", num, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+}
+
+void SV_FindSpectatorFunctions()
+{
+	SpectatorConnect = SpectatorThink = SpectatorDisconnect = 0;
+
+	dfunction_t* f;
+	if ((f = ED_FindFunction("SpectatorConnect")) != NULL)
+	{
+		SpectatorConnect = (func_t)(f - pr_functions);
+	}
+	if ((f = ED_FindFunction("SpectatorThink")) != NULL)
+	{
+		SpectatorThink = (func_t)(f - pr_functions);
+	}
+	if ((f = ED_FindFunction("SpectatorDisconnect")) != NULL)
+	{
+		SpectatorDisconnect = (func_t)(f - pr_functions);
+	}
+}
+
 /*
 ================
 SV_SpawnServer
@@ -222,6 +252,10 @@ void SV_SpawnServer(char* server)
 	// load progs to get entity field count
 	// which determines how big each edict is
 	PR_LoadProgs();
+
+	SV_AddProgCrcTotheServerInfo();
+
+	SV_FindSpectatorFunctions();
 
 	// allocate edicts
 	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
@@ -306,6 +340,6 @@ void SV_SpawnServer(char* server)
 	SV_CreateBaseline();
 	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
 
-	Info_SetValueForKey(svs.qh_info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(svs.qh_info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	Con_DPrintf("Server spawned.\n");
 }

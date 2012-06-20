@@ -41,6 +41,7 @@ void SVQH_FlushSignon();
 //
 extern Cvar* svqh_deathmatch;
 extern Cvar* svqh_coop;
+extern Cvar* svqh_highchars;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)

@@ -21,4 +21,6 @@
 Cvar* svqh_deathmatch;			// 0, 1, or 2
 Cvar* svqh_coop;				// 0 or 1
 
+Cvar* svqh_highchars;
+
 int svqh_current_skill;

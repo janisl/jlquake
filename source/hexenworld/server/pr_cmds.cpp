@@ -2209,7 +2209,7 @@ void PF_setclass(void)
 	host_client->h2_playerclass = NewClass;
 
 	sprintf(temp,"%d",(int)NewClass);
-	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !sv_highchars->value);
+	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
 	String::NCpy(host_client->name, Info_ValueForKey(host_client->userinfo, "name"),
 		sizeof(host_client->name) - 1);
 	host_client->qh_sendinfo = true;
