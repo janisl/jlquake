@@ -5,6 +5,4 @@ extern int pr_string_count;
 
 //============================================================================
 
-void PR_Init(void);
-
 void PR_InitBuiltins();

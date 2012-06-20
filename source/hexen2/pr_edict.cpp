@@ -132,14 +132,3 @@ void PR_LoadStrings(void)
 	pr_string_count = count;
 	Con_Printf("Read in %d string lines\n",count);
 }
-
-/*
-===============
-PR_Init
-===============
-*/
-void PR_Init(void)
-{
-	PR_InitBuiltins();
-	PR_SharedInit();
-}

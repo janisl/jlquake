@@ -7,7 +7,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
 add_executable(jlqwsv
 	server/pr_cmds.cpp 
-	server/pr_edict.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 	server/sv_ents.cpp

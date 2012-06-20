@@ -1131,6 +1131,7 @@ void SV_SpawnServer(char* server)
 	String::Cpy(sv.name, server);
 
 // load progs to get entity field count
+	PR_InitBuiltins();
 	PR_LoadProgs();
 
 // allocate server memory

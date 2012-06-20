@@ -17,7 +17,6 @@ add_executable(jlquake
 	net_loop.cpp
 	net_main.cpp
 	pr_cmds.cpp
-	pr_edict.cpp
 	r_part.cpp
 	sbar.cpp
 	snd_dma.cpp

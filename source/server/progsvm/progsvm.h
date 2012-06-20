@@ -162,7 +162,7 @@ bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
 const char* ED_ParseGlobals(const char* data);
 void PR_InitGlobals();
 void PR_LoadProgs();
-void PR_SharedInit();
+void PR_Init();
 
 void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
 void PR_ExecuteProgram(func_t fnum);

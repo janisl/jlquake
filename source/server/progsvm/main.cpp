@@ -739,7 +739,7 @@ void PR_LoadProgs()
 	}
 }
 
-void PR_SharedInit()
+void PR_Init()
 {
 	Cmd_AddCommand("edict", ED_PrintEdict_f);
 	Cmd_AddCommand("edicts", ED_PrintEdicts);

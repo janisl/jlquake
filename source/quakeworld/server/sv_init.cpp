@@ -251,6 +251,7 @@ void SV_SpawnServer(char* server)
 
 	// load progs to get entity field count
 	// which determines how big each edict is
+	PR_InitBuiltins();
 	PR_LoadProgs();
 
 	SV_AddProgCrcTotheServerInfo();

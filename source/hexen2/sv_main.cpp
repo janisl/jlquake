@@ -2258,6 +2258,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	total_loading_size = 100;
 	current_loading_size = 0;
 	loading_stage = 1;
+	PR_InitBuiltins();
 	PR_LoadProgs();
 	current_loading_size += 40;
 	SCR_UpdateScreen();
