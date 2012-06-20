@@ -12,7 +12,6 @@
 
 extern Cvar* pausable;
 
-int current_skill;
 static double old_time;
 
 void RestoreClients(void);
@@ -264,7 +263,7 @@ void Host_Map_f(void)
 	SCR_BeginLoadingPlaque();
 
 	info_mask = 0;
-	if (!coop->value && deathmatch->value)
+	if (!svqh_coop->value && svqh_deathmatch->value)
 	{
 		info_mask2 = 0x80000000;
 	}
@@ -551,12 +550,12 @@ void Host_Savegame_f(void)
 	FS_Printf(f, "%s\n", comment);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
-	FS_Printf(f, "%d\n", current_skill);
+	FS_Printf(f, "%d\n", svqh_current_skill);
 	FS_Printf(f, "%s\n", sv.name);
 	FS_Printf(f, "%f\n",sv.qh_time);
 	FS_Printf(f, "%d\n",svs.qh_maxclients);
-	FS_Printf(f, "%f\n",deathmatch->value);
-	FS_Printf(f, "%f\n",coop->value);
+	FS_Printf(f, "%f\n",svqh_deathmatch->value);
+	FS_Printf(f, "%f\n",svqh_coop->value);
 	FS_Printf(f, "%f\n",teamplay->value);
 	FS_Printf(f, "%f\n",randomclass->value);
 	FS_Printf(f, "%f\n",clh2_playerclass->value);
@@ -647,8 +646,8 @@ void Host_Loadgame_f(void)
 		spawn_parms[i] = String::Atof(GetLine(ReadPos));
 	}
 	// this silliness is so we can load 1.06 save files, which have float skill values
-	current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
-	Cvar_SetValue("skill", (float)current_skill);
+	svqh_current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
 
 	Cvar_SetValue("deathmatch", 0);
 	Cvar_SetValue("coop", 0);
@@ -1662,7 +1661,7 @@ void Host_Spawn_f(void)
 		ent = host_client->qh_edict;
 		sv.qh_paused = false;
 
-		if (!ent->GetStatsRestored() || deathmatch->value)
+		if (!ent->GetStatsRestored() || svqh_deathmatch->value)
 		{
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 

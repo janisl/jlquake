@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "progsvm.h"
+#include "../quake_hexen/local.h"
 
 #define MAX_FIELD_LEN   64
 #define GEFV_CACHESIZE  2
@@ -163,6 +164,8 @@ idEntVarDef entFieldMoveChain;
 idEntVarDef entFieldChainMoved;
 idEntVarDef entFieldGravity;
 idEntVarDef entFieldSiegeTeam;
+
+Cvar* max_temp_edicts;
 
 static bool RemoveBadReferences;
 
@@ -919,5 +922,288 @@ void ED_Count()
 	common->Printf("view      :%3i\n", models);
 	common->Printf("touch     :%3i\n", solid);
 	common->Printf("step      :%3i\n", step);
+}
 
+//	Either finds a free edict, or allocates a new one.
+// Try to avoid reusing an entity that was recently freed, because it
+// can cause the client to think the entity morphed into something else
+// instead of being removed and recreated, which can cause interpolated
+// angles and bad trails.
+qhedict_t* ED_Alloc()
+{
+	int i = (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ? MAX_CLIENTS_QHW : svs.qh_maxclients) +
+		(GGameType & GAME_Hexen2 ? max_temp_edicts->value : 0) + 1;
+	for (; i < sv.qh_num_edicts; i++)
+	{
+		qhedict_t* e = QH_EDICT_NUM(i);
+		// the first couple seconds of server time can involve a lot of
+		// freeing and allocating, so relax the replacement policy
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
+		{
+			ED_ClearEdict(e);
+			return e;
+		}
+	}
+
+	if (i == MAX_EDICTS_QH)
+	{
+		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+		{
+			common->Printf("WARNING: ED_Alloc: no free edicts\n");
+			i--;	// step on whatever is the last edict
+			qhedict_t* e = QH_EDICT_NUM(i);
+			SVQH_UnlinkEdict(e);
+		}
+		else
+		{
+			common->Error("ED_Alloc: no free edicts");
+		}
+	}
+	else
+	{
+		sv.qh_num_edicts++;
+	}
+	qhedict_t* e = QH_EDICT_NUM(i);
+	ED_ClearEdict(e);
+
+	return e;
+}
+
+//	Marks the edict as free
+//	FIXME: walk all entities and NULL out references to this entity
+void ED_Free(qhedict_t* ed)
+{
+	SVQH_UnlinkEdict(ed);			// unlink from world bsp
+
+	ed->free = true;
+	ed->SetModel(0);
+	ed->SetTakeDamage(0);
+	ed->v.modelindex = 0;
+	ed->SetColorMap(0);
+	ed->SetSkin(0);
+	ed->SetFrame(0);
+	VectorCopy(vec3_origin, ed->GetOrigin());
+	ed->SetAngles(vec3_origin);
+	ed->SetNextThink(-1);
+	ed->SetSolid(0);
+
+	ed->freetime = sv.qh_time;
+	ed->alloctime = -1;
+}
+
+qhedict_t* ED_Alloc_Temp()
+{
+	int i,j,Found;
+	qhedict_t* e,* Least;
+	float LeastTime;
+	qboolean LeastSet;
+
+	LeastTime = -1;
+	LeastSet = false;
+	for (i = (GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients) + 1,j = 0; j < max_temp_edicts->value; i++,j++)
+	{
+		e = QH_EDICT_NUM(i);
+		// the first couple seconds of server time can involve a lot of
+		// freeing and allocating, so relax the replacement policy
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
+		{
+			ED_ClearEdict(e);
+			e->alloctime = sv.qh_time;
+
+			return e;
+		}
+		else if (e->alloctime < LeastTime || !LeastSet)
+		{
+			Least = e;
+			LeastTime = e->alloctime;
+			Found = j;
+			LeastSet = true;
+		}
+	}
+
+	ED_Free(Least);
+	ED_ClearEdict(Least);
+	Least->alloctime = sv.qh_time;
+
+	return Least;
+}
+
+//	The entities are directly placed in the array, rather than allocated with
+// ED_Alloc, because otherwise an error loading the map would have entity
+// number references out of order.
+//	Creates a server's entity / program execution context by
+// parsing textual entity definitions out of an ent file.
+//	Used for both fresh maps and savegame loads.  A fresh map would also need
+// to call ED_CallSpawnFunctions () to let the objects initialize themselves.
+void ED_LoadFromFile(const char* data)
+{
+	qhedict_t* ent;
+	int inhibit,skip;
+	dfunction_t* func;
+
+	ent = NULL;
+	inhibit = 0;
+	*pr_globalVars.time = sv.qh_time;
+
+	// parse ents
+	while (1)
+	{
+		// parse the opening brace
+		char* token = String::Parse2(&data);
+		if (!data)
+		{
+			break;
+		}
+		if (token[0] != '{')
+		{
+			common->Error("ED_LoadFromFile: found %s when expecting {",token);
+		}
+
+		if (!ent)
+		{
+			ent = QH_EDICT_NUM(0);
+		}
+		else
+		{
+			ent = ED_Alloc();
+		}
+		data = ED_ParseEdict(data, ent);
+
+		// remove things from different skill levels or deathmatch
+		if (GGameType & GAME_Hexen2)
+		{
+			if (svqh_deathmatch->value)
+			{
+				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_DEATHMATCH))
+				{
+					ED_Free(ent);
+					inhibit++;
+					continue;
+				}
+			}
+			else if (svqh_coop->value)
+			{
+				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_COOP))
+				{
+					ED_Free(ent);
+					inhibit++;
+					continue;
+				}
+			}
+			else
+			{	// Gotta be single player
+				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_SINGLE))
+				{
+					ED_Free(ent);
+					inhibit++;
+					continue;
+				}
+
+				if (!(GGameType & GAME_HexenWorld))
+				{
+					skip = 0;
+
+					switch (Cvar_VariableIntegerValue("_cl_playerclass"))
+					{
+					case CLASS_PALADIN:
+						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_PALADIN)
+						{
+							skip = 1;
+						}
+						break;
+
+					case CLASS_CLERIC:
+						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_CLERIC)
+						{
+							skip = 1;
+						}
+						break;
+
+					case CLASS_DEMON:
+					case CLASS_NECROMANCER:
+						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_NECROMANCER)
+						{
+							skip = 1;
+						}
+						break;
+
+					case CLASS_THEIF:
+						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_THEIF)
+						{
+							skip = 1;
+						}
+						break;
+					}
+
+					if (skip)
+					{
+						ED_Free(ent);
+						inhibit++;
+						continue;
+					}
+				}
+			}
+
+			int current_skill = GGameType & GAME_HexenWorld ? sv.hw_current_skill : svqh_current_skill;
+			if ((current_skill == 0 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_EASY)) ||
+				(current_skill == 1 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_MEDIUM)) ||
+				(current_skill >= 2 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_HARD)))
+			{
+				ED_Free(ent);
+				inhibit++;
+				continue;
+			}
+		}
+		else
+		{
+			if (GGameType & GAME_QuakeWorld || svqh_deathmatch->value)
+			{
+				if (((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_DEATHMATCH))
+				{
+					ED_Free(ent);
+					inhibit++;
+					continue;
+				}
+			}
+			else if ((svqh_current_skill == 0 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_EASY)) ||
+					(svqh_current_skill == 1 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_MEDIUM)) ||
+					(svqh_current_skill >= 2 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_HARD)))
+			{
+				ED_Free(ent);
+				inhibit++;
+				continue;
+			}
+		}
+
+		//
+		// immediately call spawn function
+		//
+		if (!ent->GetClassName())
+		{
+			common->Printf("No classname for:\n");
+			ED_Print(ent);
+			ED_Free(ent);
+			continue;
+		}
+
+		// look for the spawn function
+		func = ED_FindFunction(PR_GetString(ent->GetClassName()));
+
+		if (!func)
+		{
+			common->Printf("No spawn function for:\n");
+			ED_Print(ent);
+			ED_Free(ent);
+			continue;
+		}
+
+		*pr_globalVars.self = EDICT_TO_PROG(ent);
+		PR_ExecuteProgram(func - pr_functions);
+		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+		{
+			SVQH_FlushSignon();
+		}
+	}
+
+	common->DPrintf("%i entities inhibited\n", inhibit);
 }

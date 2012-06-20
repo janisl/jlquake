@@ -15,20 +15,6 @@
 
 #define FL2_CROUCHED            4096
 
-// Built-in Spawn Flags
-#define SPAWNFLAG_NOT_PALADIN       0x00000100
-#define SPAWNFLAG_NOT_CLERIC        0x00000200
-#define SPAWNFLAG_NOT_NECROMANCER   0x00000400
-#define SPAWNFLAG_NOT_THEIF         0x00000800
-#define SPAWNFLAG_NOT_EASY          0x00001000
-#define SPAWNFLAG_NOT_MEDIUM        0x00002000
-#define SPAWNFLAG_NOT_HARD          0x00004000
-#define SPAWNFLAG_NOT_DEATHMATCH    0x00008000
-#define SPAWNFLAG_NOT_COOP          0x00010000
-#define SPAWNFLAG_NOT_SINGLE        0x00020000
-#define SPAWNFLAG_NOT_DEMON         0x00040000
-
-
 // server flags
 #define SFL_EPISODE_1       1
 #define SFL_EPISODE_2       2
@@ -42,9 +28,7 @@
 
 extern Cvar* teamplay;
 extern Cvar* skill;
-extern Cvar* deathmatch;
 extern Cvar* randomclass;
-extern Cvar* coop;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 

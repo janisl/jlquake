@@ -43,3 +43,8 @@ struct qwclient_frame_t
 #define H2MOVE_PHASE        4
 
 #define QHPHS_OVERRIDE_R    8
+
+#define Q1SPAWNFLAG_NOT_EASY          256
+#define Q1SPAWNFLAG_NOT_MEDIUM        512
+#define Q1SPAWNFLAG_NOT_HARD          1024
+#define Q1SPAWNFLAG_NOT_DEATHMATCH    2048

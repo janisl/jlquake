@@ -47,8 +47,6 @@ Cvar* samelevel;
 Cvar* maxclients;
 Cvar* maxspectators;
 Cvar* skill;
-Cvar* deathmatch;
-Cvar* coop;
 Cvar* randomclass;
 Cvar* damageScale;
 Cvar* shyRespawn;
@@ -1330,8 +1328,8 @@ void SV_InitLocal(void)
 	maxclients = Cvar_Get("maxclients", "8", CVAR_SERVERINFO);
 	maxspectators = Cvar_Get("maxspectators", "8", CVAR_SERVERINFO);
 	skill = Cvar_Get("skill", "1", 0);						// 0 - 3
-	deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
-	coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2
+	svqh_deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
+	svqh_coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2
 	randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
 	damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
 	shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);

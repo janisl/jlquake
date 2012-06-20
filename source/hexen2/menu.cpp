@@ -3468,7 +3468,7 @@ void M_Menu_GameOptions_f(void)
 		startepisode = REG_START;
 	}
 
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		startlevel = 0;
 		if (startepisode == 1)
@@ -3501,7 +3501,7 @@ void M_GameOptions_Draw(void)
 	M_Print(160 + 8, 84, va("%i", maxplayers));
 
 	M_Print(0 + 8, 92, "        Game Type");
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		M_Print(160 + 8, 92, "Cooperative");
 	}
@@ -3629,8 +3629,8 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 2:
-		Cvar_SetValue("coop", coop->value ? 0 : 1);
-		if (coop->value)
+		Cvar_SetValue("coop", svqh_coop->value ? 0 : 1);
+		if (svqh_coop->value)
 		{
 			startlevel = 0;
 			if (startepisode == 1)
@@ -3730,7 +3730,7 @@ void M_NetStart_Change(int dir)
 		if (registered->value)
 		{
 			count = DM_START;
-			if (!coop->value)
+			if (!svqh_coop->value)
 			{
 				count++;
 			}
@@ -3772,7 +3772,7 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 10:
-		if (coop->value)
+		if (svqh_coop->value)
 		{
 			startlevel = 0;
 			break;
@@ -3807,7 +3807,7 @@ void M_GameOptions_Key(int key)
 		if (gameoptions_cursor < 0)
 		{
 			gameoptions_cursor = NUM_GAMEOPTIONS - 1;
-			if (coop->value)
+			if (svqh_coop->value)
 			{
 				gameoptions_cursor--;
 			}
@@ -3817,7 +3817,7 @@ void M_GameOptions_Key(int key)
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
 		gameoptions_cursor++;
-		if (coop->value)
+		if (svqh_coop->value)
 		{
 			if (gameoptions_cursor >= NUM_GAMEOPTIONS - 1)
 			{

@@ -26,18 +26,6 @@
 
 #define FL2_CROUCHED            4096
 
-// Built-in Spawn Flags
-#define SPAWNFLAG_NOT_PALADIN       256
-#define SPAWNFLAG_NOT_CLERIC        512
-#define SPAWNFLAG_NOT_NECROMANCER   1024
-#define SPAWNFLAG_NOT_THEIF         2048
-#define SPAWNFLAG_NOT_EASY          4096
-#define SPAWNFLAG_NOT_MEDIUM        8192
-#define SPAWNFLAG_NOT_HARD          16384
-#define SPAWNFLAG_NOT_DEATHMATCH    32768
-#define SPAWNFLAG_NOT_COOP          65536
-#define SPAWNFLAG_NOT_SINGLE        131072
-
 // server flags
 #define SFL_EPISODE_1       1
 #define SFL_EPISODE_2       2
@@ -56,8 +44,6 @@ extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 extern Cvar* spawn;
 extern Cvar* teamplay;
 extern Cvar* skill;
-extern Cvar* deathmatch;
-extern Cvar* coop;
 extern Cvar* maxclients;
 extern Cvar* randomclass;
 extern Cvar* damageScale;
@@ -167,6 +153,5 @@ void SV_Status_f(void);
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
 
 void SV_ParseEffect(QMsg* sb);
-void SV_FlushSignon(void);
 void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
 void SV_SendEffect(QMsg* sb, int index);

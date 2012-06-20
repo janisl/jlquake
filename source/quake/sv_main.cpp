@@ -121,7 +121,7 @@ void SV_SendServerinfo(client_t* client)
 	client->qh_message.WriteLong(PROTOCOL_VERSION);
 	client->qh_message.WriteByte(svs.qh_maxclients);
 
-	if (!coop->value && deathmatch->value)
+	if (!svqh_coop->value && svqh_deathmatch->value)
 	{
 		client->qh_message.WriteByte(GAME_DEATHMATCH);
 	}
@@ -1105,21 +1105,21 @@ void SV_SpawnServer(char* server)
 //
 // make cvars consistant
 //
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		Cvar_SetValue("deathmatch", 0);
 	}
-	current_skill = (int)(skill->value + 0.5);
-	if (current_skill < 0)
+	svqh_current_skill = (int)(skill->value + 0.5);
+	if (svqh_current_skill < 0)
 	{
-		current_skill = 0;
+		svqh_current_skill = 0;
 	}
-	if (current_skill > 3)
+	if (svqh_current_skill > 3)
 	{
-		current_skill = 3;
+		svqh_current_skill = 3;
 	}
 
-	Cvar_SetValue("skill", (float)current_skill);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
 
 //
 // set up the new server
@@ -1186,13 +1186,13 @@ void SV_SpawnServer(char* server)
 	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
-	if (coop->value)
+	if (svqh_coop->value)
 	{
-		*pr_globalVars.coop = coop->value;
+		*pr_globalVars.coop = svqh_coop->value;
 	}
 	else
 	{
-		*pr_globalVars.deathmatch = deathmatch->value;
+		*pr_globalVars.deathmatch = svqh_deathmatch->value;
 	}
 
 	*pr_globalVars.mapname = PR_SetString(sv.name);

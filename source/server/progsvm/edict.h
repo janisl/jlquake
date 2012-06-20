@@ -426,6 +426,8 @@ struct qhedict_t
 #undef FIELD_ENTITY
 };
 
+extern Cvar* max_temp_edicts;
+
 int ED_InitEntityFields();
 
 qhedict_t* QH_EDICT_NUM(int n);
@@ -448,6 +450,10 @@ void ED_PrintEdict_f();
 void ED_Write(fileHandle_t f, const qhedict_t* ed);
 const char* ED_ParseEdict(const char* data, qhedict_t* ent);
 void ED_Count();
+qhedict_t* ED_Alloc();
+void ED_Free(qhedict_t* ed);
+qhedict_t* ED_Alloc_Temp();
+void ED_LoadFromFile(const char* data);
 
 inline int qhedict_t::GetIntField(idEntVarDef& field) const
 {

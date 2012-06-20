@@ -32,6 +32,20 @@
 void PF_changeyaw();
 
 //
+//	Init
+//
+void SVQH_FlushSignon();
+
+//
+//	Main
+//
+extern Cvar* svqh_deathmatch;
+extern Cvar* svqh_coop;
+extern int svqh_current_skill;			// skill level for currently loaded level (in case
+										//  the user changes the cvar while the level is
+										//  running, this reflects the level actually in use)
+
+//
 //	Move
 //
 bool SVQH_CheckBottom(qhedict_t* ent);

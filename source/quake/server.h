@@ -28,17 +28,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DAMAGE_YES              1
 #define DAMAGE_AIM              2
 
-#define SPAWNFLAG_NOT_EASY          256
-#define SPAWNFLAG_NOT_MEDIUM        512
-#define SPAWNFLAG_NOT_HARD          1024
-#define SPAWNFLAG_NOT_DEATHMATCH    2048
-
 //============================================================================
 
 extern Cvar* teamplay;
 extern Cvar* skill;
-extern Cvar* deathmatch;
-extern Cvar* coop;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 

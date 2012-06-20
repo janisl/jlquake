@@ -22,10 +22,6 @@ void PR_Init(void);
 
 void PR_LoadProgs(void);
 
-qhedict_t* ED_Alloc(void);
-void ED_Free(qhedict_t* ed);
-
-void ED_LoadFromFile(const char* data);
 void PR_InitBuiltins();
 
 //============================================================================

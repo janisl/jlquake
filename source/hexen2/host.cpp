@@ -52,9 +52,7 @@ Cvar* samelevel;
 Cvar* noexit;
 
 Cvar* skill;						// 0 - 3
-Cvar* deathmatch;			// 0, 1, or 2
 Cvar* randomclass;				// 0, 1, or 2
-Cvar* coop;				// 0 or 1
 
 Cvar* pausable;
 Cvar* sys_adaptive;
@@ -299,9 +297,9 @@ void Host_InitLocal(void)
 	samelevel = Cvar_Get("samelevel", "0", 0);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 	skill = Cvar_Get("skill", "1", 0);						// 0 - 3
-	deathmatch = Cvar_Get("deathmatch", "0", 0);			// 0, 1, or 2
+	svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);			// 0, 1, or 2
 	randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
-	coop = Cvar_Get("coop", "0", 0);			// 0 or 1
+	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
 	pausable = Cvar_Get("pausable", "1", 0);
 

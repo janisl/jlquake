@@ -30,6 +30,8 @@ add_library(server STATIC
 	progsvm/execute.cpp
 	progsvm/main.cpp
 	quake_hexen/game.cpp
+	quake_hexen/init.cpp
+	quake_hexen/main.cpp
 	quake_hexen/move.cpp
 	quake_hexen/nchan.cpp
 	quake_hexen/physics.cpp

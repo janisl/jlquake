@@ -34,31 +34,6 @@ int SV_ModelIndex(const char* name)
 
 /*
 ================
-SV_FlushSignon
-
-Moves to the next signon buffer if needed
-================
-*/
-void SV_FlushSignon(void)
-{
-	if (sv.qh_signon.cursize < sv.qh_signon.maxsize - 100)
-	{
-		return;
-	}
-
-	if (sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS - 1)
-	{
-		SV_Error("sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS-1");
-	}
-
-	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
-	sv.qh_signon._data = sv.qh_signon_buffers[sv.qh_num_signon_buffers];
-	sv.qh_num_signon_buffers++;
-	sv.qh_signon.cursize = 0;
-}
-
-/*
-================
 SV_CreateBaseline
 
 Entity baselines are used to compress the update messages
@@ -113,7 +88,7 @@ void SV_CreateBaseline(void)
 		// flush the signon message out to a seperate buffer if
 		// nearly full
 		//
-		SV_FlushSignon();
+		SVQH_FlushSignon();
 
 		//
 		// add to the message
@@ -276,13 +251,13 @@ void SV_SpawnServer(char* server, char* startspot)
 	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		Cvar_SetValue("deathmatch", 0);
 	}
 
-	*pr_globalVars.coop = coop->value;
-	*pr_globalVars.deathmatch = deathmatch->value;
+	*pr_globalVars.coop = svqh_coop->value;
+	*pr_globalVars.deathmatch = svqh_deathmatch->value;
 	*pr_globalVars.randomclass = randomclass->value;
 	*pr_globalVars.damageScale = damageScale->value;
 	*pr_globalVars.shyRespawn = shyRespawn->value;

@@ -53,31 +53,6 @@ int SV_ModelIndex(const char* name)
 
 /*
 ================
-SV_FlushSignon
-
-Moves to the next signon buffer if needed
-================
-*/
-void SV_FlushSignon(void)
-{
-	if (sv.qh_signon.cursize < sv.qh_signon.maxsize - 512)
-	{
-		return;
-	}
-
-	if (sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS - 1)
-	{
-		SV_Error("sv.qh_num_signon_buffers == MAX_SIGNON_BUFFERS-1");
-	}
-
-	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
-	sv.qh_signon._data = sv.qh_signon_buffers[sv.qh_num_signon_buffers];
-	sv.qh_num_signon_buffers++;
-	sv.qh_signon.cursize = 0;
-}
-
-/*
-================
 SV_CreateBaseline
 
 Entity baselines are used to compress the update messages
@@ -128,7 +103,7 @@ void SV_CreateBaseline(void)
 		// flush the signon message out to a seperate buffer if
 		// nearly full
 		//
-		SV_FlushSignon();
+		SVQH_FlushSignon();
 
 		//
 		// add to the message

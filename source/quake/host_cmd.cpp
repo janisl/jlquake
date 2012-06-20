@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* pausable;
 
-int current_skill;
-
 /*
 ==================
 Host_Quit_f
@@ -506,7 +504,7 @@ void Host_Savegame_f(void)
 	FS_Printf(f, "%s\n", comment);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
-	FS_Printf(f, "%d\n", current_skill);
+	FS_Printf(f, "%d\n", svqh_current_skill);
 	FS_Printf(f, "%s\n", sv.name);
 	FS_Printf(f, "%f\n",sv.qh_time);
 
@@ -615,8 +613,8 @@ void Host_Loadgame_f(void)
 		spawn_parms[i] = String::Atof(GetLine(ReadPos));
 	}
 	// this silliness is so we can load 1.06 save files, which have float skill values
-	current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
-	Cvar_SetValue("skill", (float)current_skill);
+	svqh_current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
 
 	String::Cpy(mapname, GetLine(ReadPos));
 	time = String::Atof(GetLine(ReadPos));

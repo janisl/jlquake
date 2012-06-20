@@ -43,11 +43,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DAMAGE_YES              1
 #define DAMAGE_AIM              2
 
-#define SPAWNFLAG_NOT_EASY          256
-#define SPAWNFLAG_NOT_MEDIUM        512
-#define SPAWNFLAG_NOT_HARD          1024
-#define SPAWNFLAG_NOT_DEATHMATCH    2048
-
 //============================================================================
 
 extern Cvar* sv_highchars;
@@ -56,7 +51,6 @@ extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 extern Cvar* spawn;
 extern Cvar* teamplay;
-extern Cvar* deathmatch;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
@@ -106,7 +100,6 @@ void Master_Packet(void);
 // sv_init.c
 //
 void SV_SpawnServer(char* server);
-void SV_FlushSignon(void);
 
 //
 // sv_send.c

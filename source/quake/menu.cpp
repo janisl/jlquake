@@ -2142,7 +2142,7 @@ void M_GameOptions_Draw(void)
 	M_Print(160, 56, va("%i", maxplayers));
 
 	M_Print(0, 64, "        Game Type");
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		M_Print(160, 64, "Cooperative");
 	}
@@ -2298,7 +2298,7 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 2:
-		Cvar_SetValue("coop", coop->value ? 0 : 1);
+		Cvar_SetValue("coop", svqh_coop->value ? 0 : 1);
 		break;
 
 	case 3:

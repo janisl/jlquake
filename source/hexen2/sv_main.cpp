@@ -270,7 +270,7 @@ void SV_SendServerinfo(client_t* client)
 	client->qh_message.WriteLong(PROTOCOL_VERSION);
 	client->qh_message.WriteByte(svs.qh_maxclients);
 
-	if (!coop->value && deathmatch->value)
+	if (!svqh_coop->value && svqh_deathmatch->value)
 	{
 		client->qh_message.WriteByte(GAME_DEATHMATCH);
 		client->qh_message.WriteShort(sv_kingofhill);
@@ -2223,22 +2223,22 @@ void SV_SpawnServer(char* server, char* startspot)
 //
 // make cvars consistant
 //
-	if (coop->value)
+	if (svqh_coop->value)
 	{
 		Cvar_SetValue("deathmatch", 0);
 	}
 
-	current_skill = (int)(skill->value + 0.1);
-	if (current_skill < 0)
+	svqh_current_skill = (int)(skill->value + 0.1);
+	if (svqh_current_skill < 0)
 	{
-		current_skill = 0;
+		svqh_current_skill = 0;
 	}
-	if (current_skill > 4)
+	if (svqh_current_skill > 4)
 	{
-		current_skill = 4;
+		svqh_current_skill = 4;
 	}
 
-	Cvar_SetValue("skill", (float)current_skill);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
 
 //
 // set up the new server
@@ -2259,11 +2259,11 @@ void SV_SpawnServer(char* server, char* startspot)
 	current_loading_size = 0;
 	loading_stage = 1;
 	PR_LoadProgs();
-	current_loading_size += 10;
+	current_loading_size += 40;
 	SCR_UpdateScreen();
 //	PR_LoadStrings();
 //	PR_LoadInfoStrings();
-	current_loading_size += 5;
+	current_loading_size += 20;
 	SCR_UpdateScreen();
 
 // allocate server memory
@@ -2336,13 +2336,13 @@ void SV_SpawnServer(char* server, char* startspot)
 	ent->SetSolid(QHSOLID_BSP);
 	ent->SetMoveType(QHMOVETYPE_PUSH);
 
-	if (coop->value)
+	if (svqh_coop->value)
 	{
-		*pr_globalVars.coop = coop->value;
+		*pr_globalVars.coop = svqh_coop->value;
 	}
 	else
 	{
-		*pr_globalVars.deathmatch = deathmatch->value;
+		*pr_globalVars.deathmatch = svqh_deathmatch->value;
 	}
 
 	*pr_globalVars.randomclass = randomclass->value;
@@ -2353,7 +2353,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	// serverflags are for cross level information (sigils)
 	*pr_globalVars.serverflags = svs.qh_serverflags;
 
-	current_loading_size += 5;
+	current_loading_size += 20;
 	SCR_UpdateScreen();
 	ED_LoadFromFile(CM_EntityString());
 
@@ -2365,6 +2365,8 @@ void SV_SpawnServer(char* server, char* startspot)
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 
+	current_loading_size += 20;
+	SCR_UpdateScreen();
 // create a baseline for more efficient communications
 	SV_CreateBaseline();
 

@@ -60,7 +60,6 @@ Cvar* teamplay;
 Cvar* samelevel;
 Cvar* maxclients;
 Cvar* maxspectators;
-Cvar* deathmatch;
 Cvar* spawn;
 Cvar* watervis;
 
@@ -1449,7 +1448,7 @@ void SV_InitLocal(void)
 	samelevel = Cvar_Get("samelevel","0", CVAR_SERVERINFO);
 	maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
 	maxspectators = Cvar_Get("maxspectators","8", CVAR_SERVERINFO);
-	deathmatch = Cvar_Get("deathmatch","1", CVAR_SERVERINFO);			// 0, 1, or 2
+	svqh_deathmatch = Cvar_Get("deathmatch","1", CVAR_SERVERINFO);			// 0, 1, or 2
 	spawn = Cvar_Get("spawn","0", CVAR_SERVERINFO);
 	watervis = Cvar_Get("watervis", "0", CVAR_SERVERINFO);
 	hostname = Cvar_Get("hostname","unnamed", CVAR_SERVERINFO);

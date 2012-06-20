@@ -31,3 +31,15 @@ struct h2client_state2_t
 {
 	h2client_frames_t frames[H2MAX_FRAMES + 2];	// 0 = base, 1-max = proposed, max+1 = too late
 };
+
+// Built-in Spawn Flags
+#define H2SPAWNFLAG_NOT_PALADIN       0x00000100
+#define H2SPAWNFLAG_NOT_CLERIC        0x00000200
+#define H2SPAWNFLAG_NOT_NECROMANCER   0x00000400
+#define H2SPAWNFLAG_NOT_THEIF         0x00000800
+#define H2SPAWNFLAG_NOT_EASY          0x00001000
+#define H2SPAWNFLAG_NOT_MEDIUM        0x00002000
+#define H2SPAWNFLAG_NOT_HARD          0x00004000
+#define H2SPAWNFLAG_NOT_DEATHMATCH    0x00008000
+#define H2SPAWNFLAG_NOT_COOP          0x00010000
+#define H2SPAWNFLAG_NOT_SINGLE        0x00020000
