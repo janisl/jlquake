@@ -1189,7 +1189,7 @@ void PF_precache_sound(void)
 	const char* s;
 	int i;
 
-	if (sv.state != SS_LOADING && !ignore_precache)
+	if (sv.state != SS_LOADING)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1238,7 +1238,7 @@ void PF_precache_model(void)
 	const char* s;
 	int i;
 
-	if (sv.state != SS_LOADING && !ignore_precache)
+	if (sv.state != SS_LOADING)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}
@@ -1289,7 +1289,7 @@ void PF_precache_puzzle_model(void)
 	char temp[256];
 	const char* m;
 
-	if (sv.state != SS_LOADING && !ignore_precache)
+	if (sv.state != SS_LOADING)
 	{
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 	}

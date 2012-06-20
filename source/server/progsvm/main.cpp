@@ -738,3 +738,29 @@ void PR_LoadProgs()
 		}
 	}
 }
+
+void PR_SharedInit()
+{
+	Cmd_AddCommand("edict", ED_PrintEdict_f);
+	Cmd_AddCommand("edicts", ED_PrintEdicts);
+	Cmd_AddCommand("edictcount", ED_Count);
+	Cmd_AddCommand("profile", PR_Profile_f);
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		Cvar_Get("nomonsters", "0", 0);
+		Cvar_Get("gamecfg", "0", 0);
+		Cvar_Get("scratch1", "0", 0);
+		Cvar_Get("scratch2", "0", 0);
+		Cvar_Get("scratch3", "0", 0);
+		Cvar_Get("scratch4", "0", 0);
+		Cvar_Get("savedgamecfg", "0", CVAR_ARCHIVE);
+		Cvar_Get("saved1", "0", CVAR_ARCHIVE);
+		Cvar_Get("saved2", "0", CVAR_ARCHIVE);
+		Cvar_Get("saved3", "0", CVAR_ARCHIVE);
+		Cvar_Get("saved4", "0", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		max_temp_edicts = Cvar_Get("max_temp_edicts", "30", CVAR_ARCHIVE);
+	}
+}
