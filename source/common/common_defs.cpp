@@ -30,6 +30,8 @@ Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE
 
 Cvar* cl_shownet;
 
+Cvar* qh_registered;
+
 fileHandle_t com_journalFile;			// events are written here
 fileHandle_t com_journalDataFile;		// config files are written here
 

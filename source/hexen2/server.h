@@ -9,10 +9,6 @@
 #define DEAD_DYING              1
 #define DEAD_DEAD               2
 
-#define DAMAGE_NO               0		// Cannot be damaged
-#define DAMAGE_YES              1		// Can be damaged
-#define DAMAGE_NO_GRENADE       2		// Will not set off grenades
-
 #define FL2_CROUCHED            4096
 
 // server flags
@@ -26,7 +22,6 @@
 
 //============================================================================
 
-extern Cvar* teamplay;
 extern Cvar* skill;
 extern Cvar* randomclass;
 extern Cvar* fraglimit;

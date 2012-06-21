@@ -556,7 +556,7 @@ void Host_Savegame_f(void)
 	FS_Printf(f, "%d\n",svs.qh_maxclients);
 	FS_Printf(f, "%f\n",svqh_deathmatch->value);
 	FS_Printf(f, "%f\n",svqh_coop->value);
-	FS_Printf(f, "%f\n",teamplay->value);
+	FS_Printf(f, "%f\n",svqh_teamplay->value);
 	FS_Printf(f, "%f\n",randomclass->value);
 	FS_Printf(f, "%f\n",clh2_playerclass->value);
 	FS_Printf(f, "%d\n",info_mask);
@@ -1389,7 +1389,7 @@ void Host_Say(qboolean teamonly)
 		{
 			continue;
 		}
-		if (teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
+		if (svqh_teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
 		{
 			continue;
 		}
@@ -1779,105 +1779,6 @@ int strdiff(const char* s1, const char* s2)
 	}
 
 	return i;
-}
-
-void Host_Create_f(void)
-{
-	char* FindName;
-	dfunction_t* Search,* func;
-	qhedict_t* ent;
-	int i,Length,NumFound,Diff,NewDiff;
-
-	if (sv.state == SS_DEAD)
-	{
-		Con_Printf("server is not active!\n");
-		return;
-	}
-
-	if ((svs.qh_maxclients != 1) || (skill->value > 2))
-	{
-		Con_Printf("can't cheat anymore!\n");
-		return;
-	}
-
-	if (Cmd_Argc() == 1)
-	{
-		Con_Printf("create <quake-ed spawn function>\n");
-		return;
-	}
-
-	FindName = Cmd_Argv(1);
-
-	func = ED_FindFunctioni(FindName);
-
-	if (!func)
-	{
-		Length = String::Length(FindName);
-		NumFound = 0;
-
-		Diff = 999;
-
-		for (i = 0; i < progs->numfunctions; i++)
-		{
-			Search = &pr_functions[i];
-			if (!String::NICmp(PR_GetString(Search->s_name),FindName,Length))
-			{
-				if (NumFound == 1)
-				{
-					Con_Printf("   %s\n", PR_GetString(func->s_name));
-				}
-				if (NumFound)
-				{
-					Con_Printf("   %s\n", PR_GetString(Search->s_name));
-					NewDiff = strdiff(PR_GetString(Search->s_name), PR_GetString(func->s_name));
-					if (NewDiff < Diff)
-					{
-						Diff = NewDiff;
-					}
-				}
-
-				func = Search;
-				NumFound++;
-			}
-		}
-
-		if (!NumFound)
-		{
-			Con_Printf("Could not find spawn function\n");
-			return;
-		}
-
-		if (NumFound != 1)
-		{
-			sprintf(g_consoleField.buffer,"create %s",PR_GetString(func->s_name));
-			g_consoleField.buffer[Diff + 7] = 0;
-			g_consoleField.cursor = Diff + 7;
-			return;
-		}
-	}
-
-	Con_Printf("Executing %s...\n", PR_GetString(func->s_name));
-
-	ent = ED_Alloc();
-
-	ent->SetClassName(func->s_name);
-	VectorCopy(cl.refdef.vieworg, ent->GetOrigin());
-	ent->GetOrigin()[0] += cl.refdef.viewaxis[0][0] * 80;
-	ent->GetOrigin()[1] += cl.refdef.viewaxis[0][1] * 80;
-	ent->GetOrigin()[2] += cl.refdef.viewaxis[0][2] * 80;
-	VectorCopy(ent->GetOrigin(),ent->v.absmin);
-	VectorCopy(ent->GetOrigin(),ent->v.absmax);
-	ent->v.absmin[0] -= 16;
-	ent->v.absmin[1] -= 16;
-	ent->v.absmin[2] -= 16;
-	ent->v.absmax[0] += 16;
-	ent->v.absmax[1] += 16;
-	ent->v.absmax[2] += 16;
-
-	*pr_globalVars.self = EDICT_TO_PROG(ent);
-	ignore_precache = true;
-	PR_ExecuteProgram(func - pr_functions);
-	ignore_precache = false;
 }
 
 /*
@@ -2445,6 +2346,4 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("viewframe", Host_Viewframe_f);
 	Cmd_AddCommand("viewnext", Host_Viewnext_f);
 	Cmd_AddCommand("viewprev", Host_Viewprev_f);
-
-	Cmd_AddCommand("create", Host_Create_f);
 }

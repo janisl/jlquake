@@ -592,6 +592,23 @@ q1trace_t SVQH_Move(const vec3_t start, const vec3_t mins, const vec3_t maxs, co
 	return clip.trace;
 }
 
+q1trace_t SVQH_MoveHull0(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int type, qhedict_t* passedict)
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		float saveHull = passedict->GetHull();
+		passedict->SetHull(0);
+		q1trace_t trace = SVQH_Move(start, mins, maxs, end, type, passedict);
+		passedict->SetHull(saveHull);
+		return trace;
+	}
+	else
+	{
+		return SVQH_Move(start, mins, maxs, end, type, passedict);
+	}
+}
+
 //	This could be a lot more efficient...
 //	A small wrapper around SV_BoxInSolidEntity that never clips against the
 // supplied entity.

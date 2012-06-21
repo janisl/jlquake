@@ -3463,7 +3463,7 @@ void M_Menu_GameOptions_f(void)
 	}
 	setup_class--;
 
-	if (registered->value && (startepisode < REG_START || startepisode >= OEM_START))
+	if (qh_registered->value && (startepisode < REG_START || startepisode >= OEM_START))
 	{
 		startepisode = REG_START;
 	}
@@ -3515,7 +3515,7 @@ void M_GameOptions_Draw(void)
     {
         char *msg;
 
-        switch((int)teamplay.value)
+        switch((int)svqh_teamplay.value)
         {
             case 1: msg = "No Friendly Fire"; break;
             case 2: msg = "Friendly Fire"; break;
@@ -3531,7 +3531,7 @@ void M_GameOptions_Draw(void)
 */  {
 		const char* msg;
 
-		switch ((int)teamplay->value)
+		switch ((int)svqh_teamplay->value)
 		{
 		case 1: msg = "No Friendly Fire"; break;
 		case 2: msg = "Friendly Fire"; break;
@@ -3654,12 +3654,12 @@ void M_NetStart_Change(int dir)
 //		else
 		count = 2;
 
-		Cvar_SetValue("teamplay", teamplay->value + dir);
-		if (teamplay->value > count)
+		Cvar_SetValue("teamplay", svqh_teamplay->value + dir);
+		if (svqh_teamplay->value > count)
 		{
 			Cvar_SetValue("teamplay", 0);
 		}
-		else if (teamplay->value < 0)
+		else if (svqh_teamplay->value < 0)
 		{
 			Cvar_SetValue("teamplay", count);
 		}
@@ -3727,7 +3727,7 @@ void M_NetStart_Change(int dir)
 	case 9:
 		startepisode += dir;
 
-		if (registered->value)
+		if (qh_registered->value)
 		{
 			count = DM_START;
 			if (!svqh_coop->value)

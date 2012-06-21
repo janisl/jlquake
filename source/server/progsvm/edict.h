@@ -205,7 +205,7 @@ struct qhedict_t
 	float GetFloatField(idEntVarDef& field) const;
 	void SetFloatField(idEntVarDef& field, float value);
 	float* GetVectorField(idEntVarDef& field);
-	void SetVectorField(idEntVarDef& field, vec3_t value);
+	void SetVectorField(idEntVarDef& field, const vec3_t value);
 
 #define FIELD_FLOAT(name) \
 	float Get ## name() const	\
@@ -221,7 +221,7 @@ struct qhedict_t
 	{ \
 		return GetVectorField(entField ## name); \
 	} \
-	void Set ## name(vec3_t value) \
+	void Set ## name(const vec3_t value) \
 	{ \
 		SetVectorField(entField ## name, value); \
 	}
@@ -480,7 +480,7 @@ inline float* qhedict_t::GetVectorField(idEntVarDef& field)
 	return (float*)((byte*)&v + field.offset);
 }
 
-inline void qhedict_t::SetVectorField(idEntVarDef& field, vec3_t value)
+inline void qhedict_t::SetVectorField(idEntVarDef& field, const vec3_t value)
 {
 	VectorCopy(value, (float*)((byte*)&v + field.offset));
 }

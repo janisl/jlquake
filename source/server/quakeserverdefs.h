@@ -48,3 +48,13 @@ struct qwclient_frame_t
 #define Q1SPAWNFLAG_NOT_MEDIUM        512
 #define Q1SPAWNFLAG_NOT_HARD          1024
 #define Q1SPAWNFLAG_NOT_DEATHMATCH    2048
+
+#define QHDAMAGE_NO             0
+#define QHDAMAGE_YES            1
+#define Q1DAMAGE_AIM            2
+
+#define QHMSG_BROADCAST 0		// unreliable to all
+#define QHMSG_ONE       1		// reliable to one (msg_entity)
+#define QHMSG_ALL       2		// reliable to all
+#define QHMSG_INIT      3		// write to the init string
+#define QHMSG_MULTICAST 4		// for multicast()

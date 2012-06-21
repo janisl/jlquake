@@ -39,10 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEAD_DYING              1
 #define DEAD_DEAD               2
 
-#define DAMAGE_NO               0
-#define DAMAGE_YES              1
-#define DAMAGE_AIM              2
-
 //============================================================================
 
 extern func_t SpectatorConnect;
@@ -52,7 +48,6 @@ extern func_t SpectatorDisconnect;
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 extern Cvar* spawn;
-extern Cvar* teamplay;
 extern Cvar* fraglimit;
 extern Cvar* timelimit;
 
@@ -66,7 +61,6 @@ extern char localinfo[MAX_LOCALINFO_STRING + 1];
 
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
-extern fileHandle_t sv_fraglogfile;
 
 extern int sv_net_port;
 

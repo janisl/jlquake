@@ -14,16 +14,15 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
-//#include "../progsvm/progsvm.h"
-#include "local.h"
+#ifndef _SERVER_HEXEN2_LOCAL_H
+#define _SERVER_HEXEN2_LOCAL_H
 
-Cvar* svqh_deathmatch;			// 0, 1, or 2
-Cvar* svqh_coop;				// 0 or 1
-Cvar* svqh_teamplay;
+void PF_setpuzzlemodel();
+void PF_precache_sound2();
+void PF_precache_sound3();
+void PF_precache_sound4();
+void PF_precache_model2();
+void PF_precache_model3();
+void PF_precache_model4();
 
-Cvar* svqh_highchars;
-
-int svqh_current_skill;
-
-fileHandle_t svqhw_fraglogfile;
+#endif

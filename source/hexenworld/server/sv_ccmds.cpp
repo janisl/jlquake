@@ -101,11 +101,11 @@ void SV_Fraglogfile_f(void)
 	char name[MAX_OSPATH];
 	int i;
 
-	if (sv_fraglogfile)
+	if (svqhw_fraglogfile)
 	{
 		Con_Printf("Frag file logging off.\n");
-		FS_FCloseFile(sv_fraglogfile);
-		sv_fraglogfile = 0;
+		FS_FCloseFile(svqhw_fraglogfile);
+		svqhw_fraglogfile = 0;
 		return;
 	}
 
@@ -113,23 +113,23 @@ void SV_Fraglogfile_f(void)
 	for (i = 0; i < 1000; i++)
 	{
 		sprintf(name, "frag_%i.log", i);
-		FS_FOpenFileRead(name, &sv_fraglogfile, true);
-		if (!sv_fraglogfile)
+		FS_FOpenFileRead(name, &svqhw_fraglogfile, true);
+		if (!svqhw_fraglogfile)
 		{
 			// can't read it, so create this one
-			sv_fraglogfile = FS_FOpenFileWrite(name);
-			if (!sv_fraglogfile)
+			svqhw_fraglogfile = FS_FOpenFileWrite(name);
+			if (!svqhw_fraglogfile)
 			{
 				i = 1000;	// give error
 			}
 			break;
 		}
-		FS_FCloseFile(sv_fraglogfile);
+		FS_FCloseFile(svqhw_fraglogfile);
 	}
 	if (i == 1000)
 	{
 		Con_Printf("Can't open any logfiles.\n");
-		sv_fraglogfile = 0;
+		svqhw_fraglogfile = 0;
 		return;
 	}
 

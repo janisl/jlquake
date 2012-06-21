@@ -29,7 +29,65 @@
 //
 //	Game
 //
+#define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
+#define RETURN_STRING(s) (((int*)pr_globals)[OFS_RETURN] = PR_SetString(s))
+
+extern Cvar* svqh_aim;
+
+void PF_objerror();
 void PF_changeyaw();
+void PF_setorigin();
+void SetMinMaxSize(qhedict_t* e, const float* min, const float* max);
+void PF_setsize();
+void PFQ1_setmodel();
+void PFQW_setmodel();
+void PF_ambientsound();
+void PF_sound();
+void PF_traceline();
+void PF_checkclient();
+void PF_findradius();
+void PF_Spawn();
+void PFQ1_Remove();
+void PFH2_Remove();
+void PFHW_Remove();
+void PF_Find();
+void PR_CheckEmptyString(const char* s);
+void PF_precache_file();
+void PF_precache_sound();
+void PF_precache_model();
+void PFQ1_walkmove();
+void PFH2_walkmove();
+void PF_droptofloor();
+void PFQ1_lightstyle();
+void PFQW_lightstyle();
+void PF_checkbottom();
+void PF_pointcontents();
+void PF_nextent();
+void PFQ1_aim();
+void PFQW_aim();
+void PFH2_aim();
+QMsg* Q1WriteDest();
+QMsg* QWWriteDest();
+client_t* Write_GetClient();
+void PFQ1_WriteByte();
+void PFQW_WriteByte();
+void PFQ1_WriteChar();
+void PFQW_WriteChar();
+void PFQ1_WriteShort();
+void PFQW_WriteShort();
+void PFQ1_WriteLong();
+void PFQW_WriteLong();
+void PFQ1_WriteAngle();
+void PFQW_WriteAngle();
+void PFQ1_WriteCoord();
+void PFQW_WriteCoord();
+void PFQ1_WriteString();
+void PFQW_WriteString();
+void PFQ1_WriteEntity();
+void PFQW_WriteEntity();
+void PF_setspawnparms();
+void PF_logfrag();
+void PF_multicast();
 
 //
 //	Init
@@ -41,10 +99,12 @@ void SVQH_FlushSignon();
 //
 extern Cvar* svqh_deathmatch;
 extern Cvar* svqh_coop;
+extern Cvar* svqh_teamplay;
 extern Cvar* svqh_highchars;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
+extern fileHandle_t svqhw_fraglogfile;
 
 //
 //	Move
@@ -126,6 +186,8 @@ int SVQH_PointContents(vec3_t p);
 // shouldn't be considered solid objects
 //	passedict is explicitly excluded from clipping checks (normally NULL)
 q1trace_t SVQH_Move(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int type, qhedict_t* passedict);
+q1trace_t SVQH_MoveHull0(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 	int type, qhedict_t* passedict);
 qhedict_t* SVQH_TestEntityPosition(qhedict_t* ent);
 

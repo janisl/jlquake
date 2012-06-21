@@ -3,18 +3,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "../../common/file_formats/bsp29.h"
-
-#define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
-#define RETURN_STRING(s) (((int*)pr_globals)[OFS_RETURN] = PR_SetString(s))
-
-QMsg* WriteDest(void);
-
-#define MSG_BROADCAST   0		// unreliable to all
-#define MSG_ONE         1		// reliable to one (msg_entity)
-#define MSG_ALL         2		// reliable to all
-#define MSG_INIT        3		// write to the init string
-#define MSG_MULTICAST   4		// for multicast()
 
 /*
 ===============================================================================
@@ -23,254 +11,6 @@ QMsg* WriteDest(void);
 
 ===============================================================================
 */
-
-/*
-=================
-PF_objerror
-
-Dumps out self, then an error message.  The program is aborted and self is
-removed, but the level can continue.
-
-objerror(value)
-=================
-*/
-void PF_objerror(void)
-{
-	const char* s;
-	qhedict_t* ed;
-
-	s = PF_VarString(0);
-	Con_Printf("======OBJECT ERROR in %s:\n%s\n",
-		PR_GetString(pr_xfunction->s_name),s);
-	ed = PROG_TO_EDICT(*pr_globalVars.self);
-	ED_Print(ed);
-	ED_Free(ed);
-
-	SV_Error("Program error");
-}
-
-
-
-/*
-=================
-PF_setorigin
-
-This is the only valid way to move an object without using the physics of the world (setting velocity and waiting).  Directly changing origin will not set internal links correctly, so clipping would be messed up.  This should be called when an object is spawned, and then only if it is teleported.
-
-setorigin (entity, origin)
-=================
-*/
-void PF_setorigin(void)
-{
-	qhedict_t* e;
-	float* org;
-
-	e = G_EDICT(OFS_PARM0);
-	org = G_VECTOR(OFS_PARM1);
-	VectorCopy(org, e->GetOrigin());
-	SVQH_LinkEdict(e, false);
-}
-
-
-void SetMinMaxSize(qhedict_t* e, float* min, float* max, qboolean rotate)
-{
-	float* angles;
-	vec3_t rmin, rmax;
-	float bounds[2][3];
-	float xvector[2], yvector[2];
-	float a;
-	vec3_t base, transformed;
-	int i, j, k, l;
-
-	for (i = 0; i < 3; i++)
-		if (min[i] > max[i])
-		{
-			PR_RunError("backwards mins/maxs");
-		}
-
-	rotate = false;		// FIXME: implement rotation properly again
-
-	if (!rotate)
-	{
-		VectorCopy(min, rmin);
-		VectorCopy(max, rmax);
-	}
-	else
-	{
-		// find min / max for rotations
-		angles = e->GetAngles();
-
-		a = angles[1] / 180 * M_PI;
-
-		xvector[0] = cos(a);
-		xvector[1] = sin(a);
-		yvector[0] = -sin(a);
-		yvector[1] = cos(a);
-
-		VectorCopy(min, bounds[0]);
-		VectorCopy(max, bounds[1]);
-
-		rmin[0] = rmin[1] = rmin[2] = 9999;
-		rmax[0] = rmax[1] = rmax[2] = -9999;
-
-		for (i = 0; i <= 1; i++)
-		{
-			base[0] = bounds[i][0];
-			for (j = 0; j <= 1; j++)
-			{
-				base[1] = bounds[j][1];
-				for (k = 0; k <= 1; k++)
-				{
-					base[2] = bounds[k][2];
-
-					// transform the point
-					transformed[0] = xvector[0] * base[0] + yvector[0] * base[1];
-					transformed[1] = xvector[1] * base[0] + yvector[1] * base[1];
-					transformed[2] = base[2];
-
-					for (l = 0; l < 3; l++)
-					{
-						if (transformed[l] < rmin[l])
-						{
-							rmin[l] = transformed[l];
-						}
-						if (transformed[l] > rmax[l])
-						{
-							rmax[l] = transformed[l];
-						}
-					}
-				}
-			}
-		}
-	}
-
-// set derived values
-	e->SetMins(rmin);
-	e->SetMaxs(rmax);
-	VectorSubtract(max, min, e->GetSize());
-
-	SVQH_LinkEdict(e, false);
-}
-
-/*
-=================
-PF_setsize
-
-the size box is rotated by the current angle
-
-setsize (entity, minvector, maxvector)
-=================
-*/
-void PF_setsize(void)
-{
-	qhedict_t* e;
-	float* min, * max;
-
-	e = G_EDICT(OFS_PARM0);
-	min = G_VECTOR(OFS_PARM1);
-	max = G_VECTOR(OFS_PARM2);
-//	VectorCopy (min, e->v.mins);
-//	VectorCopy (max, e->v.maxs);
-//	VectorSubtract (max, min, e->v.size);
-//	SVQH_LinkEdict (e, false);
-	SetMinMaxSize(e, min, max, false);
-}
-
-
-/*
-=================
-PF_setmodel
-
-setmodel(entity, model)
-Also sets size, mins, and maxs for inline bmodels
-=================
-*/
-void PF_setmodel(void)
-{
-	qhedict_t* e;
-	const char* m, ** check;
-	int i;
-	clipHandle_t mod;
-
-	e = G_EDICT(OFS_PARM0);
-	m = G_STRING(OFS_PARM1);
-
-// check to see if model was properly precached
-	for (i = 0, check = sv.qh_model_precache; *check; i++, check++)
-		if (!String::Cmp(*check, m))
-		{
-			break;
-		}
-
-	if (!*check)
-	{
-		PR_RunError("no precache: %s\n", m);
-	}
-
-	e->SetModel(PR_SetString(m));
-	e->v.modelindex = i;
-
-	mod = sv.models[(int)e->v.modelindex];
-
-	if (mod)
-	{
-		vec3_t mins;
-		vec3_t maxs;
-		CM_ModelBounds(mod, mins, maxs);
-		SetMinMaxSize(e, mins, maxs, true);
-	}
-	else
-	{
-		SetMinMaxSize(e, vec3_origin, vec3_origin, true);
-	}
-}
-
-void PF_setpuzzlemodel(void)
-{
-	qhedict_t* e;
-	const char* m, ** check;
-	clipHandle_t mod;
-	int i;
-	char NewName[256];
-
-	e = G_EDICT(OFS_PARM0);
-	m = G_STRING(OFS_PARM1);
-
-	sprintf(NewName,"models/puzzle/%s.mdl",m);
-// check to see if model was properly precached
-	for (i = 0, check = sv.qh_model_precache; *check; i++, check++)
-		if (!String::Cmp(*check, NewName))
-		{
-			break;
-		}
-
-	e->SetModel(PR_SetString(ED_NewString(NewName)));
-
-	if (!*check)
-	{
-//		PR_RunError ("no precache: %s\n", NewName);
-		Con_Printf("**** NO PRECACHE FOR PUZZLE PIECE:");
-		Con_Printf("**** %s\n",NewName);
-
-		sv.qh_model_precache[i] = PR_GetString(e->GetModel());
-	}
-
-	e->v.modelindex = i;
-
-	mod = sv.models[(int)e->v.modelindex];
-
-	if (mod)
-	{
-		vec3_t mins;
-		vec3_t maxs;
-		CM_ModelBounds(mod, mins, maxs);
-		SetMinMaxSize(e, mins, maxs, true);
-	}
-	else
-	{
-		SetMinMaxSize(e, vec3_origin, vec3_origin, true);
-	}
-}
 
 /*
 =================
@@ -371,7 +111,7 @@ void PF_name_print(void)
 	}
 
 
-	if ((int)G_FLOAT(OFS_PARM0) == MSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
+	if ((int)G_FLOAT(OFS_PARM0) == QHMSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
 	{
 		client_t* cl;
 		int i;
@@ -401,9 +141,19 @@ void PF_name_print(void)
 		return;
 	}
 
-	WriteDest()->WriteByte(hwsvc_name_print);
-	WriteDest()->WriteByte(Style);
-	WriteDest()->WriteByte(Index - 1);	//heh, don't need a short here.
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_name_print, 3);
+		SVQH_ClientReliableWrite_Byte(cl, Style);
+		SVQH_ClientReliableWrite_Byte(cl, Index - 1);	//heh, don't need a short here.
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_name_print);
+		QWWriteDest()->WriteByte(Style);
+		QWWriteDest()->WriteByte(Index - 1);	//heh, don't need a short here.
+	}
 }
 
 
@@ -441,7 +191,7 @@ void PF_print_indexed(void)
 		PR_RunError("PF_sprint_indexed: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 	}
 
-	if ((int)G_FLOAT(OFS_PARM0) == MSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
+	if ((int)G_FLOAT(OFS_PARM0) == QHMSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
 	{
 		client_t* cl;
 		int i;
@@ -465,9 +215,19 @@ void PF_print_indexed(void)
 		return;
 	}
 
-	WriteDest()->WriteByte(hwsvc_indexed_print);
-	WriteDest()->WriteByte(Style);
-	WriteDest()->WriteShort(Index);
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_indexed_print, 4);
+		SVQH_ClientReliableWrite_Byte(cl, Style);
+		SVQH_ClientReliableWrite_Short(cl, Index);
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_indexed_print);
+		QWWriteDest()->WriteByte(Style);
+		QWWriteDest()->WriteShort(Index);
+	}
 }
 
 
@@ -654,51 +414,6 @@ void PF_particle4(void)
 
 /*
 =================
-PF_ambientsound
-
-=================
-*/
-void PF_ambientsound(void)
-{
-	const char** check;
-	const char* samp;
-	float* pos;
-	float vol, attenuation;
-	int i, soundnum;
-
-	pos = G_VECTOR(OFS_PARM0);
-	samp = G_STRING(OFS_PARM1);
-	vol = G_FLOAT(OFS_PARM2);
-	attenuation = G_FLOAT(OFS_PARM3);
-
-// check to see if samp was properly precached
-	for (soundnum = 0, check = sv.qh_sound_precache; *check; check++, soundnum++)
-		if (!String::Cmp(*check,samp))
-		{
-			break;
-		}
-
-	if (!*check)
-	{
-		Con_Printf("no precache: %s\n", samp);
-		return;
-	}
-
-// add an svc_spawnambient command to the level signon packet
-
-	sv.qh_signon.WriteByte(h2svc_spawnstaticsound);
-	for (i = 0; i < 3; i++)
-		sv.qh_signon.WriteCoord(pos[i]);
-
-	sv.qh_signon.WriteByte(soundnum);
-
-	sv.qh_signon.WriteByte(vol * 255);
-	sv.qh_signon.WriteByte(attenuation * 64);
-
-}
-
-/*
-=================
 PF_StopSound
     stop ent's sound on this chan
 =================
@@ -743,70 +458,6 @@ void PF_UpdateSoundPos(void)
 
 /*
 =================
-PF_sound
-
-Each entity can have eight independant sound sources, like voice,
-weapon, feet, etc.
-
-Channel 0 is an auto-allocate channel, the others override anything
-allready running on that entity/channel pair.
-
-An attenuation of 0 will play full volume everywhere in the level.
-Larger attenuations will drop off.
-
-=================
-*/
-void PF_sound(void)
-{
-	const char* sample;
-	int channel;
-	qhedict_t* entity;
-	int volume;
-	float attenuation;
-
-	entity = G_EDICT(OFS_PARM0);
-	channel = G_FLOAT(OFS_PARM1);
-	sample = G_STRING(OFS_PARM2);
-	volume = G_FLOAT(OFS_PARM3) * 255;
-	attenuation = G_FLOAT(OFS_PARM4);
-
-	SVQH_StartSound(entity, channel, sample, volume, attenuation);
-}
-
-/*
-=================
-PF_traceline
-
-Used for use tracing and shot targeting
-Traces are blocked by bbox and exact bsp entityes, and also slide box entities
-if the tryents flag is set.
-
-traceline (vector1, vector2, tryents)
-=================
-*/
-void PF_traceline(void)
-{
-	float* v1, * v2;
-	q1trace_t trace;
-	int nomonsters;
-	qhedict_t* ent;
-	float save_hull;
-
-	v1 = G_VECTOR(OFS_PARM0);
-	v2 = G_VECTOR(OFS_PARM1);
-	nomonsters = G_FLOAT(OFS_PARM2);
-	ent = G_EDICT(OFS_PARM3);
-
-	save_hull = ent->GetHull();
-	ent->SetHull(0);
-	trace = SVQH_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
-	ent->SetHull(save_hull);
-
-	SVQH_SetMoveTrace(trace);
-}
-
-/*
-=================
 PF_tracearea
 
 Used for use tracing and shot targeting
@@ -841,148 +492,6 @@ void PF_tracearea(void)
 
 /*
 =================
-PF_checkpos
-
-Returns true if the given entity can move to the given position from it's
-current position by walking or rolling.
-FIXME: make work...
-scalar checkpos (entity, vector)
-=================
-*/
-void PF_checkpos(void)
-{
-}
-
-//============================================================================
-
-byte checkpvs[BSP29_MAX_MAP_LEAFS / 8];
-
-int PF_newcheckclient(int check)
-{
-	int i;
-	byte* pvs;
-	qhedict_t* ent;
-	vec3_t org;
-
-// cycle to the next one
-
-	if (check < 1)
-	{
-		check = 1;
-	}
-	if (check > MAX_CLIENTS_QHW)
-	{
-		check = MAX_CLIENTS_QHW;
-	}
-
-	if (check == MAX_CLIENTS_QHW)
-	{
-		i = 1;
-	}
-	else
-	{
-		i = check + 1;
-	}
-
-	for (;; i++)
-	{
-		if (i == MAX_CLIENTS_QHW + 1)
-		{
-			i = 1;
-		}
-
-		ent = QH_EDICT_NUM(i);
-
-		if (i == check)
-		{
-			break;	// didn't find anything else
-
-		}
-		if (ent->free)
-		{
-			continue;
-		}
-		if (ent->GetHealth() <= 0)
-		{
-			continue;
-		}
-		if ((int)ent->GetFlags() & QHFL_NOTARGET)
-		{
-			continue;
-		}
-
-		// anything that is a client, or has a client as an enemy
-		break;
-	}
-
-	// get the PVS for the entity
-	VectorAdd(ent->GetOrigin(), ent->GetViewOfs(), org);
-	int leaf = CM_PointLeafnum(org);
-	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
-	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
-
-	return i;
-}
-
-/*
-=================
-PF_checkclient
-
-Returns a client (or object that has a client enemy) that would be a
-valid target.
-
-If there are more than one valid options, they are cycled each frame
-
-If (self.origin + self.viewofs) is not in the PVS of the current target,
-it is not returned at all.
-
-name checkclient ()
-=================
-*/
-#define MAX_CHECK   16
-int c_invis, c_notvis;
-void PF_checkclient(void)
-{
-	qhedict_t* ent, * self;
-	vec3_t view;
-
-// find a new check if on a new frame
-	if (sv.qh_time - sv.qh_lastchecktime >= HX_FRAME_TIME)
-	{
-		sv.qh_lastcheck = PF_newcheckclient(sv.qh_lastcheck);
-		sv.qh_lastchecktime = sv.qh_time;
-	}
-
-// return check if it might be visible
-	ent = QH_EDICT_NUM(sv.qh_lastcheck);
-	if (ent->free || ent->GetHealth() <= 0)
-	{
-		RETURN_EDICT(sv.qh_edicts);
-		return;
-	}
-
-// if current entity can't possibly see the check entity, return 0
-	self = PROG_TO_EDICT(*pr_globalVars.self);
-	VectorAdd(self->GetOrigin(), self->GetViewOfs(), view);
-	int leaf = CM_PointLeafnum(view);
-	int l = CM_LeafCluster(leaf);
-	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
-	{
-		c_notvis++;
-		RETURN_EDICT(sv.qh_edicts);
-		return;
-	}
-
-// might be able to see it
-	c_invis++;
-	RETURN_EDICT(ent);
-}
-
-//============================================================================
-
-
-/*
-=================
 PF_stuffcmd
 
 Sends text over to the client's execution buffer
@@ -1012,61 +521,6 @@ void PF_stuffcmd(void)
 	host_client = old;
 }
 
-/*
-=================
-PF_findradius
-
-Returns a chain of entities that have origins within a spherical area
-
-findradius (origin, radius)
-=================
-*/
-void PF_findradius(void)
-{
-	qhedict_t* ent, * chain;
-	float rad;
-	float* org;
-	vec3_t eorg;
-	int i, j;
-
-	chain = (qhedict_t*)sv.qh_edicts;
-
-	org = G_VECTOR(OFS_PARM0);
-	rad = G_FLOAT(OFS_PARM1);
-
-	ent = NEXT_EDICT(sv.qh_edicts);
-	for (i = 1; i < sv.qh_num_edicts; i++, ent = NEXT_EDICT(ent))
-	{
-		if (ent->free)
-		{
-			continue;
-		}
-		if (ent->GetSolid() == QHSOLID_NOT)
-		{
-			continue;
-		}
-		for (j = 0; j < 3; j++)
-			eorg[j] = org[j] - (ent->GetOrigin()[j] + (ent->GetMins()[j] + ent->GetMaxs()[j]) * 0.5);
-		if (VectorLength(eorg) > rad)
-		{
-			continue;
-		}
-
-		ent->SetChain(EDICT_TO_PROG(chain));
-		chain = ent;
-	}
-
-	RETURN_EDICT(chain);
-}
-
-
-void PF_Spawn(void)
-{
-	qhedict_t* ed;
-	ed = ED_Alloc();
-	RETURN_EDICT(ed);
-}
-
 void PF_SpawnTemp(void)
 {
 	qhedict_t* ed;
@@ -1074,68 +528,6 @@ void PF_SpawnTemp(void)
 	ed = ED_Alloc_Temp();
 
 	RETURN_EDICT(ed);
-}
-
-void PF_Remove(void)
-{
-	qhedict_t* ed;
-	int i;
-
-	ed = G_EDICT(OFS_PARM0);
-	if (ed == sv.qh_edicts)
-	{
-		Con_Printf("Tried to remove the world at %s in %s!\n",
-			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
-		return;
-	}
-
-	i = QH_NUM_FOR_EDICT(ed);
-	if (i <= MAX_CLIENTS_QHW)
-	{
-		Con_Printf("Tried to remove a client at %s in %s!\n",
-			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
-		return;
-	}
-	ED_Free(ed);
-}
-
-
-// entity (entity start, .string field, string match) find = #5;
-void PF_Find(void)
-{
-	int e;
-	int f;
-	const char* s, * t;
-	qhedict_t* ed;
-
-	e = G_EDICTNUM(OFS_PARM0);
-	f = G_INT(OFS_PARM1);
-	s = G_STRING(OFS_PARM2);
-	if (!s)
-	{
-		PR_RunError("PF_Find: bad search string");
-	}
-
-	for (e++; e < sv.qh_num_edicts; e++)
-	{
-		ed = QH_EDICT_NUM(e);
-		if (ed->free)
-		{
-			continue;
-		}
-		t = E_STRING(ed,f);
-		if (!t)
-		{
-			continue;
-		}
-		if (!String::Cmp(t,s))
-		{
-			RETURN_EDICT(ed);
-			return;
-		}
-	}
-
-	RETURN_EDICT(sv.qh_edicts);
 }
 
 void PF_FindFloat(void)
@@ -1171,117 +563,6 @@ void PF_FindFloat(void)
 	RETURN_EDICT(sv.qh_edicts);
 }
 
-void PR_CheckEmptyString(const char* s)
-{
-	if (s[0] <= ' ')
-	{
-		PR_RunError("Bad string");
-	}
-}
-
-void PF_precache_file(void)
-{	// precache_file is only used to copy files with qcc, it does nothing
-	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
-}
-
-void PF_precache_sound(void)
-{
-	const char* s;
-	int i;
-
-	if (sv.state != SS_LOADING)
-	{
-		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
-	}
-
-	s = G_STRING(OFS_PARM0);
-	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
-	PR_CheckEmptyString(s);
-
-	for (i = 0; i < MAX_SOUNDS_HW; i++)
-	{
-		if (!sv.qh_sound_precache[i])
-		{
-			sv.qh_sound_precache[i] = s;
-			return;
-		}
-		if (!String::Cmp(sv.qh_sound_precache[i], s))
-		{
-			return;
-		}
-	}
-	PR_RunError("PF_precache_sound: overflow");
-}
-
-void PF_precache_sound2(void)
-{
-	if (!registered->value)
-	{
-		return;
-	}
-
-	PF_precache_sound();
-}
-
-void PF_precache_sound3(void)
-{
-	if (!registered->value)
-	{
-		return;
-	}
-
-	PF_precache_sound();
-}
-
-void PF_precache_model(void)
-{
-	const char* s;
-	int i;
-
-	if (sv.state != SS_LOADING)
-	{
-		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
-	}
-
-	s = G_STRING(OFS_PARM0);
-	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
-	PR_CheckEmptyString(s);
-
-	for (i = 0; i < MAX_MODELS_H2; i++)
-	{
-		if (!sv.qh_model_precache[i])
-		{
-			sv.qh_model_precache[i] = s;
-			return;
-		}
-		if (!String::Cmp(sv.qh_model_precache[i], s))
-		{
-			return;
-		}
-	}
-	PR_RunError("PF_precache_model: overflow");
-}
-
-void PF_precache_model2(void)
-{
-	if (!registered->value)
-	{
-		return;
-	}
-
-	PF_precache_model();
-}
-
-void PF_precache_model3(void)
-{
-	if (!registered->value)
-	{
-		return;
-	}
-
-	PF_precache_model();
-}
-
 void PF_precache_puzzle_model(void)
 {
 	int i;
@@ -1315,120 +596,6 @@ void PF_precache_puzzle_model(void)
 		}
 	}
 	PR_RunError("PF_precache_puzzle_model: overflow");
-}
-
-/*
-===============
-PF_walkmove
-
-float(float yaw, float dist) walkmove
-===============
-*/
-void PF_walkmove(void)
-{
-	qhedict_t* ent;
-	float yaw, dist;
-	vec3_t move;
-	dfunction_t* oldf;
-	int oldself;
-	qboolean set_trace;
-
-	ent = PROG_TO_EDICT(*pr_globalVars.self);
-	yaw = G_FLOAT(OFS_PARM0);
-	dist = G_FLOAT(OFS_PARM1);
-	set_trace = G_FLOAT(OFS_PARM2);
-
-	if (!((int)ent->GetFlags() & (QHFL_ONGROUND | QHFL_FLY | QHFL_SWIM)))
-	{
-		G_FLOAT(OFS_RETURN) = 0;
-		return;
-	}
-
-	yaw = yaw * M_PI * 2 / 360;
-
-	move[0] = cos(yaw) * dist;
-	move[1] = sin(yaw) * dist;
-	move[2] = 0;
-
-// save program state, because SVQH_movestep may call other progs
-	oldf = pr_xfunction;
-	oldself = *pr_globalVars.self;
-
-	G_FLOAT(OFS_RETURN) = SVQH_movestep(ent, move, true, true, set_trace);
-
-
-// restore program state
-	pr_xfunction = oldf;
-	*pr_globalVars.self = oldself;
-}
-
-/*
-===============
-PF_droptofloor
-
-void() droptofloor
-===============
-*/
-void PF_droptofloor(void)
-{
-	qhedict_t* ent;
-	vec3_t end;
-	q1trace_t trace;
-
-	ent = PROG_TO_EDICT(*pr_globalVars.self);
-
-	VectorCopy(ent->GetOrigin(), end);
-	end[2] -= 256;
-
-	trace = SVQH_Move(ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, false, ent);
-
-	if (trace.fraction == 1 || trace.allsolid)
-	{
-		G_FLOAT(OFS_RETURN) = 0;
-	}
-	else
-	{
-		VectorCopy(trace.endpos, ent->GetOrigin());
-		SVQH_LinkEdict(ent, false);
-		ent->SetFlags((int)ent->GetFlags() | QHFL_ONGROUND);
-		ent->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(trace.entityNum)));
-		G_FLOAT(OFS_RETURN) = 1;
-	}
-}
-
-/*
-===============
-PF_lightstyle
-
-void(float style, string value) lightstyle
-===============
-*/
-void PF_lightstyle(void)
-{
-	int style;
-	const char* val;
-	client_t* client;
-	int j;
-
-	style = G_FLOAT(OFS_PARM0);
-	val = G_STRING(OFS_PARM1);
-
-// change the string in sv
-	sv.qh_lightstyles[style] = val;
-
-// send message to all clients on this server
-	if (sv.state != SS_GAME)
-	{
-		return;
-	}
-
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
-		if (client->state == CS_ACTIVE)
-		{
-			client->netchan.message.WriteChar(h2svc_lightstyle);
-			client->netchan.message.WriteChar(style);
-			client->netchan.message.WriteString2(val);
-		}
 }
 
 //==========================================================================
@@ -1515,260 +682,6 @@ void PF_lightstylestatic(void)
 		}
 }
 
-/*
-=============
-PF_checkbottom
-=============
-*/
-void PF_checkbottom(void)
-{
-	qhedict_t* ent;
-
-	ent = G_EDICT(OFS_PARM0);
-
-	G_FLOAT(OFS_RETURN) = SVQH_CheckBottom(ent);
-}
-
-/*
-=============
-PF_pointcontents
-=============
-*/
-void PF_pointcontents(void)
-{
-	float* v;
-
-	v = G_VECTOR(OFS_PARM0);
-
-	G_FLOAT(OFS_RETURN) = SVQH_PointContents(v);
-}
-
-/*
-=============
-PF_nextent
-
-entity nextent(entity)
-=============
-*/
-void PF_nextent(void)
-{
-	int i;
-	qhedict_t* ent;
-
-	i = G_EDICTNUM(OFS_PARM0);
-	while (1)
-	{
-		i++;
-		if (i == sv.qh_num_edicts)
-		{
-			RETURN_EDICT(sv.qh_edicts);
-			return;
-		}
-		ent = QH_EDICT_NUM(i);
-		if (!ent->free)
-		{
-			RETURN_EDICT(ent);
-			return;
-		}
-	}
-}
-
-/*
-=============
-PF_aim
-
-Pick a vector for the player to shoot along
-vector aim(entity, missilespeed)
-=============
-*/
-Cvar* sv_aim;
-void PF_aim(void)
-{
-	qhedict_t* ent, * check, * bestent;
-	vec3_t start, dir, end, bestdir,hold_org;
-	int i, j;
-	q1trace_t tr;
-	float dist, bestdist;
-	float speed;
-	float* shot_org;
-	float save_hull;
-
-	ent = G_EDICT(OFS_PARM0);
-	shot_org = G_VECTOR(OFS_PARM1);
-	speed = G_FLOAT(OFS_PARM2);
-
-//	VectorCopy (ent->v.origin, start);
-	VectorCopy(shot_org, start);
-	start[2] += 20;
-
-// try sending a trace straight
-	VectorCopy(pr_globalVars.v_forward, dir);
-	VectorMA(start, 2048, dir, end);
-	save_hull = ent->GetHull();
-	ent->SetHull(0);
-	tr = SVQH_Move(start, vec3_origin, vec3_origin, end, false, ent);
-	ent->SetHull(save_hull);
-	if (tr.entityNum >= 0 && QH_EDICT_NUM(tr.entityNum)->GetTakeDamage() == DAMAGE_YES &&
-		(!teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != QH_EDICT_NUM(tr.entityNum)->GetTeam()))
-	{
-		VectorCopy(pr_globalVars.v_forward, G_VECTOR(OFS_RETURN));
-		return;
-	}
-
-
-// try all possible entities
-	VectorCopy(dir, bestdir);
-	bestdist = sv_aim->value;
-	bestent = NULL;
-
-	check = NEXT_EDICT(sv.qh_edicts);
-	for (i = 1; i < sv.qh_num_edicts; i++, check = NEXT_EDICT(check))
-	{
-		if (check->GetTakeDamage() != DAMAGE_YES)
-		{
-			continue;
-		}
-		if (check == ent)
-		{
-			continue;
-		}
-		if (teamplay->value && ent->GetTeam() > 0 && ent->GetTeam() == check->GetTeam())
-		{
-			continue;	// don't aim at teammate
-		}
-		for (j = 0; j < 3; j++)
-			end[j] = check->GetOrigin()[j]
-					 + 0.5 * (check->GetMins()[j] + check->GetMaxs()[j]);
-		VectorSubtract(end, start, dir);
-		VectorNormalize(dir);
-		dist = DotProduct(dir, pr_globalVars.v_forward);
-		if (dist < bestdist)
-		{
-			continue;	// to far to turn
-		}
-		save_hull = ent->GetHull();
-		ent->SetHull(0);
-		tr = SVQH_Move(start, vec3_origin, vec3_origin, end, false, ent);
-		ent->SetHull(save_hull);
-		if (QH_EDICT_NUM(tr.entityNum) == check)
-		{	// can shoot at this one
-			bestdist = dist;
-			bestent = check;
-		}
-	}
-
-	if (bestent)
-	{	// Since all origins are at the base, move the point to the middle of the victim model
-		hold_org[0] = bestent->GetOrigin()[0];
-		hold_org[1] = bestent->GetOrigin()[1];
-		hold_org[2] = bestent->GetOrigin()[2] + (0.5 * bestent->GetMaxs()[2]);
-
-		VectorSubtract(hold_org,shot_org,dir);
-		dist = DotProduct(dir, pr_globalVars.v_forward);
-		VectorScale(pr_globalVars.v_forward, dist, end);
-		end[2] = dir[2];
-		VectorNormalize(end);
-		VectorCopy(end, G_VECTOR(OFS_RETURN));
-	}
-	else
-	{
-		VectorCopy(bestdir, G_VECTOR(OFS_RETURN));
-	}
-}
-
-/*
-===============================================================================
-
-MESSAGE WRITING
-
-===============================================================================
-*/
-
-QMsg* WriteDest(void)
-{
-	int entnum;
-	int dest;
-	qhedict_t* ent;
-
-	dest = G_FLOAT(OFS_PARM0);
-	switch (dest)
-	{
-	case MSG_BROADCAST:
-		return &sv.qh_datagram;
-
-	case MSG_ONE:
-		ent = PROG_TO_EDICT(*pr_globalVars.msg_entity);
-		entnum = QH_NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
-		{
-			PR_RunError("WriteDest: not a client");
-		}
-		return &svs.clients[entnum - 1].netchan.message;
-
-	case MSG_ALL:
-		return &sv.qh_reliable_datagram;
-
-	case MSG_INIT:
-		if (sv.state != SS_LOADING)
-		{
-			PR_RunError("PF_Write_*: MSG_INIT can only be written in spawn functions");
-		}
-		return &sv.qh_signon;
-
-	case MSG_MULTICAST:
-		return &sv.multicast;
-
-	default:
-		PR_RunError("WriteDest: bad destination");
-		break;
-	}
-
-	return NULL;
-}
-
-void PF_WriteByte(void)
-{
-	WriteDest()->WriteByte(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteChar(void)
-{
-	WriteDest()->WriteChar(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteShort(void)
-{
-	WriteDest()->WriteShort(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteLong(void)
-{
-	WriteDest()->WriteLong(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteAngle(void)
-{
-	WriteDest()->WriteAngle(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteCoord(void)
-{
-	WriteDest()->WriteCoord(G_FLOAT(OFS_PARM1));
-}
-
-void PF_WriteString(void)
-{
-	WriteDest()->WriteString2(G_STRING(OFS_PARM1));
-}
-
-
-void PF_WriteEntity(void)
-{
-	WriteDest()->WriteShort(G_EDICTNUM(OFS_PARM1));
-}
-
-//=============================================================================
-
 void PF_makestatic(void)
 {
 	qhedict_t* ent;
@@ -1786,6 +699,7 @@ void PF_makestatic(void)
 	sv.qh_signon.WriteByte((int)(ent->GetScale() * 100.0) & 255);
 	sv.qh_signon.WriteByte(ent->GetDrawFlags());
 	sv.qh_signon.WriteByte((int)(ent->GetAbsLight() * 255.0) & 255);
+
 	for (i = 0; i < 3; i++)
 	{
 		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
@@ -1797,31 +711,6 @@ void PF_makestatic(void)
 }
 
 //=============================================================================
-
-/*
-==============
-PF_setspawnparms
-==============
-*/
-void PF_setspawnparms(void)
-{
-	qhedict_t* ent;
-	int i;
-	client_t* client;
-
-	ent = G_EDICT(OFS_PARM0);
-	i = QH_NUM_FOR_EDICT(ent);
-	if (i < 1 || i > MAX_CLIENTS_QHW)
-	{
-		PR_RunError("Entity is not a client");
-	}
-
-	// copy spawn parms out of the client_t
-	client = svs.clients + (i - 1);
-
-	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		pr_globalVars.parm1[i] = client->qh_spawn_parms[i];
-}
 
 /*
 ==============
@@ -1848,41 +737,6 @@ void PF_changelevel(void)
 	else
 	{
 		Cbuf_AddText(va("changelevel2 %s %s\n",s1, s2));
-	}
-}
-
-
-/*
-==============
-PF_logfrag
-
-logfrag (killer, killee)
-==============
-*/
-void PF_logfrag(void)
-{
-	qhedict_t* ent1, * ent2;
-	int e1, e2;
-	char* s;
-
-	ent1 = G_EDICT(OFS_PARM0);
-	ent2 = G_EDICT(OFS_PARM1);
-
-	e1 = QH_NUM_FOR_EDICT(ent1);
-	e2 = QH_NUM_FOR_EDICT(ent2);
-
-	if (e1 < 1 || e1 > MAX_CLIENTS_QHW ||
-		e2 < 1 || e2 > MAX_CLIENTS_QHW)
-	{
-		return;
-	}
-
-	s = va("\\%s\\%s\\\n",svs.clients[e1 - 1].name, svs.clients[e2 - 1].name);
-
-	svs.qh_log[svs.qh_logsequence & 1].Print(s);
-	if (sv_fraglogfile)
-	{
-		FS_Printf(sv_fraglogfile, s);
 	}
 }
 
@@ -1925,25 +779,6 @@ void PF_infokey(void)
 	RETURN_STRING(value);
 }
 
-/*
-==============
-PF_multicast
-
-void(vector where, float set) multicast
-==============
-*/
-void PF_multicast(void)
-{
-	float* o;
-	int to;
-
-	o = G_VECTOR(OFS_PARM0);
-	to = G_FLOAT(OFS_PARM1);
-
-	SVQH_Multicast(o, to);
-}
-
-
 void PF_plaque_draw(void)
 {
 	int Index;
@@ -1962,8 +797,17 @@ void PF_plaque_draw(void)
 		PR_RunError("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 	}
 
-	WriteDest()->WriteByte(hwsvc_plaque);
-	WriteDest()->WriteShort(Index);
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_plaque, 3);
+		SVQH_ClientReliableWrite_Short(cl, Index);
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_plaque);
+		QWWriteDest()->WriteShort(Index);
+	}
 }
 
 void PF_rain_go(void)
@@ -2505,7 +1349,7 @@ builtin_t pr_builtin[] =
 	PF_Fixme,
 	PF_makevectors,	// void(entity e)	makevectors         = #1;
 	PF_setorigin,	// void(entity e, vector o) setorigin	= #2;
-	PF_setmodel,// void(entity e, string m) setmodel	= #3;
+	PFQ1_setmodel,// void(entity e, string m) setmodel	= #3;
 	PF_setsize,	// void(entity e, vector min, vector max) setsize = #4;
 	PF_lightstylestatic,// 5
 	PF_break,	// void() break						= #6;
@@ -2517,7 +1361,7 @@ builtin_t pr_builtin[] =
 	PF_vlen,// float(vector v) vlen				= #12;
 	PF_vectoyaw,// float(vector v) vectoyaw		= #13;
 	PF_Spawn,	// entity() spawn						= #14;
-	PF_Remove,	// void(entity e) remove				= #15;
+	PFHW_Remove,	// void(entity e) remove				= #15;
 	PF_traceline,	// float(vector v1, vector v2, float tryents) traceline = #16;
 	PF_checkclient,	// entity() clientlist					= #17;
 	PF_Find,// entity(entity start, .string fld, string match) find = #18;
@@ -2534,10 +1378,10 @@ builtin_t pr_builtin[] =
 	PF_traceon,
 	PF_traceoff,
 	PF_eprint,	// void(entity e) debug print an entire entity
-	PF_walkmove,// float(float yaw, float dist) walkmove
+	PFH2_walkmove,// float(float yaw, float dist) walkmove
 	PF_tracearea,							// float(vector v1, vector v2, vector mins, vector maxs,
 	PF_droptofloor,
-	PF_lightstyle,
+	PFQW_lightstyle,
 	PF_rint,
 	PF_floor,
 	PF_ceil,
@@ -2546,7 +1390,7 @@ builtin_t pr_builtin[] =
 	PF_pointcontents,
 	PF_particle2,
 	PF_fabs,
-	PF_aim,
+	PFH2_aim,
 	PF_cvar,
 	PF_localcmd,
 	PF_nextent,
@@ -2555,14 +1399,14 @@ builtin_t pr_builtin[] =
 	PF_vhlen,								// float(vector v) vhlen											= #50
 	PF_vectoangles,
 
-	PF_WriteByte,
-	PF_WriteChar,
-	PF_WriteShort,
-	PF_WriteLong,
-	PF_WriteCoord,
-	PF_WriteAngle,
-	PF_WriteString,
-	PF_WriteEntity,
+	PFQW_WriteByte,
+	PFQW_WriteChar,
+	PFQW_WriteShort,
+	PFQW_WriteLong,
+	PFQW_WriteCoord,
+	PFQW_WriteAngle,
+	PFQW_WriteString,
+	PFQW_WriteEntity,
 
 	PF_dprintf,								// void(string s1, string s2) dprint										= #60
 	PF_Cos,									//																			= #61

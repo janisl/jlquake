@@ -42,13 +42,12 @@ void SV_Init(void)
 	extern Cvar* sv_edgefriction;
 	extern Cvar* sv_idealpitchscale;
 	extern Cvar* sv_idealrollscale;
-	extern Cvar* sv_aim;
 
 	SVQH_RegisterPhysicsCvars();
 	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
 	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);
 	sv_idealrollscale = Cvar_Get("sv_idealrollscale","0.8", 0);
-	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
+	svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
 	sv_walkpitch = Cvar_Get("sv_walkpitch", "0", 0);
 	sv_sound_distance = Cvar_Get("sv_sound_distance","800", CVAR_ARCHIVE);
 	sv_update_player    = Cvar_Get("sv_update_player","1", CVAR_ARCHIVE);

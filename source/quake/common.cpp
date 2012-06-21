@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const char* safeargvs[NUM_SAFE_ARGVS] =
 {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-Cvar* registered;
 Cvar* cmdline;
 
 int static_registered = 1;				// only for startup check, then set
@@ -200,7 +199,7 @@ void COM_Init(const char* basedir)
 {
 	Com_InitByteOrder();
 
-	registered = Cvar_Get("registered", "0", 0);
+	qh_registered = Cvar_Get("registered", "0", 0);
 	cmdline = Cvar_Get("cmdline", "0", CVAR_SERVERINFO);
 
 	COM_InitFilesystem();

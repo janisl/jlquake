@@ -54,7 +54,6 @@ Cvar* pausable;
 //
 Cvar* fraglimit;
 Cvar* timelimit;
-Cvar* teamplay;
 Cvar* samelevel;
 Cvar* maxclients;
 Cvar* maxspectators;
@@ -64,7 +63,6 @@ Cvar* watervis;
 Cvar* hostname;
 
 fileHandle_t sv_logfile;
-fileHandle_t sv_fraglogfile;
 
 int sv_net_port;
 
@@ -110,10 +108,10 @@ void SV_Shutdown()
 		FS_FCloseFile(sv_logfile);
 		sv_logfile = 0;
 	}
-	if (sv_fraglogfile)
+	if (svqhw_fraglogfile)
 	{
-		FS_FCloseFile(sv_fraglogfile);
-		sv_fraglogfile = 0;
+		FS_FCloseFile(svqhw_fraglogfile);
+		svqhw_fraglogfile = 0;
 	}
 	NET_Shutdown();
 }
@@ -443,7 +441,7 @@ void SVC_Log(void)
 		seq = -1;
 	}
 
-	if (seq == svs.qh_logsequence - 1 || !sv_fraglogfile)
+	if (seq == svs.qh_logsequence - 1 || !svqhw_fraglogfile)
 	{	// they allready have this data, or we aren't logging frags
 		data[0] = A2A_NACK;
 		NET_SendPacket(1, data, net_from);
@@ -1431,7 +1429,6 @@ SV_InitLocal
 void SV_InitLocal(void)
 {
 	int i;
-	extern Cvar* sv_aim;
 
 	SV_InitOperatorCommands();
 	SV_UserInit();
@@ -1442,7 +1439,7 @@ void SV_InitLocal(void)
 
 	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
-	teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
+	svqh_teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel","0", CVAR_SERVERINFO);
 	maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
 	maxspectators = Cvar_Get("maxspectators","8", CVAR_SERVERINFO);
@@ -1457,7 +1454,7 @@ void SV_InitLocal(void)
 
 	SVQH_RegisterPhysicsCvars();
 
-	sv_aim = Cvar_Get("sv_aim", "2", 0);
+	svqh_aim = Cvar_Get("sv_aim", "2", 0);
 
 	filterban = Cvar_Get("filterban", "1", 0);
 

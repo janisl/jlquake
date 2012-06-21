@@ -46,7 +46,6 @@ Cvar* serverprofile;
 
 Cvar* fraglimit;
 Cvar* timelimit;
-Cvar* teamplay;
 
 Cvar* samelevel;
 Cvar* noexit;
@@ -293,7 +292,7 @@ void Host_InitLocal(void)
 
 	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
-	teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
+	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel", "0", 0);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 	skill = Cvar_Get("skill", "1", 0);						// 0 - 3

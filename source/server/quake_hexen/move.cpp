@@ -57,18 +57,7 @@ realcheck:
 	start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5;
 	start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5;
 	stop[2] = start[2] - 2 * STEPSIZE;
-	float save_hull;
-	if (GGameType & GAME_Hexen2)
-	{
-		//temp hack so it HullForEntity doesn't calculate the wrong offset
-		save_hull = ent->GetHull();
-		ent->SetHull(0);
-	}
-	q1trace_t trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, ent);
-	if (GGameType & GAME_Hexen2)
-	{
-		ent->SetHull(save_hull);
-	}
+	q1trace_t trace = SVQH_MoveHull0(start, vec3_origin, vec3_origin, stop, true, ent);
 
 	if (trace.fraction == 1.0)
 	{
@@ -85,17 +74,7 @@ realcheck:
 			start[0] = stop[0] = x ? maxs[0] : mins[0];
 			start[1] = stop[1] = y ? maxs[1] : mins[1];
 
-			if (GGameType & GAME_Hexen2)
-			{
-				//temp hack so it HullForEntity doesn't calculate the wrong offset
-				save_hull = ent->GetHull();
-				ent->SetHull(0);
-			}
-			trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, ent);
-			if (GGameType & GAME_Hexen2)
-			{
-				ent->SetHull(save_hull);
-			}
+			trace = SVQH_MoveHull0(start, vec3_origin, vec3_origin, stop, true, ent);
 
 			if (trace.fraction != 1.0 && trace.endpos[2] > bottom)
 			{

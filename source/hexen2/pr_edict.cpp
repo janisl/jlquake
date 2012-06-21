@@ -17,8 +17,6 @@ char* pr_global_info_strings = NULL;
 int pr_info_string_count = 0;
 #endif
 
-qboolean ignore_precache = false;
-
 #ifdef MISSIONPACK
 void PR_LoadInfoStrings(void)
 {

@@ -36,13 +36,12 @@ void SV_Init(void)
 	int i;
 	extern Cvar* sv_edgefriction;
 	extern Cvar* sv_idealpitchscale;
-	extern Cvar* sv_aim;
 
 
 	SVQH_RegisterPhysicsCvars();
 	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
 	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale", "0.8", 0);
-	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
+	svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 		sprintf(localmodels[i], "*%i", i);

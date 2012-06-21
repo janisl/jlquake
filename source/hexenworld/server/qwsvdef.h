@@ -2,6 +2,7 @@
 
 #include "../../server/server.h"
 #include "../../server/quake_hexen/local.h"
+#include "../../server/hexen2/local.h"
 #include "../../server/progsvm/progsvm.h"
 
 //define	PARANOID			// speed sapping error checking

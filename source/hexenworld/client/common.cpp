@@ -14,8 +14,6 @@
 static const char* safeargvs[NUM_SAFE_ARGVS] =
 {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 
-Cvar* registered;
-
 int static_registered = 1;		// only for startup check, then set
 
 qboolean msg_suppress_1 = 0;
@@ -163,7 +161,7 @@ void COM_Init(const char* basedir)
 
 	COM_InitCommonCvars();
 
-	registered = Cvar_Get("registered", "0", 0);
+	qh_registered = Cvar_Get("registered", "0", 0);
 
 	COM_InitFilesystem();
 	COM_CheckRegistered();

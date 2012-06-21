@@ -882,7 +882,7 @@ void Host_Say(qboolean teamonly)
 		{
 			continue;
 		}
-		if (teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
+		if (svqh_teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
 		{
 			continue;
 		}

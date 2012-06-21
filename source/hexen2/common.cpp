@@ -14,7 +14,6 @@
 static const char* safeargvs[NUM_SAFE_ARGVS] =
 {"-nomidi", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-Cvar* registered;
 Cvar* sv_gamedir;
 Cvar* cmdline;
 
@@ -193,7 +192,7 @@ void COM_Init(const char* basedir)
 {
 	Com_InitByteOrder();
 
-	registered = Cvar_Get("registered", "0", 0);
+	qh_registered = Cvar_Get("registered", "0", 0);
 	sv_gamedir = Cvar_Get("*gamedir", "portals", CVAR_SERVERINFO);
 	cmdline = Cvar_Get("cmdline","0", CVAR_SERVERINFO);
 

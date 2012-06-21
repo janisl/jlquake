@@ -2156,7 +2156,7 @@ void M_GameOptions_Draw(void)
 	{
 		const char* msg;
 
-		switch ((int)teamplay->value)
+		switch ((int)svqh_teamplay->value)
 		{
 		case 1: msg = "No Friendly Fire"; break;
 		case 2: msg = "Friendly Fire"; break;
@@ -2172,7 +2172,7 @@ void M_GameOptions_Draw(void)
 	{
 		const char* msg;
 
-		switch ((int)teamplay->value)
+		switch ((int)svqh_teamplay->value)
 		{
 		case 1: msg = "No Friendly Fire"; break;
 		case 2: msg = "Friendly Fire"; break;
@@ -2311,12 +2311,12 @@ void M_NetStart_Change(int dir)
 			count = 2;
 		}
 
-		Cvar_SetValue("teamplay", teamplay->value + dir);
-		if (teamplay->value > count)
+		Cvar_SetValue("teamplay", svqh_teamplay->value + dir);
+		if (svqh_teamplay->value > count)
 		{
 			Cvar_SetValue("teamplay", 0);
 		}
-		else if (teamplay->value < 0)
+		else if (svqh_teamplay->value < 0)
 		{
 			Cvar_SetValue("teamplay", count);
 		}
@@ -2371,7 +2371,7 @@ void M_NetStart_Change(int dir)
 		{
 			count = 4;
 		}
-		else if (registered->value)
+		else if (qh_registered->value)
 		{
 			count = 7;
 		}
