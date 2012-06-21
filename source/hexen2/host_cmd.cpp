@@ -16,8 +16,6 @@ static double old_time;
 
 void RestoreClients(void);
 
-unsigned int info_mask, info_mask2;
-
 #define TESTSAVE
 
 int LoadGamestate(char* level, char* startspot, int ClientsMode);

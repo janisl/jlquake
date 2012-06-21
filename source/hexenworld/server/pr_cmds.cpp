@@ -414,84 +414,6 @@ void PF_particle4(void)
 
 /*
 =================
-PF_StopSound
-    stop ent's sound on this chan
-=================
-*/
-void PF_StopSound(void)
-{
-	int channel;
-	qhedict_t* entity;
-
-	entity = G_EDICT(OFS_PARM0);
-	channel = G_FLOAT(OFS_PARM1);
-
-	if (channel < 0 || channel > 7)
-	{
-		Sys_Error("SVQH_StartSound: channel = %i", channel);
-	}
-
-	SVH2_StopSound(entity, channel);
-}
-
-/*
-=================
-PF_UpdateSoundPos
-    sends cur pos to client to update this ent/chan pair
-=================
-*/
-void PF_UpdateSoundPos(void)
-{
-	int channel;
-	qhedict_t* entity;
-
-	entity = G_EDICT(OFS_PARM0);
-	channel = G_FLOAT(OFS_PARM1);
-
-	if (channel < 0 || channel > 7)
-	{
-		Sys_Error("SVQH_StartSound: channel = %i", channel);
-	}
-
-	SVH2_UpdateSoundPos(entity, channel);
-}
-
-/*
-=================
-PF_tracearea
-
-Used for use tracing and shot targeting
-Traces are blocked by bbox and exact bsp entityes, and also slide box entities
-if the tryents flag is set.
-
-tracearea (vector1, vector2, mins, maxs, tryents)
-=================
-*/
-void PF_tracearea(void)
-{
-	float* v1, * v2, * mins, * maxs;
-	q1trace_t trace;
-	int nomonsters;
-	qhedict_t* ent;
-	float save_hull;
-
-	v1 = G_VECTOR(OFS_PARM0);
-	v2 = G_VECTOR(OFS_PARM1);
-	mins = G_VECTOR(OFS_PARM2);
-	maxs = G_VECTOR(OFS_PARM3);
-	nomonsters = G_FLOAT(OFS_PARM4);
-	ent = G_EDICT(OFS_PARM5);
-
-	save_hull = ent->GetHull();
-	ent->SetHull(0);
-	trace = SVQH_Move(v1, mins, maxs, v2, nomonsters, ent);
-	ent->SetHull(save_hull);
-
-	SVQH_SetMoveTrace(trace);
-}
-
-/*
-=================
 PF_stuffcmd
 
 Sends text over to the client's execution buffer
@@ -519,167 +441,6 @@ void PF_stuffcmd(void)
 	host_client->netchan.message.WriteString2(str);
 
 	host_client = old;
-}
-
-void PF_SpawnTemp(void)
-{
-	qhedict_t* ed;
-
-	ed = ED_Alloc_Temp();
-
-	RETURN_EDICT(ed);
-}
-
-void PF_FindFloat(void)
-{
-	int e;
-	int f;
-	float s, t;
-	qhedict_t* ed;
-
-	e = G_EDICTNUM(OFS_PARM0);
-	f = G_INT(OFS_PARM1);
-	s = G_FLOAT(OFS_PARM2);
-	if (!s)
-	{
-		PR_RunError("PF_Find: bad search string");
-	}
-
-	for (e++; e < sv.qh_num_edicts; e++)
-	{
-		ed = QH_EDICT_NUM(e);
-		if (ed->free)
-		{
-			continue;
-		}
-		t = E_FLOAT(ed,f);
-		if (t == s)
-		{
-			RETURN_EDICT(ed);
-			return;
-		}
-	}
-
-	RETURN_EDICT(sv.qh_edicts);
-}
-
-void PF_precache_puzzle_model(void)
-{
-	int i;
-	const char* s;
-	char temp[256];
-	const char* m;
-
-	if (sv.state != SS_LOADING)
-	{
-		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
-	}
-
-	m = G_STRING(OFS_PARM0);
-	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
-
-	sprintf(temp,"models/puzzle/%s.mdl",m);
-	s = ED_NewString(temp);
-
-	PR_CheckEmptyString(s);
-
-	for (i = 0; i < MAX_MODELS_H2; i++)
-	{
-		if (!sv.qh_model_precache[i])
-		{
-			sv.qh_model_precache[i] = s;
-			return;
-		}
-		if (!String::Cmp(sv.qh_model_precache[i], s))
-		{
-			return;
-		}
-	}
-	PR_RunError("PF_precache_puzzle_model: overflow");
-}
-
-//==========================================================================
-//
-// PF_lightstylevalue
-//
-// void lightstylevalue(float style);
-//
-//==========================================================================
-
-
-//extern
-int cl_lightstylevalue[256];
-
-// rjr
-//I need this!  MG
-void PF_lightstylevalue(void)
-{
-	int style;
-
-	style = G_FLOAT(OFS_PARM0);
-	if (style < 0 || style >= MAX_LIGHTSTYLES_H2)
-	{
-		G_FLOAT(OFS_RETURN) = 0;
-		return;
-	}
-
-	//G_FLOAT(OFS_RETURN) = 0;//
-	G_FLOAT(OFS_RETURN) = (int)cl_lightstylevalue[style];
-}
-
-
-//==========================================================================
-//
-// PF_lightstylestatic
-//
-// void lightstylestatic(float style, float value);
-//
-//==========================================================================
-
-void PF_lightstylestatic(void)
-{
-	int j;
-	int value;
-	int styleNumber;
-	const char* styleString;
-	client_t* client;
-	static const char* styleDefs[] =
-	{
-		"a", "b", "c", "d", "e", "f", "g",
-		"h", "i", "j", "k", "l", "m", "n",
-		"o", "p", "q", "r", "s", "t", "u",
-		"v", "w", "x", "y", "z"
-	};
-
-	styleNumber = G_FLOAT(OFS_PARM0);
-	value = G_FLOAT(OFS_PARM1);
-	if (value < 0)
-	{
-		value = 0;
-	}
-	else if (value > 'z' - 'a')
-	{
-		value = 'z' - 'a';
-	}
-	styleString = styleDefs[value];
-
-	// Change the string in sv
-	sv.qh_lightstyles[styleNumber] = styleString;
-	cl_lightstylevalue[styleNumber] = value;
-
-	if (sv.state != SS_GAME)
-	{
-		return;
-	}
-
-	// Send message to all clients on this server
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
-		if (client->state == CS_ACTIVE)
-		{
-			client->netchan.message.WriteChar(h2svc_lightstyle);
-			client->netchan.message.WriteChar(styleNumber);
-			client->netchan.message.WriteString2(styleString);
-		}
 }
 
 void PF_makestatic(void)
@@ -781,11 +542,7 @@ void PF_infokey(void)
 
 void PF_plaque_draw(void)
 {
-	int Index;
-
-//	plaquemessage = G_STRING(OFS_PARM0);
-
-	Index = ((int)G_FLOAT(OFS_PARM1));
+	int Index = ((int)G_FLOAT(OFS_PARM1));
 
 	if (Index < 0)
 	{
@@ -855,170 +612,6 @@ void PF_particleexplosion(void)
 	sv.qh_datagram.WriteShort(color);
 	sv.qh_datagram.WriteShort(radius);
 	sv.qh_datagram.WriteShort(counter);
-}
-
-void PF_movestep(void)
-{
-	vec3_t v;
-	qhedict_t* ent;
-	dfunction_t* oldf;
-	int oldself;
-	qboolean set_trace;
-
-	ent = PROG_TO_EDICT(*pr_globalVars.self);
-
-	v[0] = G_FLOAT(OFS_PARM0);
-	v[1] = G_FLOAT(OFS_PARM1);
-	v[2] = G_FLOAT(OFS_PARM2);
-	set_trace = G_FLOAT(OFS_PARM3);
-
-// save program state, because SVQH_movestep may call other progs
-	oldf = pr_xfunction;
-	oldself = *pr_globalVars.self;
-
-	G_INT(OFS_RETURN) = SVQH_movestep(ent, v, false, true, set_trace);
-
-// restore program state
-	pr_xfunction = oldf;
-	*pr_globalVars.self = oldself;
-}
-
-void PF_AdvanceFrame(void)
-{
-	qhedict_t* Ent;
-	float Start,End,Result;
-
-	Ent = PROG_TO_EDICT(*pr_globalVars.self);
-	Start = G_FLOAT(OFS_PARM0);
-	End = G_FLOAT(OFS_PARM1);
-
-	if ((Start < End && (Ent->GetFrame() < Start || Ent->GetFrame() > End)) ||
-		(Start > End && (Ent->GetFrame() > Start || Ent->GetFrame() < End)))
-	{	// Didn't start in the range
-		Ent->SetFrame(Start);
-		Result = 0;
-	}
-	else if (Ent->GetFrame() == End)
-	{	// Wrapping
-		Ent->SetFrame(Start);
-		Result = 1;
-	}
-	else if (End > Start)
-	{	// Regular Advance
-		Ent->SetFrame(Ent->GetFrame() + 1);
-		if (Ent->GetFrame() == End)
-		{
-			Result = 2;
-		}
-		else
-		{
-			Result = 0;
-		}
-	}
-	else if (End < Start)
-	{	// Reverse Advance
-		Ent->SetFrame(Ent->GetFrame() - 1);
-		if (Ent->GetFrame() == End)
-		{
-			Result = 2;
-		}
-		else
-		{
-			Result = 0;
-		}
-	}
-	else
-	{
-		Ent->SetFrame(End);
-		Result = 1;
-	}
-
-	G_FLOAT(OFS_RETURN) = Result;
-}
-
-void PF_RewindFrame(void)
-{
-	qhedict_t* Ent;
-	float Start,End,Result;
-
-	Ent = PROG_TO_EDICT(*pr_globalVars.self);
-	Start = G_FLOAT(OFS_PARM0);
-	End = G_FLOAT(OFS_PARM1);
-
-	if (Ent->GetFrame() > Start || Ent->GetFrame() < End)
-	{	// Didn't start in the range
-		Ent->SetFrame(Start);
-		Result = 0;
-	}
-	else if (Ent->GetFrame() == End)
-	{	// Wrapping
-		Ent->SetFrame(Start);
-		Result = 1;
-	}
-	else
-	{	// Regular Advance
-		Ent->SetFrame(Ent->GetFrame() - 1);
-		if (Ent->GetFrame() == End)
-		{
-			Result = 2;
-		}
-		else
-		{
-			Result = 0;
-		}
-	}
-
-	G_FLOAT(OFS_RETURN) = Result;
-}
-
-#define WF_NORMAL_ADVANCE 0
-#define WF_CYCLE_STARTED 1
-#define WF_CYCLE_WRAPPED 2
-#define WF_LAST_FRAME 3
-
-void PF_advanceweaponframe(void)
-{
-	qhedict_t* ent;
-	float startframe,endframe;
-	float state;
-
-	ent = PROG_TO_EDICT(*pr_globalVars.self);
-	startframe = G_FLOAT(OFS_PARM0);
-	endframe = G_FLOAT(OFS_PARM1);
-
-	if ((endframe > startframe && (ent->GetWeaponFrame() > endframe || ent->GetWeaponFrame() < startframe)) ||
-		(endframe < startframe && (ent->GetWeaponFrame() < endframe || ent->GetWeaponFrame() > startframe)))
-	{
-		ent->SetWeaponFrame(startframe);
-		state = WF_CYCLE_STARTED;
-	}
-	else if (ent->GetWeaponFrame() == endframe)
-	{
-		ent->SetWeaponFrame(startframe);
-		state = WF_CYCLE_WRAPPED;
-	}
-	else
-	{
-		if (startframe > endframe)
-		{
-			ent->SetWeaponFrame(ent->GetWeaponFrame() - 1);
-		}
-		else if (startframe < endframe)
-		{
-			ent->SetWeaponFrame(ent->GetWeaponFrame() + 1);
-		}
-
-		if (ent->GetWeaponFrame() == endframe)
-		{
-			state = WF_LAST_FRAME;
-		}
-		else
-		{
-			state = WF_NORMAL_ADVANCE;
-		}
-	}
-
-	G_FLOAT(OFS_RETURN) = state;
 }
 
 void PF_setclass(void)
@@ -1351,7 +944,7 @@ builtin_t pr_builtin[] =
 	PF_setorigin,	// void(entity e, vector o) setorigin	= #2;
 	PFQ1_setmodel,// void(entity e, string m) setmodel	= #3;
 	PF_setsize,	// void(entity e, vector min, vector max) setsize = #4;
-	PF_lightstylestatic,// 5
+	PFHW_lightstylestatic,// 5
 	PF_break,	// void() break						= #6;
 	PF_random,	// float() random						= #7;
 	PF_sound,	// void(entity e, float chan, string samp) sound = #8;
@@ -1411,7 +1004,7 @@ builtin_t pr_builtin[] =
 	PF_dprintf,								// void(string s1, string s2) dprint										= #60
 	PF_Cos,									//																			= #61
 	PF_Sin,									//																			= #62
-	PF_AdvanceFrame,						//																			= #63
+	PFHW_AdvanceFrame,						//																			= #63
 	PF_dprintv,								// void(string s1, string s2) dprint										= #64
 	PF_RewindFrame,							//																			= #65
 	PF_setclass,
@@ -1421,7 +1014,7 @@ builtin_t pr_builtin[] =
 	PF_makestatic,
 
 	PF_changelevel,
-	PF_lightstylevalue,	// 71
+	PFHW_lightstylevalue,	// 71
 
 	PF_cvar_set,
 	PF_centerprint,

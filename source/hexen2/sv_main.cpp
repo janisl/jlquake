@@ -19,7 +19,6 @@ Cvar* sv_update_misc;
 Cvar* sv_ce_scale;
 Cvar* sv_ce_max_size;
 
-extern unsigned int info_mask, info_mask2;
 int sv_kingofhill;
 qboolean skip_start = false;
 int num_intro_msg = 0;
