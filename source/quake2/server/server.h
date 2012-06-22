@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // server.h
 
 #include "../../server/server.h"
+#include "../../server/quake2/local.h"
 
 #include "../../common/file_formats/bsp38.h"
 
 //define	PARANOID			// speed sapping error checking
 
 #include "../qcommon/qcommon.h"
-#include "game.h"
 
 //=============================================================================
 
@@ -104,7 +104,7 @@ void SV_FlushRedirect(int sv_redirected, char* outputbuf);
 void SV_DemoCompleted(void);
 void SV_SendClientMessages(void);
 
-void SV_Multicast(vec3_t origin, multicast_t to);
+void SV_Multicast(vec3_t origin, q2multicast_t to);
 void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
 	int soundindex, float volume,
 	float attenuation, float timeofs);
@@ -135,56 +135,6 @@ void SV_BuildClientFrame(client_t* client);
 //
 // sv_game.c
 //
-extern game_export_t* ge;
-
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
 void SV_InitEdict(q2edict_t* e);
-
-
-
-//============================================================
-
-//
-// high level object sorting to reduce interaction tests
-//
-
-void SV_UnlinkEdict(q2edict_t* ent);
-// call before removing an entity, and before trying to move one,
-// so it doesn't clip against itself
-
-void SV_LinkEdict(q2edict_t* ent);
-// Needs to be called any time an entity changes origin, mins, maxs,
-// or solid.  Automatically unlinks if needed.
-// sets ent->v.absmin and ent->v.absmax
-// sets ent->leafnums[] for pvs determination even if the entity
-// is not solid
-
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list, int maxcount, int areatype);
-// fills in a table of edict pointers with edicts that have bounding boxes
-// that intersect the given area.  It is possible for a non-axial bmodel
-// to be returned that doesn't actually intersect the area on an exact
-// test.
-// returns the number of pointers filled in
-// ??? does this always return the world?
-
-//===================================================================
-
-//
-// functions that interact with everything apropriate
-//
-int SV_PointContents(vec3_t p);
-// returns the CONTENTS_* value from the world at the given point.
-// Quake 2 extends this to also check entities, to allow moving liquids
-
-
-q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passedict, int contentmask);
-// mins and maxs are relative
-
-// if the entire move stays in a solid volume, trace.allsolid will be set,
-// trace.startsolid will be set, and trace.fraction will be 0
-
-// if the starting point is in a solid, it will be allowed to move out
-// to an open area
-
-// passedict is explicitly excluded from clipping checks (normally NULL)

@@ -83,3 +83,19 @@ struct q2edict_t
 	// the game dll can add anything it wants after
 	// this point in the structure
 };
+
+// destination class for gi.multicast()
+enum q2multicast_t
+{
+	Q2MULTICAST_ALL,
+	Q2MULTICAST_PHS,
+	Q2MULTICAST_PVS,
+	Q2MULTICAST_ALL_R,
+	Q2MULTICAST_PHS_R,
+	Q2MULTICAST_PVS_R
+};
+
+// gi.BoxEdicts() can return a list of either solid or trigger entities
+// FIXME: eliminate AREA_ distinction?
+#define Q2AREA_SOLID    1
+#define Q2AREA_TRIGGERS 2

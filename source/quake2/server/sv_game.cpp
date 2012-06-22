@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 
-game_export_t* ge;
-
 void* game_library;
 
 
@@ -197,7 +195,7 @@ void PF_setmodel(q2edict_t* ent, char* name)
 	{
 		mod = CM_InlineModel(String::Atoi(name + 1));
 		CM_ModelBounds(mod, ent->mins, ent->maxs);
-		SV_LinkEdict(ent);
+		SVQ2_LinkEdict(ent);
 	}
 
 }
@@ -230,7 +228,7 @@ void PF_Configstring(int index, const char* val)
 		sv.multicast.WriteShort(index);
 		sv.multicast.WriteString2(val);
 
-		SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+		SV_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
 	}
 }
 
@@ -404,7 +402,7 @@ void SCR_DebugGraph(float value, int color);
 
 void SV_InitGameProgs(void)
 {
-	game_import_t import;
+	q2game_import_t import;
 
 	// unload anything we have now
 	if (ge)
@@ -422,11 +420,11 @@ void SV_InitGameProgs(void)
 	import.centerprintf = PF_centerprintf;
 	import.error = PFQ2_error;
 
-	import.linkentity = SV_LinkEdict;
-	import.unlinkentity = SV_UnlinkEdict;
-	import.BoxEdicts = SV_AreaEdicts;
-	import.trace = SV_Trace;
-	import.pointcontents = SV_PointContents;
+	import.linkentity = SVQ2_LinkEdict;
+	import.unlinkentity = SVQ2_UnlinkEdict;
+	import.BoxEdicts = SVQ2_AreaEdicts;
+	import.trace = SVQ2_Trace;
+	import.pointcontents = SVQ2_PointContents;
 	import.setmodel = PF_setmodel;
 	import.inPVS = PF_inPVS;
 	import.inPHS = PF_inPHS;
@@ -467,16 +465,16 @@ void SV_InitGameProgs(void)
 	import.SetAreaPortalState = CM_SetAreaPortalState;
 	import.AreasConnected = CM_AreasConnected;
 
-	ge = (game_export_t*)Sys_GetGameAPI(&import);
+	ge = (q2game_export_t*)Sys_GetGameAPI(&import);
 
 	if (!ge)
 	{
 		Com_Error(ERR_DROP, "failed to load game DLL");
 	}
-	if (ge->apiversion != GAME_API_VERSION)
+	if (ge->apiversion != Q2GAME_API_VERSION)
 	{
 		Com_Error(ERR_DROP, "game is version %i, not %i", ge->apiversion,
-			GAME_API_VERSION);
+			Q2GAME_API_VERSION);
 	}
 
 	ge->Init();

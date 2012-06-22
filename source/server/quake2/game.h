@@ -1,52 +1,29 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
 // game.h -- game dll information visible to server
 
-#define GAME_API_VERSION    3
+#define Q2GAME_API_VERSION  3
 
 //===============================================================
 
 //
 // functions provided by the main engine
 //
-typedef struct
+struct q2game_import_t
 {
 	// special messages
 	void (* bprintf)(int printlevel, const char* fmt, ...);
@@ -85,10 +62,10 @@ typedef struct
 	void (* linkentity)(q2edict_t* ent);
 	void (* unlinkentity)(q2edict_t* ent);		// call before removing an interactive edict
 	int (* BoxEdicts)(vec3_t mins, vec3_t maxs, q2edict_t** list, int maxcount, int areatype);
-	void (* Pmove)(pmove_t* pmove);			// player movement code common with client prediction
+	void (* Pmove)(q2pmove_t* pmove);			// player movement code common with client prediction
 
 	// network messaging
-	void (* multicast)(vec3_t origin, multicast_t to);
+	void (* multicast)(vec3_t origin, q2multicast_t to);
 	void (* unicast)(q2edict_t* ent, qboolean reliable);
 	void (* WriteChar)(int c);
 	void (* WriteByte)(int c);
@@ -120,12 +97,12 @@ typedef struct
 	void (* AddCommandString)(const char* text);
 
 	void (* DebugGraph)(float value, int color);
-} game_import_t;
+};
 
 //
 // functions exported by the game subsystem
 //
-typedef struct
+struct q2game_export_t
 {
 	int apiversion;
 
@@ -177,6 +154,4 @@ typedef struct
 	int edict_size;
 	int num_edicts;				// current number, <= max_edicts
 	int max_edicts;
-} game_export_t;
-
-game_export_t* GetGameApi(game_import_t* import);
+};

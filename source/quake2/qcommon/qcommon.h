@@ -208,7 +208,7 @@ Common between server and client so prediction matches
 
 extern float pm_airaccelerate;
 
-void Pmove(pmove_t* pmove);
+void Pmove(q2pmove_t* pmove);
 
 /*
 ==============================================================

@@ -107,6 +107,35 @@ struct qhplayermove_t
 	int watertype;
 };
 
+#define Q2MAXTOUCH    32
+
+struct q2pmove_t
+{
+	// state (in / out)
+	q2pmove_state_t s;
+
+	// command (in)
+	q2usercmd_t cmd;
+	qboolean snapinitial;			// if s has been changed outside pmove
+
+	// results (out)
+	int numtouch;
+	struct q2edict_t* touchents[Q2MAXTOUCH];
+
+	vec3_t viewangles;				// clamped
+	float viewheight;
+
+	vec3_t mins, maxs;				// bounding box size
+
+	struct q2edict_t* groundentity;
+	int watertype;
+	int waterlevel;
+
+	// callbacks to test the world
+	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
+	int (* pointcontents)(vec3_t point);
+};
+
 extern movevars_t movevars;
 extern qhplayermove_t qh_pmove;
 

@@ -37,17 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ERR_DROP            1		// print to console and disconnect from game
 #define ERR_DISCONNECT      2		// don't kill server
 
-// destination class for gi.multicast()
-typedef enum
-{
-	MULTICAST_ALL,
-	MULTICAST_PHS,
-	MULTICAST_PVS,
-	MULTICAST_ALL_R,
-	MULTICAST_PHS_R,
-	MULTICAST_PVS_R
-} multicast_t;
-
 
 //=============================================
 
@@ -109,39 +98,6 @@ COLLISION DETECTION
 #define MASK_SHOT               (BSP38CONTENTS_SOLID | BSP38CONTENTS_MONSTER | BSP38CONTENTS_WINDOW | BSP38CONTENTS_DEADMONSTER)
 #define MASK_CURRENT            (BSP38CONTENTS_CURRENT_0 | BSP38CONTENTS_CURRENT_90 | BSP38CONTENTS_CURRENT_180 | BSP38CONTENTS_CURRENT_270 | BSP38CONTENTS_CURRENT_UP | BSP38CONTENTS_CURRENT_DOWN)
 
-
-// gi.BoxEdicts() can return a list of either solid or trigger entities
-// FIXME: eliminate AREA_ distinction?
-#define AREA_SOLID      1
-#define AREA_TRIGGERS   2
-
-#define MAXTOUCH    32
-typedef struct
-{
-	// state (in / out)
-	q2pmove_state_t s;
-
-	// command (in)
-	q2usercmd_t cmd;
-	qboolean snapinitial;			// if s has been changed outside pmove
-
-	// results (out)
-	int numtouch;
-	struct q2edict_t* touchents[MAXTOUCH];
-
-	vec3_t viewangles;				// clamped
-	float viewheight;
-
-	vec3_t mins, maxs;				// bounding box size
-
-	struct q2edict_t* groundentity;
-	int watertype;
-	int waterlevel;
-
-	// callbacks to test the world
-	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
-	int (* pointcontents)(vec3_t point);
-} pmove_t;
 
 // ROGUE
 

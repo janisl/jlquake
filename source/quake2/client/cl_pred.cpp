@@ -222,7 +222,7 @@ void CL_PredictMovement(void)
 	int frame;
 	int oldframe;
 	q2usercmd_t* cmd;
-	pmove_t pm;
+	q2pmove_t pm;
 	int i;
 	int step;
 	int oldz;

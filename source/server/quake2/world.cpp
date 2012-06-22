@@ -1,52 +1,41 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// world.c -- world query functions
-
-#include "server.h"
-
-/*
-===============================================================================
-
-ENTITY AREA CHECKING
-
-FIXME: this use of "area" is different from the bsp file use
-===============================================================================
-*/
+#include "../server.h"
+#include "local.h"
 
 #define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,q2edict_t,area)
 
-float* area_mins, * area_maxs;
-q2edict_t** area_list;
-int area_count, area_maxcount;
-int area_type;
+struct q2moveclip_t
+{
+	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
+	float* mins, * maxs;		// size of the moving object
+	vec3_t mins2, maxs2;		// size when clipping against mosnters
+	float* start, * end;
+	q2trace_t trace;
+	q2edict_t* passedict;
+	int contentmask;
+};
 
-clipHandle_t SV_HullForEntity(q2edict_t* ent);
+static float* area_mins, * area_maxs;
+static q2edict_t** area_list;
+static int area_count, area_maxcount;
+static int area_type;
 
-
-/*
-===============
-SV_UnlinkEdict
-
-===============
-*/
-void SV_UnlinkEdict(q2edict_t* ent)
+void SVQ2_UnlinkEdict(q2edict_t* ent)
 {
 	if (!ent->area.prev)
 	{
@@ -56,27 +45,13 @@ void SV_UnlinkEdict(q2edict_t* ent)
 	ent->area.prev = ent->area.next = NULL;
 }
 
-
-/*
-===============
-SV_LinkEdict
-
-===============
-*/
-#define MAX_TOTAL_ENT_LEAFS     128
-void SV_LinkEdict(q2edict_t* ent)
+void SVQ2_LinkEdict(q2edict_t* ent)
 {
-	worldSector_t* node;
-	int leafs[MAX_TOTAL_ENT_LEAFS];
-	int clusters[MAX_TOTAL_ENT_LEAFS];
-	int num_leafs;
-	int i, j, k;
-	int area;
-	int topnode;
+	enum { MAX_TOTAL_ENT_LEAFS = 128 };
 
 	if (ent->area.prev)
 	{
-		SV_UnlinkEdict(ent);	// unlink from old position
+		SVQ2_UnlinkEdict(ent);	// unlink from old position
 
 	}
 	if (ent == ge->edicts)
@@ -94,8 +69,9 @@ void SV_LinkEdict(q2edict_t* ent)
 
 	// encode the size into the entity_state for client prediction
 	if (ent->solid == Q2SOLID_BBOX && !(ent->svflags & Q2SVF_DEADMONSTER))
-	{	// assume that x/y are equal and symetric
-		i = ent->maxs[0] / 8;
+	{
+		// assume that x/y are equal and symetric
+		int i = ent->maxs[0] / 8;
 		if (i < 1)
 		{
 			i = 1;
@@ -106,7 +82,7 @@ void SV_LinkEdict(q2edict_t* ent)
 		}
 
 		// z is not symetric
-		j = (-ent->mins[2]) / 8;
+		int j = (-ent->mins[2]) / 8;
 		if (j < 1)
 		{
 			j = 1;
@@ -117,7 +93,7 @@ void SV_LinkEdict(q2edict_t* ent)
 		}
 
 		// and z maxs can be negative...
-		k = (ent->maxs[2] + 32) / 8;
+		int k = (ent->maxs[2] + 32) / 8;
 		if (k < 1)
 		{
 			k = 1;
@@ -141,7 +117,8 @@ void SV_LinkEdict(q2edict_t* ent)
 	// set the abs box
 	if (ent->solid == Q2SOLID_BSP &&
 		(ent->s.angles[0] || ent->s.angles[1] || ent->s.angles[2]))
-	{	// expand for rotation
+	{
+		// expand for rotation
 		float max, v;
 		int i;
 
@@ -166,7 +143,8 @@ void SV_LinkEdict(q2edict_t* ent)
 		}
 	}
 	else
-	{	// normal
+	{
+		// normal
 		VectorAdd(ent->s.origin, ent->mins, ent->absmin);
 		VectorAdd(ent->s.origin, ent->maxs, ent->absmax);
 	}
@@ -180,28 +158,32 @@ void SV_LinkEdict(q2edict_t* ent)
 	ent->absmax[1] += 1;
 	ent->absmax[2] += 1;
 
-// link to PVS leafs
+	// link to PVS leafs
 	ent->num_clusters = 0;
 	ent->areanum = 0;
 	ent->areanum2 = 0;
 
 	//get all leafs, including solids
-	num_leafs = CM_BoxLeafnums(ent->absmin, ent->absmax,
+	int topnode;
+	int leafs[MAX_TOTAL_ENT_LEAFS];
+	int num_leafs = CM_BoxLeafnums(ent->absmin, ent->absmax,
 		leafs, MAX_TOTAL_ENT_LEAFS, &topnode);
 
 	// set areas
-	for (i = 0; i < num_leafs; i++)
+	int clusters[MAX_TOTAL_ENT_LEAFS];
+	for (int i = 0; i < num_leafs; i++)
 	{
 		clusters[i] = CM_LeafCluster(leafs[i]);
-		area = CM_LeafArea(leafs[i]);
+		int area = CM_LeafArea(leafs[i]);
 		if (area)
-		{	// doors may legally straggle two areas,
+		{
+			// doors may legally straggle two areas,
 			// but nothing should evern need more than that
 			if (ent->areanum && ent->areanum != area)
 			{
 				if (ent->areanum2 && ent->areanum2 != area && sv.state == SS_LOADING)
 				{
-					Com_DPrintf("Object touching 3 areas at %f %f %f\n",
+					common->DPrintf("Object touching 3 areas at %f %f %f\n",
 						ent->absmin[0], ent->absmin[1], ent->absmin[2]);
 				}
 				ent->areanum2 = area;
@@ -214,24 +196,28 @@ void SV_LinkEdict(q2edict_t* ent)
 	}
 
 	if (num_leafs >= MAX_TOTAL_ENT_LEAFS)
-	{	// assume we missed some leafs, and mark by headnode
+	{
+		// assume we missed some leafs, and mark by headnode
 		ent->num_clusters = -1;
 		ent->headnode = topnode;
 	}
 	else
 	{
 		ent->num_clusters = 0;
-		for (i = 0; i < num_leafs; i++)
+		for (int i = 0; i < num_leafs; i++)
 		{
 			if (clusters[i] == -1)
 			{
 				continue;		// not a visible leaf
 			}
+			int j;
 			for (j = 0; j < i; j++)
+			{
 				if (clusters[j] == clusters[i])
 				{
 					break;
 				}
+			}
 			if (j == i)
 			{
 				if (ent->num_clusters == MAX_ENT_CLUSTERS_Q2)
@@ -258,8 +244,8 @@ void SV_LinkEdict(q2edict_t* ent)
 		return;
 	}
 
-// find the first node that the ent's box crosses
-	node = sv_worldSectors;
+	// find the first node that the ent's box crosses
+	worldSector_t* node = sv_worldSectors;
 	while (1)
 	{
 		if (node->axis == -1)
@@ -292,23 +278,11 @@ void SV_LinkEdict(q2edict_t* ent)
 
 }
 
-
-/*
-====================
-SV_AreaEdicts_r
-
-====================
-*/
-void SV_AreaEdicts_r(worldSector_t* node)
+static void SVQ2_AreaEdicts_r(worldSector_t* node)
 {
-	link_t* l, * next, * start;
-	q2edict_t* check;
-	int count;
-
-	count = 0;
-
 	// touch linked edicts
-	if (area_type == AREA_SOLID)
+	link_t* start;
+	if (area_type == Q2AREA_SOLID)
 	{
 		start = &node->solid_edicts;
 	}
@@ -317,10 +291,11 @@ void SV_AreaEdicts_r(worldSector_t* node)
 		start = &node->trigger_edicts;
 	}
 
-	for (l = start->next; l != start; l = next)
+	link_t* next;
+	for (link_t* l = start->next; l != start; l = next)
 	{
 		next = l->next;
-		check = EDICT_FROM_AREA(l);
+		q2edict_t* check = EDICT_FROM_AREA(l);
 
 		if (check->solid == Q2SOLID_NOT)
 		{
@@ -338,7 +313,7 @@ void SV_AreaEdicts_r(worldSector_t* node)
 		}
 		if (area_count == area_maxcount)
 		{
-			Com_Printf("SV_AreaEdicts: MAXCOUNT\n");
+			common->Printf("SVQ2_AreaEdicts: MAXCOUNT\n");
 			return;
 		}
 
@@ -354,20 +329,15 @@ void SV_AreaEdicts_r(worldSector_t* node)
 	// recurse down both sides
 	if (area_maxs[node->axis] > node->dist)
 	{
-		SV_AreaEdicts_r(node->children[0]);
+		SVQ2_AreaEdicts_r(node->children[0]);
 	}
 	if (area_mins[node->axis] < node->dist)
 	{
-		SV_AreaEdicts_r(node->children[1]);
+		SVQ2_AreaEdicts_r(node->children[1]);
 	}
 }
 
-/*
-================
-SV_AreaEdicts
-================
-*/
-int SV_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list,
+int SVQ2_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list,
 	int maxcount, int areatype)
 {
 	area_mins = mins;
@@ -377,46 +347,57 @@ int SV_AreaEdicts(vec3_t mins, vec3_t maxs, q2edict_t** list,
 	area_maxcount = maxcount;
 	area_type = areatype;
 
-	SV_AreaEdicts_r(sv_worldSectors);
+	SVQ2_AreaEdicts_r(sv_worldSectors);
 
 	return area_count;
 }
 
-
-//===========================================================================
-
-/*
-=============
-SV_PointContents
-=============
-*/
-int SV_PointContents(vec3_t p)
+//	Returns a headnode that can be used for testing or clipping an
+// object of mins/maxs size.
+// Offset is filled in to contain the adjustment that must be added to the
+// testing object's origin to get a point to use with the returned hull.
+static clipHandle_t SVQ2_HullForEntity(q2edict_t* ent)
 {
-	q2edict_t* touch[MAX_EDICTS_Q2], * hit;
-	int i, num;
-	int contents, c2;
-	clipHandle_t model;
-	float* angles;
+	// decide which clipping hull to use, based on the size
+	if (ent->solid == Q2SOLID_BSP)
+	{
+		// explicit hulls in the BSP model
+		clipHandle_t model = sv.models[ent->s.modelindex];
 
+		if (!model)
+		{
+			common->FatalError("MOVETYPE_PUSH with a non bsp model");
+		}
+
+		return model;
+	}
+
+	// create a temp hull from bounding box sizes
+	return CM_TempBoxModel(ent->mins, ent->maxs);
+}
+
+int SVQ2_PointContents(vec3_t p)
+{
 	// get base contents from world
-	contents = CM_PointContentsQ2(p, 0);
+	int contents = CM_PointContentsQ2(p, 0);
 
 	// or in contents from all the other entities
-	num = SV_AreaEdicts(p, p, touch, MAX_EDICTS_Q2, AREA_SOLID);
+	q2edict_t* touch[MAX_EDICTS_Q2];
+	int num = SVQ2_AreaEdicts(p, p, touch, MAX_EDICTS_Q2, Q2AREA_SOLID);
 
-	for (i = 0; i < num; i++)
+	for (int i = 0; i < num; i++)
 	{
-		hit = touch[i];
+		q2edict_t* hit = touch[i];
 
 		// might intersect, so do an exact clip
-		model = SV_HullForEntity(hit);
-		angles = hit->s.angles;
+		clipHandle_t model = SVQ2_HullForEntity(hit);
+		float* angles = hit->s.angles;
 		if (hit->solid != Q2SOLID_BSP)
 		{
 			angles = vec3_origin;	// boxes don't rotate
 
 		}
-		c2 = CM_TransformedPointContentsQ2(p, model, hit->s.origin, hit->s.angles);
+		int c2 = CM_TransformedPointContentsQ2(p, model, hit->s.origin, hit->s.angles);
 
 		contents |= c2;
 	}
@@ -424,78 +405,17 @@ int SV_PointContents(vec3_t p)
 	return contents;
 }
 
-
-
-typedef struct
+static void SVQ2_ClipMoveToEntities(q2moveclip_t* clip)
 {
-	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
-	float* mins, * maxs;		// size of the moving object
-	vec3_t mins2, maxs2;		// size when clipping against mosnters
-	float* start, * end;
-	q2trace_t trace;
-	q2edict_t* passedict;
-	int contentmask;
-} moveclip_t;
-
-
-
-/*
-================
-SV_HullForEntity
-
-Returns a headnode that can be used for testing or clipping an
-object of mins/maxs size.
-Offset is filled in to contain the adjustment that must be added to the
-testing object's origin to get a point to use with the returned hull.
-================
-*/
-clipHandle_t SV_HullForEntity(q2edict_t* ent)
-{
-	clipHandle_t model;
-
-// decide which clipping hull to use, based on the size
-	if (ent->solid == Q2SOLID_BSP)
-	{	// explicit hulls in the BSP model
-		model = sv.models[ent->s.modelindex];
-
-		if (!model)
-		{
-			Com_Error(ERR_FATAL, "MOVETYPE_PUSH with a non bsp model");
-		}
-
-		return model;
-	}
-
-	// create a temp hull from bounding box sizes
-
-	return CM_TempBoxModel(ent->mins, ent->maxs);
-}
-
-
-//===========================================================================
-
-/*
-====================
-SV_ClipMoveToEntities
-
-====================
-*/
-void SV_ClipMoveToEntities(moveclip_t* clip)
-{
-	int i, num;
-	q2edict_t* touchlist[MAX_EDICTS_Q2], * touch;
-	q2trace_t trace;
-	clipHandle_t model;
-	float* angles;
-
-	num = SV_AreaEdicts(clip->boxmins, clip->boxmaxs, touchlist,
-		MAX_EDICTS_Q2, AREA_SOLID);
+	q2edict_t* touchlist[MAX_EDICTS_Q2];
+	int num = SVQ2_AreaEdicts(clip->boxmins, clip->boxmaxs, touchlist,
+		MAX_EDICTS_Q2, Q2AREA_SOLID);
 
 	// be careful, it is possible to have an entity in this
 	// list removed before we get to it (killtriggered)
-	for (i = 0; i < num; i++)
+	for (int i = 0; i < num; i++)
 	{
-		touch = touchlist[i];
+		q2edict_t* touch = touchlist[i];
 		if (touch->solid == Q2SOLID_NOT)
 		{
 			continue;
@@ -527,13 +447,14 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 		}
 
 		// might intersect, so do an exact clip
-		model = SV_HullForEntity(touch);
-		angles = touch->s.angles;
+		clipHandle_t model = SVQ2_HullForEntity(touch);
+		float* angles = touch->s.angles;
 		if (touch->solid != Q2SOLID_BSP)
 		{
 			angles = vec3_origin;	// boxes don't rotate
 
 		}
+		q2trace_t trace;
 		if (touch->svflags & Q2SVF_MONSTER)
 		{
 			trace = CM_TransformedBoxTraceQ2(clip->start, clip->end,
@@ -568,22 +489,9 @@ void SV_ClipMoveToEntities(moveclip_t* clip)
 	}
 }
 
-
-/*
-==================
-SV_TraceBounds
-==================
-*/
-void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
+void SVQ2_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
 {
-#if 0
-// debug to test against everything
-	boxmins[0] = boxmins[1] = boxmins[2] = -9999;
-	boxmaxs[0] = boxmaxs[1] = boxmaxs[2] = 9999;
-#else
-	int i;
-
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (end[i] > start[i])
 		{
@@ -596,23 +504,12 @@ void SV_TraceBounds(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t b
 			boxmaxs[i] = start[i] + maxs[i] + 1;
 		}
 	}
-#endif
 }
 
-/*
-==================
-SV_Trace
-
-Moves the given mins/maxs volume through the world from start to end.
-
-Passedict and edicts owned by passedict are explicitly not checked.
-
-==================
-*/
-q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passedict, int contentmask)
+//	Moves the given mins/maxs volume through the world from start to end.
+//	Passedict and edicts owned by passedict are explicitly not checked.
+q2trace_t SVQ2_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passedict, int contentmask)
 {
-	moveclip_t clip;
-
 	if (!mins)
 	{
 		mins = vec3_origin;
@@ -622,14 +519,16 @@ q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t
 		maxs = vec3_origin;
 	}
 
-	Com_Memset(&clip, 0, sizeof(moveclip_t));
+	q2moveclip_t clip;
+	Com_Memset(&clip, 0, sizeof(q2moveclip_t));
 
 	// clip to world
 	clip.trace = CM_BoxTraceQ2(start, end, mins, maxs, 0, contentmask);
 	clip.trace.ent = ge->edicts;
 	if (clip.trace.fraction == 0)
 	{
-		return clip.trace;		// blocked by the world
+		// blocked by the world
+		return clip.trace;
 
 	}
 	clip.contentmask = contentmask;
@@ -643,10 +542,10 @@ q2trace_t SV_Trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t
 	VectorCopy(maxs, clip.maxs2);
 
 	// create the bounding box of the entire move
-	SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
+	SVQ2_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs);
 
 	// clip to other solid entities
-	SV_ClipMoveToEntities(&clip);
+	SVQ2_ClipMoveToEntities(&clip);
 
 	return clip.trace;
 }

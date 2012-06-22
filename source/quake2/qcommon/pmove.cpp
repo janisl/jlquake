@@ -44,7 +44,7 @@ typedef struct
 	qboolean ladder;
 } pml_t;
 
-pmove_t* pm;
+q2pmove_t* pm;
 pml_t pml;
 
 
@@ -123,7 +123,7 @@ void PM_StepSlideMove_(void)
 
 		}
 		// save entity for contact
-		if (pm->numtouch < MAXTOUCH && trace.ent)
+		if (pm->numtouch < Q2MAXTOUCH && trace.ent)
 		{
 			pm->touchents[pm->numtouch] = trace.ent;
 			pm->numtouch++;
@@ -788,7 +788,7 @@ void PM_CatagorizePosition(void)
 		}
 #endif
 
-		if (pm->numtouch < MAXTOUCH && trace.ent)
+		if (pm->numtouch < Q2MAXTOUCH && trace.ent)
 		{
 			pm->touchents[pm->numtouch] = trace.ent;
 			pm->numtouch++;
@@ -1354,7 +1354,7 @@ Pmove
 Can be called by either the server or the client
 ================
 */
-void Pmove(pmove_t* pmove)
+void Pmove(q2pmove_t* pmove)
 {
 	pm = pmove;
 

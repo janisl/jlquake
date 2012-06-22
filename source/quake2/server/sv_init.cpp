@@ -59,7 +59,7 @@ int SV_FindIndex(char* name, int start, int max, qboolean create)
 		sv.multicast.WriteChar(q2svc_configstring);
 		sv.multicast.WriteShort(start + i);
 		sv.multicast.WriteString2(name);
-		SV_Multicast(vec3_origin, MULTICAST_ALL_R);
+		SV_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
 	}
 
 	return i;

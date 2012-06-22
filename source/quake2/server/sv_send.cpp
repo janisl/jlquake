@@ -150,7 +150,7 @@ void SV_BroadcastCommand(const char* fmt, ...)
 
 	sv.multicast.WriteByte(q2svc_stufftext);
 	sv.multicast.WriteString2(string);
-	SV_Multicast(NULL, MULTICAST_ALL_R);
+	SV_Multicast(NULL, Q2MULTICAST_ALL_R);
 }
 
 
@@ -161,12 +161,12 @@ SV_Multicast
 Sends the contents of sv.multicast to a subset of the clients,
 then clears sv.multicast.
 
-MULTICAST_ALL	same as broadcast (origin can be NULL)
-MULTICAST_PVS	send to clients potentially visible from org
-MULTICAST_PHS	send to clients potentially hearable from org
+Q2MULTICAST_ALL	same as broadcast (origin can be NULL)
+Q2MULTICAST_PVS	send to clients potentially visible from org
+Q2MULTICAST_PHS	send to clients potentially hearable from org
 =================
 */
-void SV_Multicast(vec3_t origin, multicast_t to)
+void SV_Multicast(vec3_t origin, q2multicast_t to)
 {
 	client_t* client;
 	byte* mask;
@@ -177,7 +177,7 @@ void SV_Multicast(vec3_t origin, multicast_t to)
 
 	reliable = false;
 
-	if (to != MULTICAST_ALL_R && to != MULTICAST_ALL)
+	if (to != Q2MULTICAST_ALL_R && to != Q2MULTICAST_ALL)
 	{
 		leafnum = CM_PointLeafnum(origin);
 		area1 = CM_LeafArea(leafnum);
@@ -196,24 +196,24 @@ void SV_Multicast(vec3_t origin, multicast_t to)
 
 	switch (to)
 	{
-	case MULTICAST_ALL_R:
+	case Q2MULTICAST_ALL_R:
 		reliable = true;	// intentional fallthrough
-	case MULTICAST_ALL:
+	case Q2MULTICAST_ALL:
 		leafnum = 0;
 		mask = NULL;
 		break;
 
-	case MULTICAST_PHS_R:
+	case Q2MULTICAST_PHS_R:
 		reliable = true;	// intentional fallthrough
-	case MULTICAST_PHS:
+	case Q2MULTICAST_PHS:
 		leafnum = CM_PointLeafnum(origin);
 		cluster = CM_LeafCluster(leafnum);
 		mask = CM_ClusterPHS(cluster);
 		break;
 
-	case MULTICAST_PVS_R:
+	case Q2MULTICAST_PVS_R:
 		reliable = true;	// intentional fallthrough
-	case MULTICAST_PVS:
+	case Q2MULTICAST_PVS:
 		leafnum = CM_PointLeafnum(origin);
 		cluster = CM_LeafCluster(leafnum);
 		mask = CM_ClusterPVS(cluster);
@@ -414,22 +414,22 @@ void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
 	{
 		if (use_phs)
 		{
-			SV_Multicast(origin, MULTICAST_PHS_R);
+			SV_Multicast(origin, Q2MULTICAST_PHS_R);
 		}
 		else
 		{
-			SV_Multicast(origin, MULTICAST_ALL_R);
+			SV_Multicast(origin, Q2MULTICAST_ALL_R);
 		}
 	}
 	else
 	{
 		if (use_phs)
 		{
-			SV_Multicast(origin, MULTICAST_PHS);
+			SV_Multicast(origin, Q2MULTICAST_PHS);
 		}
 		else
 		{
-			SV_Multicast(origin, MULTICAST_ALL);
+			SV_Multicast(origin, Q2MULTICAST_ALL);
 		}
 	}
 }
