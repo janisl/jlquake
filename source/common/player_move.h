@@ -150,3 +150,7 @@ void PMQH_Init();
 q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t stop);
 bool PMQH_TestPlayerPosition(const vec3_t point);
 void PMQH_PlayerMove();
+
+extern float pmq2_airaccelerate;
+
+void PMQ2_Pmove(q2pmove_t* pmove);

@@ -264,7 +264,7 @@ void CL_PredictMovement(void)
 	pm.trace = CL_PMTrace;
 	pm.pointcontents = CL_PMpointcontents;
 
-	pm_airaccelerate = String::Atof(cl.q2_configstrings[Q2CS_AIRACCEL]);
+	pmq2_airaccelerate = String::Atof(cl.q2_configstrings[Q2CS_AIRACCEL]);
 
 	pm.s = cl.q2_frame.playerstate.pmove;
 
@@ -279,7 +279,7 @@ void CL_PredictMovement(void)
 		cmd = &cl.q2_cmds[frame];
 
 		pm.cmd = *cmd;
-		Pmove(&pm);
+		PMQ2_Pmove(&pm);
 
 		// save for debug checking
 		VectorCopy(pm.s.origin, cl.q2_predicted_origins[frame]);

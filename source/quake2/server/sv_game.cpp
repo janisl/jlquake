@@ -58,7 +58,7 @@ void SV_InitGameProgs(void)
 	import.setmodel = SVQ2_setmodel;
 	import.inPVS = SVQ2_inPVS;
 	import.inPHS = SVQ2_inPHS;
-	import.Pmove = Pmove;
+	import.Pmove = PMQ2_Pmove;
 
 	import.modelindex = SVQ2_ModelIndex;
 	import.soundindex = SVQ2_SoundIndex;

@@ -149,12 +149,12 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	if (Cvar_VariableValue("deathmatch"))
 	{
 		sprintf(sv.q2_configstrings[Q2CS_AIRACCEL], "%g", sv_airaccelerate->value);
-		pm_airaccelerate = sv_airaccelerate->value;
+		pmq2_airaccelerate = sv_airaccelerate->value;
 	}
 	else
 	{
 		String::Cpy(sv.q2_configstrings[Q2CS_AIRACCEL], "0");
-		pm_airaccelerate = 0;
+		pmq2_airaccelerate = 0;
 	}
 
 	sv.multicast.InitOOB(sv.multicastBuffer, MAX_MSGLEN_Q2);

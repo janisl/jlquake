@@ -162,21 +162,6 @@ qboolean Netchan_Process(netchan_t* chan, QMsg* msg);
 
 qboolean Netchan_CanReliable(netchan_t* chan);
 
-
-/*
-==============================================================
-
-PLAYER MOVEMENT CODE
-
-Common between server and client so prediction matches
-
-==============================================================
-*/
-
-extern float pm_airaccelerate;
-
-void Pmove(q2pmove_t* pmove);
-
 /*
 ==============================================================
 

@@ -40,6 +40,7 @@ set(COMMON_FILES
 	network_channel.cpp
 	player_move.cpp
 	player_move1.cpp
+	player_move2.cpp
 	precompiler.cpp
 	script.cpp
 	socket.cpp
