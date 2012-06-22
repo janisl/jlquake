@@ -31,7 +31,7 @@ struct q2game_import_t
 	void (* cprintf)(q2edict_t* ent, int printlevel, const char* fmt, ...);
 	void (* centerprintf)(q2edict_t* ent, const char* fmt, ...);
 	void (* sound)(q2edict_t* ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void (* positioned_sound)(vec3_t origin, q2edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
+	void (* positioned_sound)(const vec3_t origin, q2edict_t* ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
 
 	// config strings hold all the index strings, the lightstyles,
 	// and misc data like the sky definition and cdtrack.
@@ -65,7 +65,7 @@ struct q2game_import_t
 	void (* Pmove)(q2pmove_t* pmove);			// player movement code common with client prediction
 
 	// network messaging
-	void (* multicast)(vec3_t origin, q2multicast_t to);
+	void (* multicast)(const vec3_t origin, q2multicast_t to);
 	void (* unicast)(q2edict_t* ent, qboolean reliable);
 	void (* WriteChar)(int c);
 	void (* WriteByte)(int c);

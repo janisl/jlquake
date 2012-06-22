@@ -19,10 +19,23 @@
 
 #include "game.h"
 
+#define Q2_EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
+#define Q2_NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
+
 //
 //	Game
 //
 extern q2game_export_t* ge;
+
+//
+//	Send
+//
+void SVQ2_ClientPrintf(client_t* cl, int level, const char* fmt, ...) id_attribute((format(printf, 3, 4)));
+void SVQ2_BroadcastPrintf(int level, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+void SVQ2_Multicast(const vec3_t origin, q2multicast_t to);
+void SVQ2_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+void SVQ2_StartSound(const vec3_t origin, q2edict_t* entity, int channel,
+	int soundindex, float volume, float attenuation, float timeofs);
 
 //
 //	World

@@ -724,3 +724,13 @@ enum
 #define MAX_INFO_KEY_Q2     64
 #define MAX_INFO_VALUE_Q2   64
 #define MAX_INFO_STRING_Q2  512
+
+// a sound without an ent or pos will be a local only sound
+#define Q2SND_VOLUME        BIT(0)		// a byte
+#define Q2SND_ATTENUATION   BIT(1)		// a byte
+#define Q2SND_POS           BIT(2)		// three coordinates
+#define Q2SND_ENT           BIT(3)		// a short 0-2: channel, 3-12: entity
+#define Q2SND_OFFSET        BIT(4)		// a byte, msec offset from frame start
+
+#define Q2DEFAULT_SOUND_PACKET_VOLUME        1.0
+#define Q2DEFAULT_SOUND_PACKET_ATTENUATION   1.0

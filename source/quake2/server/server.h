@@ -32,9 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
-#define Q2_EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))
-#define Q2_NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
-
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting
 // timing out if no valid messages are received for timeout.value seconds
@@ -47,7 +44,6 @@ extern QMsg net_message;
 extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 extern Cvar* sv_paused;
-extern Cvar* maxclients;
 extern Cvar* sv_noreload;					// don't reload level state when reentering
 extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 											// development tool
@@ -103,14 +99,6 @@ void SV_FlushRedirect(int sv_redirected, char* outputbuf);
 
 void SV_DemoCompleted(void);
 void SV_SendClientMessages(void);
-
-void SV_Multicast(vec3_t origin, q2multicast_t to);
-void SV_StartSound(vec3_t origin, q2edict_t* entity, int channel,
-	int soundindex, float volume,
-	float attenuation, float timeofs);
-void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
-void SV_BroadcastPrintf(int level, const char* fmt, ...);
-void SV_BroadcastCommand(const char* fmt, ...);
 
 //
 // sv_user.c

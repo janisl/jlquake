@@ -18,3 +18,5 @@
 
 serverStatic_t svs;					// persistant server info
 server_t sv;						// local server
+
+Cvar* sv_maxclients;

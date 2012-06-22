@@ -35,7 +35,6 @@ Cvar* sv_zombietime;			// seconds to sink messages after disconnect
 Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
 Cvar* sv_allowDownload;
-Cvar* sv_maxclients;
 Cvar* sv_privateClients;		// number of clients reserved for password
 Cvar* sv_hostname;
 Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address

@@ -106,7 +106,7 @@ qboolean SV_SetPlayer(void)
 	if (s[0] >= '0' && s[0] <= '9')
 	{
 		idnum = String::Atoi(Cmd_Argv(1));
-		if (idnum < 0 || idnum >= maxclients->value)
+		if (idnum < 0 || idnum >= sv_maxclients->value)
 		{
 			Com_Printf("Bad client slot: %i\n", idnum);
 			return false;
@@ -123,7 +123,7 @@ qboolean SV_SetPlayer(void)
 	}
 
 	// check for a name match
-	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+	for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 	{
 		if (!cl->state)
 		{
@@ -475,8 +475,8 @@ void SV_GameMap_f(void)
 			// clear all the client inuse flags before saving so that
 			// when the level is re-entered, the clients will spawn
 			// at spawn points instead of occupying body shells
-			savedInuse = (qboolean*)malloc(maxclients->value * sizeof(qboolean));
-			for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+			savedInuse = (qboolean*)malloc(sv_maxclients->value * sizeof(qboolean));
+			for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 			{
 				savedInuse[i] = cl->q2_edict->inuse;
 				cl->q2_edict->inuse = false;
@@ -485,7 +485,7 @@ void SV_GameMap_f(void)
 			SV_WriteLevelFile();
 
 			// we must restore these for clients to transfer over correctly
-			for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+			for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 				cl->q2_edict->inuse = savedInuse[i];
 			free(savedInuse);
 		}
@@ -625,7 +625,7 @@ void SV_Savegame_f(void)
 		return;
 	}
 
-	if (maxclients->value == 1 && svs.clients[0].q2_edict->client->ps.stats[Q2STAT_HEALTH] <= 0)
+	if (sv_maxclients->value == 1 && svs.clients[0].q2_edict->client->ps.stats[Q2STAT_HEALTH] <= 0)
 	{
 		Com_Printf("\nCan't savegame while dead!\n");
 		return;
@@ -681,10 +681,10 @@ void SV_Kick_f(void)
 		return;
 	}
 
-	SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", sv_client->name);
+	SVQ2_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", sv_client->name);
 	// print directly, because the dropped client won't get the
-	// SV_BroadcastPrintf message
-	SV_ClientPrintf(sv_client, PRINT_HIGH, "You were kicked from the game\n");
+	// SVQ2_BroadcastPrintf message
+	SVQ2_ClientPrintf(sv_client, PRINT_HIGH, "You were kicked from the game\n");
 	SV_DropClient(sv_client);
 	sv_client->q2_lastmessage = svs.q2_realtime;	// min case there is a funny zombie
 }
@@ -710,7 +710,7 @@ void SV_Status_f(void)
 
 	Com_Printf("num score ping name            lastmsg address               qport \n");
 	Com_Printf("--- ----- ---- --------------- ------- --------------------- ------\n");
-	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+	for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 	{
 		if (!cl->state)
 		{
@@ -781,13 +781,13 @@ void SV_ConSay_f(void)
 
 	String::Cat(text, sizeof(text), p);
 
-	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
+	for (j = 0, client = svs.clients; j < sv_maxclients->value; j++, client++)
 	{
 		if (client->state != CS_ACTIVE)
 		{
 			continue;
 		}
-		SV_ClientPrintf(client, PRINT_CHAT, "%s\n", text);
+		SVQ2_ClientPrintf(client, PRINT_CHAT, "%s\n", text);
 	}
 }
 

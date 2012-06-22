@@ -192,7 +192,7 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 			// in any bytes being emited if the entity has not changed at all
 			// note that players are always 'newentities', this updates their oldorigin always
 			// and prevents warping
-			MSGQ2_WriteDeltaEntity(oldent, newent, msg, false, newent->number <= maxclients->value);
+			MSGQ2_WriteDeltaEntity(oldent, newent, msg, false, newent->number <= sv_maxclients->value);
 			oldindex++;
 			newindex++;
 			continue;

@@ -55,7 +55,6 @@ Cvar* pausable;
 Cvar* fraglimit;
 Cvar* timelimit;
 Cvar* samelevel;
-Cvar* maxclients;
 Cvar* maxspectators;
 Cvar* spawn;
 Cvar* watervis;
@@ -679,7 +678,7 @@ void SVC_DirectConnect(void)
 	}
 
 	// if at server limits, refuse connection
-	if (maxclients->value > MAX_CLIENTS_QHW)
+	if (sv_maxclients->value > MAX_CLIENTS_QHW)
 	{
 		Cvar_SetValue("maxclients", MAX_CLIENTS_QHW);
 	}
@@ -687,12 +686,12 @@ void SVC_DirectConnect(void)
 	{
 		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW);
 	}
-	if (maxspectators->value + maxclients->value > MAX_CLIENTS_QHW)
+	if (maxspectators->value + sv_maxclients->value > MAX_CLIENTS_QHW)
 	{
-		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW - maxspectators->value + maxclients->value);
+		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW - maxspectators->value + sv_maxclients->value);
 	}
 	if ((spectator && spectators >= (int)maxspectators->value) ||
-		(!spectator && clients >= (int)maxclients->value))
+		(!spectator && clients >= (int)sv_maxclients->value))
 	{
 		Con_Printf("%s:full connect\n", SOCK_AdrToString(adr));
 		Netchan_OutOfBandPrint(adr, "%c\nserver is full\n\n", A2C_PRINT);
@@ -1441,7 +1440,7 @@ void SV_InitLocal(void)
 	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
 	svqh_teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel","0", CVAR_SERVERINFO);
-	maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
+	sv_maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
 	maxspectators = Cvar_Get("maxspectators","8", CVAR_SERVERINFO);
 	svqh_deathmatch = Cvar_Get("deathmatch","1", CVAR_SERVERINFO);			// 0, 1, or 2
 	spawn = Cvar_Get("spawn","0", CVAR_SERVERINFO);

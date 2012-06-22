@@ -309,7 +309,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	*pr_globalVars.dmMode = dmMode->value;
 	*pr_globalVars.easyFourth = easyFourth->value;
 	*pr_globalVars.patternRunner = patternRunner->value;
-	*pr_globalVars.max_players = maxclients->value;
+	*pr_globalVars.max_players = sv_maxclients->value;
 
 	*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
 

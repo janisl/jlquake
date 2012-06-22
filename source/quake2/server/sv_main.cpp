@@ -44,7 +44,6 @@ Cvar* sv_airaccelerate;
 
 Cvar* sv_noreload;				// don't reload level state when reentering
 
-Cvar* maxclients;				// FIXME: rename sv_maxclients
 Cvar* sv_showclamp;
 
 Cvar* hostname;
@@ -120,7 +119,7 @@ char* SV_StatusString(void)
 	String::Cat(status, sizeof(status), "\n");
 	statusLength = String::Length(status);
 
-	for (i = 0; i < maxclients->value; i++)
+	for (i = 0; i < sv_maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
 		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
@@ -182,7 +181,7 @@ void SVC_Info(void)
 	int i, count;
 	int version;
 
-	if (maxclients->value == 1)
+	if (sv_maxclients->value == 1)
 	{
 		return;		// ignore in single player
 
@@ -196,13 +195,13 @@ void SVC_Info(void)
 	else
 	{
 		count = 0;
-		for (i = 0; i < maxclients->value; i++)
+		for (i = 0; i < sv_maxclients->value; i++)
 			if (svs.clients[i].state >= CS_CONNECTED)
 			{
 				count++;
 			}
 
-		String::Sprintf(string, sizeof(string), "%16s %8s %2i/%2i\n", hostname->string, sv.name, count, (int)maxclients->value);
+		String::Sprintf(string, sizeof(string), "%16s %8s %2i/%2i\n", hostname->string, sv.name, count, (int)sv_maxclients->value);
 	}
 
 	Netchan_OutOfBandPrint(NS_SERVER, net_from, "info\n%s", string);
@@ -348,7 +347,7 @@ void SVC_DirectConnect(void)
 	Com_Memset(newcl, 0, sizeof(client_t));
 
 	// if there is already a slot for this ip, reuse it
-	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+	for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 	{
 		if (cl->state == CS_FREE)
 		{
@@ -371,7 +370,7 @@ void SVC_DirectConnect(void)
 
 	// find a client slot
 	newcl = NULL;
-	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+	for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 	{
 		if (cl->state == CS_FREE)
 		{
@@ -568,7 +567,7 @@ void SV_CalcPings(void)
 	client_t* cl;
 	int total, count;
 
-	for (i = 0; i < maxclients->value; i++)
+	for (i = 0; i < sv_maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
 		if (cl->state != CS_ACTIVE)
@@ -632,7 +631,7 @@ void SV_GiveMsec(void)
 		return;
 	}
 
-	for (i = 0; i < maxclients->value; i++)
+	for (i = 0; i < sv_maxclients->value; i++)
 	{
 		cl = &svs.clients[i];
 		if (cl->state == CS_FREE)
@@ -673,7 +672,7 @@ void SV_ReadPackets(void)
 		qport = net_message.ReadShort() & 0xffff;
 
 		// check for packets from connected clients
-		for (i = 0, cl = svs.clients; i < maxclients->value; i++,cl++)
+		for (i = 0, cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 		{
 			if (cl->state == CS_FREE)
 			{
@@ -704,7 +703,7 @@ void SV_ReadPackets(void)
 			break;
 		}
 
-		if (i != maxclients->value)
+		if (i != sv_maxclients->value)
 		{
 			continue;
 		}
@@ -734,7 +733,7 @@ void SV_CheckTimeouts(void)
 	droppoint = svs.q2_realtime - 1000 * timeout->value;
 	zombiepoint = svs.q2_realtime - 1000 * zombietime->value;
 
-	for (i = 0,cl = svs.clients; i < maxclients->value; i++,cl++)
+	for (i = 0,cl = svs.clients; i < sv_maxclients->value; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
 		if (cl->q2_lastmessage > svs.q2_realtime)
@@ -751,7 +750,7 @@ void SV_CheckTimeouts(void)
 		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
 			cl->q2_lastmessage < droppoint)
 		{
-			SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
+			SVQ2_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 			SV_DropClient(cl);
 			cl->state = CS_FREE;	// don't bother with zombie state
 		}
@@ -801,7 +800,7 @@ void SV_RunGameFrame(void)
 	sv.q2_time = sv.q2_framenum * 100;
 
 	// don't run if paused
-	if (!sv_paused->value || maxclients->value > 1)
+	if (!sv_paused->value || sv_maxclients->value > 1)
 	{
 		ge->RunFrame();
 
@@ -1051,7 +1050,7 @@ void SV_Init(void)
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
 	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_INIT);;
-	maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
+	sv_maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
 	hostname = Cvar_Get("hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
 	timeout = Cvar_Get("timeout", "125", 0);
 	zombietime = Cvar_Get("zombietime", "2", 0);
@@ -1108,14 +1107,14 @@ void SV_FinalMessage(const char* message, qboolean reconnect)
 	// send it twice
 	// stagger the packets to crutch operating system limited buffers
 
-	for (i = 0, cl = svs.clients; i < maxclients->value; i++, cl++)
+	for (i = 0, cl = svs.clients; i < sv_maxclients->value; i++, cl++)
 		if (cl->state >= CS_CONNECTED)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
 		}
 
-	for (i = 0, cl = svs.clients; i < maxclients->value; i++, cl++)
+	for (i = 0, cl = svs.clients; i < sv_maxclients->value; i++, cl++)
 		if (cl->state >= CS_CONNECTED)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,

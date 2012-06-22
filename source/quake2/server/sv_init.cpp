@@ -59,7 +59,7 @@ int SV_FindIndex(char* name, int start, int max, qboolean create)
 		sv.multicast.WriteChar(q2svc_configstring);
 		sv.multicast.WriteShort(start + i);
 		sv.multicast.WriteString2(name);
-		SV_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
+		SVQ2_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
 	}
 
 	return i;
@@ -224,7 +224,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	String::Cpy(sv.name, server);
 
 	// leave slots at start for clients only
-	for (i = 0; i < maxclients->value; i++)
+	for (i = 0; i < sv_maxclients->value; i++)
 	{
 		// needs to reconnect
 		if (svs.clients[i].state > CS_CONNECTED)
@@ -346,18 +346,18 @@ void SV_InitGame(void)
 	// init clients
 	if (Cvar_VariableValue("deathmatch"))
 	{
-		if (maxclients->value <= 1)
+		if (sv_maxclients->value <= 1)
 		{
 			Cvar_Set("maxclients", "8");
 		}
-		else if (maxclients->value > MAX_CLIENTS_Q2)
+		else if (sv_maxclients->value > MAX_CLIENTS_Q2)
 		{
 			Cvar_Set("maxclients", va("%i", MAX_CLIENTS_Q2));
 		}
 	}
 	else if (Cvar_VariableValue("coop"))
 	{
-		if (maxclients->value <= 1 || maxclients->value > 4)
+		if (sv_maxclients->value <= 1 || sv_maxclients->value > 4)
 		{
 			Cvar_Set("maxclients", "4");
 		}
@@ -368,12 +368,12 @@ void SV_InitGame(void)
 	}
 
 	svs.spawncount = rand();
-	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * maxclients->value);
-	svs.q2_num_client_entities = maxclients->value * UPDATE_BACKUP_Q2 * 64;
+	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * sv_maxclients->value);
+	svs.q2_num_client_entities = sv_maxclients->value * UPDATE_BACKUP_Q2 * 64;
 	svs.q2_client_entities = (q2entity_state_t*)Z_Malloc(sizeof(q2entity_state_t) * svs.q2_num_client_entities);
 
 	// init network stuff
-	NET_Config((maxclients->value > 1));
+	NET_Config((sv_maxclients->value > 1));
 
 	// heartbeats will always be sent to the id master
 	svs.q2_last_heartbeat = -99999;		// send immediately
@@ -381,7 +381,7 @@ void SV_InitGame(void)
 
 	// init game
 	SV_InitGameProgs();
-	for (i = 0; i < maxclients->value; i++)
+	for (i = 0; i < sv_maxclients->value; i++)
 	{
 		ent = Q2_EDICT_NUM(i + 1);
 		ent->s.number = i + 1;
@@ -464,29 +464,29 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame)
 	if (l > 4 && !String::Cmp(level + l - 4, ".cin"))
 	{
 		SCR_BeginLoadingPlaque();			// for local system
-		SV_BroadcastCommand("changing\n");
+		SVQ2_BroadcastCommand("changing\n");
 		SV_SpawnServer(level, spawnpoint, SS_CINEMATIC, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".dm2"))
 	{
 		SCR_BeginLoadingPlaque();			// for local system
-		SV_BroadcastCommand("changing\n");
+		SVQ2_BroadcastCommand("changing\n");
 		SV_SpawnServer(level, spawnpoint, SS_DEMO, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".pcx"))
 	{
 		SCR_BeginLoadingPlaque();			// for local system
-		SV_BroadcastCommand("changing\n");
+		SVQ2_BroadcastCommand("changing\n");
 		SV_SpawnServer(level, spawnpoint, SS_PIC, attractloop, loadgame);
 	}
 	else
 	{
 		SCR_BeginLoadingPlaque();			// for local system
-		SV_BroadcastCommand("changing\n");
+		SVQ2_BroadcastCommand("changing\n");
 		SV_SendClientMessages();
 		SV_SpawnServer(level, spawnpoint, SS_GAME, attractloop, loadgame);
 		Cbuf_CopyToDefer();
 	}
 
-	SV_BroadcastCommand("reconnect\n");
+	SVQ2_BroadcastCommand("reconnect\n");
 }

@@ -41,7 +41,6 @@ extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 extern Cvar* spawn;
 extern Cvar* skill;
-extern Cvar* maxclients;
 extern Cvar* randomclass;
 extern Cvar* damageScale;
 extern Cvar* meleeDamScale;

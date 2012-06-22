@@ -75,7 +75,6 @@ extern Cvar* sv_allowDownload;
 extern Cvar* sv_friendlyFire;			// NERVE - SMF
 extern Cvar* sv_maxlives;				// NERVE - SMF
 extern Cvar* sv_tourney;				// NERVE - SMF
-extern Cvar* sv_maxclients;
 
 extern Cvar* sv_privateClients;
 extern Cvar* sv_hostname;

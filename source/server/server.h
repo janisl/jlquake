@@ -31,6 +31,8 @@
 #include "global.h"
 #include "worldsector.h"
 
+extern Cvar* sv_maxclients;
+
 //
 // Must be provided
 //

@@ -604,16 +604,16 @@ void CL_ParseStartSoundPacket(void)
 	flags = net_message.ReadByte();
 	sound_num = net_message.ReadByte();
 
-	if (flags & SND_VOLUME)
+	if (flags & Q2SND_VOLUME)
 	{
 		volume = net_message.ReadByte() / 255.0;
 	}
 	else
 	{
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+		volume = Q2DEFAULT_SOUND_PACKET_VOLUME;
 	}
 
-	if (flags & SND_ATTENUATION)
+	if (flags & Q2SND_ATTENUATION)
 	{
 		attenuation = net_message.ReadByte() / 64.0;
 	}
@@ -622,7 +622,7 @@ void CL_ParseStartSoundPacket(void)
 		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
-	if (flags & SND_OFFSET)
+	if (flags & Q2SND_OFFSET)
 	{
 		ofs = net_message.ReadByte() / 1000.0;
 	}
@@ -631,7 +631,7 @@ void CL_ParseStartSoundPacket(void)
 		ofs = 0;
 	}
 
-	if (flags & SND_ENT)
+	if (flags & Q2SND_ENT)
 	{	// entity reletive
 		channel = net_message.ReadShort();
 		ent = channel >> 3;
@@ -648,7 +648,7 @@ void CL_ParseStartSoundPacket(void)
 		channel = 0;
 	}
 
-	if (flags & SND_POS)
+	if (flags & Q2SND_POS)
 	{	// positioned in space
 		net_message.ReadPos(pos_v);
 

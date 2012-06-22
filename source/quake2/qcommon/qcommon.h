@@ -118,18 +118,6 @@ PROTOCOL
 #define PS_WEAPONFRAME      (1 << 13)
 #define PS_RDFLAGS          (1 << 14)
 
-//==============================================
-
-// a sound without an ent or pos will be a local only sound
-#define SND_VOLUME      (1 << 0)		// a byte
-#define SND_ATTENUATION (1 << 1)		// a byte
-#define SND_POS         (1 << 2)		// three coordinates
-#define SND_ENT         (1 << 3)		// a short 0-2: channel, 3-12: entity
-#define SND_OFFSET      (1 << 4)		// a byte, msec offset from frame start
-
-#define DEFAULT_SOUND_PACKET_VOLUME 1.0
-#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
-
 //===========================================================================
 
 void    Cmd_Init(void);

@@ -42,7 +42,7 @@ void PF_Unicast(q2edict_t* ent, qboolean reliable)
 	}
 
 	p = Q2_NUM_FOR_EDICT(ent);
-	if (p < 1 || p > maxclients->value)
+	if (p < 1 || p > sv_maxclients->value)
 	{
 		return;
 	}
@@ -98,7 +98,7 @@ void PF_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 	if (ent)
 	{
 		n = Q2_NUM_FOR_EDICT(ent);
-		if (n < 1 || n > maxclients->value)
+		if (n < 1 || n > sv_maxclients->value)
 		{
 			Com_Error(ERR_DROP, "cprintf to a non-client");
 		}
@@ -110,7 +110,7 @@ void PF_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 
 	if (ent)
 	{
-		SV_ClientPrintf(svs.clients + (n - 1), level, "%s", msg);
+		SVQ2_ClientPrintf(svs.clients + (n - 1), level, "%s", msg);
 	}
 	else
 	{
@@ -133,7 +133,7 @@ void PF_centerprintf(q2edict_t* ent, const char* fmt, ...)
 	int n;
 
 	n = Q2_NUM_FOR_EDICT(ent);
-	if (n < 1 || n > maxclients->value)
+	if (n < 1 || n > sv_maxclients->value)
 	{
 		return;	// Com_Error (ERR_DROP, "centerprintf to a non-client");
 
@@ -228,7 +228,7 @@ void PF_Configstring(int index, const char* val)
 		sv.multicast.WriteShort(index);
 		sv.multicast.WriteString2(val);
 
-		SV_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
+		SVQ2_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
 	}
 }
 
@@ -320,7 +320,7 @@ void PF_StartSound(q2edict_t* entity, int channel, int sound_num, float volume,
 	{
 		return;
 	}
-	SV_StartSound(NULL, entity, channel, sound_num, volume, attenuation, timeofs);
+	SVQ2_StartSound(NULL, entity, channel, sound_num, volume, attenuation, timeofs);
 }
 
 //==============================================
@@ -412,9 +412,9 @@ void SV_InitGameProgs(void)
 
 
 	// load a new game dll
-	import.multicast = SV_Multicast;
+	import.multicast = SVQ2_Multicast;
 	import.unicast = PF_Unicast;
-	import.bprintf = SV_BroadcastPrintf;
+	import.bprintf = SVQ2_BroadcastPrintf;
 	import.dprintf = PF_dprintf;
 	import.cprintf = PF_cprintf;
 	import.centerprintf = PF_centerprintf;
@@ -436,7 +436,7 @@ void SV_InitGameProgs(void)
 
 	import.configstring = PF_Configstring;
 	import.sound = PF_StartSound;
-	import.positioned_sound = SV_StartSound;
+	import.positioned_sound = SVQ2_StartSound;
 
 	import.WriteChar = PF_WriteChar;
 	import.WriteByte = PF_WriteByte;
