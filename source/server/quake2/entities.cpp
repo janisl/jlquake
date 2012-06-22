@@ -594,19 +594,15 @@ void SVQ2_BuildClientFrame(client_t* client)
 //	Used for recording footage for merged or assembled demos
 void SVQ2_RecordDemoMessage()
 {
-	int e;
-	q2edict_t* ent;
-	q2entity_state_t nostate;
-	QMsg buf;
-	byte buf_data[32768];
-	int len;
-
 	if (!svs.q2_demofile)
 	{
 		return;
 	}
 
+	q2entity_state_t nostate;
 	Com_Memset(&nostate, 0, sizeof(nostate));
+	QMsg buf;
+	byte buf_data[32768];
 	buf.InitOOB(buf_data, sizeof(buf_data));
 
 	// write a frame message that doesn't contain a q2player_state_t
@@ -615,10 +611,9 @@ void SVQ2_RecordDemoMessage()
 
 	buf.WriteByte(q2svc_packetentities);
 
-	e = 1;
-	ent = Q2_EDICT_NUM(e);
-	while (e < ge->num_edicts)
+	for (int e = 1; e < ge->num_edicts; e++)
 	{
+		q2edict_t* ent = Q2_EDICT_NUM(e);
 		// ignore ents without visible models unless they have an effect
 		if (ent->inuse &&
 			ent->s.number &&
@@ -627,9 +622,6 @@ void SVQ2_RecordDemoMessage()
 		{
 			MSGQ2_WriteDeltaEntity(&nostate, &ent->s, &buf, false, true);
 		}
-
-		e++;
-		ent = Q2_EDICT_NUM(e);
 	}
 
 	buf.WriteShort(0);		// end of packetentities
@@ -639,7 +631,7 @@ void SVQ2_RecordDemoMessage()
 	svs.q2_demo_multicast.Clear();
 
 	// now write the entire message to the file, prefixed by the length
-	len = LittleLong(buf.cursize);
+	int len = LittleLong(buf.cursize);
 	FS_Write(&len, 4, svs.q2_demofile);
 	FS_Write(buf._data, buf.cursize, svs.q2_demofile);
 }
