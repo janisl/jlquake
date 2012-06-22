@@ -169,17 +169,9 @@ void SV_SaveSpawnparms(void)
 
 unsigned SV_CheckModel(const char* mdl)
 {
-	byte stackbuf[1024];		// avoid dirtying the cache heap
-	byte* buf;
-	unsigned short crc;
-//	int len;
-
-	buf = (byte*)COM_LoadStackFile(mdl, stackbuf, sizeof(stackbuf));
-	crc = CRC_Block(buf, com_filesize);
-//	for (len = com_filesize; len; len--, buf++)
-//		CRC_ProcessByte(&crc, *buf);
-
-	return crc;
+	Array<byte> buffer;
+	FS_ReadFile(mdl, buffer);
+	return CRC_Block(buffer.Ptr(), buffer.Num());
 }
 
 void SV_AddProgCrcTotheServerInfo()
