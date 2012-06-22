@@ -42,17 +42,17 @@ struct q2game_import_t
 	void (* error)(const char* fmt, ...);
 
 	// the *index functions create configstrings and some internal server state
-	int (* modelindex)(char* name);
-	int (* soundindex)(char* name);
-	int (* imageindex)(char* name);
+	int (* modelindex)(const char* name);
+	int (* soundindex)(const char* name);
+	int (* imageindex)(const char* name);
 
-	void (* setmodel)(q2edict_t* ent, char* name);
+	void (* setmodel)(q2edict_t* ent, const char* name);
 
 	// collision detection
 	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passent, int contentmask);
 	int (* pointcontents)(vec3_t point);
-	qboolean (* inPVS)(vec3_t p1, vec3_t p2);
-	qboolean (* inPHS)(vec3_t p1, vec3_t p2);
+	qboolean (* inPVS)(const vec3_t p1, const vec3_t p2);
+	qboolean (* inPHS)(const vec3_t p1, const vec3_t p2);
 	void (* SetAreaPortalState)(int portalnum, qboolean open);
 	qboolean (* AreasConnected)(int area1, int area2);
 
@@ -72,9 +72,9 @@ struct q2game_import_t
 	void (* WriteShort)(int c);
 	void (* WriteLong)(int c);
 	void (* WriteFloat)(float f);
-	void (* WriteString)(char* s);
-	void (* WritePosition)(vec3_t pos);		// some fractional bits
-	void (* WriteDir)(vec3_t pos);			// single byte encoded, very coarse
+	void (* WriteString)(const char* s);
+	void (* WritePosition)(const vec3_t pos);		// some fractional bits
+	void (* WriteDir)(const vec3_t pos);			// single byte encoded, very coarse
 	void (* WriteAngle)(float f);
 
 	// managed memory allocation

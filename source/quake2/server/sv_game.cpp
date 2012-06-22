@@ -21,376 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 
-void* game_library;
-
-
-/*
-===============
-PF_Unicast
-
-Sends the contents of the mutlicast buffer to a single client
-===============
-*/
-void PF_Unicast(q2edict_t* ent, qboolean reliable)
-{
-	int p;
-	client_t* client;
-
-	if (!ent)
-	{
-		return;
-	}
-
-	p = Q2_NUM_FOR_EDICT(ent);
-	if (p < 1 || p > sv_maxclients->value)
-	{
-		return;
-	}
-
-	client = svs.clients + (p - 1);
-
-	if (reliable)
-	{
-		client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
-	}
-	else
-	{
-		client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
-	}
-
-	sv.multicast.Clear();
-}
-
-
-/*
-===============
-PF_dprintf
-
-Debug print to server console
-===============
-*/
-void PF_dprintf(const char* fmt, ...)
-{
-	char msg[1024];
-	va_list argptr;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, 1024, fmt, argptr);
-	va_end(argptr);
-
-	Com_Printf("%s", msg);
-}
-
-
-/*
-===============
-PF_cprintf
-
-Print to a single client
-===============
-*/
-void PF_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
-{
-	char msg[1024];
-	va_list argptr;
-	int n;
-
-	if (ent)
-	{
-		n = Q2_NUM_FOR_EDICT(ent);
-		if (n < 1 || n > sv_maxclients->value)
-		{
-			Com_Error(ERR_DROP, "cprintf to a non-client");
-		}
-	}
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, 1024, fmt, argptr);
-	va_end(argptr);
-
-	if (ent)
-	{
-		SVQ2_ClientPrintf(svs.clients + (n - 1), level, "%s", msg);
-	}
-	else
-	{
-		Com_Printf("%s", msg);
-	}
-}
-
-
-/*
-===============
-PF_centerprintf
-
-centerprint to a single client
-===============
-*/
-void PF_centerprintf(q2edict_t* ent, const char* fmt, ...)
-{
-	char msg[1024];
-	va_list argptr;
-	int n;
-
-	n = Q2_NUM_FOR_EDICT(ent);
-	if (n < 1 || n > sv_maxclients->value)
-	{
-		return;	// Com_Error (ERR_DROP, "centerprintf to a non-client");
-
-	}
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, 1024, fmt, argptr);
-	va_end(argptr);
-
-	sv.multicast.WriteByte(q2svc_centerprint);
-	sv.multicast.WriteString2(msg);
-	PF_Unicast(ent, true);
-}
-
-
-/*
-===============
-PFQ2_error
-
-Abort the server with a game error
-===============
-*/
-void PFQ2_error(const char* fmt, ...)
-{
-	char msg[1024];
-	va_list argptr;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, 1024, fmt, argptr);
-	va_end(argptr);
-
-	Com_Error(ERR_DROP, "Game Error: %s", msg);
-}
-
-
-/*
-=================
-PF_setmodel
-
-Also sets mins and maxs for inline bmodels
-=================
-*/
-void PF_setmodel(q2edict_t* ent, char* name)
-{
-	int i;
-	clipHandle_t mod;
-
-	if (!name)
-	{
-		Com_Error(ERR_DROP, "PF_setmodel: NULL");
-	}
-
-	i = SV_ModelIndex(name);
-
-//	ent->model = name;
-	ent->s.modelindex = i;
-
-// if it is an inline model, get the size information for it
-	if (name[0] == '*')
-	{
-		mod = CM_InlineModel(String::Atoi(name + 1));
-		CM_ModelBounds(mod, ent->mins, ent->maxs);
-		SVQ2_LinkEdict(ent);
-	}
-
-}
-
-/*
-===============
-PF_Configstring
-
-===============
-*/
-void PF_Configstring(int index, const char* val)
-{
-	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
-	{
-		Com_Error(ERR_DROP, "configstring: bad index %i\n", index);
-	}
-
-	if (!val)
-	{
-		val = "";
-	}
-
-	// change the string in sv
-	String::Cpy(sv.q2_configstrings[index], val);
-
-	if (sv.state != SS_LOADING)
-	{	// send the update to everyone
-		sv.multicast.Clear();
-		sv.multicast.WriteChar(q2svc_configstring);
-		sv.multicast.WriteShort(index);
-		sv.multicast.WriteString2(val);
-
-		SVQ2_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
-	}
-}
-
-
-
-void PF_WriteChar(int c) {sv.multicast.WriteChar(c); }
-void PF_WriteByte(int c) {sv.multicast.WriteByte(c); }
-void PF_WriteShort(int c) {sv.multicast.WriteShort(c); }
-void PF_WriteLong(int c) {sv.multicast.WriteLong(c); }
-void PF_WriteFloat(float f) {sv.multicast.WriteFloat(f); }
-void PF_WriteString(char* s) {sv.multicast.WriteString2(s); }
-void PF_WritePos(vec3_t pos) {sv.multicast.WritePos(pos); }
-void PF_WriteDir(vec3_t dir) {sv.multicast.WriteDir(dir); }
-void PF_WriteAngle(float f) {sv.multicast.WriteAngle(f); }
-
-
-/*
-=================
-PF_inPVS
-
-Also checks portalareas so that doors block sight
-=================
-*/
-qboolean PF_inPVS(vec3_t p1, vec3_t p2)
-{
-	int leafnum;
-	int cluster;
-	int area1, area2;
-	byte* mask;
-
-	leafnum = CM_PointLeafnum(p1);
-	cluster = CM_LeafCluster(leafnum);
-	area1 = CM_LeafArea(leafnum);
-	mask = CM_ClusterPVS(cluster);
-
-	leafnum = CM_PointLeafnum(p2);
-	cluster = CM_LeafCluster(leafnum);
-	area2 = CM_LeafArea(leafnum);
-	if (mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
-	{
-		return false;
-	}
-	if (!CM_AreasConnected(area1, area2))
-	{
-		return false;		// a door blocks sight
-	}
-	return true;
-}
-
-
-/*
-=================
-PF_inPHS
-
-Also checks portalareas so that doors block sound
-=================
-*/
-qboolean PF_inPHS(vec3_t p1, vec3_t p2)
-{
-	int leafnum;
-	int cluster;
-	int area1, area2;
-	byte* mask;
-
-	leafnum = CM_PointLeafnum(p1);
-	cluster = CM_LeafCluster(leafnum);
-	area1 = CM_LeafArea(leafnum);
-	mask = CM_ClusterPHS(cluster);
-
-	leafnum = CM_PointLeafnum(p2);
-	cluster = CM_LeafCluster(leafnum);
-	area2 = CM_LeafArea(leafnum);
-	if (mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
-	{
-		return false;		// more than one bounce away
-	}
-	if (!CM_AreasConnected(area1, area2))
-	{
-		return false;		// a door blocks hearing
-
-	}
-	return true;
-}
-
-void PF_StartSound(q2edict_t* entity, int channel, int sound_num, float volume,
-	float attenuation, float timeofs)
-{
-	if (!entity)
-	{
-		return;
-	}
-	SVQ2_StartSound(NULL, entity, channel, sound_num, volume, attenuation, timeofs);
-}
-
-//==============================================
-
-static void SV_UnloadGame()
-{
-	Sys_UnloadDll(game_library);
-	game_library = NULL;
-}
-
-/*
-===============
-SV_ShutdownGameProgs
-
-Called when either the entire server is being killed, or
-it is changing to a different game directory.
-===============
-*/
-void SV_ShutdownGameProgs(void)
-{
-	if (!ge)
-	{
-		return;
-	}
-	ge->Shutdown();
-	SV_UnloadGame();
-	ge = NULL;
-}
-
-//	Loads the game dll
-static void* Sys_GetGameAPI(void* parms)
-{
-	void*(*GetGameAPI)(void*);
-	char name[MAX_OSPATH];
-	char* path;
-	const char* gamename = Sys_GetDllName("game");
-
-	if (game_library)
-	{
-		Com_Error(ERR_FATAL, "Sys_GetGameAPI without SV_UnloadGame");
-	}
-
-	// run through the search paths
-	path = NULL;
-	while (1)
-	{
-		path = FS_NextPath(path);
-		if (!path)
-		{
-			return NULL;		// couldn't find one anywhere
-		}
-		String::Sprintf(name, sizeof(name), "%s/%s", path, gamename);
-		game_library = Sys_LoadDll(name);
-		if (game_library)
-		{
-			Com_DPrintf("LoadLibrary (%s)\n",name);
-			break;
-		}
-	}
-
-	GetGameAPI = (void*(*)(void*))Sys_GetDllFunction(game_library, "GetGameAPI");
-	if (!GetGameAPI)
-	{
-		SV_UnloadGame();
-		return NULL;
-	}
-
-	return GetGameAPI(parms);
-}
-
 /*
 ===============
 SV_InitGameProgs
@@ -407,46 +37,46 @@ void SV_InitGameProgs(void)
 	// unload anything we have now
 	if (ge)
 	{
-		SV_ShutdownGameProgs();
+		SVQ2_ShutdownGameProgs();
 	}
 
 
 	// load a new game dll
 	import.multicast = SVQ2_Multicast;
-	import.unicast = PF_Unicast;
+	import.unicast = SVQ2_Unicast;
 	import.bprintf = SVQ2_BroadcastPrintf;
-	import.dprintf = PF_dprintf;
-	import.cprintf = PF_cprintf;
-	import.centerprintf = PF_centerprintf;
-	import.error = PFQ2_error;
+	import.dprintf = SVQ2_dprintf;
+	import.cprintf = SVQ2_cprintf;
+	import.centerprintf = SVQ2_centerprintf;
+	import.error = SVQ2_error;
 
 	import.linkentity = SVQ2_LinkEdict;
 	import.unlinkentity = SVQ2_UnlinkEdict;
 	import.BoxEdicts = SVQ2_AreaEdicts;
 	import.trace = SVQ2_Trace;
 	import.pointcontents = SVQ2_PointContents;
-	import.setmodel = PF_setmodel;
-	import.inPVS = PF_inPVS;
-	import.inPHS = PF_inPHS;
+	import.setmodel = SVQ2_setmodel;
+	import.inPVS = SVQ2_inPVS;
+	import.inPHS = SVQ2_inPHS;
 	import.Pmove = Pmove;
 
-	import.modelindex = SV_ModelIndex;
-	import.soundindex = SV_SoundIndex;
-	import.imageindex = SV_ImageIndex;
+	import.modelindex = SVQ2_ModelIndex;
+	import.soundindex = SVQ2_SoundIndex;
+	import.imageindex = SVQ2_ImageIndex;
 
-	import.configstring = PF_Configstring;
-	import.sound = PF_StartSound;
+	import.configstring = SVQ2_Configstring;
+	import.sound = SVQ2_sound;
 	import.positioned_sound = SVQ2_StartSound;
 
-	import.WriteChar = PF_WriteChar;
-	import.WriteByte = PF_WriteByte;
-	import.WriteShort = PF_WriteShort;
-	import.WriteLong = PF_WriteLong;
-	import.WriteFloat = PF_WriteFloat;
-	import.WriteString = PF_WriteString;
-	import.WritePosition = PF_WritePos;
-	import.WriteDir = PF_WriteDir;
-	import.WriteAngle = PF_WriteAngle;
+	import.WriteChar = SVQ2_WriteChar;
+	import.WriteByte = SVQ2_WriteByte;
+	import.WriteShort = SVQ2_WriteShort;
+	import.WriteLong = SVQ2_WriteLong;
+	import.WriteFloat = SVQ2_WriteFloat;
+	import.WriteString = SVQ2_WriteString;
+	import.WritePosition = SVQ2_WritePos;
+	import.WriteDir = SVQ2_WriteDir;
+	import.WriteAngle = SVQ2_WriteAngle;
 
 	import.TagMalloc = Z_TagMalloc;
 	import.TagFree = Z_Free;
@@ -465,7 +95,7 @@ void SV_InitGameProgs(void)
 	import.SetAreaPortalState = CM_SetAreaPortalState;
 	import.AreasConnected = CM_AreasConnected;
 
-	ge = (q2game_export_t*)Sys_GetGameAPI(&import);
+	ge = (q2game_export_t*)SVQ2_GetGameAPI(&import);
 
 	if (!ge)
 	{

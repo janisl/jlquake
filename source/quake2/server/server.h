@@ -60,10 +60,6 @@ extern q2edict_t* sv_player;
 void SV_FinalMessage(const char* message, qboolean reconnect);
 void SV_DropClient(client_t* drop);
 
-int SV_ModelIndex(char* name);
-int SV_SoundIndex(char* name);
-int SV_ImageIndex(char* name);
-
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
 void SV_InitOperatorCommands(void);
@@ -116,5 +112,4 @@ void SV_Status_f(void);
 // sv_game.c
 //
 void SV_InitGameProgs(void);
-void SV_ShutdownGameProgs(void);
 void SV_InitEdict(q2edict_t* e);

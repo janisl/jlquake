@@ -22,68 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 ================
-SV_FindIndex
-
-================
-*/
-int SV_FindIndex(char* name, int start, int max, qboolean create)
-{
-	int i;
-
-	if (!name || !name[0])
-	{
-		return 0;
-	}
-
-	for (i = 1; i < max && sv.q2_configstrings[start + i][0]; i++)
-		if (!String::Cmp(sv.q2_configstrings[start + i], name))
-		{
-			return i;
-		}
-
-	if (!create)
-	{
-		return 0;
-	}
-
-	if (i == max)
-	{
-		Com_Error(ERR_DROP, "*Index: overflow");
-	}
-
-	String::NCpy(sv.q2_configstrings[start + i], name, sizeof(sv.q2_configstrings[i]));
-
-	if (sv.state != SS_LOADING)
-	{	// send the update to everyone
-		sv.multicast.Clear();
-		sv.multicast.WriteChar(q2svc_configstring);
-		sv.multicast.WriteShort(start + i);
-		sv.multicast.WriteString2(name);
-		SVQ2_Multicast(vec3_origin, Q2MULTICAST_ALL_R);
-	}
-
-	return i;
-}
-
-
-int SV_ModelIndex(char* name)
-{
-	return SV_FindIndex(name, Q2CS_MODELS, MAX_MODELS_Q2, true);
-}
-
-int SV_SoundIndex(char* name)
-{
-	return SV_FindIndex(name, Q2CS_SOUNDS, MAX_SOUNDS_Q2, true);
-}
-
-int SV_ImageIndex(char* name)
-{
-	return SV_FindIndex(name, Q2CS_IMAGES, MAX_IMAGES_Q2, true);
-}
-
-
-/*
-================
 SV_CreateBaseline
 
 Entity baselines are used to compress the update messages

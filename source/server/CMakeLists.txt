@@ -40,6 +40,7 @@ add_library(server STATIC
 	quake_hexen/world.cpp
 	quake2/entities.cpp
 	quake2/game.cpp
+	quake2/init.cpp
 	quake2/send.cpp
 	quake2/world.cpp
 	quake3/game.cpp

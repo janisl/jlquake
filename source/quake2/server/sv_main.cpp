@@ -1140,7 +1140,7 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 	}
 
 	Master_Shutdown();
-	SV_ShutdownGameProgs();
+	SVQ2_ShutdownGameProgs();
 
 	// free current level
 	if (sv.q2_demofile)
