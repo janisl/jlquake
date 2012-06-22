@@ -113,14 +113,6 @@ void SV_ReadLevelFile(void);
 void SV_Status_f(void);
 
 //
-// sv_ents.c
-//
-void SV_WriteFrameToClient(client_t* client, QMsg* msg);
-void SV_RecordDemoMessage(void);
-void SV_BuildClientFrame(client_t* client);
-
-
-//
 // sv_game.c
 //
 void SV_InitGameProgs(void);

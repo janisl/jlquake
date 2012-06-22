@@ -65,14 +65,14 @@ qboolean SV_SendClientDatagram(client_t* client)
 	byte msg_buf[MAX_MSGLEN_Q2];
 	QMsg msg;
 
-	SV_BuildClientFrame(client);
+	SVQ2_BuildClientFrame(client);
 
 	msg.InitOOB(msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = true;
 
 	// send over all the relevant q2entity_state_t
 	// and the q2player_state_t
-	SV_WriteFrameToClient(client, &msg);
+	SVQ2_WriteFrameToClient(client, &msg);
 
 	// copy the accumulated multicast datagram
 	// for this client out to the message

@@ -21,7 +21,6 @@ add_executable(jlquake2
 	qcommon/q_shared.cpp
 	qcommon/pmove.cpp
 	server/sv_ccmds.cpp
-	server/sv_ents.cpp
 	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
@@ -43,7 +42,6 @@ add_executable(jlquake2ded
 	qcommon/q_shared.cpp
 	qcommon/pmove.cpp
 	server/sv_ccmds.cpp
-	server/sv_ents.cpp
 	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp

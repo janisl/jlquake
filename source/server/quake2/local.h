@@ -23,6 +23,13 @@
 #define Q2_NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 
 //
+//	Entities
+//
+void SVQ2_WriteFrameToClient(client_t* client, QMsg* msg);
+void SVQ2_BuildClientFrame(client_t* client);
+void SVQ2_RecordDemoMessage();
+
+//
 //	Game
 //
 extern q2game_export_t* ge;

@@ -461,41 +461,41 @@ void CL_ParsePlayerstate(q2frame_t* oldframe, q2frame_t* newframe)
 	//
 	// parse the q2pmove_state_t
 	//
-	if (flags & PS_M_TYPE)
+	if (flags & Q2PS_M_TYPE)
 	{
 		state->pmove.pm_type = (q2pmtype_t)net_message.ReadByte();
 	}
 
-	if (flags & PS_M_ORIGIN)
+	if (flags & Q2PS_M_ORIGIN)
 	{
 		state->pmove.origin[0] = net_message.ReadShort();
 		state->pmove.origin[1] = net_message.ReadShort();
 		state->pmove.origin[2] = net_message.ReadShort();
 	}
 
-	if (flags & PS_M_VELOCITY)
+	if (flags & Q2PS_M_VELOCITY)
 	{
 		state->pmove.velocity[0] = net_message.ReadShort();
 		state->pmove.velocity[1] = net_message.ReadShort();
 		state->pmove.velocity[2] = net_message.ReadShort();
 	}
 
-	if (flags & PS_M_TIME)
+	if (flags & Q2PS_M_TIME)
 	{
 		state->pmove.pm_time = net_message.ReadByte();
 	}
 
-	if (flags & PS_M_FLAGS)
+	if (flags & Q2PS_M_FLAGS)
 	{
 		state->pmove.pm_flags = net_message.ReadByte();
 	}
 
-	if (flags & PS_M_GRAVITY)
+	if (flags & Q2PS_M_GRAVITY)
 	{
 		state->pmove.gravity = net_message.ReadShort();
 	}
 
-	if (flags & PS_M_DELTA_ANGLES)
+	if (flags & Q2PS_M_DELTA_ANGLES)
 	{
 		state->pmove.delta_angles[0] = net_message.ReadShort();
 		state->pmove.delta_angles[1] = net_message.ReadShort();
@@ -510,33 +510,33 @@ void CL_ParsePlayerstate(q2frame_t* oldframe, q2frame_t* newframe)
 	//
 	// parse the rest of the q2player_state_t
 	//
-	if (flags & PS_VIEWOFFSET)
+	if (flags & Q2PS_VIEWOFFSET)
 	{
 		state->viewoffset[0] = net_message.ReadChar() * 0.25;
 		state->viewoffset[1] = net_message.ReadChar() * 0.25;
 		state->viewoffset[2] = net_message.ReadChar() * 0.25;
 	}
 
-	if (flags & PS_VIEWANGLES)
+	if (flags & Q2PS_VIEWANGLES)
 	{
 		state->viewangles[0] = net_message.ReadAngle16();
 		state->viewangles[1] = net_message.ReadAngle16();
 		state->viewangles[2] = net_message.ReadAngle16();
 	}
 
-	if (flags & PS_KICKANGLES)
+	if (flags & Q2PS_KICKANGLES)
 	{
 		state->kick_angles[0] = net_message.ReadChar() * 0.25;
 		state->kick_angles[1] = net_message.ReadChar() * 0.25;
 		state->kick_angles[2] = net_message.ReadChar() * 0.25;
 	}
 
-	if (flags & PS_WEAPONINDEX)
+	if (flags & Q2PS_WEAPONINDEX)
 	{
 		state->gunindex = net_message.ReadByte();
 	}
 
-	if (flags & PS_WEAPONFRAME)
+	if (flags & Q2PS_WEAPONFRAME)
 	{
 		state->gunframe = net_message.ReadByte();
 		state->gunoffset[0] = net_message.ReadChar() * 0.25;
@@ -547,7 +547,7 @@ void CL_ParsePlayerstate(q2frame_t* oldframe, q2frame_t* newframe)
 		state->gunangles[2] = net_message.ReadChar() * 0.25;
 	}
 
-	if (flags & PS_BLEND)
+	if (flags & Q2PS_BLEND)
 	{
 		state->blend[0] = net_message.ReadByte() / 255.0;
 		state->blend[1] = net_message.ReadByte() / 255.0;
@@ -555,12 +555,12 @@ void CL_ParsePlayerstate(q2frame_t* oldframe, q2frame_t* newframe)
 		state->blend[3] = net_message.ReadByte() / 255.0;
 	}
 
-	if (flags & PS_FOV)
+	if (flags & Q2PS_FOV)
 	{
 		state->fov = net_message.ReadByte();
 	}
 
-	if (flags & PS_RDFLAGS)
+	if (flags & Q2PS_RDFLAGS)
 	{
 		state->rdflags = net_message.ReadByte();
 	}

@@ -97,27 +97,6 @@ PROTOCOL
 #define PORT_CLIENT 27901
 #define PORT_SERVER 27910
 
-//==============================================
-
-// plyer_state_t communication
-
-#define PS_M_TYPE           (1 << 0)
-#define PS_M_ORIGIN         (1 << 1)
-#define PS_M_VELOCITY       (1 << 2)
-#define PS_M_TIME           (1 << 3)
-#define PS_M_FLAGS          (1 << 4)
-#define PS_M_GRAVITY        (1 << 5)
-#define PS_M_DELTA_ANGLES   (1 << 6)
-
-#define PS_VIEWOFFSET       (1 << 7)
-#define PS_VIEWANGLES       (1 << 8)
-#define PS_KICKANGLES       (1 << 9)
-#define PS_BLEND            (1 << 10)
-#define PS_FOV              (1 << 11)
-#define PS_WEAPONINDEX      (1 << 12)
-#define PS_WEAPONFRAME      (1 << 13)
-#define PS_RDFLAGS          (1 << 14)
-
 //===========================================================================
 
 void    Cmd_Init(void);

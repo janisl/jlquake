@@ -878,7 +878,7 @@ void SV_Frame(int msec)
 	SV_SendClientMessages();
 
 	// save the entire world state if recording a serverdemo
-	SV_RecordDemoMessage();
+	SVQ2_RecordDemoMessage();
 
 	// send a heartbeat to the master if needed
 	Master_Heartbeat();

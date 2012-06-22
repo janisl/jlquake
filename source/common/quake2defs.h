@@ -734,3 +734,22 @@ enum
 
 #define Q2DEFAULT_SOUND_PACKET_VOLUME        1.0
 #define Q2DEFAULT_SOUND_PACKET_ATTENUATION   1.0
+
+// plyer_state_t communication
+
+#define Q2PS_M_TYPE         BIT(0)
+#define Q2PS_M_ORIGIN       BIT(1)
+#define Q2PS_M_VELOCITY     BIT(2)
+#define Q2PS_M_TIME         BIT(3)
+#define Q2PS_M_FLAGS        BIT(4)
+#define Q2PS_M_GRAVITY      BIT(5)
+#define Q2PS_M_DELTA_ANGLES BIT(6)
+
+#define Q2PS_VIEWOFFSET     BIT(7)
+#define Q2PS_VIEWANGLES     BIT(8)
+#define Q2PS_KICKANGLES     BIT(9)
+#define Q2PS_BLEND          BIT(10)
+#define Q2PS_FOV            BIT(11)
+#define Q2PS_WEAPONINDEX    BIT(12)
+#define Q2PS_WEAPONFRAME    BIT(13)
+#define Q2PS_RDFLAGS        BIT(14)

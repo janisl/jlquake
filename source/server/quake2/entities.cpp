@@ -1,158 +1,30 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
-of the License, or (at your option) any later version.
+#include "../server.h"
+#include "local.h"
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+static byte svq2_fatpvs[65536 / 8];			// 32767 is MAX_MAP_LEAFS
 
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-#include "server.h"
-
-/*
-=============================================================================
-
-Encode a client frame onto the network channel
-
-=============================================================================
-*/
-
-#if 0
-
-// because there can be a lot of projectiles, there is a special
-// network protocol for them
-#define MAX_PROJECTILES     64
-q2edict_t* projectiles[MAX_PROJECTILES];
-int numprojs;
-Cvar* sv_projectiles;
-
-qboolean SV_AddProjectileUpdate(q2edict_t* ent)
+//	Writes a delta update of an q2entity_state_t list to the message.
+static void SVQ2_EmitPacketEntities(const q2client_frame_t* from, const q2client_frame_t* to, QMsg* msg)
 {
-	if (!sv_projectiles)
-	{
-		sv_projectiles = Cvar_Get("sv_projectiles", "1", 0);
-	}
-
-	if (!sv_projectiles->value)
-	{
-		return false;
-	}
-
-	if (!(ent->svflags & SVF_PROJECTILE))
-	{
-		return false;
-	}
-	if (numprojs == MAX_PROJECTILES)
-	{
-		return true;
-	}
-
-	projectiles[numprojs++] = ent;
-	return true;
-}
-
-void SV_EmitProjectileUpdate(QMsg* msg)
-{
-	byte bits[16];		// [modelindex] [48 bits] xyz p y 12 12 12 8 8 [entitynum] [e2]
-	int n, i;
-	q2edict_t* ent;
-	int x, y, z, p, yaw;
-	int len;
-
-	if (!numprojs)
-	{
-		return;
-	}
-
-	msg->WriteByte(numprojs);
-
-	for (n = 0; n < numprojs; n++)
-	{
-		ent = projectiles[n];
-		x = (int)(ent->s.origin[0] + 4096) >> 1;
-		y = (int)(ent->s.origin[1] + 4096) >> 1;
-		z = (int)(ent->s.origin[2] + 4096) >> 1;
-		p = (int)(256 * ent->s.angles[0] / 360) & 255;
-		yaw = (int)(256 * ent->s.angles[1] / 360) & 255;
-
-		len = 0;
-		bits[len++] = x;
-		bits[len++] = (x >> 8) | (y << 4);
-		bits[len++] = (y >> 4);
-		bits[len++] = z;
-		bits[len++] = (z >> 8);
-		if (ent->s.effects & Q2EF_BLASTER)
-		{
-			bits[len - 1] |= 64;
-		}
-
-		if (ent->s.old_origin[0] != ent->s.origin[0] ||
-			ent->s.old_origin[1] != ent->s.origin[1] ||
-			ent->s.old_origin[2] != ent->s.origin[2])
-		{
-			bits[len - 1] |= 128;
-			x = (int)(ent->s.old_origin[0] + 4096) >> 1;
-			y = (int)(ent->s.old_origin[1] + 4096) >> 1;
-			z = (int)(ent->s.old_origin[2] + 4096) >> 1;
-			bits[len++] = x;
-			bits[len++] = (x >> 8) | (y << 4);
-			bits[len++] = (y >> 4);
-			bits[len++] = z;
-			bits[len++] = (z >> 8);
-		}
-
-		bits[len++] = p;
-		bits[len++] = yaw;
-		bits[len++] = ent->s.modelindex;
-
-		bits[len++] = (ent->s.number & 0x7f);
-		if (ent->s.number > 255)
-		{
-			bits[len - 1] |= 128;
-			bits[len++] = (ent->s.number >> 7);
-		}
-
-		for (i = 0; i < len; i++)
-			msg->WriteByte(bits[i]);
-	}
-}
-#endif
-
-/*
-=============
-SV_EmitPacketEntities
-
-Writes a delta update of an q2entity_state_t list to the message.
-=============
-*/
-void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* msg)
-{
-	q2entity_state_t* oldent, * newent;
-	int oldindex, newindex;
-	int oldnum, newnum;
-	int from_num_entities;
-	int bits;
-
-#if 0
-	if (numprojs)
-	{
-		msg->WriteByte(svc_packetentities2);
-	}
-	else
-#endif
 	msg->WriteByte(q2svc_packetentities);
 
+	int from_num_entities;
 	if (!from)
 	{
 		from_num_entities = 0;
@@ -162,10 +34,12 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 		from_num_entities = from->num_entities;
 	}
 
-	newindex = 0;
-	oldindex = 0;
+	int newindex = 0;
+	int oldindex = 0;
 	while (newindex < to->num_entities || oldindex < from_num_entities)
 	{
+		q2entity_state_t* newent;
+		int newnum;
 		if (newindex >= to->num_entities)
 		{
 			newnum = 9999;
@@ -176,6 +50,8 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 			newnum = newent->number;
 		}
 
+		q2entity_state_t* oldent;
+		int oldnum;
 		if (oldindex >= from_num_entities)
 		{
 			oldnum = 9999;
@@ -199,15 +75,17 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 		}
 
 		if (newnum < oldnum)
-		{	// this is a new entity, send it from the baseline
+		{
+			// this is a new entity, send it from the baseline
 			MSGQ2_WriteDeltaEntity(&sv.q2_baselines[newnum], newent, msg, true, true);
 			newindex++;
 			continue;
 		}
 
 		if (newnum > oldnum)
-		{	// the old entity isn't present in the new message
-			bits = Q2U_REMOVE;
+		{
+			// the old entity isn't present in the new message
+			int bits = Q2U_REMOVE;
 			if (oldnum >= 256)
 			{
 				bits |= Q2U_NUMBER16 | Q2U_MOREBITS1;
@@ -234,32 +112,13 @@ void SV_EmitPacketEntities(q2client_frame_t* from, q2client_frame_t* to, QMsg* m
 	}
 
 	msg->WriteShort(0);	// end of packetentities
-
-#if 0
-	if (numprojs)
-	{
-		SV_EmitProjectileUpdate(msg);
-	}
-#endif
 }
 
-
-
-/*
-=============
-SV_WritePlayerstateToClient
-
-=============
-*/
-void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, QMsg* msg)
+static void SVQ2_WritePlayerstateToClient(const q2client_frame_t* from, const q2client_frame_t* to, QMsg* msg)
 {
-	int i;
-	int pflags;
-	q2player_state_t* ps, * ops;
+	const q2player_state_t* ps = &to->ps;
+	const q2player_state_t* ops;
 	q2player_state_t dummy;
-	int statbits;
-
-	ps = &to->ps;
 	if (!from)
 	{
 		Com_Memset(&dummy, 0, sizeof(dummy));
@@ -273,47 +132,47 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 	//
 	// determine what needs to be sent
 	//
-	pflags = 0;
+	int pflags = 0;
 
 	if (ps->pmove.pm_type != ops->pmove.pm_type)
 	{
-		pflags |= PS_M_TYPE;
+		pflags |= Q2PS_M_TYPE;
 	}
 
 	if (ps->pmove.origin[0] != ops->pmove.origin[0] ||
 		ps->pmove.origin[1] != ops->pmove.origin[1] ||
 		ps->pmove.origin[2] != ops->pmove.origin[2])
 	{
-		pflags |= PS_M_ORIGIN;
+		pflags |= Q2PS_M_ORIGIN;
 	}
 
 	if (ps->pmove.velocity[0] != ops->pmove.velocity[0] ||
 		ps->pmove.velocity[1] != ops->pmove.velocity[1] ||
 		ps->pmove.velocity[2] != ops->pmove.velocity[2])
 	{
-		pflags |= PS_M_VELOCITY;
+		pflags |= Q2PS_M_VELOCITY;
 	}
 
 	if (ps->pmove.pm_time != ops->pmove.pm_time)
 	{
-		pflags |= PS_M_TIME;
+		pflags |= Q2PS_M_TIME;
 	}
 
 	if (ps->pmove.pm_flags != ops->pmove.pm_flags)
 	{
-		pflags |= PS_M_FLAGS;
+		pflags |= Q2PS_M_FLAGS;
 	}
 
 	if (ps->pmove.gravity != ops->pmove.gravity)
 	{
-		pflags |= PS_M_GRAVITY;
+		pflags |= Q2PS_M_GRAVITY;
 	}
 
 	if (ps->pmove.delta_angles[0] != ops->pmove.delta_angles[0] ||
 		ps->pmove.delta_angles[1] != ops->pmove.delta_angles[1] ||
 		ps->pmove.delta_angles[2] != ops->pmove.delta_angles[2])
 	{
-		pflags |= PS_M_DELTA_ANGLES;
+		pflags |= Q2PS_M_DELTA_ANGLES;
 	}
 
 
@@ -321,21 +180,21 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 		ps->viewoffset[1] != ops->viewoffset[1] ||
 		ps->viewoffset[2] != ops->viewoffset[2])
 	{
-		pflags |= PS_VIEWOFFSET;
+		pflags |= Q2PS_VIEWOFFSET;
 	}
 
 	if (ps->viewangles[0] != ops->viewangles[0] ||
 		ps->viewangles[1] != ops->viewangles[1] ||
 		ps->viewangles[2] != ops->viewangles[2])
 	{
-		pflags |= PS_VIEWANGLES;
+		pflags |= Q2PS_VIEWANGLES;
 	}
 
 	if (ps->kick_angles[0] != ops->kick_angles[0] ||
 		ps->kick_angles[1] != ops->kick_angles[1] ||
 		ps->kick_angles[2] != ops->kick_angles[2])
 	{
-		pflags |= PS_KICKANGLES;
+		pflags |= Q2PS_KICKANGLES;
 	}
 
 	if (ps->blend[0] != ops->blend[0] ||
@@ -343,25 +202,25 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 		ps->blend[2] != ops->blend[2] ||
 		ps->blend[3] != ops->blend[3])
 	{
-		pflags |= PS_BLEND;
+		pflags |= Q2PS_BLEND;
 	}
 
 	if (ps->fov != ops->fov)
 	{
-		pflags |= PS_FOV;
+		pflags |= Q2PS_FOV;
 	}
 
 	if (ps->rdflags != ops->rdflags)
 	{
-		pflags |= PS_RDFLAGS;
+		pflags |= Q2PS_RDFLAGS;
 	}
 
 	if (ps->gunframe != ops->gunframe)
 	{
-		pflags |= PS_WEAPONFRAME;
+		pflags |= Q2PS_WEAPONFRAME;
 	}
 
-	pflags |= PS_WEAPONINDEX;
+	pflags |= Q2PS_WEAPONINDEX;
 
 	//
 	// write it
@@ -372,41 +231,41 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 	//
 	// write the q2pmove_state_t
 	//
-	if (pflags & PS_M_TYPE)
+	if (pflags & Q2PS_M_TYPE)
 	{
 		msg->WriteByte(ps->pmove.pm_type);
 	}
 
-	if (pflags & PS_M_ORIGIN)
+	if (pflags & Q2PS_M_ORIGIN)
 	{
 		msg->WriteShort(ps->pmove.origin[0]);
 		msg->WriteShort(ps->pmove.origin[1]);
 		msg->WriteShort(ps->pmove.origin[2]);
 	}
 
-	if (pflags & PS_M_VELOCITY)
+	if (pflags & Q2PS_M_VELOCITY)
 	{
 		msg->WriteShort(ps->pmove.velocity[0]);
 		msg->WriteShort(ps->pmove.velocity[1]);
 		msg->WriteShort(ps->pmove.velocity[2]);
 	}
 
-	if (pflags & PS_M_TIME)
+	if (pflags & Q2PS_M_TIME)
 	{
 		msg->WriteByte(ps->pmove.pm_time);
 	}
 
-	if (pflags & PS_M_FLAGS)
+	if (pflags & Q2PS_M_FLAGS)
 	{
 		msg->WriteByte(ps->pmove.pm_flags);
 	}
 
-	if (pflags & PS_M_GRAVITY)
+	if (pflags & Q2PS_M_GRAVITY)
 	{
 		msg->WriteShort(ps->pmove.gravity);
 	}
 
-	if (pflags & PS_M_DELTA_ANGLES)
+	if (pflags & Q2PS_M_DELTA_ANGLES)
 	{
 		msg->WriteShort(ps->pmove.delta_angles[0]);
 		msg->WriteShort(ps->pmove.delta_angles[1]);
@@ -416,33 +275,33 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 	//
 	// write the rest of the q2player_state_t
 	//
-	if (pflags & PS_VIEWOFFSET)
+	if (pflags & Q2PS_VIEWOFFSET)
 	{
 		msg->WriteChar(ps->viewoffset[0] * 4);
 		msg->WriteChar(ps->viewoffset[1] * 4);
 		msg->WriteChar(ps->viewoffset[2] * 4);
 	}
 
-	if (pflags & PS_VIEWANGLES)
+	if (pflags & Q2PS_VIEWANGLES)
 	{
 		msg->WriteAngle16(ps->viewangles[0]);
 		msg->WriteAngle16(ps->viewangles[1]);
 		msg->WriteAngle16(ps->viewangles[2]);
 	}
 
-	if (pflags & PS_KICKANGLES)
+	if (pflags & Q2PS_KICKANGLES)
 	{
 		msg->WriteChar(ps->kick_angles[0] * 4);
 		msg->WriteChar(ps->kick_angles[1] * 4);
 		msg->WriteChar(ps->kick_angles[2] * 4);
 	}
 
-	if (pflags & PS_WEAPONINDEX)
+	if (pflags & Q2PS_WEAPONINDEX)
 	{
 		msg->WriteByte(ps->gunindex);
 	}
 
-	if (pflags & PS_WEAPONFRAME)
+	if (pflags & Q2PS_WEAPONFRAME)
 	{
 		msg->WriteByte(ps->gunframe);
 		msg->WriteChar(ps->gunoffset[0] * 4);
@@ -453,65 +312,63 @@ void SV_WritePlayerstateToClient(q2client_frame_t* from, q2client_frame_t* to, Q
 		msg->WriteChar(ps->gunangles[2] * 4);
 	}
 
-	if (pflags & PS_BLEND)
+	if (pflags & Q2PS_BLEND)
 	{
 		msg->WriteByte(ps->blend[0] * 255);
 		msg->WriteByte(ps->blend[1] * 255);
 		msg->WriteByte(ps->blend[2] * 255);
 		msg->WriteByte(ps->blend[3] * 255);
 	}
-	if (pflags & PS_FOV)
+	if (pflags & Q2PS_FOV)
 	{
 		msg->WriteByte(ps->fov);
 	}
-	if (pflags & PS_RDFLAGS)
+	if (pflags & Q2PS_RDFLAGS)
 	{
 		msg->WriteByte(ps->rdflags);
 	}
 
 	// send stats
-	statbits = 0;
-	for (i = 0; i < MAX_STATS_Q2; i++)
+	int statbits = 0;
+	for (int i = 0; i < MAX_STATS_Q2; i++)
+	{
 		if (ps->stats[i] != ops->stats[i])
 		{
 			statbits |= 1 << i;
 		}
+	}
 	msg->WriteLong(statbits);
-	for (i = 0; i < MAX_STATS_Q2; i++)
+	for (int i = 0; i < MAX_STATS_Q2; i++)
+	{
 		if (statbits & (1 << i))
 		{
 			msg->WriteShort(ps->stats[i]);
 		}
+	}
 }
 
-
-/*
-==================
-SV_WriteFrameToClient
-==================
-*/
-void SV_WriteFrameToClient(client_t* client, QMsg* msg)
+void SVQ2_WriteFrameToClient(client_t* client, QMsg* msg)
 {
-	q2client_frame_t* frame, * oldframe;
-	int lastframe;
-
-//Com_Printf ("%i -> %i\n", client->lastframe, sv.framenum);
 	// this is the frame we are creating
-	frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
+	const q2client_frame_t* frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
+	const q2client_frame_t* oldframe;
+	int lastframe;
 	if (client->q2_lastframe <= 0)
-	{	// client is asking for a retransmit
+	{
+		// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = -1;
 	}
 	else if (sv.q2_framenum - client->q2_lastframe >= (UPDATE_BACKUP_Q2 - 3))
-	{	// client hasn't gotten a good message through in a long time
-//		Com_Printf ("%s: Delta request from out-of-date packet.\n", client->name);
+	{
+		// client hasn't gotten a good message through in a long time
 		oldframe = NULL;
 		lastframe = -1;
 	}
 	else
-	{	// we have a valid message to delta from
+	{
+		// we have a valid message to delta from
 		oldframe = &client->q2_frames[client->q2_lastframe & UPDATE_MASK_Q2];
 		lastframe = client->q2_lastframe;
 	}
@@ -527,121 +384,87 @@ void SV_WriteFrameToClient(client_t* client, QMsg* msg)
 	msg->WriteData(frame->areabits, frame->areabytes);
 
 	// delta encode the playerstate
-	SV_WritePlayerstateToClient(oldframe, frame, msg);
+	SVQ2_WritePlayerstateToClient(oldframe, frame, msg);
 
 	// delta encode the entities
-	SV_EmitPacketEntities(oldframe, frame, msg);
+	SVQ2_EmitPacketEntities(oldframe, frame, msg);
 }
 
-
-/*
-=============================================================================
-
-Build a client frame structure
-
-=============================================================================
-*/
-
-byte fatpvs[65536 / 8];			// 32767 is MAX_MAP_LEAFS
-
-/*
-============
-SV_FatPVS
-
-The client will interpolate the view position,
-so we can't use a single PVS point
-===========
-*/
-void SV_FatPVS(vec3_t org)
+//	The client will interpolate the view position,
+// so we can't use a single PVS point
+static void SVQ2_FatPVS(const vec3_t org)
 {
-	int leafs[64];
-	int i, j, count;
-	int longs;
-	byte* src;
 	vec3_t mins, maxs;
-
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		mins[i] = org[i] - 8;
 		maxs[i] = org[i] + 8;
 	}
 
-	count = CM_BoxLeafnums(mins, maxs, leafs, 64);
+	int leafs[64];
+	int count = CM_BoxLeafnums(mins, maxs, leafs, 64);
 	if (count < 1)
 	{
-		Com_Error(ERR_FATAL, "SV_FatPVS: count < 1");
+		common->FatalError("SV_FatPVS: count < 1");
 	}
-	longs = (CM_NumClusters() + 31) >> 5;
+	int longs = (CM_NumClusters() + 31) >> 5;
 
 	// convert leafs to clusters
-	for (i = 0; i < count; i++)
-		leafs[i] = CM_LeafCluster(leafs[i]);
-
-	Com_Memcpy(fatpvs, CM_ClusterPVS(leafs[0]), longs << 2);
-	// or in all the other leaf bits
-	for (i = 1; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
+		leafs[i] = CM_LeafCluster(leafs[i]);
+	}
+
+	Com_Memcpy(svq2_fatpvs, CM_ClusterPVS(leafs[0]), longs << 2);
+	// or in all the other leaf bits
+	for (int i = 1; i < count; i++)
+	{
+		int j;
 		for (j = 0; j < i; j++)
+		{
 			if (leafs[i] == leafs[j])
 			{
 				break;
 			}
+		}
 		if (j != i)
 		{
 			continue;		// already have the cluster we want
 		}
-		src = CM_ClusterPVS(leafs[i]);
+		byte* src = CM_ClusterPVS(leafs[i]);
 		for (j = 0; j < longs; j++)
-			((long*)fatpvs)[j] |= ((long*)src)[j];
+		{
+			((long*)svq2_fatpvs)[j] |= ((long*)src)[j];
+		}
 	}
 }
 
-
-/*
-=============
-SV_BuildClientFrame
-
-Decides which entities are going to be visible to the client, and
-copies off the playerstat and areabits.
-=============
-*/
-void SV_BuildClientFrame(client_t* client)
+//	Decides which entities are going to be visible to the client, and
+// copies off the playerstat and areabits.
+void SVQ2_BuildClientFrame(client_t* client)
 {
-	int e, i;
-	vec3_t org;
-	q2edict_t* ent;
-	q2edict_t* clent;
-	q2client_frame_t* frame;
-	q2entity_state_t* state;
-	int l;
-	int clientarea, clientcluster;
-	int leafnum;
-	int c_fullsend;
-	byte* clientphs;
-	byte* bitvector;
-
-	clent = client->q2_edict;
+	q2edict_t* clent = client->q2_edict;
 	if (!clent->client)
 	{
 		return;		// not in game yet
 
 	}
-#if 0
-	numprojs = 0;	// no projectiles yet
-#endif
 
 	// this is the frame we are creating
-	frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
+	q2client_frame_t* frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
 	frame->senttime = svs.q2_realtime;	// save it for ping calc later
 
 	// find the client's PVS
-	for (i = 0; i < 3; i++)
+	vec3_t org;
+	for (int i = 0; i < 3; i++)
+	{
 		org[i] = clent->client->ps.pmove.origin[i] * 0.125 + clent->client->ps.viewoffset[i];
+	}
 
-	leafnum = CM_PointLeafnum(org);
-	clientarea = CM_LeafArea(leafnum);
-	clientcluster = CM_LeafCluster(leafnum);
+	int leafnum = CM_PointLeafnum(org);
+	int clientarea = CM_LeafArea(leafnum);
+	int clientcluster = CM_LeafCluster(leafnum);
 
 	// calculate the visible areas
 	frame->areabytes = CM_WriteAreaBits(frame->areabits, clientarea);
@@ -650,18 +473,18 @@ void SV_BuildClientFrame(client_t* client)
 	frame->ps = clent->client->ps;
 
 
-	SV_FatPVS(org);
-	clientphs = CM_ClusterPHS(clientcluster);
+	SVQ2_FatPVS(org);
+	byte* clientphs = CM_ClusterPHS(clientcluster);
 
 	// build up the list of visible entities
 	frame->num_entities = 0;
 	frame->first_entity = svs.q2_next_client_entities;
 
-	c_fullsend = 0;
+	int c_fullsend = 0;
 
-	for (e = 1; e < ge->num_edicts; e++)
+	for (int e = 1; e < ge->num_edicts; e++)
 	{
-		ent = Q2_EDICT_NUM(e);
+		q2edict_t* ent = Q2_EDICT_NUM(e);
 
 		// ignore ents without visible models
 		if (ent->svflags & Q2SVF_NOCLIENT)
@@ -693,7 +516,7 @@ void SV_BuildClientFrame(client_t* client)
 			// beams just check one point for PHS
 			if (ent->s.renderfx & Q2RF_BEAM)
 			{
-				l = ent->clusternums[0];
+				int l = ent->clusternums[0];
 				if (!(clientphs[l >> 3] & (1 << (l & 7))))
 				{
 					continue;
@@ -703,17 +526,11 @@ void SV_BuildClientFrame(client_t* client)
 			{
 				// FIXME: if an ent has a model and a sound, but isn't
 				// in the PVS, only the PHS, clear the model
-				if (ent->s.sound)
-				{
-					bitvector = fatpvs;	//clientphs;
-				}
-				else
-				{
-					bitvector = fatpvs;
-				}
+				byte* bitvector = svq2_fatpvs;
 
 				if (ent->num_clusters == -1)
-				{	// too many leafs for individual check, go by headnode
+				{
+					// too many leafs for individual check, go by headnode
 					if (!CM_HeadnodeVisible(ent->headnode, bitvector))
 					{
 						continue;
@@ -721,10 +538,12 @@ void SV_BuildClientFrame(client_t* client)
 					c_fullsend++;
 				}
 				else
-				{	// check individual leafs
+				{
+					// check individual leafs
+					int i;
 					for (i = 0; i < ent->num_clusters; i++)
 					{
-						l = ent->clusternums[i];
+						int l = ent->clusternums[i];
 						if (bitvector[l >> 3] & (1 << (l & 7)))
 						{
 							break;
@@ -751,18 +570,11 @@ void SV_BuildClientFrame(client_t* client)
 			}
 		}
 
-#if 0
-		if (SV_AddProjectileUpdate(ent))
-		{
-			continue;	// added as a special projectile
-		}
-#endif
-
 		// add it to the circular client_entities array
-		state = &svs.q2_client_entities[svs.q2_next_client_entities % svs.q2_num_client_entities];
+		q2entity_state_t* state = &svs.q2_client_entities[svs.q2_next_client_entities % svs.q2_num_client_entities];
 		if (ent->s.number != e)
 		{
-			Com_DPrintf("FIXING ENT->S.NUMBER!!!\n");
+			common->DPrintf("FIXING ENT->S.NUMBER!!!\n");
 			ent->s.number = e;
 		}
 		*state = ent->s;
@@ -778,16 +590,9 @@ void SV_BuildClientFrame(client_t* client)
 	}
 }
 
-
-/*
-==================
-SV_RecordDemoMessage
-
-Save everything in the world out without deltas.
-Used for recording footage for merged or assembled demos
-==================
-*/
-void SV_RecordDemoMessage(void)
+//	Save everything in the world out without deltas.
+//	Used for recording footage for merged or assembled demos
+void SVQ2_RecordDemoMessage()
 {
 	int e;
 	q2edict_t* ent;
