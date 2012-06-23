@@ -79,20 +79,6 @@ void COM_Init(void);
 
 char* CopyString(char* in);
 
-/*
-==============================================================
-
-PROTOCOL
-
-==============================================================
-*/
-
-// protocol.h -- communications protocols
-
-#define PROTOCOL_VERSION    34
-
-//=========================================
-
 #define PORT_MASTER 27900
 #define PORT_CLIENT 27901
 #define PORT_SERVER 27910

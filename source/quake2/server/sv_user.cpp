@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 
-q2edict_t* sv_player;
-
 /*
 ============================================================
 
@@ -32,465 +30,29 @@ sv_client and sv_player will be valid.
 ============================================================
 */
 
-/*
-==================
-SV_BeginDemoServer
-==================
-*/
-void SV_BeginDemoserver(void)
-{
-	char name[MAX_OSPATH];
-
-	String::Sprintf(name, sizeof(name), "demos/%s", sv.name);
-	FS_FOpenFileRead(name, &sv.q2_demofile, true);
-	if (!sv.q2_demofile)
-	{
-		Com_Error(ERR_DROP, "Couldn't open %s\n", name);
-	}
-}
-
-/*
-================
-SV_New_f
-
-Sends the first message from the server to a connected client.
-This will be sent on the initial connection and upon each server load.
-================
-*/
-void SV_New_f(void)
-{
-	const char* gamedir;
-	int playernum;
-	q2edict_t* ent;
-
-	Com_DPrintf("New() from %s\n", sv_client->name);
-
-	if (sv_client->state != CS_CONNECTED)
-	{
-		Com_Printf("New not valid -- already spawned\n");
-		return;
-	}
-
-	// demo servers just dump the file message
-	if (sv.state == SS_DEMO)
-	{
-		SV_BeginDemoserver();
-		return;
-	}
-
-	//
-	// serverdata needs to go over for all types of servers
-	// to make sure the protocol is right, and to set the gamedir
-	//
-	gamedir = Cvar_VariableString("gamedir");
-
-	// send the serverdata
-	sv_client->netchan.message.WriteByte(q2svc_serverdata);
-	sv_client->netchan.message.WriteLong(PROTOCOL_VERSION);
-	sv_client->netchan.message.WriteLong(svs.spawncount);
-	sv_client->netchan.message.WriteByte(sv.q2_attractloop);
-	sv_client->netchan.message.WriteString2(gamedir);
-
-	if (sv.state == SS_CINEMATIC || sv.state == SS_PIC)
-	{
-		playernum = -1;
-	}
-	else
-	{
-		playernum = sv_client - svs.clients;
-	}
-	sv_client->netchan.message.WriteShort(playernum);
-
-	// send full levelname
-	sv_client->netchan.message.WriteString2(sv.q2_configstrings[Q2CS_NAME]);
-
-	//
-	// game server
-	//
-	if (sv.state == SS_GAME)
-	{
-		// set up the entity for the client
-		ent = Q2_EDICT_NUM(playernum + 1);
-		ent->s.number = playernum + 1;
-		sv_client->q2_edict = ent;
-		Com_Memset(&sv_client->q2_lastUsercmd, 0, sizeof(sv_client->q2_lastUsercmd));
-
-		// begin fetching configstrings
-		sv_client->netchan.message.WriteByte(q2svc_stufftext);
-		sv_client->netchan.message.WriteString2(va("cmd configstrings %i 0\n",svs.spawncount));
-	}
-
-}
-
-/*
-==================
-SV_Configstrings_f
-==================
-*/
-void SV_Configstrings_f(void)
-{
-	int start;
-
-	Com_DPrintf("Configstrings() from %s\n", sv_client->name);
-
-	if (sv_client->state != CS_CONNECTED)
-	{
-		Com_Printf("configstrings not valid -- already spawned\n");
-		return;
-	}
-
-	// handle the case of a level changing while a client was connecting
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		Com_Printf("SV_Configstrings_f from different level\n");
-		SV_New_f();
-		return;
-	}
-
-	start = String::Atoi(Cmd_Argv(2));
-
-	// write a packet full of data
-
-	while (sv_client->netchan.message.cursize < MAX_MSGLEN_Q2 / 2 &&
-		   start < MAX_CONFIGSTRINGS_Q2)
-	{
-		if (sv.q2_configstrings[start][0])
-		{
-			sv_client->netchan.message.WriteByte(q2svc_configstring);
-			sv_client->netchan.message.WriteShort(start);
-			sv_client->netchan.message.WriteString2(sv.q2_configstrings[start]);
-		}
-		start++;
-	}
-
-	// send next command
-
-	if (start == MAX_CONFIGSTRINGS_Q2)
-	{
-		sv_client->netchan.message.WriteByte(q2svc_stufftext);
-		sv_client->netchan.message.WriteString2(va("cmd baselines %i 0\n",svs.spawncount));
-	}
-	else
-	{
-		sv_client->netchan.message.WriteByte(q2svc_stufftext);
-		sv_client->netchan.message.WriteString2(va("cmd configstrings %i %i\n",svs.spawncount, start));
-	}
-}
-
-/*
-==================
-SV_Baselines_f
-==================
-*/
-void SV_Baselines_f(void)
-{
-	int start;
-	q2entity_state_t nullstate;
-	q2entity_state_t* base;
-
-	Com_DPrintf("Baselines() from %s\n", sv_client->name);
-
-	if (sv_client->state != CS_CONNECTED)
-	{
-		Com_Printf("baselines not valid -- already spawned\n");
-		return;
-	}
-
-	// handle the case of a level changing while a client was connecting
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		Com_Printf("SV_Baselines_f from different level\n");
-		SV_New_f();
-		return;
-	}
-
-	start = String::Atoi(Cmd_Argv(2));
-
-	Com_Memset(&nullstate, 0, sizeof(nullstate));
-
-	// write a packet full of data
-
-	while (sv_client->netchan.message.cursize <  MAX_MSGLEN_Q2 / 2 &&
-		   start < MAX_EDICTS_Q2)
-	{
-		base = &sv.q2_baselines[start];
-		if (base->modelindex || base->sound || base->effects)
-		{
-			sv_client->netchan.message.WriteByte(q2svc_spawnbaseline);
-			MSGQ2_WriteDeltaEntity(&nullstate, base, &sv_client->netchan.message, true, true);
-		}
-		start++;
-	}
-
-	// send next command
-
-	if (start == MAX_EDICTS_Q2)
-	{
-		sv_client->netchan.message.WriteByte(q2svc_stufftext);
-		sv_client->netchan.message.WriteString2(va("precache %i\n", svs.spawncount));
-	}
-	else
-	{
-		sv_client->netchan.message.WriteByte(q2svc_stufftext);
-		sv_client->netchan.message.WriteString2(va("cmd baselines %i %i\n",svs.spawncount, start));
-	}
-}
-
-/*
-==================
-SV_Begin_f
-==================
-*/
-void SV_Begin_f(void)
-{
-	Com_DPrintf("Begin() from %s\n", sv_client->name);
-
-	// handle the case of a level changing while a client was connecting
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		Com_Printf("SV_Begin_f from different level\n");
-		SV_New_f();
-		return;
-	}
-
-	sv_client->state = CS_ACTIVE;
-
-	// call the game begin function
-	ge->ClientBegin(sv_player);
-
-	Cbuf_InsertFromDefer();
-}
-
-//=============================================================================
-
-/*
-==================
-SV_NextDownload_f
-==================
-*/
-void SV_NextDownload_f(void)
-{
-	int r;
-	int percent;
-	int size;
-
-	if (!sv_client->q2_downloadData)
-	{
-		return;
-	}
-
-	r = sv_client->downloadSize - sv_client->downloadCount;
-	if (r > 1024)
-	{
-		r = 1024;
-	}
-
-	sv_client->netchan.message.WriteByte(q2svc_download);
-	sv_client->netchan.message.WriteShort(r);
-
-	sv_client->downloadCount += r;
-	size = sv_client->downloadSize;
-	if (!size)
-	{
-		size = 1;
-	}
-	percent = sv_client->downloadCount * 100 / size;
-	sv_client->netchan.message.WriteByte(percent);
-	sv_client->netchan.message.WriteData(
-		sv_client->q2_downloadData + sv_client->downloadCount - r, r);
-
-	if (sv_client->downloadCount != sv_client->downloadSize)
-	{
-		return;
-	}
-
-	FS_FreeFile(sv_client->q2_downloadData);
-	sv_client->q2_downloadData = NULL;
-}
-
-/*
-==================
-SV_BeginDownload_f
-==================
-*/
-void SV_BeginDownload_f(void)
-{
-	char* name;
-	extern Cvar* allow_download;
-	extern Cvar* allow_download_players;
-	extern Cvar* allow_download_models;
-	extern Cvar* allow_download_sounds;
-	extern Cvar* allow_download_maps;
-	int offset = 0;
-
-	name = Cmd_Argv(1);
-
-	if (Cmd_Argc() > 2)
-	{
-		offset = String::Atoi(Cmd_Argv(2));	// downloaded offset
-
-	}
-	// hacked by zoid to allow more conrol over download
-	// first off, no .. or global allow check
-	if (strstr(name, "..") || !allow_download->value
-		// leading dot is no good
-		|| *name == '.'
-		// leading slash bad as well, must be in subdir
-		|| *name == '/'
-		// next up, skin check
-		|| (String::NCmp(name, "players/", 6) == 0 && !allow_download_players->value)
-		// now models
-		|| (String::NCmp(name, "models/", 6) == 0 && !allow_download_models->value)
-		// now sounds
-		|| (String::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
-		// now maps (note special case for maps, must not be in pak)
-		|| (String::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
-		// MUST be in a subdirectory
-		|| !strstr(name, "/"))
-	{	// don't allow anything with .. path
-		sv_client->netchan.message.WriteByte(q2svc_download);
-		sv_client->netchan.message.WriteShort(-1);
-		sv_client->netchan.message.WriteByte(0);
-		return;
-	}
-
-
-	if (sv_client->q2_downloadData)
-	{
-		FS_FreeFile(sv_client->q2_downloadData);
-	}
-
-	sv_client->downloadSize = FS_ReadFile(name, (void**)&sv_client->q2_downloadData);
-	sv_client->downloadCount = offset;
-
-	if (offset > sv_client->downloadSize)
-	{
-		sv_client->downloadCount = sv_client->downloadSize;
-	}
-
-	if (!sv_client->q2_downloadData
-		// special check for maps, if it came from a pak file, don't allow
-		// download  ZOID
-		|| (String::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
-	{
-		Com_DPrintf("Couldn't download %s to %s\n", name, sv_client->name);
-		if (sv_client->q2_downloadData)
-		{
-			FS_FreeFile(sv_client->q2_downloadData);
-			sv_client->q2_downloadData = NULL;
-		}
-
-		sv_client->netchan.message.WriteByte(q2svc_download);
-		sv_client->netchan.message.WriteShort(-1);
-		sv_client->netchan.message.WriteByte(0);
-		return;
-	}
-
-	SV_NextDownload_f();
-	Com_DPrintf("Downloading %s to %s\n", name, sv_client->name);
-}
-
-
-
-//============================================================================
-
-
-/*
-=================
-SV_Disconnect_f
-
-The client is going to disconnect, so remove the connection immediately
-=================
-*/
-void SV_Disconnect_f(void)
-{
-//	SV_EndRedirect ();
-	SV_DropClient(sv_client);
-}
-
-
-/*
-==================
-SV_ShowServerinfo_f
-
-Dumps the serverinfo info string
-==================
-*/
-void SV_ShowServerinfo_f(void)
-{
-	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
-			MAX_INFO_VALUE_Q2, true, false));
-}
-
-
-void SV_Nextserver(void)
-{
-	const char* v;
-
-	//ZOID, SS_PIC can be nextserver'd in coop mode
-	if (sv.state == SS_GAME || (sv.state == SS_PIC && !Cvar_VariableValue("coop")))
-	{
-		return;		// can't nextserver while playing a normal game
-
-	}
-	svs.spawncount++;	// make sure another doesn't sneak in
-	v = Cvar_VariableString("nextserver");
-	if (!v[0])
-	{
-		Cbuf_AddText("killserver\n");
-	}
-	else
-	{
-		Cbuf_AddText(const_cast<char*>(v));
-		Cbuf_AddText("\n");
-	}
-	Cvar_SetLatched("nextserver","");
-}
-
-/*
-==================
-SV_Nextserver_f
-
-A cinematic has completed or been aborted by a client, so move
-to the next server,
-==================
-*/
-void SV_Nextserver_f(void)
-{
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		Com_DPrintf("Nextserver() from wrong level, from %s\n", sv_client->name);
-		return;		// leftover from last server
-	}
-
-	Com_DPrintf("Nextserver() from %s\n", sv_client->name);
-
-	SV_Nextserver();
-}
-
 typedef struct
 {
 	const char* name;
-	void (* func)(void);
+	void (* func)(client_t* client);
 } ucmd_t;
 
 ucmd_t ucmds[] =
 {
 	// auto issued
-	{"new", SV_New_f},
-	{"configstrings", SV_Configstrings_f},
-	{"baselines", SV_Baselines_f},
-	{"begin", SV_Begin_f},
+	{"new", SVQ2_New_f},
+	{"configstrings", SVQ2_Configstrings_f},
+	{"baselines", SVQ2_Baselines_f},
+	{"begin", SVQ2_Begin_f},
 
-	{"nextserver", SV_Nextserver_f},
+	{"nextserver", SVQ2_Nextserver_f},
 
-	{"disconnect", SV_Disconnect_f},
+	{"disconnect", SVQ2_Disconnect_f},
 
 	// issued by hand at client consoles
-	{"info", SV_ShowServerinfo_f},
+	{"info", SVQ2_ShowServerinfo_f},
 
-	{"download", SV_BeginDownload_f},
-	{"nextdl", SV_NextDownload_f},
+	{"download", SVQ2_BeginDownload_f},
+	{"nextdl", SVQ2_NextDownload_f},
 
 	{NULL, NULL}
 };
@@ -505,23 +67,18 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	ucmd_t* u;
 
 	Cmd_TokenizeString(s, true);
-	sv_player = sv_client->q2_edict;
-
-//	SV_BeginRedirect (RD_CLIENT);
 
 	for (u = ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
-			u->func();
+			u->func(sv_client);
 			break;
 		}
 
 	if (!u->name && sv.state == SS_GAME)
 	{
-		ge->ClientCommand(sv_player);
+		ge->ClientCommand(sv_client->q2_edict);
 	}
-
-//	SV_EndRedirect ();
 }
 
 /*
@@ -532,25 +89,104 @@ USER CMD EXECUTION
 ===========================================================================
 */
 
-
-
-void SV_ClientThink(client_t* cl, q2usercmd_t* cmd)
-
+bool SVQ2_ParseMove(client_t* cl, QMsg& net_message, bool& move_issued)
 {
-	cl->q2_commandMsec -= cmd->msec;
-
-	if (cl->q2_commandMsec < 0 && sv_enforcetime->value)
+	if (move_issued)
 	{
-		Com_DPrintf("commandMsec underflow from %s\n", cl->name);
-		return;
+		// someone is trying to cheat...
+		return false;
+	}
+	move_issued = true;
+
+	int checksumIndex = net_message.readcount;
+	int checksum = net_message.ReadByte();
+	int lastframe = net_message.ReadLong();
+
+	if (lastframe != cl->q2_lastframe)
+	{
+		cl->q2_lastframe = lastframe;
+		if (cl->q2_lastframe > 0)
+		{
+			cl->q2_frame_latency[cl->q2_lastframe & (LATENCY_COUNTS - 1)] =
+				svs.q2_realtime - cl->q2_frames[cl->q2_lastframe & UPDATE_MASK_Q2].senttime;
+		}
 	}
 
-	ge->ClientThink(cl->q2_edict, cmd);
+	q2usercmd_t nullcmd;
+	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+	q2usercmd_t oldest, oldcmd, newcmd;
+	MSGQ2_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
+	MSGQ2_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
+	MSGQ2_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
+
+	if (cl->state != CS_ACTIVE)
+	{
+		cl->q2_lastframe = -1;
+		return true;
+	}
+
+	// if the checksum fails, ignore the rest of the packet
+	int calculatedChecksum = COM_BlockSequenceCRCByte(
+		net_message._data + checksumIndex + 1,
+		net_message.readcount - checksumIndex - 1,
+		cl->netchan.incomingSequence);
+
+	if (calculatedChecksum != checksum)
+	{
+		Com_DPrintf("Failed command checksum for %s (%d != %d)/%d\n",
+			cl->name, calculatedChecksum, checksum,
+			cl->netchan.incomingSequence);
+		return false;
+	}
+
+	if (!sv_paused->value)
+	{
+		int net_drop = cl->netchan.dropped;
+		if (net_drop < 20)
+		{
+			while (net_drop > 2)
+			{
+				SVQ2_ClientThink(cl, &cl->q2_lastUsercmd);
+
+				net_drop--;
+			}
+			if (net_drop > 1)
+			{
+				SVQ2_ClientThink(cl, &oldest);
+			}
+
+			if (net_drop > 0)
+			{
+				SVQ2_ClientThink(cl, &oldcmd);
+			}
+
+		}
+		SVQ2_ClientThink(cl, &newcmd);
+	}
+
+	cl->q2_lastUsercmd = newcmd;
+	return true;
 }
 
+bool SVQ2_ParseStringCommand(client_t* cl, QMsg& net_message, int& stringCmdCount)
+{
+	enum { MAX_STRINGCMDS = 8 };
 
+	const char* s = net_message.ReadString2();
 
-#define MAX_STRINGCMDS  8
+	// malicious users may try using too many string commands
+	if (++stringCmdCount < MAX_STRINGCMDS)
+	{
+		SV_ExecuteClientCommand(sv_client, s, true, false);
+	}
+
+	if (cl->state == CS_ZOMBIE)
+	{
+		return false;	// disconnect command
+	}
+	return true;
+}
+
 /*
 ===================
 SV_ExecuteClientMessage
@@ -560,35 +196,22 @@ The current net_message is parsed for the given client
 */
 void SV_ExecuteClientMessage(client_t* cl)
 {
-	int c;
-	char* s;
-
-	q2usercmd_t nullcmd;
-	q2usercmd_t oldest, oldcmd, newcmd;
-	int net_drop;
-	int stringCmdCount;
-	int checksum, calculatedChecksum;
-	int checksumIndex;
-	qboolean move_issued;
-	int lastframe;
-
 	sv_client = cl;
-	sv_player = sv_client->q2_edict;
 
 	// only allow one move command
-	move_issued = false;
-	stringCmdCount = 0;
+	bool move_issued = false;
+	int stringCmdCount = 0;
 
 	while (1)
 	{
 		if (net_message.readcount > net_message.cursize)
 		{
 			Com_Printf("SV_ReadClientMessage: badread\n");
-			SV_DropClient(cl);
+			SVQ2_DropClient(cl);
 			return;
 		}
 
-		c = net_message.ReadByte();
+		int c = net_message.ReadByte();
 		if (c == -1)
 		{
 			break;
@@ -598,106 +221,23 @@ void SV_ExecuteClientMessage(client_t* cl)
 		{
 		default:
 			Com_Printf("SV_ReadClientMessage: unknown command char\n");
-			SV_DropClient(cl);
+			SVQ2_DropClient(cl);
 			return;
-
 		case q2clc_nop:
 			break;
-
 		case q2clc_userinfo:
-			String::NCpy(cl->userinfo, net_message.ReadString2(), MAX_INFO_STRING_Q2 - 1);
-			SV_UserinfoChanged(cl);
+			SVQ2_ParseUserInfo(cl, net_message);
 			break;
-
 		case q2clc_move:
-			if (move_issued)
+			if (!SVQ2_ParseMove(cl, net_message, move_issued))
 			{
-				return;		// someone is trying to cheat...
-
-			}
-			move_issued = true;
-			checksumIndex = net_message.readcount;
-			checksum = net_message.ReadByte();
-			lastframe = net_message.ReadLong();
-			if (lastframe != cl->q2_lastframe)
-			{
-				cl->q2_lastframe = lastframe;
-				if (cl->q2_lastframe > 0)
-				{
-					cl->q2_frame_latency[cl->q2_lastframe & (LATENCY_COUNTS - 1)] =
-						svs.q2_realtime - cl->q2_frames[cl->q2_lastframe & UPDATE_MASK_Q2].senttime;
-				}
-			}
-
-			Com_Memset(&nullcmd, 0, sizeof(nullcmd));
-			MSGQ2_ReadDeltaUsercmd(&net_message, &nullcmd, &oldest);
-			MSGQ2_ReadDeltaUsercmd(&net_message, &oldest, &oldcmd);
-			MSGQ2_ReadDeltaUsercmd(&net_message, &oldcmd, &newcmd);
-
-			if (cl->state != CS_ACTIVE)
-			{
-				cl->q2_lastframe = -1;
-				break;
-			}
-
-			// if the checksum fails, ignore the rest of the packet
-			calculatedChecksum = COM_BlockSequenceCRCByte(
-				net_message._data + checksumIndex + 1,
-				net_message.readcount - checksumIndex - 1,
-				cl->netchan.incomingSequence);
-
-			if (calculatedChecksum != checksum)
-			{
-				Com_DPrintf("Failed command checksum for %s (%d != %d)/%d\n",
-					cl->name, calculatedChecksum, checksum,
-					cl->netchan.incomingSequence);
 				return;
 			}
-
-			if (!sv_paused->value)
-			{
-				net_drop = cl->netchan.dropped;
-				if (net_drop < 20)
-				{
-
-//if (net_drop > 2)
-
-//	Com_Printf ("drop %i\n", net_drop);
-					while (net_drop > 2)
-					{
-						SV_ClientThink(cl, &cl->q2_lastUsercmd);
-
-						net_drop--;
-					}
-					if (net_drop > 1)
-					{
-						SV_ClientThink(cl, &oldest);
-					}
-
-					if (net_drop > 0)
-					{
-						SV_ClientThink(cl, &oldcmd);
-					}
-
-				}
-				SV_ClientThink(cl, &newcmd);
-			}
-
-			cl->q2_lastUsercmd = newcmd;
 			break;
-
 		case q2clc_stringcmd:
-			s = const_cast<char*>(net_message.ReadString2());
-
-			// malicious users may try using too many string commands
-			if (++stringCmdCount < MAX_STRINGCMDS)
+			if (!SVQ2_ParseStringCommand(cl, net_message, stringCmdCount))
 			{
-				SV_ExecuteClientCommand(sv_client, s, true, false);
-			}
-
-			if (cl->state == CS_ZOMBIE)
-			{
-				return;	// disconnect command
+				return;
 			}
 			break;
 		}

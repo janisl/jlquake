@@ -27,18 +27,10 @@ client_t* sv_client;			// current client
 Cvar* sv_paused;
 Cvar* sv_timedemo;
 
-Cvar* sv_enforcetime;
-
 Cvar* timeout;					// seconds without any message
 Cvar* zombietime;				// seconds to sink messages after disconnect
 
 Cvar* rcon_password;			// password for remote server commands
-
-Cvar* allow_download;
-Cvar* allow_download_players;
-Cvar* allow_download_models;
-Cvar* allow_download_sounds;
-Cvar* allow_download_maps;
 
 Cvar* sv_airaccelerate;
 
@@ -52,42 +44,6 @@ Cvar* public_server;			// should heartbeats be sent
 Cvar* sv_reconnect_limit;		// minimum seconds between connect messages
 
 void Master_Shutdown(void);
-
-
-//============================================================================
-
-
-/*
-=====================
-SV_DropClient
-
-Called when the player is totally leaving the server, either willingly
-or unwillingly.  This is NOT called if the entire server is quiting
-or crashing.
-=====================
-*/
-void SV_DropClient(client_t* drop)
-{
-	// add the disconnect
-	drop->netchan.message.WriteByte(q2svc_disconnect);
-
-	if (drop->state == CS_ACTIVE)
-	{
-		// call the prog function for removing a client
-		// this will remove the body, among other things
-		ge->ClientDisconnect(drop->q2_edict);
-	}
-
-	if (drop->q2_downloadData)
-	{
-		FS_FreeFile(drop->q2_downloadData);
-		drop->q2_downloadData = NULL;
-	}
-
-	drop->state = CS_ZOMBIE;		// become free in a few seconds
-	drop->name[0] = 0;
-}
-
 
 
 /*
@@ -188,7 +144,7 @@ void SVC_Info(void)
 	}
 	version = String::Atoi(Cmd_Argv(1));
 
-	if (version != PROTOCOL_VERSION)
+	if (version != Q2PROTOCOL_VERSION)
 	{
 		String::Sprintf(string, sizeof(string), "%s: wrong version\n", hostname->string, sizeof(string));
 	}
@@ -292,7 +248,7 @@ void SVC_DirectConnect(void)
 	Com_DPrintf("SVC_DirectConnect ()\n");
 
 	version = String::Atoi(Cmd_Argv(1));
-	if (version != PROTOCOL_VERSION)
+	if (version != Q2PROTOCOL_VERSION)
 	{
 		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %4.2f.\n", VERSION);
 		Com_DPrintf("    rejected connect from version %i\n", version);
@@ -414,7 +370,7 @@ gotnewcl:
 
 	// parse some info from the info strings
 	String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_Q2 - 1);
-	SV_UserinfoChanged(newcl);
+	SVQ2_UserinfoChanged(newcl);
 
 	// send the connect packet to the client
 	Netchan_OutOfBandPrint(NS_SERVER, adr, "client_connect");
@@ -751,7 +707,7 @@ void SV_CheckTimeouts(void)
 			cl->q2_lastmessage < droppoint)
 		{
 			SVQ2_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
-			SV_DropClient(cl);
+			SVQ2_DropClient(cl);
 			cl->state = CS_FREE;	// don't bother with zombie state
 		}
 	}
@@ -975,61 +931,6 @@ void Master_Shutdown(void)
 
 //============================================================================
 
-
-/*
-=================
-SV_UserinfoChanged
-
-Pull specific info from a newly changed userinfo string
-into a more C freindly form.
-=================
-*/
-void SV_UserinfoChanged(client_t* cl)
-{
-	const char* val;
-	int i;
-
-	// call prog code to allow overrides
-	ge->ClientUserinfoChanged(cl->q2_edict, cl->userinfo);
-
-	// name for C code
-	String::NCpy(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name) - 1);
-	// mask off high bit
-	for (i = 0; i < (int)sizeof(cl->name); i++)
-		cl->name[i] &= 127;
-
-	// rate command
-	val = Info_ValueForKey(cl->userinfo, "rate");
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		cl->rate = i;
-		if (cl->rate < 100)
-		{
-			cl->rate = 100;
-		}
-		if (cl->rate > 15000)
-		{
-			cl->rate = 15000;
-		}
-	}
-	else
-	{
-		cl->rate = 5000;
-	}
-
-	// msg command
-	val = Info_ValueForKey(cl->userinfo, "msg");
-	if (String::Length(val))
-	{
-		cl->messagelevel = String::Atoi(val);
-	}
-
-}
-
-
-//============================================================================
-
 /*
 ===============
 SV_Init
@@ -1049,7 +950,7 @@ void SV_Init(void)
 	Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
-	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_INIT);;
+	Cvar_Get("protocol", va("%i", Q2PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_INIT);;
 	sv_maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
 	hostname = Cvar_Get("hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
 	timeout = Cvar_Get("timeout", "125", 0);
@@ -1057,7 +958,7 @@ void SV_Init(void)
 	sv_showclamp = Cvar_Get("showclamp", "0", 0);
 	sv_paused = Cvar_Get("paused", "0", 0);
 	sv_timedemo = Cvar_Get("timedemo", "0", 0);
-	sv_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);
+	svq2_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);
 	allow_download = Cvar_Get("allow_download", "0", CVAR_ARCHIVE);
 	allow_download_players  = Cvar_Get("allow_download_players", "0", CVAR_ARCHIVE);
 	allow_download_models = Cvar_Get("allow_download_models", "1", CVAR_ARCHIVE);

@@ -116,7 +116,7 @@ void SV_DemoCompleted(void)
 		FS_FCloseFile(sv.q2_demofile);
 		sv.q2_demofile = 0;
 	}
-	SV_Nextserver();
+	SVQ2_Nextserver();
 }
 
 
@@ -220,7 +220,7 @@ void SV_SendClientMessages(void)
 			c->netchan.message.Clear();
 			c->datagram.Clear();
 			SVQ2_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
-			SV_DropClient(c);
+			SVQ2_DropClient(c);
 		}
 
 		if (sv.state == SS_CINEMATIC ||

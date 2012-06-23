@@ -113,7 +113,6 @@ qboolean SV_SetPlayer(void)
 		}
 
 		sv_client = &svs.clients[idnum];
-		sv_player = sv_client->q2_edict;
 		if (!sv_client->state)
 		{
 			Com_Printf("Client %i is not active\n", idnum);
@@ -132,7 +131,6 @@ qboolean SV_SetPlayer(void)
 		if (!String::Cmp(cl->name, s))
 		{
 			sv_client = cl;
-			sv_player = sv_client->q2_edict;
 			return true;
 		}
 	}
@@ -685,7 +683,7 @@ void SV_Kick_f(void)
 	// print directly, because the dropped client won't get the
 	// SVQ2_BroadcastPrintf message
 	SVQ2_ClientPrintf(sv_client, PRINT_HIGH, "You were kicked from the game\n");
-	SV_DropClient(sv_client);
+	SVQ2_DropClient(sv_client);
 	sv_client->q2_lastmessage = svs.q2_realtime;	// min case there is a funny zombie
 }
 
@@ -906,7 +904,7 @@ void SV_ServerRecord_f(void)
 	//
 	// send the serverdata
 	buf.WriteByte(q2svc_serverdata);
-	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(Q2PROTOCOL_VERSION);
 	buf.WriteLong(svs.spawncount);
 	// 2 means server demo
 	buf.WriteByte(2);	// demos are always attract loops

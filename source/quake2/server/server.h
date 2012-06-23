@@ -47,10 +47,8 @@ extern Cvar* sv_paused;
 extern Cvar* sv_noreload;					// don't reload level state when reentering
 extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 											// development tool
-extern Cvar* sv_enforcetime;
 
 extern client_t* sv_client;
-extern q2edict_t* sv_player;
 
 //===========================================================
 
@@ -58,15 +56,13 @@ extern q2edict_t* sv_player;
 // sv_main.c
 //
 void SV_FinalMessage(const char* message, qboolean reconnect);
-void SV_DropClient(client_t* drop);
+void SVQ2_DropClient(client_t* drop);
 
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);
-void SV_UserinfoChanged(client_t* cl);
-
 
 void Master_Heartbeat(void);
 void Master_Packet(void);
@@ -99,7 +95,6 @@ void SV_SendClientMessages(void);
 //
 // sv_user.c
 //
-void SV_Nextserver(void);
 void SV_ExecuteClientMessage(client_t* cl);
 
 //

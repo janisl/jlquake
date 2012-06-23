@@ -296,12 +296,12 @@ void CL_ParseServerData(void)
 	cls.q2_serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
-	if (Com_ServerState() && PROTOCOL_VERSION == 34)
+	if (Com_ServerState() && Q2PROTOCOL_VERSION == 34)
 	{
 	}
-	else if (i != PROTOCOL_VERSION)
+	else if (i != Q2PROTOCOL_VERSION)
 	{
-		Com_Error(ERR_DROP,"Server returned version %i, not %i", i, PROTOCOL_VERSION);
+		Com_Error(ERR_DROP,"Server returned version %i, not %i", i, Q2PROTOCOL_VERSION);
 	}
 
 	cl.servercount = net_message.ReadLong();

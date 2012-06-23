@@ -66,6 +66,16 @@ int SVQ2_SoundIndex(const char* name);
 int SVQ2_ImageIndex(const char* name);
 
 //
+//	Main
+//
+extern Cvar* allow_download;
+extern Cvar* allow_download_players;
+extern Cvar* allow_download_models;
+extern Cvar* allow_download_sounds;
+extern Cvar* allow_download_maps;
+extern Cvar* svq2_enforcetime;
+
+//
 //	Send
 //
 void SVQ2_ClientPrintf(client_t* cl, int level, const char* fmt, ...) id_attribute((format(printf, 3, 4)));
@@ -74,6 +84,23 @@ void SVQ2_Multicast(const vec3_t origin, q2multicast_t to);
 void SVQ2_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 void SVQ2_StartSound(const vec3_t origin, q2edict_t* entity, int channel,
 	int soundindex, float volume, float attenuation, float timeofs);
+
+//
+//	User
+//
+void SVQ2_New_f(client_t* client);
+void SVQ2_Configstrings_f(client_t* client);
+void SVQ2_Baselines_f(client_t* client);
+void SVQ2_Begin_f(client_t* client);
+void SVQ2_NextDownload_f(client_t* client);
+void SVQ2_BeginDownload_f(client_t* client);
+void SVQ2_Disconnect_f(client_t* client);
+void SVQ2_ShowServerinfo_f(client_t* client);
+void SVQ2_Nextserver();
+void SVQ2_Nextserver_f(client_t* client);
+void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd);
+void SVQ2_UserinfoChanged(client_t* cl);
+void SVQ2_ParseUserInfo(client_t* cl, QMsg& message);
 
 //
 //	World

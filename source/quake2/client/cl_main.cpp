@@ -189,7 +189,7 @@ void CL_Record_f(void)
 
 	// send the serverdata
 	buf.WriteByte(q2svc_serverdata);
-	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(Q2PROTOCOL_VERSION);
 	buf.WriteLong(0x10000 + cl.servercount);
 	buf.WriteByte(1);	// demos are always attract loops
 	buf.WriteString2(cl.q2_gamedir);
@@ -420,7 +420,7 @@ void CL_SendConnectPacket(void)
 	cvar_modifiedFlags &= ~CVAR_USERINFO;
 
 	Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
-		PROTOCOL_VERSION, port, cls.challenge,
+		Q2PROTOCOL_VERSION, port, cls.challenge,
 		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
 			MAX_INFO_VALUE_Q2, true, false));
 }
@@ -819,7 +819,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
 	}
 
 	// send a packet to each address book entry
@@ -838,7 +838,7 @@ void CL_PingServers_f(void)
 			Com_Printf("Bad address: %s\n", adrstring);
 			continue;
 		}
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
+		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
 	}
 }
 

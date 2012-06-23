@@ -41,7 +41,9 @@ add_library(server STATIC
 	quake2/entities.cpp
 	quake2/game.cpp
 	quake2/init.cpp
+	quake2/main.cpp
 	quake2/send.cpp
+	quake2/user.cpp
 	quake2/world.cpp
 	quake3/game.cpp
 	quake3/Quake3Entity.cpp

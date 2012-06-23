@@ -586,6 +586,8 @@ struct q2usercmd_t
 // the svc_strings[] array in cl_parse.c should mirror this
 //==================
 
+#define Q2PROTOCOL_VERSION    34
+
 //
 // server to client
 //
