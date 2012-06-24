@@ -21,56 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "server.h"
 
 /*
-=================
-SV_CheckForSavegame
-=================
-*/
-void SV_CheckForSavegame(void)
-{
-	char name[MAX_OSPATH];
-	int i;
-
-	if (sv_noreload->value)
-	{
-		return;
-	}
-
-	if (Cvar_VariableValue("deathmatch"))
-	{
-		return;
-	}
-
-	String::Sprintf(name, sizeof(name), "save/current/%s.sav", sv.name);
-	if (!FS_FileExists(name))
-	{
-		return;		// no savegame
-
-	}
-	SV_ClearWorld();
-
-	// get configstrings and areaportals
-	SVQ2_ReadLevelFile();
-
-	if (!sv.loadgame)
-	{	// coming back to a level after being in a different
-		// level, so run it for ten seconds
-
-		// rlava2 was sending too many lightstyles, and overflowing the
-		// reliable data. temporarily changing the server state to loading
-		// prevents these from being passed down.
-		serverState_t previousState;			// PGM
-
-		previousState = sv.state;				// PGM
-		sv.state = SS_LOADING;					// PGM
-		for (i = 0; i < 100; i++)
-			ge->RunFrame();
-
-		sv.state = previousState;				// PGM
-	}
-}
-
-
-/*
 ================
 SV_SpawnServer
 
@@ -191,7 +141,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	SVQ2_CreateBaseline();
 
 	// check for a savegame
-	SV_CheckForSavegame();
+	SVQ2_CheckForSavegame();
 
 	// set serverinfo variable
 	Cvar_Get("mapname", "", CVAR_SERVERINFO | CVAR_INIT);

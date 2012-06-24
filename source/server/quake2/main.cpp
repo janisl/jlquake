@@ -25,6 +25,8 @@ Cvar* allow_download_maps;
 
 Cvar* svq2_enforcetime;
 
+Cvar* svq2_noreload;				// don't reload level state when reentering
+
 //	Builds the string that is sent as heartbeats and status replies
 const char* SVQ2_StatusString()
 {

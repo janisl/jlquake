@@ -40,7 +40,6 @@ extern netadr_t net_from;
 extern QMsg net_message;
 
 extern Cvar* sv_paused;
-extern Cvar* sv_noreload;					// don't reload level state when reentering
 extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 											// development tool
 

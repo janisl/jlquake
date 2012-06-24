@@ -93,3 +93,48 @@ void SVQ2_CreateBaseline()
 		sv.q2_baselines[entnum] = svent->s;
 	}
 }
+
+void SVQ2_CheckForSavegame()
+{
+	if (svq2_noreload->value)
+	{
+		return;
+	}
+
+	if (Cvar_VariableValue("deathmatch"))
+	{
+		return;
+	}
+
+	char name[MAX_OSPATH];
+	String::Sprintf(name, sizeof(name), "save/current/%s.sav", sv.name);
+	if (!FS_FileExists(name))
+	{
+		// no savegame
+		return;
+
+	}
+	SV_ClearWorld();
+
+	// get configstrings and areaportals
+	SVQ2_ReadLevelFile();
+
+	if (!sv.loadgame)
+	{
+		// coming back to a level after being in a different
+		// level, so run it for ten seconds
+
+		// rlava2 was sending too many lightstyles, and overflowing the
+		// reliable data. temporarily changing the server state to loading
+		// prevents these from being passed down.
+		serverState_t previousState = sv.state;
+
+		sv.state = SS_LOADING;
+		for (int i = 0; i < 100; i++)
+		{
+			ge->RunFrame();
+		}
+
+		sv.state = previousState;
+	}
+}

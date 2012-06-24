@@ -30,8 +30,6 @@ Cvar* rcon_password;			// password for remote server commands
 
 Cvar* sv_airaccelerate;
 
-Cvar* sv_noreload;				// don't reload level state when reentering
-
 Cvar* sv_showclamp;
 
 Cvar* hostname;
@@ -919,7 +917,7 @@ void SV_Init(void)
 	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", CVAR_ARCHIVE);
 	allow_download_maps   = Cvar_Get("allow_download_maps", "1", CVAR_ARCHIVE);
 
-	sv_noreload = Cvar_Get("sv_noreload", "0", 0);
+	svq2_noreload = Cvar_Get("sv_noreload", "0", 0);
 
 	sv_airaccelerate = Cvar_Get("sv_airaccelerate", "0", CVAR_LATCH);
 
