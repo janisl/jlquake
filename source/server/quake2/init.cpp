@@ -67,3 +67,29 @@ int SVQ2_ImageIndex(const char* name)
 {
 	return SVQ2_FindIndex(name, Q2CS_IMAGES, MAX_IMAGES_Q2);
 }
+
+//	Entity baselines are used to compress the update messages
+// to the clients -- only the fields that differ from the
+// baseline will be transmitted
+void SVQ2_CreateBaseline()
+{
+	for (int entnum = 1; entnum < ge->num_edicts; entnum++)
+	{
+		q2edict_t* svent = Q2_EDICT_NUM(entnum);
+		if (!svent->inuse)
+		{
+			continue;
+		}
+		if (!svent->s.modelindex && !svent->s.sound && !svent->s.effects)
+		{
+			continue;
+		}
+		svent->s.number = entnum;
+
+		//
+		// take current state as baseline
+		//
+		VectorCopy(svent->s.origin, svent->s.old_origin);
+		sv.q2_baselines[entnum] = svent->s;
+	}
+}

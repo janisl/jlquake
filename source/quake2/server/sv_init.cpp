@@ -21,42 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "server.h"
 
 /*
-================
-SV_CreateBaseline
-
-Entity baselines are used to compress the update messages
-to the clients -- only the fields that differ from the
-baseline will be transmitted
-================
-*/
-void SV_CreateBaseline(void)
-{
-	q2edict_t* svent;
-	int entnum;
-
-	for (entnum = 1; entnum < ge->num_edicts; entnum++)
-	{
-		svent = Q2_EDICT_NUM(entnum);
-		if (!svent->inuse)
-		{
-			continue;
-		}
-		if (!svent->s.modelindex && !svent->s.sound && !svent->s.effects)
-		{
-			continue;
-		}
-		svent->s.number = entnum;
-
-		//
-		// take current state as baseline
-		//
-		VectorCopy(svent->s.origin, svent->s.old_origin);
-		sv.q2_baselines[entnum] = svent->s;
-	}
-}
-
-
-/*
 =================
 SV_CheckForSavegame
 =================
@@ -224,7 +188,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	Com_SetServerState(sv.state);
 
 	// create a baseline for more efficient communications
-	SV_CreateBaseline();
+	SVQ2_CreateBaseline();
 
 	// check for a savegame
 	SV_CheckForSavegame();

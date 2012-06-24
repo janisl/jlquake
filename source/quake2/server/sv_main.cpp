@@ -55,47 +55,6 @@ CONNECTIONLESS COMMANDS
 */
 
 /*
-===============
-SV_StatusString
-
-Builds the string that is sent as heartbeats and status replies
-===============
-*/
-char* SV_StatusString(void)
-{
-	char player[1024];
-	static char status[MAX_MSGLEN_Q2 - 16];
-	int i;
-	client_t* cl;
-	int statusLength;
-	int playerLength;
-
-	String::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
-			MAX_INFO_VALUE_Q2, true, false));
-	String::Cat(status, sizeof(status), "\n");
-	statusLength = String::Length(status);
-
-	for (i = 0; i < sv_maxclients->value; i++)
-	{
-		cl = &svs.clients[i];
-		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
-		{
-			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-				cl->q2_edict->client->ps.stats[Q2STAT_FRAGS], cl->ping, cl->name);
-			playerLength = String::Length(player);
-			if (statusLength + playerLength >= (int)sizeof(status))
-			{
-				break;		// can't hold any more
-			}
-			String::Cpy(status + statusLength, player);
-			statusLength += playerLength;
-		}
-	}
-
-	return status;
-}
-
-/*
 ================
 SVC_Status
 
@@ -104,10 +63,10 @@ Responds with all the info that qplug or qspy can see
 */
 void SVC_Status(void)
 {
-	Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SV_StatusString());
+	Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SVQ2_StatusString());
 #if 0
 	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
-	Com_Printf(SV_StatusString());
+	Com_Printf(SVQ2_StatusString());
 	Com_EndRedirect();
 #endif
 }
@@ -857,7 +816,7 @@ let it know we are alive, and log information
 #define HEARTBEAT_SECONDS   300
 void Master_Heartbeat(void)
 {
-	char* string;
+	const char* string;
 	int i;
 
 
@@ -885,7 +844,7 @@ void Master_Heartbeat(void)
 	svs.q2_last_heartbeat = svs.q2_realtime;
 
 	// send the same string that we would give for a status OOB command
-	string = SV_StatusString();
+	string = SVQ2_StatusString();
 
 	// send to group master
 	for (i = 0; i < MAX_MASTERS; i++)

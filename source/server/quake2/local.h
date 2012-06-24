@@ -64,6 +64,7 @@ void* SVQ2_GetGameAPI(void* parms);
 int SVQ2_ModelIndex(const char* name);
 int SVQ2_SoundIndex(const char* name);
 int SVQ2_ImageIndex(const char* name);
+void SVQ2_CreateBaseline();
 
 //
 //	Main
@@ -74,6 +75,8 @@ extern Cvar* allow_download_models;
 extern Cvar* allow_download_sounds;
 extern Cvar* allow_download_maps;
 extern Cvar* svq2_enforcetime;
+
+const char* SVQ2_StatusString();
 
 //
 //	Send
