@@ -57,10 +57,6 @@ static void SVQ2_BeginDemoserver()
 // This will be sent on the initial connection and upon each server load.
 void SVQ2_New_f(client_t* client)
 {
-	const char* gamedir;
-	int playernum;
-	q2edict_t* ent;
-
 	common->DPrintf("New() from %s\n", client->name);
 
 	if (client->state != CS_CONNECTED)
@@ -80,7 +76,7 @@ void SVQ2_New_f(client_t* client)
 	// serverdata needs to go over for all types of servers
 	// to make sure the protocol is right, and to set the gamedir
 	//
-	gamedir = Cvar_VariableString("gamedir");
+	const char* gamedir = Cvar_VariableString("gamedir");
 
 	// send the serverdata
 	client->netchan.message.WriteByte(q2svc_serverdata);
@@ -89,6 +85,7 @@ void SVQ2_New_f(client_t* client)
 	client->netchan.message.WriteByte(sv.q2_attractloop);
 	client->netchan.message.WriteString2(gamedir);
 
+	int playernum;
 	if (sv.state == SS_CINEMATIC || sv.state == SS_PIC)
 	{
 		playernum = -1;
@@ -108,7 +105,7 @@ void SVQ2_New_f(client_t* client)
 	if (sv.state == SS_GAME)
 	{
 		// set up the entity for the client
-		ent = Q2_EDICT_NUM(playernum + 1);
+		q2edict_t* ent = Q2_EDICT_NUM(playernum + 1);
 		ent->s.number = playernum + 1;
 		client->q2_edict = ent;
 		Com_Memset(&client->q2_lastUsercmd, 0, sizeof(client->q2_lastUsercmd));
@@ -122,8 +119,6 @@ void SVQ2_New_f(client_t* client)
 
 void SVQ2_Configstrings_f(client_t* client)
 {
-	int start;
-
 	common->DPrintf("Configstrings() from %s\n", client->name);
 
 	if (client->state != CS_CONNECTED)
@@ -140,7 +135,7 @@ void SVQ2_Configstrings_f(client_t* client)
 		return;
 	}
 
-	start = String::Atoi(Cmd_Argv(2));
+	int start = String::Atoi(Cmd_Argv(2));
 
 	// write a packet full of data
 
@@ -172,10 +167,6 @@ void SVQ2_Configstrings_f(client_t* client)
 
 void SVQ2_Baselines_f(client_t* client)
 {
-	int start;
-	q2entity_state_t nullstate;
-	q2entity_state_t* base;
-
 	common->DPrintf("Baselines() from %s\n", client->name);
 
 	if (client->state != CS_CONNECTED)
@@ -192,8 +183,9 @@ void SVQ2_Baselines_f(client_t* client)
 		return;
 	}
 
-	start = String::Atoi(Cmd_Argv(2));
+	int start = String::Atoi(Cmd_Argv(2));
 
+	q2entity_state_t nullstate;
 	Com_Memset(&nullstate, 0, sizeof(nullstate));
 
 	// write a packet full of data
@@ -201,7 +193,7 @@ void SVQ2_Baselines_f(client_t* client)
 	while (client->netchan.message.cursize <  MAX_MSGLEN_Q2 / 2 &&
 		   start < MAX_EDICTS_Q2)
 	{
-		base = &sv.q2_baselines[start];
+		q2entity_state_t* base = &sv.q2_baselines[start];
 		if (base->modelindex || base->sound || base->effects)
 		{
 			client->netchan.message.WriteByte(q2svc_spawnbaseline);
@@ -246,16 +238,12 @@ void SVQ2_Begin_f(client_t* client)
 
 void SVQ2_NextDownload_f(client_t* client)
 {
-	int r;
-	int percent;
-	int size;
-
 	if (!client->q2_downloadData)
 	{
 		return;
 	}
 
-	r = client->downloadSize - client->downloadCount;
+	int r = client->downloadSize - client->downloadCount;
 	if (r > 1024)
 	{
 		r = 1024;
@@ -265,12 +253,12 @@ void SVQ2_NextDownload_f(client_t* client)
 	client->netchan.message.WriteShort(r);
 
 	client->downloadCount += r;
-	size = client->downloadSize;
+	int size = client->downloadSize;
 	if (!size)
 	{
 		size = 1;
 	}
-	percent = client->downloadCount * 100 / size;
+	int percent = client->downloadCount * 100 / size;
 	client->netchan.message.WriteByte(percent);
 	client->netchan.message.WriteData(
 		client->q2_downloadData + client->downloadCount - r, r);
@@ -286,11 +274,9 @@ void SVQ2_NextDownload_f(client_t* client)
 
 void SVQ2_BeginDownload_f(client_t* client)
 {
-	char* name;
+	const char* name = Cmd_Argv(1);
+
 	int offset = 0;
-
-	name = Cmd_Argv(1);
-
 	if (Cmd_Argc() > 2)
 	{
 		offset = String::Atoi(Cmd_Argv(2));	// downloaded offset
@@ -371,8 +357,6 @@ void SVQ2_ShowServerinfo_f(client_t* client)
 
 void SVQ2_Nextserver()
 {
-	const char* v;
-
 	//ZOID, SS_PIC can be nextserver'd in coop mode
 	if (sv.state == SS_GAME || (sv.state == SS_PIC && !Cvar_VariableValue("coop")))
 	{
@@ -380,7 +364,7 @@ void SVQ2_Nextserver()
 
 	}
 	svs.spawncount++;	// make sure another doesn't sneak in
-	v = Cvar_VariableString("nextserver");
+	const char* v = Cvar_VariableString("nextserver");
 	if (!v[0])
 	{
 		Cbuf_AddText("killserver\n");
@@ -425,23 +409,22 @@ void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd)
 // into a more C freindly form.
 void SVQ2_UserinfoChanged(client_t* cl)
 {
-	const char* val;
-	int i;
-
 	// call prog code to allow overrides
 	ge->ClientUserinfoChanged(cl->q2_edict, cl->userinfo);
 
 	// name for C code
 	String::NCpy(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name) - 1);
 	// mask off high bit
-	for (i = 0; i < (int)sizeof(cl->name); i++)
+	for (int i = 0; i < (int)sizeof(cl->name); i++)
+	{
 		cl->name[i] &= 127;
+	}
 
 	// rate command
-	val = Info_ValueForKey(cl->userinfo, "rate");
+	const char* val = Info_ValueForKey(cl->userinfo, "rate");
 	if (String::Length(val))
 	{
-		i = String::Atoi(val);
+		int i = String::Atoi(val);
 		cl->rate = i;
 		if (cl->rate < 100)
 		{
