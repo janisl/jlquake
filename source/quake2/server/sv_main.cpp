@@ -20,10 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "server.h"
 
-netadr_t master_adr[MAX_MASTERS];		// address of group servers
-
-client_t* sv_client;			// current client
-
 Cvar* sv_paused;
 Cvar* sv_timedemo;
 
@@ -305,7 +301,6 @@ gotnewcl:
 	// accept the new client
 	// this is the only place a client_t is ever initialized
 	*newcl = temp;
-	sv_client = newcl;
 	edictnum = (newcl - svs.clients) + 1;
 	ent = Q2_EDICT_NUM(edictnum);
 	newcl->q2_edict = ent;

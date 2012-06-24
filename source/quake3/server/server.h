@@ -32,9 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define AUTHORIZE_TIMEOUT   5000
 
-#define MAX_MASTERS 8				// max recipients for heartbeat packets
-
-
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;

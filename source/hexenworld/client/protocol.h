@@ -97,11 +97,3 @@
 // This is to mask out those items in the inventory (for inventory changes)
 #define SC1_INV 0x01fffc00
 #define SC2_INV 0x00000000
-
-//==============================================
-
-// h2svc_print messages have an id, so messages can be filtered
-#define PRINT_LOW           0
-#define PRINT_MEDIUM        1
-#define PRINT_HIGH          2
-#define PRINT_CHAT          3	// also go to chat buffer

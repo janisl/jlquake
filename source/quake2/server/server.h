@@ -30,8 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //=============================================================================
 
-#define MAX_MASTERS 8				// max recipients for heartbeat packets
-
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting
 // timing out if no valid messages are received for timeout.value seconds
@@ -41,14 +39,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern netadr_t net_from;
 extern QMsg net_message;
 
-extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
-
 extern Cvar* sv_paused;
 extern Cvar* sv_noreload;					// don't reload level state when reentering
 extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 											// development tool
-
-extern client_t* sv_client;
 
 //===========================================================
 
@@ -56,7 +50,6 @@ extern client_t* sv_client;
 // sv_main.c
 //
 void SV_FinalMessage(const char* message, qboolean reconnect);
-void SVQ2_DropClient(client_t* drop);
 
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
@@ -82,7 +75,7 @@ void SV_PrepWorldFrame(void);
 //
 // sv_send.c
 //
-typedef enum {RD_NONE, RD_CLIENT, RD_PACKET} redirect_t;
+typedef enum {RD_NONE, RD_PACKET} redirect_t;
 #define SV_OUTPUTBUF_LENGTH (MAX_MSGLEN_Q2 - 16)
 
 extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
@@ -96,12 +89,6 @@ void SV_SendClientMessages(void);
 // sv_user.c
 //
 void SV_ExecuteClientMessage(client_t* cl);
-
-//
-// sv_ccmds.c
-//
-void SV_ReadLevelFile(void);
-void SV_Status_f(void);
 
 //
 // sv_game.c

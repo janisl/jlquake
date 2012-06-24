@@ -158,7 +158,6 @@ FILESYSTEM
 
 void    FS_InitFilesystem(void);
 void    FS_SetGamedir(char* dir);
-char* FS_Gamedir(void);
 void    FS_ExecAutoexec(void);
 
 

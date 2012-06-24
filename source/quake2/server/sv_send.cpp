@@ -37,12 +37,6 @@ void SV_FlushRedirect(int sv_redirected, char* outputbuf)
 	{
 		Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
 	}
-	else if (sv_redirected == RD_CLIENT)
-	{
-		sv_client->netchan.message.WriteByte(q2svc_print);
-		sv_client->netchan.message.WriteByte(PRINT_HIGH);
-		sv_client->netchan.message.WriteString2(outputbuf);
-	}
 }
 
 /*

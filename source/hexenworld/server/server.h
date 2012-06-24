@@ -2,8 +2,6 @@
 
 #define QW_SERVER
 
-#define MAX_MASTERS 8				// max recipients for heartbeat packets
-
 // a client can leave the server in one of four ways:
 // dropping properly by quiting or disconnecting
 // timing out if no valid messages are received for timeout.value seconds
@@ -36,8 +34,6 @@
 extern func_t SpectatorConnect;
 extern func_t SpectatorThink;
 extern func_t SpectatorDisconnect;
-
-extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 extern Cvar* spawn;
 extern Cvar* skill;

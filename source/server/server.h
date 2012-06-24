@@ -31,7 +31,11 @@
 #include "global.h"
 #include "worldsector.h"
 
+#define MAX_MASTERS 8				// max recipients for heartbeat packets
+
 extern Cvar* sv_maxclients;
+
+extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 //
 // Must be provided

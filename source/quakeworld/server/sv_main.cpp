@@ -29,8 +29,6 @@ double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
 
-netadr_t master_adr[MAX_MASTERS];		// address of group servers
-
 client_t* host_client;				// current client
 
 Cvar* timeout;

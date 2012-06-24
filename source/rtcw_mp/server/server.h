@@ -39,9 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define AUTHORIZE_TIMEOUT   5000
 
-#define MAX_MASTERS 8				// max recipients for heartbeat packets
-
-
 //================
 // DHM - Nerve
 #ifdef UPDATE_SERVER

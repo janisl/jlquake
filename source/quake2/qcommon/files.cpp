@@ -30,19 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Cvar* fs_gamedirvar;
 
-
-/*
-============
-FS_Gamedir
-
-Called to find where to write a file (demos, savegames, etc)
-============
-*/
-char* FS_Gamedir(void)
-{
-	return fs_gamedir;
-}
-
 /*
 =============
 FS_ExecAutoexec

@@ -94,15 +94,6 @@
 #define IT_SIGIL3               (1 << 30)
 #define IT_SIGIL4               (1 << 31)
 
-//
-// print flags
-//
-#define PRINT_LOW           0		// pickup messages
-#define PRINT_MEDIUM        1		// death messages
-#define PRINT_HIGH          2		// critical messages
-#define PRINT_CHAT          3		// chat messages
-#define PRINT_SOUND         4		// says a sound
-
 //Dm Modes
 #define DM_CAPTURE_THE_TOKEN        1
 #define DM_HUNTER                   2

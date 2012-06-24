@@ -91,11 +91,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define IT_SIGIL2               (1 << 29)
 #define IT_SIGIL3               (1 << 30)
 #define IT_SIGIL4               (1 << 31)
-
-//
-// print flags
-//
-#define PRINT_LOW           0		// pickup messages
-#define PRINT_MEDIUM        1		// death messages
-#define PRINT_HIGH          2		// critical messages
-#define PRINT_CHAT          3		// chat messages

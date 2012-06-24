@@ -25,14 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h>
 #include <time.h>
 
-// game print flags
-#define PRINT_LOW           0		// pickup messages
-#define PRINT_MEDIUM        1		// death messages
-#define PRINT_HIGH          2		// critical messages
-#define PRINT_CHAT          3		// chat messages
-
-
-
 #define ERR_FATAL           0		// exit the entire game with a popup window
 #define ERR_DROP            1		// print to console and disconnect from game
 #define ERR_DISCONNECT      2		// don't kill server

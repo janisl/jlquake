@@ -49,7 +49,7 @@ void SV_CheckForSavegame(void)
 	SV_ClearWorld();
 
 	// get configstrings and areaportals
-	SV_ReadLevelFile();
+	SVQ2_ReadLevelFile();
 
 	if (!sv.loadgame)
 	{	// coming back to a level after being in a different

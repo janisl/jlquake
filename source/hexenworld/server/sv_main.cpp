@@ -14,7 +14,6 @@ double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
 
-netadr_t master_adr[MAX_MASTERS];		// address of group servers
 netadr_t idmaster_adr;					// for global logging
 
 client_t* host_client;				// current client

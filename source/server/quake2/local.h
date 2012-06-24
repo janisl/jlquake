@@ -23,6 +23,25 @@
 #define Q2_NUM_FOR_EDICT(e) (((byte*)(e) - (byte*)ge->edicts) / ge->edict_size)
 
 //
+//	CCmds
+//
+client_t* SVQ2_SetPlayer();
+void SVQ2_WipeSavegame(const char* savename);
+void SVQ2_CopySaveGame(const char* src, const char* dst);
+void SVQ2_WriteLevelFile();
+void SVQ2_ReadLevelFile();
+void SVQ2_WriteServerFile(bool autosave);
+void SVQ2_Kick_f();
+void SVQ2_Status_f();
+void SVQ2_ConSay_f();
+void SVQ2_Heartbeat_f();
+void SVQ2_Serverinfo_f();
+void SVQ2_DumpUser_f();
+void SVQ2_ServerRecord_f();
+void SVQ2_ServerStop_f();
+void SVQ2_ServerCommand_f();
+
+//
 //	Entities
 //
 void SVQ2_WriteFrameToClient(client_t* client, QMsg* msg);
@@ -104,6 +123,7 @@ void SVQ2_Nextserver_f(client_t* client);
 void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd);
 void SVQ2_UserinfoChanged(client_t* cl);
 void SVQ2_ParseUserInfo(client_t* cl, QMsg& message);
+void SVQ2_DropClient(client_t* drop);
 
 //
 //	World

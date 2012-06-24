@@ -3827,3 +3827,9 @@ bool FS_CL_ExtractFromPakFile(const char* fullpath, const char* gamedir, const c
 	FS_FreeFile(srcData);
 	return true;
 }
+
+//	Called to find where to write a file (demos, savegames, etc)
+const char* FS_Gamedir()
+{
+	return fs_gamedir;
+}

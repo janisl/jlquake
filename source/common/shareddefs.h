@@ -55,3 +55,11 @@
 #define QHBUTTON_JUMP   2
 
 #define MAX_NAME_LENGTH        36		// max length of a client name
+
+// game print flags
+#define PRINT_LOW           0		// pickup messages
+#define PRINT_MEDIUM        1		// death messages
+#define PRINT_HIGH          2		// critical messages
+#define PRINT_CHAT          3		// chat messages
+//	HexenWorld only
+#define PRINT_SOUND         4		// says a sound

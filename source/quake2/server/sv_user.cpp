@@ -71,13 +71,13 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	for (u = ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
-			u->func(sv_client);
+			u->func(cl);
 			break;
 		}
 
 	if (!u->name && sv.state == SS_GAME)
 	{
-		ge->ClientCommand(sv_client->q2_edict);
+		ge->ClientCommand(cl->q2_edict);
 	}
 }
 
@@ -177,7 +177,7 @@ bool SVQ2_ParseStringCommand(client_t* cl, QMsg& net_message, int& stringCmdCoun
 	// malicious users may try using too many string commands
 	if (++stringCmdCount < MAX_STRINGCMDS)
 	{
-		SV_ExecuteClientCommand(sv_client, s, true, false);
+		SV_ExecuteClientCommand(cl, s, true, false);
 	}
 
 	if (cl->state == CS_ZOMBIE)
@@ -196,8 +196,6 @@ The current net_message is parsed for the given client
 */
 void SV_ExecuteClientMessage(client_t* cl)
 {
-	sv_client = cl;
-
 	// only allow one move command
 	bool move_issued = false;
 	int stringCmdCount = 0;
