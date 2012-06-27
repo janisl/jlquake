@@ -689,15 +689,6 @@ int CL_LerpTag(orientation_t* tag,  const wmrefEntity_t* gameRefent, const char*
 	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
-static int  FloatAsInt(float f)
-{
-	int temp;
-
-	*(float*)&temp = f;
-
-	return temp;
-}
-
 /*
 ====================
 CL_CgameSystemCalls

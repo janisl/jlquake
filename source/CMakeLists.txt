@@ -6,7 +6,7 @@ set(ALL_CFLAGS ${DEBUG_CFLAGS})
 set(COMMON_CLIENTS_LIBS client common z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 set(CLIENTS_LIBS server ${COMMON_CLIENTS_LIBS})
 set(DEDCLIENTS_LIBS ${COMMON_CLIENTS_LIBS})
-set(SERVERS_LIBS common z dl server)
+set(SERVERS_LIBS server common z dl)
 
 include_directories(/usr/include/freetype2)
 

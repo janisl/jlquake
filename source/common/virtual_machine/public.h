@@ -56,3 +56,12 @@ void VM_Init();
 
 #define VMA(x)  VM_ArgPtr(args[x])
 #define VMF(x)  (*(float*)(&args[x]))
+
+inline int FloatAsInt(float f)
+{
+	int temp;
+
+	*(float*)&temp = f;
+
+	return temp;
+}

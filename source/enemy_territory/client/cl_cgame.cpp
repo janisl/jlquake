@@ -779,17 +779,6 @@ void CL_ShutdownCGame(void)
 	cgvm = NULL;
 }
 
-static int  FloatAsInt(float f)
-{
-	int temp;
-
-	*(float*)&temp = f;
-
-	return temp;
-}
-
-//static int numtraces = 0;
-
 /*
 ====================
 CL_CgameSystemCalls
