@@ -569,15 +569,15 @@ static int CL_BinaryMessageStatus(void)
 {
 	if (clc.et_binaryMessageLength == 0)
 	{
-		return MESSAGE_EMPTY;
+		return ETMESSAGE_EMPTY;
 	}
 
 	if (clc.et_binaryMessageOverflowed)
 	{
-		return MESSAGE_WAITING_OVERFLOW;
+		return ETMESSAGE_WAITING_OVERFLOW;
 	}
 
-	return MESSAGE_WAITING;
+	return ETMESSAGE_WAITING;
 }
 
 /*

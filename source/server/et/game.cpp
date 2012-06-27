@@ -89,6 +89,85 @@ bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, b
 	return VM_Call(gvm, ETBOT_CHECKATTACKATPOS, entnum, enemy, pos, ducking, allowHitWorld);
 }
 
+static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
+	etplayerState_t* clients, int sizeofGameClient)
+{
+	sv.et_gentities = gEnts;
+	sv.q3_gentitySize = sizeofGEntity_t;
+	sv.q3_num_entities = numGEntities;
+
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		SVT3_EntityNum(i)->SetGEntity(SVET_GentityNum(i));
+	}
+
+	sv.et_gameClients = clients;
+	sv.q3_gameClientSize = sizeofGameClient;
+}
+
+static bool SVET_EntityContact(const vec3_t mins, const vec3_t maxs, const etsharedEntity_t* gEnt, const int capsule)
+{
+	return SVT3_EntityContact(mins, maxs, SVET_EntityForGentity(gEnt), capsule);
+}
+
+static void SVET_SetBrushModel(etsharedEntity_t* ent, const char* name)
+{
+	SVT3_SetBrushModel(SVET_EntityForGentity(ent), SVET_SvEntityForGentity(ent), name);
+}
+
+static void SVET_AdjustAreaPortalState(etsharedEntity_t* ent, qboolean open)
+{
+	SVT3_AdjustAreaPortalState(SVET_SvEntityForGentity(ent), open);
+}
+
+static void SVET_GetUsercmd(int clientNum, etusercmd_t* cmd)
+{
+	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
+	{
+		common->Error("SVET_GetUsercmd: bad clientNum:%i", clientNum);
+	}
+	*cmd = svs.clients[clientNum].et_lastUsercmd;
+}
+
+static void SVET_SendBinaryMessage(int cno, const char* buf, int buflen)
+{
+	if (cno < 0 || cno >= sv_maxclients->integer)
+	{
+		common->Error("SVET_SendBinaryMessage: bad client %i", cno);
+		return;
+	}
+
+	if (buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET)
+	{
+		common->Error("SVET_SendBinaryMessage: bad length %i", buflen);
+		svs.clients[cno].et_binaryMessageLength = 0;
+		return;
+	}
+
+	svs.clients[cno].et_binaryMessageLength = buflen;
+	memcpy(svs.clients[cno].et_binaryMessage, buf, buflen);
+}
+
+static int SVET_BinaryMessageStatus(int cno)
+{
+	if (cno < 0 || cno >= sv_maxclients->integer)
+	{
+		return false;
+	}
+
+	if (svs.clients[cno].et_binaryMessageLength == 0)
+	{
+		return ETMESSAGE_EMPTY;
+	}
+
+	if (svs.clients[cno].et_binaryMessageOverflowed)
+	{
+		return ETMESSAGE_WAITING_OVERFLOW;
+	}
+
+	return ETMESSAGE_WAITING;
+}
+
 //	The module is making a system call
 qintptr SVET_GameSystemCalls(qintptr* args)
 {
@@ -144,6 +223,9 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETG_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
+	case ETG_LOCATE_GAME_DATA:
+		SVET_LocateGameData((etsharedEntity_t*)VMA(1), args[2], args[3], (etplayerState_t*)VMA(4), args[5]);
+		return 0;
 //------
 	case ETG_LINKENTITY:
 		SVET_LinkEntity((etsharedEntity_t*)VMA(1));
@@ -153,7 +235,10 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 		return 0;
 	case ETG_ENTITIES_IN_BOX:
 		return SVT3_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
-//------
+	case ETG_ENTITY_CONTACT:
+		return SVET_EntityContact((float*)VMA(1), (float*)VMA(2), (etsharedEntity_t*)VMA(3), false);
+	case ETG_ENTITY_CONTACTCAPSULE:
+		return SVET_EntityContact((float*)VMA(1), (float*)VMA(2), (etsharedEntity_t*)VMA(3), true);
 	case ETG_TRACE:
 		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], false);
 		return 0;
@@ -162,17 +247,31 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 		return 0;
 	case ETG_POINT_CONTENTS:
 		return SVT3_PointContents((float*)VMA(1), args[2]);
-//------
+	case ETG_SET_BRUSH_MODEL:
+		SVET_SetBrushModel((etsharedEntity_t*)VMA(1), (char*)VMA(2));
+		return 0;
 	case ETG_IN_PVS:
 		return SVT3_inPVS((float*)VMA(1), (float*)VMA(2));
 	case ETG_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
 //------
+	case ETG_GET_SERVERINFO:
+		SVT3_GetServerinfo((char*)VMA(1), args[2]);
+		return 0;
+	case ETG_ADJUST_AREA_PORTAL_STATE:
+		SVET_AdjustAreaPortalState((etsharedEntity_t*)VMA(1), args[2]);
+		return 0;
 	case ETG_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
 //------
+
+	case ETG_GET_USERCMD:
+		SVET_GetUsercmd(args[1], (etusercmd_t*)VMA(2));
+		return 0;
+	case ETG_GET_ENTITY_TOKEN:
+		return SVT3_GetEntityToken((char*)VMA(1), args[2]);
 
 	case ETG_DEBUG_POLYGON_CREATE:
 		return BotImport_DebugPolygonCreate(args[1], args[2], (vec3_t*)VMA(3));
@@ -632,7 +731,12 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETPB_STAT_REPORT:
 		return 0;
 
-//------
+	case ETG_SENDMESSAGE:
+		SVET_SendBinaryMessage(args[1], (char*)VMA(2), args[3]);
+		return 0;
+	case ETG_MESSAGESTATUS:
+		return SVET_BinaryMessageStatus(args[1]);
+
 	default:
 		common->Error("Bad game system trap: %i", (int)args[0]);
 	}

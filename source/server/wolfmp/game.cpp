@@ -89,6 +89,46 @@ bool SVWM_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, b
 	return VM_Call(gvm, WMAICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
 }
 
+static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
+	wmplayerState_t* clients, int sizeofGameClient)
+{
+	sv.wm_gentities = gEnts;
+	sv.q3_gentitySize = sizeofGEntity_t;
+	sv.q3_num_entities = numGEntities;
+
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		SVT3_EntityNum(i)->SetGEntity(SVWM_GentityNum(i));
+	}
+
+	sv.wm_gameClients = clients;
+	sv.q3_gameClientSize = sizeofGameClient;
+}
+
+static bool SVWM_EntityContact(const vec3_t mins, const vec3_t maxs, const wmsharedEntity_t* gEnt, const int capsule)
+{
+	return SVT3_EntityContact(mins, maxs, SVWM_EntityForGentity(gEnt), capsule);
+}
+
+static void SVWM_SetBrushModel(wmsharedEntity_t* ent, const char* name)
+{
+	SVT3_SetBrushModel(SVWM_EntityForGentity(ent), SVWM_SvEntityForGentity(ent), name);
+}
+
+static void SVWM_AdjustAreaPortalState(wmsharedEntity_t* ent, qboolean open)
+{
+	SVT3_AdjustAreaPortalState(SVWM_SvEntityForGentity(ent), open);
+}
+
+static void SVWM_GetUsercmd(int clientNum, wmusercmd_t* cmd)
+{
+	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
+	{
+		common->Error("SVWM_GetUsercmd: bad clientNum:%i", clientNum);
+	}
+	*cmd = svs.clients[clientNum].wm_lastUsercmd;
+}
+
 //	The module is making a system call
 qintptr SVWM_GameSystemCalls(qintptr* args)
 {
@@ -141,6 +181,9 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMG_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
+	case WMG_LOCATE_GAME_DATA:
+		SVWM_LocateGameData((wmsharedEntity_t*)VMA(1), args[2], args[3], (wmplayerState_t*)VMA(4), args[5]);
+		return 0;
 //------
 	case WMG_LINKENTITY:
 		SVWM_LinkEntity((wmsharedEntity_t*)VMA(1));
@@ -150,7 +193,10 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 		return 0;
 	case WMG_ENTITIES_IN_BOX:
 		return SVT3_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
-//------
+	case WMG_ENTITY_CONTACT:
+		return SVWM_EntityContact((float*)VMA(1), (float*)VMA(2), (wmsharedEntity_t*)VMA(3), false);
+	case WMG_ENTITY_CONTACTCAPSULE:
+		return SVWM_EntityContact((float*)VMA(1), (float*)VMA(2), (wmsharedEntity_t*)VMA(3), true);
 	case WMG_TRACE:
 		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], false);
 		return 0;
@@ -159,17 +205,31 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 		return 0;
 	case WMG_POINT_CONTENTS:
 		return SVT3_PointContents((float*)VMA(1), args[2]);
-//------
+	case WMG_SET_BRUSH_MODEL:
+		SVWM_SetBrushModel((wmsharedEntity_t*)VMA(1), (char*)VMA(2));
+		return 0;
 	case WMG_IN_PVS:
 		return SVT3_inPVS((float*)VMA(1), (float*)VMA(2));
 	case WMG_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
 //------
+	case WMG_GET_SERVERINFO:
+		SVT3_GetServerinfo((char*)VMA(1), args[2]);
+		return 0;
+	case WMG_ADJUST_AREA_PORTAL_STATE:
+		SVWM_AdjustAreaPortalState((wmsharedEntity_t*)VMA(1), args[2]);
+		return 0;
 	case WMG_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
 //------
+
+	case WMG_GET_USERCMD:
+		SVWM_GetUsercmd(args[1], (wmusercmd_t*)VMA(2));
+		return 0;
+	case WMG_GET_ENTITY_TOKEN:
+		return SVT3_GetEntityToken((char*)VMA(1), args[2]);
 
 	case WMG_DEBUG_POLYGON_CREATE:
 		return BotImport_DebugPolygonCreate(args[1], args[2], (vec3_t*)VMA(3));

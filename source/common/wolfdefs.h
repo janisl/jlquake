@@ -866,3 +866,10 @@ enum
 #define ETCS_WOLFINFO       21		// NERVE - SMF
 
 struct animModelInfo_t;
+
+enum
+{
+	ETMESSAGE_EMPTY = 0,
+	ETMESSAGE_WAITING,		// rate/packet limited
+	ETMESSAGE_WAITING_OVERFLOW,	// packet too large with message
+};

@@ -109,3 +109,78 @@ bool SVT3_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, b
 	}
 	return false;
 }
+
+bool SVT3_EntityContact(const vec3_t mins, const vec3_t maxs, const idEntity3* ent, int capsule)
+{
+	// check for exact collision
+	const float* origin = ent->GetCurrentOrigin();
+	const float* angles = ent->GetCurrentAngles();
+
+	clipHandle_t ch = SVT3_ClipHandleForEntity(ent);
+	q3trace_t trace;
+	CM_TransformedBoxTraceQ3(&trace, vec3_origin, vec3_origin, mins, maxs,
+		ch, -1, origin, angles, capsule);
+
+	return trace.startsolid;
+}
+
+//	sets mins and maxs for inline bmodels
+void SVT3_SetBrushModel(idEntity3* ent, q3svEntity_t* svEnt, const char* name)
+{
+	if (!name)
+	{
+		common->Error("SV_SetBrushModel: NULL");
+	}
+
+	if (name[0] != '*')
+	{
+		common->Error("SV_SetBrushModel: %s isn't a brush model", name);
+	}
+
+
+	ent->SetModelIndex(String::Atoi(name + 1));
+
+	clipHandle_t h = CM_InlineModel(ent->GetModelIndex());
+	vec3_t mins, maxs;
+	CM_ModelBounds(h, mins, maxs);
+	ent->SetMins(mins);
+	ent->SetMaxs(maxs);
+	ent->SetBModel(true);
+
+	// we don't know exactly what is in the brushes
+	ent->SetContents(-1);
+
+	SVT3_LinkEntity(ent, svEnt);
+}
+
+void SVT3_GetServerinfo(char* buffer, int bufferSize)
+{
+	if (bufferSize < 1)
+	{
+		common->Error("SVT3_GetServerinfo: bufferSize == %i", bufferSize);
+	}
+	String::NCpyZ(buffer, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3), bufferSize);
+}
+
+void SVT3_AdjustAreaPortalState(q3svEntity_t* svEnt, bool open)
+{
+	if (svEnt->areanum2 == -1)
+	{
+		return;
+	}
+	CM_AdjustAreaPortalState(svEnt->areanum, svEnt->areanum2, open);
+}
+
+bool SVT3_GetEntityToken(char* buffer, int length)
+{
+	const char* s = String::Parse3(&sv.q3_entityParsePoint);
+	String::NCpyZ(buffer, s, length);
+	if (!sv.q3_entityParsePoint && !s[0])
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}

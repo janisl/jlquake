@@ -191,12 +191,6 @@ enum {qfalse, qtrue};
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-typedef enum {
-	MESSAGE_EMPTY = 0,
-	MESSAGE_WAITING,		// rate/packet limited
-	MESSAGE_WAITING_OVERFLOW,	// packet too large with message
-} messageStatus_t;
-
 #ifdef  ERR_FATAL
 #undef  ERR_FATAL				// this is be defined in malloc.h
 #endif

@@ -29,6 +29,11 @@ bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
 
 bool SVT3_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
 bool SVT3_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
+bool SVT3_EntityContact(const vec3_t mins, const vec3_t maxs, const idEntity3* ent, int capsule);
+void SVT3_SetBrushModel(idEntity3* ent, q3svEntity_t* svEnt, const char* name);
+void SVT3_GetServerinfo(char* buffer, int bufferSize);
+void SVT3_AdjustAreaPortalState(q3svEntity_t* svEnt, bool open);
+bool SVT3_GetEntityToken(char* buffer, int length);
 
 //
 //	World

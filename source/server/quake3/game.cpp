@@ -79,6 +79,46 @@ clipHandle_t SVQ3_ClipHandleForEntity(const q3sharedEntity_t* gent)
 	return SVT3_ClipHandleForEntity(SVQ3_EntityForGentity(gent));
 }
 
+static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
+	q3playerState_t* clients, int sizeofGameClient)
+{
+	sv.q3_gentities = gEnts;
+	sv.q3_gentitySize = sizeofGEntity_t;
+	sv.q3_num_entities = numGEntities;
+
+	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+	{
+		SVT3_EntityNum(i)->SetGEntity(SVQ3_GentityNum(i));
+	}
+
+	sv.q3_gameClients = clients;
+	sv.q3_gameClientSize = sizeofGameClient;
+}
+
+static bool SVQ3_EntityContact(const vec3_t mins, const vec3_t maxs, const q3sharedEntity_t* gEnt, int capsule)
+{
+	return SVT3_EntityContact(mins, maxs, SVQ3_EntityForGentity(gEnt), capsule);
+}
+
+static void SVQ3_SetBrushModel(q3sharedEntity_t* ent, const char* name)
+{
+	SVT3_SetBrushModel(SVQ3_EntityForGentity(ent), SVQ3_SvEntityForGentity(ent), name);
+}
+
+static void SVQ3_AdjustAreaPortalState(q3sharedEntity_t* ent, qboolean open)
+{
+	SVT3_AdjustAreaPortalState(SVQ3_SvEntityForGentity(ent), open);
+}
+
+static void SVQ3_GetUsercmd(int clientNum, q3usercmd_t* cmd)
+{
+	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
+	{
+		common->Error("SVQ3_GetUsercmd: bad clientNum:%i", clientNum);
+	}
+	*cmd = svs.clients[clientNum].q3_lastUsercmd;
+}
+
 //	The module is making a system call
 qintptr SVQ3_GameSystemCalls(qintptr* args)
 {
@@ -131,6 +171,9 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3G_FS_SEEK:
 		return FS_Seek(args[1], args[2], args[3]);
 
+	case Q3G_LOCATE_GAME_DATA:
+		SVQ3_LocateGameData((q3sharedEntity_t*)VMA(1), args[2], args[3], (q3playerState_t*)VMA(4), args[5]);
+		return 0;
 //----
 	case Q3G_LINKENTITY:
 		SVQ3_LinkEntity((q3sharedEntity_t*)VMA(1));
@@ -140,7 +183,10 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 		return 0;
 	case Q3G_ENTITIES_IN_BOX:
 		return SVT3_AreaEntities((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);
-//----
+	case Q3G_ENTITY_CONTACT:
+		return SVQ3_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), false);
+	case Q3G_ENTITY_CONTACTCAPSULE:
+		return SVQ3_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), true);
 	case Q3G_TRACE:
 		SVT3_Trace((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], false);
 		return 0;
@@ -149,17 +195,30 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 		return 0;
 	case Q3G_POINT_CONTENTS:
 		return SVT3_PointContents((float*)VMA(1), args[2]);
-//----
+	case Q3G_SET_BRUSH_MODEL:
+		SVQ3_SetBrushModel((q3sharedEntity_t*)VMA(1), (char*)VMA(2));
+		return 0;
 	case Q3G_IN_PVS:
 		return SVT3_inPVS((float*)VMA(1), (float*)VMA(2));
 	case Q3G_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
 //----
+	case Q3G_GET_SERVERINFO:
+		SVT3_GetServerinfo((char*)VMA(1), args[2]);
+		return 0;
+	case Q3G_ADJUST_AREA_PORTAL_STATE:
+		SVQ3_AdjustAreaPortalState((q3sharedEntity_t*)VMA(1), args[2]);
+		return 0;
 	case Q3G_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
 //----
+	case Q3G_GET_USERCMD:
+		SVQ3_GetUsercmd(args[1], (q3usercmd_t*)VMA(2));
+		return 0;
+	case Q3G_GET_ENTITY_TOKEN:
+		return SVT3_GetEntityToken((char*)VMA(1), args[2]);
 
 	case Q3G_DEBUG_POLYGON_CREATE:
 		return BotImport_DebugPolygonCreate(args[1], args[2], (vec3_t*)VMA(3));

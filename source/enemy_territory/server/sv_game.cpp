@@ -30,16 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-void SV_GameError(const char* string)
-{
-	Com_Error(ERR_DROP, "%s", string);
-}
-
-void SV_GamePrint(const char* string)
-{
-	Com_Printf("%s", string);
-}
-
 /*
 ===============
 SV_GameSendServerCommand
@@ -84,188 +74,6 @@ void SV_GameDropClient(int clientNum, const char* reason, int length)
 	}
 }
 
-
-/*
-=================
-SV_SetBrushModel
-
-sets mins and maxs for inline bmodels
-=================
-*/
-void SV_SetBrushModel(etsharedEntity_t* ent, const char* name)
-{
-	clipHandle_t h;
-	vec3_t mins, maxs;
-
-	if (!name)
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: NULL");
-	}
-
-	if (name[0] != '*')
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name);
-	}
-
-
-	ent->s.modelindex = String::Atoi(name + 1);
-
-	h = CM_InlineModel(ent->s.modelindex);
-	CM_ModelBounds(h, mins, maxs);
-	VectorCopy(mins, ent->r.mins);
-	VectorCopy(maxs, ent->r.maxs);
-	ent->r.bmodel = qtrue;
-
-	ent->r.contents = -1;		// we don't know exactly what is in the brushes
-
-	SVET_LinkEntity(ent);			// FIXME: remove
-}
-
-
-
-/*
-========================
-SV_AdjustAreaPortalState
-========================
-*/
-void SV_AdjustAreaPortalState(etsharedEntity_t* ent, qboolean open)
-{
-	q3svEntity_t* svEnt;
-
-	svEnt = SVET_SvEntityForGentity(ent);
-	if (svEnt->areanum2 == -1)
-	{
-		return;
-	}
-	CM_AdjustAreaPortalState(svEnt->areanum, svEnt->areanum2, open);
-}
-
-
-/*
-==================
-SV_GameAreaEntities
-==================
-*/
-qboolean    SV_EntityContact(const vec3_t mins, const vec3_t maxs, const etsharedEntity_t* gEnt, const int capsule)
-{
-	const float* origin, * angles;
-	clipHandle_t ch;
-	q3trace_t trace;
-
-	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
-
-	ch = SVET_ClipHandleForEntity(gEnt);
-	CM_TransformedBoxTraceQ3(&trace, vec3_origin, vec3_origin, mins, maxs,
-		ch, -1, origin, angles, capsule);
-
-	return trace.startsolid;
-}
-
-
-/*
-===============
-SV_GetServerinfo
-
-===============
-*/
-void SV_GetServerinfo(char* buffer, int bufferSize)
-{
-	if (bufferSize < 1)
-	{
-		Com_Error(ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize);
-	}
-	String::NCpyZ(buffer, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3), bufferSize);
-}
-
-/*
-===============
-SV_LocateGameData
-
-===============
-*/
-void SV_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
-	etplayerState_t* clients, int sizeofGameClient)
-{
-	sv.et_gentities = gEnts;
-	sv.q3_gentitySize = sizeofGEntity_t;
-	sv.q3_num_entities = numGEntities;
-
-	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
-	{
-		SVT3_EntityNum(i)->SetGEntity(SVET_GentityNum(i));
-	}
-
-	sv.et_gameClients = clients;
-	sv.q3_gameClientSize = sizeofGameClient;
-}
-
-
-/*
-===============
-SV_GetUsercmd
-
-===============
-*/
-void SV_GetUsercmd(int clientNum, etusercmd_t* cmd)
-{
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-	{
-		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
-	}
-	*cmd = svs.clients[clientNum].et_lastUsercmd;
-}
-
-/*
-====================
-SV_SendBinaryMessage
-====================
-*/
-static void SV_SendBinaryMessage(int cno, char* buf, int buflen)
-{
-	if (cno < 0 || cno >= sv_maxclients->integer)
-	{
-		Com_Error(ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno);
-		return;
-	}
-
-	if (buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET)
-	{
-		Com_Error(ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen);
-		svs.clients[cno].et_binaryMessageLength = 0;
-		return;
-	}
-
-	svs.clients[cno].et_binaryMessageLength = buflen;
-	memcpy(svs.clients[cno].et_binaryMessage, buf, buflen);
-}
-
-/*
-====================
-SV_BinaryMessageStatus
-====================
-*/
-static int SV_BinaryMessageStatus(int cno)
-{
-	if (cno < 0 || cno >= sv_maxclients->integer)
-	{
-		return qfalse;
-	}
-
-	if (svs.clients[cno].et_binaryMessageLength == 0)
-	{
-		return MESSAGE_EMPTY;
-	}
-
-	if (svs.clients[cno].et_binaryMessageOverflowed)
-	{
-		return MESSAGE_WAITING_OVERFLOW;
-	}
-
-	return MESSAGE_WAITING;
-}
-
 /*
 ====================
 SV_GameBinaryMessageReceived
@@ -290,23 +98,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //------
-	case ETG_LOCATE_GAME_DATA:
-		SV_LocateGameData((etsharedEntity_t*)VMA(1), args[2], args[3], (etplayerState_t*)VMA(4), args[5]);
-		return 0;
 	case ETG_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2), args[3]);
 		return 0;
 	case ETG_SEND_SERVER_COMMAND:
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
-		return 0;
-//------
-	case ETG_ENTITY_CONTACT:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (etsharedEntity_t*)VMA(3), /* int capsule */ qfalse);
-	case ETG_ENTITY_CONTACTCAPSULE:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (etsharedEntity_t*)VMA(3), /* int capsule */ qtrue);
-//------
-	case ETG_SET_BRUSH_MODEL:
-		SV_SetBrushModel((etsharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
 //------
 	case ETG_SET_CONFIGSTRING:
@@ -321,37 +117,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case ETG_GET_USERINFO:
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case ETG_GET_SERVERINFO:
-		SV_GetServerinfo((char*)VMA(1), args[2]);
-		return 0;
-	case ETG_ADJUST_AREA_PORTAL_STATE:
-		SV_AdjustAreaPortalState((etsharedEntity_t*)VMA(1), args[2]);
-		return 0;
 //------
 	case ETG_BOT_ALLOCATE_CLIENT:
 		return SV_BotAllocateClient(args[1]);
 	case ETG_BOT_FREE_CLIENT:
 		SV_BotFreeClient(args[1]);
 		return 0;
-
-	case ETG_GET_USERCMD:
-		SV_GetUsercmd(args[1], (etusercmd_t*)VMA(2));
-		return 0;
-	case ETG_GET_ENTITY_TOKEN:
-	{
-		const char* s;
-
-		s = String::Parse3(&sv.q3_entityParsePoint);
-		String::NCpyZ((char*)VMA(1), s, args[2]);
-		if (!sv.q3_entityParsePoint && !s[0])
-		{
-			return qfalse;
-		}
-		else
-		{
-			return qtrue;
-		}
-	}
 //------
 	case ETG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
@@ -376,13 +147,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case ETBOTLIB_USER_COMMAND:
 		SV_ClientThink(&svs.clients[args[1]], (etusercmd_t*)VMA(2));
 		return 0;
-//------
-	case ETG_SENDMESSAGE:
-		SV_SendBinaryMessage(args[1], (char*)VMA(2), args[3]);
-		return 0;
-	case ETG_MESSAGESTATUS:
-		return SV_BinaryMessageStatus(args[1]);
-
 	default:
 		return SVET_GameSystemCalls(args);
 	}

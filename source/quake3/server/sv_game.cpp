@@ -23,16 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 
-void SV_GameError(const char* string)
-{
-	Com_Error(ERR_DROP, "%s", string);
-}
-
-void SV_GamePrint(const char* string)
-{
-	Com_Printf("%s", string);
-}
-
 /*
 ===============
 SV_GameSendServerCommand
@@ -73,139 +63,6 @@ void SV_GameDropClient(int clientNum, const char* reason)
 	SV_DropClient(svs.clients + clientNum, reason);
 }
 
-
-/*
-=================
-SV_SetBrushModel
-
-sets mins and maxs for inline bmodels
-=================
-*/
-void SV_SetBrushModel(q3sharedEntity_t* ent, const char* name)
-{
-	clipHandle_t h;
-	vec3_t mins, maxs;
-
-	if (!name)
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: NULL");
-	}
-
-	if (name[0] != '*')
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name);
-	}
-
-
-	ent->s.modelindex = String::Atoi(name + 1);
-
-	h = CM_InlineModel(ent->s.modelindex);
-	CM_ModelBounds(h, mins, maxs);
-	VectorCopy(mins, ent->r.mins);
-	VectorCopy(maxs, ent->r.maxs);
-	ent->r.bmodel = qtrue;
-
-	ent->r.contents = -1;		// we don't know exactly what is in the brushes
-
-	SVQ3_LinkEntity(ent);			// FIXME: remove
-}
-
-
-
-/*
-========================
-SV_AdjustAreaPortalState
-========================
-*/
-void SV_AdjustAreaPortalState(q3sharedEntity_t* ent, qboolean open)
-{
-	q3svEntity_t* svEnt;
-
-	svEnt = SVQ3_SvEntityForGentity(ent);
-	if (svEnt->areanum2 == -1)
-	{
-		return;
-	}
-	CM_AdjustAreaPortalState(svEnt->areanum, svEnt->areanum2, open);
-}
-
-
-/*
-==================
-SV_GameAreaEntities
-==================
-*/
-qboolean    SV_EntityContact(vec3_t mins, vec3_t maxs, const q3sharedEntity_t* gEnt, int capsule)
-{
-	const float* origin, * angles;
-	clipHandle_t ch;
-	q3trace_t trace;
-
-	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
-
-	ch = SVQ3_ClipHandleForEntity(gEnt);
-	CM_TransformedBoxTraceQ3(&trace, vec3_origin, vec3_origin, mins, maxs,
-		ch, -1, origin, angles, capsule);
-
-	return trace.startsolid;
-}
-
-
-/*
-===============
-SV_GetServerinfo
-
-===============
-*/
-void SV_GetServerinfo(char* buffer, int bufferSize)
-{
-	if (bufferSize < 1)
-	{
-		Com_Error(ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize);
-	}
-	String::NCpyZ(buffer, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3), bufferSize);
-}
-
-/*
-===============
-SV_LocateGameData
-
-===============
-*/
-void SV_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
-	q3playerState_t* clients, int sizeofGameClient)
-{
-	sv.q3_gentities = gEnts;
-	sv.q3_gentitySize = sizeofGEntity_t;
-	sv.q3_num_entities = numGEntities;
-
-	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
-	{
-		SVT3_EntityNum(i)->SetGEntity(SVQ3_GentityNum(i));
-	}
-
-	sv.q3_gameClients = clients;
-	sv.q3_gameClientSize = sizeofGameClient;
-}
-
-
-/*
-===============
-SV_GetUsercmd
-
-===============
-*/
-void SV_GetUsercmd(int clientNum, q3usercmd_t* cmd)
-{
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-	{
-		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
-	}
-	*cmd = svs.clients[clientNum].q3_lastUsercmd;
-}
-
 //==============================================
 
 /*
@@ -220,23 +77,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //----
-	case Q3G_LOCATE_GAME_DATA:
-		SV_LocateGameData((q3sharedEntity_t*)VMA(1), args[2], args[3], (q3playerState_t*)VMA(4), args[5]);
-		return 0;
 	case Q3G_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2));
 		return 0;
 	case Q3G_SEND_SERVER_COMMAND:
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
-		return 0;
-//----
-	case Q3G_ENTITY_CONTACT:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), /*int capsule*/ qfalse);
-	case Q3G_ENTITY_CONTACTCAPSULE:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (q3sharedEntity_t*)VMA(3), /*int capsule*/ qtrue);
-//----
-	case Q3G_SET_BRUSH_MODEL:
-		SV_SetBrushModel((q3sharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
 //----
 	case Q3G_SET_CONFIGSTRING:
@@ -251,12 +96,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case Q3G_GET_USERINFO:
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case Q3G_GET_SERVERINFO:
-		SV_GetServerinfo((char*)VMA(1), args[2]);
-		return 0;
-	case Q3G_ADJUST_AREA_PORTAL_STATE:
-		SV_AdjustAreaPortalState((q3sharedEntity_t*)VMA(1), args[2]);
-		return 0;
 //----
 	case Q3G_BOT_ALLOCATE_CLIENT:
 		return SV_BotAllocateClient();
@@ -264,24 +103,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_BotFreeClient(args[1]);
 		return 0;
 
-	case Q3G_GET_USERCMD:
-		SV_GetUsercmd(args[1], (q3usercmd_t*)VMA(2));
-		return 0;
-	case Q3G_GET_ENTITY_TOKEN:
-	{
-		const char* s;
-
-		s = String::Parse3(&sv.q3_entityParsePoint);
-		String::NCpyZ((char*)VMA(1), s, args[2]);
-		if (!sv.q3_entityParsePoint && !s[0])
-		{
-			return qfalse;
-		}
-		else
-		{
-			return qtrue;
-		}
-	}
 //----
 	case Q3G_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));

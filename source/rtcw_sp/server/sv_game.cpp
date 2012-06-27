@@ -30,16 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-void SV_GameError(const char* string)
-{
-	Com_Error(ERR_DROP, "%s", string);
-}
-
-void SV_GamePrint(const char* string)
-{
-	Com_Printf("%s", string);
-}
-
 /*
 ===============
 SV_GameSendServerCommand
@@ -80,139 +70,6 @@ void SV_GameDropClient(int clientNum, const char* reason)
 	SV_DropClient(svs.clients + clientNum, reason);
 }
 
-
-/*
-=================
-SV_SetBrushModel
-
-sets mins and maxs for inline bmodels
-=================
-*/
-void SV_SetBrushModel(wssharedEntity_t* ent, const char* name)
-{
-	clipHandle_t h;
-	vec3_t mins, maxs;
-
-	if (!name)
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: NULL");
-	}
-
-	if (name[0] != '*')
-	{
-		Com_Error(ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name);
-	}
-
-
-	ent->s.modelindex = String::Atoi(name + 1);
-
-	h = CM_InlineModel(ent->s.modelindex);
-	CM_ModelBounds(h, mins, maxs);
-	VectorCopy(mins, ent->r.mins);
-	VectorCopy(maxs, ent->r.maxs);
-	ent->r.bmodel = qtrue;
-
-	ent->r.contents = -1;		// we don't know exactly what is in the brushes
-
-	SVWS_LinkEntity(ent);			// FIXME: remove
-}
-
-
-
-/*
-========================
-SV_AdjustAreaPortalState
-========================
-*/
-void SV_AdjustAreaPortalState(wssharedEntity_t* ent, qboolean open)
-{
-	q3svEntity_t* svEnt;
-
-	svEnt = SVWS_SvEntityForGentity(ent);
-	if (svEnt->areanum2 == -1)
-	{
-		return;
-	}
-	CM_AdjustAreaPortalState(svEnt->areanum, svEnt->areanum2, open);
-}
-
-
-/*
-==================
-SV_GameAreaEntities
-==================
-*/
-qboolean    SV_EntityContact(const vec3_t mins, const vec3_t maxs, const wssharedEntity_t* gEnt, const int capsule)
-{
-	const float* origin, * angles;
-	clipHandle_t ch;
-	q3trace_t trace;
-
-	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
-
-	ch = SVWS_ClipHandleForEntity(gEnt);
-	CM_TransformedBoxTraceQ3(&trace, vec3_origin, vec3_origin, mins, maxs,
-		ch, -1, origin, angles, capsule);
-
-	return trace.startsolid;
-}
-
-
-/*
-===============
-SV_GetServerinfo
-
-===============
-*/
-void SV_GetServerinfo(char* buffer, int bufferSize)
-{
-	if (bufferSize < 1)
-	{
-		Com_Error(ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize);
-	}
-	String::NCpyZ(buffer, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3), bufferSize);
-}
-
-/*
-===============
-SV_LocateGameData
-
-===============
-*/
-void SV_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
-	wsplayerState_t* clients, int sizeofGameClient)
-{
-	sv.ws_gentities = gEnts;
-	sv.q3_gentitySize = sizeofGEntity_t;
-	sv.q3_num_entities = numGEntities;
-
-	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
-	{
-		SVT3_EntityNum(i)->SetGEntity(SVWS_GentityNum(i));
-	}
-
-	sv.ws_gameClients = clients;
-	sv.q3_gameClientSize = sizeofGameClient;
-}
-
-
-/*
-===============
-SV_GetUsercmd
-
-===============
-*/
-void SV_GetUsercmd(int clientNum, wsusercmd_t* cmd)
-{
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-	{
-		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
-	}
-	*cmd = svs.clients[clientNum].ws_lastUsercmd;
-}
-
 //==============================================
 
 /*
@@ -235,23 +92,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		FS_CopyFileOS((char*)VMA(1), (char*)VMA(2));			//DAJ
 		return 0;
 //-----------
-	case WSG_LOCATE_GAME_DATA:
-		SV_LocateGameData((wssharedEntity_t*)VMA(1), args[2], args[3], (wsplayerState_t*)VMA(4), args[5]);
-		return 0;
 	case WSG_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2));
 		return 0;
 	case WSG_SEND_SERVER_COMMAND:
 		SV_GameSendServerCommand(args[1], (char*)VMA(2));
-		return 0;
-//-----------
-	case WSG_ENTITY_CONTACT:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wssharedEntity_t*)VMA(3), /* int capsule */ qfalse);
-	case WSG_ENTITY_CONTACTCAPSULE:
-		return SV_EntityContact((float*)VMA(1), (float*)VMA(2), (wssharedEntity_t*)VMA(3), /* int capsule */ qtrue);
-//-----------
-	case WSG_SET_BRUSH_MODEL:
-		SV_SetBrushModel((wssharedEntity_t*)VMA(1), (char*)VMA(2));
 		return 0;
 //-----------
 	case WSG_SET_CONFIGSTRING:
@@ -266,37 +111,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case WSG_GET_USERINFO:
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case WSG_GET_SERVERINFO:
-		SV_GetServerinfo((char*)VMA(1), args[2]);
-		return 0;
-	case WSG_ADJUST_AREA_PORTAL_STATE:
-		SV_AdjustAreaPortalState((wssharedEntity_t*)VMA(1), args[2]);
-		return 0;
 //-----------
 	case WSG_BOT_ALLOCATE_CLIENT:
 		return SV_BotAllocateClient();
 	case WSG_BOT_FREE_CLIENT:
 		SV_BotFreeClient(args[1]);
 		return 0;
-
-	case WSG_GET_USERCMD:
-		SV_GetUsercmd(args[1], (wsusercmd_t*)VMA(2));
-		return 0;
-	case WSG_GET_ENTITY_TOKEN:
-	{
-		const char* s;
-
-		s = String::Parse3(&sv.q3_entityParsePoint);
-		String::NCpyZ((char*)VMA(1), s, args[2]);
-		if (!sv.q3_entityParsePoint && !s[0])
-		{
-			return qfalse;
-		}
-		else
-		{
-			return qtrue;
-		}
-	}
 //-----------
 	case WSG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
