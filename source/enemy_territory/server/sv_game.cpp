@@ -118,12 +118,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
-	case ETG_BOT_ALLOCATE_CLIENT:
-		return SV_BotAllocateClient(args[1]);
-	case ETG_BOT_FREE_CLIENT:
-		SV_BotFreeClient(args[1]);
-		return 0;
-//------
 	case ETG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 	case ETG_SNAPVECTOR:
@@ -135,18 +129,10 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	case ETG_REGISTERTAG:
 		return SV_LoadTag((char*)VMA(1));
 //------
-	case ETBOTLIB_SETUP:
-		return SV_BotLibSetup();
-	case ETBOTLIB_SHUTDOWN:
-		return SV_BotLibShutdown();
-//------
-	case ETBOTLIB_GET_SNAPSHOT_ENTITY:
-		return SV_BotGetSnapshotEntity(args[1], args[2]);
-	case ETBOTLIB_GET_CONSOLE_MESSAGE:
-		return SV_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 	case ETBOTLIB_USER_COMMAND:
 		SV_ClientThink(&svs.clients[args[1]], (etusercmd_t*)VMA(2));
 		return 0;
+//------
 	default:
 		return SVET_GameSystemCalls(args);
 	}
@@ -190,6 +176,7 @@ static void SV_InitGameVM(qboolean restart)
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
 		svs.clients[i].et_gentity = NULL;
+		svs.clients[i].q3_entity = NULL;
 	}
 
 	// use the current msec count for a random seed
@@ -263,28 +250,6 @@ qboolean SV_GameCommand(void)
 	}
 
 	return VM_Call(gvm, ETGAME_CONSOLE_COMMAND);
-}
-
-/*
-====================
-SV_GameIsSinglePlayer
-====================
-*/
-qboolean SV_GameIsSinglePlayer(void)
-{
-	return(com_gameInfo.spGameTypes & (1 << g_gameType->integer));
-}
-
-/*
-====================
-SV_GameIsCoop
-
-    This is a modified SinglePlayer, no savegame capability for example
-====================
-*/
-qboolean SV_GameIsCoop(void)
-{
-	return(com_gameInfo.coopGameTypes & (1 << g_gameType->integer));
 }
 
 /*

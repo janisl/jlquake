@@ -287,7 +287,7 @@ void CL_WritePacket(void)
 	{
 		buf.WriteByte(q3clc_clientCommand);
 		buf.WriteLong(i);
-		buf.WriteString(clc.q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WM - 1)]);
+		buf.WriteString(clc.q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WOLF - 1)]);
 	}
 
 	// we want to send all the usercmds that were generated in the last
@@ -334,7 +334,7 @@ void CL_WritePacket(void)
 		// also use the message acknowledge
 		key ^= clc.q3_serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= Com_HashKey(clc.q3_serverCommands[clc.q3_serverCommandSequence & (MAX_RELIABLE_COMMANDS_WM - 1)], 32);
+		key ^= Com_HashKey(clc.q3_serverCommands[clc.q3_serverCommandSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1)], 32);
 
 		// write all the commands, including the predicted command
 		for (i = 0; i < count; i++)

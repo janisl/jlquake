@@ -14,7 +14,6 @@ set(QUAKE3_FILES
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
 	client/snd_dma.cpp
-	server/sv_bot.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
 	server/sv_game.cpp
@@ -57,7 +56,6 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 #############################################################################
 
 set(QUAKE3_DEDICATED_FILES
-	server/sv_bot.cpp
 	server/sv_client.cpp
 	server/sv_ccmds.cpp
 	server/sv_game.cpp

@@ -97,30 +97,12 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //----
-	case Q3G_BOT_ALLOCATE_CLIENT:
-		return SV_BotAllocateClient();
-	case Q3G_BOT_FREE_CLIENT:
-		SV_BotFreeClient(args[1]);
-		return 0;
-
-//----
 	case Q3G_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 	case Q3G_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
-
-	//====================================
-
-	case Q3BOTLIB_SETUP:
-		return SV_BotLibSetup();
-	case Q3BOTLIB_SHUTDOWN:
-		return SV_BotLibShutdown();
 //----
-	case Q3BOTLIB_GET_SNAPSHOT_ENTITY:
-		return SV_BotGetSnapshotEntity(args[1], args[2]);
-	case Q3BOTLIB_GET_CONSOLE_MESSAGE:
-		return SV_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 	case Q3BOTLIB_USER_COMMAND:
 		SV_ClientThink(&svs.clients[args[1]], (q3usercmd_t*)VMA(2));
 		return 0;
@@ -170,6 +152,7 @@ static void SV_InitGameVM(qboolean restart)
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
 		svs.clients[i].q3_gentity = NULL;
+		svs.clients[i].q3_entity = NULL;
 	}
 
 	// use the current msec count for a random seed
@@ -215,8 +198,6 @@ Called on a normal map change, not on a map_restart
 void SV_InitGameProgs(void)
 {
 	Cvar* var;
-	//FIXME these are temp while I make bots run in vm
-	extern int bot_enable;
 
 	var = Cvar_Get("bot_enable", "1", CVAR_LATCH2);
 	if (var)

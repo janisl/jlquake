@@ -41,6 +41,11 @@ int com_frameTime;
 
 int cl_connectedToPureServer;
 
+// Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
+// This can't be dependant on gamecode as we sometimes need to know about it when no game-modules
+// are loaded
+etgameInfo_t comet_gameInfo;
+
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS + 1];
 

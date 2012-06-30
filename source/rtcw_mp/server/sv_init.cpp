@@ -657,7 +657,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	for (i = 0; i < 3; i++)
 	{
 		VM_Call(gvm, WMGAME_RUN_FRAME, svs.q3_time);
-		SV_BotFrame(svs.q3_time);
+		SVT3_BotFrame(svs.q3_time);
 		svs.q3_time += 100;
 	}
 
@@ -711,6 +711,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					ent = SVWM_GentityNum(i);
 					ent->s.number = i;
 					client->wm_gentity = ent;
+					client->q3_entity = SVT3_EntityNum(i);
 
 					client->q3_deltaMessage = -1;
 					client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
@@ -723,7 +724,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// run another frame to allow things to look at all the players
 	VM_Call(gvm, WMGAME_RUN_FRAME, svs.q3_time);
-	SV_BotFrame(svs.q3_time);
+	SVT3_BotFrame(svs.q3_time);
 	svs.q3_time += 100;
 
 	if (sv_pure->integer)
@@ -883,8 +884,6 @@ SV_Init
 Only called at main exe startup, not for each game
 ===============
 */
-void SV_BotInitBotLib(void);
-
 void SV_Init(void)
 {
 	SV_AddOperatorCommands();
@@ -995,10 +994,10 @@ void SV_Init(void)
 #endif
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
-	SV_BotInitCvars();
+	SVT3_BotInitCvars();
 
 	// init the botlib here because we need the pre-compiler in the UI
-	SV_BotInitBotLib();
+	SVT3_BotInitBotLib();
 
 	// DHM - Nerve
 #ifdef UPDATE_SERVER

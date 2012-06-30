@@ -62,8 +62,6 @@ Cvar* sv_needpass;
 
 Cvar* sv_dl_maxRate;
 
-Cvar* g_gameType;
-
 // Rafael gameskill
 //Cvar	*sv_gameskill;
 // done
@@ -154,18 +152,18 @@ void SV_AddServerCommand(client_t* client, const char* cmd)
 	// we must drop the connection
 	// we check == instead of >= so a broadcast print added by SV_DropClient()
 	// doesn't cause a recursive drop client
-	if (client->q3_reliableSequence - client->q3_reliableAcknowledge == MAX_RELIABLE_COMMANDS_ET + 1)
+	if (client->q3_reliableSequence - client->q3_reliableAcknowledge == MAX_RELIABLE_COMMANDS_WOLF + 1)
 	{
 		Com_Printf("===== pending server commands =====\n");
 		for (i = client->q3_reliableAcknowledge + 1; i <= client->q3_reliableSequence; i++)
 		{
-			Com_Printf("cmd %5d: %s\n", i, client->q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_ET - 1)]);
+			Com_Printf("cmd %5d: %s\n", i, client->q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WOLF - 1)]);
 		}
 		Com_Printf("cmd %5d: %s\n", i, cmd);
 		SV_DropClient(client, "Server command overflow");
 		return;
 	}
-	index = client->q3_reliableSequence & (MAX_RELIABLE_COMMANDS_ET - 1);
+	index = client->q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
 	String::NCpyZ(client->q3_reliableCommands[index], cmd, sizeof(client->q3_reliableCommands[index]));
 }
 
@@ -257,7 +255,7 @@ void SV_MasterHeartbeat(const char* hbname)
 	static netadr_t adr[MAX_MASTER_SERVERS];
 	int i;
 
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;		// no heartbeats for SP
 	}
@@ -326,7 +324,7 @@ void SV_MasterGameCompleteStatus()
 	static netadr_t adr[MAX_MASTER_SERVERS];
 	int i;
 
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;		// no master game status for SP
 	}
@@ -459,7 +457,7 @@ void SVC_Status(netadr_t from)
 	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;
 	}
@@ -520,7 +518,7 @@ void SVC_GameCompleteStatus(netadr_t from)
 	char infostring[MAX_INFO_STRING_Q3];
 
 	// ignore if we are in single player
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;
 	}
@@ -579,7 +577,7 @@ void SVC_Info(netadr_t from)
 	const char* balancedteams;
 
 	// ignore if we are in single player
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;
 	}
@@ -1120,7 +1118,7 @@ void SV_Frame(int msec)
 
 	if (!com_dedicated->integer)
 	{
-		SV_BotFrame(svs.q3_time + sv.q3_timeResidual);
+		SVT3_BotFrame(svs.q3_time + sv.q3_timeResidual);
 	}
 
 	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
@@ -1201,7 +1199,7 @@ void SV_Frame(int msec)
 
 	if (com_dedicated->integer)
 	{
-		SV_BotFrame(svs.q3_time);
+		SVT3_BotFrame(svs.q3_time);
 	}
 
 	// run the game simulation in chunks

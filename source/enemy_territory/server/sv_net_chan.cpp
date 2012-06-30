@@ -122,7 +122,7 @@ static void SV_Netchan_Decode(client_t* client, QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)client->q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)];
+	string = (byte*)client->q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WOLF - 1)];
 	index = 0;
 	//
 	key = client->challenge ^ serverId ^ messageAcknowledge;
@@ -171,7 +171,7 @@ void SV_Netchan_TransmitNextFragment(client_t* client)
 			client->et_netchan_end_queue = NULL;
 		}
 
-		if (!SV_GameIsSinglePlayer())
+		if (!SVET_GameIsSinglePlayer())
 		{
 			SV_Netchan_Encode(client, &netbuf->msg, netbuf->lastClientCommandString);
 		}
@@ -255,7 +255,7 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 	}
 	else
 	{
-		if (!SV_GameIsSinglePlayer())
+		if (!SVET_GameIsSinglePlayer())
 		{
 			SV_Netchan_Encode(client, msg, client->q3_lastClientCommandString);
 		}
@@ -276,7 +276,7 @@ qboolean SV_Netchan_Process(client_t* client, QMsg* msg)
 	{
 		return qfalse;
 	}
-	if (!SV_GameIsSinglePlayer())
+	if (!SVET_GameIsSinglePlayer())
 	{
 		SV_Netchan_Decode(client, msg);
 	}

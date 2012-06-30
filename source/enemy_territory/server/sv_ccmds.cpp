@@ -175,7 +175,7 @@ static void SV_Map_f(void)
 		return;
 	}
 
-	if (!com_gameInfo.spEnabled)
+	if (!comet_gameInfo.spEnabled)
 	{
 		if (!String::ICmp(Cmd_Argv(0), "spdevmap") || !String::ICmp(Cmd_Argv(0), "spmap"))
 		{
@@ -186,7 +186,7 @@ static void SV_Map_f(void)
 
 	buildScript = Cvar_VariableIntegerValue("com_buildScript");
 
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		if (!buildScript && sv_reloading->integer && sv_reloading->integer != RELOAD_NEXTMAP)		// game is in 'reload' mode, don't allow starting new maps yet.
 		{
@@ -202,7 +202,7 @@ static void SV_Map_f(void)
 			byte* buffer;
 			int size, csize;
 
-			if (com_gameInfo.usesProfiles && cl_profileStr[0])
+			if (comet_gameInfo.usesProfiles && cl_profileStr[0])
 			{
 				String::Sprintf(savedir, sizeof(savedir), "profiles/%s/save/", cl_profileStr);
 			}
@@ -301,9 +301,9 @@ static void SV_Map_f(void)
 	if (!String::ICmp(Cmd_Argv(0), "spdevmap") || !String::ICmp(Cmd_Argv(0), "spmap"))
 	{
 		// This is explicitly asking for a single player load of this map
-		Cvar_Set("g_gametype", va("%i", com_gameInfo.defaultSPGameType));
+		Cvar_Set("g_gametype", va("%i", comet_gameInfo.defaultSPGameType));
 		// force latched values to get set
-		Cvar_Get("g_gametype", va("%i", com_gameInfo.defaultSPGameType), CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2);
+		Cvar_Get("g_gametype", va("%i", comet_gameInfo.defaultSPGameType), CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2);
 		// enable bot support for AI
 		Cvar_Set("bot_enable", "1");
 	}
@@ -399,7 +399,7 @@ NERVE - SMF
 */
 static qboolean SV_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, int delay)
 {
-	if (!SV_GameIsSinglePlayer() && !SV_GameIsCoop())
+	if (!SVET_GameIsSinglePlayer() && !SVET_GameIsCoop())
 	{
 		// we always do a warmup before starting match
 		if (old_gs == GS_INTERMISSION && new_gs == GS_PLAYING)
@@ -480,7 +480,7 @@ static void SV_MapRestart_f(void)
 	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
 	old_gs = (gamestate_t) String::Atoi(Cvar_VariableString("gamestate"));
 
-	if (SV_GameIsSinglePlayer() || SV_GameIsCoop())
+	if (SVET_GameIsSinglePlayer() || SVET_GameIsCoop())
 	{
 		new_gs = GS_PLAYING;
 	}
@@ -524,7 +524,7 @@ static void SV_MapRestart_f(void)
 		int size, savegameTime;
 		const char* cl_profileStr = Cvar_VariableString("cl_profile");
 
-		if (com_gameInfo.usesProfiles)
+		if (comet_gameInfo.usesProfiles)
 		{
 			String::Sprintf(savemap, sizeof(savemap), "profiles/%s/save/current.sav", cl_profileStr);
 		}
@@ -601,7 +601,7 @@ static void SV_MapRestart_f(void)
 
 		if (client->netchan.remoteAddress.type == NA_BOT)
 		{
-			if (SV_GameIsSinglePlayer() || SV_GameIsCoop())
+			if (SVET_GameIsSinglePlayer() || SVET_GameIsCoop())
 			{
 				continue;	// dont carry across bots in single player
 			}
@@ -622,7 +622,7 @@ static void SV_MapRestart_f(void)
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
 			SV_DropClient(client, denied);
-			if ((!SV_GameIsSinglePlayer()) || (!isBot))
+			if ((!SVET_GameIsSinglePlayer()) || (!isBot))
 			{
 				Com_Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
 			}
@@ -672,7 +672,7 @@ void    SV_LoadGame_f(void)
 		return;
 	}
 
-	if (com_gameInfo.usesProfiles && cl_profileStr[0])
+	if (comet_gameInfo.usesProfiles && cl_profileStr[0])
 	{
 		String::Sprintf(savedir, sizeof(savedir), "profiles/%s/save/", cl_profileStr);
 	}

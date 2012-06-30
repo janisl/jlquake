@@ -316,7 +316,7 @@ void FS_Restart(int checksumFeed)
 		{
 			const char* cl_profileStr = Cvar_VariableString("cl_profile");
 
-			if (com_gameInfo.usesProfiles && cl_profileStr[0])
+			if (comet_gameInfo.usesProfiles && cl_profileStr[0])
 			{
 				// bani - check existing pid file and make sure it's ok
 				if (!Com_CheckProfile(va("profiles/%s/profile.pid", cl_profileStr)))

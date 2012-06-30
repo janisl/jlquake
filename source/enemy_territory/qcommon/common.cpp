@@ -2606,18 +2606,13 @@ void Com_SetRecommended()
 //	Cvar_Set("ui_glCustom", "999");	// 'recommended'
 }
 
-// Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
-// This can't be dependant on gamecode as we sometimes need to know about it when no game-modules
-// are loaded
-gameInfo_t com_gameInfo;
-
 void Com_GetGameInfo()
 {
 	char* f;
 	const char* buf;
 	char* token;
 
-	memset(&com_gameInfo, 0, sizeof(com_gameInfo));
+	memset(&comet_gameInfo, 0, sizeof(comet_gameInfo));
 
 	if (FS_ReadFile("gameinfo.dat", (void**)&f) > 0)
 	{
@@ -2628,20 +2623,20 @@ void Com_GetGameInfo()
 		{
 			if (!String::ICmp(token, "spEnabled"))
 			{
-				com_gameInfo.spEnabled = qtrue;
+				comet_gameInfo.spEnabled = qtrue;
 			}
 			else if (!String::ICmp(token, "spGameTypes"))
 			{
 				while ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.spGameTypes |= (1 << String::Atoi(token));
+					comet_gameInfo.spGameTypes |= (1 << String::Atoi(token));
 				}
 			}
 			else if (!String::ICmp(token, "defaultSPGameType"))
 			{
 				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.defaultSPGameType = String::Atoi(token);
+					comet_gameInfo.defaultSPGameType = String::Atoi(token);
 				}
 				else
 				{
@@ -2654,14 +2649,14 @@ void Com_GetGameInfo()
 
 				while ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.coopGameTypes |= (1 << String::Atoi(token));
+					comet_gameInfo.coopGameTypes |= (1 << String::Atoi(token));
 				}
 			}
 			else if (!String::ICmp(token, "defaultCoopGameType"))
 			{
 				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.defaultCoopGameType = String::Atoi(token);
+					comet_gameInfo.defaultCoopGameType = String::Atoi(token);
 				}
 				else
 				{
@@ -2673,7 +2668,7 @@ void Com_GetGameInfo()
 			{
 				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.defaultGameType = String::Atoi(token);
+					comet_gameInfo.defaultGameType = String::Atoi(token);
 				}
 				else
 				{
@@ -2685,7 +2680,7 @@ void Com_GetGameInfo()
 			{
 				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
 				{
-					com_gameInfo.usesProfiles = String::Atoi(token);
+					comet_gameInfo.usesProfiles = String::Atoi(token);
 				}
 				else
 				{
@@ -2894,7 +2889,7 @@ void Com_Init(char* commandLine)
 			const char* cl_profileStr = Cvar_VariableString("cl_profile");
 
 			safeMode = qfalse;
-			if (com_gameInfo.usesProfiles)
+			if (comet_gameInfo.usesProfiles)
 			{
 				if (!cl_profileStr[0])
 				{
@@ -3141,7 +3136,7 @@ void Com_WriteConfiguration(void)
 	}
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-	if (com_gameInfo.usesProfiles && cl_profileStr[0])
+	if (comet_gameInfo.usesProfiles && cl_profileStr[0])
 	{
 		Com_WriteConfigToFile(va("profiles/%s/%s", cl_profileStr, CONFIG_NAME));
 	}
@@ -3496,7 +3491,7 @@ void Com_Shutdown(qboolean badProfile)
 
 
 	// delete pid file
-	if (com_gameInfo.usesProfiles && cl_profileStr[0] && !badProfile)
+	if (comet_gameInfo.usesProfiles && cl_profileStr[0] && !badProfile)
 	{
 		if (FS_FileExists(va("profiles/%s/profile.pid", cl_profileStr)))
 		{

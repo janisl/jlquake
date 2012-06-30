@@ -219,6 +219,7 @@ struct client_t
 	netchan_buffer_t** q3_netchan_end_queue;
 	netchan_buffer_t* et_netchan_end_queue;
 
+	idEntity3* q3_entity;		// SVT3_ntityNum(clientnum)
 	q3sharedEntity_t* q3_gentity;		// SVWS_GentityNum(clientnum)
 	wssharedEntity_t* ws_gentity;		// SVWS_GentityNum(clientnum)
 	wmsharedEntity_t* wm_gentity;		// SVWS_GentityNum(clientnum)

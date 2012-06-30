@@ -79,6 +79,11 @@ clipHandle_t SVQ3_ClipHandleForEntity(const q3sharedEntity_t* gent)
 	return SVT3_ClipHandleForEntity(SVQ3_EntityForGentity(gent));
 }
 
+void SVQ3_BotFrame(int time)
+{
+	VM_Call(gvm, Q3BOTAI_START_FRAME, time);
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {
@@ -213,7 +218,12 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3G_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
-//----
+	case Q3G_BOT_ALLOCATE_CLIENT:
+		return SVT3_BotAllocateClient(-1);
+	case Q3G_BOT_FREE_CLIENT:
+		SVT3_BotFreeClient(args[1]);
+		return 0;
+
 	case Q3G_GET_USERCMD:
 		SVQ3_GetUsercmd(args[1], (q3usercmd_t*)VMA(2));
 		return 0;
@@ -226,6 +236,11 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
 //----
+
+	case Q3BOTLIB_SETUP:
+		return SVT3_BotLibSetup();
+	case Q3BOTLIB_SHUTDOWN:
+		return BotLibShutdown();
 	case Q3BOTLIB_LIBVAR_SET:
 		return BotLibVarSet((char*)VMA(1), (char*)VMA(2));
 	case Q3BOTLIB_LIBVAR_GET:
@@ -251,6 +266,10 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3BOTLIB_TEST:
 		return 0;
 
+	case Q3BOTLIB_GET_SNAPSHOT_ENTITY:
+		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
+	case Q3BOTLIB_GET_CONSOLE_MESSAGE:
+		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 //----
 
 	case Q3BOTLIB_AAS_BBOX_AREAS:

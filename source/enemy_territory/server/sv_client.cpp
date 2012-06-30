@@ -58,7 +58,7 @@ void SV_GetChallenge(netadr_t from)
 	challenge_t* challenge;
 
 	// ignore if we are in single player
-	if (SV_GameIsSinglePlayer())
+	if (SVET_GameIsSinglePlayer())
 	{
 		return;
 	}
@@ -513,6 +513,7 @@ gotnewcl:
 	clientNum = newcl - svs.clients;
 	ent = SVET_GentityNum(clientNum);
 	newcl->et_gentity = ent;
+	newcl->q3_entity = SVT3_EntityNum(clientNum);
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -622,7 +623,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 		SV_CloseDownload(drop);
 	}
 
-	if ((!SV_GameIsSinglePlayer()) || (!isBot))
+	if ((!SVET_GameIsSinglePlayer()) || (!isBot))
 	{
 		// tell everyone why they got dropped
 
@@ -649,7 +650,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 
 	if (drop->netchan.remoteAddress.type == NA_BOT)
 	{
-		SV_BotFreeClient(drop - svs.clients);
+		SVT3_BotFreeClient(drop - svs.clients);
 	}
 
 	// nuke user info
@@ -775,6 +776,7 @@ void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
 	ent = SVET_GentityNum(clientNum);
 	ent->s.number = clientNum;
 	client->et_gentity = ent;
+	client->q3_entity = SVT3_EntityNum(clientNum);
 
 	client->q3_deltaMessage = -1;
 	client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
@@ -1875,7 +1877,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	// also use the message acknowledge
 	key ^= cl->q3_messageAcknowledge;
 	// also use the last acknowledged server command in the key
-	key ^= Com_HashKey(cl->q3_reliableCommands[cl->q3_reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)], 32);
+	key ^= Com_HashKey(cl->q3_reliableCommands[cl->q3_reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WOLF - 1)], 32);
 
 	memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
@@ -1939,7 +1941,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		//if ( cmds[i].serverTime > svs.q3_time + 3000 ) {
 		//	continue;
 		//}
-		if (!SV_GameIsSinglePlayer())		// We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+		if (!SVET_GameIsSinglePlayer())		// We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
 		{	// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if (cmds[i].serverTime <= cl->et_lastUsercmd.serverTime)		// Q3_MISSIONPACK
@@ -2012,7 +2014,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
 	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
-	if (cl->q3_reliableAcknowledge < cl->q3_reliableSequence - MAX_RELIABLE_COMMANDS_ET)
+	if (cl->q3_reliableAcknowledge < cl->q3_reliableSequence - MAX_RELIABLE_COMMANDS_WOLF)
 	{
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging

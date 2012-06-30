@@ -53,6 +53,16 @@ void idQuake3Entity::IncLinkCount()
 	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.linkcount++;
 }
 
+int idQuake3Entity::GetSvFlags() const
+{
+	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags;
+}
+
+void idQuake3Entity::SetSvFlags(int value)
+{
+	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags = value;
+}
+
 bool idQuake3Entity::GetSvFlagCapsule() const
 {
 	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CAPSULE);

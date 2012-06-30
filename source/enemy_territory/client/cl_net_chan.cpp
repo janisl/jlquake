@@ -69,7 +69,7 @@ static void CL_Netchan_Encode(QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)clc.q3_serverCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)];
+	string = (byte*)clc.q3_serverCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WOLF - 1)];
 	index = 0;
 	//
 	key = clc.q3_challenge ^ serverId ^ messageAcknowledge;
@@ -121,7 +121,7 @@ static void CL_Netchan_Decode(QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	string = (byte*)clc.q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_ET - 1)];
+	string = (byte*)clc.q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WOLF - 1)];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
 	key = clc.q3_challenge ^ LittleLong(*(unsigned*)msg->_data);
@@ -156,7 +156,7 @@ void CL_Netchan_TransmitNextFragment(netchan_t* chan)
 	Netchan_TransmitNextFragment(chan);
 }
 
-extern qboolean SV_GameIsSinglePlayer(void);
+extern bool SVET_GameIsSinglePlayer(void);
 
 /*
 ================
@@ -193,7 +193,7 @@ void CL_Netchan_Transmit(netchan_t* chan, QMsg* msg)
 	msg->WriteByte(q3clc_EOF);
 	CL_WriteBinaryMessage(msg);
 
-	if (!SV_GameIsSinglePlayer())
+	if (!SVET_GameIsSinglePlayer())
 	{
 		CL_Netchan_Encode(msg);
 	}
@@ -216,7 +216,7 @@ qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg)
 	{
 		return qfalse;
 	}
-	if (!SV_GameIsSinglePlayer())
+	if (!SVET_GameIsSinglePlayer())
 	{
 		CL_Netchan_Decode(msg);
 	}

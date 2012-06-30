@@ -87,6 +87,8 @@ public:
 	virtual bool GetLinked() const = 0;
 	virtual void SetLinked(bool value) = 0;
 	virtual void IncLinkCount() = 0;
+	virtual int GetSvFlags() const = 0;
+	virtual void SetSvFlags(int value) = 0;
 	virtual bool GetSvFlagCapsule() const = 0;
 	virtual bool GetBModel() const = 0;
 	virtual void SetBModel(bool value) = 0;

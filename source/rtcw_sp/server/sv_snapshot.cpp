@@ -249,8 +249,8 @@ void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg)
 	{
 		msg->WriteByte(q3svc_serverCommand);
 		msg->WriteLong(i);
-		//MSG_WriteString( msg, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_WS-1) ] );
-		msg->WriteString(SV_GetReliableCommand(client, i & (MAX_RELIABLE_COMMANDS_WS - 1)));
+		//MSG_WriteString( msg, client->reliableCommands[ i & (MAX_RELIABLE_COMMANDS_WOLF-1) ] );
+		msg->WriteString(SVT3_GetReliableCommand(client, i & (MAX_RELIABLE_COMMANDS_WOLF - 1)));
 	}
 	client->q3_reliableSent = client->q3_reliableSequence;
 }

@@ -105,7 +105,6 @@ void SV_ChangeMaxClients(void);
 void SV_SpawnServer(char* server, qboolean killBots);
 
 //RF, reliable commands
-const char* SV_GetReliableCommand(client_t* cl, int index);
 void SV_FreeAcknowledgedReliableCommands(client_t* cl);
 qboolean SV_AddReliableCommand(client_t* cl, int index, const char* cmd);
 void SV_InitReliableCommandsForClient(client_t* cl, int commands);
@@ -154,19 +153,6 @@ void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);
 qboolean SV_GetTag(int clientNum, char* tagname, orientation_t* _1or);
-
-//
-// sv_bot.c
-//
-void        SV_BotFrame(int time);
-int         SV_BotAllocateClient(void);
-void        SV_BotFreeClient(int clientNum);
-
-void        SV_BotInitCvars(void);
-int         SV_BotLibSetup(void);
-int         SV_BotLibShutdown(void);
-int         SV_BotGetSnapshotEntity(int client, int ent);
-int         SV_BotGetConsoleMessage(int client, char* buf, int size);
 
 //============================================================
 //

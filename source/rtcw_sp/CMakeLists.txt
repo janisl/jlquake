@@ -29,7 +29,6 @@ set(WOLFSP_FILES
 	unix/unix_shared.cpp
 	unix/linux_glimp.cpp
 
-	server/sv_bot.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
 	server/sv_game.cpp

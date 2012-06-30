@@ -104,12 +104,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
-	case WMG_BOT_ALLOCATE_CLIENT:
-		return SV_BotAllocateClient();
-	case WMG_BOT_FREE_CLIENT:
-		SV_BotFreeClient(args[1]);
-		return 0;
-//------
 	case WMG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 	case WMG_SNAPVECTOR:
@@ -117,23 +111,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 	case WMG_GETTAG:
 		return SV_GetTag(args[1], (char*)VMA(2), (orientation_t*)VMA(3));
-
-	//====================================
-
-	case WMBOTLIB_SETUP:
-		return SV_BotLibSetup();
-	case WMBOTLIB_SHUTDOWN:
-		return SV_BotLibShutdown();
 //------
-	case WMBOTLIB_GET_SNAPSHOT_ENTITY:
-		return SV_BotGetSnapshotEntity(args[1], args[2]);
-	case WMBOTLIB_GET_CONSOLE_MESSAGE:
-		return SV_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 	case WMBOTLIB_USER_COMMAND:
 		SV_ClientThink(&svs.clients[args[1]], (wmusercmd_t*)VMA(2));
 		return 0;
 //------
-
 	default:
 		return SVWM_GameSystemCalls(args);
 	}
@@ -177,6 +159,7 @@ static void SV_InitGameVM(qboolean restart)
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
 		svs.clients[i].wm_gentity = NULL;
+		svs.clients[i].q3_entity = NULL;
 	}
 
 	// use the current msec count for a random seed

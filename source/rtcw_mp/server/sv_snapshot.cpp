@@ -249,7 +249,7 @@ void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg)
 	{
 		msg->WriteByte(q3svc_serverCommand);
 		msg->WriteLong(i);
-		msg->WriteString(client->q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WM - 1)]);
+		msg->WriteString(client->q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WOLF - 1)]);
 	}
 	client->q3_reliableSent = client->q3_reliableSequence;
 }

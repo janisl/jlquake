@@ -28,9 +28,12 @@ etplayerState_t* SVET_GameClientNum(int num);
 q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
 etsharedEntity_t* SVET_GEntityForSvEntity(const q3svEntity_t* svEnt);
 idEntity3* SVET_EntityForGentity(const etsharedEntity_t* gEnt);
+bool SVET_GameIsSinglePlayer();
+bool SVET_GameIsCoop();
 
 bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy);
 bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
+void SVET_BotFrame(int time);
 qintptr SVET_GameSystemCalls(qintptr* args);
 
 //

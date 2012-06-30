@@ -46,9 +46,8 @@ class idQuake3Entity : public idEntity3
 	virtual bool GetLinked() const;
 	virtual void SetLinked(bool value);
 	virtual void IncLinkCount();
-/*
-	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
-*/
+	virtual int GetSvFlags() const;
+	virtual void SetSvFlags(int value);
 	virtual bool GetSvFlagCapsule() const;
 /*
 	// only send to this client when SVF_SINGLECLIENT is set

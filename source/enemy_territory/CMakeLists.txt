@@ -15,7 +15,6 @@
 #g_env.Append( CPPFLAGS = '-fno-strict-aliasing' )
 
 set (ET_FILES
-	server/sv_bot.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
 	server/sv_game.cpp
@@ -70,7 +69,6 @@ target_link_libraries(jlet ${CLIENTS_LIBS} curl)
 #local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 
 set (ETDED_FILES
-	server/sv_bot.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
 	server/sv_game.cpp

@@ -80,8 +80,6 @@ extern Cvar* sv_onlyVisibleClients;
 
 extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
 
-extern Cvar* g_gameType;
-
 // Rafael gameskill
 //extern	Cvar	*sv_gameskill;
 // done
@@ -195,22 +193,7 @@ void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);
 qboolean SV_GetTag(int clientNum, int tagFileNumber, char* tagname, orientation_t* _or);
 int SV_LoadTag(const char* mod_name);
-qboolean    SV_GameIsSinglePlayer(void);
-qboolean    SV_GameIsCoop(void);
 void        SV_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
-
-//
-// sv_bot.c
-//
-void        SV_BotFrame(int time);
-int         SV_BotAllocateClient(int clientNum);
-void        SV_BotFreeClient(int clientNum);
-
-void        SV_BotInitCvars(void);
-int         SV_BotLibSetup(void);
-int         SV_BotLibShutdown(void);
-int         SV_BotGetSnapshotEntity(int client, int ent);
-int         SV_BotGetConsoleMessage(int client, char* buf, int size);
 
 //============================================================
 //

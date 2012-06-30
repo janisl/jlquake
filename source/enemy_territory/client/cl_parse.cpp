@@ -956,7 +956,7 @@ void CL_ParseCommandString(QMsg* msg)
 	}
 	clc.q3_serverCommandSequence = seq;
 
-	index = seq & (MAX_RELIABLE_COMMANDS_ET - 1);
+	index = seq & (MAX_RELIABLE_COMMANDS_WOLF - 1);
 	String::NCpyZ(clc.q3_serverCommands[index], s, sizeof(clc.q3_serverCommands[index]));
 }
 
@@ -1006,7 +1006,7 @@ void CL_ParseServerMessage(QMsg* msg)
 	// get the reliable sequence acknowledge number
 	clc.q3_reliableAcknowledge = msg->ReadLong();
 	//
-	if (clc.q3_reliableAcknowledge < clc.q3_reliableSequence - MAX_RELIABLE_COMMANDS_ET)
+	if (clc.q3_reliableAcknowledge < clc.q3_reliableSequence - MAX_RELIABLE_COMMANDS_WOLF)
 	{
 		clc.q3_reliableAcknowledge = clc.q3_reliableSequence;
 	}

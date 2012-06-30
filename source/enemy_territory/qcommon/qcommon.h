@@ -202,19 +202,6 @@ extern char cl_cdkey[34];
 void Com_AppendCDKey(const char* filename);
 void Com_ReadCDKey(const char* filename);
 
-typedef struct gameInfo_s
-{
-	qboolean spEnabled;
-	int spGameTypes;
-	int defaultSPGameType;
-	int coopGameTypes;
-	int defaultCoopGameType;
-	int defaultGameType;
-	qboolean usesProfiles;
-} gameInfo_t;
-
-extern gameInfo_t com_gameInfo;
-
 // returnbed by Sys_GetProcessorId
 #define CPUID_GENERIC           0			// any unrecognized processor
 

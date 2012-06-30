@@ -125,7 +125,7 @@ void SV_UpdateConfigStrings(void)
 				// RF, re-enabled
 				// Arnout: removed hardcoded gametype
 				// Arnout: added coop
-				if ((SV_GameIsSinglePlayer() || SV_GameIsCoop()) && client->et_gentity && (client->et_gentity->r.svFlags & Q3SVF_BOT))
+				if ((SVET_GameIsSinglePlayer() || SVET_GameIsCoop()) && client->et_gentity && (client->et_gentity->r.svFlags & Q3SVF_BOT))
 				{
 					continue;
 				}
@@ -296,7 +296,7 @@ void SV_BoundMaxClients(int minimum)
 	// set here, which may be wrong - we can certainly just set it to a sensible number
 	// when it is not in single player mode in the else part of the if statement when
 	// necessary
-	if (SV_GameIsSinglePlayer() || SV_GameIsCoop())
+	if (SVET_GameIsSinglePlayer() || SVET_GameIsCoop())
 	{
 		Cvar_Set("sv_maxclients", "64");
 	}
@@ -655,7 +655,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// Ridah
 	// DHM - Nerve :: We want to use the completion bar in multiplayer as well
 	// Arnout: just always use it
-//	if( !SV_GameIsSinglePlayer() ) {
+//	if( !SVET_GameIsSinglePlayer() ) {
 	SV_SetExpectedHunkUsage(va("maps/%s.bsp", server));
 //	} else {
 	// just set it to a negative number,so the cgame knows not to draw the percent bar
@@ -717,7 +717,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	for (i = 0; i < GAME_INIT_FRAMES; i++)
 	{
 		VM_Call(gvm, ETGAME_RUN_FRAME, svs.q3_time);
-		SV_BotFrame(svs.q3_time);
+		SVT3_BotFrame(svs.q3_time);
 		svs.q3_time += FRAMETIME;
 	}
 
@@ -733,7 +733,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 			if (svs.clients[i].netchan.remoteAddress.type == NA_BOT)
 			{
-				if (killBots || SV_GameIsSinglePlayer() || SV_GameIsCoop())
+				if (killBots || SVET_GameIsSinglePlayer() || SVET_GameIsCoop())
 				{
 					SV_DropClient(&svs.clients[i], "");
 					continue;
@@ -771,6 +771,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					ent = SVET_GentityNum(i);
 					ent->s.number = i;
 					client->et_gentity = ent;
+					client->q3_entity = SVT3_EntityNum(i);
 
 					client->q3_deltaMessage = -1;
 					client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
@@ -783,7 +784,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// run another frame to allow things to look at all the players
 	VM_Call(gvm, ETGAME_RUN_FRAME, svs.q3_time);
-	SV_BotFrame(svs.q3_time);
+	SVT3_BotFrame(svs.q3_time);
 	svs.q3_time += FRAMETIME;
 
 	if (sv_pure->integer)
@@ -852,8 +853,6 @@ SV_Init
 Only called at main exe startup, not for each game
 ===============
 */
-void SV_BotInitBotLib(void);
-
 void SV_Init(void)
 {
 	SV_AddOperatorCommands();
@@ -955,7 +954,7 @@ void SV_Init(void)
 
 	Cvar_Get("g_needpass", "0", CVAR_SERVERINFO);
 
-	g_gameType = Cvar_Get("g_gametype", va("%i", com_gameInfo.defaultGameType), CVAR_SERVERINFO | CVAR_LATCH2);
+	get_gameType = Cvar_Get("g_gametype", va("%i", comet_gameInfo.defaultGameType), CVAR_SERVERINFO | CVAR_LATCH2);
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	sv_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
@@ -974,10 +973,10 @@ void SV_Init(void)
 	sv_fullmsg = Cvar_Get("sv_fullmsg", "Server is full.", CVAR_ARCHIVE);
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
-	SV_BotInitCvars();
+	SVT3_BotInitCvars();
 
 	// init the botlib here because we need the pre-compiler in the UI
-	SV_BotInitBotLib();
+	SVT3_BotInitBotLib();
 
 	svs.et_serverLoad = -1;
 }

@@ -89,6 +89,11 @@ bool SVWM_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, b
 	return VM_Call(gvm, WMAICAST_CHECKATTACKATPOS, entnum, enemy, (qintptr)pos, ducking, allowHitWorld);
 }
 
+void SVWM_BotFrame(int time)
+{
+	VM_Call(gvm, WMBOTAI_START_FRAME, time);
+}
+
 static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {
@@ -223,7 +228,11 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMG_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
-//------
+	case WMG_BOT_ALLOCATE_CLIENT:
+		return SVT3_BotAllocateClient(-1);
+	case WMG_BOT_FREE_CLIENT:
+		SVT3_BotFreeClient(args[1]);
+		return 0;
 
 	case WMG_GET_USERCMD:
 		SVWM_GetUsercmd(args[1], (wmusercmd_t*)VMA(2));
@@ -237,6 +246,11 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
 //------
+
+	case WMBOTLIB_SETUP:
+		return SVT3_BotLibSetup();
+	case WMBOTLIB_SHUTDOWN:
+		return BotLibShutdown();
 	case WMBOTLIB_LIBVAR_SET:
 		return BotLibVarSet((char*)VMA(1), (char*)VMA(2));
 	case WMBOTLIB_LIBVAR_GET:
@@ -262,6 +276,10 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMBOTLIB_TEST:
 		return 0;
 
+	case WMBOTLIB_GET_SNAPSHOT_ENTITY:
+		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
+	case WMBOTLIB_GET_CONSOLE_MESSAGE:
+		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 //------
 
 	case WMBOTLIB_AAS_ENTITY_INFO:

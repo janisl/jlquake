@@ -79,6 +79,17 @@ clipHandle_t SVET_ClipHandleForEntity(const etsharedEntity_t* gent)
 	return SVT3_ClipHandleForEntity(SVET_EntityForGentity(gent));
 }
 
+bool SVET_GameIsSinglePlayer()
+{
+	return !!(comet_gameInfo.spGameTypes & (1 << get_gameType->integer));
+}
+
+//	This is a modified SinglePlayer, no savegame capability for example
+bool SVET_GameIsCoop()
+{
+	return !!(comet_gameInfo.coopGameTypes & (1 << get_gameType->integer));
+}
+
 bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy)
 {
 	return VM_Call(gvm, ETBOT_VISIBLEFROMPOS, srcorigin, srcnum, destorigin, destent, dummy);
@@ -87,6 +98,11 @@ bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int
 bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld)
 {
 	return VM_Call(gvm, ETBOT_CHECKATTACKATPOS, entnum, enemy, pos, ducking, allowHitWorld);
+}
+
+void SVET_BotFrame(int time)
+{
+	VM_Call(gvm, ETBOTAI_START_FRAME, time);
 }
 
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
@@ -265,7 +281,11 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETG_AREAS_CONNECTED:
 		return CM_AreasConnected(args[1], args[2]);
 
-//------
+	case ETG_BOT_ALLOCATE_CLIENT:
+		return SVT3_BotAllocateClient(args[1]);
+	case ETG_BOT_FREE_CLIENT:
+		SVT3_BotFreeClient(args[1]);
+		return 0;
 
 	case ETG_GET_USERCMD:
 		SVET_GetUsercmd(args[1], (etusercmd_t*)VMA(2));
@@ -286,7 +306,10 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETG_GET_SOUND_LENGTH:
 		common->Error("GetSoundLength on server");
 
-//------
+	case ETBOTLIB_SETUP:
+		return SVT3_BotLibSetup();
+	case ETBOTLIB_SHUTDOWN:
+		return BotLibShutdown();
 	case ETBOTLIB_LIBVAR_SET:
 		return BotLibVarSet((char*)VMA(1), (char*)VMA(2));
 	case ETBOTLIB_LIBVAR_GET:
@@ -315,6 +338,10 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETBOTLIB_TEST:
 		return 0;
 
+	case ETBOTLIB_GET_SNAPSHOT_ENTITY:
+		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
+	case ETBOTLIB_GET_CONSOLE_MESSAGE:
+		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
 //------
 
 	case ETBOTLIB_AAS_ENTITY_INFO:

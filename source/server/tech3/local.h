@@ -18,6 +18,20 @@
 #define _TECH3_LOCAL_H
 
 //
+//	Bot
+//
+extern int bot_enable;
+
+int SVT3_BotAllocateClient(int clientNum);
+void SVT3_BotFreeClient(int clientNum);
+int SVT3_BotLibSetup();
+void SVT3_BotInitCvars();
+void SVT3_BotInitBotLib();
+bool SVT3_BotGetConsoleMessage(int client, char* buf, int size);
+int SVT3_BotGetSnapshotEntity(int client, int ent);
+void SVT3_BotFrame(int time);
+
+//
 //	Game
 //
 extern vm_t* gvm;							// game virtual machine
@@ -34,6 +48,16 @@ void SVT3_SetBrushModel(idEntity3* ent, q3svEntity_t* svEnt, const char* name);
 void SVT3_GetServerinfo(char* buffer, int bufferSize);
 void SVT3_AdjustAreaPortalState(q3svEntity_t* svEnt, bool open);
 bool SVT3_GetEntityToken(char* buffer, int length);
+
+//
+//	Init
+//
+const char* SVT3_GetReliableCommand(client_t* cl, int index);
+
+//
+//	Main
+//
+extern Cvar* get_gameType;
 
 //
 //	World

@@ -866,7 +866,7 @@ void SV_Frame(int msec)
 
 	if (!com_dedicated->integer)
 	{
-		SV_BotFrame(svs.q3_time + sv.q3_timeResidual);
+		SVT3_BotFrame(svs.q3_time + sv.q3_timeResidual);
 	}
 
 	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
@@ -928,7 +928,7 @@ void SV_Frame(int msec)
 
 	if (com_dedicated->integer)
 	{
-		SV_BotFrame(svs.q3_time);
+		SVT3_BotFrame(svs.q3_time);
 	}
 
 	// run the game simulation in chunks

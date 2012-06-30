@@ -31,6 +31,7 @@ idEntity3* SVWS_EntityForGentity(const wssharedEntity_t* gEnt);
 
 bool SVWS_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
 bool SVWS_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
+void SVWS_BotFrame(int time);
 qintptr SVWS_GameSystemCalls(qintptr* args);
 
 //

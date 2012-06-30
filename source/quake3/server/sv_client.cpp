@@ -453,6 +453,7 @@ gotnewcl:
 	clientNum = newcl - svs.clients;
 	ent = SVQ3_GentityNum(clientNum);
 	newcl->q3_gentity = ent;
+	newcl->q3_entity = SVT3_EntityNum(clientNum);
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -569,7 +570,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 
 	if (drop->netchan.remoteAddress.type == NA_BOT)
 	{
-		SV_BotFreeClient(drop - svs.clients);
+		SVT3_BotFreeClient(drop - svs.clients);
 	}
 
 	// nuke user info
@@ -691,6 +692,7 @@ void SV_ClientEnterWorld(client_t* client, q3usercmd_t* cmd)
 	ent = SVQ3_GentityNum(clientNum);
 	ent->s.number = clientNum;
 	client->q3_gentity = ent;
+	client->q3_entity = SVT3_EntityNum(clientNum);
 
 	client->q3_deltaMessage = -1;
 	client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately

@@ -808,9 +808,7 @@ struct etentityState_t
 // RF, increased this, seems to keep causing problems when set to 64, especially when loading
 // a savegame, which is hard to fix on that side, since we can't really spread out a loadgame
 // among several frames
-#define MAX_RELIABLE_COMMANDS_WS   256	// bigger!
-#define MAX_RELIABLE_COMMANDS_WM   256	// bigger!
-#define MAX_RELIABLE_COMMANDS_ET   256	// bigger!
+#define MAX_RELIABLE_COMMANDS_WOLF   256	// bigger!
 #define BIGGEST_MAX_RELIABLE_COMMANDS   256	// bigger!
 
 #define MAX_NAME_LENGTH_WS     32		// max length of a client name
@@ -872,4 +870,15 @@ enum
 	ETMESSAGE_EMPTY = 0,
 	ETMESSAGE_WAITING,		// rate/packet limited
 	ETMESSAGE_WAITING_OVERFLOW,	// packet too large with message
+};
+
+struct etgameInfo_t
+{
+	qboolean spEnabled;
+	int spGameTypes;
+	int defaultSPGameType;
+	int coopGameTypes;
+	int defaultCoopGameType;
+	int defaultGameType;
+	qboolean usesProfiles;
 };

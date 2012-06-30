@@ -118,7 +118,6 @@ char autoupdateFilename[MAX_QPATH];
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
-extern void SV_BotFrame(int time);
 void CL_CheckForResend(void);
 void CL_ShowIP_f(void);
 void CL_ServerStatus_f(void);
@@ -194,12 +193,12 @@ void CL_AddReliableCommand(const char* cmd)
 
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
-	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_ET)
+	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WOLF)
 	{
 		Com_Error(ERR_DROP, "Client command overflow");
 	}
 	clc.q3_reliableSequence++;
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_ET - 1);
+	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
 	String::NCpyZ(clc.q3_reliableCommands[index], cmd, sizeof(clc.q3_reliableCommands[index]));
 }
 
@@ -214,7 +213,7 @@ void CL_ChangeReliableCommand(void)
 
 	// NOTE TTimo: what is the randomize for?
 	r = clc.q3_reliableSequence - (random() * 5);
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_ET - 1);
+	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
 	l = String::Length(clc.q3_reliableCommands[index]);
 	if (l >= MAX_STRING_CHARS - 1)
 	{

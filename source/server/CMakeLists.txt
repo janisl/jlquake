@@ -48,8 +48,11 @@ add_library(server STATIC
 	quake2/world.cpp
 	quake3/game.cpp
 	quake3/Quake3Entity.cpp
+	tech3/bot.cpp
 	tech3/Entity3.cpp
 	tech3/game.cpp
+	tech3/init.cpp
+	tech3/main.cpp
 	tech3/world.cpp
 	wolfmp/game.cpp
 	wolfmp/WolfMPEntity.cpp

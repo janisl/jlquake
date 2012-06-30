@@ -53,6 +53,16 @@ void idWolfSPEntity::IncLinkCount()
 	reinterpret_cast<wssharedEntity_t*>(gentity)->r.linkcount++;
 }
 
+int idWolfSPEntity::GetSvFlags() const
+{
+	return reinterpret_cast<wssharedEntity_t*>(gentity)->r.svFlags;
+}
+
+void idWolfSPEntity::SetSvFlags(int value)
+{
+	reinterpret_cast<wssharedEntity_t*>(gentity)->r.svFlags = value;
+}
+
 bool idWolfSPEntity::GetSvFlagCapsule() const
 {
 	return !!(reinterpret_cast<wssharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_CAPSULE);

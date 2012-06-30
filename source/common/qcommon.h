@@ -83,4 +83,6 @@ extern int com_frameTime;
 
 extern int cl_connectedToPureServer;
 
+extern etgameInfo_t comet_gameInfo;
+
 #endif
