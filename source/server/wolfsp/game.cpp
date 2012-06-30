@@ -145,7 +145,9 @@ qintptr SVWS_GameSystemCalls(qintptr* args)
 	case WSG_ERROR:
 		common->Error("%s", (char*)VMA(1));
 		return 0;
-//-----------
+	case WSG_ENDGAME:
+		common->EndGame("endgame");		// no message, no error print
+		return 0;
 	case WSG_MILLISECONDS:
 		return Sys_Milliseconds();
 	case WSG_CVAR_REGISTER:

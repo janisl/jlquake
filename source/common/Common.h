@@ -30,6 +30,8 @@ public:
 	// Fatal errors quit all the way to a system dialog box, which is appropriate for
 	// static internal errors or cases where the system may be corrupted.
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+
+	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
 };
 
 extern idCommon* common;

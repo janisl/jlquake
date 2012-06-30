@@ -2483,6 +2483,10 @@ void Com_Frame(void)
 	{
 		Com_Error(ERR_DROP, "%s", e.What());
 	}
+	catch (EndGameException& e)
+	{
+		Com_Error(ERR_ENDGAME, "%s", e.What());
+	}
 	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());

@@ -33,4 +33,11 @@ public:
 	{}
 };
 
+class EndGameException : public Exception
+{
+public:
+	EndGameException(const char* text) : Exception(text)
+	{}
+};
+
 #define qassert(x)      if (x) {} else {throw Exception("Assertion failed " #x); }

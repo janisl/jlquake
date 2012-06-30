@@ -861,6 +861,10 @@ void _Host_Frame(float time)
 	{
 		Host_Error(e.What());
 	}
+	catch (EndGameException& e)
+	{
+		Host_EndGame(e.What());
+	}
 }
 
 void Host_Frame(float time)
