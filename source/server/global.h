@@ -344,7 +344,7 @@ struct server_t
 	int q3_snapshotCounter;				// incremented for each snapshot built
 	int q3_timeResidual;				// <= 1000 / sv_frame->value
 
-	char* q3_configstrings[MAX_CONFIGSTRINGS_Q3];
+	char* q3_configstrings[BIGGEST_MAX_CONFIGSTRINGS_T3];
 	q3svEntity_t q3_svEntities[MAX_GENTITIES_Q3];
 	idEntity3* q3_entities[MAX_GENTITIES_Q3];
 

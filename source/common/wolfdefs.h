@@ -21,6 +21,7 @@
 #define MAX_CONFIGSTRINGS_WS   2048
 #define MAX_CONFIGSTRINGS_WM   2048
 #define MAX_CONFIGSTRINGS_ET   1024
+#define BIGGEST_MAX_CONFIGSTRINGS_T3   2048
 
 // wsusercmd_t is sent to the server each client frame
 struct wsusercmd_t
