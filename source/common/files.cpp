@@ -488,7 +488,7 @@ bool FS_CreatePath(const char* OSPath_)
 }
 
 //	Copy a fully specified file from one place to another
-void FS_CopyFile(char* fromOSPath, char* toOSPath)
+void FS_CopyFile(const char* fromOSPath, const char* toOSPath)
 {
 	if (fs_debug->integer)
 	{
@@ -535,6 +535,13 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 	}
 	fclose(f);
 	Mem_Free(buf);
+}
+
+void FS_CopyFileOS(const char* from, const char* to)
+{
+	char* fromOSPath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, from);
+	char* toOSPath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, to);
+	FS_CopyFile(fromOSPath, toOSPath);
 }
 
 void FS_Remove(const char* osPath)

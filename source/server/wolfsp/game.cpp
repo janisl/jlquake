@@ -186,7 +186,9 @@ qintptr SVWS_GameSystemCalls(qintptr* args)
 	case WSG_FS_FCLOSE_FILE:
 		FS_FCloseFile(args[1]);
 		return 0;
-//-----------
+	case WSG_FS_COPY_FILE:
+		FS_CopyFileOS((char*)VMA(1), (char*)VMA(2));
+		return 0;
 	case WSG_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 

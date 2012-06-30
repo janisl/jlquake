@@ -84,10 +84,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //-----------
-	case WSG_FS_COPY_FILE:
-		FS_CopyFileOS((char*)VMA(1), (char*)VMA(2));			//DAJ
-		return 0;
-//-----------
 	case WSG_DROP_CLIENT:
 		SV_GameDropClient(args[1], (char*)VMA(2));
 		return 0;

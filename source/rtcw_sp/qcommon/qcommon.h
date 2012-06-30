@@ -135,8 +135,6 @@ void    FS_Restart(int checksumFeed);
 
 int     FS_LoadStack();
 
-void    FS_CopyFileOS(char* from, char* to);	//DAJ
-
 /*
 ==============================================================
 
