@@ -231,24 +231,6 @@ void QDECL Com_Printf(const char* msg, ...);
 #define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
 
-// real time
-//=============================================
-
-
-typedef struct qtime_s
-{
-	int tm_sec;		/* seconds after the minute - [0,59] */
-	int tm_min;		/* minutes after the hour - [0,59] */
-	int tm_hour;	/* hours since midnight - [0,23] */
-	int tm_mday;	/* day of the month - [1,31] */
-	int tm_mon;		/* months since January - [0,11] */
-	int tm_year;	/* years since 1900 */
-	int tm_wday;	/* days since Sunday - [0,6] */
-	int tm_yday;	/* days since January 1 - [0,365] */
-	int tm_isdst;	/* daylight savings time flag */
-} qtime_t;
-
-
 // server browser sources
 #define AS_LOCAL            0
 #define AS_MPLAYER      1

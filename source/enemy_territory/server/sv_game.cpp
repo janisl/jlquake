@@ -118,8 +118,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
-	case ETG_REAL_TIME:
-		return Com_RealTime((qtime_t*)VMA(1));
 	case ETG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;

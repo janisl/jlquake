@@ -251,6 +251,8 @@ qintptr SVWS_GameSystemCalls(qintptr* args)
 	case WSG_DEBUG_POLYGON_DELETE:
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
+	case WSG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 //-----------
 
 	case WSBOTLIB_SETUP:

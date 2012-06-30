@@ -298,6 +298,8 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETG_DEBUG_POLYGON_DELETE:
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
+	case ETG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 //------
 
 	//	Not used by actual game code.

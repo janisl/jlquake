@@ -235,6 +235,8 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3G_DEBUG_POLYGON_DELETE:
 		BotImport_DebugPolygonDelete(args[1]);
 		return 0;
+	case Q3G_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 //----
 
 	case Q3BOTLIB_SETUP:
