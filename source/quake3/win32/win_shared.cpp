@@ -34,53 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <conio.h>
 
 /*
-================
-Sys_SnapVector
-================
-*/
-long fastftol(float f)
-{
-#ifdef _WIN64
-	return (long)f;
-#else
-	static int tmp;
-	__asm fld f
-	__asm fistp tmp
-	__asm mov eax, tmp
-#endif
-}
-
-void Sys_SnapVector(float* v)
-{
-#ifndef _WIN64
-	int i;
-	float f;
-
-	f = *v;
-	__asm fld f;
-	__asm fistp i;
-	*v = i;
-	v++;
-	f = *v;
-	__asm fld f;
-	__asm fistp i;
-	*v = i;
-	v++;
-	f = *v;
-	__asm fld f;
-	__asm fistp i;
-	*v = i;
-#else
-	*v = fastftol(*v);
-	v++;
-	*v = fastftol(*v);
-	v++;
-	*v = fastftol(*v);
-#endif
-}
-
-
-/*
 **
 ** Disable all optimizations temporarily so this code works correctly!
 **

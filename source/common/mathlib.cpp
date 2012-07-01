@@ -1345,3 +1345,33 @@ float Q_random(int* seed)
 {
 	return (Q_rand(seed) & 0xffff) / (float)0x10000;
 }
+
+#if id386 && defined _MSC_VER
+void Sys_SnapVector(float* v)
+{
+	int i;
+	float f;
+
+	f = *v;
+	__asm fld f;
+	__asm fistp i;
+	*v = i;
+	v++;
+	f = *v;
+	__asm fld f;
+	__asm fistp i;
+	*v = i;
+	v++;
+	f = *v;
+	__asm fld f;
+	__asm fistp i;
+	*v = i;
+}
+#elif !id386
+void Sys_SnapVector(float* v)
+{
+	v[0] = (float)rint(v[0]);
+	v[1] = (float)rint(v[1]);
+	v[2] = (float)rint(v[2]);
+}
+#endif

@@ -32,29 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-//=============================================================================
-
-//#if 0 // bk001215 - see snapvector.nasm for replacement
-#ifndef __i386__// rcg010206 - using this for PPC builds...
-long fastftol(float f)		// bk001213 - from win32/win_shared.c
-{	//static int tmp;
-	//	__asm fld f
-	//__asm fistp tmp
-	//__asm mov eax, tmp
-	return (long)f;
-}
-
-void Sys_SnapVector(float* v)		// bk001213 - see win32/win_shared.c
-{	// bk001213 - old linux
-	v[0] = rint(v[0]);
-	v[1] = rint(v[1]);
-	v[2] = rint(v[2]);
-}
-#endif
-
-
-//============================================
-
 int Sys_GetProcessorId(void)
 {
 	return CPUID_GENERIC;

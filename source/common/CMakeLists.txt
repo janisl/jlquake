@@ -73,6 +73,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 	set(COMMON_NASM_FILES
 		ftol.nasm
+		snapvector.nasm
 	)
 
 	foreach(SRC ${COMMON_NASM_FILES})

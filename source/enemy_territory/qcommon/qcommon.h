@@ -436,8 +436,6 @@ const char* Sys_GetCurrentUser(void);
 void QDECL Sys_Error(const char* error, ...);
 void    Sys_Quit(void);
 
-void    Sys_SnapVector(float* v);
-
 // the system console is shown when a dedicated server is running
 void    Sys_DisplaySystemConsole(qboolean show);
 

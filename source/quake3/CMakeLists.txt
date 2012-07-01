@@ -31,22 +31,6 @@ set(QUAKE3_FILES
 	unix/linux_signals.cpp
 )
 
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_NASM_FILES
-		unix/snapvector.nasm
-	)
-
-	foreach(SRC ${QUAKE3_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		set(QUAKE3_FILES ${QUAKE3_FILES} ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
-
 add_executable(jlquake3 ${QUAKE3_FILES})
 set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlquake3 ${CLIENTS_LIBS})
@@ -74,22 +58,6 @@ set(QUAKE3_DEDICATED_FILES
 	null/null_client.cpp
 	null/null_snddma.cpp
 )
-
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(QUAKE3_DED_NASM_FILES
-		unix/snapvector.nasm
-	)
-
-	foreach(SRC ${QUAKE3_DED_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES} ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})
 set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED -DC_ONLY")

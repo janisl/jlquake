@@ -47,21 +47,6 @@ set (ET_FILES
 	unix/unix_shared.cpp
 )
 
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(ET_NASM_FILES
-		unix/snapvector.nasm
-	)
-	foreach(SRC ${ET_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		list(APPEND ET_FILES ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
-
 add_executable(jlet ${ET_FILES})
 set_target_properties(jlet PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlet ${CLIENTS_LIBS} curl)
@@ -91,21 +76,6 @@ set (ETDED_FILES
 	null/null_snddma.cpp
 	qcommon/dl_main_stubs.cpp
 )
-
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(ETDED_NASM_FILES
-		unix/snapvector.nasm
-	)
-	foreach(SRC ${ETDED_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		list(APPEND ETDED_FILES ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jletded ${ETDED_FILES})
 set_target_properties(jletded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O -DDEDICATED")

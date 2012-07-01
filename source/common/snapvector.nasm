@@ -65,31 +65,3 @@ Sys_SnapVector:
 	pop ebp
 	pop eax
 	ret
-	
-; void Sys_SnapVectorCW( float *v, unsigned short int cw )
-global Sys_SnapVectorCW
-Sys_SnapVector_cw:
-	push 	eax
-	push 	ebp
-	mov	ebp, esp
-
-	fnstcw	[fpucw]
-	mov	eax, dword [ebp + 12]
-	fldcw	[ebp + 16]	
-	fld	dword [eax]
-	fistp	dword [eax]
-	fild	dword [eax]
-	fstp	dword [eax]	
-	fld	dword [eax + 4]
-	fistp	dword [eax + 4]
-	fild	dword [eax + 4]
-	fstp	dword [eax + 4]
-	fld	dword [eax + 8]
-	fistp	dword [eax + 8]
-	fild	dword [eax + 8]
-	fstp	dword [eax + 8]
-	fldcw	[fpucw]
-	
-	pop ebp
-	pop eax
-	ret

@@ -40,17 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../../common/system_unix.h"
 
-//=============================================================================
-
-#if defined __x86_64__
-void Sys_SnapVector(float* v)		// bk001213 - see win32/win_shared.c
-{	// bk001213 - old linux
-	v[0] = rint(v[0]);
-	v[1] = rint(v[1]);
-	v[2] = rint(v[2]);
-}
-#endif
-
 char* strlwr(char* s)
 {
 	if (s == NULL)		// bk001204 - paranoia

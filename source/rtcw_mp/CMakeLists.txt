@@ -45,21 +45,6 @@ set(WOLFMP_FILES
 	server/sv_snapshot.cpp
 )
 
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(WOLFMP_NASM_FILES
-		unix/snapvector.nasm
-	)
-	foreach(SRC ${WOLFMP_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		list(APPEND WOLFMP_FILES ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
-
 add_executable(jlwolfmp ${WOLFMP_FILES})
 set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
@@ -83,21 +68,6 @@ set(WOLFMPDED_FILES
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp
 )
-
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(WOLFMPDED_NASM_FILES
-		unix/snapvector.nasm
-	)
-	foreach(SRC ${WOLFMPDED_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		list(APPEND WOLFMPDED_FILES ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})
 set_target_properties(jlwolfmpded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O -DDEDICATED -DC_ONLY")

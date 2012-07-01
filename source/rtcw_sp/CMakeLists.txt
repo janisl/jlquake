@@ -38,21 +38,6 @@ set(WOLFSP_FILES
 	server/sv_snapshot.cpp
 )
 
-if(${SIZEOF_VOID_PTR} MATCHES "^4$")
-	set(WOLFSP_NASM_FILES
-		unix/snapvector.nasm
-	)
-	foreach(SRC ${WOLFSP_NASM_FILES})
-		get_filename_component(FILE_BASE ${SRC} NAME_WE)
-		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-		add_custom_command(OUTPUT ${OBJ}
-			DEPENDS ${SRC}
-			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
-		)
-		list(APPEND WOLFSP_FILES ${OBJ})
-	endforeach(SRC)
-endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
-
 add_executable(jlwolfsp ${WOLFSP_FILES})
 set_target_properties(jlwolfsp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlwolfsp ${CLIENTS_LIBS})
