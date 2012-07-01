@@ -97,14 +97,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //----
-	case Q3G_SNAPVECTOR:
-		Sys_SnapVector((float*)VMA(1));
-		return 0;
-//----
-	case Q3BOTLIB_USER_COMMAND:
-		SV_ClientThink(&svs.clients[args[1]], (q3usercmd_t*)VMA(2));
-		return 0;
-//----
 	default:
 		return SVQ3_GameSystemCalls(args);
 	}

@@ -118,18 +118,11 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
-	case ETG_SNAPVECTOR:
-		Sys_SnapVector((float*)VMA(1));
-		return 0;
 	case ETG_GETTAG:
 		return SV_GetTag(args[1], args[2], (char*)VMA(3), (orientation_t*)VMA(4));
 
 	case ETG_REGISTERTAG:
 		return SV_LoadTag((char*)VMA(1));
-//------
-	case ETBOTLIB_USER_COMMAND:
-		SV_ClientThink(&svs.clients[args[1]], (etusercmd_t*)VMA(2));
-		return 0;
 //------
 	default:
 		return SVET_GameSystemCalls(args);

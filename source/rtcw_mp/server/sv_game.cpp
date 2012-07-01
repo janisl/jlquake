@@ -104,15 +104,8 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
-	case WMG_SNAPVECTOR:
-		Sys_SnapVector((float*)VMA(1));
-		return 0;
 	case WMG_GETTAG:
 		return SV_GetTag(args[1], (char*)VMA(2), (orientation_t*)VMA(3));
-//------
-	case WMBOTLIB_USER_COMMAND:
-		SV_ClientThink(&svs.clients[args[1]], (wmusercmd_t*)VMA(2));
-		return 0;
 //------
 	default:
 		return SVWM_GameSystemCalls(args);

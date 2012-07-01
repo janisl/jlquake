@@ -90,6 +90,19 @@ bool SVET_GameIsCoop()
 	return !!(comet_gameInfo.coopGameTypes & (1 << get_gameType->integer));
 }
 
+void SVET_ClientThink(client_t* cl, etusercmd_t* cmd)
+{
+	cl->et_lastUsercmd = *cmd;
+
+	if (cl->state != CS_ACTIVE)
+	{
+		// may have been kicked during the last usercmd
+		return;
+	}
+
+	VM_Call(gvm, ETGAME_CLIENT_THINK, cl - svs.clients);
+}
+
 bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy)
 {
 	return VM_Call(gvm, ETBOT_VISIBLEFROMPOS, srcorigin, srcnum, destorigin, destent, dummy);
@@ -300,6 +313,9 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 		return 0;
 	case ETG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
+	case ETG_SNAPVECTOR:
+		Sys_SnapVector((float*)VMA(1));
+		return 0;
 //------
 
 	//	Not used by actual game code.
@@ -344,7 +360,9 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
 	case ETBOTLIB_GET_CONSOLE_MESSAGE:
 		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
-//------
+	case ETBOTLIB_USER_COMMAND:
+		SVET_ClientThink(&svs.clients[args[1]], (etusercmd_t*)VMA(2));
+		return 0;
 
 	case ETBOTLIB_AAS_ENTITY_INFO:
 		AAS_EntityInfo(args[1], (aas_entityinfo_t*)VMA(2));

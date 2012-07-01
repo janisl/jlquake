@@ -79,6 +79,19 @@ clipHandle_t SVQ3_ClipHandleForEntity(const q3sharedEntity_t* gent)
 	return SVT3_ClipHandleForEntity(SVQ3_EntityForGentity(gent));
 }
 
+void SVQ3_ClientThink(client_t* cl, q3usercmd_t* cmd)
+{
+	cl->q3_lastUsercmd = *cmd;
+
+	if (cl->state != CS_ACTIVE)
+	{
+		// may have been kicked during the last usercmd
+		return;
+	}
+
+	VM_Call(gvm, Q3GAME_CLIENT_THINK, cl - svs.clients);
+}
+
 void SVQ3_BotFrame(int time)
 {
 	VM_Call(gvm, Q3BOTAI_START_FRAME, time);
@@ -237,7 +250,9 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 		return 0;
 	case Q3G_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
-//----
+	case Q3G_SNAPVECTOR:
+		Sys_SnapVector((float*)VMA(1));
+		return 0;
 
 	case Q3BOTLIB_SETUP:
 		return SVT3_BotLibSetup();
@@ -272,7 +287,9 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
 	case Q3BOTLIB_GET_CONSOLE_MESSAGE:
 		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
-//----
+	case Q3BOTLIB_USER_COMMAND:
+		SVQ3_ClientThink(&svs.clients[args[1]], (q3usercmd_t*)VMA(2));
+		return 0;
 
 	case Q3BOTLIB_AAS_BBOX_AREAS:
 		return AAS_BBoxAreas((float*)VMA(1), (float*)VMA(2), (int*)VMA(3), args[4]);

@@ -79,6 +79,19 @@ clipHandle_t SVWM_ClipHandleForEntity(const wmsharedEntity_t* gent)
 	return SVT3_ClipHandleForEntity(SVWM_EntityForGentity(gent));
 }
 
+void SVWM_ClientThink(client_t* cl, wmusercmd_t* cmd)
+{
+	cl->wm_lastUsercmd = *cmd;
+
+	if (cl->state != CS_ACTIVE)
+	{
+		// may have been kicked during the last usercmd
+		return;
+	}
+
+	VM_Call(gvm, WMGAME_CLIENT_THINK, cl - svs.clients);
+}
+
 bool SVWM_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos)
 {
 	return VM_Call(gvm, WMAICAST_VISIBLEFROMPOS, (qintptr)srcpos, srcnum, (qintptr)destpos, destnum, updateVisPos);
@@ -247,6 +260,9 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 		return 0;
 	case WMG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
+	case WMG_SNAPVECTOR:
+		Sys_SnapVector((float*)VMA(1));
+		return 0;
 //------
 
 	case WMBOTLIB_SETUP:
@@ -282,7 +298,9 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 		return SVT3_BotGetSnapshotEntity(args[1], args[2]);
 	case WMBOTLIB_GET_CONSOLE_MESSAGE:
 		return SVT3_BotGetConsoleMessage(args[1], (char*)VMA(2), args[3]);
-//------
+	case WMBOTLIB_USER_COMMAND:
+		SVWM_ClientThink(&svs.clients[args[1]], (wmusercmd_t*)VMA(2));
+		return 0;
 
 	case WMBOTLIB_AAS_ENTITY_INFO:
 		AAS_EntityInfo(args[1], (aas_entityinfo_t*)VMA(2));

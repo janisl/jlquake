@@ -1809,26 +1809,6 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg, qboolean premaprestart
 
 //==================================================================================
 
-
-/*
-==================
-SV_ClientThink
-
-Also called by bot code
-==================
-*/
-void SV_ClientThink(client_t* cl, etusercmd_t* cmd)
-{
-	cl->et_lastUsercmd = *cmd;
-
-	if (cl->state != CS_ACTIVE)
-	{
-		return;		// may have been kicked during the last usercmd
-	}
-
-	VM_Call(gvm, ETGAME_CLIENT_THINK, cl - svs.clients);
-}
-
 /*
 ==================
 SV_UserMove
@@ -1949,7 +1929,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 				continue;	// from just before a map_restart
 			}
 		}
-		SV_ClientThink(cl, &cmds[i]);
+		SVET_ClientThink(cl, &cmds[i]);
 	}
 }
 

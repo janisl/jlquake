@@ -161,7 +161,6 @@ void SV_FreeClientNetChan(client_t* client);
 void SV_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-void SV_ClientThink(client_t* cl, etusercmd_t* cmd);
 
 void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 

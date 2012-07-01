@@ -153,7 +153,6 @@ void SV_ClientEnterWorld(client_t* client, wmusercmd_t* cmd);
 void SV_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-void SV_ClientThink(client_t* cl, wmusercmd_t* cmd);
 
 void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 

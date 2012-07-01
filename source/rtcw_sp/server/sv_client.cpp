@@ -1443,26 +1443,6 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 
 //==================================================================================
 
-
-/*
-==================
-SV_ClientThink
-
-Also called by bot code
-==================
-*/
-void SV_ClientThink(client_t* cl, wsusercmd_t* cmd)
-{
-	cl->ws_lastUsercmd = *cmd;
-
-	if (cl->state != CS_ACTIVE)
-	{
-		return;		// may have been kicked during the last usercmd
-	}
-
-	VM_Call(gvm, WSGAME_CLIENT_THINK, cl - svs.clients);
-}
-
 /*
 ==================
 SV_UserMove
@@ -1568,7 +1548,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 				continue;	// from just before a map_restart
 			}
 		}
-		SV_ClientThink(cl, &cmds[i]);
+		SVWS_ClientThink(cl, &cmds[i]);
 	}
 }
 
