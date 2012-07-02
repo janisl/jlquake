@@ -285,18 +285,6 @@ int memsearch(byte* start, int count, int search)
 	return -1;
 }
 
-
-char* CopyString(char* in)
-{
-	char* out;
-
-	out = (char*)Z_Malloc(String::Length(in) + 1);
-	String::Cpy(out, in);
-	return out;
-}
-
-
-
 /*
 ==============================================================================
 

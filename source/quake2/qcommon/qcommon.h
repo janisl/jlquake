@@ -77,8 +77,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void COM_Init(void);
 
-char* CopyString(char* in);
-
 #define PORT_MASTER 27900
 #define PORT_CLIENT 27901
 #define PORT_SERVER 27910
