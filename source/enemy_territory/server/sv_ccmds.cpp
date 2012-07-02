@@ -473,7 +473,7 @@ static void SV_MapRestart_f(void)
 	if (delay)
 	{
 		sv.q3_restartTime = svs.q3_time + delay * 1000;
-		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
+		SVT3_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
 
@@ -580,10 +580,6 @@ static void SV_MapRestart_f(void)
 		VM_Call(gvm, ETGAME_RUN_FRAME, svs.q3_time);
 		svs.q3_time += FRAMETIME;
 	}
-
-	// create a baseline for more efficient communications
-	// Gordon: meh, this wont work here as the client doesn't know it has happened
-//	SV_CreateBaseline ();
 
 	sv.state = SS_GAME;
 	sv.q3_restarting = qfalse;

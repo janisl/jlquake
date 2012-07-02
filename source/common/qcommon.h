@@ -62,6 +62,8 @@
 
 int Com_Milliseconds();
 
+char* __CopyString(const char* in);
+
 extern Cvar* com_dedicated;
 extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar* com_timescale;

@@ -73,6 +73,11 @@ bool idWolfMPEntity::GetSvFlagCastAI() const
 	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WMSVF_CASTAI);
 }
 
+bool idWolfMPEntity::GetSvFlagNoServerInfo() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOSERVERINFO);
+}
+
 bool idWolfMPEntity::GetBModel() const
 {
 	return reinterpret_cast<wmsharedEntity_t*>(gentity)->r.bmodel;

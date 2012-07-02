@@ -198,7 +198,7 @@ static void SV_Map_f(void)
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if (sv_gametype->integer == Q3GT_SINGLE_PLAYER)
+		if (svt3_gametype->integer == Q3GT_SINGLE_PLAYER)
 		{
 			Cvar_SetValue("g_gametype", Q3GT_FFA);
 		}
@@ -270,13 +270,13 @@ static void SV_MapRestart_f(void)
 	if (delay && !Cvar_VariableValue("g_doWarmup"))
 	{
 		sv.q3_restartTime = svs.q3_time + delay * 1000;
-		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
+		SVT3_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
 
 	// check for changes in variables that can't just be restarted
 	// check for maxclients change
-	if (sv_maxclients->modified || sv_gametype->modified)
+	if (sv_maxclients->modified || svt3_gametype->modified)
 	{
 		char mapname[MAX_QPATH];
 

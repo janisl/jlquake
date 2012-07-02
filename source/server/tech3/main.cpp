@@ -17,7 +17,8 @@
 #include "../server.h"
 #include "local.h"
 
-Cvar* get_gameType;
+Cvar* svt3_gametype;
+Cvar* svt3_pure;
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)

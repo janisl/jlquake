@@ -27,8 +27,6 @@
 
 #define MAX_FOUND_FILES     0x1000
 
-char* __CopyString(const char* in);
-
 /* base time in seconds, that's our origin
    timeval:tv_sec is an int:
    assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038

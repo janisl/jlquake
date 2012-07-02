@@ -81,13 +81,13 @@ clipHandle_t SVET_ClipHandleForEntity(const etsharedEntity_t* gent)
 
 bool SVET_GameIsSinglePlayer()
 {
-	return !!(comet_gameInfo.spGameTypes & (1 << get_gameType->integer));
+	return !!(comet_gameInfo.spGameTypes & (1 << svt3_gametype->integer));
 }
 
 //	This is a modified SinglePlayer, no savegame capability for example
 bool SVET_GameIsCoop()
 {
-	return !!(comet_gameInfo.coopGameTypes & (1 << get_gameType->integer));
+	return !!(comet_gameInfo.coopGameTypes & (1 << svt3_gametype->integer));
 }
 
 void SVET_ClientThink(client_t* cl, etusercmd_t* cmd)

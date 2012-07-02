@@ -954,7 +954,7 @@ void SV_SendClientMessages(void)
 	sv.wm_ubpsTotalBytes = 0;		// NERVE - SMF - net debugging
 
 	// Gordon: update any changed configstrings from this frame
-	SV_UpdateConfigStrings();
+	SVET_UpdateConfigStrings();
 
 	// send a message to each connected client
 	for (i = 0; i < sv_maxclients->integer; i++)

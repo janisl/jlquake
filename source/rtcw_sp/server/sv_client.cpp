@@ -480,11 +480,11 @@ gotnewcl:
 	// RF, create the reliable commands
 	if (newcl->netchan.remoteAddress.type != NA_BOT)
 	{
-		SV_InitReliableCommandsForClient(newcl, MAX_RELIABLE_COMMANDS_WOLF);
+		SVWS_InitReliableCommandsForClient(newcl, MAX_RELIABLE_COMMANDS_WOLF);
 	}
 	else
 	{
-		SV_InitReliableCommandsForClient(newcl, 0);
+		SVWS_InitReliableCommandsForClient(newcl, 0);
 	}
 
 	SV_UserinfoChanged(newcl);
@@ -576,10 +576,10 @@ void SVT3_DropClient(client_t* drop, const char* reason)
 	}
 
 	// nuke user info
-	SV_SetUserinfo(drop - svs.clients, "");
+	SVT3_SetUserinfo(drop - svs.clients, "");
 
 	// RF, nuke reliable commands
-	SV_FreeReliableCommandsForClient(drop);
+	SVWS_FreeReliableCommandsForClient(drop);
 
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
@@ -876,7 +876,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 			else if (!sv_allowDownload->integer)
 			{
 				Com_Printf("clientDownload: %d : \"%s\" download disabled", cl - svs.clients, cl->downloadName);
-				if (sv_pure->integer)
+				if (svt3_pure->integer)
 				{
 					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																		"You will need to get this file elsewhere before you "
@@ -1075,7 +1075,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 	// certain pk3 files, namely we want the client to have loaded the
 	// ui and cgame that we think should be loaded based on the pure setting
 	//
-	if (sv_pure->integer != 0)
+	if (svt3_pure->integer != 0)
 	{
 
 		bGood = qtrue;
@@ -1514,7 +1514,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		// the moves can be processed normaly
 	}
 	//
-	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0)
+	if (svt3_pure->integer != 0 && cl->q3_pureAuthentic == 0)
 	{
 		SVT3_DropClient(cl, "Cannot validate pure client!");
 		return;
@@ -1540,7 +1540,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		//if ( cmds[i].serverTime > svs.q3_time + 3000 ) {
 		//	continue;
 		//}
-		if (sv_gametype->integer != Q3GT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+		if (svt3_gametype->integer != Q3GT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
 		{	// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if (cmds[i].serverTime <= cl->ws_lastUsercmd.serverTime)		// Q3_MISSIONPACK
@@ -1625,7 +1625,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	}
 
 	// RF, kill any reliableCommands that have been acknowledged
-	SV_FreeAcknowledgedReliableCommands(cl);
+	SVWS_FreeAcknowledgedReliableCommands(cl);
 
 	// read optional clientCommand strings
 	do

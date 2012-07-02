@@ -66,6 +66,7 @@ class idETEntity : public idEntity3
 	virtual void SetSvFlags(int value);
 	virtual bool GetSvFlagCapsule() const;
 	virtual bool GetSvFlagCastAI() const;
+	virtual bool GetSvFlagNoServerInfo() const;
 	/*
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 */

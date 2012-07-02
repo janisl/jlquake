@@ -229,7 +229,7 @@ static void SV_Map_f(void)
 			cheat = qfalse;
 			killBots = qfalse;
 		}
-		if (sv_gametype->integer == Q3GT_SINGLE_PLAYER)
+		if (svt3_gametype->integer == Q3GT_SINGLE_PLAYER)
 		{
 			Cvar_SetValue("g_gametype", Q3GT_FFA);
 		}
@@ -371,8 +371,8 @@ static void SV_MapRestart_f(void)
 	}
 
 	// DHM - Nerve :: Check for invalid gametype
-	sv_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
-	nextgt = sv_gametype->integer;
+	svt3_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
+	nextgt = svt3_gametype->integer;
 
 	world = SVWM_GentityNum(Q3ENTITYNUM_WORLD);
 	worldspawnflags = world->r.worldflags;
@@ -392,7 +392,7 @@ static void SV_MapRestart_f(void)
 			Cvar_Set("g_gametype", "7");
 		}
 
-		sv_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
+		svt3_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
 	}
 	// dhm
 
@@ -404,7 +404,7 @@ static void SV_MapRestart_f(void)
 	if (delay)
 	{
 		sv.q3_restartTime = svs.q3_time + delay * 1000;
-		SV_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
+		SVT3_SetConfigstring(Q3CS_WARMUP, va("%i", sv.q3_restartTime));
 		return;
 	}
 

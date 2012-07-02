@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/tech3/local.h"
 #include "../../server/wolfsp/local.h"
 
-#define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
-
 //=============================================================================
 
 #define AUTHORIZE_TIMEOUT   5000
@@ -62,8 +60,6 @@ extern Cvar* sv_serverid;
 extern Cvar* sv_maxRate;
 extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
-extern Cvar* sv_gametype;
-extern Cvar* sv_pure;
 extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
 
@@ -94,19 +90,7 @@ void SV_MasterShutdown(void);
 //
 // sv_init.c
 //
-void SV_SetConfigstring(int index, const char* val);
-void SV_GetConfigstring(int index, char* buffer, int bufferSize);
-
-void SV_SetUserinfo(int index, const char* val);
-void SV_GetUserinfo(int index, char* buffer, int bufferSize);
-
-void SV_ChangeMaxClients(void);
 void SV_SpawnServer(char* server, qboolean killBots);
-
-//RF, reliable commands
-void SV_FreeAcknowledgedReliableCommands(client_t* cl);
-void SV_InitReliableCommandsForClient(client_t* cl, int commands);
-void SV_FreeReliableCommandsForClient(client_t* cl);
 
 
 //

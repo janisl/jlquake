@@ -305,8 +305,6 @@ void S_ClearSoundBuffer(bool killStreaming);
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
 
-char* __CopyString(const char* in);
-
 //	For HexenWorld
 bool com_portals = false;
 const char* fs_PrimaryBaseGame;

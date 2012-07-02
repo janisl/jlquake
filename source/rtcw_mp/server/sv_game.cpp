@@ -92,16 +92,16 @@ qintptr SV_GameSystemCalls(qintptr* args)
 		return 0;
 //------
 	case WMG_SET_CONFIGSTRING:
-		SV_SetConfigstring(args[1], (char*)VMA(2));
+		SVT3_SetConfigstring(args[1], (char*)VMA(2));
 		return 0;
 	case WMG_GET_CONFIGSTRING:
-		SV_GetConfigstring(args[1], (char*)VMA(2), args[3]);
+		SVT3_GetConfigstring(args[1], (char*)VMA(2), args[3]);
 		return 0;
 	case WMG_SET_USERINFO:
-		SV_SetUserinfo(args[1], (char*)VMA(2));
+		SVT3_SetUserinfo(args[1], (char*)VMA(2));
 		return 0;
 	case WMG_GET_USERINFO:
-		SV_GetUserinfo(args[1], (char*)VMA(2), args[3]);
+		SVT3_GetUserinfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //------
 	case WMG_GETTAG:

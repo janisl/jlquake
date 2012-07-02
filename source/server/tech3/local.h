@@ -54,11 +54,28 @@ bool SVT3_GetEntityToken(char* buffer, int length);
 //
 bool SVT3_AddReliableCommand(client_t* cl, int index, const char* cmd);
 const char* SVT3_GetReliableCommand(client_t* cl, int index);
+void SVT3_SetConfigstring(int index, const char* val);
+void SVT3_SetConfigstringNoUpdate(int index, const char* val);
+void SVET_UpdateConfigStrings();
+void SVT3_GetConfigstring(int index, char* buffer, int bufferSize);
+void SVT3_SetUserinfo(int index, const char* val);
+void SVT3_GetUserinfo(int index, char* buffer, int bufferSize);
+void SVT3_CreateBaseline();
+void SVWS_InitReliableCommandsForClient(client_t* cl, int commands);
+void SVWS_InitReliableCommands(client_t* clients);
+void SVWS_FreeReliableCommandsForClient(client_t* cl);
+void SVWS_FreeAcknowledgedReliableCommands(client_t* cl);
+void SVT3_Startup();
+void SVT3_ChangeMaxClients();
+void SVT3_ClearServer();
+void SVT3_TouchCGame();
+void SVT3_TouchCGameDLL();
 
 //
 //	Main
 //
-extern Cvar* get_gameType;
+extern Cvar* svt3_gametype;
+extern Cvar* svt3_pure;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));

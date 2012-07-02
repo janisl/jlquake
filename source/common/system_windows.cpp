@@ -22,8 +22,6 @@
 
 #define MAX_FOUND_FILES     0x1000
 
-char* __CopyString(const char* in);
-
 HINSTANCE global_hInstance;
 // when we get a windows message, we store the time off so keyboard processing
 // can know the exact time of an event

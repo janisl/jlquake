@@ -620,7 +620,7 @@ void SVT3_DropClient(client_t* drop, const char* reason)
 	}
 
 	// nuke user info
-	SV_SetUserinfo(drop - svs.clients, "");
+	SVT3_SetUserinfo(drop - svs.clients, "");
 
 
 	// if this was the last client on the server, send a heartbeat
@@ -961,7 +961,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 			else if (!sv_allowDownload->integer)
 			{
 				Com_Printf("clientDownload: %d : \"%s\" download disabled", cl - svs.clients, cl->downloadName);
-				if (sv_pure->integer)
+				if (svt3_pure->integer)
 				{
 					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																		"You will need to get this file elsewhere before you "
@@ -1168,7 +1168,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 	// if we are pure, we "expect" the client to load certain things from
 	// certain pk3 files, namely we want the client to have loaded the
 	// ui and cgame that we think should be loaded based on the pure setting
-	if (sv_pure->integer != 0)
+	if (svt3_pure->integer != 0)
 	{
 
 		bGood = qtrue;
@@ -1659,7 +1659,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	// catch the no-cp-yet situation before SV_ClientEnterWorld
 	// if CS_ACTIVE, then it's time to trigger a new gamestate emission
 	// if not, then we are getting remaining parasite usermove commands, which we should ignore
-	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0 && !cl->q3_gotCP)
+	if (svt3_pure->integer != 0 && cl->q3_pureAuthentic == 0 && !cl->q3_gotCP)
 	{
 		if (cl->state == CS_ACTIVE)
 		{
@@ -1679,7 +1679,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	}
 
 	// a bad cp command was sent, drop the client
-	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0)
+	if (svt3_pure->integer != 0 && cl->q3_pureAuthentic == 0)
 	{
 		SVT3_DropClient(cl, "Cannot validate pure client!");
 		return;
@@ -1705,7 +1705,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		//if ( cmds[i].serverTime > svs.q3_time + 3000 ) {
 		//	continue;
 		//}
-		if (sv_gametype->integer != Q3GT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+		if (svt3_gametype->integer != Q3GT_SINGLE_PLAYER)		// RF, we need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
 		{	// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if (cmds[i].serverTime <= cl->wm_lastUsercmd.serverTime)		// Q3_MISSIONPACK

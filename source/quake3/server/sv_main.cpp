@@ -42,8 +42,6 @@ Cvar* sv_serverid;
 Cvar* sv_maxRate;
 Cvar* sv_minPing;
 Cvar* sv_maxPing;
-Cvar* sv_gametype;
-Cvar* sv_pure;
 Cvar* sv_floodProtect;
 Cvar* sv_lanForceRate;		// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 Cvar* sv_strictAuth;
@@ -260,8 +258,8 @@ void SVC_Info(netadr_t from)
 	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "sv_maxclients",
 		va("%i", sv_maxclients->integer - sv_privateClients->integer), MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(infostring, "gametype", va("%i", sv_gametype->integer), MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(infostring, "pure", va("%i", sv_pure->integer), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "gametype", va("%i", svt3_gametype->integer), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "pure", va("%i", svt3_pure->integer), MAX_INFO_STRING_Q3);
 
 	if (sv_minPing->integer)
 	{
@@ -757,12 +755,12 @@ void SV_Frame(int msec)
 	// update infostrings if anything has been changed
 	if (cvar_modifiedFlags & CVAR_SERVERINFO)
 	{
-		SV_SetConfigstring(Q3CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3));
+		SVT3_SetConfigstring(Q3CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3));
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if (cvar_modifiedFlags & CVAR_SYSTEMINFO)
 	{
-		SV_SetConfigstring(Q3CS_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
+		SVT3_SetConfigstring(Q3CS_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 

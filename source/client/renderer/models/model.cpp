@@ -25,8 +25,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-char* __CopyString(const char* in);
-
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------

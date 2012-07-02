@@ -71,8 +71,6 @@ extern Cvar* sv_serverid;
 extern Cvar* sv_maxRate;
 extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
-//extern	Cvar	*sv_gametype;
-extern Cvar* sv_pure;
 extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
 extern Cvar* sv_lanForceRate;
@@ -128,17 +126,6 @@ qboolean SV_VerifyChallenge(char* challenge);
 //
 // sv_init.c
 //
-void SV_SetConfigstringNoUpdate(int index, const char* val);
-void SV_SetConfigstring(int index, const char* val);
-void SV_UpdateConfigStrings(void);
-void SV_GetConfigstring(int index, char* buffer, int bufferSize);
-
-void SV_SetUserinfo(int index, const char* val);
-void SV_GetUserinfo(int index, char* buffer, int bufferSize);
-
-void SV_CreateBaseline(void);
-
-void SV_ChangeMaxClients(void);
 void SV_SpawnServer(char* server, qboolean killBots);
 
 

@@ -55,8 +55,6 @@ struct cmd_function_t
 bool Cmd_HandleNullCommand(const char* text);
 void Cmd_HandleUnknownCommand();
 
-char* __CopyString(const char* in);
-
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------

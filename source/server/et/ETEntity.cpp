@@ -73,6 +73,11 @@ bool idETEntity::GetSvFlagCastAI() const
 	return false;
 }
 
+bool idETEntity::GetSvFlagNoServerInfo() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOSERVERINFO);
+}
+
 bool idETEntity::GetBModel() const
 {
 	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.bmodel;
