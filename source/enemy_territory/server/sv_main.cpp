@@ -98,134 +98,6 @@ EVENT MESSAGES
 */
 
 /*
-===============
-SV_ExpandNewlines
-
-Converts newlines to "\n" so a line prints nicer
-===============
-*/
-char* SV_ExpandNewlines(char* in)
-{
-	static char string[1024];
-	int l;
-
-	l = 0;
-	while (*in && l < (int)sizeof(string) - 3)
-	{
-		if (*in == '\n')
-		{
-			string[l++] = '\\';
-			string[l++] = 'n';
-		}
-		else
-		{
-			// NERVE - SMF - HACK - strip out localization tokens before string command is displayed in syscon window
-			if (!String::NCmp(in, "[lon]", 5) || !String::NCmp(in, "[lof]", 5))
-			{
-				in += 5;
-				continue;
-			}
-
-			string[l++] = *in;
-		}
-		in++;
-	}
-	string[l] = 0;
-
-	return string;
-}
-
-/*
-======================
-SV_AddServerCommand
-
-The given command will be transmitted to the client, and is guaranteed to
-not have future snapshot_t executed before it is executed
-======================
-*/
-void SV_AddServerCommand(client_t* client, const char* cmd)
-{
-	int index, i;
-
-	client->q3_reliableSequence++;
-	// if we would be losing an old command that hasn't been acknowledged,
-	// we must drop the connection
-	// we check == instead of >= so a broadcast print added by SV_DropClient()
-	// doesn't cause a recursive drop client
-	if (client->q3_reliableSequence - client->q3_reliableAcknowledge == MAX_RELIABLE_COMMANDS_WOLF + 1)
-	{
-		Com_Printf("===== pending server commands =====\n");
-		for (i = client->q3_reliableAcknowledge + 1; i <= client->q3_reliableSequence; i++)
-		{
-			Com_Printf("cmd %5d: %s\n", i, client->q3_reliableCommands[i & (MAX_RELIABLE_COMMANDS_WOLF - 1)]);
-		}
-		Com_Printf("cmd %5d: %s\n", i, cmd);
-		SV_DropClient(client, "Server command overflow");
-		return;
-	}
-	index = client->q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
-	String::NCpyZ(client->q3_reliableCommands[index], cmd, sizeof(client->q3_reliableCommands[index]));
-}
-
-
-/*
-=================
-SV_SendServerCommand
-
-Sends a reliable command string to be interpreted by
-the client game module: "cp", "print", "chat", etc
-A NULL client will broadcast to all clients
-=================
-*/
-void QDECL SV_SendServerCommand(client_t* cl, const char* fmt, ...)
-{
-	va_list argptr;
-	byte message[MAX_MSGLEN_WOLF];
-	client_t* client;
-	int j;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf((char*)message, sizeof(message), fmt, argptr);
-	va_end(argptr);
-
-	// do not forward server command messages that would be too big to clients
-	// ( q3infoboom / q3msgboom stuff )
-	if (String::Length((char*)message) > 1022)
-	{
-		return;
-	}
-
-	if (cl != NULL)
-	{
-		SV_AddServerCommand(cl, (char*)message);
-		return;
-	}
-
-	// hack to echo broadcast prints to console
-	if (com_dedicated->integer && !String::NCmp((char*)message, "print", 5))
-	{
-		Com_Printf("broadcast: %s\n", SV_ExpandNewlines((char*)message));
-	}
-
-	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++)
-	{
-		if (client->state < CS_PRIMED)
-		{
-			continue;
-		}
-		// Ridah, don't need to send messages to AI
-		if (client->et_gentity && client->et_gentity->r.svFlags & Q3SVF_BOT)
-		{
-			continue;
-		}
-		// done.
-		SV_AddServerCommand(client, (char*)message);
-	}
-}
-
-
-/*
 ==============================================================================
 
 MASTER SERVER FUNCTIONS
@@ -1013,7 +885,7 @@ void SV_CheckTimeouts(void)
 			// cause a timeout
 			if (++cl->q3_timeoutCount > 5)
 			{
-				SV_DropClient(cl, "timed out");
+				SVT3_DropClient(cl, "timed out");
 				cl->state = CS_FREE;	// don't bother with zombie state
 			}
 		}

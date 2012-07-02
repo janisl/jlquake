@@ -49,6 +49,7 @@ class idQuake3Entity : public idEntity3
 	virtual int GetSvFlags() const;
 	virtual void SetSvFlags(int value);
 	virtual bool GetSvFlagCapsule() const;
+	virtual bool GetSvFlagCastAI() const;
 /*
 	// only send to this client when SVF_SINGLECLIENT is set
 	// if Q3SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)

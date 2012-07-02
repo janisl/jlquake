@@ -34,7 +34,7 @@ void SV_GameSendServerCommand(int clientNum, const char* text)
 {
 	if (clientNum == -1)
 	{
-		SV_SendServerCommand(NULL, "%s", text);
+		SVT3_SendServerCommand(NULL, "%s", text);
 	}
 	else
 	{
@@ -42,7 +42,7 @@ void SV_GameSendServerCommand(int clientNum, const char* text)
 		{
 			return;
 		}
-		SV_SendServerCommand(svs.clients + clientNum, "%s", text);
+		SVT3_SendServerCommand(svs.clients + clientNum, "%s", text);
 	}
 }
 
@@ -60,7 +60,7 @@ void SV_GameDropClient(int clientNum, const char* reason)
 	{
 		return;
 	}
-	SV_DropClient(svs.clients + clientNum, reason);
+	SVT3_DropClient(svs.clients + clientNum, reason);
 }
 
 //==============================================

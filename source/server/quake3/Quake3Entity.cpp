@@ -68,6 +68,11 @@ bool idQuake3Entity::GetSvFlagCapsule() const
 	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CAPSULE);
 }
 
+bool idQuake3Entity::GetSvFlagCastAI() const
+{
+	return false;
+}
+
 bool idQuake3Entity::GetBModel() const
 {
 	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.bmodel;

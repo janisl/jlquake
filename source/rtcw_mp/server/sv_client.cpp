@@ -467,7 +467,7 @@ void SV_DirectConnect(netadr_t from)
 			// if they're all bots
 			if (count >= sv_maxclients->integer - startIndex)
 			{
-				SV_DropClient(&svs.clients[sv_maxclients->integer - 1], "only bots on server");
+				SVT3_DropClient(&svs.clients[sv_maxclients->integer - 1], "only bots on server");
 				newcl = &svs.clients[sv_maxclients->integer - 1];
 			}
 			else
@@ -560,14 +560,14 @@ gotnewcl:
 
 /*
 =====================
-SV_DropClient
+SVT3_DropClient
 
 Called when the player is totally leaving the server, either willingly
 or unwillingly.  This is NOT called if the entire server is quiting
 or crashing -- SV_FinalMessage() will handle that
 =====================
 */
-void SV_DropClient(client_t* drop, const char* reason)
+void SVT3_DropClient(client_t* drop, const char* reason)
 {
 	int i;
 	challenge_t* challenge;
@@ -596,7 +596,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	SV_CloseDownload(drop);
 
 	// tell everyone why they got dropped
-	SV_SendServerCommand(NULL, "print \"[lof]%s" S_COLOR_WHITE " [lon]%s\n\"", drop->name, reason);
+	SVT3_SendServerCommand(NULL, "print \"[lof]%s" S_COLOR_WHITE " [lon]%s\n\"", drop->name, reason);
 
 	Com_DPrintf("Going to CS_ZOMBIE for %s\n", drop->name);
 	drop->state = CS_ZOMBIE;		// become free in a few seconds
@@ -612,7 +612,7 @@ void SV_DropClient(client_t* drop, const char* reason)
 	VM_Call(gvm, WMGAME_CLIENT_DISCONNECT, drop - svs.clients);
 
 	// add the disconnect command
-	SV_SendServerCommand(drop, "disconnect \"%s\"", reason);
+	SVT3_SendServerCommand(drop, "disconnect \"%s\"", reason);
 
 	if (drop->netchan.remoteAddress.type == NA_BOT)
 	{
@@ -853,7 +853,7 @@ void SV_NextDownload_f(client_t* cl)
 	// We aren't getting an acknowledge for the correct block, drop the client
 	// FIXME: this is bad... the client will never parse the disconnect message
 	//			because the cgame isn't loaded yet
-	SV_DropClient(cl, "broken download");
+	SVT3_DropClient(cl, "broken download");
 }
 
 /*
@@ -906,7 +906,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 	if (!FS_VerifyPak(cl->downloadName))
 	{
 		// will drop the client and leave it hanging on the other side. good for him
-		SV_DropClient(cl, "illegal download request");
+		SVT3_DropClient(cl, "illegal download request");
 		return;
 	}
 
@@ -943,7 +943,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 
 			*cl->downloadName = 0;
 
-			SV_DropClient(cl, "Invalid download from update server");
+			SVT3_DropClient(cl, "Invalid download from update server");
 			return;
 		}
 #endif
@@ -1140,7 +1140,7 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 */
 static void SV_Disconnect_f(client_t* cl)
 {
-	SV_DropClient(cl, "disconnected");
+	SVT3_DropClient(cl, "disconnected");
 }
 
 /*
@@ -1334,7 +1334,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			cl->q3_nextSnapshotTime = -1;
 			cl->state = CS_ACTIVE;
 			SV_SendClientSnapshot(cl);
-			SV_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
+			SVT3_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
 		}
 	}
 }
@@ -1547,7 +1547,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	{
 		Com_Printf("Client %s lost %i clientCommands\n", cl->name,
 			seq - cl->q3_lastClientCommand + 1);
-		SV_DropClient(cl, "Lost reliable commands");
+		SVT3_DropClient(cl, "Lost reliable commands");
 		return qfalse;
 	}
 
@@ -1681,7 +1681,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	// a bad cp command was sent, drop the client
 	if (sv_pure->integer != 0 && cl->q3_pureAuthentic == 0)
 	{
-		SV_DropClient(cl, "Cannot validate pure client!");
+		SVT3_DropClient(cl, "Cannot validate pure client!");
 		return;
 	}
 
@@ -1748,7 +1748,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
-		SV_DropClient(cl, "DEBUG: illegible client message");
+		SVT3_DropClient(cl, "DEBUG: illegible client message");
 #endif
 		return;
 	}
@@ -1763,7 +1763,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 		// usually only hackers create messages like this
 		// it is more annoying for them to let them hanging
 #ifndef NDEBUG
-		SV_DropClient(cl, "DEBUG: illegible client message");
+		SVT3_DropClient(cl, "DEBUG: illegible client message");
 #endif
 		cl->q3_reliableAcknowledge = cl->q3_reliableSequence;
 		return;

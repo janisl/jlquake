@@ -111,7 +111,6 @@ extern Cvar* sv_fullmsg;
 // sv_main.c
 //
 void SV_FinalCommand(const char* cmd, qboolean disconnect);		// ydnar: added disconnect flag so map changes can use this function as well
-void QDECL SV_SendServerCommand(client_t* cl, const char* fmt, ...);
 
 
 void SV_AddOperatorCommands(void);
@@ -158,7 +157,7 @@ void SV_UserinfoChanged(client_t* cl);
 
 void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd);
 void SV_FreeClientNetChan(client_t* client);
-void SV_DropClient(client_t* drop, const char* reason);
+void SVT3_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
@@ -175,7 +174,6 @@ void SV_TempBanNetAddress(netadr_t address, int length);
 //
 // sv_snapshot.c
 //
-void SV_AddServerCommand(client_t* client, const char* cmd);
 void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
 void SV_WriteFrameToClient(client_t* client, QMsg* msg);
 void SV_SendMessageToClient(QMsg* msg, client_t* client);

@@ -859,7 +859,7 @@ void SV_SendClientIdle(client_t* client)
 		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 
-		SV_DropClient(client, "Msg overflowed");
+		SVT3_DropClient(client, "Msg overflowed");
 		return;
 	}
 
@@ -927,7 +927,7 @@ void SV_SendClientSnapshot(client_t* client)
 		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 
-		SV_DropClient(client, "Msg overflowed");
+		SVT3_DropClient(client, "Msg overflowed");
 		return;
 	}
 

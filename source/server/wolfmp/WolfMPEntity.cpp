@@ -68,6 +68,11 @@ bool idWolfMPEntity::GetSvFlagCapsule() const
 	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_CAPSULE);
 }
 
+bool idWolfMPEntity::GetSvFlagCastAI() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WMSVF_CASTAI);
+}
+
 bool idWolfMPEntity::GetBModel() const
 {
 	return reinterpret_cast<wmsharedEntity_t*>(gentity)->r.bmodel;

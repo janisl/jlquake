@@ -66,8 +66,6 @@ extern Cvar* sv_strictAuth;
 // sv_main.c
 //
 void SV_FinalMessage(const char* message);
-void SV_SendServerCommand(client_t* cl, const char* fmt, ...);
-
 
 void SV_AddOperatorCommands(void);
 void SV_RemoveOperatorCommands(void);
@@ -106,7 +104,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
 void SV_UserinfoChanged(client_t* cl);
 
 void SV_ClientEnterWorld(client_t* client, q3usercmd_t* cmd);
-void SV_DropClient(client_t* drop, const char* reason);
+void SVT3_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
@@ -120,7 +118,6 @@ void SV_Heartbeat_f(void);
 //
 // sv_snapshot.c
 //
-void SV_AddServerCommand(client_t* client, const char* cmd);
 void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
 void SV_WriteFrameToClient(client_t* client, QMsg* msg);
 void SV_SendMessageToClient(QMsg* msg, client_t* client);

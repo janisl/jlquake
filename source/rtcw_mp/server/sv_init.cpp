@@ -71,7 +71,7 @@ void SV_SetConfigstring(int index, const char* val)
 	// spawning a new server
 	if (sv.state == SS_GAME || sv.q3_restarting)
 	{
-//		SV_SendServerCommand( NULL, "cs %i \"%s\"\n", index, val );
+//		SVT3_SendServerCommand( NULL, "cs %i \"%s\"\n", index, val );
 
 		// send the data to all relevent clients
 		for (i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++)
@@ -92,7 +92,7 @@ void SV_SetConfigstring(int index, const char* val)
 				continue;
 			}
 
-//			SV_SendServerCommand( client, "cs %i \"%s\"\n", index, val );
+//			SVT3_SendServerCommand( client, "cs %i \"%s\"\n", index, val );
 
 			len = String::Length(val);
 			if (len >= maxChunkSize)
@@ -118,7 +118,7 @@ void SV_SetConfigstring(int index, const char* val)
 					}
 					String::NCpyZ(buf, &val[sent], maxChunkSize);
 
-					SV_SendServerCommand(client, "%s %i \"%s\"\n", cmd, index, buf);
+					SVT3_SendServerCommand(client, "%s %i \"%s\"\n", cmd, index, buf);
 
 					sent += (maxChunkSize - 1);
 					remaining -= (maxChunkSize - 1);
@@ -127,7 +127,7 @@ void SV_SetConfigstring(int index, const char* val)
 			else
 			{
 				// standard cs, just send it
-				SV_SendServerCommand(client, "cs %i \"%s\"\n", index, val);
+				SVT3_SendServerCommand(client, "cs %i \"%s\"\n", index, val);
 			}
 		}
 	}
@@ -675,7 +675,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 			{
 				if (killBots || Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
 				{
-					SV_DropClient(&svs.clients[i], "");
+					SVT3_DropClient(&svs.clients[i], "");
 					continue;
 				}
 				isBot = qtrue;
@@ -691,7 +691,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 			{
 				// this generally shouldn't happen, because the client
 				// was connected before the level change
-				SV_DropClient(&svs.clients[i], denied);
+				SVT3_DropClient(&svs.clients[i], denied);
 			}
 			else
 			{
@@ -1049,8 +1049,8 @@ void SV_FinalMessage(const char* message)
 				// don't send a disconnect to a local client
 				if (cl->netchan.remoteAddress.type != NA_LOOPBACK)
 				{
-					SV_SendServerCommand(cl, "print \"%s\"", message);
-					SV_SendServerCommand(cl, "disconnect");
+					SVT3_SendServerCommand(cl, "print \"%s\"", message);
+					SVT3_SendServerCommand(cl, "disconnect");
 				}
 				// force a snapshot to be sent
 				cl->q3_nextSnapshotTime = -1;

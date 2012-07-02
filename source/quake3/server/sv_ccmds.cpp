@@ -336,7 +336,7 @@ static void SV_MapRestart_f(void)
 		}
 
 		// add the map_restart command
-		SV_AddServerCommand(client, "map_restart\n");
+		SVT3_AddServerCommand(client, "map_restart\n");
 
 		// connect the client again, without the firstTime flag
 		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, Q3GAME_CLIENT_CONNECT, i, qfalse, isBot));
@@ -344,7 +344,7 @@ static void SV_MapRestart_f(void)
 		{
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
-			SV_DropClient(client, denied);
+			SVT3_DropClient(client, denied);
 			Com_Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
 			continue;
 		}
@@ -401,7 +401,7 @@ static void SV_Kick_f(void)
 				{
 					continue;
 				}
-				SV_DropClient(cl, "was kicked");
+				SVT3_DropClient(cl, "was kicked");
 				cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 			}
 		}
@@ -417,7 +417,7 @@ static void SV_Kick_f(void)
 				{
 					continue;
 				}
-				SV_DropClient(cl, "was kicked");
+				SVT3_DropClient(cl, "was kicked");
 				cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 			}
 		}
@@ -425,11 +425,11 @@ static void SV_Kick_f(void)
 	}
 	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
 	{
-		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
+		SVT3_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
-	SV_DropClient(cl, "was kicked");
+	SVT3_DropClient(cl, "was kicked");
 	cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
 
@@ -467,7 +467,7 @@ static void SV_Ban_f(void)
 
 	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
 	{
-		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
+		SVT3_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
@@ -524,7 +524,7 @@ static void SV_BanNum_f(void)
 	}
 	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
 	{
-		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
+		SVT3_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
@@ -580,11 +580,11 @@ static void SV_KickNum_f(void)
 	}
 	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
 	{
-		SV_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
+		SVT3_SendServerCommand(NULL, "print \"%s\"", "Cannot kick host player\n");
 		return;
 	}
 
-	SV_DropClient(cl, "was kicked");
+	SVT3_DropClient(cl, "was kicked");
 	cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
 
@@ -694,7 +694,7 @@ static void SV_ConSay_f(void)
 
 	String::Cat(text, sizeof(text), p);
 
-	SV_SendServerCommand(NULL, "chat \"%s\n\"", text);
+	SVT3_SendServerCommand(NULL, "chat \"%s\n\"", text);
 }
 
 
@@ -702,7 +702,7 @@ static void SV_ConSay_f(void)
 ==================
 SV_Heartbeat_f
 
-Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
+Also called by SVT3_DropClient, SV_DirectConnect, and SV_SpawnServer
 ==================
 */
 void SV_Heartbeat_f(void)

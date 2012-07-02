@@ -52,12 +52,16 @@ bool SVT3_GetEntityToken(char* buffer, int length);
 //
 //	Init
 //
+bool SVT3_AddReliableCommand(client_t* cl, int index, const char* cmd);
 const char* SVT3_GetReliableCommand(client_t* cl, int index);
 
 //
 //	Main
 //
 extern Cvar* get_gameType;
+
+void SVT3_AddServerCommand(client_t* client, const char* cmd);
+void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 
 //
 //	World
@@ -91,5 +95,8 @@ void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, 
 void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule);
 // returns the CONTENTS_* value from the world and all entities at the given point.
 int SVT3_PointContents(const vec3_t p, int passEntityNum);
+
+
+void SVT3_DropClient(client_t* drop, const char* reason);
 
 #endif

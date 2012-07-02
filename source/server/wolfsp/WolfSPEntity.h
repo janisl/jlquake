@@ -68,6 +68,7 @@ class idWolfSPEntity : public idEntity3
 	virtual int GetSvFlags() const;
 	virtual void SetSvFlags(int value);
 	virtual bool GetSvFlagCapsule() const;
+	virtual bool GetSvFlagCastAI() const;
 	/*
 	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
 */

@@ -90,6 +90,7 @@ public:
 	virtual int GetSvFlags() const = 0;
 	virtual void SetSvFlags(int value) = 0;
 	virtual bool GetSvFlagCapsule() const = 0;
+	virtual bool GetSvFlagCastAI() const = 0;
 	virtual bool GetBModel() const = 0;
 	virtual void SetBModel(bool value) = 0;
 	virtual const float* GetMins() const = 0;
