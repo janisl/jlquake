@@ -294,7 +294,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	sv.state = SS_GAME;
 
 	// send a heartbeat now so the master will get up to date info
-	SV_Heartbeat_f();
+	SVT3_Heartbeat_f();
 
 	Hunk_SetMark();
 

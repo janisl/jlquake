@@ -31,6 +31,7 @@ idEntity3* SVQ3_EntityForGentity(const q3sharedEntity_t* gEnt);
 qintptr SVQ3_GameSystemCalls(qintptr* args);
 void SVQ3_ClientThink(client_t* cl, q3usercmd_t* cmd);
 void SVQ3_BotFrame(int time);
+void SVQ3_GameClientDisconnect(client_t* drop);
 
 //
 //	World

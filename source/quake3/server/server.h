@@ -95,16 +95,10 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
 void SV_UserinfoChanged(client_t* cl);
 
 void SV_ClientEnterWorld(client_t* client, q3usercmd_t* cmd);
-void SVT3_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
 void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
-
-//
-// sv_ccmds.c
-//
-void SV_Heartbeat_f(void);
 
 //
 // sv_snapshot.c

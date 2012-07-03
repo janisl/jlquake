@@ -34,6 +34,7 @@ bool SVWM_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destn
 bool SVWM_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
 void SVWM_BotFrame(int time);
 qintptr SVWM_GameSystemCalls(qintptr* args);
+void SVWM_GameClientDisconnect(client_t* drop);
 
 //
 //	World

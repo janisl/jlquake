@@ -32,6 +32,17 @@ int SVT3_BotGetSnapshotEntity(int client, int ent);
 void SVT3_BotFrame(int time);
 
 //
+//	CCmds
+//
+void SVT3_Heartbeat_f();
+
+//
+//	Client
+//
+void SVT3_CloseDownload(client_t* cl);
+void SVT3_DropClient(client_t* drop, const char* reason);
+
+//
 //	Game
 //
 extern vm_t* gvm;							// game virtual machine
@@ -112,8 +123,5 @@ void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, 
 void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule);
 // returns the CONTENTS_* value from the world and all entities at the given point.
 int SVT3_PointContents(const vec3_t p, int passEntityNum);
-
-
-void SVT3_DropClient(client_t* drop, const char* reason);
 
 #endif

@@ -49,6 +49,8 @@ add_library(server STATIC
 	quake3/game.cpp
 	quake3/Quake3Entity.cpp
 	tech3/bot.cpp
+	tech3/ccmds.cpp
+	tech3/client.cpp
 	tech3/Entity3.cpp
 	tech3/game.cpp
 	tech3/init.cpp

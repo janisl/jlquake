@@ -97,6 +97,11 @@ void SVQ3_BotFrame(int time)
 	VM_Call(gvm, Q3BOTAI_START_FRAME, time);
 }
 
+void SVQ3_GameClientDisconnect(client_t* drop)
+{
+	VM_Call(gvm, Q3GAME_CLIENT_DISCONNECT, drop - svs.clients);
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {

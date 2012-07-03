@@ -36,6 +36,7 @@ bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int
 bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
 void SVET_BotFrame(int time);
 qintptr SVET_GameSystemCalls(qintptr* args);
+void SVET_GameClientDisconnect(client_t* drop);
 
 //
 //	World

@@ -118,6 +118,11 @@ void SVET_BotFrame(int time)
 	VM_Call(gvm, ETBOTAI_START_FRAME, time);
 }
 
+void SVET_GameClientDisconnect(client_t* drop)
+{
+	VM_Call(gvm, ETGAME_CLIENT_DISCONNECT, drop - svs.clients);
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {

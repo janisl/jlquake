@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server.h"
 
-static void SV_CloseDownload(client_t* cl);
-
 /*
 =================
 SV_GetChallenge
@@ -507,89 +505,7 @@ gotnewcl:
 	}
 	if (count == 1 || count == sv_maxclients->integer)
 	{
-		SV_Heartbeat_f();
-	}
-}
-
-
-/*
-=====================
-SVT3_DropClient
-
-Called when the player is totally leaving the server, either willingly
-or unwillingly.  This is NOT called if the entire server is quiting
-or crashing -- SV_FinalMessage() will handle that
-=====================
-*/
-void SVT3_DropClient(client_t* drop, const char* reason)
-{
-	int i;
-	challenge_t* challenge;
-
-	if (drop->state == CS_ZOMBIE)
-	{
-		return;		// already dropped
-	}
-
-	if (!drop->q3_gentity || !(drop->q3_gentity->r.svFlags & Q3SVF_BOT))
-	{
-		// see if we already have a challenge for this ip
-		challenge = &svs.challenges[0];
-
-		for (i = 0; i < MAX_CHALLENGES; i++, challenge++)
-		{
-			if (SOCK_CompareAdr(drop->netchan.remoteAddress, challenge->adr))
-			{
-				challenge->connected = qfalse;
-				break;
-			}
-		}
-	}
-
-	// Kill any download
-	SV_CloseDownload(drop);
-
-	// tell everyone why they got dropped
-	SVT3_SendServerCommand(NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason);
-
-	Com_DPrintf("Going to CS_ZOMBIE for %s\n", drop->name);
-	drop->state = CS_ZOMBIE;		// become free in a few seconds
-
-	if (drop->download)
-	{
-		FS_FCloseFile(drop->download);
-		drop->download = 0;
-	}
-
-	// call the prog function for removing a client
-	// this will remove the body, among other things
-	VM_Call(gvm, Q3GAME_CLIENT_DISCONNECT, drop - svs.clients);
-
-	// add the disconnect command
-	SVT3_SendServerCommand(drop, "disconnect \"%s\"", reason);
-
-	if (drop->netchan.remoteAddress.type == NA_BOT)
-	{
-		SVT3_BotFreeClient(drop - svs.clients);
-	}
-
-	// nuke user info
-	SVT3_SetUserinfo(drop - svs.clients, "");
-
-	// if this was the last client on the server, send a heartbeat
-	// to the master so it is known the server is empty
-	// send a heartbeat now so the master will get up to date info
-	// if there is already a slot for this ip, reuse it
-	for (i = 0; i < sv_maxclients->integer; i++)
-	{
-		if (svs.clients[i].state >= CS_CONNECTED)
-		{
-			break;
-		}
-	}
-	if (i == sv_maxclients->integer)
-	{
-		SV_Heartbeat_f();
+		SVT3_Heartbeat_f();
 	}
 }
 
@@ -712,37 +628,6 @@ CLIENT COMMAND EXECUTION
 
 /*
 ==================
-SV_CloseDownload
-
-clear/free any download vars
-==================
-*/
-static void SV_CloseDownload(client_t* cl)
-{
-	int i;
-
-	// EOF
-	if (cl->download)
-	{
-		FS_FCloseFile(cl->download);
-	}
-	cl->download = 0;
-	*cl->downloadName = 0;
-
-	// Free the temporary buffer space
-	for (i = 0; i < MAX_DOWNLOAD_WINDOW; i++)
-	{
-		if (cl->downloadBlocks[i])
-		{
-			Z_Free(cl->downloadBlocks[i]);
-			cl->downloadBlocks[i] = NULL;
-		}
-	}
-
-}
-
-/*
-==================
 SV_StopDownload_f
 
 Abort a download if in progress
@@ -755,7 +640,7 @@ void SV_StopDownload_f(client_t* cl)
 		Com_DPrintf("clientDownload: %d : file \"%s\" aborted\n", cl - svs.clients, cl->downloadName);
 	}
 
-	SV_CloseDownload(cl);
+	SVT3_CloseDownload(cl);
 }
 
 /*
@@ -792,7 +677,7 @@ void SV_NextDownload_f(client_t* cl)
 		if (cl->downloadBlockSize[cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW] == 0)
 		{
 			Com_Printf("clientDownload: %d : file \"%s\" completed\n", cl - svs.clients, cl->downloadName);
-			SV_CloseDownload(cl);
+			SVT3_CloseDownload(cl);
 			return;
 		}
 
@@ -815,7 +700,7 @@ void SV_BeginDownload_f(client_t* cl)
 {
 
 	// Kill any existing download
-	SV_CloseDownload(cl);
+	SVT3_CloseDownload(cl);
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
@@ -917,7 +802,7 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 
 		if (!cl->downloadBlocks[curindex])
 		{
-			cl->downloadBlocks[curindex] = (byte*)Z_Malloc(MAX_DOWNLOAD_BLKSIZE);
+			cl->downloadBlocks[curindex] = (byte*)Mem_Alloc(MAX_DOWNLOAD_BLKSIZE);
 		}
 
 		cl->downloadBlockSize[curindex] = FS_Read(cl->downloadBlocks[curindex], MAX_DOWNLOAD_BLKSIZE, cl->download);

@@ -107,6 +107,11 @@ void SVWS_BotFrame(int time)
 	VM_Call(gvm, WSBOTAI_START_FRAME, time);
 }
 
+void SVWS_GameClientDisconnect(client_t* drop)
+{
+	VM_Call(gvm, WSGAME_CLIENT_DISCONNECT, drop - svs.clients);
+}
+
 static void SVWS_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wsplayerState_t* clients, int sizeofGameClient)
 {

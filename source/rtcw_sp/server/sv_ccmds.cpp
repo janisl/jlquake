@@ -941,19 +941,6 @@ static void SV_ConSay_f(void)
 
 
 /*
-==================
-SV_Heartbeat_f
-
-Also called by SVT3_DropClient, SV_DirectConnect, and SV_SpawnServer
-==================
-*/
-void SV_Heartbeat_f(void)
-{
-	svs.q3_nextHeartbeatTime = -9999999;
-}
-
-
-/*
 ===========
 SV_Serverinfo_f
 
@@ -1044,7 +1031,7 @@ void SV_AddOperatorCommands(void)
 	}
 	initialized = qtrue;
 
-	Cmd_AddCommand("heartbeat", SV_Heartbeat_f);
+	Cmd_AddCommand("heartbeat", SVT3_Heartbeat_f);
 	Cmd_AddCommand("kick", SV_Kick_f);
 	Cmd_AddCommand("banUser", SV_Ban_f);
 	Cmd_AddCommand("banClient", SV_BanNum_f);

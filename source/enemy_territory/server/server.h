@@ -144,7 +144,6 @@ void SV_UserinfoChanged(client_t* cl);
 
 void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd);
 void SV_FreeClientNetChan(client_t* client);
-void SVT3_DropClient(client_t* drop, const char* reason);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
@@ -153,8 +152,6 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 //
 // sv_ccmds.c
 //
-void SV_Heartbeat_f(void);
-
 qboolean SV_TempBanIsBanned(netadr_t address);
 void SV_TempBanNetAddress(netadr_t address, int length);
 

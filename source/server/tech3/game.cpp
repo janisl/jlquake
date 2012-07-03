@@ -17,8 +17,8 @@
 #include "../server.h"
 #include "local.h"
 #include "../quake3/local.h"
-#include "../wolfsp//local.h"
-#include "../wolfmp//local.h"
+#include "../wolfsp/local.h"
+#include "../wolfmp/local.h"
 #include "../et/local.h"
 
 vm_t* gvm = NULL;							// game virtual machine

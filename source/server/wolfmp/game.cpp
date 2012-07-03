@@ -107,6 +107,11 @@ void SVWM_BotFrame(int time)
 	VM_Call(gvm, WMBOTAI_START_FRAME, time);
 }
 
+void SVWM_GameClientDisconnect(client_t* drop)
+{
+	VM_Call(gvm, WMGAME_CLIENT_DISCONNECT, drop - svs.clients);
+}
+
 static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {
