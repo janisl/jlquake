@@ -290,7 +290,8 @@ qintptr SVWS_GameSystemCalls(qintptr* args)
 	case WSG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
-//-----------
+	case WSG_GETTAG:
+		return SVT3_GetTag(args[1], 0, (char*)VMA(2), (orientation_t*)VMA(3));
 
 	case WSBOTLIB_SETUP:
 		return SVT3_BotLibSetup();

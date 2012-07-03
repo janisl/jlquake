@@ -117,3 +117,8 @@ qboolean CL_CDKeyValidate(const char* key, const char* checksum) { return qtrue;
 void Key_ClearStates(void)
 {
 }
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

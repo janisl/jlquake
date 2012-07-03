@@ -105,3 +105,8 @@ void CL_ShutdownAll(void) {};
 
 // bk001208 - added new dummy (RC4)
 qboolean CL_CDKeyValidate(const char* key, const char* checksum) { return qtrue; }
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

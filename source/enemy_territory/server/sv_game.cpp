@@ -43,30 +43,6 @@ void SV_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int comm
 //==============================================
 
 /*
-====================
-SV_GameSystemCalls
-
-The module is making a system call
-====================
-*/
-qintptr SV_GameSystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//------
-	case ETG_GETTAG:
-		return SV_GetTag(args[1], args[2], (char*)VMA(3), (orientation_t*)VMA(4));
-
-	case ETG_REGISTERTAG:
-		return SV_LoadTag((char*)VMA(1));
-//------
-	default:
-		return SVET_GameSystemCalls(args);
-	}
-	return -1;
-}
-
-/*
 ===============
 SV_ShutdownGameProgs
 
@@ -152,7 +128,7 @@ void SV_InitGameProgs(void)
 	sv.et_num_tags = 0;
 
 	// load the dll
-	gvm = VM_Create("qagame", SV_GameSystemCalls, VMI_NATIVE);
+	gvm = VM_Create("qagame", SVET_GameSystemCalls, VMI_NATIVE);
 	if (!gvm)
 	{
 		Com_Error(ERR_FATAL, "VM_Create on game failed");
@@ -177,46 +153,4 @@ qboolean SV_GameCommand(void)
 	}
 
 	return VM_Call(gvm, ETGAME_CONSOLE_COMMAND);
-}
-
-/*
-====================
-SV_GetTag
-
-  return qfalse if unable to retrieve tag information for this client
-====================
-*/
-extern qboolean CL_GetTag(int clientNum, char* tagname, orientation_t* _or);
-
-qboolean SV_GetTag(int clientNum, int tagFileNumber, char* tagname, orientation_t* _or)
-{
-	int i;
-
-	if (tagFileNumber > 0 && tagFileNumber <= sv.et_num_tagheaders)
-	{
-		for (i = sv.et_tagHeadersExt[tagFileNumber - 1].start; i < sv.et_tagHeadersExt[tagFileNumber - 1].start + sv.et_tagHeadersExt[tagFileNumber - 1].count; i++)
-		{
-			if (!String::ICmp(sv.et_tags[i].name, tagname))
-			{
-				VectorCopy(sv.et_tags[i].origin, _or->origin);
-				VectorCopy(sv.et_tags[i].axis[0], _or->axis[0]);
-				VectorCopy(sv.et_tags[i].axis[1], _or->axis[1]);
-				VectorCopy(sv.et_tags[i].axis[2], _or->axis[2]);
-				return qtrue;
-			}
-		}
-	}
-
-	// Gordon: lets try and remove the inconsitancy between ded/non-ded servers...
-	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
-#ifndef DEDICATED	// TTimo: dedicated only binary defines DEDICATED
-	if (com_dedicated->integer)
-	{
-		return qfalse;
-	}
-
-	return CL_GetTag(clientNum, tagname, _or);
-#else
-	return qfalse;
-#endif
 }

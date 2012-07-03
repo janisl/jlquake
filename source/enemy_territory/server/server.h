@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../../server/et/g_public.h"
 #include "../../common/file_formats/md3.h"
-#include "../qcommon/qfiles.h"
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 #include "../../server/et/local.h"
@@ -171,8 +170,6 @@ void SV_SendClientIdle(client_t* client);
 void        SV_InitGameProgs(void);
 void        SV_ShutdownGameProgs(void);
 void        SV_RestartGameProgs(void);
-qboolean SV_GetTag(int clientNum, int tagFileNumber, char* tagname, orientation_t* _or);
-int SV_LoadTag(const char* mod_name);
 void        SV_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
 
 //============================================================

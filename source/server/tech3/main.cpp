@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../../common/file_formats/tag.h"
 
 Cvar* svt3_gametype;
 Cvar* svt3_pure;
@@ -126,4 +127,79 @@ void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...)
 		}
 		SVT3_AddServerCommand(client, (char*)message);
 	}
+}
+
+int SVET_LoadTag(const char* mod_name)
+{
+	for (int i = 0; i < sv.et_num_tagheaders; i++)
+	{
+		if (!String::ICmp(mod_name, sv.et_tagHeadersExt[i].filename))
+		{
+			return i + 1;
+		}
+	}
+
+	unsigned char* buffer;
+	FS_ReadFile(mod_name, (void**)&buffer);
+
+	if (!buffer)
+	{
+		return 0;
+	}
+
+	tagHeader_t* pinmodel = (tagHeader_t*)buffer;
+
+	int version = LittleLong(pinmodel->version);
+	if (version != TAG_VERSION)
+	{
+		common->Printf(S_COLOR_YELLOW "WARNING: SVET_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version, TAG_VERSION);
+		FS_FreeFile(buffer);
+		return 0;
+	}
+
+	if (sv.et_num_tagheaders >= MAX_TAG_FILES_ET)
+	{
+		common->Error("MAX_TAG_FILES_ET reached\n");
+
+		FS_FreeFile(buffer);
+		return 0;
+	}
+
+#define LL(x) x = LittleLong(x)
+	LL(pinmodel->ident);
+	LL(pinmodel->numTags);
+	LL(pinmodel->ofsEnd);
+	LL(pinmodel->version);
+#undef LL
+
+	String::NCpyZ(sv.et_tagHeadersExt[sv.et_num_tagheaders].filename, mod_name, MAX_QPATH);
+	sv.et_tagHeadersExt[sv.et_num_tagheaders].start = sv.et_num_tags;
+	sv.et_tagHeadersExt[sv.et_num_tagheaders].count = pinmodel->numTags;
+
+	if (sv.et_num_tags + pinmodel->numTags >= MAX_SERVER_TAGS_ET)
+	{
+		common->Error("MAX_SERVER_TAGS_ET reached\n");
+
+		FS_FreeFile(buffer);
+		return 0;
+	}
+
+	// swap all the tags
+	md3Tag_t* tag = &sv.et_tags[sv.et_num_tags];
+	sv.et_num_tags += pinmodel->numTags;
+	md3Tag_t* readTag = (md3Tag_t*)(buffer + sizeof(tagHeader_t));
+	for (int i = 0; i < pinmodel->numTags; i++, tag++, readTag++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			tag->origin[j] = LittleFloat(readTag->origin[j]);
+			tag->axis[0][j] = LittleFloat(readTag->axis[0][j]);
+			tag->axis[1][j] = LittleFloat(readTag->axis[1][j]);
+			tag->axis[2][j] = LittleFloat(readTag->axis[2][j]);
+		}
+		String::NCpyZ(tag->name, readTag->name, 64);
+	}
+
+	FS_FreeFile(buffer);
+	return ++sv.et_num_tagheaders;
 }

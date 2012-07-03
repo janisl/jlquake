@@ -1206,3 +1206,8 @@ void CL_SetCGameTime(void)
 	}
 
 }
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

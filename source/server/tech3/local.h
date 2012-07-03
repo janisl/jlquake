@@ -62,6 +62,7 @@ void SVT3_AdjustAreaPortalState(q3svEntity_t* svEnt, bool open);
 bool SVT3_GetEntityToken(char* buffer, int length);
 void SVT3_GameSendServerCommand(int clientNum, const char* text);
 void SVT3_GameDropClient(int clientNum, const char* reason, int length);
+bool SVT3_GetTag(int clientNum, int tagFileNumber, const char* tagname, orientation_t* _or);
 
 //
 //	Init
@@ -93,6 +94,7 @@ extern Cvar* svt3_pure;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+int SVET_LoadTag(const char* mod_name);
 
 //
 //	World
@@ -126,5 +128,8 @@ void SVT3_ClipToEntity(q3trace_t* trace, const vec3_t start, const vec3_t mins, 
 void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, int capsule);
 // returns the CONTENTS_* value from the world and all entities at the given point.
 int SVT3_PointContents(const vec3_t p, int passEntityNum);
+
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 
 #endif

@@ -215,3 +215,32 @@ void SVT3_GameDropClient(int clientNum, const char* reason, int length)
 		SVET_TempBanNetAddress(svs.clients[clientNum].netchan.remoteAddress, length);
 	}
 }
+
+//	return false if unable to retrieve tag information for this client
+bool SVT3_GetTag(int clientNum, int tagFileNumber, const char* tagname, orientation_t* _or)
+{
+	if (tagFileNumber > 0 && tagFileNumber <= sv.et_num_tagheaders)
+	{
+		for (int i = sv.et_tagHeadersExt[tagFileNumber - 1].start;
+			i < sv.et_tagHeadersExt[tagFileNumber - 1].start + sv.et_tagHeadersExt[tagFileNumber - 1].count; i++)
+		{
+			if (!String::ICmp(sv.et_tags[i].name, tagname))
+			{
+				VectorCopy(sv.et_tags[i].origin, _or->origin);
+				VectorCopy(sv.et_tags[i].axis[0], _or->axis[0]);
+				VectorCopy(sv.et_tags[i].axis[1], _or->axis[1]);
+				VectorCopy(sv.et_tags[i].axis[2], _or->axis[2]);
+				return true;
+			}
+		}
+	}
+
+	// Gordon: lets try and remove the inconsitancy between ded/non-ded servers...
+	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
+	if (com_dedicated->integer)
+	{
+		return false;
+	}
+
+	return CL_GetTag(clientNum, tagname, _or);
+}

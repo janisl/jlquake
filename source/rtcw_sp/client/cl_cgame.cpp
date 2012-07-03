@@ -1530,7 +1530,7 @@ void CL_SetCGameTime(void)
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag(int clientNum, char* tagname, orientation_t* _or)
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	if (!cgvm)
 	{

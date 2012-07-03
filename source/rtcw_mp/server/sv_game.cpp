@@ -31,27 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "server.h"
 
 /*
-====================
-SV_GameSystemCalls
-
-The module is making a system call
-====================
-*/
-qintptr SV_GameSystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//------
-	case WMG_GETTAG:
-		return SV_GetTag(args[1], (char*)VMA(2), (orientation_t*)VMA(3));
-//------
-	default:
-		return SVWM_GameSystemCalls(args);
-	}
-	return -1;
-}
-
-/*
 ===============
 SV_ShutdownGameProgs
 
@@ -135,7 +114,7 @@ void SV_InitGameProgs(void)
 {
 
 	// load the dll
-	gvm = VM_Create("qagame", SV_GameSystemCalls, VMI_NATIVE);
+	gvm = VM_Create("qagame", SVWM_GameSystemCalls, VMI_NATIVE);
 	if (!gvm)
 	{
 		Com_Error(ERR_FATAL, "VM_Create on game failed");
@@ -175,27 +154,4 @@ void SV_SendMoveSpeedsToGame(int entnum, char* text)
 		return;
 	}
 	VM_Call(gvm, WMGAME_RETRIEVE_MOVESPEEDS_FROM_CLIENT, entnum, text);
-}
-
-/*
-====================
-SV_GetTag
-
-  return qfalse if unable to retrieve tag information for this client
-====================
-*/
-extern qboolean CL_GetTag(int clientNum, char* tagname, orientation_t* _or);
-
-qboolean SV_GetTag(int clientNum, char* tagname, orientation_t* _or)
-{
-#ifndef DEDICATED	// TTimo: dedicated only binary defines DEDICATED
-	if (com_dedicated->integer)
-	{
-		return qfalse;
-	}
-
-	return CL_GetTag(clientNum, tagname, _or);
-#else
-	return qfalse;
-#endif
 }

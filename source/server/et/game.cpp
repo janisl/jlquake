@@ -337,7 +337,11 @@ qintptr SVET_GameSystemCalls(qintptr* args)
 	case ETG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
-//------
+	case ETG_GETTAG:
+		return SVT3_GetTag(args[1], args[2], (char*)VMA(3), (orientation_t*)VMA(4));
+
+	case ETG_REGISTERTAG:
+		return SVET_LoadTag((char*)VMA(1));
 
 	//	Not used by actual game code.
 	case ETG_REGISTERSOUND:

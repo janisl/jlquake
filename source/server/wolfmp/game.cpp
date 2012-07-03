@@ -284,7 +284,8 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
-//------
+	case WMG_GETTAG:
+		return SVT3_GetTag(args[1], 0, (char*)VMA(2), (orientation_t*)VMA(3));
 
 	case WMBOTLIB_SETUP:
 		return SVT3_BotLibSetup();
