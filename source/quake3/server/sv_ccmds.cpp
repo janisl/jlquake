@@ -303,7 +303,7 @@ static void SV_MapRestart_f(void)
 	sv.state = SS_LOADING;
 	sv.q3_restarting = qtrue;
 
-	SV_RestartGameProgs();
+	SVT3_RestartGameProgs();
 
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)

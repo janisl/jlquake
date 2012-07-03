@@ -22,32 +22,17 @@
 //
 //	Game
 //
-int SVWS_NumForGentity(const wssharedEntity_t* ent);
 wssharedEntity_t* SVWS_GentityNum(int num);
 wsplayerState_t* SVWS_GameClientNum(int num);
 q3svEntity_t* SVWS_SvEntityForGentity(const wssharedEntity_t* gEnt);
-wssharedEntity_t* SVWS_GEntityForSvEntity(const q3svEntity_t* svEnt);
-idEntity3* SVWS_EntityForGentity(const wssharedEntity_t* gEnt);
-
 void SVWS_ClientThink(client_t* cl, wsusercmd_t* cmd);
 bool SVWS_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
 bool SVWS_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
 void SVWS_BotFrame(int time);
 qintptr SVWS_GameSystemCalls(qintptr* args);
 void SVWS_GameClientDisconnect(client_t* drop);
-
-//
-//	World
-//
-// call before removing an entity, and before trying to move one,
-// so it doesn't clip against itself
-void SVWS_UnlinkEntity(wssharedEntity_t* ent);
-// Needs to be called any time an entity changes origin, mins, maxs,
-// or solid.  Automatically unlinks if needed.
-// sets ent->v.absmin and ent->v.absmax
-// sets ent->leafnums[] for pvs determination even if the entity
-// is not solid
-void SVWS_LinkEntity(wssharedEntity_t* ent);
-clipHandle_t SVWS_ClipHandleForEntity(const wssharedEntity_t* ent);
+void SVWS_GameInit(int serverTime, int randomSeed, bool restart);
+void SVWS_GameShutdown(bool restart);
+bool SVWS_GameConsoleCommand();
 
 #endif

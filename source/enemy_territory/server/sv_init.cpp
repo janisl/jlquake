@@ -59,7 +59,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	}
 
 	// shut down the existing game if it is running
-	SV_ShutdownGameProgs();
+	SVT3_ShutdownGameProgs();
 
 	Com_Printf("------ Server Initialization ------\n");
 	Com_Printf("Server: %s\n",server);
@@ -171,7 +171,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	Cvar_Set("sv_serverRestarting", "1");
 
 	// load and spawn all other entities
-	SV_InitGameProgs();
+	SVT3_InitGameProgs();
 
 	// run a few frames to allow everything to settle
 	for (i = 0; i < GAME_INIT_FRAMES; i++)
@@ -509,7 +509,7 @@ void SV_Shutdown(const char* finalmsg)
 
 	SV_RemoveOperatorCommands();
 	SV_MasterShutdown();
-	SV_ShutdownGameProgs();
+	SVT3_ShutdownGameProgs();
 
 	// free current level
 	SVT3_ClearServer();

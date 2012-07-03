@@ -31,8 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 // RF, this is only used when running a local server
-extern void SV_SendMoveSpeedsToGame(int entnum, char* text);
-extern qboolean SV_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo);
+extern void SVWS_SendMoveSpeedsToGame(int entnum, char* text);
+extern int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo);
 
 
 /*
@@ -908,7 +908,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return 0;
 
 	case CG_SENDMOVESPEEDSTOGAME:
-		SV_SendMoveSpeedsToGame(args[1], (char*)VMA(2));
+		SVWS_SendMoveSpeedsToGame(args[1], (char*)VMA(2));
 		return 0;
 
 	case CG_CIN_PLAYCINEMATIC:
@@ -1030,7 +1030,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	// - NERVE - SMF
 
 	case CG_GETMODELINFO:
-		return SV_GetModelInfo(args[1], (char*)VMA(2), (animModelInfo_t**)VMA(3));
+		return SVWS_GetModelInfo(args[1], (char*)VMA(2), (animModelInfo_t**)VMA(3));
 
 	default:
 		Com_Error(ERR_DROP, "Bad cgame system trap: %i", args[0]);

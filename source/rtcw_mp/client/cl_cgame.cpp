@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 
 // RF, this is only used when running a local server
-extern void SV_SendMoveSpeedsToGame(int entnum, char* text);
+extern void SVWM_SendMoveSpeedsToGame(int entnum, char* text);
 
 // NERVE - SMF
 void Key_GetBindingBuf(int keynum, char* buf, int buflen);
@@ -976,7 +976,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return 0;
 
 	case CG_SENDMOVESPEEDSTOGAME:
-		SV_SendMoveSpeedsToGame(args[1], (char*)VMA(2));
+		SVWM_SendMoveSpeedsToGame(args[1], (char*)VMA(2));
 		return 0;
 
 	case CG_CIN_PLAYCINEMATIC:

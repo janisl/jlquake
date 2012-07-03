@@ -38,7 +38,6 @@ set(WOLFMP_FILES
 
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
-	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 	server/sv_net_chan.cpp
@@ -54,7 +53,6 @@ set(WOLFMPDED_FILES
 	null/null_snddma.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
-	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 	server/sv_net_chan.cpp

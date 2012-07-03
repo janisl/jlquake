@@ -20,13 +20,6 @@
 #include "g_public.h"
 #include "../botlib/public.h"
 
-// these functions must be used instead of pointer arithmetic, because
-// the game allocates gentities with private information after the server shared part
-int SVET_NumForGentity(const etsharedEntity_t* ent)
-{
-	return ((byte*)ent - (byte*)sv.et_gentities) / sv.q3_gentitySize;
-}
-
 etsharedEntity_t* SVET_GentityNum(int num)
 {
 	return (etsharedEntity_t*)((byte*)sv.et_gentities + sv.q3_gentitySize * num);
@@ -46,37 +39,13 @@ q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt)
 	return &sv.q3_svEntities[gEnt->s.number];
 }
 
-idEntity3* SVET_EntityForGentity(const etsharedEntity_t* gEnt)
+static idEntity3* SVET_EntityForGentity(const etsharedEntity_t* gEnt)
 {
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
 	{
 		common->Error("SVET_SvEntityForGentity: bad gEnt");
 	}
 	return sv.q3_entities[gEnt->s.number];
-}
-
-etsharedEntity_t* SVET_GEntityForSvEntity(const q3svEntity_t* svEnt)
-{
-	int num = svEnt - sv.q3_svEntities;
-	return SVET_GentityNum(num);
-}
-
-void SVET_UnlinkEntity(etsharedEntity_t* gEnt)
-{
-	SVT3_UnlinkEntity(SVET_EntityForGentity(gEnt), SVET_SvEntityForGentity(gEnt));
-}
-
-void SVET_LinkEntity(etsharedEntity_t* gEnt)
-{
-	SVT3_LinkEntity(SVET_EntityForGentity(gEnt), SVET_SvEntityForGentity(gEnt));
-}
-
-//	Returns a headnode that can be used for testing or clipping to a
-// given entity.  If the entity is a bsp model, the headnode will
-// be returned, otherwise a custom box tree will be constructed.
-clipHandle_t SVET_ClipHandleForEntity(const etsharedEntity_t* gent)
-{
-	return SVT3_ClipHandleForEntity(SVET_EntityForGentity(gent));
 }
 
 bool SVET_GameIsSinglePlayer()
@@ -123,6 +92,26 @@ void SVET_GameClientDisconnect(client_t* drop)
 	VM_Call(gvm, ETGAME_CLIENT_DISCONNECT, drop - svs.clients);
 }
 
+void SVET_GameInit(int serverTime, int randomSeed, bool restart)
+{
+	VM_Call(gvm, ETGAME_INIT, serverTime, randomSeed, restart);
+}
+
+void SVET_GameShutdown(bool restart)
+{
+	VM_Call(gvm, ETGAME_SHUTDOWN, restart);
+}
+
+bool SVET_GameConsoleCommand()
+{
+	return VM_Call(gvm, ETGAME_CONSOLE_COMMAND);
+}
+
+void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime)
+{
+	VM_Call(gvm, ETGAME_MESSAGERECEIVED, cno, buf, buflen, commandTime);
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {
@@ -137,6 +126,16 @@ static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int s
 
 	sv.et_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
+}
+
+static void SVET_UnlinkEntity(etsharedEntity_t* gEnt)
+{
+	SVT3_UnlinkEntity(SVET_EntityForGentity(gEnt), SVET_SvEntityForGentity(gEnt));
+}
+
+static void SVET_LinkEntity(etsharedEntity_t* gEnt)
+{
+	SVT3_LinkEntity(SVET_EntityForGentity(gEnt), SVET_SvEntityForGentity(gEnt));
 }
 
 static bool SVET_EntityContact(const vec3_t mins, const vec3_t maxs, const etsharedEntity_t* gEnt, const int capsule)

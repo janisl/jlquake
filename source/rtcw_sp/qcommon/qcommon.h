@@ -325,7 +325,6 @@ void SV_Init(void);
 void SV_Shutdown(const char* finalmsg);
 void SV_Frame(int msec);
 void SV_PacketEvent(netadr_t from, QMsg* msg);
-qboolean SV_GameCommand(void);
 
 
 //

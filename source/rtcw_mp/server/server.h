@@ -154,13 +154,6 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client);
 void SV_SendClientMessages(void);
 void SV_SendClientSnapshot(client_t* client);
 
-//
-// sv_game.c
-//
-void        SV_InitGameProgs(void);
-void        SV_ShutdownGameProgs(void);
-void        SV_RestartGameProgs(void);
-
 //============================================================
 //
 // high level object sorting to reduce interaction tests

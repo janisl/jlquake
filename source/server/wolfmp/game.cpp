@@ -20,13 +20,6 @@
 #include "g_public.h"
 #include "../botlib/public.h"
 
-// these functions must be used instead of pointer arithmetic, because
-// the game allocates gentities with private information after the server shared part
-int SVWM_NumForGentity(const wmsharedEntity_t* ent)
-{
-	return ((byte*)ent - (byte*)sv.wm_gentities) / sv.q3_gentitySize;
-}
-
 wmsharedEntity_t* SVWM_GentityNum(int num)
 {
 	return (wmsharedEntity_t*)((byte*)sv.wm_gentities + sv.q3_gentitySize * num);
@@ -46,37 +39,13 @@ q3svEntity_t* SVWM_SvEntityForGentity(const wmsharedEntity_t* gEnt)
 	return &sv.q3_svEntities[gEnt->s.number];
 }
 
-idEntity3* SVWM_EntityForGentity(const wmsharedEntity_t* gEnt)
+static idEntity3* SVWM_EntityForGentity(const wmsharedEntity_t* gEnt)
 {
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES_Q3)
 	{
 		common->Error("SVWM_SvEntityForGentity: bad gEnt");
 	}
 	return sv.q3_entities[gEnt->s.number];
-}
-
-wmsharedEntity_t* SVWM_GEntityForSvEntity(const q3svEntity_t* svEnt)
-{
-	int num = svEnt - sv.q3_svEntities;
-	return SVWM_GentityNum(num);
-}
-
-void SVWM_UnlinkEntity(wmsharedEntity_t* gEnt)
-{
-	SVT3_UnlinkEntity(SVWM_EntityForGentity(gEnt), SVWM_SvEntityForGentity(gEnt));
-}
-
-void SVWM_LinkEntity(wmsharedEntity_t* gEnt)
-{
-	SVT3_LinkEntity(SVWM_EntityForGentity(gEnt), SVWM_SvEntityForGentity(gEnt));
-}
-
-//	Returns a headnode that can be used for testing or clipping to a
-// given entity.  If the entity is a bsp model, the headnode will
-// be returned, otherwise a custom box tree will be constructed.
-clipHandle_t SVWM_ClipHandleForEntity(const wmsharedEntity_t* gent)
-{
-	return SVT3_ClipHandleForEntity(SVWM_EntityForGentity(gent));
 }
 
 void SVWM_ClientThink(client_t* cl, wmusercmd_t* cmd)
@@ -112,6 +81,30 @@ void SVWM_GameClientDisconnect(client_t* drop)
 	VM_Call(gvm, WMGAME_CLIENT_DISCONNECT, drop - svs.clients);
 }
 
+void SVWM_GameInit(int serverTime, int randomSeed, bool restart)
+{
+	VM_Call(gvm, WMGAME_INIT, serverTime, randomSeed, restart);
+}
+
+void SVWM_GameShutdown(bool restart)
+{
+	VM_Call(gvm, WMGAME_SHUTDOWN, restart);
+}
+
+bool SVWM_GameConsoleCommand()
+{
+	return VM_Call(gvm, WMGAME_CONSOLE_COMMAND);
+}
+
+void SVWM_SendMoveSpeedsToGame(int entnum, char* text)
+{
+	if (!gvm)
+	{
+		return;
+	}
+	VM_Call(gvm, WMGAME_RETRIEVE_MOVESPEEDS_FROM_CLIENT, entnum, text);
+}
+
 static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {
@@ -126,6 +119,16 @@ static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int s
 
 	sv.wm_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
+}
+
+static void SVWM_UnlinkEntity(wmsharedEntity_t* gEnt)
+{
+	SVT3_UnlinkEntity(SVWM_EntityForGentity(gEnt), SVWM_SvEntityForGentity(gEnt));
+}
+
+static void SVWM_LinkEntity(wmsharedEntity_t* gEnt)
+{
+	SVT3_LinkEntity(SVWM_EntityForGentity(gEnt), SVWM_SvEntityForGentity(gEnt));
 }
 
 static bool SVWM_EntityContact(const vec3_t mins, const vec3_t maxs, const wmsharedEntity_t* gEnt, const int capsule)

@@ -46,7 +46,7 @@ void Cmd_HandleUnknownCommand()
 	}
 
 	// check server game commands
-	if (com_sv_running && com_sv_running->integer && SV_GameCommand())
+	if (com_sv_running && com_sv_running->integer && SVT3_GameCommand())
 	{
 		return;
 	}

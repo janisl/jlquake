@@ -93,7 +93,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// done.
 
 	// shut down the existing game if it is running
-	SV_ShutdownGameProgs();
+	SVT3_ShutdownGameProgs();
 
 	Com_Printf("------ Server Initialization ------\n");
 	Com_Printf("Server: %s\n",server);
@@ -187,7 +187,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	sv.state = SS_LOADING;
 
 	// load and spawn all other entities
-	SV_InitGameProgs();
+	SVT3_InitGameProgs();
 
 	// don't allow a map_restart if game is modified
 	svt3_gametype->modified = qfalse;
@@ -467,7 +467,7 @@ void SV_Shutdown(const char* finalmsg)
 
 	SV_RemoveOperatorCommands();
 	SV_MasterShutdown();
-	SV_ShutdownGameProgs();
+	SVT3_ShutdownGameProgs();
 
 	// free current level
 	SVT3_ClearServer();

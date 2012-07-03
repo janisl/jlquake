@@ -164,14 +164,6 @@ void SV_SendClientSnapshot(client_t* client);
 //bani
 void SV_SendClientIdle(client_t* client);
 
-//
-// sv_game.c
-//
-void        SV_InitGameProgs(void);
-void        SV_ShutdownGameProgs(void);
-void        SV_RestartGameProgs(void);
-void        SV_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
-
 //============================================================
 //
 // high level object sorting to reduce interaction tests

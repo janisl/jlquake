@@ -22,34 +22,20 @@
 //
 //	Game
 //
-int SVET_NumForGentity(const etsharedEntity_t* ent);
 etsharedEntity_t* SVET_GentityNum(int num);
 etplayerState_t* SVET_GameClientNum(int num);
 q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
-etsharedEntity_t* SVET_GEntityForSvEntity(const q3svEntity_t* svEnt);
-idEntity3* SVET_EntityForGentity(const etsharedEntity_t* gEnt);
 bool SVET_GameIsSinglePlayer();
 bool SVET_GameIsCoop();
-
 void SVET_ClientThink(client_t* cl, etusercmd_t* cmd);
 bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy);
 bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
 void SVET_BotFrame(int time);
 qintptr SVET_GameSystemCalls(qintptr* args);
 void SVET_GameClientDisconnect(client_t* drop);
-
-//
-//	World
-//
-// call before removing an entity, and before trying to move one,
-// so it doesn't clip against itself
-void SVET_UnlinkEntity(etsharedEntity_t* ent);
-// Needs to be called any time an entity changes origin, mins, maxs,
-// or solid.  Automatically unlinks if needed.
-// sets ent->v.absmin and ent->v.absmax
-// sets ent->leafnums[] for pvs determination even if the entity
-// is not solid
-void SVET_LinkEntity(etsharedEntity_t* ent);
-clipHandle_t SVET_ClipHandleForEntity(const etsharedEntity_t* ent);
+void SVET_GameInit(int serverTime, int randomSeed, bool restart);
+void SVET_GameShutdown(bool restart);
+bool SVET_GameConsoleCommand();
+void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
 
 #endif

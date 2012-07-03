@@ -244,3 +244,168 @@ bool SVT3_GetTag(int clientNum, int tagFileNumber, const char* tagname, orientat
 
 	return CL_GetTag(clientNum, tagname, _or);
 }
+
+//	Called for both a full init and a restart
+static void SVT3_InitGameVM(bool restart)
+{
+	// start the entity parsing at the beginning
+	sv.q3_entityParsePoint = CM_EntityString();
+
+	// clear all gentity pointers that might still be set from
+	// a previous level
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		svs.clients[i].q3_gentity = NULL;
+		svs.clients[i].ws_gentity = NULL;
+		svs.clients[i].wm_gentity = NULL;
+		svs.clients[i].et_gentity = NULL;
+		svs.clients[i].q3_entity = NULL;
+	}
+
+	// use the current msec count for a random seed
+	// init for this gamestate
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameInit(svs.q3_time, Com_Milliseconds(), restart);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameInit(svs.q3_time, Com_Milliseconds(), restart);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameInit(svs.q3_time, Com_Milliseconds(), restart);
+	}
+	else
+	{
+		SVQ3_GameInit(svs.q3_time, Com_Milliseconds(), restart);
+	}
+}
+
+//	Called on a normal map change, not on a map_restart
+void SVT3_InitGameProgs()
+{
+	if (GGameType & (GAME_Quake3 | GAME_WolfSP))
+	{
+		Cvar* var = Cvar_Get("bot_enable", "1", CVAR_LATCH2);
+		if (var)
+		{
+			bot_enable = var->integer;
+		}
+		else
+		{
+			bot_enable = 0;
+		}
+	}
+
+	sv.et_num_tagheaders = 0;
+	sv.et_num_tags = 0;
+
+	// load the dll or bytecode
+	if (GGameType & GAME_WolfSP)
+	{
+		gvm = VM_Create("qagame", SVWS_GameSystemCalls, VMI_NATIVE);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		gvm = VM_Create("qagame", SVWM_GameSystemCalls, VMI_NATIVE);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		gvm = VM_Create("qagame", SVET_GameSystemCalls, VMI_NATIVE);
+	}
+	else
+	{
+		gvm = VM_Create("qagame", SVQ3_GameSystemCalls, (vmInterpret_t)(int)Cvar_VariableValue("vm_game"));
+	}
+	if (!gvm)
+	{
+		common->FatalError("VM_Create on game failed");
+	}
+
+	SVT3_InitGameVM(false);
+}
+
+//	Called on a map_restart, but not on a normal map change
+void SVT3_RestartGameProgs()
+{
+	if (!gvm)
+	{
+		return;
+	}
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameShutdown(true);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameShutdown(true);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameShutdown(true);
+	}
+	else
+	{
+		SVQ3_GameShutdown(true);
+	}
+
+	// do a restart instead of a free
+	gvm = VM_Restart(gvm);
+	if (!gvm)		// bk001212 - as done below
+	{
+		common->FatalError("VM_Restart on game failed");
+	}
+
+	SVT3_InitGameVM(true);
+}
+
+//	Called every time a map changes
+void SVT3_ShutdownGameProgs()
+{
+	if (!gvm)
+	{
+		return;
+	}
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameShutdown(false);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameShutdown(false);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameShutdown(false);
+	}
+	else
+	{
+		SVQ3_GameShutdown(false);
+	}
+	VM_Free(gvm);
+	gvm = NULL;
+}
+
+//	See if the current console command is claimed by the game
+bool SVT3_GameCommand()
+{
+	if (sv.state != SS_GAME)
+	{
+		return false;
+	}
+
+	if (GGameType & GAME_WolfSP)
+	{
+		return SVWS_GameConsoleCommand();
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		return SVWM_GameConsoleCommand();
+	}
+	if (GGameType & GAME_ET)
+	{
+		return SVET_GameConsoleCommand();
+	}
+	return SVQ3_GameConsoleCommand();
+}

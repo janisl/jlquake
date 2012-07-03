@@ -87,4 +87,6 @@ extern int cl_connectedToPureServer;
 
 extern etgameInfo_t comet_gameInfo;
 
+bool SVT3_GameCommand();
+
 #endif

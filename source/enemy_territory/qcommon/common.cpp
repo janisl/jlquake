@@ -1589,7 +1589,7 @@ qboolean Hunk_CheckMark(void)
 }
 
 void CL_ShutdownUI(void);
-void SV_ShutdownGameProgs(void);
+void SVT3_ShutdownGameProgs(void);
 
 /*
 =================
@@ -1605,7 +1605,7 @@ void Hunk_Clear(void)
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 #endif
-	SV_ShutdownGameProgs();
+	SVT3_ShutdownGameProgs();
 #ifndef DEDICATED
 	CIN_CloseAllVideos();
 #endif

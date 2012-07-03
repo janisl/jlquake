@@ -63,6 +63,9 @@ bool SVT3_GetEntityToken(char* buffer, int length);
 void SVT3_GameSendServerCommand(int clientNum, const char* text);
 void SVT3_GameDropClient(int clientNum, const char* reason, int length);
 bool SVT3_GetTag(int clientNum, int tagFileNumber, const char* tagname, orientation_t* _or);
+void SVT3_InitGameProgs();
+void SVT3_RestartGameProgs();
+void SVT3_ShutdownGameProgs();
 
 //
 //	Init
