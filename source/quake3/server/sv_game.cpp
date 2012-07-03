@@ -25,86 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ===============
-SV_GameSendServerCommand
-
-Sends a command string to a client
-===============
-*/
-void SV_GameSendServerCommand(int clientNum, const char* text)
-{
-	if (clientNum == -1)
-	{
-		SVT3_SendServerCommand(NULL, "%s", text);
-	}
-	else
-	{
-		if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-		{
-			return;
-		}
-		SVT3_SendServerCommand(svs.clients + clientNum, "%s", text);
-	}
-}
-
-
-/*
-===============
-SV_GameDropClient
-
-Disconnects the client with a message
-===============
-*/
-void SV_GameDropClient(int clientNum, const char* reason)
-{
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-	{
-		return;
-	}
-	SVT3_DropClient(svs.clients + clientNum, reason);
-}
-
-//==============================================
-
-/*
-====================
-SV_GameSystemCalls
-
-The module is making a system call
-====================
-*/
-qintptr SV_GameSystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//----
-	case Q3G_DROP_CLIENT:
-		SV_GameDropClient(args[1], (char*)VMA(2));
-		return 0;
-	case Q3G_SEND_SERVER_COMMAND:
-		SV_GameSendServerCommand(args[1], (char*)VMA(2));
-		return 0;
-//----
-	case Q3G_SET_CONFIGSTRING:
-		SVT3_SetConfigstring(args[1], (char*)VMA(2));
-		return 0;
-	case Q3G_GET_CONFIGSTRING:
-		SVT3_GetConfigstring(args[1], (char*)VMA(2), args[3]);
-		return 0;
-	case Q3G_SET_USERINFO:
-		SVT3_SetUserinfo(args[1], (char*)VMA(2));
-		return 0;
-	case Q3G_GET_USERINFO:
-		SVT3_GetUserinfo(args[1], (char*)VMA(2), args[3]);
-		return 0;
-//----
-	default:
-		return SVQ3_GameSystemCalls(args);
-	}
-	return -1;
-}
-
-/*
-===============
 SV_ShutdownGameProgs
 
 Called every time a map changes
@@ -200,7 +120,7 @@ void SV_InitGameProgs(void)
 	}
 
 	// load the dll or bytecode
-	gvm = VM_Create("qagame", SV_GameSystemCalls, (vmInterpret_t)(int)Cvar_VariableValue("vm_game"));
+	gvm = VM_Create("qagame", SVQ3_GameSystemCalls, (vmInterpret_t)(int)Cvar_VariableValue("vm_game"));
 	if (!gvm)
 	{
 		Com_Error(ERR_FATAL, "VM_Create on game failed");

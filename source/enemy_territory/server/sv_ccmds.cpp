@@ -790,7 +790,7 @@ static void SV_Kick_f( void ) {
                 }
                 SVT3_DropClient( cl, "player kicked" ); // JPW NERVE to match front menu message
                 if( timeout != -1 ) {
-                    SV_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
+                    SVET_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
                 }
                 cl->lastPacketTime = svs.q3_time;	// in case there is a funny zombie
             }
@@ -804,7 +804,7 @@ static void SV_Kick_f( void ) {
                 }
                 SVT3_DropClient( cl, "was kicked" );
                 if( timeout != -1 ) {
-                    SV_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
+                    SVET_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
                 }
                 cl->lastPacketTime = svs.q3_time;	// in case there is a funny zombie
             }
@@ -818,7 +818,7 @@ static void SV_Kick_f( void ) {
 
     SVT3_DropClient( cl, "player kicked" ); // JPW NERVE to match front menu message
     if( timeout != -1 ) {
-        SV_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
+        SVET_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
     }
     cl->lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
@@ -950,40 +950,6 @@ static void SV_BanNum_f(void)
 }
 #endif	// AUTHORIZE_SUPPORT
 
-/*
-==================
-==================
-*/
-void SV_TempBanNetAddress(netadr_t address, int length)
-{
-	int i;
-	int oldesttime = 0;
-	int oldest = -1;
-
-	for (i = 0; i < MAX_TEMPBAN_ADDRESSES; i++)
-	{
-		if (!svs.et_tempBanAddresses[i].endtime || svs.et_tempBanAddresses[i].endtime < svs.q3_time)
-		{
-			// found a free slot
-			svs.et_tempBanAddresses[i].adr       = address;
-			svs.et_tempBanAddresses[i].endtime   = svs.q3_time + (length * 1000);
-
-			return;
-		}
-		else
-		{
-			if (oldest == -1 || oldesttime > svs.et_tempBanAddresses[i].endtime)
-			{
-				oldesttime  = svs.et_tempBanAddresses[i].endtime;
-				oldest      = i;
-			}
-		}
-	}
-
-	svs.et_tempBanAddresses[oldest].adr      = address;
-	svs.et_tempBanAddresses[oldest].endtime  = svs.q3_time + length;
-}
-
 qboolean SV_TempBanIsBanned(netadr_t address)
 {
 	int i;
@@ -1043,7 +1009,7 @@ static void SV_KickNum_f( void ) {
 
     SVT3_DropClient( cl, "player kicked" );
     if( timeout != -1 ) {
-        SV_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
+        SVET_TempBanNetAddress( cl->netchan.remoteAddress, timeout );
     }
     cl->lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }

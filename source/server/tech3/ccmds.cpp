@@ -26,3 +26,30 @@ void SVT3_Heartbeat_f()
 {
 	svs.q3_nextHeartbeatTime = -9999999;
 }
+
+void SVET_TempBanNetAddress(netadr_t address, int length)
+{
+	int oldesttime = 0;
+	int oldest = -1;
+	for (int i = 0; i < MAX_TEMPBAN_ADDRESSES; i++)
+	{
+		if (!svs.et_tempBanAddresses[i].endtime || svs.et_tempBanAddresses[i].endtime < svs.q3_time)
+		{
+			// found a free slot
+			svs.et_tempBanAddresses[i].adr = address;
+			svs.et_tempBanAddresses[i].endtime = svs.q3_time + (length * 1000);
+			return;
+		}
+		else
+		{
+			if (oldest == -1 || oldesttime > svs.et_tempBanAddresses[i].endtime)
+			{
+				oldesttime = svs.et_tempBanAddresses[i].endtime;
+				oldest = i;
+			}
+		}
+	}
+
+	svs.et_tempBanAddresses[oldest].adr = address;
+	svs.et_tempBanAddresses[oldest].endtime = svs.q3_time + length;
+}

@@ -197,7 +197,12 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3G_LOCATE_GAME_DATA:
 		SVQ3_LocateGameData((q3sharedEntity_t*)VMA(1), args[2], args[3], (q3playerState_t*)VMA(4), args[5]);
 		return 0;
-//----
+	case Q3G_DROP_CLIENT:
+		SVT3_GameDropClient(args[1], (char*)VMA(2), 0);
+		return 0;
+	case Q3G_SEND_SERVER_COMMAND:
+		SVT3_GameSendServerCommand(args[1], (char*)VMA(2));
+		return 0;
 	case Q3G_LINKENTITY:
 		SVQ3_LinkEntity((q3sharedEntity_t*)VMA(1));
 		return 0;
@@ -226,7 +231,18 @@ qintptr SVQ3_GameSystemCalls(qintptr* args)
 	case Q3G_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
-//----
+	case Q3G_SET_CONFIGSTRING:
+		SVT3_SetConfigstring(args[1], (char*)VMA(2));
+		return 0;
+	case Q3G_GET_CONFIGSTRING:
+		SVT3_GetConfigstring(args[1], (char*)VMA(2), args[3]);
+		return 0;
+	case Q3G_SET_USERINFO:
+		SVT3_SetUserinfo(args[1], (char*)VMA(2));
+		return 0;
+	case Q3G_GET_USERINFO:
+		SVT3_GetUserinfo(args[1], (char*)VMA(2), args[3]);
+		return 0;
 	case Q3G_GET_SERVERINFO:
 		SVT3_GetServerinfo((char*)VMA(1), args[2]);
 		return 0;

@@ -207,7 +207,12 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMG_LOCATE_GAME_DATA:
 		SVWM_LocateGameData((wmsharedEntity_t*)VMA(1), args[2], args[3], (wmplayerState_t*)VMA(4), args[5]);
 		return 0;
-//------
+	case WMG_DROP_CLIENT:
+		SVT3_GameDropClient(args[1], (char*)VMA(2), 0);
+		return 0;
+	case WMG_SEND_SERVER_COMMAND:
+		SVT3_GameSendServerCommand(args[1], (char*)VMA(2));
+		return 0;
 	case WMG_LINKENTITY:
 		SVWM_LinkEntity((wmsharedEntity_t*)VMA(1));
 		return 0;
@@ -236,7 +241,18 @@ qintptr SVWM_GameSystemCalls(qintptr* args)
 	case WMG_IN_PVS_IGNORE_PORTALS:
 		return SVT3_inPVSIgnorePortals((float*)VMA(1), (float*)VMA(2));
 
-//------
+	case WMG_SET_CONFIGSTRING:
+		SVT3_SetConfigstring(args[1], (char*)VMA(2));
+		return 0;
+	case WMG_GET_CONFIGSTRING:
+		SVT3_GetConfigstring(args[1], (char*)VMA(2), args[3]);
+		return 0;
+	case WMG_SET_USERINFO:
+		SVT3_SetUserinfo(args[1], (char*)VMA(2));
+		return 0;
+	case WMG_GET_USERINFO:
+		SVT3_GetUserinfo(args[1], (char*)VMA(2), args[3]);
+		return 0;
 	case WMG_GET_SERVERINFO:
 		SVT3_GetServerinfo((char*)VMA(1), args[2]);
 		return 0;

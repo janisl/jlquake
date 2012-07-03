@@ -153,7 +153,6 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 // sv_ccmds.c
 //
 qboolean SV_TempBanIsBanned(netadr_t address);
-void SV_TempBanNetAddress(netadr_t address, int length);
 
 //
 // sv_snapshot.c

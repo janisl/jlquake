@@ -35,6 +35,7 @@ void SVT3_BotFrame(int time);
 //	CCmds
 //
 void SVT3_Heartbeat_f();
+void SVET_TempBanNetAddress(netadr_t address, int length);
 
 //
 //	Client
@@ -59,6 +60,8 @@ void SVT3_SetBrushModel(idEntity3* ent, q3svEntity_t* svEnt, const char* name);
 void SVT3_GetServerinfo(char* buffer, int bufferSize);
 void SVT3_AdjustAreaPortalState(q3svEntity_t* svEnt, bool open);
 bool SVT3_GetEntityToken(char* buffer, int length);
+void SVT3_GameSendServerCommand(int clientNum, const char* text);
+void SVT3_GameDropClient(int clientNum, const char* reason, int length);
 
 //
 //	Init

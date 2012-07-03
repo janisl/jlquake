@@ -184,3 +184,34 @@ bool SVT3_GetEntityToken(char* buffer, int length)
 		return true;
 	}
 }
+
+//	Sends a command string to a client
+void SVT3_GameSendServerCommand(int clientNum, const char* text)
+{
+	if (clientNum == -1)
+	{
+		SVT3_SendServerCommand(NULL, "%s", text);
+	}
+	else
+	{
+		if (clientNum < 0 || clientNum >= sv_maxclients->integer)
+		{
+			return;
+		}
+		SVT3_SendServerCommand(svs.clients + clientNum, "%s", text);
+	}
+}
+
+//	Disconnects the client with a message
+void SVT3_GameDropClient(int clientNum, const char* reason, int length)
+{
+	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
+	{
+		return;
+	}
+	SVT3_DropClient(svs.clients + clientNum, reason);
+	if (length)
+	{
+		SVET_TempBanNetAddress(svs.clients[clientNum].netchan.remoteAddress, length);
+	}
+}

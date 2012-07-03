@@ -31,48 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "server.h"
 
 /*
-===============
-SV_GameSendServerCommand
-
-Sends a command string to a client
-===============
-*/
-void SV_GameSendServerCommand(int clientNum, const char* text)
-{
-	if (clientNum == -1)
-	{
-		SVT3_SendServerCommand(NULL, "%s", text);
-	}
-	else
-	{
-		if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-		{
-			return;
-		}
-		SVT3_SendServerCommand(svs.clients + clientNum, "%s", text);
-	}
-}
-
-
-/*
-===============
-SV_GameDropClient
-
-Disconnects the client with a message
-===============
-*/
-void SV_GameDropClient(int clientNum, const char* reason)
-{
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer)
-	{
-		return;
-	}
-	SVT3_DropClient(svs.clients + clientNum, reason);
-}
-
-//==============================================
-
-/*
 ====================
 SV_GameSystemCalls
 
@@ -83,26 +41,6 @@ qintptr SV_GameSystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-//------
-	case WMG_DROP_CLIENT:
-		SV_GameDropClient(args[1], (char*)VMA(2));
-		return 0;
-	case WMG_SEND_SERVER_COMMAND:
-		SV_GameSendServerCommand(args[1], (char*)VMA(2));
-		return 0;
-//------
-	case WMG_SET_CONFIGSTRING:
-		SVT3_SetConfigstring(args[1], (char*)VMA(2));
-		return 0;
-	case WMG_GET_CONFIGSTRING:
-		SVT3_GetConfigstring(args[1], (char*)VMA(2), args[3]);
-		return 0;
-	case WMG_SET_USERINFO:
-		SVT3_SetUserinfo(args[1], (char*)VMA(2));
-		return 0;
-	case WMG_GET_USERINFO:
-		SVT3_GetUserinfo(args[1], (char*)VMA(2), args[3]);
-		return 0;
 //------
 	case WMG_GETTAG:
 		return SV_GetTag(args[1], (char*)VMA(2), (orientation_t*)VMA(3));
