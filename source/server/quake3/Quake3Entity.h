@@ -16,6 +16,9 @@
 
 class idQuake3Entity : public idEntity3
 {
+	virtual bool GetEFlagViewingCamera() const;
+	virtual bool GetEFlagDead() const;
+	virtual void SetEFlagNoDraw();
 	/*
 	int loopSound;		// constantly loop this sound
 */
@@ -37,9 +40,9 @@ class idQuake3Entity : public idEntity3
 	int weapon;			// determines weapon and flash model, etc
 	int legsAnim;		// mask off ANIM_TOGGLEBIT
 	int torsoAnim;		// mask off ANIM_TOGGLEBIT
-
-	int generic1;
 	 */
+	virtual int GetGeneric1() const;
+	virtual void SetGeneric1(int value);
 	/*
 	q3entityState_t s;				// communicated by server to clients
 */
@@ -51,11 +54,16 @@ class idQuake3Entity : public idEntity3
 	virtual bool GetSvFlagCapsule() const;
 	virtual bool GetSvFlagCastAI() const;
 	virtual bool GetSvFlagNoServerInfo() const;
-/*
-	// only send to this client when SVF_SINGLECLIENT is set
-	// if Q3SVF_CLIENTMASK is set, use bitmask for clients to send to (maxclients must be <= 32, up to the mod to enforce this)
-	int singleClient;
-*/
+	virtual bool GetSvFlagSelfPortal() const;
+	virtual bool GetSvFlagSelfPortalExclusive() const;
+	virtual bool GetSvFlagSingleClient() const;
+	virtual bool GetSvFlagNotSingleClient() const;
+	virtual bool GetSvFlagClientMask() const;
+	virtual bool GetSvFlagIgnoreBModelExtents() const;
+	virtual bool GetSvFlagVisDummy() const;
+	virtual bool GetSvFlagVisDummyMultiple() const;
+	virtual int GetSingleClient() const;
+	virtual void SetSingleClient(int value);
 	virtual bool GetBModel() const;
 	virtual void SetBModel(bool value);
 	virtual const float* GetMins() const;
@@ -74,6 +82,10 @@ class idQuake3Entity : public idEntity3
 	virtual void SetCurrentAngles(const vec3_t value);
 	virtual int GetOwnerNum() const;
 	virtual void SetOwnerNum(int value);
+	virtual int GetEventTime() const;
+	virtual void SetEventTime(int value);
+	virtual bool GetSnapshotCallback() const;
+	virtual void SetSnapshotCallback(bool value);
 
 	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const;
 	virtual bool IsETypeProp() const;

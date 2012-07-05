@@ -55,6 +55,7 @@ add_library(server STATIC
 	tech3/game.cpp
 	tech3/init.cpp
 	tech3/main.cpp
+	tech3/snapshot.cpp
 	tech3/world.cpp
 	wolfmp/game.cpp
 	wolfmp/WolfMPEntity.cpp

@@ -104,12 +104,17 @@ void SVET_GameShutdown(bool restart)
 
 bool SVET_GameConsoleCommand()
 {
-	return VM_Call(gvm, ETGAME_CONSOLE_COMMAND);
+	return !!VM_Call(gvm, ETGAME_CONSOLE_COMMAND);
 }
 
 void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime)
 {
 	VM_Call(gvm, ETGAME_MESSAGERECEIVED, cno, buf, buflen, commandTime);
+}
+
+bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber)
+{
+	return !!VM_Call(gvm, ETGAME_SNAPSHOT_CALLBACK, entityNumber, clientNumber);
 }
 
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,

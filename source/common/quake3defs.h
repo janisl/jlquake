@@ -290,3 +290,7 @@ enum
 {
 	Q3PM_INTERMISSION = 5	// no movement or status bar
 };
+
+#define Q3SNAPFLAG_RATE_DELAYED 1
+#define Q3SNAPFLAG_NOT_ACTIVE   2	// snapshot used during connection and for zombies
+#define Q3SNAPFLAG_SERVERCOUNT  4	// toggled every map_restart so transitions can be detected

@@ -46,12 +46,10 @@ Cvar* sv_hostname;
 Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
 Cvar* sv_reconnectlimit;		// minimum seconds between connect messages
 Cvar* sv_showloss;				// report when usercmds are lost
-Cvar* sv_padPackets;			// add nop bytes to messages
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
 Cvar* sv_mapname;
 Cvar* sv_mapChecksum;
 Cvar* sv_serverid;
-Cvar* sv_maxRate;
 Cvar* sv_minPing;
 Cvar* sv_maxPing;
 Cvar* sv_floodProtect;
@@ -61,8 +59,6 @@ Cvar* sv_onlyVisibleClients;	// DHM - Nerve
 Cvar* sv_friendlyFire;			// NERVE - SMF
 Cvar* sv_maxlives;				// NERVE - SMF
 Cvar* sv_tourney;				// NERVE - SMF
-
-Cvar* sv_dl_maxRate;
 
 // Rafael gameskill
 Cvar* sv_gameskill;

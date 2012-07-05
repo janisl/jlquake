@@ -18,6 +18,20 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+bool idQuake3Entity::GetEFlagViewingCamera() const
+{
+	return false;
+}
+
+bool idQuake3Entity::GetEFlagDead() const
+{
+	return false;
+}
+
+void idQuake3Entity::SetEFlagNoDraw()
+{
+}
+
 int idQuake3Entity::GetModelIndex() const
 {
 	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.modelindex;
@@ -36,6 +50,16 @@ int idQuake3Entity::GetSolid() const
 void idQuake3Entity::SetSolid(int value)
 {
 	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.solid = value;
+}
+
+int idQuake3Entity::GetGeneric1() const
+{
+	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.generic1;
+}
+
+void idQuake3Entity::SetGeneric1(int value)
+{
+	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.generic1 = value;
 }
 
 bool idQuake3Entity::GetLinked() const
@@ -76,6 +100,56 @@ bool idQuake3Entity::GetSvFlagCastAI() const
 bool idQuake3Entity::GetSvFlagNoServerInfo() const
 {
 	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_NOSERVERINFO);
+}
+
+bool idQuake3Entity::GetSvFlagSelfPortal() const
+{
+	return false;
+}
+
+bool idQuake3Entity::GetSvFlagSelfPortalExclusive() const
+{
+	return false;
+}
+
+bool idQuake3Entity::GetSvFlagSingleClient() const
+{
+	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_SINGLECLIENT);
+}
+
+bool idQuake3Entity::GetSvFlagNotSingleClient() const
+{
+	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_NOTSINGLECLIENT);
+}
+
+bool idQuake3Entity::GetSvFlagClientMask() const
+{
+	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CLIENTMASK);
+}
+
+bool idQuake3Entity::GetSvFlagIgnoreBModelExtents() const
+{
+	return false;
+}
+
+bool idQuake3Entity::GetSvFlagVisDummy() const
+{
+	return false;
+}
+
+bool idQuake3Entity::GetSvFlagVisDummyMultiple() const
+{
+	return false;
+}
+
+int idQuake3Entity::GetSingleClient() const
+{
+	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.singleClient;
+}
+
+void idQuake3Entity::SetSingleClient(int value)
+{
+	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.singleClient = value;
 }
 
 bool idQuake3Entity::GetBModel() const
@@ -166,6 +240,24 @@ int idQuake3Entity::GetOwnerNum() const
 void idQuake3Entity::SetOwnerNum(int value)
 {
 	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+int idQuake3Entity::GetEventTime() const
+{
+	return 0;
+}
+
+void idQuake3Entity::SetEventTime(int value)
+{
+}
+
+bool idQuake3Entity::GetSnapshotCallback() const
+{
+	return false;
+}
+
+void idQuake3Entity::SetSnapshotCallback(bool value)
+{
 }
 
 void idQuake3Entity::SetTempBoxModelContents(clipHandle_t) const

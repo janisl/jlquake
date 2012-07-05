@@ -112,7 +112,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// toggle the server bit so clients can detect that a
 	// server has changed
-	svs.q3_snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
+	svs.q3_snapFlagServerBit ^= Q3SNAPFLAG_SERVERCOUNT;
 
 	// set nextmap to the same map, but it may be overriden
 	// by the game startup or another console command
@@ -429,7 +429,7 @@ void SV_Init(void)
 	sv_maxclients = Cvar_Get("sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH2);					// NERVE - SMF - changed to 20 from 8
 #endif
 
-	sv_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
@@ -467,7 +467,7 @@ void SV_Init(void)
 	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
 	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
-	sv_padPackets = Cvar_Get("sv_padPackets", "0", 0);
+	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	sv_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
@@ -506,10 +506,10 @@ void SV_Init(void)
 	// TTimo - autodownload speed tweaks
 #ifndef UPDATE_SERVER
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
-	sv_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
+	svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
 #else
 	// the update server is on steroids, sv_fps 60 and no snapshotMsec limitation, it can go up to 30 kb/s
-	sv_dl_maxRate = Cvar_Get("sv_dl_maxRate", "60000", CVAR_ARCHIVE);
+	svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "60000", CVAR_ARCHIVE);
 #endif
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib

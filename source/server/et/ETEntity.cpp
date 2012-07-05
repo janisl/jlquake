@@ -18,6 +18,21 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+bool idETEntity::GetEFlagViewingCamera() const
+{
+	return false;
+}
+
+bool idETEntity::GetEFlagDead() const
+{
+	return false;
+}
+
+void idETEntity::SetEFlagNoDraw()
+{
+	gentity->eFlags |= ETEF_NODRAW;
+}
+
 int idETEntity::GetModelIndex() const
 {
 	return reinterpret_cast<etsharedEntity_t*>(gentity)->s.modelindex;
@@ -36,6 +51,15 @@ int idETEntity::GetSolid() const
 void idETEntity::SetSolid(int value)
 {
 	reinterpret_cast<etsharedEntity_t*>(gentity)->s.solid = value;
+}
+
+int idETEntity::GetGeneric1() const
+{
+	return 0;
+}
+
+void idETEntity::SetGeneric1(int value)
+{
 }
 
 bool idETEntity::GetLinked() const
@@ -76,6 +100,56 @@ bool idETEntity::GetSvFlagCastAI() const
 bool idETEntity::GetSvFlagNoServerInfo() const
 {
 	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOSERVERINFO);
+}
+
+bool idETEntity::GetSvFlagSelfPortal() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_SELF_PORTAL);
+}
+
+bool idETEntity::GetSvFlagSelfPortalExclusive() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_SELF_PORTAL_EXCLUSIVE);
+}
+
+bool idETEntity::GetSvFlagSingleClient() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_SINGLECLIENT);
+}
+
+bool idETEntity::GetSvFlagNotSingleClient() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOTSINGLECLIENT);
+}
+
+bool idETEntity::GetSvFlagClientMask() const
+{
+	return false;
+}
+
+bool idETEntity::GetSvFlagIgnoreBModelExtents() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_IGNOREBMODELEXTENTS);
+}
+
+bool idETEntity::GetSvFlagVisDummy() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY);
+}
+
+bool idETEntity::GetSvFlagVisDummyMultiple() const
+{
+	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE);
+}
+
+int idETEntity::GetSingleClient() const
+{
+	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.singleClient;
+}
+
+void idETEntity::SetSingleClient(int value)
+{
+	reinterpret_cast<etsharedEntity_t*>(gentity)->r.singleClient = value;
 }
 
 bool idETEntity::GetBModel() const
@@ -166,6 +240,26 @@ int idETEntity::GetOwnerNum() const
 void idETEntity::SetOwnerNum(int value)
 {
 	reinterpret_cast<etsharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+int idETEntity::GetEventTime() const
+{
+	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.eventTime;
+}
+
+void idETEntity::SetEventTime(int value)
+{
+	reinterpret_cast<etsharedEntity_t*>(gentity)->r.eventTime = value;
+}
+
+bool idETEntity::GetSnapshotCallback() const
+{
+	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.snapshotCallback;
+}
+
+void idETEntity::SetSnapshotCallback(bool value)
+{
+	reinterpret_cast<etsharedEntity_t*>(gentity)->r.snapshotCallback = value;
 }
 
 void idETEntity::SetTempBoxModelContents(clipHandle_t clipHandle) const

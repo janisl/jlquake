@@ -62,12 +62,10 @@ extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_tempbanmessage;
 extern Cvar* sv_showloss;
-extern Cvar* sv_padPackets;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapname;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_maxRate;
 extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
@@ -82,9 +80,6 @@ extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
 // done
 
 extern Cvar* sv_reloading;
-
-// TTimo - autodl
-extern Cvar* sv_dl_maxRate;
 
 // TTimo
 extern Cvar* sv_wwwDownload;// general flag to enable/disable www download redirects
@@ -156,7 +151,6 @@ qboolean SV_TempBanIsBanned(netadr_t address);
 //
 // sv_snapshot.c
 //
-void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
 void SV_WriteFrameToClient(client_t* client, QMsg* msg);
 void SV_SendMessageToClient(QMsg* msg, client_t* client);
 void SV_SendClientMessages(void);

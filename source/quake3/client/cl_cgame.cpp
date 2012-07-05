@@ -1040,7 +1040,7 @@ CL_FirstSnapshot
 void CL_FirstSnapshot(void)
 {
 	// ignore snapshots that don't have entities
-	if (cl.q3_snap.snapFlags & SNAPFLAG_NOT_ACTIVE)
+	if (cl.q3_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE)
 	{
 		return;
 	}

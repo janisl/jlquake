@@ -467,7 +467,7 @@ struct serverStatic_t
 
 	int q3_time;						// will be strictly increasing across level changes
 
-	int q3_snapFlagServerBit;			// ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
+	int q3_snapFlagServerBit;			// ^= Q3SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
 
 	int q3_numSnapshotEntities;			// sv_maxclients->integer*PACKET_BACKUP_Q3*MAX_PACKET_ENTITIES
 	int q3_nextSnapshotEntities;		// next snapshotEntities to use

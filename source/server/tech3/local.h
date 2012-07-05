@@ -94,10 +94,21 @@ void SVT3_TouchCGameDLL();
 //
 extern Cvar* svt3_gametype;
 extern Cvar* svt3_pure;
+extern Cvar* svt3_padPackets;
+extern Cvar* svt3_maxRate;
+extern Cvar* svt3_dl_maxRate;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 int SVET_LoadTag(const char* mod_name);
+
+//
+//	Snapshot
+//
+void SVT3_WriteSnapshotToClient(client_t* client, QMsg* msg);
+void SVT3_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
+void SVT3_BuildClientSnapshot(client_t* client);
+int SVT3_RateMsec(client_t* client, int messageSize);
 
 //
 //	World

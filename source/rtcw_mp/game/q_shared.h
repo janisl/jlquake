@@ -263,18 +263,6 @@ MATHLIB
 void QDECL Com_Error(int level, const char* error, ...);
 void QDECL Com_Printf(const char* msg, ...);
 
-/*
-========================================================================
-
-  ELEMENTS COMMUNICATED ACROSS THE NET
-
-========================================================================
-*/
-
-#define SNAPFLAG_RATE_DELAYED   1
-#define SNAPFLAG_NOT_ACTIVE     2	// snapshot used during connection and for zombies
-#define SNAPFLAG_SERVERCOUNT    4	// toggled every map_restart so transitions can be detected
-
 // server browser sources
 #define AS_LOCAL        0
 #define AS_GLOBAL       1			// NERVE - SMF - modified

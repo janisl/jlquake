@@ -78,7 +78,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// toggle the server bit so clients can detect that a
 	// server has changed
-	svs.q3_snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
+	svs.q3_snapFlagServerBit ^= Q3SNAPFLAG_SERVERCOUNT;
 
 	// set nextmap to the same map, but it may be overriden
 	// by the game startup or another console command
@@ -282,7 +282,7 @@ void SV_Init(void)
 	sv_hostname = Cvar_Get("sv_hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
 	sv_maxclients = Cvar_Get("sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH2);
 
-	sv_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
@@ -312,7 +312,7 @@ void SV_Init(void)
 	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
 	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
-	sv_padPackets = Cvar_Get("sv_padPackets", "0", 0);
+	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	sv_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);

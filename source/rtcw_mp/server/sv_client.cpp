@@ -595,7 +595,7 @@ void SV_SendClientGameState(client_t* client)
 	// we have to do this cause we send the client->reliableSequence
 	// with a gamestate and it sets the clc.serverCommandSequence at
 	// the client side
-	SV_UpdateServerCommandsToClient(client, &msg);
+	SVT3_UpdateServerCommandsToClient(client, &msg);
 
 	// send the gamestate
 	msg.WriteByte(q3svc_gamestate);
@@ -930,12 +930,12 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 	// show_bug.cgi?id=509
 	// for autodownload, we use a seperate max rate value
 	// we do this everytime because the client might change it's rate during the download
-	if (sv_dl_maxRate->integer < rate)
+	if (svt3_dl_maxRate->integer < rate)
 	{
-		rate = sv_dl_maxRate->integer;
+		rate = svt3_dl_maxRate->integer;
 		if (bTellRate)
 		{
-			Com_Printf("'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer);
+			Com_Printf("'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, svt3_dl_maxRate->integer);
 		}
 	}
 	else
@@ -1642,7 +1642,7 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 
 	// NOTE: when the client message is fux0red the acknowledgement numbers
 	// can be out of range, this could cause the server to send thousands of server
-	// commands which the server thinks are not yet acknowledged in SV_UpdateServerCommandsToClient
+	// commands which the server thinks are not yet acknowledged in SVT3_UpdateServerCommandsToClient
 	if (cl->q3_reliableAcknowledge < cl->q3_reliableSequence - MAX_RELIABLE_COMMANDS_WOLF)
 	{
 		// usually only hackers create messages like this

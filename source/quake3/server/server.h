@@ -46,12 +46,10 @@ extern Cvar* sv_hostname;
 extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_showloss;
-extern Cvar* sv_padPackets;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapname;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_maxRate;
 extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
@@ -103,7 +101,6 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 //
 // sv_snapshot.c
 //
-void SV_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
 void SV_WriteFrameToClient(client_t* client, QMsg* msg);
 void SV_SendMessageToClient(QMsg* msg, client_t* client);
 void SV_SendClientMessages(void);

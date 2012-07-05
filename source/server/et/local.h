@@ -37,5 +37,6 @@ void SVET_GameInit(int serverTime, int randomSeed, bool restart);
 void SVET_GameShutdown(bool restart);
 bool SVET_GameConsoleCommand();
 void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
+bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber);
 
 #endif

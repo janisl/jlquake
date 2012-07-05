@@ -51,8 +51,9 @@ public:
 
 	int GetNumber() const;
 	void SetNumber(int value);
+	int GetEType() const;
+	void SetEType(int value);
 	/*
-	int eType;			// entityType_t
 	int eFlags;
 
 	q3trajectory_t pos;	// for calculating position
@@ -63,9 +64,8 @@ public:
 */
 	const float* GetOrigin() const;
 	void SetOrigin(const vec3_t value);
-	/*
-	vec3_t origin2;
-*/
+	const float* GetOrigin2() const;
+	void SetOrigin2(const vec3_t value);
 	const float* GetAngles() const;
 	void SetAngles(const vec3_t value);
 	/*
@@ -80,10 +80,15 @@ public:
 
 	int constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
 	 */
+	virtual bool GetEFlagViewingCamera() const = 0;
+	virtual bool GetEFlagDead() const = 0;
+	virtual void SetEFlagNoDraw() = 0;
 	virtual int GetModelIndex() const = 0;
 	virtual void SetModelIndex(int value) = 0;
 	virtual int GetSolid() const = 0;
 	virtual void SetSolid(int value) = 0;
+	virtual int GetGeneric1() const = 0;
+	virtual void SetGeneric1(int value) = 0;
 	virtual bool GetLinked() const = 0;
 	virtual void SetLinked(bool value) = 0;
 	virtual void IncLinkCount() = 0;
@@ -92,6 +97,16 @@ public:
 	virtual bool GetSvFlagCapsule() const = 0;
 	virtual bool GetSvFlagCastAI() const = 0;
 	virtual bool GetSvFlagNoServerInfo() const = 0;
+	virtual bool GetSvFlagSelfPortal() const = 0;
+	virtual bool GetSvFlagSelfPortalExclusive() const = 0;
+	virtual bool GetSvFlagSingleClient() const = 0;
+	virtual bool GetSvFlagNotSingleClient() const = 0;
+	virtual bool GetSvFlagClientMask() const = 0;
+	virtual bool GetSvFlagIgnoreBModelExtents() const = 0;
+	virtual bool GetSvFlagVisDummy() const = 0;
+	virtual bool GetSvFlagVisDummyMultiple() const = 0;
+	virtual int GetSingleClient() const = 0;
+	virtual void SetSingleClient(int value) = 0;
 	virtual bool GetBModel() const = 0;
 	virtual void SetBModel(bool value) = 0;
 	virtual const float* GetMins() const = 0;
@@ -110,6 +125,10 @@ public:
 	virtual void SetCurrentAngles(const vec3_t value) = 0;
 	virtual int GetOwnerNum() const = 0;
 	virtual void SetOwnerNum(int value) = 0;
+	virtual int GetEventTime() const = 0;
+	virtual void SetEventTime(int value) = 0;
+	virtual bool GetSnapshotCallback() const = 0;
+	virtual void SetSnapshotCallback(bool value) = 0;
 
 	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const = 0;
 	virtual bool IsETypeProp() const = 0;
@@ -138,6 +157,16 @@ inline void idEntity3::SetNumber(int value)
 	gentity->number = value;
 }
 
+inline int idEntity3::GetEType() const
+{
+	return gentity->eType;
+}
+
+inline void idEntity3::SetEType(int value)
+{
+	gentity->eType = value;
+}
+
 inline const float* idEntity3::GetOrigin() const
 {
 	return gentity->origin;
@@ -146,6 +175,16 @@ inline const float* idEntity3::GetOrigin() const
 inline void idEntity3::SetOrigin(const vec3_t value)
 {
 	VectorCopy(value, gentity->origin);
+}
+
+inline const float* idEntity3::GetOrigin2() const
+{
+	return gentity->origin2;
+}
+
+inline void idEntity3::SetOrigin2(const vec3_t value)
+{
+	VectorCopy(value, gentity->origin2);
 }
 
 inline const float* idEntity3::GetAngles() const

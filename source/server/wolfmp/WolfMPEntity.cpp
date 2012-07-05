@@ -18,6 +18,21 @@
 #include "../tech3/local.h"
 #include "local.h"
 
+bool idWolfMPEntity::GetEFlagViewingCamera() const
+{
+	return !!(gentity->eFlags & WMEF_VIEWING_CAMERA);
+}
+
+bool idWolfMPEntity::GetEFlagDead() const
+{
+	return !!(gentity->eFlags & WMEF_DEAD);
+}
+
+void idWolfMPEntity::SetEFlagNoDraw()
+{
+	gentity->eFlags |= WMEF_NODRAW;
+}
+
 int idWolfMPEntity::GetModelIndex() const
 {
 	return reinterpret_cast<wmsharedEntity_t*>(gentity)->s.modelindex;
@@ -36,6 +51,15 @@ int idWolfMPEntity::GetSolid() const
 void idWolfMPEntity::SetSolid(int value)
 {
 	reinterpret_cast<wmsharedEntity_t*>(gentity)->s.solid = value;
+}
+
+int idWolfMPEntity::GetGeneric1() const
+{
+	return 0;
+}
+
+void idWolfMPEntity::SetGeneric1(int value)
+{
 }
 
 bool idWolfMPEntity::GetLinked() const
@@ -76,6 +100,56 @@ bool idWolfMPEntity::GetSvFlagCastAI() const
 bool idWolfMPEntity::GetSvFlagNoServerInfo() const
 {
 	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOSERVERINFO);
+}
+
+bool idWolfMPEntity::GetSvFlagSelfPortal() const
+{
+	return false;
+}
+
+bool idWolfMPEntity::GetSvFlagSelfPortalExclusive() const
+{
+	return false;
+}
+
+bool idWolfMPEntity::GetSvFlagSingleClient() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_SINGLECLIENT);
+}
+
+bool idWolfMPEntity::GetSvFlagNotSingleClient() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOTSINGLECLIENT);
+}
+
+bool idWolfMPEntity::GetSvFlagClientMask() const
+{
+	return false;
+}
+
+bool idWolfMPEntity::GetSvFlagIgnoreBModelExtents() const
+{
+	return false;
+}
+
+bool idWolfMPEntity::GetSvFlagVisDummy() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY);
+}
+
+bool idWolfMPEntity::GetSvFlagVisDummyMultiple() const
+{
+	return !!(reinterpret_cast<wmsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE);
+}
+
+int idWolfMPEntity::GetSingleClient() const
+{
+	return reinterpret_cast<wmsharedEntity_t*>(gentity)->r.singleClient;
+}
+
+void idWolfMPEntity::SetSingleClient(int value)
+{
+	reinterpret_cast<wmsharedEntity_t*>(gentity)->r.singleClient = value;
 }
 
 bool idWolfMPEntity::GetBModel() const
@@ -166,6 +240,25 @@ int idWolfMPEntity::GetOwnerNum() const
 void idWolfMPEntity::SetOwnerNum(int value)
 {
 	reinterpret_cast<wmsharedEntity_t*>(gentity)->r.ownerNum = value;
+}
+
+int idWolfMPEntity::GetEventTime() const
+{
+	return reinterpret_cast<wmsharedEntity_t*>(gentity)->r.eventTime;
+}
+
+void idWolfMPEntity::SetEventTime(int value)
+{
+	reinterpret_cast<wmsharedEntity_t*>(gentity)->r.eventTime = value;
+}
+
+bool idWolfMPEntity::GetSnapshotCallback() const
+{
+	return false;
+}
+
+void idWolfMPEntity::SetSnapshotCallback(bool value)
+{
 }
 
 void idWolfMPEntity::SetTempBoxModelContents(clipHandle_t clipHandle) const

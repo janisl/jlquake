@@ -16,6 +16,9 @@
 
 class idETEntity : public idEntity3
 {
+	virtual bool GetEFlagViewingCamera() const;
+	virtual bool GetEFlagDead() const;
+	virtual void SetEFlagNoDraw();
 	/*
 	int dl_intensity;		// used for coronas
 	int loopSound;			// constantly loop this sound
@@ -42,8 +45,10 @@ class idETEntity : public idEntity3
 	int weapon;				// determines weapon and flash model, etc
 	int legsAnim;			// mask off ANIM_TOGGLEBIT
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
-//	int		weapAnim;		// mask off ANIM_TOGGLEBIT	//----(SA)	removed (weap anims will be client-side only)
-
+*/
+	virtual int GetGeneric1() const;
+	virtual void SetGeneric1(int value);
+/*
 	int density;			// for particle effects
 
 	int dmgFlags;			// to pass along additional information for damage effects for players/ Also used for cursorhints for non-player entities
@@ -67,9 +72,16 @@ class idETEntity : public idEntity3
 	virtual bool GetSvFlagCapsule() const;
 	virtual bool GetSvFlagCastAI() const;
 	virtual bool GetSvFlagNoServerInfo() const;
-	/*
-	int singleClient;				// only send to this client when SVF_SINGLECLIENT is set
-*/
+	virtual bool GetSvFlagSelfPortal() const;
+	virtual bool GetSvFlagSelfPortalExclusive() const;
+	virtual bool GetSvFlagSingleClient() const;
+	virtual bool GetSvFlagNotSingleClient() const;
+	virtual bool GetSvFlagClientMask() const;
+	virtual bool GetSvFlagIgnoreBModelExtents() const;
+	virtual bool GetSvFlagVisDummy() const;
+	virtual bool GetSvFlagVisDummyMultiple() const;
+	virtual int GetSingleClient() const;
+	virtual void SetSingleClient(int value);
 	virtual bool GetBModel() const;
 	virtual void SetBModel(bool value);
 	virtual const float* GetMins() const;
@@ -88,13 +100,13 @@ class idETEntity : public idEntity3
 	virtual void SetCurrentAngles(const vec3_t value);
 	virtual int GetOwnerNum() const;
 	virtual void SetOwnerNum(int value);
+	virtual int GetEventTime() const;
+	virtual void SetEventTime(int value);
 /*
-	int eventTime;
-
 	int worldflags;				// DHM - Nerve
-
-	qboolean snapshotCallback;
 	 */
+	virtual bool GetSnapshotCallback() const;
+	virtual void SetSnapshotCallback(bool value);
 
 	virtual void SetTempBoxModelContents(clipHandle_t clipHandle) const;
 	virtual bool IsETypeProp() const;

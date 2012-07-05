@@ -432,7 +432,7 @@ static void SV_MapRestart_f(void)
 
 	// toggle the server bit so clients can detect that a
 	// map_restart has happened
-	svs.q3_snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
+	svs.q3_snapFlagServerBit ^= Q3SNAPFLAG_SERVERCOUNT;
 
 	// generate a new serverid
 	sv.q3_restartedServerId = sv.q3_serverId;

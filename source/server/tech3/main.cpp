@@ -20,6 +20,9 @@
 
 Cvar* svt3_gametype;
 Cvar* svt3_pure;
+Cvar* svt3_padPackets;			// add nop bytes to messages
+Cvar* svt3_maxRate;
+Cvar* svt3_dl_maxRate;
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)
