@@ -350,9 +350,4 @@ unsigned int Sys_ProcessorCount();
 
 extern huffman_t clientHuffTables;
 
-#define SV_ENCODE_START     4
-#define SV_DECODE_START     12
-#define CL_ENCODE_START     12
-#define CL_DECODE_START     4
-
 #endif	// _QCOMMON_H_

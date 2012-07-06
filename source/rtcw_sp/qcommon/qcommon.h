@@ -38,11 +38,6 @@ NET
 ==============================================================
 */
 
-// TTimo: set to 1 to perform net encoding, 0 to drop
-// single player game with no networking doesn't need encoding
-// show_bug.cgi?id=404
-#define DO_NET_ENCODE 0
-
 #define MAX_PACKET_USERCMDS     32		// max number of wsusercmd_t in a packet
 
 void        NET_Init(void);
@@ -370,10 +365,5 @@ void Sys_OpenURL(char* url, qboolean doexit);						// NERVE - SMF
 int Sys_GetHighQualityCPU();
 
 extern huffman_t clientHuffTables;
-
-#define SV_ENCODE_START     4
-#define SV_DECODE_START     12
-#define CL_ENCODE_START     12
-#define CL_DECODE_START     4
 
 #endif	// _QCOMMON_H_

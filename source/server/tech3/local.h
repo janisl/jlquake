@@ -103,6 +103,12 @@ void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((fo
 int SVET_LoadTag(const char* mod_name);
 
 //
+//	NetChan
+//
+void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString);
+void SVT3_Netchan_Decode(client_t* client, QMsg* msg);
+
+//
 //	Snapshot
 //
 void SVT3_WriteSnapshotToClient(client_t* client, QMsg* msg);

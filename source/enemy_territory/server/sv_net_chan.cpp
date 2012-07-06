@@ -32,122 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "server.h"
 
 /*
-==============
-SV_Netchan_Encode
-
-    // first four bytes of the data are always:
-    long reliableAcknowledge;
-
-==============
-*/
-static void SV_Netchan_Encode(client_t* client, QMsg* msg, char* commandString)
-{
-	long reliableAcknowledge, i, index;
-	byte key, * string;
-	int srdc, sbit, soob;
-
-	if (msg->cursize < SV_ENCODE_START)
-	{
-		return;
-	}
-
-	// NOTE: saving pos, reading reliableAck, restoring, not using it .. useless?
-	srdc = msg->readcount;
-	sbit = msg->bit;
-	soob = msg->oob;
-
-	msg->bit = 0;
-	msg->readcount = 0;
-	msg->oob = 0;
-
-	reliableAcknowledge = msg->ReadLong();
-
-	msg->oob = soob;
-	msg->bit = sbit;
-	msg->readcount = srdc;
-
-	string = (byte*)commandString;
-	index = 0;
-	// xor the client challenge with the netchan sequence number
-	key = client->challenge ^ client->netchan.outgoingSequence;
-	for (i = SV_ENCODE_START; i < msg->cursize; i++)
-	{
-		// modify the key with the last received and with this message acknowledged client command
-		if (!string[index])
-		{
-			index = 0;
-		}
-		if (string[index] > 127 || string[index] == '%')
-		{
-			key ^= '.' << (i & 1);
-		}
-		else
-		{
-			key ^= string[index] << (i & 1);
-		}
-		index++;
-		// encode the data with this key
-		*(msg->_data + i) = *(msg->_data + i) ^ key;
-	}
-}
-
-/*
-==============
-SV_Netchan_Decode
-
-    // first 12 bytes of the data are always:
-    long serverId;
-    long messageAcknowledge;
-    long reliableAcknowledge;
-
-==============
-*/
-static void SV_Netchan_Decode(client_t* client, QMsg* msg)
-{
-	int serverId, messageAcknowledge, reliableAcknowledge;
-	int i, index, srdc, sbit, soob;
-	byte key, * string;
-
-	srdc = msg->readcount;
-	sbit = msg->bit;
-	soob = msg->oob;
-
-	msg->oob = 0;
-
-	serverId = msg->ReadLong();
-	messageAcknowledge = msg->ReadLong();
-	reliableAcknowledge = msg->ReadLong();
-
-	msg->oob = soob;
-	msg->bit = sbit;
-	msg->readcount = srdc;
-
-	string = (byte*)client->q3_reliableCommands[reliableAcknowledge & (MAX_RELIABLE_COMMANDS_WOLF - 1)];
-	index = 0;
-	//
-	key = client->challenge ^ serverId ^ messageAcknowledge;
-	for (i = msg->readcount + SV_DECODE_START; i < msg->cursize; i++)
-	{
-		// modify the key with the last sent and acknowledged server command
-		if (!string[index])
-		{
-			index = 0;
-		}
-		if (string[index] > 127 || string[index] == '%')
-		{
-			key ^= '.' << (i & 1);
-		}
-		else
-		{
-			key ^= string[index] << (i & 1);
-		}
-		index++;
-		// decode the data with this key
-		*(msg->_data + i) = *(msg->_data + i) ^ key;
-	}
-}
-
-/*
 =================
 SV_Netchan_TransmitNextFragment
 =================
@@ -173,7 +57,7 @@ void SV_Netchan_TransmitNextFragment(client_t* client)
 
 		if (!SVET_GameIsSinglePlayer())
 		{
-			SV_Netchan_Encode(client, &netbuf->msg, netbuf->lastClientCommandString);
+			SVT3_Netchan_Encode(client, &netbuf->msg, netbuf->lastClientCommandString);
 		}
 		Netchan_Transmit(&client->netchan, netbuf->msg.cursize, netbuf->msg._data);
 
@@ -257,7 +141,7 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 	{
 		if (!SVET_GameIsSinglePlayer())
 		{
-			SV_Netchan_Encode(client, msg, client->q3_lastClientCommandString);
+			SVT3_Netchan_Encode(client, msg, client->q3_lastClientCommandString);
 		}
 		Netchan_Transmit(&client->netchan, msg->cursize, msg->_data);
 	}
@@ -278,7 +162,7 @@ qboolean SV_Netchan_Process(client_t* client, QMsg* msg)
 	}
 	if (!SVET_GameIsSinglePlayer())
 	{
-		SV_Netchan_Decode(client, msg);
+		SVT3_Netchan_Decode(client, msg);
 	}
 	return qtrue;
 }

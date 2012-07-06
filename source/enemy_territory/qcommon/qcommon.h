@@ -461,11 +461,6 @@ void Sys_Chmod(char* file, int mode);
 
 extern huffman_t clientHuffTables;
 
-#define SV_ENCODE_START     4
-#define SV_DECODE_START     12
-#define CL_ENCODE_START     12
-#define CL_DECODE_START     4
-
 void Com_GetHunkInfo(int* hunkused, int* hunkexpected);
 
 // TTimo
