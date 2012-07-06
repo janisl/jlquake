@@ -29,6 +29,9 @@ Cvar* com_developer;
 
 Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
+Cvar* com_sv_running;
+Cvar* com_cl_running;
+
 Cvar* cl_shownet;
 
 Cvar* qh_registered;

@@ -49,8 +49,6 @@ Cvar* com_fixedtime;
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 Cvar* com_maxfps;
 Cvar* com_timedemo;
-Cvar* com_sv_running;
-Cvar* com_cl_running;
 Cvar* com_logfile;			// 1 = buffer log, 2 = flush after each print
 Cvar* com_showtrace;
 Cvar* com_version;

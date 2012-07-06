@@ -197,3 +197,15 @@ struct tempBan_t
 #define ETSVF_IGNOREBMODELEXTENTS   0x00004000	// just use origin for in pvs check for snapshots, ignore the bmodel extents
 #define ETSVF_SELF_PORTAL           0x00008000	// use self->origin2 as portal
 #define ETSVF_SELF_PORTAL_EXCLUSIVE 0x00010000	// use self->origin2 as portal and DONT add self->origin PVS ents
+
+// NERVE - SMF - wolf server/game states
+enum gamestate_t
+{
+	GS_INITIALIZE = -1,
+	GS_PLAYING,
+	GS_WARMUP_COUNTDOWN,
+	GS_WARMUP,
+	GS_INTERMISSION,
+	GS_WAITING_FOR_PLAYERS,
+	GS_RESET
+};

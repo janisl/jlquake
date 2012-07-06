@@ -63,7 +63,6 @@ extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_tempbanmessage;
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
-extern Cvar* sv_mapname;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
 extern Cvar* sv_minPing;
@@ -142,11 +141,6 @@ void SV_FreeClientNetChan(client_t* client);
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
 void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
-
-//
-// sv_ccmds.c
-//
-qboolean SV_TempBanIsBanned(netadr_t address);
 
 //
 // sv_snapshot.c

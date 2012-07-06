@@ -61,7 +61,7 @@ void SV_GetChallenge(netadr_t from)
 		return;
 	}
 
-	if (SV_TempBanIsBanned(from))
+	if (SVET_TempBanIsBanned(from))
 	{
 		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string);
 		return;
@@ -124,13 +124,13 @@ void SV_GetChallenge(netadr_t from)
 	// look up the authorize server's IP
 	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, PORT_AUTHORIZE))
+		Com_Printf("Resolving %s\n", ETAUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(ETAUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", ETAUTHORIZE_SERVER_NAME,
 			svs.q3_authorizeAddress.ip[0], svs.q3_authorizeAddress.ip[1],
 			svs.q3_authorizeAddress.ip[2], svs.q3_authorizeAddress.ip[3],
 			BigShort(svs.q3_authorizeAddress.port));
@@ -319,7 +319,7 @@ void SV_DirectConnect(netadr_t from)
 	challenge = String::Atoi(Info_ValueForKey(userinfo, "challenge"));
 	qport = String::Atoi(Info_ValueForKey(userinfo, "qport"));
 
-	if (SV_TempBanIsBanned(from))
+	if (SVET_TempBanIsBanned(from))
 	{
 		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string);
 		return;

@@ -35,7 +35,6 @@ Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
 Cvar* sv_reconnectlimit;		// minimum seconds between connect messages
 Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
-Cvar* sv_mapname;
 Cvar* sv_mapChecksum;
 Cvar* sv_serverid;
 Cvar* sv_minPing;
@@ -252,7 +251,7 @@ void SVC_Info(netadr_t from)
 
 	Info_SetValueForKey(infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(infostring, "mapname", sv_mapname->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "mapname", svt3_mapname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "sv_maxclients",
 		va("%i", sv_maxclients->integer - sv_privateClients->integer), MAX_INFO_STRING_Q3);

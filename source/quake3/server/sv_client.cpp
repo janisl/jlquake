@@ -96,13 +96,13 @@ void SV_GetChallenge(netadr_t from)
 	// look up the authorize server's IP
 	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, PORT_AUTHORIZE))
+		Com_Printf("Resolving %s\n", Q3AUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(Q3AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf("%s resolved to %s\n", AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.q3_authorizeAddress));
+		Com_Printf("%s resolved to %s\n", Q3AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.q3_authorizeAddress));
 	}
 
 	// if they have been challenging for a long time and we

@@ -918,14 +918,14 @@ void CL_RequestAuthorization(void)
 
 	if (!cls.q3_authorizeServer.port)
 	{
-		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &cls.q3_authorizeServer, PORT_AUTHORIZE))
+		Com_Printf("Resolving %s\n", WSAUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(WSAUTHORIZE_SERVER_NAME, &cls.q3_authorizeServer, Q3PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
 
-		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", WSAUTHORIZE_SERVER_NAME,
 			cls.q3_authorizeServer.ip[0], cls.q3_authorizeServer.ip[1],
 			cls.q3_authorizeServer.ip[2], cls.q3_authorizeServer.ip[3],
 			BigShort(cls.q3_authorizeServer.port));

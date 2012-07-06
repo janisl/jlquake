@@ -299,3 +299,7 @@ enum
 #define Q3SV_DECODE_START       12
 #define Q3CL_ENCODE_START       12
 #define Q3CL_DECODE_START       4
+
+#define Q3AUTHORIZE_SERVER_NAME   "authorize.quake3arena.com"
+
+#define Q3PORT_AUTHORIZE    27952

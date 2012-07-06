@@ -98,10 +98,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 #endif
 #define MOTD_SERVER_NAME        "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?
 
-#ifdef AUTHORIZE_SUPPORT
-	#define AUTHORIZE_SERVER_NAME   "wolfauthorize.idsoftware.com"
-#endif	// AUTHORIZE_SUPPORT
-
 // TTimo: override autoupdate server for testing
 #ifndef AUTOUPDATE_SERVER_NAME
 //	#define AUTOUPDATE_SERVER_NAME "127.0.0.1"
@@ -127,9 +123,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 
 #define PORT_MASTER         27950
 #define PORT_MOTD           27951
-#ifdef AUTHORIZE_SUPPORT
-#define PORT_AUTHORIZE      27952
-#endif	// AUTHORIZE_SUPPORT
 #define PORT_SERVER         27960
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
 									// PORT_SERVER so a single machine can
@@ -243,8 +236,6 @@ extern Cvar* com_ignorecrash;		//bani
 extern Cvar* com_pid;		//bani
 
 extern Cvar* com_speeds;
-extern Cvar* com_sv_running;
-extern Cvar* com_cl_running;
 extern Cvar* com_version;
 //extern	Cvar	*com_blood;
 extern Cvar* com_buildScript;			// for building release pak files

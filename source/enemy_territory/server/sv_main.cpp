@@ -43,7 +43,6 @@ Cvar* sv_reconnectlimit;		// minimum seconds between connect messages
 Cvar* sv_tempbanmessage;
 Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
-Cvar* sv_mapname;
 Cvar* sv_mapChecksum;
 Cvar* sv_serverid;
 Cvar* sv_minPing;
@@ -471,7 +470,7 @@ void SVC_Info(netadr_t from)
 	Info_SetValueForKey(infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "serverload", va("%i", svs.et_serverLoad), MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(infostring, "mapname", sv_mapname->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "mapname", svt3_mapname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "sv_maxclients", va("%i", sv_maxclients->integer - sv_privateClients->integer), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "gametype", Cvar_VariableString("g_gametype"), MAX_INFO_STRING_Q3);
@@ -998,7 +997,7 @@ void SV_Frame(int msec)
 	// 2giga-milliseconds = 23 days, so it won't be too often
 	if (svs.q3_time > 0x70000000)
 	{
-		String::NCpyZ(mapname, sv_mapname->string, MAX_QPATH);
+		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
 		SV_Shutdown("Restarting server due to time wrapping");
 		// TTimo
 		// show_bug.cgi?id=388
@@ -1011,7 +1010,7 @@ void SV_Frame(int msec)
 	// this can happen considerably earlier when lots of clients play and the map doesn't change
 	if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE - svs.q3_numSnapshotEntities)
 	{
-		String::NCpyZ(mapname, sv_mapname->string, MAX_QPATH);
+		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
 		SV_Shutdown("Restarting server due to numSnapshotEntities wrapping");
 		// TTimo see above
 		Cbuf_AddText(va("map %s\n", mapname));

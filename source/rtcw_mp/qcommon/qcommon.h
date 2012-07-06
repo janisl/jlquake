@@ -93,7 +93,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 // NERVE - SMF - wolf multiplayer master servers
 #define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65
 #define MASTER_SERVER_NAME      "wolfmaster.idsoftware.com"
-#define AUTHORIZE_SERVER_NAME   "wolfauthorize.idsoftware.com"
 
 // TTimo: allow override for easy dev/testing..
 // see cons -- update_server=myhost
@@ -113,7 +112,7 @@ You or the server may be running older versions of the game. Press the auto-upda
 
 #define PORT_MASTER         27950
 #define PORT_UPDATE         27951
-#define PORT_AUTHORIZE      27952
+#define Q3PORT_AUTHORIZE      27952
 #define PORT_SERVER         27960
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
 									// PORT_SERVER so a single machine can
@@ -205,8 +204,6 @@ void        Com_SetRecommended();
 
 
 extern Cvar* com_speeds;
-extern Cvar* com_sv_running;
-extern Cvar* com_cl_running;
 extern Cvar* com_version;
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files

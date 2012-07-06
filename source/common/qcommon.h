@@ -78,6 +78,9 @@ extern Cvar* cl_shownet;
 
 extern Cvar* qh_registered;
 
+extern Cvar* com_sv_running;
+extern Cvar* com_cl_running;
+
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
 

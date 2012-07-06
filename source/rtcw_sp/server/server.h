@@ -53,7 +53,6 @@ extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
-extern Cvar* sv_mapname;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
 extern Cvar* sv_minPing;

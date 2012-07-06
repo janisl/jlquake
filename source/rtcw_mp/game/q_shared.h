@@ -275,15 +275,4 @@ void QDECL Com_Printf(const char* msg, ...);
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 
-// NERVE - SMF - wolf server/game states
-typedef enum {
-	GS_INITIALIZE = -1,
-	GS_PLAYING,
-	GS_WARMUP_COUNTDOWN,
-	GS_WARMUP,
-	GS_INTERMISSION,
-	GS_WAITING_FOR_PLAYERS,
-	GS_RESET
-} gamestate_t;
-
 #endif	// __Q_SHARED_H

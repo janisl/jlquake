@@ -883,3 +883,6 @@ struct etgameInfo_t
 	int defaultGameType;
 	qboolean usesProfiles;
 };
+
+#define WSAUTHORIZE_SERVER_NAME "authorize.gmistudios.com"
+#define WMAUTHORIZE_SERVER_NAME "wolfauthorize.idsoftware.com"

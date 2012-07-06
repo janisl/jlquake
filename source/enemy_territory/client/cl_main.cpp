@@ -1266,14 +1266,14 @@ void CL_RequestAuthorization(void)
 
 	if (!cls.authorizeServer.port)
 	{
-		Com_Printf("Resolving %s\n", AUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(AUTHORIZE_SERVER_NAME, &cls.authorizeServer, PORT_AUTHORIZE))
+		Com_Printf("Resolving %s\n", ETAUTHORIZE_SERVER_NAME);
+		if (!SOCK_StringToAdr(ETAUTHORIZE_SERVER_NAME, &cls.authorizeServer, Q3PORT_AUTHORIZE))
 		{
 			Com_Printf("Couldn't resolve address\n");
 			return;
 		}
 
-		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", ETAUTHORIZE_SERVER_NAME,
 			cls.authorizeServer.ip[0], cls.authorizeServer.ip[1],
 			cls.authorizeServer.ip[2], cls.authorizeServer.ip[3],
 			BigShort(cls.authorizeServer.port));
