@@ -14,33 +14,6 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_H
-#define _SERVER_H
-
-#include "../common/qcommon.h"
-#include "../common/file_formats/bsp38.h"
-#include "../common/file_formats/md3.h"
-#include "link.h"
-#include "progsvm/edict.h"
-#include "quakeserverdefs.h"
-#include "hexen2serverdefs.h"
-#include "quake2serverdefs.h"
-#include "quake3serverdefs.h"
-#include "wolfserverdefs.h"
-#include "tech3/Entity3.h"
-#include "tech3/PlayerState3.h"
-#include "global.h"
-#include "worldsector.h"
-
-#define MAX_MASTERS 8				// max recipients for heartbeat packets
-
-extern Cvar* sv_maxclients;
-
-extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
-
-//
-// Must be provided
-//
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-#endif
+#include "../server.h"
+#include "../tech3/local.h"
+#include "local.h"

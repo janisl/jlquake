@@ -24,6 +24,7 @@ add_library(server STATIC
 	botlib/log.cpp
 	botlib/struct.cpp
 	et/ETEntity.cpp
+	et/ETPlayerState.cpp
 	et/game.cpp
 	hexen2/game.cpp
 	progsvm/common_builtins.cpp
@@ -48,6 +49,7 @@ add_library(server STATIC
 	quake2/world.cpp
 	quake3/game.cpp
 	quake3/Quake3Entity.cpp
+	quake3/Quake3PlayerState.cpp
 	tech3/bot.cpp
 	tech3/ccmds.cpp
 	tech3/client.cpp
@@ -56,12 +58,15 @@ add_library(server STATIC
 	tech3/init.cpp
 	tech3/main.cpp
 	tech3/net_chan.cpp
+	tech3/PlayerState3.cpp
 	tech3/snapshot.cpp
 	tech3/world.cpp
 	wolfmp/game.cpp
 	wolfmp/WolfMPEntity.cpp
+	wolfmp/WolfMPPlayerState.cpp
 	wolfsp/game.cpp
 	wolfsp/WolfSPEntity.cpp
+	wolfsp/WolfSPPlayerState.cpp
 	link.cpp
 	server_main.cpp
 	worldsector.cpp

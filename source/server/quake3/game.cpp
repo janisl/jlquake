@@ -100,6 +100,11 @@ static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int s
 
 	sv.q3_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
+
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		SVT3_GameClientNum(i)->SetGEntity(SVQ3_GameClientNum(i));
+	}
 }
 
 static void SVQ3_UnlinkEntity(q3sharedEntity_t* gEnt)

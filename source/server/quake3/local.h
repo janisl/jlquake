@@ -18,6 +18,7 @@
 #define _QUAKE3_LOCAL_H
 
 #include "Quake3Entity.h"
+#include "Quake3PlayerState.h"
 
 //
 //	Game

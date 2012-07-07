@@ -88,6 +88,11 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	{
 		sv.q3_entities[i] = new idWolfMPEntity();
 	}
+	sv.q3_gamePlayerStates = new idPlayerState3*[sv_maxclients->integer];
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		sv.q3_gamePlayerStates[i] = new idWolfMPPlayerState();
+	}
 
 	// init client structures and svs.q3_numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running"))

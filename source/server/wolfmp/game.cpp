@@ -119,6 +119,11 @@ static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int s
 
 	sv.wm_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
+
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		SVT3_GameClientNum(i)->SetGEntity(SVWM_GameClientNum(i));
+	}
 }
 
 static void SVWM_UnlinkEntity(wmsharedEntity_t* gEnt)

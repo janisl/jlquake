@@ -18,6 +18,7 @@
 #define _WOLFMP_LOCAL_H
 
 #include "WolfMPEntity.h"
+#include "WolfMPPlayerState.h"
 
 //
 //	Game

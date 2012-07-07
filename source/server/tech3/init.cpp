@@ -629,6 +629,17 @@ void SVT3_ClearServer()
 			delete sv.q3_entities[i];
 		}
 	}
+	if (sv.q3_gamePlayerStates)
+	{
+		for (int i = 0; i < sv_maxclients->integer; i++)
+		{
+			if (sv.q3_gamePlayerStates[i])
+			{
+				delete sv.q3_gamePlayerStates[i];
+			}
+		}
+		delete[] sv.q3_gamePlayerStates;
+	}
 	Com_Memset(&sv, 0, sizeof(sv));
 }
 

@@ -358,6 +358,7 @@ struct server_t
 	int q3_gentitySize;
 	int q3_num_entities;				// current number, <= MAX_GENTITIES_Q3
 
+	idPlayerState3** q3_gamePlayerStates;
 	q3playerState_t* q3_gameClients;
 	wsplayerState_t* ws_gameClients;
 	wmplayerState_t* wm_gameClients;

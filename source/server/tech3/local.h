@@ -62,6 +62,7 @@ extern vm_t* gvm;							// game virtual machine
 
 idEntity3* SVT3_EntityNum(int number);
 idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt);
+idPlayerState3* SVT3_GameClientNum(int num);
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2);
 bool SVT3_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2);
 

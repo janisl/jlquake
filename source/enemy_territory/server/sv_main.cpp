@@ -782,7 +782,6 @@ void SV_CalcPings(void)
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
 		cl = &svs.clients[i];
-
 		if (cl->state != CS_ACTIVE)
 		{
 			cl->ping = 999;

@@ -37,6 +37,13 @@ idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt)
 	return SVT3_EntityNum(num);
 }
 
+idPlayerState3* SVT3_GameClientNum(int num)
+{
+	qassert(num >= 0);
+	qassert(num < sv_maxclients->integer);
+	return sv.q3_gamePlayerStates[num];
+}
+
 //	Also checks portalareas so that doors block sight
 bool SVT3_inPVS(const vec3_t p1, const vec3_t p2)
 {

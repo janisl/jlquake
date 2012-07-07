@@ -18,6 +18,7 @@
 #define _WOLFSP_LOCAL_H
 
 #include "WolfSPEntity.h"
+#include "WolfSPPlayerState.h"
 
 //
 //	Game

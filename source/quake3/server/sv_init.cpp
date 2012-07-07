@@ -96,6 +96,11 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	{
 		sv.q3_entities[i] = new idQuake3Entity();
 	}
+	sv.q3_gamePlayerStates = new idPlayerState3*[sv_maxclients->integer];
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		sv.q3_gamePlayerStates[i] = new idQuake3PlayerState();
+	}
 
 	// make sure we are not paused
 	Cvar_Set("cl_paused", "0");

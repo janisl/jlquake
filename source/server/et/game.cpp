@@ -131,6 +131,11 @@ static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int s
 
 	sv.et_gameClients = clients;
 	sv.q3_gameClientSize = sizeofGameClient;
+
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		SVT3_GameClientNum(i)->SetGEntity(SVET_GameClientNum(i));
+	}
 }
 
 static void SVET_UnlinkEntity(etsharedEntity_t* gEnt)

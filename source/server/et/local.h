@@ -18,6 +18,7 @@
 #define _ET_LOCAL_H
 
 #include "ETEntity.h"
+#include "ETPlayerState.h"
 
 //
 //	Game
