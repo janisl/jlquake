@@ -17,3 +17,43 @@
 #include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
+
+float idETPlayerState::GetLeanf() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->leanf;
+}
+
+void idETPlayerState::SetLeanf(float value)
+{
+	reinterpret_cast<etplayerState_t*>(ps)->leanf = value;
+}
+
+int idETPlayerState::GetClientNum() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->clientNum;
+}
+
+void idETPlayerState::SetClientNum(int value)
+{
+	reinterpret_cast<etplayerState_t*>(ps)->clientNum = value;
+}
+
+const float* idETPlayerState::GetViewAngles() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->viewangles;
+}
+
+void idETPlayerState::SetViewAngles(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<etplayerState_t*>(ps)->viewangles);
+}
+
+int idETPlayerState::GetViewHeight() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->viewheight;
+}
+
+void idETPlayerState::SetViewHeight(int value)
+{
+	reinterpret_cast<etplayerState_t*>(ps)->viewheight = value;
+}

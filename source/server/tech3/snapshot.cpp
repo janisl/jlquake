@@ -841,58 +841,36 @@ void SVT3_BuildClientSnapshot(client_t* client)
 		return;
 	}
 
-	int clientNum;
-	float* ps_origin;
-	float* ps_viewangles;
-	int ps_viewheight;
-	float ps_leanf;
+	// grab the current player state
+	idPlayerState3* ps = SVT3_GameClientNum(client - svs.clients);
 	if (GGameType & GAME_WolfSP)
 	{
 		// grab the current wsplayerState_t
-		wsplayerState_t* ps = SVWS_GameClientNum(client - svs.clients);
-		frame->ws_ps = *ps;
-		clientNum = frame->ws_ps.clientNum;
-		ps_origin = ps->origin;
-		ps_viewangles = ps->viewangles;
-		ps_viewheight = ps->viewheight;
-		ps_leanf = frame->ws_ps.leanf;
+		wsplayerState_t* gps = SVWS_GameClientNum(client - svs.clients);
+		frame->ws_ps = *gps;
 	}
 	else if (GGameType & GAME_WolfMP)
 	{
 		// grab the current wmplayerState_t
-		wmplayerState_t* ps = SVWM_GameClientNum(client - svs.clients);
-		frame->wm_ps = *ps;
-		clientNum = frame->wm_ps.clientNum;
-		ps_origin = ps->origin;
-		ps_viewangles = ps->viewangles;
-		ps_viewheight = ps->viewheight;
-		ps_leanf = frame->wm_ps.leanf;
+		wmplayerState_t* gps = SVWM_GameClientNum(client - svs.clients);
+		frame->wm_ps = *gps;
 	}
 	else if (GGameType & GAME_ET)
 	{
 		// grab the current etplayerState_t
-		etplayerState_t* ps = SVET_GameClientNum(client - svs.clients);
-		frame->et_ps = *ps;
-		clientNum = frame->et_ps.clientNum;
-		ps_origin = ps->origin;
-		ps_viewangles = ps->viewangles;
-		ps_viewheight = ps->viewheight;
-		ps_leanf = frame->et_ps.leanf;
+		etplayerState_t* gps = SVET_GameClientNum(client - svs.clients);
+		frame->et_ps = *gps;
 	}
 	else
 	{
 		// grab the current q3playerState_t
-		q3playerState_t* ps = SVQ3_GameClientNum(client - svs.clients);
-		frame->q3_ps = *ps;
-		clientNum = frame->q3_ps.clientNum;
-		ps_origin = ps->origin;
-		ps_viewangles = ps->viewangles;
-		ps_viewheight = ps->viewheight;
-		ps_leanf = 0;
+		q3playerState_t* gps = SVQ3_GameClientNum(client - svs.clients);
+		frame->q3_ps = *gps;
 	}
 
 	// never send client's own entity, because it can
 	// be regenerated from the playerstate
+	int clientNum = ps->GetClientNum();
 	if (clientNum < 0 || clientNum >= MAX_GENTITIES_Q3)
 	{
 		common->Error("SVT3_SvEntityForGentity: bad gEnt");
@@ -909,18 +887,18 @@ void SVT3_BuildClientSnapshot(client_t* client)
 	}
 	else
 	{
-		VectorCopy(ps_origin, org);
+		VectorCopy(ps->GetOrigin(), org);
 	}
-	org[2] += ps_viewheight;
+	org[2] += ps->GetViewHeight();
 
 	// need to account for lean, so areaportal doors draw properly
-	if (ps_leanf != 0)
+	if (ps->GetLeanf() != 0)
 	{
 		vec3_t right, v3ViewAngles;
-		VectorCopy(ps_viewangles, v3ViewAngles);
-		v3ViewAngles[2] += ps_leanf / 2.0f;
+		VectorCopy(ps->GetViewAngles(), v3ViewAngles);
+		v3ViewAngles[2] += ps->GetLeanf() / 2.0f;
 		AngleVectors(v3ViewAngles, NULL, right, NULL);
-		VectorMA(org, ps_leanf, right, org);
+		VectorMA(org, ps->GetLeanf(), right, org);
 	}
 
 	// add all the entities directly visible to the eye, which

@@ -41,10 +41,22 @@ public:
 	int bobCycle;		// for view bobbing and footstep generation
 	int pm_flags;		// ducked, jump_held, etc
 	int pm_time;
-	vec3_t origin;
+	*/
+	const float* GetOrigin() const;
+	void SetOrigin(const vec3_t value);
+	/*
 	vec3_t velocity;
 	int weaponTime;
 	 */
+
+	virtual float GetLeanf() const = 0;
+	virtual void SetLeanf(float value) = 0;
+	virtual int GetClientNum() const = 0;
+	virtual void SetClientNum(int value) = 0;
+	virtual const float* GetViewAngles() const = 0;
+	virtual void SetViewAngles(const vec3_t value) = 0;
+	virtual int GetViewHeight() const = 0;
+	virtual void SetViewHeight(int value) = 0;
 
 protected:
 	sharedPlayerState_t* ps;
@@ -58,4 +70,14 @@ inline idPlayerState3::idPlayerState3()
 inline void idPlayerState3::SetGEntity(void* newPS)
 {
 	ps = reinterpret_cast<sharedPlayerState_t*>(newPS);
+}
+
+inline const float* idPlayerState3::GetOrigin() const
+{
+	return ps->origin;
+}
+
+inline void idPlayerState3::SetOrigin(const vec3_t value)
+{
+	VectorCopy(value, ps->origin);
 }

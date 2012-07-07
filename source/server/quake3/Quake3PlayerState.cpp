@@ -17,3 +17,42 @@
 #include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
+
+float idQuake3PlayerState::GetLeanf() const
+{
+	return 0;
+}
+
+void idQuake3PlayerState::SetLeanf(float value)
+{
+}
+
+int idQuake3PlayerState::GetClientNum() const
+{
+	return reinterpret_cast<q3playerState_t*>(ps)->clientNum;
+}
+
+void idQuake3PlayerState::SetClientNum(int value)
+{
+	reinterpret_cast<q3playerState_t*>(ps)->clientNum = value;
+}
+
+const float* idQuake3PlayerState::GetViewAngles() const
+{
+	return reinterpret_cast<q3playerState_t*>(ps)->viewangles;
+}
+
+void idQuake3PlayerState::SetViewAngles(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<q3playerState_t*>(ps)->viewangles);
+}
+
+int idQuake3PlayerState::GetViewHeight() const
+{
+	return reinterpret_cast<q3playerState_t*>(ps)->viewheight;
+}
+
+void idQuake3PlayerState::SetViewHeight(int value)
+{
+	reinterpret_cast<q3playerState_t*>(ps)->viewheight = value;
+}

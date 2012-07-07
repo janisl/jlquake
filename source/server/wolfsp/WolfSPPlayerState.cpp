@@ -17,3 +17,43 @@
 #include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
+
+float idWolfSPPlayerState::GetLeanf() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->leanf;
+}
+
+void idWolfSPPlayerState::SetLeanf(float value)
+{
+	reinterpret_cast<wsplayerState_t*>(ps)->leanf = value;
+}
+
+int idWolfSPPlayerState::GetClientNum() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->clientNum;
+}
+
+void idWolfSPPlayerState::SetClientNum(int value)
+{
+	reinterpret_cast<wsplayerState_t*>(ps)->clientNum = value;
+}
+
+const float* idWolfSPPlayerState::GetViewAngles() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->viewangles;
+}
+
+void idWolfSPPlayerState::SetViewAngles(const vec3_t value)
+{
+	VectorCopy(value, reinterpret_cast<wsplayerState_t*>(ps)->viewangles);
+}
+
+int idWolfSPPlayerState::GetViewHeight() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->viewheight;
+}
+
+void idWolfSPPlayerState::SetViewHeight(int value)
+{
+	reinterpret_cast<wsplayerState_t*>(ps)->viewheight = value;
+}

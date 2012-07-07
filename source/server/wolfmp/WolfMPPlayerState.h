@@ -26,8 +26,10 @@ public:
 
 
 	int gravity;
-	float leanf;				// amount of 'lean' when player is looking around corner //----(SA)	added
-
+	*/
+	virtual float GetLeanf() const;
+	virtual void SetLeanf(float value);
+/*
 	int speed;
 	int delta_angles[3];			// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
@@ -57,19 +59,22 @@ public:
 	int externalEvent;			// events set on player from another source
 	int externalEventParm;
 	int externalEventTime;
-
-	int clientNum;				// ranges from 0 to MAX_CLIENTS_WM-1
-
+*/
+	virtual int GetClientNum() const;
+	virtual void SetClientNum(int value);
+/*
 	// weapon info
 	int weapon;					// copied to entityState_t->weapon
 	int weaponstate;
 
 	// item info
 	int item;
-
-	vec3_t viewangles;			// for fixed views
-	int viewheight;
-
+*/
+	virtual const float* GetViewAngles() const;
+	virtual void SetViewAngles(const vec3_t value);
+	virtual int GetViewHeight() const;
+	virtual void SetViewHeight(int value);
+	/*
 	// damage feedback
 	int damageEvent;			// when it changes, latch the other parms
 	int damageYaw;
