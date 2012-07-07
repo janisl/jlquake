@@ -52,7 +52,6 @@ Cvar* cl_add_blend;
 Cvar* cl_showmiss;
 Cvar* cl_showclamp;
 
-Cvar* cl_paused;
 Cvar* cl_timedemo;
 
 //

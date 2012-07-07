@@ -120,18 +120,10 @@ public:
 	int serverCursorHintVal;			// a value (0-255) associated with the above
 
 	q3trace_t serverCursorHintTrace;		// not communicated over net, but used to store the current server-side cursorhint trace
-
-	// ----------------------------------------------------------------------
-	// not communicated over the net at all
-	// FIXME: this doesn't get saved between predicted frames on the clients-side (cg.predictedPlayerState)
-	// So to use persistent variables here, which don't need to come from the server,
-	// we could use a marker variable, and use that to store everything after it
-	// before we read in the new values for the predictedPlayerState, then restore them
-	// after copying the structure recieved from the server.
-
-	// (SA) yeah.  this is causing me a little bit of trouble too.  can we go ahead with the above suggestion or find an alternative?
-
-	int ping;					// server to game info for scoreboard
+*/
+	virtual int GetPing() const;
+	virtual void SetPing(int value);
+/*
 	int pmove_framecount;			// FIXME: don't transmit over the network
 	int entityEventSequence;
 

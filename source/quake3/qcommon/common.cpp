@@ -56,8 +56,6 @@ Cvar* com_version;
 Cvar* com_blood;
 Cvar* com_buildScript;		// for automated data building scripts
 Cvar* com_introPlayed;
-Cvar* cl_paused;
-Cvar* sv_paused;
 Cvar* com_cameraMode;
 #if defined(_WIN32) && defined(_DEBUG)
 Cvar* com_noErrorInterrupt;

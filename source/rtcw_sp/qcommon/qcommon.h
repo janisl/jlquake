@@ -171,10 +171,6 @@ extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
 
-// both client and server must agree to pause
-extern Cvar* cl_paused;
-extern Cvar* sv_paused;
-
 // com_speeds times
 extern int time_game;
 extern int time_frontend;

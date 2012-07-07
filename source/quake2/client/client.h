@@ -53,7 +53,6 @@ extern Cvar* cl_autoskins;
 extern Cvar* cl_showmiss;
 extern Cvar* cl_showclamp;
 
-extern Cvar* cl_paused;
 extern Cvar* cl_timedemo;
 
 extern Cvar* cl_vwep;

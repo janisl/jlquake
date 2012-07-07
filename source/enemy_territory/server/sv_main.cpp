@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "server.h"
 
 Cvar* sv_fps;					// time rate for running non-clients
-Cvar* sv_timeout;				// seconds without any message
-Cvar* sv_zombietime;			// seconds to sink messages after disconnect
 Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
 Cvar* sv_allowDownload;
@@ -763,172 +761,6 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 	NET_OutOfBandPrint(NS_SERVER, from, "disconnect");
 }
 
-
-/*
-===================
-SV_CalcPings
-
-Updates the cl->ping variables
-===================
-*/
-void SV_CalcPings(void)
-{
-	int i, j;
-	client_t* cl;
-	int total, count;
-	int delta;
-	etplayerState_t* ps;
-
-	for (i = 0; i < sv_maxclients->integer; i++)
-	{
-		cl = &svs.clients[i];
-		if (cl->state != CS_ACTIVE)
-		{
-			cl->ping = 999;
-			continue;
-		}
-		if (!cl->et_gentity)
-		{
-			cl->ping = 999;
-			continue;
-		}
-		if (cl->et_gentity->r.svFlags & Q3SVF_BOT)
-		{
-			cl->ping = 0;
-			continue;
-		}
-
-		total = 0;
-		count = 0;
-		for (j = 0; j < PACKET_BACKUP_Q3; j++)
-		{
-			if (cl->q3_frames[j].messageAcked <= 0)
-			{
-				continue;
-			}
-			delta = cl->q3_frames[j].messageAcked - cl->q3_frames[j].messageSent;
-			count++;
-			total += delta;
-		}
-		if (!count)
-		{
-			cl->ping = 999;
-		}
-		else
-		{
-			cl->ping = total / count;
-			if (cl->ping > 999)
-			{
-				cl->ping = 999;
-			}
-		}
-
-		// let the game dll know about the ping
-		ps = SVET_GameClientNum(i);
-		ps->ping = cl->ping;
-	}
-}
-
-/*
-==================
-SV_CheckTimeouts
-
-If a packet has not been received from a client for timeout->integer
-seconds, drop the conneciton.  Server time is used instead of
-realtime to avoid dropping the local client while debugging.
-
-When a client is normally dropped, the client_t goes into a zombie state
-for a few seconds to make sure any final reliable message gets resent
-if necessary
-==================
-*/
-void SV_CheckTimeouts(void)
-{
-	int i;
-	client_t* cl;
-	int droppoint;
-	int zombiepoint;
-
-	droppoint = svs.q3_time - 1000 * sv_timeout->integer;
-	zombiepoint = svs.q3_time - 1000 * sv_zombietime->integer;
-
-	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
-	{
-		// message times may be wrong across a changelevel
-		if (cl->q3_lastPacketTime > svs.q3_time)
-		{
-			cl->q3_lastPacketTime = svs.q3_time;
-		}
-
-		if (cl->state == CS_ZOMBIE && cl->q3_lastPacketTime < zombiepoint)
-		{
-			// using the client id cause the cl->name is empty at this point
-			Com_DPrintf("Going from CS_ZOMBIE to CS_FREE for client %d\n", i);
-			cl->state = CS_FREE;	// can now be reused
-
-			continue;
-		}
-		if (cl->state >= CS_CONNECTED && cl->q3_lastPacketTime < droppoint)
-		{
-			// wait several frames so a debugger session doesn't
-			// cause a timeout
-			if (++cl->q3_timeoutCount > 5)
-			{
-				SVT3_DropClient(cl, "timed out");
-				cl->state = CS_FREE;	// don't bother with zombie state
-			}
-		}
-		else
-		{
-			cl->q3_timeoutCount = 0;
-		}
-	}
-}
-
-
-/*
-==================
-SV_CheckPaused
-==================
-*/
-qboolean SV_CheckPaused(void)
-{
-	int count;
-	client_t* cl;
-	int i;
-
-	if (!cl_paused->integer)
-	{
-		return qfalse;
-	}
-
-	// only pause if there is just a single client connected
-	count = 0;
-	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
-	{
-		if (cl->state >= CS_CONNECTED && cl->netchan.remoteAddress.type != NA_BOT)
-		{
-			count++;
-		}
-	}
-
-	if (count > 1)
-	{
-		// don't pause
-		if (sv_paused->integer)
-		{
-			Cvar_Set("sv_paused", "0");
-		}
-		return qfalse;
-	}
-
-	if (!sv_paused->integer)
-	{
-		Cvar_Set("sv_paused", "1");
-	}
-	return qtrue;
-}
-
 /*
 ==================
 SV_Frame
@@ -958,7 +790,7 @@ void SV_Frame(int msec)
 	}
 
 	// allow pause if only the local client is connected
-	if (SV_CheckPaused())
+	if (SVT3_CheckPaused())
 	{
 		return;
 	}
@@ -1056,7 +888,7 @@ void SV_Frame(int msec)
 	}
 
 	// update ping based on the all received frames
-	SV_CalcPings();
+	SVT3_CalcPings();
 
 	if (com_dedicated->integer)
 	{
@@ -1079,7 +911,7 @@ void SV_Frame(int msec)
 	}
 
 	// check timeouts
-	SV_CheckTimeouts();
+	SVT3_CheckTimeouts();
 
 	// send messages back to the clients
 	SV_SendClientMessages();

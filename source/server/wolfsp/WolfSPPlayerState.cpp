@@ -57,3 +57,13 @@ void idWolfSPPlayerState::SetViewHeight(int value)
 {
 	reinterpret_cast<wsplayerState_t*>(ps)->viewheight = value;
 }
+
+int idWolfSPPlayerState::GetPing() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->ping;
+}
+
+void idWolfSPPlayerState::SetPing(int value)
+{
+	reinterpret_cast<wsplayerState_t*>(ps)->ping = value;
+}

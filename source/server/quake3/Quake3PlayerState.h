@@ -78,9 +78,10 @@ public:
 	int generic1;
 	int loopSound;
 	int jumppad_ent;	// jumppad entity hit this frame
-
-	// not communicated over the net at all
-	int ping;			// server to game info for scoreboard
+*/
+	virtual int GetPing() const;
+	virtual void SetPing(int value);
+/*
 	int pmove_framecount;	// FIXME: don't transmit over the network
 	int jumppad_frame;
 	int entityEventSequence;

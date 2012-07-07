@@ -56,3 +56,13 @@ void idQuake3PlayerState::SetViewHeight(int value)
 {
 	reinterpret_cast<q3playerState_t*>(ps)->viewheight = value;
 }
+
+int idQuake3PlayerState::GetPing() const
+{
+	return reinterpret_cast<q3playerState_t*>(ps)->ping;
+}
+
+void idQuake3PlayerState::SetPing(int value)
+{
+	reinterpret_cast<q3playerState_t*>(ps)->ping = value;
+}

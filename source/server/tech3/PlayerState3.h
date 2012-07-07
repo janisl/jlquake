@@ -57,6 +57,8 @@ public:
 	virtual void SetViewAngles(const vec3_t value) = 0;
 	virtual int GetViewHeight() const = 0;
 	virtual void SetViewHeight(int value) = 0;
+	virtual int GetPing() const = 0;
+	virtual void SetPing(int value) = 0;
 
 protected:
 	sharedPlayerState_t* ps;

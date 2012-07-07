@@ -111,10 +111,15 @@ extern Cvar* svt3_padPackets;
 extern Cvar* svt3_maxRate;
 extern Cvar* svt3_dl_maxRate;
 extern Cvar* svt3_mapname;
+extern Cvar* svt3_timeout;
+extern Cvar* svt3_zombietime;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 int SVET_LoadTag(const char* mod_name);
+void SVT3_CalcPings();
+void SVT3_CheckTimeouts();
+bool SVT3_CheckPaused();
 
 //
 //	NetChan

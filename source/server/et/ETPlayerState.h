@@ -117,16 +117,10 @@ public:
 	int serverCursorHintVal;			// a value (0-255) associated with the above
 
 	q3trace_t serverCursorHintTrace;		// not communicated over net, but used to store the current server-side cursorhint trace
-
-	// ----------------------------------------------------------------------
-	// So to use persistent variables here, which don't need to come from the server,
-	// we could use a marker variable, and use that to store everything after it
-	// before we read in the new values for the predictedPlayerState, then restore them
-	// after copying the structure recieved from the server.
-
-	// Arnout: use the pmoveExt_t structure in bg_public.h to store this kind of data now (presistant on client, not network transmitted)
-
-	int ping;					// server to game info for scoreboard
+*/
+	virtual int GetPing() const;
+	virtual void SetPing(int value);
+/*
 	int pmove_framecount;
 	int entityEventSequence;
 

@@ -366,8 +366,8 @@ void SV_Init(void)
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
-	sv_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
-	sv_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
+	svt3_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
+	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
 
 	sv_allowDownload = Cvar_Get("sv_allowDownload", "1", CVAR_ARCHIVE);

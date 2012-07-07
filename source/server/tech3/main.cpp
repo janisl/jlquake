@@ -24,6 +24,8 @@ Cvar* svt3_padPackets;			// add nop bytes to messages
 Cvar* svt3_maxRate;
 Cvar* svt3_dl_maxRate;
 Cvar* svt3_mapname;
+Cvar* svt3_timeout;				// seconds without any message
+Cvar* svt3_zombietime;			// seconds to sink messages after disconnect
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)
@@ -206,4 +208,141 @@ int SVET_LoadTag(const char* mod_name)
 
 	FS_FreeFile(buffer);
 	return ++sv.et_num_tagheaders;
+}
+
+//	Updates the cl->ping variables
+void SVT3_CalcPings()
+{
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		client_t* cl = &svs.clients[i];
+		if (cl->state != CS_ACTIVE)
+		{
+			cl->ping = 999;
+			continue;
+		}
+		if (!cl->q3_entity)
+		{
+			cl->ping = 999;
+			continue;
+		}
+		if (cl->q3_entity->GetSvFlags() & Q3SVF_BOT)
+		{
+			cl->ping = 0;
+			continue;
+		}
+
+		int total = 0;
+		int count = 0;
+		for (int j = 0; j < PACKET_BACKUP_Q3; j++)
+		{
+			if (cl->q3_frames[j].messageAcked <= 0)
+			{
+				continue;
+			}
+			int delta = cl->q3_frames[j].messageAcked - cl->q3_frames[j].messageSent;
+			count++;
+			total += delta;
+		}
+		if (!count)
+		{
+			cl->ping = 999;
+		}
+		else
+		{
+			cl->ping = total / count;
+			if (cl->ping > 999)
+			{
+				cl->ping = 999;
+			}
+		}
+
+		// let the game dll know about the ping
+		idPlayerState3* ps = SVT3_GameClientNum(i);
+		ps->SetPing(cl->ping);
+	}
+}
+
+//	If a packet has not been received from a client for timeout->integer
+// seconds, drop the conneciton.  Server time is used instead of
+// realtime to avoid dropping the local client while debugging.
+//	When a client is normally dropped, the client_t goes into a zombie state
+// for a few seconds to make sure any final reliable message gets resent
+// if necessary
+void SVT3_CheckTimeouts()
+{
+	int droppoint = svs.q3_time - 1000 * svt3_timeout->integer;
+	int zombiepoint = svs.q3_time - 1000 * svt3_zombietime->integer;
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
+	{
+		// message times may be wrong across a changelevel
+		if (cl->q3_lastPacketTime > svs.q3_time)
+		{
+			cl->q3_lastPacketTime = svs.q3_time;
+		}
+
+		if (cl->state == CS_ZOMBIE &&
+			cl->q3_lastPacketTime < zombiepoint)
+		{
+			// using the client id cause the cl->name is empty at this point
+			common->DPrintf("Going from CS_ZOMBIE to CS_FREE for client %d\n", i);
+			cl->state = CS_FREE;	// can now be reused
+			continue;
+		}
+		// Ridah, AI's don't time out
+		if (!(GGameType & GAME_WolfSP) || (cl->q3_entity && !cl->q3_entity->GetSvFlagCastAI()))
+		{
+			if (cl->state >= CS_CONNECTED && cl->q3_lastPacketTime < droppoint)
+			{
+				// wait several frames so a debugger session doesn't
+				// cause a timeout
+				if (++cl->q3_timeoutCount > 5)
+				{
+					SVT3_DropClient(cl, "timed out");
+					cl->state = CS_FREE;	// don't bother with zombie state
+				}
+			}
+			else
+			{
+				cl->q3_timeoutCount = 0;
+			}
+		}
+	}
+}
+
+bool SVT3_CheckPaused()
+{
+	if (!cl_paused->integer)
+	{
+		return false;
+	}
+
+	// only pause if there is just a single client connected
+	int count = 0;
+	client_t* cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (cl->state >= CS_CONNECTED && cl->netchan.remoteAddress.type != NA_BOT)
+		{
+			count++;
+		}
+	}
+
+	if (count > 1)
+	{
+		// don't pause
+		if (sv_paused->integer)
+		{
+			Cvar_Set("sv_paused", "0");
+		}
+		return false;
+	}
+
+	if (!sv_paused->integer)
+	{
+		Cvar_Set("sv_paused", "1");
+	}
+	return true;
 }

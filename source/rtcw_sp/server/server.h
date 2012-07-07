@@ -42,8 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;
-extern Cvar* sv_timeout;
-extern Cvar* sv_zombietime;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
 extern Cvar* sv_allowDownload;

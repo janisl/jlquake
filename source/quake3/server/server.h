@@ -35,8 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;
-extern Cvar* sv_timeout;
-extern Cvar* sv_zombietime;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
 extern Cvar* sv_allowDownload;

@@ -57,3 +57,13 @@ void idETPlayerState::SetViewHeight(int value)
 {
 	reinterpret_cast<etplayerState_t*>(ps)->viewheight = value;
 }
+
+int idETPlayerState::GetPing() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->ping;
+}
+
+void idETPlayerState::SetPing(int value)
+{
+	reinterpret_cast<etplayerState_t*>(ps)->ping = value;
+}

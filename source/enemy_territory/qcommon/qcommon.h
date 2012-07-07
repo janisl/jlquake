@@ -246,10 +246,6 @@ extern Cvar* com_logosPlaying;
 extern Cvar* com_watchdog;
 extern Cvar* com_watchdog_cmd;
 
-// both client and server must agree to pause
-extern Cvar* cl_paused;
-extern Cvar* sv_paused;
-
 // com_speeds times
 extern int time_game;
 extern int time_frontend;

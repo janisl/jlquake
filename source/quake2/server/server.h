@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern netadr_t net_from;
 extern QMsg net_message;
 
-extern Cvar* sv_paused;
 extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 											// development tool
 

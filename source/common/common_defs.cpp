@@ -31,6 +31,8 @@ Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE
 
 Cvar* com_sv_running;
 Cvar* com_cl_running;
+Cvar* cl_paused;
+Cvar* sv_paused;
 
 Cvar* cl_shownet;
 
