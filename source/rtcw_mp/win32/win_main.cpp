@@ -434,11 +434,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	String::NCpyZ(sys_cmdline, lpCmdLine, sizeof(sys_cmdline));
 
 	// done before Com/Sys_Init since we need this for error output
-#ifdef UPDATE_SERVER		// DHM - Nerve
-	Sys_CreateConsole("Wolf Update Server");
-#else
 	Sys_CreateConsole("Wolf Console");
-#endif
 
 	// no abort/retry/fail errors
 	SetErrorMode(SEM_FAILCRITICALERRORS);

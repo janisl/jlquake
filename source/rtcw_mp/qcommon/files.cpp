@@ -227,7 +227,6 @@ void FS_InitFilesystem(void)
 	// try to start up normally
 	FS_Startup(BASEGAME);
 
-#ifndef UPDATE_SERVER
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
@@ -236,7 +235,6 @@ void FS_InitFilesystem(void)
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
 		Com_Error(ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?");
 	}
-#endif
 
 	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
 	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));

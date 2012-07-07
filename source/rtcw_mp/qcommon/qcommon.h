@@ -344,10 +344,8 @@ void CL_StartHunkUsers(void);
 // start all the client stuff using the hunk
 
 
-#ifndef UPDATE_SERVER
 void CL_CheckAutoUpdate(void);
 // Send a message to auto-update server
-#endif
 
 void Key_WriteBindings(fileHandle_t f);
 // for writing the config files

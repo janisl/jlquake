@@ -29,11 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "server.h"
 
-#ifdef UPDATE_SERVER
-versionMapping_t versionMap[MAX_UPDATE_VERSIONS];
-int numVersions = 0;
-#endif
-
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_timeout;				// seconds without any message
 Cvar* sv_zombietime;			// seconds to sink messages after disconnect
@@ -102,11 +97,6 @@ void SV_MasterHeartbeat(const char* hbname)
 {
 	static netadr_t adr[MAX_MASTER_SERVERS];
 	int i;
-
-	// DHM - Nerve :: Update Server doesn't send heartbeat
-#ifdef UPDATE_SERVER
-	return;
-#endif
 
 	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
 	if (!com_dedicated || com_dedicated->integer != 2)
@@ -271,11 +261,6 @@ void SVC_Status(netadr_t from)
 		return;
 	}
 
-	// DHM - Nerve
-#ifdef UPDATE_SERVER
-	return;
-#endif
-
 	String::Cpy(infostring, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3));
 
 	// echo back the parameter to status. so master servers can use it as a challenge
@@ -376,11 +361,6 @@ void SVC_Info(netadr_t from)
 	char infostring[MAX_INFO_STRING_Q3];
 	const char* antilag;
 
-	// DHM - Nerve
-#ifdef UPDATE_SERVER
-	return;
-#endif
-
 	// ignore if we are in single player
 	if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
 	{
@@ -445,58 +425,6 @@ void SVC_Info(netadr_t from)
 
 	NET_OutOfBandPrint(NS_SERVER, from, "infoResponse\n%s", infostring);
 }
-
-// DHM - Nerve
-#ifdef UPDATE_SERVER
-/*
-================
-SVC_GetUpdateInfo
-
-Responds with a short info message that tells the client if they
-have an update available for their version
-================
-*/
-void SVC_GetUpdateInfo(netadr_t from)
-{
-	char* version;
-	char* platform;
-	int i;
-	qboolean found = qfalse;
-
-	version = Cmd_Argv(1);
-	platform = Cmd_Argv(2);
-
-	Com_DPrintf("SVC_GetUpdateInfo: version == %s / %s,\n", version, platform);
-
-	for (i = 0; i < numVersions; i++)
-	{
-		if (!String::Cmp(versionMap[i].version, version) &&
-			!String::Cmp(versionMap[i].platform, platform))
-		{
-
-			// If the installer is set to "current", we will skip over it
-			if (String::Cmp(versionMap[i].installer, "current"))
-			{
-				found = qtrue;
-			}
-
-			break;
-		}
-	}
-
-	if (found)
-	{
-		NET_OutOfBandPrint(NS_SERVER, from, "updateResponse 1 %s", versionMap[i].installer);
-		Com_DPrintf("   SENT:  updateResponse 1 %s\n", versionMap[i].installer);
-	}
-	else
-	{
-		NET_OutOfBandPrint(NS_SERVER, from, "updateResponse 0");
-		Com_DPrintf("   SENT:  updateResponse 0\n");
-	}
-}
-#endif
-// DHM - Nerve
 
 /*
 ==============
@@ -650,14 +578,6 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	else if (!String::ICmp(c, "rcon"))
 	{
 		SVC_RemoteCommand(from, msg);
-// DHM - Nerve
-#ifdef UPDATE_SERVER
-	}
-	else if (!String::ICmp(c, "getUpdateInfo"))
-	{
-		SVC_GetUpdateInfo(from);
-#endif
-// DHM - Nerve
 	}
 	else if (!String::ICmp(c,"disconnect"))
 	{
@@ -764,14 +684,6 @@ void SV_CalcPings(void)
 	for (i = 0; i < sv_maxclients->integer; i++)
 	{
 		cl = &svs.clients[i];
-
-		// DHM - Nerve
-#ifdef UPDATE_SERVER
-		if (!cl)
-		{
-			continue;
-		}
-#endif
 
 		if (cl->state != CS_ACTIVE)
 		{
@@ -1050,9 +962,7 @@ void SV_Frame(int msec)
 		svs.q3_time += frameMsec;
 
 		// let everything in the world think and move
-#ifndef UPDATE_SERVER
 		VM_Call(gvm, WMGAME_RUN_FRAME, svs.q3_time);
-#endif
 	}
 
 	if (com_speeds->integer)

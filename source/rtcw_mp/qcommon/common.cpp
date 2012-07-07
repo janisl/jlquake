@@ -2485,8 +2485,6 @@ void Com_Init(char* commandLine)
 
 		Com_InitJournaling();
 
-		// DHM - Nerve
-#ifndef UPDATE_SERVER
 		Cbuf_AddText("exec default.cfg\n");
 		Cbuf_AddText("exec language.cfg\n");	// NERVE - SMF
 
@@ -2498,7 +2496,6 @@ void Com_Init(char* commandLine)
 		}
 
 		Cbuf_AddText("exec autoexec.cfg\n");
-#endif
 
 		Cbuf_Execute();
 
@@ -2506,9 +2503,7 @@ void Com_Init(char* commandLine)
 		Com_StartupVariable(NULL);
 
 		// get dedicated here for proper hunk megs initialization
-#ifdef UPDATE_SERVER
-		com_dedicated = Cvar_Get("dedicated", "1", CVAR_LATCH2);
-#elif DEDICATED
+#if DEDICATED
 		// TTimo: default to internet dedicated, not LAN dedicated
 		com_dedicated = Cvar_Get("dedicated", "2", CVAR_ROM);
 #else
@@ -2829,11 +2824,8 @@ void Com_Frame(void)
 		// old net chan encryption key
 		key = 0x87243987;
 
-		// DHM - Nerve :: Don't write config on Update Server
-#ifndef UPDATE_SERVER
 		// write config file if anything changed
 		Com_WriteConfiguration();
-#endif
 
 		// if "viewlog" has been modified, show or hide the log console
 		if (com_viewlog->modified)

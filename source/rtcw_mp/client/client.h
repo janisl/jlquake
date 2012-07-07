@@ -88,10 +88,8 @@ void CL_AddReliableCommand(const char* cmd);
 
 void CL_StartHunkUsers(void);
 
-#ifndef UPDATE_SERVER
 void CL_CheckAutoUpdate(void);
 void CL_GetAutoUpdate(void);
-#endif
 
 void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);

@@ -283,9 +283,7 @@ void SV_DirectConnect(netadr_t from)
 	MAC_STATIC client_t temp;
 	wmsharedEntity_t* ent;
 	int clientNum;
-#ifndef UPDATE_SERVER
 	int version;
-#endif
 	int qport;
 	int challenge;
 	const char* password;
@@ -297,8 +295,6 @@ void SV_DirectConnect(netadr_t from)
 
 	String::NCpyZ(userinfo, Cmd_Argv(1), sizeof(userinfo));
 
-	// DHM - Nerve :: Update Server allows any protocol to connect
-#ifndef UPDATE_SERVER
 	version = String::Atoi(Info_ValueForKey(userinfo, "protocol"));
 	if (version != PROTOCOL_VERSION)
 	{
@@ -314,7 +310,6 @@ void SV_DirectConnect(netadr_t from)
 		Com_DPrintf("    rejected connect from version %i\n", version);
 		return;
 	}
-#endif
 
 	challenge = String::Atoi(Info_ValueForKey(userinfo, "challenge"));
 	qport = String::Atoi(Info_ValueForKey(userinfo, "qport"));
@@ -774,11 +769,6 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 	int idPack;
 	char errorMessage[1024];
 
-#ifdef UPDATE_SERVER
-	int i;
-	char testname[MAX_QPATH];
-#endif
-
 	qboolean bTellRate = qfalse;// verbosity
 
 	if (!*cl->downloadName)
@@ -802,37 +792,6 @@ void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
 		Com_Printf("clientDownload: %d : begining \"%s\"\n", cl - svs.clients, cl->downloadName);
 
 		idPack = FS_idPak(cl->downloadName, "main");
-
-		// DHM - Nerve :: Update server only allows files that are in versionmap.cfg to download
-#ifdef UPDATE_SERVER
-		for (i = 0; i < numVersions; i++)
-		{
-
-			String::Cpy(testname, "updates/");
-			String::Cat(testname, MAX_QPATH, versionMap[i].installer);
-
-			if (!String::ICmp(cl->downloadName, testname))
-			{
-				break;
-			}
-		}
-
-		if (i == numVersions)
-		{
-			msg->WriteByte(q3svc_download);
-			msg->WriteShort(0);		// client is expecting block zero
-			msg->WriteLong(-1);		// illegal file size
-
-			String::Sprintf(errorMessage, sizeof(errorMessage), "Invalid download from update server");
-			MSG_WriteString(msg, errorMessage);
-
-			*cl->downloadName = 0;
-
-			SVT3_DropClient(cl, "Invalid download from update server");
-			return;
-		}
-#endif
-		// DHM - Nerve
 
 		if (!sv_allowDownload->integer || idPack ||
 			(cl->downloadSize = FS_SV_FOpenFileRead(cl->downloadName, &cl->download)) <= 0)

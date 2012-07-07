@@ -39,26 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #define AUTHORIZE_TIMEOUT   5000
 
-//================
-// DHM - Nerve
-#ifdef UPDATE_SERVER
-
-typedef struct
-{
-	char version[MAX_QPATH];
-	char platform[MAX_QPATH];
-	char installer[MAX_QPATH];
-} versionMapping_t;
-
-
-#define MAX_UPDATE_VERSIONS 128
-extern versionMapping_t versionMap[MAX_UPDATE_VERSIONS];
-extern int numVersions;
-// Maps client version to appropriate installer
-
-#endif
-// DHM - Nerve
-
 //=============================================================================
 
 #define MAX_MASTER_SERVERS  5

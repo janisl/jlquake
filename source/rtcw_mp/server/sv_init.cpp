@@ -303,99 +303,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	Com_Printf("-----------------------------------\n");
 }
 
-// DHM - Nerve :: Update Server
-#ifdef UPDATE_SERVER
-/*
-====================
-SV_ParseVersionMapping
-
-  Reads versionmap.cfg which sets up a mapping of client version to installer to download
-====================
-*/
-void SV_ParseVersionMapping(void)
-{
-	int handle;
-	char* filename = "versionmap.cfg";
-	char* buf;
-	char* buftrav;
-	char* token;
-	int len;
-
-	len = FS_SV_FOpenFileRead(filename, &handle);
-	if (len >= 0)		// the file exists
-
-	{
-		buf = (char*)Z_Malloc(len + 1);
-		memset(buf, 0, len + 1);
-
-		FS_Read((void*)buf, len, handle);
-		FS_FCloseFile(handle);
-
-		// now parse the file, setting the version table info
-		buftrav = buf;
-
-		token = String::Parse3(&buftrav);
-		if (String::Cmp(token, "RTCW-VersionMap"))
-		{
-			Z_Free(buf);
-			Com_Error(ERR_FATAL, "invalid versionmap.cfg");
-			return;
-		}
-
-		Com_Printf("\n------------Update Server-------------\n\nParsing version map...");
-
-		while ((token = String::Parse3(&buftrav)) && token[0])
-		{
-			// read the version number
-			String::Cpy(versionMap[numVersions].version, token);
-
-			// read the platform
-			token = String::Parse3(&buftrav);
-			if (token && token[0])
-			{
-				String::Cpy(versionMap[numVersions].platform, token);
-			}
-			else
-			{
-				Z_Free(buf);
-				Com_Error(ERR_FATAL, "error parsing versionmap.cfg, after %s", versionMap[numVersions].version);
-				return;
-			}
-
-			// read the installer name
-			token = String::Parse3(&buftrav);
-			if (token && token[0])
-			{
-				String::Cpy(versionMap[numVersions].installer, token);
-			}
-			else
-			{
-				Z_Free(buf);
-				Com_Error(ERR_FATAL, "error parsing versionmap.cfg, after %s", versionMap[numVersions].platform);
-				return;
-			}
-
-			numVersions++;
-			if (numVersions >= MAX_UPDATE_VERSIONS)
-			{
-				Z_Free(buf);
-				Com_Error(ERR_FATAL, "Exceeded maximum number of mappings(%d)", MAX_UPDATE_VERSIONS);
-				return;
-			}
-
-		}
-
-		Com_Printf(" found %d mapping%c\n--------------------------------------\n\n", numVersions, numVersions > 1 ? 's' : ' ');
-
-		Z_Free(buf);
-	}
-	else
-	{
-		Com_Error(ERR_FATAL, "Couldn't open versionmap.cfg");
-	}
-}
-#endif
-
 /*
 ===============
 SV_Init
@@ -450,11 +357,7 @@ void SV_Init(void)
 	// server vars
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
-#ifndef UPDATE_SERVER
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
-#else
-	sv_fps = Cvar_Get("sv_fps", "60", CVAR_TEMP);	// this allows faster downloads
-#endif
 	sv_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
 	sv_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
@@ -503,43 +406,14 @@ void SV_Init(void)
 	// ATVI Tracker Wolfenstein Misc #263
 	Cvar_Get("g_antilag", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 
-	// TTimo - autodownload speed tweaks
-#ifndef UPDATE_SERVER
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
-#else
-	// the update server is on steroids, sv_fps 60 and no snapshotMsec limitation, it can go up to 30 kb/s
-	svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "60000", CVAR_ARCHIVE);
-#endif
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SVT3_BotInitCvars();
 
 	// init the botlib here because we need the pre-compiler in the UI
 	SVT3_BotInitBotLib();
-
-	// DHM - Nerve
-#ifdef UPDATE_SERVER
-	SVT3_Startup();
-	SV_ParseVersionMapping();
-
-	// serverid should be different each time
-	sv.q3_serverId = com_frameTime + 100;
-	sv.q3_restartedServerId = sv.q3_serverId;	// I suppose the init here is just to be safe
-	sv.q3_checksumFeedServerId = sv.q3_serverId;
-	Cvar_Set("sv_serverid", va("%i", sv.q3_serverId));
-	Cvar_Set("mapname", "Update");
-
-	// allocate empty config strings
-	{
-		int i;
-
-		for (i = 0; i < MAX_CONFIGSTRINGS_WM; i++)
-		{
-			sv.q3_configstrings[i] = __CopyString("");
-		}
-	}
-#endif
 }
 
 
