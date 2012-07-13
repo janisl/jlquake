@@ -52,8 +52,8 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 
 	// local clients get snapshots every frame
 	// TTimo - show_bug.cgi?id=491
-	// added sv_lanForceRate check
-	if (client->netchan.remoteAddress.type == NA_LOOPBACK || (sv_lanForceRate->integer && SOCK_IsLANAddress(client->netchan.remoteAddress)))
+	// added svt3_lanForceRate check
+	if (client->netchan.remoteAddress.type == NA_LOOPBACK || (svt3_lanForceRate->integer && SOCK_IsLANAddress(client->netchan.remoteAddress)))
 	{
 		client->q3_nextSnapshotTime = svs.q3_time - 1;
 		return;
@@ -130,7 +130,7 @@ void SV_SendClientSnapshot(client_t* client)
 	SVT3_WriteSnapshotToClient(client, &msg);
 
 	// Add any download data if the client is downloading
-	SV_WriteDownloadToClient(client, &msg);
+	SVT3_WriteDownloadToClient(client, &msg);
 
 	// check for overflow
 	if (msg.overflowed)

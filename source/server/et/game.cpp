@@ -117,6 +117,16 @@ bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber)
 	return !!VM_Call(gvm, ETGAME_SNAPSHOT_CALLBACK, entityNumber, clientNumber);
 }
 
+void SVET_GameClientBegin(int clientNum)
+{
+	VM_Call(gvm, ETGAME_CLIENT_BEGIN, clientNum);
+}
+
+void SVET_GameClientUserInfoChanged(int clientNum)
+{
+	VM_Call(gvm, ETGAME_CLIENT_USERINFO_CHANGED, clientNum);
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {

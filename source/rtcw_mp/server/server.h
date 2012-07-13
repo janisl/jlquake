@@ -46,7 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
-extern Cvar* sv_allowDownload;
 extern Cvar* sv_friendlyFire;			// NERVE - SMF
 extern Cvar* sv_maxlives;				// NERVE - SMF
 extern Cvar* sv_tourney;				// NERVE - SMF
@@ -63,7 +62,6 @@ extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
-extern Cvar* sv_lanForceRate;
 extern Cvar* sv_onlyVisibleClients;
 
 extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
@@ -108,13 +106,8 @@ void SV_DirectConnect(netadr_t from);
 void SV_AuthorizeIpPacket(netadr_t from);
 
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
-void SV_UserinfoChanged(client_t* cl);
-
-void SV_ClientEnterWorld(client_t* client, wmusercmd_t* cmd);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 
 //
 // sv_snapshot.c

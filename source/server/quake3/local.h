@@ -33,5 +33,7 @@ void SVQ3_GameClientDisconnect(client_t* drop);
 void SVQ3_GameInit(int serverTime, int randomSeed, bool restart);
 void SVQ3_GameShutdown(bool restart);
 bool SVQ3_GameConsoleCommand();
+void SVQ3_GameClientBegin(int clientNum);
+void SVQ3_GameClientUserInfoChanged(int clientNum);
 
 #endif

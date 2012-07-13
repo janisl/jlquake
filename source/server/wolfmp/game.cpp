@@ -105,6 +105,16 @@ void SVWM_SendMoveSpeedsToGame(int entnum, char* text)
 	VM_Call(gvm, WMGAME_RETRIEVE_MOVESPEEDS_FROM_CLIENT, entnum, text);
 }
 
+void SVWM_GameClientBegin(int clientNum)
+{
+	VM_Call(gvm, WMGAME_CLIENT_BEGIN, clientNum);
+}
+
+void SVWM_GameClientUserInfoChanged(int clientNum)
+{
+	VM_Call(gvm, WMGAME_CLIENT_USERINFO_CHANGED, clientNum);
+}
+
 static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {

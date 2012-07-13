@@ -209,3 +209,8 @@ enum gamestate_t
 	GS_WAITING_FOR_PLAYERS,
 	GS_RESET
 };
+
+//bani - cl->downloadnotify
+#define DLNOTIFY_REDIRECT   0x00000001	// "Redirecting client ..."
+#define DLNOTIFY_BEGIN      0x00000002	// "clientDownload: 4 : beginning ..."
+#define DLNOTIFY_ALL        (DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN)

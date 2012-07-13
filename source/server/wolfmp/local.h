@@ -35,5 +35,7 @@ void SVWM_GameClientDisconnect(client_t* drop);
 void SVWM_GameInit(int serverTime, int randomSeed, bool restart);
 void SVWM_GameShutdown(bool restart);
 bool SVWM_GameConsoleCommand();
+void SVWM_GameClientBegin(int clientNum);
+void SVWM_GameClientUserInfoChanged(int clientNum);
 
 #endif

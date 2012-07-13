@@ -318,7 +318,7 @@ static void SV_MapRestart_f(void)
 
 		client->state = CS_ACTIVE;
 
-		SV_ClientEnterWorld(client, &client->wm_lastUsercmd);
+		SVWM_ClientEnterWorld(client, &client->wm_lastUsercmd);
 	}
 
 	// run another frame to allow things to look at all the players

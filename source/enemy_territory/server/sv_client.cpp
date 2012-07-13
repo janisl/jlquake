@@ -535,7 +535,7 @@ gotnewcl:
 		return;
 	}
 
-	SV_UserinfoChanged(newcl);
+	SVT3_UserinfoChanged(newcl);
 
 	// DHM - Nerve :: Clear out firstPing now that client is connected
 	svs.challenges[i].firstPing = 0;
@@ -655,35 +655,6 @@ void SV_SendClientGameState(client_t* client)
 	SV_SendMessageToClient(&msg, client);
 }
 
-
-/*
-==================
-SV_ClientEnterWorld
-==================
-*/
-void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
-{
-	int clientNum;
-	etsharedEntity_t* ent;
-
-	Com_DPrintf("Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name);
-	client->state = CS_ACTIVE;
-
-	// set up the entity for the client
-	clientNum = client - svs.clients;
-	ent = SVET_GentityNum(clientNum);
-	ent->s.number = clientNum;
-	client->et_gentity = ent;
-	client->q3_entity = SVT3_EntityNum(clientNum);
-
-	client->q3_deltaMessage = -1;
-	client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
-	client->et_lastUsercmd = *cmd;
-
-	// call the game begin function
-	VM_Call(gvm, ETGAME_CLIENT_BEGIN, client - svs.clients);
-}
-
 /*
 ============================================================
 
@@ -691,23 +662,6 @@ CLIENT COMMAND EXECUTION
 
 ============================================================
 */
-
-/*
-==================
-SV_StopDownload_f
-
-Abort a download if in progress
-==================
-*/
-void SV_StopDownload_f(client_t* cl)
-{
-	if (*cl->downloadName)
-	{
-		Com_DPrintf("clientDownload: %d : file \"%s\" aborted\n", (int)(cl - svs.clients), cl->downloadName);
-	}
-
-	SVT3_CloseDownload(cl);
-}
 
 /*
 ==================
@@ -721,62 +675,6 @@ void SV_DoneDownload_f(client_t* cl)
 	Com_DPrintf("clientDownload: %s Done\n", cl->name);
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState(cl);
-}
-
-/*
-==================
-SV_NextDownload_f
-
-The argument will be the last acknowledged block from the client, it should be
-the same as cl->downloadClientBlock
-==================
-*/
-void SV_NextDownload_f(client_t* cl)
-{
-	int block = String::Atoi(Cmd_Argv(1));
-
-	if (block == cl->downloadClientBlock)
-	{
-		Com_DPrintf("clientDownload: %d : client acknowledge of block %d\n", (int)(cl - svs.clients), block);
-
-		// Find out if we are done.  A zero-length block indicates EOF
-		if (cl->downloadBlockSize[cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW] == 0)
-		{
-			Com_Printf("clientDownload: %d : file \"%s\" completed\n", (int)(cl - svs.clients), cl->downloadName);
-			SVT3_CloseDownload(cl);
-			return;
-		}
-
-		cl->downloadSendTime = svs.q3_time;
-		cl->downloadClientBlock++;
-		return;
-	}
-	// We aren't getting an acknowledge for the correct block, drop the client
-	// FIXME: this is bad... the client will never parse the disconnect message
-	//			because the cgame isn't loaded yet
-	SVT3_DropClient(cl, "broken download");
-}
-
-/*
-==================
-SV_BeginDownload_f
-==================
-*/
-void SV_BeginDownload_f(client_t* cl)
-{
-
-	// Kill any existing download
-	SVT3_CloseDownload(cl);
-
-	//bani - stop us from printing dupe messages
-	if (String::Cmp(cl->downloadName, Cmd_Argv(1)))
-	{
-		cl->et_downloadnotify = DLNOTIFY_ALL;
-	}
-
-	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
-	// the file itself
-	String::NCpyZ(cl->downloadName, Cmd_Argv(1), sizeof(cl->downloadName));
 }
 
 /*
@@ -854,359 +752,6 @@ void SV_WWWDownload_f(client_t* cl)
 	SVT3_DropClient(cl, va("SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd));
 }
 
-// abort an attempted download
-void SV_BadDownload(client_t* cl, QMsg* msg)
-{
-	msg->WriteByte(q3svc_download);
-	msg->WriteShort(0);		// client is expecting block zero
-	msg->WriteLong(-1);		// illegal file size
-
-	*cl->downloadName = 0;
-}
-
-/*
-==================
-SV_CheckFallbackURL
-
-sv_wwwFallbackURL can be used to redirect clients to a web URL in case direct ftp/http didn't work (or is disabled on client's end)
-return true when a redirect URL message was filled up
-when the cvar is set to something, the download server will effectively never use a legacy download strategy
-==================
-*/
-static qboolean SV_CheckFallbackURL(client_t* cl, QMsg* msg)
-{
-	if (!sv_wwwFallbackURL->string || String::Length(sv_wwwFallbackURL->string) == 0)
-	{
-		return qfalse;
-	}
-
-	Com_Printf("clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string);
-
-	msg->WriteByte(q3svc_download);
-	msg->WriteShort(-1);	// block -1 means ftp/http download
-	msg->WriteString(sv_wwwFallbackURL->string);
-	msg->WriteLong(0);
-	msg->WriteLong(2);	// DL_FLAG_URL
-
-	return qtrue;
-}
-
-/*
-==================
-SV_WriteDownloadToClient
-
-Check to see if the client wants a file, open it if needed and start pumping the client
-Fill up msg with data
-==================
-*/
-void SV_WriteDownloadToClient(client_t* cl, QMsg* msg)
-{
-	int curindex;
-	int rate;
-	int blockspersnap;
-	int idPack;
-	char errorMessage[1024];
-	int download_flag;
-
-	qboolean bTellRate = qfalse;// verbosity
-
-	if (!*cl->downloadName)
-	{
-		return;	// Nothing being downloaded
-
-	}
-	if (cl->et_bWWWing)
-	{
-		return;	// The client acked and is downloading with ftp/http
-
-	}
-	// CVE-2006-2082
-	// validate the download against the list of pak files
-	if (!FS_VerifyPak(cl->downloadName))
-	{
-		// will drop the client and leave it hanging on the other side. good for him
-		SVT3_DropClient(cl, "illegal download request");
-		return;
-	}
-
-	if (!cl->download)
-	{
-		// We open the file here
-
-		//bani - prevent duplicate download notifications
-		if (cl->et_downloadnotify & DLNOTIFY_BEGIN)
-		{
-			cl->et_downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf("clientDownload: %d : beginning \"%s\"\n", (int)(cl - svs.clients), cl->downloadName);
-		}
-
-		idPack = FS_idPak(cl->downloadName, BASEGAME);
-
-		// sv_allowDownload and idPack checks
-		if (!sv_allowDownload->integer || idPack)
-		{
-			// cannot auto-download file
-			if (idPack)
-			{
-				Com_Printf("clientDownload: %d : \"%s\" cannot download id pk3 files\n", (int)(cl - svs.clients), cl->downloadName);
-				String::Sprintf(errorMessage, sizeof(errorMessage), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName);
-			}
-			else
-			{
-				Com_Printf("clientDownload: %d : \"%s\" download disabled", (int)(cl - svs.clients), cl->downloadName);
-				if (svt3_pure->integer)
-				{
-					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-																		"You will need to get this file elsewhere before you "
-																		"can connect to this pure server.\n", cl->downloadName);
-				}
-				else
-				{
-					String::Sprintf(errorMessage, sizeof(errorMessage), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-																		"Set autodownload to No in your settings and you might be "
-																		"able to connect even if you don't have the file.\n", cl->downloadName);
-				}
-			}
-
-			SV_BadDownload(cl, msg);
-			msg->WriteString(errorMessage);		// (could SVT3_DropClient isntead?)
-
-			return;
-		}
-
-		// www download redirect protocol
-		// NOTE: this is called repeatedly while a client connects. Maybe we should sort of cache the message or something
-		// FIXME: we need to abstract this to an independant module for maximum configuration/usability by server admins
-		// FIXME: I could rework that, it's crappy
-		if (sv_wwwDownload->integer)
-		{
-			if (cl->et_bDlOK)
-			{
-				if (!cl->et_bFallback)
-				{
-					fileHandle_t handle;
-					int downloadSize = FS_SV_FOpenFileRead(cl->downloadName, &handle);
-					if (downloadSize)
-					{
-						FS_FCloseFile(handle);	// don't keep open, we only care about the size
-
-						String::NCpyZ(cl->et_downloadURL, va("%s/%s", sv_wwwBaseURL->string, cl->downloadName), sizeof(cl->et_downloadURL));
-
-						//bani - prevent multiple download notifications
-						if (cl->et_downloadnotify & DLNOTIFY_REDIRECT)
-						{
-							cl->et_downloadnotify &= ~DLNOTIFY_REDIRECT;
-							Com_Printf("Redirecting client '%s' to %s\n", cl->name, cl->et_downloadURL);
-						}
-						// once cl->downloadName is set (and possibly we have our listening socket), let the client know
-						cl->et_bWWWDl = qtrue;
-						msg->WriteByte(q3svc_download);
-						msg->WriteShort(-1);	// block -1 means ftp/http download
-						// compatible with legacy q3svc_download protocol: [size] [size bytes]
-						// download URL, size of the download file, download flags
-						msg->WriteString(cl->et_downloadURL);
-						msg->WriteLong(downloadSize);
-						download_flag = 0;
-						if (sv_wwwDlDisconnected->integer)
-						{
-							download_flag |= (1 << DL_FLAG_DISCON);
-						}
-						msg->WriteLong(download_flag);	// flags
-						return;
-					}
-					else
-					{
-						// that should NOT happen - even regular download would fail then anyway
-						Com_Printf("ERROR: Client '%s': couldn't extract file size for %s\n", cl->name, cl->downloadName);
-					}
-				}
-				else
-				{
-					cl->et_bFallback = qfalse;
-					if (SV_CheckFallbackURL(cl, msg))
-					{
-						return;
-					}
-					Com_Printf("Client '%s': falling back to regular downloading for failed file %s\n", cl->name, cl->downloadName);
-				}
-			}
-			else
-			{
-				if (SV_CheckFallbackURL(cl, msg))
-				{
-					return;
-				}
-				Com_Printf("Client '%s' is not configured for www download\n", cl->name);
-			}
-		}
-
-		// find file
-		cl->et_bWWWDl = qfalse;
-		cl->downloadSize = FS_SV_FOpenFileRead(cl->downloadName, &cl->download);
-		if (cl->downloadSize <= 0)
-		{
-			Com_Printf("clientDownload: %d : \"%s\" file not found on server\n", (int)(cl - svs.clients), cl->downloadName);
-			String::Sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" not found on server for autodownloading.\n", cl->downloadName);
-			SV_BadDownload(cl, msg);
-			msg->WriteString(errorMessage);		// (could SVT3_DropClient isntead?)
-			return;
-		}
-
-		// is valid source, init
-		cl->downloadCurrentBlock = cl->downloadClientBlock = cl->downloadXmitBlock = 0;
-		cl->downloadCount = 0;
-		cl->downloadEOF = qfalse;
-
-		bTellRate = qtrue;
-	}
-
-	// Perform any reads that we need to
-	while (cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW &&
-		   cl->downloadSize != cl->downloadCount)
-	{
-
-		curindex = (cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW);
-
-		if (!cl->downloadBlocks[curindex])
-		{
-			cl->downloadBlocks[curindex] = (byte*)Mem_Alloc(MAX_DOWNLOAD_BLKSIZE);
-		}
-
-		cl->downloadBlockSize[curindex] = FS_Read(cl->downloadBlocks[curindex], MAX_DOWNLOAD_BLKSIZE, cl->download);
-
-		if (cl->downloadBlockSize[curindex] < 0)
-		{
-			// EOF right now
-			cl->downloadCount = cl->downloadSize;
-			break;
-		}
-
-		cl->downloadCount += cl->downloadBlockSize[curindex];
-
-		// Load in next block
-		cl->downloadCurrentBlock++;
-	}
-
-	// Check to see if we have eof condition and add the EOF block
-	if (cl->downloadCount == cl->downloadSize &&
-		!cl->downloadEOF &&
-		cl->downloadCurrentBlock - cl->downloadClientBlock < MAX_DOWNLOAD_WINDOW)
-	{
-
-		cl->downloadBlockSize[cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW] = 0;
-		cl->downloadCurrentBlock++;
-
-		cl->downloadEOF = qtrue;	// We have added the EOF block
-	}
-
-	// Loop up to window size times based on how many blocks we can fit in the
-	// client snapMsec and rate
-
-	// based on the rate, how many bytes can we fit in the snapMsec time of the client
-	// normal rate / snapshotMsec calculation
-	rate = cl->rate;
-
-	// show_bug.cgi?id=509
-	// for autodownload, we use a seperate max rate value
-	// we do this everytime because the client might change it's rate during the download
-	if (svt3_dl_maxRate->integer < rate)
-	{
-		rate = svt3_dl_maxRate->integer;
-		if (bTellRate)
-		{
-			Com_Printf("'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, svt3_dl_maxRate->integer);
-		}
-	}
-	else
-	if (bTellRate)
-	{
-		Com_Printf("'%s' downloading at rate %d\n", cl->name, rate);
-	}
-
-	if (!rate)
-	{
-		blockspersnap = 1;
-	}
-	else
-	{
-		blockspersnap = ((rate * cl->q3_snapshotMsec) / 1000 + MAX_DOWNLOAD_BLKSIZE) /
-						MAX_DOWNLOAD_BLKSIZE;
-	}
-
-	if (blockspersnap < 0)
-	{
-		blockspersnap = 1;
-	}
-
-	while (blockspersnap--)
-	{
-
-		// Write out the next section of the file, if we have already reached our window,
-		// automatically start retransmitting
-
-		if (cl->downloadClientBlock == cl->downloadCurrentBlock)
-		{
-			return;	// Nothing to transmit
-
-		}
-		if (cl->downloadXmitBlock == cl->downloadCurrentBlock)
-		{
-			// We have transmitted the complete window, should we start resending?
-
-			//FIXME:  This uses a hardcoded one second timeout for lost blocks
-			//the timeout should be based on client rate somehow
-			if (svs.q3_time - cl->downloadSendTime > 1000)
-			{
-				cl->downloadXmitBlock = cl->downloadClientBlock;
-			}
-			else
-			{
-				return;
-			}
-		}
-
-		// Send current block
-		curindex = (cl->downloadXmitBlock % MAX_DOWNLOAD_WINDOW);
-
-		msg->WriteByte(q3svc_download);
-		msg->WriteShort(cl->downloadXmitBlock);
-
-		// block zero is special, contains file size
-		if (cl->downloadXmitBlock == 0)
-		{
-			msg->WriteLong(cl->downloadSize);
-		}
-
-		msg->WriteShort(cl->downloadBlockSize[curindex]);
-
-		// Write the block
-		if (cl->downloadBlockSize[curindex])
-		{
-			msg->WriteData(cl->downloadBlocks[curindex], cl->downloadBlockSize[curindex]);
-		}
-
-		Com_DPrintf("clientDownload: %d : writing block %d\n", (int)(cl - svs.clients), cl->downloadXmitBlock);
-
-		// Move on to the next block
-		// It will get sent with next snap shot.  The rate will keep us in line.
-		cl->downloadXmitBlock++;
-
-		cl->downloadSendTime = svs.q3_time;
-	}
-}
-
-/*
-=================
-SV_Disconnect_f
-
-The client is going to disconnect, so remove the connection immediately  FIXME: move to game?
-=================
-*/
-static void SV_Disconnect_f(client_t* cl)
-{
-	SVT3_DropClient(cl, "disconnected");
-}
-
 /*
 =================
 SV_VerifyPaks_f
@@ -1237,11 +782,11 @@ static void SV_VerifyPaks_f(client_t* cl)
 
 		bGood = qtrue;
 		nChkSum1 = nChkSum2 = 0;
-
-		bGood = (FS_FileIsInPAK(FS_ShiftStr(SYS_DLLNAME_CGAME, -SYS_DLLNAME_CGAME_SHIFT), &nChkSum1) == 1);
+		// we run the game, so determine which cgame and ui the client "should" be running
+		bGood = (FS_FileIsInPAK(GGameType & (GAME_WolfMP | GAME_ET) ? "cgame_mp_x86.dll" : "vm/cgame.qvm", &nChkSum1) == 1);
 		if (bGood)
 		{
-			bGood = (FS_FileIsInPAK(FS_ShiftStr(SYS_DLLNAME_UI, -SYS_DLLNAME_UI_SHIFT), &nChkSum2) == 1);
+			bGood = (FS_FileIsInPAK(GGameType & (GAME_WolfMP | GAME_ET) ? "ui_mp_x86.dll" : "vm/ui.qvm", &nChkSum2) == 1);
 		}
 
 		nClientPaks = Cmd_Argc();
@@ -1250,7 +795,6 @@ static void SV_VerifyPaks_f(client_t* cl)
 		nCurArg = 1;
 
 		pArg = Cmd_Argv(nCurArg++);
-
 		if (!pArg)
 		{
 			bGood = qfalse;
@@ -1403,139 +947,6 @@ static void SV_VerifyPaks_f(client_t* cl)
 	}
 }
 
-/*
-=================
-SV_ResetPureClient_f
-=================
-*/
-static void SV_ResetPureClient_f(client_t* cl)
-{
-	cl->q3_pureAuthentic = 0;
-	cl->q3_gotCP = qfalse;
-}
-
-/*
-=================
-SV_UserinfoChanged
-
-Pull specific info from a newly changed userinfo string
-into a more C friendly form.
-=================
-*/
-void SV_UserinfoChanged(client_t* cl)
-{
-	const char* val;
-	int i;
-
-	// name for C code
-	String::NCpyZ(cl->name, Info_ValueForKey(cl->userinfo, "name"), sizeof(cl->name));
-
-	// rate command
-
-	// if the client is on the same subnet as the server and we aren't running an
-	// internet public server, assume they don't need a rate choke
-	if (SOCK_IsLANAddress(cl->netchan.remoteAddress) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1)
-	{
-		cl->rate = 99999;	// lans should not rate limit
-	}
-	else
-	{
-		val = Info_ValueForKey(cl->userinfo, "rate");
-		if (String::Length(val))
-		{
-			i = String::Atoi(val);
-			cl->rate = i;
-			if (cl->rate < 1000)
-			{
-				cl->rate = 1000;
-			}
-			else if (cl->rate > 90000)
-			{
-				cl->rate = 90000;
-			}
-		}
-		else
-		{
-			cl->rate = 5000;
-		}
-	}
-	val = Info_ValueForKey(cl->userinfo, "handicap");
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		if (i <= -100 || i > 100 || String::Length(val) > 4)
-		{
-			Info_SetValueForKey(cl->userinfo, "handicap", "0", MAX_INFO_STRING_Q3);
-		}
-	}
-
-	// snaps command
-	val = Info_ValueForKey(cl->userinfo, "snaps");
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		if (i < 1)
-		{
-			i = 1;
-		}
-		else if (i > 30)
-		{
-			i = 30;
-		}
-		cl->q3_snapshotMsec = 1000 / i;
-	}
-	else
-	{
-		cl->q3_snapshotMsec = 50;
-	}
-
-	// TTimo
-	// maintain the IP information
-	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates it's userinfo
-	// the banning code relies on this being consistently present
-	// zinx - modified to always keep this consistent, instead of only
-	// when "ip" is 0-length, so users can't supply their own IP
-	//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
-	if (!SOCK_IsLocalAddress(cl->netchan.remoteAddress))
-	{
-		Info_SetValueForKey(cl->userinfo, "ip", SOCK_AdrToString(cl->netchan.remoteAddress), MAX_INFO_STRING_Q3);
-	}
-	else
-	{
-		// force the "ip" info key to "localhost" for local clients
-		Info_SetValueForKey(cl->userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
-	}
-
-	// TTimo
-	// download prefs of the client
-	val = Info_ValueForKey(cl->userinfo, "cl_wwwDownload");
-	cl->et_bDlOK = qfalse;
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		if (i != 0)
-		{
-			cl->et_bDlOK = qtrue;
-		}
-	}
-
-}
-
-
-/*
-==================
-SV_UpdateUserinfo_f
-==================
-*/
-static void SV_UpdateUserinfo_f(client_t* cl)
-{
-	String::NCpyZ(cl->userinfo, Cmd_Argv(1), MAX_INFO_STRING_Q3);
-
-	SV_UserinfoChanged(cl);
-	// call prog code to allow overrides
-	VM_Call(gvm, ETGAME_CLIENT_USERINFO_CHANGED, cl - svs.clients);
-}
-
 typedef struct
 {
 	const char* name;
@@ -1544,13 +955,13 @@ typedef struct
 } ucmd_t;
 
 static ucmd_t ucmds[] = {
-	{"userinfo", SV_UpdateUserinfo_f,    qfalse },
-	{"disconnect",   SV_Disconnect_f,        qtrue },
+	{"userinfo", SVT3_UpdateUserinfo_f,    qfalse },
+	{"disconnect",   SVT3_Disconnect_f,        qtrue },
 	{"cp",           SV_VerifyPaks_f,        qfalse },
-	{"vdr",          SV_ResetPureClient_f,   qfalse },
-	{"download", SV_BeginDownload_f,     qfalse },
-	{"nextdl",       SV_NextDownload_f,      qfalse },
-	{"stopdl",       SV_StopDownload_f,      qfalse },
+	{"vdr",          SVT3_ResetPureClient_f,   qfalse },
+	{"download", SVT3_BeginDownload_f,     qfalse },
+	{"nextdl",       SVT3_NextDownload_f,      qfalse },
+	{"stopdl",       SVT3_StopDownload_f,      qfalse },
 	{"donedl",       SV_DoneDownload_f,      qfalse },
 	{"wwwdl",        SV_WWWDownload_f,       qfalse },
 	{NULL, NULL}
@@ -1739,7 +1150,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	cl->q3_frames[cl->q3_messageAcknowledge & PACKET_MASK_Q3].messageAcked = svs.q3_time;
 
 	// TTimo
-	// catch the no-cp-yet situation before SV_ClientEnterWorld
+	// catch the no-cp-yet situation before SVET_ClientEnterWorld
 	// if CS_ACTIVE, then it's time to trigger a new gamestate emission
 	// if not, then we are getting remaining parasite usermove commands, which we should ignore
 	if (svt3_pure->integer != 0 && cl->q3_pureAuthentic == 0 && !cl->q3_gotCP)
@@ -1757,7 +1168,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 	// this gamestate, put the client into the world
 	if (cl->state == CS_PRIMED)
 	{
-		SV_ClientEnterWorld(cl, &cmds[0]);
+		SVET_ClientEnterWorld(cl, &cmds[0]);
 		// the moves can be processed normaly
 	}
 

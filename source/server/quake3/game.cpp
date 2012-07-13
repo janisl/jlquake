@@ -86,6 +86,16 @@ bool SVQ3_GameConsoleCommand()
 	return VM_Call(gvm, Q3GAME_CONSOLE_COMMAND);
 }
 
+void SVQ3_GameClientBegin(int clientNum)
+{
+	VM_Call(gvm, Q3GAME_CLIENT_BEGIN, clientNum);
+}
+
+void SVQ3_GameClientUserInfoChanged(int clientNum)
+{
+	VM_Call(gvm, Q3GAME_CLIENT_USERINFO_CHANGED, clientNum);
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {

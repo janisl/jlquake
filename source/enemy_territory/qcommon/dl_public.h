@@ -40,10 +40,4 @@ dlStatus_t DL_DownloadLoop();
 
 void DL_Shutdown();
 
-// bitmask
-typedef enum {
-	DL_FLAG_DISCON = 0,
-	DL_FLAG_URL
-} dlFlags_t;
-
 #endif

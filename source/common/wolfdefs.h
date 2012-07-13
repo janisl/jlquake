@@ -886,3 +886,10 @@ struct etgameInfo_t
 
 #define WSAUTHORIZE_SERVER_NAME "authorize.gmistudios.com"
 #define WMAUTHORIZE_SERVER_NAME "wolfauthorize.idsoftware.com"
+
+// bitmask
+enum
+{
+	DL_FLAG_DISCON = 0,
+	DL_FLAG_URL
+};

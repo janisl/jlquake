@@ -20,12 +20,20 @@
 
 Cvar* svt3_gametype;
 Cvar* svt3_pure;
-Cvar* svt3_padPackets;			// add nop bytes to messages
+Cvar* svt3_padPackets;		// add nop bytes to messages
 Cvar* svt3_maxRate;
 Cvar* svt3_dl_maxRate;
 Cvar* svt3_mapname;
-Cvar* svt3_timeout;				// seconds without any message
-Cvar* svt3_zombietime;			// seconds to sink messages after disconnect
+Cvar* svt3_timeout;			// seconds without any message
+Cvar* svt3_zombietime;		// seconds to sink messages after disconnect
+Cvar* svt3_allowDownload;
+Cvar* svet_wwwFallbackURL;	// URL to send to if an http/ftp fails or is refused client side
+Cvar* svet_wwwDownload;		// server does a www dl redirect
+Cvar* svet_wwwBaseURL;	// base URL for redirect
+// tell clients to perform their downloads while disconnected from the server
+// this gets you a better throughput, but you loose the ability to control the download usage
+Cvar* svet_wwwDlDisconnected;
+Cvar* svt3_lanForceRate;		// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)

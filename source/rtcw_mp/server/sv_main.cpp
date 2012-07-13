@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
-Cvar* sv_allowDownload;
 
 Cvar* sv_privateClients;		// number of clients reserved for password
 Cvar* sv_hostname;
@@ -46,7 +45,6 @@ Cvar* sv_minPing;
 Cvar* sv_maxPing;
 Cvar* sv_floodProtect;
 Cvar* sv_allowAnonymous;
-Cvar* sv_lanForceRate;	// TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 Cvar* sv_onlyVisibleClients;	// DHM - Nerve
 Cvar* sv_friendlyFire;			// NERVE - SMF
 Cvar* sv_maxlives;				// NERVE - SMF

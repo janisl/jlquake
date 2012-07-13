@@ -39,5 +39,7 @@ void SVET_GameShutdown(bool restart);
 bool SVET_GameConsoleCommand();
 void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
 bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber);
+void SVET_GameClientBegin(int clientNum);
+void SVET_GameClientUserInfoChanged(int clientNum);
 
 #endif

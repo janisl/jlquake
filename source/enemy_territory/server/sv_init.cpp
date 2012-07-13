@@ -370,7 +370,7 @@ void SV_Init(void)
 	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
 
-	sv_allowDownload = Cvar_Get("sv_allowDownload", "1", CVAR_ARCHIVE);
+	svt3_allowDownload = Cvar_Get("sv_allowDownload", "1", CVAR_ARCHIVE);
 	sv_master[0] = Cvar_Get("sv_master1", MASTER_SERVER_NAME, 0);
 	sv_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
 	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
@@ -385,7 +385,7 @@ void SV_Init(void)
 
 	sv_reloading = Cvar_Get("g_reloading", "0", CVAR_ROM);
 
-	sv_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
+	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 
 	sv_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve
 
@@ -424,10 +424,10 @@ void SV_Init(void)
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
 
-	sv_wwwDownload = Cvar_Get("sv_wwwDownload", "0", CVAR_ARCHIVE);
-	sv_wwwBaseURL = Cvar_Get("sv_wwwBaseURL", "", CVAR_ARCHIVE);
-	sv_wwwDlDisconnected = Cvar_Get("sv_wwwDlDisconnected", "0", CVAR_ARCHIVE);
-	sv_wwwFallbackURL = Cvar_Get("sv_wwwFallbackURL", "", CVAR_ARCHIVE);
+	svet_wwwDownload = Cvar_Get("sv_wwwDownload", "0", CVAR_ARCHIVE);
+	svet_wwwBaseURL = Cvar_Get("sv_wwwBaseURL", "", CVAR_ARCHIVE);
+	svet_wwwDlDisconnected = Cvar_Get("sv_wwwDlDisconnected", "0", CVAR_ARCHIVE);
+	svet_wwwFallbackURL = Cvar_Get("sv_wwwFallbackURL", "", CVAR_ARCHIVE);
 
 	//bani
 	sv_packetloss = Cvar_Get("sv_packetloss", "0", CVAR_CHEAT);

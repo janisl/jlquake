@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
-Cvar* sv_allowDownload;
 Cvar* sv_privateClients;		// number of clients reserved for password
 Cvar* sv_hostname;
 Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address

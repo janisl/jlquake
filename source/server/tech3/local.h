@@ -52,8 +52,19 @@ bool SVET_TempBanIsBanned(netadr_t address);
 //
 //	Client
 //
-void SVT3_CloseDownload(client_t* cl);
 void SVT3_DropClient(client_t* drop, const char* reason);
+void SVQ3_ClientEnterWorld(client_t* client, q3usercmd_t* cmd);
+void SVWS_ClientEnterWorld(client_t* client, wsusercmd_t* cmd);
+void SVWM_ClientEnterWorld(client_t* client, wmusercmd_t* cmd);
+void SVET_ClientEnterWorld(client_t* client, etusercmd_t* cmd);
+void SVT3_StopDownload_f(client_t* cl);
+void SVT3_NextDownload_f(client_t* cl);
+void SVT3_BeginDownload_f(client_t* cl);
+void SVT3_WriteDownloadToClient(client_t* cl, QMsg* msg);
+void SVT3_Disconnect_f(client_t* cl);
+void SVT3_ResetPureClient_f(client_t* cl);
+void SVT3_UserinfoChanged(client_t* cl);
+void SVT3_UpdateUserinfo_f(client_t* cl);
 
 //
 //	Game
@@ -113,6 +124,14 @@ extern Cvar* svt3_dl_maxRate;
 extern Cvar* svt3_mapname;
 extern Cvar* svt3_timeout;
 extern Cvar* svt3_zombietime;
+extern Cvar* svt3_allowDownload;
+extern Cvar* svet_wwwFallbackURL;
+extern Cvar* svet_wwwDownload;// general flag to enable/disable www download redirects
+extern Cvar* svet_wwwBaseURL;	// the base URL of all the files
+// tell clients to perform their downloads while disconnected from the server
+// this gets you a better throughput, but you loose the ability to control the download usage
+extern Cvar* svet_wwwDlDisconnected;
+extern Cvar* svt3_lanForceRate;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));

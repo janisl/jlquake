@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
-Cvar* sv_allowDownload;
 
 Cvar* sv_privateClients;		// number of clients reserved for password
 Cvar* sv_hostname;
@@ -47,7 +46,6 @@ Cvar* sv_minPing;
 Cvar* sv_maxPing;
 Cvar* sv_floodProtect;
 Cvar* sv_allowAnonymous;
-Cvar* sv_lanForceRate;	// TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 Cvar* sv_onlyVisibleClients;	// DHM - Nerve
 Cvar* sv_friendlyFire;			// NERVE - SMF
 Cvar* sv_maxlives;				// NERVE - SMF
@@ -60,13 +58,6 @@ Cvar* sv_needpass;
 Cvar* sv_reloading;
 
 Cvar* sv_showAverageBPS;		// NERVE - SMF - net debugging
-
-Cvar* sv_wwwDownload;	// server does a www dl redirect
-Cvar* sv_wwwBaseURL;	// base URL for redirect
-// tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
-Cvar* sv_wwwDlDisconnected;
-Cvar* sv_wwwFallbackURL;// URL to send to if an http/ftp fails or is refused client side
 
 //bani
 Cvar* sv_cheats;

@@ -49,7 +49,6 @@ If you have questions concerning this license or the applicable additional terms
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
-extern Cvar* sv_allowDownload;
 extern Cvar* sv_friendlyFire;			// NERVE - SMF
 extern Cvar* sv_maxlives;				// NERVE - SMF
 extern Cvar* sv_needpass;
@@ -67,7 +66,6 @@ extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
-extern Cvar* sv_lanForceRate;
 extern Cvar* sv_onlyVisibleClients;
 
 extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
@@ -77,14 +75,6 @@ extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
 // done
 
 extern Cvar* sv_reloading;
-
-// TTimo
-extern Cvar* sv_wwwDownload;// general flag to enable/disable www download redirects
-extern Cvar* sv_wwwBaseURL;	// the base URL of all the files
-// tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
-extern Cvar* sv_wwwDlDisconnected;
-extern Cvar* sv_wwwFallbackURL;
 
 //bani
 extern Cvar* sv_cheats;
@@ -131,14 +121,10 @@ void SV_DirectConnect(netadr_t from);
 void SV_AuthorizeIpPacket(netadr_t from);
 
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
-void SV_UserinfoChanged(client_t* cl);
 
-void SV_ClientEnterWorld(client_t* client, etusercmd_t* cmd);
 void SV_FreeClientNetChan(client_t* client);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 
 //
 // sv_snapshot.c
@@ -161,8 +147,3 @@ void SV_SendClientIdle(client_t* client);
 void SV_Netchan_Transmit(client_t* client, QMsg* msg);
 void SV_Netchan_TransmitNextFragment(client_t* client);
 qboolean SV_Netchan_Process(client_t* client, QMsg* msg);
-
-//bani - cl->downloadnotify
-#define DLNOTIFY_REDIRECT   0x00000001	// "Redirecting client ..."
-#define DLNOTIFY_BEGIN      0x00000002	// "clientDownload: 4 : beginning ..."
-#define DLNOTIFY_ALL        (DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN)

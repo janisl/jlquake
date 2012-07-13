@@ -37,7 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
-extern Cvar* sv_allowDownload;
 
 extern Cvar* sv_privateClients;
 extern Cvar* sv_hostname;
@@ -50,7 +49,6 @@ extern Cvar* sv_serverid;
 extern Cvar* sv_minPing;
 extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
-extern Cvar* sv_lanForceRate;
 extern Cvar* sv_strictAuth;
 
 //===========================================================
@@ -87,13 +85,8 @@ void SV_DirectConnect(netadr_t from);
 void SV_AuthorizeIpPacket(netadr_t from);
 
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
-void SV_UserinfoChanged(client_t* cl);
-
-void SV_ClientEnterWorld(client_t* client, q3usercmd_t* cmd);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-void SV_WriteDownloadToClient(client_t* cl, QMsg* msg);
 
 //
 // sv_snapshot.c

@@ -387,7 +387,7 @@ void SV_Init(void)
 	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
 
-	sv_allowDownload = Cvar_Get("sv_allowDownload", "1", 0);
+	svt3_allowDownload = Cvar_Get("sv_allowDownload", "1", 0);
 //----(SA)	heh, whoops.  we've been talking to id masters since we got a connection...
 //	sv_master[0] = Cvar_Get ("sv_master1", "master3.idsoftware.com", 0 );
 	sv_master[0] = Cvar_Get("sv_master1", "master.gmistudios.com", 0);
@@ -400,6 +400,7 @@ void SV_Init(void)
 	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
+	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 
 	sv_reloading = Cvar_Get("g_reloading", "0", CVAR_ROM);		//----(SA)	added
 

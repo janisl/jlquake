@@ -115,6 +115,16 @@ int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInf
 	return VM_Call(gvm, WSGAME_GETMODELINFO, clientNum, modelName, modelInfo);
 }
 
+void SVWS_GameClientBegin(int clientNum)
+{
+	VM_Call(gvm, WSGAME_CLIENT_BEGIN, clientNum);
+}
+
+void SVWS_GameClientUserInfoChanged(int clientNum)
+{
+	VM_Call(gvm, WSGAME_CLIENT_USERINFO_CHANGED, clientNum);
+}
+
 static void SVWS_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wsplayerState_t* clients, int sizeofGameClient)
 {
