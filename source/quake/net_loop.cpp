@@ -90,7 +90,7 @@ qsocket_t* Loop_Connect(const char* host, netchan_t* chan)
 	}
 	loopbacks[0].send = 0;
 	loopbacks[0].get = 0;
-	loop_client->canSend = true;
+	loopbacks[0].canSend = true;
 
 	if (!loop_server)
 	{
@@ -103,10 +103,7 @@ qsocket_t* Loop_Connect(const char* host, netchan_t* chan)
 	}
 	loopbacks[1].send = 0;
 	loopbacks[1].get = 0;
-	loop_server->canSend = true;
-
-	loop_client->driverdata = (void*)loop_server;
-	loop_server->driverdata = (void*)loop_client;
+	loopbacks[1].canSend = true;
 
 	return loop_client;
 }
@@ -122,10 +119,10 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 	localconnectpending = false;
 	loopbacks[1].send = 0;
 	loopbacks[1].get = 0;
-	loop_server->canSend = true;
+	loopbacks[1].canSend = true;
 	loopbacks[0].send = 0;
 	loopbacks[0].get = 0;
-	loop_client->canSend = true;
+	loopbacks[0].canSend = true;
 	return loop_server;
 }
 
@@ -134,9 +131,9 @@ int Loop_GetMessage(qsocket_t* sock, netchan_t* chan)
 	netadr_t net_from;
 	int ret = NET_GetLoopPacket(chan->sock, &net_from, &net_message);
 
-	if (sock->driverdata && ret == 1)
+	if (ret == 1)
 	{
-		((qsocket_t*)sock->driverdata)->canSend = true;
+		loopbacks[chan->sock ^ 1].canSend = true;
 	}
 
 	return ret;
@@ -144,11 +141,6 @@ int Loop_GetMessage(qsocket_t* sock, netchan_t* chan)
 
 int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
-	if (!sock->driverdata)
-	{
-		return -1;
-	}
-
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
 	{
@@ -157,18 +149,13 @@ int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 
 	NET_SendLoopPacket(chan->sock, data->cursize, data->_data, 1);
 
-	sock->canSend = false;
+	loopbacks[chan->sock].canSend = false;
 	return 1;
 }
 
 
 int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
-	if (!sock->driverdata)
-	{
-		return -1;
-	}
-
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
 	{
@@ -182,11 +169,7 @@ int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 
 qboolean Loop_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 {
-	if (!sock->driverdata)
-	{
-		return false;
-	}
-	return sock->canSend;
+	return loopbacks[chan->sock].canSend;
 }
 
 
@@ -198,13 +181,9 @@ qboolean Loop_CanSendUnreliableMessage(qsocket_t* sock)
 
 void Loop_Close(qsocket_t* sock, netchan_t* chan)
 {
-	if (sock->driverdata)
-	{
-		((qsocket_t*)sock->driverdata)->driverdata = NULL;
-	}
 	loopbacks[chan->sock].send = 0;
 	loopbacks[chan->sock].get = 0;
-	sock->canSend = true;
+	loopbacks[chan->sock].canSend = true;
 	if (sock == loop_client)
 	{
 		loop_client = NULL;

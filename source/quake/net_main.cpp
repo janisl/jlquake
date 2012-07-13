@@ -153,7 +153,6 @@ qsocket_t* NET_NewQSocket(void)
 	String::Cpy(sock->address,"UNSET ADDRESS");
 	sock->driver = net_driverlevel;
 	sock->socket = 0;
-	sock->driverdata = NULL;
 	sock->canSend = true;
 	sock->sendNext = false;
 

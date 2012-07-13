@@ -99,7 +99,6 @@ struct qsocket_t
 
 	int driver;
 	int socket;
-	void* driverdata;
 
 	char address[NET_NAMELEN_Q1];
 };
@@ -120,6 +119,7 @@ struct loopback_t
 	loopmsg_t msgs[MAX_LOOPBACK];
 	int get;
 	int send;
+	bool canSend;
 };
 
 extern loopback_t loopbacks[2];
