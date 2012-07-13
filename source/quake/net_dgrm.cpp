@@ -52,8 +52,6 @@ static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
 static const char* net_interface;
 
-static int myDriverLevel;
-
 static struct
 {
 	unsigned int length;
@@ -617,7 +615,7 @@ static void Test_f(void)
 		for (n = 0; n < hostCacheCount; n++)
 			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
-				if (hostcache[n].driver != myDriverLevel)
+				if (hostcache[n].driver != 1)
 				{
 					continue;
 				}
@@ -760,7 +758,7 @@ static void Test2_f(void)
 		for (n = 0; n < hostCacheCount; n++)
 			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
-				if (hostcache[n].driver != myDriverLevel)
+				if (hostcache[n].driver != 1)
 				{
 					continue;
 				}
@@ -807,7 +805,6 @@ JustDoIt:
 
 int Datagram_Init(void)
 {
-	myDriverLevel = net_driverlevel;
 	Cmd_AddCommand("net_stats", NET_Stats_f);
 
 	if (COM_CheckParm("-nolan"))
@@ -1077,7 +1074,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 			continue;
 		}
 		s = client->qh_netconnection;
-		if (s->driver != net_driverlevel)
+		if (client->netchan.remoteAddress.type != NA_IP)
 		{
 			continue;
 		}
@@ -1254,7 +1251,7 @@ static void _Datagram_SearchForHosts(qboolean xmit)
 			String::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
 		}
 		hostcache[n].addr = readaddr;
-		hostcache[n].driver = net_driverlevel;
+		hostcache[n].driver = 1;
 		String::Cpy(hostcache[n].cname, SOCK_AdrToString(readaddr));
 
 		// check for a name conflict

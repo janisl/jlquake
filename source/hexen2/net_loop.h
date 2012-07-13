@@ -9,6 +9,5 @@ int         Loop_GetMessage(qsocket_t* sock, netchan_t* chan);
 int         Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
 int         Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
 qboolean    Loop_CanSendMessage(qsocket_t* sock, netchan_t* chan);
-qboolean    Loop_CanSendUnreliableMessage(qsocket_t* sock);
 void        Loop_Close(qsocket_t* sock, netchan_t* chan);
 void        Loop_Shutdown(void);

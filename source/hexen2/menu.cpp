@@ -3982,7 +3982,7 @@ void M_ServerList_Draw(void)
 	{
 		if (hostcache[n].driver == 0)
 		{
-			name = net_drivers[hostcache[n].driver].name;
+			name = "Loopback";
 		}
 		else
 		{

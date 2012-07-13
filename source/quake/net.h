@@ -111,34 +111,9 @@ extern qsocket_t* net_activeSockets;
 extern qsocket_t* net_freeSockets;
 extern int net_numsockets;
 
-#define MAX_NET_DRIVERS     8
-
-typedef struct
-{
-	const char* name;
-	qboolean initialized;
-	int (* Init)(void);
-	void (* Listen)(qboolean state);
-	void (* SearchForHosts)(qboolean xmit);
-	qsocket_t*(*Connect)(const char* host, netchan_t * chan);
-	qsocket_t*(*CheckNewConnections)(netadr_t * outaddr);
-	int (* QGetMessage)(qsocket_t* sock, netchan_t* chan);
-	int (* QSendMessage)(qsocket_t* sock, netchan_t* chan, QMsg* data);
-	int (* SendUnreliableMessage)(qsocket_t* sock, netchan_t* chan, QMsg* data);
-	qboolean (* CanSendMessage)(qsocket_t* sock, netchan_t* chan);
-	qboolean (* CanSendUnreliableMessage)(qsocket_t* sock);
-	void (* Close)(qsocket_t* sock, netchan_t* chan);
-	void (* Shutdown)(void);
-	int controlSock;
-} net_driver_t;
-
-extern int net_numdrivers;
-extern net_driver_t net_drivers[MAX_NET_DRIVERS];
-
 extern int DEFAULTnet_hostport;
 extern int net_hostport;
 
-extern int net_driverlevel;
 extern Cvar* hostname;
 extern char playername[];
 extern int playercolor;

@@ -60,56 +60,12 @@ Cvar* hostname;
 Cvar* idgods = {"idgods", "0"};
 #endif
 
-// these two macros are to make the code more readable
-#define sfunc   net_drivers[sock->driver]
-#define dfunc   net_drivers[net_driverlevel]
-
-int net_driverlevel;
-
-
 double net_time;
 
 #include "net_loop.h"
 #include "net_dgrm.h"
 
-net_driver_t net_drivers[MAX_NET_DRIVERS] =
-{
-	{
-		"Loopback",
-		false,
-		Loop_Init,
-		Loop_Listen,
-		Loop_SearchForHosts,
-		Loop_Connect,
-		Loop_CheckNewConnections,
-		Loop_GetMessage,
-		Loop_SendMessage,
-		Loop_SendUnreliableMessage,
-		Loop_CanSendMessage,
-		Loop_CanSendUnreliableMessage,
-		Loop_Close,
-		Loop_Shutdown
-	}
-	,
-	{
-		"Datagram",
-		false,
-		Datagram_Init,
-		Datagram_Listen,
-		Datagram_SearchForHosts,
-		Datagram_Connect,
-		Datagram_CheckNewConnections,
-		Datagram_GetMessage,
-		Datagram_SendMessage,
-		Datagram_SendUnreliableMessage,
-		Datagram_CanSendMessage,
-		Datagram_CanSendUnreliableMessage,
-		Datagram_Close,
-		Datagram_Shutdown
-	}
-};
-
-int net_numdrivers = 2;
+bool datagram_initialized;
 
 double SetNetTime(void)
 {
@@ -151,7 +107,6 @@ qsocket_t* NET_NewQSocket(void)
 	sock->disconnected = false;
 	sock->connecttime = net_time;
 	String::Cpy(sock->address,"UNSET ADDRESS");
-	sock->driver = net_driverlevel;
 	sock->socket = 0;
 	sock->canSend = true;
 	sock->sendNext = false;
@@ -200,13 +155,10 @@ static void NET_Listen_f(void)
 
 	listening = String::Atoi(Cmd_Argv(1)) ? true : false;
 
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	Loop_Listen(listening);
+	if (datagram_initialized)
 	{
-		if (net_drivers[net_driverlevel].initialized == false)
-		{
-			continue;
-		}
-		dfunc.Listen(listening);
+		Datagram_Listen(listening);
 	}
 }
 
@@ -354,17 +306,13 @@ void NET_Slist_f(void)
 
 static void Slist_Send(void)
 {
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	if (slistLocal)
 	{
-		if (!slistLocal && net_driverlevel == 0)
-		{
-			continue;
-		}
-		if (net_drivers[net_driverlevel].initialized == false)
-		{
-			continue;
-		}
-		dfunc.SearchForHosts(true);
+		Loop_SearchForHosts(true);
+	}
+	if (datagram_initialized)
+	{
+		Datagram_SearchForHosts(true);
 	}
 
 	if ((Sys_DoubleTime() - slistStartTime) < 0.5)
@@ -376,17 +324,13 @@ static void Slist_Send(void)
 
 static void Slist_Poll(void)
 {
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	if (slistLocal)
 	{
-		if (!slistLocal && net_driverlevel == 0)
-		{
-			continue;
-		}
-		if (net_drivers[net_driverlevel].initialized == false)
-		{
-			continue;
-		}
-		dfunc.SearchForHosts(false);
+		Loop_SearchForHosts(false);
+	}
+	if (datagram_initialized)
+	{
+		Datagram_SearchForHosts(false);
 	}
 
 	if (!slistSilent)
@@ -423,7 +367,7 @@ qsocket_t* NET_Connect(const char* host, netchan_t* chan)
 {
 	qsocket_t* ret;
 	int n;
-	int numdrivers = net_numdrivers;
+	int numdrivers = 2;
 
 	SetNetTime();
 
@@ -482,13 +426,15 @@ qsocket_t* NET_Connect(const char* host, netchan_t* chan)
 	}
 
 JustDoIt:
-	for (net_driverlevel = 0; net_driverlevel < numdrivers; net_driverlevel++)
+	ret = Loop_Connect(host, chan);
+	if (ret)
 	{
-		if (net_drivers[net_driverlevel].initialized == false)
-		{
-			continue;
-		}
-		ret = dfunc.Connect(host, chan);
+		return ret;
+	}
+
+	if (datagram_initialized && numdrivers > 1)
+	{
+		ret = Datagram_Connect(host, chan);
 		if (ret)
 		{
 			return ret;
@@ -520,21 +466,24 @@ qsocket_t* NET_CheckNewConnections(netadr_t* outaddr)
 
 	SetNetTime();
 
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	ret = Loop_CheckNewConnections(outaddr);
+	if (ret)
 	{
-		if (net_drivers[net_driverlevel].initialized == false)
-		{
-			continue;
-		}
-		if (net_driverlevel && listening == false)
-		{
-			continue;
-		}
-		ret = dfunc.CheckNewConnections(outaddr);
-		if (ret)
-		{
-			return ret;
-		}
+		return ret;
+	}
+
+	if (!datagram_initialized)
+	{
+		return NULL;
+	}
+	if (listening == false)
+	{
+		return NULL;
+	}
+	ret = Datagram_CheckNewConnections(outaddr);
+	if (ret)
+	{
+		return ret;
 	}
 
 	return NULL;
@@ -560,7 +509,14 @@ void NET_Close(qsocket_t* sock, netchan_t* chan)
 	SetNetTime();
 
 	// call the driver_Close function
-	sfunc.Close(sock, chan);
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		Loop_Close(sock, chan);
+	}
+	else
+	{
+		Datagram_Close(sock, chan);
+	}
 
 	NET_FreeQSocket(sock);
 }
@@ -597,10 +553,17 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 
 	SetNetTime();
 
-	ret = sfunc.QGetMessage(sock, chan);
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		ret = Loop_GetMessage(sock, chan);
+	}
+	else
+	{
+		ret = Datagram_GetMessage(sock, chan);
+	}
 
 	// see if this connection has timed out
-	if (ret == 0 && sock->driver)
+	if (ret == 0 && chan->remoteAddress.type == NA_IP)
 	{
 		if (net_time - chan->lastReceived * 1000.0 > net_messagetimeout->value)
 		{
@@ -612,7 +575,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 
 	if (ret > 0)
 	{
-		if (sock->driver)
+		if (chan->remoteAddress.type == NA_IP)
 		{
 			chan->lastReceived = net_time * 1000;
 			if (ret == 1)
@@ -657,8 +620,15 @@ int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	}
 
 	SetNetTime();
-	r = sfunc.QSendMessage(sock, chan, data);
-	if (r == 1 && sock->driver)
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_SendMessage(sock, chan, data);
+	}
+	else
+	{
+		r = Datagram_SendMessage(sock, chan, data);
+	}
+	if (r == 1 && chan->remoteAddress.type == NA_IP)
 	{
 		messagesSent++;
 	}
@@ -683,8 +653,15 @@ int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	}
 
 	SetNetTime();
-	r = sfunc.SendUnreliableMessage(sock, chan, data);
-	if (r == 1 && sock->driver)
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_SendUnreliableMessage(sock, chan, data);
+	}
+	else
+	{
+		r = Datagram_SendUnreliableMessage(sock, chan, data);
+	}
+	if (r == 1 && chan->remoteAddress.type == NA_IP)
 	{
 		unreliableMessagesSent++;
 	}
@@ -717,7 +694,14 @@ qboolean NET_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 
 	SetNetTime();
 
-	r = sfunc.CanSendMessage(sock, chan);
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_CanSendMessage(sock, chan);
+	}
+	else
+	{
+		r = Datagram_CanSendMessage(sock, chan);
+	}
 
 	return r;
 }
@@ -739,7 +723,7 @@ int NET_SendToAll(QMsg* data, int blocktime)
 		}
 		if (host_client->state >= CS_CONNECTED)
 		{
-			if (host_client->qh_netconnection->driver == 0)
+			if (host_client->netchan.remoteAddress.type == NA_LOOPBACK)
 			{
 				NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, data);
 				state1[i] = true;
@@ -869,18 +853,21 @@ void NET_Init(void)
 	Cmd_AddCommand("port", NET_Port_f);
 
 	// initialize all the drivers
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	controlSocket = Loop_Init();
+	if (controlSocket != -1)
 	{
-		controlSocket = net_drivers[net_driverlevel].Init();
-		if (controlSocket == -1)
-		{
-			continue;
-		}
-		net_drivers[net_driverlevel].initialized = true;
-		net_drivers[net_driverlevel].controlSock = controlSocket;
 		if (listening)
 		{
-			net_drivers[net_driverlevel].Listen(true);
+			Loop_Listen(true);
+		}
+	}
+	controlSocket = Datagram_Init();
+	if (controlSocket != -1)
+	{
+		datagram_initialized = true;
+		if (listening)
+		{
+			Datagram_Listen(true);
 		}
 	}
 }
@@ -916,13 +903,11 @@ void        NET_Shutdown(void)
 //
 // shutdown the drivers
 //
-	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
+	Loop_Shutdown();
+	if (datagram_initialized)
 	{
-		if (net_drivers[net_driverlevel].initialized == true)
-		{
-			net_drivers[net_driverlevel].Shutdown();
-			net_drivers[net_driverlevel].initialized = false;
-		}
+		Datagram_Shutdown();
+		datagram_initialized = false;
 	}
 }
 

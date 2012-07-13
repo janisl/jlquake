@@ -97,7 +97,6 @@ struct qsocket_t
 	qboolean canSend;
 	qboolean sendNext;
 
-	int driver;
 	int socket;
 
 	char address[NET_NAMELEN_Q1];

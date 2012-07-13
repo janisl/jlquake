@@ -46,7 +46,7 @@ void Loop_SearchForHosts(qboolean xmit)
 	String::Cpy(hostcache[0].map, sv.name);
 	hostcache[0].users = net_activeconnections;
 	hostcache[0].maxusers = svs.qh_maxclients;
-	hostcache[0].driver = net_driverlevel;
+	hostcache[0].driver = 0;
 	String::Cpy(hostcache[0].cname, "local");
 }
 
@@ -86,6 +86,7 @@ qsocket_t* Loop_Connect(const char* host, netchan_t* chan)
 	loopbacks[1].get = 0;
 	loopbacks[1].canSend = true;
 
+	chan->remoteAddress.type = NA_LOOPBACK;
 	return loop_client;
 }
 
@@ -104,6 +105,7 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 	loopbacks[0].send = 0;
 	loopbacks[0].get = 0;
 	loopbacks[0].canSend = true;
+	outaddr->type = NA_LOOPBACK;
 	return loop_server;
 }
 
@@ -152,12 +154,6 @@ int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 qboolean Loop_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 {
 	return loopbacks[chan->sock].canSend;
-}
-
-
-qboolean Loop_CanSendUnreliableMessage(qsocket_t* sock)
-{
-	return true;
 }
 
 
