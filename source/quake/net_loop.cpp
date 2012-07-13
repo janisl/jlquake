@@ -22,22 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "net_loop.h"
 
-#define MAX_LOOPBACK    16
-
-struct loopmsg_t
-{
-	byte data[MAX_MSGLEN_Q1];
-	int datalen;
-	byte type;
-};
-
-typedef struct
-{
-	loopmsg_t msgs[MAX_LOOPBACK];
-	int get, send;
-} loopback_t;
-
-loopback_t loopbacks[2];
 qboolean localconnectpending = false;
 qsocket_t* loop_client = NULL;
 qsocket_t* loop_server = NULL;
@@ -147,27 +131,8 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 
 int Loop_GetMessage(qsocket_t* sock, netchan_t* chan)
 {
-	int ret;
-	int length;
-
-	loopback_t* loop = &loopbacks[chan->sock];
-	if (loop->send - loop->get > MAX_LOOPBACK)
-	{
-		loop->get = loop->send - MAX_LOOPBACK;
-	}
-
-	if (loop->get >= loop->send)
-	{
-		return 0;
-	}
-
-	int i = loop->get & (MAX_LOOPBACK - 1);
-	ret = loop->msgs[i].type;
-	length = loop->msgs[i].datalen;
-	// alignment byte skipped here
-	net_message.Clear();
-	net_message.WriteData(loop->msgs[i].data, length);
-	loop->get++;
+	netadr_t net_from;
+	int ret = NET_GetLoopPacket(chan->sock, &net_from, &net_message);
 
 	if (sock->driverdata && ret == 1)
 	{
@@ -184,16 +149,13 @@ int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 		return -1;
 	}
 
-	if (data->cursize > MAX_MSGLEN_Q1)
+	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
+	if (loopback->send - loopback->get >= MAX_LOOPBACK)
 	{
 		Sys_Error("Loop_SendMessage: overflow\n");
 	}
 
-	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
-	loopmsg_t* loop = &loopback->msgs[loopback->send++ & (MAX_LOOPBACK - 1)];
-	loop->type = 1;
-	loop->datalen = data->cursize;
-	Com_Memcpy(loop->data, data->_data, data->cursize);
+	NET_SendLoopPacket(chan->sock, data->cursize, data->_data, 1);
 
 	sock->canSend = false;
 	return 1;
@@ -213,10 +175,7 @@ int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 		return 0;
 	}
 
-	loopmsg_t* loop = &loopback->msgs[loopback->send++ & (MAX_LOOPBACK - 1)];
-	loop->type = 2;
-	loop->datalen = data->cursize;
-	Com_Memcpy(loop->data, data->_data, data->cursize);
+	NET_SendLoopPacket(chan->sock, data->cursize, data->_data, 2);
 	return 1;
 }
 

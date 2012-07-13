@@ -103,3 +103,26 @@ struct qsocket_t
 
 	char address[NET_NAMELEN_Q1];
 };
+
+// there needs to be enough loopback messages to hold a complete
+// gamestate of maximum size
+#define MAX_LOOPBACK    16
+
+struct loopmsg_t
+{
+	byte data[MAX_MSGLEN];
+	int datalen;
+	byte type;
+};
+
+struct loopback_t
+{
+	loopmsg_t msgs[MAX_LOOPBACK];
+	int get;
+	int send;
+};
+
+extern loopback_t loopbacks[2];
+
+int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
+void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
