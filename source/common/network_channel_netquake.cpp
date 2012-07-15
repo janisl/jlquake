@@ -59,23 +59,6 @@ qsocket_t* NET_NewQSocket()
 	return sock;
 }
 
-int Loop_Init()
-{
-	if (com_dedicated->integer)
-	{
-		return -1;
-	}
-	return 0;
-}
-
-void Loop_Shutdown()
-{
-}
-
-void Loop_Listen(bool state)
-{
-}
-
 qsocket_t* Loop_Connect(const char* host, netchan_t* chan)
 {
 	if (String::Cmp(host,"local") != 0)

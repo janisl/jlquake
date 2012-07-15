@@ -85,7 +85,6 @@ static void NET_Listen_f(void)
 
 	listening = String::Atoi(Cmd_Argv(1)) ? true : false;
 
-	Loop_Listen(listening);
 	if (datagram_initialized)
 	{
 		Datagram_Listen(listening);
@@ -780,14 +779,6 @@ void NET_Init(void)
 	Cmd_AddCommand("port", NET_Port_f);
 
 	// initialize all the drivers
-	controlSocket = Loop_Init();
-	if (controlSocket != -1)
-	{
-		if (listening)
-		{
-			Loop_Listen(true);
-		}
-	}
 	controlSocket = Datagram_Init();
 	if (controlSocket != -1)
 	{
@@ -830,7 +821,6 @@ void        NET_Shutdown(void)
 //
 // shutdown the drivers
 //
-	Loop_Shutdown();
 	if (datagram_initialized)
 	{
 		Datagram_Shutdown();

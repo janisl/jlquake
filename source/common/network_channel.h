@@ -152,9 +152,6 @@ extern int net_numsockets;
 extern double net_time;
 
 qsocket_t* NET_NewQSocket();
-int Loop_Init();
-void Loop_Shutdown();
-void Loop_Listen(bool state);
 void Loop_SearchForHosts(bool xmit);
 qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
 qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
