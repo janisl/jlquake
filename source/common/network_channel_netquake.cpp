@@ -116,7 +116,7 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 	return loop_server;
 }
 
-int Loop_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
+int Loop_GetMessage(netchan_t* chan, QMsg* message)
 {
 	netadr_t net_from;
 	int ret = NET_GetLoopPacket(chan->sock, &net_from, message);
@@ -129,7 +129,7 @@ int Loop_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 	return ret;
 }
 
-int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+int Loop_SendMessage(netchan_t* chan, QMsg* data)
 {
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
@@ -143,8 +143,7 @@ int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-
-int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+int Loop_SendUnreliableMessage(netchan_t* chan, QMsg* data)
 {
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
@@ -156,11 +155,10 @@ int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-bool Loop_CanSendMessage(qsocket_t* sock, netchan_t* chan)
+bool Loop_CanSendMessage(netchan_t* chan)
 {
 	return loopbacks[chan->sock].canSend;
 }
-
 
 void Loop_Close(qsocket_t* sock, netchan_t* chan)
 {

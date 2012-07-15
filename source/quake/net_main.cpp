@@ -500,7 +500,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		ret = Loop_GetMessage(sock, chan, &net_message);
+		ret = Loop_GetMessage(chan, &net_message);
 	}
 	else
 	{
@@ -567,7 +567,7 @@ int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	SetNetTime();
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		r = Loop_SendMessage(sock, chan, data);
+		r = Loop_SendMessage(chan, data);
 	}
 	else
 	{
@@ -600,7 +600,7 @@ int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	SetNetTime();
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		r = Loop_SendUnreliableMessage(sock, chan, data);
+		r = Loop_SendUnreliableMessage(chan, data);
 	}
 	else
 	{
@@ -641,7 +641,7 @@ qboolean NET_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		r = Loop_CanSendMessage(sock, chan);
+		r = Loop_CanSendMessage(chan);
 	}
 	else
 	{
