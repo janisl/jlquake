@@ -916,7 +916,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 		SOCK_GetAddr(acceptsock, &newaddr);
 		SOCK_CheckAddr(&newaddr);
 		net_message.WriteString2(SOCK_AdrToString(newaddr));
-		net_message.WriteString2(hostname->string);
+		net_message.WriteString2(sv_hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
 		net_message.WriteByte(svs.qh_maxclients);
@@ -1101,6 +1101,20 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 			NET_Close(s, &client->netchan);
 			return NULL;
 		}
+	}
+
+	if (net_activeconnections >= svs.qh_maxclients)
+	{
+		// no room; try to let him know
+		net_message.Clear();
+		// save space for the header, filled in later
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_REJECT);
+		net_message.WriteString2("Server is full.\n");
+		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
+		return NULL;
 	}
 
 	// allocate a QSocket

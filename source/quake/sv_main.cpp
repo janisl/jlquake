@@ -1084,7 +1084,7 @@ void SV_SpawnServer(char* server)
 	int i;
 
 	// let's not have any servers with no name
-	if (!hostname || hostname->string[0] == 0)
+	if (!sv_hostname || sv_hostname->string[0] == 0)
 	{
 		Cvar_Set("hostname", "UNNAMED");
 	}

@@ -57,8 +57,6 @@ Cvar* maxspectators;
 Cvar* spawn;
 Cvar* watervis;
 
-Cvar* hostname;
-
 fileHandle_t sv_logfile;
 
 int sv_net_port;
@@ -1443,7 +1441,7 @@ void SV_InitLocal(void)
 	svqh_deathmatch = Cvar_Get("deathmatch","1", CVAR_SERVERINFO);			// 0, 1, or 2
 	spawn = Cvar_Get("spawn","0", CVAR_SERVERINFO);
 	watervis = Cvar_Get("watervis", "0", CVAR_SERVERINFO);
-	hostname = Cvar_Get("hostname","unnamed", CVAR_SERVERINFO);
+	sv_hostname = Cvar_Get("hostname","unnamed", CVAR_SERVERINFO);
 
 	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
 	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages

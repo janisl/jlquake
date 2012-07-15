@@ -121,7 +121,45 @@ struct loopback_t
 	bool canSend;
 };
 
+extern Cvar* sv_hostname;
 extern loopback_t loopbacks[2];
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
+
+#define HOSTCACHESIZE   8
+
+struct hostcache_t
+{
+	char name[16];
+	char map[16];
+	char cname[32];
+	int users;
+	int maxusers;
+	int driver;
+	netadr_t addr;
+};
+
+extern bool localconnectpending;
+extern qsocket_t* loop_client;
+extern qsocket_t* loop_server;
+extern int hostCacheCount;
+extern hostcache_t hostcache[HOSTCACHESIZE];
+extern int net_activeconnections;
+extern qsocket_t* net_activeSockets;
+extern qsocket_t* net_freeSockets;
+extern int net_numsockets;
+extern double net_time;
+
+qsocket_t* NET_NewQSocket();
+int Loop_Init();
+void Loop_Shutdown();
+void Loop_Listen(bool state);
+void Loop_SearchForHosts(bool xmit);
+qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
+qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
+int Loop_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message);
+int Loop_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int Loop_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+bool Loop_CanSendMessage(qsocket_t* sock, netchan_t* chan);
+void Loop_Close(qsocket_t* sock, netchan_t* chan);

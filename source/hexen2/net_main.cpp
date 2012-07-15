@@ -2,10 +2,6 @@
 
 #include "quakedef.h"
 
-qsocket_t* net_activeSockets = NULL;
-qsocket_t* net_freeSockets = NULL;
-int net_numsockets = 0;
-
 qboolean tcpipAvailable = false;
 
 int net_hostport;
@@ -27,7 +23,6 @@ PollProcedure slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
 QMsg net_message;
 byte net_message_buf[MAX_MSGLEN_H2];
-int net_activeconnections = 0;
 
 int messagesSent = 0;
 int messagesReceived = 0;
@@ -35,15 +30,11 @@ int unreliableMessagesSent = 0;
 int unreliableMessagesReceived = 0;
 
 Cvar* net_messagetimeout;
-Cvar* hostname;
 
 #ifdef IDGODS
 Cvar* idgods;
 #endif
 
-double net_time;
-
-#include "net_loop.h"
 #include "net_dgrm.h"
 
 bool datagram_initialized;
@@ -53,48 +44,6 @@ double SetNetTime(void)
 	net_time = Sys_DoubleTime();
 	return net_time;
 }
-
-
-/*
-===================
-NET_NewQSocket
-
-Called by drivers when a new communications endpoint is required
-The sequence and buffer fields will be filled in properly
-===================
-*/
-qsocket_t* NET_NewQSocket(void)
-{
-	qsocket_t* sock;
-
-	if (net_freeSockets == NULL)
-	{
-		return NULL;
-	}
-
-	if (net_activeconnections >= svs.qh_maxclients)
-	{
-		return NULL;
-	}
-
-	// get one from free list
-	sock = net_freeSockets;
-	net_freeSockets = sock->next;
-
-	// add it to active list
-	sock->next = net_activeSockets;
-	net_activeSockets = sock;
-
-	sock->disconnected = false;
-	sock->connecttime = net_time;
-	String::Cpy(sock->address,"UNSET ADDRESS");
-	sock->socket = 0;
-	sock->canSend = true;
-	sock->sendNext = false;
-
-	return sock;
-}
-
 
 void NET_FreeQSocket(qsocket_t* sock)
 {
@@ -351,9 +300,6 @@ NET_Connect
 ===================
 */
 
-int hostCacheCount = 0;
-hostcache_t hostcache[HOSTCACHESIZE];
-
 qsocket_t* NET_Connect(const char* host, netchan_t* chan)
 {
 	qsocket_t* ret;
@@ -536,7 +482,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		ret = Loop_GetMessage(sock, chan);
+		ret = Loop_GetMessage(sock, chan, &net_message);
 	}
 	else
 	{
@@ -823,7 +769,7 @@ void NET_Init(void)
 	net_message.InitOOB(net_message_buf, MAX_MSGLEN_H2);
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
-	hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);
+	sv_hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);
 #ifdef IDGODS
 	idgods = Cvar_Get("idgods", "0", 0);
 #endif

@@ -864,7 +864,7 @@ void Host_Say(qboolean teamonly)
 	}
 	else
 	{
-		sprintf(text, "%c<%s> ", 1, hostname->string);
+		sprintf(text, "%c<%s> ", 1, sv_hostname->string);
 	}
 
 	j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator

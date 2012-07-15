@@ -89,14 +89,9 @@
 #define CCREP_PLAYER_INFO   0x84
 #define CCREP_RULE_INFO     0x85
 
-extern qsocket_t* net_activeSockets;
-extern qsocket_t* net_freeSockets;
-extern int net_numsockets;
-
 extern int DEFAULTnet_hostport;
 extern int net_hostport;
 
-extern Cvar* hostname;
 extern char playername[];
 extern int playercolor;
 
@@ -105,26 +100,8 @@ extern int messagesReceived;
 extern int unreliableMessagesSent;
 extern int unreliableMessagesReceived;
 
-qsocket_t* NET_NewQSocket(void);
 void NET_FreeQSocket(qsocket_t*);
 double SetNetTime(void);
-
-
-#define HOSTCACHESIZE   8
-
-typedef struct
-{
-	char name[16];
-	char map[16];
-	char cname[32];
-	int users;
-	int maxusers;
-	int driver;
-	netadr_t addr;
-} hostcache_t;
-
-extern int hostCacheCount;
-extern hostcache_t hostcache[HOSTCACHESIZE];
 
 #ifdef IDGODS
 qboolean IsID(netadr_t* addr);
@@ -136,9 +113,7 @@ qboolean IsID(netadr_t* addr);
 //
 //============================================================================
 
-extern double net_time;
 extern QMsg net_message;
-extern int net_activeconnections;
 
 void        NET_Init(void);
 void        NET_Shutdown(void);

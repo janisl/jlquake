@@ -14,7 +14,6 @@ add_executable(jlquake
 	keys.cpp
 	menu.cpp
 	net_dgrm.cpp
-	net_loop.cpp
 	net_main.cpp
 	pr_cmds.cpp
 	r_part.cpp

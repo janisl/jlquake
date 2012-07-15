@@ -31,7 +31,6 @@ Cvar* sv_airaccelerate;
 
 Cvar* sv_showclamp;
 
-Cvar* hostname;
 Cvar* public_server;			// should heartbeats be sent
 
 Cvar* sv_reconnect_limit;		// minimum seconds between connect messages
@@ -98,7 +97,7 @@ void SVC_Info(void)
 
 	if (version != Q2PROTOCOL_VERSION)
 	{
-		String::Sprintf(string, sizeof(string), "%s: wrong version\n", hostname->string, sizeof(string));
+		String::Sprintf(string, sizeof(string), "%s: wrong version\n", sv_hostname->string, sizeof(string));
 	}
 	else
 	{
@@ -109,7 +108,7 @@ void SVC_Info(void)
 				count++;
 			}
 
-		String::Sprintf(string, sizeof(string), "%16s %8s %2i/%2i\n", hostname->string, sv.name, count, (int)sv_maxclients->value);
+		String::Sprintf(string, sizeof(string), "%16s %8s %2i/%2i\n", sv_hostname->string, sv.name, count, (int)sv_maxclients->value);
 	}
 
 	Netchan_OutOfBandPrint(NS_SERVER, net_from, "info\n%s", string);
@@ -903,7 +902,7 @@ void SV_Init(void)
 	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
 	Cvar_Get("protocol", va("%i", Q2PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_INIT);;
 	sv_maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
-	hostname = Cvar_Get("hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
+	sv_hostname = Cvar_Get("hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
 	timeout = Cvar_Get("timeout", "125", 0);
 	zombietime = Cvar_Get("zombietime", "2", 0);
 	sv_showclamp = Cvar_Get("showclamp", "0", 0);

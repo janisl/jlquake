@@ -16,6 +16,8 @@
 
 #include "qcommon.h"
 
+Cvar* sv_hostname;
+
 loopback_t loopbacks[2];
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)

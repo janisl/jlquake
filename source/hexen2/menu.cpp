@@ -1528,7 +1528,7 @@ void M_Menu_Setup_f(void)
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
 	setup_myname.widthInChars = 16;
-	String::Cpy(setup_hostname.buffer, hostname->string);
+	String::Cpy(setup_hostname.buffer, sv_hostname->string);
 	setup_hostname.cursor = String::Length(setup_hostname.buffer);
 	setup_hostname.maxLength = 15;
 	setup_hostname.widthInChars = 16;
@@ -1661,7 +1661,7 @@ forward:
 		{
 			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
 		}
-		if (String::Cmp(hostname->string, setup_hostname.buffer) != 0)
+		if (String::Cmp(sv_hostname->string, setup_hostname.buffer) != 0)
 		{
 			Cvar_Set("hostname", setup_hostname.buffer);
 		}

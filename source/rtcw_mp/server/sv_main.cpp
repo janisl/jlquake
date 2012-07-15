@@ -34,7 +34,6 @@ Cvar* sv_rconPassword;			// password for remote server commands
 Cvar* sv_privatePassword;		// password for the privateClient slots
 
 Cvar* sv_privateClients;		// number of clients reserved for password
-Cvar* sv_hostname;
 Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
 Cvar* sv_reconnectlimit;		// minimum seconds between connect messages
 Cvar* sv_showloss;				// report when usercmds are lost

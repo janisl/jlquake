@@ -51,7 +51,6 @@ extern Cvar* sv_maxlives;				// NERVE - SMF
 extern Cvar* sv_tourney;				// NERVE - SMF
 
 extern Cvar* sv_privateClients;
-extern Cvar* sv_hostname;
 extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_showloss;

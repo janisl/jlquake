@@ -38,6 +38,7 @@ set(COMMON_FILES
 	message_utils2.cpp
 	message_utils3.cpp
 	network_channel.cpp
+	network_channel_netquake.cpp
 	player_move.cpp
 	player_move1.cpp
 	player_move2.cpp

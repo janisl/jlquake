@@ -45,7 +45,6 @@ extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_privatePassword;
 extern Cvar* sv_privateClients;
-extern Cvar* sv_hostname;
 extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_showloss;

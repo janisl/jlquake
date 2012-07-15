@@ -206,3 +206,26 @@ void SVQH_ClientReliableWrite_SZ(client_t* cl, const void* data, int len)
 		cl->netchan.message.WriteData(data, len);
 	}
 }
+
+void Loop_SearchForHosts(bool xmit)
+{
+	if (sv.state == SS_DEAD)
+	{
+		return;
+	}
+
+	hostCacheCount = 1;
+	if (String::Cmp(sv_hostname->string, "UNNAMED") == 0)
+	{
+		String::Cpy(hostcache[0].name, "local");
+	}
+	else
+	{
+		String::Cpy(hostcache[0].name, sv_hostname->string);
+	}
+	String::Cpy(hostcache[0].map, sv.name);
+	hostcache[0].users = net_activeconnections;
+	hostcache[0].maxusers = svs.qh_maxclients;
+	hostcache[0].driver = 0;
+	String::Cpy(hostcache[0].cname, "local");
+}

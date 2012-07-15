@@ -2193,7 +2193,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	qboolean stats_restored;
 
 	// let's not have any servers with no name
-	if (hostname->string[0] == 0)
+	if (sv_hostname->string[0] == 0)
 	{
 		Cvar_Set("hostname", "UNNAMED");
 	}

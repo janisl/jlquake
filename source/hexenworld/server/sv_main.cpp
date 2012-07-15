@@ -59,8 +59,6 @@ Cvar* easyFourth;
 Cvar* patternRunner;
 Cvar* spawn;
 
-Cvar* hostname;
-
 Cvar* sv_ce_scale;
 Cvar* sv_ce_max_size;
 
@@ -1339,7 +1337,7 @@ void SV_InitLocal(void)
 	easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
 	patternRunner = Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
 	spawn = Cvar_Get("spawn", "0", CVAR_SERVERINFO);
-	hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
+	sv_hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 
 	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
