@@ -527,15 +527,7 @@ void SV_ReadClientMove(q1usercmd_t* move)
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
-	int ret;
-	if (cl->qh_privileged)
-	{
-		ret = 2;
-	}
-	else
-	{
-		ret = 0;
-	}
+	int ret = 0;
 	if (String::NICmp(s, "status", 6) == 0)
 	{
 		ret = 1;
@@ -612,11 +604,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	{
 		ret = 1;
 	}
-	if (ret == 2)
-	{
-		Cbuf_InsertText(s);
-	}
-	else if (ret == 1)
+	if (ret == 1)
 	{
 		Cmd_ExecuteString(s, src_client);
 	}

@@ -73,7 +73,6 @@ struct client_t
 
 	//	Only in NetQuake/Hexen 2
 	bool qh_dropasap;					// has been told to go to another level
-	bool qh_privileged;					// can execute any host command
 	bool qh_sendsignon;					// only valid before spawned
 
 	double qh_last_message;				// reliable messages must be sent

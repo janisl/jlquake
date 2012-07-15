@@ -372,8 +372,6 @@ void SV_ConnectClient(int clientnum)
 	}
 	Com_Memset(&sv.h2_states[clientnum],0,sizeof(h2client_state2_t));
 
-	client->qh_privileged = false;
-
 	if (sv.loadgame)
 	{
 		Com_Memcpy(client->qh_spawn_parms, spawn_parms, sizeof(spawn_parms));

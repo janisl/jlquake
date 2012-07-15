@@ -200,8 +200,6 @@ void SV_ConnectClient(int clientnum)
 	client->qh_message.InitOOB(client->qh_messageBuffer, MAX_MSGLEN_Q1);
 	client->qh_message.allowoverflow = true;		// we can catch it
 
-	client->qh_privileged = false;
-
 	if (sv.loadgame)
 	{
 		Com_Memcpy(client->qh_spawn_parms, spawn_parms, sizeof(spawn_parms));

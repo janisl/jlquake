@@ -117,8 +117,8 @@ void Host_God_f(void)
 		return;
 	}
 
-	if ((*pr_globalVars.deathmatch ||
-		 *pr_globalVars.coop || skill->value > 2) && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch ||
+		*pr_globalVars.coop || skill->value > 2)
 	{
 		return;
 	}
@@ -142,7 +142,7 @@ void Host_Notarget_f(void)
 		return;
 	}
 
-	if ((*pr_globalVars.deathmatch || skill->value > 2) && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch || skill->value > 2)
 	{
 		return;
 	}
@@ -166,8 +166,8 @@ void Host_Noclip_f(void)
 		return;
 	}
 
-	if ((*pr_globalVars.deathmatch ||
-		 *pr_globalVars.coop || skill->value > 2) && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch ||
+		*pr_globalVars.coop || skill->value > 2)
 	{
 		return;
 	}
@@ -1704,7 +1704,7 @@ void Host_Kick_f(void)
 			return;
 		}
 	}
-	else if (*pr_globalVars.deathmatch && !host_client->qh_privileged)
+	else if (*pr_globalVars.deathmatch)
 	{
 		return;
 	}
@@ -1816,7 +1816,7 @@ void Host_Give_f(void)
 		return;
 	}
 
-	if ((*pr_globalVars.deathmatch || skill->value > 2) && !host_client->qh_privileged)
+	if (*pr_globalVars.deathmatch || skill->value > 2)
 	{
 		return;
 	}
