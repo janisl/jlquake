@@ -21,9 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-qboolean tcpipAvailable = false;
-
-int net_hostport;
 int DEFAULTnet_hostport = 26000;
 
 static qboolean listening = false;

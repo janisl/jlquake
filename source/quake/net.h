@@ -108,7 +108,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CCREP_RULE_INFO     0x85
 
 extern int DEFAULTnet_hostport;
-extern int net_hostport;
 
 extern char playername[];
 extern int playercolor;
@@ -181,8 +180,6 @@ typedef struct _PollProcedure
 } PollProcedure;
 
 void SchedulePollProcedure(PollProcedure* pp, double timeOffset);
-
-extern qboolean tcpipAvailable;
 
 extern qboolean slistInProgress;
 extern qboolean slistSilent;

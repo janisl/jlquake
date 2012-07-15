@@ -16,6 +16,8 @@
 
 #include "qcommon.h"
 
+int net_hostport;
+
 qsocket_t* net_activeSockets = NULL;
 qsocket_t* net_freeSockets = NULL;
 int net_numsockets = 0;
@@ -29,6 +31,12 @@ hostcache_t hostcache[HOSTCACHESIZE];
 bool localconnectpending = false;
 qsocket_t* loop_client = NULL;
 qsocket_t* loop_server = NULL;
+
+bool tcpipAvailable = false;
+
+static const char* net_interface;
+int net_controlsocket;
+int net_acceptsocket = -1;		// socket for fielding new connections
 
 //	Called by drivers when a new communications endpoint is required
 // The sequence and buffer fields will be filled in properly
@@ -173,4 +181,170 @@ void Loop_Close(qsocket_t* sock, netchan_t* chan)
 	{
 		loop_server = NULL;
 	}
+}
+
+int UDPNQ_OpenSocket(int port)
+{
+	int newsocket = SOCK_Open(net_interface, port);
+	if (newsocket == 0)
+	{
+		return -1;
+	}
+	return newsocket;
+}
+
+int UDP_Init()
+{
+	if (COM_CheckParm("-noudp"))
+	{
+		return -1;
+	}
+
+	if (!SOCK_Init())
+	{
+		return -1;
+	}
+
+	// determine my name & address
+	SOCK_GetLocalAddress();
+
+	int i = COM_CheckParm("-ip");
+	if (i)
+	{
+		if (i < COM_Argc() - 1)
+		{
+			net_interface = COM_Argv(i + 1);
+		}
+		else
+		{
+			common->FatalError("NET_Init: you must specify an IP address after -ip");
+		}
+	}
+
+	if ((net_controlsocket = UDPNQ_OpenSocket(PORT_ANY)) == -1)
+	{
+		common->Printf("UDP_Init: Unable to open control socket\n");
+		SOCK_Shutdown();
+		return -1;
+	}
+
+	tcpipAvailable = true;
+
+	return net_controlsocket;
+}
+
+int UDP_CloseSocket(int socket)
+{
+	SOCK_Close(socket);
+	return 0;
+}
+
+void UDP_Listen(bool state)
+{
+	// enable listening
+	if (state)
+	{
+		if (net_acceptsocket != -1)
+		{
+			return;
+		}
+		if ((net_acceptsocket = UDPNQ_OpenSocket(net_hostport)) == -1)
+		{
+			common->FatalError("UDP_Listen: Unable to open accept socket\n");
+		}
+		return;
+	}
+
+	// disable listening
+	if (net_acceptsocket == -1)
+	{
+		return;
+	}
+	UDP_CloseSocket(net_acceptsocket);
+	net_acceptsocket = -1;
+}
+
+void UDP_Shutdown()
+{
+	UDP_Listen(false);
+	UDP_CloseSocket(net_controlsocket);
+	SOCK_Shutdown();
+}
+
+int UDP_Read(int socket, byte* buf, int len, netadr_t* addr)
+{
+	int ret = SOCK_Recv(socket, buf, len, addr);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return 0;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		return -1;
+	}
+	return ret;
+}
+
+int UDP_Write(int socket, byte* buf, int len, netadr_t* addr)
+{
+	int ret = SOCK_Send(socket, buf, len, addr);
+	if (ret == SOCKSEND_WOULDBLOCK)
+	{
+		return 0;
+	}
+	return ret;
+}
+
+int UDP_Broadcast(int socket, byte* buf, int len)
+{
+	netadr_t to;
+	Com_Memset(&to, 0, sizeof(to));
+	to.type = NA_BROADCAST;
+	to.port = BigShort(net_hostport);
+	int ret = SOCK_Send(socket, buf, len, &to);
+	if (ret == SOCKSEND_WOULDBLOCK)
+	{
+		return 0;
+	}
+	return ret;
+}
+
+int UDP_GetAddrFromName(const char* name, netadr_t* addr)
+{
+	if (!SOCK_StringToAdr(name, addr, 0))
+	{
+		return -1;
+	}
+
+	addr->port = BigShort(net_hostport);
+
+	return 0;
+}
+
+int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
+{
+	if (SOCK_CompareAdr(*addr1, *addr2))
+	{
+		return 0;
+	}
+
+	if (SOCK_CompareBaseAdr(*addr1, *addr2))
+	{
+		return 1;
+	}
+
+	return -1;
+}
+
+int UDP_GetNameFromAddr(netadr_t* addr, char* name)
+{
+	const char* host = SOCK_GetHostByAddr(addr);
+	if (host)
+	{
+		String::NCpy(name, host, NET_NAMELEN_Q1 - 1);
+		return 0;
+	}
+
+	String::Cpy(name, SOCK_AdrToString(*addr));
+	return 0;
 }

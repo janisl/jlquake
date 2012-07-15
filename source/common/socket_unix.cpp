@@ -429,7 +429,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (newsocket == -1)
 	{
-		Log::write("ERROR: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString());
+		Log::write("ERROR: SOCK_Open: socket: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -437,7 +437,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int _true = 1;
 	if (ioctl(newsocket, FIONBIO, &_true) == -1)
 	{
-		Log::write("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
+		Log::write("ERROR: SOCK_Open: ioctl FIONBIO:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -446,7 +446,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int i = 1;
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
 	{
-		Log::write("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
+		Log::write("ERROR: SOCK_Open: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -474,7 +474,7 @@ int SOCK_Open(const char* net_interface, int port)
 
 	if (bind(newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		Log::write("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
+		Log::write("ERROR: SOCK_Open: bind: %s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}

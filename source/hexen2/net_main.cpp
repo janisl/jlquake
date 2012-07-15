@@ -2,9 +2,6 @@
 
 #include "quakedef.h"
 
-qboolean tcpipAvailable = false;
-
-int net_hostport;
 int DEFAULTnet_hostport = 26900;
 
 static qboolean listening = false;

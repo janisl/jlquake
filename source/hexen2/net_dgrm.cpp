@@ -6,18 +6,6 @@
 #include "quakedef.h"
 #include "net_dgrm.h"
 
-int  UDP_Init(void);
-void UDP_Shutdown(void);
-void UDP_Listen(qboolean state);
-int  UDP_OpenSocket(int port);
-int  UDP_CloseSocket(int socket);
-int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
-int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
-int  UDP_Broadcast(int socket, byte* buf, int len);
-int  UDP_GetNameFromAddr(netadr_t* addr, char* name);
-int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
-int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
-
 /* statistic counters */
 int packetsSent = 0;
 int packetsReSent = 0;
@@ -28,9 +16,6 @@ int droppedDatagrams;
 
 static int udp_controlSock;
 static qboolean udp_initialized;
-
-static int net_acceptsocket = -1;		// socket for fielding new connections
-static int net_controlsocket;
 
 static struct
 {
@@ -571,7 +556,7 @@ static void Test_Poll(void)
 	}
 	else
 	{
-		UDP_OpenSocket(testSocket);
+		UDPNQ_OpenSocket(testSocket);
 		testInProgress = false;
 	}
 }
@@ -621,7 +606,7 @@ static void Test_f(void)
 	}
 
 JustDoIt:
-	testSocket = UDP_OpenSocket(0);
+	testSocket = UDPNQ_OpenSocket(0);
 	if (testSocket == -1)
 	{
 		return;
@@ -715,7 +700,7 @@ Reschedule:
 Error:
 	Con_Printf("Unexpected repsonse to Rule Info request\n");
 Done:
-	UDP_OpenSocket(test2Socket);
+	UDPNQ_OpenSocket(test2Socket);
 	test2InProgress = false;
 	return;
 }
@@ -763,7 +748,7 @@ static void Test2_f(void)
 	}
 
 JustDoIt:
-	test2Socket = UDP_OpenSocket(0);
+	test2Socket = UDPNQ_OpenSocket(0);
 	if (test2Socket == -1)
 	{
 		return;
@@ -824,7 +809,7 @@ void Datagram_Shutdown(void)
 
 void Datagram_Close(qsocket_t* sock, netchan_t* chan)
 {
-	UDP_OpenSocket(sock->socket);
+	UDPNQ_OpenSocket(sock->socket);
 }
 
 
@@ -1114,7 +1099,7 @@ static qsocket_t* _Datagram_CheckNewConnections(netadr_t* outaddr)
 	}
 
 	// allocate a network socket
-	newsock = UDP_OpenSocket(0);
+	newsock = UDPNQ_OpenSocket(0);
 	if (newsock == -1)
 	{
 		NET_FreeQSocket(sock);
@@ -1300,7 +1285,7 @@ static qsocket_t* _Datagram_Connect(const char* host, netchan_t* chan)
 		return NULL;
 	}
 
-	newsock = UDP_OpenSocket(0);
+	newsock = UDPNQ_OpenSocket(0);
 	if (newsock == -1)
 	{
 		return NULL;
@@ -1433,7 +1418,7 @@ static qsocket_t* _Datagram_Connect(const char* host, netchan_t* chan)
 ErrorReturn:
 	NET_FreeQSocket(sock);
 ErrorReturn2:
-	UDP_OpenSocket(newsock);
+	UDPNQ_OpenSocket(newsock);
 	if (m_return_onerror)
 	{
 		in_keyCatchers |= KEYCATCH_UI;
@@ -1453,180 +1438,3 @@ qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
 	}
 	return ret;
 }
-
-//=============================================================================
-
-int UDP_Init()
-{
-	if (COM_CheckParm("-noudp"))
-	{
-		return -1;
-	}
-
-	if (!SOCK_Init())
-	{
-		return -1;
-	}
-
-	// determine my name & address
-	SOCK_GetLocalAddress();
-
-	if ((net_controlsocket = UDP_OpenSocket(PORT_ANY)) == -1)
-	{
-		Con_Printf("UDP_Init: Unable to open control socket\n");
-		SOCK_Shutdown();
-		return -1;
-	}
-
-	tcpipAvailable = true;
-
-	return net_controlsocket;
-}
-
-//=============================================================================
-
-void UDP_Shutdown(void)
-{
-	UDP_Listen(false);
-	UDP_CloseSocket(net_controlsocket);
-	SOCK_Shutdown();
-}
-
-//=============================================================================
-
-void UDP_Listen(qboolean state)
-{
-	// enable listening
-	if (state)
-	{
-		if (net_acceptsocket != -1)
-		{
-			return;
-		}
-		if ((net_acceptsocket = UDP_OpenSocket(net_hostport)) == -1)
-		{
-			Sys_Error("UDP_Listen: Unable to open accept socket\n");
-		}
-		return;
-	}
-
-	// disable listening
-	if (net_acceptsocket == -1)
-	{
-		return;
-	}
-	UDP_CloseSocket(net_acceptsocket);
-	net_acceptsocket = -1;
-}
-
-//=============================================================================
-
-int UDP_OpenSocket(int port)
-{
-	int newsocket = SOCK_Open(NULL, port);
-	if (newsocket == 0)
-	{
-		return -1;
-	}
-	return newsocket;
-}
-
-//=============================================================================
-
-int UDP_CloseSocket(int socket)
-{
-	SOCK_Close(socket);
-	return 0;
-}
-
-//=============================================================================
-
-int UDP_Read(int socket, byte* buf, int len, netadr_t* addr)
-{
-	int ret = SOCK_Recv(socket, buf, len, addr);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return 0;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return -1;
-	}
-	return ret;
-}
-
-//=============================================================================
-
-int UDP_Write(int socket, byte* buf, int len, netadr_t* addr)
-{
-	int ret = SOCK_Send(socket, buf, len, addr);
-	if (ret == SOCKSEND_WOULDBLOCK)
-	{
-		return 0;
-	}
-	return ret;
-}
-
-//=============================================================================
-
-int UDP_Broadcast(int socket, byte* buf, int len)
-{
-	netadr_t to;
-	Com_Memset(&to, 0, sizeof(to));
-	to.type = NA_BROADCAST;
-	to.port = BigShort(net_hostport);
-	int ret = SOCK_Send(socket, buf, len, &to);
-	if (ret == SOCKSEND_WOULDBLOCK)
-	{
-		return 0;
-	}
-	return ret;
-}
-
-//=============================================================================
-
-int UDP_GetAddrFromName(const char* name, netadr_t* addr)
-{
-	if (!SOCK_StringToAdr(name, addr, 0))
-	{
-		return -1;
-	}
-
-	addr->port = BigShort(net_hostport);
-
-	return 0;
-}
-
-//=============================================================================
-
-int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
-{
-	if (SOCK_CompareAdr(*addr1, *addr2))
-	{
-		return 0;
-	}
-
-	if (SOCK_CompareBaseAdr(*addr1, *addr2))
-	{
-		return 1;
-	}
-
-	return -1;
-}
-
-//=============================================================================
-
-int UDP_GetNameFromAddr(netadr_t* addr, char* name)
-{
-	const char* host = SOCK_GetHostByAddr(addr);
-	if (host)
-	{
-		String::NCpy(name, host, NET_NAMELEN_Q1 - 1);
-		return 0;
-	}
-
-	String::Cpy(name, SOCK_AdrToString(*addr));
-	return 0;
-}
-
-//=============================================================================
