@@ -103,10 +103,6 @@ extern int unreliableMessagesReceived;
 void NET_FreeQSocket(qsocket_t*);
 double SetNetTime(void);
 
-#ifdef IDGODS
-qboolean IsID(netadr_t* addr);
-#endif
-
 //============================================================================
 //
 // public network functions

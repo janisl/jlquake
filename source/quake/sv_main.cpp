@@ -200,11 +200,7 @@ void SV_ConnectClient(int clientnum)
 	client->qh_message.InitOOB(client->qh_messageBuffer, MAX_MSGLEN_Q1);
 	client->qh_message.allowoverflow = true;		// we can catch it
 
-#ifdef IDGODS
-	client->qh_privileged = IsID(&client->netconnection->addr);
-#else
 	client->qh_privileged = false;
-#endif
 
 	if (sv.loadgame)
 	{

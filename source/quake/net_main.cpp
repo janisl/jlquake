@@ -50,10 +50,6 @@ int unreliableMessagesReceived = 0;
 
 Cvar* net_messagetimeout;
 
-#ifdef IDGODS
-Cvar* idgods = {"idgods", "0"};
-#endif
-
 #include "net_dgrm.h"
 
 bool datagram_initialized;
@@ -788,9 +784,6 @@ void NET_Init(void)
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
 	sv_hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);
-#ifdef IDGODS
-	idgods = Cvar_Get("idgods", "0", 0);
-#endif
 
 	Cmd_AddCommand("slist", NET_Slist_f);
 	Cmd_AddCommand("listen", NET_Listen_f);
@@ -892,27 +885,3 @@ void SchedulePollProcedure(PollProcedure* proc, double timeOffset)
 	proc->next = pp;
 	prev->next = proc;
 }
-
-
-#ifdef IDGODS
-#define IDNET   0xc0f62800
-
-qboolean IsID(netadr_t* addr)
-{
-	if (idgods->value == 0.0)
-	{
-		return false;
-	}
-
-	if (addr->type != NA_IP)
-	{
-		return false;
-	}
-
-	if ((BigLong(*(int*)addr->ip) & 0xffffff00) == IDNET)
-	{
-		return true;
-	}
-	return false;
-}
-#endif

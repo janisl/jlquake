@@ -372,11 +372,7 @@ void SV_ConnectClient(int clientnum)
 	}
 	Com_Memset(&sv.h2_states[clientnum],0,sizeof(h2client_state2_t));
 
-#ifdef IDGODS
-	client->qh_privileged = IsID(&client->netconnection->addr);
-#else
 	client->qh_privileged = false;
-#endif
 
 	if (sv.loadgame)
 	{
