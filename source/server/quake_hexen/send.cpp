@@ -147,7 +147,7 @@ void SVH2_StopSound(qhedict_t* entity, int channel)
 	}
 	else
 	{
-		if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 4)
+		if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 4)
 		{
 			return;
 		}
@@ -277,7 +277,7 @@ void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int vol
 	}
 	else
 	{
-		if (sv.qh_datagram.cursize > (GGameType & GAME_Hexen2 ? MAX_DATAGRAM_H2 : MAX_DATAGRAM_Q1) - 16)
+		if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
 		{
 			return;
 		}
@@ -350,7 +350,7 @@ void SVH2_UpdateSoundPos(qhedict_t* entity, int channel)
 	}
 	else
 	{
-		if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 4)
+		if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 4)
 		{
 			return;
 		}

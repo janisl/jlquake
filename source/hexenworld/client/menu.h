@@ -1,9 +1,6 @@
 
-//
-// the net drivers should just set the apropriate bits in m_activenet,
-// instead of having the menu code look through their internal tables
-//
-#define MNET_IPX        1
+#include "../../client/game/quake_hexen2/menu.h"
+
 #define MNET_TCP        2
 
 extern int m_activenet;

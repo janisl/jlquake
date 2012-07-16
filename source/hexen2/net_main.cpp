@@ -21,52 +21,9 @@ PollProcedure slistPollProcedure = {NULL, 0.0, Slist_Poll};
 QMsg net_message;
 byte net_message_buf[MAX_MSGLEN_H2];
 
-int messagesSent = 0;
-int messagesReceived = 0;
-int unreliableMessagesSent = 0;
-int unreliableMessagesReceived = 0;
-
 Cvar* net_messagetimeout;
 
-#include "net_dgrm.h"
-
 bool datagram_initialized;
-
-double SetNetTime(void)
-{
-	net_time = Sys_DoubleTime();
-	return net_time;
-}
-
-void NET_FreeQSocket(qsocket_t* sock)
-{
-	qsocket_t* s;
-
-	// remove it from active list
-	if (sock == net_activeSockets)
-	{
-		net_activeSockets = net_activeSockets->next;
-	}
-	else
-	{
-		for (s = net_activeSockets; s; s = s->next)
-			if (s->next == sock)
-			{
-				s->next = sock->next;
-				break;
-			}
-		if (!s)
-		{
-			Sys_Error("NET_FreeQSocket: not active\n");
-		}
-	}
-
-	// add it to free list
-	sock->next = net_freeSockets;
-	net_freeSockets = sock;
-	sock->disconnected = true;
-}
-
 
 static void NET_Listen_f(void)
 {
@@ -409,39 +366,6 @@ qsocket_t* NET_CheckNewConnections(netadr_t* outaddr)
 }
 
 /*
-===================
-NET_Close
-===================
-*/
-void NET_Close(qsocket_t* sock, netchan_t* chan)
-{
-	if (!sock)
-	{
-		return;
-	}
-
-	if (sock->disconnected)
-	{
-		return;
-	}
-
-	SetNetTime();
-
-	// call the driver_Close function
-	if (chan->remoteAddress.type == NA_LOOPBACK)
-	{
-		Loop_Close(sock, chan);
-	}
-	else
-	{
-		Datagram_Close(sock, chan);
-	}
-
-	NET_FreeQSocket(sock);
-}
-
-
-/*
 =================
 NET_GetMessage
 
@@ -452,9 +376,6 @@ returns 1 if a message was received
 returns -1 if connection is invalid
 =================
 */
-
-extern void PrintStats(qsocket_t* s);
-
 int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 {
 	int ret;
@@ -478,7 +399,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan)
 	}
 	else
 	{
-		ret = Datagram_GetMessage(sock, chan);
+		ret = Datagram_GetMessage(sock, chan, &net_message);
 	}
 
 	// see if this connection has timed out

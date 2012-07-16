@@ -66,7 +66,7 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 {
 	int i, v;
 
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_Q1 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
 	{
 		return;
 	}
@@ -728,7 +728,7 @@ SV_SendClientDatagram
 */
 qboolean SV_SendClientDatagram(client_t* client)
 {
-	byte buf[MAX_DATAGRAM_Q1];
+	byte buf[MAX_DATAGRAM_QH];
 	QMsg msg;
 
 	msg.InitOOB(buf, sizeof(buf));
@@ -1130,9 +1130,9 @@ void SV_SpawnServer(char* server)
 // allocate server memory
 	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
 
-	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_DATAGRAM_Q1);
+	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_DATAGRAM_QH);
 
-	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_DATAGRAM_Q1);
+	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_DATAGRAM_QH);
 
 	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_Q1);
 

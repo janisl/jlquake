@@ -22,6 +22,8 @@ set(CLIENT_FILES
 	game/quake/projectiles.cpp
 	game/quake/skin.cpp
 	game/quake/temporary_entities.cpp
+	game/quake_hexen2/menu.cpp
+	game/quake_hexen2/network_channel.cpp
 	game/quake_hexen2/predict.cpp
 	game/quake2/beam.cpp
 	game/quake2/effects.cpp

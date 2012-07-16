@@ -10,8 +10,6 @@ extern float introTime;
 extern Cvar* crosshair;
 Cvar* m_oldmission;
 
-menu_state_t m_state;
-
 void M_Menu_Main_f(void);
 void M_Menu_SinglePlayer_f(void);
 void M_Menu_Load_f(void);
@@ -70,10 +68,6 @@ void M_ServerList_Key(int key);
 qboolean m_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
 qboolean m_recursiveDraw;
-
-menu_state_t m_return_state;
-qboolean m_return_onerror;
-char m_return_reason [32];
 
 static float TitlePercent = 0;
 static float TitleTargetPercent = 1;

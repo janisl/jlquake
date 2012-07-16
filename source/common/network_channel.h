@@ -24,9 +24,8 @@
 #define MAX_MSGLEN_WOLF     32768		// increased for larger submodel entity counts
 #define MAX_MSGLEN          32768		// biggest value of all of the above
 
-#define MAX_DATAGRAM_Q1     1024		// max length of unreliable message
+#define MAX_DATAGRAM_QH     1024		// max length of unreliable message
 #define MAX_DATAGRAM_QW     1450		// max length of unreliable message
-#define MAX_DATAGRAM_H2     1024		// max length of unreliable message
 #define MAX_DATAGRAM_HW     1400		// max length of unreliable message
 #define MAX_DATAGRAM        1450		// biggest value of all of the above
 
@@ -127,6 +126,34 @@ extern loopback_t loopbacks[2];
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
 
+#define NET_NAME_ID         "HEXENII"
+
+#define Q1NET_PROTOCOL_VERSION    3
+#define H2NET_PROTOCOL_VERSION    5
+
+#define NET_HEADERSIZE      (2 * sizeof(unsigned int))
+#define NET_DATAGRAMSIZE    (MAX_DATAGRAM_QH + NET_HEADERSIZE)
+
+// NetHeader flags
+#define NETFLAG_LENGTH_MASK 0x0000ffff
+#define NETFLAG_DATA        0x00010000
+#define NETFLAG_ACK         0x00020000
+#define NETFLAG_NAK         0x00040000
+#define NETFLAG_EOM         0x00080000
+#define NETFLAG_UNRELIABLE  0x00100000
+#define NETFLAG_CTL         0x80000000
+
+#define CCREQ_CONNECT       0x01
+#define CCREQ_SERVER_INFO   0x02
+#define CCREQ_PLAYER_INFO   0x03
+#define CCREQ_RULE_INFO     0x04
+
+#define CCREP_ACCEPT        0x81
+#define CCREP_REJECT        0x82
+#define CCREP_SERVER_INFO   0x83
+#define CCREP_PLAYER_INFO   0x84
+#define CCREP_RULE_INFO     0x85
+
 #define HOSTCACHESIZE   8
 
 struct hostcache_t
@@ -138,6 +165,13 @@ struct hostcache_t
 	int maxusers;
 	int driver;
 	netadr_t addr;
+};
+
+struct packetBuffer_t
+{
+	unsigned int length;
+	unsigned int sequence;
+	byte data[MAX_DATAGRAM_QH];
 };
 
 extern bool localconnectpending;
@@ -154,8 +188,25 @@ extern int net_controlsocket;
 extern bool tcpipAvailable;
 extern int net_acceptsocket;
 extern int net_hostport;
+extern packetBuffer_t packetBuffer;
+extern int packetsSent;
+extern int packetsReSent;
+extern int packetsReceived;
+extern int receivedDuplicateCount;
+extern int shortPacketCount;
+extern int droppedDatagrams;
+extern netadr_t banAddr;
+extern netadr_t banMask;
+extern int messagesSent;
+extern int messagesReceived;
+extern int unreliableMessagesSent;
+extern int unreliableMessagesReceived;
+extern int udp_controlSock;
+extern bool udp_initialized;
 
 qsocket_t* NET_NewQSocket();
+void NET_FreeQSocket(qsocket_t*);
+double SetNetTime();
 void Loop_SearchForHosts(bool xmit);
 qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
 qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
@@ -175,3 +226,25 @@ int  UDP_Broadcast(int socket, byte* buf, int len);
 int  UDP_GetNameFromAddr(netadr_t* addr, char* name);
 int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
 int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
+int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int SendMessageNext(qsocket_t* sock, netchan_t* chan);
+int ReSendMessage(qsocket_t* sock, netchan_t* chan);
+bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan);
+int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message);
+void NET_Ban_f();
+void NET_Stats_f();
+int Datagram_Init();
+void Datagram_Shutdown();
+void Datagram_Listen(bool state);
+void Datagram_Close(qsocket_t* sock, netchan_t* chan);
+qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr);
+void Datagram_SearchForHosts(bool xmit);
+qsocket_t* Datagram_Connect(const char* host, netchan_t* chan);
+void NET_Close(qsocket_t* sock, netchan_t* chan);
+// if a dead connection is returned by a get or send function, this function
+// should be called when it is convenient
+// Server calls when a client is kicked off for a game related misbehavior
+// like an illegal protocal conversation.  Client calls when disconnecting
+// from a server.
+// A netcon_t number will not be reused until this function is called for it

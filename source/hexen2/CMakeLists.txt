@@ -14,7 +14,6 @@ add_executable(jlhexen2
 	host_cmd.cpp
 	keys.cpp
 	menu.cpp
-	net_dgrm.cpp
 	net_main.cpp
 	pr_cmds.cpp
 	pr_edict.cpp

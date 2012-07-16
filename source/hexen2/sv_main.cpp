@@ -135,7 +135,7 @@ void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
 {
 	int i, v;
 
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 16)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
 	{
 		return;
 	}
@@ -169,7 +169,7 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
 {
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 36)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 36)
 	{
 		return;
 	}
@@ -198,7 +198,7 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count)
 {
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 15)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 15)
 	{
 		return;
 	}
@@ -224,7 +224,7 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count)
 {
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_H2 - 13)
+	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 13)
 	{
 		return;
 	}

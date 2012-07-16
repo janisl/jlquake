@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-menu_state_t m_state;
-
 void M_Menu_Main_f(void);
 void M_Menu_SinglePlayer_f(void);
 void M_Menu_Load_f(void);
@@ -81,10 +79,6 @@ void M_ServerList_Key(int key);
 qboolean m_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
 qboolean m_recursiveDraw;
-
-menu_state_t m_return_state;
-qboolean m_return_onerror;
-char m_return_reason [32];
 
 #define StartingGame    (m_multiplayer_cursor == 1)
 #define JoiningGame     (m_multiplayer_cursor == 0)

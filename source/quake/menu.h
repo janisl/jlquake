@@ -18,20 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-//
-// the net drivers should just set the apropriate bits in m_activenet,
-// instead of having the menu code look through their internal tables
-//
-#define MNET_IPX        1
+#include "../client/game/quake_hexen2/menu.h"
+
 #define MNET_TCP        2
 
 extern int m_activenet;
-
-enum menu_state_t
-{
-	m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist
-};
-extern menu_state_t m_state, m_return_state;
 
 //
 // menus
