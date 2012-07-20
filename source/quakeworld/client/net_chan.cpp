@@ -518,12 +518,12 @@ qboolean NET_GetPacket(void)
 		Sys_Error("NET_GetPacket failed");
 	}
 
-	net_message.cursize = ret;
 	if (ret == sizeof(net_message_buffer))
 	{
 		Con_Printf("Oversize packet from %s\n", SOCK_AdrToString(net_from));
 		return false;
 	}
+	net_message.cursize = ret;
 
 	return ret;
 }

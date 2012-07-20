@@ -53,13 +53,18 @@ typedef struct
 	huff_t decompressor;
 } huffman_t;
 
-void    Huff_Init(huffman_t* huff);
-void    Huff_addRef(huff_t* huff, byte ch);
-int     Huff_Receive(node_t* node, int* ch, byte* fin);
-void    Huff_transmit(huff_t* huff, int ch, byte* fout);
-void    Huff_offsetReceive(node_t* node, int* ch, byte* fin, int* offset);
-void    Huff_offsetTransmit(huff_t* huff, int ch, byte* fout, int* offset);
-void    Huff_putBit(int bit, byte* fout, int* offset);
-int     Huff_getBit(byte* fout, int* offset);
-void    Huff_Compress(QMsg* buf, int offset);
-void    Huff_Decompress(QMsg* buf, int offset);
+void Huff_Init(huffman_t* huff);
+void Huff_addRef(huff_t* huff, byte ch);
+int Huff_Receive(node_t* node, int* ch, byte* fin);
+void Huff_transmit(huff_t* huff, int ch, byte* fout);
+void Huff_offsetReceive(node_t* node, int* ch, byte* fin, int* offset);
+void Huff_offsetTransmit(huff_t* huff, int ch, byte* fout, int* offset);
+void Huff_putBit(int bit, byte* fout, int* offset);
+int  Huff_getBit(byte* fout, int* offset);
+void Huff_Compress(QMsg* buf, int offset);
+void Huff_Decompress(QMsg* buf, int offset);
+
+//	HexenWorld's packet compression
+void HuffInit();
+void HuffDecode(unsigned char* in, unsigned char* out, int inlen, int* outlen);
+void HuffEncode(unsigned char* in,unsigned char* out,int inlen,int* outlen);
