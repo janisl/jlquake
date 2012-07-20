@@ -7,6 +7,7 @@
 #include "../client/client.h"
 #include "../server/server.h"
 #include "../client/game/hexen2/local.h"
+#include "../client/game/quake_hexen2/network_channel.h"
 #include "../server/quake_hexen/local.h"
 #include "../server/hexen2/local.h"
 #include "../server/progsvm/progsvm.h"

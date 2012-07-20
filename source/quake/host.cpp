@@ -218,9 +218,9 @@ void    Host_FindMaxClients(void)
 	{
 		svs.qh_maxclients = 8;
 	}
-	else if (svs.qh_maxclients > MAX_CLIENTS_Q1)
+	else if (svs.qh_maxclients > MAX_CLIENTS_QH)
 	{
-		svs.qh_maxclients = MAX_CLIENTS_Q1;
+		svs.qh_maxclients = MAX_CLIENTS_QH;
 	}
 
 	svs.qh_maxclientslimit = svs.qh_maxclients;
@@ -480,7 +480,7 @@ void Host_ShutdownServer(qboolean crash)
 				}
 				else
 				{
-					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
+					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
 					count++;
 				}
 			}
@@ -954,7 +954,9 @@ void Host_Shutdown(void)
 	Host_WriteConfiguration();
 
 	CDAudio_Shutdown();
-	NET_Shutdown();
+	SVQH_Shutdown();
+	CLQH_ShutdownNetwork();
+	NETQH_Shutdown();
 	S_Shutdown();
 	IN_Shutdown();
 

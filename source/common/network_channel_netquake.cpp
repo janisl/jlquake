@@ -77,10 +77,18 @@
 
 #include "qcommon.h"
 
-int net_hostport;
+struct packetBuffer_t
+{
+	unsigned int length;
+	unsigned int sequence;
+	byte data[MAX_DATAGRAM_QH];
+};
 
-qsocket_t* net_activeSockets = NULL;
-qsocket_t* net_freeSockets = NULL;
+int net_hostport;
+int DEFAULTnet_hostport;
+
+static qsocket_t* net_activeSockets = NULL;
+static qsocket_t* net_freeSockets = NULL;
 int net_numsockets = 0;
 
 double net_time;
@@ -89,35 +97,40 @@ int net_activeconnections = 0;
 int hostCacheCount = 0;
 hostcache_t hostcache[HOSTCACHESIZE];
 
-bool localconnectpending = false;
-qsocket_t* loop_client = NULL;
-qsocket_t* loop_server = NULL;
+static bool localconnectpending = false;
+static qsocket_t* loop_client = NULL;
+static qsocket_t* loop_server = NULL;
 
 bool tcpipAvailable = false;
 
 static const char* net_interface;
-int net_controlsocket;
+static int net_controlsocket;
 int net_acceptsocket = -1;		// socket for fielding new connections
 
-packetBuffer_t packetBuffer;
+static packetBuffer_t packetBuffer;
 
 /* statistic counters */
-int packetsSent = 0;
-int packetsReSent = 0;
-int packetsReceived = 0;
-int receivedDuplicateCount = 0;
-int shortPacketCount = 0;
-int droppedDatagrams;
-int messagesSent = 0;
-int messagesReceived = 0;
-int unreliableMessagesSent = 0;
-int unreliableMessagesReceived = 0;
+static int packetsSent = 0;
+static int packetsReSent = 0;
+static int packetsReceived = 0;
+static int receivedDuplicateCount = 0;
+static int shortPacketCount = 0;
+static int droppedDatagrams;
+static int messagesSent = 0;
+static int messagesReceived = 0;
+static int unreliableMessagesSent = 0;
+static int unreliableMessagesReceived = 0;
 
 netadr_t banAddr;
 netadr_t banMask;
 
 int udp_controlSock;
 bool udp_initialized;
+
+static Cvar* net_messagetimeout;
+
+bool datagram_initialized;
+bool net_listening = false;
 
 //	Called by drivers when a new communications endpoint is required
 // The sequence and buffer fields will be filled in properly
@@ -239,7 +252,7 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 	return loop_server;
 }
 
-int Loop_GetMessage(netchan_t* chan, QMsg* message)
+static int Loop_GetMessage(netchan_t* chan, QMsg* message)
 {
 	netadr_t net_from;
 	int ret = NET_GetLoopPacket(chan->sock, &net_from, message);
@@ -252,7 +265,7 @@ int Loop_GetMessage(netchan_t* chan, QMsg* message)
 	return ret;
 }
 
-int Loop_SendMessage(netchan_t* chan, QMsg* data)
+static int Loop_SendMessage(netchan_t* chan, QMsg* data)
 {
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
@@ -266,7 +279,7 @@ int Loop_SendMessage(netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-int Loop_SendUnreliableMessage(netchan_t* chan, QMsg* data)
+static int Loop_SendUnreliableMessage(netchan_t* chan, QMsg* data)
 {
 	loopback_t* loopback = &loopbacks[chan->sock ^ 1];
 	if (loopback->send - loopback->get >= MAX_LOOPBACK)
@@ -278,12 +291,12 @@ int Loop_SendUnreliableMessage(netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-bool Loop_CanSendMessage(netchan_t* chan)
+static bool Loop_CanSendMessage(netchan_t* chan)
 {
 	return loopbacks[chan->sock].canSend;
 }
 
-void Loop_Close(qsocket_t* sock, netchan_t* chan)
+static void Loop_Close(qsocket_t* sock, netchan_t* chan)
 {
 	loopbacks[chan->sock].send = 0;
 	loopbacks[chan->sock].get = 0;
@@ -308,7 +321,7 @@ int UDPNQ_OpenSocket(int port)
 	return newsocket;
 }
 
-int UDP_Init()
+static int UDP_Init()
 {
 	if (COM_CheckParm("-noudp"))
 	{
@@ -348,13 +361,13 @@ int UDP_Init()
 	return net_controlsocket;
 }
 
-int UDP_CloseSocket(int socket)
+static int UDP_CloseSocket(int socket)
 {
 	SOCK_Close(socket);
 	return 0;
 }
 
-void UDP_Listen(bool state)
+static void UDP_Listen(bool state)
 {
 	// enable listening
 	if (state)
@@ -379,7 +392,7 @@ void UDP_Listen(bool state)
 	net_acceptsocket = -1;
 }
 
-void UDP_Shutdown()
+static void UDP_Shutdown()
 {
 	UDP_Listen(false);
 	UDP_CloseSocket(net_controlsocket);
@@ -464,7 +477,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 	return 0;
 }
 
-int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+static int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
 #ifdef DEBUG
 	if (data->cursize == 0)
@@ -516,7 +529,7 @@ int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-int SendMessageNext(qsocket_t* sock, netchan_t* chan)
+static int SendMessageNext(qsocket_t* sock, netchan_t* chan)
 {
 	unsigned int dataLen;
 	unsigned int eom;
@@ -548,7 +561,7 @@ int SendMessageNext(qsocket_t* sock, netchan_t* chan)
 	return 1;
 }
 
-int ReSendMessage(qsocket_t* sock, netchan_t* chan)
+static int ReSendMessage(qsocket_t* sock, netchan_t* chan)
 {
 	unsigned int dataLen;
 	unsigned int eom;
@@ -580,7 +593,7 @@ int ReSendMessage(qsocket_t* sock, netchan_t* chan)
 	return 1;
 }
 
-bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan)
+static bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 {
 	if (sock->sendNext)
 	{
@@ -590,7 +603,7 @@ bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 	return sock->canSend;
 }
 
-int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+static int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 {
 #ifdef DEBUG
 	if (data->cursize == 0)
@@ -619,7 +632,7 @@ int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
+static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 {
 	int length;
 	unsigned int flags;
@@ -788,7 +801,7 @@ static void PrintStats(qsocket_t* s)
 	common->Printf("\n");
 }
 
-void NET_Stats_f()
+static void NET_Stats_f()
 {
 	qsocket_t* s;
 
@@ -835,7 +848,7 @@ void NET_Stats_f()
 	}
 }
 
-int Datagram_Init()
+static int Datagram_Init()
 {
 	Cmd_AddCommand("net_stats", NET_Stats_f);
 
@@ -856,7 +869,7 @@ int Datagram_Init()
 	return 0;
 }
 
-void Datagram_Shutdown()
+static void Datagram_Shutdown()
 {
 	if (udp_initialized)
 	{
@@ -865,12 +878,12 @@ void Datagram_Shutdown()
 	}
 }
 
-void Datagram_Close(qsocket_t* sock, netchan_t* chan)
+static void Datagram_Close(qsocket_t* sock, netchan_t* chan)
 {
 	UDPNQ_OpenSocket(sock->socket);
 }
 
-void Datagram_Listen(bool state)
+static void Datagram_Listen(bool state)
 {
 	if (udp_initialized)
 	{
@@ -905,130 +918,270 @@ void NET_Close(qsocket_t* sock, netchan_t* chan)
 	NET_FreeQSocket(sock);
 }
 
-void Datagram_SearchForHosts(bool xmit)
+//	If there is a complete message, return it in net_message
+//	returns 0 if no data is waiting
+//	returns 1 if a message was received
+//	returns -1 if connection is invalid
+int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 {
-	if (!udp_initialized)
+	if (!sock)
 	{
+		return -1;
+	}
+
+	if (sock->disconnected)
+	{
+		common->Printf("NET_GetMessage: disconnected socket\n");
+		return -1;
+	}
+
+	SetNetTime();
+
+	int ret;
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		ret = Loop_GetMessage(chan, message);
+	}
+	else
+	{
+		ret = Datagram_GetMessage(sock, chan, message);
+	}
+
+	// see if this connection has timed out
+	if (ret == 0 && chan->remoteAddress.type == NA_IP)
+	{
+		if (net_time - chan->lastReceived / 1000.0 > net_messagetimeout->value)
+		{
+			NET_Close(sock, chan);
+			return -1;
+		}
+	}
+
+
+	if (ret > 0)
+	{
+		if (chan->remoteAddress.type == NA_IP)
+		{
+			chan->lastReceived = net_time * 1000;
+			if (ret == 1)
+			{
+				messagesReceived++;
+			}
+			else if (ret == 2)
+			{
+				unreliableMessagesReceived++;
+			}
+		}
+	}
+
+	return ret;
+}
+
+//	Try to send a complete length+message unit over the reliable stream.
+// returns 0 if the message cannot be delivered reliably, but the connection
+//        is still considered valid
+// returns 1 if the message was sent properly
+// returns -1 if the connection died
+int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+{
+	if (!sock)
+	{
+		return -1;
+	}
+
+	if (sock->disconnected)
+	{
+		common->Printf("NET_SendMessage: disconnected socket\n");
+		return -1;
+	}
+
+	SetNetTime();
+	int r;
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_SendMessage(chan, data);
+	}
+	else
+	{
+		r = Datagram_SendMessage(sock, chan, data);
+	}
+	if (r == 1 && chan->remoteAddress.type == NA_IP)
+	{
+		messagesSent++;
+	}
+
+	return r;
+}
+
+int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+{
+	if (!sock)
+	{
+		return -1;
+	}
+
+	if (sock->disconnected)
+	{
+		common->Printf("NET_SendMessage: disconnected socket\n");
+		return -1;
+	}
+
+	SetNetTime();
+	int r;
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_SendUnreliableMessage(chan, data);
+	}
+	else
+	{
+		r = Datagram_SendUnreliableMessage(sock, chan, data);
+	}
+	if (r == 1 && chan->remoteAddress.type == NA_IP)
+	{
+		unreliableMessagesSent++;
+	}
+
+	return r;
+}
+
+//	Returns true or false if the given qsocket can currently accept a
+// message to be transmitted.
+bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan)
+{
+	if (!sock)
+	{
+		return false;
+	}
+
+	if (sock->disconnected)
+	{
+		return false;
+	}
+
+	SetNetTime();
+
+	int r;
+	if (chan->remoteAddress.type == NA_LOOPBACK)
+	{
+		r = Loop_CanSendMessage(chan);
+	}
+	else
+	{
+		r = Datagram_CanSendMessage(sock, chan);
+	}
+
+	return r;
+}
+
+static void NET_Listen_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("\"listen\" is \"%u\"\n", net_listening ? 1 : 0);
 		return;
 	}
-	int ret;
-	int n;
-	int i;
-	netadr_t readaddr;
-	int control;
 
-	QMsg net_message;
-	byte net_message_buf[MAX_DATAGRAM_QH];
-	net_message.InitOOB(net_message_buf, MAX_DATAGRAM_QH);
+	net_listening = String::Atoi(Cmd_Argv(1)) ? true : false;
 
-	if (xmit)
+	if (datagram_initialized)
 	{
-		net_message.Clear();
-		// save space for the header, filled in later
-		net_message.WriteLong(0);
-		net_message.WriteByte(CCREQ_SERVER_INFO);
-		net_message.WriteString2(GGameType & GAME_Hexen2 ? NET_NAME_ID : "QUAKE");
-		net_message.WriteByte(GGameType & GAME_Hexen2 ? H2NET_PROTOCOL_VERSION : Q1NET_PROTOCOL_VERSION);
-		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Broadcast(udp_controlSock, net_message._data, net_message.cursize);
-		net_message.Clear();
+		Datagram_Listen(net_listening);
+	}
+}
+
+static void NET_Port_f()
+{
+	int n;
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("\"port\" is \"%u\"\n", net_hostport);
+		return;
 	}
 
-	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
+	n = String::Atoi(Cmd_Argv(1));
+	if (n < 1 || n > 65534)
 	{
-		if (ret < (int)sizeof(int))
-		{
-			continue;
-		}
-		net_message.cursize = ret;
+		common->Printf("Bad value, must be between 1 and 65534\n");
+		return;
+	}
 
-		// is the cache full?
-		if (hostCacheCount == HOSTCACHESIZE)
-		{
-			continue;
-		}
+	DEFAULTnet_hostport = n;
+	net_hostport = n;
 
-		net_message.BeginReadingOOB();
-		control = BigLong(*((int*)net_message._data));
-		net_message.ReadLong();
-		if (control == -1)
-		{
-			continue;
-		}
-		if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
-		{
-			continue;
-		}
-		if ((control & NETFLAG_LENGTH_MASK) != ret)
-		{
-			continue;
-		}
+	if (net_listening)
+	{
+		// force a change to the new port
+		Cbuf_AddText("listen 0\n");
+		Cbuf_AddText("listen 1\n");
+	}
+}
 
-		if (net_message.ReadByte() != CCREP_SERVER_INFO)
-		{
-			continue;
-		}
+void NET_CommonInit()
+{
+	DEFAULTnet_hostport = GGameType & GAME_Hexen2 ? 26900 : 26000;
 
-		//	This is server's IP, or more exatly what server thinks is it's IP.
-		// Originally this string was converted into readaddr and that address
-		// was then saved in host cache. The whole thin is stupid as server
-		// can't know exatly which IP this client sees it by and secondly
-		// readaddr already contains exactly the right address.
-		net_message.ReadString2();
+	int i = COM_CheckParm("-port");
+	if (!i)
+	{
+		i = COM_CheckParm("-udpport");
+	}
 
-		// search the cache for this server
-		for (n = 0; n < hostCacheCount; n++)
+	if (i)
+	{
+		if (i < COM_Argc() - 1)
 		{
-			if (UDP_AddrCompare(&readaddr, &hostcache[n].addr) == 0)
-			{
-				break;
-			}
+			DEFAULTnet_hostport = String::Atoi(COM_Argv(i + 1));
 		}
+		else
+		{
+			common->FatalError("NET_Init: you must specify a number after -port");
+		}
+	}
+	net_hostport = DEFAULTnet_hostport;
 
-		// is it already there?
-		if (n < hostCacheCount)
-		{
-			continue;
-		}
+	if (COM_CheckParm("-listen") || com_dedicated->integer)
+	{
+		net_listening = true;
+	}
+	if (!com_dedicated->integer)
+	{
+		net_numsockets++;
+	}
 
-		// add it
-		hostCacheCount++;
-		String::Cpy(hostcache[n].name, net_message.ReadString2());
-		String::Cpy(hostcache[n].map, net_message.ReadString2());
-		hostcache[n].users = net_message.ReadByte();
-		hostcache[n].maxusers = net_message.ReadByte();
-		if (net_message.ReadByte() != (GGameType & GAME_Hexen2 ? H2NET_PROTOCOL_VERSION : Q1NET_PROTOCOL_VERSION))
-		{
-			String::Cpy(hostcache[n].cname, hostcache[n].name);
-			hostcache[n].cname[14] = 0;
-			String::Cpy(hostcache[n].name, "*");
-			String::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
-		}
-		hostcache[n].addr = readaddr;
-		hostcache[n].driver = 1;
-		String::Cpy(hostcache[n].cname, SOCK_AdrToString(readaddr));
+	SetNetTime();
 
-		// check for a name conflict
-		for (i = 0; i < hostCacheCount; i++)
+	for (i = 0; i < net_numsockets; i++)
+	{
+		qsocket_t* s = (qsocket_t*)Mem_Alloc(sizeof(qsocket_t));
+		s->next = net_freeSockets;
+		net_freeSockets = s;
+		s->disconnected = true;
+	}
+
+	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
+	sv_hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);
+
+	Cmd_AddCommand("listen", NET_Listen_f);
+	Cmd_AddCommand("port", NET_Port_f);
+
+	// initialize all the drivers
+	int controlSocket = Datagram_Init();
+	if (controlSocket != -1)
+	{
+		datagram_initialized = true;
+		if (net_listening)
 		{
-			if (i == n)
-			{
-				continue;
-			}
-			if (String::ICmp(hostcache[n].name, hostcache[i].name) == 0)
-			{
-				i = String::Length(hostcache[n].name);
-				if (i < 15 && hostcache[n].name[i - 1] > '8')
-				{
-					hostcache[n].name[i] = '0';
-					hostcache[n].name[i + 1] = 0;
-				}
-				else
-				{
-					hostcache[n].name[i - 1]++;
-				}
-				i = -1;
-			}
+			Datagram_Listen(true);
 		}
+	}
+}
+
+void NETQH_Shutdown()
+{
+	if (datagram_initialized)
+	{
+		Datagram_Shutdown();
+		datagram_initialized = false;
 	}
 }

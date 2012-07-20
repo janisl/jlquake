@@ -391,11 +391,11 @@ void Sbar_DrawNum(int x, int y, int num, int digits, int color)
 
 //=============================================================================
 
-int fragsort[MAX_CLIENTS_Q1];
+int fragsort[MAX_CLIENTS_QH];
 
-char scoreboardtext[MAX_CLIENTS_Q1][20];
-int scoreboardtop[MAX_CLIENTS_Q1];
-int scoreboardbottom[MAX_CLIENTS_Q1];
+char scoreboardtext[MAX_CLIENTS_QH][20];
+int scoreboardtop[MAX_CLIENTS_QH];
+int scoreboardbottom[MAX_CLIENTS_QH];
 int scoreboardlines;
 
 /*

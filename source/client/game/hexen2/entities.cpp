@@ -33,7 +33,7 @@ static float GTint[256];
 static float BTint[256];
 
 qhandle_t clh2_player_models[MAX_PLAYER_CLASS];
-static image_t* clh2_playertextures[H2BIGGEST_MAX_CLIENTS];	// color translated skins
+static image_t* clh2_playertextures[BIGGEST_MAX_CLIENTS_QH];	// color translated skins
 
 static image_t* clh2_extra_textures[H2MAX_EXTRA_TEXTURES];	// generic textures for models
 

@@ -94,9 +94,9 @@ struct qwpacket_entities_t
 	q1entity_state_t entities[QWMAX_PACKET_ENTITIES];
 };
 
-#define MAX_CLIENTS_Q1          16
+#define MAX_CLIENTS_QH          16
 #define MAX_CLIENTS_QHW         32
-#define BIGGEST_MAX_CLIENTS_Q1  32	//	For common arrays
+#define BIGGEST_MAX_CLIENTS_QH  32	//	For common arrays
 
 #define UPDATE_BACKUP_QW    64	// copies of entity_state_t to keep buffered
 // must be power of two

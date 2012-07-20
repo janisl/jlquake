@@ -176,7 +176,7 @@ struct clientActive_t
 	in_usercmd_t qh_cmd;			// last command sent to the server
 
 	// all player information
-	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_Q1];
+	q1player_info_t q1_players[BIGGEST_MAX_CLIENTS_QH];
 
 	int q1_items;			// inventory bit flags
 	float q1_item_gettime[32];	// cl.time of aquiring item, for blinking
@@ -190,7 +190,7 @@ struct clientActive_t
 	h2EffectT h2_Effects[MAX_EFFECTS_H2];
 
 	// all player information
-	h2player_info_t h2_players[H2BIGGEST_MAX_CLIENTS];
+	h2player_info_t h2_players[BIGGEST_MAX_CLIENTS_QH];
 
 	int h2_inv_order[MAX_INVENTORY_H2];
 	int h2_inv_count;

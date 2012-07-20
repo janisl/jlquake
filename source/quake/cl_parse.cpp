@@ -231,7 +231,7 @@ void CL_ParseServerInfo(void)
 
 // parse maxclients
 	cl.qh_maxclients = net_message.ReadByte();
-	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_Q1)
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
 	{
 		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
@@ -640,7 +640,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_Q1");
+				Host_Error("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_QH");
 			}
 			String::Cpy(cl.q1_players[i].name, net_message.ReadString2());
 			break;
@@ -649,7 +649,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_Q1");
+				Host_Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QH");
 			}
 			cl.q1_players[i].frags = net_message.ReadShort();
 			break;
@@ -659,7 +659,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_Q1");
+				Host_Error("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_QH");
 			}
 			int j = net_message.ReadByte();
 			cl.q1_players[i].topcolor = (j & 0xf0) >> 4;

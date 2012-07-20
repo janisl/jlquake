@@ -167,42 +167,21 @@ struct hostcache_t
 	netadr_t addr;
 };
 
-struct packetBuffer_t
-{
-	unsigned int length;
-	unsigned int sequence;
-	byte data[MAX_DATAGRAM_QH];
-};
-
-extern bool localconnectpending;
-extern qsocket_t* loop_client;
-extern qsocket_t* loop_server;
 extern int hostCacheCount;
 extern hostcache_t hostcache[HOSTCACHESIZE];
 extern int net_activeconnections;
-extern qsocket_t* net_activeSockets;
-extern qsocket_t* net_freeSockets;
 extern int net_numsockets;
 extern double net_time;
-extern int net_controlsocket;
 extern bool tcpipAvailable;
 extern int net_acceptsocket;
 extern int net_hostport;
-extern packetBuffer_t packetBuffer;
-extern int packetsSent;
-extern int packetsReSent;
-extern int packetsReceived;
-extern int receivedDuplicateCount;
-extern int shortPacketCount;
-extern int droppedDatagrams;
 extern netadr_t banAddr;
 extern netadr_t banMask;
-extern int messagesSent;
-extern int messagesReceived;
-extern int unreliableMessagesSent;
-extern int unreliableMessagesReceived;
 extern int udp_controlSock;
 extern bool udp_initialized;
+extern bool datagram_initialized;
+extern bool net_listening;
+extern int DEFAULTnet_hostport;
 
 qsocket_t* NET_NewQSocket();
 void NET_FreeQSocket(qsocket_t*);
@@ -210,41 +189,35 @@ double SetNetTime();
 void Loop_SearchForHosts(bool xmit);
 qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
 qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
-int Loop_GetMessage(netchan_t* chan, QMsg* message);
-int Loop_SendMessage(netchan_t* chan, QMsg* data);
-int Loop_SendUnreliableMessage(netchan_t* chan, QMsg* data);
-bool Loop_CanSendMessage(netchan_t* chan);
-void Loop_Close(qsocket_t* sock, netchan_t* chan);
-int  UDP_Init();
 int  UDPNQ_OpenSocket(int port);
-void UDP_Shutdown();
-void UDP_Listen(bool state);
-int  UDP_CloseSocket(int socket);
 int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Broadcast(int socket, byte* buf, int len);
 int  UDP_GetNameFromAddr(netadr_t* addr, char* name);
 int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
 int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
-int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
-int SendMessageNext(qsocket_t* sock, netchan_t* chan);
-int ReSendMessage(qsocket_t* sock, netchan_t* chan);
-bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan);
-int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
-int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message);
 void NET_Ban_f();
-void NET_Stats_f();
-int Datagram_Init();
-void Datagram_Shutdown();
-void Datagram_Listen(bool state);
-void Datagram_Close(qsocket_t* sock, netchan_t* chan);
-qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr);
-void Datagram_SearchForHosts(bool xmit);
-qsocket_t* Datagram_Connect(const char* host, netchan_t* chan);
-void NET_Close(qsocket_t* sock, netchan_t* chan);
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
 // Server calls when a client is kicked off for a game related misbehavior
 // like an illegal protocal conversation.  Client calls when disconnecting
 // from a server.
 // A netcon_t number will not be reused until this function is called for it
+void NET_Close(qsocket_t* sock, netchan_t* chan);
+// returns data in net_message sizebuf
+// returns 0 if no data is waiting
+// returns 1 if a message was received
+// returns 2 if an unreliable message was received
+// returns -1 if the connection died
+int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message);
+// returns 0 if the message connot be delivered reliably, but the connection
+//		is still considered valid
+// returns 1 if the message was sent properly
+// returns -1 if the connection died
+int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+// Returns true or false if the given qsocket can currently accept a
+// message to be transmitted.
+bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan);
+void NET_CommonInit();
+void NETQH_Shutdown();

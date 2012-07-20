@@ -24,7 +24,7 @@ q1entity_state_t clq1_baselines[MAX_EDICTS_QH];
 q1entity_t clq1_entities[MAX_EDICTS_QH];
 q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
 
-image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_Q1];	// color translated skins
+image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_QH];	// color translated skins
 
 int clq1_playerindex;
 int clqw_flagindex;

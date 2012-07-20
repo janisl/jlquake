@@ -278,7 +278,7 @@ void NET_Ban_f()
 	}
 }
 
-qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
+static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 {
 	if (!udp_initialized)
 	{
@@ -578,4 +578,177 @@ qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	net_message.Clear();
 
 	return sock;
+}
+
+qsocket_t* NET_CheckNewConnections(netadr_t* outaddr)
+{
+	Com_Memset(outaddr, 0, sizeof(*outaddr));
+	qsocket_t* ret;
+
+	SetNetTime();
+
+	ret = Loop_CheckNewConnections(outaddr);
+	if (ret)
+	{
+		return ret;
+	}
+
+	if (!datagram_initialized)
+	{
+		return NULL;
+	}
+	if (net_listening == false)
+	{
+		return NULL;
+	}
+	ret = Datagram_CheckNewConnections(outaddr);
+	if (ret)
+	{
+		return ret;
+	}
+
+	return NULL;
+}
+
+int NET_SendToAll(QMsg* data, int blocktime)
+{
+	int i;
+	int count = 0;
+	bool state1 [MAX_CLIENTS_QH];
+	bool state2 [MAX_CLIENTS_QH];
+	client_t* client;
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
+	{
+		if (!client->qh_netconnection)
+		{
+			continue;
+		}
+		if (client->state >= CS_CONNECTED)
+		{
+			if (client->netchan.remoteAddress.type == NA_LOOPBACK)
+			{
+				NET_SendMessage(client->qh_netconnection, &client->netchan, data);
+				state1[i] = true;
+				state2[i] = true;
+				continue;
+			}
+			count++;
+			state1[i] = false;
+			state2[i] = false;
+		}
+		else
+		{
+			state1[i] = true;
+			state2[i] = true;
+		}
+	}
+
+	QMsg net_message;
+	byte net_message_buf[MAX_MSGLEN];
+	net_message.InitOOB(net_message_buf, MAX_MSGLEN);
+
+	double start = Sys_DoubleTime();
+	while (count)
+	{
+		count = 0;
+		for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
+		{
+			if (!state1[i])
+			{
+				if (NET_CanSendMessage(client->qh_netconnection, &client->netchan))
+				{
+					state1[i] = true;
+					NET_SendMessage(client->qh_netconnection, &client->netchan, data);
+				}
+				else
+				{
+					NET_GetMessage(client->qh_netconnection, &client->netchan, &net_message);
+				}
+				count++;
+				continue;
+			}
+
+			if (!state2[i])
+			{
+				if (NET_CanSendMessage(client->qh_netconnection, &client->netchan))
+				{
+					state2[i] = true;
+				}
+				else
+				{
+					NET_GetMessage(client->qh_netconnection, &client->netchan, &net_message);
+				}
+				count++;
+				continue;
+			}
+		}
+		if ((Sys_DoubleTime() - start) > blocktime)
+		{
+			break;
+		}
+	}
+	return count;
+}
+
+void MaxPlayers_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("\"maxplayers\" is \"%u\"\n", svs.qh_maxclients);
+		return;
+	}
+
+	if (sv.state != SS_DEAD)
+	{
+		common->Printf("maxplayers can not be changed while a server is running.\n");
+		return;
+	}
+
+	int n = String::Atoi(Cmd_Argv(1));
+	if (n < 1)
+	{
+		n = 1;
+	}
+	if (n > svs.qh_maxclientslimit)
+	{
+		n = svs.qh_maxclientslimit;
+		common->Printf("\"maxplayers\" set to \"%u\"\n", n);
+	}
+
+	if ((n == 1) && net_listening)
+	{
+		Cbuf_AddText("listen 0\n");
+	}
+
+	if ((n > 1) && (!net_listening))
+	{
+		Cbuf_AddText("listen 1\n");
+	}
+
+	svs.qh_maxclients = n;
+	if (n == 1)
+	{
+		Cvar_Set("deathmatch", "0");
+	}
+	else
+	{
+		Cvar_Set("deathmatch", "1");
+	}
+}
+
+void SVQH_Shutdown()
+{
+	client_t* client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, client++)
+	{
+		if (!client->qh_netconnection)
+		{
+			continue;
+		}
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		NET_Close(client->qh_netconnection, &client->netchan);
+	}
 }

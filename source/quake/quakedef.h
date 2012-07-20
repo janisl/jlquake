@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "../server/server.h"
 #include "../client/game/quake/local.h"
+#include "../client/game/quake_hexen2/network_channel.h"
 #include "../server/quake_hexen/local.h"
 #include "../server/progsvm/progsvm.h"
 

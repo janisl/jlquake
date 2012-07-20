@@ -147,7 +147,7 @@ int CL_GetMessage(void)
 
 	while (1)
 	{
-		r = NET_GetMessage(cls.qh_netcon, &clc.netchan);
+		r = NET_GetMessage(cls.qh_netcon, &clc.netchan, &net_message);
 
 		if (r != 1 && r != 2)
 		{

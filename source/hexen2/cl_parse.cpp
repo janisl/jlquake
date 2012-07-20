@@ -246,7 +246,7 @@ void CL_ParseServerInfo(void)
 
 // parse maxclients
 	cl.qh_maxclients = net_message.ReadByte();
-	if (cl.qh_maxclients < 1 || cl.qh_maxclients > H2MAX_CLIENTS)
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
 	{
 		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
@@ -916,7 +916,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: h2svc_updatename > H2MAX_CLIENTS");
+				Host_Error("CL_ParseServerMessage: h2svc_updatename > MAX_CLIENTS_QH");
 			}
 			String::Cpy(cl.h2_players[i].name, net_message.ReadString2());
 			break;
@@ -925,7 +925,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: h2svc_updateclass > H2MAX_CLIENTS");
+				Host_Error("CL_ParseServerMessage: h2svc_updateclass > MAX_CLIENTS_QH");
 			}
 			cl.h2_players[i].playerclass = net_message.ReadByte();
 			CL_NewTranslation(i);	// update the color
@@ -935,7 +935,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: h2svc_updatefrags > H2MAX_CLIENTS");
+				Host_Error("CL_ParseServerMessage: h2svc_updatefrags > MAX_CLIENTS_QH");
 			}
 			cl.h2_players[i].frags = net_message.ReadShort();
 			break;
@@ -948,7 +948,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: h2svc_updatecolors > H2MAX_CLIENTS");
+				Host_Error("CL_ParseServerMessage: h2svc_updatecolors > MAX_CLIENTS_QH");
 			}
 			j = net_message.ReadByte();
 			cl.h2_players[i].topColour = (j & 0xf0) >> 4;

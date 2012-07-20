@@ -630,7 +630,7 @@ qboolean SV_ReadClientMessage(void)
 	do
 	{
 nextmsg:
-		ret = NET_GetMessage(host_client->qh_netconnection, &host_client->netchan);
+		ret = NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
 		if (ret == -1)
 		{
 			Con_Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
