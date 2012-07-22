@@ -20,6 +20,10 @@ Cvar* sv_hostname;
 
 loopback_t loopbacks[2];
 
+unsigned char huffbuff[65536];
+
+int ip_sockets[2];
+
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 {
 	loopback_t* loop = &loopbacks[sock];
@@ -54,4 +58,55 @@ void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type)
 	Com_Memcpy(loop->msgs[i].data, data, length);
 	loop->msgs[i].datalen = length;
 	loop->msgs[i].type = type;
+}
+
+bool NET_GetUdpPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
+{
+	int net_socket = ip_sockets[sock];
+
+	if (!net_socket)
+	{
+		return false;
+	}
+
+	int ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ||
+			(GGameType & GAME_Quake2 && !com_dedicated->value))	// let dedicated servers continue after errors
+		{
+			common->Error("NET_GetPacket failed");
+		}
+		return false;
+	}
+
+	if (ret == net_message->maxsize)
+	{
+		common->Printf("Oversize packet from %s\n", SOCK_AdrToString(*net_from));
+		return false;
+	}
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		Com_Memcpy(huffbuff, net_message->_data, ret);
+		HuffDecode(huffbuff, net_message->_data, ret, &ret);
+	}
+
+	net_message->cursize = ret;
+	net_message->readcount = 0;
+	return true;
+}
+
+bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
+{
+	if (NET_GetLoopPacket(sock, net_from, net_message))
+	{
+		return true;
+	}
+
+	return NET_GetUdpPacket(sock, net_from, net_message);
 }

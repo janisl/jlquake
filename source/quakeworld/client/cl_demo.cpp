@@ -287,7 +287,7 @@ qboolean CL_GetMessage(void)
 		return CL_GetDemoMessage();
 	}
 
-	if (!NET_GetPacket())
+	if (!NET_GetUdpPacket(NS_SERVER, &net_from, &net_message))
 	{
 		return false;
 	}

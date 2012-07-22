@@ -134,7 +134,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// connected client times out, the message would not otherwise
 		// be printed until the next event.
 		//JL: Originally timeout was 0.1 ms
-		if (!SOCK_Sleep(net_socket, 1))
+		if (!SOCK_Sleep(ip_sockets[0], 1))
 		{
 			continue;
 		}

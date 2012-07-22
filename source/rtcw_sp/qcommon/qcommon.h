@@ -50,8 +50,6 @@ void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char* for
 qboolean    NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void        NET_Sleep(int msec);
 
-qboolean    Sys_GetPacket(netadr_t* net_from, QMsg* net_message);
-
 /*
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */

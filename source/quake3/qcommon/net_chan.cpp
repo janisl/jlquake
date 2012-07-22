@@ -511,8 +511,6 @@ static qboolean networkingEnabled = qfalse;
 
 static Cvar* net_noudp;
 
-int ip_socket;
-
 void NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to)
 {
 
@@ -548,12 +546,12 @@ void NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to)
 		return;
 	}
 
-	if (!ip_socket)
+	if (!ip_sockets[0])
 	{
 		return;
 	}
 
-	SOCK_Send(ip_socket, data, length, &to);
+	SOCK_Send(ip_sockets[0], data, length, &to);
 }
 
 /*
@@ -615,43 +613,6 @@ void NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte* format, int len)
 }
 
 /*
-==================
-Sys_GetPacket
-
-Never called by the game logic, just the system event queing
-==================
-*/
-qboolean Sys_GetPacket(netadr_t* net_from, QMsg* net_message)
-{
-	if (!ip_socket)
-	{
-		return false;
-	}
-
-	int ret = SOCK_Recv(ip_socket, net_message->_data, net_message->maxsize, net_from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return false;
-	}
-	net_message->readcount = 0;
-
-	if (ret == net_message->maxsize)
-	{
-		Com_Printf("Oversize packet from %s\n", SOCK_AdrToString(*net_from));
-		return false;
-	}
-
-	net_message->cursize = ret;
-	return true;
-}
-
-//=============================================================================
-
-/*
 ====================
 NET_OpenIP
 ====================
@@ -666,9 +627,10 @@ static void NET_OpenIP()
 	// a different net_port for each one
 	for (int i = 0; i < 10; i++)
 	{
-		ip_socket = SOCK_Open(ip->string, port + i);
-		if (ip_socket)
+		ip_sockets[0] = SOCK_Open(ip->string, port + i);
+		if (ip_sockets[0])
 		{
+			ip_sockets[1] = ip_sockets[0];
 			Cvar_SetValue("net_port", port + i);
 			if (net_socksEnabled->integer)
 			{
@@ -762,10 +724,10 @@ void NET_Config(bool enableNetworking)
 
 	if (stop)
 	{
-		if (ip_socket)
+		if (ip_sockets[0])
 		{
-			SOCK_Close(ip_socket);
-			ip_socket = 0;
+			SOCK_Close(ip_sockets[0]);
+			ip_sockets[0] = 0;
 		}
 
 		SOCK_CloseSocks();
@@ -825,5 +787,5 @@ void NET_Sleep(int msec)
 		return;	// we're not a server, just run full speed
 	}
 
-	SOCK_Sleep(ip_socket, msec);
+	SOCK_Sleep(ip_sockets[0], msec);
 }

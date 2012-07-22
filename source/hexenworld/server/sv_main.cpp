@@ -1058,7 +1058,7 @@ void SV_ReadPackets(void)
 	qboolean good;
 
 	good = false;
-	while (NET_GetPacket())
+	while (NET_GetUdpPacket(NS_SERVER, &net_from, &net_message))
 	{
 		if (SV_FilterPacket())
 		{

@@ -478,7 +478,6 @@ qboolean Netchan_Process(netchan_t* chan)
 
 netadr_t net_from;
 QMsg net_message;
-int net_socket;
 
 #define MAX_UDP_PACKET  (MAX_MSGLEN_QW * 2)		// one more than msg + header
 byte net_message_buffer[MAX_UDP_PACKET];
@@ -506,33 +505,9 @@ static int UDP_OpenSocket(int port)
 
 //=============================================================================
 
-qboolean NET_GetPacket(void)
-{
-	int ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &net_from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		Sys_Error("NET_GetPacket failed");
-	}
-
-	if (ret == sizeof(net_message_buffer))
-	{
-		Con_Printf("Oversize packet from %s\n", SOCK_AdrToString(net_from));
-		return false;
-	}
-	net_message.cursize = ret;
-
-	return ret;
-}
-
-//=============================================================================
-
 void NET_SendPacket(int length, void* data, netadr_t to)
 {
-	SOCK_Send(net_socket, data, length, &to);
+	SOCK_Send(ip_sockets[0], data, length, &to);
 }
 
 /*
@@ -550,7 +525,8 @@ void NET_Init(int port)
 	//
 	// open the single socket to be used for all communications
 	//
-	net_socket = UDP_OpenSocket(port);
+	ip_sockets[0] = UDP_OpenSocket(port);
+	ip_sockets[1] = ip_sockets[0];
 
 	//
 	// init the message buffer
@@ -570,6 +546,6 @@ NET_Shutdown
 */
 void    NET_Shutdown(void)
 {
-	SOCK_Close(net_socket);
+	SOCK_Close(ip_sockets[0]);
 	SOCK_Shutdown();
 }

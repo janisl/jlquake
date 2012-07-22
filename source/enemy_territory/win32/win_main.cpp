@@ -247,7 +247,7 @@ sysEvent_t Sys_GetEvent(void)
 
 	// check for network packets
 	netmsg.Init(sys_packetReceived, sizeof(sys_packetReceived));
-	if (Sys_GetPacket(&adr, &netmsg))
+	if (NET_GetUdpPacket(NS_SERVER, &adr, &netmsg))
 	{
 		netadr_t* buf;
 		int len;

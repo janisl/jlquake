@@ -22,11 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern netadr_t net_from;			// address of who sent the packet
 extern QMsg net_message;
 
-extern int net_socket;
-
 void        NET_Init(int port);
 void        NET_Shutdown(void);
-qboolean    NET_GetPacket(void);
 void        NET_SendPacket(int length, void* data, netadr_t to);
 
 //============================================================================

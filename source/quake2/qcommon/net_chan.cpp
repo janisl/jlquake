@@ -412,53 +412,6 @@ qboolean Netchan_Process(netchan_t* chan, QMsg* msg)
 
 //=============================================================================
 
-int ip_sockets[2];
-
-//=============================================================================
-
-qboolean NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
-{
-	int ret;
-	int net_socket;
-
-	if (NET_GetLoopPacket(sock, net_from, net_message))
-	{
-		return true;
-	}
-
-	net_socket = ip_sockets[sock];
-
-	if (!net_socket)
-	{
-		return false;
-	}
-
-	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		if (!com_dedicated->value)	// let dedicated servers continue after errors
-		{
-			Com_Error(ERR_DROP, "NET_GetPacket failed");
-		}
-		return false;
-	}
-
-	if (ret == net_message->maxsize)
-	{
-		Com_Printf("Oversize packet from %s\n", SOCK_AdrToString(*net_from));
-		return false;
-	}
-
-	net_message->cursize = ret;
-	return true;
-}
-
-//=============================================================================
-
 void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to)
 {
 	int net_socket;

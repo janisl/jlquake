@@ -122,9 +122,12 @@ struct loopback_t
 
 extern Cvar* sv_hostname;
 extern loopback_t loopbacks[2];
+extern int ip_sockets[2];
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
+bool NET_GetUdpPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
+bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 
 #define NET_NAME_ID         "HEXENII"
 

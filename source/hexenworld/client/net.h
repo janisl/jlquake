@@ -3,11 +3,8 @@
 extern netadr_t net_from;			// address of who sent the packet
 extern QMsg net_message;
 
-extern int net_socket;
-
 void        NET_Init(int port);
 void        NET_Shutdown(void);
-qboolean    NET_GetPacket(void);
 void        NET_SendPacket(int length, void* data, netadr_t to);
 
 //============================================================================

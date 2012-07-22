@@ -958,7 +958,6 @@ CL_ReadPackets
 */
 void CL_ReadPackets(void)
 {
-//	while (NET_GetPacket ())
 	while (CL_GetMessage())
 	{
 		//

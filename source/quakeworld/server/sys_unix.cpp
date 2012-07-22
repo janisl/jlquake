@@ -106,7 +106,6 @@ int main(int argc, char* argv[])
 {
 	double time, oldtime, newtime;
 	quakeparms_t parms;
-	extern int net_socket;
 	int j;
 
 	Com_Memset(&parms, 0, sizeof(parms));
@@ -148,7 +147,7 @@ int main(int argc, char* argv[])
 		// the only reason we have a timeout at all is so that if the last
 		// connected client times out, the message would not otherwise
 		// be printed until the next event.
-		if (!SOCK_Sleep(net_socket, 1000))
+		if (!SOCK_Sleep(ip_sockets[0], 1000))
 		{
 			continue;
 		}
