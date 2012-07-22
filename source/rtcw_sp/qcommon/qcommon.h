@@ -44,9 +44,6 @@ void        NET_Init(void);
 void        NET_Shutdown(void);
 void        NET_Restart(void);
 
-void        NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to);
-void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char* format, ...);
-
 qboolean    NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void        NET_Sleep(int msec);
 
@@ -56,9 +53,6 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 
 void Netchan_Init(int qport);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport);
-
-void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
-void Netchan_TransmitNextFragment(netchan_t* chan);
 
 qboolean Netchan_Process(netchan_t* chan, QMsg* msg);
 

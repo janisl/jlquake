@@ -46,7 +46,6 @@ address spoofing.
 
 */
 
-Cvar* showpackets;
 Cvar* showdrop;
 
 /*
@@ -60,53 +59,6 @@ void Netchan_Init(void)
 	showpackets = Cvar_Get("showpackets", "0", 0);
 	showdrop = Cvar_Get("showdrop", "0", 0);
 }
-
-/*
-===============
-Netchan_OutOfBand
-
-Sends an out-of-band datagram
-================
-*/
-void Netchan_OutOfBand(netadr_t adr, int length, byte* data)
-{
-	QMsg send;
-	byte send_buf[MAX_MSGLEN_HW + PACKET_HEADER];
-
-// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));
-
-	send.WriteLong(-1);	// -1 sequence means out of band
-	send.WriteData(data, length);
-
-// send the datagram
-	//zoid, no input in demo playback mode
-#ifndef SERVERONLY
-	if (!clc.demoplaying)
-#endif
-	NET_SendPacket(send.cursize, send._data, adr);
-}
-
-/*
-===============
-Netchan_OutOfBandPrint
-
-Sends a text message in an out-of-band datagram
-================
-*/
-void Netchan_OutOfBandPrint(netadr_t adr, const char* format, ...)
-{
-	va_list argptr;
-	static char string[8192];			// ??? why static?
-
-	va_start(argptr, format);
-	Q_vsnprintf(string, 8192, format, argptr);
-	va_end(argptr);
-
-
-	Netchan_OutOfBand(adr, String::Length(string), (byte*)string);
-}
-
 
 /*
 ==============
@@ -167,7 +119,7 @@ qboolean Netchan_CanReliable(netchan_t* chan)
 
 /*
 ===============
-Netchan_Transmit
+Netchan_Transmit_
 
 tries to send an unreliable message to a connection, and handles the
 transmition / retransmition of the reliable messages.
@@ -175,93 +127,18 @@ transmition / retransmition of the reliable messages.
 A 0 length will still generate a packet and deal with the reliable messages.
 ================
 */
-void Netchan_Transmit(netchan_t* chan, int length, byte* data)
+void Netchan_Transmit_(netchan_t* chan, int length, byte* data)
 {
-	QMsg send;
-	byte send_buf[MAX_MSGLEN_HW + PACKET_HEADER];
-	qboolean send_reliable;
-	unsigned w1, w2;
-	int i;
-
-// check for message overflow
-	if (chan->message.overflowed)
-	{
-		Con_Printf("%s:Outgoing message overflow\n",
-			SOCK_AdrToString(chan->remoteAddress));
-		return;
-	}
-
-// if the remote side dropped the last reliable message, resend it
-	send_reliable = false;
-
-	if (chan->incomingAcknowledged > chan->lastReliableSequence &&
-		chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
-	{
-		send_reliable = true;
-	}
-
-// if the reliable transmit buffer is empty, copy the current message out
-	if (!chan->reliableOrUnsentLength && chan->message.cursize)
-	{
-		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->messageBuffer, chan->message.cursize);
-		chan->reliableOrUnsentLength = chan->message.cursize;
-		chan->message.cursize = 0;
-		chan->outgoingReliableSequence ^= 1;
-		send_reliable = true;
-	}
-
-// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));
-
-	w1 = chan->outgoingSequence | (send_reliable << 31);
-	w2 = chan->incomingSequence | (chan->incomingReliableSequence << 31);
-
-	chan->outgoingSequence++;
-
-	send.WriteLong(w1);
-	send.WriteLong(w2);
-
-// copy the reliable message to the packet first
-	if (send_reliable)
-	{
-		send.WriteData(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentLength);
-		chan->lastReliableSequence = chan->outgoingSequence;
-	}
-
-// add the unreliable part if space is available
-	if (send.maxsize - send.cursize >= length)
-	{
-		send.WriteData(data, length);
-	}
-
-// send the datagram
-	i = chan->outgoingSequence & (MAX_LATENT - 1);
-
-	//zoid, no input in demo playback mode
-#ifndef SERVERONLY
-	if (!clc.demoplaying)
-#endif
-	NET_SendPacket(send.cursize, send._data, chan->remoteAddress);
+	Netchan_Transmit(chan, length, data);
 
 	if (chan->clearTime < realtime)
 	{
-		chan->clearTime = realtime + send.cursize * chan->rate;
+		chan->clearTime = realtime + (length + chan->reliableOrUnsentLength) * chan->rate;
 	}
 	else
 	{
-		chan->clearTime += send.cursize * chan->rate;
+		chan->clearTime += (length + chan->reliableOrUnsentLength) * chan->rate;
 	}
-
-	if (showpackets->value)
-	{
-		Con_Printf("--> s=%i(%i) a=%i(%i) %i\n",
-			chan->outgoingSequence,
-			send_reliable,
-			chan->incomingSequence,
-			chan->incomingReliableSequence,
-			send.cursize);
-	}
-
 }
 
 int packet_latency[256];
@@ -416,26 +293,6 @@ QMsg net_message;
 
 #define MAX_UDP_PACKET  (MAX_MSGLEN_HW + 9)		// one more than msg + header
 static byte net_message_buffer[MAX_UDP_PACKET];
-
-//=============================================================================
-extern unsigned char huffbuff[65536];
-
-void NET_SendPacket(int length, void* data, netadr_t to)
-{
-	int outlen;
-
-	HuffEncode((unsigned char*)data, huffbuff, length, &outlen);
-
-#if defined(_WIN32) && defined(_DEBUG)
-	char string[120];
-	sprintf(string,"in: %d  out: %d  ratio: %f\n",HuffIn, HuffOut, 1 - (float)HuffOut / (float)HuffIn);
-	OutputDebugString(string);
-
-	CalcFreq((unsigned char*)data, length);
-#endif
-
-	SOCK_Send(ip_sockets[0], huffbuff, outlen, &to);
-}
 
 //=============================================================================
 

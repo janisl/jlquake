@@ -119,6 +119,7 @@ void CL_SendCmd(void)
 		if (clc.netchan.message.cursize || curtime - clc.netchan.lastSent > 1000)
 		{
 			Netchan_Transmit(&clc.netchan, 0, clc.netchan.message._data);
+			clc.netchan.lastSent = curtime;
 		}
 		return;
 	}
@@ -185,6 +186,7 @@ void CL_SendCmd(void)
 	// deliver the message
 	//
 	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
+	clc.netchan.lastSent = curtime;
 }
 
 

@@ -120,14 +120,32 @@ struct loopback_t
 	bool canSend;
 };
 
+#define PACKET_HEADER   8
+
+#define FRAGMENT_BIT    (1 << 31)
+#define FRAGMENT_SIZE   (MAX_PACKETLEN - 100)
+
 extern Cvar* sv_hostname;
 extern loopback_t loopbacks[2];
 extern int ip_sockets[2];
+extern Cvar* sv_packetloss;
+extern Cvar* sv_packetdelay;
+extern Cvar* cl_packetloss;
+extern Cvar* cl_packetdelay;
+extern Cvar* showpackets;
+extern const char* netsrcString[2];
+extern Cvar* qport;
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
 bool NET_GetUdpPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
+void NET_SendPacket(netsrc_t sock, int length, const void* data, const netadr_t& to);
+void NET_OutOfBandPrint(netsrc_t sock, const netadr_t& adr, const char* format, ...) id_attribute((format(printf, 3, 4)));
+void NET_OutOfBandData(netsrc_t sock, const netadr_t& adr, const byte* data, int length);
+bool Netchan_NeedReliable(netchan_t* chan);
+void Netchan_TransmitNextFragment(netchan_t* chan);
+void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
 
 #define NET_NAME_ID         "HEXENII"
 

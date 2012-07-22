@@ -35,7 +35,7 @@ void SV_FlushRedirect(int sv_redirected, char* outputbuf)
 {
 	if (sv_redirected == RD_PACKET)
 	{
-		Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
+		NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
 	}
 }
 
@@ -90,6 +90,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 
 	// send the datagram
 	Netchan_Transmit(&client->netchan, msg.cursize, msg._data);
+	client->netchan.lastSent = curtime;
 
 	// record the size for rate estimation
 	client->q2_message_size[sv.q2_framenum % RATE_MESSAGES] = msg.cursize;
@@ -223,6 +224,7 @@ void SV_SendClientMessages(void)
 			)
 		{
 			Netchan_Transmit(&c->netchan, msglen, msgbuf);
+			c->netchan.lastSent = curtime;
 		}
 		else if (c->state == CS_ACTIVE)
 		{
@@ -240,6 +242,7 @@ void SV_SendClientMessages(void)
 			if (c->netchan.message.cursize  || curtime - c->netchan.lastSent > 1000)
 			{
 				Netchan_Transmit(&c->netchan, 0, NULL);
+				c->netchan.lastSent = curtime;
 			}
 		}
 	}

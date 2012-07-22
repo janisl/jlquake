@@ -178,7 +178,7 @@ void CL_SendConnectPacket(void)
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
 		255, 255, 255, 255, PROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo);
-	NET_SendPacket(String::Length(data), data, adr);
+	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
 }
 
 /*
@@ -222,7 +222,7 @@ void CL_CheckForResend(void)
 
 	Con_Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket(String::Length(data), data, adr);
+	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
 }
 
 void CL_BeginServerConnect(void)
@@ -311,7 +311,7 @@ void CL_Rcon_f(void)
 		SOCK_StringToAdr(rcon_address->string, &to, 27500);
 	}
 
-	NET_SendPacket(String::Length(message) + 1, message, to);
+	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
 }
 
 
@@ -396,9 +396,9 @@ void CL_Disconnect(void)
 
 		final[0] = q1clc_stringcmd;
 		String::Cpy((char*)final + 1, "drop");
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
+		Netchan_Transmit_(&clc.netchan, 6, final);
+		Netchan_Transmit_(&clc.netchan, 6, final);
+		Netchan_Transmit_(&clc.netchan, 6, final);
 
 		cls.state = CA_DISCONNECTED;
 
@@ -713,7 +713,7 @@ void CL_Packet_f(void)
 	}
 	*out = 0;
 
-	NET_SendPacket(out - send, send, adr);
+	NET_SendPacket(NS_CLIENT, out - send, send, adr);
 }
 
 
@@ -923,7 +923,7 @@ void CL_ConnectionlessPacket(void)
 		data[4] = A2A_ACK;
 		data[5] = 0;
 
-		NET_SendPacket(6, &data, net_from);
+		NET_SendPacket(NS_CLIENT, 6, &data, net_from);
 		return;
 	}
 

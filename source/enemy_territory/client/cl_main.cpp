@@ -87,9 +87,6 @@ Cvar* cl_waverecording;	//bani
 Cvar* cl_wavefilename;	//bani
 Cvar* cl_waveoffset;	//bani
 
-Cvar* cl_packetloss;	//bani
-Cvar* cl_packetdelay;		//bani
-
 vm_t* cgvm;
 
 ping_t cl_pinglist[MAX_PINGREQUESTS];

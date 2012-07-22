@@ -73,7 +73,7 @@ void SV_SetMaster_f(void)
 
 		common->Printf("Sending a ping.\n");
 
-		Netchan_OutOfBandPrint(NS_SERVER, master_adr[slot], "ping");
+		NET_OutOfBandPrint(NS_SERVER, master_adr[slot], "ping");
 
 		slot++;
 	}

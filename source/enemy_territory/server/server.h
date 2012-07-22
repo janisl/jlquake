@@ -77,8 +77,6 @@ extern Cvar* sv_reloading;
 
 //bani
 extern Cvar* sv_cheats;
-extern Cvar* sv_packetloss;
-extern Cvar* sv_packetdelay;
 
 //fretn
 extern Cvar* sv_fullmsg;

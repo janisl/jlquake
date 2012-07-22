@@ -54,23 +54,11 @@ to the new value before sending out any replies.
 */
 
 
-#define FRAGMENT_SIZE           (MAX_PACKETLEN - 100)
-#define PACKET_HEADER           10			// two ints and a short
-
-#define FRAGMENT_BIT    (1 << 31)
-
-Cvar* showpackets;
 Cvar* showdrop;
-Cvar* qport;
 
 static bool networkingEnabled = false;
 
 static Cvar* net_noudp;
-
-static const char* netsrcString[2] = {
-	"client",
-	"server"
-};
 
 /*
 ===============
@@ -102,126 +90,6 @@ void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
 	chan->qport = qport;
 	chan->incomingSequence = 0;
 	chan->outgoingSequence = 1;
-}
-
-/*
-=================
-Netchan_TransmitNextFragment
-
-Send one fragment of the current message
-=================
-*/
-void Netchan_TransmitNextFragment(netchan_t* chan)
-{
-	QMsg send;
-	byte send_buf[MAX_PACKETLEN];
-	int fragmentLength;
-
-	// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));						// <-- only do the oob here
-
-	send.WriteLong(chan->outgoingSequence | FRAGMENT_BIT);
-
-	// send the qport if we are a client
-	if (chan->sock == NS_CLIENT)
-	{
-		send.WriteShort(qport->integer);
-	}
-
-	// copy the reliable message to the packet first
-	fragmentLength = FRAGMENT_SIZE;
-	if (chan->unsentFragmentStart  + fragmentLength > chan->reliableOrUnsentLength)
-	{
-		fragmentLength = chan->reliableOrUnsentLength - chan->unsentFragmentStart;
-	}
-
-	send.WriteShort(chan->unsentFragmentStart);
-	send.WriteShort(fragmentLength);
-	send.WriteData(chan->reliableOrUnsentBuffer + chan->unsentFragmentStart, fragmentLength);
-
-	// send the datagram
-	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
-
-	if (showpackets->integer)
-	{
-		Com_Printf("%s send %4i : s=%i fragment=%i,%i\n",
-			netsrcString[chan->sock],
-			send.cursize,
-			chan->outgoingSequence,
-			chan->unsentFragmentStart, fragmentLength);
-	}
-
-	chan->unsentFragmentStart += fragmentLength;
-
-	// this exit condition is a little tricky, because a packet
-	// that is exactly the fragment length still needs to send
-	// a second packet of zero length so that the other side
-	// can tell there aren't more to follow
-	if (chan->unsentFragmentStart == chan->reliableOrUnsentLength && fragmentLength != FRAGMENT_SIZE)
-	{
-		chan->outgoingSequence++;
-		chan->unsentFragments = qfalse;
-	}
-}
-
-
-/*
-===============
-Netchan_Transmit
-
-Sends a message to a connection, fragmenting if necessary
-A 0 length will still generate a packet.
-================
-*/
-void Netchan_Transmit(netchan_t* chan, int length, const byte* data)
-{
-	QMsg send;
-	byte send_buf[MAX_PACKETLEN];
-
-	if (length > MAX_MSGLEN_WOLF)
-	{
-		Com_Error(ERR_DROP, "Netchan_Transmit: length = %i", length);
-	}
-	chan->unsentFragmentStart = 0;
-
-	// fragment large reliable messages
-	if (length >= FRAGMENT_SIZE)
-	{
-		chan->unsentFragments = qtrue;
-		chan->reliableOrUnsentLength = length;
-		Com_Memcpy(chan->reliableOrUnsentBuffer, data, length);
-
-		// only send the first fragment now
-		Netchan_TransmitNextFragment(chan);
-
-		return;
-	}
-
-	// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));
-
-	send.WriteLong(chan->outgoingSequence);
-	chan->outgoingSequence++;
-
-	// send the qport if we are a client
-	if (chan->sock == NS_CLIENT)
-	{
-		send.WriteShort(qport->integer);
-	}
-
-	send.WriteData(data, length);
-
-	// send the datagram
-	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
-
-	if (showpackets->integer)
-	{
-		Com_Printf("%s send %4i : s=%i ack=%i\n",
-			netsrcString[chan->sock],
-			send.cursize,
-			chan->outgoingSequence - 1,
-			chan->incomingSequence);
-	}
 }
 
 /*
@@ -416,103 +284,6 @@ qboolean Netchan_Process(netchan_t* chan, QMsg* msg)
 }
 
 //=============================================================================
-
-
-void NET_SendPacket(netsrc_t sock, int length, const void* data, netadr_t to)
-{
-
-	// sequenced packets are shown in netchan, so just show oob
-	if (showpackets->integer && *(int*)data == -1)
-	{
-		Com_Printf("send packet %4i\n", length);
-	}
-
-	if (to.type == NA_LOOPBACK)
-	{
-		NET_SendLoopPacket(sock, length, data, 1);
-		return;
-	}
-	if (to.type == NA_BOT)
-	{
-		return;
-	}
-	if (to.type == NA_BAD)
-	{
-		return;
-	}
-
-	if (to.type != NA_BROADCAST && to.type != NA_IP)
-	{
-		Com_Error(ERR_FATAL, "NET_SendPacket: bad address type");
-		return;
-	}
-
-	if (!ip_sockets[0])
-	{
-		return;
-	}
-
-	SOCK_Send(ip_sockets[0], data, length, &to);
-}
-
-/*
-===============
-NET_OutOfBandPrint
-
-Sends a text message in an out-of-band datagram
-================
-*/
-void QDECL NET_OutOfBandPrint(netsrc_t sock, netadr_t adr, const char* format, ...)
-{
-	va_list argptr;
-	char string[MAX_MSGLEN_WOLF];
-
-	// set the header
-	string[0] = -1;
-	string[1] = -1;
-	string[2] = -1;
-	string[3] = -1;
-
-	va_start(argptr, format);
-	Q_vsnprintf(string + 4, sizeof(string) - 4, format, argptr);
-	va_end(argptr);
-
-	// send the datagram
-	NET_SendPacket(sock, String::Length(string), string, adr);
-}
-
-
-
-/*
-===============
-NET_OutOfBandPrint
-
-Sends a data message in an out-of-band datagram (only used for "connect")
-================
-*/
-void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte* format, int len)
-{
-	byte string[MAX_MSGLEN_WOLF * 2];
-	int i;
-	QMsg mbuf;
-
-	// set the header
-	string[0] = 0xff;
-	string[1] = 0xff;
-	string[2] = 0xff;
-	string[3] = 0xff;
-
-	for (i = 0; i < len; i++)
-	{
-		string[i + 4] = format[i];
-	}
-
-	mbuf._data = string;
-	mbuf.cursize = len + 4;
-	Huff_Compress(&mbuf, 12);
-	// send the datagram
-	NET_SendPacket(sock, mbuf.cursize, mbuf._data, adr);
-}
 
 /*
 ====================

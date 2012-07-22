@@ -418,7 +418,7 @@ void CL_SendConnectPacket(void)
 	port = Cvar_VariableValue("qport");
 	cvar_modifiedFlags &= ~CVAR_USERINFO;
 
-	Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
+	NET_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
 		Q2PROTOCOL_VERSION, port, cls.challenge,
 		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
 			MAX_INFO_VALUE_Q2, true, false));
@@ -469,7 +469,7 @@ void CL_CheckForResend(void)
 
 	Com_Printf("Connecting to %s...\n", cls.servername);
 
-	Netchan_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
+	NET_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
 }
 
 
@@ -640,6 +640,7 @@ void CL_Disconnect(void)
 	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
 	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
 	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
+	clc.netchan.lastSent = curtime;
 
 	CL_ClearState();
 
@@ -818,7 +819,7 @@ void CL_PingServers_f(void)
 	{
 		adr.type = NA_BROADCAST;
 		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
+		NET_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
 	}
 
 	// send a packet to each address book entry
@@ -837,7 +838,7 @@ void CL_PingServers_f(void)
 			Com_Printf("Bad address: %s\n", adrstring);
 			continue;
 		}
-		Netchan_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
+		NET_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
 	}
 }
 
@@ -938,7 +939,7 @@ void CL_ConnectionlessPacket(void)
 	// ping from somewhere
 	if (!String::Cmp(c, "ping"))
 	{
-		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "ack");
+		NET_OutOfBandPrint(NS_CLIENT, net_from, "ack");
 		return;
 	}
 
@@ -953,7 +954,7 @@ void CL_ConnectionlessPacket(void)
 	// echo request from server
 	if (!String::Cmp(c, "echo"))
 	{
-		Netchan_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
+		NET_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
 		return;
 	}
 

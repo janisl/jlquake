@@ -74,9 +74,7 @@ then a packet only needs to be delivered if there is something in the
 unacknowledged reliable
 */
 
-Cvar* showpackets;
 Cvar* showdrop;
-Cvar* qport;
 
 netadr_t net_from;
 QMsg net_message;
@@ -99,48 +97,6 @@ void Netchan_Init(void)
 	showdrop = Cvar_Get("showdrop", "0", 0);
 	qport = Cvar_Get("qport", va("%i", port), CVAR_INIT);
 }
-
-/*
-===============
-Netchan_OutOfBand
-
-Sends an out-of-band datagram
-================
-*/
-void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data)
-{
-	QMsg send;
-	byte send_buf[MAX_MSGLEN_Q2];
-
-// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));
-
-	send.WriteLong(-1);	// -1 sequence means out of band
-	send.WriteData(data, length);
-
-// send the datagram
-	NET_SendPacket((netsrc_t)net_socket, send.cursize, send._data, adr);
-}
-
-/*
-===============
-Netchan_OutOfBandPrint
-
-Sends a text message in an out-of-band datagram
-================
-*/
-void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, const char* format, ...)
-{
-	va_list argptr;
-	static char string[MAX_MSGLEN_Q2 - 4];
-
-	va_start(argptr, format);
-	Q_vsnprintf(string, sizeof(string), format, argptr);
-	va_end(argptr);
-
-	Netchan_OutOfBand(net_socket, adr, String::Length(string), (byte*)string);
-}
-
 
 /*
 ==============
@@ -179,125 +135,6 @@ qboolean Netchan_CanReliable(netchan_t* chan)
 		return false;			// waiting for ack
 	}
 	return true;
-}
-
-
-qboolean Netchan_NeedReliable(netchan_t* chan)
-{
-	qboolean send_reliable;
-
-// if the remote side dropped the last reliable message, resend it
-	send_reliable = false;
-
-	if (chan->incomingAcknowledged > chan->lastReliableSequence &&
-		chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
-	{
-		send_reliable = true;
-	}
-
-// if the reliable transmit buffer is empty, copy the current message out
-	if (!chan->reliableOrUnsentLength && chan->message.cursize)
-	{
-		send_reliable = true;
-	}
-
-	return send_reliable;
-}
-
-/*
-===============
-Netchan_Transmit
-
-tries to send an unreliable message to a connection, and handles the
-transmition / retransmition of the reliable messages.
-
-A 0 length will still generate a packet and deal with the reliable messages.
-================
-*/
-void Netchan_Transmit(netchan_t* chan, int length, byte* data)
-{
-	QMsg send;
-	byte send_buf[MAX_MSGLEN_Q2];
-	qboolean send_reliable;
-	unsigned w1, w2;
-
-// check for message overflow
-	if (chan->message.overflowed)
-	{
-		Com_Printf("%s:Outgoing message overflow\n",
-			SOCK_AdrToString(chan->remoteAddress));
-		return;
-	}
-
-	send_reliable = Netchan_NeedReliable(chan);
-
-	if (!chan->reliableOrUnsentLength && chan->message.cursize)
-	{
-		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->messageBuffer, chan->message.cursize);
-		chan->reliableOrUnsentLength = chan->message.cursize;
-		chan->message.cursize = 0;
-		chan->outgoingReliableSequence ^= 1;
-	}
-
-
-// write the packet header
-	send.InitOOB(send_buf, sizeof(send_buf));
-
-	w1 = (chan->outgoingSequence & ~(1 << 31)) | (send_reliable << 31);
-	w2 = (chan->incomingSequence & ~(1 << 31)) | (chan->incomingReliableSequence << 31);
-
-	chan->outgoingSequence++;
-	chan->lastSent = curtime;
-
-	send.WriteLong(w1);
-	send.WriteLong(w2);
-
-	// send the qport if we are a client
-	if (chan->sock == NS_CLIENT)
-	{
-		send.WriteShort(qport->value);
-	}
-
-// copy the reliable message to the packet first
-	if (send_reliable)
-	{
-		send.WriteData(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentLength);
-		chan->lastReliableSequence = chan->outgoingSequence;
-	}
-
-// add the unreliable part if space is available
-	if (send.maxsize - send.cursize >= length)
-	{
-		send.WriteData(data, length);
-	}
-	else
-	{
-		Com_Printf("Netchan_Transmit: dumped unreliable\n");
-	}
-
-// send the datagram
-	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
-
-	if (showpackets->value)
-	{
-		if (send_reliable)
-		{
-			Com_Printf("send %4i : s=%i reliable=%i ack=%i rack=%i\n",
-				send.cursize,
-				chan->outgoingSequence - 1,
-				chan->outgoingReliableSequence,
-				chan->incomingSequence,
-				chan->incomingReliableSequence);
-		}
-		else
-		{
-			Com_Printf("send %4i : s=%i ack=%i rack=%i\n",
-				send.cursize,
-				chan->outgoingSequence - 1,
-				chan->incomingSequence,
-				chan->incomingReliableSequence);
-		}
-	}
 }
 
 /*
@@ -408,49 +245,6 @@ qboolean Netchan_Process(netchan_t* chan, QMsg* msg)
 	chan->lastReceived = curtime;
 
 	return true;
-}
-
-//=============================================================================
-
-void NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to)
-{
-	int net_socket;
-
-	if (to.type == NA_LOOPBACK)
-	{
-		NET_SendLoopPacket(sock, length, data, 1);
-		return;
-	}
-
-	if (to.type == NA_BROADCAST)
-	{
-		net_socket = ip_sockets[sock];
-		if (!net_socket)
-		{
-			return;
-		}
-	}
-	else if (to.type == NA_IP)
-	{
-		net_socket = ip_sockets[sock];
-		if (!net_socket)
-		{
-			return;
-		}
-	}
-	else
-	{
-		Com_Error(ERR_FATAL, "NET_SendPacket: bad address type");
-	}
-
-	int ret = SOCK_Send(net_socket, data, length, &to);
-	if (ret == SOCKSEND_ERROR)
-	{
-		if (!com_dedicated->value)	// let dedicated servers continue after errors
-		{
-			Com_Error(ERR_DROP, "NET_SendPacket ERROR");
-		}
-	}
 }
 
 //=============================================================================

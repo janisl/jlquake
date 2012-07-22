@@ -5,7 +5,6 @@ extern QMsg net_message;
 
 void        NET_Init(int port);
 void        NET_Shutdown(void);
-void        NET_SendPacket(int length, void* data, netadr_t to);
 
 //============================================================================
 
@@ -14,9 +13,7 @@ void        NET_SendPacket(int length, void* data, netadr_t to);
 #define MAX_LATENT  32
 
 void Netchan_Init(void);
-void Netchan_Transmit(netchan_t* chan, int length, byte* data);
-void Netchan_OutOfBand(netadr_t adr, int length, byte* data);
-void Netchan_OutOfBandPrint(netadr_t adr, const char* format, ...);
+void Netchan_Transmit_(netchan_t* chan, int length, byte* data);
 qboolean Netchan_Process(netchan_t* chan);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr);
 

@@ -112,14 +112,10 @@ NET
 
 // net.h -- quake's interface to the networking layer
 
-#define PACKET_HEADER   10			// two ints and a short
-
 void        NET_Init(void);
 void        NET_Shutdown(void);
 
 void        NET_Config(qboolean multiplayer);
-
-void        NET_SendPacket(netsrc_t sock, int length, void* data, netadr_t to);
 
 void        NET_Sleep(int msec);
 
@@ -137,10 +133,6 @@ extern byte net_message_buffer[MAX_MSGLEN_Q2];
 void Netchan_Init(void);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport);
 
-qboolean Netchan_NeedReliable(netchan_t* chan);
-void Netchan_Transmit(netchan_t* chan, int length, byte* data);
-void Netchan_OutOfBand(int net_socket, netadr_t adr, int length, byte* data);
-void Netchan_OutOfBandPrint(int net_socket, netadr_t adr, const char* format, ...);
 qboolean Netchan_Process(netchan_t* chan, QMsg* msg);
 
 qboolean Netchan_CanReliable(netchan_t* chan);

@@ -165,7 +165,7 @@ void CL_SendCmd(void)
 //
 // deliver the message
 //
-	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
+	Netchan_Transmit_(&clc.netchan, buf.cursize, buf._data);
 }
 
 /*

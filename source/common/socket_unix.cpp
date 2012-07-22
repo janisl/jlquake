@@ -56,7 +56,7 @@ static sockaddr socksRelayAddr;
 //
 //==========================================================================
 
-static void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
+static void NetadrToSockadr(const netadr_t* a, sockaddr_in* s)
 {
 	Com_Memset(s, 0, sizeof(*s));
 
@@ -577,28 +577,28 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 //
 //==========================================================================
 
-int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
+int SOCK_Send(int socket, const void* data, int length, const netadr_t& to)
 {
 	sockaddr_in addr;
-	NetadrToSockadr(To, &addr);
+	NetadrToSockadr(&to, &addr);
 
 	int ret;
-	if (usingSocks && To->type == NA_IP)
+	if (usingSocks && to.type == NA_IP)
 	{
 		Array<char> socksBuf;
-		socksBuf.SetNum(Length + 10);
+		socksBuf.SetNum(length + 10);
 		socksBuf[0] = 0;	// reserved
 		socksBuf[1] = 0;
 		socksBuf[2] = 0;	// fragment (not fragmented)
 		socksBuf[3] = 1;	// address type: IPV4
 		*(int*)&socksBuf[4] = addr.sin_addr.s_addr;
 		*(short*)&socksBuf[8] = addr.sin_port;
-		Com_Memcpy(&socksBuf[10], Data, Length);
-		ret = sendto(Socket, socksBuf.Ptr(), Length + 10, 0, &socksRelayAddr, sizeof(socksRelayAddr));
+		Com_Memcpy(&socksBuf[10], data, length);
+		ret = sendto(socket, socksBuf.Ptr(), length + 10, 0, &socksRelayAddr, sizeof(socksRelayAddr));
 	}
 	else
 	{
-		ret = sendto(Socket, Data, Length, 0, (struct sockaddr*)&addr, sizeof(addr));
+		ret = sendto(socket, data, length, 0, (struct sockaddr*)&addr, sizeof(addr));
 	}
 
 	if (ret == -1)
@@ -612,7 +612,7 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
 		}
 
 		// some PPP links do not allow broadcasts and return an error
-		if ((err == EADDRNOTAVAIL) && (To->type == NA_BROADCAST))
+		if ((err == EADDRNOTAVAIL) && (to.type == NA_BROADCAST))
 		{
 			return SOCKSEND_WOULDBLOCK;
 		}

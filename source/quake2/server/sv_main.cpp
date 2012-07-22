@@ -55,7 +55,7 @@ Responds with all the info that qplug or qspy can see
 */
 void SVC_Status(void)
 {
-	Netchan_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SVQ2_StatusString());
+	NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SVQ2_StatusString());
 #if 0
 	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
 	Com_Printf(SVQ2_StatusString());
@@ -111,7 +111,7 @@ void SVC_Info(void)
 		String::Sprintf(string, sizeof(string), "%16s %8s %2i/%2i\n", sv_hostname->string, sv.name, count, (int)sv_maxclients->value);
 	}
 
-	Netchan_OutOfBandPrint(NS_SERVER, net_from, "info\n%s", string);
+	NET_OutOfBandPrint(NS_SERVER, net_from, "info\n%s", string);
 }
 
 /*
@@ -123,7 +123,7 @@ Just responds with an acknowledgement
 */
 void SVC_Ping(void)
 {
-	Netchan_OutOfBandPrint(NS_SERVER, net_from, "ack");
+	NET_OutOfBandPrint(NS_SERVER, net_from, "ack");
 }
 
 
@@ -171,7 +171,7 @@ void SVC_GetChallenge(void)
 	}
 
 	// send it back
-	Netchan_OutOfBandPrint(NS_SERVER, net_from, "challenge %i", svs.challenges[i].challenge);
+	NET_OutOfBandPrint(NS_SERVER, net_from, "challenge %i", svs.challenges[i].challenge);
 }
 
 /*
@@ -201,7 +201,7 @@ void SVC_DirectConnect(void)
 	version = String::Atoi(Cmd_Argv(1));
 	if (version != Q2PROTOCOL_VERSION)
 	{
-		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %4.2f.\n", VERSION);
+		NET_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %4.2f.\n", VERSION);
 		Com_DPrintf("    rejected connect from version %i\n", version);
 		return;
 	}
@@ -223,7 +223,7 @@ void SVC_DirectConnect(void)
 		if (!SOCK_IsLocalAddress(adr))
 		{
 			Com_Printf("Remote connect in attract loop.  Ignored.\n");
-			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
+			NET_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 			return;
 		}
 	}
@@ -239,13 +239,13 @@ void SVC_DirectConnect(void)
 				{
 					break;		// good
 				}
-				Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nBad challenge.\n");
+				NET_OutOfBandPrint(NS_SERVER, adr, "print\nBad challenge.\n");
 				return;
 			}
 		}
 		if (i == MAX_CHALLENGES)
 		{
-			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nNo challenge for address.\n");
+			NET_OutOfBandPrint(NS_SERVER, adr, "print\nNo challenge for address.\n");
 			return;
 		}
 	}
@@ -287,7 +287,7 @@ void SVC_DirectConnect(void)
 	}
 	if (!newcl)
 	{
-		Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nServer is full.\n");
+		NET_OutOfBandPrint(NS_SERVER, adr, "print\nServer is full.\n");
 		Com_DPrintf("Rejected a connection.\n");
 		return;
 	}
@@ -307,12 +307,12 @@ gotnewcl:
 	{
 		if (*Info_ValueForKey(userinfo, "rejmsg"))
 		{
-			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\n%s\nConnection refused.\n",
+			NET_OutOfBandPrint(NS_SERVER, adr, "print\n%s\nConnection refused.\n",
 				Info_ValueForKey(userinfo, "rejmsg"));
 		}
 		else
 		{
-			Netchan_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
+			NET_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 		}
 		Com_DPrintf("Game rejected a connection.\n");
 		return;
@@ -323,7 +323,7 @@ gotnewcl:
 	SVQ2_UserinfoChanged(newcl);
 
 	// send the connect packet to the client
-	Netchan_OutOfBandPrint(NS_SERVER, adr, "client_connect");
+	NET_OutOfBandPrint(NS_SERVER, adr, "client_connect");
 
 	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
 
@@ -842,7 +842,7 @@ void Master_Heartbeat(void)
 		if (master_adr[i].port)
 		{
 			Com_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
+			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
 		}
 }
 
@@ -875,7 +875,7 @@ void Master_Shutdown(void)
 			{
 				Com_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
 			}
-			Netchan_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
+			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
 		}
 }
 
@@ -963,6 +963,7 @@ void SV_FinalMessage(const char* message, qboolean reconnect)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
+			cl->netchan.lastSent = curtime;
 		}
 
 	for (i = 0, cl = svs.clients; i < sv_maxclients->value; i++, cl++)
@@ -970,6 +971,7 @@ void SV_FinalMessage(const char* message, qboolean reconnect)
 		{
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
+			cl->netchan.lastSent = curtime;
 		}
 }
 

@@ -60,8 +60,6 @@ Cvar* sv_showAverageBPS;		// NERVE - SMF - net debugging
 
 //bani
 Cvar* sv_cheats;
-Cvar* sv_packetloss;
-Cvar* sv_packetdelay;
 
 // fretn
 Cvar* sv_fullmsg;

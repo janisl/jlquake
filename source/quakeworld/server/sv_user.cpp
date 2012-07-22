@@ -599,7 +599,7 @@ void OutofBandPrintf(netadr_t where, const char* fmt, ...)
 	Q_vsnprintf(send + 5, 1024 - 5, fmt, argptr);
 	va_end(argptr);
 
-	NET_SendPacket(String::Length(send) + 1, send, where);
+	NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, where);
 }
 
 /*

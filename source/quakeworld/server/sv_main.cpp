@@ -169,7 +169,7 @@ void SV_FinalMessage(const char* message)
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		if (cl->state >= CS_ACTIVE)
 		{
-			Netchan_Transmit(&cl->netchan, net_message.cursize,
+			Netchan_Transmit_(&cl->netchan, net_message.cursize,
 				net_message._data);
 		}
 }
@@ -439,7 +439,7 @@ void SVC_Log(void)
 	if (seq == svs.qh_logsequence - 1 || !svqhw_fraglogfile)
 	{	// they allready have this data, or we aren't logging frags
 		data[0] = A2A_NACK;
-		NET_SendPacket(1, data, net_from);
+		NET_SendPacket(NS_SERVER, 1, data, net_from);
 		return;
 	}
 
@@ -448,7 +448,7 @@ void SVC_Log(void)
 	sprintf(data, "stdlog %i\n", svs.qh_logsequence - 1);
 	String::Cat(data, sizeof(data), (char*)svs.qh_log_buf[((svs.qh_logsequence - 1) & 1)]);
 
-	NET_SendPacket(String::Length(data) + 1, data, net_from);
+	NET_SendPacket(NS_SERVER, String::Length(data) + 1, data, net_from);
 }
 
 /*
@@ -464,7 +464,7 @@ void SVC_Ping(void)
 
 	data = A2A_ACK;
 
-	NET_SendPacket(1, &data, net_from);
+	NET_SendPacket(NS_SERVER, 1, &data, net_from);
 }
 
 /*
@@ -511,7 +511,7 @@ void SVC_GetChallenge(void)
 	}
 
 	// send it back
-	Netchan_OutOfBandPrint(net_from, "%c%i", S2C_CHALLENGE,
+	NET_OutOfBandPrint(NS_SERVER, net_from, "%c%i", S2C_CHALLENGE,
 		svs.challenges[i].challenge);
 }
 
@@ -542,7 +542,7 @@ void SVC_DirectConnect(void)
 	version = String::Atoi(Cmd_Argv(1));
 	if (version != PROTOCOL_VERSION)
 	{
-		Netchan_OutOfBandPrint(net_from, "%c\nServer is version %4.2f.\n", A2C_PRINT, VERSION);
+		NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nServer is version %4.2f.\n", A2C_PRINT, VERSION);
 		Con_Printf("* rejected connect from version %i\n", version);
 		return;
 	}
@@ -564,13 +564,13 @@ void SVC_DirectConnect(void)
 			{
 				break;		// good
 			}
-			Netchan_OutOfBandPrint(net_from, "%c\nBad challenge.\n", A2C_PRINT);
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nBad challenge.\n", A2C_PRINT);
 			return;
 		}
 	}
 	if (i == MAX_CHALLENGES)
 	{
-		Netchan_OutOfBandPrint(net_from, "%c\nNo challenge for address.\n", A2C_PRINT);
+		NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nNo challenge for address.\n", A2C_PRINT);
 		return;
 	}
 
@@ -583,7 +583,7 @@ void SVC_DirectConnect(void)
 			String::Cmp(spectator_password->string, s))
 		{	// failed
 			Con_Printf("%s:spectator password failed\n", SOCK_AdrToString(net_from));
-			Netchan_OutOfBandPrint(net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
 		Info_RemoveKey(userinfo, "spectator", MAX_INFO_STRING_QW);	// remove passwd
@@ -598,7 +598,7 @@ void SVC_DirectConnect(void)
 			String::Cmp(password->string, s))
 		{
 			Con_Printf("%s:password failed\n", SOCK_AdrToString(net_from));
-			Netchan_OutOfBandPrint(net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
 			return;
 		}
 		spectator = false;
@@ -690,7 +690,7 @@ void SVC_DirectConnect(void)
 		(!spectator && clients >= (int)sv_maxclients->value))
 	{
 		Con_Printf("%s:full connect\n", SOCK_AdrToString(adr));
-		Netchan_OutOfBandPrint(adr, "%c\nserver is full\n\n", A2C_PRINT);
+		NET_OutOfBandPrint(NS_SERVER, adr, "%c\nserver is full\n\n", A2C_PRINT);
 		return;
 	}
 
@@ -716,7 +716,7 @@ void SVC_DirectConnect(void)
 	// this is the only place a client_t is ever initialized
 	*newcl = temp;
 
-	Netchan_OutOfBandPrint(adr, "%c", S2C_CONNECTION);
+	NET_OutOfBandPrint(NS_SERVER, adr, "%c", S2C_CONNECTION);
 
 	edictnum = (newcl - svs.clients) + 1;
 
@@ -1104,7 +1104,7 @@ void SV_SendBan(void)
 	data[5] = 0;
 	String::Cat(data, sizeof(data), "\nbanned.\n");
 
-	NET_SendPacket(String::Length(data), data, net_from);
+	NET_SendPacket(NS_SERVER, String::Length(data), data, net_from);
 }
 
 /*
@@ -1533,7 +1533,7 @@ void Master_Heartbeat(void)
 		if (master_adr[i].port)
 		{
 			Con_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			NET_SendPacket(String::Length(string), string, master_adr[i]);
+			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
 		}
 }
 
@@ -1556,7 +1556,7 @@ void Master_Shutdown(void)
 		if (master_adr[i].port)
 		{
 			Con_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			NET_SendPacket(String::Length(string), string, master_adr[i]);
+			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
 		}
 }
 

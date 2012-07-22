@@ -57,7 +57,7 @@ void SV_FlushRedirect(void)
 		send[4] = A2C_PRINT;
 		Com_Memcpy(send + 5, outputbuf, String::Length(outputbuf) + 1);
 
-		NET_SendPacket(String::Length(send) + 1, send, net_from);
+		NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, net_from);
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
@@ -439,7 +439,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	}
 
 	// send the datagram
-	Netchan_Transmit(&client->netchan, msg.cursize, buf);
+	Netchan_Transmit_(&client->netchan, msg.cursize, buf);
 
 	return true;
 }
@@ -629,7 +629,7 @@ void SV_SendClientMessages(void)
 		}
 		else
 		{
-			Netchan_Transmit(&c->netchan, 0, NULL);		// just update reliable
+			Netchan_Transmit_(&c->netchan, 0, NULL);		// just update reliable
 
 		}
 	}

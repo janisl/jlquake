@@ -16,13 +16,41 @@
 
 #include "qcommon.h"
 
+struct delaybuf_t
+{
+	netsrc_t sock;
+	int length;
+	char data[MAX_PACKETLEN];
+	netadr_t to;
+	int time;
+	delaybuf_t* next;
+};
+
 Cvar* sv_hostname;
 
 loopback_t loopbacks[2];
 
-unsigned char huffbuff[65536];
+static unsigned char huffbuff[65536];
 
 int ip_sockets[2];
+
+Cvar* sv_packetloss;
+Cvar* sv_packetdelay;
+Cvar* cl_packetloss;
+Cvar* cl_packetdelay;
+Cvar* showpackets;
+Cvar* qport;
+
+static delaybuf_t* sv_delaybuf_head = NULL;
+static delaybuf_t* sv_delaybuf_tail = NULL;
+static delaybuf_t* cl_delaybuf_head = NULL;
+static delaybuf_t* cl_delaybuf_tail = NULL;
+
+const char* netsrcString[2] =
+{
+	"client",
+	"server"
+};
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 {
@@ -109,4 +137,387 @@ bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 	}
 
 	return NET_GetUdpPacket(sock, net_from, net_message);
+}
+
+static void NET_DoSendPacket(netsrc_t sock, int length, const void* data, const netadr_t& to)
+{
+	// sequenced packets are shown in netchan, so just show oob
+	if (showpackets->integer && *(int*)data == -1)
+	{
+		common->Printf("send packet %4i\n", length);
+	}
+
+	if (to.type == NA_LOOPBACK)
+	{
+		NET_SendLoopPacket(sock, length, data, 1);
+		return;
+	}
+	if (to.type == NA_BOT)
+	{
+		return;
+	}
+	if (to.type == NA_BAD)
+	{
+		return;
+	}
+
+	if (to.type != NA_BROADCAST && to.type != NA_IP)
+	{
+		common->FatalError("NET_SendPacket: bad address type");
+		return;
+	}
+
+	if (!ip_sockets[sock])
+	{
+		return;
+	}
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		int outlen;
+		HuffEncode((unsigned char*)data, huffbuff, length, &outlen);
+		SOCK_Send(ip_sockets[sock], huffbuff, outlen, to);
+	}
+	else
+	{
+		int ret = SOCK_Send(ip_sockets[sock], data, length, to);
+		if (GGameType & GAME_Quake2 && ret == SOCKSEND_ERROR)
+		{
+			if (!com_dedicated->value)	// let dedicated servers continue after errors
+			{
+				common->Error("NET_SendPacket ERROR");
+			}
+		}
+	}
+}
+
+//	tries to send an unreliable message to a connection, and handles the
+// transmition / retransmition of the reliable messages.
+//	Sends a message to a connection, fragmenting if necessary
+//	A 0 length will still generate a packet and deal with the reliable messages.
+void NET_SendPacket(netsrc_t sock, int length, const void* data, const netadr_t& to)
+{
+	if (GGameType & GAME_ET)
+	{
+		int packetloss, packetdelay;
+		delaybuf_t** delaybuf_head, ** delaybuf_tail;
+
+		switch (sock)
+		{
+		case NS_CLIENT:
+			packetloss = cl_packetloss->integer;
+			packetdelay = cl_packetdelay->integer;
+			delaybuf_head = &cl_delaybuf_head;
+			delaybuf_tail = &cl_delaybuf_tail;
+			break;
+		case NS_SERVER:
+			packetloss = sv_packetloss->integer;
+			packetdelay = sv_packetdelay->integer;
+			delaybuf_head = &sv_delaybuf_head;
+			delaybuf_tail = &sv_delaybuf_tail;
+			break;
+		}
+
+		if (packetloss > 0)
+		{
+			if (((float)rand() / RAND_MAX) * 100 <= packetloss)
+			{
+				if (showpackets->integer)
+				{
+					common->Printf("drop packet %4i\n", length);
+				}
+				return;
+			}
+		}
+
+		if (packetdelay)
+		{
+			int curtime;
+			delaybuf_t* buf, * nextbuf;
+
+			curtime = Sys_Milliseconds();
+
+			//send any scheduled packets, starting from oldest
+			for (buf = *delaybuf_head; buf; buf = nextbuf)
+			{
+
+				if ((buf->time + packetdelay) > curtime)
+				{
+					break;
+				}
+
+				if (showpackets->integer)
+				{
+					common->Printf("delayed packet(%dms) %4i\n", buf->time - curtime, buf->length);
+				}
+
+				NET_DoSendPacket(sock, buf->length, buf->data, buf->to);
+
+				// remove from queue
+				nextbuf = buf->next;
+				*delaybuf_head = nextbuf;
+				if (!*delaybuf_head)
+				{
+					*delaybuf_tail = NULL;
+				}
+				Mem_Free(buf);
+			}
+
+			// create buffer and add it to the queue
+			buf = (delaybuf_t*)Mem_Alloc(sizeof(*buf));
+			buf->sock = sock;
+			buf->length = length;
+			Com_Memcpy(buf->data, data, length);
+			buf->to = to;
+			buf->time = curtime;
+			buf->next = NULL;
+
+			if (*delaybuf_head)
+			{
+				(*delaybuf_tail)->next = buf;
+			}
+			else
+			{
+				*delaybuf_head = buf;
+			}
+			*delaybuf_tail = buf;
+
+			return;
+		}
+	}
+
+	NET_DoSendPacket(sock, length, data, to);
+}
+
+//	Sends a text message in an out-of-band datagram
+void NET_OutOfBandPrint(netsrc_t sock, const netadr_t& adr, const char* format, ...)
+{
+	va_list argptr;
+	char string[MAX_MSGLEN];
+
+	// set the header
+	string[0] = -1;
+	string[1] = -1;
+	string[2] = -1;
+	string[3] = -1;
+
+	va_start(argptr, format);
+	Q_vsnprintf(string + 4, sizeof(string) - 4, format, argptr);
+	va_end(argptr);
+
+	// send the datagram
+	NET_SendPacket(sock, String::Length(string), string, adr);
+}
+
+//	Sends a data message in an out-of-band datagram (only used for "connect")
+void NET_OutOfBandData(netsrc_t sock, const netadr_t& adr, const byte* data, int length)
+{
+	byte buffer[MAX_MSGLEN_Q3 * 2];
+
+	// set the header
+	buffer[0] = 0xff;
+	buffer[1] = 0xff;
+	buffer[2] = 0xff;
+	buffer[3] = 0xff;
+
+	for (int i = 0; i < length; i++)
+	{
+		buffer[i + 4] = data[i];
+	}
+
+	QMsg mbuf;
+	mbuf._data = buffer;
+	mbuf.cursize = length + 4;
+	Huff_Compress(&mbuf, 12);
+	// send the datagram
+	NET_SendPacket(sock, mbuf.cursize, mbuf._data, adr);
+}
+
+bool Netchan_NeedReliable(netchan_t* chan)
+{
+	if (GGameType & GAME_Tech3)
+	{
+		return false;
+	}
+
+	// if the remote side dropped the last reliable message, resend it
+	bool send_reliable = false;
+
+	if (chan->incomingAcknowledged > chan->lastReliableSequence &&
+		chan->incomingReliableAcknowledged != chan->outgoingReliableSequence)
+	{
+		send_reliable = true;
+	}
+
+	// if the reliable transmit buffer is empty, copy the current message out
+	if (!chan->reliableOrUnsentLength && chan->message.cursize)
+	{
+		send_reliable = true;
+	}
+
+	return send_reliable;
+}
+
+//	Send one fragment of the current message
+void Netchan_TransmitNextFragment(netchan_t* chan)
+{
+	QMsg send;
+	byte send_buf[MAX_PACKETLEN];
+	int fragmentLength;
+
+	// write the packet header
+	send.InitOOB(send_buf, sizeof(send_buf));					// <-- only do the oob here
+
+	send.WriteLong(chan->outgoingSequence | FRAGMENT_BIT);
+
+	// send the qport if we are a client
+	if (chan->sock == NS_CLIENT)
+	{
+		send.WriteShort(qport->integer);
+	}
+
+	// copy the reliable message to the packet first
+	fragmentLength = FRAGMENT_SIZE;
+	if (chan->unsentFragmentStart  + fragmentLength > chan->reliableOrUnsentLength)
+	{
+		fragmentLength = chan->reliableOrUnsentLength - chan->unsentFragmentStart;
+	}
+
+	send.WriteShort(chan->unsentFragmentStart);
+	send.WriteShort(fragmentLength);
+	send.WriteData(chan->reliableOrUnsentBuffer + chan->unsentFragmentStart, fragmentLength);
+
+	// send the datagram
+	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
+
+	if (showpackets->integer)
+	{
+		common->Printf("%s send %4i : s=%i fragment=%i,%i\n",
+			netsrcString[chan->sock],
+			send.cursize,
+			chan->outgoingSequence,
+			chan->unsentFragmentStart, fragmentLength);
+	}
+
+	chan->unsentFragmentStart += fragmentLength;
+
+	// this exit condition is a little tricky, because a packet
+	// that is exactly the fragment length still needs to send
+	// a second packet of zero length so that the other side
+	// can tell there aren't more to follow
+	if (chan->unsentFragmentStart == chan->reliableOrUnsentLength && fragmentLength != FRAGMENT_SIZE)
+	{
+		chan->outgoingSequence++;
+		chan->unsentFragments = false;
+	}
+}
+
+void Netchan_Transmit(netchan_t* chan, int length, const byte* data)
+{
+	// check for message overflow
+	if (!(GGameType & GAME_Tech3) && chan->message.overflowed)
+	{
+		common->Printf("%s:Outgoing message overflow\n", SOCK_AdrToString(chan->remoteAddress));
+		return;
+	}
+
+	if (GGameType & GAME_Tech3 && length > (GGameType & GAME_Quake3 ? MAX_MSGLEN_Q3 : MAX_MSGLEN_WOLF))
+	{
+		common->Error("Netchan_Transmit: length = %i", length);
+	}
+	bool send_reliable = Netchan_NeedReliable(chan);
+
+	if (!(GGameType & GAME_Tech3) && !chan->reliableOrUnsentLength && chan->message.cursize)
+	{
+		Com_Memcpy(chan->reliableOrUnsentBuffer, chan->messageBuffer, chan->message.cursize);
+		chan->reliableOrUnsentLength = chan->message.cursize;
+		chan->message.cursize = 0;
+		chan->outgoingReliableSequence ^= 1;
+	}
+
+	chan->unsentFragmentStart = 0;
+
+	// fragment large reliable messages
+	if (GGameType & GAME_Tech3 && length >= FRAGMENT_SIZE)
+	{
+		chan->unsentFragments = true;
+		chan->reliableOrUnsentLength = length;
+		Com_Memcpy(chan->reliableOrUnsentBuffer, data, length);
+
+		// only send the first fragment now
+		Netchan_TransmitNextFragment(chan);
+
+		return;
+	}
+
+	// write the packet header
+	QMsg send;
+	byte send_buf[MAX_MSGLEN_HW + PACKET_HEADER];
+	send.InitOOB(send_buf, GGameType & GAME_QuakeWorld ? MAX_MSGLEN_QW + PACKET_HEADER :
+		GGameType & GAME_HexenWorld ? MAX_MSGLEN_HW + PACKET_HEADER :
+		GGameType & GAME_Quake2 ? MAX_MSGLEN_Q2 : MAX_PACKETLEN);
+
+	if (GGameType & GAME_Tech3)
+	{
+		send.WriteLong(chan->outgoingSequence);
+	}
+	else
+	{
+		unsigned w1 = (chan->outgoingSequence & ~(1 << 31)) | (send_reliable << 31);
+		unsigned w2 = (chan->incomingSequence & ~(1 << 31)) | (chan->incomingReliableSequence << 31);
+
+		send.WriteLong(w1);
+		send.WriteLong(w2);
+	}
+
+	chan->outgoingSequence++;
+
+	// send the qport if we are a client
+	if (!(GGameType & GAME_HexenWorld) && chan->sock == NS_CLIENT)
+	{
+		send.WriteShort(qport->integer);
+	}
+
+	// copy the reliable message to the packet first
+	if (send_reliable)
+	{
+		send.WriteData(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentLength);
+		chan->lastReliableSequence = chan->outgoingSequence;
+	}
+
+	// add the unreliable part if space is available
+	if (send.maxsize - send.cursize >= length)
+	{
+		send.WriteData(data, length);
+	}
+	else
+	{
+		common->Printf("Netchan_Transmit: dumped unreliable\n");
+	}
+
+	// send the datagram
+	NET_SendPacket(chan->sock, send.cursize, send._data, chan->remoteAddress);
+
+	if (showpackets->integer)
+	{
+		if (send_reliable)
+		{
+			common->Printf("%s send %4i : s=%i reliable=%i ack=%i rack=%i\n",
+				netsrcString[chan->sock],
+				send.cursize,
+				chan->outgoingSequence - 1,
+				chan->outgoingReliableSequence,
+				chan->incomingSequence,
+				chan->incomingReliableSequence);
+		}
+		else
+		{
+			common->Printf("%s send %4i : s=%i ack=%i rack=%i\n",
+				netsrcString[chan->sock],
+				send.cursize,
+				chan->outgoingSequence - 1,
+				chan->incomingSequence,
+				chan->incomingReliableSequence);
+		}
+	}
 }
