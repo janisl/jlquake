@@ -252,9 +252,7 @@ void SV_CheckForNewClients(void)
 			Sys_Error("Host_CheckForNewClients: no free clients");
 		}
 
-		Com_Memset(&svs.clients[i].netchan, 0, sizeof(svs.clients[i].netchan));
-		svs.clients[i].netchan.sock = NS_SERVER;
-		svs.clients[i].netchan.remoteAddress = addr;
+		Netchan_Setup(NS_SERVER, &svs.clients[i].netchan, addr, 0);
 		svs.clients[i].netchan.lastReceived = net_time * 1000;
 		svs.clients[i].qh_netconnection = ret;
 		SV_ConnectClient(i);

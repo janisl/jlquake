@@ -129,10 +129,6 @@ extern netadr_t net_from;
 extern QMsg net_message;
 extern byte net_message_buffer[MAX_MSGLEN_Q2];
 
-
-void Netchan_Init(void);
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport);
-
 /*
 ==============================================================
 

@@ -19,6 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qwsvdef.h"
+#ifdef _WIN32
+#include "../../client/windows_shared.h"
+#else
+#include <unistd.h>
+#endif
+#include <time.h>
 
 quakeparms_t host_parms;
 
@@ -716,6 +722,7 @@ void SVC_DirectConnect(void)
 	edictnum = (newcl - svs.clients) + 1;
 
 	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
+	newcl->netchan.lastReceived = realtime * 1000;
 
 	newcl->state = CS_CONNECTED;
 
@@ -1718,7 +1725,12 @@ void SV_InitNet(void)
 	}
 	NET_Init(sv_net_port);
 
-	Netchan_Init();
+	// pick a port value that should be nice and random
+#ifdef _WIN32
+	Netchan_Init((int)(timeGetTime() * 1000) * time(NULL));
+#else
+	Netchan_Init((int)(getpid() + getuid() * 1000) * time(NULL));
+#endif
 
 	// heartbeats will allways be sent to the id master
 	svs.qh_last_heartbeat = -99999;		// send immediately

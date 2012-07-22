@@ -53,6 +53,49 @@ const char* netsrcString[2] =
 	"server"
 };
 
+void Netchan_Init(int port)
+{
+	port &= 0xffff;
+	showpackets = Cvar_Get("showpackets", "0", CVAR_TEMP);
+	showdrop = Cvar_Get("showdrop", "0", CVAR_TEMP);
+	if (GGameType & GAME_Tech3)
+	{
+		qport = Cvar_Get("net_qport", va("%i", port), CVAR_INIT);
+	}
+	else
+	{
+		qport = Cvar_Get("qport", va("%i", port), CVAR_INIT);
+	}
+}
+
+//	called to open a channel to a remote system
+void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qport)
+{
+	Com_Memset(chan, 0, sizeof(*chan));
+
+	chan->sock = sock;
+	chan->remoteAddress = adr;
+	chan->qport = qport;
+	chan->incomingSequence = 0;
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		chan->outgoingSequence = 1;
+	}
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		chan->message.InitOOB(chan->messageBuffer,
+			GGameType & GAME_QuakeWorld ? MAX_MSGLEN_QW :
+			GGameType & GAME_HexenWorld ? MAX_MSGLEN_HW :
+			GGameType & GAME_Quake2 ? MAX_MSGLEN_Q2 - 16 :	// leave space for header
+			1024);
+		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+		{
+			chan->message.allowoverflow = true;
+		}
+	}
+}
+
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message)
 {
 	loopback_t* loop = &loopbacks[sock];

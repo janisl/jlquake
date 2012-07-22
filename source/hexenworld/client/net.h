@@ -11,6 +11,3 @@ void        NET_Shutdown(void);
 #define OLD_AVG     0.99		// total = oldtotal*OLD_AVG + new*(1-OLD_AVG)
 
 #define MAX_LATENT  32
-
-void Netchan_Init(void);
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr);

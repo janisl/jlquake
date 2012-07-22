@@ -46,38 +46,6 @@ to the new value before sending out any replies.
 
 */
 
-/*
-===============
-Netchan_Init
-
-===============
-*/
-void Netchan_Init(int port)
-{
-	port &= 0xffff;
-	showpackets = Cvar_Get("showpackets", "0", CVAR_TEMP);
-	showdrop = Cvar_Get("showdrop", "0", CVAR_TEMP);
-	qport = Cvar_Get("net_qport", va("%i", port), CVAR_INIT);
-}
-
-/*
-==============
-Netchan_Setup
-
-called to open a channel to a remote system
-==============
-*/
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
-{
-	Com_Memset(chan, 0, sizeof(*chan));
-
-	chan->sock = sock;
-	chan->remoteAddress = adr;
-	chan->qport = qport;
-	chan->incomingSequence = 0;
-	chan->outgoingSequence = 1;
-}
-
 static qboolean networkingEnabled = qfalse;
 
 static Cvar* net_noudp;

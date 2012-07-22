@@ -77,49 +77,6 @@ to the new value before sending out any replies.
 
 */
 
-/*
-===============
-Netchan_Init
-
-===============
-*/
-void Netchan_Init(void)
-{
-	int port;
-
-	// pick a port value that should be nice and random
-#ifdef _WIN32
-	port = ((int)(timeGetTime() * 1000) * time(NULL)) & 0xffff;
-#else
-	port = ((int)(getpid() + getuid() * 1000) * time(NULL)) & 0xffff;
-#endif
-
-	showpackets = Cvar_Get("showpackets", "0", 0);
-	showdrop = Cvar_Get("showdrop", "0", 0);
-	qport = Cvar_Get("qport", "0", 0);
-	Cvar_SetValue("qport", port);
-}
-
-/*
-==============
-Netchan_Setup
-
-called to open a channel to a remote system
-==============
-*/
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
-{
-	Com_Memset(chan, 0, sizeof(*chan));
-
-	chan->remoteAddress = adr;
-	chan->lastReceived = realtime * 1000;
-
-	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_QW);
-	chan->message.allowoverflow = true;
-
-	chan->qport = qport;
-}
-
 netadr_t net_from;
 QMsg net_message;
 

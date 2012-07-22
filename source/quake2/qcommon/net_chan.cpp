@@ -78,46 +78,6 @@ netadr_t net_from;
 QMsg net_message;
 byte net_message_buffer[MAX_MSGLEN_Q2];
 
-/*
-===============
-Netchan_Init
-
-===============
-*/
-void Netchan_Init(void)
-{
-	int port;
-
-	// pick a port value that should be nice and random
-	port = Sys_Milliseconds_() & 0xffff;
-
-	showpackets = Cvar_Get("showpackets", "0", 0);
-	showdrop = Cvar_Get("showdrop", "0", 0);
-	qport = Cvar_Get("qport", va("%i", port), CVAR_INIT);
-}
-
-/*
-==============
-Netchan_Setup
-
-called to open a channel to a remote system
-==============
-*/
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport)
-{
-	Com_Memset(chan, 0, sizeof(*chan));
-
-	chan->sock = sock;
-	chan->remoteAddress = adr;
-	chan->qport = qport;
-	chan->lastReceived = curtime;
-	chan->incomingSequence = 0;
-	chan->outgoingSequence = 1;
-
-	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_Q2 - 16);	// leave space for header
-	chan->message.allowoverflow = true;
-}
-
 static Cvar* noudp;
 
 /*

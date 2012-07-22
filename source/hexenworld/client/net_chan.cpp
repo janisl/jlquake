@@ -46,37 +46,6 @@ address spoofing.
 
 */
 
-/*
-===============
-Netchan_Init
-
-===============
-*/
-void Netchan_Init(void)
-{
-	showpackets = Cvar_Get("showpackets", "0", 0);
-	showdrop = Cvar_Get("showdrop", "0", 0);
-}
-
-/*
-==============
-Netchan_Setup
-
-called to open a channel to a remote system
-==============
-*/
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr)
-{
-	Com_Memset(chan, 0, sizeof(*chan));
-
-	chan->sock = sock;
-	chan->remoteAddress = adr;
-	chan->lastReceived = realtime * 1000;
-
-	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_HW);
-	chan->message.allowoverflow = true;
-}
-
 int packet_latency[256];
 
 netadr_t net_from;

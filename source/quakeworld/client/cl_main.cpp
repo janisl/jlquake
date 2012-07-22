@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #ifdef _WIN32
 #include "../../client/windows_shared.h"
+#else
+#include <unistd.h>
 #endif
 
 
@@ -839,6 +841,7 @@ void CL_ConnectionlessPacket(void)
 			return;
 		}
 		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
+		clc.netchan.lastReceived = realtime * 1000;
 		clc.netchan.message.WriteChar(q1clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		cls.state = CA_CONNECTED;
@@ -1460,7 +1463,12 @@ void Host_Init(quakeparms_t* parms)
 		Host_FixupModelNames();
 
 		NET_Init(PORT_CLIENT);
-		Netchan_Init();
+		// pick a port value that should be nice and random
+#ifdef _WIN32
+		Netchan_Init((int)(timeGetTime() * 1000) * time(NULL));
+#else
+		Netchan_Init((int)(getpid() + getuid() * 1000) * time(NULL));
+#endif
 
 		Key_Init();
 		Con_Init();

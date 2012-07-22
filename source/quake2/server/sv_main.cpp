@@ -326,6 +326,7 @@ gotnewcl:
 	NET_OutOfBandPrint(NS_SERVER, adr, "client_connect");
 
 	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
+	newcl->netchan.lastReceived = curtime;
 
 	newcl->state = CS_CONNECTED;
 

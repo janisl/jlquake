@@ -131,6 +131,8 @@ extern const char* netsrcString[2];
 extern Cvar* qport;
 extern Cvar* showdrop;
 
+void Netchan_Init(int port);
+void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qport);
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
 bool NET_GetUdpPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);

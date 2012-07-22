@@ -677,7 +677,8 @@ void Qcommon_Init(int argc, char** argv)
 		Sys_Init();
 
 		NET_Init();
-		Netchan_Init();
+		// pick a port value that should be nice and random
+		Netchan_Init(Sys_Milliseconds_());
 
 		SV_Init();
 		CL_Init();

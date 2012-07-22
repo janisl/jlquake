@@ -758,7 +758,8 @@ void CL_ConnectionlessPacket(void)
 			}
 			return;
 		}
-		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from);
+		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, 0);
+		clc.netchan.lastReceived = realtime * 1000;
 		clc.netchan.message.WriteChar(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		cls.state = CA_CONNECTED;
@@ -1341,7 +1342,7 @@ void Host_Init(quakeparms_t* parms)
 		COM_Init(parms->basedir);
 
 		NET_Init(PORT_CLIENT);
-		Netchan_Init();
+		Netchan_Init(0);
 
 		Key_Init();
 		Con_Init();

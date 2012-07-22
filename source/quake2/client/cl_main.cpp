@@ -901,6 +901,7 @@ void CL_ConnectionlessPacket(void)
 			return;
 		}
 		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
+		clc.netchan.lastReceived = curtime;
 		clc.netchan.message.WriteChar(q2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		cls.state = CA_CONNECTED;

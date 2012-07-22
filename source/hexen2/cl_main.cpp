@@ -182,9 +182,8 @@ void CL_EstablishConnection(const char* host)
 
 	CL_Disconnect();
 
-	Com_Memset(&clc.netchan, 0, sizeof(clc.netchan));
-	clc.netchan.sock = NS_CLIENT;
-	clc.netchan.message.InitOOB(clc.netchan.messageBuffer, 1024);
+	netadr_t addr = {};
+	Netchan_Setup(NS_CLIENT, &clc.netchan, addr, 0);
 	cls.qh_netcon = NET_Connect(host, &clc.netchan);
 	if (!cls.qh_netcon)
 	{

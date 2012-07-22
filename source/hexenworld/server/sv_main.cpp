@@ -628,7 +628,8 @@ void SVC_DirectConnect(void)
 
 	edictnum = (newcl - svs.clients) + 1;
 
-	Netchan_Setup(NS_SERVER, &newcl->netchan, adr);
+	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, 0);
+	newcl->netchan.lastReceived = realtime * 1000;
 
 	newcl->state = CS_CONNECTED;
 
@@ -1621,7 +1622,7 @@ void SV_InitNet(void)
 	}
 	NET_Init(sv_net_port);
 
-	Netchan_Init();
+	Netchan_Init(0);
 
 	// heartbeats will allways be sent to the id master
 	svs.qh_last_heartbeat = -99999;		// send immediately
