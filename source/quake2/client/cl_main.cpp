@@ -1021,6 +1021,7 @@ void CL_ReadPackets(void)
 		{
 			continue;		// wasn't accepted for some reason
 		}
+		clc.netchan.lastReceived = curtime;
 		CL_ParseServerMessage();
 	}
 

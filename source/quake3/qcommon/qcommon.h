@@ -47,9 +47,6 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 void Netchan_Init(int qport);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport);
 
-qboolean Netchan_Process(netchan_t* chan, QMsg* msg);
-
-
 /*
 ==============================================================
 

@@ -849,10 +849,11 @@ void CL_ReadPackets(void)
 				SOCK_AdrToString(net_from));
 			continue;
 		}
-		if (!Netchan_Process(&clc.netchan))
+		if (!Netchan_Process(&clc.netchan, &net_message))
 		{
 			continue;		// wasn't accepted for some reason
 		}
+		clc.netchan.lastReceived = realtime * 1000;
 		CL_ParseServerMessage();
 
 //		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())

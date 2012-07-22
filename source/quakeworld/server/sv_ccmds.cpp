@@ -421,8 +421,8 @@ void SV_Status_f(void)
 		// most remote clients are 40 columns
 		//           0123456789012345678901234567890123456789
 		Con_Printf("name               userid frags\n");
-		Con_Printf("  address          rate ping drop\n");
-		Con_Printf("  ---------------- ---- ---- -----\n");
+		Con_Printf("  address          ping drop\n");
+		Con_Printf("  ---------------- ---- -----\n");
 		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
@@ -454,16 +454,15 @@ void SV_Status_f(void)
 				Con_Printf("ZOMBIE\n");
 				continue;
 			}
-			Con_Printf("%4i %4i %5.2f\n",
-				(int)(1000 * cl->netchan.frameRate),
+			Con_Printf("%4i %5.2f\n",
 				(int)SV_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence);
 		}
 	}
 	else
 	{
-		Con_Printf("frags userid address         name            rate ping drop  qport\n");
-		Con_Printf("----- ------ --------------- --------------- ---- ---- ----- -----\n");
+		Con_Printf("frags userid address         name            ping drop  qport\n");
+		Con_Printf("----- ------ --------------- --------------- ---- ----- -----\n");
 		for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
 		{
 			if (!cl->state)
@@ -492,8 +491,7 @@ void SV_Status_f(void)
 				Con_Printf("ZOMBIE\n");
 				continue;
 			}
-			Con_Printf("%4i %4i %3.1f %4i",
-				(int)(1000 * cl->netchan.frameRate),
+			Con_Printf("%4i %3.1f %4i",
 				(int)SV_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence,
 				cl->netchan.qport);

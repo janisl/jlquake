@@ -391,21 +391,7 @@ void SV_Begin_f(void)
 	}
 
 	// clear the net statistics, because connecting gives a bogus picture
-	host_client->netchan.frameRate = 0;
 	host_client->netchan.dropCount = 0;
-#if 0
-//
-// send a fixangle over the reliable channel to make sure it gets there
-// Never send a roll angle, because savegames can catch the server
-// in a state where it is expecting the client to correct the angle
-// and it won't happen if the game was just loaded, so you wind up
-// with a permanent head tilt
-	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
-	host_client->netchan.message.WriteByte(h2svc_setangle);
-	for (i = 0; i < 2; i++)
-		host_client->netchan.message.WriteAngle(ent->v.angles[i]);
-	host_client->netchan.message.WriteAngle(0);
-#endif
 }
 
 //=============================================================================

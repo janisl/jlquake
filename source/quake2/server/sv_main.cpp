@@ -599,7 +599,9 @@ void SV_ReadPackets(void)
 			}
 
 			if (Netchan_Process(&cl->netchan, &net_message))
-			{	// this is a valid, sequenced packet, so process it
+			{
+				// this is a valid, sequenced packet, so process it
+				cl->netchan.lastReceived = curtime;
 				if (cl->state != CS_ZOMBIE)
 				{
 					cl->q2_lastmessage = svs.q2_realtime;	// don't timeout

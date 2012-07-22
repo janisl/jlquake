@@ -40,6 +40,7 @@ Cvar* cl_packetloss;
 Cvar* cl_packetdelay;
 Cvar* showpackets;
 Cvar* qport;
+Cvar* showdrop;
 
 static delaybuf_t* sv_delaybuf_head = NULL;
 static delaybuf_t* sv_delaybuf_tail = NULL;
@@ -333,7 +334,7 @@ void NET_OutOfBandData(netsrc_t sock, const netadr_t& adr, const byte* data, int
 	NET_SendPacket(sock, mbuf.cursize, mbuf._data, adr);
 }
 
-bool Netchan_NeedReliable(netchan_t* chan)
+static bool Netchan_NeedReliable(netchan_t* chan)
 {
 	if (GGameType & GAME_Tech3)
 	{
@@ -520,4 +521,238 @@ void Netchan_Transmit(netchan_t* chan, int length, const byte* data)
 				chan->incomingReliableSequence);
 		}
 	}
+}
+
+//	Returns true if the last reliable message has acked
+bool Netchan_CanReliable(netchan_t* chan)
+{
+	if (chan->reliableOrUnsentLength)
+	{
+		return false;			// waiting for ack
+	}
+	return true;
+}
+
+//	Returns false if the message should not be processed due to being
+// out of order or a fragment.
+//	Msg must be large enough to hold MAX_MSGLEN_Q3, because if this is the
+// final fragment of a multi-part message, the entire thing will be
+// copied out.
+bool Netchan_Process(netchan_t* chan, QMsg* msg)
+{
+	// get sequence numbers
+	msg->BeginReadingOOB();
+	int sequence = msg->ReadLong();
+
+	int sequence_ack = 0;
+	bool reliable_message = false;
+	int reliable_ack = 0;
+	bool fragmented = false;
+	if (GGameType & GAME_Tech3)
+	{
+		if (sequence & FRAGMENT_BIT)
+		{
+			fragmented = true;
+		}
+	}
+	else
+	{
+		sequence_ack = msg->ReadLong();
+
+		reliable_message = (unsigned)sequence >> 31;
+		reliable_ack = (unsigned)sequence_ack >> 31;
+
+		sequence_ack &= ~(1 << 31);
+	}
+	sequence &= ~(1 << 31);
+
+	// read the qport if we are a server
+	if (!(GGameType & GAME_HexenWorld) && chan->sock == NS_SERVER)
+	{
+		msg->ReadShort();
+	}
+
+	int fragmentStart, fragmentLength;
+	// read the fragment information
+	if (fragmented)
+	{
+		fragmentStart = msg->ReadShort();
+		fragmentLength = msg->ReadShort();
+	}
+	else
+	{
+		fragmentStart = 0;		// stop warning message
+		fragmentLength = 0;
+	}
+
+	if (showpackets->integer)
+	{
+		if (reliable_message)
+		{
+			common->Printf("recv %4i : s=%i reliable=%i ack=%i rack=%i\n",
+				msg->cursize,
+				sequence,
+				chan->incomingReliableSequence ^ 1,
+				sequence_ack,
+				reliable_ack);
+		}
+		else if (fragmented)
+		{
+			common->Printf("%s recv %4i : s=%i fragment=%i,%i\n",
+				netsrcString[chan->sock],
+				msg->cursize,
+				sequence,
+				fragmentStart, fragmentLength);
+		}
+		else
+		{
+			common->Printf("%s recv %4i : s=%i ack=%i rack=%i\n",
+				netsrcString[chan->sock],
+				msg->cursize,
+				sequence,
+				sequence_ack,
+				reliable_ack);
+		}
+	}
+
+	//
+	// discard out of order or duplicated packets
+	//
+	if (sequence <= chan->incomingSequence)
+	{
+		if (showdrop->integer || showpackets->integer)
+		{
+			common->Printf("%s:Out of order packet %i at %i\n",
+				SOCK_AdrToString(chan->remoteAddress),
+				sequence,
+				chan->incomingSequence);
+		}
+		return false;
+	}
+
+	//
+	// dropped packets don't keep the message from being used
+	//
+	chan->dropped = sequence - (chan->incomingSequence + 1);
+	if (chan->dropped > 0)
+	{
+		chan->dropCount += 1;
+
+		if (showdrop->integer || showpackets->integer)
+		{
+			common->Printf("%s:Dropped %i packets at %i\n",
+				SOCK_AdrToString(chan->remoteAddress),
+				chan->dropped,
+				sequence);
+		}
+	}
+
+	//
+	// if this is the final framgent of a reliable message,
+	// bump incoming_reliable_sequence
+	//
+	if (fragmented)
+	{
+		// TTimo
+		// make sure we add the fragments in correct order
+		// either a packet was dropped, or we received this one too soon
+		// we don't reconstruct the fragments. we will wait till this fragment gets to us again
+		// (NOTE: we could probably try to rebuild by out of order chunks if needed)
+		if (sequence != chan->fragmentSequence)
+		{
+			chan->fragmentSequence = sequence;
+			chan->fragmentLength = 0;
+		}
+
+		// if we missed a fragment, dump the message
+		if (fragmentStart != chan->fragmentLength)
+		{
+			if (showdrop->integer || showpackets->integer)
+			{
+				common->Printf("%s:Dropped a message fragment, sequence %d\n",
+					SOCK_AdrToString(chan->remoteAddress),
+					sequence);
+			}
+			// we can still keep the part that we have so far,
+			// so we don't need to clear chan->fragmentLength
+			return false;
+		}
+
+		// copy the fragment to the fragment buffer
+		if (fragmentLength < 0 || msg->readcount + fragmentLength > msg->cursize ||
+			chan->fragmentLength + fragmentLength > (GGameType & GAME_Quake3 ? MAX_MSGLEN_Q3 : MAX_MSGLEN_WOLF))
+		{
+			if (showdrop->integer || showpackets->integer)
+			{
+				common->Printf("%s:illegal fragment length\n",
+					SOCK_AdrToString(chan->remoteAddress));
+			}
+			return false;
+		}
+
+		Com_Memcpy(chan->fragmentBuffer + chan->fragmentLength,
+			msg->_data + msg->readcount, fragmentLength);
+
+		chan->fragmentLength += fragmentLength;
+
+		// if this wasn't the last fragment, don't process anything
+		if (fragmentLength == FRAGMENT_SIZE)
+		{
+			return false;
+		}
+
+		if (chan->fragmentLength > msg->maxsize)
+		{
+			common->Printf("%s:fragmentLength %i > msg->maxsize\n",
+				SOCK_AdrToString(chan->remoteAddress),
+				chan->fragmentLength);
+			return false;
+		}
+
+		// copy the full message over the partial fragment
+
+		// make sure the sequence number is still there
+		*(int*)msg->_data = LittleLong(sequence);
+
+		Com_Memcpy(msg->_data + 4, chan->fragmentBuffer, chan->fragmentLength);
+		msg->cursize = chan->fragmentLength + 4;
+		chan->fragmentLength = 0;
+		msg->readcount = 4;	// past the sequence number
+		msg->bit = 32;	// past the sequence number
+
+		// TTimo
+		// clients were not acking fragmented messages
+		chan->incomingSequence = sequence;
+
+		return true;
+	}
+
+	//
+	// the message can now be read from the current message pointer
+	//
+	chan->incomingSequence = sequence;
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		//
+		// if the current outgoing reliable message has been acknowledged
+		// clear the buffer to make way for the next
+		//
+		if (reliable_ack == chan->outgoingReliableSequence)
+		{
+			chan->reliableOrUnsentLength = 0;	// it has been received
+
+		}
+		//
+		// if this message contains a reliable message, bump incoming_reliable_sequence
+		//
+		chan->incomingAcknowledged = sequence_ack;
+		chan->incomingReliableAcknowledged = reliable_ack;
+		if (reliable_message)
+		{
+			chan->incomingReliableSequence ^= 1;
+		}
+	}
+
+	return true;
 }

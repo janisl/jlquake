@@ -1084,8 +1084,10 @@ void SV_ReadPackets(void)
 			{
 				continue;
 			}
-			if (Netchan_Process(&cl->netchan))
-			{	// this is a valid, sequenced packet, so process it
+			if (Netchan_Process(&cl->netchan, &net_message))
+			{
+				// this is a valid, sequenced packet, so process it
+				cl->netchan.lastReceived = realtime * 1000;
 				svs.qh_stats.packets++;
 				good = true;
 				cl->qh_send_message = true;	// reply at end of frame

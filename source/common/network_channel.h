@@ -76,9 +76,6 @@ struct netchan_t
 	QMsg message;		// writing buffer to send to server
 	byte messageBuffer[MAX_MSGLEN];
 
-	// the statistics are cleared at each client begin, because
-	// the server connecting process gives a bogus picture of the data
-	float frameRate;
 	int dropCount;			// dropped packets, cleared each level
 };
 
@@ -132,6 +129,7 @@ extern Cvar* cl_packetdelay;
 extern Cvar* showpackets;
 extern const char* netsrcString[2];
 extern Cvar* qport;
+extern Cvar* showdrop;
 
 int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
@@ -140,9 +138,10 @@ bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
 void NET_SendPacket(netsrc_t sock, int length, const void* data, const netadr_t& to);
 void NET_OutOfBandPrint(netsrc_t sock, const netadr_t& adr, const char* format, ...) id_attribute((format(printf, 3, 4)));
 void NET_OutOfBandData(netsrc_t sock, const netadr_t& adr, const byte* data, int length);
-bool Netchan_NeedReliable(netchan_t* chan);
 void Netchan_TransmitNextFragment(netchan_t* chan);
 void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
+bool Netchan_CanReliable(netchan_t* chan);
+bool Netchan_Process(netchan_t* chan, QMsg* msg);
 
 #define NET_NAME_ID         "HEXENII"
 

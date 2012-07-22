@@ -500,7 +500,6 @@ void SV_Begin_f(void)
 	}
 
 	// clear the net statistics, because connecting gives a bogus picture
-	host_client->netchan.frameRate = 0;
 	host_client->netchan.dropCount = 0;
 
 	//check he's not cheating

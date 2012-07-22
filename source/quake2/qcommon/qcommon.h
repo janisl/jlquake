@@ -133,10 +133,6 @@ extern byte net_message_buffer[MAX_MSGLEN_Q2];
 void Netchan_Init(void);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr, int qport);
 
-qboolean Netchan_Process(netchan_t* chan, QMsg* msg);
-
-qboolean Netchan_CanReliable(netchan_t* chan);
-
 /*
 ==============================================================
 

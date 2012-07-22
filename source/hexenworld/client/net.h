@@ -13,7 +13,4 @@ void        NET_Shutdown(void);
 #define MAX_LATENT  32
 
 void Netchan_Init(void);
-qboolean Netchan_Process(netchan_t* chan);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr);
-
-qboolean Netchan_CanReliable(netchan_t* chan);
