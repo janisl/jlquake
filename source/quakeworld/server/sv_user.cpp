@@ -1087,40 +1087,6 @@ void SV_PTrack_f(void)
 	ent->SetGoalEntity(EDICT_TO_PROG(tent));
 }
 
-
-/*
-=================
-SV_Rate_f
-
-Change the bandwidth estimate for a client
-=================
-*/
-void SV_Rate_f(void)
-{
-	int rate;
-
-	if (Cmd_Argc() != 2)
-	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Current rate is %i\n",
-			(int)(1.0 / host_client->netchan.rate + 0.5));
-		return;
-	}
-
-	rate = String::Atoi(Cmd_Argv(1));
-	if (rate < 500)
-	{
-		rate = 500;
-	}
-	if (rate > 10000)
-	{
-		rate = 10000;
-	}
-
-	SV_ClientPrintf(host_client, PRINT_HIGH, "Net rate set to %i\n", rate);
-	host_client->netchan.rate = 1.0 / rate;
-}
-
-
 /*
 =================
 SV_Msg_f
@@ -1237,7 +1203,6 @@ ucmd_t ucmds[] =
 	{"pings", SV_Pings_f},
 
 // issued by hand at client consoles
-	{"rate", SV_Rate_f},
 	{"kill", SV_Kill_f},
 	{"pause", SV_Pause_f},
 	{"msg", SV_Msg_f},

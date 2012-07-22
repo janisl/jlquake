@@ -77,28 +77,7 @@ void Netchan_Setup(netsrc_t sock, netchan_t* chan, netadr_t adr)
 
 	chan->message.InitOOB(chan->messageBuffer, MAX_MSGLEN_HW);
 	chan->message.allowoverflow = true;
-
-	chan->rate = 1.0 / 2500;
 }
-
-
-/*
-===============
-Netchan_CanPacket
-
-Returns true if the bandwidth choke isn't active
-================
-*/
-#define MAX_BACKUP  200
-qboolean Netchan_CanPacket(netchan_t* chan)
-{
-	if (chan->clearTime < realtime + MAX_BACKUP * chan->rate)
-	{
-		return true;
-	}
-	return false;
-}
-
 
 /*
 ===============
@@ -113,32 +92,7 @@ qboolean Netchan_CanReliable(netchan_t* chan)
 	{
 		return false;			// waiting for ack
 	}
-	return Netchan_CanPacket(chan);
-}
-
-
-/*
-===============
-Netchan_Transmit_
-
-tries to send an unreliable message to a connection, and handles the
-transmition / retransmition of the reliable messages.
-
-A 0 length will still generate a packet and deal with the reliable messages.
-================
-*/
-void Netchan_Transmit_(netchan_t* chan, int length, byte* data)
-{
-	Netchan_Transmit(chan, length, data);
-
-	if (chan->clearTime < realtime)
-	{
-		chan->clearTime = realtime + (length + chan->reliableOrUnsentLength) * chan->rate;
-	}
-	else
-	{
-		chan->clearTime += (length + chan->reliableOrUnsentLength) * chan->rate;
-	}
+	return true;
 }
 
 int packet_latency[256];

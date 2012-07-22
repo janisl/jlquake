@@ -80,9 +80,6 @@ struct netchan_t
 	// the server connecting process gives a bogus picture of the data
 	float frameRate;
 	int dropCount;			// dropped packets, cleared each level
-	// bandwidth estimator
-	double clearTime;			// if realtime > nc->cleartime, free to go
-	double rate;				// seconds / byte
 };
 
 #define NET_NAMELEN_Q1          64

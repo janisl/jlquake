@@ -396,9 +396,9 @@ void CL_Disconnect(void)
 
 		final[0] = q1clc_stringcmd;
 		String::Cpy((char*)final + 1, "drop");
-		Netchan_Transmit_(&clc.netchan, 6, final);
-		Netchan_Transmit_(&clc.netchan, 6, final);
-		Netchan_Transmit_(&clc.netchan, 6, final);
+		Netchan_Transmit(&clc.netchan, 6, final);
+		Netchan_Transmit(&clc.netchan, 6, final);
+		Netchan_Transmit(&clc.netchan, 6, final);
 
 		cls.state = CA_DISCONNECTED;
 

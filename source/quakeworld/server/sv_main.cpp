@@ -169,7 +169,7 @@ void SV_FinalMessage(const char* message)
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		if (cl->state >= CS_ACTIVE)
 		{
-			Netchan_Transmit_(&cl->netchan, net_message.cursize,
+			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
 		}
 }
@@ -1690,22 +1690,6 @@ void SV_ExtractFromUserinfo(client_t* cl)
 
 
 	String::NCpy(cl->name, val, sizeof(cl->name) - 1);
-
-	// rate command
-	val = Info_ValueForKey(cl->userinfo, "rate");
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		if (i < 500)
-		{
-			i = 500;
-		}
-		if (i > 10000)
-		{
-			i = 10000;
-		}
-		cl->netchan.rate = 1.0 / i;
-	}
 
 	// msg command
 	val = Info_ValueForKey(cl->userinfo, "msg");

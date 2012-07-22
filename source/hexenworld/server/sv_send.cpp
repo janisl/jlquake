@@ -482,14 +482,6 @@ void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
 
 	ent = client->qh_edict;
 
-	// send the chokecount for cl_netgraph
-	if (client->qh_chokecount)
-	{
-		msg->WriteByte(hwsvc_chokecount);
-		msg->WriteByte(client->qh_chokecount);
-		client->qh_chokecount = 0;
-	}
-
 	// send a damage message if the player got hit this frame
 	if (ent->GetDmgTake() || ent->GetDmgSave())
 	{
@@ -627,7 +619,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	}
 
 	// send the datagram
-	Netchan_Transmit_(&client->netchan, msg.cursize, buf);
+	Netchan_Transmit(&client->netchan, msg.cursize, buf);
 
 	return true;
 }
@@ -873,7 +865,6 @@ void SV_SendClientMessages(void)
 			Con_Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
 			c->qh_send_message = true;
-			c->netchan.clearTime = 0;	// don't choke this message
 		}
 
 		// only send messages if the client has sent one
@@ -883,11 +874,6 @@ void SV_SendClientMessages(void)
 			continue;
 		}
 		c->qh_send_message = false;	// try putting this after choke?
-		if (!Netchan_CanPacket(&c->netchan))
-		{
-			c->qh_chokecount++;
-			continue;		// bandwidth choke
-		}
 
 		if (c->state == CS_ACTIVE)
 		{
@@ -895,7 +881,7 @@ void SV_SendClientMessages(void)
 		}
 		else
 		{
-			Netchan_Transmit_(&c->netchan, 0, NULL);		// just update reliable
+			Netchan_Transmit(&c->netchan, 0, NULL);		// just update reliable
 
 		}
 	}

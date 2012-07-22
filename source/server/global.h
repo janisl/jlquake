@@ -114,7 +114,6 @@ struct client_t
 	int qh_whensaidhead;				// Head value for floodprots
 	double qh_lockedtill;
 
-	int qh_chokecount;
 	int qh_delta_sequence;				// -1 = no compression
 
 	q1usercmd_t q1_lastUsercmd;			// movement
