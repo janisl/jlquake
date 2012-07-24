@@ -78,8 +78,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void COM_Init(void);
 
 #define PORT_MASTER 27900
-#define PORT_CLIENT 27901
-#define PORT_SERVER 27910
 
 //===========================================================================
 
@@ -109,17 +107,6 @@ NET
 
 ==============================================================
 */
-
-// net.h -- quake's interface to the networking layer
-
-void        NET_Init(void);
-void        NET_Shutdown(void);
-
-void        NET_Config(qboolean multiplayer);
-
-void        NET_Sleep(int msec);
-
-//============================================================================
 
 #define OLD_AVG     0.99		// total = oldtotal*OLD_AVG + new*(1-OLD_AVG)
 

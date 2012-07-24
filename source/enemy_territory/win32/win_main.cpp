@@ -457,7 +457,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Sys_Milliseconds();
 
 	Com_Init(sys_cmdline);
-	NET_Init();
+	NETQ23_Init();
 
 #ifndef DEDICATED
 	IN_Init();	// fretn - directinput must be inited after video etc

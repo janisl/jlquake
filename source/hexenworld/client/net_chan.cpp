@@ -54,18 +54,6 @@ QMsg net_message;
 #define MAX_UDP_PACKET  (MAX_MSGLEN_HW + 9)		// one more than msg + header
 static byte net_message_buffer[MAX_UDP_PACKET];
 
-//=============================================================================
-
-static int UDP_OpenSocket(int port)
-{
-	int newsocket = SOCK_Open(NULL, port);
-	if (newsocket == 0)
-	{
-		Sys_Error("UDP_OpenSocket: failed");
-	}
-	return newsocket;
-}
-
 /*
 ====================
 NET_Init
@@ -73,41 +61,10 @@ NET_Init
 */
 void NET_Init(int port)
 {
-	HuffInit();
-
-	if (!SOCK_Init())
-	{
-		Sys_Error("Sockets initialization failed.");
-	}
-
-	//
-	// open the single socket to be used for all communications
-	//
-	ip_sockets[0] = UDP_OpenSocket(port);
-	ip_sockets[1] = ip_sockets[0];
+	NETQHW_InitCommon(port);
 
 	//
 	// init the message buffer
 	//
 	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
-
-	//
-	// determine my addresses
-	//
-	SOCK_GetLocalAddress();
-}
-
-/*
-====================
-NET_Shutdown
-====================
-*/
-void    NET_Shutdown(void)
-{
-	SOCK_Close(ip_sockets[0]);
-	SOCK_Shutdown();
-
-#ifdef _DEBUG
-	PrintFreqs();
-#endif
 }

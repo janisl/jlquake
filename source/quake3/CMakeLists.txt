@@ -24,7 +24,6 @@ set(QUAKE3_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp
@@ -49,7 +48,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp

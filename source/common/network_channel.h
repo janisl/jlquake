@@ -119,6 +119,10 @@ struct loopback_t
 #define FRAGMENT_BIT    (1 << 31)
 #define FRAGMENT_SIZE   (MAX_PACKETLEN - 100)
 
+#define Q2PORT_CLIENT 27901
+#define Q2PORT_SERVER 27910
+#define Q3PORT_SERVER         27960
+
 extern Cvar* sv_hostname;
 extern loopback_t loopbacks[2];
 extern int ip_sockets[2];
@@ -130,6 +134,8 @@ extern Cvar* showpackets;
 extern const char* netsrcString[2];
 extern Cvar* qport;
 extern Cvar* showdrop;
+extern Cvar* net_noudp;
+extern bool networkingEnabled;
 
 void Netchan_Init(int port);
 void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qport);
@@ -144,6 +150,13 @@ void Netchan_TransmitNextFragment(netchan_t* chan);
 void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
 bool Netchan_CanReliable(netchan_t* chan);
 bool Netchan_Process(netchan_t* chan, QMsg* msg);
+void NETQHW_InitCommon(int port);
+bool NET_GetCvars();
+void NET_Config(bool enableNetworking);
+void NETQ23_Init();
+void NET_Shutdown();
+void NET_Restart();
+void NET_Sleep(int msec);
 
 #define NET_NAME_ID         "HEXENII"
 

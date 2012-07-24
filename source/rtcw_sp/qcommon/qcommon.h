@@ -40,13 +40,6 @@ NET
 
 #define MAX_PACKET_USERCMDS     32		// max number of wsusercmd_t in a packet
 
-void        NET_Init(void);
-void        NET_Shutdown(void);
-void        NET_Restart(void);
-
-qboolean    NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
-void        NET_Sleep(int msec);
-
 /*
 ==============================================================
 
@@ -66,9 +59,8 @@ PROTOCOL
 #define PORT_MASTER         27950
 #define PORT_UPDATE         27951
 #define Q3PORT_AUTHORIZE    27952
-#define PORT_SERVER         27960
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
-									// PORT_SERVER so a single machine can
+									// Q3PORT_SERVER so a single machine can
 									// run multiple servers
 
 

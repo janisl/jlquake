@@ -14,6 +14,29 @@
 //**
 //**************************************************************************
 
+/*
+
+packet header
+-------------
+4	outgoing sequence.  high bit will be set if this is a fragmented message
+[2	qport (only for client to server)]
+[2	fragment start byte]
+[2	fragment length. if < FRAGMENT_SIZE, this is the last fragment]
+
+if the sequence number is -1, the packet should be handled as an out-of-band
+message instead of as part of a netcon.
+
+All fragments will have the same sequence numbers.
+
+The qport field is a workaround for bad address translating routers that
+sometimes remap the client's source port on a packet during gameplay.
+
+If the base part of the net address matches and the qport matches, then the
+channel matches even if the IP port differs.  The IP port should be updated
+to the new value before sending out any replies.
+
+*/
+
 #include "qcommon.h"
 
 struct delaybuf_t
@@ -33,6 +56,7 @@ loopback_t loopbacks[2];
 static unsigned char huffbuff[65536];
 
 int ip_sockets[2];
+bool networkingEnabled = false;
 
 Cvar* sv_packetloss;
 Cvar* sv_packetdelay;
@@ -41,6 +65,7 @@ Cvar* cl_packetdelay;
 Cvar* showpackets;
 Cvar* qport;
 Cvar* showdrop;
+Cvar* net_noudp;
 
 static delaybuf_t* sv_delaybuf_head = NULL;
 static delaybuf_t* sv_delaybuf_tail = NULL;
@@ -798,4 +823,254 @@ bool Netchan_Process(netchan_t* chan, QMsg* msg)
 	}
 
 	return true;
+}
+
+static int UDP_OpenSocket(int port)
+{
+	Cvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH2);
+	int newsocket = SOCK_Open(ip->string, port);
+	if (newsocket == 0)
+	{
+		common->FatalError("UDP_OpenSocket: socket failed");
+	}
+	return newsocket;
+}
+
+void NETQHW_InitCommon(int port)
+{
+	if (GGameType & GAME_HexenWorld)
+	{
+		HuffInit();
+	}
+
+	if (!SOCK_Init())
+	{
+		common->FatalError("Sockets initialization failed.");
+	}
+
+	//
+	// open the single socket to be used for all communications
+	//
+	ip_sockets[0] = UDP_OpenSocket(port);
+	ip_sockets[1] = ip_sockets[0];
+
+	//
+	// determine my addresses
+	//
+	SOCK_GetLocalAddress();
+}
+
+bool NET_GetCvars()
+{
+	bool modified = false;
+
+	if (net_noudp && net_noudp->modified)
+	{
+		modified = true;
+	}
+	net_noudp = Cvar_Get("net_noudp", "0", CVAR_LATCH2 | CVAR_ARCHIVE);
+
+	if (SOCK_GetSocksCvars())
+	{
+		modified = true;
+	}
+
+	return modified;
+}
+
+static void NETQ2_OpenIP()
+{
+	Cvar* ip = Cvar_Get("ip", "localhost", CVAR_INIT);
+
+	int dedicated = Cvar_VariableValue("dedicated");
+
+	if (!ip_sockets[NS_SERVER])
+	{
+		int port = Cvar_Get("ip_hostport", "0", CVAR_INIT)->integer;
+		if (!port)
+		{
+			port = Cvar_Get("hostport", "0", CVAR_INIT)->integer;
+			if (!port)
+			{
+				port = Cvar_Get("port", va("%i", Q2PORT_SERVER), CVAR_INIT)->integer;
+			}
+		}
+		ip_sockets[NS_SERVER] = SOCK_Open(ip->string, port);
+		if (!ip_sockets[NS_SERVER] && dedicated)
+		{
+			common->FatalError("Couldn't allocate dedicated server IP port");
+		}
+	}
+
+	// dedicated servers don't need client ports
+	if (dedicated)
+	{
+		return;
+	}
+
+	if (!ip_sockets[NS_CLIENT])
+	{
+		int port = Cvar_Get("ip_clientport", "0", CVAR_INIT)->integer;
+		if (!port)
+		{
+			port = Cvar_Get("clientport", va("%i", Q2PORT_CLIENT), CVAR_INIT)->integer;
+			if (!port)
+			{
+				port = PORT_ANY;
+			}
+		}
+		ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, port);
+		if (!ip_sockets[NS_CLIENT])
+		{
+			ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, PORT_ANY);
+		}
+	}
+}
+
+static void NETT3_OpenIP()
+{
+	Cvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH2);
+	int port = Cvar_Get("net_port", va("%i", Q3PORT_SERVER), CVAR_LATCH2)->integer;
+
+	// automatically scan for a valid port, so multiple
+	// dedicated servers can be started without requiring
+	// a different net_port for each one
+	for (int i = 0; i < 10; i++)
+	{
+		ip_sockets[0] = SOCK_Open(ip->string, port + i);
+		if (ip_sockets[0])
+		{
+			ip_sockets[1] = ip_sockets[0];
+			Cvar_SetValue("net_port", port + i);
+			if (net_socksEnabled->integer)
+			{
+				SOCK_OpenSocks(port + i);
+			}
+			SOCK_GetLocalAddress();
+			return;
+		}
+	}
+	common->Printf("WARNING: Couldn't allocate IP port\n");
+}
+
+void NET_Config(bool enableNetworking)
+{
+	// get any latched changes to cvars
+	bool modified = NET_GetCvars();
+
+	if (net_noudp->integer)
+	{
+		enableNetworking = false;
+	}
+
+	// if enable state is the same and no cvars were modified, we have nothing to do
+	if (enableNetworking == networkingEnabled && !modified)
+	{
+		return;
+	}
+
+	bool stop;
+	bool start;
+	if (enableNetworking == networkingEnabled)
+	{
+		stop = enableNetworking;
+		start = enableNetworking;
+	}
+	else
+	{
+		start = enableNetworking;
+		stop = !enableNetworking;
+		networkingEnabled = enableNetworking;
+	}
+
+	if (stop)
+	{
+		if (GGameType & GAME_Quake2)
+		{
+			// shut down any existing sockets
+			for (int i = 0; i < 2; i++)
+			{
+				if (ip_sockets[i])
+				{
+					SOCK_Close(ip_sockets[i]);
+					ip_sockets[i] = 0;
+				}
+			}
+		}
+		else
+		{
+			if (ip_sockets[0])
+			{
+				SOCK_Close(ip_sockets[0]);
+				ip_sockets[0] = 0;
+			}
+
+			SOCK_CloseSocks();
+		}
+	}
+
+	if (start)
+	{
+		if (GGameType & GAME_Quake2)
+		{
+			NETQ2_OpenIP();
+		}
+		else
+		{
+			NETT3_OpenIP();
+		}
+	}
+}
+
+void NETQ23_Init()
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		//----(SA)	disabled networking for SP
+		return;
+	}
+
+	if (!SOCK_Init())
+	{
+		return;
+	}
+
+	// this is really just to get the cvars registered
+	NET_GetCvars();
+
+	if (!(GGameType & GAME_Quake2))
+	{
+		//FIXME testing!
+		NET_Config(true);
+	}
+}
+
+void NET_Shutdown()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		SOCK_Close(ip_sockets[0]);
+	}
+	else
+	{
+		NET_Config(false);
+	}
+	SOCK_Shutdown();
+}
+
+void NET_Restart()
+{
+	NET_Config(networkingEnabled);
+}
+
+// sleeps msec or until net socket is ready
+//JL: Quake 3 Note on Windows this  method was empty.
+void NET_Sleep(int msec)
+{
+	if (!com_dedicated || !com_dedicated->integer)
+	{
+		return;	// we're not a server, just run full speed
+	}
+
+	SOCK_Sleep(ip_sockets[NS_SERVER], msec);
 }

@@ -192,7 +192,7 @@ static int LAN_AddServer(int source, const char* name, const char* address)
 	}
 	if (servers && *count < max)
 	{
-		SOCK_StringToAdr(address, &adr, PORT_SERVER);
+		SOCK_StringToAdr(address, &adr, Q3PORT_SERVER);
 		for (i = 0; i < *count; i++)
 		{
 			if (SOCK_CompareAdr(servers[i].adr, adr))
@@ -245,7 +245,7 @@ static void LAN_RemoveServer(int source, const char* addr)
 	if (servers)
 	{
 		netadr_t comp;
-		SOCK_StringToAdr(addr, &comp, PORT_SERVER);
+		SOCK_StringToAdr(addr, &comp, Q3PORT_SERVER);
 		for (i = 0; i < *count; i++)
 		{
 			if (SOCK_CompareAdr(comp, servers[i].adr))

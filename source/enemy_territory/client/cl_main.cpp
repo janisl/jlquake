@@ -1010,7 +1010,7 @@ void CL_MapLoading(void)
 		in_keyCatchers = 0;
 		SCR_UpdateScreen();
 		clc.q3_connectTime = -RETRANSMIT_TIMEOUT;
-		SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, PORT_SERVER);
+		SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER);
 		// we don't need a challenge on the localhost
 
 		CL_CheckForResend();
@@ -1455,7 +1455,7 @@ void CL_Connect_f(void)
 
 	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
 
-	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, PORT_SERVER))
+	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER))
 	{
 		Com_Printf("Bad server address\n");
 		cls.state = CA_DISCONNECTED;
@@ -1464,7 +1464,7 @@ void CL_Connect_f(void)
 	}
 	if (clc.q3_serverAddress.port == 0)
 	{
-		clc.q3_serverAddress.port = BigShort(PORT_SERVER);
+		clc.q3_serverAddress.port = BigShort(Q3PORT_SERVER);
 	}
 
 	String::NCpyZ(ip_port, SOCK_AdrToString(clc.q3_serverAddress), sizeof(ip_port));
@@ -1563,10 +1563,10 @@ void CL_Rcon_f(void)
 
 			return;
 		}
-		SOCK_StringToAdr(rconAddress->string, &to, PORT_SERVER);
+		SOCK_StringToAdr(rconAddress->string, &to, Q3PORT_SERVER);
 		if (to.port == 0)
 		{
-			to.port = BigShort(PORT_SERVER);
+			to.port = BigShort(Q3PORT_SERVER);
 		}
 	}
 
@@ -3245,7 +3245,7 @@ void CL_CheckAutoUpdate(void)
 	srand(Com_Milliseconds());
 
 	// Resolve update server
-	if (!SOCK_StringToAdr(cls.wm_autoupdateServerNames[0], &cls.wm_autoupdateServer, PORT_SERVER))
+	if (!SOCK_StringToAdr(cls.wm_autoupdateServerNames[0], &cls.wm_autoupdateServer, Q3PORT_SERVER))
 	{
 		Com_DPrintf("Failed to resolve any Auto-update servers.\n");
 
@@ -3305,7 +3305,7 @@ qboolean CL_NextUpdateServer(void)
 	servername = cls.wm_autoupdateServerNames[cls.et_autoupdatServerIndex];
 
 	Com_DPrintf("Resolving AutoUpdate Server... ");
-	if (!SOCK_StringToAdr(servername, &cls.wm_autoupdateServer, PORT_SERVER))
+	if (!SOCK_StringToAdr(servername, &cls.wm_autoupdateServer, Q3PORT_SERVER))
 	{
 		Com_DPrintf("Couldn't resolve address, trying next one...");
 
@@ -4033,7 +4033,7 @@ int CL_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen)
 		return qfalse;
 	}
 	// get the address
-	if (!SOCK_StringToAdr(serverAddress, &to, PORT_SERVER))
+	if (!SOCK_StringToAdr(serverAddress, &to, Q3PORT_SERVER))
 	{
 		return qfalse;
 	}
@@ -4239,7 +4239,7 @@ void CL_LocalServers_f(void)
 		// can nicely run multiple servers
 		for (j = 0; j < NUM_SERVER_PORTS; j++)
 		{
-			to.port = BigShort((short)(PORT_SERVER + j));
+			to.port = BigShort((short)(Q3PORT_SERVER + j));
 
 			to.type = NA_BROADCAST;
 			NET_SendPacket(NS_CLIENT, String::Length(message), message, to);
@@ -4490,7 +4490,7 @@ void CL_Ping_f(void)
 
 	server = Cmd_Argv(1);
 
-	if (!SOCK_StringToAdr(server, &to, PORT_SERVER))
+	if (!SOCK_StringToAdr(server, &to, Q3PORT_SERVER))
 	{
 		return;
 	}
@@ -4658,7 +4658,7 @@ void CL_ServerStatus_f(void)
 		server = Cmd_Argv(1);
 	}
 
-	if (!SOCK_StringToAdr(server, &to, PORT_SERVER))
+	if (!SOCK_StringToAdr(server, &to, Q3PORT_SERVER))
 	{
 		return;
 	}

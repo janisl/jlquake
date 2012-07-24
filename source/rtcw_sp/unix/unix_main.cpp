@@ -529,7 +529,7 @@ int main(int argc, char* argv[])
 	memset(&sys_packetReceived[0], 0, MAX_MSGLEN_WOLF * sizeof(byte));
 
 	Com_Init(cmdline);
-	NET_Init();
+	NETQ23_Init();
 
 	Sys_ConsoleInputInit();
 

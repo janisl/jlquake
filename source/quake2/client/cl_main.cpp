@@ -408,7 +408,7 @@ void CL_SendConnectPacket(void)
 	netadr_t adr;
 	int port;
 
-	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
+	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
 	{
 		Com_Printf("Bad server address\n");
 		cls.q2_connect_time = 0;
@@ -458,7 +458,7 @@ void CL_CheckForResend(void)
 		return;
 	}
 
-	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
+	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
 	{
 		Com_Printf("Bad server address\n");
 		cls.state = CA_DISCONNECTED;
@@ -564,7 +564,7 @@ void CL_Rcon_f(void)
 
 			return;
 		}
-		SOCK_StringToAdr(rcon_address->string, &to, PORT_SERVER);
+		SOCK_StringToAdr(rcon_address->string, &to, Q2PORT_SERVER);
 	}
 
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
@@ -684,7 +684,7 @@ void CL_Packet_f(void)
 
 	NET_Config(true);		// allow remote
 
-	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, PORT_SERVER))
+	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, Q2PORT_SERVER))
 	{
 		Com_Printf("Bad address\n");
 		return;
@@ -818,7 +818,7 @@ void CL_PingServers_f(void)
 	if (!noudp->value)
 	{
 		adr.type = NA_BROADCAST;
-		adr.port = BigShort(PORT_SERVER);
+		adr.port = BigShort(Q2PORT_SERVER);
 		NET_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
 	}
 
@@ -833,7 +833,7 @@ void CL_PingServers_f(void)
 		}
 
 		Com_Printf("pinging %s...\n", adrstring);
-		if (!SOCK_StringToAdr(adrstring, &adr, PORT_SERVER))
+		if (!SOCK_StringToAdr(adrstring, &adr, Q2PORT_SERVER))
 		{
 			Com_Printf("Bad address: %s\n", adrstring);
 			continue;

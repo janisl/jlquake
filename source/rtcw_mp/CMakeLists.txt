@@ -28,7 +28,6 @@ set(WOLFMP_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 
 	client/snd_dma.cpp
 
@@ -61,7 +60,6 @@ set(WOLFMPDED_FILES
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp

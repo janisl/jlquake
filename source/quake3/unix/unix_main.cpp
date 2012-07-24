@@ -339,7 +339,7 @@ int main(int argc, char* argv[])
 	Com_Memset(&sys_packetReceived[0], 0, MAX_MSGLEN_Q3 * sizeof(byte));
 
 	Com_Init(cmdline);
-	NET_Init();
+	NETQ23_Init();
 
 	Sys_ConsoleInputInit();
 
