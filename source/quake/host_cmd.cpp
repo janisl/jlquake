@@ -32,12 +32,14 @@ extern void M_Menu_Quit_f(void);
 
 void Host_Quit_f(void)
 {
+#ifndef DEDICATED
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != CA_DEDICATED)
 	{
 		M_Menu_Quit_f();
 		return;
 	}
 	CL_Disconnect();
+#endif
 	Host_ShutdownServer(false);
 
 	Sys_Quit();
@@ -278,13 +280,17 @@ void Host_Map_f(void)
 		return;
 	}
 
+#ifndef DEDICATED
 	cls.qh_demonum = -1;		// stop demo loop in case this fails
 
 	CL_Disconnect();
+#endif
 	Host_ShutdownServer(false);
 
+#ifndef DEDICATED
 	in_keyCatchers = 0;			// remove console or menu
 	SCR_BeginLoadingPlaque();
+#endif
 
 	svs.qh_serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
@@ -294,6 +300,7 @@ void Host_Map_f(void)
 		return;
 	}
 
+#ifndef DEDICATED
 	if (cls.state != CA_DEDICATED)
 	{
 		String::Cpy(cls.qh_spawnparms, "");
@@ -306,6 +313,7 @@ void Host_Map_f(void)
 
 		Cmd_ExecuteString("connect local", src_command);
 	}
+#endif
 }
 
 /*
@@ -324,7 +332,11 @@ void Host_Changelevel_f(void)
 		Con_Printf("changelevel <levelname> : continue game on a new level\n");
 		return;
 	}
+#ifdef DEDICATED
+	if (sv.state == SS_DEAD)
+#else
 	if (sv.state == SS_DEAD || clc.demoplaying)
+#endif
 	{
 		Con_Printf("Only the server may changelevel\n");
 		return;
@@ -345,7 +357,11 @@ void Host_Restart_f(void)
 {
 	char mapname[MAX_QPATH];
 
+#ifdef DEDICATED
+	if (sv.state == SS_DEAD)
+#else
 	if (clc.demoplaying || sv.state == SS_DEAD)
+#endif
 	{
 		return;
 	}
@@ -359,6 +375,7 @@ void Host_Restart_f(void)
 	SV_SpawnServer(mapname);
 }
 
+#ifndef DEDICATED
 /*
 ==================
 Host_Reconnect_f
@@ -394,6 +411,7 @@ void Host_Connect_f(void)
 	CL_EstablishConnection(name);
 	Host_Reconnect_f();
 }
+#endif
 
 
 /*
@@ -406,6 +424,7 @@ LOAD / SAVE GAME
 
 #define SAVEGAME_VERSION    5
 
+#ifndef DEDICATED
 /*
 ===============
 Host_SavegameComment
@@ -532,6 +551,7 @@ void Host_Savegame_f(void)
 	FS_FCloseFile(f);
 	Con_Printf("done.\n");
 }
+#endif
 
 static char* GetLine(char*& ReadPos)
 {
@@ -581,7 +601,9 @@ void Host_Loadgame_f(void)
 		return;
 	}
 
+#ifndef DEDICATED
 	cls.qh_demonum = -1;		// stop demo loop in case this fails
+#endif
 
 	String::NCpyZ(name, Cmd_Argv(1), sizeof(name));
 	String::DefaultExtension(name, sizeof(name), ".sav");
@@ -619,7 +641,9 @@ void Host_Loadgame_f(void)
 	String::Cpy(mapname, GetLine(ReadPos));
 	time = String::Atof(GetLine(ReadPos));
 
+#ifndef DEDICATED
 	CL_Disconnect_f();
+#endif
 
 	SV_SpawnServer(mapname);
 	if (sv.state == SS_DEAD)
@@ -683,11 +707,13 @@ void Host_Loadgame_f(void)
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		svs.clients->qh_spawn_parms[i] = spawn_parms[i];
 
+#ifndef DEDICATED
 	if (cls.state != CA_DEDICATED)
 	{
 		CL_EstablishConnection("local");
 		Host_Reconnect_f();
 	}
+#endif
 }
 
 //============================================================================
@@ -703,7 +729,9 @@ void Host_Name_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
+#ifndef DEDICATED
 		Con_Printf("\"name\" is \"%s\"\n", clqh_name->string);
+#endif
 		return;
 	}
 	if (Cmd_Argc() == 2)
@@ -718,6 +746,7 @@ void Host_Name_f(void)
 
 	if (cmd_source == src_command)
 	{
+#ifndef DEDICATED
 		if (String::Cmp(clqh_name->string, newName) == 0)
 		{
 			return;
@@ -727,6 +756,7 @@ void Host_Name_f(void)
 		{
 			Cmd_ForwardToServer();
 		}
+#endif
 		return;
 	}
 
@@ -765,16 +795,20 @@ void Host_Say(qboolean teamonly)
 
 	if (cmd_source == src_command)
 	{
+#ifndef DEDICATED
 		if (cls.state == CA_DEDICATED)
+#endif
 		{
 			fromServer = true;
 			teamonly = false;
 		}
+#ifndef DEDICATED
 		else
 		{
 			Cmd_ForwardToServer();
 			return;
 		}
+#endif
 	}
 
 	if (Cmd_Argc() < 2)
@@ -912,8 +946,10 @@ void Host_Color_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
+#ifndef DEDICATED
 		Con_Printf("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
 		Con_Printf("color <0-13> [0-13]\n");
+#endif
 		return;
 	}
 
@@ -942,11 +978,13 @@ void Host_Color_f(void)
 
 	if (cmd_source == src_command)
 	{
+#ifndef DEDICATED
 		Cvar_SetValue("_cl_color", playercolor);
 		if (cls.state == CA_ACTIVE)
 		{
 			Cmd_ForwardToServer();
 		}
+#endif
 		return;
 	}
 
@@ -1256,6 +1294,9 @@ void Host_Kick_f(void)
 	{
 		if (cmd_source == src_command)
 		{
+#ifdef DEDICATED
+			who = "Console";
+#else
 			if (cls.state == CA_DEDICATED)
 			{
 				who = "Console";
@@ -1264,6 +1305,7 @@ void Host_Kick_f(void)
 			{
 				who = clqh_name->string;
 			}
+#endif
 		}
 		else
 		{
@@ -1499,6 +1541,7 @@ void Host_Give_f(void)
 	}
 }
 
+#ifndef DEDICATED
 qhedict_t* FindViewthing(void)
 {
 	int i;
@@ -1622,6 +1665,7 @@ void Host_Viewprev_f(void)
 
 	R_PrintModelFrameName(m, e->GetFrame());
 }
+#endif
 
 /*
 ===============================================================================
@@ -1639,9 +1683,11 @@ Host_Startdemos_f
 */
 void Host_Startdemos_f(void)
 {
+#ifndef DEDICATED
 	int i, c;
 
 	if (cls.state == CA_DEDICATED)
+#endif
 	{
 		if (sv.state == SS_DEAD)
 		{
@@ -1650,6 +1696,7 @@ void Host_Startdemos_f(void)
 		return;
 	}
 
+#ifndef DEDICATED
 	c = Cmd_Argc() - 1;
 	if (c > MAX_DEMOS)
 	{
@@ -1670,9 +1717,10 @@ void Host_Startdemos_f(void)
 	{
 		cls.qh_demonum = -1;
 	}
+#endif
 }
 
-
+#ifndef DEDICATED
 /*
 ==================
 Host_Demos_f
@@ -1714,6 +1762,7 @@ void Host_Stopdemo_f(void)
 	CL_StopPlayback();
 	CL_Disconnect();
 }
+#endif
 
 //=============================================================================
 
@@ -1732,8 +1781,10 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("map", Host_Map_f);
 	Cmd_AddCommand("restart", Host_Restart_f);
 	Cmd_AddCommand("changelevel", Host_Changelevel_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("connect", Host_Connect_f);
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);
+#endif
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("noclip", Host_Noclip_f);
 	Cmd_AddCommand("version", Host_Version_f);
@@ -1749,10 +1800,13 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("kick", Host_Kick_f);
 	Cmd_AddCommand("ping", Host_Ping_f);
 	Cmd_AddCommand("load", Host_Loadgame_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("save", Host_Savegame_f);
+#endif
 	Cmd_AddCommand("give", Host_Give_f);
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("demos", Host_Demos_f);
 	Cmd_AddCommand("stopdemo", Host_Stopdemo_f);
 
@@ -1760,4 +1814,5 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("viewframe", Host_Viewframe_f);
 	Cmd_AddCommand("viewnext", Host_Viewnext_f);
 	Cmd_AddCommand("viewprev", Host_Viewprev_f);
+#endif
 }

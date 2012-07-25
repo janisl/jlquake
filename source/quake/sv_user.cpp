@@ -724,7 +724,11 @@ void SV_RunClients(void)
 		}
 
 // always pause in single player if in console or menus
+#ifdef DEDICATED
+		if (!sv.qh_paused)
+#else
 		if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
+#endif
 		{
 			SV_ClientThink();
 		}

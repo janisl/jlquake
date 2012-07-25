@@ -27,6 +27,7 @@ qboolean con_debuglog;
 
 extern void M_Menu_Main_f(void);
 
+#ifndef DEDICATED
 /*
 ================
 Con_ToggleConsole_f
@@ -58,6 +59,7 @@ void Con_ToggleConsole_f(void)
 	Con_ClearNotify();
 	con.desiredFrac = 0.5;
 }
+#endif
 
 /*
 ================
@@ -77,12 +79,14 @@ void Con_Init(void)
 
 	Con_Printf("Console initialized.\n");
 
+#ifndef DEDICATED
 	Con_InitCommon();
 
 //
 // register our commands
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
+#endif
 }
 
 /*
@@ -116,7 +120,6 @@ void Con_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
@@ -131,6 +134,7 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", "%s", msg);
 	}
 
+#ifndef DEDICATED
 	if (cls.state == CA_DEDICATED)
 	{
 		return;		// no graphics mode
@@ -144,6 +148,7 @@ void Con_Printf(const char* fmt, ...)
 	{
 		// protect against infinite loop if something in SCR_UpdateScreen calls
 		// Con_Printd
+	static qboolean inupdate;
 		if (!inupdate)
 		{
 			inupdate = true;
@@ -151,6 +156,7 @@ void Con_Printf(const char* fmt, ...)
 			inupdate = false;
 		}
 	}
+#endif
 }
 
 /*

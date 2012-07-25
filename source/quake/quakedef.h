@@ -19,10 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client
 
+#ifndef DEDICATED
 #include "../client/client.h"
-#include "../server/server.h"
 #include "../client/game/quake/local.h"
 #include "../client/game/quake_hexen2/network_channel.h"
+#endif
+#include "../server/server.h"
 #include "../server/quake_hexen/local.h"
 #include "../server/progsvm/progsvm.h"
 
@@ -131,20 +133,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
+#ifndef DEDICATED
 #include "draw.h"
 #include "screen.h"
+#endif
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
+#ifndef DEDICATED
 #include "sbar.h"
 #include "render.h"
 #include "client.h"
+#endif
 #include "progs.h"
 #include "server.h"
+#ifndef DEDICATED
 #include "keys.h"
+#endif
 #include "console.h"
+#ifndef DEDICATED
 #include "view.h"
 #include "menu.h"
+#endif
 
 //=============================================================================
 

@@ -26,3 +26,20 @@ add_executable(jlquake
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake ${CLIENTS_LIBS})
+
+add_executable(jlquakeded
+	cmd.cpp
+	common.cpp
+	console.cpp
+	cvar.cpp
+	host.cpp
+	host_cmd.cpp
+	net_main.cpp
+	pr_cmds.cpp
+	sv_main.cpp
+	sv_user.cpp
+	sys_linux.cpp
+	zone.cpp
+)
+set_target_properties(jlquakeded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")
+target_link_libraries(jlquakeded ${SERVERS_LIBS})

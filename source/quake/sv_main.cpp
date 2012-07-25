@@ -1024,10 +1024,12 @@ void SV_SendReconnect(void)
 	msg.WriteString2("reconnect\n");
 	NET_SendToAll(&msg, 5);
 
+#ifndef DEDICATED
 	if (cls.state != CA_DEDICATED)
 	{
 		Cmd_ExecuteString("reconnect\n", src_command);
 	}
+#endif
 }
 
 
@@ -1068,7 +1070,9 @@ SV_SpawnServer
 This is called at the start of each level
 ================
 */
+#ifndef DEDICATED
 extern float scr_centertime_off;
+#endif
 
 void SV_SpawnServer(char* server)
 {
@@ -1080,7 +1084,9 @@ void SV_SpawnServer(char* server)
 	{
 		Cvar_Set("hostname", "UNNAMED");
 	}
+#ifndef DEDICATED
 	scr_centertime_off = 0;
+#endif
 
 	Con_DPrintf("SpawnServer: %s\n",server);
 	svs.qh_changelevel_issued = false;		// now safe to issue another
@@ -1214,3 +1220,9 @@ void SV_SpawnServer(char* server)
 
 	Con_DPrintf("Server spawned.\n");
 }
+
+#ifdef DEDICATED
+void S_ClearSoundBuffer(bool)
+{
+}
+#endif
