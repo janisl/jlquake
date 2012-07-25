@@ -238,7 +238,7 @@ void R_LoadWorld(const char* name)
 {
 	if (tr.worldMapLoaded)
 	{
-		throw DropException("ERROR: attempted to redundantly load world map\n");
+		common->Error("ERROR: attempted to redundantly load world map\n");
 	}
 
 	skyboxportal = 0;
@@ -274,7 +274,7 @@ void R_LoadWorld(const char* name)
 	FS_ReadFile(name, &buffer);
 	if (!buffer)
 	{
-		throw DropException(va("R_LoadWorld: %s not found", name));
+		common->Error("R_LoadWorld: %s not found", name);
 	}
 
 	model_t* mod = NULL;
@@ -326,7 +326,7 @@ void R_LoadWorld(const char* name)
 			break;
 
 		default:
-			throw DropException(va("Mod_NumForName: unknown fileid for %s", name));
+			common->Error("Mod_NumForName: unknown fileid for %s", name);
 			break;
 		}
 	}

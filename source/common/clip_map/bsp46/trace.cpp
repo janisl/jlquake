@@ -1793,7 +1793,7 @@ float QClipMap46::SquareRootFloat(float number)
 
 bool QClipMap46::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
-	throw DropException("Not implemented");
+	common->Error("Not implemented");
 }
 
 //==========================================================================
@@ -1805,7 +1805,7 @@ bool QClipMap46::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_
 q2trace_t QClipMap46::BoxTraceQ2(vec3_t Start, vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
 {
-	throw DropException("Not implemented");
+	common->Error("Not implemented");
 }
 
 //==========================================================================
@@ -1817,5 +1817,5 @@ q2trace_t QClipMap46::BoxTraceQ2(vec3_t Start, vec3_t End,
 q2trace_t QClipMap46::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
 {
-	throw DropException("Not implemented");
+	common->Error("Not implemented");
 }

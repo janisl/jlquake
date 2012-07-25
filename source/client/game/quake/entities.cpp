@@ -36,7 +36,7 @@ static q1entity_t* CLQ1_EntityNum(int number)
 	{
 		if (number >= MAX_EDICTS_QH)
 		{
-			throw DropException(va("CLQ1_EntityNum: %i is an invalid number", number));
+			common->Error("CLQ1_EntityNum: %i is an invalid number", number);
 		}
 		while (cl.qh_num_entities <= number)
 		{
@@ -76,7 +76,7 @@ void CLQ1_ParseSpawnStatic(QMsg& message)
 	int i = cl.qh_num_statics;
 	if (i >= MAX_STATIC_ENTITIES_Q1)
 	{
-		throw DropException("Too many static entities");
+		common->Error("Too many static entities");
 	}
 	q1entity_t* ent = &clq1_static_entities[i];
 	cl.qh_num_statics++;
@@ -134,7 +134,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 		modnum = message.ReadByte();
 		if (modnum >= MAX_MODELS_Q1)
 		{
-			throw DropException("CL_ParseModel: bad modnum");
+			common->Error("CL_ParseModel: bad modnum");
 		}
 	}
 	else
@@ -188,7 +188,7 @@ void CLQ1_ParseUpdate(QMsg& message, int bits)
 	}
 	if (ent->state.colormap > cl.qh_maxclients)
 	{
-		throw Exception("i >= cl.maxclients");
+		common->FatalError("i >= cl.maxclients");
 	}
 
 	int skin;
@@ -392,7 +392,7 @@ static void CLQW_FlushEntityPacket(QMsg& message)
 		if (message.badread)
 		{
 			// something didn't parse right...
-			throw DropException("msg_badread in packetentities");
+			common->Error("msg_badread in packetentities");
 			return;
 		}
 
@@ -464,7 +464,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 		if (message.badread)
 		{
 			// something didn't parse right...
-			throw DropException("msg_badread in packetentities");
+			common->Error("msg_badread in packetentities");
 		}
 
 		if (!word)
@@ -474,7 +474,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 				// copy all the rest of the entities from the old packet
 				if (newindex >= QWMAX_PACKET_ENTITIES)
 				{
-					throw DropException("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
+					common->Error("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 				}
 				newp->entities[newindex] = oldp->entities[oldindex];
 				newindex++;
@@ -497,7 +497,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			// copy one of the old entities over to the new packet unchanged
 			if (newindex >= QWMAX_PACKET_ENTITIES)
 			{
-				throw DropException("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
+				common->Error("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 			}
 			newp->entities[newindex] = oldp->entities[oldindex];
 			newindex++;
@@ -521,7 +521,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			}
 			if (newindex >= QWMAX_PACKET_ENTITIES)
 			{
-				throw DropException("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
+				common->Error("CLQW_ParsePacketEntities: newindex == QWMAX_PACKET_ENTITIES");
 			}
 			CLQW_ParseDelta(message, &clq1_baselines[newnum], &newp->entities[newindex], word);
 			newindex++;
@@ -566,7 +566,7 @@ void CLQW_ParsePlayerinfo(QMsg& message)
 	int num = message.ReadByte();
 	if (num > MAX_CLIENTS_QHW)
 	{
-		throw Exception("CLQW_ParsePlayerinfo: bad num");
+		common->FatalError("CLQW_ParsePlayerinfo: bad num");
 	}
 
 	qwframe_t* frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];

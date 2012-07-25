@@ -1595,7 +1595,7 @@ static bool CLH2_ParseEffectType(int index, QMsg& message)
 		CLH2_ParseEffectChunk(index, message);
 		break;
 	default:
-		throw Exception("CL_ParseEffect: bad type");
+		common->FatalError("CL_ParseEffect: bad type");
 	}
 	return ImmediateFree;
 }
@@ -1821,7 +1821,7 @@ static bool CLHW_ParseEffectType(int index, QMsg& message)
 		ImmediateFree = !CLHW_ParseEffectEidolonStar(index, message);
 		break;
 	default:
-		throw Exception("CL_ParseEffect: bad type");
+		common->FatalError("CL_ParseEffect: bad type");
 	}
 	return ImmediateFree;
 }
@@ -1890,7 +1890,7 @@ void CLHW_ParseMultiEffect(QMsg& message)
 		CLHW_ParseMultiEffectRavenPower(message);
 		break;
 	default:
-		throw Exception("CLHW_ParseMultiEffect: bad type");
+		common->FatalError("CLHW_ParseMultiEffect: bad type");
 	}
 }
 

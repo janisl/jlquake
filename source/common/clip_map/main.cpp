@@ -66,7 +66,7 @@ static QClipMap* GetModel(clipHandle_t Handle)
 	int Index = ((Handle & CMH_NON_MAP_MASK) >> CMH_NON_MAP_SHIFT) - 1;
 	if (Index >= CMNonMapModels.Num())
 	{
-		throw DropException("Invalid handle");
+		common->Error("Invalid handle");
 	}
 	return CMNonMapModels[Index];
 }
@@ -105,7 +105,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 {
 	if (!name || (!(GGameType & GAME_Quake2) && !name[0]))
 	{
-		throw DropException("CM_LoadMap: NULL name");
+		common->Error("CM_LoadMap: NULL name");
 	}
 
 	common->DPrintf("CM_LoadMap(%s, %i)\n", name, clientload);
@@ -147,7 +147,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 	Array<quint8> Buffer;
 	if (FS_ReadFile(name, Buffer) <= 0)
 	{
-		throw DropException(va("Couldn't load %s", name));
+		common->Error("Couldn't load %s", name);
 	}
 
 	struct TTestHeader
@@ -178,12 +178,12 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 			break;
 
 		default:
-			throw DropException("Unsupported BSP model version");
+			common->Error("Unsupported BSP model version");
 		}
 		break;
 
 	default:
-		throw DropException("Unsupported map file format");
+		common->Error("Unsupported map file format");
 	}
 
 	CMapShared->LoadMap(name, Buffer);

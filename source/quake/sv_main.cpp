@@ -316,7 +316,7 @@ byte* SV_FatPVS(vec3_t org)
 	int count = CM_BoxLeafnums(mins, maxs, leafs, 64);
 	if (count < 1)
 	{
-		throw Exception("SV_FatPVS: count < 1");
+		common->FatalError("SV_FatPVS: count < 1");
 	}
 
 	// convert leafs to clusters

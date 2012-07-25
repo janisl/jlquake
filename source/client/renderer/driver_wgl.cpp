@@ -832,7 +832,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 		if (!RegisterClass(&wc))
 		{
-			throw Exception("GLW_CreateWindow: could not register window class");
+			common->FatalError("GLW_CreateWindow: could not register window class");
 		}
 		s_classRegistered = true;
 		common->Printf("...registered window class\n");
@@ -909,7 +909,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 		if (!GMainWindow)
 		{
-			throw Exception("GLW_CreateWindow() - Couldn't create window");
+			common->FatalError("GLW_CreateWindow() - Couldn't create window");
 		}
 
 		ShowWindow(GMainWindow, SW_SHOW);

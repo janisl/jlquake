@@ -867,7 +867,7 @@ void CLQ2_ParseTEnt(QMsg& message)
 		break;
 
 	default:
-		throw DropException("CLQ2_ParseTEnt: bad type");
+		common->Error("CLQ2_ParseTEnt: bad type");
 	}
 }
 

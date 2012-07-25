@@ -329,7 +329,7 @@ double Sys_DoubleTime()
 
 		if (!QueryPerformanceFrequency(&PerformanceFreq))
 		{
-			throw Exception("No hardware timer available");
+			common->FatalError("No hardware timer available");
 		}
 
 		// get 32 out of the 64 time bits such that we have around

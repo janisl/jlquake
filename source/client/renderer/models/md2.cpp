@@ -55,8 +55,8 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH2_VERSION)
 	{
-		throw DropException(va("%s has wrong version number (%i should be %i)",
-				mod->name, version, MESH2_VERSION));
+		common->Error("%s has wrong version number (%i should be %i)",
+				mod->name, version, MESH2_VERSION);
 	}
 
 	dmd2_t* pheader = (dmd2_t*)Mem_Alloc(LittleLong(pinmodel->ofs_end));
@@ -69,27 +69,27 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 
 	if (pheader->num_xyz <= 0)
 	{
-		throw DropException(va("model %s has no vertices", mod->name));
+		common->Error("model %s has no vertices", mod->name);
 	}
 
 	if (pheader->num_xyz > MAX_MD2_VERTS)
 	{
-		throw DropException(va("model %s has too many vertices", mod->name));
+		common->Error("model %s has too many vertices", mod->name);
 	}
 
 	if (pheader->num_st <= 0)
 	{
-		throw DropException(va("model %s has no st vertices", mod->name));
+		common->Error("model %s has no st vertices", mod->name);
 	}
 
 	if (pheader->num_tris <= 0)
 	{
-		throw DropException(va("model %s has no triangles", mod->name));
+		common->Error("model %s has no triangles", mod->name);
 	}
 
 	if (pheader->num_frames <= 0)
 	{
-		throw DropException(va("model %s has no frames", mod->name));
+		common->Error("model %s has no frames", mod->name);
 	}
 
 	//

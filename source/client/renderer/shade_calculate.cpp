@@ -76,7 +76,7 @@ static float* TableForFunc(genFunc_t func)
 		break;
 	}
 
-	throw DropException(va("TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.shader->name));
+	common->Error("TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.shader->name);
 }
 
 //==========================================================================
@@ -2075,8 +2075,8 @@ void ComputeTexCoords(shaderStage_t* pStage)
 				break;
 
 			default:
-				throw DropException(va("ERROR: unknown texmod '%d' in shader '%s'\n",
-						pStage->bundle[b].texMods[tm].type, tess.shader->name));
+				common->Error("ERROR: unknown texmod '%d' in shader '%s'\n",
+						pStage->bundle[b].texMods[tm].type, tess.shader->name);
 				break;
 			}
 		}

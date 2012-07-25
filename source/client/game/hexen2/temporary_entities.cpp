@@ -557,7 +557,7 @@ void CLH2_ParseTEnt(QMsg& message)
 		CLH2_ParseStream(message, type);
 		break;
 	default:
-		throw Exception("CL_ParseTEnt: bad type");
+		common->FatalError("CL_ParseTEnt: bad type");
 	}
 }
 
@@ -755,7 +755,7 @@ void CLHW_ParseTEnt(QMsg& message)
 		CLHW_ParseChainLightning(message);
 		break;
 	default:
-		throw Exception("CL_ParseTEnt: bad type");
+		common->FatalError("CL_ParseTEnt: bad type");
 	}
 }
 

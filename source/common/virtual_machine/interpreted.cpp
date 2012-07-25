@@ -170,7 +170,7 @@ void VM_PrepareInterpreter(vm_t* vm, vmHeader_t* header)
 		codeBase[pc] = op;
 		if (pc > header->codeLength)
 		{
-			throw Exception("VM_PrepareInterpreter: pc > header->codeLength");
+			common->FatalError("VM_PrepareInterpreter: pc > header->codeLength");
 		}
 
 		pc++;
@@ -349,26 +349,26 @@ nextInstruction2:
 #ifdef DEBUG_VM
 		if ((unsigned)programCounter > vm->codeLength)
 		{
-			throw DropException("VM pc out of range");
+			common->Error("VM pc out of range");
 		}
 
 		if (opStack < stack)
 		{
-			throw DropException("VM opStack underflow");
+			common->Error("VM opStack underflow");
 		}
 		if (opStack >= stack + MAX_STACK)
 		{
-			throw DropException("VM opStack overflow");
+			common->Error("VM opStack overflow");
 		}
 
 		if (programStack <= vm->stackBottom)
 		{
-			throw DropException("VM stack overflow");
+			common->Error("VM stack overflow");
 		}
 
 		if (programStack & 3)
 		{
-			throw DropException("VM program stack misaligned");
+			common->Error("VM program stack misaligned");
 		}
 
 		if (vm_debugLevel > 1)
@@ -382,7 +382,7 @@ nextInstruction2:
 		{
 #ifdef DEBUG_VM
 		default:
-			throw DropException("Bad VM instruction");	// this should be scanned on load!
+			common->Error("Bad VM instruction");	// this should be scanned on load!
 #endif
 		case OP_BREAK:
 			vm->breakCount++;
@@ -406,7 +406,7 @@ nextInstruction2:
 #ifdef DEBUG_VM
 			if (*opStack & 3)
 			{
-				throw DropException("OP_LOAD4 misaligned");
+				common->Error("OP_LOAD4 misaligned");
 			}
 #endif
 			r0 = *opStack = *(int*)&image[r0 & dataMask];
@@ -455,7 +455,7 @@ nextInstruction2:
 			int* dest = (int*)&image[r1 & dataMask];
 			if (((qintptr)src | (qintptr)dest | count) & 3)
 			{
-				throw DropException("OP_BLOCK_COPY not dword aligned");
+				common->Error("OP_BLOCK_COPY not dword aligned");
 			}
 			count >>= 2;
 			for (int i = count - 1; i >= 0; i--)
@@ -938,7 +938,7 @@ done:
 
 	if (opStack != &stack[1])
 	{
-		throw DropException(va("Interpreter error: opStack = %i", (int)(opStack - stack)));
+		common->Error("Interpreter error: opStack = %i", (int)(opStack - stack));
 	}
 
 	vm->programStack = stackOnEntry;

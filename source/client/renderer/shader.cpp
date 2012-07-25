@@ -463,7 +463,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 
 	if (stage->bundle[0].numTexMods == TR_MAX_TEXMODS)
 	{
-		throw DropException(va("ERROR: too many tcMod stages in shader '%s'\n", shader.name));
+		common->Error("ERROR: too many tcMod stages in shader '%s'\n", shader.name);
 	}
 
 	texModInfo_t* tmi = &stage->bundle[0].texMods[stage->bundle[0].numTexMods];
@@ -3933,7 +3933,7 @@ static void ScanAndLoadShaderFiles()
 		sum += buffersize[i];
 		if (!buffers[i])
 		{
-			throw DropException(va("Couldn't load %s", filename));
+			common->Error("Couldn't load %s", filename);
 		}
 	}
 

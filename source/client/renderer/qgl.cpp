@@ -879,7 +879,7 @@ void QGL_Init()
 			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
 			{
-				throw Exception("bad getprocaddress");
+				common->FatalError("bad getprocaddress");
 			}
 		}
 		else
@@ -901,7 +901,7 @@ void QGL_Init()
 			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))GLimp_GetProcAddress("glPointParameterfvEXT");
 			if (!qglPointParameterfEXT || !qglPointParameterfvEXT)
 			{
-				throw Exception("bad getprocaddress");
+				common->FatalError("bad getprocaddress");
 			}
 		}
 		else

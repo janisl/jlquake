@@ -411,7 +411,7 @@ static void CLQ1_ParseTEntCommon(QMsg& message, int type)
 		break;
 
 	default:
-		throw Exception("CL_ParseTEnt: bad type");
+		common->FatalError("CL_ParseTEnt: bad type");
 	}
 }
 

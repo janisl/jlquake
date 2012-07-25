@@ -190,7 +190,7 @@ void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 		Cbuf_AddText(Text);
 		break;
 	default:
-		throw Exception("Cbuf_ExecuteText: bad exec_when");
+		common->FatalError("Cbuf_ExecuteText: bad exec_when");
 	}
 }
 

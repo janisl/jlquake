@@ -268,7 +268,7 @@ static int Hex(int c)
 		return c - '0';
 	}
 
-	throw DropException(va("Hex: bad char '%c'", c));
+	common->Error("Hex: bad char '%c'", c);
 }
 
 static void EmitString(const char* string)
@@ -425,7 +425,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 		{
 			if (compiledOfs > maxLength - 16)
 			{
-				throw Exception("VM_CompileX86: maxLength exceeded");
+				common->FatalError("VM_CompileX86: maxLength exceeded");
 			}
 
 			vm->instructionPointers[instruction] = compiledOfs;
@@ -433,7 +433,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 
 			if (pc > header->codeLength)
 			{
-				throw Exception("VM_CompileX86: pc > header->codeLength");
+				common->FatalError("VM_CompileX86: pc > header->codeLength");
 			}
 
 			int op = code[pc];
@@ -1072,7 +1072,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 				Emit4((int)vm->instructionPointers);
 				break;
 			default:
-				throw DropException(va("VM_CompileX86: bad opcode %i at offset %i", op, pc));
+				common->Error("VM_CompileX86: bad opcode %i at offset %i", op, pc);
 			}
 			pop0 = pop1;
 			pop1 = op;
@@ -1104,7 +1104,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 			PROT_READ | PROT_WRITE | PROT_EXEC);
 
 //      if (r < 0)
-		throw Exception("mprotect failed to change PROT_EXEC");
+		common->FatalError("mprotect failed to change PROT_EXEC");
 	}
 #endif
 }
@@ -1182,11 +1182,11 @@ qintptr VM_CallCompiled(vm_t* vm, int* args)
 
 	if (opStack != &stack[1])
 	{
-		throw DropException("opStack corrupted in compiled code");
+		common->Error("opStack corrupted in compiled code");
 	}
 	if (programStack != stackOnEntry - 48)
 	{
-		throw DropException("programStack corrupted in compiled code");
+		common->Error("programStack corrupted in compiled code");
 	}
 
 	vm->programStack = stackOnEntry;

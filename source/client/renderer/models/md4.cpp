@@ -127,13 +127,13 @@ bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name)
 
 			if (surf->numVerts > SHADER_MAX_VERTEXES)
 			{
-				throw DropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
-						mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
+				common->Error("R_LoadMD3: %s has more than %i verts on a surface (%i)",
+						mod_name, SHADER_MAX_VERTEXES, surf->numVerts);
 			}
 			if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
 			{
-				throw DropException(va("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
-						mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
+				common->Error("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
+						mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles);
 			}
 
 			// change to surface identifier

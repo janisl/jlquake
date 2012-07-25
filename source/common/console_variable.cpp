@@ -300,7 +300,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 {
 	if (!VarName || (!(GGameType & GAME_Quake2) && !VarValue))
 	{
-		throw Exception("Cvar_Get: NULL parameter");
+		common->FatalError("Cvar_Get: NULL parameter");
 	}
 
 	if (!(GGameType & GAME_Quake2) || (Flags & (CVAR_USERINFO | CVAR_SERVERINFO)))
@@ -396,7 +396,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	//
 	if (cvar_numIndexes >= MAX_CVARS)
 	{
-		throw Exception("MAX_CVARS");
+		common->FatalError("MAX_CVARS");
 	}
 	var = new Cvar;
 	Com_Memset(var, 0, sizeof(*var));
@@ -586,7 +586,7 @@ void Cvar_Update(vmCvar_t* vmCvar)
 
 	if ((unsigned)vmCvar->handle >= (unsigned)cvar_numIndexes)
 	{
-		throw DropException("Cvar_Update: handle out of range");
+		common->Error("Cvar_Update: handle out of range");
 	}
 
 	Cvar* cv = cvar_indexes[vmCvar->handle];
@@ -607,8 +607,8 @@ void Cvar_Update(vmCvar_t* vmCvar)
 	// bk001129 - mismatches.
 	if (String::Length(cv->string) + 1 > MAX_CVAR_VALUE_STRING)
 	{
-		throw DropException(va("Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
-				cv->string, String::Length(cv->string)));
+		common->Error("Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
+				cv->string, String::Length(cv->string));
 	}
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
 	// bk001129 - paranoia. Never trust the destination string.

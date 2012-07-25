@@ -124,19 +124,19 @@ void R_LoadBMP(const char* name, byte** pic, int* width, int* height)
 
 	if (bmpHeader.id[0] != 'B' && bmpHeader.id[1] != 'M')
 	{
-		throw DropException(va("LoadBMP: only Windows-style BMP files supported (%s)\n", name));
+		common->Error("LoadBMP: only Windows-style BMP files supported (%s)\n", name);
 	}
 	if ((int)bmpHeader.fileSize != length)
 	{
-		throw DropException(va("LoadBMP: header size does not match file size (%d vs. %d) (%s)\n", bmpHeader.fileSize, length, name));
+		common->Error("LoadBMP: header size does not match file size (%d vs. %d) (%s)\n", bmpHeader.fileSize, length, name);
 	}
 	if (bmpHeader.compression != 0)
 	{
-		throw DropException(va("LoadBMP: only uncompressed BMP files supported (%s)\n", name));
+		common->Error("LoadBMP: only uncompressed BMP files supported (%s)\n", name);
 	}
 	if (bmpHeader.bitsPerPixel < 8)
 	{
-		throw DropException(va("LoadBMP: monochrome and 4-bit BMP files not supported (%s)\n", name));
+		common->Error("LoadBMP: monochrome and 4-bit BMP files not supported (%s)\n", name);
 	}
 
 	int columns = bmpHeader.width;
@@ -210,7 +210,7 @@ void R_LoadBMP(const char* name, byte** pic, int* width, int* height)
 				break;
 
 			default:
-				throw DropException(va("LoadBMP: illegal pixel_size '%d' in file '%s'\n", bmpHeader.bitsPerPixel, name));
+				common->Error("LoadBMP: illegal pixel_size '%d' in file '%s'\n", bmpHeader.bitsPerPixel, name);
 				break;
 			}
 		}

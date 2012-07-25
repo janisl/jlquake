@@ -105,7 +105,7 @@ clipHandle_t QClipMap46::InlineModel(int Index) const
 {
 	if (Index < 0 || Index >= numSubModels)
 	{
-		throw DropException("CM_InlineModel: bad number");
+		common->Error("CM_InlineModel: bad number");
 	}
 	return Index;
 }
@@ -165,7 +165,7 @@ int QClipMap46::LeafCluster(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numLeafs)
 	{
-		throw DropException("CM_LeafCluster: bad number");
+		common->Error("CM_LeafCluster: bad number");
 	}
 	return leafs[LeafNum].cluster;
 }
@@ -180,7 +180,7 @@ int QClipMap46::LeafArea(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numLeafs)
 	{
-		throw DropException("CM_LeafArea: bad number");
+		common->Error("CM_LeafArea: bad number");
 	}
 	return leafs[LeafNum].area;
 }
@@ -254,7 +254,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 {
 	if (Handle < 0)
 	{
-		throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle));
+		common->Error("CM_ClipHandleToModel: bad handle %i", Handle);
 	}
 	if (Handle < numSubModels)
 	{
@@ -266,10 +266,10 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	}
 	if (Handle < MAX_SUBMODELS)
 	{
-		throw DropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i",
-				numSubModels, Handle, MAX_SUBMODELS));
+		common->Error("CM_ClipHandleToModel: bad handle %i < %i < %i",
+				numSubModels, Handle, MAX_SUBMODELS);
 	}
-	throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
+	common->Error("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS);
 }
 
 //==========================================================================
@@ -382,7 +382,7 @@ void QClipMap46::SetTempBoxModelContents(clipHandle_t handle, int contents)
 
 int QClipMap46::ContentsToQ1(int Contents) const
 {
-	throw Exception("Not implemented");
+	common->FatalError("Not implemented");
 }
 
 //==========================================================================
@@ -393,5 +393,5 @@ int QClipMap46::ContentsToQ1(int Contents) const
 
 int QClipMap46::ContentsToQ2(int Contents) const
 {
-	throw Exception("Not implemented");
+	common->FatalError("Not implemented");
 }

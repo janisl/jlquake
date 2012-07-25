@@ -97,8 +97,8 @@ const char* Sys_DefaultHomePath()
 		{
 			if (errno != EEXIST)
 			{
-				throw Exception(va("Unable to create directory \"%s\", error is %s(%d)\n",
-						homePath, strerror(errno), errno));
+				common->FatalError("Unable to create directory \"%s\", error is %s(%d)\n",
+						homePath, strerror(errno), errno);
 			}
 		}
 		return homePath;

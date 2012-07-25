@@ -181,7 +181,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 {
 	if (!Name[0])
 	{
-		throw DropException("CM_ForName: NULL name");
+		common->Error("CM_ForName: NULL name");
 	}
 
 	//
@@ -201,7 +201,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	Array<quint8> Buffer;
 	if (FS_ReadFile(Name, Buffer) <= 0)
 	{
-		throw DropException(va("CM_PrecacheModel: %s not found", Name));
+		common->Error("CM_PrecacheModel: %s not found", Name);
 	}
 
 	// call the apropriate loader
@@ -316,8 +316,8 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_VERSION)
 	{
-		throw DropException(va("%s has wrong version number (%i should be %i)",
-				*mod->Name, version, MESH1_VERSION));
+		common->Error("%s has wrong version number (%i should be %i)",
+				*mod->Name, version, MESH1_VERSION);
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -377,8 +377,8 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_NEWVERSION)
 	{
-		throw DropException(va("%s has wrong version number (%i should be %i)",
-				*mod->Name, version, MESH1_NEWVERSION));
+		common->Error("%s has wrong version number (%i should be %i)",
+				*mod->Name, version, MESH1_NEWVERSION);
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -555,7 +555,7 @@ void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 	int version = LittleLong(pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		throw DropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));
+		common->Error("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION);
 	}
 
 	ModelMins[0] = ModelMins[1] = -LittleLong(pin->width) / 2;

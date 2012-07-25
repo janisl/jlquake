@@ -80,7 +80,7 @@ static void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
 {
 	if (s->sin_family != AF_INET)
 	{
-		throw Exception("Not an IP address");
+		common->FatalError("Not an IP address");
 	}
 	a->type = NA_IP;
 	*(int*)&a->ip = s->sin_addr.s_addr;

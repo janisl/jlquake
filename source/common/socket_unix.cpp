@@ -76,7 +76,7 @@ static void NetadrToSockadr(const netadr_t* a, sockaddr_in* s)
 	}
 	else
 	{
-		throw Exception("Invalid address type");
+		common->FatalError("Invalid address type");
 	}
 }
 

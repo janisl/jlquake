@@ -54,14 +54,14 @@ void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen)
 
 	if (sprout->version != SPRITE2_VERSION)
 	{
-		throw DropException(va("%s has wrong version number (%i should be %i)",
-				mod->name, sprout->version, SPRITE2_VERSION));
+		common->Error("%s has wrong version number (%i should be %i)",
+				mod->name, sprout->version, SPRITE2_VERSION);
 	}
 
 	if (sprout->numframes > MAX_MD2_SKINS)
 	{
-		throw DropException(va("%s has too many frames (%i > %i)",
-				mod->name, sprout->numframes, MAX_MD2_SKINS));
+		common->Error("%s has too many frames (%i > %i)",
+				mod->name, sprout->numframes, MAX_MD2_SKINS);
 	}
 
 	// byte swap everything

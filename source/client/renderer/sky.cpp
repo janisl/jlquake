@@ -455,7 +455,7 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 {
 	if (nump > MAX_CLIP_VERTS - 2)
 	{
-		throw DropException("ClipSkyPolygon: MAX_CLIP_VERTS");
+		common->Error("ClipSkyPolygon: MAX_CLIP_VERTS");
 	}
 	if (stage == 6)
 	{
@@ -1045,7 +1045,7 @@ static void FillCloudySkySide(const int mins[2], const int maxs[2], bool addInde
 
 			if (tess.numVertexes >= SHADER_MAX_VERTEXES)
 			{
-				throw DropException("SHADER_MAX_VERTEXES hit in FillCloudySkySide()\n");
+				common->Error("SHADER_MAX_VERTEXES hit in FillCloudySkySide()\n");
 			}
 		}
 	}
@@ -1057,7 +1057,7 @@ static void FillCloudySkySide(const int mins[2], const int maxs[2], bool addInde
 		int sWidth = maxs[0] - mins[0] + 1;
 		if (tess.numIndexes + (sWidth - 1) * (tHeight - 1) * 6 >= SHADER_MAX_INDEXES)
 		{
-			throw DropException("SHADER_MAX_INDEXES hit in FillCloudySkySide()\n");
+			common->Error("SHADER_MAX_INDEXES hit in FillCloudySkySide()\n");
 		}
 		for (int t = 0; t < tHeight - 1; t++)
 		{

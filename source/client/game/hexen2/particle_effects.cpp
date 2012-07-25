@@ -566,7 +566,7 @@ void CLH2_SnowEffect(const vec3_t minOrigin, const vec3_t maxOrigin, int flags, 
 		while (contents != BSP29CONTENTS_EMPTY && j);
 		if (contents != BSP29CONTENTS_EMPTY)
 		{
-			throw Exception("Snow entity top plane is not in an empty area (sorry!)");
+			common->FatalError("Snow entity top plane is not in an empty area (sorry!)");
 		}
 
 		VectorCopy(minOrigin, p->minOrg);

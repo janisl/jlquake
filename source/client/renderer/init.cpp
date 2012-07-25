@@ -741,7 +741,7 @@ static void R_SetMode()
 	}
 
 	common->Printf("...WARNING: could not revert to safe mode\n");
-	throw Exception("R_SetMode() - could not initialise OpenGL subsystem\n");
+	common->FatalError("R_SetMode() - could not initialise OpenGL subsystem\n");
 }
 
 //==========================================================================

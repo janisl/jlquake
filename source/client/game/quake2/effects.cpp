@@ -512,7 +512,7 @@ void CLQ2_ParseMuzzleFlash(QMsg& message)
 	int i = message.ReadShort();
 	if (i < 1 || i >= MAX_EDICTS_Q2)
 	{
-		throw DropException("CLQ2_ParseMuzzleFlash: bad entity");
+		common->Error("CLQ2_ParseMuzzleFlash: bad entity");
 	}
 
 	int weapon = message.ReadByte();
@@ -682,7 +682,7 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	int ent = message.ReadShort();
 	if (ent < 1 || ent >= MAX_EDICTS_Q2)
 	{
-		throw DropException("CLQ2_ParseMuzzleFlash2: bad entity");
+		common->Error("CLQ2_ParseMuzzleFlash2: bad entity");
 	}
 	int flash_number = message.ReadByte();
 

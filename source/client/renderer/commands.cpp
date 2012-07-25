@@ -274,7 +274,7 @@ void* R_GetCommandBuffer(int bytes)
 	{
 		if (bytes > MAX_RENDER_COMMANDS - (int)sizeof(swapBuffersCommand_t) - 4)
 		{
-			throw Exception(va("R_GetCommandBuffer: bad size %i", bytes));
+			common->FatalError("R_GetCommandBuffer: bad size %i", bytes);
 		}
 		// if we run out of room, just start dropping commands
 		return NULL;
@@ -658,7 +658,7 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 		int err = qglGetError();
 		if (err != GL_NO_ERROR)
 		{
-			throw Exception(va("RE_BeginFrame() - glGetError() failed (0x%x)!\n", err));
+			common->FatalError("RE_BeginFrame() - glGetError() failed (0x%x)!\n", err);
 		}
 	}
 
@@ -684,14 +684,14 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 		}
 		else
 		{
-			throw Exception(va("RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame));
+			common->FatalError("RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame);
 		}
 	}
 	else
 	{
 		if (stereoFrame != STEREO_CENTER)
 		{
-			throw Exception(va("R_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame));
+			common->FatalError("R_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame);
 		}
 		if (!String::ICmp(r_drawBuffer->string, "GL_FRONT"))
 		{

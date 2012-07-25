@@ -285,7 +285,7 @@ static shader_t* ShaderForShaderNum(int shaderNum, int lightmapNum)
 	shaderNum = LittleLong(shaderNum);
 	if (shaderNum < 0 || shaderNum >= s_worldData.numShaders)
 	{
-		throw DropException(va("ShaderForShaderNum: bad num %i", shaderNum));
+		common->Error("ShaderForShaderNum: bad num %i", shaderNum);
 	}
 	bsp46_dshader_t* dsh = &s_worldData.shaders[shaderNum];
 
@@ -538,7 +538,7 @@ static void ParseTriSurf(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46
 		tri->indexes[i] = LittleLong(indexes[i]);
 		if (tri->indexes[i] < 0 || tri->indexes[i] >= numVerts)
 		{
-			throw DropException("Bad index in triangle surface");
+			common->Error("Bad index in triangle surface");
 		}
 	}
 
@@ -1795,20 +1795,20 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 	bsp46_dsurface_t* in = (bsp46_dsurface_t*)(fileBase + surfs->fileofs);
 	if (surfs->filelen % sizeof(*in))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = surfs->filelen / sizeof(*in);
 
 	bsp46_drawVert_t* dv = (bsp46_drawVert_t*)(fileBase + verts->fileofs);
 	if (verts->filelen % sizeof(*dv))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 
 	int* indexes = (int*)(fileBase + indexLump->fileofs);
 	if (indexLump->filelen % sizeof(*indexes))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 
 	mbrush46_surface_t* out = new mbrush46_surface_t[count];
@@ -1856,7 +1856,7 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 			numFoliage++;
 			break;
 		default:
-			throw DropException("Bad surfaceType");
+			common->Error("Bad surfaceType");
 		}
 	}
 
@@ -1924,7 +1924,7 @@ static void R_LoadNodesAndLeafs(bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump)
 	if (nodeLump->filelen % sizeof(bsp46_dnode_t) ||
 		leafLump->filelen % sizeof(bsp46_dleaf_t))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int numNodes = nodeLump->filelen / sizeof(bsp46_dnode_t);
 	int numLeafs = leafLump->filelen / sizeof(bsp46_dleaf_t);
@@ -2013,7 +2013,7 @@ static void R_LoadShaders(bsp46_lump_t* l)
 	bsp46_dshader_t* in = (bsp46_dshader_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = l->filelen / sizeof(*in);
 	bsp46_dshader_t* out = new bsp46_dshader_t[count];
@@ -2041,7 +2041,7 @@ static void R_LoadMarksurfaces(bsp46_lump_t* l)
 	int* in = (int*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush46_surface_t** out = new mbrush46_surface_t*[count];
@@ -2067,7 +2067,7 @@ static void R_LoadPlanes(bsp46_lump_t* l)
 	bsp46_dplane_t* in = (bsp46_dplane_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = l->filelen / sizeof(*in);
 	//JL Why * 2?
@@ -2119,7 +2119,7 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 	bsp46_dfog_t* fogs = (bsp46_dfog_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*fogs))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = l->filelen / sizeof(*fogs);
 
@@ -2140,14 +2140,14 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 	bsp46_dbrush_t* brushes = (bsp46_dbrush_t*)(fileBase + brushesLump->fileofs);
 	if (brushesLump->filelen % sizeof(*brushes))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int brushesCount = brushesLump->filelen / sizeof(*brushes);
 
 	bsp46_dbrushside_t* sides = (bsp46_dbrushside_t*)(fileBase + sidesLump->fileofs);
 	if (sidesLump->filelen % sizeof(*sides))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int sidesCount = sidesLump->filelen / sizeof(*sides);
 
@@ -2166,7 +2166,7 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 		{
 			if ((unsigned)out->originalBrushNumber >= (unsigned)brushesCount)
 			{
-				throw DropException("fog brushNumber out of range");
+				common->Error("fog brushNumber out of range");
 			}
 
 			// ydnar: find which bsp submodel the fog volume belongs to
@@ -2185,7 +2185,7 @@ static void R_LoadFogs(bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t*
 			firstSide = LittleLong(brush->firstSide);
 			if ((unsigned)firstSide > (unsigned)(sidesCount - 6))
 			{
-				throw DropException("fog brush sideNumber out of range");
+				common->Error("fog brush sideNumber out of range");
 			}
 
 			// brushes are always sorted with the axial sides first
@@ -2405,7 +2405,7 @@ static void R_LoadSubmodels(bsp46_lump_t* l)
 	bsp46_dmodel_t* in = (bsp46_dmodel_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("LoadMap: funny lump size in %s", s_worldData.name));
+		common->Error("LoadMap: funny lump size in %s", s_worldData.name);
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -2465,8 +2465,8 @@ void R_LoadBrush46Model(void* buffer)
 	int version = LittleLong(header->version);
 	if (version != BSP46_VERSION && version != BSP47_VERSION)
 	{
-		throw DropException(va("RE_LoadWorldMap: %s has wrong version number (%i should be %i)",
-				s_worldData.name, version, BSP46_VERSION));
+		common->Error("RE_LoadWorldMap: %s has wrong version number (%i should be %i)",
+				s_worldData.name, version, BSP46_VERSION);
 	}
 
 	// swap all the lumps
@@ -2587,7 +2587,7 @@ mbrush46_node_t* R_PointInLeaf(const vec3_t p)
 {
 	if (!tr.world)
 	{
-		throw DropException("R_PointInLeaf: bad model");
+		common->Error("R_PointInLeaf: bad model");
 	}
 
 	mbrush46_node_t* node = tr.world->nodes;

@@ -506,7 +506,7 @@ int String::GetChar(const char*& S)
 	}
 	else
 	{
-		throw Exception("Not a valid UTF-8");
+		common->FatalError("Not a valid UTF-8");
 	}
 	S++;
 
@@ -514,7 +514,7 @@ int String::GetChar(const char*& S)
 	{
 		if ((*S & 0xc0) != 0x80)
 		{
-			throw Exception("Not a valid UTF-8");
+			common->FatalError("Not a valid UTF-8");
 		}
 		Val = (Val << 6) | (*S & 0x3f);
 		S++;
@@ -808,15 +808,15 @@ void String::NCpyZ(char* dest, const char* src, int destSize)
 	// bk001129 - also NULL dest
 	if (!dest)
 	{
-		throw Exception("Q_strncpyz: NULL dest");
+		common->FatalError("Q_strncpyz: NULL dest");
 	}
 	if (!src)
 	{
-		throw Exception("Q_strncpyz: NULL src");
+		common->FatalError("Q_strncpyz: NULL src");
 	}
 	if (destSize < 1)
 	{
-		throw Exception("Q_strncpyz: destsize < 1");
+		common->FatalError("Q_strncpyz: destsize < 1");
 	}
 
 	NCpy(dest, src, destSize - 1);
@@ -829,7 +829,7 @@ void String::Cat(char* dest, int size, const char* src)
 	int l1 = Length(dest);
 	if (l1 >= size)
 	{
-		throw Exception("Q_strcat: already overflowed");
+		common->FatalError("Q_strcat: already overflowed");
 	}
 	NCpyZ(dest + l1, src, size - l1);
 }
@@ -1043,7 +1043,7 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	va_end(ArgPtr);
 	if (Len >= (int)sizeof(BigBuffer))
 	{
-		throw Exception("String::Sprintf: overflowed bigbuffer");
+		common->FatalError("String::Sprintf: overflowed bigbuffer");
 	}
 	if (Len >= Size)
 	{

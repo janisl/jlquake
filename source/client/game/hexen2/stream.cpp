@@ -241,7 +241,7 @@ void CLH2_ParseStream(QMsg& message, int type)
 		CLH2_CreateStreamGaze(ent, tag, flags, skin, duration, source, dest);
 		break;
 	default:
-		throw Exception("CLH2_ParseStream: bad type");
+		common->FatalError("CLH2_ParseStream: bad type");
 	}
 }
 

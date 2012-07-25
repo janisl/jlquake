@@ -1219,13 +1219,13 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 					break;
 
 				default:
-					throw DropException("R_AddEntitySurfaces: Bad modeltype");
+					common->Error("R_AddEntitySurfaces: Bad modeltype");
 				}
 			}
 			break;
 
 		default:
-			throw DropException("R_AddEntitySurfaces: Bad reType");
+			common->Error("R_AddEntitySurfaces: Bad reType");
 		}
 
 		if ((GGameType & GAME_Hexen2) && item_trans)
@@ -2168,7 +2168,7 @@ static void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs)
 		// no shader should ever have this sort type
 		if (shader->sort == SS_BAD)
 		{
-			throw DropException(va("Shader '%s'with sort == SS_BAD", shader->name));
+			common->Error("Shader '%s'with sort == SS_BAD", shader->name);
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface

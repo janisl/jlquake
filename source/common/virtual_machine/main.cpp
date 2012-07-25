@@ -612,7 +612,7 @@ vm_t* VM_Restart(vm_t* vm)
 	length = FS_ReadFile(filename, (void**)&header);
 	if (!header)
 	{
-		throw DropException("VM_Restart failed.\n");
+		common->Error("VM_Restart failed.\n");
 	}
 
 	// byte swap the header
@@ -629,7 +629,7 @@ vm_t* VM_Restart(vm_t* vm)
 		header->codeLength <= 0)
 	{
 		VM_Free(vm);
-		throw Exception(va("%s has bad header", filename));
+		common->FatalError("%s has bad header", filename);
 	}
 
 	// round up to next power of 2 so all data operations can

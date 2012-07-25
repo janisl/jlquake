@@ -45,7 +45,7 @@ void Cmd_Init(void)
 
 bool Cmd_HandleNullCommand(const char* text)
 {
-	throw Exception("NULL command");
+	common->FatalError("NULL command");
 }
 
 void Cmd_HandleUnknownCommand()

@@ -511,7 +511,7 @@ void FS_CopyFile(const char* fromOSPath, const char* toOSPath)
 	void* buf = Mem_Alloc(len);
 	if ((int)fread(buf, 1, len, f) != len)
 	{
-		throw Exception("Short read in FS_Copyfiles()\n");
+		common->FatalError("Short read in FS_Copyfiles()\n");
 	}
 	fclose(f);
 
@@ -529,7 +529,7 @@ void FS_CopyFile(const char* fromOSPath, const char* toOSPath)
 	}
 	if ((int)fwrite(buf, 1, len, f) != len)
 	{
-		throw Exception("Short write in FS_Copyfiles()\n");
+		common->FatalError("Short write in FS_Copyfiles()\n");
 	}
 	fclose(f);
 	Mem_Free(buf);
@@ -700,7 +700,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 	fread(&header, 1, sizeof(header), packhandle);
 	if (LittleLong(header.ident) != IDPAKHEADER)
 	{
-		throw Exception(va("%s is not a packfile", packfile));
+		common->FatalError("%s is not a packfile", packfile);
 	}
 	header.dirofs = LittleLong(header.dirofs);
 	header.dirlen = LittleLong(header.dirlen);
@@ -709,7 +709,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 
 	if (numpackfiles > MAX_FILES_IN_PACK)
 	{
-		throw Exception(va("%s has %i files", packfile, numpackfiles));
+		common->FatalError("%s has %i files", packfile, numpackfiles);
 	}
 
 	newfiles = new packfile_t[numpackfiles];
@@ -991,22 +991,22 @@ static fileHandle_t FS_HandleForFile()
 			return i;
 		}
 	}
-	throw DropException("FS_HandleForFile: none free");
+	common->Error("FS_HandleForFile: none free");
 }
 
 static FILE* FS_FileForHandle(fileHandle_t f)
 {
 	if (f < 0 || f > MAX_FILE_HANDLES)
 	{
-		throw DropException("FS_FileForHandle: out of reange");
+		common->Error("FS_FileForHandle: out of reange");
 	}
 	if (fsh[f].zipFile == true)
 	{
-		throw DropException("FS_FileForHandle: can't get FILE on zip file");
+		common->Error("FS_FileForHandle: can't get FILE on zip file");
 	}
 	if (!fsh[f].handleFiles.file.o)
 	{
-		throw DropException("FS_FileForHandle: NULL");
+		common->Error("FS_FileForHandle: NULL");
 	}
 
 	return fsh[f].handleFiles.file.o;
@@ -1051,7 +1051,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!file)
@@ -1129,7 +1129,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 
 	if (!filename)
 	{
-		throw Exception("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
+		common->FatalError("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
 	}
 
 	// qpaths are not supposed to have a leading slash
@@ -1269,7 +1269,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 						fsh[*file].handleFiles.file.z = unzReOpen(pak->pakFilename, pak->handle);
 						if (fsh[*file].handleFiles.file.z == NULL)
 						{
-							throw Exception(va("Couldn't reopen %s", pak->pakFilename));
+							common->FatalError("Couldn't reopen %s", pak->pakFilename);
 						}
 					}
 					else
@@ -1319,7 +1319,7 @@ int FS_FOpenFileRead(const char* filename, fileHandle_t* file, bool uniqueFILE)
 						fsh[*file].handleFiles.file.o = fopen(pak->filename, "rb");
 						if (!fsh[*file].handleFiles.file.o)
 						{
-							throw Exception(va("Couldn't reopen %s", pak->filename));
+							common->FatalError("Couldn't reopen %s", pak->filename);
 						}
 					}
 					else
@@ -1428,7 +1428,7 @@ fileHandle_t FS_FOpenFileWrite(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1466,7 +1466,7 @@ static fileHandle_t FS_FOpenFileAppend(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1530,7 +1530,7 @@ int FS_FOpenFileByMode(const char* qpath, fileHandle_t* f, fsMode_t mode)
 		}
 		break;
 	default:
-		throw Exception("FSH_FOpenFile: bad mode");
+		common->FatalError("FSH_FOpenFile: bad mode");
 	}
 
 	if (!f)
@@ -1561,7 +1561,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1621,7 +1621,7 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	char* ospath = FS_BuildOSPath(fs_homepath->string, filename, "");
@@ -1659,7 +1659,7 @@ void FS_FCloseFile(fileHandle_t f)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (fsh[f].zipFile == true)
@@ -1696,7 +1696,7 @@ int FS_Read(void* buffer, int len, fileHandle_t f)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!f)
@@ -1730,7 +1730,7 @@ int FS_Read(void* buffer, int len, fileHandle_t f)
 
 			if (read == -1)
 			{
-				throw Exception("FS_Read: -1 bytes read");
+				common->FatalError("FS_Read: -1 bytes read");
 			}
 
 			remaining -= read;
@@ -1749,7 +1749,7 @@ int FS_Write(const void* buffer, int len, fileHandle_t h)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!h)
@@ -1816,7 +1816,7 @@ int FS_Seek(fileHandle_t f, int offset, int origin)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (fsh[f].zipFile == true)
@@ -1837,7 +1837,7 @@ int FS_Seek(fileHandle_t f, int offset, int origin)
 		}
 		else
 		{
-			throw Exception("ZIP FILE FSEEK NOT YET IMPLEMENTED\n");
+			common->FatalError("ZIP FILE FSEEK NOT YET IMPLEMENTED\n");
 			return -1;
 		}
 	}
@@ -1857,7 +1857,7 @@ int FS_Seek(fileHandle_t f, int offset, int origin)
 			_origin = SEEK_SET;
 			break;
 		default:
-			throw Exception("Bad origin in FS_Seek\n");
+			common->FatalError("Bad origin in FS_Seek\n");
 		}
 
 		return fseek(file, offset, _origin);
@@ -1894,12 +1894,12 @@ int FS_FileIsInPAK(const char* filename, int* pChecksum)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!filename)
 	{
-		throw Exception("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
+		common->FatalError("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
 	}
 
 	// qpaths are not supposed to have a leading slash
@@ -1978,12 +1978,12 @@ int FS_ReadFile(const char* qpath, void** buffer)
 
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !qpath[0])
 	{
-		throw Exception("FS_ReadFile with empty name\n");
+		common->FatalError("FS_ReadFile with empty name\n");
 	}
 
 	// if this is a .cfg file and we are playing back a journal, read
@@ -2026,7 +2026,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 			r = FS_Read(buf, len, com_journalDataFile);
 			if (r != len)
 			{
-				throw Exception("Read from journalDataFile failed");
+				common->FatalError("Read from journalDataFile failed");
 			}
 
 			// guarantee that it will have a trailing 0 for string operations
@@ -2098,12 +2098,12 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !qpath[0])
 	{
-		throw Exception("FS_ReadFile with empty name\n");
+		common->FatalError("FS_ReadFile with empty name\n");
 	}
 
 	// if this is a .cfg file and we are playing back a journal, read
@@ -2134,7 +2134,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 			r = FS_Read(Buffer.Ptr(), len, com_journalDataFile);
 			if (r != len)
 			{
-				throw Exception("Read from journalDataFile failed");
+				common->FatalError("Read from journalDataFile failed");
 			}
 
 			return len;
@@ -2182,11 +2182,11 @@ void FS_FreeFile(void* buffer)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 	if (!buffer)
 	{
-		throw Exception("FS_FreeFile( NULL )");
+		common->FatalError("FS_FreeFile( NULL )");
 	}
 
 	Mem_Free(buffer);
@@ -2197,12 +2197,12 @@ void FS_WriteFile(const char* qpath, const void* buffer, int size)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !buffer)
 	{
-		throw Exception("FS_WriteFile: NULL parameter");
+		common->FatalError("FS_WriteFile: NULL parameter");
 	}
 
 	fileHandle_t f = FS_FOpenFileWrite(qpath);
@@ -2221,7 +2221,7 @@ void FS_Rename(const char* from, const char* to)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	// don't let sound stutter
@@ -2252,7 +2252,7 @@ void FS_SV_Rename(const char* from, const char* to)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	// don't let sound stutter
@@ -2375,7 +2375,7 @@ static char** FS_ListFilteredFiles(const char* path, const char* extension, char
 
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!path)
@@ -2573,7 +2573,7 @@ void FS_FreeFileList(char** list)
 {
 	if (!fs_searchpaths)
 	{
-		throw Exception("Filesystem call made without initialization\n");
+		common->FatalError("Filesystem call made without initialization\n");
 	}
 
 	if (!list)

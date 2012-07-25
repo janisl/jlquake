@@ -1667,11 +1667,11 @@ void RB_EndSurface()
 
 	if (input->indexes[SHADER_MAX_INDEXES - 1] != 0)
 	{
-		throw DropException("RB_EndSurface() - SHADER_MAX_INDEXES hit");
+		common->Error("RB_EndSurface() - SHADER_MAX_INDEXES hit");
 	}
 	if (input->xyz[SHADER_MAX_VERTEXES - 1][0] != 0)
 	{
-		throw DropException("RB_EndSurface() - SHADER_MAX_VERTEXES hit");
+		common->Error("RB_EndSurface() - SHADER_MAX_VERTEXES hit");
 	}
 
 	if (tess.shader == tr.shadowShader)

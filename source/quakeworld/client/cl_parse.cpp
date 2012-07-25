@@ -153,7 +153,7 @@ static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 	Array<byte> Buffer;
 	if (!FS_ReadFile(ModelName, Buffer))
 	{
-		throw DropException(va("Couldn't load %s", ModelName));
+		common->Error("Couldn't load %s", ModelName);
 	}
 
 	unsigned short crc;

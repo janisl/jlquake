@@ -40,4 +40,4 @@ public:
 	{}
 };
 
-#define qassert(x)      if (x) {} else {throw Exception("Assertion failed " #x); }
+#define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

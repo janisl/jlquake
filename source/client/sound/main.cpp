@@ -325,7 +325,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 		}
 		else
 		{
-			throw Exception("S_FindName: NULL\n");
+			common->FatalError("S_FindName: NULL\n");
 		}
 	}
 	if (!Name[0])
@@ -336,13 +336,13 @@ sfx_t* S_FindName(const char* Name, bool Create)
 		}
 		else
 		{
-			throw Exception("S_FindName: empty name\n");
+			common->FatalError("S_FindName: empty name\n");
 		}
 	}
 
 	if (String::Length(Name) >= MAX_QPATH)
 	{
-		throw Exception(va("Sound name too long: %s", Name));
+		common->FatalError("Sound name too long: %s", Name);
 	}
 
 	// Ridah, caching
@@ -383,7 +383,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 	{
 		if (s_numSfx == MAX_SFX)
 		{
-			throw Exception("S_FindName: out of sfx_t");
+			common->FatalError("S_FindName: out of sfx_t");
 		}
 		s_numSfx++;
 	}
@@ -425,7 +425,7 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 	{
 		if (s_numSfx == MAX_SFX)
 		{
-			throw Exception("S_FindName: out of sfx_t");
+			common->FatalError("S_FindName: out of sfx_t");
 		}
 		s_numSfx++;
 	}
@@ -2849,7 +2849,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 
 		if (!origin && (entnum < 0 || entnum > MAX_LOOPSOUNDS))
 		{
-			throw DropException(va("S_StartSound: bad entitynum %i", entnum));
+			common->Error("S_StartSound: bad entitynum %i", entnum);
 		}
 
 		if (sfx->InMemory == false)

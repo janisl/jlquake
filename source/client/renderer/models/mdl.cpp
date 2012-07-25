@@ -241,7 +241,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 {
 	if (numskins < 1 || numskins > MAX_MESH1_SKINS)
 	{
-		throw Exception(va("Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins));
+		common->FatalError("Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins);
 	}
 
 	int s = pheader->skinwidth * pheader->skinheight;
@@ -274,7 +274,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			{
 				if (s > (int)sizeof(q1_player_8bit_texels))
 				{
-					throw Exception("Player skin too large");
+					common->FatalError("Player skin too large");
 				}
 				Com_Memcpy(q1_player_8bit_texels, (byte*)(pskintype + 1), s);
 			}
@@ -284,7 +284,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[0]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[0], (byte*)(pskintype + 1), s);
 				}
@@ -292,7 +292,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[1]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[1], (byte*)(pskintype + 1), s);
 				}
@@ -300,7 +300,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[2]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[2], (byte*)(pskintype + 1), s);
 				}
@@ -308,7 +308,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[3]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[3], (byte*)(pskintype + 1), s);
 				}
@@ -316,7 +316,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[4]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[4], (byte*)(pskintype + 1), s);
 				}
@@ -324,7 +324,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[5]))
 					{
-						throw Exception("Player skin too large");
+						common->FatalError("Player skin too large");
 					}
 					Com_Memcpy(h2_player_8bit_texels[5], (byte*)(pskintype + 1), s);
 				}
@@ -763,8 +763,8 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_VERSION)
 	{
-		throw Exception(va("%s has wrong version number (%i should be %i)",
-				mod->name, version, MESH1_VERSION));
+		common->FatalError("%s has wrong version number (%i should be %i)",
+				mod->name, version, MESH1_VERSION);
 	}
 
 	//
@@ -786,33 +786,33 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
 	{
-		throw Exception(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
+		common->FatalError("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT);
 	}
 
 	pheader->numverts = LittleLong(pinmodel->numverts);
 
 	if (pheader->numverts <= 0)
 	{
-		throw Exception(va("model %s has no vertices", mod->name));
+		common->FatalError("model %s has no vertices", mod->name);
 	}
 
 	if (pheader->numverts > MAXALIASVERTS)
 	{
-		throw Exception(va("model %s has too many vertices", mod->name));
+		common->FatalError("model %s has too many vertices", mod->name);
 	}
 
 	pheader->numtris = LittleLong(pinmodel->numtris);
 
 	if (pheader->numtris <= 0)
 	{
-		throw Exception(va("model %s has no triangles", mod->name));
+		common->FatalError("model %s has no triangles", mod->name);
 	}
 
 	pheader->numframes = LittleLong(pinmodel->numframes);
 	int numframes = pheader->numframes;
 	if (numframes < 1)
 	{
-		throw Exception(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
+		common->FatalError("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes);
 	}
 
 	pheader->size = LittleFloat(pinmodel->size) * ALIAS_BASE_SIZE_RATIO;
@@ -924,8 +924,8 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_NEWVERSION)
 	{
-		throw Exception(va("%s has wrong version number (%i should be %i)",
-				mod->name, version, MESH1_NEWVERSION));
+		common->FatalError("%s has wrong version number (%i should be %i)",
+				mod->name, version, MESH1_NEWVERSION);
 	}
 
 	//
@@ -947,7 +947,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
 	{
-		throw Exception(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
+		common->FatalError("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT);
 	}
 
 	pheader->numverts = LittleLong(pinmodel->numverts);
@@ -955,26 +955,26 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 
 	if (pheader->numverts <= 0)
 	{
-		throw Exception(va("model %s has no vertices", mod->name));
+		common->FatalError("model %s has no vertices", mod->name);
 	}
 
 	if (pheader->numverts > MAXALIASVERTS)
 	{
-		throw Exception(va("model %s has too many vertices", mod->name));
+		common->FatalError("model %s has too many vertices", mod->name);
 	}
 
 	pheader->numtris = LittleLong(pinmodel->numtris);
 
 	if (pheader->numtris <= 0)
 	{
-		throw Exception(va("model %s has no triangles", mod->name));
+		common->FatalError("model %s has no triangles", mod->name);
 	}
 
 	pheader->numframes = LittleLong(pinmodel->numframes);
 	int numframes = pheader->numframes;
 	if (numframes < 1)
 	{
-		throw Exception(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
+		common->FatalError("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes);
 	}
 
 	pheader->size = LittleFloat(pinmodel->size) * ALIAS_BASE_SIZE_RATIO;

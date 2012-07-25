@@ -1217,7 +1217,7 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex)
 	{
 		if (entity->skinNum > 255)
 		{
-			throw Exception("skinnum > 255");
+			common->FatalError("skinnum > 255");
 		}
 
 		if (!clh2_extra_textures[entity->skinNum - 100])	// Need to load it in

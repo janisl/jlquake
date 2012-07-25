@@ -159,7 +159,7 @@ void QMemHeap::Free(void* Ptr)
 		LargeFree(Ptr);
 		break;
 	default:
-		throw Exception("Invalid memory block");
+		common->FatalError("Invalid memory block");
 	}
 }
 
@@ -175,8 +175,8 @@ QMemHeap::QPage* QMemHeap::AllocPage(size_t Bytes)
 	QPage* P = (QPage*)::malloc(Size);
 	if (!P)
 	{
-		//throw Exception("Failed to allocate %d bytes", Bytes);
-		throw Exception("Failed to allocate page");
+		//common->FatalError("Failed to allocate %d bytes", Bytes);
+		common->FatalError("Failed to allocate page");
 	}
 	P->Data = P + 1;
 	P->Size = Bytes;
@@ -195,7 +195,7 @@ void QMemHeap::FreePage(QMemHeap::QPage* Page)
 {
 	if (!Page)
 	{
-		throw Exception("Tried to free NULL page");
+		common->FatalError("Tried to free NULL page");
 	}
 	::free(Page);
 }
@@ -267,7 +267,7 @@ void QMemHeap::SmallFree(void* Ptr)
 	size_t Idx = *Block;
 	if (Idx > 256 / ALIGN)
 	{
-		throw Exception("Invalid small memory block size");
+		common->FatalError("Invalid small memory block size");
 	}
 
 	*((void**)Ptr) = SmallFirstFree[Idx];
@@ -367,7 +367,7 @@ void* Mem_Alloc(int size, const char* FileName, int LineNumber)
 	if (!ptr)
 	{
 		//	It should always return valid pointer.
-		throw Exception("MainHeap.Alloc failed");
+		common->FatalError("MainHeap.Alloc failed");
 	}
 
 	MemDebug_t* m = (MemDebug_t*)ptr;
@@ -465,7 +465,7 @@ void* Mem_Alloc(int size)
 	if (!ptr)
 	{
 		//	It should always return valid pointer.
-		throw Exception("MainHeap.Alloc failed");
+		common->FatalError("MainHeap.Alloc failed");
 	}
 	return ptr;
 }

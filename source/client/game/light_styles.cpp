@@ -33,13 +33,13 @@ void CL_SetLightStyle(int i, const char* s)
 {
 	if (i >= MAX_LIGHTSTYLES)
 	{
-		throw DropException("svc_lightstyle > MAX_LIGHTSTYLES");
+		common->Error("svc_lightstyle > MAX_LIGHTSTYLES");
 	}
 
 	int j = String::Length(s);
 	if (j >= MAX_STYLESTRING)
 	{
-		throw DropException(va("svc_lightstyle length=%i", j));
+		common->Error("svc_lightstyle length=%i", j);
 	}
 
 	String::Cpy(cl_lightstyle[i].mapStr,  s);

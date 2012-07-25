@@ -867,7 +867,7 @@ char* SV_LoadEffects(char* Data)
 
 	if (String::NCmp(Data, "Effects: ", 9))
 	{
-		throw DropException("Effects expected");
+		common->Error("Effects expected");
 	}
 	Data += 9;
 	Total = GetInt(Data);

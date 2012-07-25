@@ -56,8 +56,8 @@ void QClipMap29::LoadMap(const char* AName, const Array<quint8>& Buffer)
 	int version = LittleLong(header.version);
 	if (version != BSP29_VERSION)
 	{
-		throw DropException(va("CM_LoadModel: %s has wrong version number (%i should be %i)",
-				AName, version, BSP29_VERSION));
+		common->Error("CM_LoadModel: %s has wrong version number (%i should be %i)",
+				AName, version, BSP29_VERSION);
 	}
 
 	// swap all the lumps
@@ -172,7 +172,7 @@ void QClipMap29::LoadPlanes(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dplane_t* in = (const bsp29_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	//	Extra planes for box.
@@ -205,7 +205,7 @@ void QClipMap29::LoadNodes(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dnode_t* in = (const bsp29_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	cnode_t* out = new cnode_t[count];
@@ -237,7 +237,7 @@ void QClipMap29::LoadLeafs(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dleaf_t* in = (const bsp29_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	cleaf_t* out = new cleaf_t[count];
@@ -278,7 +278,7 @@ void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dclipnode_t* in = (const bsp29_dclipnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	//	Extra space for hull 0 and box.
@@ -414,7 +414,7 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -460,7 +460,7 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException("MOD_LoadBmodel: funny lump size");
+		common->Error("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 

@@ -97,7 +97,7 @@ static void Mod_LoadVertexes(bsp38_lump_t* l)
 	bsp38_dvertex_t* in = (bsp38_dvertex_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_vertex_t* out = new mbrush38_vertex_t[count];
@@ -124,7 +124,7 @@ static void Mod_LoadEdges(bsp38_lump_t* l)
 	bsp38_dedge_t* in = (bsp38_dedge_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	//JL What's the extra edge?
@@ -152,7 +152,7 @@ static void Mod_LoadTexinfo(bsp38_lump_t* l)
 	bsp38_texinfo_t* in = (bsp38_texinfo_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_texinfo_t* out = new mbrush38_texinfo_t[count];
@@ -284,7 +284,7 @@ static void SubdividePolygon(int numverts, float* verts)
 {
 	if (numverts > 60)
 	{
-		throw DropException(va("numverts = %i", numverts));
+		common->Error("numverts = %i", numverts);
 	}
 
 	vec3_t mins, maxs;
@@ -509,7 +509,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 	bsp38_dface_t* in = (bsp38_dface_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_surface_t* out = new mbrush38_surface_t[count];
@@ -541,7 +541,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 		int ti = LittleShort(in->texinfo);
 		if (ti < 0 || ti >= loadmodel->brush38_numtexinfo)
 		{
-			throw DropException("MOD_LoadBmodel: bad texinfo number");
+			common->Error("MOD_LoadBmodel: bad texinfo number");
 		}
 		out->texinfo = loadmodel->brush38_texinfo + ti;
 
@@ -619,7 +619,7 @@ static void Mod_LoadNodes(bsp38_lump_t* l)
 	bsp38_dnode_t* in = (bsp38_dnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_node_t* out = new mbrush38_node_t[count];
@@ -671,7 +671,7 @@ static void Mod_LoadLeafs(bsp38_lump_t* l)
 	bsp38_dleaf_t* in = (bsp38_dleaf_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_leaf_t* out = new mbrush38_leaf_t[count];
@@ -711,7 +711,7 @@ static void Mod_LoadMarksurfaces(bsp38_lump_t* l)
 	short* in = (short*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_surface_t** out = new mbrush38_surface_t*[count];
@@ -724,7 +724,7 @@ static void Mod_LoadMarksurfaces(bsp38_lump_t* l)
 		int j = LittleShort(in[i]);
 		if (j < 0 ||  j >= loadmodel->brush38_numsurfaces)
 		{
-			throw DropException("Mod_ParseMarksurfaces: bad surface number");
+			common->Error("Mod_ParseMarksurfaces: bad surface number");
 		}
 		out[i] = loadmodel->brush38_surfaces + j;
 	}
@@ -741,13 +741,13 @@ static void Mod_LoadSurfedges(bsp38_lump_t* l)
 	int* in = (int*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1 || count >= BSP38MAX_MAP_SURFEDGES)
 	{
-		throw DropException(va("MOD_LoadBmodel: bad surfedges count in %s: %i",
-				loadmodel->name, count));
+		common->Error("MOD_LoadBmodel: bad surfedges count in %s: %i",
+				loadmodel->name, count);
 	}
 
 	int* out = new int[count];
@@ -772,7 +772,7 @@ static void Mod_LoadPlanes(bsp38_lump_t* l)
 	bsp38_dplane_t* in = (bsp38_dplane_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	//JL Why 2 times more?
@@ -806,7 +806,7 @@ static void Mod_LoadSubmodels(bsp38_lump_t* l)
 	bsp38_dmodel_t* in = (bsp38_dmodel_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw DropException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		common->Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush38_model_t* out = new mbrush38_model_t[count];
@@ -848,7 +848,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 	int version = LittleLong(header->version);
 	if (version != BSP38_VERSION)
 	{
-		throw DropException(va("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, version, BSP38_VERSION));
+		common->Error("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, version, BSP38_VERSION);
 	}
 
 	// swap all the lumps
@@ -904,7 +904,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 		starmod->brush38_firstnode = bm->headnode;
 		if (starmod->brush38_firstnode >= loadmodel->brush38_numnodes)
 		{
-			throw DropException(va("Inline model %i has bad firstnode", i));
+			common->Error("Inline model %i has bad firstnode", i);
 		}
 
 		VectorCopy(bm->maxs, starmod->q2_maxs);
@@ -1026,7 +1026,7 @@ mbrush38_leaf_t* Mod_PointInLeafQ2(vec3_t p, model_t* model)
 {
 	if (!model || !model->brush38_nodes)
 	{
-		throw DropException("Mod_PointInLeafQ2: bad model");
+		common->Error("Mod_PointInLeafQ2: bad model");
 	}
 
 	mbrush38_node_t* node = model->brush38_nodes;

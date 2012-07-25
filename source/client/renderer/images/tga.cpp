@@ -102,17 +102,17 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 
 	if (targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3)
 	{
-		throw DropException("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n");
+		common->Error("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n");
 	}
 
 	if (targa_header.colormap_type != 0)
 	{
-		throw DropException("LoadTGA: colormaps not supported\n");
+		common->Error("LoadTGA: colormaps not supported\n");
 	}
 
 	if (targa_header.pixel_size != 32 && targa_header.pixel_size != 24 && targa_header.image_type != 3)
 	{
-		throw DropException("LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
+		common->Error("LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 	}
 
 	int columns = targa_header.width;
@@ -179,7 +179,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 					break;
 
 				default:
-					throw DropException(va("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name));
+					common->Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name);
 				}
 			}
 		}
@@ -219,7 +219,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 						break;
 
 					default:
-						throw DropException(va("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name));
+						common->Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name);
 					}
 
 					for (int j = 0; j < packetSize; j++)
@@ -274,7 +274,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 							break;
 
 						default:
-							throw DropException(va("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name));
+							common->Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name);
 						}
 						column++;
 						if (column == columns)

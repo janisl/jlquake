@@ -359,7 +359,7 @@ void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
 {
 	if (Length < Src.cursize)
 	{
-		throw DropException("QMsg::Copy: can't copy into a smaller QMsg buffer");
+		common->Error("QMsg::Copy: can't copy into a smaller QMsg buffer");
 	}
 	Com_Memcpy(this, &Src, sizeof(QMsg));
 	_data = NewData;
@@ -391,7 +391,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 	{
 		if (!allowoverflow)
 		{
-			throw Exception("SZ_GetSpace: overflow without allowoverflow set");
+			common->FatalError("SZ_GetSpace: overflow without allowoverflow set");
 		}
 		if (!(GGameType & GAME_Tech3))
 		{
@@ -404,7 +404,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 
 	if (NumBits == 0 || NumBits < -31 || NumBits > 32)
 	{
-		throw DropException(va("QMsg::WriteBits: bad bits %i", NumBits));
+		common->Error("QMsg::WriteBits: bad bits %i", NumBits);
 	}
 
 	if (NumBits < 0)
@@ -435,7 +435,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 		}
 		else
 		{
-			throw DropException(va("can't read %d bits\n", NumBits));
+			common->Error("can't read %d bits\n", NumBits);
 		}
 	}
 	else
@@ -503,7 +503,7 @@ int QMsg::ReadBits(int NumBits)
 		}
 		else
 		{
-			throw DropException(va("can't read %d bits\n", NumBits));
+			common->Error("can't read %d bits\n", NumBits);
 		}
 	}
 	else
@@ -545,7 +545,7 @@ void QMsg::WriteChar(int C)
 #ifdef PARANOID
 	if (C < MIN_QINT8 || C > MAX_QINT8)
 	{
-		throw Exception("MSG_WriteChar: range error");
+		common->FatalError("MSG_WriteChar: range error");
 	}
 #endif
 
@@ -557,7 +557,7 @@ void QMsg::WriteByte(int C)
 #ifdef PARANOID
 	if (C < 0 || C > MAX_QUINT8)
 	{
-		throw Exception("MSG_WriteByte: range error");
+		common->FatalError("MSG_WriteByte: range error");
 	}
 #endif
 
@@ -569,7 +569,7 @@ void QMsg::WriteShort(int C)
 #ifdef PARANOID
 	if (C < MIN_QINT16 || c > MAX_QINT16)
 	{
-		throw Exception("QMsg::WriteShort: range error");
+		common->FatalError("QMsg::WriteShort: range error");
 	}
 #endif
 
