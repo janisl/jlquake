@@ -73,19 +73,6 @@ qboolean com_fullyInitialized;
 
 char com_errorMessage[MAXPRINTMSG];
 
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Com_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Com_DPrintf("%s", text);
-	}
-} MainLog;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -2459,7 +2446,6 @@ void Com_Init(char* commandLine)
 
 		GGameType = GAME_Quake3;
 		Sys_SetHomePathSuffix("jlquake3");
-		Log::addListener(&MainLog);
 
 		Com_InitByteOrder();
 

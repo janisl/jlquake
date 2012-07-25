@@ -98,19 +98,6 @@ char soundlist_name[] =
 { 's' ^ 0xff, 'o' ^ 0xff, 'u' ^ 0xff, 'n' ^ 0xff, 'd' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff,
   ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
 
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Con_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Con_DPrintf("%s", text);
-	}
-} MainLog;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -1506,7 +1493,6 @@ void Host_Init(quakeparms_t* parms)
 	{
 		GGameType = GAME_Quake | GAME_QuakeWorld;
 		Sys_SetHomePathSuffix("jlquake");
-		Log::addListener(&MainLog);
 		COM_InitArgv2(parms->argc, parms->argv);
 		COM_AddParm("-game");
 		COM_AddParm("qw");

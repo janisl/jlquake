@@ -69,21 +69,6 @@ Cvar* pausable;
 
 Cvar* temp1;
 
-
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Con_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Con_DPrintf("%s", text);
-	}
-} MainLog;
-//	Log::addListener(&MainLog);
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -976,7 +961,6 @@ void Host_Init(quakeparms_t* parms)
 	{
 		GGameType = GAME_Quake;
 		Sys_SetHomePathSuffix("jlquake");
-		Log::addListener(&MainLog);
 
 		if (standard_quake)
 		{

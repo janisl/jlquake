@@ -28,7 +28,6 @@ set(COMMON_FILES
 	game_utils1.cpp
 	huffman.cpp
 	info_string.cpp
-	log.cpp
 	mathlib.cpp
 	md4.cpp
 	memory.cpp

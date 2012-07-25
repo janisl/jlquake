@@ -70,19 +70,6 @@ int sv_net_port;
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void Master_Shutdown(void);
 
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Con_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Con_DPrintf("%s", text);
-	}
-} MainLog;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -1822,7 +1809,6 @@ void SV_Init(quakeparms_t* parms)
 	{
 		GGameType = GAME_Quake | GAME_QuakeWorld;
 		Sys_SetHomePathSuffix("jlquake");
-		Log::addListener(&MainLog);
 
 		COM_InitArgv2(parms->argc, parms->argv);
 		COM_AddParm("-game");

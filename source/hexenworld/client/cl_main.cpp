@@ -59,19 +59,6 @@ jmp_buf host_abort;
 
 void Master_Connect_f(void);
 
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Con_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Con_DPrintf("%s", text);
-	}
-} MainLog;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -1386,7 +1373,6 @@ void Host_Init(quakeparms_t* parms)
 	{
 		GGameType = GAME_Hexen2 | GAME_HexenWorld;
 		Sys_SetHomePathSuffix("jlhexen2");
-		Log::addListener(&MainLog);
 
 		COM_InitArgv2(parms->argc, parms->argv);
 //	COM_AddParm ("-game");

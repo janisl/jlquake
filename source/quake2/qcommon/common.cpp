@@ -47,19 +47,6 @@ int time_after_game;
 int time_before_ref;
 int time_after_ref;
 
-class QMainLog : public LogListener
-{
-public:
-	void serialise(const char* text)
-	{
-		Com_Printf("%s", text);
-	}
-	void develSerialise(const char* text)
-	{
-		Com_DPrintf("%s", text);
-	}
-} MainLog;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -687,7 +674,6 @@ void Qcommon_Init(int argc, char** argv)
 
 		GGameType = GAME_Quake2;
 		Sys_SetHomePathSuffix("jlquake2");
-		Log::addListener(&MainLog);
 
 		z_chain.next = z_chain.prev = &z_chain;
 
