@@ -117,11 +117,11 @@ static char* Cvar_ClearForeignCharacters(const char* value)
 
 static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 {
-	Log::develWrite("Cvar_Set2: %s %s\n", var_name, value);
+	common->DPrintf("Cvar_Set2: %s %s\n", var_name, value);
 
 	if (!Cvar_ValidateString(var_name))
 	{
-		Log::write("invalid cvar name string: %s\n", var_name);
+		common->Printf("invalid cvar name string: %s\n", var_name);
 		var_name = "BADNAME";
 	}
 
@@ -147,7 +147,7 @@ static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 	{
 		if (!Cvar_ValidateString(value))
 		{
-			Log::write("invalid info cvar value\n");
+			common->Printf("invalid info cvar value\n");
 			return var;
 		}
 	}
@@ -186,19 +186,19 @@ static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 
 		if (var->flags & CVAR_ROM)
 		{
-			Log::write("%s is read only.\n", var_name);
+			common->Printf("%s is read only.\n", var_name);
 			return var;
 		}
 
 		if (var->flags & CVAR_INIT)
 		{
-			Log::write("%s is write protected.\n", var_name);
+			common->Printf("%s is write protected.\n", var_name);
 			return var;
 		}
 
 		if ((var->flags & CVAR_CHEAT) && !cvar_cheats->integer)
 		{
-			Log::write("%s is cheat protected.\n", var_name);
+			common->Printf("%s is cheat protected.\n", var_name);
 			return var;
 		}
 
@@ -220,7 +220,7 @@ static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 				}
 			}
 
-			Log::write("%s will be changed upon restarting.\n", var_name);
+			common->Printf("%s will be changed upon restarting.\n", var_name);
 			var->latchedString = __CopyString(value);
 			var->modified = true;
 			var->modificationCount++;
@@ -309,10 +309,10 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		{
 			if (GGameType & GAME_Quake2)
 			{
-				Log::write("invalid info cvar name\n");
+				common->Printf("invalid info cvar name\n");
 				return NULL;
 			}
-			Log::write("invalid cvar name string: %s\n", VarName);
+			common->Printf("invalid cvar name string: %s\n", VarName);
 			VarName = "BADNAME";
 		}
 	}
@@ -344,7 +344,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		}
 		else if (VarValue[0] && String::Cmp(var->resetString, VarValue))
 		{
-			Log::develWrite("Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
+			common->DPrintf("Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				VarName, var->resetString, VarValue);
 		}
 		// if we have a latched string, take that value now
@@ -386,7 +386,7 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	{
 		if (!Cvar_ValidateString(VarValue))
 		{
-			Log::write("invalid info cvar value\n");
+			common->Printf("invalid info cvar value\n");
 			return NULL;
 		}
 	}
@@ -505,11 +505,11 @@ bool Cvar_Command()
 	// perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		Log::write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
+		common->Printf("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
 			v->name, v->string, v->resetString);
 		if (v->latchedString)
 		{
-			Log::write("latched: \"%s\"\n", v->latchedString);
+			common->Printf("latched: \"%s\"\n", v->latchedString);
 		}
 		return true;
 	}
@@ -692,7 +692,7 @@ static void Cvar_Toggle_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		Log::write("usage: toggle <variable>\n");
+		common->Printf("usage: toggle <variable>\n");
 		return;
 	}
 
@@ -868,7 +868,7 @@ static void Cvar_Reset_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		Log::write("usage: reset <variable>\n");
+		common->Printf("usage: reset <variable>\n");
 		return;
 	}
 	Cvar_Reset(Cmd_Argv(1));
@@ -897,66 +897,66 @@ static void Cvar_List_f()
 
 		if (var->flags & CVAR_SERVERINFO)
 		{
-			Log::write("S");
+			common->Printf("S");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & CVAR_USERINFO)
 		{
-			Log::write("U");
+			common->Printf("U");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & CVAR_ROM)
 		{
-			Log::write("R");
+			common->Printf("R");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & CVAR_INIT)
 		{
-			Log::write("I");
+			common->Printf("I");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & CVAR_ARCHIVE)
 		{
-			Log::write("A");
+			common->Printf("A");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & (CVAR_LATCH | CVAR_LATCH2))
 		{
-			Log::write("L");
+			common->Printf("L");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 		if (var->flags & CVAR_CHEAT)
 		{
-			Log::write("C");
+			common->Printf("C");
 		}
 		else
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 
-		Log::write(" %s \"%s\"\n", var->name, var->string);
+		common->Printf(" %s \"%s\"\n", var->name, var->string);
 	}
 
-	Log::write("\n%i total cvars\n", i);
-	Log::write("%i cvar indexes\n", cvar_numIndexes);
+	common->Printf("\n%i total cvars\n", i);
+	common->Printf("%i cvar indexes\n", cvar_numIndexes);
 }
 
 //	Resets all cvars to their hardcoded values

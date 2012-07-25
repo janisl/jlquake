@@ -274,7 +274,7 @@ static void VM_StackTrace(vm_t* vm, int programCounter, int programStack)
 	int count = 0;
 	do
 	{
-		Log::write("%s\n", VM_ValueToSymbol(vm, programCounter));
+		common->Printf("%s\n", VM_ValueToSymbol(vm, programCounter));
 		programStack =  *(int*)&vm->dataBase[programStack + 4];
 		programCounter = *(int*)&vm->dataBase[programStack];
 	}
@@ -373,7 +373,7 @@ nextInstruction2:
 
 		if (vm_debugLevel > 1)
 		{
-			Log::write("%s %s\n", DEBUGSTR, opnames[opcode]);
+			common->Printf("%s %s\n", DEBUGSTR, opnames[opcode]);
 		}
 		profileSymbol->profileCount++;
 #endif
@@ -482,7 +482,7 @@ nextInstruction2:
 #ifdef DEBUG_VM
 				if (vm_debugLevel)
 				{
-					Log::write("%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter);
+					common->Printf("%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter);
 				}
 #endif
 				// save the stack to allow recursive VM entry
@@ -515,7 +515,7 @@ nextInstruction2:
 #ifdef DEBUG_VM
 				if (vm_debugLevel)
 				{
-					Log::write("%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter));
+					common->Printf("%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter));
 				}
 #endif
 			}
@@ -548,7 +548,7 @@ nextInstruction2:
 			*(int*)&image[programStack + 4] = programStack + v1;
 			if (vm_debugLevel)
 			{
-				Log::write("%s---> %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter - 5));
+				common->Printf("%s---> %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter - 5));
 				if (vm->breakFunction && programCounter - 5 == vm->breakFunction)
 				{
 					// this is to allow setting breakpoints here in the debugger
@@ -574,7 +574,7 @@ nextInstruction2:
 			if (vm_debugLevel)
 			{
 				vm->callLevel--;
-				Log::write("%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter));
+				common->Printf("%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol(vm, programCounter));
 			}
 #endif
 			// check for leaving the VM

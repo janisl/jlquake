@@ -92,7 +92,7 @@ bool SNDDMA_Init()
 
 	CoInitialize(NULL);
 
-	Log::write("Initializing DirectSound\n");
+	common->Printf("Initializing DirectSound\n");
 
 	use8 = 1;
 	// Create IDirectSound using the primary sound device
@@ -101,7 +101,7 @@ bool SNDDMA_Init()
 		use8 = 0;
 		if (FAILED(hresult = CoCreateInstance(CLSID_DirectSound, NULL, CLSCTX_INPROC_SERVER, IID_IDirectSound, (void**)&pDS)))
 		{
-			Log::write("failed\n");
+			common->Printf("failed\n");
 			SNDDMA_Shutdown();
 			return false;
 		}
@@ -109,17 +109,17 @@ bool SNDDMA_Init()
 
 	hresult = pDS->Initialize(NULL);
 
-	Log::develWrite("ok\n");
+	common->DPrintf("ok\n");
 
-	Log::develWrite("...setting DSSCL_PRIORITY coop level: ");
+	common->DPrintf("...setting DSSCL_PRIORITY coop level: ");
 
 	if (DS_OK != pDS->SetCooperativeLevel(GMainWindow, DSSCL_PRIORITY))
 	{
-		Log::write("failed\n");
+		common->Printf("failed\n");
 		SNDDMA_Shutdown();
 		return false;
 	}
-	Log::develWrite("ok\n");
+	common->DPrintf("ok\n");
 
 	// create the secondary buffer we'll actually work with
 	dma.channels = s_channels_cv->integer;
@@ -162,10 +162,10 @@ bool SNDDMA_Init()
 	Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 	dsbcaps.dwSize = sizeof(dsbcaps);
 
-	Log::develWrite("...creating secondary buffer: ");
+	common->DPrintf("...creating secondary buffer: ");
 	if (DS_OK == pDS->CreateSoundBuffer(&dsbuf, &pDSBuf, NULL))
 	{
-		Log::write("locked hardware.  ok\n");
+		common->Printf("locked hardware.  ok\n");
 	}
 	else
 	{
@@ -177,17 +177,17 @@ bool SNDDMA_Init()
 		}
 		if (DS_OK != pDS->CreateSoundBuffer(&dsbuf, &pDSBuf, NULL))
 		{
-			Log::write("failed\n");
+			common->Printf("failed\n");
 			SNDDMA_Shutdown();
 			return false;
 		}
-		Log::develWrite("forced to software.  ok\n");
+		common->DPrintf("forced to software.  ok\n");
 	}
 
 	// Make sure mixer is active
 	if (DS_OK != pDSBuf->Play(0, 0, DSBPLAY_LOOPING))
 	{
-		Log::write("*** Looped sound play failed ***\n");
+		common->Printf("*** Looped sound play failed ***\n");
 		SNDDMA_Shutdown();
 		return false;
 	}
@@ -195,7 +195,7 @@ bool SNDDMA_Init()
 	// get the returned buffer size
 	if (DS_OK != pDSBuf->GetCaps(&dsbcaps))
 	{
-		Log::write("*** GetCaps failed ***\n");
+		common->Printf("*** GetCaps failed ***\n");
 		SNDDMA_Shutdown();
 		return false;
 	}
@@ -222,7 +222,7 @@ bool SNDDMA_Init()
 
 	dsound_init = true;
 
-	Log::develWrite("Completed successfully\n");
+	common->DPrintf("Completed successfully\n");
 
 	return true;
 }
@@ -235,18 +235,18 @@ bool SNDDMA_Init()
 
 void SNDDMA_Shutdown()
 {
-	Log::develWrite("Shutting down sound system\n");
+	common->DPrintf("Shutting down sound system\n");
 
 	if (pDS)
 	{
 		if (pDSBuf)
 		{
-			Log::develWrite("...stopping and releasing sound buffer\n");
+			common->DPrintf("...stopping and releasing sound buffer\n");
 			pDSBuf->Stop();
 			pDSBuf->Release();
 		}
 
-		Log::develWrite("...releasing DS object\n");
+		common->DPrintf("...releasing DS object\n");
 		pDS->Release();
 	}
 
@@ -314,7 +314,7 @@ void SNDDMA_BeginPainting()
 	// if the buffer was lost or stopped, restore it and/or restart it
 	if (pDSBuf->GetStatus(&dwStatus) != DS_OK)
 	{
-		Log::write("Couldn't get sound buffer status\n");
+		common->Printf("Couldn't get sound buffer status\n");
 	}
 
 	if (dwStatus & DSBSTATUS_BUFFERLOST)
@@ -337,7 +337,7 @@ void SNDDMA_BeginPainting()
 	{
 		if (hresult != DSERR_BUFFERLOST)
 		{
-			Log::write("SNDDMA_BeginPainting: Lock failed with error '%s'\n", DSoundError(hresult));
+			common->Printf("SNDDMA_BeginPainting: Lock failed with error '%s'\n", DSoundError(hresult));
 			SNDDMA_Shutdown();
 			return;
 		}
@@ -389,7 +389,7 @@ void SNDDMA_Activate()
 
 	if (DS_OK != pDS->SetCooperativeLevel(GMainWindow, DSSCL_PRIORITY))
 	{
-		Log::write("sound SetCooperativeLevel failed\n");
+		common->Printf("sound SetCooperativeLevel failed\n");
 		SNDDMA_Shutdown();
 	}
 }

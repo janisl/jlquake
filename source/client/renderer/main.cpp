@@ -1855,7 +1855,7 @@ static bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum)
 	// don't recursively mirror
 	if (tr.viewParms.isPortal)
 	{
-		Log::develWrite(S_COLOR_RED "WARNING: recursive mirror/portal found\n");
+		common->DPrintf(S_COLOR_RED "WARNING: recursive mirror/portal found\n");
 		return false;
 	}
 

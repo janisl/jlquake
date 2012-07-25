@@ -439,11 +439,11 @@ static void Mem_MemDebugDump()
 	int NumBlocks = 0;
 	for (MemDebug_t* m = MemDebug; m; m = m->Next)
 	{
-		Log::writeLine("block %p size %8d at %s:%d", m + 1, m->Size,
+		common->Printf("block %p size %8d at %s:%d\n", m + 1, m->Size,
 			m->FileName, m->LineNumber);
 		NumBlocks++;
 	}
-	Log::writeLine("%d blocks allocated", NumBlocks);
+	common->Printf("%d blocks allocated\n", NumBlocks);
 }
 
 #else

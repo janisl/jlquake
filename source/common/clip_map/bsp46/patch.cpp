@@ -854,7 +854,7 @@ int patchCollide_t::GridPlane(int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], i
 	}
 
 	// should never happen
-	Log::write("WARNING: CM_GridPlane unresolvable\n");
+	common->Printf("WARNING: CM_GridPlane unresolvable\n");
 	return -1;
 }
 
@@ -929,7 +929,7 @@ void patchCollide_t::SetBorderInward(facet_t* facet, cGrid_t* grid,
 		else
 		{
 			// bisecting side border
-			Log::develWrite("WARNING: CM_SetBorderInward: mixed plane sides\n");
+			common->DPrintf("WARNING: CM_SetBorderInward: mixed plane sides\n");
 			facet->borderInward[k] = false;
 			if (!debugBlock)
 			{
@@ -1127,7 +1127,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 			{
 				if (facet->numBorders > 4 + 6 + 16)
 				{
-					Log::write("ERROR: too many bevels\n");
+					common->Printf("ERROR: too many bevels\n");
 				}
 				facet->borderPlanes[facet->numBorders] = FindPlane2(plane, &flipped);
 				facet->borderNoAdjust[facet->numBorders] = 0;
@@ -1227,7 +1227,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 				{
 					if (facet->numBorders > 4 + 6 + 16)
 					{
-						Log::write("ERROR: too many bevels\n");
+						common->Printf("ERROR: too many bevels\n");
 					}
 					facet->borderPlanes[facet->numBorders] = FindPlane2(plane, &flipped);
 
@@ -1236,7 +1236,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 						if (facet->borderPlanes[facet->numBorders] ==
 							facet->borderPlanes[k])
 						{
-							Log::write("WARNING: bevel plane already used\n");
+							common->Printf("WARNING: bevel plane already used\n");
 						}
 					}
 
@@ -1254,7 +1254,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 					CM46_ChopWindingInPlace(&w2, newplane, newplane[3], 0.1f);
 					if (!w2)
 					{
-						Log::develWrite("WARNING: CM_AddFacetBevels... invalid bevel\n");
+						common->DPrintf("WARNING: CM_AddFacetBevels... invalid bevel\n");
 						continue;
 					}
 					else
@@ -2046,7 +2046,7 @@ void QClipMap46::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, fl
 			}
 			else
 			{
-				Log::write("winding chopped away by border planes\n");
+				common->Printf("winding chopped away by border planes\n");
 			}
 		}
 	}

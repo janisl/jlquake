@@ -395,7 +395,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 		}
 		if (!(GGameType & GAME_Tech3))
 		{
-			Log::writeLine("SZ_GetSpace: overflow");
+			common->Printf("SZ_GetSpace: overflow\n");
 			Clear();
 		}
 		overflowed = true;
@@ -606,7 +606,7 @@ void QMsg::WriteString(const char* S)
 		int L = String::Length(S);
 		if (L >= MAX_STRING_CHARS)
 		{
-			Log::write("QMsg::WriteString: MAX_STRING_CHARS");
+			common->Printf("QMsg::WriteString: MAX_STRING_CHARS");
 			WriteData("", 1);
 			return;
 		}
@@ -650,7 +650,7 @@ void QMsg::WriteBigString(const char* S)
 		int L = String::Length(S);
 		if (L >= BIG_INFO_STRING)
 		{
-			Log::write("MSG_WriteString: BIG_INFO_STRING");
+			common->Printf("MSG_WriteString: BIG_INFO_STRING");
 			WriteData("", 1);
 			return;
 		}

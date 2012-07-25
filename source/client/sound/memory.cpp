@@ -215,7 +215,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	FindChunk("RIFF");
 	if (!(data_p && !String::NCmp((char*)data_p + 8, "WAVE", 4)))
 	{
-		Log::write("Missing RIFF/WAVE chunks\n");
+		common->Printf("Missing RIFF/WAVE chunks\n");
 		return info;
 	}
 
@@ -225,7 +225,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	FindChunk("fmt ");
 	if (!data_p)
 	{
-		Log::write("Missing fmt chunk\n");
+		common->Printf("Missing fmt chunk\n");
 		return info;
 	}
 	data_p += 8;
@@ -237,8 +237,8 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 
 	if (info.format != 1)
 	{
-		Log::write("Unsupported format: %s\n", GetWaveFormatName(info.format));
-		Log::write("Microsoft PCM format only\n");
+		common->Printf("Unsupported format: %s\n", GetWaveFormatName(info.format));
+		common->Printf("Microsoft PCM format only\n");
 		return info;
 	}
 
@@ -271,7 +271,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	FindChunk("data");
 	if (!data_p)
 	{
-		Log::write("Missing data chunk\n");
+		common->Printf("Missing data chunk\n");
 		return info;
 	}
 
@@ -371,7 +371,7 @@ bool S_LoadSound(sfx_t* sfx)
 	int size = FS_ReadFile(namebuffer, data);
 	if (size <= 0)
 	{
-		Log::develWrite("Couldn't load %s\n", namebuffer);
+		common->DPrintf("Couldn't load %s\n", namebuffer);
 		sfx->DefaultSound = true;
 		return false;
 	}
@@ -379,7 +379,7 @@ bool S_LoadSound(sfx_t* sfx)
 	wavinfo_t info = GetWavinfo(sfx->Name, data.Ptr(), size);
 	if (info.channels != 1)
 	{
-		Log::write("%s is a stereo wav file\n", sfx->Name);
+		common->Printf("%s is a stereo wav file\n", sfx->Name);
 		sfx->DefaultSound = true;
 		return false;
 	}

@@ -106,7 +106,7 @@ BOOL ReadFile2(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBy
 {
 	if (MidiOffset + nNumberOfBytesToRead > MidiSize)
 	{
-//		Log::write("Bad Read (%d+%d>=%d)\n",MidiOffset,nNumberOfBytesToRead,MidiSize);
+//		common->Printf("Bad Read (%d+%d>=%d)\n",MidiOffset,nNumberOfBytesToRead,MidiSize);
 		return FALSE;
 	}
 
@@ -185,7 +185,7 @@ BOOL ConverterInit(LPSTR szInFile)
 		((cbHeader = DWORDSWAP(cbHeader)) < sizeof(MIDIFILEHDR)) ||
 		GetInFileData(&Header, cbHeader))
 	{
-		Log::write("MIDI: %s\n",szInitErrInFile);
+		common->Printf("MIDI: %s\n",szInitErrInFile);
 		goto Init_Cleanup;
 	}
 
@@ -204,7 +204,7 @@ BOOL ConverterInit(LPSTR szInFile)
 		ifs.dwTrackCount * sizeof(INTRACKSTATE));
 	if (ifs.pitsTracks == NULL)
 	{
-		Log::write("MIDI: %s\n",szInitErrMem);
+		common->Printf("MIDI: %s\n",szInitErrMem);
 		goto Init_Cleanup;
 	}
 
@@ -214,14 +214,14 @@ BOOL ConverterInit(LPSTR szInFile)
 		if ((ptsTrack->pTrackStart
 				 = (LPBYTE)GlobalAllocPtr(GHND, TRACK_BUFFER_SIZE)) == NULL)
 		{
-			Log::write("MIDI: %s\n", szNoTrackBuffMem);
+			common->Printf("MIDI: %s\n", szNoTrackBuffMem);
 			goto Init_Cleanup;
 		}
 
 		if (GetInFileData(&dwTag, sizeof(dwTag)) || (dwTag != MTrk) ||
 			GetInFileData(&cbHeader, sizeof(cbHeader)))
 		{
-			Log::write("MIDI: %s\n", szInitErrInFile);
+			common->Printf("MIDI: %s\n", szInitErrInFile);
 			goto Init_Cleanup;
 		}
 
@@ -257,7 +257,7 @@ BOOL ConverterInit(LPSTR szInFile)
 		if (!ReadFile2(ptsTrack->pTrackStart, dwToRead, &cbRead, NULL) ||
 			(cbRead != dwToRead))
 		{
-			Log::write("MIDI: %s\n", szInitErrInFile);
+			common->Printf("MIDI: %s\n", szInitErrInFile);
 			goto Init_Cleanup;
 		}
 		// Save the number of bytes that didn't make it into the buffer
@@ -288,7 +288,7 @@ BOOL ConverterInit(LPSTR szInFile)
 		//
 		if (GetTrackVDWord(ptsTrack, &ptsTrack->tkNextEventDue))
 		{
-			Log::write("MIDI: %s\n", szInitErrInFile);
+			common->Printf("MIDI: %s\n", szInitErrInFile);
 			goto Init_Cleanup;
 		}
 		// Step over any unread data, advancing to the beginning of the next
@@ -415,7 +415,7 @@ static BOOL RewindConverter(void)
 		if (!ReadFile2(ptsTrack->pTrackStart, dwToRead, &cbRead, NULL) ||
 			(cbRead != dwToRead))
 		{
-			Log::write("MIDI: %s\n", szInitErrInFile);
+			common->Printf("MIDI: %s\n", szInitErrInFile);
 			goto Rewind_Cleanup;
 		}
 		// Save the number of bytes that didn't make it into the buffer
@@ -447,7 +447,7 @@ static BOOL RewindConverter(void)
 		//
 		if (GetTrackVDWord(ptsTrack, &ptsTrack->tkNextEventDue))
 		{
-			Log::write("MIDI: %s\n", szInitErrInFile);
+			common->Printf("MIDI: %s\n", szInitErrInFile);
 			goto Rewind_Cleanup;
 		}
 		// Step over any unread data, advancing to the beginning of the next
@@ -1020,7 +1020,7 @@ BOOL RefillTrackBuffer(PINTRACKSTATE ptsTrack)
 				 (long)ptsTrack->foNextReadStart,
 				 0L, FILE_BEGIN)) == 0xFFFFFFFF)
 		{
-			Log::write("MIDI: Unable to seek to track buffer location in RefillTrackBuffer()!!\n");
+			common->Printf("MIDI: Unable to seek to track buffer location in RefillTrackBuffer()!!\n");
 			return(TRUE);
 		}
 
@@ -1046,7 +1046,7 @@ BOOL RefillTrackBuffer(PINTRACKSTATE ptsTrack)
 		if (!bResult || (bResult && !dwBytesRead) ||
 			(bResult && dwBytesRead != ptsTrack->dwLeftInBuffer))
 		{
-			Log::write("MIDI: Read operation failed prematurely!!\n");
+			common->Printf("MIDI: Read operation failed prematurely!!\n");
 			ptsTrack->dwLeftInBuffer = dwBytesRead;
 			return(TRUE);
 		}

@@ -1085,7 +1085,7 @@ void VM_Compile(vm_t* vm, vmHeader_t* header)
 	Com_Memcpy(vm->codeBase, buf, compiledOfs);
 	delete[] buf;
 	delete[] jused;
-	Log::write("VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs);
+	common->Printf("VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs);
 
 	// offset all the instruction pointers for the new location
 	for (int i = 0; i < header->instructionCount; i++)

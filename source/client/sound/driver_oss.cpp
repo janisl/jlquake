@@ -77,7 +77,7 @@ bool SNDDMA_Init()
 		if (audio_fd < 0)
 		{
 			perror(snddevice->string);
-			Log::write("Could not open %s\n", snddevice->string);
+			common->Printf("Could not open %s\n", snddevice->string);
 			return false;
 		}
 	}
@@ -85,7 +85,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_RESET, 0) < 0)	//Not in Q3
 	{
 		perror(snddevice->string);
-		Log::write("Could not reset %s\n", snddevice->string);
+		common->Printf("Could not reset %s\n", snddevice->string);
 		close(audio_fd);
 		return false;
 	}
@@ -94,14 +94,14 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETCAPS, &caps) == -1)
 	{
 		perror(snddevice->string);
-		Log::write("Sound driver too old\n");
+		common->Printf("Sound driver too old\n");
 		close(audio_fd);
 		return false;
 	}
 
 	if (!(caps & DSP_CAP_TRIGGER) || !(caps & DSP_CAP_MMAP))
 	{
-		Log::write("Sorry but your soundcard can't do this\n");
+		common->Printf("Sorry but your soundcard can't do this\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -170,7 +170,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_STEREO, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		Log::write("Could not set %s to stereo=%d", snddevice->string, dma.channels);
+		common->Printf("Could not set %s to stereo=%d", snddevice->string, dma.channels);
 		close(audio_fd);
 		return 0;
 	}
@@ -186,7 +186,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SPEED, &dma.speed) < 0)
 	{
 		perror(snddevice->string);
-		Log::write("Could not set %s speed to %d", snddevice->string, dma.speed);
+		common->Printf("Could not set %s speed to %d", snddevice->string, dma.speed);
 		close(audio_fd);
 		return 0;
 	}
@@ -197,7 +197,7 @@ bool SNDDMA_Init()
 		if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &tmp) < 0)
 		{
 			perror(snddevice->string);
-			Log::write("Could not support 16-bit data.  Try 8-bit.\n");
+			common->Printf("Could not support 16-bit data.  Try 8-bit.\n");
 			close(audio_fd);
 			return 0;
 		}
@@ -208,7 +208,7 @@ bool SNDDMA_Init()
 		if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &tmp) < 0)
 		{
 			perror(snddevice->string);
-			Log::write("Could not support 8-bit data.\n");
+			common->Printf("Could not support 8-bit data.\n");
 			close(audio_fd);
 			return 0;
 		}
@@ -216,7 +216,7 @@ bool SNDDMA_Init()
 	else
 	{
 		perror(snddevice->string);
-		Log::write("%d-bit sound not supported.", dma.samplebits);
+		common->Printf("%d-bit sound not supported.", dma.samplebits);
 		close(audio_fd);
 		return 0;
 	}
@@ -225,7 +225,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info) == -1)
 	{
 		perror("GETOSPACE");
-		Log::write("Um, can't do GETOSPACE?\n");
+		common->Printf("Um, can't do GETOSPACE?\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -252,8 +252,8 @@ bool SNDDMA_Init()
 
 	if (!dma.buffer)
 	{
-		Log::write("Could not mmap dma buffer PROT_WRITE|PROT_READ\n");
-		Log::write("trying mmap PROT_WRITE (with associated better compatibility / less performance code)\n");
+		common->Printf("Could not mmap dma buffer PROT_WRITE|PROT_READ\n");
+		common->Printf("trying mmap PROT_WRITE (with associated better compatibility / less performance code)\n");
 		dma.buffer = (byte*)mmap(NULL, info.fragstotal * info.fragsize,
 			PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0);
 		// LordHavoc MAP_FAILED is a bad value to have outside init code
@@ -268,7 +268,7 @@ bool SNDDMA_Init()
 	if (!dma.buffer)
 	{
 		perror(snddevice->string);
-		Log::write("Could not mmap %s\n", snddevice->string);
+		common->Printf("Could not mmap %s\n", snddevice->string);
 		close(audio_fd);
 		return 0;
 	}
@@ -279,7 +279,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		Log::write("Could not toggle.\n");
+		common->Printf("Could not toggle.\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -287,7 +287,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		Log::write("Could not toggle.\n");
+		common->Printf("Could not toggle.\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -325,7 +325,7 @@ int SNDDMA_GetDMAPos()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETOPTR, &count) == -1)
 	{
 		perror(snddevice->string);
-		Log::write("Uh, sound dead.\n");
+		common->Printf("Uh, sound dead.\n");
 		close(audio_fd);
 		snd_inited = 0;
 		return 0;

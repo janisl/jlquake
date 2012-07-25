@@ -137,7 +137,7 @@ static FT_Bitmap* R_RenderGlyph(FT_GlyphSlot glyph, glyphInfo_t* glyphOut)
 
 	if (glyph->format != ft_glyph_format_outline)
 	{
-		Log::write("Non-outline fonts are not supported\n");
+		common->Printf("Non-outline fonts are not supported\n");
 		return NULL;
 	}
 
@@ -348,7 +348,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 
 	if (registeredFontCount >= MAX_FONTS)
 	{
-		Log::write("R_RegisterFont: Too many fonts registered already.\n");
+		common->Printf("R_RegisterFont: Too many fonts registered already.\n");
 		return;
 	}
 
@@ -408,7 +408,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 
 	if (ftLibrary == NULL)
 	{
-		Log::write("R_RegisterFont: FreeType not initialized.\n");
+		common->Printf("R_RegisterFont: FreeType not initialized.\n");
 		return;
 	}
 
@@ -416,7 +416,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	len = FS_ReadFile(fontName, &faceData);
 	if (len <= 0)
 	{
-		Log::write("R_RegisterFont: Unable to read font file\n");
+		common->Printf("R_RegisterFont: Unable to read font file\n");
 		return;
 	}
 
@@ -424,13 +424,13 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	FT_Face face;
 	if (FT_New_Memory_Face(ftLibrary, (FT_Byte*)faceData, len, 0, &face))
 	{
-		Log::write("R_RegisterFont: FreeType2, unable to allocate new face.\n");
+		common->Printf("R_RegisterFont: FreeType2, unable to allocate new face.\n");
 		return;
 	}
 
 	if (FT_Set_Char_Size(face, pointSize << 6, pointSize << 6, dpi, dpi))
 	{
-		Log::write("R_RegisterFont: FreeType2, Unable to set face char size.\n");
+		common->Printf("R_RegisterFont: FreeType2, Unable to set face char size.\n");
 		return;
 	}
 
@@ -543,7 +543,7 @@ void R_InitFreeType()
 {
 	if (FT_Init_FreeType(&ftLibrary))
 	{
-		Log::write("R_InitFreeType: Unable to initialize FreeType.\n");
+		common->Printf("R_InitFreeType: Unable to initialize FreeType.\n");
 	}
 	registeredFontCount = 0;
 }

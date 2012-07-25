@@ -270,7 +270,7 @@ static void S_ChannelSetup()
 	endflist = q;
 	*(channel_t**)q = NULL;
 	freelist = p + MAX_CHANNELS - 1;
-	Log::develWrite("Channel memory manager started\n");
+	common->DPrintf("Channel memory manager started\n");
 }
 
 //**************************************************************************
@@ -527,7 +527,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 
 	if (String::Length(Name) >= MAX_QPATH)
 	{
-		Log::write("Sound name exceeds MAX_QPATH\n");
+		common->Printf("Sound name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -537,7 +537,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 	{
 		if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 		{
-			Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
+			common->Printf(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 			return 0;
 		}
 		return Sfx - s_knownSfx;
@@ -552,7 +552,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 
 	if ((GGameType & GAME_Tech3) && Sfx->DefaultSound)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
+		common->Printf(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
 		return 0;
 	}
 
@@ -681,7 +681,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 
 	if (s_rawend[streamingIndex] < s_soundtime)
 	{
-		Log::develWrite("S_RawSamples: resetting minimum: %i < %i\n", s_rawend[streamingIndex], s_soundtime);
+		common->DPrintf("S_RawSamples: resetting minimum: %i < %i\n", s_rawend[streamingIndex], s_soundtime);
 		s_rawend[streamingIndex] = s_soundtime;
 	}
 
@@ -770,7 +770,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 
 	if (s_rawend[streamingIndex] > s_soundtime + MAX_RAW_SAMPLES)
 	{
-		Log::develWrite("S_RawSamples: overflowed %i > %i\n", s_rawend[streamingIndex], s_soundtime);
+		common->DPrintf("S_RawSamples: overflowed %i > %i\n", s_rawend[streamingIndex], s_soundtime);
 	}
 }
 
@@ -1086,7 +1086,7 @@ void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 		String::NCpyZ(loopMusic, ss->loop, sizeof(loopMusic));
 	}
 
-	Log::develWrite("S_StartBackgroundTrack( %s, %s )\n", intro, loopMusic);
+	common->DPrintf("S_StartBackgroundTrack( %s, %s )\n", intro, loopMusic);
 
 	Cvar_Set("s_currentMusic", "");	//	so the savegame will have the right music
 
@@ -1118,7 +1118,7 @@ void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 	FS_FOpenFileRead(ss->name, &fh, true);
 	if (!fh)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", ss->name);
+		common->Printf(S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", ss->name);
 		return;
 	}
 
@@ -1128,7 +1128,7 @@ void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 
 	if (!S_FindWavChunk(fh, "fmt "))
 	{
-		Log::write("No fmt chunk in %s\n", ss->name);
+		common->Printf("No fmt chunk in %s\n", ss->name);
 		FS_FCloseFile(fh);
 		return;
 	}
@@ -1144,19 +1144,19 @@ void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 	if (ss->info.format != WAV_FORMAT_PCM)
 	{
 		FS_FCloseFile(fh);
-		Log::write("Not a microsoft PCM format wav: %s\n", ss->name);
+		common->Printf("Not a microsoft PCM format wav: %s\n", ss->name);
 		return;
 	}
 
 	if (ss->info.channels != 2 || ss->info.rate < 22050)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: music file %s is not 22k or higher stereo\n", ss->name);
+		common->Printf(S_COLOR_YELLOW "WARNING: music file %s is not 22k or higher stereo\n", ss->name);
 	}
 
 	if ((len = S_FindWavChunk(fh, "data")) == 0)
 	{
 		FS_FCloseFile(fh);
-		Log::write("No data chunk in %s\n", ss->name);
+		common->Printf("No data chunk in %s\n", ss->name);
 		return;
 	}
 
@@ -1449,7 +1449,7 @@ static void S_UpdateStreamingSounds()
 			r = FS_Read(raw, fileBytes, ss->file);
 			if (r != fileBytes)
 			{
-				Log::write("StreamedRead failure on stream sound\n");
+				common->Printf("StreamedRead failure on stream sound\n");
 				ss->kill = 1;
 				break;
 			}
@@ -1587,34 +1587,34 @@ static void S_UpdateStreamingSounds()
 
 static void S_SoundInfo_f()
 {
-	Log::write("----- Sound Info -----\n");
+	common->Printf("----- Sound Info -----\n");
 	if (!s_soundStarted)
 	{
-		Log::write("sound system not started\n");
+		common->Printf("sound system not started\n");
 	}
 	else
 	{
 		if (s_soundMuted)
 		{
-			Log::write("sound system is muted\n");
+			common->Printf("sound system is muted\n");
 		}
 
-		Log::write("%5d stereo\n", dma.channels - 1);
-		Log::write("%5d samples\n", dma.samples);
-		Log::write("%5d samplebits\n", dma.samplebits);
-		Log::write("%5d submission_chunk\n", dma.submission_chunk);
-		Log::write("%5d speed\n", dma.speed);
-		Log::write("0x%p dma buffer\n", dma.buffer);
+		common->Printf("%5d stereo\n", dma.channels - 1);
+		common->Printf("%5d samples\n", dma.samples);
+		common->Printf("%5d samplebits\n", dma.samplebits);
+		common->Printf("%5d submission_chunk\n", dma.submission_chunk);
+		common->Printf("%5d speed\n", dma.speed);
+		common->Printf("0x%p dma buffer\n", dma.buffer);
 		if (streamingSounds[0].file)
 		{
-			Log::write("Background file: %s\n", streamingSounds[0].loop);
+			common->Printf("Background file: %s\n", streamingSounds[0].loop);
 		}
 		else
 		{
-			Log::write("No background file.\n");
+			common->Printf("No background file.\n");
 		}
 	}
-	Log::write("----------------------\n");
+	common->Printf("----------------------\n");
 }
 
 //==========================================================================
@@ -1638,7 +1638,7 @@ static void S_Music_f()
 	}
 	else
 	{
-		Log::write("music <musicfile> [loopfile]\n");
+		common->Printf("music <musicfile> [loopfile]\n");
 		return;
 	}
 }
@@ -1763,7 +1763,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		}
 		else
 		{
-			Log::write(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
+			common->Printf(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
 		}
 		return;
 	}
@@ -1919,11 +1919,11 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 	{
 		if (GGameType & GAME_Tech3)
 		{
-			Log::write(S_COLOR_YELLOW "S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
+			common->Printf(S_COLOR_YELLOW "S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
 		}
 		else
 		{
-			Log::write("S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
+			common->Printf("S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
 		}
 		return;
 	}
@@ -2682,7 +2682,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 
 	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
 	{
-		Log::write(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
+		common->Printf(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
 		return;
 	}
 
@@ -2859,7 +2859,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 
 		if (s_show->integer == 1)
 		{
-			Log::write("%i : %s\n", s_paintedtime, sfx->Name);
+			common->Printf("%i : %s\n", s_paintedtime, sfx->Name);
 		}
 
 		time = Com_Milliseconds();
@@ -2935,7 +2935,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 					}
 					if (chosen == -1)
 					{
-						Log::write("dropping sound\n");
+						common->Printf("dropping sound\n");
 						return;
 					}
 				}
@@ -3018,7 +3018,7 @@ void S_IssuePlaysound(playsound_t* ps)
 
 	if (s_show->value)
 	{
-		Log::write("Issue %i\n", ps->begin);
+		common->Printf("Issue %i\n", ps->begin);
 	}
 	// pick a channel to play on
 	ch = S_PickChannel(ps->entnum, ps->entchannel);
@@ -3111,8 +3111,8 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 
 	if (numLoopChannels == MAX_CHANNELS)
 	{
-		Log::write("StaticSound: MAX_CHANNELS reached\n");
-		Log::write(" failed at (%.2f, %.2f, %.2f)\n",origin[0],origin[1],origin[2]);
+		common->Printf("StaticSound: MAX_CHANNELS reached\n");
+		common->Printf(" failed at (%.2f, %.2f, %.2f)\n",origin[0],origin[1],origin[2]);
 		return;
 	}
 
@@ -3126,7 +3126,7 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 
 	if (sfx->LoopStart == -1)
 	{
-		Log::write("Sound %s not looped\n", sfx->Name);
+		common->Printf("Sound %s not looped\n", sfx->Name);
 		return;
 	}
 
@@ -3637,7 +3637,7 @@ static void S_Update_()
 	// check to make sure that we haven't overshot
 	if (!(GGameType & GAME_Tech3) && s_paintedtime < s_soundtime)
 	{
-		Log::develWrite("S_Update_ : overflow\n");
+		common->DPrintf("S_Update_ : overflow\n");
 		s_paintedtime = s_soundtime;
 	}
 
@@ -3797,7 +3797,7 @@ void S_Update()
 {
 	if (!s_soundStarted || s_soundMuted)
 	{
-		Log::develWrite("not started or muted\n");
+		common->DPrintf("not started or muted\n");
 		return;
 	}
 
@@ -3821,12 +3821,12 @@ void S_Update()
 		{
 			if (ch->sfx && (ch->leftvol || ch->rightvol))
 			{
-				Log::write("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name);
+				common->Printf("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name);
 				total++;
 			}
 		}
 
-		Log::write("----(%i)---- painted: %i\n", total, s_paintedtime);
+		common->Printf("----(%i)---- painted: %i\n", total, s_paintedtime);
 	}
 
 	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
@@ -3972,7 +3972,7 @@ static void S_SoundList_f()
 	{
 		if (sfx->Name[0] == '*')
 		{
-			Log::write("  placeholder : %s\n", sfx->Name);
+			common->Printf("  placeholder : %s\n", sfx->Name);
 		}
 		else
 		{
@@ -3980,16 +3980,16 @@ static void S_SoundList_f()
 			total += size;
 			if (sfx->LoopStart >= 0)
 			{
-				Log::write("L");
+				common->Printf("L");
 			}
 			else
 			{
-				Log::write(" ");
+				common->Printf(" ");
 			}
-			Log::write("%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory]);
+			common->Printf("%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory]);
 		}
 	}
-	Log::write("Total resident: %i\n", total);
+	common->Printf("Total resident: %i\n", total);
 }
 
 //	console interface really just for testing
@@ -4042,7 +4042,7 @@ static void S_StreamingSound_f()
 
 void S_Init()
 {
-	Log::write("\n------- sound initialization -------\n");
+	common->Printf("\n------- sound initialization -------\n");
 
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -4077,8 +4077,8 @@ void S_Init()
 	Cvar* cv = Cvar_Get("s_initsound", "1", 0);
 	if (!cv->integer)
 	{
-		Log::write("not initializing.\n");
-		Log::write("------------------------------------\n");
+		common->Printf("not initializing.\n");
+		common->Printf("------------------------------------\n");
 		return;
 	}
 
@@ -4092,7 +4092,7 @@ void S_Init()
 	Cmd_AddCommand("music_queue", S_QueueMusic_f);
 
 	bool r = SNDDMA_Init();
-	Log::write("------------------------------------\n");
+	common->Printf("------------------------------------\n");
 
 	if (r)
 	{

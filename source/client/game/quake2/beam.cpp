@@ -88,7 +88,7 @@ static void CLQ2_NewBeamInternal(q2beam_t* beams, int ent, int destEnt, qhandle_
 			return;
 		}
 	}
-	Log::write("beam list overflow!\n");
+	common->Printf("beam list overflow!\n");
 }
 
 static void CLQ2_NewBeam(int ent, int destEnt, qhandle_t model, vec3_t start, vec3_t end, vec3_t offset)

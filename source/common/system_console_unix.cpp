@@ -109,7 +109,7 @@ void Sys_ConsoleInputInit()
 
 	if (isatty(STDIN_FILENO) != 1)
 	{
-		Log::write("stdin is not a tty, tty console mode failed\n");
+		common->Printf("stdin is not a tty, tty console mode failed\n");
 		Cvar_Set("ttycon", "0");
 		ttycon_on = false;
 		return;
@@ -151,7 +151,7 @@ void Sys_ConsoleInputInit()
 		return;
 	}
 	ttycon_on = true;
-	Log::write("Started tty console (use +set ttycon 0 to disable)\n");
+	common->Printf("Started tty console (use +set ttycon 0 to disable)\n");
 }
 
 //==========================================================================
@@ -166,7 +166,7 @@ void Sys_ConsoleInputShutdown()
 {
 	if (ttycon_on)
 	{
-		Log::write("Shutdown tty console\n");
+		common->Printf("Shutdown tty console\n");
 		tcsetattr(0, TCSADRAIN, &tty_tc);
 		ttycon_on = false;
 	}
@@ -449,7 +449,7 @@ char* Sys_ConsoleInput()
 					}
 				}
 			}
-			Log::develWrite("droping ISCTL sequence: %d, tty_erase: %d\n", key, tty_erase);
+			common->DPrintf("droping ISCTL sequence: %d, tty_erase: %d\n", key, tty_erase);
 			tty_FlushIn();
 			return NULL;
 		}

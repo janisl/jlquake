@@ -104,7 +104,7 @@ static void CLQ1_ParseBeam(QMsg& message, qhandle_t model)
 			return;
 		}
 	}
-	Log::write("beam list overflow!\n");
+	common->Printf("beam list overflow!\n");
 }
 
 static void CLQ1_UpdateBeams()

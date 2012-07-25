@@ -22,7 +22,7 @@ void CLQ1_SignonReply()
 {
 	char str[8192];
 
-	Log::develWrite("CLQ1_SignonReply: %i\n", clc.qh_signon);
+	common->DPrintf("CLQ1_SignonReply: %i\n", clc.qh_signon);
 
 	switch (clc.qh_signon)
 	{
@@ -62,7 +62,7 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 
 	if (strstr(filename, ".."))
 	{
-		Log::write("Refusing to download a path with ..\n");
+		common->Printf("Refusing to download a path with ..\n");
 		return true;
 	}
 
@@ -77,7 +77,7 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 	//ZOID - can't download when recording
 	if (clc.demorecording)
 	{
-		Log::write("Unable to download %s in record mode.\n", clc.downloadName);
+		common->Printf("Unable to download %s in record mode.\n", clc.downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
@@ -87,7 +87,7 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 	}
 
 	String::Cpy(clc.downloadName, filename);
-	Log::write("Downloading %s...\n", clc.downloadName);
+	common->Printf("Downloading %s...\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted

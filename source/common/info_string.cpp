@@ -252,25 +252,25 @@ void Info_SetValueForKey(char* s, const char* key, const char* value,
 
 	if (strchr(key, '\\') || strchr(value, '\\'))
 	{
-		Log::write("Can't use keys or values with a \\\n");
+		common->Printf("Can't use keys or values with a \\\n");
 		return;
 	}
 
 	if (strchr(key, ';') || strchr(value, ';'))
 	{
-		Log::write("Can't use keys or values with a semicolon\n");
+		common->Printf("Can't use keys or values with a semicolon\n");
 		return;
 	}
 
 	if (strchr(key, '\"') || strchr(value, '\"'))
 	{
-		Log::write("Can't use keys or values with a \"\n");
+		common->Printf("Can't use keys or values with a \"\n");
 		return;
 	}
 
 	if (String::Length(key) > MaxKeySize - 1 || String::Length(value) > MaxValSize - 1)
 	{
-		Log::write("Keys and values must be < %d characters.\n", MaxKeySize);
+		common->Printf("Keys and values must be < %d characters.\n", MaxKeySize);
 		return;
 	}
 
@@ -284,7 +284,7 @@ void Info_SetValueForKey(char* s, const char* key, const char* value,
 
 	if (String::Length(newi) + String::Length(s) > MaxSize)
 	{
-		Log::write("Info string length exceeded\n");
+		common->Printf("Info string length exceeded\n");
 		return;
 	}
 
@@ -423,11 +423,11 @@ void Info_Print(const char* s)
 		{
 			*o = 0;
 		}
-		Log::write("%s", key);
+		common->Printf("%s", key);
 
 		if (!*s)
 		{
-			Log::write("MISSING VALUE\n");
+			common->Printf("MISSING VALUE\n");
 			return;
 		}
 
@@ -441,6 +441,6 @@ void Info_Print(const char* s)
 		{
 			s++;
 		}
-		Log::write("%s\n", value);
+		common->Printf("%s\n", value);
 	}
 }

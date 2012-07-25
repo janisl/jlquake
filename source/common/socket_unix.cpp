@@ -187,7 +187,7 @@ void SOCK_GetLocalAddress()
 	ifaddrs* IfAddrs = NULL;
 	if (getifaddrs(&IfAddrs) == -1)
 	{
-		Log::write("SOCK_GetLocalAddress: getifaddrs: %s", SOCK_ErrorString());
+		common->Printf("SOCK_GetLocalAddress: getifaddrs: %s", SOCK_ErrorString());
 		return;
 	}
 
@@ -202,7 +202,7 @@ void SOCK_GetLocalAddress()
 		localIP[numIP][1] = Addr->ifa_addr->sa_data[3];
 		localIP[numIP][2] = Addr->ifa_addr->sa_data[4];
 		localIP[numIP][3] = Addr->ifa_addr->sa_data[5];
-		Log::write("IP: %i.%i.%i.%i\n", localIP[numIP][0], localIP[numIP][1], localIP[numIP][2], localIP[numIP][3]);
+		common->Printf("IP: %i.%i.%i.%i\n", localIP[numIP][0], localIP[numIP][1], localIP[numIP][2], localIP[numIP][3]);
 		numIP++;
 	}
 
@@ -222,24 +222,24 @@ void SOCK_OpenSocks(int port)
 {
 	usingSocks = false;
 
-	Log::write("Opening connection to SOCKS server.\n");
+	common->Printf("Opening connection to SOCKS server.\n");
 
 	socks_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socks_socket == -1)
 	{
-		Log::write("WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString());
+		common->Printf("WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString());
 		return;
 	}
 
 	hostent* h = gethostbyname(net_socksServer->string);
 	if (h == NULL)
 	{
-		Log::write("WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString());
+		common->Printf("WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (h->h_addrtype != AF_INET)
 	{
-		Log::write("WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n");
+		common->Printf("WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n");
 		return;
 	}
 	sockaddr_in address;
@@ -249,7 +249,7 @@ void SOCK_OpenSocks(int port)
 
 	if (connect(socks_socket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		Log::write("SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString());
+		common->Printf("SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -277,7 +277,7 @@ void SOCK_OpenSocks(int port)
 	}
 	if (send(socks_socket, buf, len, 0) == -1)
 	{
-		Log::write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+		common->Printf("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -285,12 +285,12 @@ void SOCK_OpenSocks(int port)
 	len = recv(socks_socket, buf, 64, 0);
 	if (len == -1)
 	{
-		Log::write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+		common->Printf("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (len != 2 || buf[0] != 5)
 	{
-		Log::write("SOCK_OpenSocks: bad response\n");
+		common->Printf("SOCK_OpenSocks: bad response\n");
 		return;
 	}
 	switch (buf[1])
@@ -300,7 +300,7 @@ void SOCK_OpenSocks(int port)
 	case 2:	// username/password authentication
 		break;
 	default:
-		Log::write("SOCK_OpenSocks: request denied\n");
+		common->Printf("SOCK_OpenSocks: request denied\n");
 		return;
 	}
 
@@ -326,7 +326,7 @@ void SOCK_OpenSocks(int port)
 		// send it
 		if (send(socks_socket, buf, 3 + ulen + plen, 0) == -1)
 		{
-			Log::write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+			common->Printf("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 			return;
 		}
 
@@ -334,17 +334,17 @@ void SOCK_OpenSocks(int port)
 		len = recv(socks_socket, buf, 64, 0);
 		if (len == -1)
 		{
-			Log::write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+			common->Printf("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 			return;
 		}
 		if (len != 2 || buf[0] != 1)
 		{
-			Log::write("SOCK_OpenSocks: bad response\n");
+			common->Printf("SOCK_OpenSocks: bad response\n");
 			return;
 		}
 		if (buf[1] != 0)
 		{
-			Log::write("SOCK_OpenSocks: authentication failed\n");
+			common->Printf("SOCK_OpenSocks: authentication failed\n");
 			return;
 		}
 	}
@@ -358,7 +358,7 @@ void SOCK_OpenSocks(int port)
 	*(short*)&buf[8] = htons((short)port);		// port
 	if (send(socks_socket, buf, 10, 0) == -1)
 	{
-		Log::write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+		common->Printf("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -366,23 +366,23 @@ void SOCK_OpenSocks(int port)
 	len = recv(socks_socket, buf, 64, 0);
 	if (len == -1)
 	{
-		Log::write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+		common->Printf("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (len < 2 || buf[0] != 5)
 	{
-		Log::write("SOCK_OpenSocks: bad response\n");
+		common->Printf("SOCK_OpenSocks: bad response\n");
 		return;
 	}
 	// check completion code
 	if (buf[1] != 0)
 	{
-		Log::write("SOCK_OpenSocks: request denied: %i\n", buf[1]);
+		common->Printf("SOCK_OpenSocks: request denied: %i\n", buf[1]);
 		return;
 	}
 	if (buf[3] != 1)
 	{
-		Log::write("SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3]);
+		common->Printf("SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3]);
 		return;
 	}
 	((sockaddr_in*)&socksRelayAddr)->sin_family = AF_INET;
@@ -419,17 +419,17 @@ int SOCK_Open(const char* net_interface, int port)
 {
 	if (net_interface)
 	{
-		Log::write("Opening IP socket: %s:%i\n", net_interface, port);
+		common->Printf("Opening IP socket: %s:%i\n", net_interface, port);
 	}
 	else
 	{
-		Log::write("Opening IP socket: localhost:%i\n", port);
+		common->Printf("Opening IP socket: localhost:%i\n", port);
 	}
 
 	int newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (newsocket == -1)
 	{
-		Log::write("ERROR: SOCK_Open: socket: %s\n", SOCK_ErrorString());
+		common->Printf("ERROR: SOCK_Open: socket: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -437,7 +437,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int _true = 1;
 	if (ioctl(newsocket, FIONBIO, &_true) == -1)
 	{
-		Log::write("ERROR: SOCK_Open: ioctl FIONBIO:%s\n", SOCK_ErrorString());
+		common->Printf("ERROR: SOCK_Open: ioctl FIONBIO:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -446,7 +446,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int i = 1;
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
 	{
-		Log::write("ERROR: SOCK_Open: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
+		common->Printf("ERROR: SOCK_Open: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -474,7 +474,7 @@ int SOCK_Open(const char* net_interface, int port)
 
 	if (bind(newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		Log::write("ERROR: SOCK_Open: bind: %s\n", SOCK_ErrorString());
+		common->Printf("ERROR: SOCK_Open: bind: %s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -523,8 +523,8 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 			return SOCKRECV_NO_DATA;
 		}
 
-		Log::write("NET_GetPacket: %s", SOCK_ErrorString());
-		//Log::write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), SOCK_AdrToString(*net_from));
+		common->Printf("NET_GetPacket: %s", SOCK_ErrorString());
+		//common->Printf("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), SOCK_AdrToString(*net_from));
 		return SOCKRECV_ERROR;
 	}
 
@@ -617,8 +617,8 @@ int SOCK_Send(int socket, const void* data, int length, const netadr_t& to)
 			return SOCKSEND_WOULDBLOCK;
 		}
 
-		Log::write("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
-		//Log::write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
+		common->Printf("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
+		//common->Printf("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
 		return SOCKSEND_ERROR;
 	}
 
@@ -669,7 +669,7 @@ bool SOCK_GetAddr(int socket, netadr_t* addr)
 	Com_Memset(&sadr, 0, sizeof(sadr));
 	if (getsockname(socket, (sockaddr*)&sadr, &addrlen) == -1)
 	{
-		Log::write("getsockname: ", SOCK_ErrorString());
+		common->Printf("getsockname: ", SOCK_ErrorString());
 		return false;
 	}
 

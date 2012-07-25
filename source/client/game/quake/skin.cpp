@@ -111,7 +111,7 @@ byte* CLQW_SkinCache(qw_skin_t* skin)
 	sprintf(name, "skins/%s.pcx", skin->name);
 	if (!FS_FOpenFileRead(name, NULL, false))
 	{
-		Log::write("Couldn't load skin %s\n", name);
+		common->Printf("Couldn't load skin %s\n", name);
 		sprintf(name, "skins/%s.pcx", clqw_baseskin->string);
 		if (!FS_FOpenFileRead(name, NULL, false))
 		{
@@ -125,7 +125,7 @@ byte* CLQW_SkinCache(qw_skin_t* skin)
 	if (!out)
 	{
 		skin->failedload = true;
-		Log::write("Skin %s was malformed.  You should delete it.\n", name);
+		common->Printf("Skin %s was malformed.  You should delete it.\n", name);
 		return NULL;
 	}
 
@@ -142,7 +142,7 @@ void CLQW_SkinNextDownload()
 
 	if (clc.downloadNumber == 0)
 	{
-		Log::write("Checking skins...\n");
+		common->Printf("Checking skins...\n");
 	}
 	clc.downloadType = dl_skin;
 

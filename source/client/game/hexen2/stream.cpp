@@ -70,7 +70,7 @@ static void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, i
 	h2stream_t* stream = CLH2_NewStream(ent, tag);
 	if (stream == NULL)
 	{
-		Log::write("stream list overflow\n");
+		common->Printf("stream list overflow\n");
 		return;
 	}
 	stream->type = type;

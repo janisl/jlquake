@@ -152,7 +152,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t* hull, int num, float p1f,
 #ifdef PARANOID
 	if (HullPointContents(hull, node->children[side], mid) == BSP29CONTENTS_SOLID)
 	{
-		Log::write("mid PointInHullSolid\n");
+		common->Printf("mid PointInHullSolid\n");
 		return false;
 	}
 #endif
@@ -191,7 +191,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t* hull, int num, float p1f,
 		{
 			trace->fraction = midf;
 			VectorCopy(mid, trace->endpos);
-			Log::develWrite("backup past 0\n");
+			common->DPrintf("backup past 0\n");
 			return false;
 		}
 		midf = p1f + (p2f - p1f) * frac;

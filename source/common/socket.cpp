@@ -224,7 +224,7 @@ bool SOCK_CompareAdr(const netadr_t& a, const netadr_t& b)
 		return false;
 	}
 
-	Log::write("SOCK_CompareAdr: bad address type\n");
+	common->Printf("SOCK_CompareAdr: bad address type\n");
 	return false;
 }
 
@@ -257,7 +257,7 @@ bool SOCK_CompareBaseAdr(const netadr_t& a, const netadr_t& b)
 		return false;
 	}
 
-	Log::write("SOCK_CompareBaseAdr: bad address type\n");
+	common->Printf("SOCK_CompareBaseAdr: bad address type\n");
 	return false;
 }
 
@@ -387,7 +387,7 @@ void SOCK_ShowIP()
 {
 	for (int i = 0; i < numIP; i++)
 	{
-		Log::write("IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3]);
+		common->Printf("IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3]);
 	}
 }
 

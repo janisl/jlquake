@@ -234,7 +234,7 @@ static msprite1frame_t* R_GetSpriteFrame(msprite1_t* psprite, trRefEntity_t* cur
 
 	if (frame >= psprite->numframes || frame < 0)
 	{
-		Log::write("R_DrawSprite: no such frame %d\n", frame);
+		common->Printf("R_DrawSprite: no such frame %d\n", frame);
 		frame = 0;
 	}
 

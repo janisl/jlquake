@@ -124,7 +124,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	KeySym keysym;
 	int XLookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
 #ifdef KBD_DBG
-	Log::write("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
+	common->Printf("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
 #endif
 
 	static char shiftlessbuf[2];
@@ -404,7 +404,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	default:
 		if (XLookupRet == 0)
 		{
-			Log::develWrite("Warning: XLookupString failed on KeySym %d\n", keysym);
+			common->DPrintf("Warning: XLookupString failed on KeySym %d\n", keysym);
 			return NULL;
 		}
 		// XK_* tests failed, but XLookupString got a buffer, so let's try it
@@ -577,7 +577,7 @@ static void install_grabs()
 		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
 		{
 			// unable to query, probalby not supported, force the setting to 0
-			Log::write("Failed to detect XF86DGA Mouse\n");
+			common->Printf("Failed to detect XF86DGA Mouse\n");
 			Cvar_Set("in_dgamouse", "0");
 		}
 		else
@@ -618,7 +618,7 @@ static void uninstall_grabs()
 {
 	if (in_dgamouse->value)
 	{
-		Log::develWrite("DGA Mouse - Disabling DGA DirectVideo\n");
+		common->DPrintf("DGA Mouse - Disabling DGA DirectVideo\n");
 		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
 	}
 
@@ -1009,7 +1009,7 @@ static void IN_StartupJoystick()
 
 	if (!in_joystick->integer)
 	{
-		Log::write("Joystick is not active.\n");
+		common->Printf("Joystick is not active.\n");
 		return;
 	}
 
@@ -1023,7 +1023,7 @@ static void IN_StartupJoystick()
 
 		if (joy_fd != -1)
 		{
-			Log::write("Joystick %s found\n", filename);
+			common->Printf("Joystick %s found\n", filename);
 
 			//	Get rid of initialization messages.
 			js_event event;
@@ -1050,9 +1050,9 @@ static void IN_StartupJoystick()
 				String::NCpy(name, "Unknown", sizeof(name));
 			}
 
-			Log::write("Name:    %s\n", name);
-			Log::write("Axes:    %d\n", axes);
-			Log::write("Buttons: %d\n", buttons);
+			common->Printf("Name:    %s\n", name);
+			common->Printf("Axes:    %d\n", axes);
+			common->Printf("Buttons: %d\n", buttons);
 
 			//	Our work here is done.
 			return;
@@ -1062,7 +1062,7 @@ static void IN_StartupJoystick()
 	//	No soup for you.
 	if (joy_fd == -1)
 	{
-		Log::write("No joystick found.\n");
+		common->Printf("No joystick found.\n");
 		return;
 	}
 }
@@ -1113,7 +1113,7 @@ static void IN_JoyMove()
 		}
 		else
 		{
-			Log::write("Unknown joystick event type\n");
+			common->Printf("Unknown joystick event type\n");
 		}
 
 	}
@@ -1197,7 +1197,7 @@ static void IN_JoyMove()
 
 void IN_Init()
 {
-	Log::write("\n------- Input Initialization -------\n");
+	common->Printf("\n------- Input Initialization -------\n");
 
 	// mouse variables
 	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
@@ -1228,7 +1228,7 @@ void IN_Init()
 
 	IN_StartupJoystick();
 
-	Log::write("------------------------------------\n");
+	common->Printf("------------------------------------\n");
 }
 
 //==========================================================================

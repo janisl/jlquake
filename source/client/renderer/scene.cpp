@@ -358,7 +358,7 @@ void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, 
 
 	if (!hShader)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: R_AddPolyToScene: NULL poly shader\n");
+		common->Printf(S_COLOR_YELLOW "WARNING: R_AddPolyToScene: NULL poly shader\n");
 		return;
 	}
 
@@ -372,7 +372,7 @@ void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, 
 			since we don't plan on changing the const and making for room for those effects
 			simply cut this message to developer only
 			*/
-			Log::develWrite(S_COLOR_RED "WARNING: R_AddPolyToScene: r_max_polys or r_max_polyverts reached\n");
+			common->DPrintf(S_COLOR_RED "WARNING: R_AddPolyToScene: r_max_polys or r_max_polyverts reached\n");
 			return;
 		}
 

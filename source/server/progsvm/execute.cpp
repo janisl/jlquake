@@ -87,43 +87,43 @@ static void PR_PrintStatement(const dstatement_t* s)
 {
 	if ((unsigned)s->op < sizeof(pr_opnames) / sizeof(pr_opnames[0]))
 	{
-		Log::write("%s ", pr_opnames[s->op]);
+		common->Printf("%s ", pr_opnames[s->op]);
 		int i = String::Length(pr_opnames[s->op]);
 		for (; i < 10; i++)
 		{
-			Log::write(" ");
+			common->Printf(" ");
 		}
 	}
 
 	if (s->op == OP_IF || s->op == OP_IFNOT)
 	{
-		Log::write("%sbranch %i", PR_GlobalString(s->a), s->b);
+		common->Printf("%sbranch %i", PR_GlobalString(s->a), s->b);
 	}
 	else if (s->op == OP_GOTO)
 	{
-		Log::write("branch %i", s->a);
+		common->Printf("branch %i", s->a);
 	}
 	else if ((unsigned)(s->op - OP_STORE_F) < 6)
 	{
-		Log::write("%s", PR_GlobalString(s->a));
-		Log::write("%s", PR_GlobalStringNoContents(s->b));
+		common->Printf("%s", PR_GlobalString(s->a));
+		common->Printf("%s", PR_GlobalStringNoContents(s->b));
 	}
 	else
 	{
 		if (s->a)
 		{
-			Log::write("%s", PR_GlobalString(s->a));
+			common->Printf("%s", PR_GlobalString(s->a));
 		}
 		if (s->b)
 		{
-			Log::write("%s", PR_GlobalString(s->b));
+			common->Printf("%s", PR_GlobalString(s->b));
 		}
 		if (s->c)
 		{
-			Log::write("%s", PR_GlobalStringNoContents(s->c));
+			common->Printf("%s", PR_GlobalStringNoContents(s->c));
 		}
 	}
-	Log::write("\n");
+	common->Printf("\n");
 }
 
 static void PR_StackTrace()

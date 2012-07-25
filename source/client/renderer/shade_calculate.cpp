@@ -421,11 +421,11 @@ static void AutospriteDeform()
 {
 	if (tess.numVertexes & 3)
 	{
-		Log::write(S_COLOR_YELLOW "Autosprite shader %s had odd vertex count", tess.shader->name);
+		common->Printf(S_COLOR_YELLOW "Autosprite shader %s had odd vertex count", tess.shader->name);
 	}
 	if (tess.numIndexes != (tess.numVertexes >> 2) * 6)
 	{
-		Log::write(S_COLOR_YELLOW "Autosprite shader %s had odd index count", tess.shader->name);
+		common->Printf(S_COLOR_YELLOW "Autosprite shader %s had odd index count", tess.shader->name);
 	}
 
 	int oldVerts = tess.numVertexes;
@@ -499,11 +499,11 @@ static void Autosprite2Deform()
 {
 	if (tess.numVertexes & 3)
 	{
-		Log::write(S_COLOR_YELLOW "Autosprite2 shader %s had odd vertex count", tess.shader->name);
+		common->Printf(S_COLOR_YELLOW "Autosprite2 shader %s had odd vertex count", tess.shader->name);
 	}
 	if (tess.numIndexes != (tess.numVertexes >> 2) * 6)
 	{
-		Log::write(S_COLOR_YELLOW "Autosprite2 shader %s had odd index count", tess.shader->name);
+		common->Printf(S_COLOR_YELLOW "Autosprite2 shader %s had odd index count", tess.shader->name);
 	}
 
 	vec3_t forward;

@@ -279,12 +279,12 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 
 static void R_ModeList_f()
 {
-	Log::write("\n");
+	common->Printf("\n");
 	for (int i = 0; i < s_numVidModes; i++)
 	{
-		Log::write("%s\n", r_vidModes[i].description);
+		common->Printf("%s\n", r_vidModes[i].description);
 	}
-	Log::write("\n");
+	common->Printf("\n");
 }
 
 //==========================================================================
@@ -299,19 +299,19 @@ static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeI
 	{
 		if ((int)cv->value != cv->integer)
 		{
-			Log::write(S_COLOR_YELLOW "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value);
+			common->Printf(S_COLOR_YELLOW "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value);
 			Cvar_Set(cv->name, va("%d", cv->integer));
 		}
 	}
 
 	if (cv->value < minVal)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal);
+		common->Printf(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal);
 		Cvar_Set(cv->name, va("%f", minVal));
 	}
 	else if (cv->value > maxVal)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal);
+		common->Printf(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal);
 		Cvar_Set(cv->name, va("%f", maxVal));
 	}
 }
@@ -335,16 +335,16 @@ static void GfxInfo_f()
 		"enabled"
 	};
 
-	Log::write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
-	Log::write("GL_RENDERER: %s\n", glConfig.renderer_string);
-	Log::write("GL_VERSION: %s\n", glConfig.version_string);
+	common->Printf("\nGL_VENDOR: %s\n", glConfig.vendor_string);
+	common->Printf("GL_RENDERER: %s\n", glConfig.renderer_string);
+	common->Printf("GL_VERSION: %s\n", glConfig.version_string);
 
-	Log::writeLine("GL_EXTENSIONS:");
+	common->Printf("GL_EXTENSIONS:\n");
 	Array<String> Exts;
 	String(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
-		Log::writeLine(" %s", *Exts[i]);
+		common->Printf(" %s\n", *Exts[i]);
 	}
 #ifdef _WIN32
 	common->Printf("WGL_EXTENSIONS:\n");
@@ -354,33 +354,33 @@ static void GfxInfo_f()
 	String(gl_system_extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
-		Log::writeLine(" %s", *Exts[i]);
+		common->Printf(" %s\n", *Exts[i]);
 	}
 
-	Log::write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
-	Log::write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
-	Log::write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
-	Log::write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
+	common->Printf("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
+	common->Printf("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
+	common->Printf("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
+	common->Printf("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
 	if (glConfig.displayFrequency)
 	{
-		Log::write("%d\n", glConfig.displayFrequency);
+		common->Printf("%d\n", glConfig.displayFrequency);
 	}
 	else
 	{
-		Log::write("N/A\n");
+		common->Printf("N/A\n");
 	}
 	if (glConfig.deviceSupportsGamma)
 	{
-		Log::write("GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits);
+		common->Printf("GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits);
 	}
 	else
 	{
-		Log::write("GAMMA: software w/ %d overbright bits\n", tr.overbrightBits);
+		common->Printf("GAMMA: software w/ %d overbright bits\n", tr.overbrightBits);
 	}
 
 	// rendering primitives
 	// default is to use triangles if compiled vertex arrays are present
-	Log::write("rendering primitives: ");
+	common->Printf("rendering primitives: ");
 	int primitives = r_primitives->integer;
 	if (primitives == 0)
 	{
@@ -395,29 +395,29 @@ static void GfxInfo_f()
 	}
 	if (primitives == -1)
 	{
-		Log::write("none\n");
+		common->Printf("none\n");
 	}
 	else if (primitives == 2)
 	{
-		Log::write("single glDrawElements\n");
+		common->Printf("single glDrawElements\n");
 	}
 	else if (primitives == 1)
 	{
-		Log::write("multiple glArrayElement\n");
+		common->Printf("multiple glArrayElement\n");
 	}
 	else if (primitives == 3)
 	{
-		Log::write("multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n");
+		common->Printf("multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n");
 	}
 
-	Log::write("texturemode: %s\n", r_textureMode->string);
-	Log::write("picmip: %d\n", r_picmip->integer);
+	common->Printf("texturemode: %s\n", r_textureMode->string);
+	common->Printf("picmip: %d\n", r_picmip->integer);
 	common->Printf("picmip2: %d\n", r_picmip2->integer);
-	Log::write("texture bits: %d\n", r_texturebits->integer);
-	Log::write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
-	Log::write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0]);
-	Log::write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
-	Log::write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
+	common->Printf("texture bits: %d\n", r_texturebits->integer);
+	common->Printf("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
+	common->Printf("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0]);
+	common->Printf("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
+	common->Printf("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
 	common->Printf("anisotropy: %s\n", r_textureAnisotropy->string);
 	common->Printf("ATI truform: %s\n", enablestrings[qglPNTrianglesiATI != 0]);
 	if (qglPNTrianglesiATI)
@@ -433,15 +433,15 @@ static void GfxInfo_f()
 	}
 	if (r_vertexLight->integer)
 	{
-		Log::write("HACK: using vertex lightmap approximation\n");
+		common->Printf("HACK: using vertex lightmap approximation\n");
 	}
 	if (glConfig.smpActive)
 	{
-		Log::write("Using dual processor acceleration\n");
+		common->Printf("Using dual processor acceleration\n");
 	}
 	if (r_finish->integer)
 	{
-		Log::write("Forcing glFinish\n");
+		common->Printf("Forcing glFinish\n");
 	}
 }
 
@@ -707,7 +707,7 @@ static void R_SetMode()
 
 	if (err == RSERR_INVALID_FULLSCREEN)
 	{
-		Log::write("...WARNING: fullscreen unavailable in this mode\n");
+		common->Printf("...WARNING: fullscreen unavailable in this mode\n");
 
 		Cvar_SetValue("r_fullscreen", 0);
 		r_fullscreen->modified = false;
@@ -719,7 +719,7 @@ static void R_SetMode()
 		}
 	}
 
-	Log::write("...WARNING: could not set the given mode (%d)\n", r_mode->integer);
+	common->Printf("...WARNING: could not set the given mode (%d)\n", r_mode->integer);
 
 	// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
 	// try it again but with a 16-bit desktop
@@ -730,7 +730,7 @@ static void R_SetMode()
 		{
 			return;
 		}
-		Log::write("...WARNING: could not set default 16-bit fullscreen mode\n");
+		common->Printf("...WARNING: could not set default 16-bit fullscreen mode\n");
 	}
 
 	// try setting it back to something safe
@@ -740,7 +740,7 @@ static void R_SetMode()
 		return;
 	}
 
-	Log::write("...WARNING: could not revert to safe mode\n");
+	common->Printf("...WARNING: could not revert to safe mode\n");
 	throw Exception("R_SetMode() - could not initialise OpenGL subsystem\n");
 }
 
@@ -758,7 +758,7 @@ static void R_SetMode()
 
 static void InitOpenGLSubsystem()
 {
-	Log::write("Initializing OpenGL subsystem\n");
+	common->Printf("Initializing OpenGL subsystem\n");
 
 	//	Ceate the window and set up the context.
 	R_SetMode();
@@ -980,7 +980,7 @@ static void R_InitFunctionTables()
 
 static void R_Init()
 {
-	Log::write("----- R_Init -----\n");
+	common->Printf("----- R_Init -----\n");
 
 	// clear all our internal state
 	Com_Memset(&tr, 0, sizeof(tr));
@@ -989,7 +989,7 @@ static void R_Init()
 
 	if ((qintptr)tess.xyz & 15)
 	{
-		Log::write("WARNING: tess.xyz not 16 byte aligned\n");
+		common->Printf("WARNING: tess.xyz not 16 byte aligned\n");
 	}
 	Com_Memset(tess.constantColor255, 255, sizeof(tess.constantColor255));
 
@@ -1018,10 +1018,10 @@ static void R_Init()
 	int err = qglGetError();
 	if (err != GL_NO_ERROR)
 	{
-		Log::write("glGetError() = 0x%x\n", err);
+		common->Printf("glGetError() = 0x%x\n", err);
 	}
 
-	Log::write("----- finished R_Init -----\n");
+	common->Printf("----- finished R_Init -----\n");
 }
 
 //==========================================================================
@@ -1090,7 +1090,7 @@ void R_PurgeCache()
 
 void R_Shutdown(bool destroyWindow)
 {
-	Log::write("R_Shutdown( %i )\n", destroyWindow);
+	common->Printf("R_Shutdown( %i )\n", destroyWindow);
 
 	Cmd_RemoveCommand("modellist");
 	Cmd_RemoveCommand("imagelist");

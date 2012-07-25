@@ -108,7 +108,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 		throw DropException("CM_LoadMap: NULL name");
 	}
 
-	Log::develWrite("CM_LoadMap(%s, %i)\n", name, clientload);
+	common->DPrintf("CM_LoadMap(%s, %i)\n", name, clientload);
 
 	if (!cm_flushmap)
 	{

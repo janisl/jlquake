@@ -120,7 +120,7 @@ static void VM_LoadSymbols(vm_t* vm)
 	FS_ReadFile(symbols, &mapfile);
 	if (!mapfile)
 	{
-		Log::write("Couldn't load symbol file: %s\n", symbols);
+		common->Printf("Couldn't load symbol file: %s\n", symbols);
 		return;
 	}
 
@@ -606,9 +606,9 @@ vm_t* VM_Restart(vm_t* vm)
 	}
 
 	// load the image
-	Log::write("VM_Restart()\n");
+	common->Printf("VM_Restart()\n");
 	String::Sprintf(filename, sizeof(filename), "vm/%s.qvm", vm->name);
-	Log::write("Loading vm file %s.\n", filename);
+	common->Printf("Loading vm file %s.\n", filename);
 	length = FS_ReadFile(filename, (void**)&header);
 	if (!header)
 	{

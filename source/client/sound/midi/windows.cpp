@@ -49,7 +49,7 @@ void MidiErrorMessageBox(MMRESULT mmr)
 	char temp[1024];
 
 	midiOutGetErrorText(mmr,temp,sizeof(temp));
-	Log::write("%s\n",temp);
+	common->Printf("%s\n",temp);
 }
 
 
@@ -94,11 +94,11 @@ void MIDI_Loop_f(void)
 
 	if (bLooped)
 	{
-		Log::write("MIDI music will be looped\n");
+		common->Printf("MIDI music will be looped\n");
 	}
 	else
 	{
-		Log::write("MIDI music will not be looped\n");
+		common->Printf("MIDI music will not be looped\n");
 	}
 }
 
@@ -114,7 +114,7 @@ void MIDI_Volume_f(void)
 	}
 	else
 	{
-		Log::write("MIDI volume is %d\n", dwVolumePercent / (65535 / 100));
+		common->Printf("MIDI volume is %d\n", dwVolumePercent / (65535 / 100));
 	}
 }
 
@@ -172,13 +172,13 @@ void MIDI_Play(char* Name)
 
 	if (StreamBufferSetup(Temp))
 	{
-		Log::write("Couldn't load midi file %s\n",Temp);
+		common->Printf("Couldn't load midi file %s\n",Temp);
 	}
 	else
 	{
 		bFileOpen = TRUE;
 
-		Log::write("Playing midi file %s\n",Temp);
+		common->Printf("Playing midi file %s\n",Temp);
 
 		uCallbackStatus = 0;
 
@@ -259,7 +259,7 @@ void MIDI_Stop(void)
 
 		if (WaitForSingleObject(hBufferReturnEvent,DEBUG_CALLBACK_TIMEOUT) == WAIT_TIMEOUT)
 		{
-			//Log::write("Timed out waiting for MIDI callback\n");
+			//common->Printf("Timed out waiting for MIDI callback\n");
 			uCallbackStatus = STATUS_CALLBACKDEAD;
 		}
 	}
@@ -541,7 +541,7 @@ void CALLBACK MidiProc(HMIDIIN hMidi,UINT uMsg,DWORD dwInstance,DWORD dwParam1,D
 				}
 				else
 				{
-					Log::write("MidiProc() conversion pass failed!");
+					common->Printf("MidiProc() conversion pass failed!");
 					ConverterCleanup();
 					return;
 				}

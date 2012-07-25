@@ -377,7 +377,7 @@ static void CLQW_ParseDelta(QMsg& message, q1entity_state_t* from, q1entity_stat
 
 static void CLQW_FlushEntityPacket(QMsg& message)
 {
-	Log::develWrite("CLQW_FlushEntityPacket\n");
+	common->DPrintf("CLQW_FlushEntityPacket\n");
 
 	q1entity_state_t olde;
 	Com_Memset(&olde, 0, sizeof(olde));
@@ -423,7 +423,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 
 		if ((from & UPDATE_MASK_QW) != (oldpacket & UPDATE_MASK_QW))
 		{
-			Log::develWrite("WARNING: from mismatch\n");
+			common->DPrintf("WARNING: from mismatch\n");
 		}
 	}
 	else
@@ -489,7 +489,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 		{
 			if (full)
 			{
-				Log::write("WARNING: oldcopy on full update");
+				common->Printf("WARNING: oldcopy on full update");
 				CLQW_FlushEntityPacket(message);
 				return;
 			}
@@ -513,7 +513,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 				if (full)
 				{
 					cl.qh_validsequence = 0;
-					Log::write("WARNING: QWU_REMOVE on full update\n");
+					common->Printf("WARNING: QWU_REMOVE on full update\n");
 					CLQW_FlushEntityPacket(message);
 					return;
 				}
@@ -534,7 +534,7 @@ static void CLQW_ParsePacketEntities(QMsg& message, bool delta)
 			if (full)
 			{
 				cl.qh_validsequence = 0;
-				Log::write("WARNING: delta on full update");
+				common->Printf("WARNING: delta on full update");
 			}
 			if (word & QWU_REMOVE)
 			{

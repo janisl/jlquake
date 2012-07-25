@@ -103,10 +103,10 @@ static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 {
 	static char buf[1024];
 	XGetErrorText(dpy, ev->error_code, buf, 1024);
-	Log::write("X Error of failed request: %s\n", buf);
-	Log::write("  Major opcode of failed request: %d\n", ev->request_code, buf);
-	Log::write("  Minor opcode of failed request: %d\n", ev->minor_code);
-	Log::write("  Serial number of failed request: %d\n", ev->serial);
+	common->Printf("X Error of failed request: %s\n", buf);
+	common->Printf("  Major opcode of failed request: %d\n", ev->request_code, buf);
+	common->Printf("  Minor opcode of failed request: %d\n", ev->minor_code);
+	common->Printf("  Serial number of failed request: %d\n", ev->serial);
 	return 0;
 }
 
@@ -174,7 +174,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	if (!XInitThreads())
 	{
-		Log::write("...XInitThreads() failed, disabling r_smp\n");
+		common->Printf("...XInitThreads() failed, disabling r_smp\n");
 		Cvar_Set("r_smp", "0");
 	}
 
@@ -183,20 +183,20 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 
 	if (fullscreen && in_nograb->value)
 	{
-		Log::write("Fullscreen not allowed with in_nograb 1\n");
+		common->Printf("Fullscreen not allowed with in_nograb 1\n");
 		Cvar_Set("r_fullscreen", "0");
 		r_fullscreen->modified = false;
 		fullscreen = false;
 	}
 
-	Log::write("...setting mode %d:", mode);
+	common->Printf("...setting mode %d:", mode);
 
 	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
 	{
-		Log::write(" invalid mode\n");
+		common->Printf(" invalid mode\n");
 		return RSERR_INVALID_MODE;
 	}
-	Log::write(" %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
+	common->Printf(" %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
 
 	// open the display
 	if (!(dpy = XOpenDisplay(NULL)))
@@ -215,7 +215,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	}
 	else
 	{
-		Log::write("Using XFree86-VidModeExtension Version %d.%d\n", vidmode_MajorVersion, vidmode_MinorVersion);
+		common->Printf("Using XFree86-VidModeExtension Version %d.%d\n", vidmode_MajorVersion, vidmode_MinorVersion);
 		vidmode_ext = true;
 	}
 
@@ -227,12 +227,12 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		if (!XF86DGAQueryVersion(dpy, &dga_MajorVersion, &dga_MinorVersion))
 		{
 			// unable to query, probalby not supported
-			Log::write("Failed to detect XF86DGA Mouse\n");
+			common->Printf("Failed to detect XF86DGA Mouse\n");
 			Cvar_Set("in_dgamouse", "0");
 		}
 		else
 		{
-			Log::write("XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion);
+			common->Printf("XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion);
 		}
 	}
 
@@ -281,18 +281,18 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 				// Move the viewport to top left
 				XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
 
-				Log::write("XFree86-VidModeExtension Activated at %dx%d\n",
+				common->Printf("XFree86-VidModeExtension Activated at %dx%d\n",
 					actualWidth, actualHeight);
 			}
 			else
 			{
 				fullscreen = 0;
-				Log::write("XFree86-VidModeExtension: No acceptable modes found\n");
+				common->Printf("XFree86-VidModeExtension: No acceptable modes found\n");
 			}
 		}
 		else
 		{
-			Log::write("XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
+			common->Printf("XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
 		}
 	}
 
@@ -432,7 +432,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			continue;
 		}
 
-		Log::write("Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
+		common->Printf("Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
 			attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
 			attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX]);
 
@@ -444,7 +444,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 
 	if (!visinfo)
 	{
-		Log::write("Couldn't get a visual\n");
+		common->Printf("Couldn't get a visual\n");
 		return RSERR_INVALID_MODE;
 	}
 
@@ -517,12 +517,12 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		if (vidmode_MajorVersion < GAMMA_MINMAJOR ||
 			(vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR))
 		{
-			Log::write("XF86 Gamma extension not supported in this version\n");
+			common->Printf("XF86 Gamma extension not supported in this version\n");
 		}
 		else
 		{
 			XF86VidModeGetGamma(dpy, scrnum, &vidmode_InitialGamma);
-			Log::write("XF86 Gamma extension initialized\n");
+			common->Printf("XF86 Gamma extension initialized\n");
 			glConfig.deviceSupportsGamma = true;
 		}
 	}
@@ -534,18 +534,18 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	{
 		if (!r_allowSoftwareGL->integer)
 		{
-			Log::write("\n\n***********************************************************\n");
-			Log::write(" You are using software Mesa (no hardware acceleration)!\n");
-			Log::write(" If this is intentional, add\n");
-			Log::write("       \"+set r_allowSoftwareGL 1\"\n");
-			Log::write(" to the command line when starting the game.\n");
-			Log::write("***********************************************************\n");
+			common->Printf("\n\n***********************************************************\n");
+			common->Printf(" You are using software Mesa (no hardware acceleration)!\n");
+			common->Printf(" If this is intentional, add\n");
+			common->Printf("       \"+set r_allowSoftwareGL 1\"\n");
+			common->Printf(" to the command line when starting the game.\n");
+			common->Printf("***********************************************************\n");
 			GLimp_Shutdown();
 			return RSERR_INVALID_MODE;
 		}
 		else
 		{
-			Log::write("...using software Mesa (r_allowSoftwareGL==1).\n");
+			common->Printf("...using software Mesa (r_allowSoftwareGL==1).\n");
 		}
 	}
 
@@ -679,13 +679,13 @@ void GLimp_SwapBuffers()
 
 static void* GLimp_RenderThreadWrapper(void* arg)
 {
-	Log::write("Render thread starting\n");
+	common->Printf("Render thread starting\n");
 
 	glimpRenderThread();
 
 	glXMakeCurrent(dpy, None, NULL);
 
-	Log::write("Render thread terminating\n");
+	common->Printf("Render thread terminating\n");
 
 	return arg;
 }
@@ -715,7 +715,7 @@ bool GLimp_SpawnRenderThread(void (* function)())
 	int ret = pthread_create(&renderThread, NULL, GLimp_RenderThreadWrapper, NULL);
 	if (ret)
 	{
-		Log::write("pthread_create returned %d: %s", ret, strerror(ret));
+		common->Printf("pthread_create returned %d: %s", ret, strerror(ret));
 		return false;
 	}
 
@@ -723,7 +723,7 @@ bool GLimp_SpawnRenderThread(void (* function)())
 	ret = pthread_detach(renderThread);
 	if (ret)
 	{
-		Log::write("pthread_detach returned %d: %s", ret, strerror(ret));
+		common->Printf("pthread_detach returned %d: %s", ret, strerror(ret));
 	}
 #endif
 

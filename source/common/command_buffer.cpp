@@ -123,7 +123,7 @@ void Cbuf_AddText(const char* Text)
 
 	if (cmd_text.cursize + L >= cmd_text.maxsize)
 	{
-		Log::write("Cbuf_AddText: overflow\n");
+		common->Printf("Cbuf_AddText: overflow\n");
 		return;
 	}
 	Com_Memcpy(&cmd_text.data[cmd_text.cursize], Text, L);
@@ -144,7 +144,7 @@ void Cbuf_InsertText(const char* Text)
 	int Len = String::Length(Text) + 1;
 	if (Len + cmd_text.cursize > cmd_text.maxsize)
 	{
-		Log::write("Cbuf_InsertText overflowed\n");
+		common->Printf("Cbuf_InsertText overflowed\n");
 		return;
 	}
 
@@ -474,9 +474,9 @@ static void Cmd_Echo_f()
 	{
 		for (int i = 1; i < Cmd_Argc(); i++)
 		{
-			Log::write("%s ",Cmd_Argv(i));
+			common->Printf("%s ",Cmd_Argv(i));
 		}
-		Log::write("\n");
+		common->Printf("\n");
 	}
 }
 
@@ -495,10 +495,10 @@ static void Cmd_Alias_f()
 
 	if (Cmd_Argc() == 1)
 	{
-		Log::write("Current alias commands:\n");
+		common->Printf("Current alias commands:\n");
 		for (a = cmd_alias; a; a = a->next)
 		{
-			Log::write("%s : %s\n", a->name, a->value);
+			common->Printf("%s : %s\n", a->name, a->value);
 		}
 		return;
 	}
@@ -506,7 +506,7 @@ static void Cmd_Alias_f()
 	const char* s = Cmd_Argv(1);
 	if (String::Length(s) >= MAX_ALIAS_NAME)
 	{
-		Log::write("Alias name is too long\n");
+		common->Printf("Alias name is too long\n");
 		return;
 	}
 
@@ -556,7 +556,7 @@ static void Cmd_Vstr_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		Log::write("vstr <variablename> : execute a variable command\n");
+		common->Printf("vstr <variablename> : execute a variable command\n");
 		return;
 	}
 
@@ -574,7 +574,7 @@ static void Cmd_Exec_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		Log::write("exec <filename> : execute a script file\n");
+		common->Printf("exec <filename> : execute a script file\n");
 		return;
 	}
 
@@ -586,12 +586,12 @@ static void Cmd_Exec_f()
 	FS_ReadFile(filename, Buffer);
 	if (!Buffer.Num())
 	{
-		Log::write("couldn't exec %s\n", Cmd_Argv(1));
+		common->Printf("couldn't exec %s\n", Cmd_Argv(1));
 		return;
 	}
 	//	Append trailing 0
 	Buffer.Append(0);
-	Log::write("execing %s\n", Cmd_Argv(1));
+	common->Printf("execing %s\n", Cmd_Argv(1));
 
 	Cbuf_InsertText((char*)Buffer.Ptr());
 }
@@ -623,10 +623,10 @@ static void Cmd_List_f()
 			continue;
 		}
 
-		Log::write("%s\n", cmd->name);
+		common->Printf("%s\n", cmd->name);
 		i++;
 	}
-	Log::write("%i commands\n", i);
+	common->Printf("%i commands\n", i);
 }
 
 /*
@@ -681,7 +681,7 @@ void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 			//	Allow completion-only commands to be silently doubled.
 			if (Function != NULL)
 			{
-				Log::write("Cmd_AddCommand: %s already defined\n", CmdName);
+				common->Printf("Cmd_AddCommand: %s already defined\n", CmdName);
 			}
 			return;
 		}
@@ -876,7 +876,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 	int Len = String::Length(Scan);
 	if (Len >= MAX_STRING_CHARS)
 	{
-		Log::write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+		common->Printf("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 		return NULL;
 	}
 
@@ -910,7 +910,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 		Len += j;
 		if (Len >= MAX_STRING_CHARS)
 		{
-			Log::write("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+			common->Printf("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 			return NULL;
 		}
 
@@ -925,14 +925,14 @@ static const char* Cmd_MacroExpandString(const char* Text)
 
 		if (++Count == 100)
 		{
-			Log::write("Macro expansion loop, discarded.\n");
+			common->Printf("Macro expansion loop, discarded.\n");
 			return NULL;
 		}
 	}
 
 	if (InQuote)
 	{
-		Log::write("Line has unmatched quote, discarded.\n");
+		common->Printf("Line has unmatched quote, discarded.\n");
 		return NULL;
 	}
 
@@ -1248,7 +1248,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 		{
 			if (++alias_count == ALIAS_LOOP_COUNT)
 			{
-				Log::write("ALIAS_LOOP_COUNT\n");
+				common->Printf("ALIAS_LOOP_COUNT\n");
 				return;
 			}
 			Cbuf_InsertText(a->value);
@@ -1486,7 +1486,7 @@ void Field_CompleteCommand(field_t* field, int& acLength)
 		acLength = completionField->cursor;
 		ConcatRemaining(temp.buffer, completionString);
 
-		Log::write("]%s\n", completionField->buffer);
+		common->Printf("]%s\n", completionField->buffer);
 
 		// run through again, printing matches
 		Cmd_CommandCompletion(PrintMatches);

@@ -144,7 +144,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 		}
 	}
 
-	Log::develWrite("SCR_PlayCinematic( %s )\n", arg);
+	common->DPrintf("SCR_PlayCinematic( %s )\n", arg);
 
 	int Handle = CIN_HandleForVideo();
 
@@ -166,7 +166,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 		CIN_StartedPlayback();
 	}
 
-	Log::develWrite("trFMV::play(), playing %s\n", arg);
+	common->DPrintf("trFMV::play(), playing %s\n", arg);
 
 	return Handle;
 }
@@ -306,7 +306,7 @@ e_status QCinematicPlayer::Run()
 		}
 		else
 		{
-			Log::develWrite("finished cinematic\n");
+			common->DPrintf("finished cinematic\n");
 			if (AlterGameState)
 			{
 				CIN_FinishCinematic();

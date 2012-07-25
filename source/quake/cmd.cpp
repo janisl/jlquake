@@ -74,7 +74,7 @@ void Cmd_ForwardToServer(void)
 		return;		// not really connected
 
 	}
-	Log::write("Forward to server %s %s\n", Cmd_Argv(0), Cmd_ArgsUnmodified());
+	common->Printf("Forward to server %s %s\n", Cmd_Argv(0), Cmd_ArgsUnmodified());
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	if (String::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{

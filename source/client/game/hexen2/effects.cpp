@@ -553,7 +553,7 @@ static bool CLH2_ParseEffectGhost(int index, QMsg& message)
 	ent->state.abslight = .5;
 	if (GGameType & GAME_HexenWorld)
 	{
-		Log::write("Bad effect type %d\n", (int)cl.h2_Effects[index].type);
+		common->Printf("Bad effect type %d\n", (int)cl.h2_Effects[index].type);
 		return false;
 	}
 	return true;
@@ -2306,7 +2306,7 @@ void CLHW_ParseTurnEffect(QMsg& message)
 	case 0:
 		break;
 	default:
-		Log::write("CLHW_ParseTurnEffect: bad type %d\n", cl.h2_Effects[index].type);
+		common->Printf("CLHW_ParseTurnEffect: bad type %d\n", cl.h2_Effects[index].type);
 		break;
 	}
 }

@@ -322,7 +322,7 @@ breakOut:;
 	// instead we just print a warning
 	if (targa_header.attributes & 0x20)
 	{
-		Log::write(S_COLOR_YELLOW "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name);
+		common->Printf(S_COLOR_YELLOW "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name);
 	}
 
 	FS_FreeFile(buffer);

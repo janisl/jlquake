@@ -120,7 +120,7 @@ static void CL_AddParticle(cparticle_t* p, cparticle_t*& active, cparticle_t*& t
 
 	if (p->color < 0 || p->color > 511)
 	{
-		Log::write("Invalid color for particle type %d\n", (int)p->type);
+		common->Printf("Invalid color for particle type %d\n", (int)p->type);
 		return;
 	}
 

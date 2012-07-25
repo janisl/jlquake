@@ -688,7 +688,7 @@ static bool CheckSystemExtension(const char* Extension)
 
 void QGL_Init()
 {
-	Log::write("...initializing QGL\n");
+	common->Printf("...initializing QGL\n");
 
 #define GLF_0(r, n)             qgl ## n = gl ## n;
 #define GLF_V0(n)               qgl ## n = gl ## n;
@@ -739,7 +739,7 @@ void QGL_Init()
 	qglXSwapIntervalSGI = NULL;
 #endif
 
-	Log::write("Initializing OpenGL extensions\n");
+	common->Printf("Initializing OpenGL extensions\n");
 
 	// GL_S3_s3tc
 	glConfig.textureCompression = TC_NONE;
@@ -761,17 +761,17 @@ void QGL_Init()
 		if (r_ext_compressed_textures->integer)
 		{
 			glConfig.textureCompression = TC_S3TC;
-			Log::write("...using GL_S3_s3tc\n");
+			common->Printf("...using GL_S3_s3tc\n");
 		}
 		else
 		{
 			glConfig.textureCompression = TC_NONE;
-			Log::write("...ignoring GL_S3_s3tc\n");
+			common->Printf("...ignoring GL_S3_s3tc\n");
 		}
 	}
 	else
 	{
-		Log::write("...GL_S3_s3tc not found\n");
+		common->Printf("...GL_S3_s3tc not found\n");
 	}
 
 	// GL_ARB_multitexture
@@ -789,25 +789,25 @@ void QGL_Init()
 
 				if (glConfig.maxActiveTextures > 1)
 				{
-					Log::write("...using GL_ARB_multitexture\n");
+					common->Printf("...using GL_ARB_multitexture\n");
 				}
 				else
 				{
 					qglMultiTexCoord2fARB = NULL;
 					qglActiveTextureARB = NULL;
 					qglClientActiveTextureARB = NULL;
-					Log::write("...not using GL_ARB_multitexture, < 2 texture units\n");
+					common->Printf("...not using GL_ARB_multitexture, < 2 texture units\n");
 				}
 			}
 		}
 		else
 		{
-			Log::write("...ignoring GL_ARB_multitexture\n");
+			common->Printf("...ignoring GL_ARB_multitexture\n");
 		}
 	}
 	else
 	{
-		Log::write("...GL_ARB_multitexture not found\n");
+		common->Printf("...GL_ARB_multitexture not found\n");
 	}
 
 	// GL_EXT_texture_env_add
@@ -817,17 +817,17 @@ void QGL_Init()
 		if (r_ext_texture_env_add->integer)
 		{
 			glConfig.textureEnvAddAvailable = true;
-			Log::write("...using GL_EXT_texture_env_add\n");
+			common->Printf("...using GL_EXT_texture_env_add\n");
 		}
 		else
 		{
 			glConfig.textureEnvAddAvailable = false;
-			Log::write("...ignoring GL_EXT_texture_env_add\n");
+			common->Printf("...ignoring GL_EXT_texture_env_add\n");
 		}
 	}
 	else
 	{
-		Log::write("...GL_EXT_texture_env_add not found\n");
+		common->Printf("...GL_EXT_texture_env_add not found\n");
 	}
 
 #ifdef _WIN32
@@ -839,22 +839,22 @@ void QGL_Init()
 			qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
 			if (qwglSwapIntervalEXT)
 			{
-				Log::write("...using WGL_EXT_swap_control\n");
+				common->Printf("...using WGL_EXT_swap_control\n");
 				r_swapInterval->modified = true;	// force a set next frame
 			}
 			else
 			{
-				Log::write("...WGL_EXT_swap_control not found\n");
+				common->Printf("...WGL_EXT_swap_control not found\n");
 			}
 		}
 		else
 		{
-			Log::write("...ignoring WGL_EXT_swap_control\n");
+			common->Printf("...ignoring WGL_EXT_swap_control\n");
 		}
 	}
 	else
 	{
-		Log::write("...WGL_EXT_swap_control not found\n");
+		common->Printf("...WGL_EXT_swap_control not found\n");
 	}
 #else
 	// GLX_SGI_swap_control
@@ -874,7 +874,7 @@ void QGL_Init()
 	{
 		if (r_ext_compiled_vertex_array->integer)
 		{
-			Log::write("...using GL_EXT_compiled_vertex_array\n");
+			common->Printf("...using GL_EXT_compiled_vertex_array\n");
 			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
 			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
@@ -884,19 +884,19 @@ void QGL_Init()
 		}
 		else
 		{
-			Log::write("...ignoring GL_EXT_compiled_vertex_array\n");
+			common->Printf("...ignoring GL_EXT_compiled_vertex_array\n");
 		}
 	}
 	else
 	{
-		Log::write("...GL_EXT_compiled_vertex_array not found\n");
+		common->Printf("...GL_EXT_compiled_vertex_array not found\n");
 	}
 
 	if (CheckExtension("GL_EXT_point_parameters"))
 	{
 		if (r_ext_point_parameters->integer)
 		{
-			Log::write("...using GL_EXT_point_parameters\n");
+			common->Printf("...using GL_EXT_point_parameters\n");
 			qglPointParameterfEXT = (void (APIENTRY*)(GLenum, GLfloat))GLimp_GetProcAddress("glPointParameterfEXT");
 			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))GLimp_GetProcAddress("glPointParameterfvEXT");
 			if (!qglPointParameterfEXT || !qglPointParameterfvEXT)
@@ -906,12 +906,12 @@ void QGL_Init()
 		}
 		else
 		{
-			Log::write("...ignoring GL_EXT_point_parameters\n");
+			common->Printf("...ignoring GL_EXT_point_parameters\n");
 		}
 	}
 	else
 	{
-		Log::write("...GL_EXT_point_parameters not found\n");
+		common->Printf("...GL_EXT_point_parameters not found\n");
 	}
 
 	// GL_NV_fog_distance
@@ -992,7 +992,7 @@ void QGL_Init()
 
 void QGL_Shutdown()
 {
-	Log::write("...shutting down QGL\n");
+	common->Printf("...shutting down QGL\n");
 
 	// close the r_logFile
 	if (log_fp)

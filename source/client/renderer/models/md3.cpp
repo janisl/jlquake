@@ -52,7 +52,7 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 	int version = LittleLong(pinmodel->version);
 	if (version != MD3_VERSION)
 	{
-		Log::write(S_COLOR_YELLOW "R_LoadMD3: %s has wrong version (%i should be %i)\n",
+		common->Printf(S_COLOR_YELLOW "R_LoadMD3: %s has wrong version (%i should be %i)\n",
 			mod_name, version, MD3_VERSION);
 		return false;
 	}
@@ -76,7 +76,7 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 
 	if (mod->q3_md3[lod]->numFrames < 1)
 	{
-		Log::write(S_COLOR_YELLOW "R_LoadMD3: %s has no frames\n", mod_name);
+		common->Printf(S_COLOR_YELLOW "R_LoadMD3: %s has no frames\n", mod_name);
 		return false;
 	}
 
@@ -276,7 +276,7 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 		int ident = LittleLong(*(unsigned*)buf);
 		if (ident != MD3_IDENT)
 		{
-			Log::write(S_COLOR_YELLOW "R_LoadMd3: unknown fileid for %s\n", filename);
+			common->Printf(S_COLOR_YELLOW "R_LoadMd3: unknown fileid for %s\n", filename);
 			return false;
 		}
 
@@ -662,7 +662,7 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 		(ent->e.oldframe >= tr.currentModel->q3_md3[lod]->numFrames) ||
 		(ent->e.oldframe < 0))
 	{
-		Log::develWrite(S_COLOR_RED "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
+		common->DPrintf(S_COLOR_RED "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
 			ent->e.oldframe, ent->e.frame, tr.currentModel->name);
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
@@ -764,11 +764,11 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 
 			if (shader == tr.defaultShader)
 			{
-				Log::develWrite(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
+				common->DPrintf(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
 			}
 			else if (shader->defaultShader)
 			{
-				Log::develWrite(S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name);
+				common->DPrintf(S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name);
 			}
 		}
 		else if (surface->numShaders <= 0)
