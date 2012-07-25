@@ -28,3 +28,22 @@ add_executable(jlhexen2
 )
 set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhexen2 ${CLIENTS_LIBS})
+
+add_executable(jlhexen2ded
+	cl_effect.cpp
+	cmd.cpp
+	common.cpp
+	console.cpp
+	cvar.cpp
+	host.cpp
+	host_cmd.cpp
+	net_main.cpp
+	pr_cmds.cpp
+	pr_edict.cpp
+	sv_main.cpp
+	sv_user.cpp
+	zone.cpp
+	sys_linux.cpp
+)
+set_target_properties(jlhexen2ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")
+target_link_libraries(jlhexen2ded ${SERVERS_LIBS})

@@ -22,7 +22,9 @@ Cmd_Init
 void Cmd_Init(void)
 {
 	Cmd_SharedInit();
+#ifndef DEDICATED
 	Cmd_AddCommand("cmd", Cmd_ForwardToServer);
+#endif
 }
 
 bool Cmd_HandleNullCommand(const char* text)
@@ -44,6 +46,7 @@ Sends the entire command line over to the server
 */
 void Cmd_ForwardToServer(void)
 {
+#ifndef DEDICATED
 	if (cls.state != CA_ACTIVE)
 	{
 		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
@@ -69,4 +72,5 @@ void Cmd_ForwardToServer(void)
 	{
 		clc.netchan.message.Print("\n");
 	}
+#endif
 }

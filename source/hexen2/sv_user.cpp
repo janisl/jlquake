@@ -288,8 +288,10 @@ void SV_FlightMove(void)
 	vec3_t wishvel;
 	float speed, newspeed, wishspeed, addspeed, accelspeed;
 
+#ifndef DEDICATED
 	cl.qh_nodrift = false;
 	cl.qh_driftmove = 0;
+#endif
 
 //
 // user intentions
@@ -866,7 +868,11 @@ void SV_RunClients(void)
 		}
 
 // always pause in single player if in console or menus
+#ifdef DEDICATED
+		if (!sv.qh_paused)
+#else
 		if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
+#endif
 		{
 			SV_ClientThink();
 		}

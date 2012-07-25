@@ -4,10 +4,12 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
+#ifndef DEDICATED
 #include "../client/client.h"
-#include "../server/server.h"
 #include "../client/game/hexen2/local.h"
 #include "../client/game/quake_hexen2/network_channel.h"
+#endif
+#include "../server/server.h"
 #include "../server/quake_hexen/local.h"
 #include "../server/hexen2/local.h"
 #include "../server/progsvm/progsvm.h"
@@ -119,20 +121,28 @@
 #define ENT_CLEARED         2
 
 
+#ifndef DEDICATED
 #include "draw.h"
 #include "screen.h"
+#endif
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
+#ifndef DEDICATED
 #include "sbar.h"
 #include "render.h"
+#endif
 #include "progs.h"
 #include "client.h"
 #include "server.h"
+#ifndef DEDICATED
 #include "keys.h"
+#endif
 #include "console.h"
+#ifndef DEDICATED
 #include "view.h"
 #include "menu.h"
+#endif
 
 //=============================================================================
 

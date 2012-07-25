@@ -6,6 +6,7 @@ qboolean con_forcedup;			// because no entities to refresh
 
 qboolean con_debuglog;
 
+#ifndef DEDICATED
 extern void M_Menu_Main_f(void);
 
 /*
@@ -39,6 +40,7 @@ void Con_ToggleConsole_f(void)
 	Con_ClearNotify();
 	con.desiredFrac = 0.5;
 }
+#endif
 
 /*
 ================
@@ -58,12 +60,14 @@ void Con_Init(void)
 
 	Con_Printf("Console initialized.\n");
 
+#ifndef DEDICATED
 	Con_InitCommon();
 
 //
 // register our commands
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
+#endif
 
 	PR_LoadStrings();
 #ifdef MISSIONPACK
@@ -117,6 +121,7 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", "%s", msg);
 	}
 
+#ifndef DEDICATED
 	if (cls.state == CA_DEDICATED)
 	{
 		return;		// no graphics mode
@@ -137,6 +142,7 @@ void Con_Printf(const char* fmt, ...)
 			inupdate = false;
 		}
 	}
+#endif
 }
 
 /*

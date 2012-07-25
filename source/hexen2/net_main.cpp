@@ -21,6 +21,8 @@ void NET_Init(void)
 	// allocate space for network message buffer
 	net_message.InitOOB(net_message_buf, MAX_MSGLEN_H2);
 
+#ifndef DEDICATED
 	Cmd_AddCommand("slist", NET_Slist_f);
+#endif
 	Cmd_AddCommand("maxplayers", MaxPlayers_f);
 }

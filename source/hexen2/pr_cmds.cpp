@@ -232,7 +232,11 @@ void PFH2_lightstylevalue(void)
 		return;
 	}
 
+#ifdef DEDICATED
+	G_FLOAT(OFS_RETURN) = 0;
+#else
 	G_FLOAT(OFS_RETURN) = (int)(cl_lightstyle[style].value[0] / 22.0 * 256.0);
+#endif
 }
 
 
@@ -450,7 +454,9 @@ extern void V_WhiteFlash_f(void);
 
 void PF_doWhiteFlash(void)
 {
+#ifndef DEDICATED
 	V_WhiteFlash_f();
+#endif
 }
 
 builtin_t pr_builtin[] =

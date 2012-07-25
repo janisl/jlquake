@@ -91,6 +91,9 @@ void Host_EndGame(const char* message, ...)
 		Host_ShutdownServer(false);
 	}
 
+#ifdef DEDICATED
+		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
+#else
 	if (cls.state == CA_DEDICATED)
 	{
 		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
@@ -106,6 +109,7 @@ void Host_EndGame(const char* message, ...)
 	}
 
 	longjmp(host_abortserver, 1);
+#endif
 }
 
 /*
@@ -127,7 +131,9 @@ void Host_Error(const char* error, ...)
 	}
 	inerror = true;
 
+#ifndef DEDICATED
 	SCR_EndLoadingPlaque();			// reenable screen updates
+#endif
 
 	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
@@ -139,6 +145,9 @@ void Host_Error(const char* error, ...)
 		Host_ShutdownServer(false);
 	}
 
+#ifdef DEDICATED
+	Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
+#else
 	if (cls.state == CA_DEDICATED)
 	{
 		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
@@ -150,6 +159,7 @@ void Host_Error(const char* error, ...)
 	inerror = false;
 
 	longjmp(host_abortserver, 1);
+#endif
 }
 
 /*
@@ -168,7 +178,9 @@ void    Host_FindMaxClients(void)
 	{
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
+#ifndef DEDICATED
 		cls.state = CA_DEDICATED;
+#endif
 		if (i != (COM_Argc() - 1))
 		{
 			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
@@ -180,11 +192,17 @@ void    Host_FindMaxClients(void)
 	}
 	else
 	{
+#ifdef DEDICATED
+		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+		svs.qh_maxclients = 8;
+#else
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
 		cls.state = CA_DISCONNECTED;
+#endif
 	}
 
+#ifndef DEDICATED
 	i = COM_CheckParm("-listen");
 	if (i)
 	{
@@ -201,6 +219,7 @@ void    Host_FindMaxClients(void)
 			svs.qh_maxclients = 8;
 		}
 	}
+#endif
 	if (svs.qh_maxclients < 1)
 	{
 		svs.qh_maxclients = 8;
@@ -227,6 +246,7 @@ void    Host_FindMaxClients(void)
 	}
 }
 
+#ifndef DEDICATED
 /*
 ===============
 Host_SaveConfig_f
@@ -267,6 +287,7 @@ void Host_SaveConfig_f(void)
 
 	Host_WriteConfiguration(Cmd_Argv(1));
 }
+#endif
 
 
 /*
@@ -276,7 +297,9 @@ Host_InitLocal
 */
 void Host_InitLocal(void)
 {
+#ifndef DEDICATED
 	Cmd_AddCommand("saveconfig", Host_SaveConfig_f);
+#endif
 
 	Host_InitCommands();
 
@@ -311,6 +334,7 @@ void Host_InitLocal(void)
 	host_time = 1.0;		// so a think at time 0 won't get called
 }
 
+#ifndef DEDICATED
 /*
 ===============
 Host_WriteConfiguration
@@ -337,6 +361,7 @@ void Host_WriteConfiguration(const char* fname)
 		FS_FCloseFile(f);
 	}
 }
+#endif
 
 
 /*
@@ -495,11 +520,13 @@ void Host_ShutdownServer(qboolean crash)
 
 	sv.state = SS_DEAD;
 
+#ifndef DEDICATED
 // stop all client sounds immediately
 	if (cls.state == CA_ACTIVE)
 	{
 		CL_Disconnect();
 	}
+#endif
 
 // flush any pending messages - like the score!!!
 	start = Sys_DoubleTime();
@@ -551,7 +578,7 @@ void Host_ShutdownServer(qboolean crash)
 	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
 }
 
-
+#ifndef DEDICATED
 /*
 ===================
 Mod_ClearAll
@@ -568,6 +595,7 @@ static void Mod_ClearAll(void)
 	Draw_Init();
 	SB_Init();
 }
+#endif
 
 /*
 ================
@@ -580,15 +608,21 @@ not reinitialize anything.
 void Host_ClearMemory(void)
 {
 	Con_DPrintf("Clearing memory\n");
+#ifndef DEDICATED
 	Mod_ClearAll();
+#endif
 	if (host_hunklevel)
 	{
 		Hunk_FreeToLowMark(host_hunklevel);
 	}
 
+#ifndef DEDICATED
 	clc.qh_signon = 0;
+#endif
 	Com_Memset(&sv, 0, sizeof(sv));
+#ifndef DEDICATED
 	Com_Memset(&cl, 0, sizeof(cl));
+#endif
 }
 
 
@@ -605,9 +639,13 @@ Returns false if the time is too short to run a frame
 qboolean Host_FilterTime(float time)
 {
 	realtime += time;
+#ifdef DEDICATED
+	if (realtime - oldrealtime < 1.0 / 72.0)
+#else
 	cls.realtime = realtime * 1000;
 
 	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / 72.0)
+#endif
 	{
 		return false;		// framerate is too high
 
@@ -631,8 +669,10 @@ qboolean Host_FilterTime(float time)
 		}
 	}
 
+#ifndef DEDICATED
 	cls.frametime = (int)(host_frametime * 1000);
 	cls.realFrametime = cls.frametime;
+#endif
 	return true;
 }
 
@@ -682,7 +722,11 @@ void Host_ServerFrame(void)
 
 // move things around and think
 // always pause in single player if in console or menus
+#ifdef DEDICATED
+	if (!sv.qh_paused)
+#else
 	if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
+#endif
 	{
 		SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 	}
@@ -722,6 +766,7 @@ void _Host_Frame(float time)
 			return;		// don't run too fast, or packets will flood out
 
 		}
+#ifndef DEDICATED
 // get new key events
 		Sys_SendKeyEvents();
 
@@ -729,10 +774,12 @@ void _Host_Frame(float time)
 		IN_Frame();
 
 		IN_ProcessEvents();
+#endif
 
 // process console commands
 		Cbuf_Execute();
 
+#ifndef DEDICATED
 		NET_Poll();
 
 // if running the server locally, make intentions now
@@ -740,6 +787,7 @@ void _Host_Frame(float time)
 		{
 			CL_SendCmd();
 		}
+#endif
 
 //-------------------
 //
@@ -777,6 +825,7 @@ void _Host_Frame(float time)
 			//
 			//-------------------
 
+#ifndef DEDICATED
 			// if running the server remotely, send intentions now after
 			// the incoming messages have been read
 			if (sv.state == SS_DEAD)
@@ -797,6 +846,7 @@ void _Host_Frame(float time)
 				}
 				CLH2_UpdateEffects();
 			}
+#endif
 
 			if (!sys_adaptive->value)
 			{
@@ -817,6 +867,7 @@ void _Host_Frame(float time)
 
 		host_frametime = save_host_frametime;
 
+#ifndef DEDICATED
 // update video
 		if (host_speeds->value)
 		{
@@ -842,6 +893,7 @@ void _Host_Frame(float time)
 		S_Update();
 
 		CDAudio_Update();
+#endif
 
 		if (host_speeds->value)
 		{
@@ -854,7 +906,9 @@ void _Host_Frame(float time)
 		}
 
 		host_framecount++;
+#ifndef DEDICATED
 		cls.framecount++;
+#endif
 		fps_count++;
 	}
 	catch (DropException& e)
@@ -916,6 +970,7 @@ void Host_Frame(float time)
 
 //============================================================================
 
+#ifndef DEDICATED
 /*
 ===============
 CL_InitRenderStuff
@@ -929,6 +984,7 @@ static void CL_InitRenderStuff(void)
 		Sys_Error("Couldn't load gfx/player.lmp");
 	}
 }
+#endif
 
 
 /*
@@ -968,29 +1024,38 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
+#ifndef DEDICATED
 		V_Init();
 		Chase_Init();
+#endif
 		COM_Init(parms->basedir);
 		Host_InitLocal();
+#ifndef DEDICATED
 		Key_Init();
+#endif
 		Con_Init();
+#ifndef DEDICATED
 		M_Init();
+#endif
 		PR_Init();
 		SV_Init();
 
 		Con_Printf("Exe: "__TIME__ " "__DATE__ "\n");
 		Con_Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
 
+#ifndef DEDICATED
 		if (cls.state != CA_DEDICATED)
 		{
 			CL_Init();
 		}
+#endif
 
 		Cbuf_InsertText("exec hexen.rc\n");
 		Cbuf_Execute();
 
 		NET_Init();
 
+#ifndef DEDICATED
 		if (cls.state != CA_DEDICATED)
 		{
 			IN_Init();
@@ -1004,6 +1069,7 @@ void Host_Init(quakeparms_t* parms)
 			MIDI_Init();
 			SB_Init();
 		}
+#endif
 
 		Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
 		host_hunklevel = Hunk_LowMark();
@@ -1038,6 +1104,7 @@ void Host_Shutdown(void)
 	}
 	isdown = true;
 
+#ifndef DEDICATED
 // keep Con_Printf from trying to update the screen
 	cls.disable_screen = true;
 
@@ -1045,9 +1112,13 @@ void Host_Shutdown(void)
 
 	CDAudio_Shutdown();
 	MIDI_Cleanup();
+#endif
 	SVQH_Shutdown();
+#ifndef DEDICATED
 	CLQH_ShutdownNetwork();
+#endif
 	NETQH_Shutdown();
+#ifndef DEDICATED
 	S_Shutdown();
 	IN_Shutdown();
 
@@ -1055,4 +1126,5 @@ void Host_Shutdown(void)
 	{
 		R_Shutdown(true);
 	}
+#endif
 }

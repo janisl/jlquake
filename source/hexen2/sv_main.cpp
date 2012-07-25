@@ -2132,10 +2132,12 @@ void SV_SendReconnect(void)
 	msg.WriteString2("reconnect\n");
 	NET_SendToAll(&msg, 5);
 
+#ifndef DEDICATED
 	if (cls.state != CA_DEDICATED)
 	{
 		Cmd_ExecuteString("reconnect\n", src_command);
 	}
+#endif
 }
 
 
@@ -2189,7 +2191,9 @@ void SV_SpawnServer(char* server, char* startspot)
 	{
 		Cvar_Set("hostname", "UNNAMED");
 	}
+#ifndef DEDICATED
 	scr_centertime_off = 0;
+#endif
 
 	Con_DPrintf("SpawnServer: %s\n",server);
 	if (svs.qh_changelevel_issued)
@@ -2245,17 +2249,21 @@ void SV_SpawnServer(char* server, char* startspot)
 
 // load progs to get entity field count
 
+#ifndef DEDICATED
 	total_loading_size = 100;
 	current_loading_size = 0;
 	loading_stage = 1;
+#endif
 	PR_InitBuiltins();
 	PR_LoadProgs();
+#ifndef DEDICATED
 	current_loading_size += 40;
 	SCR_UpdateScreen();
 //	PR_LoadStrings();
 //	PR_LoadInfoStrings();
 	current_loading_size += 20;
 	SCR_UpdateScreen();
+#endif
 
 // allocate server memory
 	Com_Memset(sv.h2_Effects,0,sizeof(sv.h2_Effects));
@@ -2344,8 +2352,10 @@ void SV_SpawnServer(char* server, char* startspot)
 	// serverflags are for cross level information (sigils)
 	*pr_globalVars.serverflags = svs.qh_serverflags;
 
+#ifndef DEDICATED
 	current_loading_size += 20;
 	SCR_UpdateScreen();
+#endif
 	ED_LoadFromFile(CM_EntityString());
 
 // all setup is completed, any further precache statements are errors
@@ -2356,8 +2366,10 @@ void SV_SpawnServer(char* server, char* startspot)
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 
+#ifndef DEDICATED
 	current_loading_size += 20;
 	SCR_UpdateScreen();
+#endif
 // create a baseline for more efficient communications
 	SV_CreateBaseline();
 
@@ -2372,6 +2384,14 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	Con_DPrintf("Server spawned.\n");
 
+#ifndef DEDICATED
 	total_loading_size = 0;
 	loading_stage = 0;
+#endif
 }
+
+#ifdef DEDICATED
+void S_ClearSoundBuffer(bool)
+{
+}
+#endif
