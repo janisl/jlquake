@@ -95,6 +95,79 @@ public:
 	}
 } MainLog;
 
+class idCommonLocal : public idCommon
+{
+public:
+	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
+};
+
+static idCommonLocal commonLocal;
+idCommon* common = &commonLocal;
+
+void idCommonLocal::Printf(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	Com_Printf("%s", string);
+}
+
+void idCommonLocal::DPrintf(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	Com_DPrintf("%s", string);
+}
+
+void idCommonLocal::Error(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	throw DropException(string);
+}
+
+void idCommonLocal::FatalError(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	throw Exception(string);
+}
+
+void idCommonLocal::EndGame(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	throw EndGameException(string);
+}
+
 //============================================================================
 
 static char* rd_buffer;
