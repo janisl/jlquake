@@ -259,6 +259,7 @@ cmodel_t* QClipMap29::ClipHandleToModel(clipHandle_t Handle)
 		return &box_model;
 	}
 	common->FatalError("Invalid handle");
+	return NULL;
 }
 
 //==========================================================================
@@ -353,6 +354,7 @@ void QClipMap29::SetTempBoxModelContents(clipHandle_t handle, int contents)
 int QClipMap29::ContentsToQ2(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }
 
 //==========================================================================
@@ -364,6 +366,7 @@ int QClipMap29::ContentsToQ2(int Contents) const
 int QClipMap29::ContentsToQ3(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }
 
 //==========================================================================

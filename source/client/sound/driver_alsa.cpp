@@ -212,7 +212,7 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &p);
 	if (err < 0)
 	{
-		common->Printf("ALSA: Unable to set buffer size %li: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
+		common->Printf("ALSA: Unable to set buffer size %i: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
 		//return false;
 	}
 
@@ -229,7 +229,7 @@ bool SNDDMA_Init()
 		//rate succeeded, but is perhaps slightly different
 		if (dir != 0)
 		{
-			common->Printf("ALSA: period %d not supported, using %d\n", (BUFFER_SAMPLES / dma.channels), p);
+			common->Printf("ALSA: period %d not supported, using %lu\n", (BUFFER_SAMPLES / dma.channels), p);
 		}
 	}
 

@@ -443,7 +443,7 @@ QCinematicCin::cblock_t QCinematicCin::Huff1Decompress(QCinematicCin::cblock_t i
 
 	if (input - in.data != in.count && input - in.data != in.count + 1)
 	{
-		common->Printf("Decompression overread by %i\n", (input - in.data) - in.count);
+		common->Printf("Decompression overread by %i\n", static_cast<int>(input - in.data) - in.count);
 	}
 	out.count = out_p - out.data;
 

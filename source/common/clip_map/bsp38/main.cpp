@@ -391,6 +391,7 @@ void QClipMap38::SetTempBoxModelContents(clipHandle_t handle, int contents)
 int QClipMap38::ContentsToQ1(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }
 
 //==========================================================================
@@ -402,6 +403,7 @@ int QClipMap38::ContentsToQ1(int Contents) const
 int QClipMap38::ContentsToQ3(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }
 
 //==========================================================================

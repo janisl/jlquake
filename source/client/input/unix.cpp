@@ -404,7 +404,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	default:
 		if (XLookupRet == 0)
 		{
-			common->DPrintf("Warning: XLookupString failed on KeySym %d\n", keysym);
+			common->DPrintf("Warning: XLookupString failed on KeySym %lu\n", keysym);
 			return NULL;
 		}
 		// XK_* tests failed, but XLookupString got a buffer, so let's try it

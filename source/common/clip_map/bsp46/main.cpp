@@ -270,6 +270,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 				numSubModels, Handle, MAX_SUBMODELS);
 	}
 	common->Error("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS);
+	return NULL;
 }
 
 //==========================================================================
@@ -383,6 +384,7 @@ void QClipMap46::SetTempBoxModelContents(clipHandle_t handle, int contents)
 int QClipMap46::ContentsToQ1(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }
 
 //==========================================================================
@@ -394,4 +396,5 @@ int QClipMap46::ContentsToQ1(int Contents) const
 int QClipMap46::ContentsToQ2(int Contents) const
 {
 	common->FatalError("Not implemented");
+	return 0;
 }

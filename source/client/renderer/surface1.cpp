@@ -120,6 +120,7 @@ static int AllocBlock(int w, int h, int* x, int* y)
 	}
 
 	common->FatalError("AllocBlock: full");
+	return 0;
 }
 
 //==========================================================================

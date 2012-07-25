@@ -150,6 +150,7 @@ void* R_GetWadLumpByName(const char* name)
 	}
 
 	common->Error("R_GetWadLumpByName: %s not found", name);
+	return NULL;
 }
 
 //==========================================================================

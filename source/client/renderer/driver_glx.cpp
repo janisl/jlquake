@@ -104,9 +104,9 @@ static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 	static char buf[1024];
 	XGetErrorText(dpy, ev->error_code, buf, 1024);
 	common->Printf("X Error of failed request: %s\n", buf);
-	common->Printf("  Major opcode of failed request: %d\n", ev->request_code, buf);
+	common->Printf("  Major opcode of failed request: %d\n", ev->request_code);
 	common->Printf("  Minor opcode of failed request: %d\n", ev->minor_code);
-	common->Printf("  Serial number of failed request: %d\n", ev->serial);
+	common->Printf("  Serial number of failed request: %lu\n", ev->serial);
 	return 0;
 }
 

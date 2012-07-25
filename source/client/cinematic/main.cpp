@@ -120,6 +120,7 @@ int CIN_HandleForVideo()
 		}
 	}
 	common->Error("CIN_HandleForVideo: none free");
+	return 0;
 }
 
 //==========================================================================

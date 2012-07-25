@@ -992,6 +992,7 @@ static fileHandle_t FS_HandleForFile()
 		}
 	}
 	common->Error("FS_HandleForFile: none free");
+	return 0;
 }
 
 static FILE* FS_FileForHandle(fileHandle_t f)

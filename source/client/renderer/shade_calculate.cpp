@@ -77,6 +77,7 @@ static float* TableForFunc(genFunc_t func)
 	}
 
 	common->Error("TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.shader->name);
+	return NULL;
 }
 
 //==========================================================================

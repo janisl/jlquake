@@ -618,6 +618,7 @@ void QClipMap38::TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* 
 bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	common->Error("Not implemented");
+	return false;
 }
 
 //==========================================================================

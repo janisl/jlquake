@@ -617,7 +617,7 @@ int SOCK_Send(int socket, const void* data, int length, const netadr_t& to)
 			return SOCKSEND_WOULDBLOCK;
 		}
 
-		common->Printf("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
+		common->Printf("NET_SendPacket ERROR: %s\n", SOCK_ErrorString());
 		//common->Printf("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
 		return SOCKSEND_ERROR;
 	}
@@ -669,7 +669,7 @@ bool SOCK_GetAddr(int socket, netadr_t* addr)
 	Com_Memset(&sadr, 0, sizeof(sadr));
 	if (getsockname(socket, (sockaddr*)&sadr, &addrlen) == -1)
 	{
-		common->Printf("getsockname: ", SOCK_ErrorString());
+		common->Printf("getsockname: %s", SOCK_ErrorString());
 		return false;
 	}
 
