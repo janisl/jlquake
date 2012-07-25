@@ -945,7 +945,7 @@ void CL_ConnectionlessPacket(void)
 	{
 		common->Printf("disconnect\n");
 
-		Host_EndGame("Server disconnected");
+		common->Error("Server disconnected");
 		return;
 	}
 #endif
@@ -1447,7 +1447,7 @@ void Host_Init(quakeparms_t* parms)
 
 		if (parms->memsize < MINIMUM_MEMORY)
 		{
-			Sys_Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
+			common->FatalError("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
 		}
 
 		Memory_Init(parms->membase, parms->memsize);

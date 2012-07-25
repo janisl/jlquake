@@ -221,7 +221,7 @@ void    Host_FindMaxClients(void)
 	{
 		if (cls.state == CA_DEDICATED)
 		{
-			Sys_Error("Only one of -dedicated or -listen can be specified");
+			common->FatalError("Only one of -dedicated or -listen can be specified");
 		}
 		if (i != (COM_Argc() - 1))
 		{
@@ -923,7 +923,7 @@ void Host_Init(quakeparms_t* parms)
 
 		if (parms->memsize < minimum_memory)
 		{
-			Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
+			common->FatalError("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
 		}
 
 		Memory_Init(parms->membase, parms->memsize);

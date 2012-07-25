@@ -835,7 +835,7 @@ void SCR_ExecuteLayoutString(const char* s)
 			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
 			if (value >= MAX_IMAGES_Q2)
 			{
-				Com_Error(ERR_DROP, "Pic >= MAX_IMAGES_Q2");
+				common->Error("Pic >= MAX_IMAGES_Q2");
 			}
 			if (cl.q2_configstrings[Q2CS_IMAGES + value])
 			{
@@ -857,7 +857,7 @@ void SCR_ExecuteLayoutString(const char* s)
 			value = String::Atoi(token);
 			if (value >= MAX_CLIENTS_Q2 || value < 0)
 			{
-				Com_Error(ERR_DROP, "client >= MAX_CLIENTS_Q2");
+				common->Error("client >= MAX_CLIENTS_Q2");
 			}
 			ci = &cl.q2_clientinfo[value];
 
@@ -898,7 +898,7 @@ void SCR_ExecuteLayoutString(const char* s)
 			value = String::Atoi(token);
 			if (value >= MAX_CLIENTS_Q2 || value < 0)
 			{
-				Com_Error(ERR_DROP, "client >= MAX_CLIENTS_Q2");
+				common->Error("client >= MAX_CLIENTS_Q2");
 			}
 			ci = &cl.q2_clientinfo[value];
 
@@ -1027,12 +1027,12 @@ void SCR_ExecuteLayoutString(const char* s)
 			index = String::Atoi(token);
 			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 			{
-				Com_Error(ERR_DROP, "Bad stat_string index");
+				common->Error("Bad stat_string index");
 			}
 			index = cl.q2_frame.playerstate.stats[index];
 			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 			{
-				Com_Error(ERR_DROP, "Bad stat_string index");
+				common->Error("Bad stat_string index");
 			}
 			UI_DrawString(x, y, cl.q2_configstrings[index]);
 			continue;

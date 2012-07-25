@@ -247,7 +247,7 @@ qboolean CL_GetDemoMessage(void)
 		//common->Printf("read: %ld bytes\n", net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN_QW)
 		{
-			Sys_Error("Demo message > MAX_MSGLEN_QW");
+			common->FatalError("Demo message > MAX_MSGLEN_QW");
 		}
 		r = FS_Read(net_message._data, net_message.cursize, clc.demofile);
 		if (r != net_message.cursize)

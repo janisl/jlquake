@@ -119,7 +119,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!parms.membase)
 	{
-		Sys_Error("Insufficient memory.\n");
+		common->FatalError("Insufficient memory.\n");
 	}
 
 	parms.basedir = ".";

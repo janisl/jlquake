@@ -639,14 +639,14 @@ void CL_ParseGamestate(QMsg* msg)
 			i = msg->ReadShort();
 			if (i < 0 || i >= MAX_CONFIGSTRINGS_WM)
 			{
-				Com_Error(ERR_DROP, "configstring > MAX_CONFIGSTRINGS_WM");
+				common->Error("configstring > MAX_CONFIGSTRINGS_WM");
 			}
 			s = msg->ReadBigString();
 			len = String::Length(s);
 
 			if (len + 1 + cl.wm_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
 			{
-				Com_Error(ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded");
+				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
 			}
 
 			// append it to the gameState string buffer
@@ -659,7 +659,7 @@ void CL_ParseGamestate(QMsg* msg)
 			newnum = msg->ReadBits(GENTITYNUM_BITS_Q3);
 			if (newnum < 0 || newnum >= MAX_GENTITIES_Q3)
 			{
-				Com_Error(ERR_DROP, "Baseline number out of range: %i", newnum);
+				common->Error("Baseline number out of range: %i", newnum);
 			}
 			memset(&nullstate, 0, sizeof(nullstate));
 			es = &cl.wm_entityBaselines[newnum];
@@ -667,7 +667,7 @@ void CL_ParseGamestate(QMsg* msg)
 		}
 		else
 		{
-			Com_Error(ERR_DROP, "CL_ParseGamestate: bad command byte");
+			common->Error("CL_ParseGamestate: bad command byte");
 		}
 	}
 
@@ -730,7 +730,7 @@ void CL_ParseDownload(QMsg* msg)
 
 		if (clc.downloadSize < 0)
 		{
-			Com_Error(ERR_DROP, msg->ReadString());
+			common->Error(msg->ReadString());
 			return;
 		}
 	}
@@ -738,7 +738,7 @@ void CL_ParseDownload(QMsg* msg)
 	size = msg->ReadShort();
 	if (size < 0 || size > (int)sizeof(data))
 	{
-		Com_Error(ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size);
+		common->Error("CL_ParseDownload: Invalid size %d for download chunk.", size);
 		return;
 	}
 

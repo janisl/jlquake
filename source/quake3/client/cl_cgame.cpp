@@ -76,7 +76,7 @@ qboolean CL_GetUserCmd(int cmdNumber, q3usercmd_t* ucmd)
 	// can't return anything that we haven't created yet
 	if (cmdNumber > cl.q3_cmdNumber)
 	{
-		Com_Error(ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
+		common->Error("CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
 	}
 
 	// the usercmd has been overwritten in the wrapping
@@ -107,7 +107,7 @@ qboolean    CL_GetParseEntityState(int parseEntityNumber, q3entityState_t* state
 	// can't return anything that hasn't been parsed yet
 	if (parseEntityNumber >= cl.parseEntitiesNum)
 	{
-		Com_Error(ERR_DROP, "CL_GetParseEntityState: %i >= %i",
+		common->Error("CL_GetParseEntityState: %i >= %i",
 			parseEntityNumber, cl.parseEntitiesNum);
 	}
 
@@ -144,7 +144,7 @@ qboolean    CL_GetSnapshot(int snapshotNumber, q3snapshot_t* snapshot)
 
 	if (snapshotNumber > cl.q3_snap.messageNum)
 	{
-		Com_Error(ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
+		common->Error("CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
 	}
 
 	// if the frame has fallen out of the circular buffer, we can't return it
@@ -220,7 +220,7 @@ CL_CgameError
 */
 void CL_CgameError(const char* string)
 {
-	Com_Error(ERR_DROP, "%s", string);
+	common->Error("%s", string);
 }
 
 
@@ -240,7 +240,7 @@ void CL_ConfigstringModified(void)
 	index = String::Atoi(Cmd_Argv(1));
 	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
 	{
-		Com_Error(ERR_DROP, "configstring > MAX_CONFIGSTRINGS_Q3");
+		common->Error("configstring > MAX_CONFIGSTRINGS_Q3");
 	}
 	// get everything after "cs <num>"
 	s = Cmd_ArgsFrom(2);
@@ -278,7 +278,7 @@ void CL_ConfigstringModified(void)
 
 		if (len + 1 + cl.q3_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
 		{
-			Com_Error(ERR_DROP, "MAX_GAMESTATE_CHARS_Q3 exceeded");
+			common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
 		}
 
 		// append it to the gameState string buffer
@@ -319,13 +319,13 @@ qboolean CL_GetServerCommand(int serverCommandNumber)
 		{
 			return false;
 		}
-		Com_Error(ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out");
+		common->Error("CL_GetServerCommand: a reliable command was cycled out");
 		return false;
 	}
 
 	if (serverCommandNumber > clc.q3_serverCommandSequence)
 	{
-		Com_Error(ERR_DROP, "CL_GetServerCommand: requested a command not received");
+		common->Error("CL_GetServerCommand: requested a command not received");
 		return false;
 	}
 
@@ -364,7 +364,7 @@ rescan:
 		s = Cmd_Argv(2);
 		if (String::Length(bigConfigString) + String::Length(s) >= BIG_INFO_STRING)
 		{
-			Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+			common->Error("bcs exceeded BIG_INFO_STRING");
 		}
 		String::Cat(bigConfigString, sizeof(bigConfigString), s);
 		return false;
@@ -375,7 +375,7 @@ rescan:
 		s = Cmd_Argv(2);
 		if (String::Length(bigConfigString) + String::Length(s) + 1 >= BIG_INFO_STRING)
 		{
-			Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+			common->Error("bcs exceeded BIG_INFO_STRING");
 		}
 		String::Cat(bigConfigString, sizeof(bigConfigString), s);
 		String::Cat(bigConfigString, sizeof(bigConfigString), "\"");
@@ -563,7 +563,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		common->Printf("%s", VMA(1));
 		return 0;
 	case CG_ERROR:
-		Com_Error(ERR_DROP, "%s", VMA(1));
+		common->Error("%s", VMA(1));
 		return 0;
 	case CG_MILLISECONDS:
 		return Sys_Milliseconds();
@@ -832,7 +832,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 
 	default:
 		assert(0);		// bk010102
-		Com_Error(ERR_DROP, "Bad cgame system trap: %i", args[0]);
+		common->Error("Bad cgame system trap: %i", args[0]);
 	}
 	return 0;
 }
@@ -875,7 +875,7 @@ void CL_InitCGame(void)
 	cgvm = VM_Create("cgame", CL_CgameSystemCalls, interpret);
 	if (!cgvm)
 	{
-		Com_Error(ERR_DROP, "VM_Create on cgame failed");
+		common->Error("VM_Create on cgame failed");
 	}
 	cls.state = CA_LOADING;
 
@@ -1104,7 +1104,7 @@ void CL_SetCGameTime(void)
 	// if we have gotten to this point, cl.snap is guaranteed to be valid
 	if (!cl.q3_snap.valid)
 	{
-		Com_Error(ERR_DROP, "CL_SetCGameTime: !cl.snap.valid");
+		common->Error("CL_SetCGameTime: !cl.snap.valid");
 	}
 
 	// allow pause in single player
@@ -1116,7 +1116,7 @@ void CL_SetCGameTime(void)
 
 	if (cl.q3_snap.serverTime < cl.q3_oldFrameServerTime)
 	{
-		Com_Error(ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime");
+		common->Error("cl.snap.serverTime < cl.oldFrameServerTime");
 	}
 	cl.q3_oldFrameServerTime = cl.q3_snap.serverTime;
 

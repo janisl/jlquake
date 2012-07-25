@@ -192,7 +192,7 @@ void CL_AddReliableCommand(const char* cmd)
 	// we must drop the connection
 	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WOLF)
 	{
-		Com_Error(ERR_DROP, "Client command overflow");
+		common->Error("Client command overflow");
 	}
 	clc.q3_reliableSequence++;
 	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
@@ -544,7 +544,7 @@ void CL_ReadDemoMessage(void)
 	}
 	if (buf.cursize > buf.maxsize)
 	{
-		Com_Error(ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_WOLF");
+		common->Error("CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_WOLF");
 	}
 	r = FS_Read(buf._data, buf.cursize, clc.demofile);
 	if (r != buf.cursize)
@@ -840,7 +840,7 @@ void CL_PlayDemo_f(void)
 	}
 	if (!clc.demofile)
 	{
-		Com_Error(ERR_DROP, "couldn't open %s", name);
+		common->Error("couldn't open %s", name);
 		return;
 	}
 	String::NCpyZ(clc.q3_demoName, Cmd_Argv(1), sizeof(clc.q3_demoName));
@@ -2184,7 +2184,7 @@ void CL_CheckForResend(void)
 		break;
 
 	default:
-		Com_Error(ERR_FATAL, "CL_CheckForResend: bad cls.state");
+		common->FatalError("CL_CheckForResend: bad cls.state");
 	}
 }
 
@@ -2295,13 +2295,13 @@ void CL_PrintPacket(netadr_t from, QMsg* msg)
 	{
 		String::NCpyZ(clc.q3_serverMessage, s + 12, sizeof(clc.q3_serverMessage));
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
-		Com_Error(ERR_DROP, "%s", clc.q3_serverMessage);
+		common->Error("%s", clc.q3_serverMessage);
 	}
 	else if (!String::NICmp(s, "[err_prot]", 10))
 	{
 		String::NCpyZ(clc.q3_serverMessage, s + 10, sizeof(clc.q3_serverMessage));
 		// Cvar_Set("com_errorMessage", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
-		Com_Error(ERR_DROP, "%s", CL_TranslateStringBuf(PROTOCOL_MISMATCH_ERROR_LONG));
+		common->Error("%s", CL_TranslateStringBuf(PROTOCOL_MISMATCH_ERROR_LONG));
 	}
 	else if (!String::NICmp(s, "[err_update]", 12))
 	{
@@ -2312,7 +2312,7 @@ void CL_PrintPacket(netadr_t from, QMsg* msg)
 	{
 		String::NCpyZ(clc.q3_serverMessage, s, sizeof(clc.q3_serverMessage));
 		Cvar_Set("com_errorMessage", clc.q3_serverMessage);
-		Com_Error(ERR_DROP, "%s", clc.q3_serverMessage);
+		common->Error("%s", clc.q3_serverMessage);
 	}
 	else
 	{
@@ -2850,7 +2850,7 @@ void CL_WWWDownload(void)
 			const char* error = va("Download failure while getting '%s'\n", cls.et_downloadName);	// get the msg before clearing structs
 			cls.et_bWWWDlDisconnected = false;	// need clearing structs before ERR_DROP, or it goes into endless reload
 			CL_ClearStaticDownload();
-			Com_Error(ERR_DROP, "%s", error);
+			common->Error("%s", error);
 		}
 		else
 		{
@@ -3031,7 +3031,7 @@ static void CL_Cache_UsedFile_f(void)
 
 	if (Cmd_Argc() < 2)
 	{
-		Com_Error(ERR_DROP, "usedfile without enough parameters\n");
+		common->Error("usedfile without enough parameters\n");
 		return;
 	}
 
@@ -3055,7 +3055,7 @@ static void CL_Cache_UsedFile_f(void)
 	}
 	if (i == CACHE_NUMGROUPS)
 	{
-		Com_Error(ERR_DROP, "usedfile without a valid cache group\n");
+		common->Error("usedfile without a valid cache group\n");
 		return;
 	}
 
@@ -3094,7 +3094,7 @@ static void CL_Cache_SetIndex_f(void)
 {
 	if (Cmd_Argc() < 2)
 	{
-		Com_Error(ERR_DROP, "setindex needs an index\n");
+		common->Error("setindex needs an index\n");
 		return;
 	}
 

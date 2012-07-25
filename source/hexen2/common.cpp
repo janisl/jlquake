@@ -114,7 +114,7 @@ void COM_CheckRegistered(void)
 	if (!f)
 	{
 #if WINDED
-		Sys_Error("This dedicated server requires a full registered copy of Hexen II");
+		common->FatalError("This dedicated server requires a full registered copy of Hexen II");
 #endif
 		common->Printf("Playing demo version.\n");
 		return;
@@ -126,7 +126,7 @@ void COM_CheckRegistered(void)
 	for (i = 0; i < 128; i++)
 		if (pop[i] != (unsigned short)BigShort(check[i]))
 		{
-			Sys_Error("Corrupted data file.");
+			common->FatalError("Corrupted data file.");
 		}
 
 	static_registered = 1;
@@ -280,12 +280,12 @@ byte* COM_LoadFile(const char* path, int usehunk, int* size)
 	}
 	else
 	{
-		Sys_Error("COM_LoadFile: bad usehunk");
+		common->FatalError("COM_LoadFile: bad usehunk");
 	}
 
 	if (!buf)
 	{
-		Sys_Error("COM_LoadFile: not enough space for %s", path);
+		common->FatalError("COM_LoadFile: not enough space for %s", path);
 	}
 
 	((byte*)buf)[len] = 0;

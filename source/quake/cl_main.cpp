@@ -55,7 +55,7 @@ void CL_ClearState(void)
 CL_Disconnect
 
 Sends a disconnect message to the server
-This is also called on Host_Error, so it shouldn't cause any errors
+This is also called on common->Error, so it shouldn't cause any errors
 =====================
 */
 void CL_Disconnect(void)
@@ -131,7 +131,7 @@ void CL_EstablishConnection(const char* host)
 	cls.qh_netcon = NET_Connect(host, &clc.netchan);
 	if (!cls.qh_netcon)
 	{
-		Host_Error("CL_Connect: connect failed\n");
+		common->Error("CL_Connect: connect failed\n");
 	}
 	clc.netchan.lastReceived = net_time * 1000;
 	common->DPrintf("CL_EstablishConnection: connected to %s\n", host);
@@ -223,7 +223,7 @@ int CL_ReadFromServer(void)
 		ret = CL_GetMessage();
 		if (ret == -1)
 		{
-			Host_Error("CL_ReadFromServer: lost server connection");
+			common->Error("CL_ReadFromServer: lost server connection");
 		}
 		if (!ret)
 		{

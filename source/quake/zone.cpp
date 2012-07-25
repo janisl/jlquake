@@ -98,17 +98,17 @@ void Z_Free(void* ptr)
 
 	if (!ptr)
 	{
-		Sys_Error("Z_Free: NULL pointer");
+		common->FatalError("Z_Free: NULL pointer");
 	}
 
 	block = (memblock_t*)((byte*)ptr - sizeof(memblock_t));
 	if (block->id != ZONEID)
 	{
-		Sys_Error("Z_Free: freed a pointer without ZONEID");
+		common->FatalError("Z_Free: freed a pointer without ZONEID");
 	}
 	if (block->tag == 0)
 	{
-		Sys_Error("Z_Free: freed a freed pointer");
+		common->FatalError("Z_Free: freed a freed pointer");
 	}
 
 	block->tag = 0;		// mark as free
@@ -153,7 +153,7 @@ void* Z_Malloc(int size)
 	buf = Z_TagMalloc(size, 1);
 	if (!buf)
 	{
-		Sys_Error("Z_Malloc: failed on allocation of %i bytes",size);
+		common->FatalError("Z_Malloc: failed on allocation of %i bytes",size);
 	}
 	Com_Memset(buf, 0, size);
 
@@ -167,7 +167,7 @@ void* Z_TagMalloc(int size, int tag)
 
 	if (!tag)
 	{
-		Sys_Error("Z_TagMalloc: tried to use a 0 tag");
+		common->FatalError("Z_TagMalloc: tried to use a 0 tag");
 	}
 
 //
@@ -289,15 +289,15 @@ void Z_CheckHeap(void)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Sys_Error("Z_CheckHeap: block size does not touch the next block\n");
+			common->FatalError("Z_CheckHeap: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Sys_Error("Z_CheckHeap: next block doesn't have proper back link\n");
+			common->FatalError("Z_CheckHeap: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Sys_Error("Z_CheckHeap: two consecutive free blocks\n");
+			common->FatalError("Z_CheckHeap: two consecutive free blocks\n");
 		}
 	}
 }
@@ -339,11 +339,11 @@ void Hunk_Check(void)
 	{
 		if (h->sentinal != HUNK_SENTINAL)
 		{
-			Sys_Error("Hunk_Check: trahsed sentinal");
+			common->FatalError("Hunk_Check: trahsed sentinal");
 		}
 		if (h->size < 16 || h->size + (byte*)h - hunk_base > hunk_size)
 		{
-			Sys_Error("Hunk_Check: bad size");
+			common->FatalError("Hunk_Check: bad size");
 		}
 		h = (hunk_t*)((byte*)h + h->size);
 	}
@@ -403,11 +403,11 @@ void Hunk_Print(qboolean all)
 		//
 		if (h->sentinal != HUNK_SENTINAL)
 		{
-			Sys_Error("Hunk_Check: trahsed sentinal");
+			common->FatalError("Hunk_Check: trahsed sentinal");
 		}
 		if (h->size < 16 || h->size + (byte*)h - hunk_base > hunk_size)
 		{
-			Sys_Error("Hunk_Check: bad size");
+			common->FatalError("Hunk_Check: bad size");
 		}
 
 		next = (hunk_t*)((byte*)h + h->size);
@@ -461,14 +461,14 @@ void* Hunk_AllocName(int size, const char* name)
 
 	if (size < 0)
 	{
-		Sys_Error("Hunk_Alloc: bad size: %i", size);
+		common->FatalError("Hunk_Alloc: bad size: %i", size);
 	}
 
 	size = sizeof(hunk_t) + ((size + 15) & ~15);
 
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 	{
-		Sys_Error("Hunk_Alloc: failed on %i bytes",size);
+		common->FatalError("Hunk_Alloc: failed on %i bytes",size);
 	}
 
 	h = (hunk_t*)(hunk_base + hunk_low_used);
@@ -502,7 +502,7 @@ void Hunk_FreeToLowMark(int mark)
 {
 	if (mark < 0 || mark > hunk_low_used)
 	{
-		Sys_Error("Hunk_FreeToLowMark: bad mark %i", mark);
+		common->FatalError("Hunk_FreeToLowMark: bad mark %i", mark);
 	}
 	Com_Memset(hunk_base + mark, 0, hunk_low_used - mark);
 	hunk_low_used = mark;
@@ -528,7 +528,7 @@ void Hunk_FreeToHighMark(int mark)
 	}
 	if (mark < 0 || mark > hunk_high_used)
 	{
-		Sys_Error("Hunk_FreeToHighMark: bad mark %i", mark);
+		common->FatalError("Hunk_FreeToHighMark: bad mark %i", mark);
 	}
 	Com_Memset(hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
 	hunk_high_used = mark;
@@ -546,7 +546,7 @@ void* Hunk_HighAllocName(int size, const char* name)
 
 	if (size < 0)
 	{
-		Sys_Error("Hunk_HighAllocName: bad size: %i", size);
+		common->FatalError("Hunk_HighAllocName: bad size: %i", size);
 	}
 
 	if (hunk_tempactive)
@@ -644,7 +644,7 @@ void Memory_Init(void* buf, int size)
 		}
 		else
 		{
-			Sys_Error("Memory_Init: you must specify a size in KB after -zone");
+			common->FatalError("Memory_Init: you must specify a size in KB after -zone");
 		}
 	}
 	mainzone = (memzone_t*)Hunk_AllocName(zonesize, "zone");

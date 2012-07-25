@@ -224,11 +224,11 @@ void SV_WriteDelta(q1entity_state_t* from, q1entity_state_t* to, QMsg* msg, qboo
 	//
 	if (!to->number)
 	{
-		SV_Error("Unset entity number");
+		common->Error("Unset entity number");
 	}
 	if (to->number >= 512)
 	{
-		SV_Error("Entity number >= 512");
+		common->Error("Entity number >= 512");
 	}
 
 	if (!bits && !force)
@@ -238,7 +238,7 @@ void SV_WriteDelta(q1entity_state_t* from, q1entity_state_t* to, QMsg* msg, qboo
 	i = to->number | (bits & ~511);
 	if (i & QWU_REMOVE)
 	{
-		Sys_Error("QWU_REMOVE");
+		common->FatalError("QWU_REMOVE");
 	}
 	msg->WriteShort(i);
 

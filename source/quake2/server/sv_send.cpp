@@ -190,7 +190,7 @@ void SV_SendClientMessages(void)
 			}
 			if (msglen > MAX_MSGLEN_Q2)
 			{
-				Com_Error(ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN_Q2");
+				common->Error("SV_SendClientMessages: msglen > MAX_MSGLEN_Q2");
 			}
 			r = FS_Read(msgbuf, msglen, sv.q2_demofile);
 			if (r != msglen)

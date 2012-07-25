@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 	}
 	if ((parms.membase = malloc(parms.memsize)) == NULL)
 	{
-		Sys_Error("Can't allocate %ld\n", parms.memsize);
+		common->FatalError("Can't allocate %ld\n", parms.memsize);
 	}
 
 	parms.basedir = ".";

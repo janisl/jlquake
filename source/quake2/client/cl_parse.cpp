@@ -520,7 +520,7 @@ void CL_ParseConfigString(void)
 	i = net_message.ReadShort();
 	if (i < 0 || i >= MAX_CONFIGSTRINGS_Q2)
 	{
-		Com_Error(ERR_DROP, "configstring > MAX_CONFIGSTRINGS_Q2");
+		common->Error("configstring > MAX_CONFIGSTRINGS_Q2");
 	}
 	s = const_cast<char*>(net_message.ReadString2());
 	String::Cpy(cl.q2_configstrings[i], s);
@@ -835,7 +835,7 @@ void CL_ParseServerMessage(void)
 		case q2svc_playerinfo:
 		case q2svc_packetentities:
 		case q2svc_deltapacketentities:
-			Com_Error(ERR_DROP, "Out of place frame data");
+			common->Error("Out of place frame data");
 			break;
 		}
 	}

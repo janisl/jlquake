@@ -99,11 +99,11 @@ void SV_InitGameProgs(void)
 
 	if (!ge)
 	{
-		Com_Error(ERR_DROP, "failed to load game DLL");
+		common->Error("failed to load game DLL");
 	}
 	if (ge->apiversion != Q2GAME_API_VERSION)
 	{
-		Com_Error(ERR_DROP, "game is version %i, not %i", ge->apiversion,
+		common->Error("game is version %i, not %i", ge->apiversion,
 			Q2GAME_API_VERSION);
 	}
 

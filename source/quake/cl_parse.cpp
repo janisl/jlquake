@@ -113,7 +113,7 @@ void CL_ParseStartSoundPacket(void)
 
 	if (ent > MAX_EDICTS_QH)
 	{
-		Host_Error("CL_ParseStartSoundPacket: ent = %i", ent);
+		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
 	}
 
 	for (i = 0; i < 3; i++)
@@ -156,16 +156,16 @@ void CL_KeepaliveMessage(void)
 		switch (ret)
 		{
 		default:
-			Host_Error("CL_KeepaliveMessage: CL_GetMessage failed");
+			common->Error("CL_KeepaliveMessage: CL_GetMessage failed");
 		case 0:
 			break;	// nothing waiting
 		case 1:
-			Host_Error("CL_KeepaliveMessage: received a message");
+			common->Error("CL_KeepaliveMessage: received a message");
 			break;
 		case 2:
 			if (net_message.ReadByte() != q1svc_nop)
 			{
-				Host_Error("CL_KeepaliveMessage: datagram wasn't a nop");
+				common->Error("CL_KeepaliveMessage: datagram wasn't a nop");
 			}
 			break;
 		}
@@ -464,7 +464,7 @@ void CL_NewTranslation(int slot)
 {
 	if (slot > cl.qh_maxclients)
 	{
-		Sys_Error("CL_NewTranslation: slot > cl.maxclients");
+		common->FatalError("CL_NewTranslation: slot > cl.maxclients");
 	}
 	CLQ1_TranslatePlayerSkin(slot);
 }
@@ -540,7 +540,7 @@ void CL_ParseServerMessage(void)
 	{
 		if (net_message.badread)
 		{
-			Host_Error("CL_ParseServerMessage: Bad server message");
+			common->Error("CL_ParseServerMessage: Bad server message");
 		}
 
 		cmd = net_message.ReadByte();
@@ -565,7 +565,7 @@ void CL_ParseServerMessage(void)
 		switch (cmd)
 		{
 		default:
-			Host_Error("CL_ParseServerMessage: Illegible server message\n");
+			common->Error("CL_ParseServerMessage: Illegible server message\n");
 			break;
 
 		case q1svc_nop:
@@ -586,12 +586,12 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadLong();
 			if (i != PROTOCOL_VERSION)
 			{
-				Host_Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
+				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
 			}
 			break;
 
 		case q1svc_disconnect:
-			Host_EndGame("Server disconnected\n");
+			common->EndGame("Server disconnected\n");
 
 		case q1svc_print:
 			CL_ParsePrint();
@@ -640,7 +640,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_QH");
+				common->Error("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_QH");
 			}
 			String::Cpy(cl.q1_players[i].name, net_message.ReadString2());
 			break;
@@ -649,7 +649,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QH");
+				common->Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QH");
 			}
 			cl.q1_players[i].frags = net_message.ReadShort();
 			break;
@@ -659,7 +659,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				Host_Error("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_QH");
+				common->Error("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_QH");
 			}
 			int j = net_message.ReadByte();
 			cl.q1_players[i].topcolor = (j & 0xf0) >> 4;
@@ -701,7 +701,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i <= clc.qh_signon)
 			{
-				Host_Error("Received signon %i when at %i", i, clc.qh_signon);
+				common->Error("Received signon %i when at %i", i, clc.qh_signon);
 			}
 			clc.qh_signon = i;
 			CLQ1_SignonReply();
@@ -719,7 +719,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i < 0 || i >= MAX_CL_STATS)
 			{
-				Sys_Error("q1svc_updatestat: %i is invalid", i);
+				common->FatalError("q1svc_updatestat: %i is invalid", i);
 			}
 			cl.qh_stats[i] = net_message.ReadLong();;
 			break;

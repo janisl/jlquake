@@ -162,7 +162,7 @@ void CL_SendCmd(void)
 
 	if (NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
 	{
-		Host_Error("CL_WriteToServer: lost server connection");
+		common->Error("CL_WriteToServer: lost server connection");
 	}
 
 	clc.netchan.message.Clear();

@@ -252,7 +252,7 @@ void FS_InitFilesystem(void)
 	// Arnout: we want the nice error message here as well
 	if (FS_ReadFile("default.cfg", NULL) <= 0)
 	{
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?");
+		common->FatalError("Couldn't load default.cfg - I am missing essential files - verify your installation?");
 	}
 
 	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
@@ -301,11 +301,11 @@ void FS_Restart(int checksumFeed)
 			lastValidBase[0] = '\0';
 			lastValidGame[0] = '\0';
 			FS_Restart(checksumFeed);
-			Com_Error(ERR_DROP, "Invalid game folder\n");
+			common->Error("Invalid game folder\n");
 			return;
 		}
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?");
+		common->FatalError("Couldn't load default.cfg - I am missing essential files - verify your installation?");
 	}
 
 	// bk010116 - new check before safeMode
@@ -389,7 +389,7 @@ unsigned int FS_ChecksumOSPath(char* OSPath)
 	buf = (byte*)malloc(len);
 	if ((int)fread(buf, 1, len, f) != len)
 	{
-		Com_Error(ERR_FATAL, "short read in FS_ChecksumOSPath\n");
+		common->FatalError("short read in FS_ChecksumOSPath\n");
 	}
 	fclose(f);
 

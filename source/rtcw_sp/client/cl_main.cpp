@@ -141,7 +141,7 @@ void CL_AddReliableCommand(const char* cmd)
 
 	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WOLF)
 	{
-		Com_Error(ERR_DROP, "Client command overflow");
+		common->Error("Client command overflow");
 	}
 	clc.q3_reliableSequence++;
 	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
@@ -480,7 +480,7 @@ void CL_ReadDemoMessage(void)
 	}
 	if (buf.cursize > buf.maxsize)
 	{
-		Com_Error(ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_WOLF");
+		common->Error("CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_WOLF");
 	}
 	r = FS_Read(buf._data, buf.cursize, clc.demofile);
 	if (r != buf.cursize)
@@ -538,7 +538,7 @@ void CL_PlayDemo_f(void)
 	FS_FOpenFileRead(name, &clc.demofile, true);
 	if (!clc.demofile)
 	{
-		Com_Error(ERR_DROP, "couldn't open %s", name);
+		common->Error("couldn't open %s", name);
 		return;
 	}
 	String::NCpyZ(clc.q3_demoName, Cmd_Argv(1), sizeof(clc.q3_demoName));
@@ -1640,7 +1640,7 @@ void CL_CheckForResend(void)
 		break;
 
 	default:
-		Com_Error(ERR_FATAL, "CL_CHeckForResend: bad cls.state");
+		common->FatalError("CL_CHeckForResend: bad cls.state");
 	}
 }
 
@@ -2283,7 +2283,7 @@ static void CL_Cache_UsedFile_f(void)
 
 	if (Cmd_Argc() < 2)
 	{
-		Com_Error(ERR_DROP, "usedfile without enough parameters\n");
+		common->Error("usedfile without enough parameters\n");
 		return;
 	}
 
@@ -2307,7 +2307,7 @@ static void CL_Cache_UsedFile_f(void)
 	}
 	if (i == CACHE_NUMGROUPS)
 	{
-		Com_Error(ERR_DROP, "usedfile without a valid cache group\n");
+		common->Error("usedfile without a valid cache group\n");
 		return;
 	}
 
@@ -2346,7 +2346,7 @@ static void CL_Cache_SetIndex_f(void)
 {
 	if (Cmd_Argc() < 2)
 	{
-		Com_Error(ERR_DROP, "setindex needs an index\n");
+		common->Error("setindex needs an index\n");
 		return;
 	}
 

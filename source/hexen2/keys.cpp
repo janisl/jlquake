@@ -342,7 +342,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 
 	if (keys[K_CTRL].down && keys[K_ALT].down && keys[K_DEL].down)
 	{
-		Sys_Error("ctrl-alt-del pressed");
+		common->FatalError("ctrl-alt-del pressed");
 	}
 
 	if (!down)

@@ -978,7 +978,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		token = String::Parse1(&start);
 		if (String::Cmp(token, "{"))
 		{
-			Sys_Error("First token isn't a brace");
+			common->FatalError("First token isn't a brace");
 		}
 
 		// parse an edict

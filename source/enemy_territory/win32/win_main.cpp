@@ -64,7 +64,7 @@ void Sys_StartProcess(const char* exeName, qboolean doexit)
 	if (!CreateProcess(NULL, va("%s\\%s", szPathOrig, exeName), NULL, NULL,FALSE, 0, NULL, NULL, &si, &pi))
 	{
 		// couldn't start it, popup error box
-		Com_Error(ERR_DROP, "Could not start process: '%s\\%s' ", szPathOrig, exeName);
+		common->Error("Could not start process: '%s\\%s' ", szPathOrig, exeName);
 		return;
 	}
 	// jpw
@@ -100,7 +100,7 @@ void Sys_OpenURL(const char* url, qboolean doexit)
 	if (!ShellExecute(NULL, "open", url, NULL, NULL, SW_RESTORE))
 	{
 		// couldn't start it, popup error box
-		Com_Error(ERR_DROP, "Could not open url: '%s' ", url);
+		common->Error("Could not open url: '%s' ", url);
 		return;
 	}
 
@@ -376,7 +376,7 @@ void Sys_Init(void)
 			Cvar_Set("sys_cpustring", "Alpha AXP");
 			break;
 		default:
-			Com_Error(ERR_FATAL, "Unknown cpu type %d\n", cpuid);
+			common->FatalError("Unknown cpu type %d\n", cpuid);
 			break;
 		}
 	}

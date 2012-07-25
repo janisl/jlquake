@@ -482,17 +482,17 @@ static int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 #ifdef DEBUG
 	if (data->cursize == 0)
 	{
-		Sys_Error("Datagram_SendMessage: zero length message\n");
+		common->FatalError("Datagram_SendMessage: zero length message\n");
 	}
 
 	if (data->cursize > GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_MSGLEN_Q1)
 	{
-		Sys_Error("Datagram_SendMessage: message too big %u\n", data->cursize);
+		common->FatalError("Datagram_SendMessage: message too big %u\n", data->cursize);
 	}
 
 	if (sock->canSend == false)
 	{
-		Sys_Error("SendMessage: called with canSend == false\n");
+		common->FatalError("SendMessage: called with canSend == false\n");
 	}
 #endif
 
@@ -608,12 +608,12 @@ static int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg
 #ifdef DEBUG
 	if (data->cursize == 0)
 	{
-		Sys_Error("Datagram_SendUnreliableMessage: zero length message\n");
+		common->FatalError("Datagram_SendUnreliableMessage: zero length message\n");
 	}
 
 	if (data->cursize > MAX_DATAGRAM_QH)
 	{
-		Sys_Error("Datagram_SendUnreliableMessage: message too big %u\n", data->cursize);
+		common->FatalError("Datagram_SendUnreliableMessage: message too big %u\n", data->cursize);
 	}
 #endif
 

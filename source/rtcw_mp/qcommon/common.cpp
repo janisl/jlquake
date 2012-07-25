@@ -598,17 +598,17 @@ void Z_Free(void* ptr)
 
 	if (!ptr)
 	{
-		Com_Error(ERR_DROP, "Z_Free: NULL pointer");
+		common->Error("Z_Free: NULL pointer");
 	}
 
 	block = (memblock_t*)((byte*)ptr - sizeof(memblock_t));
 	if (block->id != ZONEID)
 	{
-		Com_Error(ERR_FATAL, "Z_Free: freed a pointer without ZONEID");
+		common->FatalError("Z_Free: freed a pointer without ZONEID");
 	}
 	if (block->tag == 0)
 	{
-		Com_Error(ERR_FATAL, "Z_Free: freed a freed pointer");
+		common->FatalError("Z_Free: freed a freed pointer");
 	}
 	// if static memory
 	if (block->tag == TAG_STATIC)
@@ -619,7 +619,7 @@ void Z_Free(void* ptr)
 	// check the memory trash tester
 	if (*(int*)((byte*)block + block->size - 4) != ZONEID)
 	{
-		Com_Error(ERR_FATAL, "Z_Free: memory block wrote past end");
+		common->FatalError("Z_Free: memory block wrote past end");
 	}
 
 	if (block->tag == TAG_SMALL)
@@ -725,7 +725,7 @@ void* Z_TagMalloc(int size, int tag)
 
 	if (!tag)
 	{
-		Com_Error(ERR_FATAL, "Z_TagMalloc: tried to use a 0 tag");
+		common->FatalError("Z_TagMalloc: tried to use a 0 tag");
 	}
 
 	if (tag == TAG_SMALL)
@@ -757,7 +757,7 @@ void* Z_TagMalloc(int size, int tag)
 			Z_LogHeap();
 #endif
 			// scaned all the way around the list
-			Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone",
+			common->FatalError("Z_Malloc: failed on allocation of %i bytes from the %s zone",
 				size, zone == smallzone ? "small" : "main");
 			return NULL;
 		}
@@ -865,15 +865,15 @@ void Z_CheckHeap(void)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Com_Error(ERR_FATAL, "Z_CheckHeap: block size does not touch the next block\n");
+			common->FatalError("Z_CheckHeap: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Com_Error(ERR_FATAL, "Z_CheckHeap: next block doesn't have proper back link\n");
+			common->FatalError("Z_CheckHeap: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Com_Error(ERR_FATAL, "Z_CheckHeap: two consecutive free blocks\n");
+			common->FatalError("Z_CheckHeap: two consecutive free blocks\n");
 		}
 	}
 }
@@ -1253,7 +1253,7 @@ void Com_InitSmallZoneMemory(void)
 	smallzone = (memzone_t*)calloc(s_smallZoneTotal, 1);
 	if (!smallzone)
 	{
-		Com_Error(ERR_FATAL, "Small zone data failed to allocate %1.1f megs", (float)s_smallZoneTotal / (1024 * 1024));
+		common->FatalError("Small zone data failed to allocate %1.1f megs", (float)s_smallZoneTotal / (1024 * 1024));
 	}
 	Z_ClearZone(smallzone, s_smallZoneTotal);
 
@@ -1307,7 +1307,7 @@ void Com_InitZoneMemory(void)
 	mainzone = (memzone_t*)calloc(s_zoneTotal, 1);
 	if (!mainzone)
 	{
-		Com_Error(ERR_FATAL, "Zone data failed to allocate %i megs", s_zoneTotal / (1024 * 1024));
+		common->FatalError("Zone data failed to allocate %i megs", s_zoneTotal / (1024 * 1024));
 	}
 	Z_ClearZone(mainzone, s_zoneTotal);
 
@@ -1421,7 +1421,7 @@ void Com_InitHunkMemory(void)
 	// memory systems
 	if (FS_LoadStack() != 0)
 	{
-		Com_Error(ERR_FATAL, "Hunk initialization failed. File system load stack not zero");
+		common->FatalError("Hunk initialization failed. File system load stack not zero");
 	}
 
 	// allocate the stack based hunk allocator
@@ -1453,7 +1453,7 @@ void Com_InitHunkMemory(void)
 	s_hunkData = (byte*)malloc(s_hunkTotal + 31);
 	if (!s_hunkData)
 	{
-		Com_Error(ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / (1024 * 1024));
+		common->FatalError("Hunk data failed to allocate %i megs", s_hunkTotal / (1024 * 1024));
 	}
 	// cacheline align
 	s_hunkData = (byte*)(((qintptr)s_hunkData + 31) & ~31);
@@ -1606,7 +1606,7 @@ void* Hunk_Alloc(int size, ha_pref preference)
 
 	if (s_hunkData == NULL)
 	{
-		Com_Error(ERR_FATAL, "Hunk_Alloc: Hunk memory system not initialized");
+		common->FatalError("Hunk_Alloc: Hunk memory system not initialized");
 	}
 
 	Hunk_SwapBanks();
@@ -1624,7 +1624,7 @@ void* Hunk_Alloc(int size, ha_pref preference)
 		Hunk_Log();
 		Hunk_SmallLog();
 #endif
-		Com_Error(ERR_DROP, "Hunk_Alloc failed on %i", size);
+		common->Error("Hunk_Alloc failed on %i", size);
 	}
 
 	if (hunk_permanent == &hunk_low)
@@ -1694,7 +1694,7 @@ void* Hunk_AllocateTempMemory(int size)
 
 	if (hunk_temp->temp + hunk_permanent->permanent + size > s_hunkTotal)
 	{
-		Com_Error(ERR_DROP, "Hunk_AllocateTempMemory: failed on %i", size);
+		common->Error("Hunk_AllocateTempMemory: failed on %i", size);
 	}
 
 	if (hunk_temp == &hunk_low)
@@ -1747,7 +1747,7 @@ void Hunk_FreeTempMemory(void* buf)
 	hdr = ((hunkHeader_t*)buf) - 1;
 	if (hdr->magic != (int)HUNK_MAGIC)
 	{
-		Com_Error(ERR_FATAL, "Hunk_FreeTempMemory: bad magic");
+		common->FatalError("Hunk_FreeTempMemory: bad magic");
 	}
 
 	hdr->magic = HUNK_FREE_MAGIC;
@@ -1814,7 +1814,7 @@ void Hunk_Trash(void)
 	}
 
 #ifdef _DEBUG
-	Com_Error(ERR_DROP, "hunk trashed\n");
+	common->Error("hunk trashed\n");
 	return;
 #endif
 
@@ -1921,7 +1921,7 @@ sysEvent_t  Com_GetRealEvent(void)
 		r = FS_Read(&ev, sizeof(ev), com_journalFile);
 		if (r != sizeof(ev))
 		{
-			Com_Error(ERR_FATAL, "Error reading from journal file");
+			common->FatalError("Error reading from journal file");
 		}
 		if (ev.evPtrLength)
 		{
@@ -1929,7 +1929,7 @@ sysEvent_t  Com_GetRealEvent(void)
 			r = FS_Read(ev.evPtr, ev.evPtrLength, com_journalFile);
 			if (r != ev.evPtrLength)
 			{
-				Com_Error(ERR_FATAL, "Error reading from journal file");
+				common->FatalError("Error reading from journal file");
 			}
 		}
 	}
@@ -1943,14 +1943,14 @@ sysEvent_t  Com_GetRealEvent(void)
 			r = FS_Write(&ev, sizeof(ev), com_journalFile);
 			if (r != sizeof(ev))
 			{
-				Com_Error(ERR_FATAL, "Error writing to journal file");
+				common->FatalError("Error writing to journal file");
 			}
 			if (ev.evPtrLength)
 			{
 				r = FS_Write(ev.evPtr, ev.evPtrLength, com_journalFile);
 				if (r != ev.evPtrLength)
 				{
-					Com_Error(ERR_FATAL, "Error writing to journal file");
+					common->FatalError("Error writing to journal file");
 				}
 			}
 		}
@@ -2105,7 +2105,7 @@ int Com_EventLoop(void)
 		{
 		default:
 			// bk001129 - was ev.evTime
-			Com_Error(ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType);
+			common->FatalError("Com_EventLoop: bad event type %i", ev.evType);
 			break;
 		case SE_NONE:
 			break;
@@ -2213,11 +2213,11 @@ static void Com_Error_f(void)
 {
 	if (Cmd_Argc() > 1)
 	{
-		Com_Error(ERR_DROP, "Testing drop error");
+		common->Error("Testing drop error");
 	}
 	else
 	{
-		Com_Error(ERR_FATAL, "Testing fatal error");
+		common->FatalError("Testing fatal error");
 	}
 }
 

@@ -575,7 +575,7 @@ void CL_ParseServerData(void)
 	if (protover != PROTOCOL_VERSION &&
 		!(clc.demoplaying && (protover == 26 || protover == 27 || protover == 28)))
 	{
-		Host_EndGame("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, PROTOCOL_VERSION);
+		common->Error("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, PROTOCOL_VERSION);
 	}
 
 	cl.servercount = net_message.ReadLong();
@@ -670,7 +670,7 @@ void CL_ParseSoundlist(void)
 		numsounds++;
 		if (numsounds == MAX_SOUNDS_Q1)
 		{
-			Host_EndGame("Server sent too many sound_precache");
+			common->Error("Server sent too many sound_precache");
 		}
 		String::Cpy(cl.qh_sound_name[numsounds], str);
 	}
@@ -714,7 +714,7 @@ void CL_ParseModellist(void)
 		nummodels++;
 		if (nummodels == MAX_MODELS_Q1)
 		{
-			Host_EndGame("Server sent too many model_precache");
+			common->Error("Server sent too many model_precache");
 		}
 		String::Cpy(cl.qh_model_name[nummodels], str);
 
@@ -821,7 +821,7 @@ void CL_ParseStartSoundPacket(void)
 
 	if (ent > MAX_EDICTS_QH)
 	{
-		Host_EndGame("CL_ParseStartSoundPacket: ent = %i", ent);
+		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
 	}
 
 	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
@@ -876,7 +876,7 @@ void CL_NewTranslation(int slot)
 {
 	if (slot > MAX_CLIENTS_QHW)
 	{
-		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
+		common->FatalError("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
 	}
 
 	CLQ1_TranslatePlayerSkin(slot);
@@ -922,7 +922,7 @@ void CL_UpdateUserinfo(void)
 	slot = net_message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QHW");
+		common->Error("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.q1_players[slot];
@@ -947,7 +947,7 @@ void CL_SetInfo(void)
 	slot = net_message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QHW");
+		common->Error("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.q1_players[slot];
@@ -1002,7 +1002,7 @@ void CL_SetStat(int stat, int value)
 	int j;
 	if (stat < 0 || stat >= MAX_CL_STATS)
 	{
-		Sys_Error("CL_SetStat: %i is invalid", stat);
+		common->FatalError("CL_SetStat: %i is invalid", stat);
 	}
 
 	if (stat == QWSTAT_ITEMS)
@@ -1088,7 +1088,7 @@ void CL_ParseServerMessage(void)
 	{
 		if (net_message.badread)
 		{
-			Host_EndGame("CL_ParseServerMessage: Bad server message");
+			common->Error("CL_ParseServerMessage: Bad server message");
 			break;
 		}
 
@@ -1107,7 +1107,7 @@ void CL_ParseServerMessage(void)
 		switch (cmd)
 		{
 		default:
-			Host_EndGame("CL_ParseServerMessage: Illegible server message");
+			common->Error("CL_ParseServerMessage: Illegible server message");
 			break;
 
 		case q1svc_nop:
@@ -1117,12 +1117,12 @@ void CL_ParseServerMessage(void)
 		case q1svc_disconnect:
 			if (cls.state == CA_CONNECTED)
 			{
-				Host_EndGame("Server disconnected\n"
+				common->Error("Server disconnected\n"
 							 "Server version may not be compatible");
 			}
 			else
 			{
-				Host_EndGame("Server disconnected");
+				common->Error("Server disconnected");
 			}
 			break;
 
@@ -1173,7 +1173,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].frags = net_message.ReadShort();
 			break;
@@ -1182,7 +1182,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].ping = net_message.ReadShort();
 			break;
@@ -1191,7 +1191,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].pl = net_message.ReadByte();
 			break;
@@ -1201,7 +1201,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QHW");
 			}
 			cl.q1_players[i].entertime = realtime - net_message.ReadFloat();
 			break;

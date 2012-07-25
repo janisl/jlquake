@@ -233,7 +233,7 @@ void FS_InitFilesystem(void)
 	if (FS_ReadFile("default.cfg", NULL) <= 0)
 	{
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?");
+		common->FatalError("Couldn't load default.cfg - I am missing essential files - verify your installation?");
 	}
 
 	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
@@ -276,10 +276,10 @@ void FS_Restart(int checksumFeed)
 			lastValidBase[0] = '\0';
 			lastValidGame[0] = '\0';
 			FS_Restart(checksumFeed);
-			Com_Error(ERR_DROP, "Invalid game folder\n");
+			common->Error("Invalid game folder\n");
 			return;
 		}
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg");
+		common->FatalError("Couldn't load default.cfg");
 	}
 
 	// bk010116 - new check before safeMode

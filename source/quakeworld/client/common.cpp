@@ -115,7 +115,7 @@ void COM_CheckRegistered(void)
 	for (i = 0; i < 128; i++)
 		if (pop[i] != (unsigned short)BigShort(check[i]))
 		{
-			Sys_Error("Corrupted data file.");
+			common->FatalError("Corrupted data file.");
 		}
 
 	Cvar_Set("registered", "1");

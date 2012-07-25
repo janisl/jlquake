@@ -930,7 +930,7 @@ void SB_IntermissionOverlay(void)
 		break;
 
 	default:
-		Sys_Error("SB_IntermissionOverlay: Bad episode");
+		common->FatalError("SB_IntermissionOverlay: Bad episode");
 		break;
 	}
 

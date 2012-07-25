@@ -437,7 +437,7 @@ void CL_ParseServerData(void)
 	protover = net_message.ReadLong();
 	if (protover != PROTOCOL_VERSION && protover != OLD_PROTOCOL_VERSION)
 	{
-		Host_EndGame("Server returned version %i, not %i", protover, PROTOCOL_VERSION);
+		common->Error("Server returned version %i, not %i", protover, PROTOCOL_VERSION);
 	}
 
 	cl.servercount = net_message.ReadLong();
@@ -544,7 +544,7 @@ void CL_ParseSoundlist(void)
 		}
 		if (numsounds == MAX_SOUNDS_HW)
 		{
-			Host_EndGame("Server sent too many sound_precache");
+			common->Error("Server sent too many sound_precache");
 		}
 		String::Cpy(cl.qh_sound_name[numsounds], str);
 	}
@@ -586,7 +586,7 @@ void CL_ParseModellist(void)
 		}
 		if (nummodels == MAX_MODELS_H2)
 		{
-			Host_EndGame("Server sent too many model_precache");
+			common->Error("Server sent too many model_precache");
 		}
 		String::Cpy(cl.qh_model_name[nummodels], str);
 
@@ -719,7 +719,7 @@ void CL_ParseStartSoundPacket(void)
 
 	if (ent > MAX_EDICTS_QH)
 	{
-		Host_EndGame("CL_ParseStartSoundPacket: ent = %i", ent);
+		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
 	}
 
 	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
@@ -774,7 +774,7 @@ void CL_NewTranslation(int slot)
 {
 	if (slot > MAX_CLIENTS_QHW)
 	{
-		Sys_Error("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
+		common->FatalError("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
 	}
 
 	CLH2_TranslatePlayerSkin(slot);
@@ -793,7 +793,7 @@ void CL_UpdateUserinfo(void)
 	slot = net_message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
 	{
-		Host_EndGame("CL_ParseServerMessage: hwsvc_updateuserinfo > MAX_CLIENTS_QHW");
+		common->Error("CL_ParseServerMessage: hwsvc_updateuserinfo > MAX_CLIENTS_QHW");
 	}
 
 	player = &cl.h2_players[slot];
@@ -833,7 +833,7 @@ void CL_SetStat(int stat, int value)
 {
 	if (stat < 0 || stat >= MAX_CL_STATS)
 	{
-		Sys_Error("CL_SetStat: %i is invalid", stat);
+		common->FatalError("CL_SetStat: %i is invalid", stat);
 	}
 
 	Sbar_Changed();
@@ -1014,7 +1014,7 @@ void CL_ParseServerMessage(void)
 	{
 		if (net_message.badread)
 		{
-			Host_EndGame("CL_ParseServerMessage: Bad server message");
+			common->Error("CL_ParseServerMessage: Bad server message");
 			break;
 		}
 
@@ -1033,7 +1033,7 @@ void CL_ParseServerMessage(void)
 		switch (cmd)
 		{
 		default:
-			Host_EndGame("CL_ParseServerMessage: Illegible server message\n");
+			common->Error("CL_ParseServerMessage: Illegible server message\n");
 			break;
 
 		case h2svc_nop:
@@ -1041,7 +1041,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_disconnect:
-			Host_EndGame("Server disconnected\n");
+			common->Error("Server disconnected\n");
 			break;
 
 		case h2svc_print:
@@ -1118,7 +1118,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: h2svc_updatefrags > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: h2svc_updatefrags > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].frags = net_message.ReadShort();
 			break;
@@ -1127,7 +1127,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updateping > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: hwsvc_updateping > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].ping = net_message.ReadShort();
 			break;
@@ -1137,7 +1137,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updateentertime > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: hwsvc_updateentertime > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].entertime = realtime - net_message.ReadFloat();
 			break;
@@ -1147,7 +1147,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatepclass > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: hwsvc_updatepclass > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].playerclass = net_message.ReadByte();
 			cl.h2_players[i].level = cl.h2_players[i].playerclass & 31;
@@ -1159,7 +1159,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatedminfo > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: hwsvc_updatedminfo > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].frags = net_message.ReadShort();
 			cl.h2_players[i].playerclass = net_message.ReadByte();
@@ -1178,7 +1178,7 @@ void CL_ParseServerMessage(void)
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
-				Host_EndGame("CL_ParseServerMessage: hwsvc_updatesiegeteam > MAX_CLIENTS_QHW");
+				common->Error("CL_ParseServerMessage: hwsvc_updatesiegeteam > MAX_CLIENTS_QHW");
 			}
 			cl.h2_players[i].siege_team = net_message.ReadByte();
 			break;

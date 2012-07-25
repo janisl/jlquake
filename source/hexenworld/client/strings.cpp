@@ -14,7 +14,7 @@ void PR_LoadStrings(void)
 	pr_global_strings = (char*)COM_LoadHunkFile("strings.txt");
 	if (!pr_global_strings)
 	{
-		Sys_Error("PR_LoadStrings: couldn't load strings.txt");
+		common->FatalError("PR_LoadStrings: couldn't load strings.txt");
 	}
 
 	NewLineChar = -1;
@@ -34,7 +34,7 @@ void PR_LoadStrings(void)
 
 	if (!count)
 	{
-		Sys_Error("PR_LoadStrings: no string lines found");
+		common->FatalError("PR_LoadStrings: no string lines found");
 	}
 
 	pr_string_index = (int*)Hunk_AllocName((count + 1) * 4, "string_index");

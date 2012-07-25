@@ -167,7 +167,7 @@ void SV_SendEffect(QMsg* sb, int index)
 		break;
 
 	default:
-//			Sys_Error ("SV_SendEffect: bad type");
+//			common->FatalError ("SV_SendEffect: bad type");
 		PR_RunError("SV_SendEffect: bad type");
 		break;
 	}
@@ -401,7 +401,7 @@ void SV_SendEffect(QMsg* sb, int index)
 			break;
 
 		default:
-			//			Sys_Error ("SV_SendEffect: bad type");
+			//			common->FatalError ("SV_SendEffect: bad type");
 			PR_RunError("SV_SendEffect: bad type");
 			break;
 		}
@@ -601,7 +601,7 @@ void SV_ParseEffect(QMsg* sb)
 
 
 	default:
-//			Sys_Error ("SV_ParseEffect: bad type");
+//			common->FatalError ("SV_ParseEffect: bad type");
 		PR_RunError("SV_SendEffect: bad type");
 	}
 
@@ -825,7 +825,7 @@ static int GetInt(char*& Data)
 		if (Len >= (int)sizeof(Tmp) - 1)
 		{
 			Tmp[31] = 0;
-			Sys_Error("Number too long %s", Tmp);
+			common->FatalError("Number too long %s", Tmp);
 		}
 		Tmp[Len] = *Data++;
 		Len++;
@@ -846,7 +846,7 @@ static float GetFloat(char*& Data)
 		if (Len >= (int)sizeof(Tmp) - 1)
 		{
 			Tmp[31] = 0;
-			Sys_Error("Number too long %s", Tmp);
+			common->FatalError("Number too long %s", Tmp);
 		}
 		Tmp[Len] = *Data++;
 		Len++;
@@ -879,7 +879,7 @@ char* SV_LoadEffects(char* Data)
 			Data++;
 		if (String::NCmp(Data, "Effect: ", 8))
 		{
-			Sys_Error("Effect expected");
+			common->FatalError("Effect expected");
 		}
 		Data += 8;
 		index = GetInt(Data);
@@ -887,7 +887,7 @@ char* SV_LoadEffects(char* Data)
 		sv.h2_Effects[index].expire_time = GetFloat(Data);
 		if (*Data != ':')
 		{
-			Sys_Error("Colon expected");
+			common->FatalError("Colon expected");
 		}
 		Data++;
 

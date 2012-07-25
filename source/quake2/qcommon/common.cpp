@@ -322,7 +322,7 @@ void Z_Free(void* ptr)
 
 	if (z->magic != Z_MAGIC)
 	{
-		Com_Error(ERR_FATAL, "Z_Free: bad magic");
+		common->FatalError("Z_Free: bad magic");
 	}
 
 	z->prev->next = z->next;
@@ -376,7 +376,7 @@ void* Z_TagMalloc(int size, int tag)
 	z = (zhead_t*)malloc(size);
 	if (!z)
 	{
-		Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes",size);
+		common->FatalError("Z_Malloc: failed on allocation of %i bytes",size);
 	}
 	Com_Memset(z, 0, size);
 	z_count++;
@@ -592,7 +592,7 @@ test error shutdown procedures
 */
 void Com_Error_f(void)
 {
-	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
+	common->FatalError("%s", Cmd_Argv(1));
 }
 
 

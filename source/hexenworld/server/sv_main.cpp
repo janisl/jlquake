@@ -151,7 +151,7 @@ void SV_Error(const char* error, ...)
 ==================
 SV_FinalMessage
 
-Used by SV_Error and SV_Quit_f to send a final message to all connected
+Used by common->Error and SV_Quit_f to send a final message to all connected
 clients before the server goes down.  The messages are sent immediately,
 not just stuck on the outgoing message list, because the server is going
 to totally exit after returning from this function.
@@ -1657,7 +1657,7 @@ void SV_Init(quakeparms_t* parms)
 
 		if (parms->memsize < MINIMUM_MEMORY)
 		{
-			SV_Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
+			common->Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
 		}
 
 		Memory_Init(parms->membase, parms->memsize);
@@ -1700,7 +1700,7 @@ void SV_Init(quakeparms_t* parms)
 		}
 		if (sv.state == SS_DEAD)
 		{
-			SV_Error("Couldn't spawn a server");
+			common->Error("Couldn't spawn a server");
 		}
 	}
 	catch (Exception& e)

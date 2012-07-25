@@ -146,7 +146,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 		switch (cls.state)
 		{
 		default:
-			Com_Error(ERR_FATAL, "SCR_DrawScreenField: bad cls.state");
+			common->FatalError("SCR_DrawScreenField: bad cls.state");
 			break;
 		case CA_CINEMATIC:
 			SCR_DrawCinematic();
@@ -223,7 +223,7 @@ void SCR_UpdateScreen(void)
 
 	if (++recursive > 2)
 	{
-		Com_Error(ERR_FATAL, "SCR_UpdateScreen: recursively called");
+		common->FatalError("SCR_UpdateScreen: recursively called");
 	}
 	recursive = 1;
 

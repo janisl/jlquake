@@ -31,7 +31,7 @@ int SV_ModelIndex(const char* name)
 		}
 	if (i == MAX_MODELS_H2 || !sv.qh_model_precache[i])
 	{
-		SV_Error("SV_ModelIndex: model %s not precached", name);
+		common->Error("SV_ModelIndex: model %s not precached", name);
 	}
 	return i;
 }

@@ -204,7 +204,7 @@ void SV_SendEffect(QMsg* sb, int index)
 		TestDistance = 600;
 		break;
 	default:
-//			Sys_Error ("SV_SendEffect: bad type");
+//			common->FatalError ("SV_SendEffect: bad type");
 		PR_RunError("SV_SendEffect: bad type");
 		break;
 	}
@@ -456,7 +456,7 @@ void SV_SendEffect(QMsg* sb, int index)
 		}
 		break;
 	default:
-//			Sys_Error ("SV_SendEffect: bad type");
+//			common->FatalError ("SV_SendEffect: bad type");
 		PR_RunError("SV_SendEffect: bad type");
 		break;
 	}
@@ -721,7 +721,7 @@ void SV_ParseEffect(QMsg* sb)
 		sv.h2_Effects[index].expire_time = sv.qh_time + 15;
 		break;
 	default:
-//			Sys_Error ("SV_ParseEffect: bad type");
+//			common->FatalError ("SV_ParseEffect: bad type");
 		PR_RunError("SV_SendEffect: bad type");
 	}
 

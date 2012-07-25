@@ -120,7 +120,7 @@ void COM_CheckRegistered(void)
 	for (i = 0; i < 128; i++)
 		if (pop[i] != (unsigned short)BigShort(check[i]))
 		{
-			Sys_Error("Corrupted data file.");
+			common->FatalError("Corrupted data file.");
 		}
 
 	Cvar_Set("registered", "1");
@@ -242,12 +242,12 @@ byte* COM_LoadFile(const char* path, int usehunk)
 	}
 	else
 	{
-		Sys_Error("COM_LoadFile: bad usehunk");
+		common->FatalError("COM_LoadFile: bad usehunk");
 	}
 
 	if (!buf)
 	{
-		Sys_Error("COM_LoadFile: not enough space for %s", path);
+		common->FatalError("COM_LoadFile: not enough space for %s", path);
 	}
 
 	((byte*)buf)[len] = 0;

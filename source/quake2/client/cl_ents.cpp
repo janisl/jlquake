@@ -684,7 +684,7 @@ void CL_ParseFrame(void)
 	SHOWNET(svc_strings[cmd]);
 	if (cmd != q2svc_playerinfo)
 	{
-		Com_Error(ERR_DROP, "CL_ParseFrame: not playerinfo");
+		common->Error("CL_ParseFrame: not playerinfo");
 	}
 	CL_ParsePlayerstate(old, &cl.q2_frame);
 
@@ -693,7 +693,7 @@ void CL_ParseFrame(void)
 	SHOWNET(svc_strings[cmd]);
 	if (cmd != q2svc_packetentities)
 	{
-		Com_Error(ERR_DROP, "CL_ParseFrame: not packetentities");
+		common->Error("CL_ParseFrame: not packetentities");
 	}
 	CL_ParsePacketEntities(old, &cl.q2_frame);
 
@@ -1535,7 +1535,7 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org)
 
 	if (ent < 0 || ent >= MAX_EDICTS_Q2)
 	{
-		Com_Error(ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
+		common->Error("CL_GetEntitySoundOrigin: bad ent");
 	}
 	old = &clq2_entities[ent];
 	VectorCopy(old->lerp_origin, org);

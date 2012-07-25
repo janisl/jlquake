@@ -190,7 +190,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!GetCurrentDirectory(sizeof(cwd), cwd))
 	{
-		Sys_Error("Couldn't determine current directory");
+		common->FatalError("Couldn't determine current directory");
 	}
 
 	if (cwd[String::Length(cwd) - 1] == '/')
@@ -270,7 +270,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!parms.membase)
 	{
-		Sys_Error("Not enough memory free; check disk space\n");
+		common->FatalError("Not enough memory free; check disk space\n");
 	}
 
 	if (COM_CheckParm("-nopagein") == 0)
@@ -282,7 +282,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!tevent)
 	{
-		Sys_Error("Couldn't create event");
+		common->FatalError("Couldn't create event");
 	}
 
 	Sys_Init();

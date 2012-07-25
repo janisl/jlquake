@@ -916,7 +916,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 	switch (args[0])
 	{
 	case UI_ERROR:
-		Com_Error(ERR_DROP, "%s", (char*)VMA(1));
+		common->Error("%s", (char*)VMA(1));
 		return 0;
 
 	case UI_PRINT:
@@ -1332,7 +1332,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return 0;
 
 	default:
-		Com_Error(ERR_DROP, "Bad UI system trap: %i", (int)args[0]);
+		common->Error("Bad UI system trap: %i", (int)args[0]);
 
 	}
 
@@ -1370,14 +1370,14 @@ void CL_InitUI(void)
 	uivm = VM_Create("ui", CL_UISystemCalls, VMI_NATIVE);
 	if (!uivm)
 	{
-		Com_Error(ERR_FATAL, "VM_Create on UI failed");
+		common->FatalError("VM_Create on UI failed");
 	}
 
 	// sanity check
 	v = VM_Call(uivm, UI_GETAPIVERSION);
 	if (v != UI_API_VERSION)
 	{
-		Com_Error(ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION);
+		common->FatalError("User Interface is version %d, expected %d", v, UI_API_VERSION);
 		cls.q3_uiStarted = false;
 	}
 

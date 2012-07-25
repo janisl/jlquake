@@ -421,7 +421,7 @@ void SV_CheckForNewClients(void)
 			}
 		if (i == svs.qh_maxclients)
 		{
-			Sys_Error("Host_CheckForNewClients: no free clients");
+			common->FatalError("Host_CheckForNewClients: no free clients");
 		}
 
 		Netchan_Setup(NS_SERVER, &svs.clients[i].netchan, addr, 0);
@@ -841,7 +841,7 @@ skipA:
 //		flagtest = (long)ent->v.flags;
 		if (flagtest & 0xff000000)
 		{
-			Host_Error("Invalid flags setting for class %s", PR_GetString(ent->GetClassName()));
+			common->Error("Invalid flags setting for class %s", PR_GetString(ent->GetClassName()));
 			return;
 		}
 

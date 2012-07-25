@@ -161,7 +161,7 @@ void FS_InitFilesystem(void)
 	// graphics screen when the font fails to load
 	if (FS_ReadFile("default.cfg", NULL) <= 0)
 	{
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg");
+		common->FatalError("Couldn't load default.cfg");
 		// bk001208 - SafeMode see below, FIXME?
 	}
 
@@ -207,10 +207,10 @@ void FS_Restart(int checksumFeed)
 			lastValidBase[0] = '\0';
 			lastValidGame[0] = '\0';
 			FS_Restart(checksumFeed);
-			Com_Error(ERR_DROP, "Invalid game folder\n");
+			common->Error("Invalid game folder\n");
 			return;
 		}
-		Com_Error(ERR_FATAL, "Couldn't load default.cfg");
+		common->FatalError("Couldn't load default.cfg");
 	}
 
 	// bk010116 - new check before safeMode

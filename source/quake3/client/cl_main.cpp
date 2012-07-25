@@ -113,7 +113,7 @@ void CL_AddReliableCommand(const char* cmd)
 	// we must drop the connection
 	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_Q3)
 	{
-		Com_Error(ERR_DROP, "Client command overflow");
+		common->Error("Client command overflow");
 	}
 	clc.q3_reliableSequence++;
 	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_Q3 - 1);
@@ -459,7 +459,7 @@ void CL_ReadDemoMessage(void)
 	}
 	if (buf.cursize > buf.maxsize)
 	{
-		Com_Error(ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_Q3");
+		common->Error("CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN_Q3");
 	}
 	r = FS_Read(buf._data, buf.cursize, clc.demofile);
 	if (r != buf.cursize)
@@ -563,7 +563,7 @@ void CL_PlayDemo_f(void)
 
 	if (!clc.demofile)
 	{
-		Com_Error(ERR_DROP, "couldn't open %s", name);
+		common->Error("couldn't open %s", name);
 		return;
 	}
 	String::NCpyZ(clc.q3_demoName, Cmd_Argv(1), sizeof(clc.q3_demoName));
@@ -1652,7 +1652,7 @@ void CL_CheckForResend(void)
 		break;
 
 	default:
-		Com_Error(ERR_FATAL, "CL_CheckForResend: bad cls.state");
+		common->FatalError("CL_CheckForResend: bad cls.state");
 	}
 }
 

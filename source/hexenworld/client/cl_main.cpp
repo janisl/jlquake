@@ -808,7 +808,7 @@ void CL_ConnectionlessPacket(void)
 
 	if (c == h2svc_disconnect)
 	{
-		Host_EndGame("Server disconnected\n");
+		common->Error("Server disconnected\n");
 		return;
 	}
 
@@ -1298,7 +1298,7 @@ static void CL_InitRenderStuff(void)
 	playerTranslation = (byte*)COM_LoadHunkFile("gfx/player.lmp");
 	if (!playerTranslation)
 	{
-		Sys_Error("Couldn't load gfx/player.lmp");
+		common->FatalError("Couldn't load gfx/player.lmp");
 	}
 }
 
@@ -1328,7 +1328,7 @@ void Host_Init(quakeparms_t* parms)
 
 		if (parms->memsize < MINIMUM_MEMORY)
 		{
-			Sys_Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
+			common->FatalError("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
 		}
 
 		Memory_Init(parms->membase, parms->memsize);

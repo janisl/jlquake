@@ -249,7 +249,7 @@ void SV_CheckForNewClients(void)
 			}
 		if (i == svs.qh_maxclients)
 		{
-			Sys_Error("Host_CheckForNewClients: no free clients");
+			common->FatalError("Host_CheckForNewClients: no free clients");
 		}
 
 		Netchan_Setup(NS_SERVER, &svs.clients[i].netchan, addr, 0);
@@ -938,7 +938,7 @@ int SV_ModelIndex(const char* name)
 		}
 	if (i == MAX_MODELS_Q1 || !sv.qh_model_precache[i])
 	{
-		Sys_Error("SV_ModelIndex: model %s not precached", name);
+		common->FatalError("SV_ModelIndex: model %s not precached", name);
 	}
 	return i;
 }

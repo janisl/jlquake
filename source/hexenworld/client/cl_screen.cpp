@@ -759,7 +759,7 @@ void SB_IntermissionOverlay(void)
 		pic = R_CachePic("gfx/attwin2.lmp");
 		break;
 	default:
-		Sys_Error("SB_IntermissionOverlay: Bad episode");
+		common->FatalError("SB_IntermissionOverlay: Bad episode");
 		break;
 	}
 	UI_DrawPic(((viddef.width - 320) >> 1),((viddef.height - 200) >> 1), pic);

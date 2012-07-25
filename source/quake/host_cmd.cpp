@@ -676,7 +676,7 @@ void Host_Loadgame_f(void)
 		}
 		if (String::Cmp(token,"{"))
 		{
-			Sys_Error("First token isn't a brace %s", token);
+			common->FatalError("First token isn't a brace %s", token);
 		}
 
 		if (entnum == -1)

@@ -581,7 +581,7 @@ void* Z_TagMalloc(int size, int tag)
 	}
 	else
 	{
-		Com_Error(ERR_FATAL, "Z_TagMalloc: out of tagged allocation space\n");
+		common->FatalError("Z_TagMalloc: out of tagged allocation space\n");
 	}
 	return NULL;
 }
@@ -897,7 +897,7 @@ void Com_InitHunkMemory(void)
 	// memory systems
 	if (FS_LoadStack() != 0)
 	{
-		Com_Error(ERR_FATAL, "Hunk initialization failed. File system load stack not zero");
+		common->FatalError("Hunk initialization failed. File system load stack not zero");
 	}
 
 	// allocate the stack based hunk allocator
@@ -929,7 +929,7 @@ void Com_InitHunkMemory(void)
 	s_hunkData = (byte*)malloc(s_hunkTotal + 31);
 	if (!s_hunkData)
 	{
-		Com_Error(ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / (1024 * 1024));
+		common->FatalError("Hunk data failed to allocate %i megs", s_hunkTotal / (1024 * 1024));
 	}
 	// cacheline align
 	s_hunkData = (byte*)(((qintptr)s_hunkData + 31) & ~31);
@@ -1079,7 +1079,7 @@ void* Hunk_Alloc(int size, ha_pref preference)
 
 	if (s_hunkData == NULL)
 	{
-		Com_Error(ERR_FATAL, "Hunk_Alloc: Hunk memory system not initialized");
+		common->FatalError("Hunk_Alloc: Hunk memory system not initialized");
 	}
 
 	Hunk_SwapBanks();
@@ -1097,7 +1097,7 @@ void* Hunk_Alloc(int size, ha_pref preference)
 		Hunk_Log();
 		Hunk_SmallLog();
 #endif
-		Com_Error(ERR_DROP, "Hunk_Alloc failed on %i", size);
+		common->Error("Hunk_Alloc failed on %i", size);
 	}
 
 	if (hunk_permanent == &hunk_low)
@@ -1167,7 +1167,7 @@ void* Hunk_AllocateTempMemory(int size)
 
 	if (hunk_temp->temp + hunk_permanent->permanent + size > s_hunkTotal)
 	{
-		Com_Error(ERR_DROP, "Hunk_AllocateTempMemory: failed on %i", size);
+		common->Error("Hunk_AllocateTempMemory: failed on %i", size);
 	}
 
 	if (hunk_temp == &hunk_low)
@@ -1220,7 +1220,7 @@ void Hunk_FreeTempMemory(void* buf)
 	hdr = ((hunkHeader_t*)buf) - 1;
 	if (hdr->magic != (int)HUNK_MAGIC)
 	{
-		Com_Error(ERR_FATAL, "Hunk_FreeTempMemory: bad magic");
+		common->FatalError("Hunk_FreeTempMemory: bad magic");
 	}
 
 	hdr->magic = HUNK_FREE_MAGIC;
@@ -1287,7 +1287,7 @@ void Hunk_Trash(void)
 	}
 
 #ifdef _DEBUG
-	Com_Error(ERR_DROP, "hunk trashed\n");
+	common->Error("hunk trashed\n");
 	return;
 #endif
 
@@ -1394,7 +1394,7 @@ sysEvent_t  Com_GetRealEvent(void)
 		r = FS_Read(&ev, sizeof(ev), com_journalFile);
 		if (r != sizeof(ev))
 		{
-			Com_Error(ERR_FATAL, "Error reading from journal file");
+			common->FatalError("Error reading from journal file");
 		}
 		if (ev.evPtrLength)
 		{
@@ -1402,7 +1402,7 @@ sysEvent_t  Com_GetRealEvent(void)
 			r = FS_Read(ev.evPtr, ev.evPtrLength, com_journalFile);
 			if (r != ev.evPtrLength)
 			{
-				Com_Error(ERR_FATAL, "Error reading from journal file");
+				common->FatalError("Error reading from journal file");
 			}
 		}
 	}
@@ -1416,14 +1416,14 @@ sysEvent_t  Com_GetRealEvent(void)
 			r = FS_Write(&ev, sizeof(ev), com_journalFile);
 			if (r != sizeof(ev))
 			{
-				Com_Error(ERR_FATAL, "Error writing to journal file");
+				common->FatalError("Error writing to journal file");
 			}
 			if (ev.evPtrLength)
 			{
 				r = FS_Write(ev.evPtr, ev.evPtrLength, com_journalFile);
 				if (r != ev.evPtrLength)
 				{
-					Com_Error(ERR_FATAL, "Error writing to journal file");
+					common->FatalError("Error writing to journal file");
 				}
 			}
 		}
@@ -1578,7 +1578,7 @@ int Com_EventLoop(void)
 		{
 		default:
 			// bk001129 - was ev.evTime
-			Com_Error(ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType);
+			common->FatalError("Com_EventLoop: bad event type %i", ev.evType);
 			break;
 		case SE_NONE:
 			break;
@@ -1686,11 +1686,11 @@ static void Com_Error_f(void)
 {
 	if (Cmd_Argc() > 1)
 	{
-		Com_Error(ERR_DROP, "Testing drop error");
+		common->Error("Testing drop error");
 	}
 	else
 	{
-		Com_Error(ERR_FATAL, "Testing fatal error");
+		common->FatalError("Testing fatal error");
 	}
 }
 

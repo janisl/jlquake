@@ -1061,7 +1061,7 @@ void FindColor(int slot, int* color1, int* color2)
 
 	if (slot > MAX_CLIENTS_QHW)
 	{
-		Sys_Error("CL_NewTranslation: slot > cl.maxclients");
+		common->FatalError("CL_NewTranslation: slot > cl.maxclients");
 	}
 
 	if (cl.h2_players[slot].playerclass <= 0 || cl.h2_players[slot].playerclass > MAX_PLAYER_CLASS)

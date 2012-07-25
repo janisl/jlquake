@@ -656,7 +656,7 @@ void CL_Disconnect(void)
 
 void CL_Disconnect_f(void)
 {
-	Com_Error(ERR_DROP, "Disconnected from server");
+	common->Error("Disconnected from server");
 }
 
 
@@ -1389,7 +1389,7 @@ void CL_RequestNextDownload(void)
 
 		if (map_checksum != String::Atoi(cl.q2_configstrings[Q2CS_MAPCHECKSUM]))
 		{
-			Com_Error(ERR_DROP, "Local map version differs from server: %i != '%s'\n",
+			common->Error("Local map version differs from server: %i != '%s'\n",
 				map_checksum, cl.q2_configstrings[Q2CS_MAPCHECKSUM]);
 			return;
 		}

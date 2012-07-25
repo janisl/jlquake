@@ -39,7 +39,7 @@ void Sys_Init(void)
 		"hwcl");/* Semaphore name      */
 	if (!qwclsemaphore)
 	{
-		Sys_Error("HWCL is already running on this system");
+		common->FatalError("HWCL is already running on this system");
 	}
 	CloseHandle(qwclsemaphore);
 
@@ -167,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!GetCurrentDirectory(sizeof(cwd), cwd))
 	{
-		Sys_Error("Couldn't determine current directory");
+		common->FatalError("Couldn't determine current directory");
 	}
 
 	if (cwd[String::Length(cwd) - 1] == '/')
@@ -242,7 +242,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!parms.membase)
 	{
-		Sys_Error("Not enough memory free; check disk space\n");
+		common->FatalError("Not enough memory free; check disk space\n");
 	}
 
 	Sys_Init();
