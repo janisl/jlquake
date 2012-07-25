@@ -45,7 +45,7 @@ void PF_bprint(void)
 	level = G_FLOAT(OFS_PARM0);
 
 	s = PF_VarString(1);
-	SV_BroadcastPrintf(level, "%s", s);
+	SVQH_BroadcastPrintf(level, "%s", s);
 }
 
 /*
@@ -77,7 +77,7 @@ void PF_sprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	SV_ClientPrintf(client, level, "%s", s);
+	SVQH_ClientPrintf(client, level, "%s", s);
 }
 
 
@@ -142,8 +142,7 @@ void PF_stuffcmd(void)
 		return;
 	}
 
-	SVQH_ClientReliableWrite_Begin(cl, q1svc_stufftext, 2 + String::Length(str));
-	SVQH_ClientReliableWrite_String(cl, str);
+	SVQH_SendClientCommand(cl, "%s", str);
 }
 
 void PF_makestatic(void)

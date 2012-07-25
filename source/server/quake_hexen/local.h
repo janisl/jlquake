@@ -165,6 +165,11 @@ void SVH2_StopSound(qhedict_t* entity, int channel);
 void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation);
 void SVH2_UpdateSoundPos(qhedict_t* entity, int channel);
+void SVQH_PrintToClient(client_t* cl, int level, char* string);
+void SVQH_ClientPrintf(client_t* cl, int level, const char* fmt, ...) id_attribute((format(printf, 3, 4)));
+void SVQH_BroadcastPrintf(int level, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+void SVQH_SendClientCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+void SVQH_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 
 //
 //	World

@@ -44,9 +44,7 @@ void SV_FlushRedirect(void)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		host_client->netchan.message.WriteByte(h2svc_print);
-		host_client->netchan.message.WriteByte(PRINT_HIGH);
-		host_client->netchan.message.WriteString2(outputbuf);
+		SVQH_PrintToClient(host_client, PRINT_HIGH, outputbuf);
 	}
 
 	// clear it
@@ -140,94 +138,6 @@ EVENT MESSAGES
 
 =============================================================================
 */
-
-
-/*
-=================
-SV_ClientPrintf
-
-Sends text across to be displayed if the level passes
-=================
-*/
-void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	if (level < cl->messagelevel)
-	{
-		return;
-	}
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end(argptr);
-
-	cl->netchan.message.WriteByte(h2svc_print);
-	cl->netchan.message.WriteByte(level);
-	cl->netchan.message.WriteString2(string);
-}
-
-
-/*
-=================
-SV_BroadcastPrintf
-
-Sends text to all active clients
-=================
-*/
-void SV_BroadcastPrintf(int level, const char* fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-	client_t* cl;
-	int i;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end(argptr);
-
-	common->Printf("%s", string);	// print to the console
-
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
-	{
-		if (level < cl->messagelevel)
-		{
-			continue;
-		}
-		if (!cl->state)
-		{
-			continue;
-		}
-		cl->netchan.message.WriteByte(h2svc_print);
-		cl->netchan.message.WriteByte(level);
-		cl->netchan.message.WriteString2(string);
-	}
-}
-
-/*
-=================
-SV_BroadcastCommand
-
-Sends text to all active clients
-=================
-*/
-void SV_BroadcastCommand(const char* fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	if (!sv.state)
-	{
-		return;
-	}
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end(argptr);
-
-	sv.qh_reliable_datagram.WriteByte(h2svc_stufftext);
-	sv.qh_reliable_datagram.WriteString2(string);
-}
 
 /*
 =================
@@ -861,7 +771,7 @@ void SV_SendClientMessages(void)
 		{
 			c->netchan.message.Clear();
 			c->datagram.Clear();
-			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
 			common->Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
 			c->qh_send_message = true;

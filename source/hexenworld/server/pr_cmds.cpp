@@ -35,7 +35,7 @@ void PF_bprint(void)
 		return;
 	}
 
-	SV_BroadcastPrintf(level, "%s", s);
+	SVQH_BroadcastPrintf(level, "%s", s);
 }
 
 /*
@@ -73,7 +73,7 @@ void PF_sprint(void)
 	}
 
 
-	SV_ClientPrintf(client, level, "%s", s);
+	SVQH_ClientPrintf(client, level, "%s", s);
 }
 
 /*
@@ -128,9 +128,7 @@ void PF_name_print(void)
 			{
 				if (cl->state)	//not fully in so won't know name yet, explicitly say the name
 				{
-					cl->netchan.message.WriteByte(h2svc_print);
-					cl->netchan.message.WriteByte(Style);
-					cl->netchan.message.WriteString2((char*)&svs.clients[Index - 1].name);
+					SVQH_PrintToClient(cl, Style, svs.clients[Index - 1].name);
 				}
 				continue;
 			}
@@ -437,8 +435,7 @@ void PF_stuffcmd(void)
 	old = host_client;
 	host_client = &svs.clients[entnum - 1];
 
-	host_client->netchan.message.WriteByte(h2svc_stufftext);
-	host_client->netchan.message.WriteString2(str);
+	SVQH_SendClientCommand(host_client, "%s", str);
 
 	host_client = old;
 }

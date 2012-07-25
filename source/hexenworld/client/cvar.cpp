@@ -13,7 +13,7 @@ void Cvar_Changed(Cvar* var)
 	{
 		Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
 			64, 64, !svqh_highchars || !svqh_highchars->value, false);
-		SV_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
+		SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
 	}
 #else
 	if (var->flags & CVAR_USERINFO && var->name[0] != '*')

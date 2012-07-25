@@ -1304,7 +1304,7 @@ void SV_CheckTimeouts(void)
 			}
 			if (cl->netchan.lastReceived < droptime)
 			{
-				SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
+				SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 				SV_DropClient(cl);
 				cl->state = CS_FREE;	// don't bother with zombie state
 			}
@@ -1739,8 +1739,8 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			}
 			else if (cl->qw_lastnamecount++ > 4)
 			{
-				SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked for name spam\n", cl->name);
-				SV_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game for name spamming\n");
+				SVQH_BroadcastPrintf(PRINT_HIGH, "%s was kicked for name spam\n", cl->name);
+				SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game for name spamming\n");
 				SV_DropClient(cl);
 				return;
 			}
@@ -1748,7 +1748,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 
 		if (cl->state >= CS_ACTIVE && !cl->qh_spectator)
 		{
-			SV_BroadcastPrintf(PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
 		}
 	}
 

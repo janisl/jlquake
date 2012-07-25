@@ -363,3 +363,106 @@ void SVH2_UpdateSoundPos(qhedict_t* entity, int channel)
 		}
 	}
 }
+
+void SVQH_PrintToClient(client_t* cl, int level, char* string)
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		SVQH_ClientReliableWrite_Begin(cl, GGameType & GAME_HexenWorld ? h2svc_print : q1svc_print, String::Length(string) + 3);
+		SVQH_ClientReliableWrite_Byte(cl, level);
+		SVQH_ClientReliableWrite_String(cl, string);
+	}
+	else
+	{
+		cl->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_print : q1svc_print);
+		cl->qh_message.WriteString2(string);
+	}
+}
+
+//	Sends text across to be displayed if the level passes
+void SVQH_ClientPrintf(client_t* cl, int level, const char* fmt, ...)
+{
+	va_list argptr;
+	char string[MAXPRINTMSG];
+
+	if (level < cl->messagelevel)
+	{
+		return;
+	}
+
+	va_start(argptr,fmt);
+	Q_vsnprintf(string, MAXPRINTMSG, fmt, argptr);
+	va_end(argptr);
+
+	SVQH_PrintToClient(cl, level, string);
+}
+
+//	Sends text to all active clients
+void SVQH_BroadcastPrintf(int level, const char* fmt, ...)
+{
+	va_list argptr;
+	char string[1024];
+	int i;
+
+	va_start(argptr,fmt);
+	Q_vsnprintf(string, 1024, fmt, argptr);
+	va_end(argptr);
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		common->Printf("%s", string);	// print to the console
+	}
+
+	client_t* cl = svs.clients;
+	for (i = 0; i < (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ? MAX_CLIENTS_QHW : svs.qh_maxclients); i++, cl++)
+	{
+		if (level < cl->messagelevel)
+		{
+			continue;
+		}
+		if (cl->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		SVQH_PrintToClient(cl, level, string);
+	}
+}
+
+//	Send text over to the client to be executed
+void SVQH_SendClientCommand(client_t* cl, const char* fmt, ...)
+{
+	va_list argptr;
+	char string[1024];
+	va_start(argptr,fmt);
+	Q_vsnprintf(string, 1024, fmt, argptr);
+	va_end(argptr);
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		SVQH_ClientReliableWrite_Begin(cl, GGameType & GAME_Hexen2 ? h2svc_stufftext : q1svc_stufftext, String::Length(string) + 2);
+		SVQH_ClientReliableWrite_String(cl, string);
+	}
+	else
+	{
+		cl->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_stufftext : q1svc_stufftext);
+		cl->qh_message.WriteString2(string);
+	}
+}
+
+//	Sends text to all active clients
+void SVQH_BroadcastCommand(const char* fmt, ...)
+{
+	if (!sv.state)
+	{
+		return;
+	}
+
+	va_list argptr;
+	char string[1024];
+	va_start(argptr,fmt);
+	Q_vsnprintf(string, 1024, fmt, argptr);
+	va_end(argptr);
+
+	sv.qh_reliable_datagram.WriteByte(GGameType & GAME_HexenWorld ? h2svc_stufftext : q1svc_stufftext);
+	sv.qh_reliable_datagram.WriteString2(string);
+}

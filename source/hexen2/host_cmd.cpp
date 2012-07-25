@@ -56,7 +56,6 @@ void Host_Status_f(void)
 	int minutes;
 	int hours = 0;
 	int j;
-	void (* print)(const char* fmt, ...);
 
 	if (cmd_source == src_command)
 	{
@@ -65,18 +64,29 @@ void Host_Status_f(void)
 			Cmd_ForwardToServer();
 			return;
 		}
-		print = Con_Printf;
+	}
+
+	if (cmd_source == src_command)
+	{
+		common->Printf("host:    %s\n", Cvar_VariableString("hostname"));
+		common->Printf("version: %4.2f\n", HEXEN2_VERSION);
 	}
 	else
 	{
-		print = SV_ClientPrintf;
+		SVQH_ClientPrintf(host_client, 0, "host:    %s\n", Cvar_VariableString("hostname"));
+		SVQH_ClientPrintf(host_client, 0, "version: %4.2f\n", HEXEN2_VERSION);
 	}
-
-	print("host:    %s\n", Cvar_VariableString("hostname"));
-	print("version: %4.2f\n", HEXEN2_VERSION);
 	SOCK_ShowIP();
-	print("map:     %s\n", sv.name);
-	print("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	if (cmd_source == src_command)
+	{
+		common->Printf("map:     %s\n", sv.name);
+		common->Printf("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	}
+	else
+	{
+		SVQH_ClientPrintf(host_client, 0, "map:     %s\n", sv.name);
+		SVQH_ClientPrintf(host_client, 0, "players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	}
 	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
@@ -98,8 +108,16 @@ void Host_Status_f(void)
 		{
 			hours = 0;
 		}
-		print("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-		print("   %s\n", client->qh_netconnection->address);
+		if (cmd_source == src_command)
+		{
+			common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
+			common->Printf("   %s\n", client->qh_netconnection->address);
+		}
+		else
+		{
+			SVQH_ClientPrintf(host_client, 0, "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
+			SVQH_ClientPrintf(host_client, 0, "   %s\n", client->qh_netconnection->address);
+		}
 	}
 }
 
@@ -128,11 +146,11 @@ void Host_God_f(void)
 	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
 	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
 	{
-		SV_ClientPrintf("godmode OFF\n");
+		SVQH_ClientPrintf(host_client, 0, "godmode OFF\n");
 	}
 	else
 	{
-		SV_ClientPrintf("godmode ON\n");
+		SVQH_ClientPrintf(host_client, 0, "godmode ON\n");
 	}
 }
 
@@ -152,11 +170,11 @@ void Host_Notarget_f(void)
 	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_NOTARGET);
 	if (!((int)sv_player->GetFlags() & QHFL_NOTARGET))
 	{
-		SV_ClientPrintf("notarget OFF\n");
+		SVQH_ClientPrintf(host_client, 0, "notarget OFF\n");
 	}
 	else
 	{
-		SV_ClientPrintf("notarget ON\n");
+		SVQH_ClientPrintf(host_client, 0, "notarget ON\n");
 	}
 }
 
@@ -177,12 +195,12 @@ void Host_Noclip_f(void)
 	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
 	{
 		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
-		SV_ClientPrintf("noclip ON\n");
+		SVQH_ClientPrintf(host_client, 0, "noclip ON\n");
 	}
 	else
 	{
 		sv_player->SetMoveType(QHMOVETYPE_WALK);
-		SV_ClientPrintf("noclip OFF\n");
+		SVQH_ClientPrintf(host_client, 0, "noclip OFF\n");
 	}
 }
 
@@ -205,7 +223,7 @@ void Host_Ping_f(void)
 		return;
 	}
 
-	SV_ClientPrintf("Client ping times:\n");
+	SVQH_ClientPrintf(host_client, 0, "Client ping times:\n");
 	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
 		if (client->state < CS_CONNECTED)
@@ -216,7 +234,7 @@ void Host_Ping_f(void)
 		for (j = 0; j < NUM_PING_TIMES; j++)
 			total += client->qh_ping_times[j];
 		total /= NUM_PING_TIMES;
-		SV_ClientPrintf("%4i %s\n", (int)(total * 1000), client->name);
+		SVQH_ClientPrintf(host_client, 0, "%4i %s\n", (int)(total * 1000), client->name);
 	}
 }
 
@@ -1324,7 +1342,7 @@ void Host_Say(qboolean teamonly)
 			continue;
 		}
 		host_client = client;
-		SV_ClientPrintf("%s", text);
+		SVQH_ClientPrintf(host_client, 0, "%s", text);
 	}
 	host_client = save;
 
@@ -1398,7 +1416,7 @@ void Host_Tell_f(void)
 			continue;
 		}
 		host_client = client;
-		SV_ClientPrintf("%s", text);
+		SVQH_ClientPrintf(host_client, 0, "%s", text);
 		break;
 	}
 	host_client = save;
@@ -1483,7 +1501,7 @@ void Host_Kill_f(void)
 
 	if (sv_player->GetHealth() <= 0)
 	{
-		SV_ClientPrintf("Can't suicide -- allready dead!\n");
+		SVQH_ClientPrintf(host_client, 0, "Can't suicide -- allready dead!\n");
 		return;
 	}
 
@@ -1508,7 +1526,7 @@ void Host_Pause_f(void)
 	}
 	if (!pausable->value)
 	{
-		SV_ClientPrintf("Pause not allowed.\n");
+		SVQH_ClientPrintf(host_client, 0, "Pause not allowed.\n");
 	}
 	else
 	{
@@ -1516,11 +1534,11 @@ void Host_Pause_f(void)
 
 		if (sv.qh_paused)
 		{
-			SV_BroadcastPrintf("%s paused the game\n", PR_GetString(sv_player->GetNetName()));
+			SVQH_BroadcastPrintf(0, "%s paused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 		else
 		{
-			SV_BroadcastPrintf("%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
+			SVQH_BroadcastPrintf(0, "%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
 		}
 
 		// send notification to all clients
@@ -1837,11 +1855,11 @@ void Host_Kick_f(void)
 		}
 		if (message)
 		{
-			SV_ClientPrintf("Kicked by %s: %s\n", who, message);
+			SVQH_ClientPrintf(host_client, 0, "Kicked by %s: %s\n", who, message);
 		}
 		else
 		{
-			SV_ClientPrintf("Kicked by %s\n", who);
+			SVQH_ClientPrintf(host_client, 0, "Kicked by %s\n", who);
 		}
 		SV_DropClient(false);
 	}

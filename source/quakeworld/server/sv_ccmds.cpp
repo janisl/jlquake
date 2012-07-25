@@ -212,11 +212,11 @@ void SV_God_f(void)
 	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
 	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "godmode OFF\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "godmode OFF\n");
 	}
 	else
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "godmode ON\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "godmode ON\n");
 	}
 }
 
@@ -237,12 +237,12 @@ void SV_Noclip_f(void)
 	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
 	{
 		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
-		SV_ClientPrintf(host_client, PRINT_HIGH, "noclip ON\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "noclip ON\n");
 	}
 	else
 	{
 		sv_player->SetMoveType(QHMOVETYPE_WALK);
-		SV_ClientPrintf(host_client, PRINT_HIGH, "noclip OFF\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "noclip OFF\n");
 	}
 }
 
@@ -328,7 +328,7 @@ void SV_Map_f(void)
 #if 0
 	if (!String::Cmp(level, "e1m8"))
 	{	// QuakeWorld can't go to e1m8
-		SV_BroadcastPrintf(PRINT_HIGH, "can't go to low grav level in QuakeWorld...\n");
+		SVQH_BroadcastPrintf(PRINT_HIGH, "can't go to low grav level in QuakeWorld...\n");
 		String::Cpy(level, "e1m5");
 	}
 #endif
@@ -343,12 +343,12 @@ void SV_Map_f(void)
 	}
 	FS_FCloseFile(f);
 
-	SV_BroadcastCommand("changing\n");
+	SVQH_BroadcastCommand("changing\n");
 	SV_SendMessagesToAll();
 
 	SV_SpawnServer(level);
 
-	SV_BroadcastCommand("reconnect\n");
+	SVQH_BroadcastCommand("reconnect\n");
 }
 
 
@@ -375,10 +375,10 @@ void SV_Kick_f(void)
 		}
 		if (cl->qh_userid == uid)
 		{
-			SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", cl->name);
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", cl->name);
 			// print directly, because the dropped client won't get the
-			// SV_BroadcastPrintf message
-			SV_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
+			// SVQH_BroadcastPrintf message
+			SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
 			SV_DropClient(cl);
 			return;
 		}
@@ -544,7 +544,7 @@ void SV_ConSay_f(void)
 		{
 			continue;
 		}
-		SV_ClientPrintf(client, PRINT_CHAT, "%s\n", text);
+		SVQH_ClientPrintf(client, PRINT_CHAT, "%s\n", text);
 	}
 }
 
@@ -861,8 +861,7 @@ void SV_Snap(int uid)
 		cl->qw_remote_snap = false;
 	}
 
-	SVQH_ClientReliableWrite_Begin(cl, q1svc_stufftext, 24);
-	SVQH_ClientReliableWrite_String(cl, "cmd snap");
+	SVQH_SendClientCommand(cl, "cmd snap");
 	common->Printf("Requesting snap from user %d...\n", uid);
 }
 

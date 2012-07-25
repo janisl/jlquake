@@ -61,9 +61,7 @@ void SV_FlushRedirect(void)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		SVQH_ClientReliableWrite_Begin(host_client, q1svc_print, String::Length(outputbuf) + 3);
-		SVQH_ClientReliableWrite_Byte(host_client, PRINT_HIGH);
-		SVQH_ClientReliableWrite_String(host_client, outputbuf);
+		SVQH_PrintToClient(host_client, PRINT_HIGH, outputbuf);
 	}
 
 	// clear it
@@ -148,105 +146,6 @@ void Con_DPrintf(const char* fmt, ...)
 	va_end(argptr);
 
 	common->Printf("%s", msg);
-}
-
-/*
-=============================================================================
-
-EVENT MESSAGES
-
-=============================================================================
-*/
-
-static void SV_PrintToClient(client_t* cl, int level, char* string)
-{
-	SVQH_ClientReliableWrite_Begin(cl, q1svc_print, String::Length(string) + 3);
-	SVQH_ClientReliableWrite_Byte(cl, level);
-	SVQH_ClientReliableWrite_String(cl, string);
-}
-
-
-/*
-=================
-SV_ClientPrintf
-
-Sends text across to be displayed if the level passes
-=================
-*/
-void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...)
-{
-	va_list argptr;
-	char string[MAXPRINTMSG];
-
-	if (level < cl->messagelevel)
-	{
-		return;
-	}
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, MAXPRINTMSG, fmt, argptr);
-	va_end(argptr);
-
-	SV_PrintToClient(cl, level, string);
-}
-
-/*
-=================
-SV_BroadcastPrintf
-
-Sends text to all active clients
-=================
-*/
-void SV_BroadcastPrintf(int level, const char* fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-	client_t* cl;
-	int i;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end(argptr);
-
-	Sys_Print(string);	// print to the console
-
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
-	{
-		if (level < cl->messagelevel)
-		{
-			continue;
-		}
-		if (!cl->state)
-		{
-			continue;
-		}
-
-		SV_PrintToClient(cl, level, string);
-	}
-}
-
-/*
-=================
-SV_BroadcastCommand
-
-Sends text to all active clients
-=================
-*/
-void SV_BroadcastCommand(const char* fmt, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	if (!sv.state)
-	{
-		return;
-	}
-	va_start(argptr,fmt);
-	Q_vsnprintf(string, 1024, fmt, argptr);
-	va_end(argptr);
-
-	sv.qh_reliable_datagram.WriteByte(q1svc_stufftext);
-	sv.qh_reliable_datagram.WriteString2(string);
 }
 
 /*
@@ -595,7 +494,7 @@ void SV_SendClientMessages(void)
 		{
 			c->netchan.message.Clear();
 			c->datagram.Clear();
-			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
 			common->Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
 			c->qh_send_message = true;

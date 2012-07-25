@@ -42,7 +42,7 @@ void PF_bprint(void)
 	const char* s;
 
 	s = PF_VarString(0);
-	SV_BroadcastPrintf("%s", s);
+	SVQH_BroadcastPrintf(0, "%s", s);
 }
 
 /*
@@ -71,8 +71,7 @@ void PF_sprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->qh_message.WriteChar(q1svc_print);
-	client->qh_message.WriteString2(s);
+	SVQH_ClientPrintf(client, 0, "%s", s);
 }
 
 
@@ -151,7 +150,7 @@ void PF_stuffcmd(void)
 
 	old = host_client;
 	host_client = &svs.clients[entnum - 1];
-	Host_ClientCommands("%s", str);
+	SVQH_SendClientCommand(host_client, "%s", str);
 	host_client = old;
 }
 

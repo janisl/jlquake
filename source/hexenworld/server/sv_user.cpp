@@ -567,7 +567,7 @@ void SV_Say(qboolean team)
 	{
 		if (realtime < host_client->qh_lockedtill)
 		{
-			SV_ClientPrintf(host_client, PRINT_CHAT,
+			SVQH_ClientPrintf(host_client, PRINT_CHAT,
 				"You can't talk for %d more seconds\n",
 				(int)(host_client->qh_lockedtill - realtime));
 			return;
@@ -582,12 +582,12 @@ void SV_Say(qboolean team)
 			host_client->qh_lockedtill = realtime + fp_secondsdead;
 			if (fp_msg[0])
 			{
-				SV_ClientPrintf(host_client, PRINT_CHAT,
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
 					"FloodProt: %s\n", fp_msg);
 			}
 			else
 			{
-				SV_ClientPrintf(host_client, PRINT_CHAT,
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
 					"FloodProt: You can't talk for %d seconds.\n", fp_secondsdead);
 			}
 			return;
@@ -686,16 +686,16 @@ void SV_Say(qboolean team)
 		{
 			if (dmMode->value == DM_SIEGE && host_client->hw_siege_team != client->hw_siege_team)	//other team speaking
 			{
-				SV_ClientPrintf(client, PRINT_CHAT, "%s", text);//fixme: print biege
+				SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);//fixme: print biege
 			}
 			else
 			{
-				SV_ClientPrintf(client, PRINT_CHAT, "%s", text);
+				SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);
 			}
 		}
 		else
 		{
-			SV_ClientPrintf(client, PRINT_SOUND + speaknum - 1, "%s", text);
+			SVQH_ClientPrintf(client, PRINT_SOUND + speaknum - 1, "%s", text);
 		}
 	}
 }
@@ -761,7 +761,7 @@ void SV_Kill_f(void)
 {
 	if (sv_player->GetHealth() <= 0)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
 		return;
 	}
 
@@ -782,7 +782,7 @@ void SV_Drop_f(void)
 	SV_EndRedirect();
 	if (!host_client->qh_spectator)
 	{
-		SV_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
 	}
 	SV_DropClient(host_client);
 }
@@ -809,7 +809,7 @@ void SV_PTrack_f(void)
 	if (i < 0 || i >= MAX_CLIENTS_QHW || svs.clients[i].state != CS_ACTIVE ||
 		svs.clients[i].qh_spectator)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
 		host_client->qh_spec_track = 0;
 		return;
 	}
@@ -827,14 +827,14 @@ void SV_Msg_f(void)
 {
 	if (Cmd_Argc() != 2)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Current msg level is %i\n",
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Current msg level is %i\n",
 			host_client->messagelevel);
 		return;
 	}
 
 	host_client->messagelevel = String::Atoi(Cmd_Argv(1));
 
-	SV_ClientPrintf(host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
+	SVQH_ClientPrintf(host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
 }
 
 /*

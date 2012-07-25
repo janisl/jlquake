@@ -8,7 +8,7 @@ void Cvar_Changed(Cvar* var)
 	{
 		if (sv.state != SS_DEAD)
 		{
-			SV_BroadcastPrintf("\"%s\" changed to \"%s\"\n", var->name, var->string);
+			SVQH_BroadcastPrintf(0, "\"%s\" changed to \"%s\"\n", var->name, var->string);
 		}
 	}
 }

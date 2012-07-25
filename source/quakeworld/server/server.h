@@ -98,9 +98,6 @@ void SV_SpawnServer(char* server);
 //
 void SV_SendClientMessages(void);
 
-void SV_ClientPrintf(client_t* cl, int level, const char* fmt, ...);
-void SV_BroadcastPrintf(int level, const char* fmt, ...);
-void SV_BroadcastCommand(const char* fmt, ...);
 void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);
 

@@ -1195,7 +1195,7 @@ void SV_CheckTimeouts(void)
 		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
 			cl->netchan.lastReceived < droptime)
 		{
-			SV_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
 			SV_DropClient(cl);
 			cl->state = CS_FREE;	// don't bother with zombie state
 		}

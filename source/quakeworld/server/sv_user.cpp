@@ -270,7 +270,7 @@ void SV_PreSpawn_f(void)
 		CM_MapChecksums(map_checksum, map_checksum2);
 		if (sv_mapcheck->value && check != map_checksum && check != map_checksum2)
 		{
-			SV_ClientPrintf(host_client, PRINT_HIGH,
+			SVQH_ClientPrintf(host_client, PRINT_HIGH,
 				"Map model file does not match (%s), %i != %i/%i.\n"
 				"You may need a new version of the map, or the proper install files.\n",
 				sv.qh_modelname, check, map_checksum, map_checksum2);
@@ -409,8 +409,7 @@ void SV_Spawn_f(void)
 
 	// get the client to check and download skins
 	// when that is completed, a begin command will be issued
-	SVQH_ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
-	SVQH_ClientReliableWrite_String(host_client, "skins\n");
+	SVQH_SendClientCommand(host_client, "skins\n");
 
 }
 
@@ -510,7 +509,7 @@ void SV_Begin_f(void)
 	if (pmodel != sv.qw_model_player_checksum ||
 		emodel != sv.qw_eyes_player_checksum)
 	{
-		SV_BroadcastPrintf(PRINT_HIGH, "%s WARNING: non standard player/eyes model detected\n", host_client->name);
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s WARNING: non standard player/eyes model detected\n", host_client->name);
 	}
 
 	// if we are paused, tell the client
@@ -518,7 +517,7 @@ void SV_Begin_f(void)
 	{
 		SVQH_ClientReliableWrite_Begin(host_client, q1svc_setpause, 2);
 		SVQH_ClientReliableWrite_Byte(host_client, sv.qh_paused);
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Server is paused.\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Server is paused.\n");
 	}
 
 #if 0
@@ -613,9 +612,8 @@ void SV_NextUpload(void)
 
 	if (!*host_client->qw_uploadfn)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Upload denied\n");
-		SVQH_ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
-		SVQH_ClientReliableWrite_String(host_client, "stopul");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Upload denied\n");
+		SVQH_SendClientCommand(host_client, "stopul");
 
 		// suck out rest of packet
 		size = net_message.ReadShort(); net_message.ReadByte();
@@ -632,8 +630,7 @@ void SV_NextUpload(void)
 		if (!host_client->qw_upload)
 		{
 			common->Printf("Can't create %s\n", host_client->qw_uploadfn);
-			SVQH_ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
-			SVQH_ClientReliableWrite_String(host_client, "stopul");
+			SVQH_SendClientCommand(host_client, "stopul");
 			*host_client->qw_uploadfn = 0;
 			return;
 		}
@@ -651,8 +648,7 @@ void SV_NextUpload(void)
 
 	if (percent != 100)
 	{
-		SVQH_ClientReliableWrite_Begin(host_client, q1svc_stufftext, 8);
-		SVQH_ClientReliableWrite_String(host_client, "nextul\n");
+		SVQH_SendClientCommand(host_client, "nextul\n");
 	}
 	else
 	{
@@ -803,7 +799,7 @@ void SV_Say(qboolean team)
 	{
 		if (!sv.qh_paused && realtime < host_client->qh_lockedtill)
 		{
-			SV_ClientPrintf(host_client, PRINT_CHAT,
+			SVQH_ClientPrintf(host_client, PRINT_CHAT,
 				"You can't talk for %d more seconds\n",
 				(int)(host_client->qh_lockedtill - realtime));
 			return;
@@ -819,12 +815,12 @@ void SV_Say(qboolean team)
 			host_client->qh_lockedtill = realtime + fp_secondsdead;
 			if (fp_msg[0])
 			{
-				SV_ClientPrintf(host_client, PRINT_CHAT,
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
 					"FloodProt: %s\n", fp_msg);
 			}
 			else
 			{
-				SV_ClientPrintf(host_client, PRINT_CHAT,
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
 					"FloodProt: You can't talk for %d seconds.\n", fp_secondsdead);
 			}
 			return;
@@ -883,7 +879,7 @@ void SV_Say(qboolean team)
 				}
 			}
 		}
-		SV_ClientPrintf(client, PRINT_CHAT, "%s", text);
+		SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);
 	}
 }
 
@@ -951,7 +947,7 @@ void SV_Kill_f(void)
 {
 	if (sv_player->GetHealth() <= 0)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
 		return;
 	}
 
@@ -974,7 +970,7 @@ void SV_TogglePause(const char* msg)
 
 	if (msg)
 	{
-		SV_BroadcastPrintf(PRINT_HIGH, "%s", msg);
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s", msg);
 	}
 
 	// send notification to all clients
@@ -1001,13 +997,13 @@ void SV_Pause_f(void)
 
 	if (!pausable->value)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Pause not allowed.\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Pause not allowed.\n");
 		return;
 	}
 
 	if (host_client->qh_spectator)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Spectators can not pause.\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Spectators can not pause.\n");
 		return;
 	}
 
@@ -1036,7 +1032,7 @@ void SV_Drop_f(void)
 	SV_EndRedirect();
 	if (!host_client->qh_spectator)
 	{
-		SV_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
 	}
 	SV_DropClient(host_client);
 }
@@ -1072,7 +1068,7 @@ void SV_PTrack_f(void)
 	if (i < 0 || i >= MAX_CLIENTS_QHW || svs.clients[i].state != CS_ACTIVE ||
 		svs.clients[i].qh_spectator)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
 		host_client->qh_spec_track = 0;
 		ent = QH_EDICT_NUM(host_client - svs.clients + 1);
 		tent = QH_EDICT_NUM(0);
@@ -1097,14 +1093,14 @@ void SV_Msg_f(void)
 {
 	if (Cmd_Argc() != 2)
 	{
-		SV_ClientPrintf(host_client, PRINT_HIGH, "Current msg level is %i\n",
+		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Current msg level is %i\n",
 			host_client->messagelevel);
 		return;
 	}
 
 	host_client->messagelevel = String::Atoi(Cmd_Argv(1));
 
-	SV_ClientPrintf(host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
+	SVQH_ClientPrintf(host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
 }
 
 /*
@@ -1179,7 +1175,7 @@ void SV_NoSnap_f(void)
 	if (*host_client->qw_uploadfn)
 	{
 		*host_client->qw_uploadfn = 0;
-		SV_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", host_client->name);
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", host_client->name);
 	}
 }
 

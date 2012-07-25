@@ -30,7 +30,7 @@ void PF_bprint(void)
 	const char* s;
 
 	s = PF_VarString(0);
-	SV_BroadcastPrintf("%s", s);
+	SVQH_BroadcastPrintf(0, "%s", s);
 }
 
 /*
@@ -59,8 +59,7 @@ void PF_sprint(void)
 
 	client = &svs.clients[entnum - 1];
 
-	client->qh_message.WriteChar(h2svc_print);
-	client->qh_message.WriteString2(s);
+	SVQH_ClientPrintf(client, 0, "%s", s);
 }
 
 
@@ -209,7 +208,7 @@ void PF_stuffcmd(void)
 
 	old = host_client;
 	host_client = &svs.clients[entnum - 1];
-	Host_ClientCommands("%s", str);
+	SVQH_SendClientCommand(host_client, "%s", str);
 	host_client = old;
 }
 
@@ -400,7 +399,7 @@ void PF_setclass(void)
 
 	old = host_client;
 	host_client = client;
-	Host_ClientCommands("playerclass %i\n", (int)NewClass);
+	SVQH_SendClientCommand(host_client, "playerclass %i\n", (int)NewClass);
 	host_client = old;
 
 	// These will get set again after the message has filtered its way

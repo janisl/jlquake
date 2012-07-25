@@ -112,9 +112,7 @@ void SV_SendServerinfo(client_t* client)
 	const char** s;
 	char message[2048];
 
-	client->qh_message.WriteByte(q1svc_print);
-	sprintf(message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
-	client->qh_message.WriteString2(message);
+	SVQH_ClientPrintf(client, 0, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
 
 	client->qh_message.WriteByte(q1svc_serverinfo);
 	client->qh_message.WriteLong(PROTOCOL_VERSION);
