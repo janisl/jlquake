@@ -1474,7 +1474,7 @@ skipwhite:
 //	Parse a token out of a string
 //	Will never return NULL, just empty strings
 //
-//	If "allowLineBreaks" is qtrue then an empty string will be returned if
+//	If "allowLineBreaks" is true then an empty string will be returned if
 // the next token is a newline.
 char* String::Parse3(const char** data_p)
 {

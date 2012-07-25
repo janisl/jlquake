@@ -66,7 +66,7 @@ qboolean SV_Netchan_Process(client_t* client, QMsg* msg)
 	ret = Netchan_Process(&client->netchan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
-	return qtrue;
+	return true;
 }

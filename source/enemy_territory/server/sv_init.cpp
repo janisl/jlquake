@@ -55,7 +55,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// ydnar: broadcast a level change to all connected clients
 	if (svs.clients && !com_errorEntered)
 	{
-		SV_FinalCommand("spawnserver", qfalse);
+		SV_FinalCommand("spawnserver", false);
 	}
 
 	// shut down the existing game if it is running
@@ -88,7 +88,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	for (i = 0; i < MAX_CONFIGSTRINGS_ET; i++)
 	{
 		sv.q3_configstrings[i] = __CopyString("");
-		sv.et_configstringsmodified[i] = qfalse;
+		sv.et_configstringsmodified[i] = false;
 	}
 
 	for (int i = 0; i < MAX_GENTITIES_Q3; i++)
@@ -152,7 +152,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 #endif
 	FS_Restart(sv.q3_checksumFeed);
 
-	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
+	CM_LoadMap(va("maps/%s.bsp", server), false, &checksum);
 
 	// set serverinfo visible name
 	Cvar_Set("mapname", server);
@@ -203,15 +203,15 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					SVT3_DropClient(&svs.clients[i], "");
 					continue;
 				}
-				isBot = qtrue;
+				isBot = true;
 			}
 			else
 			{
-				isBot = qfalse;
+				isBot = false;
 			}
 
 			// connect the client again
-			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, ETGAME_CLIENT_CONNECT, i, qfalse, isBot));		// firstTime = qfalse
+			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, ETGAME_CLIENT_CONNECT, i, false, isBot));		// firstTime = false
 			if (denied)
 			{
 				// this generally shouldn't happen, because the client
@@ -509,7 +509,7 @@ void SV_Shutdown(const char* finalmsg)
 
 	if (svs.clients && !com_errorEntered)
 	{
-		SV_FinalCommand(va("print \"%s\"", finalmsg), qtrue);
+		SV_FinalCommand(va("print \"%s\"", finalmsg), true);
 	}
 
 	SV_RemoveOperatorCommands();
@@ -533,5 +533,5 @@ void SV_Shutdown(const char* finalmsg)
 	Com_Printf("---------------------------\n");
 
 	// disconnect any local clients
-	CL_Disconnect(qfalse);
+	CL_Disconnect(false);
 }

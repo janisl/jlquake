@@ -99,7 +99,7 @@ void SCR_Init(void)
 	cl_debuggraph = Cvar_Get("debuggraph", "0", CVAR_CHEAT);
 	SCR_InitCommon();
 
-	scr_initialized = qtrue;
+	scr_initialized = true;
 }
 
 
@@ -155,12 +155,12 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 			// connecting clients will only show the connection dialog
 			// refresh to update the time
 			VM_Call(uivm, UI_REFRESH, cls.realtime);
-			VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, qfalse);
+			VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, false);
 			break;
 //			// Ridah, if the cgame is valid, fall through to there
 //			if (!cls.cgameStarted || !com_sv_running->integer) {
 //				// connecting clients will only show the connection dialog
-//				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
+//				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, false );
 //				break;
 //			}
 		case CA_LOADING:
@@ -172,7 +172,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 			// flash away too briefly on local or lan games
 			//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats"))	// Ridah, don't draw useless text if not in dev mode
 			VM_Call(uivm, UI_REFRESH, cls.realtime);
-			VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, qtrue);
+			VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, true);
 			break;
 		case CA_ACTIVE:
 			CL_CGameRendering(stereoFrame);

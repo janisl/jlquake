@@ -136,7 +136,7 @@ void SV_MasterHeartbeat(const char* hbname)
 		// do it when needed
 		if (sv_master[i]->modified)
 		{
-			sv_master[i]->modified = qfalse;
+			sv_master[i]->modified = false;
 
 			Com_Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
@@ -145,7 +145,7 @@ void SV_MasterHeartbeat(const char* hbname)
 				// so we don't take repeated dns hits
 				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = qfalse;
+				sv_master[i]->modified = false;
 				continue;
 			}
 			Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
@@ -197,7 +197,7 @@ void SV_MasterGameCompleteStatus()
 		// do it when needed
 		if (sv_master[i]->modified)
 		{
-			sv_master[i]->modified = qfalse;
+			sv_master[i]->modified = false;
 
 			Com_Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
@@ -206,7 +206,7 @@ void SV_MasterGameCompleteStatus()
 				// so we don't take repeated dns hits
 				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = qfalse;
+				sv_master[i]->modified = false;
 				continue;
 			}
 			Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
@@ -252,21 +252,21 @@ CONNECTIONLESS COMMANDS
 */
 
 //bani - bugtraq 12534
-//returns qtrue if valid challenge
-//returns qfalse if m4d h4x0rz
+//returns true if valid challenge
+//returns false if m4d h4x0rz
 qboolean SV_VerifyChallenge(char* challenge)
 {
 	int i, j;
 
 	if (!challenge)
 	{
-		return qfalse;
+		return false;
 	}
 
 	j = String::Length(challenge);
 	if (j > 64)
 	{
-		return qfalse;
+		return false;
 	}
 	for (i = 0; i < j; i++)
 	{
@@ -279,10 +279,10 @@ qboolean SV_VerifyChallenge(char* challenge)
 			challenge[i] > 126	// non-ascii
 			)
 		{
-			return qfalse;
+			return false;
 		}
 	}
-	return qtrue;
+	return true;
 }
 
 /*
@@ -554,12 +554,12 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 	if (!String::Length(sv_rconPassword->string) ||
 		String::Cmp(Cmd_Argv(1), sv_rconPassword->string))
 	{
-		valid = qfalse;
+		valid = false;
 		Com_Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 	else
 	{
-		valid = qtrue;
+		valid = true;
 		Com_Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 

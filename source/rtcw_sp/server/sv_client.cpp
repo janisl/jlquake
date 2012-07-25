@@ -464,7 +464,7 @@ gotnewcl:
 	String::NCpyZ(newcl->userinfo, userinfo, MAX_INFO_STRING_Q3);
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = VM_Call(gvm, WSGAME_CLIENT_CONNECT, clientNum, qtrue, qfalse);	// firstTime = qtrue
+	denied = VM_Call(gvm, WSGAME_CLIENT_CONNECT, clientNum, true, false);	// firstTime = true
 	if (denied)
 	{
 		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
@@ -584,7 +584,7 @@ void SV_SendClientGameState(client_t* client)
 			continue;
 		}
 		msg.WriteByte(q3svc_baseline);
-		MSGWS_WriteDeltaEntity(&msg, &nullstate, base, qtrue);
+		MSGWS_WriteDeltaEntity(&msg, &nullstate, base, true);
 	}
 
 	msg.WriteByte(q3svc_EOF);
@@ -640,7 +640,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 	int nClientChkSum[1024];
 	int nServerChkSum[1024];
 	const char* pPaks, * pArg;
-	qboolean bGood = qtrue;
+	qboolean bGood = true;
 
 	// if we are pure, we "expect" the client to load certain things from
 	// certain pk3 files, namely we want the client to have loaded the
@@ -648,7 +648,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 	if (svt3_pure->integer != 0)
 	{
 
-		bGood = qtrue;
+		bGood = true;
 		nChkSum1 = nChkSum2 = 0;
 		// we run the game, so determine which cgame and ui the client "should" be running
 		bGood = (FS_FileIsInPAK(GGameType & (GAME_WolfMP | GAME_ET) ? "cgame_mp_x86.dll" : "vm/cgame.qvm", &nChkSum1) == 1);
@@ -665,7 +665,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 		pArg = Cmd_Argv(nCurArg++);
 		if (!pArg)
 		{
-			bGood = qfalse;
+			bGood = false;
 		}
 		else
 		{
@@ -687,28 +687,28 @@ static void SV_VerifyPaks_f(client_t* cl)
 			// numChecksums is encoded
 			if (nClientPaks < 6)
 			{
-				bGood = qfalse;
+				bGood = false;
 				break;
 			}
 			// verify first to be the cgame checksum
 			pArg = Cmd_Argv(nCurArg++);
 			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum1)
 			{
-				bGood = qfalse;
+				bGood = false;
 				break;
 			}
 			// verify the second to be the ui checksum
 			pArg = Cmd_Argv(nCurArg++);
 			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum2)
 			{
-				bGood = qfalse;
+				bGood = false;
 				break;
 			}
 			// should be sitting at the delimeter now
 			pArg = Cmd_Argv(nCurArg++);
 			if (*pArg != '@')
 			{
-				bGood = qfalse;
+				bGood = false;
 				break;
 			}
 			// store checksums since tokenization is not re-entrant
@@ -732,16 +732,16 @@ static void SV_VerifyPaks_f(client_t* cl)
 					}
 					if (nClientChkSum[i] == nClientChkSum[j])
 					{
-						bGood = qfalse;
+						bGood = false;
 						break;
 					}
 				}
-				if (bGood == qfalse)
+				if (bGood == false)
 				{
 					break;
 				}
 			}
-			if (bGood == qfalse)
+			if (bGood == false)
 			{
 				break;
 			}
@@ -772,11 +772,11 @@ static void SV_VerifyPaks_f(client_t* cl)
 				}
 				if (j >= nServerPaks)
 				{
-					bGood = qfalse;
+					bGood = false;
 					break;
 				}
 			}
-			if (bGood == qfalse)
+			if (bGood == false)
 			{
 				break;
 			}
@@ -790,7 +790,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			nChkSum1 ^= nClientPaks;
 			if (nChkSum1 != nClientChkSum[nClientPaks])
 			{
-				bGood = qfalse;
+				bGood = false;
 				break;
 			}
 
@@ -798,7 +798,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			break;
 		}
 
-		cl->q3_gotCP = qtrue;
+		cl->q3_gotCP = true;
 
 		if (bGood)
 		{
@@ -875,7 +875,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 {
 	int seq;
 	const char* s;
-	qboolean clientOk = qtrue;
+	qboolean clientOk = true;
 
 	seq = msg->ReadLong();
 	s = msg->ReadString();
@@ -883,7 +883,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	// see if we have already executed it
 	if (cl->q3_lastClientCommand >= seq)
 	{
-		return qtrue;
+		return true;
 	}
 
 	Com_DPrintf("clientCommand: %s : %i : %s\n", cl->name, seq, s);
@@ -894,7 +894,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 		Com_Printf("Client %s lost %i clientCommands\n", cl->name,
 			seq - cl->q3_lastClientCommand + 1);
 		SVT3_DropClient(cl, "Lost reliable commands");
-		return qfalse;
+		return false;
 	}
 
 	// malicious users may try using too many string commands
@@ -910,9 +910,9 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 		svs.q3_time < cl->q3_nextReliableTime)
 	{
 		// ignore any other text messages from this client but let them keep playing
-		clientOk = qfalse;
+		clientOk = false;
 		Com_DPrintf("client text ignored for %s\n", cl->name);
-		//return qfalse;	// stop processing
+		//return false;	// stop processing
 	}
 
 	// don't allow another command for one second
@@ -923,7 +923,7 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 	cl->q3_lastClientCommand = seq;
 	String::Sprintf(cl->q3_lastClientCommandString, sizeof(cl->q3_lastClientCommandString), "%s", s);
 
-	return qtrue;		// continue procesing
+	return true;		// continue procesing
 }
 
 
@@ -1139,11 +1139,11 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	// read the wsusercmd_t
 	if (c == q3clc_move)
 	{
-		SV_UserMove(cl, msg, qtrue);
+		SV_UserMove(cl, msg, true);
 	}
 	else if (c == q3clc_moveNoDelta)
 	{
-		SV_UserMove(cl, msg, qfalse);
+		SV_UserMove(cl, msg, false);
 	}
 	else if (c != q3clc_EOF)
 	{

@@ -148,7 +148,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 #endif
 	FS_Restart(sv.q3_checksumFeed);
 
-	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
+	CM_LoadMap(va("maps/%s.bsp", server), false, &checksum);
 
 	// set serverinfo visible name
 	Cvar_Set("mapname", server);
@@ -175,7 +175,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	SVT3_InitGameProgs();
 
 	// don't allow a map_restart if game is modified
-	svt3_gametype->modified = qfalse;
+	svt3_gametype->modified = false;
 
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)
@@ -202,15 +202,15 @@ void SV_SpawnServer(char* server, qboolean killBots)
 					SVT3_DropClient(&svs.clients[i], "");
 					continue;
 				}
-				isBot = qtrue;
+				isBot = true;
 			}
 			else
 			{
-				isBot = qfalse;
+				isBot = false;
 			}
 
 			// connect the client again
-			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, WMGAME_CLIENT_CONNECT, i, qfalse, isBot));		// firstTime = qfalse
+			denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, WMGAME_CLIENT_CONNECT, i, false, isBot));		// firstTime = false
 			if (denied)
 			{
 				// this generally shouldn't happen, because the client
@@ -500,5 +500,5 @@ void SV_Shutdown(const char* finalmsg)
 	Com_Printf("---------------------------\n");
 
 	// disconnect any local clients
-	CL_Disconnect(qfalse);
+	CL_Disconnect(false);
 }

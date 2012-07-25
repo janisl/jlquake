@@ -96,7 +96,7 @@ static void SVQ3_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t
 		if (newnum == oldnum)
 		{
 			// delta update from old position
-			// because the force parm is qfalse, this will not result
+			// because the force parm is false, this will not result
 			// in any bytes being emited if the entity has not changed at all
 			MSGQ3_WriteDeltaEntity(msg, oldent, newent, false);
 			oldindex++;
@@ -169,7 +169,7 @@ static void SVWS_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t
 		if (newnum == oldnum)
 		{
 			// delta update from old position
-			// because the force parm is qfalse, this will not result
+			// because the force parm is false, this will not result
 			// in any bytes being emited if the entity has not changed at all
 			MSGWS_WriteDeltaEntity(msg, oldent, newent, false);
 			oldindex++;
@@ -242,7 +242,7 @@ static void SVWM_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t
 		if (newnum == oldnum)
 		{
 			// delta update from old position
-			// because the force parm is qfalse, this will not result
+			// because the force parm is false, this will not result
 			// in any bytes being emited if the entity has not changed at all
 			MSGWM_WriteDeltaEntity(msg, oldent, newent, false);
 			oldindex++;
@@ -315,7 +315,7 @@ static void SVET_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t
 		if (newnum == oldnum)
 		{
 			// delta update from old position
-			// because the force parm is qfalse, this will not result
+			// because the force parm is false, this will not result
 			// in any bytes being emited if the entity has not changed at all
 			MSGET_WriteDeltaEntity(msg, oldent, newent, false);
 			oldindex++;

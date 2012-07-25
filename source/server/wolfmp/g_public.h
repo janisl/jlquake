@@ -361,7 +361,7 @@ enum
 	// ConsoleCommand will be called when a command has been issued
 	// that is not recognized as a builtin function.
 	// The game can issue trap_argc() / trap_argv() commands to get the command
-	// and parameters.  Return qfalse if the game doesn't recognize it as a command.
+	// and parameters.  Return false if the game doesn't recognize it as a command.
 
 	WMBOTAI_START_FRAME,				// ( int time );
 

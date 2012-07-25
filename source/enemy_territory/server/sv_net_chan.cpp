@@ -81,13 +81,13 @@ static void SV_WriteBinaryMessage(QMsg* msg, client_t* cl)
 
 	if ((msg->cursize + cl->et_binaryMessageLength) >= msg->maxsize)
 	{
-		cl->et_binaryMessageOverflowed = qtrue;
+		cl->et_binaryMessageOverflowed = true;
 		return;
 	}
 
 	msg->WriteData(cl->et_binaryMessage, cl->et_binaryMessageLength);
 	cl->et_binaryMessageLength = 0;
-	cl->et_binaryMessageOverflowed = qfalse;
+	cl->et_binaryMessageOverflowed = false;
 }
 
 /*
@@ -158,11 +158,11 @@ qboolean SV_Netchan_Process(client_t* client, QMsg* msg)
 	ret = Netchan_Process(&client->netchan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
 	if (!SVET_GameIsSinglePlayer())
 	{
 		SVT3_Netchan_Decode(client, msg);
 	}
-	return qtrue;
+	return true;
 }

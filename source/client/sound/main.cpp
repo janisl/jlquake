@@ -3142,7 +3142,7 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 //
 //	S_ScanChannelStarts
 //
-//	Returns qtrue if any new sounds were started since the last mix
+//	Returns true if any new sounds were started since the last mix
 //
 //==========================================================================
 

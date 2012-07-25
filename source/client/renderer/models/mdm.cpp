@@ -1714,7 +1714,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 					qglEnd();
 					qglDisable(GL_BLEND);
 
-					R_DebugText(vec, 1.f, 1.f, 1.f, mdxBoneInfo->name, false);			// qfalse, as there is no reason to set depthrange again
+					R_DebugText(vec, 1.f, 1.f, 1.f, mdxBoneInfo->name, false);			// false, as there is no reason to set depthrange again
 				}
 
 				qglDepthRange(0, 1);
@@ -1773,7 +1773,7 @@ void RB_MDM_SurfaceAnim(mdmSurface_t* surface)
 						qglEnd();
 						qglDisable(GL_BLEND);
 
-						R_DebugText(vec, 1.f, 1.f, 1.f, pTag->name, false);		// qfalse, as there is no reason to set depthrange again
+						R_DebugText(vec, 1.f, 1.f, 1.f, pTag->name, false);		// false, as there is no reason to set depthrange again
 
 						pTag = (mdmTag_t*)((byte*)pTag + pTag->ofsEnd);
 					}

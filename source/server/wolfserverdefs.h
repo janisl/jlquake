@@ -35,7 +35,7 @@ struct wsentityShared_t
 {
 	wsentityState_t s;					// communicated by server to clients
 
-	qboolean linked;				// qfalse if not in any good cluster
+	qboolean linked;				// false if not in any good cluster
 	int linkcount;
 
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
@@ -76,7 +76,7 @@ struct wmentityShared_t
 {
 	wmentityState_t s;					// communicated by server to clients
 
-	qboolean linked;				// qfalse if not in any good cluster
+	qboolean linked;				// false if not in any good cluster
 	int linkcount;
 
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc
@@ -117,7 +117,7 @@ struct wmsharedEntity_t
 
 struct etentityShared_t
 {
-	qboolean linked;				// qfalse if not in any good cluster
+	qboolean linked;				// false if not in any good cluster
 	int linkcount;
 
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc

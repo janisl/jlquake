@@ -198,7 +198,7 @@ static int LAN_AddServer(int source, const char* name, const char* address)
 		{
 			servers[*count].adr = adr;
 			String::NCpyZ(servers[*count].hostName, name, sizeof(servers[*count].hostName));
-			servers[*count].visible = qtrue;
+			servers[*count].visible = true;
 			(*count)++;
 			return 1;
 		}
@@ -714,7 +714,7 @@ static int LAN_ServerIsVisible(int source, int n)
 		}
 		break;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -766,7 +766,7 @@ Key_KeynumToStringBuf
 */
 void Key_KeynumToStringBuf(int keynum, char* buf, int buflen)
 {
-	String::NCpyZ(buf, Key_KeynumToString(keynum, qtrue), buflen);
+	String::NCpyZ(buf, Key_KeynumToString(keynum, true), buflen);
 }
 
 /*
@@ -877,7 +877,7 @@ static int GetConfigString(int index, char* buf, int size)
 
 	if (index < 0 || index >= MAX_CONFIGSTRINGS_WM)
 	{
-		return qfalse;
+		return false;
 	}
 
 	offset = cl.wm_gameState.stringOffsets[index];
@@ -887,12 +887,12 @@ static int GetConfigString(int index, char* buf, int size)
 		{
 			buf[0] = 0;
 		}
-		return qfalse;
+		return false;
 	}
 
 	String::NCpyZ(buf, cl.wm_gameState.stringData + offset, size);
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1295,7 +1295,7 @@ CL_ShutdownUI
 void CL_ShutdownUI(void)
 {
 	in_keyCatchers &= ~KEYCATCH_UI;
-	cls.q3_uiStarted = qfalse;
+	cls.q3_uiStarted = false;
 	if (!uivm)
 	{
 		return;
@@ -1326,7 +1326,7 @@ void CL_InitUI(void)
 	if (v != UI_API_VERSION)
 	{
 		Com_Error(ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION);
-		cls.q3_uiStarted = qfalse;
+		cls.q3_uiStarted = false;
 	}
 
 	// init for this gamestate
@@ -1338,11 +1338,11 @@ qboolean UI_usesUniqueCDKey()
 {
 	if (uivm)
 	{
-		return (VM_Call(uivm, UI_HASUNIQUECDKEY) == qtrue);
+		return (VM_Call(uivm, UI_HASUNIQUECDKEY) == true);
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -1354,7 +1354,7 @@ qboolean UI_checkKeyExec(int key)
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -1369,7 +1369,7 @@ qboolean UI_GameCommand(void)
 {
 	if (!uivm)
 	{
-		return qfalse;
+		return false;
 	}
 
 	return VM_Call(uivm, UI_CONSOLE_COMMAND, cls.realtime);

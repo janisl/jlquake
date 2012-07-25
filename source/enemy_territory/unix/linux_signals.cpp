@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 // rain - don't bother building this in debug builds now, since we
 // aren't calling the signal handler at all
 #ifndef _DEBUG
-static qboolean signalcaught = qfalse;;
+static qboolean signalcaught = false;;
 
 void Sys_Exit(int);		// bk010104 - abstraction
 
@@ -50,7 +50,7 @@ static void signal_handler(int sig)		// bk010104 - replace this... (NOTE TTimo h
 		Sys_Exit(1);	// bk010104 - abstraction
 	}
 
-	signalcaught = qtrue;
+	signalcaught = true;
 	printf("Received signal %d, exiting...\n", sig);
 #ifndef DEDICATED
 	GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown

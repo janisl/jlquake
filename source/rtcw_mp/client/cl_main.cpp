@@ -118,7 +118,7 @@ Called by Com_Error when a cd is needed
 */
 void CL_CDDialog(void)
 {
-	cls.q3_cddialog = qtrue;	// start it next frame
+	cls.q3_cddialog = true;	// start it next frame
 }
 
 
@@ -229,7 +229,7 @@ void CL_StopRecord_f(void)
 	FS_Write(&len, 4, clc.demofile);
 	FS_FCloseFile(clc.demofile);
 	clc.demofile = 0;
-	clc.demorecording = qfalse;
+	clc.demorecording = false;
 	Com_Printf("Stopped demo.\n");
 }
 
@@ -346,11 +346,11 @@ void CL_Record_f(void)
 		Com_Printf("ERROR: couldn't open.\n");
 		return;
 	}
-	clc.demorecording = qtrue;
+	clc.demorecording = true;
 	String::NCpyZ(clc.q3_demoName, demoName, sizeof(clc.q3_demoName));
 
 	// don't start saving messages until a non-delta compressed message is received
-	clc.q3_demowaiting = qtrue;
+	clc.q3_demowaiting = true;
 
 	// write out the gamestate message
 	buf.Init(bufData, sizeof(bufData));
@@ -385,7 +385,7 @@ void CL_Record_f(void)
 			continue;
 		}
 		buf.WriteByte(q3svc_baseline);
-		MSGWM_WriteDeltaEntity(&buf, &nullstate, ent, qtrue);
+		MSGWM_WriteDeltaEntity(&buf, &nullstate, ent, true);
 	}
 
 	buf.WriteByte(q3svc_EOF);
@@ -438,7 +438,7 @@ void CL_DemoCompleted(void)
 		}
 	}
 
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 	CL_NextDemo();
 }
 
@@ -587,7 +587,7 @@ void CL_PlayDemo_f(void)
 	// make sure a local server is killed
 	Cvar_Set("sv_killserver", "1");
 
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 
 
 //	CL_FlushMemory();	//----(SA)	MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
@@ -605,7 +605,7 @@ void CL_PlayDemo_f(void)
 		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, PROTOCOL_VERSION);
 	}
 
-	FS_FOpenFileRead(name, &clc.demofile, qtrue);
+	FS_FOpenFileRead(name, &clc.demofile, true);
 	if (!clc.demofile)
 	{
 		Com_Error(ERR_DROP, "couldn't open %s", name);
@@ -616,12 +616,12 @@ void CL_PlayDemo_f(void)
 	Con_Close();
 
 	cls.state = CA_CONNECTED;
-	clc.demoplaying = qtrue;
+	clc.demoplaying = true;
 
 	if (Cvar_VariableValue("cl_wavefilerecord"))
 	{
 		CL_WriteWaveOpen();
-		clc.wm_waverecording = qtrue;
+		clc.wm_waverecording = true;
 	}
 
 	String::NCpyZ(cls.servername, Cmd_Argv(1), sizeof(cls.servername));
@@ -637,11 +637,11 @@ void CL_PlayDemo_f(void)
 	}
 	// don't get the first snapshot this frame, to prevent the long
 	// time from the gamestate load from messing causing a time skip
-	clc.q3_firstDemoFrameSkipped = qfalse;
+	clc.q3_firstDemoFrameSkipped = false;
 	if (clc.wm_waverecording)
 	{
 		CL_WriteWaveClose();
-		clc.wm_waverecording = qfalse;
+		clc.wm_waverecording = false;
 	}
 }
 
@@ -705,12 +705,12 @@ void CL_ShutdownAll(void)
 	CL_ShutdownUI();
 
 	// shutdown the renderer
-	R_Shutdown(qfalse);			// don't destroy window or context
+	R_Shutdown(false);			// don't destroy window or context
 
-	cls.q3_uiStarted = qfalse;
-	cls.q3_cgameStarted = qfalse;
-	cls.q3_rendererStarted = qfalse;
-	cls.q3_soundRegistered = qfalse;
+	cls.q3_uiStarted = false;
+	cls.q3_cgameStarted = false;
+	cls.q3_rendererStarted = false;
+	cls.q3_soundRegistered = false;
 }
 
 /*
@@ -778,7 +778,7 @@ void CL_MapLoading(void)
 	{
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set("nextmap", "");
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		String::NCpyZ(cls.servername, "localhost", sizeof(cls.servername));
 		cls.state = CA_CHALLENGING;		// so the connect screen is drawn
 		in_keyCatchers = 0;
@@ -840,7 +840,7 @@ void CL_Disconnect(qboolean showMainMenu)
 	*clc.downloadTempName = *clc.downloadName = 0;
 	Cvar_Set("cl_downloadName", "");
 
-	autoupdateStarted = qfalse;
+	autoupdateStarted = false;
 	autoupdateFilename[0] = '\0';
 
 	if (clc.demofile)
@@ -878,7 +878,7 @@ void CL_Disconnect(qboolean showMainMenu)
 	Cvar_Set("sv_cheats", "1");
 
 	// not connected to a pure server anymore
-	cl_connectedToPureServer = qfalse;
+	cl_connectedToPureServer = false;
 }
 
 
@@ -1186,7 +1186,7 @@ void CL_Connect_f(void)
 	Cvar_Set("sv_killserver", "1");
 	SV_Frame(0);
 
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 	Con_Close();
 
 	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
@@ -1372,11 +1372,11 @@ void CL_Vid_Restart_f(void)
 
 	S_BeginRegistration();	// all sound handles are now invalid
 
-	cls.q3_rendererStarted = qfalse;
-	cls.q3_uiStarted = qfalse;
-	cls.q3_cgameStarted = qfalse;
-	cls.q3_soundRegistered = qfalse;
-	autoupdateChecked = qfalse;
+	cls.q3_rendererStarted = false;
+	cls.q3_uiStarted = false;
+	cls.q3_cgameStarted = false;
+	cls.q3_soundRegistered = false;
+	autoupdateChecked = false;
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set("cl_paused", "0");
@@ -1402,7 +1402,7 @@ void CL_Vid_Restart_f(void)
 	// start the cgame if connected
 	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)
 	{
-		cls.q3_cgameStarted = qtrue;
+		cls.q3_cgameStarted = true;
 		CL_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
@@ -1420,7 +1420,7 @@ void CL_UI_Restart_f(void)				// NERVE - SMF
 {	// shutdown the UI
 	CL_ShutdownUI();
 
-	autoupdateChecked = qfalse;
+	autoupdateChecked = false;
 
 	// init the UI
 	CL_InitUI();
@@ -1540,18 +1540,18 @@ void CL_DownloadsComplete(void)
 			Sys_Chmod(fn, S_IXUSR);
 #endif
 #endif
-			Sys_StartProcess(fn, qtrue);
+			Sys_StartProcess(fn, true);
 		}
 
-		autoupdateStarted = qfalse;
-		CL_Disconnect(qtrue);
+		autoupdateStarted = false;
+		CL_Disconnect(true);
 		return;
 	}
 
 	// if we downloaded files we need to restart the file system
 	if (clc.downloadRestart)
 	{
-		clc.downloadRestart = qfalse;
+		clc.downloadRestart = false;
 
 		FS_Restart(clc.q3_checksumFeed);	// We possibly downloaded a pak, restart the file system to load it
 
@@ -1585,7 +1585,7 @@ void CL_DownloadsComplete(void)
 	CL_FlushMemory();
 
 	// initialize the CGame
-	cls.q3_cgameStarted = qtrue;
+	cls.q3_cgameStarted = true;
 	CL_InitCGame();
 
 	// set pure checksums
@@ -1672,7 +1672,7 @@ void CL_NextDownload(void)
 		}
 		CL_BeginDownload(localName, remoteName);
 
-		clc.downloadRestart = qtrue;
+		clc.downloadRestart = true;
 
 		// move over the rest
 		memmove(clc.downloadList, s, String::Length(s) + 1);
@@ -1710,7 +1710,7 @@ void CL_InitDownloads(void)
 	else
 	{
 		// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
-		if (FS_ComparePaks(missingfiles, sizeof(missingfiles), qfalse))
+		if (FS_ComparePaks(missingfiles, sizeof(missingfiles), false))
 		{
 			Cvar_Set("com_missingFiles", missingfiles);
 		}
@@ -1719,7 +1719,7 @@ void CL_InitDownloads(void)
 			Cvar_Set("com_missingFiles", "");
 		}
 
-		if (cl_allowDownload->integer && FS_ComparePaks(clc.downloadList, sizeof(clc.downloadList), qtrue))
+		if (cl_allowDownload->integer && FS_ComparePaks(clc.downloadList, sizeof(clc.downloadList), true))
 		{
 			// this gets printed to UI, i18n
 			Com_Printf(CL_TranslateStringBuf("Need paks: %s\n"), clc.downloadList);
@@ -1853,7 +1853,7 @@ void CL_DisconnectPacket(netadr_t from)
 	message = CL_TranslateStringBuf("Server disconnected for unknown reason\n");
 	Com_Printf(message);
 	Cvar_Set("com_errorMessage", message);
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 }
 
 
@@ -2172,7 +2172,7 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 			// Mark the client as being in the process of getting an update
 			if (cl_updateavailable->integer)
 			{
-				autoupdateStarted = qtrue;
+				autoupdateStarted = true;
 			}
 		}
 
@@ -2337,7 +2337,7 @@ void CL_CheckTimeout(void)
 		if (++cl.timeoutcount > 5)			// timeoutcount saves debugger
 		{
 			Cvar_Set("com_errorMessage", CL_TranslateStringBuf("Server connection timed out."));
-			CL_Disconnect(qtrue);
+			CL_Disconnect(true);
 			return;
 		}
 	}
@@ -2393,7 +2393,7 @@ void CL_Frame(int msec)
 	if (cls.q3_cddialog)
 	{
 		// bring up the cd error dialog if needed
-		cls.q3_cddialog = qfalse;
+		cls.q3_cddialog = false;
 		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
 	}
 	else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
@@ -2640,7 +2640,7 @@ CL_ShutdownRef
 */
 void CL_ShutdownRef(void)
 {
-	R_Shutdown(qtrue);
+	R_Shutdown(true);
 }
 
 /*
@@ -2688,25 +2688,25 @@ void CL_StartHunkUsers(void)
 
 	if (!cls.q3_rendererStarted)
 	{
-		cls.q3_rendererStarted = qtrue;
+		cls.q3_rendererStarted = true;
 		CL_InitRenderer();
 	}
 
 	if (!cls.q3_soundStarted)
 	{
-		cls.q3_soundStarted = qtrue;
+		cls.q3_soundStarted = true;
 		S_Init();
 	}
 
 	if (!cls.q3_soundRegistered)
 	{
-		cls.q3_soundRegistered = qtrue;
+		cls.q3_soundRegistered = true;
 		S_BeginRegistration();
 	}
 
 	if (!cls.q3_uiStarted)
 	{
-		cls.q3_uiStarted = qtrue;
+		cls.q3_uiStarted = true;
 		CL_InitUI();
 	}
 }
@@ -2762,7 +2762,7 @@ void CL_CheckAutoUpdate(void)
 		if (!SOCK_StringToAdr(cls.wm_autoupdateServerNames[0], &cls.wm_autoupdateServer, Q3PORT_SERVER))
 		{
 			Com_DPrintf("Failed to resolve any Auto-update servers.\n");
-			autoupdateChecked = qtrue;
+			autoupdateChecked = true;
 			return;
 		}
 	}
@@ -2775,7 +2775,7 @@ void CL_CheckAutoUpdate(void)
 
 	CL_RequestMotd();
 
-	autoupdateChecked = qtrue;
+	autoupdateChecked = true;
 }
 
 void CL_GetAutoUpdate(void)
@@ -2813,7 +2813,7 @@ void CL_GetAutoUpdate(void)
 	Cvar_Set("sv_killserver", "1");
 	SV_Frame(0);
 
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 	Con_Close();
 
 	String::NCpyZ(cls.servername, "Auto-Updater", sizeof(cls.servername));
@@ -2871,22 +2871,22 @@ void CL_ClientDamageCommand(void)
 void CL_startSingleplayer_f(void)
 {
 #if defined(__linux__)
-	Sys_StartProcess("./wolfsp.x86", qtrue);
+	Sys_StartProcess("./wolfsp.x86", true);
 #else
-	Sys_StartProcess("WolfSP.exe", qtrue);
+	Sys_StartProcess("WolfSP.exe", true);
 #endif
 }
 
 // NERVE - SMF
 void CL_buyNow_f(void)
 {
-	Sys_OpenURL("http://www.activision.com/games/wolfenstein/purchase.html", qtrue);
+	Sys_OpenURL("http://www.activision.com/games/wolfenstein/purchase.html", true);
 }
 
 // NERVE - SMF
 void CL_singlePlayLink_f(void)
 {
-	Sys_OpenURL("http://www.activision.com/games/wolfenstein/home.html", qtrue);
+	Sys_OpenURL("http://www.activision.com/games/wolfenstein/home.html", true);
 }
 
 //===========================================================================================
@@ -3075,8 +3075,8 @@ void CL_Init(void)
 	Cvar_Set("cl_running", "1");
 
 	// DHM - Nerve
-	autoupdateChecked = qfalse;
-	autoupdateStarted = qfalse;
+	autoupdateChecked = false;
+	autoupdateStarted = false;
 
 	CL_InitTranslation();	// NERVE - SMF - localization
 
@@ -3092,7 +3092,7 @@ CL_Shutdown
 */
 void CL_Shutdown(void)
 {
-	static qboolean recursive = qfalse;
+	static qboolean recursive = false;
 
 	Com_Printf("----- CL_Shutdown -----\n");
 
@@ -3101,9 +3101,9 @@ void CL_Shutdown(void)
 		printf("recursive shutdown\n");
 		return;
 	}
-	recursive = qtrue;
+	recursive = true;
 
-	CL_Disconnect(qtrue);
+	CL_Disconnect(true);
 
 	S_Shutdown();
 	CL_ShutdownRef();
@@ -3142,7 +3142,7 @@ void CL_Shutdown(void)
 
 	Cvar_Set("cl_running", "0");
 
-	recursive = qfalse;
+	recursive = false;
 
 	memset(&cls, 0, sizeof(cls));
 
@@ -3436,21 +3436,21 @@ int CL_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen)
 		for (i = 0; i < MAX_SERVERSTATUSREQUESTS; i++)
 		{
 			cl_serverStatusList[i].address.port = 0;
-			cl_serverStatusList[i].retrieved = qtrue;
+			cl_serverStatusList[i].retrieved = true;
 		}
-		return qfalse;
+		return false;
 	}
 	// get the address
 	if (!SOCK_StringToAdr(serverAddress, &to, Q3PORT_SERVER))
 	{
-		return qfalse;
+		return false;
 	}
 	serverStatus = CL_GetServerStatus(to);
 	// if no server status string then reset the server status request for this address
 	if (!serverStatusString)
 	{
-		serverStatus->retrieved = qtrue;
-		return qfalse;
+		serverStatus->retrieved = true;
+		return false;
 	}
 
 	// if this server status request has the same address
@@ -3460,35 +3460,35 @@ int CL_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen)
 		if (!serverStatus->pending)
 		{
 			String::NCpyZ(serverStatusString, serverStatus->string, maxLen);
-			serverStatus->retrieved = qtrue;
+			serverStatus->retrieved = true;
 			serverStatus->startTime = 0;
-			return qtrue;
+			return true;
 		}
 		// resend the request regularly
 		else if (serverStatus->startTime < Sys_Milliseconds() - cl_serverStatusResendTime->integer)
 		{
-			serverStatus->print = qfalse;
-			serverStatus->pending = qtrue;
-			serverStatus->retrieved = qfalse;
+			serverStatus->print = false;
+			serverStatus->pending = true;
+			serverStatus->retrieved = false;
 			serverStatus->time = 0;
 			serverStatus->startTime = Sys_Milliseconds();
 			NET_OutOfBandPrint(NS_CLIENT, to, "getstatus");
-			return qfalse;
+			return false;
 		}
 	}
 	// if retrieved
 	else if (serverStatus->retrieved)
 	{
 		serverStatus->address = to;
-		serverStatus->print = qfalse;
-		serverStatus->pending = qtrue;
-		serverStatus->retrieved = qfalse;
+		serverStatus->print = false;
+		serverStatus->pending = true;
+		serverStatus->retrieved = false;
 		serverStatus->startTime = Sys_Milliseconds();
 		serverStatus->time = 0;
 		NET_OutOfBandPrint(NS_CLIENT, to, "getstatus");
-		return qfalse;
+		return false;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -3602,10 +3602,10 @@ void CL_ServerStatusResponse(netadr_t from, QMsg* msg)
 
 	serverStatus->time = Sys_Milliseconds();
 	serverStatus->address = from;
-	serverStatus->pending = qfalse;
+	serverStatus->pending = false;
 	if (serverStatus->print)
 	{
-		serverStatus->retrieved = qtrue;
+		serverStatus->retrieved = true;
 	}
 }
 
@@ -3931,11 +3931,11 @@ qboolean CL_UpdateVisiblePings_f(int source)
 	char buff[MAX_STRING_CHARS];
 	int pingTime;
 	int max;
-	qboolean status = qfalse;
+	qboolean status = false;
 
 	if (source < 0 || source > AS_FAVORITES)
 	{
-		return qfalse;
+		return false;
 	}
 
 	cls.q3_pingUpdateSource = source;
@@ -3991,7 +3991,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 					}
 					if (j >= MAX_PINGREQUESTS)
 					{
-						status = qtrue;
+						status = true;
 						for (j = 0; j < MAX_PINGREQUESTS; j++)
 						{
 							if (!cl_pinglist[j].adr.port)
@@ -4029,7 +4029,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 
 	if (slots)
 	{
-		status = qtrue;
+		status = true;
 	}
 	for (i = 0; i < MAX_PINGREQUESTS; i++)
 	{
@@ -4041,7 +4041,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 		if (pingTime != 0)
 		{
 			CL_ClearPing(i);
-			status = qtrue;
+			status = true;
 		}
 	}
 
@@ -4085,8 +4085,8 @@ void CL_ServerStatus_f(void)
 
 	serverStatus = CL_GetServerStatus(to);
 	serverStatus->address = to;
-	serverStatus->print = qtrue;
-	serverStatus->pending = qtrue;
+	serverStatus->print = true;
+	serverStatus->pending = true;
 }
 
 /*
@@ -4114,12 +4114,12 @@ qboolean CL_CDKeyValidate(const char* key, const char* checksum)
 	len = String::Length(key);
 	if (len != CDKEY_LEN)
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (checksum && String::Length(checksum) != CDCHKSUM_LEN)
 	{
-		return qfalse;
+		return false;
 	}
 
 	sum = 0;
@@ -4152,7 +4152,7 @@ qboolean CL_CDKeyValidate(const char* key, const char* checksum)
 			sum = (sum << 1) ^ ch;
 			continue;
 		default:
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -4161,15 +4161,15 @@ qboolean CL_CDKeyValidate(const char* key, const char* checksum)
 
 	if (checksum && !String::ICmp(chs, checksum))
 	{
-		return qtrue;
+		return true;
 	}
 
 	if (!checksum)
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 // NERVE - SMF
@@ -4238,11 +4238,11 @@ qboolean CL_GetLimboString(int index, char* buf)
 {
 	if (index >= LIMBOCHAT_HEIGHT_WA)
 	{
-		return qfalse;
+		return false;
 	}
 
 	String::NCpy(buf, cl.wa_limboChatMsgs[index], 140);
-	return qtrue;
+	return true;
 }
 // -NERVE - SMF
 
@@ -4258,7 +4258,7 @@ void CL_OpenURL(const char* url)
 		Com_Printf(CL_TranslateStringBuf("invalid/empty URL\n"));
 		return;
 	}
-	Sys_OpenURL(url, qtrue);
+	Sys_OpenURL(url, true);
 }
 
 float* CL_GetSimOrg()

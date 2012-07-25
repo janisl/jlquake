@@ -182,9 +182,6 @@ static inline float idSqrt(float x)
 
 //=============================================================
 
-
-enum {qfalse, qtrue};
-
 // TTimo gcc: was missing, added from Q3 source
 #ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))

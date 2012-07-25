@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/renderer/local.h"
 #endif
 
-static qboolean signalcaught = qfalse;;
+static qboolean signalcaught = false;;
 
 void Sys_Exit(int);	// bk010104 - abstraction
 
@@ -70,7 +70,7 @@ static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 -
 		Sys_Exit(1);// bk010104 - abstraction
 	}
 
-	signalcaught = qtrue;
+	signalcaught = true;
 	printf("Received signal %d, exiting...\n", sig);
 #ifndef DEDICATED
 	GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown

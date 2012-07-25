@@ -67,7 +67,7 @@ void CL_MapLoading(void)
 
 qboolean CL_GameCommand(void)
 {
-	return qfalse;	// bk001204 - non-void
+	return false;	// bk001204 - non-void
 }
 
 void CL_KeyEvent(int key, qboolean down, unsigned time)
@@ -76,7 +76,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 qboolean UI_GameCommand(void)
 {
-	return qfalse;
+	return false;
 }
 
 void CL_ForwardCommandToServer(const char* string)
@@ -111,7 +111,7 @@ void CL_StartHunkUsers(void)
 void CL_ShutdownAll(void) {};
 
 // bk001208 - added new dummy (RC4)
-qboolean CL_CDKeyValidate(const char* key, const char* checksum) { return qtrue; }
+qboolean CL_CDKeyValidate(const char* key, const char* checksum) { return true; }
 
 // TTimo added for win32 dedicated
 void Key_ClearStates(void)

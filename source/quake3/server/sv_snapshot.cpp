@@ -59,11 +59,11 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	{
 		// never send more packets than this, no matter what the rate is at
 		rateMsec = client->q3_snapshotMsec;
-		client->q3_rateDelayed = qfalse;
+		client->q3_rateDelayed = false;
 	}
 	else
 	{
-		client->q3_rateDelayed = qtrue;
+		client->q3_rateDelayed = true;
 	}
 
 	client->q3_nextSnapshotTime = svs.q3_time + rateMsec;

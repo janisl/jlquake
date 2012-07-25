@@ -31,7 +31,7 @@ struct decalVert_t
 typedef double dvec3_t[3];
 
 //	generates a texture projection matrix for a triangle
-// returns qfalse if a texture matrix cannot be created
+// returns false if a texture matrix cannot be created
 static bool MakeTextureMatrix(vec4_t texMat[2], vec4_t projection, decalVert_t* a, decalVert_t* b, decalVert_t* c)
 {
 	//	project triangle onto plane of projection
@@ -397,7 +397,7 @@ void R_TransformDecalProjector(decalProjector_t* in, vec3_t axis[3], vec3_t orig
 	}
 }
 
-//	return qtrue if the decal projector intersects the bounding box
+//	return true if the decal projector intersects the bounding box
 bool R_TestDecalBoundingBox(decalProjector_t* dp, vec3_t mins, vec3_t maxs)
 {
 	if (mins[0] >= (dp->center[0] + dp->radius) || maxs[0] <= (dp->center[0] - dp->radius) ||
@@ -409,7 +409,7 @@ bool R_TestDecalBoundingBox(decalProjector_t* dp, vec3_t mins, vec3_t maxs)
 	return true;
 }
 
-//	return qtrue if the decal projector intersects the bounding sphere
+//	return true if the decal projector intersects the bounding sphere
 static bool R_TestDecalBoundingSphere(decalProjector_t* dp, vec3_t center, float radius2)
 {
 	vec3_t delta;

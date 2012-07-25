@@ -142,7 +142,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG * 4];
-	static qboolean opening_qconsole = qfalse;
+	static qboolean opening_qconsole = false;
 
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
@@ -182,7 +182,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 			struct tm* newtime;
 			time_t aclock;
 
-			opening_qconsole = qtrue;
+			opening_qconsole = true;
 
 			time(&aclock);
 			newtime = localtime(&aclock);
@@ -203,7 +203,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 				FS_ForceFlush(logfile);
 			}
 
-			opening_qconsole = qfalse;
+			opening_qconsole = false;
 		}
 		if (logfile && FS_Initialized())
 		{
@@ -298,7 +298,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	{
 		Sys_Error("recursive error after: %s", com_errorMessage);
 	}
-	com_errorEntered = qtrue;
+	com_errorEntered = true;
 
 	va_start(argptr,fmt);
 	vsprintf(com_errorMessage,fmt,argptr);
@@ -311,9 +311,9 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 
 	if (code == ERR_SERVERDISCONNECT)
 	{
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		CL_FlushMemory();
-		com_errorEntered = qfalse;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else if (code == ERR_ENDGAME)		//----(SA)	added
@@ -321,9 +321,9 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		SV_Shutdown("endgame");
 		if (com_cl_running && com_cl_running->integer)
 		{
-			CL_Disconnect(qtrue);
+			CL_Disconnect(true);
 			CL_FlushMemory();
-			com_errorEntered = qfalse;
+			com_errorEntered = false;
 			CL_EndgameMenu();
 		}
 		longjmp(abortframe, -1);
@@ -332,9 +332,9 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	{
 		Com_Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
 		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		CL_FlushMemory();
-		com_errorEntered = qfalse;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else
@@ -443,10 +443,10 @@ qboolean Com_SafeMode(void)
 			!String::ICmp(Cmd_Argv(0), "cvar_restart"))
 		{
 			com_consoleLines[i][0] = 0;
-			return qtrue;
+			return true;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 
@@ -494,7 +494,7 @@ Com_AddStartupCommands
 Adds command line parameters as script statements
 Commands are seperated by + signs
 
-Returns qtrue if any late commands were added, which
+Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
@@ -503,7 +503,7 @@ qboolean Com_AddStartupCommands(void)
 	int i;
 	qboolean added;
 
-	added = qfalse;
+	added = false;
 	// quote every token, so args with semicolons can work
 	for (i = 0; i < com_numConsoleLines; i++)
 	{
@@ -515,7 +515,7 @@ qboolean Com_AddStartupCommands(void)
 		// set commands won't override menu startup
 		if (String::NICmp(com_consoleLines[i], "set", 3))
 		{
-			added = qtrue;
+			added = true;
 		}
 		Cbuf_AddText(com_consoleLines[i]);
 		Cbuf_AddText("\n");
@@ -840,7 +840,7 @@ void Hunk_SmallLog(void)
 	}
 	for (block = hunkblocks; block; block = block->next)
 	{
-		block->printed = qfalse;
+		block->printed = false;
 	}
 	size = 0;
 	numBlocks = 0;
@@ -865,7 +865,7 @@ void Hunk_SmallLog(void)
 			}
 			size += block2->size;
 			locsize += block2->size;
-			block2->printed = qtrue;
+			block2->printed = true;
 		}
 #ifdef HUNK_DEBUG
 		String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", locsize, block->file, block->line, block->label);
@@ -992,9 +992,9 @@ qboolean Hunk_CheckMark(void)
 {
 	if (hunk_low.mark || hunk_high.mark)
 	{
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 void CL_ShutdownCGame(void);
@@ -1365,8 +1365,8 @@ void Com_InitJournaling(void)
 	else if (com_journal->integer == 2)
 	{
 		Com_Printf("Replaying journaled events\n");
-		FS_FOpenFileRead("journal.dat", &com_journalFile, qtrue);
-		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, qtrue);
+		FS_FOpenFileRead("journal.dat", &com_journalFile, true);
+		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, true);
 	}
 
 	if (!com_journalFile || !com_journalDataFile)
@@ -1469,7 +1469,7 @@ void Com_PushEvent(sysEvent_t* event)
 		// don't print the warning constantly, or it can give time for more...
 		if (!printedWarning)
 		{
-			printedWarning = qtrue;
+			printedWarning = true;
 			Com_Printf("WARNING: Com_PushEvent overflow\n");
 		}
 
@@ -1481,7 +1481,7 @@ void Com_PushEvent(sysEvent_t* event)
 	}
 	else
 	{
-		printedWarning = qfalse;
+		printedWarning = false;
 	}
 
 	*ev = *event;
@@ -2036,11 +2036,11 @@ void Com_Init(char* commandLine)
 		VM_Init();
 		SV_Init();
 
-		com_dedicated->modified = qfalse;
+		com_dedicated->modified = false;
 		if (!com_dedicated->integer)
 		{
 			CL_Init();
-			Sys_ShowConsole(com_viewlog->integer, qfalse);
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 
 		// set com_frameTime so that if a map is started on the
@@ -2062,12 +2062,12 @@ void Com_Init(char* commandLine)
 		// delay this so potential wicked3d dll can find a wolf window
 		if (!com_dedicated->integer)
 		{
-			Sys_ShowConsole(com_viewlog->integer, qfalse);
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 
 		if (!com_recommendedSet->integer)
 		{
-			Com_SetRecommended(qtrue);
+			Com_SetRecommended(true);
 			Cvar_Set("com_recommendedSet", "1");
 		}
 
@@ -2086,7 +2086,7 @@ void Com_Init(char* commandLine)
 			}
 		}
 
-		com_fullyInitialized = qtrue;
+		com_fullyInitialized = true;
 		fs_ProtectKeyFile = true;
 		Com_Printf("--- Common Initialization Complete ---\n");
 	}
@@ -2299,9 +2299,9 @@ void Com_Frame(void)
 		{
 			if (!com_dedicated->value)
 			{
-				Sys_ShowConsole(com_viewlog->integer, qfalse);
+				Sys_ShowConsole(com_viewlog->integer, false);
 			}
-			com_viewlog->modified = qfalse;
+			com_viewlog->modified = false;
 		}
 
 		//
@@ -2357,16 +2357,16 @@ void Com_Frame(void)
 		{
 			// get the latched value
 			Cvar_Get("dedicated", "0", 0);
-			com_dedicated->modified = qfalse;
+			com_dedicated->modified = false;
 			if (!com_dedicated->integer)
 			{
 				CL_Init();
-				Sys_ShowConsole(com_viewlog->integer, qfalse);
+				Sys_ShowConsole(com_viewlog->integer, false);
 			}
 			else
 			{
 				CL_Shutdown();
-				Sys_ShowConsole(1, qtrue);
+				Sys_ShowConsole(1, true);
 			}
 		}
 

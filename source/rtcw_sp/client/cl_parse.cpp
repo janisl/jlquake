@@ -151,7 +151,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			{
 				Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
-			CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+			CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 			oldindex++;
 
@@ -173,7 +173,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			{
 				Com_Printf("%3i:  delta: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, oldstate, qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, oldstate, false);
 
 			oldindex++;
 
@@ -197,7 +197,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			{
 				Com_Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, &cl.ws_entityBaselines[newnum], qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, &cl.ws_entityBaselines[newnum], false);
 			continue;
 		}
 
@@ -211,7 +211,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 		{
 			Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
-		CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+		CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 		oldindex++;
 
@@ -280,9 +280,9 @@ void CL_ParseSnapshot(QMsg* msg)
 	// message
 	if (newSnap.deltaNum <= 0)
 	{
-		newSnap.valid = qtrue;		// uncompressed frame
+		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
-		clc.q3_demowaiting = qfalse;	// we can start recording now
+		clc.q3_demowaiting = false;	// we can start recording now
 	}
 	else
 	{
@@ -304,7 +304,7 @@ void CL_ParseSnapshot(QMsg* msg)
 		}
 		else
 		{
-			newSnap.valid = qtrue;	// valid delta parse
+			newSnap.valid = true;	// valid delta parse
 		}
 	}
 
@@ -346,7 +346,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	}
 	for (; oldMessageNum < newSnap.messageNum; oldMessageNum++)
 	{
-		cl.ws_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
+		cl.ws_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = false;
 	}
 
 	// copy to the current good spot
@@ -371,7 +371,7 @@ void CL_ParseSnapshot(QMsg* msg)
 			cl.ws_snap.deltaNum, cl.ws_snap.ping);
 	}
 
-	cl.q3_newSnapshots = qtrue;
+	cl.q3_newSnapshots = true;
 }
 
 
@@ -520,7 +520,7 @@ void CL_ParseGamestate(QMsg* msg)
 		// don't set to true because we yet have to start downloading
 		// enabling this can cause double loading of a map when connecting to
 		// a server which has a different game directory set
-		//clc.downloadRestart = qtrue;
+		//clc.downloadRestart = true;
 	}
 
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the

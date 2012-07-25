@@ -453,7 +453,7 @@ void Sys_OpenURL(const char* url, qboolean doexit)
 	char fn[MAX_OSPATH];
 	char cmdline[MAX_CMD];
 
-	static qboolean doexit_spamguard = qfalse;
+	static qboolean doexit_spamguard = false;
 
 	if (doexit_spamguard)
 	{
@@ -497,7 +497,7 @@ void Sys_OpenURL(const char* url, qboolean doexit)
 	// show_bug.cgi?id=612
 	if (doexit)
 	{
-		doexit_spamguard = qtrue;
+		doexit_spamguard = true;
 	}
 
 	Com_DPrintf("URL script: %s\n", fn);
@@ -580,5 +580,5 @@ int main(int argc, char* argv[])
 qboolean Sys_IsNumLockDown(void)
 {
 	// Gordon: FIXME for timothee
-	return qfalse;
+	return false;
 }

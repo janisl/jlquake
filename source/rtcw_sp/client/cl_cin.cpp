@@ -184,7 +184,7 @@ void CIN_DrawCinematic(int handle)
 	}
 
 	R_StretchRaw(x, y, w, h, cinTable[handle]->Cin->Width, cinTable[handle]->Cin->Height, buf, handle, cinTable[handle]->Cin->Dirty);
-	cinTable[handle]->Cin->Dirty = qfalse;
+	cinTable[handle]->Cin->Dirty = false;
 }
 
 bool CIN_IsInCinematicState()
@@ -212,7 +212,7 @@ void CL_PlayCinematic_f(void)
 	arg = Cmd_Argv(1);
 	s = Cmd_Argv(2);
 
-	holdatend = qfalse;
+	holdatend = false;
 	if ((s && s[0] == '1') || String::ICmp(arg,"demoend.roq") == 0 || String::ICmp(arg,"end.roq") == 0)
 	{
 		bits |= CIN_hold;

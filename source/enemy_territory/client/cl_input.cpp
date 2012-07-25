@@ -154,7 +154,7 @@ void CL_CreateNewCommands(void)
 =================
 CL_ReadyToSendPacket
 
-Returns qfalse if we are over the maxpackets limit
+Returns false if we are over the maxpackets limit
 and should choke back the bandwidth a bit by not sending
 a packet this frame.  All the commands will still get
 delivered in the next packet, but saving a header and
@@ -169,14 +169,14 @@ qboolean CL_ReadyToSendPacket(void)
 	// don't send anything if playing back a demo
 	if (clc.demoplaying || cls.state == CA_CINEMATIC)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// If we are downloading, we send no less than 50ms between packets
 	if (*cls.et_downloadTempName &&
 		cls.realtime - clc.q3_lastPacketSentTime < 50)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if we don't have a valid gamestate yet, only send
@@ -186,19 +186,19 @@ qboolean CL_ReadyToSendPacket(void)
 		!*cls.et_downloadTempName &&
 		cls.realtime - clc.q3_lastPacketSentTime < 1000)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// send every frame for loopbacks
 	if (clc.netchan.remoteAddress.type == NA_LOOPBACK)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// send every frame for LAN
 	if (SOCK_IsLANAddress(clc.netchan.remoteAddress))
 	{
-		return qtrue;
+		return true;
 	}
 
 	// check for exceeding cl_maxpackets
@@ -215,10 +215,10 @@ qboolean CL_ReadyToSendPacket(void)
 	if (delta < 1000 / cl_maxpackets->integer)
 	{
 		// the accumulated commands will go out in the next packet
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*

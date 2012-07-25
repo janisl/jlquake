@@ -106,12 +106,12 @@ qboolean CL_GetUserCmd(int cmdNumber, wmusercmd_t* ucmd)
 	// buffer because it is too far out of date
 	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
 	{
-		return qfalse;
+		return false;
 	}
 
 	*ucmd = cl.wm_cmds[cmdNumber & CMD_MASK_Q3];
 
-	return qtrue;
+	return true;
 }
 
 int CL_GetCurrentCmdNumber(void)
@@ -137,11 +137,11 @@ qboolean    CL_GetParseEntityState(int parseEntityNumber, wmentityState_t* state
 	// can't return anything that has been overwritten in the circular buffer
 	if (parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES_Q3)
 	{
-		return qfalse;
+		return false;
 	}
 
 	*state = cl.wm_parseEntities[parseEntityNumber & (MAX_PARSE_ENTITIES_Q3 - 1)];
-	return qtrue;
+	return true;
 }
 
 /*
@@ -173,21 +173,21 @@ qboolean    CL_GetSnapshot(int snapshotNumber, snapshot_t* snapshot)
 	// if the frame has fallen out of the circular buffer, we can't return it
 	if (cl.wm_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if the frame is not valid, we can't return it
 	clSnap = &cl.wm_snapshots[snapshotNumber & PACKET_MASK_Q3];
 	if (!clSnap->valid)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if the entities in the frame have fallen out of their
 	// circular buffer, we can't return it
 	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// write the snapshot
@@ -212,7 +212,7 @@ qboolean    CL_GetSnapshot(int snapshotNumber, snapshot_t* snapshot)
 
 	// FIXME: configstring changes and server commands!!!
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -356,16 +356,16 @@ qboolean CL_GetServerCommand(int serverCommandNumber)
 		// reliable commands then the client never got those first reliable commands
 		if (clc.demoplaying)
 		{
-			return qfalse;
+			return false;
 		}
 		Com_Error(ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out");
-		return qfalse;
+		return false;
 	}
 
 	if (serverCommandNumber > clc.q3_serverCommandSequence)
 	{
 		Com_Error(ERR_DROP, "CL_GetServerCommand: requested a command not received");
-		return qfalse;
+		return false;
 	}
 
 	s = clc.q3_serverCommands[serverCommandNumber & (MAX_RELIABLE_COMMANDS_WOLF - 1)];
@@ -397,7 +397,7 @@ rescan:
 	if (!String::Cmp(cmd, "bcs0"))
 	{
 		String::Sprintf(bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2));
-		return qfalse;
+		return false;
 	}
 
 	if (!String::Cmp(cmd, "bcs1"))
@@ -408,7 +408,7 @@ rescan:
 			Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
 		}
 		strcat(bigConfigString, s);
-		return qfalse;
+		return false;
 	}
 
 	if (!String::Cmp(cmd, "bcs2"))
@@ -429,7 +429,7 @@ rescan:
 		CL_ConfigstringModified();
 		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString(s);
-		return qtrue;
+		return true;
 	}
 
 	if (!String::Cmp(cmd, "map_restart"))
@@ -438,7 +438,7 @@ rescan:
 		// the restart to the cgame
 		Con_ClearNotify();
 		memset(cl.wm_cmds, 0, sizeof(cl.wm_cmds));
-		return qtrue;
+		return true;
 	}
 
 	if (!String::Cmp(cmd, "popup"))			// direct server to client popup request, bypassing cgame
@@ -447,7 +447,7 @@ rescan:
 //			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_CLIPBOARD);
 //			Menus_OpenByName(Cmd_Argv(1));
 //		}
-		return qfalse;
+		return false;
 	}
 
 
@@ -463,19 +463,19 @@ rescan:
 		// the existing thumbnails
 		if (!com_sv_running->integer)
 		{
-			return qfalse;
+			return false;
 		}
 		// close the console
 		Con_Close();
 		// take a special screenshot next frame
 		Cbuf_AddText("wait ; wait ; wait ; wait ; screenshot levelshot\n");
-		return qtrue;
+		return true;
 	}
 
 	// we may want to put a "connect to other server" command here
 
 	// cgame can now act on the command
-	return qtrue;
+	return true;
 }
 
 // DHM - Nerve :: Copied from server to here
@@ -554,7 +554,7 @@ void CL_CM_LoadMap(const char* mapname)
 		Cvar_Set("com_errorDiagnoseIP", "");
 	}
 
-	CM_LoadMap(mapname, qtrue, &checksum);
+	CM_LoadMap(mapname, true, &checksum);
 }
 
 /*
@@ -566,7 +566,7 @@ CL_ShutdonwCGame
 void CL_ShutdownCGame(void)
 {
 	in_keyCatchers &= ~KEYCATCH_CGAME;
-	cls.q3_cgameStarted = qfalse;
+	cls.q3_cgameStarted = false;
 	if (!cgvm)
 	{
 		return;
@@ -766,24 +766,24 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	case CG_CM_INLINEMODEL:
 		return CM_InlineModel(args[1]);
 	case CG_CM_TEMPBOXMODEL:
-		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), qfalse);
+		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), false);
 	case CG_CM_TEMPCAPSULEMODEL:
-		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), qtrue);
+		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), true);
 	case CG_CM_POINTCONTENTS:
 		return CM_PointContentsQ3((float*)VMA(1), args[2]);
 	case CG_CM_TRANSFORMEDPOINTCONTENTS:
 		return CM_TransformedPointContentsQ3((float*)VMA(1), args[2], (float*)VMA(3), (float*)VMA(4));
 	case CG_CM_BOXTRACE:
-		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ qfalse);
+		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ false);
 		return 0;
 	case CG_CM_TRANSFORMEDBOXTRACE:
-		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ qfalse);
+		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ false);
 		return 0;
 	case CG_CM_CAPSULETRACE:
-		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ qtrue);
+		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ true);
 		return 0;
 	case CG_CM_TRANSFORMEDCAPSULETRACE:
-		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ qtrue);
+		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ true);
 		return 0;
 	case CG_CM_MARKFRAGMENTS:
 		return R_MarkFragmentsWolf(args[1], (const vec3_t*)VMA(2), (float*)VMA(3), args[4], (float*)VMA(5), args[6], (markFragment_t*)VMA(7));
@@ -1075,8 +1075,8 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		{
 			if (VM_Call(uivm, UI_GET_ACTIVE_MENU) == UIMENU_WM_LIMBO)
 			{
-				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, qtrue);
-				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, qtrue);
+				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, true);
+				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, true);
 			}
 		}
 		return 0;
@@ -1296,7 +1296,7 @@ qboolean CL_GameCommand(void)
 {
 	if (!cgvm)
 	{
-		return qfalse;
+		return false;
 	}
 
 	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
@@ -1344,7 +1344,7 @@ void CL_AdjustTimeDelta(void)
 	int newDelta;
 	int deltaDelta;
 
-	cl.q3_newSnapshots = qfalse;
+	cl.q3_newSnapshots = false;
 
 	// the delta never drifts when replaying a demo
 	if (clc.demoplaying)
@@ -1395,7 +1395,7 @@ void CL_AdjustTimeDelta(void)
 		{
 			if (cl.q3_extrapolatedSnapshot)
 			{
-				cl.q3_extrapolatedSnapshot = qfalse;
+				cl.q3_extrapolatedSnapshot = false;
 				cl.q3_serverTimeDelta -= 2;
 			}
 			else
@@ -1466,14 +1466,14 @@ void CL_SetCGameTime(void)
 			// as the gamestate, because it causes a bad time skip
 			if (!clc.q3_firstDemoFrameSkipped)
 			{
-				clc.q3_firstDemoFrameSkipped = qtrue;
+				clc.q3_firstDemoFrameSkipped = true;
 				return;
 			}
 			CL_ReadDemoMessage();
 		}
 		if (cl.q3_newSnapshots)
 		{
-			cl.q3_newSnapshots = qfalse;
+			cl.q3_newSnapshots = false;
 			CL_FirstSnapshot();
 		}
 		if (cls.state != CA_ACTIVE)
@@ -1549,7 +1549,7 @@ void CL_SetCGameTime(void)
 		// so we will try and adjust back a bit when the next snapshot arrives
 		if (cls.realtime + cl.q3_serverTimeDelta >= cl.wm_snap.serverTime - 5)
 		{
-			cl.q3_extrapolatedSnapshot = qtrue;
+			cl.q3_extrapolatedSnapshot = true;
 		}
 	}
 
@@ -1606,7 +1606,7 @@ bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	if (!cgvm)
 	{
-		return qfalse;
+		return false;
 	}
 
 	return VM_Call(cgvm, CG_GET_TAG, clientNum, tagname, _or);

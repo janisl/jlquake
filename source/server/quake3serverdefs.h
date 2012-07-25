@@ -63,7 +63,7 @@ struct q3entityShared_t
 {
 	q3entityState_t s;				// communicated by server to clients
 
-	qboolean linked;				// qfalse if not in any good cluster
+	qboolean linked;				// false if not in any good cluster
 	int linkcount;
 
 	int svFlags;					// Q3SVF_NOCLIENT, Q3SVF_BROADCAST, etc

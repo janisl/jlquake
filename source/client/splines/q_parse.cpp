@@ -129,7 +129,7 @@ Parse a token out of a string
 Will never return NULL, just empty strings.
 An empty string will only be returned at end of file.
 
-If "allowLineBreaks" is qtrue then an empty
+If "allowLineBreaks" is true then an empty
 string will be returned if the next token is
 a newline.
 */

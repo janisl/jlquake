@@ -359,7 +359,7 @@ dlStatus_t DL_DownloadLoop()
 {
 	if (!dl_running)
 	{
-		Com_DPrintf("DL_DownloadLoop: unexpected call with dl_running == qfalse\n");
+		Com_DPrintf("DL_DownloadLoop: unexpected call with dl_running == false\n");
 		return DL_DONE;
 	}
 

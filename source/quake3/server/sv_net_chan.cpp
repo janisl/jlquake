@@ -110,8 +110,8 @@ qboolean SV_Netchan_Process(client_t* client, QMsg* msg)
 	ret = Netchan_Process(&client->netchan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
 	SVT3_Netchan_Decode(client, msg);
-	return qtrue;
+	return true;
 }

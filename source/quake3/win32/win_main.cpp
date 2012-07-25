@@ -368,7 +368,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// have a working graphics subsystems
 	if (!com_dedicated->integer && !com_viewlog->integer)
 	{
-		Sys_ShowConsole(0, qfalse);
+		Sys_ShowConsole(0, false);
 	}
 
 	// main game loop

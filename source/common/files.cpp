@@ -3165,7 +3165,7 @@ bool FS_idPak(const char* pak, const char* base)
 }
 
 //	----------------
-//	dlstring == qtrue
+//	dlstring == true
 //
 //	Returns a list of pak files that we should download from the server. They all get stored
 //	in the current gamedir and an FS_Restart will be fired up after we download them all.
@@ -3179,7 +3179,7 @@ bool FS_idPak(const char* pak, const char* base)
 //	static char		*fs_serverReferencedPakNames[MAX_SEARCH_PATHS];
 //
 //	----------------
-//	dlstring == qfalse
+//	dlstring == false
 //
 //	we are not interested in a download string format, we want something human-readable
 //	(this is used for diagnostics while connecting to a pure server)

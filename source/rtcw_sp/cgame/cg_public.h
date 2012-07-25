@@ -384,7 +384,7 @@ typedef enum {
 //	qboolean (*CG_ConsoleCommand)( void );
 	// a console command has been issued locally that is not recognized by the
 	// main game system.
-	// use Cmd_Argc() / Cmd_Argv() to read the command, return qfalse if the
+	// use Cmd_Argc() / Cmd_Argv() to read the command, return false if the
 	// command is not known to the game
 
 	CG_DRAW_ACTIVE_FRAME,

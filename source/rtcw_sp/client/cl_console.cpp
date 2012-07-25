@@ -66,7 +66,7 @@ void Con_MessageMode3_f(void)
 		chat_playerNum = -1;
 		return;
 	}
-	chat_team = qfalse;
+	chat_team = false;
 	Field_Clear(&chatField);
 	chatField.widthInChars = 30;
 	in_keyCatchers ^= KEYCATCH_MESSAGE;
@@ -85,7 +85,7 @@ void Con_MessageMode4_f(void)
 		chat_playerNum = -1;
 		return;
 	}
-	chat_team = qfalse;
+	chat_team = false;
 	Field_Clear(&chatField);
 	chatField.widthInChars = 30;
 	in_keyCatchers ^= KEYCATCH_MESSAGE;

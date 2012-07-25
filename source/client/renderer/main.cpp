@@ -1846,7 +1846,7 @@ static void R_MirrorVector(vec3_t in, orientation_t* surface, orientation_t* cam
 //
 //	R_MirrorViewBySurface
 //
-//	Returns qtrue if another view has been rendered
+//	Returns true if another view has been rendered
 //
 //==========================================================================
 

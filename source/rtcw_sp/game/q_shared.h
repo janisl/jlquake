@@ -142,9 +142,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================
 
-
-enum {qfalse, qtrue};
-
 #ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 #define min(x, y) (((x) < (y)) ? (x) : (y))

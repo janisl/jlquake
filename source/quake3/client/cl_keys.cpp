@@ -95,7 +95,7 @@ qboolean Key_IsDown(int keynum)
 {
 	if (keynum == -1)
 	{
-		return qfalse;
+		return false;
 	}
 
 	return keys[keynum].down;
@@ -463,7 +463,7 @@ void CL_AddKeyUpCommands(int key, char* kb)
 	{
 		return;
 	}
-	keyevent = qfalse;
+	keyevent = false;
 	buttonPtr = button;
 	for (i = 0;; i++)
 	{
@@ -476,7 +476,7 @@ void CL_AddKeyUpCommands(int key, char* kb)
 				// sources can be discriminated and subframe corrected
 				String::Sprintf(cmd, sizeof(cmd), "-%s %i %i\n", button + 1, key, time);
 				Cbuf_AddText(cmd);
-				keyevent = qtrue;
+				keyevent = true;
 			}
 			else
 			{
@@ -752,7 +752,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, qtrue);
+		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
@@ -774,13 +774,13 @@ void Key_ClearStates(void)
 {
 	int i;
 
-	anykeydown = qfalse;
+	anykeydown = false;
 
 	for (i = 0; i < MAX_KEYS; i++)
 	{
 		if (keys[i].down)
 		{
-			CL_KeyEvent(i, qfalse, 0);
+			CL_KeyEvent(i, false, 0);
 
 		}
 		keys[i].down = 0;

@@ -138,7 +138,7 @@ void QDECL Sys_Error(const char* error, ...)
 	Sys_Print("\n");
 
 	Sys_SetErrorText(text);
-	Sys_ShowConsole(1, qtrue);
+	Sys_ShowConsole(1, true);
 
 	timeEndPeriod(1);
 
@@ -452,7 +452,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// have a working graphics subsystems
 	if (!com_dedicated->integer && !com_viewlog->integer)
 	{
-		Sys_ShowConsole(0, qfalse);
+		Sys_ShowConsole(0, false);
 	}
 
 #ifndef DEDICATED

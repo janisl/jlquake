@@ -137,9 +137,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //=============================================================
 
-enum {qfalse, qtrue};
-
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL			// this is be defined in malloc.h
 #endif

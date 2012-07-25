@@ -103,36 +103,36 @@ qboolean isEntVisible(wmentityState_t* ent)
 
 	// First, viewpoint to viewpoint
 	end[2] += view_height;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// First-b, viewpoint to top of head
 	end[2] += 16;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 	end[2] -= 16;
 
 	// Second, viewpoint to ent's origin
 	end[2] -= view_height;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Third, to ent's right knee
 	VectorAdd(end, right, temp);
 	temp[2] += 8;
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Fourth, to ent's right shoulder
@@ -145,10 +145,10 @@ qboolean isEntVisible(wmentityState_t* ent)
 	{
 		temp[2] += 52;
 	}
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Fifth, to ent's left knee
@@ -156,10 +156,10 @@ qboolean isEntVisible(wmentityState_t* ent)
 	VectorScale(right2, -1, right2);
 	VectorAdd(end, right2, temp);
 	temp[2] += 2;
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Sixth, to ent's left shoulder
@@ -172,13 +172,13 @@ qboolean isEntVisible(wmentityState_t* ent)
 	{
 		temp[2] += 36;
 	}
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 #endif
@@ -298,7 +298,7 @@ void CL_ParsePacketEntities(QMsg* msg, wmclSnapshot_t* oldframe, wmclSnapshot_t*
 			{
 				Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
-			CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+			CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 			oldindex++;
 
@@ -320,7 +320,7 @@ void CL_ParsePacketEntities(QMsg* msg, wmclSnapshot_t* oldframe, wmclSnapshot_t*
 			{
 				Com_Printf("%3i:  delta: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, oldstate, qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, oldstate, false);
 
 			oldindex++;
 
@@ -344,7 +344,7 @@ void CL_ParsePacketEntities(QMsg* msg, wmclSnapshot_t* oldframe, wmclSnapshot_t*
 			{
 				Com_Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, &cl.wm_entityBaselines[newnum], qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, &cl.wm_entityBaselines[newnum], false);
 			continue;
 		}
 
@@ -358,7 +358,7 @@ void CL_ParsePacketEntities(QMsg* msg, wmclSnapshot_t* oldframe, wmclSnapshot_t*
 		{
 			Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
-		CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+		CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 		oldindex++;
 
@@ -432,9 +432,9 @@ void CL_ParseSnapshot(QMsg* msg)
 	// message
 	if (newSnap.deltaNum <= 0)
 	{
-		newSnap.valid = qtrue;		// uncompressed frame
+		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
-		clc.q3_demowaiting = qfalse;	// we can start recording now
+		clc.q3_demowaiting = false;	// we can start recording now
 	}
 	else
 	{
@@ -456,7 +456,7 @@ void CL_ParseSnapshot(QMsg* msg)
 		}
 		else
 		{
-			newSnap.valid = qtrue;	// valid delta parse
+			newSnap.valid = true;	// valid delta parse
 		}
 	}
 
@@ -505,7 +505,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	}
 	for (; oldMessageNum < newSnap.messageNum; oldMessageNum++)
 	{
-		cl.wm_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
+		cl.wm_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = false;
 	}
 
 	// copy to the current good spot
@@ -530,7 +530,7 @@ void CL_ParseSnapshot(QMsg* msg)
 			cl.wm_snap.deltaNum, cl.wm_snap.ping);
 	}
 
-	cl.q3_newSnapshots = qtrue;
+	cl.q3_newSnapshots = true;
 }
 
 
@@ -684,7 +684,7 @@ void CL_ParseGamestate(QMsg* msg)
 		// don't set to true because we yet have to start downloading
 		// enabling this can cause double loading of a map when connecting to
 		// a server which has a different game directory set
-		//clc.downloadRestart = qtrue;
+		//clc.downloadRestart = true;
 	}
 
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the

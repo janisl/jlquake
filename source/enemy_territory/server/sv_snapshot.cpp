@@ -69,11 +69,11 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	{
 		// never send more packets than this, no matter what the rate is at
 		rateMsec = client->q3_snapshotMsec;
-		client->q3_rateDelayed = qfalse;
+		client->q3_rateDelayed = false;
 	}
 	else
 	{
-		client->q3_rateDelayed = qtrue;
+		client->q3_rateDelayed = true;
 	}
 
 	client->q3_nextSnapshotTime = svs.q3_time + rateMsec;
@@ -175,7 +175,7 @@ void SV_SendClientSnapshot(client_t* client)
 	}
 
 	msg.Init(msg_buf, sizeof(msg_buf));
-	msg.allowoverflow = qtrue;
+	msg.allowoverflow = true;
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received

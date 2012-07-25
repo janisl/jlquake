@@ -70,8 +70,8 @@ qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg)
 	ret = Netchan_Process(chan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
 	newsize += msg->cursize;
-	return qtrue;
+	return true;
 }

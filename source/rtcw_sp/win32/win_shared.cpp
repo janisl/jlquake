@@ -101,9 +101,9 @@ set21:
 	}
 
 err:
-	return qfalse;
+	return false;
 good:
-	return qtrue;
+	return true;
 }
 
 static int Is3DNOW(void)
@@ -130,23 +130,23 @@ static int Is3DNOW(void)
 
 //  REMOVED because you can have 3DNow! on non-AMD systems
 //	if ( String::Cmp( processorString, "AuthenticAMD" ) )
-//		return qfalse;
+//		return false;
 
 	// check AMD-specific functions
 	CPUID(0x80000000, regs);
 	if (regs[0] < 0x80000000)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// bit 31 of EDX denotes 3DNOW! support
 	CPUID(0x80000001, regs);
 	if (regs[3] & (1 << 31))
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 static int IsKNI(void)
@@ -159,10 +159,10 @@ static int IsKNI(void)
 	// bit 25 of EDX denotes KNI existence
 	if (regs[3] & (1 << 25))
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 static int IsMMX(void)
@@ -175,9 +175,9 @@ static int IsMMX(void)
 	// bit 23 of EDX denotes MMX existence
 	if (regs[3] & (1 << 23))
 	{
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 static int IsP3()
@@ -188,30 +188,30 @@ static int IsP3()
 	CPUID(1, regs);
 	if (regs[0] < 6)
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x1))
 	{
-		return qfalse;		// fp
+		return false;		// fp
 	}
 
 	if (!(regs[3] & 0x8000))		// cmov
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x800000))		// mmx
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x2000000))			// simd
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 static int IsAthlon()
@@ -238,56 +238,56 @@ static int IsAthlon()
 
 	if (String::Cmp(processorString, "AuthenticAMD"))
 	{
-		return qfalse;
+		return false;
 	}
 
 	CPUID(0x80000000, regs);
 
 	if (regs[0] < 0x80000001)
 	{
-		return qfalse;
+		return false;
 	}
 
 	// get CPU feature bits
 	CPUID(1, regs);
 	if (regs[0] < 6)
 	{
-		return qfalse;
+		return false;
 	}
 
 	CPUID(0x80000001, regs);
 
 	if (!(regs[3] & 0x1))
 	{
-		return qfalse;		// fp
+		return false;		// fp
 	}
 
 	if (!(regs[3] & 0x8000))		// cmov
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x800000))		// mmx
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x400000))		// k7 mmx
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x80000000))		// 3dnow
 	{
-		return qfalse;
+		return false;
 	}
 
 	if (!(regs[3] & 0x40000000))		// advanced 3dnow
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 #endif
 

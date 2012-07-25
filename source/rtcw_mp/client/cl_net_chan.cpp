@@ -182,9 +182,9 @@ qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg)
 	ret = Netchan_Process(chan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
 	CL_Netchan_Decode(msg);
 	newsize += msg->cursize;
-	return qtrue;
+	return true;
 }

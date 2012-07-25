@@ -144,7 +144,7 @@ void CL_ParsePacketEntities(QMsg* msg, q3clSnapshot_t* oldframe, q3clSnapshot_t*
 			{
 				Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
-			CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+			CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 			oldindex++;
 
@@ -166,7 +166,7 @@ void CL_ParsePacketEntities(QMsg* msg, q3clSnapshot_t* oldframe, q3clSnapshot_t*
 			{
 				Com_Printf("%3i:  delta: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, oldstate, qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, oldstate, false);
 
 			oldindex++;
 
@@ -190,7 +190,7 @@ void CL_ParsePacketEntities(QMsg* msg, q3clSnapshot_t* oldframe, q3clSnapshot_t*
 			{
 				Com_Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, &cl.q3_entityBaselines[newnum], qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, &cl.q3_entityBaselines[newnum], false);
 			continue;
 		}
 
@@ -204,7 +204,7 @@ void CL_ParsePacketEntities(QMsg* msg, q3clSnapshot_t* oldframe, q3clSnapshot_t*
 		{
 			Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
-		CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+		CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 		oldindex++;
 
@@ -273,9 +273,9 @@ void CL_ParseSnapshot(QMsg* msg)
 	// message
 	if (newSnap.deltaNum <= 0)
 	{
-		newSnap.valid = qtrue;		// uncompressed frame
+		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
-		clc.q3_demowaiting = qfalse;	// we can start recording now
+		clc.q3_demowaiting = false;	// we can start recording now
 	}
 	else
 	{
@@ -297,7 +297,7 @@ void CL_ParseSnapshot(QMsg* msg)
 		}
 		else
 		{
-			newSnap.valid = qtrue;	// valid delta parse
+			newSnap.valid = true;	// valid delta parse
 		}
 	}
 
@@ -339,7 +339,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	}
 	for (; oldMessageNum < newSnap.messageNum; oldMessageNum++)
 	{
-		cl.q3_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
+		cl.q3_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = false;
 	}
 
 	// copy to the current good spot
@@ -364,7 +364,7 @@ void CL_ParseSnapshot(QMsg* msg)
 			cl.q3_snap.deltaNum, cl.q3_snap.ping);
 	}
 
-	cl.q3_newSnapshots = qtrue;
+	cl.q3_newSnapshots = true;
 }
 
 
@@ -415,7 +415,7 @@ void CL_SystemInfoChanged(void)
 	t = Info_ValueForKey(systemInfo, "sv_referencedPakNames");
 	FS_PureServerSetReferencedPaks(s, t);
 
-	gameSet = qfalse;
+	gameSet = false;
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
 	while (s)
@@ -428,7 +428,7 @@ void CL_SystemInfoChanged(void)
 		// ehw!
 		if (!String::ICmp(key, "fs_game"))
 		{
-			gameSet = qtrue;
+			gameSet = true;
 		}
 
 		Cvar_Set(key, value);

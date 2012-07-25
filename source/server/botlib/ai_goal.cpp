@@ -1985,7 +1985,7 @@ static bool BotItemGoalInVisButNotVisible(int viewer, const vec3_t eye, const ve
 		AAS_EntityInfo(goal->entitynum, &entinfo);
 		//NOTE: for some wacko reason entities are sometimes
 		// not updated
-		//if (!entinfo.valid) return qtrue;
+		//if (!entinfo.valid) return true;
 		if (entinfo.ltime < AAS_Time() - 0.5)
 		{
 			return true;

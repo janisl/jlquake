@@ -104,36 +104,36 @@ qboolean isEntVisible(etentityState_t* ent)
 
 	// First, viewpoint to viewpoint
 	end[2] += view_height;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// First-b, viewpoint to top of head
 	end[2] += 16;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 	end[2] -= 16;
 
 	// Second, viewpoint to ent's origin
 	end[2] -= view_height;
-	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, end, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Third, to ent's right knee
 	VectorAdd(end, right, temp);
 	temp[2] += 8;
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Fourth, to ent's right shoulder
@@ -146,10 +146,10 @@ qboolean isEntVisible(etentityState_t* ent)
 	{
 		temp[2] += 52;
 	}
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Fifth, to ent's left knee
@@ -157,10 +157,10 @@ qboolean isEntVisible(etentityState_t* ent)
 	VectorScale(right2, -1, right2);
 	VectorAdd(end, right2, temp);
 	temp[2] += 2;
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Sixth, to ent's left shoulder
@@ -173,13 +173,13 @@ qboolean isEntVisible(etentityState_t* ent)
 	{
 		temp[2] += 36;
 	}
-	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, qfalse);
+	CM_BoxTraceQ3(&tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false);
 	if (tr.fraction == 1.f)
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 #endif
@@ -299,7 +299,7 @@ void CL_ParsePacketEntities(QMsg* msg, etclSnapshot_t* oldframe, etclSnapshot_t*
 			{
 				Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
-			CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+			CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 			oldindex++;
 
@@ -321,7 +321,7 @@ void CL_ParsePacketEntities(QMsg* msg, etclSnapshot_t* oldframe, etclSnapshot_t*
 			{
 				Com_Printf("%3i:  delta: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, oldstate, qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, oldstate, false);
 
 			oldindex++;
 
@@ -345,7 +345,7 @@ void CL_ParsePacketEntities(QMsg* msg, etclSnapshot_t* oldframe, etclSnapshot_t*
 			{
 				Com_Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
 			}
-			CL_DeltaEntity(msg, newframe, newnum, &cl.et_entityBaselines[newnum], qfalse);
+			CL_DeltaEntity(msg, newframe, newnum, &cl.et_entityBaselines[newnum], false);
 			continue;
 		}
 
@@ -359,7 +359,7 @@ void CL_ParsePacketEntities(QMsg* msg, etclSnapshot_t* oldframe, etclSnapshot_t*
 		{
 			Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
-		CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
+		CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
 		oldindex++;
 
@@ -433,11 +433,11 @@ void CL_ParseSnapshot(QMsg* msg)
 	// message
 	if (newSnap.deltaNum <= 0)
 	{
-		newSnap.valid = qtrue;		// uncompressed frame
+		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
 		if (clc.demorecording)
 		{
-			clc.q3_demowaiting = qfalse;	// we can start recording now
+			clc.q3_demowaiting = false;	// we can start recording now
 //			if(cl_autorecord->integer) {
 //				Cvar_Set( "g_synchronousClients", "0" );
 //			}
@@ -501,7 +501,7 @@ void CL_ParseSnapshot(QMsg* msg)
 		}
 		else
 		{
-			newSnap.valid = qtrue;	// valid delta parse
+			newSnap.valid = true;	// valid delta parse
 		}
 	}
 
@@ -550,7 +550,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	}
 	for (; oldMessageNum < newSnap.messageNum; oldMessageNum++)
 	{
-		cl.et_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = qfalse;
+		cl.et_snapshots[oldMessageNum & PACKET_MASK_Q3].valid = false;
 	}
 
 	// copy to the current good spot
@@ -575,7 +575,7 @@ void CL_ParseSnapshot(QMsg* msg)
 			cl.et_snap.deltaNum, cl.et_snap.ping);
 	}
 
-	cl.q3_newSnapshots = qtrue;
+	cl.q3_newSnapshots = true;
 }
 
 
@@ -649,7 +649,7 @@ void CL_SystemInfoChanged(void)
 		{
 			CL_PurgeCache();
 		}
-		cl_connectedToPureServer = qtrue;
+		cl_connectedToPureServer = true;
 	}
 	else
 	{
@@ -657,7 +657,7 @@ void CL_SystemInfoChanged(void)
 		{
 			CL_PurgeCache();
 		}
-		cl_connectedToPureServer = qfalse;
+		cl_connectedToPureServer = false;
 	}
 }
 
@@ -799,22 +799,22 @@ void CL_ParseDownload(QMsg* msg)
 			clc.downloadFlags = msg->ReadLong();
 			if (clc.downloadFlags & (1 << DL_FLAG_URL))
 			{
-				Sys_OpenURL(cls.et_downloadName, qtrue);
+				Sys_OpenURL(cls.et_downloadName, true);
 				Cbuf_ExecuteText(EXEC_APPEND, "quit\n");
 				CL_AddReliableCommand("wwwdl bbl8r");	// not sure if that's the right msg
-				clc.et_bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = true;
 				return;
 			}
 			Cvar_SetValue("cl_downloadSize", clc.downloadSize);
 			Com_DPrintf("Server redirected download: %s\n", cls.et_downloadName);
-			clc.et_bWWWDl = qtrue;	// activate wwwdl client loop
+			clc.et_bWWWDl = true;	// activate wwwdl client loop
 			CL_AddReliableCommand("wwwdl ack");
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if (strstr(clc.et_badChecksumList, va("@%s", cls.et_originalDownloadName)))
 			{
 				Com_Printf("refusing redirect to %s by server (bad checksum)\n", cls.et_downloadName);
 				CL_AddReliableCommand("wwwdl fail");
-				clc.et_bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = true;
 				return;
 			}
 			// make downloadTempName an OS path
@@ -827,7 +827,7 @@ void CL_ParseDownload(QMsg* msg)
 				// still leave a flag so that CL_WWWDownload is inactive
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand("wwwdl fail");
-				clc.et_bWWWDlAborting = qtrue;
+				clc.et_bWWWDlAborting = true;
 				Com_Printf("Failed to initialize download for '%s'\n", cls.et_downloadName);
 			}
 			// Check for a disconnected download
@@ -835,7 +835,7 @@ void CL_ParseDownload(QMsg* msg)
 			if (clc.downloadFlags & (1 << DL_FLAG_DISCON))
 			{
 				CL_AddReliableCommand("wwwdl bbl8r");
-				cls.et_bWWWDlDisconnected = qtrue;
+				cls.et_bWWWDlDisconnected = true;
 			}
 			return;
 		}

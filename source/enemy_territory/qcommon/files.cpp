@@ -75,9 +75,9 @@ qboolean FS_OS_FileExists(const char* file)
 	if (f)
 	{
 		fclose(f);
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -170,7 +170,7 @@ static void FS_Startup(const char* gameName)
 	// print the current search paths
 	FS_Path_f();
 
-	fs_gamedirvar->modified = qfalse;	// We just loaded, it's not modified
+	fs_gamedirvar->modified = false;	// We just loaded, it's not modified
 
 	Com_Printf("----------------------\n");
 
@@ -365,9 +365,9 @@ qboolean FS_ConditionalRestart(int checksumFeed)
 	if (fs_gamedirvar->modified || checksumFeed != fs_checksumFeed)
 	{
 		FS_Restart(checksumFeed);
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 unsigned int FS_ChecksumOSPath(char* OSPath)

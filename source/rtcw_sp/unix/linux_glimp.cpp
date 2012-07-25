@@ -49,7 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../client/client.h"
 #include "linux_local.h"// bk001130
 
-static qboolean signalcaught = qfalse;;
+static qboolean signalcaught = false;;
 
 void Sys_Exit(int);		// bk010104 - abstraction
 
@@ -64,7 +64,7 @@ static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 -
 		Sys_Exit(1);	// bk010104 - abstraction
 	}
 
-	signalcaught = qtrue;
+	signalcaught = true;
 #if id386
 	/* Do something useful with siginfo_t */
 	ucontext_t* uc = (ucontext_t*)secret;

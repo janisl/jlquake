@@ -4441,7 +4441,7 @@ void R_BackupShaders()
 //
 //	if shadertext is NULL, looks for matching shadername and removes it
 //
-//	returns qtrue if request was successful, qfalse if the gods were angered
+//	returns true if request was successful, false if the gods were angered
 bool R_LoadDynamicShader(const char* shadername, const char* shadertext)
 {
 	const char* func_err = "WARNING: R_LoadDynamicShader";

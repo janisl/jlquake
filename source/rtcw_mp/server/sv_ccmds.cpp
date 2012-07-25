@@ -97,27 +97,27 @@ static void SV_Map_f(void)
 		Cvar_SetLatched("sv_maxclients", "32");		// Ridah, modified this
 #endif
 		cmd += 2;
-		killBots = qtrue;
+		killBots = true;
 		if (!String::ICmp(cmd, "devmap"))
 		{
-			cheat = qtrue;
+			cheat = true;
 		}
 		else
 		{
-			cheat = qfalse;
+			cheat = false;
 		}
 	}
 	else
 	{
 		if (!String::ICmp(cmd, "devmap"))
 		{
-			cheat = qtrue;
-			killBots = qtrue;
+			cheat = true;
+			killBots = true;
 		}
 		else
 		{
-			cheat = qfalse;
-			killBots = qfalse;
+			cheat = false;
+			killBots = false;
 		}
 		if (svt3_gametype->integer == Q3GT_SINGLE_PLAYER)
 		{
@@ -249,7 +249,7 @@ static void SV_MapRestart_f(void)
 		// restart the map the slow way
 		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
-		SV_SpawnServer(mapname, qfalse);
+		SV_SpawnServer(mapname, false);
 		return;
 	}
 
@@ -266,7 +266,7 @@ static void SV_MapRestart_f(void)
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
-	sv.q3_restarting = qtrue;
+	sv.q3_restarting = true;
 
 	Cvar_Set("sv_serverRestarting", "1");
 
@@ -280,7 +280,7 @@ static void SV_MapRestart_f(void)
 	}
 
 	sv.state = SS_GAME;
-	sv.q3_restarting = qfalse;
+	sv.q3_restarting = false;
 
 	// connect and begin all the clients
 	for (i = 0; i < sv_maxclients->integer; i++)
@@ -295,18 +295,18 @@ static void SV_MapRestart_f(void)
 
 		if (client->netchan.remoteAddress.type == NA_BOT)
 		{
-			isBot = qtrue;
+			isBot = true;
 		}
 		else
 		{
-			isBot = qfalse;
+			isBot = false;
 		}
 
 		// add the map_restart command
 		SVT3_AddServerCommand(client, "map_restart\n");
 
 		// connect the client again, without the firstTime flag
-		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, WMGAME_CLIENT_CONNECT, i, qfalse, isBot));
+		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, WMGAME_CLIENT_CONNECT, i, false, isBot));
 		if (denied)
 		{
 			// this generally shouldn't happen, because the client
@@ -553,7 +553,7 @@ void SV_AddOperatorCommands(void)
 	{
 		return;
 	}
-	initialized = qtrue;
+	initialized = true;
 
 	Cmd_AddCommand("heartbeat", SVT3_Heartbeat_f);
 	Cmd_AddCommand("kick", SVT3_Kick_f);

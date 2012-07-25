@@ -204,19 +204,19 @@ static void SV_Map_f(void)
 
 	if (!String::ICmp(cmd, "devmap"))
 	{
-		cheat = qtrue;
-		killBots = qtrue;
+		cheat = true;
+		killBots = true;
 	}
 	else
 	if (!String::ICmp(Cmd_Argv(0), "spdevmap"))
 	{
-		cheat = qtrue;
-		killBots = qtrue;
+		cheat = true;
+		killBots = true;
 	}
 	else
 	{
-		cheat = qfalse;
-		killBots = qfalse;
+		cheat = false;
+		killBots = false;
 	}
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
@@ -321,7 +321,7 @@ static void SV_MapRestart_f(void)
 		// restart the map the slow way
 		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
-		SV_SpawnServer(mapname, qfalse);
+		SV_SpawnServer(mapname, false);
 		return;
 	}
 
@@ -378,7 +378,7 @@ static void SV_MapRestart_f(void)
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
-	sv.q3_restarting = qtrue;
+	sv.q3_restarting = true;
 
 	Cvar_Set("sv_serverRestarting", "1");
 
@@ -392,7 +392,7 @@ static void SV_MapRestart_f(void)
 	}
 
 	sv.state = SS_GAME;
-	sv.q3_restarting = qfalse;
+	sv.q3_restarting = false;
 
 	// connect and begin all the clients
 	for (i = 0; i < sv_maxclients->integer; i++)
@@ -411,18 +411,18 @@ static void SV_MapRestart_f(void)
 			{
 				continue;	// dont carry across bots in single player
 			}
-			isBot = qtrue;
+			isBot = true;
 		}
 		else
 		{
-			isBot = qfalse;
+			isBot = false;
 		}
 
 		// add the map_restart command
 		SVT3_AddServerCommand(client, "map_restart\n");
 
 		// connect the client again, without the firstTime flag
-		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, ETGAME_CLIENT_CONNECT, i, qfalse, isBot));
+		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, ETGAME_CLIENT_CONNECT, i, false, isBot));
 		if (denied)
 		{
 			// this generally shouldn't happen, because the client
@@ -592,7 +592,7 @@ void SV_AddOperatorCommands(void)
 	{
 		return;
 	}
-	initialized = qtrue;
+	initialized = true;
 
 	Cmd_AddCommand("heartbeat", SVT3_Heartbeat_f);
 	Cmd_AddCommand("status", SVT3_Status_f);

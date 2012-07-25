@@ -174,13 +174,13 @@ static void CL_WriteBinaryMessage(QMsg* msg)
 
 	if ((msg->cursize + clc.et_binaryMessageLength) >= msg->maxsize)
 	{
-		clc.et_binaryMessageOverflowed = qtrue;
+		clc.et_binaryMessageOverflowed = true;
 		return;
 	}
 
 	msg->WriteData(clc.et_binaryMessage, clc.et_binaryMessageLength);
 	clc.et_binaryMessageLength = 0;
-	clc.et_binaryMessageOverflowed = qfalse;
+	clc.et_binaryMessageOverflowed = false;
 }
 
 /*
@@ -214,12 +214,12 @@ qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg)
 	ret = Netchan_Process(chan, msg);
 	if (!ret)
 	{
-		return qfalse;
+		return false;
 	}
 	if (!SVET_GameIsSinglePlayer())
 	{
 		CL_Netchan_Decode(msg);
 	}
 	newsize += msg->cursize;
-	return qtrue;
+	return true;
 }

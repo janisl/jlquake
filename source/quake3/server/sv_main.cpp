@@ -99,7 +99,7 @@ void SV_MasterHeartbeat(void)
 		// do it when needed
 		if (sv_master[i]->modified)
 		{
-			sv_master[i]->modified = qfalse;
+			sv_master[i]->modified = false;
 
 			Com_Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
@@ -108,7 +108,7 @@ void SV_MasterHeartbeat(void)
 				// so we don't take repeated dns hits
 				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = qfalse;
+				sv_master[i]->modified = false;
 				continue;
 			}
 			Com_Printf("%s resolved to %s\n", sv_master[i]->string, SOCK_AdrToString(adr[i]));
@@ -313,12 +313,12 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 	if (!String::Length(sv_rconPassword->string) ||
 		String::Cmp(Cmd_Argv(1), sv_rconPassword->string))
 	{
-		valid = qfalse;
+		valid = false;
 		Com_Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 	else
 	{
-		valid = qtrue;
+		valid = true;
 		Com_Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 

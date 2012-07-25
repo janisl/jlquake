@@ -609,7 +609,7 @@ qboolean Key_IsDown(int keynum)
 {
 	if (keynum == -1)
 	{
-		return qfalse;
+		return false;
 	}
 
 	return keys[keynum].down;
@@ -951,7 +951,7 @@ void Key_WriteBindings(fileHandle_t f)
 	{
 		if (keys[i].binding && keys[i].binding[0])
 		{
-			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i, qfalse), keys[i].binding);
+			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i, false), keys[i].binding);
 
 		}
 
@@ -973,7 +973,7 @@ void Key_Bindlist_f(void)
 	{
 		if (keys[i].binding && keys[i].binding[0])
 		{
-			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i, qfalse), keys[i].binding);
+			Com_Printf("%s \"%s\"\n", Key_KeynumToString(i, false), keys[i].binding);
 		}
 	}
 }
@@ -1005,7 +1005,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 	char* kb;
 	char cmd[1024];
-	qboolean bypassMenu = qfalse;		// NERVE - SMF
+	qboolean bypassMenu = false;		// NERVE - SMF
 
 	// update auto-repeat status and WOLFBUTTON_ANY status
 	keys[key].down = down;
@@ -1189,12 +1189,12 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cl_bypassMouseInput->integer == 1)
 			{
-				bypassMenu = qtrue;
+				bypassMenu = true;
 			}
 		}
 		else if (!UI_checkKeyExec(key))
 		{
-			bypassMenu = qtrue;
+			bypassMenu = true;
 		}
 	}
 
@@ -1265,7 +1265,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 			if (key >= 200)
 			{
 				Com_Printf("%s is unbound, use controls menu to set.\n",
-					Key_KeynumToString(key, qfalse));
+					Key_KeynumToString(key, false));
 			}
 		}
 		else if (kb[0] == '+')
@@ -1307,7 +1307,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, qtrue);
+		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
@@ -1329,13 +1329,13 @@ void Key_ClearStates(void)
 {
 	int i;
 
-	anykeydown = qfalse;
+	anykeydown = false;
 
 	for (i = 0; i < MAX_KEYS; i++)
 	{
 		if (keys[i].down)
 		{
-			CL_KeyEvent(i, qfalse, 0);
+			CL_KeyEvent(i, false, 0);
 
 		}
 		keys[i].down = 0;

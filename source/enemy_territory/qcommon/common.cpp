@@ -161,7 +161,7 @@ A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 int QDECL Com_VPrintf(const char* fmt, va_list argptr)
 {
 	char msg[MAXPRINTMSG];
-	static qboolean opening_qconsole = qfalse;
+	static qboolean opening_qconsole = false;
 
 	// FIXME TTimo
 	// switched vsprintf -> vsnprintf
@@ -203,7 +203,7 @@ int QDECL Com_VPrintf(const char* fmt, va_list argptr)
 			struct tm* newtime;
 			time_t aclock;
 
-			opening_qconsole = qtrue;
+			opening_qconsole = true;
 
 			time(&aclock);
 			newtime = localtime(&aclock);
@@ -217,7 +217,7 @@ int QDECL Com_VPrintf(const char* fmt, va_list argptr)
 				FS_ForceFlush(logfile);
 			}
 
-			opening_qconsole = qfalse;
+			opening_qconsole = false;
 		}
 		if (logfile && FS_Initialized())
 		{
@@ -325,7 +325,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 
 		Sys_Error("recursive error '%s' after: %s", buf, com_errorMessage);
 	}
-	com_errorEntered = qtrue;
+	com_errorEntered = true;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(com_errorMessage, sizeof(com_errorMessage), fmt, argptr);
@@ -338,26 +338,26 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 
 	if (code == ERR_SERVERDISCONNECT)
 	{
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		CL_FlushMemory();
-		com_errorEntered = qfalse;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else if (code == ERR_DROP || code == ERR_DISCONNECT)
 	{
 		Com_Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
 		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		CL_FlushMemory();
-		com_errorEntered = qfalse;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 #ifndef DEDICATED
 	else if (code == ERR_AUTOUPDATE)
 	{
-		CL_Disconnect(qtrue);
+		CL_Disconnect(true);
 		CL_FlushMemory();
-		com_errorEntered = qfalse;
+		com_errorEntered = false;
 		if (!String::NICmp(com_errorMessage, "Server is full", 14) && CL_NextUpdateServer())
 		{
 			CL_GetAutoUpdate();
@@ -374,7 +374,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		SV_Shutdown(va("Server fatal crashed: %s\n", com_errorMessage));
 	}
 
-	Com_Shutdown(code == ERR_VID_FATAL ? qtrue : qfalse);
+	Com_Shutdown(code == ERR_VID_FATAL ? true : false);
 
 	Sys_Error("%s", com_errorMessage);
 }
@@ -402,7 +402,7 @@ void Com_Quit_f(void)
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
-		Com_Shutdown(qfalse);
+		Com_Shutdown(false);
 		FS_Shutdown();
 	}
 	Sys_Quit();
@@ -484,10 +484,10 @@ qboolean Com_SafeMode(void)
 			!String::ICmp(Cmd_Argv(0), "cvar_restart"))
 		{
 			com_consoleLines[i][0] = 0;
-			return qtrue;
+			return true;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 
@@ -535,7 +535,7 @@ Com_AddStartupCommands
 Adds command line parameters as script statements
 Commands are seperated by + signs
 
-Returns qtrue if any late commands were added, which
+Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
@@ -544,7 +544,7 @@ qboolean Com_AddStartupCommands(void)
 	int i;
 	qboolean added;
 
-	added = qfalse;
+	added = false;
 	// quote every token, so args with semicolons can work
 	for (i = 0; i < com_numConsoleLines; i++)
 	{
@@ -556,7 +556,7 @@ qboolean Com_AddStartupCommands(void)
 		// set commands won't override menu startup
 		if (String::NICmp(com_consoleLines[i], "set", 3))
 		{
-			added = qtrue;
+			added = true;
 		}
 		Cbuf_AddText(com_consoleLines[i]);
 		Cbuf_AddText("\n");
@@ -1424,7 +1424,7 @@ void Hunk_SmallLog(void)
 	}
 	for (block = hunkblocks; block; block = block->next)
 	{
-		block->printed = qfalse;
+		block->printed = false;
 	}
 	size = 0;
 	numBlocks = 0;
@@ -1449,7 +1449,7 @@ void Hunk_SmallLog(void)
 			}
 			size += block2->size;
 			locsize += block2->size;
-			block2->printed = qtrue;
+			block2->printed = true;
 		}
 #ifdef HUNK_DEBUG
 		String::Sprintf(buf, sizeof(buf), "size = %8d (%6.2f MB / %6.2f MB): %s, line: %d (%s)\r\n", locsize, locsize / Square(1024.f), (size + block->size) / Square(1024.f), block->file, block->line, block->label);
@@ -1579,9 +1579,9 @@ qboolean Hunk_CheckMark(void)
 {
 	if (hunk_low.mark || hunk_high.mark)
 	{
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 void CL_ShutdownUI(void);
@@ -1953,8 +1953,8 @@ void Com_InitJournaling(void)
 	else if (com_journal->integer == 2)
 	{
 		Com_Printf("Replaying journaled events\n");
-		FS_FOpenFileRead("journal.dat", &com_journalFile, qtrue);
-		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, qtrue);
+		FS_FOpenFileRead("journal.dat", &com_journalFile, true);
+		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, true);
 	}
 
 	if (!com_journalFile || !com_journalDataFile)
@@ -2057,7 +2057,7 @@ void Com_PushEvent(sysEvent_t* event)
 		// don't print the warning constantly, or it can give time for more...
 		if (!printedWarning)
 		{
-			printedWarning = qtrue;
+			printedWarning = true;
 			Com_Printf("WARNING: Com_PushEvent overflow\n");
 		}
 
@@ -2069,7 +2069,7 @@ void Com_PushEvent(sysEvent_t* event)
 	}
 	else
 	{
-		printedWarning = qfalse;
+		printedWarning = false;
 	}
 
 	*ev = *event;
@@ -2187,7 +2187,7 @@ int Com_EventLoop(void)
 			// when you just opened it
 			if (consoleButtonWasPressed)
 			{
-				consoleButtonWasPressed = qfalse;
+				consoleButtonWasPressed = false;
 				break;
 			}
 #endif
@@ -2584,18 +2584,18 @@ void Com_GetGameInfo()
 		{
 			if (!String::ICmp(token, "spEnabled"))
 			{
-				comet_gameInfo.spEnabled = qtrue;
+				comet_gameInfo.spEnabled = true;
 			}
 			else if (!String::ICmp(token, "spGameTypes"))
 			{
-				while ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.spGameTypes |= (1 << String::Atoi(token));
 				}
 			}
 			else if (!String::ICmp(token, "defaultSPGameType"))
 			{
-				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.defaultSPGameType = String::Atoi(token);
 				}
@@ -2608,14 +2608,14 @@ void Com_GetGameInfo()
 			else if (!String::ICmp(token, "coopGameTypes"))
 			{
 
-				while ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.coopGameTypes |= (1 << String::Atoi(token));
 				}
 			}
 			else if (!String::ICmp(token, "defaultCoopGameType"))
 			{
-				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.defaultCoopGameType = String::Atoi(token);
 				}
@@ -2627,7 +2627,7 @@ void Com_GetGameInfo()
 			}
 			else if (!String::ICmp(token, "defaultGameType"))
 			{
-				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.defaultGameType = String::Atoi(token);
 				}
@@ -2639,7 +2639,7 @@ void Com_GetGameInfo()
 			}
 			else if (!String::ICmp(token, "usesProfiles"))
 			{
-				if ((token = String::ParseExt(&buf, qfalse)) != NULL && token[0])
+				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
 				{
 					comet_gameInfo.usesProfiles = String::Atoi(token);
 				}
@@ -2662,8 +2662,8 @@ void Com_GetGameInfo()
 }
 
 // bani - checks if profile.pid is valid
-// return qtrue if it is
-// return qfalse if it isn't(!)
+// return true if it is
+// return false if it isn't(!)
 qboolean Com_CheckProfile(char* profile_path)
 {
 	fileHandle_t f;
@@ -2673,13 +2673,13 @@ qboolean Com_CheckProfile(char* profile_path)
 	//let user override this
 	if (com_ignorecrash->integer)
 	{
-		return qtrue;
+		return true;
 	}
 
-	if (FS_FOpenFileRead(profile_path, &f, qtrue) < 0)
+	if (FS_FOpenFileRead(profile_path, &f, true) < 0)
 	{
 		//no profile found, we're ok
-		return qtrue;
+		return true;
 	}
 
 	if (FS_Read(&f_data, sizeof(f_data) - 1, f) < 0)
@@ -2688,7 +2688,7 @@ qboolean Com_CheckProfile(char* profile_path)
 		FS_FCloseFile(f);
 		//try to delete corrupted pid file
 		FS_Delete(profile_path);
-		return qfalse;
+		return false;
 	}
 
 	f_pid = String::Atoi(f_data);
@@ -2696,12 +2696,12 @@ qboolean Com_CheckProfile(char* profile_path)
 	{
 		//pid doesn't match
 		FS_FCloseFile(f);
-		return qfalse;
+		return false;
 	}
 
 	//we're all ok
 	FS_FCloseFile(f);
-	return qtrue;
+	return true;
 }
 
 //bani - from files.c
@@ -2739,8 +2739,8 @@ void Com_TrackProfile(char* profile_path)
 }
 
 // bani - writes pid to profile
-// returns qtrue if successful
-// returns qfalse if not(!!)
+// returns true if successful
+// returns false if not(!!)
 qboolean Com_WriteProfile(char* profile_path)
 {
 	fileHandle_t f;
@@ -2754,7 +2754,7 @@ qboolean Com_WriteProfile(char* profile_path)
 	if (f < 0)
 	{
 		Com_Printf("Com_WriteProfile: Can't write %s.\n", profile_path);
-		return qfalse;
+		return false;
 	}
 
 	FS_Printf(f, "%d", com_pid->integer);
@@ -2764,7 +2764,7 @@ qboolean Com_WriteProfile(char* profile_path)
 	//track profile changes
 	Com_TrackProfile(profile_path);
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2779,7 +2779,7 @@ void Com_Init(char* commandLine)
 		char* s;
 		int pid;
 		// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
-		volatile qboolean safeMode = qtrue;
+		volatile qboolean safeMode = true;
 
 		Com_Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
 
@@ -2849,7 +2849,7 @@ void Com_Init(char* commandLine)
 		{
 			const char* cl_profileStr = Cvar_VariableString("cl_profile");
 
-			safeMode = qfalse;
+			safeMode = false;
 			if (comet_gameInfo.usesProfiles)
 			{
 				if (!cl_profileStr[0])
@@ -2992,11 +2992,11 @@ void Com_Init(char* commandLine)
 		VM_Init();
 		SV_Init();
 
-		com_dedicated->modified = qfalse;
+		com_dedicated->modified = false;
 		if (!com_dedicated->integer)
 		{
 			CL_Init();
-			Sys_ShowConsole(com_viewlog->integer, qfalse);
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 
 		// set com_frameTime so that if a map is started on the
@@ -3018,7 +3018,7 @@ void Com_Init(char* commandLine)
 		// delay this so potential wicked3d dll can find a wolf window
 		if (!com_dedicated->integer)
 		{
-			Sys_ShowConsole(com_viewlog->integer, qfalse);
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 
 		// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
@@ -3040,7 +3040,7 @@ void Com_Init(char* commandLine)
 			}*/
 		}
 
-		com_fullyInitialized = qtrue;
+		com_fullyInitialized = true;
 		fs_ProtectKeyFile = true;
 		Com_Printf("--- Common Initialization Complete ---\n");
 	}
@@ -3226,7 +3226,7 @@ void Com_Frame(void)
 		int timeAfter;
 
 		static int watchdogTime = 0;
-		static qboolean watchWarn = qfalse;
+		static qboolean watchWarn = false;
 
 		if (setjmp(abortframe))
 		{
@@ -3253,9 +3253,9 @@ void Com_Frame(void)
 		{
 			if (!com_dedicated->value)
 			{
-				Sys_ShowConsole(com_viewlog->integer, qfalse);
+				Sys_ShowConsole(com_viewlog->integer, false);
 			}
-			com_viewlog->modified = qfalse;
+			com_viewlog->modified = false;
 		}
 
 		//
@@ -3311,16 +3311,16 @@ void Com_Frame(void)
 		{
 			// get the latched value
 			Cvar_Get("dedicated", "0", 0);
-			com_dedicated->modified = qfalse;
+			com_dedicated->modified = false;
 			if (!com_dedicated->integer)
 			{
 				CL_Init();
-				Sys_ShowConsole(com_viewlog->integer, qfalse);
+				Sys_ShowConsole(com_viewlog->integer, false);
 			}
 			else
 			{
 				CL_Shutdown();
-				Sys_ShowConsole(1, qtrue);
+				Sys_ShowConsole(1, true);
 			}
 		}
 
@@ -3374,13 +3374,13 @@ void Com_Frame(void)
 				if (!watchWarn && Sys_Milliseconds() - watchdogTime > (com_watchdog->integer - 4) * 1000)
 				{
 					Com_Printf("WARNING: watchdog will trigger in 4 seconds\n");
-					watchWarn = qtrue;
+					watchWarn = true;
 				}
 				else if (Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000)
 				{
 					Com_Printf("Idle Server with no map - triggering watchdog\n");
 					watchdogTime = 0;
-					watchWarn = qfalse;
+					watchWarn = false;
 					if (com_watchdog_cmd->string[0] == '\0')
 					{
 						Cbuf_AddText("quit\n");

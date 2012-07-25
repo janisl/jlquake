@@ -1591,7 +1591,7 @@ static bool BotWalkInDirection(bot_movestate_t* ms, const vec3_t dir, float spee
 		aas_clientmove_t move;
 		AAS_PredictClientMovement(&move, ms->entitynum, origin, presencetype, 0, true,
 			velocity, cmdmove, cmdframes, maxframes, 0.1f,
-			stopevent, 0, false);						//qtrue);
+			stopevent, 0, false);						//true);
 		//if prediction time wasn't enough to fully predict the movement
 		if (move.frames >= maxframes && (type & MOVE_JUMP))
 		{
