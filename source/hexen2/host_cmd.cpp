@@ -246,7 +246,7 @@ void Host_Map_f(void)
 	if (Cmd_Argc() < 2)		//no map name given
 	{
 #ifndef DEDICATED
-		Con_Printf("map <levelname>: start a new server\nCurrently on: %s\n",cl.qh_levelname);
+		common->Printf("map <levelname>: start a new server\nCurrently on: %s\n",cl.qh_levelname);
 #endif
 		return;
 	}
@@ -319,7 +319,7 @@ void Host_Changelevel_f(void)
 
 	if (Cmd_Argc() < 2)
 	{
-		Con_Printf("changelevel <levelname> : continue game on a new level\n");
+		common->Printf("changelevel <levelname> : continue game on a new level\n");
 		return;
 	}
 #ifdef DEDICATED
@@ -328,7 +328,7 @@ void Host_Changelevel_f(void)
 	if (sv.state == SS_DEAD || clc.demoplaying)
 #endif
 	{
-		Con_Printf("Only the server may changelevel\n");
+		common->Printf("Only the server may changelevel\n");
 		return;
 	}
 
@@ -504,14 +504,14 @@ void Host_Savegame_f(void)
 
 	if (sv.state == SS_DEAD)
 	{
-		Con_Printf("Not playing a local game.\n");
+		common->Printf("Not playing a local game.\n");
 		return;
 	}
 
 #ifndef DEDICATED
 	if (cl.qh_intermission)
 	{
-		Con_Printf("Can't save in intermission.\n");
+		common->Printf("Can't save in intermission.\n");
 		return;
 	}
 #endif
@@ -519,20 +519,20 @@ void Host_Savegame_f(void)
 #ifndef TESTSAVE
 	if (svs.qh_maxclients != 1)
 	{
-		Con_Printf("Can't save multiplayer games.\n");
+		common->Printf("Can't save multiplayer games.\n");
 		return;
 	}
 #endif
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("save <savename> : save a game\n");
+		common->Printf("save <savename> : save a game\n");
 		return;
 	}
 
 	if (strstr(Cmd_Argv(1), ".."))
 	{
-		Con_Printf("Relative pathnames are not allowed.\n");
+		common->Printf("Relative pathnames are not allowed.\n");
 		return;
 	}
 
@@ -540,7 +540,7 @@ void Host_Savegame_f(void)
 	{
 		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
 		{
-			Con_Printf("Can't savegame with a dead player\n");
+			common->Printf("Can't savegame with a dead player\n");
 			return;
 		}
 	}
@@ -556,7 +556,7 @@ void Host_Savegame_f(void)
 	FS_Remove(netname);
 
 	sprintf(dest, "%s/", Cmd_Argv(1));
-	Con_Printf("Saving game to %s...\n", Cmd_Argv(1));
+	common->Printf("Saving game to %s...\n", Cmd_Argv(1));
 
 #ifndef DEDICATED
 	CL_CopyFiles("", ".gip", dest);
@@ -566,7 +566,7 @@ void Host_Savegame_f(void)
 	f = FS_FOpenFileWrite(dest);
 	if (!f)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
@@ -638,7 +638,7 @@ void Host_Loadgame_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("load <savename> : load a game\n");
+		common->Printf("load <savename> : load a game\n");
 		return;
 	}
 
@@ -648,7 +648,7 @@ void Host_Loadgame_f(void)
 	CL_RemoveGIPFiles(NULL);
 #endif
 
-	Con_Printf("Loading game from %s...\n", Cmd_Argv(1));
+	common->Printf("Loading game from %s...\n", Cmd_Argv(1));
 
 	sprintf(dest, "%s/info.dat", Cmd_Argv(1));
 
@@ -656,7 +656,7 @@ void Host_Loadgame_f(void)
 	int Len = FS_ReadFile(dest, Buffer);
 	if (Len <= 0)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 	Buffer.Append(0);
@@ -666,7 +666,7 @@ void Host_Loadgame_f(void)
 
 	if (version != SAVEGAME_VERSION)
 	{
-		Con_Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+		common->Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
 	GetLine(ReadPos);
@@ -781,13 +781,13 @@ void SaveGamestate(qboolean ClientsOnly)
 
 		sprintf(name, "%s.gip", sv.name);
 
-//		Con_Printf ("Saving game to %s...\n", name);
+//		common->Printf ("Saving game to %s...\n", name);
 	}
 
 	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
@@ -911,7 +911,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 
 		if (ClientsMode != 2 && ClientsMode != 3)
 		{
-			Con_Printf("Loading game from %s...\n", name);
+			common->Printf("Loading game from %s...\n", name);
 		}
 	}
 
@@ -921,7 +921,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 	{
 		if (ClientsMode == 2)
 		{
-			Con_Printf("ERROR: couldn't open.\n");
+			common->Printf("ERROR: couldn't open.\n");
 		}
 
 		return -1;
@@ -933,7 +933,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 
 	if (version != SAVEGAME_VERSION)
 	{
-		Con_Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+		common->Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return -1;
 	}
 
@@ -950,7 +950,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 
 		if (sv.state == SS_DEAD)
 		{
-			Con_Printf("Couldn't load map\n");
+			common->Printf("Couldn't load map\n");
 			return -1;
 		}
 
@@ -1043,7 +1043,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 
 	if (ClientsMode != 1 && auto_correct)
 	{
-		Con_DPrintf("*** Auto-corrected model indexes!\n");
+		common->DPrintf("*** Auto-corrected model indexes!\n");
 	}
 
 //	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
@@ -1061,7 +1061,7 @@ void Host_Changelevel2_f(void)
 
 	if (Cmd_Argc() < 2)
 	{
-		Con_Printf("changelevel2 <levelname> : continue game on a new level in the unit\n");
+		common->Printf("changelevel2 <levelname> : continue game on a new level in the unit\n");
 		return;
 	}
 #ifdef DEDICATED
@@ -1070,7 +1070,7 @@ void Host_Changelevel2_f(void)
 	if (sv.state == SS_DEAD || clc.demoplaying)
 #endif
 	{
-		Con_Printf("Only the server may changelevel\n");
+		common->Printf("Only the server may changelevel\n");
 		return;
 	}
 
@@ -1115,7 +1115,7 @@ void Host_Name_f(void)
 	if (Cmd_Argc() == 1)
 	{
 #ifndef DEDICATED
-		Con_Printf("\"name\" is \"%s\"\n", clqh_name->string);
+		common->Printf("\"name\" is \"%s\"\n", clqh_name->string);
 #endif
 		return;
 	}
@@ -1134,7 +1134,7 @@ void Host_Name_f(void)
 	if (pdest)
 	{
 		*pdest = 0;	//zap the brace
-		Con_Printf("Illegal char in name removed!\n");
+		common->Printf("Illegal char in name removed!\n");
 	}
 
 	if (cmd_source == src_command)
@@ -1157,7 +1157,7 @@ void Host_Name_f(void)
 	{
 		if (String::Cmp(host_client->name, newName) != 0)
 		{
-			Con_Printf("%s renamed to %s\n", host_client->name, newName);
+			common->Printf("%s renamed to %s\n", host_client->name, newName);
 		}
 	}
 	String::Cpy(host_client->name, newName);
@@ -1180,11 +1180,11 @@ void Host_Class_f(void)
 #ifndef DEDICATED
 		if (!(int)clh2_playerclass->value)
 		{
-			Con_Printf("\"playerclass\" is %d (\"unknown\")\n", (int)clh2_playerclass->value);
+			common->Printf("\"playerclass\" is %d (\"unknown\")\n", (int)clh2_playerclass->value);
 		}
 		else
 		{
-			Con_Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,ClassNames[(int)clh2_playerclass->value - 1]);
+			common->Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,ClassNames[(int)clh2_playerclass->value - 1]);
 		}
 #endif
 		return;
@@ -1248,8 +1248,8 @@ void Host_Class_f(void)
 
 void Host_Version_f(void)
 {
-	Con_Printf("Version %4.2f\n", HEXEN2_VERSION);
-	Con_Printf("Exe: "__TIME__ " "__DATE__ "\n");
+	common->Printf("Version %4.2f\n", HEXEN2_VERSION);
+	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
 void Host_Say(qboolean teamonly)
@@ -1328,7 +1328,7 @@ void Host_Say(qboolean teamonly)
 	}
 	host_client = save;
 
-	Con_Printf("%s", &text[1]);
+	common->Printf("%s", &text[1]);
 }
 
 
@@ -1418,8 +1418,8 @@ void Host_Color_f(void)
 	if (Cmd_Argc() == 1)
 	{
 #ifndef DEDICATED
-		Con_Printf("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
-		Con_Printf("color <0-10> [0-10]\n");
+		common->Printf("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
+		common->Printf("color <0-10> [0-10]\n");
 #endif
 		return;
 	}
@@ -1541,13 +1541,13 @@ void Host_PreSpawn_f(void)
 {
 	if (cmd_source == src_command)
 	{
-		Con_Printf("prespawn is not valid from the console\n");
+		common->Printf("prespawn is not valid from the console\n");
 		return;
 	}
 
 	if (host_client->state == CS_ACTIVE)
 	{
-		Con_Printf("prespawn not valid -- allready spawned\n");
+		common->Printf("prespawn not valid -- allready spawned\n");
 		return;
 	}
 
@@ -1570,13 +1570,13 @@ void Host_Spawn_f(void)
 
 	if (cmd_source == src_command)
 	{
-		Con_Printf("spawn is not valid from the console\n");
+		common->Printf("spawn is not valid from the console\n");
 		return;
 	}
 
 	if (host_client->state == CS_ACTIVE)
 	{
-		Con_Printf("Spawn not valid -- allready spawned\n");
+		common->Printf("Spawn not valid -- allready spawned\n");
 		return;
 	}
 
@@ -1617,7 +1617,7 @@ void Host_Spawn_f(void)
 
 			if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
 			{
-				Con_Printf("%s entered the game\n", host_client->name);
+				common->Printf("%s entered the game\n", host_client->name);
 			}
 
 			PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
@@ -1724,7 +1724,7 @@ void Host_Begin_f(void)
 {
 	if (cmd_source == src_command)
 	{
-		Con_Printf("begin is not valid from the console\n");
+		common->Printf("begin is not valid from the console\n");
 		return;
 	}
 
@@ -2033,7 +2033,7 @@ qhedict_t* FindViewthing(void)
 			return e;
 		}
 	}
-	Con_Printf("No viewthing on map\n");
+	common->Printf("No viewthing on map\n");
 	return NULL;
 }
 
@@ -2056,7 +2056,7 @@ void Host_Viewmodel_f(void)
 	m = R_RegisterModel(Cmd_Argv(1));
 	if (!m)
 	{
-		Con_Printf("Can't load %s\n", Cmd_Argv(1));
+		common->Printf("Can't load %s\n", Cmd_Argv(1));
 		return;
 	}
 
@@ -2178,10 +2178,10 @@ void Host_Startdemos_f(void)
 	c = Cmd_Argc() - 1;
 	if (c > MAX_DEMOS)
 	{
-		Con_Printf("Max %i demos in demoloop\n", MAX_DEMOS);
+		common->Printf("Max %i demos in demoloop\n", MAX_DEMOS);
 		c = MAX_DEMOS;
 	}
-	Con_Printf("%i demo(s) in loop\n", c);
+	common->Printf("%i demo(s) in loop\n", c);
 
 	for (i = 1; i < c + 1; i++)
 		String::NCpy(cls.qh_demos[i - 1], Cmd_Argv(i), sizeof(cls.qh_demos[0]) - 1);

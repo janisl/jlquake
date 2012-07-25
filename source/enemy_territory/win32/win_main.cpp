@@ -91,11 +91,11 @@ void Sys_OpenURL(const char* url, qboolean doexit)
 
 	if (doexit_spamguard)
 	{
-		Com_DPrintf("Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url);
+		common->DPrintf("Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url);
 		return;
 	}
 
-	Com_Printf("Open URL: %s\n", url);
+	common->Printf("Open URL: %s\n", url);
 
 	if (!ShellExecute(NULL, "open", url, NULL, NULL, SW_RESTORE))
 	{
@@ -348,7 +348,7 @@ void Sys_Init(void)
 	Cvar_Get("sys_cpustring", "detect", 0);
 	if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "detect"))
 	{
-		Com_Printf("...detecting CPU, found ");
+		common->Printf("...detecting CPU, found ");
 
 		cpuid = Sys_GetProcessorId();
 
@@ -382,7 +382,7 @@ void Sys_Init(void)
 	}
 	else
 	{
-		Com_Printf("...forcing CPU type to ");
+		common->Printf("...forcing CPU type to ");
 		if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "generic"))
 		{
 			cpuid = CPUID_GENERIC;
@@ -409,12 +409,12 @@ void Sys_Init(void)
 		}
 		else
 		{
-			Com_Printf("WARNING: unknown sys_cpustring '%s'\n", Cvar_VariableString("sys_cpustring"));
+			common->Printf("WARNING: unknown sys_cpustring '%s'\n", Cvar_VariableString("sys_cpustring"));
 			cpuid = CPUID_GENERIC;
 		}
 	}
 	Cvar_SetValue("sys_cpuid", cpuid);
-	Com_Printf("%s\n", Cvar_VariableString("sys_cpustring"));
+	common->Printf("%s\n", Cvar_VariableString("sys_cpustring"));
 
 	Cvar_Set("username", Sys_GetCurrentUser());
 
@@ -464,7 +464,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 	_getcwd(cwd, sizeof(cwd));
-	Com_Printf("Working directory: %s\n", cwd);
+	common->Printf("Working directory: %s\n", cwd);
 
 	// hide the early console since we've reached the point where we
 	// have a working graphics subsystems

@@ -687,7 +687,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 
 	scale = (float)rate / dma.speed;
 
-//Com_Printf ("%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
+//common->Printf ("%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
 	if (channels == 2 && width == 2)
 	{
 		if (scale == 1.0)
@@ -2596,7 +2596,7 @@ static void S_ThreadStartSoundEx(const vec3_t origin, int entityNum, int entchan
 				}
 				if (chosen == -1)
 				{
-					//Com_Printf("dropping sound\n");
+					//common->Printf("dropping sound\n");
 					return;
 				}
 			}
@@ -2864,7 +2864,7 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 
 		time = Com_Milliseconds();
 
-		//	Com_Printf("playing %s\n", sfx->soundName);
+		//	common->Printf("playing %s\n", sfx->soundName);
 		// pick a channel to play on
 
 		allowed = 4;
@@ -3590,7 +3590,7 @@ static void GetSoundtime()
 		// check to make sure that we haven't overshot
 		if (s_paintedtime < s_soundtime)
 		{
-			Com_DPrintf("S_Update_ : overflow\n");
+			common->DPrintf("S_Update_ : overflow\n");
 			s_paintedtime = s_soundtime;
 		}
 #endif

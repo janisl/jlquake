@@ -110,7 +110,7 @@ void COM_CheckRegistered(void)
 
 	if (!h)
 	{
-		Con_Printf("Playing demo version.\n");
+		common->Printf("Playing demo version.\n");
 		return;
 	}
 
@@ -125,7 +125,7 @@ void COM_CheckRegistered(void)
 
 	Cvar_Set("registered", "1");
 	static_registered = 1;
-	Con_Printf("Playing registered version.\n");
+	common->Printf("Playing registered version.\n");
 }
 
 
@@ -285,7 +285,7 @@ void COM_Gamedir(char* dir)
 	if (strstr(dir, "..") || strstr(dir, "/") ||
 		strstr(dir, "\\") || strstr(dir, ":"))
 	{
-		Con_Printf("Gamedir should be a single filename, not a path\n");
+		common->Printf("Gamedir should be a single filename, not a path\n");
 		return;
 	}
 

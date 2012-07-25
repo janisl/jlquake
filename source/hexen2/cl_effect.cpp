@@ -397,7 +397,7 @@ void SV_SendEffect(QMsg* sb, int index)
 			sb->WriteCoord(sv.h2_Effects[index].Chunk.srcVel[2]);
 			sb->WriteByte(sv.h2_Effects[index].Chunk.numChunks);
 
-			//Con_Printf("Adding %d chunks on server...\n",sv.h2_Effects[index].Chunk.numChunks);
+			//common->Printf("Adding %d chunks on server...\n",sv.h2_Effects[index].Chunk.numChunks);
 			break;
 
 		default:
@@ -441,7 +441,7 @@ void SV_ParseEffect(QMsg* sb)
 		return;
 	}
 
-//	Con_Printf("Effect #%d\n",index);
+//	common->Printf("Effect #%d\n",index);
 
 	Com_Memset(&sv.h2_Effects[index],0,sizeof(struct h2EffectT));
 

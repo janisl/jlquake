@@ -512,7 +512,7 @@ void SV_ParseEffect(QMsg* sb)
 		return;
 	}
 
-//	Con_Printf("Effect #%d\n",index);
+//	common->Printf("Effect #%d\n",index);
 
 	Com_Memset(&sv.h2_Effects[index],0,sizeof(struct h2EffectT));
 

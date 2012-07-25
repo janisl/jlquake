@@ -170,16 +170,16 @@ void CL_PrepRefresh(void)
 	mapname[String::Length(mapname) - 4] = 0;		// cut off ".bsp"
 
 	// register models, pics, and skins
-	Com_Printf("Map: %s\r", mapname);
+	common->Printf("Map: %s\r", mapname);
 	SCR_UpdateScreen();
 	R_BeginRegistrationAndLoadWorld(mapname);
-	Com_Printf("                                     \r");
+	common->Printf("                                     \r");
 
 	// precache status bar pics
-	Com_Printf("pics\r");
+	common->Printf("pics\r");
 	SCR_UpdateScreen();
 	SCR_TouchPics();
-	Com_Printf("                                     \r");
+	common->Printf("                                     \r");
 
 	CLQ2_RegisterTEntModels();
 
@@ -192,7 +192,7 @@ void CL_PrepRefresh(void)
 		name[37] = 0;	// never go beyond one line
 		if (name[0] != '*')
 		{
-			Com_Printf("%s\r", name);
+			common->Printf("%s\r", name);
 		}
 		SCR_UpdateScreen();
 		Sys_SendKeyEvents();	// pump message loop
@@ -221,11 +221,11 @@ void CL_PrepRefresh(void)
 		}
 		if (name[0] != '*')
 		{
-			Com_Printf("                                     \r");
+			common->Printf("                                     \r");
 		}
 	}
 
-	Com_Printf("images\r", i);
+	common->Printf("images\r", i);
 	SCR_UpdateScreen();
 	for (i = 1; i < MAX_IMAGES_Q2 && cl.q2_configstrings[Q2CS_IMAGES + i][0]; i++)
 	{
@@ -234,31 +234,31 @@ void CL_PrepRefresh(void)
 		IN_ProcessEvents();
 	}
 
-	Com_Printf("                                     \r");
+	common->Printf("                                     \r");
 	for (i = 0; i < MAX_CLIENTS_Q2; i++)
 	{
 		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS + i][0])
 		{
 			continue;
 		}
-		Com_Printf("client %i\r", i);
+		common->Printf("client %i\r", i);
 		SCR_UpdateScreen();
 		Sys_SendKeyEvents();	// pump message loop
 		IN_ProcessEvents();
 		CL_ParseClientinfo(i);
-		Com_Printf("                                     \r");
+		common->Printf("                                     \r");
 	}
 
 	CL_LoadClientinfo(&cl.q2_baseclientinfo, "unnamed\\male/grunt");
 
 	// set sky textures and speed
-	Com_Printf("sky\r", i);
+	common->Printf("sky\r", i);
 	SCR_UpdateScreen();
 	rotate = String::Atof(cl.q2_configstrings[Q2CS_SKYROTATE]);
 	sscanf(cl.q2_configstrings[Q2CS_SKYAXIS], "%f %f %f",
 		&axis[0], &axis[1], &axis[2]);
 	R_SetSky(cl.q2_configstrings[Q2CS_SKY], rotate, axis);
-	Com_Printf("                                     \r");
+	common->Printf("                                     \r");
 
 	R_EndRegistration();
 
@@ -302,7 +302,7 @@ float CalcFov(float fov_x, float width, float height)
 void V_Gun_Next_f(void)
 {
 	gun_frame++;
-	Com_Printf("frame %i\n", gun_frame);
+	common->Printf("frame %i\n", gun_frame);
 }
 
 void V_Gun_Prev_f(void)
@@ -312,7 +312,7 @@ void V_Gun_Prev_f(void)
 	{
 		gun_frame = 0;
 	}
-	Com_Printf("frame %i\n", gun_frame);
+	common->Printf("frame %i\n", gun_frame);
 }
 
 void V_Gun_Model_f(void)
@@ -516,7 +516,7 @@ V_Viewpos_f
 */
 void V_Viewpos_f(void)
 {
-	Com_Printf("(%i %i %i) : %i\n", (int)cl.refdef.vieworg[0],
+	common->Printf("(%i %i %i) : %i\n", (int)cl.refdef.vieworg[0],
 		(int)cl.refdef.vieworg[1], (int)cl.refdef.vieworg[2],
 		(int)VecToYaw(cl.refdef.viewaxis[0]));
 }

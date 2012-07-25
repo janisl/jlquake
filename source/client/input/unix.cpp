@@ -732,12 +732,12 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 	// we get 7132, the formula handles the wrap safely
 	unsigned long xtime_aux,base_aux;
 	int test;
-//	Com_Printf("sys_timeBase: %p\n", sys_timeBase);
-//	Com_Printf("xtime: %p\n", xtime);
+//	common->Printf("sys_timeBase: %p\n", sys_timeBase);
+//	common->Printf("xtime: %p\n", xtime);
 	xtime_aux = 500;// 500 ms after wrap
 	base_aux = 0x3df3b63f;	// the base a few seconds before wrap
 	test = xtime_aux - (unsigned long)(base_aux * 1000);
-	Com_Printf("xtime wrap test: %d\n", test);
+	common->Printf("xtime wrap test: %d\n", test);
 #endif
 
 	// some X servers (like suse 8.1's) report weird event times

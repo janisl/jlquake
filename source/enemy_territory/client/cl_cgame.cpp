@@ -200,7 +200,7 @@ qboolean    CL_GetSnapshot(int snapshotNumber, snapshot_t* snapshot)
 	count = clSnap->numEntities;
 	if (count > MAX_ENTITIES_IN_SNAPSHOT)
 	{
-		Com_DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT);
+		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT);
 		count = MAX_ENTITIES_IN_SNAPSHOT;
 	}
 	snapshot->numEntities = count;
@@ -384,7 +384,7 @@ qboolean CL_GetServerCommand(int serverCommandNumber)
 
 	if (cl_showServerCommands->integer)				// NERVE - SMF
 	{
-		Com_DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
+		common->DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
 	}
 
 rescan:
@@ -791,7 +791,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 	case CG_PRINT:
-		Com_Printf("%s", (char*)VMA(1));
+		common->Printf("%s", (char*)VMA(1));
 		return 0;
 	case CG_ERROR:
 		Com_Error(ERR_DROP, "%s", (char*)VMA(1));
@@ -1145,10 +1145,10 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return 0;
 
 	case CG_TESTPRINTINT:
-		Com_Printf("%s%i\n", (char*)VMA(1), (int)args[2]);
+		common->Printf("%s%i\n", (char*)VMA(1), (int)args[2]);
 		return 0;
 	case CG_TESTPRINTFLOAT:
-		Com_Printf("%s%f\n", (char*)VMA(1), VMF(2));
+		common->Printf("%s%f\n", (char*)VMA(1), VMF(2));
 		return 0;
 
 	case CG_LOADCAMERA:
@@ -1402,7 +1402,7 @@ void CL_InitCGame(void)
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
+	common->Printf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1451,7 +1451,7 @@ void CL_CGameRendering(stereoFrame_t stereo)
 {
 /*	static int x = 0;
     if(!((++x) % 20)) {
-        Com_Printf( "numtraces: %i\n", numtraces / 20 );
+        common->Printf( "numtraces: %i\n", numtraces / 20 );
         numtraces = 0;
     } else {
     }*/
@@ -1517,7 +1517,7 @@ void CL_AdjustTimeDelta(void)
 		cl.serverTime = cl.et_snap.serverTime;
 		if (cl_showTimeDelta->integer)
 		{
-			Com_Printf("<RESET> ");
+			common->Printf("<RESET> ");
 		}
 	}
 	else if (deltaDelta > 100)
@@ -1525,7 +1525,7 @@ void CL_AdjustTimeDelta(void)
 		// fast adjust, cut the difference in half
 		if (cl_showTimeDelta->integer)
 		{
-			Com_Printf("<FAST> ");
+			common->Printf("<FAST> ");
 		}
 		cl.q3_serverTimeDelta = (cl.q3_serverTimeDelta + newDelta) >> 1;
 	}
@@ -1553,7 +1553,7 @@ void CL_AdjustTimeDelta(void)
 
 	if (cl_showTimeDelta->integer)
 	{
-		Com_Printf("%i ", cl.q3_serverTimeDelta);
+		common->Printf("%i ", cl.q3_serverTimeDelta);
 	}
 }
 

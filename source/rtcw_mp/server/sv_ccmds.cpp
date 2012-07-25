@@ -67,7 +67,7 @@ static void SV_Map_f(void)
 	String::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
 	if (FS_ReadFile(expanded, NULL) == -1)
 	{
-		Com_Printf("Can't find map %s\n", expanded);
+		common->Printf("Can't find map %s\n", expanded);
 		return;
 	}
 
@@ -175,7 +175,7 @@ static void SV_MapRestart_f(void)
 	// make sure server is running
 	if (!com_sv_running->integer)
 	{
-		Com_Printf("Server is not running.\n");
+		common->Printf("Server is not running.\n");
 		return;
 	}
 
@@ -245,7 +245,7 @@ static void SV_MapRestart_f(void)
 	{
 		char mapname[MAX_QPATH];
 
-		Com_Printf("sv_maxclients variable change -- restarting.\n");
+		common->Printf("sv_maxclients variable change -- restarting.\n");
 		// restart the map the slow way
 		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
@@ -312,7 +312,7 @@ static void SV_MapRestart_f(void)
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
 			SVT3_DropClient(client, denied);
-			Com_Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
+			common->Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
 			continue;
 		}
 
@@ -342,7 +342,7 @@ void    SV_LoadGame_f(void)
 	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	if (!filename[0])
 	{
-		Com_Printf("You must specify a savegame to load\n");
+		common->Printf("You must specify a savegame to load\n");
 		return;
 	}
 	if (String::NCmp(filename, "save/", 5) && String::NCmp(filename, "save\\", 5))
@@ -357,7 +357,7 @@ void    SV_LoadGame_f(void)
 	size = FS_ReadFile(filename, NULL);
 	if (size < 0)
 	{
-		Com_Printf("Can't find savegame %s\n", filename);
+		common->Printf("Can't find savegame %s\n", filename);
 		return;
 	}
 
@@ -409,13 +409,13 @@ void SVT3_Ban_f()
 	// make sure server is running
 	if (!com_sv_running->integer)
 	{
-		Com_Printf("Server is not running.\n");
+		common->Printf("Server is not running.\n");
 		return;
 	}
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("Usage: banUser <player name>\n");
+		common->Printf("Usage: banUser <player name>\n");
 		return;
 	}
 
@@ -437,13 +437,13 @@ void SVT3_Ban_f()
 	{
 		const char* authorizeServerName = GGameType & GAME_WolfSP ? WSAUTHORIZE_SERVER_NAME :
 			GGameType & GAME_WolfMP ? WMAUTHORIZE_SERVER_NAME : Q3AUTHORIZE_SERVER_NAME;
-		Com_Printf("Resolving %s\n", authorizeServerName);
+		common->Printf("Resolving %s\n", authorizeServerName);
 		if (!SOCK_StringToAdr(authorizeServerName, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
 		{
-			Com_Printf("Couldn't resolve address\n");
+			common->Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf("%s resolved to %s\n", authorizeServerName, SOCK_AdrToString(svs.q3_authorizeAddress));
+		common->Printf("%s resolved to %s\n", authorizeServerName, SOCK_AdrToString(svs.q3_authorizeAddress));
 	}
 
 	// otherwise send their ip to the authorize server
@@ -451,7 +451,7 @@ void SVT3_Ban_f()
 	{
 		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"banUser %s", SOCK_BaseAdrToString(cl->netchan.remoteAddress));
-		Com_Printf("%s was banned from coming back\n", cl->name);
+		common->Printf("%s was banned from coming back\n", cl->name);
 	}
 }
 
@@ -470,13 +470,13 @@ static void SV_BanNum_f(void)
 	// make sure server is running
 	if (!com_sv_running->integer)
 	{
-		Com_Printf("Server is not running.\n");
+		common->Printf("Server is not running.\n");
 		return;
 	}
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("Usage: banClient <client number>\n");
+		common->Printf("Usage: banClient <client number>\n");
 		return;
 	}
 
@@ -494,13 +494,13 @@ static void SV_BanNum_f(void)
 	// look up the authorize server's IP
 	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		Com_Printf("Resolving %s\n", WMAUTHORIZE_SERVER_NAME);
+		common->Printf("Resolving %s\n", WMAUTHORIZE_SERVER_NAME);
 		if (!SOCK_StringToAdr(WMAUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
 		{
-			Com_Printf("Couldn't resolve address\n");
+			common->Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", WMAUTHORIZE_SERVER_NAME,
+		common->Printf("%s resolved to %i.%i.%i.%i:%i\n", WMAUTHORIZE_SERVER_NAME,
 			svs.q3_authorizeAddress.ip[0], svs.q3_authorizeAddress.ip[1],
 			svs.q3_authorizeAddress.ip[2], svs.q3_authorizeAddress.ip[3],
 			BigShort(svs.q3_authorizeAddress.port));
@@ -512,7 +512,7 @@ static void SV_BanNum_f(void)
 		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[0], cl->netchan.remoteAddress.ip[1],
 			cl->netchan.remoteAddress.ip[2], cl->netchan.remoteAddress.ip[3]);
-		Com_Printf("%s was banned from coming back\n", cl->name);
+		common->Printf("%s was banned from coming back\n", cl->name);
 	}
 }
 

@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 
 int Com_VPrintf(const char* fmt, va_list pArgs) id_attribute((format(printf,1,0)));
 int Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
-int Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));
+int common->Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));
 void Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));			// watch out, we don't define ERR_FATAL and stuff
 void    Cvar_SetValue(const char* var_name, float value);
 void    Cvar_Set(const char* var_name, const char* value);

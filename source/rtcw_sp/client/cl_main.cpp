@@ -137,7 +137,7 @@ void CL_AddReliableCommand(const char* cmd)
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
 //	if(cl.cameraMode)
-//		Com_Printf ("cmd: %s\n", cmd);
+//		common->Printf ("cmd: %s\n", cmd);
 
 	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WOLF)
 	{
@@ -213,7 +213,7 @@ void CL_StopRecord_f(void)
 
 	if (!clc.demorecording)
 	{
-		Com_Printf("Not recording a demo.\n");
+		common->Printf("Not recording a demo.\n");
 		return;
 	}
 
@@ -224,7 +224,7 @@ void CL_StopRecord_f(void)
 	FS_FCloseFile(clc.demofile);
 	clc.demofile = 0;
 	clc.demorecording = false;
-	Com_Printf("Stopped demo.\n");
+	common->Printf("Stopped demo.\n");
 }
 
 /*
@@ -277,25 +277,25 @@ void CL_Record_f(void)
 
 	if (Cmd_Argc() > 2)
 	{
-		Com_Printf("record <demoname>\n");
+		common->Printf("record <demoname>\n");
 		return;
 	}
 
 	if (clc.demorecording)
 	{
-		Com_Printf("Already recording.\n");
+		common->Printf("Already recording.\n");
 		return;
 	}
 
 	if (cls.state != CA_ACTIVE)
 	{
-		Com_Printf("You must be in a level to record.\n");
+		common->Printf("You must be in a level to record.\n");
 		return;
 	}
 
 	if (!Cvar_VariableValue("g_synchronousClients"))
 	{
-		Com_Printf("The server must have 'g_synchronousClients 1' set for demos\n");
+		common->Printf("The server must have 'g_synchronousClients 1' set for demos\n");
 		return;
 	}
 
@@ -332,11 +332,11 @@ void CL_Record_f(void)
 	}
 #endif
 
-	Com_Printf("recording to %s.\n", name);
+	common->Printf("recording to %s.\n", name);
 	clc.demofile = FS_FOpenFileWrite(name);
 	if (!clc.demofile)
 	{
-		Com_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 	clc.demorecording = true;
@@ -426,7 +426,7 @@ void CL_DemoCompleted(void)
 		time = Sys_Milliseconds() - clc.q3_timeDemoStart;
 		if (time > 0)
 		{
-			Com_Printf("%i frames, %3.1f seconds: %3.1f fps\n", clc.q3_timeDemoFrames,
+			common->Printf("%i frames, %3.1f seconds: %3.1f fps\n", clc.q3_timeDemoFrames,
 				time / 1000.0, clc.q3_timeDemoFrames * 1000.0 / time);
 		}
 	}
@@ -485,7 +485,7 @@ void CL_ReadDemoMessage(void)
 	r = FS_Read(buf._data, buf.cursize, clc.demofile);
 	if (r != buf.cursize)
 	{
-		Com_Printf("Demo file was truncated.\n");
+		common->Printf("Demo file was truncated.\n");
 		CL_DemoCompleted();
 		return;
 	}
@@ -510,7 +510,7 @@ void CL_PlayDemo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("playdemo <demoname>\n");
+		common->Printf("playdemo <demoname>\n");
 		return;
 	}
 
@@ -588,7 +588,7 @@ void CL_NextDemo(void)
 
 	String::NCpyZ(v, Cvar_VariableString("nextdemo"), sizeof(v));
 	v[MAX_STRING_CHARS - 1] = 0;
-	Com_DPrintf("CL_NextDemo: %s\n", v);
+	common->DPrintf("CL_NextDemo: %s\n", v);
 	if (!v[0])
 	{
 		return;
@@ -822,7 +822,7 @@ void CL_ForwardCommandToServer(const char* string)
 
 	if (clc.demoplaying || cls.state < CA_CONNECTED || cmd[0] == '+')
 	{
-		Com_Printf("Unknown command \"%s\"\n", cmd);
+		common->Printf("Unknown command \"%s\"\n", cmd);
 		return;
 	}
 
@@ -850,13 +850,13 @@ void CL_RequestMotd(void)
 	{
 		return;
 	}
-	Com_Printf("Resolving %s\n", UPDATE_SERVER_NAME);
+	common->Printf("Resolving %s\n", UPDATE_SERVER_NAME);
 	if (!SOCK_StringToAdr(UPDATE_SERVER_NAME, &cls.q3_updateServer, PORT_UPDATE))
 	{
-		Com_Printf("Couldn't resolve address\n");
+		common->Printf("Couldn't resolve address\n");
 		return;
 	}
-	Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
+	common->Printf("%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
 		cls.q3_updateServer.ip[0], cls.q3_updateServer.ip[1],
 		cls.q3_updateServer.ip[2], cls.q3_updateServer.ip[3],
 		BigShort(cls.q3_updateServer.port));
@@ -918,14 +918,14 @@ void CL_RequestAuthorization(void)
 
 	if (!cls.q3_authorizeServer.port)
 	{
-		Com_Printf("Resolving %s\n", WSAUTHORIZE_SERVER_NAME);
+		common->Printf("Resolving %s\n", WSAUTHORIZE_SERVER_NAME);
 		if (!SOCK_StringToAdr(WSAUTHORIZE_SERVER_NAME, &cls.q3_authorizeServer, Q3PORT_AUTHORIZE))
 		{
-			Com_Printf("Couldn't resolve address\n");
+			common->Printf("Couldn't resolve address\n");
 			return;
 		}
 
-		Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", WSAUTHORIZE_SERVER_NAME,
+		common->Printf("%s resolved to %i.%i.%i.%i:%i\n", WSAUTHORIZE_SERVER_NAME,
 			cls.q3_authorizeServer.ip[0], cls.q3_authorizeServer.ip[1],
 			cls.q3_authorizeServer.ip[2], cls.q3_authorizeServer.ip[3],
 			BigShort(cls.q3_authorizeServer.port));
@@ -976,7 +976,7 @@ void CL_ForwardToServer_f(void)
 {
 	if (cls.state != CA_ACTIVE || clc.demoplaying)
 	{
-		Com_Printf("Not connected to a server.\n");
+		common->Printf("Not connected to a server.\n");
 		return;
 	}
 
@@ -1020,11 +1020,11 @@ void CL_Setenv_f(void)
 
 		if (env)
 		{
-			Com_Printf("%s=%s\n", Cmd_Argv(1), env);
+			common->Printf("%s=%s\n", Cmd_Argv(1), env);
 		}
 		else
 		{
-			Com_Printf("%s undefined\n", Cmd_Argv(1), env);
+			common->Printf("%s undefined\n", Cmd_Argv(1), env);
 		}
 	}
 }
@@ -1058,7 +1058,7 @@ void CL_Reconnect_f(void)
 {
 	if (!String::Length(cls.servername) || !String::Cmp(cls.servername, "localhost"))
 	{
-		Com_Printf("Can't reconnect to localhost.\n");
+		common->Printf("Can't reconnect to localhost.\n");
 		return;
 	}
 	Cbuf_AddText(va("connect %s\n", cls.servername));
@@ -1076,7 +1076,7 @@ void CL_Connect_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("usage: connect [server]\n");
+		common->Printf("usage: connect [server]\n");
 		return;
 	}
 
@@ -1112,7 +1112,7 @@ void CL_Connect_f(void)
 
 	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER))
 	{
-		Com_Printf("Bad server address\n");
+		common->Printf("Bad server address\n");
 		cls.state = CA_DISCONNECTED;
 		return;
 	}
@@ -1120,7 +1120,7 @@ void CL_Connect_f(void)
 	{
 		clc.q3_serverAddress.port = BigShort(Q3PORT_SERVER);
 	}
-	Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
+	common->Printf("%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
 		clc.q3_serverAddress.ip[0], clc.q3_serverAddress.ip[1],
 		clc.q3_serverAddress.ip[2], clc.q3_serverAddress.ip[3],
 		BigShort(clc.q3_serverAddress.port));
@@ -1161,7 +1161,7 @@ void CL_Rcon_f(void)
 
 	if (!rcon_client_password->string)
 	{
-		Com_Printf("You must set 'rcon_password' before\n"
+		common->Printf("You must set 'rcon_password' before\n"
 				   "issuing an rcon command.\n");
 		return;
 	}
@@ -1191,7 +1191,7 @@ void CL_Rcon_f(void)
 	{
 		if (!String::Length(rconAddress->string))
 		{
-			Com_Printf("You must either be connected,\n"
+			common->Printf("You must either be connected,\n"
 					   "or set the 'rconAddress' cvar\n"
 					   "to issue rcon commands\n");
 
@@ -1349,7 +1349,7 @@ CL_PK3List_f
 */
 void CL_OpenedPK3List_f(void)
 {
-	Com_Printf("Opened PK3 Names: %s\n", FS_LoadedPakNames());
+	common->Printf("Opened PK3 Names: %s\n", FS_LoadedPakNames());
 }
 
 /*
@@ -1359,7 +1359,7 @@ CL_PureList_f
 */
 void CL_ReferencedPK3List_f(void)
 {
-	Com_Printf("Referenced PK3 Names: %s\n", FS_ReferencedPakNames());
+	common->Printf("Referenced PK3 Names: %s\n", FS_ReferencedPakNames());
 }
 
 /*
@@ -1374,7 +1374,7 @@ void CL_Configstrings_f(void)
 
 	if (cls.state != CA_ACTIVE)
 	{
-		Com_Printf("Not connected to a server.\n");
+		common->Printf("Not connected to a server.\n");
 		return;
 	}
 
@@ -1385,7 +1385,7 @@ void CL_Configstrings_f(void)
 		{
 			continue;
 		}
-		Com_Printf("%4i: %s\n", i, cl.ws_gameState.stringData + ofs);
+		common->Printf("%4i: %s\n", i, cl.ws_gameState.stringData + ofs);
 	}
 }
 
@@ -1396,12 +1396,12 @@ CL_Clientinfo_f
 */
 void CL_Clientinfo_f(void)
 {
-	Com_Printf("--------- Client Information ---------\n");
-	Com_Printf("state: %i\n", cls.state);
-	Com_Printf("Server: %s\n", cls.servername);
-	Com_Printf("User info settings:\n");
+	common->Printf("--------- Client Information ---------\n");
+	common->Printf("state: %i\n", cls.state);
+	common->Printf("Server: %s\n", cls.servername);
+	common->Printf("User info settings:\n");
 	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3));
-	Com_Printf("--------------------------------------\n");
+	common->Printf("--------------------------------------\n");
 }
 
 
@@ -1477,7 +1477,7 @@ game directory.
 void CL_BeginDownload(const char* localName, const char* remoteName)
 {
 
-	Com_DPrintf("***** CL_BeginDownload *****\n"
+	common->DPrintf("***** CL_BeginDownload *****\n"
 				"Localname: %s\n"
 				"Remotename: %s\n"
 				"****************************\n", localName, remoteName);
@@ -1676,7 +1676,7 @@ void CL_DisconnectPacket(netadr_t from)
 	}
 
 	// drop the connection (FIXME: connection dropped dialog)
-	Com_Printf("Server disconnected for unknown reason\n");
+	common->Printf("Server disconnected for unknown reason\n");
 	CL_Disconnect(true);
 }
 
@@ -1754,7 +1754,7 @@ void CL_ServersResponsePacket(netadr_t from, QMsg* msg)
 	byte* buffptr;
 	byte* buffend;
 
-	Com_Printf("CL_ServersResponsePacket\n");
+	common->Printf("CL_ServersResponsePacket\n");
 
 	if (cls.q3_numglobalservers == -1)
 	{
@@ -1801,7 +1801,7 @@ void CL_ServersResponsePacket(netadr_t from, QMsg* msg)
 			break;
 		}
 
-		Com_DPrintf("server: %d ip: %d.%d.%d.%d:%d\n",numservers,
+		common->DPrintf("server: %d ip: %d.%d.%d.%d:%d\n",numservers,
 			addresses[numservers].ip[0],
 			addresses[numservers].ip[1],
 			addresses[numservers].ip[2],
@@ -1873,7 +1873,7 @@ void CL_ServersResponsePacket(netadr_t from, QMsg* msg)
 		total = count;
 	}
 
-	Com_Printf("%d servers parsed (total %d)\n", numservers, total);
+	common->Printf("%d servers parsed (total %d)\n", numservers, total);
 }
 
 /*
@@ -1897,14 +1897,14 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 
 	c = Cmd_Argv(0);
 
-	Com_DPrintf("CL packet %s: %s\n", SOCK_AdrToString(from), c);
+	common->DPrintf("CL packet %s: %s\n", SOCK_AdrToString(from), c);
 
 	// challenge from the server we are connecting to
 	if (!String::ICmp(c, "challengeResponse"))
 	{
 		if (cls.state != CA_CONNECTING)
 		{
-			Com_Printf("Unwanted challenge response received.  Ignored.\n");
+			common->Printf("Unwanted challenge response received.  Ignored.\n");
 		}
 		else
 		{
@@ -1926,18 +1926,18 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	{
 		if (cls.state >= CA_CONNECTED)
 		{
-			Com_Printf("Dup connect received.  Ignored.\n");
+			common->Printf("Dup connect received.  Ignored.\n");
 			return;
 		}
 		if (cls.state != CA_CHALLENGING)
 		{
-			Com_Printf("connectResponse packet while not connecting.  Ignored.\n");
+			common->Printf("connectResponse packet while not connecting.  Ignored.\n");
 			return;
 		}
 		if (!SOCK_CompareBaseAdr(from, clc.q3_serverAddress))
 		{
-			Com_Printf("connectResponse from a different address.  Ignored.\n");
-			Com_Printf("%s should have been %s\n", SOCK_AdrToString(from),
+			common->Printf("connectResponse from a different address.  Ignored.\n");
+			common->Printf("%s should have been %s\n", SOCK_AdrToString(from),
 				SOCK_AdrToString(clc.q3_serverAddress));
 			return;
 		}
@@ -1995,7 +1995,7 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	{
 		s = msg->ReadString();
 		String::NCpyZ(clc.q3_serverMessage, s, sizeof(clc.q3_serverMessage));
-		Com_Printf("%s", s);
+		common->Printf("%s", s);
 		return;
 	}
 
@@ -2006,7 +2006,7 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 		return;
 	}
 
-	Com_DPrintf("Unknown connectionless packet command.\n");
+	common->DPrintf("Unknown connectionless packet command.\n");
 }
 
 
@@ -2036,7 +2036,7 @@ void CL_PacketEvent(netadr_t from, QMsg* msg)
 
 	if (msg->cursize < 4)
 	{
-		Com_Printf("%s: Runt packet\n",SOCK_AdrToString(from));
+		common->Printf("%s: Runt packet\n",SOCK_AdrToString(from));
 		return;
 	}
 
@@ -2045,7 +2045,7 @@ void CL_PacketEvent(netadr_t from, QMsg* msg)
 	//
 	if (!SOCK_CompareAdr(from, clc.netchan.remoteAddress))
 	{
-		Com_DPrintf("%s:sequenced packet without connection\n",
+		common->DPrintf("%s:sequenced packet without connection\n",
 			SOCK_AdrToString(from));
 		// FIXME: send a client disconnect?
 		return;
@@ -2094,7 +2094,7 @@ void CL_CheckTimeout(void)
 	{
 		if (++cl.timeoutcount > 5)			// timeoutcount saves debugger
 		{
-			Com_Printf("\nServer connection timed out.\n");
+			common->Printf("\nServer connection timed out.\n");
 			CL_Disconnect(true);
 			return;
 		}
@@ -2414,7 +2414,7 @@ void CL_MapRestart_f(void)
 	{
 		return;
 	}
-	Com_Printf("This command is no longer functional.\nUse \"loadgame current\" to load the current map.");
+	common->Printf("This command is no longer functional.\nUse \"loadgame current\" to load the current map.");
 }
 
 /*
@@ -2518,11 +2518,11 @@ CL_InitRef
 */
 void CL_InitRef(void)
 {
-	Com_Printf("----- Initializing Renderer ----\n");
+	common->Printf("----- Initializing Renderer ----\n");
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
-	Com_Printf("-------------------------------\n");
+	common->Printf("-------------------------------\n");
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set("cl_paused", "0");
@@ -2566,11 +2566,11 @@ void CL_ShellExecute_URL_f(void)
 {
 	qboolean doexit;
 
-	Com_DPrintf("CL_ShellExecute_URL_f\n");
+	common->DPrintf("CL_ShellExecute_URL_f\n");
 
 	if (String::ICmp(Cmd_Argv(1),"open"))
 	{
-		Com_DPrintf("invalid CL_ShellExecute_URL_f syntax (shellExecute \"open\" <url> <doExit>)\n");
+		common->DPrintf("invalid CL_ShellExecute_URL_f syntax (shellExecute \"open\" <url> <doExit>)\n");
 		return;
 	}
 
@@ -2595,7 +2595,7 @@ CL_Init
 */
 void CL_Init(void)
 {
-	Com_Printf("----- Client Initialization -----\n");
+	common->Printf("----- Client Initialization -----\n");
 
 	Con_Init();
 
@@ -2733,7 +2733,7 @@ void CL_Init(void)
 
 	Cvar_Set("cl_running", "1");
 
-	Com_Printf("----- Client Initialization Complete -----\n");
+	common->Printf("----- Client Initialization Complete -----\n");
 }
 
 
@@ -2747,7 +2747,7 @@ void CL_Shutdown(void)
 {
 	static qboolean recursive = false;
 
-	Com_Printf("----- CL_Shutdown -----\n");
+	common->Printf("----- CL_Shutdown -----\n");
 
 	if (recursive)
 	{
@@ -2799,7 +2799,7 @@ void CL_Shutdown(void)
 
 	memset(&cls, 0, sizeof(cls));
 
-	Com_Printf("-----------------------\n");
+	common->Printf("-----------------------\n");
 }
 
 
@@ -2881,7 +2881,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 	prot = String::Atoi(Info_ValueForKey(infoString, "protocol"));
 	if (prot != PROTOCOL_VERSION)
 	{
-		Com_DPrintf("Different protocol info packet: %s\n", infoString);
+		common->DPrintf("Different protocol info packet: %s\n", infoString);
 //		return;
 	}
 
@@ -2892,7 +2892,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 		{
 			// calc ping time
 			cl_pinglist[i].time = cls.realtime - cl_pinglist[i].start + 1;
-			Com_DPrintf("ping time %dms from %s\n", cl_pinglist[i].time, SOCK_AdrToString(from));
+			common->DPrintf("ping time %dms from %s\n", cl_pinglist[i].time, SOCK_AdrToString(from));
 
 			// save of info
 			String::NCpyZ(cl_pinglist[i].info, infoString, sizeof(cl_pinglist[i].info));
@@ -2942,7 +2942,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 
 	if (i == MAX_OTHER_SERVERS_Q3)
 	{
-		Com_DPrintf("MAX_OTHER_SERVERS_Q3 hit, dropping infoResponse\n");
+		common->DPrintf("MAX_OTHER_SERVERS_Q3 hit, dropping infoResponse\n");
 		return;
 	}
 
@@ -2968,7 +2968,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 		{
 			strncat(info, "\n", sizeof(info));
 		}
-		Com_Printf("%s: %s", SOCK_AdrToString(from), info);
+		common->Printf("%s: %s", SOCK_AdrToString(from), info);
 	}
 }
 
@@ -3122,7 +3122,7 @@ void CL_ServerStatusResponse(netadr_t from, QMsg* msg)
 
 	if (serverStatus->print)
 	{
-		Com_Printf("Server settings:\n");
+		common->Printf("Server settings:\n");
 		// print cvars
 		while (*s)
 		{
@@ -3149,11 +3149,11 @@ void CL_ServerStatusResponse(netadr_t from, QMsg* msg)
 				info[l] = '\0';
 				if (i)
 				{
-					Com_Printf("%s\n", info);
+					common->Printf("%s\n", info);
 				}
 				else
 				{
-					Com_Printf("%-24s", info);
+					common->Printf("%-24s", info);
 				}
 			}
 		}
@@ -3164,8 +3164,8 @@ void CL_ServerStatusResponse(netadr_t from, QMsg* msg)
 
 	if (serverStatus->print)
 	{
-		Com_Printf("\nPlayers:\n");
-		Com_Printf("num: score: ping: name:\n");
+		common->Printf("\nPlayers:\n");
+		common->Printf("num: score: ping: name:\n");
 	}
 	for (i = 0, s = msg->ReadStringLine(); *s; s = msg->ReadStringLine(), i++)
 	{
@@ -3190,7 +3190,7 @@ void CL_ServerStatusResponse(netadr_t from, QMsg* msg)
 			{
 				s = "unknown";
 			}
-			Com_Printf("%-2d   %-3d    %-3d   %s\n", i, score, ping, s);
+			common->Printf("%-2d   %-3d    %-3d   %s\n", i, score, ping, s);
 		}
 	}
 	len = String::Length(serverStatus->string);
@@ -3216,7 +3216,7 @@ void CL_LocalServers_f(void)
 	int i, j;
 	netadr_t to;
 
-	Com_Printf("Scanning for servers on the local network...\n");
+	common->Printf("Scanning for servers on the local network...\n");
 
 	// reset the list, waiting for response
 	cls.q3_numlocalservers = 0;
@@ -3266,13 +3266,13 @@ void CL_GlobalServers_f(void)
 
 	if (Cmd_Argc() < 3)
 	{
-		Com_Printf("usage: globalservers <master# 0-1> <protocol> [keywords]\n");
+		common->Printf("usage: globalservers <master# 0-1> <protocol> [keywords]\n");
 		return;
 	}
 
 	cls.q3_masterNum = String::Atoi(Cmd_Argv(1));
 
-	Com_Printf("Requesting servers from the master...\n");
+	common->Printf("Requesting servers from the master...\n");
 
 	// reset the list, waiting for response
 	// -1 is used to distinguish a "no response"
@@ -3492,7 +3492,7 @@ void CL_Ping_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("usage: ping [server]\n");
+		common->Printf("usage: ping [server]\n");
 		return;
 	}
 
@@ -3661,8 +3661,8 @@ void CL_ServerStatus_f(void)
 	{
 		if (cls.state != CA_ACTIVE || clc.demoplaying)
 		{
-			Com_Printf("Not connected to a server.\n");
-			Com_Printf("Usage: serverstatus [server]\n");
+			common->Printf("Not connected to a server.\n");
+			common->Printf("Usage: serverstatus [server]\n");
 			return;
 		}
 		server = cls.servername;

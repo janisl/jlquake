@@ -209,7 +209,7 @@ int QDECL Com_VPrintf(const char* fmt, va_list argptr)
 			newtime = localtime(&aclock);
 
 			logfile = FS_FOpenFileWrite("etconsole.log");
-			Com_Printf("logfile opened on %s\n", asctime(newtime));
+			common->Printf("logfile opened on %s\n", asctime(newtime));
 			if (com_logfile->integer > 1)
 			{
 				// force it to not buffer so we get valid
@@ -242,7 +242,7 @@ void QDECL Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));
 ================
 Com_DPrintf
 
-A Com_Printf that only shows up if the "developer" cvar is set
+A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
 void QDECL Com_DPrintf(const char* fmt, ...)
@@ -259,7 +259,7 @@ void QDECL Com_DPrintf(const char* fmt, ...)
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
 
-	Com_Printf("%s", msg);
+	common->Printf("%s", msg);
 }
 void QDECL Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
 
@@ -345,7 +345,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	}
 	else if (code == ERR_DROP || code == ERR_DISCONNECT)
 	{
-		Com_Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
+		common->Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
 		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
 		CL_Disconnect(true);
 		CL_FlushMemory();
@@ -1156,7 +1156,7 @@ void Com_Meminfo_f(void)
 	{
 		if (Cmd_Argc() != 1)
 		{
-			Com_Printf("block:%p    size:%7i    tag:%3i\n",
+			common->Printf("block:%p    size:%7i    tag:%3i\n",
 				block, block->size, block->tag);
 		}
 		if (block->tag)
@@ -1179,15 +1179,15 @@ void Com_Meminfo_f(void)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Com_Printf("ERROR: block size does not touch the next block\n");
+			common->Printf("ERROR: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Com_Printf("ERROR: next block doesn't have proper back link\n");
+			common->Printf("ERROR: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Com_Printf("ERROR: two consecutive free blocks\n");
+			common->Printf("ERROR: two consecutive free blocks\n");
 		}
 	}
 
@@ -1207,26 +1207,26 @@ void Com_Meminfo_f(void)
 		}
 	}
 
-	Com_Printf("%9i bytes (%6.2f MB) total hunk\n", s_hunkTotal, s_hunkTotal / Square(1024.f));
-	Com_Printf("%9i bytes (%6.2f MB) total zone\n", s_zoneTotal, s_zoneTotal / Square(1024.f));
-	Com_Printf("\n");
-	Com_Printf("%9i bytes (%6.2f MB) low mark\n", hunk_low.mark, hunk_low.mark / Square(1024.f));
-	Com_Printf("%9i bytes (%6.2f MB) low permanent\n", hunk_low.permanent, hunk_low.permanent / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) total hunk\n", s_hunkTotal, s_hunkTotal / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) total zone\n", s_zoneTotal, s_zoneTotal / Square(1024.f));
+	common->Printf("\n");
+	common->Printf("%9i bytes (%6.2f MB) low mark\n", hunk_low.mark, hunk_low.mark / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) low permanent\n", hunk_low.permanent, hunk_low.permanent / Square(1024.f));
 	if (hunk_low.temp != hunk_low.permanent)
 	{
-		Com_Printf("%9i bytes (%6.2f MB) low temp\n", hunk_low.temp, hunk_low.temp / Square(1024.f));
+		common->Printf("%9i bytes (%6.2f MB) low temp\n", hunk_low.temp, hunk_low.temp / Square(1024.f));
 	}
-	Com_Printf("%9i bytes (%6.2f MB) low tempHighwater\n", hunk_low.tempHighwater, hunk_low.tempHighwater / Square(1024.f));
-	Com_Printf("\n");
-	Com_Printf("%9i bytes (%6.2f MB) high mark\n", hunk_high.mark, hunk_high.mark / Square(1024.f));
-	Com_Printf("%9i bytes (%6.2f MB) high permanent\n", hunk_high.permanent, hunk_high.permanent / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) low tempHighwater\n", hunk_low.tempHighwater, hunk_low.tempHighwater / Square(1024.f));
+	common->Printf("\n");
+	common->Printf("%9i bytes (%6.2f MB) high mark\n", hunk_high.mark, hunk_high.mark / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) high permanent\n", hunk_high.permanent, hunk_high.permanent / Square(1024.f));
 	if (hunk_high.temp != hunk_high.permanent)
 	{
-		Com_Printf("%9i bytes (%6.2f MB) high temp\n", hunk_high.temp, hunk_high.temp / Square(1024.f));
+		common->Printf("%9i bytes (%6.2f MB) high temp\n", hunk_high.temp, hunk_high.temp / Square(1024.f));
 	}
-	Com_Printf("%9i bytes (%6.2f MB) high tempHighwater\n", hunk_high.tempHighwater, hunk_high.tempHighwater / Square(1024.f));
-	Com_Printf("\n");
-	Com_Printf("%9i bytes (%6.2f MB) total hunk in use\n", hunk_low.permanent + hunk_high.permanent, (hunk_low.permanent + hunk_high.permanent) / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) high tempHighwater\n", hunk_high.tempHighwater, hunk_high.tempHighwater / Square(1024.f));
+	common->Printf("\n");
+	common->Printf("%9i bytes (%6.2f MB) total hunk in use\n", hunk_low.permanent + hunk_high.permanent, (hunk_low.permanent + hunk_high.permanent) / Square(1024.f));
 	unused = 0;
 	if (hunk_low.tempHighwater > hunk_low.permanent)
 	{
@@ -1236,13 +1236,13 @@ void Com_Meminfo_f(void)
 	{
 		unused += hunk_high.tempHighwater - hunk_high.permanent;
 	}
-	Com_Printf("%9i bytes (%6.2f MB) unused highwater\n", unused, unused / Square(1024.f));
-	Com_Printf("\n");
-	Com_Printf("%9i bytes (%6.2f MB) in %i zone blocks\n", zoneBytes, zoneBytes / Square(1024.f), zoneBlocks);
-	Com_Printf("        %9i bytes (%6.2f MB) in dynamic botlib\n", botlibBytes, botlibBytes / Square(1024.f));
-	Com_Printf("        %9i bytes (%6.2f MB) in dynamic renderer\n", rendererBytes, rendererBytes / Square(1024.f));
-	Com_Printf("        %9i bytes (%6.2f MB) in dynamic other\n", zoneBytes - (botlibBytes + rendererBytes), (zoneBytes - (botlibBytes + rendererBytes)) / Square(1024.f));
-	Com_Printf("        %9i bytes (%6.2f MB) in small Zone memory\n", smallZoneBytes, smallZoneBytes / Square(1024.f));
+	common->Printf("%9i bytes (%6.2f MB) unused highwater\n", unused, unused / Square(1024.f));
+	common->Printf("\n");
+	common->Printf("%9i bytes (%6.2f MB) in %i zone blocks\n", zoneBytes, zoneBytes / Square(1024.f), zoneBlocks);
+	common->Printf("        %9i bytes (%6.2f MB) in dynamic botlib\n", botlibBytes, botlibBytes / Square(1024.f));
+	common->Printf("        %9i bytes (%6.2f MB) in dynamic renderer\n", rendererBytes, rendererBytes / Square(1024.f));
+	common->Printf("        %9i bytes (%6.2f MB) in dynamic other\n", zoneBytes - (botlibBytes + rendererBytes), (zoneBytes - (botlibBytes + rendererBytes)) / Square(1024.f));
+	common->Printf("        %9i bytes (%6.2f MB) in small Zone memory\n", smallZoneBytes, smallZoneBytes / Square(1024.f));
 }
 
 /*
@@ -1296,7 +1296,7 @@ void Com_TouchMemory(void)
 
 	end = Sys_Milliseconds();
 
-	Com_Printf("Com_TouchMemory: %i msec\n", end - start);
+	common->Printf("Com_TouchMemory: %i msec\n", end - start);
 }
 
 
@@ -1502,7 +1502,7 @@ void Com_InitHunkMemory(void)
 	if (cv->integer < nMinAlloc)
 	{
 		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf(pMsg, nMinAlloc, s_hunkTotal / (1024 * 1024));
+		common->Printf(pMsg, nMinAlloc, s_hunkTotal / (1024 * 1024));
 	}
 	else
 	{
@@ -1621,7 +1621,7 @@ void Hunk_Clear(void)
 	Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_Printf("Hunk_Clear: reset the hunk ok\n");
+	common->Printf("Hunk_Clear: reset the hunk ok\n");
 	VM_Clear();	// (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -1828,7 +1828,7 @@ void Hunk_FreeTempMemory(void* buf)
 		}
 		else
 		{
-			Com_Printf("Hunk_FreeTempMemory: not the final block\n");
+			common->Printf("Hunk_FreeTempMemory: not the final block\n");
 		}
 	}
 	else
@@ -1839,7 +1839,7 @@ void Hunk_FreeTempMemory(void* buf)
 		}
 		else
 		{
-			Com_Printf("Hunk_FreeTempMemory: not the final block\n");
+			common->Printf("Hunk_FreeTempMemory: not the final block\n");
 		}
 	}
 }
@@ -1946,13 +1946,13 @@ void Com_InitJournaling(void)
 
 	if (com_journal->integer == 1)
 	{
-		Com_Printf("Journaling events\n");
+		common->Printf("Journaling events\n");
 		com_journalFile = FS_FOpenFileWrite("journal.dat");
 		com_journalDataFile = FS_FOpenFileWrite("journaldata.dat");
 	}
 	else if (com_journal->integer == 2)
 	{
-		Com_Printf("Replaying journaled events\n");
+		common->Printf("Replaying journaled events\n");
 		FS_FOpenFileRead("journal.dat", &com_journalFile, true);
 		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, true);
 	}
@@ -1962,7 +1962,7 @@ void Com_InitJournaling(void)
 		Cvar_Set("com_journal", "0");
 		com_journalFile = 0;
 		com_journalDataFile = 0;
-		Com_Printf("Couldn't open journal files\n");
+		common->Printf("Couldn't open journal files\n");
 	}
 }
 
@@ -2058,7 +2058,7 @@ void Com_PushEvent(sysEvent_t* event)
 		if (!printedWarning)
 		{
 			printedWarning = true;
-			Com_Printf("WARNING: Com_PushEvent overflow\n");
+			common->Printf("WARNING: Com_PushEvent overflow\n");
 		}
 
 		if (ev->evPtr)
@@ -2115,7 +2115,7 @@ void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
 		msec = t2 - t1;
 		if (com_speeds->integer == 3)
 		{
-			Com_Printf("SV_PacketEvent time: %i\n", msec);
+			common->Printf("SV_PacketEvent time: %i\n", msec);
 		}
 	}
 }
@@ -2226,7 +2226,7 @@ int Com_EventLoop(void)
 			// enough to hold fragment reassembly
 			if ((unsigned)buf.cursize > buf.maxsize)
 			{
-				Com_Printf("Com_EventLoop: oversize packet\n");
+				common->Printf("Com_EventLoop: oversize packet\n");
 				continue;
 			}
 			memcpy(buf._data, (byte*)((netadr_t*)ev.evPtr + 1), buf.cursize);
@@ -2315,7 +2315,7 @@ static void Com_Freeze_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("freeze <seconds>\n");
+		common->Printf("freeze <seconds>\n");
 		return;
 	}
 	s = String::Atof(Cmd_Argv(1));
@@ -2351,7 +2351,7 @@ Com_CPUSpeed_f
 */
 void Com_CPUSpeed_f(void)
 {
-	Com_Printf("CPU Speed: %.2f Mhz\n", Sys_GetCPUSpeed());
+	common->Printf("CPU Speed: %.2f Mhz\n", Sys_GetCPUSpeed());
 }
 
 qboolean CL_CDKeyValidate(const char* key, const char* checksum);
@@ -2460,7 +2460,7 @@ static void Com_WriteCDKey(const char* filename, const char* ikey)
 	f = FS_SV_FOpenFileWrite(fbuffer);
 	if (!f)
 	{
-		Com_Printf("Couldn't write %s.\n", filename);
+		common->Printf("Couldn't write %s.\n", filename);
 		return;
 	}
 
@@ -2493,13 +2493,13 @@ void Com_SetRecommended()
 	{
 		if (goodVideo)
 		{
-			Com_Printf("Found high quality video and fast CPU\n");
+			common->Printf("Found high quality video and fast CPU\n");
 			Cbuf_AddText("exec preset_high.cfg\n");
 			Cvar_Set("com_recommended", "0");
 		}
 		else
 		{
-			Com_Printf("Found low quality video and fast CPU\n");
+			common->Printf("Found low quality video and fast CPU\n");
 			Cbuf_AddText("exec preset_normal.cfg\n");
 			Cvar_Set("com_recommended", "1");
 		}
@@ -2508,11 +2508,11 @@ void Com_SetRecommended()
 	{
 		if (goodVideo)
 		{
-			Com_Printf("Found high quality video and normal CPU\n");
+			common->Printf("Found high quality video and normal CPU\n");
 		}
 		else
 		{
-			Com_Printf("Found low quality video and normal CPU\n");
+			common->Printf("Found low quality video and normal CPU\n");
 		}
 		Cbuf_AddText("exec preset_normal.cfg\n");
 		Cvar_Set("com_recommended", "1");
@@ -2521,11 +2521,11 @@ void Com_SetRecommended()
 	{
 		if (goodVideo)
 		{
-			Com_Printf("Found high quality video but didn't manage to detect a CPU properly\n");
+			common->Printf("Found high quality video but didn't manage to detect a CPU properly\n");
 		}
 		else
 		{
-			Com_Printf("Found low quality video but didn't manage to detect a CPU properly\n");
+			common->Printf("Found low quality video but didn't manage to detect a CPU properly\n");
 		}
 		Cbuf_AddText("exec preset_normal.cfg\n");
 		Cvar_Set("com_recommended", "1");
@@ -2534,13 +2534,13 @@ void Com_SetRecommended()
 	{
 		if (goodVideo)
 		{
-			Com_Printf("Found high quality video and slow CPU\n");
+			common->Printf("Found high quality video and slow CPU\n");
 			Cbuf_AddText("exec preset_fast.cfg\n");
 			Cvar_Set("com_recommended", "2");
 		}
 		else
 		{
-			Com_Printf("Found low quality video and slow CPU\n");
+			common->Printf("Found low quality video and slow CPU\n");
 			Cbuf_AddText("exec preset_fastest.cfg\n");
 			Cvar_Set("com_recommended", "3");
 		}
@@ -2550,17 +2550,17 @@ void Com_SetRecommended()
 	/*goodCPU = Sys_GetHighQualityCPU();
 
 	if (goodVideo && goodCPU) {
-	    Com_Printf ("Found high quality video and CPU\n");
+	    common->Printf ("Found high quality video and CPU\n");
 	    Cbuf_AddText ("exec highVidhighCPU.cfg\n");
 	} else if (goodVideo && !goodCPU) {
 	    Cbuf_AddText ("exec highVidlowCPU.cfg\n");
-	    Com_Printf ("Found high quality video and low quality CPU\n");
+	    common->Printf ("Found high quality video and low quality CPU\n");
 	} else if (!goodVideo && goodCPU) {
 	    Cbuf_AddText ("exec lowVidhighCPU.cfg\n");
-	    Com_Printf ("Found low quality video and high quality CPU\n");
+	    common->Printf ("Found low quality video and high quality CPU\n");
 	} else {
 	    Cbuf_AddText ("exec lowVidlowCPU.cfg\n");
-	    Com_Printf ("Found low quality video and low quality CPU\n");
+	    common->Printf ("Found low quality video and low quality CPU\n");
 	}*/
 
 // (SA) set the cvar so the menu will reflect this on first run
@@ -2714,7 +2714,7 @@ void Com_TrackProfile(char* profile_path)
 {
 	char temp_fs_gamedir[MAX_OSPATH];
 
-//	Com_Printf( "Com_TrackProfile: Tracking profile [%s] [%s]\n", fs_gamedir, profile_path );
+//	common->Printf( "Com_TrackProfile: Tracking profile [%s] [%s]\n", fs_gamedir, profile_path );
 	//have we changed fs_game(dir)?
 	if (String::Cmp(last_fs_gamedir, fs_gamedir))
 	{
@@ -2726,7 +2726,7 @@ void Com_TrackProfile(char* profile_path)
 			String::NCpyZ(fs_gamedir, last_fs_gamedir, sizeof(fs_gamedir));
 			if (FS_FileExists(last_profile_path))
 			{
-				Com_Printf("Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path);
+				common->Printf("Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path);
 				FS_Delete(last_profile_path);
 			}
 			//restore current fs_gamedir
@@ -2753,7 +2753,7 @@ qboolean Com_WriteProfile(char* profile_path)
 	f = FS_FOpenFileWrite(profile_path);
 	if (f < 0)
 	{
-		Com_Printf("Com_WriteProfile: Can't write %s.\n", profile_path);
+		common->Printf("Com_WriteProfile: Can't write %s.\n", profile_path);
 		return false;
 	}
 
@@ -2781,7 +2781,7 @@ void Com_Init(char* commandLine)
 		// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
 		volatile qboolean safeMode = true;
 
-		Com_Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
+		common->Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
 
 		if (setjmp(abortframe))
 		{
@@ -2881,7 +2881,7 @@ void Com_Init(char* commandLine)
 					if (!Com_CheckProfile(va("profiles/%s/profile.pid", cl_profileStr)))
 					{
 #ifndef _DEBUG
-						Com_Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
+						common->Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
 						// ydnar: set crashed state
 						Cbuf_AddText("set com_crashed 1\n");
 #endif
@@ -2890,7 +2890,7 @@ void Com_Init(char* commandLine)
 					// bani - write a new one
 					if (!Com_WriteProfile(va("profiles/%s/profile.pid", cl_profileStr)))
 					{
-						Com_Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
+						common->Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
 					}
 
 					// exec the config
@@ -3042,7 +3042,7 @@ void Com_Init(char* commandLine)
 
 		com_fullyInitialized = true;
 		fs_ProtectKeyFile = true;
-		Com_Printf("--- Common Initialization Complete ---\n");
+		common->Printf("--- Common Initialization Complete ---\n");
 	}
 	catch (Exception& e)
 	{
@@ -3059,7 +3059,7 @@ void Com_WriteConfigToFile(const char* filename)
 	f = FS_FOpenFileWrite(filename);
 	if (!f)
 	{
-		Com_Printf("Couldn't write %s.\n", filename);
+		common->Printf("Couldn't write %s.\n", filename);
 		return;
 	}
 
@@ -3133,13 +3133,13 @@ void Com_WriteConfig_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("Usage: writeconfig <filename>\n");
+		common->Printf("Usage: writeconfig <filename>\n");
 		return;
 	}
 
 	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	String::DefaultExtension(filename, sizeof(filename), ".cfg");
-	Com_Printf("Writing %s.\n", filename);
+	common->Printf("Writing %s.\n", filename);
 	Com_WriteConfigToFile(filename);
 }
 
@@ -3179,7 +3179,7 @@ int Com_ModifyMsec(int msec)
 		// of time.
 		if (msec > 500 && msec < 500000)
 		{
-			Com_Printf("Hitch warning: %i msec frame time\n", msec);
+			common->Printf("Hitch warning: %i msec frame time\n", msec);
 		}
 		clampTime = 5000;
 	}
@@ -3373,12 +3373,12 @@ void Com_Frame(void)
 			{
 				if (!watchWarn && Sys_Milliseconds() - watchdogTime > (com_watchdog->integer - 4) * 1000)
 				{
-					Com_Printf("WARNING: watchdog will trigger in 4 seconds\n");
+					common->Printf("WARNING: watchdog will trigger in 4 seconds\n");
 					watchWarn = true;
 				}
 				else if (Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000)
 				{
-					Com_Printf("Idle Server with no map - triggering watchdog\n");
+					common->Printf("Idle Server with no map - triggering watchdog\n");
 					watchdogTime = 0;
 					watchWarn = false;
 					if (com_watchdog_cmd->string[0] == '\0')
@@ -3408,7 +3408,7 @@ void Com_Frame(void)
 			sv -= time_game;
 			cl -= time_frontend + time_backend;
 
-			Com_Printf("frame:%i all:%3i sv:%3i sev:%3i cev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
+			common->Printf("frame:%i all:%3i sv:%3i sev:%3i cev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
 				com_frameNumber, all, sv, sev, cev, cl, time_game, time_frontend, time_backend);
 		}
 
@@ -3418,7 +3418,7 @@ void Com_Frame(void)
 		if (com_showtrace->integer)
 		{
 
-			Com_Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
+			common->Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
 				c_brush_traces, c_patch_traces, c_pointcontents);
 			c_traces = 0;
 			c_brush_traces = 0;

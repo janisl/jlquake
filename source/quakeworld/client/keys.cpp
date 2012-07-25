@@ -174,14 +174,14 @@ void Key_Unbind_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("unbind <key> : remove commands from a key\n");
+		common->Printf("unbind <key> : remove commands from a key\n");
 		return;
 	}
 
 	b = Key_StringToKeynum(Cmd_Argv(1));
 	if (b == -1)
 	{
-		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+		common->Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
 
@@ -214,13 +214,13 @@ void Key_Bind_f(void)
 
 	if (c != 2 && c != 3)
 	{
-		Con_Printf("bind <key> [command] : attach a command to a key\n");
+		common->Printf("bind <key> [command] : attach a command to a key\n");
 		return;
 	}
 	b = Key_StringToKeynum(Cmd_Argv(1));
 	if (b == -1)
 	{
-		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+		common->Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
 
@@ -228,11 +228,11 @@ void Key_Bind_f(void)
 	{
 		if (keys[b].binding)
 		{
-			Con_Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keys[b].binding);
+			common->Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keys[b].binding);
 		}
 		else
 		{
-			Con_Printf("\"%s\" is not bound\n", Cmd_Argv(1));
+			common->Printf("\"%s\" is not bound\n", Cmd_Argv(1));
 		}
 		return;
 	}
@@ -358,7 +358,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	char* kb;
 	char cmd[1024];
 
-//	Con_Printf ("%i : %i\n", key, down); //@@@
+//	common->Printf ("%i : %i\n", key, down); //@@@
 
 	keys[key].down = down;
 
@@ -389,7 +389,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		if (key >= 200 && !keys[key].binding)
 		{
-			Con_Printf("%s is unbound, hit F4 to set.\n", Key_KeynumToString(key));
+			common->Printf("%s is unbound, hit F4 to set.\n", Key_KeynumToString(key));
 		}
 	}
 

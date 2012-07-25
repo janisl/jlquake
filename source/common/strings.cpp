@@ -1462,7 +1462,7 @@ skipwhite:
 
 	if (len == sizeof(com_token))
 	{
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+//		common->Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
 	}
 	com_token[len] = 0;
@@ -1637,7 +1637,7 @@ char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 
 	if (len == MAX_TOKEN_CHARS_Q3)
 	{
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+//		common->Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
 	}
 	com_token[len] = 0;

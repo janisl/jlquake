@@ -745,7 +745,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	}
 	else
 	{
-		Con_DPrintf("%s tried to %s\n", host_client->name, s);
+		common->DPrintf("%s tried to %s\n", host_client->name, s);
 	}
 }
 
@@ -768,7 +768,7 @@ nextmsg:
 		ret = NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
 		if (ret == -1)
 		{
-			Con_Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
+			common->Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
 			return false;
 		}
 		if (!ret)
@@ -787,7 +787,7 @@ nextmsg:
 			}
 			if (net_message.badread)
 			{
-				Con_Printf("SV_ReadClientMessage: badread\n");
+				common->Printf("SV_ReadClientMessage: badread\n");
 				return false;
 			}
 
@@ -799,11 +799,11 @@ nextmsg:
 				goto nextmsg;		// end of message
 
 			default:
-				Con_Printf("SV_ReadClientMessage: unknown command char\n");
+				common->Printf("SV_ReadClientMessage: unknown command char\n");
 				return false;
 
 			case h2clc_nop:
-//				Con_Printf ("h2clc_nop\n");
+//				common->Printf ("h2clc_nop\n");
 				break;
 
 			case h2clc_stringcmd:
@@ -812,7 +812,7 @@ nextmsg:
 				break;
 
 			case h2clc_disconnect:
-//				Con_Printf ("SV_ReadClientMessage: client disconnected\n");
+//				common->Printf ("SV_ReadClientMessage: client disconnected\n");
 				return false;
 
 			case h2clc_move:

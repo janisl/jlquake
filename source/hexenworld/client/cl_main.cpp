@@ -95,8 +95,8 @@ CL_Version_f
 */
 void CL_Version_f(void)
 {
-	Con_Printf("Version %4.2f\n", VERSION);
-	Con_Printf("Exe: "__TIME__ " "__DATE__ "\n");
+	common->Printf("Version %4.2f\n", VERSION);
+	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
 
@@ -120,7 +120,7 @@ void CL_SendConnectPacket(void)
 
 	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
 	{
-		Con_Printf("Bad server address\n");
+		common->Printf("Bad server address\n");
 		connect_time = -1;
 		return;
 	}
@@ -128,7 +128,7 @@ void CL_SendConnectPacket(void)
 
 	connect_time = realtime + t2 - t1;	// for retransmit requests
 
-	Con_Printf("Connecting to %s...\n", cls.servername);
+	common->Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cconnect %d \"%s\"\n",
 		255, 255, 255, 255, com_portals, cls.qh_userinfo);
 	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
@@ -171,7 +171,7 @@ void CL_Connect_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("usage: connect <server>\n");
+		common->Printf("usage: connect <server>\n");
 		return;
 	}
 
@@ -200,7 +200,7 @@ void CL_Rcon_f(void)
 
 	if (!rcon_password->string)
 	{
-		Con_Printf("You must set 'rcon_password' before\n"
+		common->Printf("You must set 'rcon_password' before\n"
 				   "issuing an rcon command.\n");
 		return;
 	}
@@ -230,7 +230,7 @@ void CL_Rcon_f(void)
 	{
 		if (!String::Length(rcon_address->string))
 		{
-			Con_Printf("You must either be connected,\n"
+			common->Printf("You must either be connected,\n"
 					   "or set the 'rcon_address' cvar\n"
 					   "to issue rcon commands\n");
 
@@ -270,7 +270,7 @@ void CL_ClearState(void)
 {
 	S_StopAllSounds();
 
-	Con_DPrintf("Clearing memory\n");
+	common->DPrintf("Clearing memory\n");
 	Mod_ClearAll();
 	if (host_hunklevel)	// FIXME: check this...
 	{
@@ -364,7 +364,7 @@ void CL_User_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("Usage: user <username / userid>\n");
+		common->Printf("Usage: user <username / userid>\n");
 		return;
 	}
 
@@ -383,7 +383,7 @@ void CL_User_f(void)
 			return;
 		}
 	}
-	Con_Printf("User not in server.\n");
+	common->Printf("User not in server.\n");
 }
 
 /*
@@ -399,18 +399,18 @@ void CL_Users_f(void)
 	int c;
 
 	c = 0;
-	Con_Printf("userid frags name\n");
-	Con_Printf("------ ----- ----\n");
+	common->Printf("userid frags name\n");
+	common->Printf("------ ----- ----\n");
 	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		if (cl.h2_players[i].name[0])
 		{
-			Con_Printf("%6i %4i %s\n", cl.h2_players[i].userid, cl.h2_players[i].frags, cl.h2_players[i].name);
+			common->Printf("%6i %4i %s\n", cl.h2_players[i].userid, cl.h2_players[i].frags, cl.h2_players[i].name);
 			c++;
 		}
 	}
 
-	Con_Printf("%i total users\n", c);
+	common->Printf("%i total users\n", c);
 }
 
 void CL_Color_f(void)
@@ -421,10 +421,10 @@ void CL_Color_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf("\"color\" is \"%s %s\"\n",
+		common->Printf("\"color\" is \"%s %s\"\n",
 			Info_ValueForKey(cls.qh_userinfo, "topcolor"),
 			Info_ValueForKey(cls.qh_userinfo, "bottomcolor"));
-		Con_Printf("color <0-13> [0-13]\n");
+		common->Printf("color <0-13> [0-13]\n");
 		return;
 	}
 
@@ -469,7 +469,7 @@ void CL_FullServerinfo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("usage: fullserverinfo <complete info string>\n");
+		common->Printf("usage: fullserverinfo <complete info string>\n");
 		return;
 	}
 
@@ -482,17 +482,17 @@ void CL_FullServerinfo_f(void)
 		{
 			if (!clqh_server_version)
 			{
-				Con_Printf("Version %1.2f Server\n", v);
+				common->Printf("Version %1.2f Server\n", v);
 			}
 			clqh_server_version = v;
 			if ((int)(clqh_server_version * 100) > (int)(VERSION * 100))
 			{
-				Con_Printf("The server is running v%4.2f, you have v%4.2f, please go to www.hexenworld.com and update your client to join\n",clqh_server_version,VERSION);
+				common->Printf("The server is running v%4.2f, you have v%4.2f, please go to www.hexenworld.com and update your client to join\n",clqh_server_version,VERSION);
 				CL_Disconnect_f();
 			}
 			if ((int)(clqh_server_version * 100) < (int)(VERSION * 100))
 			{
-				Con_Printf("The server is running an old version (v%4.2f), you have v%4.2f, please ask server admin to update to latest version\n",clqh_server_version,VERSION);
+				common->Printf("The server is running an old version (v%4.2f), you have v%4.2f, please ask server admin to update to latest version\n",clqh_server_version,VERSION);
 				CL_Disconnect_f();
 			}
 		}
@@ -515,7 +515,7 @@ void CL_FullInfo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("fullinfo <complete info string>\n");
+		common->Printf("fullinfo <complete info string>\n");
 		return;
 	}
 
@@ -533,7 +533,7 @@ void CL_FullInfo_f(void)
 
 		if (!*s)
 		{
-			Con_Printf("MISSING VALUE\n");
+			common->Printf("MISSING VALUE\n");
 			return;
 		}
 
@@ -550,7 +550,7 @@ void CL_FullInfo_f(void)
 
 		if (key[0] == '*')
 		{
-			Con_Printf("Can't set * keys\n");
+			common->Printf("Can't set * keys\n");
 			continue;
 		}
 
@@ -575,7 +575,7 @@ void CL_SetInfo_f(void)
 	}
 	if (Cmd_Argc() != 3)
 	{
-		Con_Printf("usage: setinfo [ <key> <value> ]\n");
+		common->Printf("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
 	if (!String::ICmp(Cmd_Argv(1), "pmodel") || !String::Cmp(Cmd_Argv(1), "emodel"))
@@ -585,7 +585,7 @@ void CL_SetInfo_f(void)
 
 	if (Cmd_Argv(1)[0] == '*')
 	{
-		Con_Printf("Can't set * keys\n");
+		common->Printf("Can't set * keys\n");
 		return;
 	}
 
@@ -615,13 +615,13 @@ void CL_Packet_f(void)
 
 	if (Cmd_Argc() != 3)
 	{
-		Con_Printf("packet <destination> <contents>\n");
+		common->Printf("packet <destination> <contents>\n");
 		return;
 	}
 
 	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, 0))
 	{
-		Con_Printf("Bad address\n");
+		common->Printf("Bad address\n");
 		return;
 	}
 
@@ -669,7 +669,7 @@ void CL_NextDemo(void)
 		cls.qh_demonum = 0;
 		if (!cls.qh_demos[cls.qh_demonum][0])
 		{
-//			Con_Printf ("No demos listed with startdemos\n");
+//			common->Printf ("No demos listed with startdemos\n");
 			cls.qh_demonum = -1;
 			return;
 		}
@@ -694,7 +694,7 @@ void CL_Changing_f(void)
 	S_StopAllSounds();
 	cl.qh_intermission = 0;
 	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
-	Con_Printf("\nChanging map...\n");
+	common->Printf("\nChanging map...\n");
 }
 
 
@@ -711,7 +711,7 @@ void CL_Reconnect_f(void)
 
 	if (cls.state == CA_CONNECTED)
 	{
-		Con_Printf("reconnecting...\n");
+		common->Printf("reconnecting...\n");
 		clc.netchan.message.WriteChar(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		return;
@@ -719,7 +719,7 @@ void CL_Reconnect_f(void)
 
 	if (!*cls.servername)
 	{
-		Con_Printf("No server to reconnect to...\n");
+		common->Printf("No server to reconnect to...\n");
 		return;
 	}
 
@@ -745,16 +745,16 @@ void CL_ConnectionlessPacket(void)
 	c = net_message.ReadByte();
 	if (!clc.demoplaying)
 	{
-		Con_Printf("%s:\n", SOCK_AdrToString(net_from));
+		common->Printf("%s:\n", SOCK_AdrToString(net_from));
 	}
-	Con_DPrintf("%s", net_message._data + 5);
+	common->DPrintf("%s", net_message._data + 5);
 	if (c == S2C_CONNECTION)
 	{
 		if (cls.state == CA_CONNECTED)
 		{
 			if (!clc.demoplaying)
 			{
-				Con_Printf("Dup connect received.  Ignored.\n");
+				common->Printf("Dup connect received.  Ignored.\n");
 			}
 			return;
 		}
@@ -763,7 +763,7 @@ void CL_ConnectionlessPacket(void)
 		clc.netchan.message.WriteChar(h2clc_stringcmd);
 		clc.netchan.message.WriteString2("new");
 		cls.state = CA_CONNECTED;
-		Con_Printf("Connected.\n");
+		common->Printf("Connected.\n");
 		return;
 	}
 	// remote command from gui front end
@@ -771,7 +771,7 @@ void CL_ConnectionlessPacket(void)
 	{
 		if (!SOCK_IsLocalIP(net_from))
 		{
-			Con_Printf("Command packet from remote host.  Ignored.\n");
+			common->Printf("Command packet from remote host.  Ignored.\n");
 			return;
 		}
 #ifdef _WIN32
@@ -786,7 +786,7 @@ void CL_ConnectionlessPacket(void)
 	if (c == A2C_PRINT)
 	{
 		s = const_cast<char*>(net_message.ReadString2());
-		Con_Printf(s);
+		common->Printf(s);
 		return;
 	}
 
@@ -812,7 +812,7 @@ void CL_ConnectionlessPacket(void)
 		return;
 	}
 
-	Con_Printf("Unknown command:\n%c\n", c);
+	common->Printf("Unknown command:\n%c\n", c);
 }
 
 
@@ -836,7 +836,7 @@ void CL_ReadPackets(void)
 
 		if (net_message.cursize < 8)
 		{
-			Con_Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
+			common->Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
 			continue;
 		}
 
@@ -846,7 +846,7 @@ void CL_ReadPackets(void)
 		if (!clc.demoplaying &&
 			!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
 		{
-			Con_Printf("%s:sequenced packet without connection\n",
+			common->Printf("%s:sequenced packet without connection\n",
 				SOCK_AdrToString(net_from));
 			continue;
 		}
@@ -867,7 +867,7 @@ void CL_ReadPackets(void)
 	if ((cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE) &&
 		realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
 	{
-		Con_Printf("\nServer connection timed out.\n");
+		common->Printf("\nServer connection timed out.\n");
 		CL_Disconnect();
 		return;
 	}
@@ -885,13 +885,13 @@ void CL_Download_f(void)
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf("Must be connected.\n");
+		common->Printf("Must be connected.\n");
 		return;
 	}
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("Usage: download <datafile>\n");
+		common->Printf("Usage: download <datafile>\n");
 		return;
 	}
 
@@ -909,7 +909,7 @@ void CL_Sensitivity_save_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("sensitivity_save <save/restore>\n");
+		common->Printf("sensitivity_save <save/restore>\n");
 		return;
 	}
 
@@ -935,7 +935,7 @@ static void Skin_Skins_f()
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf("WARNING: cannot complete command because there is no connection to a server\n");
+		common->Printf("WARNING: cannot complete command because there is no connection to a server\n");
 		return;
 	}
 
@@ -1064,9 +1064,9 @@ void Host_EndGame(const char* message, ...)
 	va_start(argptr,message);
 	Q_vsnprintf(string, 1024, message, argptr);
 	va_end(argptr);
-	Con_Printf("\n===========================\n");
-	Con_Printf("Host_EndGame: %s\n",string);
-	Con_Printf("===========================\n\n");
+	common->Printf("\n===========================\n");
+	common->Printf("Host_EndGame: %s\n",string);
+	common->Printf("===========================\n\n");
 
 	CL_Disconnect();
 
@@ -1095,7 +1095,7 @@ void Host_FatalError(const char* error, ...)
 	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end(argptr);
-	Con_Printf("Host_FatalError: %s\n",string);
+	common->Printf("Host_FatalError: %s\n",string);
 
 	CL_Disconnect();
 	cls.qh_demonum = -1;
@@ -1121,7 +1121,7 @@ void Host_WriteConfiguration(const char* fname)
 		fileHandle_t f = FS_FOpenFileWrite(fname);
 		if (!f)
 		{
-			Con_Printf("Couldn't write %s.\n",fname);
+			common->Printf("Couldn't write %s.\n",fname);
 			return;
 		}
 
@@ -1137,13 +1137,13 @@ void Host_SaveConfig_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("saveconfig <savename> : save a config file\n");
+		common->Printf("saveconfig <savename> : save a config file\n");
 		return;
 	}
 
 	if (strstr(Cmd_Argv(1), ".."))
 	{
-		Con_Printf("Relative pathnames are not allowed.\n");
+		common->Printf("Relative pathnames are not allowed.\n");
 		return;
 	}
 
@@ -1267,7 +1267,7 @@ void Host_Frame(float time)
 			time3 = Sys_DoubleTime();
 			pass2 = (time2 - time1) * 1000;
 			pass3 = (time3 - time2) * 1000;
-			Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
+			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
 
@@ -1349,8 +1349,8 @@ void Host_Init(quakeparms_t* parms)
 		M_Init();
 
 
-//	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-		Con_Printf("%4.1f megs RAM used.\n",parms->memsize / (1024 * 1024.0));
+//	common->Printf ("Exe: "__TIME__" "__DATE__"\n");
+		common->Printf("%4.1f megs RAM used.\n",parms->memsize / (1024 * 1024.0));
 
 		cls.state = CA_DISCONNECTED;
 		CL_Init();
@@ -1375,7 +1375,7 @@ void Host_Init(quakeparms_t* parms)
 
 		host_initialized = true;
 
-		Con_Printf("������� HexenWorld Initialized �������\n");
+		common->Printf("������� HexenWorld Initialized �������\n");
 	}
 	catch (Exception& e)
 	{

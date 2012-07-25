@@ -97,7 +97,7 @@ void Host_EndGame(const char* message, ...)
 	va_start(argptr,message);
 	Q_vsnprintf(string, 1024, message, argptr);
 	va_end(argptr);
-	Con_DPrintf("Host_EndGame: %s\n",string);
+	common->DPrintf("Host_EndGame: %s\n",string);
 
 	if (sv.state != SS_DEAD)
 	{
@@ -151,7 +151,7 @@ void Host_Error(const char* error, ...)
 	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end(argptr);
-	Con_Printf("Host_Error: %s\n",string);
+	common->Printf("Host_Error: %s\n",string);
 
 	if (sv.state != SS_DEAD)
 	{
@@ -313,7 +313,7 @@ void Host_WriteConfiguration(void)
 		fileHandle_t f = FS_FOpenFileWrite("config.cfg");
 		if (!f)
 		{
-			Con_Printf("Couldn't write config.cfg.\n");
+			common->Printf("Couldn't write config.cfg.\n");
 			return;
 		}
 
@@ -425,7 +425,7 @@ void SV_DropClient(qboolean crash)
 			*pr_globalVars.self = saveSelf;
 		}
 
-		Con_Printf("Client %s removed\n",host_client->name);
+		common->Printf("Client %s removed\n",host_client->name);
 	}
 
 // break the net connection
@@ -521,7 +521,7 @@ void Host_ShutdownServer(qboolean crash)
 	count = NET_SendToAll(&buf, 5);
 	if (count)
 	{
-		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
+		common->Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
 	}
 
 	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
@@ -566,7 +566,7 @@ not reinitialize anything.
 */
 void Host_ClearMemory(void)
 {
-	Con_DPrintf("Clearing memory\n");
+	common->DPrintf("Clearing memory\n");
 #ifndef DEDICATED
 	Mod_ClearAll();
 #endif
@@ -823,7 +823,7 @@ void _Host_Frame(float time)
 			time3 = Sys_DoubleTime();
 			pass2 = (time2 - time1) * 1000;
 			pass3 = (time3 - time2) * 1000;
-			Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
+			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
 
@@ -882,7 +882,7 @@ void Host_Frame(float time)
 			}
 		}
 
-		Con_Printf("serverprofile: %2i clients %2i msec\n",  c,  m);
+		common->Printf("serverprofile: %2i clients %2i msec\n",  c,  m);
 	}
 	catch (Exception& e)
 	{
@@ -946,8 +946,8 @@ void Host_Init(quakeparms_t* parms)
 		PR_Init();
 		SV_Init();
 
-		Con_Printf("Exe: "__TIME__ " "__DATE__ "\n");
-		Con_Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
+		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
+		common->Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
 
 #ifndef DEDICATED
 		if (cls.state != CA_DEDICATED)
@@ -980,7 +980,7 @@ void Host_Init(quakeparms_t* parms)
 
 		host_initialized = true;
 
-		Con_Printf("========Quake Initialized=========\n");
+		common->Printf("========Quake Initialized=========\n");
 	}
 	catch (Exception& e)
 	{
@@ -1009,7 +1009,7 @@ void Host_Shutdown(void)
 	isdown = true;
 
 #ifndef DEDICATED
-// keep Con_Printf from trying to update the screen
+// keep common->Printf from trying to update the screen
 	cls.disable_screen = true;
 #endif
 

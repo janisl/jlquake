@@ -176,7 +176,7 @@ void SV_ConnectClient(int clientnum)
 
 	client = svs.clients + clientnum;
 
-	Con_DPrintf("Client %s connected\n", client->qh_netconnection->address);
+	common->DPrintf("Client %s connected\n", client->qh_netconnection->address);
 
 	edictnum = clientnum + 1;
 
@@ -391,7 +391,7 @@ void SV_WriteEntitiesToClient(qhedict_t* clent, QMsg* msg)
 
 		if (msg->maxsize - msg->cursize < 16)
 		{
-			Con_Printf("packet overflow\n");
+			common->Printf("packet overflow\n");
 			return;
 		}
 
@@ -1088,7 +1088,7 @@ void SV_SpawnServer(char* server)
 	scr_centertime_off = 0;
 #endif
 
-	Con_DPrintf("SpawnServer: %s\n",server);
+	common->DPrintf("SpawnServer: %s\n",server);
 	svs.qh_changelevel_issued = false;		// now safe to issue another
 
 //
@@ -1218,7 +1218,7 @@ void SV_SpawnServer(char* server)
 			SV_SendServerinfo(host_client);
 		}
 
-	Con_DPrintf("Server spawned.\n");
+	common->DPrintf("Server spawned.\n");
 }
 
 #ifdef DEDICATED

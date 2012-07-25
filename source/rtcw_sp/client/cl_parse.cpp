@@ -46,7 +46,7 @@ void SHOWNET(QMsg* msg, const char* s)
 {
 	if (cl_shownet->integer >= 2)
 	{
-		Com_Printf("%3i %3i:%s\n", msg->readcount - 1, msg->cursize, s);
+		common->Printf("%3i %3i:%s\n", msg->readcount - 1, msg->cursize, s);
 	}
 }
 
@@ -149,7 +149,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			// one or more entities from the old packet are unchanged
 			if (cl_shownet->integer == 3)
 			{
-				Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
+				common->Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
 			CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
@@ -171,7 +171,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			// delta from previous state
 			if (cl_shownet->integer == 3)
 			{
-				Com_Printf("%3i:  delta: %i\n", msg->readcount, newnum);
+				common->Printf("%3i:  delta: %i\n", msg->readcount, newnum);
 			}
 			CL_DeltaEntity(msg, newframe, newnum, oldstate, false);
 
@@ -195,7 +195,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 			// delta from baseline
 			if (cl_shownet->integer == 3)
 			{
-				Com_Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
+				common->Printf("%3i:  baseline: %i\n", msg->readcount, newnum);
 			}
 			CL_DeltaEntity(msg, newframe, newnum, &cl.ws_entityBaselines[newnum], false);
 			continue;
@@ -209,7 +209,7 @@ void CL_ParsePacketEntities(QMsg* msg, wsclSnapshot_t* oldframe, wsclSnapshot_t*
 		// one or more entities from the old packet are unchanged
 		if (cl_shownet->integer == 3)
 		{
-			Com_Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
+			common->Printf("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
 		CL_DeltaEntity(msg, newframe, oldnum, oldstate, true);
 
@@ -290,17 +290,17 @@ void CL_ParseSnapshot(QMsg* msg)
 		if (!old->valid)
 		{
 			// should never happen
-			Com_Printf("Delta from invalid frame (not supposed to happen!).\n");
+			common->Printf("Delta from invalid frame (not supposed to happen!).\n");
 		}
 		else if (old->messageNum != newSnap.deltaNum)
 		{
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
-			Com_Printf("Delta frame too old.\n");
+			common->Printf("Delta frame too old.\n");
 		}
 		else if (cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128)
 		{
-			Com_Printf("Delta parseEntitiesNum too old.\n");
+			common->Printf("Delta parseEntitiesNum too old.\n");
 		}
 		else
 		{
@@ -367,7 +367,7 @@ void CL_ParseSnapshot(QMsg* msg)
 
 	if (cl_shownet->integer == 3)
 	{
-		Com_Printf("   snapshot:%i  delta:%i  ping:%i\n", cl.ws_snap.messageNum,
+		common->Printf("   snapshot:%i  delta:%i  ping:%i\n", cl.ws_snap.messageNum,
 			cl.ws_snap.deltaNum, cl.ws_snap.ping);
 	}
 
@@ -572,7 +572,7 @@ void CL_ParseDownload(QMsg* msg)
 
 	if (clc.downloadBlock != block)
 	{
-		Com_DPrintf("CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block);
+		common->DPrintf("CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block);
 		return;
 	}
 
@@ -581,7 +581,7 @@ void CL_ParseDownload(QMsg* msg)
 	{
 		if (!*clc.downloadTempName)
 		{
-			Com_Printf("Server sending download, but no download was requested\n");
+			common->Printf("Server sending download, but no download was requested\n");
 			CL_AddReliableCommand("stopdl");
 			return;
 		}
@@ -590,7 +590,7 @@ void CL_ParseDownload(QMsg* msg)
 
 		if (!clc.download)
 		{
-			Com_Printf("Could not create %s\n", clc.downloadTempName);
+			common->Printf("Could not create %s\n", clc.downloadTempName);
 			CL_AddReliableCommand("stopdl");
 			CL_NextDownload();
 			return;
@@ -679,11 +679,11 @@ void CL_ParseServerMessage(QMsg* msg)
 
 	if (cl_shownet->integer == 1)
 	{
-		Com_Printf("%i ",msg->cursize);
+		common->Printf("%i ",msg->cursize);
 	}
 	else if (cl_shownet->integer >= 2)
 	{
-		Com_Printf("------------------\n");
+		common->Printf("------------------\n");
 	}
 
 	msg->Bitstream();
@@ -719,7 +719,7 @@ void CL_ParseServerMessage(QMsg* msg)
 		{
 			if (!svc_strings[cmd])
 			{
-				Com_Printf("%3i:BAD CMD %i\n", msg->readcount - 1, cmd);
+				common->Printf("%3i:BAD CMD %i\n", msg->readcount - 1, cmd);
 			}
 			else
 			{

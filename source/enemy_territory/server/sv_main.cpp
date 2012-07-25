@@ -138,23 +138,23 @@ void SV_MasterHeartbeat(const char* hbname)
 		{
 			sv_master[i]->modified = false;
 
-			Com_Printf("Resolving %s\n", sv_master[i]->string);
+			common->Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
+				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
 				sv_master[i]->modified = false;
 				continue;
 			}
-			Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
+			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
 				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
 				BigShort(adr[i].port));
 		}
 
 
-		Com_Printf("Sending heartbeat to %s\n", sv_master[i]->string);
+		common->Printf("Sending heartbeat to %s\n", sv_master[i]->string);
 		// this command should be changed if the server info / status format
 		// ever incompatably changes
 		NET_OutOfBandPrint(NS_SERVER, adr[i], "heartbeat %s\n", hbname);
@@ -199,22 +199,22 @@ void SV_MasterGameCompleteStatus()
 		{
 			sv_master[i]->modified = false;
 
-			Com_Printf("Resolving %s\n", sv_master[i]->string);
+			common->Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
+				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
 				sv_master[i]->modified = false;
 				continue;
 			}
-			Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
+			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
 				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
 				BigShort(adr[i].port));
 		}
 
-		Com_Printf("Sending gameCompleteStatus to %s\n", sv_master[i]->string);
+		common->Printf("Sending gameCompleteStatus to %s\n", sv_master[i]->string);
 		// this command should be changed if the server info / status format
 		// ever incompatably changes
 		SVC_GameCompleteStatus(adr[i]);
@@ -534,7 +534,7 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 	unsigned int time;
 	char remaining[1024];
 	// show_bug.cgi?id=376
-	// if we send an OOB print message this size, 1.31 clients die in a Com_Printf buffer overflow
+	// if we send an OOB print message this size, 1.31 clients die in a common->Printf buffer overflow
 	// the buffer overflow will be fixed in > 1.31 clients
 	// but we want a server side fix
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
@@ -555,19 +555,19 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 		String::Cmp(Cmd_Argv(1), sv_rconPassword->string))
 	{
 		valid = false;
-		Com_Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+		common->Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 	else
 	{
 		valid = true;
-		Com_Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+		common->Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 
 	// start redirecting all print outputs to the packet
 	svs.q3_redirectAddress = from;
 	// FIXME TTimo our rcon redirection could be improved
 	//   big rcon commands such as status lead to sending
-	//   out of band packets on every single call to Com_Printf
+	//   out of band packets on every single call to common->Printf
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
@@ -575,11 +575,11 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 
 	if (!String::Length(sv_rconPassword->string))
 	{
-		Com_Printf("No rconpassword set on the server.\n");
+		common->Printf("No rconpassword set on the server.\n");
 	}
 	else if (!valid)
 	{
-		Com_Printf("Bad rconpassword.\n");
+		common->Printf("Bad rconpassword.\n");
 	}
 	else
 	{
@@ -635,7 +635,7 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	Cmd_TokenizeString(s);
 
 	c = Cmd_Argv(0);
-	Com_DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
+	common->DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
 
 	if (!String::ICmp(c,"getstatus"))
 	{
@@ -671,7 +671,7 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	}
 	else
 	{
-		Com_DPrintf("bad connectionless packet from %s:\n%s\n",
+		common->DPrintf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(from), s);
 	}
 }
@@ -725,7 +725,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 		// port assignments
 		if (cl->netchan.remoteAddress.port != from.port)
 		{
-			Com_Printf("SV_PacketEvent: fixing up a translated port\n");
+			common->Printf("SV_PacketEvent: fixing up a translated port\n");
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -915,7 +915,7 @@ void SV_Frame(int msec)
 		svs.et_currentFrameIndex++;
 
 		//if( svs.et_currentFrameIndex % 50 == 0 )
-		//	Com_Printf( "currentFrameIndex: %i\n", svs.et_currentFrameIndex );
+		//	common->Printf( "currentFrameIndex: %i\n", svs.et_currentFrameIndex );
 
 		if (svs.et_currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES)
 		{
@@ -946,7 +946,7 @@ void SV_Frame(int msec)
 				svs.et_serverLoad = (averageFrameTime / (float)frameMsec) * 100;
 			}
 
-			//Com_Printf( "serverload: %i (%i/%i)\n", svs.et_serverLoad, averageFrameTime, frameMsec );
+			//common->Printf( "serverload: %i (%i/%i)\n", svs.et_serverLoad, averageFrameTime, frameMsec );
 
 			svs.et_totalFrameTime = 0;
 			svs.et_currentFrameIndex = 0;

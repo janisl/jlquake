@@ -42,8 +42,8 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// shut down the existing game if it is running
 	SVT3_ShutdownGameProgs();
 
-	Com_Printf("------ Server Initialization ------\n");
-	Com_Printf("Server: %s\n",server);
+	common->Printf("------ Server Initialization ------\n");
+	common->Printf("Server: %s\n",server);
 
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
@@ -219,7 +219,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 		Cvar_Set("sv_paks", p);
 		if (String::Length(p) == 0)
 		{
-			Com_Printf("WARNING: sv_pure set but no PK3 files loaded\n");
+			common->Printf("WARNING: sv_pure set but no PK3 files loaded\n");
 		}
 		p = FS_LoadedPakNames();
 		Cvar_Set("sv_pakNames", p);
@@ -261,7 +261,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	Hunk_SetMark();
 
-	Com_Printf("-----------------------------------\n");
+	common->Printf("-----------------------------------\n");
 }
 
 /*
@@ -383,7 +383,7 @@ void SV_Shutdown(const char* finalmsg)
 		return;
 	}
 
-	Com_Printf("----- Server Shutdown -----\n");
+	common->Printf("----- Server Shutdown -----\n");
 
 	if (svs.clients && !com_errorEntered)
 	{
@@ -407,7 +407,7 @@ void SV_Shutdown(const char* finalmsg)
 	Cvar_Set("sv_running", "0");
 	Cvar_Set("ui_singlePlayerActive", "0");
 
-	Com_Printf("---------------------------\n");
+	common->Printf("---------------------------\n");
 
 	// disconnect any local clients
 	CL_Disconnect(false);

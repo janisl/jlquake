@@ -144,7 +144,7 @@ public:
 #define MAX_STRING_CHARS    1024	// max length of a string passed to Cmd_TokenizeString
 
 // TTimo
-// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
+// centralized and cleaned, that's the max string you can send to a common->Printf / common->DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
 #define ANGLE2SHORT(x)      ((int)((x) * 65536 / 360) & 65535)

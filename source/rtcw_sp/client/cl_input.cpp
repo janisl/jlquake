@@ -284,13 +284,13 @@ void CL_WritePacket(void)
 	if (count > MAX_PACKET_USERCMDS)
 	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf("MAX_PACKET_USERCMDS\n");
+		common->Printf("MAX_PACKET_USERCMDS\n");
 	}
 	if (count >= 1)
 	{
 		if (cl_showSend->integer)
 		{
-			Com_Printf("(%i)", count);
+			common->Printf("(%i)", count);
 		}
 
 		// begin a client move command
@@ -335,7 +335,7 @@ void CL_WritePacket(void)
 
 	if (cl_showSend->integer)
 	{
-		Com_Printf("%i ", buf.cursize);
+		common->Printf("%i ", buf.cursize);
 	}
 //	Netchan_Transmit (&clc.netchan, buf.cursize, buf.data);
 	CL_Netchan_Transmit(&clc.netchan, &buf);
@@ -378,7 +378,7 @@ void CL_SendCmd(void)
 	{
 		if (cl_showSend->integer)
 		{
-			Com_Printf(". ");
+			common->Printf(". ");
 		}
 		return;
 	}

@@ -102,7 +102,7 @@ BOOL HTAlertCallback_progress(HTRequest* request, HTAlertOpcode op,
 			/* show_bug.cgi?id=605 */
 			if (!HTNet_rawBytesCount(request->net))
 			{
-				Com_DPrintf("Force raw byte count on request->net %p\n", request->net);
+				common->DPrintf("Force raw byte count on request->net %p\n", request->net);
 				HTFTP_setRawBytesCount(request);
 			}
 			Cvar_SetValue("cl_downloadCount", (float)HTFTP_getDNetRawBytesCount(request));
@@ -123,11 +123,11 @@ BOOL HTAlertCallback_confirm(HTRequest* request, HTAlertOpcode op,
 	// some predefined messages we know the answer to
 	if (msgnum == HT_MSG_FILE_REPLACE)
 	{
-		Com_Printf("Replace existing download target file\n");
+		common->Printf("Replace existing download target file\n");
 		return YES;
 	}
 	// anything else, means we abort
-	Com_Printf("Aborting, unknown libwww confirm message id: %d\n", msgnum);
+	common->Printf("Aborting, unknown libwww confirm message id: %d\n", msgnum);
 	HTEventList_stopLoop();
 	return NO;
 }
@@ -142,7 +142,7 @@ BOOL HTAlertCallback_prompt(HTRequest* request, HTAlertOpcode op,
 	int msgnum, const char* dfault, void* input,
 	HTAlertPar* reply)
 {
-	Com_Printf("Aborting, libwww prompt message id: %d (prompted for a login/password?)\n", msgnum);
+	common->Printf("Aborting, libwww prompt message id: %d (prompted for a login/password?)\n", msgnum);
 	HTEventList_stopLoop();
 	return NO;
 }
@@ -181,7 +181,7 @@ void DL_InitDownload()
 	HTAlert_add(HTAlertCallback_confirm, HT_A_CONFIRM);
 	HTAlert_add(HTAlertCallback_prompt, HT_A_PROMPT | HT_A_SECRET | HT_A_USER_PW);
 
-	Com_Printf("Client download subsystem initialized\n");
+	common->Printf("Client download subsystem initialized\n");
 	dl_initialized = 1;
 }
 
@@ -225,7 +225,7 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 
 	if (dl_running)
 	{
-		Com_Printf("ERROR: DL_BeginDownload called with a download request already active\n"); \
+		common->Printf("ERROR: DL_BeginDownload called with a download request already active\n"); \
 		return 0;
 	}
 
@@ -240,7 +240,7 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 
 	if (!localName || !remoteName)
 	{
-		Com_DPrintf("Empty download URL or empty local file name\n");
+		common->DPrintf("Empty download URL or empty local file name\n");
 		return 0;
 	}
 
@@ -297,7 +297,7 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 			/* correct the HTTP */
 			url = HT_MALLOC(7 + String::Length(ptr + 1) + String::Length(path) + 1);
 			sprintf(url, "http://%s%s", ptr + 1, path);
-			Com_DPrintf("HTTP Basic Auth - %s %s %s\n", login, passwd, url);
+			common->DPrintf("HTTP Basic Auth - %s %s %s\n", login, passwd, url);
 			HT_FREE(login);
 			HT_FREE(path);
 		}
@@ -317,7 +317,7 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 	/* Start the load */
 	if (HTLoadToFile(url, dl_request, localName) != YES)
 	{
-		Com_DPrintf("HTLoadToFile failed\n");
+		common->DPrintf("HTLoadToFile failed\n");
 		HT_FREE(url);
 		HTProfile_delete();
 		return 0;
@@ -359,7 +359,7 @@ dlStatus_t DL_DownloadLoop()
 {
 	if (!dl_running)
 	{
-		Com_DPrintf("DL_DownloadLoop: unexpected call with dl_running == false\n");
+		common->DPrintf("DL_DownloadLoop: unexpected call with dl_running == false\n");
 		return DL_DONE;
 	}
 
@@ -385,7 +385,7 @@ dlStatus_t DL_DownloadLoop()
 	/* NOTE: there is HTEventList_status, but it says != HT_OK as soon as HTEventList_pump returns NO */
 	if (terminate_status < 0)
 	{
-		Com_DPrintf("DL_DownloadLoop: request terminated with failure status %d\n", terminate_status);
+		common->DPrintf("DL_DownloadLoop: request terminated with failure status %d\n", terminate_status);
 		return DL_FAILED;
 	}
 

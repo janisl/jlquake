@@ -528,7 +528,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 
 	newindex = 0;
 	oldindex = 0;
-//Con_Printf ("---%i to %i ----\n", client->delta_sequence & UPDATE_MASK_HW
+//common->Printf ("---%i to %i ----\n", client->delta_sequence & UPDATE_MASK_HW
 //			, client->netchan.outgoing_sequence & UPDATE_MASK_HW);
 	while (newindex < to->num_entities || oldindex < oldmax)
 	{
@@ -537,7 +537,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 
 		if (newnum == oldnum)
 		{	// delta update from old position
-//Con_Printf ("delta %i\n", newnum);
+//common->Printf ("delta %i\n", newnum);
 			SV_WriteDelta(&from->entities[oldindex], &to->entities[newindex], msg, false, QH_EDICT_NUM(newnum), client);
 			oldindex++;
 			newindex++;
@@ -547,7 +547,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 		if (newnum < oldnum)
 		{	// this is a new entity, send it from the baseline
 			ent = QH_EDICT_NUM(newnum);
-//Con_Printf ("baseline %i\n", newnum);
+//common->Printf ("baseline %i\n", newnum);
 			SV_WriteDelta(&ent->h2_baseline, &to->entities[newindex], msg, true, ent, client);
 			newindex++;
 			continue;
@@ -555,7 +555,7 @@ void SV_EmitPacketEntities(client_t* client, hwpacket_entities_t* to, QMsg* msg)
 
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
-//Con_Printf ("remove %i\n", oldnum);
+//common->Printf ("remove %i\n", oldnum);
 			msg->WriteShort(oldnum | HWU_REMOVE);
 			oldindex++;
 			continue;
@@ -611,7 +611,7 @@ void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 		}
 		if (ent->GetTeleportTime() > sv.qh_time)
 		{
-//			Con_Printf ("Teleport_time>time, sending bit\n");
+//			common->Printf ("Teleport_time>time, sending bit\n");
 			sc1 |= SC1_TELEPORT_TIME;
 //			ent->v.teleport_time = 0;
 		}

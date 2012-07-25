@@ -92,7 +92,7 @@ void CL_SendCmd(void)
 	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_HW;
 	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, true);
 
-//	Con_Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
+//	common->Printf("I  %hd %hd %hd\n",cmd->forwardmove, cmd->sidemove, cmd->upmove);
 
 	// request delta compression of entities
 	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_HW - 1)

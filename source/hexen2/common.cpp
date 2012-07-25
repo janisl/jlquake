@@ -116,7 +116,7 @@ void COM_CheckRegistered(void)
 #if WINDED
 		Sys_Error("This dedicated server requires a full registered copy of Hexen II");
 #endif
-		Con_Printf("Playing demo version.\n");
+		common->Printf("Playing demo version.\n");
 		return;
 	}
 
@@ -133,7 +133,7 @@ void COM_CheckRegistered(void)
 	Cvar_Set("cmdline", com_cmdline);
 
 	Cvar_Set("registered", "1");
-	Con_Printf("Playing retail version.\n");
+	common->Printf("Playing retail version.\n");
 }
 
 

@@ -34,7 +34,7 @@ draw
 CenterPrint ()
 SlowPrint ()
 Screen_Update ();
-Con_Printf ();
+common->Printf ();
 
 net
 turn off messages option
@@ -357,7 +357,7 @@ static void R_TimeRefresh_f(void)
 
 	if (cls.state != CA_ACTIVE)
 	{
-		Con_Printf("Not connected to a server\n");
+		common->Printf("Not connected to a server\n");
 		return;
 	}
 
@@ -377,7 +377,7 @@ static void R_TimeRefresh_f(void)
 
 	stop = Sys_DoubleTime();
 	time = stop - start;
-	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
+	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
 }
 
 //============================================================================
@@ -843,7 +843,7 @@ void SB_IntermissionOverlay(void)
 		cl.qh_intermission++;
 		cl.qh_completed_time = cl.qh_serverTimeFloat;
 	}
-//	Con_Printf("Time is %10.2f\n",elapsed);
+//	common->Printf("Time is %10.2f\n",elapsed);
 }
 
 //==========================================================================
@@ -878,7 +878,7 @@ void SCR_UpdateScreen(void)
 		if (realtime * 1000 - cls.disable_screen > 60000)
 		{
 			cls.disable_screen = 0;
-			Con_Printf("load failed.\n");
+			common->Printf("load failed.\n");
 		}
 		else
 		{

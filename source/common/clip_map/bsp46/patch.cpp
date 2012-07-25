@@ -2036,7 +2036,7 @@ void QClipMap46::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, fl
 				if (facet == debugFacet)
 				{
 					drawPoly(4, w->numpoints, w->p[0]);
-					//Com_Printf("blue facet has %d border planes\n", facet->numBorders);
+					//common->Printf("blue facet has %d border planes\n", facet->numBorders);
 				}
 				else
 				{

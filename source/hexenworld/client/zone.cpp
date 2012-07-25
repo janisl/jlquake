@@ -218,11 +218,11 @@ void Z_Print(memzone_t* zone)
 {
 	memblock_t* block;
 
-	Con_Printf("zone size: %i  location: %p\n",mainzone->size,mainzone);
+	common->Printf("zone size: %i  location: %p\n",mainzone->size,mainzone);
 
 	for (block = zone->blocklist.next;; block = block->next)
 	{
-		Con_Printf("block:%p    size:%7i    tag:%3i\n",
+		common->Printf("block:%p    size:%7i    tag:%3i\n",
 			block, block->size, block->tag);
 
 		if (block->next == &zone->blocklist)
@@ -231,15 +231,15 @@ void Z_Print(memzone_t* zone)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Con_Printf("ERROR: block size does not touch the next block\n");
+			common->Printf("ERROR: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Con_Printf("ERROR: next block doesn't have proper back link\n");
+			common->Printf("ERROR: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Con_Printf("ERROR: two consecutive free blocks\n");
+			common->Printf("ERROR: two consecutive free blocks\n");
 		}
 	}
 }
@@ -347,8 +347,8 @@ void Hunk_Print(qboolean all)
 	starthigh = (hunk_t*)(hunk_base + hunk_size - hunk_high_used);
 	endhigh = (hunk_t*)(hunk_base + hunk_size);
 
-	Con_Printf("          :%8i total hunk size\n", hunk_size);
-	Con_Printf("-------------------------\n");
+	common->Printf("          :%8i total hunk size\n", hunk_size);
+	common->Printf("-------------------------\n");
 
 	while (1)
 	{
@@ -357,9 +357,9 @@ void Hunk_Print(qboolean all)
 		//
 		if (h == endlow)
 		{
-			Con_Printf("-------------------------\n");
-			Con_Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
-			Con_Printf("-------------------------\n");
+			common->Printf("-------------------------\n");
+			common->Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
+			common->Printf("-------------------------\n");
 			h = starthigh;
 		}
 
@@ -394,7 +394,7 @@ void Hunk_Print(qboolean all)
 		Com_Memcpy(name, h->name, 8);
 		if (all)
 		{
-			Con_Printf("%8p :%8i %8s\n",h, h->size, name);
+			common->Printf("%8p :%8i %8s\n",h, h->size, name);
 		}
 
 		//
@@ -405,7 +405,7 @@ void Hunk_Print(qboolean all)
 		{
 			if (!all)
 			{
-				Con_Printf("          :%8i %8s (TOTAL)\n",sum, name);
+				common->Printf("          :%8i %8s (TOTAL)\n",sum, name);
 			}
 			count = 0;
 			sum = 0;
@@ -414,8 +414,8 @@ void Hunk_Print(qboolean all)
 		h = next;
 	}
 
-	Con_Printf("-------------------------\n");
-	Con_Printf("%8i total blocks\n", totalblocks);
+	common->Printf("-------------------------\n");
+	common->Printf("%8i total blocks\n", totalblocks);
 
 }
 
@@ -539,7 +539,7 @@ void* Hunk_HighAllocName(int size, const char* name)
 
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 	{
-		Con_Printf("Hunk_HighAlloc: failed on %i bytes\n",size);
+		common->Printf("Hunk_HighAlloc: failed on %i bytes\n",size);
 		return NULL;
 	}
 

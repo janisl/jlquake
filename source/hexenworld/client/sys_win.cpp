@@ -247,7 +247,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Sys_Init();
 
-	Con_Printf("Host_Init\n");
+	common->Printf("Host_Init\n");
 	Host_Init(&parms);
 
 	oldtime = Sys_DoubleTime();

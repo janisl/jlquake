@@ -97,7 +97,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 
 	if (!uivm)
 	{
-		Com_DPrintf("draw screen without UI loaded\n");
+		common->DPrintf("draw screen without UI loaded\n");
 		return;
 	}
 

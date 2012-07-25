@@ -61,7 +61,7 @@ void PF_sprint(void)
 
 	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
-		Con_Printf("tried to sprint to a non-client\n");
+		common->Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
@@ -116,7 +116,7 @@ void PF_name_print(void)
 		client_t* cl;
 		int i;
 
-		Con_Printf("%s",&svs.clients[Index - 1].name);
+		common->Printf("%s",&svs.clients[Index - 1].name);
 
 		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		{
@@ -196,7 +196,7 @@ void PF_print_indexed(void)
 		client_t* cl;
 		int i;
 
-		Con_Printf("%s",&pr_global_strings[pr_string_index[Index - 1]]);
+		common->Printf("%s",&pr_global_strings[pr_string_index[Index - 1]]);
 
 		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		{
@@ -252,7 +252,7 @@ void PF_centerprint(void)
 
 	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
-		Con_Printf("tried to sprint to a non-client\n");
+		common->Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
@@ -311,7 +311,7 @@ void PF_centerprint2(void)
 
 	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
-		Con_Printf("tried to sprint to a non-client\n");
+		common->Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
@@ -628,7 +628,7 @@ void PF_setclass(void)
 
 	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
-		Con_Printf("tried to change class of a non-client\n");
+		common->Printf("tried to change class of a non-client\n");
 		return;
 	}
 
@@ -674,7 +674,7 @@ void PF_setsiegeteam(void)
 
 	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
 	{
-		Con_Printf("tried to change siege_team of a non-client\n");
+		common->Printf("tried to change siege_team of a non-client\n");
 		return;
 	}
 
@@ -930,7 +930,7 @@ void PF_weapon_sound(void)
 
 	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
 	{
-		Con_Printf("SVQH_StartSound: %s not precacheed\n", sample);
+		common->Printf("SVQH_StartSound: %s not precacheed\n", sample);
 		return;
 	}
 	entity->SetWpnSound(sound_num);

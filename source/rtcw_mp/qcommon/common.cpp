@@ -193,7 +193,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 			}
 #endif
 			logfile = FS_FOpenFileWrite("rtcwconsole.log");
-			Com_Printf("logfile opened on %s\n", asctime(newtime));
+			common->Printf("logfile opened on %s\n", asctime(newtime));
 			if (com_logfile->integer > 1)
 			{
 				// force it to not buffer so we get valid
@@ -215,7 +215,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 ================
 Com_DPrintf
 
-A Com_Printf that only shows up if the "developer" cvar is set
+A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
 void QDECL Com_DPrintf(const char* fmt, ...)
@@ -232,7 +232,7 @@ void QDECL Com_DPrintf(const char* fmt, ...)
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
 
-	Com_Printf("%s", msg);
+	common->Printf("%s", msg);
 }
 
 /*
@@ -311,7 +311,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	}
 	else if (code == ERR_DROP || code == ERR_DISCONNECT)
 	{
-		Com_Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
+		common->Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
 		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
 		CL_Disconnect(true);
 		CL_FlushMemory();
@@ -1096,7 +1096,7 @@ void Com_Meminfo_f(void)
 	{
 		if (Cmd_Argc() != 1)
 		{
-			Com_Printf("block:%p    size:%7i    tag:%3i\n",
+			common->Printf("block:%p    size:%7i    tag:%3i\n",
 				block, block->size, block->tag);
 		}
 		if (block->tag)
@@ -1119,15 +1119,15 @@ void Com_Meminfo_f(void)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Com_Printf("ERROR: block size does not touch the next block\n");
+			common->Printf("ERROR: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Com_Printf("ERROR: next block doesn't have proper back link\n");
+			common->Printf("ERROR: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Com_Printf("ERROR: two consecutive free blocks\n");
+			common->Printf("ERROR: two consecutive free blocks\n");
 		}
 	}
 
@@ -1147,26 +1147,26 @@ void Com_Meminfo_f(void)
 		}
 	}
 
-	Com_Printf("%8i bytes total hunk\n", s_hunkTotal);
-	Com_Printf("%8i bytes total zone\n", s_zoneTotal);
-	Com_Printf("\n");
-	Com_Printf("%8i low mark\n", hunk_low.mark);
-	Com_Printf("%8i low permanent\n", hunk_low.permanent);
+	common->Printf("%8i bytes total hunk\n", s_hunkTotal);
+	common->Printf("%8i bytes total zone\n", s_zoneTotal);
+	common->Printf("\n");
+	common->Printf("%8i low mark\n", hunk_low.mark);
+	common->Printf("%8i low permanent\n", hunk_low.permanent);
 	if (hunk_low.temp != hunk_low.permanent)
 	{
-		Com_Printf("%8i low temp\n", hunk_low.temp);
+		common->Printf("%8i low temp\n", hunk_low.temp);
 	}
-	Com_Printf("%8i low tempHighwater\n", hunk_low.tempHighwater);
-	Com_Printf("\n");
-	Com_Printf("%8i high mark\n", hunk_high.mark);
-	Com_Printf("%8i high permanent\n", hunk_high.permanent);
+	common->Printf("%8i low tempHighwater\n", hunk_low.tempHighwater);
+	common->Printf("\n");
+	common->Printf("%8i high mark\n", hunk_high.mark);
+	common->Printf("%8i high permanent\n", hunk_high.permanent);
 	if (hunk_high.temp != hunk_high.permanent)
 	{
-		Com_Printf("%8i high temp\n", hunk_high.temp);
+		common->Printf("%8i high temp\n", hunk_high.temp);
 	}
-	Com_Printf("%8i high tempHighwater\n", hunk_high.tempHighwater);
-	Com_Printf("\n");
-	Com_Printf("%8i total hunk in use\n", hunk_low.permanent + hunk_high.permanent);
+	common->Printf("%8i high tempHighwater\n", hunk_high.tempHighwater);
+	common->Printf("\n");
+	common->Printf("%8i total hunk in use\n", hunk_low.permanent + hunk_high.permanent);
 	unused = 0;
 	if (hunk_low.tempHighwater > hunk_low.permanent)
 	{
@@ -1176,13 +1176,13 @@ void Com_Meminfo_f(void)
 	{
 		unused += hunk_high.tempHighwater - hunk_high.permanent;
 	}
-	Com_Printf("%8i unused highwater\n", unused);
-	Com_Printf("\n");
-	Com_Printf("%8i bytes in %i zone blocks\n", zoneBytes, zoneBlocks);
-	Com_Printf("        %8i bytes in dynamic botlib\n", botlibBytes);
-	Com_Printf("        %8i bytes in dynamic renderer\n", rendererBytes);
-	Com_Printf("        %8i bytes in dynamic other\n", zoneBytes - (botlibBytes + rendererBytes));
-	Com_Printf("        %8i bytes in small Zone memory\n", smallZoneBytes);
+	common->Printf("%8i unused highwater\n", unused);
+	common->Printf("\n");
+	common->Printf("%8i bytes in %i zone blocks\n", zoneBytes, zoneBlocks);
+	common->Printf("        %8i bytes in dynamic botlib\n", botlibBytes);
+	common->Printf("        %8i bytes in dynamic renderer\n", rendererBytes);
+	common->Printf("        %8i bytes in dynamic other\n", zoneBytes - (botlibBytes + rendererBytes));
+	common->Printf("        %8i bytes in small Zone memory\n", smallZoneBytes);
 }
 
 /*
@@ -1236,7 +1236,7 @@ void Com_TouchMemory(void)
 
 	end = Sys_Milliseconds();
 
-	Com_Printf("Com_TouchMemory: %i msec\n", end - start);
+	common->Printf("Com_TouchMemory: %i msec\n", end - start);
 }
 
 
@@ -1442,7 +1442,7 @@ void Com_InitHunkMemory(void)
 	if (cv->integer < nMinAlloc)
 	{
 		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf(pMsg, nMinAlloc, s_hunkTotal / (1024 * 1024));
+		common->Printf(pMsg, nMinAlloc, s_hunkTotal / (1024 * 1024));
 	}
 	else
 	{
@@ -1560,7 +1560,7 @@ void Hunk_Clear(void)
 	hunk_temp = &hunk_high;
 
 	Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
-	Com_Printf("Hunk_Clear: reset the hunk ok\n");
+	common->Printf("Hunk_Clear: reset the hunk ok\n");
 	VM_Clear();	// (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -1762,7 +1762,7 @@ void Hunk_FreeTempMemory(void* buf)
 		}
 		else
 		{
-			Com_Printf("Hunk_FreeTempMemory: not the final block\n");
+			common->Printf("Hunk_FreeTempMemory: not the final block\n");
 		}
 	}
 	else
@@ -1773,7 +1773,7 @@ void Hunk_FreeTempMemory(void* buf)
 		}
 		else
 		{
-			Com_Printf("Hunk_FreeTempMemory: not the final block\n");
+			common->Printf("Hunk_FreeTempMemory: not the final block\n");
 		}
 	}
 }
@@ -1885,13 +1885,13 @@ void Com_InitJournaling(void)
 			_fcreator = 'WlfM';
 		}
 #endif
-		Com_Printf("Journaling events\n");
+		common->Printf("Journaling events\n");
 		com_journalFile = FS_FOpenFileWrite("journal.dat");
 		com_journalDataFile = FS_FOpenFileWrite("journaldata.dat");
 	}
 	else if (com_journal->integer == 2)
 	{
-		Com_Printf("Replaying journaled events\n");
+		common->Printf("Replaying journaled events\n");
 		FS_FOpenFileRead("journal.dat", &com_journalFile, true);
 		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, true);
 	}
@@ -1901,7 +1901,7 @@ void Com_InitJournaling(void)
 		Cvar_Set("com_journal", "0");
 		com_journalFile = 0;
 		com_journalDataFile = 0;
-		Com_Printf("Couldn't open journal files\n");
+		common->Printf("Couldn't open journal files\n");
 	}
 }
 
@@ -1997,7 +1997,7 @@ void Com_PushEvent(sysEvent_t* event)
 		if (!printedWarning)
 		{
 			printedWarning = true;
-			Com_Printf("WARNING: Com_PushEvent overflow\n");
+			common->Printf("WARNING: Com_PushEvent overflow\n");
 		}
 
 		if (ev->evPtr)
@@ -2054,7 +2054,7 @@ void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
 		msec = t2 - t1;
 		if (com_speeds->integer == 3)
 		{
-			Com_Printf("SV_PacketEvent time: %i\n", msec);
+			common->Printf("SV_PacketEvent time: %i\n", msec);
 		}
 	}
 }
@@ -2148,7 +2148,7 @@ int Com_EventLoop(void)
 			// enough to hold fragment reassembly
 			if ((unsigned)buf.cursize > buf.maxsize)
 			{
-				Com_Printf("Com_EventLoop: oversize packet\n");
+				common->Printf("Com_EventLoop: oversize packet\n");
 				continue;
 			}
 			memcpy(buf._data, (byte*)((netadr_t*)ev.evPtr + 1), buf.cursize);
@@ -2237,7 +2237,7 @@ static void Com_Freeze_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("freeze <seconds>\n");
+		common->Printf("freeze <seconds>\n");
 		return;
 	}
 	s = String::Atof(Cmd_Argv(1));
@@ -2380,7 +2380,7 @@ static void Com_WriteCDKey(const char* filename, const char* ikey)
 	f = FS_SV_FOpenFileWrite(fbuffer);
 	if (!f)
 	{
-		Com_Printf("Couldn't write %s.\n", filename);
+		common->Printf("Couldn't write %s.\n", filename);
 		return;
 	}
 
@@ -2407,23 +2407,23 @@ void Com_SetRecommended()
 
 	if (goodVideo && goodCPU)
 	{
-		Com_Printf("Found high quality video and CPU\n");
+		common->Printf("Found high quality video and CPU\n");
 		Cbuf_AddText("exec highVidhighCPU.cfg\n");
 	}
 	else if (goodVideo && !goodCPU)
 	{
 		Cbuf_AddText("exec highVidlowCPU.cfg\n");
-		Com_Printf("Found high quality video and low quality CPU\n");
+		common->Printf("Found high quality video and low quality CPU\n");
 	}
 	else if (!goodVideo && goodCPU)
 	{
 		Cbuf_AddText("exec lowVidhighCPU.cfg\n");
-		Com_Printf("Found low quality video and high quality CPU\n");
+		common->Printf("Found low quality video and high quality CPU\n");
 	}
 	else
 	{
 		Cbuf_AddText("exec lowVidlowCPU.cfg\n");
-		Com_Printf("Found low quality video and low quality CPU\n");
+		common->Printf("Found low quality video and low quality CPU\n");
 	}
 
 // (SA) set the cvar so the menu will reflect this on first run
@@ -2443,7 +2443,7 @@ void Com_Init(char* commandLine)
 		// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
 		volatile qboolean safeMode = true;
 
-		Com_Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
+		common->Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
 
 		if (setjmp(abortframe))
 		{
@@ -2619,7 +2619,7 @@ void Com_Init(char* commandLine)
 
 		com_fullyInitialized = true;
 		fs_ProtectKeyFile = true;
-		Com_Printf("--- Common Initialization Complete ---\n");
+		common->Printf("--- Common Initialization Complete ---\n");
 	}
 	catch (Exception& e)
 	{
@@ -2643,7 +2643,7 @@ void Com_WriteConfigToFile(const char* filename)
 	f = FS_FOpenFileWrite(filename);
 	if (!f)
 	{
-		Com_Printf("Couldn't write %s.\n", filename);
+		common->Printf("Couldn't write %s.\n", filename);
 		return;
 	}
 
@@ -2709,13 +2709,13 @@ void Com_WriteConfig_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("Usage: writeconfig <filename>\n");
+		common->Printf("Usage: writeconfig <filename>\n");
 		return;
 	}
 
 	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	String::DefaultExtension(filename, sizeof(filename), ".cfg");
-	Com_Printf("Writing %s.\n", filename);
+	common->Printf("Writing %s.\n", filename);
 	Com_WriteConfigToFile(filename);
 }
 
@@ -2755,7 +2755,7 @@ int Com_ModifyMsec(int msec)
 		// of time.
 		if (msec > 500 && msec < 500000)
 		{
-			Com_Printf("Hitch warning: %i msec frame time\n", msec);
+			common->Printf("Hitch warning: %i msec frame time\n", msec);
 		}
 		clampTime = 5000;
 	}
@@ -2947,7 +2947,7 @@ void Com_Frame(void)
 			sv -= time_game;
 			cl -= time_frontend + time_backend;
 
-			Com_Printf("frame:%i all:%3i sv:%3i ev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
+			common->Printf("frame:%i all:%3i sv:%3i ev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
 				com_frameNumber, all, sv, ev, cl, time_game, time_frontend, time_backend);
 		}
 
@@ -2957,7 +2957,7 @@ void Com_Frame(void)
 		if (com_showtrace->integer)
 		{
 
-			Com_Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
+			common->Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
 				c_brush_traces, c_patch_traces, c_pointcontents);
 			c_traces = 0;
 			c_brush_traces = 0;

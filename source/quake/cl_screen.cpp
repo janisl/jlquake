@@ -53,7 +53,7 @@ draw
 CenterPrint ()
 SlowPrint ()
 Screen_Update ();
-Con_Printf ();
+common->Printf ();
 
 net
 turn off messages option
@@ -403,7 +403,7 @@ static void R_TimeRefresh_f(void)
 
 	stop = Sys_DoubleTime();
 	time = stop - start;
-	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
+	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
 }
 
 //============================================================================
@@ -719,7 +719,7 @@ void SCR_UpdateScreen(void)
 		if (realtime * 1000 - cls.disable_screen > 60000)
 		{
 			cls.disable_screen = 0;
-			Con_Printf("load failed.\n");
+			common->Printf("load failed.\n");
 		}
 		else
 		{

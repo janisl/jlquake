@@ -264,7 +264,7 @@ void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 	if (current != fpu_word)
 	{
 #if 0
-		Com_Printf("FPU Control 0x%x (was 0x%x)\n", fpu_word, current);
+		common->Printf("FPU Control 0x%x (was 0x%x)\n", fpu_word, current);
 		_FPU_SETCW(fpu_word);
 		_FPU_GETCW(current);
 		assert(fpu_word == current);

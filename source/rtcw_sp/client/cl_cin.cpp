@@ -84,7 +84,7 @@ e_status CIN_StopCinematic(int handle)
 		return FMV_EOF;
 	}
 
-	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[handle]->Cin->Name);
+	common->DPrintf("trFMV::stop(), closing %s\n", cinTable[handle]->Cin->Name);
 
 	if (!cinTable[handle]->Cin->OutputFrame)
 	{
@@ -99,7 +99,7 @@ e_status CIN_StopCinematic(int handle)
 		}
 	}
 	cinTable[handle]->Status = FMV_EOF;
-	Com_DPrintf("finished cinematic\n");
+	common->DPrintf("finished cinematic\n");
 	cinTable[handle]->Status = FMV_IDLE;
 
 	if (cinTable[handle]->AlterGameState)
@@ -124,7 +124,7 @@ void CIN_StartedPlayback()
 
 	Con_Close();
 
-	Com_DPrintf("Setting rawend to %i\n", s_soundtime);
+	common->DPrintf("Setting rawend to %i\n", s_soundtime);
 	s_rawend[CIN_STREAM] = s_soundtime;
 }
 
@@ -203,7 +203,7 @@ void CL_PlayCinematic_f(void)
 	qboolean holdatend;
 	int bits = CIN_system;
 
-	Com_DPrintf("CL_PlayCinematic_f\n");
+	common->DPrintf("CL_PlayCinematic_f\n");
 	if (CIN_IsInCinematicState())
 	{
 		SCR_StopCinematic();

@@ -133,7 +133,7 @@ bool SVQ2_ParseMove(client_t* cl, QMsg& net_message, bool& move_issued)
 
 	if (calculatedChecksum != checksum)
 	{
-		Com_DPrintf("Failed command checksum for %s (%d != %d)/%d\n",
+		common->DPrintf("Failed command checksum for %s (%d != %d)/%d\n",
 			cl->name, calculatedChecksum, checksum,
 			cl->netchan.incomingSequence);
 		return false;
@@ -204,7 +204,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	{
 		if (net_message.readcount > net_message.cursize)
 		{
-			Com_Printf("SV_ReadClientMessage: badread\n");
+			common->Printf("SV_ReadClientMessage: badread\n");
 			SVQ2_DropClient(cl);
 			return;
 		}
@@ -218,7 +218,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 		switch (c)
 		{
 		default:
-			Com_Printf("SV_ReadClientMessage: unknown command char\n");
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
 			SVQ2_DropClient(cl);
 			return;
 		case q2clc_nop:

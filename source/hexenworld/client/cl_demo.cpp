@@ -58,7 +58,7 @@ void CL_WriteDemoCmd(hwusercmd_t* pcmd)
 	byte c;
 	hwusercmd_t cmd;
 
-//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+//common->Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	fl = LittleFloat((float)realtime);
 	FS_Write(&fl, sizeof(fl), clc.demofile);
@@ -99,7 +99,7 @@ void CL_WriteDemoMessage(QMsg* msg)
 	float fl;
 	byte c;
 
-//Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
+//common->Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
 
 	if (!clc.demorecording)
 	{
@@ -225,7 +225,7 @@ qboolean CL_GetDemoMessage(void)
 		// get the next message
 		FS_Read(&net_message.cursize, 4, clc.demofile);
 		net_message.cursize = LittleLong(net_message.cursize);
-		//Con_Printf("read: %ld bytes\n", net_message.cursize);
+		//common->Printf("read: %ld bytes\n", net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN_HW)
 		{
 			Sys_Error("Demo message > MAX_MSGLEN_HW");
@@ -239,7 +239,7 @@ qboolean CL_GetDemoMessage(void)
 		break;
 
 	default:
-		Con_Printf("Corrupted demo.\n");
+		common->Printf("Corrupted demo.\n");
 		CL_StopPlayback();
 		return 0;
 	}
@@ -283,7 +283,7 @@ void CL_Stop_f(void)
 {
 	if (!clc.demorecording)
 	{
-		Con_Printf("Not recording a demo.\n");
+		common->Printf("Not recording a demo.\n");
 		return;
 	}
 
@@ -298,7 +298,7 @@ void CL_Stop_f(void)
 	FS_FCloseFile(clc.demofile);
 	clc.demofile = 0;
 	clc.demorecording = false;
-	Con_Printf("Completed demo\n");
+	common->Printf("Completed demo\n");
 }
 
 /*
@@ -316,7 +316,7 @@ void CL_Record_f(void)
 	c = Cmd_Argc();
 	if (c != 3)
 	{
-		Con_Printf("record <demoname> <server>\n");
+		common->Printf("record <demoname> <server>\n");
 		return;
 	}
 
@@ -335,7 +335,7 @@ void CL_Record_f(void)
 	clc.demofile = FS_FOpenFileWrite(name);
 	if (!clc.demofile)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
@@ -344,7 +344,7 @@ void CL_Record_f(void)
 		CL_Disconnect();
 	}
 
-	Con_Printf("recording to %s.\n", name);
+	common->Printf("recording to %s.\n", name);
 	clc.demorecording = true;
 
 //
@@ -368,13 +368,13 @@ void CL_ReRecord_f(void)
 	c = Cmd_Argc();
 	if (c != 2)
 	{
-		Con_Printf("rerecord <demoname>\n");
+		common->Printf("rerecord <demoname>\n");
 		return;
 	}
 
 	if (!*cls.servername)
 	{
-		Con_Printf("No server to reconnect to...\n");
+		common->Printf("No server to reconnect to...\n");
 		return;
 	}
 
@@ -393,11 +393,11 @@ void CL_ReRecord_f(void)
 	clc.demofile = FS_FOpenFileWrite(name);
 	if (!clc.demofile)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
-	Con_Printf("recording to %s.\n", name);
+	common->Printf("recording to %s.\n", name);
 	clc.demorecording = true;
 
 	CL_Disconnect();
@@ -418,7 +418,7 @@ void CL_PlayDemo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("play <demoname> : plays a demo\n");
+		common->Printf("play <demoname> : plays a demo\n");
 		return;
 	}
 
@@ -433,11 +433,11 @@ void CL_PlayDemo_f(void)
 	String::Cpy(name, Cmd_Argv(1));
 	String::DefaultExtension(name, sizeof(name), ".qwd");
 
-	Con_Printf("Playing demo from %s.\n", name);
+	common->Printf("Playing demo from %s.\n", name);
 	FS_FOpenFileRead(name, &clc.demofile, true);
 	if (!clc.demofile)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		cls.qh_demonum = -1;		// stop demo loop
 		return;
 	}
@@ -468,7 +468,7 @@ void CL_FinishTimeDemo(void)
 	{
 		time = 1;
 	}
-	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
+	common->Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
 }
 
 /*
@@ -482,7 +482,7 @@ void CL_TimeDemo_f(void)
 {
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("timedemo <demoname> : gets demo speeds\n");
+		common->Printf("timedemo <demoname> : gets demo speeds\n");
 		return;
 	}
 

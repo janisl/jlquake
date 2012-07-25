@@ -152,7 +152,7 @@ int CL_GetMessage(void)
 		// discard nop keepalive message
 		if (net_message.cursize == 1 && net_message._data[0] == h2svc_nop)
 		{
-			Con_Printf("<-- server to client keepalive\n");
+			common->Printf("<-- server to client keepalive\n");
 		}
 		else
 		{
@@ -185,7 +185,7 @@ void CL_Stop_f(void)
 
 	if (!clc.demorecording)
 	{
-		Con_Printf("Not recording a demo.\n");
+		common->Printf("Not recording a demo.\n");
 		return;
 	}
 
@@ -202,7 +202,7 @@ void CL_Stop_f(void)
 	FS_FCloseFile(clc.demofile);
 	clc.demofile = 0;
 	clc.demorecording = false;
-	Con_Printf("Completed demo\n");
+	common->Printf("Completed demo\n");
 }
 
 /*
@@ -226,19 +226,19 @@ void CL_Record_f(void)
 	c = Cmd_Argc();
 	if (c != 2 && c != 3 && c != 4)
 	{
-		Con_Printf("record <demoname> [<map> [cd track]]\n");
+		common->Printf("record <demoname> [<map> [cd track]]\n");
 		return;
 	}
 
 	if (strstr(Cmd_Argv(1), ".."))
 	{
-		Con_Printf("Relative pathnames are not allowed.\n");
+		common->Printf("Relative pathnames are not allowed.\n");
 		return;
 	}
 
 	if (c == 2 && cls.state == CA_ACTIVE)
 	{
-		Con_Printf("Can not record - already connected to server\nClient demo recording must be started before connecting\n");
+		common->Printf("Can not record - already connected to server\nClient demo recording must be started before connecting\n");
 		return;
 	}
 
@@ -246,7 +246,7 @@ void CL_Record_f(void)
 	if (c == 4)
 	{
 		track = String::Atoi(Cmd_Argv(3));
-		Con_Printf("Forcing CD track to %i\n", cls.qh_forcetrack);
+		common->Printf("Forcing CD track to %i\n", cls.qh_forcetrack);
 	}
 	else
 	{
@@ -268,11 +268,11 @@ void CL_Record_f(void)
 //
 	String::DefaultExtension(name, sizeof(name), ".dem");
 
-	Con_Printf("recording to %s.\n", name);
+	common->Printf("recording to %s.\n", name);
 	clc.demofile = FS_FOpenFileWrite(name);
 	if (!clc.demofile)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
@@ -301,7 +301,7 @@ void CL_PlayDemo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("play <demoname> : plays a demo\n");
+		common->Printf("play <demoname> : plays a demo\n");
 		return;
 	}
 
@@ -324,11 +324,11 @@ void CL_PlayDemo_f(void)
 	}
 	String::DefaultExtension(name, sizeof(name), ".dem");
 
-	Con_Printf("Playing demo from %s.\n", name);
+	common->Printf("Playing demo from %s.\n", name);
 	FS_FOpenFileRead(name, &clc.demofile, true);
 	if (!clc.demofile)
 	{
-		Con_Printf("ERROR: couldn't open.\n");
+		common->Printf("ERROR: couldn't open.\n");
 		cls.qh_demonum = -1;		// stop demo loop
 		return;
 	}
@@ -382,7 +382,7 @@ void CL_FinishTimeDemo(void)
 	{
 		time = 1;
 	}
-	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
+	common->Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
 }
 
 /*
@@ -401,7 +401,7 @@ void CL_TimeDemo_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf("timedemo <demoname> : gets demo speeds\n");
+		common->Printf("timedemo <demoname> : gets demo speeds\n");
 		return;
 	}
 

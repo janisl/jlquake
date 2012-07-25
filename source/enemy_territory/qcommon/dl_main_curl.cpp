@@ -81,7 +81,7 @@ void DL_InitDownload()
 
 	dl_multi = curl_multi_init();
 
-	Com_Printf("Client download subsystem initialized\n");
+	common->Printf("Client download subsystem initialized\n");
 	dl_initialized = 1;
 }
 
@@ -118,13 +118,13 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 
 	if (dl_request)
 	{
-		Com_Printf("ERROR: DL_BeginDownload called with a download request already active\n"); \
+		common->Printf("ERROR: DL_BeginDownload called with a download request already active\n"); \
 		return 0;
 	}
 
 	if (!localName || !remoteName)
 	{
-		Com_DPrintf("Empty download URL or empty local file name\n");
+		common->DPrintf("Empty download URL or empty local file name\n");
 		return 0;
 	}
 
@@ -132,7 +132,7 @@ int DL_BeginDownload(const char* localName, const char* remoteName, int debug)
 	dl_file = fopen(localName, "wb+");
 	if (!dl_file)
 	{
-		Com_Printf("ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName);
+		common->Printf("ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName);
 		return 0;
 	}
 
@@ -169,7 +169,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if (!dl_request)
 	{
-		Com_DPrintf("DL_DownloadLoop: unexpected call with dl_request == NULL\n");
+		common->DPrintf("DL_DownloadLoop: unexpected call with dl_request == NULL\n");
 		return DL_DONE;
 	}
 
@@ -211,7 +211,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if (err)
 	{
-		Com_DPrintf("DL_DownloadLoop: request terminated with failure status '%s'\n", err);
+		common->DPrintf("DL_DownloadLoop: request terminated with failure status '%s'\n", err);
 		return DL_FAILED;
 	}
 

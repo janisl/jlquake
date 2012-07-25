@@ -120,7 +120,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 
 	if (strstr(filename, ".."))
 	{
-		Con_Printf("Refusing to download a path with ..\n");
+		common->Printf("Refusing to download a path with ..\n");
 		return true;
 	}
 
@@ -134,7 +134,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 	//ZOID - can't download when recording
 	if (clc.demorecording)
 	{
-		Con_Printf("Unable to download %s in record mode.\n", clc.downloadName);
+		common->Printf("Unable to download %s in record mode.\n", clc.downloadName);
 		return true;
 	}
 	//ZOID - can't download when playback
@@ -144,7 +144,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 	}
 
 	String::Cpy(clc.downloadName, filename);
-	Con_Printf("Downloading %s...\n", clc.downloadName);
+	common->Printf("Downloading %s...\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
@@ -186,7 +186,7 @@ void Model_NextDownload(void)
 
 	if (clc.downloadNumber == 0)
 	{
-		Con_Printf("Checking models...\n");
+		common->Printf("Checking models...\n");
 		clc.downloadNumber = 1;
 	}
 
@@ -223,9 +223,9 @@ void Model_NextDownload(void)
 		}
 		if (!cl.model_draw[i])
 		{
-			Con_Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
+			common->Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
 				cl.qh_model_name[i]);
-			Con_Printf("You may need to download or purchase a %s client "
+			common->Printf("You may need to download or purchase a %s client "
 					   "pack in order to play on this server.\n\n", gamedirfile);
 			CL_Disconnect();
 			return;
@@ -257,7 +257,7 @@ void Sound_NextDownload(void)
 
 	if (clc.downloadNumber == 0)
 	{
-		Con_Printf("Checking sounds...\n");
+		common->Printf("Checking sounds...\n");
 		clc.downloadNumber = 1;
 	}
 
@@ -339,10 +339,10 @@ void CL_ParseDownload(void)
 
 	if (size == -1)
 	{
-		Con_Printf("File not found.\n");
+		common->Printf("File not found.\n");
 		if (clc.download)
 		{
-			Con_Printf("cls.download shouldn't have been set\n");
+			common->Printf("cls.download shouldn't have been set\n");
 			FS_FCloseFile(clc.download);
 			clc.download = 0;
 		}
@@ -358,7 +358,7 @@ void CL_ParseDownload(void)
 		if (!clc.download)
 		{
 			net_message.readcount += size;
-			Con_Printf("Failed to open %s\n", clc.downloadTempName);
+			common->Printf("Failed to open %s\n", clc.downloadTempName);
 			CL_RequestNextDownload();
 			return;
 		}
@@ -372,11 +372,11 @@ void CL_ParseDownload(void)
 // change display routines by zoid
 		// request next block
 #if 0
-		Con_Printf(".");
+		common->Printf(".");
 		if (10 * (percent / 10) != cls.downloadpercent)
 		{
 			cls.downloadpercent = 10 * (percent / 10);
-			Con_Printf("%i%%", cls.downloadpercent);
+			common->Printf("%i%%", cls.downloadpercent);
 		}
 #endif
 		clc.downloadPercent = percent;
@@ -387,7 +387,7 @@ void CL_ParseDownload(void)
 	else
 	{
 #if 0
-		Con_Printf("100%%\n");
+		common->Printf("100%%\n");
 #endif
 
 		FS_FCloseFile(clc.download);
@@ -427,7 +427,7 @@ void CL_ParseServerData(void)
 	extern char gamedirfile[MAX_OSPATH];
 	int protover;
 
-	Con_DPrintf("Serverdata packet received.\n");
+	common->DPrintf("Serverdata packet received.\n");
 //
 // wipe the clientActive_t struct
 //
@@ -509,8 +509,8 @@ void CL_ParseServerData(void)
 	}
 
 	// seperate the printfs so the server message can have a color
-	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-	Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
 
 	// ask for the sound list next
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
@@ -749,7 +749,7 @@ void CL_ParseClientdata(void)
 
 	if (latency < 0 || latency > 1.0)
 	{
-//		Con_Printf ("Odd latency: %5.2f\n", latency);
+//		common->Printf ("Odd latency: %5.2f\n", latency);
 	}
 	else
 	{
@@ -887,11 +887,11 @@ void CL_IndexedPrint(void)
 	{
 		if (i == PRINT_CHAT)
 		{
-			Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &pr_global_strings[pr_string_index[index - 1]]);
+			common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &pr_global_strings[pr_string_index[index - 1]]);
 		}
 		else
 		{
-			Con_Printf("%s",&pr_global_strings[pr_string_index[index - 1]]);
+			common->Printf("%s",&pr_global_strings[pr_string_index[index - 1]]);
 		}
 	}
 }
@@ -910,11 +910,11 @@ void CL_NamePrint(void)
 	{
 		if (i == PRINT_CHAT)
 		{
-			Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &cl.h2_players[index].name);
+			common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &cl.h2_players[index].name);
 		}
 		else
 		{
-			Con_Printf("%s",&cl.h2_players[index].name);
+			common->Printf("%s",&cl.h2_players[index].name);
 		}
 	}
 }
@@ -942,7 +942,7 @@ static void CL_ParsePrint()
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
+		common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
 	}
 	else if (i >= PRINT_SOUND)
 	{
@@ -953,15 +953,15 @@ static void CL_ParsePrint()
 		char temp[100];
 		sprintf(temp, "taunt/taunt%.3d.wav", i - PRINT_SOUND + 1);
 		S_StartLocalSound(temp);
-		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
+		common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt);
 	}
 	else
 	{
-		Con_Printf("%s", txt);
+		common->Printf("%s", txt);
 	}
 }
 
-#define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
+#define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
 =====================
 CL_ParseServerMessage
@@ -997,11 +997,11 @@ void CL_ParseServerMessage(void)
 //
 	if (cl_shownet->value == 1)
 	{
-		Con_Printf("%i ",net_message.cursize);
+		common->Printf("%i ",net_message.cursize);
 	}
 	else if (cl_shownet->value == 2)
 	{
-		Con_Printf("------------------\n");
+		common->Printf("------------------\n");
 	}
 
 
@@ -1037,7 +1037,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_nop:
-//			Con_Printf ("h2svc_nop\n");
+//			common->Printf ("h2svc_nop\n");
 			break;
 
 		case h2svc_disconnect:
@@ -1054,7 +1054,7 @@ void CL_ParseServerMessage(void)
 
 		case h2svc_stufftext:
 			s = const_cast<char*>(net_message.ReadString2());
-			Con_DPrintf("stufftext: %s\n", s);
+			common->DPrintf("stufftext: %s\n", s);
 			Cbuf_AddText(s);
 			break;
 
@@ -1444,7 +1444,7 @@ void CL_ParseServerMessage(void)
 //					cl.h2_v.weapon = net_message.ReadByte();
 			if (sc1 & SC1_TELEPORT_TIME)
 			{
-//				Con_Printf("Teleport_time>time, got bit\n");
+//				common->Printf("Teleport_time>time, got bit\n");
 				cl.h2_v.teleport_time = realtime + 2;	//can't airmove for 2 seconds
 			}
 

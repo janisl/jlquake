@@ -34,7 +34,7 @@ bool Cmd_HandleNullCommand(const char* text)
 
 void Cmd_HandleUnknownCommand()
 {
-	Con_Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+	common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
 }
 
 /*
@@ -49,7 +49,7 @@ void Cmd_ForwardToServer(void)
 #ifndef DEDICATED
 	if (cls.state != CA_ACTIVE)
 	{
-		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
 	}
 

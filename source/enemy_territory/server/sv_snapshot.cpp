@@ -126,7 +126,7 @@ void SV_SendClientIdle(client_t* client)
 	// check for overflow
 	if (msg.overflowed)
 	{
-		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 
 		SVT3_DropClient(client, "Msg overflowed");
@@ -194,7 +194,7 @@ void SV_SendClientSnapshot(client_t* client)
 	// check for overflow
 	if (msg.overflowed)
 	{
-		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 
 		SVT3_DropClient(client, "Msg overflowed");
@@ -311,7 +311,7 @@ void SV_SendClientMessages(void)
 			sv.wm_ucompAve += comp_ratio;
 			sv.wm_ucompNum++;
 
-			Com_DPrintf("bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
+			common->DPrintf("bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
 				ave / (float)numclients, ave, sv.wm_bpsMaxBytes, uave, sv.wm_ubpsMaxBytes, comp_ratio, sv.wm_ucompAve / sv.wm_ucompNum);
 		}
 	}

@@ -113,23 +113,23 @@ void SV_MasterHeartbeat(void)
 		{
 			sv_master[i]->modified = false;
 
-			Com_Printf("Resolving %s\n", sv_master[i]->string);
+			common->Printf("Resolving %s\n", sv_master[i]->string);
 			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
+				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
 				Cvar_Set(sv_master[i]->name, "");
 				sv_master[i]->modified = false;
 				continue;
 			}
-			Com_Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
+			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
 				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
 				BigShort(adr[i].port));
 		}
 
 
-		Com_Printf("Sending heartbeat to %s\n", sv_master[i]->string);
+		common->Printf("Sending heartbeat to %s\n", sv_master[i]->string);
 		// this command should be changed if the server info / status format
 		// ever incompatably changes
 		NET_OutOfBandPrint(NS_SERVER, adr[i], "heartbeat %s\n", HEARTBEAT_GAME);
@@ -321,12 +321,12 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 		String::Cmp(Cmd_Argv(1), sv_rconPassword->string))
 	{
 		valid = false;
-		Com_DPrintf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+		common->DPrintf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 	else
 	{
 		valid = true;
-		Com_DPrintf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+		common->DPrintf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
 	}
 
 	// start redirecting all print outputs to the packet
@@ -335,11 +335,11 @@ void SVC_RemoteCommand(netadr_t from, QMsg* msg)
 
 	if (!String::Length(sv_rconPassword->string))
 	{
-		Com_Printf("No rconpassword set.\n");
+		common->Printf("No rconpassword set.\n");
 	}
 	else if (!valid)
 	{
-		Com_Printf("Bad rconpassword.\n");
+		common->Printf("Bad rconpassword.\n");
 	}
 	else
 	{
@@ -380,7 +380,7 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	Cmd_TokenizeString(s);
 
 	c = Cmd_Argv(0);
-	Com_DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
+	common->DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
 
 	if (!String::ICmp(c,"getstatus"))
 	{
@@ -414,7 +414,7 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	}
 	else
 	{
-		Com_DPrintf("bad connectionless packet from %s:\n%s\n",
+		common->DPrintf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(from), s);
 	}
 }
@@ -469,7 +469,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 		// port assignments
 		if (cl->netchan.remoteAddress.port != from.port)
 		{
-			Com_Printf("SV_ReadPackets: fixing up a translated port\n");
+			common->Printf("SV_ReadPackets: fixing up a translated port\n");
 			cl->netchan.remoteAddress.port = from.port;
 		}
 

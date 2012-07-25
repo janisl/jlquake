@@ -153,7 +153,7 @@ void Com_Printf(const char* fmt, ...)
 ================
 Com_DPrintf
 
-A Com_Printf that only shows up if the "developer" cvar is set
+A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
 void Com_DPrintf(const char* fmt, ...)
@@ -170,7 +170,7 @@ void Com_DPrintf(const char* fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	Com_Printf("%s", msg);
+	common->Printf("%s", msg);
 }
 
 
@@ -206,7 +206,7 @@ void Com_Error(int code, const char* fmt, ...)
 	}
 	else if (code == ERR_DROP)
 	{
-		Com_Printf("********************\nERROR: %s\n********************\n", msg);
+		common->Printf("********************\nERROR: %s\n********************\n", msg);
 		SV_Shutdown(va("Server crashed: %s\n", msg), false);
 		CL_Drop();
 		recursive = false;
@@ -341,7 +341,7 @@ Z_Stats_f
 */
 void Z_Stats_f(void)
 {
-	Com_Printf("%i bytes in %i blocks\n", z_bytes, z_count);
+	common->Printf("%i bytes in %i blocks\n", z_bytes, z_count);
 }
 
 /*
@@ -702,7 +702,7 @@ void Qcommon_Init(int argc, char** argv)
 			SCR_EndLoadingPlaque();
 		}
 
-		Com_Printf("====== Quake2 Initialized ======\n\n");
+		common->Printf("====== Quake2 Initialized ======\n\n");
 	}
 	catch (Exception& e)
 	{
@@ -768,7 +768,7 @@ void Qcommon_Frame(int msec)
 
 		if (showtrace->value)
 		{
-			Com_Printf("%4i traces  %4i points\n", c_traces, c_pointcontents);
+			common->Printf("%4i traces  %4i points\n", c_traces, c_pointcontents);
 			c_traces = 0;
 			c_brush_traces = 0;
 			c_pointcontents = 0;
@@ -816,7 +816,7 @@ void Qcommon_Frame(int msec)
 			rf = time_after_ref - time_before_ref;
 			sv -= gm;
 			cl -= rf;
-			Com_Printf("all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
+			common->Printf("all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
 				all, sv, gm, cl, rf);
 		}
 	}

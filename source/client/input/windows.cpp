@@ -1116,7 +1116,7 @@ static void IN_JoyMove()
 		// read error occurred
 		// turning off the joystick seems too harsh for 1 read error,\
 		// but what should be done?
-		// Com_Printf ("IN_ReadJoystick: no response\n");
+		// common->Printf ("IN_ReadJoystick: no response\n");
 		// joy_avail = false;
 		return;
 	}

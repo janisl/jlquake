@@ -197,7 +197,7 @@ void CL_KeepaliveMessage(void)
 	lastmsg = time;
 
 // write out a nop
-	Con_Printf("--> client to server keepalive\n");
+	common->Printf("--> client to server keepalive\n");
 
 	clc.netchan.message.WriteByte(h2clc_nop);
 	NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
@@ -230,7 +230,7 @@ void CL_ParseServerInfo(void)
 	char sound_precache[MAX_SOUNDS_H2][MAX_QPATH];
 // rjr	qhedict_t		*ent;
 
-	Con_DPrintf("Serverinfo packet received.\n");
+	common->DPrintf("Serverinfo packet received.\n");
 //
 // wipe the clientActive_t struct
 //
@@ -240,7 +240,7 @@ void CL_ParseServerInfo(void)
 	i = net_message.ReadLong();
 	if (i != PROTOCOL_VERSION)
 	{
-		Con_Printf("Server returned version %i, not %i", i, PROTOCOL_VERSION);
+		common->Printf("Server returned version %i, not %i", i, PROTOCOL_VERSION);
 		return;
 	}
 
@@ -248,7 +248,7 @@ void CL_ParseServerInfo(void)
 	cl.qh_maxclients = net_message.ReadByte();
 	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
 	{
-		Con_Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
+		common->Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
 	}
 
@@ -265,8 +265,8 @@ void CL_ParseServerInfo(void)
 	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
 
 // seperate the printfs so the server message can have a color
-	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-	Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
 
 //
 // first we go through and touch all of the precache data that still
@@ -285,7 +285,7 @@ void CL_ParseServerInfo(void)
 		}
 		if (nummodels == MAX_MODELS_H2)
 		{
-			Con_Printf("Server sent too many model precaches\n");
+			common->Printf("Server sent too many model precaches\n");
 			return;
 		}
 		String::Cpy(model_precache[nummodels], str);
@@ -302,7 +302,7 @@ void CL_ParseServerInfo(void)
 		}
 		if (numsounds == MAX_SOUNDS_H2)
 		{
-			Con_Printf("Server sent too many sound precaches\n");
+			common->Printf("Server sent too many sound precaches\n");
 			return;
 		}
 		String::Cpy(sound_precache[numsounds], str);
@@ -328,7 +328,7 @@ void CL_ParseServerInfo(void)
 
 		if (cl.model_draw[i] == 0)
 		{
-			Con_Printf("Model %s not found\n", model_precache[i]);
+			common->Printf("Model %s not found\n", model_precache[i]);
 			return;
 		}
 		CL_KeepaliveMessage();
@@ -663,15 +663,15 @@ static void CL_ParsePrint()
 	}
 	if (txt[0] == 1 || txt[0] == 2)
 	{
-		Con_Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt + 1);
+		common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt + 1);
 	}
 	else
 	{
-		Con_Printf("%s", txt);
+		common->Printf("%s", txt);
 	}
 }
 
-#define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
+#define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 
 /*
 =====================
@@ -700,12 +700,12 @@ void CL_ParseServerMessage(void)
 	}
 	if (cl_shownet->value == 1)
 	{
-		Con_Printf("Time: %2.2f Pck: %i ",host_time - lasttime,net_message.cursize);
+		common->Printf("Time: %2.2f Pck: %i ",host_time - lasttime,net_message.cursize);
 		lasttime = host_time;
 	}
 	else if (cl_shownet->value == 2)
 	{
-		Con_Printf("------------------\n");
+		common->Printf("------------------\n");
 	}
 
 	cl.qh_onground = false;	// unless the server says otherwise
@@ -727,7 +727,7 @@ void CL_ParseServerMessage(void)
 		{
 			if (cl_shownet->value == 1)
 			{
-				Con_Printf("Ent: %i (%i bytes)",EntityCount,EntitySize);
+				common->Printf("Ent: %i (%i bytes)",EntityCount,EntitySize);
 			}
 
 			SHOWNET("END OF MESSAGE");
@@ -756,7 +756,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_nop:
-//			Con_Printf ("h2svc_nop\n");
+//			common->Printf ("h2svc_nop\n");
 			break;
 
 		case h2svc_time:

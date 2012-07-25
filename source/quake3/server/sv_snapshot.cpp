@@ -124,7 +124,7 @@ void SV_SendClientSnapshot(client_t* client)
 	// check for overflow
 	if (msg.overflowed)
 	{
-		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 	}
 

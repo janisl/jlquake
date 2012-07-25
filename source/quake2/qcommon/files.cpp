@@ -69,7 +69,7 @@ void FS_SetGamedir(char* dir)
 	if (strstr(dir, "..") || strstr(dir, "/") ||
 		strstr(dir, "\\") || strstr(dir, ":"))
 	{
-		Com_Printf("Gamedir should be a single filename, not a path\n");
+		common->Printf("Gamedir should be a single filename, not a path\n");
 		return;
 	}
 

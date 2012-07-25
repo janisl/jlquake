@@ -197,7 +197,7 @@ void Model_NextDownload(void)
 
 	if (clc.downloadNumber == 0)
 	{
-		Con_Printf("Checking models...\n");
+		common->Printf("Checking models...\n");
 		clc.downloadNumber = 1;
 	}
 
@@ -236,9 +236,9 @@ void Model_NextDownload(void)
 
 		if (!cl.model_draw[i])
 		{
-			Con_Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
+			common->Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
 				cl.qh_model_name[i]);
-			Con_Printf("You may need to download or purchase a %s client "
+			common->Printf("You may need to download or purchase a %s client "
 					   "pack in order to play on this server.\n\n", gamedirfile);
 			CL_Disconnect();
 			return;
@@ -274,7 +274,7 @@ void Sound_NextDownload(void)
 
 	if (clc.downloadNumber == 0)
 	{
-		Con_Printf("Checking sounds...\n");
+		common->Printf("Checking sounds...\n");
 		clc.downloadNumber = 1;
 	}
 
@@ -334,7 +334,7 @@ void CL_RequestNextDownload(void)
 		break;
 	case dl_none:
 	default:
-		Con_DPrintf("Unknown download type.\n");
+		common->DPrintf("Unknown download type.\n");
 	}
 }
 
@@ -365,10 +365,10 @@ void CL_ParseDownload(void)
 
 	if (size == -1)
 	{
-		Con_Printf("File not found.\n");
+		common->Printf("File not found.\n");
 		if (clc.download)
 		{
-			Con_Printf("cls.download shouldn't have been set\n");
+			common->Printf("cls.download shouldn't have been set\n");
 			FS_FCloseFile(clc.download);
 			clc.download = 0;
 		}
@@ -392,7 +392,7 @@ void CL_ParseDownload(void)
 		if (!clc.download)
 		{
 			net_message.readcount += size;
-			Con_Printf("Failed to open %s\n", clc.downloadTempName);
+			common->Printf("Failed to open %s\n", clc.downloadTempName);
 			CL_RequestNextDownload();
 			return;
 		}
@@ -406,11 +406,11 @@ void CL_ParseDownload(void)
 // change display routines by zoid
 		// request next block
 #if 0
-		Con_Printf(".");
+		common->Printf(".");
 		if (10 * (percent / 10) != cls.downloadpercent)
 		{
 			cls.downloadpercent = 10 * (percent / 10);
-			Con_Printf("%i%%", cls.downloadpercent);
+			common->Printf("%i%%", cls.downloadpercent);
 		}
 #endif
 		clc.downloadPercent = percent;
@@ -424,7 +424,7 @@ void CL_ParseDownload(void)
 		char newn[MAX_OSPATH];
 
 #if 0
-		Con_Printf("100%%\n");
+		common->Printf("100%%\n");
 #endif
 
 		FS_FCloseFile(clc.download);
@@ -488,14 +488,14 @@ void CL_NextUpload(void)
 	clc.netchan.message.WriteByte(percent);
 	clc.netchan.message.WriteData(buffer, r);
 
-	Con_DPrintf("UPLOAD: %6d: %d written\n", upload_pos - r, r);
+	common->DPrintf("UPLOAD: %6d: %d written\n", upload_pos - r, r);
 
 	if (upload_pos != upload_size)
 	{
 		return;
 	}
 
-	Con_Printf("Upload completed\n");
+	common->Printf("Upload completed\n");
 
 	free(upload_data);
 	upload_data = 0;
@@ -515,7 +515,7 @@ void CL_StartUpload(byte* data, int size)
 		free(upload_data);
 	}
 
-	Con_DPrintf("Upload starting of %d...\n", size);
+	common->DPrintf("Upload starting of %d...\n", size);
 
 	upload_data = (byte*)malloc(size);
 	Com_Memcpy(upload_data, data, size);
@@ -563,7 +563,7 @@ void CL_ParseServerData(void)
 	extern char gamedirfile[MAX_OSPATH];
 	int protover;
 
-	Con_DPrintf("Serverdata packet received.\n");
+	common->DPrintf("Serverdata packet received.\n");
 //
 // wipe the clientActive_t struct
 //
@@ -631,8 +631,8 @@ void CL_ParseServerData(void)
 	movevars.entgravity         = net_message.ReadFloat();
 
 	// seperate the printfs so the server message can have a color
-	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-	Con_Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE "\n", str);
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE "\n", str);
 
 	// ask for the sound list next
 	Com_Memset(cl.qh_sound_name, 0, sizeof(cl.qh_sound_name));
@@ -851,7 +851,7 @@ void CL_ParseClientdata(void)
 
 	if (latency < 0 || latency > 1.0)
 	{
-//		Con_Printf ("Odd latency: %5.2f\n", latency);
+//		common->Printf ("Odd latency: %5.2f\n", latency);
 	}
 	else
 	{
@@ -957,7 +957,7 @@ void CL_SetInfo(void)
 	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
-	Con_DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
+	common->DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
 
 	if (key[0] != '*')
 	{
@@ -983,7 +983,7 @@ void CL_ServerInfo(void)
 	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
-	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
+	common->DPrintf("SERVERINFO: %s=%s\n", key, value);
 
 	if (key[0] != '*')
 	{
@@ -1042,15 +1042,15 @@ static void CL_ParsePrint()
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		Con_Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt);
+		common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt);
 	}
 	else
 	{
-		Con_Printf("%s", txt);
+		common->Printf("%s", txt);
 	}
 }
 
-#define SHOWNET(x) if (cl_shownet->value == 2) {Con_Printf("%3i:%s\n", net_message.readcount - 1, x); }
+#define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
 =====================
 CL_ParseServerMessage
@@ -1071,11 +1071,11 @@ void CL_ParseServerMessage(void)
 //
 	if (cl_shownet->value == 1)
 	{
-		Con_Printf("%i ",net_message.cursize);
+		common->Printf("%i ",net_message.cursize);
 	}
 	else if (cl_shownet->value == 2)
 	{
-		Con_Printf("------------------\n");
+		common->Printf("------------------\n");
 	}
 
 
@@ -1111,7 +1111,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_nop:
-//			Con_Printf ("q1svc_nop\n");
+//			common->Printf ("q1svc_nop\n");
 			break;
 
 		case q1svc_disconnect:
@@ -1136,7 +1136,7 @@ void CL_ParseServerMessage(void)
 
 		case q1svc_stufftext:
 			s = const_cast<char*>(net_message.ReadString2());
-			Con_DPrintf("stufftext: %s\n", s);
+			common->DPrintf("stufftext: %s\n", s);
 			Cbuf_AddText(s);
 			break;
 

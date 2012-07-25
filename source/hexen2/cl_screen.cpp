@@ -37,7 +37,7 @@ draw
 CenterPrint ()
 SlowPrint ()
 Screen_Update ();
-Con_Printf ();
+common->Printf ();
 
 net
 turn off messages option
@@ -434,7 +434,7 @@ static void R_TimeRefresh_f(void)
 
 	stop = Sys_DoubleTime();
 	time = stop - start;
-	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
+	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
 }
 
 //============================================================================
@@ -823,7 +823,7 @@ void Info_Plaque_Draw(const char* message)
 
 	if (lines == MAXLINES)
 	{
-		Con_DPrintf("Info_Plaque_Draw: line overflow error\n");
+		common->DPrintf("Info_Plaque_Draw: line overflow error\n");
 		lines = MAXLINES - 1;
 	}
 
@@ -1036,7 +1036,7 @@ void SB_IntermissionOverlay(void)
 		cl.qh_intermission++;
 		cl.qh_completed_time = cl.qh_serverTimeFloat;
 	}
-//	Con_Printf("Time is %10.2f\n",elapsed);
+//	common->Printf("Time is %10.2f\n",elapsed);
 }
 
 //==========================================================================
@@ -1073,7 +1073,7 @@ void SCR_UpdateScreen(void)
 			cls.disable_screen = 0;
 			total_loading_size = 0;
 			loading_stage = 0;
-			Con_Printf("load failed.\n");
+			common->Printf("load failed.\n");
 		}
 		else
 		{

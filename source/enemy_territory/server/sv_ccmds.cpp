@@ -67,7 +67,7 @@ static void SV_Map_f(void)
 	{
 		if (!String::ICmp(Cmd_Argv(0), "spdevmap") || !String::ICmp(Cmd_Argv(0), "spmap"))
 		{
-			Com_Printf("Single Player is not enabled.\n");
+			common->Printf("Single Player is not enabled.\n");
 			return;
 		}
 	}
@@ -111,7 +111,7 @@ static void SV_Map_f(void)
 			size = FS_ReadFile(savemap, NULL);
 			if (size < 0)
 			{
-				Com_Printf("Can't find savegame %s\n", savemap);
+				common->Printf("Can't find savegame %s\n", savemap);
 				return;
 			}
 
@@ -176,7 +176,7 @@ static void SV_Map_f(void)
 	String::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
 	if (FS_ReadFile(expanded, NULL) == -1)
 	{
-		Com_Printf("Can't find map %s\n", expanded);
+		common->Printf("Can't find map %s\n", expanded);
 		return;
 	}
 
@@ -266,7 +266,7 @@ static void SV_MapRestart_f(void)
 	// make sure server is running
 	if (!com_sv_running->integer)
 	{
-		Com_Printf("Server is not running.\n");
+		common->Printf("Server is not running.\n");
 		return;
 	}
 
@@ -317,7 +317,7 @@ static void SV_MapRestart_f(void)
 	{
 		char mapname[MAX_QPATH];
 
-		Com_Printf("sv_maxclients variable change -- restarting.\n");
+		common->Printf("sv_maxclients variable change -- restarting.\n");
 		// restart the map the slow way
 		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
@@ -346,7 +346,7 @@ static void SV_MapRestart_f(void)
 		size = FS_ReadFile(savemap, NULL);
 		if (size < 0)
 		{
-			Com_Printf("Can't find savegame %s\n", savemap);
+			common->Printf("Can't find savegame %s\n", savemap);
 			return;
 		}
 
@@ -430,7 +430,7 @@ static void SV_MapRestart_f(void)
 			SVT3_DropClient(client, denied);
 			if ((!SVET_GameIsSinglePlayer()) || (!isBot))
 			{
-				Com_Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
+				common->Printf("SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i);		// bk010125
 			}
 			continue;
 		}
@@ -474,7 +474,7 @@ void    SV_LoadGame_f(void)
 	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	if (!filename[0])
 	{
-		Com_Printf("You must specify a savegame to load\n");
+		common->Printf("You must specify a savegame to load\n");
 		return;
 	}
 
@@ -508,7 +508,7 @@ void    SV_LoadGame_f(void)
 	size = FS_ReadFile(filename, NULL);
 	if (size < 0)
 	{
-		Com_Printf("Can't find savegame %s\n", filename);
+		common->Printf("Can't find savegame %s\n", filename);
 		return;
 	}
 

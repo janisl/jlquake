@@ -98,7 +98,7 @@ static float V_CalcBob(void)
 // (don't count Z, or jumping messes it up)
 
 	bob = sqrt(cl.qh_velocity[0] * cl.qh_velocity[0] + cl.qh_velocity[1] * cl.qh_velocity[1]) * cl_bob->value;
-//Con_Printf ("speed: %5.1f\n", Length(cl.velocity));
+//common->Printf ("speed: %5.1f\n", Length(cl.velocity));
 	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
 	if (bob > 4)
 	{
@@ -169,7 +169,7 @@ static void V_DriftPitch(void)
 	move = host_frametime * cl.qh_pitchvel;
 	cl.qh_pitchvel += host_frametime * v_centerspeed->value;
 
-//Con_Printf ("move: %f (%f)\n", move, host_frametime);
+//common->Printf ("move: %f (%f)\n", move, host_frametime);
 
 	if (delta > 0)
 	{
@@ -406,7 +406,7 @@ static void V_CalcBlend(void)
 			continue;
 		}
 		a = a + a2 * (1 - a);
-//Con_Printf ("j:%i a:%f\n", j, a);
+//common->Printf ("j:%i a:%f\n", j, a);
 		a2 = a2 / a;
 		r = r * (1 - a2) + cl.qh_cshifts[j].destcolor[0] * a2;
 		g = g * (1 - a2) + cl.qh_cshifts[j].destcolor[1] * a2;

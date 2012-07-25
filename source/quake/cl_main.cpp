@@ -75,7 +75,7 @@ void CL_Disconnect(void)
 			CL_Stop_f();
 		}
 
-		Con_DPrintf("Sending q1clc_disconnect\n");
+		common->DPrintf("Sending q1clc_disconnect\n");
 		clc.netchan.message.Clear();
 		clc.netchan.message.WriteByte(q1clc_disconnect);
 		NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
@@ -134,7 +134,7 @@ void CL_EstablishConnection(const char* host)
 		Host_Error("CL_Connect: connect failed\n");
 	}
 	clc.netchan.lastReceived = net_time * 1000;
-	Con_DPrintf("CL_EstablishConnection: connected to %s\n", host);
+	common->DPrintf("CL_EstablishConnection: connected to %s\n", host);
 
 	cls.qh_demonum = -1;			// not in the demo loop now
 	cls.state = CA_ACTIVE;
@@ -164,7 +164,7 @@ void CL_NextDemo(void)
 		cls.qh_demonum = 0;
 		if (!cls.qh_demos[cls.qh_demonum][0])
 		{
-			Con_Printf("No demos listed with startdemos\n");
+			common->Printf("No demos listed with startdemos\n");
 			cls.qh_demonum = -1;
 			return;
 		}
@@ -187,13 +187,13 @@ void CL_PrintEntities_f(void)
 
 	for (i = 0,ent = clq1_entities; i < cl.qh_num_entities; i++,ent++)
 	{
-		Con_Printf("%3i:",i);
+		common->Printf("%3i:",i);
 		if (!ent->state.modelindex)
 		{
-			Con_Printf("EMPTY\n");
+			common->Printf("EMPTY\n");
 			continue;
 		}
-		Con_Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
+		common->Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
 			R_ModelName(cl.model_draw[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
 	}
 }
@@ -237,7 +237,7 @@ int CL_ReadFromServer(void)
 
 	if (cl_shownet->value)
 	{
-		Con_Printf("\n");
+		common->Printf("\n");
 	}
 
 //

@@ -111,14 +111,14 @@ void SV_Soundlist_f(void)
 
 	if (host_client->state != CS_CONNECTED)
 	{
-		Con_Printf("soundlist not valid -- allready spawned\n");
+		common->Printf("soundlist not valid -- allready spawned\n");
 		return;
 	}
 
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		Con_Printf("SV_Soundlist_f from different level\n");
+		common->Printf("SV_Soundlist_f from different level\n");
 		SV_New_f();
 		return;
 	}
@@ -140,14 +140,14 @@ void SV_Modellist_f(void)
 
 	if (host_client->state != CS_CONNECTED)
 	{
-		Con_Printf("modellist not valid -- allready spawned\n");
+		common->Printf("modellist not valid -- allready spawned\n");
 		return;
 	}
 
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		Con_Printf("SV_Modellist_f from different level\n");
+		common->Printf("SV_Modellist_f from different level\n");
 		SV_New_f();
 		return;
 	}
@@ -169,14 +169,14 @@ void SV_PreSpawn_f(void)
 
 	if (host_client->state != CS_CONNECTED)
 	{
-		Con_Printf("prespawn not valid -- allready spawned\n");
+		common->Printf("prespawn not valid -- allready spawned\n");
 		return;
 	}
 
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		Con_Printf("SV_PreSpawn_f from different level\n");
+		common->Printf("SV_PreSpawn_f from different level\n");
 		SV_New_f();
 		return;
 	}
@@ -219,19 +219,19 @@ void SV_Spawn_f(void)
 
 	if (host_client->state != CS_CONNECTED)
 	{
-		Con_Printf("Spawn not valid -- allready spawned\n");
+		common->Printf("Spawn not valid -- allready spawned\n");
 		return;
 	}
 
 // handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		Con_Printf("SV_Spawn_f from different level\n");
+		common->Printf("SV_Spawn_f from different level\n");
 		SV_New_f();
 		return;
 	}
 
-//	Con_Printf("SV_Spawn_f\n");
+//	common->Printf("SV_Spawn_f\n");
 	// set up the edict
 	ent = host_client->qh_edict;
 
@@ -350,7 +350,7 @@ void SV_Begin_f(void)
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		Con_Printf("SV_Begin_f from different level\n");
+		common->Printf("SV_Begin_f from different level\n");
 		SV_New_f();
 		return;
 	}
@@ -510,7 +510,7 @@ void SV_BeginDownload_f(void)
 			host_client->download = 0;
 		}
 
-		Con_Printf("Couldn't download %s to %s\n", name, host_client->name);
+		common->Printf("Couldn't download %s to %s\n", name, host_client->name);
 		host_client->netchan.message.WriteByte(hwsvc_download);
 		host_client->netchan.message.WriteShort(-1);
 		host_client->netchan.message.WriteByte(0);
@@ -518,7 +518,7 @@ void SV_BeginDownload_f(void)
 	}
 
 	SV_NextDownload_f();
-	Con_Printf("Downloading %s to %s\n", name, host_client->name);
+	common->Printf("Downloading %s to %s\n", name, host_client->name);
 }
 
 //=============================================================================
@@ -635,7 +635,7 @@ void SV_Say(qboolean team)
 		String::Cat(text, sizeof(text), "\n");
 	}
 
-	Con_Printf("%s", text);
+	common->Printf("%s", text);
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
 	{
@@ -848,14 +848,14 @@ void SV_SetInfo_f(void)
 {
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf("User info settings:\n");
+		common->Printf("User info settings:\n");
 		Info_Print(host_client->userinfo);
 		return;
 	}
 
 	if (Cmd_Argc() != 3)
 	{
-		Con_Printf("usage: setinfo [ <key> <value> ]\n");
+		common->Printf("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
 
@@ -946,7 +946,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 
 	if (!u->name)
 	{
-		Con_Printf("Bad user command: %s\n", Cmd_Argv(0));
+		common->Printf("Bad user command: %s\n", Cmd_Argv(0));
 	}
 
 	SV_EndRedirect();
@@ -1250,7 +1250,7 @@ void SV_RunCmd(hwusercmd_t* ucmd)
 
 		if (sv_player->v.health > 0 && before && !after)
 		{
-			Con_Printf("player %s got stuck in playermove!!!!\n", host_client->name);
+			common->Printf("player %s got stuck in playermove!!!!\n", host_client->name);
 		}
 	}
 #else
@@ -1384,7 +1384,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 	{
 		if (net_message.badread)
 		{
-			Con_Printf("SV_ReadClientMessage: badread\n");
+			common->Printf("SV_ReadClientMessage: badread\n");
 			SV_DropClient(cl);
 			return;
 		}
@@ -1398,7 +1398,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 		switch (c)
 		{
 		default:
-			Con_Printf("SV_ReadClientMessage: unknown command char\n");
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
 			SV_DropClient(cl);
 			return;
 
@@ -1474,7 +1474,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			c = net_message.ReadByte();
 			if (sv.h2_Effects[c].type)
 			{
-				Con_Printf("Getting effect %d\n",(int)c);
+				common->Printf("Getting effect %d\n",(int)c);
 				SV_SendEffect(&host_client->netchan.message, c);
 
 			}

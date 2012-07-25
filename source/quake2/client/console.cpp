@@ -80,7 +80,7 @@ Con_Init
 */
 void Con_Init(void)
 {
-	Com_Printf("Console initialized.\n");
+	common->Printf("Console initialized.\n");
 
 	Con_InitCommon();
 

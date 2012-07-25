@@ -50,7 +50,7 @@ void SV_Netchan_TransmitNextFragment(client_t* client)
 		if (client->q3_netchan_start_queue)
 		{
 			netchan_buffer_t* netbuf;
-			//Com_DPrintf("Netchan_TransmitNextFragment: popping a queued message for transmit\n");
+			//common->DPrintf("Netchan_TransmitNextFragment: popping a queued message for transmit\n");
 			netbuf = client->q3_netchan_start_queue;
 
 			SVT3_Netchan_Encode(client, &netbuf->msg, client->q3_lastClientCommandString);
@@ -60,12 +60,12 @@ void SV_Netchan_TransmitNextFragment(client_t* client)
 			client->q3_netchan_start_queue = netbuf->next;
 			if (!client->q3_netchan_start_queue)
 			{
-				//Com_DPrintf("Netchan_TransmitNextFragment: emptied queue\n");
+				//common->DPrintf("Netchan_TransmitNextFragment: emptied queue\n");
 				client->q3_netchan_end_queue = &client->q3_netchan_start_queue;
 			}
 			/*
 			else
-			    Com_DPrintf("Netchan_TransmitNextFragment: remaining queued message\n");
+			    common->DPrintf("Netchan_TransmitNextFragment: remaining queued message\n");
 			    */
 			Z_Free(netbuf);
 		}
@@ -90,7 +90,7 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 	if (client->netchan.unsentFragments)
 	{
 		netchan_buffer_t* netbuf;
-		//Com_DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
+		//common->DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
 		netbuf = (netchan_buffer_t*)Z_Malloc(sizeof(netchan_buffer_t));
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending
 		netbuf->msg.Copy(netbuf->msgBuffer, sizeof(netbuf->msgBuffer), *msg);

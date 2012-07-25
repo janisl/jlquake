@@ -74,7 +74,7 @@ e_status CIN_StopCinematic(int Handle)
 		return FMV_EOF;
 	}
 
-	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[Handle]->Cin->Name);
+	common->DPrintf("trFMV::stop(), closing %s\n", cinTable[Handle]->Cin->Name);
 
 	if (cinTable[Handle]->AlterGameState)
 	{
@@ -83,7 +83,7 @@ e_status CIN_StopCinematic(int Handle)
 			return cinTable[Handle]->Status;
 		}
 	}
-	Com_DPrintf("finished cinematic\n");
+	common->DPrintf("finished cinematic\n");
 
 	if (cinTable[Handle]->AlterGameState)
 	{
@@ -170,7 +170,7 @@ void CL_PlayCinematic_f(void)
 	qboolean holdatend;
 	int bits = CIN_system;
 
-	Com_DPrintf("CL_PlayCinematic_f\n");
+	common->DPrintf("CL_PlayCinematic_f\n");
 	if (cls.state == CA_CINEMATIC)
 	{
 		SCR_StopCinematic();

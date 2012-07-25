@@ -196,7 +196,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	qhedict_t* ent;
 	int i;
 
-	Con_DPrintf("SpawnServer: %s\n",server);
+	common->DPrintf("SpawnServer: %s\n",server);
 
 	SV_SaveSpawnparms();
 
@@ -355,7 +355,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
 
 	Info_SetValueForKey(svs.qh_info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
-	Con_DPrintf("Server spawned.\n");
+	common->DPrintf("Server spawned.\n");
 
 	svs.qh_changelevel_issued = false;		// now safe to issue another
 }

@@ -374,9 +374,9 @@ static qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
 				if (UDP_AddrCompare(&readaddr, &sendaddr) != 0)
 				{
 #ifdef DEBUG
-					Con_Printf("wrong reply address\n");
-					Con_Printf("Expected: %s\n", SOCK_AdrToString(sendaddr));
-					Con_Printf("Received: %s\n", SOCK_AdrToString(readaddr));
+					common->Printf("wrong reply address\n");
+					common->Printf("Expected: %s\n", SOCK_AdrToString(sendaddr));
+					common->Printf("Received: %s\n", SOCK_AdrToString(readaddr));
 					SCR_UpdateScreen();
 #endif
 					ret = 0;

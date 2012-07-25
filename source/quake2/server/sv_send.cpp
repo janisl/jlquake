@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*
 =============================================================================
 
-Com_Printf redirection
+common->Printf redirection
 
 =============================================================================
 */
@@ -74,7 +74,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	// so that entity references will be current
 	if (client->datagram.overflowed)
 	{
-		Com_Printf("WARNING: datagram overflowed for %s\n", client->name);
+		common->Printf("WARNING: datagram overflowed for %s\n", client->name);
 	}
 	else
 	{
@@ -84,7 +84,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 
 	if (msg.overflowed)
 	{	// must have room left for the packet header
-		Com_Printf("WARNING: msg overflowed for %s\n", client->name);
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 	}
 

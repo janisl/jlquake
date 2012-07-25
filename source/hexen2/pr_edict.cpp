@@ -71,7 +71,7 @@ void PR_LoadInfoStrings(void)
 	}
 
 	pr_info_string_count = count;
-	Con_Printf("Read in %d objectives\n",count);
+	common->Printf("Read in %d objectives\n",count);
 }
 #endif
 
@@ -128,5 +128,5 @@ void PR_LoadStrings(void)
 	}
 
 	pr_string_count = count;
-	Con_Printf("Read in %d string lines\n",count);
+	common->Printf("Read in %d string lines\n",count);
 }

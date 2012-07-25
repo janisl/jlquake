@@ -66,7 +66,7 @@ void PR_LoadStrings(void)
 	}
 
 	pr_string_count = count;
-	Con_Printf("Read in %d string lines\n",count);
+	common->Printf("Read in %d string lines\n",count);
 
 	puzzle_strings = (char*)COM_LoadHunkFile("puzzles.txt");
 }

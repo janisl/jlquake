@@ -911,7 +911,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return 0;
 
 	case UI_PRINT:
-		Com_Printf("%s", VMA(1));
+		common->Printf("%s", VMA(1));
 		return 0;
 
 	case UI_MILLISECONDS:
@@ -1232,7 +1232,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return Com_RealTime((qtime_t*)VMA(1));
 
 	case UI_CIN_PLAYCINEMATIC:
-		Com_DPrintf("UI_CIN_PlayCinematic\n");
+		common->DPrintf("UI_CIN_PlayCinematic\n");
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
 	case UI_CIN_STOPCINEMATIC:

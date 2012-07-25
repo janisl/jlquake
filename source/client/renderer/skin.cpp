@@ -144,7 +144,7 @@ static const char* CommaParse(char** data_p)
 
 	if (len == MAX_TOKEN_CHARS_Q3)
 	{
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS_Q3);
+//		common->Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS_Q3);
 		len = 0;
 	}
 	com_token[len] = 0;

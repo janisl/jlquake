@@ -26,7 +26,7 @@ void Cmd_ForwardToServer(void)
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
 	}
 
@@ -49,7 +49,7 @@ void Cmd_ForwardToServer_f(void)
 {
 	if (cls.state == CA_DISCONNECTED)
 	{
-		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
 		return;
 	}
 
@@ -80,7 +80,7 @@ void Cmd_HandleUnknownCommand()
 {
 	if (cl_warncmd->value || com_developer->value)
 	{
-		Con_Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+		common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
 	}
 }
 

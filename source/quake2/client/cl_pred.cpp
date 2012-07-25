@@ -55,7 +55,7 @@ void CL_CheckPredictionError(void)
 	{
 		if (cl_showmiss->value && (delta[0] || delta[1] || delta[2]))
 		{
-			Com_Printf("prediction miss on %i: %i\n", cl.q2_frame.serverframe,
+			common->Printf("prediction miss on %i: %i\n", cl.q2_frame.serverframe,
 				delta[0] + delta[1] + delta[2]);
 		}
 
@@ -254,7 +254,7 @@ void CL_PredictMovement(void)
 	{
 		if (cl_showmiss->value)
 		{
-			Com_Printf("exceeded CMD_BACKUP_Q2\n");
+			common->Printf("exceeded CMD_BACKUP_Q2\n");
 		}
 		return;
 	}

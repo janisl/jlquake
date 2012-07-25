@@ -39,9 +39,9 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 		Cvar_SetLatched("paused", "0");
 	}
 
-	Com_Printf("------- Server Initialization -------\n");
+	common->Printf("------- Server Initialization -------\n");
 
-	Com_DPrintf("SpawnServer: %s\n",server);
+	common->DPrintf("SpawnServer: %s\n",server);
 	if (sv.q2_demofile)
 	{
 		FS_FCloseFile(sv.q2_demofile);
@@ -147,7 +147,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 	Cvar_Get("mapname", "", CVAR_SERVERINFO | CVAR_INIT);
 	Cvar_Set("mapname", sv.name);
 
-	Com_Printf("-------------------------------------\n");
+	common->Printf("-------------------------------------\n");
 }
 
 /*
@@ -181,7 +181,7 @@ void SV_InitGame(void)
 
 	if (Cvar_VariableValue("coop") && Cvar_VariableValue("deathmatch"))
 	{
-		Com_Printf("Deathmatch and Coop both set, disabling Coop\n");
+		common->Printf("Deathmatch and Coop both set, disabling Coop\n");
 		Cvar_Set("coop", "0");
 	}
 

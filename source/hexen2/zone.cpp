@@ -222,11 +222,11 @@ void Z_Print(memzone_t* zone)
 {
 	memblock_t* block;
 
-	Con_Printf("zone size: %i  location: %p\n",mainzone->size,mainzone);
+	common->Printf("zone size: %i  location: %p\n",mainzone->size,mainzone);
 
 	for (block = zone->blocklist.next;; block = block->next)
 	{
-		Con_Printf("block:%p    size:%7i    tag:%3i\n",
+		common->Printf("block:%p    size:%7i    tag:%3i\n",
 			block, block->size, block->tag);
 
 		if (block->next == &zone->blocklist)
@@ -235,15 +235,15 @@ void Z_Print(memzone_t* zone)
 		}
 		if ((byte*)block + block->size != (byte*)block->next)
 		{
-			Con_Printf("ERROR: block size does not touch the next block\n");
+			common->Printf("ERROR: block size does not touch the next block\n");
 		}
 		if (block->next->prev != block)
 		{
-			Con_Printf("ERROR: next block doesn't have proper back link\n");
+			common->Printf("ERROR: next block doesn't have proper back link\n");
 		}
 		if (!block->tag && !block->next->tag)
 		{
-			Con_Printf("ERROR: two consecutive free blocks\n");
+			common->Printf("ERROR: two consecutive free blocks\n");
 		}
 	}
 }
@@ -356,12 +356,12 @@ void Hunk_Print(qboolean all, qboolean write_file)
 	starthigh = (hunk_t*)(hunk_base + hunk_size - hunk_high_used);
 	endhigh = (hunk_t*)(hunk_base + hunk_size);
 
-	Con_Printf("          :%8i total hunk size\n", hunk_size);
+	common->Printf("          :%8i total hunk size\n", hunk_size);
 	if (FH)
 	{
 		fprintf(FH,"          :%8i total hunk size\n", hunk_size);
 	}
-	Con_Printf("-------------------------\n");
+	common->Printf("-------------------------\n");
 	if (FH)
 	{
 		fprintf(FH,"-------------------------\n");
@@ -374,17 +374,17 @@ void Hunk_Print(qboolean all, qboolean write_file)
 		//
 		if (h == endlow)
 		{
-			Con_Printf("-------------------------\n");
+			common->Printf("-------------------------\n");
 			if (FH)
 			{
 				fprintf(FH,"-------------------------\n");
 			}
-			Con_Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
+			common->Printf("          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
 			if (FH)
 			{
 				fprintf(FH,"          :%8i REMAINING\n", hunk_size - hunk_low_used - hunk_high_used);
 			}
-			Con_Printf("-------------------------\n");
+			common->Printf("-------------------------\n");
 			if (FH)
 			{
 				fprintf(FH,"-------------------------\n");
@@ -422,7 +422,7 @@ void Hunk_Print(qboolean all, qboolean write_file)
 		//
 		if (all)
 		{
-			Con_Printf("%8p :%8i %8s\n",h, h->size, h->name);
+			common->Printf("%8p :%8i %8s\n",h, h->size, h->name);
 			if (FH)
 			{
 				fprintf(FH,"%8p :%8i %8s\n",h, h->size, h->name);
@@ -437,7 +437,7 @@ void Hunk_Print(qboolean all, qboolean write_file)
 		{
 			if (!all)
 			{
-				Con_Printf("          :%8i %8s (TOTAL)\n",sum, h->name);
+				common->Printf("          :%8i %8s (TOTAL)\n",sum, h->name);
 				if (FH)
 				{
 					fprintf(FH,"          :%8i %8s (TOTAL)\n",sum, h->name);
@@ -450,12 +450,12 @@ void Hunk_Print(qboolean all, qboolean write_file)
 		h = next;
 	}
 
-	Con_Printf("-------------------------\n");
+	common->Printf("-------------------------\n");
 	if (FH)
 	{
 		fprintf(FH,"-------------------------\n");
 	}
-	Con_Printf("%8i total blocks\n", totalblocks);
+	common->Printf("%8i total blocks\n", totalblocks);
 	if (FH)
 	{
 		fprintf(FH,"%8i total blocks\n", totalblocks);
@@ -584,7 +584,7 @@ void* Hunk_HighAllocName(int size, const char* name)
 
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 	{
-		Con_Printf("Hunk_HighAlloc: failed on %i bytes\n",size);
+		common->Printf("Hunk_HighAlloc: failed on %i bytes\n",size);
 		return NULL;
 	}
 
@@ -750,19 +750,19 @@ void Memory_Stats_f(void)
 		FH = fopen("stats.txt","w");
 	}
 
-	Con_Printf("Group           Count Size\n");
+	common->Printf("Group           Count Size\n");
 	if (FH)
 	{
 		fprintf(FH,"Group           Count Size\n");
 	}
-	Con_Printf("--------------- ----- --------\n");
+	common->Printf("--------------- ----- --------\n");
 	if (FH)
 	{
 		fprintf(FH,"--------------- ----- --------\n");
 	}
 	for (counter = 0; counter < NUM_GROUPS + 1; counter++)
 	{
-		Con_Printf("%-15s %-5i %i\n",MemoryGroups[counter],GroupCount[counter],GroupSum[counter]);
+		common->Printf("%-15s %-5i %i\n",MemoryGroups[counter],GroupCount[counter],GroupSum[counter]);
 		if (FH)
 		{
 			fprintf(FH,"%-15s %-5i %i\n",MemoryGroups[counter],GroupCount[counter],GroupSum[counter]);
@@ -770,12 +770,12 @@ void Memory_Stats_f(void)
 		count += GroupCount[counter];
 		sum += GroupSum[counter];
 	}
-	Con_Printf("--------------- ----- --------\n");
+	common->Printf("--------------- ----- --------\n");
 	if (FH)
 	{
 		fprintf(FH,"--------------- ----- --------\n");
 	}
-	Con_Printf("%-15s %-5i %i\n","Total",count,sum);
+	common->Printf("%-15s %-5i %i\n","Total",count,sum);
 	if (FH)
 	{
 		fprintf(FH,"%-15s %-5i %i\n","Total",count,sum);

@@ -74,7 +74,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 {
 	if (strstr(filename, ".."))
 	{
-		Com_Printf("Refusing to download a path with ..\n");
+		common->Printf("Refusing to download a path with ..\n");
 		return true;
 	}
 
@@ -91,7 +91,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 	String::StripExtension(clc.downloadName, clc.downloadTempName);
 	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	Com_Printf("Downloading %s\n", clc.downloadName);
+	common->Printf("Downloading %s\n", clc.downloadName);
 	clc.netchan.message.WriteByte(q2clc_stringcmd);
 	clc.netchan.message.WriteString2(
 		va("download %s", clc.downloadName));
@@ -114,7 +114,7 @@ void    CL_Download_f(void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Com_Printf("Usage: download <filename>\n");
+		common->Printf("Usage: download <filename>\n");
 		return;
 	}
 
@@ -122,18 +122,18 @@ void    CL_Download_f(void)
 
 	if (strstr(filename, ".."))
 	{
-		Com_Printf("Refusing to download a path with ..\n");
+		common->Printf("Refusing to download a path with ..\n");
 		return;
 	}
 
 	if (FS_ReadFile(filename, NULL) != -1)
 	{	// it exists, no need to download
-		Com_Printf("File already exists.\n");
+		common->Printf("File already exists.\n");
 		return;
 	}
 
 	String::Cpy(clc.downloadName, filename);
-	Com_Printf("Downloading %s\n", clc.downloadName);
+	common->Printf("Downloading %s\n", clc.downloadName);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
@@ -191,7 +191,7 @@ void CL_ParseDownload(void)
 	percent = net_message.ReadByte();
 	if (size == -1)
 	{
-		Com_Printf("Server does not have this file.\n");
+		common->Printf("Server does not have this file.\n");
 		if (clc.download)
 		{
 			// if here, we tried to resume a file but the server said no
@@ -211,7 +211,7 @@ void CL_ParseDownload(void)
 		if (!clc.download)
 		{
 			net_message.readcount += size;
-			Com_Printf("Failed to open %s\n", clc.downloadTempName);
+			common->Printf("Failed to open %s\n", clc.downloadTempName);
 			CL_RequestNextDownload();
 			return;
 		}
@@ -225,11 +225,11 @@ void CL_ParseDownload(void)
 		// request next block
 // change display routines by zoid
 #if 0
-		Com_Printf(".");
+		common->Printf(".");
 		if (10 * (percent / 10) != cls.downloadpercent)
 		{
 			cls.downloadpercent = 10 * (percent / 10);
-			Com_Printf("%i%%", cls.downloadpercent);
+			common->Printf("%i%%", cls.downloadpercent);
 		}
 #endif
 		clc.downloadPercent = percent;
@@ -242,7 +242,7 @@ void CL_ParseDownload(void)
 		char oldn[MAX_OSPATH];
 		char newn[MAX_OSPATH];
 
-//		Com_Printf ("100%%\n");
+//		common->Printf ("100%%\n");
 
 		FS_FCloseFile(clc.download);
 
@@ -252,7 +252,7 @@ void CL_ParseDownload(void)
 		r = rename(oldn, newn);
 		if (r)
 		{
-			Com_Printf("failed to rename.\n");
+			common->Printf("failed to rename.\n");
 		}
 
 		clc.download = 0;
@@ -284,7 +284,7 @@ void CL_ParseServerData(void)
 	char* str;
 	int i;
 
-	Com_DPrintf("Serverdata packet received.\n");
+	common->DPrintf("Serverdata packet received.\n");
 //
 // wipe the clientActive_t struct
 //
@@ -331,8 +331,8 @@ void CL_ParseServerData(void)
 	else
 	{
 		// seperate the printfs so the server message can have a color
-		Com_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-		Com_Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE "\n", str);
+		common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+		common->Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE "\n", str);
 
 		// need to prep refresh at next oportunity
 		cl.q2_refresh_prepped = false;
@@ -675,11 +675,11 @@ static void CL_ParsePrint()
 	if (i == PRINT_CHAT)
 	{
 		S_StartLocalSound("misc/talk.wav");
-		Com_Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE, txt);
+		common->Printf(S_COLOR_GREEN "%s" S_COLOR_WHITE, txt);
 	}
 	else
 	{
-		Com_Printf("%s", txt);
+		common->Printf("%s", txt);
 	}
 }
 
@@ -687,7 +687,7 @@ void SHOWNET(const char* s)
 {
 	if (cl_shownet->value >= 2)
 	{
-		Com_Printf("%3i:%s\n", net_message.readcount - 1, s);
+		common->Printf("%3i:%s\n", net_message.readcount - 1, s);
 	}
 }
 
@@ -706,11 +706,11 @@ void CL_ParseServerMessage(void)
 //
 	if (cl_shownet->value == 1)
 	{
-		Com_Printf("%i ",net_message.cursize);
+		common->Printf("%i ",net_message.cursize);
 	}
 	else if (cl_shownet->value >= 2)
 	{
-		Com_Printf("------------------\n");
+		common->Printf("------------------\n");
 	}
 
 
@@ -737,7 +737,7 @@ void CL_ParseServerMessage(void)
 		{
 			if (!svc_strings[cmd])
 			{
-				Com_Printf("%3i:BAD CMD %i\n", net_message.readcount - 1,cmd);
+				common->Printf("%3i:BAD CMD %i\n", net_message.readcount - 1,cmd);
 			}
 			else
 			{
@@ -753,7 +753,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_nop:
-//			Com_Printf ("q2svc_nop\n");
+//			common->Printf ("q2svc_nop\n");
 			break;
 
 		case q2svc_disconnect:
@@ -761,7 +761,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_reconnect:
-			Com_Printf("Server disconnected, reconnecting\n");
+			common->Printf("Server disconnected, reconnecting\n");
 			if (clc.download)
 			{
 				//ZOID, close download
@@ -782,7 +782,7 @@ void CL_ParseServerMessage(void)
 
 		case q2svc_stufftext:
 			s = const_cast<char*>(net_message.ReadString2());
-			Com_DPrintf("stufftext: %s\n", s);
+			common->DPrintf("stufftext: %s\n", s);
 			Cbuf_AddText(s);
 			break;
 

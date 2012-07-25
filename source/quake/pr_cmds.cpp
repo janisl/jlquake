@@ -65,7 +65,7 @@ void PF_sprint(void)
 
 	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
-		Con_Printf("tried to sprint to a non-client\n");
+		common->Printf("tried to sprint to a non-client\n");
 		return;
 	}
 
@@ -96,7 +96,7 @@ void PF_centerprint(void)
 
 	if (entnum < 1 || entnum > svs.qh_maxclients)
 	{
-		Con_Printf("tried to sprint to a non-client\n");
+		common->Printf("tried to sprint to a non-client\n");
 		return;
 	}
 

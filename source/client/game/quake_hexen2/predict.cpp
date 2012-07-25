@@ -235,7 +235,7 @@ void CLQW_SetUpPlayerPrediction(bool dopred)
 				!dopred)
 			{
 				VectorCopy(state->origin, pplayer->origin);
-				//Con_DPrintf ("nopredict\n");
+				//common->DPrintf ("nopredict\n");
 			}
 			else
 			{
@@ -245,7 +245,7 @@ void CLQW_SetUpPlayerPrediction(bool dopred)
 					msec = 255;
 				}
 				state->command.msec = msec;
-				//Con_DPrintf ("predict: %i\n", msec);
+				//common->DPrintf ("predict: %i\n", msec);
 
 				CLQW_PredictUsercmd(state, &exact, &state->command, false);
 				VectorCopy(exact.origin, pplayer->origin);
@@ -317,7 +317,7 @@ void CLHW_SetUpPlayerPrediction(bool dopred)
 				!dopred)
 			{
 				VectorCopy(state->origin, pplayer->origin);
-				//Con_DPrintf ("nopredict\n");
+				//common->DPrintf ("nopredict\n");
 			}
 			else
 			{
@@ -327,7 +327,7 @@ void CLHW_SetUpPlayerPrediction(bool dopred)
 					msec = 255;
 				}
 				state->command.msec = msec;
-				//Con_DPrintf ("predict: %i\n", msec);
+				//common->DPrintf ("predict: %i\n", msec);
 
 				CLHW_PredictUsercmd(state, &exact, &state->command, false);
 				VectorCopy(exact.origin, pplayer->origin);

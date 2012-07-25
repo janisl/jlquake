@@ -65,7 +65,7 @@ void Con_Init(void)
 {
 	con_debuglog = COM_CheckParm("-condebug");
 
-	Con_Printf("Console initialized.\n");
+	common->Printf("Console initialized.\n");
 
 	Con_InitCommon();
 
@@ -136,7 +136,7 @@ void Con_Printf(const char* fmt, ...)
 ================
 Con_DPrintf
 
-A Con_Printf that only shows up if the "developer" cvar is set
+A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
 void Con_DPrintf(const char* fmt, ...)
@@ -153,5 +153,5 @@ void Con_DPrintf(const char* fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	Con_Printf("%s", msg);
+	common->Printf("%s", msg);
 }

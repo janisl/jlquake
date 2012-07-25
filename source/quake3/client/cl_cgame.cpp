@@ -177,7 +177,7 @@ qboolean    CL_GetSnapshot(int snapshotNumber, q3snapshot_t* snapshot)
 	count = clSnap->numEntities;
 	if (count > MAX_ENTITIES_IN_SNAPSHOT_Q3)
 	{
-		Com_DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_Q3);
+		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_Q3);
 		count = MAX_ENTITIES_IN_SNAPSHOT_Q3;
 	}
 	snapshot->numEntities = count;
@@ -332,7 +332,7 @@ qboolean CL_GetServerCommand(int serverCommandNumber)
 	s = clc.q3_serverCommands[serverCommandNumber & (MAX_RELIABLE_COMMANDS_Q3 - 1)];
 	clc.q3_lastExecutedServerCommand = serverCommandNumber;
 
-	Com_DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
+	common->DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
 
 rescan:
 	Cmd_TokenizeString(s);
@@ -560,7 +560,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 	case CG_PRINT:
-		Com_Printf("%s", VMA(1));
+		common->Printf("%s", VMA(1));
 		return 0;
 	case CG_ERROR:
 		Com_Error(ERR_DROP, "%s", VMA(1));
@@ -890,7 +890,7 @@ void CL_InitCGame(void)
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
+	common->Printf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -991,7 +991,7 @@ void CL_AdjustTimeDelta(void)
 		cl.serverTime = cl.q3_snap.serverTime;
 		if (cl_showTimeDelta->integer)
 		{
-			Com_Printf("<RESET> ");
+			common->Printf("<RESET> ");
 		}
 	}
 	else if (deltaDelta > 100)
@@ -999,7 +999,7 @@ void CL_AdjustTimeDelta(void)
 		// fast adjust, cut the difference in half
 		if (cl_showTimeDelta->integer)
 		{
-			Com_Printf("<FAST> ");
+			common->Printf("<FAST> ");
 		}
 		cl.q3_serverTimeDelta = (cl.q3_serverTimeDelta + newDelta) >> 1;
 	}
@@ -1027,7 +1027,7 @@ void CL_AdjustTimeDelta(void)
 
 	if (cl_showTimeDelta->integer)
 	{
-		Com_Printf("%i ", cl.q3_serverTimeDelta);
+		common->Printf("%i ", cl.q3_serverTimeDelta);
 	}
 }
 

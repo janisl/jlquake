@@ -73,7 +73,7 @@ void SV_Edicts(const char* Name)
 	FH = FS_FOpenFileWrite(Name);
 	if (!FH)
 	{
-		Con_Printf("Could not open %s\n",Name);
+		common->Printf("Could not open %s\n",Name);
 		return;
 	}
 
@@ -100,7 +100,7 @@ void Sv_Edicts_f(void)
 
 	if (sv.state == SS_DEAD)
 	{
-		Con_Printf("This command can only be executed on a server running a map\n");
+		common->Printf("This command can only be executed on a server running a map\n");
 		return;
 	}
 
@@ -337,7 +337,7 @@ void SV_ConnectClient(int clientnum)
 
 	client = svs.clients + clientnum;
 
-	Con_DPrintf("Client %s connected\n", client->qh_netconnection->address);
+	common->DPrintf("Client %s connected\n", client->qh_netconnection->address);
 
 	edictnum = clientnum + 1;
 
@@ -552,7 +552,7 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 
 	if (client->h2_last_sequence != client->h2_current_sequence)
 	{	// Old sequence
-//		Con_Printf("SV: Old sequence SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
+//		common->Printf("SV: Old sequence SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->h2_current_frame++;
 		if (client->h2_current_frame > H2MAX_FRAMES + 1)
 		{
@@ -563,13 +563,13 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 			 client->h2_last_frame == 0 ||
 			 client->h2_last_frame == H2MAX_FRAMES + 1)
 	{	// Reference expired in current sequence
-//		Con_Printf("SV: Expired SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
+//		common->Printf("SV: Expired SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->h2_current_frame = 1;
 		client->h2_current_sequence++;
 	}
 	else if (client->h2_last_frame >= 1 && client->h2_last_frame <= client->h2_current_frame)
 	{	// Got a valid frame
-//		Con_Printf("SV: Valid SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
+//		common->Printf("SV: Valid SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		*reference = state->frames[client->h2_last_frame];
 
 		for (i = 0; i < reference->count; i++)
@@ -592,7 +592,7 @@ void SV_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg)
 	}
 	else
 	{	// Normal frame advance
-//		Con_Printf("SV: Normal SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
+//		common->Printf("SV: Normal SV(%d,%d) CL(%d,%d)\n",client->current_sequence, client->current_frame, client->last_sequence, client->last_frame);
 		client->h2_current_frame++;
 		if (client->h2_current_frame > H2MAX_FRAMES + 1)
 		{
@@ -1837,7 +1837,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 
 	//if (msg.cursize > 300)
 	//{
-	//	Con_DPrintf("WARNING: packet size is %i\n",msg.cursize);
+	//	common->DPrintf("WARNING: packet size is %i\n",msg.cursize);
 	//}
 
 // send the datagram
@@ -2036,7 +2036,7 @@ int SV_ModelIndex(const char* name)
 		}
 	if (i == MAX_MODELS_H2 || !sv.qh_model_precache[i])
 	{
-		Con_Printf("SV_ModelIndex: model %s not precached\n", name);
+		common->Printf("SV_ModelIndex: model %s not precached\n", name);
 		return 0;
 	}
 
@@ -2195,7 +2195,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	scr_centertime_off = 0;
 #endif
 
-	Con_DPrintf("SpawnServer: %s\n",server);
+	common->DPrintf("SpawnServer: %s\n",server);
 	if (svs.qh_changelevel_issued)
 	{
 		stats_restored = true;
@@ -2382,7 +2382,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	svs.qh_changelevel_issued = false;		// now safe to issue another
 
-	Con_DPrintf("Server spawned.\n");
+	common->DPrintf("Server spawned.\n");
 
 #ifndef DEDICATED
 	total_loading_size = 0;

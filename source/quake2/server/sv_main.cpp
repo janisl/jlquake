@@ -58,7 +58,7 @@ void SVC_Status(void)
 	NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SVQ2_StatusString());
 #if 0
 	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
-	Com_Printf(SVQ2_StatusString());
+	common->Printf(SVQ2_StatusString());
 	Com_EndRedirect();
 #endif
 }
@@ -71,7 +71,7 @@ SVC_Ack
 */
 void SVC_Ack(void)
 {
-	Com_Printf("Ping acknowledge from %s\n", SOCK_AdrToString(net_from));
+	common->Printf("Ping acknowledge from %s\n", SOCK_AdrToString(net_from));
 }
 
 /*
@@ -196,13 +196,13 @@ void SVC_DirectConnect(void)
 
 	adr = net_from;
 
-	Com_DPrintf("SVC_DirectConnect ()\n");
+	common->DPrintf("SVC_DirectConnect ()\n");
 
 	version = String::Atoi(Cmd_Argv(1));
 	if (version != Q2PROTOCOL_VERSION)
 	{
 		NET_OutOfBandPrint(NS_SERVER, adr, "print\nServer is version %4.2f.\n", VERSION);
-		Com_DPrintf("    rejected connect from version %i\n", version);
+		common->DPrintf("    rejected connect from version %i\n", version);
 		return;
 	}
 
@@ -222,7 +222,7 @@ void SVC_DirectConnect(void)
 	{
 		if (!SOCK_IsLocalAddress(adr))
 		{
-			Com_Printf("Remote connect in attract loop.  Ignored.\n");
+			common->Printf("Remote connect in attract loop.  Ignored.\n");
 			NET_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 			return;
 		}
@@ -266,10 +266,10 @@ void SVC_DirectConnect(void)
 		{
 			if (!SOCK_IsLocalAddress(adr) && (svs.q2_realtime - cl->q2_lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
-				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(adr));
+				common->DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(adr));
 				return;
 			}
-			Com_Printf("%s:reconnect\n", SOCK_AdrToString(adr));
+			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
 			newcl = cl;
 			goto gotnewcl;
 		}
@@ -288,7 +288,7 @@ void SVC_DirectConnect(void)
 	if (!newcl)
 	{
 		NET_OutOfBandPrint(NS_SERVER, adr, "print\nServer is full.\n");
-		Com_DPrintf("Rejected a connection.\n");
+		common->DPrintf("Rejected a connection.\n");
 		return;
 	}
 
@@ -314,7 +314,7 @@ gotnewcl:
 		{
 			NET_OutOfBandPrint(NS_SERVER, adr, "print\nConnection refused.\n");
 		}
-		Com_DPrintf("Game rejected a connection.\n");
+		common->DPrintf("Game rejected a connection.\n");
 		return;
 	}
 
@@ -369,18 +369,18 @@ void SVC_RemoteCommand(void)
 
 	if (i == 0)
 	{
-		Com_Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(net_from), net_message._data + 4);
+		common->Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 	else
 	{
-		Com_Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(net_from), net_message._data + 4);
+		common->Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 
 	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, (void*)SV_FlushRedirect);
 
 	if (!Rcon_Validate())
 	{
-		Com_Printf("Bad rcon_password.\n");
+		common->Printf("Bad rcon_password.\n");
 	}
 	else
 	{
@@ -421,7 +421,7 @@ void SV_ConnectionlessPacket(void)
 	Cmd_TokenizeString(s, false);
 
 	c = Cmd_Argv(0);
-	Com_DPrintf("Packet %s : %s\n", SOCK_AdrToString(net_from), c);
+	common->DPrintf("Packet %s : %s\n", SOCK_AdrToString(net_from), c);
 
 	if (!String::Cmp(c, "ping"))
 	{
@@ -453,7 +453,7 @@ void SV_ConnectionlessPacket(void)
 	}
 	else
 	{
-		Com_Printf("bad connectionless packet from %s:\n%s\n",
+		common->Printf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(net_from), s);
 	}
 }
@@ -595,7 +595,7 @@ void SV_ReadPackets(void)
 			}
 			if (cl->netchan.remoteAddress.port != net_from.port)
 			{
-				Com_Printf("SV_ReadPackets: fixing up a translated port\n");
+				common->Printf("SV_ReadPackets: fixing up a translated port\n");
 				cl->netchan.remoteAddress.port = net_from.port;
 			}
 
@@ -718,7 +718,7 @@ void SV_RunGameFrame(void)
 		{
 			if (sv_showclamp->value)
 			{
-				Com_Printf("sv highclamp\n");
+				common->Printf("sv highclamp\n");
 			}
 			svs.q2_realtime = sv.q2_time;
 		}
@@ -766,7 +766,7 @@ void SV_Frame(int msec)
 		{
 			if (sv_showclamp->value)
 			{
-				Com_Printf("sv lowclamp\n");
+				common->Printf("sv lowclamp\n");
 			}
 			svs.q2_realtime = sv.q2_time - 100;
 		}
@@ -844,7 +844,7 @@ void Master_Heartbeat(void)
 	for (i = 0; i < MAX_MASTERS; i++)
 		if (master_adr[i].port)
 		{
-			Com_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
 			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
 		}
 }
@@ -876,7 +876,7 @@ void Master_Shutdown(void)
 		{
 			if (i > 0)
 			{
-				Com_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+				common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
 			}
 			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
 		}

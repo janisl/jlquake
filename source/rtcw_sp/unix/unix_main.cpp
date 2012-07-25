@@ -336,7 +336,7 @@ void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 	if (current != fpu_word)
 	{
 #if 0
-		Com_Printf("FPU Control 0x%x (was 0x%x)\n", fpu_word, current);
+		common->Printf("FPU Control 0x%x (was 0x%x)\n", fpu_word, current);
 		_FPU_SETCW(fpu_word);
 		_FPU_GETCW(current);
 		assert(fpu_word == current);
@@ -418,13 +418,13 @@ void Sys_StartProcess(const char* cmdline, qboolean doexit)
 
 	if (doexit)
 	{
-		Com_DPrintf("Sys_StartProcess %s (delaying to final exit)\n", cmdline);
+		common->DPrintf("Sys_StartProcess %s (delaying to final exit)\n", cmdline);
 		String::NCpyZ(exit_cmdline, cmdline, MAX_CMD);
 		Cbuf_ExecuteText(EXEC_APPEND, "quit");
 		return;
 	}
 
-	Com_DPrintf("Sys_StartProcess %s\n", cmdline);
+	common->DPrintf("Sys_StartProcess %s\n", cmdline);
 	Sys_DoStartProcess(cmdline);
 }
 
@@ -440,7 +440,7 @@ void Sys_OpenURL(char* url, qboolean doexit)
 	char fn[MAX_OSPATH];
 	char cmdline[MAX_CMD];
 
-	Com_Printf("Sys_OpenURL %s\n", url);
+	common->Printf("Sys_OpenURL %s\n", url);
 	// opening an URL on *nix can mean a lot of things ..
 	// just spawn a script instead of deciding for the user :-)
 
@@ -453,27 +453,27 @@ void Sys_OpenURL(char* url, qboolean doexit)
 	String::Sprintf(fn, MAX_OSPATH, "%s/%s", pwdpath, fname);
 	if (access(fn, X_OK) == -1)
 	{
-		Com_DPrintf("%s not found\n", fn);
+		common->DPrintf("%s not found\n", fn);
 		// try in home path
 		homepath = Cvar_VariableString("fs_homepath");
 		String::Sprintf(fn, MAX_OSPATH, "%s/%s", homepath, fname);
 		if (access(fn, X_OK) == -1)
 		{
-			Com_DPrintf("%s not found\n", fn);
+			common->DPrintf("%s not found\n", fn);
 			// basepath, last resort
 			basepath = Cvar_VariableString("fs_basepath");
 			String::Sprintf(fn, MAX_OSPATH, "%s/%s", basepath, fname);
 			if (access(fn, X_OK) == -1)
 			{
-				Com_DPrintf("%s not found\n", fn);
-				Com_Printf("Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname);
+				common->DPrintf("%s not found\n", fn);
+				common->Printf("Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname);
 				// we won't quit
 				return;
 			}
 		}
 	}
 
-	Com_DPrintf("URL script: %s\n", fn);
+	common->DPrintf("URL script: %s\n", fn);
 
 	// build the command line
 	String::Sprintf(cmdline, MAX_CMD, "%s '%s' &", fn, url);

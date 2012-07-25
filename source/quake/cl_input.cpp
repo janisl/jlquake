@@ -101,7 +101,7 @@ static void CL_SendMove(in_usercmd_t* cmd)
 
 	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{
-		Con_Printf("CL_SendMove: lost server connection\n");
+		common->Printf("CL_SendMove: lost server connection\n");
 		CL_Disconnect();
 	}
 }
@@ -156,7 +156,7 @@ void CL_SendCmd(void)
 	}
 	if (!NET_CanSendMessage(cls.qh_netcon, &clc.netchan))
 	{
-		Con_DPrintf("CL_WriteToServer: can't send\n");
+		common->DPrintf("CL_WriteToServer: can't send\n");
 		return;
 	}
 

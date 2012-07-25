@@ -111,7 +111,7 @@ static void FS_Startup(const char* gameName)
 {
 	Cvar* fs;
 
-	Com_Printf("----- FS_Startup -----\n");
+	common->Printf("----- FS_Startup -----\n");
 
 	FS_SharedStartup();
 	fs_buildgame = Cvar_Get("fs_buildgame", BASEGAME, CVAR_INIT);
@@ -172,9 +172,9 @@ static void FS_Startup(const char* gameName)
 
 	fs_gamedirvar->modified = false;	// We just loaded, it's not modified
 
-	Com_Printf("----------------------\n");
+	common->Printf("----------------------\n");
 
-	Com_Printf("%d files in pk3 files\n", fs_packFiles);
+	common->Printf("%d files in pk3 files\n", fs_packFiles);
 }
 
 #if defined(DO_LIGHT_DEDICATED)
@@ -322,7 +322,7 @@ void FS_Restart(int checksumFeed)
 				if (!Com_CheckProfile(va("profiles/%s/profile.pid", cl_profileStr)))
 				{
 #ifndef _DEBUG
-					Com_Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
+					common->Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
 					// ydnar: set crashed state
 					Cbuf_AddText("set com_crashed 1\n");
 #endif
@@ -331,7 +331,7 @@ void FS_Restart(int checksumFeed)
 				// bani - write a new one
 				if (!Com_WriteProfile(va("profiles/%s/profile.pid", cl_profileStr)))
 				{
-					Com_Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
+					common->Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
 				}
 
 				// exec the config

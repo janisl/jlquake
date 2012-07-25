@@ -754,7 +754,7 @@ void SVT3_UserinfoChanged(client_t* cl)
 	val = Info_ValueForKey(cl->userinfo, "ip");
 	if (!val[0] || GGameType & GAME_ET)
 	{
-		//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
+		//common->DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
 		if (!SOCK_IsLocalAddress(cl->netchan.remoteAddress))
 		{
 			Info_SetValueForKey(cl->userinfo, "ip", SOCK_AdrToString(cl->netchan.remoteAddress), MAX_INFO_STRING_Q3);

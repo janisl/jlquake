@@ -109,7 +109,7 @@ void SV_Netchan_Transmit(client_t* client, QMsg* msg)		//int length, const byte 
 	if (client->netchan.unsentFragments)
 	{
 		netchan_buffer_t* netbuf;
-		//Com_DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
+		//common->DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
 		netbuf = (netchan_buffer_t*)Z_Malloc(sizeof(netchan_buffer_t));
 
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending

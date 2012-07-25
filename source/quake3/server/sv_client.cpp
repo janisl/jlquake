@@ -96,13 +96,13 @@ void SV_GetChallenge(netadr_t from)
 	// look up the authorize server's IP
 	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
 	{
-		Com_Printf("Resolving %s\n", Q3AUTHORIZE_SERVER_NAME);
+		common->Printf("Resolving %s\n", Q3AUTHORIZE_SERVER_NAME);
 		if (!SOCK_StringToAdr(Q3AUTHORIZE_SERVER_NAME, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
 		{
-			Com_Printf("Couldn't resolve address\n");
+			common->Printf("Couldn't resolve address\n");
 			return;
 		}
-		Com_Printf("%s resolved to %s\n", Q3AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.q3_authorizeAddress));
+		common->Printf("%s resolved to %s\n", Q3AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.q3_authorizeAddress));
 	}
 
 	// if they have been challenging for a long time and we
@@ -110,7 +110,7 @@ void SV_GetChallenge(netadr_t from)
 	// let them in, assuming the id server is down
 	if (svs.q3_time - challenge->firstTime > AUTHORIZE_TIMEOUT)
 	{
-		Com_DPrintf("authorize server timed out\n");
+		common->DPrintf("authorize server timed out\n");
 
 		challenge->pingTime = svs.q3_time;
 		NET_OutOfBandPrint(NS_SERVER, challenge->adr,
@@ -124,7 +124,7 @@ void SV_GetChallenge(netadr_t from)
 		Cvar* fs;
 		char game[1024];
 
-		Com_DPrintf("sending getIpAuthorize for %s\n", SOCK_AdrToString(from));
+		common->DPrintf("sending getIpAuthorize for %s\n", SOCK_AdrToString(from));
 
 		String::Cpy(game, BASEGAME);
 		fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
@@ -160,7 +160,7 @@ void SV_AuthorizeIpPacket(netadr_t from)
 
 	if (!SOCK_CompareBaseAdr(from, svs.q3_authorizeAddress))
 	{
-		Com_Printf("SV_AuthorizeIpPacket: not from authorize server\n");
+		common->Printf("SV_AuthorizeIpPacket: not from authorize server\n");
 		return;
 	}
 
@@ -175,7 +175,7 @@ void SV_AuthorizeIpPacket(netadr_t from)
 	}
 	if (i == MAX_CHALLENGES)
 	{
-		Com_Printf("SV_AuthorizeIpPacket: challenge not found\n");
+		common->Printf("SV_AuthorizeIpPacket: challenge not found\n");
 		return;
 	}
 
@@ -256,7 +256,7 @@ void SV_DirectConnect(netadr_t from)
 	int startIndex;
 	int count;
 
-	Com_DPrintf("SVC_DirectConnect ()\n");
+	common->DPrintf("SVC_DirectConnect ()\n");
 
 	String::NCpyZ(userinfo, Cmd_Argv(1), sizeof(userinfo));
 
@@ -264,7 +264,7 @@ void SV_DirectConnect(netadr_t from)
 	if (version != PROTOCOL_VERSION)
 	{
 		NET_OutOfBandPrint(NS_SERVER, from, "print\nServer uses protocol version %i.\n", PROTOCOL_VERSION);
-		Com_DPrintf("    rejected connect from version %i\n", version);
+		common->DPrintf("    rejected connect from version %i\n", version);
 		return;
 	}
 
@@ -285,7 +285,7 @@ void SV_DirectConnect(netadr_t from)
 			if ((svs.q3_time - cl->q3_lastConnectTime)
 				< (sv_reconnectlimit->integer * 1000))
 			{
-				Com_DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
+				common->DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
 				return;
 			}
 			break;
@@ -316,7 +316,7 @@ void SV_DirectConnect(netadr_t from)
 		Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(from), MAX_INFO_STRING_Q3);
 
 		ping = svs.q3_time - svs.challenges[i].pingTime;
-		Com_Printf("Client %i connecting with %i challenge ping\n", i, ping);
+		common->Printf("Client %i connecting with %i challenge ping\n", i, ping);
 		svs.challenges[i].connected = true;
 
 		// never reject a LAN client based on ping
@@ -326,7 +326,7 @@ void SV_DirectConnect(netadr_t from)
 			{
 				// don't let them keep trying until they get a big delay
 				NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for high pings only\n");
-				Com_DPrintf("Client %i rejected on a too low ping\n", i);
+				common->DPrintf("Client %i rejected on a too low ping\n", i);
 				// reset the address otherwise their ping will keep increasing
 				// with each connect message and they'd eventually be able to connect
 				svs.challenges[i].adr.port = 0;
@@ -335,7 +335,7 @@ void SV_DirectConnect(netadr_t from)
 			if (sv_maxPing->value && ping > sv_maxPing->value)
 			{
 				NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for low pings only\n");
-				Com_DPrintf("Client %i rejected on a too high ping\n", i);
+				common->DPrintf("Client %i rejected on a too high ping\n", i);
 				return;
 			}
 		}
@@ -360,7 +360,7 @@ void SV_DirectConnect(netadr_t from)
 			(cl->netchan.qport == qport ||
 			 from.port == cl->netchan.remoteAddress.port))
 		{
-			Com_Printf("%s:reconnect\n", SOCK_AdrToString(from));
+			common->Printf("%s:reconnect\n", SOCK_AdrToString(from));
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -434,7 +434,7 @@ void SV_DirectConnect(netadr_t from)
 		else
 		{
 			NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is full.\n");
-			Com_DPrintf("Rejected a connection.\n");
+			common->DPrintf("Rejected a connection.\n");
 			return;
 		}
 	}
@@ -472,7 +472,7 @@ gotnewcl:
 		char* denied_str = (char*)VM_ExplicitArgPtr(gvm, denied);
 
 		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", denied_str);
-		Com_DPrintf("Game rejected a connection: %s.\n", denied_str);
+		common->DPrintf("Game rejected a connection: %s.\n", denied_str);
 		return;
 	}
 
@@ -481,7 +481,7 @@ gotnewcl:
 	// send the connect packet to the client
 	NET_OutOfBandPrint(NS_SERVER, from, "connectResponse");
 
-	Com_DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
+	common->DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
 
 	newcl->state = CS_CONNECTED;
 	newcl->q3_nextSnapshotTime = svs.q3_time;
@@ -527,8 +527,8 @@ void SV_SendClientGameState(client_t* client)
 	QMsg msg;
 	byte msgBuffer[MAX_MSGLEN_Q3];
 
-	Com_DPrintf("SV_SendClientGameState() for %s\n", client->name);
-	Com_DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
+	common->DPrintf("SV_SendClientGameState() for %s\n", client->name);
+	common->DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
 	client->state = CS_PRIMED;
 	client->q3_pureAuthentic = 0;
 	client->q3_gotCP = false;
@@ -606,7 +606,7 @@ Downloads are finished
 */
 void SV_DoneDownload_f(client_t* cl)
 {
-	Com_DPrintf("clientDownload: %s Done\n", cl->name);
+	common->DPrintf("clientDownload: %s Done\n", cl->name);
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState(cl);
 }
@@ -665,7 +665,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			// since serverId is a frame count, it always goes up
 			if (String::Atoi(pArg) < sv.q3_checksumFeedServerId)
 			{
-				Com_DPrintf("ignoring outdated cp command from client %s\n", cl->name);
+				common->DPrintf("ignoring outdated cp command from client %s\n", cl->name);
 				return;
 			}
 		}
@@ -860,7 +860,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	}
 	else if (!bProcessed)
 	{
-		Com_DPrintf("client text ignored for %s: %s\n", cl->name, Cmd_Argv(0));
+		common->DPrintf("client text ignored for %s: %s\n", cl->name, Cmd_Argv(0));
 	}
 }
 
@@ -884,12 +884,12 @@ static qboolean SV_ClientCommand(client_t* cl, QMsg* msg)
 		return true;
 	}
 
-	Com_DPrintf("clientCommand: %s : %i : %s\n", cl->name, seq, s);
+	common->DPrintf("clientCommand: %s : %i : %s\n", cl->name, seq, s);
 
 	// drop the connection if we have somehow lost commands
 	if (seq > cl->q3_lastClientCommand + 1)
 	{
-		Com_Printf("Client %s lost %i clientCommands\n", cl->name,
+		common->Printf("Client %s lost %i clientCommands\n", cl->name,
 			seq - cl->q3_lastClientCommand + 1);
 		SVT3_DropClient(cl, "Lost reliable commands");
 		return false;
@@ -959,13 +959,13 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 
 	if (cmdCount < 1)
 	{
-		Com_Printf("cmdCount < 1\n");
+		common->Printf("cmdCount < 1\n");
 		return;
 	}
 
 	if (cmdCount > MAX_PACKET_USERCMDS)
 	{
-		Com_Printf("cmdCount > MAX_PACKET_USERCMDS\n");
+		common->Printf("cmdCount > MAX_PACKET_USERCMDS\n");
 		return;
 	}
 
@@ -997,7 +997,7 @@ static void SV_UserMove(client_t* cl, QMsg* msg, qboolean delta)
 		if (cl->state == CS_ACTIVE)
 		{
 			// we didn't get a cp yet, don't assume anything and just send the gamestate all over again
-			Com_DPrintf("%s: didn't get cp command, resending gamestate\n", cl->name, cl->state);
+			common->DPrintf("%s: didn't get cp command, resending gamestate\n", cl->name, cl->state);
 			SV_SendClientGameState(cl);
 		}
 		return;
@@ -1115,14 +1115,14 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	{
 		if (serverId >= sv.q3_restartedServerId && serverId < sv.q3_serverId)		// TTimo - use a comparison here to catch multiple map_restart
 		{	// they just haven't caught the map_restart yet
-			Com_DPrintf("%s : ignoring pre map_restart / outdated client message\n", cl->name);
+			common->DPrintf("%s : ignoring pre map_restart / outdated client message\n", cl->name);
 			return;
 		}
 		// if we can tell that the client has dropped the last
 		// gamestate we sent them, resend it
 		if (cl->q3_messageAcknowledge > cl->q3_gamestateMessageNum)
 		{
-			Com_DPrintf("%s : dropped gamestate, resending\n", cl->name);
+			common->DPrintf("%s : dropped gamestate, resending\n", cl->name);
 			SV_SendClientGameState(cl);
 		}
 		return;
@@ -1162,9 +1162,9 @@ void SV_ExecuteClientMessage(client_t* cl, QMsg* msg)
 	}
 	else if (c != q3clc_EOF)
 	{
-		Com_Printf("WARNING: bad command byte for client %i\n", cl - svs.clients);
+		common->Printf("WARNING: bad command byte for client %i\n", cl - svs.clients);
 	}
 //	if ( msg->readcount != msg->cursize ) {
-//		Com_Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
+//		common->Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
 //	}
 }

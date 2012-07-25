@@ -138,7 +138,7 @@ void SV_Error(const char* error, ...)
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end(argptr);
 
-	Con_Printf("SV_Error: %s\n",string);
+	common->Printf("SV_Error: %s\n",string);
 
 	SV_FinalMessage(va("server crashed: %s\n", string));
 
@@ -214,7 +214,7 @@ void SV_DropClient(client_t* drop)
 		{
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind
-			Con_Printf("Client in unspawned state had puzzle piece, forcing drop\n");
+			common->Printf("Client in unspawned state had puzzle piece, forcing drop\n");
 			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
 			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
 		}
@@ -222,11 +222,11 @@ void SV_DropClient(client_t* drop)
 
 	if (drop->qh_spectator)
 	{
-		Con_Printf("Spectator %s removed\n",drop->name);
+		common->Printf("Spectator %s removed\n",drop->name);
 	}
 	else
 	{
-		Con_Printf("Client %s removed\n",drop->name);
+		common->Printf("Client %s removed\n",drop->name);
 	}
 
 	if (drop->download)
@@ -296,10 +296,10 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 	int i;
 	char info[HWMAX_INFO_STRING];
 
-//	Con_Printf("SV_FullClientUpdate\n");
+//	common->Printf("SV_FullClientUpdate\n");
 	i = client - svs.clients;
 
-//Con_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
+//common->Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
 
 	buf->WriteByte(hwsvc_updatedminfo);
 	buf->WriteByte(i);
@@ -367,7 +367,7 @@ void SVC_Status(void)
 
 	Cmd_TokenizeString("status");
 	SV_BeginRedirect(RD_PACKET);
-	Con_Printf("%s\n", svs.qh_info);
+	common->Printf("%s\n", svs.qh_info);
 	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
 		cl = &svs.clients[i];
@@ -376,7 +376,7 @@ void SVC_Status(void)
 			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
 			ping = SV_CalcPing(cl);
-			Con_Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
+			common->Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
 				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
 		}
@@ -408,7 +408,7 @@ void SV_CheckLog(void)
 		svs.qh_logsequence++;
 		sz = &svs.qh_log[svs.qh_logsequence & 1];
 		sz->cursize = 0;
-		Con_Printf("beginning fraglog sequence %i\n", svs.qh_logsequence);
+		common->Printf("beginning fraglog sequence %i\n", svs.qh_logsequence);
 	}
 
 }
@@ -444,7 +444,7 @@ void SVC_Log(void)
 		return;
 	}
 
-	Con_DPrintf("sending log %i to %s\n", svs.qh_logsequence - 1, SOCK_AdrToString(net_from));
+	common->DPrintf("sending log %i to %s\n", svs.qh_logsequence - 1, SOCK_AdrToString(net_from));
 
 	sprintf(data, "stdlog %i\n", svs.qh_logsequence - 1);
 	String::Cat(data, sizeof(data), (char*)svs.qh_log_buf[((svs.qh_logsequence - 1) & 1)]);
@@ -499,7 +499,7 @@ void SVC_DirectConnect(void)
 			String::ICmp(spectator_password->string, "none") &&
 			String::Cmp(spectator_password->string, s))
 		{	// failed
-			Con_Printf("%s:spectator password failed\n", SOCK_AdrToString(net_from));
+			common->Printf("%s:spectator password failed\n", SOCK_AdrToString(net_from));
 			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
@@ -514,7 +514,7 @@ void SVC_DirectConnect(void)
 			String::ICmp(password->string, "none") &&
 			String::Cmp(password->string, s))
 		{
-			Con_Printf("%s:password failed\n", SOCK_AdrToString(net_from));
+			common->Printf("%s:password failed\n", SOCK_AdrToString(net_from));
 			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
 			return;
 		}
@@ -556,7 +556,7 @@ void SVC_DirectConnect(void)
 		}
 		if (SOCK_CompareAdr(adr, cl->netchan.remoteAddress))
 		{
-			Con_Printf("%s:reconnect\n", SOCK_AdrToString(adr));
+			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
 			SV_DropClient(cl);
 			break;
 		}
@@ -597,7 +597,7 @@ void SVC_DirectConnect(void)
 	if ((spectator && spectators >= (int)maxspectators->value) ||
 		(!spectator && clients >= (int)sv_maxclients->value))
 	{
-		Con_Printf("%s:full connect\n", SOCK_AdrToString(adr));
+		common->Printf("%s:full connect\n", SOCK_AdrToString(adr));
 		NET_OutOfBandPrint(NS_SERVER, adr, "%c\nserver is full\n\n", A2C_PRINT);
 		return;
 	}
@@ -614,7 +614,7 @@ void SVC_DirectConnect(void)
 	}
 	if (!newcl)
 	{
-		Con_Printf("WARNING: miscounted available clients\n");
+		common->Printf("WARNING: miscounted available clients\n");
 		return;
 	}
 
@@ -659,11 +659,11 @@ void SVC_DirectConnect(void)
 
 	if (newcl->qh_spectator)
 	{
-		Con_Printf("Spectator %s connected\n", newcl->name);
+		common->Printf("Spectator %s connected\n", newcl->name);
 	}
 	else
 	{
-		Con_DPrintf("Client %s connected\n", newcl->name);
+		common->DPrintf("Client %s connected\n", newcl->name);
 	}
 }
 
@@ -707,12 +707,12 @@ void SVC_RemoteCommand(void)
 
 	if (i == 0)
 	{
-		Con_Printf("Bad rcon from %s:\n%s\n",
+		common->Printf("Bad rcon from %s:\n%s\n",
 			SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 	if (i == 1)
 	{
-		Con_Printf("Rcon from %s:\n%s\n",
+		common->Printf("Rcon from %s:\n%s\n",
 			SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 
@@ -720,7 +720,7 @@ void SVC_RemoteCommand(void)
 
 	if (!Rcon_Validate())
 	{
-		Con_Printf("Bad rcon_password.\n");
+		common->Printf("Bad rcon_password.\n");
 	}
 	else
 	{
@@ -770,7 +770,7 @@ void SV_ConnectionlessPacket(void)
 	}
 	if (c[0] == A2A_ACK && (c[1] == 0 || c[1] == '\n'))
 	{
-		Con_Printf("A2A_ACK from %s\n", SOCK_AdrToString(net_from));
+		common->Printf("A2A_ACK from %s\n", SOCK_AdrToString(net_from));
 		return;
 	}
 	else if (c[0] == A2S_ECHO)
@@ -799,7 +799,7 @@ void SV_ConnectionlessPacket(void)
 	}
 	else
 	{
-		Con_Printf("bad connectionless packet from %s:\n%s\n",
+		common->Printf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(net_from), s);
 	}
 }
@@ -871,7 +871,7 @@ qboolean StringToFilter(char* s, ipfilter_t* f)
 	{
 		if (*s < '0' || *s > '9')
 		{
-			Con_Printf("Bad filter address: %s\n", s);
+			common->Printf("Bad filter address: %s\n", s);
 			return false;
 		}
 
@@ -918,7 +918,7 @@ void SV_AddIP_f(void)
 	{
 		if (numipfilters == MAX_IPFILTERS)
 		{
-			Con_Printf("IP filter list is full\n");
+			common->Printf("IP filter list is full\n");
 			return;
 		}
 		numipfilters++;
@@ -951,10 +951,10 @@ void SV_RemoveIP_f(void)
 			for (j = i + 1; j < numipfilters; j++)
 				ipfilters[j - 1] = ipfilters[j];
 			numipfilters--;
-			Con_Printf("Removed.\n");
+			common->Printf("Removed.\n");
 			return;
 		}
-	Con_Printf("Didn't find %s.\n", Cmd_Argv(1));
+	common->Printf("Didn't find %s.\n", Cmd_Argv(1));
 }
 
 /*
@@ -967,11 +967,11 @@ void SV_ListIP_f(void)
 	int i;
 	byte b[4];
 
-	Con_Printf("Filter list:\n");
+	common->Printf("Filter list:\n");
 	for (i = 0; i < numipfilters; i++)
 	{
 		*(unsigned*)b = ipfilters[i].compare;
-		Con_Printf("%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
+		common->Printf("%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
 	}
 }
 
@@ -989,12 +989,12 @@ void SV_WriteIP_f(void)
 
 	sprintf(name, "listip.cfg");
 
-	Con_Printf("Writing %s.\n", name);
+	common->Printf("Writing %s.\n", name);
 
 	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
-		Con_Printf("Couldn't open %s\n", name);
+		common->Printf("Couldn't open %s\n", name);
 		return;
 	}
 
@@ -1106,7 +1106,7 @@ void SV_ReadPackets(void)
 		}
 
 		// packet is not from a known client
-		//	Con_Printf ("%s:sequenced packet without connection\n"
+		//	common->Printf ("%s:sequenced packet without connection\n"
 		// ,SOCK_AdrToString(net_from));
 	}
 }
@@ -1197,7 +1197,7 @@ void SV_CheckVars(void)
 		v |= 2;
 	}
 
-	Con_Printf("Updated needpass.\n");
+	common->Printf("Updated needpass.\n");
 	if (!v)
 	{
 		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
@@ -1434,7 +1434,7 @@ void Master_Heartbeat(void)
 	for (i = 0; i < MAX_MASTERS; i++)
 		if (master_adr[i].port)
 		{
-			Con_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
 			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
 		}
 
@@ -1462,7 +1462,7 @@ void Master_Shutdown(void)
 	for (i = 0; i < MAX_MASTERS; i++)
 		if (master_adr[i].port)
 		{
-			Con_Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
 			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
 		}
 
@@ -1618,7 +1618,7 @@ void SV_InitNet(void)
 	if (p && p < COM_Argc())
 	{
 		sv_net_port = String::Atoi(COM_Argv(p + 1));
-		Con_Printf("Port: %i\n", sv_net_port);
+		common->Printf("Port: %i\n", sv_net_port);
 	}
 	NET_Init(sv_net_port);
 
@@ -1684,9 +1684,9 @@ void SV_Init(quakeparms_t* parms)
 
 		host_initialized = true;
 
-		Con_Printf("Exe: "__TIME__ " "__DATE__ "\n");
-		Con_Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
-		Con_Printf("======== HexenWorld Initialized ========\n");
+		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
+		common->Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
+		common->Printf("======== HexenWorld Initialized ========\n");
 
 // process command line arguments
 		Cbuf_AddLateCommands();

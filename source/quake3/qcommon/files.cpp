@@ -68,7 +68,7 @@ static void FS_Startup(const char* gameName)
 {
 	Cvar* fs;
 
-	Com_Printf("----- FS_Startup -----\n");
+	common->Printf("----- FS_Startup -----\n");
 
 	FS_SharedStartup();
 
@@ -129,9 +129,9 @@ static void FS_Startup(const char* gameName)
 
 	fs_gamedirvar->modified = false;	// We just loaded, it's not modified
 
-	Com_Printf("----------------------\n");
+	common->Printf("----------------------\n");
 
-	Com_Printf("%d files in pk3 files\n", fs_packFiles);
+	common->Printf("%d files in pk3 files\n", fs_packFiles);
 }
 
 /*

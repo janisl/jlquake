@@ -424,7 +424,7 @@ static int R_DlightSurfaceET(mbrush46_surface_t* surface, int dlightBits)
 		}
 	}
 
-	// Com_Printf( "Surf: 0x%08X dlightBits: 0x%08X\n", srf, dlightBits );
+	// common->Printf( "Surf: 0x%08X dlightBits: 0x%08X\n", srf, dlightBits );
 
 	// set counters
 	if (dlightBits == 0)

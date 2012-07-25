@@ -11,7 +11,7 @@
 /*
 =============================================================================
 
-Con_Printf redirection
+common->Printf redirection
 
 =============================================================================
 */
@@ -58,7 +58,7 @@ void SV_FlushRedirect(void)
 ==================
 SV_BeginRedirect
 
-  Send Con_Printf data to the remote client
+  Send common->Printf data to the remote client
   instead of the console
 ==================
 */
@@ -113,7 +113,7 @@ void Con_Printf(const char* fmt, ...)
 ================
 Con_DPrintf
 
-A Con_Printf that only shows up if the "developer" cvar is set
+A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
 void Con_DPrintf(const char* fmt, ...)
@@ -130,7 +130,7 @@ void Con_DPrintf(const char* fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	Con_Printf("%s", msg);
+	common->Printf("%s", msg);
 }
 
 /*
@@ -187,7 +187,7 @@ void SV_BroadcastPrintf(int level, const char* fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end(argptr);
 
-	Con_Printf("%s", string);	// print to the console
+	common->Printf("%s", string);	// print to the console
 
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 	{
@@ -598,7 +598,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	// for this client out to the message
 	if (client->datagram.overflowed)
 	{
-		Con_Printf("WARNING: datagram overflowed for %s\n", client->name);
+		common->Printf("WARNING: datagram overflowed for %s\n", client->name);
 	}
 	else
 	{
@@ -614,7 +614,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 
 	if (msg.overflowed)
 	{
-		Con_Printf("WARNING: msg overflowed for %s\n", client->name);
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
 		msg.Clear();
 	}
 
@@ -674,7 +674,7 @@ static void UpdatePIV(void)
 			dist = VectorNormalize(distvec);
 			if (dist > sv_namedistance->value)
 			{
-//				Con_Printf("dist %f\n", dist);
+//				common->Printf("dist %f\n", dist);
 				continue;
 			}
 
@@ -711,7 +711,7 @@ void SV_UpdateToReliableMessages(void)
 	qhedict_t* ent;
 	qboolean CheckPIV = false;
 
-//	Con_Printf("SV_UpdateToReliableMessages\n");
+//	common->Printf("SV_UpdateToReliableMessages\n");
 	if (sv.qh_time - sv.hw_next_PIV_time >= 1)
 	{
 		sv.hw_next_PIV_time = sv.qh_time + 1;
@@ -739,7 +739,7 @@ void SV_UpdateToReliableMessages(void)
 				{
 					continue;
 				}
-//Con_Printf("SV_UpdateToReliableMessages:  Updated frags for client %d to %d\n", i, j);
+//common->Printf("SV_UpdateToReliableMessages:  Updated frags for client %d to %d\n", i, j);
 				client->netchan.message.WriteByte(hwsvc_updatedminfo);
 				client->netchan.message.WriteByte(i);
 				client->netchan.message.WriteShort(host_client->qh_edict->GetFrags());
@@ -862,7 +862,7 @@ void SV_SendClientMessages(void)
 			c->netchan.message.Clear();
 			c->datagram.Clear();
 			SV_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
-			Con_Printf("WARNING: reliable overflow for %s\n",c->name);
+			common->Printf("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient(c);
 			c->qh_send_message = true;
 		}
