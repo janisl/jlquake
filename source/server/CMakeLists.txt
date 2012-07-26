@@ -26,6 +26,7 @@ add_library(server STATIC
 	et/ETEntity.cpp
 	et/ETPlayerState.cpp
 	et/game.cpp
+	hexen2/effect.cpp
 	hexen2/game.cpp
 	progsvm/common_builtins.cpp
 	progsvm/edict.cpp

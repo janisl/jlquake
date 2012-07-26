@@ -65,9 +65,5 @@ void SV_RunClients(void);
 void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server, char* startspot);
 
-void SV_ParseEffect(QMsg* sb);
 void SV_Edicts(const char* Name);
 void SaveGamestate(qboolean ClientsOnly);
-
-void SV_SaveEffects(fileHandle_t FH);
-char* SV_LoadEffects(char* Data);

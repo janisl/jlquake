@@ -410,7 +410,7 @@ void PF_setclass(void)
 
 void PF_starteffect(void)
 {
-	SV_ParseEffect(&sv.qh_reliable_datagram);
+	SVH2_ParseEffect(&sv.qh_reliable_datagram);
 }
 
 void PF_endeffect(void)

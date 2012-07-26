@@ -16,9 +16,6 @@ Cvar* sv_update_monsters;
 Cvar* sv_update_missiles;
 Cvar* sv_update_misc;
 
-Cvar* sv_ce_scale;
-Cvar* sv_ce_max_size;
-
 int sv_kingofhill;
 qboolean skip_start = false;
 int num_intro_msg = 0;

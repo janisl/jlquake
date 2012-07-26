@@ -1475,7 +1475,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 			if (sv.h2_Effects[c].type)
 			{
 				common->Printf("Getting effect %d\n",(int)c);
-				SV_SendEffect(&host_client->netchan.message, c);
+				SVHW_SendEffect(&host_client->netchan.message, c);
 
 			}
 			break;

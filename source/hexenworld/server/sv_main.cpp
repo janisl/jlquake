@@ -59,9 +59,6 @@ Cvar* easyFourth;
 Cvar* patternRunner;
 Cvar* spawn;
 
-Cvar* sv_ce_scale;
-Cvar* sv_ce_max_size;
-
 Cvar* noexit;
 
 fileHandle_t sv_logfile;

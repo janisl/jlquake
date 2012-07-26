@@ -832,7 +832,7 @@ void SaveGamestate(qboolean ClientsOnly)
 				FS_Printf(f,"m\n");
 			}
 		}
-		SV_SaveEffects(f);
+		SVH2_SaveEffects(f);
 		FS_Printf(f,"-1\n");
 		ED_WriteGlobals(f);
 	}
@@ -980,7 +980,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 			String::Cpy(Tmp, Style);
 			sv.qh_lightstyles[i] = Tmp;
 		}
-		ReadPos = SV_LoadEffects(ReadPos);
+		ReadPos = const_cast<char*>(SVH2_LoadEffects(ReadPos));
 	}
 
 	// load the edicts out of the savegame file
@@ -1694,7 +1694,7 @@ void Host_Spawn_f(void)
 	host_client->qh_message.WriteLong(*pr_globalVars.killed_monsters);
 
 
-	SV_UpdateEffects(&host_client->qh_message);
+	SVH2_UpdateEffects(&host_client->qh_message);
 
 //
 // send a fixangle

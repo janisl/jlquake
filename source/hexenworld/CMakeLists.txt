@@ -9,7 +9,6 @@ add_executable(jlhwsv
 	server/pr_cmds.cpp 
 	server/sv_init.cpp
 	server/sv_main.cpp
-	server/sv_effect.cpp
 	server/sv_ents.cpp
 	server/sv_send.cpp
 	server/sv_user.cpp

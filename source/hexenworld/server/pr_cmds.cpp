@@ -716,7 +716,7 @@ void PF_updateSiegeInfo(void)
 
 void PF_starteffect(void)
 {
-	SV_ParseEffect(NULL);
+	SVH2_ParseEffect(NULL);
 }
 
 void PF_endeffect(void)
@@ -882,31 +882,25 @@ void PF_GetString(void)
 }
 
 
-void SV_setseed(int seed);
-float SV_seedrand(void);
-float SV_GetMultiEffectId(void);
-void SV_ParseMultiEffect(QMsg* sb);
-
-
 void PF_setseed(void)
 {
-	SV_setseed(G_FLOAT(OFS_PARM0));
+	SVHW_setseed(G_FLOAT(OFS_PARM0));
 }
 
 void PF_seedrand(void)
 {
-	G_FLOAT(OFS_RETURN) = SV_seedrand();
+	G_FLOAT(OFS_RETURN) = SVHW_seedrand();
 }
 
 void PF_multieffect(void)
 {
-	SV_ParseMultiEffect(&sv.qh_reliable_datagram);
+	SVHW_ParseMultiEffect(&sv.qh_reliable_datagram);
 
 }
 
 void PF_getmeid(void)
 {
-	G_FLOAT(OFS_RETURN) = SV_GetMultiEffectId();
+	G_FLOAT(OFS_RETURN) = SVHW_GetMultiEffectId();
 }
 
 void PF_weapon_sound(void)

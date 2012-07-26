@@ -17,6 +17,19 @@
 #ifndef _SERVER_HEXEN2_LOCAL_H
 #define _SERVER_HEXEN2_LOCAL_H
 
+extern Cvar* sv_ce_scale;
+extern Cvar* sv_ce_max_size;
+
+void SVHW_SendEffect(QMsg* sb, int index);
+void SVH2_UpdateEffects(QMsg* sb);
+void SVH2_ParseEffect(QMsg* sb);
+void SVHW_ParseMultiEffect(QMsg* sb);
+float SVHW_GetMultiEffectId();
+void SVH2_SaveEffects(fileHandle_t FH);
+const char* SVH2_LoadEffects(const char* Data);
+void SVHW_setseed(int seed);
+float SVHW_seedrand();
+
 extern unsigned int info_mask, info_mask2;
 
 void PF_setpuzzlemodel();

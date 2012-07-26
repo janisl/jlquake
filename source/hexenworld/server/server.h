@@ -140,6 +140,4 @@ void SV_Status_f(void);
 //
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
 
-void SV_ParseEffect(QMsg* sb);
 void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
-void SV_SendEffect(QMsg* sb, int index);
