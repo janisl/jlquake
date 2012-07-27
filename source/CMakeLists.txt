@@ -3,10 +3,10 @@ set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -march=pentiumpro -O6 -ffast-math -funroll-loops -fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
 set(ALL_CFLAGS ${DEBUG_CFLAGS})
 
-set(COMMON_CLIENTS_LIBS client common z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
+set(COMMON_CLIENTS_LIBS client common z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype pthread dl)
 set(CLIENTS_LIBS server ${COMMON_CLIENTS_LIBS})
 set(DEDCLIENTS_LIBS ${COMMON_CLIENTS_LIBS})
-set(SERVERS_LIBS server common z dl)
+set(SERVERS_LIBS server common z pthread dl)
 
 include_directories(/usr/include/freetype2)
 
