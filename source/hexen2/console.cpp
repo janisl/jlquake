@@ -68,11 +68,6 @@ void Con_Init(void)
 //
 	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 #endif
-
-	PR_LoadStrings();
-#ifdef MISSIONPACK
-	PR_LoadInfoStrings();
-#endif
 }
 
 /*

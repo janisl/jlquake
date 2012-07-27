@@ -105,9 +105,6 @@ static int StartC[MAXLINES],EndC[MAXLINES];
 #define MAX_INFO 1024
 char infomessage[MAX_INFO];
 qboolean info_up = false;
-
-extern int* pr_info_string_index;
-extern char* pr_global_info_strings;
 #endif
 
 #ifdef MISSIONPACK
@@ -119,7 +116,7 @@ void UpdateInfoMessage(void)
 
 	String::Cpy(infomessage, "Objectives:");
 
-	if (!pr_global_info_strings)
+	if (!prh2_global_info_strings)
 	{
 		return;
 	}
@@ -130,7 +127,7 @@ void UpdateInfoMessage(void)
 
 		if (cl.h2_info_mask & check)
 		{
-			newmessage = &pr_global_info_strings[pr_info_string_index[i]];
+			newmessage = &prh2_global_info_strings[prh2_info_string_index[i]];
 			String::Cat(infomessage, sizeof(infomessage), "@@");
 			String::Cat(infomessage, sizeof(infomessage), newmessage);
 		}
@@ -142,7 +139,7 @@ void UpdateInfoMessage(void)
 
 		if (cl.h2_info_mask2 & check)
 		{
-			newmessage = &pr_global_info_strings[pr_info_string_index[i + 32]];
+			newmessage = &prh2_global_info_strings[prh2_info_string_index[i + 32]];
 			String::Cat(infomessage, sizeof(infomessage), "@@");
 			String::Cat(infomessage, sizeof(infomessage), newmessage);
 		}
@@ -958,21 +955,21 @@ void SB_IntermissionOverlay(void)
 		elapsed = (cl.qh_serverTimeFloat - cl.qh_completed_time) * 20;
 	}
 
-	if (cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= pr_string_count)
+	if (cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= prh2_string_count)
 	{
-		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 394]];
+		message = &prh2_global_strings[prh2_string_index[cl.qh_intermission + 394]];
 	}
 	else if (cl.qh_intermission == 5)
 	{
-		message = &pr_global_strings[pr_string_index[ABILITIES_STR_INDEX + NUM_CLASSES * 2 + 1]];
+		message = &prh2_global_strings[prh2_string_index[ABILITIES_STR_INDEX + NUM_CLASSES * 2 + 1]];
 	}
-	else if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= pr_string_count)
+	else if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= prh2_string_count)
 	{
-		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 386]];
+		message = &prh2_global_strings[prh2_string_index[cl.qh_intermission + 386]];
 	}
 	else if (cl.qh_intermission == 9)
 	{
-		message = &pr_global_strings[pr_string_index[391]];
+		message = &prh2_global_strings[prh2_string_index[391]];
 	}
 	else
 	{
@@ -981,15 +978,15 @@ void SB_IntermissionOverlay(void)
 
 	if (cl.qh_intermission == 10)
 	{
-		message = &pr_global_strings[pr_string_index[538]];
+		message = &prh2_global_strings[prh2_string_index[538]];
 	}
 	else if (cl.qh_intermission == 11)
 	{
-		message = &pr_global_strings[pr_string_index[545]];
+		message = &prh2_global_strings[prh2_string_index[545]];
 	}
 	else if (cl.qh_intermission == 12)
 	{
-		message = &pr_global_strings[pr_string_index[561]];
+		message = &prh2_global_strings[prh2_string_index[561]];
 	}
 
 	FindTextBreaks(message, 38);

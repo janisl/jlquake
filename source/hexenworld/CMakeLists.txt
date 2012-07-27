@@ -17,7 +17,6 @@ add_executable(jlhwsv
 	client/cmd.cpp
 	client/common.cpp
 	client/cvar.cpp
-	client/strings.cpp
 	client/zone.cpp
 	client/net_chan.cpp
 )
@@ -45,7 +44,6 @@ add_executable(jlhwcl
 	client/r_part.cpp
 	client/sbar.cpp
 	client/snd_dma.cpp
-	client/strings.cpp
 	client/sys_linux.cpp
 	client/view.cpp
 	client/zone.cpp

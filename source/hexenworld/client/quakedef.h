@@ -18,7 +18,7 @@
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
-#include "strings.h"
+#include "../../common/hexen2strings.h"
 #include "sbar.h"
 #include "render.h"
 #include "client.h"
@@ -77,5 +77,3 @@ extern unsigned int attLosses;				// Attackers Losses in Siege
 
 extern int cl_keyholder;
 extern int cl_doc;
-
-void PR_LoadStrings(void);

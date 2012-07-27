@@ -66,9 +66,9 @@ void SV_New_f(void)
 	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= pr_string_count)
+	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count)
 	{
-		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
+		host_client->netchan.message.WriteString2(&prh2_global_strings[prh2_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
 	}
 	else
 	{	//Use netname on map if there is one, so they don't have to edit strings.txt

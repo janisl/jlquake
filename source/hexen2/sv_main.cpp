@@ -272,9 +272,9 @@ void SV_SendServerinfo(client_t* client)
 		client->qh_message.WriteByte(GAME_COOP);
 	}
 
-	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= pr_string_count)
+	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count)
 	{
-		client->qh_message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
+		client->qh_message.WriteString2(&prh2_global_strings[prh2_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
 	}
 	else
 	{
@@ -2250,11 +2250,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	PR_InitBuiltins();
 	PR_LoadProgs();
 #ifndef DEDICATED
-	current_loading_size += 40;
-	SCR_UpdateScreen();
-//	PR_LoadStrings();
-//	PR_LoadInfoStrings();
-	current_loading_size += 20;
+	current_loading_size += 60;
 	SCR_UpdateScreen();
 #endif
 

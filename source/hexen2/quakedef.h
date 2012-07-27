@@ -13,6 +13,7 @@
 #include "../server/quake_hexen/local.h"
 #include "../server/hexen2/local.h"
 #include "../server/progsvm/progsvm.h"
+#include "../common/hexen2strings.h"
 
 //#define MISSIONPACK
 

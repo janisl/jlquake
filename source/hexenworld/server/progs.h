@@ -1,7 +1,7 @@
 
-extern int* pr_string_index;
-extern char* pr_global_strings;
-extern int pr_string_count;
+extern int* prh2_string_index;
+extern char* prh2_global_strings;
+extern int prh2_string_count;
 
 //============================================================================
 

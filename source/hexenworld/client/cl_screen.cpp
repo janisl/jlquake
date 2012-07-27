@@ -778,21 +778,21 @@ void SB_IntermissionOverlay(void)
 		elapsed = (cl.qh_serverTimeFloat - cl.qh_completed_time) * 20;
 	}
 
-	if (cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= pr_string_count)
+	if (cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= prh2_string_count)
 	{
-		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 394]];
+		message = &prh2_global_strings[prh2_string_index[cl.qh_intermission + 394]];
 	}
 	else if (cl.qh_intermission == 5)
 	{
-		message = &pr_global_strings[pr_string_index[408]];
+		message = &prh2_global_strings[prh2_string_index[408]];
 	}
-	else if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= pr_string_count)
+	else if (cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= prh2_string_count)
 	{
-		message = &pr_global_strings[pr_string_index[cl.qh_intermission + 386]];
+		message = &prh2_global_strings[prh2_string_index[cl.qh_intermission + 386]];
 	}
 	else if (cl.qh_intermission == 9)
 	{
-		message = &pr_global_strings[pr_string_index[391]];
+		message = &prh2_global_strings[prh2_string_index[391]];
 	}
 	else
 	{

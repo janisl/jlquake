@@ -15,7 +15,6 @@ add_executable(jlhexen2
 	menu.cpp
 	net_main.cpp
 	pr_cmds.cpp
-	pr_edict.cpp
 	r_part.cpp
 	sbar.cpp
 	sv_main.cpp
@@ -37,7 +36,6 @@ add_executable(jlhexen2ded
 	host_cmd.cpp
 	net_main.cpp
 	pr_cmds.cpp
-	pr_edict.cpp
 	sv_main.cpp
 	sv_user.cpp
 	zone.cpp

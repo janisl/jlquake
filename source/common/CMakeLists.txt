@@ -26,6 +26,7 @@ set(COMMON_FILES
 	exception.cpp
 	files.cpp
 	game_utils1.cpp
+	hexen2strings.cpp
 	huffman.cpp
 	info_string.cpp
 	mathlib.cpp

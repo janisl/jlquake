@@ -1406,9 +1406,8 @@ void Host_Init(quakeparms_t* parms)
 		Key_Init();
 		Con_Init();
 		M_Init();
+		ComH2_LoadStrings();
 
-
-//	common->Printf ("Exe: "__TIME__" "__DATE__"\n");
 		common->Printf("%4.1f megs RAM used.\n",parms->memsize / (1024 * 1024.0));
 
 		cls.state = CA_DISCONNECTED;

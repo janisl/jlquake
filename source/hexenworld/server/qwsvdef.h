@@ -66,5 +66,3 @@ extern unsigned int attLosses;	// Attackers Losses in Siege
 #define HULL_CROUCH         4	//'-16 -16 0', '16 16 28'
 #define HULL_HYDRA          5	//'-28 -28 -24', '28 28 24'
 #define HULL_GOLEM          6	//???,???
-
-void PR_LoadStrings(void);

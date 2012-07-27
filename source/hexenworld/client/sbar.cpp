@@ -641,17 +641,17 @@ static void DrawLowerBar(void)
 	// Abilities
 	Sbar_DrawSmallString(11, 79, "abilities");
 	i = AbilityLineIndex[(playerClass - 1)];
-	if (i + 1 < pr_string_count)
+	if (i + 1 < prh2_string_count)
 	{
 		if (((int)cl.h2_v.flags) & H2FL_SPECIAL_ABILITY1)
 		{
 			Sbar_DrawSmallString(8, 89,
-				&pr_global_strings[pr_string_index[i]]);
+				&prh2_global_strings[prh2_string_index[i]]);
 		}
 		if (((int)cl.h2_v.flags) & H2FL_SPECIAL_ABILITY2)
 		{
 			Sbar_DrawSmallString(8, 96,
-				&pr_global_strings[pr_string_index[i + 1]]);
+				&prh2_global_strings[prh2_string_index[i + 1]]);
 		}
 	}
 
@@ -1338,8 +1338,8 @@ void FindName(char* which, char* name)
 	char test[40];
 
 	String::Cpy(name, "Unknown");
-	j = atol(puzzle_strings);
-	pos = strchr(puzzle_strings,13);
+	j = atol(h2_puzzle_strings);
+	pos = strchr(h2_puzzle_strings,13);
 	if (!pos)
 	{
 		return;

@@ -74,7 +74,6 @@ const char* svc_strings[] =
 	"h2svc_toggle_statbar"
 };
 
-char* puzzle_strings;
 int LastServerMessageSize;
 extern Cvar* precache;
 
@@ -358,8 +357,6 @@ void CL_ParseServerInfo(void)
 // local state
 	R_NewMap();
 
-	puzzle_strings = (char*)COM_LoadHunkFile("puzzles.txt");
-
 	Hunk_Check();		// make sure nothing is hurt
 }
 
@@ -605,9 +602,9 @@ void CL_Plaque(void)
 
 	index = net_message.ReadShort();
 
-	if (index > 0 && index <= pr_string_count)
+	if (index > 0 && index <= prh2_string_count)
 	{
-		plaquemessage = &pr_global_strings[pr_string_index[index - 1]];
+		plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
 	}
 	else
 	{

@@ -306,9 +306,9 @@ void PF_plaque_draw(void)
 		PR_RunError("PF_plaque_draw: index(%d) < 1",Index);
 	}
 
-	if (Index > pr_string_count)
+	if (Index > prh2_string_count)
 	{
-		PR_RunError("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
+		PR_RunError("PF_plaque_draw: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
 	}
 
 	Q1WriteDest()->WriteByte(h2svc_plaque);
@@ -441,12 +441,12 @@ void PF_GetString(void)
 		PR_RunError("PF_GetString: index(%d) < 1",Index + 1);
 	}
 
-	if (Index >= pr_string_count)
+	if (Index >= prh2_string_count)
 	{
-		PR_RunError("PF_GetString: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
+		PR_RunError("PF_GetString: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
 	}
 
-	G_INT(OFS_RETURN) = PR_SetString(&pr_global_strings[pr_string_index[Index]]);
+	G_INT(OFS_RETURN) = PR_SetString(&prh2_global_strings[prh2_string_index[Index]]);
 }
 
 extern void V_WhiteFlash_f(void);

@@ -184,9 +184,9 @@ void PF_print_indexed(void)
 		PR_RunError("PF_sprint_indexed: index(%d) < 1",Index);
 	}
 
-	if (Index > pr_string_count)
+	if (Index > prh2_string_count)
 	{
-		PR_RunError("PF_sprint_indexed: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
+		PR_RunError("PF_sprint_indexed: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
 	}
 
 	if ((int)G_FLOAT(OFS_PARM0) == QHMSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
@@ -194,7 +194,7 @@ void PF_print_indexed(void)
 		client_t* cl;
 		int i;
 
-		common->Printf("%s",&pr_global_strings[pr_string_index[Index - 1]]);
+		common->Printf("%s",&prh2_global_strings[prh2_string_index[Index - 1]]);
 
 		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
 		{
@@ -546,9 +546,9 @@ void PF_plaque_draw(void)
 		PR_RunError("PF_plaque_draw: index(%d) < 1",Index);
 	}
 
-	if (Index > pr_string_count)
+	if (Index > prh2_string_count)
 	{
-		PR_RunError("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
+		PR_RunError("PF_plaque_draw: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
 	}
 
 	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
@@ -873,12 +873,12 @@ void PF_GetString(void)
 		PR_RunError("PF_GetString: index(%d) < 1",Index + 1);
 	}
 
-	if (Index >= pr_string_count)
+	if (Index >= prh2_string_count)
 	{
-		PR_RunError("PF_GetString: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
+		PR_RunError("PF_GetString: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
 	}
 
-	G_INT(OFS_RETURN) = PR_SetString(&pr_global_strings[pr_string_index[Index]]);
+	G_INT(OFS_RETURN) = PR_SetString(&prh2_global_strings[prh2_string_index[Index]]);
 }
 
 

@@ -235,8 +235,6 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	SV_FindSpectatorFunctions();
 
-	PR_LoadStrings();
-
 	// allocate edicts
 	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
 

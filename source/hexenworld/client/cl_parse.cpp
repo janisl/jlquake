@@ -235,8 +235,6 @@ void Model_NextDownload(void)
 	// all done
 	R_NewMap();
 
-	PR_LoadStrings();
-
 	Hunk_Check();		// make sure nothing is hurt
 
 	// done with modellist, request first of static signon messages
@@ -863,9 +861,9 @@ void CL_Plaque(void)
 
 	index = net_message.ReadShort();
 
-	if (index > 0 && index <= pr_string_count)
+	if (index > 0 && index <= prh2_string_count)
 	{
-		plaquemessage = &pr_global_strings[pr_string_index[index - 1]];
+		plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
 	}
 	else
 	{
@@ -883,15 +881,15 @@ void CL_IndexedPrint(void)
 
 	int index = net_message.ReadShort();
 
-	if (index > 0 && index <= pr_string_count)
+	if (index > 0 && index <= prh2_string_count)
 	{
 		if (i == PRINT_CHAT)
 		{
-			common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &pr_global_strings[pr_string_index[index - 1]]);
+			common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, &prh2_global_strings[prh2_string_index[index - 1]]);
 		}
 		else
 		{
-			common->Printf("%s",&pr_global_strings[pr_string_index[index - 1]]);
+			common->Printf("%s",&prh2_global_strings[prh2_string_index[index - 1]]);
 		}
 	}
 }

@@ -5,6 +5,8 @@
 #else
 #include <dirent.h>
 #endif
+#include "../../common/hexen2strings.h"
+
 quakeparms_t host_parms;
 
 qboolean host_initialized;			// true if into command execution (compatability)
@@ -1725,6 +1727,7 @@ void SV_Init(quakeparms_t* parms)
 
 		COM_Init(parms->basedir);
 
+		ComH2_LoadStrings();
 		PR_Init();
 
 		SV_InitNet();
