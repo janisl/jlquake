@@ -983,7 +983,10 @@ void M_SinglePlayer_Key(int key)
 		switch (m_singleplayer_cursor)
 		{
 		case 0:
-			m_enter_portals = 1;
+			if (GGameType & GAME_H2Portals)
+			{
+				m_enter_portals = 1;
+			}
 
 		case 3:
 			if (sv.state != SS_DEAD)
