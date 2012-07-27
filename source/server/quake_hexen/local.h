@@ -88,11 +88,21 @@ void PFQW_WriteEntity();
 void PF_setspawnparms();
 void PF_logfrag();
 void PF_multicast();
+void PFQ1_bprint();
+void PFQW_bprint();
+void PFQ1_sprint();
+void PFQW_sprint();
+void PF_centerprint();
+void PF_particle();
+void PF_stuffcmd();
 
 //
 //	Init
 //
+extern char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];
+
 void SVQH_FlushSignon();
+int SVQH_ModelIndex(const char* name);
 
 //
 //	Main
@@ -101,10 +111,13 @@ extern Cvar* svqh_deathmatch;
 extern Cvar* svqh_coop;
 extern Cvar* svqh_teamplay;
 extern Cvar* svqh_highchars;
+extern Cvar* hw_spartanPrint;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
 extern fileHandle_t svqhw_fraglogfile;
+
+int SVQH_CalcPing(client_t* cl);
 
 //
 //	Move
@@ -170,6 +183,10 @@ void SVQH_ClientPrintf(client_t* cl, int level, const char* fmt, ...) id_attribu
 void SVQH_BroadcastPrintf(int level, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 void SVQH_SendClientCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 void SVQH_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+void SVQH_StartParticle(const vec3_t org, const vec3_t dir, int color, int count);
+void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax, int color, int effect, int count);
+void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count);
+void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
 
 //
 //	World

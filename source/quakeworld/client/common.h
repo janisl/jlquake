@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
-#define MAX_LOCALINFO_STRING    32768
-
 extern qwusercmd_t nullcmd;
 
 //============================================================================

@@ -569,14 +569,11 @@ void PF_matchAngleToSlope()
 
 void PF_updateInfoPlaque()
 {
-	unsigned int check;
-	unsigned int index, mode;
+	unsigned int index = G_FLOAT(OFS_PARM0);
+	unsigned int mode = G_FLOAT(OFS_PARM1);
+
 	unsigned int* use;
 	int ofs = 0;
-
-	index = G_FLOAT(OFS_PARM0);
-	mode = G_FLOAT(OFS_PARM1);
-
 	if (index > 31)
 	{
 		use = &info_mask2;
@@ -587,7 +584,7 @@ void PF_updateInfoPlaque()
 		use = &info_mask;
 	}
 
-	check = (long)(1 << (index - ofs));
+	unsigned int check = (long)(1 << (index - ofs));
 
 	if (((mode & 1) && ((*use) & check)) || ((mode & 2) && !((*use) & check)))
 	{
@@ -597,4 +594,115 @@ void PF_updateInfoPlaque()
 	{
 		(*use) ^= check;
 	}
+}
+
+void PF_particle2()
+{
+	float* org = G_VECTOR(OFS_PARM0);
+	float* dmin = G_VECTOR(OFS_PARM1);
+	float* dmax = G_VECTOR(OFS_PARM2);
+	float colour = G_FLOAT(OFS_PARM3);
+	float effect = G_FLOAT(OFS_PARM4);
+	float count = G_FLOAT(OFS_PARM5);
+	SVH2_StartParticle2(org, dmin, dmax, colour, effect, count);
+}
+
+void PF_particle3()
+{
+	float* org = G_VECTOR(OFS_PARM0);
+	float* box = G_VECTOR(OFS_PARM1);
+	float color = G_FLOAT(OFS_PARM2);
+	float effect = G_FLOAT(OFS_PARM3);
+	float count = G_FLOAT(OFS_PARM4);
+	SVH2_StartParticle3(org, box, color, effect, count);
+}
+
+void PF_particle4()
+{
+	float* org = G_VECTOR(OFS_PARM0);
+	float radius = G_FLOAT(OFS_PARM1);
+	float color = G_FLOAT(OFS_PARM2);
+	float effect = G_FLOAT(OFS_PARM3);
+	float count = G_FLOAT(OFS_PARM4);
+	SVH2_StartParticle4(org, radius, color, effect, count);
+}
+
+void PFH2_makestatic()
+{
+	qhedict_t* ent = G_EDICT(OFS_PARM0);
+
+	sv.qh_signon.WriteByte(h2svc_spawnstatic);
+
+	sv.qh_signon.WriteShort(SVQH_ModelIndex(PR_GetString(ent->GetModel())));
+
+	sv.qh_signon.WriteByte(ent->GetFrame());
+	sv.qh_signon.WriteByte(ent->GetColorMap());
+	sv.qh_signon.WriteByte(ent->GetSkin());
+	sv.qh_signon.WriteByte((int)(ent->GetScale() * 100.0) & 255);
+	sv.qh_signon.WriteByte(ent->GetDrawFlags());
+	sv.qh_signon.WriteByte((int)(ent->GetAbsLight() * 255.0) & 255);
+
+	for (int i = 0; i < 3; i++)
+	{
+		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
+		sv.qh_signon.WriteAngle(ent->GetAngles()[i]);
+	}
+
+	// throw the entity away now
+	ED_Free(ent);
+}
+
+void PFH2_changelevel()
+{
+	if (svs.qh_changelevel_issued)
+	{
+		return;
+	}
+	svs.qh_changelevel_issued = true;
+
+	const char* s1 = G_STRING(OFS_PARM0);
+	const char* s2 = G_STRING(OFS_PARM1);
+
+	if ((int)*pr_globalVars.serverflags & (H2SFL_NEW_UNIT | H2SFL_NEW_EPISODE))
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			Cbuf_AddText(va("map %s %s\n",s1, s2));
+		}
+		else
+		{
+			Cbuf_AddText(va("changelevel %s %s\n",s1, s2));
+		}
+	}
+	else
+	{
+		Cbuf_AddText(va("changelevel2 %s %s\n",s1, s2));
+	}
+}
+
+void PFHW_infokey()
+{
+	qhedict_t* e = G_EDICT(OFS_PARM0);
+	int e1 = QH_NUM_FOR_EDICT(e);
+	const char* key = G_STRING(OFS_PARM1);
+
+	const char* value;
+	if (e1 == 0)
+	{
+		if ((value = Info_ValueForKey(svs.qh_info, key)) == NULL ||
+			!*value)
+		{
+			value = Info_ValueForKey(qhw_localinfo, key);
+		}
+	}
+	else if (e1 <= MAX_CLIENTS_QHW)
+	{
+		value = Info_ValueForKey(svs.clients[e1 - 1].userinfo, key);
+	}
+	else
+	{
+		value = "";
+	}
+
+	RETURN_STRING(value);
 }

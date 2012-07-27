@@ -20,15 +20,6 @@
 
 #define FL2_CROUCHED            4096
 
-// server flags
-#define SFL_EPISODE_1       1
-#define SFL_EPISODE_2       2
-#define SFL_EPISODE_3       4
-#define SFL_EPISODE_4       8
-#define SFL_NEW_UNIT        16
-#define SFL_NEW_EPISODE     32
-#define SFL_CROSS_TRIGGERS  65280
-
 //============================================================================
 
 extern func_t SpectatorConnect;
@@ -41,7 +32,6 @@ extern Cvar* randomclass;
 extern Cvar* damageScale;
 extern Cvar* meleeDamScale;
 extern Cvar* shyRespawn;
-extern Cvar* spartanPrint;
 extern Cvar* manaScale;
 extern Cvar* tomeMode;
 extern Cvar* tomeRespawn;
@@ -62,8 +52,6 @@ extern qhedict_t* sv_player;
 
 extern char localmodels[MAX_MODELS_H2][5];			// inline model names for precache
 
-extern char localinfo[MAX_LOCALINFO_STRING + 1];
-
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 
@@ -79,10 +67,7 @@ void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
 void SV_DropClient(client_t* drop);
 
-int SV_CalcPing(client_t* cl);
 void SV_FullClientUpdate(client_t* client, QMsg* buf);
-
-int SV_ModelIndex(const char* name);
 
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
@@ -108,10 +93,6 @@ void SV_SpawnServer(char* server, char* startspot);
 void SV_SendClientMessages(void);
 
 void SV_MulticastSpecific(unsigned clients, qboolean reliable);
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
-void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
-void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count);
-void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count);
 void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count);
 void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);

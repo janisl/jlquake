@@ -122,121 +122,6 @@ EVENT MESSAGES
 */
 
 /*
-==================
-SV_StartParticle
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
-{
-	int i, v;
-
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
-	{
-		return;
-	}
-	sv.qh_datagram.WriteByte(h2svc_particle);
-	sv.qh_datagram.WriteCoord(org[0]);
-	sv.qh_datagram.WriteCoord(org[1]);
-	sv.qh_datagram.WriteCoord(org[2]);
-	for (i = 0; i < 3; i++)
-	{
-		v = dir[i] * 16;
-		if (v > 127)
-		{
-			v = 127;
-		}
-		else if (v < -128)
-		{
-			v = -128;
-		}
-		sv.qh_datagram.WriteChar(v);
-	}
-	sv.qh_datagram.WriteByte(count);
-	sv.qh_datagram.WriteByte(color);
-}
-
-/*
-==================
-SV_StartParticle2
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
-{
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 36)
-	{
-		return;
-	}
-	sv.qh_datagram.WriteByte(h2svc_particle2);
-	sv.qh_datagram.WriteCoord(org[0]);
-	sv.qh_datagram.WriteCoord(org[1]);
-	sv.qh_datagram.WriteCoord(org[2]);
-	sv.qh_datagram.WriteFloat(dmin[0]);
-	sv.qh_datagram.WriteFloat(dmin[1]);
-	sv.qh_datagram.WriteFloat(dmin[2]);
-	sv.qh_datagram.WriteFloat(dmax[0]);
-	sv.qh_datagram.WriteFloat(dmax[1]);
-	sv.qh_datagram.WriteFloat(dmax[2]);
-
-	sv.qh_datagram.WriteShort(color);
-	sv.qh_datagram.WriteByte(count);
-	sv.qh_datagram.WriteByte(effect);
-}
-
-/*
-==================
-SV_StartParticle3
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count)
-{
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 15)
-	{
-		return;
-	}
-	sv.qh_datagram.WriteByte(h2svc_particle3);
-	sv.qh_datagram.WriteCoord(org[0]);
-	sv.qh_datagram.WriteCoord(org[1]);
-	sv.qh_datagram.WriteCoord(org[2]);
-	sv.qh_datagram.WriteByte(box[0]);
-	sv.qh_datagram.WriteByte(box[1]);
-	sv.qh_datagram.WriteByte(box[2]);
-
-	sv.qh_datagram.WriteShort(color);
-	sv.qh_datagram.WriteByte(count);
-	sv.qh_datagram.WriteByte(effect);
-}
-
-/*
-==================
-SV_StartParticle4
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count)
-{
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 13)
-	{
-		return;
-	}
-	sv.qh_datagram.WriteByte(h2svc_particle4);
-	sv.qh_datagram.WriteCoord(org[0]);
-	sv.qh_datagram.WriteCoord(org[1]);
-	sv.qh_datagram.WriteCoord(org[2]);
-	sv.qh_datagram.WriteByte(radius);
-
-	sv.qh_datagram.WriteShort(color);
-	sv.qh_datagram.WriteByte(count);
-	sv.qh_datagram.WriteByte(effect);
-}
-
-/*
 ==============================================================================
 
 CLIENT SPAWNING
@@ -843,7 +728,7 @@ skipA:
 		{
 			String::Cpy(NewName, PR_GetString(ent->GetModel()));
 			NewName[String::Length(NewName) - 5] = client->h2_playerclass + 48;
-			temp_index = SV_ModelIndex(NewName);
+			temp_index = SVQH_ModelIndex(NewName);
 		}
 
 		if (ref_ent->modelindex != temp_index)
@@ -1183,7 +1068,7 @@ void SV_WriteClientdataToMessage(client_t* client, qhedict_t* ent, QMsg* msg)
 	}
 	if (bits & SU_WEAPON)
 	{
-		msg->WriteShort(SV_ModelIndex(PR_GetString(ent->GetWeaponModel())));
+		msg->WriteShort(SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel())));
 	}
 
 	if (host_client->h2_send_all_v)
@@ -2009,35 +1894,6 @@ SERVER SPAWNING
 
 /*
 ================
-SV_ModelIndex
-
-================
-*/
-int SV_ModelIndex(const char* name)
-{
-	int i;
-
-	if (!name || !name[0])
-	{
-		return 0;
-	}
-
-	for (i = 0; i < MAX_MODELS_H2 && sv.qh_model_precache[i]; i++)
-		if (!String::Cmp(sv.qh_model_precache[i], name))
-		{
-			return i;
-		}
-	if (i == MAX_MODELS_H2 || !sv.qh_model_precache[i])
-	{
-		common->Printf("SV_ModelIndex: model %s not precached\n", name);
-		return 0;
-	}
-
-	return i;
-}
-
-/*
-================
 SV_CreateBaseline
 
 ================
@@ -2075,13 +1931,13 @@ void SV_CreateBaseline(void)
 		if (entnum > 0  && entnum <= svs.qh_maxclients)
 		{
 			svent->h2_baseline.colormap = entnum;
-			svent->h2_baseline.modelindex = 0;	//SV_ModelIndex("models/paladin.mdl");
+			svent->h2_baseline.modelindex = 0;	//SVQH_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
 			svent->h2_baseline.colormap = 0;
 			svent->h2_baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->GetModel()));
+				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 		Com_Memset(svent->h2_baseline.ClearCount,99,sizeof(svent->h2_baseline.ClearCount));
 

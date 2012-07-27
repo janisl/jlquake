@@ -11,15 +11,6 @@
 
 #define FL2_CROUCHED            4096
 
-// server flags
-#define SFL_EPISODE_1       1
-#define SFL_EPISODE_2       2
-#define SFL_EPISODE_3       4
-#define SFL_EPISODE_4       8
-#define SFL_NEW_UNIT        16
-#define SFL_NEW_EPISODE     32
-#define SFL_CROSS_TRIGGERS  65280
-
 //============================================================================
 
 extern Cvar* skill;
@@ -39,17 +30,10 @@ extern qhedict_t* sv_player;
 
 void SV_Init(void);
 
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
-void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
-void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count);
-void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count);
-
 void SV_DropClient(qboolean crash);
 
 void SV_SendClientMessages(void);
 void SV_ClearDatagram(void);
-
-int SV_ModelIndex(const char* name);
 
 void SV_SetIdealPitch(void);
 

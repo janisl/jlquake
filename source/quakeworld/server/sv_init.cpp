@@ -22,38 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 char localmodels[MAX_MODELS_Q1][5];		// inline model names for precache
 
-char localinfo[MAX_LOCALINFO_STRING + 1];	// local game info
-
 func_t SpectatorConnect;
 func_t SpectatorThink;
 func_t SpectatorDisconnect;
-
-/*
-================
-SV_ModelIndex
-
-================
-*/
-int SV_ModelIndex(const char* name)
-{
-	int i;
-
-	if (!name || !name[0])
-	{
-		return 0;
-	}
-
-	for (i = 0; i < MAX_MODELS_Q1 && sv.qh_model_precache[i]; i++)
-		if (!String::Cmp(sv.qh_model_precache[i], name))
-		{
-			return i;
-		}
-	if (i == MAX_MODELS_Q1 || !sv.qh_model_precache[i])
-	{
-		common->Error("SV_ModelIndex: model %s not precached", name);
-	}
-	return i;
-}
 
 /*
 ================
@@ -94,13 +65,13 @@ void SV_CreateBaseline(void)
 		if (entnum > 0 && entnum <= MAX_CLIENTS_QHW)
 		{
 			svent->q1_baseline.colormap = entnum;
-			svent->q1_baseline.modelindex = SV_ModelIndex("progs/player.mdl");
+			svent->q1_baseline.modelindex = SVQH_ModelIndex("progs/player.mdl");
 		}
 		else
 		{
 			svent->q1_baseline.colormap = 0;
 			svent->q1_baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->GetModel()));
+				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
 		//
@@ -243,7 +214,6 @@ void SV_SpawnServer(char* server)
 
 	// load progs to get entity field count
 	// which determines how big each edict is
-	PR_InitBuiltins();
 	PR_LoadProgs();
 
 	SV_AddProgCrcTotheServerInfo();

@@ -180,113 +180,6 @@ void SV_MulticastSpecific(unsigned clients, qboolean reliable)
 	sv.multicast.Clear();
 }
 
-/*
-==================
-SV_StartParticle
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
-{
-	int i, v;
-
-	sv.multicast.WriteByte(h2svc_particle);
-	sv.multicast.WriteCoord(org[0]);
-	sv.multicast.WriteCoord(org[1]);
-	sv.multicast.WriteCoord(org[2]);
-	for (i = 0; i < 3; i++)
-	{
-		v = dir[i] * 16;
-		if (v > 127)
-		{
-			v = 127;
-		}
-		else if (v < -128)
-		{
-			v = -128;
-		}
-		sv.multicast.WriteChar(v);
-	}
-	sv.multicast.WriteByte(count);
-	sv.multicast.WriteByte(color);
-
-	SVQH_Multicast(org, MULTICAST_PVS);
-}
-
-/*
-==================
-SV_StartParticle2
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle2(vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
-{
-	sv.multicast.WriteByte(hwsvc_particle2);
-	sv.multicast.WriteCoord(org[0]);
-	sv.multicast.WriteCoord(org[1]);
-	sv.multicast.WriteCoord(org[2]);
-	sv.multicast.WriteFloat(dmin[0]);
-	sv.multicast.WriteFloat(dmin[1]);
-	sv.multicast.WriteFloat(dmin[2]);
-	sv.multicast.WriteFloat(dmax[0]);
-	sv.multicast.WriteFloat(dmax[1]);
-	sv.multicast.WriteFloat(dmax[2]);
-
-	sv.multicast.WriteShort(color);
-	sv.multicast.WriteByte(count);
-	sv.multicast.WriteByte(effect);
-
-	SVQH_Multicast(org, MULTICAST_PVS);
-}
-
-/*
-==================
-SV_StartParticle3
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle3(vec3_t org, vec3_t box, int color, int effect, int count)
-{
-	sv.multicast.WriteByte(hwsvc_particle3);
-	sv.multicast.WriteCoord(org[0]);
-	sv.multicast.WriteCoord(org[1]);
-	sv.multicast.WriteCoord(org[2]);
-	sv.multicast.WriteByte(box[0]);
-	sv.multicast.WriteByte(box[1]);
-	sv.multicast.WriteByte(box[2]);
-
-	sv.multicast.WriteShort(color);
-	sv.multicast.WriteByte(count);
-	sv.multicast.WriteByte(effect);
-
-	SVQH_Multicast(org, MULTICAST_PVS);
-}
-
-/*
-==================
-SV_StartParticle4
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle4(vec3_t org, float radius, int color, int effect, int count)
-{
-	sv.multicast.WriteByte(hwsvc_particle4);
-	sv.multicast.WriteCoord(org[0]);
-	sv.multicast.WriteCoord(org[1]);
-	sv.multicast.WriteCoord(org[2]);
-	sv.multicast.WriteByte(radius);
-
-	sv.multicast.WriteShort(color);
-	sv.multicast.WriteByte(count);
-	sv.multicast.WriteByte(effect);
-
-	SVQH_Multicast(org, MULTICAST_PVS);
-}
-
 void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
 {
 	sv.multicast.WriteByte(hwsvc_raineffect);
@@ -450,7 +343,7 @@ void SV_UpdateClientStats(client_t* client)
 	}
 
 	stats[STAT_HEALTH] = 0;	//ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	stats[STAT_WEAPON] = SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel()));
 	stats[STAT_AMMO] = 0;	//ent->v.currentammo;
 	stats[STAT_ARMOR] = 0;	//ent->v.armorvalue;
 	stats[STAT_SHELLS] = 0;	//ent->v.ammo_shells;

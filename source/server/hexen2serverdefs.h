@@ -43,3 +43,7 @@ struct h2client_state2_t
 #define H2SPAWNFLAG_NOT_DEATHMATCH    0x00008000
 #define H2SPAWNFLAG_NOT_COOP          0x00010000
 #define H2SPAWNFLAG_NOT_SINGLE        0x00020000
+
+// server flags
+#define H2SFL_NEW_UNIT      16
+#define H2SFL_NEW_EPISODE   32

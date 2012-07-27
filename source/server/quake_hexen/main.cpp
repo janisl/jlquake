@@ -23,7 +23,48 @@ Cvar* svqh_coop;				// 0 or 1
 Cvar* svqh_teamplay;
 
 Cvar* svqh_highchars;
+Cvar* hw_spartanPrint;
 
 int svqh_current_skill;
 
 fileHandle_t svqhw_fraglogfile;
+
+int SVQH_CalcPing(client_t* cl)
+{
+	float ping;
+	int count;
+
+	ping = 0;
+	count = 0;
+	if (GGameType & GAME_HexenWorld)
+	{
+		hwclient_frame_t* frame = cl->hw_frames;
+		for (int i = 0; i < UPDATE_BACKUP_HW; i++, frame++)
+		{
+			if (frame->ping_time > 0)
+			{
+				ping += frame->ping_time;
+				count++;
+			}
+		}
+	}
+	else
+	{
+		qwclient_frame_t* frame = cl->qw_frames;
+		for (int i = 0; i < UPDATE_BACKUP_QW; i++, frame++)
+		{
+			if (frame->ping_time > 0)
+			{
+				ping += frame->ping_time;
+				count++;
+			}
+		}
+	}
+	if (!count)
+	{
+		return 9999;
+	}
+	ping /= count;
+
+	return ping * 1000;
+}

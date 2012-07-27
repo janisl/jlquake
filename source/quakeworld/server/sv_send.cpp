@@ -251,7 +251,7 @@ void SV_UpdateClientStats(client_t* client)
 	}
 
 	stats[Q1STAT_HEALTH] = ent->GetHealth();
-	stats[Q1STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	stats[Q1STAT_WEAPON] = SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel()));
 	stats[Q1STAT_AMMO] = ent->GetCurrentAmmo();
 	stats[Q1STAT_ARMOR] = ent->GetArmorValue();
 	stats[Q1STAT_SHELLS] = ent->GetAmmoShells();

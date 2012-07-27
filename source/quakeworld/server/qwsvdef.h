@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../server/server.h"
 #include "../../server/quake_hexen/local.h"
+#include "../../server/quake/local.h"
 #include "../../server/progsvm/progsvm.h"
 
 //define	PARANOID			// speed sapping error checking
@@ -36,7 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
-#include "progs.h"
 
 #include "server.h"
 

@@ -1111,3 +1111,119 @@ void PF_multicast()
 
 	SVQH_Multicast(o, to);
 }
+
+//	broadcast print to everyone on server
+void PFQ1_bprint()
+{
+	const char* s = PF_VarString(0);
+	SVQH_BroadcastPrintf(0, "%s", s);
+}
+
+void PFQW_bprint()
+{
+	int level = G_FLOAT(OFS_PARM0);
+	const char* s = PF_VarString(1);
+
+	if (GGameType & GAME_HexenWorld && hw_spartanPrint->value == 1 && level < 2)
+	{
+		return;
+	}
+
+	SVQH_BroadcastPrintf(level, "%s", s);
+}
+
+//	single print to a specific client
+void PFQ1_sprint()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	const char* s = PF_VarString(1);
+
+	if (entnum < 1 || entnum > svs.qh_maxclients)
+	{
+		common->Printf("tried to sprint to a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	SVQH_ClientPrintf(client, 0, "%s", s);
+}
+
+void PFQW_sprint()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	int level = G_FLOAT(OFS_PARM1);
+
+	const char* s = PF_VarString(2);
+
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
+	{
+		common->Printf("tried to sprint to a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	if (GGameType & GAME_HexenWorld && hw_spartanPrint->value == 1 && level < 2)
+	{
+		return;
+	}
+
+	SVQH_ClientPrintf(client, level, "%s", s);
+}
+
+void PF_centerprint()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	const char* s = PF_VarString(1);
+
+	if (entnum < 1 || entnum > (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ? MAX_CLIENTS_QHW : svs.qh_maxclients))
+	{
+		common->Printf("tried to sprint to a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		SVQH_ClientReliableWrite_Begin(client, GGameType & GAME_HexenWorld ? h2svc_centerprint : q1svc_centerprint, 2 + String::Length(s));
+		SVQH_ClientReliableWrite_String(client, s);
+	}
+	else
+	{
+		client->qh_message.WriteChar(GGameType & GAME_Hexen2 ? h2svc_centerprint : q1svc_centerprint);
+		client->qh_message.WriteString2(s);
+	}
+}
+
+void PF_particle()
+{
+	float* org = G_VECTOR(OFS_PARM0);
+	float* dir = G_VECTOR(OFS_PARM1);
+	float color = G_FLOAT(OFS_PARM2);
+	float count = G_FLOAT(OFS_PARM3);
+	SVQH_StartParticle(org, dir, color, count);
+}
+
+//	Sends text over to the client's execution buffer
+void PF_stuffcmd()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	if (entnum < 1 || entnum > (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ? MAX_CLIENTS_QHW : svs.qh_maxclients))
+	{
+		PR_RunError("Parm 0 not a client");
+	}
+	const char* str = G_STRING(OFS_PARM1);
+
+	client_t* cl = &svs.clients[entnum - 1];
+
+	if (GGameType & GAME_QuakeWorld && String::Cmp(str, "disconnect\n") == 0)
+	{
+		// so long and thanks for all the fish
+		cl->qw_drop = true;
+		return;
+	}
+
+	SVQH_SendClientCommand(cl, "%s", str);
+}

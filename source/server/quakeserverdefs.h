@@ -58,3 +58,5 @@ struct qwclient_frame_t
 #define QHMSG_ALL       2		// reliable to all
 #define QHMSG_INIT      3		// write to the init string
 #define QHMSG_MULTICAST 4		// for multicast()
+
+#define QHMAX_LOCALINFO_STRING    32768

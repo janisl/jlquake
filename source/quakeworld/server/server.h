@@ -53,8 +53,6 @@ extern qhedict_t* sv_player;
 
 extern char localmodels[MAX_MODELS_Q1][5];			// inline model names for precache
 
-extern char localinfo[MAX_LOCALINFO_STRING + 1];
-
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 
@@ -70,10 +68,7 @@ void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
 void SV_DropClient(client_t* drop);
 
-int SV_CalcPing(client_t* cl);
 void SV_FullClientUpdate(client_t* client, QMsg* buf);
-
-int SV_ModelIndex(const char* name);
 
 void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
 

@@ -48,50 +48,6 @@ void SV_Init(void)
 }
 
 /*
-=============================================================================
-
-EVENT MESSAGES
-
-=============================================================================
-*/
-
-/*
-==================
-SV_StartParticle
-
-Make sure the event gets sent to all clients
-==================
-*/
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count)
-{
-	int i, v;
-
-	if (sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
-	{
-		return;
-	}
-	sv.qh_datagram.WriteByte(q1svc_particle);
-	sv.qh_datagram.WriteCoord(org[0]);
-	sv.qh_datagram.WriteCoord(org[1]);
-	sv.qh_datagram.WriteCoord(org[2]);
-	for (i = 0; i < 3; i++)
-	{
-		v = dir[i] * 16;
-		if (v > 127)
-		{
-			v = 127;
-		}
-		else if (v < -128)
-		{
-			v = -128;
-		}
-		sv.qh_datagram.WriteChar(v);
-	}
-	sv.qh_datagram.WriteByte(count);
-	sv.qh_datagram.WriteByte(color);
-}
-
-/*
 ==============================================================================
 
 CLIENT SPAWNING
@@ -690,7 +646,7 @@ void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
 	}
 	if (bits & SU_WEAPON)
 	{
-		msg->WriteByte(SV_ModelIndex(PR_GetString(ent->GetWeaponModel())));
+		msg->WriteByte(SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel())));
 	}
 
 	msg->WriteShort(ent->GetHealth());
@@ -916,33 +872,6 @@ SERVER SPAWNING
 
 /*
 ================
-SV_ModelIndex
-
-================
-*/
-int SV_ModelIndex(const char* name)
-{
-	int i;
-
-	if (!name || !name[0])
-	{
-		return 0;
-	}
-
-	for (i = 0; i < MAX_MODELS_Q1 && sv.qh_model_precache[i]; i++)
-		if (!String::Cmp(sv.qh_model_precache[i], name))
-		{
-			return i;
-		}
-	if (i == MAX_MODELS_Q1 || !sv.qh_model_precache[i])
-	{
-		common->FatalError("SV_ModelIndex: model %s not precached", name);
-	}
-	return i;
-}
-
-/*
-================
 SV_CreateBaseline
 
 ================
@@ -976,13 +905,13 @@ void SV_CreateBaseline(void)
 		if (entnum > 0 && entnum <= svs.qh_maxclients)
 		{
 			svent->q1_baseline.colormap = entnum;
-			svent->q1_baseline.modelindex = SV_ModelIndex("progs/player.mdl");
+			svent->q1_baseline.modelindex = SVQH_ModelIndex("progs/player.mdl");
 		}
 		else
 		{
 			svent->q1_baseline.colormap = 0;
 			svent->q1_baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->GetModel()));
+				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
 		//
@@ -1126,7 +1055,6 @@ void SV_SpawnServer(char* server)
 	String::Cpy(sv.name, server);
 
 // load progs to get entity field count
-	PR_InitBuiltins();
 	PR_LoadProgs();
 
 // allocate server memory

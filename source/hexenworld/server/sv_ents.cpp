@@ -354,7 +354,7 @@ void SV_WriteDelta(h2entity_state_t* from, h2entity_state_t* to, QMsg* msg, qboo
 		{
 			NewName[String::Length(NewName) - 5] = client->h2_playerclass + 48;
 		}
-		temp_index = SV_ModelIndex(NewName);
+		temp_index = SVQH_ModelIndex(NewName);
 	}
 
 	if (temp_index != from->modelindex)

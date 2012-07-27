@@ -3,38 +3,9 @@
 
 char localmodels[MAX_MODELS_H2][5];		// inline model names for precache
 
-char localinfo[MAX_LOCALINFO_STRING + 1];	// local game info
-
 func_t SpectatorConnect;
 func_t SpectatorThink;
 func_t SpectatorDisconnect;
-
-/*
-================
-SV_ModelIndex
-
-================
-*/
-int SV_ModelIndex(const char* name)
-{
-	int i;
-
-	if (!name || !name[0])
-	{
-		return 0;
-	}
-
-	for (i = 0; i < MAX_MODELS_H2 && sv.qh_model_precache[i]; i++)
-		if (!String::Cmp(sv.qh_model_precache[i], name))
-		{
-			return i;
-		}
-	if (i == MAX_MODELS_H2 || !sv.qh_model_precache[i])
-	{
-		common->Error("SV_ModelIndex: model %s not precached", name);
-	}
-	return i;
-}
 
 /*
 ================
@@ -75,14 +46,14 @@ void SV_CreateBaseline(void)
 		if (entnum > 0 && entnum <= MAX_CLIENTS_QHW)
 		{
 			svent->h2_baseline.colormap = entnum;
-//			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
-			svent->h2_baseline.modelindex = SV_ModelIndex("models/paladin.mdl");
+//			svent->baseline.modelindex = SVQH_ModelIndex("progs/player.mdl");
+			svent->h2_baseline.modelindex = SVQH_ModelIndex("models/paladin.mdl");
 		}
 		else
 		{
 			svent->h2_baseline.colormap = 0;
 			svent->h2_baseline.modelindex =
-				SV_ModelIndex(PR_GetString(svent->GetModel()));
+				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
 		}
 
 		svent->h2_baseline.scale = (int)(svent->GetScale() * 100.0) & 255;
@@ -295,7 +266,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	*pr_globalVars.randomclass = randomclass->value;
 	*pr_globalVars.damageScale = damageScale->value;
 	*pr_globalVars.shyRespawn = shyRespawn->value;
-	*pr_globalVars.spartanPrint = spartanPrint->value;
+	*pr_globalVars.spartanPrint = hw_spartanPrint->value;
 	*pr_globalVars.meleeDamScale = meleeDamScale->value;
 	*pr_globalVars.manaScale = manaScale->value;
 	*pr_globalVars.tomeMode = tomeMode->value;

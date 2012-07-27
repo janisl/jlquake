@@ -17,6 +17,7 @@
 #include "../server.h"
 #include "progsvm.h"
 #include "../quake_hexen/local.h"
+#include "../quake/local.h"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;
@@ -730,10 +731,12 @@ void PR_LoadProgs()
 	{
 		if (GGameType & GAME_QuakeWorld)
 		{
+			PRQW_InitBuiltins();
 			PR_LoadProgsFile("qwprogs.dat", QWPROGHEADER_CRC);
 		}
 		else
 		{
+			PRQ1_InitBuiltins();
 			PR_LoadProgsFile("progs.dat", Q1PROGHEADER_CRC);
 		}
 	}

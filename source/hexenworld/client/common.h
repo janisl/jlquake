@@ -1,7 +1,5 @@
 // comndef.h  -- general definitions
 
-#define MAX_LOCALINFO_STRING    32768
-
 //============================================================================
 
 void COM_Init(const char* path);

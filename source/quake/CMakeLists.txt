@@ -14,7 +14,6 @@ add_executable(jlquake
 	keys.cpp
 	menu.cpp
 	net_main.cpp
-	pr_cmds.cpp
 	r_part.cpp
 	sbar.cpp
 	snd_dma.cpp
@@ -35,7 +34,6 @@ add_executable(jlquakeded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	pr_cmds.cpp
 	sv_main.cpp
 	sv_user.cpp
 	sys_linux.cpp

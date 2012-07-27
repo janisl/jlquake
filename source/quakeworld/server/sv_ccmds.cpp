@@ -455,7 +455,7 @@ void SV_Status_f(void)
 				continue;
 			}
 			common->Printf("%4i %5.2f\n",
-				(int)SV_CalcPing(cl),
+				(int)SVQH_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence);
 		}
 	}
@@ -492,7 +492,7 @@ void SV_Status_f(void)
 				continue;
 			}
 			common->Printf("%4i %3.1f %4i",
-				(int)SV_CalcPing(cl),
+				(int)SVQH_CalcPing(cl),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence,
 				cl->netchan.qport);
 			if (cl->qh_spectator)
@@ -619,7 +619,7 @@ void SV_Localinfo_f(void)
 	if (Cmd_Argc() == 1)
 	{
 		common->Printf("Local info settings:\n");
-		Info_Print(localinfo);
+		Info_Print(qhw_localinfo);
 		return;
 	}
 
@@ -634,7 +634,7 @@ void SV_Localinfo_f(void)
 		common->Printf("Star variables cannot be changed.\n");
 		return;
 	}
-	Info_SetValueForKey(localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_LOCALINFO_STRING, 64, 64, !svqh_highchars->value, false);
+	Info_SetValueForKey(qhw_localinfo, Cmd_Argv(1), Cmd_Argv(2), QHMAX_LOCALINFO_STRING, 64, 64, !svqh_highchars->value, false);
 }
 
 

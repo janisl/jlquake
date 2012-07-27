@@ -18,6 +18,8 @@
 //#include "../progsvm/progsvm.h"
 #include "local.h"
 
+char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];	// local game info
+
 //	Moves to the next signon buffer if needed
 void SVQH_FlushSignon()
 {
@@ -35,4 +37,30 @@ void SVQH_FlushSignon()
 	sv.qh_signon._data = sv.qh_signon_buffers[sv.qh_num_signon_buffers];
 	sv.qh_num_signon_buffers++;
 	sv.qh_signon.cursize = 0;
+}
+
+int SVQH_ModelIndex(const char* name)
+{
+	int i;
+
+	if (!name || !name[0])
+	{
+		return 0;
+	}
+
+	for (i = 0; i < (GGameType & GAME_Hexen2 ? MAX_MODELS_H2 : MAX_MODELS_Q1) && sv.qh_model_precache[i]; i++)
+		if (!String::Cmp(sv.qh_model_precache[i], name))
+		{
+			return i;
+		}
+	if (i == (GGameType & GAME_Hexen2 ? MAX_MODELS_H2 : MAX_MODELS_Q1) || !sv.qh_model_precache[i])
+	{
+		if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
+		{
+			common->Printf("SVQH_ModelIndex: model %s not precached\n", name);
+			return 0;
+		}
+		common->Error("SVQH_ModelIndex: model %s not precached", name);
+	}
+	return i;
 }

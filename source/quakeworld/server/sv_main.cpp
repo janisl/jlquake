@@ -303,40 +303,6 @@ void SV_DropClient(client_t* drop)
 }
 
 
-//====================================================================
-
-/*
-===================
-SV_CalcPing
-
-===================
-*/
-int SV_CalcPing(client_t* cl)
-{
-	float ping;
-	int i;
-	int count;
-	register qwclient_frame_t* frame;
-
-	ping = 0;
-	count = 0;
-	for (frame = cl->qw_frames, i = 0; i < UPDATE_BACKUP_QW; i++, frame++)
-	{
-		if (frame->ping_time > 0)
-		{
-			ping += frame->ping_time;
-			count++;
-		}
-	}
-	if (!count)
-	{
-		return 9999;
-	}
-	ping /= count;
-
-	return ping * 1000;
-}
-
 /*
 ===================
 SV_FullClientUpdate
@@ -359,7 +325,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(qwsvc_updateping);
 	buf->WriteByte(i);
-	buf->WriteShort(SV_CalcPing(client));
+	buf->WriteShort(SVQH_CalcPing(client));
 
 	buf->WriteByte(qwsvc_updatepl);
 	buf->WriteByte(i);
@@ -435,7 +401,7 @@ void SVC_Status(void)
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
 			top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
 			bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
-			ping = SV_CalcPing(cl);
+			ping = SVQH_CalcPing(cl);
 			common->Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
 				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);

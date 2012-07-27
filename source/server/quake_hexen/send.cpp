@@ -466,3 +466,114 @@ void SVQH_BroadcastCommand(const char* fmt, ...)
 	sv.qh_reliable_datagram.WriteByte(GGameType & GAME_HexenWorld ? h2svc_stufftext : q1svc_stufftext);
 	sv.qh_reliable_datagram.WriteString2(string);
 }
+
+void SVQH_StartParticle(const vec3_t org, const vec3_t dir, int color, int count)
+{
+	int i, v;
+
+	if (!(GGameType & GAME_HexenWorld) && sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16)
+	{
+		return;
+	}
+	QMsg& message = GGameType & GAME_HexenWorld ? sv.multicast : sv.qh_datagram;
+	message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_particle : q1svc_particle);
+	message.WriteCoord(org[0]);
+	message.WriteCoord(org[1]);
+	message.WriteCoord(org[2]);
+	for (i = 0; i < 3; i++)
+	{
+		v = dir[i] * 16;
+		if (v > 127)
+		{
+			v = 127;
+		}
+		else if (v < -128)
+		{
+			v = -128;
+		}
+		message.WriteChar(v);
+	}
+	message.WriteByte(count);
+	message.WriteByte(color);
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}
+
+void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax, int color, int effect, int count)
+{
+	if (!(GGameType & GAME_HexenWorld) && sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 36)
+	{
+		return;
+	}
+	QMsg& message = GGameType & GAME_HexenWorld ? sv.multicast : sv.qh_datagram;
+	message.WriteByte(GGameType & GAME_HexenWorld ? hwsvc_particle2 : h2svc_particle2);
+	message.WriteCoord(org[0]);
+	message.WriteCoord(org[1]);
+	message.WriteCoord(org[2]);
+	message.WriteFloat(dmin[0]);
+	message.WriteFloat(dmin[1]);
+	message.WriteFloat(dmin[2]);
+	message.WriteFloat(dmax[0]);
+	message.WriteFloat(dmax[1]);
+	message.WriteFloat(dmax[2]);
+
+	message.WriteShort(color);
+	message.WriteByte(count);
+	message.WriteByte(effect);
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}
+
+void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count)
+{
+	if (!(GGameType & GAME_HexenWorld) && sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 15)
+	{
+		return;
+	}
+	QMsg& message = GGameType & GAME_HexenWorld ? sv.multicast : sv.qh_datagram;
+	message.WriteByte(GGameType & GAME_HexenWorld ? hwsvc_particle3 : h2svc_particle3);
+	message.WriteCoord(org[0]);
+	message.WriteCoord(org[1]);
+	message.WriteCoord(org[2]);
+	message.WriteByte(box[0]);
+	message.WriteByte(box[1]);
+	message.WriteByte(box[2]);
+
+	message.WriteShort(color);
+	message.WriteByte(count);
+	message.WriteByte(effect);
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}
+
+void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count)
+{
+	if (!(GGameType & GAME_HexenWorld) && sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 13)
+	{
+		return;
+	}
+	QMsg& message = GGameType & GAME_HexenWorld ? sv.multicast : sv.qh_datagram;
+	message.WriteByte(GGameType & GAME_HexenWorld ? hwsvc_particle4 : h2svc_particle4);
+	message.WriteCoord(org[0]);
+	message.WriteCoord(org[1]);
+	message.WriteCoord(org[2]);
+	message.WriteByte(radius);
+
+	message.WriteShort(color);
+	message.WriteByte(count);
+	message.WriteByte(effect);
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}

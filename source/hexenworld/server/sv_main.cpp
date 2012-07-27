@@ -47,7 +47,6 @@ Cvar* skill;
 Cvar* randomclass;
 Cvar* damageScale;
 Cvar* shyRespawn;
-Cvar* spartanPrint;
 Cvar* meleeDamScale;
 Cvar* manaScale;
 Cvar* tomeMode;
@@ -306,41 +305,6 @@ void SV_DropClient(client_t* drop)
 	SV_FullClientUpdate(drop, &sv.qh_reliable_datagram);
 }
 
-
-//====================================================================
-
-/*
-===================
-SV_CalcPing
-
-===================
-*/
-int SV_CalcPing(client_t* cl)
-{
-	float ping;
-	int i;
-	int count;
-	register hwclient_frame_t* frame;
-
-	ping = 0;
-	count = 0;
-	for (frame = cl->hw_frames, i = 0; i < UPDATE_BACKUP_HW; i++, frame++)
-	{
-		if (frame->ping_time > 0)
-		{
-			ping += frame->ping_time;
-			count++;
-		}
-	}
-	if (!count)
-	{
-		return 9999;
-	}
-	ping /= count;
-
-	return ping * 1000;
-}
-
 /*
 ===================
 SV_FullClientUpdate
@@ -385,7 +349,7 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 
 	buf->WriteByte(hwsvc_updateping);
 	buf->WriteByte(i);
-	buf->WriteShort(SV_CalcPing(client));
+	buf->WriteShort(SVQH_CalcPing(client));
 
 	buf->WriteByte(hwsvc_updateentertime);
 	buf->WriteByte(i);
@@ -434,7 +398,7 @@ void SVC_Status(void)
 		{
 			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
 			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
-			ping = SV_CalcPing(cl);
+			ping = SVQH_CalcPing(cl);
 			common->Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
 				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
@@ -1386,7 +1350,7 @@ void SV_InitLocal(void)
 	randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
 	damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
 	shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);
-	spartanPrint = Cvar_Get("spartanPrint", "1.0", CVAR_SERVERINFO);
+	hw_spartanPrint = Cvar_Get("spartanPrint", "1.0", CVAR_SERVERINFO);
 	meleeDamScale = Cvar_Get("meleeDamScale", "0.66666", CVAR_SERVERINFO);
 	manaScale = Cvar_Get("manascale", "1.0", CVAR_SERVERINFO);
 	tomeMode = Cvar_Get("tomemode", "0", CVAR_SERVERINFO);

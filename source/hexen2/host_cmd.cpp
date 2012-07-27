@@ -1025,7 +1025,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 				SVQH_LinkEdict(ent, false);
 				if (ent->v.modelindex && ent->GetModel())
 				{
-					i = SV_ModelIndex(PR_GetString(ent->GetModel()));
+					i = SVQH_ModelIndex(PR_GetString(ent->GetModel()));
 					if (i != ent->v.modelindex)
 					{
 						ent->v.modelindex = i;

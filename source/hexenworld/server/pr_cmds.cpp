@@ -14,70 +14,6 @@
 
 /*
 =================
-PF_bprint
-
-broadcast print to everyone on server
-
-bprint(value)
-=================
-*/
-void PF_bprint(void)
-{
-	const char* s;
-	int level;
-
-	level = G_FLOAT(OFS_PARM0);
-
-	s = PF_VarString(1);
-
-	if (spartanPrint->value == 1 && level < 2)
-	{
-		return;
-	}
-
-	SVQH_BroadcastPrintf(level, "%s", s);
-}
-
-/*
-=================
-PF_sprint
-
-single print to a specific client
-
-sprint(clientent, value)
-=================
-*/
-void PF_sprint(void)
-{
-	const char* s;
-	client_t* client;
-	int entnum;
-	int level;
-
-	entnum = G_EDICTNUM(OFS_PARM0);
-	level = G_FLOAT(OFS_PARM1);
-
-	s = PF_VarString(2);
-
-	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
-	{
-		common->Printf("tried to sprint to a non-client\n");
-		return;
-	}
-
-	client = &svs.clients[entnum - 1];
-
-	if (spartanPrint->value == 1 && level < 2)
-	{
-		return;
-	}
-
-
-	SVQH_ClientPrintf(client, level, "%s", s);
-}
-
-/*
-=================
 PF_name_print
 
 print player's name
@@ -95,7 +31,7 @@ void PF_name_print(void)
 	Style = ((int)G_FLOAT(OFS_PARM1));
 
 
-	if (spartanPrint->value == 1 && Style < 2)
+	if (hw_spartanPrint->value == 1 && Style < 2)
 	{
 		return;
 	}
@@ -174,7 +110,7 @@ void PF_print_indexed(void)
 	Index = ((int)G_FLOAT(OFS_PARM2));
 	Style = ((int)G_FLOAT(OFS_PARM1));
 
-	if (spartanPrint->value == 1 && Style < 2)
+	if (hw_spartanPrint->value == 1 && Style < 2)
 	{
 		return;
 	}
@@ -228,37 +164,6 @@ void PF_print_indexed(void)
 	}
 }
 
-
-
-/*
-=================
-PF_centerprint
-
-single print to a specific client
-
-centerprint(clientent, value)
-=================
-*/
-void PF_centerprint(void)
-{
-	const char* s;
-	client_t* client;
-	int entnum;
-
-	entnum = G_EDICTNUM(OFS_PARM0);
-	s = PF_VarString(1);
-
-	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
-	{
-		common->Printf("tried to sprint to a non-client\n");
-		return;
-	}
-
-	client = &svs.clients[entnum - 1];
-
-	client->netchan.message.WriteChar(h2svc_centerprint);
-	client->netchan.message.WriteString2(s);
-}
 
 
 /*
@@ -317,224 +222,6 @@ void PF_centerprint2(void)
 
 	client->netchan.message.WriteChar(h2svc_centerprint);
 	client->netchan.message.WriteString2(s);
-}
-
-
-/*
-=================
-PF_particle
-
-particle(origin, color, count)
-=================
-*/
-void PF_particle(void)
-{
-	float* org, * dir;
-	float color;
-	float count;
-
-	org = G_VECTOR(OFS_PARM0);
-	dir = G_VECTOR(OFS_PARM1);
-	color = G_FLOAT(OFS_PARM2);
-	count = G_FLOAT(OFS_PARM3);
-	SV_StartParticle(org, dir, color, count);
-}
-
-
-/*
-=================
-PF_particle2
-
-particle(origin, dmin, dmax, color, effect, count)
-=================
-*/
-void PF_particle2(void)
-{
-	float* org, * dmin, * dmax;
-	float color;
-	float count;
-	float effect;
-
-	org = G_VECTOR(OFS_PARM0);
-	dmin = G_VECTOR(OFS_PARM1);
-	dmax = G_VECTOR(OFS_PARM2);
-	color = G_FLOAT(OFS_PARM3);
-	effect = G_FLOAT(OFS_PARM4);
-	count = G_FLOAT(OFS_PARM5);
-	SV_StartParticle2(org, dmin, dmax, color, effect, count);
-}
-
-
-/*
-=================
-PF_particle3
-
-particle(origin, box, color, effect, count)
-=================
-*/
-void PF_particle3(void)
-{
-	float* org, * box;
-	float color;
-	float count;
-	float effect;
-
-	org = G_VECTOR(OFS_PARM0);
-	box = G_VECTOR(OFS_PARM1);
-	color = G_FLOAT(OFS_PARM2);
-	effect = G_FLOAT(OFS_PARM3);
-	count = G_FLOAT(OFS_PARM4);
-	SV_StartParticle3(org, box, color, effect, count);
-}
-
-/*
-=================
-PF_particle4
-
-particle(origin, radius, color, effect, count)
-=================
-*/
-void PF_particle4(void)
-{
-	float* org;
-	float radius;
-	float color;
-	float count;
-	float effect;
-
-	org = G_VECTOR(OFS_PARM0);
-	radius = G_FLOAT(OFS_PARM1);
-	color = G_FLOAT(OFS_PARM2);
-	effect = G_FLOAT(OFS_PARM3);
-	count = G_FLOAT(OFS_PARM4);
-	SV_StartParticle4(org, radius, color, effect, count);
-}
-
-/*
-=================
-PF_stuffcmd
-
-Sends text over to the client's execution buffer
-
-stuffcmd (clientent, value)
-=================
-*/
-void PF_stuffcmd(void)
-{
-	int entnum;
-	const char* str;
-	client_t* old;
-
-	entnum = G_EDICTNUM(OFS_PARM0);
-	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
-	{
-		PR_RunError("Parm 0 not a client");
-	}
-	str = G_STRING(OFS_PARM1);
-
-	old = host_client;
-	host_client = &svs.clients[entnum - 1];
-
-	SVQH_SendClientCommand(host_client, "%s", str);
-
-	host_client = old;
-}
-
-void PF_makestatic(void)
-{
-	qhedict_t* ent;
-	int i;
-
-	ent = G_EDICT(OFS_PARM0);
-
-	sv.qh_signon.WriteByte(h2svc_spawnstatic);
-
-	sv.qh_signon.WriteShort(SV_ModelIndex(PR_GetString(ent->GetModel())));
-
-	sv.qh_signon.WriteByte(ent->GetFrame());
-	sv.qh_signon.WriteByte(ent->GetColorMap());
-	sv.qh_signon.WriteByte(ent->GetSkin());
-	sv.qh_signon.WriteByte((int)(ent->GetScale() * 100.0) & 255);
-	sv.qh_signon.WriteByte(ent->GetDrawFlags());
-	sv.qh_signon.WriteByte((int)(ent->GetAbsLight() * 255.0) & 255);
-
-	for (i = 0; i < 3; i++)
-	{
-		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
-		sv.qh_signon.WriteAngle(ent->GetAngles()[i]);
-	}
-
-// throw the entity away now
-	ED_Free(ent);
-}
-
-//=============================================================================
-
-/*
-==============
-PF_changelevel
-==============
-*/
-void PF_changelevel(void)
-{
-	const char* s1, * s2;
-
-	if (svs.qh_changelevel_issued)
-	{
-		return;
-	}
-	svs.qh_changelevel_issued = true;
-
-	s1 = G_STRING(OFS_PARM0);
-	s2 = G_STRING(OFS_PARM1);
-
-	if ((int)*pr_globalVars.serverflags & (SFL_NEW_UNIT | SFL_NEW_EPISODE))
-	{
-		Cbuf_AddText(va("map %s %s\n",s1, s2));
-	}
-	else
-	{
-		Cbuf_AddText(va("changelevel2 %s %s\n",s1, s2));
-	}
-}
-
-
-/*
-==============
-PF_infokey
-
-string(entity e, string key) infokey
-==============
-*/
-void PF_infokey(void)
-{
-	qhedict_t* e;
-	int e1;
-	const char* value;
-	const char* key;
-
-	e = G_EDICT(OFS_PARM0);
-	e1 = QH_NUM_FOR_EDICT(e);
-	key = G_STRING(OFS_PARM1);
-
-	if (e1 == 0)
-	{
-		if ((value = Info_ValueForKey(svs.qh_info, key)) == NULL ||
-			!*value)
-		{
-			value = Info_ValueForKey(localinfo, key);
-		}
-	}
-	else if (e1 <= MAX_CLIENTS_QHW)
-	{
-		value = Info_ValueForKey(svs.clients[e1 - 1].userinfo, key);
-	}
-	else
-	{
-		value = "";
-	}
-
-	RETURN_STRING(value);
 }
 
 void PF_plaque_draw(void)
@@ -953,8 +640,8 @@ builtin_t pr_builtin[] =
 	PF_precache_model,	// void(string s) precache_model		= #20;
 	PF_stuffcmd,// void(entity client, string s)stuffcmd = #21;
 	PF_findradius,	// entity(vector org, float rad) findradius = #22;
-	PF_bprint,	// void(string s) bprint				= #23;
-	PF_sprint,	// void(entity client, string s) sprint = #24;
+	PFQW_bprint,	// void(string s) bprint				= #23;
+	PFQW_sprint,	// void(entity client, string s) sprint = #24;
 	PF_dprint,	// void(string s) dprint				= #25;
 	PF_ftos,// void(string s) ftos				= #26;
 	PF_vtos,// void(string s) vtos				= #27;
@@ -1002,9 +689,9 @@ builtin_t pr_builtin[] =
 
 	SVQH_MoveToGoal,
 	PF_precache_file,
-	PF_makestatic,
+	PFH2_makestatic,
 
-	PF_changelevel,
+	PFH2_changelevel,
 	PFHW_lightstylevalue,	// 71
 
 	PF_cvar_set,
@@ -1045,7 +732,7 @@ builtin_t pr_builtin[] =
 
 	PF_logfrag,	//99
 
-	PF_infokey,	//100
+	PFHW_infokey,	//100
 	PF_stof,	//101
 	PF_multicast,	//102
 	PF_turneffect,	//103

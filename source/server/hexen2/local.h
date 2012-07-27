@@ -55,5 +55,11 @@ void PF_RewindFrame();
 void PF_advanceweaponframe();
 void PF_matchAngleToSlope();
 void PF_updateInfoPlaque();
+void PF_particle2();
+void PF_particle3();
+void PF_particle4();
+void PFH2_makestatic();
+void PFH2_changelevel();
+void PFHW_infokey();
 
 #endif

@@ -929,7 +929,7 @@ void SV_Pings_f(void)
 
 		SVQH_ClientReliableWrite_Begin(host_client, qwsvc_updateping, 4);
 		SVQH_ClientReliableWrite_Byte(host_client, j);
-		SVQH_ClientReliableWrite_Short(host_client, SV_CalcPing(client));
+		SVQH_ClientReliableWrite_Short(host_client, SVQH_CalcPing(client));
 		SVQH_ClientReliableWrite_Begin(host_client, qwsvc_updatepl, 4);
 		SVQH_ClientReliableWrite_Byte(host_client, j);
 		SVQH_ClientReliableWrite_Byte(host_client, client->qw_lossage);

@@ -746,7 +746,7 @@ void SV_Pings_f(void)
 
 		host_client->netchan.message.WriteByte(hwsvc_updateping);
 		host_client->netchan.message.WriteByte(j);
-		host_client->netchan.message.WriteShort(SV_CalcPing(client));
+		host_client->netchan.message.WriteShort(SVQH_CalcPing(client));
 	}
 }
 
