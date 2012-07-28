@@ -2196,23 +2196,23 @@ void M_GameOptions_Draw(void)
 	}
 
 	M_Print(0, 88, "       Frag Limit");
-	if (fraglimit->value == 0)
+	if (qh_fraglimit->value == 0)
 	{
 		M_Print(160, 88, "none");
 	}
 	else
 	{
-		M_Print(160, 88, va("%i frags", (int)fraglimit->value));
+		M_Print(160, 88, va("%i frags", (int)qh_fraglimit->value));
 	}
 
 	M_Print(0, 96, "       Time Limit");
-	if (timelimit->value == 0)
+	if (qh_timelimit->value == 0)
 	{
 		M_Print(160, 96, "none");
 	}
 	else
 	{
-		M_Print(160, 96, va("%i minutes", (int)timelimit->value));
+		M_Print(160, 96, va("%i minutes", (int)qh_timelimit->value));
 	}
 
 	M_Print(0, 112, "         Episode");
@@ -2331,24 +2331,24 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 5:
-		Cvar_SetValue("fraglimit", fraglimit->value + dir * 10);
-		if (fraglimit->value > 100)
+		Cvar_SetValue("fraglimit", qh_fraglimit->value + dir * 10);
+		if (qh_fraglimit->value > 100)
 		{
 			Cvar_SetValue("fraglimit", 0);
 		}
-		if (fraglimit->value < 0)
+		if (qh_fraglimit->value < 0)
 		{
 			Cvar_SetValue("fraglimit", 100);
 		}
 		break;
 
 	case 6:
-		Cvar_SetValue("timelimit", timelimit->value + dir * 5);
-		if (timelimit->value > 60)
+		Cvar_SetValue("timelimit", qh_timelimit->value + dir * 5);
+		if (qh_timelimit->value > 60)
 		{
 			Cvar_SetValue("timelimit", 0);
 		}
-		if (timelimit->value < 0)
+		if (qh_timelimit->value < 0)
 		{
 			Cvar_SetValue("timelimit", 60);
 		}

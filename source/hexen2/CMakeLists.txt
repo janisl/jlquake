@@ -14,7 +14,6 @@ add_executable(jlhexen2
 	keys.cpp
 	menu.cpp
 	net_main.cpp
-	pr_cmds.cpp
 	r_part.cpp
 	sbar.cpp
 	sv_main.cpp
@@ -35,7 +34,6 @@ add_executable(jlhexen2ded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	pr_cmds.cpp
 	sv_main.cpp
 	sv_user.cpp
 	zone.cpp

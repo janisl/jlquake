@@ -18,7 +18,6 @@
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
-#include "progs.h"
 
 #include "server.h"
 

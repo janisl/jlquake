@@ -15,8 +15,6 @@
 
 extern Cvar* skill;
 extern Cvar* randomclass;
-extern Cvar* fraglimit;
-extern Cvar* timelimit;
 
 extern client_t* host_client;
 

@@ -32,34 +32,7 @@ float SVHW_seedrand();
 
 extern unsigned int info_mask, info_mask2;
 
-void PF_setpuzzlemodel();
-void PF_precache_sound2();
-void PF_precache_sound3();
-void PF_precache_sound4();
-void PF_precache_model2();
-void PF_precache_model3();
-void PF_precache_model4();
-void PF_StopSound();
-void PF_UpdateSoundPos();
-void PF_tracearea();
-void PF_SpawnTemp();
-void PF_FindFloat();
-void PF_precache_puzzle_model();
-void PFHW_lightstylevalue();
-void PFH2_lightstylestatic();
-void PFHW_lightstylestatic();
-void PF_movestep();
-void PFH2_AdvanceFrame();
-void PFHW_AdvanceFrame();
-void PF_RewindFrame();
-void PF_advanceweaponframe();
-void PF_matchAngleToSlope();
-void PF_updateInfoPlaque();
-void PF_particle2();
-void PF_particle3();
-void PF_particle4();
-void PFH2_makestatic();
-void PFH2_changelevel();
-void PFHW_infokey();
+void PRH2_InitBuiltins();
+void PRHW_InitBuiltins();
 
 #endif

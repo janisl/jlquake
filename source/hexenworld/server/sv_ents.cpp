@@ -1244,7 +1244,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		{
 			if ((int)ent->GetEffects() & H2EF_NODRAW)
 			{
-				if (dmMode->value == DM_SIEGE && clent->GetPlayerClass() == CLASS_DWARF)
+				if (hw_dmMode->value == HWDM_SIEGE && clent->GetPlayerClass() == CLASS_DWARF)
 				{
 					invis_level = false;
 				}
@@ -1429,7 +1429,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		}
 		if (ent->GetSkin())
 		{
-			if (dmMode->value == DM_SIEGE && playermodel && ent->GetSkin() == 1)
+			if (hw_dmMode->value == HWDM_SIEGE && playermodel && ent->GetSkin() == 1)
 			{
 				;
 			}

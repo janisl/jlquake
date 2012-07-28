@@ -39,11 +39,8 @@ extern Cvar* w2Respawn;
 extern Cvar* altRespawn;
 extern Cvar* fixedLevel;
 extern Cvar* autoItems;
-extern Cvar* dmMode;
 extern Cvar* easyFourth;
 extern Cvar* patternRunner;
-extern Cvar* fraglimit;
-extern Cvar* timelimit;
 extern Cvar* noexit;
 
 extern client_t* host_client;
@@ -92,8 +89,6 @@ void SV_SpawnServer(char* server, char* startspot);
 //
 void SV_SendClientMessages(void);
 
-void SV_MulticastSpecific(unsigned clients, qboolean reliable);
-void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count);
 void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);
 

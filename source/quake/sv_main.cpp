@@ -1151,4 +1151,9 @@ void SV_SpawnServer(char* server)
 void S_ClearSoundBuffer(bool)
 {
 }
+
+int CLH2_GetLightStyleValue(int style)
+{
+	return 0;
+}
 #endif

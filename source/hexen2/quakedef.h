@@ -133,7 +133,6 @@
 #include "sbar.h"
 #include "render.h"
 #endif
-#include "progs.h"
 #include "client.h"
 #include "server.h"
 #ifndef DEDICATED

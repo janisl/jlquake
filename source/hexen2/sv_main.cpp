@@ -2103,7 +2103,6 @@ void SV_SpawnServer(char* server, char* startspot)
 	current_loading_size = 0;
 	loading_stage = 1;
 #endif
-	PR_InitBuiltins();
 	PR_LoadProgs();
 #ifndef DEDICATED
 	current_loading_size += 60;
@@ -2238,5 +2237,10 @@ void SV_SpawnServer(char* server, char* startspot)
 #ifdef DEDICATED
 void S_ClearSoundBuffer(bool)
 {
+}
+
+int CLH2_GetLightStyleValue(int style)
+{
+	return 0;
 }
 #endif

@@ -110,3 +110,8 @@ void CLH2_ExplosionLight(vec3_t origin)
 		dl->color[2] = 0.05;
 	}
 }
+
+int CLH2_GetLightStyleValue(int style)
+{
+	return (int)(cl_lightstyle[style].value[0] / 22.0 * 256.0);
+}

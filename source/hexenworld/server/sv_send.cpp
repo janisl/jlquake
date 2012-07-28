@@ -140,65 +140,6 @@ EVENT MESSAGES
 */
 
 /*
-=================
-SV_MulticastSpecific
-
-Sends the contents of sv.multicast to a subset of the clients,
-then clears sv.multicast.
-=================
-*/
-void SV_MulticastSpecific(unsigned clients, qboolean reliable)
-{
-	client_t* client;
-	int j;
-
-	clients_multicast = 0;
-
-	// send the data to all relevent clients
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-
-		if ((1l << j) & clients)
-		{
-			clients_multicast |= 1l << j;
-
-			if (reliable)
-			{
-				client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
-			}
-			else
-			{
-				client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
-			}
-		}
-	}
-
-	sv.multicast.Clear();
-}
-
-void SV_StartRainEffect(vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
-{
-	sv.multicast.WriteByte(hwsvc_raineffect);
-	sv.multicast.WriteCoord(org[0]);
-	sv.multicast.WriteCoord(org[1]);
-	sv.multicast.WriteCoord(org[2]);
-	sv.multicast.WriteCoord(e_size[0]);
-	sv.multicast.WriteCoord(e_size[1]);
-	sv.multicast.WriteCoord(e_size[2]);
-	sv.multicast.WriteAngle(x_dir);
-	sv.multicast.WriteAngle(y_dir);
-	sv.multicast.WriteShort(color);
-	sv.multicast.WriteShort(count);
-
-	SVQH_Multicast(org, MULTICAST_PVS);
-}
-
-
-/*
 ===============================================================================
 
 FRAME UPDATES
@@ -548,7 +489,7 @@ void SV_UpdateToReliableMessages(void)
 				client->netchan.message.WriteShort(host_client->qh_edict->GetFrags());
 				client->netchan.message.WriteByte((host_client->h2_playerclass << 5) | ((int)host_client->qh_edict->GetLevel() & 31));
 
-				if (dmMode->value == DM_SIEGE)
+				if (hw_dmMode->value == HWDM_SIEGE)
 				{
 					client->netchan.message.WriteByte(hwsvc_updatesiegelosses);
 					client->netchan.message.WriteByte(*pr_globalVars.defLosses);

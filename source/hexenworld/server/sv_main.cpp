@@ -39,8 +39,6 @@ Cvar* sv_namedistance;
 //
 // game rules mirrored in svs.qh_info
 //
-Cvar* fraglimit;
-Cvar* timelimit;
 Cvar* samelevel;
 Cvar* maxspectators;
 Cvar* skill;
@@ -55,7 +53,6 @@ Cvar* w2Respawn;
 Cvar* altRespawn;
 Cvar* fixedLevel;
 Cvar* autoItems;
-Cvar* dmMode;
 Cvar* easyFourth;
 Cvar* patternRunner;
 Cvar* spawn;
@@ -266,7 +263,7 @@ void SV_DropClient(client_t* drop)
 			PR_ExecuteProgram(SpectatorDisconnect);
 		}
 	}
-	else if (dmMode->value == DM_SIEGE)
+	else if (hw_dmMode->value == HWDM_SIEGE)
 	{
 		if (String::ICmp(PR_GetString(drop->qh_edict->GetPuzzleInv1()),""))
 		{
@@ -329,11 +326,11 @@ void SV_FullClientUpdate(client_t* client, QMsg* buf)
 	buf->WriteShort(client->qh_old_frags);
 	buf->WriteByte((client->h2_playerclass << 5) | ((int)client->qh_edict->GetLevel() & 31));
 
-	if (dmMode->value == DM_SIEGE)
+	if (hw_dmMode->value == HWDM_SIEGE)
 	{
 		buf->WriteByte(hwsvc_updatesiegeinfo);
-		buf->WriteByte((int)ceil(timelimit->value));
-		buf->WriteByte((int)ceil(fraglimit->value));
+		buf->WriteByte((int)ceil(qh_timelimit->value));
+		buf->WriteByte((int)ceil(qh_fraglimit->value));
 
 		buf->WriteByte(hwsvc_updatesiegeteam);
 		buf->WriteByte(i);
@@ -1338,8 +1335,8 @@ void SV_InitLocal(void)
 	password = Cvar_Get("password", "", 0);	// password for entering the game
 	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
-	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	qh_timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel", "0", CVAR_SERVERINFO);
 	sv_maxclients = Cvar_Get("maxclients", "8", CVAR_SERVERINFO);
@@ -1359,7 +1356,7 @@ void SV_InitLocal(void)
 	altRespawn = Cvar_Get("altrespawn", "0", CVAR_SERVERINFO);
 	fixedLevel = Cvar_Get("fixedlevel", "0", CVAR_SERVERINFO);
 	autoItems = Cvar_Get("autoitems", "0", CVAR_SERVERINFO);
-	dmMode = Cvar_Get("dmmode", "0", CVAR_SERVERINFO);
+	hw_dmMode = Cvar_Get("dmmode", "0", CVAR_SERVERINFO);
 	easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
 	patternRunner = Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
 	spawn = Cvar_Get("spawn", "0", CVAR_SERVERINFO);
@@ -1597,7 +1594,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 	if (String::Length(val))
 	{
 		i = String::Atoi(val);
-		if (i > CLASS_DEMON && dmMode->value != DM_SIEGE)
+		if (i > CLASS_DEMON && hw_dmMode->value != HWDM_SIEGE)
 		{
 			i = CLASS_PALADIN;
 		}
@@ -1730,4 +1727,9 @@ void SV_Init(quakeparms_t* parms)
 	{
 		Sys_Error("%s", e.What());
 	}
+}
+
+int CLH2_GetLightStyleValue(int style)
+{
+	return 0;
 }

@@ -1,6 +1,7 @@
 // sv_user.c -- server code for moving users
 
 #include "qwsvdef.h"
+#include "../../common/hexen2strings.h"
 
 qhedict_t* sv_player;
 
@@ -237,7 +238,7 @@ void SV_Spawn_f(void)
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->SetColorMap(QH_NUM_FOR_EDICT(ent));
-	if (dmMode->value == DM_SIEGE)
+	if (hw_dmMode->value == HWDM_SIEGE)
 	{
 		ent->SetTeam(ent->GetSiegeTeam());	// FIXME
 	}
@@ -664,7 +665,7 @@ void SV_Say(qboolean team)
 			else
 			{
 				t2 = Info_ValueForKey(client->userinfo, "team");
-				if (dmMode->value == DM_SIEGE)
+				if (hw_dmMode->value == HWDM_SIEGE)
 				{
 					if ((host_client->qh_edict->GetSkin() == 102 && client->qh_edict->GetSkin() != 102) || (client->qh_edict->GetSkin() == 102 && host_client->qh_edict->GetSkin() != 102))
 					{
@@ -684,7 +685,7 @@ void SV_Say(qboolean team)
 		}
 		if (speaknum == -1)
 		{
-			if (dmMode->value == DM_SIEGE && host_client->hw_siege_team != client->hw_siege_team)	//other team speaking
+			if (hw_dmMode->value == HWDM_SIEGE && host_client->hw_siege_team != client->hw_siege_team)	//other team speaking
 			{
 				SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);//fixme: print biege
 			}

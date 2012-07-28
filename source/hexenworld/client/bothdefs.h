@@ -93,8 +93,3 @@
 #define IT_SIGIL2               (1 << 29)
 #define IT_SIGIL3               (1 << 30)
 #define IT_SIGIL4               (1 << 31)
-
-//Dm Modes
-#define DM_CAPTURE_THE_TOKEN        1
-#define DM_HUNTER                   2
-#define DM_SIEGE                    3

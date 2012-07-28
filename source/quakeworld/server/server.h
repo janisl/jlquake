@@ -44,8 +44,6 @@ extern func_t SpectatorThink;
 extern func_t SpectatorDisconnect;
 
 extern Cvar* spawn;
-extern Cvar* fraglimit;
-extern Cvar* timelimit;
 
 extern client_t* host_client;
 

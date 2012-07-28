@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //============================================================================
 
 extern Cvar* skill;
-extern Cvar* fraglimit;
-extern Cvar* timelimit;
 
 extern client_t* host_client;
 

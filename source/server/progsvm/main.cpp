@@ -18,6 +18,7 @@
 #include "progsvm.h"
 #include "../quake_hexen/local.h"
 #include "../quake/local.h"
+#include "../hexen2/local.h"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;
@@ -711,10 +712,12 @@ void PR_LoadProgs()
 	{
 		if (GGameType & GAME_HexenWorld)
 		{
+			PRHW_InitBuiltins();
 			PR_LoadProgsFile("hwprogs.dat", HWPROGHEADER_CRC);
 		}
 		else
 		{
+			PRH2_InitBuiltins();
 			char finalprogname[MAX_OSPATH];
 			GetHexen2ProgsName(finalprogname);
 

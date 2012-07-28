@@ -44,9 +44,6 @@ Cvar* host_speeds;				// set for running times
 Cvar* sys_ticrate;
 Cvar* serverprofile;
 
-Cvar* fraglimit;
-Cvar* timelimit;
-
 Cvar* samelevel;
 Cvar* noexit;
 
@@ -373,8 +370,8 @@ void Host_InitLocal(void)
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
 	serverprofile = Cvar_Get("serverprofile", "0", 0);
 
-	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	qh_timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel", "0", 0);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);

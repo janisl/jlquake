@@ -112,6 +112,9 @@ extern Cvar* svqh_coop;
 extern Cvar* svqh_teamplay;
 extern Cvar* svqh_highchars;
 extern Cvar* hw_spartanPrint;
+extern Cvar* hw_dmMode;
+extern Cvar* qh_timelimit;
+extern Cvar* qh_fraglimit;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -174,6 +177,7 @@ extern unsigned clients_multicast;
 extern Cvar* sv_phs;
 
 void SVQH_Multicast(const vec3_t origin, int to);
+void SVHW_MulticastSpecific(unsigned clients, bool reliable);
 void SVH2_StopSound(qhedict_t* entity, int channel);
 void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
 	float attenuation);
@@ -187,6 +191,7 @@ void SVQH_StartParticle(const vec3_t org, const vec3_t dir, int color, int count
 void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax, int color, int effect, int count);
 void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count);
 void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
+void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count);
 
 //
 //	World

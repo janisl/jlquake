@@ -18,6 +18,7 @@
 #include "../progsvm/progsvm.h"
 #include "../quake_hexen/local.h"
 #include "local.h"
+#include "../../common/hexen2strings.h"
 
 #define WF_NORMAL_ADVANCE 0
 #define WF_CYCLE_STARTED 1
@@ -36,7 +37,7 @@ static const char* styleDefs[] =
 	"v", "w", "x", "y", "z"
 };
 
-void PF_setpuzzlemodel()
+static void PF_setpuzzlemodel()
 {
 	qhedict_t* e = G_EDICT(OFS_PARM0);
 	const char* m = G_STRING(OFS_PARM1);
@@ -84,7 +85,7 @@ void PF_setpuzzlemodel()
 	}
 }
 
-void PF_precache_sound2()
+static void PF_precache_sound2()
 {
 	if (!qh_registered->value)
 	{
@@ -94,7 +95,7 @@ void PF_precache_sound2()
 	PF_precache_sound();
 }
 
-void PF_precache_sound3()
+static void PF_precache_sound3()
 {
 	if (!qh_registered->value)
 	{
@@ -104,7 +105,7 @@ void PF_precache_sound3()
 	PF_precache_sound();
 }
 
-void PF_precache_sound4()
+static void PF_precache_sound4()
 {
 	//mission pack only
 	if (!qh_registered->value)
@@ -115,7 +116,7 @@ void PF_precache_sound4()
 	PF_precache_sound();
 }
 
-void PF_precache_model2()
+static void PF_precache_model2()
 {
 	if (!qh_registered->value)
 	{
@@ -125,7 +126,7 @@ void PF_precache_model2()
 	PF_precache_model();
 }
 
-void PF_precache_model3()
+static void PF_precache_model3()
 {
 	if (!qh_registered->value)
 	{
@@ -135,7 +136,7 @@ void PF_precache_model3()
 	PF_precache_model();
 }
 
-void PF_precache_model4()
+static void PF_precache_model4()
 {
 	if (!qh_registered->value)
 	{
@@ -145,7 +146,7 @@ void PF_precache_model4()
 }
 
 //	stop ent's sound on this chan
-void PF_StopSound()
+static void PF_StopSound()
 {
 	qhedict_t* entity = G_EDICT(OFS_PARM0);
 	int channel = G_FLOAT(OFS_PARM1);
@@ -159,7 +160,7 @@ void PF_StopSound()
 }
 
 //	sends cur pos to client to update this ent/chan pair
-void PF_UpdateSoundPos()
+static void PF_UpdateSoundPos()
 {
 	qhedict_t* entity = G_EDICT(OFS_PARM0);
 	int channel = G_FLOAT(OFS_PARM1);
@@ -175,7 +176,7 @@ void PF_UpdateSoundPos()
 //	Used for use tracing and shot targeting
 // Traces are blocked by bbox and exact bsp entityes, and also slide box entities
 // if the tryents flag is set.
-void PF_tracearea()
+static void PF_tracearea()
 {
 	float* v1 = G_VECTOR(OFS_PARM0);
 	float* v2 = G_VECTOR(OFS_PARM1);
@@ -189,42 +190,14 @@ void PF_tracearea()
 	SVQH_SetMoveTrace(trace);
 }
 
-void PF_SpawnTemp()
+static void PF_SpawnTemp()
 {
 	qhedict_t* ed = ED_Alloc_Temp();
 
 	RETURN_EDICT(ed);
 }
 
-void PF_FindFloat()
-{
-	int e = G_EDICTNUM(OFS_PARM0);
-	int f = G_INT(OFS_PARM1);
-	float s = G_FLOAT(OFS_PARM2);
-	if (!s)
-	{
-		PR_RunError("PF_Find: bad search string");
-	}
-
-	for (e++; e < sv.qh_num_edicts; e++)
-	{
-		qhedict_t* ed = QH_EDICT_NUM(e);
-		if (ed->free)
-		{
-			continue;
-		}
-		float t = E_FLOAT(ed,f);
-		if (t == s)
-		{
-			RETURN_EDICT(ed);
-			return;
-		}
-	}
-
-	RETURN_EDICT(sv.qh_edicts);
-}
-
-void PF_precache_puzzle_model()
+static void PF_precache_puzzle_model()
 {
 	if (sv.state != SS_LOADING)
 	{
@@ -259,7 +232,19 @@ void PF_precache_puzzle_model()
 	PR_RunError("PF_precache_puzzle_model: overflow");
 }
 
-void PFHW_lightstylevalue()
+static void PFH2_lightstylevalue()
+{
+	int style = G_FLOAT(OFS_PARM0);
+	if (style < 0 || style >= MAX_LIGHTSTYLES_H2)
+	{
+		G_FLOAT(OFS_RETURN) = 0;
+		return;
+	}
+
+	G_FLOAT(OFS_RETURN) = CLH2_GetLightStyleValue(style);
+}
+
+static void PFHW_lightstylevalue()
 {
 	int style = G_FLOAT(OFS_PARM0);
 	if (style < 0 || style >= MAX_LIGHTSTYLES_H2)
@@ -271,7 +256,7 @@ void PFHW_lightstylevalue()
 	G_FLOAT(OFS_RETURN) = (int)pr_lightstylevalue[style];
 }
 
-void PFH2_lightstylestatic()
+static void PFH2_lightstylestatic()
 {
 	int styleNumber = G_FLOAT(OFS_PARM0);
 	int value = G_FLOAT(OFS_PARM1);
@@ -306,7 +291,7 @@ void PFH2_lightstylestatic()
 	}
 }
 
-void PFHW_lightstylestatic()
+static void PFHW_lightstylestatic()
 {
 	int styleNumber = G_FLOAT(OFS_PARM0);
 	int value = G_FLOAT(OFS_PARM1);
@@ -342,7 +327,7 @@ void PFHW_lightstylestatic()
 	}
 }
 
-void PF_movestep()
+static void PF_movestep()
 {
 	qhedict_t* ent = PROG_TO_EDICT(*pr_globalVars.self);
 
@@ -363,7 +348,7 @@ void PF_movestep()
 	*pr_globalVars.self = oldself;
 }
 
-void PFH2_AdvanceFrame()
+static void PFH2_AdvanceFrame()
 {
 	qhedict_t* ent = PROG_TO_EDICT(*pr_globalVars.self);
 	float start = G_FLOAT(OFS_PARM0);
@@ -399,7 +384,7 @@ void PFH2_AdvanceFrame()
 	G_FLOAT(OFS_RETURN) = result;
 }
 
-void PFHW_AdvanceFrame()
+static void PFHW_AdvanceFrame()
 {
 	qhedict_t* ent = PROG_TO_EDICT(*pr_globalVars.self);
 	float start = G_FLOAT(OFS_PARM0);
@@ -454,7 +439,7 @@ void PFHW_AdvanceFrame()
 	G_FLOAT(OFS_RETURN) = result;
 }
 
-void PF_RewindFrame()
+static void PF_RewindFrame()
 {
 	qhedict_t* ent = PROG_TO_EDICT(*pr_globalVars.self);
 	float start = G_FLOAT(OFS_PARM0);
@@ -490,7 +475,7 @@ void PF_RewindFrame()
 	G_FLOAT(OFS_RETURN) = Result;
 }
 
-void PF_advanceweaponframe()
+static void PF_advanceweaponframe()
 {
 	qhedict_t* ent = PROG_TO_EDICT(*pr_globalVars.self);
 	float startframe = G_FLOAT(OFS_PARM0);
@@ -532,7 +517,7 @@ void PF_advanceweaponframe()
 	G_FLOAT(OFS_RETURN) = state;
 }
 
-void PF_matchAngleToSlope()
+static void PF_matchAngleToSlope()
 {
 	// OFS_PARM0 is used by PF_vectoangles below
 	qhedict_t* actor = G_EDICT(OFS_PARM1);
@@ -567,7 +552,7 @@ void PF_matchAngleToSlope()
 	actor->GetAngles()[2] = (1 - Q_fabs(dot)) * pitch * mod;
 }
 
-void PF_updateInfoPlaque()
+static void PF_updateInfoPlaque()
 {
 	unsigned int index = G_FLOAT(OFS_PARM0);
 	unsigned int mode = G_FLOAT(OFS_PARM1);
@@ -596,7 +581,7 @@ void PF_updateInfoPlaque()
 	}
 }
 
-void PF_particle2()
+static void PF_particle2()
 {
 	float* org = G_VECTOR(OFS_PARM0);
 	float* dmin = G_VECTOR(OFS_PARM1);
@@ -607,7 +592,7 @@ void PF_particle2()
 	SVH2_StartParticle2(org, dmin, dmax, colour, effect, count);
 }
 
-void PF_particle3()
+static void PF_particle3()
 {
 	float* org = G_VECTOR(OFS_PARM0);
 	float* box = G_VECTOR(OFS_PARM1);
@@ -617,7 +602,7 @@ void PF_particle3()
 	SVH2_StartParticle3(org, box, color, effect, count);
 }
 
-void PF_particle4()
+static void PF_particle4()
 {
 	float* org = G_VECTOR(OFS_PARM0);
 	float radius = G_FLOAT(OFS_PARM1);
@@ -627,7 +612,7 @@ void PF_particle4()
 	SVH2_StartParticle4(org, radius, color, effect, count);
 }
 
-void PFH2_makestatic()
+static void PFH2_makestatic()
 {
 	qhedict_t* ent = G_EDICT(OFS_PARM0);
 
@@ -652,7 +637,7 @@ void PFH2_makestatic()
 	ED_Free(ent);
 }
 
-void PFH2_changelevel()
+static void PFH2_changelevel()
 {
 	if (svs.qh_changelevel_issued)
 	{
@@ -680,7 +665,7 @@ void PFH2_changelevel()
 	}
 }
 
-void PFHW_infokey()
+static void PFHW_infokey()
 {
 	qhedict_t* e = G_EDICT(OFS_PARM0);
 	int e1 = QH_NUM_FOR_EDICT(e);
@@ -705,4 +690,856 @@ void PFHW_infokey()
 	}
 
 	RETURN_STRING(value);
+}
+
+static void PFH2_plaque_draw()
+{
+	int Index = ((int)G_FLOAT(OFS_PARM1));
+
+	if (Index < 0)
+	{
+		PR_RunError("PF_plaque_draw: index(%d) < 1",Index);
+	}
+
+	if (Index > prh2_string_count)
+	{
+		PR_RunError("PF_plaque_draw: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
+	}
+
+	Q1WriteDest()->WriteByte(h2svc_plaque);
+	Q1WriteDest()->WriteShort(Index);
+}
+
+static void PFHW_plaque_draw()
+{
+	int Index = ((int)G_FLOAT(OFS_PARM1));
+
+	if (Index < 0)
+	{
+		PR_RunError("PF_plaque_draw: index(%d) < 1",Index);
+	}
+
+	if (Index > prh2_string_count)
+	{
+		PR_RunError("PF_plaque_draw: index(%d) >= prh2_string_count(%d)",Index,prh2_string_count);
+	}
+
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_plaque, 3);
+		SVQH_ClientReliableWrite_Short(cl, Index);
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_plaque);
+		QWWriteDest()->WriteShort(Index);
+	}
+}
+
+static void PF_rain_go()
+{
+	float* min_org = G_VECTOR(OFS_PARM0);
+	float* max_org = G_VECTOR(OFS_PARM1);
+	float* e_size = G_VECTOR(OFS_PARM2);
+	float* dir = G_VECTOR(OFS_PARM3);
+	int color = G_FLOAT(OFS_PARM4);
+	int count = G_FLOAT(OFS_PARM5);
+
+	vec3_t org;
+	org[0] = min_org[0];
+	org[1] = min_org[1];
+	org[2] = max_org[2];
+
+	int x_dir = dir[0];
+	int y_dir = dir[1];
+
+	SVH2_StartRainEffect(org, e_size, x_dir, y_dir, color, count);
+}
+
+static void PF_particleexplosion()
+{
+	float* org = G_VECTOR(OFS_PARM0);
+	int color = G_FLOAT(OFS_PARM1);
+	int radius = G_FLOAT(OFS_PARM2);
+	int counter = G_FLOAT(OFS_PARM3);
+
+	sv.qh_datagram.WriteByte(GGameType & GAME_HexenWorld ? hwsvc_particle_explosion : h2svc_particle_explosion);
+	sv.qh_datagram.WriteCoord(org[0]);
+	sv.qh_datagram.WriteCoord(org[1]);
+	sv.qh_datagram.WriteCoord(org[2]);
+	sv.qh_datagram.WriteShort(color);
+	sv.qh_datagram.WriteShort(radius);
+	sv.qh_datagram.WriteShort(counter);
+}
+
+static void PFH2_setclass()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	qhedict_t* e = G_EDICT(OFS_PARM0);
+	float NewClass = G_FLOAT(OFS_PARM1);
+
+	if (entnum < 1 || entnum > svs.qh_maxclients)
+	{
+		common->Printf("tried to sprint to a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	SVQH_SendClientCommand(client, "playerclass %i\n", (int)NewClass);
+
+	// These will get set again after the message has filtered its way
+	// but it wouldn't take affect right away
+	e->SetPlayerClass(NewClass);
+	client->h2_playerclass = NewClass;
+}
+
+static void PFHW_setclass()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	qhedict_t* e = G_EDICT(OFS_PARM0);
+	float NewClass = G_FLOAT(OFS_PARM1);
+
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
+	{
+		common->Printf("tried to change class of a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	if (NewClass > CLASS_DEMON && hw_dmMode->value != HWDM_SIEGE)
+	{
+		NewClass = CLASS_PALADIN;
+	}
+
+	e->SetPlayerClass(NewClass);
+	client->h2_playerclass = NewClass;
+
+	char temp[1024];
+	sprintf(temp,"%d",(int)NewClass);
+	Info_SetValueForKey(client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+	String::NCpy(client->name, Info_ValueForKey(client->userinfo, "name"), sizeof(client->name) - 1);
+	client->qh_sendinfo = true;
+
+	//update everyone else about playerclass change
+	sv.qh_reliable_datagram.WriteByte(hwsvc_updatepclass);
+	sv.qh_reliable_datagram.WriteByte(entnum - 1);
+	sv.qh_reliable_datagram.WriteByte(((client->h2_playerclass << 5) | ((int)e->GetLevel() & 31)));
+}
+
+static void PFH2_starteffect()
+{
+	SVH2_ParseEffect(&sv.qh_reliable_datagram);
+}
+
+static void PFHW_starteffect()
+{
+	SVH2_ParseEffect(NULL);
+}
+
+static void PFH2_endeffect()
+{
+	int index = G_FLOAT(OFS_PARM1);
+
+	if (!sv.h2_Effects[index].type)
+	{
+		return;
+	}
+
+	sv.h2_Effects[index].type = 0;
+	sv.qh_reliable_datagram.WriteByte(h2svc_end_effect);
+	sv.qh_reliable_datagram.WriteByte(index);
+}
+
+static void PFHW_endeffect()
+{
+	int index = G_FLOAT(OFS_PARM1);
+
+	if (!sv.h2_Effects[index].type)
+	{
+		return;
+	}
+
+	sv.h2_Effects[index].type = 0;
+	sv.multicast.WriteByte(hwsvc_end_effect);
+	sv.multicast.WriteByte(index);
+	SVQH_Multicast(vec3_origin, MULTICAST_ALL_R);
+}
+
+static void PF_turneffect()
+{
+	float* dir, * pos;
+	int index;
+
+	index = G_FLOAT(OFS_PARM0);
+	pos = G_VECTOR(OFS_PARM1);
+	dir = G_VECTOR(OFS_PARM2);
+
+	if (!sv.h2_Effects[index].type)
+	{
+		return;
+	}
+	VectorCopy(pos, sv.h2_Effects[index].Missile.origin);
+	VectorCopy(dir, sv.h2_Effects[index].Missile.velocity);
+
+	sv.multicast.WriteByte(hwsvc_turn_effect);
+	sv.multicast.WriteByte(index);
+	sv.multicast.WriteFloat(sv.qh_time);
+	sv.multicast.WriteCoord(pos[0]);
+	sv.multicast.WriteCoord(pos[1]);
+	sv.multicast.WriteCoord(pos[2]);
+	sv.multicast.WriteCoord(dir[0]);
+	sv.multicast.WriteCoord(dir[1]);
+	sv.multicast.WriteCoord(dir[2]);
+
+	SVHW_MulticastSpecific(sv.h2_Effects[index].client_list, true);
+}
+
+//type-specific what this will send
+static void PF_updateeffect()
+{
+	int index,type,cmd;
+	vec3_t tvec;
+
+	index = G_FLOAT(OFS_PARM0);	// the effect we're lookin to change is parm 0
+	type = G_FLOAT(OFS_PARM1);	// the type of effect that it had better be is parm 1
+
+	if (!sv.h2_Effects[index].type)
+	{
+		return;
+	}
+
+	if (sv.h2_Effects[index].type != type)
+	{
+		return;
+	}
+
+	//common writing--PLEASE use sent type when determining how much and what to read, so it's safe
+	sv.multicast.WriteByte(hwsvc_update_effect);
+	sv.multicast.WriteByte(index);	//
+	sv.multicast.WriteByte(type);	//paranoia alert--make sure client reads the correct number of bytes
+
+	switch (type)
+	{
+	case HWCE_SCARABCHAIN:	//new ent to be attached to--pass in 0 for chain retract
+		sv.h2_Effects[index].Chain.owner = G_INT(OFS_PARM2) & 0x0fff;
+		sv.h2_Effects[index].Chain.material = G_INT(OFS_PARM2) >> 12;
+
+		if (sv.h2_Effects[index].Chain.owner)
+		{
+			sv.h2_Effects[index].Chain.state = 1;
+		}
+		else
+		{
+			sv.h2_Effects[index].Chain.state = 2;
+		}
+
+		sv.multicast.WriteShort(G_EDICTNUM(OFS_PARM2));
+		break;
+	case HWCE_HWSHEEPINATOR:
+	case HWCE_HWXBOWSHOOT:
+		cmd = G_FLOAT(OFS_PARM2);
+		sv.multicast.WriteByte(cmd);
+		if (cmd & 1)
+		{
+			sv.h2_Effects[index].Xbow.activebolts &= ~(1 << ((cmd >> 4) & 7));
+			sv.multicast.WriteCoord(G_FLOAT(OFS_PARM3));
+		}
+		else
+		{
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][0] = G_FLOAT(OFS_PARM3);
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][1] = G_FLOAT(OFS_PARM4);
+			sv.h2_Effects[index].Xbow.vel[(cmd >> 4) & 7][2] = 0;
+
+			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM3));
+			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM4));
+			if (cmd & 128)	//send origin too
+			{
+				sv.h2_Effects[index].Xbow.turnedbolts |= 1 << ((cmd >> 4) & 7);
+				VectorCopy(G_VECTOR(OFS_PARM5), sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][0]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][1]);
+				sv.multicast.WriteCoord(sv.h2_Effects[index].Xbow.origin[(cmd >> 4) & 7][2]);
+			}
+		}
+		break;
+	case HWCE_HWDRILLA:
+		cmd = G_FLOAT(OFS_PARM2);
+		sv.multicast.WriteByte(cmd);
+		if (cmd == 0)
+		{
+			VectorCopy(G_VECTOR(OFS_PARM3), tvec);
+			sv.multicast.WriteCoord(tvec[0]);
+			sv.multicast.WriteCoord(tvec[1]);
+			sv.multicast.WriteCoord(tvec[2]);
+			sv.multicast.WriteByte(G_FLOAT(OFS_PARM4));
+		}
+		else
+		{
+			sv.h2_Effects[index].Missile.angle[0] = G_FLOAT(OFS_PARM3);
+			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM3));
+			sv.h2_Effects[index].Missile.angle[1] = G_FLOAT(OFS_PARM4);
+			sv.multicast.WriteAngle(G_FLOAT(OFS_PARM4));
+
+			VectorCopy(G_VECTOR(OFS_PARM5), sv.h2_Effects[index].Missile.origin);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[0]);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[1]);
+			sv.multicast.WriteCoord(sv.h2_Effects[index].Missile.origin[2]);
+		}
+		break;
+	}
+
+	SVHW_MulticastSpecific(sv.h2_Effects[index].client_list, true);
+}
+
+static void PF_GetString()
+{
+	int index = (int)G_FLOAT(OFS_PARM0) - 1;
+
+	if (index < 0)
+	{
+		PR_RunError("PF_GetString: index(%d) < 1",index + 1);
+	}
+
+	if (index >= prh2_string_count)
+	{
+		PR_RunError("PF_GetString: index(%d) >= prh2_string_count(%d)",index,prh2_string_count);
+	}
+
+	G_INT(OFS_RETURN) = PR_SetString(&prh2_global_strings[prh2_string_index[index]]);
+}
+
+static void PF_doWhiteFlash()
+{
+	Cmd_ExecuteString("wf");
+}
+
+//	print player's name
+static void PF_name_print()
+{
+	int index = ((int)G_EDICTNUM(OFS_PARM2));
+	int style = ((int)G_FLOAT(OFS_PARM1));
+
+	if (hw_spartanPrint->value == 1 && style < 2)
+	{
+		return;
+	}
+
+	if (index <= 0)
+	{
+		PR_RunError("PF_name_print: index(%d) <= 0",index);
+	}
+
+	if (index > MAX_CLIENTS_QHW)
+	{
+		PR_RunError("PF_name_print: index(%d) > MAX_CLIENTS_QHW",index);
+	}
+
+
+	if ((int)G_FLOAT(OFS_PARM0) == QHMSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
+	{
+		common->Printf("%s", svs.clients[index - 1].name);
+
+		client_t* cl = svs.clients;
+		for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+		{
+			if (style < cl->messagelevel)
+			{
+				continue;
+			}
+			if (cl->state != CS_ACTIVE)//should i be checking CS_CONNECTED too?
+			{
+				if (cl->state)	//not fully in so won't know name yet, explicitly say the name
+				{
+					SVQH_PrintToClient(cl, style, svs.clients[index - 1].name);
+				}
+				continue;
+			}
+			cl->netchan.message.WriteByte(hwsvc_name_print);
+			cl->netchan.message.WriteByte(style);
+			cl->netchan.message.WriteByte(index - 1);	//knows the name, send the index.
+		}
+		return;
+	}
+
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_name_print, 3);
+		SVQH_ClientReliableWrite_Byte(cl, style);
+		SVQH_ClientReliableWrite_Byte(cl, index - 1);	//heh, don't need a short here.
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_name_print);
+		QWWriteDest()->WriteByte(style);
+		QWWriteDest()->WriteByte(index - 1);	//heh, don't need a short here.
+	}
+}
+
+//	print string from strings.txt
+static void PF_print_indexed()
+{
+	int index = ((int)G_FLOAT(OFS_PARM2));
+	int style = ((int)G_FLOAT(OFS_PARM1));
+
+	if (hw_spartanPrint->value == 1 && style < 2)
+	{
+		return;
+	}
+
+	if (index <= 0)
+	{
+		PR_RunError("PF_sprint_indexed: index(%d) < 1",index);
+	}
+
+	if (index > prh2_string_count)
+	{
+		PR_RunError("PF_sprint_indexed: index(%d) >= prh2_string_count(%d)",index,prh2_string_count);
+	}
+
+	if ((int)G_FLOAT(OFS_PARM0) == QHMSG_BROADCAST)	//broadcast message--send like bprint, print it out on server too.
+	{
+		common->Printf("%s",&prh2_global_strings[prh2_string_index[index - 1]]);
+
+		client_t* cl = svs.clients;
+		for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+		{
+			if (style < cl->messagelevel)
+			{
+				continue;
+			}
+			if (!cl->state)
+			{
+				continue;
+			}
+			cl->netchan.message.WriteByte(hwsvc_indexed_print);
+			cl->netchan.message.WriteByte(style);
+			cl->netchan.message.WriteShort(index);
+		}
+		return;
+	}
+
+	if (G_FLOAT(OFS_PARM0) == QHMSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
+		SVQH_ClientReliableWrite_Begin(cl, hwsvc_indexed_print, 4);
+		SVQH_ClientReliableWrite_Byte(cl, style);
+		SVQH_ClientReliableWrite_Short(cl, index);
+	}
+	else
+	{
+		QWWriteDest()->WriteByte(hwsvc_indexed_print);
+		QWWriteDest()->WriteByte(style);
+		QWWriteDest()->WriteShort(index);
+	}
+}
+
+static void PF_bcenterprint2()
+{
+	const char* s = PF_VarString(0);
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (!cl->state)
+		{
+			continue;
+		}
+		cl->netchan.message.WriteByte(h2svc_centerprint);
+		cl->netchan.message.WriteString2(s);
+	}
+}
+
+static void PF_centerprint2()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	const char* s = PF_VarString(1);
+
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
+	{
+		common->Printf("tried to sprint to a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	client->netchan.message.WriteChar(h2svc_centerprint);
+	client->netchan.message.WriteString2(s);
+}
+
+static void PF_setsiegeteam()
+{
+	int entnum = G_EDICTNUM(OFS_PARM0);
+	qhedict_t* e = G_EDICT(OFS_PARM0);
+	float NewTeam = G_FLOAT(OFS_PARM1);
+
+	if (entnum < 1 || entnum > MAX_CLIENTS_QHW)
+	{
+		common->Printf("tried to change siege_team of a non-client\n");
+		return;
+	}
+
+	client_t* client = &svs.clients[entnum - 1];
+
+	e->SetSiegeTeam(NewTeam);
+	client->hw_siege_team = NewTeam;
+
+	//update everyone else about playerclass change
+	sv.qh_reliable_datagram.WriteByte(hwsvc_updatesiegeteam);
+	sv.qh_reliable_datagram.WriteByte(entnum - 1);
+	sv.qh_reliable_datagram.WriteByte(client->hw_siege_team);
+}
+
+static void PF_updateSiegeInfo()
+{
+	client_t* client = svs.clients;
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		client->netchan.message.WriteByte(hwsvc_updatesiegeinfo);
+		client->netchan.message.WriteByte((int)ceil(qh_timelimit->value));
+		client->netchan.message.WriteByte((int)ceil(qh_fraglimit->value));
+	}
+}
+
+static void PF_setseed()
+{
+	SVHW_setseed(G_FLOAT(OFS_PARM0));
+}
+
+static void PF_seedrand()
+{
+	G_FLOAT(OFS_RETURN) = SVHW_seedrand();
+}
+
+static void PF_multieffect()
+{
+	SVHW_ParseMultiEffect(&sv.qh_reliable_datagram);
+
+}
+
+static void PF_getmeid()
+{
+	G_FLOAT(OFS_RETURN) = SVHW_GetMultiEffectId();
+}
+
+static void PF_weapon_sound()
+{
+	qhedict_t* entity;
+	int sound_num;
+	const char* sample;
+
+	entity = G_EDICT(OFS_PARM0);
+	sample = G_STRING(OFS_PARM1);
+
+	for (sound_num = 1; sound_num < MAX_SOUNDS_HW &&
+		 sv.qh_sound_precache[sound_num]; sound_num++)
+		if (!String::Cmp(sample, sv.qh_sound_precache[sound_num]))
+		{
+			break;
+		}
+
+	if (sound_num == MAX_SOUNDS_HW || !sv.qh_sound_precache[sound_num])
+	{
+		common->Printf("SVQH_StartSound: %s not precacheed\n", sample);
+		return;
+	}
+	entity->SetWpnSound(sound_num);
+}
+
+static builtin_t prh2_builtin[] =
+{
+	PF_Fixme,
+
+	PF_makevectors,		// 1
+	PF_setorigin,		// 2
+	PFQ1_setmodel,		// 3
+	PF_setsize,			// 4
+	PFH2_lightstylestatic,// 5
+
+	PF_break,								// void() break														= #6
+	PF_random,								// float() random														= #7
+	PF_sound,								// void(entity e, float chan, string samp) sound			= #8
+	PF_normalize,							// vector(vector v) normalize										= #9
+	PF_error,								// void(string e) error												= #10
+	PF_objerror,							// void(string e) objerror											= #11
+	PF_vlen,									// float(vector v) vlen												= #12
+	PF_vectoyaw,							// float(vector v) vectoyaw										= #13
+	PF_Spawn,								// entity() spawn														= #14
+	PFH2_Remove,								// void(entity e) remove											= #15
+	PF_traceline,							// float(vector v1, vector v2, float tryents) traceline	= #16
+	PF_checkclient,						// entity() clientlist												= #17
+	PF_Find,									// entity(entity start, .string fld, string match) find	= #18
+	PF_precache_sound,					// void(string s) precache_sound									= #19
+	PF_precache_model,					// void(string s) precache_model									= #20
+	PF_stuffcmd,							// void(entity client, string s)stuffcmd						= #21
+	PF_findradius,							// entity(vector org, float rad) findradius					= #22
+	PFQ1_bprint,								// void(string s) bprint											= #23
+	PFQ1_sprint,								// void(entity client, string s) sprint						= #24
+	PF_dprint,								// void(string s) dprint											= #25
+	PF_ftos,									// void(string s) ftos												= #26
+	PF_vtos,									// void(string s) vto				s								= #27
+	PF_coredump,							//	PF_coredump															= #28
+	PF_traceon,								// PF_traceon															= #29
+	PF_traceoff,							// PF_traceoff															= #30
+	PF_eprint,								// void(entity e) debug print an entire entity				= #31
+	PFH2_walkmove,							// float(float yaw, float dist) walkmove						= #32
+	PF_tracearea,							// float(vector v1, vector v2, vector mins, vector maxs,
+	//       float tryents) traceline								= #33
+	PF_droptofloor,						// PF_droptofloor														= #34
+	PFQ1_lightstyle,							//																			= #35
+	PFH2_rint,									//																			= #36
+	PF_floor,								//																			= #37
+	PF_ceil,									//																			= #38
+	PF_Fixme,
+	PF_checkbottom,						//																			= #40
+	PF_pointcontents,						//																			= #41
+	PF_particle2,
+	PF_fabs,									//																			= #43
+	PFH2_aim,									//																			= #44
+	PF_cvar,									//																			= #45
+	PF_localcmd,							//																			= #46
+	PF_nextent,								//																			= #47
+	PF_particle,							//																			= #48
+	PF_changeyaw,							//																			= #49
+	PF_vhlen,								// float(vector v) vhlen											= #50
+	PF_vectoangles,						//																			= #51
+
+	PFQ1_WriteByte,							//																			= #52
+	PFQ1_WriteChar,							//																			= #53
+	PFQ1_WriteShort,							//																			= #54
+	PFQ1_WriteLong,							//																			= #55
+	PFQ1_WriteCoord,							//																			= #56
+	PFQ1_WriteAngle,							//																			= #57
+	PFQ1_WriteString,						//																			= #58
+	PFQ1_WriteEntity,						//																			= #59
+
+//PF_FindPath,								//																			= #60
+	PF_dprintf,								// void(string s1, string s2) dprint										= #60
+	PF_Cos,									//																			= #61
+	PF_Sin,									//																			= #62
+	PFH2_AdvanceFrame,						//																			= #63
+	PF_dprintv,								// void(string s1, string s2) dprint										= #64
+	PF_RewindFrame,							//																			= #65
+	PFH2_setclass,
+
+	SVQH_MoveToGoal,
+	PF_precache_file,
+	PFH2_makestatic,
+
+	PFH2_changelevel,
+
+	PFH2_lightstylevalue,	// 71
+
+	PF_cvar_set,
+	PF_centerprint,
+
+	PF_ambientsound,
+
+	PF_precache_model2,
+	PF_precache_sound2,						// precache_sound2 is different only for qcc
+	PF_precache_file,
+
+	PF_setspawnparms,
+	PFH2_plaque_draw,
+	PF_rain_go,									//																				=	#80
+	PF_particleexplosion,						//																				=	#81
+	PF_movestep,
+	PF_advanceweaponframe,
+	PF_sqrt,
+
+	PF_particle3,							// 85
+	PF_particle4,							// 86
+	PF_setpuzzlemodel,						// 87
+
+	PFH2_starteffect,							// 88
+	PFH2_endeffect,							// 89
+
+	PF_precache_puzzle_model,				// 90
+	PF_concatv,								// 91
+	PF_GetString,							// 92
+	PF_SpawnTemp,							// 93
+	PF_v_factor,							// 94
+	PF_v_factorrange,						// 95
+
+	PF_precache_sound3,						// 96
+	PF_precache_model3,						// 97
+	PF_precache_file,						// 98
+	PF_matchAngleToSlope,					// 99
+	PF_updateInfoPlaque,					//100
+
+	PF_precache_sound4,						// 101
+	PF_precache_model4,						// 102
+	PF_precache_file,						// 103
+
+	PF_doWhiteFlash,						//104
+	PF_UpdateSoundPos,						//105
+	PF_StopSound,							//106
+
+	PF_Fixme,
+	PF_Fixme,
+	PF_Fixme,
+	PF_Fixme,
+	PF_Fixme,
+	PF_Fixme,
+	PF_Fixme,
+};
+
+void PRH2_InitBuiltins()
+{
+	pr_builtins = prh2_builtin;
+	pr_numbuiltins = sizeof(prh2_builtin) / sizeof(prh2_builtin[0]);
+}
+
+static builtin_t prhw_builtin[] =
+{
+	PF_Fixme,
+	PF_makevectors,	// void(entity e)	makevectors         = #1;
+	PF_setorigin,	// void(entity e, vector o) setorigin	= #2;
+	PFQ1_setmodel,// void(entity e, string m) setmodel	= #3;
+	PF_setsize,	// void(entity e, vector min, vector max) setsize = #4;
+	PFHW_lightstylestatic,// 5
+	PF_break,	// void() break						= #6;
+	PF_random,	// float() random						= #7;
+	PF_sound,	// void(entity e, float chan, string samp) sound = #8;
+	PF_normalize,	// vector(vector v) normalize			= #9;
+	PF_error,	// void(string e) error				= #10;
+	PF_objerror,// void(string e) objerror				= #11;
+	PF_vlen,// float(vector v) vlen				= #12;
+	PF_vectoyaw,// float(vector v) vectoyaw		= #13;
+	PF_Spawn,	// entity() spawn						= #14;
+	PFHW_Remove,	// void(entity e) remove				= #15;
+	PF_traceline,	// float(vector v1, vector v2, float tryents) traceline = #16;
+	PF_checkclient,	// entity() clientlist					= #17;
+	PF_Find,// entity(entity start, .string fld, string match) find = #18;
+	PF_precache_sound,	// void(string s) precache_sound		= #19;
+	PF_precache_model,	// void(string s) precache_model		= #20;
+	PF_stuffcmd,// void(entity client, string s)stuffcmd = #21;
+	PF_findradius,	// entity(vector org, float rad) findradius = #22;
+	PFQW_bprint,	// void(string s) bprint				= #23;
+	PFQW_sprint,	// void(entity client, string s) sprint = #24;
+	PF_dprint,	// void(string s) dprint				= #25;
+	PF_ftos,// void(string s) ftos				= #26;
+	PF_vtos,// void(string s) vtos				= #27;
+	PF_coredump,
+	PF_traceon,
+	PF_traceoff,
+	PF_eprint,	// void(entity e) debug print an entire entity
+	PFH2_walkmove,// float(float yaw, float dist) walkmove
+	PF_tracearea,							// float(vector v1, vector v2, vector mins, vector maxs,
+	PF_droptofloor,
+	PFQW_lightstyle,
+	PF_rint,
+	PF_floor,
+	PF_ceil,
+	PF_Fixme,
+	PF_checkbottom,
+	PF_pointcontents,
+	PF_particle2,
+	PF_fabs,
+	PFH2_aim,
+	PF_cvar,
+	PF_localcmd,
+	PF_nextent,
+	PF_particle,							//																			= #48
+	PF_changeyaw,
+	PF_vhlen,								// float(vector v) vhlen											= #50
+	PF_vectoangles,
+
+	PFQW_WriteByte,
+	PFQW_WriteChar,
+	PFQW_WriteShort,
+	PFQW_WriteLong,
+	PFQW_WriteCoord,
+	PFQW_WriteAngle,
+	PFQW_WriteString,
+	PFQW_WriteEntity,
+
+	PF_dprintf,								// void(string s1, string s2) dprint										= #60
+	PF_Cos,									//																			= #61
+	PF_Sin,									//																			= #62
+	PFHW_AdvanceFrame,						//																			= #63
+	PF_dprintv,								// void(string s1, string s2) dprint										= #64
+	PF_RewindFrame,							//																			= #65
+	PFHW_setclass,
+
+	SVQH_MoveToGoal,
+	PF_precache_file,
+	PFH2_makestatic,
+
+	PFH2_changelevel,
+	PFHW_lightstylevalue,	// 71
+
+	PF_cvar_set,
+	PF_centerprint,
+
+	PF_ambientsound,
+
+	PF_precache_model2,
+	PF_precache_sound2,	// precache_sound2 is different only for qcc
+	PF_precache_file,
+
+	PF_setspawnparms,
+
+	PFHW_plaque_draw,
+	PF_rain_go,									//																				=	#80
+	PF_particleexplosion,						//																				=	#81
+	PF_movestep,
+	PF_advanceweaponframe,
+	PF_sqrt,
+
+	PF_particle3,							// 85
+	PF_particle4,							// 86
+	PF_setpuzzlemodel,						// 87
+
+	PFHW_starteffect,							// 88
+	PFHW_endeffect,							// 89
+
+	PF_precache_puzzle_model,				// 90
+	PF_concatv,								// 91
+	PF_GetString,							// 92
+	PF_SpawnTemp,							// 93
+	PF_v_factor,							// 94
+	PF_v_factorrange,						// 95
+
+	PF_precache_sound3,						// 96
+	PF_precache_model3,						// 97
+	PF_precache_file,						// 98
+
+	PF_logfrag,	//99
+
+	PFHW_infokey,	//100
+	PF_stof,	//101
+	PF_multicast,	//102
+	PF_turneffect,	//103
+	PF_updateeffect,//104
+	PF_setseed,	//105
+	PF_seedrand,//106
+	PF_multieffect,	//107
+	PF_getmeid,	//108
+	PF_weapon_sound,//109
+	PF_bcenterprint2,	//110
+	PF_print_indexed,	//111
+	PF_centerprint2,//112
+	PF_name_print,	//113
+	PF_StopSound,	//114
+	PF_UpdateSoundPos,	//115
+
+	PF_precache_sound,			// 116
+	PF_precache_model,			// 117
+	PF_precache_file,			// 118
+	PF_setsiegeteam,			// 119
+	PF_updateSiegeInfo,			// 120
+};
+
+void PRHW_InitBuiltins()
+{
+	pr_builtins = prhw_builtin;
+	pr_numbuiltins = sizeof(prhw_builtin) / sizeof(prhw_builtin[0]);
 }

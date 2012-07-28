@@ -47,3 +47,6 @@ struct h2client_state2_t
 // server flags
 #define H2SFL_NEW_UNIT      16
 #define H2SFL_NEW_EPISODE   32
+
+//Dm Modes
+#define HWDM_SIEGE                  3

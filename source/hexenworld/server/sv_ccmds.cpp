@@ -460,7 +460,7 @@ void SV_Status_f(void)
 	common->Printf("packets/frame    : %5.2f\n", pak);
 	t_limit = Cvar_VariableValue("timelimit");
 	f_limit = Cvar_VariableValue("fraglimit");
-	if (dmMode->value == DM_SIEGE)
+	if (hw_dmMode->value == HWDM_SIEGE)
 	{
 		num_min = floor((t_limit * 60) - sv.qh_time);
 		num_sec = (int)(t_limit - num_min) % 60;
@@ -642,7 +642,7 @@ void SV_ConSay_f(void)
 		return;
 	}
 
-	if (dmMode->value == DM_SIEGE)
+	if (hw_dmMode->value == HWDM_SIEGE)
 	{
 		String::Cpy(text, "GOD SAYS: ");
 	}

@@ -119,6 +119,39 @@ inrange:
 	sv.multicast.Clear();
 }
 
+//	Sends the contents of sv.multicast to a subset of the clients,
+// then clears sv.multicast.
+void SVHW_MulticastSpecific(unsigned clients, bool reliable)
+{
+	clients_multicast = 0;
+
+	// send the data to all relevent clients
+	client_t* client = svs.clients;
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+
+		if ((1l << j) & clients)
+		{
+			clients_multicast |= 1l << j;
+
+			if (reliable)
+			{
+				client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
+			}
+			else
+			{
+				client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
+			}
+		}
+	}
+
+	sv.multicast.Clear();
+}
+
 void SVH2_StopSound(qhedict_t* entity, int channel)
 {
 	int ent = QH_NUM_FOR_EDICT(entity);
@@ -571,6 +604,27 @@ void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, 
 	message.WriteShort(color);
 	message.WriteByte(count);
 	message.WriteByte(effect);
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}
+
+void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count)
+{
+	QMsg& message = GGameType & GAME_HexenWorld ? sv.multicast : sv.qh_datagram;
+	message.WriteByte(GGameType & GAME_HexenWorld ? hwsvc_raineffect : h2svc_raineffect);
+	message.WriteCoord(org[0]);
+	message.WriteCoord(org[1]);
+	message.WriteCoord(org[2]);
+	message.WriteCoord(e_size[0]);
+	message.WriteCoord(e_size[1]);
+	message.WriteCoord(e_size[2]);
+	message.WriteAngle(x_dir);
+	message.WriteAngle(y_dir);
+	message.WriteShort(color);
+	message.WriteShort(count);
 
 	if (GGameType & GAME_HexenWorld)
 	{

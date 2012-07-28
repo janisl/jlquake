@@ -56,8 +56,6 @@ Cvar* pausable;
 //
 // game rules mirrored in svs.qh_info
 //
-Cvar* fraglimit;
-Cvar* timelimit;
 Cvar* samelevel;
 Cvar* maxspectators;
 Cvar* spawn;
@@ -1462,8 +1460,8 @@ void SV_InitLocal(void)
 	password = Cvar_Get("password", "", 0);	// password for entering the game
 	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
-	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
-	timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
+	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	qh_timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
 	svqh_teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel","0", CVAR_SERVERINFO);
 	sv_maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
@@ -1841,4 +1839,9 @@ void SV_Init(quakeparms_t* parms)
 	{
 		Sys_Error("%s", e.What());
 	}
+}
+
+int CLH2_GetLightStyleValue(int style)
+{
+	return 0;
 }

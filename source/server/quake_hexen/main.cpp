@@ -21,9 +21,12 @@
 Cvar* svqh_deathmatch;			// 0, 1, or 2
 Cvar* svqh_coop;				// 0 or 1
 Cvar* svqh_teamplay;
+Cvar* qh_timelimit;
+Cvar* qh_fraglimit;
 
 Cvar* svqh_highchars;
 Cvar* hw_spartanPrint;
+Cvar* hw_dmMode;
 
 int svqh_current_skill;
 

@@ -199,7 +199,6 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	// load progs to get entity field count
 	// which determines how big each edict is
-	PR_InitBuiltins();
 	PR_LoadProgs();
 
 	SV_AddProgCrcTotheServerInfo();
@@ -275,7 +274,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	*pr_globalVars.altRespawn = altRespawn->value;
 	*pr_globalVars.fixedLevel = fixedLevel->value;
 	*pr_globalVars.autoItems = autoItems->value;
-	*pr_globalVars.dmMode = dmMode->value;
+	*pr_globalVars.dmMode = hw_dmMode->value;
 	*pr_globalVars.easyFourth = easyFourth->value;
 	*pr_globalVars.patternRunner = patternRunner->value;
 	*pr_globalVars.max_players = sv_maxclients->value;
