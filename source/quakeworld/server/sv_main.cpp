@@ -565,7 +565,7 @@ void SVC_DirectConnect(void)
 	int challenge;
 
 	version = String::Atoi(Cmd_Argv(1));
-	if (version != PROTOCOL_VERSION)
+	if (version != QWPROTOCOL_VERSION)
 	{
 		NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nServer is version %4.2f.\n", A2C_PRINT, VERSION);
 		common->Printf("* rejected connect from version %i\n", version);
@@ -1370,6 +1370,7 @@ void SV_Frame(float time)
 		{
 			realtime += time;
 			sv.qh_time += time;
+			svs.realtime = realtime * 1000;
 		}
 
 		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())

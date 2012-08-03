@@ -39,89 +39,6 @@ qboolean onground;
 
 q1usercmd_t cmd;
 
-Cvar* sv_idealpitchscale;
-
-
-/*
-===============
-SV_SetIdealPitch
-===============
-*/
-#define MAX_FORWARD 6
-void SV_SetIdealPitch(void)
-{
-	float angleval, sinval, cosval;
-	q1trace_t tr;
-	vec3_t top, bottom;
-	float z[MAX_FORWARD];
-	int i, j;
-	int step, dir, steps;
-
-	if (!((int)sv_player->GetFlags() & QHFL_ONGROUND))
-	{
-		return;
-	}
-
-	angleval = sv_player->GetAngles()[YAW] * M_PI * 2 / 360;
-	sinval = sin(angleval);
-	cosval = cos(angleval);
-
-	for (i = 0; i < MAX_FORWARD; i++)
-	{
-		top[0] = sv_player->GetOrigin()[0] + cosval * (i + 3) * 12;
-		top[1] = sv_player->GetOrigin()[1] + sinval * (i + 3) * 12;
-		top[2] = sv_player->GetOrigin()[2] + sv_player->GetViewOfs()[2];
-
-		bottom[0] = top[0];
-		bottom[1] = top[1];
-		bottom[2] = top[2] - 160;
-
-		tr = SVQH_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
-		if (tr.allsolid)
-		{
-			return;	// looking at a wall, leave ideal the way is was
-
-		}
-		if (tr.fraction == 1)
-		{
-			return;	// near a dropoff
-
-		}
-		z[i] = top[2] + tr.fraction * (bottom[2] - top[2]);
-	}
-
-	dir = 0;
-	steps = 0;
-	for (j = 1; j < i; j++)
-	{
-		step = z[j] - z[j - 1];
-		if (step > -ON_EPSILON && step < ON_EPSILON)
-		{
-			continue;
-		}
-
-		if (dir && (step - dir > ON_EPSILON || step - dir < -ON_EPSILON))
-		{
-			return;		// mixed changes
-
-		}
-		steps++;
-		dir = step;
-	}
-
-	if (!dir)
-	{
-		sv_player->SetIdealPitch(0);
-		return;
-	}
-
-	if (steps < 2)
-	{
-		return;
-	}
-	sv_player->SetIdealPitch(-dir * sv_idealpitchscale->value);
-}
-
 
 /*
 ==================
@@ -525,8 +442,33 @@ void SV_ReadClientMove(q1usercmd_t* move)
 	}
 }
 
+struct ucmd_t
+{
+	const char* name;
+	void (*func)(client_t*);
+};
+
+ucmd_t ucmds[] =
+{
+	{ "prespawn", SVQ1_PreSpawn_f },
+	{ "spawn", SVQH_Spawn_f },
+	{ "begin", SVQH_Begin_f },
+	{ NULL, NULL }
+};
+
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
+	Cmd_TokenizeString(s);
+
+	for (ucmd_t* u = ucmds; u->name; u++)
+	{
+		if (!String::Cmp(Cmd_Argv(0), u->name))
+		{
+			u->func(cl);
+			return;
+		}
+	}
+
 	int ret = 0;
 	if (String::NICmp(s, "status", 6) == 0)
 	{
@@ -573,18 +515,6 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 		ret = 1;
 	}
 	else if (String::NICmp(s, "pause", 5) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "spawn", 5) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "begin", 5) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "prespawn", 8) == 0)
 	{
 		ret = 1;
 	}

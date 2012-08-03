@@ -40,32 +40,7 @@
 #define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
 
 
-#define ON_EPSILON      0.1			// point on plane side epsilon
-
 #define SAVEGAME_COMMENT_LENGTH 39
-
-//
-// stats are integers communicated to the client by the server
-//
-//#define	STAT_HEALTH			0
-#define STAT_FRAGS          1
-#define STAT_WEAPON         2
-//#define	STAT_AMMO			3
-#define STAT_ARMOR          4
-#define STAT_WEAPONFRAME    5
-//#define	STAT_SHELLS			6
-//#define	STAT_NAILS			7
-//#define	STAT_ROCKETS		8
-//#define	STAT_CELLS			9
-//#define	STAT_ACTIVEWEAPON	10
-#define STAT_TOTALSECRETS   11
-#define STAT_TOTALMONSTERS  12
-#define STAT_SECRETS        13		// bumped on client side by h2svc_foundsecret
-#define STAT_MONSTERS       14		// bumped by h2svc_killedmonster
-//#define	STAT_BLUEMANA			15
-//#define	STAT_GREENMANA			16
-//#define	STAT_EXPERIENCE		17
-
 
 // stock defines
 

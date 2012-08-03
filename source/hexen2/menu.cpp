@@ -3508,24 +3508,7 @@ void M_GameOptions_Draw(void)
 	}
 
 	M_Print(0 + 8, 100, "        Teamplay");
-/*	if (rogue)
-    {
-        char *msg;
-
-        switch((int)svqh_teamplay.value)
-        {
-            case 1: msg = "No Friendly Fire"; break;
-            case 2: msg = "Friendly Fire"; break;
-            case 3: msg = "Tag"; break;
-            case 4: msg = "Capture the Flag"; break;
-            case 5: msg = "One Flag CTF"; break;
-            case 6: msg = "Three Team CTF"; break;
-            default: msg = "Off"; break;
-        }
-        M_Print (160+8, 100, msg);
-    }
-    else
-*/  {
+  {
 		const char* msg;
 
 		switch ((int)svqh_teamplay->value)
@@ -3646,9 +3629,6 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 3:
-//		if (rogue)
-//			count = 6;
-//		else
 		count = 2;
 
 		Cvar_SetValue("teamplay", svqh_teamplay->value + dir);

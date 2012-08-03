@@ -265,7 +265,7 @@ void SVQ2_Kick_f()
 	// SVQ2_BroadcastPrintf message
 	SVQ2_ClientPrintf(client, PRINT_HIGH, "You were kicked from the game\n");
 	SVQ2_DropClient(client);
-	client->q2_lastmessage = svs.q2_realtime;	// min case there is a funny zombie
+	client->q2_lastmessage = svs.realtime;	// min case there is a funny zombie
 }
 
 void SVQ2_Status_f()
@@ -310,7 +310,7 @@ void SVQ2_Status_f()
 			common->Printf(" ");
 		}
 
-		common->Printf("%7i ", svs.q2_realtime - cl->q2_lastmessage);
+		common->Printf("%7i ", svs.realtime - cl->q2_lastmessage);
 
 		const char* s = SOCK_AdrToString(cl->netchan.remoteAddress);
 		common->Printf("%s", s);

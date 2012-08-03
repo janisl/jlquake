@@ -363,10 +363,6 @@ void COM_InitFilesystem(void)
 	}
 #endif
 
-/*	if (COM_CheckParm ("-rogue"))
-        COM_AddGameDirectory (va("%s/rogue", basedir) );
-*/
-
 //
 // -game <gamedir>
 // Adds basedir/gamedir as an override game

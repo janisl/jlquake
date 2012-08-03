@@ -27,8 +27,6 @@ qwusercmd_t cmd;
 
 Cvar* sv_spectalk;
 
-Cvar* sv_mapcheck;
-
 extern int fp_messages, fp_persecond, fp_secondsdead;
 extern char fp_msg[];
 extern Cvar* pausable;
@@ -42,203 +40,9 @@ host_client and sv_player will be valid.
 ============================================================
 */
 
-/*
-================
-SV_New_f
-
-Sends the first message from the server to a connected client.
-This will be sent on the initial connection and upon each server load.
-================
-*/
-void SV_New_f(void)
+void SVQHW_PreSpawn_f(client_t* client)
 {
-	const char* gamedir;
-	int playernum;
-
-	if (host_client->state == CS_ACTIVE)
-	{
-		return;
-	}
-
-	host_client->state = CS_CONNECTED;
-	host_client->qh_connection_started = realtime;
-
-	// send the info about the new client to all connected clients
-//	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
-//	host_client->sendinfo = true;
-
-	gamedir = Info_ValueForKey(svs.qh_info, "*gamedir");
-	if (!gamedir[0])
-	{
-		gamedir = "qw";
-	}
-
-//NOTE:  This doesn't go through ClientReliableWrite since it's before the user
-//spawns.  These functions are written to not overflow
-	if (host_client->qw_num_backbuf)
-	{
-		common->Printf("WARNING %s: [SV_New] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->qw_num_backbuf = 0;
-		host_client->netchan.message.Clear();
-	}
-
-	// send the serverdata
-	host_client->netchan.message.WriteByte(qwsvc_serverdata);
-	host_client->netchan.message.WriteLong(PROTOCOL_VERSION);
-	host_client->netchan.message.WriteLong(svs.spawncount);
-	host_client->netchan.message.WriteString2(gamedir);
-
-	playernum = QH_NUM_FOR_EDICT(host_client->qh_edict) - 1;
-	if (host_client->qh_spectator)
-	{
-		playernum |= 128;
-	}
-	host_client->netchan.message.WriteByte(playernum);
-
-	// send full levelname
-	host_client->netchan.message.WriteString2(PR_GetString(sv.qh_edicts->GetMessage()));
-
-	// send the movevars
-	host_client->netchan.message.WriteFloat(movevars.gravity);
-	host_client->netchan.message.WriteFloat(movevars.stopspeed);
-	host_client->netchan.message.WriteFloat(movevars.maxspeed);
-	host_client->netchan.message.WriteFloat(movevars.spectatormaxspeed);
-	host_client->netchan.message.WriteFloat(movevars.accelerate);
-	host_client->netchan.message.WriteFloat(movevars.airaccelerate);
-	host_client->netchan.message.WriteFloat(movevars.wateraccelerate);
-	host_client->netchan.message.WriteFloat(movevars.friction);
-	host_client->netchan.message.WriteFloat(movevars.waterfriction);
-	host_client->netchan.message.WriteFloat(movevars.entgravity);
-
-	// send music
-	host_client->netchan.message.WriteByte(q1svc_cdtrack);
-	host_client->netchan.message.WriteByte(sv.qh_edicts->GetSounds());
-
-	// send server info string
-	host_client->netchan.message.WriteByte(q1svc_stufftext);
-	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.qh_info));
-}
-
-/*
-==================
-SV_Soundlist_f
-==================
-*/
-void SV_Soundlist_f(void)
-{
-	const char** s;
-	int n;
-
-	if (host_client->state != CS_CONNECTED)
-	{
-		common->Printf("soundlist not valid -- allready spawned\n");
-		return;
-	}
-
-	// handle the case of a level changing while a client was connecting
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		common->Printf("SV_Soundlist_f from different level\n");
-		SV_New_f();
-		return;
-	}
-
-	n = String::Atoi(Cmd_Argv(2));
-
-//NOTE:  This doesn't go through ClientReliableWrite since it's before the user
-//spawns.  These functions are written to not overflow
-	if (host_client->qw_num_backbuf)
-	{
-		common->Printf("WARNING %s: [SV_Soundlist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->qw_num_backbuf = 0;
-		host_client->netchan.message.Clear();
-	}
-
-	host_client->netchan.message.WriteByte(qwsvc_soundlist);
-	host_client->netchan.message.WriteByte(n);
-	for (s = sv.qh_sound_precache + 1 + n;
-		 *s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW / 2);
-		 s++, n++)
-		host_client->netchan.message.WriteString2(*s);
-
-	host_client->netchan.message.WriteByte(0);
-
-	// next msg
-	if (*s)
-	{
-		host_client->netchan.message.WriteByte(n);
-	}
-	else
-	{
-		host_client->netchan.message.WriteByte(0);
-	}
-}
-
-/*
-==================
-SV_Modellist_f
-==================
-*/
-void SV_Modellist_f(void)
-{
-	const char** s;
-	int n;
-
-	if (host_client->state != CS_CONNECTED)
-	{
-		common->Printf("modellist not valid -- allready spawned\n");
-		return;
-	}
-
-	// handle the case of a level changing while a client was connecting
-	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
-	{
-		common->Printf("SV_Modellist_f from different level\n");
-		SV_New_f();
-		return;
-	}
-
-	n = String::Atoi(Cmd_Argv(2));
-
-//NOTE:  This doesn't go through ClientReliableWrite since it's before the user
-//spawns.  These functions are written to not overflow
-	if (host_client->qw_num_backbuf)
-	{
-		common->Printf("WARNING %s: [SV_Modellist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->qw_num_backbuf = 0;
-		host_client->netchan.message.Clear();
-	}
-
-	host_client->netchan.message.WriteByte(qwsvc_modellist);
-	host_client->netchan.message.WriteByte(n);
-	for (s = sv.qh_model_precache + 1 + n;
-		 *s && host_client->netchan.message.cursize < (MAX_MSGLEN_QW / 2);
-		 s++, n++)
-		host_client->netchan.message.WriteString2(*s);
-	host_client->netchan.message.WriteByte(0);
-
-	// next msg
-	if (*s)
-	{
-		host_client->netchan.message.WriteByte(n);
-	}
-	else
-	{
-		host_client->netchan.message.WriteByte(0);
-	}
-}
-
-/*
-==================
-SV_PreSpawn_f
-==================
-*/
-void SV_PreSpawn_f(void)
-{
-	int buf;
-	int check;
-
-	if (host_client->state != CS_CONNECTED)
+	if (client->state != CS_CONNECTED)
 	{
 		common->Printf("prespawn not valid -- allready spawned\n");
 		return;
@@ -247,62 +51,72 @@ void SV_PreSpawn_f(void)
 	// handle the case of a level changing while a client was connecting
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
-		common->Printf("SV_PreSpawn_f from different level\n");
-		SV_New_f();
+		common->Printf("SVQHW_PreSpawn_f from different level\n");
+		SVQHW_New_f(client);
 		return;
 	}
 
-	buf = String::Atoi(Cmd_Argv(2));
-	if (buf >= sv.qh_num_signon_buffers)
+	int buf = String::Atoi(Cmd_Argv(2));
+	if (buf < 0 || buf >= sv.qh_num_signon_buffers)
 	{
 		buf = 0;
 	}
 
-	if (!buf)
+	if (GGameType & GAME_QuakeWorld)
 	{
-		// should be three numbers following containing checksums
-		check = String::Atoi(Cmd_Argv(3));
-
-//		common->DPrintf("Client check = %d\n", check);
-
-		int map_checksum;
-		int map_checksum2;
-		CM_MapChecksums(map_checksum, map_checksum2);
-		if (sv_mapcheck->value && check != map_checksum && check != map_checksum2)
+		if (!buf)
 		{
-			SVQH_ClientPrintf(host_client, PRINT_HIGH,
-				"Map model file does not match (%s), %i != %i/%i.\n"
-				"You may need a new version of the map, or the proper install files.\n",
-				sv.qh_modelname, check, map_checksum, map_checksum2);
-			SV_DropClient(host_client);
-			return;
+			// should be three numbers following containing checksums
+			int check = String::Atoi(Cmd_Argv(3));
+
+			int map_checksum;
+			int map_checksum2;
+			CM_MapChecksums(map_checksum, map_checksum2);
+			if (svqw_mapcheck->value && check != map_checksum && check != map_checksum2)
+			{
+				SVQH_ClientPrintf(client, PRINT_HIGH,
+					"Map model file does not match (%s), %i != %i/%i.\n"
+					"You may need a new version of the map, or the proper install files.\n",
+					sv.qh_modelname, check, map_checksum, map_checksum2);
+				SV_DropClient(client);
+				return;
+			}
+			client->qw_checksum = check;
 		}
-		host_client->qw_checksum = check;
+
+		//NOTE:  This doesn't go through ClientReliableWrite since it's before the user
+		//spawns.  These functions are written to not overflow
+		if (client->qw_num_backbuf)
+		{
+			common->Printf("WARNING %s: [SV_PreSpawn] Back buffered (%d0, clearing", client->name, client->netchan.message.cursize);
+			client->qw_num_backbuf = 0;
+			client->netchan.message.Clear();
+		}
 	}
 
-//NOTE:  This doesn't go through ClientReliableWrite since it's before the user
-//spawns.  These functions are written to not overflow
-	if (host_client->qw_num_backbuf)
-	{
-		common->Printf("WARNING %s: [SV_PreSpawn] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize);
-		host_client->qw_num_backbuf = 0;
-		host_client->netchan.message.Clear();
-	}
-
-	host_client->netchan.message.WriteData(
+	client->netchan.message.WriteData(
 		sv.qh_signon_buffers[buf],
 		sv.qh_signon_buffer_size[buf]);
 
 	buf++;
 	if (buf == sv.qh_num_signon_buffers)
-	{	// all done prespawning
-		host_client->netchan.message.WriteByte(q1svc_stufftext);
-		host_client->netchan.message.WriteString2(va("cmd spawn %i 0\n",svs.spawncount));
+	{
+		// all done prespawning
+		if (GGameType & GAME_HexenWorld)
+		{
+			client->netchan.message.WriteByte(h2svc_stufftext);
+			client->netchan.message.WriteString2(va("cmd spawn %i\n",svs.spawncount));
+		}
+		else
+		{
+			client->netchan.message.WriteByte(q1svc_stufftext);
+			client->netchan.message.WriteString2(va("cmd spawn %i 0\n",svs.spawncount));
+		}
 	}
 	else
 	{	// need to prespawn more
-		host_client->netchan.message.WriteByte(q1svc_stufftext);
-		host_client->netchan.message.WriteString2(
+		client->netchan.message.WriteByte(GGameType & GAME_HexenWorld ? h2svc_stufftext : q1svc_stufftext);
+		client->netchan.message.WriteString2(
 			va("cmd prespawn %i %i\n", svs.spawncount, buf));
 	}
 }
@@ -330,7 +144,7 @@ void SV_Spawn_f(void)
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
 		common->Printf("SV_Spawn_f from different level\n");
-		SV_New_f();
+		SVQHW_New_f(host_client);
 		return;
 	}
 
@@ -340,7 +154,7 @@ void SV_Spawn_f(void)
 	if (n < 0 || n > MAX_CLIENTS_QHW)
 	{
 		common->Printf("SV_Spawn_f invalid client start\n");
-		SV_New_f();
+		SVQHW_New_f(host_client);
 		return;
 	}
 
@@ -461,7 +275,7 @@ void SV_Begin_f(void)
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
 		common->Printf("SV_Begin_f from different level\n");
-		SV_New_f();
+		SVQHW_New_f(host_client);
 		return;
 	}
 
@@ -1182,39 +996,40 @@ void SV_NoSnap_f(void)
 typedef struct
 {
 	const char* name;
-	void (* func)(void);
+	void (* func)(client_t*);
+	void (* old_func)(void);
 } ucmd_t;
 
 ucmd_t ucmds[] =
 {
-	{"new", SV_New_f},
-	{"modellist", SV_Modellist_f},
-	{"soundlist", SV_Soundlist_f},
-	{"prespawn", SV_PreSpawn_f},
-	{"spawn", SV_Spawn_f},
-	{"begin", SV_Begin_f},
+	{"new", SVQHW_New_f},
+	{"modellist", SVQW_Modellist_f},
+	{"soundlist", SVQW_Soundlist_f},
+	{"prespawn", SVQHW_PreSpawn_f},
+	{"spawn", NULL, SV_Spawn_f},
+	{"begin", NULL, SV_Begin_f},
 
-	{"drop", SV_Drop_f},
-	{"pings", SV_Pings_f},
+	{"drop", NULL, SV_Drop_f},
+	{"pings", NULL, SV_Pings_f},
 
 // issued by hand at client consoles
-	{"kill", SV_Kill_f},
-	{"pause", SV_Pause_f},
-	{"msg", SV_Msg_f},
+	{"kill", NULL, SV_Kill_f},
+	{"pause", NULL, SV_Pause_f},
+	{"msg", NULL, SV_Msg_f},
 
-	{"say", SV_Say_f},
-	{"say_team", SV_Say_Team_f},
+	{"say", NULL, SV_Say_f},
+	{"say_team", NULL, SV_Say_Team_f},
 
-	{"setinfo", SV_SetInfo_f},
+	{"setinfo", NULL, SV_SetInfo_f},
 
-	{"serverinfo", SV_ShowServerinfo_f},
+	{"serverinfo", NULL, SV_ShowServerinfo_f},
 
-	{"download", SV_BeginDownload_f},
-	{"nextdl", SV_NextDownload_f},
+	{"download", NULL, SV_BeginDownload_f},
+	{"nextdl", NULL, SV_NextDownload_f},
 
-	{"ptrack", SV_PTrack_f},//ZOID - used with autocam
+	{"ptrack", NULL, SV_PTrack_f},//ZOID - used with autocam
 
-	{"snap", SV_NoSnap_f},
+	{"snap", NULL, SV_NoSnap_f},
 
 	{NULL, NULL}
 };
@@ -1231,21 +1046,28 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	Cmd_TokenizeString(s);
 	sv_player = host_client->qh_edict;
 
-	SV_BeginRedirect(RD_CLIENT);
-
 	for (u = ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
-			u->func();
+			if (u->func)
+			{
+				u->func(cl);
+			}
+			else
+			{
+				SV_BeginRedirect(RD_CLIENT);
+				u->old_func();
+				SV_EndRedirect();
+			}
 			break;
 		}
 
 	if (!u->name)
 	{
+		SV_BeginRedirect(RD_CLIENT);
 		common->Printf("Bad user command: %s\n", Cmd_Argv(0));
+		SV_EndRedirect();
 	}
-
-	SV_EndRedirect();
 }
 
 /*
@@ -1788,5 +1610,5 @@ void SV_UserInit(void)
 {
 	VQH_InitRollCvars();
 	sv_spectalk = Cvar_Get("sv_spectalk", "1", 0);
-	sv_mapcheck = Cvar_Get("sv_mapcheck", "1", 0);
+	svqw_mapcheck = Cvar_Get("sv_mapcheck", "1", 0);
 }

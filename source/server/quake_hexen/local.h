@@ -27,6 +27,20 @@
 #define MULTICAST_PVS_R         5
 
 //
+//	Client
+//
+void SVQH_SetIdealPitch(qhedict_t* player);
+void SVQ1_PreSpawn_f(client_t* client);
+void SVQH_Spawn_f(client_t* client);
+void SVQH_Begin_f(client_t* client);
+void SVQHW_New_f(client_t* client);
+void SVQW_Soundlist_f(client_t* client);
+void SVHW_Soundlist_f(client_t* client);
+void SVQW_Modellist_f(client_t* client);
+void SVHW_Modellist_f(client_t* client);
+void SVQHW_PreSpawn_f(client_t* client);
+
+//
 //	Game
 //
 #define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
@@ -115,10 +129,12 @@ extern Cvar* hw_spartanPrint;
 extern Cvar* hw_dmMode;
 extern Cvar* qh_timelimit;
 extern Cvar* qh_fraglimit;
+extern Cvar* svqw_mapcheck;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
 extern fileHandle_t svqhw_fraglogfile;
+extern Cvar* svqh_idealpitchscale;
 
 int SVQH_CalcPing(client_t* cl);
 
@@ -192,6 +208,7 @@ void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax,
 void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count);
 void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
 void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count);
+void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg);
 
 //
 //	World

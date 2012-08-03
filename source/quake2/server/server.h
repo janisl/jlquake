@@ -49,8 +49,6 @@ extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
 //
 void SV_FinalMessage(const char* message, qboolean reconnect);
 
-void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
-
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);

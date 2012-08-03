@@ -91,6 +91,8 @@ extern int cl_connectedToPureServer;
 
 extern etgameInfo_t comet_gameInfo;
 
+extern bool q1_standard_quake;
+
 bool SVT3_GameCommand();
 
 #endif

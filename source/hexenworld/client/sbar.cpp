@@ -921,10 +921,10 @@ static void SoloScoreboard(void)
 	int minutes, seconds, tens, units;
 	int l;
 
-	sprintf(str,"Monsters:%3i /%3i", cl.qh_stats[STAT_MONSTERS], cl.qh_stats[STAT_TOTALMONSTERS]);
+	sprintf(str,"Monsters:%3i /%3i", cl.qh_stats[Q1STAT_MONSTERS], cl.qh_stats[Q1STAT_TOTALMONSTERS]);
 	Sbar_DrawString(8, 4, str);
 
-	sprintf(str,"Secrets :%3i /%3i", cl.qh_stats[STAT_SECRETS], cl.qh_stats[STAT_TOTALSECRETS]);
+	sprintf(str,"Secrets :%3i /%3i", cl.qh_stats[Q1STAT_SECRETS], cl.qh_stats[Q1STAT_TOTALSECRETS]);
 	Sbar_DrawString(8, 12, str);
 
 	// draw time

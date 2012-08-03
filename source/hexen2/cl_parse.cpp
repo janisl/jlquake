@@ -369,14 +369,12 @@ Server information pertaining to this client only
 */
 void CL_ParseClientdata(int bits)
 {
-	if (bits & SU_VIEWHEIGHT)
+	if (bits & Q1SU_VIEWHEIGHT)
 	{
 		cl.qh_viewheight = net_message.ReadChar();
 	}
-//rjr	else
-//rjr		cl.h2_viewheight = DEFAULT_VIEWHEIGHT;
 
-	if (bits & SU_IDEALPITCH)
+	if (bits & Q1SU_IDEALPITCH)
 	{
 		cl.qh_idealpitch = net_message.ReadChar();
 	}
@@ -384,7 +382,7 @@ void CL_ParseClientdata(int bits)
 	{
 	}
 
-	if (bits & SU_IDEALROLL)
+	if (bits & H2SU_IDEALROLL)
 	{
 		cl.h2_idealroll = net_message.ReadChar();
 	}
@@ -394,13 +392,13 @@ void CL_ParseClientdata(int bits)
 	VectorCopy(cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
 	for (int i = 0; i < 3; i++)
 	{
-		if (bits & (SU_PUNCH1 << i))
+		if (bits & (Q1SU_PUNCH1 << i))
 		{
 			cl.qh_punchangles[i] = net_message.ReadChar();
 		}
 //rjr		else
 //rjr			cl.punchangle[i] = 0;
-		if (bits & (SU_VELOCITY1 << i))
+		if (bits & (Q1SU_VELOCITY1 << i))
 		{
 			cl.qh_mvelocity[0][i] = net_message.ReadChar() * 16;
 		}
@@ -408,34 +406,30 @@ void CL_ParseClientdata(int bits)
 //rjr			cl.mvelocity[0][i] = 0;
 	}
 
-/*	if (bits & SU_ITEMS)
-        i = net_message.ReadLong ();
-*/
+	cl.qh_onground = (bits & Q1SU_ONGROUND) != 0;
 
-	cl.qh_onground = (bits & SU_ONGROUND) != 0;
-
-	if (bits & SU_WEAPONFRAME)
+	if (bits & Q1SU_WEAPONFRAME)
 	{
-		cl.qh_stats[STAT_WEAPONFRAME] = net_message.ReadByte();
+		cl.qh_stats[Q1STAT_WEAPONFRAME] = net_message.ReadByte();
 	}
 //rjr	else
-//rjr		cl.stats[STAT_WEAPONFRAME] = 0;
+//rjr		cl.stats[Q1STAT_WEAPONFRAME] = 0;
 
-	if (bits & SU_ARMOR)
+	if (bits & Q1SU_ARMOR)
 	{
-		cl.qh_stats[STAT_ARMOR] = net_message.ReadByte();
+		cl.qh_stats[Q1STAT_ARMOR] = net_message.ReadByte();
 	}
 
-	if (bits & SU_WEAPON)
+	if (bits & Q1SU_WEAPON)
 	{
-		cl.qh_stats[STAT_WEAPON] = net_message.ReadShort();
+		cl.qh_stats[Q1STAT_WEAPON] = net_message.ReadShort();
 	}
 
 /*	sc1 = sc2 = 0;
 
-    if (bits & SU_SC1)
+    if (bits & H2SU_SC1)
         sc1 = net_message.ReadLong ();
-    if (bits & SU_SC2)
+    if (bits & H2SU_SC2)
         sc2 = net_message.ReadLong ();
 
     if (sc1 & SC1_HEALTH)
@@ -1008,11 +1002,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_killedmonster:
-			cl.qh_stats[STAT_MONSTERS]++;
+			cl.qh_stats[Q1STAT_MONSTERS]++;
 			break;
 
 		case h2svc_foundsecret:
-			cl.qh_stats[STAT_SECRETS]++;
+			cl.qh_stats[Q1STAT_SECRETS]++;
 			break;
 
 		case h2svc_updatestat:

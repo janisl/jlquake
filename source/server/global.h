@@ -429,6 +429,8 @@ struct serverStatic_t
 	int spawncount;						// incremented each server start
 										// used to check late spawns
 
+	int realtime;					// always increasing, no clamping, etc
+
 	int qh_serverflags;					// episode completion information
 
 	// Only NetQuake/Hexen2
@@ -448,8 +450,6 @@ struct serverStatic_t
 	double qh_logtime;					// time of last swap
 	QMsg qh_log[2];
 	byte qh_log_buf[2][MAX_DATAGRAM];
-
-	int q2_realtime;					// always increasing, no clamping, etc
 
 	char q2_mapcmd[MAX_TOKEN_CHARS_Q2];	// ie: *intro.cin+base
 

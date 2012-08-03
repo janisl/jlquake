@@ -992,10 +992,7 @@ void Host_Init(quakeparms_t* parms)
 #endif
 		Sys_SetHomePathSuffix("jlhexen2");
 
-//	if (standard_quake)
 		minimum_memory = MINIMUM_MEMORY;
-//	else
-//		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
 
 		if (COM_CheckParm("-minmemory"))
 		{

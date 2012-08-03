@@ -211,54 +211,6 @@ void SV_FindModelNumbers(void)
 	}
 }
 
-
-/*
-==================
-SV_WriteClientdataToMessage
-
-==================
-*/
-void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
-{
-	int i;
-	qhedict_t* other;
-	qhedict_t* ent;
-
-	ent = client->qh_edict;
-
-	// send a damage message if the player got hit this frame
-	if (ent->GetDmgTake() || ent->GetDmgSave())
-	{
-		other = PROG_TO_EDICT(ent->GetDmgInflictor());
-		msg->WriteByte(h2svc_damage);
-		msg->WriteByte(ent->GetDmgSave());
-		msg->WriteByte(ent->GetDmgTake());
-		for (i = 0; i < 3; i++)
-			msg->WriteCoord(other->GetOrigin()[i] + 0.5 * (other->GetMins()[i] + other->GetMaxs()[i]));
-
-		ent->SetDmgTake(0);
-		ent->SetDmgSave(0);
-	}
-
-	// a fixangle might get lost in a dropped packet.  Oh well.
-	if (ent->GetFixAngle())
-	{
-		msg->WriteByte(h2svc_setangle);
-		for (i = 0; i < 3; i++)
-			msg->WriteAngle(ent->GetAngles()[i]);
-		ent->SetFixAngle(0);
-	}
-
-	// if the player has a target, send its info...
-	if (ent->GetTargDist())
-	{
-		msg->WriteByte(hwsvc_targetupdate);
-		msg->WriteByte(ent->GetTargAng());
-		msg->WriteByte(ent->GetTargPitch());
-		msg->WriteByte((ent->GetTargDist() < 255.0) ? (int)(ent->GetTargDist()) : 255);
-	}
-}
-
 /*
 =======================
 SV_UpdateClientStats
@@ -283,20 +235,20 @@ void SV_UpdateClientStats(client_t* client)
 		ent = svs.clients[client->qh_spec_track - 1].qh_edict;
 	}
 
-	stats[STAT_HEALTH] = 0;	//ent->v.health;
-	stats[STAT_WEAPON] = SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel()));
-	stats[STAT_AMMO] = 0;	//ent->v.currentammo;
-	stats[STAT_ARMOR] = 0;	//ent->v.armorvalue;
-	stats[STAT_SHELLS] = 0;	//ent->v.ammo_shells;
-	stats[STAT_NAILS] = 0;	//ent->v.ammo_nails;
-	stats[STAT_ROCKETS] = 0;//ent->v.ammo_rockets;
-	stats[STAT_CELLS] = 0;	//ent->v.ammo_cells;
+	stats[Q1STAT_HEALTH] = 0;	//ent->v.health;
+	stats[Q1STAT_WEAPON] = SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	stats[Q1STAT_AMMO] = 0;	//ent->v.currentammo;
+	stats[Q1STAT_ARMOR] = 0;	//ent->v.armorvalue;
+	stats[Q1STAT_SHELLS] = 0;	//ent->v.ammo_shells;
+	stats[Q1STAT_NAILS] = 0;	//ent->v.ammo_nails;
+	stats[Q1STAT_ROCKETS] = 0;//ent->v.ammo_rockets;
+	stats[Q1STAT_CELLS] = 0;	//ent->v.ammo_cells;
 	if (!client->qh_spectator)
 	{
-		stats[STAT_ACTIVEWEAPON] = 0;	//ent->v.weapon;
+		stats[Q1STAT_ACTIVEWEAPON] = 0;	//ent->v.weapon;
 	}
 	// stuff the sigil bits into the high bits of items for sbar
-	stats[STAT_ITEMS] = 0;	//(int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
+	stats[QWSTAT_ITEMS] = 0;	//(int)ent->v.items | ((int)pr_global_struct->serverflags << 28);
 
 	for (i = 0; i < MAX_CL_STATS; i++)
 		if (stats[i] != client->qh_stats[i])
@@ -331,7 +283,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.allowoverflow = true;
 
 	// add the client specific data to the datagram
-	SV_WriteClientdataToMessage(client, &msg);
+	SVQH_WriteClientdataToMessage(client, &msg);
 
 	// send over all the objects that are in the PVS
 	// this will include clients, a packetentities, and

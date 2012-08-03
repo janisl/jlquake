@@ -782,7 +782,7 @@ static void V_CalcRefdef(void)
 	}
 	else
 	{
-		view->state.modelindex = cl.qh_stats[STAT_WEAPON];
+		view->state.modelindex = cl.qh_stats[Q1STAT_WEAPON];
 	}
 	view->state.frame = view_message->weaponframe;
 

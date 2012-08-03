@@ -327,16 +327,16 @@ void CL_ParseClientdata(int bits)
 {
 	int i, j;
 
-	if (bits & SU_VIEWHEIGHT)
+	if (bits & Q1SU_VIEWHEIGHT)
 	{
 		cl.qh_viewheight = net_message.ReadChar();
 	}
 	else
 	{
-		cl.qh_viewheight = DEFAULT_VIEWHEIGHT;
+		cl.qh_viewheight = Q1DEFAULT_VIEWHEIGHT;
 	}
 
-	if (bits & SU_IDEALPITCH)
+	if (bits & Q1SU_IDEALPITCH)
 	{
 		cl.qh_idealpitch = net_message.ReadChar();
 	}
@@ -348,7 +348,7 @@ void CL_ParseClientdata(int bits)
 	VectorCopy(cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
 	for (i = 0; i < 3; i++)
 	{
-		if (bits & (SU_PUNCH1 << i))
+		if (bits & (Q1SU_PUNCH1 << i))
 		{
 			cl.qh_punchangles[i] = net_message.ReadChar();
 		}
@@ -356,7 +356,7 @@ void CL_ParseClientdata(int bits)
 		{
 			cl.qh_punchangles[i] = 0;
 		}
-		if (bits & (SU_VELOCITY1 << i))
+		if (bits & (Q1SU_VELOCITY1 << i))
 		{
 			cl.qh_mvelocity[0][i] = net_message.ReadChar() * 16;
 		}
@@ -366,7 +366,7 @@ void CL_ParseClientdata(int bits)
 		}
 	}
 
-// [always sent]	if (bits & SU_ITEMS)
+// [always sent]	if (bits & Q1SU_ITEMS)
 	i = net_message.ReadLong();
 
 	if (cl.q1_items != i)
@@ -379,9 +379,9 @@ void CL_ParseClientdata(int bits)
 		cl.q1_items = i;
 	}
 
-	cl.qh_onground = (bits & SU_ONGROUND) != 0;
+	cl.qh_onground = (bits & Q1SU_ONGROUND) != 0;
 
-	if (bits & SU_WEAPONFRAME)
+	if (bits & Q1SU_WEAPONFRAME)
 	{
 		cl.qh_stats[Q1STAT_WEAPONFRAME] = net_message.ReadByte();
 	}
@@ -390,7 +390,7 @@ void CL_ParseClientdata(int bits)
 		cl.qh_stats[Q1STAT_WEAPONFRAME] = 0;
 	}
 
-	if (bits & SU_ARMOR)
+	if (bits & Q1SU_ARMOR)
 	{
 		i = net_message.ReadByte();
 	}
@@ -403,7 +403,7 @@ void CL_ParseClientdata(int bits)
 		cl.qh_stats[Q1STAT_ARMOR] = i;
 	}
 
-	if (bits & SU_WEAPON)
+	if (bits & Q1SU_WEAPON)
 	{
 		i = net_message.ReadByte();
 	}
@@ -439,7 +439,7 @@ void CL_ParseClientdata(int bits)
 
 	i = net_message.ReadByte();
 
-	if (standard_quake)
+	if (q1_standard_quake)
 	{
 		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != i)
 		{

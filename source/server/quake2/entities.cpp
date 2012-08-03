@@ -453,7 +453,7 @@ void SVQ2_BuildClientFrame(client_t* client)
 	// this is the frame we are creating
 	q2client_frame_t* frame = &client->q2_frames[sv.q2_framenum & UPDATE_MASK_Q2];
 
-	frame->senttime = svs.q2_realtime;	// save it for ping calc later
+	frame->senttime = svs.realtime;	// save it for ping calc later
 
 	// find the client's PVS
 	vec3_t org;

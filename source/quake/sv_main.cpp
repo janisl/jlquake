@@ -35,12 +35,11 @@ void SV_Init(void)
 {
 	int i;
 	extern Cvar* sv_edgefriction;
-	extern Cvar* sv_idealpitchscale;
 
 
 	SVQH_RegisterPhysicsCvars();
 	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
-	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale", "0.8", 0);
+	svqh_idealpitchscale = Cvar_Get("sv_idealpitchscale", "0.8", 0);
 	svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
@@ -501,179 +500,6 @@ void SV_CleanupEnts(void)
 }
 
 /*
-==================
-SV_WriteClientdataToMessage
-
-==================
-*/
-void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
-{
-	int bits;
-	int i;
-	qhedict_t* other;
-	int items;
-	eval_t* val;
-
-//
-// send a damage message
-//
-	if (ent->GetDmgTake() || ent->GetDmgSave())
-	{
-		other = PROG_TO_EDICT(ent->GetDmgInflictor());
-		msg->WriteByte(q1svc_damage);
-		msg->WriteByte(ent->GetDmgSave());
-		msg->WriteByte(ent->GetDmgTake());
-		for (i = 0; i < 3; i++)
-			msg->WriteCoord(other->GetOrigin()[i] + 0.5 * (other->GetMins()[i] + other->GetMaxs()[i]));
-
-		ent->SetDmgTake(0);
-		ent->SetDmgSave(0);
-	}
-
-//
-// send the current viewpos offset from the view entity
-//
-	SV_SetIdealPitch();			// how much to look up / down ideally
-
-// a fixangle might get lost in a dropped packet.  Oh well.
-	if (ent->GetFixAngle())
-	{
-		msg->WriteByte(q1svc_setangle);
-		for (i = 0; i < 3; i++)
-			msg->WriteAngle(ent->GetAngles()[i]);
-		ent->SetFixAngle(0);
-	}
-
-	bits = 0;
-
-	if (ent->GetViewOfs()[2] != DEFAULT_VIEWHEIGHT)
-	{
-		bits |= SU_VIEWHEIGHT;
-	}
-
-	if (ent->GetIdealPitch())
-	{
-		bits |= SU_IDEALPITCH;
-	}
-
-// stuff the sigil bits into the high bits of items for sbar, or else
-// mix in items2
-	val = GetEdictFieldValue(ent, "items2");
-
-	if (val)
-	{
-		items = (int)ent->GetItems() | ((int)val->_float << 23);
-	}
-	else
-	{
-		items = (int)ent->GetItems() | ((int)*pr_globalVars.serverflags << 28);
-	}
-
-	bits |= SU_ITEMS;
-
-	if ((int)ent->GetFlags() & QHFL_ONGROUND)
-	{
-		bits |= SU_ONGROUND;
-	}
-
-	if (ent->GetWaterLevel() >= 2)
-	{
-		bits |= SU_INWATER;
-	}
-
-	for (i = 0; i < 3; i++)
-	{
-		if (ent->GetPunchAngle()[i])
-		{
-			bits |= (SU_PUNCH1 << i);
-		}
-		if (ent->GetVelocity()[i])
-		{
-			bits |= (SU_VELOCITY1 << i);
-		}
-	}
-
-	if (ent->GetWeaponFrame())
-	{
-		bits |= SU_WEAPONFRAME;
-	}
-
-	if (ent->GetArmorValue())
-	{
-		bits |= SU_ARMOR;
-	}
-
-//	if (ent->v.weapon)
-	bits |= SU_WEAPON;
-
-// send the data
-
-	msg->WriteByte(q1svc_clientdata);
-	msg->WriteShort(bits);
-
-	if (bits & SU_VIEWHEIGHT)
-	{
-		msg->WriteChar(ent->GetViewOfs()[2]);
-	}
-
-	if (bits & SU_IDEALPITCH)
-	{
-		msg->WriteChar(ent->GetIdealPitch());
-	}
-
-	for (i = 0; i < 3; i++)
-	{
-		if (bits & (SU_PUNCH1 << i))
-		{
-			msg->WriteChar(ent->GetPunchAngle()[i]);
-		}
-		if (bits & (SU_VELOCITY1 << i))
-		{
-			msg->WriteChar(ent->GetVelocity()[i] / 16);
-		}
-	}
-
-// [always sent]	if (bits & SU_ITEMS)
-	msg->WriteLong(items);
-
-	if (bits & SU_WEAPONFRAME)
-	{
-		msg->WriteByte(ent->GetWeaponFrame());
-	}
-	if (bits & SU_ARMOR)
-	{
-		msg->WriteByte(ent->GetArmorValue());
-	}
-	if (bits & SU_WEAPON)
-	{
-		msg->WriteByte(SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel())));
-	}
-
-	msg->WriteShort(ent->GetHealth());
-	msg->WriteByte(ent->GetCurrentAmmo());
-	msg->WriteByte(ent->GetAmmoShells());
-	msg->WriteByte(ent->GetAmmoNails());
-	msg->WriteByte(ent->GetAmmoRockets());
-	msg->WriteByte(ent->GetAmmoCells());
-
-	if (standard_quake)
-	{
-		msg->WriteByte(ent->GetWeapon());
-	}
-	else
-	{
-		for (i = 0; i < 32; i++)
-		{
-			if (((int)ent->GetWeapon()) & (1 << i))
-			{
-				msg->WriteByte(i);
-				break;
-			}
-		}
-	}
-}
-
-/*
 =======================
 SV_SendClientDatagram
 =======================
@@ -689,7 +515,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.WriteFloat(sv.qh_time);
 
 // add the client specific data to the datagram
-	SV_WriteClientdataToMessage(client->qh_edict, &msg);
+	SVQH_WriteClientdataToMessage(client, &msg);
 
 	SV_WriteEntitiesToClient(client->qh_edict, &msg);
 

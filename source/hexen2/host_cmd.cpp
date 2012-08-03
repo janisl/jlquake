@@ -487,7 +487,7 @@ void Host_SavegameComment(char* text)
 #ifndef DEDICATED
 	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
 #endif
-//	sprintf (kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
+//	sprintf (kills,"kills:%3i/%3i", cl.stats[Q1STAT_MONSTERS], cl.stats[Q1STAT_TOTALMONSTERS]);
 
 	TempTime = time(NULL);
 	tblock = localtime(&TempTime);
@@ -821,7 +821,7 @@ void SaveGamestate(qboolean ClientsOnly)
 
 		// write the light styles
 
-		for (i = 0; i < MAX_LIGHTSTYLES_H2; i++)
+		for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 		{
 			if (sv.qh_lightstyles[i])
 			{
@@ -973,7 +973,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		}
 
 		// load the light styles
-		for (i = 0; i < MAX_LIGHTSTYLES_H2; i++)
+		for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 		{
 			char* Style = GetLine(ReadPos);
 			char* Tmp = (char*)Hunk_Alloc(String::Length(Style) + 1);
@@ -1549,172 +1549,6 @@ void Host_Pause_f(void)
 
 //===========================================================================
 
-
-/*
-==================
-Host_PreSpawn_f
-==================
-*/
-void Host_PreSpawn_f(void)
-{
-	if (cmd_source == src_command)
-	{
-		common->Printf("prespawn is not valid from the console\n");
-		return;
-	}
-
-	if (host_client->state == CS_ACTIVE)
-	{
-		common->Printf("prespawn not valid -- allready spawned\n");
-		return;
-	}
-
-	host_client->qh_message.WriteData(sv.qh_signon._data, sv.qh_signon.cursize);
-	host_client->qh_message.WriteByte(h2svc_signonnum);
-	host_client->qh_message.WriteByte(2);
-	host_client->qh_sendsignon = true;
-}
-
-/*
-==================
-Host_Spawn_f
-==================
-*/
-void Host_Spawn_f(void)
-{
-	int i;
-	client_t* client;
-	qhedict_t* ent;
-
-	if (cmd_source == src_command)
-	{
-		common->Printf("spawn is not valid from the console\n");
-		return;
-	}
-
-	if (host_client->state == CS_ACTIVE)
-	{
-		common->Printf("Spawn not valid -- allready spawned\n");
-		return;
-	}
-
-// send all current names, colors, and frag counts
-	host_client->qh_message.Clear();
-
-// run the entrance script
-	if (sv.loadgame)
-	{	// loaded games are fully inited allready
-		// if this is the last client to be connected, unpause
-		sv.qh_paused = false;
-	}
-	else
-	{
-		// set up the edict
-		ent = host_client->qh_edict;
-		sv.qh_paused = false;
-
-		if (!ent->GetStatsRestored() || svqh_deathmatch->value)
-		{
-			Com_Memset(&ent->v, 0, progs->entityfields * 4);
-
-			//ent->v.colormap = QH_NUM_FOR_EDICT(ent);
-			ent->SetTeam((host_client->qh_colors & 15) + 1);
-			ent->SetNetName(PR_SetString(host_client->name));
-			ent->SetPlayerClass(host_client->h2_playerclass);
-
-			// copy spawn parms out of the client_t
-
-			for (i = 0; i < NUM_SPAWN_PARMS; i++)
-				pr_globalVars.parm1[i] = host_client->qh_spawn_parms[i];
-
-			// call the spawn function
-
-			*pr_globalVars.time = sv.qh_time;
-			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram(*pr_globalVars.ClientConnect);
-
-			if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
-			{
-				common->Printf("%s entered the game\n", host_client->name);
-			}
-
-			PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
-		}
-	}
-
-
-// send time of update
-	host_client->qh_message.WriteByte(h2svc_time);
-	host_client->qh_message.WriteFloat(sv.qh_time);
-
-	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
-	{
-		host_client->qh_message.WriteByte(h2svc_updatename);
-		host_client->qh_message.WriteByte(i);
-		host_client->qh_message.WriteString2(client->name);
-
-		host_client->qh_message.WriteByte(h2svc_updateclass);
-		host_client->qh_message.WriteByte(i);
-		host_client->qh_message.WriteByte(client->h2_playerclass);
-
-		host_client->qh_message.WriteByte(h2svc_updatefrags);
-		host_client->qh_message.WriteByte(i);
-		host_client->qh_message.WriteShort(client->qh_old_frags);
-
-		host_client->qh_message.WriteByte(h2svc_updatecolors);
-		host_client->qh_message.WriteByte(i);
-		host_client->qh_message.WriteByte(client->qh_colors);
-	}
-
-// send all current light styles
-	for (i = 0; i < MAX_LIGHTSTYLES_H2; i++)
-	{
-		host_client->qh_message.WriteByte(h2svc_lightstyle);
-		host_client->qh_message.WriteByte((char)i);
-		host_client->qh_message.WriteString2(sv.qh_lightstyles[i]);
-	}
-
-//
-// send some stats
-//
-	host_client->qh_message.WriteByte(h2svc_updatestat);
-	host_client->qh_message.WriteByte(STAT_TOTALSECRETS);
-	host_client->qh_message.WriteLong(*pr_globalVars.total_secrets);
-
-	host_client->qh_message.WriteByte(h2svc_updatestat);
-	host_client->qh_message.WriteByte(STAT_TOTALMONSTERS);
-	host_client->qh_message.WriteLong(*pr_globalVars.total_monsters);
-
-	host_client->qh_message.WriteByte(h2svc_updatestat);
-	host_client->qh_message.WriteByte(STAT_SECRETS);
-	host_client->qh_message.WriteLong(*pr_globalVars.found_secrets);
-
-	host_client->qh_message.WriteByte(h2svc_updatestat);
-	host_client->qh_message.WriteByte(STAT_MONSTERS);
-	host_client->qh_message.WriteLong(*pr_globalVars.killed_monsters);
-
-
-	SVH2_UpdateEffects(&host_client->qh_message);
-
-//
-// send a fixangle
-// Never send a roll angle, because savegames can catch the server
-// in a state where it is expecting the client to correct the angle
-// and it won't happen if the game was just loaded, so you wind up
-// with a permanent head tilt
-	ent = QH_EDICT_NUM(1 + (host_client - svs.clients));
-	host_client->qh_message.WriteByte(h2svc_setangle);
-	for (i = 0; i < 2; i++)
-		host_client->qh_message.WriteAngle(ent->GetAngles()[i]);
-	host_client->qh_message.WriteAngle(0);
-
-	SV_WriteClientdataToMessage(host_client, sv_player, &host_client->qh_message);
-
-	host_client->qh_message.WriteByte(h2svc_signonnum);
-	host_client->qh_message.WriteByte(3);
-	host_client->qh_sendsignon = true;
-}
-
 int strdiff(const char* s1, const char* s2)
 {
 	int L1,L2,i;
@@ -1731,22 +1565,6 @@ int strdiff(const char* s1, const char* s2)
 	}
 
 	return i;
-}
-
-/*
-==================
-Host_Begin_f
-==================
-*/
-void Host_Begin_f(void)
-{
-	if (cmd_source == src_command)
-	{
-		common->Printf("begin is not valid from the console\n");
-		return;
-	}
-
-	host_client->state = CS_ACTIVE;
 }
 
 //===========================================================================
@@ -1911,128 +1729,14 @@ void Host_Give_f(void)
 	case '7':
 	case '8':
 	case '9':
-		// MED 01/04/97 added hipnotic give stuff
-/*      if (hipnotic)
-      {
-         if (t[0] == '6')
-         {
-            if (t[1] == 'a')
-               sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
-            else
-               sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
-         }
-         else if (t[0] == '9')
-            sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
-         else if (t[0] == '0')
-            sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
-         else if (t[0] >= '2')
-            sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
-      }
-      else
-*/  {
 		if (t[0] >= '2')
 		{
 			sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
 		}
-	}
-	break;
+		break;
 
-	case 's':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_shells1");
-            if (val)
-                val->_float = v;
-        }
-
-        sv_player->v.ammo_shells = v;
-        break;		*/
-	case 'n':
-/*		if (rogue)
-        {
-        val = GetEdictFieldValue(sv_player, "ammo_nails1");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon <= IT_LIGHTNING)
-                    sv_player->v.ammo_nails = v;
-            }
-        }
-        else
-        {
-            sv_player->v.ammo_nails = v;
-        }*/
-		break;
-	case 'l':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon > IT_LIGHTNING)
-                    sv_player->v.ammo_nails = v;
-            }
-        }*/
-		break;
-	case 'r':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_rockets1");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon <= IT_LIGHTNING)
-                    sv_player->v.ammo_rockets = v;
-            }
-        }
-        else
-        {
-            sv_player->v.ammo_rockets = v;
-        }*/
-		break;
-	case 'm':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon > IT_LIGHTNING)
-                    sv_player->v.ammo_rockets = v;
-            }
-        }*/
-		break;
 	case 'h':
 		sv_player->SetHealth(v);
-		break;
-	case 'c':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_cells1");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon <= IT_LIGHTNING)
-                    sv_player->v.ammo_cells = v;
-            }
-        }
-        else
-        {
-            sv_player->v.ammo_cells = v;
-        }*/
-		break;
-	case 'p':
-/*		if (rogue)
-        {
-            val = GetEdictFieldValue(sv_player, "ammo_plasma");
-            if (val)
-            {
-                val->_float = v;
-                if (sv_player->v.weapon > IT_LIGHTNING)
-                    sv_player->v.ammo_cells = v;
-            }
-        }*/
 		break;
 	}
 }
@@ -2291,9 +1995,6 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);
 	Cmd_AddCommand("pause", Host_Pause_f);
-	Cmd_AddCommand("spawn", Host_Spawn_f);
-	Cmd_AddCommand("begin", Host_Begin_f);
-	Cmd_AddCommand("prespawn", Host_PreSpawn_f);
 	Cmd_AddCommand("kick", Host_Kick_f);
 	Cmd_AddCommand("ping", Host_Ping_f);
 	Cmd_AddCommand("load", Host_Loadgame_f);

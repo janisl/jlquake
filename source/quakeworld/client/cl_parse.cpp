@@ -572,10 +572,10 @@ void CL_ParseServerData(void)
 // parse protocol version number
 // allow 2.2 and 2.29 demos to play
 	protover = net_message.ReadLong();
-	if (protover != PROTOCOL_VERSION &&
+	if (protover != QWPROTOCOL_VERSION &&
 		!(clc.demoplaying && (protover == 26 || protover == 27 || protover == 28)))
 	{
-		common->Error("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, PROTOCOL_VERSION);
+		common->Error("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, QWPROTOCOL_VERSION);
 	}
 
 	cl.servercount = net_message.ReadLong();

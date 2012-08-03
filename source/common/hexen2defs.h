@@ -719,7 +719,6 @@ struct hwpacket_entities_t
 #define hwclc_inv_select    7
 #define hwclc_get_effect    8	//[byte] effect id
 
-#define MAX_LIGHTSTYLES_H2  64
 #define MAX_MODELS_H2       512			// Sent over the net as a word
 #define MAX_SOUNDS_H2       512			// Sent over the net as a byte
 #define MAX_SOUNDS_HW       256			// so they cannot be blindly increased
@@ -876,3 +875,66 @@ struct h2client_entvars_t
 #define HWEF_ICESTORM_EFFECT      0x02000000
 #define HWEF_HAMMER_EFFECTS       0x10000000
 #define HWEF_BEETLE_EFFECTS       0x20000000
+
+// Bits to help send server info about the client's edict variables
+#define SC1_HEALTH              (1 << 0)		// changes stat bar
+#define SC1_LEVEL               (1 << 1)		// changes stat bar
+#define SC1_INTELLIGENCE        (1 << 2)		// changes stat bar
+#define SC1_WISDOM              (1 << 3)		// changes stat bar
+#define SC1_STRENGTH            (1 << 4)		// changes stat bar
+#define SC1_DEXTERITY           (1 << 5)		// changes stat bar
+#define SC1_WEAPON              (1 << 6)		// changes stat bar
+#define SC1_TELEPORT_TIME       (1 << 6)		// can't airmove for 2 seconds
+#define SC1_BLUEMANA            (1 << 7)		// changes stat bar
+#define SC1_GREENMANA           (1 << 8)		// changes stat bar
+#define SC1_EXPERIENCE          (1 << 9)		// changes stat bar
+#define SC1_CNT_TORCH           (1 << 10)		// changes stat bar
+#define SC1_CNT_H_BOOST         (1 << 11)		// changes stat bar
+#define SC1_CNT_SH_BOOST        (1 << 12)		// changes stat bar
+#define SC1_CNT_MANA_BOOST      (1 << 13)		// changes stat bar
+#define SC1_CNT_TELEPORT        (1 << 14)		// changes stat bar
+#define SC1_CNT_TOME            (1 << 15)		// changes stat bar
+#define SC1_CNT_SUMMON          (1 << 16)		// changes stat bar
+#define SC1_CNT_INVISIBILITY    (1 << 17)		// changes stat bar
+#define SC1_CNT_GLYPH           (1 << 18)		// changes stat bar
+#define SC1_CNT_HASTE           (1 << 19)		// changes stat bar
+#define SC1_CNT_BLAST           (1 << 20)		// changes stat bar
+#define SC1_CNT_POLYMORPH       (1 << 21)		// changes stat bar
+#define SC1_CNT_FLIGHT          (1 << 22)		// changes stat bar
+#define SC1_CNT_CUBEOFFORCE     (1 << 23)		// changes stat bar
+#define SC1_CNT_INVINCIBILITY   (1 << 24)		// changes stat bar
+#define SC1_ARTIFACT_ACTIVE     (1 << 25)
+#define SC1_ARTIFACT_LOW        (1 << 26)
+#define SC1_MOVETYPE            (1 << 27)
+#define SC1_CAMERAMODE          (1 << 28)
+#define SC1_HASTED              (1 << 29)
+#define SC1_INVENTORY           (1 << 30)
+#define SC1_RINGS_ACTIVE        (1 << 31)
+
+#define SC2_RINGS_LOW           (1 << 0)
+#define SC2_AMULET              (1 << 1)
+#define SC2_BRACER              (1 << 2)
+#define SC2_BREASTPLATE         (1 << 3)
+#define SC2_HELMET              (1 << 4)
+#define SC2_FLIGHT_T            (1 << 5)
+#define SC2_WATER_T             (1 << 6)
+#define SC2_TURNING_T           (1 << 7)
+#define SC2_REGEN_T             (1 << 8)
+#define SC2_HASTE_T             (1 << 9)
+#define SC2_TOME_T              (1 << 10)
+#define SC2_PUZZLE1             (1 << 11)
+#define SC2_PUZZLE2             (1 << 12)
+#define SC2_PUZZLE3             (1 << 13)
+#define SC2_PUZZLE4             (1 << 14)
+#define SC2_PUZZLE5             (1 << 15)
+#define SC2_PUZZLE6             (1 << 16)
+#define SC2_PUZZLE7             (1 << 17)
+#define SC2_PUZZLE8             (1 << 18)
+#define SC2_MAXHEALTH           (1 << 19)
+#define SC2_MAXMANA             (1 << 20)
+#define SC2_FLAGS               (1 << 21)
+#define SC2_OBJ                 (1 << 22)
+#define SC2_OBJ2                (1 << 23)
+
+#define HWOLD_PROTOCOL_VERSION    24
+#define HWPROTOCOL_VERSION    25

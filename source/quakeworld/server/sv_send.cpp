@@ -187,45 +187,6 @@ void SV_FindModelNumbers(void)
 	}
 }
 
-
-/*
-==================
-SV_WriteClientdataToMessage
-
-==================
-*/
-void SV_WriteClientdataToMessage(client_t* client, QMsg* msg)
-{
-	int i;
-	qhedict_t* other;
-	qhedict_t* ent;
-
-	ent = client->qh_edict;
-
-	// send a damage message if the player got hit this frame
-	if (ent->GetDmgTake() || ent->GetDmgSave())
-	{
-		other = PROG_TO_EDICT(ent->GetDmgInflictor());
-		msg->WriteByte(q1svc_damage);
-		msg->WriteByte(ent->GetDmgSave());
-		msg->WriteByte(ent->GetDmgTake());
-		for (i = 0; i < 3; i++)
-			msg->WriteCoord(other->GetOrigin()[i] + 0.5 * (other->GetMins()[i] + other->GetMaxs()[i]));
-
-		ent->SetDmgTake(0);
-		ent->SetDmgSave(0);
-	}
-
-	// a fixangle might get lost in a dropped packet.  Oh well.
-	if (ent->GetFixAngle())
-	{
-		msg->WriteByte(q1svc_setangle);
-		for (i = 0; i < 3; i++)
-			msg->WriteAngle(ent->GetAngles()[i]);
-		ent->SetFixAngle(0);
-	}
-}
-
 /*
 =======================
 SV_UpdateClientStats
@@ -298,7 +259,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	msg.allowoverflow = true;
 
 	// add the client specific data to the datagram
-	SV_WriteClientdataToMessage(client, &msg);
+	SVQH_WriteClientdataToMessage(client, &msg);
 
 	// send over all the objects that are in the PVS
 	// this will include clients, a packetentities, and

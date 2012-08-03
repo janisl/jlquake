@@ -802,8 +802,8 @@ static void V_CalcRefdef(void)
 		view->state.origin[2] += 0.5;
 	}
 
-	view->state.modelindex = cl.qh_stats[STAT_WEAPON];
-	view->state.frame = cl.qh_stats[STAT_WEAPONFRAME];
+	view->state.modelindex = cl.qh_stats[Q1STAT_WEAPON];
+	view->state.frame = cl.qh_stats[Q1STAT_WEAPONFRAME];
 
 	// Place weapon in powered up mode
 	if ((ent->state.drawflags & H2MLS_MASKIN) == H2MLS_POWERMODE)

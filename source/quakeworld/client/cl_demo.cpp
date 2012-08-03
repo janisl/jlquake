@@ -462,7 +462,7 @@ void CL_Record_f(void)
 
 // send the serverdata
 	buf.WriteByte(qwsvc_serverdata);
-	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(QWPROTOCOL_VERSION);
 	buf.WriteLong(cl.servercount);
 	buf.WriteString2(gamedirfile);
 

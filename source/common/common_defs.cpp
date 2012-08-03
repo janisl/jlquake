@@ -55,6 +55,8 @@ etgameInfo_t comet_gameInfo;
 static int com_argc;
 static const char* com_argv[MAX_NUM_ARGVS + 1];
 
+bool q1_standard_quake = true;
+
 Interface::~Interface()
 {
 }

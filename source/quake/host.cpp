@@ -892,7 +892,7 @@ void Host_Init(quakeparms_t* parms)
 		GGameType = GAME_Quake;
 		Sys_SetHomePathSuffix("jlquake");
 
-		if (standard_quake)
+		if (q1_standard_quake)
 		{
 			minimum_memory = MINIMUM_MEMORY;
 		}

@@ -239,7 +239,7 @@ void CL_SendConnectPacket(void)
 
 //	common->Printf ("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
-		255, 255, 255, 255, PROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo);
+		255, 255, 255, 255, QWPROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo);
 	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
 }
 

@@ -1249,6 +1249,7 @@ void SV_Frame(float time)
 // decide the simulation time
 		realtime += time;
 		sv.qh_time += time;
+		svs.realtime = realtime * 1000;
 
 		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
 		{

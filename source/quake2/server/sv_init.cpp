@@ -54,7 +54,7 @@ void SV_SpawnServer(char* server, char* spawnpoint, serverState_t serverstate, q
 
 	// wipe the entire per-level structure
 	Com_Memset(&sv, 0, sizeof(sv));
-	svs.q2_realtime = 0;
+	svs.realtime = 0;
 	sv.loadgame = loadgame;
 	sv.q2_attractloop = attractloop;
 

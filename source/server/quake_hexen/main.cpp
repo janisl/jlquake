@@ -27,6 +27,8 @@ Cvar* qh_fraglimit;
 Cvar* svqh_highchars;
 Cvar* hw_spartanPrint;
 Cvar* hw_dmMode;
+Cvar* svqh_idealpitchscale;
+Cvar* svqw_mapcheck;
 
 int svqh_current_skill;
 

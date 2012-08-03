@@ -57,8 +57,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
 
 
-#define ON_EPSILON      0.1			// point on plane side epsilon
-
 #define SAVEGAME_COMMENT_LENGTH 39
 
 // stock defines

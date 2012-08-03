@@ -323,3 +323,27 @@ struct qwpacket_entities_t
 // the sound field has bits 0-2: channel, 3-12: entity
 #define QHWSND_VOLUME       BIT(15)		// a byte
 #define QHWSND_ATTENUATION  BIT(14)		// a byte
+
+#define Q1SU_VIEWHEIGHT     (1 << 0)
+#define Q1SU_IDEALPITCH     (1 << 1)
+#define Q1SU_PUNCH1         (1 << 2)
+#define Q1SU_PUNCH2         (1 << 3)
+#define Q1SU_PUNCH3         (1 << 4)
+#define Q1SU_VELOCITY1      (1 << 5)
+#define Q1SU_VELOCITY2      (1 << 6)
+#define Q1SU_VELOCITY3      (1 << 7)
+#define Q1SU_ITEMS          (1 << 9)
+#define Q1SU_ONGROUND       (1 << 10)		// no data follows, the bit is it
+#define Q1SU_INWATER        (1 << 11)		// no data follows, the bit is it
+#define Q1SU_WEAPONFRAME    (1 << 12)
+#define Q1SU_ARMOR          (1 << 13)
+#define Q1SU_WEAPON         (1 << 14)
+
+#define H2SU_IDEALROLL      (1 << 8)	// I'll take that available bit
+#define H2SU_SC1            (1 << 9)
+#define H2SU_SC2            (1 << 15)
+
+// defaults for clientinfo messages
+#define Q1DEFAULT_VIEWHEIGHT  22
+
+#define QWPROTOCOL_VERSION    28

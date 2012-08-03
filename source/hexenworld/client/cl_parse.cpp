@@ -433,9 +433,9 @@ void CL_ParseServerData(void)
 
 // parse protocol version number
 	protover = net_message.ReadLong();
-	if (protover != PROTOCOL_VERSION && protover != OLD_PROTOCOL_VERSION)
+	if (protover != HWPROTOCOL_VERSION && protover != HWOLD_PROTOCOL_VERSION)
 	{
-		common->Error("Server returned version %i, not %i", protover, PROTOCOL_VERSION);
+		common->Error("Server returned version %i, not %i", protover, HWPROTOCOL_VERSION);
 	}
 
 	cl.servercount = net_message.ReadLong();
@@ -479,7 +479,7 @@ void CL_ParseServerData(void)
 	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
 
 	// get the movevars
-	if (protover == PROTOCOL_VERSION)
+	if (protover == HWPROTOCOL_VERSION)
 	{
 		movevars.gravity            = net_message.ReadFloat();
 		movevars.stopspeed          = net_message.ReadFloat();
@@ -1219,11 +1219,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_killedmonster:
-			cl.qh_stats[STAT_MONSTERS]++;
+			cl.qh_stats[Q1STAT_MONSTERS]++;
 			break;
 
 		case h2svc_foundsecret:
-			cl.qh_stats[STAT_SECRETS]++;
+			cl.qh_stats[Q1STAT_SECRETS]++;
 			break;
 
 		case h2svc_updatestat:

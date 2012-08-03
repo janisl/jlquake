@@ -68,8 +68,6 @@ void SV_DropClient(client_t* drop);
 
 void SV_FullClientUpdate(client_t* client, QMsg* buf);
 
-void SV_WriteClientdataToMessage(client_t* client, QMsg* msg);
-
 void SV_SaveSpawnparms(void);
 
 void SV_InitOperatorCommands(void);

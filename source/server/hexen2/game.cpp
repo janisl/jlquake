@@ -235,7 +235,7 @@ static void PF_precache_puzzle_model()
 static void PFH2_lightstylevalue()
 {
 	int style = G_FLOAT(OFS_PARM0);
-	if (style < 0 || style >= MAX_LIGHTSTYLES_H2)
+	if (style < 0 || style >= MAX_LIGHTSTYLES_Q1)
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;
@@ -247,7 +247,7 @@ static void PFH2_lightstylevalue()
 static void PFHW_lightstylevalue()
 {
 	int style = G_FLOAT(OFS_PARM0);
-	if (style < 0 || style >= MAX_LIGHTSTYLES_H2)
+	if (style < 0 || style >= MAX_LIGHTSTYLES_Q1)
 	{
 		G_FLOAT(OFS_RETURN) = 0;
 		return;

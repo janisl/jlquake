@@ -45,14 +45,10 @@ void SV_DropClient(qboolean crash);
 void SV_SendClientMessages(void);
 void SV_ClearDatagram(void);
 
-void SV_SetIdealPitch(void);
-
 void SV_AddUpdates(void);
 
 void SV_ClientThink(void);
 void SV_AddClientToServer(qsocket_t* ret);
-
-void SV_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg);
 
 void SV_CheckForNewClients(void);
 void SV_RunClients(void);

@@ -15,8 +15,9 @@
 //**************************************************************************
 
 #include "../server.h"
-//#include "../progsvm/progsvm.h"
+#include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../hexen2/local.h"
 
 unsigned clients_multicast;
 
@@ -629,5 +630,945 @@ void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int 
 	if (GGameType & GAME_HexenWorld)
 	{
 		SVQH_Multicast(org, MULTICAST_PVS);
+	}
+}
+
+static void SVQ1_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
+{
+	int bits = 0;
+
+	if (ent->GetViewOfs()[2] != Q1DEFAULT_VIEWHEIGHT)
+	{
+		bits |= Q1SU_VIEWHEIGHT;
+	}
+
+	if (ent->GetIdealPitch())
+	{
+		bits |= Q1SU_IDEALPITCH;
+	}
+
+	// stuff the sigil bits into the high bits of items for sbar, or else
+	// mix in items2
+	eval_t* val = GetEdictFieldValue(ent, "items2");
+
+	int items;
+	if (val)
+	{
+		items = (int)ent->GetItems() | ((int)val->_float << 23);
+	}
+	else
+	{
+		items = (int)ent->GetItems() | ((int)*pr_globalVars.serverflags << 28);
+	}
+
+	bits |= Q1SU_ITEMS;
+
+	if ((int)ent->GetFlags() & QHFL_ONGROUND)
+	{
+		bits |= Q1SU_ONGROUND;
+	}
+
+	if (ent->GetWaterLevel() >= 2)
+	{
+		bits |= Q1SU_INWATER;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (ent->GetPunchAngle()[i])
+		{
+			bits |= (Q1SU_PUNCH1 << i);
+		}
+		if (ent->GetVelocity()[i])
+		{
+			bits |= (Q1SU_VELOCITY1 << i);
+		}
+	}
+
+	if (ent->GetWeaponFrame())
+	{
+		bits |= Q1SU_WEAPONFRAME;
+	}
+
+	if (ent->GetArmorValue())
+	{
+		bits |= Q1SU_ARMOR;
+	}
+
+	bits |= Q1SU_WEAPON;
+
+	// send the data
+
+	msg->WriteByte(q1svc_clientdata);
+	msg->WriteShort(bits);
+
+	if (bits & Q1SU_VIEWHEIGHT)
+	{
+		msg->WriteChar(ent->GetViewOfs()[2]);
+	}
+
+	if (bits & Q1SU_IDEALPITCH)
+	{
+		msg->WriteChar(ent->GetIdealPitch());
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (bits & (Q1SU_PUNCH1 << i))
+		{
+			msg->WriteChar(ent->GetPunchAngle()[i]);
+		}
+		if (bits & (Q1SU_VELOCITY1 << i))
+		{
+			msg->WriteChar(ent->GetVelocity()[i] / 16);
+		}
+	}
+
+	// [always sent]	if (bits & Q1SU_ITEMS)
+	msg->WriteLong(items);
+
+	if (bits & Q1SU_WEAPONFRAME)
+	{
+		msg->WriteByte(ent->GetWeaponFrame());
+	}
+	if (bits & Q1SU_ARMOR)
+	{
+		msg->WriteByte(ent->GetArmorValue());
+	}
+	if (bits & Q1SU_WEAPON)
+	{
+		msg->WriteByte(SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel())));
+	}
+
+	msg->WriteShort(ent->GetHealth());
+	msg->WriteByte(ent->GetCurrentAmmo());
+	msg->WriteByte(ent->GetAmmoShells());
+	msg->WriteByte(ent->GetAmmoNails());
+	msg->WriteByte(ent->GetAmmoRockets());
+	msg->WriteByte(ent->GetAmmoCells());
+
+	if (q1_standard_quake)
+	{
+		msg->WriteByte(ent->GetWeapon());
+	}
+	else
+	{
+		for (int i = 0; i < 32; i++)
+		{
+			if (((int)ent->GetWeapon()) & (1 << i))
+			{
+				msg->WriteByte(i);
+				break;
+			}
+		}
+	}
+}
+
+static void SVH2_WriteClientdataToMessage(client_t* client, qhedict_t* ent, QMsg* msg)
+{
+	int bits = 0;
+
+	if (client->h2_send_all_v)
+	{
+		bits = Q1SU_VIEWHEIGHT | Q1SU_IDEALPITCH | H2SU_IDEALROLL |
+			   Q1SU_VELOCITY1 | (Q1SU_VELOCITY1 << 1) | (Q1SU_VELOCITY1 << 2) |
+			   Q1SU_PUNCH1 | (Q1SU_PUNCH1 << 1) | (Q1SU_PUNCH1 << 2) | Q1SU_WEAPONFRAME |
+			   Q1SU_ARMOR | Q1SU_WEAPON;
+	}
+	else
+	{
+		if (ent->GetViewOfs()[2] != client->h2_old_v.view_ofs[2])
+		{
+			bits |= Q1SU_VIEWHEIGHT;
+		}
+
+		if (ent->GetIdealPitch() != client->h2_old_v.idealpitch)
+		{
+			bits |= Q1SU_IDEALPITCH;
+		}
+
+		if (ent->GetIdealRoll() != client->h2_old_v.idealroll)
+		{
+			bits |= H2SU_IDEALROLL;
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			if (ent->GetPunchAngle()[i] != client->h2_old_v.punchangle[i])
+			{
+				bits |= (Q1SU_PUNCH1 << i);
+			}
+			if (ent->GetVelocity()[i] != client->h2_old_v.velocity[i])
+			{
+				bits |= (Q1SU_VELOCITY1 << i);
+			}
+		}
+
+		if (ent->GetWeaponFrame() != client->h2_old_v.weaponframe)
+		{
+			bits |= Q1SU_WEAPONFRAME;
+		}
+
+		if (ent->GetArmorValue() != client->h2_old_v.armorvalue)
+		{
+			bits |= Q1SU_ARMOR;
+		}
+
+		if (ent->GetWeaponModel() != client->h2_old_v.weaponmodel)
+		{
+			bits |= Q1SU_WEAPON;
+		}
+	}
+
+	// send the data
+
+	//fjm: this wasn't in here b4, and the centerview command requires it.
+	if ((int)ent->GetFlags() & QHFL_ONGROUND)
+	{
+		bits |= Q1SU_ONGROUND;
+	}
+
+	static int next_update = 0;
+	static int next_count = 0;
+
+	next_count++;
+	if (next_count >= 3)
+	{
+		next_count = 0;
+		next_update++;
+		if (next_update > 11)
+		{
+			next_update = 0;
+		}
+
+		switch (next_update)
+		{
+		case 0: bits |= Q1SU_VIEWHEIGHT;
+			break;
+		case 1: bits |= Q1SU_IDEALPITCH;
+			break;
+		case 2: bits |= H2SU_IDEALROLL;
+			break;
+		case 3: bits |= Q1SU_VELOCITY1;
+			break;
+		case 4: bits |= (Q1SU_VELOCITY1 << 1);
+			break;
+		case 5: bits |= (Q1SU_VELOCITY1 << 2);
+			break;
+		case 6: bits |= Q1SU_PUNCH1;
+			break;
+		case 7: bits |= (Q1SU_PUNCH1 << 1);
+			break;
+		case 8: bits |= (Q1SU_PUNCH1 << 2);
+			break;
+		case 9: bits |= Q1SU_WEAPONFRAME;
+			break;
+		case 10: bits |= Q1SU_ARMOR;
+			break;
+		case 11: bits |= Q1SU_WEAPON;
+			break;
+		}
+	}
+
+	msg->WriteByte(h2svc_clientdata);
+	msg->WriteShort(bits);
+
+	if (bits & Q1SU_VIEWHEIGHT)
+	{
+		msg->WriteChar(ent->GetViewOfs()[2]);
+	}
+
+	if (bits & Q1SU_IDEALPITCH)
+	{
+		msg->WriteChar(ent->GetIdealPitch());
+	}
+
+	if (bits & H2SU_IDEALROLL)
+	{
+		msg->WriteChar(ent->GetIdealRoll());
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (bits & (Q1SU_PUNCH1 << i))
+		{
+			msg->WriteChar(ent->GetPunchAngle()[i]);
+		}
+		if (bits & (Q1SU_VELOCITY1 << i))
+		{
+			msg->WriteChar(ent->GetVelocity()[i] / 16);
+		}
+	}
+
+	if (bits & Q1SU_WEAPONFRAME)
+	{
+		msg->WriteByte(ent->GetWeaponFrame());
+	}
+	if (bits & Q1SU_ARMOR)
+	{
+		msg->WriteByte(ent->GetArmorValue());
+	}
+	if (bits & Q1SU_WEAPON)
+	{
+		msg->WriteShort(SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel())));
+	}
+
+	int sc1, sc2;
+	if (client->h2_send_all_v)
+	{
+		sc1 = sc2 = 0xffffffff;
+		client->h2_send_all_v = false;
+	}
+	else
+	{
+		sc1 = sc2 = 0;
+
+		if (ent->GetHealth() != client->h2_old_v.health)
+		{
+			sc1 |= SC1_HEALTH;
+		}
+		if (ent->GetLevel() != client->h2_old_v.level)
+		{
+			sc1 |= SC1_LEVEL;
+		}
+		if (ent->GetIntelligence() != client->h2_old_v.intelligence)
+		{
+			sc1 |= SC1_INTELLIGENCE;
+		}
+		if (ent->GetWisdom() != client->h2_old_v.wisdom)
+		{
+			sc1 |= SC1_WISDOM;
+		}
+		if (ent->GetStrength() != client->h2_old_v.strength)
+		{
+			sc1 |= SC1_STRENGTH;
+		}
+		if (ent->GetDexterity() != client->h2_old_v.dexterity)
+		{
+			sc1 |= SC1_DEXTERITY;
+		}
+		if (ent->GetWeapon() != client->h2_old_v.weapon)
+		{
+			sc1 |= SC1_WEAPON;
+		}
+		if (ent->GetBlueMana() != client->h2_old_v.bluemana)
+		{
+			sc1 |= SC1_BLUEMANA;
+		}
+		if (ent->GetGreenMana() != client->h2_old_v.greenmana)
+		{
+			sc1 |= SC1_GREENMANA;
+		}
+		if (ent->GetExperience() != client->h2_old_v.experience)
+		{
+			sc1 |= SC1_EXPERIENCE;
+		}
+		if (ent->GetCntTorch() != client->h2_old_v.cnt_torch)
+		{
+			sc1 |= SC1_CNT_TORCH;
+		}
+		if (ent->GetCntHBoost() != client->h2_old_v.cnt_h_boost)
+		{
+			sc1 |= SC1_CNT_H_BOOST;
+		}
+		if (ent->GetCntSHBoost() != client->h2_old_v.cnt_sh_boost)
+		{
+			sc1 |= SC1_CNT_SH_BOOST;
+		}
+		if (ent->GetCntManaBoost() != client->h2_old_v.cnt_mana_boost)
+		{
+			sc1 |= SC1_CNT_MANA_BOOST;
+		}
+		if (ent->GetCntTeleport() != client->h2_old_v.cnt_teleport)
+		{
+			sc1 |= SC1_CNT_TELEPORT;
+		}
+		if (ent->GetCntTome() != client->h2_old_v.cnt_tome)
+		{
+			sc1 |= SC1_CNT_TOME;
+		}
+		if (ent->GetCntSummon() != client->h2_old_v.cnt_summon)
+		{
+			sc1 |= SC1_CNT_SUMMON;
+		}
+		if (ent->GetCntInvisibility() != client->h2_old_v.cnt_invisibility)
+		{
+			sc1 |= SC1_CNT_INVISIBILITY;
+		}
+		if (ent->GetCntGlyph() != client->h2_old_v.cnt_glyph)
+		{
+			sc1 |= SC1_CNT_GLYPH;
+		}
+		if (ent->GetCntHaste() != client->h2_old_v.cnt_haste)
+		{
+			sc1 |= SC1_CNT_HASTE;
+		}
+		if (ent->GetCntBlast() != client->h2_old_v.cnt_blast)
+		{
+			sc1 |= SC1_CNT_BLAST;
+		}
+		if (ent->GetCntPolyMorph() != client->h2_old_v.cnt_polymorph)
+		{
+			sc1 |= SC1_CNT_POLYMORPH;
+		}
+		if (ent->GetCntFlight() != client->h2_old_v.cnt_flight)
+		{
+			sc1 |= SC1_CNT_FLIGHT;
+		}
+		if (ent->GetCntCubeOfForce() != client->h2_old_v.cnt_cubeofforce)
+		{
+			sc1 |= SC1_CNT_CUBEOFFORCE;
+		}
+		if (ent->GetCntInvincibility() != client->h2_old_v.cnt_invincibility)
+		{
+			sc1 |= SC1_CNT_INVINCIBILITY;
+		}
+		if (ent->GetArtifactActive() != client->h2_old_v.artifact_active)
+		{
+			sc1 |= SC1_ARTIFACT_ACTIVE;
+		}
+		if (ent->GetArtifactLow() != client->h2_old_v.artifact_low)
+		{
+			sc1 |= SC1_ARTIFACT_LOW;
+		}
+		if (ent->GetMoveType() != client->h2_old_v.movetype)
+		{
+			sc1 |= SC1_MOVETYPE;
+		}
+		if (ent->GetCameraMode() != client->h2_old_v.cameramode)
+		{
+			sc1 |= SC1_CAMERAMODE;
+		}
+		if (ent->GetHasted() != client->h2_old_v.hasted)
+		{
+			sc1 |= SC1_HASTED;
+		}
+		if (ent->GetInventory() != client->h2_old_v.inventory)
+		{
+			sc1 |= SC1_INVENTORY;
+		}
+		if (ent->GetRingsActive() != client->h2_old_v.rings_active)
+		{
+			sc1 |= SC1_RINGS_ACTIVE;
+		}
+
+		if (ent->GetRingsLow() != client->h2_old_v.rings_low)
+		{
+			sc2 |= SC2_RINGS_LOW;
+		}
+		if (ent->GetArmorAmulet() != client->h2_old_v.armor_amulet)
+		{
+			sc2 |= SC2_AMULET;
+		}
+		if (ent->GetArmorBracer() != client->h2_old_v.armor_bracer)
+		{
+			sc2 |= SC2_BRACER;
+		}
+		if (ent->GetArmorBreastPlate() != client->h2_old_v.armor_breastplate)
+		{
+			sc2 |= SC2_BREASTPLATE;
+		}
+		if (ent->GetArmorHelmet() != client->h2_old_v.armor_helmet)
+		{
+			sc2 |= SC2_HELMET;
+		}
+		if (ent->GetRingFlight() != client->h2_old_v.ring_flight)
+		{
+			sc2 |= SC2_FLIGHT_T;
+		}
+		if (ent->GetRingWater() != client->h2_old_v.ring_water)
+		{
+			sc2 |= SC2_WATER_T;
+		}
+		if (ent->GetRingTurning() != client->h2_old_v.ring_turning)
+		{
+			sc2 |= SC2_TURNING_T;
+		}
+		if (ent->GetRingRegeneration() != client->h2_old_v.ring_regeneration)
+		{
+			sc2 |= SC2_REGEN_T;
+		}
+		if (ent->GetHasteTime() != client->h2_old_v.haste_time)
+		{
+			sc2 |= SC2_HASTE_T;
+		}
+		if (ent->GetTomeTime() != client->h2_old_v.tome_time)
+		{
+			sc2 |= SC2_TOME_T;
+		}
+		if (ent->GetPuzzleInv1() != client->h2_old_v.puzzle_inv1)
+		{
+			sc2 |= SC2_PUZZLE1;
+		}
+		if (ent->GetPuzzleInv2() != client->h2_old_v.puzzle_inv2)
+		{
+			sc2 |= SC2_PUZZLE2;
+		}
+		if (ent->GetPuzzleInv3() != client->h2_old_v.puzzle_inv3)
+		{
+			sc2 |= SC2_PUZZLE3;
+		}
+		if (ent->GetPuzzleInv4() != client->h2_old_v.puzzle_inv4)
+		{
+			sc2 |= SC2_PUZZLE4;
+		}
+		if (ent->GetPuzzleInv5() != client->h2_old_v.puzzle_inv5)
+		{
+			sc2 |= SC2_PUZZLE5;
+		}
+		if (ent->GetPuzzleInv6() != client->h2_old_v.puzzle_inv6)
+		{
+			sc2 |= SC2_PUZZLE6;
+		}
+		if (ent->GetPuzzleInv7() != client->h2_old_v.puzzle_inv7)
+		{
+			sc2 |= SC2_PUZZLE7;
+		}
+		if (ent->GetPuzzleInv8() != client->h2_old_v.puzzle_inv8)
+		{
+			sc2 |= SC2_PUZZLE8;
+		}
+		if (ent->GetMaxHealth() != client->h2_old_v.max_health)
+		{
+			sc2 |= SC2_MAXHEALTH;
+		}
+		if (ent->GetMaxMana() != client->h2_old_v.max_mana)
+		{
+			sc2 |= SC2_MAXMANA;
+		}
+		if (ent->GetFlags() != client->h2_old_v.flags)
+		{
+			sc2 |= SC2_FLAGS;
+		}
+		if (info_mask != client->h2_info_mask)
+		{
+			sc2 |= SC2_OBJ;
+		}
+		if (info_mask2 != client->h2_info_mask2)
+		{
+			sc2 |= SC2_OBJ2;
+		}
+	}
+
+	byte test;
+
+	if (!sc1 && !sc2)
+	{
+		goto end;
+	}
+
+	client->qh_message.WriteByte(h2svc_update_inv);
+	test = 0;
+	if (sc1 & 0x000000ff)
+	{
+		test |= 1;
+	}
+	if (sc1 & 0x0000ff00)
+	{
+		test |= 2;
+	}
+	if (sc1 & 0x00ff0000)
+	{
+		test |= 4;
+	}
+	if (sc1 & 0xff000000)
+	{
+		test |= 8;
+	}
+	if (sc2 & 0x000000ff)
+	{
+		test |= 16;
+	}
+	if (sc2 & 0x0000ff00)
+	{
+		test |= 32;
+	}
+	if (sc2 & 0x00ff0000)
+	{
+		test |= 64;
+	}
+	if (sc2 & 0xff000000)
+	{
+		test |= 128;
+	}
+
+	client->qh_message.WriteByte(test);
+
+	if (test & 1)
+	{
+		client->qh_message.WriteByte(sc1 & 0xff);
+	}
+	if (test & 2)
+	{
+		client->qh_message.WriteByte((sc1 >> 8) & 0xff);
+	}
+	if (test & 4)
+	{
+		client->qh_message.WriteByte((sc1 >> 16) & 0xff);
+	}
+	if (test & 8)
+	{
+		client->qh_message.WriteByte((sc1 >> 24) & 0xff);
+	}
+	if (test & 16)
+	{
+		client->qh_message.WriteByte(sc2 & 0xff);
+	}
+	if (test & 32)
+	{
+		client->qh_message.WriteByte((sc2 >> 8) & 0xff);
+	}
+	if (test & 64)
+	{
+		client->qh_message.WriteByte((sc2 >> 16) & 0xff);
+	}
+	if (test & 128)
+	{
+		client->qh_message.WriteByte((sc2 >> 24) & 0xff);
+	}
+
+	if (sc1 & SC1_HEALTH)
+	{
+		client->qh_message.WriteShort(ent->GetHealth());
+	}
+	if (sc1 & SC1_LEVEL)
+	{
+		client->qh_message.WriteByte(ent->GetLevel());
+	}
+	if (sc1 & SC1_INTELLIGENCE)
+	{
+		client->qh_message.WriteByte(ent->GetIntelligence());
+	}
+	if (sc1 & SC1_WISDOM)
+	{
+		client->qh_message.WriteByte(ent->GetWisdom());
+	}
+	if (sc1 & SC1_STRENGTH)
+	{
+		client->qh_message.WriteByte(ent->GetStrength());
+	}
+	if (sc1 & SC1_DEXTERITY)
+	{
+		client->qh_message.WriteByte(ent->GetDexterity());
+	}
+	if (sc1 & SC1_WEAPON)
+	{
+		client->qh_message.WriteByte(ent->GetWeapon());
+	}
+	if (sc1 & SC1_BLUEMANA)
+	{
+		client->qh_message.WriteByte(ent->GetBlueMana());
+	}
+	if (sc1 & SC1_GREENMANA)
+	{
+		client->qh_message.WriteByte(ent->GetGreenMana());
+	}
+	if (sc1 & SC1_EXPERIENCE)
+	{
+		client->qh_message.WriteLong(ent->GetExperience());
+	}
+	if (sc1 & SC1_CNT_TORCH)
+	{
+		client->qh_message.WriteByte(ent->GetCntTorch());
+	}
+	if (sc1 & SC1_CNT_H_BOOST)
+	{
+		client->qh_message.WriteByte(ent->GetCntHBoost());
+	}
+	if (sc1 & SC1_CNT_SH_BOOST)
+	{
+		client->qh_message.WriteByte(ent->GetCntSHBoost());
+	}
+	if (sc1 & SC1_CNT_MANA_BOOST)
+	{
+		client->qh_message.WriteByte(ent->GetCntManaBoost());
+	}
+	if (sc1 & SC1_CNT_TELEPORT)
+	{
+		client->qh_message.WriteByte(ent->GetCntTeleport());
+	}
+	if (sc1 & SC1_CNT_TOME)
+	{
+		client->qh_message.WriteByte(ent->GetCntTome());
+	}
+	if (sc1 & SC1_CNT_SUMMON)
+	{
+		client->qh_message.WriteByte(ent->GetCntSummon());
+	}
+	if (sc1 & SC1_CNT_INVISIBILITY)
+	{
+		client->qh_message.WriteByte(ent->GetCntInvisibility());
+	}
+	if (sc1 & SC1_CNT_GLYPH)
+	{
+		client->qh_message.WriteByte(ent->GetCntGlyph());
+	}
+	if (sc1 & SC1_CNT_HASTE)
+	{
+		client->qh_message.WriteByte(ent->GetCntHaste());
+	}
+	if (sc1 & SC1_CNT_BLAST)
+	{
+		client->qh_message.WriteByte(ent->GetCntBlast());
+	}
+	if (sc1 & SC1_CNT_POLYMORPH)
+	{
+		client->qh_message.WriteByte(ent->GetCntPolyMorph());
+	}
+	if (sc1 & SC1_CNT_FLIGHT)
+	{
+		client->qh_message.WriteByte(ent->GetCntFlight());
+	}
+	if (sc1 & SC1_CNT_CUBEOFFORCE)
+	{
+		client->qh_message.WriteByte(ent->GetCntCubeOfForce());
+	}
+	if (sc1 & SC1_CNT_INVINCIBILITY)
+	{
+		client->qh_message.WriteByte(ent->GetCntInvincibility());
+	}
+	if (sc1 & SC1_ARTIFACT_ACTIVE)
+	{
+		client->qh_message.WriteFloat(ent->GetArtifactActive());
+	}
+	if (sc1 & SC1_ARTIFACT_LOW)
+	{
+		client->qh_message.WriteFloat(ent->GetArtifactLow());
+	}
+	if (sc1 & SC1_MOVETYPE)
+	{
+		client->qh_message.WriteByte(ent->GetMoveType());
+	}
+	if (sc1 & SC1_CAMERAMODE)
+	{
+		client->qh_message.WriteByte(ent->GetCameraMode());
+	}
+	if (sc1 & SC1_HASTED)
+	{
+		client->qh_message.WriteFloat(ent->GetHasted());
+	}
+	if (sc1 & SC1_INVENTORY)
+	{
+		client->qh_message.WriteByte(ent->GetInventory());
+	}
+	if (sc1 & SC1_RINGS_ACTIVE)
+	{
+		client->qh_message.WriteFloat(ent->GetRingsActive());
+	}
+
+	if (sc2 & SC2_RINGS_LOW)
+	{
+		client->qh_message.WriteFloat(ent->GetRingsLow());
+	}
+	if (sc2 & SC2_AMULET)
+	{
+		client->qh_message.WriteByte(ent->GetArmorAmulet());
+	}
+	if (sc2 & SC2_BRACER)
+	{
+		client->qh_message.WriteByte(ent->GetArmorBracer());
+	}
+	if (sc2 & SC2_BREASTPLATE)
+	{
+		client->qh_message.WriteByte(ent->GetArmorBreastPlate());
+	}
+	if (sc2 & SC2_HELMET)
+	{
+		client->qh_message.WriteByte(ent->GetArmorHelmet());
+	}
+	if (sc2 & SC2_FLIGHT_T)
+	{
+		client->qh_message.WriteByte(ent->GetRingFlight());
+	}
+	if (sc2 & SC2_WATER_T)
+	{
+		client->qh_message.WriteByte(ent->GetRingWater());
+	}
+	if (sc2 & SC2_TURNING_T)
+	{
+		client->qh_message.WriteByte(ent->GetRingTurning());
+	}
+	if (sc2 & SC2_REGEN_T)
+	{
+		client->qh_message.WriteByte(ent->GetRingRegeneration());
+	}
+	if (sc2 & SC2_HASTE_T)
+	{
+		client->qh_message.WriteFloat(ent->GetHasteTime());
+	}
+	if (sc2 & SC2_TOME_T)
+	{
+		client->qh_message.WriteFloat(ent->GetTomeTime());
+	}
+	if (sc2 & SC2_PUZZLE1)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv1()));
+	}
+	if (sc2 & SC2_PUZZLE2)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv2()));
+	}
+	if (sc2 & SC2_PUZZLE3)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv3()));
+	}
+	if (sc2 & SC2_PUZZLE4)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv4()));
+	}
+	if (sc2 & SC2_PUZZLE5)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv5()));
+	}
+	if (sc2 & SC2_PUZZLE6)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv6()));
+	}
+	if (sc2 & SC2_PUZZLE7)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv7()));
+	}
+	if (sc2 & SC2_PUZZLE8)
+	{
+		client->qh_message.WriteString2(PR_GetString(ent->GetPuzzleInv8()));
+	}
+	if (sc2 & SC2_MAXHEALTH)
+	{
+		client->qh_message.WriteShort(ent->GetMaxHealth());
+	}
+	if (sc2 & SC2_MAXMANA)
+	{
+		client->qh_message.WriteByte(ent->GetMaxMana());
+	}
+	if (sc2 & SC2_FLAGS)
+	{
+		client->qh_message.WriteFloat(ent->GetFlags());
+	}
+	if (sc2 & SC2_OBJ)
+	{
+		client->qh_message.WriteLong(info_mask);
+		client->h2_info_mask = info_mask;
+	}
+	if (sc2 & SC2_OBJ2)
+	{
+		client->qh_message.WriteLong(info_mask2);
+		client->h2_info_mask2 = info_mask2;
+	}
+
+end:
+	client->h2_old_v.movetype = ent->GetMoveType();
+	VectorCopy(ent->GetVelocity(), client->h2_old_v.velocity);
+	VectorCopy(ent->GetPunchAngle(), client->h2_old_v.punchangle);
+	client->h2_old_v.weapon = ent->GetWeapon();
+	client->h2_old_v.weaponmodel = ent->GetWeaponModel();
+	client->h2_old_v.weaponframe = ent->GetWeaponFrame();
+	client->h2_old_v.health = ent->GetHealth();
+	client->h2_old_v.max_health = ent->GetMaxHealth();
+	client->h2_old_v.bluemana = ent->GetBlueMana();
+	client->h2_old_v.greenmana = ent->GetGreenMana();
+	client->h2_old_v.max_mana = ent->GetMaxMana();
+	client->h2_old_v.armor_amulet = ent->GetArmorAmulet();
+	client->h2_old_v.armor_bracer = ent->GetArmorBracer();
+	client->h2_old_v.armor_breastplate = ent->GetArmorBreastPlate();
+	client->h2_old_v.armor_helmet = ent->GetArmorHelmet();
+	client->h2_old_v.level = ent->GetLevel();
+	client->h2_old_v.intelligence = ent->GetIntelligence();
+	client->h2_old_v.wisdom = ent->GetWisdom();
+	client->h2_old_v.dexterity = ent->GetDexterity();
+	client->h2_old_v.strength = ent->GetStrength();
+	client->h2_old_v.experience = ent->GetExperience();
+	client->h2_old_v.ring_flight = ent->GetRingFlight();
+	client->h2_old_v.ring_water = ent->GetRingWater();
+	client->h2_old_v.ring_turning = ent->GetRingTurning();
+	client->h2_old_v.ring_regeneration = ent->GetRingRegeneration();
+	client->h2_old_v.haste_time = ent->GetHasteTime();
+	client->h2_old_v.tome_time = ent->GetTomeTime();
+	client->h2_old_v.puzzle_inv1 = ent->GetPuzzleInv1();
+	client->h2_old_v.puzzle_inv2 = ent->GetPuzzleInv2();
+	client->h2_old_v.puzzle_inv3 = ent->GetPuzzleInv3();
+	client->h2_old_v.puzzle_inv4 = ent->GetPuzzleInv4();
+	client->h2_old_v.puzzle_inv5 = ent->GetPuzzleInv5();
+	client->h2_old_v.puzzle_inv6 = ent->GetPuzzleInv6();
+	client->h2_old_v.puzzle_inv7 = ent->GetPuzzleInv7();
+	client->h2_old_v.puzzle_inv8 = ent->GetPuzzleInv8();
+	VectorCopy(ent->GetViewOfs(), client->h2_old_v.view_ofs);
+	client->h2_old_v.idealpitch = ent->GetIdealPitch();
+	client->h2_old_v.idealroll = ent->GetIdealRoll();
+	client->h2_old_v.flags = ent->GetFlags();
+	client->h2_old_v.armorvalue = ent->GetArmorValue();
+	client->h2_old_v.rings_active = ent->GetRingsActive();
+	client->h2_old_v.rings_low = ent->GetRingsLow();
+	client->h2_old_v.artifact_active = ent->GetArtifactActive();
+	client->h2_old_v.artifact_low = ent->GetArtifactLow();
+	client->h2_old_v.hasted = ent->GetHasted();
+	client->h2_old_v.inventory = ent->GetInventory();
+	client->h2_old_v.cnt_torch = ent->GetCntTorch();
+	client->h2_old_v.cnt_h_boost = ent->GetCntHBoost();
+	client->h2_old_v.cnt_sh_boost = ent->GetCntSHBoost();
+	client->h2_old_v.cnt_mana_boost = ent->GetCntManaBoost();
+	client->h2_old_v.cnt_teleport = ent->GetCntTeleport();
+	client->h2_old_v.cnt_tome = ent->GetCntTome();
+	client->h2_old_v.cnt_summon = ent->GetCntSummon();
+	client->h2_old_v.cnt_invisibility = ent->GetCntInvisibility();
+	client->h2_old_v.cnt_glyph = ent->GetCntGlyph();
+	client->h2_old_v.cnt_haste = ent->GetCntHaste();
+	client->h2_old_v.cnt_blast = ent->GetCntBlast();
+	client->h2_old_v.cnt_polymorph = ent->GetCntPolyMorph();
+	client->h2_old_v.cnt_flight = ent->GetCntFlight();
+	client->h2_old_v.cnt_cubeofforce = ent->GetCntCubeOfForce();
+	client->h2_old_v.cnt_invincibility = ent->GetCntInvincibility();
+	client->h2_old_v.cameramode = ent->GetCameraMode();
+}
+
+void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg)
+{
+	qhedict_t* ent = client->qh_edict;
+
+	// send a damage message if the player got hit this frame
+	if (ent->GetDmgTake() || ent->GetDmgSave())
+	{
+		qhedict_t* other = PROG_TO_EDICT(ent->GetDmgInflictor());
+		msg->WriteByte(GGameType & GAME_Hexen2 ? h2svc_damage : q1svc_damage);
+		msg->WriteByte(ent->GetDmgSave());
+		msg->WriteByte(ent->GetDmgTake());
+		for (int i = 0; i < 3; i++)
+			msg->WriteCoord(other->GetOrigin()[i] + 0.5 * (other->GetMins()[i] + other->GetMaxs()[i]));
+
+		ent->SetDmgTake(0);
+		ent->SetDmgSave(0);
+	}
+
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		// send the current viewpos offset from the view entity
+		SVQH_SetIdealPitch(ent);			// how much to look up / down ideally
+	}
+
+	// a fixangle might get lost in a dropped packet.  Oh well.
+	if (ent->GetFixAngle())
+	{
+		msg->WriteByte(GGameType & GAME_Hexen2 ? h2svc_setangle : q1svc_setangle);
+		for (int i = 0; i < 3; i++)
+			msg->WriteAngle(ent->GetAngles()[i]);
+		ent->SetFixAngle(0);
+	}
+
+	if (GGameType & GAME_Quake && !(GGameType & GAME_QuakeWorld))
+	{
+		SVQ1_WriteClientdataToMessage(ent, msg);
+	}
+
+	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
+	{
+		SVH2_WriteClientdataToMessage(client, ent, msg);
+	}
+
+	// if the player has a target, send its info...
+	if (GGameType & GAME_HexenWorld && ent->GetTargDist())
+	{
+		msg->WriteByte(hwsvc_targetupdate);
+		msg->WriteByte(ent->GetTargAng());
+		msg->WriteByte(ent->GetTargPitch());
+		msg->WriteByte((ent->GetTargDist() < 255.0) ? (int)(ent->GetTargDist()) : 255);
 	}
 }
