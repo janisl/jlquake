@@ -19,8 +19,6 @@
 // Timing macros
 #define HX_FRAME_TIME       0.05
 
-#define HWMAX_INFO_STRING   196
-
 // Player Classes
 #define NUM_CLASSES_H2          4
 #define NUM_CLASSES_H2MP        5

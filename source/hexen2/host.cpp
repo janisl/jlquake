@@ -421,74 +421,6 @@ void Host_WriteConfiguration(const char* fname)
 #endif
 
 /*
-=====================
-SV_DropClient
-
-Called when the player is getting totally kicked off the host
-if (crash = true), don't bother sending signofs
-=====================
-*/
-void SV_DropClient(qboolean crash)
-{
-	int saveSelf;
-	int i;
-	client_t* client;
-
-	if (!crash)
-	{
-		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
-		{
-			host_client->qh_message.WriteByte(h2svc_disconnect);
-			NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
-		}
-
-		if (host_client->qh_edict && host_client->state == CS_ACTIVE)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			saveSelf = *pr_globalVars.self;
-			*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
-			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
-			*pr_globalVars.self = saveSelf;
-		}
-
-		common->Printf("Client %s removed\n",host_client->name);
-	}
-
-// break the net connection
-	NET_Close(host_client->qh_netconnection, &host_client->netchan);
-	host_client->qh_netconnection = NULL;
-
-// free the client (the body stays around)
-	host_client->state = CS_FREE;
-	host_client->name[0] = 0;
-	host_client->qh_old_frags = -999999;
-	Com_Memset(&host_client->h2_old_v,0,sizeof(host_client->h2_old_v));
-	ED_ClearEdict(host_client->qh_edict);
-	host_client->h2_send_all_v = true;
-	net_activeconnections--;
-
-// send notification to all clients
-	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
-	{
-		if (client->state < CS_CONNECTED)
-		{
-			continue;
-		}
-		client->qh_message.WriteByte(h2svc_updatename);
-		client->qh_message.WriteByte(host_client - svs.clients);
-		client->qh_message.WriteString2("");
-		client->qh_message.WriteByte(h2svc_updatefrags);
-		client->qh_message.WriteByte(host_client - svs.clients);
-		client->qh_message.WriteShort(0);
-		client->qh_message.WriteByte(h2svc_updatecolors);
-		client->qh_message.WriteByte(host_client - svs.clients);
-		client->qh_message.WriteByte(0);
-	}
-}
-
-/*
 ==================
 Host_ShutdownServer
 
@@ -558,7 +490,7 @@ void Host_ShutdownServer(qboolean crash)
 	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
 		if (host_client->state >= CS_CONNECTED)
 		{
-			SV_DropClient(crash);
+			SVQH_DropClient(host_client, crash);
 		}
 
 //

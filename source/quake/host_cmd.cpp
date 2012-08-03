@@ -1187,7 +1187,7 @@ void Host_Kick_f(void)
 		{
 			SVQH_ClientPrintf(host_client, 0, "Kicked by %s\n", who);
 		}
-		SV_DropClient(false);
+		SVQH_DropClient(host_client, false);
 	}
 
 	host_client = save;

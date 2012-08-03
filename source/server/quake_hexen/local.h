@@ -29,6 +29,7 @@
 //
 //	Client
 //
+void SVQH_DropClient(client_t* host_client, bool crash);
 void SVQH_SetIdealPitch(qhedict_t* player);
 void SVQ1_PreSpawn_f(client_t* client);
 void SVQH_Spawn_f(client_t* client);
@@ -114,6 +115,9 @@ void PF_stuffcmd();
 //	Init
 //
 extern char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];
+extern func_t qhw_SpectatorConnect;
+extern func_t qhw_SpectatorThink;
+extern func_t qhw_SpectatorDisconnect;
 
 void SVQH_FlushSignon();
 int SVQH_ModelIndex(const char* name);
@@ -137,6 +141,7 @@ extern fileHandle_t svqhw_fraglogfile;
 extern Cvar* svqh_idealpitchscale;
 
 int SVQH_CalcPing(client_t* cl);
+void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
 
 //
 //	Move

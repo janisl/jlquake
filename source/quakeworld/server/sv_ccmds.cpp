@@ -379,7 +379,7 @@ void SV_Kick_f(void)
 			// print directly, because the dropped client won't get the
 			// SVQH_BroadcastPrintf message
 			SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			return;
 		}
 	}

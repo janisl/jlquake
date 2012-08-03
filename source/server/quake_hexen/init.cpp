@@ -20,6 +20,10 @@
 
 char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];	// local game info
 
+func_t qhw_SpectatorConnect;
+func_t qhw_SpectatorThink;
+func_t qhw_SpectatorDisconnect;
+
 //	Moves to the next signon buffer if needed
 void SVQH_FlushSignon()
 {

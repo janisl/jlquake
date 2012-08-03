@@ -819,7 +819,7 @@ static void PFHW_setclass()
 
 	char temp[1024];
 	sprintf(temp,"%d",(int)NewClass);
-	Info_SetValueForKey(client->userinfo, "playerclass", temp, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+	Info_SetValueForKey(client->userinfo, "playerclass", temp, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 	String::NCpy(client->name, Info_ValueForKey(client->userinfo, "name"), sizeof(client->name) - 1);
 	client->qh_sendinfo = true;
 

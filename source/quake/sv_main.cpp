@@ -528,7 +528,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 // send the datagram
 	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
 	{
-		SV_DropClient(true);// if the message couldn't send, kick off
+		SVQH_DropClient(host_client, true);// if the message couldn't send, kick off
 		return false;
 	}
 
@@ -597,7 +597,7 @@ void SV_SendNop(client_t* client)
 
 	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
 	{
-		SV_DropClient(true);	// if the message couldn't send, kick off
+		SVQH_DropClient(host_client, true);	// if the message couldn't send, kick off
 	}
 	client->qh_last_message = realtime;
 }
@@ -651,7 +651,7 @@ void SV_SendClientMessages(void)
 		// changes level
 		if (host_client->qh_message.overflowed)
 		{
-			SV_DropClient(true);
+			SVQH_DropClient(host_client, true);
 			host_client->qh_message.overflowed = false;
 			continue;
 		}
@@ -666,14 +666,14 @@ void SV_SendClientMessages(void)
 
 			if (host_client->qh_dropasap)
 			{
-				SV_DropClient(false);	// went to another level
+				SVQH_DropClient(host_client, false);	// went to another level
 			}
 			else
 			{
 				if (NET_SendMessage(host_client->qh_netconnection,
 						&host_client->netchan, &host_client->qh_message) == -1)
 				{
-					SV_DropClient(true);	// if the message couldn't send, kick off
+					SVQH_DropClient(host_client, true);	// if the message couldn't send, kick off
 				}
 				host_client->qh_message.Clear();
 				host_client->qh_last_message = realtime;

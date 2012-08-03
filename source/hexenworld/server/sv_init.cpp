@@ -3,10 +3,6 @@
 
 char localmodels[MAX_MODELS_H2][5];		// inline model names for precache
 
-func_t SpectatorConnect;
-func_t SpectatorThink;
-func_t SpectatorDisconnect;
-
 /*
 ================
 SV_CreateBaseline
@@ -135,20 +131,20 @@ void SV_AddProgCrcTotheServerInfo()
 
 void SV_FindSpectatorFunctions()
 {
-	SpectatorConnect = SpectatorThink = SpectatorDisconnect = 0;
+	qhw_SpectatorConnect = qhw_SpectatorThink = qhw_SpectatorDisconnect = 0;
 
 	dfunction_t* f;
 	if ((f = ED_FindFunction("SpectatorConnect")) != NULL)
 	{
-		SpectatorConnect = (func_t)(f - pr_functions);
+		qhw_SpectatorConnect = (func_t)(f - pr_functions);
 	}
 	if ((f = ED_FindFunction("SpectatorThink")) != NULL)
 	{
-		SpectatorThink = (func_t)(f - pr_functions);
+		qhw_SpectatorThink = (func_t)(f - pr_functions);
 	}
 	if ((f = ED_FindFunction("SpectatorDisconnect")) != NULL)
 	{
-		SpectatorDisconnect = (func_t)(f - pr_functions);
+		qhw_SpectatorDisconnect = (func_t)(f - pr_functions);
 	}
 }
 

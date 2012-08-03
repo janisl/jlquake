@@ -779,7 +779,7 @@ void SV_RunClients(void)
 
 		if (!SV_ReadClientMessage())
 		{
-			SV_DropClient(false);	// client misbehaved...
+			SVQH_DropClient(host_client, false);	// client misbehaved...
 			continue;
 		}
 

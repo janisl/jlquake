@@ -236,113 +236,6 @@ void SV_FinalMessage(const char* message)
 
 
 /*
-=====================
-SV_DropClient
-
-Called when the player is totally leaving the server, either willingly
-or unwillingly.  This is NOT called if the entire server is quiting
-or crashing.
-=====================
-*/
-void SV_DropClient(client_t* drop)
-{
-	// add the disconnect
-	drop->netchan.message.WriteByte(q1svc_disconnect);
-
-	if (drop->state == CS_ACTIVE)
-	{
-		if (!drop->qh_spectator)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
-		}
-		else if (SpectatorDisconnect)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(SpectatorDisconnect);
-		}
-	}
-
-	if (drop->qh_spectator)
-	{
-		common->Printf("Spectator %s removed\n",drop->name);
-	}
-	else
-	{
-		common->Printf("Client %s removed\n",drop->name);
-	}
-
-	if (drop->download)
-	{
-		FS_FCloseFile(drop->download);
-		drop->download = 0;
-	}
-	if (drop->qw_upload)
-	{
-		FS_FCloseFile(drop->qw_upload);
-		drop->qw_upload = 0;
-	}
-	*drop->qw_uploadfn = 0;
-
-	drop->state = CS_ZOMBIE;		// become free in a few seconds
-	drop->qh_connection_started = realtime;	// for zombie timeout
-
-	drop->qh_old_frags = 0;
-	drop->qh_edict->SetFrags(0);
-	drop->name[0] = 0;
-	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
-
-// send notification to all remaining clients
-	SV_FullClientUpdate(drop, &sv.qh_reliable_datagram);
-}
-
-
-/*
-===================
-SV_FullClientUpdate
-
-Writes all update values to a sizebuf
-===================
-*/
-void SV_FullClientUpdate(client_t* client, QMsg* buf)
-{
-	int i;
-	char info[MAX_INFO_STRING_QW];
-
-	i = client - svs.clients;
-
-//common->Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
-
-	buf->WriteByte(q1svc_updatefrags);
-	buf->WriteByte(i);
-	buf->WriteShort(client->qh_old_frags);
-
-	buf->WriteByte(qwsvc_updateping);
-	buf->WriteByte(i);
-	buf->WriteShort(SVQH_CalcPing(client));
-
-	buf->WriteByte(qwsvc_updatepl);
-	buf->WriteByte(i);
-	buf->WriteByte(client->qw_lossage);
-
-	buf->WriteByte(qwsvc_updateentertime);
-	buf->WriteByte(i);
-	buf->WriteFloat(realtime - client->qh_connection_started);
-
-	String::Cpy(info, client->userinfo);
-	Info_RemovePrefixedKeys(info, '_', MAX_INFO_STRING_QW);		// server passwords, etc
-
-	buf->WriteByte(qwsvc_updateuserinfo);
-	buf->WriteByte(i);
-	buf->WriteLong(client->qh_userid);
-	buf->WriteString2(info);
-}
-
-/*
 ===================
 SV_FullClientUpdateToClient
 
@@ -354,12 +247,12 @@ void SV_FullClientUpdateToClient(client_t* client, client_t* cl)
 	SVQH_ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
 	if (cl->qw_num_backbuf)
 	{
-		SV_FullClientUpdate(client, &cl->qw_backbuf);
+		SVQHW_FullClientUpdate(client, &cl->qw_backbuf);
 		SVQH_ClientReliable_FinishWrite(cl);
 	}
 	else
 	{
-		SV_FullClientUpdate(client, &cl->netchan.message);
+		SVQHW_FullClientUpdate(client, &cl->netchan.message);
 	}
 }
 
@@ -674,7 +567,7 @@ void SVC_DirectConnect(void)
 			}
 
 			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			break;
 		}
 	}
@@ -1269,7 +1162,7 @@ void SV_CheckTimeouts(void)
 			if (cl->netchan.lastReceived < droptime)
 			{
 				SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
-				SV_DropClient(cl);
+				SVQHW_DropClient(cl);
 				cl->state = CS_FREE;	// don't bother with zombie state
 			}
 		}
@@ -1706,7 +1599,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			{
 				SVQH_BroadcastPrintf(PRINT_HIGH, "%s was kicked for name spam\n", cl->name);
 				SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game for name spamming\n");
-				SV_DropClient(cl);
+				SVQHW_DropClient(cl);
 				return;
 			}
 		}

@@ -60,7 +60,7 @@ struct h2player_info_t
 
 	//	New to HexenWorld
 	int userid;
-	char userinfo[HWMAX_INFO_STRING];
+	char userinfo[MAX_INFO_STRING_QW];
 
 	int ping;
 

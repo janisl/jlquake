@@ -232,137 +232,6 @@ void SV_FinalMessage(const char* message)
 }
 
 /*
-=====================
-SV_DropClient
-
-Called when the player is totally leaving the server, either willingly
-or unwillingly.  This is NOT called if the entire server is quiting
-or crashing.
-=====================
-*/
-void SV_DropClient(client_t* drop)
-{
-
-	// add the disconnect
-	drop->netchan.message.WriteByte(h2svc_disconnect);
-
-	if (drop->state == CS_ACTIVE)
-	{
-		if (!drop->qh_spectator)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
-		}
-		else if (SpectatorDisconnect)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(SpectatorDisconnect);
-		}
-	}
-	else if (hw_dmMode->value == HWDM_SIEGE)
-	{
-		if (String::ICmp(PR_GetString(drop->qh_edict->GetPuzzleInv1()),""))
-		{
-			//this guy has a puzzle piece, call this function anyway
-			//to make sure he leaves it behind
-			common->Printf("Client in unspawned state had puzzle piece, forcing drop\n");
-			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
-			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
-		}
-	}
-
-	if (drop->qh_spectator)
-	{
-		common->Printf("Spectator %s removed\n",drop->name);
-	}
-	else
-	{
-		common->Printf("Client %s removed\n",drop->name);
-	}
-
-	if (drop->download)
-	{
-		FS_FCloseFile(drop->download);
-		drop->download = 0;
-	}
-
-	drop->state = CS_ZOMBIE;		// become free in a few seconds
-	drop->qh_connection_started = realtime;	// for zombie timeout
-
-	drop->qh_old_frags = 0;
-	drop->qh_edict->SetFrags(0);
-	drop->name[0] = 0;
-	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
-
-// send notification to all remaining clients
-	SV_FullClientUpdate(drop, &sv.qh_reliable_datagram);
-}
-
-/*
-===================
-SV_FullClientUpdate
-
-Writes all update values to a sizebuf
-===================
-*/
-unsigned int defLosses;	// Defenders losses in Siege
-unsigned int attLosses;	// Attackers Losses in Siege
-void SV_FullClientUpdate(client_t* client, QMsg* buf)
-{
-	int i;
-	char info[HWMAX_INFO_STRING];
-
-//	common->Printf("SV_FullClientUpdate\n");
-	i = client - svs.clients;
-
-//common->Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
-
-	buf->WriteByte(hwsvc_updatedminfo);
-	buf->WriteByte(i);
-	buf->WriteShort(client->qh_old_frags);
-	buf->WriteByte((client->h2_playerclass << 5) | ((int)client->qh_edict->GetLevel() & 31));
-
-	if (hw_dmMode->value == HWDM_SIEGE)
-	{
-		buf->WriteByte(hwsvc_updatesiegeinfo);
-		buf->WriteByte((int)ceil(qh_timelimit->value));
-		buf->WriteByte((int)ceil(qh_fraglimit->value));
-
-		buf->WriteByte(hwsvc_updatesiegeteam);
-		buf->WriteByte(i);
-		buf->WriteByte(client->hw_siege_team);
-
-		buf->WriteByte(hwsvc_updatesiegelosses);
-		buf->WriteByte(*pr_globalVars.defLosses);
-		buf->WriteByte(*pr_globalVars.attLosses);
-
-		buf->WriteByte(h2svc_time);	//send server time upon connection
-		buf->WriteFloat(sv.qh_time);
-	}
-
-	buf->WriteByte(hwsvc_updateping);
-	buf->WriteByte(i);
-	buf->WriteShort(SVQH_CalcPing(client));
-
-	buf->WriteByte(hwsvc_updateentertime);
-	buf->WriteByte(i);
-	buf->WriteFloat(realtime - client->qh_connection_started);
-
-	String::Cpy(info, client->userinfo);
-	Info_RemovePrefixedKeys(info, '_', HWMAX_INFO_STRING);	// server passwords, etc
-
-	buf->WriteByte(hwsvc_updateuserinfo);
-	buf->WriteByte(i);
-	buf->WriteLong(client->qh_userid);
-	buf->WriteString2(info);
-}
-
-
-/*
 ==============================================================================
 
 CONNECTIONLESS COMMANDS
@@ -523,9 +392,9 @@ void SVC_DirectConnect(void)
 			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
-		Info_SetValueForKey(userinfo, "*spectator", "1", HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		spectator = true;
-		Info_RemoveKey(userinfo, "spectator", HWMAX_INFO_STRING);	// remove passwd
+		Info_RemoveKey(userinfo, "spectator", MAX_INFO_STRING_QW);	// remove passwd
 	}
 	else
 	{
@@ -539,7 +408,7 @@ void SVC_DirectConnect(void)
 			return;
 		}
 		spectator = false;
-		Info_RemoveKey(userinfo, "password", HWMAX_INFO_STRING);	// remove passwd
+		Info_RemoveKey(userinfo, "password", MAX_INFO_STRING_QW);	// remove passwd
 	}
 
 	adr = net_from;
@@ -564,7 +433,7 @@ void SVC_DirectConnect(void)
 	}
 	else
 	{
-		String::NCpy(newcl->userinfo, userinfo, HWMAX_INFO_STRING - 1);
+		String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_QW - 1);
 	}
 
 	// if there is allready a slot for this ip, drop it
@@ -577,7 +446,7 @@ void SVC_DirectConnect(void)
 		if (SOCK_CompareAdr(adr, cl->netchan.remoteAddress))
 		{
 			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			break;
 		}
 	}
@@ -1156,7 +1025,7 @@ void SV_CheckTimeouts(void)
 			cl->netchan.lastReceived < droptime)
 		{
 			SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			cl->state = CS_FREE;	// don't bother with zombie state
 		}
 		if (cl->state == CS_ZOMBIE &&
@@ -1532,13 +1401,13 @@ void SV_ExtractFromUserinfo(client_t* cl)
 
 	if (String::Cmp(val, newname))
 	{
-		Info_SetValueForKey(cl->userinfo, "name", newname, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		val = Info_ValueForKey(cl->userinfo, "name");
 	}
 
 	if (!val[0] || !String::ICmp(val, "console"))
 	{
-		Info_SetValueForKey(cl->userinfo, "name", "unnamed", HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		val = Info_ValueForKey(cl->userinfo, "name");
 	}
 
@@ -1579,7 +1448,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 			}
 
 			sprintf(newname, "(%d)%-0.40s", dupc++, p);
-			Info_SetValueForKey(cl->userinfo, "name", newname, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 			val = Info_ValueForKey(cl->userinfo, "name");
 		}
 		else
@@ -1609,7 +1478,7 @@ void SV_ExtractFromUserinfo(client_t* cl)
 		if (cl->qh_edict->GetHealth() > 0)
 		{
 			sprintf(newname,"%d",cl->h2_playerclass);
-			Info_SetValueForKey(cl->userinfo, "playerclass", newname, HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value);
+			Info_SetValueForKey(cl->userinfo, "playerclass", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
 		}
 	}
 

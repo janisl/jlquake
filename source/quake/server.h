@@ -40,8 +40,6 @@ extern qhedict_t* sv_player;
 
 void SV_Init(void);
 
-void SV_DropClient(qboolean crash);
-
 void SV_SendClientMessages(void);
 void SV_ClearDatagram(void);
 

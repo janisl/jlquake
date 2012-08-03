@@ -15,7 +15,7 @@
 //**************************************************************************
 
 #include "../server.h"
-//#include "../progsvm/progsvm.h"
+#include "../progsvm/progsvm.h"
 #include "local.h"
 
 Cvar* svqh_deathmatch;			// 0, 1, or 2
@@ -72,4 +72,68 @@ int SVQH_CalcPing(client_t* cl)
 	ping /= count;
 
 	return ping * 1000;
+}
+
+//	Writes all update values to a sizebuf
+void SVQHW_FullClientUpdate(client_t* client, QMsg* buf)
+{
+	int i;
+	char info[MAX_INFO_STRING_QW];
+
+	i = client - svs.clients;
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		buf->WriteByte(hwsvc_updatedminfo);
+		buf->WriteByte(i);
+		buf->WriteShort(client->qh_old_frags);
+		buf->WriteByte((client->h2_playerclass << 5) | ((int)client->qh_edict->GetLevel() & 31));
+
+		if (hw_dmMode->value == HWDM_SIEGE)
+		{
+			buf->WriteByte(hwsvc_updatesiegeinfo);
+			buf->WriteByte((int)ceil(qh_timelimit->value));
+			buf->WriteByte((int)ceil(qh_fraglimit->value));
+
+			buf->WriteByte(hwsvc_updatesiegeteam);
+			buf->WriteByte(i);
+			buf->WriteByte(client->hw_siege_team);
+
+			buf->WriteByte(hwsvc_updatesiegelosses);
+			buf->WriteByte(*pr_globalVars.defLosses);
+			buf->WriteByte(*pr_globalVars.attLosses);
+
+			buf->WriteByte(h2svc_time);	//send server time upon connection
+			buf->WriteFloat(sv.qh_time);
+		}
+	}
+	else
+	{
+		buf->WriteByte(q1svc_updatefrags);
+		buf->WriteByte(i);
+		buf->WriteShort(client->qh_old_frags);
+	}
+
+	buf->WriteByte(GGameType & GAME_HexenWorld ? hwsvc_updateping : qwsvc_updateping);
+	buf->WriteByte(i);
+	buf->WriteShort(SVQH_CalcPing(client));
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		buf->WriteByte(qwsvc_updatepl);
+		buf->WriteByte(i);
+		buf->WriteByte(client->qw_lossage);
+	}
+
+	buf->WriteByte(GGameType & GAME_HexenWorld ? hwsvc_updateentertime : qwsvc_updateentertime);
+	buf->WriteByte(i);
+	buf->WriteFloat(svs.realtime * 0.001 - client->qh_connection_started);
+
+	String::Cpy(info, client->userinfo);
+	Info_RemovePrefixedKeys(info, '_', MAX_INFO_STRING_QW);	// server passwords, etc
+
+	buf->WriteByte(GGameType & GAME_HexenWorld ? hwsvc_updateuserinfo : qwsvc_updateuserinfo);
+	buf->WriteByte(i);
+	buf->WriteLong(client->qh_userid);
+	buf->WriteString2(info);
 }

@@ -23,6 +23,141 @@
 #define MAX_FORWARD 6
 #define ON_EPSILON      0.1			// point on plane side epsilon
 
+//	Called when the player is getting totally kicked off the host
+// if (crash = true), don't bother sending signofs
+void SVQH_DropClient(client_t* host_client, bool crash)
+{
+	int saveSelf;
+	int i;
+	client_t* client;
+
+	if (!crash)
+	{
+		// send any final messages (don't check for errors)
+		if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+		{
+			host_client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_disconnect : q1svc_disconnect);
+			NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
+		}
+
+		if (host_client->qh_edict && host_client->state == CS_ACTIVE)
+		{
+			// call the prog function for removing a client
+			// this will set the body to a dead frame, among other things
+			saveSelf = *pr_globalVars.self;
+			*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
+			*pr_globalVars.self = saveSelf;
+		}
+
+		common->Printf("Client %s removed\n",host_client->name);
+	}
+
+	// break the net connection
+	NET_Close(host_client->qh_netconnection, &host_client->netchan);
+	host_client->qh_netconnection = NULL;
+
+	// free the client (the body stays around)
+	host_client->state = CS_FREE;
+	host_client->name[0] = 0;
+	host_client->qh_old_frags = -999999;
+	if (GGameType & GAME_Hexen2)
+	{
+		Com_Memset(&host_client->h2_old_v,0,sizeof(host_client->h2_old_v));
+		ED_ClearEdict(host_client->qh_edict);
+		host_client->h2_send_all_v = true;
+	}
+	net_activeconnections--;
+
+	// send notification to all clients
+	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatename : q1svc_updatename);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteString2("");
+		client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatefrags : q1svc_updatefrags);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteShort(0);
+		client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatecolors : q1svc_updatecolors);
+		client->qh_message.WriteByte(host_client - svs.clients);
+		client->qh_message.WriteByte(0);
+	}
+}
+
+//	Called when the player is totally leaving the server, either willingly
+// or unwillingly.  This is NOT called if the entire server is quiting
+// or crashing.
+void SVQHW_DropClient(client_t* drop)
+{
+	// add the disconnect
+	drop->netchan.message.WriteByte(GGameType & GAME_HexenWorld ? h2svc_disconnect : q1svc_disconnect);
+
+	if (drop->state == CS_ACTIVE)
+	{
+		if (!drop->qh_spectator)
+		{
+			// call the prog function for removing a client
+			// this will set the body to a dead frame, among other things
+			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
+		}
+		else if (qhw_SpectatorDisconnect)
+		{
+			// call the prog function for removing a client
+			// this will set the body to a dead frame, among other things
+			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
+			PR_ExecuteProgram(qhw_SpectatorDisconnect);
+		}
+	}
+	else if (GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE)
+	{
+		if (String::ICmp(PR_GetString(drop->qh_edict->GetPuzzleInv1()),""))
+		{
+			//this guy has a puzzle piece, call this function anyway
+			//to make sure he leaves it behind
+			common->Printf("Client in unspawned state had puzzle piece, forcing drop\n");
+			*pr_globalVars.self = EDICT_TO_PROG(drop->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.ClientDisconnect);
+		}
+	}
+
+	if (drop->qh_spectator)
+	{
+		common->Printf("Spectator %s removed\n",drop->name);
+	}
+	else
+	{
+		common->Printf("Client %s removed\n",drop->name);
+	}
+
+	if (drop->download)
+	{
+		FS_FCloseFile(drop->download);
+		drop->download = 0;
+	}
+	if (drop->qw_upload)
+	{
+		FS_FCloseFile(drop->qw_upload);
+		drop->qw_upload = 0;
+	}
+	*drop->qw_uploadfn = 0;
+
+	drop->state = CS_ZOMBIE;		// become free in a few seconds
+	drop->qh_connection_started = svs.realtime * 0.001;	// for zombie timeout
+
+	drop->qh_old_frags = 0;
+	drop->qh_edict->SetFrags(0);
+	drop->name[0] = 0;
+	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
+
+	// send notification to all remaining clients
+	SVQHW_FullClientUpdate(drop, &sv.qh_reliable_datagram);
+}
+
 void SVQH_SetIdealPitch(qhedict_t* player)
 {
 	if (!((int)player->GetFlags() & QHFL_ONGROUND))

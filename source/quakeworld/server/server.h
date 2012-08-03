@@ -39,10 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-extern func_t SpectatorConnect;
-extern func_t SpectatorThink;
-extern func_t SpectatorDisconnect;
-
 extern Cvar* spawn;
 
 extern client_t* host_client;
@@ -64,9 +60,7 @@ extern int sv_net_port;
 void SV_Shutdown(void);
 void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
-void SV_DropClient(client_t* drop);
-
-void SV_FullClientUpdate(client_t* client, QMsg* buf);
+void SVQHW_DropClient(client_t* drop);
 
 void SV_SaveSpawnparms(void);
 

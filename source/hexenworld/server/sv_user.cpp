@@ -60,7 +60,7 @@ void SVQHW_PreSpawn_f(client_t* client)
 					"Map model file does not match (%s), %i != %i/%i.\n"
 					"You may need a new version of the map, or the proper install files.\n",
 					sv.qh_modelname, check, map_checksum, map_checksum2);
-				SV_DropClient(client);
+				SVQHW_DropClient(client);
 				return;
 			}
 			client->qw_checksum = check;
@@ -168,7 +168,7 @@ void SV_Spawn_f(void)
 // send current status of all other players
 
 	for (i = 0, client = svs.clients; i < MAX_CLIENTS_QHW; i++, client++)
-		SV_FullClientUpdate(client, &host_client->netchan.message);
+		SVQHW_FullClientUpdate(client, &host_client->netchan.message);
 
 // send all current light styles
 	for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
@@ -257,7 +257,7 @@ void SV_Begin_f(void)
 	{
 		SV_SpawnSpectator();
 
-		if (SpectatorConnect)
+		if (qhw_SpectatorConnect)
 		{
 			// copy spawn parms out of the client_t
 			for (i = 0; i < NUM_SPAWN_PARMS; i++)
@@ -266,7 +266,7 @@ void SV_Begin_f(void)
 			// call the spawn function
 			*pr_globalVars.time = sv.qh_time;
 			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram(SpectatorConnect);
+			PR_ExecuteProgram(qhw_SpectatorConnect);
 		}
 	}
 	else
@@ -682,7 +682,7 @@ void SV_Drop_f(void)
 	{
 		SVQH_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
 	}
-	SV_DropClient(host_client);
+	SVQHW_DropClient(host_client);
 }
 
 /*
@@ -762,10 +762,10 @@ void SV_SetInfo_f(void)
 		return;		// don't set priveledged values
 
 	}
-	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), HWMAX_INFO_STRING, 64, 64, !svqh_highchars->value, false);
+	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value, false);
 	String::NCpy(host_client->name, Info_ValueForKey(host_client->userinfo, "name"),
 		sizeof(host_client->name) - 1);
-//	SV_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
+//	SVQHW_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
 	host_client->qh_sendinfo = true;
 
 	// process any changed values
@@ -1236,11 +1236,11 @@ void SV_PostRunCmd(void)
 		PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
 		SVQH_RunNewmis(realtime);
 	}
-	else if (SpectatorThink)
+	else if (qhw_SpectatorThink)
 	{
 		*pr_globalVars.time = sv.qh_time;
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram(SpectatorThink);
+		PR_ExecuteProgram(qhw_SpectatorThink);
 	}
 }
 
@@ -1291,7 +1291,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 		if (net_message.badread)
 		{
 			common->Printf("SV_ReadClientMessage: badread\n");
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			return;
 		}
 
@@ -1305,7 +1305,7 @@ void SV_ExecuteClientMessage(client_t* cl)
 		{
 		default:
 			common->Printf("SV_ReadClientMessage: unknown command char\n");
-			SV_DropClient(cl);
+			SVQHW_DropClient(cl);
 			return;
 
 		case h2clc_nop:

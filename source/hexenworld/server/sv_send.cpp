@@ -425,7 +425,7 @@ void SV_UpdateToReliableMessages(void)
 		if (host_client->qh_sendinfo)
 		{
 			host_client->qh_sendinfo = false;
-			SV_FullClientUpdate(host_client, &sv.qh_reliable_datagram);
+			SVQHW_FullClientUpdate(host_client, &sv.qh_reliable_datagram);
 		}
 		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
 		{
@@ -559,7 +559,7 @@ void SV_SendClientMessages(void)
 			c->datagram.Clear();
 			SVQH_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
 			common->Printf("WARNING: reliable overflow for %s\n",c->name);
-			SV_DropClient(c);
+			SVQHW_DropClient(c);
 			c->qh_send_message = true;
 		}
 
