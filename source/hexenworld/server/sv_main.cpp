@@ -27,12 +27,6 @@ Cvar* rcon_password;
 Cvar* password;
 Cvar* spectator_password;
 
-Cvar* allow_download;
-Cvar* allow_download_skins;
-Cvar* allow_download_models;
-Cvar* allow_download_sounds;
-Cvar* allow_download_maps;
-
 Cvar* sv_namedistance;
 
 
@@ -1243,11 +1237,11 @@ void SV_InitLocal(void)
 
 	filterban = Cvar_Get("filterban", "1", 0);
 
-	allow_download = Cvar_Get("allow_download", "1", 0);
-	allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
-	allow_download_models = Cvar_Get("allow_download_models", "1", 0);
-	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
-	allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
+	qhw_allow_download = Cvar_Get("allow_download", "1", 0);
+	qhw_allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
+	qhw_allow_download_models = Cvar_Get("allow_download_models", "1", 0);
+	qhw_allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
+	qhw_allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
 
 	svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
 

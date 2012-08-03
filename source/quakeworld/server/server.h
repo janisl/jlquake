@@ -110,5 +110,3 @@ void SV_Status_f(void);
 // sv_ents.c
 //
 void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
-
-void SV_FullClientUpdateToClient(client_t* client, client_t* cl);

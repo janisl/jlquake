@@ -40,6 +40,10 @@ void SVHW_Soundlist_f(client_t* client);
 void SVQW_Modellist_f(client_t* client);
 void SVHW_Modellist_f(client_t* client);
 void SVQHW_PreSpawn_f(client_t* client);
+void SVQHW_Spawn_f(client_t* client);
+void SVQHW_Begin_f(client_t* client);
+void SVQHW_NextDownload_f(client_t* client);
+void SVQHW_BeginDownload_f(client_t* client);
 
 //
 //	Game
@@ -134,6 +138,11 @@ extern Cvar* hw_dmMode;
 extern Cvar* qh_timelimit;
 extern Cvar* qh_fraglimit;
 extern Cvar* svqw_mapcheck;
+extern Cvar* qhw_allow_download;
+extern Cvar* qhw_allow_download_skins;
+extern Cvar* qhw_allow_download_models;
+extern Cvar* qhw_allow_download_sounds;
+extern Cvar* qhw_allow_download_maps;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -142,6 +151,7 @@ extern Cvar* svqh_idealpitchscale;
 
 int SVQH_CalcPing(client_t* cl);
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
+void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl);
 
 //
 //	Move

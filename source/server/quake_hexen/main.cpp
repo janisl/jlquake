@@ -30,6 +30,12 @@ Cvar* hw_dmMode;
 Cvar* svqh_idealpitchscale;
 Cvar* svqw_mapcheck;
 
+Cvar* qhw_allow_download;
+Cvar* qhw_allow_download_skins;
+Cvar* qhw_allow_download_models;
+Cvar* qhw_allow_download_sounds;
+Cvar* qhw_allow_download_maps;
+
 int svqh_current_skill;
 
 fileHandle_t svqhw_fraglogfile;
@@ -136,4 +142,19 @@ void SVQHW_FullClientUpdate(client_t* client, QMsg* buf)
 	buf->WriteByte(i);
 	buf->WriteLong(client->qh_userid);
 	buf->WriteString2(info);
+}
+
+//	Writes all update values to a client's reliable stream
+void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl)
+{
+	SVQH_ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
+	if (cl->qw_num_backbuf)
+	{
+		SVQHW_FullClientUpdate(client, &cl->qw_backbuf);
+		SVQH_ClientReliable_FinishWrite(cl);
+	}
+	else
+	{
+		SVQHW_FullClientUpdate(client, &cl->netchan.message);
+	}
 }

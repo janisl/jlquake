@@ -44,12 +44,6 @@ Cvar* rcon_password;
 Cvar* password;
 Cvar* spectator_password;
 
-Cvar* allow_download;
-Cvar* allow_download_skins;
-Cvar* allow_download_models;
-Cvar* allow_download_sounds;
-Cvar* allow_download_maps;
-
 Cvar* pausable;
 
 
@@ -232,30 +226,6 @@ void SV_FinalMessage(const char* message)
 				net_message._data);
 		}
 }
-
-
-
-/*
-===================
-SV_FullClientUpdateToClient
-
-Writes all update values to a client's reliable stream
-===================
-*/
-void SV_FullClientUpdateToClient(client_t* client, client_t* cl)
-{
-	SVQH_ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
-	if (cl->qw_num_backbuf)
-	{
-		SVQHW_FullClientUpdate(client, &cl->qw_backbuf);
-		SVQH_ClientReliable_FinishWrite(cl);
-	}
-	else
-	{
-		SVQHW_FullClientUpdate(client, &cl->netchan.message);
-	}
-}
-
 
 /*
 ==============================================================================
@@ -1375,11 +1345,11 @@ void SV_InitLocal(void)
 
 	filterban = Cvar_Get("filterban", "1", 0);
 
-	allow_download = Cvar_Get("allow_download", "1", 0);
-	allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
-	allow_download_models = Cvar_Get("allow_download_models", "1", 0);
-	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
-	allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
+	qhw_allow_download = Cvar_Get("allow_download", "1", 0);
+	qhw_allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
+	qhw_allow_download_models = Cvar_Get("allow_download_models", "1", 0);
+	qhw_allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
+	qhw_allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
 
 	svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
 
