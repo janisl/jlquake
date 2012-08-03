@@ -3,8 +3,6 @@
 
 qboolean sv_allow_cheats;
 
-int fp_messages = 4, fp_persecond = 4, fp_secondsdead = 10;
-char fp_msg[255] = { 0 };
 extern Cvar* cl_warncmd;
 
 /*
@@ -822,10 +820,10 @@ void SV_Floodprot_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
-		if (fp_messages)
+		if (qhw_fp_messages)
 		{
 			common->Printf("Current floodprot settings: \nAfter %d msgs per %d seconds, silence for %d seconds\n",
-				fp_messages, fp_persecond, fp_secondsdead);
+				qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead);
 			return;
 		}
 		else
@@ -857,16 +855,16 @@ void SV_Floodprot_f(void)
 		return;
 	}
 
-	fp_messages = arg1;
-	fp_persecond = arg2;
-	fp_secondsdead = arg3;
+	qhw_fp_messages = arg1;
+	qhw_fp_persecond = arg2;
+	qhw_fp_secondsdead = arg3;
 }
 
 void SV_Floodprotmsg_f(void)
 {
 	if (Cmd_Argc() == 1)
 	{
-		common->Printf("Current msg: %s\n", fp_msg);
+		common->Printf("Current msg: %s\n", qhw_fp_msg);
 		return;
 	}
 	else if (Cmd_Argc() != 2)
@@ -874,7 +872,7 @@ void SV_Floodprotmsg_f(void)
 		common->Printf("Usage: floodprotmsg \"<message>\"\n");
 		return;
 	}
-	sprintf(fp_msg, "%s", Cmd_Argv(1));
+	sprintf(qhw_fp_msg, "%s", Cmd_Argv(1));
 }
 
 /*

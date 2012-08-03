@@ -1081,3 +1081,270 @@ void SVQHW_BeginDownload_f(client_t* client)
 	SVQHW_NextDownload_f(client);
 	common->Printf("Downloading %s to %s\n", name, client->name);
 }
+
+static void SVQH_Say(client_t* host_client, bool teamonly)
+{
+	if (Cmd_Argc() < 2)
+	{
+		return;
+	}
+
+	char* p = Cmd_ArgsUnmodified();
+	// remove quotes if present
+	if (*p == '"')
+	{
+		p++;
+		p[String::Length(p) - 1] = 0;
+	}
+
+	// turn on color set 1
+	char text[64];
+	String::Sprintf(text, sizeof(text), "%c%s: ", 1, host_client->name);
+
+	int j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
+	if (String::Length(p) > j)
+	{
+		p[j] = 0;
+	}
+
+	String::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), "\n");
+
+	client_t* client = svs.clients;
+	for (j = 0; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		if (svqh_teamplay->value && teamonly && client->qh_edict->GetTeam() != host_client->qh_edict->GetTeam())
+		{
+			continue;
+		}
+		SVQH_ClientPrintf(client, 0, "%s", text);
+	}
+}
+
+void SVQH_Say_f(client_t* host_client)
+{
+	SVQH_Say(host_client, false);
+}
+
+void SVQH_Say_Team_f(client_t* host_client)
+{
+	SVQH_Say(host_client, true);
+}
+
+void SVQH_Tell_f(client_t* host_client)
+{
+	if (Cmd_Argc() < 3)
+	{
+		return;
+	}
+
+	char text[64];
+	String::Cpy(text, host_client->name);
+	String::Cat(text, sizeof(text), ": ");
+
+	char* p = Cmd_ArgsUnmodified();
+
+	// remove quotes if present
+	if (*p == '"')
+	{
+		p++;
+		p[String::Length(p) - 1] = 0;
+	}
+
+	// check length & truncate if necessary
+	int j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
+	if (String::Length(p) > j)
+	{
+		p[j] = 0;
+	}
+
+	String::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), "\n");
+
+	client_t* client = svs.clients;
+	for (j = 0; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		if (String::ICmp(client->name, Cmd_Argv(1)))
+		{
+			continue;
+		}
+		SVQH_ClientPrintf(client, 0, "%s", text);
+		break;
+	}
+}
+
+static void SVQHW_Say(client_t* host_client, bool team)
+{
+	client_t* client;
+	int j, tmp;
+	char* p;
+	char text[2048];
+	char t1[32];
+	const char* t2;
+
+	if (Cmd_Argc() < 2)
+	{
+		return;
+	}
+
+	if (team)
+	{
+		String::NCpy(t1, Info_ValueForKey(host_client->userinfo, "team"), 31);
+		t1[31] = 0;
+	}
+
+	if (host_client->qh_spectator && (!svqhw_spectalk->value || team))
+	{
+		sprintf(text, "[SPEC] %s: ", host_client->name);
+	}
+	else if (team)
+	{
+		sprintf(text, "(%s): ", host_client->name);
+	}
+	else
+	{
+		sprintf(text, "%s: ", host_client->name);
+	}
+
+	if (qhw_fp_messages)
+	{
+		if ((!sv.qh_paused || GGameType & GAME_HexenWorld) && svs.realtime * 0.001 < host_client->qh_lockedtill)
+		{
+			SVQH_ClientPrintf(host_client, PRINT_CHAT,
+				"You can't talk for %d more seconds\n",
+				(int)(host_client->qh_lockedtill - svs.realtime * 0.001));
+			return;
+		}
+		tmp = host_client->qh_whensaidhead - qhw_fp_messages + 1;
+		if (tmp < 0)
+		{
+			tmp = 10 + tmp;
+		}
+		if ((!sv.qh_paused || GGameType & GAME_HexenWorld) &&
+			host_client->qh_whensaid[tmp] && (svs.realtime * 0.001 - host_client->qh_whensaid[tmp] < qhw_fp_persecond))
+		{
+			host_client->qh_lockedtill = svs.realtime * 0.001 + qhw_fp_secondsdead;
+			if (qhw_fp_msg[0])
+			{
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
+					"FloodProt: %s\n", qhw_fp_msg);
+			}
+			else
+			{
+				SVQH_ClientPrintf(host_client, PRINT_CHAT,
+					"FloodProt: You can't talk for %d seconds.\n", qhw_fp_secondsdead);
+			}
+			return;
+		}
+		host_client->qh_whensaidhead++;
+		if (host_client->qh_whensaidhead > 9)
+		{
+			host_client->qh_whensaidhead = 0;
+		}
+		host_client->qh_whensaid[host_client->qh_whensaidhead] = svs.realtime * 0.001;
+	}
+
+	p = Cmd_ArgsUnmodified();
+
+	if (*p == '"')
+	{
+		p++;
+		p[String::Length(p) - 1] = 0;
+	}
+
+	int speaknum = -1;
+	if (GGameType & GAME_HexenWorld && p[0] == '`' && !host_client->qh_spectator && svhw_allowtaunts->value)
+	{
+		speaknum = atol(&p[1]);
+		if (speaknum <= 0 || speaknum > 255 - PRINT_SOUND)
+		{
+			speaknum = -1;
+		}
+		else
+		{
+			text[String::Length(text) - 2] = 0;
+			String::Cat(text, sizeof(text)," speaks!\n");
+		}
+	}
+
+	if (speaknum == -1)
+	{
+		String::Cat(text, sizeof(text), p);
+		String::Cat(text, sizeof(text), "\n");
+	}
+
+	common->Printf("%s", text);
+
+	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		if (host_client->qh_spectator && !svqhw_spectalk->value)
+		{
+			if (!client->qh_spectator)
+			{
+				continue;
+			}
+		}
+
+		if (team)
+		{
+			// the spectator team
+			if (host_client->qh_spectator)
+			{
+				if (!client->qh_spectator)
+				{
+					continue;
+				}
+			}
+			else
+			{
+				t2 = Info_ValueForKey(client->userinfo, "team");
+				if (GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE)
+				{
+					if ((host_client->qh_edict->GetSkin() == 102 && client->qh_edict->GetSkin() != 102) || (client->qh_edict->GetSkin() == 102 && host_client->qh_edict->GetSkin() != 102))
+					{
+						continue;	//noteam players can team chat with each other, cannot recieve team chat of other players
+
+					}
+					if (client->hw_siege_team != host_client->hw_siege_team)
+					{
+						continue;	// on different teams
+					}
+				}
+				else if (String::Cmp(t1, t2) || client->qh_spectator)
+				{
+					continue;	// on different teams
+				}
+			}
+		}
+		if (speaknum == -1)
+		{
+			SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);
+		}
+		else
+		{
+			SVQH_ClientPrintf(client, PRINT_SOUND + speaknum - 1, "%s", text);
+		}
+	}
+}
+
+void SVQHW_Say_f(client_t* host_client)
+{
+	SVQHW_Say(host_client, false);
+}
+
+void SVQHW_Say_Team_f(client_t* host_client)
+{
+	SVQHW_Say(host_client, true);
+}

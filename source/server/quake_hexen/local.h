@@ -27,6 +27,12 @@
 #define MULTICAST_PVS_R         5
 
 //
+//	CCmds
+//
+extern int qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead;
+extern char qhw_fp_msg[];
+
+//
 //	Client
 //
 void SVQH_DropClient(client_t* host_client, bool crash);
@@ -44,6 +50,11 @@ void SVQHW_Spawn_f(client_t* client);
 void SVQHW_Begin_f(client_t* client);
 void SVQHW_NextDownload_f(client_t* client);
 void SVQHW_BeginDownload_f(client_t* client);
+void SVQH_Say_f(client_t* host_client);
+void SVQH_Say_Team_f(client_t* host_client);
+void SVQH_Tell_f(client_t* host_client);
+void SVQHW_Say_f(client_t* host_client);
+void SVQHW_Say_Team_f(client_t* host_client);
 
 //
 //	Game
@@ -143,6 +154,8 @@ extern Cvar* qhw_allow_download_skins;
 extern Cvar* qhw_allow_download_models;
 extern Cvar* qhw_allow_download_sounds;
 extern Cvar* qhw_allow_download_maps;
+extern Cvar* svhw_allowtaunts;
+extern Cvar* svqhw_spectalk;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)

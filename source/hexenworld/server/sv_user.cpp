@@ -7,12 +7,6 @@ qhedict_t* sv_player;
 
 hwusercmd_t cmd;
 
-Cvar* sv_spectalk;
-Cvar* sv_allowtaunts;
-
-extern int fp_messages, fp_persecond, fp_secondsdead;
-extern char fp_msg[];
-
 /*
 ============================================================
 
@@ -23,205 +17,6 @@ host_client and sv_player will be valid.
 */
 
 //=============================================================================
-
-/*
-==================
-SV_Say
-==================
-*/
-void SV_Say(qboolean team)
-{
-	client_t* client;
-	int j, tmp;
-	char* p;
-	char text[2048];
-	char t1[32];
-	const char* t2;
-	int speaknum = -1;
-	qboolean IsRaven = false;
-
-	if (Cmd_Argc() < 2)
-	{
-		return;
-	}
-
-	if (team)
-	{
-		String::NCpy(t1, Info_ValueForKey(host_client->userinfo, "team"), 31);
-		t1[31] = 0;
-	}
-
-	if (host_client->qh_spectator && (!sv_spectalk->value || team))
-	{
-		sprintf(text, "[SPEC] %s: ", host_client->name);
-	}
-	else if (team)
-	{
-		sprintf(text, "(%s): ", host_client->name);
-	}
-	else
-	{
-		sprintf(text, "%s: ", host_client->name);
-	}
-
-	if (fp_messages)
-	{
-		if (realtime < host_client->qh_lockedtill)
-		{
-			SVQH_ClientPrintf(host_client, PRINT_CHAT,
-				"You can't talk for %d more seconds\n",
-				(int)(host_client->qh_lockedtill - realtime));
-			return;
-		}
-		tmp = host_client->qh_whensaidhead - fp_messages + 1;
-		if (tmp < 0)
-		{
-			tmp = 10 + tmp;
-		}
-		if (host_client->qh_whensaid[tmp] && (realtime - host_client->qh_whensaid[tmp] < fp_persecond))
-		{
-			host_client->qh_lockedtill = realtime + fp_secondsdead;
-			if (fp_msg[0])
-			{
-				SVQH_ClientPrintf(host_client, PRINT_CHAT,
-					"FloodProt: %s\n", fp_msg);
-			}
-			else
-			{
-				SVQH_ClientPrintf(host_client, PRINT_CHAT,
-					"FloodProt: You can't talk for %d seconds.\n", fp_secondsdead);
-			}
-			return;
-		}
-		host_client->qh_whensaidhead++;
-		if (host_client->qh_whensaidhead > 9)
-		{
-			host_client->qh_whensaidhead = 0;
-		}
-		host_client->qh_whensaid[host_client->qh_whensaidhead] = realtime;
-	}
-
-	p = Cmd_ArgsUnmodified();
-
-	if (*p == '"')
-	{
-		p++;
-		p[String::Length(p) - 1] = 0;
-	}
-
-	if (host_client->netchan.remoteAddress.ip[0] == 208 &&
-		host_client->netchan.remoteAddress.ip[1] == 135 &&
-		host_client->netchan.remoteAddress.ip[2] == 137)
-	{
-		IsRaven = true;
-	}
-
-	if (p[0] == '`' && ((!host_client->qh_spectator && sv_allowtaunts->value) || IsRaven))
-	{
-		speaknum = atol(&p[1]);
-		if (speaknum <= 0 || speaknum > 255 - PRINT_SOUND)
-		{
-			speaknum = -1;
-		}
-		else
-		{
-			text[String::Length(text) - 2] = 0;
-			String::Cat(text, sizeof(text)," speaks!\n");
-		}
-	}
-
-	if (speaknum == -1)
-	{
-		String::Cat(text, sizeof(text), p);
-		String::Cat(text, sizeof(text), "\n");
-	}
-
-	common->Printf("%s", text);
-
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-		if (host_client->qh_spectator && !sv_spectalk->value)
-		{
-			if (!client->qh_spectator)
-			{
-				continue;
-			}
-		}
-
-		if (team)
-		{
-			// the spectator team
-			if (host_client->qh_spectator)
-			{
-				if (!client->qh_spectator)
-				{
-					continue;
-				}
-			}
-			else
-			{
-				t2 = Info_ValueForKey(client->userinfo, "team");
-				if (hw_dmMode->value == HWDM_SIEGE)
-				{
-					if ((host_client->qh_edict->GetSkin() == 102 && client->qh_edict->GetSkin() != 102) || (client->qh_edict->GetSkin() == 102 && host_client->qh_edict->GetSkin() != 102))
-					{
-						continue;	//noteam players can team chat with each other, cannot recieve team chat of other players
-
-					}
-					if (client->hw_siege_team != host_client->hw_siege_team)
-					{
-						continue;	// on different teams
-					}
-				}
-				else if (String::Cmp(t1, t2) || client->qh_spectator)
-				{
-					continue;	// on different teams
-				}
-			}
-		}
-		if (speaknum == -1)
-		{
-			if (hw_dmMode->value == HWDM_SIEGE && host_client->hw_siege_team != client->hw_siege_team)	//other team speaking
-			{
-				SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);//fixme: print biege
-			}
-			else
-			{
-				SVQH_ClientPrintf(client, PRINT_CHAT, "%s", text);
-			}
-		}
-		else
-		{
-			SVQH_ClientPrintf(client, PRINT_SOUND + speaknum - 1, "%s", text);
-		}
-	}
-}
-
-
-/*
-==================
-SV_Say_f
-==================
-*/
-void SV_Say_f(void)
-{
-	SV_Say(false);
-}
-/*
-==================
-SV_Say_Team_f
-==================
-*/
-void SV_Say_Team_f(void)
-{
-	SV_Say(true);
-}
-
-
 
 //============================================================================
 
@@ -410,8 +205,8 @@ ucmd_t ucmds[] =
 	{"kill", NULL, SV_Kill_f},
 	{"msg", NULL, SV_Msg_f},
 
-	{"say", NULL, SV_Say_f},
-	{"say_team", NULL, SV_Say_Team_f},
+	{"say", SVQHW_Say_f},
+	{"say_team", SVQHW_Say_Team_f},
 
 	{"setinfo", NULL, SV_SetInfo_f},
 
@@ -1000,6 +795,6 @@ SV_UserInit
 void SV_UserInit(void)
 {
 	VQH_InitRollCvars();
-	sv_spectalk = Cvar_Get("sv_spectalk", "1", 0);
-	sv_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
+	svqhw_spectalk = Cvar_Get("sv_spectalk", "1", 0);
+	svhw_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
 }

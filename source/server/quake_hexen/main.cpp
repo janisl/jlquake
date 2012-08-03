@@ -29,6 +29,8 @@ Cvar* hw_spartanPrint;
 Cvar* hw_dmMode;
 Cvar* svqh_idealpitchscale;
 Cvar* svqw_mapcheck;
+Cvar* svhw_allowtaunts;
+Cvar* svqhw_spectalk;
 
 Cvar* qhw_allow_download;
 Cvar* qhw_allow_download_skins;

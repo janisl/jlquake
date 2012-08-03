@@ -802,57 +802,38 @@ void Host_Version_f(void)
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
-void Host_Say(qboolean teamonly)
+void Host_Say_f()
+{
+	Cmd_ForwardToServer();
+}
+
+void Host_Say_Team_f(void)
+{
+	Cmd_ForwardToServer();
+}
+
+void Host_ConSay_f()
 {
 	client_t* client;
-	client_t* save;
 	int j;
 	char* p;
 	char text[64];
-	qboolean fromServer = false;
-
-	if (cmd_source == src_command)
-	{
-#ifndef DEDICATED
-		if (cls.state == CA_DEDICATED)
-#endif
-		{
-			fromServer = true;
-			teamonly = false;
-		}
-#ifndef DEDICATED
-		else
-		{
-			Cmd_ForwardToServer();
-			return;
-		}
-#endif
-	}
 
 	if (Cmd_Argc() < 2)
 	{
 		return;
 	}
 
-	save = host_client;
-
 	p = Cmd_ArgsUnmodified();
-// remove quotes if present
+	// remove quotes if present
 	if (*p == '"')
 	{
 		p++;
 		p[String::Length(p) - 1] = 0;
 	}
 
-// turn on color set 1
-	if (!fromServer)
-	{
-		sprintf(text, "%c%s: ", 1, save->name);
-	}
-	else
-	{
-		sprintf(text, "%c<%s> ", 1, sv_hostname->string);
-	}
+	// turn on color set 1
+	sprintf(text, "%c<%s> ", 1, sv_hostname->string);
 
 	j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
 	if (String::Length(p) > j)
@@ -869,86 +850,13 @@ void Host_Say(qboolean teamonly)
 		{
 			continue;
 		}
-		if (svqh_teamplay->value && teamonly && client->qh_edict->GetTeam() != save->qh_edict->GetTeam())
-		{
-			continue;
-		}
-		host_client = client;
-		SVQH_ClientPrintf(host_client, 0, "%s", text);
+		SVQH_ClientPrintf(client, 0, "%s", text);
 	}
-	host_client = save;
 }
-
-
-void Host_Say_f(void)
-{
-	Host_Say(false);
-}
-
-
-void Host_Say_Team_f(void)
-{
-	Host_Say(true);
-}
-
 
 void Host_Tell_f(void)
 {
-	client_t* client;
-	client_t* save;
-	int j;
-	char* p;
-	char text[64];
-
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (Cmd_Argc() < 3)
-	{
-		return;
-	}
-
-	String::Cpy(text, host_client->name);
-	String::Cat(text, sizeof(text), ": ");
-
-	p = Cmd_ArgsUnmodified();
-
-// remove quotes if present
-	if (*p == '"')
-	{
-		p++;
-		p[String::Length(p) - 1] = 0;
-	}
-
-// check length & truncate if necessary
-	j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
-	if (String::Length(p) > j)
-	{
-		p[j] = 0;
-	}
-
-	String::Cat(text, sizeof(text), p);
-	String::Cat(text, sizeof(text), "\n");
-
-	save = host_client;
-	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-		if (String::ICmp(client->name, Cmd_Argv(1)))
-		{
-			continue;
-		}
-		host_client = client;
-		SVQH_ClientPrintf(host_client, 0, "%s", text);
-		break;
-	}
-	host_client = save;
+	Cmd_ForwardToServer();
 }
 
 
@@ -1635,8 +1543,15 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("noclip", Host_Noclip_f);
 	Cmd_AddCommand("version", Host_Version_f);
-	Cmd_AddCommand("say", Host_Say_f);
-	Cmd_AddCommand("say_team", Host_Say_Team_f);
+	if (com_dedicated->integer)
+	{
+		Cmd_AddCommand("say", Host_ConSay_f);
+	}
+	else
+	{
+		Cmd_AddCommand("say", Host_Say_f);
+		Cmd_AddCommand("say_team", Host_Say_Team_f);
+	}
 	Cmd_AddCommand("tell", Host_Tell_f);
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);

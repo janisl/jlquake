@@ -453,6 +453,9 @@ ucmd_t ucmds[] =
 	{ "prespawn", SVQ1_PreSpawn_f },
 	{ "spawn", SVQH_Spawn_f },
 	{ "begin", SVQH_Begin_f },
+	{ "say", SVQH_Say_f },
+	{ "say_team", SVQH_Say_Team_f },
+	{ "tell", SVQH_Tell_f },
 	{ NULL, NULL }
 };
 
@@ -491,18 +494,6 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 		ret = 1;
 	}
 	else if (String::NICmp(s, "noclip", 6) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "say", 3) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "say_team", 8) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "tell", 4) == 0)
 	{
 		ret = 1;
 	}
