@@ -14,19 +14,13 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "qcommon.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define MAX_CMD_LINE        1024
 #define MAX_ARGS            1024
 #define MAX_CMD_BUFFER      131072
 #define MAX_ALIAS_NAME      32
 #define ALIAS_LOOP_COUNT    16
-
-// TYPES -------------------------------------------------------------------
 
 struct QCmd
 {
@@ -49,23 +43,9 @@ struct cmd_function_t
 	xcommand_t function;
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
 //	Game specific.
 bool Cmd_HandleNullCommand(const char* text);
 void Cmd_HandleUnknownCommand();
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-cmd_source_t cmd_source;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static cmdalias_t* cmd_alias;
 
@@ -86,8 +66,6 @@ static char cmd_tokenized[8192 + 1024];				// will have 0 bytes inserted
 static char cmd_cmd[8192];				// the original command we received (no token processing)
 static char cmd_args[8192];
 
-// CODE --------------------------------------------------------------------
-
 /*
 =============================================================================
 
@@ -96,12 +74,6 @@ static char cmd_args[8192];
 =============================================================================
 */
 
-//==========================================================================
-//
-//	Cbuf_Init
-//
-//==========================================================================
-
 void Cbuf_Init()
 {
 	cmd_text.data = cmd_text_buf;
@@ -109,14 +81,7 @@ void Cbuf_Init()
 	cmd_text.cursize = 0;
 }
 
-//==========================================================================
-//
-//	Cbuf_AddText
-//
 //	Adds command text at the end of the buffer, does NOT add a final \n
-//
-//==========================================================================
-
 void Cbuf_AddText(const char* Text)
 {
 	int L = String::Length(Text);
@@ -130,15 +95,8 @@ void Cbuf_AddText(const char* Text)
 	cmd_text.cursize += L;
 }
 
-//==========================================================================
-//
-//	Cbuf_InsertText
-//
 //	Adds command text immediately after the current command
 //	Adds a \n to the text
-//
-//==========================================================================
-
 void Cbuf_InsertText(const char* Text)
 {
 	int Len = String::Length(Text) + 1;
@@ -162,12 +120,6 @@ void Cbuf_InsertText(const char* Text)
 
 	cmd_text.cursize += Len;
 }
-
-//==========================================================================
-//
-//	Cbuf_ExecuteText
-//
-//==========================================================================
 
 void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 {
@@ -193,12 +145,6 @@ void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 		common->FatalError("Cbuf_ExecuteText: bad exec_when");
 	}
 }
-
-//==========================================================================
-//
-//	Cbuf_Execute
-//
-//==========================================================================
 
 void Cbuf_Execute()
 {
@@ -265,12 +211,6 @@ void Cbuf_Execute()
 	}
 }
 
-//==========================================================================
-//
-//	Cbuf_CopyToDefer
-//
-//==========================================================================
-
 void Cbuf_CopyToDefer()
 {
 	Com_Memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
@@ -278,32 +218,17 @@ void Cbuf_CopyToDefer()
 	cmd_text.cursize = 0;
 }
 
-//==========================================================================
-//
-//	Cbuf_InsertFromDefer
-//
-//==========================================================================
-
 void Cbuf_InsertFromDefer()
 {
 	Cbuf_InsertText((char*)defer_text_buf);
 	defer_text_buf[0] = 0;
 }
 
-//==========================================================================
-//
-//	Cbuf_AddEarlyCommands
-//
 //	Adds command line parameters as script statements
 //	Commands lead with a +, and continue until another +
-//
 //	Set commands are added early, so they are guaranteed to be set before
 // the client and server initialize for the first time.
-//
 //	Other commands are added late, after all initialization is complete.
-//
-//==========================================================================
-
 void Cbuf_AddEarlyCommands(bool Clear)
 {
 	for (int i = 0; i < COM_Argc(); i++)
@@ -324,19 +249,11 @@ void Cbuf_AddEarlyCommands(bool Clear)
 	}
 }
 
-//==========================================================================
-//
-//	Cbuf_AddLateCommands
-//
 //	Adds command line parameters as script statements. Commands lead with
 // a + and continue until another + or -
 //	quake +vid_ref gl +map amlev1
-//
 //	Returns true if any late commands were added, which will keep the
 // demoloop from immediately starting
-//
-//==========================================================================
-
 bool Cbuf_AddLateCommands(bool Insert)
 {
 	// build the combined string to parse from
@@ -413,16 +330,9 @@ bool Cbuf_AddLateCommands(bool Insert)
 ==============================================================================
 */
 
-//==========================================================================
-//
-//	Cmd_Wait_f
-//
 //	Causes execution of the remainder of the command buffer to be delayed
 // until next frame.  This allows commands like:
 //	bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
-//
-//==========================================================================
-
 static void Cmd_Wait_f()
 {
 	if (Cmd_Argc() == 2)
@@ -435,30 +345,16 @@ static void Cmd_Wait_f()
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_StuffCmds_f
-//
 //	Adds command line parameters as script statements. Commands lead with
 // a +, and continue until a - or another +
 //	quake +prog jctest.qp +cmd amlev1
 //	quake -nosound +cmd amlev1
-//
-//==========================================================================
-
 static void Cmd_StuffCmds_f()
 {
 	Cbuf_AddLateCommands(true);
 }
 
-//==========================================================================
-//
-//	Cmd_Echo_f
-//
 //	Just prints the rest of the line to the console
-//
-//==========================================================================
-
 static void Cmd_Echo_f()
 {
 	if (GGameType & GAME_ET)
@@ -480,14 +376,7 @@ static void Cmd_Echo_f()
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_Alias_f
-//
 //	Creates a new command that executes a command string (possibly ; seperated)
-//
-//==========================================================================
-
 static void Cmd_Alias_f()
 {
 	cmdalias_t* a;
@@ -544,14 +433,7 @@ static void Cmd_Alias_f()
 	a->value = __CopyString(cmd);
 }
 
-//==========================================================================
-//
-//	Cmd_Vstr_f
-//
 //	Inserts the current value of a variable as command text
-//
-//==========================================================================
-
 static void Cmd_Vstr_f()
 {
 	if (Cmd_Argc() != 2)
@@ -563,12 +445,6 @@ static void Cmd_Vstr_f()
 	const char* v = Cvar_VariableString(Cmd_Argv(1));
 	Cbuf_InsertText(va("%s\n", v));
 }
-
-//==========================================================================
-//
-//	Cmd_Exec_f
-//
-//==========================================================================
 
 static void Cmd_Exec_f()
 {
@@ -595,12 +471,6 @@ static void Cmd_Exec_f()
 
 	Cbuf_InsertText((char*)Buffer.Ptr());
 }
-
-//==========================================================================
-//
-//	Cmd_List_f
-//
-//==========================================================================
 
 static void Cmd_List_f()
 {
@@ -637,12 +507,6 @@ static void Cmd_List_f()
 =============================================================================
 */
 
-//==========================================================================
-//
-//	Cmd_Init
-//
-//==========================================================================
-
 void Cmd_SharedInit()
 {
 	//
@@ -662,12 +526,6 @@ void Cmd_SharedInit()
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
 }
-
-//==========================================================================
-//
-//	Cmd_AddCommand
-//
-//==========================================================================
 
 void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 {
@@ -694,12 +552,6 @@ void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 	cmd_functions = cmd;
 }
 
-//==========================================================================
-//
-//	Cmd_RemoveCommand
-//
-//==========================================================================
-
 void Cmd_RemoveCommand(const char* CmdName)
 {
 	cmd_function_t** back = &cmd_functions;
@@ -725,22 +577,10 @@ void Cmd_RemoveCommand(const char* CmdName)
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_Argc
-//
-//==========================================================================
-
 int Cmd_Argc()
 {
 	return cmd_argc;
 }
-
-//==========================================================================
-//
-//	Cmd_Argv
-//
-//==========================================================================
 
 char* Cmd_Argv(int Arg)
 {
@@ -751,41 +591,20 @@ char* Cmd_Argv(int Arg)
 	return cmd_argv[Arg];
 }
 
-//==========================================================================
-//
-//	Cmd_ArgvBuffer
-//
 //	The interpreted versions use this because they can't have pointers
 // returned to them
-//
-//==========================================================================
-
 void Cmd_ArgvBuffer(int Arg, char* Buffer, int BufferLength)
 {
 	String::NCpyZ(Buffer, Cmd_Argv(Arg), BufferLength);
 }
 
-//==========================================================================
-//
-//	Cmd_ArgsUnmodified
-//
 //	Returns a single string containing argv(1) to argv(argc()-1)
-//
-//==========================================================================
-
 char* Cmd_ArgsUnmodified()
 {
 	return cmd_args;
 }
 
-//==========================================================================
-//
-//	Cmd_Args
-//
 //	Returns a single string containing argv(1) to argv(argc()-1)
-//
-//==========================================================================
-
 char* Cmd_Args()
 {
 	static char cmd_args[MAX_STRING_CHARS];
@@ -803,14 +622,7 @@ char* Cmd_Args()
 	return cmd_args;
 }
 
-//==========================================================================
-//
-//	Cmd_ArgsFrom
-//
 //	Returns a single string containing argv(arg) to argv(argc()-1)
-//
-//==========================================================================
-
 char* Cmd_ArgsFrom(int Arg)
 {
 	static char cmd_args[BIG_INFO_STRING];
@@ -832,39 +644,19 @@ char* Cmd_ArgsFrom(int Arg)
 	return cmd_args;
 }
 
-//==========================================================================
-//
-//	Cmd_ArgsBuffer
-//
 //	The interpreted versions use this because they can't have pointers
 // returned to them
-//
-//==========================================================================
-
 void Cmd_ArgsBuffer(char* Buffer, int BufferLength)
 {
 	String::NCpyZ(Buffer, Cmd_Args(), BufferLength);
 }
 
-//==========================================================================
-//
-//	Cmd_Cmd
-//
 //	Retrieve the unmodified command string. For rcon use when you want to
 // transmit without altering quoting.
-//
-//==========================================================================
-
 char* Cmd_Cmd()
 {
 	return cmd_cmd;
 }
-
-//==========================================================================
-//
-//	Cmd_MacroExpandString
-//
-//==========================================================================
 
 static const char* Cmd_MacroExpandString(const char* Text)
 {
@@ -939,17 +731,10 @@ static const char* Cmd_MacroExpandString(const char* Text)
 	return Scan;
 }
 
-//==========================================================================
-//
-//	Cmd_TokenizeString
-//
 //	Parses the given string into command line tokens. The text is copied to
 // a seperate buffer and 0 characters are inserted in the apropriate place.
 // The argv array will point into this temporary buffer. $Cvars will be
 // expanded unless they are in a quoted token
-//
-//==========================================================================
-
 void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 {
 	// clear previous args
@@ -1126,12 +911,6 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_CompleteCommand
-//
-//==========================================================================
-
 char* Cmd_CompleteCommand(const char* Partial)
 {
 	int Len = String::Length(Partial);
@@ -1176,12 +955,6 @@ char* Cmd_CompleteCommand(const char* Partial)
 	return NULL;
 }
 
-//==========================================================================
-//
-//	Cmd_CommandCompletion
-//
-//==========================================================================
-
 void Cmd_CommandCompletion(void (* callback)(const char* s))
 {
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
@@ -1194,19 +967,11 @@ void Cmd_CommandCompletion(void (* callback)(const char* s))
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_ExecuteString
-//
 //	A complete command line has been parsed, so try to execute it
-//
-//==========================================================================
-
-void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
+void Cmd_ExecuteString(const char* text)
 {
 	// execute the command line
-	cmd_source = Src;
-	Cmd_TokenizeString(Text, !!(GGameType & GAME_Quake2));
+	Cmd_TokenizeString(text, !!(GGameType & GAME_Quake2));
 	if (!Cmd_Argc())
 	{
 		return;		// no tokens
@@ -1228,7 +993,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 			// perform the action
 			if (!cmd->function)
 			{
-				if (!Cmd_HandleNullCommand(Text))
+				if (!Cmd_HandleNullCommand(text))
 				{
 					break;
 				}
@@ -1277,24 +1042,12 @@ static field_t* completionField;
 static int matchIndex;
 static int findMatchIndex;
 
-//==========================================================================
-//
-//	Field_Clear
-//
-//==========================================================================
-
 void Field_Clear(field_t* edit)
 {
 	Com_Memset(edit->buffer, 0, MAX_EDIT_LINE);
 	edit->cursor = 0;
 	edit->scroll = 0;
 }
-
-//==========================================================================
-//
-//	FindMatches
-//
-//==========================================================================
 
 static void FindMatches(const char* s)
 {
@@ -1335,12 +1088,6 @@ static void FindIndexMatch(const char* s)
 	findMatchIndex++;
 }
 
-//==========================================================================
-//
-//	PrintMatches
-//
-//==========================================================================
-
 static void PrintMatches(const char* s)
 {
 	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
@@ -1371,12 +1118,6 @@ static void PrintCvarMatches(const char* s)
 	}
 }
 
-//==========================================================================
-//
-//	keyConcatArgs
-//
-//==========================================================================
-
 static void keyConcatArgs()
 {
 	for (int i = 1; i < Cmd_Argc(); i++)
@@ -1400,12 +1141,6 @@ static void keyConcatArgs()
 	}
 }
 
-//==========================================================================
-//
-//	Cmd_CommandCompletion
-//
-//==========================================================================
-
 static void ConcatRemaining(const char* src, const char* start)
 {
 	const char* str = strstr(src, start);
@@ -1419,16 +1154,9 @@ static void ConcatRemaining(const char* src, const char* start)
 	String::Cat(completionField->buffer, sizeof(completionField->buffer), str);
 }
 
-//==========================================================================
-//
-//	Field_CompleteCommand
-//
 //	perform Tab expansion
 //	NOTE TTimo this was originally client code only
 //  moved to common code when writing tty console for *nix dedicated server
-//
-//==========================================================================
-
 void Field_CompleteCommand(field_t* field, int& acLength)
 {
 	field_t temp;

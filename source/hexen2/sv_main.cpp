@@ -1187,7 +1187,7 @@ void SV_SendReconnect(void)
 #ifndef DEDICATED
 	if (cls.state != CA_DEDICATED)
 	{
-		Cmd_ExecuteString("reconnect\n", src_command);
+		Cmd_ExecuteString("reconnect\n");
 	}
 #endif
 }

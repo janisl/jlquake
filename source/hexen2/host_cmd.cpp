@@ -159,11 +159,6 @@ void Host_Map_f(void)
 		return;
 	}
 
-	if (cmd_source != src_command)
-	{
-		return;
-	}
-
 #ifndef DEDICATED
 	cls.qh_demonum = -1;		// stop demo loop in case this fails
 
@@ -207,7 +202,7 @@ void Host_Map_f(void)
 			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), " ");
 		}
 
-		Cmd_ExecuteString("connect local", src_command);
+		Cmd_ExecuteString("connect local");
 	}
 #endif
 }
@@ -274,11 +269,6 @@ void Host_Restart_f(void)
 #else
 	if (clc.demoplaying || sv.state == SS_DEAD)
 #endif
-	{
-		return;
-	}
-
-	if (cmd_source != src_command)
 	{
 		return;
 	}
@@ -404,11 +394,6 @@ void Host_Savegame_f(void)
 	int i;
 	char comment[SAVEGAME_COMMENT_LENGTH + 1];
 	char dest[MAX_OSPATH];
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	if (sv.state == SS_DEAD)
 	{
@@ -538,11 +523,6 @@ void Host_Loadgame_f(void)
 	int tempi;
 	float spawn_parms[NUM_SPAWN_PARMS];
 	char dest[MAX_OSPATH];
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	if (Cmd_Argc() != 2)
 	{
@@ -1268,24 +1248,14 @@ void Host_Kick_f(void)
 {
 	const char* who;
 	const char* message = NULL;
-	client_t* save;
 	int i;
 	qboolean byNumber = false;
 
-	if (cmd_source == src_command)
+	if (sv.state == SS_DEAD)
 	{
-		if (sv.state == SS_DEAD)
-		{
-			Cmd_ForwardToServer();
-			return;
-		}
-	}
-	else if (*pr_globalVars.deathmatch)
-	{
+		Cmd_ForwardToServer();
 		return;
 	}
-
-	save = host_client;
 
 	if (Cmd_Argc() > 2 && String::Cmp(Cmd_Argv(1), "#") == 0)
 	{
@@ -1318,31 +1288,18 @@ void Host_Kick_f(void)
 
 	if (i < svs.qh_maxclients)
 	{
-		if (cmd_source == src_command)
+#ifndef DEDICATED
+		if (cls.state == CA_DEDICATED)
+#endif
 		{
-#ifndef DEDICATED
-			if (cls.state == CA_DEDICATED)
-#endif
-			{
-				who = "Console";
-			}
-#ifndef DEDICATED
-			else
-			{
-				who = clqh_name->string;
-			}
-#endif
+			who = "Console";
 		}
+#ifndef DEDICATED
 		else
 		{
-			who = save->name;
+			who = clqh_name->string;
 		}
-
-		// can't kick yourself!
-		if (host_client == save)
-		{
-			return;
-		}
+#endif
 
 		if (Cmd_Argc() > 2)
 		{
@@ -1368,8 +1325,6 @@ void Host_Kick_f(void)
 		}
 		SVQH_DropClient(host_client, false);
 	}
-
-	host_client = save;
 }
 
 /*

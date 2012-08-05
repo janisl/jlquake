@@ -165,11 +165,6 @@ void Host_Map_f(void)
 	int i;
 	char name[MAX_QPATH];
 
-	if (cmd_source != src_command)
-	{
-		return;
-	}
-
 #ifndef DEDICATED
 	cls.qh_demonum = -1;		// stop demo loop in case this fails
 
@@ -201,7 +196,7 @@ void Host_Map_f(void)
 			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), " ");
 		}
 
-		Cmd_ExecuteString("connect local", src_command);
+		Cmd_ExecuteString("connect local");
 	}
 #endif
 }
@@ -256,10 +251,6 @@ void Host_Restart_f(void)
 		return;
 	}
 
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared
 	// in sv_spawnserver
 	SV_SpawnServer(mapname);
@@ -352,11 +343,6 @@ void Host_Savegame_f(void)
 	char name[256];
 	int i;
 	char comment[SAVEGAME_COMMENT_LENGTH + 1];
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	if (sv.state == SS_DEAD)
 	{
@@ -479,11 +465,6 @@ void Host_Loadgame_f(void)
 	int entnum;
 	int version;
 	float spawn_parms[NUM_SPAWN_PARMS];
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	if (Cmd_Argc() != 2)
 	{

@@ -761,7 +761,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_sellscreen:
-			Cmd_ExecuteString("help", src_command);
+			Cmd_ExecuteString("help");
 			break;
 		}
 	}

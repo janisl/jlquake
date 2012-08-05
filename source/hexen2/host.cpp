@@ -309,25 +309,6 @@ Host_SaveConfig_f
 */
 void Host_SaveConfig_f(void)
 {
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
-
-/*	if (!sv.active)
-    {
-        common->Printf ("Not playing a local game.\n");
-        return;
-    }
-
-    if (cl.intermission)
-    {
-        common->Printf ("Can't save in intermission.\n");
-        return;
-    }
-*/
-
 	if (Cmd_Argc() != 2)
 	{
 		common->Printf("saveConfig <savename> : save a config file\n");

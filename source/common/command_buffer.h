@@ -77,13 +77,6 @@ bool Cbuf_AddLateCommands(bool Insert = false);
 
 typedef void (*xcommand_t)(void);
 
-enum cmd_source_t
-{
-	src_command,	// from the command buffer
-	src_client,		// came in over a net connection as a clc_stringcmd
-					// host_client will be valid during this state.
-};
-
 void Cmd_AddCommand(const char* CmdName, xcommand_t Function);
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
@@ -116,13 +109,11 @@ char* Cmd_CompleteCommand(const char* partial);
 void Cmd_CommandCompletion(void (* callback)(const char* s));
 // callback with each valid string
 
-void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
+void Cmd_ExecuteString(const char* text);
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 
 void Cmd_SharedInit();
-
-extern cmd_source_t cmd_source;
 
 //==========================================================================
 //

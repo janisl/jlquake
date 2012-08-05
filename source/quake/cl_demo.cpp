@@ -183,11 +183,6 @@ stop recording a demo
 */
 void CL_Stop_f(void)
 {
-	if (cmd_source != src_command)
-	{
-		return;
-	}
-
 	if (!clc.demorecording)
 	{
 		common->Printf("Not recording a demo.\n");
@@ -218,11 +213,6 @@ void CL_Record_f(void)
 	int c;
 	char name[MAX_OSPATH];
 	int track;
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	c = Cmd_Argc();
 	if (c != 2 && c != 3 && c != 4)
@@ -261,7 +251,7 @@ void CL_Record_f(void)
 //
 	if (c > 2)
 	{
-		Cmd_ExecuteString(va("map %s", Cmd_Argv(2)), src_command);
+		Cmd_ExecuteString(va("map %s", Cmd_Argv(2)));
 	}
 
 //
@@ -296,11 +286,6 @@ void CL_PlayDemo_f(void)
 	char name[256];
 	char c;
 	qboolean neg = false;
-
-	if (cmd_source != src_command)
-	{
-		return;
-	}
 
 	if (Cmd_Argc() != 2)
 	{
@@ -390,11 +375,6 @@ timedemo [demoname]
 */
 void CL_TimeDemo_f(void)
 {
-	if (cmd_source != src_command)
-	{
-		return;
-	}
-
 	if (Cmd_Argc() != 2)
 	{
 		common->Printf("timedemo <demoname> : gets demo speeds\n");
