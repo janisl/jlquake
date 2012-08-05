@@ -174,13 +174,6 @@ void SVQH_SetIdealPitch(qhedict_t* player)
 	float sinval = sin(angleval);
 	float cosval = cos(angleval);
 
-	float save_hull;
-	if (GGameType & GAME_Hexen2)
-	{
-		save_hull = player->GetHull();
-		player->SetHull(0);
-	}
-
 	float z[MAX_FORWARD];
 	int i;
 	for (i = 0; i < MAX_FORWARD; i++)
@@ -195,22 +188,13 @@ void SVQH_SetIdealPitch(qhedict_t* player)
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		q1trace_t tr = SVQH_Move(top, vec3_origin, vec3_origin, bottom, 1, player);
+		q1trace_t tr = SVQH_MoveHull0(top, vec3_origin, vec3_origin, bottom, 1, player);
 		if (tr.allsolid ||		// looking at a wall, leave ideal the way is was
 			tr.fraction == 1)	// near a dropoff
 		{
-			if (GGameType & GAME_Hexen2)
-			{
-				player->SetHull(save_hull);
-			}
 			return;
 		}
 		z[i] = top[2] + tr.fraction * (bottom[2] - top[2]);
-	}
-
-	if (GGameType & GAME_Hexen2)
-	{
-		player->SetHull(save_hull);	//restore
 	}
 
 	int dir = 0;

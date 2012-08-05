@@ -595,7 +595,9 @@ void Host_ServerFrame(void)
 // check for new clients
 	SV_CheckForNewClients();
 
-// read client messages
+	SVQH_SetMoveVars();
+
+	// read client messages
 	SV_RunClients();
 
 // move things around and think

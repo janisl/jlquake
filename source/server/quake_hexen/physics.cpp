@@ -45,6 +45,7 @@ static Cvar* svqh_airaccelerate;
 static Cvar* svqh_wateraccelerate;
 static Cvar* svqh_waterfriction;
 static Cvar* svqh_nostep;
+static Cvar* svqh_edgefriction;
 
 static Cvar* svqh_mintic;
 static Cvar* svqh_maxtic;
@@ -79,6 +80,7 @@ void SVQH_RegisterPhysicsCvars()
 	{
 		svqh_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
 		svqh_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
+		svqh_edgefriction = Cvar_Get("edgefriction", "2", 0);
 		svqh_nostep = Cvar_Get("sv_nostep", "0", 0);
 		if (GGameType & GAME_Hexen2)
 		{
@@ -89,7 +91,6 @@ void SVQH_RegisterPhysicsCvars()
 			svqh_maxspeed = Cvar_Get("sv_maxspeed", "320", CVAR_SERVERINFO);
 		}
 	}
-
 }
 
 void SVQH_SetMoveVars()
@@ -1732,8 +1733,6 @@ static void SVQH_Physics(float frametime, float realtime)
 //	Quake and Hexen 2 behavior.
 void SVQH_RunPhysicsAndUpdateTime(float frametime, float realtime)
 {
-	SVQH_SetMoveVars();
-
 	SVQH_Physics(frametime, realtime);
 
 	sv.qh_time += frametime;
@@ -1758,4 +1757,338 @@ void SVQH_RunPhysicsForTime(float realtime)
 	*pr_globalVars.frametime = frametime;
 
 	SVQH_Physics(frametime, realtime);
+}
+
+void SVQH_UserFriction(qhedict_t* sv_player, float frametime)
+{
+	float* vel;
+	float speed, newspeed, control;
+	vec3_t start, stop;
+	float friction;
+	q1trace_t trace;
+
+	vel = sv_player->GetVelocity();
+
+	speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
+	if (!speed)
+	{
+		return;
+	}
+
+	// if the leading edge is over a dropoff, increase friction
+	start[0] = stop[0] = sv_player->GetOrigin()[0] + vel[0] / speed * 16;
+	start[1] = stop[1] = sv_player->GetOrigin()[1] + vel[1] / speed * 16;
+	start[2] = sv_player->GetOrigin()[2] + sv_player->GetMins()[2];
+	stop[2] = start[2] - 34;
+
+	trace = SVQH_MoveHull0(start, vec3_origin, vec3_origin, stop, true, sv_player);
+
+	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_H2Portals) && sv_player->GetFriction() != 1)	//reset their friction to 1, only a trigger touching can change it again
+	{
+		sv_player->SetFriction(1);
+	}
+
+	if (trace.fraction == 1.0)
+	{
+		friction = svqh_friction->value * svqh_edgefriction->value;
+	}
+	else
+	{
+		friction = svqh_friction->value;
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		friction *= sv_player->GetFriction();
+	}
+
+	// apply friction
+	control = speed < svqh_stopspeed->value ? svqh_stopspeed->value : speed;
+	newspeed = speed - frametime * control * friction;
+
+	if (newspeed < 0)
+	{
+		newspeed = 0;
+	}
+	newspeed /= speed;
+
+	vel[0] = vel[0] * newspeed;
+	vel[1] = vel[1] * newspeed;
+	vel[2] = vel[2] * newspeed;
+}
+
+void SVQH_Accelerate(float* velocity, float frametime, const vec3_t wishdir, float wishspeed)
+{
+	float currentspeed = DotProduct(velocity, wishdir);
+	float addspeed = wishspeed - currentspeed;
+	if (addspeed <= 0)
+	{
+		return;
+	}
+	float accelspeed = svqh_accelerate->value * frametime * wishspeed;
+	if (accelspeed > addspeed)
+	{
+		accelspeed = addspeed;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		velocity[i] += accelspeed * wishdir[i];
+	}
+}
+
+void SVQH_AirAccelerate(float* velocity, float frametime, float wishspeed, vec3_t wishveloc)
+{
+	float wishspd = VectorNormalize(wishveloc);
+	if (wishspd > 30)
+	{
+		wishspd = 30;
+	}
+	float currentspeed = DotProduct(velocity, wishveloc);
+	float addspeed = wishspd - currentspeed;
+	if (addspeed <= 0)
+	{
+		return;
+	}
+	float accelspeed = svqh_accelerate->value * wishspeed * frametime;
+	if (accelspeed > addspeed)
+	{
+		accelspeed = addspeed;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		velocity[i] += accelspeed * wishveloc[i];
+	}
+}
+
+void SVQH_DropPunchAngle(qhedict_t* sv_player, float frametime)
+{
+	float len = VectorNormalize(sv_player->GetPunchAngle());
+
+	len -= 10 * frametime;
+	if (len < 0)
+	{
+		len = 0;
+	}
+	VectorScale(sv_player->GetPunchAngle(), len, sv_player->GetPunchAngle());
+}
+
+void SVQH_WaterMove(client_t* client, float frametime)
+{
+	qhedict_t* sv_player = client->qh_edict;
+	vec3_t wishvel;
+
+	//
+	// user intentions
+	//
+	vec3_t forward, right, up;
+	AngleVectors(sv_player->GetVAngle(), forward, right, up);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			wishvel[i] = forward[i] * client->h2_lastUsercmd.forwardmove + right[i] * client->h2_lastUsercmd.sidemove;
+		}
+
+		if (!client->h2_lastUsercmd.forwardmove && !client->h2_lastUsercmd.sidemove && !client->h2_lastUsercmd.upmove)
+		{
+			wishvel[2] -= 60;		// drift towards bottom
+		}
+		else
+		{
+			wishvel[2] += client->h2_lastUsercmd.upmove;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			wishvel[i] = forward[i] * client->q1_lastUsercmd.forwardmove + right[i] * client->q1_lastUsercmd.sidemove;
+		}
+
+		if (!client->q1_lastUsercmd.forwardmove && !client->q1_lastUsercmd.sidemove && !client->q1_lastUsercmd.upmove)
+		{
+			wishvel[2] -= 60;		// drift towards bottom
+		}
+		else
+		{
+			wishvel[2] += client->q1_lastUsercmd.upmove;
+		}
+	}
+
+	float wishspeed = VectorLength(wishvel);
+	if (wishspeed > svqh_maxspeed->value)
+	{
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		if (sv_player->GetPlayerClass() == CLASS_DEMON)		// Paladin Special Ability #1 - unrestricted movement in water
+		{
+			wishspeed *= 0.5;
+		}
+		else if (sv_player->GetPlayerClass() != CLASS_PALADIN)	// Paladin Special Ability #1 - unrestricted movement in water
+		{
+			wishspeed *= 0.7;
+		}
+		else if (sv_player->GetLevel() == 1)
+		{
+			wishspeed *= 0.75;
+		}
+		else if (sv_player->GetLevel() == 2)
+		{
+			wishspeed *= 0.80;
+		}
+		else if ((sv_player->GetLevel() == 3) || (sv_player->GetLevel() == 4))
+		{
+			wishspeed *= 0.85;
+		}
+		else if ((sv_player->GetLevel() == 5) || (sv_player->GetLevel() == 6))
+		{
+			wishspeed *= 0.90;
+		}
+		else if ((sv_player->GetLevel() == 7) || (sv_player->GetLevel() == 8))
+		{
+			wishspeed *= 0.95;
+		}
+		else
+		{
+			wishspeed = wishspeed;
+		}
+	}
+	else
+	{
+		wishspeed *= 0.7;
+	}
+
+//
+// water friction
+//
+	float speed = VectorLength(sv_player->GetVelocity());
+	float newspeed;
+	if (speed)
+	{
+		newspeed = speed - frametime * speed * svqh_friction->value;
+		if (newspeed < 0)
+		{
+			newspeed = 0;
+		}
+		VectorScale(sv_player->GetVelocity(), newspeed / speed, sv_player->GetVelocity());
+	}
+	else
+	{
+		newspeed = 0;
+	}
+
+//
+// water acceleration
+//
+	if (!wishspeed)
+	{
+		return;
+	}
+
+	float addspeed = wishspeed - newspeed;
+	if (addspeed <= 0)
+	{
+		return;
+	}
+
+	VectorNormalize(wishvel);
+	float accelspeed = svqh_accelerate->value * wishspeed * frametime;
+	if (accelspeed > addspeed)
+	{
+		accelspeed = addspeed;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		sv_player->GetVelocity()[i] += accelspeed * wishvel[i];
+	}
+}
+
+void SVQH_WaterJump(qhedict_t* sv_player)
+{
+	if (sv.qh_time > sv_player->GetTeleportTime() ||
+		!sv_player->GetWaterLevel())
+	{
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_WATERJUMP);
+		sv_player->SetTeleportTime(0);
+	}
+	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
+	sv_player->GetVelocity()[1] = sv_player->GetMoveDir()[1];
+}
+
+void SV_AirMove(client_t* client, float frametime)
+{
+	qhedict_t* sv_player = client->qh_edict;
+
+	vec3_t forward, right, up;
+	AngleVectors(sv_player->GetAngles(), forward, right, up);
+
+	float fmove, smove;
+	if (GGameType & GAME_Hexen2)
+	{
+		fmove = client->h2_lastUsercmd.forwardmove;
+		smove = client->h2_lastUsercmd.sidemove;
+	}
+	else
+	{
+		fmove = client->q1_lastUsercmd.forwardmove;
+		smove = client->q1_lastUsercmd.sidemove;
+	}
+
+	// hack to not let you back into teleporter
+	if (sv.qh_time < sv_player->GetTeleportTime() && fmove < 0)
+	{
+		fmove = 0;
+	}
+
+	vec3_t wishvel;
+	for (int i = 0; i < 3; i++)
+	{
+		wishvel[i] = forward[i] * fmove + right[i] * smove;
+	}
+
+	if ((int)sv_player->GetMoveType() != QHMOVETYPE_WALK)
+	{
+		if (GGameType & GAME_Hexen2)
+		{
+			wishvel[2] = client->h2_lastUsercmd.upmove;
+		}
+		else
+		{
+			wishvel[2] = client->q1_lastUsercmd.upmove;
+		}
+	}
+	else
+	{
+		wishvel[2] = 0;
+	}
+
+	vec3_t wishdir;
+	VectorCopy(wishvel, wishdir);
+	float wishspeed = VectorNormalize(wishdir);
+	if (wishspeed > svqh_maxspeed->value)
+	{
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
+	}
+
+	if (sv_player->GetMoveType() == QHMOVETYPE_NOCLIP)
+	{	// noclip
+		sv_player->SetVelocity(wishvel);
+	}
+	else if ((int)sv_player->GetFlags() & QHFL_ONGROUND)
+	{
+		SVQH_UserFriction(sv_player, frametime);
+		SVQH_Accelerate(sv_player->GetVelocity(), frametime, wishdir, wishspeed);
+	}
+	else
+	{	// not on ground, so little effect on velocity
+		SVQH_AirAccelerate(sv_player->GetVelocity(), frametime, wishspeed, wishvel);
+	}
 }

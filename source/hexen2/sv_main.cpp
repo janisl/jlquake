@@ -35,11 +35,9 @@ SV_Init
 void SV_Init(void)
 {
 	int i;
-	extern Cvar* sv_edgefriction;
 	extern Cvar* sv_idealrollscale;
 
 	SVQH_RegisterPhysicsCvars();
-	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
 	svqh_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);
 	sv_idealrollscale = Cvar_Get("sv_idealrollscale","0.8", 0);
 	svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
@@ -1410,7 +1408,9 @@ void SV_SpawnServer(char* server, char* startspot)
 // all setup is completed, any further precache statements are errors
 	sv.state = SS_GAME;
 
-// run two frames to allow everything to settle
+	SVQH_SetMoveVars();
+
+	// run two frames to allow everything to settle
 	host_frametime = 0.1;
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);

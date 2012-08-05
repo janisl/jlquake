@@ -23,321 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qhedict_t* sv_player;
 
-Cvar* sv_edgefriction;
-
-static vec3_t forward, right, up;
-
-vec3_t wishdir;
-float wishspeed;
-
-// world
-float* angles;
-float* origin;
-float* velocity;
-
-qboolean onground;
-
-q1usercmd_t cmd;
-
-
-/*
-==================
-SV_UserFriction
-
-==================
-*/
-void SV_UserFriction(void)
-{
-	float* vel;
-	float speed, newspeed, control;
-	vec3_t start, stop;
-	float friction;
-	q1trace_t trace;
-
-	vel = velocity;
-
-	speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
-	if (!speed)
-	{
-		return;
-	}
-
-// if the leading edge is over a dropoff, increase friction
-	start[0] = stop[0] = origin[0] + vel[0] / speed * 16;
-	start[1] = stop[1] = origin[1] + vel[1] / speed * 16;
-	start[2] = origin[2] + sv_player->GetMins()[2];
-	stop[2] = start[2] - 34;
-
-	trace = SVQH_Move(start, vec3_origin, vec3_origin, stop, true, sv_player);
-
-	if (trace.fraction == 1.0)
-	{
-		friction = svqh_friction->value * sv_edgefriction->value;
-	}
-	else
-	{
-		friction = svqh_friction->value;
-	}
-
-// apply friction
-	control = speed < svqh_stopspeed->value ? svqh_stopspeed->value : speed;
-	newspeed = speed - host_frametime * control * friction;
-
-	if (newspeed < 0)
-	{
-		newspeed = 0;
-	}
-	newspeed /= speed;
-
-	vel[0] = vel[0] * newspeed;
-	vel[1] = vel[1] * newspeed;
-	vel[2] = vel[2] * newspeed;
-}
-
-/*
-==============
-SV_Accelerate
-==============
-*/
-#if 0
-void SV_Accelerate(vec3_t wishvel)
-{
-	int i;
-	float addspeed, accelspeed;
-	vec3_t pushvec;
-
-	if (wishspeed == 0)
-	{
-		return;
-	}
-
-	VectorSubtract(wishvel, velocity, pushvec);
-	addspeed = VectorNormalize(pushvec);
-
-	accelspeed = svqh_accelerate.value * host_frametime * addspeed;
-	if (accelspeed > addspeed)
-	{
-		accelspeed = addspeed;
-	}
-
-	for (i = 0; i < 3; i++)
-		velocity[i] += accelspeed * pushvec[i];
-}
-#endif
-void SV_Accelerate(void)
-{
-	int i;
-	float addspeed, accelspeed, currentspeed;
-
-	currentspeed = DotProduct(velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
-	if (addspeed <= 0)
-	{
-		return;
-	}
-	accelspeed = svqh_accelerate->value * host_frametime * wishspeed;
-	if (accelspeed > addspeed)
-	{
-		accelspeed = addspeed;
-	}
-
-	for (i = 0; i < 3; i++)
-		velocity[i] += accelspeed * wishdir[i];
-}
-
-void SV_AirAccelerate(vec3_t wishveloc)
-{
-	int i;
-	float addspeed, wishspd, accelspeed, currentspeed;
-
-	wishspd = VectorNormalize(wishveloc);
-	if (wishspd > 30)
-	{
-		wishspd = 30;
-	}
-	currentspeed = DotProduct(velocity, wishveloc);
-	addspeed = wishspd - currentspeed;
-	if (addspeed <= 0)
-	{
-		return;
-	}
-//	accelspeed = svqh_accelerate.value * host_frametime;
-	accelspeed = svqh_accelerate->value * wishspeed * host_frametime;
-	if (accelspeed > addspeed)
-	{
-		accelspeed = addspeed;
-	}
-
-	for (i = 0; i < 3; i++)
-		velocity[i] += accelspeed * wishveloc[i];
-}
-
-
-void DropPunchAngle(void)
-{
-	float len;
-
-	len = VectorNormalize(sv_player->GetPunchAngle());
-
-	len -= 10 * host_frametime;
-	if (len < 0)
-	{
-		len = 0;
-	}
-	VectorScale(sv_player->GetPunchAngle(), len, sv_player->GetPunchAngle());
-}
-
-/*
-===================
-SV_WaterMove
-
-===================
-*/
-void SV_WaterMove(void)
-{
-	int i;
-	vec3_t wishvel;
-	float speed, newspeed, wishspeed, addspeed, accelspeed;
-
-//
-// user intentions
-//
-	AngleVectors(sv_player->GetVAngle(), forward, right, up);
-
-	for (i = 0; i < 3; i++)
-		wishvel[i] = forward[i] * cmd.forwardmove + right[i] * cmd.sidemove;
-
-	if (!cmd.forwardmove && !cmd.sidemove && !cmd.upmove)
-	{
-		wishvel[2] -= 60;		// drift towards bottom
-	}
-	else
-	{
-		wishvel[2] += cmd.upmove;
-	}
-
-	wishspeed = VectorLength(wishvel);
-	if (wishspeed > svqh_maxspeed->value)
-	{
-		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
-		wishspeed = svqh_maxspeed->value;
-	}
-	wishspeed *= 0.7;
-
-//
-// water friction
-//
-	speed = VectorLength(velocity);
-	if (speed)
-	{
-		newspeed = speed - host_frametime * speed * svqh_friction->value;
-		if (newspeed < 0)
-		{
-			newspeed = 0;
-		}
-		VectorScale(velocity, newspeed / speed, velocity);
-	}
-	else
-	{
-		newspeed = 0;
-	}
-
-//
-// water acceleration
-//
-	if (!wishspeed)
-	{
-		return;
-	}
-
-	addspeed = wishspeed - newspeed;
-	if (addspeed <= 0)
-	{
-		return;
-	}
-
-	VectorNormalize(wishvel);
-	accelspeed = svqh_accelerate->value * wishspeed * host_frametime;
-	if (accelspeed > addspeed)
-	{
-		accelspeed = addspeed;
-	}
-
-	for (i = 0; i < 3; i++)
-		velocity[i] += accelspeed * wishvel[i];
-}
-
-void SV_WaterJump(void)
-{
-	if (sv.qh_time > sv_player->GetTeleportTime() ||
-		!sv_player->GetWaterLevel())
-	{
-		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_WATERJUMP);
-		sv_player->SetTeleportTime(0);
-	}
-	sv_player->GetVelocity()[0] = sv_player->GetMoveDir()[0];
-	sv_player->GetVelocity()[1] = sv_player->GetMoveDir()[1];
-}
-
-
-/*
-===================
-SV_AirMove
-
-===================
-*/
-void SV_AirMove(void)
-{
-	int i;
-	vec3_t wishvel;
-	float fmove, smove;
-
-	AngleVectors(sv_player->GetAngles(), forward, right, up);
-
-	fmove = cmd.forwardmove;
-	smove = cmd.sidemove;
-
-// hack to not let you back into teleporter
-	if (sv.qh_time < sv_player->GetTeleportTime() && fmove < 0)
-	{
-		fmove = 0;
-	}
-
-	for (i = 0; i < 3; i++)
-		wishvel[i] = forward[i] * fmove + right[i] * smove;
-
-	if ((int)sv_player->GetMoveType() != QHMOVETYPE_WALK)
-	{
-		wishvel[2] = cmd.upmove;
-	}
-	else
-	{
-		wishvel[2] = 0;
-	}
-
-	VectorCopy(wishvel, wishdir);
-	wishspeed = VectorNormalize(wishdir);
-	if (wishspeed > svqh_maxspeed->value)
-	{
-		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
-		wishspeed = svqh_maxspeed->value;
-	}
-
-	if (sv_player->GetMoveType() == QHMOVETYPE_NOCLIP)
-	{	// noclip
-		VectorCopy(wishvel, velocity);
-	}
-	else if (onground)
-	{
-		SV_UserFriction();
-		SV_Accelerate();
-	}
-	else
-	{	// not on ground, so little effect on velocity
-		SV_AirAccelerate(wishvel);
-	}
-}
-
 /*
 ===================
 SV_ClientThink
@@ -355,12 +40,7 @@ void SV_ClientThink(void)
 		return;
 	}
 
-	onground = (int)sv_player->GetFlags() & QHFL_ONGROUND;
-
-	origin = sv_player->GetOrigin();
-	velocity = sv_player->GetVelocity();
-
-	DropPunchAngle();
+	SVQH_DropPunchAngle(sv_player, host_frametime);
 
 //
 // if dead, behave differently
@@ -373,8 +53,7 @@ void SV_ClientThink(void)
 //
 // angles
 // show 1/3 the pitch angle and all the roll angle
-	cmd = host_client->q1_lastUsercmd;
-	angles = sv_player->GetAngles();
+	float* angles = sv_player->GetAngles();
 
 	VectorAdd(sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
 	angles[ROLL] = VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
@@ -386,7 +65,7 @@ void SV_ClientThink(void)
 
 	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
 	{
-		SV_WaterJump();
+		SVQH_WaterJump(sv_player);
 		return;
 	}
 //
@@ -395,11 +74,11 @@ void SV_ClientThink(void)
 	if ((sv_player->GetWaterLevel() >= 2) &&
 		(sv_player->GetMoveType() != QHMOVETYPE_NOCLIP))
 	{
-		SV_WaterMove();
+		SVQH_WaterMove(host_client, host_frametime);
 		return;
 	}
 
-	SV_AirMove();
+	SV_AirMove(host_client, host_frametime);
 }
 
 
