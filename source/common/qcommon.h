@@ -92,6 +92,8 @@ extern int cl_connectedToPureServer;
 extern etgameInfo_t comet_gameInfo;
 
 extern bool q1_standard_quake;
+extern bool q1_rogue;
+extern bool q1_hipnotic;
 
 bool SVT3_GameCommand();
 

@@ -41,8 +41,6 @@ void COM_InitFilesystem(void);
 #define CMDLINE_LENGTH  256
 char com_cmdline[CMDLINE_LENGTH];
 
-qboolean rogue, hipnotic;
-
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
 {
@@ -178,13 +176,13 @@ void COM_InitArgv2(int argc, char** argv)
 
 	if (COM_CheckParm("-rogue"))
 	{
-		rogue = true;
+		q1_rogue = true;
 		q1_standard_quake = false;
 	}
 
 	if (COM_CheckParm("-hipnotic"))
 	{
-		hipnotic = true;
+		q1_hipnotic = true;
 		q1_standard_quake = false;
 	}
 }

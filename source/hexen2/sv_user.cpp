@@ -579,6 +579,10 @@ ucmd_t ucmds[] =
 	{ "say", SVQH_Say_f },
 	{ "say_team", SVQH_Say_Team_f },
 	{ "tell", SVQH_Tell_f },
+	{ "god", SVQH_God_f },
+	{ "notarget", SVQH_Notarget_f },
+	{ "noclip", SVQH_Noclip_f },
+	{ "give", SVH2_Give_f },
 	{ NULL, NULL }
 };
 
@@ -600,27 +604,11 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	{
 		ret = 1;
 	}
-	else if (String::NICmp(s, "god", 3) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "notarget", 8) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "fly", 3) == 0)
-	{
-		ret = 1;
-	}
 	else if (String::NICmp(s, "name", 4) == 0)
 	{
 		ret = 1;
 	}
 	else if (String::NICmp(s, "playerclass", 11) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "noclip", 6) == 0)
 	{
 		ret = 1;
 	}
@@ -641,10 +629,6 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 		ret = 1;
 	}
 	else if (String::NICmp(s, "ping", 4) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "give", 4) == 0)
 	{
 		ret = 1;
 	}

@@ -2148,7 +2148,7 @@ void M_GameOptions_Draw(void)
 	}
 
 	M_Print(0, 72, "        Teamplay");
-	if (rogue)
+	if (q1_rogue)
 	{
 		const char* msg;
 
@@ -2178,15 +2178,15 @@ void M_GameOptions_Draw(void)
 	}
 
 	M_Print(0, 80, "            Skill");
-	if (skill->value == 0)
+	if (qh_skill->value == 0)
 	{
 		M_Print(160, 80, "Easy difficulty");
 	}
-	else if (skill->value == 1)
+	else if (qh_skill->value == 1)
 	{
 		M_Print(160, 80, "Normal difficulty");
 	}
-	else if (skill->value == 2)
+	else if (qh_skill->value == 2)
 	{
 		M_Print(160, 80, "Hard difficulty");
 	}
@@ -2217,12 +2217,12 @@ void M_GameOptions_Draw(void)
 
 	M_Print(0, 112, "         Episode");
 	//MED 01/06/97 added hipnotic episodes
-	if (hipnotic)
+	if (q1_hipnotic)
 	{
 		M_Print(160, 112, hipnoticepisodes[startepisode].description);
 	}
 	//PGM 01/07/97 added rogue episodes
-	else if (rogue)
+	else if (q1_rogue)
 	{
 		M_Print(160, 112, rogueepisodes[startepisode].description);
 	}
@@ -2233,13 +2233,13 @@ void M_GameOptions_Draw(void)
 
 	M_Print(0, 120, "           Level");
 	//MED 01/06/97 added hipnotic episodes
-	if (hipnotic)
+	if (q1_hipnotic)
 	{
 		M_Print(160, 120, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].description);
 		M_Print(160, 128, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].name);
 	}
 	//PGM 01/07/97 added rogue episodes
-	else if (rogue)
+	else if (q1_rogue)
 	{
 		M_Print(160, 120, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].description);
 		M_Print(160, 128, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].name);
@@ -2298,7 +2298,7 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 3:
-		if (rogue)
+		if (q1_rogue)
 		{
 			count = 6;
 		}
@@ -2319,12 +2319,12 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 4:
-		Cvar_SetValue("skill", skill->value + dir);
-		if (skill->value > 3)
+		Cvar_SetValue("skill", qh_skill->value + dir);
+		if (qh_skill->value > 3)
 		{
 			Cvar_SetValue("skill", 0);
 		}
-		if (skill->value < 0)
+		if (qh_skill->value < 0)
 		{
 			Cvar_SetValue("skill", 3);
 		}
@@ -2357,13 +2357,13 @@ void M_NetStart_Change(int dir)
 	case 7:
 		startepisode += dir;
 		//MED 01/06/97 added hipnotic count
-		if (hipnotic)
+		if (q1_hipnotic)
 		{
 			count = 6;
 		}
 		//PGM 01/07/97 added rogue count
 		//PGM 03/02/97 added 1 for dmatch episode
-		else if (rogue)
+		else if (q1_rogue)
 		{
 			count = 4;
 		}
@@ -2392,12 +2392,12 @@ void M_NetStart_Change(int dir)
 	case 8:
 		startlevel += dir;
 		//MED 01/06/97 added hipnotic episodes
-		if (hipnotic)
+		if (q1_hipnotic)
 		{
 			count = hipnoticepisodes[startepisode].levels;
 		}
 		//PGM 01/06/97 added hipnotic episodes
-		else if (rogue)
+		else if (q1_rogue)
 		{
 			count = rogueepisodes[startepisode].levels;
 		}
@@ -2475,11 +2475,11 @@ void M_GameOptions_Key(int key)
 			Cbuf_AddText(va("maxplayers %u\n", maxplayers));
 			SCR_BeginLoadingPlaque();
 
-			if (hipnotic)
+			if (q1_hipnotic)
 			{
 				Cbuf_AddText(va("map %s\n", hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].name));
 			}
-			else if (rogue)
+			else if (q1_rogue)
 			{
 				Cbuf_AddText(va("map %s\n", roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].name));
 			}

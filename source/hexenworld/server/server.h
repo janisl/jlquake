@@ -23,7 +23,6 @@
 //============================================================================
 
 extern Cvar* spawn;
-extern Cvar* skill;
 extern Cvar* randomclass;
 extern Cvar* damageScale;
 extern Cvar* meleeDamScale;

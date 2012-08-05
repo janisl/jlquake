@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-extern Cvar* skill;
-
 extern client_t* host_client;
 
 extern jmp_buf host_abortserver;

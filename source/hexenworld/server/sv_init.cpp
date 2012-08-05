@@ -277,7 +277,7 @@ void SV_SpawnServer(char* server, char* startspot)
 
 	*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
 
-	sv.hw_current_skill = (int)(skill->value + 0.5);
+	sv.hw_current_skill = (int)(qh_skill->value + 0.5);
 	if (sv.hw_current_skill < 0)
 	{
 		sv.hw_current_skill = 0;

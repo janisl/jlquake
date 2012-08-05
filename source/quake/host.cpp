@@ -60,8 +60,6 @@ Cvar* serverprofile;
 Cvar* samelevel;
 Cvar* noexit;
 
-Cvar* skill;						// 0 - 3
-
 Cvar* pausable;
 
 Cvar* temp1;
@@ -322,8 +320,6 @@ Host_InitLocal
 */
 void Host_InitLocal(void)
 {
-	Host_InitCommands();
-
 	COM_InitCommonCvars();
 
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion
@@ -337,7 +333,7 @@ void Host_InitLocal(void)
 	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel", "0", 0);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
-	skill = Cvar_Get("skill", "1", 0);			// 0 - 3
+	qh_skill = Cvar_Get("skill", "1", 0);			// 0 - 3
 	svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);	// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
@@ -346,6 +342,8 @@ void Host_InitLocal(void)
 	temp1 = Cvar_Get("temp1", "0", 0);
 
 	Host_FindMaxClients();
+
+	Host_InitCommands();
 
 	host_time = 1.0;		// so a think at time 0 won't get called
 }

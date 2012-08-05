@@ -934,5 +934,10 @@ struct h2client_entvars_t
 #define SC2_OBJ                 (1 << 22)
 #define SC2_OBJ2                (1 << 23)
 
-#define HWOLD_PROTOCOL_VERSION    24
-#define HWPROTOCOL_VERSION    25
+#define HWOLD_PROTOCOL_VERSION  24
+#define HWPROTOCOL_VERSION      25
+
+//
+// item flags
+//
+#define H2IT_WEAPON2            1

@@ -3525,7 +3525,7 @@ void M_GameOptions_Draw(void)
 
 	M_Print(0 + 8, 116, "       Difficulty");
 
-	M_Print(160 + 8, 116, DiffNames[setup_class][(int)skill->value]);
+	M_Print(160 + 8, 116, DiffNames[setup_class][(int)qh_skill->value]);
 
 	M_Print(0 + 8, 124, "       Frag Limit");
 	if (qh_fraglimit->value == 0)
@@ -3655,12 +3655,12 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 5:
-		Cvar_SetValue("skill", skill->value + dir);
-		if (skill->value > 3)
+		Cvar_SetValue("skill", qh_skill->value + dir);
+		if (qh_skill->value > 3)
 		{
 			Cvar_SetValue("skill", 0);
 		}
-		if (skill->value < 0)
+		if (qh_skill->value < 0)
 		{
 			Cvar_SetValue("skill", 3);
 		}

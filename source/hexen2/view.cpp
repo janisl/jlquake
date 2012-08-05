@@ -391,21 +391,6 @@ V_CalcPowerupCshift
 */
 static void V_CalcPowerupCshift(void)
 {
-/*	if (cl.items & IT_QUAD)
-    {
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
-        cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
-    }
-    else if (cl.items & IT_SUIT)
-    {
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
-        cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
-        cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
-    }
-*/
 	if ((int)cl.h2_v.artifact_active & H2ARTFLAG_DIVINE_INTERVENTION)
 	{
 		cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;

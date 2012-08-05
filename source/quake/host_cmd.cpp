@@ -123,6 +123,7 @@ void Host_Status_f(void)
 	}
 }
 
+#ifndef DEDICATED
 
 /*
 ==================
@@ -133,75 +134,17 @@ Sets client to godmode
 */
 void Host_God_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch)
-	{
-		return;
-	}
-
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
-	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
-	{
-		SVQH_ClientPrintf(host_client, 0, "godmode OFF\n");
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "godmode ON\n");
-	}
+	Cmd_ForwardToServer();
 }
 
 void Host_Notarget_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch)
-	{
-		return;
-	}
-
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_NOTARGET);
-	if (!((int)sv_player->GetFlags() & QHFL_NOTARGET))
-	{
-		SVQH_ClientPrintf(host_client, 0, "notarget OFF\n");
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "notarget ON\n");
-	}
+	Cmd_ForwardToServer();
 }
 
 void Host_Noclip_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch)
-	{
-		return;
-	}
-
-	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
-	{
-		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
-		SVQH_ClientPrintf(host_client, 0, "noclip ON\n");
-	}
-	else
-	{
-		sv_player->SetMoveType(QHMOVETYPE_WALK);
-		SVQH_ClientPrintf(host_client, 0, "noclip OFF\n");
-	}
+	Cmd_ForwardToServer();
 }
 
 /*
@@ -213,29 +156,10 @@ Sets client to flymode
 */
 void Host_Fly_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch)
-	{
-		return;
-	}
-
-	if (sv_player->GetMoveType() != QHMOVETYPE_FLY)
-	{
-		sv_player->SetMoveType(QHMOVETYPE_FLY);
-		SVQH_ClientPrintf(host_client, 0, "flymode ON\n");
-	}
-	else
-	{
-		sv_player->SetMoveType(QHMOVETYPE_WALK);
-		SVQH_ClientPrintf(host_client, 0, "flymode OFF\n");
-	}
+	Cmd_ForwardToServer();
 }
 
+#endif
 
 /*
 ==================
@@ -802,6 +726,8 @@ void Host_Version_f(void)
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
+#ifndef DEDICATED
+
 void Host_Say_f()
 {
 	Cmd_ForwardToServer();
@@ -811,6 +737,8 @@ void Host_Say_Team_f(void)
 {
 	Cmd_ForwardToServer();
 }
+
+#endif
 
 void Host_ConSay_f()
 {
@@ -1109,6 +1037,7 @@ DEBUGGING TOOLS
 ===============================================================================
 */
 
+#ifndef DEDICATED
 /*
 ==================
 Host_Give_f
@@ -1116,187 +1045,9 @@ Host_Give_f
 */
 void Host_Give_f(void)
 {
-	char* t;
-	int v;
-	eval_t* val;
-
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch)
-	{
-		return;
-	}
-
-	t = Cmd_Argv(1);
-	v = String::Atoi(Cmd_Argv(2));
-
-	switch (t[0])
-	{
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-		// MED 01/04/97 added hipnotic give stuff
-		if (hipnotic)
-		{
-			if (t[0] == '6')
-			{
-				if (t[1] == 'a')
-				{
-					sv_player->SetItems((int)sv_player->GetItems() | HIT_PROXIMITY_GUN);
-				}
-				else
-				{
-					sv_player->SetItems((int)sv_player->GetItems() | IT_GRENADE_LAUNCHER);
-				}
-			}
-			else if (t[0] == '9')
-			{
-				sv_player->SetItems((int)sv_player->GetItems() | HIT_LASER_CANNON);
-			}
-			else if (t[0] == '0')
-			{
-				sv_player->SetItems((int)sv_player->GetItems() | HIT_MJOLNIR);
-			}
-			else if (t[0] >= '2')
-			{
-				sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
-			}
-		}
-		else
-		{
-			if (t[0] >= '2')
-			{
-				sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
-			}
-		}
-		break;
-
-	case 's':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_shells1");
-			if (val)
-			{
-				val->_float = v;
-			}
-		}
-
-		sv_player->SetAmmoShells(v);
-		break;
-	case 'n':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_nails1");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() <= IT_LIGHTNING)
-				{
-					sv_player->SetAmmoNails(v);
-				}
-			}
-		}
-		else
-		{
-			sv_player->SetAmmoNails(v);
-		}
-		break;
-	case 'l':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() > IT_LIGHTNING)
-				{
-					sv_player->SetAmmoNails(v);
-				}
-			}
-		}
-		break;
-	case 'r':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_rockets1");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() <= IT_LIGHTNING)
-				{
-					sv_player->SetAmmoRockets(v);
-				}
-			}
-		}
-		else
-		{
-			sv_player->SetAmmoRockets(v);
-		}
-		break;
-	case 'm':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() > IT_LIGHTNING)
-				{
-					sv_player->SetAmmoRockets(v);
-				}
-			}
-		}
-		break;
-	case 'h':
-		sv_player->SetHealth(v);
-		break;
-	case 'c':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_cells1");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() <= IT_LIGHTNING)
-				{
-					sv_player->SetAmmoCells(v);
-				}
-			}
-		}
-		else
-		{
-			sv_player->SetAmmoCells(v);
-		}
-		break;
-	case 'p':
-		if (rogue)
-		{
-			val = GetEdictFieldValue(sv_player, "ammo_plasma");
-			if (val)
-			{
-				val->_float = v;
-				if (sv_player->GetWeapon() > IT_LIGHTNING)
-				{
-					sv_player->SetAmmoCells(v);
-				}
-			}
-		}
-		break;
-	}
+	Cmd_ForwardToServer();
 }
 
-#ifndef DEDICATED
 qhedict_t* FindViewthing(void)
 {
 	int i;
@@ -1530,9 +1281,11 @@ void Host_InitCommands(void)
 {
 	Cmd_AddCommand("status", Host_Status_f);
 	Cmd_AddCommand("quit", Host_Quit_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("god", Host_God_f);
 	Cmd_AddCommand("notarget", Host_Notarget_f);
 	Cmd_AddCommand("fly", Host_Fly_f);
+#endif
 	Cmd_AddCommand("map", Host_Map_f);
 	Cmd_AddCommand("restart", Host_Restart_f);
 	Cmd_AddCommand("changelevel", Host_Changelevel_f);
@@ -1541,18 +1294,22 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);
 #endif
 	Cmd_AddCommand("name", Host_Name_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("noclip", Host_Noclip_f);
+#endif
 	Cmd_AddCommand("version", Host_Version_f);
 	if (com_dedicated->integer)
 	{
 		Cmd_AddCommand("say", Host_ConSay_f);
 	}
+#ifndef DEDICATED
 	else
 	{
 		Cmd_AddCommand("say", Host_Say_f);
 		Cmd_AddCommand("say_team", Host_Say_Team_f);
 	}
 	Cmd_AddCommand("tell", Host_Tell_f);
+#endif
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);
 	Cmd_AddCommand("pause", Host_Pause_f);
@@ -1561,8 +1318,8 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("load", Host_Loadgame_f);
 #ifndef DEDICATED
 	Cmd_AddCommand("save", Host_Savegame_f);
-#endif
 	Cmd_AddCommand("give", Host_Give_f);
+#endif
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
 #ifndef DEDICATED

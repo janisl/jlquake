@@ -342,28 +342,28 @@ V_CalcPowerupCshift
 */
 static void V_CalcPowerupCshift(void)
 {
-	if (cl.q1_items & IT_QUAD)
+	if (cl.q1_items & Q1IT_QUAD)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
 	}
-	else if (cl.q1_items & IT_SUIT)
+	else if (cl.q1_items & Q1IT_SUIT)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
 	}
-	else if (cl.q1_items & IT_INVISIBILITY)
+	else if (cl.q1_items & Q1IT_INVISIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
-	else if (cl.q1_items & IT_INVULNERABILITY)
+	else if (cl.q1_items & Q1IT_INVULNERABILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
@@ -775,7 +775,7 @@ static void CL_AddViewModel()
 		return;
 	}
 
-	if (cl.q1_items & IT_INVISIBILITY)
+	if (cl.q1_items & Q1IT_INVISIBILITY)
 	{
 		return;
 	}

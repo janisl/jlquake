@@ -23,6 +23,7 @@ Cvar* svqh_coop;				// 0 or 1
 Cvar* svqh_teamplay;
 Cvar* qh_timelimit;
 Cvar* qh_fraglimit;
+Cvar* qh_skill;					// 0 - 3
 
 Cvar* svqh_highchars;
 Cvar* hw_spartanPrint;

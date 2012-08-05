@@ -1348,3 +1348,288 @@ void SVQHW_Say_Team_f(client_t* host_client)
 {
 	SVQHW_Say(host_client, true);
 }
+
+//	Sets client to godmode
+void SVQH_God_f(client_t* client)
+{
+	if (*pr_globalVars.deathmatch ||
+		(GGameType & GAME_Hexen2 && (*pr_globalVars.coop || qh_skill->value > 2)))
+	{
+		return;
+	}
+
+	client->qh_edict->SetFlags((int)client->qh_edict->GetFlags() ^ QHFL_GODMODE);
+	if (!((int)client->qh_edict->GetFlags() & QHFL_GODMODE))
+	{
+		SVQH_ClientPrintf(client, 0, "godmode OFF\n");
+	}
+	else
+	{
+		SVQH_ClientPrintf(client, 0, "godmode ON\n");
+	}
+}
+
+void SVQH_Notarget_f(client_t* client)
+{
+	if (*pr_globalVars.deathmatch || (GGameType & GAME_Hexen2 && qh_skill->value > 2))
+	{
+		return;
+	}
+
+	client->qh_edict->SetFlags((int)client->qh_edict->GetFlags() ^ QHFL_NOTARGET);
+	if (!((int)client->qh_edict->GetFlags() & QHFL_NOTARGET))
+	{
+		SVQH_ClientPrintf(client, 0, "notarget OFF\n");
+	}
+	else
+	{
+		SVQH_ClientPrintf(client, 0, "notarget ON\n");
+	}
+}
+
+void SVQH_Noclip_f(client_t* client)
+{
+	if (*pr_globalVars.deathmatch ||
+		(GGameType & GAME_Hexen2 && (*pr_globalVars.coop || qh_skill->value > 2)))
+	{
+		return;
+	}
+
+	if (client->qh_edict->GetMoveType() != QHMOVETYPE_NOCLIP)
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_NOCLIP);
+		SVQH_ClientPrintf(client, 0, "noclip ON\n");
+	}
+	else
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_WALK);
+		SVQH_ClientPrintf(client, 0, "noclip OFF\n");
+	}
+}
+
+//	Sets client to flymode
+void SVQ1_Fly_f(client_t* client)
+{
+	if (*pr_globalVars.deathmatch)
+	{
+		return;
+	}
+
+	if (client->qh_edict->GetMoveType() != QHMOVETYPE_FLY)
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_FLY);
+		SVQH_ClientPrintf(client, 0, "flymode ON\n");
+	}
+	else
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_WALK);
+		SVQH_ClientPrintf(client, 0, "flymode OFF\n");
+	}
+}
+
+void SVQ1_Give_f(client_t* host_client)
+{
+	if (*pr_globalVars.deathmatch)
+	{
+		return;
+	}
+
+	const char* t = Cmd_Argv(1);
+	int v = String::Atoi(Cmd_Argv(2));
+	qhedict_t* sv_player = host_client->qh_edict;
+
+	switch (t[0])
+	{
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		// MED 01/04/97 added hipnotic give stuff
+		if (q1_hipnotic)
+		{
+			if (t[0] == '6')
+			{
+				if (t[1] == 'a')
+				{
+					sv_player->SetItems((int)sv_player->GetItems() | Q1HIT_PROXIMITY_GUN);
+				}
+				else
+				{
+					sv_player->SetItems((int)sv_player->GetItems() | Q1IT_GRENADE_LAUNCHER);
+				}
+			}
+			else if (t[0] == '9')
+			{
+				sv_player->SetItems((int)sv_player->GetItems() | Q1HIT_LASER_CANNON);
+			}
+			else if (t[0] == '0')
+			{
+				sv_player->SetItems((int)sv_player->GetItems() | Q1HIT_MJOLNIR);
+			}
+			else if (t[0] >= '2')
+			{
+				sv_player->SetItems((int)sv_player->GetItems() | (Q1IT_SHOTGUN << (t[0] - '2')));
+			}
+		}
+		else
+		{
+			if (t[0] >= '2')
+			{
+				sv_player->SetItems((int)sv_player->GetItems() | (Q1IT_SHOTGUN << (t[0] - '2')));
+			}
+		}
+		break;
+
+	case 's':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_shells1");
+			if (val)
+			{
+				val->_float = v;
+			}
+		}
+
+		sv_player->SetAmmoShells(v);
+		break;
+	case 'n':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_nails1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() <= Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoNails(v);
+				}
+			}
+		}
+		else
+		{
+			sv_player->SetAmmoNails(v);
+		}
+		break;
+	case 'l':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() > Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoNails(v);
+				}
+			}
+		}
+		break;
+	case 'r':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_rockets1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() <= Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoRockets(v);
+				}
+			}
+		}
+		else
+		{
+			sv_player->SetAmmoRockets(v);
+		}
+		break;
+	case 'm':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() > Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoRockets(v);
+				}
+			}
+		}
+		break;
+	case 'h':
+		sv_player->SetHealth(v);
+		break;
+	case 'c':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_cells1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() <= Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoCells(v);
+				}
+			}
+		}
+		else
+		{
+			sv_player->SetAmmoCells(v);
+		}
+		break;
+	case 'p':
+		if (q1_rogue)
+		{
+			eval_t* val = GetEdictFieldValue(sv_player, "ammo_plasma");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->GetWeapon() > Q1IT_LIGHTNING)
+				{
+					sv_player->SetAmmoCells(v);
+				}
+			}
+		}
+		break;
+	}
+}
+
+void SVH2_Give_f(client_t* host_client)
+{
+	if (*pr_globalVars.deathmatch || qh_skill->value > 2)
+	{
+		return;
+	}
+
+	char* t = Cmd_Argv(1);
+	int v = String::Atoi(Cmd_Argv(2));
+
+	switch (t[0])
+	{
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		if (t[0] >= '2')
+		{
+			host_client->qh_edict->SetItems((int)host_client->qh_edict->GetItems() | (H2IT_WEAPON2 << (t[0] - '2')));
+		}
+		break;
+
+	case 'h':
+		host_client->qh_edict->SetHealth(v);
+		break;
+	}
+}

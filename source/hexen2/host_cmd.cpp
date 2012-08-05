@@ -121,6 +121,7 @@ void Host_Status_f(void)
 	}
 }
 
+#ifndef DEDICATED
 
 /*
 ==================
@@ -131,78 +132,20 @@ Sets client to godmode
 */
 void Host_God_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch ||
-		*pr_globalVars.coop || skill->value > 2)
-	{
-		return;
-	}
-
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
-	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
-	{
-		SVQH_ClientPrintf(host_client, 0, "godmode OFF\n");
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "godmode ON\n");
-	}
+	Cmd_ForwardToServer();
 }
 
 void Host_Notarget_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch || skill->value > 2)
-	{
-		return;
-	}
-
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_NOTARGET);
-	if (!((int)sv_player->GetFlags() & QHFL_NOTARGET))
-	{
-		SVQH_ClientPrintf(host_client, 0, "notarget OFF\n");
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "notarget ON\n");
-	}
+	Cmd_ForwardToServer();
 }
 
 void Host_Noclip_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch ||
-		*pr_globalVars.coop || skill->value > 2)
-	{
-		return;
-	}
-
-	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
-	{
-		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
-		SVQH_ClientPrintf(host_client, 0, "noclip ON\n");
-	}
-	else
-	{
-		sv_player->SetMoveType(QHMOVETYPE_WALK);
-		SVQH_ClientPrintf(host_client, 0, "noclip OFF\n");
-	}
+	Cmd_ForwardToServer();
 }
+
+#endif
 
 
 /*
@@ -815,7 +758,7 @@ void SaveGamestate(qboolean ClientsOnly)
 	{
 		Host_SavegameComment(comment);
 		FS_Printf(f, "%s\n", comment);
-		FS_Printf(f, "%f\n", skill->value);
+		FS_Printf(f, "%f\n", qh_skill->value);
 		FS_Printf(f, "%s\n", sv.name);
 		FS_Printf(f, "%f\n", sv.qh_time);
 
@@ -1270,6 +1213,8 @@ void Host_Version_f(void)
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
+#ifndef DEDICATED
+
 void Host_Say_f()
 {
 	Cmd_ForwardToServer();
@@ -1279,6 +1224,8 @@ void Host_Say_Team_f(void)
 {
 	Cmd_ForwardToServer();
 }
+
+#endif
 
 void Host_ConSay_f()
 {
@@ -1598,6 +1545,7 @@ DEBUGGING TOOLS
 ===============================================================================
 */
 
+#ifndef DEDICATED
 /*
 ==================
 Host_Give_f
@@ -1605,48 +1553,9 @@ Host_Give_f
 */
 void Host_Give_f(void)
 {
-	char* t;
-	int v;
-
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (*pr_globalVars.deathmatch || skill->value > 2)
-	{
-		return;
-	}
-
-	t = Cmd_Argv(1);
-	v = String::Atoi(Cmd_Argv(2));
-
-	switch (t[0])
-	{
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-		if (t[0] >= '2')
-		{
-			sv_player->SetItems((int)sv_player->GetItems() | (IT_SHOTGUN << (t[0] - '2')));
-		}
-		break;
-
-	case 'h':
-		sv_player->SetHealth(v);
-		break;
-	}
+	Cmd_ForwardToServer();
 }
 
-#ifndef DEDICATED
 qhedict_t* FindViewthing(void)
 {
 	int i;
@@ -1880,8 +1789,10 @@ void Host_InitCommands(void)
 {
 	Cmd_AddCommand("status", Host_Status_f);
 	Cmd_AddCommand("quit", Host_Quit_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("god", Host_God_f);
 	Cmd_AddCommand("notarget", Host_Notarget_f);
+#endif
 	Cmd_AddCommand("map", Host_Map_f);
 	Cmd_AddCommand("restart", Host_Restart_f);
 	Cmd_AddCommand("changelevel", Host_Changelevel_f);
@@ -1892,18 +1803,22 @@ void Host_InitCommands(void)
 #endif
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("playerclass", Host_Class_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("noclip", Host_Noclip_f);
+#endif
 	Cmd_AddCommand("version", Host_Version_f);
 	if (com_dedicated->integer)
 	{
 		Cmd_AddCommand("say", Host_ConSay_f);
 	}
+#ifndef DEDICATED
 	else
 	{
 		Cmd_AddCommand("say", Host_Say_f);
 		Cmd_AddCommand("say_team", Host_Say_Team_f);
 	}
 	Cmd_AddCommand("tell", Host_Tell_f);
+#endif
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);
 	Cmd_AddCommand("pause", Host_Pause_f);
@@ -1911,7 +1826,9 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("ping", Host_Ping_f);
 	Cmd_AddCommand("load", Host_Loadgame_f);
 	Cmd_AddCommand("save", Host_Savegame_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("give", Host_Give_f);
+#endif
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
 #ifndef DEDICATED

@@ -279,7 +279,7 @@ void SV_Give_f(void)
 	case '7':
 	case '8':
 	case '9':
-		sv_player->SetItems((int)sv_player->GetItems() | IT_SHOTGUN << (t[0] - '2'));
+		sv_player->SetItems((int)sv_player->GetItems() | Q1IT_SHOTGUN << (t[0] - '2'));
 		break;
 
 	case 's':

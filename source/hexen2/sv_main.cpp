@@ -1276,7 +1276,7 @@ void SV_SpawnServer(char* server, char* startspot)
 		Cvar_SetValue("deathmatch", 0);
 	}
 
-	svqh_current_skill = (int)(skill->value + 0.1);
+	svqh_current_skill = (int)(qh_skill->value + 0.1);
 	if (svqh_current_skill < 0)
 	{
 		svqh_current_skill = 0;

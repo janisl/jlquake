@@ -13,7 +13,6 @@
 
 //============================================================================
 
-extern Cvar* skill;
 extern Cvar* randomclass;
 
 extern client_t* host_client;

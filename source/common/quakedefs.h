@@ -347,3 +347,52 @@ struct qwpacket_entities_t
 #define Q1DEFAULT_VIEWHEIGHT  22
 
 #define QWPROTOCOL_VERSION    28
+
+#define Q1IT_SHOTGUN              1
+#define Q1IT_SUPER_SHOTGUN        2
+#define Q1IT_NAILGUN              4
+#define Q1IT_SUPER_NAILGUN        8
+#define Q1IT_GRENADE_LAUNCHER     16
+#define Q1IT_ROCKET_LAUNCHER      32
+#define Q1IT_LIGHTNING            64
+#define Q1IT_SUPER_LIGHTNING      128
+#define Q1IT_SHELLS               256
+#define Q1IT_NAILS                512
+#define Q1IT_ROCKETS              1024
+#define Q1IT_CELLS                2048
+#define Q1IT_AXE                  4096
+#define Q1IT_ARMOR1               8192
+#define Q1IT_ARMOR2               16384
+#define Q1IT_ARMOR3               32768
+#define Q1IT_SUPERHEALTH          65536
+#define Q1IT_KEY1                 131072
+#define Q1IT_KEY2                 262144
+#define Q1IT_INVISIBILITY         524288
+#define Q1IT_INVULNERABILITY      1048576
+#define Q1IT_SUIT                 2097152
+#define Q1IT_QUAD                 4194304
+#define Q1IT_SIGIL1               (1 << 28)
+#define Q1IT_SIGIL2               (1 << 29)
+#define Q1IT_SIGIL3               (1 << 30)
+#define Q1IT_SIGIL4               (1 << 31)
+
+//rogue changed and added defines
+#define Q1RIT_SHELLS              128
+#define Q1RIT_NAILS               256
+#define Q1RIT_ROCKETS             512
+#define Q1RIT_CELLS               1024
+#define Q1RIT_LAVA_NAILGUN        4096
+#define Q1RIT_ARMOR1              8388608
+#define Q1RIT_ARMOR2              16777216
+#define Q1RIT_ARMOR3              33554432
+#define Q1RIT_LAVA_NAILS          67108864
+#define Q1RIT_PLASMA_AMMO         134217728
+#define Q1RIT_MULTI_ROCKETS       268435456
+
+//hipnotic added defines
+#define Q1HIT_PROXIMITY_GUN_BIT 16
+#define Q1HIT_MJOLNIR_BIT       7
+#define Q1HIT_LASER_CANNON_BIT  23
+#define Q1HIT_PROXIMITY_GUN     (1 << Q1HIT_PROXIMITY_GUN_BIT)
+#define Q1HIT_MJOLNIR           (1 << Q1HIT_MJOLNIR_BIT)
+#define Q1HIT_LASER_CANNON      (1 << Q1HIT_LASER_CANNON_BIT)

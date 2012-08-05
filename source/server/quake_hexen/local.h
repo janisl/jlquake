@@ -55,6 +55,12 @@ void SVQH_Say_Team_f(client_t* host_client);
 void SVQH_Tell_f(client_t* host_client);
 void SVQHW_Say_f(client_t* host_client);
 void SVQHW_Say_Team_f(client_t* host_client);
+void SVQH_God_f(client_t* client);
+void SVQH_Notarget_f(client_t* client);
+void SVQH_Noclip_f(client_t* client);
+void SVQ1_Fly_f(client_t* client);
+void SVQ1_Give_f(client_t* host_client);
+void SVH2_Give_f(client_t* host_client);
 
 //
 //	Game
@@ -156,6 +162,7 @@ extern Cvar* qhw_allow_download_sounds;
 extern Cvar* qhw_allow_download_maps;
 extern Cvar* svhw_allowtaunts;
 extern Cvar* svqhw_spectalk;
+extern Cvar* qh_skill;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
