@@ -598,7 +598,7 @@ void Host_ServerFrame(void)
 	SVQH_SetMoveVars();
 
 	// read client messages
-	SV_RunClients();
+	SVQH_RunClients(host_frametime);
 
 // move things around and think
 // always pause in single player if in console or menus

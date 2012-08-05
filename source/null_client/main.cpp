@@ -29,3 +29,8 @@ int CLH2_GetLightStyleValue(int style)
 void CL_ClearDrift()
 {
 }
+
+int CL_GetKeyCatchers()
+{
+	return 0;
+}

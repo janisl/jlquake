@@ -44,6 +44,9 @@ void SVQH_DropClient(client_t* host_client, bool crash);
 void SVQHW_DropClient(client_t* drop);
 void SVQH_SetIdealPitch(qhedict_t* player);
 void SVQH_TogglePause(const char* msg);
+void SVQW_ExecuteClientMessage(client_t* cl, QMsg& message);
+void SVHW_ExecuteClientMessage(client_t* cl, QMsg& message);
+void SVQH_RunClients(float frametime);
 
 //
 //	Game
@@ -192,11 +195,8 @@ void SVQH_Shutdown();
 //
 //	Physics
 //
-extern Cvar* svqh_friction;
-extern Cvar* svqh_stopspeed;
 extern Cvar* svqh_gravity;
 extern Cvar* svqh_maxspeed;
-extern Cvar* svqh_accelerate;
 
 void SVQH_RegisterPhysicsCvars();
 void SVQH_SetMoveVars();

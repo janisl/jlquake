@@ -229,3 +229,6 @@ struct qtime_t
 };
 
 int Com_RealTime(qtime_t* qtime);
+
+byte COMQW_BlockSequenceCRCByte(byte* base, int length, int sequence);
+byte COMQ2_BlockSequenceCRCByte(byte* base, int length, int sequence);

@@ -156,8 +156,6 @@ void        Com_Quit(void);
 int         Com_ServerState(void);		// this should have just been a cvar...
 void        Com_SetServerState(int state);
 
-byte        COM_BlockSequenceCRCByte(byte* base, int length, int sequence);
-
 extern Cvar* host_speeds;
 extern Cvar* log_stats;
 

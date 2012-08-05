@@ -19,9 +19,14 @@
 #include "local.h"
 #include "../hexen2/local.h"
 #include "../../common/hexen2strings.h"
+#include "../../client/public.h"
 
 #define MAX_FORWARD 6
 #define ON_EPSILON      0.1			// point on plane side epsilon
+
+static vec3_t pmove_mins;
+static vec3_t pmove_maxs;
+static byte playertouch[(MAX_EDICTS_QH + 7) / 8];
 
 //	Called when the player is getting totally kicked off the host
 // if (crash = true), don't bother sending signofs
@@ -2291,3 +2296,1008 @@ ucmd_t hw_ucmds[] =
 
 	{NULL, NULL}
 };
+
+static void SVQHW_AddLinksToPmove(qhedict_t* sv_player, worldSector_t* node)
+{
+	link_t* l, * next;
+	qhedict_t* check;
+	int pl;
+	int i;
+	qhphysent_t* pe;
+
+	pl = EDICT_TO_PROG(sv_player);
+
+	// touch linked edicts
+	for (l = node->solid_edicts.next; l != &node->solid_edicts; l = next)
+	{
+		next = l->next;
+		check = QHEDICT_FROM_AREA(l);
+
+		if (check->GetOwner() == pl)
+		{
+			continue;		// player's own missile
+		}
+		if (check->GetSolid() == QHSOLID_BSP ||
+			check->GetSolid() == QHSOLID_BBOX ||
+			check->GetSolid() == QHSOLID_SLIDEBOX)
+		{
+			if (check == sv_player)
+			{
+				continue;
+			}
+
+			for (i = 0; i < 3; i++)
+				if (check->v.absmin[i] > pmove_maxs[i] ||
+					check->v.absmax[i] < pmove_mins[i])
+				{
+					break;
+				}
+			if (i != 3)
+			{
+				continue;
+			}
+			if (qh_pmove.numphysent == QHMAX_PHYSENTS)
+			{
+				return;
+			}
+			pe = &qh_pmove.physents[qh_pmove.numphysent];
+			qh_pmove.numphysent++;
+
+			VectorCopy(check->GetOrigin(), pe->origin);
+			if (GGameType & GAME_HexenWorld)
+			{
+				VectorCopy(check->GetAngles(), pe->angles);
+			}
+			pe->info = QH_NUM_FOR_EDICT(check);
+			if (check->GetSolid() == QHSOLID_BSP)
+			{
+				pe->model = sv.models[(int)(check->v.modelindex)];
+			}
+			else
+			{
+				pe->model = -1;
+				VectorCopy(check->GetMins(), pe->mins);
+				VectorCopy(check->GetMaxs(), pe->maxs);
+			}
+		}
+	}
+
+	// recurse down both sides
+	if (node->axis == -1)
+	{
+		return;
+	}
+
+	if (pmove_maxs[node->axis] > node->dist)
+	{
+		SVQHW_AddLinksToPmove(sv_player, node->children[0]);
+	}
+	if (pmove_mins[node->axis] < node->dist)
+	{
+		SVQHW_AddLinksToPmove(sv_player, node->children[1]);
+	}
+}
+
+//	Done before running a player command.  Clears the touch array
+static void SVQHW_PreRunCmd()
+{
+	Com_Memset(playertouch, 0, sizeof(playertouch));
+}
+
+static void SVQW_RunCmd(client_t* host_client, qwusercmd_t* ucmd)
+{
+	qhedict_t* sv_player = host_client->qh_edict;
+	qhedict_t* ent;
+	int i, n;
+	int oldmsec;
+
+	qwusercmd_t cmd = *ucmd;
+
+	// chop up very long commands
+	if (cmd.msec > 50)
+	{
+		oldmsec = ucmd->msec;
+		cmd.msec = oldmsec / 2;
+		SVQW_RunCmd(host_client, &cmd);
+		cmd.msec = oldmsec / 2;
+		cmd.impulse = 0;
+		SVQW_RunCmd(host_client, &cmd);
+		return;
+	}
+
+	if (!sv_player->GetFixAngle())
+	{
+		sv_player->SetVAngle(ucmd->angles);
+	}
+
+	sv_player->SetButton0(ucmd->buttons & 1);
+	sv_player->SetButton2((ucmd->buttons & 2) >> 1);
+	if (ucmd->impulse)
+	{
+		sv_player->SetImpulse(ucmd->impulse);
+	}
+
+	//
+	// angles
+	// show 1/3 the pitch angle and all the roll angle
+	if (sv_player->GetHealth() > 0)
+	{
+		if (!sv_player->GetFixAngle())
+		{
+			sv_player->GetAngles()[PITCH] = -sv_player->GetVAngle()[PITCH] / 3;
+			sv_player->GetAngles()[YAW] = sv_player->GetVAngle()[YAW];
+		}
+		sv_player->GetAngles()[ROLL] =
+			VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
+	}
+
+	float host_frametime = ucmd->msec * 0.001;
+	if (host_frametime > 0.1)
+	{
+		host_frametime = 0.1;
+	}
+
+	if (!host_client->qh_spectator)
+	{
+		*pr_globalVars.frametime = host_frametime;
+
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
+
+		SVQH_RunThink(sv_player, host_frametime);
+	}
+
+	for (i = 0; i < 3; i++)
+		qh_pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - pmqh_player_mins[i]);
+	VectorCopy(sv_player->GetVelocity(), qh_pmove.velocity);
+	VectorCopy(sv_player->GetVAngle(), qh_pmove.angles);
+
+	qh_pmove.spectator = host_client->qh_spectator;
+	qh_pmove.waterjumptime = sv_player->GetTeleportTime();
+	qh_pmove.numphysent = 1;
+	qh_pmove.physents[0].model = 0;
+	qh_pmove.cmd.Set(*ucmd);
+	qh_pmove.dead = sv_player->GetHealth() <= 0;
+	qh_pmove.oldbuttons = host_client->qh_oldbuttons;
+
+	movevars.entgravity = host_client->qh_entgravity;
+	movevars.maxspeed = host_client->qh_maxspeed;
+
+	for (i = 0; i < 3; i++)
+	{
+		pmove_mins[i] = qh_pmove.origin[i] - 256;
+		pmove_maxs[i] = qh_pmove.origin[i] + 256;
+	}
+	SVQHW_AddLinksToPmove(sv_player, sv_worldSectors);
+
+	PMQH_PlayerMove();
+
+	host_client->qh_oldbuttons = qh_pmove.oldbuttons;
+	sv_player->SetTeleportTime(qh_pmove.waterjumptime);
+	sv_player->SetWaterLevel(qh_pmove.waterlevel);
+	sv_player->SetWaterType(qh_pmove.watertype);
+	if (qh_pmove.onground != -1)
+	{
+		sv_player->SetFlags((int)sv_player->GetFlags() | QHFL_ONGROUND);
+		sv_player->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
+	}
+	else
+	{
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_ONGROUND);
+	}
+	for (i = 0; i < 3; i++)
+		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - pmqh_player_mins[i]);
+
+	VectorCopy(qh_pmove.velocity, sv_player->GetVelocity());
+
+	sv_player->SetVAngle(qh_pmove.angles);
+
+	if (!host_client->qh_spectator)
+	{
+		// link into place and touch triggers
+		SVQH_LinkEdict(sv_player, true);
+
+		// touch other objects
+		for (i = 0; i < qh_pmove.numtouch; i++)
+		{
+			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
+			ent = QH_EDICT_NUM(n);
+			if (!ent->GetTouch() || (playertouch[n / 8] & (1 << (n % 8))))
+			{
+				continue;
+			}
+			*pr_globalVars.self = EDICT_TO_PROG(ent);
+			*pr_globalVars.other = EDICT_TO_PROG(sv_player);
+			PR_ExecuteProgram(ent->GetTouch());
+			playertouch[n / 8] |= 1 << (n % 8);
+		}
+	}
+}
+
+static void SVHW_RunCmd(client_t* host_client, hwusercmd_t* ucmd)
+{
+	qhedict_t* sv_player = host_client->qh_edict;
+	qhedict_t* ent;
+	int i, n;
+	int oldmsec;
+
+	hwusercmd_t cmd = *ucmd;
+
+	// chop up very long commands
+	if (cmd.msec > 50)
+	{
+		oldmsec = ucmd->msec;
+		cmd.msec = oldmsec / 2;
+		SVHW_RunCmd(host_client, &cmd);
+		cmd.msec = oldmsec / 2;
+		cmd.impulse = 0;
+		SVHW_RunCmd(host_client, &cmd);
+		return;
+	}
+
+	if (!sv_player->GetFixAngle())
+	{
+		sv_player->SetVAngle(ucmd->angles);
+	}
+
+	sv_player->SetButton0(ucmd->buttons & 1);
+	sv_player->SetButton2((ucmd->buttons & 2) >> 1);
+
+	if (ucmd->buttons & 4 || sv_player->GetPlayerClass() == CLASS_DWARF)// crouched?
+	{
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) | H2FL2_CROUCHED);
+	}
+	else
+	{
+		sv_player->SetFlags2(((int)sv_player->GetFlags2()) & (~H2FL2_CROUCHED));
+	}
+
+	if (ucmd->impulse)
+	{
+		sv_player->SetImpulse(ucmd->impulse);
+	}
+
+	//
+	// angles
+	// show 1/3 the pitch angle and all the roll angle
+	if (sv_player->GetHealth() > 0)
+	{
+		if (!sv_player->GetFixAngle())
+		{
+			sv_player->GetAngles()[PITCH] = -sv_player->GetVAngle()[PITCH] / 3;
+			sv_player->GetAngles()[YAW] = sv_player->GetVAngle()[YAW];
+		}
+		sv_player->GetAngles()[ROLL] =
+			VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
+	}
+
+	float host_frametime = ucmd->msec * 0.001;
+	if (host_frametime > HX_FRAME_TIME)
+	{
+		host_frametime = HX_FRAME_TIME;
+	}
+
+	if (!host_client->qh_spectator)
+	{
+		*pr_globalVars.frametime = host_frametime;
+
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
+
+		SVQH_RunThink(sv_player, host_frametime);
+	}
+
+	for (i = 0; i < 3; i++)
+		qh_pmove.origin[i] = sv_player->GetOrigin()[i] + (sv_player->GetMins()[i] - pmqh_player_mins[i]);
+	VectorCopy(sv_player->GetVelocity(), qh_pmove.velocity);
+	VectorCopy(sv_player->GetVAngle(), qh_pmove.angles);
+
+	qh_pmove.spectator = host_client->qh_spectator;
+	qh_pmove.numphysent = 1;
+	qh_pmove.physents[0].model = 0;
+	qh_pmove.cmd.Set(*ucmd);
+	qh_pmove.dead = sv_player->GetHealth() <= 0;
+	qh_pmove.oldbuttons = host_client->qh_oldbuttons;
+	qh_pmove.hasted = sv_player->GetHasted();
+	qh_pmove.movetype = sv_player->GetMoveType();
+	qh_pmove.crouched = (sv_player->GetHull() == HWHULL_CROUCH);
+	qh_pmove.teleport_time = (sv_player->GetTeleportTime() - sv.qh_time);
+
+	movevars.entgravity = sv_player->GetGravity();
+	movevars.maxspeed = host_client->qh_maxspeed;
+
+	for (i = 0; i < 3; i++)
+	{
+		pmove_mins[i] = qh_pmove.origin[i] - 256;
+		pmove_maxs[i] = qh_pmove.origin[i] + 256;
+	}
+	SVQHW_AddLinksToPmove(sv_player, sv_worldSectors);
+
+	PMQH_PlayerMove();
+
+	host_client->qh_oldbuttons = qh_pmove.oldbuttons;
+//	sv_player->v.teleport_time = qh_pmove.waterjumptime;
+	sv_player->SetWaterLevel(qh_pmove.waterlevel);
+	sv_player->SetWaterType(qh_pmove.watertype);
+	if (qh_pmove.onground != -1)
+	{
+		sv_player->SetFlags((int)sv_player->GetFlags() | QHFL_ONGROUND);
+		sv_player->SetGroundEntity(EDICT_TO_PROG(QH_EDICT_NUM(qh_pmove.physents[qh_pmove.onground].info)));
+	}
+	else
+	{
+		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_ONGROUND);
+	}
+	for (i = 0; i < 3; i++)
+		sv_player->GetOrigin()[i] = qh_pmove.origin[i] - (sv_player->GetMins()[i] - pmqh_player_mins[i]);
+
+	sv_player->SetVelocity(qh_pmove.velocity);
+
+	sv_player->SetVAngle(qh_pmove.angles);
+
+	if (!host_client->qh_spectator)
+	{
+		// link into place and touch triggers
+		SVQH_LinkEdict(sv_player, true);
+
+		// touch other objects
+		for (i = 0; i < qh_pmove.numtouch; i++)
+		{
+			n = qh_pmove.physents[qh_pmove.touchindex[i]].info;
+			ent = QH_EDICT_NUM(n);
+			if (sv_player->GetTouch())
+			{
+				*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+				*pr_globalVars.other = EDICT_TO_PROG(ent);
+				PR_ExecuteProgram(sv_player->GetTouch());
+			}
+			if (!ent->GetTouch() || (playertouch[n / 8] & (1 << (n % 8))))
+			{
+				continue;
+			}
+			*pr_globalVars.self = EDICT_TO_PROG(ent);
+			*pr_globalVars.other = EDICT_TO_PROG(sv_player);
+			PR_ExecuteProgram(ent->GetTouch());
+			playertouch[n / 8] |= 1 << (n % 8);
+		}
+	}
+}
+
+//	Done after running a player command.
+static void SVQHW_PostRunCmd(client_t* client)
+{
+	// run post-think
+
+	if (!client->qh_spectator)
+	{
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
+		PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
+		SVQH_RunNewmis(svs.realtime * 0.001);
+	}
+	else if (qhw_SpectatorThink)
+	{
+		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
+		PR_ExecuteProgram(qhw_SpectatorThink);
+	}
+}
+
+static void SVQH_ParseStringCmd(client_t* cl, QMsg& message)
+{
+	const char* s = message.ReadString2();
+	SV_ExecuteClientCommand(cl, s, true, false);
+}
+
+static void SVQ1_ReadClientMove(client_t* cl, QMsg& message)
+{
+	q1usercmd_t* move = &cl->q1_lastUsercmd;
+
+	// read ping time
+	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time - message.ReadFloat();
+	cl->qh_num_pings++;
+
+	// read current angles
+	vec3_t angle;
+	for (int i = 0; i < 3; i++)
+	{
+		angle[i] = message.ReadAngle();
+	}
+
+	cl->qh_edict->SetVAngle(angle);
+
+	// read movement
+	move->forwardmove = message.ReadShort();
+	move->sidemove = message.ReadShort();
+	move->upmove = message.ReadShort();
+
+	// read buttons
+	int bits = message.ReadByte();
+	cl->qh_edict->SetButton0(bits & 1);
+	cl->qh_edict->SetButton2((bits & 2) >> 1);
+
+	int i = message.ReadByte();
+	if (i)
+	{
+		cl->qh_edict->SetImpulse(i);
+	}
+}
+
+static void SVH2_ReadClientMove(client_t* cl, QMsg& message)
+{
+	h2usercmd_t* move = &cl->h2_lastUsercmd;
+
+	// read ping time
+	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time - message.ReadFloat();
+	cl->qh_num_pings++;
+
+	// read current angles
+	vec3_t angle;
+	for (int i = 0; i < 3; i++)
+	{
+		angle[i] = message.ReadAngle();
+	}
+
+	cl->qh_edict->SetVAngle(angle);
+
+	// read movement
+	move->forwardmove = message.ReadShort();
+	move->sidemove = message.ReadShort();
+	move->upmove = message.ReadShort();
+
+	// read buttons
+	int bits = message.ReadByte();
+	cl->qh_edict->SetButton0(bits & 1);
+	cl->qh_edict->SetButton2((bits & 2) >> 1);
+
+	if (bits & 4)	// crouched?
+	{
+		cl->qh_edict->SetFlags2(((int)cl->qh_edict->GetFlags2()) | H2FL2_CROUCHED);
+	}
+	else
+	{
+		cl->qh_edict->SetFlags2(((int)cl->qh_edict->GetFlags2()) & (~H2FL2_CROUCHED));
+	}
+
+	int i = message.ReadByte();
+	if (i)
+	{
+		cl->qh_edict->SetImpulse(i);
+	}
+
+	// read light level
+	cl->qh_edict->SetLightLevel(message.ReadByte());
+}
+
+static void SVQHW_ParseDelta(client_t* cl, QMsg& message)
+{
+	cl->qh_delta_sequence = message.ReadByte();
+}
+
+static bool SVQW_ParseMove(client_t* cl, QMsg& message, bool& move_issued, int seq_hash)
+{
+	if (move_issued)
+	{
+		return false;		// someone is trying to cheat...
+
+	}
+	move_issued = true;
+
+	int checksumIndex = message.GetReadCount();
+	byte checksum = (byte)message.ReadByte();
+
+	// read loss percentage
+	cl->qw_lossage = message.ReadByte();
+
+	qwusercmd_t nullcmd;
+	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+	qwusercmd_t oldest;
+	MSGQW_ReadDeltaUsercmd(&message, &nullcmd, &oldest);
+	qwusercmd_t oldcmd;
+	MSGQW_ReadDeltaUsercmd(&message, &oldest, &oldcmd);
+	qwusercmd_t newcmd;
+	MSGQW_ReadDeltaUsercmd(&message, &oldcmd, &newcmd);
+
+	if (cl->state != CS_ACTIVE)
+	{
+		return true;
+	}
+
+	// if the checksum fails, ignore the rest of the packet
+	byte calculatedChecksum = COMQW_BlockSequenceCRCByte(
+		message._data + checksumIndex + 1,
+		message.GetReadCount() - checksumIndex - 1,
+		seq_hash);
+
+	if (calculatedChecksum != checksum)
+	{
+		common->DPrintf("Failed command checksum for %s(%d) (%d != %d)\n",
+			cl->name, cl->netchan.incomingSequence, checksum, calculatedChecksum);
+		return false;
+	}
+
+	if (!sv.qh_paused)
+	{
+		SVQHW_PreRunCmd();
+
+		int net_drop = cl->netchan.dropped;
+		if (net_drop < 20)
+		{
+			while (net_drop > 2)
+			{
+				SVQW_RunCmd(cl, &cl->qw_lastUsercmd);
+				net_drop--;
+			}
+			if (net_drop > 1)
+			{
+				SVQW_RunCmd(cl, &oldest);
+			}
+			if (net_drop > 0)
+			{
+				SVQW_RunCmd(cl, &oldcmd);
+			}
+		}
+		SVQW_RunCmd(cl, &newcmd);
+
+		SVQHW_PostRunCmd(cl);
+	}
+
+	cl->qw_lastUsercmd = newcmd;
+	cl->qw_lastUsercmd.buttons = 0;// avoid multiple fires on lag
+	return true;
+}
+
+static void SVHW_ParseMove(client_t* cl, QMsg& message)
+{
+	hwusercmd_t oldest;
+	MSGHW_ReadUsercmd(&message, &oldest, false);
+	hwusercmd_t oldcmd;
+	MSGHW_ReadUsercmd(&message, &oldcmd, false);
+	hwusercmd_t newcmd;
+	MSGHW_ReadUsercmd(&message, &newcmd, true);
+
+	if (cl->state != CS_ACTIVE)
+	{
+		return;
+	}
+
+	SVQHW_PreRunCmd();
+
+	int net_drop = cl->netchan.dropped;
+	if (net_drop < 20)
+	{
+		while (net_drop > 2)
+		{
+			SVHW_RunCmd(cl, &cl->hw_lastUsercmd);
+			net_drop--;
+		}
+		if (net_drop > 1)
+		{
+			SVHW_RunCmd(cl, &oldest);
+		}
+		if (net_drop > 0)
+		{
+			SVHW_RunCmd(cl, &oldcmd);
+		}
+	}
+	SVHW_RunCmd(cl, &newcmd);
+
+	SVQHW_PostRunCmd(cl);
+
+	cl->hw_lastUsercmd = newcmd;
+	cl->hw_lastUsercmd.buttons = 0;// avoid multiple fires on lag
+}
+
+static void SVQHW_ParseTMove(client_t* cl, QMsg& message)
+{
+	vec3_t o;
+	o[0] = message.ReadCoord();
+	o[1] = message.ReadCoord();
+	o[2] = message.ReadCoord();
+	// only allowed by spectators
+	if (cl->qh_spectator)
+	{
+		VectorCopy(o, cl->qh_edict->GetOrigin());
+		SVQH_LinkEdict(cl->qh_edict, false);
+	}
+}
+
+static void SVQW_NextUpload(client_t* client, QMsg& message)
+{
+	if (!*client->qw_uploadfn)
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "Upload denied\n");
+		SVQH_SendClientCommand(client, "stopul");
+
+		// suck out rest of packet
+		int size = message.ReadShort();
+		message.ReadByte();
+		message.readcount += size;
+		return;
+	}
+
+	int size = message.ReadShort();
+	int percent = message.ReadByte();
+
+	if (!client->qw_upload)
+	{
+		client->qw_upload = FS_FOpenFileWrite(client->qw_uploadfn);
+		if (!client->qw_upload)
+		{
+			common->Printf("Can't create %s\n", client->qw_uploadfn);
+			SVQH_SendClientCommand(client, "stopul");
+			*client->qw_uploadfn = 0;
+			return;
+		}
+		common->Printf("Receiving %s from %d...\n", client->qw_uploadfn, client->qh_userid);
+		if (client->qw_remote_snap)
+		{
+			NET_OutOfBandPrint(NS_SERVER, client->qw_snap_from, "%cServer receiving %s from %d...\n", A2C_PRINT, client->qw_uploadfn, client->qh_userid);
+		}
+	}
+
+	FS_Write(message._data + message.readcount, size, client->qw_upload);
+	message.readcount += size;
+
+	common->DPrintf("UPLOAD: %d received\n", size);
+
+	if (percent != 100)
+	{
+		SVQH_SendClientCommand(client, "nextul\n");
+	}
+	else
+	{
+		FS_FCloseFile(client->qw_upload);
+		client->qw_upload = 0;
+
+		common->Printf("%s upload completed.\n", client->qw_uploadfn);
+
+		if (client->qw_remote_snap)
+		{
+			char* p;
+
+			if ((p = strchr(client->qw_uploadfn, '/')) != NULL)
+			{
+				p++;
+			}
+			else
+			{
+				p = client->qw_uploadfn;
+			}
+			NET_OutOfBandPrint(NS_SERVER, client->qw_snap_from, "%c%s upload completed.\nTo download, enter:\ndownload %s\n",
+				A2C_PRINT, client->qw_uploadfn, p);
+		}
+	}
+
+}
+
+static void SVH2_ParseInvSelect(client_t* cl, QMsg& message)
+{
+	cl->qh_edict->SetInventory(message.ReadByte());
+}
+
+static void SVH2_ParseFrame(client_t* cl, QMsg& message)
+{
+	cl->h2_last_frame = message.ReadByte();
+	cl->h2_last_sequence = message.ReadByte();
+}
+
+static void SVHW_ParseGetEffect(client_t* cl, QMsg& message)
+{
+	int c = message.ReadByte();
+	if (sv.h2_Effects[c].type)
+	{
+		common->Printf("Getting effect %d\n", c);
+		SVHW_SendEffect(&cl->netchan.message, c);
+	}
+}
+
+static bool SVQ1_ParseClientMessage(client_t* cl, QMsg& message)
+{
+	message.BeginReadingOOB();
+
+	while (1)
+	{
+		if (cl->state < CS_CONNECTED)
+		{
+			return false;	// a command caused an error
+
+		}
+		if (message.badread)
+		{
+			common->Printf("SV_ReadClientMessage: badread\n");
+			return false;
+		}
+
+		int cmd = message.ReadChar();
+
+		switch (cmd)
+		{
+		case -1:
+			return true;		// end of message
+		default:
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
+			return false;
+		case q1clc_nop:
+			break;
+		case q1clc_stringcmd:
+			SVQH_ParseStringCmd(cl, message);
+			break;
+		case q1clc_disconnect:
+			return false;
+		case q1clc_move:
+			SVQ1_ReadClientMove(cl, message);
+			break;
+		}
+	}
+}
+
+static bool SVH2_ParseClientMessage(client_t* cl, QMsg& message)
+{
+	message.BeginReadingOOB();
+
+	while (1)
+	{
+		if (cl->state < CS_CONNECTED)
+		{
+			return false;	// a command caused an error
+
+		}
+		if (message.badread)
+		{
+			common->Printf("SV_ReadClientMessage: badread\n");
+			return false;
+		}
+
+		int cmd = message.ReadChar();
+
+		switch (cmd)
+		{
+		case -1:
+			return true;		// end of message
+		default:
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
+			return false;
+		case h2clc_nop:
+			break;
+		case h2clc_stringcmd:
+			SVQH_ParseStringCmd(cl, message);
+			break;
+		case h2clc_disconnect:
+			return false;
+		case h2clc_move:
+			SVH2_ReadClientMove(cl, message);
+			break;
+		case h2clc_inv_select:
+			SVH2_ParseInvSelect(cl, message);
+			break;
+		case h2clc_frame:
+			SVH2_ParseFrame(cl, message);
+			break;
+		}
+	}
+}
+
+void SVQW_ExecuteClientMessage(client_t* cl, QMsg& message)
+{
+	int c;
+	qwclient_frame_t* frame;
+	bool move_issued = false;	//only allow one move command
+	int seq_hash;
+
+	// calc ping time
+	frame = &cl->qw_frames[cl->netchan.incomingAcknowledged & UPDATE_MASK_QW];
+	frame->ping_time = svs.realtime * 0.001 - frame->senttime;
+
+	// make sure the reply sequence number matches the incoming
+	// sequence number
+	if (cl->netchan.incomingSequence >= cl->netchan.outgoingSequence)
+	{
+		cl->netchan.outgoingSequence = cl->netchan.incomingSequence;
+	}
+	else
+	{
+		cl->qh_send_message = false;	// don't reply, sequences have slipped
+
+	}
+	// save time for ping calculations
+	cl->qw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].senttime = svs.realtime * 0.001;
+	cl->qw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_QW].ping_time = -1;
+
+	seq_hash = cl->netchan.incomingSequence;
+
+	// mark time so clients will know how much to predict
+	// other players
+	cl->qh_localtime = sv.qh_time;
+	cl->qh_delta_sequence = -1;	// no delta unless requested
+	while (1)
+	{
+		if (message.badread)
+		{
+			common->Printf("SV_ReadClientMessage: badread\n");
+			SVQHW_DropClient(cl);
+			return;
+		}
+
+		c = message.ReadByte();
+		if (c == -1)
+		{
+			break;
+		}
+
+		switch (c)
+		{
+		default:
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
+			SVQHW_DropClient(cl);
+			return;
+		case q1clc_nop:
+			break;
+		case qwclc_delta:
+			SVQHW_ParseDelta(cl, message);
+			break;
+		case q1clc_move:
+			if (!SVQW_ParseMove(cl, message, move_issued, seq_hash))
+			{
+				return;
+			}
+			break;
+		case q1clc_stringcmd:
+			SVQH_ParseStringCmd(cl, message);
+			break;
+		case qwclc_tmove:
+			SVQHW_ParseTMove(cl, message);
+			break;
+		case qwclc_upload:
+			SVQW_NextUpload(cl, message);
+			break;
+		}
+	}
+}
+
+void SVHW_ExecuteClientMessage(client_t* cl, QMsg& message)
+{
+	int c;
+	hwclient_frame_t* frame;
+
+	// calc ping time
+	frame = &cl->hw_frames[cl->netchan.incomingAcknowledged & UPDATE_MASK_HW];
+	frame->ping_time = svs.realtime * 0.001 - frame->senttime;
+
+	// make sure the reply sequence number matches the incoming
+	// sequence number
+	if (cl->netchan.incomingSequence >= cl->netchan.outgoingSequence)
+	{
+		cl->netchan.outgoingSequence = cl->netchan.incomingSequence;
+	}
+	else
+	{
+		cl->qh_send_message = false;	// don't reply, sequences have slipped
+
+	}
+	// save time for ping calculations
+	cl->hw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_HW].senttime = svs.realtime * 0.001;
+	cl->hw_frames[cl->netchan.outgoingSequence & UPDATE_MASK_HW].ping_time = -1;
+
+	// mark time so clients will know how much to predict
+	// other players
+	cl->qh_localtime = sv.qh_time;
+	cl->qh_delta_sequence = -1;	// no delta unless requested
+	while (1)
+	{
+		if (message.badread)
+		{
+			common->Printf("SV_ReadClientMessage: badread\n");
+			SVQHW_DropClient(cl);
+			return;
+		}
+
+		c = message.ReadByte();
+		if (c == -1)
+		{
+			break;
+		}
+
+		switch (c)
+		{
+		default:
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
+			SVQHW_DropClient(cl);
+			return;
+		case h2clc_nop:
+			break;
+		case hwclc_delta:
+			SVQHW_ParseDelta(cl, message);
+			break;
+		case h2clc_move:
+			SVHW_ParseMove(cl, message);
+			break;
+		case h2clc_stringcmd:
+			SVQH_ParseStringCmd(cl, message);
+			break;
+		case hwclc_tmove:
+			SVQHW_ParseTMove(cl, message);
+			break;
+		case hwclc_inv_select:
+			SVH2_ParseInvSelect(cl, message);
+			break;
+		case hwclc_get_effect:
+			SVHW_ParseGetEffect(cl, message);
+			break;
+		}
+	}
+}
+
+//	Returns false if the client should be killed
+static bool SVQH_ReadClientMessage(client_t* client)
+{
+	QMsg message;
+	byte message_buf[MAX_MSGLEN];
+	message.InitOOB(message_buf, GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_MSGLEN_Q1);
+
+	do
+	{
+		int ret = NET_GetMessage(client->qh_netconnection, &client->netchan, &message);
+		if (ret == -1)
+		{
+			common->Printf("SV_ReadClientMessage: NET_GetMessage failed\n");
+			return false;
+		}
+		if (!ret)
+		{
+			return true;
+		}
+
+		if (GGameType & GAME_Hexen2)
+		{
+			if (!SVH2_ParseClientMessage(client, message))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (!SVQ1_ParseClientMessage(client, message))
+			{
+				return false;
+			}
+		}
+	}
+	while (1);
+
+	return true;
+}
+
+void SVQH_RunClients(float frametime)
+{
+	client_t* client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+
+		if (!SVQH_ReadClientMessage(client))
+		{
+			SVQH_DropClient(client, false);	// client misbehaved...
+			continue;
+		}
+
+		if (client->state != CS_ACTIVE)
+		{
+			// clear client movement until a new packet is received
+			Com_Memset(&client->q1_lastUsercmd, 0, sizeof(client->q1_lastUsercmd));
+			Com_Memset(&client->h2_lastUsercmd, 0, sizeof(client->h2_lastUsercmd));
+			continue;
+		}
+
+		// always pause in single player if in console or menus
+		if (!sv.qh_paused && (svs.qh_maxclients > 1 || CL_GetKeyCatchers() == 0))
+		{
+			SVQH_ClientThink(client, frametime);
+		}
+	}
+}

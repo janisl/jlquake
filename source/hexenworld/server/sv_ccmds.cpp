@@ -159,7 +159,6 @@ qboolean SV_SetPlayer(void)
 		if (cl->qh_userid == idnum)
 		{
 			host_client = cl;
-			sv_player = host_client->qh_edict;
 			return true;
 		}
 	}
@@ -188,8 +187,8 @@ void SV_God_f(void)
 		return;
 	}
 
-	sv_player->SetFlags((int)sv_player->GetFlags() ^ QHFL_GODMODE);
-	if (!((int)sv_player->GetFlags() & QHFL_GODMODE))
+	host_client->qh_edict->SetFlags((int)host_client->qh_edict->GetFlags() ^ QHFL_GODMODE);
+	if (!((int)host_client->qh_edict->GetFlags() & QHFL_GODMODE))
 	{
 		SVQH_ClientPrintf(host_client, PRINT_HIGH, "godmode OFF\n");
 	}
@@ -213,14 +212,14 @@ void SV_Noclip_f(void)
 		return;
 	}
 
-	if (sv_player->GetMoveType() != QHMOVETYPE_NOCLIP)
+	if (host_client->qh_edict->GetMoveType() != QHMOVETYPE_NOCLIP)
 	{
-		sv_player->SetMoveType(QHMOVETYPE_NOCLIP);
+		host_client->qh_edict->SetMoveType(QHMOVETYPE_NOCLIP);
 		SVQH_ClientPrintf(host_client, PRINT_HIGH, "noclip ON\n");
 	}
 	else
 	{
-		sv_player->SetMoveType(QHMOVETYPE_WALK);
+		host_client->qh_edict->SetMoveType(QHMOVETYPE_WALK);
 		SVQH_ClientPrintf(host_client, PRINT_HIGH, "noclip OFF\n");
 	}
 }
@@ -260,23 +259,10 @@ void SV_Give_f(void)
 	case '7':
 	case '8':
 	case '9':
-		sv_player->SetItems((int)sv_player->GetItems() | H2IT_WEAPON2 << (t[0] - '2'));
-		break;
-
-	case 's':
-//rjr		sv_player->v.ammo_shells = v;
-		break;
-	case 'n':
-//rjr		sv_player->v.ammo_nails = v;
-		break;
-	case 'r':
-//rjr		sv_player->v.ammo_rockets = v;
+		host_client->qh_edict->SetItems((int)host_client->qh_edict->GetItems() | H2IT_WEAPON2 << (t[0] - '2'));
 		break;
 	case 'h':
-		sv_player->SetHealth(v);
-		break;
-	case 'c':
-//rjr		sv_player->v.ammo_cells = v;
+		host_client->qh_edict->SetHealth(v);
 		break;
 	}
 }
@@ -374,7 +360,7 @@ void SV_Kick_f(void)
 			SVQHW_DropClient(cl);
 
 			*pr_globalVars.time = sv.qh_time;
-			*pr_globalVars.self = EDICT_TO_PROG(sv_player);
+			*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
 			PR_ExecuteProgram(*pr_globalVars.ClientKill);
 			return;
 		}

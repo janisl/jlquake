@@ -18,8 +18,6 @@
 #define DEAD_DYING              1
 #define DEAD_DEAD               2
 
-#define FL2_CROUCHED            4096
-
 //============================================================================
 
 extern Cvar* spawn;
@@ -39,8 +37,6 @@ extern Cvar* patternRunner;
 extern Cvar* noexit;
 
 extern client_t* host_client;
-
-extern qhedict_t* sv_player;
 
 extern char localmodels[MAX_MODELS_H2][5];			// inline model names for precache
 
@@ -80,13 +76,6 @@ void SV_SendClientMessages(void);
 
 void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);
-
-//
-// sv_user.c
-//
-void SV_ExecuteClientMessage(client_t* cl);
-void SV_UserInit(void);
-
 
 //
 // svonly.c

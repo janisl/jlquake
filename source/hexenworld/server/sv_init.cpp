@@ -307,7 +307,6 @@ void SV_SpawnServer(char* server, char* startspot)
 	sv.state = SS_GAME;
 
 	// run two frames to allow everything to settle
-	host_frametime = HX_FRAME_TIME;
 	SVQH_RunPhysicsForTime(realtime);
 	SVQH_RunPhysicsForTime(realtime);
 

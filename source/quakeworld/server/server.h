@@ -43,8 +43,6 @@ extern Cvar* spawn;
 
 extern client_t* host_client;
 
-extern qhedict_t* sv_player;
-
 extern char localmodels[MAX_MODELS_Q1][5];			// inline model names for precache
 
 extern int host_hunklevel;
@@ -83,13 +81,6 @@ void SV_SendClientMessages(void);
 
 void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);
-
-//
-// sv_user.c
-//
-void SV_ExecuteClientMessage(client_t* cl);
-void SV_UserInit(void);
-
 
 //
 // svonly.c

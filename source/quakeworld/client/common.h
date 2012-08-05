@@ -29,6 +29,5 @@ void COM_InitArgv2(int argc, char** argv);
 void COM_Gamedir(char* dir);
 
 byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, unsigned mapchecksum);
-byte    COM_BlockSequenceCRCByte(byte* base, int length, int sequence);
 
 int build_number(void);

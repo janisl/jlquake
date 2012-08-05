@@ -50,3 +50,13 @@ struct h2client_state2_t
 
 //Dm Modes
 #define HWDM_SIEGE                  3
+
+#define H2FL2_CROUCHED            4096
+
+#define HWHULL_IMPLICIT       0	//Choose the hull based on bounding box- like in Quake
+#define HWHULL_POINT          1	//0 0 0, 0 0 0
+#define HWHULL_PLAYER         2	//'-16 -16 0', '16 16 56'
+#define HWHULL_SCORPION       3	//'-24 -24 -20', '24 24 20'
+#define HWHULL_CROUCH         4	//'-16 -16 0', '16 16 28'
+#define HWHULL_HYDRA          5	//'-28 -28 -24', '28 28 24'
+#define HWHULL_GOLEM          6	//???,???

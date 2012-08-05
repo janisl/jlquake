@@ -1,7 +1,5 @@
 // client.h
 
-#define FL2_CROUCHED            4096
-
 // edict->movetype values
 #define QHMOVETYPE_NONE         0		// never moves
 #define QHMOVETYPE_ANGLENOCLIP  1

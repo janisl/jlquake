@@ -135,7 +135,7 @@ void CL_SendCmd(void)
 	MSGQW_WriteDeltaUsercmd(&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
-	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
+	buf._data[checksumIndex] = COMQW_BlockSequenceCRCByte(
 		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
 		seq_hash);
 

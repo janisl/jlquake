@@ -36,10 +36,10 @@ solid_edge items only clip against bsp models.
 #include "../../client/public.h"
 
 Cvar* svqh_gravity;
-Cvar* svqh_stopspeed;
 Cvar* svqh_maxspeed;
-Cvar* svqh_accelerate;
-Cvar* svqh_friction;
+static Cvar* svqh_stopspeed;
+static Cvar* svqh_accelerate;
+static Cvar* svqh_friction;
 static Cvar* svqh_maxvelocity;
 static Cvar* svqh_spectatormaxspeed;
 static Cvar* svqh_airaccelerate;

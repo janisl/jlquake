@@ -15,6 +15,7 @@ Cvar* sv_update_player;
 Cvar* sv_update_monsters;
 Cvar* sv_update_missiles;
 Cvar* sv_update_misc;
+Cvar* sv_idealrollscale;
 
 int sv_kingofhill;
 qboolean skip_start = false;
@@ -35,7 +36,6 @@ SV_Init
 void SV_Init(void)
 {
 	int i;
-	extern Cvar* sv_idealrollscale;
 
 	SVQH_RegisterPhysicsCvars();
 	svqh_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);

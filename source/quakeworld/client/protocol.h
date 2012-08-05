@@ -26,23 +26,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PORT_CLIENT 27001
 #define PORT_MASTER 27000
 #define PORT_SERVER 27500
-
-//=========================================
-
-// out of band message id bytes
-
-// M = master, S = server, C = client, A = any
-// the second character will allways be \n if the message isn't a single
-// byte long (?? not true anymore?)
-
-#define S2C_CHALLENGE       'c'
-#define S2C_CONNECTION      'j'
-#define A2A_PING            'k'	// respond with an A2A_ACK
-#define A2A_ACK             'l'	// general acknowledgement without info
-#define A2A_NACK            'm'	// [+ comment] general failure
-#define A2A_ECHO            'e'	// for echoing
-#define A2C_PRINT           'n'	// print a message on client
-
-#define S2M_HEARTBEAT       'a'	// + serverinfo + userlist + fraglist
-#define A2C_CLIENT_COMMAND  'B'	// + command line
-#define S2M_SHUTDOWN        'C'

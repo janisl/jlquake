@@ -1140,11 +1140,11 @@ static void SVH2_WriteClientdataToMessage(client_t* client, qhedict_t* ent, QMsg
 		{
 			sc2 |= SC2_FLAGS;
 		}
-		if (info_mask != client->h2_info_mask)
+		if (static_cast<int>(info_mask) != client->h2_info_mask)
 		{
 			sc2 |= SC2_OBJ;
 		}
-		if (info_mask2 != client->h2_info_mask2)
+		if (static_cast<int>(info_mask2) != client->h2_info_mask2)
 		{
 			sc2 |= SC2_OBJ2;
 		}

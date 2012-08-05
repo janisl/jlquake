@@ -9,8 +9,6 @@
 #define DEAD_DYING              1
 #define DEAD_DEAD               2
 
-#define FL2_CROUCHED            4096
-
 //============================================================================
 
 extern Cvar* randomclass;
@@ -33,7 +31,6 @@ void SV_AddUpdates(void);
 void SV_AddClientToServer(qsocket_t* ret);
 
 void SV_CheckForNewClients(void);
-void SV_RunClients(void);
 void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server, char* startspot);
 

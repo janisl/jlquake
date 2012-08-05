@@ -11,7 +11,6 @@ quakeparms_t host_parms;
 
 qboolean host_initialized;			// true if into command execution (compatability)
 
-double host_frametime;
 double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
@@ -972,7 +971,7 @@ void SV_ReadPackets(void)
 				cl->qh_send_message = true;	// reply at end of frame
 				if (cl->state != CS_ZOMBIE)
 				{
-					SV_ExecuteClientMessage(cl);
+					SVHW_ExecuteClientMessage(cl, net_message);
 				}
 			}
 			break;
@@ -1188,7 +1187,11 @@ void SV_InitLocal(void)
 	int i;
 	
 	SV_InitOperatorCommands();
-	SV_UserInit();
+
+	VQH_InitRollCvars();
+
+	svqhw_spectalk = Cvar_Get("sv_spectalk", "1", 0);
+	svhw_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
 
 	rcon_password = Cvar_Get("rcon_password", "", 0);	// password for remote server commands
 	password = Cvar_Get("password", "", 0);	// password for entering the game

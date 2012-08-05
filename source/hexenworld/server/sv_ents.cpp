@@ -1445,7 +1445,7 @@ void SV_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* pvs, QMsg
 		{
 			pflags |= HWPF_DEAD;
 		}
-		if (ent->GetHull() == HULL_CROUCH)
+		if (ent->GetHull() == HWHULL_CROUCH)
 		{
 			pflags |= HWPF_CROUCH;
 		}

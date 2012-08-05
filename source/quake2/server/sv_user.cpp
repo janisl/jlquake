@@ -99,7 +99,7 @@ bool SVQ2_ParseMove(client_t* cl, QMsg& net_message, bool& move_issued)
 	}
 
 	// if the checksum fails, ignore the rest of the packet
-	int calculatedChecksum = COM_BlockSequenceCRCByte(
+	int calculatedChecksum = COMQ2_BlockSequenceCRCByte(
 		net_message._data + checksumIndex + 1,
 		net_message.readcount - checksumIndex - 1,
 		cl->netchan.incomingSequence);
