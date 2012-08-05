@@ -1438,14 +1438,3 @@ void SV_SpawnServer(char* server, char* startspot)
 	loading_stage = 0;
 #endif
 }
-
-#ifdef DEDICATED
-void S_ClearSoundBuffer(bool)
-{
-}
-
-int CLH2_GetLightStyleValue(int style)
-{
-	return 0;
-}
-#endif

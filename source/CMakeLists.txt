@@ -6,12 +6,13 @@ set(ALL_CFLAGS ${DEBUG_CFLAGS})
 set(COMMON_CLIENTS_LIBS client common z jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype pthread dl)
 set(CLIENTS_LIBS server ${COMMON_CLIENTS_LIBS})
 set(DEDCLIENTS_LIBS ${COMMON_CLIENTS_LIBS})
-set(SERVERS_LIBS server common z pthread dl)
+set(SERVERS_LIBS server common null_client z pthread dl)
 
 include_directories(/usr/include/freetype2)
 
 add_subdirectory(common)
 add_subdirectory(client)
+add_subdirectory(null_client)
 add_subdirectory(server)
 
 add_subdirectory(quake)

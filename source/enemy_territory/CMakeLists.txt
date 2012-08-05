@@ -69,7 +69,6 @@ set (ETDED_FILES
 	unix/unix_shared.cpp
 
 	null/null_client.cpp
-	null/null_snddma.cpp
 	qcommon/dl_main_stubs.cpp
 )
 

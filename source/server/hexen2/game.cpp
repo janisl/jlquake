@@ -19,6 +19,7 @@
 #include "../quake_hexen/local.h"
 #include "local.h"
 #include "../../common/hexen2strings.h"
+#include "../../client/public.h"
 
 #define WF_NORMAL_ADVANCE 0
 #define WF_CYCLE_STARTED 1

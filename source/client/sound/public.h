@@ -57,7 +57,6 @@ void S_StopLoopingSound(int EntityNumber);
 void S_StopAllSounds();
 
 void S_ClearSounds(bool clearStreaming, bool clearMusic);
-void S_ClearSoundBuffer(bool killStreaming);
 
 // if origin is NULL, the sound will be dynamically sourced from the entity
 void S_StartSound(const vec3_t Origin, int EntityNumber, int EntityChannel, sfxHandle_t SfxHandle, float FVolume = 1, float Attenuation = 1, float TimeOffset = 0);

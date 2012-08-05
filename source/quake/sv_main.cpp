@@ -971,14 +971,3 @@ void SV_SpawnServer(char* server)
 
 	common->DPrintf("Server spawned.\n");
 }
-
-#ifdef DEDICATED
-void S_ClearSoundBuffer(bool)
-{
-}
-
-int CLH2_GetLightStyleValue(int style)
-{
-	return 0;
-}
-#endif

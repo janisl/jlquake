@@ -133,10 +133,6 @@ void idCommonLocal::EndGame(const char* format, ...)
 	throw EndGameException(string);
 }
 
-void S_ClearSoundBuffer(bool killStreaming)
-{
-}
-
 //============================================================================
 
 /*
@@ -1560,9 +1556,4 @@ void SV_Init(quakeparms_t* parms)
 	{
 		Sys_Error("%s", e.What());
 	}
-}
-
-int CLH2_GetLightStyleValue(int style)
-{
-	return 0;
 }

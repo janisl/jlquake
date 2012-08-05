@@ -162,6 +162,7 @@ or configs will never get loaded from disk!
 
 #include "qcommon.h"
 #include "unzip.h"
+#include "../client/public.h"
 
 // number of id paks that will never be autodownloaded from baseq3
 #define NUM_ID_PAKS         9
@@ -300,10 +301,6 @@ struct officialpak_t
 	char pakname[MAX_QPATH];
 	bool ok;
 };
-
-void S_ClearSoundBuffer(bool killStreaming);
-void FS_Restart(int checksumFeed);
-bool CL_WWWBadChecksum(const char* pakname);
 
 //	For HexenWorld
 bool com_portals = false;

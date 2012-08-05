@@ -95,6 +95,8 @@ extern bool q1_standard_quake;
 extern bool q1_rogue;
 extern bool q1_hipnotic;
 
+void FS_Restart(int checksumFeed);
+bool CL_WWWBadChecksum(const char* pakname);
 bool SVT3_GameCommand();
 
 #endif

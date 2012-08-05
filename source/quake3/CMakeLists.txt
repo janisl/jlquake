@@ -52,7 +52,6 @@ set(QUAKE3_DEDICATED_FILES
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	null/null_client.cpp
-	null/null_snddma.cpp
 )
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})

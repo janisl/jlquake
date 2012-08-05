@@ -49,7 +49,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
-	null/null_snddma.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
 	server/sv_init.cpp

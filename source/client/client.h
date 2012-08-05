@@ -18,6 +18,7 @@
 #define _CLIENT_H
 
 #include "../common/qcommon.h"
+#include "public.h"
 #include "../common/file_formats/bsp38.h"
 
 #include "sound/public.h"
