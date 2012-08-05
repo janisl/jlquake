@@ -55,7 +55,7 @@ static void SVQ2_BeginDemoserver()
 
 //	Sends the first message from the server to a connected client.
 // This will be sent on the initial connection and upon each server load.
-void SVQ2_New_f(client_t* client)
+static void SVQ2_New_f(client_t* client)
 {
 	common->DPrintf("New() from %s\n", client->name);
 
@@ -117,7 +117,7 @@ void SVQ2_New_f(client_t* client)
 
 }
 
-void SVQ2_Configstrings_f(client_t* client)
+static void SVQ2_Configstrings_f(client_t* client)
 {
 	common->DPrintf("Configstrings() from %s\n", client->name);
 
@@ -165,7 +165,7 @@ void SVQ2_Configstrings_f(client_t* client)
 	}
 }
 
-void SVQ2_Baselines_f(client_t* client)
+static void SVQ2_Baselines_f(client_t* client)
 {
 	common->DPrintf("Baselines() from %s\n", client->name);
 
@@ -216,7 +216,7 @@ void SVQ2_Baselines_f(client_t* client)
 	}
 }
 
-void SVQ2_Begin_f(client_t* client)
+static void SVQ2_Begin_f(client_t* client)
 {
 	common->DPrintf("Begin() from %s\n", client->name);
 
@@ -236,7 +236,7 @@ void SVQ2_Begin_f(client_t* client)
 	Cbuf_InsertFromDefer();
 }
 
-void SVQ2_NextDownload_f(client_t* client)
+static void SVQ2_NextDownload_f(client_t* client)
 {
 	if (!client->q2_downloadData)
 	{
@@ -272,7 +272,7 @@ void SVQ2_NextDownload_f(client_t* client)
 	client->q2_downloadData = NULL;
 }
 
-void SVQ2_BeginDownload_f(client_t* client)
+static void SVQ2_BeginDownload_f(client_t* client)
 {
 	const char* name = Cmd_Argv(1);
 
@@ -343,13 +343,13 @@ void SVQ2_BeginDownload_f(client_t* client)
 }
 
 //	The client is going to disconnect, so remove the connection immediately
-void SVQ2_Disconnect_f(client_t* client)
+static void SVQ2_Disconnect_f(client_t* client)
 {
 	SVQ2_DropClient(client);
 }
 
 //	Dumps the serverinfo info string
-void SVQ2_ShowServerinfo_f(client_t* client)
+static void SVQ2_ShowServerinfo_f(client_t* client)
 {
 	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
 			MAX_INFO_VALUE_Q2, true, false));
@@ -379,7 +379,7 @@ void SVQ2_Nextserver()
 
 //	A cinematic has completed or been aborted by a client, so move
 // to the next server,
-void SVQ2_Nextserver_f(client_t* client)
+static void SVQ2_Nextserver_f(client_t* client)
 {
 	if (String::Atoi(Cmd_Argv(1)) != svs.spawncount)
 	{
@@ -453,3 +453,24 @@ void SVQ2_ParseUserInfo(client_t* cl, QMsg& message)
 	String::NCpy(cl->userinfo, message.ReadString2(), MAX_INFO_STRING_Q2 - 1);
 	SVQ2_UserinfoChanged(cl);
 }
+
+ucmd_t q2_ucmds[] =
+{
+	// auto issued
+	{"new", SVQ2_New_f},
+	{"configstrings", SVQ2_Configstrings_f},
+	{"baselines", SVQ2_Baselines_f},
+	{"begin", SVQ2_Begin_f},
+
+	{"nextserver", SVQ2_Nextserver_f},
+
+	{"disconnect", SVQ2_Disconnect_f},
+
+	// issued by hand at client consoles
+	{"info", SVQ2_ShowServerinfo_f},
+
+	{"download", SVQ2_BeginDownload_f},
+	{"nextdl", SVQ2_NextDownload_f},
+
+	{NULL, NULL}
+};

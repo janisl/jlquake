@@ -246,7 +246,7 @@ void SVQH_SetIdealPitch(qhedict_t* player)
 	player->SetIdealPitch(-dir * svqh_idealpitchscale->value);
 }
 
-void SVQ1_PreSpawn_f(client_t* client)
+static void SVQ1_PreSpawn_f(client_t* client)
 {
 	if (client->state == CS_ACTIVE)
 	{
@@ -260,7 +260,7 @@ void SVQ1_PreSpawn_f(client_t* client)
 	client->qh_sendsignon = true;
 }
 
-void SVQH_Spawn_f(client_t* host_client)
+static void SVQH_Spawn_f(client_t* host_client)
 {
 	if (host_client->state == CS_ACTIVE)
 	{
@@ -411,14 +411,14 @@ void SVQH_Spawn_f(client_t* host_client)
 	host_client->qh_sendsignon = true;
 }
 
-void SVQH_Begin_f(client_t* client)
+static void SVQH_Begin_f(client_t* client)
 {
 	client->state = CS_ACTIVE;
 }
 
 //	Sends the first message from the server to a connected client.
 // This will be sent on the initial connection and upon each server load.
-void SVQHW_New_f(client_t* client)
+static void SVQHW_New_f(client_t* client)
 {
 	if (client->state == CS_ACTIVE)
 	{
@@ -512,7 +512,7 @@ void SVQHW_New_f(client_t* client)
 	client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.qh_info));
 }
 
-void SVQW_Modellist_f(client_t* client)
+static void SVQW_Modellist_f(client_t* client)
 {
 	if (client->state != CS_CONNECTED)
 	{
@@ -561,7 +561,7 @@ void SVQW_Modellist_f(client_t* client)
 	}
 }
 
-void SVHW_Modellist_f(client_t* client)
+static void SVHW_Modellist_f(client_t* client)
 {
 	if (client->state != CS_CONNECTED)
 	{
@@ -585,7 +585,7 @@ void SVHW_Modellist_f(client_t* client)
 	client->netchan.message.WriteByte(0);
 }
 
-void SVQW_Soundlist_f(client_t* client)
+static void SVQW_Soundlist_f(client_t* client)
 {
 	if (client->state != CS_CONNECTED)
 	{
@@ -635,7 +635,7 @@ void SVQW_Soundlist_f(client_t* client)
 	}
 }
 
-void SVHW_Soundlist_f(client_t* client)
+static void SVHW_Soundlist_f(client_t* client)
 {
 	if (client->state != CS_CONNECTED)
 	{
@@ -659,7 +659,7 @@ void SVHW_Soundlist_f(client_t* client)
 	client->netchan.message.WriteByte(0);
 }
 
-void SVQHW_PreSpawn_f(client_t* client)
+static void SVQHW_PreSpawn_f(client_t* client)
 {
 	if (client->state != CS_CONNECTED)
 	{
@@ -740,7 +740,7 @@ void SVQHW_PreSpawn_f(client_t* client)
 	}
 }
 
-void SVQHW_Spawn_f(client_t* host_client)
+static void SVQHW_Spawn_f(client_t* host_client)
 {
 	int i;
 
@@ -891,10 +891,9 @@ static void SVQHW_SpawnSpectator(qhedict_t* player)
 			return;
 		}
 	}
-
 }
 
-void SVQHW_Begin_f(client_t* client)
+static void SVQHW_Begin_f(client_t* client)
 {
 	if (client->state == CS_ACTIVE)
 	{
@@ -978,7 +977,7 @@ void SVQHW_Begin_f(client_t* client)
 	}
 }
 
-void SVQHW_NextDownload_f(client_t* client)
+static void SVQHW_NextDownload_f(client_t* client)
 {
 	if (!client->download)
 	{
@@ -1015,7 +1014,7 @@ void SVQHW_NextDownload_f(client_t* client)
 
 }
 
-void SVQHW_BeginDownload_f(client_t* client)
+static void SVQHW_BeginDownload_f(client_t* client)
 {
 	char* name = Cmd_Argv(1);
 	// hacked by zoid to allow more conrol over download
@@ -1125,17 +1124,17 @@ static void SVQH_Say(client_t* host_client, bool teamonly)
 	}
 }
 
-void SVQH_Say_f(client_t* host_client)
+static void SVQH_Say_f(client_t* host_client)
 {
 	SVQH_Say(host_client, false);
 }
 
-void SVQH_Say_Team_f(client_t* host_client)
+static void SVQH_Say_Team_f(client_t* host_client)
 {
 	SVQH_Say(host_client, true);
 }
 
-void SVQH_Tell_f(client_t* host_client)
+static void SVQH_Tell_f(client_t* host_client)
 {
 	if (Cmd_Argc() < 3)
 	{
@@ -1339,18 +1338,18 @@ static void SVQHW_Say(client_t* host_client, bool team)
 	}
 }
 
-void SVQHW_Say_f(client_t* host_client)
+static void SVQHW_Say_f(client_t* host_client)
 {
 	SVQHW_Say(host_client, false);
 }
 
-void SVQHW_Say_Team_f(client_t* host_client)
+static void SVQHW_Say_Team_f(client_t* host_client)
 {
 	SVQHW_Say(host_client, true);
 }
 
 //	Sets client to godmode
-void SVQH_God_f(client_t* client)
+static void SVQH_God_f(client_t* client)
 {
 	if (*pr_globalVars.deathmatch ||
 		(GGameType & GAME_Hexen2 && (*pr_globalVars.coop || qh_skill->value > 2)))
@@ -1369,7 +1368,7 @@ void SVQH_God_f(client_t* client)
 	}
 }
 
-void SVQH_Notarget_f(client_t* client)
+static void SVQH_Notarget_f(client_t* client)
 {
 	if (*pr_globalVars.deathmatch || (GGameType & GAME_Hexen2 && qh_skill->value > 2))
 	{
@@ -1387,7 +1386,7 @@ void SVQH_Notarget_f(client_t* client)
 	}
 }
 
-void SVQH_Noclip_f(client_t* client)
+static void SVQH_Noclip_f(client_t* client)
 {
 	if (*pr_globalVars.deathmatch ||
 		(GGameType & GAME_Hexen2 && (*pr_globalVars.coop || qh_skill->value > 2)))
@@ -1408,7 +1407,7 @@ void SVQH_Noclip_f(client_t* client)
 }
 
 //	Sets client to flymode
-void SVQ1_Fly_f(client_t* client)
+static void SVQ1_Fly_f(client_t* client)
 {
 	if (*pr_globalVars.deathmatch)
 	{
@@ -1427,7 +1426,7 @@ void SVQ1_Fly_f(client_t* client)
 	}
 }
 
-void SVQ1_Give_f(client_t* host_client)
+static void SVQ1_Give_f(client_t* host_client)
 {
 	if (*pr_globalVars.deathmatch)
 	{
@@ -1600,7 +1599,7 @@ void SVQ1_Give_f(client_t* host_client)
 	}
 }
 
-void SVH2_Give_f(client_t* host_client)
+static void SVH2_Give_f(client_t* host_client)
 {
 	if (*pr_globalVars.deathmatch || qh_skill->value > 2)
 	{
@@ -1634,7 +1633,7 @@ void SVH2_Give_f(client_t* host_client)
 	}
 }
 
-void SVQH_Name_f(client_t* client)
+static void SVQH_Name_f(client_t* client)
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -1678,7 +1677,7 @@ void SVQH_Name_f(client_t* client)
 	sv.qh_reliable_datagram.WriteString2(client->name);
 }
 
-void SVH2_Class_f(client_t* client)
+static void SVH2_Class_f(client_t* client)
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -1719,7 +1718,7 @@ void SVH2_Class_f(client_t* client)
 	sv.qh_reliable_datagram.WriteByte((byte)newClass);
 }
 
-void SVQH_Color_f(client_t* client)
+static void SVQH_Color_f(client_t* client)
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -1760,7 +1759,7 @@ void SVQH_Color_f(client_t* client)
 }
 
 //	Change the message level for a client
-void SVQHW_Msg_f(client_t* client)
+static void SVQHW_Msg_f(client_t* client)
 {
 	if (Cmd_Argc() != 2)
 	{
@@ -1775,7 +1774,7 @@ void SVQHW_Msg_f(client_t* client)
 }
 
 //	Allow clients to change userinfo
-void SVQHW_SetInfo_f(client_t* client)
+static void SVQHW_SetInfo_f(client_t* client)
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -1829,7 +1828,7 @@ void SVQHW_SetInfo_f(client_t* client)
 	}
 }
 
-void SVQH_Kill_f(client_t* client)
+static void SVQH_Kill_f(client_t* client)
 {
 	if (client->qh_edict->GetHealth() <= 0)
 	{
@@ -1872,7 +1871,7 @@ void SVQH_TogglePause(const char* msg)
 	}
 }
 
-void SVQH_Pause_f(client_t* client)
+static void SVQH_Pause_f(client_t* client)
 {
 	if (!qh_pausable->value)
 	{
@@ -1913,7 +1912,7 @@ void SVQH_Pause_f(client_t* client)
 	SVQH_TogglePause(st);
 }
 
-void SVQH_Status_f(client_t* host_client)
+static void SVQH_Status_f(client_t* host_client)
 {
 	client_t* client;
 	int seconds;
@@ -1952,7 +1951,7 @@ void SVQH_Status_f(client_t* host_client)
 }
 
 //	Kicks a user off of the server
-void SVQH_Kick_f(client_t* kicker)
+static void SVQH_Kick_f(client_t* kicker)
 {
 	if (*pr_globalVars.deathmatch)
 	{
@@ -2028,7 +2027,7 @@ void SVQH_Kick_f(client_t* kicker)
 	}
 }
 
-void SVQH_Ping_f(client_t* host_client)
+static void SVQH_Ping_f(client_t* host_client)
 {
 	SVQH_ClientPrintf(host_client, 0, "Client ping times:\n");
 	client_t* client = svs.clients;
@@ -2048,13 +2047,13 @@ void SVQH_Ping_f(client_t* host_client)
 	}
 }
 
-void SVQH_Ban_f(client_t* client)
+static void SVQH_Ban_f(client_t* client)
 {
 	NET_Ban_f();
 }
 
 //	The client is showing the scoreboard, so send new ping times for all clients
-void SVQHW_Pings_f(client_t* host_client)
+static void SVQHW_Pings_f(client_t* host_client)
 {
 	client_t* client = svs.clients;
 	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
@@ -2077,7 +2076,7 @@ void SVQHW_Pings_f(client_t* host_client)
 }
 
 //	The client is going to disconnect, so remove the connection immediately
-void SVQHW_Drop_f(client_t* client)
+static void SVQHW_Drop_f(client_t* client)
 {
 	if (!client->qh_spectator)
 	{
@@ -2086,7 +2085,7 @@ void SVQHW_Drop_f(client_t* client)
 	SVQHW_DropClient(client);
 }
 
-void SVQHW_PTrack_f(client_t* client)
+static void SVQHW_PTrack_f(client_t* client)
 {
 	if (!client->qh_spectator)
 	{
@@ -2131,7 +2130,7 @@ void SVQHW_PTrack_f(client_t* client)
 }
 
 //	Dumps the serverinfo info string
-void SVQHW_ShowServerinfo_f(client_t* client)
+static void SVQHW_ShowServerinfo_f(client_t* client)
 {
 	char outputbuf[8000];
 	outputbuf[0] = 0;
@@ -2187,7 +2186,7 @@ void SVQHW_ShowServerinfo_f(client_t* client)
 	NET_OutOfBandPrint(NS_SERVER, client->netchan.remoteAddress, "%s", outputbuf);
 }
 
-void SVQW_NoSnap_f(client_t* client)
+static void SVQW_NoSnap_f(client_t* client)
 {
 	if (*client->qw_uploadfn)
 	{
@@ -2195,3 +2194,116 @@ void SVQW_NoSnap_f(client_t* client)
 		SVQH_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", client->name);
 	}
 }
+
+ucmd_t q1_ucmds[] =
+{
+	{ "prespawn", SVQ1_PreSpawn_f },
+	{ "spawn", SVQH_Spawn_f },
+	{ "begin", SVQH_Begin_f },
+	{ "say", SVQH_Say_f },
+	{ "say_team", SVQH_Say_Team_f },
+	{ "tell", SVQH_Tell_f },
+	{ "god", SVQH_God_f },
+	{ "notarget", SVQH_Notarget_f },
+	{ "noclip", SVQH_Noclip_f },
+	{ "fly", SVQ1_Fly_f },
+	{ "give", SVQ1_Give_f },
+	{ "name", SVQH_Name_f },
+	{ "color", SVQH_Color_f },
+	{ "kill", SVQH_Kill_f },
+	{ "pause", SVQH_Pause_f },
+	{ "status", SVQH_Status_f },
+	{ "kick", SVQH_Kick_f },
+	{ "ping", SVQH_Ping_f },
+	{ "ban", SVQH_Ban_f },
+	{ NULL, NULL }
+};
+
+ucmd_t qw_ucmds[] =
+{
+	{"new", SVQHW_New_f},
+	{"modellist", SVQW_Modellist_f},
+	{"soundlist", SVQW_Soundlist_f},
+	{"prespawn", SVQHW_PreSpawn_f},
+	{"spawn", SVQHW_Spawn_f},
+	{"begin", SVQHW_Begin_f},
+
+	{"drop", SVQHW_Drop_f},
+	{"pings", SVQHW_Pings_f},
+
+	// issued by hand at client consoles
+	{"kill", SVQH_Kill_f},
+	{"pause", SVQH_Pause_f},
+	{"msg", SVQHW_Msg_f},
+
+	{"say", SVQHW_Say_f},
+	{"say_team", SVQHW_Say_Team_f},
+
+	{"setinfo", SVQHW_SetInfo_f},
+
+	{"serverinfo", SVQHW_ShowServerinfo_f},
+
+	{"download", SVQHW_BeginDownload_f},
+	{"nextdl", SVQHW_NextDownload_f},
+
+	{"ptrack", SVQHW_PTrack_f},//ZOID - used with autocam
+
+	{"snap", SVQW_NoSnap_f},
+
+	{NULL, NULL}
+};
+
+ucmd_t h2_ucmds[] =
+{
+	{ "prespawn", SVQ1_PreSpawn_f },
+	{ "spawn", SVQH_Spawn_f },
+	{ "begin", SVQH_Begin_f },
+	{ "say", SVQH_Say_f },
+	{ "say_team", SVQH_Say_Team_f },
+	{ "tell", SVQH_Tell_f },
+	{ "god", SVQH_God_f },
+	{ "notarget", SVQH_Notarget_f },
+	{ "noclip", SVQH_Noclip_f },
+	{ "give", SVH2_Give_f },
+	{ "name", SVQH_Name_f },
+	{ "playerclass", SVH2_Class_f },
+	{ "color", SVQH_Color_f },
+	{ "kill", SVQH_Kill_f },
+	{ "pause", SVQH_Pause_f },
+	{ "status", SVQH_Status_f },
+	{ "kick", SVQH_Kick_f },
+	{ "ping", SVQH_Ping_f },
+	{ "ban", SVQH_Ban_f },
+	{ NULL, NULL }
+};
+
+ucmd_t hw_ucmds[] =
+{
+	{"new", SVQHW_New_f},
+	{"modellist", SVHW_Modellist_f},
+	{"soundlist", SVHW_Soundlist_f},
+	{"prespawn", SVQHW_PreSpawn_f},
+	{"spawn", SVQHW_Spawn_f},
+	{"begin", SVQHW_Begin_f},
+
+	{"drop", SVQHW_Drop_f},
+	{"pings", SVQHW_Pings_f},
+
+	// issued by hand at client consoles
+	{"kill", SVQH_Kill_f},
+	{"msg", SVQHW_Msg_f},
+
+	{"say", SVQHW_Say_f},
+	{"say_team", SVQHW_Say_Team_f},
+
+	{"setinfo", SVQHW_SetInfo_f},
+
+	{"serverinfo", SVQHW_ShowServerinfo_f},
+
+	{"download", SVQHW_BeginDownload_f},
+	{"nextdl", SVQHW_NextDownload_f},
+
+	{"ptrack", SVQHW_PTrack_f},//ZOID - used with autocam
+
+	{NULL, NULL}
+};

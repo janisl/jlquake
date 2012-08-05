@@ -442,41 +442,11 @@ void SV_ReadClientMove(q1usercmd_t* move)
 	}
 }
 
-struct ucmd_t
-{
-	const char* name;
-	void (*func)(client_t*);
-};
-
-ucmd_t ucmds[] =
-{
-	{ "prespawn", SVQ1_PreSpawn_f },
-	{ "spawn", SVQH_Spawn_f },
-	{ "begin", SVQH_Begin_f },
-	{ "say", SVQH_Say_f },
-	{ "say_team", SVQH_Say_Team_f },
-	{ "tell", SVQH_Tell_f },
-	{ "god", SVQH_God_f },
-	{ "notarget", SVQH_Notarget_f },
-	{ "noclip", SVQH_Noclip_f },
-	{ "fly", SVQ1_Fly_f },
-	{ "give", SVQ1_Give_f },
-	{ "name", SVQH_Name_f },
-	{ "color", SVQH_Color_f },
-	{ "kill", SVQH_Kill_f },
-	{ "pause", SVQH_Pause_f },
-	{ "status", SVQH_Status_f },
-	{ "kick", SVQH_Kick_f },
-	{ "ping", SVQH_Ping_f },
-	{ "ban", SVQH_Ban_f },
-	{ NULL, NULL }
-};
-
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
 {
 	Cmd_TokenizeString(s);
 
-	for (ucmd_t* u = ucmds; u->name; u++)
+	for (ucmd_t* u = q1_ucmds; u->name; u++)
 	{
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{

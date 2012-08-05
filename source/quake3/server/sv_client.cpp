@@ -806,12 +806,6 @@ static void SV_VerifyPaks_f(client_t* cl)
 	}
 }
 
-typedef struct
-{
-	const char* name;
-	void (* func)(client_t* cl);
-} ucmd_t;
-
 static ucmd_t ucmds[] = {
 	{"userinfo", SVT3_UpdateUserinfo_f},
 	{"disconnect", SVT3_Disconnect_f},

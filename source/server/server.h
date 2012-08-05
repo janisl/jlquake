@@ -32,6 +32,13 @@
 #include "global.h"
 #include "worldsector.h"
 
+struct ucmd_t
+{
+	const char* name;
+	void (*func)(client_t* cl);
+	bool allowedpostmapchange;
+};
+
 #define MAX_MASTERS 8				// max recipients for heartbeat packets
 
 extern Cvar* sv_maxclients;

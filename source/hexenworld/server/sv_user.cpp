@@ -7,43 +7,6 @@ qhedict_t* sv_player;
 
 hwusercmd_t cmd;
 
-typedef struct
-{
-	const char* name;
-	void (* func)(client_t*);
-} ucmd_t;
-
-ucmd_t ucmds[] =
-{
-	{"new", SVQHW_New_f},
-	{"modellist", SVHW_Modellist_f},
-	{"soundlist", SVHW_Soundlist_f},
-	{"prespawn", SVQHW_PreSpawn_f},
-	{"spawn", SVQHW_Spawn_f},
-	{"begin", SVQHW_Begin_f},
-
-	{"drop", SVQHW_Drop_f},
-	{"pings", SVQHW_Pings_f},
-
-// issued by hand at client consoles
-	{"kill", SVQH_Kill_f},
-	{"msg", SVQHW_Msg_f},
-
-	{"say", SVQHW_Say_f},
-	{"say_team", SVQHW_Say_Team_f},
-
-	{"setinfo", SVQHW_SetInfo_f},
-
-	{"serverinfo", SVQHW_ShowServerinfo_f},
-
-	{"download", SVQHW_BeginDownload_f},
-	{"nextdl", SVQHW_NextDownload_f},
-
-	{"ptrack", SVQHW_PTrack_f},//ZOID - used with autocam
-
-	{NULL, NULL}
-};
-
 /*
 ==================
 SV_ExecuteClientCommand
@@ -56,7 +19,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	Cmd_TokenizeString(s);
 	sv_player = host_client->qh_edict;
 
-	for (u = ucmds; u->name; u++)
+	for (u = hw_ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
 			u->func(cl);

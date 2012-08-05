@@ -35,50 +35,15 @@ extern char qhw_fp_msg[];
 //
 //	Client
 //
+extern ucmd_t q1_ucmds[];
+extern ucmd_t qw_ucmds[];
+extern ucmd_t h2_ucmds[];
+extern ucmd_t hw_ucmds[];
+
 void SVQH_DropClient(client_t* host_client, bool crash);
 void SVQHW_DropClient(client_t* drop);
 void SVQH_SetIdealPitch(qhedict_t* player);
-void SVQ1_PreSpawn_f(client_t* client);
-void SVQH_Spawn_f(client_t* client);
-void SVQH_Begin_f(client_t* client);
-void SVQHW_New_f(client_t* client);
-void SVQW_Soundlist_f(client_t* client);
-void SVHW_Soundlist_f(client_t* client);
-void SVQW_Modellist_f(client_t* client);
-void SVHW_Modellist_f(client_t* client);
-void SVQHW_PreSpawn_f(client_t* client);
-void SVQHW_Spawn_f(client_t* client);
-void SVQHW_Begin_f(client_t* client);
-void SVQHW_NextDownload_f(client_t* client);
-void SVQHW_BeginDownload_f(client_t* client);
-void SVQH_Say_f(client_t* host_client);
-void SVQH_Say_Team_f(client_t* host_client);
-void SVQH_Tell_f(client_t* host_client);
-void SVQHW_Say_f(client_t* host_client);
-void SVQHW_Say_Team_f(client_t* host_client);
-void SVQH_God_f(client_t* client);
-void SVQH_Notarget_f(client_t* client);
-void SVQH_Noclip_f(client_t* client);
-void SVQ1_Fly_f(client_t* client);
-void SVQ1_Give_f(client_t* host_client);
-void SVH2_Give_f(client_t* host_client);
-void SVQH_Name_f(client_t* client);
-void SVH2_Class_f(client_t* client);
-void SVQH_Color_f(client_t* client);
-void SVQHW_Msg_f(client_t* client);
-void SVQHW_SetInfo_f(client_t* client);
-void SVQH_Kill_f(client_t* client);
 void SVQH_TogglePause(const char* msg);
-void SVQH_Pause_f(client_t* client);
-void SVQH_Status_f(client_t* client);
-void SVQH_Kick_f(client_t* host_client);
-void SVQH_Ping_f(client_t* host_client);
-void SVQH_Ban_f(client_t* client);
-void SVQHW_Pings_f(client_t* host_client);
-void SVQHW_Drop_f(client_t* client);
-void SVQHW_PTrack_f(client_t* client);
-void SVQHW_ShowServerinfo_f(client_t* client);
-void SVQW_NoSnap_f(client_t* client);
 
 //
 //	Game

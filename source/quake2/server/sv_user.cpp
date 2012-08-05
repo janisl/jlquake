@@ -30,33 +30,6 @@ sv_client and sv_player will be valid.
 ============================================================
 */
 
-typedef struct
-{
-	const char* name;
-	void (* func)(client_t* client);
-} ucmd_t;
-
-ucmd_t ucmds[] =
-{
-	// auto issued
-	{"new", SVQ2_New_f},
-	{"configstrings", SVQ2_Configstrings_f},
-	{"baselines", SVQ2_Baselines_f},
-	{"begin", SVQ2_Begin_f},
-
-	{"nextserver", SVQ2_Nextserver_f},
-
-	{"disconnect", SVQ2_Disconnect_f},
-
-	// issued by hand at client consoles
-	{"info", SVQ2_ShowServerinfo_f},
-
-	{"download", SVQ2_BeginDownload_f},
-	{"nextdl", SVQ2_NextDownload_f},
-
-	{NULL, NULL}
-};
-
 /*
 ==================
 SV_ExecuteClientCommand
@@ -68,7 +41,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 
 	Cmd_TokenizeString(s, true);
 
-	for (u = ucmds; u->name; u++)
+	for (u = q2_ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
 			u->func(cl);

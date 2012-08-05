@@ -112,16 +112,9 @@ void SVQ2_StartSound(const vec3_t origin, q2edict_t* entity, int channel,
 //
 //	User
 //
-void SVQ2_New_f(client_t* client);
-void SVQ2_Configstrings_f(client_t* client);
-void SVQ2_Baselines_f(client_t* client);
-void SVQ2_Begin_f(client_t* client);
-void SVQ2_NextDownload_f(client_t* client);
-void SVQ2_BeginDownload_f(client_t* client);
-void SVQ2_Disconnect_f(client_t* client);
-void SVQ2_ShowServerinfo_f(client_t* client);
+extern ucmd_t q2_ucmds[];
+
 void SVQ2_Nextserver();
-void SVQ2_Nextserver_f(client_t* client);
 void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd);
 void SVQ2_UserinfoChanged(client_t* cl);
 void SVQ2_ParseUserInfo(client_t* cl, QMsg& message);
