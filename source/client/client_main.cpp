@@ -173,3 +173,9 @@ float CLQH_LerpPoint()
 	}
 	return frac;
 }
+
+void CL_ClearDrift()
+{
+	cl.qh_nodrift = false;
+	cl.qh_driftmove = 0;
+}

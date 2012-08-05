@@ -205,13 +205,7 @@ void SVQH_ProgStartFrame();
 void SVQH_RunNewmis(float realtime);
 void SVQH_RunPhysicsAndUpdateTime(float frametime, float realtime);
 void SVQH_RunPhysicsForTime(float realtime);
-void SVQH_UserFriction(qhedict_t* sv_player, float frametime);
-void SVQH_Accelerate(float* velocity, float frametime, const vec3_t wishdir, float wishspeed);
-void SVQH_AirAccelerate(float* velocity, float frametime, float wishspeed, vec3_t wishveloc);
-void SVQH_DropPunchAngle(qhedict_t* sv_player, float frametime);
-void SVQH_WaterMove(client_t* client, float frametime);
-void SVQH_WaterJump(qhedict_t* sv_player);
-void SV_AirMove(client_t* client, float frametime);
+void SVQH_ClientThink(client_t* client, float frametime);
 
 //
 //	Send

@@ -733,7 +733,6 @@ void M_Class_Key(int key)
 
 	case K_ENTER:
 
-//		sv_player->v.playerclass=m_class_cursor+1;
 		Cbuf_AddText(va("playerclass %d\n", m_class_cursor + 1));
 		m_entersound = true;
 //		if (!class_flag)

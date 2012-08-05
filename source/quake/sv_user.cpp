@@ -21,67 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-qhedict_t* sv_player;
-
-/*
-===================
-SV_ClientThink
-
-the move fields specify an intended velocity in pix/sec
-the angle fields specify an exact angular motion in degrees
-===================
-*/
-void SV_ClientThink(void)
-{
-	vec3_t v_angle;
-
-	if (sv_player->GetMoveType() == QHMOVETYPE_NONE)
-	{
-		return;
-	}
-
-	SVQH_DropPunchAngle(sv_player, host_frametime);
-
-//
-// if dead, behave differently
-//
-	if (sv_player->GetHealth() <= 0)
-	{
-		return;
-	}
-
-//
-// angles
-// show 1/3 the pitch angle and all the roll angle
-	float* angles = sv_player->GetAngles();
-
-	VectorAdd(sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
-	angles[ROLL] = VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
-	if (!sv_player->GetFixAngle())
-	{
-		angles[PITCH] = -v_angle[PITCH] / 3;
-		angles[YAW] = v_angle[YAW];
-	}
-
-	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
-	{
-		SVQH_WaterJump(sv_player);
-		return;
-	}
-//
-// walk
-//
-	if ((sv_player->GetWaterLevel() >= 2) &&
-		(sv_player->GetMoveType() != QHMOVETYPE_NOCLIP))
-	{
-		SVQH_WaterMove(host_client, host_frametime);
-		return;
-	}
-
-	SV_AirMove(host_client, host_frametime);
-}
-
-
 /*
 ===================
 SV_ReadClientMove
@@ -231,8 +170,6 @@ void SV_RunClients(void)
 			continue;
 		}
 
-		sv_player = host_client->qh_edict;
-
 		if (!SV_ReadClientMessage())
 		{
 			SVQH_DropClient(host_client, false);	// client misbehaved...
@@ -253,7 +190,7 @@ void SV_RunClients(void)
 		if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
 #endif
 		{
-			SV_ClientThink();
+			SVQH_ClientThink(host_client, host_frametime);
 		}
 	}
 }

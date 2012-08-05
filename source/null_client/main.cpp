@@ -25,3 +25,7 @@ int CLH2_GetLightStyleValue(int style)
 {
 	return 0;
 }
+
+void CL_ClearDrift()
+{
+}

@@ -33,6 +33,7 @@ solid_edge items only clip against bsp models.
 #include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../../client/public.h"
 
 Cvar* svqh_gravity;
 Cvar* svqh_stopspeed;
@@ -1759,35 +1760,31 @@ void SVQH_RunPhysicsForTime(float realtime)
 	SVQH_Physics(frametime, realtime);
 }
 
-void SVQH_UserFriction(qhedict_t* sv_player, float frametime)
+static void SVQH_UserFriction(qhedict_t* sv_player, float frametime)
 {
-	float* vel;
-	float speed, newspeed, control;
-	vec3_t start, stop;
-	float friction;
-	q1trace_t trace;
+	float* vel = sv_player->GetVelocity();
 
-	vel = sv_player->GetVelocity();
-
-	speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
+	float speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
 	if (!speed)
 	{
 		return;
 	}
 
 	// if the leading edge is over a dropoff, increase friction
+	vec3_t start, stop;
 	start[0] = stop[0] = sv_player->GetOrigin()[0] + vel[0] / speed * 16;
 	start[1] = stop[1] = sv_player->GetOrigin()[1] + vel[1] / speed * 16;
 	start[2] = sv_player->GetOrigin()[2] + sv_player->GetMins()[2];
 	stop[2] = start[2] - 34;
 
-	trace = SVQH_MoveHull0(start, vec3_origin, vec3_origin, stop, true, sv_player);
+	q1trace_t trace = SVQH_MoveHull0(start, vec3_origin, vec3_origin, stop, true, sv_player);
 
 	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_H2Portals) && sv_player->GetFriction() != 1)	//reset their friction to 1, only a trigger touching can change it again
 	{
 		sv_player->SetFriction(1);
 	}
 
+	float friction;
 	if (trace.fraction == 1.0)
 	{
 		friction = svqh_friction->value * svqh_edgefriction->value;
@@ -1802,8 +1799,8 @@ void SVQH_UserFriction(qhedict_t* sv_player, float frametime)
 	}
 
 	// apply friction
-	control = speed < svqh_stopspeed->value ? svqh_stopspeed->value : speed;
-	newspeed = speed - frametime * control * friction;
+	float control = speed < svqh_stopspeed->value ? svqh_stopspeed->value : speed;
+	float newspeed = speed - frametime * control * friction;
 
 	if (newspeed < 0)
 	{
@@ -1816,7 +1813,7 @@ void SVQH_UserFriction(qhedict_t* sv_player, float frametime)
 	vel[2] = vel[2] * newspeed;
 }
 
-void SVQH_Accelerate(float* velocity, float frametime, const vec3_t wishdir, float wishspeed)
+static void SVQH_Accelerate(float* velocity, float frametime, const vec3_t wishdir, float wishspeed)
 {
 	float currentspeed = DotProduct(velocity, wishdir);
 	float addspeed = wishspeed - currentspeed;
@@ -1836,7 +1833,7 @@ void SVQH_Accelerate(float* velocity, float frametime, const vec3_t wishdir, flo
 	}
 }
 
-void SVQH_AirAccelerate(float* velocity, float frametime, float wishspeed, vec3_t wishveloc)
+static void SVQH_AirAccelerate(float* velocity, float frametime, float wishspeed, vec3_t wishveloc)
 {
 	float wishspd = VectorNormalize(wishveloc);
 	if (wishspd > 30)
@@ -1861,7 +1858,7 @@ void SVQH_AirAccelerate(float* velocity, float frametime, float wishspeed, vec3_
 	}
 }
 
-void SVQH_DropPunchAngle(qhedict_t* sv_player, float frametime)
+static void SVQH_DropPunchAngle(qhedict_t* sv_player, float frametime)
 {
 	float len = VectorNormalize(sv_player->GetPunchAngle());
 
@@ -1873,10 +1870,9 @@ void SVQH_DropPunchAngle(qhedict_t* sv_player, float frametime)
 	VectorScale(sv_player->GetPunchAngle(), len, sv_player->GetPunchAngle());
 }
 
-void SVQH_WaterMove(client_t* client, float frametime)
+static void SVQH_WaterMove(client_t* client, float frametime)
 {
 	qhedict_t* sv_player = client->qh_edict;
-	vec3_t wishvel;
 
 	//
 	// user intentions
@@ -1884,6 +1880,7 @@ void SVQH_WaterMove(client_t* client, float frametime)
 	vec3_t forward, right, up;
 	AngleVectors(sv_player->GetVAngle(), forward, right, up);
 
+	vec3_t wishvel;
 	if (GGameType & GAME_Hexen2)
 	{
 		for (int i = 0; i < 3; i++)
@@ -2010,7 +2007,7 @@ void SVQH_WaterMove(client_t* client, float frametime)
 	}
 }
 
-void SVQH_WaterJump(qhedict_t* sv_player)
+static void SVQH_WaterJump(qhedict_t* sv_player)
 {
 	if (sv.qh_time > sv_player->GetTeleportTime() ||
 		!sv_player->GetWaterLevel())
@@ -2022,7 +2019,7 @@ void SVQH_WaterJump(qhedict_t* sv_player)
 	sv_player->GetVelocity()[1] = sv_player->GetMoveDir()[1];
 }
 
-void SV_AirMove(client_t* client, float frametime)
+static void SVQH_AirMove(client_t* client, float frametime)
 {
 	qhedict_t* sv_player = client->qh_edict;
 
@@ -2091,4 +2088,133 @@ void SV_AirMove(client_t* client, float frametime)
 	{	// not on ground, so little effect on velocity
 		SVQH_AirAccelerate(sv_player->GetVelocity(), frametime, wishspeed, wishvel);
 	}
+}
+
+//	this is just the same as SVQH_WaterMove but with a few changes to make it flight
+static void SVH2_FlightMove(client_t* client, float frametime)
+{
+	qhedict_t* sv_player = client->qh_edict;
+
+	CL_ClearDrift();
+
+	//
+	// user intentions
+	//
+	vec3_t forward, right, up;
+	AngleVectors(sv_player->GetVAngle(), forward, right, up);
+
+	vec3_t wishvel;
+	for (int i = 0; i < 3; i++)
+	{
+		wishvel[i] = forward[i] * client->h2_lastUsercmd.forwardmove + right[i] * client->h2_lastUsercmd.sidemove + up[i] * client->h2_lastUsercmd.upmove;
+	}
+
+	float wishspeed = VectorLength(wishvel);
+	if (wishspeed > svqh_maxspeed->value)
+	{
+		VectorScale(wishvel, svqh_maxspeed->value / wishspeed, wishvel);
+		wishspeed = svqh_maxspeed->value;
+	}
+
+	//
+	// water friction
+	//
+	float speed = VectorLength(sv_player->GetVelocity());
+	float newspeed;
+	if (speed)
+	{
+		newspeed = speed - frametime * speed * svqh_friction->value;
+		if (newspeed < 0)
+		{
+			newspeed = 0;
+		}
+		VectorScale(sv_player->GetVelocity(), newspeed / speed, sv_player->GetVelocity());
+	}
+	else
+	{
+		newspeed = 0;
+	}
+
+	//
+	// water acceleration
+	//
+	if (!wishspeed)
+	{
+		return;
+	}
+
+	float addspeed = wishspeed - newspeed;
+	if (addspeed <= 0)
+	{
+		return;
+	}
+
+	VectorNormalize(wishvel);
+	float accelspeed = svqh_accelerate->value * wishspeed * frametime;
+	if (accelspeed > addspeed)
+	{
+		accelspeed = addspeed;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		sv_player->GetVelocity()[i] += accelspeed * wishvel[i];
+	}
+}
+
+//	the move fields specify an intended velocity in pix/sec
+//	the angle fields specify an exact angular motion in degrees
+void SVQH_ClientThink(client_t* client, float frametime)
+{
+	qhedict_t* sv_player = client->qh_edict;
+	if (sv_player->GetMoveType() == QHMOVETYPE_NONE)
+	{
+		return;
+	}
+
+	SVQH_DropPunchAngle(sv_player, frametime);
+
+	//
+	// if dead, behave differently
+	//
+	if (sv_player->GetHealth() <= 0)
+	{
+		return;
+	}
+
+	//
+	// angles
+	// show 1/3 the pitch angle and all the roll angle
+	float* angles = sv_player->GetAngles();
+
+	vec3_t v_angle;
+	VectorAdd(sv_player->GetVAngle(), sv_player->GetPunchAngle(), v_angle);
+	angles[ROLL] = VQH_CalcRoll(sv_player->GetAngles(), sv_player->GetVelocity()) * 4;
+	if (!sv_player->GetFixAngle())
+	{
+		angles[PITCH] = -v_angle[PITCH] / 3;
+		angles[YAW] = v_angle[YAW];
+	}
+
+	if ((int)sv_player->GetFlags() & QHFL_WATERJUMP)
+	{
+		SVQH_WaterJump(sv_player);
+		return;
+	}
+	//
+	// walk
+	//
+	if ((sv_player->GetWaterLevel() >= 2) &&
+		(sv_player->GetMoveType() != QHMOVETYPE_NOCLIP))
+	{
+		SVQH_WaterMove(client, frametime);
+		return;
+	}
+	else if (GGameType & GAME_Hexen2 && sv_player->GetMoveType() == QHMOVETYPE_FLY)
+	{
+		SVH2_FlightMove(client, frametime);
+		return;
+	}
+
+	SVQH_AirMove(client, frametime);
 }

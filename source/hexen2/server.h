@@ -21,8 +21,6 @@ extern jmp_buf host_abortserver;
 
 extern double host_time;
 
-extern qhedict_t* sv_player;
-
 //===========================================================
 
 void SV_Init(void);
@@ -32,7 +30,6 @@ void SV_ClearDatagram(void);
 
 void SV_AddUpdates(void);
 
-void SV_ClientThink(void);
 void SV_AddClientToServer(qsocket_t* ret);
 
 void SV_CheckForNewClients(void);
