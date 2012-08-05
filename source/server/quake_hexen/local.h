@@ -36,6 +36,7 @@ extern char qhw_fp_msg[];
 //	Client
 //
 void SVQH_DropClient(client_t* host_client, bool crash);
+void SVQHW_DropClient(client_t* drop);
 void SVQH_SetIdealPitch(qhedict_t* player);
 void SVQ1_PreSpawn_f(client_t* client);
 void SVQH_Spawn_f(client_t* client);
@@ -61,6 +62,23 @@ void SVQH_Noclip_f(client_t* client);
 void SVQ1_Fly_f(client_t* client);
 void SVQ1_Give_f(client_t* host_client);
 void SVH2_Give_f(client_t* host_client);
+void SVQH_Name_f(client_t* client);
+void SVH2_Class_f(client_t* client);
+void SVQH_Color_f(client_t* client);
+void SVQHW_Msg_f(client_t* client);
+void SVQHW_SetInfo_f(client_t* client);
+void SVQH_Kill_f(client_t* client);
+void SVQH_TogglePause(const char* msg);
+void SVQH_Pause_f(client_t* client);
+void SVQH_Status_f(client_t* client);
+void SVQH_Kick_f(client_t* host_client);
+void SVQH_Ping_f(client_t* host_client);
+void SVQH_Ban_f(client_t* client);
+void SVQHW_Pings_f(client_t* host_client);
+void SVQHW_Drop_f(client_t* client);
+void SVQHW_PTrack_f(client_t* client);
+void SVQHW_ShowServerinfo_f(client_t* client);
+void SVQW_NoSnap_f(client_t* client);
 
 //
 //	Game
@@ -163,6 +181,7 @@ extern Cvar* qhw_allow_download_maps;
 extern Cvar* svhw_allowtaunts;
 extern Cvar* svqhw_spectalk;
 extern Cvar* qh_skill;
+extern Cvar* qh_pausable;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -172,6 +191,7 @@ extern Cvar* svqh_idealpitchscale;
 int SVQH_CalcPing(client_t* cl);
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
 void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl);
+void SVQHW_ExtractFromUserinfo(client_t* cl);
 
 //
 //	Move

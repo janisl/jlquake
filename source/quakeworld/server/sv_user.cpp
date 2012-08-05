@@ -25,8 +25,6 @@ qhedict_t* sv_player;
 
 qwusercmd_t cmd;
 
-extern Cvar* pausable;
-
 /*
 ============================================================
 
@@ -116,283 +114,10 @@ void SV_NextUpload(void)
 
 //=============================================================================
 
-/*
-=================
-SV_Pings_f
-
-The client is showing the scoreboard, so send new ping times for all
-clients
-=================
-*/
-void SV_Pings_f(void)
-{
-	client_t* client;
-	int j;
-
-	for (j = 0, client = svs.clients; j < MAX_CLIENTS_QHW; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-
-		SVQH_ClientReliableWrite_Begin(host_client, qwsvc_updateping, 4);
-		SVQH_ClientReliableWrite_Byte(host_client, j);
-		SVQH_ClientReliableWrite_Short(host_client, SVQH_CalcPing(client));
-		SVQH_ClientReliableWrite_Begin(host_client, qwsvc_updatepl, 4);
-		SVQH_ClientReliableWrite_Byte(host_client, j);
-		SVQH_ClientReliableWrite_Byte(host_client, client->qw_lossage);
-	}
-}
-
-
-
-/*
-==================
-SV_Kill_f
-==================
-*/
-void SV_Kill_f(void)
-{
-	if (sv_player->GetHealth() <= 0)
-	{
-		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
-		return;
-	}
-
-	*pr_globalVars.time = sv.qh_time;
-	*pr_globalVars.self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram(*pr_globalVars.ClientKill);
-}
-
-/*
-==================
-SV_TogglePause
-==================
-*/
-void SV_TogglePause(const char* msg)
-{
-	int i;
-	client_t* cl;
-
-	sv.qh_paused ^= 1;
-
-	if (msg)
-	{
-		SVQH_BroadcastPrintf(PRINT_HIGH, "%s", msg);
-	}
-
-	// send notification to all clients
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
-	{
-		if (!cl->state)
-		{
-			continue;
-		}
-		SVQH_ClientReliableWrite_Begin(cl, q1svc_setpause, 2);
-		SVQH_ClientReliableWrite_Byte(cl, sv.qh_paused);
-	}
-}
-
-
-/*
-==================
-SV_Pause_f
-==================
-*/
-void SV_Pause_f(void)
-{
-	char st[sizeof(host_client->name) + 32];
-
-	if (!pausable->value)
-	{
-		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Pause not allowed.\n");
-		return;
-	}
-
-	if (host_client->qh_spectator)
-	{
-		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Spectators can not pause.\n");
-		return;
-	}
-
-	if (sv.qh_paused)
-	{
-		sprintf(st, "%s paused the game\n", host_client->name);
-	}
-	else
-	{
-		sprintf(st, "%s unpaused the game\n", host_client->name);
-	}
-
-	SV_TogglePause(st);
-}
-
-
-/*
-=================
-SV_Drop_f
-
-The client is going to disconnect, so remove the connection immediately
-=================
-*/
-void SV_Drop_f(void)
-{
-	SV_EndRedirect();
-	if (!host_client->qh_spectator)
-	{
-		SVQH_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", host_client->name);
-	}
-	SVQHW_DropClient(host_client);
-}
-
-/*
-=================
-SV_PTrack_f
-
-Change the bandwidth estimate for a client
-=================
-*/
-void SV_PTrack_f(void)
-{
-	int i;
-	qhedict_t* ent, * tent;
-
-	if (!host_client->qh_spectator)
-	{
-		return;
-	}
-
-	if (Cmd_Argc() != 2)
-	{
-		// turn off tracking
-		host_client->qh_spec_track = 0;
-		ent = QH_EDICT_NUM(host_client - svs.clients + 1);
-		tent = QH_EDICT_NUM(0);
-		ent->SetGoalEntity(EDICT_TO_PROG(tent));
-		return;
-	}
-
-	i = String::Atoi(Cmd_Argv(1));
-	if (i < 0 || i >= MAX_CLIENTS_QHW || svs.clients[i].state != CS_ACTIVE ||
-		svs.clients[i].qh_spectator)
-	{
-		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Invalid client to track\n");
-		host_client->qh_spec_track = 0;
-		ent = QH_EDICT_NUM(host_client - svs.clients + 1);
-		tent = QH_EDICT_NUM(0);
-		ent->SetGoalEntity(EDICT_TO_PROG(tent));
-		return;
-	}
-	host_client->qh_spec_track = i + 1;// now tracking
-
-	ent = QH_EDICT_NUM(host_client - svs.clients + 1);
-	tent = QH_EDICT_NUM(i + 1);
-	ent->SetGoalEntity(EDICT_TO_PROG(tent));
-}
-
-/*
-=================
-SV_Msg_f
-
-Change the message level for a client
-=================
-*/
-void SV_Msg_f(void)
-{
-	if (Cmd_Argc() != 2)
-	{
-		SVQH_ClientPrintf(host_client, PRINT_HIGH, "Current msg level is %i\n",
-			host_client->messagelevel);
-		return;
-	}
-
-	host_client->messagelevel = String::Atoi(Cmd_Argv(1));
-
-	SVQH_ClientPrintf(host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
-}
-
-/*
-==================
-SV_SetInfo_f
-
-Allow clients to change userinfo
-==================
-*/
-void SV_SetInfo_f(void)
-{
-	int i;
-	char oldval[MAX_INFO_STRING_QW];
-
-
-	if (Cmd_Argc() == 1)
-	{
-		common->Printf("User info settings:\n");
-		Info_Print(host_client->userinfo);
-		return;
-	}
-
-	if (Cmd_Argc() != 3)
-	{
-		common->Printf("usage: setinfo [ <key> <value> ]\n");
-		return;
-	}
-
-	if (Cmd_Argv(1)[0] == '*')
-	{
-		return;		// don't set priveledged values
-
-	}
-	String::Cpy(oldval, Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
-
-	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value, false);
-// name is extracted below in ExtractFromUserInfo
-//	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
-//		, sizeof(host_client->name)-1);
-//	SVQHW_FullClientUpdate (host_client, &sv.qh_reliable_datagram);
-//	host_client->sendinfo = true;
-
-	if (!String::Cmp(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)), oldval))
-	{
-		return;	// key hasn't changed
-
-	}
-	// process any changed values
-	SV_ExtractFromUserinfo(host_client);
-
-	i = host_client - svs.clients;
-	sv.qh_reliable_datagram.WriteByte(qwsvc_setinfo);
-	sv.qh_reliable_datagram.WriteByte(i);
-	sv.qh_reliable_datagram.WriteString2(Cmd_Argv(1));
-	sv.qh_reliable_datagram.WriteString2(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
-}
-
-/*
-==================
-SV_ShowServerinfo_f
-
-Dumps the serverinfo info string
-==================
-*/
-void SV_ShowServerinfo_f(void)
-{
-	Info_Print(svs.qh_info);
-}
-
-void SV_NoSnap_f(void)
-{
-	if (*host_client->qw_uploadfn)
-	{
-		*host_client->qw_uploadfn = 0;
-		SVQH_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", host_client->name);
-	}
-}
-
 typedef struct
 {
 	const char* name;
 	void (* func)(client_t*);
-	void (* old_func)(void);
 } ucmd_t;
 
 ucmd_t ucmds[] =
@@ -404,27 +129,27 @@ ucmd_t ucmds[] =
 	{"spawn", SVQHW_Spawn_f},
 	{"begin", SVQHW_Begin_f},
 
-	{"drop", NULL, SV_Drop_f},
-	{"pings", NULL, SV_Pings_f},
+	{"drop", SVQHW_Drop_f},
+	{"pings", SVQHW_Pings_f},
 
 // issued by hand at client consoles
-	{"kill", NULL, SV_Kill_f},
-	{"pause", NULL, SV_Pause_f},
-	{"msg", NULL, SV_Msg_f},
+	{"kill", SVQH_Kill_f},
+	{"pause", SVQH_Pause_f},
+	{"msg", SVQHW_Msg_f},
 
 	{"say", SVQHW_Say_f},
 	{"say_team", SVQHW_Say_Team_f},
 
-	{"setinfo", NULL, SV_SetInfo_f},
+	{"setinfo", SVQHW_SetInfo_f},
 
-	{"serverinfo", NULL, SV_ShowServerinfo_f},
+	{"serverinfo", SVQHW_ShowServerinfo_f},
 
 	{"download", SVQHW_BeginDownload_f},
 	{"nextdl", SVQHW_NextDownload_f},
 
-	{"ptrack", NULL, SV_PTrack_f},//ZOID - used with autocam
+	{"ptrack", SVQHW_PTrack_f},//ZOID - used with autocam
 
-	{"snap", NULL, SV_NoSnap_f},
+	{"snap", SVQW_NoSnap_f},
 
 	{NULL, NULL}
 };
@@ -444,24 +169,13 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 	for (u = ucmds; u->name; u++)
 		if (!String::Cmp(Cmd_Argv(0), u->name))
 		{
-			if (u->func)
-			{
-				u->func(cl);
-			}
-			else
-			{
-				SV_BeginRedirect(RD_CLIENT);
-				u->old_func();
-				SV_EndRedirect();
-			}
+			u->func(cl);
 			break;
 		}
 
 	if (!u->name)
 	{
-		SV_BeginRedirect(RD_CLIENT);
-		common->Printf("Bad user command: %s\n", Cmd_Argv(0));
-		SV_EndRedirect();
+		NET_OutOfBandPrint(NS_SERVER, cl->netchan.remoteAddress, "Bad user command: %s\n", Cmd_Argv(0));
 	}
 }
 

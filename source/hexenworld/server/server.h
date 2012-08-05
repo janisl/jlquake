@@ -57,14 +57,12 @@ extern int sv_net_port;
 void SV_Shutdown(void);
 void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
-void SVQHW_DropClient(client_t* drop);
 
 void SV_SaveSpawnparms(void);
 
 void SV_InitOperatorCommands(void);
 
 void SV_SendServerinfo(client_t* client);
-void SV_ExtractFromUserinfo(client_t* cl);
 
 
 void Master_Heartbeat(void);

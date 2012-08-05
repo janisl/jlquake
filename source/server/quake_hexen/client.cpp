@@ -1633,3 +1633,565 @@ void SVH2_Give_f(client_t* host_client)
 		break;
 	}
 }
+
+void SVQH_Name_f(client_t* client)
+{
+	if (Cmd_Argc() == 1)
+	{
+		return;
+	}
+	char* newName;
+	if (Cmd_Argc() == 2)
+	{
+		newName = Cmd_Argv(1);
+	}
+	else
+	{
+		newName = Cmd_ArgsUnmodified();
+	}
+	newName[15] = 0;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		//this is for the fuckers who put braces in the name causing loadgame to crash.
+		char* pdest = strchr(newName,'{');
+		if (pdest)
+		{
+			*pdest = 0;	//zap the brace
+			common->Printf("Illegal char in name removed!\n");
+		}
+	}
+
+	if (client->name[0] && String::Cmp(client->name, "unconnected"))
+	{
+		if (String::Cmp(client->name, newName) != 0)
+		{
+			common->Printf("%s renamed to %s\n", client->name, newName);
+		}
+	}
+	String::Cpy(client->name, newName);
+	client->qh_edict->SetNetName(PR_SetString(client->name));
+
+	// send notification to all clients
+	sv.qh_reliable_datagram.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatename : q1svc_updatename);
+	sv.qh_reliable_datagram.WriteByte(client - svs.clients);
+	sv.qh_reliable_datagram.WriteString2(client->name);
+}
+
+void SVH2_Class_f(client_t* client)
+{
+	if (Cmd_Argc() == 1)
+	{
+		return;
+	}
+	float newClass;
+	if (Cmd_Argc() == 2)
+	{
+		newClass = String::Atof(Cmd_Argv(1));
+	}
+	else
+	{
+		newClass = String::Atof(Cmd_ArgsUnmodified());
+	}
+
+	if (sv.loadgame || client->h2_playerclass)
+	{
+		if (client->qh_edict->GetPlayerClass())
+		{
+			newClass = client->qh_edict->GetPlayerClass();
+		}
+		else if (client->h2_playerclass)
+		{
+			newClass = client->h2_playerclass;
+		}
+	}
+
+	client->h2_playerclass = newClass;
+	client->qh_edict->SetPlayerClass(newClass);
+
+	// Change the weapon model used
+	*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
+	PR_ExecuteProgram(*pr_globalVars.ClassChangeWeapon);
+
+	// send notification to all clients
+	sv.qh_reliable_datagram.WriteByte(h2svc_updateclass);
+	sv.qh_reliable_datagram.WriteByte(client - svs.clients);
+	sv.qh_reliable_datagram.WriteByte((byte)newClass);
+}
+
+void SVQH_Color_f(client_t* client)
+{
+	if (Cmd_Argc() == 1)
+	{
+		return;
+	}
+
+	int top, bottom;
+	if (Cmd_Argc() == 2)
+	{
+		top = bottom = String::Atoi(Cmd_Argv(1));
+	}
+	else
+	{
+		top = String::Atoi(Cmd_Argv(1));
+		bottom = String::Atoi(Cmd_Argv(2));
+	}
+
+	top &= 15;
+	if (top > 13)
+	{
+		top = 13;
+	}
+	bottom &= 15;
+	if (bottom > 13)
+	{
+		bottom = 13;
+	}
+
+	int playercolor = top * 16 + bottom;
+
+	client->qh_colors = playercolor;
+	client->qh_edict->SetTeam(bottom + 1);
+
+	// send notification to all clients
+	sv.qh_reliable_datagram.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatecolors : q1svc_updatecolors);
+	sv.qh_reliable_datagram.WriteByte(client - svs.clients);
+	sv.qh_reliable_datagram.WriteByte(client->qh_colors);
+}
+
+//	Change the message level for a client
+void SVQHW_Msg_f(client_t* client)
+{
+	if (Cmd_Argc() != 2)
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "Current msg level is %i\n",
+			client->messagelevel);
+		return;
+	}
+
+	client->messagelevel = String::Atoi(Cmd_Argv(1));
+
+	SVQH_ClientPrintf(client, PRINT_HIGH, "Msg level set to %i\n", client->messagelevel);
+}
+
+//	Allow clients to change userinfo
+void SVQHW_SetInfo_f(client_t* client)
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("User info settings:\n");
+		Info_Print(client->userinfo);
+		return;
+	}
+
+	if (Cmd_Argc() != 3)
+	{
+		common->Printf("usage: setinfo [ <key> <value> ]\n");
+		return;
+	}
+
+	if (Cmd_Argv(1)[0] == '*')
+	{
+		return;		// don't set priveledged values
+
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		Info_SetValueForKey(client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value, false);
+		String::NCpy(client->name, Info_ValueForKey(client->userinfo, "name"),
+			sizeof(client->name) - 1);
+		client->qh_sendinfo = true;
+	}
+	else
+	{
+		char oldval[MAX_INFO_STRING_QW];
+		String::Cpy(oldval, Info_ValueForKey(client->userinfo, Cmd_Argv(1)));
+
+		Info_SetValueForKey(client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value, false);
+
+		if (!String::Cmp(Info_ValueForKey(client->userinfo, Cmd_Argv(1)), oldval))
+		{
+			return;	// key hasn't changed
+
+		}
+	}
+
+	// process any changed values
+	SVQHW_ExtractFromUserinfo(client);
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		int i = client - svs.clients;
+		sv.qh_reliable_datagram.WriteByte(qwsvc_setinfo);
+		sv.qh_reliable_datagram.WriteByte(i);
+		sv.qh_reliable_datagram.WriteString2(Cmd_Argv(1));
+		sv.qh_reliable_datagram.WriteString2(Info_ValueForKey(client->userinfo, Cmd_Argv(1)));
+	}
+}
+
+void SVQH_Kill_f(client_t* client)
+{
+	if (client->qh_edict->GetHealth() <= 0)
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "Can't suicide -- allready dead!\n");
+		return;
+	}
+
+	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
+	PR_ExecuteProgram(*pr_globalVars.ClientKill);
+}
+
+void SVQH_TogglePause(const char* msg)
+{
+	sv.qh_paused ^= 1;
+
+	if (msg)
+	{
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s", msg);
+	}
+
+	// send notification to all clients
+	if (GGameType & GAME_QuakeWorld)
+	{
+		client_t* cl = svs.clients;
+		for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+		{
+			if (!cl->state)
+			{
+				continue;
+			}
+			SVQH_ClientReliableWrite_Begin(cl, q1svc_setpause, 2);
+			SVQH_ClientReliableWrite_Byte(cl, sv.qh_paused);
+		}
+	}
+	else
+	{
+		sv.qh_reliable_datagram.WriteByte(GGameType & GAME_Hexen2 ? h2svc_setpause : q1svc_setpause);
+		sv.qh_reliable_datagram.WriteByte(sv.qh_paused);
+	}
+}
+
+void SVQH_Pause_f(client_t* client)
+{
+	if (!qh_pausable->value)
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "Pause not allowed.\n");
+		return;
+	}
+
+	char st[sizeof(client->name) + 32];
+	if (GGameType & GAME_QuakeWorld)
+	{
+		if (client->qh_spectator)
+		{
+			SVQH_ClientPrintf(client, PRINT_HIGH, "Spectators can not pause.\n");
+			return;
+		}
+
+		if (sv.qh_paused)
+		{
+			sprintf(st, "%s paused the game\n", client->name);
+		}
+		else
+		{
+			sprintf(st, "%s unpaused the game\n", client->name);
+		}
+	}
+	else
+	{
+		if (sv.qh_paused)
+		{
+			sprintf(st, "%s paused the game\n", PR_GetString(client->qh_edict->GetNetName()));
+		}
+		else
+		{
+			sprintf(st, "%s unpaused the game\n", PR_GetString(client->qh_edict->GetNetName()));
+		}
+	}
+
+	SVQH_TogglePause(st);
+}
+
+void SVQH_Status_f(client_t* host_client)
+{
+	client_t* client;
+	int seconds;
+	int minutes;
+	int hours = 0;
+	int j;
+
+	SVQH_ClientPrintf(host_client, 0, "host:    %s\n", Cvar_VariableString("hostname"));
+	SVQH_ClientPrintf(host_client, 0, "version: " JLQUAKE_VERSION_STRING "\n");
+	SVQH_ClientPrintf(host_client, 0, "map:     %s\n", sv.name);
+	SVQH_ClientPrintf(host_client, 0, "players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		seconds = (int)(net_time - client->qh_netconnection->connecttime);
+		minutes = seconds / 60;
+		if (minutes)
+		{
+			seconds -= (minutes * 60);
+			hours = minutes / 60;
+			if (hours)
+			{
+				minutes -= (hours * 60);
+			}
+		}
+		else
+		{
+			hours = 0;
+		}
+		SVQH_ClientPrintf(host_client, 0, "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
+		SVQH_ClientPrintf(host_client, 0, "   %s\n", client->qh_netconnection->address);
+	}
+}
+
+//	Kicks a user off of the server
+void SVQH_Kick_f(client_t* kicker)
+{
+	if (*pr_globalVars.deathmatch)
+	{
+		return;
+	}
+
+	int i;
+	bool byNumber = false;
+	client_t* kicked;
+	if (Cmd_Argc() > 2 && String::Cmp(Cmd_Argv(1), "#") == 0)
+	{
+		i = String::Atof(Cmd_Argv(2)) - 1;
+		if (i < 0 || i >= svs.qh_maxclients)
+		{
+			return;
+		}
+		if (svs.clients[i].state < CS_CONNECTED)
+		{
+			return;
+		}
+		kicked = &svs.clients[i];
+		byNumber = true;
+	}
+	else
+	{
+		for (i = 0, kicked = svs.clients; i < svs.qh_maxclients; i++, kicked++)
+		{
+			if (kicked->state < CS_CONNECTED)
+			{
+				continue;
+			}
+			if (String::ICmp(kicked->name, Cmd_Argv(1)) == 0)
+			{
+				break;
+			}
+		}
+	}
+
+	if (i < svs.qh_maxclients)
+	{
+		const char* who = kicker->name;
+
+		// can't kick yourself!
+		if (kicked == kicker)
+		{
+			return;
+		}
+
+		const char* message = NULL;
+		if (Cmd_Argc() > 2)
+		{
+			message = Cmd_ArgsUnmodified();
+			String::Parse1(&message);
+			if (byNumber)
+			{
+				message++;							// skip the #
+				while (*message == ' ')				// skip white space
+					message++;
+				message += String::Length(Cmd_Argv(2));	// skip the number
+			}
+			while (*message && *message == ' ')
+				message++;
+		}
+		if (message)
+		{
+			SVQH_ClientPrintf(kicked, 0, "Kicked by %s: %s\n", who, message);
+		}
+		else
+		{
+			SVQH_ClientPrintf(kicked, 0, "Kicked by %s\n", who);
+		}
+		SVQH_DropClient(kicked, false);
+	}
+}
+
+void SVQH_Ping_f(client_t* host_client)
+{
+	SVQH_ClientPrintf(host_client, 0, "Client ping times:\n");
+	client_t* client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		float total = 0;
+		for (int j = 0; j < NUM_PING_TIMES; j++)
+		{
+			total += client->qh_ping_times[j];
+		}
+		total /= NUM_PING_TIMES;
+		SVQH_ClientPrintf(host_client, 0, "%4i %s\n", (int)(total * 1000), client->name);
+	}
+}
+
+void SVQH_Ban_f(client_t* client)
+{
+	NET_Ban_f();
+}
+
+//	The client is showing the scoreboard, so send new ping times for all clients
+void SVQHW_Pings_f(client_t* host_client)
+{
+	client_t* client = svs.clients;
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+
+		SVQH_ClientReliableWrite_Begin(host_client, GGameType & GAME_HexenWorld ? hwsvc_updateping : qwsvc_updateping, 4);
+		SVQH_ClientReliableWrite_Byte(host_client, j);
+		SVQH_ClientReliableWrite_Short(host_client, SVQH_CalcPing(client));
+		if (GGameType & GAME_QuakeWorld)
+		{
+			SVQH_ClientReliableWrite_Begin(host_client, qwsvc_updatepl, 4);
+			SVQH_ClientReliableWrite_Byte(host_client, j);
+			SVQH_ClientReliableWrite_Byte(host_client, client->qw_lossage);
+		}
+	}
+}
+
+//	The client is going to disconnect, so remove the connection immediately
+void SVQHW_Drop_f(client_t* client)
+{
+	if (!client->qh_spectator)
+	{
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s dropped\n", client->name);
+	}
+	SVQHW_DropClient(client);
+}
+
+void SVQHW_PTrack_f(client_t* client)
+{
+	if (!client->qh_spectator)
+	{
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		// turn off tracking
+		client->qh_spec_track = 0;
+		if (GGameType & GAME_QuakeWorld)
+		{
+			qhedict_t* ent = QH_EDICT_NUM(client - svs.clients + 1);
+			qhedict_t* tent = QH_EDICT_NUM(0);
+			ent->SetGoalEntity(EDICT_TO_PROG(tent));
+		}
+		return;
+	}
+
+	int i = String::Atoi(Cmd_Argv(1));
+	if (i < 0 || i >= MAX_CLIENTS_QHW || svs.clients[i].state != CS_ACTIVE ||
+		svs.clients[i].qh_spectator)
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "Invalid client to track\n");
+		client->qh_spec_track = 0;
+		if (GGameType & GAME_QuakeWorld)
+		{
+			qhedict_t* ent = QH_EDICT_NUM(client - svs.clients + 1);
+			qhedict_t* tent = QH_EDICT_NUM(0);
+			ent->SetGoalEntity(EDICT_TO_PROG(tent));
+		}
+		return;
+	}
+	client->qh_spec_track = i + 1;// now tracking
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		qhedict_t* ent = QH_EDICT_NUM(client - svs.clients + 1);
+		qhedict_t* tent = QH_EDICT_NUM(i + 1);
+		ent->SetGoalEntity(EDICT_TO_PROG(tent));
+	}
+}
+
+//	Dumps the serverinfo info string
+void SVQHW_ShowServerinfo_f(client_t* client)
+{
+	char outputbuf[8000];
+	outputbuf[0] = 0;
+
+	const char* s = svs.qh_info;
+	if (*s == '\\')
+	{
+		s++;
+	}
+	while (*s)
+	{
+		char key[512];
+		char* o = key;
+		while (*s && *s != '\\')
+		{
+			*o++ = *s++;
+		}
+
+		int l = o - key;
+		if (l < 20)
+		{
+			Com_Memset(o, ' ', 20 - l);
+			key[20] = 0;
+		}
+		else
+		{
+			*o = 0;
+		}
+		String::Cat(outputbuf, sizeof(outputbuf), key);
+
+		if (!*s)
+		{
+			String::Cat(outputbuf, sizeof(outputbuf), "MISSING VALUE\n");
+			break;
+		}
+
+		char value[512];
+		o = value;
+		s++;
+		while (*s && *s != '\\')
+		{
+			*o++ = *s++;
+		}
+		*o = 0;
+
+		if (*s)
+		{
+			s++;
+		}
+		String::Cat(outputbuf, sizeof(outputbuf), value);
+		String::Cat(outputbuf, sizeof(outputbuf), "\n");
+	}
+	NET_OutOfBandPrint(NS_SERVER, client->netchan.remoteAddress, "%s", outputbuf);
+}
+
+void SVQW_NoSnap_f(client_t* client)
+{
+	if (*client->qw_uploadfn)
+	{
+		*client->qw_uploadfn = 0;
+		SVQH_BroadcastPrintf(PRINT_HIGH, "%s refused remote screenshot\n", client->name);
+	}
+}

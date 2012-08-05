@@ -49,7 +49,6 @@ Cvar* noexit;
 
 Cvar* randomclass;				// 0, 1, or 2
 
-Cvar* pausable;
 Cvar* sys_adaptive;
 
 Cvar* temp1;
@@ -377,7 +376,7 @@ void Host_InitLocal(void)
 	randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
-	pausable = Cvar_Get("pausable", "1", 0);
+	qh_pausable = Cvar_Get("pausable", "1", 0);
 
 	sys_adaptive = Cvar_Get("sys_adaptive","1", CVAR_ARCHIVE);
 

@@ -583,6 +583,15 @@ ucmd_t ucmds[] =
 	{ "notarget", SVQH_Notarget_f },
 	{ "noclip", SVQH_Noclip_f },
 	{ "give", SVH2_Give_f },
+	{ "name", SVQH_Name_f },
+	{ "playerclass", SVH2_Class_f },
+	{ "color", SVQH_Color_f },
+	{ "kill", SVQH_Kill_f },
+	{ "pause", SVQH_Pause_f },
+	{ "status", SVQH_Status_f },
+	{ "kick", SVQH_Kick_f },
+	{ "ping", SVQH_Ping_f },
+	{ "ban", SVQH_Ban_f },
 	{ NULL, NULL }
 };
 
@@ -599,52 +608,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 		}
 	}
 
-	int ret = 0;
-	if (String::NICmp(s, "status", 6) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "name", 4) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "playerclass", 11) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "color", 5) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "kill", 4) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "pause", 5) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "kick", 4) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "ping", 4) == 0)
-	{
-		ret = 1;
-	}
-	else if (String::NICmp(s, "ban", 3) == 0)
-	{
-		ret = 1;
-	}
-
-	if (ret == 1)
-	{
-		Cmd_ExecuteString(s, src_client);
-	}
-	else
-	{
-		common->DPrintf("%s tried to %s\n", host_client->name, s);
-	}
+	common->DPrintf("%s tried to %s\n", host_client->name, s);
 }
 
 /*

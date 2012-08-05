@@ -32,6 +32,7 @@ Cvar* svqh_idealpitchscale;
 Cvar* svqw_mapcheck;
 Cvar* svhw_allowtaunts;
 Cvar* svqhw_spectalk;
+Cvar* qh_pausable;
 
 Cvar* qhw_allow_download;
 Cvar* qhw_allow_download_skins;
@@ -45,11 +46,8 @@ fileHandle_t svqhw_fraglogfile;
 
 int SVQH_CalcPing(client_t* cl)
 {
-	float ping;
-	int count;
-
-	ping = 0;
-	count = 0;
+	float ping = 0;
+	int count = 0;
 	if (GGameType & GAME_HexenWorld)
 	{
 		hwclient_frame_t* frame = cl->hw_frames;
@@ -86,10 +84,9 @@ int SVQH_CalcPing(client_t* cl)
 //	Writes all update values to a sizebuf
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf)
 {
-	int i;
 	char info[MAX_INFO_STRING_QW];
 
-	i = client - svs.clients;
+	int i = client - svs.clients;
 
 	if (GGameType & GAME_HexenWorld)
 	{
@@ -159,5 +156,163 @@ void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl)
 	else
 	{
 		SVQHW_FullClientUpdate(client, &cl->netchan.message);
+	}
+}
+
+//	Pull specific info from a newly changed userinfo string
+// into a more C freindly form.
+void SVQHW_ExtractFromUserinfo(client_t* cl)
+{
+	const char* val;
+	char* p, * q;
+	int i;
+	client_t* client;
+	int dupc = 1;
+	char newname[80];
+
+
+	// name for C code
+	val = Info_ValueForKey(cl->userinfo, "name");
+
+	// trim user name
+	String::NCpy(newname, val, sizeof(newname) - 1);
+	newname[sizeof(newname) - 1] = 0;
+
+	for (p = newname; (*p == ' ' || *p == '\r' || *p == '\n') && *p; p++)
+		;
+
+	if (p != newname && !*p)
+	{
+		//white space only
+		String::Cpy(newname, "unnamed");
+		p = newname;
+	}
+
+	if (p != newname && *p)
+	{
+		for (q = newname; *p; *q++ = *p++)
+			;
+		*q = 0;
+	}
+	for (p = newname + String::Length(newname) - 1; p != newname && (*p == ' ' || *p == '\r' || *p == '\n'); p--)
+		;
+	p[1] = 0;
+
+	if (String::Cmp(val, newname))
+	{
+		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
+		val = Info_ValueForKey(cl->userinfo, "name");
+	}
+
+	if (!val[0] || !String::ICmp(val, "console"))
+	{
+		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
+		val = Info_ValueForKey(cl->userinfo, "name");
+	}
+
+	// check to see if another user by the same name exists
+	while (1)
+	{
+		for (i = 0, client = svs.clients; i < MAX_CLIENTS_QHW; i++, client++)
+		{
+			if (client->state != CS_ACTIVE || client == cl)
+			{
+				continue;
+			}
+			if (!String::ICmp(client->name, val))
+			{
+				break;
+			}
+		}
+		if (i != MAX_CLIENTS_QHW)
+		{
+			// dup name
+			char tmp[80];
+			String::NCpyZ(tmp, val, sizeof(tmp));
+			if (String::Length(tmp) > (int)sizeof(cl->name) - 1)
+			{
+				tmp[sizeof(cl->name) - 4] = 0;
+			}
+			p = tmp;
+
+			if (tmp[0] == '(')
+			{
+				if (tmp[2] == ')')
+				{
+					p = tmp + 3;
+				}
+				else if (tmp[3] == ')')
+				{
+					p = tmp + 4;
+				}
+			}
+
+			sprintf(newname, "(%d)%-.40s", dupc++, p);
+			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
+			val = Info_ValueForKey(cl->userinfo, "name");
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if (String::NCmp(val, cl->name, String::Length(cl->name)))
+	{
+		if (!sv.qh_paused)
+		{
+			if (!cl->qw_lastnametime || svs.realtime * 0.001 - cl->qw_lastnametime > 5)
+			{
+				cl->qw_lastnamecount = 0;
+				cl->qw_lastnametime = svs.realtime * 0.001;
+			}
+			else if (cl->qw_lastnamecount++ > 4)
+			{
+				SVQH_BroadcastPrintf(PRINT_HIGH, "%s was kicked for name spam\n", cl->name);
+				SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game for name spamming\n");
+				SVQHW_DropClient(cl);
+				return;
+			}
+		}
+
+		if (cl->state >= CS_ACTIVE && !cl->qh_spectator)
+		{
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
+		}
+	}
+
+	String::NCpy(cl->name, val, sizeof(cl->name) - 1);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		// playerclass command
+		val = Info_ValueForKey(cl->userinfo, "playerclass");
+		if (String::Length(val))
+		{
+			i = String::Atoi(val);
+			if (i > CLASS_DEMON && hw_dmMode->value != HWDM_SIEGE)
+			{
+				i = CLASS_PALADIN;
+			}
+			if (i < 0 || i > MAX_PLAYER_CLASS || (!cl->hw_portals && i == CLASS_DEMON))
+			{
+				i = 0;
+			}
+			cl->hw_next_playerclass =  i;
+			cl->qh_edict->SetNextPlayerClass(i);
+
+			if (cl->qh_edict->GetHealth() > 0)
+			{
+				sprintf(newname,"%d",cl->h2_playerclass);
+				Info_SetValueForKey(cl->userinfo, "playerclass", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
+			}
+		}
+	}
+
+	// msg command
+	val = Info_ValueForKey(cl->userinfo, "msg");
+	if (String::Length(val))
+	{
+		cl->messagelevel = String::Atoi(val);
 	}
 }

@@ -526,7 +526,7 @@ void SVC_DirectConnect(void)
 	ED_ClearEdict(ent);
 
 	// parse some info from the info strings
-	SV_ExtractFromUserinfo(newcl);
+	SVQHW_ExtractFromUserinfo(newcl);
 
 	// JACK: Init the floodprot stuff.
 	for (i = 0; i < 10; i++)
@@ -1354,136 +1354,6 @@ void Master_Shutdown(void)
 	NET_SendPacket(NS_SERVER, String::Length(string), string, idmaster_adr);
 #endif
 }
-
-/*
-=================
-SV_ExtractFromUserinfo
-
-Pull specific info from a newly changed userinfo string
-into a more C freindly form.
-=================
-*/
-void SV_ExtractFromUserinfo(client_t* cl)
-{
-	const char* val;
-	char* p, * q;
-	int i;
-	client_t* client;
-	int dupc = 1;
-	char newname[80];
-
-
-	// name for C code
-	val = Info_ValueForKey(cl->userinfo, "name");
-
-	// trim user name
-	String::NCpy(newname, val, sizeof(newname) - 1);
-	newname[sizeof(newname) - 1] = 0;
-
-	for (p = newname; *p == ' ' && *p; p++)
-		;
-	if (p != newname && *p)
-	{
-		for (q = newname; *p; *q++ = *p++)
-			;
-		*q = 0;
-	}
-	for (p = newname + String::Length(newname) - 1; p != newname && *p == ' '; p--)
-		;
-	p[1] = 0;
-
-	if (String::Cmp(val, newname))
-	{
-		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
-		val = Info_ValueForKey(cl->userinfo, "name");
-	}
-
-	if (!val[0] || !String::ICmp(val, "console"))
-	{
-		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
-		val = Info_ValueForKey(cl->userinfo, "name");
-	}
-
-	// check to see if another user by the same name exists
-	while (1)
-	{
-		for (i = 0, client = svs.clients; i < MAX_CLIENTS_QHW; i++, client++)
-		{
-			if (client->state != CS_ACTIVE || client == cl)
-			{
-				continue;
-			}
-			if (!String::ICmp(client->name, val))
-			{
-				break;
-			}
-		}
-		if (i != MAX_CLIENTS_QHW)
-		{	// dup name
-			char tmp[80];
-			String::NCpyZ(tmp, val, sizeof(tmp));
-			if (String::Length(val) > (int)sizeof(cl->name) - 1)
-			{
-				tmp[sizeof(cl->name) - 4] = 0;
-			}
-			p = tmp;
-
-			if (tmp[0] == '(')
-			{
-				if (tmp[2] == ')')
-				{
-					p = tmp + 3;
-				}
-				else if (tmp[3] == ')')
-				{
-					p = tmp + 4;
-				}
-			}
-
-			sprintf(newname, "(%d)%-0.40s", dupc++, p);
-			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
-			val = Info_ValueForKey(cl->userinfo, "name");
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	String::NCpy(cl->name, val, sizeof(cl->name) - 1);
-
-	// playerclass command
-	val = Info_ValueForKey(cl->userinfo, "playerclass");
-	if (String::Length(val))
-	{
-		i = String::Atoi(val);
-		if (i > CLASS_DEMON && hw_dmMode->value != HWDM_SIEGE)
-		{
-			i = CLASS_PALADIN;
-		}
-		if (i < 0 || i > MAX_PLAYER_CLASS || (!cl->hw_portals && i == CLASS_DEMON))
-		{
-			i = 0;
-		}
-		cl->hw_next_playerclass =  i;
-		cl->qh_edict->SetNextPlayerClass(i);
-
-		if (cl->qh_edict->GetHealth() > 0)
-		{
-			sprintf(newname,"%d",cl->h2_playerclass);
-			Info_SetValueForKey(cl->userinfo, "playerclass", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
-		}
-	}
-
-	// msg command
-	val = Info_ValueForKey(cl->userinfo, "msg");
-	if (String::Length(val))
-	{
-		cl->messagelevel = String::Atoi(val);
-	}
-
-}
-
 
 //============================================================================
 

@@ -10,8 +10,6 @@
 #endif
 #include <time.h>
 
-extern Cvar* pausable;
-
 static double old_time;
 
 void RestoreClients(void);
@@ -57,36 +55,17 @@ void Host_Status_f(void)
 	int hours = 0;
 	int j;
 
-	if (cmd_source == src_command)
+	if (sv.state == SS_DEAD)
 	{
-		if (sv.state == SS_DEAD)
-		{
-			Cmd_ForwardToServer();
-			return;
-		}
+		Cmd_ForwardToServer();
+		return;
 	}
 
-	if (cmd_source == src_command)
-	{
-		common->Printf("host:    %s\n", Cvar_VariableString("hostname"));
-		common->Printf("version: %4.2f\n", HEXEN2_VERSION);
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "host:    %s\n", Cvar_VariableString("hostname"));
-		SVQH_ClientPrintf(host_client, 0, "version: %4.2f\n", HEXEN2_VERSION);
-	}
+	common->Printf("host:    %s\n", Cvar_VariableString("hostname"));
+	common->Printf("version: " JLQUAKE_VERSION_STRING "\n");
 	SOCK_ShowIP();
-	if (cmd_source == src_command)
-	{
-		common->Printf("map:     %s\n", sv.name);
-		common->Printf("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
-	}
-	else
-	{
-		SVQH_ClientPrintf(host_client, 0, "map:     %s\n", sv.name);
-		SVQH_ClientPrintf(host_client, 0, "players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
-	}
+	common->Printf("map:     %s\n", sv.name);
+	common->Printf("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
 	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
 	{
 		if (client->state < CS_CONNECTED)
@@ -108,16 +87,8 @@ void Host_Status_f(void)
 		{
 			hours = 0;
 		}
-		if (cmd_source == src_command)
-		{
-			common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-			common->Printf("   %s\n", client->qh_netconnection->address);
-		}
-		else
-		{
-			SVQH_ClientPrintf(host_client, 0, "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-			SVQH_ClientPrintf(host_client, 0, "   %s\n", client->qh_netconnection->address);
-		}
+		common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
+		common->Printf("   %s\n", client->qh_netconnection->address);
 	}
 }
 
@@ -145,9 +116,6 @@ void Host_Noclip_f(void)
 	Cmd_ForwardToServer();
 }
 
-#endif
-
-
 /*
 ==================
 Host_Ping_f
@@ -156,30 +124,9 @@ Host_Ping_f
 */
 void Host_Ping_f(void)
 {
-	int i, j;
-	float total;
-	client_t* client;
-
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	SVQH_ClientPrintf(host_client, 0, "Client ping times:\n");
-	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
-	{
-		if (client->state < CS_CONNECTED)
-		{
-			continue;
-		}
-		total = 0;
-		for (j = 0; j < NUM_PING_TIMES; j++)
-			total += client->qh_ping_times[j];
-		total /= NUM_PING_TIMES;
-		SVQH_ClientPrintf(host_client, 0, "%4i %s\n", (int)(total * 1000), client->name);
-	}
+	Cmd_ForwardToServer();
 }
+#endif
 
 /*
 ===============================================================================
@@ -1063,6 +1010,7 @@ void Host_Changelevel2_f(void)
 
 //============================================================================
 
+#ifndef DEDICATED
 /*
 ======================
 Host_Name_f
@@ -1071,13 +1019,10 @@ Host_Name_f
 void Host_Name_f(void)
 {
 	char* newName;
-	char* pdest;
 
 	if (Cmd_Argc() == 1)
 	{
-#ifndef DEDICATED
 		common->Printf("\"name\" is \"%s\"\n", clqh_name->string);
-#endif
 		return;
 	}
 	if (Cmd_Argc() == 2)
@@ -1090,45 +1035,26 @@ void Host_Name_f(void)
 	}
 	newName[15] = 0;
 
-	//this is for the fuckers who put braces in the name causing loadgame to crash.
-	pdest = strchr(newName,'{');
-	if (pdest)
+	if (GGameType & GAME_Hexen2)
 	{
-		*pdest = 0;	//zap the brace
-		common->Printf("Illegal char in name removed!\n");
+		//this is for the fuckers who put braces in the name causing loadgame to crash.
+		char* pdest = strchr(newName,'{');
+		if (pdest)
+		{
+			*pdest = 0;	//zap the brace
+			common->Printf("Illegal char in name removed!\n");
+		}
 	}
 
-	if (cmd_source == src_command)
+	if (String::Cmp(clqh_name->string, newName) == 0)
 	{
-#ifndef DEDICATED
-		if (String::Cmp(clqh_name->string, newName) == 0)
-		{
-			return;
-		}
-		Cvar_Set("_cl_name", newName);
-		if (cls.state == CA_ACTIVE)
-		{
-			Cmd_ForwardToServer();
-		}
-#endif
 		return;
 	}
-
-	if (host_client->name[0] && String::Cmp(host_client->name, "unconnected"))
+	Cvar_Set("_cl_name", newName);
+	if (cls.state == CA_ACTIVE)
 	{
-		if (String::Cmp(host_client->name, newName) != 0)
-		{
-			common->Printf("%s renamed to %s\n", host_client->name, newName);
-		}
+		Cmd_ForwardToServer();
 	}
-	String::Cpy(host_client->name, newName);
-	host_client->qh_edict->SetNetName(PR_SetString(host_client->name));
-
-// send notification to all clients
-
-	sv.qh_reliable_datagram.WriteByte(h2svc_updatename);
-	sv.qh_reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.qh_reliable_datagram.WriteString2(host_client->name);
 }
 
 extern const char* ClassNames[NUM_CLASSES];	//from menu.c
@@ -1138,7 +1064,6 @@ void Host_Class_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
-#ifndef DEDICATED
 		if (!(int)clh2_playerclass->value)
 		{
 			common->Printf("\"playerclass\" is %d (\"unknown\")\n", (int)clh2_playerclass->value);
@@ -1147,7 +1072,6 @@ void Host_Class_f(void)
 		{
 			common->Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,ClassNames[(int)clh2_playerclass->value - 1]);
 		}
-#endif
 		return;
 	}
 	if (Cmd_Argc() == 2)
@@ -1159,53 +1083,24 @@ void Host_Class_f(void)
 		newClass = String::Atof(Cmd_ArgsUnmodified());
 	}
 
-	if (cmd_source == src_command)
-	{
-#ifndef DEDICATED
-		Cvar_SetValue("_cl_playerclass", newClass);
+	Cvar_SetValue("_cl_playerclass", newClass);
 
-#ifdef MISSIONPACK
+	if (GGameType & GAME_H2Portals)
+	{
 		// when classes changes after map load, update cl_playerclass, cl_playerclass should
 		// probably only be used in worldspawn, though
 		if (pr_globalVars.cl_playerclass)
 		{
 			*pr_globalVars.cl_playerclass = newClass;
 		}
-#endif
-
-		if (cls.state == CA_ACTIVE)
-		{
-			Cmd_ForwardToServer();
-		}
-#endif
-		return;
 	}
 
-	if (sv.loadgame || host_client->h2_playerclass)
+	if (cls.state == CA_ACTIVE)
 	{
-		if (host_client->qh_edict->GetPlayerClass())
-		{
-			newClass = host_client->qh_edict->GetPlayerClass();
-		}
-		else if (host_client->h2_playerclass)
-		{
-			newClass = host_client->h2_playerclass;
-		}
+		Cmd_ForwardToServer();
 	}
-
-	host_client->h2_playerclass = newClass;
-	host_client->qh_edict->SetPlayerClass(newClass);
-
-	// Change the weapon model used
-	*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
-	PR_ExecuteProgram(*pr_globalVars.ClassChangeWeapon);
-
-// send notification to all clients
-
-	sv.qh_reliable_datagram.WriteByte(h2svc_updateclass);
-	sv.qh_reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.qh_reliable_datagram.WriteByte((byte)newClass);
 }
+#endif
 
 void Host_Version_f(void)
 {
@@ -1269,17 +1164,12 @@ void Host_ConSay_f()
 	}
 }
 
+#ifndef DEDICATED
 void Host_Tell_f(void)
 {
 	Cmd_ForwardToServer();
 }
 
-
-/*
-==================
-Host_Color_f
-==================
-*/
 void Host_Color_f(void)
 {
 	int top, bottom;
@@ -1287,10 +1177,8 @@ void Host_Color_f(void)
 
 	if (Cmd_Argc() == 1)
 	{
-#ifndef DEDICATED
 		common->Printf("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
-		common->Printf("color <0-10> [0-10]\n");
-#endif
+		common->Printf("color <0-13> [0-13]\n");
 		return;
 	}
 
@@ -1317,25 +1205,11 @@ void Host_Color_f(void)
 
 	playercolor = top * 16 + bottom;
 
-	if (cmd_source == src_command)
+	Cvar_SetValue("_cl_color", playercolor);
+	if (cls.state == CA_ACTIVE)
 	{
-#ifndef DEDICATED
-		Cvar_SetValue("_cl_color", playercolor);
-		if (cls.state == CA_ACTIVE)
-		{
-			Cmd_ForwardToServer();
-		}
-#endif
-		return;
+		Cmd_ForwardToServer();
 	}
-
-	host_client->qh_colors = playercolor;
-	host_client->qh_edict->SetTeam(bottom + 1);
-
-// send notification to all clients
-	sv.qh_reliable_datagram.WriteByte(h2svc_updatecolors);
-	sv.qh_reliable_datagram.WriteByte(host_client - svs.clients);
-	sv.qh_reliable_datagram.WriteByte(host_client->qh_colors);
 }
 
 /*
@@ -1345,21 +1219,7 @@ Host_Kill_f
 */
 void Host_Kill_f(void)
 {
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (sv_player->GetHealth() <= 0)
-	{
-		SVQH_ClientPrintf(host_client, 0, "Can't suicide -- allready dead!\n");
-		return;
-	}
-
-	*pr_globalVars.time = sv.qh_time;
-	*pr_globalVars.self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram(*pr_globalVars.ClientKill);
+	Cmd_ForwardToServer();
 }
 
 
@@ -1370,34 +1230,9 @@ Host_Pause_f
 */
 void Host_Pause_f(void)
 {
-
-	if (cmd_source == src_command)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-	if (!pausable->value)
-	{
-		SVQH_ClientPrintf(host_client, 0, "Pause not allowed.\n");
-	}
-	else
-	{
-		sv.qh_paused ^= 1;
-
-		if (sv.qh_paused)
-		{
-			SVQH_BroadcastPrintf(0, "%s paused the game\n", PR_GetString(sv_player->GetNetName()));
-		}
-		else
-		{
-			SVQH_BroadcastPrintf(0, "%s unpaused the game\n", PR_GetString(sv_player->GetNetName()));
-		}
-
-		// send notification to all clients
-		sv.qh_reliable_datagram.WriteByte(h2svc_setpause);
-		sv.qh_reliable_datagram.WriteByte(sv.qh_paused);
-	}
+	Cmd_ForwardToServer();
 }
+#endif
 
 //===========================================================================
 
@@ -1800,10 +1635,8 @@ void Host_InitCommands(void)
 #ifndef DEDICATED
 	Cmd_AddCommand("connect", Host_Connect_f);
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);
-#endif
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("playerclass", Host_Class_f);
-#ifndef DEDICATED
 	Cmd_AddCommand("noclip", Host_Noclip_f);
 #endif
 	Cmd_AddCommand("version", Host_Version_f);
@@ -1818,12 +1651,14 @@ void Host_InitCommands(void)
 		Cmd_AddCommand("say_team", Host_Say_Team_f);
 	}
 	Cmd_AddCommand("tell", Host_Tell_f);
-#endif
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);
 	Cmd_AddCommand("pause", Host_Pause_f);
+#endif
 	Cmd_AddCommand("kick", Host_Kick_f);
+#ifndef DEDICATED
 	Cmd_AddCommand("ping", Host_Ping_f);
+#endif
 	Cmd_AddCommand("load", Host_Loadgame_f);
 	Cmd_AddCommand("save", Host_Savegame_f);
 #ifndef DEDICATED

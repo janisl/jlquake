@@ -60,8 +60,6 @@ Cvar* serverprofile;
 Cvar* samelevel;
 Cvar* noexit;
 
-Cvar* pausable;
-
 Cvar* temp1;
 
 class idCommonLocal : public idCommon
@@ -337,7 +335,7 @@ void Host_InitLocal(void)
 	svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);	// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
-	pausable = Cvar_Get("pausable", "1", 0);
+	qh_pausable = Cvar_Get("pausable", "1", 0);
 
 	temp1 = Cvar_Get("temp1", "0", 0);
 
