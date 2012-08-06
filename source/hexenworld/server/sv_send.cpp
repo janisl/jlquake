@@ -147,24 +147,18 @@ FRAME UPDATES
 ===============================================================================
 */
 
-//int		sv_nailmodel, sv_supernailmodel, sv_playermodel[MAX_PLAYER_CLASS];
-int sv_magicmissmodel, sv_playermodel[MAX_PLAYER_CLASS];
-int sv_ravenmodel, sv_raven2model;
-
 void SV_FindModelNumbers(void)
 {
 	int i;
 
-//	sv_nailmodel = -1;
-//	sv_supernailmodel = -1;
-	sv_playermodel[0] = -1;
-	sv_playermodel[1] = -1;
-	sv_playermodel[2] = -1;
-	sv_playermodel[3] = -1;
-	sv_playermodel[4] = -1;
-	sv_magicmissmodel = -1;
-	sv_ravenmodel = -1;
-	sv_raven2model = -1;
+	svhw_playermodel[0] = -1;
+	svhw_playermodel[1] = -1;
+	svhw_playermodel[2] = -1;
+	svhw_playermodel[3] = -1;
+	svhw_playermodel[4] = -1;
+	svhw_magicmissmodel = -1;
+	svhw_ravenmodel = -1;
+	svhw_raven2model = -1;
 
 	for (i = 0; i < MAX_MODELS_H2; i++)
 	{
@@ -172,41 +166,37 @@ void SV_FindModelNumbers(void)
 		{
 			break;
 		}
-//		if (!String::Cmp(sv.model_precache[i],"progs/spike.mdl"))
-//			sv_nailmodel = i;
-//		if (!String::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
-//			sv_supernailmodel = i;
 		if (!String::Cmp(sv.qh_model_precache[i],"models/paladin.mdl"))
 		{
-			sv_playermodel[0] = i;
+			svhw_playermodel[0] = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/crusader.mdl"))
 		{
-			sv_playermodel[1] = i;
+			svhw_playermodel[1] = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/necro.mdl"))
 		{
-			sv_playermodel[2] = i;
+			svhw_playermodel[2] = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/assassin.mdl"))
 		{
-			sv_playermodel[3] = i;
+			svhw_playermodel[3] = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/succubus.mdl"))
 		{
-			sv_playermodel[4] = i;
+			svhw_playermodel[4] = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/ball.mdl"))
 		{
-			sv_magicmissmodel = i;
+			svhw_magicmissmodel = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/ravproj.mdl"))
 		{
-			sv_ravenmodel = i;
+			svhw_ravenmodel = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"models/vindsht1.mdl"))
 		{
-			sv_raven2model = i;
+			svhw_raven2model = i;
 		}
 	}
 }
@@ -288,7 +278,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	// send over all the objects that are in the PVS
 	// this will include clients, a packetentities, and
 	// possibly a nails update
-	SV_WriteEntitiesToClient(client, &msg);
+	SVHW_WriteEntitiesToClient(client, &msg);
 
 	// copy the accumulated multicast datagram
 	// for this client out to the message
@@ -452,7 +442,7 @@ void SV_UpdateToReliableMessages(void)
 			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
 		}
 
-		SV_WriteInventory(host_client, host_client->qh_edict, &host_client->netchan.message);
+		SVHW_WriteInventory(host_client, host_client->qh_edict, &host_client->netchan.message);
 
 		if (CheckPIV && host_client->hw_PIV != host_client->hw_LastPIV)
 		{
@@ -513,11 +503,11 @@ void SV_UpdateToReliableMessages(void)
 
 /*
 =============
-SV_CleanupEnts
+SVQH_CleanupEnts
 
 =============
 */
-void SV_CleanupEnts(void)
+void SVQH_CleanupEnts(void)
 {
 	int e;
 	qhedict_t* ent;
@@ -583,7 +573,7 @@ void SV_SendClientMessages(void)
 	}
 
 	// clear muzzle flashes & wpn_sound
-	SV_CleanupEnts();
+	SVQH_CleanupEnts();
 }
 
 

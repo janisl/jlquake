@@ -34,6 +34,11 @@ Cvar* svhw_allowtaunts;
 Cvar* svqhw_spectalk;
 Cvar* qh_pausable;
 
+Cvar* svh2_update_player;
+Cvar* svh2_update_monsters;
+Cvar* svh2_update_missiles;
+Cvar* svh2_update_misc;
+
 Cvar* qhw_allow_download;
 Cvar* qhw_allow_download_skins;
 Cvar* qhw_allow_download_models;

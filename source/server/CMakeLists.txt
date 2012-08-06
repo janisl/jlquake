@@ -35,6 +35,7 @@ add_library(server STATIC
 	quake/game.cpp
 	quake_hexen/ccmds.cpp
 	quake_hexen/client.cpp
+	quake_hexen/entities.cpp
 	quake_hexen/game.cpp
 	quake_hexen/init.cpp
 	quake_hexen/main.cpp

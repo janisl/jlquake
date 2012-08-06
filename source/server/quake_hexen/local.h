@@ -49,6 +49,15 @@ void SVHW_ExecuteClientMessage(client_t* cl, QMsg& message);
 void SVQH_RunClients(float frametime);
 
 //
+//	Entities
+//
+void SVQ1_WriteEntitiesToClient(qhedict_t* clent, QMsg* msg);
+void SVH2_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg);
+void SVQW_WriteEntitiesToClient(client_t* client, QMsg* msg);
+void SVHW_WriteEntitiesToClient(client_t* client, QMsg* msg);
+void SVHW_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
+
+//
 //	Game
 //
 #define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
@@ -150,6 +159,10 @@ extern Cvar* svhw_allowtaunts;
 extern Cvar* svqhw_spectalk;
 extern Cvar* qh_skill;
 extern Cvar* qh_pausable;
+extern Cvar* svh2_update_player;
+extern Cvar* svh2_update_monsters;
+extern Cvar* svh2_update_missiles;
+extern Cvar* svh2_update_misc;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -212,6 +225,13 @@ void SVQH_ClientThink(client_t* client, float frametime);
 //
 extern unsigned clients_multicast;
 extern Cvar* sv_phs;
+extern int svqw_nailmodel;
+extern int svqw_supernailmodel;
+extern int svqw_playermodel;
+extern int svhw_magicmissmodel;
+extern int svhw_playermodel[MAX_PLAYER_CLASS];
+extern int svhw_ravenmodel;
+extern int svhw_raven2model;
 
 void SVQH_Multicast(const vec3_t origin, int to);
 void SVHW_MulticastSpecific(unsigned clients, bool reliable);

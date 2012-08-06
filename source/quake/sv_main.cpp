@@ -233,257 +233,12 @@ void SV_ClearDatagram(void)
 }
 
 /*
-=============================================================================
-
-The PVS must include a small area around the client to allow head bobbing
-or other small motion on the client side.  Otherwise, a bob might cause an
-entity that should be visible to not show up, especially when the bob
-crosses a waterline.
-
-=============================================================================
-*/
-
-static byte fatpvs[BSP29_MAX_MAP_LEAFS / 8];
-
-/*
 =============
-SV_FatPVS
-
-Calculates a PVS that is the inclusive or of all leafs within 8 pixels of the
-given point.
-=============
-*/
-byte* SV_FatPVS(vec3_t org)
-{
-	vec3_t mins, maxs;
-	for (int i = 0; i < 3; i++)
-	{
-		mins[i] = org[i] - 8;
-		maxs[i] = org[i] + 8;
-	}
-
-	int leafs[64];
-	int count = CM_BoxLeafnums(mins, maxs, leafs, 64);
-	if (count < 1)
-	{
-		common->FatalError("SV_FatPVS: count < 1");
-	}
-
-	// convert leafs to clusters
-	for (int i = 0; i < count; i++)
-	{
-		leafs[i] = CM_LeafCluster(leafs[i]);
-	}
-
-	int fatbytes = (CM_NumClusters() + 31) >> 3;
-	Com_Memcpy(fatpvs, CM_ClusterPVS(leafs[0]), fatbytes);
-	// or in all the other leaf bits
-	for (int i = 1; i < count; i++)
-	{
-		byte* pvs = CM_ClusterPVS(leafs[i]);
-		for (int j = 0; j < fatbytes; j++)
-		{
-			fatpvs[j] |= pvs[j];
-		}
-	}
-	return fatpvs;
-}
-
-//=============================================================================
-
-
-/*
-=============
-SV_WriteEntitiesToClient
+SVQH_CleanupEnts
 
 =============
 */
-void SV_WriteEntitiesToClient(qhedict_t* clent, QMsg* msg)
-{
-	int e, i;
-	int bits;
-	byte* pvs;
-	vec3_t org;
-	float miss;
-	qhedict_t* ent;
-
-// find the client's PVS
-	VectorAdd(clent->GetOrigin(), clent->GetViewOfs(), org);
-	pvs = SV_FatPVS(org);
-
-// send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.qh_edicts);
-	for (e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
-	{
-// ignore if not touching a PV leaf
-		if (ent != clent)	// clent is ALLWAYS sent
-		{
-// ignore ents without visible models
-			if (!ent->v.modelindex || !*PR_GetString(ent->GetModel()))
-			{
-				continue;
-			}
-
-			for (i = 0; i < ent->num_leafs; i++)
-			{
-				int l = CM_LeafCluster(ent->LeafNums[i]);
-				if (pvs[l >> 3] & (1 << (l & 7)))
-				{
-					break;
-				}
-			}
-
-			if (i == ent->num_leafs)
-			{
-				continue;		// not visible
-			}
-		}
-
-		if (msg->maxsize - msg->cursize < 16)
-		{
-			common->Printf("packet overflow\n");
-			return;
-		}
-
-// send an update
-		bits = 0;
-
-		for (i = 0; i < 3; i++)
-		{
-			miss = ent->GetOrigin()[i] - ent->q1_baseline.origin[i];
-			if (miss < -0.1 || miss > 0.1)
-			{
-				bits |= Q1U_ORIGIN1 << i;
-			}
-		}
-
-		if (ent->GetAngles()[0] != ent->q1_baseline.angles[0])
-		{
-			bits |= Q1U_ANGLE1;
-		}
-
-		if (ent->GetAngles()[1] != ent->q1_baseline.angles[1])
-		{
-			bits |= Q1U_ANGLE2;
-		}
-
-		if (ent->GetAngles()[2] != ent->q1_baseline.angles[2])
-		{
-			bits |= Q1U_ANGLE3;
-		}
-
-		if (ent->GetMoveType() == QHMOVETYPE_STEP)
-		{
-			bits |= Q1U_NOLERP;	// don't mess up the step animation
-
-		}
-		if (ent->q1_baseline.colormap != ent->GetColorMap())
-		{
-			bits |= Q1U_COLORMAP;
-		}
-
-		if (ent->q1_baseline.skinnum != ent->GetSkin())
-		{
-			bits |= Q1U_SKIN;
-		}
-
-		if (ent->q1_baseline.frame != ent->GetFrame())
-		{
-			bits |= Q1U_FRAME;
-		}
-
-		if (ent->q1_baseline.effects != ent->GetEffects())
-		{
-			bits |= Q1U_EFFECTS;
-		}
-
-		if (ent->q1_baseline.modelindex != ent->v.modelindex)
-		{
-			bits |= Q1U_MODEL;
-		}
-
-		if (e >= 256)
-		{
-			bits |= Q1U_LONGENTITY;
-		}
-
-		if (bits >= 256)
-		{
-			bits |= Q1U_MOREBITS;
-		}
-
-		//
-		// write the message
-		//
-		msg->WriteByte(bits | Q1U_SIGNAL);
-
-		if (bits & Q1U_MOREBITS)
-		{
-			msg->WriteByte(bits >> 8);
-		}
-		if (bits & Q1U_LONGENTITY)
-		{
-			msg->WriteShort(e);
-		}
-		else
-		{
-			msg->WriteByte(e);
-		}
-
-		if (bits & Q1U_MODEL)
-		{
-			msg->WriteByte(ent->v.modelindex);
-		}
-		if (bits & Q1U_FRAME)
-		{
-			msg->WriteByte(ent->GetFrame());
-		}
-		if (bits & Q1U_COLORMAP)
-		{
-			msg->WriteByte(ent->GetColorMap());
-		}
-		if (bits & Q1U_SKIN)
-		{
-			msg->WriteByte(ent->GetSkin());
-		}
-		if (bits & Q1U_EFFECTS)
-		{
-			msg->WriteByte(ent->GetEffects());
-		}
-		if (bits & Q1U_ORIGIN1)
-		{
-			msg->WriteCoord(ent->GetOrigin()[0]);
-		}
-		if (bits & Q1U_ANGLE1)
-		{
-			msg->WriteAngle(ent->GetAngles()[0]);
-		}
-		if (bits & Q1U_ORIGIN2)
-		{
-			msg->WriteCoord(ent->GetOrigin()[1]);
-		}
-		if (bits & Q1U_ANGLE2)
-		{
-			msg->WriteAngle(ent->GetAngles()[1]);
-		}
-		if (bits & Q1U_ORIGIN3)
-		{
-			msg->WriteCoord(ent->GetOrigin()[2]);
-		}
-		if (bits & Q1U_ANGLE3)
-		{
-			msg->WriteAngle(ent->GetAngles()[2]);
-		}
-	}
-}
-
-/*
-=============
-SV_CleanupEnts
-
-=============
-*/
-void SV_CleanupEnts(void)
+void SVQH_CleanupEnts(void)
 {
 	int e;
 	qhedict_t* ent;
@@ -514,7 +269,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 // add the client specific data to the datagram
 	SVQH_WriteClientdataToMessage(client, &msg);
 
-	SV_WriteEntitiesToClient(client->qh_edict, &msg);
+	SVQ1_WriteEntitiesToClient(client->qh_edict, &msg);
 
 // copy the server datagram if there is space
 	if (msg.cursize + sv.qh_datagram.cursize < msg.maxsize)
@@ -681,7 +436,7 @@ void SV_SendClientMessages(void)
 
 
 // clear muzzle flashes
-	SV_CleanupEnts();
+	SVQH_CleanupEnts();
 }
 
 

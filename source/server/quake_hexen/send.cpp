@@ -23,6 +23,14 @@ unsigned clients_multicast;
 
 Cvar* sv_phs;
 
+int svqw_nailmodel;
+int svqw_supernailmodel;
+int svqw_playermodel;
+int svhw_magicmissmodel;
+int svhw_playermodel[MAX_PLAYER_CLASS];
+int svhw_ravenmodel;
+int svhw_raven2model;
+
 //	Sends the contents of sv.multicast to a subset of the clients,
 // then clears sv.multicast.
 //

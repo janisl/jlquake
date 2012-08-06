@@ -156,15 +156,13 @@ FRAME UPDATES
 ===============================================================================
 */
 
-int sv_nailmodel, sv_supernailmodel, sv_playermodel;
-
 void SV_FindModelNumbers(void)
 {
 	int i;
 
-	sv_nailmodel = -1;
-	sv_supernailmodel = -1;
-	sv_playermodel = -1;
+	svqw_nailmodel = -1;
+	svqw_supernailmodel = -1;
+	svqw_playermodel = -1;
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 	{
@@ -174,15 +172,15 @@ void SV_FindModelNumbers(void)
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"progs/spike.mdl"))
 		{
-			sv_nailmodel = i;
+			svqw_nailmodel = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"progs/s_spike.mdl"))
 		{
-			sv_supernailmodel = i;
+			svqw_supernailmodel = i;
 		}
 		if (!String::Cmp(sv.qh_model_precache[i],"progs/player.mdl"))
 		{
-			sv_playermodel = i;
+			svqw_playermodel = i;
 		}
 	}
 }
@@ -264,7 +262,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	// send over all the objects that are in the PVS
 	// this will include clients, a packetentities, and
 	// possibly a nails update
-	SV_WriteEntitiesToClient(client, &msg);
+	SVQW_WriteEntitiesToClient(client, &msg);
 
 	// copy the accumulated multicast datagram
 	// for this client out to the message

@@ -58,15 +58,6 @@
 #include "sys.h"
 #include "zone.h"
 
-//#define BASE_ENT_ON		1
-//#define BASE_ENT_SENT	2
-
-#define CLEAR_LIMIT 2
-
-#define ENT_STATE_ON        1
-#define ENT_CLEARED         2
-
-
 #ifndef DEDICATED
 #include "draw.h"
 #include "screen.h"

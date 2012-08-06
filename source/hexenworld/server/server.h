@@ -88,10 +88,3 @@ void SV_EndRedirect(void);
 // sv_ccmds.c
 //
 void SV_Status_f(void);
-
-//
-// sv_ents.c
-//
-void SV_WriteEntitiesToClient(client_t* client, QMsg* msg);
-
-void SV_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
