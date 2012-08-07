@@ -644,6 +644,11 @@ void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int 
 	}
 }
 
+void SVQH_ClearDatagram()
+{
+	sv.qh_datagram.Clear();
+}
+
 static void SVQ1_WriteClientdataToMessage(qhedict_t* ent, QMsg* msg)
 {
 	int bits = 0;
@@ -1606,4 +1611,670 @@ void SVQHW_BeginRedirect(const netadr_t& addr)
 {
 	qh_redirect_addr = addr;
 	Com_BeginRedirect(outputbuf, sizeof(outputbuf), SVQHW_FlushRedirect);
+}
+
+void SVQW_FindModelNumbers()
+{
+	svqw_nailmodel = -1;
+	svqw_supernailmodel = -1;
+	svqw_playermodel = -1;
+
+	for (int i = 0; i < MAX_MODELS_Q1; i++)
+	{
+		if (!sv.qh_model_precache[i])
+		{
+			break;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/spike.mdl"))
+		{
+			svqw_nailmodel = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/s_spike.mdl"))
+		{
+			svqw_supernailmodel = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"progs/player.mdl"))
+		{
+			svqw_playermodel = i;
+		}
+	}
+}
+
+void SVHW_FindModelNumbers()
+{
+	svhw_playermodel[0] = -1;
+	svhw_playermodel[1] = -1;
+	svhw_playermodel[2] = -1;
+	svhw_playermodel[3] = -1;
+	svhw_playermodel[4] = -1;
+	svhw_magicmissmodel = -1;
+	svhw_ravenmodel = -1;
+	svhw_raven2model = -1;
+
+	for (int i = 0; i < MAX_MODELS_H2; i++)
+	{
+		if (!sv.qh_model_precache[i])
+		{
+			break;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/paladin.mdl"))
+		{
+			svhw_playermodel[0] = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/crusader.mdl"))
+		{
+			svhw_playermodel[1] = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/necro.mdl"))
+		{
+			svhw_playermodel[2] = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/assassin.mdl"))
+		{
+			svhw_playermodel[3] = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/succubus.mdl"))
+		{
+			svhw_playermodel[4] = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/ball.mdl"))
+		{
+			svhw_magicmissmodel = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/ravproj.mdl"))
+		{
+			svhw_ravenmodel = i;
+		}
+		if (!String::Cmp(sv.qh_model_precache[i],"models/vindsht1.mdl"))
+		{
+			svhw_raven2model = i;
+		}
+	}
+}
+
+//	Performs a delta update of the stats array.  This should only be performed
+// when a reliable message can be delivered this frame.
+static void SVQHW_UpdateClientStats(client_t* client)
+{
+	qhedict_t* ent = client->qh_edict;
+	// if we are a spectator and we are tracking a player, we get his stats
+	// so our status bar reflects his
+	if (client->qh_spectator && client->qh_spec_track > 0)
+	{
+		ent = svs.clients[client->qh_spec_track - 1].qh_edict;
+	}
+
+	int stats[MAX_CL_STATS];
+	Com_Memset(stats, 0, sizeof(stats));
+	stats[Q1STAT_WEAPON] = SVQH_ModelIndex(PR_GetString(ent->GetWeaponModel()));
+	if (GGameType & GAME_QuakeWorld)
+	{
+		stats[Q1STAT_HEALTH] = ent->GetHealth();
+		stats[Q1STAT_AMMO] = ent->GetCurrentAmmo();
+		stats[Q1STAT_ARMOR] = ent->GetArmorValue();
+		stats[Q1STAT_SHELLS] = ent->GetAmmoShells();
+		stats[Q1STAT_NAILS] = ent->GetAmmoNails();
+		stats[Q1STAT_ROCKETS] = ent->GetAmmoRockets();
+		stats[Q1STAT_CELLS] = ent->GetAmmoCells();
+		if (!client->qh_spectator)
+		{
+			stats[Q1STAT_ACTIVEWEAPON] = ent->GetWeapon();
+		}
+		// stuff the sigil bits into the high bits of items for sbar
+		stats[QWSTAT_ITEMS] = (int)ent->GetItems() | ((int)*pr_globalVars.serverflags << 28);
+	}
+
+	for (int i = 0; i < MAX_CL_STATS; i++)
+	{
+		if (stats[i] != client->qh_stats[i])
+		{
+			client->qh_stats[i] = stats[i];
+			if (stats[i] >= 0 && stats[i] <= 255)
+			{
+				SVQH_ClientReliableWrite_Begin(client, GGameType & GAME_HexenWorld ? h2svc_updatestat : q1svc_updatestat, 3);
+				SVQH_ClientReliableWrite_Byte(client, i);
+				SVQH_ClientReliableWrite_Byte(client, stats[i]);
+			}
+			else
+			{
+				SVQH_ClientReliableWrite_Begin(client, GGameType & GAME_HexenWorld ? hwsvc_updatestatlong : qwsvc_updatestatlong, 6);
+				SVQH_ClientReliableWrite_Byte(client, i);
+				SVQH_ClientReliableWrite_Long(client, stats[i]);
+			}
+		}
+	}
+}
+
+static bool SVQH_SendClientDatagram(client_t* client)
+{
+	byte buf[MAX_MSGLEN];
+	QMsg msg;
+	msg.InitOOB(buf, GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_DATAGRAM_QH);
+
+	msg.WriteByte(GGameType & GAME_Hexen2 ? h2svc_time : q1svc_time);
+	msg.WriteFloat(sv.qh_time);
+
+	// add the client specific data to the datagram
+	SVQH_WriteClientdataToMessage(client, &msg);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		SVH2_PrepareClientEntities(client, client->qh_edict, &msg);
+	}
+	else
+	{
+		SVQ1_WriteEntitiesToClient(client->qh_edict, &msg);
+	}
+
+	// copy the server datagram if there is space
+	if (msg.cursize + sv.qh_datagram.cursize < msg.maxsize)
+	{
+		msg.WriteData(sv.qh_datagram._data, sv.qh_datagram.cursize);
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		if (msg.cursize + client->datagram.cursize < msg.maxsize)
+		{
+			msg.WriteData(client->datagram._data, client->datagram.cursize);
+		}
+
+		client->datagram.Clear();
+	}
+
+	// send the datagram
+	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
+	{
+		SVQH_DropClient(client, true);// if the message couldn't send, kick off
+		return false;
+	}
+
+	return true;
+}
+
+static bool SVQHW_SendClientDatagram(client_t* client)
+{
+	byte buf[MAX_DATAGRAM];
+	QMsg msg;
+	msg.InitOOB(buf, GGameType & GAME_HexenWorld ? MAX_DATAGRAM_HW : MAX_DATAGRAM_QW);
+	msg.allowoverflow = true;
+
+	// add the client specific data to the datagram
+	SVQH_WriteClientdataToMessage(client, &msg);
+
+	// send over all the objects that are in the PVS
+	// this will include clients, a packetentities, and
+	// possibly a nails update
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVHW_WriteEntitiesToClient(client, &msg);
+	}
+	else
+	{
+		SVQW_WriteEntitiesToClient(client, &msg);
+	}
+
+	// copy the accumulated multicast datagram
+	// for this client out to the message
+	if (client->datagram.overflowed)
+	{
+		common->Printf("WARNING: datagram overflowed for %s\n", client->name);
+	}
+	else
+	{
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	}
+	client->datagram.Clear();
+
+	// send deltas over reliable stream
+	if (Netchan_CanReliable(&client->netchan))
+	{
+		SVQHW_UpdateClientStats(client);
+	}
+
+	if (msg.overflowed)
+	{
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
+		msg.Clear();
+	}
+
+	// send the datagram
+	Netchan_Transmit(&client->netchan, msg.cursize, buf);
+
+	return true;
+}
+
+static void SVQH_UpdateToReliableMessages()
+{
+	// check for changes to be sent over the reliable streams
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
+	{
+		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
+		{
+			client_t* client = svs.clients;
+			for (int j = 0; j < svs.qh_maxclients; j++, client++)
+			{
+				if (client->state < CS_CONNECTED)
+				{
+					continue;
+				}
+				client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_updatefrags : q1svc_updatefrags);
+				client->qh_message.WriteByte(i);
+				client->qh_message.WriteShort(host_client->qh_edict->GetFrags());
+			}
+
+			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
+		}
+	}
+
+	client_t* client = svs.clients;
+	for (int j = 0; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		client->qh_message.WriteData(sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
+	}
+
+	sv.qh_reliable_datagram.Clear();
+}
+
+static bool ValidToShowName(qhedict_t* edict)
+{
+	if (edict->GetDeadFlag())
+	{
+		return false;
+	}
+	if ((int)edict->GetEffects() & H2EF_NODRAW)
+	{
+		return false;
+	}
+	return true;
+}
+
+static void UpdatePIV()
+{
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, host_client++)
+	{
+		host_client->hw_PIV = 0;
+	}
+
+	host_client = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, host_client++)
+	{
+		if (host_client->state != CS_ACTIVE || host_client->qh_spectator)
+		{
+			continue;
+		}
+
+		vec3_t adjust_org1;
+		VectorCopy(host_client->qh_edict->GetOrigin(), adjust_org1);
+		adjust_org1[2] += 24;
+
+		client_t* client = host_client + 1;
+		for (int j = i + 1; j < MAX_CLIENTS_QHW; j++, client++)
+		{
+			if (client->state != CS_ACTIVE || client->qh_spectator)
+			{
+				continue;
+			}
+
+			vec3_t distvec;
+			VectorSubtract(client->qh_edict->GetOrigin(), host_client->qh_edict->GetOrigin(), distvec);
+			float dist = VectorNormalize(distvec);
+			if (dist > svhw_namedistance->value)
+			{
+				continue;
+			}
+
+			vec3_t adjust_org2;
+			VectorCopy(client->qh_edict->GetOrigin(), adjust_org2);
+			adjust_org2[2] += 24;
+
+			q1trace_t trace = SVQH_MoveHull0(adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict);
+			if (QH_EDICT_NUM(trace.entityNum) == client->qh_edict)
+			{
+				//can see each other, check for invisible, dead
+				if (ValidToShowName(client->qh_edict))
+				{
+					host_client->hw_PIV |= 1 << j;
+				}
+				if (ValidToShowName(host_client->qh_edict))
+				{
+					client->hw_PIV |= 1 << i;
+				}
+			}
+		}
+	}
+}
+
+static void SVQHW_UpdateToReliableMessages()
+{
+	bool CheckPIV = false;
+	if (GGameType & GAME_HexenWorld && sv.qh_time - sv.hw_next_PIV_time >= 1)
+	{
+		sv.hw_next_PIV_time = sv.qh_time + 1;
+		CheckPIV = true;
+		UpdatePIV();
+	}
+
+	// check for changes to be sent over the reliable streams to all clients
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, host_client++)
+	{
+		if (host_client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		if (host_client->qh_sendinfo)
+		{
+			host_client->qh_sendinfo = false;
+			SVQHW_FullClientUpdate(host_client, &sv.qh_reliable_datagram);
+		}
+		if (host_client->qh_old_frags != host_client->qh_edict->GetFrags())
+		{
+			client_t* client = svs.clients;
+			for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+			{
+				if (client->state < CS_CONNECTED)
+				{
+					continue;
+				}
+				if (GGameType & GAME_HexenWorld)
+				{
+					client->netchan.message.WriteByte(hwsvc_updatedminfo);
+					client->netchan.message.WriteByte(i);
+					client->netchan.message.WriteShort(host_client->qh_edict->GetFrags());
+					client->netchan.message.WriteByte((host_client->h2_playerclass << 5) | ((int)host_client->qh_edict->GetLevel() & 31));
+
+					if (hw_dmMode->value == HWDM_SIEGE)
+					{
+						client->netchan.message.WriteByte(hwsvc_updatesiegelosses);
+						client->netchan.message.WriteByte(*pr_globalVars.defLosses);
+						client->netchan.message.WriteByte(*pr_globalVars.attLosses);
+					}
+				}
+				else
+				{
+					SVQH_ClientReliableWrite_Begin(client, q1svc_updatefrags, 4);
+					SVQH_ClientReliableWrite_Byte(client, i);
+					SVQH_ClientReliableWrite_Short(client, host_client->qh_edict->GetFrags());
+				}
+			}
+
+			host_client->qh_old_frags = host_client->qh_edict->GetFrags();
+		}
+
+		if (GGameType & GAME_HexenWorld)
+		{
+			SVHW_WriteInventory(host_client, host_client->qh_edict, &host_client->netchan.message);
+
+			if (CheckPIV && host_client->hw_PIV != host_client->hw_LastPIV)
+			{
+				host_client->netchan.message.WriteByte(hwsvc_update_piv);
+				host_client->netchan.message.WriteLong(host_client->hw_PIV);
+				host_client->hw_LastPIV = host_client->hw_PIV;
+			}
+		}
+
+		// maxspeed/entgravity changes
+		qhedict_t* ent = host_client->qh_edict;
+
+		eval_t* val = GetEdictFieldValue(ent, "gravity");
+		if (val && host_client->qh_entgravity != val->_float)
+		{
+			host_client->qh_entgravity = val->_float;
+			SVQH_ClientReliableWrite_Begin(host_client, GGameType & GAME_HexenWorld ? hwsvc_entgravity : qwsvc_entgravity, 5);
+			SVQH_ClientReliableWrite_Float(host_client, host_client->qh_entgravity);
+		}
+		val = GetEdictFieldValue(ent, "maxspeed");
+		if (val && host_client->qh_maxspeed != val->_float)
+		{
+			host_client->qh_maxspeed = val->_float;
+			SVQH_ClientReliableWrite_Begin(host_client, GGameType & GAME_HexenWorld ? hwsvc_maxspeed : qwsvc_maxspeed, 5);
+			SVQH_ClientReliableWrite_Float(host_client, host_client->qh_maxspeed);
+		}
+
+	}
+
+	if (sv.qh_datagram.overflowed)
+	{
+		sv.qh_datagram.Clear();
+	}
+
+	// append the broadcast messages to each client messages
+	client_t* client = svs.clients;
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;	// reliables go to all connected or spawned
+		}
+		SVQH_ClientReliableCheckBlock(client, sv.qh_reliable_datagram.cursize);
+		SVQH_ClientReliableWrite_SZ(client, sv.qh_reliable_datagram._data, sv.qh_reliable_datagram.cursize);
+
+		if (client->state != CS_ACTIVE)
+		{
+			continue;	// datagrams only go to spawned
+		}
+		client->datagram.WriteData(sv.qh_datagram._data, sv.qh_datagram.cursize);
+	}
+
+	sv.qh_reliable_datagram.Clear();
+	sv.qh_datagram.Clear();
+}
+
+static void SVQH_CleanupEnts()
+{
+	qhedict_t* ent = NEXT_EDICT(sv.qh_edicts);
+	for (int e = 1; e < sv.qh_num_edicts; e++, ent = NEXT_EDICT(ent))
+	{
+		ent->SetEffects((int)ent->GetEffects() & (GGameType & GAME_Hexen2 ? ~H2EF_MUZZLEFLASH : ~Q1EF_MUZZLEFLASH));
+		if (GGameType& GAME_HexenWorld)
+		{
+			ent->SetWpnSound(0);
+		}
+	}
+}
+
+//	Send a nop message without trashing or sending the accumulated client message buffer
+static void SVQH_SendNop(client_t* client)
+{
+	QMsg msg;
+	byte buf[4];
+	msg.InitOOB(buf, sizeof(buf));
+
+	msg.WriteChar(GGameType & GAME_Hexen2 ? h2svc_nop : q1svc_nop);
+
+	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
+	{
+		SVQH_DropClient(client, true);	// if the message couldn't send, kick off
+	}
+	client->qh_last_message = svs.realtime * 0.001;
+}
+
+void SVQH_SendClientMessages()
+{
+	// update frags, names, etc
+	SVQH_UpdateToReliableMessages();
+
+	// build individual updates
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
+	{
+		if (host_client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+
+		if (host_client->state == CS_ACTIVE)
+		{
+			if (!SVQH_SendClientDatagram(host_client))
+			{
+				continue;
+			}
+		}
+		else
+		{
+			// the player isn't totally in the game yet
+			// send small keepalive messages if too much time has passed
+			// send a full message when the next signon stage has been requested
+			// some other message data (name changes, etc) may accumulate
+			// between signon stages
+			if (!host_client->qh_sendsignon)
+			{
+				if (svs.realtime * 0.001 - host_client->qh_last_message > 5)
+				{
+					SVQH_SendNop(host_client);
+				}
+				continue;	// don't send out non-signon messages
+			}
+		}
+
+		// check for an overflowed message.  Should only happen
+		// on a very fucked up connection that backs up a lot, then
+		// changes level
+		if (host_client->qh_message.overflowed)
+		{
+			SVQH_DropClient(host_client, true);
+			host_client->qh_message.overflowed = false;
+			continue;
+		}
+
+		if (host_client->qh_message.cursize || host_client->qh_dropasap)
+		{
+			if (!NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+			{
+				continue;
+			}
+
+			if (host_client->qh_dropasap)
+			{
+				SVQH_DropClient(host_client, false);	// went to another level
+			}
+			else
+			{
+				if (NET_SendMessage(host_client->qh_netconnection,
+						&host_client->netchan, &host_client->qh_message) == -1)
+				{
+					SVQH_DropClient(host_client, true);	// if the message couldn't send, kick off
+				}
+				host_client->qh_message.Clear();
+				host_client->qh_last_message = svs.realtime * 0.001;
+				host_client->qh_sendsignon = false;
+			}
+		}
+	}
+
+	// clear muzzle flashes
+	SVQH_CleanupEnts();
+}
+
+void SVQHW_SendClientMessages()
+{
+	// update frags, names, etc
+	SVQHW_UpdateToReliableMessages();
+
+	// build individual updates
+	client_t* c = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, c++)
+	{
+		if (!c->state)
+		{
+			continue;
+		}
+
+		if (GGameType & GAME_QuakeWorld && c->qw_drop)
+		{
+			SVQHW_DropClient(c);
+			c->qw_drop = false;
+			continue;
+		}
+
+		// check to see if we have a backbuf to stick in the reliable
+		if (c->qw_num_backbuf)
+		{
+			// will it fit?
+			if (c->netchan.message.cursize + c->qw_backbuf_size[0] <
+				c->netchan.message.maxsize)
+			{
+
+				common->DPrintf("%s: backbuf %d bytes\n",
+					c->name, c->qw_backbuf_size[0]);
+
+				// it'll fit
+				c->netchan.message.WriteData(c->qw_backbuf_data[0],
+					c->qw_backbuf_size[0]);
+
+				//move along, move along
+				for (int j = 1; j < c->qw_num_backbuf; j++)
+				{
+					Com_Memcpy(c->qw_backbuf_data[j - 1], c->qw_backbuf_data[j],
+						c->qw_backbuf_size[j]);
+					c->qw_backbuf_size[j - 1] = c->qw_backbuf_size[j];
+				}
+
+				c->qw_num_backbuf--;
+				if (c->qw_num_backbuf)
+				{
+					c->qw_backbuf.InitOOB(c->qw_backbuf_data[c->qw_num_backbuf - 1], sizeof(c->qw_backbuf_data[c->qw_num_backbuf - 1]));
+					c->qw_backbuf.cursize = c->qw_backbuf_size[c->qw_num_backbuf - 1];
+				}
+			}
+		}
+
+		// if the reliable message overflowed,
+		// drop the client
+		if (c->netchan.message.overflowed)
+		{
+			c->netchan.message.Clear();
+			c->datagram.Clear();
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
+			common->Printf("WARNING: reliable overflow for %s\n",c->name);
+			SVQHW_DropClient(c);
+			c->qh_send_message = true;
+		}
+
+		// only send messages if the client has sent one
+		// and the bandwidth is not choked
+		if (!c->qh_send_message)
+		{
+			continue;
+		}
+		c->qh_send_message = false;	// try putting this after choke?
+
+		if (c->state == CS_ACTIVE)
+		{
+			SVQHW_SendClientDatagram(c);
+		}
+		else
+		{
+			Netchan_Transmit(&c->netchan, 0, NULL);		// just update reliable
+
+		}
+	}
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		// clear muzzle flashes & wpn_sound
+		SVQH_CleanupEnts();
+	}
+}
+
+//	FIXME: does this sequence right?
+void SVQHW_SendMessagesToAll()
+{
+	int i;
+	client_t* c;
+
+	for (i = 0, c = svs.clients; i < MAX_CLIENTS_QHW; i++, c++)
+		if (c->state)		// FIXME: should this only send to active?
+		{
+			c->qh_send_message = true;
+		}
+
+	SVQHW_SendClientMessages();
 }

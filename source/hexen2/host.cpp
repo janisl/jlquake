@@ -544,6 +544,7 @@ qboolean Host_FilterTime(float time)
 	if (realtime - oldrealtime < 1.0 / 72.0)
 #else
 	cls.realtime = realtime * 1000;
+	svs.realtime = realtime * 1000;
 
 	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / 72.0)
 #endif
@@ -613,7 +614,7 @@ void Host_ServerFrame(void)
 	*pr_globalVars.frametime = host_frametime;
 
 // set the time and clear the general datagram
-	SV_ClearDatagram();
+	SVQH_ClearDatagram();
 
 // check for new clients
 	SV_CheckForNewClients();
@@ -635,7 +636,7 @@ void Host_ServerFrame(void)
 	}
 
 // send all messages to the clients
-	SV_SendClientMessages();
+	SVQH_SendClientMessages();
 }
 
 /*

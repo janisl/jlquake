@@ -33,6 +33,7 @@ Cvar* svqw_mapcheck;
 Cvar* svhw_allowtaunts;
 Cvar* svqhw_spectalk;
 Cvar* qh_pausable;
+Cvar* svhw_namedistance;
 
 Cvar* svh2_update_player;
 Cvar* svh2_update_monsters;

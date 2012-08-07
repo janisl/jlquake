@@ -163,11 +163,12 @@ extern Cvar* svh2_update_player;
 extern Cvar* svh2_update_monsters;
 extern Cvar* svh2_update_missiles;
 extern Cvar* svh2_update_misc;
+extern Cvar* svhw_namedistance;
+extern Cvar* svqh_idealpitchscale;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
 extern fileHandle_t svqhw_fraglogfile;
-extern Cvar* svqh_idealpitchscale;
 
 int SVQH_CalcPing(client_t* cl);
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
@@ -249,8 +250,14 @@ void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax,
 void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count);
 void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
 void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count);
+void SVQH_ClearDatagram();
 void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg);
 void SVQHW_BeginRedirect(const netadr_t& addr);
+void SVQW_FindModelNumbers();
+void SVHW_FindModelNumbers();
+void SVQH_SendClientMessages();
+void SVQHW_SendClientMessages();
+void SVQHW_SendMessagesToAll();
 
 //
 //	World

@@ -281,7 +281,7 @@ void SV_SpawnServer(char* server)
 	ED_LoadFromFile(CM_EntityString());
 
 	// look up some model indexes for specialized message compression
-	SV_FindModelNumbers();
+	SVQW_FindModelNumbers();
 
 	// all spawning is completed, any further precache statements
 	// or prog writes to the signon message are errors

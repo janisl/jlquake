@@ -26,9 +26,6 @@ Cvar* rcon_password;
 Cvar* password;
 Cvar* spectator_password;
 
-Cvar* sv_namedistance;
-
-
 //
 // game rules mirrored in svs.qh_info
 //
@@ -1148,7 +1145,7 @@ void SV_Frame(float time)
 		SV_CheckVars();
 
 // send messages back to the clients that had packets read this frame
-		SV_SendClientMessages();
+		SVQHW_SendClientMessages();
 
 // send a heartbeat to the master if needed
 		Master_Heartbeat();
@@ -1244,7 +1241,7 @@ void SV_InitLocal(void)
 	svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
 
 	sv_phs = Cvar_Get("sv_phs", "1", 0);
-	sv_namedistance = Cvar_Get("sv_namedistance", "600", 0);
+	svhw_namedistance = Cvar_Get("sv_namedistance", "600", 0);
 
 	sv_ce_scale = Cvar_Get("sv_ce_scale", "1", CVAR_ARCHIVE);
 	sv_ce_max_size = Cvar_Get("sv_ce_max_size", "0", CVAR_ARCHIVE);

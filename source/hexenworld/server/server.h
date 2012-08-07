@@ -70,14 +70,6 @@ void Master_Packet(void);
 void SV_SpawnServer(char* server, char* startspot);
 
 //
-// sv_send.c
-//
-void SV_SendClientMessages(void);
-
-void SV_SendMessagesToAll(void);
-void SV_FindModelNumbers(void);
-
-//
 // sv_ccmds.c
 //
 void SV_Status_f(void);

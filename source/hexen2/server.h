@@ -23,9 +23,6 @@ extern double host_time;
 
 void SV_Init(void);
 
-void SV_SendClientMessages(void);
-void SV_ClearDatagram(void);
-
 void SV_AddUpdates(void);
 
 void SV_AddClientToServer(qsocket_t* ret);

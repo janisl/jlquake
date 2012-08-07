@@ -1273,7 +1273,7 @@ void SV_Frame(float time)
 		SV_CheckVars();
 
 // send messages back to the clients that had packets read this frame
-		SV_SendClientMessages();
+		SVQHW_SendClientMessages();
 
 // send a heartbeat to the master if needed
 		Master_Heartbeat();

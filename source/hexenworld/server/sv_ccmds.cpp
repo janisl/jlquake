@@ -321,7 +321,7 @@ void SV_Map_f(void)
 	FS_FCloseFile(f);
 
 	SVQH_BroadcastCommand("changing\n");
-	SV_SendMessagesToAll();
+	SVQHW_SendMessagesToAll();
 
 	SV_SpawnServer(level, startspot);
 
