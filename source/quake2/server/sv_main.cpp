@@ -376,7 +376,7 @@ void SVC_RemoteCommand(void)
 		common->Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 
-	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, (void*)SV_FlushRedirect);
+	Com_BeginRedirect(sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
 
 	if (!Rcon_Validate())
 	{

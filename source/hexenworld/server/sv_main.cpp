@@ -243,7 +243,7 @@ void SVC_Status(void)
 	int top, bottom;
 
 	Cmd_TokenizeString("status");
-	SV_BeginRedirect(RD_PACKET);
+	SVQHW_BeginRedirect(net_from);
 	common->Printf("%s\n", svs.qh_info);
 	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
@@ -258,7 +258,7 @@ void SVC_Status(void)
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
 		}
 	}
-	SV_EndRedirect();
+	Com_EndRedirect();
 }
 
 /*
@@ -593,7 +593,7 @@ void SVC_RemoteCommand(void)
 			SOCK_AdrToString(net_from), net_message._data + 4);
 	}
 
-	SV_BeginRedirect(RD_PACKET);
+	SVQHW_BeginRedirect(net_from);
 
 	if (!Rcon_Validate())
 	{
@@ -612,7 +612,7 @@ void SVC_RemoteCommand(void)
 		Cmd_ExecuteString(remaining);
 	}
 
-	SV_EndRedirect();
+	Com_EndRedirect();
 }
 
 

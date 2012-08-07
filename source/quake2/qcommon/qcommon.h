@@ -146,8 +146,6 @@ MISC
 #define EXEC_INSERT 1		// insert at current position, but don't run yet
 #define EXEC_APPEND 2		// add to end of the command buffer
 
-void        Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush));
-void        Com_EndRedirect(void);
 void        Com_Printf(const char* fmt, ...);
 void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);

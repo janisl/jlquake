@@ -128,35 +128,6 @@ CLIENT / SERVER interactions
 ============================================================================
 */
 
-static int rd_target;
-static char* rd_buffer;
-static int rd_buffersize;
-static void (* rd_flush)(int target, char* buffer);
-
-void Com_BeginRedirect(int target, char* buffer, int buffersize, void (*flush))
-{
-	if (!target || !buffer || !buffersize || !flush)
-	{
-		return;
-	}
-	rd_target = target;
-	rd_buffer = buffer;
-	rd_buffersize = buffersize;
-	rd_flush = (void (*)(int target, char* buffer))flush;
-
-	*rd_buffer = 0;
-}
-
-void Com_EndRedirect(void)
-{
-	rd_flush(rd_target, rd_buffer);
-
-	rd_target = 0;
-	rd_buffer = NULL;
-	rd_buffersize = 0;
-	rd_flush = NULL;
-}
-
 /*
 =============
 Com_Printf
@@ -174,11 +145,11 @@ void Com_Printf(const char* fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	if (rd_target)
+	if (rd_buffer)
 	{
 		if ((String::Length(msg) + String::Length(rd_buffer)) > (rd_buffersize - 1))
 		{
-			rd_flush(rd_target, rd_buffer);
+			rd_flush(rd_buffer);
 			*rd_buffer = 0;
 		}
 		String::Cat(rd_buffer, rd_buffersize, msg);

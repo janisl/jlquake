@@ -245,7 +245,7 @@ void SVC_Status(void)
 	int top, bottom;
 
 	Cmd_TokenizeString("status");
-	SV_BeginRedirect(RD_PACKET);
+	SVQHW_BeginRedirect(net_from);
 	common->Printf("%s\n", svs.qh_info);
 	for (i = 0; i < MAX_CLIENTS_QHW; i++)
 	{
@@ -262,7 +262,7 @@ void SVC_Status(void)
 				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
 		}
 	}
-	SV_EndRedirect();
+	Com_EndRedirect();
 }
 
 /*
@@ -676,7 +676,7 @@ void SVC_RemoteCommand(void)
 		common->Printf("Bad rcon from %s:\n%s\n",
 			SOCK_AdrToString(net_from), net_message._data + 4);
 
-		SV_BeginRedirect(RD_PACKET);
+		SVQHW_BeginRedirect(net_from);
 
 		common->Printf("Bad rcon_password.\n");
 
@@ -687,7 +687,7 @@ void SVC_RemoteCommand(void)
 		common->Printf("Rcon from %s:\n%s\n",
 			SOCK_AdrToString(net_from), net_message._data + 4);
 
-		SV_BeginRedirect(RD_PACKET);
+		SVQHW_BeginRedirect(net_from);
 
 		remaining[0] = 0;
 
@@ -701,7 +701,7 @@ void SVC_RemoteCommand(void)
 
 	}
 
-	SV_EndRedirect();
+	Com_EndRedirect();
 }
 
 

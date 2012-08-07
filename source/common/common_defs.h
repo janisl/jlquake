@@ -232,3 +232,10 @@ int Com_RealTime(qtime_t* qtime);
 
 byte COMQW_BlockSequenceCRCByte(byte* base, int length, int sequence);
 byte COMQ2_BlockSequenceCRCByte(byte* base, int length, int sequence);
+
+extern char* rd_buffer;
+extern int rd_buffersize;
+extern void (* rd_flush)(char* buffer);
+
+void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*));
+void Com_EndRedirect();

@@ -31,12 +31,9 @@ common->Printf redirection
 
 char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
-void SV_FlushRedirect(int sv_redirected, char* outputbuf)
+void SV_FlushRedirect(char* outputbuf)
 {
-	if (sv_redirected == RD_PACKET)
-	{
-		NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
-	}
+	NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
 }
 
 /*

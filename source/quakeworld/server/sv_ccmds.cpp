@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean sv_allow_cheats;
 
 extern Cvar* cl_warncmd;
-extern redirect_t sv_redirected;
+extern char* rd_buffer;
 
 
 /*
@@ -413,7 +413,7 @@ void SV_Status_f(void)
 	common->Printf("packets/frame    : %5.2f\n", pak);
 
 // min fps lat drp
-	if (sv_redirected != RD_NONE)
+	if (rd_buffer)
 	{
 		// most remote clients are 40 columns
 		//           0123456789012345678901234567890123456789
@@ -849,7 +849,7 @@ void SV_Snap(int uid)
 	String::Cpy(cl->qw_uploadfn, checkname);
 
 	Com_Memcpy(&cl->qw_snap_from, &net_from, sizeof(net_from));
-	if (sv_redirected != RD_NONE)
+	if (rd_buffer)
 	{
 		cl->qw_remote_snap = true;
 	}

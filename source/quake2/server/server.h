@@ -71,12 +71,11 @@ void SV_PrepWorldFrame(void);
 //
 // sv_send.c
 //
-typedef enum {RD_NONE, RD_PACKET} redirect_t;
 #define SV_OUTPUTBUF_LENGTH (MAX_MSGLEN_Q2 - 16)
 
 extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
-void SV_FlushRedirect(int sv_redirected, char* outputbuf);
+void SV_FlushRedirect(char* outputbuf);
 
 void SV_DemoCompleted(void);
 void SV_SendClientMessages(void);

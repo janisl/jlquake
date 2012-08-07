@@ -59,6 +59,10 @@ bool q1_standard_quake = true;
 bool q1_rogue;
 bool q1_hipnotic;
 
+char* rd_buffer;
+int rd_buffersize;
+void (* rd_flush)(char* buffer);
+
 Interface::~Interface()
 {
 }
@@ -922,4 +926,29 @@ byte COMQ2_BlockSequenceCRCByte(byte* base, int length, int sequence)
 	crc = (crc ^ x) & 0xff;
 
 	return crc;
+}
+
+void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*))
+{
+	if (!buffer || !buffersize || !flush)
+	{
+		return;
+	}
+	rd_buffer = buffer;
+	rd_buffersize = buffersize;
+	rd_flush = flush;
+
+	*rd_buffer = 0;
+}
+
+void Com_EndRedirect(void)
+{
+	if (rd_flush)
+	{
+		rd_flush(rd_buffer);
+	}
+
+	rd_buffer = NULL;
+	rd_buffersize = 0;
+	rd_flush = NULL;
 }

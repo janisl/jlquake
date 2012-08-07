@@ -4,6 +4,7 @@
 qboolean sv_allow_cheats;
 
 extern Cvar* cl_warncmd;
+extern char* rd_buffer;
 
 /*
 ===============================================================================
@@ -426,8 +427,6 @@ void SV_Status_f(void)
 	client_t* cl;
 	float cpu, avg, pak, t_limit,f_limit;
 	const char* s;
-	extern redirect_t sv_redirected;
-
 
 	cpu = (svs.qh_stats.latched_active + svs.qh_stats.latched_idle);
 	if (cpu)
@@ -462,7 +461,7 @@ void SV_Status_f(void)
 	}
 
 // min fps lat drp
-	if (sv_redirected != RD_NONE)
+	if (rd_buffer)
 	{
 		// most remote clients are 40 columns
 		//           0123456789012345678901234567890123456789

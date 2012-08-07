@@ -16,62 +16,7 @@ common->Printf redirection
 =============================================================================
 */
 
-char outputbuf[8000];
-
-redirect_t sv_redirected;
-
 extern Cvar* sv_namedistance;
-
-/*
-==================
-SV_FlushRedirect
-==================
-*/
-void SV_FlushRedirect(void)
-{
-	char send[8000 + 6];
-
-	if (sv_redirected == RD_PACKET)
-	{
-		send[0] = 0xff;
-		send[1] = 0xff;
-		send[2] = 0xff;
-		send[3] = 0xff;
-		send[4] = A2C_PRINT;
-		Com_Memcpy(send + 5, outputbuf, String::Length(outputbuf) + 1);
-
-		NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, net_from);
-	}
-	else if (sv_redirected == RD_CLIENT)
-	{
-		SVQH_PrintToClient(host_client, PRINT_HIGH, outputbuf);
-	}
-
-	// clear it
-	outputbuf[0] = 0;
-}
-
-
-/*
-==================
-SV_BeginRedirect
-
-  Send common->Printf data to the remote client
-  instead of the console
-==================
-*/
-void SV_BeginRedirect(redirect_t rd)
-{
-	sv_redirected = rd;
-	outputbuf[0] = 0;
-}
-
-void SV_EndRedirect(void)
-{
-	SV_FlushRedirect();
-	sv_redirected = RD_NONE;
-}
-
 
 /*
 ================
@@ -90,13 +35,13 @@ void Con_Printf(const char* fmt, ...)
 	va_end(argptr);
 
 	// add to redirected message
-	if (sv_redirected)
+	if (rd_buffer)
 	{
-		if (String::Length(msg) + String::Length(outputbuf) > (int)sizeof(outputbuf) - 1)
+		if (String::Length(msg) + String::Length(rd_buffer) > rd_buffersize - 1)
 		{
-			SV_FlushRedirect();
+			rd_flush(rd_buffer);
 		}
-		String::Cat(outputbuf, sizeof(outputbuf), msg);
+		String::Cat(rd_buffer, rd_buffersize, msg);
 		return;
 	}
 

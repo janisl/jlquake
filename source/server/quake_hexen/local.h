@@ -250,6 +250,7 @@ void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effe
 void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
 void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count);
 void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg);
+void SVQHW_BeginRedirect(const netadr_t& addr);
 
 //
 //	World

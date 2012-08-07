@@ -111,8 +111,6 @@ extern char cl_cdkey[34];
 
 char* CopyString(const char* in);
 
-void        Com_BeginRedirect(char* buffer, int buffersize, void (* flush)(char*));
-void        Com_EndRedirect(void);
 void        Com_Printf(const char* fmt, ...);
 void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);

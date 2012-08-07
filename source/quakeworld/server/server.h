@@ -83,13 +83,6 @@ void SV_SendMessagesToAll(void);
 void SV_FindModelNumbers(void);
 
 //
-// svonly.c
-//
-typedef enum {RD_NONE, RD_CLIENT, RD_PACKET} redirect_t;
-void SV_BeginRedirect(redirect_t rd);
-void SV_EndRedirect(void);
-
-//
 // sv_ccmds.c
 //
 void SV_Status_f(void);

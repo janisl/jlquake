@@ -31,6 +31,9 @@ int svhw_playermodel[MAX_PLAYER_CLASS];
 int svhw_ravenmodel;
 int svhw_raven2model;
 
+static char outputbuf[8000];
+static netadr_t qh_redirect_addr;
+
 //	Sends the contents of sv.multicast to a subset of the clients,
 // then clears sv.multicast.
 //
@@ -1579,4 +1582,28 @@ void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg)
 		msg->WriteByte(ent->GetTargPitch());
 		msg->WriteByte((ent->GetTargDist() < 255.0) ? (int)(ent->GetTargDist()) : 255);
 	}
+}
+
+static void SVQHW_FlushRedirect(char* buffer)
+{
+	char send[8000 + 6];
+
+	send[0] = 0xff;
+	send[1] = 0xff;
+	send[2] = 0xff;
+	send[3] = 0xff;
+	send[4] = A2C_PRINT;
+	Com_Memcpy(send + 5, buffer, String::Length(buffer) + 1);
+
+	NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, qh_redirect_addr);
+
+	// clear it
+	buffer[0] = 0;
+}
+
+//  Send common->Printf data to the remote client instead of the console
+void SVQHW_BeginRedirect(const netadr_t& addr)
+{
+	qh_redirect_addr = addr;
+	Com_BeginRedirect(outputbuf, sizeof(outputbuf), SVQHW_FlushRedirect);
 }
