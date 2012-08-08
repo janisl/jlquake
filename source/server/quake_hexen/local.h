@@ -32,6 +32,10 @@
 extern int qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead;
 extern char qhw_fp_msg[];
 
+void SVQ1_SavegameComment(char* text);
+void SVH2_SavegameComment(char* text);
+void SVH2_SaveGamestate(bool clientsOnly);
+
 //
 //	Client
 //
@@ -174,6 +178,8 @@ int SVQH_CalcPing(client_t* cl);
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
 void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl);
 void SVQHW_ExtractFromUserinfo(client_t* cl);
+const char* SVQ1_GetMapName();
+const char* SVH2_GetMapName();
 
 //
 //	Move

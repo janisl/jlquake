@@ -60,3 +60,5 @@ struct qwclient_frame_t
 #define QHMSG_MULTICAST 4		// for multicast()
 
 #define QHMAX_LOCALINFO_STRING    32768
+
+#define SAVEGAME_COMMENT_LENGTH 39

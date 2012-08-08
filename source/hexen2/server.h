@@ -32,4 +32,3 @@ void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server, char* startspot);
 
 void SV_Edicts(const char* Name);
-void SaveGamestate(qboolean ClientsOnly);

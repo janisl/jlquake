@@ -62,7 +62,6 @@ This will be sent on the initial connection and upon each server load.
 void SV_SendServerinfo(client_t* client)
 {
 	const char** s;
-	char message[2048];
 
 	SVQH_ClientPrintf(client, 0, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
 
@@ -79,9 +78,7 @@ void SV_SendServerinfo(client_t* client)
 		client->qh_message.WriteByte(GAME_COOP);
 	}
 
-	String::Cpy(message, PR_GetString(sv.qh_edicts->GetMessage()));
-
-	client->qh_message.WriteString2(message);
+	client->qh_message.WriteString2(SVQ1_GetMapName());
 
 	for (s = sv.qh_model_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);

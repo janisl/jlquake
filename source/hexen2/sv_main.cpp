@@ -150,14 +150,7 @@ void SV_SendServerinfo(client_t* client)
 		client->qh_message.WriteByte(GAME_COOP);
 	}
 
-	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count)
-	{
-		client->qh_message.WriteString2(&prh2_global_strings[prh2_string_index[(int)sv.qh_edicts->GetMessage() - 1]]);
-	}
-	else
-	{
-		client->qh_message.WriteString2(PR_GetString(sv.qh_edicts->GetNetName()));
-	}
+	client->qh_message.WriteString2(SVH2_GetMapName());
 
 	for (s = sv.qh_model_precache + 1; *s; s++)
 		client->qh_message.WriteString2(*s);
@@ -468,7 +461,7 @@ void SV_SpawnServer(char* server, char* startspot)
 	if (svs.qh_changelevel_issued)
 	{
 		stats_restored = true;
-		SaveGamestate(true);
+		SVH2_SaveGamestate(true);
 	}
 	else
 	{

@@ -308,33 +308,6 @@ LOAD / SAVE GAME
 #ifndef DEDICATED
 /*
 ===============
-Host_SavegameComment
-
-Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
-===============
-*/
-void Host_SavegameComment(char* text)
-{
-	int i;
-	char kills[20];
-
-	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
-		text[i] = ' ';
-	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
-	sprintf(kills,"kills:%3i/%3i", cl.qh_stats[Q1STAT_MONSTERS], cl.qh_stats[Q1STAT_TOTALMONSTERS]);
-	Com_Memcpy(text + 22, kills, String::Length(kills));
-// convert space to _ to make stdio happy
-	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
-		if (text[i] == ' ')
-		{
-			text[i] = '_';
-		}
-	text[SAVEGAME_COMMENT_LENGTH] = '\0';
-}
-
-
-/*
-===============
 Host_Savegame_f
 ===============
 */
@@ -395,7 +368,7 @@ void Host_Savegame_f(void)
 	}
 
 	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
-	Host_SavegameComment(comment);
+	SVQ1_SavegameComment(comment);
 	FS_Printf(f, "%s\n", comment);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);

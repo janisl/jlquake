@@ -17,6 +17,7 @@
 #include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../../common/hexen2strings.h"
 
 Cvar* svqh_deathmatch;			// 0, 1, or 2
 Cvar* svqh_coop;				// 0 or 1
@@ -320,5 +321,22 @@ void SVQHW_ExtractFromUserinfo(client_t* cl)
 	if (String::Length(val))
 	{
 		cl->messagelevel = String::Atoi(val);
+	}
+}
+
+const char* SVQ1_GetMapName()
+{
+	return PR_GetString(sv.qh_edicts->GetMessage());
+}
+
+const char* SVH2_GetMapName()
+{
+	if (sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count)
+	{
+		return &prh2_global_strings[prh2_string_index[(int)sv.qh_edicts->GetMessage() - 1]];
+	}
+	else
+	{
+		return PR_GetString(sv.qh_edicts->GetNetName());
 	}
 }

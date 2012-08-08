@@ -25,6 +25,3 @@
 
 
 #define SOUND_CHANNELS      8
-
-
-#define SAVEGAME_COMMENT_LENGTH 39

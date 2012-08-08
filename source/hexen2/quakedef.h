@@ -40,8 +40,6 @@
 #define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
 
 
-#define SAVEGAME_COMMENT_LENGTH 39
-
 //===========================================
 
 #ifdef MISSIONPACK

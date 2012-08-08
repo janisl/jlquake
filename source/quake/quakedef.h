@@ -56,9 +56,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MINIMUM_MEMORY          0x550000
 #define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
 
-
-#define SAVEGAME_COMMENT_LENGTH 39
-
 //===========================================
 
 #define SOUND_CHANNELS      8

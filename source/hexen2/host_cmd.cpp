@@ -343,46 +343,6 @@ LOAD / SAVE GAME
 ===============================================================================
 */
 
-#define SAVEGAME_VERSION    5
-
-#define ShortTime "%m/%d/%Y %H:%M"
-
-
-/*
-===============
-Host_SavegameComment
-
-Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
-===============
-*/
-void Host_SavegameComment(char* text)
-{
-	int i;
-	char kills[20];
-	struct tm* tblock;
-	time_t TempTime;
-
-	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
-		text[i] = ' ';
-#ifndef DEDICATED
-	Com_Memcpy(text, cl.qh_levelname, String::Length(cl.qh_levelname));
-#endif
-//	sprintf (kills,"kills:%3i/%3i", cl.stats[Q1STAT_MONSTERS], cl.stats[Q1STAT_TOTALMONSTERS]);
-
-	TempTime = time(NULL);
-	tblock = localtime(&TempTime);
-	strftime(kills,sizeof(kills),ShortTime,tblock);
-
-	Com_Memcpy(text + 21, kills, String::Length(kills));
-// convert space to _ to make stdio happy
-	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
-		if (text[i] == ' ')
-		{
-			text[i] = '_';
-		}
-	text[SAVEGAME_COMMENT_LENGTH] = '\0';
-}
-
 /*
 ===============
 Host_Savegame_f
@@ -439,7 +399,7 @@ void Host_Savegame_f(void)
 	}
 
 
-	SaveGamestate(false);
+	SVH2_SaveGamestate(false);
 
 #ifndef DEDICATED
 	CL_RemoveGIPFiles(Cmd_Argv(1));
@@ -463,8 +423,8 @@ void Host_Savegame_f(void)
 		return;
 	}
 
-	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
-	Host_SavegameComment(comment);
+	FS_Printf(f, "%i\n", H2_SAVEGAME_VERSION);
+	SVH2_SavegameComment(comment);
 	FS_Printf(f, "%s\n", comment);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
@@ -552,9 +512,9 @@ void Host_Loadgame_f(void)
 	char* ReadPos = (char*)Buffer.Ptr();
 	version = String::Atoi(GetLine(ReadPos));
 
-	if (version != SAVEGAME_VERSION)
+	if (version != H2_SAVEGAME_VERSION)
 	{
-		common->Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+		common->Printf("Savegame is version %i, not %i\n", version, H2_SAVEGAME_VERSION);
 		return;
 	}
 	GetLine(ReadPos);
@@ -646,99 +606,6 @@ void Host_Loadgame_f(void)
 #endif
 }
 
-void SaveGamestate(qboolean ClientsOnly)
-{
-	char name[MAX_OSPATH];
-	fileHandle_t f;
-	int i;
-	char comment[SAVEGAME_COMMENT_LENGTH + 1];
-	qhedict_t* ent;
-	int start,end;
-
-	if (ClientsOnly)
-	{
-		start = 1;
-		end = svs.qh_maxclients + 1;
-
-		sprintf(name, "clients.gip");
-	}
-	else
-	{
-		start = 1;
-		end = sv.qh_num_edicts;
-
-		sprintf(name, "%s.gip", sv.name);
-
-//		common->Printf ("Saving game to %s...\n", name);
-	}
-
-	f = FS_FOpenFileWrite(name);
-	if (!f)
-	{
-		common->Printf("ERROR: couldn't open.\n");
-		return;
-	}
-
-	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
-
-	if (!ClientsOnly)
-	{
-		Host_SavegameComment(comment);
-		FS_Printf(f, "%s\n", comment);
-		FS_Printf(f, "%f\n", qh_skill->value);
-		FS_Printf(f, "%s\n", sv.name);
-		FS_Printf(f, "%f\n", sv.qh_time);
-
-		// write the light styles
-
-		for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
-		{
-			if (sv.qh_lightstyles[i])
-			{
-				FS_Printf(f, "%s\n", sv.qh_lightstyles[i]);
-			}
-			else
-			{
-				FS_Printf(f,"m\n");
-			}
-		}
-		SVH2_SaveEffects(f);
-		FS_Printf(f,"-1\n");
-		ED_WriteGlobals(f);
-	}
-
-	host_client = svs.clients;
-
-//	for (i=svs.qh_maxclients+1 ; i<sv.num_edicts ; i++)
-//  to save the client states
-	for (i = start; i < end; i++)
-	{
-		ent = QH_EDICT_NUM(i);
-		if ((int)ent->GetFlags() & H2FL_ARCHIVE_OVERRIDE)
-		{
-			continue;
-		}
-		if (ClientsOnly)
-		{
-			if (host_client->state >= CS_CONNECTED)
-			{
-				FS_Printf(f, "%i\n",i);
-				ED_Write(f, ent);
-				FS_Flush(f);
-			}
-			host_client++;
-		}
-		else
-		{
-			FS_Printf(f, "%i\n",i);
-			ED_Write(f, ent);
-			FS_Flush(f);
-		}
-	}
-
-	FS_FCloseFile(f);
-}
-
 void RestoreClients(void)
 {
 	int i,j;
@@ -774,7 +641,7 @@ void RestoreClients(void)
 			G_FLOAT(OFS_PARM0) = time_diff;
 			PR_ExecuteProgram(*pr_globalVars.ClientReEnter);
 		}
-	SaveGamestate(true);
+	SVH2_SaveGamestate(true);
 }
 
 int LoadGamestate(char* level, char* startspot, int ClientsMode)
@@ -819,9 +686,9 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 	char* ReadPos = (char*)Buffer.Ptr();
 	version = String::Atoi(GetLine(ReadPos));
 
-	if (version != SAVEGAME_VERSION)
+	if (version != H2_SAVEGAME_VERSION)
 	{
-		common->Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+		common->Printf("Savegame is version %i, not %i\n", version, H2_SAVEGAME_VERSION);
 		return -1;
 	}
 
@@ -977,7 +844,7 @@ void Host_Changelevel2_f(void)
 
 	// save the current level's state
 	old_time = sv.qh_time;
-	SaveGamestate(false);
+	SVH2_SaveGamestate(false);
 
 	// try to restore the new level
 	if (LoadGamestate(level, startspot, 0))
