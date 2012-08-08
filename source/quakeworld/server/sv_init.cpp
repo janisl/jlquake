@@ -20,153 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qwsvdef.h"
 
-char localmodels[MAX_MODELS_Q1][5];		// inline model names for precache
-
-/*
-================
-SV_CreateBaseline
-
-Entity baselines are used to compress the update messages
-to the clients -- only the fields that differ from the
-baseline will be transmitted
-================
-*/
-void SV_CreateBaseline(void)
-{
-	int i;
-	qhedict_t* svent;
-	int entnum;
-
-	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
-	{
-		svent = QH_EDICT_NUM(entnum);
-		if (svent->free)
-		{
-			continue;
-		}
-		// create baselines for all player slots,
-		// and any other edict that has a visible model
-		if (entnum > MAX_CLIENTS_QHW && !svent->v.modelindex)
-		{
-			continue;
-		}
-
-		//
-		// create entity baseline
-		//
-		VectorCopy(svent->GetOrigin(), svent->q1_baseline.origin);
-		VectorCopy(svent->GetAngles(), svent->q1_baseline.angles);
-		svent->q1_baseline.frame = svent->GetFrame();
-		svent->q1_baseline.skinnum = svent->GetSkin();
-		if (entnum > 0 && entnum <= MAX_CLIENTS_QHW)
-		{
-			svent->q1_baseline.colormap = entnum;
-			svent->q1_baseline.modelindex = SVQH_ModelIndex("progs/player.mdl");
-		}
-		else
-		{
-			svent->q1_baseline.colormap = 0;
-			svent->q1_baseline.modelindex =
-				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
-		}
-
-		//
-		// flush the signon message out to a seperate buffer if
-		// nearly full
-		//
-		SVQH_FlushSignon();
-
-		//
-		// add to the message
-		//
-		sv.qh_signon.WriteByte(q1svc_spawnbaseline);
-		sv.qh_signon.WriteShort(entnum);
-
-		sv.qh_signon.WriteByte(svent->q1_baseline.modelindex);
-		sv.qh_signon.WriteByte(svent->q1_baseline.frame);
-		sv.qh_signon.WriteByte(svent->q1_baseline.colormap);
-		sv.qh_signon.WriteByte(svent->q1_baseline.skinnum);
-		for (i = 0; i < 3; i++)
-		{
-			sv.qh_signon.WriteCoord(svent->q1_baseline.origin[i]);
-			sv.qh_signon.WriteAngle(svent->q1_baseline.angles[i]);
-		}
-	}
-}
-
-
-/*
-================
-SV_SaveSpawnparms
-
-Grabs the current state of the progs serverinfo flags
-and each client for saving across the
-transition to another level
-================
-*/
-void SV_SaveSpawnparms(void)
-{
-	int i, j;
-
-	if (!sv.state)
-	{
-		return;		// no progs loaded yet
-
-	}
-	// serverflags is the only game related thing maintained
-	svs.qh_serverflags = *pr_globalVars.serverflags;
-
-	for (i = 0, host_client = svs.clients; i < MAX_CLIENTS_QHW; i++, host_client++)
-	{
-		if (host_client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-
-		// needs to reconnect
-		host_client->state = CS_CONNECTED;
-
-		// call the progs to get default spawn parms for the new client
-		*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
-		PR_ExecuteProgram(*pr_globalVars.SetChangeParms);
-		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->qh_spawn_parms[j] = pr_globalVars.parm1[j];
-	}
-}
-
-unsigned SV_CheckModel(const char* mdl)
-{
-	Array<byte> buffer;
-	FS_ReadFile(mdl, buffer);
-	return CRC_Block(buffer.Ptr(), buffer.Num());
-}
-
-void SV_AddProgCrcTotheServerInfo()
-{
-	char num[32];
-	sprintf(num, "%i", pr_crc);
-	Info_SetValueForKey(svs.qh_info, "*progs", num, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
-}
-
-void SV_FindSpectatorFunctions()
-{
-	qhw_SpectatorConnect = qhw_SpectatorThink = qhw_SpectatorDisconnect = 0;
-
-	dfunction_t* f;
-	if ((f = ED_FindFunction("SpectatorConnect")) != NULL)
-	{
-		qhw_SpectatorConnect = (func_t)(f - pr_functions);
-	}
-	if ((f = ED_FindFunction("SpectatorThink")) != NULL)
-	{
-		qhw_SpectatorThink = (func_t)(f - pr_functions);
-	}
-	if ((f = ED_FindFunction("SpectatorDisconnect")) != NULL)
-	{
-		qhw_SpectatorDisconnect = (func_t)(f - pr_functions);
-	}
-}
-
 /*
 ================
 SV_SpawnServer
@@ -184,7 +37,7 @@ void SV_SpawnServer(char* server)
 
 	common->DPrintf("SpawnServer: %s\n",server);
 
-	SV_SaveSpawnparms();
+	SVQH_SaveSpawnparms();
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -212,9 +65,9 @@ void SV_SpawnServer(char* server)
 	// which determines how big each edict is
 	PR_LoadProgs();
 
-	SV_AddProgCrcTotheServerInfo();
+	SVQHW_AddProgCrcTotheServerInfo();
 
-	SV_FindSpectatorFunctions();
+	SVQHW_FindSpectatorFunctions();
 
 	// allocate edicts
 	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
@@ -247,13 +100,13 @@ void SV_SpawnServer(char* server)
 	sv.models[1] = 0;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.qh_model_precache[1 + i] = localmodels[i];
+		sv.qh_model_precache[1 + i] = svqh_localmodels[i];
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
 	//check player/eyes models for hacks
-	sv.qw_model_player_checksum = SV_CheckModel("progs/player.mdl");
-	sv.qw_eyes_player_checksum = SV_CheckModel("progs/eyes.mdl");
+	sv.qw_model_player_checksum = SVQW_CheckModel("progs/player.mdl");
+	sv.qw_eyes_player_checksum = SVQW_CheckModel("progs/eyes.mdl");
 
 	//
 	// spawn the rest of the entities on the map
@@ -296,7 +149,7 @@ void SV_SpawnServer(char* server)
 	SVQH_SetMoveVars();
 
 	// create a baseline for more efficient communications
-	SV_CreateBaseline();
+	SVQH_CreateBaseline();
 	sv.qh_signon_buffer_size[sv.qh_num_signon_buffers - 1] = sv.qh_signon.cursize;
 
 	Info_SetValueForKey(svs.qh_info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);

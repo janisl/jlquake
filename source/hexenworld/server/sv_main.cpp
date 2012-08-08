@@ -1252,7 +1252,7 @@ void SV_InitLocal(void)
 	Cmd_AddCommand("writeip", SV_WriteIP_f);
 
 	for (i = 0; i < MAX_MODELS_H2; i++)
-		sprintf(localmodels[i], "*%i", i);
+		sprintf(svqh_localmodels[i], "*%i", i);
 
 	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 

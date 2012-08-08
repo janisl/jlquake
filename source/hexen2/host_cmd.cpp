@@ -246,7 +246,7 @@ void Host_Changelevel_f(void)
 		startspot = _startspot;
 	}
 
-	SV_SaveSpawnparms();
+	SVQH_SaveSpawnparms();
 	SV_SpawnServer(level, startspot);
 
 	//updatePlaqueMessage();
@@ -581,7 +581,7 @@ void Host_Loadgame_f(void)
 
 	LoadGamestate(mapname, NULL, 2);
 
-	SV_SaveSpawnparms();
+	SVQH_SaveSpawnparms();
 
 	ent = QH_EDICT_NUM(1);
 
@@ -840,7 +840,7 @@ void Host_Changelevel2_f(void)
 		startspot = _startspot;
 	}
 
-	SV_SaveSpawnparms();
+	SVQH_SaveSpawnparms();
 
 	// save the current level's state
 	old_time = sv.qh_time;

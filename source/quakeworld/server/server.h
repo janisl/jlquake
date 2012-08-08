@@ -43,8 +43,6 @@ extern Cvar* spawn;
 
 extern client_t* host_client;
 
-extern char localmodels[MAX_MODELS_Q1][5];			// inline model names for precache
-
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 
@@ -58,8 +56,6 @@ extern int sv_net_port;
 void SV_Shutdown(void);
 void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
-
-void SV_SaveSpawnparms(void);
 
 void SV_InitOperatorCommands(void);
 

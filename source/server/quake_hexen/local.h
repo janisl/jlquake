@@ -138,9 +138,16 @@ extern char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];
 extern func_t qhw_SpectatorConnect;
 extern func_t qhw_SpectatorThink;
 extern func_t qhw_SpectatorDisconnect;
+extern char svqh_localmodels[BIGGEST_MAX_MODELS][5];			// inline model names for precache
 
 void SVQH_FlushSignon();
 int SVQH_ModelIndex(const char* name);
+void SVQH_CreateBaseline();
+void SVQH_SaveSpawnparms();
+unsigned SVQW_CheckModel(const char* mdl);
+void SVQHW_AddProgCrcTotheServerInfo();
+void SVQHW_FindSpectatorFunctions();
+void SVQH_SendReconnect();
 
 //
 //	Main

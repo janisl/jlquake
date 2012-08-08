@@ -41,5 +41,4 @@ void SV_AddUpdates(void);
 void SV_AddClientToServer(qsocket_t* ret);
 
 void SV_CheckForNewClients(void);
-void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server);

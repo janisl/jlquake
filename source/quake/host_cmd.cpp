@@ -226,7 +226,7 @@ void Host_Changelevel_f(void)
 		common->Printf("Only the server may changelevel\n");
 		return;
 	}
-	SV_SaveSpawnparms();
+	SVQH_SaveSpawnparms();
 	String::Cpy(level, Cmd_Argv(1));
 	SV_SpawnServer(level);
 }

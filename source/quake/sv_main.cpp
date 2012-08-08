@@ -22,10 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../common/file_formats/bsp29.h"
 
-char localmodels[MAX_MODELS_Q1][5];				// inline model names for precache
-
-//============================================================================
-
 /*
 ===============
 SV_Init
@@ -40,7 +36,7 @@ void SV_Init(void)
 	svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
-		sprintf(localmodels[i], "*%i", i);
+		sprintf(svqh_localmodels[i], "*%i", i);
 }
 
 /*
@@ -218,126 +214,6 @@ SERVER SPAWNING
 
 /*
 ================
-SV_CreateBaseline
-
-================
-*/
-void SV_CreateBaseline(void)
-{
-	int i;
-	qhedict_t* svent;
-	int entnum;
-
-	for (entnum = 0; entnum < sv.qh_num_edicts; entnum++)
-	{
-		// get the current server version
-		svent = QH_EDICT_NUM(entnum);
-		if (svent->free)
-		{
-			continue;
-		}
-		if (entnum > svs.qh_maxclients && !svent->v.modelindex)
-		{
-			continue;
-		}
-
-		//
-		// create entity baseline
-		//
-		VectorCopy(svent->GetOrigin(), svent->q1_baseline.origin);
-		VectorCopy(svent->GetAngles(), svent->q1_baseline.angles);
-		svent->q1_baseline.frame = svent->GetFrame();
-		svent->q1_baseline.skinnum = svent->GetSkin();
-		if (entnum > 0 && entnum <= svs.qh_maxclients)
-		{
-			svent->q1_baseline.colormap = entnum;
-			svent->q1_baseline.modelindex = SVQH_ModelIndex("progs/player.mdl");
-		}
-		else
-		{
-			svent->q1_baseline.colormap = 0;
-			svent->q1_baseline.modelindex =
-				SVQH_ModelIndex(PR_GetString(svent->GetModel()));
-		}
-
-		//
-		// add to the message
-		//
-		sv.qh_signon.WriteByte(q1svc_spawnbaseline);
-		sv.qh_signon.WriteShort(entnum);
-
-		sv.qh_signon.WriteByte(svent->q1_baseline.modelindex);
-		sv.qh_signon.WriteByte(svent->q1_baseline.frame);
-		sv.qh_signon.WriteByte(svent->q1_baseline.colormap);
-		sv.qh_signon.WriteByte(svent->q1_baseline.skinnum);
-		for (i = 0; i < 3; i++)
-		{
-			sv.qh_signon.WriteCoord(svent->q1_baseline.origin[i]);
-			sv.qh_signon.WriteAngle(svent->q1_baseline.angles[i]);
-		}
-	}
-}
-
-
-/*
-================
-SV_SendReconnect
-
-Tell all the clients that the server is changing levels
-================
-*/
-void SV_SendReconnect(void)
-{
-	byte data[128];
-	QMsg msg;
-
-	msg.InitOOB(data, sizeof(data));
-
-	msg.WriteChar(q1svc_stufftext);
-	msg.WriteString2("reconnect\n");
-	NET_SendToAll(&msg, 5);
-
-#ifndef DEDICATED
-	if (cls.state != CA_DEDICATED)
-	{
-		Cmd_ExecuteString("reconnect\n");
-	}
-#endif
-}
-
-
-/*
-================
-SV_SaveSpawnparms
-
-Grabs the current state of each client for saving across the
-transition to another level
-================
-*/
-void SV_SaveSpawnparms(void)
-{
-	int i, j;
-
-	svs.qh_serverflags = *pr_globalVars.serverflags;
-
-	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
-	{
-		if (host_client->state < CS_CONNECTED)
-		{
-			continue;
-		}
-
-		// call the progs to get default spawn parms for the new client
-		*pr_globalVars.self = EDICT_TO_PROG(host_client->qh_edict);
-		PR_ExecuteProgram(*pr_globalVars.SetChangeParms);
-		for (j = 0; j < NUM_SPAWN_PARMS; j++)
-			host_client->qh_spawn_parms[j] = pr_globalVars.parm1[j];
-	}
-}
-
-
-/*
-================
 SV_SpawnServer
 
 This is called at the start of each level
@@ -369,7 +245,7 @@ void SV_SpawnServer(char* server)
 //
 	if (sv.state != SS_DEAD)
 	{
-		SV_SendReconnect();
+		SVQH_SendReconnect();
 	}
 
 //
@@ -441,7 +317,7 @@ void SV_SpawnServer(char* server)
 	sv.qh_model_precache[1] = sv.qh_modelname;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.qh_model_precache[1 + i] = localmodels[i];
+		sv.qh_model_precache[1 + i] = svqh_localmodels[i];
 		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
@@ -483,7 +359,7 @@ void SV_SpawnServer(char* server)
 	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
 
 // create a baseline for more efficient communications
-	SV_CreateBaseline();
+	SVQH_CreateBaseline();
 
 // send serverinfo to all connected clients
 	for (i = 0,host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
