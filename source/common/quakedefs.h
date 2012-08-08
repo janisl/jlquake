@@ -346,6 +346,7 @@ struct qwpacket_entities_t
 // defaults for clientinfo messages
 #define Q1DEFAULT_VIEWHEIGHT  22
 
+#define Q1PROTOCOL_VERSION    15
 #define QWPROTOCOL_VERSION    28
 
 #define Q1IT_SHOTGUN              1
@@ -414,3 +415,8 @@ struct qwpacket_entities_t
 #define S2M_HEARTBEAT       'a'	// + serverinfo + userlist + fraglist
 #define A2C_CLIENT_COMMAND  'B'	// + command line
 #define S2M_SHUTDOWN        'C'
+
+// game types sent by serverinfo
+// these determine which intermission screen plays
+#define QHGAME_COOP           0
+#define QHGAME_DEATHMATCH     1

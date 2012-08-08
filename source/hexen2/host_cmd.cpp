@@ -183,7 +183,7 @@ void Host_Map_f(void)
 
 	svs.qh_serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
-	SV_SpawnServer(name, NULL);
+	SVQH_SpawnServer(name, NULL);
 	if (sv.state == SS_DEAD)
 	{
 		return;
@@ -247,7 +247,7 @@ void Host_Changelevel_f(void)
 	}
 
 	SVQH_SaveSpawnparms();
-	SV_SpawnServer(level, startspot);
+	SVQH_SpawnServer(level, startspot);
 
 	//updatePlaqueMessage();
 }
@@ -280,14 +280,14 @@ void Host_Restart_f(void)
 	{
 		if (LoadGamestate(mapname, startspot, 3))
 		{
-			SV_SpawnServer(mapname, startspot);
+			SVQH_SpawnServer(mapname, startspot);
 			RestoreClients();
 		}
 	}
 	else
 	{
 		// in sv_spawnserver
-		SV_SpawnServer(mapname, startspot);
+		SVQH_SpawnServer(mapname, startspot);
 	}
 
 //	updatePlaqueMessage();
@@ -435,7 +435,7 @@ void Host_Savegame_f(void)
 	FS_Printf(f, "%f\n",svqh_deathmatch->value);
 	FS_Printf(f, "%f\n",svqh_coop->value);
 	FS_Printf(f, "%f\n",svqh_teamplay->value);
-	FS_Printf(f, "%f\n",randomclass->value);
+	FS_Printf(f, "%f\n",h2_randomclass->value);
 #ifndef DEDICATED
 	FS_Printf(f, "%f\n",clh2_playerclass->value);
 #endif
@@ -701,7 +701,7 @@ int LoadGamestate(char* level, char* startspot, int ClientsMode)
 		String::Cpy(mapname, GetLine(ReadPos));
 		time = String::Atof(GetLine(ReadPos));
 
-		SV_SpawnServer(mapname, startspot);
+		SVQH_SpawnServer(mapname, startspot);
 
 		if (sv.state == SS_DEAD)
 		{
@@ -849,7 +849,7 @@ void Host_Changelevel2_f(void)
 	// try to restore the new level
 	if (LoadGamestate(level, startspot, 0))
 	{
-		SV_SpawnServer(level, startspot);
+		SVQH_SpawnServer(level, startspot);
 		RestoreClients();
 	}
 }

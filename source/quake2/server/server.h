@@ -51,8 +51,6 @@ void SV_FinalMessage(const char* message, qboolean reconnect);
 
 void SV_InitOperatorCommands(void);
 
-void SV_SendServerinfo(client_t* client);
-
 void Master_Heartbeat(void);
 void Master_Packet(void);
 

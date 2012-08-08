@@ -340,7 +340,7 @@ void SB_Draw(void)
 
 	if (sb_ShowDM)
 	{
-		if (cl.qh_gametype == GAME_DEATHMATCH)
+		if (cl.qh_gametype == QHGAME_DEATHMATCH)
 		{
 			Sbar_DeathmatchOverlay();
 		}
@@ -349,7 +349,7 @@ void SB_Draw(void)
 			Sbar_NormalOverlay();
 		}
 	}
-	else if (cl.qh_gametype == GAME_DEATHMATCH && DMMode->value)
+	else if (cl.qh_gametype == QHGAME_DEATHMATCH && DMMode->value)
 	{
 		Sbar_SmallDeathmatchOverlay();
 	}
@@ -830,7 +830,7 @@ static void SoloScoreboard(void)
 void Sbar_DrawScoreboard(void)
 {
 	SoloScoreboard();
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay();
 	}
@@ -1050,7 +1050,7 @@ void Sbar_DeathmatchOverlay(void)
 		f = s->frags;
 		sprintf(num, "%3i",f);
 
-		if (k == sv_kingofhill)
+		if (k == svh2_kingofhill)
 		{
 			UI_DrawChar(x - 12, y - 1, 130);
 		}
@@ -1243,7 +1243,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		if (k != cl.viewentity - 1)
 		{
 			UI_DrawString(x + 2, y - 1, num);
-			if (k == sv_kingofhill)
+			if (k == svh2_kingofhill)
 			{
 				UI_DrawChar(x + 30, y - 1, 130);
 			}
@@ -1251,7 +1251,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		else
 		{
 			UI_DrawString(x + 2, y - 1, num, 256);
-			if (k == sv_kingofhill)
+			if (k == svh2_kingofhill)
 			{
 				UI_DrawChar(x + 30, y - 1, 130);
 			}

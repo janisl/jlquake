@@ -31,19 +31,6 @@ Cvar* spectator_password;
 //
 Cvar* samelevel;
 Cvar* maxspectators;
-Cvar* randomclass;
-Cvar* damageScale;
-Cvar* shyRespawn;
-Cvar* meleeDamScale;
-Cvar* manaScale;
-Cvar* tomeMode;
-Cvar* tomeRespawn;
-Cvar* w2Respawn;
-Cvar* altRespawn;
-Cvar* fixedLevel;
-Cvar* autoItems;
-Cvar* easyFourth;
-Cvar* patternRunner;
 Cvar* spawn;
 
 Cvar* noexit;
@@ -1203,21 +1190,21 @@ void SV_InitLocal(void)
 	qh_skill = Cvar_Get("skill", "1", 0);						// 0 - 3
 	svqh_deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2
-	randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
-	damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
-	shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);
+	h2_randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
+	hw_damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
+	hw_shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);
 	hw_spartanPrint = Cvar_Get("spartanPrint", "1.0", CVAR_SERVERINFO);
-	meleeDamScale = Cvar_Get("meleeDamScale", "0.66666", CVAR_SERVERINFO);
-	manaScale = Cvar_Get("manascale", "1.0", CVAR_SERVERINFO);
-	tomeMode = Cvar_Get("tomemode", "0", CVAR_SERVERINFO);
-	tomeRespawn = Cvar_Get("tomerespawn", "0", CVAR_SERVERINFO);
-	w2Respawn = Cvar_Get("w2respawn", "0", CVAR_SERVERINFO);
-	altRespawn = Cvar_Get("altrespawn", "0", CVAR_SERVERINFO);
-	fixedLevel = Cvar_Get("fixedlevel", "0", CVAR_SERVERINFO);
-	autoItems = Cvar_Get("autoitems", "0", CVAR_SERVERINFO);
+	hw_meleeDamScale = Cvar_Get("meleeDamScale", "0.66666", CVAR_SERVERINFO);
+	hw_manaScale = Cvar_Get("manascale", "1.0", CVAR_SERVERINFO);
+	hw_tomeMode = Cvar_Get("tomemode", "0", CVAR_SERVERINFO);
+	hw_tomeRespawn = Cvar_Get("tomerespawn", "0", CVAR_SERVERINFO);
+	hw_w2Respawn = Cvar_Get("w2respawn", "0", CVAR_SERVERINFO);
+	hw_altRespawn = Cvar_Get("altrespawn", "0", CVAR_SERVERINFO);
+	hw_fixedLevel = Cvar_Get("fixedlevel", "0", CVAR_SERVERINFO);
+	hw_autoItems = Cvar_Get("autoitems", "0", CVAR_SERVERINFO);
 	hw_dmMode = Cvar_Get("dmmode", "0", CVAR_SERVERINFO);
-	easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
-	patternRunner = Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
+	hw_easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
+	hw_patternRunner = Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
 	spawn = Cvar_Get("spawn", "0", CVAR_SERVERINFO);
 	sv_hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);

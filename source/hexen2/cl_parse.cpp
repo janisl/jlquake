@@ -215,6 +215,8 @@ static void R_NewMap(void)
 	R_EndRegistration();
 }
 
+extern float scr_centertime_off;
+
 /*
 ==================
 CL_ParseServerInfo
@@ -235,11 +237,13 @@ void CL_ParseServerInfo(void)
 //
 	CL_ClearState();
 
+	scr_centertime_off = 0;
+
 // parse protocol version number
 	i = net_message.ReadLong();
-	if (i != PROTOCOL_VERSION)
+	if (i != H2PROTOCOL_VERSION)
 	{
-		common->Printf("Server returned version %i, not %i", i, PROTOCOL_VERSION);
+		common->Printf("Server returned version %i, not %i", i, H2PROTOCOL_VERSION);
 		return;
 	}
 
@@ -254,9 +258,9 @@ void CL_ParseServerInfo(void)
 // parse gametype
 	cl.qh_gametype = net_message.ReadByte();
 
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
-		sv_kingofhill = net_message.ReadShort();
+		svh2_kingofhill = net_message.ReadShort();
 	}
 
 // parse signon message
@@ -762,9 +766,9 @@ void CL_ParseServerMessage(void)
 
 		case h2svc_version:
 			i = net_message.ReadLong();
-			if (i != PROTOCOL_VERSION)
+			if (i != H2PROTOCOL_VERSION)
 			{
-				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
+				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, H2PROTOCOL_VERSION);
 			}
 			break;
 
@@ -932,7 +936,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_update_kingofhill:
-			sv_kingofhill = net_message.ReadShort() - 1;
+			svh2_kingofhill = net_message.ReadShort() - 1;
 			break;
 
 		case h2svc_updatecolors:

@@ -456,57 +456,6 @@ void Host_ShutdownServer(qboolean crash)
 	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
 }
 
-#ifndef DEDICATED
-/*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
-	translate_texture = NULL;
-
-	Draw_Init();
-	Sbar_Init();
-}
-#endif
-
-/*
-================
-Host_ClearMemory
-
-This clears all the memory used by both the client and server, but does
-not reinitialize anything.
-================
-*/
-void Host_ClearMemory(void)
-{
-	common->DPrintf("Clearing memory\n");
-#ifndef DEDICATED
-	Mod_ClearAll();
-#endif
-	if (host_hunklevel)
-	{
-		Hunk_FreeToLowMark(host_hunklevel);
-	}
-
-#ifndef DEDICATED
-	clc.qh_signon = 0;
-#endif
-	Com_Memset(&sv, 0, sizeof(sv));
-#ifndef DEDICATED
-	Com_Memset(&cl, 0, sizeof(cl));
-#endif
-}
-
-
-//============================================================================
-
-
 /*
 ===================
 Host_FilterTime

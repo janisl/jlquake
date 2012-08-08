@@ -6,7 +6,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 #############################################################################
 
 add_executable(jlqwsv
-	server/sv_init.cpp
 	server/sv_main.cpp
 	server/sv_send.cpp
 	server/sv_user.cpp      

@@ -111,7 +111,6 @@ extern int host_framecount;				// incremented every frame, never reset
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void Host_ClearMemory(void);
 void Host_ServerFrame(void);
 void Host_InitCommands(void);
 void Host_Init(quakeparms_t* parms);
@@ -129,7 +128,6 @@ extern qboolean isDedicated;
 
 extern int minimum_memory;
 
-extern int sv_kingofhill;
 extern qboolean skip_start;
 extern int num_intro_msg;
 extern qboolean check_bottom;

@@ -142,12 +142,8 @@ extern char svqh_localmodels[BIGGEST_MAX_MODELS][5];			// inline model names for
 
 void SVQH_FlushSignon();
 int SVQH_ModelIndex(const char* name);
-void SVQH_CreateBaseline();
 void SVQH_SaveSpawnparms();
-unsigned SVQW_CheckModel(const char* mdl);
-void SVQHW_AddProgCrcTotheServerInfo();
-void SVQHW_FindSpectatorFunctions();
-void SVQH_SendReconnect();
+void SVQH_SpawnServer(const char* server, const char* startspot);
 
 //
 //	Main
@@ -176,17 +172,33 @@ extern Cvar* svh2_update_missiles;
 extern Cvar* svh2_update_misc;
 extern Cvar* svhw_namedistance;
 extern Cvar* svqh_idealpitchscale;
+extern Cvar* h2_randomclass;
+extern Cvar* hw_damageScale;
+extern Cvar* hw_shyRespawn;
+extern Cvar* hw_meleeDamScale;
+extern Cvar* hw_manaScale;
+extern Cvar* hw_tomeMode;
+extern Cvar* hw_tomeRespawn;
+extern Cvar* hw_w2Respawn;
+extern Cvar* hw_altRespawn;
+extern Cvar* hw_fixedLevel;
+extern Cvar* hw_autoItems;
+extern Cvar* hw_easyFourth;
+extern Cvar* hw_patternRunner;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
+extern int svh2_kingofhill;
 extern fileHandle_t svqhw_fraglogfile;
 
+void SVQH_FreeMemory();
 int SVQH_CalcPing(client_t* cl);
 void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
 void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl);
 void SVQHW_ExtractFromUserinfo(client_t* cl);
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
+void SVQH_SendServerinfo(client_t* client);
 
 //
 //	Move

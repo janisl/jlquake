@@ -323,7 +323,7 @@ void SV_Map_f(void)
 	SVQH_BroadcastCommand("changing\n");
 	SVQHW_SendMessagesToAll();
 
-	SV_SpawnServer(level, startspot);
+	SVQH_SpawnServer(level, startspot);
 
 	SVQH_BroadcastCommand("reconnect\n");
 }

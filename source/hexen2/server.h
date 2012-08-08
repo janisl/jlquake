@@ -11,8 +11,6 @@
 
 //============================================================================
 
-extern Cvar* randomclass;
-
 extern client_t* host_client;
 
 extern jmp_buf host_abortserver;
@@ -28,6 +26,5 @@ void SV_AddUpdates(void);
 void SV_AddClientToServer(qsocket_t* ret);
 
 void SV_CheckForNewClients(void);
-void SV_SpawnServer(char* server, char* startspot);
 
 void SV_Edicts(const char* Name);

@@ -11,9 +11,10 @@ Cvar* sv_sound_distance;
 
 Cvar* sv_idealrollscale;
 
-int sv_kingofhill;
 qboolean skip_start = false;
 int num_intro_msg = 0;
+
+extern int host_hunklevel;
 
 //============================================================================
 
@@ -49,7 +50,7 @@ void SV_Init(void)
 	for (i = 0; i < MAX_MODELS_H2; i++)
 		sprintf(svqh_localmodels[i], "*%i", i);
 
-	sv_kingofhill = 0;	//Initialize King of Hill to world
+	svh2_kingofhill = 0;	//Initialize King of Hill to world
 }
 
 void SV_Edicts(const char* Name)
@@ -122,65 +123,6 @@ CLIENT SPAWNING
 
 /*
 ================
-SV_SendServerinfo
-
-Sends the first message from the server to a connected client.
-This will be sent on the initial connection and upon each server load.
-================
-*/
-void SV_SendServerinfo(client_t* client)
-{
-	const char** s;
-
-	SVQH_ClientPrintf(client, 0, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, HEXEN2_VERSION, pr_crc);
-
-	client->qh_message.WriteByte(h2svc_serverinfo);
-	client->qh_message.WriteLong(PROTOCOL_VERSION);
-	client->qh_message.WriteByte(svs.qh_maxclients);
-
-	if (!svqh_coop->value && svqh_deathmatch->value)
-	{
-		client->qh_message.WriteByte(GAME_DEATHMATCH);
-		client->qh_message.WriteShort(sv_kingofhill);
-	}
-	else
-	{
-		client->qh_message.WriteByte(GAME_COOP);
-	}
-
-	client->qh_message.WriteString2(SVH2_GetMapName());
-
-	for (s = sv.qh_model_precache + 1; *s; s++)
-		client->qh_message.WriteString2(*s);
-	client->qh_message.WriteByte(0);
-
-	for (s = sv.qh_sound_precache + 1; *s; s++)
-		client->qh_message.WriteString2(*s);
-	client->qh_message.WriteByte(0);
-
-// send music
-	client->qh_message.WriteByte(h2svc_cdtrack);
-//	client->message.WriteByte(sv.qh_edicts->v.soundtype);
-//	client->message.WriteByte(sv.qh_edicts->v.soundtype);
-	client->qh_message.WriteByte(sv.h2_cd_track);
-	client->qh_message.WriteByte(sv.h2_cd_track);
-
-	client->qh_message.WriteByte(h2svc_midi_name);
-	client->qh_message.WriteString2(sv.h2_midi_name);
-
-// set view
-	client->qh_message.WriteByte(h2svc_setview);
-	client->qh_message.WriteShort(QH_NUM_FOR_EDICT(client->qh_edict));
-
-	client->qh_message.WriteByte(h2svc_signonnum);
-	client->qh_message.WriteByte(1);
-
-	client->qh_sendsignon = true;
-	client->state = CS_CONNECTED;		// need prespawn, spawn, etc
-}
-
-/*
-================
 SV_ConnectClient
 
 Initializes a client_t for a new net connection.  This will only be called
@@ -246,7 +188,7 @@ void SV_ConnectClient(int clientnum)
 	//		client->spawn_parms[i] = (&pr_global_struct->parm1)[i];
 //	}
 
-	SV_SendServerinfo(client);
+	SVQH_SendServerinfo(client);
 }
 
 
@@ -293,228 +235,4 @@ void SV_CheckForNewClients(void)
 
 		net_activeconnections++;
 	}
-}
-
-/*
-==============================================================================
-
-SERVER SPAWNING
-
-==============================================================================
-*/
-
-/*
-================
-SV_SpawnServer
-
-This is called at the start of each level
-================
-*/
-extern float scr_centertime_off;
-
-void SV_SpawnServer(char* server, char* startspot)
-{
-	qhedict_t* ent;
-	int i;
-	qboolean stats_restored;
-
-	// let's not have any servers with no name
-	if (sv_hostname->string[0] == 0)
-	{
-		Cvar_Set("hostname", "UNNAMED");
-	}
-#ifndef DEDICATED
-	scr_centertime_off = 0;
-#endif
-
-	common->DPrintf("SpawnServer: %s\n",server);
-	if (svs.qh_changelevel_issued)
-	{
-		stats_restored = true;
-		SVH2_SaveGamestate(true);
-	}
-	else
-	{
-		stats_restored = false;
-	}
-
-//
-// tell all connected clients that we are going to a new level
-//
-	if (sv.state != SS_DEAD)
-	{
-		SVQH_SendReconnect();
-	}
-
-//
-// make cvars consistant
-//
-	if (svqh_coop->value)
-	{
-		Cvar_SetValue("deathmatch", 0);
-	}
-
-	svqh_current_skill = (int)(qh_skill->value + 0.1);
-	if (svqh_current_skill < 0)
-	{
-		svqh_current_skill = 0;
-	}
-	if (svqh_current_skill > 4)
-	{
-		svqh_current_skill = 4;
-	}
-
-	Cvar_SetValue("skill", (float)svqh_current_skill);
-
-//
-// set up the new server
-//
-	Host_ClearMemory();
-
-	//Com_Memset(&sv, 0, sizeof(sv));
-
-	String::Cpy(sv.name, server);
-	if (startspot)
-	{
-		String::Cpy(sv.h2_startspot, startspot);
-	}
-
-// load progs to get entity field count
-
-#ifndef DEDICATED
-	total_loading_size = 100;
-	current_loading_size = 0;
-	loading_stage = 1;
-#endif
-	PR_LoadProgs();
-#ifndef DEDICATED
-	current_loading_size += 60;
-	SCR_UpdateScreen();
-#endif
-
-// allocate server memory
-	Com_Memset(sv.h2_Effects,0,sizeof(sv.h2_Effects));
-
-	sv.h2_states = (h2client_state2_t*)Hunk_AllocName(svs.qh_maxclients * sizeof(h2client_state2_t), "states");
-	Com_Memset(sv.h2_states,0,svs.qh_maxclients * sizeof(h2client_state2_t));
-
-	sv.qh_edicts = (qhedict_t*)Hunk_AllocName(MAX_EDICTS_QH * pr_edict_size, "edicts");
-
-	//JL WTF????
-	sv.qh_datagram.InitOOB(sv.qh_datagramBuffer, MAX_MSGLEN_H2);
-
-	sv.qh_reliable_datagram.InitOOB(sv.qh_reliable_datagramBuffer, MAX_MSGLEN_H2);
-
-	sv.qh_signon.InitOOB(sv.qh_signonBuffer, MAX_MSGLEN_H2);
-
-// leave slots at start for clients only
-	sv.qh_num_edicts = svs.qh_maxclients + 1 + max_temp_edicts->value;
-	for (i = 0; i < svs.qh_maxclients; i++)
-	{
-		ent = QH_EDICT_NUM(i + 1);
-		svs.clients[i].qh_edict = ent;
-		svs.clients[i].h2_send_all_v = true;
-	}
-
-	for (i = 0; i < max_temp_edicts->value; i++)
-	{
-		ent = QH_EDICT_NUM(i + svs.qh_maxclients + 1);
-		ED_ClearEdict(ent);
-
-		ent->free = true;
-		ent->freetime = -999;
-	}
-
-	sv.state = SS_LOADING;
-	sv.qh_paused = false;
-
-	sv.qh_time = 1.0;
-
-	String::Cpy(sv.name, server);
-	sprintf(sv.qh_modelname,"maps/%s.bsp", server);
-
-	CM_LoadMap(sv.qh_modelname, false, NULL);
-	sv.models[1] = 0;
-
-//
-// clear world interaction links
-//
-	SV_ClearWorld();
-
-	sv.qh_sound_precache[0] = PR_GetString(0);
-
-	sv.qh_model_precache[0] = PR_GetString(0);
-	sv.qh_model_precache[1] = sv.qh_modelname;
-	for (i = 1; i < CM_NumInlineModels(); i++)
-	{
-		sv.qh_model_precache[1 + i] = svqh_localmodels[i];
-		sv.models[i + 1] = CM_InlineModel(i);
-	}
-
-//
-// load the rest of the entities
-//
-	ent = QH_EDICT_NUM(0);
-	Com_Memset(&ent->v, 0, progs->entityfields * 4);
-	ent->free = false;
-	ent->SetModel(PR_SetString(sv.qh_modelname));
-	ent->v.modelindex = 1;		// world model
-	ent->SetSolid(QHSOLID_BSP);
-	ent->SetMoveType(QHMOVETYPE_PUSH);
-
-	if (svqh_coop->value)
-	{
-		*pr_globalVars.coop = svqh_coop->value;
-	}
-	else
-	{
-		*pr_globalVars.deathmatch = svqh_deathmatch->value;
-	}
-
-	*pr_globalVars.randomclass = randomclass->value;
-
-	*pr_globalVars.mapname = PR_SetString(sv.name);
-	*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
-
-	// serverflags are for cross level information (sigils)
-	*pr_globalVars.serverflags = svs.qh_serverflags;
-
-#ifndef DEDICATED
-	current_loading_size += 20;
-	SCR_UpdateScreen();
-#endif
-	ED_LoadFromFile(CM_EntityString());
-
-// all setup is completed, any further precache statements are errors
-	sv.state = SS_GAME;
-
-	SVQH_SetMoveVars();
-
-	// run two frames to allow everything to settle
-	host_frametime = 0.1;
-	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
-	SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
-
-#ifndef DEDICATED
-	current_loading_size += 20;
-	SCR_UpdateScreen();
-#endif
-// create a baseline for more efficient communications
-	SVQH_CreateBaseline();
-
-// send serverinfo to all connected clients
-	for (i = 0,host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
-		if (host_client->state >= CS_CONNECTED)
-		{
-			SV_SendServerinfo(host_client);
-		}
-
-	svs.qh_changelevel_issued = false;		// now safe to issue another
-
-	common->DPrintf("Server spawned.\n");
-
-#ifndef DEDICATED
-	total_loading_size = 0;
-	loading_stage = 0;
-#endif
 }

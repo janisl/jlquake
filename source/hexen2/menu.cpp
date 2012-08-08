@@ -3547,7 +3547,7 @@ void M_GameOptions_Draw(void)
 	}
 
 	M_Print(0 + 8, 140, "     Random Class");
-	if (randomclass->value)
+	if (h2_randomclass->value)
 	{
 		M_Print(160 + 8, 140, "on");
 	}
@@ -3690,7 +3690,7 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 8:
-		if (randomclass->value)
+		if (h2_randomclass->value)
 		{
 			Cvar_SetValue("randomclass", 0);
 		}

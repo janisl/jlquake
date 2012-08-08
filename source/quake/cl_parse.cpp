@@ -202,6 +202,8 @@ static void R_NewMap(void)
 	R_EndRegistration();
 }
 
+extern float scr_centertime_off;
+
 /*
 ==================
 CL_ParseServerInfo
@@ -221,11 +223,13 @@ void CL_ParseServerInfo(void)
 //
 	CL_ClearState();
 
+	scr_centertime_off = 0;
+
 // parse protocol version number
 	i = net_message.ReadLong();
-	if (i != PROTOCOL_VERSION)
+	if (i != Q1PROTOCOL_VERSION)
 	{
-		common->Printf("Server returned version %i, not %i", i, PROTOCOL_VERSION);
+		common->Printf("Server returned version %i, not %i", i, Q1PROTOCOL_VERSION);
 		return;
 	}
 
@@ -584,9 +588,9 @@ void CL_ParseServerMessage(void)
 
 		case q1svc_version:
 			i = net_message.ReadLong();
-			if (i != PROTOCOL_VERSION)
+			if (i != Q1PROTOCOL_VERSION)
 			{
-				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, PROTOCOL_VERSION);
+				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, Q1PROTOCOL_VERSION);
 			}
 			break;
 

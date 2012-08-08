@@ -179,7 +179,7 @@ void Host_Map_f(void)
 
 	svs.qh_serverflags = 0;			// haven't completed an episode yet
 	String::Cpy(name, Cmd_Argv(1));
-	SV_SpawnServer(name);
+	SVQH_SpawnServer(name, "");
 	if (sv.state == SS_DEAD)
 	{
 		return;
@@ -228,7 +228,7 @@ void Host_Changelevel_f(void)
 	}
 	SVQH_SaveSpawnparms();
 	String::Cpy(level, Cmd_Argv(1));
-	SV_SpawnServer(level);
+	SVQH_SpawnServer(level, "");
 }
 
 /*
@@ -253,7 +253,7 @@ void Host_Restart_f(void)
 
 	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared
 	// in sv_spawnserver
-	SV_SpawnServer(mapname);
+	SVQH_SpawnServer(mapname, "");
 }
 
 #ifndef DEDICATED
@@ -489,7 +489,7 @@ void Host_Loadgame_f(void)
 	CL_Disconnect_f();
 #endif
 
-	SV_SpawnServer(mapname);
+	SVQH_SpawnServer(mapname, "");
 	if (sv.state == SS_DEAD)
 	{
 		common->Printf("Couldn't load map\n");

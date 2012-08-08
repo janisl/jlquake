@@ -47,8 +47,6 @@ Cvar* serverprofile;
 Cvar* samelevel;
 Cvar* noexit;
 
-Cvar* randomclass;				// 0, 1, or 2
-
 Cvar* sys_adaptive;
 
 Cvar* temp1;
@@ -354,7 +352,7 @@ void Host_InitLocal(void)
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 	qh_skill = Cvar_Get("skill", "1", 0);						// 0 - 3
 	svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);			// 0, 1, or 2
-	randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
+	h2_randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
 	qh_pausable = Cvar_Get("pausable", "1", 0);
@@ -478,57 +476,6 @@ void Host_ShutdownServer(qboolean crash)
 	Com_Memset(&sv, 0, sizeof(sv));
 	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
 }
-
-#ifndef DEDICATED
-/*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	CLH2_ClearEntityTextureArrays();
-	Com_Memset(translate_texture, 0, sizeof(translate_texture));
-
-	Draw_Init();
-	SB_Init();
-}
-#endif
-
-/*
-================
-Host_ClearMemory
-
-This clears all the memory used by both the client and server, but does
-not reinitialize anything.
-================
-*/
-void Host_ClearMemory(void)
-{
-	common->DPrintf("Clearing memory\n");
-#ifndef DEDICATED
-	Mod_ClearAll();
-#endif
-	if (host_hunklevel)
-	{
-		Hunk_FreeToLowMark(host_hunklevel);
-	}
-
-#ifndef DEDICATED
-	clc.qh_signon = 0;
-#endif
-	Com_Memset(&sv, 0, sizeof(sv));
-#ifndef DEDICATED
-	Com_Memset(&cl, 0, sizeof(cl));
-#endif
-}
-
-
-//============================================================================
-
 
 /*
 ===================

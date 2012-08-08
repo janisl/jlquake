@@ -18,6 +18,23 @@
 static float save_sensitivity;
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll(void)
+{
+	R_Shutdown(false);
+	R_BeginRegistration(&cls.glconfig);
+
+	CLH2_ClearEntityTextureArrays();
+	Com_Memset(translate_texture, 0, sizeof(translate_texture));
+
+	Draw_Init();
+	SB_Init();
+}
+
+/*
 =====================
 CL_ClearState
 
@@ -25,12 +42,10 @@ CL_ClearState
 */
 void CL_ClearState(void)
 {
-	if (sv.state == SS_DEAD)
-	{
-		Host_ClearMemory();
-	}
+	Mod_ClearAll();
+	clc.qh_signon = 0;
 
-// wipe the entire cl structure
+	// wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
 
 	clc.netchan.message.Clear();

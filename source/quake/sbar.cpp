@@ -250,7 +250,7 @@ Sbar_DrawPic
 */
 void Sbar_DrawPic(int x, int y, image_t* pic)
 {
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		UI_DrawPic(x /* + ((viddef.width - 320)>>1)*/, y + (viddef.height - SBAR_HEIGHT), pic);
 	}
@@ -267,7 +267,7 @@ Sbar_DrawTransPic
 */
 void Sbar_DrawTransPic(int x, int y, image_t* pic)
 {
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		UI_DrawPic(x /*+ ((viddef.width - 320)>>1)*/, y + (viddef.height - SBAR_HEIGHT), pic);
 	}
@@ -286,7 +286,7 @@ Draws one solid graphics character
 */
 void Sbar_DrawCharacter(int x, int y, int num)
 {
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		UI_DrawChar(x /*+ ((viddef.width - 320)>>1) */ + 4, y + viddef.height - SBAR_HEIGHT, num);
 	}
@@ -303,7 +303,7 @@ Sbar_DrawString
 */
 void Sbar_DrawString(int x, int y, char* str)
 {
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		UI_DrawString(x /*+ ((viddef.width - 320)>>1)*/, y + viddef.height - SBAR_HEIGHT, str);
 	}
@@ -502,7 +502,7 @@ Sbar_DrawScoreboard
 void Sbar_DrawScoreboard(void)
 {
 	Sbar_SoloScoreboard();
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay();
 	}
@@ -513,7 +513,7 @@ void Sbar_DrawScoreboard(void)
 	int top, bottom;
 	q1player_info_t* s;
 
-	if (cl.gametype != GAME_DEATHMATCH)
+	if (cl.gametype != QHGAME_DEATHMATCH)
 	{
 		Sbar_SoloScoreboard();
 		return;
@@ -797,7 +797,7 @@ void Sbar_DrawFrags(void)
 	l = scoreboardlines <= 4 ? scoreboardlines : 4;
 
 	x = 23;
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		xofs = 0;
 	}
@@ -873,7 +873,7 @@ void Sbar_DrawFace(void)
 		top = Sbar_ColorForMap(top);
 		bottom = Sbar_ColorForMap(bottom);
 
-		if (cl.qh_gametype == GAME_DEATHMATCH)
+		if (cl.qh_gametype == QHGAME_DEATHMATCH)
 		{
 			xofs = 113;
 		}
@@ -1115,7 +1115,7 @@ void Sbar_Draw(void)
 
 	if (viddef.width > 320)
 	{
-		if (cl.qh_gametype == GAME_DEATHMATCH)
+		if (cl.qh_gametype == QHGAME_DEATHMATCH)
 		{
 			Sbar_MiniDeathmatchOverlay();
 		}
@@ -1369,7 +1369,7 @@ void Sbar_IntermissionOverlay(void)
 	int dig;
 	int num;
 
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay();
 		return;

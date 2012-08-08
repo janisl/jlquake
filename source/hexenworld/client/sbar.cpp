@@ -303,10 +303,7 @@ void Sbar_Draw(void)
 	{
 		if (sb_ShowDM)
 		{
-//rjr		if (cl.gametype == GAME_DEATHMATCH)
 			Sbar_DeathmatchOverlay();
-//rjr		else
-//rjr			Sbar_NormalOverlay();
 		}
 		else if (DMMode->value)
 		{
@@ -456,10 +453,7 @@ void Sbar_Draw(void)
 
 	if (sb_ShowDM)
 	{
-//rjr		if (cl.gametype == GAME_DEATHMATCH)
 		Sbar_DeathmatchOverlay();
-//rjr		else
-//rjr			Sbar_NormalOverlay();
 	}
 	else if (DMMode->value)
 	{
@@ -949,10 +943,7 @@ static void SoloScoreboard(void)
 void Sbar_DrawScoreboard(void)
 {
 	SoloScoreboard();
-//rjr	if(cl.gametype == GAME_DEATHMATCH)
-	{
-		Sbar_DeathmatchOverlay();
-	}
+	Sbar_DeathmatchOverlay();
 }
 
 //==========================================================================
@@ -1279,8 +1270,6 @@ void Sbar_DeathmatchOverlay(void)
 				UI_DrawChar(x, y - 1, 13);
 			}
 
-//rjr			if(k==sv_kingofhill)
-//rjr				UI_DrawChar ( x+40 , y-1, 130);
 			sprintf(num, "%4d",s->ping);
 			UI_DrawString(x + 48, y, num);
 

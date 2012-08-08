@@ -770,3 +770,13 @@ void PR_Init()
 		max_temp_edicts = Cvar_Get("max_temp_edicts", "30", CVAR_ARCHIVE);
 	}
 }
+
+void PR_UnloadProgs()
+{
+	if (progs)
+	{
+		FS_FreeFile(progs);
+		progs = NULL;
+	}
+	PR_ClearStringMap();
+}

@@ -881,7 +881,7 @@ void SB_IntermissionOverlay(void)
 	const char* message;
 	char temp[80];
 
-	if (cl.qh_gametype == GAME_DEATHMATCH)
+	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay();
 		return;

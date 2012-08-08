@@ -59,16 +59,8 @@ void SV_FinalMessage(const char* message);
 
 void SV_InitOperatorCommands(void);
 
-void SV_SendServerinfo(client_t* client);
-
-
 void Master_Heartbeat(void);
 void Master_Packet(void);
-
-//
-// sv_init.c
-//
-void SV_SpawnServer(char* server);
 
 //
 // sv_ccmds.c

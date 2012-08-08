@@ -25,6 +25,7 @@ Cvar* svqh_teamplay;
 Cvar* qh_timelimit;
 Cvar* qh_fraglimit;
 Cvar* qh_skill;					// 0 - 3
+Cvar* h2_randomclass;				// 0, 1, or 2
 
 Cvar* svqh_highchars;
 Cvar* hw_spartanPrint;
@@ -47,9 +48,38 @@ Cvar* qhw_allow_download_models;
 Cvar* qhw_allow_download_sounds;
 Cvar* qhw_allow_download_maps;
 
+Cvar* hw_damageScale;
+Cvar* hw_shyRespawn;
+Cvar* hw_meleeDamScale;
+Cvar* hw_manaScale;
+Cvar* hw_tomeMode;
+Cvar* hw_tomeRespawn;
+Cvar* hw_w2Respawn;
+Cvar* hw_altRespawn;
+Cvar* hw_fixedLevel;
+Cvar* hw_autoItems;
+Cvar* hw_easyFourth;
+Cvar* hw_patternRunner;
+
 int svqh_current_skill;
+int svh2_kingofhill;
 
 fileHandle_t svqhw_fraglogfile;
+
+void SVQH_FreeMemory()
+{
+	if (sv.h2_states)
+	{
+		Mem_Free(sv.h2_states);
+		sv.h2_states = NULL;
+	}
+	if (sv.qh_edicts)
+	{
+		Mem_Free(sv.qh_edicts);
+		sv.qh_edicts = NULL;
+	}
+	PR_UnloadProgs();
+}
 
 int SVQH_CalcPing(client_t* cl)
 {
@@ -339,4 +369,69 @@ const char* SVH2_GetMapName()
 	{
 		return PR_GetString(sv.qh_edicts->GetNetName());
 	}
+}
+
+//	Sends the first message from the server to a connected client.
+// This will be sent on the initial connection and upon each server load.
+void SVQH_SendServerinfo(client_t* client)
+{
+	SVQH_ClientPrintf(client, 0, "%c\nJLQuake VERSION " JLQUAKE_VERSION_STRING " SERVER (%i CRC)\n", 2, pr_crc);
+
+	client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_serverinfo : q1svc_serverinfo);
+	client->qh_message.WriteLong(GGameType & GAME_Hexen2 ? H2PROTOCOL_VERSION : Q1PROTOCOL_VERSION);
+	client->qh_message.WriteByte(svs.qh_maxclients);
+
+	if (!svqh_coop->value && svqh_deathmatch->value)
+	{
+		client->qh_message.WriteByte(QHGAME_DEATHMATCH);
+		if (GGameType & GAME_Hexen2)
+		{
+			client->qh_message.WriteShort(svh2_kingofhill);
+		}
+	}
+	else
+	{
+		client->qh_message.WriteByte(QHGAME_COOP);
+	}
+
+	client->qh_message.WriteString2(GGameType & GAME_Hexen2 ? SVH2_GetMapName() : SVQ1_GetMapName());
+
+	for (const char** s = sv.qh_model_precache + 1; *s; s++)
+	{
+		client->qh_message.WriteString2(*s);
+	}
+	client->qh_message.WriteByte(0);
+
+	for (const char** s = sv.qh_sound_precache + 1; *s; s++)
+	{
+		client->qh_message.WriteString2(*s);
+	}
+	client->qh_message.WriteByte(0);
+
+	// send music
+	if (GGameType & GAME_Hexen2)
+	{
+		client->qh_message.WriteByte(h2svc_cdtrack);
+		client->qh_message.WriteByte(sv.h2_cd_track);
+		client->qh_message.WriteByte(sv.h2_cd_track);
+
+		client->qh_message.WriteByte(h2svc_midi_name);
+		client->qh_message.WriteString2(sv.h2_midi_name);
+	}
+	else
+	{
+		client->qh_message.WriteByte(q1svc_cdtrack);
+		client->qh_message.WriteByte(sv.qh_edicts->GetSounds());
+		client->qh_message.WriteByte(sv.qh_edicts->GetSounds());
+	}
+
+	// set view
+	client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_setview : q1svc_setview);
+	client->qh_message.WriteShort(QH_NUM_FOR_EDICT(client->qh_edict));
+
+	client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_signonnum : q1svc_signonnum);
+	client->qh_message.WriteByte(1);
+
+	client->qh_sendsignon = true;
+	client->state = CS_CONNECTED;		// need prespawn, spawn, etc
 }

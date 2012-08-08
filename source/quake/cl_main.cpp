@@ -25,6 +25,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll(void)
+{
+	R_Shutdown(false);
+	R_BeginRegistration(&cls.glconfig);
+
+	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
+	translate_texture = NULL;
+
+	Draw_Init();
+	Sbar_Init();
+}
+
+/*
 =====================
 CL_ClearState
 
@@ -32,12 +49,10 @@ CL_ClearState
 */
 void CL_ClearState(void)
 {
-	if (sv.state == SS_DEAD)
-	{
-		Host_ClearMemory();
-	}
+	Mod_ClearAll();
+	clc.qh_signon = 0;
 
-// wipe the entire cl structure
+	// wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
 
 	clc.netchan.message.Clear();

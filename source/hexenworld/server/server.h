@@ -21,19 +21,6 @@
 //============================================================================
 
 extern Cvar* spawn;
-extern Cvar* randomclass;
-extern Cvar* damageScale;
-extern Cvar* meleeDamScale;
-extern Cvar* shyRespawn;
-extern Cvar* manaScale;
-extern Cvar* tomeMode;
-extern Cvar* tomeRespawn;
-extern Cvar* w2Respawn;
-extern Cvar* altRespawn;
-extern Cvar* fixedLevel;
-extern Cvar* autoItems;
-extern Cvar* easyFourth;
-extern Cvar* patternRunner;
 extern Cvar* noexit;
 
 extern client_t* host_client;
@@ -54,16 +41,8 @@ void SV_FinalMessage(const char* message);
 
 void SV_InitOperatorCommands(void);
 
-void SV_SendServerinfo(client_t* client);
-
-
 void Master_Heartbeat(void);
 void Master_Packet(void);
-
-//
-// sv_init.c
-//
-void SV_SpawnServer(char* server, char* startspot);
 
 //
 // sv_ccmds.c
