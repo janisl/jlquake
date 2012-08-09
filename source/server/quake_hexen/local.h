@@ -189,6 +189,7 @@ extern Cvar* svqhw_rcon_password;
 extern Cvar* svqhw_password;
 extern Cvar* svqhw_spectator_password;
 extern Cvar* svqhw_maxspectators;
+extern Cvar* qhw_filterban;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -206,6 +207,12 @@ void SVQH_SendServerinfo(client_t* client);
 void SVQH_CheckForNewClients();
 void SVQHW_CheckLog();
 void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message);
+void SVQHW_AddIP_f();
+void SVQHW_RemoveIP_f();
+void SVQHW_ListIP_f();
+void SVQHW_WriteIP_f();
+void SVQHW_SendBan(const netadr_t& net_from);
+bool SVQHW_FilterPacket(const netadr_t& net_from);
 
 //
 //	Move

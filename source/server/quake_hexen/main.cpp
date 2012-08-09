@@ -987,16 +987,14 @@ static void SVCQHW_RemoteCommand(const netadr_t& net_from, QMsg& message)
 // connectionless packets.
 void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message)
 {
-	char* c;
-
 	message.BeginReadingOOB();
 	message.ReadLong();		// skip the -1 marker
 
-	const char* s = const_cast<char*>(message.ReadStringLine2());
+	const char* s = message.ReadStringLine2();
 
 	Cmd_TokenizeString(s);
 
-	c = Cmd_Argv(0);
+	const char* c = Cmd_Argv(0);
 
 	if (!String::Cmp(c, "ping") || (c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')))
 	{
@@ -1042,4 +1040,205 @@ void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message)
 		common->Printf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(net_from), s);
 	}
+}
+
+/*
+==============================================================================
+
+PACKET FILTERING
+
+
+You can add or remove addresses from the filter list with:
+
+addip <ip>
+removeip <ip>
+
+The ip address is specified in dot format, and any unspecified digits will match any value, so you can specify an entire class C network with "addip 192.246.40".
+
+Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
+
+listip
+Prints the current list of filters.
+
+writeip
+Dumps "addip <ip>" commands to listip.cfg so it can be execed at a later date.  The filter lists are not saved and restored by default, because I beleive it would cause too much confusion.
+
+filterban <0 or 1>
+
+If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.  This is the default setting.
+
+If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
+
+
+==============================================================================
+*/
+
+
+struct ipfilter_t
+{
+	unsigned mask;
+	unsigned compare;
+};
+
+#define MAX_IPFILTERS   1024
+
+static ipfilter_t qhw_ipfilters[MAX_IPFILTERS];
+static int qhw_numipfilters;
+
+Cvar* qhw_filterban;
+
+static bool StringToFilter(char* s, ipfilter_t* f)
+{
+	byte b[4];
+	byte m[4];
+	for (int i = 0; i < 4; i++)
+	{
+		b[i] = 0;
+		m[i] = 0;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (*s < '0' || *s > '9')
+		{
+			common->Printf("Bad filter address: %s\n", s);
+			return false;
+		}
+
+		int j = 0;
+		char num[128];
+		while (*s >= '0' && *s <= '9')
+		{
+			num[j++] = *s++;
+		}
+		num[j] = 0;
+		b[i] = String::Atoi(num);
+		if (b[i] != 0)
+		{
+			m[i] = 255;
+		}
+
+		if (!*s)
+		{
+			break;
+		}
+		s++;
+	}
+
+	f->mask = *(unsigned*)m;
+	f->compare = *(unsigned*)b;
+
+	return true;
+}
+
+void SVQHW_AddIP_f()
+{
+	int i;
+	for (i = 0; i < qhw_numipfilters; i++)
+	{
+		if (qhw_ipfilters[i].compare == 0xffffffff)
+		{
+			// free spot
+			break;
+		}
+	}
+	if (i == qhw_numipfilters)
+	{
+		if (qhw_numipfilters == MAX_IPFILTERS)
+		{
+			common->Printf("IP filter list is full\n");
+			return;
+		}
+		qhw_numipfilters++;
+	}
+
+	if (!StringToFilter(Cmd_Argv(1), &qhw_ipfilters[i]))
+	{
+		qhw_ipfilters[i].compare = 0xffffffff;
+	}
+}
+
+void SVQHW_RemoveIP_f()
+{
+	ipfilter_t f;
+	if (!StringToFilter(Cmd_Argv(1), &f))
+	{
+		return;
+	}
+	for (int i = 0; i < qhw_numipfilters; i++)
+	{
+		if (qhw_ipfilters[i].mask == f.mask &&
+			qhw_ipfilters[i].compare == f.compare)
+		{
+			for (int j = i + 1; j < qhw_numipfilters; j++)
+			{
+				qhw_ipfilters[j - 1] = qhw_ipfilters[j];
+			}
+			qhw_numipfilters--;
+			common->Printf("Removed.\n");
+			return;
+		}
+	}
+	common->Printf("Didn't find %s.\n", Cmd_Argv(1));
+}
+
+void SVQHW_ListIP_f()
+{
+	common->Printf("Filter list:\n");
+	for (int i = 0; i < qhw_numipfilters; i++)
+	{
+		byte b[4];
+		*(unsigned*)b = qhw_ipfilters[i].compare;
+		common->Printf("%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
+	}
+}
+
+void SVQHW_WriteIP_f()
+{
+	char name[MAX_OSPATH];
+	sprintf(name, "listip.cfg");
+
+	common->Printf("Writing %s.\n", name);
+
+	fileHandle_t f = FS_FOpenFileWrite(name);
+	if (!f)
+	{
+		common->Printf("Couldn't open %s\n", name);
+		return;
+	}
+
+	for (int i = 0; i < qhw_numipfilters; i++)
+	{
+		byte b[4];
+		*(unsigned*)b = qhw_ipfilters[i].compare;
+		FS_Printf(f, "addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
+	}
+
+	FS_FCloseFile(f);
+}
+
+void SVQHW_SendBan(const netadr_t& net_from)
+{
+	char data[128];
+	data[0] = data[1] = data[2] = data[3] = 0xff;
+	data[4] = A2C_PRINT;
+	data[5] = 0;
+	String::Cat(data, sizeof(data), "\nbanned.\n");
+
+	NET_SendPacket(NS_SERVER, String::Length(data), data, net_from);
+}
+
+bool SVQHW_FilterPacket(const netadr_t& net_from)
+{
+	unsigned in = *(unsigned*)net_from.ip;
+
+	for (int i = 0; i < qhw_numipfilters; i++)
+	{
+		if ((in & qhw_ipfilters[i].mask) == qhw_ipfilters[i].compare)
+		{
+			return qhw_filterban->value;
+		}
+	}
+
+	return !qhw_filterban->value;
 }

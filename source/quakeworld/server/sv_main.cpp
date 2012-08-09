@@ -216,247 +216,6 @@ void SV_FinalMessage(const char* message)
 		}
 }
 
-/*
-==============================================================================
-
-PACKET FILTERING
-
-
-You can add or remove addresses from the filter list with:
-
-addip <ip>
-removeip <ip>
-
-The ip address is specified in dot format, and any unspecified digits will match any value, so you can specify an entire class C network with "addip 192.246.40".
-
-Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
-
-listip
-Prints the current list of filters.
-
-writeip
-Dumps "addip <ip>" commands to listip.cfg so it can be execed at a later date.  The filter lists are not saved and restored by default, because I beleive it would cause too much confusion.
-
-filterban <0 or 1>
-
-If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.  This is the default setting.
-
-If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
-
-
-==============================================================================
-*/
-
-
-typedef struct
-{
-	unsigned mask;
-	unsigned compare;
-} ipfilter_t;
-
-#define MAX_IPFILTERS   1024
-
-ipfilter_t ipfilters[MAX_IPFILTERS];
-int numipfilters;
-
-Cvar* filterban;
-
-/*
-=================
-StringToFilter
-=================
-*/
-qboolean StringToFilter(char* s, ipfilter_t* f)
-{
-	char num[128];
-	int i, j;
-	byte b[4];
-	byte m[4];
-
-	for (i = 0; i < 4; i++)
-	{
-		b[i] = 0;
-		m[i] = 0;
-	}
-
-	for (i = 0; i < 4; i++)
-	{
-		if (*s < '0' || *s > '9')
-		{
-			common->Printf("Bad filter address: %s\n", s);
-			return false;
-		}
-
-		j = 0;
-		while (*s >= '0' && *s <= '9')
-		{
-			num[j++] = *s++;
-		}
-		num[j] = 0;
-		b[i] = String::Atoi(num);
-		if (b[i] != 0)
-		{
-			m[i] = 255;
-		}
-
-		if (!*s)
-		{
-			break;
-		}
-		s++;
-	}
-
-	f->mask = *(unsigned*)m;
-	f->compare = *(unsigned*)b;
-
-	return true;
-}
-
-/*
-=================
-SV_AddIP_f
-=================
-*/
-void SV_AddIP_f(void)
-{
-	int i;
-
-	for (i = 0; i < numipfilters; i++)
-		if (ipfilters[i].compare == 0xffffffff)
-		{
-			break;
-		}				// free spot
-	if (i == numipfilters)
-	{
-		if (numipfilters == MAX_IPFILTERS)
-		{
-			common->Printf("IP filter list is full\n");
-			return;
-		}
-		numipfilters++;
-	}
-
-	if (!StringToFilter(Cmd_Argv(1), &ipfilters[i]))
-	{
-		ipfilters[i].compare = 0xffffffff;
-	}
-}
-
-/*
-=================
-SV_RemoveIP_f
-=================
-*/
-void SV_RemoveIP_f(void)
-{
-	ipfilter_t f;
-	int i, j;
-
-	if (!StringToFilter(Cmd_Argv(1), &f))
-	{
-		return;
-	}
-	for (i = 0; i < numipfilters; i++)
-		if (ipfilters[i].mask == f.mask &&
-			ipfilters[i].compare == f.compare)
-		{
-			for (j = i + 1; j < numipfilters; j++)
-				ipfilters[j - 1] = ipfilters[j];
-			numipfilters--;
-			common->Printf("Removed.\n");
-			return;
-		}
-	common->Printf("Didn't find %s.\n", Cmd_Argv(1));
-}
-
-/*
-=================
-SV_ListIP_f
-=================
-*/
-void SV_ListIP_f(void)
-{
-	int i;
-	byte b[4];
-
-	common->Printf("Filter list:\n");
-	for (i = 0; i < numipfilters; i++)
-	{
-		*(unsigned*)b = ipfilters[i].compare;
-		common->Printf("%3i.%3i.%3i.%3i\n", b[0], b[1], b[2], b[3]);
-	}
-}
-
-/*
-=================
-SV_WriteIP_f
-=================
-*/
-void SV_WriteIP_f(void)
-{
-	fileHandle_t f;
-	char name[MAX_OSPATH];
-	byte b[4];
-	int i;
-
-	sprintf(name, "listip.cfg");
-
-	common->Printf("Writing %s.\n", name);
-
-	f = FS_FOpenFileWrite(name);
-	if (!f)
-	{
-		common->Printf("Couldn't open %s\n", name);
-		return;
-	}
-
-	for (i = 0; i < numipfilters; i++)
-	{
-		*(unsigned*)b = ipfilters[i].compare;
-		FS_Printf(f, "addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
-	}
-
-	FS_FCloseFile(f);
-}
-
-/*
-=================
-SV_SendBan
-=================
-*/
-void SV_SendBan(void)
-{
-	char data[128];
-
-	data[0] = data[1] = data[2] = data[3] = 0xff;
-	data[4] = A2C_PRINT;
-	data[5] = 0;
-	String::Cat(data, sizeof(data), "\nbanned.\n");
-
-	NET_SendPacket(NS_SERVER, String::Length(data), data, net_from);
-}
-
-/*
-=================
-SV_FilterPacket
-=================
-*/
-qboolean SV_FilterPacket(void)
-{
-	int i;
-	unsigned in;
-
-	in = *(unsigned*)net_from.ip;
-
-	for (i = 0; i < numipfilters; i++)
-		if ((in & ipfilters[i].mask) == ipfilters[i].compare)
-		{
-			return filterban->value;
-		}
-
-	return !filterban->value;
-}
-
 //============================================================================
 
 /*
@@ -474,9 +233,9 @@ void SV_ReadPackets(void)
 	good = false;
 	while (NET_GetUdpPacket(NS_SERVER, &net_from, &net_message))
 	{
-		if (SV_FilterPacket())
+		if (SVQHW_FilterPacket(net_from))
 		{
-			SV_SendBan();	// tell them we aren't listening...
+			SVQHW_SendBan(net_from);	// tell them we aren't listening...
 			continue;
 		}
 
@@ -787,7 +546,7 @@ void SV_InitLocal(void)
 
 	svqh_aim = Cvar_Get("sv_aim", "2", 0);
 
-	filterban = Cvar_Get("filterban", "1", 0);
+	qhw_filterban = Cvar_Get("filterban", "1", 0);
 
 	qhw_allow_download = Cvar_Get("allow_download", "1", 0);
 	qhw_allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
@@ -801,10 +560,10 @@ void SV_InitLocal(void)
 
 	qh_pausable    = Cvar_Get("pausable", "1", 0);
 
-	Cmd_AddCommand("addip", SV_AddIP_f);
-	Cmd_AddCommand("removeip", SV_RemoveIP_f);
-	Cmd_AddCommand("listip", SV_ListIP_f);
-	Cmd_AddCommand("writeip", SV_WriteIP_f);
+	Cmd_AddCommand("addip", SVQHW_AddIP_f);
+	Cmd_AddCommand("removeip", SVQHW_RemoveIP_f);
+	Cmd_AddCommand("listip", SVQHW_ListIP_f);
+	Cmd_AddCommand("writeip", SVQHW_WriteIP_f);
 
 	for (i = 0; i < MAX_MODELS_Q1; i++)
 		sprintf(svqh_localmodels[i], "*%i", i);
