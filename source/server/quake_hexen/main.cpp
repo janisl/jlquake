@@ -435,3 +435,102 @@ void SVQH_SendServerinfo(client_t* client)
 	client->qh_sendsignon = true;
 	client->state = CS_CONNECTED;		// need prespawn, spawn, etc
 }
+
+//	Initializes a client_t for a new net connection.  This will only be called
+// once for a player each game, not once for each level change.
+static void SVQH_ConnectClient(int clientnum)
+{
+	client_t* client = svs.clients + clientnum;
+
+	common->DPrintf("Client %s connected\n", client->qh_netconnection->address);
+
+	int edictnum = clientnum + 1;
+
+	qhedict_t* ent = QH_EDICT_NUM(edictnum);
+
+	// set up the client_t
+	qsocket_t* netconnection = client->qh_netconnection;
+	netchan_t netchan = client->netchan;
+
+	float spawn_parms[NUM_SPAWN_PARMS];
+	if (sv.loadgame)
+	{
+		Com_Memcpy(spawn_parms, client->qh_spawn_parms, sizeof(spawn_parms));
+	}
+	Com_Memset(client, 0, sizeof(*client));
+	if (GGameType & GAME_Hexen2)
+	{
+		client->h2_send_all_v = true;
+	}
+	client->qh_netconnection = netconnection;
+	client->netchan = netchan;
+
+	String::Cpy(client->name, "unconnected");
+	client->state = CS_CONNECTED;
+	client->qh_edict = ent;
+
+	client->qh_message.InitOOB(client->qh_messageBuffer, GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_MSGLEN_Q1);
+	client->qh_message.allowoverflow = true;		// we can catch it
+
+	if (GGameType & GAME_Hexen2)
+	{
+		client->datagram.InitOOB(client->datagramBuffer, MAX_MSGLEN_H2);
+
+		Com_Memset(&sv.h2_states[clientnum],0,sizeof(h2client_state2_t));
+	}
+
+	if (sv.loadgame)
+	{
+		Com_Memcpy(client->qh_spawn_parms, spawn_parms, sizeof(spawn_parms));
+	}
+	else if (GGameType & GAME_Quake)
+	{
+		// call the progs to get default spawn parms for the new client
+		PR_ExecuteProgram(*pr_globalVars.SetNewParms);
+		for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+		{
+			client->qh_spawn_parms[i] = pr_globalVars.parm1[i];
+		}
+	}
+
+	SVQH_SendServerinfo(client);
+}
+
+void SVQH_CheckForNewClients()
+{
+	//
+	// check for new connections
+	//
+	while (1)
+	{
+		netadr_t addr;
+		qsocket_t* ret = NET_CheckNewConnections(&addr);
+		if (!ret)
+		{
+			break;
+		}
+
+		//
+		// init a new client structure
+		//
+		int i;
+		for (i = 0; i < svs.qh_maxclients; i++)
+		{
+			if (svs.clients[i].state == CS_FREE)
+			{
+				break;
+			}
+		}
+		if (i == svs.qh_maxclients)
+		{
+			common->FatalError("Host_CheckForNewClients: no free clients");
+		}
+
+		Netchan_Setup(NS_SERVER, &svs.clients[i].netchan, addr, 0);
+		svs.clients[i].netchan.lastReceived = net_time * 1000;
+		svs.clients[i].qh_netconnection = ret;
+		SVQH_ConnectClient(i);
+
+		net_activeconnections++;
+	}
+}

@@ -543,7 +543,7 @@ void Host_ServerFrame(void)
 	SVQH_ClearDatagram();
 
 // check for new clients
-	SV_CheckForNewClients();
+	SVQH_CheckForNewClients();
 
 	SVQH_SetMoveVars();
 

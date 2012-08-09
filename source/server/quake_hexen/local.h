@@ -199,6 +199,7 @@ void SVQHW_ExtractFromUserinfo(client_t* cl);
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
+void SVQH_CheckForNewClients();
 
 //
 //	Move
