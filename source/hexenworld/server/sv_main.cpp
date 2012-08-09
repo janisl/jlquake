@@ -112,12 +112,12 @@ void idCommonLocal::EndGame(const char* format, ...)
 
 /*
 ================
-SV_Shutdown
+SVQHW_Shutdown
 
 Quake calls this before calling Sys_Quit or Sys_Error
 ================
 */
-void SV_Shutdown(void)
+void SVQHW_Shutdown(void)
 {
 	SVQHW_Master_Shutdown();
 	if (sv_logfile)
@@ -162,7 +162,7 @@ void SV_Error(const char* error, ...)
 
 	SV_FinalMessage(va("server crashed: %s\n", string));
 
-	SV_Shutdown();
+	SVQHW_Shutdown();
 
 	Sys_Error("SV_Error: %s\n",string);
 }
@@ -483,6 +483,10 @@ void SV_InitLocal(void)
 
 
 //============================================================================
+
+void CL_Disconnect()
+{
+}
 
 /*
 ====================

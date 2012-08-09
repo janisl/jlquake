@@ -53,7 +53,7 @@ extern int sv_net_port;
 //
 // sv_main.c
 //
-void SV_Shutdown(void);
+void SVQHW_Shutdown(void);
 void SV_Frame(float time);
 void SV_FinalMessage(const char* message);
 

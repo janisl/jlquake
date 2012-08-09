@@ -141,7 +141,7 @@ void Host_EndGame(const char* message, ...)
 
 	if (sv.state != SS_DEAD)
 	{
-		Host_ShutdownServer(false);
+		SVQH_Shutdown(false);
 	}
 
 #ifdef DEDICATED
@@ -195,7 +195,7 @@ void Host_Error(const char* error, ...)
 
 	if (sv.state != SS_DEAD)
 	{
-		Host_ShutdownServer(false);
+		SVQH_Shutdown(false);
 	}
 
 #ifdef DEDICATED
@@ -396,86 +396,6 @@ void Host_WriteConfiguration(const char* fname)
 	}
 }
 #endif
-
-/*
-==================
-Host_ShutdownServer
-
-This only happens at the end of a game, not between levels
-==================
-*/
-void Host_ShutdownServer(qboolean crash)
-{
-	int i;
-	int count;
-	QMsg buf;
-	byte message[4];
-	double start;
-
-	if (sv.state == SS_DEAD)
-	{
-		return;
-	}
-
-	sv.state = SS_DEAD;
-
-#ifndef DEDICATED
-// stop all client sounds immediately
-	if (cls.state == CA_ACTIVE)
-	{
-		CL_Disconnect();
-	}
-#endif
-
-// flush any pending messages - like the score!!!
-	start = Sys_DoubleTime();
-	do
-	{
-		count = 0;
-		for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
-		{
-			if (host_client->state >= CS_CONNECTED && host_client->qh_message.cursize)
-			{
-				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
-				{
-					NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
-					host_client->qh_message.Clear();
-				}
-				else
-				{
-					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
-					count++;
-				}
-			}
-		}
-		if ((Sys_DoubleTime() - start) > 3.0)
-		{
-			break;
-		}
-	}
-	while (count);
-
-// make sure all the clients know we're disconnecting
-	buf.InitOOB(message, 4);
-	buf.WriteByte(h2svc_disconnect);
-	count = NET_SendToAll(&buf, 5);
-	if (count)
-	{
-		common->Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
-	}
-
-	for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
-		if (host_client->state >= CS_CONNECTED)
-		{
-			SVQH_DropClient(host_client, crash);
-		}
-
-//
-// clear structures
-//
-	Com_Memset(&sv, 0, sizeof(sv));
-	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
-}
 
 /*
 ===================
@@ -976,3 +896,9 @@ void Host_Shutdown(void)
 	}
 #endif
 }
+
+#ifdef DEDICATED
+void CL_Disconnect()
+{
+}
+#endif

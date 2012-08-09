@@ -36,7 +36,7 @@ void Host_Quit_f(void)
 	}
 	CL_Disconnect();
 #endif
-	Host_ShutdownServer(false);
+	SVQH_Shutdown(false);
 
 	Sys_Quit();
 }
@@ -164,7 +164,7 @@ void Host_Map_f(void)
 
 	CL_Disconnect();
 #endif
-	Host_ShutdownServer(false);
+	SVQH_Shutdown(false);
 
 #ifndef DEDICATED
 	in_keyCatchers = 0;			// remove console or menu

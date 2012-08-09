@@ -125,7 +125,6 @@ void Host_Error(const char* error, ...);
 void Host_EndGame(const char* message, ...);
 void Host_Frame(float time);
 void Host_Quit_f(void);
-void Host_ShutdownServer(qboolean crash);
 
 extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss

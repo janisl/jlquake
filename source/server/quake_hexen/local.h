@@ -214,6 +214,7 @@ void SVQHW_WriteIP_f();
 void SVQHW_ReadPackets();
 void SVQHW_Master_Heartbeat();
 void SVQHW_Master_Shutdown();
+void SVQH_Shutdown(bool crash);
 
 //
 //	Move

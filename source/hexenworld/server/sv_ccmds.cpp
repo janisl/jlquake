@@ -59,7 +59,7 @@ void SV_Quit_f(void)
 {
 	SV_FinalMessage("server shutdown\n");
 	common->Printf("Shutting down.\n");
-	SV_Shutdown();
+	SVQHW_Shutdown();
 	Sys_Quit();
 }
 

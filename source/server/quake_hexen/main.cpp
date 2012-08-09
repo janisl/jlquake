@@ -1411,3 +1411,77 @@ void SVQHW_Master_Shutdown()
 	}
 #endif
 }
+
+//	This only happens at the end of a game, not between levels
+void SVQH_Shutdown(bool crash)
+{
+	if (sv.state == SS_DEAD)
+	{
+		return;
+	}
+
+	sv.state = SS_DEAD;
+
+	// stop all client sounds immediately
+	CL_Disconnect();
+
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN];
+	net_message.InitOOB(net_message_buffer, MAX_MSGLEN);
+
+	// flush any pending messages - like the score!!!
+	double start = Sys_DoubleTime();
+	int count;
+	do
+	{
+		count = 0;
+		client_t* host_client = svs.clients;
+		for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
+		{
+			if (host_client->state >= CS_CONNECTED && host_client->qh_message.cursize)
+			{
+				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+				{
+					NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
+					host_client->qh_message.Clear();
+				}
+				else
+				{
+					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
+					count++;
+				}
+			}
+		}
+		if ((Sys_DoubleTime() - start) > 3.0)
+		{
+			break;
+		}
+	}
+	while (count);
+
+	// make sure all the clients know we're disconnecting
+	QMsg buf;
+	byte message[4];
+	buf.InitOOB(message, 4);
+	buf.WriteByte(GGameType & GAME_Hexen2 ? h2svc_disconnect : q1svc_disconnect);
+	count = NET_SendToAll(&buf, 5);
+	if (count)
+	{
+		common->Printf("SVQH_Shutdown: NET_SendToAll failed for %u clients\n", count);
+	}
+
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
+	{
+		if (host_client->state >= CS_CONNECTED)
+		{
+			SVQH_DropClient(host_client, crash);
+		}
+	}
+
+	//
+	// clear structures
+	//
+	Com_Memset(&sv, 0, sizeof(sv));
+	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
+}
