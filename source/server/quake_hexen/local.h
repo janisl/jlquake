@@ -206,13 +206,11 @@ const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
 void SVQH_CheckForNewClients();
 void SVQHW_CheckLog();
-void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message);
 void SVQHW_AddIP_f();
 void SVQHW_RemoveIP_f();
 void SVQHW_ListIP_f();
 void SVQHW_WriteIP_f();
-void SVQHW_SendBan(const netadr_t& net_from);
-bool SVQHW_FilterPacket(const netadr_t& net_from);
+void SVQHW_ReadPackets();
 
 //
 //	Move

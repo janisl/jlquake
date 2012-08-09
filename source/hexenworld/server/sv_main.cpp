@@ -201,70 +201,6 @@ void SV_FinalMessage(const char* message)
 //============================================================================
 
 /*
-=================
-SV_ReadPackets
-=================
-*/
-void SV_ReadPackets(void)
-{
-	int i;
-	client_t* cl;
-	qboolean good;
-
-	good = false;
-	while (NET_GetUdpPacket(NS_SERVER, &net_from, &net_message))
-	{
-		if (SVQHW_FilterPacket(net_from))
-		{
-			SVQHW_SendBan(net_from);	// tell them we aren't listening...
-			continue;
-		}
-
-		// check for connectionless packet (0xffffffff) first
-		if (*(int*)net_message._data == -1)
-		{
-			SVQHW_ConnectionlessPacket(net_from, net_message);
-			continue;
-		}
-
-		// check for packets from connected clients
-		for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
-		{
-			if (cl->state == CS_FREE)
-			{
-				continue;
-			}
-			if (!SOCK_CompareAdr(net_from, cl->netchan.remoteAddress))
-			{
-				continue;
-			}
-			if (Netchan_Process(&cl->netchan, &net_message))
-			{
-				// this is a valid, sequenced packet, so process it
-				cl->netchan.lastReceived = realtime * 1000;
-				svs.qh_stats.packets++;
-				good = true;
-				cl->qh_send_message = true;	// reply at end of frame
-				if (cl->state != CS_ZOMBIE)
-				{
-					SVHW_ExecuteClientMessage(cl, net_message);
-				}
-			}
-			break;
-		}
-
-		if (i != MAX_CLIENTS_QHW)
-		{
-			continue;
-		}
-
-		// packet is not from a known client
-		//	common->Printf ("%s:sequenced packet without connection\n"
-		// ,SOCK_AdrToString(net_from));
-	}
-}
-
-/*
 ==================
 SV_CheckTimeouts
 
@@ -413,7 +349,7 @@ void SV_Frame(float time)
 		SVQH_RunPhysicsForTime(realtime);
 
 // get packets
-		SV_ReadPackets();
+		SVQHW_ReadPackets();
 
 // check for commands typed to the host
 		SV_GetConsoleCommands();

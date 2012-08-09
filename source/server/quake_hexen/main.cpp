@@ -985,7 +985,7 @@ static void SVCQHW_RemoteCommand(const netadr_t& net_from, QMsg& message)
 // characters to distinguish it from a game channel.
 // Clients that are in the game can still send
 // connectionless packets.
-void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message)
+static void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message)
 {
 	message.BeginReadingOOB();
 	message.ReadLong();		// skip the -1 marker
@@ -1217,7 +1217,7 @@ void SVQHW_WriteIP_f()
 	FS_FCloseFile(f);
 }
 
-void SVQHW_SendBan(const netadr_t& net_from)
+static void SVQHW_SendBan(const netadr_t& net_from)
 {
 	char data[128];
 	data[0] = data[1] = data[2] = data[3] = 0xff;
@@ -1228,7 +1228,7 @@ void SVQHW_SendBan(const netadr_t& net_from)
 	NET_SendPacket(NS_SERVER, String::Length(data), data, net_from);
 }
 
-bool SVQHW_FilterPacket(const netadr_t& net_from)
+static bool SVQHW_FilterPacket(const netadr_t& net_from)
 {
 	unsigned in = *(unsigned*)net_from.ip;
 
@@ -1241,4 +1241,96 @@ bool SVQHW_FilterPacket(const netadr_t& net_from)
 	}
 
 	return !qhw_filterban->value;
+}
+
+void SVQHW_ReadPackets()
+{
+	bool good = false;
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN];
+	net_message.InitOOB(net_message_buffer, GGameType & GAME_HexenWorld ? MAX_MSGLEN_HW + 9 : MAX_MSGLEN_QW * 2);	// one more than msg + header
+	while (NET_GetUdpPacket(NS_SERVER, &net_from, &net_message))
+	{
+		if (SVQHW_FilterPacket(net_from))
+		{
+			SVQHW_SendBan(net_from);	// tell them we aren't listening...
+			continue;
+		}
+
+		// check for connectionless packet (0xffffffff) first
+		if (*(int*)net_message._data == -1)
+		{
+			SVQHW_ConnectionlessPacket(net_from, net_message);
+			continue;
+		}
+
+		int qport = 0;
+		if (GGameType & GAME_QuakeWorld)
+		{
+			// read the qport out of the message so we can fix up
+			// stupid address translating routers
+			net_message.BeginReadingOOB();
+			net_message.ReadLong();		// sequence number
+			net_message.ReadLong();		// sequence number
+			qport = net_message.ReadShort() & 0xffff;
+		}
+
+		// check for packets from connected clients
+		client_t* cl = svs.clients;
+		int i;
+		for (i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+		{
+			if (cl->state == CS_FREE)
+			{
+				continue;
+			}
+			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remoteAddress))
+			{
+				continue;
+			}
+			if (GGameType & GAME_QuakeWorld && cl->netchan.qport != qport)
+			{
+				continue;
+			}
+			if (cl->netchan.remoteAddress.port != net_from.port)
+			{
+				if (GGameType & GAME_HexenWorld)
+				{
+					continue;
+				}
+				common->DPrintf("SVQHW_ReadPackets: fixing up a translated port\n");
+				cl->netchan.remoteAddress.port = net_from.port;
+			}
+			if (Netchan_Process(&cl->netchan, &net_message))
+			{
+				// this is a valid, sequenced packet, so process it
+				cl->netchan.lastReceived = svs.realtime;
+				svs.qh_stats.packets++;
+				good = true;
+				cl->qh_send_message = true;	// reply at end of frame
+				if (cl->state != CS_ZOMBIE)
+				{
+					if (GGameType & GAME_HexenWorld)
+					{
+						SVHW_ExecuteClientMessage(cl, net_message);
+					}
+					else
+					{
+						SVQW_ExecuteClientMessage(cl, net_message);
+					}
+				}
+			}
+			break;
+		}
+
+		if (i != MAX_CLIENTS_QHW)
+		{
+			continue;
+		}
+
+		// packet is not from a known client
+		//	common->Printf ("%s:sequenced packet without connection\n"
+		// ,SOCK_AdrToString(net_from));
+	}
 }
