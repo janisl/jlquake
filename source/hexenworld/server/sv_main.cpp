@@ -22,15 +22,10 @@ client_t* host_client;				// current client
 Cvar* timeout;
 Cvar* zombietime;
 
-Cvar* rcon_password;
-Cvar* password;
-Cvar* spectator_password;
-
 //
 // game rules mirrored in svs.qh_info
 //
 Cvar* samelevel;
-Cvar* maxspectators;
 Cvar* spawn;
 
 Cvar* noexit;
@@ -201,468 +196,6 @@ void SV_FinalMessage(const char* message)
 			Netchan_Transmit(&cl->netchan, net_message.cursize,
 				net_message._data);
 		}
-}
-
-/*
-==============================================================================
-
-CONNECTIONLESS COMMANDS
-
-==============================================================================
-*/
-
-/*
-================
-SVC_Status
-
-Responds with all the info that qplug or qspy can see
-This message can be up to around 5k with worst case string lengths.
-================
-*/
-void SVC_Status(void)
-{
-	int i;
-	client_t* cl;
-	int ping;
-	int top, bottom;
-
-	Cmd_TokenizeString("status");
-	SVQHW_BeginRedirect(net_from);
-	common->Printf("%s\n", svs.qh_info);
-	for (i = 0; i < MAX_CLIENTS_QHW; i++)
-	{
-		cl = &svs.clients[i];
-		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->qh_spectator)
-		{
-			top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
-			bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
-			ping = SVQH_CalcPing(cl);
-			common->Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
-				cl->qh_old_frags, (int)(realtime - cl->qh_connection_started) / 60,
-				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
-		}
-	}
-	Com_EndRedirect();
-}
-
-/*
-===================
-SV_CheckLog
-
-===================
-*/
-#define LOG_HIGHWATER   4096
-#define LOG_FLUSH       10 * 60
-void SV_CheckLog(void)
-{
-	QMsg* sz;
-
-	sz = &svs.qh_log[svs.qh_logsequence & 1];
-
-	// bump sequence if allmost full, or ten minutes have passed and
-	// there is something still sitting there
-	if (sz->cursize > LOG_HIGHWATER ||
-		(realtime - svs.qh_logtime > LOG_FLUSH && sz->cursize))
-	{
-		// swap buffers and bump sequence
-		svs.qh_logtime = realtime;
-		svs.qh_logsequence++;
-		sz = &svs.qh_log[svs.qh_logsequence & 1];
-		sz->cursize = 0;
-		common->Printf("beginning fraglog sequence %i\n", svs.qh_logsequence);
-	}
-
-}
-
-/*
-================
-SVC_Log
-
-Responds with all the logged frags for ranking programs.
-If a sequence number is passed as a parameter and it is
-the same as the current sequence, an A2A_NACK will be returned
-instead of the data.
-================
-*/
-void SVC_Log(void)
-{
-	int seq;
-	char data[MAX_DATAGRAM_HW + 64];
-
-	if (Cmd_Argc() == 2)
-	{
-		seq = String::Atoi(Cmd_Argv(1));
-	}
-	else
-	{
-		seq = -1;
-	}
-
-	if (seq == svs.qh_logsequence - 1 || !svqhw_fraglogfile)
-	{	// they allready have this data, or we aren't logging frags
-		data[0] = A2A_NACK;
-		NET_SendPacket(NS_SERVER, 1, data, net_from);
-		return;
-	}
-
-	common->DPrintf("sending log %i to %s\n", svs.qh_logsequence - 1, SOCK_AdrToString(net_from));
-
-	sprintf(data, "stdlog %i\n", svs.qh_logsequence - 1);
-	String::Cat(data, sizeof(data), (char*)svs.qh_log_buf[((svs.qh_logsequence - 1) & 1)]);
-
-	NET_SendPacket(NS_SERVER, String::Length(data) + 1, data, net_from);
-}
-
-/*
-================
-SVC_Ping
-
-Just responds with an acknowledgement
-================
-*/
-void SVC_Ping(void)
-{
-	char data;
-
-	data = A2A_ACK;
-
-	NET_SendPacket(NS_SERVER, 1, &data, net_from);
-}
-
-/*
-==================
-SVC_DirectConnect
-
-A connection request that did not come from the master
-==================
-*/
-void SVC_DirectConnect(void)
-{
-	char userinfo[1024];
-	static int userid;
-	netadr_t adr;
-	int i;
-	client_t* cl, * newcl;
-	client_t temp;
-	qhedict_t* ent;
-	int edictnum;
-	const char* s;
-	int clients, spectators;
-	qboolean spectator;
-
-	String::NCpy(userinfo, Cmd_Argv(2), sizeof(userinfo) - 1);
-
-	// check for password or spectator_password
-	s = Info_ValueForKey(userinfo, "spectator");
-	if (s[0] && String::Cmp(s, "0"))
-	{
-		if (spectator_password->string[0] &&
-			String::ICmp(spectator_password->string, "none") &&
-			String::Cmp(spectator_password->string, s))
-		{	// failed
-			common->Printf("%s:spectator password failed\n", SOCK_AdrToString(net_from));
-			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
-			return;
-		}
-		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
-		spectator = true;
-		Info_RemoveKey(userinfo, "spectator", MAX_INFO_STRING_QW);	// remove passwd
-	}
-	else
-	{
-		s = Info_ValueForKey(userinfo, "password");
-		if (password->string[0] &&
-			String::ICmp(password->string, "none") &&
-			String::Cmp(password->string, s))
-		{
-			common->Printf("%s:password failed\n", SOCK_AdrToString(net_from));
-			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
-			return;
-		}
-		spectator = false;
-		Info_RemoveKey(userinfo, "password", MAX_INFO_STRING_QW);	// remove passwd
-	}
-
-	adr = net_from;
-	userid++;	// so every client gets a unique id
-
-	newcl = &temp;
-	Com_Memset(newcl, 0, sizeof(client_t));
-
-	newcl->qh_userid = userid;
-	newcl->hw_portals = atol(Cmd_Argv(1));
-
-	// works properly
-	if (!svqh_highchars->value)
-	{
-		char* p, * q;
-
-		for (p = newcl->userinfo, q = userinfo; *q; q++)
-			if (*q > 31 && *q <= 127)
-			{
-				*p++ = *q;
-			}
-	}
-	else
-	{
-		String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_QW - 1);
-	}
-
-	// if there is allready a slot for this ip, drop it
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
-	{
-		if (cl->state == CS_FREE)
-		{
-			continue;
-		}
-		if (SOCK_CompareAdr(adr, cl->netchan.remoteAddress))
-		{
-			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
-			SVQHW_DropClient(cl);
-			break;
-		}
-	}
-
-	// count up the clients and spectators
-	clients = 0;
-	spectators = 0;
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
-	{
-		if (cl->state == CS_FREE)
-		{
-			continue;
-		}
-		if (cl->qh_spectator)
-		{
-			spectators++;
-		}
-		else
-		{
-			clients++;
-		}
-	}
-
-	// if at server limits, refuse connection
-	if (sv_maxclients->value > MAX_CLIENTS_QHW)
-	{
-		Cvar_SetValue("maxclients", MAX_CLIENTS_QHW);
-	}
-	if (maxspectators->value > MAX_CLIENTS_QHW)
-	{
-		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW);
-	}
-	if (maxspectators->value + sv_maxclients->value > MAX_CLIENTS_QHW)
-	{
-		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW - maxspectators->value + sv_maxclients->value);
-	}
-	if ((spectator && spectators >= (int)maxspectators->value) ||
-		(!spectator && clients >= (int)sv_maxclients->value))
-	{
-		common->Printf("%s:full connect\n", SOCK_AdrToString(adr));
-		NET_OutOfBandPrint(NS_SERVER, adr, "%c\nserver is full\n\n", A2C_PRINT);
-		return;
-	}
-
-	// find a client slot
-	newcl = NULL;
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
-	{
-		if (cl->state == CS_FREE)
-		{
-			newcl = cl;
-			break;
-		}
-	}
-	if (!newcl)
-	{
-		common->Printf("WARNING: miscounted available clients\n");
-		return;
-	}
-
-
-	// build a new connection
-	// accept the new client
-	// this is the only place a client_t is ever initialized
-	*newcl = temp;
-
-	NET_OutOfBandPrint(NS_SERVER, adr, "%c", S2C_CONNECTION);
-
-	edictnum = (newcl - svs.clients) + 1;
-
-	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, 0);
-	newcl->netchan.lastReceived = realtime * 1000;
-
-	newcl->state = CS_CONNECTED;
-
-	newcl->datagram.InitOOB(newcl->datagramBuffer, MAX_DATAGRAM_HW);
-	newcl->datagram.allowoverflow = true;
-
-	// spectator mode can ONLY be set at join time
-	newcl->qh_spectator = spectator;
-
-	ent = QH_EDICT_NUM(edictnum);
-	newcl->qh_edict = ent;
-	ED_ClearEdict(ent);
-
-	// parse some info from the info strings
-	SVQHW_ExtractFromUserinfo(newcl);
-
-	// JACK: Init the floodprot stuff.
-	for (i = 0; i < 10; i++)
-		newcl->qh_whensaid[i] = 0.0;
-	newcl->qh_whensaidhead = 0;
-	newcl->qh_lockedtill = 0;
-
-	// call the progs to get default spawn parms for the new client
-	PR_ExecuteProgram(*pr_globalVars.SetNewParms);
-	for (i = 0; i < NUM_SPAWN_PARMS; i++)
-		newcl->qh_spawn_parms[i] = pr_globalVars.parm1[i];
-
-	if (newcl->qh_spectator)
-	{
-		common->Printf("Spectator %s connected\n", newcl->name);
-	}
-	else
-	{
-		common->DPrintf("Client %s connected\n", newcl->name);
-	}
-}
-
-int Rcon_Validate(void)
-{
-	if (net_from.ip[0] == 208 && net_from.ip[1] == 135 && net_from.ip[2] == 137
-//		&& !String::Cmp(Cmd_Argv(1), "tms") )
-		&& !String::Cmp(Cmd_Argv(1), "rjr"))
-	{
-		return 2;
-	}
-
-	if (!String::Length(rcon_password->string))
-	{
-		return 0;
-	}
-
-	if (String::Cmp(Cmd_Argv(1), rcon_password->string))
-	{
-		return 0;
-	}
-
-	return 1;
-}
-
-/*
-===============
-SVC_RemoteCommand
-
-A client issued an rcon command.
-Shift down the remaining args
-Redirect all printfs
-===============
-*/
-void SVC_RemoteCommand(void)
-{
-	int i;
-	char remaining[1024];
-
-	i = Rcon_Validate();
-
-	if (i == 0)
-	{
-		common->Printf("Bad rcon from %s:\n%s\n",
-			SOCK_AdrToString(net_from), net_message._data + 4);
-	}
-	if (i == 1)
-	{
-		common->Printf("Rcon from %s:\n%s\n",
-			SOCK_AdrToString(net_from), net_message._data + 4);
-	}
-
-	SVQHW_BeginRedirect(net_from);
-
-	if (!Rcon_Validate())
-	{
-		common->Printf("Bad rcon_password.\n");
-	}
-	else
-	{
-		remaining[0] = 0;
-
-		for (i = 2; i < Cmd_Argc(); i++)
-		{
-			String::Cat(remaining, sizeof(remaining), Cmd_Argv(i));
-			String::Cat(remaining, sizeof(remaining), " ");
-		}
-
-		Cmd_ExecuteString(remaining);
-	}
-
-	Com_EndRedirect();
-}
-
-
-/*
-=================
-SV_ConnectionlessPacket
-
-A connectionless packet has four leading 0xff
-characters to distinguish it from a game channel.
-Clients that are in the game can still send
-connectionless packets.
-=================
-*/
-void SV_ConnectionlessPacket(void)
-{
-	char* s;
-	char* c;
-
-	net_message.BeginReadingOOB();
-	net_message.ReadLong();		// skip the -1 marker
-
-	s = const_cast<char*>(net_message.ReadStringLine2());
-
-	Cmd_TokenizeString(s);
-
-	c = Cmd_Argv(0);
-
-	if (!String::Cmp(c, "ping") || (c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')))
-	{
-		SVC_Ping();
-		return;
-	}
-	if (c[0] == A2A_ACK && (c[1] == 0 || c[1] == '\n'))
-	{
-		common->Printf("A2A_ACK from %s\n", SOCK_AdrToString(net_from));
-		return;
-	}
-	else if (c[0] == A2S_ECHO)
-	{
-		NET_SendPacket(NS_SERVER, net_message.cursize, net_message._data, net_from);
-		return;
-	}
-	else if (!String::Cmp(c,"status"))
-	{
-		SVC_Status();
-		return;
-	}
-	else if (!String::Cmp(c,"log"))
-	{
-		SVC_Log();
-		return;
-	}
-	else if (!String::Cmp(c,"connect"))
-	{
-		SVC_DirectConnect();
-		return;
-	}
-	else if (!String::Cmp(c, "rcon"))
-	{
-		SVC_RemoteCommand();
-	}
-	else
-	{
-		common->Printf("bad connectionless packet from %s:\n%s\n",
-			SOCK_AdrToString(net_from), s);
-	}
 }
 
 /*
@@ -931,7 +464,7 @@ void SV_ReadPackets(void)
 		// check for connectionless packet (0xffffffff) first
 		if (*(int*)net_message._data == -1)
 		{
-			SV_ConnectionlessPacket();
+			SVQHW_ConnectionlessPacket(net_from, net_message);
 			continue;
 		}
 
@@ -1041,12 +574,12 @@ void SV_CheckVars(void)
 	static char* pw, * spw;
 	int v;
 
-	if (password->string == pw && spectator_password->string == spw)
+	if (svqhw_password->string == pw && svqhw_spectator_password->string == spw)
 	{
 		return;
 	}
-	pw = password->string;
-	spw = spectator_password->string;
+	pw = svqhw_password->string;
+	spw = svqhw_spectator_password->string;
 
 	v = 0;
 	if (pw && pw[0] && String::Cmp(pw, "none"))
@@ -1115,7 +648,7 @@ void SV_Frame(float time)
 		SV_CheckTimeouts();
 
 // toggle the log buffer if full
-		SV_CheckLog();
+		SVQHW_CheckLog();
 
 // move autonomous things around if enough time has passed
 		SVQH_RunPhysicsForTime(realtime);
@@ -1177,16 +710,16 @@ void SV_InitLocal(void)
 	svqhw_spectalk = Cvar_Get("sv_spectalk", "1", 0);
 	svhw_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
 
-	rcon_password = Cvar_Get("rcon_password", "", 0);	// password for remote server commands
-	password = Cvar_Get("password", "", 0);	// password for entering the game
-	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
+	svqhw_rcon_password = Cvar_Get("rcon_password", "", 0);	// svqhw_password for remote server commands
+	svqhw_password = Cvar_Get("password", "", 0);	// password for entering the game
+	svqhw_spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
 	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
 	qh_timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
 	samelevel = Cvar_Get("samelevel", "0", CVAR_SERVERINFO);
 	sv_maxclients = Cvar_Get("maxclients", "8", CVAR_SERVERINFO);
-	maxspectators = Cvar_Get("maxspectators", "8", CVAR_SERVERINFO);
+	svqhw_maxspectators = Cvar_Get("maxspectators", "8", CVAR_SERVERINFO);
 	qh_skill = Cvar_Get("skill", "1", 0);						// 0 - 3
 	svqh_deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
 	svqh_coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2

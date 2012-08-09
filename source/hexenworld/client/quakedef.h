@@ -50,7 +50,6 @@ typedef struct
 //
 extern quakeparms_t host_parms;
 
-extern Cvar* password;
 extern Cvar* talksounds;
 
 extern qboolean host_initialized;			// true if into command execution

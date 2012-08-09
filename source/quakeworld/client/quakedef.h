@@ -75,8 +75,6 @@ typedef struct
 //
 extern quakeparms_t host_parms;
 
-extern Cvar* password;
-
 extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
 extern int host_framecount;				// incremented every frame, never reset

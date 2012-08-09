@@ -185,6 +185,10 @@ extern Cvar* hw_fixedLevel;
 extern Cvar* hw_autoItems;
 extern Cvar* hw_easyFourth;
 extern Cvar* hw_patternRunner;
+extern Cvar* svqhw_rcon_password;
+extern Cvar* svqhw_password;
+extern Cvar* svqhw_spectator_password;
+extern Cvar* svqhw_maxspectators;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -200,6 +204,8 @@ const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
 void SVQH_CheckForNewClients();
+void SVQHW_CheckLog();
+void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message);
 
 //
 //	Move

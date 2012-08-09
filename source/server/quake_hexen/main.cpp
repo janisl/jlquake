@@ -36,6 +36,7 @@ Cvar* svhw_allowtaunts;
 Cvar* svqhw_spectalk;
 Cvar* qh_pausable;
 Cvar* svhw_namedistance;
+Cvar* svqhw_maxspectators;
 
 Cvar* svh2_update_player;
 Cvar* svh2_update_monsters;
@@ -60,6 +61,10 @@ Cvar* hw_fixedLevel;
 Cvar* hw_autoItems;
 Cvar* hw_easyFourth;
 Cvar* hw_patternRunner;
+
+Cvar* svqhw_rcon_password;
+Cvar* svqhw_password;
+Cvar* svqhw_spectator_password;
 
 int svqh_current_skill;
 int svh2_kingofhill;
@@ -532,5 +537,509 @@ void SVQH_CheckForNewClients()
 		SVQH_ConnectClient(i);
 
 		net_activeconnections++;
+	}
+}
+
+/*
+==============================================================================
+
+CONNECTIONLESS COMMANDS
+
+==============================================================================
+*/
+
+//	Responds with all the info that qplug or qspy can see
+// This message can be up to around 5k with worst case string lengths.
+static void SVCQHW_Status(const netadr_t& net_from)
+{
+	Cmd_TokenizeString("status");
+	SVQHW_BeginRedirect(net_from);
+	common->Printf("%s\n", svs.qh_info);
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++)
+	{
+		client_t* cl = &svs.clients[i];
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) && !cl->qh_spectator)
+		{
+			int top = String::Atoi(Info_ValueForKey(cl->userinfo, "topcolor"));
+			int bottom = String::Atoi(Info_ValueForKey(cl->userinfo, "bottomcolor"));
+			top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
+			bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
+			int ping = SVQH_CalcPing(cl);
+			common->Printf("%i %i %i %i \"%s\" \"%s\" %i %i\n", cl->qh_userid,
+				cl->qh_old_frags, (int)(svs.realtime * 0.001 - cl->qh_connection_started) / 60,
+				ping, cl->name, Info_ValueForKey(cl->userinfo, "skin"), top, bottom);
+		}
+	}
+	Com_EndRedirect();
+}
+
+#define LOG_HIGHWATER   4096
+#define LOG_FLUSH       10 * 60
+void SVQHW_CheckLog()
+{
+	QMsg* sz = &svs.qh_log[svs.qh_logsequence & 1];
+
+	// bump sequence if allmost full, or ten minutes have passed and
+	// there is something still sitting there
+	if (sz->cursize > LOG_HIGHWATER ||
+		(svs.realtime * 0.001 - svs.qh_logtime > LOG_FLUSH && sz->cursize))
+	{
+		// swap buffers and bump sequence
+		svs.qh_logtime = svs.realtime * 0.001;
+		svs.qh_logsequence++;
+		sz = &svs.qh_log[svs.qh_logsequence & 1];
+		sz->cursize = 0;
+		common->Printf("beginning fraglog sequence %i\n", svs.qh_logsequence);
+	}
+}
+
+//	Responds with all the logged frags for ranking programs.
+// If a sequence number is passed as a parameter and it is
+// the same as the current sequence, an A2A_NACK will be returned
+// instead of the data.
+static void SVCQHW_Log(const netadr_t& net_from)
+{
+	int seq;
+	if (Cmd_Argc() == 2)
+	{
+		seq = String::Atoi(Cmd_Argv(1));
+	}
+	else
+	{
+		seq = -1;
+	}
+
+	char data[MAX_DATAGRAM + 64];
+	if (seq == svs.qh_logsequence - 1 || !svqhw_fraglogfile)
+	{	// they allready have this data, or we aren't logging frags
+		data[0] = A2A_NACK;
+		NET_SendPacket(NS_SERVER, 1, data, net_from);
+		return;
+	}
+
+	common->DPrintf("sending log %i to %s\n", svs.qh_logsequence - 1, SOCK_AdrToString(net_from));
+
+	sprintf(data, "stdlog %i\n", svs.qh_logsequence - 1);
+	String::Cat(data, sizeof(data), (char*)svs.qh_log_buf[((svs.qh_logsequence - 1) & 1)]);
+
+	NET_SendPacket(NS_SERVER, String::Length(data) + 1, data, net_from);
+}
+
+//	Just responds with an acknowledgement
+static void SVCQHW_Ping(const netadr_t& net_from)
+{
+	char data = A2A_ACK;
+
+	NET_SendPacket(NS_SERVER, 1, &data, net_from);
+}
+
+//	Returns a challenge number that can be used
+// in a subsequent client_connect command.
+// We do this to prevent denial of service attacks that
+// flood the server with invalid connection IPs.  With a
+// challenge, they must give a valid IP address.
+static void SVCQW_GetChallenge(const netadr_t& net_from)
+{
+	int i;
+	int oldest;
+	int oldestTime;
+
+	oldest = 0;
+	oldestTime = 0x7fffffff;
+
+	// see if we already have a challenge for this ip
+	for (i = 0; i < MAX_CHALLENGES; i++)
+	{
+		if (SOCK_CompareBaseAdr(net_from, svs.challenges[i].adr))
+		{
+			break;
+		}
+		if (svs.challenges[i].time < oldestTime)
+		{
+			oldestTime = svs.challenges[i].time;
+			oldest = i;
+		}
+	}
+
+	if (i == MAX_CHALLENGES)
+	{
+		// overwrite the oldest
+		svs.challenges[oldest].challenge = (rand() << 16) ^ rand();
+		svs.challenges[oldest].adr = net_from;
+		svs.challenges[oldest].time = svs.realtime * 0.001;
+		i = oldest;
+	}
+
+	// send it back
+	NET_OutOfBandPrint(NS_SERVER, net_from, "%c%i", S2C_CHALLENGE,
+		svs.challenges[i].challenge);
+}
+
+//	A connection request that did not come from the master
+static void SVCQHW_DirectConnect(const netadr_t& net_from)
+{
+	static int userid;
+
+	int qport = 0;
+	char userinfo[1024];
+	if (GGameType & GAME_HexenWorld)
+	{
+		String::NCpy(userinfo, Cmd_Argv(2), sizeof(userinfo) - 1);
+	}
+	else
+	{
+		int version = String::Atoi(Cmd_Argv(1));
+		if (version != QWPROTOCOL_VERSION)
+		{
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nServer is JLQuake version " JLQUAKE_VERSION_STRING ".\n", A2C_PRINT);
+			common->Printf("* rejected connect from version %i\n", version);
+			return;
+		}
+
+		qport = String::Atoi(Cmd_Argv(2));
+
+		int challenge = String::Atoi(Cmd_Argv(3));
+
+		// note an extra byte is needed to replace spectator key
+		String::NCpy(userinfo, Cmd_Argv(4), sizeof(userinfo) - 2);
+		userinfo[sizeof(userinfo) - 2] = 0;
+
+		// see if the challenge is valid
+		int i;
+		for (i = 0; i < MAX_CHALLENGES; i++)
+		{
+			if (SOCK_CompareBaseAdr(net_from, svs.challenges[i].adr))
+			{
+				if (challenge == svs.challenges[i].challenge)
+				{
+					break;		// good
+				}
+				NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nBad challenge.\n", A2C_PRINT);
+				return;
+			}
+		}
+		if (i == MAX_CHALLENGES)
+		{
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nNo challenge for address.\n", A2C_PRINT);
+			return;
+		}
+	}
+
+	// check for password or spectator_password
+	const char* s = Info_ValueForKey(userinfo, "spectator");
+	bool spectator;
+	if (s[0] && String::Cmp(s, "0"))
+	{
+		if (svqhw_spectator_password->string[0] &&
+			String::ICmp(svqhw_spectator_password->string, "none") &&
+			String::Cmp(svqhw_spectator_password->string, s))
+		{	// failed
+			common->Printf("%s:spectator password failed\n", SOCK_AdrToString(net_from));
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
+			return;
+		}
+		Info_RemoveKey(userinfo, "spectator", MAX_INFO_STRING_QW);	// remove passwd
+		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value);
+		spectator = true;
+	}
+	else
+	{
+		s = Info_ValueForKey(userinfo, "password");
+		if (svqhw_password->string[0] &&
+			String::ICmp(svqhw_password->string, "none") &&
+			String::Cmp(svqhw_password->string, s))
+		{
+			common->Printf("%s:password failed\n", SOCK_AdrToString(net_from));
+			NET_OutOfBandPrint(NS_SERVER, net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
+			return;
+		}
+		spectator = false;
+		Info_RemoveKey(userinfo, "password", MAX_INFO_STRING_QW);	// remove passwd
+	}
+
+	netadr_t adr = net_from;
+	userid++;	// so every client gets a unique id
+
+	client_t temp;
+	client_t* newcl = &temp;
+	Com_Memset(newcl, 0, sizeof(client_t));
+
+	newcl->qh_userid = userid;
+	if (GGameType & GAME_HexenWorld)
+	{
+		newcl->hw_portals = atol(Cmd_Argv(1));
+	}
+
+	// works properly
+	if (!svqh_highchars->value)
+	{
+		byte* q = reinterpret_cast<byte*>(userinfo);
+		for (byte* p = reinterpret_cast<byte*>(newcl->userinfo); *q && p < (byte*)newcl->userinfo + MAX_INFO_STRING_QW - 1; q++)
+		{
+			if (*q > 31 && *q <= 127)
+			{
+				*p++ = *q;
+			}
+		}
+	}
+	else
+	{
+		String::NCpy(newcl->userinfo, userinfo, MAX_INFO_STRING_QW - 1);
+	}
+
+	// if there is allready a slot for this ip, drop it
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
+			continue;
+		}
+		if (SOCK_CompareBaseAdr(adr, cl->netchan.remoteAddress) &&
+			((GGameType & GAME_QuakeWorld && cl->netchan.qport == qport) ||
+			adr.port == cl->netchan.remoteAddress.port))
+		{
+			if (GGameType & GAME_QuakeWorld && cl->state == CS_CONNECTED)
+			{
+				common->Printf("%s:dup connect\n", SOCK_AdrToString(adr));
+				userid--;
+				return;
+			}
+
+			common->Printf("%s:reconnect\n", SOCK_AdrToString(adr));
+			SVQHW_DropClient(cl);
+			break;
+		}
+	}
+
+	// count up the clients and spectators
+	int clients = 0;
+	int spectators = 0;
+	cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
+			continue;
+		}
+		if (cl->qh_spectator)
+		{
+			spectators++;
+		}
+		else
+		{
+			clients++;
+		}
+	}
+
+	// if at server limits, refuse connection
+	if (sv_maxclients->value > MAX_CLIENTS_QHW)
+	{
+		Cvar_SetValue("maxclients", MAX_CLIENTS_QHW);
+	}
+	if (svqhw_maxspectators->value > MAX_CLIENTS_QHW)
+	{
+		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW);
+	}
+	if (svqhw_maxspectators->value + sv_maxclients->value > MAX_CLIENTS_QHW)
+	{
+		Cvar_SetValue("maxspectators", MAX_CLIENTS_QHW - svqhw_maxspectators->value + sv_maxclients->value);
+	}
+	if ((spectator && spectators >= (int)svqhw_maxspectators->value) ||
+		(!spectator && clients >= (int)sv_maxclients->value))
+	{
+		common->Printf("%s:full connect\n", SOCK_AdrToString(adr));
+		NET_OutOfBandPrint(NS_SERVER, adr, "%c\nserver is full\n\n", A2C_PRINT);
+		return;
+	}
+
+	// find a client slot
+	newcl = NULL;
+	cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
+			newcl = cl;
+			break;
+		}
+	}
+	if (!newcl)
+	{
+		common->Printf("WARNING: miscounted available clients\n");
+		return;
+	}
+
+
+	// build a new connection
+	// accept the new client
+	// this is the only place a client_t is ever initialized
+	*newcl = temp;
+
+	NET_OutOfBandPrint(NS_SERVER, adr, "%c", S2C_CONNECTION);
+
+	int edictnum = (newcl - svs.clients) + 1;
+
+	Netchan_Setup(NS_SERVER, &newcl->netchan, adr, qport);
+	newcl->netchan.lastReceived = svs.realtime;
+
+	newcl->state = CS_CONNECTED;
+
+	newcl->datagram.InitOOB(newcl->datagramBuffer, GGameType & GAME_HexenWorld ? MAX_DATAGRAM_HW : MAX_DATAGRAM_QW);
+	newcl->datagram.allowoverflow = true;
+
+	// spectator mode can ONLY be set at join time
+	newcl->qh_spectator = spectator;
+
+	qhedict_t* ent = QH_EDICT_NUM(edictnum);
+	newcl->qh_edict = ent;
+	if (GGameType & GAME_HexenWorld)
+	{
+		ED_ClearEdict(ent);
+	}
+
+	// parse some info from the info strings
+	SVQHW_ExtractFromUserinfo(newcl);
+
+	// JACK: Init the floodprot stuff.
+	for (int i = 0; i < 10; i++)
+	{
+		newcl->qh_whensaid[i] = 0.0;
+	}
+	newcl->qh_whensaidhead = 0;
+	newcl->qh_lockedtill = 0;
+
+	// call the progs to get default spawn parms for the new client
+	PR_ExecuteProgram(*pr_globalVars.SetNewParms);
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		newcl->qh_spawn_parms[i] = pr_globalVars.parm1[i];
+	}
+
+	if (newcl->qh_spectator)
+	{
+		common->Printf("Spectator %s connected\n", newcl->name);
+	}
+	else
+	{
+		common->DPrintf("Client %s connected\n", newcl->name);
+	}
+	if (GGameType & GAME_QuakeWorld)
+	{
+		newcl->qh_sendinfo = true;
+	}
+}
+
+static bool SVQHW_Rcon_Validate()
+{
+	if (!String::Length(svqhw_rcon_password->string))
+	{
+		return false;
+	}
+
+	if (String::Cmp(Cmd_Argv(1), svqhw_rcon_password->string))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//	A client issued an rcon command.
+// Shift down the remaining args
+// Redirect all printfs
+static void SVCQHW_RemoteCommand(const netadr_t& net_from, QMsg& message)
+{
+	if (!SVQHW_Rcon_Validate())
+	{
+		common->Printf("Bad rcon from %s:\n%s\n",
+			SOCK_AdrToString(net_from), message._data + 4);
+
+		SVQHW_BeginRedirect(net_from);
+
+		common->Printf("Bad rcon_password.\n");
+	}
+	else
+	{
+		common->Printf("Rcon from %s:\n%s\n",
+			SOCK_AdrToString(net_from), message._data + 4);
+
+		SVQHW_BeginRedirect(net_from);
+
+		char remaining[1024];
+		remaining[0] = 0;
+
+		for (int i = 2; i < Cmd_Argc(); i++)
+		{
+			String::Cat(remaining, sizeof(remaining), Cmd_Argv(i));
+			String::Cat(remaining, sizeof(remaining), " ");
+		}
+
+		Cmd_ExecuteString(remaining);
+	}
+
+	Com_EndRedirect();
+}
+
+//	A connectionless packet has four leading 0xff
+// characters to distinguish it from a game channel.
+// Clients that are in the game can still send
+// connectionless packets.
+void SVQHW_ConnectionlessPacket(const netadr_t& net_from, QMsg& message)
+{
+	char* c;
+
+	message.BeginReadingOOB();
+	message.ReadLong();		// skip the -1 marker
+
+	const char* s = const_cast<char*>(message.ReadStringLine2());
+
+	Cmd_TokenizeString(s);
+
+	c = Cmd_Argv(0);
+
+	if (!String::Cmp(c, "ping") || (c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')))
+	{
+		SVCQHW_Ping(net_from);
+		return;
+	}
+	if (c[0] == A2A_ACK && (c[1] == 0 || c[1] == '\n'))
+	{
+		common->Printf("A2A_ACK from %s\n", SOCK_AdrToString(net_from));
+		return;
+	}
+	else if (GGameType & GAME_HexenWorld && c[0] == A2S_ECHO)
+	{
+		NET_SendPacket(NS_SERVER, message.cursize, message._data, net_from);
+		return;
+	}
+	else if (!String::Cmp(c,"status"))
+	{
+		SVCQHW_Status(net_from);
+		return;
+	}
+	else if (!String::Cmp(c,"log"))
+	{
+		SVCQHW_Log(net_from);
+		return;
+	}
+	else if (!String::Cmp(c,"connect"))
+	{
+		SVCQHW_DirectConnect(net_from);
+		return;
+	}
+	else if (GGameType & GAME_QuakeWorld && !String::Cmp(c,"getchallenge"))
+	{
+		SVCQW_GetChallenge(net_from);
+		return;
+	}
+	else if (!String::Cmp(c, "rcon"))
+	{
+		SVCQHW_RemoteCommand(net_from, message);
+	}
+	else
+	{
+		common->Printf("bad connectionless packet from %s:\n%s\n",
+			SOCK_AdrToString(net_from), s);
 	}
 }
