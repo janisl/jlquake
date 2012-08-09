@@ -19,6 +19,8 @@
 #include "local.h"
 #include "../../common/hexen2strings.h"
 
+#define HEARTBEAT_SECONDS   300
+
 Cvar* svqh_deathmatch;			// 0, 1, or 2
 Cvar* svqh_coop;				// 0 or 1
 Cvar* svqh_teamplay;
@@ -70,6 +72,8 @@ int svqh_current_skill;
 int svh2_kingofhill;
 
 fileHandle_t svqhw_fraglogfile;
+
+netadr_t hw_idmaster_adr;					// for global logging
 
 void SVQH_FreeMemory()
 {
@@ -1333,4 +1337,77 @@ void SVQHW_ReadPackets()
 		//	common->Printf ("%s:sequenced packet without connection\n"
 		// ,SOCK_AdrToString(net_from));
 	}
+}
+
+//	Send a message to the master every few minutes to
+// let it know we are alive, and log information
+void SVQHW_Master_Heartbeat()
+{
+	if (svs.realtime * 0.001 - svs.qh_last_heartbeat < HEARTBEAT_SECONDS)
+	{
+		return;		// not time to send yet
+
+	}
+	svs.qh_last_heartbeat = svs.realtime * 0.001;
+
+	//
+	// count active users
+	//
+	int active = 0;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++)
+	{
+		if (svs.clients[i].state == CS_CONNECTED ||
+			svs.clients[i].state == CS_ACTIVE)
+		{
+			active++;
+		}
+	}
+
+	svs.qh_heartbeat_sequence++;
+	char string[2048];
+	sprintf(string, "%c\n%i\n%i\n", S2M_HEARTBEAT,
+		svs.qh_heartbeat_sequence, active);
+
+	// send to group master
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port)
+		{
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
+		}
+	}
+
+#ifndef _DEBUG
+	if (GGameType & GAME_HexenWorld)
+	{
+		// send to id master
+		NET_SendPacket(NS_SERVER, String::Length(string), string, hw_idmaster_adr);
+	}
+#endif
+}
+
+//	Informs all masters that this server is going down
+void SVQHW_Master_Shutdown()
+{
+	char string[2048];
+	sprintf(string, "%c\n", S2M_SHUTDOWN);
+
+	// send to group master
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port)
+		{
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
+		}
+	}
+
+	// send to id master
+#ifndef _DEBUG
+	if (GGameType & GAME_HexenWorld)
+	{
+		NET_SendPacket(NS_SERVER, String::Length(string), string, hw_idmaster_adr);
+	}
+#endif
 }

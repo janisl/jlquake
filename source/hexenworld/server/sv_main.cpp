@@ -15,8 +15,6 @@ double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
 
-netadr_t idmaster_adr;					// for global logging
-
 client_t* host_client;				// current client
 
 Cvar* timeout;
@@ -35,7 +33,7 @@ fileHandle_t sv_logfile;
 int sv_net_port;
 
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
-void Master_Shutdown(void);
+void SVQHW_Master_Shutdown(void);
 
 class idCommonLocal : public idCommon
 {
@@ -121,7 +119,7 @@ Quake calls this before calling Sys_Quit or Sys_Error
 */
 void SV_Shutdown(void)
 {
-	Master_Shutdown();
+	SVQHW_Master_Shutdown();
 	if (sv_logfile)
 	{
 		FS_FCloseFile(sv_logfile);
@@ -363,7 +361,7 @@ void SV_Frame(float time)
 		SVQHW_SendClientMessages();
 
 // send a heartbeat to the master if needed
-		Master_Heartbeat();
+		SVQHW_Master_Heartbeat();
 
 // collect timing statistics
 		end = Sys_DoubleTime();
@@ -487,88 +485,6 @@ void SV_InitLocal(void)
 //============================================================================
 
 /*
-================
-Master_Heartbeat
-
-Send a message to the master every few minutes to
-let it know we are alive, and log information
-================
-*/
-#define HEARTBEAT_SECONDS   300
-void Master_Heartbeat(void)
-{
-	char string[2048];
-	int active;
-	int i;
-
-	if (realtime - svs.qh_last_heartbeat < HEARTBEAT_SECONDS)
-	{
-		return;		// not time to send yet
-
-	}
-	svs.qh_last_heartbeat = realtime;
-
-	//
-	// count active users
-	//
-	active = 0;
-	for (i = 0; i < MAX_CLIENTS_QHW; i++)
-		if (svs.clients[i].state == CS_CONNECTED ||
-			svs.clients[i].state == CS_ACTIVE)
-		{
-			active++;
-		}
-
-	svs.qh_heartbeat_sequence++;
-	sprintf(string, "%c\n%i\n%i\n", S2M_HEARTBEAT,
-		svs.qh_heartbeat_sequence, active);
-
-
-	// send to group master
-	for (i = 0; i < MAX_MASTERS; i++)
-		if (master_adr[i].port)
-		{
-			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
-		}
-
-#ifndef _DEBUG
-	// send to id master
-	NET_SendPacket(NS_SERVER, String::Length(string), string, idmaster_adr);
-#endif
-}
-
-/*
-=================
-Master_Shutdown
-
-Informs all masters that this server is going down
-=================
-*/
-void Master_Shutdown(void)
-{
-	char string[2048];
-	int i;
-
-	sprintf(string, "%c\n", S2M_SHUTDOWN);
-
-	// send to group master
-	for (i = 0; i < MAX_MASTERS; i++)
-		if (master_adr[i].port)
-		{
-			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			NET_SendPacket(NS_SERVER, String::Length(string), string, master_adr[i]);
-		}
-
-	// send to id master
-#ifndef _DEBUG
-	NET_SendPacket(NS_SERVER, String::Length(string), string, idmaster_adr);
-#endif
-}
-
-//============================================================================
-
-/*
 ====================
 SV_InitNet
 ====================
@@ -591,7 +507,7 @@ void SV_InitNet(void)
 	// heartbeats will allways be sent to the id master
 	svs.qh_last_heartbeat = -99999;		// send immediately
 
-	SOCK_StringToAdr("208.135.137.23", &idmaster_adr, 26900);
+	SOCK_StringToAdr("208.135.137.23", &hw_idmaster_adr, 26900);
 }
 
 
