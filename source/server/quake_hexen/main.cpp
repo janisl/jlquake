@@ -18,6 +18,7 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../common/hexen2strings.h"
+#include "../../client/public.h"
 
 #define HEARTBEAT_SECONDS   300
 
@@ -39,6 +40,8 @@ Cvar* svqhw_spectalk;
 Cvar* qh_pausable;
 Cvar* svhw_namedistance;
 Cvar* svqhw_maxspectators;
+Cvar* svqhw_timeout;
+Cvar* svqhw_zombietime;
 
 Cvar* svh2_update_player;
 Cvar* svh2_update_monsters;
@@ -505,7 +508,7 @@ static void SVQH_ConnectClient(int clientnum)
 	SVQH_SendServerinfo(client);
 }
 
-void SVQH_CheckForNewClients()
+static void SVQH_CheckForNewClients()
 {
 	//
 	// check for new connections
@@ -579,7 +582,7 @@ static void SVCQHW_Status(const netadr_t& net_from)
 
 #define LOG_HIGHWATER   4096
 #define LOG_FLUSH       10 * 60
-void SVQHW_CheckLog()
+static void SVQHW_CheckLog()
 {
 	QMsg* sz = &svs.qh_log[svs.qh_logsequence & 1];
 
@@ -1247,7 +1250,7 @@ static bool SVQHW_FilterPacket(const netadr_t& net_from)
 	return !qhw_filterban->value;
 }
 
-void SVQHW_ReadPackets()
+static void SVQHW_ReadPackets()
 {
 	bool good = false;
 	netadr_t net_from;
@@ -1341,7 +1344,7 @@ void SVQHW_ReadPackets()
 
 //	Send a message to the master every few minutes to
 // let it know we are alive, and log information
-void SVQHW_Master_Heartbeat()
+static void SVQHW_Master_Heartbeat()
 {
 	if (svs.realtime * 0.001 - svs.qh_last_heartbeat < HEARTBEAT_SECONDS)
 	{
@@ -1484,4 +1487,129 @@ void SVQH_Shutdown(bool crash)
 	//
 	Com_Memset(&sv, 0, sizeof(sv));
 	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
+}
+
+void SVQH_ServerFrame(float frametime)
+{
+	// run the world state
+	*pr_globalVars.frametime = frametime;
+
+	// set the time and clear the general datagram
+	SVQH_ClearDatagram();
+
+	// check for new clients
+	SVQH_CheckForNewClients();
+
+	SVQH_SetMoveVars();
+
+	// read client messages
+	SVQH_RunClients(frametime);
+
+	// move things around and think
+	// always pause in single player if in console or menus
+	if (!sv.qh_paused && (svs.qh_maxclients > 1 || CL_GetKeyCatchers() == 0))
+	{
+		SVQH_RunPhysicsAndUpdateTime(frametime, svs.realtime * 0.001);
+	}
+
+	// send all messages to the clients
+	SVQH_SendClientMessages();
+}
+
+static void SVQHW_CheckVars()
+{
+	static char* pw, * spw;
+	int v;
+
+	if (svqhw_password->string == pw && svqhw_spectator_password->string == spw)
+	{
+		return;
+	}
+	pw = svqhw_password->string;
+	spw = svqhw_spectator_password->string;
+
+	v = 0;
+	if (pw && pw[0] && String::Cmp(pw, "none"))
+	{
+		v |= 1;
+	}
+	if (spw && spw[0] && String::Cmp(spw, "none"))
+	{
+		v |= 2;
+	}
+
+	common->Printf("Updated needpass.\n");
+	if (!v)
+	{
+		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+	}
+	else
+	{
+		Info_SetValueForKey(svs.qh_info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+	}
+}
+
+//	If a packet has not been received from a client in timeout.value
+// seconds, drop the conneciton.
+//	When a client is normally dropped, the client_t goes into a zombie state
+// for a few seconds to make sure any final reliable message gets resent
+// if necessary
+static void SVQHW_CheckTimeouts()
+{
+	int droptime = svs.realtime - svqhw_timeout->value * 1000;
+	int nclients = 0;
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+	{
+		if (cl->state == CS_CONNECTED || cl->state == CS_ACTIVE)
+		{
+			if (!cl->qh_spectator)
+			{
+				nclients++;
+			}
+			if (cl->netchan.lastReceived < droptime)
+			{
+				SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
+				SVQHW_DropClient(cl);
+				cl->state = CS_FREE;	// don't bother with zombie state
+			}
+		}
+		if (cl->state == CS_ZOMBIE &&
+			svs.realtime * 0.001 - cl->qh_connection_started > svqhw_zombietime->value)
+		{
+			cl->state = CS_FREE;	// can now be reused
+		}
+	}
+	if (GGameType & GAME_QuakeWorld && sv.qh_paused && !nclients)
+	{
+		// nobody left, unpause the server
+		SVQH_TogglePause("Pause released since no players are left.\n");
+	}
+}
+
+void SVQHW_ServerFrame()
+{
+	SVQHW_CheckVars();
+
+	// check timeouts
+	SVQHW_CheckTimeouts();
+
+	// toggle the log buffer if full
+	SVQHW_CheckLog();
+
+	// move autonomous things around if enough time has passed
+	if (!sv.qh_paused || GGameType & GAME_HexenWorld)
+	{
+		SVQH_RunPhysicsForTime(svs.realtime * 0.001);
+	}
+
+	// get packets
+	SVQHW_ReadPackets();
+
+	// send messages back to the clients that had packets read this frame
+	SVQHW_SendClientMessages();
+
+	// send a heartbeat to the master if needed
+	SVQHW_Master_Heartbeat();
 }

@@ -17,9 +17,6 @@ int host_hunklevel;
 
 client_t* host_client;				// current client
 
-Cvar* timeout;
-Cvar* zombietime;
-
 //
 // game rules mirrored in svs.qh_info
 //
@@ -199,42 +196,6 @@ void SV_FinalMessage(const char* message)
 //============================================================================
 
 /*
-==================
-SV_CheckTimeouts
-
-If a packet has not been received from a client in timeout.value
-seconds, drop the conneciton.
-
-When a client is normally dropped, the client_t goes into a zombie state
-for a few seconds to make sure any final reliable message gets resent
-if necessary
-==================
-*/
-void SV_CheckTimeouts(void)
-{
-	int i;
-	client_t* cl;
-
-	int droptime = realtime * 1000 - timeout->value * 1000;
-
-	for (i = 0,cl = svs.clients; i < MAX_CLIENTS_QHW; i++,cl++)
-	{
-		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
-			cl->netchan.lastReceived < droptime)
-		{
-			SVQH_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
-			SVQHW_DropClient(cl);
-			cl->state = CS_FREE;	// don't bother with zombie state
-		}
-		if (cl->state == CS_ZOMBIE &&
-			realtime - cl->qh_connection_started > zombietime->value)
-		{
-			cl->state = CS_FREE;	// can now be reused
-		}
-	}
-}
-
-/*
 ===================
 SV_GetConsoleCommands
 
@@ -253,45 +214,6 @@ void SV_GetConsoleCommands(void)
 			break;
 		}
 		Cbuf_AddText(cmd);
-	}
-}
-
-/*
-===================
-SV_CheckVars
-
-===================
-*/
-void SV_CheckVars(void)
-{
-	static char* pw, * spw;
-	int v;
-
-	if (svqhw_password->string == pw && svqhw_spectator_password->string == spw)
-	{
-		return;
-	}
-	pw = svqhw_password->string;
-	spw = svqhw_spectator_password->string;
-
-	v = 0;
-	if (pw && pw[0] && String::Cmp(pw, "none"))
-	{
-		v |= 1;
-	}
-	if (spw && spw[0] && String::Cmp(spw, "none"))
-	{
-		v |= 2;
-	}
-
-	common->Printf("Updated needpass.\n");
-	if (!v)
-	{
-		Info_SetValueForKey(svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
-	}
-	else
-	{
-		Info_SetValueForKey(svs.qh_info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	}
 }
 
@@ -337,31 +259,13 @@ void SV_Frame(float time)
 			}
 		}
 
-// check timeouts
-		SV_CheckTimeouts();
-
-// toggle the log buffer if full
-		SVQHW_CheckLog();
-
-// move autonomous things around if enough time has passed
-		SVQH_RunPhysicsForTime(realtime);
-
-// get packets
-		SVQHW_ReadPackets();
-
 // check for commands typed to the host
 		SV_GetConsoleCommands();
 
 // process console commands
 		Cbuf_Execute();
 
-		SV_CheckVars();
-
-// send messages back to the clients that had packets read this frame
-		SVQHW_SendClientMessages();
-
-// send a heartbeat to the master if needed
-		SVQHW_Master_Heartbeat();
+		SVQHW_ServerFrame();
 
 // collect timing statistics
 		end = Sys_DoubleTime();
@@ -435,8 +339,8 @@ void SV_InitLocal(void)
 	sv_hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
 	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 
-	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
-	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
+	svqhw_timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
+	svqhw_zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
 	// after disconnect
 
 	SVQH_RegisterPhysicsCvars();

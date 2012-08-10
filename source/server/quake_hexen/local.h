@@ -190,6 +190,8 @@ extern Cvar* svqhw_password;
 extern Cvar* svqhw_spectator_password;
 extern Cvar* svqhw_maxspectators;
 extern Cvar* qhw_filterban;
+extern Cvar* svqhw_timeout;
+extern Cvar* svqhw_zombietime;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -205,16 +207,14 @@ void SVQHW_ExtractFromUserinfo(client_t* cl);
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
-void SVQH_CheckForNewClients();
-void SVQHW_CheckLog();
 void SVQHW_AddIP_f();
 void SVQHW_RemoveIP_f();
 void SVQHW_ListIP_f();
 void SVQHW_WriteIP_f();
-void SVQHW_ReadPackets();
-void SVQHW_Master_Heartbeat();
 void SVQHW_Master_Shutdown();
 void SVQH_Shutdown(bool crash);
+void SVQH_ServerFrame(float frametime);
+void SVQHW_ServerFrame();
 
 //
 //	Move

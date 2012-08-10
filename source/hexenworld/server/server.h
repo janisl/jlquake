@@ -41,7 +41,6 @@ void SV_FinalMessage(const char* message);
 
 void SV_InitOperatorCommands(void);
 
-void SVQHW_Master_Heartbeat(void);
 void Master_Packet(void);
 
 //

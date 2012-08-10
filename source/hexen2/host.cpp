@@ -468,44 +468,6 @@ void Host_GetConsoleCommands(void)
 	}
 }
 
-
-/*
-==================
-Host_ServerFrame
-
-==================
-*/
-void Host_ServerFrame(void)
-{
-// run the world state
-	*pr_globalVars.frametime = host_frametime;
-
-// set the time and clear the general datagram
-	SVQH_ClearDatagram();
-
-// check for new clients
-	SVQH_CheckForNewClients();
-
-	SVQH_SetMoveVars();
-
-	// read client messages
-	SVQH_RunClients(host_frametime);
-
-// move things around and think
-// always pause in single player if in console or menus
-#ifdef DEDICATED
-	if (!sv.qh_paused)
-#else
-	if (!sv.qh_paused && (svs.qh_maxclients > 1 || in_keyCatchers == 0))
-#endif
-	{
-		SVQH_RunPhysicsAndUpdateTime(host_frametime, realtime);
-	}
-
-// send all messages to the clients
-	SVQH_SendClientMessages();
-}
-
 /*
 ==================
 Host_Frame
@@ -587,7 +549,7 @@ void _Host_Frame(float time)
 		{
 			if (sv.state != SS_DEAD)
 			{
-				Host_ServerFrame();
+				SVQH_ServerFrame(host_frametime);
 			}
 
 			//-------------------
