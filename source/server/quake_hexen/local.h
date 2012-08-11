@@ -35,6 +35,8 @@ extern char qhw_fp_msg[];
 void SVQ1_SavegameComment(char* text);
 void SVH2_SavegameComment(char* text);
 void SVH2_SaveGamestate(bool clientsOnly);
+void SVQH_InitOperatorCommands();
+void SVQHW_InitOperatorCommands();
 
 //
 //	Client

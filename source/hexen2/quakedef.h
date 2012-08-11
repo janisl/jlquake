@@ -8,6 +8,8 @@
 #include "../client/client.h"
 #include "../client/game/hexen2/local.h"
 #include "../client/game/quake_hexen2/network_channel.h"
+#else
+#include "../client/public.h"
 #endif
 #include "../server/server.h"
 #include "../server/quake_hexen/local.h"

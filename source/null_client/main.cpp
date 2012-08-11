@@ -34,3 +34,20 @@ int CL_GetKeyCatchers()
 {
 	return 0;
 }
+
+void CLQH_StopDemoLoop()
+{
+}
+
+void CL_ClearKeyCatchers()
+{
+}
+
+void CLQH_GetSpawnParams()
+{
+}
+
+bool CL_IsDemoPlaying()
+{
+	return false;
+}

@@ -28,7 +28,7 @@ void SCR_SizeUp(void);
 void SCR_SizeDown(void);
 void SCR_CenterPrint(const char* str);
 
-void SCR_BeginLoadingPlaque(void);
+void SCRQH_BeginLoadingPlaque(void);
 
 int SCR_ModalMessage(const char* text);
 

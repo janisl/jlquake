@@ -496,3 +496,7 @@ void SV_Init(quakeparms_t* parms)
 		Sys_Error("%s", e.What());
 	}
 }
+
+void SCRQH_BeginLoadingPlaque()
+{
+}

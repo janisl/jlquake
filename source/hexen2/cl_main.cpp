@@ -228,7 +228,7 @@ void CL_NextDemo(void)
 		return;		// don't play demos
 
 	}
-	SCR_BeginLoadingPlaque();
+	SCRQH_BeginLoadingPlaque();
 
 	if (!cls.qh_demos[cls.qh_demonum][0] || cls.qh_demonum == MAX_DEMOS)
 	{

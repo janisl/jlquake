@@ -301,55 +301,6 @@ void SV_Give_f(void)
 
 
 /*
-======================
-SV_Map_f
-
-handle a
-map <mapname>
-command from the console or progs.
-======================
-*/
-void SV_Map_f(void)
-{
-	char level[MAX_QPATH];
-	char expanded[MAX_QPATH];
-	fileHandle_t f;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("map <levelname> : continue game on a new level\n");
-		return;
-	}
-	String::Cpy(level, Cmd_Argv(1));
-
-#if 0
-	if (!String::Cmp(level, "e1m8"))
-	{	// QuakeWorld can't go to e1m8
-		SVQH_BroadcastPrintf(PRINT_HIGH, "can't go to low grav level in QuakeWorld...\n");
-		String::Cpy(level, "e1m5");
-	}
-#endif
-
-	// check to make sure the level exists
-	sprintf(expanded, "maps/%s.bsp", level);
-	FS_FOpenFileRead(expanded, &f, true);
-	if (!f)
-	{
-		common->Printf("Can't find %s\n", expanded);
-		return;
-	}
-	FS_FCloseFile(f);
-
-	SVQH_BroadcastCommand("changing\n");
-	SVQHW_SendMessagesToAll();
-
-	SVQH_SpawnServer(level, "");
-
-	SVQH_BroadcastCommand("reconnect\n");
-}
-
-
-/*
 ==================
 SV_Kick_f
 
@@ -915,6 +866,7 @@ void SV_InitOperatorCommands(void)
 		Info_SetValueForKey(svs.qh_info, "*cheats", "ON", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
 	}
 
+	SVQHW_InitOperatorCommands();
 	Cmd_AddCommand("logfile", SV_Logfile_f);
 	Cmd_AddCommand("fraglogfile", SV_Fraglogfile_f);
 
@@ -923,7 +875,6 @@ void SV_InitOperatorCommands(void)
 	Cmd_AddCommand("kick", SV_Kick_f);
 	Cmd_AddCommand("status", SV_Status_f);
 
-	Cmd_AddCommand("map", SV_Map_f);
 	Cmd_AddCommand("setmaster", SV_SetMaster_f);
 
 	Cmd_AddCommand("say", SV_ConSay_f);

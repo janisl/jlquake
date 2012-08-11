@@ -670,11 +670,11 @@ void SCR_DrawLoading(void)
 
 /*
 ===============
-SCR_BeginLoadingPlaque
+SCRQH_BeginLoadingPlaque
 
 ================
 */
-void SCR_BeginLoadingPlaque(void)
+void SCRQH_BeginLoadingPlaque(void)
 {
 	S_StopAllSounds();
 

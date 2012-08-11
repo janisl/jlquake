@@ -18,12 +18,138 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../hexen2/local.h"
+#include "../../client/public.h"
 #include <time.h>
 
 #define ShortTime "%m/%d/%Y %H:%M"
 
 int qhw_fp_messages = 4, qhw_fp_persecond = 4, qhw_fp_secondsdead = 10;
 char qhw_fp_msg[255] = { 0 };
+
+//	handle a
+//	map <servername>
+//	command from the console.  Active clients are kicked off.
+static void SVQH_Map_f()
+{
+	if (Cmd_Argc() < 2)		//no map name given
+	{
+		common->Printf("map <levelname>: start a new server\nCurrently on: %s\n", GGameType & GAME_Hexen2 ? SVH2_GetMapName() : SVQ1_GetMapName());
+		return;
+	}
+
+	CLQH_StopDemoLoop();		// stop demo loop in case this fails
+
+	CL_Disconnect();
+	SVQH_Shutdown(false);
+
+	CL_ClearKeyCatchers();			// remove console or menu
+	SCRQH_BeginLoadingPlaque();
+
+	if (GGameType & GAME_Hexen2)
+	{
+		info_mask = 0;
+		if (!svqh_coop->value && svqh_deathmatch->value)
+		{
+			info_mask2 = 0x80000000;
+		}
+		else
+		{
+			info_mask2 = 0;
+		}
+	}
+
+	svs.qh_serverflags = 0;			// haven't completed an episode yet
+	char name[MAX_QPATH];
+	String::Cpy(name, Cmd_Argv(1));
+	SVQH_SpawnServer(name, NULL);
+	if (sv.state == SS_DEAD)
+	{
+		return;
+	}
+
+	if (!com_dedicated->integer)
+	{
+		CLQH_GetSpawnParams();
+
+		Cmd_ExecuteString("connect local");
+	}
+}
+
+//	Goes to a new map, taking all clients along
+static void SVQH_Changelevel_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		common->Printf("changelevel <levelname> : continue game on a new level\n");
+		return;
+	}
+	if (sv.state == SS_DEAD || CL_IsDemoPlaying())
+	{
+		common->Printf("Only the server may changelevel\n");
+		return;
+	}
+
+	char level[MAX_QPATH];
+	String::Cpy(level, Cmd_Argv(1));
+	char _startspot[MAX_QPATH];
+	char* startspot;
+	if (!(GGameType & GAME_Hexen2) || Cmd_Argc() == 2)
+	{
+		startspot = NULL;
+	}
+	else
+	{
+		String::Cpy(_startspot, Cmd_Argv(2));
+		startspot = _startspot;
+	}
+
+	SVQH_SaveSpawnparms();
+	SVQH_SpawnServer(level, startspot);
+}
+
+//	handle a
+//	map <mapname>
+//	command from the console or progs.
+void SVQHW_Map_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		common->Printf("map <levelname> : continue game on a new level\n");
+		return;
+	}
+	char level[MAX_QPATH];
+	String::Cpy(level, Cmd_Argv(1));
+	char _startspot[MAX_QPATH];
+	char* startspot;
+	if (!(GGameType & GAME_Hexen2) || Cmd_Argc() == 2)
+	{
+		startspot = NULL;
+	}
+	else
+	{
+		String::Cpy(_startspot, Cmd_Argv(2));
+		startspot = _startspot;
+	}
+
+	// check to make sure the level exists
+	char expanded[MAX_QPATH];
+	sprintf(expanded, "maps/%s.bsp", level);
+	fileHandle_t f;
+	FS_FOpenFileRead(expanded, &f, true);
+	if (!f)
+	{
+		common->Printf("Can't find %s\n", expanded);
+		return;
+	}
+	FS_FCloseFile(f);
+
+	SVQH_BroadcastCommand("changing\n");
+	SVQHW_SendMessagesToAll();
+
+	SVQH_SpawnServer(level, startspot);
+
+	SVQH_BroadcastCommand("reconnect\n");
+}
 
 //	Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
 void SVQ1_SavegameComment(char* text)
@@ -158,4 +284,15 @@ void SVH2_SaveGamestate(bool clientsOnly)
 	}
 
 	FS_FCloseFile(f);
+}
+
+void SVQH_InitOperatorCommands()
+{
+	Cmd_AddCommand("map", SVQH_Map_f);
+	Cmd_AddCommand("changelevel", SVQH_Changelevel_f);
+}
+
+void SVQHW_InitOperatorCommands()
+{
+	Cmd_AddCommand("map", SVQHW_Map_f);
 }

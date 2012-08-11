@@ -21,5 +21,9 @@ void S_ClearSoundBuffer(bool killStreaming);
 int CLH2_GetLightStyleValue(int style);
 void CL_ClearDrift();
 int CL_GetKeyCatchers();
+void CLQH_StopDemoLoop();
+void CL_ClearKeyCatchers();
+void CLQH_GetSpawnParams();
+bool CL_IsDemoPlaying();
 
 #endif

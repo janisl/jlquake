@@ -1155,7 +1155,7 @@ void M_Load_Key(int k)
 
 		// Host_Loadgame_f can't bring up the loading plaque because too much
 		// stack space has been used, so do it now
-		SCR_BeginLoadingPlaque();
+		SCRQH_BeginLoadingPlaque();
 
 		// issue the load command
 		Cbuf_AddText(va("load s%i\n", load_cursor));
@@ -1328,7 +1328,7 @@ void M_MLoad_Key(int k)
 
 		// Host_Loadgame_f can't bring up the loading plaque because too much
 		// stack space has been used, so do it now
-		SCR_BeginLoadingPlaque();
+		SCRQH_BeginLoadingPlaque();
 
 		// issue the load command
 		Cbuf_AddText(va("load ms%i\n", load_cursor));
@@ -3838,7 +3838,7 @@ void M_GameOptions_Key(int key)
 			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
 			Cbuf_AddText("listen 0\n");		// so host_netport will be re-examined
 			Cbuf_AddText(va("maxplayers %u\n", maxplayers));
-			SCR_BeginLoadingPlaque();
+			SCRQH_BeginLoadingPlaque();
 
 			Cbuf_AddText(va("map %s\n", levels[episodes[startepisode].firstLevel + startlevel].name));
 

@@ -150,109 +150,23 @@ SERVER TRANSITIONS
 ===============================================================================
 */
 
-
-/*
-======================
-Host_Map_f
-
-handle a
-map <servername>
-command from the console.  Active clients are kicked off.
-======================
-*/
-void Host_Map_f(void)
-{
-	int i;
-	char name[MAX_QPATH];
-
-#ifndef DEDICATED
-	cls.qh_demonum = -1;		// stop demo loop in case this fails
-
-	CL_Disconnect();
-#endif
-	SVQH_Shutdown(false);
-
-#ifndef DEDICATED
-	in_keyCatchers = 0;			// remove console or menu
-	SCR_BeginLoadingPlaque();
-#endif
-
-	svs.qh_serverflags = 0;			// haven't completed an episode yet
-	String::Cpy(name, Cmd_Argv(1));
-	SVQH_SpawnServer(name, "");
-	if (sv.state == SS_DEAD)
-	{
-		return;
-	}
-
-#ifndef DEDICATED
-	if (cls.state != CA_DEDICATED)
-	{
-		String::Cpy(cls.qh_spawnparms, "");
-
-		for (i = 2; i < Cmd_Argc(); i++)
-		{
-			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), Cmd_Argv(i));
-			String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), " ");
-		}
-
-		Cmd_ExecuteString("connect local");
-	}
-#endif
-}
-
 /*
 ==================
-Host_Changelevel_f
-
-Goes to a new map, taking all clients along
-==================
-*/
-void Host_Changelevel_f(void)
-{
-	char level[MAX_QPATH];
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("changelevel <levelname> : continue game on a new level\n");
-		return;
-	}
-#ifdef DEDICATED
-	if (sv.state == SS_DEAD)
-#else
-	if (sv.state == SS_DEAD || clc.demoplaying)
-#endif
-	{
-		common->Printf("Only the server may changelevel\n");
-		return;
-	}
-	SVQH_SaveSpawnparms();
-	String::Cpy(level, Cmd_Argv(1));
-	SVQH_SpawnServer(level, "");
-}
-
-/*
-==================
-Host_Restart_f
+SVQ1_Restart_f
 
 Restarts the current server for a dead player
 ==================
 */
-void Host_Restart_f(void)
+void SVQ1_Restart_f(void)
 {
 	char mapname[MAX_QPATH];
 
-#ifdef DEDICATED
-	if (sv.state == SS_DEAD)
-#else
-	if (clc.demoplaying || sv.state == SS_DEAD)
-#endif
+	if (CL_IsDemoPlaying() || sv.state == SS_DEAD)
 	{
 		return;
 	}
 
-	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared
-	// in sv_spawnserver
+	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared in sv_spawnserver
 	SVQH_SpawnServer(mapname, "");
 }
 
@@ -267,7 +181,7 @@ This is sent just before a server changes levels
 */
 void Host_Reconnect_f(void)
 {
-	SCR_BeginLoadingPlaque();
+	SCRQH_BeginLoadingPlaque();
 	clc.qh_signon = 0;		// need new connection messages
 }
 
@@ -452,9 +366,9 @@ void Host_Loadgame_f(void)
 	String::NCpyZ(name, Cmd_Argv(1), sizeof(name));
 	String::DefaultExtension(name, sizeof(name), ".sav");
 
-// we can't call SCR_BeginLoadingPlaque, because too much stack space has
+// we can't call SCRQH_BeginLoadingPlaque, because too much stack space has
 // been used.  The menu calls it before stuffing loadgame command
-//	SCR_BeginLoadingPlaque ();
+//	SCRQH_BeginLoadingPlaque ();
 
 	Array<byte> Buffer;
 	common->Printf("Loading game from %s...\n", name);
@@ -1085,6 +999,7 @@ Host_InitCommands
 */
 void Host_InitCommands(void)
 {
+	SVQH_InitOperatorCommands();
 	Cmd_AddCommand("status", Host_Status_f);
 	Cmd_AddCommand("quit", Host_Quit_f);
 #ifndef DEDICATED
@@ -1092,9 +1007,7 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("notarget", Host_Notarget_f);
 	Cmd_AddCommand("fly", Host_Fly_f);
 #endif
-	Cmd_AddCommand("map", Host_Map_f);
-	Cmd_AddCommand("restart", Host_Restart_f);
-	Cmd_AddCommand("changelevel", Host_Changelevel_f);
+	Cmd_AddCommand("restart", SVQ1_Restart_f);
 #ifndef DEDICATED
 	Cmd_AddCommand("connect", Host_Connect_f);
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);

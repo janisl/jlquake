@@ -791,4 +791,7 @@ void Host_Shutdown(void)
 void CL_Disconnect()
 {
 }
+void SCRQH_BeginLoadingPlaque()
+{
+}
 #endif

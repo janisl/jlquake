@@ -179,3 +179,29 @@ void CL_ClearDrift()
 	cl.qh_nodrift = false;
 	cl.qh_driftmove = 0;
 }
+
+void CLQH_StopDemoLoop()
+{
+	cls.qh_demonum = -1;
+}
+
+void CL_ClearKeyCatchers()
+{
+	in_keyCatchers = 0;
+}
+
+void CLQH_GetSpawnParams()
+{
+	String::Cpy(cls.qh_spawnparms, "");
+
+	for (int i = 2; i < Cmd_Argc(); i++)
+	{
+		String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), Cmd_Argv(i));
+		String::Cat(cls.qh_spawnparms, sizeof(cls.qh_spawnparms), " ");
+	}
+}
+
+bool CL_IsDemoPlaying()
+{
+	return clc.demoplaying;
+}
