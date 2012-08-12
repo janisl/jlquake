@@ -1061,10 +1061,460 @@ static void SVH2_Loadgame_f()
 	}
 }
 
+static void SVQH_ConStatus_f()
+{
+	if (sv.state == SS_DEAD)
+	{
+		Cmd_ForwardToServer();
+		return;
+	}
+
+	common->Printf("host:    %s\n", Cvar_VariableString("hostname"));
+	common->Printf("version: " JLQUAKE_VERSION_STRING "\n");
+	SOCK_ShowIP();
+	common->Printf("map:     %s\n", sv.name);
+	common->Printf("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
+	client_t* client = svs.clients;
+	for (int j = 0; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state < CS_CONNECTED)
+		{
+			continue;
+		}
+		int seconds = (int)(net_time - client->qh_netconnection->connecttime);
+		int minutes = seconds / 60;
+		int hours = 0;
+		if (minutes)
+		{
+			seconds -= (minutes * 60);
+			hours = minutes / 60;
+			if (hours)
+			{
+				minutes -= (hours * 60);
+			}
+		}
+		else
+		{
+			hours = 0;
+		}
+		common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
+		common->Printf("   %s\n", client->qh_netconnection->address);
+	}
+}
+
+static void SVQHW_Status_f()
+{
+	float cpu = (svs.qh_stats.latched_active + svs.qh_stats.latched_idle);
+	if (cpu)
+	{
+		cpu = 100 * svs.qh_stats.latched_active / cpu;
+	}
+	float avg = 1000 * svs.qh_stats.latched_active / QHW_STATFRAMES;
+	float pak = (float)svs.qh_stats.latched_packets / QHW_STATFRAMES;
+
+	SOCK_ShowIP();
+	common->Printf("port             : %d\n", svqhw_net_port);
+	common->Printf("cpu utilization  : %3i%%\n",(int)cpu);
+	common->Printf("avg response time: %i ms\n",(int)avg);
+	common->Printf("packets/frame    : %5.2f\n", pak);
+	int t_limit = Cvar_VariableValue("timelimit");
+	int f_limit = Cvar_VariableValue("fraglimit");
+	if (GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE)
+	{
+		int num_min = floor((t_limit * 60) - sv.qh_time);
+		int num_sec = (int)(t_limit - num_min) % 60;
+		num_min = (num_min - num_sec) / 60;
+		common->Printf("timeleft         : %i:", num_min);
+		common->Printf("%2i\n", num_sec);
+		common->Printf("deflosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.defLosses)), static_cast<int>(floor(f_limit)));
+		common->Printf("attlosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.attLosses)), static_cast<int>(floor(f_limit * 2)));
+	}
+	else
+	{
+		common->Printf("time             : %5.2f\n", sv.qh_time);
+		common->Printf("timelimit        : %i\n", t_limit);
+		common->Printf("fraglimit        : %i\n", f_limit);
+	}
+
+	// min fps lat drp
+	if (rd_buffer)
+	{
+		// most remote clients are 40 columns
+		//           0123456789012345678901234567890123456789
+		common->Printf("name               userid frags\n");
+		common->Printf("  address          ping drop\n");
+		common->Printf("  ---------------- ---- -----\n");
+		client_t* cl = svs.clients;
+		for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+		{
+			if (!cl->state)
+			{
+				continue;
+			}
+
+			common->Printf("%-16.16s  ", cl->name);
+
+			common->Printf("%6i %5i", cl->qh_userid, (int)cl->qh_edict->GetFrags());
+			if (cl->qh_spectator)
+			{
+				common->Printf(" (s)\n");
+			}
+			else
+			{
+				common->Printf("\n");
+			}
+
+			const char* s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
+			common->Printf("  %-16.16s", s);
+			if (cl->state == CS_CONNECTED)
+			{
+				common->Printf("CONNECTING\n");
+				continue;
+			}
+			if (cl->state == CS_ZOMBIE)
+			{
+				common->Printf("ZOMBIE\n");
+				continue;
+			}
+			common->Printf("%4i %5.2f\n",
+				(int)SVQH_CalcPing(cl),
+				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence);
+		}
+	}
+	else
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			common->Printf("frags userid address         name            ping drop  siege\n");
+		}
+		else
+		{
+			common->Printf("frags userid address         name            ping drop  qport\n");
+		}
+		common->Printf("----- ------ --------------- --------------- ---- ----- -----\n");
+		client_t* cl = svs.clients;
+		for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+		{
+			if (!cl->state)
+			{
+				continue;
+			}
+			common->Printf("%5i %6i ", (int)cl->qh_edict->GetFrags(),  cl->qh_userid);
+
+			const char* s = SOCK_BaseAdrToString(cl->netchan.remoteAddress);
+			common->Printf("%s", s);
+			int l = 16 - String::Length(s);
+			for (int j = 0; j < l; j++)
+			{
+				common->Printf(" ");
+			}
+
+			common->Printf("%s", cl->name);
+			l = 16 - String::Length(cl->name);
+			for (int j = 0; j < l; j++)
+			{
+				common->Printf(" ");
+			}
+			if (cl->state == CS_CONNECTED)
+			{
+				common->Printf("CONNECTING\n");
+				continue;
+			}
+			if (cl->state == CS_ZOMBIE)
+			{
+				common->Printf("ZOMBIE\n");
+				continue;
+			}
+			common->Printf("%4i %3.1f",
+				(int)SVQH_CalcPing(cl),
+				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence);
+			if (GGameType & GAME_QuakeWorld)
+			{
+				common->Printf(" %4i", cl->netchan.qport);
+			}
+
+			if (cl->qh_spectator)
+			{
+				common->Printf(" (s)\n");
+			}
+			else if (GGameType & GAME_HexenWorld)
+			{
+				common->Printf(" ");
+				switch (cl->h2_playerclass)
+				{
+				case CLASS_PALADIN:
+					common->Printf("P");
+					break;
+				case CLASS_CLERIC:
+					common->Printf("C");
+					break;
+				case CLASS_NECROMANCER:
+					common->Printf("N");
+					break;
+				case CLASS_THEIF:
+					common->Printf("A");
+					break;
+				case CLASS_DEMON:
+					common->Printf("S");
+					break;
+				case CLASS_DWARF:
+					common->Printf("D");
+					break;
+				default:
+					common->Printf("?");
+					break;
+				}
+				switch (cl->hw_siege_team)
+				{
+				case HWST_DEFENDER:
+					common->Printf("D");
+					break;
+				case HWST_ATTACKER:
+					common->Printf("A");
+					break;
+				default:
+					common->Printf("?");
+					break;
+				}
+				if ((int)cl->h2_old_v.flags2 & 65536)	//defender of crown
+				{
+					common->Printf("D");
+				}
+				else
+				{
+					common->Printf("-");
+				}
+				if ((int)cl->h2_old_v.flags2 & 524288)	//has siege key
+				{
+					common->Printf("K");
+				}
+				else
+				{
+					common->Printf("-");
+				}
+				common->Printf("\n");
+			}
+			else
+			{
+				common->Printf("\n");
+			}
+		}
+	}
+	common->Printf("\n");
+}
+
+static void SVQH_ConSay_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		return;
+	}
+
+	char* p = Cmd_ArgsUnmodified();
+	// remove quotes if present
+	if (*p == '"')
+	{
+		p++;
+		p[String::Length(p) - 1] = 0;
+	}
+
+	// turn on color set 1
+	char text[64];
+	sprintf(text, "%c<%s> ", 1, sv_hostname->string);
+
+	int j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
+	if (String::Length(p) > j)
+	{
+		p[j] = 0;
+	}
+
+	String::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), "\n");
+
+	client_t* client = svs.clients;
+	for (j = 0; j < svs.qh_maxclients; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		SVQH_ClientPrintf(client, 0, "%s", text);
+	}
+}
+
+static void SVQHW_ConSay_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		return;
+	}
+
+	char text[1024];
+	if (GGameType & GAME_HexenWorld)
+	{
+		if (hw_dmMode->value == HWDM_SIEGE)
+		{
+			String::Cpy(text, "GOD SAYS: ");
+		}
+		else
+		{
+			String::Cpy(text, "ServerAdmin: ");
+		}
+	}
+	else
+	{
+		String::Cpy(text, "console: ");
+	}
+
+	char* p = Cmd_ArgsUnmodified();
+
+	if (*p == '"')
+	{
+		p++;
+		p[String::Length(p) - 1] = 0;
+	}
+
+	String::Cat(text, sizeof(text), p);
+
+	client_t* client = svs.clients;
+	for (int j = 0; j < MAX_CLIENTS_QHW; j++, client++)
+	{
+		if (client->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		SVQH_ClientPrintf(client, PRINT_CHAT, "%s\n", text);
+	}
+}
+
+//	Kicks a user off of the server
+static void SVQH_ConKick_f()
+{
+	if (sv.state == SS_DEAD)
+	{
+		Cmd_ForwardToServer();
+		return;
+	}
+
+	int i;
+	client_t* kicked_client;
+	bool byNumber = false;
+	if (Cmd_Argc() > 2 && String::Cmp(Cmd_Argv(1), "#") == 0)
+	{
+		i = String::Atof(Cmd_Argv(2)) - 1;
+		if (i < 0 || i >= svs.qh_maxclients)
+		{
+			return;
+		}
+		if (svs.clients[i].state < CS_CONNECTED)
+		{
+			return;
+		}
+		kicked_client = &svs.clients[i];
+		byNumber = true;
+	}
+	else
+	{
+		kicked_client = svs.clients;
+		for (i = 0; i < svs.qh_maxclients; i++, kicked_client++)
+		{
+			if (kicked_client->state < CS_CONNECTED)
+			{
+				continue;
+			}
+			if (String::ICmp(kicked_client->name, Cmd_Argv(1)) == 0)
+			{
+				break;
+			}
+		}
+	}
+
+	if (i < svs.qh_maxclients)
+	{
+		const char* who;
+		if (com_dedicated->integer)
+		{
+			who = "Console";
+		}
+		else
+		{
+			who = Cvar_VariableString("_cl_name");
+		}
+
+		const char* message = NULL;
+		if (Cmd_Argc() > 2)
+		{
+			message = Cmd_ArgsUnmodified();
+			String::Parse1(&message);
+			if (byNumber)
+			{
+				message++;							// skip the #
+				while (*message == ' ')				// skip white space
+				{
+					message++;
+				}
+				message += String::Length(Cmd_Argv(2));	// skip the number
+			}
+			while (*message && *message == ' ')
+			{
+				message++;
+			}
+		}
+		if (message)
+		{
+			SVQH_ClientPrintf(kicked_client, 0, "Kicked by %s: %s\n", who, message);
+		}
+		else
+		{
+			SVQH_ClientPrintf(kicked_client, 0, "Kicked by %s\n", who);
+		}
+		SVQH_DropClient(kicked_client, false);
+	}
+}
+
+//	Kick a user off of the server
+static void SVQHW_Kick_f()
+{
+	int uid = String::Atoi(Cmd_Argv(1));
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (!cl->state)
+		{
+			continue;
+		}
+		if (cl->qh_userid == uid)
+		{
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s was kicked\n", cl->name);
+			// print directly, because the dropped client won't get the
+			// SVQH_BroadcastPrintf message
+			SVQH_ClientPrintf(cl, PRINT_HIGH, "You were kicked from the game\n");
+			SVQHW_DropClient(cl);
+
+			if (GGameType & GAME_HexenWorld)
+			{
+				*pr_globalVars.time = sv.qh_time;
+				*pr_globalVars.self = EDICT_TO_PROG(cl->qh_edict);
+				PR_ExecuteProgram(*pr_globalVars.ClientKill);
+			}
+			return;
+		}
+	}
+
+	common->Printf("Couldn't find user number %i\n", uid);
+}
+
 void SVQH_InitOperatorCommands()
 {
 	Cmd_AddCommand("map", SVQH_Map_f);
 	Cmd_AddCommand("changelevel", SVQH_Changelevel_f);
+	Cmd_AddCommand("status", SVQH_ConStatus_f);
+	Cmd_AddCommand("kick", SVQH_ConKick_f);
+	if (com_dedicated->integer)
+	{
+		Cmd_AddCommand("say", SVQH_ConSay_f);
+	}
 	if (GGameType & GAME_Quake)
 	{
 		Cmd_AddCommand("restart", SVQ1_Restart_f);
@@ -1083,4 +1533,7 @@ void SVQH_InitOperatorCommands()
 void SVQHW_InitOperatorCommands()
 {
 	Cmd_AddCommand("map", SVQHW_Map_f);
+	Cmd_AddCommand("status", SVQHW_Status_f);
+	Cmd_AddCommand("say", SVQHW_ConSay_f);
+	Cmd_AddCommand("kick", SVQHW_Kick_f);
 }

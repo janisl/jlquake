@@ -62,3 +62,5 @@ struct qwclient_frame_t
 #define QHMAX_LOCALINFO_STRING    32768
 
 #define SAVEGAME_COMMENT_LENGTH 39
+
+#define QHW_STATFRAMES  100

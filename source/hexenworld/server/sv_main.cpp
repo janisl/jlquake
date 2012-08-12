@@ -27,8 +27,6 @@ Cvar* noexit;
 
 fileHandle_t sv_logfile;
 
-int sv_net_port;
-
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 
@@ -270,7 +268,7 @@ void SV_Frame(float time)
 // collect timing statistics
 		end = Sys_DoubleTime();
 		svs.qh_stats.active += end - start;
-		if (++svs.qh_stats.count == STATFRAMES)
+		if (++svs.qh_stats.count == QHW_STATFRAMES)
 		{
 			svs.qh_stats.latched_active = svs.qh_stats.active;
 			svs.qh_stats.latched_idle = svs.qh_stats.idle;
@@ -401,14 +399,14 @@ void SV_InitNet(void)
 {
 	int p;
 
-	sv_net_port = PORT_SERVER;
+	svqhw_net_port = PORT_SERVER;
 	p = COM_CheckParm("-port");
 	if (p && p < COM_Argc())
 	{
-		sv_net_port = String::Atoi(COM_Argv(p + 1));
-		common->Printf("Port: %i\n", sv_net_port);
+		svqhw_net_port = String::Atoi(COM_Argv(p + 1));
+		common->Printf("Port: %i\n", svqhw_net_port);
 	}
-	NET_Init(sv_net_port);
+	NET_Init(svqhw_net_port);
 
 	Netchan_Init(0);
 

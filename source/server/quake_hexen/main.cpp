@@ -78,6 +78,8 @@ fileHandle_t svqhw_fraglogfile;
 
 netadr_t hw_idmaster_adr;					// for global logging
 
+int svqhw_net_port;
+
 void SVQH_FreeMemory()
 {
 	if (sv.h2_states)

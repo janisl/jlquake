@@ -29,9 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //=============================================================================
 
-
-#define STATFRAMES  100
-
 // edict->deadflag values
 #define DEAD_NO                 0
 #define DEAD_DYING              1
@@ -46,8 +43,6 @@ extern client_t* host_client;
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 
-extern int sv_net_port;
-
 //===========================================================
 
 //
@@ -60,8 +55,3 @@ void SV_FinalMessage(const char* message);
 void SV_InitOperatorCommands(void);
 
 void Master_Packet(void);
-
-//
-// sv_ccmds.c
-//
-void SV_Status_f(void);

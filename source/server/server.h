@@ -53,5 +53,6 @@ void CL_Disconnect();
 void SCRQH_BeginLoadingPlaque();
 void CL_EstablishConnection(const char* name);
 void Host_Reconnect_f();
+void Cmd_ForwardToServer();
 
 #endif

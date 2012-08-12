@@ -33,57 +33,6 @@ void Host_Quit_f(void)
 	Sys_Quit();
 }
 
-
-/*
-==================
-Host_Status_f
-==================
-*/
-void Host_Status_f(void)
-{
-	client_t* client;
-	int seconds;
-	int minutes;
-	int hours = 0;
-	int j;
-
-	if (sv.state == SS_DEAD)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	common->Printf("host:    %s\n", Cvar_VariableString("hostname"));
-	common->Printf("version: " JLQUAKE_VERSION_STRING "\n");
-	SOCK_ShowIP();
-	common->Printf("map:     %s\n", sv.name);
-	common->Printf("players: %i active (%i max)\n\n", net_activeconnections, svs.qh_maxclients);
-	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
-	{
-		if (client->state < CS_CONNECTED)
-		{
-			continue;
-		}
-		seconds = (int)(net_time - client->qh_netconnection->connecttime);
-		minutes = seconds / 60;
-		if (minutes)
-		{
-			seconds -= (minutes * 60);
-			hours = minutes / 60;
-			if (hours)
-			{
-				minutes -= (hours * 60);
-			}
-		}
-		else
-		{
-			hours = 0;
-		}
-		common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-		common->Printf("   %s\n", client->qh_netconnection->address);
-	}
-}
-
 #ifndef DEDICATED
 
 /*
@@ -278,51 +227,6 @@ void Host_Say_Team_f(void)
 	Cmd_ForwardToServer();
 }
 
-#endif
-
-void Host_ConSay_f()
-{
-	client_t* client;
-	int j;
-	char* p;
-	char text[64];
-
-	if (Cmd_Argc() < 2)
-	{
-		return;
-	}
-
-	p = Cmd_ArgsUnmodified();
-	// remove quotes if present
-	if (*p == '"')
-	{
-		p++;
-		p[String::Length(p) - 1] = 0;
-	}
-
-	// turn on color set 1
-	sprintf(text, "%c<%s> ", 1, sv_hostname->string);
-
-	j = sizeof(text) - 2 - String::Length(text);	// -2 for /n and null terminator
-	if (String::Length(p) > j)
-	{
-		p[j] = 0;
-	}
-
-	String::Cat(text, sizeof(text), p);
-	String::Cat(text, sizeof(text), "\n");
-
-	for (j = 0, client = svs.clients; j < svs.qh_maxclients; j++, client++)
-	{
-		if (client->state != CS_ACTIVE)
-		{
-			continue;
-		}
-		SVQH_ClientPrintf(client, 0, "%s", text);
-	}
-}
-
-#ifndef DEDICATED
 void Host_Tell_f(void)
 {
 	Cmd_ForwardToServer();
@@ -410,99 +314,6 @@ int strdiff(const char* s1, const char* s2)
 	}
 
 	return i;
-}
-
-//===========================================================================
-
-
-/*
-==================
-Host_Kick_f
-
-Kicks a user off of the server
-==================
-*/
-void Host_Kick_f(void)
-{
-	const char* who;
-	const char* message = NULL;
-	int i;
-	qboolean byNumber = false;
-
-	if (sv.state == SS_DEAD)
-	{
-		Cmd_ForwardToServer();
-		return;
-	}
-
-	if (Cmd_Argc() > 2 && String::Cmp(Cmd_Argv(1), "#") == 0)
-	{
-		i = String::Atof(Cmd_Argv(2)) - 1;
-		if (i < 0 || i >= svs.qh_maxclients)
-		{
-			return;
-		}
-		if (svs.clients[i].state < CS_CONNECTED)
-		{
-			return;
-		}
-		host_client = &svs.clients[i];
-		byNumber = true;
-	}
-	else
-	{
-		for (i = 0, host_client = svs.clients; i < svs.qh_maxclients; i++, host_client++)
-		{
-			if (host_client->state < CS_CONNECTED)
-			{
-				continue;
-			}
-			if (String::ICmp(host_client->name, Cmd_Argv(1)) == 0)
-			{
-				break;
-			}
-		}
-	}
-
-	if (i < svs.qh_maxclients)
-	{
-#ifndef DEDICATED
-		if (cls.state == CA_DEDICATED)
-#endif
-		{
-			who = "Console";
-		}
-#ifndef DEDICATED
-		else
-		{
-			who = clqh_name->string;
-		}
-#endif
-
-		if (Cmd_Argc() > 2)
-		{
-			message = Cmd_ArgsUnmodified();
-			String::Parse1(&message);
-			if (byNumber)
-			{
-				message++;							// skip the #
-				while (*message == ' ')				// skip white space
-					message++;
-				message += String::Length(Cmd_Argv(2));	// skip the number
-			}
-			while (*message && *message == ' ')
-				message++;
-		}
-		if (message)
-		{
-			SVQH_ClientPrintf(host_client, 0, "Kicked by %s: %s\n", who, message);
-		}
-		else
-		{
-			SVQH_ClientPrintf(host_client, 0, "Kicked by %s\n", who);
-		}
-		SVQH_DropClient(host_client, false);
-	}
 }
 
 /*
@@ -756,7 +567,6 @@ Host_InitCommands
 void Host_InitCommands(void)
 {
 	SVQH_InitOperatorCommands();
-	Cmd_AddCommand("status", Host_Status_f);
 	Cmd_AddCommand("quit", Host_Quit_f);
 #ifndef DEDICATED
 	Cmd_AddCommand("god", Host_God_f);
@@ -768,12 +578,8 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("noclip", Host_Noclip_f);
 #endif
 	Cmd_AddCommand("version", Host_Version_f);
-	if (com_dedicated->integer)
-	{
-		Cmd_AddCommand("say", Host_ConSay_f);
-	}
 #ifndef DEDICATED
-	else
+	if (!com_dedicated->integer)
 	{
 		Cmd_AddCommand("say", Host_Say_f);
 		Cmd_AddCommand("say_team", Host_Say_Team_f);
@@ -782,9 +588,6 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("color", Host_Color_f);
 	Cmd_AddCommand("kill", Host_Kill_f);
 	Cmd_AddCommand("pause", Host_Pause_f);
-#endif
-	Cmd_AddCommand("kick", Host_Kick_f);
-#ifndef DEDICATED
 	Cmd_AddCommand("ping", Host_Ping_f);
 	Cmd_AddCommand("give", Host_Give_f);
 #endif

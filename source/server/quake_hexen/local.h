@@ -199,6 +199,7 @@ extern int svqh_current_skill;			// skill level for currently loaded level (in c
 extern int svh2_kingofhill;
 extern fileHandle_t svqhw_fraglogfile;
 extern netadr_t hw_idmaster_adr;
+extern int svqhw_net_port;
 
 void SVQH_FreeMemory();
 int SVQH_CalcPing(client_t* cl);
