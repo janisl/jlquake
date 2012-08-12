@@ -389,7 +389,7 @@ void SV_Init(void)
 
 	sv_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve
 
-	sv_showAverageBPS = Cvar_Get("sv_showAverageBPS", "0", 0);				// NERVE - SMF - net debugging
+	svwm_showAverageBPS = Cvar_Get("sv_showAverageBPS", "0", 0);				// NERVE - SMF - net debugging
 
 	// NERVE - SMF - create user set cvars
 	Cvar_Get("g_userTimeLimit", "0", 0);
@@ -483,7 +483,7 @@ void SV_FinalCommand(const char* cmd, qboolean disconnect)
 				}
 				// force a snapshot to be sent
 				cl->q3_nextSnapshotTime = -1;
-				SV_SendClientSnapshot(cl);
+				SVT3_SendClientSnapshot(cl);
 			}
 		}
 	}

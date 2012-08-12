@@ -32,7 +32,6 @@ set(WOLFSP_FILES
 	server/sv_client.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
-	server/sv_snapshot.cpp
 )
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

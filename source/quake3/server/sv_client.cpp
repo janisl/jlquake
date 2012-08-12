@@ -586,7 +586,7 @@ void SV_SendClientGameState(client_t* client)
 	msg.WriteLong(sv.q3_checksumFeed);
 
 	// deliver this to the client
-	SV_SendMessageToClient(&msg, client);
+	SVT3_SendMessageToClient(&msg, client);
 }
 
 /*
@@ -800,7 +800,7 @@ static void SV_VerifyPaks_f(client_t* cl)
 			cl->q3_pureAuthentic = 0;
 			cl->q3_nextSnapshotTime = -1;
 			cl->state = CS_ACTIVE;
-			SV_SendClientSnapshot(cl);
+			SVT3_SendClientSnapshot(cl);
 			SVT3_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
 		}
 	}

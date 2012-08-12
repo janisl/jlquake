@@ -86,11 +86,3 @@ void SV_AuthorizeIpPacket(netadr_t from);
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-//
-// sv_snapshot.c
-//
-void SV_WriteFrameToClient(client_t* client, QMsg* msg);
-void SV_SendMessageToClient(QMsg* msg, client_t* client);
-void SV_SendClientMessages(void);
-void SV_SendClientSnapshot(client_t* client);

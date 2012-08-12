@@ -63,8 +63,6 @@ extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
 extern Cvar* sv_onlyVisibleClients;
 
-extern Cvar* sv_showAverageBPS;				// NERVE - SMF - net debugging
-
 // Rafael gameskill
 extern Cvar* sv_gameskill;
 // done
@@ -107,11 +105,3 @@ void SV_AuthorizeIpPacket(netadr_t from);
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
-
-//
-// sv_snapshot.c
-//
-void SV_WriteFrameToClient(client_t* client, QMsg* msg);
-void SV_SendMessageToClient(QMsg* msg, client_t* client);
-void SV_SendClientMessages(void);
-void SV_SendClientSnapshot(client_t* client);

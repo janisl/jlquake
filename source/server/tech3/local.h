@@ -132,6 +132,7 @@ extern Cvar* svet_wwwBaseURL;	// the base URL of all the files
 // this gets you a better throughput, but you loose the ability to control the download usage
 extern Cvar* svet_wwwDlDisconnected;
 extern Cvar* svt3_lanForceRate;
+extern Cvar* svwm_showAverageBPS;				// NERVE - SMF - net debugging
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
@@ -143,8 +144,6 @@ bool SVT3_CheckPaused();
 //
 //	NetChan
 //
-void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString);
-void SVT3_Netchan_Decode(client_t* client, QMsg* msg);
 void SVT3_Netchan_TransmitNextFragment(client_t* client);
 void SVT3_Netchan_Transmit(client_t* client, QMsg* msg);
 bool SVT3_Netchan_Process(client_t* client, QMsg* msg);
@@ -152,10 +151,10 @@ bool SVT3_Netchan_Process(client_t* client, QMsg* msg);
 //
 //	Snapshot
 //
-void SVT3_WriteSnapshotToClient(client_t* client, QMsg* msg);
 void SVT3_UpdateServerCommandsToClient(client_t* client, QMsg* msg);
-void SVT3_BuildClientSnapshot(client_t* client);
-int SVT3_RateMsec(client_t* client, int messageSize);
+void SVT3_SendMessageToClient(QMsg* msg, client_t* client);
+void SVT3_SendClientSnapshot(client_t* client);
+void SVT3_SendClientMessages();
 
 //
 //	World

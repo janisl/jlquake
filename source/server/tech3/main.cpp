@@ -34,6 +34,7 @@ Cvar* svet_wwwBaseURL;	// base URL for redirect
 // this gets you a better throughput, but you loose the ability to control the download usage
 Cvar* svet_wwwDlDisconnected;
 Cvar* svt3_lanForceRate;		// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
+Cvar* svwm_showAverageBPS;		// NERVE - SMF - net debugging
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)

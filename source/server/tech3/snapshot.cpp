@@ -343,7 +343,7 @@ static void SVET_EmitPacketEntities(q3clientSnapshot_t* from, q3clientSnapshot_t
 	msg->WriteBits((MAX_GENTITIES_Q3 - 1), GENTITYNUM_BITS_Q3);			// end of packetentities
 }
 
-void SVT3_WriteSnapshotToClient(client_t* client, QMsg* msg)
+static void SVT3_WriteSnapshotToClient(client_t* client, QMsg* msg)
 {
 	q3clientSnapshot_t* frame, * oldframe;
 	int lastframe;
@@ -820,7 +820,7 @@ notVisible:
 //	This properly handles multiple recursive portals, but the render
 // currently doesn't.
 //	For viewing through other player's eyes, clent can be something other than client->gentity
-void SVT3_BuildClientSnapshot(client_t* client)
+static void SVT3_BuildClientSnapshot(client_t* client)
 {
 	// bump the counter used to prevent double adding
 	sv.q3_snapshotCounter++;
@@ -962,7 +962,7 @@ void SVT3_BuildClientSnapshot(client_t* client)
 //	Return the number of msec a given size message is supposed
 // to take to clear, based on the current rate
 // TTimo - use sv_maxRate or sv_dl_maxRate depending on regular or downloading client
-int SVT3_RateMsec(client_t* client, int messageSize)
+static int SVT3_RateMsec(client_t* client, int messageSize)
 {
 	// include our header, IP header, and some overhead
 	enum { HEADER_RATE_BYTES = 48 };
@@ -998,4 +998,268 @@ int SVT3_RateMsec(client_t* client, int messageSize)
 	int rateMsec = (messageSize + HEADER_RATE_BYTES) * 1000 / rate;
 
 	return rateMsec;
+}
+
+void SVT3_SendMessageToClient(QMsg* msg, client_t* client)
+{
+	// record information about the message
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSize = msg->cursize;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageSent = svs.q3_time;
+	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
+
+	// send the datagram
+	SVT3_Netchan_Transmit(client, msg);
+
+	// set nextSnapshotTime based on rate and requested number of updates
+
+	// local clients get snapshots every frame
+	if (client->netchan.remoteAddress.type == NA_LOOPBACK || (svt3_lanForceRate->integer && SOCK_IsLANAddress(client->netchan.remoteAddress)))
+	{
+		client->q3_nextSnapshotTime = svs.q3_time - 1;
+		return;
+	}
+
+	// normal rate / snapshotMsec calculation
+	int rateMsec = SVT3_RateMsec(client, msg->cursize);
+
+	// TTimo - during a download, ignore the snapshotMsec
+	// the update server on steroids, with this disabled and sv_fps 60, the download can reach 30 kb/s
+	// on a regular server, we will still top at 20 kb/s because of sv_fps 20
+	if (!*client->downloadName && rateMsec < client->q3_snapshotMsec)
+	{
+		// never send more packets than this, no matter what the rate is at
+		rateMsec = client->q3_snapshotMsec;
+		client->q3_rateDelayed = false;
+	}
+	else
+	{
+		client->q3_rateDelayed = true;
+	}
+
+	client->q3_nextSnapshotTime = svs.q3_time + rateMsec;
+
+	// don't pile up empty snapshots while connecting
+	if (client->state != CS_ACTIVE)
+	{
+		// a gigantic connection message may have already put the nextSnapshotTime
+		// more than a second away, so don't shorten it
+		// do shorten if client is downloading
+		if (!*client->downloadName && client->q3_nextSnapshotTime < svs.q3_time + 1000)
+		{
+			client->q3_nextSnapshotTime = svs.q3_time + 1000;
+		}
+	}
+}
+
+//	There is no need to send full snapshots to clients who are loading a map.
+// So we send them "idle" packets with the bare minimum required to keep them on the server.
+static void SVET_SendClientIdle(client_t* client)
+{
+	byte msg_buf[MAX_MSGLEN_WOLF];
+	QMsg msg;
+	msg.Init(msg_buf, sizeof(msg_buf));
+
+	// NOTE, MRE: all server->client messages now acknowledge
+	// let the client know which reliable clientCommands we have received
+	msg.WriteLong(client->q3_lastClientCommand);
+
+	// (re)send any reliable server commands
+	SVT3_UpdateServerCommandsToClient(client, &msg);
+
+	// Add any download data if the client is downloading
+	SVT3_WriteDownloadToClient(client, &msg);
+
+	// check for overflow
+	if (msg.overflowed)
+	{
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
+		msg.Clear();
+
+		SVT3_DropClient(client, "Msg overflowed");
+		return;
+	}
+
+	SVT3_SendMessageToClient(&msg, client);
+
+	sv.wm_bpsTotalBytes += msg.cursize;			// NERVE - SMF - net debugging
+	sv.wm_ubpsTotalBytes += msg.uncompsize / 8;	// NERVE - SMF - net debugging
+}
+
+void SVT3_SendClientSnapshot(client_t* client)
+{
+	if (GGameType & GAME_ET && client->state < CS_ACTIVE)
+	{
+		// bani - #760 - zombie clients need full snaps so they can still process reliable commands
+		// (eg so they can pick up the disconnect reason)
+		if (client->state != CS_ZOMBIE)
+		{
+			SVET_SendClientIdle(client);
+			return;
+		}
+	}
+
+	//RF, AI don't need snapshots built
+	if (GGameType & GAME_WolfSP && client->q3_entity && client->q3_entity->GetSvFlagCastAI())
+	{
+		return;
+	}
+
+	// build the snapshot
+	SVT3_BuildClientSnapshot(client);
+
+	// bots need to have their snapshots build, but
+	// the query them directly without needing to be sent
+	if (client->q3_entity && client->q3_entity->GetSvFlags() & Q3SVF_BOT)
+	{
+		return;
+	}
+
+	QMsg msg;
+	byte msg_buf[MAX_MSGLEN];
+	msg.Init(msg_buf, GGameType & GAME_Quake3 ? MAX_MSGLEN_Q3 : MAX_MSGLEN_WOLF);
+	if (!(GGameType & GAME_Quake3))
+	{
+		msg.allowoverflow = true;
+	}
+
+	// NOTE, MRE: all server->client messages now acknowledge
+	// let the client know which reliable clientCommands we have received
+	msg.WriteLong(client->q3_lastClientCommand);
+
+	// (re)send any reliable server commands
+	SVT3_UpdateServerCommandsToClient(client, &msg);
+
+	// send over all the relevant entityState_t
+	// and the playerState_t
+	SVT3_WriteSnapshotToClient(client, &msg);
+
+	// Add any download data if the client is downloading
+	SVT3_WriteDownloadToClient(client, &msg);
+
+	// check for overflow
+	if (msg.overflowed)
+	{
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
+		msg.Clear();
+
+		if (GGameType & GAME_ET)
+		{
+			SVT3_DropClient(client, "Msg overflowed");
+			return;
+		}
+	}
+
+	SVT3_SendMessageToClient(&msg, client);
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		sv.wm_bpsTotalBytes += msg.cursize;			// NERVE - SMF - net debugging
+		sv.wm_ubpsTotalBytes += msg.uncompsize / 8;	// NERVE - SMF - net debugging
+	}
+}
+
+void SVT3_SendClientMessages()
+{
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		sv.wm_bpsTotalBytes = 0;		// NERVE - SMF - net debugging
+		sv.wm_ubpsTotalBytes = 0;		// NERVE - SMF - net debugging
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		// Gordon: update any changed configstrings from this frame
+		SVET_UpdateConfigStrings();
+	}
+
+	// send a message to each connected client
+	int numclients = 0;			// NERVE - SMF - net debugging
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		client_t* c = &svs.clients[i];
+
+		// rain - changed <= CS_ZOMBIE to < CS_ZOMBIE so that the
+		// disconnect reason is properly sent in the network stream
+		if (c->state < CS_ZOMBIE)
+		{
+			continue;		// not connected
+		}
+
+		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
+		// --> "netchan queue is not properly initialized in SVT3_Netchan_TransmitNextFragment\n"
+		if (GGameType & GAME_ET && c->q3_entity && c->q3_entity->GetSvFlags() & Q3SVF_BOT)
+		{
+			continue;
+		}
+
+		if (svs.q3_time < c->q3_nextSnapshotTime)
+		{
+			continue;		// not time yet
+		}
+
+		numclients++;		// NERVE - SMF - net debugging
+
+		// send additional message fragments if the last message
+		// was too large to send at once
+		if (c->netchan.unsentFragments)
+		{
+			c->q3_nextSnapshotTime = svs.q3_time +
+								  SVT3_RateMsec(c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart);
+			SVT3_Netchan_TransmitNextFragment(c);
+			continue;
+		}
+
+		// generate and send a new message
+		SVT3_SendClientSnapshot(c);
+	}
+
+	// net debugging
+	if (GGameType & (GAME_WolfMP | GAME_ET) && svwm_showAverageBPS->integer && numclients > 0)
+	{
+		float ave = 0, uave = 0;
+
+		for (int i = 0; i < MAX_BPS_WINDOW - 1; i++)
+		{
+			sv.wm_bpsWindow[i] = sv.wm_bpsWindow[i + 1];
+			ave += sv.wm_bpsWindow[i];
+
+			sv.wm_ubpsWindow[i] = sv.wm_ubpsWindow[i + 1];
+			uave += sv.wm_ubpsWindow[i];
+		}
+
+		sv.wm_bpsWindow[MAX_BPS_WINDOW - 1] = sv.wm_bpsTotalBytes;
+		ave += sv.wm_bpsTotalBytes;
+
+		sv.wm_ubpsWindow[MAX_BPS_WINDOW - 1] = sv.wm_ubpsTotalBytes;
+		uave += sv.wm_ubpsTotalBytes;
+
+		if (sv.wm_bpsTotalBytes >= sv.wm_bpsMaxBytes)
+		{
+			sv.wm_bpsMaxBytes = sv.wm_bpsTotalBytes;
+		}
+
+		if (sv.wm_ubpsTotalBytes >= sv.wm_ubpsMaxBytes)
+		{
+			sv.wm_ubpsMaxBytes = sv.wm_ubpsTotalBytes;
+		}
+
+		sv.wm_bpsWindowSteps++;
+
+		if (sv.wm_bpsWindowSteps >= MAX_BPS_WINDOW)
+		{
+			float comp_ratio;
+
+			sv.wm_bpsWindowSteps = 0;
+
+			ave = (ave / (float)MAX_BPS_WINDOW);
+			uave = (uave / (float)MAX_BPS_WINDOW);
+
+			comp_ratio = (1 - ave / uave) * 100.f;
+			sv.wm_ucompAve += comp_ratio;
+			sv.wm_ucompNum++;
+
+			common->DPrintf("bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
+				ave / (float)numclients, ave, sv.wm_bpsMaxBytes, uave, sv.wm_ubpsMaxBytes, comp_ratio, sv.wm_ucompAve / sv.wm_ucompNum);
+		}
+	}
 }

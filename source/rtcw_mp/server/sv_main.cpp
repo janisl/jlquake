@@ -53,8 +53,6 @@ Cvar* sv_tourney;				// NERVE - SMF
 Cvar* sv_gameskill;
 // done
 
-Cvar* sv_showAverageBPS;		// NERVE - SMF - net debugging
-
 void SVC_GameCompleteStatus(netadr_t from);			// NERVE - SMF
 
 /*
@@ -802,7 +800,7 @@ void SV_Frame(int msec)
 	SVT3_CheckTimeouts();
 
 	// send messages back to the clients
-	SV_SendClientMessages();
+	SVT3_SendClientMessages();
 
 	// send a heartbeat to the master if needed
 	SV_MasterHeartbeat(HEARTBEAT_GAME);

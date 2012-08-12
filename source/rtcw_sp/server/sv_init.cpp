@@ -442,7 +442,7 @@ void SV_FinalMessage(const char* message)
 				}
 				// force a snapshot to be sent
 				cl->q3_nextSnapshotTime = -1;
-				SV_SendClientSnapshot(cl);
+				SVT3_SendClientSnapshot(cl);
 			}
 		}
 	}

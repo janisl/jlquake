@@ -56,8 +56,6 @@ Cvar* sv_needpass;
 
 Cvar* sv_reloading;
 
-Cvar* sv_showAverageBPS;		// NERVE - SMF - net debugging
-
 //bani
 Cvar* sv_cheats;
 
@@ -902,7 +900,7 @@ void SV_Frame(int msec)
 	SVT3_CheckTimeouts();
 
 	// send messages back to the clients
-	SV_SendClientMessages();
+	SVT3_SendClientMessages();
 
 	// send a heartbeat to the master if needed
 	SV_MasterHeartbeat(HEARTBEAT_GAME);

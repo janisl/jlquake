@@ -23,7 +23,7 @@
 
 // first four bytes of the data are always:
 //	long reliableAcknowledge;
-void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString)
+static void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString)
 {
 	if (msg->cursize < Q3SV_ENCODE_START)
 	{
@@ -59,7 +59,7 @@ void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString)
 //	long serverId;
 //	long messageAcknowledge;
 //	long reliableAcknowledge;
-void SVT3_Netchan_Decode(client_t* client, QMsg* msg)
+static void SVT3_Netchan_Decode(client_t* client, QMsg* msg)
 {
 	int srdc = msg->readcount;
 	int sbit = msg->bit;
