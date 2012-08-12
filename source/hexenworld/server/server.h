@@ -20,8 +20,6 @@
 extern Cvar* spawn;
 extern Cvar* noexit;
 
-extern client_t* host_client;
-
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 

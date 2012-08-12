@@ -35,8 +35,6 @@ double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
 
-client_t* host_client;				// current client
-
 //
 // game rules mirrored in svs.qh_info
 //
