@@ -12,7 +12,6 @@
 #include "common.h"
 #include "vid.h"
 #include "sys.h"
-#include "zone.h"
 #include "draw.h"
 #include "screen.h"
 #include "net.h"
@@ -38,8 +37,6 @@ typedef struct
 	const char* basedir;
 	int argc;
 	char** argv;
-	void* membase;
-	int memsize;
 } quakeparms_t;
 
 

@@ -4,8 +4,6 @@
 -bpp
 -cddev
 -condebug
--heapsize
--minmemory
 -nocdaudio
 -nomidi
 -port
@@ -21,7 +19,6 @@
 -hipnotic
 -ip
 -listen
--mem
 -nolan
 -nostdout
 -noudp
@@ -34,7 +31,6 @@
 -conheight
 -conwidth
 -ip
--mem
 -noconinput
 -nostdout
 
@@ -55,7 +51,6 @@
 -conheight
 -conwidth
 -game
--mem
 
 ------------------------ Removed ----------------------
 
@@ -156,3 +151,8 @@ Parameter                Console command                      Saved
 
 -particles
   Number of particles is fixed now.
+
+-heapsize
+-minmemory
+-mem
+  Unused

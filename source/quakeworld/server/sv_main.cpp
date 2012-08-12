@@ -33,8 +33,6 @@ qboolean host_initialized;			// true if into command execution (compatability)
 double host_frametime;
 double realtime;					// without any filtering or bounding
 
-int host_hunklevel;
-
 fileHandle_t sv_logfile;
 
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
@@ -325,19 +323,8 @@ void SV_Init(quakeparms_t* parms)
 		COM_AddParm("-game");
 		COM_AddParm("qw");
 
-		if (COM_CheckParm("-minmemory"))
-		{
-			parms->memsize = MINIMUM_MEMORY;
-		}
-
 		host_parms = *parms;
 
-		if (parms->memsize < MINIMUM_MEMORY)
-		{
-			common->Error("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
-		}
-
-		Memory_Init(parms->membase, parms->memsize);
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
@@ -356,15 +343,11 @@ void SV_Init(quakeparms_t* parms)
 		Sys_Init();
 		PMQH_Init();
 
-		Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
-		host_hunklevel = Hunk_LowMark();
-
 		Cbuf_InsertText("exec server.cfg\n");
 
 		host_initialized = true;
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-		common->Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
 
 		common->Printf("\nServer Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 

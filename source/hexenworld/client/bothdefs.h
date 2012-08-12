@@ -21,7 +21,4 @@
 
 #define UNUSED(x)   (x = x)	// for pesky compiler / lint warnings
 
-#define MINIMUM_MEMORY  0x550000
-
-
 #define SOUND_CHANNELS      8

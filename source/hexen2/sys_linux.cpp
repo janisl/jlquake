@@ -124,15 +124,6 @@ int main(int c, char** v)
 	parms.argc = c;
 	parms.argv = v;
 
-	parms.memsize = 16 * 1024 * 1024;
-
-	j = COM_CheckParm("-mem");
-	if (j)
-	{
-		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
-	}
-	parms.membase = malloc(parms.memsize);
-
 	parms.basedir = basedir;
 
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);

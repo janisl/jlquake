@@ -55,9 +55,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define UNUSED(x)   (x = x)	// for pesky compiler / lint warnings
 
-#define MINIMUM_MEMORY          0x550000
-#define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
-
 //===========================================
 
 #define SOUND_CHANNELS      8
@@ -65,7 +62,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common.h"
 #include "vid.h"
 #include "sys.h"
-#include "zone.h"
 #ifndef DEDICATED
 #include "draw.h"
 #include "screen.h"
@@ -95,8 +91,6 @@ typedef struct
 	const char* basedir;
 	int argc;
 	char** argv;
-	void* membase;
-	int memsize;
 } quakeparms_t;
 
 
@@ -128,7 +122,5 @@ extern qboolean msg_suppress_1;			// suppresses resolution and cache size consol
 										//  an fullscreen DIB focus gain/loss
 
 extern qboolean isDedicated;
-
-extern int minimum_memory;
 
 extern double host_time;

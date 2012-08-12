@@ -235,8 +235,6 @@ void Model_NextDownload(void)
 	// all done
 	R_NewMap();
 
-	Hunk_Check();		// make sure nothing is hurt
-
 	// done with modellist, request first of static signon messages
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
 	clc.netchan.message.WriteString2(

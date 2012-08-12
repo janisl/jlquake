@@ -113,19 +113,6 @@ int main(int argc, char* argv[])
 	COM_InitArgv2(argc, argv);
 	parms.argc = argc;
 	parms.argv = argv;
-
-	parms.memsize = 16 * 1024 * 1024;
-
-	j = COM_CheckParm("-mem");
-	if (j)
-	{
-		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
-	}
-	if ((parms.membase = malloc(parms.memsize)) == NULL)
-	{
-		common->FatalError("Can't allocate %ld\n", parms.memsize);
-	}
-
 	parms.basedir = ".";
 
 	SV_Init(&parms);

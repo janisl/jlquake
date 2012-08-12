@@ -360,8 +360,6 @@ void CL_ParseServerInfo(void)
 
 // local state
 	R_NewMap();
-
-	Hunk_Check();		// make sure nothing is hurt
 }
 
 /*

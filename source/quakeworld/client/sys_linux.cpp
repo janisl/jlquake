@@ -130,7 +130,6 @@ int main(int c, char** v)
 
 	double time, oldtime, newtime;
 	quakeparms_t parms;
-	int j;
 
 	InitSig();	// trap evil signals
 
@@ -139,16 +138,6 @@ int main(int c, char** v)
 	COM_InitArgv2(c, v);
 	parms.argc = c;
 	parms.argv = v;
-
-	parms.memsize = 16 * 1024 * 1024;
-
-	j = COM_CheckParm("-mem");
-	if (j)
-	{
-		parms.memsize = (int)(String::Atof(COM_Argv(j + 1)) * 1024 * 1024);
-	}
-	parms.membase = malloc(parms.memsize);
-
 	parms.basedir = basedir;
 
 	noconinput = COM_CheckParm("-noconinput");

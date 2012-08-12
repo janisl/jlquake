@@ -13,7 +13,6 @@
 
 #include "common.h"
 #include "sys.h"
-#include "zone.h"
 
 #include "net.h"
 #include "protocol.h"
@@ -32,8 +31,6 @@ typedef struct
 	const char* basedir;
 	int argc;
 	char** argv;
-	void* membase;
-	int memsize;
 } quakeparms_t;
 
 

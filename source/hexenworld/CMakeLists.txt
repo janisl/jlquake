@@ -14,7 +14,6 @@ add_executable(jlhwsv
 	client/cmd.cpp
 	client/common.cpp
 	client/cvar.cpp
-	client/zone.cpp
 	client/net_chan.cpp
 )
 set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
@@ -43,7 +42,6 @@ add_executable(jlhwcl
 	client/snd_dma.cpp
 	client/sys_linux.cpp
 	client/view.cpp
-	client/zone.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhwcl ${DEDCLIENTS_LIBS})

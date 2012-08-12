@@ -250,7 +250,6 @@ void Model_NextDownload(void)
 
 	// all done
 	R_NewMap();
-	Hunk_Check();		// make sure nothing is hurt
 
 	int CheckSum1;
 	int CheckSum2;

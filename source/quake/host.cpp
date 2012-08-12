@@ -43,10 +43,6 @@ double oldrealtime;					// last frame run
 int host_framecount;
 int fps_count;
 
-int host_hunklevel;
-
-int minimum_memory;
-
 jmp_buf host_abortserver;
 
 Cvar* host_framerate;	// set for slow motion
@@ -291,7 +287,7 @@ void    Host_FindMaxClients(void)
 	{
 		svs.qh_maxclientslimit = 4;
 	}
-	svs.clients = (client_t*)Hunk_AllocName(svs.qh_maxclientslimit * sizeof(client_t), "clients");
+	svs.clients = (client_t*)Mem_ClearedAlloc(svs.qh_maxclientslimit * sizeof(client_t));
 
 	if (svs.qh_maxclients > 1)
 	{
@@ -638,28 +634,8 @@ void Host_Init(quakeparms_t* parms)
 		GGameType = GAME_Quake;
 		Sys_SetHomePathSuffix("jlquake");
 
-		if (q1_standard_quake)
-		{
-			minimum_memory = MINIMUM_MEMORY;
-		}
-		else
-		{
-			minimum_memory = MINIMUM_MEMORY_LEVELPAK;
-		}
-
-		if (COM_CheckParm("-minmemory"))
-		{
-			parms->memsize = minimum_memory;
-		}
-
 		host_parms = *parms;
 
-		if (parms->memsize < minimum_memory)
-		{
-			common->FatalError("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
-		}
-
-		Memory_Init(parms->membase, parms->memsize);
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
@@ -680,7 +656,6 @@ void Host_Init(quakeparms_t* parms)
 		SVQH_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-		common->Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));
 
 #ifndef DEDICATED
 		if (cls.state != CA_DEDICATED)
@@ -707,9 +682,6 @@ void Host_Init(quakeparms_t* parms)
 			Sbar_Init();
 		}
 #endif
-
-		Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
-		host_hunklevel = Hunk_LowMark();
 
 		host_initialized = true;
 

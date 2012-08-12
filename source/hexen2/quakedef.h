@@ -38,12 +38,6 @@
 
 #define UNUSED(x)   (x = x)	// for pesky compiler / lint warnings
 
-#define MINIMUM_MEMORY          0x550000
-#define MINIMUM_MEMORY_LEVELPAK (MINIMUM_MEMORY + 0x100000)
-
-
-//===========================================
-
 #ifdef MISSIONPACK
 #define NUM_CLASSES                 NUM_CLASSES_H2MP
 #else
@@ -56,7 +50,6 @@
 #include "common.h"
 #include "vid.h"
 #include "sys.h"
-#include "zone.h"
 
 #ifndef DEDICATED
 #include "draw.h"
@@ -90,8 +83,6 @@ typedef struct
 	const char* basedir;
 	int argc;
 	char** argv;
-	void* membase;
-	int memsize;
 } quakeparms_t;
 
 
@@ -124,8 +115,6 @@ extern qboolean msg_suppress_1;			// suppresses resolution and cache size consol
 										//  an fullscreen DIB focus gain/loss
 
 extern qboolean isDedicated;
-
-extern int minimum_memory;
 
 extern int num_intro_msg;
 extern qboolean check_bottom;

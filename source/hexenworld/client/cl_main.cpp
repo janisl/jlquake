@@ -47,8 +47,6 @@ double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 int host_framecount;
 
-int host_hunklevel;
-
 netadr_t master_adr;				// address of the master server
 
 Cvar* host_speeds;
@@ -332,10 +330,6 @@ void CL_ClearState(void)
 
 	common->DPrintf("Clearing memory\n");
 	Mod_ClearAll();
-	if (host_hunklevel)	// FIXME: check this...
-	{
-		Hunk_FreeToLowMark(host_hunklevel);
-	}
 
 	CLH2_ClearTEnts();
 	CLH2_ClearEffects();
@@ -1378,19 +1372,8 @@ void Host_Init(quakeparms_t* parms)
 //	COM_AddParm ("-game");
 //	COM_AddParm ("hw");
 
-		if (COM_CheckParm("-minmemory"))
-		{
-			parms->memsize = MINIMUM_MEMORY;
-		}
-
 		host_parms = *parms;
 
-		if (parms->memsize < MINIMUM_MEMORY)
-		{
-			common->FatalError("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
-		}
-
-		Memory_Init(parms->membase, parms->memsize);
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
@@ -1407,8 +1390,6 @@ void Host_Init(quakeparms_t* parms)
 		Con_Init();
 		M_Init();
 		ComH2_LoadStrings();
-
-		common->Printf("%4.1f megs RAM used.\n",parms->memsize / (1024 * 1024.0));
 
 		cls.state = CA_DISCONNECTED;
 		CL_Init();
@@ -1427,9 +1408,6 @@ void Host_Init(quakeparms_t* parms)
 		CDAudio_Init();
 		MIDI_Init();
 		Sbar_Init();
-
-		Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
-		host_hunklevel = Hunk_LowMark();
 
 		host_initialized = true;
 
