@@ -149,13 +149,13 @@ void Key_SetBinding(int keynum, const char* binding)
 // free old bindings
 	if (keys[keynum].binding)
 	{
-		Z_Free(keys[keynum].binding);
+		Mem_Free(keys[keynum].binding);
 		keys[keynum].binding = NULL;
 	}
 
 // allocate memory for new binding
 	l = String::Length(binding);
-	new_b = (char*)Z_Malloc(l + 1);
+	new_b = (char*)Mem_Alloc(l + 1);
 	String::Cpy(new_b, binding);
 	new_b[l] = 0;
 	keys[keynum].binding = new_b;
