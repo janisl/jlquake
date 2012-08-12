@@ -50,7 +50,6 @@ extern fileHandle_t sv_logfile;
 //
 void SVQHW_Shutdown(void);
 void SV_Frame(float time);
-void SV_FinalMessage(const char* message);
 
 void SV_InitOperatorCommands(void);
 

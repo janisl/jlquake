@@ -155,40 +155,11 @@ void SV_Error(const char* error, ...)
 
 	common->Printf("SV_Error: %s\n",string);
 
-	SV_FinalMessage(va("server crashed: %s\n", string));
+	SVQHW_FinalMessage(va("server crashed: %s\n", string));
 
 	SVQHW_Shutdown();
 
 	Sys_Error("SV_Error: %s\n",string);
-}
-
-/*
-==================
-SV_FinalMessage
-
-Used by common->Error and SV_Quit_f to send a final message to all connected
-clients before the server goes down.  The messages are sent immediately,
-not just stuck on the outgoing message list, because the server is going
-to totally exit after returning from this function.
-==================
-*/
-void SV_FinalMessage(const char* message)
-{
-	int i;
-	client_t* cl;
-
-	net_message.Clear();
-	net_message.WriteByte(h2svc_print);
-	net_message.WriteByte(PRINT_HIGH);
-	net_message.WriteString2(message);
-	net_message.WriteByte(h2svc_disconnect);
-
-	for (i = 0, cl = svs.clients; i < MAX_CLIENTS_QHW; i++, cl++)
-		if (cl->state >= CS_ACTIVE)
-		{
-			Netchan_Transmit(&cl->netchan, net_message.cursize,
-				net_message._data);
-		}
 }
 
 //============================================================================

@@ -217,6 +217,7 @@ void SVQHW_ListIP_f();
 void SVQHW_WriteIP_f();
 void SVQHW_Master_Shutdown();
 void SVQH_Shutdown(bool crash);
+void SVQHW_FinalMessage(const char* message);
 void SVQH_ServerFrame(float frametime);
 void SVQHW_ServerFrame();
 

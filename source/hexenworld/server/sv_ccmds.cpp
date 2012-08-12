@@ -20,7 +20,7 @@ SV_Quit_f
 */
 void SV_Quit_f(void)
 {
-	SV_FinalMessage("server shutdown\n");
+	SVQHW_FinalMessage("server shutdown\n");
 	common->Printf("Shutting down.\n");
 	SVQHW_Shutdown();
 	Sys_Quit();

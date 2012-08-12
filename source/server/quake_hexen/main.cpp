@@ -1492,6 +1492,33 @@ void SVQH_Shutdown(bool crash)
 	Com_Memset(svs.clients, 0, svs.qh_maxclientslimit * sizeof(client_t));
 }
 
+//	Used by common->Error and SV_Quit_f to send a final message to all connected
+// clients before the server goes down.  The messages are sent immediately,
+// not just stuck on the outgoing message list, because the server is going
+// to totally exit after returning from this function.
+void SVQHW_FinalMessage(const char* message)
+{
+	QMsg net_message;
+	byte net_message_buffer[MAX_DATAGRAM];
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
+	net_message.Clear();
+	net_message.WriteByte(GGameType & GAME_HexenWorld ? h2svc_print : q1svc_print);
+	net_message.WriteByte(PRINT_HIGH);
+	net_message.WriteString2(message);
+	net_message.WriteByte(GGameType & GAME_HexenWorld ? h2svc_disconnect : q1svc_disconnect);
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (cl->state >= CS_ACTIVE)
+		{
+			Netchan_Transmit(&cl->netchan, net_message.cursize,
+				net_message._data);
+		}
+	}
+}
+
 void SVQH_ServerFrame(float frametime)
 {
 	// run the world state
