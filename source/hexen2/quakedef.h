@@ -70,7 +70,6 @@
 #include "render.h"
 #endif
 #include "client.h"
-#include "server.h"
 #ifndef DEDICATED
 #include "keys.h"
 #endif
@@ -128,6 +127,7 @@ extern qboolean isDedicated;
 
 extern int minimum_memory;
 
-extern qboolean skip_start;
 extern int num_intro_msg;
 extern qboolean check_bottom;
+
+extern double host_time;

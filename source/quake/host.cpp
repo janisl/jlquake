@@ -55,11 +55,6 @@ Cvar* host_speeds;				// set for running times
 Cvar* sys_ticrate;
 Cvar* serverprofile;
 
-Cvar* samelevel;
-Cvar* noexit;
-
-Cvar* temp1;
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -323,19 +318,6 @@ void Host_InitLocal(void)
 
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
 	serverprofile = Cvar_Get("serverprofile", "0", 0);
-
-	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
-	qh_timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
-	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
-	samelevel = Cvar_Get("samelevel", "0", 0);
-	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
-	qh_skill = Cvar_Get("skill", "1", 0);			// 0 - 3
-	svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);	// 0, 1, or 2
-	svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
-
-	qh_pausable = Cvar_Get("pausable", "1", 0);
-
-	temp1 = Cvar_Get("temp1", "0", 0);
 
 	Host_FindMaxClients();
 
@@ -695,7 +677,7 @@ void Host_Init(quakeparms_t* parms)
 		M_Init();
 #endif
 		PR_Init();
-		SV_Init();
+		SVQH_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 		common->Printf("%4.1f megabyte heap\n",parms->memsize / (1024 * 1024.0));

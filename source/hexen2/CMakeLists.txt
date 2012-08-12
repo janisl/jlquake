@@ -16,7 +16,6 @@ add_executable(jlhexen2
 	net_main.cpp
 	r_part.cpp
 	sbar.cpp
-	sv_main.cpp
 	sv_user.cpp
 	zone.cpp
 	view.cpp
@@ -34,7 +33,6 @@ add_executable(jlhexen2ded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	sv_main.cpp
 	sv_user.cpp
 	zone.cpp
 	sys_linux.cpp

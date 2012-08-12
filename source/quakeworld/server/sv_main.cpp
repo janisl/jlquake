@@ -35,13 +35,6 @@ double realtime;					// without any filtering or bounding
 
 int host_hunklevel;
 
-//
-// game rules mirrored in svs.qh_info
-//
-Cvar* samelevel;
-Cvar* spawn;
-Cvar* watervis;
-
 fileHandle_t sv_logfile;
 
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
@@ -284,82 +277,6 @@ void SV_Frame(float time)
 	}
 }
 
-/*
-===============
-SV_InitLocal
-===============
-*/
-void SV_InitLocal(void)
-{
-	int i;
-
-	SV_InitOperatorCommands();
-
-	VQH_InitRollCvars();
-
-	svqhw_spectalk = Cvar_Get("sv_spectalk", "1", 0);
-	svqw_mapcheck = Cvar_Get("sv_mapcheck", "1", 0);
-
-	svqhw_rcon_password = Cvar_Get("rcon_password", "", 0);	// password for remote server commands
-	svqhw_password = Cvar_Get("password", "", 0);	// password for entering the game
-	svqhw_spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
-
-	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
-	qh_timelimit = Cvar_Get("timelimit","0", CVAR_SERVERINFO);
-	svqh_teamplay = Cvar_Get("teamplay","0", CVAR_SERVERINFO);
-	samelevel = Cvar_Get("samelevel","0", CVAR_SERVERINFO);
-	sv_maxclients = Cvar_Get("maxclients","8", CVAR_SERVERINFO);
-	svqhw_maxspectators = Cvar_Get("maxspectators","8", CVAR_SERVERINFO);
-	svqh_deathmatch = Cvar_Get("deathmatch","1", CVAR_SERVERINFO);			// 0, 1, or 2
-	spawn = Cvar_Get("spawn","0", CVAR_SERVERINFO);
-	watervis = Cvar_Get("watervis", "0", CVAR_SERVERINFO);
-	sv_hostname = Cvar_Get("hostname","unnamed", CVAR_SERVERINFO);
-
-	svqhw_timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
-	svqhw_zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
-	// after disconnect
-
-	SVQH_RegisterPhysicsCvars();
-
-	svqh_aim = Cvar_Get("sv_aim", "2", 0);
-
-	qhw_filterban = Cvar_Get("filterban", "1", 0);
-
-	qhw_allow_download = Cvar_Get("allow_download", "1", 0);
-	qhw_allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
-	qhw_allow_download_models = Cvar_Get("allow_download_models", "1", 0);
-	qhw_allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
-	qhw_allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
-
-	svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
-
-	sv_phs = Cvar_Get("sv_phs", "1", 0);
-
-	qh_pausable    = Cvar_Get("pausable", "1", 0);
-
-	Cmd_AddCommand("addip", SVQHW_AddIP_f);
-	Cmd_AddCommand("removeip", SVQHW_RemoveIP_f);
-	Cmd_AddCommand("listip", SVQHW_ListIP_f);
-	Cmd_AddCommand("writeip", SVQHW_WriteIP_f);
-
-	for (i = 0; i < MAX_MODELS_Q1; i++)
-		sprintf(svqh_localmodels[i], "*%i", i);
-
-	Info_SetValueForKey(svs.qh_info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
-
-	svs.clients = new client_t[MAX_CLIENTS_QHW];
-	Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QHW);
-
-	// init fraglog stuff
-	svs.qh_logsequence = 1;
-	svs.qh_logtime = realtime;
-	svs.qh_log[0].InitOOB(svs.qh_log_buf[0], sizeof(svs.qh_log_buf[0]));
-	svs.qh_log[0].allowoverflow = true;
-	svs.qh_log[1].InitOOB(svs.qh_log_buf[1], sizeof(svs.qh_log_buf[1]));
-	svs.qh_log[1].allowoverflow = true;
-}
-
-
 //============================================================================
 
 /*
@@ -433,7 +350,9 @@ void SV_Init(quakeparms_t* parms)
 
 		SV_InitNet();
 
-		SV_InitLocal();
+		SV_InitOperatorCommands();
+
+		SVQH_Init();
 		Sys_Init();
 		PMQH_Init();
 

@@ -566,7 +566,6 @@ Host_InitCommands
 */
 void Host_InitCommands(void)
 {
-	SVQH_InitOperatorCommands();
 	Cmd_AddCommand("quit", Host_Quit_f);
 #ifndef DEDICATED
 	Cmd_AddCommand("god", Host_God_f);

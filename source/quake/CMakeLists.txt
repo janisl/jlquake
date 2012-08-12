@@ -17,7 +17,6 @@ add_executable(jlquake
 	r_part.cpp
 	sbar.cpp
 	snd_dma.cpp
-	sv_main.cpp
 	sv_user.cpp
 	sys_linux.cpp
 	view.cpp
@@ -34,7 +33,6 @@ add_executable(jlquakeded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	sv_main.cpp
 	sv_user.cpp
 	sys_linux.cpp
 	zone.cpp

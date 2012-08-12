@@ -21,7 +21,7 @@
 
 unsigned clients_multicast;
 
-Cvar* sv_phs;
+Cvar* svqhw_phs;
 
 int svqw_nailmodel;
 int svqw_supernailmodel;
@@ -257,7 +257,7 @@ void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int vol
 	{
 		bool use_phs;
 		bool reliable = false;
-		if ((channel & QHPHS_OVERRIDE_R) || !sv_phs->value)	// no PHS flag
+		if ((channel & QHPHS_OVERRIDE_R) || !svqhw_phs->value)	// no PHS flag
 		{
 			if (channel & QHPHS_OVERRIDE_R)
 			{

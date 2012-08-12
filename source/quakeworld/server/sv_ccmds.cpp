@@ -115,7 +115,6 @@ SV_InitOperatorCommands
 */
 void SV_InitOperatorCommands(void)
 {
-	SVQHW_InitOperatorCommands();
 	Cmd_AddCommand("logfile", SV_Logfile_f);
 
 	Cmd_AddCommand("quit", SV_Quit_f);

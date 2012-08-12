@@ -76,9 +76,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sbar.h"
 #include "render.h"
 #include "client.h"
-#endif
-#include "server.h"
-#ifndef DEDICATED
 #include "keys.h"
 #endif
 #include "console.h"
@@ -133,3 +130,5 @@ extern qboolean msg_suppress_1;			// suppresses resolution and cache size consol
 extern qboolean isDedicated;
 
 extern int minimum_memory;
+
+extern double host_time;

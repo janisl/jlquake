@@ -188,13 +188,6 @@ extern Cvar* hw_fixedLevel;
 extern Cvar* hw_autoItems;
 extern Cvar* hw_easyFourth;
 extern Cvar* hw_patternRunner;
-extern Cvar* svqhw_rcon_password;
-extern Cvar* svqhw_password;
-extern Cvar* svqhw_spectator_password;
-extern Cvar* svqhw_maxspectators;
-extern Cvar* qhw_filterban;
-extern Cvar* svqhw_timeout;
-extern Cvar* svqhw_zombietime;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
@@ -211,15 +204,12 @@ void SVQHW_ExtractFromUserinfo(client_t* cl);
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
-void SVQHW_AddIP_f();
-void SVQHW_RemoveIP_f();
-void SVQHW_ListIP_f();
-void SVQHW_WriteIP_f();
 void SVQHW_Master_Shutdown();
 void SVQH_Shutdown(bool crash);
 void SVQHW_FinalMessage(const char* message);
 void SVQH_ServerFrame(float frametime);
 void SVQHW_ServerFrame();
+void SVQH_Init();
 
 //
 //	Move
@@ -271,7 +261,7 @@ void SVQH_ClientThink(client_t* client, float frametime);
 //	Send
 //
 extern unsigned clients_multicast;
-extern Cvar* sv_phs;
+extern Cvar* svqhw_phs;
 extern int svqw_nailmodel;
 extern int svqw_supernailmodel;
 extern int svqw_playermodel;

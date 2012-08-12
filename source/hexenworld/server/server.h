@@ -17,9 +17,6 @@
 
 //============================================================================
 
-extern Cvar* spawn;
-extern Cvar* noexit;
-
 extern int host_hunklevel;
 extern fileHandle_t sv_logfile;
 

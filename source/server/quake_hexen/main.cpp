@@ -19,6 +19,7 @@
 #include "local.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
+#include "../hexen2/local.h"
 
 #define HEARTBEAT_SECONDS   300
 
@@ -39,9 +40,9 @@ Cvar* svhw_allowtaunts;
 Cvar* svqhw_spectalk;
 Cvar* qh_pausable;
 Cvar* svhw_namedistance;
-Cvar* svqhw_maxspectators;
-Cvar* svqhw_timeout;
-Cvar* svqhw_zombietime;
+static Cvar* svqhw_maxspectators;
+static Cvar* svqhw_timeout;
+static Cvar* svqhw_zombietime;
 
 Cvar* svh2_update_player;
 Cvar* svh2_update_monsters;
@@ -67,9 +68,9 @@ Cvar* hw_autoItems;
 Cvar* hw_easyFourth;
 Cvar* hw_patternRunner;
 
-Cvar* svqhw_rcon_password;
-Cvar* svqhw_password;
-Cvar* svqhw_spectator_password;
+static Cvar* svqhw_rcon_password;
+static Cvar* svqhw_password;
+static Cvar* svqhw_spectator_password;
 
 int svqh_current_skill;
 int svh2_kingofhill;
@@ -1095,7 +1096,7 @@ struct ipfilter_t
 static ipfilter_t qhw_ipfilters[MAX_IPFILTERS];
 static int qhw_numipfilters;
 
-Cvar* qhw_filterban;
+static Cvar* qhw_filterban;
 
 static bool StringToFilter(char* s, ipfilter_t* f)
 {
@@ -1141,7 +1142,7 @@ static bool StringToFilter(char* s, ipfilter_t* f)
 	return true;
 }
 
-void SVQHW_AddIP_f()
+static void SVQHW_AddIP_f()
 {
 	int i;
 	for (i = 0; i < qhw_numipfilters; i++)
@@ -1168,7 +1169,7 @@ void SVQHW_AddIP_f()
 	}
 }
 
-void SVQHW_RemoveIP_f()
+static void SVQHW_RemoveIP_f()
 {
 	ipfilter_t f;
 	if (!StringToFilter(Cmd_Argv(1), &f))
@@ -1192,7 +1193,7 @@ void SVQHW_RemoveIP_f()
 	common->Printf("Didn't find %s.\n", Cmd_Argv(1));
 }
 
-void SVQHW_ListIP_f()
+static void SVQHW_ListIP_f()
 {
 	common->Printf("Filter list:\n");
 	for (int i = 0; i < qhw_numipfilters; i++)
@@ -1203,7 +1204,7 @@ void SVQHW_ListIP_f()
 	}
 }
 
-void SVQHW_WriteIP_f()
+static void SVQHW_WriteIP_f()
 {
 	char name[MAX_OSPATH];
 	sprintf(name, "listip.cfg");
@@ -1642,4 +1643,175 @@ void SVQHW_ServerFrame()
 
 	// send a heartbeat to the master if needed
 	SVQHW_Master_Heartbeat();
+}
+
+static void SVH2_Edicts(const char* Name)
+{
+	fileHandle_t FH = FS_FOpenFileWrite(Name);
+	if (!FH)
+	{
+		common->Printf("Could not open %s\n",Name);
+		return;
+	}
+
+	FS_Printf(FH, "Number of Edicts: %d\n", sv.qh_num_edicts);
+	FS_Printf(FH, "Server Time: %f\n", sv.qh_time);
+	FS_Printf(FH, "\n");
+	FS_Printf(FH, "Num.     Time Class Name                     Model                          Think                                    Touch                                    Use\n");
+	FS_Printf(FH, "---- -------- ------------------------------ ------------------------------ ---------------------------------------- ---------------------------------------- ----------------------------------------\n");
+
+	for (int i = 1; i < sv.qh_num_edicts; i++)
+	{
+		qhedict_t* e = QH_EDICT_NUM(i);
+		FS_Printf(FH, "%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
+			i,e->GetNextThink(), PR_GetString(e->GetClassName()), PR_GetString(e->GetModel()),
+			PR_GetString(pr_functions[e->GetThink()].s_name), PR_GetString(pr_functions[e->GetTouch()].s_name),
+			PR_GetString(pr_functions[e->GetUse()].s_name));
+	}
+	FS_FCloseFile(FH);
+}
+
+static void SVH2_Edicts_f()
+{
+	if (sv.state == SS_DEAD)
+	{
+		common->Printf("This command can only be executed on a server running a map\n");
+		return;
+	}
+
+	const char* Name;
+	if (Cmd_Argc() < 2)
+	{
+		Name = "edicts.txt";
+	}
+	else
+	{
+		Name = Cmd_Argv(1);
+	}
+
+	SVH2_Edicts(Name);
+}
+
+void SVQH_Init()
+{
+	SVQH_RegisterPhysicsCvars();
+
+	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
+	qh_timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	qh_fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		svqh_deathmatch = Cvar_Get("deathmatch", "0", 0);	// 0, 1, or 2
+		svqh_coop = Cvar_Get("coop", "0", 0);			// 0 or 1
+		qh_skill = Cvar_Get("skill", "1", 0);			// 0 - 3
+		qh_pausable = Cvar_Get("pausable", "1", 0);
+		svqh_idealpitchscale = Cvar_Get("sv_idealpitchscale", "0.8", 0);
+		svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
+		Cvar_Get("samelevel", "0", 0);
+		Cvar_Get("noexit", "0", CVAR_SERVERINFO);
+		Cvar_Get("temp1", "0", 0);
+		if (GGameType & GAME_Hexen2)
+		{
+			svh2_update_player = Cvar_Get("sv_update_player","1", CVAR_ARCHIVE);
+			svh2_update_monsters = Cvar_Get("sv_update_monsters","1", CVAR_ARCHIVE);
+			svh2_update_missiles = Cvar_Get("sv_update_missiles","1", CVAR_ARCHIVE);
+			svh2_update_misc = Cvar_Get("sv_update_misc","1", CVAR_ARCHIVE);
+			h2_randomclass = Cvar_Get("randomclass", "0", 0);			// 0, 1, or 2
+			sys_quake2 = Cvar_Get("sys_quake2", "1", CVAR_ARCHIVE);
+			sv_ce_scale = Cvar_Get("sv_ce_scale","0", CVAR_ARCHIVE);
+			sv_ce_max_size = Cvar_Get("sv_ce_max_size","0", CVAR_ARCHIVE);
+			Cvar_Get("sv_idealrollscale","0.8", 0);
+			Cvar_Get("sv_walkpitch", "0", 0);
+			Cvar_Get("sv_sound_distance","800", CVAR_ARCHIVE);
+
+			Cmd_AddCommand("sv_edicts", SVH2_Edicts_f);
+
+			svh2_kingofhill = 0;	//Initialize King of Hill to world
+		}
+
+		SVQH_InitOperatorCommands();
+	}
+	else
+	{
+		svqh_deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
+		svqh_highchars = Cvar_Get("sv_highchars", "1", 0);
+		qhw_allow_download = Cvar_Get("allow_download", "1", 0);
+		qhw_allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
+		qhw_allow_download_models = Cvar_Get("allow_download_models", "1", 0);
+		qhw_allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
+		qhw_allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
+		svqhw_spectalk = Cvar_Get("sv_spectalk", "1", 0);
+		svqhw_rcon_password = Cvar_Get("rcon_password", "", 0);	// password for remote server commands
+		svqhw_password = Cvar_Get("password", "", 0);	// password for entering the game
+		svqhw_spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
+		svqhw_maxspectators = Cvar_Get("maxspectators", "8", CVAR_SERVERINFO);
+		qhw_filterban = Cvar_Get("filterban", "1", 0);
+		svqhw_timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
+		svqhw_zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages after disconnect
+		svqhw_phs = Cvar_Get("sv_phs", "1", 0);
+		sv_maxclients = Cvar_Get("maxclients", "8", CVAR_SERVERINFO);
+		sv_hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
+		Cvar_Get("samelevel", "0", CVAR_SERVERINFO);
+		Cvar_Get("spawn", "0", CVAR_SERVERINFO);
+		if (GGameType & GAME_QuakeWorld)
+		{
+			svqw_mapcheck = Cvar_Get("sv_mapcheck", "1", 0);
+			qh_pausable = Cvar_Get("pausable", "1", 0);
+			svqh_aim = Cvar_Get("sv_aim", "2", 0);
+			Cvar_Get("watervis", "0", CVAR_SERVERINFO);
+		}
+		if (GGameType & GAME_HexenWorld)
+		{
+			svqh_coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2
+			hw_damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
+			hw_shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);
+			hw_spartanPrint = Cvar_Get("spartanPrint", "1.0", CVAR_SERVERINFO);
+			hw_meleeDamScale = Cvar_Get("meleeDamScale", "0.66666", CVAR_SERVERINFO);
+			hw_manaScale = Cvar_Get("manascale", "1.0", CVAR_SERVERINFO);
+			hw_tomeMode = Cvar_Get("tomemode", "0", CVAR_SERVERINFO);
+			hw_tomeRespawn = Cvar_Get("tomerespawn", "0", CVAR_SERVERINFO);
+			hw_w2Respawn = Cvar_Get("w2respawn", "0", CVAR_SERVERINFO);
+			hw_altRespawn = Cvar_Get("altrespawn", "0", CVAR_SERVERINFO);
+			hw_fixedLevel = Cvar_Get("fixedlevel", "0", CVAR_SERVERINFO);
+			hw_autoItems = Cvar_Get("autoitems", "0", CVAR_SERVERINFO);
+			hw_dmMode = Cvar_Get("dmmode", "0", CVAR_SERVERINFO);
+			hw_easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
+			hw_patternRunner = Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
+			svhw_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
+			qh_skill = Cvar_Get("skill", "1", 0);						// 0 - 3
+			svhw_namedistance = Cvar_Get("sv_namedistance", "600", 0);
+			h2_randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
+			svqh_aim = Cvar_Get("sv_aim", "0.93", 0);
+			sv_ce_scale = Cvar_Get("sv_ce_scale", "1", CVAR_ARCHIVE);
+			sv_ce_max_size = Cvar_Get("sv_ce_max_size", "0", CVAR_ARCHIVE);
+			Cvar_Get("noexit", "0", CVAR_SERVERINFO);
+		}
+
+		VQH_InitRollCvars();
+
+		SVQHW_InitOperatorCommands();
+
+		Cmd_AddCommand("addip", SVQHW_AddIP_f);
+		Cmd_AddCommand("removeip", SVQHW_RemoveIP_f);
+		Cmd_AddCommand("listip", SVQHW_ListIP_f);
+		Cmd_AddCommand("writeip", SVQHW_WriteIP_f);
+
+		Info_SetValueForKey(svs.qh_info, "*version", JLQUAKE_VERSION_STRING, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+
+		svs.clients = new client_t[MAX_CLIENTS_QHW];
+		Com_Memset(svs.clients, 0, sizeof(client_t) * MAX_CLIENTS_QHW);
+
+		// init fraglog stuff
+		svs.qh_logsequence = 1;
+		svs.qh_logtime = svs.realtime * 0.001;
+		svs.qh_log[0].InitOOB(svs.qh_log_buf[0], sizeof(svs.qh_log_buf[0]));
+		svs.qh_log[0].allowoverflow = true;
+		svs.qh_log[1].InitOOB(svs.qh_log_buf[1], sizeof(svs.qh_log_buf[1]));
+		svs.qh_log[1].allowoverflow = true;
+	}
+
+	for (int i = 0; i < BIGGEST_MAX_MODELS; i++)
+	{
+		sprintf(svqh_localmodels[i], "*%i", i);
+	}
 }
