@@ -984,6 +984,7 @@ static void SVCQHW_RemoteCommand(const netadr_t& net_from, QMsg& message)
 			String::Cat(remaining, sizeof(remaining), " ");
 		}
 
+		rcon_from = net_from;
 		Cmd_ExecuteString(remaining);
 	}
 

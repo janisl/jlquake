@@ -25,10 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 
-#ifdef SERVERONLY
-void SV_SendServerInfoChange(char* key, char* value);
-#endif
-
 void Cvar_Changed(Cvar* var)
 {
 #ifdef SERVERONLY
@@ -36,8 +32,7 @@ void Cvar_Changed(Cvar* var)
 	{
 		Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
 			64, 64, !svqh_highchars || !svqh_highchars->value, false);
-		SV_SendServerInfoChange(var->name, var->string);
-//		SVQH_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.qh_info);
+		SVQW_SendServerInfoChange(var->name, var->string);
 	}
 #else
 	if (var->flags & CVAR_USERINFO && var->name[0] != '*')

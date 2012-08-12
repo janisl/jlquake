@@ -31,6 +31,10 @@ char qhw_fp_msg[255] = { 0 };
 
 static double h2_old_time;
 
+static bool svqhw_allow_cheats;
+
+netadr_t rcon_from;
+
 static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode);
 
 //	handle a
@@ -1505,6 +1509,511 @@ static void SVQHW_Kick_f()
 	common->Printf("Couldn't find user number %i\n", uid);
 }
 
+static void SVHW_Smite_f()
+{
+	int uid = String::Atoi(Cmd_Argv(1));
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (cl->state != CS_ACTIVE)
+		{
+			continue;
+		}
+		if (cl->qh_userid == uid)
+		{
+			if (cl->h2_old_v.health <= 0)
+			{
+				common->Printf("%s is already dead!\n", cl->name);
+				return;
+			}
+			SVQH_BroadcastPrintf(PRINT_HIGH, "%s was Smitten by GOD!\n", cl->name);
+
+			//save this state
+			int old_self = *pr_globalVars.self;
+
+			//call the hc SmitePlayer function
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(cl->qh_edict);
+			PR_ExecuteProgram(*pr_globalVars.SmitePlayer);
+
+			//restore current state
+			*pr_globalVars.self = old_self;
+			return;
+		}
+	}
+	common->Printf("Couldn't find user number %i\n", uid);
+}
+
+//	Make a master server current
+static void SVQHW_SetMaster_f()
+{
+	Com_Memset(&master_adr, 0, sizeof(master_adr));
+
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		if (!String::Cmp(Cmd_Argv(i), "none") || !SOCK_StringToAdr(Cmd_Argv(i), &master_adr[i - 1], GGameType & GAME_HexenWorld ? HWPORT_MASTER : QWPORT_MASTER))
+		{
+			common->Printf("Setting nomaster mode.\n");
+			return;
+		}
+
+		common->Printf("Master server at %s\n", SOCK_AdrToString(master_adr[i - 1]));
+
+		common->Printf("Sending a ping.\n");
+
+		char data[2];
+		data[0] = A2A_PING;
+		data[1] = 0;
+		NET_SendPacket(NS_SERVER, 2, data, master_adr[i - 1]);
+	}
+
+	svs.qh_last_heartbeat = -99999;
+}
+
+static void SVQHW_Heartbeat_f()
+{
+	svs.qh_last_heartbeat = -9999;
+}
+
+static void SVQHW_Fraglogfile_f()
+{
+	if (svqhw_fraglogfile)
+	{
+		common->Printf("Frag file logging off.\n");
+		FS_FCloseFile(svqhw_fraglogfile);
+		svqhw_fraglogfile = 0;
+		return;
+	}
+
+	// find an unused name
+	int i;
+	char name[MAX_OSPATH];
+	for (i = 0; i < 1000; i++)
+	{
+		sprintf(name, "frag_%i.log", i);
+		if (!FS_FileExists(name))
+		{
+			// can't read it, so create this one
+			svqhw_fraglogfile = FS_FOpenFileWrite(name);
+			if (!svqhw_fraglogfile)
+			{
+				i = 1000;	// give error
+			}
+			break;
+		}
+	}
+	if (i == 1000)
+	{
+		common->Printf("Can't open any logfiles.\n");
+		svqhw_fraglogfile = 0;
+		return;
+	}
+
+	common->Printf("Logging frags to %s.\n", name);
+}
+
+static client_t* SVQHW_SetPlayer()
+{
+	int idnum = String::Atoi(Cmd_Argv(1));
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++,cl++)
+	{
+		if (!cl->state)
+		{
+			continue;
+		}
+		if (cl->qh_userid == idnum)
+		{
+			return cl;
+		}
+	}
+	common->Printf("Userid %i is not on the server\n", idnum);
+	return NULL;
+}
+
+//	Sets client to godmode
+static void SVQHW_God_f()
+{
+	if (!svqhw_allow_cheats)
+	{
+		common->Printf("You must run the server with -cheats to enable this command.\n");
+		return;
+	}
+
+	client_t* client = SVQHW_SetPlayer();
+	if (!client)
+	{
+		return;
+	}
+
+	client->qh_edict->SetFlags((int)client->qh_edict->GetFlags() ^ QHFL_GODMODE);
+	if (!((int)client->qh_edict->GetFlags() & QHFL_GODMODE))
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "godmode OFF\n");
+	}
+	else
+	{
+		SVQH_ClientPrintf(client, PRINT_HIGH, "godmode ON\n");
+	}
+}
+
+static void SVQHW_Noclip_f()
+{
+	if (!svqhw_allow_cheats)
+	{
+		common->Printf("You must run the server with -cheats to enable this command.\n");
+		return;
+	}
+
+	client_t* client = SVQHW_SetPlayer();
+	if (!client)
+	{
+		return;
+	}
+
+	if (client->qh_edict->GetMoveType() != QHMOVETYPE_NOCLIP)
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_NOCLIP);
+		SVQH_ClientPrintf(client, PRINT_HIGH, "noclip ON\n");
+	}
+	else
+	{
+		client->qh_edict->SetMoveType(QHMOVETYPE_WALK);
+		SVQH_ClientPrintf(client, PRINT_HIGH, "noclip OFF\n");
+	}
+}
+
+static void SVQHW_Give_f()
+{
+	if (!svqhw_allow_cheats)
+	{
+		common->Printf("You must run the server with -cheats to enable this command.\n");
+		return;
+	}
+
+	client_t* client = SVQHW_SetPlayer();
+	if (!client)
+	{
+		return;
+	}
+
+	char* t = Cmd_Argv(2);
+	int v = String::Atoi(Cmd_Argv(3));
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		switch (t[0])
+		{
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			client->qh_edict->SetItems((int)client->qh_edict->GetItems() | H2IT_WEAPON2 << (t[0] - '2'));
+			break;
+		case 'h':
+			client->qh_edict->SetHealth(v);
+			break;
+		}
+	}
+	else
+	{
+		switch (t[0])
+		{
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			client->qh_edict->SetItems((int)client->qh_edict->GetItems() | Q1IT_SHOTGUN << (t[0] - '2'));
+			break;
+
+		case 's':
+			client->qh_edict->SetAmmoShells(v);
+			break;
+		case 'n':
+			client->qh_edict->SetAmmoNails(v);
+			break;
+		case 'r':
+			client->qh_edict->SetAmmoRockets(v);
+			break;
+		case 'h':
+			client->qh_edict->SetHealth(v);
+			break;
+		case 'c':
+			client->qh_edict->SetAmmoCells(v);
+			break;
+		}
+	}
+}
+
+void SVQW_SendServerInfoChange(const char* key, const char* value)
+{
+	if (!sv.state)
+	{
+		return;
+	}
+
+	sv.qh_reliable_datagram.WriteByte(qwsvc_serverinfo);
+	sv.qh_reliable_datagram.WriteString2(key);
+	sv.qh_reliable_datagram.WriteString2(value);
+}
+
+//  Examine or change the serverinfo string
+static void SVQHW_Serverinfo_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("Server info settings:\n");
+		Info_Print(svs.qh_info);
+		return;
+	}
+
+	if (Cmd_Argc() != 3)
+	{
+		common->Printf("usage: serverinfo [ <key> <value> ]\n");
+		return;
+	}
+
+	if (Cmd_Argv(1)[0] == '*')
+	{
+		common->Printf("Star variables cannot be changed.\n");
+		return;
+	}
+	Info_SetValueForKey(svs.qh_info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value, false);
+
+	// if this is a cvar, change it too
+	Cvar_UpdateIfExists(Cmd_Argv(1), Cmd_Argv(2));
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
+	}
+	else
+	{
+		SVQW_SendServerInfoChange(Cmd_Argv(1), Cmd_Argv(2));
+	}
+}
+
+static void SVQHW_Localinfo_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("Local info settings:\n");
+		Info_Print(qhw_localinfo);
+		return;
+	}
+
+	if (Cmd_Argc() != 3)
+	{
+		common->Printf("usage: localinfo [ <key> <value> ]\n");
+		return;
+	}
+
+	if (Cmd_Argv(1)[0] == '*')
+	{
+		common->Printf("Star variables cannot be changed.\n");
+		return;
+	}
+	Info_SetValueForKey(qhw_localinfo, Cmd_Argv(1), Cmd_Argv(2), QHMAX_LOCALINFO_STRING, 64, 64, !svqh_highchars->value, false);
+}
+
+//	Examine a users info strings
+static void SVQHW_User_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage: info <userid>\n");
+		return;
+	}
+
+	client_t* client = SVQHW_SetPlayer();
+	if (!client)
+	{
+		return;
+	}
+
+	Info_Print(client->userinfo);
+}
+
+static void SVQHW_Floodprot_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		if (qhw_fp_messages)
+		{
+			common->Printf("Current floodprot settings: \nAfter %d msgs per %d seconds, silence for %d seconds\n",
+				qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead);
+			return;
+		}
+		else
+		{
+			common->Printf("No floodprots enabled.\n");
+		}
+	}
+
+	if (Cmd_Argc() != 4)
+	{
+		common->Printf("Usage: floodprot <# of messages> <per # of seconds> <seconds to silence>\n");
+		common->Printf("Use floodprotmsg to set a custom message to say to the flooder.\n");
+		return;
+	}
+
+	int arg1 = String::Atoi(Cmd_Argv(1));
+	int arg2 = String::Atoi(Cmd_Argv(2));
+	int arg3 = String::Atoi(Cmd_Argv(3));
+
+	if (arg1 <= 0 || arg2 <= 0 || arg3 <= 0)
+	{
+		common->Printf("All values must be positive numbers\n");
+		return;
+	}
+
+	if (arg1 > 10)
+	{
+		common->Printf("Can only track up to 10 messages.\n");
+		return;
+	}
+
+	qhw_fp_messages = arg1;
+	qhw_fp_persecond = arg2;
+	qhw_fp_secondsdead = arg3;
+}
+
+static void SVQHW_Floodprotmsg_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("Current msg: %s\n", qhw_fp_msg);
+		return;
+	}
+	else if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage: floodprotmsg \"<message>\"\n");
+		return;
+	}
+	sprintf(qhw_fp_msg, "%s", Cmd_Argv(1));
+}
+
+//	Sets the fake *gamedir to a different directory.
+void SVQHW_FakeGamedir_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("Current *gamedir: %s\n", Info_ValueForKey(svs.qh_info, "*gamedir"));
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage: sv_gamedir <newgamedir>\n");
+		return;
+	}
+
+	char* dir = Cmd_Argv(1);
+
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":"))
+	{
+		common->Printf("*Gamedir should be a single filename, not a path\n");
+		return;
+	}
+
+	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+}
+
+static void SVQW_Snap(int uid)
+{
+	int i;
+	client_t* cl = svs.clients;
+	for (i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (!cl->state)
+		{
+			continue;
+		}
+		if (cl->qh_userid == uid)
+		{
+			break;
+		}
+	}
+	if (i >= MAX_CLIENTS_QHW)
+	{
+		common->Printf("userid not found\n");
+		return;
+	}
+
+	char pcxname[80];
+	sprintf(pcxname, "%d-00.pcx", uid);
+
+	for (i = 0; i <= 99; i++)
+	{
+		pcxname[String::Length(pcxname) - 6] = i / 10 + '0';
+		pcxname[String::Length(pcxname) - 5] = i % 10 + '0';
+		char checkname[MAX_OSPATH];
+		sprintf(checkname, "snap/%s", pcxname);
+		if (!FS_FileExists(checkname))
+		{
+			break;	// file doesn't exist
+		}
+	}
+	if (i == 100)
+	{
+		common->Printf("Snap: Couldn't create a file, clean some out.\n");
+		return;
+	}
+	char checkname[MAX_OSPATH];
+	sprintf(checkname, "snap/%s", pcxname);
+	String::Cpy(cl->qw_uploadfn, checkname);
+
+	Com_Memcpy(&cl->qw_snap_from, &rcon_from, sizeof(rcon_from));
+	if (rd_buffer)
+	{
+		cl->qw_remote_snap = true;
+	}
+	else
+	{
+		cl->qw_remote_snap = false;
+	}
+
+	SVQH_SendClientCommand(cl, "cmd snap");
+	common->Printf("Requesting snap from user %d...\n", uid);
+}
+
+static void SVQW_Snap_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage:  snap <userid>\n");
+		return;
+	}
+
+	int uid = String::Atoi(Cmd_Argv(1));
+
+	SVQW_Snap(uid);
+}
+
+static void SVQW_SnapAll_f()
+{
+	client_t* cl = svs.clients;
+	for (int i = 0; i < MAX_CLIENTS_QHW; i++, cl++)
+	{
+		if (cl->state < CS_CONNECTED || cl->qh_spectator)
+		{
+			continue;
+		}
+		SVQW_Snap(cl->qh_userid);
+	}
+}
+
 void SVQH_InitOperatorCommands()
 {
 	Cmd_AddCommand("map", SVQH_Map_f);
@@ -1532,8 +2041,35 @@ void SVQH_InitOperatorCommands()
 
 void SVQHW_InitOperatorCommands()
 {
+	if (COM_CheckParm("-cheats"))
+	{
+		svqhw_allow_cheats = true;
+		Info_SetValueForKey(svs.qh_info, "*cheats", "ON", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+	}
+
 	Cmd_AddCommand("map", SVQHW_Map_f);
 	Cmd_AddCommand("status", SVQHW_Status_f);
 	Cmd_AddCommand("say", SVQHW_ConSay_f);
 	Cmd_AddCommand("kick", SVQHW_Kick_f);
+	Cmd_AddCommand("setmaster", SVQHW_SetMaster_f);
+	Cmd_AddCommand("heartbeat", SVQHW_Heartbeat_f);
+	Cmd_AddCommand("fraglogfile", SVQHW_Fraglogfile_f);
+	Cmd_AddCommand("god", SVQHW_God_f);
+	Cmd_AddCommand("noclip", SVQHW_Noclip_f);
+	Cmd_AddCommand("give", SVQHW_Give_f);
+	Cmd_AddCommand("serverinfo", SVQHW_Serverinfo_f);
+	Cmd_AddCommand("localinfo", SVQHW_Localinfo_f);
+	Cmd_AddCommand("user", SVQHW_User_f);
+	Cmd_AddCommand("floodprot", SVQHW_Floodprot_f);
+	Cmd_AddCommand("floodprotmsg", SVQHW_Floodprotmsg_f);
+	Cmd_AddCommand("sv_gamedir", SVQHW_FakeGamedir_f);
+	if (GGameType & GAME_QuakeWorld)
+	{
+		Cmd_AddCommand("snap", SVQW_Snap_f);
+		Cmd_AddCommand("snapall", SVQW_SnapAll_f);
+	}
+	else
+	{
+		Cmd_AddCommand("smite", SVHW_Smite_f);
+	}
 }

@@ -402,7 +402,7 @@ void SV_InitNet(void)
 {
 	int p;
 
-	svqhw_net_port = PORT_SERVER;
+	svqhw_net_port = QWPORT_SERVER;
 	p = COM_CheckParm("-port");
 	if (p && p < COM_Argc())
 	{

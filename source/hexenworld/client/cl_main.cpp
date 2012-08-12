@@ -178,7 +178,7 @@ void CL_SendConnectPacket(void)
 
 	t1 = Sys_DoubleTime();
 
-	if (!SOCK_StringToAdr(cls.servername, &adr, PORT_SERVER))
+	if (!SOCK_StringToAdr(cls.servername, &adr, HWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
 		connect_time = -1;
@@ -296,7 +296,7 @@ void CL_Rcon_f(void)
 
 			return;
 		}
-		SOCK_StringToAdr(rcon_address->string, &to, PORT_SERVER);
+		SOCK_StringToAdr(rcon_address->string, &to, HWPORT_SERVER);
 	}
 
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
@@ -1400,7 +1400,7 @@ void Host_Init(quakeparms_t* parms)
 
 		COM_Init(parms->basedir);
 
-		NET_Init(PORT_CLIENT);
+		NET_Init(HWPORT_CLIENT);
 		Netchan_Init(0);
 
 		Key_Init();

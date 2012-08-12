@@ -222,7 +222,7 @@ void CL_SendConnectPacket(void)
 
 	t1 = Sys_DoubleTime();
 
-	if (!SOCK_StringToAdr(cls.servername, &adr, 27500))
+	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
 		connect_time = -1;
@@ -271,7 +271,7 @@ void CL_CheckForResend(void)
 	}
 
 	t1 = Sys_DoubleTime();
-	if (!SOCK_StringToAdr(cls.servername, &adr, 27500))
+	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
 		connect_time = -1;
@@ -370,7 +370,7 @@ void CL_Rcon_f(void)
 
 			return;
 		}
-		SOCK_StringToAdr(rcon_address->string, &to, 27500);
+		SOCK_StringToAdr(rcon_address->string, &to, QWPORT_SERVER);
 	}
 
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
@@ -1521,7 +1521,7 @@ void Host_Init(quakeparms_t* parms)
 
 		Host_FixupModelNames();
 
-		NET_Init(PORT_CLIENT);
+		NET_Init(QWPORT_CLIENT);
 		// pick a port value that should be nice and random
 #ifdef _WIN32
 		Netchan_Init((int)(timeGetTime() * 1000) * time(NULL));

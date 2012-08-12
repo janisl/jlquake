@@ -420,3 +420,7 @@ struct qwpacket_entities_t
 // these determine which intermission screen plays
 #define QHGAME_COOP           0
 #define QHGAME_DEATHMATCH     1
+
+#define QWPORT_CLIENT 27001
+#define QWPORT_MASTER 27000
+#define QWPORT_SERVER 27500

@@ -942,3 +942,7 @@ struct h2client_entvars_t
 // item flags
 //
 #define H2IT_WEAPON2            1
+
+#define HWPORT_CLIENT 26901
+#define HWPORT_MASTER 26900
+#define HWPORT_SERVER 26950

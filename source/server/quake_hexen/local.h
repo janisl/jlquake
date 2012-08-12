@@ -31,11 +31,13 @@
 //
 extern int qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead;
 extern char qhw_fp_msg[];
+extern netadr_t rcon_from;
 
 void SVH2_SaveGamestate(bool clientsOnly);
 void SVQH_InitOperatorCommands();
 void SVQHW_InitOperatorCommands();
 void SVH2_RemoveGIPFiles(const char* path);
+void SVQW_SendServerInfoChange(const char* key, const char* value);
 
 //
 //	Client
