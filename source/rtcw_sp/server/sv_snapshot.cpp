@@ -46,7 +46,7 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
-	SV_Netchan_Transmit(client, msg);	//msg->cursize, msg->data );
+	SVT3_Netchan_Transmit(client, msg);	//msg->cursize, msg->data );
 
 	// set nextSnapshotTime based on rate and requested number of updates
 
@@ -173,7 +173,7 @@ void SV_SendClientMessages(void)
 		{
 			c->q3_nextSnapshotTime = svs.q3_time +
 								  SVT3_RateMsec(c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart);
-			SV_Netchan_TransmitNextFragment(&c->netchan);
+			SVT3_Netchan_TransmitNextFragment(c);
 			continue;
 		}
 

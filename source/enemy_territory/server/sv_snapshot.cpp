@@ -46,7 +46,7 @@ void SV_SendMessageToClient(QMsg* msg, client_t* client)
 	client->q3_frames[client->netchan.outgoingSequence & PACKET_MASK_Q3].messageAcked = -1;
 
 	// send the datagram
-	SV_Netchan_Transmit(client, msg);
+	SVT3_Netchan_Transmit(client, msg);
 
 	// set nextSnapshotTime based on rate and requested number of updates
 
@@ -239,7 +239,7 @@ void SV_SendClientMessages(void)
 		}
 
 		// RF, needed to insert this otherwise bots would cause error drops in sv_net_chan.c:
-		// --> "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n"
+		// --> "netchan queue is not properly initialized in SVT3_Netchan_TransmitNextFragment\n"
 		if (c->et_gentity && c->et_gentity->r.svFlags & Q3SVF_BOT)
 		{
 			continue;
@@ -258,7 +258,7 @@ void SV_SendClientMessages(void)
 		{
 			c->q3_nextSnapshotTime = svs.q3_time +
 								  SVT3_RateMsec(c, c->netchan.reliableOrUnsentLength - c->netchan.unsentFragmentStart);
-			SV_Netchan_TransmitNextFragment(c);
+			SVT3_Netchan_TransmitNextFragment(c);
 			continue;
 		}
 

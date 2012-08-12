@@ -106,15 +106,3 @@ void SV_WriteFrameToClient(client_t* client, QMsg* msg);
 void SV_SendMessageToClient(QMsg* msg, client_t* client);
 void SV_SendClientMessages(void);
 void SV_SendClientSnapshot(client_t* client);
-
-//============================================================
-//
-// high level object sorting to reduce interaction tests
-//
-
-//
-// sv_net_chan.c
-//
-void SV_Netchan_Transmit(client_t* client, QMsg* msg);		//int length, const byte *data );
-void SV_Netchan_TransmitNextFragment(netchan_t* chan);
-qboolean SV_Netchan_Process(client_t* client, QMsg* msg);

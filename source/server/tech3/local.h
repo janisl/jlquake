@@ -145,6 +145,9 @@ bool SVT3_CheckPaused();
 //
 void SVT3_Netchan_Encode(client_t* client, QMsg* msg, const char* commandString);
 void SVT3_Netchan_Decode(client_t* client, QMsg* msg);
+void SVT3_Netchan_TransmitNextFragment(client_t* client);
+void SVT3_Netchan_Transmit(client_t* client, QMsg* msg);
+bool SVT3_Netchan_Process(client_t* client, QMsg* msg);
 
 //
 //	Snapshot

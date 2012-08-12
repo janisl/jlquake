@@ -641,7 +641,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 		}
 
 		// make sure it is a valid, in sequence packet
-		if (SV_Netchan_Process(cl, msg))
+		if (SVT3_Netchan_Process(cl, msg))
 		{
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final
