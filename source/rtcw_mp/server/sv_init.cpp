@@ -331,9 +331,9 @@ void SV_Init(void)
 	// done
 
 	Cvar_Get("sv_keywords", "", CVAR_SERVERINFO);
-	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	Cvar_Get("protocol", va("%i", WMPROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
 	svt3_mapname = Cvar_Get("mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM);
-	sv_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
+	svt3_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
 	sv_hostname = Cvar_Get("sv_hostname", "WolfHost", CVAR_SERVERINFO | CVAR_ARCHIVE);
 #ifdef __MACOS__
 	sv_maxclients = Cvar_Get("sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH2);					//DAJ HOG
@@ -342,8 +342,8 @@ void SV_Init(void)
 #endif
 
 	svt3_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
-	sv_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
-	sv_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_allowAnonymous = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
 	sv_friendlyFire = Cvar_Get("g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE);				// NERVE - SMF
@@ -361,7 +361,7 @@ void SV_Init(void)
 
 	// server vars
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
-	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
+	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	svt3_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
 	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
@@ -373,14 +373,14 @@ void SV_Init(void)
 	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
 	sv_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
 	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
-	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
+	svt3_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
 	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 
-	sv_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve
+	svwm_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve
 
 	svwm_showAverageBPS = Cvar_Get("sv_showAverageBPS", "0", 0);				// NERVE - SMF - net debugging
 

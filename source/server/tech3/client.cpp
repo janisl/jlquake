@@ -21,6 +21,13 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 
+#define AUTHORIZE_TIMEOUT   5000
+
+// sent by the server, printed on connection screen, works for all clients
+// (restrictions: does not handle \n, no more than 256 chars)
+#define WMPROTOCOL_MISMATCH_ERROR "ERROR: Protocol Mismatch Between Client and Server.\
+The server you are attempting to join is running an incompatible version of the game."
+
 //	clear/free any download vars
 static void SVT3_CloseDownload(client_t* cl)
 {
@@ -747,7 +754,7 @@ void SVT3_UserinfoChanged(client_t* cl)
 
 	// TTimo
 	// maintain the IP information
-	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates it's userinfo
+	// this is set in SVT3_DirectConnect (directly on the server, not transmitted), may be lost when client updates it's userinfo
 	// the banning code relies on this being consistently present
 	// zinx - modified to always keep this consistent, instead of only
 	// when "ip" is 0-length, so users can't supply their own IP
@@ -805,4 +812,723 @@ void SVT3_UpdateUserinfo_f(client_t* cl)
 	{
 		SVQ3_GameClientUserInfoChanged(cl - svs.clients);
 	}
+}
+
+//	A "getchallenge" OOB command has been received
+// Returns a challenge number that can be used
+// in a subsequent connectResponse command.
+// We do this to prevent denial of service attacks that
+// flood the server with invalid connection IPs.  With a
+// challenge, they must give a valid IP address.
+//	If we are authorizing, a challenge request will cause a packet
+// to be sent to the authorize server.
+//	When an authorizeip is returned, a challenge response will be
+// sent to that ip.
+void SVT3_GetChallenge(netadr_t from)
+{
+	// ignore if we are in single player
+	if (GGameType & GAME_ET)
+	{
+		if (SVET_GameIsSinglePlayer())
+		{
+			return;
+		}
+	}
+	else
+	{
+		if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER || (GGameType & GAME_Quake3 && Cvar_VariableValue("ui_singlePlayerActive")))
+		{
+			return;
+		}
+	}
+
+	if (GGameType & GAME_ET && SVET_TempBanIsBanned(from))
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", svet_tempbanmessage->string);
+		return;
+	}
+
+	int oldest = 0;
+	int oldestTime = 0x7fffffff;
+
+	// see if we already have a challenge for this ip
+	challenge_t* challenge = &svs.challenges[0];
+	int i;
+	for (i = 0; i < MAX_CHALLENGES; i++, challenge++)
+	{
+		if (!challenge->connected && SOCK_CompareAdr(from, challenge->adr))
+		{
+			break;
+		}
+		if (challenge->time < oldestTime)
+		{
+			oldestTime = challenge->time;
+			oldest = i;
+		}
+	}
+
+	if (i == MAX_CHALLENGES)
+	{
+		// this is the first time this client has asked for a challenge
+		challenge = &svs.challenges[oldest];
+
+		challenge->challenge = ((rand() << 16) ^ rand()) ^ svs.q3_time;
+		challenge->adr = from;
+		challenge->firstTime = svs.q3_time;
+		challenge->firstPing = 0;
+		challenge->time = svs.q3_time;
+		challenge->connected = false;
+		i = oldest;
+	}
+
+	// if they are on a lan address, send the challengeResponse immediately
+	if (GGameType & GAME_ET || SOCK_IsLANAddress(from))
+	{
+		challenge->pingTime = svs.q3_time;
+		if (GGameType & (GAME_WolfMP | GAME_ET) && svwm_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, svwm_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "challengeResponse %i", challenge->challenge);
+		}
+		return;
+	}
+
+	// look up the authorize server's IP
+	if (!svs.q3_authorizeAddress.ip[0] && svs.q3_authorizeAddress.type != NA_BAD)
+	{
+		const char* suthorizeServerName = GGameType & GAME_WolfSP ? WSAUTHORIZE_SERVER_NAME :
+			GGameType & GAME_WolfMP ? WMAUTHORIZE_SERVER_NAME : Q3AUTHORIZE_SERVER_NAME;
+		common->Printf("Resolving %s\n", suthorizeServerName);
+		if (!SOCK_StringToAdr(suthorizeServerName, &svs.q3_authorizeAddress, Q3PORT_AUTHORIZE))
+		{
+			common->Printf("Couldn't resolve address\n");
+			return;
+		}
+		common->Printf("%s resolved to %s\n", suthorizeServerName, SOCK_AdrToString(svs.q3_authorizeAddress));
+	}
+
+	// if they have been challenging for a long time and we
+	// haven't heard anything from the authorize server, go ahead and
+	// let them in, assuming the id server is down
+	if (svs.q3_time - challenge->firstTime > AUTHORIZE_TIMEOUT)
+	{
+		common->DPrintf("authorize server timed out\n");
+
+		challenge->pingTime = svs.q3_time;
+		if (GGameType & GAME_WolfMP && svwm_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, challenge->adr,
+				"challengeResponse %i %i", challenge->challenge, svwm_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, challenge->adr,
+				"challengeResponse %i", challenge->challenge);
+		}
+		return;
+	}
+
+	// otherwise send their ip to the authorize server
+	if (svs.q3_authorizeAddress.type != NA_BAD)
+	{
+		Cvar* fs;
+		char game[1024];
+
+		common->DPrintf("sending getIpAuthorize for %s\n", SOCK_AdrToString(from));
+
+		if (GGameType & GAME_Quake3)
+		{
+			String::Cpy(game, fs_PrimaryBaseGame);
+		}
+		else
+		{
+			game[0] = 0;
+		}
+		fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+		if (fs && fs->string[0] != 0)
+		{
+			String::Cpy(game, fs->string);
+		}
+
+		if (GGameType & GAME_Quake3)
+		{
+			// the 0 is for backwards compatibility with obsolete sv_allowanonymous flags
+			// getIpAuthorize <challenge> <IP> <game> 0 <auth-flag>
+			NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
+				"getIpAuthorize %i %s %s 0 %s",  svs.challenges[i].challenge,
+				SOCK_BaseAdrToString(from), game, svq3_strictAuth->string);
+		}
+		else
+		{
+			fs = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
+			NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
+				"getIpAuthorize %i %s %s %i",  svs.challenges[i].challenge,
+				SOCK_BaseAdrToString(from), game, fs->integer);
+		}
+	}
+}
+
+//	A packet has been returned from the authorize server.
+// If we have a challenge adr for that ip, send the
+// challengeResponse to it
+void SVT3_AuthorizeIpPacket(netadr_t from)
+{
+	if (!SOCK_CompareBaseAdr(from, svs.q3_authorizeAddress))
+	{
+		common->Printf("SVT3_AuthorizeIpPacket: not from authorize server\n");
+		return;
+	}
+
+	int challenge = String::Atoi(Cmd_Argv(1));
+
+	int i;
+	for (i = 0; i < MAX_CHALLENGES; i++)
+	{
+		if (svs.challenges[i].challenge == challenge)
+		{
+			break;
+		}
+	}
+	if (i == MAX_CHALLENGES)
+	{
+		common->Printf("SVT3_AuthorizeIpPacket: challenge not found\n");
+		return;
+	}
+
+	// send a packet back to the original client
+	svs.challenges[i].pingTime = svs.q3_time;
+	const char* s = Cmd_Argv(2);
+	const char* r = Cmd_Argv(3);			// reason
+
+	if (!String::ICmp(s, "demo"))
+	{
+		// they are a demo client trying to connect to a real server
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nServer is not a demo server\n");
+		// clear the challenge record so it won't timeout and let them through
+		Com_Memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
+		return;
+	}
+	if (!String::ICmp(s, "accept"))
+	{
+		if (GGameType & GAME_WolfMP && svwm_onlyVisibleClients->integer)
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr,
+				"challengeResponse %i %i", svs.challenges[i].challenge, svwm_onlyVisibleClients->integer);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr,
+				"challengeResponse %i", svs.challenges[i].challenge);
+		}
+		return;
+	}
+	if (!String::ICmp(s, "unknown"))
+	{
+		if (!r)
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n");
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\n%s\n", r);
+		}
+		// clear the challenge record so it won't timeout and let them through
+		Com_Memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
+		return;
+	}
+
+	// authorization failed
+	if (!r)
+	{
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\nSomeone is using this CD Key\n");
+	}
+	else
+	{
+		NET_OutOfBandPrint(NS_SERVER, svs.challenges[i].adr, "print\n%s\n", r);
+	}
+
+	// clear the challenge record so it won't timeout and let them through
+	Com_Memset(&svs.challenges[i], 0, sizeof(svs.challenges[i]));
+}
+
+//	A "connect" OOB command has been received
+void SVT3_DirectConnect(netadr_t from)
+{
+	common->DPrintf("SVC_DirectConnect ()\n");
+
+	char userinfo[MAX_INFO_STRING_Q3];
+	String::NCpyZ(userinfo, Cmd_Argv(1), sizeof(userinfo));
+
+	int version = String::Atoi(Info_ValueForKey(userinfo, "protocol"));
+	int expectedVersion = GGameType & GAME_WolfSP ? WSPROTOCOL_VERSION :
+		GGameType & GAME_WolfMP ? WMPROTOCOL_VERSION :
+		GGameType & GAME_ET ? ETPROTOCOL_VERSION : Q3PROTOCOL_VERSION;
+	if (version != expectedVersion)
+	{
+		if (GGameType & GAME_WolfMP && version <= 59)
+		{
+			// old clients, don't send them the [err_drop] tag
+			NET_OutOfBandPrint(NS_SERVER, from, "print\n" WMPROTOCOL_MISMATCH_ERROR);
+		}
+		else if (GGameType & (GAME_WolfMP | GAME_ET))
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_prot]" WMPROTOCOL_MISMATCH_ERROR);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "print\nServer uses protocol version %i.\n", expectedVersion);
+		}
+		common->DPrintf("    rejected connect from version %i\n", version);
+		return;
+	}
+
+	int challenge = String::Atoi(Info_ValueForKey(userinfo, "challenge"));
+	int qport = String::Atoi(Info_ValueForKey(userinfo, "qport"));
+
+	if (GGameType & GAME_ET && SVET_TempBanIsBanned(from))
+	{
+		NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", svet_tempbanmessage->string);
+		return;
+	}
+
+	// quick reject
+	client_t* cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
+	{
+		// DHM - Nerve :: This check was allowing clients to reconnect after zombietime(2 secs)
+		if (!(GGameType & (GAME_WolfMP | GAME_ET)) && cl->state == CS_FREE)
+		{
+			continue;
+		}
+		if (SOCK_CompareBaseAdr(from, cl->netchan.remoteAddress) &&
+			(cl->netchan.qport == qport ||
+			 from.port == cl->netchan.remoteAddress.port))
+		{
+			if ((svs.q3_time - cl->q3_lastConnectTime)
+				< (svt3_reconnectlimit->integer * 1000))
+			{
+				common->DPrintf("%s:reconnect rejected : too soon\n", SOCK_AdrToString(from));
+				return;
+			}
+			break;
+		}
+	}
+
+	// see if the challenge is valid (local clients don't need to challenge)
+	int i;
+	if (!SOCK_IsLocalAddress(from))
+	{
+		for (i = 0; i < MAX_CHALLENGES; i++)
+		{
+			if (SOCK_CompareAdr(from, svs.challenges[i].adr))
+			{
+				if (challenge == svs.challenges[i].challenge)
+				{
+					break;		// good
+				}
+				if (GGameType & GAME_WolfSP)
+				{
+					NET_OutOfBandPrint(NS_SERVER, from, "print\nBad challenge.\n");
+					return;
+				}
+			}
+		}
+		if (i == MAX_CHALLENGES)
+		{
+			if (GGameType & GAME_ET)
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address.\n");
+			}
+			else
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\nNo or bad challenge for address.\n");
+			}
+			return;
+		}
+		// force the IP key/value pair so the game can filter based on ip
+		Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(from), MAX_INFO_STRING_Q3);
+
+		int ping;
+		if (!(GGameType & (GAME_WolfMP | GAME_ET)) || svs.challenges[i].firstPing == 0)
+		{
+			ping = svs.q3_time - svs.challenges[i].pingTime;
+			svs.challenges[i].firstPing = ping;
+		}
+		else
+		{
+			ping = svs.challenges[i].firstPing;
+		}
+
+		common->Printf("Client %i connecting with %i challenge ping\n", i, ping);
+		svs.challenges[i].connected = true;
+
+		// never reject a LAN client based on ping
+		if (!SOCK_IsLANAddress(from))
+		{
+			if (svt3_minPing->value && ping < svt3_minPing->value)
+			{
+				// don't let them keep trying until they get a big delay
+				if (GGameType & GAME_ET)
+				{
+					NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n");
+				}
+				else
+				{
+					NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for high pings only\n");
+				}
+				common->DPrintf("Client %i rejected on a too low ping\n", i);
+				// reset the address otherwise their ping will keep increasing
+				// with each connect message and they'd eventually be able to connect
+				svs.challenges[i].adr.port = 0;
+				return;
+			}
+			if (svt3_maxPing->value && ping > svt3_maxPing->value)
+			{
+				if (GGameType & GAME_ET)
+				{
+					NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]Server is for low pings only\n");
+				}
+				else
+				{
+					NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for low pings only\n");
+				}
+				common->DPrintf("Client %i rejected on a too high ping: %i\n", i, ping);
+				return;
+			}
+		}
+	}
+	else
+	{
+		// force the "ip" info key to "localhost"
+		Info_SetValueForKey(userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
+	}
+
+	client_t temp;
+	client_t* newcl = &temp;
+	Com_Memset(newcl, 0, sizeof(client_t));
+
+	const char* password;
+	// if there is already a slot for this ip, reuse it
+	cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
+			continue;
+		}
+		if (SOCK_CompareBaseAdr(from, cl->netchan.remoteAddress) &&
+			(cl->netchan.qport == qport ||
+			 from.port == cl->netchan.remoteAddress.port))
+		{
+			common->Printf("%s:reconnect\n", SOCK_AdrToString(from));
+			newcl = cl;
+			goto gotnewcl;
+		}
+	}
+
+	// find a client slot
+	// if "sv_privateClients" is set > 0, then that number
+	// of client slots will be reserved for connections that
+	// have "password" set to the value of "sv_privatePassword"
+	// Info requests will report the maxclients as if the private
+	// slots didn't exist, to prevent people from trying to connect
+	// to a full server.
+	// This is to allow us to reserve a couple slots here on our
+	// servers so we can play without having to kick people.
+
+	// check for privateClient password
+	password = Info_ValueForKey(userinfo, "password");
+	int startIndex;
+	if (!String::Cmp(password, svt3_privatePassword->string))
+	{
+		startIndex = 0;
+	}
+	else
+	{
+		// skip past the reserved slots
+		startIndex = svt3_privateClients->integer;
+	}
+
+	newcl = NULL;
+	for (int i = startIndex; i < sv_maxclients->integer; i++)
+	{
+		cl = &svs.clients[i];
+		if (cl->state == CS_FREE)
+		{
+			newcl = cl;
+			break;
+		}
+	}
+
+	if (!newcl)
+	{
+		if (SOCK_IsLocalAddress(from))
+		{
+			int count = 0;
+			for (int i = startIndex; i < sv_maxclients->integer; i++)
+			{
+				cl = &svs.clients[i];
+				if (cl->netchan.remoteAddress.type == NA_BOT)
+				{
+					count++;
+				}
+			}
+			// if they're all bots
+			if (count >= sv_maxclients->integer - startIndex)
+			{
+				SVT3_DropClient(&svs.clients[sv_maxclients->integer - 1], "only bots on server");
+				newcl = &svs.clients[sv_maxclients->integer - 1];
+			}
+			else
+			{
+				common->FatalError("server is full on local connect\n");
+				return;
+			}
+		}
+		else
+		{
+			if (GGameType & GAME_ET)
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", svet_fullmsg->string);
+			}
+			else
+			{
+				NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is full.\n");
+			}
+			common->DPrintf("Rejected a connection.\n");
+			return;
+		}
+	}
+
+	// we got a newcl, so reset the reliableSequence and reliableAcknowledge
+	cl->q3_reliableAcknowledge = 0;
+	cl->q3_reliableSequence = 0;
+
+gotnewcl:
+	// build a new connection
+	// accept the new client
+	// this is the only place a client_t is ever initialized
+	*newcl = temp;
+	int clientNum = newcl - svs.clients;
+	if (GGameType & GAME_WolfSP)
+	{
+		newcl->ws_gentity = SVWS_GentityNum(clientNum);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		newcl->wm_gentity = SVWM_GentityNum(clientNum);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		newcl->et_gentity = SVET_GentityNum(clientNum);
+	}
+	else
+	{
+		newcl->q3_gentity = SVQ3_GentityNum(clientNum);
+	}
+	newcl->q3_entity = SVT3_EntityNum(clientNum);
+
+	// save the challenge
+	newcl->challenge = challenge;
+
+	// save the address
+	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport);
+	if (GGameType & (GAME_Quake3 | GAME_WolfMP))
+	{
+		// init the netchan queue
+		newcl->q3_netchan_end_queue = &newcl->q3_netchan_start_queue;
+	}
+
+	// save the userinfo
+	String::NCpyZ(newcl->userinfo, userinfo, MAX_INFO_STRING_Q3);
+
+	// get the game a chance to reject this connection or modify the userinfo
+	const char* denied = SVT3_GameClientConnect(clientNum, true, false);	// firstTime = true
+	if (denied)
+	{
+		if (GGameType & GAME_ET)
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "print\n[err_dialog]%s\n", denied);
+		}
+		else
+		{
+			NET_OutOfBandPrint(NS_SERVER, from, "print\n%s\n", denied);
+		}
+		common->DPrintf("Game rejected a connection: %s.\n", denied);
+		return;
+	}
+
+	if (GGameType & GAME_WolfSP)
+	{
+		// RF, create the reliable commands
+		if (newcl->netchan.remoteAddress.type != NA_BOT)
+		{
+			SVWS_InitReliableCommandsForClient(newcl, MAX_RELIABLE_COMMANDS_WOLF);
+		}
+		else
+		{
+			SVWS_InitReliableCommandsForClient(newcl, 0);
+		}
+	}
+
+	SVT3_UserinfoChanged(newcl);
+
+	// DHM - Nerve :: Clear out firstPing now that client is connected
+	svs.challenges[i].firstPing = 0;
+
+	// send the connect packet to the client
+	NET_OutOfBandPrint(NS_SERVER, from, "connectResponse");
+
+	common->DPrintf("Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name);
+
+	newcl->state = CS_CONNECTED;
+	newcl->q3_nextSnapshotTime = svs.q3_time;
+	newcl->q3_lastPacketTime = svs.q3_time;
+	newcl->q3_lastConnectTime = svs.q3_time;
+
+	// when we receive the first packet from the client, we will
+	// notice that it is from a different serverid and that the
+	// gamestate message was not just sent, forcing a retransmit
+	newcl->q3_gamestateMessageNum = -1;
+
+	// if this was the first client on the server, or the last client
+	// the server can hold, send a heartbeat to the master.
+	int count = 0;
+	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
+			count++;
+		}
+	}
+	if (count == 1 || count == sv_maxclients->integer)
+	{
+		SVT3_Heartbeat_f();
+	}
+}
+
+//	Sends the first message from the server to a connected client.
+// This will be sent on the initial connection and upon each new map load.
+//	It will be resent if the client acknowledges a later message but has
+// the wrong gamestate.
+void SVT3_SendClientGameState(client_t* client)
+{
+	int start;
+	QMsg msg;
+	byte msgBuffer[MAX_MSGLEN];
+
+	common->DPrintf("SVT3_SendClientGameState() for %s\n", client->name);
+	common->DPrintf("Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name);
+	client->state = CS_PRIMED;
+	client->q3_pureAuthentic = 0;
+	client->q3_gotCP = false;
+
+	// when we receive the first packet from the client, we will
+	// notice that it is from a different serverid and that the
+	// gamestate message was not just sent, forcing a retransmit
+	client->q3_gamestateMessageNum = client->netchan.outgoingSequence;
+
+	msg.Init(msgBuffer, GGameType & GAME_Quake3 ? MAX_MSGLEN_Q3 : MAX_MSGLEN_WOLF);
+
+	// NOTE, MRE: all server->client messages now acknowledge
+	// let the client know which reliable clientCommands we have received
+	msg.WriteLong(client->q3_lastClientCommand);
+
+	// send any server commands waiting to be sent first.
+	// we have to do this cause we send the client->reliableSequence
+	// with a gamestate and it sets the clc.serverCommandSequence at
+	// the client side
+	SVT3_UpdateServerCommandsToClient(client, &msg);
+
+	// send the gamestate
+	msg.WriteByte(q3svc_gamestate);
+	msg.WriteLong(client->q3_reliableSequence);
+
+	// write the configstrings
+	for (start = 0; start < (GGameType & GAME_WolfSP ? MAX_CONFIGSTRINGS_WS :
+		GGameType & GAME_WolfMP ? MAX_CONFIGSTRINGS_WM :
+		GGameType & GAME_ET ? MAX_CONFIGSTRINGS_ET : MAX_CONFIGSTRINGS_Q3); start++)
+	{
+		if (sv.q3_configstrings[start][0])
+		{
+			msg.WriteByte(q3svc_configstring);
+			msg.WriteShort(start);
+			msg.WriteBigString(sv.q3_configstrings[start]);
+		}
+	}
+
+	// write the baselines
+	if (GGameType & GAME_WolfSP)
+	{
+		wsentityState_t nullstate;
+		memset(&nullstate, 0, sizeof(nullstate));
+		for (start = 0; start < MAX_GENTITIES_Q3; start++)
+		{
+			wsentityState_t* base = &sv.q3_svEntities[start].ws_baseline;
+			if (!base->number)
+			{
+				continue;
+			}
+			msg.WriteByte(q3svc_baseline);
+			MSGWS_WriteDeltaEntity(&msg, &nullstate, base, true);
+		}
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		wmentityState_t nullstate;
+		memset(&nullstate, 0, sizeof(nullstate));
+		for (start = 0; start < MAX_GENTITIES_Q3; start++)
+		{
+			wmentityState_t* base = &sv.q3_svEntities[start].wm_baseline;
+			if (!base->number)
+			{
+				continue;
+			}
+			msg.WriteByte(q3svc_baseline);
+			MSGWM_WriteDeltaEntity(&msg, &nullstate, base, true);
+		}
+	}
+	else if (GGameType & GAME_ET)
+	{
+		etentityState_t nullstate;
+		memset(&nullstate, 0, sizeof(nullstate));
+		for (start = 0; start < MAX_GENTITIES_Q3; start++)
+		{
+			etentityState_t* base = &sv.q3_svEntities[start].et_baseline;
+			if (!base->number)
+			{
+				continue;
+			}
+			msg.WriteByte(q3svc_baseline);
+			MSGET_WriteDeltaEntity(&msg, &nullstate, base, true);
+		}
+	}
+	else
+	{
+		q3entityState_t nullstate;
+		Com_Memset(&nullstate, 0, sizeof(nullstate));
+		for (start = 0; start < MAX_GENTITIES_Q3; start++)
+		{
+			q3entityState_t* base = &sv.q3_svEntities[start].q3_baseline;
+			if (!base->number)
+			{
+				continue;
+			}
+			msg.WriteByte(q3svc_baseline);
+			MSGQ3_WriteDeltaEntity(&msg, &nullstate, base, true);
+		}
+	}
+
+	msg.WriteByte(q3svc_EOF);
+
+	msg.WriteLong(client - svs.clients);
+
+	// write the checksum feed
+	msg.WriteLong(sv.q3_checksumFeed);
+
+	// deliver this to the client
+	SVT3_SendMessageToClient(&msg, client);
 }

@@ -475,7 +475,7 @@ void CL_ParseSnapshot(QMsg* msg)
 					period++;
 				}
 
-				String::Sprintf(name, sizeof(name), "demos/%s_%i_%i.dm_%d", period, time.tm_mday, time.tm_mon + 1, PROTOCOL_VERSION);
+				String::Sprintf(name, sizeof(name), "demos/%s_%i_%i.dm_%d", period, time.tm_mday, time.tm_mon + 1, ETPROTOCOL_VERSION);
 
 				CL_Record(name);
 			}

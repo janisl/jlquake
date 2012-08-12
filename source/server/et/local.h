@@ -41,5 +41,6 @@ void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int co
 bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber);
 void SVET_GameClientBegin(int clientNum);
 void SVET_GameClientUserInfoChanged(int clientNum);
+const char* SVET_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 
 #endif

@@ -31,16 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
-Cvar* sv_privatePassword;		// password for the privateClient slots
-Cvar* sv_privateClients;		// number of clients reserved for password
 Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
-Cvar* sv_reconnectlimit;		// minimum seconds between connect messages
 Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
 Cvar* sv_mapChecksum;
 Cvar* sv_serverid;
-Cvar* sv_minPing;
-Cvar* sv_maxPing;
 Cvar* sv_floodProtect;
 Cvar* sv_allowAnonymous;
 
@@ -244,7 +239,7 @@ void SVC_Info(netadr_t from)
 
 	// don't count privateclients
 	count = 0;
-	for (i = sv_privateClients->integer; i < sv_maxclients->integer; i++)
+	for (i = svt3_privateClients->integer; i < sv_maxclients->integer; i++)
 	{
 		if (svs.clients[i].state >= CS_CONNECTED)
 		{
@@ -258,22 +253,22 @@ void SVC_Info(netadr_t from)
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
-	Info_SetValueForKey(infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "protocol", va("%i", WSPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "mapname", svt3_mapname->string, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "sv_maxclients",
-		va("%i", sv_maxclients->integer - sv_privateClients->integer), MAX_INFO_STRING_Q3);
+		va("%i", sv_maxclients->integer - svt3_privateClients->integer), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "gametype", va("%i", svt3_gametype->integer), MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(infostring, "pure", va("%i", svt3_pure->integer), MAX_INFO_STRING_Q3);
 
-	if (sv_minPing->integer)
+	if (svt3_minPing->integer)
 	{
-		Info_SetValueForKey(infostring, "minPing", va("%i", sv_minPing->integer), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(infostring, "minPing", va("%i", svt3_minPing->integer), MAX_INFO_STRING_Q3);
 	}
-	if (sv_maxPing->integer)
+	if (svt3_maxPing->integer)
 	{
-		Info_SetValueForKey(infostring, "maxPing", va("%i", sv_maxPing->integer), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(infostring, "maxPing", va("%i", svt3_maxPing->integer), MAX_INFO_STRING_Q3);
 	}
 	gamedir = Cvar_VariableString("fs_game");
 	if (*gamedir)
@@ -392,15 +387,15 @@ void SV_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	}
 	else if (!String::ICmp(c,"getchallenge"))
 	{
-		SV_GetChallenge(from);
+		SVT3_GetChallenge(from);
 	}
 	else if (!String::ICmp(c,"connect"))
 	{
-		SV_DirectConnect(from);
+		SVT3_DirectConnect(from);
 	}
 	else if (!String::ICmp(c,"ipAuthorize"))
 	{
-		SV_AuthorizeIpPacket(from);
+		SVT3_AuthorizeIpPacket(from);
 	}
 	else if (!String::ICmp(c, "rcon"))
 	{

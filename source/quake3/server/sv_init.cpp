@@ -281,15 +281,15 @@ void SV_Init(void)
 	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
 	svt3_gametype = Cvar_Get("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2);
 	Cvar_Get("sv_keywords", "", CVAR_SERVERINFO);
-	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	Cvar_Get("protocol", va("%i", Q3PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
 	svt3_mapname = Cvar_Get("mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM);
-	sv_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
+	svt3_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
 	sv_hostname = Cvar_Get("sv_hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
 	sv_maxclients = Cvar_Get("sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH2);
 
 	svt3_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
-	sv_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
-	sv_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	sv_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
 
 	// systeminfo
@@ -303,7 +303,7 @@ void SV_Init(void)
 
 	// server vars
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
-	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
+	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	svt3_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);
 	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
@@ -315,13 +315,13 @@ void SV_Init(void)
 	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
 	sv_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
 	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
-	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
+	svt3_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
 	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
 	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
-	sv_strictAuth = Cvar_Get("sv_strictAuth", "1", CVAR_ARCHIVE);
+	svq3_strictAuth = Cvar_Get("sv_strictAuth", "1", CVAR_ARCHIVE);
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SVT3_BotInitCvars();

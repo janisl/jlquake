@@ -893,3 +893,11 @@ enum
 	DL_FLAG_DISCON = 0,
 	DL_FLAG_URL
 };
+
+#define WSPROTOCOL_VERSION    49	// TA value
+// 1.33 - protocol 59
+// 1.4 - protocol 60
+#define WMPROTOCOL_VERSION 60
+// 2.56 - protocol 83
+// 2.4 - protocol 80
+#define ETPROTOCOL_VERSION    84

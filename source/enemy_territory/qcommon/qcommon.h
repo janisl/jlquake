@@ -48,11 +48,6 @@ PROTOCOL
 ==============================================================
 */
 
-// sent by the server, printed on connection screen, works for all clients
-// (restrictions: does not handle \n, no more than 256 chars)
-#define PROTOCOL_MISMATCH_ERROR "ERROR: Protocol Mismatch Between Client and Server.\
-The server you are attempting to join is running an incompatible version of the game."
-
 // long version used by the client in diagnostic window
 #define PROTOCOL_MISMATCH_ERROR_LONG "ERROR: Protocol Mismatch Between Client and Server.\n\n\
 The server you attempted to join is running an incompatible version of the game.\n\
@@ -60,11 +55,6 @@ You or the server may be running older versions of the game. Press the auto-upda
  button if it appears on the Main Menu screen."
 
 #define GAMENAME_STRING "et"
-// 2.56 - protocol 83
-// 2.4 - protocol 80
-// 1.33 - protocol 59
-// 1.4 - protocol 60
-#define PROTOCOL_VERSION    84
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME

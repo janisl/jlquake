@@ -35,6 +35,15 @@ Cvar* svet_wwwBaseURL;	// base URL for redirect
 Cvar* svet_wwwDlDisconnected;
 Cvar* svt3_lanForceRate;		// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 Cvar* svwm_showAverageBPS;		// NERVE - SMF - net debugging
+Cvar* svet_tempbanmessage;
+Cvar* svwm_onlyVisibleClients;
+Cvar* svq3_strictAuth;
+Cvar* svet_fullmsg;
+Cvar* svt3_reconnectlimit;		// minimum seconds between connect messages
+Cvar* svt3_minPing;
+Cvar* svt3_maxPing;
+Cvar* svt3_privatePassword;		// password for the privateClient slots
+Cvar* svt3_privateClients;		// number of clients reserved for password
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)

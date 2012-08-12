@@ -48,10 +48,6 @@ PROTOCOL
 ==============================================================
 */
 
-#define PROTOCOL_VERSION    49	// TA value
-//#define	PROTOCOL_VERSION	43	// (SA) bump this up
-
-
 //----(SA)	yes, these are bogus addresses.  I'm guessing these will be set to a machine at Activision or id eventually
 #define UPDATE_SERVER_NAME      "update.gmistudios.com"
 #define MASTER_SERVER_NAME      "master.gmistudios.com"

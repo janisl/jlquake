@@ -96,6 +96,17 @@ void SVQ3_GameClientUserInfoChanged(int clientNum)
 	VM_Call(gvm, Q3GAME_CLIENT_USERINFO_CHANGED, clientNum);
 }
 
+const char* SVQ3_GameClientConnect(int clientNum, bool firstTime, bool isBot)
+{
+	qintptr denied = VM_Call(gvm, Q3GAME_CLIENT_CONNECT, clientNum, firstTime, isBot);
+	if (denied)
+	{
+		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
+		return (const char*)VM_ExplicitArgPtr(gvm, denied);
+	}
+	return NULL;
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {

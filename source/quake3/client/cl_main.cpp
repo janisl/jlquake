@@ -279,7 +279,7 @@ void CL_Record_f(void)
 	{
 		s = Cmd_Argv(1);
 		String::NCpyZ(demoName, s, sizeof(demoName));
-		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION);
+		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, Q3PROTOCOL_VERSION);
 	}
 	else
 	{
@@ -289,7 +289,7 @@ void CL_Record_f(void)
 		for (number = 0; number <= 9999; number++)
 		{
 			CL_DemoFilename(number, demoName);
-			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION);
+			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, Q3PROTOCOL_VERSION);
 
 			len = FS_ReadFile(name, NULL);
 			if (len <= 0)
@@ -1628,7 +1628,7 @@ void CL_CheckForResend(void)
 		port = Cvar_VariableValue("net_qport");
 
 		String::NCpyZ(info, Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3), sizeof(info));
-		Info_SetValueForKey(info, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "protocol", va("%i", Q3PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 		Info_SetValueForKey(info, "qport", va("%i", port), MAX_INFO_STRING_Q3);
 		Info_SetValueForKey(info, "challenge", va("%i", clc.q3_challenge), MAX_INFO_STRING_Q3);
 
@@ -2611,7 +2611,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 
 	// if this isn't the correct protocol version, ignore it
 	prot = String::Atoi(Info_ValueForKey(infoString, "protocol"));
-	if (prot != PROTOCOL_VERSION)
+	if (prot != Q3PROTOCOL_VERSION)
 	{
 		common->DPrintf("Different protocol info packet: %s\n", infoString);
 		return;

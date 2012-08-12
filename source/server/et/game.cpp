@@ -127,6 +127,18 @@ void SVET_GameClientUserInfoChanged(int clientNum)
 	VM_Call(gvm, ETGAME_CLIENT_USERINFO_CHANGED, clientNum);
 }
 
+const char* SVET_GameClientConnect(int clientNum, bool firstTime, bool isBot)
+{
+	// get the game a chance to reject this connection or modify the userinfo
+	qintptr denied = VM_Call(gvm, ETGAME_CLIENT_CONNECT, clientNum, firstTime, isBot);
+	if (denied)
+	{
+		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
+		return (const char*)VM_ExplicitArgPtr(gvm, denied);
+	}
+	return NULL;
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {

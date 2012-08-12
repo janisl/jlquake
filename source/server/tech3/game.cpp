@@ -416,3 +416,20 @@ bool SVT3_GameCommand()
 	}
 	return SVQ3_GameConsoleCommand();
 }
+
+const char* SVT3_GameClientConnect(int clientNum, bool firstTime, bool isBot)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		return SVWS_GameClientConnect(clientNum, firstTime, isBot);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		return SVWM_GameClientConnect(clientNum, firstTime, isBot);
+	}
+	if (GGameType & GAME_ET)
+	{
+		return SVET_GameClientConnect(clientNum, firstTime, isBot);
+	}
+	return SVQ3_GameClientConnect(clientNum, firstTime, isBot);
+}

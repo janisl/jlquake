@@ -37,5 +37,6 @@ void SVWS_GameShutdown(bool restart);
 bool SVWS_GameConsoleCommand();
 void SVWS_GameClientBegin(int clientNum);
 void SVWS_GameClientUserInfoChanged(int clientNum);
+const char* SVWS_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 
 #endif

@@ -115,6 +115,17 @@ void SVWM_GameClientUserInfoChanged(int clientNum)
 	VM_Call(gvm, WMGAME_CLIENT_USERINFO_CHANGED, clientNum);
 }
 
+const char* SVWM_GameClientConnect(int clientNum, bool firstTime, bool isBot)
+{
+	qintptr denied = VM_Call(gvm, WMGAME_CLIENT_CONNECT, clientNum, firstTime, isBot);
+	if (denied)
+	{
+		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
+		return (const char*)VM_ExplicitArgPtr(gvm, denied);
+	}
+	return NULL;
+}
+
 static void SVWM_LocateGameData(wmsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wmplayerState_t* clients, int sizeofGameClient)
 {

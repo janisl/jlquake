@@ -65,6 +65,10 @@ void SVT3_Disconnect_f(client_t* cl);
 void SVT3_ResetPureClient_f(client_t* cl);
 void SVT3_UserinfoChanged(client_t* cl);
 void SVT3_UpdateUserinfo_f(client_t* cl);
+void SVT3_GetChallenge(netadr_t from);
+void SVT3_AuthorizeIpPacket(netadr_t from);
+void SVT3_DirectConnect(netadr_t from);
+void SVT3_SendClientGameState(client_t* client);
 
 //
 //	Game
@@ -90,6 +94,7 @@ bool SVT3_GetTag(int clientNum, int tagFileNumber, const char* tagname, orientat
 void SVT3_InitGameProgs();
 void SVT3_RestartGameProgs();
 void SVT3_ShutdownGameProgs();
+const char* SVT3_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 
 //
 //	Init
@@ -133,6 +138,15 @@ extern Cvar* svet_wwwBaseURL;	// the base URL of all the files
 extern Cvar* svet_wwwDlDisconnected;
 extern Cvar* svt3_lanForceRate;
 extern Cvar* svwm_showAverageBPS;				// NERVE - SMF - net debugging
+extern Cvar* svet_tempbanmessage;
+extern Cvar* svwm_onlyVisibleClients;
+extern Cvar* svq3_strictAuth;
+extern Cvar* svet_fullmsg;
+extern Cvar* svt3_reconnectlimit;
+extern Cvar* svt3_minPing;
+extern Cvar* svt3_maxPing;
+extern Cvar* svt3_privatePassword;
+extern Cvar* svt3_privateClients;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));

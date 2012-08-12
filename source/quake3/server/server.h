@@ -30,25 +30,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //=============================================================================
 
-#define AUTHORIZE_TIMEOUT   5000
-
 #define MAX_MASTER_SERVERS  5
 
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
-extern Cvar* sv_privatePassword;
-
-extern Cvar* sv_privateClients;
 extern Cvar* sv_master[MAX_MASTER_SERVERS];
-extern Cvar* sv_reconnectlimit;
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_minPing;
-extern Cvar* sv_maxPing;
 extern Cvar* sv_floodProtect;
-extern Cvar* sv_strictAuth;
 
 //===========================================================
 
@@ -77,12 +68,6 @@ void SV_SpawnServer(char* server, qboolean killBots);
 //
 // sv_client.c
 //
-void SV_GetChallenge(netadr_t from);
-
-void SV_DirectConnect(netadr_t from);
-
-void SV_AuthorizeIpPacket(netadr_t from);
-
 void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);

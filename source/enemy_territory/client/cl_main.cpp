@@ -345,7 +345,7 @@ void CL_Record_f(void)
 	{
 		s = Cmd_Argv(1);
 		String::NCpyZ(demoName, s, sizeof(demoName));
-		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION);
+		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, ETPROTOCOL_VERSION);
 	}
 	else
 	{
@@ -355,7 +355,7 @@ void CL_Record_f(void)
 		for (number = 0; number <= 9999; number++)
 		{
 			CL_DemoFilename(number, demoName);
-			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION);
+			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, ETPROTOCOL_VERSION);
 
 			len = FS_ReadFile(name, NULL);
 			if (len <= 0)
@@ -823,8 +823,8 @@ void CL_PlayDemo_f(void)
 
 	// open the demo file
 	arg = Cmd_Argv(1);
-	prot_ver = PROTOCOL_VERSION - 1;
-	while (prot_ver <= PROTOCOL_VERSION && !clc.demofile)
+	prot_ver = ETPROTOCOL_VERSION - 1;
+	while (prot_ver <= ETPROTOCOL_VERSION && !clc.demofile)
 	{
 		String::Sprintf(extension, sizeof(extension), ".dm_%d", prot_ver);
 		if (!String::ICmp(arg + String::Length(arg) - String::Length(extension), extension))
@@ -2158,7 +2158,7 @@ void CL_CheckForResend(void)
 		port = Cvar_VariableValue("net_qport");
 
 		String::NCpyZ(info, Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3), sizeof(info));
-		Info_SetValueForKey(info, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "protocol", va("%i", ETPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
 		Info_SetValueForKey(info, "qport", va("%i", port), MAX_INFO_STRING_Q3);
 		Info_SetValueForKey(info, "challenge", va("%i", clc.q3_challenge), MAX_INFO_STRING_Q3);
 
@@ -3809,7 +3809,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 	int prot;
 	const char* gameName;
 	int debug_protocol;
-	int protocol = PROTOCOL_VERSION;
+	int protocol = ETPROTOCOL_VERSION;
 
 	debug_protocol = Cvar_VariableIntegerValue("debug_protocol");
 	if (debug_protocol)
