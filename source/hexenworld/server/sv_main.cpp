@@ -500,3 +500,9 @@ void SV_Init(quakeparms_t* parms)
 void SCRQH_BeginLoadingPlaque()
 {
 }
+void CL_EstablishConnection(const char* name)
+{
+}
+void Host_Reconnect_f()
+{
+}

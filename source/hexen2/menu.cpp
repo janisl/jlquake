@@ -1000,7 +1000,7 @@ void M_SinglePlayer_Key(int key)
 			{
 				Cbuf_AddText("disconnect\n");
 			}
-			CL_RemoveGIPFiles(NULL);
+			SVH2_RemoveGIPFiles(NULL);
 			Cbuf_AddText("maxplayers 1\n");
 			M_Menu_Class_f();
 			break;

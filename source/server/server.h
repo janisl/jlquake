@@ -51,5 +51,7 @@ extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 void CL_Disconnect();
 void SCRQH_BeginLoadingPlaque();
+void CL_EstablishConnection(const char* name);
+void Host_Reconnect_f();
 
 #endif

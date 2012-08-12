@@ -67,57 +67,6 @@ void CL_ClearState(void)
 	SB_InvReset();
 }
 
-void CL_RemoveGIPFiles(const char* path)
-{
-	if (!fs_homepath)
-	{
-		return;
-	}
-	char* netpath;
-	if (path)
-	{
-		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, path);
-	}
-	else
-	{
-		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "");
-		netpath[String::Length(netpath) - 1] = 0;
-	}
-	int numSysFiles;
-	char** sysFiles = Sys_ListFiles(netpath, ".gip", NULL, &numSysFiles, false);
-	for (int i = 0; i < numSysFiles; i++)
-	{
-		if (path)
-		{
-			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s/%s", path, sysFiles[i]));
-		}
-		else
-		{
-			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, sysFiles[i]);
-		}
-		FS_Remove(netpath);
-	}
-	Sys_FreeFileList(sysFiles);
-}
-
-void CL_CopyFiles(const char* source, const char* ext, const char* dest)
-{
-	char* netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, source);
-	if (!source[0])
-	{
-		netpath[String::Length(netpath) - 1] = 0;
-	}
-	int numSysFiles;
-	char** sysFiles = Sys_ListFiles(netpath, ext, NULL, &numSysFiles, false);
-	for (int i = 0; i < numSysFiles; i++)
-	{
-		char* srcpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", source, sysFiles[i]));
-		char* dstpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", dest, sysFiles[i]));
-		FS_CopyFile(srcpath, dstpath);
-	}
-	Sys_FreeFileList(sysFiles);
-}
-
 /*
 =====================
 CL_Disconnect
@@ -157,7 +106,7 @@ void CL_Disconnect(void)
 			SVQH_Shutdown(false);
 		}
 
-		CL_RemoveGIPFiles(NULL);
+		SVH2_RemoveGIPFiles(NULL);
 	}
 
 	clc.demoplaying = cls.qh_timedemo = false;

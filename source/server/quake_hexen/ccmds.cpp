@@ -21,10 +21,17 @@
 #include "../../client/public.h"
 #include <time.h>
 
+#define Q1_SAVEGAME_VERSION    5
+#define H2_SAVEGAME_VERSION    5
+
 #define ShortTime "%m/%d/%Y %H:%M"
 
 int qhw_fp_messages = 4, qhw_fp_persecond = 4, qhw_fp_secondsdead = 10;
 char qhw_fp_msg[255] = { 0 };
+
+static double h2_old_time;
+
+static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode);
 
 //	handle a
 //	map <servername>
@@ -152,7 +159,7 @@ void SVQHW_Map_f()
 }
 
 //	Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
-void SVQ1_SavegameComment(char* text)
+static void SVQ1_SavegameComment(char* text)
 {
 	for (int i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
 	{
@@ -174,7 +181,7 @@ void SVQ1_SavegameComment(char* text)
 }
 
 //	Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
-void SVH2_SavegameComment(char* text)
+static void SVH2_SavegameComment(char* text)
 {
 	for (int i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
 	{
@@ -197,6 +204,27 @@ void SVH2_SavegameComment(char* text)
 		}
 	}
 	text[SAVEGAME_COMMENT_LENGTH] = '\0';
+}
+
+static char* GetLine(char*& ReadPos)
+{
+	char* Line = ReadPos;
+	while (*ReadPos)
+	{
+		if (*ReadPos == '\r')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+		}
+		if (*ReadPos == '\n')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+			break;
+		}
+		ReadPos++;
+	}
+	return Line;
 }
 
 void SVH2_SaveGamestate(bool clientsOnly)
@@ -286,10 +314,770 @@ void SVH2_SaveGamestate(bool clientsOnly)
 	FS_FCloseFile(f);
 }
 
+static void SVH2_RestoreClients()
+{
+	double time_diff;
+
+	if (SVH2_LoadGamestate(NULL,NULL,1))
+	{
+		return;
+	}
+
+	time_diff = sv.qh_time - h2_old_time;
+
+	client_t* host_client = svs.clients;
+	for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
+	{
+		if (host_client->state >= CS_CONNECTED)
+		{
+			qhedict_t* ent = host_client->qh_edict;
+
+			ent->SetTeam((host_client->qh_colors & 15) + 1);
+			ent->SetNetName(PR_SetString(host_client->name));
+			ent->SetPlayerClass(host_client->h2_playerclass);
+
+			// copy spawn parms out of the client_t
+
+			for (int j = 0; j < NUM_SPAWN_PARMS; j++)
+			{
+				pr_globalVars.parm1[j] = host_client->qh_spawn_parms[j];
+			}
+
+			// call the spawn function
+
+			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.self = EDICT_TO_PROG(ent);
+			G_FLOAT(OFS_PARM0) = time_diff;
+			PR_ExecuteProgram(*pr_globalVars.ClientReEnter);
+		}
+	}
+	SVH2_SaveGamestate(true);
+}
+
+static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode)
+{
+	char name[MAX_OSPATH];
+	char mapname[MAX_QPATH];
+	float time, sk;
+	int i;
+	qhedict_t* ent;
+	int entnum;
+	int version;
+	qboolean auto_correct = false;
+
+	if (ClientsMode == 1)
+	{
+		sprintf(name, "clients.gip");
+	}
+	else
+	{
+		sprintf(name, "%s.gip", level);
+
+		if (ClientsMode != 2 && ClientsMode != 3)
+		{
+			common->Printf("Loading game from %s...\n", name);
+		}
+	}
+
+	Array<byte> Buffer;
+	int len = FS_ReadFile(name, Buffer);
+	if (len <= 0)
+	{
+		if (ClientsMode == 2)
+		{
+			common->Printf("ERROR: couldn't open.\n");
+		}
+
+		return -1;
+	}
+	Buffer.Append(0);
+
+	char* ReadPos = (char*)Buffer.Ptr();
+	version = String::Atoi(GetLine(ReadPos));
+
+	if (version != H2_SAVEGAME_VERSION)
+	{
+		common->Printf("Savegame is version %i, not %i\n", version, H2_SAVEGAME_VERSION);
+		return -1;
+	}
+
+	if (ClientsMode != 1)
+	{
+		GetLine(ReadPos);
+		sk = String::Atof(GetLine(ReadPos));
+		Cvar_SetValue("skill", sk);
+
+		String::Cpy(mapname, GetLine(ReadPos));
+		time = String::Atof(GetLine(ReadPos));
+
+		SVQH_SpawnServer(mapname, startspot);
+
+		if (sv.state == SS_DEAD)
+		{
+			common->Printf("Couldn't load map\n");
+			return -1;
+		}
+
+		// load the light styles
+		for (i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+		{
+			char* Style = GetLine(ReadPos);
+			char* Tmp = (char*)Mem_Alloc(String::Length(Style) + 1);
+			String::Cpy(Tmp, Style);
+			sv.qh_lightstyles[i] = Tmp;
+		}
+		ReadPos = const_cast<char*>(SVH2_LoadEffects(ReadPos));
+	}
+
+	// load the edicts out of the savegame file
+	const char* start = ReadPos;
+	while (start)
+	{
+		char* token = String::Parse1(&start);
+		if (!start)
+		{
+			break;		// end of file
+		}
+		entnum = String::Atoi(token);
+		token = String::Parse1(&start);
+		if (String::Cmp(token, "{"))
+		{
+			common->FatalError("First token isn't a brace");
+		}
+
+		// parse an edict
+
+		if (entnum == -1)
+		{
+			start = ED_ParseGlobals(start);
+			// Need to restore this
+			*pr_globalVars.startspot = PR_SetString(sv.h2_startspot);
+		}
+		else
+		{
+			ent = QH_EDICT_NUM(entnum);
+			Com_Memset(&ent->v, 0, progs->entityfields * 4);
+			//ent->free = false;
+			start = ED_ParseEdict(start, ent);
+
+			if (ClientsMode == 1 || ClientsMode == 2 || ClientsMode == 3)
+			{
+				ent->SetStatsRestored(true);
+			}
+
+			// link it into the bsp tree
+			if (!ent->free)
+			{
+				SVQH_LinkEdict(ent, false);
+				if (ent->v.modelindex && ent->GetModel())
+				{
+					i = SVQH_ModelIndex(PR_GetString(ent->GetModel()));
+					if (i != ent->v.modelindex)
+					{
+						ent->v.modelindex = i;
+						auto_correct = true;
+					}
+				}
+			}
+		}
+	}
+
+	//sv.num_edicts = entnum;
+	if (ClientsMode == 0)
+	{
+		sv.qh_time = time;
+		sv.qh_paused = true;
+
+		*pr_globalVars.serverflags = svs.qh_serverflags;
+
+		SVH2_RestoreClients();
+	}
+	else if (ClientsMode == 2)
+	{
+		sv.qh_time = time;
+	}
+	else if (ClientsMode == 3)
+	{
+		sv.qh_time = time;
+
+		*pr_globalVars.serverflags = svs.qh_serverflags;
+
+		SVH2_RestoreClients();
+	}
+
+	if (ClientsMode != 1 && auto_correct)
+	{
+		common->DPrintf("*** Auto-corrected model indexes!\n");
+	}
+
+	return 0;
+}
+
+//	Restarts the current server for a dead player
+static void SVQ1_Restart_f()
+{
+	if (CL_IsDemoPlaying() || sv.state == SS_DEAD)
+	{
+		return;
+	}
+
+	char mapname[MAX_QPATH];
+	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared in sv_spawnserver
+	SVQH_SpawnServer(mapname, "");
+}
+
+//	Restarts the current server for a dead player
+static void SVH2_Restart_f()
+{
+	if (CL_IsDemoPlaying() || sv.state == SS_DEAD)
+	{
+		return;
+	}
+
+	char mapname[MAX_QPATH];
+	String::Cpy(mapname, sv.name);	// must copy out, because it gets cleared in sv_spawnserver
+	char startspot[MAX_QPATH];
+	String::Cpy(startspot, sv.h2_startspot);
+
+	if (Cmd_Argc() == 2 && String::ICmp(Cmd_Argv(1),"restore") == 0)
+	{
+		if (SVH2_LoadGamestate(mapname, startspot, 3))
+		{
+			SVQH_SpawnServer(mapname, startspot);
+			SVH2_RestoreClients();
+		}
+	}
+	else
+	{
+		SVQH_SpawnServer(mapname, startspot);
+	}
+}
+
+// changing levels within a unit
+static void SVH2_Changelevel2_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		common->Printf("changelevel2 <levelname> : continue game on a new level in the unit\n");
+		return;
+	}
+	if (sv.state == SS_DEAD || CL_IsDemoPlaying())
+	{
+		common->Printf("Only the server may changelevel\n");
+		return;
+	}
+
+	char level[MAX_QPATH];
+	String::Cpy(level, Cmd_Argv(1));
+	char _startspot[MAX_QPATH];
+	char* startspot;
+	if (Cmd_Argc() == 2)
+	{
+		startspot = NULL;
+	}
+	else
+	{
+		String::Cpy(_startspot, Cmd_Argv(2));
+		startspot = _startspot;
+	}
+
+	SVQH_SaveSpawnparms();
+
+	// save the current level's state
+	h2_old_time = sv.qh_time;
+	SVH2_SaveGamestate(false);
+
+	// try to restore the new level
+	if (SVH2_LoadGamestate(level, startspot, 0))
+	{
+		SVQH_SpawnServer(level, startspot);
+		SVH2_RestoreClients();
+	}
+}
+
+static void SVQ1_Savegame_f()
+{
+	if (sv.state == SS_DEAD)
+	{
+		common->Printf("Not playing a local game.\n");
+		return;
+	}
+
+	if (CLQH_GetIntermission())
+	{
+		common->Printf("Can't save in intermission.\n");
+		return;
+	}
+
+	if (svs.qh_maxclients != 1)
+	{
+		common->Printf("Can't save multiplayer games.\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("save <savename> : save a game\n");
+		return;
+	}
+
+	if (strstr(Cmd_Argv(1), ".."))
+	{
+		common->Printf("Relative pathnames are not allowed.\n");
+		return;
+	}
+
+	for (int i = 0; i < svs.qh_maxclients; i++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
+		{
+			common->Printf("Can't savegame with a dead player\n");
+			return;
+		}
+	}
+
+	char name[256];
+	String::NCpyZ(name, Cmd_Argv(1), sizeof(name));
+	String::DefaultExtension(name, sizeof(name), ".sav");
+
+	common->Printf("Saving game to %s...\n", name);
+	fileHandle_t f = FS_FOpenFileWrite(name);
+	if (!f)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+
+	FS_Printf(f, "%i\n", Q1_SAVEGAME_VERSION);
+	char comment[SAVEGAME_COMMENT_LENGTH + 1];
+	SVQ1_SavegameComment(comment);
+	FS_Printf(f, "%s\n", comment);
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
+	}
+	FS_Printf(f, "%d\n", svqh_current_skill);
+	FS_Printf(f, "%s\n", sv.name);
+	FS_Printf(f, "%f\n",sv.qh_time);
+
+	// write the light styles
+	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	{
+		if (sv.qh_lightstyles[i])
+		{
+			FS_Printf(f, "%s\n", sv.qh_lightstyles[i]);
+		}
+		else
+		{
+			FS_Printf(f,"m\n");
+		}
+	}
+
+
+	ED_WriteGlobals(f);
+	for (int i = 0; i < sv.qh_num_edicts; i++)
+	{
+		ED_Write(f, QH_EDICT_NUM(i));
+		FS_Flush(f);
+	}
+	FS_FCloseFile(f);
+	common->Printf("done.\n");
+}
+
+static void SVQ1_Loadgame_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("load <savename> : load a game\n");
+		return;
+	}
+
+	CLQH_StopDemoLoop();		// stop demo loop in case this fails
+
+	char name[MAX_OSPATH];
+	String::NCpyZ(name, Cmd_Argv(1), sizeof(name));
+	String::DefaultExtension(name, sizeof(name), ".sav");
+
+	// we can't call SCRQH_BeginLoadingPlaque, because too much stack space has
+	// been used.  The menu calls it before stuffing loadgame command
+	//SCRQH_BeginLoadingPlaque ();
+
+	Array<byte> Buffer;
+	common->Printf("Loading game from %s...\n", name);
+	int FileLen = FS_ReadFile(name, Buffer);
+	if (FileLen <= 0)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+	Buffer.Append(0);
+
+	char* ReadPos = (char*)Buffer.Ptr();
+	int version = String::Atoi(GetLine(ReadPos));
+	if (version != Q1_SAVEGAME_VERSION)
+	{
+		common->Printf("Savegame is version %i, not %i\n", version, Q1_SAVEGAME_VERSION);
+		return;
+	}
+	GetLine(ReadPos);
+	float spawn_parms[NUM_SPAWN_PARMS];
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		spawn_parms[i] = String::Atof(GetLine(ReadPos));
+	}
+	// this silliness is so we can load 1.06 save files, which have float skill values
+	svqh_current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
+
+	char mapname[MAX_QPATH];
+	String::Cpy(mapname, GetLine(ReadPos));
+	float time = String::Atof(GetLine(ReadPos));
+
+	CL_Disconnect();
+	SVQH_Shutdown(false);
+
+	SVQH_SpawnServer(mapname, "");
+	if (sv.state == SS_DEAD)
+	{
+		common->Printf("Couldn't load map\n");
+		return;
+	}
+	sv.qh_paused = true;		// pause until all clients connect
+	sv.loadgame = true;
+
+	// load the light styles
+
+	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	{
+		char* Style = GetLine(ReadPos);
+		char* Tmp = (char*)Mem_Alloc(String::Length(Style) + 1);
+		String::Cpy(Tmp, Style);
+		sv.qh_lightstyles[i] = Tmp;
+	}
+
+	// load the edicts out of the savegame file
+	int entnum = -1;		// -1 is the globals
+	const char* start = ReadPos;
+	while (start)
+	{
+		const char* token = String::Parse1(&start);
+		if (!start)
+		{
+			break;		// end of file
+		}
+		if (String::Cmp(token,"{"))
+		{
+			common->FatalError("First token isn't a brace %s", token);
+		}
+
+		if (entnum == -1)
+		{
+			// parse the global vars
+			start = ED_ParseGlobals(start);
+		}
+		else
+		{
+			// parse an edict
+			qhedict_t* ent = QH_EDICT_NUM(entnum);
+			Com_Memset(&ent->v, 0, progs->entityfields * 4);
+			ent->free = false;
+			start = ED_ParseEdict(start, ent);
+
+			// link it into the bsp tree
+			if (!ent->free)
+			{
+				SVQH_LinkEdict(ent, false);
+			}
+		}
+
+		entnum++;
+	}
+
+	sv.qh_num_edicts = entnum;
+	sv.qh_time = time;
+
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		svs.clients->qh_spawn_parms[i] = spawn_parms[i];
+	}
+
+	if (!com_dedicated->integer)
+	{
+		CL_EstablishConnection("local");
+		Host_Reconnect_f();
+	}
+}
+
+void SVH2_RemoveGIPFiles(const char* path)
+{
+	if (!fs_homepath)
+	{
+		return;
+	}
+	char* netpath;
+	if (path)
+	{
+		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, path);
+	}
+	else
+	{
+		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "");
+		netpath[String::Length(netpath) - 1] = 0;
+	}
+	int numSysFiles;
+	char** sysFiles = Sys_ListFiles(netpath, ".gip", NULL, &numSysFiles, false);
+	for (int i = 0; i < numSysFiles; i++)
+	{
+		if (path)
+		{
+			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s/%s", path, sysFiles[i]));
+		}
+		else
+		{
+			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, sysFiles[i]);
+		}
+		FS_Remove(netpath);
+	}
+	Sys_FreeFileList(sysFiles);
+}
+
+static void SVH2_CopyFiles(const char* source, const char* ext, const char* dest)
+{
+	char* netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, source);
+	if (!source[0])
+	{
+		netpath[String::Length(netpath) - 1] = 0;
+	}
+	int numSysFiles;
+	char** sysFiles = Sys_ListFiles(netpath, ext, NULL, &numSysFiles, false);
+	for (int i = 0; i < numSysFiles; i++)
+	{
+		char* srcpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", source, sysFiles[i]));
+		char* dstpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", dest, sysFiles[i]));
+		FS_CopyFile(srcpath, dstpath);
+	}
+	Sys_FreeFileList(sysFiles);
+}
+
+static void SVH2_Savegame_f()
+{
+	if (sv.state == SS_DEAD)
+	{
+		common->Printf("Not playing a local game.\n");
+		return;
+	}
+
+	if (CLQH_GetIntermission())
+	{
+		common->Printf("Can't save in intermission.\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("save <savename> : save a game\n");
+		return;
+	}
+
+	if (strstr(Cmd_Argv(1), ".."))
+	{
+		common->Printf("Relative pathnames are not allowed.\n");
+		return;
+	}
+
+	for (int i = 0; i < svs.qh_maxclients; i++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED && (svs.clients[i].qh_edict->GetHealth() <= 0))
+		{
+			common->Printf("Can't savegame with a dead player\n");
+			return;
+		}
+	}
+
+	SVH2_SaveGamestate(false);
+
+	SVH2_RemoveGIPFiles(Cmd_Argv(1));
+
+	char* netname = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "clients.gip");
+	FS_Remove(netname);
+
+	char dest[MAX_OSPATH];
+	sprintf(dest, "%s/", Cmd_Argv(1));
+	common->Printf("Saving game to %s...\n", Cmd_Argv(1));
+
+	SVH2_CopyFiles("", ".gip", dest);
+
+	sprintf(dest,"%s/info.dat", Cmd_Argv(1));
+	fileHandle_t f = FS_FOpenFileWrite(dest);
+	if (!f)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+
+	FS_Printf(f, "%i\n", H2_SAVEGAME_VERSION);
+	char comment[SAVEGAME_COMMENT_LENGTH + 1];
+	SVH2_SavegameComment(comment);
+	FS_Printf(f, "%s\n", comment);
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		FS_Printf(f, "%f\n", svs.clients->qh_spawn_parms[i]);
+	}
+	FS_Printf(f, "%d\n", svqh_current_skill);
+	FS_Printf(f, "%s\n", sv.name);
+	FS_Printf(f, "%f\n", sv.qh_time);
+	FS_Printf(f, "%d\n", svs.qh_maxclients);
+	FS_Printf(f, "%f\n", svqh_deathmatch->value);
+	FS_Printf(f, "%f\n", svqh_coop->value);
+	FS_Printf(f, "%f\n", svqh_teamplay->value);
+	FS_Printf(f, "%f\n", h2_randomclass->value);
+	FS_Printf(f, "%f\n", Cvar_VariableValue("_cl_playerclass"));
+	FS_Printf(f, "%d\n", info_mask);
+	FS_Printf(f, "%d\n", info_mask2);
+
+	FS_FCloseFile(f);
+}
+
+static void SVH2_Loadgame_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("load <savename> : load a game\n");
+		return;
+	}
+
+	CLQH_StopDemoLoop();		// stop demo loop in case this fails
+	CL_Disconnect();
+	SVH2_RemoveGIPFiles(NULL);
+
+	common->Printf("Loading game from %s...\n", Cmd_Argv(1));
+
+	char dest[MAX_OSPATH];
+	sprintf(dest, "%s/info.dat", Cmd_Argv(1));
+
+	Array<byte> Buffer;
+	int Len = FS_ReadFile(dest, Buffer);
+	if (Len <= 0)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+	Buffer.Append(0);
+
+	char* ReadPos = (char*)Buffer.Ptr();
+	int version = String::Atoi(GetLine(ReadPos));
+
+	if (version != H2_SAVEGAME_VERSION)
+	{
+		common->Printf("Savegame is version %i, not %i\n", version, H2_SAVEGAME_VERSION);
+		return;
+	}
+	GetLine(ReadPos);
+	float spawn_parms[NUM_SPAWN_PARMS];
+	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		spawn_parms[i] = String::Atof(GetLine(ReadPos));
+	}
+	// this silliness is so we can load 1.06 save files, which have float skill values
+	svqh_current_skill = (int)(String::Atof(GetLine(ReadPos)) + 0.1);
+	Cvar_SetValue("skill", (float)svqh_current_skill);
+
+	Cvar_SetValue("deathmatch", 0);
+	Cvar_SetValue("coop", 0);
+	Cvar_SetValue("teamplay", 0);
+	Cvar_SetValue("randomclass", 0);
+
+	char mapname[MAX_QPATH];
+	String::Cpy(mapname, GetLine(ReadPos));
+	//	time, ignored
+	GetLine(ReadPos);
+
+	int tempi = -1;
+	tempi = String::Atoi(GetLine(ReadPos));
+	if (tempi >= 1)
+	{
+		svs.qh_maxclients = tempi;
+	}
+
+	float tempf = String::Atof(GetLine(ReadPos));
+	if (tempf >= 0)
+	{
+		Cvar_SetValue("deathmatch", tempf);
+	}
+
+	tempf = String::Atof(GetLine(ReadPos));
+	if (tempf >= 0)
+	{
+		Cvar_SetValue("coop", tempf);
+	}
+
+	tempf = String::Atof(GetLine(ReadPos));
+	if (tempf >= 0)
+	{
+		Cvar_SetValue("teamplay", tempf);
+	}
+
+	tempf = String::Atof(GetLine(ReadPos));
+	if (tempf >= 0)
+	{
+		Cvar_SetValue("randomclass", tempf);
+	}
+
+	tempf = String::Atof(GetLine(ReadPos));
+	if (tempf >= 0)
+	{
+		Cvar_SetValue("_cl_playerclass", tempf);
+	}
+
+	info_mask = String::Atoi(GetLine(ReadPos));
+	info_mask2 = String::Atoi(GetLine(ReadPos));
+
+	sprintf(dest, "%s/", Cmd_Argv(1));
+	SVH2_CopyFiles(dest, ".gip", "");
+
+	SVH2_LoadGamestate(mapname, NULL, 2);
+
+	SVQH_SaveSpawnparms();
+
+	qhedict_t* ent = QH_EDICT_NUM(1);
+
+	Cvar_SetValue("_cl_playerclass", ent->GetPlayerClass());//this better be the same as above...
+
+	if (GGameType & GAME_H2Portals)
+	{
+		// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
+		*pr_globalVars.cl_playerclass = ent->GetPlayerClass();
+	}
+
+	svs.clients->h2_playerclass = ent->GetPlayerClass();
+
+	sv.qh_paused = true;		// pause until all clients connect
+	sv.loadgame = true;
+
+	if (!com_dedicated->integer)
+	{
+		CL_EstablishConnection("local");
+		Host_Reconnect_f();
+	}
+}
+
 void SVQH_InitOperatorCommands()
 {
 	Cmd_AddCommand("map", SVQH_Map_f);
 	Cmd_AddCommand("changelevel", SVQH_Changelevel_f);
+	if (GGameType & GAME_Quake)
+	{
+		Cmd_AddCommand("restart", SVQ1_Restart_f);
+		Cmd_AddCommand("save", SVQ1_Savegame_f);
+		Cmd_AddCommand("load", SVQ1_Loadgame_f);
+	}
+	else
+	{
+		Cmd_AddCommand("restart", SVH2_Restart_f);
+		Cmd_AddCommand("changelevel2", SVH2_Changelevel2_f);
+		Cmd_AddCommand("save", SVH2_Savegame_f);
+		Cmd_AddCommand("load", SVH2_Loadgame_f);
+	}
 }
 
 void SVQHW_InitOperatorCommands()

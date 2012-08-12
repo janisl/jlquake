@@ -25,5 +25,6 @@ void CLQH_StopDemoLoop();
 void CL_ClearKeyCatchers();
 void CLQH_GetSpawnParams();
 bool CL_IsDemoPlaying();
+int CLQH_GetIntermission();
 
 #endif

@@ -59,9 +59,3 @@ void V_RenderView(void);
 void V_UpdatePalette(void);
 void V_Register(void);
 void V_ParseDamage(void);
-
-//
-// cl_tent
-//
-void CL_RemoveGIPFiles(const char* path);
-void CL_CopyFiles(const char* source, const char* ext, const char* dest);

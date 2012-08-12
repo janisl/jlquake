@@ -205,3 +205,8 @@ bool CL_IsDemoPlaying()
 {
 	return clc.demoplaying;
 }
+
+int CLQH_GetIntermission()
+{
+	return cl.qh_intermission;
+}

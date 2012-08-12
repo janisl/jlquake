@@ -181,7 +181,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	CL_RemoveGIPFiles(NULL);
+	SVH2_RemoveGIPFiles(NULL);
 
 	global_hInstance = hInstance;
 

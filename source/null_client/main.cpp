@@ -51,3 +51,8 @@ bool CL_IsDemoPlaying()
 {
 	return false;
 }
+
+int CLQH_GetIntermission()
+{
+	return 0;
+}
