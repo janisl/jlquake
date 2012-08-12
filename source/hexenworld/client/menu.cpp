@@ -363,97 +363,13 @@ void M_ToggleMenu_f(void)
 }
 
 char BigCharWidth[27][27];
-static char unused_filler;	// cuz the COM_LoadStackFile puts a 0 at the end of the data
-
-//#define BUILD_BIG_CHAR 1
 
 void M_BuildBigCharWidth(void)
 {
-#ifdef BUILD_BIG_CHAR
-	image_t* p;
-	int ypos,xpos;
-	byte* source;
-	int biggestX,adjustment;
-	char After[20], Before[20];
-	int numA,numB;
-	FILE* FH;
-	char temp[MAX_OSPATH];
-
-	p = R_CachePic("gfx/menu/bigfont.lmp");
-
-	for (numA = 0; numA < 27; numA++)
-	{
-		Com_Memset(After,20,sizeof(After));
-		source = p->data + ((numA % 8) * 20) + (numA / 8 * p->width * 20);
-		biggestX = 0;
-
-		for (ypos = 0; ypos < 19; ypos++)
-		{
-			for (xpos = 0; xpos < 19; xpos++,source++)
-			{
-				if (*source)
-				{
-					After[ypos] = xpos;
-					if (xpos > biggestX)
-					{
-						biggestX = xpos;
-					}
-				}
-			}
-			source += (p->width - 19);
-		}
-		biggestX++;
-
-		for (numB = 0; numB < 27; numB++)
-		{
-			Com_Memset(Before,0,sizeof(Before));
-			source = p->data + ((numB % 8) * 20) + (numB / 8 * p->width * 20);
-			adjustment = 0;
-
-			for (ypos = 0; ypos < 19; ypos++)
-			{
-				for (xpos = 0; xpos < 19; xpos++,source++)
-				{
-					if (!(*source))
-					{
-						Before[ypos]++;
-					}
-					else
-					{
-						break;
-					}
-				}
-				source += (p->width - xpos);
-			}
-
-
-			while (1)
-			{
-				for (ypos = 0; ypos < 19; ypos++)
-				{
-					if (After[ypos] - Before[ypos] >= 15)
-					{
-						break;
-					}
-					Before[ypos]--;
-				}
-				if (ypos < 19)
-				{
-					break;
-				}
-				adjustment--;
-			}
-			BigCharWidth[numA][numB] = adjustment + biggestX;
-		}
-	}
-
-	sprintf(temp,"%s\\gfx\\menu\\fontsize.lmp",com_gamedir);
-	FH = fopen(temp,"wb");
-	fwrite(BigCharWidth,1,sizeof(BigCharWidth),FH);
-	fclose(FH);
-#else
-	COM_LoadStackFile("gfx/menu/fontsize.lmp",BigCharWidth,sizeof(BigCharWidth) + 1);
-#endif
+	void* data;
+	FS_ReadFile("gfx/menu/fontsize.lmp", &data);
+	Com_Memcpy(BigCharWidth, data, sizeof(BigCharWidth));
+	FS_FreeFile(data);
 }
 
 /*

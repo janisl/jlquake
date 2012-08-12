@@ -1355,7 +1355,7 @@ CL_InitRenderStuff
 */
 static void CL_InitRenderStuff(void)
 {
-	playerTranslation = (byte*)COM_LoadHunkFile("gfx/player.lmp");
+	FS_ReadFile("gfx/player.lmp", (void**)&playerTranslation);
 	if (!playerTranslation)
 	{
 		common->FatalError("Couldn't load gfx/player.lmp");
