@@ -300,10 +300,10 @@ void CL_WritePacket(void)
 	}
 	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer) & PACKET_MASK_Q3;
 	count = cl.q3_cmdNumber - cl.q3_outPackets[oldPacketNum].p_cmdNumber;
-	if (count > MAX_PACKET_USERCMDS)
+	if (count > Q3MAX_PACKET_USERCMDS)
 	{
-		count = MAX_PACKET_USERCMDS;
-		common->Printf("MAX_PACKET_USERCMDS\n");
+		count = Q3MAX_PACKET_USERCMDS;
+		common->Printf("Q3MAX_PACKET_USERCMDS\n");
 	}
 	if (count >= 1)
 	{

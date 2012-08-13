@@ -15,7 +15,6 @@ set(QUAKE3_FILES
 	client/cl_ui.cpp
 	client/snd_dma.cpp
 	server/sv_ccmds.cpp
-	server/sv_client.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 	qcommon/cmd.cpp
@@ -36,7 +35,6 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 #############################################################################
 
 set(QUAKE3_DEDICATED_FILES
-	server/sv_client.cpp
 	server/sv_ccmds.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp

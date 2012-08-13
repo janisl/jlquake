@@ -33,16 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 /*
 ==============================================================
 
-NET
-
-==============================================================
-*/
-
-#define MAX_PACKET_USERCMDS     32		// max number of wmusercmd_t in a packet
-
-/*
-==============================================================
-
 PROTOCOL
 
 ==============================================================

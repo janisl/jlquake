@@ -50,7 +50,6 @@ extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_floodProtect;
 extern Cvar* sv_allowAnonymous;
 
 // Rafael gameskill
@@ -80,12 +79,3 @@ void SV_MasterGameCompleteStatus();		// NERVE - SMF
 // sv_init.c
 //
 void SV_SpawnServer(char* server, qboolean killBots);
-
-
-
-//
-// sv_client.c
-//
-void SV_ExecuteClientMessage(client_t* cl, QMsg* msg);
-
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);

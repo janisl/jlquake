@@ -30,7 +30,6 @@ Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
 Cvar* sv_mapChecksum;
 Cvar* sv_serverid;
-Cvar* sv_floodProtect;
 
 /*
 =============================================================================
@@ -482,7 +481,7 @@ void SV_PacketEvent(netadr_t from, QMsg* msg)
 			if (cl->state != CS_ZOMBIE)
 			{
 				cl->q3_lastPacketTime = svs.q3_time;	// don't timeout
-				SV_ExecuteClientMessage(cl, msg);
+				SVT3_ExecuteClientMessage(cl, msg);
 			}
 		}
 		return;

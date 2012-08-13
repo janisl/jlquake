@@ -304,5 +304,7 @@ enum
 
 #define Q3PORT_AUTHORIZE    27952
 
-#define Q3PROTOCOL_VERSION    68
+#define Q3PROTOCOL_VERSION      68
 // 1.31 - 67
+
+#define Q3MAX_PACKET_USERCMDS   32		// max number of q3usercmd_t in a packet

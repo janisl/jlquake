@@ -64,7 +64,7 @@ void SVT3_WriteDownloadToClient(client_t* cl, QMsg* msg);
 void SVT3_GetChallenge(netadr_t from);
 void SVT3_AuthorizeIpPacket(netadr_t from);
 void SVT3_DirectConnect(netadr_t from);
-void SVT3_SendClientGameState(client_t* client);
+void SVT3_ExecuteClientMessage(client_t* cl, QMsg* msg);
 
 //
 //	Game
@@ -144,6 +144,7 @@ extern Cvar* svt3_minPing;
 extern Cvar* svt3_maxPing;
 extern Cvar* svt3_privatePassword;
 extern Cvar* svt3_privateClients;
+extern Cvar* svt3_floodProtect;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
