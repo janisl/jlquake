@@ -257,7 +257,7 @@ void SVET_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
 }
 
 //	Abort a download if in progress
-void SVT3_StopDownload_f(client_t* cl)
+static void SVT3_StopDownload_f(client_t* cl)
 {
 	if (*cl->downloadName)
 	{
@@ -269,7 +269,7 @@ void SVT3_StopDownload_f(client_t* cl)
 
 //	The argument will be the last acknowledged block from the client, it should be
 // the same as cl->downloadClientBlock
-void SVT3_NextDownload_f(client_t* cl)
+static void SVT3_NextDownload_f(client_t* cl)
 {
 	int block = String::Atoi(Cmd_Argv(1));
 
@@ -295,7 +295,7 @@ void SVT3_NextDownload_f(client_t* cl)
 	SVT3_DropClient(cl, "broken download");
 }
 
-void SVT3_BeginDownload_f(client_t* cl)
+static void SVT3_BeginDownload_f(client_t* cl)
 {
 	// Kill any existing download
 	SVT3_CloseDownload(cl);
@@ -672,12 +672,12 @@ void SVT3_WriteDownloadToClient(client_t* cl, QMsg* msg)
 }
 
 //	The client is going to disconnect, so remove the connection immediately  FIXME: move to game?
-void SVT3_Disconnect_f(client_t* cl)
+static void SVT3_Disconnect_f(client_t* cl)
 {
 	SVT3_DropClient(cl, "disconnected");
 }
 
-void SVT3_ResetPureClient_f(client_t* cl)
+static void SVT3_ResetPureClient_f(client_t* cl)
 {
 	cl->q3_pureAuthentic = 0;
 	cl->q3_gotCP = false;
@@ -685,7 +685,7 @@ void SVT3_ResetPureClient_f(client_t* cl)
 
 //	Pull specific info from a newly changed userinfo string
 // into a more C friendly form.
-void SVT3_UserinfoChanged(client_t* cl)
+static void SVT3_UserinfoChanged(client_t* cl)
 {
 	const char* val;
 	int i;
@@ -790,7 +790,7 @@ void SVT3_UserinfoChanged(client_t* cl)
 	}
 }
 
-void SVT3_UpdateUserinfo_f(client_t* cl)
+static void SVT3_UpdateUserinfo_f(client_t* cl)
 {
 	String::NCpyZ(cl->userinfo, Cmd_Argv(1), MAX_INFO_STRING_Q3);
 
@@ -1532,3 +1532,290 @@ void SVT3_SendClientGameState(client_t* client)
 	// deliver this to the client
 	SVT3_SendMessageToClient(&msg, client);
 }
+
+//	Downloads are finished
+static void SVT3_DoneDownload_f(client_t* cl)
+{
+	common->DPrintf("clientDownload: %s Done\n", cl->name);
+	// resend the game state to update any clients that entered during the download
+	SVT3_SendClientGameState(cl);
+}
+
+static void SVET_WWWDownload_f(client_t* cl)
+{
+	char* subcmd = Cmd_Argv(1);
+
+	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
+	if (!cl->et_bWWWDl)
+	{
+		common->Printf("SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name);
+		SVT3_DropClient(cl, va("SV_WWWDownload: unexpected wwwdl %s", subcmd));
+		return;
+	}
+
+	if (!String::ICmp(subcmd, "ack"))
+	{
+		if (cl->et_bWWWing)
+		{
+			common->Printf("WARNING: dupe wwwdl ack from client '%s'\n", cl->name);
+		}
+		cl->et_bWWWing = true;
+		return;
+	}
+	else if (!String::ICmp(subcmd, "bbl8r"))
+	{
+		SVT3_DropClient(cl, "acking disconnected download mode");
+		return;
+	}
+
+	// below for messages that only happen during/after download
+	if (!cl->et_bWWWing)
+	{
+		common->Printf("SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name);
+		SVT3_DropClient(cl, va("SV_WWWDownload: unexpected wwwdl %s", subcmd));
+		return;
+	}
+
+	if (!String::ICmp(subcmd, "done"))
+	{
+		cl->download = 0;
+		*cl->downloadName = 0;
+		cl->et_bWWWing = false;
+		return;
+	}
+	else if (!String::ICmp(subcmd, "fail"))
+	{
+		cl->download = 0;
+		*cl->downloadName = 0;
+		cl->et_bWWWing = false;
+		cl->et_bFallback = true;
+		// send a reconnect
+		SVT3_SendClientGameState(cl);
+		return;
+	}
+	else if (!String::ICmp(subcmd, "chkfail"))
+	{
+		common->Printf("WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name, cl->downloadName);
+		common->Printf("         you should check your download redirect configuration.\n");
+		cl->download = 0;
+		*cl->downloadName = 0;
+		cl->et_bWWWing = false;
+		cl->et_bFallback = true;
+		// send a reconnect
+		SVT3_SendClientGameState(cl);
+		return;
+	}
+
+	common->Printf("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name);
+	SVT3_DropClient(cl, va("SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd));
+}
+
+//	If we are pure, disconnect the client if they do no meet the following conditions:
+//	1. the first two checksums match our view of cgame and ui
+//		Wolf specific: the checksum is the checksum of the pk3 we found the DLL in
+//	2. there are no any additional checksums that we do not have
+//	This routine would be a bit simpler with a goto but i abstained
+static void SVT3_VerifyPaks_f(client_t* cl)
+{
+	// if we are pure, we "expect" the client to load certain things from
+	// certain pk3 files, namely we want the client to have loaded the
+	// ui and cgame that we think should be loaded based on the pure setting
+	if (svt3_pure->integer != 0)
+	{
+		int nChkSum1 = 0;
+		int nChkSum2 = 0;
+		// we run the game, so determine which cgame and ui the client "should" be running
+		bool bGood = (FS_FileIsInPAK(GGameType & (GAME_WolfMP | GAME_ET) ? "cgame_mp_x86.dll" : "vm/cgame.qvm", &nChkSum1) == 1);
+		if (bGood)
+		{
+			bGood = (FS_FileIsInPAK(GGameType & (GAME_WolfMP | GAME_ET) ? "ui_mp_x86.dll" : "vm/ui.qvm", &nChkSum2) == 1);
+		}
+
+		int nClientPaks = Cmd_Argc();
+
+		// start at arg 2 ( skip serverId cl_paks )
+		int nCurArg = 1;
+
+		const char* pArg = Cmd_Argv(nCurArg++);
+		if (!pArg)
+		{
+			bGood = false;
+		}
+		else
+		{
+			// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
+			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
+			// since serverId is a frame count, it always goes up
+			if (String::Atoi(pArg) < sv.q3_checksumFeedServerId)
+			{
+				common->DPrintf("ignoring outdated cp command from client %s\n", cl->name);
+				return;
+			}
+		}
+
+		// we basically use this while loop to avoid using 'goto' :)
+		while (bGood)
+		{
+
+			// must be at least 6: "cl_paks cgame ui @ firstref ... numChecksums"
+			// numChecksums is encoded
+			if (nClientPaks < 6)
+			{
+				bGood = false;
+				break;
+			}
+			// verify first to be the cgame checksum
+			pArg = Cmd_Argv(nCurArg++);
+			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum1)
+			{
+				bGood = false;
+				break;
+			}
+			// verify the second to be the ui checksum
+			pArg = Cmd_Argv(nCurArg++);
+			if (!pArg || *pArg == '@' || String::Atoi(pArg) != nChkSum2)
+			{
+				bGood = false;
+				break;
+			}
+			// should be sitting at the delimeter now
+			pArg = Cmd_Argv(nCurArg++);
+			if (*pArg != '@')
+			{
+				bGood = false;
+				break;
+			}
+			// store checksums since tokenization is not re-entrant
+			int i;
+			int nClientChkSum[1024];
+			for (i = 0; nCurArg < nClientPaks; i++)
+			{
+				nClientChkSum[i] = String::Atoi(Cmd_Argv(nCurArg++));
+			}
+
+			// store number to compare against (minus one cause the last is the number of checksums)
+			nClientPaks = i - 1;
+
+			// make sure none of the client check sums are the same
+			// so the client can't send 5 the same checksums
+			for (i = 0; i < nClientPaks; i++)
+			{
+				for (int j = 0; j < nClientPaks; j++)
+				{
+					if (i == j)
+					{
+						continue;
+					}
+					if (nClientChkSum[i] == nClientChkSum[j])
+					{
+						bGood = false;
+						break;
+					}
+				}
+				if (bGood == false)
+				{
+					break;
+				}
+			}
+			if (bGood == false)
+			{
+				break;
+			}
+
+			// get the pure checksums of the pk3 files loaded by the server
+			const char* pPaks = FS_LoadedPakPureChecksums();
+			Cmd_TokenizeString(pPaks);
+			int nServerPaks = Cmd_Argc();
+			if (nServerPaks > 1024)
+			{
+				nServerPaks = 1024;
+			}
+
+			int nServerChkSum[1024];
+			for (i = 0; i < nServerPaks; i++)
+			{
+				nServerChkSum[i] = String::Atoi(Cmd_Argv(i));
+			}
+
+			// check if the client has provided any pure checksums of pk3 files not loaded by the server
+			for (i = 0; i < nClientPaks; i++)
+			{
+				int j;
+				for (j = 0; j < nServerPaks; j++)
+				{
+					if (nClientChkSum[i] == nServerChkSum[j])
+					{
+						break;
+					}
+				}
+				if (j >= nServerPaks)
+				{
+					bGood = false;
+					break;
+				}
+			}
+			if (bGood == false)
+			{
+				break;
+			}
+
+			// check if the number of checksums was correct
+			nChkSum1 = sv.q3_checksumFeed;
+			for (i = 0; i < nClientPaks; i++)
+			{
+				nChkSum1 ^= nClientChkSum[i];
+			}
+			nChkSum1 ^= nClientPaks;
+			if (nChkSum1 != nClientChkSum[nClientPaks])
+			{
+				bGood = false;
+				break;
+			}
+
+			// break out
+			break;
+		}
+
+		cl->q3_gotCP = true;
+
+		if (bGood)
+		{
+			cl->q3_pureAuthentic = 1;
+		}
+		else
+		{
+			cl->q3_pureAuthentic = 0;
+			cl->q3_nextSnapshotTime = -1;
+			cl->state = CS_ACTIVE;
+			SVT3_SendClientSnapshot(cl);
+			SVT3_DropClient(cl, "Unpure client detected. Invalid .PK3 files referenced!");
+		}
+	}
+}
+
+ucmd_t q3_ucmds[] =
+{
+	{"userinfo", SVT3_UpdateUserinfo_f},
+	{"disconnect", SVT3_Disconnect_f},
+	{"cp", SVT3_VerifyPaks_f},
+	{"vdr", SVT3_ResetPureClient_f},
+	{"download", SVT3_BeginDownload_f},
+	{"nextdl", SVT3_NextDownload_f},
+	{"stopdl", SVT3_StopDownload_f},
+	{"donedl", SVT3_DoneDownload_f},
+	{NULL, NULL}
+};
+
+ucmd_t et_ucmds[] =
+{
+	{"userinfo", SVT3_UpdateUserinfo_f, false },
+	{"disconnect", SVT3_Disconnect_f, true },
+	{"cp", SVT3_VerifyPaks_f, false },
+	{"vdr", SVT3_ResetPureClient_f, false },
+	{"download", SVT3_BeginDownload_f, false },
+	{"nextdl", SVT3_NextDownload_f, false },
+	{"stopdl", SVT3_StopDownload_f, false },
+	{"donedl", SVT3_DoneDownload_f, false },
+	{"wwwdl", SVET_WWWDownload_f, false },
+	{NULL, NULL}
+};

@@ -52,19 +52,15 @@ bool SVET_TempBanIsBanned(netadr_t address);
 //
 //	Client
 //
+extern ucmd_t q3_ucmds[];
+extern ucmd_t et_ucmds[];
+
 void SVT3_DropClient(client_t* drop, const char* reason);
 void SVQ3_ClientEnterWorld(client_t* client, q3usercmd_t* cmd);
 void SVWS_ClientEnterWorld(client_t* client, wsusercmd_t* cmd);
 void SVWM_ClientEnterWorld(client_t* client, wmusercmd_t* cmd);
 void SVET_ClientEnterWorld(client_t* client, etusercmd_t* cmd);
-void SVT3_StopDownload_f(client_t* cl);
-void SVT3_NextDownload_f(client_t* cl);
-void SVT3_BeginDownload_f(client_t* cl);
 void SVT3_WriteDownloadToClient(client_t* cl, QMsg* msg);
-void SVT3_Disconnect_f(client_t* cl);
-void SVT3_ResetPureClient_f(client_t* cl);
-void SVT3_UserinfoChanged(client_t* cl);
-void SVT3_UpdateUserinfo_f(client_t* cl);
 void SVT3_GetChallenge(netadr_t from);
 void SVT3_AuthorizeIpPacket(netadr_t from);
 void SVT3_DirectConnect(netadr_t from);
