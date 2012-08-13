@@ -36,5 +36,6 @@ bool SVQ3_GameConsoleCommand();
 void SVQ3_GameClientBegin(int clientNum);
 void SVQ3_GameClientUserInfoChanged(int clientNum);
 const char* SVQ3_GameClientConnect(int clientNum, bool firstTime, bool isBot);
+void SVQ3_GameClientCommand(int clientNum);
 
 #endif

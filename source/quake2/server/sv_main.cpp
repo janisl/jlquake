@@ -1021,3 +1021,18 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 	}
 	Com_Memset(&svs, 0, sizeof(svs));
 }
+
+void SCRQH_BeginLoadingPlaque()
+{
+}
+void CL_EstablishConnection(const char* name)
+{
+}
+void Host_Reconnect_f()
+{
+}
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

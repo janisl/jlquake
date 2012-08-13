@@ -16,7 +16,6 @@ add_executable(jlhexen2
 	net_main.cpp
 	r_part.cpp
 	sbar.cpp
-	sv_user.cpp
 	view.cpp
 	sys_linux.cpp
 	snd_dma.cpp
@@ -32,7 +31,6 @@ add_executable(jlhexen2ded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	sv_user.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlhexen2ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")

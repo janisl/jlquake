@@ -829,3 +829,8 @@ void Host_Reconnect_f()
 {
 }
 #endif
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

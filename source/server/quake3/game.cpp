@@ -107,6 +107,11 @@ const char* SVQ3_GameClientConnect(int clientNum, bool firstTime, bool isBot)
 	return NULL;
 }
 
+void SVQ3_GameClientCommand(int clientNum)
+{
+	VM_Call(gvm, Q3GAME_CLIENT_COMMAND, clientNum);
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {

@@ -382,3 +382,8 @@ void CL_EstablishConnection(const char* name)
 void Host_Reconnect_f()
 {
 }
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}

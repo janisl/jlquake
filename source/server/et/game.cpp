@@ -139,6 +139,11 @@ const char* SVET_GameClientConnect(int clientNum, bool firstTime, bool isBot)
 	return NULL;
 }
 
+void SVET_GameClientCommand(int clientNum)
+{
+	VM_Call(gvm, ETGAME_CLIENT_COMMAND, clientNum);
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {

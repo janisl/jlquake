@@ -17,7 +17,6 @@ add_executable(jlquake
 	r_part.cpp
 	sbar.cpp
 	snd_dma.cpp
-	sv_user.cpp
 	sys_linux.cpp
 	view.cpp
 )
@@ -32,7 +31,6 @@ add_executable(jlquakeded
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp
-	sv_user.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlquakeded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")

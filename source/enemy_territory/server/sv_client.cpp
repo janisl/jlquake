@@ -29,58 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // sv_client.c -- server code for dealing with clients
 
 #include "server.h"
-
-/*
-============================================================
-
-CLIENT COMMAND EXECUTION
-
-============================================================
-*/
-
-/*
-==================
-SV_ExecuteClientCommand
-
-Also called by bot code
-==================
-*/
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
-{
-	ucmd_t* u;
-	qboolean bProcessed = false;
-
-	Cmd_TokenizeString(s);
-
-	// see if it is a server level command
-	for (u = et_ucmds; u->name; u++)
-	{
-		if (!String::Cmp(Cmd_Argv(0), u->name))
-		{
-			if (preMapRestart && !u->allowedpostmapchange)
-			{
-				continue;
-			}
-
-			u->func(cl);
-			bProcessed = true;
-			break;
-		}
-	}
-
-	if (clientOK)
-	{
-		// pass unknown strings to the game
-		if (!u->name && sv.state == SS_GAME)
-		{
-			VM_Call(gvm, ETGAME_CLIENT_COMMAND, cl - svs.clients);
-		}
-	}
-	else if (!bProcessed)
-	{
-		common->DPrintf("client text ignored for %s: %s\n", cl->name, Cmd_Argv(0));
-	}
-}
+#include "../../server/quake2/local.h"
 
 /*
 ===============

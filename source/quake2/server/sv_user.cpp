@@ -22,39 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "server.h"
 
 /*
-============================================================
-
-USER STRINGCMD EXECUTION
-
-sv_client and sv_player will be valid.
-============================================================
-*/
-
-/*
-==================
-SV_ExecuteClientCommand
-==================
-*/
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
-{
-	ucmd_t* u;
-
-	Cmd_TokenizeString(s, true);
-
-	for (u = q2_ucmds; u->name; u++)
-		if (!String::Cmp(Cmd_Argv(0), u->name))
-		{
-			u->func(cl);
-			break;
-		}
-
-	if (!u->name && sv.state == SS_GAME)
-	{
-		ge->ClientCommand(cl->q2_edict);
-	}
-}
-
-/*
 ===========================================================================
 
 USER CMD EXECUTION

@@ -136,6 +136,11 @@ const char* SVWS_GameClientConnect(int clientNum, bool firstTime, bool isBot)
 	return NULL;
 }
 
+void SVWS_GameClientCommand(int clientNum)
+{
+	VM_Call(gvm, WSGAME_CLIENT_COMMAND, clientNum);
+}
+
 static void SVWS_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wsplayerState_t* clients, int sizeofGameClient)
 {

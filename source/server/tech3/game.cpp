@@ -433,3 +433,23 @@ const char* SVT3_GameClientConnect(int clientNum, bool firstTime, bool isBot)
 	}
 	return SVQ3_GameClientConnect(clientNum, firstTime, isBot);
 }
+
+void SVT3_GameClientCommand(int clientNum)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameClientCommand(clientNum);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameClientCommand(clientNum);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameClientCommand(clientNum);
+	}
+	else
+	{
+		SVQ3_GameClientCommand(clientNum);
+	}
+}

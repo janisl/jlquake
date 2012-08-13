@@ -91,6 +91,7 @@ void SVT3_InitGameProgs();
 void SVT3_RestartGameProgs();
 void SVT3_ShutdownGameProgs();
 const char* SVT3_GameClientConnect(int clientNum, bool firstTime, bool isBot);
+void SVT3_GameClientCommand(int clientNum);
 
 //
 //	Init

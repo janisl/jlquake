@@ -29,47 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // sv_client.c -- server code for dealing with clients
 
 #include "server.h"
-
-/*
-============================================================
-
-CLIENT COMMAND EXECUTION
-
-============================================================
-*/
-
-/*
-==================
-SV_ExecuteClientCommand
-
-Also called by bot code
-==================
-*/
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
-{
-	ucmd_t* u;
-
-	Cmd_TokenizeString(s);
-
-	// see if it is a server level command
-	for (u = q3_ucmds; u->name; u++)
-	{
-		if (!String::Cmp(Cmd_Argv(0), u->name))
-		{
-			u->func(cl);
-			break;
-		}
-	}
-
-	if (clientOK)
-	{
-		// pass unknown strings to the game
-		if (!u->name && sv.state == SS_GAME)
-		{
-			VM_Call(gvm, WSGAME_CLIENT_COMMAND, cl - svs.clients);
-		}
-	}
-}
+#include "../../server/quake2/local.h"
 
 /*
 ===============
