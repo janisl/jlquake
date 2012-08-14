@@ -239,7 +239,7 @@ bool SVT3_Netchan_Process(client_t* client, QMsg* msg)
 	{
 		return false;
 	}
-	if (!(GGameType & GAME_WolfSP) && (!(GGameType & GAME_ET) && !SVET_GameIsSinglePlayer()))
+	if (!(GGameType & GAME_WolfSP) && (!(GGameType & GAME_ET) || !SVET_GameIsSinglePlayer()))
 	{
 		SVT3_Netchan_Decode(client, msg);
 	}
