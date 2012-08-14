@@ -663,21 +663,10 @@ Also called by Com_Error
 */
 void CL_FlushMemory(void)
 {
-
 	// shutdown all the client stuff
 	CL_ShutdownAll();
 
-	// if not running a server clear the whole hunk
-	if (!com_sv_running->integer)
-	{
-		// clear the whole hunk
-		Hunk_Clear();
-	}
-	else
-	{
-		// clear all the client data on the hunk
-		Hunk_ClearToMark();
-	}
+	CIN_CloseAllVideos();
 
 	CL_StartHunkUsers();
 }
@@ -1278,17 +1267,7 @@ void CL_Vid_Restart_f(void)
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set("cl_paused", "0");
 
-	// if not running a server clear the whole hunk
-	if (!com_sv_running->integer)
-	{
-		// clear the whole hunk
-		Hunk_Clear();
-	}
-	else
-	{
-		// clear all the client data on the hunk
-		Hunk_ClearToMark();
-	}
+	CIN_CloseAllVideos();
 
 	// initialize the renderer interface
 	CL_InitRef();

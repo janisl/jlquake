@@ -868,8 +868,6 @@ void Hunk_ClearToMark(void)
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-void CL_ShutdownCGame(void);
-void CL_ShutdownUI(void);
 void SVT3_ShutdownGameProgs(void);
 
 /*
@@ -881,15 +879,7 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear(void)
 {
-
-#ifndef DEDICATED
-	CL_ShutdownCGame();
-	CL_ShutdownUI();
-#endif
 	SVT3_ShutdownGameProgs();
-#ifndef DEDICATED
-	CIN_CloseAllVideos();
-#endif
 	hunk_low.mark = 0;
 	hunk_low.permanent = 0;
 	hunk_low.temp = 0;
@@ -905,7 +895,6 @@ void Hunk_Clear(void)
 
 	Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
 	common->Printf("Hunk_Clear: reset the hunk ok\n");
-	VM_Clear();	// (SA) FIXME:TODO: was commented out in wolf
 }
 
 static void Hunk_SwapBanks(void)
