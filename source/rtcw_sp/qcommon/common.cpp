@@ -590,57 +590,6 @@ void* Z_Malloc(int size)
 	return buf;
 }
 
-#if 0
-/*
-================
-Z_TagMalloc
-================
-*/
-void* Z_TagMalloc(int size, int tag)
-{
-
-	if (tag != TAG_RENDERER)
-	{
-		assert(0);
-	}
-
-	if (g_numTaggedAllocs < MAX_TAG_ALLOCS)
-	{
-		void* ptr = Z_Malloc(size);
-		g_taggedAllocations[g_numTaggedAllocs++] = ptr;
-		return ptr;
-	}
-	else
-	{
-		common->FatalError("Z_TagMalloc: out of tagged allocation space\n");
-	}
-	return NULL;
-}
-
-/*
-================
-Z_FreeTags
-================
-*/
-void Z_FreeTags(int tag)
-{
-	int i;
-
-	if (tag != TAG_RENDERER)
-	{
-		assert(0);
-	}
-
-	for (i = 0; i < g_numTaggedAllocs; i++)
-	{
-		free(g_taggedAllocations[i]);
-	}
-
-	g_numTaggedAllocs = 0;
-}
-
-#endif
-
 /*
 ========================
 CopyString
@@ -822,97 +771,6 @@ void Com_InitZoneMemory(void)
 
 /*
 =================
-Hunk_Log
-=================
-*/
-void Hunk_Log(void)
-{
-	hunkblock_t* block;
-	char buf[4096];
-	int size, numBlocks;
-
-	if (!logfile || !FS_Initialized())
-	{
-		return;
-	}
-	size = 0;
-	numBlocks = 0;
-	String::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk log\r\n================\r\n");
-	FS_Write(buf, String::Length(buf), logfile);
-	for (block = hunkblocks; block; block = block->next)
-	{
-#ifdef HUNK_DEBUG
-		String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", block->size, block->file, block->line, block->label);
-		FS_Write(buf, String::Length(buf), logfile);
-#endif
-		size += block->size;
-		numBlocks++;
-	}
-	String::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, String::Length(buf), logfile);
-	String::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, String::Length(buf), logfile);
-}
-
-/*
-=================
-Hunk_SmallLog
-=================
-*/
-void Hunk_SmallLog(void)
-{
-	hunkblock_t* block, * block2;
-	char buf[4096];
-	int size, locsize, numBlocks;
-
-	if (!logfile || !FS_Initialized())
-	{
-		return;
-	}
-	for (block = hunkblocks; block; block = block->next)
-	{
-		block->printed = false;
-	}
-	size = 0;
-	numBlocks = 0;
-	String::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk Small log\r\n================\r\n");
-	FS_Write(buf, String::Length(buf), logfile);
-	for (block = hunkblocks; block; block = block->next)
-	{
-		if (block->printed)
-		{
-			continue;
-		}
-		locsize = block->size;
-		for (block2 = block->next; block2; block2 = block2->next)
-		{
-			if (block->line != block2->line)
-			{
-				continue;
-			}
-			if (String::ICmp(block->file, block2->file))
-			{
-				continue;
-			}
-			size += block2->size;
-			locsize += block2->size;
-			block2->printed = true;
-		}
-#ifdef HUNK_DEBUG
-		String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", locsize, block->file, block->line, block->label);
-		FS_Write(buf, String::Length(buf), logfile);
-#endif
-		size += block->size;
-		numBlocks++;
-	}
-	String::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, String::Length(buf), logfile);
-	String::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, String::Length(buf), logfile);
-}
-
-/*
-=================
 Com_InitZoneMemory
 =================
 */
@@ -967,10 +825,6 @@ void Com_InitHunkMemory(void)
 	Hunk_Clear();
 
 	Cmd_AddCommand("meminfo", Com_Meminfo_f);
-#ifdef HUNK_DEBUG
-	Cmd_AddCommand("hunklog", Hunk_Log);
-	Cmd_AddCommand("hunksmalllog", Hunk_SmallLog);
-#endif
 }
 
 /*
@@ -1014,20 +868,6 @@ void Hunk_ClearToMark(void)
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-/*
-=================
-Hunk_CheckMark
-=================
-*/
-qboolean Hunk_CheckMark(void)
-{
-	if (hunk_low.mark || hunk_high.mark)
-	{
-		return true;
-	}
-	return false;
-}
-
 void CL_ShutdownCGame(void);
 void CL_ShutdownUI(void);
 void SVT3_ShutdownGameProgs(void);
@@ -1066,9 +906,6 @@ void Hunk_Clear(void)
 	Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
 	common->Printf("Hunk_Clear: reset the hunk ok\n");
 	VM_Clear();	// (SA) FIXME:TODO: was commented out in wolf
-#ifdef HUNK_DEBUG
-	hunkblocks = NULL;
-#endif
 }
 
 static void Hunk_SwapBanks(void)
@@ -1099,13 +936,8 @@ Hunk_Alloc
 Allocate permanent (until the hunk is cleared) memory
 =================
 */
-#ifdef HUNK_DEBUG
-void* Hunk_AllocDebug(int size, ha_pref preference, char* label, char* file, int line)
-{
-#else
 void* Hunk_Alloc(int size, ha_pref preference)
 {
-#endif
 	void* buf;
 
 	if (s_hunkData == NULL)
@@ -1115,19 +947,11 @@ void* Hunk_Alloc(int size, ha_pref preference)
 
 	Hunk_SwapBanks();
 
-#ifdef HUNK_DEBUG
-	size += sizeof(hunkblock_t);
-#endif
-
 	// round to cacheline
 	size = (size + 31) & ~31;
 
 	if (hunk_low.temp + hunk_high.temp + size > s_hunkTotal)
 	{
-#ifdef HUNK_DEBUG
-		Hunk_Log();
-		Hunk_SmallLog();
-#endif
 		common->Error("Hunk_Alloc failed on %i", size);
 	}
 
@@ -1146,20 +970,6 @@ void* Hunk_Alloc(int size, ha_pref preference)
 
 	memset(buf, 0, size);
 
-#ifdef HUNK_DEBUG
-	{
-		hunkblock_t* block;
-
-		block = (hunkblock_t*)buf;
-		block->size = size - sizeof(hunkblock_t);
-		block->file = file;
-		block->label = label;
-		block->line = line;
-		block->next = hunkblocks;
-		hunkblocks = block;
-		buf = ((byte*)buf) + sizeof(hunkblock_t);
-	}
-#endif
 	// Ridah, update the com_hunkused cvar in increments, so we don't update it too often, since this cvar call isn't very efficent
 	if ((hunk_low.permanent + hunk_high.permanent) > com_hunkused->integer + 10000)
 	{
@@ -1167,185 +977,6 @@ void* Hunk_Alloc(int size, ha_pref preference)
 	}
 
 	return buf;
-}
-
-/*
-=================
-Hunk_AllocateTempMemory
-
-This is used by the file loading system.
-Multiple files can be loaded in temporary memory.
-When the files-in-use count reaches zero, all temp memory will be deleted
-=================
-*/
-void* Hunk_AllocateTempMemory(int size)
-{
-	void* buf;
-	hunkHeader_t* hdr;
-
-	// return a Z_Malloc'd block if the hunk has not been initialized
-	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
-	// memory systems
-	if (s_hunkData == NULL)
-	{
-		return Z_Malloc(size);
-	}
-
-	Hunk_SwapBanks();
-
-	size = ((size + 3) & ~3) + sizeof(hunkHeader_t);
-
-	if (hunk_temp->temp + hunk_permanent->permanent + size > s_hunkTotal)
-	{
-		common->Error("Hunk_AllocateTempMemory: failed on %i", size);
-	}
-
-	if (hunk_temp == &hunk_low)
-	{
-		buf = (void*)(s_hunkData + hunk_temp->temp);
-		hunk_temp->temp += size;
-	}
-	else
-	{
-		hunk_temp->temp += size;
-		buf = (void*)(s_hunkData + s_hunkTotal - hunk_temp->temp);
-	}
-
-	if (hunk_temp->temp > hunk_temp->tempHighwater)
-	{
-		hunk_temp->tempHighwater = hunk_temp->temp;
-	}
-
-	hdr = (hunkHeader_t*)buf;
-	buf = (void*)(hdr + 1);
-
-	hdr->magic = HUNK_MAGIC;
-	hdr->size = size;
-
-	// don't bother clearing, because we are going to load a file over it
-	return buf;
-}
-
-
-/*
-==================
-Hunk_FreeTempMemory
-==================
-*/
-void Hunk_FreeTempMemory(void* buf)
-{
-	hunkHeader_t* hdr;
-
-	// free with Z_Free if the hunk has not been initialized
-	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
-	// memory systems
-	if (s_hunkData == NULL)
-	{
-		Z_Free(buf);
-		return;
-	}
-
-
-	hdr = ((hunkHeader_t*)buf) - 1;
-	if (hdr->magic != (int)HUNK_MAGIC)
-	{
-		common->FatalError("Hunk_FreeTempMemory: bad magic");
-	}
-
-	hdr->magic = HUNK_FREE_MAGIC;
-
-	// this only works if the files are freed in stack order,
-	// otherwise the memory will stay around until Hunk_ClearTempMemory
-	if (hunk_temp == &hunk_low)
-	{
-		if (hdr == (void*)(s_hunkData + hunk_temp->temp - hdr->size))
-		{
-			hunk_temp->temp -= hdr->size;
-		}
-		else
-		{
-			common->Printf("Hunk_FreeTempMemory: not the final block\n");
-		}
-	}
-	else
-	{
-		if (hdr == (void*)(s_hunkData + s_hunkTotal - hunk_temp->temp))
-		{
-			hunk_temp->temp -= hdr->size;
-		}
-		else
-		{
-			common->Printf("Hunk_FreeTempMemory: not the final block\n");
-		}
-	}
-}
-
-
-/*
-=================
-Hunk_ClearTempMemory
-
-The temp space is no longer needed.  If we have left more
-touched but unused memory on this side, have future
-permanent allocs use this side.
-=================
-*/
-void Hunk_ClearTempMemory(void)
-{
-	if (s_hunkData != NULL)
-	{
-		hunk_temp->temp = hunk_temp->permanent;
-	}
-}
-
-/*
-=================
-Hunk_Trash
-=================
-*/
-void Hunk_Trash(void)
-{
-	int length, i, rnd;
-	char* buf, value;
-
-	return;
-
-	if (s_hunkData == NULL)
-	{
-		return;
-	}
-
-#ifdef _DEBUG
-	common->Error("hunk trashed\n");
-	return;
-#endif
-
-	Cvar_Set("com_jp", "1");
-	Hunk_SwapBanks();
-
-	if (hunk_permanent == &hunk_low)
-	{
-		buf = (char*)(s_hunkData + hunk_permanent->permanent);
-	}
-	else
-	{
-		buf = (char*)(s_hunkData + s_hunkTotal - hunk_permanent->permanent);
-	}
-	length = hunk_permanent->permanent;
-
-	if (length > 0x7FFFF)
-	{
-		//randomly trash data within buf
-		rnd = random() * (length - 0x7FFFF);
-		value = 31;
-		for (i = 0; i < 0x7FFFF; i++)
-		{
-			value *= 109;
-			buf[rnd + i] ^= value;
-		}
-	}
 }
 
 /*

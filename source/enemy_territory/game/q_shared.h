@@ -203,20 +203,11 @@ typedef enum {
 } errorParm_t;
 
 
-#if defined(_DEBUG)
-	#define HUNK_DEBUG
-#endif
-
 typedef enum {
 	h_high,
 } ha_pref;
 
-#ifdef HUNK_DEBUG
-#define Hunk_Alloc(size, preference)              Hunk_AllocDebug(size, preference, # size, __FILE__, __LINE__)
-void* Hunk_AllocDebug(int size, ha_pref preference, char* label, char* file, int line);
-#else
 void* Hunk_Alloc(int size, ha_pref preference);
-#endif
 
 /*
 ==============================================================

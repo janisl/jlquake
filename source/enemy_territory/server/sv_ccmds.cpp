@@ -115,7 +115,6 @@ static void SV_Map_f(void)
 				return;
 			}
 
-			//buffer = Hunk_AllocateTempMemory(size);
 			FS_ReadFile(savemap, (void**)&buffer);
 
 			if (String::ICmp(savemap, va("%scurrent.sav", savedir)) != 0)
@@ -350,7 +349,6 @@ static void SV_MapRestart_f(void)
 			return;
 		}
 
-		//buffer = Hunk_AllocateTempMemory(size);
 		FS_ReadFile(savemap, (void**)&buffer);
 
 		// the mapname is at the very start of the savegame file
@@ -512,7 +510,6 @@ void    SV_LoadGame_f(void)
 		return;
 	}
 
-	//buffer = Hunk_AllocateTempMemory(size);
 	FS_ReadFile(filename, (void**)&buffer);
 
 	// read the mapname, if it is the same as the current map, then do a fast load
