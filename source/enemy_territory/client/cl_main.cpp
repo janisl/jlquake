@@ -1619,10 +1619,6 @@ extern void Sys_In_Restart_f(void);		// fretn
 
 void CL_Vid_Restart_f(void)
 {
-
-	// RF, don't show percent bar, since the memory usage will just sit at the same level anyway
-	com_expectedhunkusage = -1;
-
 	// don't let them loop during the restart
 	S_StopAllSounds();
 	// shutdown the UI
@@ -3607,7 +3603,6 @@ void CL_Init(void)
 	Cmd_AddCommand("cache_mapchange", CL_Cache_MapChange_f);
 	Cmd_AddCommand("cache_endgather", CL_Cache_EndGather_f);
 
-	Cmd_AddCommand("updatehunkusage", CL_UpdateLevelHunkUsage);
 	Cmd_AddCommand("updatescreen", SCR_UpdateScreen);
 	// NERVE - SMF - don't do this in multiplayer
 	// RF, add this command so clients can't bind a key to send client damage commands to the server

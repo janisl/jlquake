@@ -180,7 +180,6 @@ void CL_CGameRendering(stereoFrame_t stereo);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);
-void CL_UpdateLevelHunkUsage(void);
 //
 // cl_ui.c
 //

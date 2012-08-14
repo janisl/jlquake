@@ -92,8 +92,6 @@ int time_backend;			// renderer backend time
 
 int com_frameMsec;
 int com_frameNumber;
-int com_expectedhunkusage;
-int com_hunkusedvalue;
 
 
 qboolean com_errorEntered;
@@ -1432,7 +1430,6 @@ void Hunk_Clear(void)
 	hunk_temp = &hunk_high;
 
 	Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
-	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	common->Printf("Hunk_Clear: reset the hunk ok\n");
 }
@@ -1504,7 +1501,6 @@ void* Hunk_Alloc(int size, ha_pref preference)
 	{
 		Cvar_Set("com_hunkused", va("%i", hunk_low.permanent + hunk_high.permanent));
 	}
-	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	return buf;
 }
@@ -2560,7 +2556,6 @@ void Com_Init(char* commandLine)
 #endif
 
 		com_hunkused = Cvar_Get("com_hunkused", "0", 0);
-		com_hunkusedvalue = 0;
 
 		if (com_dedicated->integer)
 		{
@@ -3077,6 +3072,6 @@ command line completion
 
 void Com_GetHunkInfo(int* hunkused, int* hunkexpected)
 {
-	*hunkused =     com_hunkusedvalue;
-	*hunkexpected = com_expectedhunkusage;
+	*hunkused =     0;
+	*hunkexpected = -1;
 }

@@ -203,8 +203,6 @@ extern int time_frontend;
 extern int time_backend;			// renderer backend time
 
 extern int com_frameMsec;
-extern int com_expectedhunkusage;
-extern int com_hunkusedvalue;
 
 extern qboolean com_errorEntered;
 
