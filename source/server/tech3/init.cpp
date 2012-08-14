@@ -275,7 +275,9 @@ void SVT3_GetConfigstring(int index, char* buffer, int bufferSize)
 	{
 		common->Error("SVT3_GetConfigstring: bufferSize == %i", bufferSize);
 	}
-	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
+	if (index < 0 || index >= (GGameType & GAME_ET ? MAX_CONFIGSTRINGS_ET :
+		GGameType & GAME_WolfMP ? MAX_CONFIGSTRINGS_WM :
+		GGameType & GAME_WolfSP ? MAX_CONFIGSTRINGS_WS : MAX_CONFIGSTRINGS_Q3))
 	{
 		common->Error("SVT3_GetConfigstring: bad index %i\n", index);
 	}
