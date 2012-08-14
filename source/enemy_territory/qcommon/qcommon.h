@@ -209,8 +209,6 @@ extern qboolean com_errorEntered;
 typedef enum {
 	TAG_FREE,
 	TAG_GENERAL,
-	TAG_BOTLIB,
-	TAG_RENDERER,
 	TAG_SMALL,
 	TAG_STATIC
 } memtag_t;
@@ -220,11 +218,6 @@ void* Z_Malloc(int size);			// returns 0 filled memory
 void* S_Malloc(int size);			// NOT 0 filled memory only for small allocations
 void Z_Free(void* ptr);
 void Z_LogHeap(void);
-
-void Hunk_Clear(void);
-void Hunk_ClearToMark(void);
-void Hunk_SetMark(void);
-int Hunk_MemoryRemaining(void);
 
 void Com_TouchMemory(void);
 

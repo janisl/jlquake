@@ -217,12 +217,6 @@ typedef enum {
 	ERR_DISCONNECT,				// client disconnected from the server
 } errorParm_t;
 
-typedef enum {
-	h_high,
-} ha_pref;
-
-void* Hunk_Alloc(int size, ha_pref preference);
-
 /*
 ==============================================================
 

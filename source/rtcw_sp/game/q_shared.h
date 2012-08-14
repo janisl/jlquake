@@ -163,12 +163,6 @@ typedef enum {
 	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
 } errorParm_t;
 
-typedef enum {
-	h_high,
-} ha_pref;
-
-void* Hunk_Alloc(int size, ha_pref preference);
-
 /*
 ==============================================================
 

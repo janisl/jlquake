@@ -29,15 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int demo_protocols[] =
 { 66, 67, 68, 0 };
 
-#define MIN_DEDICATED_COMHUNKMEGS 1
-#define MIN_COMHUNKMEGS 56
-#ifdef MACOS_X
-#define DEF_COMHUNKMEGS "64"
-#define DEF_COMZONEMEGS "24"
-#else
-#define DEF_COMHUNKMEGS "56"
 #define DEF_COMZONEMEGS "16"
-#endif
 
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
@@ -920,76 +912,6 @@ char* CopyString(const char* in)
 	return out;
 }
 
-/*
-==============================================================================
-
-Goals:
-    reproducable without history effects -- no out of memory errors on weird map to map changes
-    allow restarting of the client without fragmentation
-    minimize total pages in use at run time
-    minimize total pages needed during load time
-
-  Single block of memory with stack allocators coming from both ends towards the middle.
-
-  One side is designated the temporary memory allocator.
-
-  Temporary memory can be allocated and freed in any order.
-
-  A highwater mark is kept of the most in use at any time.
-
-  When there is no temporary memory allocated, the permanent and temp sides
-  can be switched, allowing the already touched temp memory to be used for
-  permanent storage.
-
-  Temp memory must never be allocated on two ends at once, or fragmentation
-  could occur.
-
-  If we have any in-use temp memory, additional temp allocations must come from
-  that side.
-
-  If not, we can choose to make either side the new temp side and push future
-  permanent allocations to the other side.  Permanent allocations should be
-  kept on the side that has the current greatest wasted highwater mark.
-
-==============================================================================
-*/
-
-
-#define HUNK_MAGIC  0x89537892
-#define HUNK_FREE_MAGIC 0x89537893
-
-typedef struct
-{
-	int magic;
-	int size;
-} hunkHeader_t;
-
-typedef struct
-{
-	int mark;
-	int permanent;
-	int temp;
-	int tempHighwater;
-} hunkUsed_t;
-
-typedef struct hunkblock_s
-{
-	int size;
-	byte printed;
-	struct hunkblock_s* next;
-	char* label;
-	char* file;
-	int line;
-} hunkblock_t;
-
-static hunkblock_t* hunkblocks;
-
-static hunkUsed_t hunk_low, hunk_high;
-static hunkUsed_t* hunk_permanent, * hunk_temp;
-
-static byte* s_hunkData = NULL;
-static int s_hunkTotal;
-
 static int s_zoneTotal;
 static int s_smallZoneTotal;
 
@@ -1004,12 +926,8 @@ void Com_Meminfo_f(void)
 	memblock_t* block;
 	int zoneBytes, zoneBlocks;
 	int smallZoneBytes, smallZoneBlocks;
-	int botlibBytes, rendererBytes;
-	int unused;
 
 	zoneBytes = 0;
-	botlibBytes = 0;
-	rendererBytes = 0;
 	zoneBlocks = 0;
 	for (block = mainzone->blocklist.next;; block = block->next)
 	{
@@ -1022,14 +940,6 @@ void Com_Meminfo_f(void)
 		{
 			zoneBytes += block->size;
 			zoneBlocks++;
-			if (block->tag == TAG_BOTLIB)
-			{
-				botlibBytes += block->size;
-			}
-			else if (block->tag == TAG_RENDERER)
-			{
-				rendererBytes += block->size;
-			}
 		}
 
 		if (block->next == &mainzone->blocklist)
@@ -1066,41 +976,10 @@ void Com_Meminfo_f(void)
 		}
 	}
 
-	common->Printf("%8i bytes total hunk\n", s_hunkTotal);
 	common->Printf("%8i bytes total zone\n", s_zoneTotal);
 	common->Printf("\n");
-	common->Printf("%8i low mark\n", hunk_low.mark);
-	common->Printf("%8i low permanent\n", hunk_low.permanent);
-	if (hunk_low.temp != hunk_low.permanent)
-	{
-		common->Printf("%8i low temp\n", hunk_low.temp);
-	}
-	common->Printf("%8i low tempHighwater\n", hunk_low.tempHighwater);
-	common->Printf("\n");
-	common->Printf("%8i high mark\n", hunk_high.mark);
-	common->Printf("%8i high permanent\n", hunk_high.permanent);
-	if (hunk_high.temp != hunk_high.permanent)
-	{
-		common->Printf("%8i high temp\n", hunk_high.temp);
-	}
-	common->Printf("%8i high tempHighwater\n", hunk_high.tempHighwater);
-	common->Printf("\n");
-	common->Printf("%8i total hunk in use\n", hunk_low.permanent + hunk_high.permanent);
-	unused = 0;
-	if (hunk_low.tempHighwater > hunk_low.permanent)
-	{
-		unused += hunk_low.tempHighwater - hunk_low.permanent;
-	}
-	if (hunk_high.tempHighwater > hunk_high.permanent)
-	{
-		unused += hunk_high.tempHighwater - hunk_high.permanent;
-	}
-	common->Printf("%8i unused highwater\n", unused);
-	common->Printf("\n");
 	common->Printf("%8i bytes in %i zone blocks\n", zoneBytes, zoneBlocks);
-	common->Printf("        %8i bytes in dynamic botlib\n", botlibBytes);
-	common->Printf("        %8i bytes in dynamic renderer\n", rendererBytes);
-	common->Printf("        %8i bytes in dynamic other\n", zoneBytes - (botlibBytes + rendererBytes));
+	common->Printf("        %8i bytes in dynamic other\n", zoneBytes);
 	common->Printf("        %8i bytes in small Zone memory\n", smallZoneBytes);
 }
 
@@ -1123,19 +1002,6 @@ void Com_TouchMemory(void)
 	start = Sys_Milliseconds();
 
 	sum = 0;
-
-	j = hunk_low.permanent >> 2;
-	for (i = 0; i < j; i += 64)				// only need to touch each page
-	{
-		sum += ((int*)s_hunkData)[i];
-	}
-
-	i = (s_hunkTotal - hunk_high.permanent) >> 2;
-	j = hunk_high.permanent >> 2;
-	for (; i < j; i += 64)				// only need to touch each page
-	{
-		sum += ((int*)s_hunkData)[i];
-	}
 
 	for (block = mainzone->blocklist.next;; block = block->next)
 	{
@@ -1211,201 +1077,7 @@ Com_InitZoneMemory
 */
 void Com_InitHunkMemory(void)
 {
-	Cvar* cv;
-	int nMinAlloc;
-	const char* pMsg = NULL;
-
-	// make sure the file system has allocated and "not" freed any temp blocks
-	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
-	// memory systems
-	if (FS_LoadStack() != 0)
-	{
-		common->FatalError("Hunk initialization failed. File system load stack not zero");
-	}
-
-	// allocate the stack based hunk allocator
-	cv = Cvar_Get("com_hunkMegs", DEF_COMHUNKMEGS, CVAR_LATCH2 | CVAR_ARCHIVE);
-
-	// if we are not dedicated min allocation is 56, otherwise min is 1
-	if (com_dedicated && com_dedicated->integer)
-	{
-		nMinAlloc = MIN_DEDICATED_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs for a dedicated server is %i, allocating %i megs.\n";
-	}
-	else
-	{
-		nMinAlloc = MIN_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs is %i, allocating %i megs.\n";
-	}
-
-	if (cv->integer < nMinAlloc)
-	{
-		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		common->Printf(pMsg, nMinAlloc, s_hunkTotal / (1024 * 1024));
-	}
-	else
-	{
-		s_hunkTotal = cv->integer * 1024 * 1024;
-	}
-
-
-	// bk001205 - was malloc
-	s_hunkData = (byte*)calloc(s_hunkTotal + 31, 1);
-	if (!s_hunkData)
-	{
-		common->FatalError("Hunk data failed to allocate %i megs", s_hunkTotal / (1024 * 1024));
-	}
-	// cacheline align
-	s_hunkData = (byte*)(((qintptr)s_hunkData + 31) & ~31);
-	Hunk_Clear();
-
 	Cmd_AddCommand("meminfo", Com_Meminfo_f);
-}
-
-/*
-====================
-Hunk_MemoryRemaining
-====================
-*/
-int Hunk_MemoryRemaining(void)
-{
-	int low, high;
-
-	low = hunk_low.permanent > hunk_low.temp ? hunk_low.permanent : hunk_low.temp;
-	high = hunk_high.permanent > hunk_high.temp ? hunk_high.permanent : hunk_high.temp;
-
-	return s_hunkTotal - (low + high);
-}
-
-/*
-===================
-Hunk_SetMark
-
-The server calls this after the level and game VM have been loaded
-===================
-*/
-void Hunk_SetMark(void)
-{
-	hunk_low.mark = hunk_low.permanent;
-	hunk_high.mark = hunk_high.permanent;
-}
-
-/*
-=================
-Hunk_ClearToMark
-
-The client calls this before starting a vid_restart or snd_restart
-=================
-*/
-void Hunk_ClearToMark(void)
-{
-	hunk_low.permanent = hunk_low.temp = hunk_low.mark;
-	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
-}
-
-void SVT3_ShutdownGameProgs(void);
-
-/*
-=================
-Hunk_Clear
-
-The server calls this before shutting down or loading a new map
-=================
-*/
-void Hunk_Clear(void)
-{
-	SVT3_ShutdownGameProgs();
-	hunk_low.mark = 0;
-	hunk_low.permanent = 0;
-	hunk_low.temp = 0;
-	hunk_low.tempHighwater = 0;
-
-	hunk_high.mark = 0;
-	hunk_high.permanent = 0;
-	hunk_high.temp = 0;
-	hunk_high.tempHighwater = 0;
-
-	hunk_permanent = &hunk_low;
-	hunk_temp = &hunk_high;
-
-	common->Printf("Hunk_Clear: reset the hunk ok\n");
-}
-
-static void Hunk_SwapBanks(void)
-{
-	hunkUsed_t* swap;
-
-	// can't swap banks if there is any temp already allocated
-	if (hunk_temp->temp != hunk_temp->permanent)
-	{
-		return;
-	}
-
-	// if we have a larger highwater mark on this side, start making
-	// our permanent allocations here and use the other side for temp
-	if (hunk_temp->tempHighwater - hunk_temp->permanent >
-		hunk_permanent->tempHighwater - hunk_permanent->permanent)
-	{
-		swap = hunk_temp;
-		hunk_temp = hunk_permanent;
-		hunk_permanent = swap;
-	}
-}
-
-/*
-=================
-Hunk_Alloc
-
-Allocate permanent (until the hunk is cleared) memory
-=================
-*/
-void* Hunk_Alloc(int size, ha_pref preference)
-{
-	void* buf;
-
-	if (s_hunkData == NULL)
-	{
-		common->FatalError("Hunk_Alloc: Hunk memory system not initialized");
-	}
-
-	// can't do preference if there is any temp allocated
-	if (hunk_temp->temp != hunk_temp->permanent)
-	{
-		Hunk_SwapBanks();
-	}
-	else
-	{
-		if (preference == h_high && hunk_permanent != &hunk_high)
-		{
-			Hunk_SwapBanks();
-		}
-	}
-
-	// round to cacheline
-	size = (size + 31) & ~31;
-
-	if (hunk_low.temp + hunk_high.temp + size > s_hunkTotal)
-	{
-		common->Error("Hunk_Alloc failed on %i", size);
-	}
-
-	if (hunk_permanent == &hunk_low)
-	{
-		buf = (void*)(s_hunkData + hunk_permanent->permanent);
-		hunk_permanent->permanent += size;
-	}
-	else
-	{
-		hunk_permanent->permanent += size;
-		buf = (void*)(s_hunkData + s_hunkTotal - hunk_permanent->permanent);
-	}
-
-	hunk_permanent->temp = hunk_permanent->permanent;
-
-	Com_Memset(buf, 0, size);
-
-	return buf;
 }
 
 /*

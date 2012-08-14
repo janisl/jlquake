@@ -999,7 +999,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
 		return 0;
 	case CG_MEMORY_REMAINING:
-		return Hunk_MemoryRemaining();
+		return 0x4000000;
 	case CG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
 	case CG_KEY_GETCATCHER:

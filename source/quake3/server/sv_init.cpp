@@ -52,9 +52,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// make sure all the client stuff is unloaded
 	CL_ShutdownAll();
 
-	// clear the whole hunk because we're (re)loading the server
-	Hunk_Clear();
-
 	// init client structures and svs.q3_numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running"))
 	{
@@ -259,8 +256,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// send a heartbeat now so the master will get up to date info
 	SVT3_Heartbeat_f();
-
-	Hunk_SetMark();
 
 	common->Printf("-----------------------------------\n");
 }

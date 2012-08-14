@@ -65,9 +65,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// make sure all the client stuff is unloaded
 	CL_ShutdownAll();
 
-	// clear the whole hunk because we're (re)loading the server
-	Hunk_Clear();
-
 	// clear collision map data		// (SA) NOTE: TODO: used in missionpack
 	CM_ClearMap();
 
@@ -300,8 +297,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 
 	// send a heartbeat now so the master will get up to date info
 	SVT3_Heartbeat_f();
-
-	Hunk_SetMark();
 
 	Cvar_Set("sv_serverRestarting", "0");
 

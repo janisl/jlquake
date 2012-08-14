@@ -1168,7 +1168,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);
 
 	case UI_MEMORY_REMAINING:
-		return Hunk_MemoryRemaining();
+		return 0x4000000;
 
 	case UI_GET_CDKEY:
 		CLUI_GetCDKey((char*)VMA(1), args[2]);
