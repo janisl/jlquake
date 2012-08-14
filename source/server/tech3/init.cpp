@@ -398,9 +398,9 @@ void SVWS_InitReliableCommandsForClient(client_t* cl, int commands)
 	}
 
 	cl->ws_reliableCommands.bufSize = commands * RELIABLE_COMMANDS_CHARS;
-	cl->ws_reliableCommands.buf = (char*)Mem_Alloc(cl->ws_reliableCommands.bufSize);
-	cl->ws_reliableCommands.commandLengths = (int*)Mem_Alloc(commands * sizeof(*cl->ws_reliableCommands.commandLengths));
-	cl->ws_reliableCommands.commands = (char**)Mem_Alloc(commands * sizeof(*cl->ws_reliableCommands.commands));
+	cl->ws_reliableCommands.buf = (char*)Mem_ClearedAlloc(cl->ws_reliableCommands.bufSize);
+	cl->ws_reliableCommands.commandLengths = (int*)Mem_ClearedAlloc(commands * sizeof(*cl->ws_reliableCommands.commandLengths));
+	cl->ws_reliableCommands.commands = (char**)Mem_ClearedAlloc(commands * sizeof(*cl->ws_reliableCommands.commands));
 
 	cl->ws_reliableCommands.rover = cl->ws_reliableCommands.buf;
 }
@@ -440,7 +440,7 @@ void SVWS_FreeReliableCommandsForClient(client_t* cl)
 	Mem_Free(cl->ws_reliableCommands.commandLengths);
 	Mem_Free(cl->ws_reliableCommands.commands);
 
-	Com_Memset(&cl->ws_reliableCommands, 0, sizeof(cl->ws_reliableCommands.bufSize));
+	Com_Memset(&cl->ws_reliableCommands, 0, sizeof(cl->ws_reliableCommands));
 }
 
 void SVWS_FreeAcknowledgedReliableCommands(client_t* cl)

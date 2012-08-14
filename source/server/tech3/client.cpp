@@ -1118,14 +1118,14 @@ void SVT3_DirectConnect(netadr_t from)
 	}
 
 	// see if the challenge is valid (local clients don't need to challenge)
-	int i;
+	int chalengeIndex = 0;
 	if (!SOCK_IsLocalAddress(from))
 	{
-		for (i = 0; i < MAX_CHALLENGES; i++)
+		for (chalengeIndex = 0; chalengeIndex < MAX_CHALLENGES; chalengeIndex++)
 		{
-			if (SOCK_CompareAdr(from, svs.challenges[i].adr))
+			if (SOCK_CompareAdr(from, svs.challenges[chalengeIndex].adr))
 			{
-				if (challenge == svs.challenges[i].challenge)
+				if (challenge == svs.challenges[chalengeIndex].challenge)
 				{
 					break;		// good
 				}
@@ -1136,7 +1136,7 @@ void SVT3_DirectConnect(netadr_t from)
 				}
 			}
 		}
-		if (i == MAX_CHALLENGES)
+		if (chalengeIndex == MAX_CHALLENGES)
 		{
 			if (GGameType & GAME_ET)
 			{
@@ -1152,18 +1152,18 @@ void SVT3_DirectConnect(netadr_t from)
 		Info_SetValueForKey(userinfo, "ip", SOCK_AdrToString(from), MAX_INFO_STRING_Q3);
 
 		int ping;
-		if (!(GGameType & (GAME_WolfMP | GAME_ET)) || svs.challenges[i].firstPing == 0)
+		if (!(GGameType & (GAME_WolfMP | GAME_ET)) || svs.challenges[chalengeIndex].firstPing == 0)
 		{
-			ping = svs.q3_time - svs.challenges[i].pingTime;
-			svs.challenges[i].firstPing = ping;
+			ping = svs.q3_time - svs.challenges[chalengeIndex].pingTime;
+			svs.challenges[chalengeIndex].firstPing = ping;
 		}
 		else
 		{
-			ping = svs.challenges[i].firstPing;
+			ping = svs.challenges[chalengeIndex].firstPing;
 		}
 
-		common->Printf("Client %i connecting with %i challenge ping\n", i, ping);
-		svs.challenges[i].connected = true;
+		common->Printf("Client %i connecting with %i challenge ping\n", chalengeIndex, ping);
+		svs.challenges[chalengeIndex].connected = true;
 
 		// never reject a LAN client based on ping
 		if (!SOCK_IsLANAddress(from))
@@ -1179,10 +1179,10 @@ void SVT3_DirectConnect(netadr_t from)
 				{
 					NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for high pings only\n");
 				}
-				common->DPrintf("Client %i rejected on a too low ping\n", i);
+				common->DPrintf("Client %i rejected on a too low ping\n", chalengeIndex);
 				// reset the address otherwise their ping will keep increasing
 				// with each connect message and they'd eventually be able to connect
-				svs.challenges[i].adr.port = 0;
+				svs.challenges[chalengeIndex].adr.port = 0;
 				return;
 			}
 			if (svt3_maxPing->value && ping > svt3_maxPing->value)
@@ -1195,7 +1195,7 @@ void SVT3_DirectConnect(netadr_t from)
 				{
 					NET_OutOfBandPrint(NS_SERVER, from, "print\nServer is for low pings only\n");
 				}
-				common->DPrintf("Client %i rejected on a too high ping: %i\n", i, ping);
+				common->DPrintf("Client %i rejected on a too high ping: %i\n", chalengeIndex, ping);
 				return;
 			}
 		}
@@ -1377,7 +1377,7 @@ gotnewcl:
 	SVT3_UserinfoChanged(newcl);
 
 	// DHM - Nerve :: Clear out firstPing now that client is connected
-	svs.challenges[i].firstPing = 0;
+	svs.challenges[chalengeIndex].firstPing = 0;
 
 	// send the connect packet to the client
 	NET_OutOfBandPrint(NS_SERVER, from, "connectResponse");
@@ -1397,7 +1397,8 @@ gotnewcl:
 	// if this was the first client on the server, or the last client
 	// the server can hold, send a heartbeat to the master.
 	int count = 0;
-	for (i = 0,cl = svs.clients; i < sv_maxclients->integer; i++,cl++)
+	cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
 	{
 		if (svs.clients[i].state >= CS_CONNECTED)
 		{
