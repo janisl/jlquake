@@ -643,6 +643,27 @@ void SVT3_ClearServer()
 		delete[] sv.q3_gamePlayerStates;
 	}
 	Com_Memset(&sv, 0, sizeof(sv));
+
+	if (svs.q3_snapshotEntities)
+	{
+		Mem_Free(svs.q3_snapshotEntities);
+		svs.q3_snapshotEntities = NULL;
+	}
+	if (svs.ws_snapshotEntities)
+	{
+		Mem_Free(svs.ws_snapshotEntities);
+		svs.ws_snapshotEntities = NULL;
+	}
+	if (svs.wm_snapshotEntities)
+	{
+		Mem_Free(svs.wm_snapshotEntities);
+		svs.wm_snapshotEntities = NULL;
+	}
+	if (svs.et_snapshotEntities)
+	{
+		Mem_Free(svs.et_snapshotEntities);
+		svs.et_snapshotEntities = NULL;
+	}
 }
 
 //	touch the cgame.vm so that a pure client can load it if it's in a seperate pk3

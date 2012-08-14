@@ -72,8 +72,11 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	// clear pak references
 	FS_ClearPakReferences(0);
 
+	// wipe the entire per-level structure
+	SVT3_ClearServer();
+
 	// allocate the snapshot entities on the hunk
-	svs.q3_snapshotEntities = (q3entityState_t*)Hunk_Alloc(sizeof(q3entityState_t) * svs.q3_numSnapshotEntities, h_high);
+	svs.q3_snapshotEntities = (q3entityState_t*)Mem_ClearedAlloc(sizeof(q3entityState_t) * svs.q3_numSnapshotEntities);
 	svs.q3_nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -85,8 +88,6 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	Cvar_Set("nextmap", "map_restart 0");
 //	Cvar_Set( "nextmap", va("map %s", server) );
 
-	// wipe the entire per-level structure
-	SVT3_ClearServer();
 	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
 	{
 		sv.q3_configstrings[i] = __CopyString("");

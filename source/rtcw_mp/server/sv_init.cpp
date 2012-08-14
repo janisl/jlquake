@@ -112,7 +112,7 @@ void SV_SpawnServer(char* server, qboolean killBots)
 	FS_ClearPakReferences(0);
 
 	// allocate the snapshot entities on the hunk
-	svs.wm_snapshotEntities = (wmentityState_t*)Hunk_Alloc(sizeof(wmentityState_t) * svs.q3_numSnapshotEntities, h_high);
+	svs.wm_snapshotEntities = (wmentityState_t*)Mem_ClearedAlloc(sizeof(wmentityState_t) * svs.q3_numSnapshotEntities);
 	svs.q3_nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
