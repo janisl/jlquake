@@ -48,7 +48,7 @@ Only called at main exe startup, not for each game
 */
 void SV_Init(void)
 {
-	SV_AddOperatorCommands();
+	SVT3_AddOperatorCommands();
 
 	// serverinfo vars
 	Cvar_Get("dmflags", "0", /*CVAR_SERVERINFO*/ 0);

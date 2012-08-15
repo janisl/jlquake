@@ -56,10 +56,3 @@ extern Cvar* sv_allowAnonymous;
 
 //bani
 extern Cvar* sv_cheats;
-
-//===========================================================
-
-//
-// sv_main.c
-//
-void SV_AddOperatorCommands(void);

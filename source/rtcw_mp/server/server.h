@@ -52,10 +52,3 @@ extern Cvar* sv_allowAnonymous;
 // Rafael gameskill
 extern Cvar* sv_gameskill;
 // done
-
-//===========================================================
-
-//
-// sv_main.c
-//
-void SV_AddOperatorCommands(void);

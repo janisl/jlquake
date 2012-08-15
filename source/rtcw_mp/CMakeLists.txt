@@ -35,7 +35,6 @@ set(WOLFMP_FILES
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp
 
-	server/sv_ccmds.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 )
@@ -46,7 +45,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
-	server/sv_ccmds.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 	qcommon/cmd.cpp

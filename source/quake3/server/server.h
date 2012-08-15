@@ -36,10 +36,3 @@ extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-
-//===========================================================
-
-//
-// sv_main.c
-//
-void SV_AddOperatorCommands(void);

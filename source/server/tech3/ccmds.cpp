@@ -150,7 +150,7 @@ static client_t* SVT3_GetPlayerByNum()
 }
 
 //	Kick a user off of the server  FIXME: move to game
-void SVT3_Kick_f()
+static void SVT3_Kick_f()
 {
 	client_t* cl;
 	int i;
@@ -216,7 +216,7 @@ void SVT3_Kick_f()
 }
 
 //	Kick a user off of the server  FIXME: move to game
-void SVT3_KickNum_f()
+static void SVT3_KickNum_f()
 {
 	// make sure server is running
 	if (!com_sv_running->integer)
@@ -246,7 +246,7 @@ void SVT3_KickNum_f()
 	cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 }
 
-void SVT3_Status_f()
+static void SVT3_Status_f()
 {
 	// make sure server is running
 	if (!com_sv_running->integer)
@@ -330,7 +330,7 @@ void SVT3_Status_f()
 	common->Printf("\n");
 }
 
-void SVT3_ConSay_f()
+static void SVT3_ConSay_f()
 {
 	char* p;
 	char text[1024];
@@ -362,20 +362,20 @@ void SVT3_ConSay_f()
 }
 
 //	Examine the serverinfo string
-void SVT3_Serverinfo_f()
+static void SVT3_Serverinfo_f()
 {
 	common->Printf("Server info settings:\n");
 	Info_Print(Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
 }
 
-void SVT3_Systeminfo_f()
+static void SVT3_Systeminfo_f()
 {
 	common->Printf("System info settings:\n");
 	Info_Print(Cvar_InfoString(CVAR_SYSTEMINFO, MAX_INFO_STRING_Q3));
 }
 
 //	Examine all a users info strings FIXME: move to game
-void SVT3_DumpUser_f()
+static void SVT3_DumpUser_f()
 {
 	// make sure server is running
 	if (!com_sv_running->integer)
@@ -426,7 +426,7 @@ static bool SVT3_CheckTransitionGameState(gamestate_t new_gs, gamestate_t old_gs
 	return true;
 }
 
-bool SVT3_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, int delay)
+static bool SVT3_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, int delay)
 {
 	if (!(GGameType & GAME_ET) || (!SVET_GameIsSinglePlayer() && !SVET_GameIsCoop()))
 	{
@@ -460,7 +460,7 @@ bool SVT3_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, int delay)
 	return true;
 }
 
-void SVET_FieldInfo_f()
+static void SVET_FieldInfo_f()
 {
 	MSGET_PrioritiseEntitystateFields();
 	MSGET_PrioritisePlayerStateFields();
@@ -483,7 +483,7 @@ bool SVET_TempBanIsBanned(netadr_t address)
 }
 
 //	Restart the server on a different map
-void SVT3_Map_f()
+static void SVT3_Map_f()
 {
 	char* map = Cmd_Argv(1);
 	if (!map)
@@ -715,7 +715,7 @@ void SVT3_Map_f()
 
 //	Completely restarts a level, but doesn't send a new gamestate to the clients.
 // This allows fair starts with variable load times.
-void SVT3_MapRestart_f()
+static void SVT3_MapRestart_f()
 {
 	// make sure we aren't restarting twice in the same frame
 	if (com_frameTime == sv.q3_serverId)
@@ -981,7 +981,7 @@ void SVT3_MapRestart_f()
 	}
 }
 
-void SVT3_LoadGame_f()
+static void SVT3_LoadGame_f()
 {
 	if (!(GGameType & GAME_WolfMP))
 	{
@@ -1094,7 +1094,7 @@ void SVT3_LoadGame_f()
 
 //	Ban a user from being able to play on this server through the auth
 // server
-void SVT3_Ban_f()
+static void SVT3_Ban_f()
 {
 	// make sure server is running
 	if (!com_sv_running->integer)
@@ -1146,7 +1146,7 @@ void SVT3_Ban_f()
 }
 
 //	Ban a user from being able to play on this server through the auth server
-void SVT3_BanNum_f()
+static void SVT3_BanNum_f()
 {
 	// make sure server is running
 	if (!com_sv_running->integer)
@@ -1192,5 +1192,62 @@ void SVT3_BanNum_f()
 		NET_OutOfBandPrint(NS_SERVER, svs.q3_authorizeAddress,
 			"banUser %s", SOCK_BaseAdrToString(cl->netchan.remoteAddress));
 		common->Printf("%s was banned from coming back\n", cl->name);
+	}
+}
+
+static void SVT3_KillServer_f()
+{
+	SVT3_Shutdown("killserver");
+}
+
+static void SVT3_GameCompleteStatus_f()
+{
+	SVT3_MasterGameCompleteStatus();
+}
+
+void SVT3_AddOperatorCommands()
+{
+	static bool initialized;
+
+	if (initialized)
+	{
+		return;
+	}
+	initialized = true;
+
+	Cmd_AddCommand("heartbeat", SVT3_Heartbeat_f);
+	Cmd_AddCommand("status", SVT3_Status_f);
+	Cmd_AddCommand("serverinfo", SVT3_Serverinfo_f);
+	Cmd_AddCommand("systeminfo", SVT3_Systeminfo_f);
+	Cmd_AddCommand("dumpuser", SVT3_DumpUser_f);
+	Cmd_AddCommand("map_restart", SVT3_MapRestart_f);
+	Cmd_AddCommand("sectorlist", SVT3_SectorList_f);
+	Cmd_AddCommand("map", SVT3_Map_f);
+	Cmd_AddCommand("devmap", SVT3_Map_f);
+	Cmd_AddCommand("spmap", SVT3_Map_f);
+	Cmd_AddCommand("spdevmap", SVT3_Map_f);
+	Cmd_AddCommand("killserver", SVT3_KillServer_f);
+	if (com_dedicated->integer)
+	{
+		Cmd_AddCommand("say", SVT3_ConSay_f);
+	}
+	if (!(GGameType & GAME_ET))
+	{
+		Cmd_AddCommand("kick", SVT3_Kick_f);
+		Cmd_AddCommand("banUser", SVT3_Ban_f);
+		Cmd_AddCommand("banClient", SVT3_BanNum_f);
+		Cmd_AddCommand("clientkick", SVT3_KickNum_f);
+	}
+	if (!(GGameType & GAME_Quake3))
+	{
+		Cmd_AddCommand("loadgame", SVT3_LoadGame_f);
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Cmd_AddCommand("gameCompleteStatus", SVT3_GameCompleteStatus_f);
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cmd_AddCommand("fieldinfo", SVET_FieldInfo_f);
 	}
 }

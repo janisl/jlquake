@@ -28,7 +28,6 @@ set(WOLFSP_FILES
 	unix/unix_shared.cpp
 	unix/linux_glimp.cpp
 
-	server/sv_ccmds.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
 )
