@@ -452,7 +452,7 @@ void SV_Frame(int msec)
 	// the menu kills the server with this cvar
 	if (sv_killserver->integer)
 	{
-		SV_Shutdown("Server was killed.\n");
+		SVT3_Shutdown("Server was killed.\n");
 		Cvar_Set("sv_killserver", "0");
 		return;
 	}
@@ -497,7 +497,7 @@ void SV_Frame(int msec)
 	if (svs.q3_time > 0x70000000)
 	{
 		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
-		SV_Shutdown("Restarting server due to time wrapping");
+		SVT3_Shutdown("Restarting server due to time wrapping");
 		// TTimo
 		// show_bug.cgi?id=388
 		// there won't be a map_restart if you have shut down the server
@@ -510,7 +510,7 @@ void SV_Frame(int msec)
 	if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE - svs.q3_numSnapshotEntities)
 	{
 		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
-		SV_Shutdown("Restarting server due to numSnapshotEntities wrapping");
+		SVT3_Shutdown("Restarting server due to numSnapshotEntities wrapping");
 		// TTimo see above
 		Cbuf_AddText(va("map %s\n", mapname));
 		return;

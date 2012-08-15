@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 #include <limits.h>
 
 #include "../../client/sound/local.h"
+#include "../../server/server.h"
+#include "../../server/tech3/local.h"
 
 Cvar* cl_wavefilerecord;
 Cvar* cl_nodelta;
@@ -1437,7 +1439,7 @@ void CL_Connect_f(void)
 	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
 	{
 		// if running a local server, kill it
-		SV_Shutdown("Server quit\n");
+		SVT3_Shutdown("Server quit\n");
 	}
 
 	// make sure a local server is killed
@@ -3335,7 +3337,7 @@ void CL_GetAutoUpdate(void)
 	if (com_sv_running->integer)
 	{
 		// if running a local server, kill it
-		SV_Shutdown("Server quit\n");
+		SVT3_Shutdown("Server quit\n");
 	}
 
 	// make sure a local server is killed

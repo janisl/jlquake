@@ -51,6 +51,7 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 // Must be provided
 //
 void CL_Disconnect();
+void CL_Disconnect(qboolean showMainMenu);
 void SCRQH_BeginLoadingPlaque();
 void CL_EstablishConnection(const char* name);
 void Host_Reconnect_f();

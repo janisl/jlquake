@@ -31,6 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "../../client/client.h"
+#include "../../server/server.h"
+#include "../../server/tech3/local.h"
 #include <setjmp.h>
 
 #define DEF_COMZONEMEGS "16"// JPW NERVE cut this back too was 30
@@ -339,7 +341,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	else if (code == ERR_DROP || code == ERR_DISCONNECT)
 	{
 		common->Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
-		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
+		SVT3_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
 		CL_Disconnect(true);
 		CL_FlushMemory();
 		com_errorEntered = false;
@@ -348,7 +350,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 	else
 	{
 		CL_Shutdown();
-		SV_Shutdown(va("Server fatal crashed: %s\n", com_errorMessage));
+		SVT3_Shutdown(va("Server fatal crashed: %s\n", com_errorMessage));
 	}
 
 	Com_Shutdown();
@@ -370,7 +372,7 @@ void Com_Quit_f(void)
 	// don't try to shutdown if we are in a recursive error
 	if (!com_errorEntered)
 	{
-		SV_Shutdown("Server quit\n");
+		SVT3_Shutdown("Server quit\n");
 		CL_Shutdown();
 		Com_Shutdown();
 		FS_Shutdown();

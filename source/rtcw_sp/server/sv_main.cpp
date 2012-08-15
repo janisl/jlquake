@@ -399,7 +399,7 @@ void SV_Frame(int msec)
 	// the menu kills the server with this cvar
 	if (sv_killserver->integer)
 	{
-		SV_Shutdown("Server was killed.\n");
+		SVT3_Shutdown("Server was killed.\n");
 		Cvar_Set("sv_killserver", "0");
 		return;
 	}
@@ -443,14 +443,14 @@ void SV_Frame(int msec)
 	// 2giga-milliseconds = 23 days, so it won't be too often
 	if (svs.q3_time > 0x70000000)
 	{
-		SV_Shutdown("Restarting server due to time wrapping");
+		SVT3_Shutdown("Restarting server due to time wrapping");
 		Cbuf_AddText("vstr nextmap\n");
 		return;
 	}
 	// this can happen considerably earlier when lots of clients play and the map doesn't change
 	if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE - svs.q3_numSnapshotEntities)
 	{
-		SV_Shutdown("Restarting server due to numSnapshotEntities wrapping");
+		SVT3_Shutdown("Restarting server due to numSnapshotEntities wrapping");
 		Cbuf_AddText("vstr nextmap\n");
 		return;
 	}

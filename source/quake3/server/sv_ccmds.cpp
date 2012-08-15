@@ -38,7 +38,7 @@ These commands can only be entered from stdin or by a remote operator datagram
 
 void SVT3_KillServer_f()
 {
-	SV_Shutdown("killserver");
+	SVT3_Shutdown("killserver");
 }
 
 /*

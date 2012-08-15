@@ -115,6 +115,7 @@ void SVWS_FreeAcknowledgedReliableCommands(client_t* cl);
 void SVT3_ClearServer();
 void SVT3_FinalCommand(const char* cmd, bool disconnect);
 void SVT3_SpawnServer(const char* server, bool killBots);
+void SVT3_Shutdown(const char* finalmsg);
 
 //
 //	Main

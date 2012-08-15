@@ -671,7 +671,7 @@ static void SVT3_TouchCGameDLL()
 	}
 }
 
-//	Used by SV_Shutdown to send a final message to all
+//	Used by SVT3_Shutdown to send a final message to all
 // connected clients before the server goes down.  The messages are sent immediately,
 // not just stuck on the outgoing message list, because the server is going
 // to totally exit after returning from this function.
@@ -1081,4 +1081,46 @@ void SVT3_SpawnServer(const char* server, bool killBots)
 	}
 
 	common->Printf("-----------------------------------\n");
+}
+
+//	Called when each game quits,
+// before Sys_Quit or Sys_Error
+void SVT3_Shutdown(const char* finalmsg)
+{
+	if (!com_sv_running || !com_sv_running->integer)
+	{
+		return;
+	}
+
+	common->Printf("----- Server Shutdown -----\n");
+
+	if (svs.clients && !com_errorEntered)
+	{
+		SVT3_FinalCommand(va("print \"%s\"", finalmsg), true);
+	}
+
+	SVT3_MasterShutdown();
+	SVT3_ShutdownGameProgs();
+
+	// free current level
+	SVT3_ClearServer();
+
+	// free server static data
+	if (svs.clients)
+	{
+		Mem_Free(svs.clients);
+	}
+	Com_Memset(&svs, 0, sizeof(svs));
+	svs.et_serverLoad = -1;
+
+	Cvar_Set("sv_running", "0");
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
+
+	common->Printf("---------------------------\n");
+
+	// disconnect any local clients
+	CL_Disconnect(false);
 }

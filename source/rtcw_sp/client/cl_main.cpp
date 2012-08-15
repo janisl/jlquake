@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../../server/server.h"
+#include "../../server/tech3/local.h"
 #include <limits.h>
 
 Cvar* cl_nodelta;
@@ -1082,7 +1084,7 @@ void CL_Connect_f(void)
 	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
 	{
 		// if running a local server, kill it
-		SV_Shutdown("Server quit\n");
+		SVT3_Shutdown("Server quit\n");
 	}
 
 	// make sure a local server is killed

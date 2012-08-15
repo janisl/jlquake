@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 #include <limits.h>
+#include "../../server/server.h"
+#include "../../server/tech3/local.h"
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
@@ -1097,7 +1099,7 @@ void CL_Connect_f(void)
 	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
 	{
 		// if running a local server, kill it
-		SV_Shutdown("Server quit\n");
+		SVT3_Shutdown("Server quit\n");
 	}
 
 	// make sure a local server is killed
