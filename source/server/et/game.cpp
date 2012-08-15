@@ -144,6 +144,11 @@ void SVET_GameClientCommand(int clientNum)
 	VM_Call(gvm, ETGAME_CLIENT_COMMAND, clientNum);
 }
 
+void SVET_GameRunFrame(int time)
+{
+	VM_Call(gvm, ETGAME_RUN_FRAME, time);
+}
+
 static void SVET_LocateGameData(etsharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	etplayerState_t* clients, int sizeofGameClient)
 {

@@ -202,7 +202,7 @@ static void SV_Map_f(void)
 	String::NCpyZ(mapname, map, sizeof(mapname));
 
 	// start up the map
-	SV_SpawnServer(mapname, killBots);
+	SVT3_SpawnServer(mapname, killBots);
 
 	// set the cheat value
 	// if the level was started with "map <levelname>", then
@@ -231,7 +231,7 @@ static void SV_MapRestart_f(void)
 {
 	int i;
 	client_t* client;
-	char* denied;
+	const char* denied;
 	qboolean isBot;
 	int delay;
 
@@ -285,7 +285,7 @@ static void SV_MapRestart_f(void)
 		// restart the map the slow way
 		String::NCpyZ(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
 
-		SV_SpawnServer(mapname, false);
+		SVT3_SpawnServer(mapname, false);
 		return;
 	}
 
@@ -338,7 +338,7 @@ static void SV_MapRestart_f(void)
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++)
 	{
-		VM_Call(gvm, WSGAME_RUN_FRAME, svs.q3_time);
+		SVT3_GameRunFrame(svs.q3_time);
 		svs.q3_time += 100;
 	}
 
@@ -369,7 +369,7 @@ static void SV_MapRestart_f(void)
 		SVT3_AddServerCommand(client, "map_restart\n");
 
 		// connect the client again, without the firstTime flag
-		denied = (char*)VM_ExplicitArgPtr(gvm, VM_Call(gvm, WSGAME_CLIENT_CONNECT, i, false, isBot));
+		denied = SVT3_GameClientConnect(i, false, isBot);
 		if (denied)
 		{
 			// this generally shouldn't happen, because the client
@@ -385,7 +385,7 @@ static void SV_MapRestart_f(void)
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call(gvm, WSGAME_RUN_FRAME, svs.q3_time);
+	SVT3_GameRunFrame(svs.q3_time);
 	svs.q3_time += 100;
 }
 

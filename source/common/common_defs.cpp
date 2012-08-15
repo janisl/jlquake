@@ -63,6 +63,8 @@ char* rd_buffer;
 int rd_buffersize;
 void (* rd_flush)(char* buffer);
 
+bool com_errorEntered;
+
 Interface::~Interface()
 {
 }

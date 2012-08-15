@@ -147,9 +147,6 @@ If you have questions concerning this license or the applicable additional terms
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-// RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS      64		// increasing this will increase memory usage significantly
-
 #ifdef  ERR_FATAL
 #undef  ERR_FATAL				// this is be defined in malloc.h
 #endif

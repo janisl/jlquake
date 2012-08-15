@@ -71,9 +71,6 @@ extern Cvar* sv_cheats;
 //
 // sv_main.c
 //
-void SV_FinalCommand(const char* cmd, qboolean disconnect);		// ydnar: added disconnect flag so map changes can use this function as well
-
-
 void SV_AddOperatorCommands(void);
 void SV_RemoveOperatorCommands(void);
 
@@ -84,9 +81,3 @@ void SV_MasterShutdown(void);
 void SV_MasterGameCompleteStatus();		// NERVE - SMF
 //bani - bugtraq 12534
 qboolean SV_VerifyChallenge(char* challenge);
-
-
-//
-// sv_init.c
-//
-void SV_SpawnServer(char* server, qboolean killBots);

@@ -134,8 +134,6 @@ extern int time_backend;			// renderer backend time
 
 extern int com_frameMsec;
 
-extern qboolean com_errorEntered;
-
 typedef enum {
 	TAG_FREE,
 	TAG_GENERAL,

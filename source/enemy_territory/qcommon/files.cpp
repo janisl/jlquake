@@ -177,52 +177,6 @@ static void FS_Startup(const char* gameName)
 	common->Printf("%d files in pk3 files\n", fs_packFiles);
 }
 
-#if defined(DO_LIGHT_DEDICATED)
-static const int feeds[5] = {
-	0x14d48835, 0xc44ed670, 0xd1c8da0d, 0x98df0626, 0xb4e51e7a
-};
-
-// counter to walk through the randomized list
-static int feed_index = -1;
-
-static int lookup_randomized[5] = { 0, 1, 2, 3, 4 };
-
-/*
-=====================
-randomize the order of the 5 checksums we rely on
-5 random swaps of the table
-=====================
-*/
-void FS_InitRandomFeed()
-{
-	int i, swap, aux;
-	for (i = 0; i < 5; i++)
-	{
-		swap = (int)(5.0 * rand() / (RAND_MAX + 1.0));
-		aux = lookup_randomized[i]; lookup_randomized[i] = lookup_randomized[swap]; lookup_randomized[swap] = aux;
-	}
-}
-
-/*
-=====================
-FS_RandChecksumFeed
-
-Return a random checksum feed among our list
-we keep the seed and use it when requested for the pure checksum
-=====================
-*/
-int FS_RandChecksumFeed()
-{
-	if (feed_index == -1)
-	{
-		FS_InitRandomFeed();
-	}
-	feed_index = (feed_index + 1) % 5;
-	return feeds[lookup_randomized[feed_index]];
-}
-
-#endif
-
 /*
 ================
 FS_InitFilesystem

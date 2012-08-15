@@ -152,14 +152,13 @@ void SV_Error(const char* error, ...)
 {
 	va_list argptr;
 	static char string[1024];
-	static qboolean inerror = false;
 
-	if (inerror)
+	if (com_errorEntered)
 	{
 		Sys_Error("SV_Error: recursively entered (%s)", string);
 	}
 
-	inerror = true;
+	com_errorEntered = true;
 
 	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
@@ -386,4 +385,10 @@ void Host_Reconnect_f()
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	return false;
+}
+void CL_MapLoading(void)
+{
+}
+void CL_ShutdownAll(void)
+{
 }

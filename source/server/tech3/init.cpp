@@ -322,7 +322,7 @@ void SVT3_GetUserinfo(int index, char* buffer, int bufferSize)
 //	Entity baselines are used to compress non-delta messages
 // to the clients -- only the fields that differ from the
 // baseline will be transmitted
-void SVT3_CreateBaseline()
+static void SVT3_CreateBaseline()
 {
 	for (int entnum = 1; entnum < sv.q3_num_entities; entnum++)
 	{
@@ -407,31 +407,6 @@ void SVWS_InitReliableCommandsForClient(client_t* cl, int commands)
 	cl->ws_reliableCommands.rover = cl->ws_reliableCommands.buf;
 }
 
-void SVWS_InitReliableCommands(client_t* clients)
-{
-	if (svt3_gametype->integer == Q3GT_SINGLE_PLAYER)
-	{
-		// single player
-		// init the actual player
-		SVWS_InitReliableCommandsForClient(clients, MAX_RELIABLE_COMMANDS_WOLF);
-		// all others can only be bots, so are not required
-		client_t* cl = &clients[1];
-		for (int i = 1; i < sv_maxclients->integer; i++, cl++)
-		{
-			SVWS_InitReliableCommandsForClient(cl, MAX_RELIABLE_COMMANDS_WOLF);		// TODO, make 0's
-		}
-	}
-	else
-	{
-		// multiplayer
-		client_t* cl = clients;
-		for (int i = 0; i < sv_maxclients->integer; i++, cl++)
-		{
-			SVWS_InitReliableCommandsForClient(cl, MAX_RELIABLE_COMMANDS_WOLF);
-		}
-	}
-}
-
 void SVWS_FreeReliableCommandsForClient(client_t* cl)
 {
 	if (!cl->ws_reliableCommands.bufSize)
@@ -488,7 +463,7 @@ void SVWS_FreeAcknowledgedReliableCommands(client_t* cl)
 // one before.  Successive map or map_restart commands will
 // NOT cause this to be called, unless the game is exited to
 // the menu system first.
-void SVT3_Startup()
+static void SVT3_Startup()
 {
 	if (svs.initialized)
 	{
@@ -511,7 +486,7 @@ void SVT3_Startup()
 	Cvar_Set("sv_running", "1");
 }
 
-void SVT3_ChangeMaxClients()
+static void SVT3_ChangeMaxClients()
 {
 	int oldMaxClients;
 	int i;
@@ -667,7 +642,7 @@ void SVT3_ClearServer()
 }
 
 //	touch the cgame.vm so that a pure client can load it if it's in a seperate pk3
-void SVT3_TouchCGame()
+static void SVT3_TouchCGame()
 {
 	char filename[MAX_QPATH];
 	String::Sprintf(filename, sizeof(filename), "vm/%s.qvm", "cgame");
@@ -680,7 +655,7 @@ void SVT3_TouchCGame()
 }
 
 //	touch the cgame DLL so that a pure client (with DLL sv_pure support) can load do the correct checks
-void SVT3_TouchCGameDLL()
+static void SVT3_TouchCGameDLL()
 {
 	char* filename;
 	filename = Sys_GetMPDllName("cgame");
@@ -694,4 +669,416 @@ void SVT3_TouchCGameDLL()
 	{
 		common->Error("Failed to locate cgame DLL for pure server mode");
 	}
+}
+
+//	Used by SV_Shutdown to send a final message to all
+// connected clients before the server goes down.  The messages are sent immediately,
+// not just stuck on the outgoing message list, because the server is going
+// to totally exit after returning from this function.
+void SVT3_FinalCommand(const char* cmd, bool disconnect)
+{
+	// send it twice, ignoring rate
+	for (int j = 0; j < 2; j++)
+	{
+		client_t* cl = svs.clients;
+		for (int i = 0; i < sv_maxclients->integer; i++, cl++)
+		{
+			if (cl->state >= CS_CONNECTED)
+			{
+				// don't send a disconnect to a local client
+				if (cl->netchan.remoteAddress.type != NA_LOOPBACK)
+				{
+					SVT3_SendServerCommand(cl, "%s", cmd);
+
+					// ydnar: added this so map changes can use this functionality
+					if (disconnect)
+					{
+						SVT3_SendServerCommand(cl, "disconnect");
+					}
+				}
+				// force a snapshot to be sent
+				cl->q3_nextSnapshotTime = -1;
+				SVT3_SendClientSnapshot(cl);
+			}
+		}
+	}
+}
+
+//	Change the server to a new map, taking all connected
+// clients along with it.
+// This is NOT called for map_restart
+void SVT3_SpawnServer(const char* server, bool killBots)
+{
+	// Ridah, enforce maxclients in single player, so there is enough room for AI characters
+	if (GGameType & GAME_WolfSP)
+	{
+		static Cvar* g_gametype, * bot_enable;
+
+		// Rafael gameskill
+		static Cvar* g_gameskill;
+
+		if (!g_gameskill)
+		{
+			g_gameskill = Cvar_Get("g_gameskill", "2", CVAR_SERVERINFO | CVAR_LATCH2 | CVAR_ARCHIVE);		// (SA) new default '2' (was '1')
+		}
+		// done
+
+		if (!g_gametype)
+		{
+			g_gametype = Cvar_Get("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2 | CVAR_ARCHIVE);
+		}
+		if (!bot_enable)
+		{
+			bot_enable = Cvar_Get("bot_enable", "1", CVAR_LATCH2);
+		}
+		if (g_gametype->integer == 2)
+		{
+			if (sv_maxclients->latchedString)
+			{
+				// it's been modified, so grab the new value
+				Cvar_Get("sv_maxclients", "8", 0);
+			}
+			if (sv_maxclients->integer < MAX_CLIENTS_WS)
+			{
+				Cvar_SetValue("sv_maxclients", WSMAX_SP_CLIENTS);
+			}
+			if (!bot_enable->integer)
+			{
+				Cvar_Set("bot_enable", "1");
+			}
+		}
+	}
+
+	// ydnar: broadcast a level change to all connected clients
+	if (GGameType & GAME_ET && svs.clients && !com_errorEntered)
+	{
+		SVT3_FinalCommand("spawnserver", false);
+	}
+
+	// shut down the existing game if it is running
+	SVT3_ShutdownGameProgs();
+
+	common->Printf("------ Server Initialization ------\n");
+	common->Printf("Server: %s\n",server);
+
+	// if not running a dedicated server CL_MapLoading will connect the client to the server
+	// also print some status stuff
+	CL_MapLoading();
+
+	// make sure all the client stuff is unloaded
+	CL_ShutdownAll();
+
+	// init client structures and svs.q3_numSnapshotEntities
+	if (!Cvar_VariableValue("sv_running"))
+	{
+		SVT3_Startup();
+	}
+	else
+	{
+		// check for maxclients change
+		if (sv_maxclients->modified)
+		{
+			SVT3_ChangeMaxClients();
+		}
+	}
+
+	// clear pak references
+	FS_ClearPakReferences(0);
+
+	// wipe the entire per-level structure
+	SVT3_ClearServer();
+
+	// allocate empty config strings
+	for (int i = 0; i < BIGGEST_MAX_CONFIGSTRINGS_T3; i++)
+	{
+		sv.q3_configstrings[i] = __CopyString("");
+		if (i < MAX_CONFIGSTRINGS_ET)
+		{
+			sv.et_configstringsmodified[i] = false;
+		}
+	}
+
+	sv.q3_gamePlayerStates = new idPlayerState3*[sv_maxclients->integer];
+	if (GGameType & GAME_Quake3)
+	{
+		for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+		{
+			sv.q3_entities[i] = new idQuake3Entity();
+		}
+		for (int i = 0; i < sv_maxclients->integer; i++)
+		{
+			sv.q3_gamePlayerStates[i] = new idQuake3PlayerState();
+		}
+
+		// allocate the snapshot entities on the hunk
+		svs.q3_snapshotEntities = (q3entityState_t*)Mem_ClearedAlloc(sizeof(q3entityState_t) * svs.q3_numSnapshotEntities);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+		{
+			sv.q3_entities[i] = new idWolfSPEntity();
+		}
+		for (int i = 0; i < sv_maxclients->integer; i++)
+		{
+			sv.q3_gamePlayerStates[i] = new idWolfSPPlayerState();
+		}
+
+		// allocate the snapshot entities on the hunk
+		svs.ws_snapshotEntities = (wsentityState_t*)Mem_ClearedAlloc(sizeof(wsentityState_t) * svs.q3_numSnapshotEntities);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+		{
+			sv.q3_entities[i] = new idWolfMPEntity();
+		}
+		for (int i = 0; i < sv_maxclients->integer; i++)
+		{
+			sv.q3_gamePlayerStates[i] = new idWolfMPPlayerState();
+		}
+
+		// allocate the snapshot entities on the hunk
+		svs.wm_snapshotEntities = (wmentityState_t*)Mem_ClearedAlloc(sizeof(wmentityState_t) * svs.q3_numSnapshotEntities);
+	}
+	else
+	{
+		for (int i = 0; i < MAX_GENTITIES_Q3; i++)
+		{
+			sv.q3_entities[i] = new idETEntity();
+		}
+		for (int i = 0; i < sv_maxclients->integer; i++)
+		{
+			sv.q3_gamePlayerStates[i] = new idETPlayerState();
+		}
+
+		// allocate the snapshot entities on the hunk
+		svs.et_snapshotEntities = (etentityState_t*)Mem_ClearedAlloc(sizeof(etentityState_t) * svs.q3_numSnapshotEntities);
+	}
+	svs.q3_nextSnapshotEntities = 0;
+
+	// toggle the server bit so clients can detect that a
+	// server has changed
+	svs.q3_snapFlagServerBit ^= Q3SNAPFLAG_SERVERCOUNT;
+
+	// set nextmap to the same map, but it may be overriden
+	// by the game startup or another console command
+	Cvar_Set("nextmap", "map_restart 0");
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		// just set it to a negative number,so the cgame knows not to draw the percent bar
+		Cvar_Set("com_expectedhunkusage", "-1");
+	}
+
+	// make sure we are not paused
+	Cvar_Set("cl_paused", "0");
+
+	// get a new checksum feed and restart the file system
+	srand(Com_Milliseconds());
+	sv.q3_checksumFeed = (((int)rand() << 16) ^ rand()) ^ Com_Milliseconds();
+	FS_Restart(sv.q3_checksumFeed);
+
+	int checksum;
+	CM_LoadMap(va("maps/%s.bsp", server), false, &checksum);
+
+	// set serverinfo visible name
+	Cvar_Set("mapname", server);
+
+	Cvar_Set("sv_mapChecksum", va("%i",checksum));
+
+	// serverid should be different each time
+	sv.q3_serverId = com_frameTime;
+	sv.q3_restartedServerId = sv.q3_serverId;	// I suppose the init here is just to be safe
+	sv.q3_checksumFeedServerId = sv.q3_serverId;
+	Cvar_Set("sv_serverid", va("%i", sv.q3_serverId));
+
+	// clear physics interaction links
+	SV_ClearWorld();
+
+	// media configstring setting should be done during
+	// the loading stage, so connected clients don't have
+	// to load during actual gameplay
+	sv.state = SS_LOADING;
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Cvar_Set("sv_serverRestarting", "1");
+	}
+
+	// load and spawn all other entities
+	SVT3_InitGameProgs();
+
+	if (!(GGameType & GAME_ET))
+	{
+		// don't allow a map_restart if game is modified
+		svt3_gametype->modified = false;
+	}
+
+	// run a few frames to allow everything to settle
+	for (int i = 0; i < (GGameType & GAME_ET ? ETGAME_INIT_FRAMES : 3); i++)
+	{
+		SVT3_GameRunFrame(svs.q3_time);
+		SVT3_BotFrame(svs.q3_time);
+		svs.q3_time += Q3FRAMETIME;
+	}
+
+	// create a baseline for more efficient communications
+	SVT3_CreateBaseline();
+
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		// send the new gamestate to all connected clients
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
+			bool isBot;
+			if (svs.clients[i].netchan.remoteAddress.type == NA_BOT)
+			{
+				if (killBots || (GGameType & (GAME_WolfSP | GAME_WolfMP) && Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER) ||
+					(GGameType & GAME_ET && (SVET_GameIsSinglePlayer() || SVET_GameIsCoop())))
+				{
+					SVT3_DropClient(&svs.clients[i], GGameType & GAME_WolfSP ? " gametype is Single Player" : "");		//DAJ added message
+					continue;
+				}
+				isBot = true;
+			}
+			else
+			{
+				isBot = false;
+			}
+
+			// connect the client again
+			const char* denied = SVT3_GameClientConnect(i, false, isBot);		// firstTime = false
+			if (denied)
+			{
+				// this generally shouldn't happen, because the client
+				// was connected before the level change
+				SVT3_DropClient(&svs.clients[i], denied);
+			}
+			else
+			{
+				if (!isBot)
+				{
+					// when we get the next packet from a connected client,
+					// the new gamestate will be sent
+					svs.clients[i].state = CS_CONNECTED;
+				}
+				else
+				{
+					client_t* client = &svs.clients[i];
+					client->state = CS_ACTIVE;
+					idEntity3* ent = SVT3_EntityNum(i);
+					ent->SetNumber(i);
+					if (GGameType & GAME_Quake3)
+					{
+						client->q3_gentity = SVQ3_GentityNum(i);
+					}
+					else if (GGameType & GAME_WolfSP)
+					{
+						client->ws_gentity = SVWS_GentityNum(i);
+					}
+					else if (GGameType & GAME_WolfMP)
+					{
+						client->wm_gentity = SVWM_GentityNum(i);
+					}
+					else
+					{
+						client->et_gentity = SVET_GentityNum(i);
+					}
+					client->q3_entity = ent;
+
+					client->q3_deltaMessage = -1;
+					client->q3_nextSnapshotTime = svs.q3_time;	// generate a snapshot immediately
+
+					SVT3_GameClientBegin(i);
+				}
+			}
+		}
+	}
+
+	// run another frame to allow things to look at all the players
+	SVT3_GameRunFrame(svs.q3_time);
+	SVT3_BotFrame(svs.q3_time);
+	svs.q3_time += Q3FRAMETIME;
+
+	if (svt3_pure->integer)
+	{
+		// the server sends these to the clients so they will only
+		// load pk3s also loaded at the server
+		const char* p = FS_LoadedPakChecksums();
+		Cvar_Set("sv_paks", p);
+		if (String::Length(p) == 0)
+		{
+			common->Printf("WARNING: sv_pure set but no PK3 files loaded\n");
+		}
+		p = FS_LoadedPakNames();
+		Cvar_Set("sv_pakNames", p);
+
+		// if a dedicated pure server we need to touch the cgame because it could be in a
+		// seperate pk3 file and the client will need to load the latest cgame.qvm
+		if (GGameType & (GAME_Quake3 | GAME_WolfSP) && com_dedicated->integer)
+		{
+			SVT3_TouchCGame();
+		}
+	}
+	else
+	{
+		Cvar_Set("sv_paks", "");
+		Cvar_Set("sv_pakNames", "");
+	}
+	// the server sends these to the clients so they can figure
+	// out which pk3s should be auto-downloaded
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// NOTE: we consider the referencedPaks as 'required for operation'
+
+		// we want the server to reference the mp_bin pk3 that the client is expected to load from
+		SVT3_TouchCGameDLL();
+	}
+	const char* p = FS_ReferencedPakChecksums();
+	Cvar_Set("sv_referencedPaks", p);
+	p = FS_ReferencedPakNames();
+	Cvar_Set("sv_referencedPakNames", p);
+
+	// save systeminfo and serverinfo strings
+	char systemInfo[16384];
+	String::NCpyZ(systemInfo, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING), sizeof(systemInfo));
+	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
+	SVT3_SetConfigstring(Q3CS_SYSTEMINFO, systemInfo);
+
+	SVT3_SetConfigstring(Q3CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
+	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
+
+	if (GGameType & GAME_WolfMP)
+	{
+		// NERVE - SMF
+		SVT3_SetConfigstring(WMCS_WOLFINFO, Cvar_InfoString(CVAR_WOLFINFO, MAX_INFO_STRING_Q3));
+		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
+	}
+	if (GGameType & GAME_ET)
+	{
+		// NERVE - SMF
+		SVT3_SetConfigstring(ETCS_WOLFINFO, Cvar_InfoString(CVAR_WOLFINFO, MAX_INFO_STRING_Q3));
+		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
+	}
+
+	// any media configstring setting now should issue a warning
+	// and any configstring changes should be reliably transmitted
+	// to all clients
+	sv.state = SS_GAME;
+
+	// send a heartbeat now so the master will get up to date info
+	SVT3_Heartbeat_f();
+
+	if (GGameType & GAME_ET)
+	{
+		SVET_UpdateConfigStrings();
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Cvar_Set("sv_serverRestarting", "0");
+	}
+
+	common->Printf("-----------------------------------\n");
 }

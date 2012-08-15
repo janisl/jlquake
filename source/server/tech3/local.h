@@ -92,6 +92,8 @@ void SVT3_RestartGameProgs();
 void SVT3_ShutdownGameProgs();
 const char* SVT3_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 void SVT3_GameClientCommand(int clientNum);
+void SVT3_GameRunFrame(int time);
+void SVT3_GameClientBegin(int clientNum);
 
 //
 //	Init
@@ -104,16 +106,12 @@ void SVET_UpdateConfigStrings();
 void SVT3_GetConfigstring(int index, char* buffer, int bufferSize);
 void SVT3_SetUserinfo(int index, const char* val);
 void SVT3_GetUserinfo(int index, char* buffer, int bufferSize);
-void SVT3_CreateBaseline();
 void SVWS_InitReliableCommandsForClient(client_t* cl, int commands);
-void SVWS_InitReliableCommands(client_t* clients);
 void SVWS_FreeReliableCommandsForClient(client_t* cl);
 void SVWS_FreeAcknowledgedReliableCommands(client_t* cl);
-void SVT3_Startup();
-void SVT3_ChangeMaxClients();
 void SVT3_ClearServer();
-void SVT3_TouchCGame();
-void SVT3_TouchCGameDLL();
+void SVT3_FinalCommand(const char* cmd, bool disconnect);
+void SVT3_SpawnServer(const char* server, bool killBots);
 
 //
 //	Main

@@ -217,13 +217,12 @@ void Com_Error(int code, const char* fmt, ...)
 {
 	va_list argptr;
 	static char msg[MAXPRINTMSG];
-	static qboolean recursive;
 
-	if (recursive)
+	if (com_errorEntered)
 	{
 		Sys_Error("recursive error after: %s", msg);
 	}
-	recursive = true;
+	com_errorEntered = true;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
@@ -232,7 +231,7 @@ void Com_Error(int code, const char* fmt, ...)
 	if (code == ERR_DISCONNECT)
 	{
 		CL_Drop();
-		recursive = false;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else if (code == ERR_DROP)
@@ -240,7 +239,7 @@ void Com_Error(int code, const char* fmt, ...)
 		common->Printf("********************\nERROR: %s\n********************\n", msg);
 		SV_Shutdown(va("Server crashed: %s\n", msg), false);
 		CL_Drop();
-		recursive = false;
+		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else

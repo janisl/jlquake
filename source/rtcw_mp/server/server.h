@@ -61,9 +61,6 @@ extern Cvar* sv_gameskill;
 //
 // sv_main.c
 //
-void SV_FinalMessage(const char* message);
-
-
 void SV_AddOperatorCommands(void);
 void SV_RemoveOperatorCommands(void);
 
@@ -72,10 +69,3 @@ void SV_MasterHeartbeat(const char* hbname);
 void SV_MasterShutdown(void);
 
 void SV_MasterGameCompleteStatus();		// NERVE - SMF
-
-
-
-//
-// sv_init.c
-//
-void SV_SpawnServer(char* server, qboolean killBots);

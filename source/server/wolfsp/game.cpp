@@ -141,6 +141,11 @@ void SVWS_GameClientCommand(int clientNum)
 	VM_Call(gvm, WSGAME_CLIENT_COMMAND, clientNum);
 }
 
+void SVWS_GameRunFrame(int time)
+{
+	VM_Call(gvm, WSGAME_RUN_FRAME, time);
+}
+
 static void SVWS_LocateGameData(wssharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	wsplayerState_t* clients, int sizeofGameClient)
 {

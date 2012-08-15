@@ -165,13 +165,12 @@ void Host_Error(const char* error, ...)
 {
 	va_list argptr;
 	char string[1024];
-	static qboolean inerror = false;
 
-	if (inerror)
+	if (com_errorEntered)
 	{
 		Sys_Error("Host_Error: recursively entered");
 	}
-	inerror = true;
+	com_errorEntered = true;
 
 #ifndef DEDICATED
 	SCR_EndLoadingPlaque();			// reenable screen updates
@@ -198,7 +197,7 @@ void Host_Error(const char* error, ...)
 	CL_Disconnect();
 	cls.qh_demonum = -1;
 
-	inerror = false;
+	com_errorEntered = false;
 
 	longjmp(host_abortserver, 1);
 #endif
@@ -833,4 +832,10 @@ void Host_Reconnect_f()
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	return false;
+}
+void CL_MapLoading(void)
+{
+}
+void CL_ShutdownAll(void)
+{
 }

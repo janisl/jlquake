@@ -453,3 +453,43 @@ void SVT3_GameClientCommand(int clientNum)
 		SVQ3_GameClientCommand(clientNum);
 	}
 }
+
+void SVT3_GameRunFrame(int time)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameRunFrame(time);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameRunFrame(time);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameRunFrame(time);
+	}
+	else
+	{
+		SVQ3_GameRunFrame(time);
+	}
+}
+
+void SVT3_GameClientBegin(int clientNum)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		SVWS_GameClientBegin(clientNum);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		SVWM_GameClientBegin(clientNum);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		SVET_GameClientBegin(clientNum);
+	}
+	else
+	{
+		SVQ3_GameClientBegin(clientNum);
+	}
+}

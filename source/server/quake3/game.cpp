@@ -112,6 +112,11 @@ void SVQ3_GameClientCommand(int clientNum)
 	VM_Call(gvm, Q3GAME_CLIENT_COMMAND, clientNum);
 }
 
+void SVQ3_GameRunFrame(int time)
+{
+	VM_Call(gvm, Q3GAME_RUN_FRAME, time);
+}
+
 static void SVQ3_LocateGameData(q3sharedEntity_t* gEnts, int numGEntities, int sizeofGEntity_t,
 	q3playerState_t* clients, int sizeofGameClient)
 {

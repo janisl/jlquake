@@ -43,5 +43,6 @@ void SVET_GameClientBegin(int clientNum);
 void SVET_GameClientUserInfoChanged(int clientNum);
 const char* SVET_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 void SVET_GameClientCommand(int clientNum);
+void SVET_GameRunFrame(int time);
 
 #endif

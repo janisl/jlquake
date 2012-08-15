@@ -29,7 +29,6 @@ These commands can only be entered from stdin or by a remote operator datagram
 ===============================================================================
 */
 
-//	Also called by SVT3_DropClient, SVT3_DirectConnect, and SV_SpawnServer
 void SVT3_Heartbeat_f()
 {
 	svs.q3_nextHeartbeatTime = -9999999;

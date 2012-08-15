@@ -91,7 +91,6 @@ int com_frameMsec;
 int com_frameNumber;
 
 
-qboolean com_errorEntered;
 qboolean com_fullyInitialized;
 
 char com_errorMessage[MAXPRINTMSG];

@@ -239,3 +239,5 @@ extern void (* rd_flush)(char* buffer);
 
 void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*));
 void Com_EndRedirect();
+
+extern bool com_errorEntered;

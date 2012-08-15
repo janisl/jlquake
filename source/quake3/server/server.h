@@ -45,19 +45,9 @@ extern Cvar* sv_serverid;
 //
 // sv_main.c
 //
-void SV_FinalMessage(const char* message);
-
 void SV_AddOperatorCommands(void);
 void SV_RemoveOperatorCommands(void);
 
 
 void SV_MasterHeartbeat(void);
 void SV_MasterShutdown(void);
-
-
-
-
-//
-// sv_init.c
-//
-void SV_SpawnServer(char* server, qboolean killBots);

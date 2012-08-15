@@ -1235,13 +1235,12 @@ void Host_FatalError(const char* error, ...)
 {
 	va_list argptr;
 	char string[1024];
-	static qboolean inerror = false;
 
-	if (inerror)
+	if (com_errorEntered)
 	{
 		Sys_Error("Host_FatalError: recursively entered");
 	}
-	inerror = true;
+	com_errorEntered = true;
 
 	va_start(argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
@@ -1251,7 +1250,7 @@ void Host_FatalError(const char* error, ...)
 	CL_Disconnect();
 	cls.qh_demonum = -1;
 
-	inerror = false;
+	com_errorEntered = false;
 
 // FIXME
 	Sys_Error("Host_FatalError: %s\n",string);

@@ -214,3 +214,8 @@ enum gamestate_t
 #define DLNOTIFY_REDIRECT   0x00000001	// "Redirecting client ..."
 #define DLNOTIFY_BEGIN      0x00000002	// "clientDownload: 4 : beginning ..."
 #define DLNOTIFY_ALL        (DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN)
+
+// RF, this is just here so different elements of the engine can be aware of this setting as it changes
+#define WSMAX_SP_CLIENTS    64		// increasing this will increase memory usage significantly
+
+#define ETGAME_INIT_FRAMES  6

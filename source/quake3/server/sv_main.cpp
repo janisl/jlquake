@@ -608,7 +608,7 @@ void SV_Frame(int msec)
 		svs.q3_time += frameMsec;
 
 		// let everything in the world think and move
-		VM_Call(gvm, Q3GAME_RUN_FRAME, svs.q3_time);
+		SVT3_GameRunFrame(svs.q3_time);
 	}
 
 	if (com_speeds->integer)

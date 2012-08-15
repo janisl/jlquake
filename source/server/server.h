@@ -55,5 +55,7 @@ void SCRQH_BeginLoadingPlaque();
 void CL_EstablishConnection(const char* name);
 void Host_Reconnect_f();
 void Cmd_ForwardToServer();
+void CL_MapLoading();
+void CL_ShutdownAll();
 
 #endif

@@ -107,10 +107,6 @@ void    FS_Restart(int checksumFeed);
 
 int     FS_LoadStack();
 
-#if defined(DO_LIGHT_DEDICATED)
-int FS_RandChecksumFeed();
-#endif
-
 char* FS_ShiftStr(const char* string, int shift);
 
 /*
@@ -168,8 +164,6 @@ extern int time_frontend;
 extern int time_backend;			// renderer backend time
 
 extern int com_frameMsec;
-
-extern qboolean com_errorEntered;
 
 typedef enum {
 	TAG_FREE,

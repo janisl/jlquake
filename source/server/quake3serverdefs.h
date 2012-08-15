@@ -141,3 +141,5 @@ struct q3svEntity_t
 #define Q3SVF_CAPSULE           0x00000400	// use capsule for collision detection instead of bbox
 #define Q3SVF_NOTSINGLECLIENT   0x00000800	// send entity to everyone but one client
 											// (q3entityShared_t->singleClient)
+
+#define Q3FRAMETIME         100					// msec

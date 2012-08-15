@@ -39,5 +39,6 @@ void SVWM_GameClientBegin(int clientNum);
 void SVWM_GameClientUserInfoChanged(int clientNum);
 const char* SVWM_GameClientConnect(int clientNum, bool firstTime, bool isBot);
 void SVWM_GameClientCommand(int clientNum);
+void SVWM_GameRunFrame(int time);
 
 #endif

@@ -216,9 +216,6 @@ MATHLIB
 #define SCREEN_WIDTH        640
 #define SCREEN_HEIGHT       480
 
-#define GAME_INIT_FRAMES    6
-#define FRAMETIME           100					// msec
-
 //=============================================
 
 #ifdef _WIN32

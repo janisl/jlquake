@@ -53,7 +53,7 @@ static void SVT3_CloseDownload(client_t* cl)
 
 //	Called when the player is totally leaving the server, either willingly
 // or unwillingly.  This is NOT called if the entire server is quiting
-// or crashing -- SV_FinalMessage() will handle that
+// or crashing -- SVT3_FinalCommand() will handle that
 void SVT3_DropClient(client_t* drop, const char* reason)
 {
 	int i;
@@ -193,7 +193,7 @@ void SVQ3_ClientEnterWorld(client_t* client, q3usercmd_t* cmd)
 	client->q3_lastUsercmd = *cmd;
 
 	// call the game begin function
-	SVQ3_GameClientBegin(clientNum);
+	SVT3_GameClientBegin(clientNum);
 }
 
 void SVWS_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
@@ -213,7 +213,7 @@ void SVWS_ClientEnterWorld(client_t* client, wsusercmd_t* cmd)
 	client->ws_lastUsercmd = *cmd;
 
 	// call the game begin function
-	SVWS_GameClientBegin(clientNum);
+	SVT3_GameClientBegin(clientNum);
 }
 
 void SVWM_ClientEnterWorld(client_t* client, wmusercmd_t* cmd)
@@ -233,7 +233,7 @@ void SVWM_ClientEnterWorld(client_t* client, wmusercmd_t* cmd)
 	client->wm_lastUsercmd = *cmd;
 
 	// call the game begin function
-	SVWM_GameClientBegin(clientNum);
+	SVT3_GameClientBegin(clientNum);
 }
 
 void SVET_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
@@ -253,7 +253,7 @@ void SVET_ClientEnterWorld(client_t* client, etusercmd_t* cmd)
 	client->et_lastUsercmd = *cmd;
 
 	// call the game begin function
-	SVET_GameClientBegin(clientNum);
+	SVT3_GameClientBegin(clientNum);
 }
 
 //	Abort a download if in progress
