@@ -219,3 +219,6 @@ enum gamestate_t
 #define WSMAX_SP_CLIENTS    64		// increasing this will increase memory usage significantly
 
 #define ETGAME_INIT_FRAMES  6
+
+#define RELOAD_NEXTMAP          0x02
+#define RELOAD_FAILED           0x08

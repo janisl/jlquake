@@ -238,9 +238,6 @@ void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
 ==========================================================
 */
 
-#define RELOAD_NEXTMAP          0x02
-#define RELOAD_FAILED           0x08
-
 // server browser sources
 #define AS_LOCAL        0
 #define AS_GLOBAL       1			// NERVE - SMF - modified

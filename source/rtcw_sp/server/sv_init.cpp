@@ -108,7 +108,7 @@ void SV_Init(void)
 	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 
-	sv_reloading = Cvar_Get("g_reloading", "0", CVAR_ROM);		//----(SA)	added
+	svt3_reloading = Cvar_Get("g_reloading", "0", CVAR_ROM);		//----(SA)	added
 
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SVT3_BotInitCvars();

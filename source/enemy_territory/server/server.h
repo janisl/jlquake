@@ -57,12 +57,6 @@ extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
 extern Cvar* sv_allowAnonymous;
 
-// Rafael gameskill
-//extern	Cvar	*sv_gameskill;
-// done
-
-extern Cvar* sv_reloading;
-
 //bani
 extern Cvar* sv_cheats;
 

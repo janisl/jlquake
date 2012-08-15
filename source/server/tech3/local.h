@@ -36,8 +36,6 @@ void SVT3_BotFrame(int time);
 //
 void SVT3_Heartbeat_f();
 void SVET_TempBanNetAddress(netadr_t address, int length);
-client_t* SVT3_GetPlayerByName();
-client_t* SVT3_GetPlayerByNum();
 void SVT3_Kick_f();
 void SVT3_KickNum_f();
 void SVT3_Status_f();
@@ -48,6 +46,11 @@ void SVT3_DumpUser_f();
 bool SVT3_TransitionGameState(gamestate_t new_gs, gamestate_t old_gs, int delay);
 void SVET_FieldInfo_f();
 bool SVET_TempBanIsBanned(netadr_t address);
+void SVT3_Map_f();
+void SVT3_MapRestart_f();
+void SVT3_LoadGame_f();
+void SVT3_Ban_f();
+void SVT3_BanNum_f();
 
 //
 //	Client
@@ -143,6 +146,7 @@ extern Cvar* svt3_maxPing;
 extern Cvar* svt3_privatePassword;
 extern Cvar* svt3_privateClients;
 extern Cvar* svt3_floodProtect;
+extern Cvar* svt3_reloading;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));

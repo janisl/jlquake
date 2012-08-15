@@ -52,8 +52,6 @@ extern Cvar* sv_allowAnonymous;
 extern Cvar* sv_gameskill;
 // done
 
-extern Cvar* sv_reloading;		//----(SA)	added
-
 //===========================================================
 
 //

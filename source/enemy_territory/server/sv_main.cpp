@@ -42,12 +42,6 @@ Cvar* sv_friendlyFire;			// NERVE - SMF
 Cvar* sv_maxlives;				// NERVE - SMF
 Cvar* sv_needpass;
 
-// Rafael gameskill
-//Cvar	*sv_gameskill;
-// done
-
-Cvar* sv_reloading;
-
 //bani
 Cvar* sv_cheats;
 

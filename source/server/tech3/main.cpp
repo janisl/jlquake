@@ -45,6 +45,7 @@ Cvar* svt3_maxPing;
 Cvar* svt3_privatePassword;		// password for the privateClient slots
 Cvar* svt3_privateClients;		// number of clients reserved for password
 Cvar* svt3_floodProtect;
+Cvar* svt3_reloading;
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)

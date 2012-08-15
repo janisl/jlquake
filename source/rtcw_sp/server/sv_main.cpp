@@ -42,8 +42,6 @@ Cvar* sv_allowAnonymous;
 Cvar* sv_gameskill;
 // done
 
-Cvar* sv_reloading;		//----(SA)	added
-
 /*
 =============================================================================
 
