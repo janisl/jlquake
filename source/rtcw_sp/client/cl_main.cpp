@@ -3256,13 +3256,13 @@ void CL_GlobalServers_f(void)
 
 	if (cls.q3_masterNum == 1)
 	{
-		SOCK_StringToAdr("master.quake3world.com", &to, PORT_MASTER);
+		SOCK_StringToAdr("master.quake3world.com", &to, Q3PORT_MASTER);
 		cls.q3_nummplayerservers = -1;
 		cls.q3_pingUpdateSource = AS_MPLAYER;
 	}
 	else
 	{
-		SOCK_StringToAdr(MASTER_SERVER_NAME, &to, PORT_MASTER);
+		SOCK_StringToAdr(MASTER_SERVER_NAME, &to, Q3PORT_MASTER);
 		cls.q3_numglobalservers = -1;
 		cls.q3_pingUpdateSource = AS_GLOBAL;
 	}

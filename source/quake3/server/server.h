@@ -30,11 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //=============================================================================
 
-#define MAX_MASTER_SERVERS  5
-
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
-extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
@@ -46,8 +43,3 @@ extern Cvar* sv_serverid;
 // sv_main.c
 //
 void SV_AddOperatorCommands(void);
-void SV_RemoveOperatorCommands(void);
-
-
-void SV_MasterHeartbeat(void);
-void SV_MasterShutdown(void);

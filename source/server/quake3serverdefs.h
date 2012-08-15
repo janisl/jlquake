@@ -143,3 +143,5 @@ struct q3svEntity_t
 											// (q3entityShared_t->singleClient)
 
 #define Q3FRAMETIME         100					// msec
+
+#define Q3MAX_MASTER_SERVERS    5

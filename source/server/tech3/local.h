@@ -147,6 +147,7 @@ extern Cvar* svt3_privatePassword;
 extern Cvar* svt3_privateClients;
 extern Cvar* svt3_floodProtect;
 extern Cvar* svt3_reloading;
+extern Cvar* svt3_master[Q3MAX_MASTER_SERVERS];
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
@@ -154,6 +155,11 @@ int SVET_LoadTag(const char* mod_name);
 void SVT3_CalcPings();
 void SVT3_CheckTimeouts();
 bool SVT3_CheckPaused();
+void SVT3_MasterHeartbeat(const char* hbname);
+void SVT3_MasterShutdown();
+bool SVET_VerifyChallenge(const char* challenge);
+void SVT3C_GameCompleteStatus(netadr_t from);
+void SVT3_MasterGameCompleteStatus();
 
 //
 //	NetChan

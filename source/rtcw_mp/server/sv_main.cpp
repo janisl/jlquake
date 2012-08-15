@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
 
-Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
 Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
 Cvar* sv_mapChecksum;
@@ -46,172 +45,12 @@ Cvar* sv_tourney;				// NERVE - SMF
 Cvar* sv_gameskill;
 // done
 
-void SVC_GameCompleteStatus(netadr_t from);			// NERVE - SMF
-
-/*
-=============================================================================
-
-EVENT MESSAGES
-
-=============================================================================
-*/
-
-/*
-==============================================================================
-
-MASTER SERVER FUNCTIONS
-
-==============================================================================
-*/
-
-/*
-================
-SV_MasterHeartbeat
-
-Send a message to the masters every few minutes to
-let it know we are alive, and log information.
-We will also have a heartbeat sent when a server
-changes from empty to non-empty, and full to non-full,
-but not on every player enter or exit.
-================
-*/
-#define HEARTBEAT_MSEC  300 * 1000
-#define HEARTBEAT_GAME  "Wolfenstein-1"
-#define HEARTBEAT_DEAD  "WolfFlatline-1"		// NERVE - SMF
-
-void SV_MasterHeartbeat(const char* hbname)
-{
-	static netadr_t adr[MAX_MASTER_SERVERS];
-	int i;
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
-	if (!com_dedicated || com_dedicated->integer != 2)
-	{
-		return;		// only dedicated servers send heartbeats
-	}
-
-	// if not time yet, don't send anything
-	if (svs.q3_time < svs.q3_nextHeartbeatTime)
-	{
-		return;
-	}
-	svs.q3_nextHeartbeatTime = svs.q3_time + HEARTBEAT_MSEC;
-
-
-	// send to group masters
-	for (i = 0; i < MAX_MASTER_SERVERS; i++)
-	{
-		if (!sv_master[i]->string[0])
-		{
-			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if (sv_master[i]->modified)
-		{
-			sv_master[i]->modified = false;
-
-			common->Printf("Resolving %s\n", sv_master[i]->string);
-			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
-				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = false;
-				continue;
-			}
-			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
-				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
-				BigShort(adr[i].port));
-		}
-
-
-		common->Printf("Sending heartbeat to %s\n", sv_master[i]->string);
-		// this command should be changed if the server info / status format
-		// ever incompatably changes
-		NET_OutOfBandPrint(NS_SERVER, adr[i], "heartbeat %s\n", hbname);
-	}
-}
-
-/*
-=================
-SV_MasterGameCompleteStatus
-
-NERVE - SMF - Sends gameCompleteStatus messages to all master servers
-=================
-*/
-void SV_MasterGameCompleteStatus()
-{
-	static netadr_t adr[MAX_MASTER_SERVERS];
-	int i;
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
-	if (!com_dedicated || com_dedicated->integer != 2)
-	{
-		return;		// only dedicated servers send master game status
-	}
-
-	// send to group masters
-	for (i = 0; i < MAX_MASTER_SERVERS; i++)
-	{
-		if (!sv_master[i]->string[0])
-		{
-			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if (sv_master[i]->modified)
-		{
-			sv_master[i]->modified = false;
-
-			common->Printf("Resolving %s\n", sv_master[i]->string);
-			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
-				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = false;
-				continue;
-			}
-			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
-				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
-				BigShort(adr[i].port));
-		}
-
-		common->Printf("Sending gameCompleteStatus to %s\n", sv_master[i]->string);
-		// this command should be changed if the server info / status format
-		// ever incompatably changes
-		SVC_GameCompleteStatus(adr[i]);
-	}
-}
-
-/*
-=================
-SV_MasterShutdown
-
-Informs all masters that this server is going down
-=================
-*/
-void SV_MasterShutdown(void)
-{
-	// send a hearbeat right now
-	svs.q3_nextHeartbeatTime = -9999;
-	SV_MasterHeartbeat(HEARTBEAT_DEAD);					// NERVE - SMF - changed to flatline
-
-	// send it again to minimize chance of drops
-//	svs.q3_nextHeartbeatTime = -9999;
-//	SV_MasterHeartbeat( HEARTBEAT_DEAD );
-
-	// when the master tries to poll the server, it won't respond, so
-	// it will be removed from the list
-}
-
+#define HEARTBEAT_MSEC      300 * 1000
+#define Q3HEARTBEAT_GAME    "QuakeArena-1"
+#define WSMHEARTBEAT_GAME   "Wolfenstein-1"
+#define WMHEARTBEAT_DEAD    "WolfFlatline-1"
+#define ETHEARTBEAT_GAME    "EnemyTerritory-1"
+#define ETHEARTBEAT_DEAD    "ETFlatline-1"			// NERVE - SMF
 
 /*
 ==============================================================================
@@ -275,61 +114,6 @@ void SVC_Status(netadr_t from)
 	}
 
 	NET_OutOfBandPrint(NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status);
-}
-
-/*
-=================
-SVC_GameCompleteStatus
-
-NERVE - SMF - Send serverinfo cvars, etc to master servers when
-game complete. Useful for tracking global player stats.
-=================
-*/
-void SVC_GameCompleteStatus(netadr_t from)
-{
-	char player[1024];
-	char status[MAX_MSGLEN_WOLF];
-	int i;
-	client_t* cl;
-	wmplayerState_t* ps;
-	int statusLength;
-	int playerLength;
-	char infostring[MAX_INFO_STRING_Q3];
-
-	// ignore if we are in single player
-	if (Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
-	{
-		return;
-	}
-
-	String::Cpy(infostring, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q3));
-
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
-
-	status[0] = 0;
-	statusLength = 0;
-
-	for (i = 0; i < sv_maxclients->integer; i++)
-	{
-		cl = &svs.clients[i];
-		if (cl->state >= CS_CONNECTED)
-		{
-			ps = SVWM_GameClientNum(i);
-			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-				ps->persistant[WMPERS_SCORE], cl->ping, cl->name);
-			playerLength = String::Length(player);
-			if (statusLength + playerLength >= (int)sizeof(status))
-			{
-				break;		// can't hold any more
-			}
-			String::Cpy(status + statusLength, player);
-			statusLength += playerLength;
-		}
-	}
-
-	NET_OutOfBandPrint(NS_SERVER, from, "gameCompleteStatus\n%s\n%s", infostring, status);
 }
 
 /*
@@ -796,7 +580,7 @@ void SV_Frame(int msec)
 	SVT3_SendClientMessages();
 
 	// send a heartbeat to the master if needed
-	SV_MasterHeartbeat(HEARTBEAT_GAME);
+	SVT3_MasterHeartbeat(WSMHEARTBEAT_GAME);
 }
 
 //============================================================================

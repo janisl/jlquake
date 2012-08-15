@@ -42,15 +42,12 @@ If you have questions concerning this license or the applicable additional terms
 
 //=============================================================================
 
-#define MAX_MASTER_SERVERS  5
-
 extern Cvar* sv_fps;
 extern Cvar* sv_rconPassword;
 extern Cvar* sv_friendlyFire;			// NERVE - SMF
 extern Cvar* sv_maxlives;				// NERVE - SMF
 extern Cvar* sv_needpass;
 
-extern Cvar* sv_master[MAX_MASTER_SERVERS];
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
@@ -66,12 +63,3 @@ extern Cvar* sv_cheats;
 // sv_main.c
 //
 void SV_AddOperatorCommands(void);
-void SV_RemoveOperatorCommands(void);
-
-
-void SV_MasterHeartbeat(const char* hbname);
-void SV_MasterShutdown(void);
-
-void SV_MasterGameCompleteStatus();		// NERVE - SMF
-//bani - bugtraq 12534
-qboolean SV_VerifyChallenge(char* challenge);

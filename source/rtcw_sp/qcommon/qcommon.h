@@ -42,7 +42,6 @@ PROTOCOL
 #define UPDATE_SERVER_NAME      "update.gmistudios.com"
 #define MASTER_SERVER_NAME      "master.gmistudios.com"
 
-#define PORT_MASTER         27950
 #define PORT_UPDATE         27951
 #define Q3PORT_AUTHORIZE    27952
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after

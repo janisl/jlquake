@@ -302,7 +302,8 @@ enum
 
 #define Q3AUTHORIZE_SERVER_NAME   "authorize.quake3arena.com"
 
-#define Q3PORT_AUTHORIZE    27952
+#define Q3PORT_AUTHORIZE        27952
+#define Q3PORT_MASTER           27950
 
 #define Q3PROTOCOL_VERSION      68
 // 1.31 - 67

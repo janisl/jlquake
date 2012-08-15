@@ -72,11 +72,11 @@ void SV_Init(void)
 	Cvar_Get("nextmap", "", CVAR_TEMP);
 
 	svt3_allowDownload = Cvar_Get("sv_allowDownload", "0", CVAR_SERVERINFO);
-	sv_master[0] = Cvar_Get("sv_master1", MASTER_SERVER_NAME, 0);
-	sv_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
-	sv_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
-	sv_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
-	sv_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
+	svt3_master[0] = Cvar_Get("sv_master1", MASTER_SERVER_NAME, 0);
+	svt3_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
+	svt3_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
+	svt3_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
+	svt3_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
 	svt3_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
 	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
@@ -114,8 +114,7 @@ void SV_Shutdown(const char* finalmsg)
 		SVT3_FinalCommand(va("print \"%s\"", finalmsg), true);
 	}
 
-	SV_RemoveOperatorCommands();
-	SV_MasterShutdown();
+	SVT3_MasterShutdown();
 	SVT3_ShutdownGameProgs();
 
 	// free current level
@@ -127,12 +126,18 @@ void SV_Shutdown(const char* finalmsg)
 		Mem_Free(svs.clients);
 	}
 	Com_Memset(&svs, 0, sizeof(svs));
+	svs.et_serverLoad = -1;
 
 	Cvar_Set("sv_running", "0");
-	Cvar_Set("ui_singlePlayerActive", "0");
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
 
 	common->Printf("---------------------------\n");
 
 	// disconnect any local clients
 	CL_Disconnect(false);
 }
+
+

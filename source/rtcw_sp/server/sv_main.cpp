@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* sv_fps;					// time rate for running non-clients
 Cvar* sv_rconPassword;			// password for remote server commands
-Cvar* sv_master[MAX_MASTER_SERVERS];		// master server ip address
 Cvar* sv_showloss;				// report when usercmds are lost
 Cvar* sv_killserver;			// menu system can set to 1 to shut server down
 Cvar* sv_mapChecksum;
@@ -42,113 +41,12 @@ Cvar* sv_allowAnonymous;
 Cvar* sv_gameskill;
 // done
 
-/*
-=============================================================================
-
-EVENT MESSAGES
-
-=============================================================================
-*/
-
-/*
-==============================================================================
-
-MASTER SERVER FUNCTIONS
-
-==============================================================================
-*/
-
-/*
-================
-SV_MasterHeartbeat
-
-Send a message to the masters every few minutes to
-let it know we are alive, and log information.
-We will also have a heartbeat sent when a server
-changes from empty to non-empty, and full to non-full,
-but not on every player enter or exit.
-================
-*/
-#define HEARTBEAT_MSEC  300 * 1000
-#define HEARTBEAT_GAME  "Wolfenstein-1"
-void SV_MasterHeartbeat(void)
-{
-	static netadr_t adr[MAX_MASTER_SERVERS];
-	int i;
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
-	if (!com_dedicated || com_dedicated->integer != 2)
-	{
-		return;		// only dedicated servers send heartbeats
-	}
-
-	// if not time yet, don't send anything
-	if (svs.q3_time < svs.q3_nextHeartbeatTime)
-	{
-		return;
-	}
-	svs.q3_nextHeartbeatTime = svs.q3_time + HEARTBEAT_MSEC;
-
-
-	// send to group masters
-	for (i = 0; i < MAX_MASTER_SERVERS; i++)
-	{
-		if (!sv_master[i]->string[0])
-		{
-			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if (sv_master[i]->modified)
-		{
-			sv_master[i]->modified = false;
-
-			common->Printf("Resolving %s\n", sv_master[i]->string);
-			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				common->Printf("Couldn't resolve address: %s\n", sv_master[i]->string);
-				Cvar_Set(sv_master[i]->name, "");
-				sv_master[i]->modified = false;
-				continue;
-			}
-			common->Printf("%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
-				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
-				BigShort(adr[i].port));
-		}
-
-
-		common->Printf("Sending heartbeat to %s\n", sv_master[i]->string);
-		// this command should be changed if the server info / status format
-		// ever incompatably changes
-		NET_OutOfBandPrint(NS_SERVER, adr[i], "heartbeat %s\n", HEARTBEAT_GAME);
-	}
-}
-
-/*
-=================
-SV_MasterShutdown
-
-Informs all masters that this server is going down
-=================
-*/
-void SV_MasterShutdown(void)
-{
-	// send a hearbeat right now
-	svs.q3_nextHeartbeatTime = -9999;
-	SV_MasterHeartbeat();
-
-	// send it again to minimize chance of drops
-	svs.q3_nextHeartbeatTime = -9999;
-	SV_MasterHeartbeat();
-
-	// when the master tries to poll the server, it won't respond, so
-	// it will be removed from the list
-}
-
+#define HEARTBEAT_MSEC      300 * 1000
+#define Q3HEARTBEAT_GAME    "QuakeArena-1"
+#define WSMHEARTBEAT_GAME   "Wolfenstein-1"
+#define WMHEARTBEAT_DEAD    "WolfFlatline-1"
+#define ETHEARTBEAT_GAME    "EnemyTerritory-1"
+#define ETHEARTBEAT_DEAD    "ETFlatline-1"			// NERVE - SMF
 
 /*
 ==============================================================================
@@ -615,7 +513,7 @@ void SV_Frame(int msec)
 	SVT3_SendClientMessages();
 
 	// send a heartbeat to the master if needed
-	SV_MasterHeartbeat();
+	SVT3_MasterHeartbeat(WSMHEARTBEAT_GAME);
 }
 
 //============================================================================
