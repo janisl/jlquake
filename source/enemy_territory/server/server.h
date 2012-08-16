@@ -43,16 +43,10 @@ If you have questions concerning this license or the applicable additional terms
 //=============================================================================
 
 extern Cvar* sv_fps;
-extern Cvar* sv_rconPassword;
-extern Cvar* sv_friendlyFire;			// NERVE - SMF
-extern Cvar* sv_maxlives;				// NERVE - SMF
-extern Cvar* sv_needpass;
-
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_allowAnonymous;
 
 //bani
 extern Cvar* sv_cheats;

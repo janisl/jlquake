@@ -38,13 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 //=============================================================================
 
 extern Cvar* sv_fps;
-extern Cvar* sv_rconPassword;
 extern Cvar* sv_showloss;
 extern Cvar* sv_killserver;
 extern Cvar* sv_mapChecksum;
 extern Cvar* sv_serverid;
-extern Cvar* sv_allowAnonymous;
-
-// Rafael gameskill
-extern Cvar* sv_gameskill;
-// done

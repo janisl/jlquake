@@ -136,6 +136,13 @@ extern Cvar* svt3_privateClients;
 extern Cvar* svt3_floodProtect;
 extern Cvar* svt3_reloading;
 extern Cvar* svt3_master[Q3MAX_MASTER_SERVERS];
+extern Cvar* svt3_gameskill;
+extern Cvar* svt3_allowAnonymous;
+extern Cvar* svt3_friendlyFire;			// NERVE - SMF
+extern Cvar* svt3_maxlives;				// NERVE - SMF
+extern Cvar* svwm_tourney;				// NERVE - SMF
+extern Cvar* svet_needpass;
+extern Cvar* svt3_rconPassword;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
@@ -145,9 +152,8 @@ void SVT3_CheckTimeouts();
 bool SVT3_CheckPaused();
 void SVT3_MasterHeartbeat(const char* hbname);
 void SVT3_MasterShutdown();
-bool SVET_VerifyChallenge(const char* challenge);
-void SVT3C_GameCompleteStatus(netadr_t from);
 void SVT3_MasterGameCompleteStatus();
+void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg);
 
 //
 //	NetChan

@@ -44,8 +44,6 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-#define GAMENAME_STRING     "wolfmp"
-
 // NERVE - SMF - wolf multiplayer master servers
 #define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65
 #define MASTER_SERVER_NAME      "wolfmaster.idsoftware.com"

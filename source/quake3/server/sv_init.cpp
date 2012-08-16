@@ -64,7 +64,7 @@ void SV_Init(void)
 	Cvar_Get("sv_referencedPakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
 
 	// server vars
-	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
+	svt3_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	svt3_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);

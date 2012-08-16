@@ -58,6 +58,11 @@ void idWolfSPPlayerState::SetViewHeight(int value)
 	reinterpret_cast<wsplayerState_t*>(ps)->viewheight = value;
 }
 
+int idWolfSPPlayerState::GetPersistantScore() const
+{
+	return reinterpret_cast<wsplayerState_t*>(ps)->persistant[WSPERS_SCORE];
+}
+
 int idWolfSPPlayerState::GetPing() const
 {
 	return reinterpret_cast<wsplayerState_t*>(ps)->ping;

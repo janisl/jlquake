@@ -56,6 +56,13 @@ Cvar* svt3_privateClients;		// number of clients reserved for password
 Cvar* svt3_floodProtect;
 Cvar* svt3_reloading;
 Cvar* svt3_master[Q3MAX_MASTER_SERVERS];		// master server ip address
+Cvar* svt3_gameskill;
+Cvar* svt3_allowAnonymous;
+Cvar* svt3_friendlyFire;			// NERVE - SMF
+Cvar* svt3_maxlives;				// NERVE - SMF
+Cvar* svwm_tourney;				// NERVE - SMF
+Cvar* svet_needpass;
+Cvar* svt3_rconPassword;			// password for remote server commands
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)
@@ -377,6 +384,434 @@ bool SVT3_CheckPaused()
 	return true;
 }
 
+//returns true if valid challenge
+//returns false if m4d h4x0rz
+static bool SVET_VerifyChallenge(const char* challenge)
+{
+	if (!challenge)
+	{
+		return false;
+	}
+
+	int j = String::Length(challenge);
+	if (j > 64)
+	{
+		return false;
+	}
+	for (int i = 0; i < j; i++)
+	{
+		if (challenge[i] == '\\' ||
+			challenge[i] == '/' ||
+			challenge[i] == '%' ||
+			challenge[i] == ';' ||
+			challenge[i] == '"' ||
+			challenge[i] < 32 ||	// non-ascii
+			challenge[i] > 126	// non-ascii
+			)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+//	NERVE - SMF - Send serverinfo cvars, etc to master servers when
+// game complete. Useful for tracking global player stats.
+static void SVT3C_GameCompleteStatus(netadr_t from)
+{
+	char player[1024];
+	char status[MAX_MSGLEN_WOLF];
+	int i;
+	client_t* cl;
+	int statusLength;
+	int playerLength;
+	char infostring[MAX_INFO_STRING_Q3];
+
+	// ignore if we are in single player
+	if (GGameType & GAME_WolfMP && Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
+	{
+		return;
+	}
+	if (GGameType & GAME_ET && SVET_GameIsSinglePlayer())
+	{
+		return;
+	}
+
+	//bani - bugtraq 12534
+	if (GGameType & GAME_ET && !SVET_VerifyChallenge(Cmd_Argv(1)))
+	{
+		return;
+	}
+
+	String::Cpy(infostring, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
+
+	// echo back the parameter to status. so master servers can use it as a challenge
+	// to prevent timed spoofed reply packets that add ghost servers
+	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
+
+	status[0] = 0;
+	statusLength = 0;
+
+	for (i = 0; i < sv_maxclients->integer; i++)
+	{
+		cl = &svs.clients[i];
+		if (cl->state >= CS_CONNECTED)
+		{
+			idPlayerState3* ps = SVT3_GameClientNum(i);
+			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n", ps->GetPersistantScore(), cl->ping, cl->name);
+			playerLength = String::Length(player);
+			if (statusLength + playerLength >= (int)sizeof(status))
+			{
+				break;		// can't hold any more
+			}
+			String::Cpy(status + statusLength, player);
+			statusLength += playerLength;
+		}
+	}
+
+	NET_OutOfBandPrint(NS_SERVER, from, "gameCompleteStatus\n%s\n%s", infostring, status);
+}
+
+//	Responds with all the info that qplug or qspy can see about the server
+// and all connected players.  Used for getting detailed information after
+// the simple info query.
+static void SVT3C_Status(netadr_t from)
+{
+	// ignore if we are in single player
+	if (!(GGameType & GAME_ET) && Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
+	{
+		return;
+	}
+	if (GGameType & GAME_ET && SVET_GameIsSinglePlayer())
+	{
+		return;
+	}
+
+	//bani - bugtraq 12534
+	if (GGameType & GAME_ET && !SVET_VerifyChallenge(Cmd_Argv(1)))
+	{
+		return;
+	}
+
+	char infostring[MAX_INFO_STRING_Q3];
+	String::Cpy(infostring, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
+
+	// echo back the parameter to status. so master servers can use it as a challenge
+	// to prevent timed spoofed reply packets that add ghost servers
+	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
+
+	char status[MAX_MSGLEN];
+	status[0] = 0;
+	int statusLength = 0;
+
+	for (int i = 0; i < sv_maxclients->integer; i++)
+	{
+		client_t* cl = &svs.clients[i];
+		if (cl->state >= CS_CONNECTED)
+		{
+			idPlayerState3* ps = SVT3_GameClientNum(i);
+			char player[1024];
+			String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
+				ps->GetPersistantScore(), cl->ping, cl->name);
+			int playerLength = String::Length(player);
+			if (statusLength + playerLength >= (GGameType & GAME_Quake3 ? MAX_MSGLEN_Q3 : MAX_MSGLEN_WOLF))
+			{
+				break;		// can't hold any more
+			}
+			String::Cpy(status + statusLength, player);
+			statusLength += playerLength;
+		}
+	}
+
+	NET_OutOfBandPrint(NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status);
+}
+
+//	Responds with a short info message that should be enough to determine
+// if a user is interested in a server to do a full status
+static void SVT3C_Info(netadr_t from)
+{
+	// ignore if we are in single player
+	if (!(GGameType & GAME_ET) && Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
+	{
+		return;
+	}
+	if (GGameType & GAME_Quake3 && Cvar_VariableValue("ui_singlePlayerActive"))
+	{
+		return;
+	}
+	if (GGameType & GAME_ET && SVET_GameIsSinglePlayer())
+	{
+		return;
+	}
+
+	//bani - bugtraq 12534
+	if (GGameType & GAME_ET && !SVET_VerifyChallenge(Cmd_Argv(1)))
+	{
+		return;
+	}
+
+	// don't count privateclients
+	int count = 0;
+	for (int i = svt3_privateClients->integer; i < sv_maxclients->integer; i++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
+			count++;
+		}
+	}
+
+	char infostring[MAX_INFO_STRING_Q3];
+	infostring[0] = 0;
+
+	// echo back the parameter to status. so servers can use it as a challenge
+	// to prevent timed spoofed reply packets that add ghost servers
+	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
+
+	if (GGameType & GAME_Quake3)
+	{
+		Info_SetValueForKey(infostring, "protocol", va("%i", Q3PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		Info_SetValueForKey(infostring, "protocol", va("%i", WSPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		Info_SetValueForKey(infostring, "protocol", va("%i", WMPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	}
+	else
+	{
+		Info_SetValueForKey(infostring, "protocol", va("%i", ETPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+	}
+	Info_SetValueForKey(infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3);
+	if (GGameType & GAME_ET)
+	{
+		Info_SetValueForKey(infostring, "serverload", va("%i", svs.et_serverLoad), MAX_INFO_STRING_Q3);
+	}
+	Info_SetValueForKey(infostring, "mapname", svt3_mapname->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "clients", va("%i", count), MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(infostring, "sv_maxclients",
+		va("%i", sv_maxclients->integer - svt3_privateClients->integer), MAX_INFO_STRING_Q3);
+	if (GGameType & GAME_ET)
+	{
+		Info_SetValueForKey(infostring, "gametype", Cvar_VariableString("g_gametype"), MAX_INFO_STRING_Q3);
+	}
+	else
+	{
+		Info_SetValueForKey(infostring, "gametype", va("%i", svt3_gametype->integer), MAX_INFO_STRING_Q3);
+	}
+	Info_SetValueForKey(infostring, "pure", va("%i", svt3_pure->integer), MAX_INFO_STRING_Q3);
+
+	if (svt3_minPing->integer)
+	{
+		Info_SetValueForKey(infostring, "minPing", va("%i", svt3_minPing->integer), MAX_INFO_STRING_Q3);
+	}
+	if (svt3_maxPing->integer)
+	{
+		Info_SetValueForKey(infostring, "maxPing", va("%i", svt3_maxPing->integer), MAX_INFO_STRING_Q3);
+	}
+	const char* gamedir = Cvar_VariableString("fs_game");
+	if (*gamedir)
+	{
+		Info_SetValueForKey(infostring, "game", gamedir, MAX_INFO_STRING_Q3);
+	}
+	if (!(GGameType & GAME_Quake3))
+	{
+		Info_SetValueForKey(infostring, "sv_allowAnonymous", va("%i", svt3_allowAnonymous->integer), MAX_INFO_STRING_Q3);
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
+	{
+		// Rafael gameskill
+		Info_SetValueForKey(infostring, "gameskill", va("%i", svt3_gameskill->integer), MAX_INFO_STRING_Q3);
+		// done
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Info_SetValueForKey(infostring, "friendlyFire", va("%i", svt3_friendlyFire->integer), MAX_INFO_STRING_Q3);			// NERVE - SMF
+		Info_SetValueForKey(infostring, "maxlives", va("%i", svt3_maxlives->integer ? 1 : 0), MAX_INFO_STRING_Q3);			// NERVE - SMF
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		Info_SetValueForKey(infostring, "tourney", va("%i", svwm_tourney->integer), MAX_INFO_STRING_Q3);					// NERVE - SMF
+		Info_SetValueForKey(infostring, "gamename", WMGAMENAME_STRING, MAX_INFO_STRING_Q3);									// Arnout: to be able to filter out Quake servers
+	}
+	if (GGameType & GAME_ET)
+	{
+		Info_SetValueForKey(infostring, "needpass", va("%i", svet_needpass->integer ? 1 : 0), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(infostring, "gamename", ETGAMENAME_STRING, MAX_INFO_STRING_Q3);									// Arnout: to be able to filter out Quake servers
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// TTimo
+		const char* antilag = Cvar_VariableString("g_antilag");
+		if (antilag)
+		{
+			Info_SetValueForKey(infostring, "g_antilag", antilag, MAX_INFO_STRING_Q3);
+		}
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		const char* weaprestrict = Cvar_VariableString("g_heavyWeaponRestriction");
+		if (weaprestrict)
+		{
+			Info_SetValueForKey(infostring, "weaprestrict", weaprestrict, MAX_INFO_STRING_Q3);
+		}
+
+		const char* balancedteams = Cvar_VariableString("g_balancedteams");
+		if (balancedteams)
+		{
+			Info_SetValueForKey(infostring, "balancedteams", balancedteams, MAX_INFO_STRING_Q3);
+		}
+	}
+
+	NET_OutOfBandPrint(NS_SERVER, from, "infoResponse\n%s", infostring);
+}
+
+static void SVT3_FlushRedirect(char* outputbuf)
+{
+	NET_OutOfBandPrint(NS_SERVER, svs.q3_redirectAddress, "print\n%s", outputbuf);
+}
+
+//	An rcon packet arrived from the network.
+//	Shift down the remaining args
+//	Redirect all printfs
+static void SVT3C_RemoteCommand(netadr_t from, QMsg* msg)
+{
+	static unsigned int lasttime = 0;
+
+	unsigned int time = Com_Milliseconds();
+	if (time < (lasttime + 500))
+	{
+		return;
+	}
+	lasttime = time;
+
+	bool valid;
+	if (!String::Length(svt3_rconPassword->string) ||
+		String::Cmp(Cmd_Argv(1), svt3_rconPassword->string))
+	{
+		valid = false;
+		common->Printf("Bad rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+	}
+	else
+	{
+		valid = true;
+		common->Printf("Rcon from %s:\n%s\n", SOCK_AdrToString(from), Cmd_Argv(2));
+	}
+
+	// start redirecting all print outputs to the packet
+	svs.q3_redirectAddress = from;
+	// TTimo - scaled down to accumulate, but not overflow anything network wise, print wise etc.
+	// (OOB messages are the bottleneck here)
+	enum { SV_OUTPUTBUF_LENGTH = 1024 - 16 };
+	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
+	Com_BeginRedirect(sv_outputbuf, SV_OUTPUTBUF_LENGTH, SVT3_FlushRedirect);
+
+	if (!String::Length(svt3_rconPassword->string))
+	{
+		common->Printf("No rconpassword set on the server.\n");
+	}
+	else if (!valid)
+	{
+		common->Printf("Bad rconpassword.\n");
+	}
+	else
+	{
+		char remaining[1024];
+		remaining[0] = 0;
+
+		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=543
+		// get the command directly, "rcon <pass> <command>" to avoid quoting issues
+		// extract the command by walking
+		// since the cmd formatting can fuckup (amount of spaces), using a dumb step by step parsing
+		char* cmd_aux = Cmd_Cmd();
+		cmd_aux += 4;
+		while (cmd_aux[0] == ' ')
+		{
+			cmd_aux++;
+		}
+		while (cmd_aux[0] && cmd_aux[0] != ' ')	// password
+		{
+			cmd_aux++;
+		}
+		while (cmd_aux[0] == ' ')
+		{
+			cmd_aux++;
+		}
+
+		String::Cat(remaining, sizeof(remaining), cmd_aux);
+
+		Cmd_ExecuteString(remaining);
+	}
+
+	Com_EndRedirect();
+}
+
+//	A connectionless packet has four leading 0xff
+// characters to distinguish it from a game channel.
+// Clients that are in the game can still send
+// connectionless packets.
+void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
+{
+	const char* s;
+	char* c;
+
+	msg->BeginReadingOOB();
+	msg->ReadLong();		// skip the -1 marker
+
+	if (!(GGameType & GAME_WolfSP) && !String::NCmp("connect", (char*)&msg->_data[4], 7))
+	{
+		Huff_Decompress(msg, 12);
+	}
+
+	s = msg->ReadStringLine();
+
+	Cmd_TokenizeString(s);
+
+	c = Cmd_Argv(0);
+	common->DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
+
+	if (!String::ICmp(c, "getstatus"))
+	{
+		SVT3C_Status(from);
+	}
+	else if (!String::ICmp(c, "getinfo"))
+	{
+		SVT3C_Info(from);
+	}
+	else if (!String::ICmp(c, "getchallenge"))
+	{
+		SVT3_GetChallenge(from);
+	}
+	else if (!String::ICmp(c, "connect"))
+	{
+		SVT3_DirectConnect(from);
+	}
+	else if (!(GGameType & GAME_ET) && !String::ICmp(c, "ipAuthorize"))
+	{
+		SVT3_AuthorizeIpPacket(from);
+	}
+	else if (!String::ICmp(c, "rcon"))
+	{
+		SVT3C_RemoteCommand(from, msg);
+	}
+	else if (!String::ICmp(c, "disconnect"))
+	{
+		// if a client starts up a local server, we may see some spurious
+		// server disconnect messages when their new server sees our final
+		// sequenced messages to the old client
+	}
+	else
+	{
+		common->DPrintf("bad connectionless packet from %s:\n%s\n",
+			SOCK_AdrToString(from), s);
+	}
+}
+
 /*
 ==============================================================================
 
@@ -520,102 +955,4 @@ void SVT3_MasterShutdown()
 
 	// when the master tries to poll the server, it won't respond, so
 	// it will be removed from the list
-}
-
-//returns true if valid challenge
-//returns false if m4d h4x0rz
-bool SVET_VerifyChallenge(const char* challenge)
-{
-	if (!challenge)
-	{
-		return false;
-	}
-
-	int j = String::Length(challenge);
-	if (j > 64)
-	{
-		return false;
-	}
-	for (int i = 0; i < j; i++)
-	{
-		if (challenge[i] == '\\' ||
-			challenge[i] == '/' ||
-			challenge[i] == '%' ||
-			challenge[i] == ';' ||
-			challenge[i] == '"' ||
-			challenge[i] < 32 ||	// non-ascii
-			challenge[i] > 126	// non-ascii
-			)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-//	NERVE - SMF - Send serverinfo cvars, etc to master servers when
-// game complete. Useful for tracking global player stats.
-void SVT3C_GameCompleteStatus(netadr_t from)
-{
-	char player[1024];
-	char status[MAX_MSGLEN_WOLF];
-	int i;
-	client_t* cl;
-	int statusLength;
-	int playerLength;
-	char infostring[MAX_INFO_STRING_Q3];
-
-	// ignore if we are in single player
-	if (GGameType & GAME_WolfMP && Cvar_VariableValue("g_gametype") == Q3GT_SINGLE_PLAYER)
-	{
-		return;
-	}
-	if (GGameType & GAME_ET && SVET_GameIsSinglePlayer())
-	{
-		return;
-	}
-
-	//bani - bugtraq 12534
-	if (GGameType & GAME_ET && !SVET_VerifyChallenge(Cmd_Argv(1)))
-	{
-		return;
-	}
-
-	String::Cpy(infostring, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
-
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING_Q3);
-
-	status[0] = 0;
-	statusLength = 0;
-
-	for (i = 0; i < sv_maxclients->integer; i++)
-	{
-		cl = &svs.clients[i];
-		if (cl->state >= CS_CONNECTED)
-		{
-			if (GGameType & GAME_ET)
-			{
-				etplayerState_t* ps = SVET_GameClientNum(i);
-				String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-					ps->persistant[ETPERS_SCORE], cl->ping, cl->name);
-			}
-			else
-			{
-				wmplayerState_t* ps = SVWM_GameClientNum(i);
-				String::Sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-					ps->persistant[WMPERS_SCORE], cl->ping, cl->name);
-			}
-			playerLength = String::Length(player);
-			if (statusLength + playerLength >= (int)sizeof(status))
-			{
-				break;		// can't hold any more
-			}
-			String::Cpy(status + statusLength, player);
-			statusLength += playerLength;
-		}
-	}
-
-	NET_OutOfBandPrint(NS_SERVER, from, "gameCompleteStatus\n%s\n%s", infostring, status);
 }

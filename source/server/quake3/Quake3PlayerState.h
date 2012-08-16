@@ -72,6 +72,9 @@ public:
 
 	int stats[MAX_STATS_Q3];
 	int persistant[MAX_PERSISTANT_Q3];	// stats that aren't cleared on death
+	*/
+	virtual int GetPersistantScore() const;
+	/*
 	int powerups[MAX_POWERUPS_Q3];	// level.time that the powerup runs out
 	int ammo[MAX_WEAPONS_Q3];
 

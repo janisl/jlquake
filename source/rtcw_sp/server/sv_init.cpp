@@ -57,7 +57,7 @@ void SV_Init(void)
 	svt3_gametype = Cvar_Get("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2);
 
 	// Rafael gameskill
-	sv_gameskill = Cvar_Get("g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2);
+	svt3_gameskill = Cvar_Get("g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2);
 	// done
 
 	Cvar_Get("sv_keywords", "", CVAR_SERVERINFO);
@@ -70,7 +70,7 @@ void SV_Init(void)
 	svt3_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	svt3_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	svt3_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
-	sv_allowAnonymous = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
+	svt3_allowAnonymous = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
 
 	// systeminfo
 	Cvar_Get("sv_cheats", "0", CVAR_SYSTEMINFO | CVAR_ROM);
@@ -86,7 +86,7 @@ void SV_Init(void)
 	Cvar_Get("sv_referencedPakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
 
 	// server vars
-	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
+	svt3_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	svt3_timeout = Cvar_Get("sv_timeout", "120", CVAR_TEMP);

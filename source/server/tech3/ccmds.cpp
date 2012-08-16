@@ -267,26 +267,8 @@ static void SVT3_Status_f()
 			continue;
 		}
 		common->Printf("%3i ", i);
-		if (GGameType & GAME_WolfSP)
-		{
-			wsplayerState_t* ps = SVWS_GameClientNum(i);
-			common->Printf("%5i ", ps->persistant[WSPERS_SCORE]);
-		}
-		else if (GGameType & GAME_WolfMP)
-		{
-			wmplayerState_t* ps = SVWM_GameClientNum(i);
-			common->Printf("%5i ", ps->persistant[WMPERS_SCORE]);
-		}
-		else if (GGameType & GAME_ET)
-		{
-			etplayerState_t* ps = SVET_GameClientNum(i);
-			common->Printf("%5i ", ps->persistant[ETPERS_SCORE]);
-		}
-		else
-		{
-			q3playerState_t* ps = SVQ3_GameClientNum(i);
-			common->Printf("%5i ", ps->persistant[Q3PERS_SCORE]);
-		}
+		idPlayerState3* ps = SVT3_GameClientNum(i);
+		common->Printf("%5i ", ps->GetPersistantScore());
 
 		if (cl->state == CS_CONNECTED)
 		{

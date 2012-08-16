@@ -894,10 +894,13 @@ enum
 	DL_FLAG_URL
 };
 
-#define WSPROTOCOL_VERSION    49	// TA value
+#define WSPROTOCOL_VERSION  49	// TA value
 // 1.33 - protocol 59
 // 1.4 - protocol 60
-#define WMPROTOCOL_VERSION 60
+#define WMPROTOCOL_VERSION  60
 // 2.56 - protocol 83
 // 2.4 - protocol 80
-#define ETPROTOCOL_VERSION    84
+#define ETPROTOCOL_VERSION  84
+
+#define WMGAMENAME_STRING   "wolfmp"
+#define ETGAMENAME_STRING   "et"

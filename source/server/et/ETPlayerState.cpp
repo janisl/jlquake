@@ -58,6 +58,11 @@ void idETPlayerState::SetViewHeight(int value)
 	reinterpret_cast<etplayerState_t*>(ps)->viewheight = value;
 }
 
+int idETPlayerState::GetPersistantScore() const
+{
+	return reinterpret_cast<etplayerState_t*>(ps)->persistant[ETPERS_SCORE];
+}
+
 int idETPlayerState::GetPing() const
 {
 	return reinterpret_cast<etplayerState_t*>(ps)->ping;

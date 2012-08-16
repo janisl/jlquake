@@ -3218,7 +3218,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 
 	// Arnout: if this isn't the correct game, ignore it
 	gameName = Info_ValueForKey(infoString, "gamename");
-	if (!gameName[0] || String::ICmp(gameName, GAMENAME_STRING))
+	if (!gameName[0] || String::ICmp(gameName, WMGAMENAME_STRING))
 	{
 		common->DPrintf("Different game info packet: %s\n", infoString);
 		return;
