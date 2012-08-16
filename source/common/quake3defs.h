@@ -309,3 +309,5 @@ enum
 // 1.31 - 67
 
 #define Q3MAX_PACKET_USERCMDS   32		// max number of q3usercmd_t in a packet
+
+#define Q3MASTER_SERVER_NAME  "master.quake3arena.com"

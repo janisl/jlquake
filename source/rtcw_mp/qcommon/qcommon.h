@@ -46,7 +46,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 
 // NERVE - SMF - wolf multiplayer master servers
 #define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65
-#define MASTER_SERVER_NAME      "wolfmaster.idsoftware.com"
 
 // TTimo: allow override for easy dev/testing..
 // see cons -- update_server=myhost
@@ -241,13 +240,6 @@ void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 
 void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
-
-
-//
-// server interface
-//
-void SV_Init(void);
-
 
 //
 // UI interface

@@ -36,10 +36,6 @@ PROTOCOL
 extern int demo_protocols[];
 
 #define UPDATE_SERVER_NAME  "update.quake3arena.com"
-// override on command line, config files etc.
-#ifndef MASTER_SERVER_NAME
-#define MASTER_SERVER_NAME  "master.quake3arena.com"
-#endif
 
 #define PORT_UPDATE         27951
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
@@ -197,13 +193,6 @@ void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 
 void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
-
-
-//
-// server interface
-//
-void SV_Init(void);
-
 
 //
 // UI interface

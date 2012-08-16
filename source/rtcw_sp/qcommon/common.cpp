@@ -1346,7 +1346,7 @@ void Com_Init(char* commandLine)
 		Sys_Init();
 		Netchan_Init(Com_Milliseconds() & 0xffff);	// pick a port value that should be nice and random
 		VM_Init();
-		SV_Init();
+		SVT3_Init();
 
 		com_dedicated->modified = false;
 		if (!com_dedicated->integer)

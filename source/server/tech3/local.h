@@ -103,6 +103,7 @@ void SVT3_ClearServer();
 void SVT3_FinalCommand(const char* cmd, bool disconnect);
 void SVT3_SpawnServer(const char* server, bool killBots);
 void SVT3_Shutdown(const char* finalmsg);
+void SVT3_Init();
 
 //
 //	Main
@@ -149,10 +150,6 @@ extern Cvar* svt3_killserver;
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
 int SVET_LoadTag(const char* mod_name);
-void SVT3_CalcPings();
-void SVT3_CheckTimeouts();
-bool SVT3_CheckPaused();
-void SVT3_MasterHeartbeat(const char* hbname);
 void SVT3_MasterShutdown();
 void SVT3_MasterGameCompleteStatus();
 void SVT3_PacketEvent(netadr_t from, QMsg* msg);

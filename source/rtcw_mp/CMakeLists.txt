@@ -34,8 +34,6 @@ set(WOLFMP_FILES
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp
-
-	server/sv_init.cpp
 )
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
@@ -44,7 +42,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
-	server/sv_init.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

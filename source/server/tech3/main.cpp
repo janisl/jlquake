@@ -250,7 +250,7 @@ int SVET_LoadTag(const char* mod_name)
 }
 
 //	Updates the cl->ping variables
-void SVT3_CalcPings()
+static void SVT3_CalcPings()
 {
 	for (int i = 0; i < sv_maxclients->integer; i++)
 	{
@@ -308,7 +308,7 @@ void SVT3_CalcPings()
 //	When a client is normally dropped, the client_t goes into a zombie state
 // for a few seconds to make sure any final reliable message gets resent
 // if necessary
-void SVT3_CheckTimeouts()
+static void SVT3_CheckTimeouts()
 {
 	int droppoint = svs.q3_time - 1000 * svt3_timeout->integer;
 	int zombiepoint = svs.q3_time - 1000 * svt3_zombietime->integer;
@@ -351,7 +351,7 @@ void SVT3_CheckTimeouts()
 	}
 }
 
-bool SVT3_CheckPaused()
+static bool SVT3_CheckPaused()
 {
 	if (!cl_paused->integer)
 	{
@@ -824,7 +824,7 @@ MASTER SERVER FUNCTIONS
 // We will also have a heartbeat sent when a server
 // changes from empty to non-empty, and full to non-full,
 // but not on every player enter or exit.
-void SVT3_MasterHeartbeat(const char* hbname)
+static void SVT3_MasterHeartbeat(const char* hbname)
 {
 	static netadr_t adr[Q3MAX_MASTER_SERVERS];
 

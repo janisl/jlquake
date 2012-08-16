@@ -1124,3 +1124,270 @@ void SVT3_Shutdown(const char* finalmsg)
 	// disconnect any local clients
 	CL_Disconnect(false);
 }
+
+//	Only called at main exe startup, not for each game
+void SVT3_Init()
+{
+	SVT3_AddOperatorCommands();
+
+	// serverinfo vars
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		Cvar_Get("dmflags", "0", 0);
+		Cvar_Get("fraglimit", "0", 0);
+	}
+	else
+	{
+		Cvar_Get("dmflags", "0", CVAR_SERVERINFO);
+		Cvar_Get("fraglimit", "20", CVAR_SERVERINFO);
+	}
+	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	if (GGameType & GAME_WolfMP)
+	{
+		// DHM - Nerve :: default to WMGT_WOLF
+		svt3_gametype = Cvar_Get("g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		svt3_gametype = Cvar_Get("g_gametype", va("%i", comet_gameInfo.defaultGameType), CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+	else
+	{
+		svt3_gametype = Cvar_Get("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+	if (GGameType & GAME_WolfSP)
+	{
+		svt3_gameskill = Cvar_Get("g_gameskill", "1", CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		svt3_gameskill = Cvar_Get("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+	Cvar_Get("sv_keywords", "", CVAR_SERVERINFO);
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Get("protocol", va("%i", Q3PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		Cvar_Get("protocol", va("%i", WSPROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		Cvar_Get("protocol", va("%i", WMPROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	}
+	else
+	{
+		Cvar_Get("protocol", va("%i", ETPROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
+	}
+	svt3_mapname = Cvar_Get("mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM);
+	svt3_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
+	if (GGameType & GAME_WolfMP)
+	{
+		sv_hostname = Cvar_Get("sv_hostname", "WolfHost", CVAR_SERVERINFO | CVAR_ARCHIVE);
+	}
+	else if (GGameType & GAME_ET)
+	{
+		sv_hostname = Cvar_Get("sv_hostname", "ETHost", CVAR_SERVERINFO | CVAR_ARCHIVE);
+	}
+	else
+	{
+		sv_hostname = Cvar_Get("sv_hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		sv_maxclients = Cvar_Get("sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH2);					// NERVE - SMF - changed to 20 from 8
+	}
+	else
+	{
+		sv_maxclients = Cvar_Get("sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH2);
+	}
+
+	svt3_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_minPing = Cvar_Get("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_maxPing = Cvar_Get("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	svt3_floodProtect = Cvar_Get("sv_floodProtect", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	if (!(GGameType & GAME_Quake3))
+	{
+		svt3_allowAnonymous = Cvar_Get("sv_allowAnonymous", "0", CVAR_SERVERINFO);
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		svt3_friendlyFire = Cvar_Get("g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE);				// NERVE - SMF
+		svt3_maxlives = Cvar_Get("g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH2 | CVAR_SERVERINFO);		// NERVE - SMF
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		svwm_tourney = Cvar_Get("g_noTeamSwitching", "0", CVAR_ARCHIVE);									// NERVE - SMF
+	}
+	if (GGameType & GAME_ET)
+	{
+		svet_needpass = Cvar_Get("g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM);
+	}
+
+	// systeminfo
+	if (GGameType & GAME_WolfSP)
+	{
+		Cvar_Get("sv_cheats", "0", CVAR_SYSTEMINFO | CVAR_ROM);
+		svt3_pure = Cvar_Get("sv_pure", "0", CVAR_SYSTEMINFO);
+	}
+	else
+	{
+		Cvar_Get("sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM);
+		svt3_pure = Cvar_Get("sv_pure", "1", CVAR_SYSTEMINFO);
+	}
+	Cvar_Get("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM);
+	Cvar_Get("sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM);
+	Cvar_Get("sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
+	Cvar_Get("sv_referencedPaks", "", CVAR_SYSTEMINFO | CVAR_ROM);
+	Cvar_Get("sv_referencedPakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
+
+	// server vars
+	svt3_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
+	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
+	svt3_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
+	if (GGameType & GAME_Quake3)
+	{
+		svt3_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		svt3_timeout = Cvar_Get("sv_timeout", "120", CVAR_TEMP);
+	}
+	else
+	{
+		svt3_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
+	}
+	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
+	Cvar_Get("nextmap", "", CVAR_TEMP);
+
+	if (GGameType & GAME_Quake3)
+	{
+		svt3_allowDownload = Cvar_Get("sv_allowDownload", "0", CVAR_SERVERINFO);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		svt3_allowDownload = Cvar_Get("sv_allowDownload", "1", 0);
+	}
+	else
+	{
+		svt3_allowDownload = Cvar_Get("sv_allowDownload", "1", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		svt3_master[0] = Cvar_Get("sv_master1", Q3MASTER_SERVER_NAME, 0);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		svt3_master[0] = Cvar_Get("sv_master1", WSMASTER_SERVER_NAME, 0);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		svt3_master[0] = Cvar_Get("sv_master1", WMMASTER_SERVER_NAME, 0);			// NERVE - SMF - wolfMP master server
+	}
+	else
+	{
+		svt3_master[0] = Cvar_Get("sv_master1", ETMASTER_SERVER_NAME, 0);
+	}
+	svt3_master[1] = Cvar_Get("sv_master2", "", CVAR_ARCHIVE);
+	svt3_master[2] = Cvar_Get("sv_master3", "", CVAR_ARCHIVE);
+	svt3_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
+	svt3_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
+	svt3_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
+	Cvar_Get("sv_showloss", "0", 0);
+	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
+	svt3_killserver = Cvar_Get("sv_killserver", "0", 0);
+	Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
+	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
+	if (GGameType & GAME_Quake3)
+	{
+		svq3_strictAuth = Cvar_Get("sv_strictAuth", "1", CVAR_ARCHIVE);
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		svt3_reloading = Cvar_Get("g_reloading", "0", CVAR_ROM);		//----(SA)	added
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		svwm_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve
+
+		svwm_showAverageBPS = Cvar_Get("sv_showAverageBPS", "0", 0);				// NERVE - SMF - net debugging
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		svet_tempbanmessage = Cvar_Get("sv_tempbanmessage", "You have been kicked and are temporarily banned from joining this server.", 0);
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// NERVE - SMF - create user set cvars
+		Cvar_Get("g_userTimeLimit", "0", 0);
+		Cvar_Get("g_userAlliedRespawnTime", "0", 0);
+		Cvar_Get("g_userAxisRespawnTime", "0", 0);
+		Cvar_Get("g_maxlives", "0", 0);
+		Cvar_Get("g_altStopwatchMode", "0", CVAR_ARCHIVE);
+		Cvar_Get("g_minGameClients", "8", CVAR_SERVERINFO);
+		Cvar_Get("gamestate", "-1", CVAR_WOLFINFO | CVAR_ROM);
+		Cvar_Get("g_currentRound", "0", CVAR_WOLFINFO);
+		Cvar_Get("g_nextTimeLimit", "0", CVAR_WOLFINFO);
+
+		// TTimo - some UI additions
+		// NOTE: sucks to have this hardcoded really, I suppose this should be in UI
+		Cvar_Get("g_axismaxlives", "0", 0);
+		Cvar_Get("g_alliedmaxlives", "0", 0);
+		Cvar_Get("g_fastres", "0", CVAR_ARCHIVE);
+		Cvar_Get("g_fastResMsec", "1000", CVAR_ARCHIVE);
+
+		// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
+		svt3_dl_maxRate = Cvar_Get("sv_dl_maxRate", "42000", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		Cvar_Get("g_noTeamSwitching", "0", CVAR_ARCHIVE);
+		Cvar_Get("g_complaintlimit", "3", CVAR_ARCHIVE);
+		// -NERVE - SMF
+
+		// ATVI Tracker Wolfenstein Misc #273
+		Cvar_Get("g_voteFlags", "255", CVAR_ARCHIVE | CVAR_SERVERINFO);
+
+		// ATVI Tracker Wolfenstein Misc #263
+		Cvar_Get("g_antilag", "0", CVAR_ARCHIVE | CVAR_SERVERINFO);
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Get("g_complaintlimit", "6", CVAR_ARCHIVE);
+		// -NERVE - SMF
+
+		// ATVI Tracker Wolfenstein Misc #273
+		Cvar_Get("g_voteFlags", "0", CVAR_ROM | CVAR_SERVERINFO);
+
+		// ATVI Tracker Wolfenstein Misc #263
+		Cvar_Get("g_antilag", "1", CVAR_ARCHIVE | CVAR_SERVERINFO);
+
+		Cvar_Get("g_needpass", "0", CVAR_SERVERINFO);
+
+		svet_wwwDownload = Cvar_Get("sv_wwwDownload", "0", CVAR_ARCHIVE);
+		svet_wwwBaseURL = Cvar_Get("sv_wwwBaseURL", "", CVAR_ARCHIVE);
+		svet_wwwDlDisconnected = Cvar_Get("sv_wwwDlDisconnected", "0", CVAR_ARCHIVE);
+		svet_wwwFallbackURL = Cvar_Get("sv_wwwFallbackURL", "", CVAR_ARCHIVE);
+
+		//bani
+		sv_packetloss = Cvar_Get("sv_packetloss", "0", CVAR_CHEAT);
+		sv_packetdelay = Cvar_Get("sv_packetdelay", "0", CVAR_CHEAT);
+
+		// fretn - note: redirecting of clients to other servers relies on this,
+		// ET://someserver.com
+		svet_fullmsg = Cvar_Get("sv_fullmsg", "Server is full.", CVAR_ARCHIVE);
+	}
+
+	// initialize bot cvars so they are listed and can be set before loading the botlib
+	SVT3_BotInitCvars();
+
+	// init the botlib here because we need the pre-compiler in the UI
+	SVT3_BotInitBotLib();
+
+	svs.et_serverLoad = -1;
+}

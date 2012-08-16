@@ -15,8 +15,6 @@
 #g_env.Append( CPPFLAGS = '-fno-strict-aliasing' )
 
 set (ET_FILES
-	server/sv_init.cpp
-
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp
@@ -47,8 +45,6 @@ target_link_libraries(jlet ${CLIENTS_LIBS} curl)
 #local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 
 set (ETDED_FILES
-	server/sv_init.cpp
-
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

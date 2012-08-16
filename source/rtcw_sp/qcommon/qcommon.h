@@ -40,7 +40,6 @@ PROTOCOL
 
 //----(SA)	yes, these are bogus addresses.  I'm guessing these will be set to a machine at Activision or id eventually
 #define UPDATE_SERVER_NAME      "update.gmistudios.com"
-#define MASTER_SERVER_NAME      "master.gmistudios.com"
 
 #define PORT_UPDATE         27951
 #define Q3PORT_AUTHORIZE    27952
@@ -212,13 +211,6 @@ void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 
 void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
-
-
-//
-// server interface
-//
-void SV_Init(void);
-
 
 //
 // UI interface

@@ -44,10 +44,6 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-// NERVE - SMF - wolf multiplayer master servers
-#ifndef MASTER_SERVER_NAME
-	#define MASTER_SERVER_NAME      "etmaster.idsoftware.com"
-#endif
 #define MOTD_SERVER_NAME        "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?
 
 // TTimo: override autoupdate server for testing
@@ -276,13 +272,6 @@ void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 
 void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
-
-
-//
-// server interface
-//
-void SV_Init(void);
-
 
 //
 // UI interface

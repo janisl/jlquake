@@ -3264,7 +3264,7 @@ void CL_GlobalServers_f(void)
 	}
 	else
 	{
-		SOCK_StringToAdr(MASTER_SERVER_NAME, &to, Q3PORT_MASTER);
+		SOCK_StringToAdr(WSMASTER_SERVER_NAME, &to, Q3PORT_MASTER);
 		cls.q3_numglobalservers = -1;
 		cls.q3_pingUpdateSource = AS_GLOBAL;
 	}
