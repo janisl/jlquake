@@ -143,6 +143,8 @@ extern Cvar* svt3_maxlives;				// NERVE - SMF
 extern Cvar* svwm_tourney;				// NERVE - SMF
 extern Cvar* svet_needpass;
 extern Cvar* svt3_rconPassword;
+extern Cvar* svt3_fps;
+extern Cvar* svt3_killserver;
 
 void SVT3_AddServerCommand(client_t* client, const char* cmd);
 void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
@@ -153,7 +155,8 @@ bool SVT3_CheckPaused();
 void SVT3_MasterHeartbeat(const char* hbname);
 void SVT3_MasterShutdown();
 void SVT3_MasterGameCompleteStatus();
-void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg);
+void SVT3_PacketEvent(netadr_t from, QMsg* msg);
+void SVT3_Frame(int msec);
 
 //
 //	NetChan

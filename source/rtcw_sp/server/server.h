@@ -34,11 +34,3 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 #include "../../server/wolfsp/local.h"
-
-//=============================================================================
-
-extern Cvar* sv_fps;
-extern Cvar* sv_showloss;
-extern Cvar* sv_killserver;
-extern Cvar* sv_mapChecksum;
-extern Cvar* sv_serverid;

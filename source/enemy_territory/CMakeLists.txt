@@ -16,7 +16,6 @@
 
 set (ET_FILES
 	server/sv_init.cpp
-	server/sv_main.cpp
 
 	qcommon/cmd.cpp
 	qcommon/common.cpp
@@ -49,7 +48,6 @@ target_link_libraries(jlet ${CLIENTS_LIBS} curl)
 
 set (ETDED_FILES
 	server/sv_init.cpp
-	server/sv_main.cpp
 
 	qcommon/cmd.cpp
 	qcommon/common.cpp

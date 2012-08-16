@@ -194,7 +194,7 @@ void SCR_UpdateScreen(void)
 		SCR_DrawScreenField(STEREO_CENTER);
 	}
 
-	if (com_speeds->integer)
+	if (t3com_speeds->integer)
 	{
 		R_EndFrame(&time_frontend, &time_backend);
 	}

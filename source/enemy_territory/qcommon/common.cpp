@@ -58,7 +58,6 @@ static fileHandle_t logfile;
 Cvar* com_ignorecrash = NULL;		// bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
 Cvar* com_pid;			// bani - process id
 
-Cvar* com_speeds;
 Cvar* com_fixedtime;
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 Cvar* com_maxfps;
@@ -85,7 +84,6 @@ Cvar* cl_notebook;
 Cvar* com_hunkused;			// Ridah
 
 // com_speeds times
-int time_game;
 int time_frontend;			// renderer frontend time
 int time_backend;			// renderer backend time
 
@@ -1349,20 +1347,20 @@ void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
 
 	t1 = 0;
 
-	if (com_speeds->integer)
+	if (t3com_speeds->integer)
 	{
 		t1 = Sys_Milliseconds();
 	}
 
-	SV_PacketEvent(*evFrom, buf);
+	SVT3_PacketEvent(*evFrom, buf);
 
-	if (com_speeds->integer)
+	if (t3com_speeds->integer)
 	{
 		t2 = Sys_Milliseconds();
 		msec = t2 - t1;
-		if (com_speeds->integer == 3)
+		if (t3com_speeds->integer == 3)
 		{
-			common->Printf("SV_PacketEvent time: %i\n", msec);
+			common->Printf("SVT3_PacketEvent time: %i\n", msec);
 		}
 	}
 }
@@ -2186,7 +2184,7 @@ void Com_Init(char* commandLine)
 		com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 		com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
 		com_dropsim = Cvar_Get("com_dropsim", "0", CVAR_CHEAT);
-		com_speeds = Cvar_Get("com_speeds", "0", 0);
+		t3com_speeds = Cvar_Get("com_speeds", "0", 0);
 		com_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
 		com_cameraMode = Cvar_Get("com_cameraMode", "0", CVAR_CHEAT);
 
@@ -2506,7 +2504,7 @@ void Com_Frame(void)
 		//
 		// main event loop
 		//
-		if (com_speeds->integer)
+		if (t3com_speeds->integer)
 		{
 			timeBeforeFirstEvents = Sys_Milliseconds();
 		}
@@ -2541,12 +2539,12 @@ void Com_Frame(void)
 		//
 		// server side
 		//
-		if (com_speeds->integer)
+		if (t3com_speeds->integer)
 		{
 			timeBeforeServer = Sys_Milliseconds();
 		}
 
-		SV_Frame(msec);
+		SVT3_Frame(msec);
 
 		// if "dedicated" has been modified, start up
 		// or shut down the client system.
@@ -2578,7 +2576,7 @@ void Com_Frame(void)
 			// run event loop a second time to get server to client packets
 			// without a frame of latency
 			//
-			if (com_speeds->integer)
+			if (t3com_speeds->integer)
 			{
 				timeBeforeEvents = Sys_Milliseconds();
 			}
@@ -2588,14 +2586,14 @@ void Com_Frame(void)
 			//
 			// client side
 			//
-			if (com_speeds->integer)
+			if (t3com_speeds->integer)
 			{
 				timeBeforeClient = Sys_Milliseconds();
 			}
 
 			CL_Frame(msec);
 
-			if (com_speeds->integer)
+			if (t3com_speeds->integer)
 			{
 				timeAfter = Sys_Milliseconds();
 			}
@@ -2641,7 +2639,7 @@ void Com_Frame(void)
 		//
 		// report timing information
 		//
-		if (com_speeds->integer)
+		if (t3com_speeds->integer)
 		{
 			int all, sv, sev, cev, cl;
 
@@ -2650,11 +2648,11 @@ void Com_Frame(void)
 			sev = timeBeforeServer - timeBeforeFirstEvents;
 			cev = timeBeforeClient - timeBeforeEvents;
 			cl = timeAfter - timeBeforeClient;
-			sv -= time_game;
+			sv -= t3time_game;
 			cl -= time_frontend + time_backend;
 
 			common->Printf("frame:%i all:%3i sv:%3i sev:%3i cev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
-				com_frameNumber, all, sv, sev, cev, cl, time_game, time_frontend, time_backend);
+				com_frameNumber, all, sv, sev, cev, cl, t3time_game, time_frontend, time_backend);
 		}
 
 		//
@@ -2728,4 +2726,20 @@ void Com_GetHunkInfo(int* hunkused, int* hunkexpected)
 {
 	*hunkused =     0;
 	*hunkexpected = -1;
+}
+
+void CL_Disconnect()
+{
+}
+void SCRQH_BeginLoadingPlaque()
+{
+}
+void CL_EstablishConnection(const char* name)
+{
+}
+void Host_Reconnect_f()
+{
+}
+void Cmd_ForwardToServer()
+{
 }

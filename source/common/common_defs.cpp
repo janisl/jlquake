@@ -65,6 +65,9 @@ void (* rd_flush)(char* buffer);
 
 bool com_errorEntered;
 
+Cvar* t3com_speeds;
+int t3time_game;
+
 Interface::~Interface()
 {
 }

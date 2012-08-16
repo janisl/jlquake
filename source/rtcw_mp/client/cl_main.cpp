@@ -1180,7 +1180,7 @@ void CL_Connect_f(void)
 
 	// make sure a local server is killed
 	Cvar_Set("sv_killserver", "1");
-	SV_Frame(0);
+	SVT3_Frame(0);
 
 	CL_Disconnect(true);
 	Con_Close();
@@ -2797,7 +2797,7 @@ void CL_GetAutoUpdate(void)
 
 	// make sure a local server is killed
 	Cvar_Set("sv_killserver", "1");
-	SV_Frame(0);
+	SVT3_Frame(0);
 
 	CL_Disconnect(true);
 	Con_Close();

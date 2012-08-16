@@ -213,11 +213,6 @@ void CL_PrintEntities_f(void)
 	}
 }
 
-bool CL_IsServerActive()
-{
-	return sv.state != SS_DEAD;
-}
-
 /*
 ===============
 CL_ReadFromServer

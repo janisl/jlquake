@@ -63,6 +63,8 @@ Cvar* svt3_maxlives;				// NERVE - SMF
 Cvar* svwm_tourney;				// NERVE - SMF
 Cvar* svet_needpass;
 Cvar* svt3_rconPassword;			// password for remote server commands
+Cvar* svt3_fps;					// time rate for running non-clients
+Cvar* svt3_killserver;			// menu system can set to 1 to shut server down
 
 //	Converts newlines to "\n" so a line prints nicer
 static const char* SVT3_ExpandNewlines(const char* in)
@@ -755,11 +757,8 @@ static void SVT3C_RemoteCommand(netadr_t from, QMsg* msg)
 // characters to distinguish it from a game channel.
 // Clients that are in the game can still send
 // connectionless packets.
-void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
+static void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
 {
-	const char* s;
-	char* c;
-
 	msg->BeginReadingOOB();
 	msg->ReadLong();		// skip the -1 marker
 
@@ -768,11 +767,11 @@ void SVT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
 		Huff_Decompress(msg, 12);
 	}
 
-	s = msg->ReadStringLine();
+	const char* s = msg->ReadStringLine();
 
 	Cmd_TokenizeString(s);
 
-	c = Cmd_Argv(0);
+	const char* c = Cmd_Argv(0);
 	common->DPrintf("SV packet %s : %s\n", SOCK_AdrToString(from), c);
 
 	if (!String::ICmp(c, "getstatus"))
@@ -955,4 +954,263 @@ void SVT3_MasterShutdown()
 
 	// when the master tries to poll the server, it won't respond, so
 	// it will be removed from the list
+}
+
+void SVT3_PacketEvent(netadr_t from, QMsg* msg)
+{
+	// check for connectionless packet (0xffffffff) first
+	if (msg->cursize >= 4 && *(int*)msg->_data == -1)
+	{
+		SVT3_ConnectionlessPacket(from, msg);
+		return;
+	}
+
+	// read the qport out of the message so we can fix up
+	// stupid address translating routers
+	msg->BeginReadingOOB();
+	msg->ReadLong();				// sequence number
+	int qport = msg->ReadShort() & 0xffff;
+
+	// find which client the message is from
+	client_t* cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->integer; i++,cl++)
+	{
+		if (cl->state == CS_FREE)
+		{
+			continue;
+		}
+		if (!SOCK_CompareBaseAdr(from, cl->netchan.remoteAddress))
+		{
+			continue;
+		}
+		// it is possible to have multiple clients from a single IP
+		// address, so they are differentiated by the qport variable
+		if (cl->netchan.qport != qport)
+		{
+			continue;
+		}
+
+		// the IP port can't be used to differentiate them, because
+		// some address translating routers periodically change UDP
+		// port assignments
+		if (cl->netchan.remoteAddress.port != from.port)
+		{
+			common->Printf("SVT3_PacketEvent: fixing up a translated port\n");
+			cl->netchan.remoteAddress.port = from.port;
+		}
+
+		// make sure it is a valid, in sequence packet
+		if (SVT3_Netchan_Process(cl, msg))
+		{
+			// zombie clients still need to do the Netchan_Process
+			// to make sure they don't need to retransmit the final
+			// reliable message, but they don't do any other processing
+			if (cl->state != CS_ZOMBIE)
+			{
+				cl->q3_lastPacketTime = svs.q3_time;	// don't timeout
+				SVT3_ExecuteClientMessage(cl, msg);
+			}
+		}
+		return;
+	}
+
+	// if we received a sequenced packet from an address we don't recognize,
+	// send an out of band disconnect packet to it
+	NET_OutOfBandPrint(NS_SERVER, from, "disconnect");
+}
+
+//	Player movement occurs as a result of packet events, which
+// happen before SVT3_Frame is called
+void SVT3_Frame(int msec)
+{
+	// the menu kills the server with this cvar
+	if (svt3_killserver->integer)
+	{
+		SVT3_Shutdown("Server was killed.\n");
+		Cvar_Set("sv_killserver", "0");
+		return;
+	}
+
+	if (!com_sv_running->integer)
+	{
+		return;
+	}
+
+	// allow pause if only the local client is connected
+	if (SVT3_CheckPaused())
+	{
+		return;
+	}
+
+	int frameStartTime = 0;
+	if (com_dedicated->integer)
+	{
+		frameStartTime = Sys_Milliseconds();
+	}
+
+	// if it isn't time for the next frame, do nothing
+	if (svt3_fps->integer < 1)
+	{
+		Cvar_Set("sv_fps", "10");
+	}
+	int frameMsec = 1000 / svt3_fps->integer;
+
+	sv.q3_timeResidual += msec;
+
+	if (!com_dedicated->integer)
+	{
+		SVT3_BotFrame(svs.q3_time + sv.q3_timeResidual);
+	}
+
+	if (com_dedicated->integer && sv.q3_timeResidual < frameMsec)
+	{
+		// NET_Sleep will give the OS time slices until either get a packet
+		// or time enough for a server frame has gone by
+		NET_Sleep(frameMsec - sv.q3_timeResidual);
+		return;
+	}
+
+	// if time is about to hit the 32nd bit, kick all clients
+	// and clear sv.time, rather
+	// than checking for negative time wraparound everywhere.
+	// 2giga-milliseconds = 23 days, so it won't be too often
+	if (svs.q3_time > 0x70000000)
+	{
+		char mapname[MAX_QPATH];
+		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
+		SVT3_Shutdown("Restarting server due to time wrapping");
+		// TTimo
+		// show_bug.cgi?id=388
+		// there won't be a map_restart if you have shut down the server
+		// since it doesn't restart a non-running server
+		// instead, re-run the current map
+		Cbuf_AddText(va("map %s\n", mapname));
+		return;
+	}
+	// this can happen considerably earlier when lots of clients play and the map doesn't change
+	if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE - svs.q3_numSnapshotEntities)
+	{
+		char mapname[MAX_QPATH];
+		String::NCpyZ(mapname, svt3_mapname->string, MAX_QPATH);
+		SVT3_Shutdown("Restarting server due to numSnapshotEntities wrapping");
+		// TTimo see above
+		Cbuf_AddText(va("map %s\n", mapname));
+		return;
+	}
+
+	if (sv.q3_restartTime && svs.q3_time >= sv.q3_restartTime)
+	{
+		sv.q3_restartTime = 0;
+		Cbuf_AddText("map_restart 0\n");
+		return;
+	}
+
+	// update infostrings if anything has been changed
+	if (cvar_modifiedFlags & CVAR_SERVERINFO)
+	{
+		SVT3_SetConfigstring(Q3CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
+		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
+	}
+	if (cvar_modifiedFlags & CVAR_SERVERINFO_NOUPDATE)
+	{
+		SVT3_SetConfigstringNoUpdate(Q3CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, MAX_INFO_STRING_Q3));
+		cvar_modifiedFlags &= ~CVAR_SERVERINFO_NOUPDATE;
+	}
+	if (cvar_modifiedFlags & CVAR_SYSTEMINFO)
+	{
+		SVT3_SetConfigstring(Q3CS_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
+		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
+	}
+	// NERVE - SMF
+	if (GGameType & (GAME_WolfMP | GAME_ET) && cvar_modifiedFlags & CVAR_WOLFINFO)
+	{
+		SVT3_SetConfigstring(GGameType & GAME_ET ? ETCS_WOLFINFO : WMCS_WOLFINFO, Cvar_InfoString(CVAR_WOLFINFO, MAX_INFO_STRING_Q3));
+		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
+	}
+
+	int startTime;
+	if (t3com_speeds->integer)
+	{
+		startTime = Sys_Milliseconds();
+	}
+	else
+	{
+		startTime = 0;	// quite a compiler warning
+	}
+
+	// update ping based on the all received frames
+	SVT3_CalcPings();
+
+	if (com_dedicated->integer)
+	{
+		SVT3_BotFrame(svs.q3_time);
+	}
+
+	// run the game simulation in chunks
+	while (sv.q3_timeResidual >= frameMsec)
+	{
+		sv.q3_timeResidual -= frameMsec;
+		svs.q3_time += frameMsec;
+
+		// let everything in the world think and move
+		SVT3_GameRunFrame(svs.q3_time);
+	}
+
+	if (t3com_speeds->integer)
+	{
+		t3time_game = Sys_Milliseconds() - startTime;
+	}
+
+	// check timeouts
+	SVT3_CheckTimeouts();
+
+	// send messages back to the clients
+	SVT3_SendClientMessages();
+
+	// send a heartbeat to the master if needed
+	SVT3_MasterHeartbeat(GGameType & GAME_Quake3 ? Q3HEARTBEAT_GAME :
+		GGameType & GAME_ET ? ETHEARTBEAT_GAME : WSMHEARTBEAT_GAME);
+
+	if (GGameType & GAME_ET && com_dedicated->integer)
+	{
+		int frameEndTime = Sys_Milliseconds();
+
+		svs.et_totalFrameTime += (frameEndTime - frameStartTime);
+		svs.et_currentFrameIndex++;
+
+		if (svs.et_currentFrameIndex == ETSERVER_PERFORMANCECOUNTER_FRAMES)
+		{
+			int averageFrameTime;
+
+			averageFrameTime = svs.et_totalFrameTime / ETSERVER_PERFORMANCECOUNTER_FRAMES;
+
+			svs.et_sampleTimes[svs.et_currentSampleIndex % SERVER_PERFORMANCECOUNTER_SAMPLES] = averageFrameTime;
+			svs.et_currentSampleIndex++;
+
+			if (svs.et_currentSampleIndex > SERVER_PERFORMANCECOUNTER_SAMPLES)
+			{
+				int totalTime = 0;
+				for (int i = 0; i < SERVER_PERFORMANCECOUNTER_SAMPLES; i++)
+				{
+					totalTime += svs.et_sampleTimes[i];
+				}
+
+				if (!totalTime)
+				{
+					totalTime = 1;
+				}
+
+				averageFrameTime = totalTime / SERVER_PERFORMANCECOUNTER_SAMPLES;
+
+				svs.et_serverLoad = (averageFrameTime / (float)frameMsec) * 100;
+			}
+
+			svs.et_totalFrameTime = 0;
+			svs.et_currentFrameIndex = 0;
+		}
+	}
+	else
+	{
+		svs.et_serverLoad = -1;
+	}
 }

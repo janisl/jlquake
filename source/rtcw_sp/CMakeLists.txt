@@ -29,7 +29,6 @@ set(WOLFSP_FILES
 	unix/linux_glimp.cpp
 
 	server/sv_init.cpp
-	server/sv_main.cpp
 )
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

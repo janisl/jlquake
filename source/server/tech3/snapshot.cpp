@@ -950,7 +950,7 @@ static void SVT3_BuildClientSnapshot(client_t* client)
 			*state = ent->s;
 		}
 		svs.q3_nextSnapshotEntities++;
-		// this should never hit, map should always be restarted first in SV_Frame
+		// this should never hit, map should always be restarted first in SVT3_Frame
 		if (svs.q3_nextSnapshotEntities >= 0x7FFFFFFE)
 		{
 			common->FatalError("svs.q3_nextSnapshotEntities wrapped");

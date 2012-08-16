@@ -108,3 +108,8 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 		}
 	}
 }
+
+bool SV_IsServerActive()
+{
+	return sv.state == SS_GAME;
+}

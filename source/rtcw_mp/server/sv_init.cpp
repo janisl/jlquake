@@ -83,7 +83,7 @@ void SV_Init(void)
 
 	// systeminfo
 	Cvar_Get("sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM);
-	sv_serverid = Cvar_Get("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM);
+	Cvar_Get("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM);
 	svt3_pure = Cvar_Get("sv_pure", "1", CVAR_SYSTEMINFO);
 	Cvar_Get("sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM);
 	Cvar_Get("sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM);
@@ -93,7 +93,7 @@ void SV_Init(void)
 	// server vars
 	svt3_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	svt3_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
-	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
+	svt3_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	svt3_timeout = Cvar_Get("sv_timeout", "240", CVAR_TEMP);
 	svt3_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
@@ -105,10 +105,10 @@ void SV_Init(void)
 	svt3_master[3] = Cvar_Get("sv_master4", "", CVAR_ARCHIVE);
 	svt3_master[4] = Cvar_Get("sv_master5", "", CVAR_ARCHIVE);
 	svt3_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
-	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
+	Cvar_Get("sv_showloss", "0", 0);
 	svt3_padPackets = Cvar_Get("sv_padPackets", "0", 0);
-	sv_killserver = Cvar_Get("sv_killserver", "0", 0);
-	sv_mapChecksum = Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
+	svt3_killserver = Cvar_Get("sv_killserver", "0", 0);
+	Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	svt3_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 
 	svwm_onlyVisibleClients = Cvar_Get("sv_onlyVisibleClients", "0", 0);			// DHM - Nerve

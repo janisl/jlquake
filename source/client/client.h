@@ -642,7 +642,6 @@ float crand();	// -1 to 1
 //	Called by Windows driver.
 void Key_ClearStates();
 float* CL_GetSimOrg();
-bool CL_IsServerActive();
 void CL_WriteWaveFilePacket(int endtime);
 void SCR_UpdateScreen();
 

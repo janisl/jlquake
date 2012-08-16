@@ -95,6 +95,10 @@ extern bool q1_standard_quake;
 extern bool q1_rogue;
 extern bool q1_hipnotic;
 
+// com_speeds times
+extern Cvar* t3com_speeds;
+extern int t3time_game;
+
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
 bool SVT3_GameCommand();

@@ -149,14 +149,12 @@ void        Com_SetRecommended();
 // only a set with the exact name.  Only used during startup.
 
 
-extern Cvar* com_speeds;
 extern Cvar* com_version;
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
 
 // com_speeds times
-extern int time_game;
 extern int time_frontend;
 extern int time_backend;			// renderer backend time
 
@@ -249,8 +247,6 @@ void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
 // server interface
 //
 void SV_Init(void);
-void SV_Frame(int msec);
-void SV_PacketEvent(netadr_t from, QMsg* msg);
 
 
 //

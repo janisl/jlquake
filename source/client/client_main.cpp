@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "client.h"
+#include "../server/public.h"
 
 Cvar* cl_inGameVideo;
 
@@ -139,7 +140,7 @@ float CLQH_LerpPoint()
 {
 	float f = cl.qh_mtime[0] - cl.qh_mtime[1];
 
-	if (!f || clqh_nolerp->value || cls.qh_timedemo || CL_IsServerActive())
+	if (!f || clqh_nolerp->value || cls.qh_timedemo || SV_IsServerActive())
 	{
 		cl.qh_serverTimeFloat = cl.qh_mtime[0];
 		cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);

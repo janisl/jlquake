@@ -222,3 +222,5 @@ enum gamestate_t
 
 #define RELOAD_NEXTMAP          0x02
 #define RELOAD_FAILED           0x08
+
+#define ETSERVER_PERFORMANCECOUNTER_FRAMES    600

@@ -27,11 +27,3 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 #include "../../server/quake3/local.h"
-
-//=============================================================================
-
-extern Cvar* sv_fps;
-extern Cvar* sv_showloss;
-extern Cvar* sv_killserver;
-extern Cvar* sv_mapChecksum;
-extern Cvar* sv_serverid;
