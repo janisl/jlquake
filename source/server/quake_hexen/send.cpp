@@ -32,7 +32,6 @@ int svhw_ravenmodel;
 int svhw_raven2model;
 
 static char outputbuf[8000];
-static netadr_t qh_redirect_addr;
 
 //	Sends the contents of sv.multicast to a subset of the clients,
 // then clears sv.multicast.
@@ -1600,7 +1599,7 @@ static void SVQHW_FlushRedirect(char* buffer)
 	send[4] = A2C_PRINT;
 	Com_Memcpy(send + 5, buffer, String::Length(buffer) + 1);
 
-	NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, qh_redirect_addr);
+	NET_SendPacket(NS_SERVER, String::Length(send) + 1, send, svs.redirectAddress);
 
 	// clear it
 	buffer[0] = 0;
@@ -1609,7 +1608,7 @@ static void SVQHW_FlushRedirect(char* buffer)
 //  Send common->Printf data to the remote client instead of the console
 void SVQHW_BeginRedirect(const netadr_t& addr)
 {
-	qh_redirect_addr = addr;
+	svs.redirectAddress = addr;
 	Com_BeginRedirect(outputbuf, sizeof(outputbuf), SVQHW_FlushRedirect);
 }
 

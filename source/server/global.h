@@ -431,6 +431,8 @@ struct serverStatic_t
 
 	int realtime;					// always increasing, no clamping, etc
 
+	netadr_t redirectAddress;		// for rcon return messages
+
 	int qh_serverflags;					// episode completion information
 
 	// Only NetQuake/Hexen2
@@ -475,7 +477,6 @@ struct serverStatic_t
 	wmentityState_t* wm_snapshotEntities;	// [numSnapshotEntities]
 	etentityState_t* et_snapshotEntities;	// [numSnapshotEntities]
 	int q3_nextHeartbeatTime;
-	netadr_t q3_redirectAddress;		// for rcon return messages
 
 	netadr_t q3_authorizeAddress;		// for rcon return messages
 

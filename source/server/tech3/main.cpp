@@ -675,7 +675,7 @@ static void SVT3C_Info(netadr_t from)
 
 static void SVT3_FlushRedirect(char* outputbuf)
 {
-	NET_OutOfBandPrint(NS_SERVER, svs.q3_redirectAddress, "print\n%s", outputbuf);
+	NET_OutOfBandPrint(NS_SERVER, svs.redirectAddress, "print\n%s", outputbuf);
 }
 
 //	An rcon packet arrived from the network.
@@ -706,7 +706,7 @@ static void SVT3C_RemoteCommand(netadr_t from, QMsg* msg)
 	}
 
 	// start redirecting all print outputs to the packet
-	svs.q3_redirectAddress = from;
+	svs.redirectAddress = from;
 	// TTimo - scaled down to accumulate, but not overflow anything network wise, print wise etc.
 	// (OOB messages are the bottleneck here)
 	enum { SV_OUTPUTBUF_LENGTH = 1024 - 16 };

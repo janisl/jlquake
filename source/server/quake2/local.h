@@ -77,8 +77,11 @@ extern Cvar* allow_download_maps;
 extern Cvar* svq2_enforcetime;
 extern Cvar* svq2_noreload;					// don't reload level state when reentering
 extern Cvar* svq2_airaccelerate;
+extern Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
+extern Cvar* q2rcon_password;			// password for remote server commands
 
 const char* SVQ2_StatusString();
+void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message);
 
 //
 //	Send

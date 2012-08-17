@@ -62,12 +62,3 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame);
 // sv_phys.c
 //
 void SV_PrepWorldFrame(void);
-
-//
-// sv_send.c
-//
-#define SV_OUTPUTBUF_LENGTH (MAX_MSGLEN_Q2 - 16)
-
-extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
-
-void SV_FlushRedirect(char* outputbuf);
