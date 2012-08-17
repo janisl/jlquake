@@ -65,8 +65,10 @@ void (* rd_flush)(char* buffer);
 
 bool com_errorEntered;
 
-Cvar* t3com_speeds;
+Cvar* com_speeds;
 int t3time_game;
+int time_before_game;
+int time_after_game;
 
 static int q2server_state;
 

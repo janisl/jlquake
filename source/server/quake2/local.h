@@ -25,21 +25,8 @@
 //
 //	CCmds
 //
-client_t* SVQ2_SetPlayer();
-void SVQ2_WipeSavegame(const char* savename);
-void SVQ2_CopySaveGame(const char* src, const char* dst);
-void SVQ2_WriteLevelFile();
 void SVQ2_ReadLevelFile();
-void SVQ2_WriteServerFile(bool autosave);
-void SVQ2_Kick_f();
-void SVQ2_Status_f();
-void SVQ2_ConSay_f();
-void SVQ2_Heartbeat_f();
-void SVQ2_Serverinfo_f();
-void SVQ2_DumpUser_f();
-void SVQ2_ServerRecord_f();
-void SVQ2_ServerStop_f();
-void SVQ2_ServerCommand_f();
+void SVQ2_InitOperatorCommands();
 
 //
 //	Entities
@@ -76,14 +63,10 @@ extern Cvar* allow_download_maps;
 extern Cvar* svq2_enforcetime;
 extern Cvar* svq2_noreload;					// don't reload level state when reentering
 extern Cvar* svq2_airaccelerate;
-extern Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
-extern Cvar* q2rcon_password;			// password for remote server commands
-extern Cvar* q2public_server;			// should heartbeats be sent
 
-void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message);
-void SVQ2_MasterHeartbeat();
-void SVQ2_MasterShutdown();
 void SVQ2_Shutdown(const char* finalmsg, bool reconnect);
+void SVQ2_Frame(int msec);
+void SVQ2_Init();
 
 //
 //	Send

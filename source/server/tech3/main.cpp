@@ -1129,7 +1129,7 @@ void SVT3_Frame(int msec)
 	}
 
 	int startTime;
-	if (t3com_speeds->integer)
+	if (com_speeds->integer)
 	{
 		startTime = Sys_Milliseconds();
 	}
@@ -1156,7 +1156,7 @@ void SVT3_Frame(int msec)
 		SVT3_GameRunFrame(svs.q3_time);
 	}
 
-	if (t3com_speeds->integer)
+	if (com_speeds->integer)
 	{
 		t3time_game = Sys_Milliseconds() - startTime;
 	}

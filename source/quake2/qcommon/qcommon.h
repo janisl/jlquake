@@ -135,14 +135,11 @@ void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
 void        Com_Quit(void);
 
-extern Cvar* host_speeds;
 extern Cvar* log_stats;
 
 extern fileHandle_t log_stats_file;
 
-// host_speeds times
-extern int time_before_game;
-extern int time_after_game;
+// com_speeds times
 extern int time_before_ref;
 extern int time_after_ref;
 
@@ -178,10 +175,5 @@ void CL_Drop(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 void SCR_BeginLoadingPlaque(bool Clear = false);
-
-void SV_Init(void);
-void SV_Frame(int msec);
-
-
 
 #endif

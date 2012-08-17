@@ -49,8 +49,6 @@ int host_framecount;
 
 netadr_t master_adr;				// address of the master server
 
-Cvar* host_speeds;
-
 int fps_count;
 
 jmp_buf host_abort;
@@ -1034,7 +1032,7 @@ void CL_Init(void)
 //
 	Cmd_AddCommand("saveconfig", Host_SaveConfig_f);
 
-	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
+	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	cl_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
@@ -1287,7 +1285,7 @@ void Host_Frame(float time)
 		CLHW_SetUpPlayerPrediction(true);
 
 		// update video
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time1 = Sys_DoubleTime();
 		}
@@ -1296,7 +1294,7 @@ void Host_Frame(float time)
 
 		SCR_UpdateScreen();
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time2 = Sys_DoubleTime();
 		}
@@ -1314,7 +1312,7 @@ void Host_Frame(float time)
 
 		CDAudio_Update();
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			pass1 = (time1 - time3) * 1000;
 			time3 = Sys_DoubleTime();

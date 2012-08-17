@@ -757,3 +757,28 @@ enum
 #define Q2PS_RDFLAGS        BIT(14)
 
 #define Q2PORT_MASTER 27900
+
+// dmflags->value flags
+#define Q2DF_NO_HEALTH          0x00000001	// 1
+#define Q2DF_NO_ITEMS           0x00000002	// 2
+#define Q2DF_WEAPONS_STAY       0x00000004	// 4
+#define Q2DF_NO_FALLING         0x00000008	// 8
+#define Q2DF_INSTANT_ITEMS      0x00000010	// 16
+#define Q2DF_SAME_LEVEL         0x00000020	// 32
+#define Q2DF_SKINTEAMS          0x00000040	// 64
+#define Q2DF_MODELTEAMS         0x00000080	// 128
+#define Q2DF_NO_FRIENDLY_FIRE   0x00000100	// 256
+#define Q2DF_SPAWN_FARTHEST     0x00000200	// 512
+#define Q2DF_FORCE_RESPAWN      0x00000400	// 1024
+#define Q2DF_NO_ARMOR           0x00000800	// 2048
+#define Q2DF_ALLOW_EXIT         0x00001000	// 4096
+#define Q2DF_INFINITE_AMMO      0x00002000	// 8192
+#define Q2DF_QUAD_DROP          0x00004000	// 16384
+#define Q2DF_FIXED_FOV          0x00008000	// 32768
+
+//ROGUE
+#define Q2DF_NO_MINES           0x00020000
+#define Q2DF_NO_STACK_DOUBLE    0x00040000
+#define Q2DF_NO_NUKES           0x00080000
+#define Q2DF_NO_SPHERES         0x00100000
+//ROGUE

@@ -32,7 +32,6 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 fileHandle_t log_stats_file;
 
-Cvar* host_speeds;
 Cvar* log_stats;
 Cvar* timescale;
 Cvar* fixedtime;
@@ -42,8 +41,6 @@ Cvar* showtrace;
 static fileHandle_t logfile;
 
 // host_speeds times
-int time_before_game;
-int time_after_game;
 int time_before_ref;
 int time_after_ref;
 
@@ -425,7 +422,7 @@ void Qcommon_Init(int argc, char** argv)
 
 		COM_InitCommonCvars();
 
-		host_speeds = Cvar_Get("host_speeds", "0", 0);
+		com_speeds = Cvar_Get("host_speeds", "0", 0);
 		log_stats = Cvar_Get("log_stats", "0", 0);
 		timescale = Cvar_Get("timescale", "1", 0);
 		fixedtime = Cvar_Get("fixedtime", "0", 0);
@@ -452,7 +449,7 @@ void Qcommon_Init(int argc, char** argv)
 		// pick a port value that should be nice and random
 		Netchan_Init(Sys_Milliseconds_());
 
-		SV_Init();
+		SVQ2_Init();
 		CL_Init();
 
 		// add + commands from command line
@@ -557,27 +554,27 @@ void Qcommon_Frame(int msec)
 		while (s);
 		Cbuf_Execute();
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time_before = Sys_Milliseconds_();
 		}
 
-		SV_Frame(msec);
+		SVQ2_Frame(msec);
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time_between = Sys_Milliseconds_();
 		}
 
 		CL_Frame(msec);
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time_after = Sys_Milliseconds_();
 		}
 
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			int all, sv, gm, cl, rf;
 
@@ -614,4 +611,28 @@ void Qcommon_Shutdown(void)
 int Com_Milliseconds()
 {
 	return Sys_Milliseconds();
+}
+
+void SCRQH_BeginLoadingPlaque()
+{
+}
+void CL_EstablishConnection(const char* name)
+{
+}
+void Host_Reconnect_f()
+{
+}
+
+bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return false;
+}
+void CL_MapLoading(void)
+{
+}
+void CL_ShutdownAll(void)
+{
+}
+void CL_Disconnect(qboolean showMainMenu)
+{
 }

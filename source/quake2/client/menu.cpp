@@ -3041,11 +3041,11 @@ static void DMFlagCallback(void* self)
 	{
 		if (f->curvalue)
 		{
-			flags &= ~DF_NO_FRIENDLY_FIRE;
+			flags &= ~Q2DF_NO_FRIENDLY_FIRE;
 		}
 		else
 		{
-			flags |= DF_NO_FRIENDLY_FIRE;
+			flags |= Q2DF_NO_FRIENDLY_FIRE;
 		}
 		goto setvalue;
 	}
@@ -3053,35 +3053,35 @@ static void DMFlagCallback(void* self)
 	{
 		if (f->curvalue)
 		{
-			flags &= ~DF_NO_FALLING;
+			flags &= ~Q2DF_NO_FALLING;
 		}
 		else
 		{
-			flags |= DF_NO_FALLING;
+			flags |= Q2DF_NO_FALLING;
 		}
 		goto setvalue;
 	}
 	else if (f == &s_weapons_stay_box)
 	{
-		bit = DF_WEAPONS_STAY;
+		bit = Q2DF_WEAPONS_STAY;
 	}
 	else if (f == &s_instant_powerups_box)
 	{
-		bit = DF_INSTANT_ITEMS;
+		bit = Q2DF_INSTANT_ITEMS;
 	}
 	else if (f == &s_allow_exit_box)
 	{
-		bit = DF_ALLOW_EXIT;
+		bit = Q2DF_ALLOW_EXIT;
 	}
 	else if (f == &s_powerups_box)
 	{
 		if (f->curvalue)
 		{
-			flags &= ~DF_NO_ITEMS;
+			flags &= ~Q2DF_NO_ITEMS;
 		}
 		else
 		{
-			flags |= DF_NO_ITEMS;
+			flags |= Q2DF_NO_ITEMS;
 		}
 		goto setvalue;
 	}
@@ -3089,68 +3089,68 @@ static void DMFlagCallback(void* self)
 	{
 		if (f->curvalue)
 		{
-			flags &= ~DF_NO_HEALTH;
+			flags &= ~Q2DF_NO_HEALTH;
 		}
 		else
 		{
-			flags |= DF_NO_HEALTH;
+			flags |= Q2DF_NO_HEALTH;
 		}
 		goto setvalue;
 	}
 	else if (f == &s_spawn_farthest_box)
 	{
-		bit = DF_SPAWN_FARTHEST;
+		bit = Q2DF_SPAWN_FARTHEST;
 	}
 	else if (f == &s_teamplay_box)
 	{
 		if (f->curvalue == 1)
 		{
-			flags |=  DF_SKINTEAMS;
-			flags &= ~DF_MODELTEAMS;
+			flags |=  Q2DF_SKINTEAMS;
+			flags &= ~Q2DF_MODELTEAMS;
 		}
 		else if (f->curvalue == 2)
 		{
-			flags |=  DF_MODELTEAMS;
-			flags &= ~DF_SKINTEAMS;
+			flags |=  Q2DF_MODELTEAMS;
+			flags &= ~Q2DF_SKINTEAMS;
 		}
 		else
 		{
-			flags &= ~(DF_MODELTEAMS | DF_SKINTEAMS);
+			flags &= ~(Q2DF_MODELTEAMS | Q2DF_SKINTEAMS);
 		}
 
 		goto setvalue;
 	}
 	else if (f == &s_samelevel_box)
 	{
-		bit = DF_SAME_LEVEL;
+		bit = Q2DF_SAME_LEVEL;
 	}
 	else if (f == &s_force_respawn_box)
 	{
-		bit = DF_FORCE_RESPAWN;
+		bit = Q2DF_FORCE_RESPAWN;
 	}
 	else if (f == &s_armor_box)
 	{
 		if (f->curvalue)
 		{
-			flags &= ~DF_NO_ARMOR;
+			flags &= ~Q2DF_NO_ARMOR;
 		}
 		else
 		{
-			flags |= DF_NO_ARMOR;
+			flags |= Q2DF_NO_ARMOR;
 		}
 		goto setvalue;
 	}
 	else if (f == &s_infinite_ammo_box)
 	{
-		bit = DF_INFINITE_AMMO;
+		bit = Q2DF_INFINITE_AMMO;
 	}
 	else if (f == &s_fixed_fov_box)
 	{
-		bit = DF_FIXED_FOV;
+		bit = Q2DF_FIXED_FOV;
 	}
 	else if (f == &s_quad_drop_box)
 	{
-		bit = DF_QUAD_DROP;
+		bit = Q2DF_QUAD_DROP;
 	}
 
 //=======
@@ -3159,19 +3159,19 @@ static void DMFlagCallback(void* self)
 	{
 		if (f == &s_no_mines_box)
 		{
-			bit = DF_NO_MINES;
+			bit = Q2DF_NO_MINES;
 		}
 		else if (f == &s_no_nukes_box)
 		{
-			bit = DF_NO_NUKES;
+			bit = Q2DF_NO_NUKES;
 		}
 		else if (f == &s_stack_double_box)
 		{
-			bit = DF_NO_STACK_DOUBLE;
+			bit = Q2DF_NO_STACK_DOUBLE;
 		}
 		else if (f == &s_no_spheres_box)
 		{
-			bit = DF_NO_SPHERES;
+			bit = Q2DF_NO_SPHERES;
 		}
 	}
 //ROGUE
@@ -3218,7 +3218,7 @@ void DMOptions_MenuInit(void)
 	s_falls_box.generic.name    = "falling damage";
 	s_falls_box.generic.callback = DMFlagCallback;
 	s_falls_box.itemnames = yes_no_names;
-	s_falls_box.curvalue = (dmflags & DF_NO_FALLING) == 0;
+	s_falls_box.curvalue = (dmflags & Q2DF_NO_FALLING) == 0;
 
 	s_weapons_stay_box.generic.type = MTYPE_SPINCONTROL;
 	s_weapons_stay_box.generic.x    = 0;
@@ -3226,7 +3226,7 @@ void DMOptions_MenuInit(void)
 	s_weapons_stay_box.generic.name = "weapons stay";
 	s_weapons_stay_box.generic.callback = DMFlagCallback;
 	s_weapons_stay_box.itemnames = yes_no_names;
-	s_weapons_stay_box.curvalue = (dmflags & DF_WEAPONS_STAY) != 0;
+	s_weapons_stay_box.curvalue = (dmflags & Q2DF_WEAPONS_STAY) != 0;
 
 	s_instant_powerups_box.generic.type = MTYPE_SPINCONTROL;
 	s_instant_powerups_box.generic.x    = 0;
@@ -3234,7 +3234,7 @@ void DMOptions_MenuInit(void)
 	s_instant_powerups_box.generic.name = "instant powerups";
 	s_instant_powerups_box.generic.callback = DMFlagCallback;
 	s_instant_powerups_box.itemnames = yes_no_names;
-	s_instant_powerups_box.curvalue = (dmflags & DF_INSTANT_ITEMS) != 0;
+	s_instant_powerups_box.curvalue = (dmflags & Q2DF_INSTANT_ITEMS) != 0;
 
 	s_powerups_box.generic.type = MTYPE_SPINCONTROL;
 	s_powerups_box.generic.x    = 0;
@@ -3242,7 +3242,7 @@ void DMOptions_MenuInit(void)
 	s_powerups_box.generic.name = "allow powerups";
 	s_powerups_box.generic.callback = DMFlagCallback;
 	s_powerups_box.itemnames = yes_no_names;
-	s_powerups_box.curvalue = (dmflags & DF_NO_ITEMS) == 0;
+	s_powerups_box.curvalue = (dmflags & Q2DF_NO_ITEMS) == 0;
 
 	s_health_box.generic.type = MTYPE_SPINCONTROL;
 	s_health_box.generic.x  = 0;
@@ -3250,7 +3250,7 @@ void DMOptions_MenuInit(void)
 	s_health_box.generic.callback = DMFlagCallback;
 	s_health_box.generic.name   = "allow health";
 	s_health_box.itemnames = yes_no_names;
-	s_health_box.curvalue = (dmflags & DF_NO_HEALTH) == 0;
+	s_health_box.curvalue = (dmflags & Q2DF_NO_HEALTH) == 0;
 
 	s_armor_box.generic.type = MTYPE_SPINCONTROL;
 	s_armor_box.generic.x   = 0;
@@ -3258,7 +3258,7 @@ void DMOptions_MenuInit(void)
 	s_armor_box.generic.name    = "allow armor";
 	s_armor_box.generic.callback = DMFlagCallback;
 	s_armor_box.itemnames = yes_no_names;
-	s_armor_box.curvalue = (dmflags & DF_NO_ARMOR) == 0;
+	s_armor_box.curvalue = (dmflags & Q2DF_NO_ARMOR) == 0;
 
 	s_spawn_farthest_box.generic.type = MTYPE_SPINCONTROL;
 	s_spawn_farthest_box.generic.x  = 0;
@@ -3266,7 +3266,7 @@ void DMOptions_MenuInit(void)
 	s_spawn_farthest_box.generic.name   = "spawn farthest";
 	s_spawn_farthest_box.generic.callback = DMFlagCallback;
 	s_spawn_farthest_box.itemnames = yes_no_names;
-	s_spawn_farthest_box.curvalue = (dmflags & DF_SPAWN_FARTHEST) != 0;
+	s_spawn_farthest_box.curvalue = (dmflags & Q2DF_SPAWN_FARTHEST) != 0;
 
 	s_samelevel_box.generic.type = MTYPE_SPINCONTROL;
 	s_samelevel_box.generic.x   = 0;
@@ -3274,7 +3274,7 @@ void DMOptions_MenuInit(void)
 	s_samelevel_box.generic.name    = "same map";
 	s_samelevel_box.generic.callback = DMFlagCallback;
 	s_samelevel_box.itemnames = yes_no_names;
-	s_samelevel_box.curvalue = (dmflags & DF_SAME_LEVEL) != 0;
+	s_samelevel_box.curvalue = (dmflags & Q2DF_SAME_LEVEL) != 0;
 
 	s_force_respawn_box.generic.type = MTYPE_SPINCONTROL;
 	s_force_respawn_box.generic.x   = 0;
@@ -3282,7 +3282,7 @@ void DMOptions_MenuInit(void)
 	s_force_respawn_box.generic.name    = "force respawn";
 	s_force_respawn_box.generic.callback = DMFlagCallback;
 	s_force_respawn_box.itemnames = yes_no_names;
-	s_force_respawn_box.curvalue = (dmflags & DF_FORCE_RESPAWN) != 0;
+	s_force_respawn_box.curvalue = (dmflags & Q2DF_FORCE_RESPAWN) != 0;
 
 	s_teamplay_box.generic.type = MTYPE_SPINCONTROL;
 	s_teamplay_box.generic.x    = 0;
@@ -3297,7 +3297,7 @@ void DMOptions_MenuInit(void)
 	s_allow_exit_box.generic.name   = "allow exit";
 	s_allow_exit_box.generic.callback = DMFlagCallback;
 	s_allow_exit_box.itemnames = yes_no_names;
-	s_allow_exit_box.curvalue = (dmflags & DF_ALLOW_EXIT) != 0;
+	s_allow_exit_box.curvalue = (dmflags & Q2DF_ALLOW_EXIT) != 0;
 
 	s_infinite_ammo_box.generic.type = MTYPE_SPINCONTROL;
 	s_infinite_ammo_box.generic.x   = 0;
@@ -3305,7 +3305,7 @@ void DMOptions_MenuInit(void)
 	s_infinite_ammo_box.generic.name    = "infinite ammo";
 	s_infinite_ammo_box.generic.callback = DMFlagCallback;
 	s_infinite_ammo_box.itemnames = yes_no_names;
-	s_infinite_ammo_box.curvalue = (dmflags & DF_INFINITE_AMMO) != 0;
+	s_infinite_ammo_box.curvalue = (dmflags & Q2DF_INFINITE_AMMO) != 0;
 
 	s_fixed_fov_box.generic.type = MTYPE_SPINCONTROL;
 	s_fixed_fov_box.generic.x   = 0;
@@ -3313,7 +3313,7 @@ void DMOptions_MenuInit(void)
 	s_fixed_fov_box.generic.name    = "fixed FOV";
 	s_fixed_fov_box.generic.callback = DMFlagCallback;
 	s_fixed_fov_box.itemnames = yes_no_names;
-	s_fixed_fov_box.curvalue = (dmflags & DF_FIXED_FOV) != 0;
+	s_fixed_fov_box.curvalue = (dmflags & Q2DF_FIXED_FOV) != 0;
 
 	s_quad_drop_box.generic.type = MTYPE_SPINCONTROL;
 	s_quad_drop_box.generic.x   = 0;
@@ -3321,7 +3321,7 @@ void DMOptions_MenuInit(void)
 	s_quad_drop_box.generic.name    = "quad drop";
 	s_quad_drop_box.generic.callback = DMFlagCallback;
 	s_quad_drop_box.itemnames = yes_no_names;
-	s_quad_drop_box.curvalue = (dmflags & DF_QUAD_DROP) != 0;
+	s_quad_drop_box.curvalue = (dmflags & Q2DF_QUAD_DROP) != 0;
 
 	s_friendlyfire_box.generic.type = MTYPE_SPINCONTROL;
 	s_friendlyfire_box.generic.x    = 0;
@@ -3329,7 +3329,7 @@ void DMOptions_MenuInit(void)
 	s_friendlyfire_box.generic.name = "friendly fire";
 	s_friendlyfire_box.generic.callback = DMFlagCallback;
 	s_friendlyfire_box.itemnames = yes_no_names;
-	s_friendlyfire_box.curvalue = (dmflags & DF_NO_FRIENDLY_FIRE) == 0;
+	s_friendlyfire_box.curvalue = (dmflags & Q2DF_NO_FRIENDLY_FIRE) == 0;
 
 //============
 //ROGUE
@@ -3341,7 +3341,7 @@ void DMOptions_MenuInit(void)
 		s_no_mines_box.generic.name = "remove mines";
 		s_no_mines_box.generic.callback = DMFlagCallback;
 		s_no_mines_box.itemnames = yes_no_names;
-		s_no_mines_box.curvalue = (dmflags & DF_NO_MINES) != 0;
+		s_no_mines_box.curvalue = (dmflags & Q2DF_NO_MINES) != 0;
 
 		s_no_nukes_box.generic.type = MTYPE_SPINCONTROL;
 		s_no_nukes_box.generic.x    = 0;
@@ -3349,7 +3349,7 @@ void DMOptions_MenuInit(void)
 		s_no_nukes_box.generic.name = "remove nukes";
 		s_no_nukes_box.generic.callback = DMFlagCallback;
 		s_no_nukes_box.itemnames = yes_no_names;
-		s_no_nukes_box.curvalue = (dmflags & DF_NO_NUKES) != 0;
+		s_no_nukes_box.curvalue = (dmflags & Q2DF_NO_NUKES) != 0;
 
 		s_stack_double_box.generic.type = MTYPE_SPINCONTROL;
 		s_stack_double_box.generic.x    = 0;
@@ -3357,7 +3357,7 @@ void DMOptions_MenuInit(void)
 		s_stack_double_box.generic.name = "2x/4x stacking off";
 		s_stack_double_box.generic.callback = DMFlagCallback;
 		s_stack_double_box.itemnames = yes_no_names;
-		s_stack_double_box.curvalue = (dmflags & DF_NO_STACK_DOUBLE) != 0;
+		s_stack_double_box.curvalue = (dmflags & Q2DF_NO_STACK_DOUBLE) != 0;
 
 		s_no_spheres_box.generic.type = MTYPE_SPINCONTROL;
 		s_no_spheres_box.generic.x  = 0;
@@ -3365,7 +3365,7 @@ void DMOptions_MenuInit(void)
 		s_no_spheres_box.generic.name   = "remove spheres";
 		s_no_spheres_box.generic.callback = DMFlagCallback;
 		s_no_spheres_box.itemnames = yes_no_names;
-		s_no_spheres_box.curvalue = (dmflags & DF_NO_SPHERES) != 0;
+		s_no_spheres_box.curvalue = (dmflags & Q2DF_NO_SPHERES) != 0;
 
 	}
 //ROGUE

@@ -1908,12 +1908,12 @@ void CL_Frame(int msec)
 	}
 
 	// update the screen
-	if (host_speeds->value)
+	if (com_speeds->value)
 	{
 		time_before_ref = Sys_Milliseconds_();
 	}
 	SCR_UpdateScreen();
-	if (host_speeds->value)
+	if (com_speeds->value)
 	{
 		time_after_ref = Sys_Milliseconds_();
 	}

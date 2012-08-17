@@ -29,11 +29,18 @@ Cvar* svq2_noreload;				// don't reload level state when reentering
 
 Cvar* svq2_airaccelerate;
 
-Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
+static Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
 
-Cvar* q2rcon_password;			// password for remote server commands
+static Cvar* q2rcon_password;			// password for remote server commands
 
-Cvar* q2public_server;			// should heartbeats be sent
+static Cvar* q2public_server;			// should heartbeats be sent
+
+static Cvar* q2_timeout;					// seconds without any message
+static Cvar* q2_zombietime;				// seconds to sink messages after disconnect
+
+static Cvar* svq2_showclamp;
+
+static Cvar* svq2_timedemo;
 
 /*
 ==============================================================================
@@ -379,7 +386,7 @@ static void SVQ2C_RemoteCommand(const netadr_t& from, QMsg& message)
 // characters to distinguish it from a game channel.
 // Clients that are in the game can still send
 // connectionless packets.
-void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message)
+static void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message)
 {
 	message.BeginReadingOOB();
 	message.ReadLong();		// skip the -1 marker
@@ -429,7 +436,7 @@ void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message)
 //	Send a message to the master every few minutes to
 // let it know we are alive, and log information
 #define HEARTBEAT_SECONDS   300
-void SVQ2_MasterHeartbeat()
+static void SVQ2_MasterHeartbeat()
 {
 	if (!com_dedicated->value)
 	{
@@ -469,7 +476,7 @@ void SVQ2_MasterHeartbeat()
 }
 
 //	Informs all masters that this server is going down
-void SVQ2_MasterShutdown()
+static void SVQ2_MasterShutdown()
 {
 	if (!com_dedicated->value)
 	{
@@ -576,4 +583,307 @@ void SVQ2_Shutdown(const char* finalmsg, bool reconnect)
 		FS_FCloseFile(svs.q2_demofile);
 	}
 	Com_Memset(&svs, 0, sizeof(svs));
+}
+
+//	Updates the cl->ping variables
+static void SVQ2_CalcPings()
+{
+	for (int i = 0; i < sv_maxclients->value; i++)
+	{
+		client_t* cl = &svs.clients[i];
+		if (cl->state != CS_ACTIVE)
+		{
+			continue;
+		}
+
+		int total = 0;
+		int count = 0;
+		for (int j = 0; j < LATENCY_COUNTS; j++)
+		{
+			if (cl->q2_frame_latency[j] > 0)
+			{
+				count++;
+				total += cl->q2_frame_latency[j];
+			}
+		}
+		if (!count)
+		{
+			cl->ping = 0;
+		}
+		else
+		{
+			cl->ping = total / count;
+		}
+		// let the game dll know about the ping
+		cl->q2_edict->client->ping = cl->ping;
+	}
+}
+
+//	Every few frames, gives all clients an allotment of milliseconds
+// for their command moves.  If they exceed it, assume cheating.
+static void SVQ2_GiveMsec()
+{
+	if (sv.q2_framenum & 15)
+	{
+		return;
+	}
+
+	for (int i = 0; i < sv_maxclients->value; i++)
+	{
+		client_t* cl = &svs.clients[i];
+		if (cl->state == CS_FREE)
+		{
+			continue;
+		}
+
+		cl->q2_commandMsec = 1800;		// 1600 + some slop
+	}
+}
+
+static void SVQ2_ReadPackets()
+{
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_Q2];
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
+	while (NET_GetPacket(NS_SERVER, &net_from, &net_message))
+	{
+		// check for connectionless packet (0xffffffff) first
+		if (*(int*)net_message._data == -1)
+		{
+			SVQ2_ConnectionlessPacket(net_from, net_message);
+			continue;
+		}
+
+		// read the qport out of the message so we can fix up
+		// stupid address translating routers
+		net_message.BeginReadingOOB();
+		net_message.ReadLong();		// sequence number
+		net_message.ReadLong();		// sequence number
+		int qport = net_message.ReadShort() & 0xffff;
+
+		// check for packets from connected clients
+		client_t* cl = svs.clients;
+		int i;
+		for (i = 0; i < sv_maxclients->value; i++,cl++)
+		{
+			if (cl->state == CS_FREE)
+			{
+				continue;
+			}
+			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remoteAddress))
+			{
+				continue;
+			}
+			if (cl->netchan.qport != qport)
+			{
+				continue;
+			}
+			if (cl->netchan.remoteAddress.port != net_from.port)
+			{
+				common->Printf("SVQ2_ReadPackets: fixing up a translated port\n");
+				cl->netchan.remoteAddress.port = net_from.port;
+			}
+
+			if (Netchan_Process(&cl->netchan, &net_message))
+			{
+				// this is a valid, sequenced packet, so process it
+				cl->netchan.lastReceived = Sys_Milliseconds();
+				if (cl->state != CS_ZOMBIE)
+				{
+					cl->q2_lastmessage = svs.realtime;	// don't timeout
+					SVQ2_ExecuteClientMessage(cl, net_message);
+				}
+			}
+			break;
+		}
+
+		if (i != sv_maxclients->value)
+		{
+			continue;
+		}
+	}
+}
+
+//	If a packet has not been received from a client for timeout->value
+// seconds, drop the conneciton.  Server frames are used instead of
+// realtime to avoid dropping the local client while debugging.
+//
+//	When a client is normally dropped, the client_t goes into a zombie state
+// for a few seconds to make sure any final reliable message gets resent
+// if necessary
+static void SVQ2_CheckTimeouts()
+{
+	int droppoint = svs.realtime - 1000 * q2_timeout->value;
+	int zombiepoint = svs.realtime - 1000 * q2_zombietime->value;
+
+	client_t* cl = svs.clients;
+	for (int i = 0; i < sv_maxclients->value; i++,cl++)
+	{
+		// message times may be wrong across a changelevel
+		if (cl->q2_lastmessage > svs.realtime)
+		{
+			cl->q2_lastmessage = svs.realtime;
+		}
+
+		if (cl->state == CS_ZOMBIE &&
+			cl->q2_lastmessage < zombiepoint)
+		{
+			cl->state = CS_FREE;	// can now be reused
+			continue;
+		}
+		if ((cl->state == CS_CONNECTED || cl->state == CS_ACTIVE) &&
+			cl->q2_lastmessage < droppoint)
+		{
+			SVQ2_BroadcastPrintf(PRINT_HIGH, "%s timed out\n", cl->name);
+			SVQ2_DropClient(cl);
+			cl->state = CS_FREE;	// don't bother with zombie state
+		}
+	}
+}
+
+//	This has to be done before the world logic, because
+// player processing happens outside RunWorldFrame
+static void SVQ2_PrepWorldFrame()
+{
+	for (int i = 0; i < ge->num_edicts; i++)
+	{
+		q2edict_t* ent = Q2_EDICT_NUM(i);
+		// events only last for a single message
+		ent->s.event = 0;
+	}
+}
+
+static void SVQ2_RunGameFrame()
+{
+	if (com_speeds->value)
+	{
+		time_before_game = Sys_Milliseconds();
+	}
+
+	// we always need to bump framenum, even if we
+	// don't run the world, otherwise the delta
+	// compression can get confused when a client
+	// has the "current" frame
+	sv.q2_framenum++;
+	sv.q2_time = sv.q2_framenum * 100;
+
+	// don't run if paused
+	if (!sv_paused->value || sv_maxclients->value > 1)
+	{
+		ge->RunFrame();
+
+		// never get more than one tic behind
+		if (sv.q2_time < (unsigned)svs.realtime)
+		{
+			if (svq2_showclamp->value)
+			{
+				common->Printf("sv highclamp\n");
+			}
+			svs.realtime = sv.q2_time;
+		}
+	}
+
+	if (com_speeds->value)
+	{
+		time_after_game = Sys_Milliseconds();
+	}
+}
+
+void SVQ2_Frame(int msec)
+{
+	time_before_game = time_after_game = 0;
+
+	// if server is not active, do nothing
+	if (!svs.initialized)
+	{
+		return;
+	}
+
+	svs.realtime += msec;
+
+	// keep the random time dependent
+	rand();
+
+	// check timeouts
+	SVQ2_CheckTimeouts();
+
+	// get packets from clients
+	SVQ2_ReadPackets();
+
+	// move autonomous things around if enough time has passed
+	if (!svq2_timedemo->value && (unsigned)svs.realtime < sv.q2_time)
+	{
+		// never let the time get too far off
+		if (sv.q2_time - svs.realtime > 100)
+		{
+			if (svq2_showclamp->value)
+			{
+				common->Printf("sv lowclamp\n");
+			}
+			svs.realtime = sv.q2_time - 100;
+		}
+		NET_Sleep(sv.q2_time - svs.realtime);
+		return;
+	}
+
+	// update ping based on the last known frame from all clients
+	SVQ2_CalcPings();
+
+	// give the clients some timeslices
+	SVQ2_GiveMsec();
+
+	// let everything in the world think and move
+	SVQ2_RunGameFrame();
+
+	// send messages back to the clients that had packets read this frame
+	SVQ2_SendClientMessages();
+
+	// save the entire world state if recording a serverdemo
+	SVQ2_RecordDemoMessage();
+
+	// send a heartbeat to the master if needed
+	SVQ2_MasterHeartbeat();
+
+	// clear teleport flags, etc for next frame
+	SVQ2_PrepWorldFrame();
+
+}
+
+//	Only called at quake2.exe startup, not for each game
+void SVQ2_Init()
+{
+	SVQ2_InitOperatorCommands();
+
+	q2rcon_password = Cvar_Get("rcon_password", "", 0);
+	Cvar_Get("skill", "1", 0);
+	Cvar_Get("deathmatch", "0", CVAR_LATCH);
+	Cvar_Get("coop", "0", CVAR_LATCH);
+	Cvar_Get("dmflags", va("%i", Q2DF_INSTANT_ITEMS), CVAR_SERVERINFO);
+	Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	Cvar_Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
+	Cvar_Get("protocol", va("%i", Q2PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_INIT);;
+	sv_maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
+	sv_hostname = Cvar_Get("hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE);
+	q2_timeout = Cvar_Get("timeout", "125", 0);
+	q2_zombietime = Cvar_Get("zombietime", "2", 0);
+	svq2_showclamp = Cvar_Get("showclamp", "0", 0);
+	sv_paused = Cvar_Get("paused", "0", 0);
+	svq2_timedemo = Cvar_Get("timedemo", "0", 0);
+	svq2_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);
+	allow_download = Cvar_Get("allow_download", "0", CVAR_ARCHIVE);
+	allow_download_players  = Cvar_Get("allow_download_players", "0", CVAR_ARCHIVE);
+	allow_download_models = Cvar_Get("allow_download_models", "1", CVAR_ARCHIVE);
+	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", CVAR_ARCHIVE);
+	allow_download_maps   = Cvar_Get("allow_download_maps", "1", CVAR_ARCHIVE);
+
+	svq2_noreload = Cvar_Get("sv_noreload", "0", 0);
+
+	svq2_airaccelerate = Cvar_Get("sv_airaccelerate", "0", CVAR_LATCH);
+
+	q2public_server = Cvar_Get("public", "0", 0);
+
+	svq2_reconnect_limit = Cvar_Get("sv_reconnect_limit", "3", CVAR_ARCHIVE);
 }

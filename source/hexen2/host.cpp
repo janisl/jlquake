@@ -33,7 +33,6 @@ int fps_count;
 jmp_buf host_abortserver;
 
 Cvar* host_framerate;	// set for slow motion
-Cvar* host_speeds;				// set for running times
 
 Cvar* sys_ticrate;
 Cvar* serverprofile;
@@ -326,7 +325,7 @@ void Host_InitLocal(void)
 	COM_InitCommonCvars();
 
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion
-	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
+	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
 	serverprofile = Cvar_Get("serverprofile", "0", 0);
@@ -574,7 +573,7 @@ void _Host_Frame(float time)
 
 #ifndef DEDICATED
 // update video
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time1 = Sys_DoubleTime();
 		}
@@ -583,7 +582,7 @@ void _Host_Frame(float time)
 
 		SCR_UpdateScreen();
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			time2 = Sys_DoubleTime();
 		}
@@ -600,7 +599,7 @@ void _Host_Frame(float time)
 		CDAudio_Update();
 #endif
 
-		if (host_speeds->value)
+		if (com_speeds->value)
 		{
 			pass1 = (time1 - time3) * 1000;
 			time3 = Sys_DoubleTime();

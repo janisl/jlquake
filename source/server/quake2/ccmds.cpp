@@ -18,7 +18,15 @@
 #include "local.h"
 #include <time.h>
 
-client_t* SVQ2_SetPlayer()
+/*
+===============================================================================
+OPERATOR CONSOLE ONLY COMMANDS
+
+These commands can only be entered from stdin or by a remote operator datagram
+===============================================================================
+*/
+
+static client_t* SVQ2_SetPlayer()
 {
 	if (Cmd_Argc() < 2)
 	{
@@ -69,7 +77,7 @@ client_t* SVQ2_SetPlayer()
 //
 
 //	Delete save/<XXX>/
-void SVQ2_WipeSavegame(const char* savename)
+static void SVQ2_WipeSavegame(const char* savename)
 {
 	common->DPrintf("SV_WipeSaveGame(%s)\n", savename);
 
@@ -98,7 +106,7 @@ void SVQ2_WipeSavegame(const char* savename)
 	Sys_FreeFileList(SysFiles);
 }
 
-void SVQ2_CopySaveGame(const char* src, const char* dst)
+static void SVQ2_CopySaveGame(const char* src, const char* dst)
 {
 	common->DPrintf("SVQ2_CopySaveGame(%s, %s)\n", src, dst);
 
@@ -132,7 +140,7 @@ void SVQ2_CopySaveGame(const char* src, const char* dst)
 	Sys_FreeFileList(SysFiles);
 }
 
-void SVQ2_WriteLevelFile()
+static void SVQ2_WriteLevelFile()
 {
 	common->DPrintf("SVQ2_WriteLevelFile()\n");
 
@@ -173,7 +181,7 @@ void SVQ2_ReadLevelFile()
 	ge->ReadLevel(name);
 }
 
-void SVQ2_WriteServerFile(bool autosave)
+static void SVQ2_WriteServerFile(bool autosave)
 {
 	common->DPrintf("SVQ2_WriteServerFile(%s)\n", autosave ? "true" : "false");
 
@@ -240,7 +248,7 @@ void SVQ2_WriteServerFile(bool autosave)
 }
 
 //	Kick a user off of the server
-void SVQ2_Kick_f()
+static void SVQ2_Kick_f()
 {
 	if (!svs.initialized)
 	{
@@ -268,7 +276,7 @@ void SVQ2_Kick_f()
 	client->q2_lastmessage = svs.realtime;	// min case there is a funny zombie
 }
 
-void SVQ2_Status_f()
+static void SVQ2_Status_f()
 {
 	if (!svs.clients)
 	{
@@ -327,7 +335,7 @@ void SVQ2_Status_f()
 	common->Printf("\n");
 }
 
-void SVQ2_ConSay_f()
+static void SVQ2_ConSay_f()
 {
 	if (Cmd_Argc() < 2)
 	{
@@ -357,13 +365,13 @@ void SVQ2_ConSay_f()
 	}
 }
 
-void SVQ2_Heartbeat_f()
+static void SVQ2_Heartbeat_f()
 {
 	svs.q2_last_heartbeat = -9999999;
 }
 
 //	Examine or change the serverinfo string
-void SVQ2_Serverinfo_f()
+static void SVQ2_Serverinfo_f()
 {
 	common->Printf("Server info settings:\n");
 	Info_Print(Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
@@ -371,7 +379,7 @@ void SVQ2_Serverinfo_f()
 }
 
 //	Examine all a users info strings
-void SVQ2_DumpUser_f()
+static void SVQ2_DumpUser_f()
 {
 	if (Cmd_Argc() != 2)
 	{
@@ -393,7 +401,7 @@ void SVQ2_DumpUser_f()
 
 //	Begins server demo recording.  Every entity and every message will be
 // recorded, but no playerinfo will be stored.  Primarily for demo merging.
-void SVQ2_ServerRecord_f()
+static void SVQ2_ServerRecord_f()
 {
 	char name[MAX_OSPATH];
 	byte buf_data[32768];
@@ -473,7 +481,7 @@ void SVQ2_ServerRecord_f()
 }
 
 //	Ends server demo recording
-void SVQ2_ServerStop_f()
+static void SVQ2_ServerStop_f()
 {
 	if (!svs.q2_demofile)
 	{
@@ -485,8 +493,307 @@ void SVQ2_ServerStop_f()
 	common->Printf("Recording completed.\n");
 }
 
+//	Specify a list of master servers
+static void SVQ2_SetMaster_f()
+{
+	// only dedicated servers send heartbeats
+	if (!com_dedicated->value)
+	{
+		common->Printf("Only dedicated servers use masters.\n");
+		return;
+	}
+
+	// make sure the server is listed public
+	Cvar_SetLatched("public", "1");
+
+	for (int i = 1; i < MAX_MASTERS; i++)
+	{
+		Com_Memset(&master_adr[i], 0, sizeof(master_adr[i]));
+	}
+
+	int slot = 1;		// slot 0 will always contain the id master
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		if (slot == MAX_MASTERS)
+		{
+			break;
+		}
+
+		if (!SOCK_StringToAdr(Cmd_Argv(i), &master_adr[slot], Q2PORT_MASTER))
+		{
+			common->Printf("Bad address: %s\n", Cmd_Argv(i));
+			continue;
+		}
+
+		common->Printf("Master server at %s\n", SOCK_AdrToString(master_adr[slot]));
+
+		common->Printf("Sending a ping.\n");
+
+		NET_OutOfBandPrint(NS_SERVER, master_adr[slot], "ping");
+
+		slot++;
+	}
+
+	svs.q2_last_heartbeat = -9999999;
+}
+
+static void SVQ2_ReadServerFile()
+{
+	common->DPrintf("SVQ2_ReadServerFile()\n");
+
+	fileHandle_t f;
+	FS_FOpenFileRead("save/current/server.ssv", &f, true);
+	if (!f)
+	{
+		common->Printf("Couldn't read save/current/server.ssv\n");
+		return;
+	}
+	// read the comment field
+	char comment[32];
+	FS_Read(comment, sizeof(comment), f);
+
+	// read the mapcmd
+	char mapcmd[MAX_TOKEN_CHARS_Q2];
+	FS_Read(mapcmd, sizeof(mapcmd), f);
+
+	// read all CVAR_LATCH cvars
+	// these will be things like coop, skill, deathmatch, etc
+	while (1)
+	{
+		char name[MAX_OSPATH];
+		if (!FS_Read(name, sizeof(name), f))
+		{
+			break;
+		}
+		char string[128];
+		FS_Read(string, sizeof(string), f);
+		common->DPrintf("Set %s = %s\n", name, string);
+		Cvar_Set(name, string);
+	}
+
+	FS_FCloseFile(f);
+
+	// start a new game fresh with new cvars
+	SVQ2_InitGame();
+
+	String::Cpy(svs.q2_mapcmd, mapcmd);
+
+	// read game state
+	char name[MAX_OSPATH];
+	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
+	ge->ReadGame(name);
+}
+
+//	Puts the server in demo mode on a specific map/cinematic
+static void SVQ2_DemoMap_f()
+{
+	SVQ2_Map(true, Cmd_Argv(1), false);
+}
+
+//	Saves the state of the map just being exited and goes to a new map.
+//
+//	If the initial character of the map string is '*', the next map is
+// in a new unit, so the current savegame directory is cleared of
+// map files.
+//
+//	Example:
+//
+//	*inter.cin+jail
+//
+//	Clears the archived maps, plays the inter.cin cinematic, then
+// goes to map jail.bsp.
+static void SVQ2_GameMap_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("USAGE: gamemap <map>\n");
+		return;
+	}
+
+	common->DPrintf("SV_GameMap(%s)\n", Cmd_Argv(1));
+
+	// check for clearing the current savegame
+	char* map = Cmd_Argv(1);
+	if (map[0] == '*')
+	{
+		// wipe all the *.sav files
+		SVQ2_WipeSavegame("current");
+	}
+	else
+	{	// save the map just exited
+		if (sv.state == SS_GAME)
+		{
+			// clear all the client inuse flags before saving so that
+			// when the level is re-entered, the clients will spawn
+			// at spawn points instead of occupying body shells
+			qboolean* savedInuse = (qboolean*)Mem_Alloc(sv_maxclients->value * sizeof(qboolean));
+			client_t* cl = svs.clients;
+			for (int i = 0; i < sv_maxclients->value; i++,cl++)
+			{
+				savedInuse[i] = cl->q2_edict->inuse;
+				cl->q2_edict->inuse = false;
+			}
+
+			SVQ2_WriteLevelFile();
+
+			// we must restore these for clients to transfer over correctly
+			cl = svs.clients;
+			for (int i = 0; i < sv_maxclients->value; i++,cl++)
+			{
+				cl->q2_edict->inuse = savedInuse[i];
+			}
+			Mem_Free(savedInuse);
+		}
+	}
+
+	// start up the next map
+	SVQ2_Map(false, Cmd_Argv(1), false);
+
+	// archive server state
+	String::NCpy(svs.q2_mapcmd, Cmd_Argv(1), sizeof(svs.q2_mapcmd) - 1);
+
+	// copy off the level to the autosave slot
+	if (!com_dedicated->value)
+	{
+		SVQ2_WriteServerFile(true);
+		SVQ2_CopySaveGame("current", "save0");
+	}
+}
+
+//	Goes directly to a given map without any savegame archiving.
+// For development work
+static void SVQ2_Map_f()
+{
+	// if not a pcx, demo, or cinematic, check to make sure the level exists
+	char* map = Cmd_Argv(1);
+	if (!strstr(map, "."))
+	{
+		char expanded[MAX_QPATH];
+		String::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
+		if (FS_ReadFile(expanded, NULL) == -1)
+		{
+			common->Printf("Can't find %s\n", expanded);
+			return;
+		}
+	}
+
+	sv.state = SS_DEAD;		// don't save current level when changing
+	SVQ2_WipeSavegame("current");
+	SVQ2_GameMap_f();
+}
+
+/*
+=====================================================================
+
+  SAVEGAMES
+
+=====================================================================
+*/
+
+static void SVQ2_Loadgame_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("USAGE: loadgame <directory>\n");
+		return;
+	}
+
+	common->Printf("Loading game...\n");
+
+	char* dir = Cmd_Argv(1);
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	{
+		common->Printf("Bad savedir.\n");
+	}
+
+	// make sure the server.ssv file exists
+	char name[MAX_OSPATH];
+	String::Sprintf(name, sizeof(name), "save/%s/server.ssv", Cmd_Argv(1));
+	fileHandle_t f;
+	FS_FOpenFileRead(name, &f, true);
+	if (!f)
+	{
+		common->Printf("No such savegame: %s\n", name);
+		return;
+	}
+	FS_FCloseFile(f);
+
+	SVQ2_CopySaveGame(Cmd_Argv(1), "current");
+
+	SVQ2_ReadServerFile();
+
+	// go to the map
+	sv.state = SS_DEAD;		// don't save current level when changing
+	SVQ2_Map(false, svs.q2_mapcmd, true);
+}
+
+static void SVQ2_Savegame_f()
+{
+	if (sv.state != SS_GAME)
+	{
+		common->Printf("You must be in a game to save.\n");
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("USAGE: savegame <directory>\n");
+		return;
+	}
+
+	if (Cvar_VariableValue("deathmatch"))
+	{
+		common->Printf("Can't savegame in a deathmatch\n");
+		return;
+	}
+
+	if (!String::Cmp(Cmd_Argv(1), "current"))
+	{
+		common->Printf("Can't save to 'current'\n");
+		return;
+	}
+
+	if (sv_maxclients->value == 1 && svs.clients[0].q2_edict->client->ps.stats[Q2STAT_HEALTH] <= 0)
+	{
+		common->Printf("\nCan't savegame while dead!\n");
+		return;
+	}
+
+	char* dir = Cmd_Argv(1);
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\"))
+	{
+		common->Printf("Bad savedir.\n");
+	}
+
+	common->Printf("Saving game...\n");
+
+	// archive current level, including all client edicts.
+	// when the level is reloaded, they will be shells awaiting
+	// a connecting client
+	SVQ2_WriteLevelFile();
+
+	// save server state
+	SVQ2_WriteServerFile(false);
+
+	// copy it off
+	SVQ2_CopySaveGame("current", dir);
+
+	common->Printf("Done.\n");
+}
+
+//	Kick everyone off, possibly in preparation for a new game
+static void SVQ2_KillServer_f()
+{
+	if (!svs.initialized)
+	{
+		return;
+	}
+	SVQ2_Shutdown("Server was killed.\n", false);
+	NET_Config(false);		// close network sockets
+}
+
 //	Let the game dll handle a command
-void SVQ2_ServerCommand_f()
+static void SVQ2_ServerCommand_f()
 {
 	if (!ge)
 	{
@@ -495,4 +802,33 @@ void SVQ2_ServerCommand_f()
 	}
 
 	ge->ServerCommand();
+}
+
+void SVQ2_InitOperatorCommands()
+{
+	Cmd_AddCommand("heartbeat", SVQ2_Heartbeat_f);
+	Cmd_AddCommand("kick", SVQ2_Kick_f);
+	Cmd_AddCommand("status", SVQ2_Status_f);
+	Cmd_AddCommand("serverinfo", SVQ2_Serverinfo_f);
+	Cmd_AddCommand("dumpuser", SVQ2_DumpUser_f);
+
+	Cmd_AddCommand("map", SVQ2_Map_f);
+	Cmd_AddCommand("demomap", SVQ2_DemoMap_f);
+	Cmd_AddCommand("gamemap", SVQ2_GameMap_f);
+	Cmd_AddCommand("setmaster", SVQ2_SetMaster_f);
+
+	if (com_dedicated->value)
+	{
+		Cmd_AddCommand("say", SVQ2_ConSay_f);
+	}
+
+	Cmd_AddCommand("serverrecord", SVQ2_ServerRecord_f);
+	Cmd_AddCommand("serverstop", SVQ2_ServerStop_f);
+
+	Cmd_AddCommand("save", SVQ2_Savegame_f);
+	Cmd_AddCommand("load", SVQ2_Loadgame_f);
+
+	Cmd_AddCommand("killserver", SVQ2_KillServer_f);
+
+	Cmd_AddCommand("sv", SVQ2_ServerCommand_f);
 }

@@ -827,18 +827,18 @@ void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
 
 	t1 = 0;
 
-	if (t3com_speeds->integer)
+	if (com_speeds->integer)
 	{
 		t1 = Sys_Milliseconds();
 	}
 
 	SVT3_PacketEvent(*evFrom, buf);
 
-	if (t3com_speeds->integer)
+	if (com_speeds->integer)
 	{
 		t2 = Sys_Milliseconds();
 		msec = t2 - t1;
-		if (t3com_speeds->integer == 3)
+		if (com_speeds->integer == 3)
 		{
 			common->Printf("SVT3_PacketEvent time: %i\n", msec);
 		}
@@ -1302,7 +1302,7 @@ void Com_Init(char* commandLine)
 		com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 		com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
 		com_dropsim = Cvar_Get("com_dropsim", "0", CVAR_CHEAT);
-		t3com_speeds = Cvar_Get("com_speeds", "0", 0);
+		com_speeds = Cvar_Get("com_speeds", "0", 0);
 		com_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
 		com_cameraMode = Cvar_Get("com_cameraMode", "0", CVAR_CHEAT);
 
@@ -1619,7 +1619,7 @@ void Com_Frame(void)
 		//
 		// main event loop
 		//
-		if (t3com_speeds->integer)
+		if (com_speeds->integer)
 		{
 			timeBeforeFirstEvents = Sys_Milliseconds();
 		}
@@ -1654,7 +1654,7 @@ void Com_Frame(void)
 		//
 		// server side
 		//
-		if (t3com_speeds->integer)
+		if (com_speeds->integer)
 		{
 			timeBeforeServer = Sys_Milliseconds();
 		}
@@ -1691,7 +1691,7 @@ void Com_Frame(void)
 			// run event loop a second time to get server to client packets
 			// without a frame of latency
 			//
-			if (t3com_speeds->integer)
+			if (com_speeds->integer)
 			{
 				timeBeforeEvents = Sys_Milliseconds();
 			}
@@ -1702,14 +1702,14 @@ void Com_Frame(void)
 			//
 			// client side
 			//
-			if (t3com_speeds->integer)
+			if (com_speeds->integer)
 			{
 				timeBeforeClient = Sys_Milliseconds();
 			}
 
 			CL_Frame(msec);
 
-			if (t3com_speeds->integer)
+			if (com_speeds->integer)
 			{
 				timeAfter = Sys_Milliseconds();
 			}
@@ -1718,7 +1718,7 @@ void Com_Frame(void)
 		//
 		// report timing information
 		//
-		if (t3com_speeds->integer)
+		if (com_speeds->integer)
 		{
 			int all, sv, ev, cl;
 
