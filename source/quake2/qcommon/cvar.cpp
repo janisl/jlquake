@@ -24,40 +24,6 @@ void Cvar_Changed(Cvar* var)
 {
 }
 
-/*
-============
-Cvar_GetLatchedVars
-
-Any variables with latched values will now be updated
-============
-*/
-void Cvar_GetLatchedVars(void)
-{
-	Cvar* var;
-
-	for (var = cvar_vars; var; var = var->next)
-	{
-		if (!var->latchedString)
-		{
-			continue;
-		}
-		//	Only for Quake 2 type latched cvars.
-		if (!(var->flags & CVAR_LATCH))
-		{
-			continue;
-		}
-		Mem_Free(var->string);
-		var->string = var->latchedString;
-		var->latchedString = NULL;
-		var->value = String::Atof(var->string);
-		if (!String::Cmp(var->name, "game"))
-		{
-			FS_SetGamedir(var->string);
-			FS_ExecAutoexec();
-		}
-	}
-}
-
 const char* Cvar_TranslateString(const char* string)
 {
 	return string;

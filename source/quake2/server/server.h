@@ -47,13 +47,6 @@ extern QMsg net_message;
 void SV_InitOperatorCommands(void);
 
 //
-// sv_init.c
-//
-void SVQ2_InitGame(void);
-void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame);
-
-
-//
 // sv_phys.c
 //
 void SV_PrepWorldFrame(void);

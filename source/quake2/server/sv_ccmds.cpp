@@ -63,7 +63,7 @@ void SV_SetMaster_f(void)
 			break;
 		}
 
-		if (!SOCK_StringToAdr(Cmd_Argv(i), &master_adr[slot], PORT_MASTER))
+		if (!SOCK_StringToAdr(Cmd_Argv(i), &master_adr[slot], Q2PORT_MASTER))
 		{
 			common->Printf("Bad address: %s\n", Cmd_Argv(i));
 			continue;
@@ -148,7 +148,7 @@ Puts the server in demo mode on a specific map/cinematic
 */
 void SV_DemoMap_f(void)
 {
-	SV_Map(true, Cmd_Argv(1), false);
+	SVQ2_Map(true, Cmd_Argv(1), false);
 }
 
 /*
@@ -215,7 +215,7 @@ void SV_GameMap_f(void)
 	}
 
 	// start up the next map
-	SV_Map(false, Cmd_Argv(1), false);
+	SVQ2_Map(false, Cmd_Argv(1), false);
 
 	// archive server state
 	String::NCpy(svs.q2_mapcmd, Cmd_Argv(1), sizeof(svs.q2_mapcmd) - 1);
@@ -309,7 +309,7 @@ void SV_Loadgame_f(void)
 
 	// go to the map
 	sv.state = SS_DEAD;		// don't save current level when changing
-	SV_Map(false, svs.q2_mapcmd, true);
+	SVQ2_Map(false, svs.q2_mapcmd, true);
 }
 
 

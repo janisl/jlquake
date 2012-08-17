@@ -2271,3 +2271,9 @@ void Host_Reconnect_f()
 void Cmd_ForwardToServer()
 {
 }
+void CL_Drop()
+{
+}
+void SCR_BeginLoadingPlaque(bool Clear)
+{
+}

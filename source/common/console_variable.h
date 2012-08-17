@@ -162,6 +162,9 @@ void Cvar_WriteVariables(fileHandle_t F);
 void Cvar_UpdateIfExists(const char* name, const char* value);
 // For QuakeWorld's and HexenWorld's server info changes.
 
+void Cvar_GetLatchedVars();
+// any CVAR_LATCHED variables that have been set will now take effect
+
 extern Cvar* cvar_vars;
 
 extern int cvar_modifiedFlags;

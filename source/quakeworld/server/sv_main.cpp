@@ -395,3 +395,9 @@ void CL_ShutdownAll(void)
 void CL_Disconnect(qboolean showMainMenu)
 {
 }
+void CL_Drop()
+{
+}
+void SCR_BeginLoadingPlaque(bool Clear)
+{
+}

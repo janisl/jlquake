@@ -3836,3 +3836,64 @@ const char* FS_Gamedir()
 {
 	return fs_gamedir;
 }
+
+//	Sets the gamedir and path to a different directory.
+void FS_SetGamedir(const char* dir)
+{
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":"))
+	{
+		common->Printf("Gamedir should be a single filename, not a path\n");
+		return;
+	}
+
+	//
+	// free up any current game dir info
+	//
+	FS_ResetSearchPathToBase();
+
+	//
+	// flush all data, so it will be forced to reload
+	//
+	if (com_dedicated && !com_dedicated->value)
+	{
+		Cbuf_AddText("vid_restart\nsnd_restart\n");
+	}
+
+	String::Sprintf(fs_gamedir, sizeof(fs_gamedir), "%s", dir);
+
+	if (!String::Cmp(dir, fs_PrimaryBaseGame) || (*dir == 0))
+	{
+		Cvar_Set("gamedir", "");
+		Cvar_Set("game", "");
+	}
+	else
+	{
+		Cvar_Set("gamedir", dir);
+		FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
+		if (fs_homepath->string[0])
+		{
+			FS_AddGameDirectory(fs_homepath->string, dir, ADDPACKS_First10);
+		}
+	}
+}
+
+void FS_ExecAutoexec()
+{
+	const char* dir = Cvar_VariableString("gamedir");
+	char name [MAX_QPATH];
+	if (*dir)
+	{
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir);
+	}
+	else
+	{
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, fs_PrimaryBaseGame);
+	}
+	FILE* f = fopen(name, "rb");
+	if (f)
+	{
+		fclose(f);
+		Cbuf_AddText("exec autoexec.cfg\n");
+	}
+}

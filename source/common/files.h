@@ -213,3 +213,5 @@ bool FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char*
 void FS_SharedStartup();
 void FS_Shutdown();
 const char* FS_Gamedir();
+void FS_SetGamedir(const char* dir);
+void FS_ExecAutoexec();

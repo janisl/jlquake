@@ -31,80 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Cvar* fs_gamedirvar;
 
 /*
-=============
-FS_ExecAutoexec
-=============
-*/
-void FS_ExecAutoexec(void)
-{
-	const char* dir;
-	char name [MAX_QPATH];
-
-	dir = Cvar_VariableString("gamedir");
-	if (*dir)
-	{
-		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir);
-	}
-	else
-	{
-		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, BASEDIRNAME);
-	}
-	if (Sys_FindFirst(name, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM))
-	{
-		Cbuf_AddText("exec autoexec.cfg\n");
-	}
-	Sys_FindClose();
-}
-
-
-/*
-================
-FS_SetGamedir
-
-Sets the gamedir and path to a different directory.
-================
-*/
-void FS_SetGamedir(char* dir)
-{
-	if (strstr(dir, "..") || strstr(dir, "/") ||
-		strstr(dir, "\\") || strstr(dir, ":"))
-	{
-		common->Printf("Gamedir should be a single filename, not a path\n");
-		return;
-	}
-
-	//
-	// free up any current game dir info
-	//
-	FS_ResetSearchPathToBase();
-
-	//
-	// flush all data, so it will be forced to reload
-	//
-	if (com_dedicated && !com_dedicated->value)
-	{
-		Cbuf_AddText("vid_restart\nsnd_restart\n");
-	}
-
-	String::Sprintf(fs_gamedir, sizeof(fs_gamedir), "%s", dir);
-
-	if (!String::Cmp(dir,BASEDIRNAME) || (*dir == 0))
-	{
-		Cvar_Set("gamedir", "");
-		Cvar_Set("game", "");
-	}
-	else
-	{
-		Cvar_Set("gamedir", dir);
-		FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
-		if (fs_homepath->string[0])
-		{
-			FS_AddGameDirectory(fs_homepath->string, dir, ADDPACKS_First10);
-		}
-	}
-}
-
-/*
 ** FS_ListFiles
 */
 char** FS_ListFiles(char* findname, int* numfiles, unsigned musthave, unsigned canthave)
@@ -162,6 +88,7 @@ FS_InitFilesystem
 */
 void FS_InitFilesystem(void)
 {
+	fs_PrimaryBaseGame = BASEDIRNAME;
 	FS_SharedStartup();
 
 	//

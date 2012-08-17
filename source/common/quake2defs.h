@@ -755,3 +755,5 @@ enum
 #define Q2PS_WEAPONINDEX    BIT(12)
 #define Q2PS_WEAPONFRAME    BIT(13)
 #define Q2PS_RDFLAGS        BIT(14)
+
+#define Q2PORT_MASTER 27900

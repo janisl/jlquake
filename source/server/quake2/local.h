@@ -62,9 +62,8 @@ void SVQ2_InitGameProgs();
 int SVQ2_ModelIndex(const char* name);
 int SVQ2_SoundIndex(const char* name);
 int SVQ2_ImageIndex(const char* name);
-void SVQ2_CreateBaseline();
-void SVQ2_CheckForSavegame();
-void SVQ2_SpawnServer(const char* server, const char* spawnpoint, serverState_t serverstate, bool attractloop, bool loadgame);
+void SVQ2_InitGame();
+void SVQ2_Map(bool attractloop, const char* levelstring, bool loadgame);
 
 //
 //	Main
