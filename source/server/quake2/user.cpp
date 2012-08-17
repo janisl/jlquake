@@ -392,7 +392,7 @@ static void SVQ2_Nextserver_f(client_t* client)
 	SVQ2_Nextserver();
 }
 
-void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd)
+static void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd)
 {
 	cl->q2_commandMsec -= cmd->msec;
 
@@ -448,7 +448,7 @@ void SVQ2_UserinfoChanged(client_t* cl)
 	}
 }
 
-void SVQ2_ParseUserInfo(client_t* cl, QMsg& message)
+static void SVQ2_ParseUserInfo(client_t* cl, QMsg& message)
 {
 	String::NCpy(cl->userinfo, message.ReadString2(), MAX_INFO_STRING_Q2 - 1);
 	SVQ2_UserinfoChanged(cl);
@@ -474,3 +474,150 @@ ucmd_t q2_ucmds[] =
 
 	{NULL, NULL}
 };
+
+static bool SVQ2_ParseMove(client_t* cl, QMsg& message, bool& move_issued)
+{
+	if (move_issued)
+	{
+		// someone is trying to cheat...
+		return false;
+	}
+	move_issued = true;
+
+	int checksumIndex = message.readcount;
+	int checksum = message.ReadByte();
+	int lastframe = message.ReadLong();
+
+	if (lastframe != cl->q2_lastframe)
+	{
+		cl->q2_lastframe = lastframe;
+		if (cl->q2_lastframe > 0)
+		{
+			cl->q2_frame_latency[cl->q2_lastframe & (LATENCY_COUNTS - 1)] =
+				svs.realtime - cl->q2_frames[cl->q2_lastframe & UPDATE_MASK_Q2].senttime;
+		}
+	}
+
+	q2usercmd_t nullcmd;
+	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+	q2usercmd_t oldest, oldcmd, newcmd;
+	MSGQ2_ReadDeltaUsercmd(&message, &nullcmd, &oldest);
+	MSGQ2_ReadDeltaUsercmd(&message, &oldest, &oldcmd);
+	MSGQ2_ReadDeltaUsercmd(&message, &oldcmd, &newcmd);
+
+	if (cl->state != CS_ACTIVE)
+	{
+		cl->q2_lastframe = -1;
+		return true;
+	}
+
+	// if the checksum fails, ignore the rest of the packet
+	int calculatedChecksum = COMQ2_BlockSequenceCRCByte(
+		message._data + checksumIndex + 1,
+		message.readcount - checksumIndex - 1,
+		cl->netchan.incomingSequence);
+
+	if (calculatedChecksum != checksum)
+	{
+		common->DPrintf("Failed command checksum for %s (%d != %d)/%d\n",
+			cl->name, calculatedChecksum, checksum,
+			cl->netchan.incomingSequence);
+		return false;
+	}
+
+	if (!sv_paused->value)
+	{
+		int net_drop = cl->netchan.dropped;
+		if (net_drop < 20)
+		{
+			while (net_drop > 2)
+			{
+				SVQ2_ClientThink(cl, &cl->q2_lastUsercmd);
+
+				net_drop--;
+			}
+			if (net_drop > 1)
+			{
+				SVQ2_ClientThink(cl, &oldest);
+			}
+
+			if (net_drop > 0)
+			{
+				SVQ2_ClientThink(cl, &oldcmd);
+			}
+
+		}
+		SVQ2_ClientThink(cl, &newcmd);
+	}
+
+	cl->q2_lastUsercmd = newcmd;
+	return true;
+}
+
+static bool SVQ2_ParseStringCommand(client_t* cl, QMsg& message, int& stringCmdCount)
+{
+	enum { MAX_STRINGCMDS = 8 };
+
+	const char* s = message.ReadString2();
+
+	// malicious users may try using too many string commands
+	if (++stringCmdCount < MAX_STRINGCMDS)
+	{
+		SV_ExecuteClientCommand(cl, s, true, false);
+	}
+
+	if (cl->state == CS_ZOMBIE)
+	{
+		return false;	// disconnect command
+	}
+	return true;
+}
+
+//	The current net_message is parsed for the given client
+void SVQ2_ExecuteClientMessage(client_t* cl, QMsg& message)
+{
+	// only allow one move command
+	bool move_issued = false;
+	int stringCmdCount = 0;
+
+	while (1)
+	{
+		if (message.readcount > message.cursize)
+		{
+			common->Printf("SV_ReadClientMessage: badread\n");
+			SVQ2_DropClient(cl);
+			return;
+		}
+
+		int c = message.ReadByte();
+		if (c == -1)
+		{
+			break;
+		}
+
+		switch (c)
+		{
+		default:
+			common->Printf("SV_ReadClientMessage: unknown command char\n");
+			SVQ2_DropClient(cl);
+			return;
+		case q2clc_nop:
+			break;
+		case q2clc_userinfo:
+			SVQ2_ParseUserInfo(cl, message);
+			break;
+		case q2clc_move:
+			if (!SVQ2_ParseMove(cl, message, move_issued))
+			{
+				return;
+			}
+			break;
+		case q2clc_stringcmd:
+			if (!SVQ2_ParseStringCommand(cl, message, stringCmdCount))
+			{
+				return;
+			}
+			break;
+		}
+	}
+}

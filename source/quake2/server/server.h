@@ -76,11 +76,6 @@ extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 void SV_FlushRedirect(char* outputbuf);
 
 //
-// sv_user.c
-//
-void SV_ExecuteClientMessage(client_t* cl);
-
-//
 // sv_game.c
 //
 void SV_InitGameProgs(void);

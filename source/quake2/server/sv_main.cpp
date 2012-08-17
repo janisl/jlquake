@@ -608,7 +608,7 @@ void SV_ReadPackets(void)
 				if (cl->state != CS_ZOMBIE)
 				{
 					cl->q2_lastmessage = svs.realtime;	// don't timeout
-					SV_ExecuteClientMessage(cl);
+					SVQ2_ExecuteClientMessage(cl, net_message);
 				}
 			}
 			break;

@@ -116,10 +116,9 @@ void SVQ2_SendClientMessages();
 extern ucmd_t q2_ucmds[];
 
 void SVQ2_Nextserver();
-void SVQ2_ClientThink(client_t* cl, q2usercmd_t* cmd);
 void SVQ2_UserinfoChanged(client_t* cl);
-void SVQ2_ParseUserInfo(client_t* cl, QMsg& message);
 void SVQ2_DropClient(client_t* drop);
+void SVQ2_ExecuteClientMessage(client_t* cl, QMsg& message);
 
 //
 //	World
