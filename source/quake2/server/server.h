@@ -48,9 +48,6 @@ void SV_FinalMessage(const char* message, qboolean reconnect);
 
 void SV_InitOperatorCommands(void);
 
-void Master_Heartbeat(void);
-void Master_Packet(void);
-
 //
 // sv_init.c
 //

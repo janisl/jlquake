@@ -79,9 +79,11 @@ extern Cvar* svq2_noreload;					// don't reload level state when reentering
 extern Cvar* svq2_airaccelerate;
 extern Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
 extern Cvar* q2rcon_password;			// password for remote server commands
+extern Cvar* q2public_server;			// should heartbeats be sent
 
-const char* SVQ2_StatusString();
 void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message);
+void SVQ2_MasterHeartbeat();
+void SVQ2_MasterShutdown();
 
 //
 //	Send

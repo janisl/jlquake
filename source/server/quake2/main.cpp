@@ -33,6 +33,8 @@ Cvar* svq2_reconnect_limit;		// minimum seconds between connect messages
 
 Cvar* q2rcon_password;			// password for remote server commands
 
+Cvar* q2public_server;			// should heartbeats be sent
+
 /*
 ==============================================================================
 
@@ -42,7 +44,7 @@ CONNECTIONLESS COMMANDS
 */
 
 //	Builds the string that is sent as heartbeats and status replies
-const char* SVQ2_StatusString()
+static const char* SVQ2_StatusString()
 {
 	static char status[MAX_MSGLEN_Q2 - 16];
 
@@ -421,5 +423,74 @@ void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message)
 	{
 		common->Printf("bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString(from), s);
+	}
+}
+
+//	Send a message to the master every few minutes to
+// let it know we are alive, and log information
+#define HEARTBEAT_SECONDS   300
+void SVQ2_MasterHeartbeat()
+{
+	if (!com_dedicated->value)
+	{
+		return;		// only dedicated servers send heartbeats
+
+	}
+	if (!q2public_server->value)
+	{
+		return;		// a private dedicated game
+
+	}
+	// check for time wraparound
+	if (svs.q2_last_heartbeat > svs.realtime)
+	{
+		svs.q2_last_heartbeat = svs.realtime;
+	}
+
+	if (svs.realtime - svs.q2_last_heartbeat < HEARTBEAT_SECONDS * 1000)
+	{
+		return;		// not time to send yet
+
+	}
+	svs.q2_last_heartbeat = svs.realtime;
+
+	// send the same string that we would give for a status OOB command
+	const char* string = SVQ2_StatusString();
+
+	// send to group master
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port)
+		{
+			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
+		}
+	}
+}
+
+//	Informs all masters that this server is going down
+void SVQ2_MasterShutdown()
+{
+	if (!com_dedicated->value)
+	{
+		return;		// only dedicated servers send heartbeats
+
+	}
+	if (!q2public_server->value)
+	{
+		return;		// a private dedicated game
+
+	}
+	// send to group master
+	for (int i = 0; i < MAX_MASTERS; i++)
+	{
+		if (master_adr[i].port)
+		{
+			if (i > 0)
+			{
+				common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
+			}
+			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
+		}
 	}
 }

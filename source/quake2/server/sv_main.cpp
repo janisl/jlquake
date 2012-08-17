@@ -27,8 +27,6 @@ Cvar* zombietime;				// seconds to sink messages after disconnect
 
 Cvar* sv_showclamp;
 
-Cvar* public_server;			// should heartbeats be sent
-
 /*
 ===================
 SV_CalcPings
@@ -358,96 +356,11 @@ void SV_Frame(int msec)
 	SVQ2_RecordDemoMessage();
 
 	// send a heartbeat to the master if needed
-	Master_Heartbeat();
+	SVQ2_MasterHeartbeat();
 
 	// clear teleport flags, etc for next frame
 	SV_PrepWorldFrame();
 
-}
-
-//============================================================================
-
-/*
-================
-Master_Heartbeat
-
-Send a message to the master every few minutes to
-let it know we are alive, and log information
-================
-*/
-#define HEARTBEAT_SECONDS   300
-void Master_Heartbeat(void)
-{
-	const char* string;
-	int i;
-
-
-	if (!com_dedicated->value)
-	{
-		return;		// only dedicated servers send heartbeats
-
-	}
-	if (!public_server->value)
-	{
-		return;		// a private dedicated game
-
-	}
-	// check for time wraparound
-	if (svs.q2_last_heartbeat > svs.realtime)
-	{
-		svs.q2_last_heartbeat = svs.realtime;
-	}
-
-	if (svs.realtime - svs.q2_last_heartbeat < HEARTBEAT_SECONDS * 1000)
-	{
-		return;		// not time to send yet
-
-	}
-	svs.q2_last_heartbeat = svs.realtime;
-
-	// send the same string that we would give for a status OOB command
-	string = SVQ2_StatusString();
-
-	// send to group master
-	for (i = 0; i < MAX_MASTERS; i++)
-		if (master_adr[i].port)
-		{
-			common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "heartbeat\n%s", string);
-		}
-}
-
-/*
-=================
-Master_Shutdown
-
-Informs all masters that this server is going down
-=================
-*/
-void Master_Shutdown(void)
-{
-	int i;
-
-	if (!com_dedicated->value)
-	{
-		return;		// only dedicated servers send heartbeats
-
-	}
-	if (!public_server->value)
-	{
-		return;		// a private dedicated game
-
-	}
-	// send to group master
-	for (i = 0; i < MAX_MASTERS; i++)
-		if (master_adr[i].port)
-		{
-			if (i > 0)
-			{
-				common->Printf("Sending heartbeat to %s\n", SOCK_AdrToString(master_adr[i]));
-			}
-			NET_OutOfBandPrint(NS_SERVER, master_adr[i], "shutdown");
-		}
 }
 
 //============================================================================
@@ -490,7 +403,7 @@ void SV_Init(void)
 
 	svq2_airaccelerate = Cvar_Get("sv_airaccelerate", "0", CVAR_LATCH);
 
-	public_server = Cvar_Get("public", "0", 0);
+	q2public_server = Cvar_Get("public", "0", 0);
 
 	svq2_reconnect_limit = Cvar_Get("sv_reconnect_limit", "3", CVAR_ARCHIVE);
 
@@ -563,7 +476,7 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 		SV_FinalMessage(finalmsg, reconnect);
 	}
 
-	Master_Shutdown();
+	SVQ2_MasterShutdown();
 	SVQ2_ShutdownGameProgs();
 
 	// free current level
