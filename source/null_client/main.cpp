@@ -56,3 +56,7 @@ int CLQH_GetIntermission()
 {
 	return 0;
 }
+
+void SCR_DebugGraph(float value, int color)
+{
+}

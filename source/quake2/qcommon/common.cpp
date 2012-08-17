@@ -315,96 +315,6 @@ int memsearch(byte* start, int count, int search)
 	return -1;
 }
 
-/*
-==============================================================================
-
-                        ZONE MEMORY ALLOCATION
-
-just cleared malloc with counters now...
-
-==============================================================================
-*/
-
-#define Z_MAGIC     0x1d1d
-
-struct zhead_t
-{
-	zhead_t* prev, * next;
-	short magic;
-	short tag;				// for group free
-	int size;
-};
-
-zhead_t z_chain;
-
-/*
-========================
-Z_Free
-========================
-*/
-void Z_Free(void* ptr)
-{
-	zhead_t* z;
-
-	z = ((zhead_t*)ptr) - 1;
-
-	if (z->magic != Z_MAGIC)
-	{
-		common->FatalError("Z_Free: bad magic");
-	}
-
-	z->prev->next = z->next;
-	z->next->prev = z->prev;
-	Mem_Free(z);
-}
-
-/*
-========================
-Z_FreeTags
-========================
-*/
-void Z_FreeTags(int tag)
-{
-	zhead_t* z, * next;
-
-	for (z = z_chain.next; z != &z_chain; z = next)
-	{
-		next = z->next;
-		if (z->tag == tag)
-		{
-			Z_Free((void*)(z + 1));
-		}
-	}
-}
-
-/*
-========================
-Z_TagMalloc
-========================
-*/
-void* Z_TagMalloc(int size, int tag)
-{
-	zhead_t* z;
-
-	size = size + sizeof(zhead_t);
-	z = (zhead_t*)Mem_Alloc(size);
-	if (!z)
-	{
-		common->FatalError("Z_Malloc: failed on allocation of %i bytes",size);
-	}
-	Com_Memset(z, 0, size);
-	z->magic = Z_MAGIC;
-	z->tag = tag;
-	z->size = size;
-
-	z->next = z_chain.next;
-	z->prev = &z_chain;
-	z_chain.next->prev = z;
-	z_chain.next = z;
-
-	return (void*)(z + 1);
-}
-
 //============================================================================
 
 
@@ -502,8 +412,6 @@ void Qcommon_Init(int argc, char** argv)
 
 		GGameType = GAME_Quake2;
 		Sys_SetHomePathSuffix("jlquake2");
-
-		z_chain.next = z_chain.prev = &z_chain;
 
 		// prepare enough of the subsystems to handle
 		// cvar and command buffer management

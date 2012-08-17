@@ -74,9 +74,3 @@ void SV_PrepWorldFrame(void);
 extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
 void SV_FlushRedirect(char* outputbuf);
-
-//
-// sv_game.c
-//
-void SV_InitGameProgs(void);
-void SV_InitEdict(q2edict_t* e);

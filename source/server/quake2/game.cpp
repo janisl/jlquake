@@ -16,13 +16,14 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../../client/public.h"
 
 q2game_export_t* ge;
 
-void* svq2_gameLibrary;
+static void* svq2_gameLibrary;
 
 //	Sends the contents of the mutlicast buffer to a single client
-void SVQ2_Unicast(q2edict_t* ent, qboolean reliable)
+static void SVQ2_Unicast(q2edict_t* ent, qboolean reliable)
 {
 	if (!ent)
 	{
@@ -50,7 +51,7 @@ void SVQ2_Unicast(q2edict_t* ent, qboolean reliable)
 }
 
 //	Debug print to server console
-void SVQ2_dprintf(const char* fmt, ...)
+static void SVQ2_dprintf(const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -63,7 +64,7 @@ void SVQ2_dprintf(const char* fmt, ...)
 }
 
 //	Print to a single client
-void SVQ2_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
+static void SVQ2_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 {
 	int n;
 	if (ent)
@@ -92,7 +93,7 @@ void SVQ2_cprintf(q2edict_t* ent, int level, const char* fmt, ...)
 }
 
 //	centerprint to a single client
-void SVQ2_centerprintf(q2edict_t* ent, const char* fmt, ...)
+static void SVQ2_centerprintf(q2edict_t* ent, const char* fmt, ...)
 {
 	int n = Q2_NUM_FOR_EDICT(ent);
 	if (n < 1 || n > sv_maxclients->value)
@@ -112,7 +113,7 @@ void SVQ2_centerprintf(q2edict_t* ent, const char* fmt, ...)
 }
 
 //	Abort the server with a game error
-void SVQ2_error(const char* fmt, ...)
+static void SVQ2_error(const char* fmt, ...)
 {
 	char msg[1024];
 	va_list argptr;
@@ -125,7 +126,7 @@ void SVQ2_error(const char* fmt, ...)
 }
 
 //	Also sets mins and maxs for inline bmodels
-void SVQ2_setmodel(q2edict_t* ent, const char* name)
+static void SVQ2_setmodel(q2edict_t* ent, const char* name)
 {
 	if (!name)
 	{
@@ -145,7 +146,7 @@ void SVQ2_setmodel(q2edict_t* ent, const char* name)
 	}
 }
 
-void SVQ2_Configstring(int index, const char* val)
+static void SVQ2_Configstring(int index, const char* val)
 {
 	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
 	{
@@ -172,53 +173,53 @@ void SVQ2_Configstring(int index, const char* val)
 	}
 }
 
-void SVQ2_WriteChar(int c)
+static void SVQ2_WriteChar(int c)
 {
 	sv.multicast.WriteChar(c);
 }
 
-void SVQ2_WriteByte(int c)
+static void SVQ2_WriteByte(int c)
 {
 	sv.multicast.WriteByte(c);
 }
 
-void SVQ2_WriteShort(int c)
+static void SVQ2_WriteShort(int c)
 {
 	sv.multicast.WriteShort(c);
 }
 
-void SVQ2_WriteLong(int c)
+static void SVQ2_WriteLong(int c)
 {
 	sv.multicast.WriteLong(c);
 }
 
-void SVQ2_WriteFloat(float f)
+static void SVQ2_WriteFloat(float f)
 {
 	sv.multicast.WriteFloat(f);
 }
 
-void SVQ2_WriteString(const char* s)
+static void SVQ2_WriteString(const char* s)
 {
 	sv.multicast.WriteString2(s);
 }
 
-void SVQ2_WritePos(const vec3_t pos)
+static void SVQ2_WritePos(const vec3_t pos)
 {
 	sv.multicast.WritePos(pos);
 }
 
-void SVQ2_WriteDir(const vec3_t dir)
+static void SVQ2_WriteDir(const vec3_t dir)
 {
 	sv.multicast.WriteDir(dir);
 }
 
-void SVQ2_WriteAngle(float f)
+static void SVQ2_WriteAngle(float f)
 {
 	sv.multicast.WriteAngle(f);
 }
 
 //	Also checks portalareas so that doors block sight
-qboolean SVQ2_inPVS(const vec3_t p1, const vec3_t p2)
+static qboolean SVQ2_inPVS(const vec3_t p1, const vec3_t p2)
 {
 	int leafnum = CM_PointLeafnum(p1);
 	int cluster = CM_LeafCluster(leafnum);
@@ -241,7 +242,7 @@ qboolean SVQ2_inPVS(const vec3_t p1, const vec3_t p2)
 }
 
 //	Also checks portalareas so that doors block sound
-qboolean SVQ2_inPHS(const vec3_t p1, const vec3_t p2)
+static qboolean SVQ2_inPHS(const vec3_t p1, const vec3_t p2)
 {
 	int leafnum = CM_PointLeafnum(p1);
 	int cluster = CM_LeafCluster(leafnum);
@@ -264,7 +265,7 @@ qboolean SVQ2_inPHS(const vec3_t p1, const vec3_t p2)
 	return true;
 }
 
-void SVQ2_sound(q2edict_t* entity, int channel, int sound_num, float volume,
+static void SVQ2_sound(q2edict_t* entity, int channel, int sound_num, float volume,
 	float attenuation, float timeofs)
 {
 	if (!entity)
@@ -272,6 +273,86 @@ void SVQ2_sound(q2edict_t* entity, int channel, int sound_num, float volume,
 		return;
 	}
 	SVQ2_StartSound(NULL, entity, channel, sound_num, volume, attenuation, timeofs);
+}
+
+/*
+==============================================================================
+
+                        ZONE MEMORY ALLOCATION
+
+just cleared malloc with counters now...
+
+==============================================================================
+*/
+
+enum { Z_MAGIC = 0x1d1d };
+
+struct zhead_t
+{
+	zhead_t* prev, * next;
+	short magic;
+	short tag;				// for group free
+	int size;
+};
+
+static zhead_t z_chain;
+
+static void SVQ2_InitZone()
+{
+	z_chain.next = z_chain.prev = &z_chain;
+}
+
+static void ZQ2_Free(void* ptr)
+{
+	zhead_t* z;
+
+	z = ((zhead_t*)ptr) - 1;
+
+	if (z->magic != Z_MAGIC)
+	{
+		common->FatalError("ZQ2_Free: bad magic");
+	}
+
+	z->prev->next = z->next;
+	z->next->prev = z->prev;
+	Mem_Free(z);
+}
+
+static void ZQ2_FreeTags(int tag)
+{
+	zhead_t* z, * next;
+
+	for (z = z_chain.next; z != &z_chain; z = next)
+	{
+		next = z->next;
+		if (z->tag == tag)
+		{
+			ZQ2_Free((void*)(z + 1));
+		}
+	}
+}
+
+static void* ZQ2_TagMalloc(int size, int tag)
+{
+	zhead_t* z;
+
+	size = size + sizeof(zhead_t);
+	z = (zhead_t*)Mem_Alloc(size);
+	if (!z)
+	{
+		common->FatalError("Z_Malloc: failed on allocation of %i bytes",size);
+	}
+	Com_Memset(z, 0, size);
+	z->magic = Z_MAGIC;
+	z->tag = tag;
+	z->size = size;
+
+	z->next = z_chain.next;
+	z->prev = &z_chain;
+	z_chain.next->prev = z;
+	z_chain.next = z;
+
+	return (void*)(z + 1);
 }
 
 static void SVQ2_UnloadGame()
@@ -294,7 +375,7 @@ void SVQ2_ShutdownGameProgs()
 }
 
 //	Loads the game dll
-void* SVQ2_GetGameAPI(void* parms)
+static void* SVQ2_GetGameAPI(void* parms)
 {
 	void*(*GetGameAPI)(void*);
 	char name[MAX_OSPATH];
@@ -332,4 +413,85 @@ void* SVQ2_GetGameAPI(void* parms)
 	}
 
 	return GetGameAPI(parms);
+}
+
+//	Init the game subsystem for a new map
+void SVQ2_InitGameProgs()
+{
+	// unload anything we have now
+	if (ge)
+	{
+		SVQ2_ShutdownGameProgs();
+	}
+
+	SVQ2_InitZone();
+
+	// load a new game dll
+	q2game_import_t import;
+	import.multicast = SVQ2_Multicast;
+	import.unicast = SVQ2_Unicast;
+	import.bprintf = SVQ2_BroadcastPrintf;
+	import.dprintf = SVQ2_dprintf;
+	import.cprintf = SVQ2_cprintf;
+	import.centerprintf = SVQ2_centerprintf;
+	import.error = SVQ2_error;
+
+	import.linkentity = SVQ2_LinkEdict;
+	import.unlinkentity = SVQ2_UnlinkEdict;
+	import.BoxEdicts = SVQ2_AreaEdicts;
+	import.trace = SVQ2_Trace;
+	import.pointcontents = SVQ2_PointContents;
+	import.setmodel = SVQ2_setmodel;
+	import.inPVS = SVQ2_inPVS;
+	import.inPHS = SVQ2_inPHS;
+	import.Pmove = PMQ2_Pmove;
+
+	import.modelindex = SVQ2_ModelIndex;
+	import.soundindex = SVQ2_SoundIndex;
+	import.imageindex = SVQ2_ImageIndex;
+
+	import.configstring = SVQ2_Configstring;
+	import.sound = SVQ2_sound;
+	import.positioned_sound = SVQ2_StartSound;
+
+	import.WriteChar = SVQ2_WriteChar;
+	import.WriteByte = SVQ2_WriteByte;
+	import.WriteShort = SVQ2_WriteShort;
+	import.WriteLong = SVQ2_WriteLong;
+	import.WriteFloat = SVQ2_WriteFloat;
+	import.WriteString = SVQ2_WriteString;
+	import.WritePosition = SVQ2_WritePos;
+	import.WriteDir = SVQ2_WriteDir;
+	import.WriteAngle = SVQ2_WriteAngle;
+
+	import.TagMalloc = ZQ2_TagMalloc;
+	import.TagFree = ZQ2_Free;
+	import.FreeTags = ZQ2_FreeTags;
+
+	import.cvar = Cvar_Get;
+	import.cvar_set = Cvar_SetLatched;
+	import.cvar_forceset = Cvar_Set;
+
+	import.argc = Cmd_Argc;
+	import.argv = Cmd_Argv;
+	import.args = Cmd_ArgsUnmodified;
+	import.AddCommandString = Cbuf_AddText;
+
+	import.DebugGraph = SCR_DebugGraph;
+	import.SetAreaPortalState = CM_SetAreaPortalState;
+	import.AreasConnected = CM_AreasConnected;
+
+	ge = (q2game_export_t*)SVQ2_GetGameAPI(&import);
+
+	if (!ge)
+	{
+		common->Error("failed to load game DLL");
+	}
+	if (ge->apiversion != Q2GAME_API_VERSION)
+	{
+		common->Error("game is version %i, not %i", ge->apiversion,
+			Q2GAME_API_VERSION);
+	}
+
+	ge->Init();
 }

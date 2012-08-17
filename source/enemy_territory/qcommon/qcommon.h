@@ -271,8 +271,6 @@ void CL_GetAutoUpdate(void);
 void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 
-void SCR_DebugGraph(float value, int color);	// FIXME: move logging to common?
-
 //
 // UI interface
 //

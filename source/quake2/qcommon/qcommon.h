@@ -165,17 +165,9 @@ extern int time_after_game;
 extern int time_before_ref;
 extern int time_after_ref;
 
-void Z_Free(void* ptr);
-void* Z_TagMalloc(int size, int tag);
-void Z_FreeTags(int tag);
-
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
 void Qcommon_Shutdown(void);
-
-// this is in the client code, but can be used for debugging from server
-void SCR_DebugGraph(float value, int color);
-
 
 /*
 ==============================================================

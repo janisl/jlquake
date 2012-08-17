@@ -65,7 +65,6 @@ void SCR_DrawSmallString(int x, int y, const char* string);
 
 void SCR_InitCommon();
 void SCR_EndLoadingPlaque();
-void SCR_DebugGraph(float value, int color);
 void SCR_DrawDebugGraph();
 
 bool Field_KeyDownEvent(field_t* edit, int key);

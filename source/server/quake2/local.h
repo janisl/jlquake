@@ -52,30 +52,9 @@ void SVQ2_RecordDemoMessage();
 //	Game
 //
 extern q2game_export_t* ge;
-extern void* svq2_gameLibrary;
 
-void SVQ2_Unicast(q2edict_t* ent, qboolean reliable);
-void SVQ2_dprintf(const char* fmt, ...);
-void SVQ2_cprintf(q2edict_t* ent, int level, const char* fmt, ...);
-void SVQ2_centerprintf(q2edict_t* ent, const char* fmt, ...);
-void SVQ2_error(const char* fmt, ...);
-void SVQ2_setmodel(q2edict_t* ent, const char* name);
-void SVQ2_Configstring(int index, const char* val);
-void SVQ2_WriteChar(int c);
-void SVQ2_WriteByte(int c);
-void SVQ2_WriteShort(int c);
-void SVQ2_WriteLong(int c);
-void SVQ2_WriteFloat(float f);
-void SVQ2_WriteString(const char* s);
-void SVQ2_WritePos(const vec3_t pos);
-void SVQ2_WriteDir(const vec3_t dir);
-void SVQ2_WriteAngle(float f);
-qboolean SVQ2_inPVS(const vec3_t p1, const vec3_t p2);
-qboolean SVQ2_inPHS(const vec3_t p1, const vec3_t p2);
-void SVQ2_sound(q2edict_t* entity, int channel, int sound_num, float volume,
-	float attenuation, float timeofs);
 void SVQ2_ShutdownGameProgs();
-void* SVQ2_GetGameAPI(void* parms);
+void SVQ2_InitGameProgs();
 
 //
 //	Init
