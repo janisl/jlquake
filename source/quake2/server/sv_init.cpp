@@ -220,9 +220,9 @@ void SV_InitGame(void)
 	}
 
 	svs.spawncount = rand();
-	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * sv_maxclients->value);
+	svs.clients = (client_t*)Mem_Alloc(sizeof(client_t) * sv_maxclients->value);
 	svs.q2_num_client_entities = sv_maxclients->value * UPDATE_BACKUP_Q2 * 64;
-	svs.q2_client_entities = (q2entity_state_t*)Z_Malloc(sizeof(q2entity_state_t) * svs.q2_num_client_entities);
+	svs.q2_client_entities = (q2entity_state_t*)Mem_Alloc(sizeof(q2entity_state_t) * svs.q2_num_client_entities);
 
 	// init network stuff
 	NET_Config((sv_maxclients->value > 1));

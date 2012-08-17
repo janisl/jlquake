@@ -1011,11 +1011,11 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 	// free server static data
 	if (svs.clients)
 	{
-		Z_Free(svs.clients);
+		Mem_Free(svs.clients);
 	}
 	if (svs.q2_client_entities)
 	{
-		Z_Free(svs.q2_client_entities);
+		Mem_Free(svs.q2_client_entities);
 	}
 	if (svs.q2_demofile)
 	{

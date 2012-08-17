@@ -327,17 +327,15 @@ just cleared malloc with counters now...
 
 #define Z_MAGIC     0x1d1d
 
-
-typedef struct zhead_s
+struct zhead_t
 {
-	struct zhead_s* prev, * next;
+	zhead_t* prev, * next;
 	short magic;
 	short tag;				// for group free
 	int size;
-} zhead_t;
+};
 
 zhead_t z_chain;
-int z_count, z_bytes;
 
 /*
 ========================
@@ -357,21 +355,7 @@ void Z_Free(void* ptr)
 
 	z->prev->next = z->next;
 	z->next->prev = z->prev;
-
-	z_count--;
-	z_bytes -= z->size;
-	free(z);
-}
-
-
-/*
-========================
-Z_Stats_f
-========================
-*/
-void Z_Stats_f(void)
-{
-	common->Printf("%i bytes in %i blocks\n", z_bytes, z_count);
+	Mem_Free(z);
 }
 
 /*
@@ -403,14 +387,12 @@ void* Z_TagMalloc(int size, int tag)
 	zhead_t* z;
 
 	size = size + sizeof(zhead_t);
-	z = (zhead_t*)malloc(size);
+	z = (zhead_t*)Mem_Alloc(size);
 	if (!z)
 	{
 		common->FatalError("Z_Malloc: failed on allocation of %i bytes",size);
 	}
 	Com_Memset(z, 0, size);
-	z_count++;
-	z_bytes += size;
 	z->magic = Z_MAGIC;
 	z->tag = tag;
 	z->size = size;
@@ -422,17 +404,6 @@ void* Z_TagMalloc(int size, int tag)
 
 	return (void*)(z + 1);
 }
-
-/*
-========================
-Z_Malloc
-========================
-*/
-void* Z_Malloc(int size)
-{
-	return Z_TagMalloc(size, 0);
-}
-
 
 //============================================================================
 
@@ -564,7 +535,6 @@ void Qcommon_Init(int argc, char** argv)
 		//
 		// init commands and vars
 		//
-		Cmd_AddCommand("z_stats", Z_Stats_f);
 		Cmd_AddCommand("error", Com_Error_f);
 
 		COM_InitCommonCvars();
