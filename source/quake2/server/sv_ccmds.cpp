@@ -124,7 +124,7 @@ void SV_ReadServerFile(void)
 	FS_FCloseFile(f);
 
 	// start a new game fresh with new cvars
-	SV_InitGame();
+	SVQ2_InitGame();
 
 	String::Cpy(svs.q2_mapcmd, mapcmd);
 

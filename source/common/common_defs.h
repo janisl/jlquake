@@ -241,3 +241,6 @@ void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*));
 void Com_EndRedirect();
 
 extern bool com_errorEntered;
+
+int ComQ2_ServerState();		// this should have just been a cvar...
+void ComQ2_SetServerState(int state);

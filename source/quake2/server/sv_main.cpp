@@ -27,8 +27,6 @@ Cvar* zombietime;				// seconds to sink messages after disconnect
 
 Cvar* rcon_password;			// password for remote server commands
 
-Cvar* sv_airaccelerate;
-
 Cvar* sv_showclamp;
 
 Cvar* public_server;			// should heartbeats be sent
@@ -922,7 +920,7 @@ void SV_Init(void)
 
 	svq2_noreload = Cvar_Get("sv_noreload", "0", 0);
 
-	sv_airaccelerate = Cvar_Get("sv_airaccelerate", "0", CVAR_LATCH);
+	svq2_airaccelerate = Cvar_Get("sv_airaccelerate", "0", CVAR_LATCH);
 
 	public_server = Cvar_Get("public", "0", 0);
 
@@ -1006,7 +1004,7 @@ void SV_Shutdown(const char* finalmsg, qboolean reconnect)
 		FS_FCloseFile(sv.q2_demofile);
 	}
 	Com_Memset(&sv, 0, sizeof(sv));
-	Com_SetServerState(sv.state);
+	ComQ2_SetServerState(sv.state);
 
 	// free server static data
 	if (svs.clients)

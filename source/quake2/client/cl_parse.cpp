@@ -296,7 +296,7 @@ void CL_ParseServerData(void)
 	cls.q2_serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
-	if (Com_ServerState() && Q2PROTOCOL_VERSION == 34)
+	if (ComQ2_ServerState() && Q2PROTOCOL_VERSION == 34)
 	{
 	}
 	else if (i != Q2PROTOCOL_VERSION)

@@ -68,6 +68,8 @@ bool com_errorEntered;
 Cvar* t3com_speeds;
 int t3time_game;
 
+static int q2server_state;
+
 Interface::~Interface()
 {
 }
@@ -956,4 +958,14 @@ void Com_EndRedirect(void)
 	rd_buffer = NULL;
 	rd_buffersize = 0;
 	rd_flush = NULL;
+}
+
+int ComQ2_ServerState()
+{
+	return q2server_state;
+}
+
+void ComQ2_SetServerState(int state)
+{
+	q2server_state = state;
 }

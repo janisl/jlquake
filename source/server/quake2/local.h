@@ -64,6 +64,7 @@ int SVQ2_SoundIndex(const char* name);
 int SVQ2_ImageIndex(const char* name);
 void SVQ2_CreateBaseline();
 void SVQ2_CheckForSavegame();
+void SVQ2_SpawnServer(const char* server, const char* spawnpoint, serverState_t serverstate, bool attractloop, bool loadgame);
 
 //
 //	Main
@@ -75,6 +76,7 @@ extern Cvar* allow_download_sounds;
 extern Cvar* allow_download_maps;
 extern Cvar* svq2_enforcetime;
 extern Cvar* svq2_noreload;					// don't reload level state when reentering
+extern Cvar* svq2_airaccelerate;
 
 const char* SVQ2_StatusString();
 

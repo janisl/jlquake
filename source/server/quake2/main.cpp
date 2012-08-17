@@ -27,6 +27,8 @@ Cvar* svq2_enforcetime;
 
 Cvar* svq2_noreload;				// don't reload level state when reentering
 
+Cvar* svq2_airaccelerate;
+
 //	Builds the string that is sent as heartbeats and status replies
 const char* SVQ2_StatusString()
 {

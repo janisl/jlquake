@@ -65,7 +65,7 @@ void Con_ToggleConsole_f(void)
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 
 		if (Cvar_VariableValue("maxclients") == 1 &&
-			Com_ServerState())
+			ComQ2_ServerState())
 		{
 			Cvar_SetLatched("paused", "1");
 		}

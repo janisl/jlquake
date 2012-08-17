@@ -151,9 +151,6 @@ void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
 void        Com_Quit(void);
 
-int         Com_ServerState(void);		// this should have just been a cvar...
-void        Com_SetServerState(int state);
-
 extern Cvar* host_speeds;
 extern Cvar* log_stats;
 

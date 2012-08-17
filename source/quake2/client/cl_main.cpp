@@ -347,7 +347,7 @@ CL_Pause_f
 void CL_Pause_f(void)
 {
 	// never pause in multiplayer
-	if (Cvar_VariableValue("maxclients") > 1 || !Com_ServerState())
+	if (Cvar_VariableValue("maxclients") > 1 || !ComQ2_ServerState())
 	{
 		Cvar_SetValueLatched("paused", 0);
 		return;
@@ -437,7 +437,7 @@ void CL_CheckForResend(void)
 
 	// if the local server is running and we aren't
 	// then connect
-	if (cls.state == CA_DISCONNECTED && Com_ServerState())
+	if (cls.state == CA_DISCONNECTED && ComQ2_ServerState())
 	{
 		cls.state = CA_CONNECTING;
 		String::NCpy(cls.servername, "localhost", sizeof(cls.servername) - 1);
@@ -489,7 +489,7 @@ void CL_Connect_f(void)
 		return;
 	}
 
-	if (Com_ServerState())
+	if (ComQ2_ServerState())
 	{	// if running a local server, kill it and reissue
 		SV_Shutdown("Server quit\n", false);
 	}

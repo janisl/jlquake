@@ -39,9 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern netadr_t net_from;
 extern QMsg net_message;
 
-extern Cvar* sv_airaccelerate;				// don't reload level state when reentering
-											// development tool
-
 //===========================================================
 
 //
@@ -57,7 +54,7 @@ void Master_Packet(void);
 //
 // sv_init.c
 //
-void SV_InitGame(void);
+void SVQ2_InitGame(void);
 void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame);
 
 

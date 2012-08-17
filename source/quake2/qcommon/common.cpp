@@ -39,8 +39,6 @@ Cvar* showtrace;
 
 static fileHandle_t logfile;
 
-int server_state;
-
 // host_speeds times
 int time_before_game;
 int time_after_game;
@@ -279,28 +277,6 @@ void Com_Quit(void)
 
 	Sys_Quit();
 }
-
-
-/*
-==================
-Com_ServerState
-==================
-*/
-int Com_ServerState(void)
-{
-	return server_state;
-}
-
-/*
-==================
-Com_SetServerState
-==================
-*/
-void Com_SetServerState(int state)
-{
-	server_state = state;
-}
-
 
 /// just for debugging
 int memsearch(byte* start, int count, int search)

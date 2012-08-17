@@ -87,7 +87,7 @@ void M_PushMenu(void (* draw)(void), const char*(*key)(int k), void (*charfunc)(
 	int i;
 
 	if (Cvar_VariableValue("maxclients") == 1 &&
-		Com_ServerState())
+		ComQ2_ServerState())
 	{
 		Cvar_SetLatched("paused", "1");
 	}
@@ -2421,7 +2421,7 @@ const char* SaveGame_MenuKey(int key)
 
 void M_Menu_SaveGame_f(void)
 {
-	if (!Com_ServerState())
+	if (!ComQ2_ServerState())
 	{
 		return;		// not playing a game
 
@@ -2749,7 +2749,7 @@ void StartServerActionFunc(void* self)
 
 	if (spot)
 	{
-		if (Com_ServerState())
+		if (ComQ2_ServerState())
 		{
 			Cbuf_AddText("disconnect\n");
 		}
