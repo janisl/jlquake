@@ -335,7 +335,7 @@ void SV_Map(qboolean attractloop, char* levelstring, qboolean loadgame)
 	{
 		SCR_BeginLoadingPlaque();			// for local system
 		SVQ2_BroadcastCommand("changing\n");
-		SV_SendClientMessages();
+		SVQ2_SendClientMessages();
 		SV_SpawnServer(level, spawnpoint, SS_GAME, attractloop, loadgame);
 		Cbuf_CopyToDefer();
 	}

@@ -23,7 +23,6 @@ add_executable(jlquake2
 	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
-	server/sv_send.cpp
 	server/sv_user.cpp
 	linux/q_shlinux.cpp
 	linux/sys_linux.cpp
@@ -43,7 +42,6 @@ add_executable(jlquake2ded
 	server/sv_game.cpp
 	server/sv_init.cpp
 	server/sv_main.cpp
-	server/sv_send.cpp
 	server/sv_user.cpp
 	linux/q_shlinux.cpp
 	linux/sys_linux.cpp

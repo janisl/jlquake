@@ -108,6 +108,7 @@ void SVQ2_Multicast(const vec3_t origin, q2multicast_t to);
 void SVQ2_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 void SVQ2_StartSound(const vec3_t origin, q2edict_t* entity, int channel,
 	int soundindex, float volume, float attenuation, float timeofs);
+void SVQ2_SendClientMessages();
 
 //
 //	User

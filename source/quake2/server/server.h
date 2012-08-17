@@ -75,9 +75,6 @@ extern char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 
 void SV_FlushRedirect(char* outputbuf);
 
-void SV_DemoCompleted(void);
-void SV_SendClientMessages(void);
-
 //
 // sv_user.c
 //

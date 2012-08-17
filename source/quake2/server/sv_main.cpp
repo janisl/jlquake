@@ -56,11 +56,6 @@ Responds with all the info that qplug or qspy can see
 void SVC_Status(void)
 {
 	NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", SVQ2_StatusString());
-#if 0
-	Com_BeginRedirect(RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
-	common->Printf(SVQ2_StatusString());
-	Com_EndRedirect();
-#endif
 }
 
 /*
@@ -351,6 +346,13 @@ int Rcon_Validate(void)
 	return 1;
 }
 
+
+char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
+
+void SV_FlushRedirect(char* outputbuf)
+{
+	NET_OutOfBandPrint(NS_SERVER, net_from, "print\n%s", outputbuf);
+}
 /*
 ===============
 SVC_RemoteCommand
@@ -784,7 +786,7 @@ void SV_Frame(int msec)
 	SV_RunGameFrame();
 
 	// send messages back to the clients that had packets read this frame
-	SV_SendClientMessages();
+	SVQ2_SendClientMessages();
 
 	// save the entire world state if recording a serverdemo
 	SVQ2_RecordDemoMessage();

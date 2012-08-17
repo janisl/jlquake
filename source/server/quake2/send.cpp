@@ -350,3 +350,175 @@ void SVQ2_StartSound(const vec3_t origin, q2edict_t* entity, int channel,
 		}
 	}
 }
+
+static bool SVQ2_SendClientDatagram(client_t* client)
+{
+	SVQ2_BuildClientFrame(client);
+
+	byte msg_buf[MAX_MSGLEN_Q2];
+	QMsg msg;
+	msg.InitOOB(msg_buf, sizeof(msg_buf));
+	msg.allowoverflow = true;
+
+	// send over all the relevant q2entity_state_t
+	// and the q2player_state_t
+	SVQ2_WriteFrameToClient(client, &msg);
+
+	// copy the accumulated multicast datagram
+	// for this client out to the message
+	// it is necessary for this to be after the WriteEntities
+	// so that entity references will be current
+	if (client->datagram.overflowed)
+	{
+		common->Printf("WARNING: datagram overflowed for %s\n", client->name);
+	}
+	else
+	{
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	}
+	client->datagram.Clear();
+
+	if (msg.overflowed)
+	{	// must have room left for the packet header
+		common->Printf("WARNING: msg overflowed for %s\n", client->name);
+		msg.Clear();
+	}
+
+	// send the datagram
+	Netchan_Transmit(&client->netchan, msg.cursize, msg._data);
+	client->netchan.lastSent = Sys_Milliseconds();
+
+	// record the size for rate estimation
+	client->q2_message_size[sv.q2_framenum % RATE_MESSAGES] = msg.cursize;
+
+	return true;
+}
+
+static void SVQ2_DemoCompleted()
+{
+	if (sv.q2_demofile)
+	{
+		FS_FCloseFile(sv.q2_demofile);
+		sv.q2_demofile = 0;
+	}
+	SVQ2_Nextserver();
+}
+
+//	Returns true if the client is over its current
+// bandwidth estimation and should not be sent another packet
+static bool SVQ2_RateDrop(client_t* c)
+{
+	// never drop over the loopback
+	if (c->netchan.remoteAddress.type == NA_LOOPBACK)
+	{
+		return false;
+	}
+
+	int total = 0;
+
+	for (int i = 0; i < RATE_MESSAGES; i++)
+	{
+		total += c->q2_message_size[i];
+	}
+
+	if (total > c->rate)
+	{
+		c->q2_surpressCount++;
+		c->q2_message_size[sv.q2_framenum % RATE_MESSAGES] = 0;
+		return true;
+	}
+
+	return false;
+}
+
+/*
+=======================
+SVQ2_SendClientMessages
+=======================
+*/
+void SVQ2_SendClientMessages(void)
+{
+	int msglen = 0;
+	byte msgbuf[MAX_MSGLEN_Q2];
+
+	// read the next demo message if needed
+	if (sv.state == SS_DEMO && sv.q2_demofile)
+	{
+		if (sv_paused->value)
+		{
+			msglen = 0;
+		}
+		else
+		{
+			// get the next message
+			int r = FS_Read(&msglen, 4, sv.q2_demofile);
+			if (r != 4)
+			{
+				SVQ2_DemoCompleted();
+				return;
+			}
+			msglen = LittleLong(msglen);
+			if (msglen == -1)
+			{
+				SVQ2_DemoCompleted();
+				return;
+			}
+			if (msglen > MAX_MSGLEN_Q2)
+			{
+				common->Error("SVQ2_SendClientMessages: msglen > MAX_MSGLEN_Q2");
+			}
+			r = FS_Read(msgbuf, msglen, sv.q2_demofile);
+			if (r != msglen)
+			{
+				SVQ2_DemoCompleted();
+				return;
+			}
+		}
+	}
+
+	// send a message to each connected client
+	client_t* c = svs.clients;
+	for (int i = 0; i < sv_maxclients->value; i++, c++)
+	{
+		if (!c->state)
+		{
+			continue;
+		}
+		// if the reliable message overflowed,
+		// drop the client
+		if (c->netchan.message.overflowed)
+		{
+			c->netchan.message.Clear();
+			c->datagram.Clear();
+			SVQ2_BroadcastPrintf(PRINT_HIGH, "%s overflowed\n", c->name);
+			SVQ2_DropClient(c);
+		}
+
+		if (sv.state == SS_CINEMATIC ||
+			sv.state == SS_DEMO ||
+			sv.state == SS_PIC)
+		{
+			Netchan_Transmit(&c->netchan, msglen, msgbuf);
+			c->netchan.lastSent = Sys_Milliseconds();
+		}
+		else if (c->state == CS_ACTIVE)
+		{
+			// don't overrun bandwidth
+			if (SVQ2_RateDrop(c))
+			{
+				continue;
+			}
+
+			SVQ2_SendClientDatagram(c);
+		}
+		else
+		{
+			// just update reliable	if needed
+			if (c->netchan.message.cursize  || Sys_Milliseconds() - c->netchan.lastSent > 1000)
+			{
+				Netchan_Transmit(&c->netchan, 0, NULL);
+				c->netchan.lastSent = Sys_Milliseconds();
+			}
+		}
+	}
+}
