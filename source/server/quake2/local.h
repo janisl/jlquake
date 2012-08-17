@@ -84,6 +84,7 @@ extern Cvar* q2public_server;			// should heartbeats be sent
 void SVQ2_ConnectionlessPacket(const netadr_t& from, QMsg& message);
 void SVQ2_MasterHeartbeat();
 void SVQ2_MasterShutdown();
+void SVQ2_Shutdown(const char* finalmsg, bool reconnect);
 
 //
 //	Send

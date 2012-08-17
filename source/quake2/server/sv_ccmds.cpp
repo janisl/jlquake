@@ -390,7 +390,7 @@ void SV_KillServer_f(void)
 	{
 		return;
 	}
-	SV_Shutdown("Server was killed.\n", false);
+	SVQ2_Shutdown("Server was killed.\n", false);
 	NET_Config(false);		// close network sockets
 }
 

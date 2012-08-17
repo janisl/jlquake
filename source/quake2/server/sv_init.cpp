@@ -29,7 +29,7 @@ void SVQ2_InitGame()
 	if (svs.initialized)
 	{
 		// cause any connected clients to reconnect
-		SV_Shutdown("Server restarted\n", true);
+		SVQ2_Shutdown("Server restarted\n", true);
 	}
 	else
 	{

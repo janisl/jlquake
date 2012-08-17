@@ -44,8 +44,6 @@ extern QMsg net_message;
 //
 // sv_main.c
 //
-void SV_FinalMessage(const char* message, qboolean reconnect);
-
 void SV_InitOperatorCommands(void);
 
 //

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // common.c -- misc functions used in client and server
 #include "qcommon.h"
 #include "../client/client.h"
+#include "../../server/server.h"
+#include "../../server/quake2/local.h"
 #include <setjmp.h>
 
 
@@ -235,14 +237,14 @@ void Com_Error(int code, const char* fmt, ...)
 	else if (code == ERR_DROP)
 	{
 		common->Printf("********************\nERROR: %s\n********************\n", msg);
-		SV_Shutdown(va("Server crashed: %s\n", msg), false);
+		SVQ2_Shutdown(va("Server crashed: %s\n", msg), false);
 		CL_Drop();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else
 	{
-		SV_Shutdown(va("Server fatal crashed: %s\n", msg), false);
+		SVQ2_Shutdown(va("Server fatal crashed: %s\n", msg), false);
 		CL_Shutdown();
 	}
 
@@ -266,7 +268,7 @@ do the apropriate things.
 */
 void Com_Quit(void)
 {
-	SV_Shutdown("Server quit\n", false);
+	SVQ2_Shutdown("Server quit\n", false);
 	CL_Shutdown();
 
 	if (logfile)

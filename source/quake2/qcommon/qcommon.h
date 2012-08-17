@@ -196,7 +196,6 @@ void CL_Frame(int msec);
 void SCR_BeginLoadingPlaque(bool Clear = false);
 
 void SV_Init(void);
-void SV_Shutdown(const char* finalmsg, qboolean reconnect);
 void SV_Frame(int msec);
 
 

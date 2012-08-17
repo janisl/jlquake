@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 #include "../../common/file_formats/md2.h"
+#include "../../server/server.h"
+#include "../../server/quake2/local.h"
 
 Cvar* adr0;
 Cvar* adr1;
@@ -491,7 +493,7 @@ void CL_Connect_f(void)
 
 	if (ComQ2_ServerState())
 	{	// if running a local server, kill it and reissue
-		SV_Shutdown("Server quit\n", false);
+		SVQ2_Shutdown("Server quit\n", false);
 	}
 	else
 	{
