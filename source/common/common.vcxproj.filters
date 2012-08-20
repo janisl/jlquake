@@ -84,7 +84,6 @@
     <ClInclude Include="files.h" />
     <ClInclude Include="huffman.h" />
     <ClInclude Include="info_string.h" />
-    <ClInclude Include="log.h" />
     <ClInclude Include="mathlib.h" />
     <ClInclude Include="md4.h" />
     <ClInclude Include="memory.h" />
@@ -101,6 +100,8 @@
     <ClInclude Include="message_utils.h" />
     <ClInclude Include="precompiler.h" />
     <ClInclude Include="script.h" />
+    <ClInclude Include="network_channel.h" />
+    <ClInclude Include="hexen2strings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clip_map\main.cpp">
@@ -161,7 +162,6 @@
       <Filter>virtual_machine</Filter>
     </ClCompile>
     <ClCompile Include="command_buffer.cpp" />
-    <ClCompile Include="Common.cpp" />
     <ClCompile Include="common_defs.cpp" />
     <ClCompile Include="console_variable.cpp" />
     <ClCompile Include="crc.cpp" />
@@ -171,7 +171,6 @@
     <ClCompile Include="files.cpp" />
     <ClCompile Include="huffman.cpp" />
     <ClCompile Include="info_string.cpp" />
-    <ClCompile Include="log.cpp" />
     <ClCompile Include="mathlib.cpp" />
     <ClCompile Include="md4.cpp" />
     <ClCompile Include="memory.cpp" />
@@ -193,5 +192,9 @@
     <ClCompile Include="message_utils3.cpp" />
     <ClCompile Include="precompiler.cpp" />
     <ClCompile Include="script.cpp" />
+    <ClCompile Include="network_channel.cpp" />
+    <ClCompile Include="network_channel_netquake.cpp" />
+    <ClCompile Include="player_move2.cpp" />
+    <ClCompile Include="hexen2strings.cpp" />
   </ItemGroup>
 </Project>

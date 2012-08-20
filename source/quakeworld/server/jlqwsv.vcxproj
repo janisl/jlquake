@@ -102,59 +102,29 @@
     <ClCompile Include="..\client\common.cpp" />
     <ClCompile Include="..\client\cvar.cpp" />
     <ClCompile Include="..\client\net_chan.cpp" />
-    <ClCompile Include="pr_cmds.cpp" />
-    <ClCompile Include="pr_edict.cpp" />
-    <ClCompile Include="pr_exec.cpp" />
     <ClCompile Include="sv_ccmds.cpp" />
-    <ClCompile Include="sv_ents.cpp" />
-    <ClCompile Include="sv_init.cpp" />
     <ClCompile Include="sv_main.cpp" />
-    <ClCompile Include="sv_move.cpp" />
-    <ClCompile Include="sv_nchan.cpp" />
-    <ClCompile Include="sv_phys.cpp" />
     <ClCompile Include="sv_send.cpp" />
-    <ClCompile Include="sv_user.cpp" />
     <ClCompile Include="sys_win.cpp" />
-    <ClCompile Include="world.cpp" />
-    <ClCompile Include="..\client\zone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\quake\v2\client\net.h" />
     <ClInclude Include="..\client\bothdefs.h" />
-    <ClInclude Include="..\client\cdaudio.h" />
-    <ClInclude Include="..\client\client.h" />
     <ClInclude Include="..\client\cmd.h" />
     <ClInclude Include="..\client\common.h" />
     <ClInclude Include="..\client\console.h" />
-    <ClInclude Include="..\client\d_iface.h" />
-    <ClInclude Include="..\client\draw.h" />
-    <ClInclude Include="..\client\input.h" />
-    <ClInclude Include="..\client\keys.h" />
-    <ClInclude Include="..\client\mathlib.h" />
-    <ClInclude Include="..\client\menu.h" />
     <ClInclude Include="..\client\net.h" />
-    <ClInclude Include="pr_comp.h" />
-    <ClInclude Include="progdefs.h" />
-    <ClInclude Include="progs.h" />
     <ClInclude Include="..\client\protocol.h" />
-    <ClInclude Include="..\client\quakedef.h" />
     <ClInclude Include="qwsvdef.h" />
-    <ClInclude Include="..\client\render.h" />
-    <ClInclude Include="..\client\sbar.h" />
-    <ClInclude Include="..\client\screen.h" />
     <ClInclude Include="server.h" />
-    <ClInclude Include="..\client\sound.h" />
     <ClInclude Include="sys.h" />
-    <ClInclude Include="..\client\vid.h" />
-    <ClInclude Include="..\client\view.h" />
-    <ClInclude Include="..\client\wad.h" />
-    <ClInclude Include="..\client\winquake.h" />
-    <ClInclude Include="world.h" />
-    <ClInclude Include="..\client\zone.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\null_client\null_client.vcxproj">
+      <Project>{844eac5b-4a2a-4139-90f2-8cf283cfaa1e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\server\server.vcxproj">
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>

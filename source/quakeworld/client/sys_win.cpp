@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../../client/windows_shared.h"
 
-#define MINIMUM_WIN_MEMORY  0x0c00000
-#define MAXIMUM_WIN_MEMORY  0x1000000
-
 #define PAUSE_SLEEP     50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP 20				// sleep time when not focus
 
@@ -193,7 +190,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG msg;
 	quakeparms_t parms;
 	double time, oldtime, newtime;
-	MEMORYSTATUS lpBuffer;
 	static char cwd[1024];
 	int t;
 
@@ -204,9 +200,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	global_hInstance = hInstance;
-
-	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
-	GlobalMemoryStatus(&lpBuffer);
 
 	if (!GetCurrentDirectory(sizeof(cwd), cwd))
 	{
@@ -250,43 +243,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	COM_InitArgv2(parms.argc, parms.argv);
 
 	Sys_CreateConsole("QuakeWorld Console");
-
-// take the greater of all the available memory or half the total memory,
-// but at least 8 Mb and no more than 16 Mb, unless they explicitly
-// request otherwise
-	parms.memsize = lpBuffer.dwAvailPhys;
-
-	if (parms.memsize < MINIMUM_WIN_MEMORY)
-	{
-		parms.memsize = MINIMUM_WIN_MEMORY;
-	}
-
-	if (parms.memsize < (lpBuffer.dwTotalPhys >> 1))
-	{
-		parms.memsize = lpBuffer.dwTotalPhys >> 1;
-	}
-
-	if (parms.memsize > MAXIMUM_WIN_MEMORY)
-	{
-		parms.memsize = MAXIMUM_WIN_MEMORY;
-	}
-
-	if (COM_CheckParm("-heapsize"))
-	{
-		t = COM_CheckParm("-heapsize") + 1;
-
-		if (t < COM_Argc())
-		{
-			parms.memsize = String::Atoi(COM_Argv(t)) * 1024;
-		}
-	}
-
-	parms.membase = malloc(parms.memsize);
-
-	if (!parms.membase)
-	{
-		common->FatalError("Not enough memory free; check disk space\n");
-	}
 
 	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
 

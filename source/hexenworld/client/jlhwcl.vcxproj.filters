@@ -63,26 +63,14 @@
     <ClCompile Include="snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="strings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="zone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="wad.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="zone.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="bothdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>

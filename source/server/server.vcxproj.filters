@@ -26,6 +26,18 @@
     <Filter Include="tech3">
       <UniqueIdentifier>{7cbde4ec-86b6-4d57-bda2-5959bae0e0aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="quake_hexen2">
+      <UniqueIdentifier>{e85b94fc-e79f-4301-b4ab-9e3af78fd7c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="quake">
+      <UniqueIdentifier>{d75e16bb-59be-420f-9815-52d04011876b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hexen2">
+      <UniqueIdentifier>{c9041ab7-dca5-48b2-a433-324936e89021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="quake2">
+      <UniqueIdentifier>{c934643c-f429-4884-b0f7-e6268159dfa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="progsvm/edict.cpp">
@@ -145,6 +157,111 @@
     <ClCompile Include="wolfsp\WolfSPEntity.cpp">
       <Filter>wolfsp</Filter>
     </ClCompile>
+    <ClCompile Include="tech3\bot.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\ccmds.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\client.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\init.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\main.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\net_chan.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\PlayerState3.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="tech3\snapshot.cpp">
+      <Filter>tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="et\ETPlayerState.cpp">
+      <Filter>et</Filter>
+    </ClCompile>
+    <ClCompile Include="quake3\Quake3PlayerState.cpp">
+      <Filter>quake3</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfmp\WolfMPPlayerState.cpp">
+      <Filter>wolfmp</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfsp\WolfSPPlayerState.cpp">
+      <Filter>wolfsp</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\ccmds.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\client.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\entities.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\game.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\init.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\main.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\move.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\nchan.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\physics.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\send.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\world.cpp">
+      <Filter>quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake\game.cpp">
+      <Filter>quake</Filter>
+    </ClCompile>
+    <ClCompile Include="hexen2\effect.cpp">
+      <Filter>hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="hexen2\game.cpp">
+      <Filter>hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="progsvm\common_builtins.cpp">
+      <Filter>progsvm</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\ccmds.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\entities.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\game.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\init.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\main.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\send.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\user.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="quake2\world.cpp">
+      <Filter>quake2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="progsvm/progs_file.h">
@@ -233,6 +350,36 @@
     </ClInclude>
     <ClInclude Include="wolfsp\WolfSPEntity.h">
       <Filter>wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="tech3\PlayerState3.h">
+      <Filter>tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="et\ETPlayerState.h">
+      <Filter>et</Filter>
+    </ClInclude>
+    <ClInclude Include="quake3\Quake3PlayerState.h">
+      <Filter>quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfmp\WolfMPPlayerState.h">
+      <Filter>wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="wolfsp\WolfSPPlayerState.h">
+      <Filter>wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="quake_hexen\local.h">
+      <Filter>quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="quake\local.h">
+      <Filter>quake</Filter>
+    </ClInclude>
+    <ClInclude Include="hexen2\local.h">
+      <Filter>hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="quake2\game.h">
+      <Filter>quake2</Filter>
+    </ClInclude>
+    <ClInclude Include="quake2\local.h">
+      <Filter>quake2</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -90,7 +90,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	quakeparms_t parms;
 	double newtime, time, oldtime;
 	static char cwd[1024];
-	int t;
 
 	global_hInstance = hInstance;
 
@@ -100,27 +99,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	parms.argc = __argc;
 	parms.argv = __argv;
-
-	parms.memsize = 16 * 1024 * 1024;
-
-	if ((t = COM_CheckParm("-heapsize")) != 0 &&
-		t + 1 < COM_Argc())
-	{
-		parms.memsize = String::Atoi(COM_Argv(t + 1)) * 1024;
-	}
-
-	if ((t = COM_CheckParm("-mem")) != 0 &&
-		t + 1 < COM_Argc())
-	{
-		parms.memsize = String::Atoi(COM_Argv(t + 1)) * 1024 * 1024;
-	}
-
-	parms.membase = malloc(parms.memsize);
-
-	if (!parms.membase)
-	{
-		common->FatalError("Insufficient memory.\n");
-	}
 
 	parms.basedir = ".";
 

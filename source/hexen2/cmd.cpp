@@ -30,6 +30,7 @@ void Cmd_Init(void)
 bool Cmd_HandleNullCommand(const char* text)
 {
 	common->FatalError("NULL command");
+	return false;
 }
 
 void Cmd_HandleUnknownCommand()

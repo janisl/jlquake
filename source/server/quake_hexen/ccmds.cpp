@@ -1130,8 +1130,8 @@ static void SVQHW_Status_f()
 		num_min = (num_min - num_sec) / 60;
 		common->Printf("timeleft         : %i:", num_min);
 		common->Printf("%2i\n", num_sec);
-		common->Printf("deflosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.defLosses)), static_cast<int>(floor(f_limit)));
-		common->Printf("attlosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.attLosses)), static_cast<int>(floor(f_limit * 2)));
+		common->Printf("deflosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.defLosses)), f_limit);
+		common->Printf("attlosses        : %3i/%3i\n", static_cast<int>(floor(*pr_globalVars.attLosses)), f_limit * 2);
 	}
 	else
 	{

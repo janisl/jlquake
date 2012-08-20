@@ -21,9 +21,6 @@
     <ClCompile Include="cl_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cl_effect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cl_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,22 +57,7 @@
     <ClCompile Include="menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net_dgrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net_loop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="net_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pr_cmds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pr_edict.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pr_exec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="r_part.cpp">
@@ -87,28 +69,10 @@
     <ClCompile Include="snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sv_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sv_move.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sv_phys.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sv_user.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="view.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="world.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="zone.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

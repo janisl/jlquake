@@ -105,7 +105,6 @@
   <ItemGroup>
     <ClCompile Include="cl_demo.cpp" />
     <ClCompile Include="cl_draw.cpp" />
-    <ClCompile Include="cl_effect.cpp" />
     <ClCompile Include="cl_input.cpp" />
     <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="cl_parse.cpp" />
@@ -118,23 +117,12 @@
     <ClCompile Include="host_cmd.cpp" />
     <ClCompile Include="keys.cpp" />
     <ClCompile Include="menu.cpp" />
-    <ClCompile Include="net_dgrm.cpp" />
-    <ClCompile Include="net_loop.cpp" />
     <ClCompile Include="net_main.cpp" />
-    <ClCompile Include="pr_cmds.cpp" />
-    <ClCompile Include="pr_edict.cpp" />
-    <ClCompile Include="pr_exec.cpp" />
     <ClCompile Include="r_part.cpp" />
     <ClCompile Include="sbar.cpp" />
     <ClCompile Include="snd_dma.cpp" />
-    <ClCompile Include="sv_main.cpp" />
-    <ClCompile Include="sv_move.cpp" />
-    <ClCompile Include="sv_phys.cpp" />
-    <ClCompile Include="sv_user.cpp" />
     <ClCompile Include="sys_win.cpp" />
     <ClCompile Include="view.cpp" />
-    <ClCompile Include="world.cpp" />
-    <ClCompile Include="zone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ftol.asm">

@@ -66,9 +66,6 @@
     <ClCompile Include="qcommon\net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\pmove.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,48 +78,18 @@
     <ClCompile Include="client\snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_ccmds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_ents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_send.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_user.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_world.cpp">
+    <ClCompile Include="client\x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\x86.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\anorms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\keys.h">
@@ -134,25 +101,13 @@
     <ClInclude Include="qcommon\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\qmenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\ref.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\screen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="win32\winquake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

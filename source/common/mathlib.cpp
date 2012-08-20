@@ -1370,8 +1370,14 @@ void Sys_SnapVector(float* v)
 #elif !id386
 void Sys_SnapVector(float* v)
 {
+#ifdef __linux__
 	v[0] = (float)rint(v[0]);
 	v[1] = (float)rint(v[1]);
 	v[2] = (float)rint(v[2]);
+#else
+	v[0] = (int)v[0];
+	v[1] = (int)v[1];
+	v[2] = (int)v[2];
+#endif
 }
 #endif

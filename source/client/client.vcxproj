@@ -104,6 +104,18 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\hexen2\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\hexen2\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="game\quake_hexen2\menu.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\network_channel.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)game\quake_hexen2\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="game\quake_hexen2\predict.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)game\quake_hexen2\</ObjectFileName>
@@ -711,6 +723,8 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="game\quake_hexen2\menu.h" />
+    <ClInclude Include="game\quake_hexen2\network_channel.h" />
     <ClInclude Include="game\quake_hexen2\predict.h" />
     <ClInclude Include="hexen2clientdefs.h" />
     <ClInclude Include="quake2clientdefs.h" />

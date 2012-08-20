@@ -66,9 +66,6 @@
     <ClCompile Include="view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="zone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bothdefs.h">
@@ -89,9 +86,6 @@
     <ClInclude Include="draw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glquake.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -105,9 +99,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quakedef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="r_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render.h">
@@ -129,12 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="view.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="winquake.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="zone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

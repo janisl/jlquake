@@ -362,6 +362,12 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="translate.cpp" />
+    <ClCompile Include="game\quake_hexen2\menu.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\network_channel.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer\cvars.h">
@@ -474,5 +480,11 @@
       <Filter>game\quake_hexen2</Filter>
     </ClInclude>
     <ClInclude Include="translate.h" />
+    <ClInclude Include="game\quake_hexen2\menu.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake_hexen2\network_channel.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

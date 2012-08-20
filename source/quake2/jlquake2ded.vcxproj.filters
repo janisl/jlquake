@@ -33,37 +33,10 @@
     <ClCompile Include="qcommon\net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\pmove.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\q_shwin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_ccmds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_ents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_send.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_user.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\sys_win.cpp">
@@ -75,18 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qcommon\qcommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="win32\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="win32\winquake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

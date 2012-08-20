@@ -23,46 +23,10 @@
     <ClCompile Include="qcommon\files.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\net_chan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="null\null_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="null\null_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="null\null_snddma.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game\q_math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game\q_shared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_bot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_ccmds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_net_chan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="server\sv_snapshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
@@ -73,28 +37,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="botai\botai.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\botlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\g_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\q_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qcommon\qcommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\win_local.h">

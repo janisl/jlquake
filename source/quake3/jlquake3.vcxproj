@@ -113,34 +113,18 @@
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="qcommon\net_chan.cpp" />
-    <ClCompile Include="game\q_math.cpp" />
-    <ClCompile Include="game\q_shared.cpp" />
     <ClCompile Include="client\snd_dma.cpp" />
-    <ClCompile Include="server\sv_bot.cpp" />
-    <ClCompile Include="server\sv_ccmds.cpp" />
-    <ClCompile Include="server\sv_client.cpp" />
-    <ClCompile Include="server\sv_game.cpp" />
-    <ClCompile Include="server\sv_init.cpp" />
-    <ClCompile Include="server\sv_main.cpp" />
-    <ClCompile Include="server\sv_net_chan.cpp" />
-    <ClCompile Include="server\sv_snapshot.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\bg_public.h" />
     <ClInclude Include="cgame\cg_public.h" />
     <ClInclude Include="client\client.h" />
-    <ClInclude Include="game\g_public.h" />
-    <ClInclude Include="ui\keycodes.h" />
     <ClInclude Include="client\keys.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="win32\resource.h" />
-    <ClInclude Include="server\server.h" />
     <ClInclude Include="ui\ui_public.h" />
-    <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="win32\cursor2.cur" />

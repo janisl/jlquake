@@ -115,14 +115,10 @@
     <ClCompile Include="r_part.cpp" />
     <ClCompile Include="sbar.cpp" />
     <ClCompile Include="snd_dma.cpp" />
-    <ClCompile Include="strings.cpp" />
     <ClCompile Include="sys_win.cpp" />
     <ClCompile Include="view.cpp" />
-    <ClCompile Include="zone.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="wad.h" />
-    <ClInclude Include="zone.h" />
     <ClInclude Include="bothdefs.h" />
     <ClInclude Include="cl_effect.h" />
     <ClInclude Include="client.h" />

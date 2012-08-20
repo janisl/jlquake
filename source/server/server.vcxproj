@@ -231,16 +231,83 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)botlib\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="et\ETEntity.cpp" />
+    <ClCompile Include="et\ETPlayerState.cpp" />
     <ClCompile Include="et\game.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)et\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)et\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)et\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)et\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="hexen2\effect.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="hexen2\game.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)hexen2\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="link.cpp" />
     <ClCompile Include="progsvm/edict.cpp" />
     <ClCompile Include="progsvm/execute.cpp" />
     <ClCompile Include="progsvm/main.cpp" />
+    <ClCompile Include="progsvm\common_builtins.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)progsvm\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)progsvm\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)progsvm\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)progsvm\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\ccmds.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\entities.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\game.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\init.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\send.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\user.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake2\world.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake2\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="quake3\game.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake3\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake3\</ObjectFileName>
@@ -248,9 +315,125 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake3\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="quake3\Quake3Entity.cpp" />
+    <ClCompile Include="quake3\Quake3PlayerState.cpp" />
+    <ClCompile Include="quake\game.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\ccmds.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\client.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\entities.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\game.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\init.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\move.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\nchan.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\physics.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\send.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="quake_hexen\world.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)quake_hexen2\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)quake_hexen2\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="server_main.cpp" />
+    <ClCompile Include="tech3\bot.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\ccmds.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\client.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="tech3\Entity3.cpp" />
     <ClCompile Include="tech3\game.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\init.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\main.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\net_chan.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tech3\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="tech3\PlayerState3.cpp" />
+    <ClCompile Include="tech3\snapshot.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)tech3\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)tech3\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)tech3\</ObjectFileName>
@@ -269,6 +452,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)wolfmp\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="wolfmp\WolfMPEntity.cpp" />
+    <ClCompile Include="wolfmp\WolfMPPlayerState.cpp" />
     <ClCompile Include="wolfsp\game.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)wolfsp\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)wolfsp\</ObjectFileName>
@@ -276,6 +460,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)wolfsp\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="wolfsp\WolfSPEntity.cpp" />
+    <ClCompile Include="wolfsp\WolfSPPlayerState.cpp" />
     <ClCompile Include="worldsector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -289,30 +474,40 @@
     <ClInclude Include="botlib\local.h" />
     <ClInclude Include="botlib\public.h" />
     <ClInclude Include="et\ETEntity.h" />
+    <ClInclude Include="et\ETPlayerState.h" />
     <ClInclude Include="et\g_public.h" />
     <ClInclude Include="et\local.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="hexen2serverdefs.h" />
+    <ClInclude Include="hexen2\local.h" />
     <ClInclude Include="link.h" />
     <ClInclude Include="progsvm/progs_file.h" />
     <ClInclude Include="progsvm/progsvm.h" />
     <ClInclude Include="progsvm\edict.h" />
     <ClInclude Include="quake2serverdefs.h" />
+    <ClInclude Include="quake2\game.h" />
+    <ClInclude Include="quake2\local.h" />
     <ClInclude Include="quake3serverdefs.h" />
     <ClInclude Include="quake3\g_public.h" />
     <ClInclude Include="quake3\local.h" />
     <ClInclude Include="quake3\Quake3Entity.h" />
+    <ClInclude Include="quake3\Quake3PlayerState.h" />
     <ClInclude Include="quakeserverdefs.h" />
+    <ClInclude Include="quake\local.h" />
+    <ClInclude Include="quake_hexen\local.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="tech3\Entity3.h" />
     <ClInclude Include="tech3\local.h" />
+    <ClInclude Include="tech3\PlayerState3.h" />
     <ClInclude Include="wolfmp\g_public.h" />
     <ClInclude Include="wolfmp\local.h" />
     <ClInclude Include="wolfmp\WolfMPEntity.h" />
+    <ClInclude Include="wolfmp\WolfMPPlayerState.h" />
     <ClInclude Include="wolfserverdefs.h" />
     <ClInclude Include="wolfsp\g_public.h" />
     <ClInclude Include="wolfsp\local.h" />
     <ClInclude Include="wolfsp\WolfSPEntity.h" />
+    <ClInclude Include="wolfsp\WolfSPPlayerState.h" />
     <ClInclude Include="worldsector.h" />
   </ItemGroup>
   <ItemGroup>
