@@ -63,36 +63,36 @@ static int snd_vol;
 #if id386 && defined _MSC_VER
 static __declspec(naked) void S_WriteLinearBlastStereo16()
 {
-	__asm {
-
+	__asm
+	{
 		push edi
 		push ebx
 		mov ecx,ds : dword ptr[snd_linear_count]
 		mov ebx,ds : dword ptr[snd_p]
 		mov edi,ds : dword ptr[snd_out]
-		LWLBLoopTop :
+	LWLBLoopTop :
 		mov eax,ds : dword ptr[-8 + ebx + ecx * 4]
 		sar eax,8
 		cmp eax,07FFFh
 		jg LClampHigh
-		cmp eax,0FFFF 8000h
+		cmp eax,0FFFF8000h
 		jnl LClampDone
-		mov eax,0FFFF 8000h
+		mov eax,0FFFF8000h
 		jmp LClampDone
-			LClampHigh :
+	LClampHigh :
 		mov eax,07FFFh
 		LClampDone :
 		mov edx,ds : dword ptr[-4 + ebx + ecx * 4]
 		sar edx,8
 		cmp edx,07FFFh
 		jg LClampHigh2
-		cmp edx,0FFFF 8000h
+		cmp edx,0FFFF8000h
 		jnl LClampDone2
-		mov edx,0FFFF 8000h
+		mov edx,0FFFF8000h
 		jmp LClampDone2
-			LClampHigh2 :
+	LClampHigh2 :
 		mov edx,07FFFh
-		LClampDone2 :
+	LClampDone2 :
 		shl edx,16
 		and eax,0FFFFh
 		or edx,eax
@@ -101,7 +101,7 @@ static __declspec(naked) void S_WriteLinearBlastStereo16()
 		jnz LWLBLoopTop
 		pop ebx
 		pop edi
-			ret
+		ret
 	}
 }
 #elif id386 && defined __GNUC__
