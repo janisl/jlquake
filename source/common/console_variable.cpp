@@ -16,15 +16,14 @@
 // cvar.c -- dynamic variable tracking
 
 #include "qcommon.h"
+#include "../server/public.h"
+#include "../client/public.h"
 
 #define MAX_CVARS           2048
 
 #define FILE_HASH_SIZE      512
 
 #define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
-
-void Cvar_Changed(Cvar* var);
-const char* Cvar_TranslateString(const char* string);
 
 Cvar* cvar_vars;
 int cvar_modifiedFlags;
@@ -162,7 +161,7 @@ static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 		char* cleaned = Cvar_ClearForeignCharacters(value);
 		if (String::Cmp(value, cleaned))
 		{
-			common->Printf("%s", Cvar_TranslateString(FOREIGN_MSG));
+			common->Printf("%s", CL_TranslateStringBuf(FOREIGN_MSG));
 			common->Printf("Using %s instead of %s\n", cleaned, value);
 			return Cvar_Set2(var_name, cleaned, force);
 		}
@@ -250,7 +249,8 @@ static Cvar* Cvar_Set2(const char* var_name, const char* value, bool force)
 	var->value = String::Atof(var->string);
 	var->integer = String::Atoi(var->string);
 
-	Cvar_Changed(var);
+	SV_CvarChanged(var);
+	CL_CvarChanged(var);
 	return var;
 }
 
@@ -423,7 +423,8 @@ Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
 	{
-		Cvar_Changed(var);
+		SV_CvarChanged(var);
+		CL_CvarChanged(var);
 	}
 
 	return var;

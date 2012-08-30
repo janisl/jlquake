@@ -112,7 +112,6 @@
     <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="console.cpp" />
-    <ClCompile Include="cvar.cpp" />
     <ClCompile Include="host.cpp" />
     <ClCompile Include="host_cmd.cpp" />
     <ClCompile Include="keys.cpp" />

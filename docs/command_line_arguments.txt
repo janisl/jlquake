@@ -40,7 +40,6 @@
 -game
 -listen
 -nolan
--nopagein
 -noudp
 -scale2d
 -udpport
@@ -155,4 +154,5 @@ Parameter                Console command                      Saved
 -heapsize
 -minmemory
 -mem
+-nopagein
   Unused

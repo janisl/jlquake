@@ -17,7 +17,6 @@
 set (ET_FILES
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/dl_main_curl.cpp
 
@@ -47,7 +46,6 @@ target_link_libraries(jlet ${CLIENTS_LIBS} curl)
 set (ETDED_FILES
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 
 	unix/linux_signals.cpp

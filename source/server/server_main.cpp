@@ -113,3 +113,38 @@ bool SV_IsServerActive()
 {
 	return sv.state == SS_GAME;
 }
+
+void SV_CvarChanged(Cvar* var)
+{
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		return;
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')
+		{
+			Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
+				64, 64, !svqh_highchars || !svqh_highchars->value, false);
+			if (GGameType & GAME_HexenWorld)
+			{
+				SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
+			}
+			else
+			{
+				SVQW_SendServerInfoChange(var->name, var->string);
+			}
+		}
+	}
+	else
+	{
+		if ((var->flags & CVAR_SERVERINFO))
+		{
+			if (sv.state != SS_DEAD)
+			{
+				SVQH_BroadcastPrintf(0, "\"%s\" changed to \"%s\"\n", var->name, var->string);
+			}
+		}
+	}
+}

@@ -21,9 +21,6 @@
     <ClCompile Include="..\client\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\cvar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -12,7 +12,6 @@ add_executable(jlqwsv
 	server/sys_unix.cpp
 	client/cmd.cpp
 	client/common.cpp
-	client/cvar.cpp
 	client/net_chan.cpp
 )
 set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
@@ -32,7 +31,6 @@ add_executable(jlqwcl
 	client/cmd.cpp
 	client/common.cpp
 	client/console.cpp
-	client/cvar.cpp
 	client/keys.cpp
 	client/menu.cpp
 	client/net_chan.cpp

@@ -108,7 +108,6 @@
     <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="console.cpp" />
-    <ClCompile Include="cvar.cpp" />
     <ClCompile Include="keys.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="net_chan.cpp" />

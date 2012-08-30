@@ -8,7 +8,6 @@ add_executable(jlquake
 	cmd.cpp
 	common.cpp
 	console.cpp
-	cvar.cpp
 	host.cpp
 	host_cmd.cpp
 	keys.cpp
@@ -27,7 +26,6 @@ add_executable(jlquakeded
 	cmd.cpp
 	common.cpp
 	console.cpp
-	cvar.cpp
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp

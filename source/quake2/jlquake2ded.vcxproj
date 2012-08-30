@@ -97,7 +97,6 @@
     <ClCompile Include="null\cl_null.cpp" />
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
-    <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="qcommon\q_shared.cpp" />

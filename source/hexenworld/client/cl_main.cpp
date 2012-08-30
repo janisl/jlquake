@@ -1468,3 +1468,6 @@ bool SV_IsServerActive()
 {
 	return false;
 }
+void SV_CvarChanged(Cvar* var)
+{
+}

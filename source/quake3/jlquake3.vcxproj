@@ -111,7 +111,6 @@
     <ClCompile Include="client\cl_ui.cpp" />
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
-    <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="client\snd_dma.cpp" />
     <ClCompile Include="win32\win_main.cpp" />

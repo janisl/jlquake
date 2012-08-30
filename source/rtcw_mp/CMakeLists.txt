@@ -26,7 +26,6 @@ set(WOLFMP_FILES
 
 	qcommon/cmd.cpp 
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 
 	client/snd_dma.cpp
@@ -44,7 +43,6 @@ set(WOLFMPDED_FILES
 	null/null_client.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp

@@ -113,7 +113,6 @@
     <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="client\console.cpp" />
-    <ClCompile Include="qcommon\cvar.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="client\keys.cpp" />
     <ClCompile Include="client\menu.cpp" />

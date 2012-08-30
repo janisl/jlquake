@@ -19,7 +19,6 @@ set(WOLFSP_FILES
 
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 
 	client/snd_dma.cpp

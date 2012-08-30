@@ -4,6 +4,7 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
+#include "../common/qcommon.h"
 #ifndef DEDICATED
 #include "../client/client.h"
 #include "../client/game/hexen2/local.h"

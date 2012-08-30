@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client
 
+#include "../common/qcommon.h"
 #ifndef DEDICATED
 #include "../client/client.h"
 #include "../client/game/quake/local.h"

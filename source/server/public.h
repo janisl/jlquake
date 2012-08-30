@@ -18,5 +18,6 @@
 #define _SERVER_PUBLIC_H
 
 bool SV_IsServerActive();
+void SV_CvarChanged(Cvar* var);
 
 #endif

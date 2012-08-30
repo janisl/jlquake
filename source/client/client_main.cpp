@@ -211,3 +211,22 @@ int CLQH_GetIntermission()
 {
 	return cl.qh_intermission;
 }
+
+void CL_CvarChanged(Cvar* var)
+{
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		return;
+	}
+
+	if (var->flags & CVAR_USERINFO && var->name[0] != '*')
+	{
+		Info_SetValueForKey(cls.qh_userinfo, var->name, var->string, MAX_INFO_STRING_QW, 64, 64,
+			String::ICmp(var->name, "name") != 0, String::ICmp(var->name, "team") == 0);
+		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
+		{
+			clc.netchan.message.WriteByte(GGameType & GAME_HexenWorld ? h2clc_stringcmd : q1clc_stringcmd);
+			clc.netchan.message.WriteString2(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));
+		}
+	}
+}

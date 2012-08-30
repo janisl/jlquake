@@ -60,3 +60,12 @@ int CLQH_GetIntermission()
 void SCR_DebugGraph(float value, int color)
 {
 }
+
+void CL_CvarChanged(Cvar* var)
+{
+}
+
+const char* CL_TranslateStringBuf(const char* string)
+{
+	return string;
+}

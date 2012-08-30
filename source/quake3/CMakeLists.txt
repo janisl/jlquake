@@ -16,7 +16,6 @@ set(QUAKE3_FILES
 	client/snd_dma.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
@@ -34,7 +33,6 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 set(QUAKE3_DEDICATED_FILES
 	qcommon/cmd.cpp
 	qcommon/common.cpp
-	qcommon/cvar.cpp
 	qcommon/files.cpp
 	unix/linux_signals.cpp
 	unix/unix_main.cpp

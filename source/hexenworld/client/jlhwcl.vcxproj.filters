@@ -42,9 +42,6 @@
     <ClCompile Include="console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cvar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
