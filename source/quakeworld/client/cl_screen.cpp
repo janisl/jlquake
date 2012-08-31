@@ -71,7 +71,6 @@ console is:
 
 */
 
-Cvar* scr_viewsize;
 Cvar* scr_fov;
 Cvar* scr_centertime;
 Cvar* scr_showturtle;
@@ -294,15 +293,15 @@ static void SCR_CalcRefdef(void)
 
 	if (size >= 120)
 	{
-		sb_lines = 0;			// no status bar at all
+		sbqh_lines = 0;			// no status bar at all
 	}
 	else if (size >= 110)
 	{
-		sb_lines = 24;			// no inventory
+		sbqh_lines = 24;			// no inventory
 	}
 	else
 	{
-		sb_lines = 24 + 16 + 8;
+		sbqh_lines = 24 + 16 + 8;
 	}
 
 	if (scr_viewsize->value >= 100.0)
@@ -318,17 +317,17 @@ static void SCR_CalcRefdef(void)
 	{
 		full = true;
 		size = 100.0;
-		sb_lines = 0;
+		sbqh_lines = 0;
 	}
 	size /= 100.0;
 
-	if (!cl_sbar->value && full)
+	if (!clqh_sbar->value && full)
 	{
 		h = viddef.height;
 	}
 	else
 	{
-		h = viddef.height - sb_lines;
+		h = viddef.height - sbqh_lines;
 	}
 
 	scr_vrect.width = viddef.width * size;
@@ -339,11 +338,11 @@ static void SCR_CalcRefdef(void)
 	}
 
 	scr_vrect.height = viddef.height * size;
-	if (cl_sbar->value || !full)
+	if (clqh_sbar->value || !full)
 	{
-		if (scr_vrect.height > (int)viddef.height - sb_lines)
+		if (scr_vrect.height > (int)viddef.height - sbqh_lines)
 		{
-			scr_vrect.height = viddef.height - sb_lines;
+			scr_vrect.height = viddef.height - sbqh_lines;
 		}
 	}
 	else if (scr_vrect.height > (int)viddef.height)
@@ -455,7 +454,7 @@ void SCR_Init(void)
 	scr_turtle = R_PicFromWad("turtle");
 
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
-	cl_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+	clqh_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
 	cl_netgraph = Cvar_Get("cl_netgraph", "0", 0);
 
@@ -534,7 +533,7 @@ void SCR_DrawFPS(void)
 
 	sprintf(st, "%3d FPS", lastfps);
 	x = viddef.width - String::Length(st) * 8 - 8;
-	y = viddef.height - sb_lines - 8;
+	y = viddef.height - sbqh_lines - 8;
 	UI_DrawString(x, y, st);
 }
 
@@ -711,11 +710,11 @@ void SCR_TileClear(void)
 	if (scr_vrect.x > 0)
 	{
 		// left
-		UI_TileClear(0, 0, scr_vrect.x, viddef.height - sb_lines, draw_backtile);
+		UI_TileClear(0, 0, scr_vrect.x, viddef.height - sbqh_lines, draw_backtile);
 		// right
 		UI_TileClear(scr_vrect.x + scr_vrect.width, 0,
 			viddef.width - scr_vrect.x + scr_vrect.width,
-			viddef.height - sb_lines, draw_backtile);
+			viddef.height - sbqh_lines, draw_backtile);
 	}
 	if (scr_vrect.y > 0)
 	{
@@ -727,7 +726,7 @@ void SCR_TileClear(void)
 		UI_TileClear(scr_vrect.x,
 			scr_vrect.y + scr_vrect.height,
 			scr_vrect.width,
-			viddef.height - sb_lines -
+			viddef.height - sbqh_lines -
 			(scr_vrect.height + scr_vrect.y), draw_backtile);
 	}
 }
@@ -787,22 +786,22 @@ void SCR_UpdateScreen(void)
 
 	if (scr_drawdialog)
 	{
-		Sbar_Draw();
+		SbarQ1_Draw();
 		Draw_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
 	{
 		SCR_DrawLoading();
-		Sbar_Draw();
+		SbarQ1_Draw();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
 	{
-		Sbar_IntermissionOverlay();
+		SbarQ1_IntermissionOverlay();
 	}
 	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
 	{
-		Sbar_FinaleOverlay();
+		SbarQ1_FinaleOverlay();
 		SCR_CheckDrawCenterString();
 	}
 	else
@@ -817,7 +816,7 @@ void SCR_UpdateScreen(void)
 		SCR_DrawTurtle();
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString();
-		Sbar_Draw();
+		SbarQ1_Draw();
 		Con_DrawConsole();
 		M_Draw();
 	}

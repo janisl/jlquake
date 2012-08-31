@@ -36,8 +36,6 @@ Cvar* rcon_address;
 
 Cvar* cl_timeout;
 
-Cvar* cl_sbar;
-Cvar* cl_hudswap;
 Cvar* cl_maxfps;
 
 Cvar* entlatency;
@@ -386,7 +384,7 @@ static void Mod_ClearAll(void)
 	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
 
 	Draw_Init();
-	Sbar_Init();
+	SbarQ1_Init();
 }
 
 /*
@@ -1126,7 +1124,7 @@ void CL_Init(void)
 	//
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	cl_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
+	clqw_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_maxfps   = Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
 
@@ -1527,7 +1525,7 @@ void Host_Init(quakeparms_t* parms)
 		S_Init();
 		CLQ1_InitTEnts();
 		CDAudio_Init();
-		Sbar_Init();
+		SbarQ1_Init();
 
 		Cbuf_AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 
@@ -1597,3 +1595,5 @@ bool SV_IsServerActive()
 void SV_CvarChanged(Cvar* var)
 {
 }
+
+Cvar* svqh_teamplay;

@@ -14,9 +14,6 @@ Cvar* rcon_address;
 
 Cvar* cl_timeout;
 
-Cvar* cl_sbar;
-Cvar* cl_hudswap;
-
 Cvar* entlatency;
 
 //
@@ -1034,7 +1031,6 @@ void CL_Init(void)
 
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	cl_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
 
 	rcon_password = Cvar_Get("rcon_password", "", 0);
@@ -1471,3 +1467,5 @@ bool SV_IsServerActive()
 void SV_CvarChanged(Cvar* var)
 {
 }
+
+Cvar* svqh_teamplay;

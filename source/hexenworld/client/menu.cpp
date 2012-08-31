@@ -837,7 +837,7 @@ void M_AdjustSliders(int dir)
 		break;
 
 	case OPT_VIDEO:
-		Cvar_SetValue("cl_sbar", !cl_sbar->value);
+		Cvar_SetValue("cl_sbar", !clqh_sbar->value);
 		break;
 	}
 }

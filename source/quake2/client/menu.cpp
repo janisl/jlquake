@@ -1358,7 +1358,6 @@ VIDEO MENU
 
 extern Cvar* r_gamma;
 extern Cvar* r_fullscreen;
-extern Cvar* scr_viewsize;
 
 static menuframework_s s_opengl_menu;
 

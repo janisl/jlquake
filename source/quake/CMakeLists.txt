@@ -14,7 +14,6 @@ add_executable(jlquake
 	menu.cpp
 	net_main.cpp
 	r_part.cpp
-	sbar.cpp
 	snd_dma.cpp
 	sys_linux.cpp
 	view.cpp

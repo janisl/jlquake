@@ -21,8 +21,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // draw.h -- these are the only functions outside the refresh allowed
 // to touch the vid buffer
 
-struct image_t;
-extern image_t* draw_backtile;
-
 void Draw_Init(void);
 void Draw_FadeScreen(void);

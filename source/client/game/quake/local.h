@@ -61,4 +61,16 @@ void CLQW_SkinNextDownload();
 void CLQW_SkinSkins_f();
 void CLQW_SkinAllSkins_f();
 
+extern int sbqh_lines;					// scan lines to draw
+extern Cvar* clqw_hudswap;
+
+void SbarQ1_Init();
+int SbarQH_itoa(int num, char* buf);
+// called every frame by screen
+void SbarQ1_Draw();
+// called each frame after the level has been completed
+void SbarQ1_IntermissionOverlay();
+void SbarQ1_FinaleOverlay();
+
+#include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

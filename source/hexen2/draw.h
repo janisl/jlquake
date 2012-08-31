@@ -7,9 +7,6 @@
 
 #define MAX_DISC 18
 
-struct image_t;
-extern image_t* draw_backtile;
-
 void Draw_Init(void);
 void Draw_FadeScreen(void);
 void Draw_SmallCharacter(int x, int y, int num);

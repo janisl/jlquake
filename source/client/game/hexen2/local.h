@@ -172,4 +172,9 @@ void CLH2_LinkMissiles();
 
 void CLH2_SignonReply();
 
+extern int sbqh_lines;					// scan lines to draw
+
+int SbarQH_itoa(int num, char* buf);
+
+#include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

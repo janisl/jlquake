@@ -29,6 +29,8 @@ static Cvar* cl_graphheight;
 static Cvar* cl_graphscale;
 static Cvar* cl_graphshift;
 
+Cvar* scr_viewsize;
+
 void SCR_InitCommon()
 {
 	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);

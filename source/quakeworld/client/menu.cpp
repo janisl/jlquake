@@ -421,11 +421,11 @@ void M_AdjustSliders(int dir)
 		break;
 
 	case 11:
-		Cvar_SetValue("cl_sbar", !cl_sbar->value);
+		Cvar_SetValue("cl_sbar", !clqh_sbar->value);
 		break;
 
 	case 12:
-		Cvar_SetValue("cl_hudswap", !cl_hudswap->value);
+		Cvar_SetValue("cl_hudswap", !clqw_hudswap->value);
 	}
 }
 
@@ -514,10 +514,10 @@ void M_Options_Draw(void)
 	M_DrawCheckbox(220, 112, lookspring->value);
 
 	M_Print(16, 128, "    Use old status bar");
-	M_DrawCheckbox(220, 120, cl_sbar->value);
+	M_DrawCheckbox(220, 120, clqh_sbar->value);
 
 	M_Print(16, 136, "      HUD on left side");
-	M_DrawCheckbox(220, 128, cl_hudswap->value);
+	M_DrawCheckbox(220, 128, clqw_hudswap->value);
 
 	M_Print(16, 136, "         Video Options");
 

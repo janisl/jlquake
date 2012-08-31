@@ -50,7 +50,6 @@ console is:
 
 */
 
-Cvar* scr_viewsize;
 Cvar* scr_fov;
 Cvar* scr_centertime;
 Cvar* scr_showturtle;
@@ -264,19 +263,19 @@ static void SCR_CalcRefdef(void)
 	}
 
 //	if (size >= 120)
-//		sb_lines = 0;		// no status bar at all
+//		sbqh_lines = 0;		// no status bar at all
 //	else if (size >= 110)
-//		sb_lines = 24;		// no inventory
+//		sbqh_lines = 24;		// no inventory
 //	else
-//		sb_lines = 24+16+8;
+//		sbqh_lines = 24+16+8;
 
 	if (size >= 110)
 	{	// No status bar
-		sb_lines = 0;
+		sbqh_lines = 0;
 	}
 	else
 	{
-		sb_lines = 36;
+		sbqh_lines = 36;
 	}
 
 	size = scr_viewsize->value > 100 ? 100 : scr_viewsize->value;
@@ -284,11 +283,11 @@ static void SCR_CalcRefdef(void)
 	{
 		size = 100;
 
-		sb_lines = 0;
+		sbqh_lines = 0;
 	}
 	size /= 100;
 
-	h = viddef.height - sb_lines;
+	h = viddef.height - sbqh_lines;
 	scr_vrect.width = viddef.width * size;
 	if (scr_vrect.width < 96)
 	{
@@ -297,9 +296,9 @@ static void SCR_CalcRefdef(void)
 	}
 
 	scr_vrect.height = viddef.height * size;
-	if (scr_vrect.height > (int)viddef.height - sb_lines)
+	if (scr_vrect.height > (int)viddef.height - sbqh_lines)
 	{
-		scr_vrect.height = viddef.height - sb_lines;
+		scr_vrect.height = viddef.height - sbqh_lines;
 	}
 
 	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
@@ -408,7 +407,7 @@ void SCR_Init(void)
 	scr_turtle = R_PicFromWad("turtle");
 
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
-	cl_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+	clqh_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
 	cl_netgraph = Cvar_Get("cl_netgraph","0", 0);
 
@@ -487,7 +486,7 @@ void SCR_DrawFPS(void)
 
 	sprintf(st, "%3d FPS", lastfps);
 	x = viddef.width - String::Length(st) * 8 - 8;
-	y = viddef.height - sb_lines - 8;
+	y = viddef.height - sbqh_lines - 8;
 	UI_DrawString(x, y, st);
 }
 
@@ -641,11 +640,11 @@ void SCR_TileClear(void)
 		if (scr_vrect.x > 0)
 		{
 			// left
-			UI_TileClear(0, 0, scr_vrect.x, viddef.height - sb_lines, draw_backtile);
+			UI_TileClear(0, 0, scr_vrect.x, viddef.height - sbqh_lines, draw_backtile);
 			// right
 			UI_TileClear(scr_vrect.x + scr_vrect.width, 0,
 				viddef.width - scr_vrect.x + scr_vrect.width,
-				viddef.height - sb_lines, draw_backtile);
+				viddef.height - sbqh_lines, draw_backtile);
 		}
 		if (scr_vrect.y > 0)
 		{
@@ -657,7 +656,7 @@ void SCR_TileClear(void)
 			UI_TileClear(scr_vrect.x,
 				scr_vrect.y + scr_vrect.height,
 				scr_vrect.width,
-				viddef.height - sb_lines -
+				viddef.height - sbqh_lines -
 				(scr_vrect.height + scr_vrect.y), draw_backtile);
 		}
 	}

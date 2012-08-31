@@ -29,9 +29,8 @@ void    SCR_CenterPrint(char* str);
 
 void    SCR_TouchPics(void);
 
-extern int sb_lines;
+extern int sbqh_lines;
 
-extern Cvar* scr_viewsize;
 extern Cvar* crosshair;
 
 extern vrect_t scr_vrect;			// position of render window

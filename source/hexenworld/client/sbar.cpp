@@ -48,7 +48,6 @@ void M_DrawPic(int x, int y, image_t* pic);
 static void Sbar_DrawPic(int x, int y, image_t* pic);
 static void Sbar_DrawSubPic(int x, int y, int h, image_t* pic);
 static void Sbar_DrawTransPic(int x, int y, image_t* pic);
-static int Sbar_itoa(int num, char* buf);
 static void Sbar_DrawNum(int x, int y, int number, int digits);
 void Sbar_SortFrags(qboolean includespec);
 //static void Sbar_DrawCharacter(int x, int y, int num);
@@ -84,8 +83,6 @@ static void DrawArtifactInventory(void);
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-int sb_lines;	// scan lines to draw
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -787,42 +784,6 @@ static int CalcAC(void)
 
 //==========================================================================
 //
-// Sbar_itoa
-//
-//==========================================================================
-
-static int Sbar_itoa(int num, char* buf)
-{
-	char* str;
-	int pow10;
-	int dig;
-
-	str = buf;
-	if (num < 0)
-	{
-		*str++ = '-';
-		num = -num;
-	}
-
-	for (pow10 = 10; num >= pow10; pow10 *= 10)
-		;
-
-	do
-	{
-		pow10 /= 10;
-		dig = num / pow10;
-		*str++ = '0' + dig;
-		num -= dig * pow10;
-	}
-	while (pow10 != 1);
-
-	*str = 0;
-
-	return str - buf;
-}
-
-//==========================================================================
-//
 // Sbar_DrawNum
 //
 //==========================================================================
@@ -833,7 +794,7 @@ static void Sbar_DrawNum(int x, int y, int number, int digits)
 	char* ptr;
 	int l, frame;
 
-	l = Sbar_itoa(number, str);
+	l = SbarQH_itoa(number, str);
 	ptr = str;
 	if (l > digits)
 	{
@@ -1003,46 +964,6 @@ void Sbar_DrawFrags (void)
     }
 }
 */
-
-//==========================================================================
-//
-// Sbar_IntermissionNumber
-//
-//==========================================================================
-
-void Sbar_IntermissionNumber(int x, int y, int num, int digits, int color)
-{
-	char str[12];
-	char* ptr;
-	int l, frame;
-
-	l = Sbar_itoa(num, str);
-	ptr = str;
-	if (l > digits)
-	{
-		ptr += (l - digits);
-	}
-	if (l < digits)
-	{
-		x += (digits - l) * 24;
-	}
-
-	while (*ptr)
-	{
-		if (*ptr == '-')
-		{
-			frame = STAT_MINUS;
-		}
-		else
-		{
-			frame = *ptr - '0';
-		}
-
-		UI_DrawPic(x,y,sb_nums[frame]);
-		x += 24;
-		ptr++;
-	}
-}
 
 void FindColor(int slot, int* color1, int* color2)
 {

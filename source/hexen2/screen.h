@@ -14,9 +14,7 @@ void SCR_DrawLoading(void);
 
 int SCR_ModalMessage(const char* text);
 
-extern int sb_lines;
-
-extern Cvar* scr_viewsize;
+extern int sbqh_lines;
 
 extern int total_loading_size, current_loading_size, loading_stage;
 

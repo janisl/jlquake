@@ -38,7 +38,7 @@ static void Mod_ClearAll(void)
 	translate_texture = NULL;
 
 	Draw_Init();
-	Sbar_Init();
+	SbarQ1_Init();
 }
 
 /*

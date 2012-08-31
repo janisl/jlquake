@@ -22,9 +22,6 @@
 //
 extern Cvar* cl_warncmd;
 
-extern Cvar* cl_sbar;
-extern Cvar* cl_hudswap;
-
 extern Cvar* playerclass;
 extern Cvar* spectator;
 

@@ -70,7 +70,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "net.h"
 #include "cmd.h"
 #ifndef DEDICATED
-#include "sbar.h"
 #include "render.h"
 #include "client.h"
 #include "keys.h"

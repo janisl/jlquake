@@ -28,8 +28,6 @@ extern Cvar* cl_crossx;
 extern Cvar* cl_crossy;
 extern Cvar* crosshaircolor;
 
-image_t* draw_backtile;
-
 image_t* cs_texture;	// crosshair texture
 
 /*

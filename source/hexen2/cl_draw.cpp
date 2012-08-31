@@ -8,8 +8,6 @@
 
 #include "quakedef.h"
 
-image_t* draw_backtile;
-
 image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
