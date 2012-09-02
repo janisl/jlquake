@@ -534,16 +534,6 @@ void CL_FullServerinfo_f(void)
 				common->Printf("Version %1.2f Server\n", v);
 			}
 			clqh_server_version = v;
-			if ((int)(clqh_server_version * 100) > (int)(VERSION * 100))
-			{
-				common->Printf("The server is running v%4.2f, you have v%4.2f, please go to www.hexenworld.com and update your client to join\n",clqh_server_version,VERSION);
-				CL_Disconnect_f();
-			}
-			if ((int)(clqh_server_version * 100) < (int)(VERSION * 100))
-			{
-				common->Printf("The server is running an old version (v%4.2f), you have v%4.2f, please ask server admin to update to latest version\n",clqh_server_version,VERSION);
-				CL_Disconnect_f();
-			}
 		}
 	}
 }
