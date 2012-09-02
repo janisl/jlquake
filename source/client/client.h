@@ -171,8 +171,8 @@ struct clientActive_t
 	vec3_t qh_simangles;
 
 	// information that is static for the entire time connected to a server
-	char qh_model_name[MAX_MODELS_Q1][MAX_QPATH];
-	char qh_sound_name[MAX_SOUNDS_Q1][MAX_QPATH];
+	char qh_model_name[BIGGEST_MAX_MODELS][MAX_QPATH];
+	char qh_sound_name[BIGGEST_MAX_SOUNDS][MAX_QPATH];
 
 	in_usercmd_t qh_cmd;			// last command sent to the server
 
