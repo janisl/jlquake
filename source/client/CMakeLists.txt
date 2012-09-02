@@ -10,9 +10,11 @@ set(CLIENT_FILES
 	game/hexen2/entities.cpp
 	game/hexen2/explosion.cpp
 	game/hexen2/light_effects.cpp
+	game/hexen2/menu.cpp
 	game/hexen2/parse.cpp
 	game/hexen2/particle_effects.cpp
 	game/hexen2/projectiles.cpp
+	game/hexen2/status_bar.cpp
 	game/hexen2/stream.cpp
 	game/hexen2/temporary_entities.cpp
 	game/quake/connection.cpp

@@ -14,7 +14,6 @@ add_executable(jlhexen2
 	menu.cpp
 	net_main.cpp
 	r_part.cpp
-	sbar.cpp
 	view.cpp
 	sys_linux.cpp
 	snd_dma.cpp

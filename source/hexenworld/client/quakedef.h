@@ -18,7 +18,6 @@
 #include "protocol.h"
 #include "cmd.h"
 #include "../../common/hexen2strings.h"
-#include "sbar.h"
 #include "render.h"
 #include "client.h"
 #include "keys.h"
@@ -65,9 +64,3 @@ void Host_Quit_f(void);
 
 extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
-
-extern unsigned int defLosses;				// Defenders losses in Siege
-extern unsigned int attLosses;				// Attackers Losses in Siege
-
-extern int cl_keyholder;
-extern int cl_doc;

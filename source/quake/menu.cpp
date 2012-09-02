@@ -104,21 +104,6 @@ void M_Print(int cx, int cy, const char* str)
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 128);
 }
 
-void M_PrintWhite(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str);
-}
-
-void M_DrawTransPic(int x, int y, image_t* pic)
-{
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y, pic);
-}
-
-void M_DrawPic(int x, int y, image_t* pic)
-{
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y, pic);
-}
-
 byte translationTable[256];
 
 static byte menuplyr_pixels[4096];
@@ -134,15 +119,15 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	cx = x;
 	cy = y;
 	p = R_CachePic("gfx/box_tl.lmp");
-	M_DrawTransPic(cx, cy, p);
+	MQH_DrawPic(cx, cy, p);
 	p = R_CachePic("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 	}
 	p = R_CachePic("gfx/box_bl.lmp");
-	M_DrawTransPic(cx, cy + 8, p);
+	MQH_DrawPic(cx, cy + 8, p);
 
 	// draw middle
 	cx += 8;
@@ -150,7 +135,7 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	{
 		cy = y;
 		p = R_CachePic("gfx/box_tm.lmp");
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 		p = R_CachePic("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
@@ -159,10 +144,10 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 			{
 				p = R_CachePic("gfx/box_mm2.lmp");
 			}
-			M_DrawTransPic(cx, cy, p);
+			MQH_DrawPic(cx, cy, p);
 		}
 		p = R_CachePic("gfx/box_bm.lmp");
-		M_DrawTransPic(cx, cy + 8, p);
+		MQH_DrawPic(cx, cy + 8, p);
 		width -= 2;
 		cx += 16;
 	}
@@ -170,15 +155,15 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	// draw right side
 	cy = y;
 	p = R_CachePic("gfx/box_tr.lmp");
-	M_DrawTransPic(cx, cy, p);
+	MQH_DrawPic(cx, cy, p);
 	p = R_CachePic("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 	}
 	p = R_CachePic("gfx/box_br.lmp");
-	M_DrawTransPic(cx, cy + 8, p);
+	MQH_DrawPic(cx, cy + 8, p);
 }
 
 void M_DrawField(int x, int y, field_t* edit, bool showCursor)
@@ -247,14 +232,14 @@ void M_Main_Draw(void)
 	int f;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/ttl_main.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	M_DrawTransPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
 
 	f = (int)(host_time * 10) % 6;
 
-	M_DrawTransPic(54, 32 + m_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + m_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -336,14 +321,14 @@ void M_SinglePlayer_Draw(void)
 	int f;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/ttl_sgl.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	M_DrawTransPic(72, 32, R_CachePic("gfx/sp_menu.lmp"));
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic(72, 32, R_CachePic("gfx/sp_menu.lmp"));
 
 	f = (int)(host_time * 10) % 6;
 
-	M_DrawTransPic(54, 32 + m_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + m_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -499,7 +484,7 @@ void M_Load_Draw(void)
 	image_t* p;
 
 	p = R_CachePic("gfx/p_load.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
 		M_Print(16, 32 + 8 * i, m_filenames[i]);
@@ -515,7 +500,7 @@ void M_Save_Draw(void)
 	image_t* p;
 
 	p = R_CachePic("gfx/p_save.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
 		M_Print(16, 32 + 8 * i, m_filenames[i]);
@@ -629,20 +614,20 @@ void M_MultiPlayer_Draw(void)
 	int f;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	M_DrawTransPic(72, 32, R_CachePic("gfx/mp_menu.lmp"));
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic(72, 32, R_CachePic("gfx/mp_menu.lmp"));
 
 	f = (int)(host_time * 10) % 6;
 
-	M_DrawTransPic(54, 32 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 
 	if (tcpipAvailable)
 	{
 		return;
 	}
-	M_PrintWhite((320 / 2) - ((27 * 8) / 2), 148, "No Communications Available");
+	MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 148, "No Communications Available");
 }
 
 
@@ -732,9 +717,9 @@ void M_Setup_Draw(void)
 {
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(64, 40, "Hostname");
 	M_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
@@ -749,11 +734,11 @@ void M_Setup_Draw(void)
 	M_Print(72, 140, "Accept Changes");
 
 	p = R_CachePic("gfx/bigbox.lmp");
-	M_DrawTransPic(160, 64, p);
+	MQH_DrawPic(160, 64, p);
 	p = R_CachePicWithTransPixels("gfx/menuplyr.lmp", menuplyr_pixels);
 	CL_CalcQuakeSkinTranslation(setup_top, setup_bottom, translationTable);
 	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translationTable, R_GetImageWidth(p), R_GetImageHeight(p));
-	M_DrawPic(172, 72, translate_texture);
+	MQH_DrawPic(172, 72, translate_texture);
 
 	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
@@ -936,9 +921,9 @@ void M_Net_Draw(void)
 	int f;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	f = 89;
 	if (tcpipAvailable)
@@ -949,13 +934,13 @@ void M_Net_Draw(void)
 	{
 		p = R_CachePic("gfx/dim_tcp.lmp");
 	}
-	M_DrawTransPic(72, f, p);
+	MQH_DrawPic(72, f, p);
 
 	if (m_net_items == 5)	// JDC, could just be removed
 	{
 		f += 19;
 		p = R_CachePic("gfx/netmen5.lmp");
-		M_DrawTransPic(72, f, p);
+		MQH_DrawPic(72, f, p);
 	}
 
 	f = (320 - 26 * 8) / 2;
@@ -967,7 +952,7 @@ void M_Net_Draw(void)
 	M_Print(f, 166, net_helpMessage[m_net_cursor * 4 + 3]);
 
 	f = (int)(host_time * 10) % 6;
-	M_DrawTransPic(54, 32 + m_net_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + m_net_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -1191,9 +1176,9 @@ void M_Options_Draw(void)
 	float r;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_option.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(16, 32, "    Customize controls");
 	M_Print(16, 40, "         Go to console");
@@ -1393,7 +1378,7 @@ void M_Keys_Draw(void)
 	image_t* p;
 
 	p = R_CachePic("gfx/ttl_cstm.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	if (bind_grab)
 	{
@@ -1526,7 +1511,7 @@ void M_Menu_Video_f(void)
 void M_Video_Draw(void)
 {
 	image_t* p = R_CachePic("gfx/vidmodes.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the");
@@ -1572,7 +1557,7 @@ void M_Menu_Help_f(void)
 
 void M_Help_Draw(void)
 {
-	M_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", help_page)));
+	MQH_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", help_page)));
 }
 
 
@@ -1716,27 +1701,27 @@ void M_Quit_Draw(void)
 
 #ifdef _WIN32
 	M_DrawTextBox(0, 0, 38, 23);
-	M_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
-	M_PrintWhite(16, 28,  "Programming        Art \n");
+	MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
+	MQH_PrintWhite(16, 28,  "Programming        Art \n");
 	M_Print(16, 36,  " John Carmack       Adrian Carmack\n");
 	M_Print(16, 44,  " Michael Abrash     Kevin Cloud\n");
 	M_Print(16, 52,  " John Cash          Paul Steed\n");
 	M_Print(16, 60,  " Dave 'Zoid' Kirsch\n");
-	M_PrintWhite(16, 68,  "Design             Biz\n");
+	MQH_PrintWhite(16, 68,  "Design             Biz\n");
 	M_Print(16, 76,  " John Romero        Jay Wilbur\n");
 	M_Print(16, 84,  " Sandy Petersen     Mike Wilson\n");
 	M_Print(16, 92,  " American McGee     Donna Jackson\n");
 	M_Print(16, 100,  " Tim Willits        Todd Hollenshead\n");
-	M_PrintWhite(16, 108, "Support            Projects\n");
+	MQH_PrintWhite(16, 108, "Support            Projects\n");
 	M_Print(16, 116, " Barrett Alexander  Shawn Green\n");
-	M_PrintWhite(16, 124, "Sound Effects\n");
+	MQH_PrintWhite(16, 124, "Sound Effects\n");
 	M_Print(16, 132, " Trent Reznor and Nine Inch Nails\n\n");
-	M_PrintWhite(16, 140, "Quake is a trademark of Id Software,\n");
-	M_PrintWhite(16, 148, "inc., (c)1996 Id Software, inc. All\n");
-	M_PrintWhite(16, 156, "rights reserved. NIN logo is a\n");
-	M_PrintWhite(16, 164, "registered trademark licensed to\n");
-	M_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
-	M_PrintWhite(16, 180, "reserved. Press y to exit\n");
+	MQH_PrintWhite(16, 140, "Quake is a trademark of Id Software,\n");
+	MQH_PrintWhite(16, 148, "inc., (c)1996 Id Software, inc. All\n");
+	MQH_PrintWhite(16, 156, "rights reserved. NIN logo is a\n");
+	MQH_PrintWhite(16, 164, "registered trademark licensed to\n");
+	MQH_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
+	MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
 #else
 	M_DrawTextBox(56, 76, 24, 4);
 	M_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
@@ -1798,10 +1783,10 @@ void M_LanConfig_Draw(void)
 	const char* startJoin;
 	const char* protocol;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_multi.lmp");
 	basex = (320 - R_GetImageWidth(p)) / 2;
-	M_DrawPic(basex, 4, p);
+	MQH_DrawPic(basex, 4, p);
 
 	if (StartingGame)
 	{
@@ -1834,7 +1819,7 @@ void M_LanConfig_Draw(void)
 
 	if (*m_return_reason)
 	{
-		M_PrintWhite(basex, 128, m_return_reason);
+		MQH_PrintWhite(basex, 128, m_return_reason);
 	}
 }
 
@@ -2127,9 +2112,9 @@ void M_GameOptions_Draw(void)
 	image_t* p;
 	int x;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_DrawTextBox(152, 32, 10, 1);
 	M_Print(160, 40, "begin game");
@@ -2521,7 +2506,7 @@ void M_Search_Draw(void)
 	int x;
 
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 	x = (320 / 2) - ((12 * 8) / 2) + 4;
 	M_DrawTextBox(x - 8, 32, 12, 1);
 	M_Print(x, 40, "Searching...");
@@ -2544,7 +2529,7 @@ void M_Search_Draw(void)
 		return;
 	}
 
-	M_PrintWhite((320 / 2) - ((22 * 8) / 2), 64, "No Quake servers found");
+	MQH_PrintWhite((320 / 2) - ((22 * 8) / 2), 64, "No Quake servers found");
 	if ((realtime - searchCompleteTime) < 3.0)
 	{
 		return;
@@ -2601,7 +2586,7 @@ void M_ServerList_Draw(void)
 	}
 
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 	for (n = 0; n < hostCacheCount; n++)
 	{
 		if (hostcache[n].maxusers)
@@ -2618,7 +2603,7 @@ void M_ServerList_Draw(void)
 
 	if (*m_return_reason)
 	{
-		M_PrintWhite(16, 148, m_return_reason);
+		MQH_PrintWhite(16, 148, m_return_reason);
 	}
 }
 

@@ -19,6 +19,7 @@
 viddef_t viddef;
 
 image_t* char_texture;
+image_t* char_smalltexture;
 
 vec4_t g_color_table[32] =
 {
@@ -236,6 +237,58 @@ void UI_DrawString(int x, int y, const char* str, int mask)
 		UI_DrawChar(x, y, ((byte)*str) | mask, color[0], color[1], color[2], color[3]);
 		str++;
 		x += 8;
+	}
+}
+
+static void UI_SmallCharacter(int x, int y, int num, float r, float g, float b, float a)
+{
+	if (num < 32)
+	{
+		num = 0;
+	}
+	else if (num >= 'a' && num <= 'z')
+	{
+		num -= 64;
+	}
+	else if (num > '_')
+	{
+		num = 0;
+	}
+	else
+	{
+		num -= 32;
+	}
+
+	if (num == 0)
+	{
+		return;
+	}
+
+	UI_DrawCharBase(x, y, num, 8, 8, char_smalltexture, 16, 4, r, g, b, a);
+}
+
+void UI_DrawSmallString(int x, int y, const char* str)
+{
+	vec4_t color;
+	Vector4Set(color, 1, 1, 1, 1);
+	while (*str)
+	{
+		if (Q_IsColorString(str))
+		{
+			if (*(str + 1) == COLOR_NULL)
+			{
+				Vector4Set(color, 1, 1, 1, 1);
+			}
+			else
+			{
+				Com_Memcpy(color, g_color_table[ColorIndex(*(str + 1))], sizeof(color));
+			}
+			str += 2;
+			continue;
+		}
+		UI_SmallCharacter(x, y, *str, color[0], color[1], color[2], color[3]);
+		str++;
+		x += 6;
 	}
 }
 

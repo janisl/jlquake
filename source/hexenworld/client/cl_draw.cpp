@@ -5,7 +5,6 @@
 #include "quakedef.h"
 
 image_t* cs_texture;	// crosshair texture
-image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
 //=============================================================================
@@ -52,56 +51,6 @@ void Draw_Crosshair(void)
 	}
 }
 
-
-//==========================================================================
-//
-// Draw_SmallCharacter
-//
-// Draws a small character that is clipped at the bottom edge of the
-// screen.
-//
-//==========================================================================
-void Draw_SmallCharacter(int x, int y, int num)
-{
-	if (num < 32)
-	{
-		num = 0;
-	}
-	else if (num >= 'a' && num <= 'z')
-	{
-		num -= 64;
-	}
-	else if (num > '_')
-	{
-		num = 0;
-	}
-	else
-	{
-		num -= 32;
-	}
-
-	if (num == 0)
-	{
-		return;
-	}
-
-	UI_DrawCharBase(x, y, num, 8, 8, char_smalltexture, 16, 4);
-}
-
-//==========================================================================
-//
-// Draw_SmallString
-//
-//==========================================================================
-void Draw_SmallString(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		Draw_SmallCharacter(x, y, *str);
-		str++;
-		x += 6;
-	}
-}
 
 int M_DrawBigCharacter(int x, int y, int num, int numNext)
 {
@@ -244,56 +193,4 @@ void R_NetGraph(void)
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
-}
-
-void R_DrawName(vec3_t origin, char* Name, int Red)
-{
-	if (!Name)
-	{
-		return;
-	}
-
-	int u;
-	int v;
-	if (!R_GetScreenPosFromWorldPos(origin, u, v))
-	{
-		return;
-	}
-
-	u -= String::Length(Name) * 4;
-
-	if (clhw_siege)
-	{
-		if (Red > 10)
-		{
-			Red -= 10;
-			UI_DrawChar(u, v, 145);	//key
-			u += 8;
-		}
-		if (Red > 0 && Red < 3)	//def
-		{
-			if (Red == true)
-			{
-				UI_DrawChar(u, v, 143);	//shield
-			}
-			else
-			{
-				UI_DrawChar(u, v, 130);	//crown
-			}
-			UI_DrawString(u + 8, v, Name, 256);
-		}
-		else if (!Red)
-		{
-			UI_DrawChar(u, v, 144);	//sword
-			UI_DrawString(u + 8, v, Name);
-		}
-		else
-		{
-			UI_DrawString(u + 8, v, Name);
-		}
-	}
-	else
-	{
-		UI_DrawString(u, v, Name);
-	}
 }

@@ -164,7 +164,6 @@ void Host_Name_f(void)
 	}
 }
 
-extern const char* ClassNames[NUM_CLASSES];	//from menu.c
 void Host_Class_f(void)
 {
 	float newClass;
@@ -177,7 +176,7 @@ void Host_Class_f(void)
 		}
 		else
 		{
-			common->Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,ClassNames[(int)clh2_playerclass->value - 1]);
+			common->Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,h2_ClassNames[(int)clh2_playerclass->value - 1]);
 		}
 		return;
 	}

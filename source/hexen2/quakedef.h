@@ -60,7 +60,6 @@
 #include "protocol.h"
 #include "cmd.h"
 #ifndef DEDICATED
-#include "sbar.h"
 #include "render.h"
 #endif
 #include "client.h"

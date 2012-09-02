@@ -310,7 +310,7 @@ static void Mod_ClearAll(void)
 	Com_Memset(translate_texture, 0, sizeof(translate_texture));
 
 	Draw_Init();
-	Sbar_Init();
+	SbarH2_Init();
 }
 
 /*
@@ -341,7 +341,7 @@ void CL_ClearState(void)
 
 	plaquemessage = "";
 
-	SB_InvReset();
+	SbarH2_InvReset();
 }
 
 /*
@@ -1390,7 +1390,7 @@ void Host_Init(quakeparms_t* parms)
 		CLH2_InitTEnts();
 		CDAudio_Init();
 		MIDI_Init();
-		Sbar_Init();
+		SbarH2_Init();
 
 		host_initialized = true;
 
@@ -1459,3 +1459,4 @@ void SV_CvarChanged(Cvar* var)
 }
 
 Cvar* svqh_teamplay;
+int svh2_kingofhill;

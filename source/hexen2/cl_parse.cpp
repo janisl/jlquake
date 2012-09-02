@@ -548,7 +548,7 @@ void CL_ParseClientdata(int bits)
         SB_Changed();
 
     if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
-        SB_InvChanged();*/
+        SbarH2_InvChanged();*/
 }
 
 /*
@@ -1369,7 +1369,7 @@ void CL_ParseServerMessage(void)
 
 			if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
 			{
-				SB_InvChanged();
+				SbarH2_InvChanged();
 			}
 			break;
 		}

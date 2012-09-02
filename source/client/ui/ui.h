@@ -36,6 +36,7 @@ struct viddef_t
 
 extern viddef_t viddef;					// global video state
 extern image_t* char_texture;
+extern image_t* char_smalltexture;
 extern vec4_t g_color_table[32];
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
@@ -53,6 +54,7 @@ void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int nu
 	int numberOfRows, float r = 1, float g = 1, float b = 1, float a = 1);
 void UI_DrawChar(int x, int y, int num, float r = 1, float g = 1, float b = 1, float a = 1);
 void UI_DrawString(int x, int y, const char* str, int mask = 0);
+void UI_DrawSmallString(int x, int y, const char* str);
 
 void SCR_FillRect(float x, float y, float width, float height, const float* color);
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader);

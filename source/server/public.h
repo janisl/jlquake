@@ -17,6 +17,8 @@
 #ifndef _SERVER_PUBLIC_H
 #define _SERVER_PUBLIC_H
 
+extern int svh2_kingofhill;
+
 bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);
 

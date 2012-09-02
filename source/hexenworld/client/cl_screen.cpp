@@ -228,7 +228,7 @@ static void SCR_CalcRefdef(void)
 
 
 // force the status bar to redraw
-	Sbar_Changed();
+	SbarH2_InvChanged();
 
 //========================================
 
@@ -324,7 +324,7 @@ void SCR_SizeUp_f(void)
 	if (scr_viewsize->value < 110)
 	{
 		Cvar_SetValue("viewsize",scr_viewsize->value + 10);
-		SB_ViewSizeChanged();
+		SbarH2_ViewSizeChanged();
 	}
 }
 
@@ -339,7 +339,7 @@ Keybinding command
 void SCR_SizeDown_f(void)
 {
 	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
-	SB_ViewSizeChanged();
+	SbarH2_ViewSizeChanged();
 }
 
 /*
@@ -708,7 +708,7 @@ void I_Print(int cx, int cy, char* str)
 
 void SB_IntermissionOverlay(void)
 {
-	Sbar_DeathmatchOverlay();
+	SbarH2_DeathmatchOverlay();
 }
 
 //==========================================================================
@@ -783,23 +783,21 @@ void SCR_UpdateScreen(void)
 
 	if (scr_drawdialog)
 	{
-		Sbar_Draw();
+		SbarH2_Draw();
 		Draw_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
 	{
-		Sbar_Draw();
+		SbarH2_Draw();
 		Draw_FadeScreen();
 		SCR_DrawLoading();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
 	{
-		Sbar_IntermissionOverlay();
 	}
 	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
 	{
-		Sbar_FinaleOverlay();
 		SCR_CheckDrawCenterString();
 	}
 	else
@@ -813,7 +811,7 @@ void SCR_UpdateScreen(void)
 		SCR_DrawTurtle();
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString();
-		Sbar_Draw();
+		SbarH2_Draw();
 		Plaque_Draw(plaquemessage,0);
 		SCR_DrawNet();
 		Con_DrawConsole();

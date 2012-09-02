@@ -31,7 +31,7 @@ static void Mod_ClearAll(void)
 	Com_Memset(translate_texture, 0, sizeof(translate_texture));
 
 	Draw_Init();
-	SB_Init();
+	SbarH2_Init();
 }
 
 /*
@@ -64,7 +64,7 @@ void CL_ClearState(void)
 
 	plaquemessage = "";
 
-	SB_InvReset();
+	SbarH2_InvReset();
 }
 
 /*

@@ -414,8 +414,6 @@ void CL_ParseDownload(void)
 CL_ParseServerData
 ==================
 */
-int cl_keyholder = -1;
-int cl_doc = -1;
 void CL_ParseServerData(void)
 {
 	char* str;
@@ -515,8 +513,8 @@ void CL_ParseServerData(void)
 
 	// now waiting for downloads, etc
 	cls.state = CA_LOADING;
-	cl_keyholder = -1;
-	cl_doc = -1;
+	clhw_keyholder = -1;
+	clhw_doc = -1;
 }
 
 /*
@@ -814,7 +812,7 @@ void CL_UpdateUserinfo(void)
         Cvar_SetValue ("playerclass",player->playerclass);
     }
 */
-	Sbar_Changed();
+	SbarH2_InvChanged();
 	player->Translated = false;
 	CL_NewTranslation(slot);
 }
@@ -832,7 +830,7 @@ void CL_SetStat(int stat, int value)
 		common->FatalError("CL_SetStat: %i is invalid", stat);
 	}
 
-	Sbar_Changed();
+	SbarH2_InvChanged();
 
 	cl.qh_stats[stat] = value;
 }
@@ -966,11 +964,6 @@ CL_ParseServerMessage
 int received_framecount;
 int LastServerMessageSize = 0;
 
-byte cl_fraglimit;
-float cl_timelimit;
-float cl_server_time_offset;
-unsigned int defLosses;		// Defenders losses in Siege
-unsigned int attLosses;		// Attackers Losses in Siege
 void CL_ParseServerMessage(void)
 {
 	int cmd;
@@ -1110,7 +1103,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_updatefrags:
-			Sbar_Changed();
+			SbarH2_InvChanged();
 			i = net_message.ReadByte();
 			if (i >= MAX_CLIENTS_QHW)
 			{
@@ -1165,8 +1158,8 @@ void CL_ParseServerMessage(void)
 
 		case hwsvc_updatesiegelosses:
 			// This dude killed someone, update his frags and level
-			defLosses = net_message.ReadByte();
-			attLosses = net_message.ReadByte();
+			clhw_defLosses = net_message.ReadByte();
+			clhw_attLosses = net_message.ReadByte();
 			break;
 
 		case hwsvc_updatesiegeteam:
@@ -1182,28 +1175,28 @@ void CL_ParseServerMessage(void)
 		case hwsvc_updatesiegeinfo:
 			// This dude killed someone, update his frags and level
 			clhw_siege = true;
-			cl_timelimit = net_message.ReadByte() * 60;
-			cl_fraglimit = net_message.ReadByte();
+			clhw_timelimit = net_message.ReadByte() * 60;
+			clhw_fraglimit = net_message.ReadByte();
 			break;
 
 		case hwsvc_haskey:
-			cl_keyholder = net_message.ReadShort() - 1;
+			clhw_keyholder = net_message.ReadShort() - 1;
 			break;
 
 		case hwsvc_isdoc:
-			cl_doc = net_message.ReadShort() - 1;
+			clhw_doc = net_message.ReadShort() - 1;
 			break;
 
 		case hwsvc_nonehaskey:
-			cl_keyholder = -1;
+			clhw_keyholder = -1;
 			break;
 
 		case hwsvc_nodoc:
-			cl_doc = -1;
+			clhw_doc = -1;
 			break;
 
 		case h2svc_time:
-			cl_server_time_offset = ((int)net_message.ReadFloat()) - cl.qh_serverTimeFloat;
+			clhw_server_time_offset = ((int)net_message.ReadFloat()) - cl.qh_serverTimeFloat;
 			break;
 
 		case h2svc_spawnbaseline:
@@ -1632,7 +1625,7 @@ void CL_ParseServerMessage(void)
 
 			if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
 			{
-				SB_InvChanged();
+				SbarH2_InvChanged();
 			}
 			break;
 

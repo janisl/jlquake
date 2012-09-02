@@ -18,3 +18,10 @@
 #include "local.h"
 
 bool clhw_siege;
+int clhw_keyholder = -1;
+int clhw_doc = -1;
+float clhw_timelimit;
+float clhw_server_time_offset;
+byte clhw_fraglimit;
+unsigned int clhw_defLosses;		// Defenders losses in Siege
+unsigned int clhw_attLosses;		// Attackers Losses in Siege

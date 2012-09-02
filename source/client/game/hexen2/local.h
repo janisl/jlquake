@@ -49,6 +49,18 @@ extern int clhw_playerindex[MAX_PLAYER_CLASS];
 extern bool h2intro_playing;
 
 extern bool clhw_siege;
+extern int clhw_keyholder;
+extern int clhw_doc;
+extern float clhw_timelimit;
+extern float clhw_server_time_offset;
+extern byte clhw_fraglimit;
+extern unsigned int clhw_defLosses;				// Defenders losses in Siege
+extern unsigned int clhw_attLosses;				// Attackers Losses in Siege
+
+extern int sbqh_lines;					// scan lines to draw
+
+extern const char* h2_ClassNames[NUM_CLASSES_H2MP];
+extern const char* hw_ClassNames[MAX_PLAYER_CLASS];
 
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
@@ -172,9 +184,13 @@ void CLH2_LinkMissiles();
 
 void CLH2_SignonReply();
 
-extern int sbqh_lines;					// scan lines to draw
-
 int SbarQH_itoa(int num, char* buf);
+void SbarH2_Init();
+void SbarH2_DeathmatchOverlay();
+void SbarH2_Draw();
+void SbarH2_InvChanged();
+void SbarH2_InvReset();
+void SbarH2_ViewSizeChanged();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

@@ -385,7 +385,7 @@ Keybinding command
 void SCR_SizeUp_f(void)
 {
 	Cvar_SetValue("viewsize",scr_viewsize->value + 10);
-	SB_ViewSizeChanged();
+	SbarH2_ViewSizeChanged();
 }
 
 
@@ -399,7 +399,7 @@ Keybinding command
 void SCR_SizeDown_f(void)
 {
 	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
-	SB_ViewSizeChanged();
+	SbarH2_ViewSizeChanged();
 }
 
 /*
@@ -882,7 +882,7 @@ void SB_IntermissionOverlay(void)
 
 	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
-		Sbar_DeathmatchOverlay();
+		SbarH2_DeathmatchOverlay();
 		return;
 	}
 
@@ -1017,7 +1017,7 @@ void SB_IntermissionOverlay(void)
 		}
 		else
 		{
-			M_PrintWhite(bx, by, temp);
+			MQH_PrintWhite(bx, by, temp);
 		}
 
 		elapsed -= size;
@@ -1106,13 +1106,13 @@ void SCR_UpdateScreen(void)
 
 	if (scr_drawdialog)
 	{
-		SB_Draw();
+		SbarH2_Draw();
 		Draw_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
 	{
-		SB_Draw();
+		SbarH2_Draw();
 		Draw_FadeScreen();
 		SCR_DrawLoading();
 	}
@@ -1142,7 +1142,7 @@ void SCR_UpdateScreen(void)
 		SCR_DrawTurtle();
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString();
-		SB_Draw();
+		SbarH2_Draw();
 		Plaque_Draw(plaquemessage,0);
 		Con_DrawConsole();
 		M_Draw();

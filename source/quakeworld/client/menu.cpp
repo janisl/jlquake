@@ -109,21 +109,6 @@ void M_Print(int cx, int cy, const char* str)
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 128);
 }
 
-void M_PrintWhite(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str);
-}
-
-void M_DrawTransPic(int x, int y, image_t* pic)
-{
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y, pic);
-}
-
-void M_DrawPic(int x, int y, image_t* pic)
-{
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y, pic);
-}
-
 void M_DrawTextBox(int x, int y, int width, int lines)
 {
 	image_t* p;
@@ -134,15 +119,15 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	cx = x;
 	cy = y;
 	p = R_CachePic("gfx/box_tl.lmp");
-	M_DrawTransPic(cx, cy, p);
+	MQH_DrawPic(cx, cy, p);
 	p = R_CachePic("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 	}
 	p = R_CachePic("gfx/box_bl.lmp");
-	M_DrawTransPic(cx, cy + 8, p);
+	MQH_DrawPic(cx, cy + 8, p);
 
 	// draw middle
 	cx += 8;
@@ -150,7 +135,7 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	{
 		cy = y;
 		p = R_CachePic("gfx/box_tm.lmp");
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 		p = R_CachePic("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
@@ -159,10 +144,10 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 			{
 				p = R_CachePic("gfx/box_mm2.lmp");
 			}
-			M_DrawTransPic(cx, cy, p);
+			MQH_DrawPic(cx, cy, p);
 		}
 		p = R_CachePic("gfx/box_bm.lmp");
-		M_DrawTransPic(cx, cy + 8, p);
+		MQH_DrawPic(cx, cy + 8, p);
 		width -= 2;
 		cx += 16;
 	}
@@ -170,15 +155,15 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	// draw right side
 	cy = y;
 	p = R_CachePic("gfx/box_tr.lmp");
-	M_DrawTransPic(cx, cy, p);
+	MQH_DrawPic(cx, cy, p);
 	p = R_CachePic("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
-		M_DrawTransPic(cx, cy, p);
+		MQH_DrawPic(cx, cy, p);
 	}
 	p = R_CachePic("gfx/box_br.lmp");
-	M_DrawTransPic(cx, cy + 8, p);
+	MQH_DrawPic(cx, cy + 8, p);
 }
 
 //=============================================================================
@@ -241,14 +226,14 @@ void M_Main_Draw(void)
 	int f;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/ttl_main.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	M_DrawTransPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
 
 	f = (int)(realtime * 10) % 6;
 
-	M_DrawTransPic(54, 32 + m_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + m_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -476,9 +461,9 @@ void M_Options_Draw(void)
 	float r;
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
 	p = R_CachePic("gfx/p_option.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(16, 32, "    Customize controls");
 	M_Print(16, 40, "         Go to console");
@@ -685,7 +670,7 @@ void M_Keys_Draw(void)
 	image_t* p;
 
 	p = R_CachePic("gfx/ttl_cstm.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	if (bind_grab)
 	{
@@ -818,7 +803,7 @@ void M_Menu_Video_f(void)
 void M_Video_Draw(void)
 {
 	image_t* p = R_CachePic("gfx/vidmodes.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the");
@@ -864,7 +849,7 @@ void M_Menu_Help_f(void)
 
 void M_Help_Draw(void)
 {
-	M_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", help_page)));
+	MQH_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", help_page)));
 }
 
 
@@ -1004,15 +989,15 @@ void M_SinglePlayer_Draw(void)
 {
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-//	M_DrawTransPic (16, 4, R_CachePic ("gfx/qplaque.lmp") );
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+//	MQH_DrawPic (16, 4, R_CachePic ("gfx/qplaque.lmp") );
 	p = R_CachePic("gfx/ttl_sgl.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-//	M_DrawTransPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+//	MQH_DrawPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
 
 	M_DrawTextBox(60, 10 * 8, 23, 4);
-	M_PrintWhite(92, 12 * 8, "QuakeWorld is for");
-	M_PrintWhite(88, 13 * 8, "Internet play only");
+	MQH_PrintWhite(92, 12 * 8, "QuakeWorld is for");
+	MQH_PrintWhite(88, 13 * 8, "Internet play only");
 
 }
 
@@ -1033,20 +1018,20 @@ void M_MultiPlayer_Draw(void)
 {
 	image_t* p;
 
-	M_DrawTransPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-//	M_DrawTransPic (16, 4, R_CachePic ("gfx/qplaque.lmp") );
+	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+//	MQH_DrawPic (16, 4, R_CachePic ("gfx/qplaque.lmp") );
 	p = R_CachePic("gfx/p_multi.lmp");
-	M_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-//	M_DrawTransPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
+	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+//	MQH_DrawPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
 
 	M_DrawTextBox(46, 8 * 8, 27, 9);
-	M_PrintWhite(72, 10 * 8, "If you want to find QW  ");
-	M_PrintWhite(72, 11 * 8, "games, head on over to: ");
+	MQH_PrintWhite(72, 10 * 8, "If you want to find QW  ");
+	MQH_PrintWhite(72, 11 * 8, "games, head on over to: ");
 	M_Print(72, 12 * 8, "   www.quakeworld.net   ");
-	M_PrintWhite(72, 13 * 8, "          or            ");
+	MQH_PrintWhite(72, 13 * 8, "          or            ");
 	M_Print(72, 14 * 8, "   www.quakespy.com     ");
-	M_PrintWhite(72, 15 * 8, "For pointers on getting ");
-	M_PrintWhite(72, 16 * 8, "        started!        ");
+	MQH_PrintWhite(72, 15 * 8, "For pointers on getting ");
+	MQH_PrintWhite(72, 16 * 8, "        started!        ");
 }
 
 void M_MultiPlayer_Key(int key)
@@ -1104,7 +1089,7 @@ void M_Quit_Draw(void)
 	{
 		if (**p == '0')
 		{
-			M_PrintWhite(16, y, *p + 1);
+			MQH_PrintWhite(16, y, *p + 1);
 		}
 		else
 		{

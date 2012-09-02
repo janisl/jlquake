@@ -191,7 +191,6 @@ extern Cvar* hw_patternRunner;
 extern int svqh_current_skill;			// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
-extern int svh2_kingofhill;
 extern fileHandle_t svqhw_fraglogfile;
 extern netadr_t hw_idmaster_adr;
 extern int svqhw_net_port;

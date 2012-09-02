@@ -8,7 +8,6 @@
 
 #include "quakedef.h"
 
-image_t* char_smalltexture;
 image_t* char_menufonttexture;
 
 /*
@@ -25,56 +24,6 @@ void Draw_Init(void)
 	conback = R_CachePic("gfx/menu/conback.lmp");
 
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
-}
-
-//==========================================================================
-//
-// Draw_SmallCharacter
-//
-// Draws a small character that is clipped at the bottom edge of the
-// screen.
-//
-//==========================================================================
-void Draw_SmallCharacter(int x, int y, int num)
-{
-	if (num < 32)
-	{
-		num = 0;
-	}
-	else if (num >= 'a' && num <= 'z')
-	{
-		num -= 64;
-	}
-	else if (num > '_')
-	{
-		num = 0;
-	}
-	else
-	{
-		num -= 32;
-	}
-
-	if (num == 0)
-	{
-		return;
-	}
-
-	UI_DrawCharBase(x, y, num, 8, 8, char_smalltexture, 16, 4);
-}
-
-//==========================================================================
-//
-// Draw_SmallString
-//
-//==========================================================================
-void Draw_SmallString(int x, int y, const char* str)
-{
-	while (*str)
-	{
-		Draw_SmallCharacter(x, y, *str);
-		str++;
-		x += 6;
-	}
 }
 
 int M_DrawBigCharacter(int x, int y, int num, int numNext)

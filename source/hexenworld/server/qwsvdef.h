@@ -50,6 +50,3 @@ void SV_Init(quakeparms_t* parms);
 
 void Con_Printf(const char* fmt, ...);
 void Con_DPrintf(const char* fmt, ...);
-
-extern unsigned int defLosses;	// Defenders losses in Siege
-extern unsigned int attLosses;	// Attackers Losses in Siege

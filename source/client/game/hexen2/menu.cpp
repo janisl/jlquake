@@ -15,20 +15,23 @@
 //**************************************************************************
 
 #include "../../client.h"
-#include "menu.h"
+#include "local.h"
 
-menu_state_t m_state;
-menu_state_t m_return_state;
-
-bool m_return_onerror;
-char m_return_reason[32];
-
-void MQH_DrawPic(int x, int y, image_t* pic)
+const char* h2_ClassNames[NUM_CLASSES_H2MP] =
 {
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y, pic);
-}
+	"Paladin",
+	"Crusader",
+	"Necromancer",
+	"Assassin",
+	"Demoness"
+};
 
-void MQH_PrintWhite(int cx, int cy, const char* str)
+const char* hw_ClassNames[MAX_PLAYER_CLASS] =
 {
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str);
-}
+	"Paladin",
+	"Crusader",
+	"Necromancer",
+	"Assassin",
+	"Succubus",
+	"Dwarf"
+};

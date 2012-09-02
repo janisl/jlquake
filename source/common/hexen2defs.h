@@ -809,10 +809,6 @@ struct h2client_entvars_t
 #define H2ARTFLAG_STONED                256
 #define H2ARTFLAG_DIVINE_INTERVENTION   512
 
-#define HWARTFLAG_HASTE                 1
-#define HWARTFLAG_INVINCIBILITY         2
-#define HWARTFLAG_TOMEOFPOWER           4
-#define HWARTFLAG_INVISIBILITY          8
 #define HWARTFLAG_FROZEN                16
 #define HWARTFLAG_STONED                32
 #define HWARTFLAG_DIVINE_INTERVENTION   64

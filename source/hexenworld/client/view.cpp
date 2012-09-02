@@ -429,14 +429,14 @@ static void V_CalcPowerupCshift(void)
 		//cl.qh_cshifts[CSHIFT_POWERUP].percent = 80;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 11000;
 	}
-	else if ((int)cl.h2_v.artifact_active & HWARTFLAG_INVISIBILITY)
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVISIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
 		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
 	}
-	else if ((int)cl.h2_v.artifact_active & HWARTFLAG_INVINCIBILITY)
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVINCIBILITY)
 	{
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
 		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;

@@ -310,17 +310,6 @@ void M_Print(int cx, int cy, const char* str)
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str, 128);
 }
 
-void M_PrintWhite(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str);
-}
-
-void M_DrawPic(int x, int y, char* pic)
-{
-	UI_DrawNamedPic(x + ((viddef.width - 320) >> 1), y + ((viddef.height - 240) >> 1), pic);
-}
-
-
 /*
 =============
 M_DrawCursor

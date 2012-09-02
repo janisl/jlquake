@@ -754,7 +754,7 @@ void Host_Init(quakeparms_t* parms)
 			CLH2_InitTEnts();
 			CDAudio_Init();
 			MIDI_Init();
-			SB_Init();
+			SbarH2_Init();
 		}
 #endif
 
