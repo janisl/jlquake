@@ -67,11 +67,6 @@ qboolean m_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
 qboolean m_recursiveDraw;
 
-static float TitlePercent = 0;
-static float TitleTargetPercent = 1;
-static float LogoPercent = 0;
-static float LogoTargetPercent = 1;
-
 int setup_class, which_class;
 
 static char* message,* message2;
@@ -140,31 +135,9 @@ const char* DiffNames[MAX_PLAYER_CLASS][4] =
 //=============================================================================
 /* Support Routines */
 
-/*
-================
-M_DrawCharacter
-
-Draws one solid graphics character
-================
-*/
-void M_DrawCharacter(int cx, int line, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
-}
-
-void M_Print(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 256);
-}
-
 void M_Print2(int cx, int cy, const char* str)
 {
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
-}
-
-void M_DrawTransPic2(int x, int y, image_t* pic)
-{
-	UI_DrawPic(x + ((viddef.width - 320) >> 1), y + ((viddef.height - 200) >> 1), pic);
 }
 
 #define PLAYER_PIC_WIDTH 68
@@ -173,126 +146,6 @@ void M_DrawTransPic2(int x, int y, image_t* pic)
 byte translationTable[256];
 static byte menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
 image_t* translate_texture[MAX_PLAYER_CLASS];
-
-void M_DrawTextBox(int x, int y, int width, int lines)
-{
-	image_t* p;
-	int cx, cy;
-	int n;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	p = R_CachePic("gfx/box_tl.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_ml.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_bl.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-
-	// draw middle
-	cx += 8;
-	while (width > 0)
-	{
-		cy = y;
-		p = R_CachePic("gfx/box_tm.lmp");
-		MQH_DrawPic(cx, cy, p);
-		p = R_CachePic("gfx/box_mm.lmp");
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-			{
-				p = R_CachePic("gfx/box_mm2.lmp");
-			}
-			MQH_DrawPic(cx, cy, p);
-		}
-		p = R_CachePic("gfx/box_bm.lmp");
-		MQH_DrawPic(cx, cy + 8, p);
-		width -= 2;
-		cx += 16;
-	}
-
-	// draw right side
-	cy = y;
-	p = R_CachePic("gfx/box_tr.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_mr.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_br.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-}
-
-void M_DrawTextBox2(int x, int y, int width, int lines)
-{
-	image_t* p;
-	int cx, cy;
-	int n;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	p = R_CachePic("gfx/box_tl.lmp");
-	M_DrawTransPic2(cx, cy, p);
-	p = R_CachePic("gfx/box_ml.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		M_DrawTransPic2(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_bl.lmp");
-	M_DrawTransPic2(cx, cy + 8, p);
-
-	// draw middle
-	cx += 8;
-	while (width > 0)
-	{
-		cy = y;
-		p = R_CachePic("gfx/box_tm.lmp");
-		M_DrawTransPic2(cx, cy, p);
-		p = R_CachePic("gfx/box_mm.lmp");
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-			{
-				p = R_CachePic("gfx/box_mm2.lmp");
-			}
-			M_DrawTransPic2(cx, cy, p);
-		}
-		p = R_CachePic("gfx/box_bm.lmp");
-		M_DrawTransPic2(cx, cy + 8, p);
-		width -= 2;
-		cx += 16;
-	}
-
-	// draw right side
-	cy = y;
-	p = R_CachePic("gfx/box_tr.lmp");
-	M_DrawTransPic2(cx, cy, p);
-	p = R_CachePic("gfx/box_mr.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		M_DrawTransPic2(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_br.lmp");
-	M_DrawTransPic2(cx, cy + 8, p);
-}
-
-void M_DrawField(int x, int y, field_t* edit, bool showCursor)
-{
-	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
-	Field_Draw(edit, x + ((viddef.width - 320) >> 1), y, showCursor);
-}
 
 //=============================================================================
 
@@ -332,125 +185,6 @@ void M_ToggleMenu_f(void)
 	}
 }
 
-char BigCharWidth[27][27];
-
-void M_BuildBigCharWidth(void)
-{
-	void* data;
-	FS_ReadFile("gfx/menu/fontsize.lmp", &data);
-	Com_Memcpy(BigCharWidth, data, sizeof(BigCharWidth));
-	FS_FreeFile(data);
-}
-
-/*
-================
-UI_DrawChar
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-
-void M_DrawBigString(int x, int y, const char* string)
-{
-	int c,length;
-
-	x += ((viddef.width - 320) >> 1);
-
-	length = String::Length(string);
-	for (c = 0; c < length; c++)
-	{
-		x += M_DrawBigCharacter(x,y,string[c],string[c + 1]);
-	}
-}
-
-
-
-
-
-
-void ScrollTitle(const char* name)
-{
-	float delta;
-	image_t* p;
-	static const char* LastName = "";
-	int finaly;
-	static qboolean CanSwitch = true;
-
-	if (TitlePercent < TitleTargetPercent)
-	{
-		delta = ((TitleTargetPercent - TitlePercent) / 0.5) * host_frametime;
-		if (delta < 0.004)
-		{
-			delta = 0.004;
-		}
-		TitlePercent += delta;
-		if (TitlePercent > TitleTargetPercent)
-		{
-			TitlePercent = TitleTargetPercent;
-		}
-	}
-	else if (TitlePercent > TitleTargetPercent)
-	{
-		delta = ((TitlePercent - TitleTargetPercent) / 0.15) * host_frametime;
-		if (delta < 0.02)
-		{
-			delta = 0.02;
-		}
-		TitlePercent -= delta;
-		if (TitlePercent <= TitleTargetPercent)
-		{
-			TitlePercent = TitleTargetPercent;
-			CanSwitch = true;
-		}
-	}
-
-	if (LogoPercent < LogoTargetPercent)
-	{
-/*		delta = ((LogoTargetPercent-LogoPercent)/1.1)*host_frametime;
-        if (delta < 0.0015)
-        {
-            delta = 0.0015;
-        }
-*/
-		delta = ((LogoTargetPercent - LogoPercent) / .15) * host_frametime;
-		if (delta < 0.02)
-		{
-			delta = 0.02;
-		}
-		LogoPercent += delta;
-		if (LogoPercent > LogoTargetPercent)
-		{
-			LogoPercent = LogoTargetPercent;
-		}
-	}
-
-	if (String::ICmp(LastName,name) != 0 && TitleTargetPercent != 0)
-	{
-		TitleTargetPercent = 0;
-	}
-
-	if (CanSwitch)
-	{
-		LastName = name;
-		CanSwitch = false;
-		TitleTargetPercent = 1;
-	}
-
-	p = R_CachePic(LastName);
-	finaly = ((float)R_GetImageHeight(p) * TitlePercent) - R_GetImageHeight(p);
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, finaly, p);
-
-	if (m_state != m_keys)
-	{
-		p = R_CachePic("gfx/menu/hplaque.lmp");
-		finaly = ((float)R_GetImageHeight(p) * LogoPercent) - R_GetImageHeight(p);
-		MQH_DrawPic(10, finaly, p);
-	}
-}
-
-
 //=============================================================================
 /* MAIN MENU */
 
@@ -475,13 +209,13 @@ void M_Main_Draw(void)
 {
 	int f;
 
-	ScrollTitle("gfx/menu/title0.lmp");
+	MH2_ScrollTitle("gfx/menu/title0.lmp");
 //	MQH_DrawPic (72, 32, R_CachePic ("gfx/mainmenu.lmp") );
-//	M_DrawBigString (72,60+(0*20),"SINGLE PLAYER");
-	M_DrawBigString(72,60 + (0 * 20),"MULTIPLAYER");
-	M_DrawBigString(72,60 + (1 * 20),"OPTIONS");
-	M_DrawBigString(72,60 + (2 * 20),"HELP");
-	M_DrawBigString(72,60 + (3 * 20),"QUIT");
+//	MH2_DrawBigString (72,60+(0*20),"SINGLE PLAYER");
+	MH2_DrawBigString(72,60 + (0 * 20),"MULTIPLAYER");
+	MH2_DrawBigString(72,60 + (1 * 20),"OPTIONS");
+	MH2_DrawBigString(72,60 + (2 * 20),"HELP");
+	MH2_DrawBigString(72,60 + (3 * 20),"QUIT");
 
 	f = (int)(realtime * 10) % 8;
 	MQH_DrawPic(43, 54 + m_main_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
@@ -576,14 +310,14 @@ void M_Class_Draw(void)
 {
 	int f;
 
-	ScrollTitle("gfx/menu/title2.lmp");
+	MH2_ScrollTitle("gfx/menu/title2.lmp");
 
-	M_DrawBigString(72,60 + (0 * 20),ClassNamesU[0]);
-	M_DrawBigString(72,60 + (1 * 20),ClassNamesU[1]);
-	M_DrawBigString(72,60 + (2 * 20),ClassNamesU[2]);
-	M_DrawBigString(72,60 + (3 * 20),ClassNamesU[3]);
-	M_DrawBigString(72,60 + (4 * 20),ClassNamesU[4]);
-	M_DrawBigString(72,60 + (5 * 20),ClassNamesU[5]);
+	MH2_DrawBigString(72,60 + (0 * 20),ClassNamesU[0]);
+	MH2_DrawBigString(72,60 + (1 * 20),ClassNamesU[1]);
+	MH2_DrawBigString(72,60 + (2 * 20),ClassNamesU[2]);
+	MH2_DrawBigString(72,60 + (3 * 20),ClassNamesU[3]);
+	MH2_DrawBigString(72,60 + (4 * 20),ClassNamesU[4]);
+	MH2_DrawBigString(72,60 + (5 * 20),ClassNamesU[5]);
 
 	f = (int)(realtime * 10) % 8;
 	MQH_DrawPic(43, 54 + m_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
@@ -825,11 +559,11 @@ void M_DrawSlider(int x, int y, float range)
 	{
 		range = 1;
 	}
-	M_DrawCharacter(x - 8, y, 256);
+	MQH_DrawCharacter(x - 8, y, 256);
 	for (i = 0; i < SLIDER_RANGE; i++)
-		M_DrawCharacter(x + i * 8, y, 257);
-	M_DrawCharacter(x + i * 8, y, 258);
-	M_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 259);
+		MQH_DrawCharacter(x + i * 8, y, 257);
+	MQH_DrawCharacter(x + i * 8, y, 258);
+	MQH_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 259);
 }
 
 void M_DrawCheckbox(int x, int y, int on)
@@ -837,20 +571,20 @@ void M_DrawCheckbox(int x, int y, int on)
 #if 0
 	if (on)
 	{
-		M_DrawCharacter(x, y, 131);
+		MQH_DrawCharacter(x, y, 131);
 	}
 	else
 	{
-		M_DrawCharacter(x, y, 129);
+		MQH_DrawCharacter(x, y, 129);
 	}
 #endif
 	if (on)
 	{
-		M_Print(x, y, "on");
+		MQH_Print(x, y, "on");
 	}
 	else
 	{
-		M_Print(x, y, "off");
+		MQH_Print(x, y, "off");
 	}
 }
 
@@ -858,65 +592,65 @@ void M_Options_Draw(void)
 {
 	float r;
 
-	ScrollTitle("gfx/menu/title3.lmp");
+	MH2_ScrollTitle("gfx/menu/title3.lmp");
 
-	M_Print(16, 60 + (0 * 8), "    Customize controls");
-	M_Print(16, 60 + (1 * 8), "         Go to console");
-	M_Print(16, 60 + (2 * 8), "     Reset to defaults");
+	MQH_Print(16, 60 + (0 * 8), "    Customize controls");
+	MQH_Print(16, 60 + (1 * 8), "         Go to console");
+	MQH_Print(16, 60 + (2 * 8), "     Reset to defaults");
 
-	M_Print(16, 60 + (3 * 8), "           Screen size");
+	MQH_Print(16, 60 + (3 * 8), "           Screen size");
 	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider(220, 60 + (3 * 8), r);
 
-	M_Print(16, 60 + (4 * 8), "            Brightness");
+	MQH_Print(16, 60 + (4 * 8), "            Brightness");
 	r = (r_gamma->value - 1);
 	M_DrawSlider(220, 60 + (4 * 8), r);
 
-	M_Print(16, 60 + (5 * 8), "           Mouse Speed");
+	MQH_Print(16, 60 + (5 * 8), "           Mouse Speed");
 	r = (cl_sensitivity->value - 1) / 10;
 	M_DrawSlider(220, 60 + (5 * 8), r);
 
-	M_Print(16, 60 + (6 * 8), "            Music Type");
+	MQH_Print(16, 60 + (6 * 8), "            Music Type");
 	if (String::ICmp(bgmtype->string,"midi") == 0)
 	{
-		M_Print(220, 60 + (6 * 8), "MIDI");
+		MQH_Print(220, 60 + (6 * 8), "MIDI");
 	}
 	else if (String::ICmp(bgmtype->string,"cd") == 0)
 	{
-		M_Print(220, 60 + (6 * 8), "CD");
+		MQH_Print(220, 60 + (6 * 8), "CD");
 	}
 	else
 	{
-		M_Print(220, 60 + (6 * 8), "None");
+		MQH_Print(220, 60 + (6 * 8), "None");
 	}
 
-	M_Print(16, 60 + (7 * 8), "          Music Volume");
+	MQH_Print(16, 60 + (7 * 8), "          Music Volume");
 	r = bgmvolume->value;
 	M_DrawSlider(220, 60 + (7 * 8), r);
 
-	M_Print(16, 60 + (8 * 8), "          Sound Volume");
+	MQH_Print(16, 60 + (8 * 8), "          Sound Volume");
 	r = s_volume->value;
 	M_DrawSlider(220, 60 + (8 * 8), r);
 
-	M_Print(16, 60 + (9 * 8),              "            Always Run");
+	MQH_Print(16, 60 + (9 * 8),              "            Always Run");
 	M_DrawCheckbox(220, 60 + (9 * 8), cl_forwardspeed->value > 200);
 
-	M_Print(16, 60 + (OPT_INVMOUSE * 8),   "          Invert Mouse");
+	MQH_Print(16, 60 + (OPT_INVMOUSE * 8),   "          Invert Mouse");
 	M_DrawCheckbox(220, 60 + (OPT_INVMOUSE * 8), m_pitch->value < 0);
 
-	M_Print(16, 60 + (OPT_LOOKSPRING * 8), "            Lookspring");
+	MQH_Print(16, 60 + (OPT_LOOKSPRING * 8), "            Lookspring");
 	M_DrawCheckbox(220, 60 + (OPT_LOOKSPRING * 8), lookspring->value);
 
-	M_Print(16, 60 + (OPT_CROSSHAIR * 8),  "        Show Crosshair");
+	MQH_Print(16, 60 + (OPT_CROSSHAIR * 8),  "        Show Crosshair");
 	M_DrawCheckbox(220, 60 + (OPT_CROSSHAIR * 8), crosshair->value);
 
-	M_Print(16,60 + (OPT_ALWAYSMLOOK * 8), "            Mouse Look");
+	MQH_Print(16,60 + (OPT_ALWAYSMLOOK * 8), "            Mouse Look");
 	M_DrawCheckbox(220, 60 + (OPT_ALWAYSMLOOK * 8), cl_freelook->value);
 
-	M_Print(16, 60 + (OPT_VIDEO * 8),  "         Video Options");
+	MQH_Print(16, 60 + (OPT_VIDEO * 8),  "         Video Options");
 
 // cursor
-	M_DrawCharacter(200, 60 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 60 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -1111,29 +845,29 @@ void M_Keys_Draw(void)
 	const char* name;
 	int x, y;
 
-	ScrollTitle("gfx/menu/title6.lmp");
+	MH2_ScrollTitle("gfx/menu/title6.lmp");
 
-//	M_DrawTextBox (6,56, 35,16);
+//	MQH_DrawTextBox (6,56, 35,16);
 
 //	p = R_CachePic("gfx/menu/hback.lmp");
 //	MQH_DrawPic(8, 62, p);
 
 	if (bind_grab)
 	{
-		M_Print(12, 64, "Press a key or button for this action");
+		MQH_Print(12, 64, "Press a key or button for this action");
 	}
 	else
 	{
-		M_Print(18, 64, "Enter to change, backspace to clear");
+		MQH_Print(18, 64, "Enter to change, backspace to clear");
 	}
 
 	if (keys_top)
 	{
-		M_DrawCharacter(6, 80, 128);
+		MQH_DrawCharacter(6, 80, 128);
 	}
 	if (keys_top + KEYS_SIZE < (int)NUMCOMMANDS)
 	{
-		M_DrawCharacter(6, 80 + ((KEYS_SIZE - 1) * 8), 129);
+		MQH_DrawCharacter(6, 80 + ((KEYS_SIZE - 1) * 8), 129);
 	}
 
 // search for known bindings
@@ -1141,7 +875,7 @@ void M_Keys_Draw(void)
 	{
 		y = 80 + 8 * i;
 
-		M_Print(16, y, bindnames[i + keys_top][1]);
+		MQH_Print(16, y, bindnames[i + keys_top][1]);
 
 		l = String::Length(bindnames[i + keys_top][0]);
 
@@ -1149,28 +883,28 @@ void M_Keys_Draw(void)
 
 		if (keys[0] == -1)
 		{
-			M_Print(140, y, "???");
+			MQH_Print(140, y, "???");
 		}
 		else
 		{
 			name = Key_KeynumToString(keys[0]);
-			M_Print(140, y, name);
+			MQH_Print(140, y, name);
 			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
-				M_Print(140 + x + 8, y, "or");
-				M_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
+				MQH_Print(140 + x + 8, y, "or");
+				MQH_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
 			}
 		}
 	}
 
 	if (bind_grab)
 	{
-		M_DrawCharacter(130, 80 + (keys_cursor - keys_top) * 8, '=');
+		MQH_DrawCharacter(130, 80 + (keys_cursor - keys_top) * 8, '=');
 	}
 	else
 	{
-		M_DrawCharacter(130, 80 + (keys_cursor - keys_top) * 8, 12 + ((int)(realtime * 4) & 1));
+		MQH_DrawCharacter(130, 80 + (keys_cursor - keys_top) * 8, 12 + ((int)(realtime * 4) & 1));
 	}
 }
 
@@ -1266,15 +1000,15 @@ void M_Menu_Video_f(void)
 
 void M_Video_Draw(void)
 {
-	ScrollTitle("gfx/menu/title7.lmp");
+	MH2_ScrollTitle("gfx/menu/title7.lmp");
 
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
 		"console with set r_mode <number>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
 		"and set r_colorbits <bits-per-pixel>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
 		"Select windowed mode with set r_fullscreen 0");
 }
 
@@ -1881,7 +1615,7 @@ void M_Quit_Draw(void)
 	}
 
 	y = 12;
-	M_DrawTextBox(0, 0, 38, 23);
+	MQH_DrawTextBox(0, 0, 38, 23);
 	MQH_PrintWhite(16, y,  "      Hexen2World version " VSTR2(VERSION) "      ");    y += 8;
 	MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
 
@@ -1910,7 +1644,7 @@ void M_Quit_Draw(void)
 		}
 		else
 		{
-			M_Print(24,y,LineText[i + place - QUIT_SIZE]);
+			MQH_Print(24,y,LineText[i + place - QUIT_SIZE]);
 		}
 	}
 
@@ -1934,21 +1668,21 @@ void M_Quit_Draw(void)
 	MQH_PrintWhite(16, y,  "          Press y to exit           ");
 
 /*	y = 12;
-    M_DrawTextBox (0, 0, 38, 23);
+    MQH_DrawTextBox (0, 0, 38, 23);
     MQH_PrintWhite (16, y,  "        Hexen II version 0.0        ");	y += 8;
     MQH_PrintWhite (16, y,  "         by Raven Software          ");	y += 16;
     MQH_PrintWhite (16, y,  "Programming        Art              ");	y += 8;
-    M_Print (16, y,       " Ben Gokey          Shane Gurno     ");	y += 8;
-    M_Print (16, y,       " Rick Johnson       Mike Werckle    ");	y += 8;
-    M_Print (16, y,       " Bob Love           Mark Morgan     ");	y += 8;
-    M_Print (16, y,       " Mike Gummelt       Brian Pelletier ");	y += 8;
-    M_Print (16, y,       "                    Kim Lathrop     ");	y += 8;
+    MQH_Print (16, y,       " Ben Gokey          Shane Gurno     ");	y += 8;
+    MQH_Print (16, y,       " Rick Johnson       Mike Werckle    ");	y += 8;
+    MQH_Print (16, y,       " Bob Love           Mark Morgan     ");	y += 8;
+    MQH_Print (16, y,       " Mike Gummelt       Brian Pelletier ");	y += 8;
+    MQH_Print (16, y,       "                    Kim Lathrop     ");	y += 8;
     MQH_PrintWhite (16, y,  "Design                              ");
-    M_Print (16, y,       "                    Les Dorscheid   ");	y += 8;
-    M_Print (16, y,       " Brian Raffel       Jim Sumwalt     ");	y += 8;
-    M_Print (16, y,       " Eric Biessman      Brian Shubat    ");	y += 16;
+    MQH_Print (16, y,       "                    Les Dorscheid   ");	y += 8;
+    MQH_Print (16, y,       " Brian Raffel       Jim Sumwalt     ");	y += 8;
+    MQH_Print (16, y,       " Eric Biessman      Brian Shubat    ");	y += 16;
     MQH_PrintWhite (16, y,  "Sound Effects      Intern           ");	y += 8;
-    M_Print (16, y,       " Kevin Schilder     Josh Weier      ");	y += 16;
+    MQH_Print (16, y,       " Kevin Schilder     Josh Weier      ");	y += 16;
     MQH_PrintWhite (16, y,  "          Press y to exit           ");	y += 8;*/
 
 }
@@ -1960,9 +1694,9 @@ void M_Menu_SinglePlayer_f(void)
 
 void M_SinglePlayer_Draw(void)
 {
-	ScrollTitle("gfx/menu/title1.lmp");
+	MH2_ScrollTitle("gfx/menu/title1.lmp");
 
-	M_DrawTextBox(60, 10 * 8, 23, 4);
+	MQH_DrawTextBox(60, 10 * 8, 23, 4);
 	MQH_PrintWhite(92, 12 * 8, "HexenWorld is for");
 	MQH_PrintWhite(88, 13 * 8, "Internet play only");
 
@@ -1983,14 +1717,14 @@ void M_Menu_MultiPlayer_f (void) {
 
 void M_MultiPlayer_Draw (void)
 {
-    ScrollTitle("gfx/menu/title1.lmp");
+    MH2_ScrollTitle("gfx/menu/title1.lmp");
 
-    M_DrawTextBox (46, 8*8, 27, 9);
+    MQH_DrawTextBox (46, 8*8, 27, 9);
     MQH_PrintWhite (72, 10*8, "If you want to find HW  ");
     MQH_PrintWhite (72, 11*8, "games, head on over to: ");
-         M_Print (72, 12*8, "   www.hexenworld.net   ");
+         MQH_Print (72, 12*8, "   www.hexenworld.net   ");
     MQH_PrintWhite (72, 13*8, "          or            ");
-         M_Print (72, 14*8, "   www.quakespy.com     ");
+         MQH_Print (72, 14*8, "   www.quakespy.com     ");
     MQH_PrintWhite (72, 15*8, "For pointers on getting ");
     MQH_PrintWhite (72, 16*8, "        started!        ");
 }
@@ -2021,11 +1755,11 @@ void M_MultiPlayer_Draw(void)
 {
 	int f;
 
-	ScrollTitle("gfx/menu/title4.lmp");
+	MH2_ScrollTitle("gfx/menu/title4.lmp");
 //	MQH_DrawPic (72, 32, R_CachePic ("gfx/mp_menu.lmp") );
 
-	M_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
-	M_DrawBigString(72,60 + (1 * 20),"SETUP");
+	MH2_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
+	MH2_DrawBigString(72,60 + (1 * 20),"SETUP");
 
 	f = (int)(realtime * 10) % 8;
 	MQH_DrawPic(43, 54 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
@@ -2150,11 +1884,11 @@ void M_Connect_Draw(void)
 	int y;
 	char temp[MAX_HOST_SIZE];
 
-	ScrollTitle("gfx/menu/title4.lmp");
+	MH2_ScrollTitle("gfx/menu/title4.lmp");
 
 	if (connect_cursor < MAX_HOST_NAMES)
 	{
-		M_DrawField(24, 56, &save_names[connect_cursor], true);
+		MQH_DrawField(24, 56, &save_names[connect_cursor], true);
 	}
 
 	y = 72;
@@ -2163,7 +1897,7 @@ void M_Connect_Draw(void)
 		sprintf(temp,"%d.",i + 1);
 		if (i == connect_cursor)
 		{
-			M_Print(24,y,temp);
+			MQH_Print(24,y,temp);
 		}
 		else
 		{
@@ -2174,7 +1908,7 @@ void M_Connect_Draw(void)
 		temp[30] = 0;
 		if (i == connect_cursor)
 		{
-			M_Print(56, y, temp);
+			MQH_Print(56, y, temp);
 		}
 		else
 		{
@@ -2182,9 +1916,9 @@ void M_Connect_Draw(void)
 		}
 	}
 
-	M_Print(24, y + 8, "Save Changes");
+	MQH_Print(24, y + 8, "Save Changes");
 
-	M_DrawCharacter(8, connect_cursor_table[connect_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, connect_cursor_table[connect_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 void M_Connect_Key(int k)
@@ -2324,12 +2058,12 @@ void M_Setup_Draw(void)
 	int i;
 	static qboolean wait;
 
-	ScrollTitle("gfx/menu/title4.lmp");
+	MH2_ScrollTitle("gfx/menu/title4.lmp");
 
-	M_Print(64, 56, "Your name");
-	M_DrawField(168, 56, &setup_myname, setup_cursor == 1);
+	MQH_Print(64, 56, "Your name");
+	MQH_DrawField(168, 56, &setup_myname, setup_cursor == 1);
 
-	M_Print(64, 72, "Spectator: ");
+	MQH_Print(64, 72, "Spectator: ");
 	if (spectator->value)
 	{
 		MQH_PrintWhite(64 + 12 * 8, 72, "YES");
@@ -2339,7 +2073,7 @@ void M_Setup_Draw(void)
 		MQH_PrintWhite(64 + 12 * 8, 72, "NO");
 	}
 
-	M_Print(64, 88, "Current Class: ");
+	MQH_Print(64, 88, "Current Class: ");
 
 	if (!com_portals)
 	{
@@ -2368,11 +2102,11 @@ void M_Setup_Draw(void)
 		break;
 	}
 
-	M_Print(64, 112, "First color patch");
-	M_Print(64, 136, "Second color patch");
+	MQH_Print(64, 112, "First color patch");
+	MQH_Print(64, 136, "Second color patch");
 
-	M_DrawTextBox(64, 164 - 8, 14, 1);
-	M_Print(72, 164, "Accept Changes");
+	MQH_DrawTextBox(64, 164 - 8, 14, 1);
+	MQH_Print(72, 164, "Accept Changes");
 
 	if (setup_class == 0)
 	{
@@ -2422,7 +2156,7 @@ void M_Setup_Draw(void)
 	R_CreateOrUpdateTranslatedImage(translate_texture[which_class - 1], va("translate_pic%d", which_class), menuplyr_pixels[which_class - 1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	MQH_DrawPic(220, 72, translate_texture[which_class - 1]);
 
-	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -2613,7 +2347,7 @@ void M_Init(void)
 	hostname9 = Cvar_Get("host9","", CVAR_ARCHIVE);
 	hostname10 = Cvar_Get("host10","", CVAR_ARCHIVE);
 
-	M_BuildBigCharWidth();
+	MH2_ReadBigCharWidth();
 }
 
 

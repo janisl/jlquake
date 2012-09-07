@@ -684,7 +684,7 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 	FindTextBreaks(message, PLAQUE_WIDTH);
 
 	by = ((25 - lines) * 8) / 2;
-	M_DrawTextBox2(32, by - 16, 30, lines + 2);
+	MQH_DrawTextBox2(32, by - 16, 30, lines + 2);
 
 	for (i = 0; i < lines; i++,by += 8)
 	{

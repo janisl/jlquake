@@ -46,5 +46,20 @@ extern menu_state_t m_return_state;
 extern bool m_return_onerror;
 extern char m_return_reason[32];
 
+extern image_t* char_menufonttexture;
+
+extern float TitlePercent;
+extern float TitleTargetPercent;
+extern float LogoPercent;
+extern float LogoTargetPercent;
+
 void MQH_DrawPic(int x, int y, image_t* pic);
+void MQH_DrawCharacter(int cx, int line, int num);
+void MQH_Print(int cx, int cy, const char* str);
 void MQH_PrintWhite(int cx, int cy, const char* str);
+void MQH_DrawTextBox(int x, int y, int width, int lines);
+void MQH_DrawTextBox2(int x, int y, int width, int lines);
+void MQH_DrawField(int x, int y, field_t* edit, bool showCursor);
+void MH2_ReadBigCharWidth();
+void MH2_DrawBigString(int x, int y, const char* string);
+void MH2_ScrollTitle(const char* name);

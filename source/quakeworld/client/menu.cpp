@@ -90,83 +90,6 @@ qboolean m_recursiveDraw;
 void M_ConfigureNetSubsystem(void);
 
 //=============================================================================
-/* Support Routines */
-
-/*
-================
-M_DrawCharacter
-
-Draws one solid graphics character
-================
-*/
-void M_DrawCharacter(int cx, int line, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
-}
-
-void M_Print(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 128);
-}
-
-void M_DrawTextBox(int x, int y, int width, int lines)
-{
-	image_t* p;
-	int cx, cy;
-	int n;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	p = R_CachePic("gfx/box_tl.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_ml.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_bl.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-
-	// draw middle
-	cx += 8;
-	while (width > 0)
-	{
-		cy = y;
-		p = R_CachePic("gfx/box_tm.lmp");
-		MQH_DrawPic(cx, cy, p);
-		p = R_CachePic("gfx/box_mm.lmp");
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-			{
-				p = R_CachePic("gfx/box_mm2.lmp");
-			}
-			MQH_DrawPic(cx, cy, p);
-		}
-		p = R_CachePic("gfx/box_bm.lmp");
-		MQH_DrawPic(cx, cy + 8, p);
-		width -= 2;
-		cx += 16;
-	}
-
-	// draw right side
-	cy = y;
-	p = R_CachePic("gfx/box_tr.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_mr.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_br.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-}
-
-//=============================================================================
 
 int m_save_demonum;
 
@@ -427,11 +350,11 @@ void M_DrawSlider(int x, int y, float range)
 	{
 		range = 1;
 	}
-	M_DrawCharacter(x - 8, y, 128);
+	MQH_DrawCharacter(x - 8, y, 128);
 	for (i = 0; i < SLIDER_RANGE; i++)
-		M_DrawCharacter(x + i * 8, y, 129);
-	M_DrawCharacter(x + i * 8, y, 130);
-	M_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 131);
+		MQH_DrawCharacter(x + i * 8, y, 129);
+	MQH_DrawCharacter(x + i * 8, y, 130);
+	MQH_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 131);
 }
 
 void M_DrawCheckbox(int x, int y, int on)
@@ -439,20 +362,20 @@ void M_DrawCheckbox(int x, int y, int on)
 #if 0
 	if (on)
 	{
-		M_DrawCharacter(x, y, 131);
+		MQH_DrawCharacter(x, y, 131);
 	}
 	else
 	{
-		M_DrawCharacter(x, y, 129);
+		MQH_DrawCharacter(x, y, 129);
 	}
 #endif
 	if (on)
 	{
-		M_Print(x, y, "on");
+		MQH_Print(x, y, "on");
 	}
 	else
 	{
-		M_Print(x, y, "off");
+		MQH_Print(x, y, "off");
 	}
 }
 
@@ -465,49 +388,49 @@ void M_Options_Draw(void)
 	p = R_CachePic("gfx/p_option.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_Print(16, 32, "    Customize controls");
-	M_Print(16, 40, "         Go to console");
-	M_Print(16, 48, "     Reset to defaults");
+	MQH_Print(16, 32, "    Customize controls");
+	MQH_Print(16, 40, "         Go to console");
+	MQH_Print(16, 48, "     Reset to defaults");
 
-	M_Print(16, 56, "           Screen size");
+	MQH_Print(16, 56, "           Screen size");
 	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider(220, 56, r);
 
-	M_Print(16, 64, "            Brightness");
+	MQH_Print(16, 64, "            Brightness");
 	r = (r_gamma->value - 1);
 	M_DrawSlider(220, 64, r);
 
-	M_Print(16, 72, "           Mouse Speed");
+	MQH_Print(16, 72, "           Mouse Speed");
 	r = (cl_sensitivity->value - 1) / 10;
 	M_DrawSlider(220, 72, r);
 
-	M_Print(16, 80, "       CD Music Volume");
+	MQH_Print(16, 80, "       CD Music Volume");
 	r = bgmvolume->value;
 	M_DrawSlider(220, 80, r);
 
-	M_Print(16, 88, "          Sound Volume");
+	MQH_Print(16, 88, "          Sound Volume");
 	r = s_volume->value;
 	M_DrawSlider(220, 88, r);
 
-	M_Print(16, 96,  "            Always Run");
+	MQH_Print(16, 96,  "            Always Run");
 	M_DrawCheckbox(220, 96, cl_forwardspeed->value > 200);
 
-	M_Print(16, 104, "          Invert Mouse");
+	MQH_Print(16, 104, "          Invert Mouse");
 	M_DrawCheckbox(220, 104, m_pitch->value < 0);
 
-	M_Print(16, 112, "            Lookspring");
+	MQH_Print(16, 112, "            Lookspring");
 	M_DrawCheckbox(220, 112, lookspring->value);
 
-	M_Print(16, 128, "    Use old status bar");
+	MQH_Print(16, 128, "    Use old status bar");
 	M_DrawCheckbox(220, 120, clqh_sbar->value);
 
-	M_Print(16, 136, "      HUD on left side");
+	MQH_Print(16, 136, "      HUD on left side");
 	M_DrawCheckbox(220, 128, clqw_hudswap->value);
 
-	M_Print(16, 136, "         Video Options");
+	MQH_Print(16, 136, "         Video Options");
 
 // cursor
-	M_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -674,11 +597,11 @@ void M_Keys_Draw(void)
 
 	if (bind_grab)
 	{
-		M_Print(12, 32, "Press a key or button for this action");
+		MQH_Print(12, 32, "Press a key or button for this action");
 	}
 	else
 	{
-		M_Print(18, 32, "Enter to change, backspace to clear");
+		MQH_Print(18, 32, "Enter to change, backspace to clear");
 	}
 
 // search for known bindings
@@ -686,7 +609,7 @@ void M_Keys_Draw(void)
 	{
 		y = 48 + 8 * i;
 
-		M_Print(16, y, bindnames[i][1]);
+		MQH_Print(16, y, bindnames[i][1]);
 
 		l = String::Length(bindnames[i][0]);
 
@@ -694,28 +617,28 @@ void M_Keys_Draw(void)
 
 		if (keys[0] == -1)
 		{
-			M_Print(140, y, "???");
+			MQH_Print(140, y, "???");
 		}
 		else
 		{
 			name = Key_KeynumToString(keys[0]);
-			M_Print(140, y, name);
+			MQH_Print(140, y, name);
 			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
-				M_Print(140 + x + 8, y, "or");
-				M_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
+				MQH_Print(140 + x + 8, y, "or");
+				MQH_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
 			}
 		}
 	}
 
 	if (bind_grab)
 	{
-		M_DrawCharacter(130, 48 + keys_cursor * 8, '=');
+		MQH_DrawCharacter(130, 48 + keys_cursor * 8, '=');
 	}
 	else
 	{
-		M_DrawCharacter(130, 48 + keys_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+		MQH_DrawCharacter(130, 48 + keys_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 	}
 }
 
@@ -805,13 +728,13 @@ void M_Video_Draw(void)
 	image_t* p = R_CachePic("gfx/vidmodes.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
 		"console with set r_mode <number>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
 		"and set r_colorbits <bits-per-pixel>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
 		"Select windowed mode with set r_fullscreen 0");
 }
 
@@ -995,7 +918,7 @@ void M_SinglePlayer_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 //	MQH_DrawPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
 
-	M_DrawTextBox(60, 10 * 8, 23, 4);
+	MQH_DrawTextBox(60, 10 * 8, 23, 4);
 	MQH_PrintWhite(92, 12 * 8, "QuakeWorld is for");
 	MQH_PrintWhite(88, 13 * 8, "Internet play only");
 
@@ -1024,12 +947,12 @@ void M_MultiPlayer_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 //	MQH_DrawPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
 
-	M_DrawTextBox(46, 8 * 8, 27, 9);
+	MQH_DrawTextBox(46, 8 * 8, 27, 9);
 	MQH_PrintWhite(72, 10 * 8, "If you want to find QW  ");
 	MQH_PrintWhite(72, 11 * 8, "games, head on over to: ");
-	M_Print(72, 12 * 8, "   www.quakeworld.net   ");
+	MQH_Print(72, 12 * 8, "   www.quakeworld.net   ");
 	MQH_PrintWhite(72, 13 * 8, "          or            ");
-	M_Print(72, 14 * 8, "   www.quakespy.com     ");
+	MQH_Print(72, 14 * 8, "   www.quakespy.com     ");
 	MQH_PrintWhite(72, 15 * 8, "For pointers on getting ");
 	MQH_PrintWhite(72, 16 * 8, "        started!        ");
 }
@@ -1083,7 +1006,7 @@ void M_Quit_Draw(void)
 		m_state = m_quit;
 	}
 #if 1
-	M_DrawTextBox(0, 0, 38, 23);
+	MQH_DrawTextBox(0, 0, 38, 23);
 	y = 12;
 	for (p = cmsg; *p; p++, y += 8)
 	{
@@ -1093,15 +1016,15 @@ void M_Quit_Draw(void)
 		}
 		else
 		{
-			M_Print(16, y, *p + 1);
+			MQH_Print(16, y, *p + 1);
 		}
 	}
 #else
-	M_DrawTextBox(56, 76, 24, 4);
-	M_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
-	M_Print(64, 92,  quitMessage[msgNumber * 4 + 1]);
-	M_Print(64, 100, quitMessage[msgNumber * 4 + 2]);
-	M_Print(64, 108, quitMessage[msgNumber * 4 + 3]);
+	MQH_DrawTextBox(56, 76, 24, 4);
+	MQH_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
+	MQH_Print(64, 92,  quitMessage[msgNumber * 4 + 1]);
+	MQH_Print(64, 100, quitMessage[msgNumber * 4 + 2]);
+	MQH_Print(64, 108, quitMessage[msgNumber * 4 + 3]);
 #endif
 }
 

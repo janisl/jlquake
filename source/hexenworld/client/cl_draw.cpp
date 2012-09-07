@@ -5,7 +5,6 @@
 #include "quakedef.h"
 
 image_t* cs_texture;	// crosshair texture
-image_t* char_menufonttexture;
 
 //=============================================================================
 /* Support Routines */
@@ -51,54 +50,6 @@ void Draw_Crosshair(void)
 	}
 }
 
-
-int M_DrawBigCharacter(int x, int y, int num, int numNext)
-{
-	int add;
-
-	if (num == ' ')
-	{
-		return 32;
-	}
-
-	if (num == '/')
-	{
-		num = 26;
-	}
-	else
-	{
-		num -= 65;
-	}
-
-	if (num < 0 || num >= 27)	// only a-z and /
-	{
-		return 0;
-	}
-
-	if (numNext == '/')
-	{
-		numNext = 26;
-	}
-	else
-	{
-		numNext -= 65;
-	}
-
-	UI_DrawCharBase(x, y, num, 20, 20, char_menufonttexture, 8, 4);
-
-	if (numNext < 0 || numNext >= 27)
-	{
-		return 0;
-	}
-
-	add = 0;
-	if (num == (int)'C' - 65 && numNext == (int)'P' - 65)
-	{
-		add = 3;
-	}
-
-	return BigCharWidth[num][numNext] + add;
-}
 
 /*
 ================

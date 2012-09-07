@@ -11,4 +11,3 @@ void R_ParseParticleEffect2(void);
 void R_ParseParticleEffect3(void);
 void R_ParseParticleEffect4(void);
 void R_ParseRainEffect(void);
-int M_DrawBigCharacter(int x, int y, int num, int numNext);

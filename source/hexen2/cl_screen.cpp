@@ -786,7 +786,7 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 	FindTextBreaks(message, PLAQUE_WIDTH);
 
 	by = ((25 - lines) * 8) / 2;
-	M_DrawTextBox2(32, by - 16, 30, lines + 2,false);
+	MQH_DrawTextBox2(32, by - 16, 30, lines + 2);
 
 	for (i = 0; i < lines; i++,by += 8)
 	{
@@ -824,7 +824,7 @@ void Info_Plaque_Draw(const char* message)
 	}
 
 	by = ((25 - lines) * 8) / 2;
-	M_DrawTextBox2(15, by - 16, PLAQUE_WIDTH + 4 + 4, lines + 2,false);
+	MQH_DrawTextBox2(15, by - 16, PLAQUE_WIDTH + 4 + 4, lines + 2);
 
 	for (i = 0; i < lines; i++,by += 8)
 	{
@@ -857,14 +857,14 @@ void Bottom_Plaque_Draw(const char* message)
 
 	by = (((viddef.height) / 8) - lines - 2) * 8;
 
-	M_DrawTextBox2(32, by - 16, 30, lines + 2,true);
+	MQH_DrawTextBox(32, by - 16, 30, lines + 2);
 
 	for (i = 0; i < lines; i++,by += 8)
 	{
 		String::NCpy(temp,&message[StartC[i]],EndC[i] - StartC[i]);
 		temp[EndC[i] - StartC[i]] = 0;
 		bx = ((40 - String::Length(temp)) * 8) / 2;
-		M_Print(bx, by, temp);
+		MQH_Print(bx, by, temp);
 	}
 }
 //==========================================================================

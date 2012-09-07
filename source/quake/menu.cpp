@@ -87,90 +87,10 @@ qboolean m_recursiveDraw;
 
 void M_ConfigureNetSubsystem(void);
 
-/*
-================
-M_DrawCharacter
-
-Draws one solid graphics character
-================
-*/
-void M_DrawCharacter(int cx, int line, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
-}
-
-void M_Print(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy, str, 128);
-}
-
 byte translationTable[256];
 
 static byte menuplyr_pixels[4096];
 image_t* translate_texture;
-
-void M_DrawTextBox(int x, int y, int width, int lines)
-{
-	image_t* p;
-	int cx, cy;
-	int n;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	p = R_CachePic("gfx/box_tl.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_ml.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_bl.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-
-	// draw middle
-	cx += 8;
-	while (width > 0)
-	{
-		cy = y;
-		p = R_CachePic("gfx/box_tm.lmp");
-		MQH_DrawPic(cx, cy, p);
-		p = R_CachePic("gfx/box_mm.lmp");
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-			{
-				p = R_CachePic("gfx/box_mm2.lmp");
-			}
-			MQH_DrawPic(cx, cy, p);
-		}
-		p = R_CachePic("gfx/box_bm.lmp");
-		MQH_DrawPic(cx, cy + 8, p);
-		width -= 2;
-		cx += 16;
-	}
-
-	// draw right side
-	cy = y;
-	p = R_CachePic("gfx/box_tr.lmp");
-	MQH_DrawPic(cx, cy, p);
-	p = R_CachePic("gfx/box_mr.lmp");
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		MQH_DrawPic(cx, cy, p);
-	}
-	p = R_CachePic("gfx/box_br.lmp");
-	MQH_DrawPic(cx, cy + 8, p);
-}
-
-void M_DrawField(int x, int y, field_t* edit, bool showCursor)
-{
-	M_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
-	Field_Draw(edit, x + ((viddef.width - 320) >> 1), y, showCursor);
-}
 
 //=============================================================================
 
@@ -487,10 +407,10 @@ void M_Load_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		M_Print(16, 32 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 32 + 8 * i, m_filenames[i]);
 
 // line cursor
-	M_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -503,10 +423,10 @@ void M_Save_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		M_Print(16, 32 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 32 + 8 * i, m_filenames[i]);
 
 // line cursor
-	M_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -721,17 +641,17 @@ void M_Setup_Draw(void)
 	p = R_CachePic("gfx/p_multi.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_Print(64, 40, "Hostname");
-	M_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
+	MQH_Print(64, 40, "Hostname");
+	MQH_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
 
-	M_Print(64, 56, "Your name");
-	M_DrawField(168, 56, &setup_myname, setup_cursor == 1);
+	MQH_Print(64, 56, "Your name");
+	MQH_DrawField(168, 56, &setup_myname, setup_cursor == 1);
 
-	M_Print(64, 80, "Shirt color");
-	M_Print(64, 104, "Pants color");
+	MQH_Print(64, 80, "Shirt color");
+	MQH_Print(64, 104, "Pants color");
 
-	M_DrawTextBox(64, 140 - 8, 14, 1);
-	M_Print(72, 140, "Accept Changes");
+	MQH_DrawTextBox(64, 140 - 8, 14, 1);
+	MQH_Print(72, 140, "Accept Changes");
 
 	p = R_CachePic("gfx/bigbox.lmp");
 	MQH_DrawPic(160, 64, p);
@@ -740,7 +660,7 @@ void M_Setup_Draw(void)
 	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translationTable, R_GetImageWidth(p), R_GetImageHeight(p));
 	MQH_DrawPic(172, 72, translate_texture);
 
-	M_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -944,12 +864,12 @@ void M_Net_Draw(void)
 	}
 
 	f = (320 - 26 * 8) / 2;
-	M_DrawTextBox(f, 134, 24, 4);
+	MQH_DrawTextBox(f, 134, 24, 4);
 	f += 8;
-	M_Print(f, 142, net_helpMessage[m_net_cursor * 4 + 0]);
-	M_Print(f, 150, net_helpMessage[m_net_cursor * 4 + 1]);
-	M_Print(f, 158, net_helpMessage[m_net_cursor * 4 + 2]);
-	M_Print(f, 166, net_helpMessage[m_net_cursor * 4 + 3]);
+	MQH_Print(f, 142, net_helpMessage[m_net_cursor * 4 + 0]);
+	MQH_Print(f, 150, net_helpMessage[m_net_cursor * 4 + 1]);
+	MQH_Print(f, 158, net_helpMessage[m_net_cursor * 4 + 2]);
+	MQH_Print(f, 166, net_helpMessage[m_net_cursor * 4 + 3]);
 
 	f = (int)(host_time * 10) % 6;
 	MQH_DrawPic(54, 32 + m_net_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
@@ -1142,11 +1062,11 @@ void M_DrawSlider(int x, int y, float range)
 	{
 		range = 1;
 	}
-	M_DrawCharacter(x - 8, y, 128);
+	MQH_DrawCharacter(x - 8, y, 128);
 	for (i = 0; i < SLIDER_RANGE; i++)
-		M_DrawCharacter(x + i * 8, y, 129);
-	M_DrawCharacter(x + i * 8, y, 130);
-	M_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 131);
+		MQH_DrawCharacter(x + i * 8, y, 129);
+	MQH_DrawCharacter(x + i * 8, y, 130);
+	MQH_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 131);
 }
 
 void M_DrawCheckbox(int x, int y, int on)
@@ -1154,20 +1074,20 @@ void M_DrawCheckbox(int x, int y, int on)
 #if 0
 	if (on)
 	{
-		M_DrawCharacter(x, y, 131);
+		MQH_DrawCharacter(x, y, 131);
 	}
 	else
 	{
-		M_DrawCharacter(x, y, 129);
+		MQH_DrawCharacter(x, y, 129);
 	}
 #endif
 	if (on)
 	{
-		M_Print(x, y, "on");
+		MQH_Print(x, y, "on");
 	}
 	else
 	{
-		M_Print(x, y, "off");
+		MQH_Print(x, y, "off");
 	}
 }
 
@@ -1180,43 +1100,43 @@ void M_Options_Draw(void)
 	p = R_CachePic("gfx/p_option.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_Print(16, 32, "    Customize controls");
-	M_Print(16, 40, "         Go to console");
-	M_Print(16, 48, "     Reset to defaults");
+	MQH_Print(16, 32, "    Customize controls");
+	MQH_Print(16, 40, "         Go to console");
+	MQH_Print(16, 48, "     Reset to defaults");
 
-	M_Print(16, 56, "           Screen size");
+	MQH_Print(16, 56, "           Screen size");
 	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider(220, 56, r);
 
-	M_Print(16, 64, "            Brightness");
+	MQH_Print(16, 64, "            Brightness");
 	r = (r_gamma->value - 1);
 	M_DrawSlider(220, 64, r);
 
-	M_Print(16, 72, "           Mouse Speed");
+	MQH_Print(16, 72, "           Mouse Speed");
 	r = (cl_sensitivity->value - 1) / 10;
 	M_DrawSlider(220, 72, r);
 
-	M_Print(16, 80, "       CD Music Volume");
+	MQH_Print(16, 80, "       CD Music Volume");
 	r = bgmvolume->value;
 	M_DrawSlider(220, 80, r);
 
-	M_Print(16, 88, "          Sound Volume");
+	MQH_Print(16, 88, "          Sound Volume");
 	r = s_volume->value;
 	M_DrawSlider(220, 88, r);
 
-	M_Print(16, 96,  "            Always Run");
+	MQH_Print(16, 96,  "            Always Run");
 	M_DrawCheckbox(220, 96, cl_forwardspeed->value > 200);
 
-	M_Print(16, 104, "          Invert Mouse");
+	MQH_Print(16, 104, "          Invert Mouse");
 	M_DrawCheckbox(220, 104, m_pitch->value < 0);
 
-	M_Print(16, 112, "            Lookspring");
+	MQH_Print(16, 112, "            Lookspring");
 	M_DrawCheckbox(220, 112, lookspring->value);
 
-	M_Print(16, 120, "         Video Options");
+	MQH_Print(16, 120, "         Video Options");
 
 // cursor
-	M_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -1382,11 +1302,11 @@ void M_Keys_Draw(void)
 
 	if (bind_grab)
 	{
-		M_Print(12, 32, "Press a key or button for this action");
+		MQH_Print(12, 32, "Press a key or button for this action");
 	}
 	else
 	{
-		M_Print(18, 32, "Enter to change, backspace to clear");
+		MQH_Print(18, 32, "Enter to change, backspace to clear");
 	}
 
 // search for known bindings
@@ -1394,7 +1314,7 @@ void M_Keys_Draw(void)
 	{
 		y = 48 + 8 * i;
 
-		M_Print(16, y, bindnames[i][1]);
+		MQH_Print(16, y, bindnames[i][1]);
 
 		l = String::Length(bindnames[i][0]);
 
@@ -1402,28 +1322,28 @@ void M_Keys_Draw(void)
 
 		if (keys[0] == -1)
 		{
-			M_Print(140, y, "???");
+			MQH_Print(140, y, "???");
 		}
 		else
 		{
 			name = Key_KeynumToString(keys[0]);
-			M_Print(140, y, name);
+			MQH_Print(140, y, name);
 			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
-				M_Print(140 + x + 8, y, "or");
-				M_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
+				MQH_Print(140 + x + 8, y, "or");
+				MQH_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
 			}
 		}
 	}
 
 	if (bind_grab)
 	{
-		M_DrawCharacter(130, 48 + keys_cursor * 8, '=');
+		MQH_DrawCharacter(130, 48 + keys_cursor * 8, '=');
 	}
 	else
 	{
-		M_DrawCharacter(130, 48 + keys_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+		MQH_DrawCharacter(130, 48 + keys_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 	}
 }
 
@@ -1513,13 +1433,13 @@ void M_Video_Draw(void)
 	image_t* p = R_CachePic("gfx/vidmodes.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
 		"console with set r_mode <number>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
 		"and set r_colorbits <bits-per-pixel>");
-	M_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
 		"Select windowed mode with set r_fullscreen 0");
 }
 
@@ -1700,22 +1620,22 @@ void M_Quit_Draw(void)
 	}
 
 #ifdef _WIN32
-	M_DrawTextBox(0, 0, 38, 23);
+	MQH_DrawTextBox(0, 0, 38, 23);
 	MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
 	MQH_PrintWhite(16, 28,  "Programming        Art \n");
-	M_Print(16, 36,  " John Carmack       Adrian Carmack\n");
-	M_Print(16, 44,  " Michael Abrash     Kevin Cloud\n");
-	M_Print(16, 52,  " John Cash          Paul Steed\n");
-	M_Print(16, 60,  " Dave 'Zoid' Kirsch\n");
+	MQH_Print(16, 36,  " John Carmack       Adrian Carmack\n");
+	MQH_Print(16, 44,  " Michael Abrash     Kevin Cloud\n");
+	MQH_Print(16, 52,  " John Cash          Paul Steed\n");
+	MQH_Print(16, 60,  " Dave 'Zoid' Kirsch\n");
 	MQH_PrintWhite(16, 68,  "Design             Biz\n");
-	M_Print(16, 76,  " John Romero        Jay Wilbur\n");
-	M_Print(16, 84,  " Sandy Petersen     Mike Wilson\n");
-	M_Print(16, 92,  " American McGee     Donna Jackson\n");
-	M_Print(16, 100,  " Tim Willits        Todd Hollenshead\n");
+	MQH_Print(16, 76,  " John Romero        Jay Wilbur\n");
+	MQH_Print(16, 84,  " Sandy Petersen     Mike Wilson\n");
+	MQH_Print(16, 92,  " American McGee     Donna Jackson\n");
+	MQH_Print(16, 100,  " Tim Willits        Todd Hollenshead\n");
 	MQH_PrintWhite(16, 108, "Support            Projects\n");
-	M_Print(16, 116, " Barrett Alexander  Shawn Green\n");
+	MQH_Print(16, 116, " Barrett Alexander  Shawn Green\n");
 	MQH_PrintWhite(16, 124, "Sound Effects\n");
-	M_Print(16, 132, " Trent Reznor and Nine Inch Nails\n\n");
+	MQH_Print(16, 132, " Trent Reznor and Nine Inch Nails\n\n");
 	MQH_PrintWhite(16, 140, "Quake is a trademark of Id Software,\n");
 	MQH_PrintWhite(16, 148, "inc., (c)1996 Id Software, inc. All\n");
 	MQH_PrintWhite(16, 156, "rights reserved. NIN logo is a\n");
@@ -1723,11 +1643,11 @@ void M_Quit_Draw(void)
 	MQH_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
 	MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
 #else
-	M_DrawTextBox(56, 76, 24, 4);
-	M_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
-	M_Print(64, 92,  quitMessage[msgNumber * 4 + 1]);
-	M_Print(64, 100, quitMessage[msgNumber * 4 + 2]);
-	M_Print(64, 108, quitMessage[msgNumber * 4 + 3]);
+	MQH_DrawTextBox(56, 76, 24, 4);
+	MQH_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
+	MQH_Print(64, 92,  quitMessage[msgNumber * 4 + 1]);
+	MQH_Print(64, 100, quitMessage[msgNumber * 4 + 2]);
+	MQH_Print(64, 108, quitMessage[msgNumber * 4 + 3]);
 #endif
 }
 
@@ -1797,25 +1717,25 @@ void M_LanConfig_Draw(void)
 		startJoin = "Join Game";
 	}
 	protocol = "TCP/IP";
-	M_Print(basex, 32, va("%s - %s", startJoin, protocol));
+	MQH_Print(basex, 32, va("%s - %s", startJoin, protocol));
 	basex += 8;
 
-	M_Print(basex, lanConfig_cursor_table[0], "Port");
-	M_DrawField(basex + 9 * 8, lanConfig_cursor_table[0], &lanConfig_portname, lanConfig_cursor == 0);
+	MQH_Print(basex, lanConfig_cursor_table[0], "Port");
+	MQH_DrawField(basex + 9 * 8, lanConfig_cursor_table[0], &lanConfig_portname, lanConfig_cursor == 0);
 
 	if (JoiningGame)
 	{
-		M_Print(basex, lanConfig_cursor_table[1], "Search for local games...");
-		M_Print(basex, 88, "Join game at:");
-		M_DrawField(basex + 16, lanConfig_cursor_table[2], &lanConfig_joinname, lanConfig_cursor == 2);
+		MQH_Print(basex, lanConfig_cursor_table[1], "Search for local games...");
+		MQH_Print(basex, 88, "Join game at:");
+		MQH_DrawField(basex + 16, lanConfig_cursor_table[2], &lanConfig_joinname, lanConfig_cursor == 2);
 	}
 	else
 	{
-		M_DrawTextBox(basex, lanConfig_cursor_table[1] - 8, 2, 1);
-		M_Print(basex + 8, lanConfig_cursor_table[1], "OK");
+		MQH_DrawTextBox(basex, lanConfig_cursor_table[1] - 8, 2, 1);
+		MQH_Print(basex + 8, lanConfig_cursor_table[1], "OK");
 	}
 
-	M_DrawCharacter(basex - 8, lanConfig_cursor_table [lanConfig_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(basex - 8, lanConfig_cursor_table [lanConfig_cursor], 12 + ((int)(realtime * 4) & 1));
 
 	if (*m_return_reason)
 	{
@@ -2116,23 +2036,23 @@ void M_GameOptions_Draw(void)
 	p = R_CachePic("gfx/p_multi.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
-	M_DrawTextBox(152, 32, 10, 1);
-	M_Print(160, 40, "begin game");
+	MQH_DrawTextBox(152, 32, 10, 1);
+	MQH_Print(160, 40, "begin game");
 
-	M_Print(0, 56, "      Max players");
-	M_Print(160, 56, va("%i", maxplayers));
+	MQH_Print(0, 56, "      Max players");
+	MQH_Print(160, 56, va("%i", maxplayers));
 
-	M_Print(0, 64, "        Game Type");
+	MQH_Print(0, 64, "        Game Type");
 	if (svqh_coop->value)
 	{
-		M_Print(160, 64, "Cooperative");
+		MQH_Print(160, 64, "Cooperative");
 	}
 	else
 	{
-		M_Print(160, 64, "Deathmatch");
+		MQH_Print(160, 64, "Deathmatch");
 	}
 
-	M_Print(0, 72, "        Teamplay");
+	MQH_Print(0, 72, "        Teamplay");
 	if (q1_rogue)
 	{
 		const char* msg;
@@ -2147,7 +2067,7 @@ void M_GameOptions_Draw(void)
 		case 6: msg = "Three Team CTF"; break;
 		default: msg = "Off"; break;
 		}
-		M_Print(160, 72, msg);
+		MQH_Print(160, 72, msg);
 	}
 	else
 	{
@@ -2159,96 +2079,96 @@ void M_GameOptions_Draw(void)
 		case 2: msg = "Friendly Fire"; break;
 		default: msg = "Off"; break;
 		}
-		M_Print(160, 72, msg);
+		MQH_Print(160, 72, msg);
 	}
 
-	M_Print(0, 80, "            Skill");
+	MQH_Print(0, 80, "            Skill");
 	if (qh_skill->value == 0)
 	{
-		M_Print(160, 80, "Easy difficulty");
+		MQH_Print(160, 80, "Easy difficulty");
 	}
 	else if (qh_skill->value == 1)
 	{
-		M_Print(160, 80, "Normal difficulty");
+		MQH_Print(160, 80, "Normal difficulty");
 	}
 	else if (qh_skill->value == 2)
 	{
-		M_Print(160, 80, "Hard difficulty");
+		MQH_Print(160, 80, "Hard difficulty");
 	}
 	else
 	{
-		M_Print(160, 80, "Nightmare difficulty");
+		MQH_Print(160, 80, "Nightmare difficulty");
 	}
 
-	M_Print(0, 88, "       Frag Limit");
+	MQH_Print(0, 88, "       Frag Limit");
 	if (qh_fraglimit->value == 0)
 	{
-		M_Print(160, 88, "none");
+		MQH_Print(160, 88, "none");
 	}
 	else
 	{
-		M_Print(160, 88, va("%i frags", (int)qh_fraglimit->value));
+		MQH_Print(160, 88, va("%i frags", (int)qh_fraglimit->value));
 	}
 
-	M_Print(0, 96, "       Time Limit");
+	MQH_Print(0, 96, "       Time Limit");
 	if (qh_timelimit->value == 0)
 	{
-		M_Print(160, 96, "none");
+		MQH_Print(160, 96, "none");
 	}
 	else
 	{
-		M_Print(160, 96, va("%i minutes", (int)qh_timelimit->value));
+		MQH_Print(160, 96, va("%i minutes", (int)qh_timelimit->value));
 	}
 
-	M_Print(0, 112, "         Episode");
+	MQH_Print(0, 112, "         Episode");
 	//MED 01/06/97 added hipnotic episodes
 	if (q1_hipnotic)
 	{
-		M_Print(160, 112, hipnoticepisodes[startepisode].description);
+		MQH_Print(160, 112, hipnoticepisodes[startepisode].description);
 	}
 	//PGM 01/07/97 added rogue episodes
 	else if (q1_rogue)
 	{
-		M_Print(160, 112, rogueepisodes[startepisode].description);
+		MQH_Print(160, 112, rogueepisodes[startepisode].description);
 	}
 	else
 	{
-		M_Print(160, 112, episodes[startepisode].description);
+		MQH_Print(160, 112, episodes[startepisode].description);
 	}
 
-	M_Print(0, 120, "           Level");
+	MQH_Print(0, 120, "           Level");
 	//MED 01/06/97 added hipnotic episodes
 	if (q1_hipnotic)
 	{
-		M_Print(160, 120, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].description);
-		M_Print(160, 128, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].name);
+		MQH_Print(160, 120, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].description);
+		MQH_Print(160, 128, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].name);
 	}
 	//PGM 01/07/97 added rogue episodes
 	else if (q1_rogue)
 	{
-		M_Print(160, 120, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].description);
-		M_Print(160, 128, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].name);
+		MQH_Print(160, 120, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].description);
+		MQH_Print(160, 128, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].name);
 	}
 	else
 	{
-		M_Print(160, 120, levels[episodes[startepisode].firstLevel + startlevel].description);
-		M_Print(160, 128, levels[episodes[startepisode].firstLevel + startlevel].name);
+		MQH_Print(160, 120, levels[episodes[startepisode].firstLevel + startlevel].description);
+		MQH_Print(160, 128, levels[episodes[startepisode].firstLevel + startlevel].name);
 	}
 
 // line cursor
-	M_DrawCharacter(144, gameoptions_cursor_table[gameoptions_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(144, gameoptions_cursor_table[gameoptions_cursor], 12 + ((int)(realtime * 4) & 1));
 
 	if (m_serverInfoMessage)
 	{
 		if ((realtime - m_serverInfoMessageTime) < 5.0)
 		{
 			x = (320 - 26 * 8) / 2;
-			M_DrawTextBox(x, 138, 24, 4);
+			MQH_DrawTextBox(x, 138, 24, 4);
 			x += 8;
-			M_Print(x, 146, "  More than 4 players   ");
-			M_Print(x, 154, " requires using command ");
-			M_Print(x, 162, "line parameters; please ");
-			M_Print(x, 170, "   see techinfo.txt.    ");
+			MQH_Print(x, 146, "  More than 4 players   ");
+			MQH_Print(x, 154, " requires using command ");
+			MQH_Print(x, 162, "line parameters; please ");
+			MQH_Print(x, 170, "   see techinfo.txt.    ");
 		}
 		else
 		{
@@ -2508,8 +2428,8 @@ void M_Search_Draw(void)
 	p = R_CachePic("gfx/p_multi.lmp");
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 	x = (320 / 2) - ((12 * 8) / 2) + 4;
-	M_DrawTextBox(x - 8, 32, 12, 1);
-	M_Print(x, 40, "Searching...");
+	MQH_DrawTextBox(x - 8, 32, 12, 1);
+	MQH_Print(x, 40, "Searching...");
 
 	if (slistInProgress)
 	{
@@ -2597,9 +2517,9 @@ void M_ServerList_Draw(void)
 		{
 			sprintf(string, "%-15.15s %-15.15s\n", hostcache[n].name, hostcache[n].map);
 		}
-		M_Print(16, 32 + 8 * n, string);
+		MQH_Print(16, 32 + 8 * n, string);
 	}
-	M_DrawCharacter(0, 32 + slist_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(0, 32 + slist_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 
 	if (*m_return_reason)
 	{
