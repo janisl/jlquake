@@ -17,8 +17,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_Load_Draw(void);
-void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
@@ -34,8 +32,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_Load_Key(int key);
-void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
@@ -115,129 +111,6 @@ void M_ToggleMenu_f(void)
 
 const char* plaquemessage = NULL;	// Pointer to current plaque message
 char* errormessage = NULL;
-
-//=============================================================================
-/* LOAD/SAVE MENU */
-
-
-void M_Load_Draw(void)
-{
-	int i;
-
-	MH2_ScrollTitle("gfx/menu/load.lmp");
-
-	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 60 + 8 * i, mqh_filenames[i]);
-
-// line cursor
-	MQH_DrawCharacter(8, 60 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
-}
-
-
-void M_Save_Draw(void)
-{
-	int i;
-
-	MH2_ScrollTitle("gfx/menu/save.lmp");
-
-	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 60 + 8 * i, mqh_filenames[i]);
-
-// line cursor
-	MQH_DrawCharacter(8, 60 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
-}
-
-
-void M_Load_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_SinglePlayer_f();
-		break;
-
-	case K_ENTER:
-		S_StartLocalSound("raven/menu2.wav");
-		if (!mqh_loadable[mqh_load_cursor])
-		{
-			return;
-		}
-		m_state = m_none;
-		in_keyCatchers &= ~KEYCATCH_UI;
-
-		// Host_Loadgame_f can't bring up the loading plaque because too much
-		// stack space has been used, so do it now
-		SCRQH_BeginLoadingPlaque();
-
-		// issue the load command
-		Cbuf_AddText(va("load s%i\n", mqh_load_cursor));
-		return;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor--;
-		if (mqh_load_cursor < 0)
-		{
-			mqh_load_cursor = MAX_SAVEGAMES - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor++;
-		if (mqh_load_cursor >= MAX_SAVEGAMES)
-		{
-			mqh_load_cursor = 0;
-		}
-		break;
-	}
-}
-
-
-void M_Save_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_SinglePlayer_f();
-		break;
-
-	case K_ENTER:
-		m_state = m_none;
-		in_keyCatchers &= ~KEYCATCH_UI;
-		Cbuf_AddText(va("save s%i\n", mqh_load_cursor));
-		return;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor--;
-		if (mqh_load_cursor < 0)
-		{
-			mqh_load_cursor = MAX_SAVEGAMES - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor++;
-		if (mqh_load_cursor >= MAX_SAVEGAMES)
-		{
-			mqh_load_cursor = 0;
-		}
-		break;
-	}
-}
-
-
-
-
-
-
-
 
 //=============================================================================
 /* MULTIPLAYER LOAD/SAVE MENU */
@@ -2649,16 +2522,6 @@ void M_Draw(void)
 	switch (m_state)
 	{
 
-	case m_load:
-	case m_mload:
-		M_Load_Draw();
-		break;
-
-	case m_save:
-	case m_msave:
-		M_Save_Draw();
-		break;
-
 	case m_multiplayer:
 		M_MultiPlayer_Draw();
 		break;
@@ -2722,14 +2585,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_load:
-		M_Load_Key(key);
-		return;
-
-	case m_save:
-		M_Save_Key(key);
-		return;
 
 	case m_mload:
 		M_MLoad_Key(key);

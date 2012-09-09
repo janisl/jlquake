@@ -43,8 +43,11 @@ Cvar* mh2_oldmission;
 
 int setup_class;
 
+static void MQH_Menu_SinglePlayer_f();
 static void MH2_Menu_Class_f();
 static void MH2_Menu_Difficulty_f();
+static void MQH_Menu_Load_f();
+static void MQH_Menu_Save_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -276,7 +279,7 @@ void MH2_ScrollTitle(const char* name)
 #define MAIN_ITEMS_HW   4
 
 static int mqh_main_cursor;
-int mqh_save_demonum;
+static int mqh_save_demonum;
 
 void MQH_Menu_Main_f()
 {
@@ -420,9 +423,9 @@ static void MQH_Main_Key(int key)
 #define SINGLEPLAYER_ITEMS_H2MP 5
 
 static int mqh_singleplayer_cursor;
-bool mh2_enter_portals;
+static bool mh2_enter_portals;
 
-void MQH_Menu_SinglePlayer_f()
+static void MQH_Menu_SinglePlayer_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_singleplayer;
@@ -816,7 +819,7 @@ int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
 char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
 bool mqh_loadable[MAX_SAVEGAMES];
 
-void MQH_ScanSaves()
+static void MQH_ScanSaves()
 {
 	int i, j;
 	char name[MAX_OSPATH];
@@ -873,7 +876,7 @@ void MQH_ScanSaves()
 	}
 }
 
-void MQH_Menu_Load_f()
+static void MQH_Menu_Load_f()
 {
 	mqh_entersound = true;
 	m_state = m_load;
@@ -881,7 +884,7 @@ void MQH_Menu_Load_f()
 	MQH_ScanSaves();
 }
 
-void MQH_Menu_Save_f()
+static void MQH_Menu_Save_f()
 {
 	if (!SV_IsServerActive())
 	{
@@ -899,6 +902,137 @@ void MQH_Menu_Save_f()
 	m_state = m_save;
 	in_keyCatchers |= KEYCATCH_UI;
 	MQH_ScanSaves();
+}
+
+static void MQH_Load_Draw()
+{
+	int y;
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/load.lmp");
+		y = 60;
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/p_load.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		y = 32;
+	}
+
+	for (int i = 0; i < MAX_SAVEGAMES; i++)
+	{
+		MQH_Print(16, y + 8 * i, mqh_filenames[i]);
+	}
+
+	// line cursor
+	MQH_DrawCharacter(8, y + mqh_load_cursor * 8, 12 + ((cls.realtime / 250) & 1));
+}
+
+static void MQH_Save_Draw()
+{
+	int y;
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/save.lmp");
+		y = 60;
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/p_save.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		y = 32;
+	}
+
+	for (int i = 0; i < MAX_SAVEGAMES; i++)
+	{
+		MQH_Print(16, y + 8 * i, mqh_filenames[i]);
+	}
+
+	// line cursor
+	MQH_DrawCharacter(8, y + mqh_load_cursor * 8, 12 + ((cls.realtime / 250) & 1));
+}
+
+static void MQH_Load_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_SinglePlayer_f();
+		break;
+
+	case K_ENTER:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		if (!mqh_loadable[mqh_load_cursor])
+		{
+			return;
+		}
+		m_state = m_none;
+		in_keyCatchers &= ~KEYCATCH_UI;
+
+		// Host_Loadgame_f can't bring up the loading plaque because too much
+		// stack space has been used, so do it now
+		SCRQH_BeginLoadingPlaque();
+
+		// issue the load command
+		Cbuf_AddText(va("load s%i\n", mqh_load_cursor));
+		return;
+
+	case K_UPARROW:
+	case K_LEFTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
+		{
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
+		{
+			mqh_load_cursor = 0;
+		}
+		break;
+	}
+}
+
+static void MQH_Save_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_SinglePlayer_f();
+		break;
+
+	case K_ENTER:
+		m_state = m_none;
+		in_keyCatchers &= ~KEYCATCH_UI;
+		Cbuf_AddText(va("save s%i\n", mqh_load_cursor));
+		return;
+
+	case K_UPARROW:
+	case K_LEFTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
+		{
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
+		{
+			mqh_load_cursor = 0;
+		}
+		break;
+	}
 }
 
 //=============================================================================
@@ -1738,6 +1872,16 @@ void MQH_Draw()
 	case m_difficulty:
 		MH2_Difficulty_Draw();
 		break;
+
+	case m_load:
+	case m_mload:
+		MQH_Load_Draw();
+		break;
+
+	case m_save:
+	case m_msave:
+		MQH_Save_Draw();
+		break;
 	}
 }
 
@@ -1762,6 +1906,14 @@ void MQH_Keydown(int key)
 
 	case m_difficulty:
 		MH2_Difficulty_Key(key);
+		return;
+
+	case m_load:
+		MQH_Load_Key(key);
+		return;
+
+	case m_save:
+		MQH_Save_Key(key);
 		return;
 	}
 }

@@ -30,8 +30,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_Load_Draw(void);
-void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
@@ -47,8 +45,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_Load_Key(int key);
-void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
@@ -833,11 +829,9 @@ void M_Draw(void)
 	{
 
 	case m_load:
-//		M_Load_Draw ();
 		break;
 
 	case m_save:
-//		M_Save_Draw ();
 		break;
 
 	case m_multiplayer:
@@ -903,14 +897,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_load:
-//		M_Load_Key (key);
-		return;
-
-	case m_save:
-//		M_Save_Key (key);
-		return;
 
 	case m_multiplayer:
 		M_MultiPlayer_Key(key);

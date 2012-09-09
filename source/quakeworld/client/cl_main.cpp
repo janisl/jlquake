@@ -1602,5 +1602,8 @@ int SVQH_GetMaxClients()
 void SVH2_RemoveGIPFiles(const char* path)
 {
 }
+void SCRQH_BeginLoadingPlaque()
+{
+}
 
 Cvar* svqh_teamplay;

@@ -57,7 +57,6 @@ extern const char* mh2_message;
 extern const char* mh2_message2;
 extern Cvar* mh2_oldmission;
 
-extern int mqh_save_demonum;
 extern int mqh_multiplayer_cursor;
 extern int mqh_options_cursor;
 extern int mqh_help_page;
@@ -108,7 +107,6 @@ enum
 extern const char* Credit2TextH2[MAX_LINES2_H2];
 extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
-extern bool mh2_enter_portals;
 extern int setup_class;
 #define NUM_DIFFLEVELS  4
 extern const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS];
@@ -125,11 +123,7 @@ void MH2_ScrollTitle(const char* name);
 void MQH_Menu_Main_f();
 void MQH_Init();
 void MQH_Draw();
-void MQH_Menu_SinglePlayer_f();
 void MQH_Menu_MultiPlayer_f();
 void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
-void MQH_ScanSaves();
-void MQH_Menu_Load_f();
-void MQH_Menu_Save_f();
