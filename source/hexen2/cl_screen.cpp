@@ -67,8 +67,6 @@ qboolean scr_initialized;			// ready to draw
 image_t* scr_net;
 image_t* scr_turtle;
 
-float introTime = 0.0;
-
 vrect_t scr_vrect;
 
 qboolean scr_drawloading;
@@ -943,10 +941,10 @@ void SB_IntermissionOverlay(void)
 	}
 	else if (cl.qh_intermission == 12)
 	{
-		elapsed = (introTime);
-		if (introTime < 500)
+		elapsed = (h2_introTime);
+		if (h2_introTime < 500)
 		{
-			introTime += 0.25;
+			h2_introTime += 0.25;
 		}
 	}
 	else

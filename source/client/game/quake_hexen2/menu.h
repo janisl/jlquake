@@ -58,7 +58,6 @@ extern const char* mh2_message2;
 extern Cvar* mh2_oldmission;
 
 extern int mqh_save_demonum;
-extern int mqh_singleplayer_cursor;
 extern int mqh_multiplayer_cursor;
 extern int mqh_options_cursor;
 extern int mqh_help_page;
@@ -71,9 +70,6 @@ extern int LineTimes;
 extern int MaxLines;
 extern const char** LineText;
 extern bool SoundPlayed;
-#define SINGLEPLAYER_ITEMS      3
-#define SINGLEPLAYER_ITEMS_H2MP 5
-extern int mh2_class_flag;
 #define MAX_SAVEGAMES       12
 #define SAVEGAME_COMMENT_LENGTH 39
 extern int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
@@ -113,6 +109,9 @@ extern const char* Credit2TextH2[MAX_LINES2_H2];
 extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
 extern bool mh2_enter_portals;
+extern int setup_class;
+#define NUM_DIFFLEVELS  4
+extern const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS];
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);
@@ -134,5 +133,3 @@ void MQH_Keydown(int key);
 void MQH_ScanSaves();
 void MQH_Menu_Load_f();
 void MQH_Menu_Save_f();
-void MH2_Menu_Class_f();
-void MQH_SinglePlayer_Key(int key);

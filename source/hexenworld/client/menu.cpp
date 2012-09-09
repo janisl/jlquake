@@ -53,7 +53,7 @@ void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
 
-int setup_class, which_class;
+int which_class;
 
 static double message_time;
 
@@ -61,56 +61,6 @@ static double message_time;
 #define JoiningGame     (mqh_multiplayer_cursor == 0)
 
 void M_ConfigureNetSubsystem(void);
-
-const char* ClassNamesU[MAX_PLAYER_CLASS] =
-{
-	"PALADIN",
-	"CRUSADER",
-	"NECROMANCER",
-	"ASSASSIN",
-	"SUCCUBUS",
-	"DWARF"
-};
-
-const char* DiffNames[MAX_PLAYER_CLASS][4] =
-{
-	{	// Paladin
-		"APPRENTICE",
-		"SQUIRE",
-		"ADEPT",
-		"LORD"
-	},
-	{	// Crusader
-		"GALLANT",
-		"HOLY AVENGER",
-		"DIVINE HERO",
-		"LEGEND"
-	},
-	{	// Necromancer
-		"SORCERER",
-		"DARK SERVANT",
-		"WARLOCK",
-		"LICH KING"
-	},
-	{	// Assassin
-		"ROGUE",
-		"CUTTHROAT",
-		"EXECUTIONER",
-		"WIDOW MAKER"
-	},
-	{	// Demoness
-		"LARVA",
-		"SPAWN",
-		"FIEND",
-		"SHE BITCH"
-	},
-	{	// Dwarf
-		"NATE",
-		"MUNCHKIN",
-		"BERZERKER",
-		"HANK"
-	}
-};
 
 //=============================================================================
 /* Support Routines */
@@ -165,88 +115,6 @@ void M_ToggleMenu_f(void)
 
 const char* plaquemessage = NULL;	// Pointer to current plaque message
 char* errormessage = NULL;
-
-
-//=============================================================================
-/* CLASS CHOICE MENU */
-
-void M_Menu_Class2_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_class;
-	mh2_class_flag = 1;
-}
-
-
-int mqh_class_cursor;
-#define CLASS_ITEMS 6
-
-void M_Class_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title2.lmp");
-
-	MH2_DrawBigString(72,60 + (0 * 20),ClassNamesU[0]);
-	MH2_DrawBigString(72,60 + (1 * 20),ClassNamesU[1]);
-	MH2_DrawBigString(72,60 + (2 * 20),ClassNamesU[2]);
-	MH2_DrawBigString(72,60 + (3 * 20),ClassNamesU[3]);
-	MH2_DrawBigString(72,60 + (4 * 20),ClassNamesU[4]);
-	MH2_DrawBigString(72,60 + (5 * 20),ClassNamesU[5]);
-
-	f = (int)(realtime * 10) % 8;
-	MQH_DrawPic(43, 54 + mqh_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-
-	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", mqh_class_cursor + 1)));
-	MQH_DrawPic(242,54, R_CachePic("gfx/menu/frame.lmp"));
-
-}
-
-void M_Class_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_SinglePlayer_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_class_cursor >= CLASS_ITEMS)
-		{
-			mqh_class_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_class_cursor < 0)
-		{
-			mqh_class_cursor = CLASS_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-
-		Cbuf_AddText(va("playerclass %d\n", mqh_class_cursor + 1));
-		mqh_entersound = true;
-//		if (!mh2_class_flag)
-//		{
-//			M_Menu_Difficulty_f();
-//		}
-//		else
-		{
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-		}
-		break;
-	default:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		break;
-	}
-
-}
 
 
 //=============================================================================
@@ -1647,7 +1515,6 @@ void M_Init(void)
 	MQH_Init();
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("menu_class", M_Menu_Class2_f);
 	Cmd_AddCommand("menu_connect", M_Menu_Connect_f);
 
 	hostname1 = Cvar_Get("host1","equalizer.ravensoft.com", CVAR_ARCHIVE);
@@ -1690,10 +1557,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_class:
-		M_Class_Draw();
-		break;
 
 	case m_load:
 //		M_Load_Draw ();
@@ -1770,10 +1633,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_class:
-		M_Class_Key(key);
-		return;
 
 	case m_load:
 //		M_Load_Key (key);

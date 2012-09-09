@@ -6,7 +6,6 @@
 
 extern Cvar* r_gamma;
 
-extern float introTime;
 extern Cvar* crosshair;
 
 void M_Menu_Setup_f(void);
@@ -54,67 +53,14 @@ void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
 
-int setup_class;
-
 static double message_time;
 
 #define StartingGame    (mqh_multiplayer_cursor == 1)
 #define JoiningGame     (mqh_multiplayer_cursor == 0)
-#define NUM_DIFFLEVELS  4
 
 void M_ConfigureNetSubsystem(void);
 
 extern qboolean introPlaying;
-
-extern float introTime;
-
-const char* ClassNamesU[NUM_CLASSES] =
-{
-	"PALADIN",
-	"CRUSADER",
-	"NECROMANCER",
-	"ASSASSIN",
-#ifdef MISSIONPACK
-	"DEMONESS"
-#endif
-};
-
-const char* DiffNames[NUM_CLASSES][4] =
-{
-	{	// Paladin
-		"APPRENTICE",
-		"SQUIRE",
-		"ADEPT",
-		"LORD"
-	},
-	{	// Crusader
-		"GALLANT",
-		"HOLY AVENGER",
-		"DIVINE HERO",
-		"LEGEND"
-	},
-	{	// Necromancer
-		"SORCERER",
-		"DARK SERVANT",
-		"WARLOCK",
-		"LICH KING"
-	},
-	{	// Assassin
-		"ROGUE",
-		"CUTTHROAT",
-		"EXECUTIONER",
-		"WIDOW MAKER"
-	},
-#ifdef MISSIONPACK
-	{	// Demoness
-		"LARVA",
-		"SPAWN",
-		"FIEND",
-		"SHE BITCH"
-	}
-#endif
-};
-
 
 //=============================================================================
 /* Support Routines */
@@ -128,7 +74,6 @@ void M_Print2(int cx, int cy, const char* str)
 #define PLAYER_PIC_HEIGHT 114
 
 byte translationTable[256];
-extern int setup_class;
 static byte menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
 image_t* translate_texture[NUM_CLASSES];
 
@@ -170,169 +115,6 @@ void M_ToggleMenu_f(void)
 
 const char* plaquemessage = NULL;	// Pointer to current plaque message
 char* errormessage = NULL;
-
-//=============================================================================
-/* DIFFICULTY MENU */
-void M_Menu_Difficulty_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_difficulty;
-}
-
-int m_diff_cursor;
-#define DIFF_ITEMS  NUM_DIFFLEVELS
-
-void M_Difficulty_Draw(void)
-{
-	int f, i;
-
-	MH2_ScrollTitle("gfx/menu/title5.lmp");
-
-	setup_class = clh2_playerclass->value;
-
-	if (setup_class < 1 || setup_class > NUM_CLASSES)
-	{
-		setup_class = NUM_CLASSES;
-	}
-	setup_class--;
-
-	for (i = 0; i < NUM_DIFFLEVELS; ++i)
-		MH2_DrawBigString(72,60 + (i * 20),DiffNames[setup_class][i]);
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + m_diff_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-}
-
-void M_Difficulty_Key(int key)
-{
-	switch (key)
-	{
-	case K_LEFTARROW:
-	case K_RIGHTARROW:
-		break;
-	case K_ESCAPE:
-		MH2_Menu_Class_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++m_diff_cursor >= DIFF_ITEMS)
-		{
-			m_diff_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--m_diff_cursor < 0)
-		{
-			m_diff_cursor = DIFF_ITEMS - 1;
-		}
-		break;
-	case K_ENTER:
-		Cvar_SetValue("skill", m_diff_cursor);
-		mqh_entersound = true;
-		if (mh2_enter_portals)
-		{
-			introTime = 0.0;
-			cl.qh_intermission = 12;
-			cl.qh_completed_time = cl.qh_serverTimeFloat;
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-			cls.qh_demonum = mqh_save_demonum;
-
-			//Cbuf_AddText ("map keep1\n");
-		}
-		else
-		{
-			Cbuf_AddText("map demo1\n");
-		}
-		break;
-	default:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		break;
-	}
-}
-
-//=============================================================================
-/* CLASS CHOICE MENU */
-
-void M_Menu_Class2_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_class;
-	mh2_class_flag = 1;
-}
-
-
-int mqh_class_cursor;
-#define CLASS_ITEMS NUM_CLASSES
-
-void M_Class_Draw(void)
-{
-	int f, i;
-
-	MH2_ScrollTitle("gfx/menu/title2.lmp");
-
-	for (i = 0; i < NUM_CLASSES; ++i)
-		MH2_DrawBigString(72,60 + (i * 20),ClassNamesU[i]);
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + mqh_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-
-	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", mqh_class_cursor + 1)));
-	MQH_DrawPic(242,54, R_CachePic("gfx/menu/frame.lmp"));
-}
-
-void M_Class_Key(int key)
-{
-	switch (key)
-	{
-	case K_LEFTARROW:
-	case K_RIGHTARROW:
-		break;
-	case K_ESCAPE:
-		MQH_Menu_SinglePlayer_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_class_cursor >= CLASS_ITEMS)
-		{
-			mqh_class_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_class_cursor < 0)
-		{
-			mqh_class_cursor = CLASS_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-		Cbuf_AddText(va("playerclass %d\n", mqh_class_cursor + 1));
-		mqh_entersound = true;
-		if (!mh2_class_flag)
-		{
-			M_Menu_Difficulty_f();
-		}
-		else
-		{
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-		}
-		break;
-	default:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		break;
-	}
-
-}
-
 
 //=============================================================================
 /* LOAD/SAVE MENU */
@@ -2834,7 +2616,6 @@ void M_Init(void)
 	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("menu_class", M_Menu_Class2_f);
 
 	mh2_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
@@ -2867,14 +2648,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_difficulty:
-		M_Difficulty_Draw();
-		break;
-
-	case m_class:
-		M_Class_Draw();
-		break;
 
 	case m_load:
 	case m_mload:
@@ -2949,14 +2722,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_difficulty:
-		M_Difficulty_Key(key);
-		return;
-
-	case m_class:
-		M_Class_Key(key);
-		return;
 
 	case m_load:
 		M_Load_Key(key);

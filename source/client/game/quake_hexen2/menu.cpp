@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "menu.h"
 #include "../../../server/public.h"
+#include "../hexen2/local.h"
 
 menu_state_t m_state;
 menu_state_t m_return_state;
@@ -40,6 +41,10 @@ const char* mh2_message2;
 
 Cvar* mh2_oldmission;
 
+int setup_class;
+
+static void MH2_Menu_Class_f();
+static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -411,7 +416,10 @@ static void MQH_Main_Key(int key)
 //=============================================================================
 /* SINGLE PLAYER MENU */
 
-int mqh_singleplayer_cursor;
+#define SINGLEPLAYER_ITEMS      3
+#define SINGLEPLAYER_ITEMS_H2MP 5
+
+static int mqh_singleplayer_cursor;
 bool mh2_enter_portals;
 
 void MQH_Menu_SinglePlayer_f()
@@ -479,7 +487,7 @@ static void MQH_SinglePlayer_Draw()
 	}
 }
 
-void MQH_SinglePlayer_Key(int key)
+static void MQH_SinglePlayer_Key(int key)
 {
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
 	{
@@ -582,13 +590,222 @@ void MQH_SinglePlayer_Key(int key)
 //=============================================================================
 /* CLASS CHOICE MENU */
 
-int mh2_class_flag;
+static int mh2_class_flag;
+static int mqh_class_cursor;
 
-void MH2_Menu_Class_f()
+static const char* h2_ClassNamesU[NUM_CLASSES_H2MP] =
+{
+	"PALADIN",
+	"CRUSADER",
+	"NECROMANCER",
+	"ASSASSIN",
+	"DEMONESS"
+};
+
+static const char* hw_ClassNamesU[MAX_PLAYER_CLASS] =
+{
+	"PALADIN",
+	"CRUSADER",
+	"NECROMANCER",
+	"ASSASSIN",
+	"SUCCUBUS",
+	"DWARF"
+};
+
+static void MH2_Menu_Class_f()
 {
 	mh2_class_flag = 0;
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
+}
+
+static void MH2_Menu_Class2_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_class;
+	mh2_class_flag = 1;
+}
+
+static void MH2_Class_Draw()
+{
+	MH2_ScrollTitle("gfx/menu/title2.lmp");
+
+	for (int i = 0; i < (GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2); i++)
+	{
+		MH2_DrawBigString(72, 60 + (i * 20), GGameType & GAME_HexenWorld ? hw_ClassNamesU[i] : h2_ClassNamesU[i]);
+	}
+
+	int f = (cls.realtime / 100) % 8;
+	MQH_DrawPic(43, 54 + mqh_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+
+	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", mqh_class_cursor + 1)));
+	MQH_DrawPic(242,54, R_CachePic("gfx/menu/frame.lmp"));
+}
+
+static void MH2_Class_Key(int key)
+{
+	switch (key)
+	{
+	case K_LEFTARROW:
+	case K_RIGHTARROW:
+		break;
+
+	case K_ESCAPE:
+		MQH_Menu_SinglePlayer_f();
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		if (++mqh_class_cursor >= (GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+		{
+			mqh_class_cursor = 0;
+		}
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		if (--mqh_class_cursor < 0)
+		{
+			mqh_class_cursor = (GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1;
+		}
+		break;
+
+	case K_ENTER:
+		Cbuf_AddText(va("playerclass %d\n", mqh_class_cursor + 1));
+		mqh_entersound = true;
+		if (!mh2_class_flag)
+		{
+			MH2_Menu_Difficulty_f();
+		}
+		else
+		{
+			in_keyCatchers &= ~KEYCATCH_UI;
+			m_state = m_none;
+		}
+		break;
+	default:
+		in_keyCatchers &= ~KEYCATCH_UI;
+		m_state = m_none;
+		break;
+	}
+}
+
+//=============================================================================
+/* DIFFICULTY MENU */
+
+static int mh2_diff_cursor;
+
+const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS] =
+{
+	{	// Paladin
+		"APPRENTICE",
+		"SQUIRE",
+		"ADEPT",
+		"LORD"
+	},
+	{	// Crusader
+		"GALLANT",
+		"HOLY AVENGER",
+		"DIVINE HERO",
+		"LEGEND"
+	},
+	{	// Necromancer
+		"SORCERER",
+		"DARK SERVANT",
+		"WARLOCK",
+		"LICH KING"
+	},
+	{	// Assassin
+		"ROGUE",
+		"CUTTHROAT",
+		"EXECUTIONER",
+		"WIDOW MAKER"
+	},
+	{	// Demoness
+		"LARVA",
+		"SPAWN",
+		"FIEND",
+		"SHE BITCH"
+	}
+};
+
+static void MH2_Menu_Difficulty_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_difficulty;
+}
+
+static void MH2_Difficulty_Draw()
+{
+	MH2_ScrollTitle("gfx/menu/title5.lmp");
+
+	setup_class = clh2_playerclass->value;
+
+	if (setup_class < 1 || setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+	{
+		setup_class = GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2;
+	}
+	setup_class--;
+
+	for (int i = 0; i < NUM_DIFFLEVELS; ++i)
+	{
+		MH2_DrawBigString(72, 60 + (i * 20), DiffNames[setup_class][i]);
+	}
+
+	int f = (int)(cls.realtime / 100) % 8;
+	MQH_DrawPic(43, 54 + mh2_diff_cursor * 20, R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+}
+
+static void MH2_Difficulty_Key(int key)
+{
+	switch (key)
+	{
+	case K_LEFTARROW:
+	case K_RIGHTARROW:
+		break;
+	case K_ESCAPE:
+		MH2_Menu_Class_f();
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		if (++mh2_diff_cursor >= NUM_DIFFLEVELS)
+		{
+			mh2_diff_cursor = 0;
+		}
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		if (--mh2_diff_cursor < 0)
+		{
+			mh2_diff_cursor = NUM_DIFFLEVELS - 1;
+		}
+		break;
+	case K_ENTER:
+		Cvar_SetValue("skill", mh2_diff_cursor);
+		mqh_entersound = true;
+		if (mh2_enter_portals)
+		{
+			h2_introTime = 0.0;
+			cl.qh_intermission = 12;
+			cl.qh_completed_time = cl.qh_serverTimeFloat;
+			in_keyCatchers &= ~KEYCATCH_UI;
+			m_state = m_none;
+			cls.qh_demonum = mqh_save_demonum;
+
+			//Cbuf_AddText ("map keep1\n");
+		}
+		else
+		{
+			Cbuf_AddText("map demo1\n");
+		}
+		break;
+	default:
+		in_keyCatchers &= ~KEYCATCH_UI;
+		m_state = m_none;
+		break;
+	}
 }
 
 //=============================================================================
@@ -1491,9 +1708,10 @@ void MQH_Init()
 		Cmd_AddCommand("menu_save", MQH_Menu_Save_f);
 		Cmd_AddCommand("menu_multiplayer", MQH_Menu_MultiPlayer_f);
 	}
-
 	if (GGameType & GAME_Hexen2)
 	{
+		Cmd_AddCommand("menu_class", MH2_Menu_Class2_f);
+
 		MH2_ReadBigCharWidth();
 	}
 }
@@ -1512,6 +1730,14 @@ void MQH_Draw()
 	case m_singleplayer:
 		MQH_SinglePlayer_Draw();
 		break;
+
+	case m_class:
+		MH2_Class_Draw();
+		break;
+
+	case m_difficulty:
+		MH2_Difficulty_Draw();
+		break;
 	}
 }
 
@@ -1528,6 +1754,14 @@ void MQH_Keydown(int key)
 
 	case m_singleplayer:
 		MQH_SinglePlayer_Key(key);
+		return;
+
+	case m_class:
+		MH2_Class_Key(key);
+		return;
+
+	case m_difficulty:
+		MH2_Difficulty_Key(key);
 		return;
 	}
 }

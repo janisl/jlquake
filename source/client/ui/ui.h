@@ -66,6 +66,7 @@ void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color);	// ignor
 void SCR_DrawSmallString(int x, int y, const char* string);
 
 extern Cvar* scr_viewsize;
+extern float h2_introTime;
 
 void SCR_InitCommon();
 void SCR_EndLoadingPlaque();
