@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-void M_Menu_Load_f(void);
-void M_Menu_Save_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
@@ -32,7 +30,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
@@ -50,7 +47,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
@@ -701,28 +697,6 @@ void M_Quit_Key(int key)
 
 }
 
-void M_SinglePlayer_Draw(void)
-{
-	image_t* p;
-
-	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-	p = R_CachePic("gfx/ttl_sgl.lmp");
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-
-	MQH_DrawTextBox(60, 10 * 8, 23, 4);
-	MQH_PrintWhite(92, 12 * 8, "QuakeWorld is for");
-	MQH_PrintWhite(88, 13 * 8, "Internet play only");
-
-}
-
-void M_SinglePlayer_Key(int key)
-{
-	if (key == K_ESCAPE || key == K_ENTER)
-	{
-		m_state = m_main;
-	}
-}
-
 void M_MultiPlayer_Draw(void)
 {
 	image_t* p;
@@ -858,10 +832,6 @@ void M_Draw(void)
 	switch (m_state)
 	{
 
-	case m_singleplayer:
-		M_SinglePlayer_Draw();
-		break;
-
 	case m_load:
 //		M_Load_Draw ();
 		break;
@@ -933,10 +903,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Key(key);
-		return;
 
 	case m_load:
 //		M_Load_Key (key);

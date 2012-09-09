@@ -7,8 +7,6 @@
 extern Cvar* r_gamma;
 extern Cvar* crosshair;
 
-void M_Menu_Load_f(void);
-void M_Menu_Save_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
@@ -18,7 +16,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
@@ -36,7 +33,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
@@ -65,7 +61,6 @@ static double message_time;
 #define JoiningGame     (mqh_multiplayer_cursor == 0)
 
 void M_ConfigureNetSubsystem(void);
-void M_Menu_Class_f(void);
 
 const char* ClassNamesU[MAX_PLAYER_CLASS] =
 {
@@ -174,24 +169,16 @@ char* errormessage = NULL;
 
 //=============================================================================
 /* CLASS CHOICE MENU */
-int class_flag;
-
-void M_Menu_Class_f(void)
-{
-	class_flag = 0;
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_class;
-}
 
 void M_Menu_Class2_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
-	class_flag = 1;
+	mh2_class_flag = 1;
 }
 
 
-int m_class_cursor;
+int mqh_class_cursor;
 #define CLASS_ITEMS 6
 
 void M_Class_Draw(void)
@@ -208,9 +195,9 @@ void M_Class_Draw(void)
 	MH2_DrawBigString(72,60 + (5 * 20),ClassNamesU[5]);
 
 	f = (int)(realtime * 10) % 8;
-	MQH_DrawPic(43, 54 + m_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 54 + mqh_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 
-	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", m_class_cursor + 1)));
+	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", mqh_class_cursor + 1)));
 	MQH_DrawPic(242,54, R_CachePic("gfx/menu/frame.lmp"));
 
 }
@@ -225,25 +212,25 @@ void M_Class_Key(int key)
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (++m_class_cursor >= CLASS_ITEMS)
+		if (++mqh_class_cursor >= CLASS_ITEMS)
 		{
-			m_class_cursor = 0;
+			mqh_class_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (--m_class_cursor < 0)
+		if (--mqh_class_cursor < 0)
 		{
-			m_class_cursor = CLASS_ITEMS - 1;
+			mqh_class_cursor = CLASS_ITEMS - 1;
 		}
 		break;
 
 	case K_ENTER:
 
-		Cbuf_AddText(va("playerclass %d\n", m_class_cursor + 1));
+		Cbuf_AddText(va("playerclass %d\n", mqh_class_cursor + 1));
 		mqh_entersound = true;
-//		if (!class_flag)
+//		if (!mh2_class_flag)
 //		{
 //			M_Menu_Difficulty_f();
 //		}
@@ -1079,24 +1066,6 @@ void M_Quit_Draw(void)
 
 }
 
-void M_SinglePlayer_Draw(void)
-{
-	MH2_ScrollTitle("gfx/menu/title1.lmp");
-
-	MQH_DrawTextBox(60, 10 * 8, 23, 4);
-	MQH_PrintWhite(92, 12 * 8, "HexenWorld is for");
-	MQH_PrintWhite(88, 13 * 8, "Internet play only");
-
-}
-
-void M_SinglePlayer_Key(int key)
-{
-	if (key == K_ESCAPE || key == K_ENTER)
-	{
-		m_state = m_main;
-	}
-}
-
 //=============================================================================
 /* MULTIPLAYER MENU */
 
@@ -1722,10 +1691,6 @@ void M_Draw(void)
 	switch (m_state)
 	{
 
-	case m_singleplayer:
-		M_SinglePlayer_Draw();
-		break;
-
 	case m_class:
 		M_Class_Draw();
 		break;
@@ -1805,10 +1770,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Key(key);
-		return;
 
 	case m_class:
 		M_Class_Key(key);

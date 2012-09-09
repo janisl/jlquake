@@ -1595,5 +1595,12 @@ bool SV_IsServerActive()
 void SV_CvarChanged(Cvar* var)
 {
 }
+int SVQH_GetMaxClients()
+{
+	return 0;
+}
+void SVH2_RemoveGIPFiles(const char* path)
+{
+}
 
 Cvar* svqh_teamplay;

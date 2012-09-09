@@ -645,5 +645,6 @@ float* CL_GetSimOrg();
 void CL_WriteWaveFilePacket(int endtime);
 void SCR_UpdateScreen();
 void CL_NextDemo();
+int SCR_ModalMessage(const char* text);
 
 #endif

@@ -8,10 +8,7 @@ extern Cvar* r_gamma;
 
 extern float introTime;
 extern Cvar* crosshair;
-Cvar* m_oldmission;
 
-void M_Menu_Load_f(void);
-void M_Menu_Save_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
@@ -21,7 +18,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
@@ -39,7 +35,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
@@ -68,7 +63,6 @@ static double message_time;
 #define NUM_DIFFLEVELS  4
 
 void M_ConfigureNetSubsystem(void);
-void M_Menu_Class_f(void);
 
 extern qboolean introPlaying;
 
@@ -186,7 +180,6 @@ void M_Menu_Difficulty_f(void)
 }
 
 int m_diff_cursor;
-int m_enter_portals;
 #define DIFF_ITEMS  NUM_DIFFLEVELS
 
 void M_Difficulty_Draw(void)
@@ -218,7 +211,7 @@ void M_Difficulty_Key(int key)
 	case K_RIGHTARROW:
 		break;
 	case K_ESCAPE:
-		M_Menu_Class_f();
+		MH2_Menu_Class_f();
 		break;
 
 	case K_DOWNARROW:
@@ -239,7 +232,7 @@ void M_Difficulty_Key(int key)
 	case K_ENTER:
 		Cvar_SetValue("skill", m_diff_cursor);
 		mqh_entersound = true;
-		if (m_enter_portals)
+		if (mh2_enter_portals)
 		{
 			introTime = 0.0;
 			cl.qh_intermission = 12;
@@ -264,24 +257,16 @@ void M_Difficulty_Key(int key)
 
 //=============================================================================
 /* CLASS CHOICE MENU */
-int class_flag;
-
-void M_Menu_Class_f(void)
-{
-	class_flag = 0;
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_class;
-}
 
 void M_Menu_Class2_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
-	class_flag = 1;
+	mh2_class_flag = 1;
 }
 
 
-int m_class_cursor;
+int mqh_class_cursor;
 #define CLASS_ITEMS NUM_CLASSES
 
 void M_Class_Draw(void)
@@ -294,9 +279,9 @@ void M_Class_Draw(void)
 		MH2_DrawBigString(72,60 + (i * 20),ClassNamesU[i]);
 
 	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + m_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 54 + mqh_class_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 
-	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", m_class_cursor + 1)));
+	MQH_DrawPic(251,54 + 21, R_CachePic(va("gfx/cport%d.lmp", mqh_class_cursor + 1)));
 	MQH_DrawPic(242,54, R_CachePic("gfx/menu/frame.lmp"));
 }
 
@@ -313,24 +298,24 @@ void M_Class_Key(int key)
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (++m_class_cursor >= CLASS_ITEMS)
+		if (++mqh_class_cursor >= CLASS_ITEMS)
 		{
-			m_class_cursor = 0;
+			mqh_class_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (--m_class_cursor < 0)
+		if (--mqh_class_cursor < 0)
 		{
-			m_class_cursor = CLASS_ITEMS - 1;
+			mqh_class_cursor = CLASS_ITEMS - 1;
 		}
 		break;
 
 	case K_ENTER:
-		Cbuf_AddText(va("playerclass %d\n", m_class_cursor + 1));
+		Cbuf_AddText(va("playerclass %d\n", mqh_class_cursor + 1));
 		mqh_entersound = true;
-		if (!class_flag)
+		if (!mh2_class_flag)
 		{
 			M_Menu_Difficulty_f();
 		}
@@ -350,197 +335,7 @@ void M_Class_Key(int key)
 
 
 //=============================================================================
-/* SINGLE PLAYER MENU */
-
-void M_SinglePlayer_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title1.lmp");
-
-	MH2_DrawBigString(72,60 + (0 * 20),"NEW MISSION");
-	MH2_DrawBigString(72,60 + (1 * 20),"LOAD");
-	MH2_DrawBigString(72,60 + (2 * 20),"SAVE");
-	if (m_oldmission->value)
-	{
-		MH2_DrawBigString(72,60 + (3 * 20),"OLD MISSION");
-	}
-	MH2_DrawBigString(72,60 + (4 * 20),"VIEW INTRO");
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-}
-
-
-void M_SinglePlayer_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_singleplayer_cursor >= SINGLEPLAYER_ITEMS_H2MP)
-		{
-			mqh_singleplayer_cursor = 0;
-		}
-		if (!m_oldmission->value)
-		{
-			if (mqh_singleplayer_cursor == 3)
-			{
-				mqh_singleplayer_cursor = 4;
-			}
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_singleplayer_cursor < 0)
-		{
-			mqh_singleplayer_cursor = SINGLEPLAYER_ITEMS_H2MP - 1;
-		}
-		if (!m_oldmission->value)
-		{
-			if (mqh_singleplayer_cursor == 3)
-			{
-				mqh_singleplayer_cursor = 2;
-			}
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-
-		m_enter_portals = 0;
-		switch (mqh_singleplayer_cursor)
-		{
-		case 0:
-			if (GGameType & GAME_H2Portals)
-			{
-				m_enter_portals = 1;
-			}
-
-		case 3:
-			if (sv.state != SS_DEAD)
-			{
-				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
-				{
-					break;
-				}
-			}
-			in_keyCatchers &= ~KEYCATCH_UI;
-			if (sv.state != SS_DEAD)
-			{
-				Cbuf_AddText("disconnect\n");
-			}
-			SVH2_RemoveGIPFiles(NULL);
-			Cbuf_AddText("maxplayers 1\n");
-			M_Menu_Class_f();
-			break;
-
-		case 1:
-			M_Menu_Load_f();
-			break;
-
-		case 2:
-			M_Menu_Save_f();
-			break;
-
-		case 4:
-			in_keyCatchers &= ~KEYCATCH_UI;
-			Cbuf_AddText("playdemo t9\n");
-			break;
-		}
-	}
-}
-
-//=============================================================================
 /* LOAD/SAVE MENU */
-
-int load_cursor;			// 0 < load_cursor < MAX_SAVEGAMES
-
-#define MAX_SAVEGAMES       12
-char m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
-int loadable[MAX_SAVEGAMES];
-
-void M_ScanSaves(void)
-{
-	int i, j;
-	char name[MAX_OSPATH];
-	fileHandle_t f;
-
-	for (i = 0; i < MAX_SAVEGAMES; i++)
-	{
-		String::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
-		loadable[i] = false;
-		sprintf(name, "s%i/info.dat", i);
-		if (!FS_FileExists(name))
-		{
-			continue;
-		}
-		FS_FOpenFileRead(name, &f, true);
-		if (!f)
-		{
-			continue;
-		}
-		FS_Read(name, 80, f);
-		name[80] = 0;
-		//	Skip version
-		char* Ptr = name;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		if (*Ptr == '\n')
-		{
-			*Ptr = 0;
-			Ptr++;
-		}
-		char* SaveName = Ptr;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		*Ptr = 0;
-		String::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i]) - 1);
-
-		// change _ back to space
-		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
-			if (m_filenames[i][j] == '_')
-			{
-				m_filenames[i][j] = ' ';
-			}
-		loadable[i] = true;
-		FS_FCloseFile(f);
-	}
-}
-
-void M_Menu_Load_f(void)
-{
-	mqh_entersound = true;
-	m_state = m_load;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanSaves();
-}
-
-
-void M_Menu_Save_f(void)
-{
-	if (sv.state == SS_DEAD)
-	{
-		return;
-	}
-	if (cl.qh_intermission)
-	{
-		return;
-	}
-	if (svs.qh_maxclients != 1)
-	{
-		return;
-	}
-	mqh_entersound = true;
-	m_state = m_save;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanSaves();
-}
 
 
 void M_Load_Draw(void)
@@ -550,10 +345,10 @@ void M_Load_Draw(void)
 	MH2_ScrollTitle("gfx/menu/load.lmp");
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 60 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 60 + 8 * i, mqh_filenames[i]);
 
 // line cursor
-	MQH_DrawCharacter(8, 60 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 60 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -564,10 +359,10 @@ void M_Save_Draw(void)
 	MH2_ScrollTitle("gfx/menu/save.lmp");
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 60 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 60 + 8 * i, mqh_filenames[i]);
 
 // line cursor
-	MQH_DrawCharacter(8, 60 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 60 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -581,7 +376,7 @@ void M_Load_Key(int k)
 
 	case K_ENTER:
 		S_StartLocalSound("raven/menu2.wav");
-		if (!loadable[load_cursor])
+		if (!mqh_loadable[mqh_load_cursor])
 		{
 			return;
 		}
@@ -593,26 +388,26 @@ void M_Load_Key(int k)
 		SCRQH_BeginLoadingPlaque();
 
 		// issue the load command
-		Cbuf_AddText(va("load s%i\n", load_cursor));
+		Cbuf_AddText(va("load s%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -630,26 +425,26 @@ void M_Save_Key(int k)
 	case K_ENTER:
 		m_state = m_none;
 		in_keyCatchers &= ~KEYCATCH_UI;
-		Cbuf_AddText(va("save s%i\n", load_cursor));
+		Cbuf_AddText(va("save s%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -673,8 +468,8 @@ void M_ScanMSaves(void)
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
 	{
-		String::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
-		loadable[i] = false;
+		String::Cpy(mqh_filenames[i], "--- UNUSED SLOT ---");
+		mqh_loadable[i] = false;
 		sprintf(name, "ms%i/info.dat", i);
 		if (!FS_FileExists(name))
 		{
@@ -700,15 +495,15 @@ void M_ScanMSaves(void)
 		while (*Ptr && *Ptr != '\n')
 			Ptr++;
 		*Ptr = 0;
-		String::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i]) - 1);
+		String::NCpy(mqh_filenames[i], SaveName, sizeof(mqh_filenames[i]) - 1);
 
 		// change _ back to space
 		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
-			if (m_filenames[i][j] == '_')
+			if (mqh_filenames[i][j] == '_')
 			{
-				m_filenames[i][j] = ' ';
+				mqh_filenames[i][j] = ' ';
 			}
-		loadable[i] = true;
+		mqh_loadable[i] = true;
 		FS_FCloseFile(f);
 	}
 }
@@ -748,7 +543,7 @@ void M_MLoad_Key(int k)
 
 	case K_ENTER:
 		S_StartLocalSound("raven/menu2.wav");
-		if (!loadable[load_cursor])
+		if (!mqh_loadable[mqh_load_cursor])
 		{
 			return;
 		}
@@ -766,26 +561,26 @@ void M_MLoad_Key(int k)
 		SCRQH_BeginLoadingPlaque();
 
 		// issue the load command
-		Cbuf_AddText(va("load ms%i\n", load_cursor));
+		Cbuf_AddText(va("load ms%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -803,26 +598,26 @@ void M_MSave_Key(int k)
 	case K_ENTER:
 		m_state = m_none;
 		in_keyCatchers &= ~KEYCATCH_UI;
-		Cbuf_AddText(va("save ms%i\n", load_cursor));
+		Cbuf_AddText(va("save ms%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -2475,7 +2270,7 @@ void M_Menu_GameOptions_f(void)
 			gameoptions_cursor = 0;
 		}
 	}
-	if (!m_oldmission->value)
+	if (!mh2_oldmission->value)
 	{
 		startepisode = MP_START;
 	}
@@ -2615,7 +2410,7 @@ void M_NetStart_Change(int dir)
 			{
 				startepisode = REG_START;
 			}
-			if (!m_oldmission->value)
+			if (!mh2_oldmission->value)
 			{
 				startepisode = MP_START;
 			}
@@ -2707,7 +2502,7 @@ void M_NetStart_Change(int dir)
 			}
 			else
 			{
-				if (!m_oldmission->value)
+				if (!mh2_oldmission->value)
 				{
 					startepisode = MP_START;
 				}
@@ -3036,14 +2831,12 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-	Cmd_AddCommand("menu_load", M_Menu_Load_f);
-	Cmd_AddCommand("menu_save", M_Menu_Save_f);
 	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
 	Cmd_AddCommand("menu_class", M_Menu_Class2_f);
 
-	m_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
+	mh2_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
 
 
@@ -3074,10 +2867,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Draw();
-		break;
 
 	case m_difficulty:
 		M_Difficulty_Draw();
@@ -3160,10 +2949,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Key(key);
-		return;
 
 	case m_difficulty:
 		M_Difficulty_Key(key);

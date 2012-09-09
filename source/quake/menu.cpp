@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-void M_Menu_Load_f(void);
-void M_Menu_Save_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
@@ -32,7 +30,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
 void M_MultiPlayer_Draw(void);
@@ -50,7 +47,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
 void M_MultiPlayer_Key(int key);
@@ -114,169 +110,7 @@ void M_ToggleMenu_f(void)
 
 
 //=============================================================================
-/* SINGLE PLAYER MENU */
-
-void M_SinglePlayer_Draw(void)
-{
-	int f;
-	image_t* p;
-
-	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-	p = R_CachePic("gfx/ttl_sgl.lmp");
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	MQH_DrawPic(72, 32, R_CachePic("gfx/sp_menu.lmp"));
-
-	f = (int)(host_time * 10) % 6;
-
-	MQH_DrawPic(54, 32 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
-}
-
-
-void M_SinglePlayer_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (++mqh_singleplayer_cursor >= SINGLEPLAYER_ITEMS)
-		{
-			mqh_singleplayer_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (--mqh_singleplayer_cursor < 0)
-		{
-			mqh_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-
-		switch (mqh_singleplayer_cursor)
-		{
-		case 0:
-			if (sv.state != SS_DEAD)
-			{
-				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
-				{
-					break;
-				}
-			}
-			in_keyCatchers &= ~KEYCATCH_UI;
-			if (sv.state != SS_DEAD)
-			{
-				Cbuf_AddText("disconnect\n");
-			}
-			Cbuf_AddText("maxplayers 1\n");
-			Cbuf_AddText("map start\n");
-			break;
-
-		case 1:
-			M_Menu_Load_f();
-			break;
-
-		case 2:
-			M_Menu_Save_f();
-			break;
-		}
-	}
-}
-
-//=============================================================================
 /* LOAD/SAVE MENU */
-
-int load_cursor;			// 0 < load_cursor < MAX_SAVEGAMES
-
-#define MAX_SAVEGAMES       12
-char m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
-int loadable[MAX_SAVEGAMES];
-
-void M_ScanSaves(void)
-{
-	int i, j;
-	char name[MAX_OSPATH];
-	fileHandle_t f;
-
-	for (i = 0; i < MAX_SAVEGAMES; i++)
-	{
-		String::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
-		loadable[i] = false;
-		sprintf(name, "s%i.sav", i);
-		//	This will make sure that only savegames in current game directory
-		// in home directory are listed
-		if (!FS_FileExists(name))
-		{
-			continue;
-		}
-		FS_FOpenFileRead(name, &f, true);
-		if (!f)
-		{
-			continue;
-		}
-		FS_Read(name, 80, f);
-		name[80] = 0;
-		//	Skip version
-		char* Ptr = name;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		if (*Ptr == '\n')
-		{
-			*Ptr = 0;
-			Ptr++;
-		}
-		char* SaveName = Ptr;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		*Ptr = 0;
-		String::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i]) - 1);
-
-		// change _ back to space
-		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
-			if (m_filenames[i][j] == '_')
-			{
-				m_filenames[i][j] = ' ';
-			}
-		loadable[i] = true;
-		FS_FCloseFile(f);
-	}
-}
-
-void M_Menu_Load_f(void)
-{
-	mqh_entersound = true;
-	m_state = m_load;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanSaves();
-}
-
-
-void M_Menu_Save_f(void)
-{
-	if (sv.state == SS_DEAD)
-	{
-		return;
-	}
-	if (cl.qh_intermission)
-	{
-		return;
-	}
-	if (svs.qh_maxclients != 1)
-	{
-		return;
-	}
-	mqh_entersound = true;
-	m_state = m_save;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanSaves();
-}
-
 
 void M_Load_Draw(void)
 {
@@ -287,10 +121,10 @@ void M_Load_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 32 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 32 + 8 * i, mqh_filenames[i]);
 
 // line cursor
-	MQH_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 32 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -303,10 +137,10 @@ void M_Save_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	for (i = 0; i < MAX_SAVEGAMES; i++)
-		MQH_Print(16, 32 + 8 * i, m_filenames[i]);
+		MQH_Print(16, 32 + 8 * i, mqh_filenames[i]);
 
 // line cursor
-	MQH_DrawCharacter(8, 32 + load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(8, 32 + mqh_load_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -320,7 +154,7 @@ void M_Load_Key(int k)
 
 	case K_ENTER:
 		S_StartLocalSound("misc/menu2.wav");
-		if (!loadable[load_cursor])
+		if (!mqh_loadable[mqh_load_cursor])
 		{
 			return;
 		}
@@ -332,26 +166,26 @@ void M_Load_Key(int k)
 		SCRQH_BeginLoadingPlaque();
 
 		// issue the load command
-		Cbuf_AddText(va("load s%i\n", load_cursor));
+		Cbuf_AddText(va("load s%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -369,26 +203,26 @@ void M_Save_Key(int k)
 	case K_ENTER:
 		m_state = m_none;
 		in_keyCatchers &= ~KEYCATCH_UI;
-		Cbuf_AddText(va("save s%i\n", load_cursor));
+		Cbuf_AddText(va("save s%i\n", mqh_load_cursor));
 		return;
 
 	case K_UPARROW:
 	case K_LEFTARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		load_cursor--;
-		if (load_cursor < 0)
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
 		{
-			load_cursor = MAX_SAVEGAMES - 1;
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		load_cursor++;
-		if (load_cursor >= MAX_SAVEGAMES)
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
 		{
-			load_cursor = 0;
+			mqh_load_cursor = 0;
 		}
 		break;
 	}
@@ -2361,8 +2195,6 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-	Cmd_AddCommand("menu_load", M_Menu_Load_f);
-	Cmd_AddCommand("menu_save", M_Menu_Save_f);
 	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
@@ -2396,10 +2228,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Draw();
-		break;
 
 	case m_load:
 		M_Load_Draw();
@@ -2472,10 +2300,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_singleplayer:
-		M_SinglePlayer_Key(key);
-		return;
 
 	case m_load:
 		M_Load_Key(key);

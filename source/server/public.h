@@ -21,5 +21,7 @@ extern int svh2_kingofhill;
 
 bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);
+int SVQH_GetMaxClients();
+void SVH2_RemoveGIPFiles(const char* path);
 
 #endif

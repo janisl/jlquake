@@ -36,7 +36,6 @@ extern netadr_t rcon_from;
 void SVH2_SaveGamestate(bool clientsOnly);
 void SVQH_InitOperatorCommands();
 void SVQHW_InitOperatorCommands();
-void SVH2_RemoveGIPFiles(const char* path);
 void SVQW_SendServerInfoChange(const char* key, const char* value);
 
 //

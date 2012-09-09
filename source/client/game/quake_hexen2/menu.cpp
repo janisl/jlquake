@@ -16,6 +16,7 @@
 
 #include "../../client.h"
 #include "menu.h"
+#include "../../../server/public.h"
 
 menu_state_t m_state;
 menu_state_t m_return_state;
@@ -36,6 +37,8 @@ bool mqh_entersound;			// play after drawing a frame, so caching
 
 const char* mh2_message;
 const char* mh2_message2;
+
+Cvar* mh2_oldmission;
 
 static void MQH_Menu_Help_f();
 
@@ -264,7 +267,10 @@ void MH2_ScrollTitle(const char* name)
 //=============================================================================
 /* MAIN MENU */
 
-int mqh_main_cursor;
+#define MAIN_ITEMS      5
+#define MAIN_ITEMS_HW   4
+
+static int mqh_main_cursor;
 int mqh_save_demonum;
 
 void MQH_Menu_Main_f()
@@ -283,8 +289,6 @@ static void MQH_Main_Draw()
 {
 	if (GGameType & GAME_Hexen2)
 	{
-		int f;
-
 		MH2_ScrollTitle("gfx/menu/title0.lmp");
 		if (GGameType & GAME_HexenWorld)
 		{
@@ -302,20 +306,17 @@ static void MQH_Main_Draw()
 			MH2_DrawBigString(72, 60 + (4 * 20), "QUIT");
 		}
 
-		f = (int)(cls.realtime / 100) % 8;
+		int f = (cls.realtime / 100) % 8;
 		MQH_DrawPic(43, 54 + mqh_main_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 	}
 	else
 	{
-		int f;
-		image_t* p;
-
 		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-		p = R_CachePic("gfx/ttl_main.lmp");
+		image_t* p = R_CachePic("gfx/ttl_main.lmp");
 		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 		MQH_DrawPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
 
-		f = (int)(cls.realtime / 100) % 6;
+		int f = (cls.realtime / 100) % 6;
 
 		MQH_DrawPic(54, 32 + mqh_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 	}
@@ -411,6 +412,7 @@ static void MQH_Main_Key(int key)
 /* SINGLE PLAYER MENU */
 
 int mqh_singleplayer_cursor;
+bool mh2_enter_portals;
 
 void MQH_Menu_SinglePlayer_f()
 {
@@ -424,6 +426,262 @@ void MQH_Menu_SinglePlayer_f()
 			Cvar_SetValue("timelimit", 0);		//put this here to help play single after dm
 		}
 	}
+}
+
+static void MQH_SinglePlayer_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title1.lmp");
+
+		if (GGameType & GAME_HexenWorld)
+		{
+			MQH_DrawTextBox(60, 10 * 8, 23, 4);
+			MQH_PrintWhite(92, 12 * 8, "HexenWorld is for");
+			MQH_PrintWhite(88, 13 * 8, "Internet play only");
+		}
+		else
+		{
+			MH2_DrawBigString(72,60 + (0 * 20),"NEW MISSION");
+			MH2_DrawBigString(72,60 + (1 * 20),"LOAD");
+			MH2_DrawBigString(72,60 + (2 * 20),"SAVE");
+			if (GGameType & GAME_H2Portals)
+			{
+				if (mh2_oldmission->value)
+				{
+					MH2_DrawBigString(72,60 + (3 * 20),"OLD MISSION");
+				}
+				MH2_DrawBigString(72,60 + (4 * 20),"VIEW INTRO");
+			}
+
+			int f = (cls.realtime / 100) % 8;
+			MQH_DrawPic(43, 54 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+		}
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/ttl_sgl.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		if (GGameType & GAME_QuakeWorld)
+		{
+			MQH_DrawTextBox(60, 10 * 8, 23, 4);
+			MQH_PrintWhite(92, 12 * 8, "QuakeWorld is for");
+			MQH_PrintWhite(88, 13 * 8, "Internet play only");
+		}
+		else
+		{
+			MQH_DrawPic(72, 32, R_CachePic("gfx/sp_menu.lmp"));
+
+			int f = (cls.realtime / 100) % 6;
+			MQH_DrawPic(54, 32 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+		}
+	}
+}
+
+void MQH_SinglePlayer_Key(int key)
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (key == K_ESCAPE || key == K_ENTER)
+		{
+			m_state = m_main;
+		}
+		return;
+	}
+
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Main_f();
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		if (++mqh_singleplayer_cursor >= (GGameType & GAME_H2Portals ? SINGLEPLAYER_ITEMS_H2MP : SINGLEPLAYER_ITEMS))
+		{
+			mqh_singleplayer_cursor = 0;
+		}
+		if (GGameType & GAME_H2Portals && !mh2_oldmission->value)
+		{
+			if (mqh_singleplayer_cursor == 3)
+			{
+				mqh_singleplayer_cursor = 4;
+			}
+		}
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		if (--mqh_singleplayer_cursor < 0)
+		{
+			mqh_singleplayer_cursor = (GGameType & GAME_H2Portals ? SINGLEPLAYER_ITEMS_H2MP : SINGLEPLAYER_ITEMS) - 1;
+		}
+		if (GGameType & GAME_H2Portals && !mh2_oldmission->value)
+		{
+			if (mqh_singleplayer_cursor == 3)
+			{
+				mqh_singleplayer_cursor = 2;
+			}
+		}
+		break;
+
+	case K_ENTER:
+		mqh_entersound = true;
+
+		mh2_enter_portals = false;
+		switch (mqh_singleplayer_cursor)
+		{
+		case 0:
+			if (GGameType & GAME_H2Portals)
+			{
+				mh2_enter_portals = true;
+			}
+
+		case 3:
+			if (SV_IsServerActive())
+			{
+				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
+				{
+					break;
+				}
+			}
+			in_keyCatchers &= ~KEYCATCH_UI;
+			if (SV_IsServerActive())
+			{
+				Cbuf_AddText("disconnect\n");
+			}
+			Cbuf_AddText("maxplayers 1\n");
+			if (GGameType & GAME_Hexen2)
+			{
+				SVH2_RemoveGIPFiles(NULL);
+				MH2_Menu_Class_f();
+			}
+			else
+			{
+				Cbuf_AddText("map start\n");
+			}
+			break;
+
+		case 1:
+			MQH_Menu_Load_f();
+			break;
+
+		case 2:
+			MQH_Menu_Save_f();
+			break;
+
+		case 4:
+			in_keyCatchers &= ~KEYCATCH_UI;
+			Cbuf_AddText("playdemo t9\n");
+			break;
+		}
+	}
+}
+
+//=============================================================================
+/* CLASS CHOICE MENU */
+
+int mh2_class_flag;
+
+void MH2_Menu_Class_f()
+{
+	mh2_class_flag = 0;
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_class;
+}
+
+//=============================================================================
+/* LOAD/SAVE MENU */
+
+int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
+
+char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
+bool mqh_loadable[MAX_SAVEGAMES];
+
+void MQH_ScanSaves()
+{
+	int i, j;
+	char name[MAX_OSPATH];
+	fileHandle_t f;
+
+	for (i = 0; i < MAX_SAVEGAMES; i++)
+	{
+		String::Cpy(mqh_filenames[i], "--- UNUSED SLOT ---");
+		mqh_loadable[i] = false;
+		if (GGameType & GAME_Hexen2)
+		{
+			sprintf(name, "s%i/info.dat", i);
+		}
+		else
+		{
+			sprintf(name, "s%i.sav", i);
+		}
+		//	This will make sure that only savegames in current game directory
+		// in home directory are listed
+		if (!FS_FileExists(name))
+		{
+			continue;
+		}
+		FS_FOpenFileRead(name, &f, true);
+		if (!f)
+		{
+			continue;
+		}
+		FS_Read(name, 80, f);
+		name[80] = 0;
+		//	Skip version
+		char* Ptr = name;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		if (*Ptr == '\n')
+		{
+			*Ptr = 0;
+			Ptr++;
+		}
+		char* SaveName = Ptr;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		*Ptr = 0;
+		String::NCpy(mqh_filenames[i], SaveName, sizeof(mqh_filenames[i]) - 1);
+
+		// change _ back to space
+		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
+			if (mqh_filenames[i][j] == '_')
+			{
+				mqh_filenames[i][j] = ' ';
+			}
+		mqh_loadable[i] = true;
+		FS_FCloseFile(f);
+	}
+}
+
+void MQH_Menu_Load_f()
+{
+	mqh_entersound = true;
+	m_state = m_load;
+	in_keyCatchers |= KEYCATCH_UI;
+	MQH_ScanSaves();
+}
+
+void MQH_Menu_Save_f()
+{
+	if (!SV_IsServerActive())
+	{
+		return;
+	}
+	if (cl.qh_intermission)
+	{
+		return;
+	}
+	if (SVQH_GetMaxClients() != 1)
+	{
+		return;
+	}
+	mqh_entersound = true;
+	m_state = m_save;
+	in_keyCatchers |= KEYCATCH_UI;
+	MQH_ScanSaves();
 }
 
 //=============================================================================
@@ -1229,6 +1487,8 @@ void MQH_Init()
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
 	{
 		Cmd_AddCommand("menu_singleplayer", MQH_Menu_SinglePlayer_f);
+		Cmd_AddCommand("menu_load", MQH_Menu_Load_f);
+		Cmd_AddCommand("menu_save", MQH_Menu_Save_f);
 		Cmd_AddCommand("menu_multiplayer", MQH_Menu_MultiPlayer_f);
 	}
 
@@ -1248,6 +1508,10 @@ void MQH_Draw()
 	case m_main:
 		MQH_Main_Draw();
 		break;
+
+	case m_singleplayer:
+		MQH_SinglePlayer_Draw();
+		break;
 	}
 }
 
@@ -1260,6 +1524,10 @@ void MQH_Keydown(int key)
 
 	case m_main:
 		MQH_Main_Key(key);
+		return;
+
+	case m_singleplayer:
+		MQH_SinglePlayer_Key(key);
 		return;
 	}
 }

@@ -148,3 +148,8 @@ void SV_CvarChanged(Cvar* var)
 		}
 	}
 }
+
+int SVQH_GetMaxClients()
+{
+	return svs.qh_maxclients;
+}
