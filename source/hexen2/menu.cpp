@@ -10,24 +10,17 @@ extern float introTime;
 extern Cvar* crosshair;
 Cvar* m_oldmission;
 
-void M_Menu_Main_f(void);
-void M_Menu_SinglePlayer_f(void);
 void M_Menu_Load_f(void);
 void M_Menu_Save_f(void);
-void M_Menu_MultiPlayer_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
-void M_Menu_Options_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_Help_f(void);
-void M_Menu_Quit_f(void);
 void M_Menu_LanConfig_f(void);
 void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_Main_Draw(void);
 void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
@@ -46,7 +39,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_Main_Key(int key);
 void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
@@ -65,17 +57,14 @@ void M_GameOptions_Key(int key);
 void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
-qboolean m_entersound;			// play after drawing a frame, so caching
-								// won't disrupt the sound
 qboolean m_recursiveDraw;
 
 int setup_class;
 
-static const char* message,* message2;
 static double message_time;
 
-#define StartingGame    (m_multiplayer_cursor == 1)
-#define JoiningGame     (m_multiplayer_cursor == 0)
+#define StartingGame    (mqh_multiplayer_cursor == 1)
+#define JoiningGame     (mqh_multiplayer_cursor == 0)
 #define NUM_DIFFLEVELS  4
 
 void M_ConfigureNetSubsystem(void);
@@ -151,8 +140,6 @@ image_t* translate_texture[NUM_CLASSES];
 
 //=============================================================================
 
-int m_save_demonum;
-
 /*
 ================
 M_ToggleMenu_f
@@ -160,7 +147,7 @@ M_ToggleMenu_f
 */
 void M_ToggleMenu_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
@@ -168,7 +155,7 @@ void M_ToggleMenu_f(void)
 		{
 			LogoTargetPercent = TitleTargetPercent = 1;
 			LogoPercent = TitlePercent = 0;
-			M_Menu_Main_f();
+			MQH_Menu_Main_f();
 			return;
 		}
 		in_keyCatchers &= ~KEYCATCH_UI;
@@ -183,103 +170,7 @@ void M_ToggleMenu_f(void)
 	{
 		LogoTargetPercent = TitleTargetPercent = 1;
 		LogoPercent = TitlePercent = 0;
-		M_Menu_Main_f();
-	}
-}
-
-//=============================================================================
-/* MAIN MENU */
-
-int m_main_cursor;
-#define MAIN_ITEMS  5
-
-
-void M_Menu_Main_f(void)
-{
-	if (!(in_keyCatchers & KEYCATCH_UI))
-	{
-		m_save_demonum = cls.qh_demonum;
-		cls.qh_demonum = -1;
-	}
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_main;
-	m_entersound = true;
-}
-
-
-void M_Main_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title0.lmp");
-//	MQH_DrawPic (72, 32, R_CachePic ("gfx/mainmenu.lmp") );
-	MH2_DrawBigString(72,60 + (0 * 20),"SINGLE PLAYER");
-	MH2_DrawBigString(72,60 + (1 * 20),"MULTIPLAYER");
-	MH2_DrawBigString(72,60 + (2 * 20),"OPTIONS");
-	MH2_DrawBigString(72,60 + (3 * 20),"HELP");
-	MH2_DrawBigString(72,60 + (4 * 20),"QUIT");
-
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + m_main_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-}
-
-
-void M_Main_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		cls.qh_demonum = m_save_demonum;
-		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state != CA_ACTIVE)
-		{
-			CL_NextDemo();
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++m_main_cursor >= MAIN_ITEMS)
-		{
-			m_main_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--m_main_cursor < 0)
-		{
-			m_main_cursor = MAIN_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-		m_entersound = true;
-
-		switch (m_main_cursor)
-		{
-		case 0:
-			M_Menu_SinglePlayer_f();
-			break;
-
-		case 1:
-			M_Menu_MultiPlayer_f();
-			break;
-
-		case 2:
-			M_Menu_Options_f();
-			break;
-
-		case 3:
-			M_Menu_Help_f();
-			break;
-
-		case 4:
-			M_Menu_Quit_f();
-			break;
-		}
+		MQH_Menu_Main_f();
 	}
 }
 
@@ -347,7 +238,7 @@ void M_Difficulty_Key(int key)
 		break;
 	case K_ENTER:
 		Cvar_SetValue("skill", m_diff_cursor);
-		m_entersound = true;
+		mqh_entersound = true;
 		if (m_enter_portals)
 		{
 			introTime = 0.0;
@@ -355,7 +246,7 @@ void M_Difficulty_Key(int key)
 			cl.qh_completed_time = cl.qh_serverTimeFloat;
 			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
-			cls.qh_demonum = m_save_demonum;
+			cls.qh_demonum = mqh_save_demonum;
 
 			//Cbuf_AddText ("map keep1\n");
 		}
@@ -417,7 +308,7 @@ void M_Class_Key(int key)
 	case K_RIGHTARROW:
 		break;
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_DOWNARROW:
@@ -438,7 +329,7 @@ void M_Class_Key(int key)
 
 	case K_ENTER:
 		Cbuf_AddText(va("playerclass %d\n", m_class_cursor + 1));
-		m_entersound = true;
+		mqh_entersound = true;
 		if (!class_flag)
 		{
 			M_Menu_Difficulty_f();
@@ -461,18 +352,6 @@ void M_Class_Key(int key)
 //=============================================================================
 /* SINGLE PLAYER MENU */
 
-int m_singleplayer_cursor;
-#define SINGLEPLAYER_ITEMS  5
-
-
-void M_Menu_SinglePlayer_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_singleplayer;
-	m_entersound = true;
-	Cvar_SetValue("timelimit", 0);		//put this here to help play single after dm
-}
-
 void M_SinglePlayer_Draw(void)
 {
 	int f;
@@ -489,7 +368,7 @@ void M_SinglePlayer_Draw(void)
 	MH2_DrawBigString(72,60 + (4 * 20),"VIEW INTRO");
 
 	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + m_singleplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 54 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 }
 
 
@@ -498,44 +377,44 @@ void M_SinglePlayer_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (++m_singleplayer_cursor >= SINGLEPLAYER_ITEMS)
+		if (++mqh_singleplayer_cursor >= SINGLEPLAYER_ITEMS_H2MP)
 		{
-			m_singleplayer_cursor = 0;
+			mqh_singleplayer_cursor = 0;
 		}
 		if (!m_oldmission->value)
 		{
-			if (m_singleplayer_cursor == 3)
+			if (mqh_singleplayer_cursor == 3)
 			{
-				m_singleplayer_cursor = 4;
+				mqh_singleplayer_cursor = 4;
 			}
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (--m_singleplayer_cursor < 0)
+		if (--mqh_singleplayer_cursor < 0)
 		{
-			m_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
+			mqh_singleplayer_cursor = SINGLEPLAYER_ITEMS_H2MP - 1;
 		}
 		if (!m_oldmission->value)
 		{
-			if (m_singleplayer_cursor == 3)
+			if (mqh_singleplayer_cursor == 3)
 			{
-				m_singleplayer_cursor = 2;
+				mqh_singleplayer_cursor = 2;
 			}
 		}
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
+		mqh_entersound = true;
 
 		m_enter_portals = 0;
-		switch (m_singleplayer_cursor)
+		switch (mqh_singleplayer_cursor)
 		{
 		case 0:
 			if (GGameType & GAME_H2Portals)
@@ -636,7 +515,7 @@ void M_ScanSaves(void)
 
 void M_Menu_Load_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_load;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves();
@@ -657,7 +536,7 @@ void M_Menu_Save_f(void)
 	{
 		return;
 	}
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_save;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves();
@@ -697,7 +576,7 @@ void M_Load_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_ENTER:
@@ -745,7 +624,7 @@ void M_Save_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_ENTER:
@@ -836,7 +715,7 @@ void M_ScanMSaves(void)
 
 void M_Menu_MLoad_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_mload;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanMSaves();
@@ -847,12 +726,12 @@ void M_Menu_MSave_f(void)
 {
 	if (sv.state == SS_DEAD || cl.qh_intermission || svs.qh_maxclients == 1)
 	{
-		message = "Only a network server";
-		message2 = "can save a multiplayer game";
+		mh2_message = "Only a network server";
+		mh2_message2 = "can save a multiplayer game";
 		message_time = host_time;
 		return;
 	}
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_msave;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanMSaves();
@@ -864,7 +743,7 @@ void M_MLoad_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_ENTER:
@@ -918,7 +797,7 @@ void M_MSave_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_ENTER:
@@ -952,19 +831,6 @@ void M_MSave_Key(int k)
 //=============================================================================
 /* MULTIPLAYER MENU */
 
-int m_multiplayer_cursor;
-#define MULTIPLAYER_ITEMS   5
-
-void M_Menu_MultiPlayer_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_multiplayer;
-	m_entersound = true;
-
-	message = NULL;
-}
-
-
 void M_MultiPlayer_Draw(void)
 {
 	int f;
@@ -979,15 +845,15 @@ void M_MultiPlayer_Draw(void)
 	MH2_DrawBigString(72,60 + (4 * 20),"SAVE");
 
 	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 54 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 
-	if (message)
+	if (mh2_message)
 	{
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, message);
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, message2);
+		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, mh2_message);
+		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, mh2_message2);
 		if (host_time - 5 > message_time)
 		{
-			message = NULL;
+			mh2_message = NULL;
 		}
 	}
 
@@ -1004,28 +870,28 @@ void M_MultiPlayer_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (++m_multiplayer_cursor >= MULTIPLAYER_ITEMS)
+		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_H2)
 		{
-			m_multiplayer_cursor = 0;
+			mqh_multiplayer_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (--m_multiplayer_cursor < 0)
+		if (--mqh_multiplayer_cursor < 0)
 		{
-			m_multiplayer_cursor = MULTIPLAYER_ITEMS - 1;
+			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_H2 - 1;
 		}
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (m_multiplayer_cursor)
+		mqh_entersound = true;
+		switch (mqh_multiplayer_cursor)
 		{
 		case 0:
 			if (tcpipAvailable)
@@ -1075,7 +941,7 @@ void M_Menu_Setup_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
-	m_entersound = true;
+	mqh_entersound = true;
 	String::Cpy(setup_myname.buffer, clqh_name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
@@ -1129,7 +995,7 @@ void M_Setup_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -1222,8 +1088,8 @@ forward:
 			Cbuf_AddText(va("color %i %i\n", setup_top, setup_bottom));
 		}
 		Cbuf_AddText(va("playerclass %d\n", setup_class));
-		m_entersound = true;
-		M_Menu_MultiPlayer_f();
+		mqh_entersound = true;
+		MQH_Menu_MultiPlayer_f();
 		break;
 	}
 	if (setup_cursor == 0)
@@ -1300,7 +1166,7 @@ void M_Menu_Net_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_net;
-	m_entersound = true;
+	mqh_entersound = true;
 	m_net_items = 4;
 
 	if (m_net_cursor >= m_net_items)
@@ -1346,7 +1212,7 @@ again:
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_DOWNARROW:
@@ -1367,7 +1233,7 @@ again:
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
+		mqh_entersound = true;
 
 		switch (m_net_cursor)
 		{
@@ -1414,43 +1280,11 @@ again:
 //=============================================================================
 /* OPTIONS MENU */
 
-#define SLIDER_RANGE    10
-
-enum
-{
-	OPT_CUSTOMIZE = 0,
-	OPT_CONSOLE,
-	OPT_DEFAULTS,
-	OPT_SCRSIZE,	//3
-	OPT_GAMMA,		//4
-	OPT_MOUSESPEED,	//5
-	OPT_MUSICTYPE,	//6
-	OPT_MUSICVOL,	//7
-	OPT_SNDVOL,		//8
-	OPT_ALWAYRUN,	//9
-	OPT_INVMOUSE,	//10
-	OPT_LOOKSPRING,	//11
-	OPT_CROSSHAIR,	//13
-	OPT_ALWAYSMLOOK,//14
-	OPT_VIDEO,		//15
-	OPTIONS_ITEMS
-};
-
-int options_cursor;
-
-void M_Menu_Options_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_options;
-	m_entersound = true;
-}
-
-
 void M_AdjustSliders(int dir)
 {
 	S_StartLocalSound("raven/menu3.wav");
 
-	switch (options_cursor)
+	switch (mqh_options_cursor)
 	{
 	case OPT_SCRSIZE:	// screen size
 		scr_viewsize->value += dir * 10;
@@ -1684,7 +1518,7 @@ void M_Options_Draw(void)
 	MQH_Print(16, 60 + (OPT_VIDEO * 8),  "         Video Options");
 
 // cursor
-	MQH_DrawCharacter(200, 60 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 60 + mqh_options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -1693,12 +1527,12 @@ void M_Options_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (options_cursor)
+		mqh_entersound = true;
+		switch (mqh_options_cursor)
 		{
 		case OPT_CUSTOMIZE:
 			M_Menu_Keys_f();
@@ -1721,19 +1555,19 @@ void M_Options_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		options_cursor--;
-		if (options_cursor < 0)
+		mqh_options_cursor--;
+		if (mqh_options_cursor < 0)
 		{
-			options_cursor = OPTIONS_ITEMS - 1;
+			mqh_options_cursor = OPTIONS_ITEMS - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		options_cursor++;
-		if (options_cursor >= OPTIONS_ITEMS)
+		mqh_options_cursor++;
+		if (mqh_options_cursor >= OPTIONS_ITEMS)
 		{
-			options_cursor = 0;
+			mqh_options_cursor = 0;
 		}
 		break;
 
@@ -1808,7 +1642,7 @@ void M_Menu_Keys_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -1964,7 +1798,7 @@ void M_Keys_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	case K_LEFTARROW:
@@ -2024,7 +1858,7 @@ void M_Menu_Video_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -2049,7 +1883,7 @@ void M_Video_Key(int key)
 	{
 	case K_ESCAPE:
 		S_StartLocalSound("raven/menu1.wav");
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	default:
@@ -2060,23 +1894,9 @@ void M_Video_Key(int key)
 //=============================================================================
 /* HELP MENU */
 
-int help_page;
-#define NUM_HELP_PAGES  5
-
-
-void M_Menu_Help_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_help;
-	m_entersound = true;
-	help_page = 0;
-}
-
-
-
 void M_Help_Draw(void)
 {
-	MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", help_page + 1)));
+	MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", mqh_help_page + 1)));
 }
 
 
@@ -2085,24 +1905,24 @@ void M_Help_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_UPARROW:
 	case K_RIGHTARROW:
-		m_entersound = true;
-		if (++help_page >= NUM_HELP_PAGES)
+		mqh_entersound = true;
+		if (++mqh_help_page >= NUM_HELP_PAGES_H2)
 		{
-			help_page = 0;
+			mqh_help_page = 0;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_LEFTARROW:
-		m_entersound = true;
-		if (--help_page < 0)
+		mqh_entersound = true;
+		if (--mqh_help_page < 0)
 		{
-			help_page = NUM_HELP_PAGES - 1;
+			mqh_help_page = NUM_HELP_PAGES_H2 - 1;
 		}
 		break;
 	}
@@ -2111,387 +1931,6 @@ void M_Help_Key(int key)
 
 //=============================================================================
 /* QUIT MENU */
-
-//int		msgNumber;
-menu_state_t m_quit_prevstate;
-qboolean wasInMenus;
-
-#ifndef _WIN32
-const char* quitMessage [] =
-{
-/* .........1.........2.... */
-	"   Look! Behind you!    ",
-	"  There's a big nasty   ",
-	"   thing - shoot it!    ",
-	"                        ",
-
-	"  You can't go now, I   ",
-	"   was just getting     ",
-	"    warmed up.          ",
-	"                        ",
-
-	"    One more game.      ",
-	"      C'mon...          ",
-	"   Who's gonna know?    ",
-	"                        ",
-
-	"   What's the matter?   ",
-	"   Palms too sweaty to  ",
-	"     keep playing?      ",
-	"                        ",
-
-	"  Watch your local store",
-	"      for Hexen 2       ",
-	"    plush toys and      ",
-	"    greeting cards!     ",
-
-	"  Hexen 2...            ",
-	"                        ",
-	"    Too much is never   ",
-	"        enough.         ",
-
-	"  Sure go ahead and     ",
-	"  leave.  But I know    ",
-	"  you'll be back.       ",
-	"                        ",
-
-	"                        ",
-	"  Insert cute phrase    ",
-	"        here            ",
-	"                        "
-};
-#endif
-
-static float LinePos;
-static int LineTimes;
-static int MaxLines;
-const char** LineText;
-static qboolean SoundPlayed;
-
-
-#define MAX_LINES 138
-
-const char* CreditText[MAX_LINES] =
-{
-	"Project Director: James Monroe",
-	"Creative Director: Brian Raffel",
-	"Project Coordinator: Kevin Schilder",
-	"",
-	"Lead Programmer: James Monroe",
-	"",
-	"Programming:",
-	"   Mike Gummelt",
-	"   Josh Weier",
-	"",
-	"Additional Programming:",
-	"   Josh Heitzman",
-	"   Nathan Albury",
-	"   Rick Johnson",
-	"",
-	"Assembly Consultant:",
-	"   Mr. John Scott",
-	"",
-	"Lead Design: Jon Zuk",
-	"",
-	"Design:",
-	"   Tom Odell",
-	"   Jeremy Statz",
-	"   Mike Renner",
-	"   Eric Biessman",
-	"   Kenn Hoekstra",
-	"   Matt Pinkston",
-	"   Bobby Duncanson",
-	"   Brian Raffel",
-	"",
-	"Art Director: Les Dorscheid",
-	"",
-	"Art:",
-	"   Kim Lathrop",
-	"   Gina Garren",
-	"   Joe Koberstein",
-	"   Kevin Long",
-	"   Jeff Butler",
-	"   Scott Rice",
-	"   John Payne",
-	"   Steve Raffel",
-	"",
-	"Animation:",
-	"   Eric Turman",
-	"   Chaos (Mike Werckle)",
-	"",
-	"Music:",
-	"   Kevin Schilder",
-	"",
-	"Sound:",
-	"   Chia Chin Lee",
-	"",
-	"Activision",
-	"",
-	"Producer:",
-	"   Steve Stringer",
-	"",
-	"Marketing Product Manager:",
-	"   Henk Hartong",
-	"",
-	"Marketing Associate:",
-	"   Kevin Kraff",
-	"",
-	"Senior Quality",
-	"Assurance Lead:",
-	"   Tim Vanlaw",
-	"",
-	"Quality Assurance Lead:",
-	"   Doug Jacobs",
-	"",
-	"Quality Assurance Team:",
-	"   Steve Rosenthal, Steve Elwell,",
-	"   Chad Bordwell, David Baker,",
-	"   Aaron Casillas, Damien Fischer,",
-	"   Winnie Lee, Igor Krinitskiy,",
-	"   Samantha Lee, John Park",
-	"   Ian Stevens, Chris Toft",
-	"",
-	"Production Testers:",
-	"   Steve Rosenthal and",
-	"   Chad Bordwell",
-	"",
-	"Additional QA and Support:",
-	"    Tony Villalobos",
-	"    Jason Sullivan",
-	"",
-	"Installer by:",
-	"   Steve Stringer, Adam Goldberg,",
-	"   Tanya Martino, Eric Schmidt,",
-	"   Ronnie Lane",
-	"",
-	"Art Assistance by:",
-	"   Carey Chico and Franz Boehm",
-	"",
-	"BizDev Babe:",
-	"   Jamie Bafus",
-	"",
-	"And...",
-	"",
-	"Our Big Toe:",
-	"   Mitch Lasky",
-	"",
-	"",
-	"Special Thanks to:",
-	"  Id software",
-	"  The original Hexen2 crew",
-	"   We couldn't have done it",
-	"   without you guys!",
-	"",
-	"",
-	"Published by Id Software, Inc.",
-	"Distributed by Activision, Inc.",
-	"",
-	"The Id Software Technology used",
-	"under license in Hexen II (tm)",
-	"(c) 1996, 1997 Id Software, Inc.",
-	"All Rights Reserved.",
-	"",
-	"Hexen(r) is a registered trademark",
-	"of Raven Software Corp.",
-	"Hexen II (tm) and the Raven logo",
-	"are trademarks of Raven Software",
-	"Corp.  The Id Software name and",
-	"id logo are trademarks of",
-	"Id Software, Inc.  Activision(r)",
-	"is a registered trademark of",
-	"Activision, Inc. All other",
-	"trademarks are the property of",
-	"their respective owners.",
-	"",
-	"",
-	"",
-	"Send bug descriptions to:",
-	"   h2bugs@mail.ravensoft.com",
-	"",
-	"",
-	"No yaks were harmed in the",
-	"making of this game!"
-};
-
-#define MAX_LINES2 150
-
-const char* Credit2Text[MAX_LINES2] =
-{
-	"PowerTrip: James (emorog) Monroe",
-	"Cartoons: Brian Raffel",
-	"         (use more puzzles)",
-	"Doc Keeper: Kevin Schilder",
-	"",
-	"Whip cracker: James Monroe",
-	"",
-	"Whipees:",
-	"   Mike (i didn't break it) Gummelt",
-	"   Josh (extern) Weier",
-	"",
-	"We don't deserve whipping:",
-	"   Josh (I'm not on this project)",
-	"         Heitzman",
-	"   Nathan (deer hunter) Albury",
-	"   Rick (model crusher) Johnson",
-	"",
-	"Bit Packer:",
-	"   Mr. John (Slaine) Scott",
-	"",
-	"Lead Slacker: Jon (devil boy) Zuk",
-	"",
-	"Other Slackers:",
-	"   Tom (can i have an office) Odell",
-	"   Jeremy (nt crashed again) Statz",
-	"   Mike (i should be doing my ",
-	"         homework) Renner",
-	"   Eric (the nose) Biessman",
-	"   Kenn (.plan) Hoekstra",
-	"   Matt (big elbow) Pinkston",
-	"   Bobby (needs haircut) Duncanson",
-	"   Brian (they're in my town) Raffel",
-	"",
-	"Use the mouse: Les Dorscheid",
-	"",
-	"What's a mouse?:",
-	"   Kim (where's my desk) Lathrop",
-	"   Gina (i can do your laundry)",
-	"        Garren",
-	"   Joe (broken axle) Koberstein",
-	"   Kevin (titanic) Long",
-	"   Jeff (norbert) Butler",
-	"   Scott (what's the DEL key for?)",
-	"          Rice",
-	"   John (Shpluuurt!) Payne",
-	"   Steve (crash) Raffel",
-	"",
-	"Boners:",
-	"   Eric (terminator) Turman",
-	"   Chaos Device",
-	"",
-	"Drum beater:",
-	"   Kevin Schilder",
-	"",
-	"Whistle blower:",
-	"   Chia Chin (bruce) Lee",
-	"",
-	"",
-	"Activision",
-	"",
-	"Producer:",
-	"   Steve 'Ferris' Stringer",
-	"",
-	"Marketing Product Manager:",
-	"   Henk 'GODMODE' Hartong",
-	"",
-	"Marketing Associate:",
-	"   Kevin 'Kraffinator' Kraff",
-	"",
-	"Senior Quality",
-	"Assurance Lead:",
-	"   Tim 'Outlaw' Vanlaw",
-	"",
-	"Quality Assurance Lead:",
-	"   Doug Jacobs",
-	"",
-	"Shadow Finders:",
-	"   Steve Rosenthal, Steve Elwell,",
-	"   Chad Bordwell,",
-	"   David 'Spice Girl' Baker,",
-	"   Error Casillas, Damien Fischer,",
-	"   Winnie Lee,"
-	"   Ygor Krynytyskyy,",
-	"   Samantha (Crusher) Lee, John Park",
-	"   Ian Stevens, Chris Toft",
-	"",
-	"Production Testers:",
-	"   Steve 'Damn It's Cold!'",
-	"       Rosenthal and",
-	"   Chad 'What Hotel Receipt?'",
-	"        Bordwell",
-	"",
-	"Additional QA and Support:",
-	"    Tony Villalobos",
-	"    Jason Sullivan",
-	"",
-	"Installer by:",
-	"   Steve 'Bahh' Stringer,",
-	"   Adam Goldberg, Tanya Martino,",
-	"   Eric Schmidt, Ronnie Lane",
-	"",
-	"Art Assistance by:",
-	"   Carey 'Damien' Chico and",
-	"   Franz Boehm",
-	"",
-	"BizDev Babe:",
-	"   Jamie Bafus",
-	"",
-	"And...",
-	"",
-	"Our Big Toe:",
-	"   Mitch Lasky",
-	"",
-	"",
-	"Special Thanks to:",
-	"  Id software",
-	"  Anyone who ever worked for Raven,",
-	"  (except for Alex)",
-	"",
-	"",
-	"Published by Id Software, Inc.",
-	"Distributed by Activision, Inc.",
-	"",
-	"The Id Software Technology used",
-	"under license in Hexen II (tm)",
-	"(c) 1996, 1997 Id Software, Inc.",
-	"All Rights Reserved.",
-	"",
-	"Hexen(r) is a registered trademark",
-	"of Raven Software Corp.",
-	"Hexen II (tm) and the Raven logo",
-	"are trademarks of Raven Software",
-	"Corp.  The Id Software name and",
-	"id logo are trademarks of",
-	"Id Software, Inc.  Activision(r)",
-	"is a registered trademark of",
-	"Activision, Inc. All other",
-	"trademarks are the property of",
-	"their respective owners.",
-	"",
-	"",
-	"",
-	"Send bug descriptions to:",
-	"   h2bugs@mail.ravensoft.com",
-	"",
-	"Special Thanks To:",
-	"   E.H.S., The Osmonds,",
-	"   B.B.V.D., Daisy The Lovin' Lamb,",
-	"  'You Killed' Kenny,",
-	"   and Baby Biessman.",
-	"",
-};
-
-#define QUIT_SIZE 18
-
-void M_Menu_Quit_f(void)
-{
-	if (m_state == m_quit)
-	{
-		return;
-	}
-	wasInMenus = !!(in_keyCatchers & KEYCATCH_UI);
-	in_keyCatchers |= KEYCATCH_UI;
-	m_quit_prevstate = m_state;
-	m_state = m_quit;
-	m_entersound = true;
-//	msgNumber = rand()&7;
-
-	LinePos = 0;
-	LineTimes = 0;
-	LineText = CreditText;
-	MaxLines = MAX_LINES;
-	SoundPlayed = false;
-}
-
 
 void M_Quit_Key(int key)
 {
@@ -2503,7 +1942,7 @@ void M_Quit_Key(int key)
 		if (wasInMenus)
 		{
 			m_state = m_quit_prevstate;
-			m_entersound = true;
+			mqh_entersound = true;
 		}
 		else
 		{
@@ -2538,15 +1977,15 @@ void M_Quit_Draw(void)
 	}
 
 	LinePos += host_frametime * 1.75;
-	if (LinePos > MaxLines + QUIT_SIZE + 2)
+	if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
 	{
 		LinePos = 0;
 		SoundPlayed = false;
 		LineTimes++;
 		if (LineTimes >= 2)
 		{
-			MaxLines = MAX_LINES2;
-			LineText = Credit2Text;
+			MaxLines = MAX_LINES2_H2;
+			LineText = Credit2TextH2;
 			CDAudio_Play(12, false);
 		}
 	}
@@ -2556,7 +1995,7 @@ void M_Quit_Draw(void)
 	MQH_PrintWhite(16, y,  "        Hexen II version 1.12       ");  y += 8;
 	MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
 
-	if (LinePos > 55 && !SoundPlayed && LineText == Credit2Text)
+	if (LinePos > 55 && !SoundPlayed && LineText == Credit2TextH2)
 	{
 		S_StartLocalSound("rj/steve.wav");
 		SoundPlayed = true;
@@ -2564,24 +2003,24 @@ void M_Quit_Draw(void)
 	topy = y;
 	place = floor(LinePos);
 	y -= floor((LinePos - place) * 8);
-	for (i = 0; i < QUIT_SIZE; i++,y += 8)
+	for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
 	{
-		if (i + place - QUIT_SIZE >= MaxLines)
+		if (i + place - QUIT_SIZE_H2 >= MaxLines)
 		{
 			break;
 		}
-		if (i + place < QUIT_SIZE)
+		if (i + place < QUIT_SIZE_H2)
 		{
 			continue;
 		}
 
-		if (LineText[i + place - QUIT_SIZE][0] == ' ')
+		if (LineText[i + place - QUIT_SIZE_H2][0] == ' ')
 		{
-			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE]);
+			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE_H2]);
 		}
 		else
 		{
-			MQH_Print(24,y,LineText[i + place - QUIT_SIZE]);
+			MQH_Print(24,y,LineText[i + place - QUIT_SIZE_H2]);
 		}
 	}
 
@@ -2591,10 +2030,10 @@ void M_Quit_Draw(void)
 	for (i = 4; i < 38; i++,x += 8)
 	{
 		MQH_DrawPic(x, y, p);	//background at top for smooth scroll out
-		MQH_DrawPic(x, y + (QUIT_SIZE * 8), p);	//draw at bottom for smooth scroll in
+		MQH_DrawPic(x, y + (QUIT_SIZE_H2 * 8), p);	//draw at bottom for smooth scroll in
 	}
 
-	y += (QUIT_SIZE * 8) + 8;
+	y += (QUIT_SIZE_H2 * 8) + 8;
 	MQH_PrintWhite(16, y,  "          Press y to exit           ");
 }
 
@@ -2613,7 +2052,7 @@ void M_Menu_LanConfig_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_lanconfig;
-	m_entersound = true;
+	mqh_entersound = true;
 	if (lanConfig_cursor == -1)
 	{
 		if (JoiningGame)
@@ -2744,7 +2183,7 @@ void M_LanConfig_Key(int key)
 			break;
 		}
 
-		m_entersound = true;
+		mqh_entersound = true;
 		if (JoiningGame)
 		{
 			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
@@ -2998,7 +2437,7 @@ void M_Menu_GameOptions_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_gameoptions;
-	m_entersound = true;
+	mqh_entersound = true;
 	if (maxplayers == 0)
 	{
 		maxplayers = svs.qh_maxclients;
@@ -3416,7 +2855,7 @@ void M_Menu_Search_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_search;
-	m_entersound = false;
+	mqh_entersound = false;
 	slistSilent = true;
 	slistLocal = false;
 	searchComplete = false;
@@ -3477,7 +2916,7 @@ void M_Menu_ServerList_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_slist;
-	m_entersound = true;
+	mqh_entersound = true;
 	slist_cursor = 0;
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -3596,20 +3035,14 @@ void M_Init(void)
 {
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
-	Cmd_AddCommand("menu_main", M_Menu_Main_f);
-	Cmd_AddCommand("menu_singleplayer", M_Menu_SinglePlayer_f);
+	MQH_Init();
 	Cmd_AddCommand("menu_load", M_Menu_Load_f);
 	Cmd_AddCommand("menu_save", M_Menu_Save_f);
-	Cmd_AddCommand("menu_multiplayer", M_Menu_MultiPlayer_f);
 	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
-	Cmd_AddCommand("menu_options", M_Menu_Options_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("help", M_Menu_Help_f);
-	Cmd_AddCommand("menu_quit", M_Menu_Quit_f);
 	Cmd_AddCommand("menu_class", M_Menu_Class2_f);
 
-	MH2_ReadBigCharWidth();
 	m_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
 
@@ -3638,14 +3071,9 @@ void M_Draw(void)
 		m_recursiveDraw = false;
 	}
 
+	MQH_Draw();
 	switch (m_state)
 	{
-	case m_none:
-		break;
-
-	case m_main:
-		M_Main_Draw();
-		break;
 
 	case m_singleplayer:
 		M_SinglePlayer_Draw();
@@ -3718,10 +3146,10 @@ void M_Draw(void)
 		break;
 	}
 
-	if (m_entersound)
+	if (mqh_entersound)
 	{
 		S_StartLocalSound("raven/menu2.wav");
-		m_entersound = false;
+		mqh_entersound = false;
 	}
 
 	S_ExtraUpdate();
@@ -3732,12 +3160,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-	case m_none:
-		return;
-
-	case m_main:
-		M_Main_Key(key);
-		return;
 
 	case m_singleplayer:
 		M_SinglePlayer_Key(key);
@@ -3815,6 +3237,7 @@ void M_Keydown(int key)
 		M_ServerList_Key(key);
 		return;
 	}
+	MQH_Keydown(key);
 }
 
 void M_CharEvent(int key)

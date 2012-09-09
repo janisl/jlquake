@@ -134,7 +134,7 @@ void CL_Quit_f(void)
 {
 	if (1 /* !(in_keyCatchers & KEYCATCH_CONSOLE) */ /* && cls.state != ca_dedicated */)
 	{
-		M_Menu_Quit_f();
+		MQH_Menu_Quit_f();
 		return;
 	}
 	CL_Disconnect();

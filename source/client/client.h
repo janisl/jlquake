@@ -644,5 +644,6 @@ void Key_ClearStates();
 float* CL_GetSimOrg();
 void CL_WriteWaveFilePacket(int endtime);
 void SCR_UpdateScreen();
+void CL_NextDemo();
 
 #endif

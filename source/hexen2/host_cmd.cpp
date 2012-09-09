@@ -16,14 +16,12 @@ Host_Quit_f
 ==================
 */
 
-extern void M_Menu_Quit_f(void);
-
 void Host_Quit_f(void)
 {
 #ifndef DEDICATED
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != CA_DEDICATED)
 	{
-		M_Menu_Quit_f();
+		MQH_Menu_Quit_f();
 		return;
 	}
 	CL_Disconnect();

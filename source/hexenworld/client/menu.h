@@ -19,6 +19,5 @@ void M_ToggleMenu_f(void);
 
 
 void M_Print2(int cx, int cy, const char* str);
-void M_Menu_Quit_f(void);
 
 extern image_t* translate_texture[MAX_PLAYER_CLASS];

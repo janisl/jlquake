@@ -21,26 +21,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-static menu_state_t m_quit_prevstate;
-
-void M_Menu_Main_f(void);
-void M_Menu_SinglePlayer_f(void);
 void M_Menu_Load_f(void);
 void M_Menu_Save_f(void);
-void M_Menu_MultiPlayer_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
-void M_Menu_Options_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_Help_f(void);
-void M_Menu_Quit_f(void);
 void M_Menu_LanConfig_f(void);
 void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_Main_Draw(void);
 void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
@@ -59,7 +50,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_Main_Key(int key);
 void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
@@ -78,12 +68,10 @@ void M_GameOptions_Key(int key);
 void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
-qboolean m_entersound;			// play after drawing a frame, so caching
-								// won't disrupt the sound
 qboolean m_recursiveDraw;
 
-#define StartingGame    (m_multiplayer_cursor == 1)
-#define JoiningGame     (m_multiplayer_cursor == 0)
+#define StartingGame    (mqh_multiplayer_cursor == 1)
+#define JoiningGame     (mqh_multiplayer_cursor == 0)
 
 void M_ConfigureNetSubsystem(void);
 
@@ -94,8 +82,6 @@ image_t* translate_texture;
 
 //=============================================================================
 
-int m_save_demonum;
-
 /*
 ================
 M_ToggleMenu_f
@@ -103,13 +89,13 @@ M_ToggleMenu_f
 */
 void M_ToggleMenu_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
 		if (m_state != m_main)
 		{
-			M_Menu_Main_f();
+			MQH_Menu_Main_f();
 			return;
 		}
 		in_keyCatchers &= ~KEYCATCH_UI;
@@ -122,119 +108,13 @@ void M_ToggleMenu_f(void)
 	}
 	else
 	{
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 	}
 }
 
-
-//=============================================================================
-/* MAIN MENU */
-
-int m_main_cursor;
-#define MAIN_ITEMS  5
-
-
-void M_Menu_Main_f(void)
-{
-	if (!(in_keyCatchers & KEYCATCH_UI))
-	{
-		m_save_demonum = cls.qh_demonum;
-		cls.qh_demonum = -1;
-	}
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_main;
-	m_entersound = true;
-}
-
-
-void M_Main_Draw(void)
-{
-	int f;
-	image_t* p;
-
-	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-	p = R_CachePic("gfx/ttl_main.lmp");
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	MQH_DrawPic(72, 32, R_CachePic("gfx/mainmenu.lmp"));
-
-	f = (int)(host_time * 10) % 6;
-
-	MQH_DrawPic(54, 32 + m_main_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
-}
-
-
-void M_Main_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		cls.qh_demonum = m_save_demonum;
-		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state != CA_ACTIVE)
-		{
-			CL_NextDemo();
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (++m_main_cursor >= MAIN_ITEMS)
-		{
-			m_main_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (--m_main_cursor < 0)
-		{
-			m_main_cursor = MAIN_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-		m_entersound = true;
-
-		switch (m_main_cursor)
-		{
-		case 0:
-			M_Menu_SinglePlayer_f();
-			break;
-
-		case 1:
-			M_Menu_MultiPlayer_f();
-			break;
-
-		case 2:
-			M_Menu_Options_f();
-			break;
-
-		case 3:
-			M_Menu_Help_f();
-			break;
-
-		case 4:
-			M_Menu_Quit_f();
-			break;
-		}
-	}
-}
 
 //=============================================================================
 /* SINGLE PLAYER MENU */
-
-int m_singleplayer_cursor;
-#define SINGLEPLAYER_ITEMS  3
-
-
-void M_Menu_SinglePlayer_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_singleplayer;
-	m_entersound = true;
-}
-
 
 void M_SinglePlayer_Draw(void)
 {
@@ -248,7 +128,7 @@ void M_SinglePlayer_Draw(void)
 
 	f = (int)(host_time * 10) % 6;
 
-	MQH_DrawPic(54, 32 + m_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + mqh_singleplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -257,29 +137,29 @@ void M_SinglePlayer_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (++m_singleplayer_cursor >= SINGLEPLAYER_ITEMS)
+		if (++mqh_singleplayer_cursor >= SINGLEPLAYER_ITEMS)
 		{
-			m_singleplayer_cursor = 0;
+			mqh_singleplayer_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (--m_singleplayer_cursor < 0)
+		if (--mqh_singleplayer_cursor < 0)
 		{
-			m_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
+			mqh_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
 		}
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
+		mqh_entersound = true;
 
-		switch (m_singleplayer_cursor)
+		switch (mqh_singleplayer_cursor)
 		{
 		case 0:
 			if (sv.state != SS_DEAD)
@@ -370,7 +250,7 @@ void M_ScanSaves(void)
 
 void M_Menu_Load_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_load;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves();
@@ -391,7 +271,7 @@ void M_Menu_Save_f(void)
 	{
 		return;
 	}
-	m_entersound = true;
+	mqh_entersound = true;
 	m_state = m_save;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves();
@@ -435,7 +315,7 @@ void M_Load_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_ENTER:
@@ -483,7 +363,7 @@ void M_Save_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_ENTER:
@@ -517,18 +397,6 @@ void M_Save_Key(int k)
 //=============================================================================
 /* MULTIPLAYER MENU */
 
-int m_multiplayer_cursor;
-#define MULTIPLAYER_ITEMS   3
-
-
-void M_Menu_MultiPlayer_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_multiplayer;
-	m_entersound = true;
-}
-
-
 void M_MultiPlayer_Draw(void)
 {
 	int f;
@@ -541,7 +409,7 @@ void M_MultiPlayer_Draw(void)
 
 	f = (int)(host_time * 10) % 6;
 
-	MQH_DrawPic(54, 32 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 
 	if (tcpipAvailable)
 	{
@@ -556,28 +424,28 @@ void M_MultiPlayer_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (++m_multiplayer_cursor >= MULTIPLAYER_ITEMS)
+		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_Q1)
 		{
-			m_multiplayer_cursor = 0;
+			mqh_multiplayer_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (--m_multiplayer_cursor < 0)
+		if (--mqh_multiplayer_cursor < 0)
 		{
-			m_multiplayer_cursor = MULTIPLAYER_ITEMS - 1;
+			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_Q1 - 1;
 		}
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (m_multiplayer_cursor)
+		mqh_entersound = true;
+		switch (mqh_multiplayer_cursor)
 		{
 		case 0:
 			if (tcpipAvailable)
@@ -619,7 +487,7 @@ void M_Menu_Setup_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
-	m_entersound = true;
+	mqh_entersound = true;
 	String::Cpy(setup_myname.buffer, clqh_name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
@@ -669,7 +537,7 @@ void M_Setup_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -746,8 +614,8 @@ forward:
 		{
 			Cbuf_AddText(va("color %i %i\n", setup_top, setup_bottom));
 		}
-		m_entersound = true;
-		M_Menu_MultiPlayer_f();
+		mqh_entersound = true;
+		MQH_Menu_MultiPlayer_f();
 		break;
 	}
 	if (setup_cursor == 0)
@@ -824,7 +692,7 @@ void M_Menu_Net_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_net;
-	m_entersound = true;
+	mqh_entersound = true;
 	m_net_items = 4;
 
 	if (m_net_cursor >= m_net_items)
@@ -882,7 +750,7 @@ again:
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_DOWNARROW:
@@ -902,7 +770,7 @@ again:
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
+		mqh_entersound = true;
 
 		switch (m_net_cursor)
 		{
@@ -941,25 +809,11 @@ again:
 //=============================================================================
 /* OPTIONS MENU */
 
-#define OPTIONS_ITEMS   13
-
-#define SLIDER_RANGE    10
-
-int options_cursor;
-
-void M_Menu_Options_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_options;
-	m_entersound = true;
-}
-
-
 void M_AdjustSliders(int dir)
 {
 	S_StartLocalSound("misc/menu3.wav");
 
-	switch (options_cursor)
+	switch (mqh_options_cursor)
 	{
 	case 3:	// screen size
 		scr_viewsize->value += dir * 10;
@@ -1136,7 +990,7 @@ void M_Options_Draw(void)
 	MQH_Print(16, 120, "         Video Options");
 
 // cursor
-	MQH_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 32 + mqh_options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -1145,12 +999,12 @@ void M_Options_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (options_cursor)
+		mqh_entersound = true;
+		switch (mqh_options_cursor)
 		{
 		case 0:
 			M_Menu_Keys_f();
@@ -1173,19 +1027,19 @@ void M_Options_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		options_cursor--;
-		if (options_cursor < 0)
+		mqh_options_cursor--;
+		if (mqh_options_cursor < 0)
 		{
-			options_cursor = OPTIONS_ITEMS - 1;
+			mqh_options_cursor = OPTIONS_ITEMS_Q1 - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		options_cursor++;
-		if (options_cursor >= OPTIONS_ITEMS)
+		mqh_options_cursor++;
+		if (mqh_options_cursor >= OPTIONS_ITEMS_Q1)
 		{
-			options_cursor = 0;
+			mqh_options_cursor = 0;
 		}
 		break;
 
@@ -1232,7 +1086,7 @@ void M_Menu_Keys_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -1373,7 +1227,7 @@ void M_Keys_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	case K_LEFTARROW:
@@ -1424,7 +1278,7 @@ void M_Menu_Video_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -1450,7 +1304,7 @@ void M_Video_Key(int key)
 	{
 	case K_ESCAPE:
 		S_StartLocalSound("misc/menu1.wav");
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	default:
@@ -1461,23 +1315,9 @@ void M_Video_Key(int key)
 //=============================================================================
 /* HELP MENU */
 
-int help_page;
-#define NUM_HELP_PAGES  6
-
-
-void M_Menu_Help_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_help;
-	m_entersound = true;
-	help_page = 0;
-}
-
-
-
 void M_Help_Draw(void)
 {
-	MQH_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", help_page)));
+	MQH_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", mqh_help_page)));
 }
 
 
@@ -1486,24 +1326,24 @@ void M_Help_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_UPARROW:
 	case K_RIGHTARROW:
-		m_entersound = true;
-		if (++help_page >= NUM_HELP_PAGES)
+		mqh_entersound = true;
+		if (++mqh_help_page >= NUM_HELP_PAGES_Q1)
 		{
-			help_page = 0;
+			mqh_help_page = 0;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_LEFTARROW:
-		m_entersound = true;
-		if (--help_page < 0)
+		mqh_entersound = true;
+		if (--mqh_help_page < 0)
 		{
-			help_page = NUM_HELP_PAGES - 1;
+			mqh_help_page = NUM_HELP_PAGES_Q1 - 1;
 		}
 		break;
 	}
@@ -1512,70 +1352,6 @@ void M_Help_Key(int key)
 
 //=============================================================================
 /* QUIT MENU */
-
-int msgNumber;
-qboolean wasInMenus;
-
-#ifndef _WIN32
-const char* quitMessage [] =
-{
-/* .........1.........2.... */
-	"  Are you gonna quit    ",
-	"  this game just like   ",
-	"   everything else?     ",
-	"                        ",
-
-	" Milord, methinks that  ",
-	"   thou art a lowly     ",
-	" quitter. Is this true? ",
-	"                        ",
-
-	" Do I need to bust your ",
-	"  face open for trying  ",
-	"        to quit?        ",
-	"                        ",
-
-	" Man, I oughta smack you",
-	"   for trying to quit!  ",
-	"     Press Y to get     ",
-	"      smacked out.      ",
-
-	" Press Y to quit like a ",
-	"   big loser in life.   ",
-	"  Press N to stay proud ",
-	"    and successful!     ",
-
-	"   If you press Y to    ",
-	"  quit, I will summon   ",
-	"  Satan all over your   ",
-	"      hard drive!       ",
-
-	"  Um, Asmodeus dislikes ",
-	" his children trying to ",
-	" quit. Press Y to return",
-	"   to your Tinkertoys.  ",
-
-	"  If you quit now, I'll ",
-	"  throw a blanket-party ",
-	"   for you next time!   ",
-	"                        "
-};
-#endif
-
-void M_Menu_Quit_f(void)
-{
-	if (m_state == m_quit)
-	{
-		return;
-	}
-	wasInMenus = !!(in_keyCatchers & KEYCATCH_UI);
-	in_keyCatchers |= KEYCATCH_UI;
-	m_quit_prevstate = m_state;
-	m_state = m_quit;
-	m_entersound = true;
-	msgNumber = rand() & 7;
-}
-
 
 void M_Quit_Key(int key)
 {
@@ -1587,7 +1363,7 @@ void M_Quit_Key(int key)
 		if (wasInMenus)
 		{
 			m_state = m_quit_prevstate;
-			m_entersound = true;
+			mqh_entersound = true;
 		}
 		else
 		{
@@ -1644,10 +1420,10 @@ void M_Quit_Draw(void)
 	MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
 #else
 	MQH_DrawTextBox(56, 76, 24, 4);
-	MQH_Print(64, 84,  quitMessage[msgNumber * 4 + 0]);
-	MQH_Print(64, 92,  quitMessage[msgNumber * 4 + 1]);
-	MQH_Print(64, 100, quitMessage[msgNumber * 4 + 2]);
-	MQH_Print(64, 108, quitMessage[msgNumber * 4 + 3]);
+	MQH_Print(64, 84,  mq1_quitMessage[msgNumber * 4 + 0]);
+	MQH_Print(64, 92,  mq1_quitMessage[msgNumber * 4 + 1]);
+	MQH_Print(64, 100, mq1_quitMessage[msgNumber * 4 + 2]);
+	MQH_Print(64, 108, mq1_quitMessage[msgNumber * 4 + 3]);
 #endif
 }
 
@@ -1666,7 +1442,7 @@ void M_Menu_LanConfig_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_lanconfig;
-	m_entersound = true;
+	mqh_entersound = true;
 	if (lanConfig_cursor == -1)
 	{
 		if (JoiningGame)
@@ -1778,7 +1554,7 @@ void M_LanConfig_Key(int key)
 			break;
 		}
 
-		m_entersound = true;
+		mqh_entersound = true;
 
 		M_ConfigureNetSubsystem();
 
@@ -2011,7 +1787,7 @@ void M_Menu_GameOptions_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_gameoptions;
-	m_entersound = true;
+	mqh_entersound = true;
 	if (maxplayers == 0)
 	{
 		maxplayers = svs.qh_maxclients;
@@ -2411,7 +2187,7 @@ void M_Menu_Search_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_search;
-	m_entersound = false;
+	mqh_entersound = false;
 	slistSilent = true;
 	slistLocal = false;
 	searchComplete = false;
@@ -2473,7 +2249,7 @@ void M_Menu_ServerList_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_slist;
-	m_entersound = true;
+	mqh_entersound = true;
 	slist_cursor = 0;
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -2584,17 +2360,12 @@ void M_Init(void)
 {
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
-	Cmd_AddCommand("menu_main", M_Menu_Main_f);
-	Cmd_AddCommand("menu_singleplayer", M_Menu_SinglePlayer_f);
+	MQH_Init();
 	Cmd_AddCommand("menu_load", M_Menu_Load_f);
 	Cmd_AddCommand("menu_save", M_Menu_Save_f);
-	Cmd_AddCommand("menu_multiplayer", M_Menu_MultiPlayer_f);
 	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
-	Cmd_AddCommand("menu_options", M_Menu_Options_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("help", M_Menu_Help_f);
-	Cmd_AddCommand("menu_quit", M_Menu_Quit_f);
 }
 
 
@@ -2622,14 +2393,9 @@ void M_Draw(void)
 		m_recursiveDraw = false;
 	}
 
+	MQH_Draw();
 	switch (m_state)
 	{
-	case m_none:
-		break;
-
-	case m_main:
-		M_Main_Draw();
-		break;
 
 	case m_singleplayer:
 		M_SinglePlayer_Draw();
@@ -2692,10 +2458,10 @@ void M_Draw(void)
 		break;
 	}
 
-	if (m_entersound)
+	if (mqh_entersound)
 	{
 		S_StartLocalSound("misc/menu2.wav");
-		m_entersound = false;
+		mqh_entersound = false;
 	}
 
 	S_ExtraUpdate();
@@ -2706,12 +2472,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-	case m_none:
-		return;
-
-	case m_main:
-		M_Main_Key(key);
-		return;
 
 	case m_singleplayer:
 		M_SinglePlayer_Key(key);
@@ -2773,6 +2533,7 @@ void M_Keydown(int key)
 		M_ServerList_Key(key);
 		return;
 	}
+	MQH_Keydown(key);
 }
 
 void M_CharEvent(int key)

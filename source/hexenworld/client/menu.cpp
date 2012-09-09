@@ -7,24 +7,17 @@
 extern Cvar* r_gamma;
 extern Cvar* crosshair;
 
-void M_Menu_Main_f(void);
-void M_Menu_SinglePlayer_f(void);
 void M_Menu_Load_f(void);
 void M_Menu_Save_f(void);
-void M_Menu_MultiPlayer_f(void);
 void M_Menu_Setup_f(void);
 void M_Menu_Net_f(void);
-void M_Menu_Options_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_Help_f(void);
-void M_Menu_Quit_f(void);
 void M_Menu_LanConfig_f(void);
 void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_Main_Draw(void);
 void M_SinglePlayer_Draw(void);
 void M_Load_Draw(void);
 void M_Save_Draw(void);
@@ -43,7 +36,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_Main_Key(int key);
 void M_SinglePlayer_Key(int key);
 void M_Load_Key(int key);
 void M_Save_Key(int key);
@@ -63,21 +55,14 @@ void M_GameOptions_Key(int key);
 void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
-qboolean m_entersound;			// play after drawing a frame, so caching
-								// won't disrupt the sound
 qboolean m_recursiveDraw;
 
 int setup_class, which_class;
 
-static char* message,* message2;
 static double message_time;
 
-#define StartingGame    (m_multiplayer_cursor == 1)
-#define JoiningGame     (m_multiplayer_cursor == 0)
-#define SerialConfig    (m_net_cursor == 0)
-#define DirectConfig    (m_net_cursor == 1)
-#define IPXConfig       (m_net_cursor == 2)
-#define TCPIPConfig     (m_net_cursor == 3)
+#define StartingGame    (mqh_multiplayer_cursor == 1)
+#define JoiningGame     (mqh_multiplayer_cursor == 0)
 
 void M_ConfigureNetSubsystem(void);
 void M_Menu_Class_f(void);
@@ -149,8 +134,6 @@ image_t* translate_texture[MAX_PLAYER_CLASS];
 
 //=============================================================================
 
-int m_save_demonum;
-
 /*
 ================
 M_ToggleMenu_f
@@ -158,7 +141,7 @@ M_ToggleMenu_f
 */
 void M_ToggleMenu_f(void)
 {
-	m_entersound = true;
+	mqh_entersound = true;
 
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
@@ -166,7 +149,7 @@ void M_ToggleMenu_f(void)
 		{
 			LogoTargetPercent = TitleTargetPercent = 1;
 			LogoPercent = TitlePercent = 0;
-			M_Menu_Main_f();
+			MQH_Menu_Main_f();
 			return;
 		}
 		in_keyCatchers &= ~KEYCATCH_UI;
@@ -181,102 +164,7 @@ void M_ToggleMenu_f(void)
 	{
 		LogoTargetPercent = TitleTargetPercent = 1;
 		LogoPercent = TitlePercent = 0;
-		M_Menu_Main_f();
-	}
-}
-
-//=============================================================================
-/* MAIN MENU */
-
-int m_main_cursor;
-#define MAIN_ITEMS  4
-
-
-void M_Menu_Main_f(void)
-{
-	if (!(in_keyCatchers & KEYCATCH_UI))
-	{
-		m_save_demonum = cls.qh_demonum;
-		cls.qh_demonum = -1;
-	}
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_main;
-	m_entersound = true;
-}
-
-
-void M_Main_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title0.lmp");
-//	MQH_DrawPic (72, 32, R_CachePic ("gfx/mainmenu.lmp") );
-//	MH2_DrawBigString (72,60+(0*20),"SINGLE PLAYER");
-	MH2_DrawBigString(72,60 + (0 * 20),"MULTIPLAYER");
-	MH2_DrawBigString(72,60 + (1 * 20),"OPTIONS");
-	MH2_DrawBigString(72,60 + (2 * 20),"HELP");
-	MH2_DrawBigString(72,60 + (3 * 20),"QUIT");
-
-	f = (int)(realtime * 10) % 8;
-	MQH_DrawPic(43, 54 + m_main_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-}
-
-
-void M_Main_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		cls.qh_demonum = m_save_demonum;
-		if (cls.qh_demonum != -1 && !clc.demoplaying && cls.state == CA_DISCONNECTED)
-		{
-			CL_NextDemo();
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++m_main_cursor >= MAIN_ITEMS)
-		{
-			m_main_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--m_main_cursor < 0)
-		{
-			m_main_cursor = MAIN_ITEMS - 1;
-		}
-		break;
-
-	case K_ENTER:
-		m_entersound = true;
-
-		switch (m_main_cursor)
-		{
-		case 4:
-			M_Menu_SinglePlayer_f();
-			break;
-
-		case 0:
-			M_Menu_MultiPlayer_f();
-			break;
-
-		case 1:
-			M_Menu_Options_f();
-			break;
-
-		case 2:
-			M_Menu_Help_f();
-			break;
-
-		case 3:
-			M_Menu_Quit_f();
-			break;
-		}
+		MQH_Menu_Main_f();
 	}
 }
 
@@ -332,7 +220,7 @@ void M_Class_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_SinglePlayer_f();
+		MQH_Menu_SinglePlayer_f();
 		break;
 
 	case K_DOWNARROW:
@@ -354,7 +242,7 @@ void M_Class_Key(int key)
 	case K_ENTER:
 
 		Cbuf_AddText(va("playerclass %d\n", m_class_cursor + 1));
-		m_entersound = true;
+		mqh_entersound = true;
 //		if (!class_flag)
 //		{
 //			M_Menu_Difficulty_f();
@@ -377,43 +265,11 @@ void M_Class_Key(int key)
 //=============================================================================
 /* OPTIONS MENU */
 
-enum
-{
-	OPT_CUSTOMIZE = 0,
-	OPT_CONSOLE,
-	OPT_DEFAULTS,
-	OPT_SCRSIZE,	//3
-	OPT_GAMMA,		//4
-	OPT_MOUSESPEED,	//5
-	OPT_MUSICTYPE,	//6
-	OPT_MUSICVOL,	//7
-	OPT_SNDVOL,		//8
-	OPT_ALWAYRUN,	//9
-	OPT_INVMOUSE,	//10
-	OPT_LOOKSPRING,	//11
-	OPT_CROSSHAIR,	//13
-	OPT_ALWAYSMLOOK,//14
-	OPT_VIDEO,		//15
-	OPTIONS_ITEMS
-};
-
-#define SLIDER_RANGE    10
-
-int options_cursor;
-
-void M_Menu_Options_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_options;
-	m_entersound = true;
-}
-
-
 void M_AdjustSliders(int dir)
 {
 	S_StartLocalSound("raven/menu3.wav");
 
-	switch (options_cursor)
+	switch (mqh_options_cursor)
 	{
 	case OPT_SCRSIZE:	// screen size
 		scr_viewsize->value += dir * 10;
@@ -650,7 +506,7 @@ void M_Options_Draw(void)
 	MQH_Print(16, 60 + (OPT_VIDEO * 8),  "         Video Options");
 
 // cursor
-	MQH_DrawCharacter(200, 60 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(200, 60 + mqh_options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -659,12 +515,12 @@ void M_Options_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (options_cursor)
+		mqh_entersound = true;
+		switch (mqh_options_cursor)
 		{
 		case OPT_CUSTOMIZE:
 			M_Menu_Keys_f();
@@ -689,19 +545,19 @@ void M_Options_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		options_cursor--;
-		if (options_cursor < 0)
+		mqh_options_cursor--;
+		if (mqh_options_cursor < 0)
 		{
-			options_cursor = OPTIONS_ITEMS - 1;
+			mqh_options_cursor = OPTIONS_ITEMS - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		options_cursor++;
-		if (options_cursor >= OPTIONS_ITEMS)
+		mqh_options_cursor++;
+		if (mqh_options_cursor >= OPTIONS_ITEMS)
 		{
-			options_cursor = 0;
+			mqh_options_cursor = 0;
 		}
 		break;
 
@@ -777,7 +633,7 @@ void M_Menu_Keys_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -934,7 +790,7 @@ void M_Keys_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	case K_LEFTARROW:
@@ -994,7 +850,7 @@ void M_Menu_Video_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
-	m_entersound = true;
+	mqh_entersound = true;
 }
 
 
@@ -1019,7 +875,7 @@ void M_Video_Key(int key)
 	{
 	case K_ESCAPE:
 		S_StartLocalSound("raven/menu1.wav");
-		M_Menu_Options_f();
+		MQH_Menu_Options_f();
 		break;
 
 	default:
@@ -1030,32 +886,15 @@ void M_Video_Key(int key)
 //=============================================================================
 /* HELP MENU */
 
-int help_page;
-
-#define NUM_HELP_PAGES  5
-#define NUM_SG_HELP_PAGES   10	//Siege has more help
-
-
-
-void M_Menu_Help_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_help;
-	m_entersound = true;
-	help_page = 0;
-}
-
-
-
 void M_Help_Draw(void)
 {
 	if (clhw_siege)
 	{
-		MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/sghelp%02i.lmp", help_page + 1)));
+		MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/sghelp%02i.lmp", mqh_help_page + 1)));
 	}
 	else
 	{
-		MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", help_page + 1)));
+		MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", mqh_help_page + 1)));
 	}
 }
 
@@ -1065,37 +904,37 @@ void M_Help_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_UPARROW:
 	case K_RIGHTARROW:
-		m_entersound = true;
+		mqh_entersound = true;
 		if (clhw_siege)
 		{
-			if (++help_page >= NUM_SG_HELP_PAGES)
+			if (++mqh_help_page >= NUM_SG_HELP_PAGES)
 			{
-				help_page = 0;
+				mqh_help_page = 0;
 			}
 		}
-		else if (++help_page >= NUM_HELP_PAGES)
+		else if (++mqh_help_page >= NUM_HELP_PAGES_H2)
 		{
-			help_page = 0;
+			mqh_help_page = 0;
 		}
 		break;
 
 	case K_DOWNARROW:
 	case K_LEFTARROW:
-		m_entersound = true;
-		if (--help_page < 0)
+		mqh_entersound = true;
+		if (--mqh_help_page < 0)
 		{
 			if (clhw_siege)
 			{
-				help_page = NUM_SG_HELP_PAGES - 1;
+				mqh_help_page = NUM_SG_HELP_PAGES - 1;
 			}
 			else
 			{
-				help_page = NUM_HELP_PAGES - 1;
+				mqh_help_page = NUM_HELP_PAGES_H2 - 1;
 			}
 		}
 		break;
@@ -1105,453 +944,6 @@ void M_Help_Key(int key)
 
 //=============================================================================
 /* QUIT MENU */
-
-int msgNumber;
-menu_state_t m_quit_prevstate;
-qboolean wasInMenus;
-
-#ifndef _WIN32
-const char* quitMessage [] =
-{
-/* .........1.........2.... */
-	"   Look! Behind you!    ",
-	"  There's a big nasty   ",
-	"   thing - shoot it!    ",
-	"                        ",
-
-	"  You can't go now, I   ",
-	"   was just getting     ",
-	"    warmed up.          ",
-	"                        ",
-
-	"    One more game.      ",
-	"      C'mon...          ",
-	"   Who's gonna know?    ",
-	"                        ",
-
-	"   What's the matter?   ",
-	"   Palms too sweaty to  ",
-	"     keep playing?      ",
-	"                        ",
-
-	"  Watch your local store",
-	"      for Hexen 2       ",
-	"    plush toys and      ",
-	"    greeting cards!     ",
-
-	"  Hexen 2...            ",
-	"                        ",
-	"    Too much is never   ",
-	"        enough.         ",
-
-	"  Sure go ahead and     ",
-	"  leave.  But I know    ",
-	"  you'll be back.       ",
-	"                        ",
-
-	"                        ",
-	"  Insert cute phrase    ",
-	"        here            ",
-	"                        "
-};
-#endif
-
-static float LinePos;
-static int LineTimes;
-static int MaxLines;
-const char** LineText;
-static qboolean SoundPlayed;
-
-
-#define MAX_LINES 145 + 25
-
-const char* CreditText[MAX_LINES] =
-{
-	"HexenWorld",
-	"",
-	"Lead Programmer: Rick Johnson",
-	"",
-	"Programming:",
-	"   Nathan Albury",
-	"   Ron Midthun",
-	"   Steve Sengele",
-	"   Mike Gummelt",
-	"   James Monroe",
-	"",
-	"Deathmatch Levels:",
-	"   Kenn Hoekstra",
-	"   Mike Renner",
-	"   Jeremy Statz",
-	"   Jon Zuk",
-	"",
-	"Special thanks to:",
-	"   Dave Kirsch",
-	"   William Mull",
-	"   Jack Mathews",
-	"",
-	"",
-	"Hexen2",
-	"",
-	"Project Director: Brian Raffel",
-	"",
-	"Lead Programmer: Rick Johnson",
-	"",
-	"Programming:",
-	"   Ben Gokey",
-	"   Bob Love",
-	"   Mike Gummelt",
-	"",
-	"Additional Programming:",
-	"   Josh Weier",
-	"",
-	"Lead Design: Eric Biessman",
-	"",
-	"Design:",
-	"   Brian Raffel",
-	"   Brian Frank",
-	"   Tom Odell",
-	"",
-	"Art Director: Brian Pelletier",
-	"",
-	"Art:",
-	"   Shane Gurno",
-	"   Jim Sumwalt",
-	"   Mark Morgan",
-	"   Kim Lathrop",
-	"   Ted Halsted",
-	"   Rebecca Rettenmund",
-	"   Les Dorscheid",
-	"",
-	"Animation:",
-	"   Chaos (Mike Werckle)",
-	"   Brian Shubat",
-	"",
-	"Cinematics:",
-	"   Jeff Dewitt",
-	"   Jeffrey P. Lampo",
-	"",
-	"Music:",
-	"   Kevin Schilder",
-	"",
-	"Sound:",
-	"   Kevin Schilder",
-	"   Chia Chin Lee",
-	"",
-	"",
-	"Activision",
-	"",
-	"Producer:",
-	"   Steve Stringer",
-	"",
-	"Localization Producer:",
-	"   Sandi Isaacs",
-	"",
-	"Marketing Product Manager:",
-	"   Henk Hartong",
-	"",
-	"European Marketing",
-	"Product Director:",
-	"   Janine Johnson",
-	"",
-	"Marketing Associate:",
-	"   Kevin Kraff",
-	"",
-	"Senior Quality",
-	"Assurance Lead:",
-	"   Tim Vanlaw",
-	"",
-	"Quality Assurance Lead:",
-	"   John Tam",
-	"",
-	"Quality Assurance Team:",
-	"   Steve Rosenthal, Mike Spann,",
-	"   Steve Elwell, Kelly Wand,",
-	"   Kip Stolberg, Igor Krinitskiy,",
-	"   Ian Stevens, Marilena Wahmann,",
-	"   David Baker, Winnie Lee",
-	"",
-	"Documentation:",
-	"   Mike Rivera, Sylvia Orzel,",
-	"   Belinda Vansickle",
-	"",
-	"Chronicle of Deeds written by:",
-	"   Joe Grant Bell",
-	"",
-	"Localization:",
-	"   Nathalie Dove, Lucy Morgan,",
-	"   Alex Wylde, Nicky Kerth",
-	"",
-	"Installer by:",
-	"   Steve Stringer, Adam Goldberg,",
-	"   Tanya Martino, Eric Schmidt,",
-	"   Ronnie Lane",
-	"",
-	"Art Assistance by:",
-	"   Carey Chico and Franz Boehm",
-	"",
-	"BizDev Babe:",
-	"   Jamie Bafus",
-	"",
-	"And...",
-	"",
-	"Deal Guru:",
-	"   Mitch Lasky",
-	"",
-	"",
-	"Thanks to Id software:",
-	"   John Carmack",
-	"   Adrian Carmack",
-	"   Kevin Cloud",
-	"   Barrett 'Bear'  Alexander",
-	"   American McGee",
-	"",
-	"",
-	"Published by Id Software, Inc.",
-	"Distributed by Activision, Inc.",
-	"",
-	"The Id Software Technology used",
-	"under license in Hexen II (tm)",
-	"(c) 1996, 1997 Id Software, Inc.",
-	"All Rights Reserved.",
-	"",
-	"Hexen(r) is a registered trademark",
-	"of Raven Software Corp.",
-	"Hexen II (tm) and the Raven logo",
-	"are trademarks of Raven Software",
-	"Corp.  The Id Software name and",
-	"id logo are trademarks of",
-	"Id Software, Inc.  Activision(r)",
-	"is a registered trademark of",
-	"Activision, Inc. All other",
-	"trademarks are the property of",
-	"their respective owners.",
-	"",
-	"",
-	"",
-	"Send bug descriptions to:",
-	"   h2bugs@mail.ravensoft.com",
-	"",
-	"Special thanks to Gary McTaggart",
-	"at 3dfx for his help with",
-	"the gl version!",
-	"",
-	"No snails were harmed in the",
-	"making of this game!"
-};
-
-#define MAX_LINES2 158 + 27
-
-const char* Credit2Text[MAX_LINES2] =
-{
-	"HexenWorld",
-	"",
-	"Superior Groucher:"
-	"   Rick 'Grrr' Johnson",
-	"",
-	"Bug Creators:",
-	"   Nathan 'Glory Code' Albury",
-	"   Ron 'Stealth' Midthun",
-	"   Steve 'Tie Dye' Sengele",
-	"   Mike 'Foos' Gummelt",
-	"   James 'Happy' Monroe",
-	"",
-	"Sloppy Joe Makers:",
-	"   Kenn 'I'm a broken man'",
-	"      Hoekstra",
-	"   Mike 'Outback' Renner",
-	"   Jeremy 'Under-rated' Statz",
-	"   Jon Zuk",
-	"",
-	"Avoid the Noid:",
-	"   Dave 'Zoid' Kirsch",
-	"   William 'Phoeb' Mull",
-	"   Jack 'Morbid' Mathews",
-	"",
-	"",
-	"Hexen2",
-	"",
-	"Map Master: ",
-	"   'Caffeine Buzz' Raffel",
-	"",
-	"Code Warrior:",
-	"   Rick 'Superfly' Johnson",
-	"",
-	"Grunt Boys:",
-	"   'Judah' Ben Gokey",
-	"   Bob 'Whipped' Love",
-	"   Mike '9-Pointer' Gummelt",
-	"",
-	"Additional Grunting:",
-	"   Josh 'Intern' Weier",
-	"",
-	"Whippin' Boy:",
-	"   Eric 'Baby' Biessman",
-	"",
-	"Crazy Levelers:",
-	"   'Big Daddy' Brian Raffel",
-	"   Brian 'Red' Frank",
-	"   Tom 'Texture Alignment' Odell",
-	"",
-	"Art Lord:",
-	"   Brian 'Mr. Calm' Pelletier",
-	"",
-	"Pixel Monkies:",
-	"   Shane 'Duh' Gurno",
-	"   'Slim' Jim Sumwalt",
-	"   Mark 'Dad Gummit' Morgan",
-	"   Kim 'Toy Master' Lathrop",
-	"   'Drop Dead' Ted Halsted",
-	"   Rebecca 'Zombie' Rettenmund",
-	"   Les 'is not more' Dorscheid",
-	"",
-	"Salad Shooters:",
-	"   Mike 'Chaos' Werckle",
-	"   Brian 'Mutton Chops' Shubat",
-	"",
-	"Last Minute Addition:",
-	"   Jeff 'Bud Bundy' Dewitt",
-	"   Jeffrey 'Misspalld' Lampo",
-	"",
-	"Random Notes:",
-	"   Kevin 'I Already Paid' Schilder",
-	"",
-	"Grunts, Groans, and Moans:",
-	"   Kevin 'I Already Paid' Schilder",
-	"   Chia 'Pet' Chin Lee",
-	"",
-	"",
-	"Activision",
-	"",
-	"Producer:",
-	"   Steve 'Ferris' Stringer",
-	"",
-	"Localization Producer:",
-	"   Sandi 'Boneduster' Isaacs",
-	"",
-	"Marketing Product Manager:",
-	"   Henk 'A-10' Hartong",
-	"",
-	"European Marketing",
-	"Product Director:",
-	"   Janine Johnson",
-	"",
-	"Marketing Associate:",
-	"   Kevin 'Savage' Kraff",
-	"",
-	"Senior Quality",
-	"Assurance Lead:",
-	"   Tim 'Outlaw' Vanlaw",
-	"",
-	"Quality Assurance Lead:",
-	"   John 'Armadillo' Tam",
-	"",
-	"Quality Assurance Team:",
-	"   Steve 'Rhinochoadicus'",
-	"      Rosenthal,",
-	"   Mike 'Dragonhawk' Spann,",
-	"   Steve 'Zendog' Elwell,",
-	"   Kelly 'Li'l Bastard' Wand,",
-	"   Kip 'Angus' Stolberg,",
-	"   Igor 'Russo' Krinitskiy,",
-	"   Ian 'Cracker' Stevens,",
-	"   Marilena 'Raveness-X' Wahmann,",
-	"   David 'Spicegirl' Baker,",
-	"   Winnie 'Mew' Lee",
-	"",
-	"Documentation:",
-	"   Mike Rivera, Sylvia Orzel,",
-	"   Belinda Vansickle",
-	"",
-	"Chronicle of Deeds written by:",
-	"   Joe Grant Bell",
-	"",
-	"Localization:",
-	"   Nathalie Dove, Lucy Morgan,",
-	"   Alex Wylde, Nicky Kerth",
-	"",
-	"Installer by:",
-	"   Steve 'Bahh' Stringer,",
-	"   Adam Goldberg, Tanya Martino,",
-	"   Eric Schmidt, Ronnie Lane",
-	"",
-	"Art Assistance by:",
-	"   Carey 'Damien' Chico and",
-	"   Franz Boehm",
-	"",
-	"BizDev Babe:",
-	"   Jamie Bafus",
-	"",
-	"And...",
-	"",
-	"Deal Guru:",
-	"   Mitch 'I'll buy that' Lasky",
-	"",
-	"",
-	"Thanks to Id software:",
-	"   John Carmack",
-	"   Adrian Carmack",
-	"   Kevin Cloud",
-	"   Barrett 'Bear'  Alexander",
-	"   American McGee",
-	"",
-	"",
-	"Published by Id Software, Inc.",
-	"Distributed by Activision, Inc.",
-	"",
-	"The Id Software Technology used",
-	"under license in Hexen II (tm)",
-	"(c) 1996, 1997 Id Software, Inc.",
-	"All Rights Reserved.",
-	"",
-	"Hexen(r) is a registered trademark",
-	"of Raven Software Corp.",
-	"Hexen II (tm) and the Raven logo",
-	"are trademarks of Raven Software",
-	"Corp.  The Id Software name and",
-	"id logo are trademarks of",
-	"Id Software, Inc.  Activision(r)",
-	"is a registered trademark of",
-	"Activision, Inc. All other",
-	"trademarks are the property of",
-	"their respective owners.",
-	"",
-	"",
-	"",
-	"Send bug descriptions to:",
-	"   h2bugs@mail.ravensoft.com",
-	"",
-	"Special thanks to Bob for",
-	"remembering 'P' is for Polymorph",
-	"",
-	"",
-	"See the next movie in the long",
-	"awaited sequel, starring",
-	"Bobby Love in,",
-	"   Out of Traction, Back in Action!",
-};
-
-#define QUIT_SIZE 18
-
-void M_Menu_Quit_f(void)
-{
-	if (m_state == m_quit)
-	{
-		return;
-	}
-	wasInMenus = !!(in_keyCatchers & KEYCATCH_UI);
-	in_keyCatchers |= KEYCATCH_UI;
-	m_quit_prevstate = m_state;
-	m_state = m_quit;
-	m_entersound = true;
-	msgNumber = rand() & 7;
-
-	LinePos = 0;
-	LineTimes = 0;
-	LineText = CreditText;
-	MaxLines = MAX_LINES;
-	SoundPlayed = false;
-}
-
 
 void M_Quit_Key(int key)
 {
@@ -1563,7 +955,7 @@ void M_Quit_Key(int key)
 		if (wasInMenus)
 		{
 			m_state = m_quit_prevstate;
-			m_entersound = true;
+			mqh_entersound = true;
 		}
 		else
 		{
@@ -1602,15 +994,15 @@ void M_Quit_Draw(void)
 	}
 
 	LinePos += host_frametime * 1.75;
-	if (LinePos > MaxLines + QUIT_SIZE + 2)
+	if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
 	{
 		LinePos = 0;
 		SoundPlayed = false;
 		LineTimes++;
 		if (LineTimes >= 2)
 		{
-			MaxLines = MAX_LINES2;
-			LineText = Credit2Text;
+			MaxLines = MAX_LINES2_HW;
+			LineText = Credit2TextHW;
 		}
 	}
 
@@ -1619,7 +1011,7 @@ void M_Quit_Draw(void)
 	MQH_PrintWhite(16, y,  "      Hexen2World version " VSTR2(VERSION) "      ");    y += 8;
 	MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
 
-	if (LinePos > 55 && !SoundPlayed && LineText == Credit2Text)
+	if (LinePos > 55 && !SoundPlayed && LineText == Credit2TextHW)
 	{
 		S_StartLocalSound("rj/steve.wav");
 		SoundPlayed = true;
@@ -1627,24 +1019,24 @@ void M_Quit_Draw(void)
 	topy = y;
 	place = LinePos;
 	y -= (LinePos - (int)LinePos) * 8;
-	for (i = 0; i < QUIT_SIZE; i++,y += 8)
+	for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
 	{
-		if (i + place - QUIT_SIZE >= MaxLines)
+		if (i + place - QUIT_SIZE_H2 >= MaxLines)
 		{
 			break;
 		}
-		if (i + place < QUIT_SIZE)
+		if (i + place < QUIT_SIZE_H2)
 		{
 			continue;
 		}
 
-		if (LineText[i + place - QUIT_SIZE][0] == ' ')
+		if (LineText[i + place - QUIT_SIZE_H2][0] == ' ')
 		{
-			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE]);
+			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE_H2]);
 		}
 		else
 		{
-			MQH_Print(24,y,LineText[i + place - QUIT_SIZE]);
+			MQH_Print(24,y,LineText[i + place - QUIT_SIZE_H2]);
 		}
 	}
 
@@ -1658,7 +1050,7 @@ void M_Quit_Draw(void)
 
 	p = R_CachePic("gfx/box_mm2.lmp");
 	x = 24;
-	y = topy + (QUIT_SIZE * 8) - 8;
+	y = topy + (QUIT_SIZE_H2 * 8) - 8;
 	for (i = 4; i < 36; i++,x += 8)
 	{
 		MQH_DrawPic(x, y, p);
@@ -1687,11 +1079,6 @@ void M_Quit_Draw(void)
 
 }
 
-void M_Menu_SinglePlayer_f(void)
-{
-	m_state = m_singleplayer;
-}
-
 void M_SinglePlayer_Draw(void)
 {
 	MH2_ScrollTitle("gfx/menu/title1.lmp");
@@ -1710,67 +1097,28 @@ void M_SinglePlayer_Key(int key)
 	}
 }
 
-/*
-void M_Menu_MultiPlayer_f (void) {
-    m_state = m_multiplayer;
-}
-
-void M_MultiPlayer_Draw (void)
-{
-    MH2_ScrollTitle("gfx/menu/title1.lmp");
-
-    MQH_DrawTextBox (46, 8*8, 27, 9);
-    MQH_PrintWhite (72, 10*8, "If you want to find HW  ");
-    MQH_PrintWhite (72, 11*8, "games, head on over to: ");
-         MQH_Print (72, 12*8, "   www.hexenworld.net   ");
-    MQH_PrintWhite (72, 13*8, "          or            ");
-         MQH_Print (72, 14*8, "   www.quakespy.com     ");
-    MQH_PrintWhite (72, 15*8, "For pointers on getting ");
-    MQH_PrintWhite (72, 16*8, "        started!        ");
-}
-
-void M_MultiPlayer_Key (key) {
-    if (key == K_ESCAPE || key==K_ENTER)
-        m_state = m_main;
-}
-*/
-
 //=============================================================================
 /* MULTIPLAYER MENU */
-
-int m_multiplayer_cursor;
-#define MULTIPLAYER_ITEMS   2
-
-void M_Menu_MultiPlayer_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_multiplayer;
-	m_entersound = true;
-
-	message = NULL;
-}
-
 
 void M_MultiPlayer_Draw(void)
 {
 	int f;
 
 	MH2_ScrollTitle("gfx/menu/title4.lmp");
-//	MQH_DrawPic (72, 32, R_CachePic ("gfx/mp_menu.lmp") );
 
 	MH2_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
 	MH2_DrawBigString(72,60 + (1 * 20),"SETUP");
 
 	f = (int)(realtime * 10) % 8;
-	MQH_DrawPic(43, 54 + m_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 54 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 
-	if (message)
+	if (mh2_message)
 	{
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, message);
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, message2);
+		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, mh2_message);
+		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, mh2_message2);
 		if (realtime - 5 > message_time)
 		{
-			message = NULL;
+			mh2_message = NULL;
 		}
 	}
 }
@@ -1781,28 +1129,28 @@ void M_MultiPlayer_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Main_f();
+		MQH_Menu_Main_f();
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (++m_multiplayer_cursor >= MULTIPLAYER_ITEMS)
+		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_HW)
 		{
-			m_multiplayer_cursor = 0;
+			mqh_multiplayer_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		if (--m_multiplayer_cursor < 0)
+		if (--mqh_multiplayer_cursor < 0)
 		{
-			m_multiplayer_cursor = MULTIPLAYER_ITEMS - 1;
+			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_HW - 1;
 		}
 		break;
 
 	case K_ENTER:
-		m_entersound = true;
-		switch (m_multiplayer_cursor)
+		mqh_entersound = true;
+		switch (mqh_multiplayer_cursor)
 		{
 		case 0:
 			M_Menu_Connect_f();
@@ -1857,9 +1205,9 @@ void M_Menu_Connect_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_mconnect;
-	m_entersound = true;
+	mqh_entersound = true;
 
-	message = NULL;
+	mh2_message = NULL;
 
 	String::Cpy(save_names[0].buffer,hostname1->string);
 	String::Cpy(save_names[1].buffer,hostname2->string);
@@ -1926,7 +1274,7 @@ void M_Connect_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -1967,8 +1315,8 @@ void M_Connect_Key(int k)
 		}
 		else
 		{
-			m_entersound = true;
-			M_Menu_MultiPlayer_f();
+			mqh_entersound = true;
+			MQH_Menu_MultiPlayer_f();
 		}
 		break;
 	}
@@ -2009,7 +1357,7 @@ void M_Menu_Setup_f(void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
-	m_entersound = true;
+	mqh_entersound = true;
 	String::Cpy(setup_myname.buffer, name->string);
 	setup_myname.cursor = String::Length(setup_myname.buffer);
 	setup_myname.maxLength = 15;
@@ -2165,7 +1513,7 @@ void M_Setup_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_MultiPlayer_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -2283,8 +1631,8 @@ forward:
 			Cbuf_AddText(va("color %i %i\n", setup_top, setup_bottom));
 		}
 		Cbuf_AddText(va("playerclass %d\n", setup_class));
-		m_entersound = true;
-		M_Menu_MultiPlayer_f();
+		mqh_entersound = true;
+		MQH_Menu_MultiPlayer_f();
 		break;
 	}
 	if (setup_cursor == 1)
@@ -2327,12 +1675,9 @@ void M_Init(void)
 {
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
-	Cmd_AddCommand("menu_main", M_Menu_Main_f);
-	Cmd_AddCommand("menu_options", M_Menu_Options_f);
+	MQH_Init();
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("help", M_Menu_Help_f);
-	Cmd_AddCommand("menu_quit", M_Menu_Quit_f);
 	Cmd_AddCommand("menu_class", M_Menu_Class2_f);
 	Cmd_AddCommand("menu_connect", M_Menu_Connect_f);
 
@@ -2346,8 +1691,6 @@ void M_Init(void)
 	hostname8 = Cvar_Get("host8","", CVAR_ARCHIVE);
 	hostname9 = Cvar_Get("host9","", CVAR_ARCHIVE);
 	hostname10 = Cvar_Get("host10","", CVAR_ARCHIVE);
-
-	MH2_ReadBigCharWidth();
 }
 
 
@@ -2375,14 +1718,9 @@ void M_Draw(void)
 		m_recursiveDraw = false;
 	}
 
+	MQH_Draw();
 	switch (m_state)
 	{
-	case m_none:
-		break;
-
-	case m_main:
-		M_Main_Draw();
-		break;
 
 	case m_singleplayer:
 		M_SinglePlayer_Draw();
@@ -2453,10 +1791,10 @@ void M_Draw(void)
 		break;
 	}
 
-	if (m_entersound)
+	if (mqh_entersound)
 	{
 		S_StartLocalSound("raven/menu2.wav");
-		m_entersound = false;
+		mqh_entersound = false;
 	}
 
 	S_ExtraUpdate();
@@ -2467,12 +1805,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-	case m_none:
-		return;
-
-	case m_main:
-		M_Main_Key(key);
-		return;
 
 	case m_singleplayer:
 		M_SinglePlayer_Key(key);
@@ -2542,6 +1874,7 @@ void M_Keydown(int key)
 		M_Connect_Key(key);
 		break;
 	}
+	MQH_Keydown(key);
 }
 
 void M_CharEvent(int key)

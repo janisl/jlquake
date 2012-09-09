@@ -7,7 +7,6 @@ qboolean con_forcedup;			// because no entities to refresh
 qboolean con_debuglog;
 
 #ifndef DEDICATED
-extern void M_Menu_Main_f(void);
 
 /*
 ================
@@ -28,7 +27,7 @@ void Con_ToggleConsole_f(void)
 		}
 		else
 		{
-			M_Menu_Main_f();
+			MQH_Menu_Main_f();
 		}
 	}
 	else

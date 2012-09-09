@@ -52,6 +52,62 @@ extern float TitlePercent;
 extern float TitleTargetPercent;
 extern float LogoPercent;
 extern float LogoTargetPercent;
+extern bool mqh_entersound;
+extern const char* mh2_message;
+extern const char* mh2_message2;
+
+extern int mqh_main_cursor;
+extern int mqh_save_demonum;
+extern int mqh_singleplayer_cursor;
+extern int mqh_multiplayer_cursor;
+extern int mqh_options_cursor;
+extern int mqh_help_page;
+extern bool wasInMenus;
+extern int msgNumber;
+extern menu_state_t m_quit_prevstate;
+extern const char* mq1_quitMessage [];
+extern float LinePos;
+extern int LineTimes;
+extern int MaxLines;
+extern const char** LineText;
+extern bool SoundPlayed;
+#define MAIN_ITEMS      5
+#define MAIN_ITEMS_HW   4
+#define SINGLEPLAYER_ITEMS      3
+#define SINGLEPLAYER_ITEMS_H2MP 5
+#define MULTIPLAYER_ITEMS_Q1    3
+#define MULTIPLAYER_ITEMS_H2    5
+#define MULTIPLAYER_ITEMS_HW    2
+#define OPTIONS_ITEMS_Q1    13
+#define OPTIONS_ITEMS_QW    15
+enum
+{
+	OPT_CUSTOMIZE = 0,
+	OPT_CONSOLE,
+	OPT_DEFAULTS,
+	OPT_SCRSIZE,	//3
+	OPT_GAMMA,		//4
+	OPT_MOUSESPEED,	//5
+	OPT_MUSICTYPE,	//6
+	OPT_MUSICVOL,	//7
+	OPT_SNDVOL,		//8
+	OPT_ALWAYRUN,	//9
+	OPT_INVMOUSE,	//10
+	OPT_LOOKSPRING,	//11
+	OPT_CROSSHAIR,	//13
+	OPT_ALWAYSMLOOK,//14
+	OPT_VIDEO,		//15
+	OPTIONS_ITEMS
+};
+#define SLIDER_RANGE    10
+#define NUM_HELP_PAGES_Q1   6
+#define NUM_HELP_PAGES_H2   5
+#define NUM_SG_HELP_PAGES   10	//Siege has more help
+#define MAX_LINES2_H2 150
+#define MAX_LINES2_HW 158 + 27
+extern const char* Credit2TextH2[MAX_LINES2_H2];
+extern const char* Credit2TextHW[MAX_LINES2_HW];
+#define QUIT_SIZE_H2 18
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);
@@ -60,6 +116,13 @@ void MQH_PrintWhite(int cx, int cy, const char* str);
 void MQH_DrawTextBox(int x, int y, int width, int lines);
 void MQH_DrawTextBox2(int x, int y, int width, int lines);
 void MQH_DrawField(int x, int y, field_t* edit, bool showCursor);
-void MH2_ReadBigCharWidth();
 void MH2_DrawBigString(int x, int y, const char* string);
 void MH2_ScrollTitle(const char* name);
+void MQH_Menu_Main_f();
+void MQH_Init();
+void MQH_Draw();
+void MQH_Menu_SinglePlayer_f();
+void MQH_Menu_MultiPlayer_f();
+void MQH_Menu_Options_f();
+void MQH_Menu_Quit_f();
+void MQH_Keydown(int key);
