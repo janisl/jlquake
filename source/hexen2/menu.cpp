@@ -10,7 +10,6 @@ extern Cvar* crosshair;
 
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_ServerList_f(void);
 
 void M_Setup_Draw(void);
 void M_Options_Draw(void);
@@ -21,8 +20,6 @@ void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 void M_GameOptions_Draw(void);
-void M_Search_Draw(void);
-void M_ServerList_Draw(void);
 
 void M_Setup_Key(int key);
 void M_Options_Key(int key);
@@ -33,8 +30,6 @@ void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
 void M_ModemConfig_Key(int key);
 void M_GameOptions_Key(int key);
-void M_Search_Key(int key);
-void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
 
@@ -1614,172 +1609,6 @@ void M_GameOptions_Key(int key)
 }
 
 //=============================================================================
-/* SEARCH MENU */
-
-void M_Search_Draw(void)
-{
-	int x;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-	x = (320 / 2) - ((12 * 8) / 2) + 4;
-	MQH_DrawTextBox(x - 8, 60, 12, 1);
-	MQH_Print(x, 68, "Searching...");
-
-	if (slistInProgress)
-	{
-		NET_Poll();
-		return;
-	}
-
-	if (!searchComplete)
-	{
-		searchComplete = true;
-		searchCompleteTime = realtime;
-	}
-
-	if (hostCacheCount)
-	{
-		M_Menu_ServerList_f();
-		return;
-	}
-
-	MQH_PrintWhite((320 / 2) - ((22 * 8) / 2), 92, "No Hexen II servers found");
-	if ((realtime - searchCompleteTime) < 3.0)
-	{
-		return;
-	}
-
-	MQH_Menu_LanConfig_f();
-}
-
-
-void M_Search_Key(int key)
-{
-}
-
-//=============================================================================
-/* SLIST MENU */
-
-int slist_cursor;
-qboolean slist_sorted;
-
-void M_Menu_ServerList_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_slist;
-	mqh_entersound = true;
-	slist_cursor = 0;
-	m_return_onerror = false;
-	m_return_reason[0] = 0;
-	slist_sorted = false;
-}
-
-
-void M_ServerList_Draw(void)
-{
-	int n;
-	char string [64];
-	const char* name;
-
-	if (!slist_sorted)
-	{
-		if (hostCacheCount > 1)
-		{
-			int i,j;
-			hostcache_t temp;
-			for (i = 0; i < hostCacheCount; i++)
-				for (j = i + 1; j < hostCacheCount; j++)
-					if (String::Cmp(hostcache[j].name, hostcache[i].name) < 0)
-					{
-						Com_Memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
-						Com_Memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
-						Com_Memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
-					}
-		}
-		slist_sorted = true;
-	}
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-	for (n = 0; n < hostCacheCount; n++)
-	{
-		if (hostcache[n].driver == 0)
-		{
-			name = "Loopback";
-		}
-		else
-		{
-			name = "UDP";
-		}
-
-		if (hostcache[n].maxusers)
-		{
-			sprintf(string, "%-11.11s %-8.8s %-10.10s %2u/%2u\n", hostcache[n].name, name, hostcache[n].map, hostcache[n].users, hostcache[n].maxusers);
-		}
-		else
-		{
-			sprintf(string, "%-11.11s %-8.8s %-10.10s\n", hostcache[n].name, name, hostcache[n].map);
-		}
-		MQH_Print(16, 60 + 8 * n, string);
-	}
-	MQH_DrawCharacter(0, 60 + slist_cursor * 8, 12 + ((int)(realtime * 4) & 1));
-
-	if (*m_return_reason)
-	{
-		MQH_PrintWhite(16, 176, m_return_reason);
-	}
-}
-
-
-void M_ServerList_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_LanConfig_f();
-		break;
-
-	case K_SPACE:
-		MQH_Menu_Search_f();
-		break;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		slist_cursor--;
-		if (slist_cursor < 0)
-		{
-			slist_cursor = hostCacheCount - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		slist_cursor++;
-		if (slist_cursor >= hostCacheCount)
-		{
-			slist_cursor = 0;
-		}
-		break;
-
-	case K_ENTER:
-		S_StartLocalSound("raven/menu2.wav");
-		m_return_state = m_state;
-		m_return_onerror = true;
-		slist_sorted = false;
-		in_keyCatchers &= ~KEYCATCH_UI;
-		m_state = m_none;
-		Cbuf_AddText(va("connect \"%s\"\n", hostcache[slist_cursor].cname));
-		break;
-
-	default:
-		break;
-	}
-
-}
-
-//=============================================================================
 /* Menu Subsystem */
 
 
@@ -1850,14 +1679,6 @@ void M_Draw(void)
 	case m_gameoptions:
 		M_GameOptions_Draw();
 		break;
-
-	case m_search:
-		M_Search_Draw();
-		break;
-
-	case m_slist:
-		M_ServerList_Draw();
-		break;
 	}
 
 	if (mqh_entersound)
@@ -1909,14 +1730,6 @@ void M_Keydown(int key)
 
 	case m_gameoptions:
 		M_GameOptions_Key(key);
-		return;
-
-	case m_search:
-		M_Search_Key(key);
-		break;
-
-	case m_slist:
-		M_ServerList_Key(key);
 		return;
 	}
 	MQH_Keydown(key);

@@ -50,6 +50,9 @@ static void MH2_Menu_Class_f();
 static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Load_f();
 static void MQH_Menu_Save_f();
+static void MQH_Menu_LanConfig_f();
+static void MQH_Menu_Search_f();
+static void MQH_Menu_ServerList_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -1297,7 +1300,7 @@ static int lanConfig_port;
 static field_t lanConfig_portname;
 static field_t lanConfig_joinname;
 
-void MQH_Menu_LanConfig_f()
+static void MQH_Menu_LanConfig_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_lanconfig;
@@ -1343,9 +1346,6 @@ void MQH_Menu_LanConfig_f()
 static void MQH_LanConfig_Draw()
 {
 	int basex;
-	const char* startJoin;
-	const char* protocol;
-
 	if (GGameType & GAME_Hexen2)
 	{
 		MH2_ScrollTitle("gfx/menu/title4.lmp");
@@ -1359,6 +1359,7 @@ static void MQH_LanConfig_Draw()
 		MQH_DrawPic(basex, 4, p);
 	}
 
+	const char* startJoin;
 	if (StartingGame)
 	{
 		startJoin = "New Game";
@@ -1367,7 +1368,7 @@ static void MQH_LanConfig_Draw()
 	{
 		startJoin = "Join Game";
 	}
-	protocol = "TCP/IP";
+	const char* protocol = "TCP/IP";
 	MQH_Print(basex, GGameType & GAME_Hexen2 ? 60 : 32, va("%s - %s", startJoin, protocol));
 	basex += 8;
 
@@ -1566,10 +1567,10 @@ static void MQH_LanConfig_Char(int key)
 //=============================================================================
 /* SEARCH MENU */
 
-bool searchComplete = false;
-double searchCompleteTime;
+static bool searchComplete = false;
+static int searchCompleteTime;
 
-void MQH_Menu_Search_f()
+static void MQH_Menu_Search_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_search;
@@ -1579,6 +1580,167 @@ void MQH_Menu_Search_f()
 	searchComplete = false;
 	NET_Slist_f();
 
+}
+
+static void MQH_Search_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	}
+
+	int x = (320 / 2) - ((12 * 8) / 2) + 4;
+	MQH_DrawTextBox(x - 8, GGameType & GAME_Hexen2 ? 60 : 32, 12, 1);
+	MQH_Print(x, GGameType & GAME_Hexen2 ? 68 : 40, "Searching...");
+
+	if (slistInProgress)
+	{
+		NET_Poll();
+		return;
+	}
+
+	if (!searchComplete)
+	{
+		searchComplete = true;
+		searchCompleteTime = cls.realtime;
+	}
+
+	if (hostCacheCount)
+	{
+		MQH_Menu_ServerList_f();
+		return;
+	}
+
+	MQH_PrintWhite((320 / 2) - ((22 * 8) / 2), GGameType & GAME_Hexen2 ? 92 : 64, GGameType & GAME_Hexen2 ? "No Hexen II servers found" : "No Quake servers found");
+	if (cls.realtime - searchCompleteTime < 3000)
+	{
+		return;
+	}
+
+	MQH_Menu_LanConfig_f();
+}
+
+static void MQH_Search_Key(int key)
+{
+}
+
+//=============================================================================
+/* SLIST MENU */
+
+static int mqh_slist_cursor;
+static bool mqh_slist_sorted;
+
+static void MQH_Menu_ServerList_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_slist;
+	mqh_entersound = true;
+	mqh_slist_cursor = 0;
+	m_return_onerror = false;
+	m_return_reason[0] = 0;
+	mqh_slist_sorted = false;
+}
+
+static void MQH_ServerList_Draw()
+{
+	if (!mqh_slist_sorted)
+	{
+		if (hostCacheCount > 1)
+		{
+			for (int i = 0; i < hostCacheCount; i++)
+			{
+				for (int j = i + 1; j < hostCacheCount; j++)
+				{
+					if (String::Cmp(hostcache[j].name, hostcache[i].name) < 0)
+					{
+						hostcache_t temp;
+						Com_Memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
+					}
+				}
+			}
+		}
+		mqh_slist_sorted = true;
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	}
+	for (int n = 0; n < hostCacheCount; n++)
+	{
+		char string [64];
+		if (hostcache[n].maxusers)
+		{
+			sprintf(string, "%-15.15s %-15.15s %2u/%2u\n", hostcache[n].name, hostcache[n].map, hostcache[n].users, hostcache[n].maxusers);
+		}
+		else
+		{
+			sprintf(string, "%-15.15s %-15.15s\n", hostcache[n].name, hostcache[n].map);
+		}
+		MQH_Print(16, (GGameType & GAME_Hexen2 ? 60 : 32) + 8 * n, string);
+	}
+	MQH_DrawCharacter(0, (GGameType & GAME_Hexen2 ? 60 : 32) + mqh_slist_cursor * 8, 12 + ((cls.realtime / 250) & 1));
+
+	if (*m_return_reason)
+	{
+		MQH_PrintWhite(16, GGameType & GAME_Hexen2 ? 176 : 148, m_return_reason);
+	}
+}
+
+static void MQH_ServerList_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_LanConfig_f();
+		break;
+
+	case K_SPACE:
+		MQH_Menu_Search_f();
+		break;
+
+	case K_UPARROW:
+	case K_LEFTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_slist_cursor--;
+		if (mqh_slist_cursor < 0)
+		{
+			mqh_slist_cursor = hostCacheCount - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_slist_cursor++;
+		if (mqh_slist_cursor >= hostCacheCount)
+		{
+			mqh_slist_cursor = 0;
+		}
+		break;
+
+	case K_ENTER:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		m_return_state = m_state;
+		m_return_onerror = true;
+		mqh_slist_sorted = false;
+		in_keyCatchers &= ~KEYCATCH_UI;
+		m_state = m_none;
+		Cbuf_AddText(va("connect \"%s\"\n", hostcache[mqh_slist_cursor].cname));
+		break;
+	}
 }
 
 //=============================================================================
@@ -2704,6 +2866,14 @@ void MQH_Draw()
 	case m_lanconfig:
 		MQH_LanConfig_Draw();
 		break;
+
+	case m_search:
+		MQH_Search_Draw();
+		break;
+
+	case m_slist:
+		MQH_ServerList_Draw();
+		break;
 	}
 }
 
@@ -2748,6 +2918,14 @@ void MQH_Keydown(int key)
 
 	case m_lanconfig:
 		MQH_LanConfig_Key(key);
+		return;
+
+	case m_search:
+		MQH_Search_Key(key);
+		return;
+
+	case m_slist:
+		MQH_ServerList_Key(key);
 		return;
 	}
 }

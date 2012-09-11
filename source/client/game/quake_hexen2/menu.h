@@ -58,8 +58,6 @@ extern const char* mh2_message2;
 extern int mh2_message_time;
 extern Cvar* mh2_oldmission;
 
-extern bool searchComplete;
-extern double searchCompleteTime;
 #define OEM_START 9
 #define REG_START 2
 #define MP_START 7
@@ -172,7 +170,5 @@ void MQH_Menu_Setup_f();
 void MH2_Menu_MLoad_f();
 void MH2_Menu_MSave_f();
 void MHW_Menu_Connect_f();
-void MQH_Menu_LanConfig_f();
 void MQH_Menu_GameOptions_f();
-void MQH_Menu_Search_f();
 void MQH_CharEvent(int key);

@@ -23,7 +23,6 @@ extern Cvar* r_gamma;
 
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_ServerList_f(void);
 
 void M_Setup_Draw(void);
 void M_Options_Draw(void);
@@ -34,8 +33,6 @@ void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 void M_GameOptions_Draw(void);
-void M_Search_Draw(void);
-void M_ServerList_Draw(void);
 
 void M_Setup_Key(int key);
 void M_Options_Key(int key);
@@ -46,8 +43,6 @@ void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
 void M_ModemConfig_Key(int key);
 void M_GameOptions_Key(int key);
-void M_Search_Key(int key);
-void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
 
@@ -810,14 +805,6 @@ void M_Draw(void)
 	case m_gameoptions:
 //		M_GameOptions_Draw ();
 		break;
-
-	case m_search:
-//		M_Search_Draw ();
-		break;
-
-	case m_slist:
-//		M_ServerList_Draw ();
-		break;
 	}
 
 	if (mqh_entersound)
@@ -861,14 +848,6 @@ void M_Keydown(int key)
 
 	case m_gameoptions:
 //		M_GameOptions_Key (key);
-		return;
-
-	case m_search:
-//		M_Search_Key (key);
-		break;
-
-	case m_slist:
-//		M_ServerList_Key (key);
 		return;
 	}
 	MQH_Keydown(key);
