@@ -18,6 +18,7 @@
 #include "menu.h"
 #include "../../../server/public.h"
 #include "../hexen2/local.h"
+#include "network_channel.h"
 
 menu_state_t m_state;
 menu_state_t m_return_state;
@@ -1039,7 +1040,14 @@ static void MQH_Save_Key(int k)
 //=============================================================================
 /* MULTIPLAYER MENU */
 
-int mqh_multiplayer_cursor;
+#define StartingGame    (mqh_multiplayer_cursor == 1)
+#define JoiningGame     (mqh_multiplayer_cursor == 0)
+
+#define MULTIPLAYER_ITEMS_Q1    3
+#define MULTIPLAYER_ITEMS_H2    5
+#define MULTIPLAYER_ITEMS_HW    2
+
+static int mqh_multiplayer_cursor;
 
 void MQH_Menu_MultiPlayer_f()
 {
@@ -1200,27 +1208,8 @@ static void MQH_MultiPlayer_Key(int key)
 //=============================================================================
 /* NET MENU */
 
-int mqh_net_cursor;
-int mqh_net_items;
-
-const char* net_helpMessage[] =
+static const char* net_helpMessage[] =
 {
-/* .........1.........2.... */
-	"                        ",
-	" Two computers connected",
-	"   through two modems.  ",
-	"                        ",
-
-	"                        ",
-	" Two computers connected",
-	" by a null-modem cable. ",
-	"                        ",
-
-	" Novell network LANs    ",
-	" or Windows 95 DOS-box. ",
-	"                        ",
-	"(LAN=Local Area Network)",
-
 	" Commonly used to play  ",
 	" over the Internet, but ",
 	" also used on a Local   ",
@@ -1232,8 +1221,423 @@ void MQH_Menu_Net_f()
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_net;
 	mqh_entersound = true;
-	mqh_net_items = 4;
-	mqh_net_cursor = 3;
+}
+
+static void MQH_Net_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+
+		MH2_DrawBigString(72, 89, "TCP/IP");
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+
+		if (tcpipAvailable)
+		{
+			p = R_CachePic("gfx/netmen4.lmp");
+		}
+		else
+		{
+			p = R_CachePic("gfx/dim_tcp.lmp");
+		}
+		MQH_DrawPic(72, 89, p);
+	}
+
+	int f = (320 - 26 * 8) / 2;
+	MQH_DrawTextBox(f, 134, 24, 4);
+	f += 8;
+	MQH_Print(f, 142, net_helpMessage[0]);
+	MQH_Print(f, 150, net_helpMessage[1]);
+	MQH_Print(f, 158, net_helpMessage[2]);
+	MQH_Print(f, 166, net_helpMessage[3]);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		f = (cls.realtime / 100) % 8;
+		MQH_DrawPic(43, 84, R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	}
+	else
+	{
+		f = (cls.realtime / 100) % 6;
+		MQH_DrawPic(54, 92, R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	}
+}
+
+static void MQH_Net_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_MultiPlayer_f();
+		break;
+
+	case K_ENTER:
+		mqh_entersound = true;
+		MQH_Menu_LanConfig_f();
+		break;
+	}
+}
+
+//=============================================================================
+/* LAN CONFIG MENU */
+
+#define NUM_LANCONFIG_CMDS_Q1   3
+#define NUM_LANCONFIG_CMDS_H2   4
+
+static int mqh_lanConfig_cursor = -1;
+static int lanConfig_cursor_table_q1[] = { 52, 72, 104 };
+static int lanConfig_cursor_table_h2[] = { 80, 100, 120, 152 };
+
+static int lanConfig_port;
+static field_t lanConfig_portname;
+static field_t lanConfig_joinname;
+
+void MQH_Menu_LanConfig_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_lanconfig;
+	mqh_entersound = true;
+	if (mqh_lanConfig_cursor == -1)
+	{
+		if (JoiningGame)
+		{
+			mqh_lanConfig_cursor = 2;
+		}
+		else
+		{
+			mqh_lanConfig_cursor = 1;
+		}
+	}
+	if (StartingGame && mqh_lanConfig_cursor == 2)
+	{
+		mqh_lanConfig_cursor = 1;
+	}
+	lanConfig_port = DEFAULTnet_hostport;
+	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
+	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
+	lanConfig_portname.maxLength = 5;
+	lanConfig_portname.widthInChars = 6;
+	Field_Clear(&lanConfig_joinname);
+	lanConfig_joinname.maxLength = 29;
+	lanConfig_joinname.widthInChars = GGameType & GAME_Hexen2 ? 30 : 22;
+
+	m_return_onerror = false;
+	m_return_reason[0] = 0;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		setup_class = clh2_playerclass->value;
+		if (setup_class < 1 || setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+		{
+			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
+		}
+		setup_class--;
+	}
+}
+
+static void MQH_LanConfig_Draw()
+{
+	int basex;
+	const char* startJoin;
+	const char* protocol;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+		basex = 48;
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		basex = (320 - R_GetImageWidth(p)) / 2;
+		MQH_DrawPic(basex, 4, p);
+	}
+
+	if (StartingGame)
+	{
+		startJoin = "New Game";
+	}
+	else
+	{
+		startJoin = "Join Game";
+	}
+	protocol = "TCP/IP";
+	MQH_Print(basex, GGameType & GAME_Hexen2 ? 60 : 32, va("%s - %s", startJoin, protocol));
+	basex += 8;
+
+	MQH_Print(basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[0] : lanConfig_cursor_table_q1[0], "Port");
+	MQH_DrawField(basex + 9 * 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[0] : lanConfig_cursor_table_q1[0], &lanConfig_portname, mqh_lanConfig_cursor == 0);
+
+	if (JoiningGame)
+	{
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_Print(basex, lanConfig_cursor_table_h2[1], "Class:");
+			MQH_Print(basex + 8 * 7, lanConfig_cursor_table_h2[1], h2_ClassNames[setup_class]);
+		}
+
+		MQH_Print(basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[2] : lanConfig_cursor_table_q1[1], "Search for local games...");
+		MQH_Print(basex, GGameType & GAME_Hexen2 ? 136 : 88, "Join game at:");
+		MQH_DrawField(basex + 16, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[3] : lanConfig_cursor_table_q1[2], &lanConfig_joinname, mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 3 : 2));
+	}
+	else
+	{
+		MQH_DrawTextBox(basex, (GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[1] : lanConfig_cursor_table_q1[1]) - 8, 2, 1);
+		MQH_Print(basex + 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[1] : lanConfig_cursor_table_q1[1], "OK");
+	}
+
+	MQH_DrawCharacter(basex - 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[mqh_lanConfig_cursor] : lanConfig_cursor_table_q1[mqh_lanConfig_cursor], 12 + ((cls.realtime / 250) & 1));
+
+	if (*m_return_reason)
+	{
+		MQH_PrintWhite(basex, GGameType & GAME_Hexen2 ? 172 : 128, m_return_reason);
+	}
+}
+
+static void MQH_ConfigureNetSubsystem()
+{
+	Cbuf_AddText("stopdemo\n");
+
+	net_hostport = lanConfig_port;
+}
+
+static void MQH_LanConfig_Key(int key)
+{
+	int l;
+
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Net_f();
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_lanConfig_cursor--;
+		if (mqh_lanConfig_cursor < 0)
+		{
+			if (GGameType & GAME_Hexen2)
+			{
+				if (JoiningGame)
+				{
+					mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_H2 - 1;
+				}
+				else
+				{
+					mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_H2 - 2;
+				}
+			}
+			else
+			{
+				mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_Q1 - 1;
+			}
+		}
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_lanConfig_cursor++;
+		if (mqh_lanConfig_cursor >= (GGameType & GAME_Hexen2 ? NUM_LANCONFIG_CMDS_H2 : NUM_LANCONFIG_CMDS_Q1))
+		{
+			mqh_lanConfig_cursor = 0;
+		}
+		break;
+
+	case K_ENTER:
+		if (mqh_lanConfig_cursor == 0 || (GGameType & GAME_Hexen2 && JoiningGame && mqh_lanConfig_cursor == 1))
+		{
+			break;
+		}
+
+		mqh_entersound = true;
+		if (GGameType & GAME_Hexen2 && JoiningGame)
+		{
+			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
+		}
+
+		MQH_ConfigureNetSubsystem();
+
+		if ((JoiningGame && mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 2 : 1)) ||
+			(!JoiningGame && mqh_lanConfig_cursor == 1))
+		{
+			if (StartingGame)
+			{
+				MQH_Menu_GameOptions_f();
+				break;
+			}
+			MQH_Menu_Search_f();
+			break;
+		}
+
+		if (mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 3 : 2))
+		{
+			m_return_state = m_state;
+			m_return_onerror = true;
+			in_keyCatchers &= ~KEYCATCH_UI;
+			m_state = m_none;
+			Cbuf_AddText(va("connect \"%s\"\n", lanConfig_joinname.buffer));
+			break;
+		}
+		break;
+
+	case K_LEFTARROW:
+		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1 || !JoiningGame)
+		{
+			break;
+		}
+
+		S_StartLocalSound("raven/menu3.wav");
+		setup_class--;
+		if (setup_class < 0)
+		{
+			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1;
+		}
+		break;
+
+	case K_RIGHTARROW:
+		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1 || !JoiningGame)
+		{
+			break;
+		}
+
+		S_StartLocalSound("raven/menu3.wav");
+		setup_class++;
+		if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1)
+		{
+			setup_class = 0;
+		}
+		break;
+	}
+	if (mqh_lanConfig_cursor == 0)
+	{
+		Field_KeyDownEvent(&lanConfig_portname, key);
+	}
+	if (mqh_lanConfig_cursor == 2)
+	{
+		Field_KeyDownEvent(&lanConfig_joinname, key);
+	}
+
+	if (StartingGame && mqh_lanConfig_cursor == 2)
+	{
+		if (key == K_UPARROW)
+		{
+			mqh_lanConfig_cursor = 1;
+		}
+		else
+		{
+			mqh_lanConfig_cursor = 0;
+		}
+	}
+
+	l =  String::Atoi(lanConfig_portname.buffer);
+	if (l > 65535)
+	{
+		sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
+		lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
+	}
+	else
+	{
+		lanConfig_port = l;
+	}
+}
+
+static void MQH_LanConfig_Char(int key)
+{
+	if (mqh_lanConfig_cursor == 0)
+	{
+		if (key >= 32 && (key < '0' || key > '9'))
+		{
+			return;
+		}
+		Field_CharEvent(&lanConfig_portname, key);
+	}
+	if (mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 3 : 2))
+	{
+		Field_CharEvent(&lanConfig_joinname, key);
+	}
+}
+
+//=============================================================================
+/* SEARCH MENU */
+
+bool searchComplete = false;
+double searchCompleteTime;
+
+void MQH_Menu_Search_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_search;
+	mqh_entersound = false;
+	slistSilent = true;
+	slistLocal = false;
+	searchComplete = false;
+	NET_Slist_f();
+
+}
+
+//=============================================================================
+/* GAME OPTIONS MENU */
+
+int mqh_gameoptions_cursor;
+int mqh_maxplayers;
+int mqh_startepisode;
+int mqh_startlevel;
+
+void MQH_Menu_GameOptions_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_gameoptions;
+	mqh_entersound = true;
+	if (mqh_maxplayers == 0)
+	{
+		mqh_maxplayers = SVQH_GetMaxClients();
+	}
+	if (mqh_maxplayers < 2)
+	{
+		mqh_maxplayers = SVQH_GetMaxClientsLimit();
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		setup_class = clh2_playerclass->value;
+		if (setup_class < 1 || setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+		{
+			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
+		}
+		setup_class--;
+
+		if (qh_registered->value && (mqh_startepisode < REG_START || mqh_startepisode >= OEM_START))
+		{
+			mqh_startepisode = REG_START;
+		}
+
+		if (svqh_coop->value)
+		{
+			mqh_startlevel = 0;
+			if (mqh_startepisode == 1)
+			{
+				mqh_startepisode = 0;
+			}
+			else if (mqh_startepisode == DM_START)
+			{
+				mqh_startepisode = REG_START;
+			}
+			if (mqh_gameoptions_cursor >= NUM_GAMEOPTIONS_H2 - 1)
+			{
+				mqh_gameoptions_cursor = 0;
+			}
+		}
+		if (!mh2_oldmission->value)
+		{
+			mqh_startepisode = MP_START;
+		}
+	}
 }
 
 //=============================================================================
@@ -2292,6 +2696,14 @@ void MQH_Draw()
 	case m_multiplayer:
 		MQH_MultiPlayer_Draw();
 		break;
+
+	case m_net:
+		MQH_Net_Draw();
+		break;
+
+	case m_lanconfig:
+		MQH_LanConfig_Draw();
+		break;
 	}
 }
 
@@ -2329,5 +2741,26 @@ void MQH_Keydown(int key)
 	case m_multiplayer:
 		MQH_MultiPlayer_Key(key);
 		return;
+
+	case m_net:
+		MQH_Net_Key(key);
+		return;
+
+	case m_lanconfig:
+		MQH_LanConfig_Key(key);
+		return;
+	}
+}
+
+void MQH_CharEvent(int key)
+{
+	switch (m_state)
+	{
+	case m_lanconfig:
+		MQH_LanConfig_Char(key);
+		break;
+
+	default:
+		break;
 	}
 }

@@ -22,4 +22,4 @@ void M_ToggleMenu_f(void);
 
 void M_Print2(int cx, int cy, const char* str);
 
-extern image_t* translate_texture[NUM_CLASSES];
+extern image_t* translate_texture[NUM_CLASSES_H2MP];

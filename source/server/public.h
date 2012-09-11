@@ -18,10 +18,13 @@
 #define _SERVER_PUBLIC_H
 
 extern int svh2_kingofhill;
+extern Cvar* svqh_coop;
+extern Cvar* svqh_teamplay;
 
 bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);
 int SVQH_GetMaxClients();
+int SVQH_GetMaxClientsLimit();
 void SVH2_RemoveGIPFiles(const char* path);
 
 #endif

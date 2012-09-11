@@ -23,13 +23,9 @@ extern Cvar* r_gamma;
 
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_LanConfig_f(void);
-void M_Menu_GameOptions_f(void);
-void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
 void M_Setup_Draw(void);
-void M_Net_Draw(void);
 void M_Options_Draw(void);
 void M_Keys_Draw(void);
 void M_Video_Draw(void);
@@ -37,13 +33,11 @@ void M_Help_Draw(void);
 void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
-void M_LanConfig_Draw(void);
 void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
 void M_Setup_Key(int key);
-void M_Net_Key(int key);
 void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
@@ -51,17 +45,11 @@ void M_Help_Key(int key);
 void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
 void M_ModemConfig_Key(int key);
-void M_LanConfig_Key(int key);
 void M_GameOptions_Key(int key);
 void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
-
-#define StartingGame    (mqh_multiplayer_cursor == 1)
-#define JoiningGame     (mqh_multiplayer_cursor == 0)
-
-void M_ConfigureNetSubsystem(void);
 
 //=============================================================================
 
@@ -799,10 +787,6 @@ void M_Draw(void)
 //		M_Setup_Draw ();
 		break;
 
-	case m_net:
-//		M_Net_Draw ();
-		break;
-
 	case m_options:
 		M_Options_Draw();
 		break;
@@ -821,10 +805,6 @@ void M_Draw(void)
 
 	case m_quit:
 		M_Quit_Draw();
-		break;
-
-	case m_lanconfig:
-//		M_LanConfig_Draw ();
 		break;
 
 	case m_gameoptions:
@@ -859,10 +839,6 @@ void M_Keydown(int key)
 //		M_Setup_Key (key);
 		return;
 
-	case m_net:
-//		M_Net_Key (key);
-		return;
-
 	case m_options:
 		M_Options_Key(key);
 		return;
@@ -883,10 +859,6 @@ void M_Keydown(int key)
 		M_Quit_Key(key);
 		return;
 
-	case m_lanconfig:
-//		M_LanConfig_Key (key);
-		return;
-
 	case m_gameoptions:
 //		M_GameOptions_Key (key);
 		return;
@@ -904,4 +876,5 @@ void M_Keydown(int key)
 
 void M_CharEvent(int key)
 {
+	MQH_CharEvent(key);
 }

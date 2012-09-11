@@ -1605,5 +1605,13 @@ void SCRQH_BeginLoadingPlaque()
 void NET_Ban_f()
 {
 }
+void Loop_SearchForHosts(bool xmit)
+{
+}
+int SVQH_GetMaxClientsLimit()
+{
+	return 0;
+}
 
 Cvar* svqh_teamplay;
+Cvar* svqh_coop;

@@ -153,3 +153,8 @@ int SVQH_GetMaxClients()
 {
 	return svs.qh_maxclients;
 }
+
+int SVQH_GetMaxClientsLimit()
+{
+	return svs.qh_maxclientslimit;
+}

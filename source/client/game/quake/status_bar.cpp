@@ -16,8 +16,7 @@
 
 #include "../../client.h"
 #include "local.h"
-
-extern Cvar* svqh_teamplay;
+#include "../../../server/public.h"
 
 #define Q1SBAR_HEIGHT     24
 

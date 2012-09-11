@@ -1457,6 +1457,10 @@ int SVQH_GetMaxClients()
 {
 	return 0;
 }
+int SVQH_GetMaxClientsLimit()
+{
+	return 0;
+}
 void SVH2_RemoveGIPFiles(const char* path)
 {
 }
@@ -1466,6 +1470,10 @@ void SCRQH_BeginLoadingPlaque()
 void NET_Ban_f()
 {
 }
+void Loop_SearchForHosts(bool xmit)
+{
+}
 
 Cvar* svqh_teamplay;
+Cvar* svqh_coop;
 int svh2_kingofhill;

@@ -10,13 +10,9 @@ extern Cvar* crosshair;
 
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
-void M_Menu_LanConfig_f(void);
-void M_Menu_GameOptions_f(void);
-void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
 void M_Setup_Draw(void);
-void M_Net_Draw(void);
 void M_Options_Draw(void);
 void M_Keys_Draw(void);
 void M_Video_Draw(void);
@@ -24,13 +20,11 @@ void M_Help_Draw(void);
 void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
-void M_LanConfig_Draw(void);
 void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
 void M_Setup_Key(int key);
-void M_Net_Key(int key);
 void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
@@ -38,17 +32,11 @@ void M_Help_Key(int key);
 void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
 void M_ModemConfig_Key(int key);
-void M_LanConfig_Key(int key);
 void M_GameOptions_Key(int key);
 void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
-
-#define StartingGame    (mqh_multiplayer_cursor == 1)
-#define JoiningGame     (mqh_multiplayer_cursor == 0)
-
-void M_ConfigureNetSubsystem(void);
 
 extern qboolean introPlaying;
 
@@ -64,8 +52,8 @@ void M_Print2(int cx, int cy, const char* str)
 #define PLAYER_PIC_HEIGHT 114
 
 byte translationTable[256];
-static byte menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
-image_t* translate_texture[NUM_CLASSES];
+static byte menuplyr_pixels[NUM_CLASSES_H2MP][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
+image_t* translate_texture[NUM_CLASSES_H2MP];
 
 //=============================================================================
 
@@ -269,7 +257,7 @@ void M_Setup_Key(int k)
 			setup_class--;
 			if (setup_class < 1)
 			{
-				setup_class = NUM_CLASSES;
+				setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
 			}
 		}
 		if (mqh_setup_cursor == 3)
@@ -291,7 +279,7 @@ forward:
 		if (mqh_setup_cursor == 2)
 		{
 			setup_class++;
-			if (setup_class > NUM_CLASSES)
+			if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
 			{
 				setup_class = 1;
 			}
@@ -370,108 +358,6 @@ void M_Setup_Char(int k)
 	if (mqh_setup_cursor == 1)
 	{
 		Field_CharEvent(&setup_myname, k);
-	}
-}
-
-//=============================================================================
-/* NET MENU */
-
-void M_Net_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-	f = 89;
-/* rjr
-    if (tcpipAvailable)
-        p = R_CachePic ("gfx/netmen4.lmp");
-    else
-        p = R_CachePic ("gfx/dim_tcp.lmp");
-*/
-//	MQH_DrawPic (72, f, p);
-	MH2_DrawBigString(72,f,"TCP/IP");
-
-	f = (320 - 26 * 8) / 2;
-	MQH_DrawTextBox(f, 134, 24, 4);
-	f += 8;
-	MQH_Print(f, 142, net_helpMessage[mqh_net_cursor * 4 + 0]);
-	MQH_Print(f, 150, net_helpMessage[mqh_net_cursor * 4 + 1]);
-	MQH_Print(f, 158, net_helpMessage[mqh_net_cursor * 4 + 2]);
-	MQH_Print(f, 166, net_helpMessage[mqh_net_cursor * 4 + 3]);
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 24 + mqh_net_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-}
-
-void M_Net_Key(int k)
-{
-again:
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_DOWNARROW:
-// Tries to re-draw the menu here, and mqh_net_cursor could be set to -1
-//		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_net_cursor >= mqh_net_items)
-		{
-			mqh_net_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-//		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_net_cursor < 0)
-		{
-			mqh_net_cursor = mqh_net_items - 1;
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-
-		switch (mqh_net_cursor)
-		{
-		case 2:
-			M_Menu_LanConfig_f();
-			break;
-
-		case 3:
-			M_Menu_LanConfig_f();
-			break;
-
-		case 4:
-// multiprotocol
-			break;
-		}
-	}
-
-	if (mqh_net_cursor == 0)
-	{
-		goto again;
-	}
-	if (mqh_net_cursor == 1)
-	{
-		goto again;
-	}
-	if (mqh_net_cursor == 2)
-	{
-		goto again;
-	}
-	if (mqh_net_cursor == 3 && !tcpipAvailable)
-	{
-		goto again;
-	}
-
-	switch (k)
-	{
-	case K_DOWNARROW:
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		break;
 	}
 }
 
@@ -1236,264 +1122,6 @@ void M_Quit_Draw(void)
 }
 
 //=============================================================================
-/* LAN CONFIG MENU */
-
-int lanConfig_cursor = -1;
-int lanConfig_cursor_table [] = {80, 100, 120, 152};
-#define NUM_LANCONFIG_CMDS  4
-
-int lanConfig_port;
-field_t lanConfig_portname;
-field_t lanConfig_joinname;
-
-void M_Menu_LanConfig_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_lanconfig;
-	mqh_entersound = true;
-	if (lanConfig_cursor == -1)
-	{
-		if (JoiningGame)
-		{
-			lanConfig_cursor = 2;
-		}
-		else
-		{
-			lanConfig_cursor = 1;
-		}
-	}
-	if (StartingGame && lanConfig_cursor >= 2)
-	{
-		lanConfig_cursor = 1;
-	}
-	lanConfig_port = DEFAULTnet_hostport;
-	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
-	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
-	lanConfig_portname.maxLength = 5;
-	lanConfig_portname.widthInChars = 6;
-	Field_Clear(&lanConfig_joinname);
-	lanConfig_joinname.maxLength = 29;
-	lanConfig_joinname.widthInChars = 30;
-
-	m_return_onerror = false;
-	m_return_reason[0] = 0;
-
-	setup_class = clh2_playerclass->value;
-	if (setup_class < 1 || setup_class > NUM_CLASSES)
-	{
-		setup_class = NUM_CLASSES;
-	}
-	setup_class--;
-}
-
-
-void M_LanConfig_Draw(void)
-{
-	int basex;
-	const char* startJoin;
-	const char* protocol;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-	basex = 48;
-
-	if (StartingGame)
-	{
-		startJoin = "New Game";
-	}
-	else
-	{
-		startJoin = "Join Game";
-	}
-	protocol = "TCP/IP";
-	MQH_Print(basex, 60, va("%s - %s", startJoin, protocol));
-	basex += 8;
-
-	MQH_Print(basex, lanConfig_cursor_table[0], "Port");
-	MQH_DrawField(basex + 9 * 8, lanConfig_cursor_table[0], &lanConfig_portname, lanConfig_cursor == 0);
-
-	if (JoiningGame)
-	{
-		MQH_Print(basex, lanConfig_cursor_table[1], "Class:");
-		MQH_Print(basex + 8 * 7, lanConfig_cursor_table[1], h2_ClassNames[setup_class]);
-
-		MQH_Print(basex, lanConfig_cursor_table[2], "Search for local games...");
-		MQH_Print(basex, 136, "Join game at:");
-		MQH_DrawField(basex + 8, lanConfig_cursor_table[3], &lanConfig_joinname, lanConfig_cursor == 3);
-	}
-	else
-	{
-		MQH_DrawTextBox(basex, lanConfig_cursor_table[1] - 8, 2, 1);
-		MQH_Print(basex + 8, lanConfig_cursor_table[1], "OK");
-	}
-
-	MQH_DrawCharacter(basex - 8, lanConfig_cursor_table [lanConfig_cursor], 12 + ((int)(realtime * 4) & 1));
-
-	if (*m_return_reason)
-	{
-		MQH_PrintWhite(basex, 172, m_return_reason);
-	}
-}
-
-
-void M_LanConfig_Key(int key)
-{
-	int l;
-
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Net_f();
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		lanConfig_cursor--;
-
-		if (JoiningGame)
-		{
-			if (lanConfig_cursor < 0)
-			{
-				lanConfig_cursor = NUM_LANCONFIG_CMDS - 1;
-			}
-		}
-		else
-		{
-			if (lanConfig_cursor < 0)
-			{
-				lanConfig_cursor = NUM_LANCONFIG_CMDS - 2;
-			}
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		lanConfig_cursor++;
-		if (lanConfig_cursor >= NUM_LANCONFIG_CMDS)
-		{
-			lanConfig_cursor = 0;
-		}
-		break;
-
-	case K_ENTER:
-		if ((JoiningGame && lanConfig_cursor <= 1) ||
-			(!JoiningGame && lanConfig_cursor == 0))
-		{
-			break;
-		}
-
-		mqh_entersound = true;
-		if (JoiningGame)
-		{
-			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
-		}
-
-		M_ConfigureNetSubsystem();
-
-		if ((JoiningGame && lanConfig_cursor == 2) ||
-			(!JoiningGame && lanConfig_cursor == 1))
-		{
-			if (StartingGame)
-			{
-				M_Menu_GameOptions_f();
-				break;
-			}
-			M_Menu_Search_f();
-			break;
-		}
-
-		if (lanConfig_cursor == 3)
-		{
-			m_return_state = m_state;
-			m_return_onerror = true;
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-			Cbuf_AddText(va("connect \"%s\"\n", lanConfig_joinname.buffer));
-			break;
-		}
-		break;
-
-	case K_LEFTARROW:
-		if (lanConfig_cursor != 1 || !JoiningGame)
-		{
-			break;
-		}
-
-		S_StartLocalSound("raven/menu3.wav");
-		setup_class--;
-		if (setup_class < 0)
-		{
-			setup_class = NUM_CLASSES - 1;
-		}
-		break;
-
-	case K_RIGHTARROW:
-		if (lanConfig_cursor != 1 || !JoiningGame)
-		{
-			break;
-		}
-
-		S_StartLocalSound("raven/menu3.wav");
-		setup_class++;
-		if (setup_class > NUM_CLASSES - 1)
-		{
-			setup_class = 0;
-		}
-		break;
-	}
-	if (lanConfig_cursor == 0)
-	{
-		Field_KeyDownEvent(&lanConfig_portname, key);
-	}
-	if (lanConfig_cursor == 3)
-	{
-		Field_KeyDownEvent(&lanConfig_joinname, key);
-	}
-
-	if (StartingGame && lanConfig_cursor == 2)
-	{
-		if (key == K_UPARROW)
-		{
-			lanConfig_cursor = 1;
-		}
-		else
-		{
-			lanConfig_cursor = 0;
-		}
-	}
-
-	l =  String::Atoi(lanConfig_portname.buffer);
-	if (l > 65535)
-	{
-		l = lanConfig_port;
-	}
-	else
-	{
-		lanConfig_port = l;
-	}
-	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
-	if (lanConfig_portname.cursor > String::Length(lanConfig_portname.buffer))
-	{
-		lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
-	}
-}
-
-void M_LanConfig_Char(int key)
-{
-	if (lanConfig_cursor == 0)
-	{
-		if (key >= 32 && (key < '0' || key > '9'))
-		{
-			return;
-		}
-		Field_CharEvent(&lanConfig_portname, key);
-	}
-	if (lanConfig_cursor == 3)
-	{
-		Field_CharEvent(&lanConfig_joinname, key);
-	}
-}
-
-//=============================================================================
 /* GAME OPTIONS MENU */
 
 typedef struct
@@ -1616,68 +1244,10 @@ episode_t episodes[] =
 	{"Deathmatch", 45, 1},
 };
 
-#define OEM_START 9
-#define REG_START 2
-#define MP_START 7
-#define DM_START 8
-
-int startepisode;
-int startlevel;
-int maxplayers;
 qboolean m_serverInfoMessage = false;
 double m_serverInfoMessageTime;
 
 int gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 104, 112, 128, 136};
-#define NUM_GAMEOPTIONS 11
-int gameoptions_cursor;
-
-void M_Menu_GameOptions_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_gameoptions;
-	mqh_entersound = true;
-	if (maxplayers == 0)
-	{
-		maxplayers = svs.qh_maxclients;
-	}
-	if (maxplayers < 2)
-	{
-		maxplayers = svs.qh_maxclientslimit;
-	}
-
-	setup_class = clh2_playerclass->value;
-	if (setup_class < 1 || setup_class > NUM_CLASSES)
-	{
-		setup_class = NUM_CLASSES;
-	}
-	setup_class--;
-
-	if (qh_registered->value && (startepisode < REG_START || startepisode >= OEM_START))
-	{
-		startepisode = REG_START;
-	}
-
-	if (svqh_coop->value)
-	{
-		startlevel = 0;
-		if (startepisode == 1)
-		{
-			startepisode = 0;
-		}
-		else if (startepisode == DM_START)
-		{
-			startepisode = REG_START;
-		}
-		if (gameoptions_cursor >= NUM_GAMEOPTIONS - 1)
-		{
-			gameoptions_cursor = 0;
-		}
-	}
-	if (!mh2_oldmission->value)
-	{
-		startepisode = MP_START;
-	}
-}
 
 void M_GameOptions_Draw(void)
 {
@@ -1687,7 +1257,7 @@ void M_GameOptions_Draw(void)
 	MQH_Print(160 + 8, 68, "begin game");
 
 	MQH_Print(0 + 8, 84, "      Max players");
-	MQH_Print(160 + 8, 84, va("%i", maxplayers));
+	MQH_Print(160 + 8, 84, va("%i", mqh_maxplayers));
 
 	MQH_Print(0 + 8, 92, "        Game Type");
 	if (svqh_coop->value)
@@ -1750,14 +1320,14 @@ void M_GameOptions_Draw(void)
 	}
 
 	MQH_Print(0 + 8, 156, "         Episode");
-	MQH_Print(160 + 8, 156, episodes[startepisode].description);
+	MQH_Print(160 + 8, 156, episodes[mqh_startepisode].description);
 
 	MQH_Print(0 + 8, 164, "           Level");
-	MQH_Print(160 + 8, 164, levels[episodes[startepisode].firstLevel + startlevel].name);
-	MQH_Print(96, 180, levels[episodes[startepisode].firstLevel + startlevel].description);
+	MQH_Print(160 + 8, 164, levels[episodes[mqh_startepisode].firstLevel + mqh_startlevel].name);
+	MQH_Print(96, 180, levels[episodes[mqh_startepisode].firstLevel + mqh_startlevel].description);
 
 // line cursor
-	MQH_DrawCharacter(172 - 16, gameoptions_cursor_table[gameoptions_cursor] + 28, 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(172 - 16, gameoptions_cursor_table[mqh_gameoptions_cursor] + 28, 12 + ((int)(realtime * 4) & 1));
 
 /*	rjr
     if (m_serverInfoMessage)
@@ -1784,19 +1354,19 @@ void M_NetStart_Change(int dir)
 {
 	int count;
 
-	switch (gameoptions_cursor)
+	switch (mqh_gameoptions_cursor)
 	{
 	case 1:
-		maxplayers += dir;
-		if (maxplayers > svs.qh_maxclientslimit)
+		mqh_maxplayers += dir;
+		if (mqh_maxplayers > svs.qh_maxclientslimit)
 		{
-			maxplayers = svs.qh_maxclientslimit;
+			mqh_maxplayers = svs.qh_maxclientslimit;
 			m_serverInfoMessage = true;
 			m_serverInfoMessageTime = realtime;
 		}
-		if (maxplayers < 2)
+		if (mqh_maxplayers < 2)
 		{
-			maxplayers = 2;
+			mqh_maxplayers = 2;
 		}
 		break;
 
@@ -1804,18 +1374,18 @@ void M_NetStart_Change(int dir)
 		Cvar_SetValue("coop", svqh_coop->value ? 0 : 1);
 		if (svqh_coop->value)
 		{
-			startlevel = 0;
-			if (startepisode == 1)
+			mqh_startlevel = 0;
+			if (mqh_startepisode == 1)
 			{
-				startepisode = 0;
+				mqh_startepisode = 0;
 			}
-			else if (startepisode == DM_START)
+			else if (mqh_startepisode == DM_START)
 			{
-				startepisode = REG_START;
+				mqh_startepisode = REG_START;
 			}
 			if (!mh2_oldmission->value)
 			{
-				startepisode = MP_START;
+				mqh_startepisode = MP_START;
 			}
 		}
 		break;
@@ -1838,9 +1408,9 @@ void M_NetStart_Change(int dir)
 		setup_class += dir;
 		if (setup_class < 0)
 		{
-			setup_class = NUM_CLASSES - 1;
+			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1;
 		}
-		if (setup_class > NUM_CLASSES - 1)
+		if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1)
 		{
 			setup_class = 0;
 		}
@@ -1894,7 +1464,7 @@ void M_NetStart_Change(int dir)
 		break;
 
 	case 9:
-		startepisode += dir;
+		mqh_startepisode += dir;
 
 		if (qh_registered->value)
 		{
@@ -1907,56 +1477,56 @@ void M_NetStart_Change(int dir)
 			{
 				if (!mh2_oldmission->value)
 				{
-					startepisode = MP_START;
+					mqh_startepisode = MP_START;
 				}
 			}
-			if (startepisode < REG_START)
+			if (mqh_startepisode < REG_START)
 			{
-				startepisode = count - 1;
+				mqh_startepisode = count - 1;
 			}
 
-			if (startepisode >= count)
+			if (mqh_startepisode >= count)
 			{
-				startepisode = REG_START;
+				mqh_startepisode = REG_START;
 			}
 
-			startlevel = 0;
+			mqh_startlevel = 0;
 		}
 		else
 		{
 			count = 2;
 
-			if (startepisode < 0)
+			if (mqh_startepisode < 0)
 			{
-				startepisode = count - 1;
+				mqh_startepisode = count - 1;
 			}
 
-			if (startepisode >= count)
+			if (mqh_startepisode >= count)
 			{
-				startepisode = 0;
+				mqh_startepisode = 0;
 			}
 
-			startlevel = 0;
+			mqh_startlevel = 0;
 		}
 		break;
 
 	case 10:
 		if (svqh_coop->value)
 		{
-			startlevel = 0;
+			mqh_startlevel = 0;
 			break;
 		}
-		startlevel += dir;
-		count = episodes[startepisode].levels;
+		mqh_startlevel += dir;
+		count = episodes[mqh_startepisode].levels;
 
-		if (startlevel < 0)
+		if (mqh_startlevel < 0)
 		{
-			startlevel = count - 1;
+			mqh_startlevel = count - 1;
 		}
 
-		if (startlevel >= count)
+		if (mqh_startlevel >= count)
 		{
-			startlevel = 0;
+			mqh_startlevel = 0;
 		}
 		break;
 	}
@@ -1972,38 +1542,38 @@ void M_GameOptions_Key(int key)
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		gameoptions_cursor--;
-		if (gameoptions_cursor < 0)
+		mqh_gameoptions_cursor--;
+		if (mqh_gameoptions_cursor < 0)
 		{
-			gameoptions_cursor = NUM_GAMEOPTIONS - 1;
+			mqh_gameoptions_cursor = NUM_GAMEOPTIONS_H2 - 1;
 			if (svqh_coop->value)
 			{
-				gameoptions_cursor--;
+				mqh_gameoptions_cursor--;
 			}
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		gameoptions_cursor++;
+		mqh_gameoptions_cursor++;
 		if (svqh_coop->value)
 		{
-			if (gameoptions_cursor >= NUM_GAMEOPTIONS - 1)
+			if (mqh_gameoptions_cursor >= NUM_GAMEOPTIONS_H2 - 1)
 			{
-				gameoptions_cursor = 0;
+				mqh_gameoptions_cursor = 0;
 			}
 		}
 		else
 		{
-			if (gameoptions_cursor >= NUM_GAMEOPTIONS)
+			if (mqh_gameoptions_cursor >= NUM_GAMEOPTIONS_H2)
 			{
-				gameoptions_cursor = 0;
+				mqh_gameoptions_cursor = 0;
 			}
 		}
 		break;
 
 	case K_LEFTARROW:
-		if (gameoptions_cursor == 0)
+		if (mqh_gameoptions_cursor == 0)
 		{
 			break;
 		}
@@ -2012,7 +1582,7 @@ void M_GameOptions_Key(int key)
 		break;
 
 	case K_RIGHTARROW:
-		if (gameoptions_cursor == 0)
+		if (mqh_gameoptions_cursor == 0)
 		{
 			break;
 		}
@@ -2022,7 +1592,7 @@ void M_GameOptions_Key(int key)
 
 	case K_ENTER:
 		S_StartLocalSound("raven/menu2.wav");
-		if (gameoptions_cursor == 0)
+		if (mqh_gameoptions_cursor == 0)
 		{
 			if (sv.state != SS_DEAD)
 			{
@@ -2030,10 +1600,10 @@ void M_GameOptions_Key(int key)
 			}
 			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
 			Cbuf_AddText("listen 0\n");		// so host_netport will be re-examined
-			Cbuf_AddText(va("maxplayers %u\n", maxplayers));
+			Cbuf_AddText(va("maxplayers %u\n", mqh_maxplayers));
 			SCRQH_BeginLoadingPlaque();
 
-			Cbuf_AddText(va("map %s\n", levels[episodes[startepisode].firstLevel + startlevel].name));
+			Cbuf_AddText(va("map %s\n", levels[episodes[mqh_startepisode].firstLevel + mqh_startlevel].name));
 
 			return;
 		}
@@ -2045,22 +1615,6 @@ void M_GameOptions_Key(int key)
 
 //=============================================================================
 /* SEARCH MENU */
-
-qboolean searchComplete = false;
-double searchCompleteTime;
-
-void M_Menu_Search_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_search;
-	mqh_entersound = false;
-	slistSilent = true;
-	slistLocal = false;
-	searchComplete = false;
-	NET_Slist_f();
-
-}
-
 
 void M_Search_Draw(void)
 {
@@ -2096,7 +1650,7 @@ void M_Search_Draw(void)
 		return;
 	}
 
-	M_Menu_LanConfig_f();
+	MQH_Menu_LanConfig_f();
 }
 
 
@@ -2182,11 +1736,11 @@ void M_ServerList_Key(int k)
 	switch (k)
 	{
 	case K_ESCAPE:
-		M_Menu_LanConfig_f();
+		MQH_Menu_LanConfig_f();
 		break;
 
 	case K_SPACE:
-		M_Menu_Search_f();
+		MQH_Menu_Search_f();
 		break;
 
 	case K_UPARROW:
@@ -2273,10 +1827,6 @@ void M_Draw(void)
 		M_Setup_Draw();
 		break;
 
-	case m_net:
-		M_Net_Draw();
-		break;
-
 	case m_options:
 		M_Options_Draw();
 		break;
@@ -2295,10 +1845,6 @@ void M_Draw(void)
 
 	case m_quit:
 		M_Quit_Draw();
-		break;
-
-	case m_lanconfig:
-		M_LanConfig_Draw();
 		break;
 
 	case m_gameoptions:
@@ -2341,10 +1887,6 @@ void M_Keydown(int key)
 		M_Setup_Key(key);
 		return;
 
-	case m_net:
-		M_Net_Key(key);
-		return;
-
 	case m_options:
 		M_Options_Key(key);
 		return;
@@ -2363,10 +1905,6 @@ void M_Keydown(int key)
 
 	case m_quit:
 		M_Quit_Key(key);
-		return;
-
-	case m_lanconfig:
-		M_LanConfig_Key(key);
 		return;
 
 	case m_gameoptions:
@@ -2391,19 +1929,8 @@ void M_CharEvent(int key)
 	case m_setup:
 		M_Setup_Char(key);
 		break;
-	case m_lanconfig:
-		M_LanConfig_Char(key);
-		break;
 	default:
 		break;
 	}
-}
-
-void M_ConfigureNetSubsystem(void)
-{
-// enable/disable net systems to match desired config
-
-	Cbuf_AddText("stopdemo\n");
-
-	net_hostport = lanConfig_port;
+	MQH_CharEvent(key);
 }

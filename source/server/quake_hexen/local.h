@@ -151,8 +151,6 @@ void SVQH_SpawnServer(const char* server, const char* startspot);
 //	Main
 //
 extern Cvar* svqh_deathmatch;
-extern Cvar* svqh_coop;
-extern Cvar* svqh_teamplay;
 extern Cvar* svqh_highchars;
 extern Cvar* hw_spartanPrint;
 extern Cvar* hw_dmMode;

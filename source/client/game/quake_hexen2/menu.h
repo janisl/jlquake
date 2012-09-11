@@ -58,10 +58,18 @@ extern const char* mh2_message2;
 extern int mh2_message_time;
 extern Cvar* mh2_oldmission;
 
-extern int mqh_multiplayer_cursor;
-extern int mqh_net_cursor;
-extern int mqh_net_items;
-extern const char* net_helpMessage[];
+extern bool searchComplete;
+extern double searchCompleteTime;
+#define OEM_START 9
+#define REG_START 2
+#define MP_START 7
+#define DM_START 8
+#define NUM_GAMEOPTIONS_Q1  9
+#define NUM_GAMEOPTIONS_H2  11
+extern int mqh_startepisode;
+extern int mqh_startlevel;
+extern int mqh_gameoptions_cursor;
+extern int mqh_maxplayers;
 #define MAX_HOST_NAMES 10
 #define MAX_HOST_SIZE 80
 #define MAX_CONNECT_CMDS 11
@@ -109,9 +117,6 @@ extern bool SoundPlayed;
 extern int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
 extern char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
 extern bool mqh_loadable[MAX_SAVEGAMES];
-#define MULTIPLAYER_ITEMS_Q1    3
-#define MULTIPLAYER_ITEMS_H2    5
-#define MULTIPLAYER_ITEMS_HW    2
 #define OPTIONS_ITEMS_Q1    13
 #define OPTIONS_ITEMS_QW    15
 enum
@@ -167,3 +172,7 @@ void MQH_Menu_Setup_f();
 void MH2_Menu_MLoad_f();
 void MH2_Menu_MSave_f();
 void MHW_Menu_Connect_f();
+void MQH_Menu_LanConfig_f();
+void MQH_Menu_GameOptions_f();
+void MQH_Menu_Search_f();
+void MQH_CharEvent(int key);
