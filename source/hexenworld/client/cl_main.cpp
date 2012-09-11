@@ -21,12 +21,8 @@ Cvar* entlatency;
 //
 Cvar* password;
 Cvar* spectator;
-Cvar* name;
-Cvar* playerclass;
 Cvar* team;
 Cvar* skin;
-Cvar* topcolor;
-Cvar* bottomcolor;
 Cvar* rate;
 Cvar* noaim;
 Cvar* talksounds;
@@ -1031,14 +1027,14 @@ void CL_Init(void)
 	//
 	// info mirrors
 	//
-	name = Cvar_Get("name","unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
-	playerclass = Cvar_Get("playerclass", "0", CVAR_ARCHIVE | CVAR_USERINFO);
+	clqh_name = Cvar_Get("name","unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
+	clh2_playerclass = Cvar_Get("playerclass", "0", CVAR_ARCHIVE | CVAR_USERINFO);
 	password = Cvar_Get("password", "", CVAR_USERINFO);
 	spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
 	skin = Cvar_Get("skin","", CVAR_ARCHIVE | CVAR_USERINFO);
 	team = Cvar_Get("team","", CVAR_ARCHIVE | CVAR_USERINFO);
-	topcolor = Cvar_Get("topcolor","0", CVAR_ARCHIVE | CVAR_USERINFO);
-	bottomcolor = Cvar_Get("bottomcolor","0", CVAR_ARCHIVE | CVAR_USERINFO);
+	qhw_topcolor = Cvar_Get("topcolor","0", CVAR_ARCHIVE | CVAR_USERINFO);
+	qhw_bottomcolor = Cvar_Get("bottomcolor","0", CVAR_ARCHIVE | CVAR_USERINFO);
 	rate = Cvar_Get("rate","2500", CVAR_ARCHIVE | CVAR_USERINFO);
 	msg = Cvar_Get("msg","1", CVAR_ARCHIVE | CVAR_USERINFO);
 	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE | CVAR_USERINFO);
@@ -1465,6 +1461,9 @@ void SVH2_RemoveGIPFiles(const char* path)
 {
 }
 void SCRQH_BeginLoadingPlaque()
+{
+}
+void NET_Ban_f()
 {
 }
 

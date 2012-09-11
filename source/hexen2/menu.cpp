@@ -8,8 +8,6 @@ extern Cvar* r_gamma;
 
 extern Cvar* crosshair;
 
-void M_Menu_Setup_f(void);
-void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 void M_Menu_LanConfig_f(void);
@@ -17,7 +15,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
 void M_Options_Draw(void);
@@ -32,7 +29,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_MultiPlayer_Key(int key);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
 void M_Options_Key(int key);
@@ -48,8 +44,6 @@ void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
-
-static double message_time;
 
 #define StartingGame    (mqh_multiplayer_cursor == 1)
 #define JoiningGame     (mqh_multiplayer_cursor == 0)
@@ -114,79 +108,6 @@ char* errormessage = NULL;
 
 //=============================================================================
 /* MULTIPLAYER LOAD/SAVE MENU */
-
-void M_ScanMSaves(void)
-{
-	int i, j;
-	char name[MAX_OSPATH];
-	fileHandle_t f;
-
-	for (i = 0; i < MAX_SAVEGAMES; i++)
-	{
-		String::Cpy(mqh_filenames[i], "--- UNUSED SLOT ---");
-		mqh_loadable[i] = false;
-		sprintf(name, "ms%i/info.dat", i);
-		if (!FS_FileExists(name))
-		{
-			continue;
-		}
-		FS_FOpenFileRead(name, &f, true);
-		if (!f)
-		{
-			continue;
-		}
-		FS_Read(name, 80, f);
-		name[80] = 0;
-		//	Skip version
-		char* Ptr = name;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		if (*Ptr == '\n')
-		{
-			*Ptr = 0;
-			Ptr++;
-		}
-		char* SaveName = Ptr;
-		while (*Ptr && *Ptr != '\n')
-			Ptr++;
-		*Ptr = 0;
-		String::NCpy(mqh_filenames[i], SaveName, sizeof(mqh_filenames[i]) - 1);
-
-		// change _ back to space
-		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
-			if (mqh_filenames[i][j] == '_')
-			{
-				mqh_filenames[i][j] = ' ';
-			}
-		mqh_loadable[i] = true;
-		FS_FCloseFile(f);
-	}
-}
-
-void M_Menu_MLoad_f(void)
-{
-	mqh_entersound = true;
-	m_state = m_mload;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanMSaves();
-}
-
-
-void M_Menu_MSave_f(void)
-{
-	if (sv.state == SS_DEAD || cl.qh_intermission || svs.qh_maxclients == 1)
-	{
-		mh2_message = "Only a network server";
-		mh2_message2 = "can save a multiplayer game";
-		message_time = host_time;
-		return;
-	}
-	mqh_entersound = true;
-	m_state = m_msave;
-	in_keyCatchers |= KEYCATCH_UI;
-	M_ScanMSaves();
-}
-
 
 void M_MLoad_Key(int k)
 {
@@ -279,136 +200,7 @@ void M_MSave_Key(int k)
 }
 
 //=============================================================================
-/* MULTIPLAYER MENU */
-
-void M_MultiPlayer_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-//	MQH_DrawPic (72, 32, R_CachePic ("gfx/mp_menu.lmp") );
-
-	MH2_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
-	MH2_DrawBigString(72,60 + (1 * 20),"NEW GAME");
-	MH2_DrawBigString(72,60 + (2 * 20),"SETUP");
-	MH2_DrawBigString(72,60 + (3 * 20),"LOAD");
-	MH2_DrawBigString(72,60 + (4 * 20),"SAVE");
-
-	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 54 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-
-	if (mh2_message)
-	{
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, mh2_message);
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, mh2_message2);
-		if (host_time - 5 > message_time)
-		{
-			mh2_message = NULL;
-		}
-	}
-
-	if (tcpipAvailable)
-	{
-		return;
-	}
-	MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 160, "No Communications Available");
-}
-
-
-void M_MultiPlayer_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_H2)
-		{
-			mqh_multiplayer_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_multiplayer_cursor < 0)
-		{
-			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_H2 - 1;
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-		switch (mqh_multiplayer_cursor)
-		{
-		case 0:
-			if (tcpipAvailable)
-			{
-				M_Menu_Net_f();
-			}
-			break;
-
-		case 1:
-			if (tcpipAvailable)
-			{
-				M_Menu_Net_f();
-			}
-			break;
-
-		case 2:
-			M_Menu_Setup_f();
-			break;
-
-		case 3:
-			M_Menu_MLoad_f();
-			break;
-
-		case 4:
-			M_Menu_MSave_f();
-			break;
-		}
-	}
-}
-
-//=============================================================================
 /* SETUP MENU */
-
-int setup_cursor = 5;
-int setup_cursor_table[] = {40, 56, 80, 104, 128, 156};
-
-field_t setup_hostname;
-field_t setup_myname;
-int setup_oldtop;
-int setup_oldbottom;
-int setup_top;
-int setup_bottom;
-
-#define NUM_SETUP_CMDS  6
-
-void M_Menu_Setup_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_setup;
-	mqh_entersound = true;
-	String::Cpy(setup_myname.buffer, clqh_name->string);
-	setup_myname.cursor = String::Length(setup_myname.buffer);
-	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 16;
-	String::Cpy(setup_hostname.buffer, sv_hostname->string);
-	setup_hostname.cursor = String::Length(setup_hostname.buffer);
-	setup_hostname.maxLength = 15;
-	setup_hostname.widthInChars = 16;
-	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
-	setup_class = clh2_playerclass->value;
-	if (setup_class < 1 || setup_class > NUM_CLASSES)
-	{
-		setup_class = NUM_CLASSES;
-	}
-}
-
 
 void M_Setup_Draw(void)
 {
@@ -417,10 +209,10 @@ void M_Setup_Draw(void)
 	MH2_ScrollTitle("gfx/menu/title4.lmp");
 
 	MQH_Print(64, 40, "Hostname");
-	MQH_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
+	MQH_DrawField(168, 40, &setup_hostname, mqh_setup_cursor == 0);
 
 	MQH_Print(64, 56, "Your name");
-	MQH_DrawField(168, 56, &setup_myname, setup_cursor == 1);
+	MQH_DrawField(168, 56, &setup_myname, mqh_setup_cursor == 1);
 
 	MQH_Print(64, 80, "Current Class: ");
 	MQH_Print(88, 88, h2_ClassNames[setup_class - 1]);
@@ -436,7 +228,7 @@ void M_Setup_Draw(void)
 	R_CreateOrUpdateTranslatedImage(translate_texture[setup_class - 1], "*translate_pic", menuplyr_pixels[setup_class - 1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	MQH_DrawPic(220, 72, translate_texture[setup_class - 1]);
 
-	MQH_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(56, setup_cursor_table_h2 [mqh_setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -450,29 +242,29 @@ void M_Setup_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		setup_cursor--;
-		if (setup_cursor < 0)
+		mqh_setup_cursor--;
+		if (mqh_setup_cursor < 0)
 		{
-			setup_cursor = NUM_SETUP_CMDS - 1;
+			mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		setup_cursor++;
-		if (setup_cursor >= NUM_SETUP_CMDS)
+		mqh_setup_cursor++;
+		if (mqh_setup_cursor >= NUM_SETUP_CMDS_H2)
 		{
-			setup_cursor = 0;
+			mqh_setup_cursor = 0;
 		}
 		break;
 
 	case K_LEFTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 		S_StartLocalSound("raven/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			setup_class--;
 			if (setup_class < 1)
@@ -480,23 +272,23 @@ void M_Setup_Key(int k)
 				setup_class = NUM_CLASSES;
 			}
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_top = setup_top - 1;
 		}
-		if (setup_cursor == 4)
+		if (mqh_setup_cursor == 4)
 		{
 			setup_bottom = setup_bottom - 1;
 		}
 		break;
 	case K_RIGHTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 forward:
 		S_StartLocalSound("raven/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			setup_class++;
 			if (setup_class > NUM_CLASSES)
@@ -504,23 +296,23 @@ forward:
 				setup_class = 1;
 			}
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_top = setup_top + 1;
 		}
-		if (setup_cursor == 4)
+		if (mqh_setup_cursor == 4)
 		{
 			setup_bottom = setup_bottom + 1;
 		}
 		break;
 
 	case K_ENTER:
-		if (setup_cursor == 0 || setup_cursor == 1)
+		if (mqh_setup_cursor == 0 || mqh_setup_cursor == 1)
 		{
 			return;
 		}
 
-		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4)
+		if (mqh_setup_cursor == 2 || mqh_setup_cursor == 3 || mqh_setup_cursor == 4)
 		{
 			goto forward;
 		}
@@ -542,11 +334,11 @@ forward:
 		MQH_Menu_MultiPlayer_f();
 		break;
 	}
-	if (setup_cursor == 0)
+	if (mqh_setup_cursor == 0)
 	{
 		Field_KeyDownEvent(&setup_hostname, k);
 	}
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_KeyDownEvent(&setup_myname, k);
 	}
@@ -571,11 +363,11 @@ forward:
 
 void M_Setup_Char(int k)
 {
-	if (setup_cursor == 0)
+	if (mqh_setup_cursor == 0)
 	{
 		Field_CharEvent(&setup_hostname, k);
 	}
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_CharEvent(&setup_myname, k);
 	}
@@ -583,50 +375,6 @@ void M_Setup_Char(int k)
 
 //=============================================================================
 /* NET MENU */
-
-int m_net_cursor = 0;
-int m_net_items;
-int m_net_saveHeight;
-
-const char* net_helpMessage [] =
-{
-/* .........1.........2.... */
-	"                        ",
-	" Two computers connected",
-	"   through two modems.  ",
-	"                        ",
-
-	"                        ",
-	" Two computers connected",
-	" by a null-modem cable. ",
-	"                        ",
-
-	" Novell network LANs    ",
-	" or Windows 95 DOS-box. ",
-	"                        ",
-	"(LAN=Local Area Network)",
-
-	" Commonly used to play  ",
-	" over the Internet, but ",
-	" also used on a Local   ",
-	" Area Network.          "
-};
-
-void M_Menu_Net_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_net;
-	mqh_entersound = true;
-	m_net_items = 4;
-
-	if (m_net_cursor >= m_net_items)
-	{
-		m_net_cursor = 0;
-	}
-	m_net_cursor--;
-	M_Net_Key(K_DOWNARROW);
-}
-
 
 void M_Net_Draw(void)
 {
@@ -647,13 +395,13 @@ void M_Net_Draw(void)
 	f = (320 - 26 * 8) / 2;
 	MQH_DrawTextBox(f, 134, 24, 4);
 	f += 8;
-	MQH_Print(f, 142, net_helpMessage[m_net_cursor * 4 + 0]);
-	MQH_Print(f, 150, net_helpMessage[m_net_cursor * 4 + 1]);
-	MQH_Print(f, 158, net_helpMessage[m_net_cursor * 4 + 2]);
-	MQH_Print(f, 166, net_helpMessage[m_net_cursor * 4 + 3]);
+	MQH_Print(f, 142, net_helpMessage[mqh_net_cursor * 4 + 0]);
+	MQH_Print(f, 150, net_helpMessage[mqh_net_cursor * 4 + 1]);
+	MQH_Print(f, 158, net_helpMessage[mqh_net_cursor * 4 + 2]);
+	MQH_Print(f, 166, net_helpMessage[mqh_net_cursor * 4 + 3]);
 
 	f = (int)(host_time * 10) % 8;
-	MQH_DrawPic(43, 24 + m_net_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(43, 24 + mqh_net_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
 }
 
 void M_Net_Key(int k)
@@ -666,26 +414,26 @@ again:
 		break;
 
 	case K_DOWNARROW:
-// Tries to re-draw the menu here, and m_net_cursor could be set to -1
+// Tries to re-draw the menu here, and mqh_net_cursor could be set to -1
 //		S_StartLocalSound("raven/menu1.wav");
-		if (++m_net_cursor >= m_net_items)
+		if (++mqh_net_cursor >= mqh_net_items)
 		{
-			m_net_cursor = 0;
+			mqh_net_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 //		S_StartLocalSound("raven/menu1.wav");
-		if (--m_net_cursor < 0)
+		if (--mqh_net_cursor < 0)
 		{
-			m_net_cursor = m_net_items - 1;
+			mqh_net_cursor = mqh_net_items - 1;
 		}
 		break;
 
 	case K_ENTER:
 		mqh_entersound = true;
 
-		switch (m_net_cursor)
+		switch (mqh_net_cursor)
 		{
 		case 2:
 			M_Menu_LanConfig_f();
@@ -701,19 +449,19 @@ again:
 		}
 	}
 
-	if (m_net_cursor == 0)
+	if (mqh_net_cursor == 0)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 1)
+	if (mqh_net_cursor == 1)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 2)
+	if (mqh_net_cursor == 2)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 3 && !tcpipAvailable)
+	if (mqh_net_cursor == 3 && !tcpipAvailable)
 	{
 		goto again;
 	}
@@ -1594,7 +1342,7 @@ void M_LanConfig_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Net_f();
+		MQH_Menu_Net_f();
 		break;
 
 	case K_UPARROW:
@@ -2219,7 +1967,7 @@ void M_GameOptions_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Net_f();
+		MQH_Menu_Net_f();
 		break;
 
 	case K_UPARROW:
@@ -2486,7 +2234,6 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
 
@@ -2521,10 +2268,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Draw();
-		break;
 
 	case m_setup:
 		M_Setup_Draw();
@@ -2592,10 +2335,6 @@ void M_Keydown(int key)
 
 	case m_msave:
 		M_MSave_Key(key);
-		return;
-
-	case m_multiplayer:
-		M_MultiPlayer_Key(key);
 		return;
 
 	case m_setup:

@@ -38,6 +38,7 @@ bool mqh_entersound;			// play after drawing a frame, so caching
 
 const char* mh2_message;
 const char* mh2_message2;
+int mh2_message_time;
 
 Cvar* mh2_oldmission;
 
@@ -1052,6 +1053,406 @@ void MQH_Menu_MultiPlayer_f()
 	mh2_message = NULL;
 }
 
+static void MQH_MultiPlayer_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+
+		MH2_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
+		if (GGameType & GAME_HexenWorld)
+		{
+			MH2_DrawBigString(72,60 + (1 * 20),"SETUP");
+		}
+		else
+		{
+			MH2_DrawBigString(72,60 + (1 * 20),"NEW GAME");
+			MH2_DrawBigString(72,60 + (2 * 20),"SETUP");
+			MH2_DrawBigString(72,60 + (3 * 20),"LOAD");
+			MH2_DrawBigString(72,60 + (4 * 20),"SAVE");
+		}
+
+		int f = (cls.realtime / 100) % 8;
+		MQH_DrawPic(43, 54 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
+
+		if (mh2_message)
+		{
+			MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, mh2_message);
+			MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, mh2_message2);
+			if (cls.realtime - 5000 > mh2_message_time)
+			{
+				mh2_message = NULL;
+			}
+		}
+
+		if (GGameType & GAME_HexenWorld || tcpipAvailable)
+		{
+			return;
+		}
+		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 160, "No Communications Available");
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		if (GGameType & GAME_QuakeWorld)
+		{
+			MQH_DrawTextBox(46, 8 * 8, 27, 9);
+			MQH_PrintWhite(72, 10 * 8, "If you want to find QW  ");
+			MQH_PrintWhite(72, 11 * 8, "games, head on over to: ");
+			MQH_Print(72, 12 * 8, "   www.quakeworld.net   ");
+			MQH_PrintWhite(72, 13 * 8, "          or            ");
+			MQH_Print(72, 14 * 8, "   www.quakespy.com     ");
+			MQH_PrintWhite(72, 15 * 8, "For pointers on getting ");
+			MQH_PrintWhite(72, 16 * 8, "        started!        ");
+		}
+		else
+		{
+			MQH_DrawPic(72, 32, R_CachePic("gfx/mp_menu.lmp"));
+
+			int f = (cls.realtime / 100) % 6;
+			MQH_DrawPic(54, 32 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+
+			if (tcpipAvailable)
+			{
+				return;
+			}
+			MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 148, "No Communications Available");
+		}
+	}
+}
+
+static void MQH_MultiPlayer_Key(int key)
+{
+	if (GGameType & GAME_QuakeWorld)
+	{
+		if (key == K_ESCAPE || key == K_ENTER)
+		{
+			m_state = m_main;
+		}
+		return;
+	}
+
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Main_f();
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		if (++mqh_multiplayer_cursor >= (GGameType & GAME_HexenWorld ? MULTIPLAYER_ITEMS_HW : GGameType & GAME_Hexen2 ? MULTIPLAYER_ITEMS_H2 : MULTIPLAYER_ITEMS_Q1))
+		{
+			mqh_multiplayer_cursor = 0;
+		}
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		if (--mqh_multiplayer_cursor < 0)
+		{
+			mqh_multiplayer_cursor = (GGameType & GAME_HexenWorld ? MULTIPLAYER_ITEMS_HW : GGameType & GAME_Hexen2 ? MULTIPLAYER_ITEMS_H2 : MULTIPLAYER_ITEMS_Q1) - 1;
+		}
+		break;
+
+	case K_ENTER:
+		mqh_entersound = true;
+		switch (mqh_multiplayer_cursor)
+		{
+		case 0:
+			if (GGameType & GAME_HexenWorld)
+			{
+				MHW_Menu_Connect_f();
+			}
+			else if (tcpipAvailable)
+			{
+				MQH_Menu_Net_f();
+			}
+			break;
+
+		case 1:
+			if (GGameType & GAME_HexenWorld)
+			{
+				MQH_Menu_Setup_f();
+			}
+			else if (tcpipAvailable)
+			{
+				MQH_Menu_Net_f();
+			}
+			break;
+
+		case 2:
+			MQH_Menu_Setup_f();
+			break;
+
+		case 3:
+			MH2_Menu_MLoad_f();
+			break;
+
+		case 4:
+			MH2_Menu_MSave_f();
+			break;
+		}
+	}
+}
+
+//=============================================================================
+/* NET MENU */
+
+int mqh_net_cursor;
+int mqh_net_items;
+
+const char* net_helpMessage[] =
+{
+/* .........1.........2.... */
+	"                        ",
+	" Two computers connected",
+	"   through two modems.  ",
+	"                        ",
+
+	"                        ",
+	" Two computers connected",
+	" by a null-modem cable. ",
+	"                        ",
+
+	" Novell network LANs    ",
+	" or Windows 95 DOS-box. ",
+	"                        ",
+	"(LAN=Local Area Network)",
+
+	" Commonly used to play  ",
+	" over the Internet, but ",
+	" also used on a Local   ",
+	" Area Network.          "
+};
+
+void MQH_Menu_Net_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_net;
+	mqh_entersound = true;
+	mqh_net_items = 4;
+	mqh_net_cursor = 3;
+}
+
+//=============================================================================
+/* CONNECT MENU */
+
+field_t save_names[MAX_HOST_NAMES];
+
+Cvar* hostname1;
+Cvar* hostname2;
+Cvar* hostname3;
+Cvar* hostname4;
+Cvar* hostname5;
+Cvar* hostname6;
+Cvar* hostname7;
+Cvar* hostname8;
+Cvar* hostname9;
+Cvar* hostname10;
+
+int connect_cursor = 0;
+
+int connect_cursor_table[MAX_CONNECT_CMDS] =
+{
+	72 + 0 * 8,
+	72 + 1 * 8,
+	72 + 2 * 8,
+	72 + 3 * 8,
+	72 + 4 * 8,
+	72 + 5 * 8,
+	72 + 6 * 8,
+	72 + 7 * 8,
+	72 + 8 * 8,
+	72 + 9 * 8,
+
+	72 + 11 * 8,
+};
+
+void MHW_Menu_Connect_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_mconnect;
+	mqh_entersound = true;
+
+	mh2_message = NULL;
+
+	String::Cpy(save_names[0].buffer, hostname1->string);
+	String::Cpy(save_names[1].buffer, hostname2->string);
+	String::Cpy(save_names[2].buffer, hostname3->string);
+	String::Cpy(save_names[3].buffer, hostname4->string);
+	String::Cpy(save_names[4].buffer, hostname5->string);
+	String::Cpy(save_names[5].buffer, hostname6->string);
+	String::Cpy(save_names[6].buffer, hostname7->string);
+	String::Cpy(save_names[7].buffer, hostname8->string);
+	String::Cpy(save_names[8].buffer, hostname9->string);
+	String::Cpy(save_names[9].buffer, hostname10->string);
+	for (int i = 0; i < MAX_HOST_NAMES; i++)
+	{
+		save_names[i].cursor = String::Length(save_names[i].buffer);
+		save_names[i].maxLength = 80;
+		save_names[i].widthInChars = 34;
+	}
+}
+
+//=============================================================================
+/* SETUP MENU */
+
+int mqh_setup_cursor;
+int setup_cursor_table_q1[] = {40, 56, 80, 104, 140};
+int setup_cursor_table_h2[] = {40, 56, 80, 104, 128, 156};
+int setup_cursor_table_hw[] = {40, 56, 72, 88, 112, 136, 164};
+field_t setup_hostname;
+field_t setup_myname;
+int setup_oldtop;
+int setup_oldbottom;
+int setup_top;
+int setup_bottom;
+int class_limit;
+int which_class;
+
+void MQH_Menu_Setup_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_setup;
+	mqh_entersound = true;
+	String::Cpy(setup_myname.buffer, clqh_name->string);
+	setup_myname.cursor = String::Length(setup_myname.buffer);
+	setup_myname.maxLength = 15;
+	setup_myname.widthInChars = 16;
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		setup_top = setup_oldtop = (int)qhw_topcolor->value;
+		setup_bottom = setup_oldbottom = (int)qhw_bottomcolor->value;
+	}
+	else
+	{
+		String::Cpy(setup_hostname.buffer, sv_hostname->string);
+		setup_hostname.cursor = String::Length(setup_hostname.buffer);
+		setup_hostname.maxLength = 15;
+		setup_hostname.widthInChars = 16;
+		setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
+		setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
+	}
+	if (GGameType & GAME_Quake)
+	{
+		mqh_setup_cursor = NUM_SETUP_CMDS_Q1 - 1;
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		if (!com_portals)
+		{
+			if (clh2_playerclass->value == CLASS_DEMON)
+			{
+				clh2_playerclass->value = 0;
+			}
+		}
+		if (String::ICmp(fs_gamedir, "siege"))
+		{
+			if (clh2_playerclass->value == CLASS_DWARF)
+			{
+				clh2_playerclass->value = 0;
+			}
+		}
+
+		setup_class = clh2_playerclass->value;
+
+		class_limit = MAX_PLAYER_CLASS;
+
+		if (setup_class < 0 || setup_class > class_limit)
+		{
+			setup_class = 1;
+		}
+		which_class = setup_class;
+		mqh_setup_cursor = NUM_SETUP_CMDS_HW - 1;
+	}
+	else
+	{
+		setup_class = clh2_playerclass->value;
+		if (setup_class < 1 || setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+		{
+			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
+		}
+		mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
+	}
+}
+
+//=============================================================================
+/* MULTIPLAYER LOAD/SAVE MENU */
+
+static void M_ScanMSaves()
+{
+	int i, j;
+	char name[MAX_OSPATH];
+	fileHandle_t f;
+
+	for (i = 0; i < MAX_SAVEGAMES; i++)
+	{
+		String::Cpy(mqh_filenames[i], "--- UNUSED SLOT ---");
+		mqh_loadable[i] = false;
+		sprintf(name, "ms%i/info.dat", i);
+		if (!FS_FileExists(name))
+		{
+			continue;
+		}
+		FS_FOpenFileRead(name, &f, true);
+		if (!f)
+		{
+			continue;
+		}
+		FS_Read(name, 80, f);
+		name[80] = 0;
+		//	Skip version
+		char* Ptr = name;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		if (*Ptr == '\n')
+		{
+			*Ptr = 0;
+			Ptr++;
+		}
+		char* SaveName = Ptr;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		*Ptr = 0;
+		String::NCpy(mqh_filenames[i], SaveName, sizeof(mqh_filenames[i]) - 1);
+
+		// change _ back to space
+		for (j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
+			if (mqh_filenames[i][j] == '_')
+			{
+				mqh_filenames[i][j] = ' ';
+			}
+		mqh_loadable[i] = true;
+		FS_FCloseFile(f);
+	}
+}
+
+void MH2_Menu_MLoad_f()
+{
+	mqh_entersound = true;
+	m_state = m_mload;
+	in_keyCatchers |= KEYCATCH_UI;
+	M_ScanMSaves();
+}
+
+
+void MH2_Menu_MSave_f()
+{
+	if (!SV_IsServerActive() || cl.qh_intermission || SVQH_GetMaxClients() == 1)
+	{
+		mh2_message = "Only a network server";
+		mh2_message2 = "can save a multiplayer game";
+		mh2_message_time = cls.realtime;
+		return;
+	}
+	mqh_entersound = true;
+	m_state = m_msave;
+	in_keyCatchers |= KEYCATCH_UI;
+	M_ScanMSaves();
+}
+
 //=============================================================================
 /* OPTIONS MENU */
 
@@ -1841,12 +2242,17 @@ void MQH_Init()
 		Cmd_AddCommand("menu_load", MQH_Menu_Load_f);
 		Cmd_AddCommand("menu_save", MQH_Menu_Save_f);
 		Cmd_AddCommand("menu_multiplayer", MQH_Menu_MultiPlayer_f);
+		Cmd_AddCommand("menu_setup", MQH_Menu_Setup_f);
 	}
 	if (GGameType & GAME_Hexen2)
 	{
 		Cmd_AddCommand("menu_class", MH2_Menu_Class2_f);
 
 		MH2_ReadBigCharWidth();
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		Cmd_AddCommand("menu_connect", MHW_Menu_Connect_f);
 	}
 }
 
@@ -1882,6 +2288,10 @@ void MQH_Draw()
 	case m_msave:
 		MQH_Save_Draw();
 		break;
+
+	case m_multiplayer:
+		MQH_MultiPlayer_Draw();
+		break;
 	}
 }
 
@@ -1914,6 +2324,10 @@ void MQH_Keydown(int key)
 
 	case m_save:
 		MQH_Save_Key(key);
+		return;
+
+	case m_multiplayer:
+		MQH_MultiPlayer_Key(key);
 		return;
 	}
 }

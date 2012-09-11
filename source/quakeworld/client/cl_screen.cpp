@@ -618,7 +618,7 @@ void SCR_RSShot_f(void)
 	time(&now);
 
 	Array<byte> buffer;
-	R_CaptureRemoteScreenShot(ctime(&now), cls.servername, name->string, buffer);
+	R_CaptureRemoteScreenShot(ctime(&now), cls.servername, clqh_name->string, buffer);
 	CL_StartUpload(buffer.Ptr(), buffer.Num());
 }
 

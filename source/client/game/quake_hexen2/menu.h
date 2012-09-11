@@ -55,9 +55,44 @@ extern float LogoTargetPercent;
 extern bool mqh_entersound;
 extern const char* mh2_message;
 extern const char* mh2_message2;
+extern int mh2_message_time;
 extern Cvar* mh2_oldmission;
 
 extern int mqh_multiplayer_cursor;
+extern int mqh_net_cursor;
+extern int mqh_net_items;
+extern const char* net_helpMessage[];
+#define MAX_HOST_NAMES 10
+#define MAX_HOST_SIZE 80
+#define MAX_CONNECT_CMDS 11
+extern field_t save_names[MAX_HOST_NAMES];
+extern Cvar* hostname1;
+extern Cvar* hostname2;
+extern Cvar* hostname3;
+extern Cvar* hostname4;
+extern Cvar* hostname5;
+extern Cvar* hostname6;
+extern Cvar* hostname7;
+extern Cvar* hostname8;
+extern Cvar* hostname9;
+extern Cvar* hostname10;
+extern int connect_cursor;
+extern int connect_cursor_table[MAX_CONNECT_CMDS];
+#define NUM_SETUP_CMDS_Q1  5
+#define NUM_SETUP_CMDS_H2  6
+#define NUM_SETUP_CMDS_HW  7
+extern int mqh_setup_cursor;
+extern int setup_cursor_table_q1[];
+extern int setup_cursor_table_h2[];
+extern int setup_cursor_table_hw[];
+extern field_t setup_hostname;
+extern field_t setup_myname;
+extern int setup_oldtop;
+extern int setup_oldbottom;
+extern int setup_top;
+extern int setup_bottom;
+extern int class_limit;
+extern int which_class;
 extern int mqh_options_cursor;
 extern int mqh_help_page;
 extern bool wasInMenus;
@@ -127,3 +162,8 @@ void MQH_Menu_MultiPlayer_f();
 void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
+void MQH_Menu_Net_f();
+void MQH_Menu_Setup_f();
+void MH2_Menu_MLoad_f();
+void MH2_Menu_MSave_f();
+void MHW_Menu_Connect_f();

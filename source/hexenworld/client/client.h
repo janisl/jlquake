@@ -22,7 +22,7 @@
 //
 extern Cvar* cl_warncmd;
 
-extern Cvar* playerclass;
+extern Cvar* clh2_playerclass;
 extern Cvar* spectator;
 
 //=============================================================================

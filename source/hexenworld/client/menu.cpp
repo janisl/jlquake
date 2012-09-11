@@ -7,8 +7,6 @@
 extern Cvar* r_gamma;
 extern Cvar* crosshair;
 
-void M_Menu_Setup_f(void);
-void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 void M_Menu_LanConfig_f(void);
@@ -16,7 +14,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
 void M_Options_Draw(void);
@@ -31,8 +28,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_MultiPlayer_Key(int key);
-void M_Menu_Connect_f(void);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
 void M_Options_Key(int key);
@@ -48,13 +43,6 @@ void M_Search_Key(int key);
 void M_ServerList_Key(int key);
 
 qboolean m_recursiveDraw;
-
-int which_class;
-
-static double message_time;
-
-#define StartingGame    (mqh_multiplayer_cursor == 1)
-#define JoiningGame     (mqh_multiplayer_cursor == 0)
 
 void M_ConfigureNetSubsystem(void);
 
@@ -931,134 +919,7 @@ void M_Quit_Draw(void)
 }
 
 //=============================================================================
-/* MULTIPLAYER MENU */
-
-void M_MultiPlayer_Draw(void)
-{
-	int f;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-	MH2_DrawBigString(72,60 + (0 * 20),"JOIN A GAME");
-	MH2_DrawBigString(72,60 + (1 * 20),"SETUP");
-
-	f = (int)(realtime * 10) % 8;
-	MQH_DrawPic(43, 54 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-
-	if (mh2_message)
-	{
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 168, mh2_message);
-		MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 176, mh2_message2);
-		if (realtime - 5 > message_time)
-		{
-			mh2_message = NULL;
-		}
-	}
-}
-
-
-void M_MultiPlayer_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_HW)
-		{
-			mqh_multiplayer_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		if (--mqh_multiplayer_cursor < 0)
-		{
-			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_HW - 1;
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-		switch (mqh_multiplayer_cursor)
-		{
-		case 0:
-			M_Menu_Connect_f();
-			break;
-
-		case 1:
-			M_Menu_Setup_f();
-			break;
-		}
-	}
-}
-
-//=============================================================================
 /* CONNECT MENU */
-
-#define MAX_HOST_NAMES 10
-#define MAX_HOST_SIZE 80
-field_t save_names[MAX_HOST_NAMES];
-
-Cvar* hostname1;
-Cvar* hostname2;
-Cvar* hostname3;
-Cvar* hostname4;
-Cvar* hostname5;
-Cvar* hostname6;
-Cvar* hostname7;
-Cvar* hostname8;
-Cvar* hostname9;
-Cvar* hostname10;
-
-int connect_cursor = 0;
-#define MAX_CONNECT_CMDS 11
-
-int connect_cursor_table[MAX_CONNECT_CMDS] =
-{
-	72 + 0 * 8,
-	72 + 1 * 8,
-	72 + 2 * 8,
-	72 + 3 * 8,
-	72 + 4 * 8,
-	72 + 5 * 8,
-	72 + 6 * 8,
-	72 + 7 * 8,
-	72 + 8 * 8,
-	72 + 9 * 8,
-
-	72 + 11 * 8,
-};
-
-
-void M_Menu_Connect_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_mconnect;
-	mqh_entersound = true;
-
-	mh2_message = NULL;
-
-	String::Cpy(save_names[0].buffer,hostname1->string);
-	String::Cpy(save_names[1].buffer,hostname2->string);
-	String::Cpy(save_names[2].buffer,hostname3->string);
-	String::Cpy(save_names[3].buffer,hostname4->string);
-	String::Cpy(save_names[4].buffer,hostname5->string);
-	String::Cpy(save_names[5].buffer,hostname6->string);
-	String::Cpy(save_names[6].buffer,hostname7->string);
-	String::Cpy(save_names[7].buffer,hostname8->string);
-	String::Cpy(save_names[8].buffer,hostname9->string);
-	String::Cpy(save_names[9].buffer,hostname10->string);
-	for (int i = 0; i < MAX_HOST_NAMES; i++)
-	{
-		save_names[i].cursor = String::Length(save_names[i].buffer);
-		save_names[i].maxLength = 80;
-		save_names[i].widthInChars = 34;
-	}
-}
 
 void M_Connect_Draw(void)
 {
@@ -1170,69 +1031,6 @@ void M_Connect_Char(int k)
 //=============================================================================
 /* SETUP MENU */
 
-int setup_cursor = 6;
-int setup_cursor_table[] = {40, 56, 72, 88, 112, 136, 164};
-
-field_t setup_myname;
-int setup_oldtop;
-int setup_oldbottom;
-int setup_top;
-int setup_bottom;
-int class_limit;
-
-#define NUM_SETUP_CMDS  7
-
-extern Cvar* name;
-extern Cvar* topcolor;
-extern Cvar* bottomcolor;
-
-void M_Menu_Setup_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_setup;
-	mqh_entersound = true;
-	String::Cpy(setup_myname.buffer, name->string);
-	setup_myname.cursor = String::Length(setup_myname.buffer);
-	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 16;
-	setup_top = setup_oldtop = (int)topcolor->value;
-	setup_bottom = setup_oldbottom = (int)bottomcolor->value;
-
-
-	if (!com_portals)
-	{
-		if (playerclass->value == CLASS_DEMON)
-		{
-			playerclass->value = 0;
-		}
-	}
-	if (String::ICmp(fs_gamedir, "siege"))
-	{
-		if (playerclass->value == CLASS_DWARF)
-		{
-			playerclass->value = 0;
-		}
-	}
-
-	setup_class = playerclass->value;
-
-//	if (com_portals||clhw_siege)//FIXME!!!
-//	{
-	class_limit = MAX_PLAYER_CLASS;
-//	}
-//	else
-//	{
-//		class_limit = MAX_PLAYER_CLASS-1;
-//	}
-
-	if (setup_class < 0 || setup_class > class_limit)
-	{
-		setup_class = 1;
-	}
-	which_class = setup_class;
-}
-
-
 void M_Setup_Draw(void)
 {
 	image_t* p;
@@ -1242,7 +1040,7 @@ void M_Setup_Draw(void)
 	MH2_ScrollTitle("gfx/menu/title4.lmp");
 
 	MQH_Print(64, 56, "Your name");
-	MQH_DrawField(168, 56, &setup_myname, setup_cursor == 1);
+	MQH_DrawField(168, 56, &setup_myname, mqh_setup_cursor == 1);
 
 	MQH_Print(64, 72, "Spectator: ");
 	if (spectator->value)
@@ -1337,7 +1135,7 @@ void M_Setup_Draw(void)
 	R_CreateOrUpdateTranslatedImage(translate_texture[which_class - 1], va("translate_pic%d", which_class), menuplyr_pixels[which_class - 1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	MQH_DrawPic(220, 72, translate_texture[which_class - 1]);
 
-	MQH_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(56, setup_cursor_table_hw [mqh_setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -1351,29 +1149,29 @@ void M_Setup_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		setup_cursor--;
-		if (setup_cursor < 1)
+		mqh_setup_cursor--;
+		if (mqh_setup_cursor < 1)
 		{
-			setup_cursor = NUM_SETUP_CMDS - 1;
+			mqh_setup_cursor = NUM_SETUP_CMDS_HW - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("raven/menu1.wav");
-		setup_cursor++;
-		if (setup_cursor >= NUM_SETUP_CMDS)
+		mqh_setup_cursor++;
+		if (mqh_setup_cursor >= NUM_SETUP_CMDS_HW)
 		{
-			setup_cursor = 1;
+			mqh_setup_cursor = 1;
 		}
 		break;
 
 	case K_LEFTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 		S_StartLocalSound("raven/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			if (spectator->value)
 			{
@@ -1387,7 +1185,7 @@ void M_Setup_Key(int k)
 			}
 			cl.qh_spectator = spectator->value;
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_class--;
 			if (setup_class < 0)
@@ -1395,23 +1193,23 @@ void M_Setup_Key(int k)
 				setup_class = class_limit;
 			}
 		}
-		if (setup_cursor == 4)
+		if (mqh_setup_cursor == 4)
 		{
 			setup_top = setup_top - 1;
 		}
-		if (setup_cursor == 5)
+		if (mqh_setup_cursor == 5)
 		{
 			setup_bottom = setup_bottom - 1;
 		}
 		break;
 	case K_RIGHTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 forward:
 		S_StartLocalSound("raven/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			if (spectator->value)
 			{
@@ -1426,7 +1224,7 @@ forward:
 			cl.qh_spectator = spectator->value;
 
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_class++;
 			if (setup_class > class_limit)
@@ -1434,28 +1232,28 @@ forward:
 				setup_class = 0;
 			}
 		}
-		if (setup_cursor == 4)
+		if (mqh_setup_cursor == 4)
 		{
 			setup_top = setup_top + 1;
 		}
-		if (setup_cursor == 5)
+		if (mqh_setup_cursor == 5)
 		{
 			setup_bottom = setup_bottom + 1;
 		}
 		break;
 
 	case K_ENTER:
-		if (setup_cursor == 0 || setup_cursor == 1)
+		if (mqh_setup_cursor == 0 || mqh_setup_cursor == 1)
 		{
 			return;
 		}
 
-		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4 || setup_cursor == 5)
+		if (mqh_setup_cursor == 2 || mqh_setup_cursor == 3 || mqh_setup_cursor == 4 || mqh_setup_cursor == 5)
 		{
 			goto forward;
 		}
 
-		if (String::Cmp(name->string, setup_myname.buffer) != 0)
+		if (String::Cmp(clqh_name->string, setup_myname.buffer) != 0)
 		{
 			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
 		}
@@ -1468,7 +1266,7 @@ forward:
 		MQH_Menu_MultiPlayer_f();
 		break;
 	}
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_KeyDownEvent(&setup_myname, k);
 	}
@@ -1493,7 +1291,7 @@ forward:
 
 void M_Setup_Char(int k)
 {
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_CharEvent(&setup_myname, k);
 	}
@@ -1511,7 +1309,6 @@ void M_Init(void)
 	MQH_Init();
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-	Cmd_AddCommand("menu_connect", M_Menu_Connect_f);
 
 	hostname1 = Cvar_Get("host1","equalizer.ravensoft.com", CVAR_ARCHIVE);
 	hostname2 = Cvar_Get("host2","", CVAR_ARCHIVE);
@@ -1553,10 +1350,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Draw();
-		break;
 
 	case m_setup:
 		M_Setup_Draw();
@@ -1621,10 +1414,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Key(key);
-		return;
 
 	case m_setup:
 		M_Setup_Key(key);

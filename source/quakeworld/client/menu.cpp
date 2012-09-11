@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-void M_Menu_Setup_f(void);
-void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 void M_Menu_LanConfig_f(void);
@@ -30,7 +28,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
 void M_Options_Draw(void);
@@ -45,7 +42,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_MultiPlayer_Key(int key);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
 void M_Options_Key(int key);
@@ -693,34 +689,6 @@ void M_Quit_Key(int key)
 
 }
 
-void M_MultiPlayer_Draw(void)
-{
-	image_t* p;
-
-	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-//	MQH_DrawPic (16, 4, R_CachePic ("gfx/qplaque.lmp") );
-	p = R_CachePic("gfx/p_multi.lmp");
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-//	MQH_DrawPic (72, 32, R_CachePic ("gfx/sp_menu.lmp") );
-
-	MQH_DrawTextBox(46, 8 * 8, 27, 9);
-	MQH_PrintWhite(72, 10 * 8, "If you want to find QW  ");
-	MQH_PrintWhite(72, 11 * 8, "games, head on over to: ");
-	MQH_Print(72, 12 * 8, "   www.quakeworld.net   ");
-	MQH_PrintWhite(72, 13 * 8, "          or            ");
-	MQH_Print(72, 14 * 8, "   www.quakespy.com     ");
-	MQH_PrintWhite(72, 15 * 8, "For pointers on getting ");
-	MQH_PrintWhite(72, 16 * 8, "        started!        ");
-}
-
-void M_MultiPlayer_Key(int key)
-{
-	if (key == K_ESCAPE || key == K_ENTER)
-	{
-		m_state = m_main;
-	}
-}
-
 void M_Quit_Draw(void)
 {
 #define VSTR(x) # x
@@ -827,17 +795,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_load:
-		break;
-
-	case m_save:
-		break;
-
-	case m_multiplayer:
-		M_MultiPlayer_Draw();
-		break;
-
 	case m_setup:
 //		M_Setup_Draw ();
 		break;
@@ -897,10 +854,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Key(key);
-		return;
 
 	case m_setup:
 //		M_Setup_Key (key);

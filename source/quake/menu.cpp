@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern Cvar* r_gamma;
 
-void M_Menu_Setup_f(void);
-void M_Menu_Net_f(void);
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 void M_Menu_LanConfig_f(void);
@@ -30,7 +28,6 @@ void M_Menu_GameOptions_f(void);
 void M_Menu_Search_f(void);
 void M_Menu_ServerList_f(void);
 
-void M_MultiPlayer_Draw(void);
 void M_Setup_Draw(void);
 void M_Net_Draw(void);
 void M_Options_Draw(void);
@@ -45,7 +42,6 @@ void M_GameOptions_Draw(void);
 void M_Search_Draw(void);
 void M_ServerList_Draw(void);
 
-void M_MultiPlayer_Key(int key);
 void M_Setup_Key(int key);
 void M_Net_Key(int key);
 void M_Options_Key(int key);
@@ -104,113 +100,8 @@ void M_ToggleMenu_f(void)
 	}
 }
 
-
-//=============================================================================
-/* MULTIPLAYER MENU */
-
-void M_MultiPlayer_Draw(void)
-{
-	int f;
-	image_t* p;
-
-	MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-	p = R_CachePic("gfx/p_multi.lmp");
-	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-	MQH_DrawPic(72, 32, R_CachePic("gfx/mp_menu.lmp"));
-
-	f = (int)(host_time * 10) % 6;
-
-	MQH_DrawPic(54, 32 + mqh_multiplayer_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
-
-	if (tcpipAvailable)
-	{
-		return;
-	}
-	MQH_PrintWhite((320 / 2) - ((27 * 8) / 2), 148, "No Communications Available");
-}
-
-
-void M_MultiPlayer_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (++mqh_multiplayer_cursor >= MULTIPLAYER_ITEMS_Q1)
-		{
-			mqh_multiplayer_cursor = 0;
-		}
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("misc/menu1.wav");
-		if (--mqh_multiplayer_cursor < 0)
-		{
-			mqh_multiplayer_cursor = MULTIPLAYER_ITEMS_Q1 - 1;
-		}
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-		switch (mqh_multiplayer_cursor)
-		{
-		case 0:
-			if (tcpipAvailable)
-			{
-				M_Menu_Net_f();
-			}
-			break;
-
-		case 1:
-			if (tcpipAvailable)
-			{
-				M_Menu_Net_f();
-			}
-			break;
-
-		case 2:
-			M_Menu_Setup_f();
-			break;
-		}
-	}
-}
-
 //=============================================================================
 /* SETUP MENU */
-
-int setup_cursor = 4;
-int setup_cursor_table[] = {40, 56, 80, 104, 140};
-
-field_t setup_hostname;
-field_t setup_myname;
-int setup_oldtop;
-int setup_oldbottom;
-int setup_top;
-int setup_bottom;
-
-#define NUM_SETUP_CMDS  5
-
-void M_Menu_Setup_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_setup;
-	mqh_entersound = true;
-	String::Cpy(setup_myname.buffer, clqh_name->string);
-	setup_myname.cursor = String::Length(setup_myname.buffer);
-	setup_myname.maxLength = 15;
-	setup_myname.widthInChars = 16;
-	String::Cpy(setup_hostname.buffer, sv_hostname->string);
-	setup_hostname.cursor = String::Length(setup_hostname.buffer);
-	setup_hostname.maxLength = 15;
-	setup_hostname.widthInChars = 16;
-	setup_top = setup_oldtop = ((int)clqh_color->value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)clqh_color->value) & 15;
-}
-
 
 void M_Setup_Draw(void)
 {
@@ -221,10 +112,10 @@ void M_Setup_Draw(void)
 	MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
 
 	MQH_Print(64, 40, "Hostname");
-	MQH_DrawField(168, 40, &setup_hostname, setup_cursor == 0);
+	MQH_DrawField(168, 40, &setup_hostname, mqh_setup_cursor == 0);
 
 	MQH_Print(64, 56, "Your name");
-	MQH_DrawField(168, 56, &setup_myname, setup_cursor == 1);
+	MQH_DrawField(168, 56, &setup_myname, mqh_setup_cursor == 1);
 
 	MQH_Print(64, 80, "Shirt color");
 	MQH_Print(64, 104, "Pants color");
@@ -239,7 +130,7 @@ void M_Setup_Draw(void)
 	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translationTable, R_GetImageWidth(p), R_GetImageHeight(p));
 	MQH_DrawPic(172, 72, translate_texture);
 
-	MQH_DrawCharacter(56, setup_cursor_table [setup_cursor], 12 + ((int)(realtime * 4) & 1));
+	MQH_DrawCharacter(56, setup_cursor_table_q1 [mqh_setup_cursor], 12 + ((int)(realtime * 4) & 1));
 }
 
 
@@ -253,66 +144,66 @@ void M_Setup_Key(int k)
 
 	case K_UPARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		setup_cursor--;
-		if (setup_cursor < 0)
+		mqh_setup_cursor--;
+		if (mqh_setup_cursor < 0)
 		{
-			setup_cursor = NUM_SETUP_CMDS - 1;
+			mqh_setup_cursor = NUM_SETUP_CMDS_Q1 - 1;
 		}
 		break;
 
 	case K_DOWNARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		setup_cursor++;
-		if (setup_cursor >= NUM_SETUP_CMDS)
+		mqh_setup_cursor++;
+		if (mqh_setup_cursor >= NUM_SETUP_CMDS_Q1)
 		{
-			setup_cursor = 0;
+			mqh_setup_cursor = 0;
 		}
 		break;
 
 	case K_LEFTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 		S_StartLocalSound("misc/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			setup_top = setup_top - 1;
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_bottom = setup_bottom - 1;
 		}
 		break;
 	case K_RIGHTARROW:
-		if (setup_cursor < 2)
+		if (mqh_setup_cursor < 2)
 		{
 			break;
 		}
 forward:
 		S_StartLocalSound("misc/menu3.wav");
-		if (setup_cursor == 2)
+		if (mqh_setup_cursor == 2)
 		{
 			setup_top = setup_top + 1;
 		}
-		if (setup_cursor == 3)
+		if (mqh_setup_cursor == 3)
 		{
 			setup_bottom = setup_bottom + 1;
 		}
 		break;
 
 	case K_ENTER:
-		if (setup_cursor == 0 || setup_cursor == 1)
+		if (mqh_setup_cursor == 0 || mqh_setup_cursor == 1)
 		{
 			return;
 		}
 
-		if (setup_cursor == 2 || setup_cursor == 3)
+		if (mqh_setup_cursor == 2 || mqh_setup_cursor == 3)
 		{
 			goto forward;
 		}
 
-		// setup_cursor == 4 (OK)
+		// mqh_setup_cursor == 4 (OK)
 		if (String::Cmp(clqh_name->string, setup_myname.buffer) != 0)
 		{
 			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
@@ -329,11 +220,11 @@ forward:
 		MQH_Menu_MultiPlayer_f();
 		break;
 	}
-	if (setup_cursor == 0)
+	if (mqh_setup_cursor == 0)
 	{
 		Field_KeyDownEvent(&setup_hostname, k);
 	}
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_KeyDownEvent(&setup_myname, k);
 	}
@@ -358,11 +249,11 @@ forward:
 
 void M_Setup_Char(int k)
 {
-	if (setup_cursor == 0)
+	if (mqh_setup_cursor == 0)
 	{
 		Field_CharEvent(&setup_hostname, k);
 	}
-	if (setup_cursor == 1)
+	if (mqh_setup_cursor == 1)
 	{
 		Field_CharEvent(&setup_myname, k);
 	}
@@ -370,50 +261,6 @@ void M_Setup_Char(int k)
 
 //=============================================================================
 /* NET MENU */
-
-int m_net_cursor;
-int m_net_items;
-int m_net_saveHeight;
-
-const char* net_helpMessage [] =
-{
-/* .........1.........2.... */
-	"                        ",
-	" Two computers connected",
-	"   through two modems.  ",
-	"                        ",
-
-	"                        ",
-	" Two computers connected",
-	" by a null-modem cable. ",
-	"                        ",
-
-	" Novell network LANs    ",
-	" or Windows 95 DOS-box. ",
-	"                        ",
-	"(LAN=Local Area Network)",
-
-	" Commonly used to play  ",
-	" over the Internet, but ",
-	" also used on a Local   ",
-	" Area Network.          "
-};
-
-void M_Menu_Net_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_net;
-	mqh_entersound = true;
-	m_net_items = 4;
-
-	if (m_net_cursor >= m_net_items)
-	{
-		m_net_cursor = 0;
-	}
-	m_net_cursor--;
-	M_Net_Key(K_DOWNARROW);
-}
-
 
 void M_Net_Draw(void)
 {
@@ -435,23 +282,16 @@ void M_Net_Draw(void)
 	}
 	MQH_DrawPic(72, f, p);
 
-	if (m_net_items == 5)	// JDC, could just be removed
-	{
-		f += 19;
-		p = R_CachePic("gfx/netmen5.lmp");
-		MQH_DrawPic(72, f, p);
-	}
-
 	f = (320 - 26 * 8) / 2;
 	MQH_DrawTextBox(f, 134, 24, 4);
 	f += 8;
-	MQH_Print(f, 142, net_helpMessage[m_net_cursor * 4 + 0]);
-	MQH_Print(f, 150, net_helpMessage[m_net_cursor * 4 + 1]);
-	MQH_Print(f, 158, net_helpMessage[m_net_cursor * 4 + 2]);
-	MQH_Print(f, 166, net_helpMessage[m_net_cursor * 4 + 3]);
+	MQH_Print(f, 142, net_helpMessage[mqh_net_cursor * 4 + 0]);
+	MQH_Print(f, 150, net_helpMessage[mqh_net_cursor * 4 + 1]);
+	MQH_Print(f, 158, net_helpMessage[mqh_net_cursor * 4 + 2]);
+	MQH_Print(f, 166, net_helpMessage[mqh_net_cursor * 4 + 3]);
 
 	f = (int)(host_time * 10) % 6;
-	MQH_DrawPic(54, 32 + m_net_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
+	MQH_DrawPic(54, 32 + mqh_net_cursor * 20,R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
 
 
@@ -466,24 +306,24 @@ again:
 
 	case K_DOWNARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (++m_net_cursor >= m_net_items)
+		if (++mqh_net_cursor >= mqh_net_items)
 		{
-			m_net_cursor = 0;
+			mqh_net_cursor = 0;
 		}
 		break;
 
 	case K_UPARROW:
 		S_StartLocalSound("misc/menu1.wav");
-		if (--m_net_cursor < 0)
+		if (--mqh_net_cursor < 0)
 		{
-			m_net_cursor = m_net_items - 1;
+			mqh_net_cursor = mqh_net_items - 1;
 		}
 		break;
 
 	case K_ENTER:
 		mqh_entersound = true;
 
-		switch (m_net_cursor)
+		switch (mqh_net_cursor)
 		{
 		case 2:
 			M_Menu_LanConfig_f();
@@ -499,19 +339,19 @@ again:
 		}
 	}
 
-	if (m_net_cursor == 0)
+	if (mqh_net_cursor == 0)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 1)
+	if (mqh_net_cursor == 1)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 2)
+	if (mqh_net_cursor == 2)
 	{
 		goto again;
 	}
-	if (m_net_cursor == 3 && !tcpipAvailable)
+	if (mqh_net_cursor == 3 && !tcpipAvailable)
 	{
 		goto again;
 	}
@@ -1238,7 +1078,7 @@ void M_LanConfig_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Net_f();
+		MQH_Menu_Net_f();
 		break;
 
 	case K_UPARROW:
@@ -1816,7 +1656,7 @@ void M_GameOptions_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_Menu_Net_f();
+		MQH_Menu_Net_f();
 		break;
 
 	case K_UPARROW:
@@ -2072,7 +1912,6 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-	Cmd_AddCommand("menu_setup", M_Menu_Setup_f);
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
 }
@@ -2105,10 +1944,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Draw();
-		break;
 
 	case m_setup:
 		M_Setup_Draw();
@@ -2169,10 +2004,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_multiplayer:
-		M_MultiPlayer_Key(key);
-		return;
 
 	case m_setup:
 		M_Setup_Key(key);

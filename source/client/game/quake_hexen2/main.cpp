@@ -19,4 +19,7 @@
 
 Cvar* clqh_sbar;
 
+Cvar* qhw_topcolor;
+Cvar* qhw_bottomcolor;
+
 image_t* draw_backtile;
