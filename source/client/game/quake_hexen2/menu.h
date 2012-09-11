@@ -68,22 +68,6 @@ extern int mqh_startepisode;
 extern int mqh_startlevel;
 extern int mqh_gameoptions_cursor;
 extern int mqh_maxplayers;
-#define MAX_HOST_NAMES 10
-#define MAX_HOST_SIZE 80
-#define MAX_CONNECT_CMDS 11
-extern field_t save_names[MAX_HOST_NAMES];
-extern Cvar* hostname1;
-extern Cvar* hostname2;
-extern Cvar* hostname3;
-extern Cvar* hostname4;
-extern Cvar* hostname5;
-extern Cvar* hostname6;
-extern Cvar* hostname7;
-extern Cvar* hostname8;
-extern Cvar* hostname9;
-extern Cvar* hostname10;
-extern int connect_cursor;
-extern int connect_cursor_table[MAX_CONNECT_CMDS];
 #define NUM_SETUP_CMDS_Q1  5
 #define NUM_SETUP_CMDS_H2  6
 #define NUM_SETUP_CMDS_HW  7
@@ -169,6 +153,5 @@ void MQH_Menu_Net_f();
 void MQH_Menu_Setup_f();
 void MH2_Menu_MLoad_f();
 void MH2_Menu_MSave_f();
-void MHW_Menu_Connect_f();
 void MQH_Menu_GameOptions_f();
 void MQH_CharEvent(int key);

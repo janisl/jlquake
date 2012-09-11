@@ -905,116 +905,6 @@ void M_Quit_Draw(void)
 }
 
 //=============================================================================
-/* CONNECT MENU */
-
-void M_Connect_Draw(void)
-{
-	int y;
-	char temp[MAX_HOST_SIZE];
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-	if (connect_cursor < MAX_HOST_NAMES)
-	{
-		MQH_DrawField(24, 56, &save_names[connect_cursor], true);
-	}
-
-	y = 72;
-	for (int i = 0; i < MAX_HOST_NAMES; i++,y += 8)
-	{
-		sprintf(temp,"%d.",i + 1);
-		if (i == connect_cursor)
-		{
-			MQH_Print(24,y,temp);
-		}
-		else
-		{
-			MQH_PrintWhite(24,y,temp);
-		}
-
-		String::Cpy(temp,save_names[i].buffer);
-		temp[30] = 0;
-		if (i == connect_cursor)
-		{
-			MQH_Print(56, y, temp);
-		}
-		else
-		{
-			MQH_PrintWhite(56, y, temp);
-		}
-	}
-
-	MQH_Print(24, y + 8, "Save Changes");
-
-	MQH_DrawCharacter(8, connect_cursor_table[connect_cursor], 12 + ((int)(realtime * 4) & 1));
-}
-
-void M_Connect_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		connect_cursor--;
-		if (connect_cursor < 0)
-		{
-			connect_cursor = MAX_CONNECT_CMDS - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		connect_cursor++;
-		if (connect_cursor >= MAX_CONNECT_CMDS)
-		{
-			connect_cursor = 0;
-		}
-		break;
-
-	case K_ENTER:
-		Cvar_Set("host1",save_names[0].buffer);
-		Cvar_Set("host2",save_names[1].buffer);
-		Cvar_Set("host3",save_names[2].buffer);
-		Cvar_Set("host4",save_names[3].buffer);
-		Cvar_Set("host5",save_names[4].buffer);
-		Cvar_Set("host6",save_names[5].buffer);
-		Cvar_Set("host7",save_names[6].buffer);
-		Cvar_Set("host8",save_names[7].buffer);
-		Cvar_Set("host9",save_names[8].buffer);
-		Cvar_Set("host10",save_names[9].buffer);
-
-		if (connect_cursor < MAX_HOST_NAMES)
-		{
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-			Cbuf_AddText(va("connect %s\n", save_names[connect_cursor].buffer));
-		}
-		else
-		{
-			mqh_entersound = true;
-			MQH_Menu_MultiPlayer_f();
-		}
-		break;
-	}
-	if (connect_cursor < MAX_HOST_NAMES)
-	{
-		Field_KeyDownEvent(&save_names[connect_cursor], k);
-	}
-}
-
-void M_Connect_Char(int k)
-{
-	if (connect_cursor < MAX_HOST_NAMES)
-	{
-		Field_CharEvent(&save_names[connect_cursor], k);
-	}
-}
-
-//=============================================================================
 /* SETUP MENU */
 
 void M_Setup_Draw(void)
@@ -1295,17 +1185,6 @@ void M_Init(void)
 	MQH_Init();
 	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
 	Cmd_AddCommand("menu_video", M_Menu_Video_f);
-
-	hostname1 = Cvar_Get("host1","equalizer.ravensoft.com", CVAR_ARCHIVE);
-	hostname2 = Cvar_Get("host2","", CVAR_ARCHIVE);
-	hostname3 = Cvar_Get("host3","", CVAR_ARCHIVE);
-	hostname4 = Cvar_Get("host4","", CVAR_ARCHIVE);
-	hostname5 = Cvar_Get("host5","", CVAR_ARCHIVE);
-	hostname6 = Cvar_Get("host6","", CVAR_ARCHIVE);
-	hostname7 = Cvar_Get("host7","", CVAR_ARCHIVE);
-	hostname8 = Cvar_Get("host8","", CVAR_ARCHIVE);
-	hostname9 = Cvar_Get("host9","", CVAR_ARCHIVE);
-	hostname10 = Cvar_Get("host10","", CVAR_ARCHIVE);
 }
 
 
@@ -1364,10 +1243,6 @@ void M_Draw(void)
 	case m_gameoptions:
 //		M_GameOptions_Draw ();
 		break;
-
-	case m_mconnect:
-		M_Connect_Draw();
-		break;
 	}
 
 	if (mqh_entersound)
@@ -1412,10 +1287,6 @@ void M_Keydown(int key)
 	case m_gameoptions:
 //		M_GameOptions_Key (key);
 		return;
-
-	case m_mconnect:
-		M_Connect_Key(key);
-		break;
 	}
 	MQH_Keydown(key);
 }
@@ -1426,9 +1297,6 @@ void M_CharEvent(int key)
 	{
 	case m_setup:
 		M_Setup_Char(key);
-		break;
-	case m_mconnect:
-		M_Connect_Char(key);
 		break;
 	default:
 		break;

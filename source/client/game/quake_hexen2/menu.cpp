@@ -53,6 +53,7 @@ static void MQH_Menu_Save_f();
 static void MQH_Menu_LanConfig_f();
 static void MQH_Menu_Search_f();
 static void MQH_Menu_ServerList_f();
+static void MHW_Menu_Connect_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -1410,8 +1411,6 @@ static void MQH_ConfigureNetSubsystem()
 
 static void MQH_LanConfig_Key(int key)
 {
-	int l;
-
 	switch (key)
 	{
 	case K_ESCAPE:
@@ -1536,7 +1535,7 @@ static void MQH_LanConfig_Key(int key)
 		}
 	}
 
-	l =  String::Atoi(lanConfig_portname.buffer);
+	int l =  String::Atoi(lanConfig_portname.buffer);
 	if (l > 65535)
 	{
 		sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
@@ -1744,6 +1743,175 @@ static void MQH_ServerList_Key(int k)
 }
 
 //=============================================================================
+/* CONNECT MENU */
+
+#define MAX_HOST_NAMES 10
+#define MAX_HOST_SIZE 80
+#define MAX_CONNECT_CMDS 11
+
+static field_t save_names[MAX_HOST_NAMES];
+
+static Cvar* hostname1;
+static Cvar* hostname2;
+static Cvar* hostname3;
+static Cvar* hostname4;
+static Cvar* hostname5;
+static Cvar* hostname6;
+static Cvar* hostname7;
+static Cvar* hostname8;
+static Cvar* hostname9;
+static Cvar* hostname10;
+
+static int connect_cursor = 0;
+
+static int connect_cursor_table[MAX_CONNECT_CMDS] =
+{
+	72 + 0 * 8,
+	72 + 1 * 8,
+	72 + 2 * 8,
+	72 + 3 * 8,
+	72 + 4 * 8,
+	72 + 5 * 8,
+	72 + 6 * 8,
+	72 + 7 * 8,
+	72 + 8 * 8,
+	72 + 9 * 8,
+
+	72 + 11 * 8,
+};
+
+static void MHW_Menu_Connect_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_mconnect;
+	mqh_entersound = true;
+
+	mh2_message = NULL;
+
+	String::Cpy(save_names[0].buffer, hostname1->string);
+	String::Cpy(save_names[1].buffer, hostname2->string);
+	String::Cpy(save_names[2].buffer, hostname3->string);
+	String::Cpy(save_names[3].buffer, hostname4->string);
+	String::Cpy(save_names[4].buffer, hostname5->string);
+	String::Cpy(save_names[5].buffer, hostname6->string);
+	String::Cpy(save_names[6].buffer, hostname7->string);
+	String::Cpy(save_names[7].buffer, hostname8->string);
+	String::Cpy(save_names[8].buffer, hostname9->string);
+	String::Cpy(save_names[9].buffer, hostname10->string);
+	for (int i = 0; i < MAX_HOST_NAMES; i++)
+	{
+		save_names[i].cursor = String::Length(save_names[i].buffer);
+		save_names[i].maxLength = 80;
+		save_names[i].widthInChars = 34;
+	}
+}
+
+static void MHW_Connect_Draw()
+{
+	MH2_ScrollTitle("gfx/menu/title4.lmp");
+
+	if (connect_cursor < MAX_HOST_NAMES)
+	{
+		MQH_DrawField(24, 56, &save_names[connect_cursor], true);
+	}
+
+	int y = 72;
+	for (int i = 0; i < MAX_HOST_NAMES; i++,y += 8)
+	{
+		char temp[MAX_HOST_SIZE];
+		sprintf(temp,"%d.",i + 1);
+		if (i == connect_cursor)
+		{
+			MQH_Print(24, y, temp);
+		}
+		else
+		{
+			MQH_PrintWhite(24, y, temp);
+		}
+
+		String::Cpy(temp,save_names[i].buffer);
+		temp[30] = 0;
+		if (i == connect_cursor)
+		{
+			MQH_Print(56, y, temp);
+		}
+		else
+		{
+			MQH_PrintWhite(56, y, temp);
+		}
+	}
+
+	MQH_Print(24, y + 8, "Save Changes");
+
+	MQH_DrawCharacter(8, connect_cursor_table[connect_cursor], 12 + ((cls.realtime / 250) & 1));
+}
+
+static void MHW_Connect_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_MultiPlayer_f();
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		connect_cursor--;
+		if (connect_cursor < 0)
+		{
+			connect_cursor = MAX_CONNECT_CMDS - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		connect_cursor++;
+		if (connect_cursor >= MAX_CONNECT_CMDS)
+		{
+			connect_cursor = 0;
+		}
+		break;
+
+	case K_ENTER:
+		Cvar_Set("host1",save_names[0].buffer);
+		Cvar_Set("host2",save_names[1].buffer);
+		Cvar_Set("host3",save_names[2].buffer);
+		Cvar_Set("host4",save_names[3].buffer);
+		Cvar_Set("host5",save_names[4].buffer);
+		Cvar_Set("host6",save_names[5].buffer);
+		Cvar_Set("host7",save_names[6].buffer);
+		Cvar_Set("host8",save_names[7].buffer);
+		Cvar_Set("host9",save_names[8].buffer);
+		Cvar_Set("host10",save_names[9].buffer);
+
+		if (connect_cursor < MAX_HOST_NAMES)
+		{
+			in_keyCatchers &= ~KEYCATCH_UI;
+			m_state = m_none;
+			Cbuf_AddText(va("connect %s\n", save_names[connect_cursor].buffer));
+		}
+		else
+		{
+			mqh_entersound = true;
+			MQH_Menu_MultiPlayer_f();
+		}
+		break;
+	}
+	if (connect_cursor < MAX_HOST_NAMES)
+	{
+		Field_KeyDownEvent(&save_names[connect_cursor], k);
+	}
+}
+
+static void MHW_Connect_Char(int k)
+{
+	if (connect_cursor < MAX_HOST_NAMES)
+	{
+		Field_CharEvent(&save_names[connect_cursor], k);
+	}
+}
+
+//=============================================================================
 /* GAME OPTIONS MENU */
 
 int mqh_gameoptions_cursor;
@@ -1799,66 +1967,6 @@ void MQH_Menu_GameOptions_f()
 		{
 			mqh_startepisode = MP_START;
 		}
-	}
-}
-
-//=============================================================================
-/* CONNECT MENU */
-
-field_t save_names[MAX_HOST_NAMES];
-
-Cvar* hostname1;
-Cvar* hostname2;
-Cvar* hostname3;
-Cvar* hostname4;
-Cvar* hostname5;
-Cvar* hostname6;
-Cvar* hostname7;
-Cvar* hostname8;
-Cvar* hostname9;
-Cvar* hostname10;
-
-int connect_cursor = 0;
-
-int connect_cursor_table[MAX_CONNECT_CMDS] =
-{
-	72 + 0 * 8,
-	72 + 1 * 8,
-	72 + 2 * 8,
-	72 + 3 * 8,
-	72 + 4 * 8,
-	72 + 5 * 8,
-	72 + 6 * 8,
-	72 + 7 * 8,
-	72 + 8 * 8,
-	72 + 9 * 8,
-
-	72 + 11 * 8,
-};
-
-void MHW_Menu_Connect_f()
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_mconnect;
-	mqh_entersound = true;
-
-	mh2_message = NULL;
-
-	String::Cpy(save_names[0].buffer, hostname1->string);
-	String::Cpy(save_names[1].buffer, hostname2->string);
-	String::Cpy(save_names[2].buffer, hostname3->string);
-	String::Cpy(save_names[3].buffer, hostname4->string);
-	String::Cpy(save_names[4].buffer, hostname5->string);
-	String::Cpy(save_names[5].buffer, hostname6->string);
-	String::Cpy(save_names[6].buffer, hostname7->string);
-	String::Cpy(save_names[7].buffer, hostname8->string);
-	String::Cpy(save_names[8].buffer, hostname9->string);
-	String::Cpy(save_names[9].buffer, hostname10->string);
-	for (int i = 0; i < MAX_HOST_NAMES; i++)
-	{
-		save_names[i].cursor = String::Length(save_names[i].buffer);
-		save_names[i].maxLength = 80;
-		save_names[i].widthInChars = 34;
 	}
 }
 
@@ -2819,6 +2927,17 @@ void MQH_Init()
 	if (GGameType & GAME_HexenWorld)
 	{
 		Cmd_AddCommand("menu_connect", MHW_Menu_Connect_f);
+
+		hostname1 = Cvar_Get("host1","equalizer.ravensoft.com", CVAR_ARCHIVE);
+		hostname2 = Cvar_Get("host2","", CVAR_ARCHIVE);
+		hostname3 = Cvar_Get("host3","", CVAR_ARCHIVE);
+		hostname4 = Cvar_Get("host4","", CVAR_ARCHIVE);
+		hostname5 = Cvar_Get("host5","", CVAR_ARCHIVE);
+		hostname6 = Cvar_Get("host6","", CVAR_ARCHIVE);
+		hostname7 = Cvar_Get("host7","", CVAR_ARCHIVE);
+		hostname8 = Cvar_Get("host8","", CVAR_ARCHIVE);
+		hostname9 = Cvar_Get("host9","", CVAR_ARCHIVE);
+		hostname10 = Cvar_Get("host10","", CVAR_ARCHIVE);
 	}
 }
 
@@ -2874,6 +2993,10 @@ void MQH_Draw()
 	case m_slist:
 		MQH_ServerList_Draw();
 		break;
+
+	case m_mconnect:
+		MHW_Connect_Draw();
+		break;
 	}
 }
 
@@ -2927,6 +3050,10 @@ void MQH_Keydown(int key)
 	case m_slist:
 		MQH_ServerList_Key(key);
 		return;
+
+	case m_mconnect:
+		MHW_Connect_Key(key);
+		break;
 	}
 }
 
@@ -2936,6 +3063,10 @@ void MQH_CharEvent(int key)
 	{
 	case m_lanconfig:
 		MQH_LanConfig_Char(key);
+		break;
+
+	case m_mconnect:
+		MHW_Connect_Char(key);
 		break;
 
 	default:
