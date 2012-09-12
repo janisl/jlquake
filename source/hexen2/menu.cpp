@@ -11,7 +11,6 @@ extern Cvar* crosshair;
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 
-void M_Setup_Draw(void);
 void M_Options_Draw(void);
 void M_Keys_Draw(void);
 void M_Video_Draw(void);
@@ -20,7 +19,6 @@ void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 
-void M_Setup_Key(int key);
 void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
@@ -40,13 +38,6 @@ void M_Print2(int cx, int cy, const char* str)
 {
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
-
-#define PLAYER_PIC_WIDTH 68
-#define PLAYER_PIC_HEIGHT 114
-
-byte translationTable[256];
-static byte menuplyr_pixels[NUM_CLASSES_H2MP][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
-image_t* translate_texture[NUM_CLASSES_H2MP];
 
 //=============================================================================
 
@@ -177,180 +168,6 @@ void M_MSave_Key(int k)
 			mqh_load_cursor = 0;
 		}
 		break;
-	}
-}
-
-//=============================================================================
-/* SETUP MENU */
-
-void M_Setup_Draw(void)
-{
-	image_t* p;
-
-	MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-	MQH_Print(64, 40, "Hostname");
-	MQH_DrawField(168, 40, &setup_hostname, mqh_setup_cursor == 0);
-
-	MQH_Print(64, 56, "Your name");
-	MQH_DrawField(168, 56, &setup_myname, mqh_setup_cursor == 1);
-
-	MQH_Print(64, 80, "Current Class: ");
-	MQH_Print(88, 88, h2_ClassNames[setup_class - 1]);
-
-	MQH_Print(64, 104, "First color patch");
-	MQH_Print(64, 128, "Second color patch");
-
-	MQH_DrawTextBox(64, 156 - 8, 14, 1);
-	MQH_Print(72, 156, "Accept Changes");
-
-	p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", setup_class), menuplyr_pixels[setup_class - 1]);
-	CL_CalcHexen2SkinTranslation(setup_top, setup_bottom, setup_class, translationTable);
-	R_CreateOrUpdateTranslatedImage(translate_texture[setup_class - 1], "*translate_pic", menuplyr_pixels[setup_class - 1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
-	MQH_DrawPic(220, 72, translate_texture[setup_class - 1]);
-
-	MQH_DrawCharacter(56, setup_cursor_table_h2 [mqh_setup_cursor], 12 + ((int)(realtime * 4) & 1));
-}
-
-
-void M_Setup_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_setup_cursor--;
-		if (mqh_setup_cursor < 0)
-		{
-			mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_setup_cursor++;
-		if (mqh_setup_cursor >= NUM_SETUP_CMDS_H2)
-		{
-			mqh_setup_cursor = 0;
-		}
-		break;
-
-	case K_LEFTARROW:
-		if (mqh_setup_cursor < 2)
-		{
-			break;
-		}
-		S_StartLocalSound("raven/menu3.wav");
-		if (mqh_setup_cursor == 2)
-		{
-			setup_class--;
-			if (setup_class < 1)
-			{
-				setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
-			}
-		}
-		if (mqh_setup_cursor == 3)
-		{
-			setup_top = setup_top - 1;
-		}
-		if (mqh_setup_cursor == 4)
-		{
-			setup_bottom = setup_bottom - 1;
-		}
-		break;
-	case K_RIGHTARROW:
-		if (mqh_setup_cursor < 2)
-		{
-			break;
-		}
-forward:
-		S_StartLocalSound("raven/menu3.wav");
-		if (mqh_setup_cursor == 2)
-		{
-			setup_class++;
-			if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
-			{
-				setup_class = 1;
-			}
-		}
-		if (mqh_setup_cursor == 3)
-		{
-			setup_top = setup_top + 1;
-		}
-		if (mqh_setup_cursor == 4)
-		{
-			setup_bottom = setup_bottom + 1;
-		}
-		break;
-
-	case K_ENTER:
-		if (mqh_setup_cursor == 0 || mqh_setup_cursor == 1)
-		{
-			return;
-		}
-
-		if (mqh_setup_cursor == 2 || mqh_setup_cursor == 3 || mqh_setup_cursor == 4)
-		{
-			goto forward;
-		}
-
-		if (String::Cmp(clqh_name->string, setup_myname.buffer) != 0)
-		{
-			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
-		}
-		if (String::Cmp(sv_hostname->string, setup_hostname.buffer) != 0)
-		{
-			Cvar_Set("hostname", setup_hostname.buffer);
-		}
-		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
-		{
-			Cbuf_AddText(va("color %i %i\n", setup_top, setup_bottom));
-		}
-		Cbuf_AddText(va("playerclass %d\n", setup_class));
-		mqh_entersound = true;
-		MQH_Menu_MultiPlayer_f();
-		break;
-	}
-	if (mqh_setup_cursor == 0)
-	{
-		Field_KeyDownEvent(&setup_hostname, k);
-	}
-	if (mqh_setup_cursor == 1)
-	{
-		Field_KeyDownEvent(&setup_myname, k);
-	}
-
-	if (setup_top > 10)
-	{
-		setup_top = 0;
-	}
-	if (setup_top < 0)
-	{
-		setup_top = 10;
-	}
-	if (setup_bottom > 10)
-	{
-		setup_bottom = 0;
-	}
-	if (setup_bottom < 0)
-	{
-		setup_bottom = 10;
-	}
-}
-
-void M_Setup_Char(int k)
-{
-	if (mqh_setup_cursor == 0)
-	{
-		Field_CharEvent(&setup_hostname, k);
-	}
-	if (mqh_setup_cursor == 1)
-	{
-		Field_CharEvent(&setup_myname, k);
 	}
 }
 
@@ -1158,10 +975,6 @@ void M_Draw(void)
 	switch (m_state)
 	{
 
-	case m_setup:
-		M_Setup_Draw();
-		break;
-
 	case m_options:
 		M_Options_Draw();
 		break;
@@ -1206,10 +1019,6 @@ void M_Keydown(int key)
 		M_MSave_Key(key);
 		return;
 
-	case m_setup:
-		M_Setup_Key(key);
-		return;
-
 	case m_options:
 		M_Options_Key(key);
 		return;
@@ -1231,17 +1040,4 @@ void M_Keydown(int key)
 		return;
 	}
 	MQH_Keydown(key);
-}
-
-void M_CharEvent(int key)
-{
-	switch (m_state)
-	{
-	case m_setup:
-		M_Setup_Char(key);
-		break;
-	default:
-		break;
-	}
-	MQH_CharEvent(key);
 }

@@ -13,11 +13,8 @@ extern char* errormessage;		// Pointer to current plaque
 //
 void M_Init(void);
 void M_Keydown(int key);
-void M_CharEvent(int key);
 void M_Draw(void);
 void M_ToggleMenu_f(void);
 
 
 void M_Print2(int cx, int cy, const char* str);
-
-extern image_t* translate_texture[MAX_PLAYER_CLASS];

@@ -20,7 +20,6 @@ Cvar* entlatency;
 // info mirrors
 //
 Cvar* password;
-Cvar* spectator;
 Cvar* team;
 Cvar* skin;
 Cvar* rate;
@@ -303,7 +302,7 @@ static void Mod_ClearAll(void)
 	R_BeginRegistration(&cls.glconfig);
 
 	CLH2_ClearEntityTextureArrays();
-	Com_Memset(translate_texture, 0, sizeof(translate_texture));
+	Com_Memset(mh2_translate_texture, 0, sizeof(mh2_translate_texture));
 
 	Draw_Init();
 	SbarH2_Init();
@@ -1030,7 +1029,7 @@ void CL_Init(void)
 	clqh_name = Cvar_Get("name","unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
 	clh2_playerclass = Cvar_Get("playerclass", "0", CVAR_ARCHIVE | CVAR_USERINFO);
 	password = Cvar_Get("password", "", CVAR_USERINFO);
-	spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
+	qhw_spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
 	skin = Cvar_Get("skin","", CVAR_ARCHIVE | CVAR_USERINFO);
 	team = Cvar_Get("team","", CVAR_ARCHIVE | CVAR_USERINFO);
 	qhw_topcolor = Cvar_Get("topcolor","0", CVAR_ARCHIVE | CVAR_USERINFO);

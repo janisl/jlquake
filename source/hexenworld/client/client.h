@@ -22,9 +22,6 @@
 //
 extern Cvar* cl_warncmd;
 
-extern Cvar* clh2_playerclass;
-extern Cvar* spectator;
-
 //=============================================================================
 
 extern qboolean nomaster;

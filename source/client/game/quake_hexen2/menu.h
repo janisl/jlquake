@@ -120,6 +120,13 @@ extern const char* Credit2TextH2[MAX_LINES2_H2];
 extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
 extern int setup_class;
+#define PLAYER_PIC_WIDTH 68
+#define PLAYER_PIC_HEIGHT 114
+extern byte mqh_translationTable[256];
+extern byte mq1_menuplyr_pixels[4096];
+extern byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
+extern image_t* mq1_translate_texture;
+extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);

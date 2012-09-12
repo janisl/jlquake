@@ -17,4 +17,5 @@
 extern Cvar* clqh_sbar;
 extern Cvar* qhw_topcolor;
 extern Cvar* qhw_bottomcolor;
+extern Cvar* qhw_spectator;
 extern image_t* draw_backtile;

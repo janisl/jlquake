@@ -48,7 +48,6 @@ static qboolean allowremotecmd = true;
 // info mirrors
 //
 Cvar* password;
-Cvar* spectator;
 Cvar* team;
 Cvar* skin;
 Cvar* rate;
@@ -1140,7 +1139,7 @@ void CL_Init(void)
 	//
 	clqh_name = Cvar_Get("name", "unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
 	password = Cvar_Get("password", "", CVAR_USERINFO);
-	spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
+	qhw_spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
 	skin = Cvar_Get("skin", "", CVAR_ARCHIVE | CVAR_USERINFO);
 	team = Cvar_Get("team", "", CVAR_ARCHIVE | CVAR_USERINFO);
 	qhw_topcolor = Cvar_Get("topcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);

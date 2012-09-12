@@ -21,5 +21,6 @@ Cvar* clqh_sbar;
 
 Cvar* qhw_topcolor;
 Cvar* qhw_bottomcolor;
+Cvar* qhw_spectator;
 
 image_t* draw_backtile;

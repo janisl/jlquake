@@ -2883,6 +2883,12 @@ int setup_bottom;
 int class_limit;
 int which_class;
 
+byte mqh_translationTable[256];
+byte mq1_menuplyr_pixels[4096];
+byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
+image_t* mq1_translate_texture;
+image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
+
 static void MQH_Menu_Setup_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -2946,6 +2952,371 @@ static void MQH_Menu_Setup_f()
 			setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
 		}
 		mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
+	}
+}
+
+static void MQH_Setup_Draw()
+{
+	static bool wait;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	}
+
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		MQH_Print(64, 40, "Hostname");
+		MQH_DrawField(168, 40, &setup_hostname, mqh_setup_cursor == 0);
+	}
+
+	MQH_Print(64, 56, "Your name");
+	MQH_DrawField(168, 56, &setup_myname, mqh_setup_cursor == 1);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		if (GGameType & GAME_HexenWorld)
+		{
+			MQH_Print(64, 72, "Spectator: ");
+			if (qhw_spectator->value)
+			{
+				MQH_PrintWhite(64 + 12 * 8, 72, "YES");
+			}
+			else
+			{
+				MQH_PrintWhite(64 + 12 * 8, 72, "NO");
+			}
+
+			MQH_Print(64, 88, "Current Class: ");
+
+			if (!com_portals)
+			{
+				if (setup_class == CLASS_DEMON)
+				{
+					setup_class = 0;
+				}
+			}
+			if (String::ICmp(fs_gamedir, "siege"))
+			{
+				if (setup_class == CLASS_DWARF)
+				{
+					setup_class = 0;
+				}
+			}
+			switch (setup_class)
+			{
+			case 0: MQH_PrintWhite(88, 96, "Random");
+				break;
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5: MQH_PrintWhite(88, 96, hw_ClassNames[setup_class - 1]);
+			case 6: MQH_PrintWhite(88, 96, hw_ClassNames[setup_class - 1]);
+				break;
+			}
+
+			MQH_Print(64, 112, "First color patch");
+			MQH_Print(64, 136, "Second color patch");
+
+			MQH_DrawTextBox(64, 164 - 8, 14, 1);
+			MQH_Print(72, 164, "Accept Changes");
+
+			if (setup_class == 0)
+			{
+				int i = (cls.realtime / 100) % 8;
+
+				if ((i == 0 && !wait) || which_class == 0)
+				{
+					if (!com_portals)
+					{	//not succubus
+						if (String::ICmp(fs_gamedir, "siege"))
+						{
+							which_class = (rand() % CLASS_THEIF) + 1;
+						}
+						else
+						{
+							which_class = (rand() % CLASS_DEMON) + 1;
+							if (which_class == CLASS_DEMON)
+							{
+								which_class = CLASS_DWARF;
+							}
+						}
+					}
+					else
+					{
+						if (String::ICmp(fs_gamedir, "siege"))
+						{
+							which_class = (rand() % CLASS_DEMON) + 1;
+						}
+						else
+						{
+							which_class = (rand() % class_limit) + 1;
+						}
+					}
+					wait = true;
+				}
+				else if (i)
+				{
+					wait = false;
+				}
+			}
+			else
+			{
+				which_class = setup_class;
+			}
+		}
+		else
+		{
+			MQH_Print(64, 80, "Current Class: ");
+			MQH_Print(88, 88, h2_ClassNames[setup_class - 1]);
+
+			MQH_Print(64, 104, "First color patch");
+			MQH_Print(64, 128, "Second color patch");
+
+			MQH_DrawTextBox(64, 156 - 8, 14, 1);
+			MQH_Print(72, 156, "Accept Changes");
+
+			which_class = setup_class;
+		}
+
+		image_t* p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), mh2_menuplyr_pixels[which_class - 1]);
+		CL_CalcHexen2SkinTranslation(setup_top, setup_bottom, which_class, mqh_translationTable);
+		R_CreateOrUpdateTranslatedImage(mh2_translate_texture[which_class - 1], va("*translate_pic%d", which_class), mh2_menuplyr_pixels[which_class - 1], mqh_translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
+		MQH_DrawPic(220, 72, mh2_translate_texture[which_class - 1]);
+	}
+	else
+	{
+		MQH_Print(64, 80, "Shirt color");
+		MQH_Print(64, 104, "Pants color");
+
+		MQH_DrawTextBox(64, 140 - 8, 14, 1);
+		MQH_Print(72, 140, "Accept Changes");
+
+		image_t* p = R_CachePic("gfx/bigbox.lmp");
+		MQH_DrawPic(160, 64, p);
+		p = R_CachePicWithTransPixels("gfx/menuplyr.lmp", mq1_menuplyr_pixels);
+		CL_CalcQuakeSkinTranslation(setup_top, setup_bottom, mqh_translationTable);
+		R_CreateOrUpdateTranslatedImage(mq1_translate_texture, "*translate_pic", mq1_menuplyr_pixels, mqh_translationTable, R_GetImageWidth(p), R_GetImageHeight(p));
+		MQH_DrawPic(172, 72, mq1_translate_texture);
+	}
+
+	MQH_DrawCharacter(56, GGameType & GAME_HexenWorld ? setup_cursor_table_hw[mqh_setup_cursor] : GGameType & GAME_Hexen2 ? setup_cursor_table_h2[mqh_setup_cursor] :
+		setup_cursor_table_q1[mqh_setup_cursor], 12 + ((cls.realtime / 250) & 1));
+}
+
+static void MQH_Setup_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_MultiPlayer_f();
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_setup_cursor--;
+		if (GGameType & GAME_HexenWorld)
+		{
+			if (mqh_setup_cursor < 1)
+			{
+				mqh_setup_cursor = NUM_SETUP_CMDS_HW - 1;
+			}
+		}
+		else
+		{
+			if (mqh_setup_cursor < 0)
+			{
+				mqh_setup_cursor = (GGameType & GAME_Hexen2 ? NUM_SETUP_CMDS_H2 : NUM_SETUP_CMDS_Q1) - 1;
+			}
+		}
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_setup_cursor++;
+		if (GGameType & GAME_HexenWorld)
+		{
+			if (mqh_setup_cursor >= NUM_SETUP_CMDS_HW)
+			{
+				mqh_setup_cursor = 1;
+			}
+		}
+		else
+		{
+			if (mqh_setup_cursor >= (GGameType & GAME_Hexen2 ? NUM_SETUP_CMDS_H2 : NUM_SETUP_CMDS_Q1))
+			{
+				mqh_setup_cursor = 0;
+			}
+		}
+		break;
+
+	case K_LEFTARROW:
+		if (mqh_setup_cursor < 2)
+		{
+			break;
+		}
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu3.wav" : "misc/menu3.wav");
+		if (GGameType & GAME_HexenWorld && mqh_setup_cursor == 2)
+		{
+			if (qhw_spectator->value)
+			{
+				Cvar_Set("spectator","0");
+			}
+			else
+			{
+				Cvar_Set("spectator","1");
+			}
+			cl.qh_spectator = qhw_spectator->value;
+		}
+		if (GGameType & GAME_Hexen2 && mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 3 : 2))
+		{
+			setup_class--;
+			if (GGameType & GAME_HexenWorld)
+			{
+				if (setup_class < 0)
+				{
+					setup_class = class_limit;
+				}
+			}
+			else
+			{
+				if (setup_class < 1)
+				{
+					setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2);
+				}
+			}
+		}
+		if (mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 4 : GGameType & GAME_Hexen2 ? 3 : 2))
+		{
+			setup_top = setup_top - 1;
+		}
+		if (mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 5 : GGameType & GAME_Hexen2 ? 4 : 3))
+		{
+			setup_bottom = setup_bottom - 1;
+		}
+		break;
+	case K_RIGHTARROW:
+		if (mqh_setup_cursor < 2)
+		{
+			break;
+		}
+forward:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu3.wav" : "misc/menu3.wav");
+		if (GGameType & GAME_HexenWorld && mqh_setup_cursor == 2)
+		{
+			if (qhw_spectator->value)
+			{
+				Cvar_Set("spectator","0");
+			}
+			else
+			{
+				Cvar_Set("spectator","1");
+			}
+			cl.qh_spectator = qhw_spectator->value;
+		}
+		if (GGameType & GAME_Hexen2 && mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 3 : 2))
+		{
+			setup_class++;
+			if (GGameType & GAME_HexenWorld)
+			{
+				if (setup_class > class_limit)
+				{
+					setup_class = 0;
+				}
+			}
+			else
+			{
+				if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2))
+				{
+					setup_class = 1;
+				}
+			}
+		}
+		if (mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 4 : GGameType & GAME_Hexen2 ? 3 : 2))
+		{
+			setup_top = setup_top + 1;
+		}
+		if (mqh_setup_cursor == (GGameType & GAME_HexenWorld ? 5 : GGameType & GAME_Hexen2 ? 4 : 3))
+		{
+			setup_bottom = setup_bottom + 1;
+		}
+		break;
+
+	case K_ENTER:
+		if (mqh_setup_cursor == 0 || mqh_setup_cursor == 1)
+		{
+			return;
+		}
+
+		if (mqh_setup_cursor == 2 || mqh_setup_cursor == 3 || (GGameType & GAME_Hexen2 && mqh_setup_cursor == 4) || (GGameType & GAME_HexenWorld && mqh_setup_cursor == 5))
+		{
+			goto forward;
+		}
+
+		if (String::Cmp(clqh_name->string, setup_myname.buffer) != 0)
+		{
+			Cbuf_AddText(va("name \"%s\"\n", setup_myname.buffer));
+		}
+		if (!(GGameType & GAME_HexenWorld) && String::Cmp(sv_hostname->string, setup_hostname.buffer) != 0)
+		{
+			Cvar_Set("hostname", setup_hostname.buffer);
+		}
+		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
+		{
+			Cbuf_AddText(va("color %i %i\n", setup_top, setup_bottom));
+		}
+		if (GGameType & GAME_Hexen2)
+		{
+			Cbuf_AddText(va("playerclass %d\n", setup_class));
+		}
+		mqh_entersound = true;
+		MQH_Menu_MultiPlayer_f();
+		break;
+	}
+	if (!(GGameType & GAME_HexenWorld) && mqh_setup_cursor == 0)
+	{
+		Field_KeyDownEvent(&setup_hostname, k);
+	}
+	if (mqh_setup_cursor == 1)
+	{
+		Field_KeyDownEvent(&setup_myname, k);
+	}
+
+	int maxColour = GGameType & GAME_Hexen2 ? 10 : 13;
+	if (setup_top > maxColour)
+	{
+		setup_top = 0;
+	}
+	if (setup_top < 0)
+	{
+		setup_top = maxColour;
+	}
+	if (setup_bottom > maxColour)
+	{
+		setup_bottom = 0;
+	}
+	if (setup_bottom < 0)
+	{
+		setup_bottom = maxColour;
+	}
+}
+
+static void MQH_Setup_Char(int k)
+{
+	if (mqh_setup_cursor == 0)
+	{
+		Field_CharEvent(&setup_hostname, k);
+	}
+	if (mqh_setup_cursor == 1)
+	{
+		Field_CharEvent(&setup_myname, k);
 	}
 }
 
@@ -3898,6 +4269,10 @@ void MQH_Draw()
 	case m_gameoptions:
 		MQH_GameOptions_Draw();
 		break;
+
+	case m_setup:
+		MQH_Setup_Draw();
+		break;
 	}
 }
 
@@ -3959,6 +4334,10 @@ void MQH_Keydown(int key)
 	case m_gameoptions:
 		MQH_GameOptions_Key(key);
 		return;
+
+	case m_setup:
+		MQH_Setup_Key(key);
+		return;
 	}
 }
 
@@ -3972,6 +4351,10 @@ void MQH_CharEvent(int key)
 
 	case m_mconnect:
 		MHW_Connect_Char(key);
+		break;
+
+	case m_setup:
+		MQH_Setup_Char(key);
 		break;
 
 	default:

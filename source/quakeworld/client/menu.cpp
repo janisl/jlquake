@@ -24,7 +24,6 @@ extern Cvar* r_gamma;
 void M_Menu_Keys_f(void);
 void M_Menu_Video_f(void);
 
-void M_Setup_Draw(void);
 void M_Options_Draw(void);
 void M_Keys_Draw(void);
 void M_Video_Draw(void);
@@ -33,7 +32,6 @@ void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 
-void M_Setup_Key(int key);
 void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
@@ -776,10 +774,6 @@ void M_Draw(void)
 	MQH_Draw();
 	switch (m_state)
 	{
-	case m_setup:
-//		M_Setup_Draw ();
-		break;
-
 	case m_options:
 		M_Options_Draw();
 		break;
@@ -816,10 +810,6 @@ void M_Keydown(int key)
 	switch (m_state)
 	{
 
-	case m_setup:
-//		M_Setup_Key (key);
-		return;
-
 	case m_options:
 		M_Options_Key(key);
 		return;
@@ -841,9 +831,4 @@ void M_Keydown(int key)
 		return;
 	}
 	MQH_Keydown(key);
-}
-
-void M_CharEvent(int key)
-{
-	MQH_CharEvent(key);
 }
