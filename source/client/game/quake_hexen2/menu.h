@@ -58,16 +58,6 @@ extern const char* mh2_message2;
 extern int mh2_message_time;
 extern Cvar* mh2_oldmission;
 
-#define OEM_START 9
-#define REG_START 2
-#define MP_START 7
-#define DM_START 8
-#define NUM_GAMEOPTIONS_Q1  9
-#define NUM_GAMEOPTIONS_H2  11
-extern int mqh_startepisode;
-extern int mqh_startlevel;
-extern int mqh_gameoptions_cursor;
-extern int mqh_maxplayers;
 #define NUM_SETUP_CMDS_Q1  5
 #define NUM_SETUP_CMDS_H2  6
 #define NUM_SETUP_CMDS_HW  7
@@ -130,8 +120,6 @@ extern const char* Credit2TextH2[MAX_LINES2_H2];
 extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
 extern int setup_class;
-#define NUM_DIFFLEVELS  4
-extern const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS];
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);
@@ -140,7 +128,6 @@ void MQH_PrintWhite(int cx, int cy, const char* str);
 void MQH_DrawTextBox(int x, int y, int width, int lines);
 void MQH_DrawTextBox2(int x, int y, int width, int lines);
 void MQH_DrawField(int x, int y, field_t* edit, bool showCursor);
-void MH2_DrawBigString(int x, int y, const char* string);
 void MH2_ScrollTitle(const char* name);
 void MQH_Menu_Main_f();
 void MQH_Init();
@@ -149,9 +136,4 @@ void MQH_Menu_MultiPlayer_f();
 void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
-void MQH_Menu_Net_f();
-void MQH_Menu_Setup_f();
-void MH2_Menu_MLoad_f();
-void MH2_Menu_MSave_f();
-void MQH_Menu_GameOptions_f();
 void MQH_CharEvent(int key);

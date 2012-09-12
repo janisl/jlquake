@@ -20,6 +20,10 @@
 extern int svh2_kingofhill;
 extern Cvar* svqh_coop;
 extern Cvar* svqh_teamplay;
+extern Cvar* qh_skill;
+extern Cvar* qh_timelimit;
+extern Cvar* qh_fraglimit;
+extern Cvar* h2_randomclass;
 
 bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);

@@ -50,10 +50,15 @@ static void MH2_Menu_Class_f();
 static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Load_f();
 static void MQH_Menu_Save_f();
+static void MQH_Menu_Net_f();
 static void MQH_Menu_LanConfig_f();
 static void MQH_Menu_Search_f();
 static void MQH_Menu_ServerList_f();
 static void MHW_Menu_Connect_f();
+static void MQH_Menu_GameOptions_f();
+static void MQH_Menu_Setup_f();
+static void MH2_Menu_MLoad_f();
+static void MH2_Menu_MSave_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -195,7 +200,7 @@ static int MH2_DrawBigCharacter(int x, int y, int num, int numNext)
 	return BigCharWidth[num][numNext] + add;
 }
 
-void MH2_DrawBigString(int x, int y, const char* string)
+static void MH2_DrawBigString(int x, int y, const char* string)
 {
 	x += ((viddef.width - 320) >> 1);
 
@@ -702,9 +707,11 @@ static void MH2_Class_Key(int key)
 //=============================================================================
 /* DIFFICULTY MENU */
 
+#define NUM_DIFFLEVELS  4
+
 static int mh2_diff_cursor;
 
-const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS] =
+static const char* DiffNames[NUM_CLASSES_H2MP][NUM_DIFFLEVELS] =
 {
 	{	// Paladin
 		"APPRENTICE",
@@ -1220,7 +1227,7 @@ static const char* net_helpMessage[] =
 	" Area Network.          "
 };
 
-void MQH_Menu_Net_f()
+static void MQH_Menu_Net_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_net;
@@ -1914,12 +1921,277 @@ static void MHW_Connect_Char(int k)
 //=============================================================================
 /* GAME OPTIONS MENU */
 
-int mqh_gameoptions_cursor;
-int mqh_maxplayers;
-int mqh_startepisode;
-int mqh_startlevel;
+#define NUM_GAMEOPTIONS_Q1  9
+#define NUM_GAMEOPTIONS_H2  11
 
-void MQH_Menu_GameOptions_f()
+#define OEM_START 9
+#define REG_START 2
+#define MP_START 7
+#define DM_START 8
+
+struct level_t
+{
+	const char* name;
+	const char* description;
+};
+
+struct episode_t
+{
+	const char* description;
+	int firstLevel;
+	int levels;
+};
+
+static int mqh_gameoptions_cursor;
+static int mqh_maxplayers;
+static int mqh_startepisode;
+static int mqh_startlevel;
+
+static level_t mq1_levels[] =
+{
+	{"start", "Entrance"},	// 0
+
+	{"e1m1", "Slipgate Complex"},				// 1
+	{"e1m2", "Castle of the Damned"},
+	{"e1m3", "The Necropolis"},
+	{"e1m4", "The Grisly Grotto"},
+	{"e1m5", "Gloom Keep"},
+	{"e1m6", "The Door To Chthon"},
+	{"e1m7", "The House of Chthon"},
+	{"e1m8", "Ziggurat Vertigo"},
+
+	{"e2m1", "The Installation"},				// 9
+	{"e2m2", "Ogre Citadel"},
+	{"e2m3", "Crypt of Decay"},
+	{"e2m4", "The Ebon Fortress"},
+	{"e2m5", "The Wizard's Manse"},
+	{"e2m6", "The Dismal Oubliette"},
+	{"e2m7", "Underearth"},
+
+	{"e3m1", "Termination Central"},			// 16
+	{"e3m2", "The Vaults of Zin"},
+	{"e3m3", "The Tomb of Terror"},
+	{"e3m4", "Satan's Dark Delight"},
+	{"e3m5", "Wind Tunnels"},
+	{"e3m6", "Chambers of Torment"},
+	{"e3m7", "The Haunted Halls"},
+
+	{"e4m1", "The Sewage System"},				// 23
+	{"e4m2", "The Tower of Despair"},
+	{"e4m3", "The Elder God Shrine"},
+	{"e4m4", "The Palace of Hate"},
+	{"e4m5", "Hell's Atrium"},
+	{"e4m6", "The Pain Maze"},
+	{"e4m7", "Azure Agony"},
+	{"e4m8", "The Nameless City"},
+
+	{"end", "Shub-Niggurath's Pit"},			// 31
+
+	{"dm1", "Place of Two Deaths"},				// 32
+	{"dm2", "Claustrophobopolis"},
+	{"dm3", "The Abandoned Base"},
+	{"dm4", "The Bad Place"},
+	{"dm5", "The Cistern"},
+	{"dm6", "The Dark Zone"}
+};
+
+//MED 01/06/97 added hipnotic levels
+static level_t mq1_hipnoticlevels[] =
+{
+	{"start", "Command HQ"},// 0
+
+	{"hip1m1", "The Pumping Station"},			// 1
+	{"hip1m2", "Storage Facility"},
+	{"hip1m3", "The Lost Mine"},
+	{"hip1m4", "Research Facility"},
+	{"hip1m5", "Military Complex"},
+
+	{"hip2m1", "Ancient Realms"},			// 6
+	{"hip2m2", "The Black Cathedral"},
+	{"hip2m3", "The Catacombs"},
+	{"hip2m4", "The Crypt"},
+	{"hip2m5", "Mortum's Keep"},
+	{"hip2m6", "The Gremlin's Domain"},
+
+	{"hip3m1", "Tur Torment"},		// 12
+	{"hip3m2", "Pandemonium"},
+	{"hip3m3", "Limbo"},
+	{"hip3m4", "The Gauntlet"},
+
+	{"hipend", "Armagon's Lair"},		// 16
+
+	{"hipdm1", "The Edge of Oblivion"}			// 17
+};
+
+//PGM 01/07/97 added rogue levels
+//PGM 03/02/97 added dmatch level
+static level_t mq1_roguelevels[] =
+{
+	{"start",   "Split Decision"},
+	{"r1m1",    "Deviant's Domain"},
+	{"r1m2",    "Dread Portal"},
+	{"r1m3",    "Judgement Call"},
+	{"r1m4",    "Cave of Death"},
+	{"r1m5",    "Towers of Wrath"},
+	{"r1m6",    "Temple of Pain"},
+	{"r1m7",    "Tomb of the Overlord"},
+	{"r2m1",    "Tempus Fugit"},
+	{"r2m2",    "Elemental Fury I"},
+	{"r2m3",    "Elemental Fury II"},
+	{"r2m4",    "Curse of Osiris"},
+	{"r2m5",    "Wizard's Keep"},
+	{"r2m6",    "Blood Sacrifice"},
+	{"r2m7",    "Last Bastion"},
+	{"r2m8",    "Source of Evil"},
+	{"ctf1",    "Division of Change"}
+};
+
+static episode_t mq1_episodes[] =
+{
+	{"Welcome to Quake", 0, 1},
+	{"Doomed Dimension", 1, 8},
+	{"Realm of Black Magic", 9, 7},
+	{"Netherworld", 16, 7},
+	{"The Elder World", 23, 8},
+	{"Final Level", 31, 1},
+	{"Deathmatch Arena", 32, 6}
+};
+
+//MED 01/06/97  added hipnotic episodes
+static episode_t mq1_hipnoticepisodes[] =
+{
+	{"Scourge of Armagon", 0, 1},
+	{"Fortress of the Dead", 1, 5},
+	{"Dominion of Darkness", 6, 6},
+	{"The Rift", 12, 4},
+	{"Final Level", 16, 1},
+	{"Deathmatch Arena", 17, 1}
+};
+
+//PGM 01/07/97 added rogue episodes
+//PGM 03/02/97 added dmatch episode
+static episode_t mq1_rogueepisodes[] =
+{
+	{"Introduction", 0, 1},
+	{"Hell's Fortress", 1, 7},
+	{"Corridors of Time", 8, 8},
+	{"Deathmatch Arena", 16, 1}
+};
+
+static level_t mh2_levels[] =
+{
+	{"demo1", "Blackmarsh"},							// 0
+	{"demo2", "Barbican"},								// 1
+
+	{"ravdm1", "Deathmatch 1"},							// 2
+
+	{"demo1","Blackmarsh"},								// 3
+	{"demo2","Barbican"},								// 4
+	{"demo3","The Mill"},								// 5
+	{"village1","King's Court"},						// 6
+	{"village2","Inner Courtyard"},						// 7
+	{"village3","Stables"},								// 8
+	{"village4","Palace Entrance"},						// 9
+	{"village5","The Forgotten Chapel"},				// 10
+	{"rider1a","Famine's Domain"},						// 11
+
+	{"meso2","Plaza of the Sun"},						// 12
+	{"meso1","The Palace of Columns"},					// 13
+	{"meso3","Square of the Stream"},					// 14
+	{"meso4","Tomb of the High Priest"},				// 15
+	{"meso5","Obelisk of the Moon"},					// 16
+	{"meso6","Court of 1000 Warriors"},					// 17
+	{"meso8","Bridge of Stars"},						// 18
+	{"meso9","Well of Souls"},							// 19
+
+	{"egypt1","Temple of Horus"},						// 20
+	{"egypt2","Ancient Temple of Nefertum"},			// 21
+	{"egypt3","Temple of Nefertum"},					// 22
+	{"egypt4","Palace of the Pharaoh"},					// 23
+	{"egypt5","Pyramid of Anubis"},						// 24
+	{"egypt6","Temple of Light"},						// 25
+	{"egypt7","Shrine of Naos"},						// 26
+	{"rider2c","Pestilence's Lair"},					// 27
+
+	{"romeric1","The Hall of Heroes"},					// 28
+	{"romeric2","Gardens of Athena"},					// 29
+	{"romeric3","Forum of Zeus"},						// 30
+	{"romeric4","Baths of Demetrius"},					// 31
+	{"romeric5","Temple of Mars"},						// 32
+	{"romeric6","Coliseum of War"},						// 33
+	{"romeric7","Reflecting Pool"},						// 34
+
+	{"cath","Cathedral"},								// 35
+	{"tower","Tower of the Dark Mage"},					// 36
+	{"castle4","The Underhalls"},						// 37
+	{"castle5","Eidolon's Ordeal"},						// 38
+	{"eidolon","Eidolon's Lair"},						// 39
+
+	{"ravdm1","Atrium of Immolation"},					// 40
+	{"ravdm2","Total Carnage"},							// 41
+	{"ravdm3","Reckless Abandon"},						// 42
+	{"ravdm4","Temple of RA"},							// 43
+	{"ravdm5","Tom Foolery"},							// 44
+
+	{"ravdm1", "Deathmatch 1"},							// 45
+
+	//OEM
+	{"demo1","Blackmarsh"},								// 46
+	{"demo2","Barbican"},								// 47
+	{"demo3","The Mill"},								// 48
+	{"village1","King's Court"},						// 49
+	{"village2","Inner Courtyard"},						// 50
+	{"village3","Stables"},								// 51
+	{"village4","Palace Entrance"},						// 52
+	{"village5","The Forgotten Chapel"},				// 53
+	{"rider1a","Famine's Domain"},						// 54
+
+	//Mission Pack
+	{"keep1",   "Eidolon's Lair"},						// 55
+	{"keep2",   "Village of Turnabel"},					// 56
+	{"keep3",   "Duke's Keep"},							// 57
+	{"keep4",   "The Catacombs"},						// 58
+	{"keep5",   "Hall of the Dead"},					// 59
+
+	{"tibet1",  "Tulku"},								// 60
+	{"tibet2",  "Ice Caverns"},							// 61
+	{"tibet3",  "The False Temple"},					// 62
+	{"tibet4",  "Courtyards of Tsok"},					// 63
+	{"tibet5",  "Temple of Kalachakra"},				// 64
+	{"tibet6",  "Temple of Bardo"},						// 65
+	{"tibet7",  "Temple of Phurbu"},					// 66
+	{"tibet8",  "Palace of Emperor Egg Chen"},			// 67
+	{"tibet9",  "Palace Inner Chambers"},				// 68
+	{"tibet10", "The Inner Sanctum of Praevus"},		// 69
+};
+
+static episode_t mh2_episodes[] =
+{
+	// Demo
+	{"Demo", 0, 2},
+	{"Demo Deathmatch", 2, 1},
+
+	// Registered
+	{"Village", 3, 9},
+	{"Meso", 12, 8},
+	{"Egypt", 20, 8},
+	{"Romeric", 28, 7},
+	{"Cathedral", 35, 5},
+	{"MISSION PACK", 55, 15},
+	{"Deathmatch", 40, 5},
+
+	// OEM
+	{"Village", 46, 9},
+	{"Deathmatch", 45, 1},
+};
+
+static bool mqh_serverInfoMessage = false;
+static int mqh_serverInfoMessageTime;
+
+static int mq1_gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 112, 120};
+static int mh2_gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 104, 112, 128, 136};
+
+static void MQH_Menu_GameOptions_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_gameoptions;
@@ -1970,6 +2242,631 @@ void MQH_Menu_GameOptions_f()
 	}
 }
 
+static void MQH_GameOptions_Draw()
+{
+	int startx;
+	int starty;
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title4.lmp");
+		startx = 8;
+		starty = 60;
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_multi.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		startx = 0;
+		starty = 32;
+	}
+
+	MQH_DrawTextBox(startx + 152, starty, 10, 1);
+	MQH_Print(startx + 160, starty + 8, "begin game");
+
+	MQH_Print(startx + 0, starty + 24, "      Max players");
+	MQH_Print(startx + 160, starty + 24, va("%i", mqh_maxplayers));
+
+	MQH_Print(startx + 0, starty + 32, "        Game Type");
+	if (svqh_coop->value)
+	{
+		MQH_Print(startx + 160, starty + 32, "Cooperative");
+	}
+	else
+	{
+		MQH_Print(startx + 160, starty + 32, "Deathmatch");
+	}
+
+	MQH_Print(startx + 0, starty + 40, "        Teamplay");
+	if (q1_rogue)
+	{
+		const char* msg;
+		switch ((int)svqh_teamplay->value)
+		{
+		case 1: msg = "No Friendly Fire"; break;
+		case 2: msg = "Friendly Fire"; break;
+		case 3: msg = "Tag"; break;
+		case 4: msg = "Capture the Flag"; break;
+		case 5: msg = "One Flag CTF"; break;
+		case 6: msg = "Three Team CTF"; break;
+		default: msg = "Off"; break;
+		}
+		MQH_Print(startx + 160, starty + 40, msg);
+	}
+	else
+	{
+		const char* msg;
+		switch ((int)svqh_teamplay->value)
+		{
+		case 1: msg = "No Friendly Fire"; break;
+		case 2: msg = "Friendly Fire"; break;
+		default: msg = "Off"; break;
+		}
+		MQH_Print(startx + 160, starty + 40, msg);
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(startx + 0, starty + 48, "            Class");
+		MQH_Print(startx + 160, starty + 48, h2_ClassNames[setup_class]);
+
+		MQH_Print(startx + 0, starty + 56, "       Difficulty");
+		MQH_Print(startx + 160, starty + 56, DiffNames[setup_class][(int)qh_skill->value]);
+		starty += 8;
+	}
+	else
+	{
+		MQH_Print(startx + 0, starty + 48, "            Skill");
+		if (qh_skill->value == 0)
+		{
+			MQH_Print(startx + 160, starty + 48, "Easy difficulty");
+		}
+		else if (qh_skill->value == 1)
+		{
+			MQH_Print(startx + 160, starty + 48, "Normal difficulty");
+		}
+		else if (qh_skill->value == 2)
+		{
+			MQH_Print(startx + 160, starty + 48, "Hard difficulty");
+		}
+		else
+		{
+			MQH_Print(startx + 160, starty + 48, "Nightmare difficulty");
+		}
+	}
+
+	MQH_Print(startx + 0, starty + 56, "       Frag Limit");
+	if (qh_fraglimit->value == 0)
+	{
+		MQH_Print(startx + 160, starty + 56, "none");
+	}
+	else
+	{
+		MQH_Print(startx + 160, starty + 56, va("%i frags", (int)qh_fraglimit->value));
+	}
+
+	MQH_Print(startx + 0, starty + 64, "       Time Limit");
+	if (qh_timelimit->value == 0)
+	{
+		MQH_Print(startx + 160, starty + 64, "none");
+	}
+	else
+	{
+		MQH_Print(startx + 160, starty + 64, va("%i minutes", (int)qh_timelimit->value));
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(startx + 0, starty + 72, "     Random Class");
+		if (h2_randomclass->value)
+		{
+			MQH_Print(startx + 160, starty + 72, "on");
+		}
+		else
+		{
+			MQH_Print(startx + 160, starty + 72, "off");
+		}
+		starty += 8;
+	}
+
+	MQH_Print(startx + 0, starty + 80, "         Episode");
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(startx + 160, starty + 80, mh2_episodes[mqh_startepisode].description);
+	}
+	else if (q1_hipnotic)
+	{
+		MQH_Print(startx + 160, starty + 80, mq1_hipnoticepisodes[mqh_startepisode].description);
+	}
+	else if (q1_rogue)
+	{
+		MQH_Print(startx + 160, starty + 80, mq1_rogueepisodes[mqh_startepisode].description);
+	}
+	else
+	{
+		MQH_Print(startx + 160, starty + 80, mq1_episodes[mqh_startepisode].description);
+	}
+
+	MQH_Print(startx + 0, starty + 88, "           Level");
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(startx + 160, starty + 88, mh2_levels[mh2_episodes[mqh_startepisode].firstLevel + mqh_startlevel].name);
+		MQH_Print(96, starty + 104, mh2_levels[mh2_episodes[mqh_startepisode].firstLevel + mqh_startlevel].description);
+	}
+	else if (q1_hipnotic)
+	{
+		MQH_Print(startx + 160, starty + 88, mq1_hipnoticlevels[mq1_hipnoticepisodes[mqh_startepisode].firstLevel + mqh_startlevel].description);
+		MQH_Print(startx + 160, starty + 96, mq1_hipnoticlevels[mq1_hipnoticepisodes[mqh_startepisode].firstLevel + mqh_startlevel].name);
+	}
+	else if (q1_rogue)
+	{
+		MQH_Print(startx + 160, starty + 88, mq1_roguelevels[mq1_rogueepisodes[mqh_startepisode].firstLevel + mqh_startlevel].description);
+		MQH_Print(startx + 160, starty + 96, mq1_roguelevels[mq1_rogueepisodes[mqh_startepisode].firstLevel + mqh_startlevel].name);
+	}
+	else
+	{
+		MQH_Print(startx + 160, starty + 88, mq1_levels[mq1_episodes[mqh_startepisode].firstLevel + mqh_startlevel].description);
+		MQH_Print(startx + 160, starty + 96, mq1_levels[mq1_episodes[mqh_startepisode].firstLevel + mqh_startlevel].name);
+	}
+
+	// line cursor
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_DrawCharacter(172 - 16, mh2_gameoptions_cursor_table[mqh_gameoptions_cursor] + 28, 12 + ((cls.realtime / 250) & 1));
+	}
+	else
+	{
+		MQH_DrawCharacter(144, mq1_gameoptions_cursor_table[mqh_gameoptions_cursor], 12 + ((cls.realtime / 250) & 1));
+
+		if (mqh_serverInfoMessage)
+		{
+			if ((cls.realtime - mqh_serverInfoMessageTime) < 5000)
+			{
+				int x = (320 - 26 * 8) / 2;
+				MQH_DrawTextBox(x, 138, 24, 4);
+				x += 8;
+				MQH_Print(x, 146, "  More than 4 players   ");
+				MQH_Print(x, 154, " requires using command ");
+				MQH_Print(x, 162, "line parameters; please ");
+				MQH_Print(x, 170, "   see techinfo.txt.    ");
+			}
+			else
+			{
+				mqh_serverInfoMessage = false;
+			}
+		}
+	}
+}
+
+static void MQH_ChangeMaxPlayers(int dir)
+{
+	mqh_maxplayers += dir;
+	if (mqh_maxplayers > SVQH_GetMaxClientsLimit())
+	{
+		mqh_maxplayers = SVQH_GetMaxClientsLimit();
+		mqh_serverInfoMessage = true;
+		mqh_serverInfoMessageTime = cls.realtime;
+	}
+	if (mqh_maxplayers < 2)
+	{
+		mqh_maxplayers = 2;
+	}
+}
+
+static void MQH_ChangeCoop(int dir)
+{
+	Cvar_SetValue("coop", svqh_coop->value ? 0 : 1);
+	if (GGameType & GAME_Hexen2 && svqh_coop->value)
+	{
+		mqh_startlevel = 0;
+		if (mqh_startepisode == 1)
+		{
+			mqh_startepisode = 0;
+		}
+		else if (mqh_startepisode == DM_START)
+		{
+			mqh_startepisode = REG_START;
+		}
+		if (!mh2_oldmission->value)
+		{
+			mqh_startepisode = MP_START;
+		}
+	}
+}
+
+static void MQH_ChangeTeamplay(int dir)
+{
+	int count;
+	if (q1_rogue)
+	{
+		count = 6;
+	}
+	else
+	{
+		count = 2;
+	}
+
+	Cvar_SetValue("teamplay", svqh_teamplay->value + dir);
+	if (svqh_teamplay->value > count)
+	{
+		Cvar_SetValue("teamplay", 0);
+	}
+	else if (svqh_teamplay->value < 0)
+	{
+		Cvar_SetValue("teamplay", count);
+	}
+}
+
+static void MQH_ChangeClass(int dir)
+{
+	setup_class += dir;
+	if (setup_class < 0)
+	{
+		setup_class = (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1;
+	}
+	if (setup_class > (GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2) - 1)
+	{
+		setup_class = 0;
+	}
+}
+
+static void MQH_ChangeSkill(int dir)
+{
+	Cvar_SetValue("skill", qh_skill->value + dir);
+	if (qh_skill->value > 3)
+	{
+		Cvar_SetValue("skill", 0);
+	}
+	if (qh_skill->value < 0)
+	{
+		Cvar_SetValue("skill", 3);
+	}
+}
+
+static void MQH_ChangeFragLimit(int dir)
+{
+	Cvar_SetValue("fraglimit", qh_fraglimit->value + dir * 10);
+	if (qh_fraglimit->value > 100)
+	{
+		Cvar_SetValue("fraglimit", 0);
+	}
+	if (qh_fraglimit->value < 0)
+	{
+		Cvar_SetValue("fraglimit", 100);
+	}
+}
+
+static void MQH_ChangeTimeLimit(int dir)
+{
+	Cvar_SetValue("timelimit", qh_timelimit->value + dir * 5);
+	if (qh_timelimit->value > 60)
+	{
+		Cvar_SetValue("timelimit", 0);
+	}
+	if (qh_timelimit->value < 0)
+	{
+		Cvar_SetValue("timelimit", 60);
+	}
+}
+
+static void MQH_ChangeRandomClass(int dir)
+{
+	if (h2_randomclass->value)
+	{
+		Cvar_SetValue("randomclass", 0);
+	}
+	else
+	{
+		Cvar_SetValue("randomclass", 1);
+	}
+}
+
+static void MQ1_ChangeStartEpisode(int dir)
+{
+	mqh_startepisode += dir;
+	int count;
+	//MED 01/06/97 added hipnotic count
+	if (q1_hipnotic)
+	{
+		count = 6;
+	}
+	//PGM 01/07/97 added rogue count
+	//PGM 03/02/97 added 1 for dmatch episode
+	else if (q1_rogue)
+	{
+		count = 4;
+	}
+	else if (qh_registered->value)
+	{
+		count = 7;
+	}
+	else
+	{
+		count = 2;
+	}
+
+	if (mqh_startepisode < 0)
+	{
+		mqh_startepisode = count - 1;
+	}
+
+	if (mqh_startepisode >= count)
+	{
+		mqh_startepisode = 0;
+	}
+
+	mqh_startlevel = 0;
+}
+
+static void MH2_ChangeStartEpisode(int dir)
+{
+	mqh_startepisode += dir;
+
+	if (qh_registered->value)
+	{
+		int count = DM_START;
+		if (!svqh_coop->value)
+		{
+			count++;
+		}
+		else
+		{
+			if (!mh2_oldmission->value)
+			{
+				mqh_startepisode = MP_START;
+			}
+		}
+		if (mqh_startepisode < REG_START)
+		{
+			mqh_startepisode = count - 1;
+		}
+
+		if (mqh_startepisode >= count)
+		{
+			mqh_startepisode = REG_START;
+		}
+
+		mqh_startlevel = 0;
+	}
+	else
+	{
+		int count = 2;
+
+		if (mqh_startepisode < 0)
+		{
+			mqh_startepisode = count - 1;
+		}
+
+		if (mqh_startepisode >= count)
+		{
+			mqh_startepisode = 0;
+		}
+
+		mqh_startlevel = 0;
+	}
+}
+
+static void MQH_ChangeStartLevel(int dir)
+{
+	if (GGameType & GAME_Hexen2 && svqh_coop->value)
+	{
+		mqh_startlevel = 0;
+		return;
+	}
+	mqh_startlevel += dir;
+	int count;
+	if (GGameType & GAME_Hexen2)
+	{
+		count = mh2_episodes[mqh_startepisode].levels;
+	}
+	else
+	{
+		//MED 01/06/97 added hipnotic episodes
+		if (q1_hipnotic)
+		{
+			count = mq1_hipnoticepisodes[mqh_startepisode].levels;
+		}
+		//PGM 01/06/97 added hipnotic episodes
+		else if (q1_rogue)
+		{
+			count = mq1_rogueepisodes[mqh_startepisode].levels;
+		}
+		else
+		{
+			count = mq1_episodes[mqh_startepisode].levels;
+		}
+	}
+
+	if (mqh_startlevel < 0)
+	{
+		mqh_startlevel = count - 1;
+	}
+
+	if (mqh_startlevel >= count)
+	{
+		mqh_startlevel = 0;
+	}
+}
+
+static void MQH_NetStart_Change(int dir)
+{
+	switch (mqh_gameoptions_cursor)
+	{
+	case 1:
+		MQH_ChangeMaxPlayers(dir);
+		break;
+
+	case 2:
+		MQH_ChangeCoop(dir);
+		break;
+
+	case 3:
+		MQH_ChangeTeamplay(dir);
+		break;
+
+	case 4:
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_ChangeClass(dir);
+		}
+		else
+		{
+			MQH_ChangeSkill(dir);
+		}
+		break;
+
+	case 5:
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_ChangeSkill(dir);
+		}
+		else
+		{
+			MQH_ChangeFragLimit(dir);
+		}
+		break;
+
+	case 6:
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_ChangeFragLimit(dir);
+		}
+		else
+		{
+			MQH_ChangeTimeLimit(dir);
+		}
+		break;
+
+	case 7:
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_ChangeTimeLimit(dir);
+		}
+		else
+		{
+			MQ1_ChangeStartEpisode(dir);
+		}
+		break;
+
+	case 8:
+		if (GGameType & GAME_Hexen2)
+		{
+			MQH_ChangeRandomClass(dir);
+		}
+		else
+		{
+			MQH_ChangeStartLevel(dir);
+		}
+		break;
+
+	case 9:
+		MH2_ChangeStartEpisode(dir);
+		break;
+
+	case 10:
+		MQH_ChangeStartLevel(dir);
+		break;
+	}
+}
+
+static void MQH_GameOptions_Key(int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Net_f();
+		break;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_gameoptions_cursor--;
+		if (mqh_gameoptions_cursor < 0)
+		{
+			mqh_gameoptions_cursor = (GGameType & GAME_Hexen2 ? NUM_GAMEOPTIONS_H2 : NUM_GAMEOPTIONS_Q1) - 1;
+			if (GGameType & GAME_Hexen2 && svqh_coop->value)
+			{
+				mqh_gameoptions_cursor--;
+			}
+		}
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_gameoptions_cursor++;
+		if (GGameType & GAME_Hexen2 && svqh_coop->value)
+		{
+			if (mqh_gameoptions_cursor >= (GGameType & GAME_Hexen2 ? NUM_GAMEOPTIONS_H2 : NUM_GAMEOPTIONS_Q1) - 1)
+			{
+				mqh_gameoptions_cursor = 0;
+			}
+		}
+		else
+		{
+			if (mqh_gameoptions_cursor >= (GGameType & GAME_Hexen2 ? NUM_GAMEOPTIONS_H2 : NUM_GAMEOPTIONS_Q1))
+			{
+				mqh_gameoptions_cursor = 0;
+			}
+		}
+		break;
+
+	case K_LEFTARROW:
+		if (mqh_gameoptions_cursor == 0)
+		{
+			break;
+		}
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu3.wav" : "misc/menu3.wav");
+		MQH_NetStart_Change(-1);
+		break;
+
+	case K_RIGHTARROW:
+		if (mqh_gameoptions_cursor == 0)
+		{
+			break;
+		}
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu3.wav" : "misc/menu3.wav");
+		MQH_NetStart_Change(1);
+		break;
+
+	case K_ENTER:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		if (mqh_gameoptions_cursor == 0)
+		{
+			if (SV_IsServerActive())
+			{
+				Cbuf_AddText("disconnect\n");
+			}
+			if (GGameType & GAME_Hexen2)
+			{
+				Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
+			}
+			Cbuf_AddText("listen 0\n");		// so host_netport will be re-examined
+			Cbuf_AddText(va("maxplayers %u\n", mqh_maxplayers));
+			SCRQH_BeginLoadingPlaque();
+
+			if (GGameType & GAME_Hexen2)
+			{
+				Cbuf_AddText(va("map %s\n", mh2_levels[mh2_episodes[mqh_startepisode].firstLevel + mqh_startlevel].name));
+			}
+			else if (q1_hipnotic)
+			{
+				Cbuf_AddText(va("map %s\n", mq1_hipnoticlevels[mq1_hipnoticepisodes[mqh_startepisode].firstLevel + mqh_startlevel].name));
+			}
+			else if (q1_rogue)
+			{
+				Cbuf_AddText(va("map %s\n", mq1_roguelevels[mq1_rogueepisodes[mqh_startepisode].firstLevel + mqh_startlevel].name));
+			}
+			else
+			{
+				Cbuf_AddText(va("map %s\n", mq1_levels[mq1_episodes[mqh_startepisode].firstLevel + mqh_startlevel].name));
+			}
+			return;
+		}
+
+		MQH_NetStart_Change(1);
+		break;
+	}
+}
+
 //=============================================================================
 /* SETUP MENU */
 
@@ -1986,7 +2883,7 @@ int setup_bottom;
 int class_limit;
 int which_class;
 
-void MQH_Menu_Setup_f()
+static void MQH_Menu_Setup_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
@@ -2103,7 +3000,7 @@ static void M_ScanMSaves()
 	}
 }
 
-void MH2_Menu_MLoad_f()
+static void MH2_Menu_MLoad_f()
 {
 	mqh_entersound = true;
 	m_state = m_mload;
@@ -2112,7 +3009,7 @@ void MH2_Menu_MLoad_f()
 }
 
 
-void MH2_Menu_MSave_f()
+static void MH2_Menu_MSave_f()
 {
 	if (!SV_IsServerActive() || cl.qh_intermission || SVQH_GetMaxClients() == 1)
 	{
@@ -2997,6 +3894,10 @@ void MQH_Draw()
 	case m_mconnect:
 		MHW_Connect_Draw();
 		break;
+
+	case m_gameoptions:
+		MQH_GameOptions_Draw();
+		break;
 	}
 }
 
@@ -3054,6 +3955,10 @@ void MQH_Keydown(int key)
 	case m_mconnect:
 		MHW_Connect_Key(key);
 		break;
+
+	case m_gameoptions:
+		MQH_GameOptions_Key(key);
+		return;
 	}
 }
 

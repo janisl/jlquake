@@ -18,7 +18,6 @@ void M_Help_Draw(void);
 void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
-void M_GameOptions_Draw(void);
 
 void M_Setup_Key(int key);
 void M_Options_Key(int key);
@@ -28,7 +27,6 @@ void M_Help_Key(int key);
 void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
 void M_ModemConfig_Key(int key);
-void M_GameOptions_Key(int key);
 
 qboolean m_recursiveDraw;
 
@@ -1239,10 +1237,6 @@ void M_Draw(void)
 	case m_quit:
 		M_Quit_Draw();
 		break;
-
-	case m_gameoptions:
-//		M_GameOptions_Draw ();
-		break;
 	}
 
 	if (mqh_entersound)
@@ -1282,10 +1276,6 @@ void M_Keydown(int key)
 
 	case m_quit:
 		M_Quit_Key(key);
-		return;
-
-	case m_gameoptions:
-//		M_GameOptions_Key (key);
 		return;
 	}
 	MQH_Keydown(key);

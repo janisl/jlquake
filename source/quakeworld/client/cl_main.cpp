@@ -1615,3 +1615,7 @@ int SVQH_GetMaxClientsLimit()
 
 Cvar* svqh_teamplay;
 Cvar* svqh_coop;
+Cvar* qh_skill;
+Cvar* qh_timelimit;
+Cvar* qh_fraglimit;
+Cvar* h2_randomclass;

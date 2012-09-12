@@ -1477,3 +1477,7 @@ void Loop_SearchForHosts(bool xmit)
 Cvar* svqh_teamplay;
 Cvar* svqh_coop;
 int svh2_kingofhill;
+Cvar* qh_skill;
+Cvar* qh_timelimit;
+Cvar* qh_fraglimit;
+Cvar* h2_randomclass;
