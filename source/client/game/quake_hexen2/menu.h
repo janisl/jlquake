@@ -53,26 +53,8 @@ extern float TitleTargetPercent;
 extern float LogoPercent;
 extern float LogoTargetPercent;
 extern bool mqh_entersound;
-extern const char* mh2_message;
-extern const char* mh2_message2;
-extern int mh2_message_time;
 extern Cvar* mh2_oldmission;
 
-#define NUM_SETUP_CMDS_Q1  5
-#define NUM_SETUP_CMDS_H2  6
-#define NUM_SETUP_CMDS_HW  7
-extern int mqh_setup_cursor;
-extern int setup_cursor_table_q1[];
-extern int setup_cursor_table_h2[];
-extern int setup_cursor_table_hw[];
-extern field_t setup_hostname;
-extern field_t setup_myname;
-extern int setup_oldtop;
-extern int setup_oldbottom;
-extern int setup_top;
-extern int setup_bottom;
-extern int class_limit;
-extern int which_class;
 extern int mqh_options_cursor;
 extern int mqh_help_page;
 extern bool wasInMenus;
@@ -84,11 +66,6 @@ extern int LineTimes;
 extern int MaxLines;
 extern const char** LineText;
 extern bool SoundPlayed;
-#define MAX_SAVEGAMES       12
-#define SAVEGAME_COMMENT_LENGTH 39
-extern int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
-extern char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
-extern bool mqh_loadable[MAX_SAVEGAMES];
 #define OPTIONS_ITEMS_Q1    13
 #define OPTIONS_ITEMS_QW    15
 enum
@@ -119,12 +96,6 @@ enum
 extern const char* Credit2TextH2[MAX_LINES2_H2];
 extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
-extern int setup_class;
-#define PLAYER_PIC_WIDTH 68
-#define PLAYER_PIC_HEIGHT 114
-extern byte mqh_translationTable[256];
-extern byte mq1_menuplyr_pixels[4096];
-extern byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 
@@ -134,12 +105,10 @@ void MQH_Print(int cx, int cy, const char* str);
 void MQH_PrintWhite(int cx, int cy, const char* str);
 void MQH_DrawTextBox(int x, int y, int width, int lines);
 void MQH_DrawTextBox2(int x, int y, int width, int lines);
-void MQH_DrawField(int x, int y, field_t* edit, bool showCursor);
 void MH2_ScrollTitle(const char* name);
 void MQH_Menu_Main_f();
 void MQH_Init();
 void MQH_Draw();
-void MQH_Menu_MultiPlayer_f();
 void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);

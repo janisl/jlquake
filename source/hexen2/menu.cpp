@@ -79,99 +79,6 @@ const char* plaquemessage = NULL;	// Pointer to current plaque message
 char* errormessage = NULL;
 
 //=============================================================================
-/* MULTIPLAYER LOAD/SAVE MENU */
-
-void M_MLoad_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_ENTER:
-		S_StartLocalSound("raven/menu2.wav");
-		if (!mqh_loadable[mqh_load_cursor])
-		{
-			return;
-		}
-		m_state = m_none;
-		in_keyCatchers &= ~KEYCATCH_UI;
-
-		if (sv.state != SS_DEAD)
-		{
-			Cbuf_AddText("disconnect\n");
-		}
-		Cbuf_AddText("listen 1\n");		// so host_netport will be re-examined
-
-		// Host_Loadgame_f can't bring up the loading plaque because too much
-		// stack space has been used, so do it now
-		SCRQH_BeginLoadingPlaque();
-
-		// issue the load command
-		Cbuf_AddText(va("load ms%i\n", mqh_load_cursor));
-		return;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor--;
-		if (mqh_load_cursor < 0)
-		{
-			mqh_load_cursor = MAX_SAVEGAMES - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor++;
-		if (mqh_load_cursor >= MAX_SAVEGAMES)
-		{
-			mqh_load_cursor = 0;
-		}
-		break;
-	}
-}
-
-
-void M_MSave_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_ENTER:
-		m_state = m_none;
-		in_keyCatchers &= ~KEYCATCH_UI;
-		Cbuf_AddText(va("save ms%i\n", mqh_load_cursor));
-		return;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor--;
-		if (mqh_load_cursor < 0)
-		{
-			mqh_load_cursor = MAX_SAVEGAMES - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_load_cursor++;
-		if (mqh_load_cursor >= MAX_SAVEGAMES)
-		{
-			mqh_load_cursor = 0;
-		}
-		break;
-	}
-}
-
-//=============================================================================
 /* OPTIONS MENU */
 
 void M_AdjustSliders(int dir)
@@ -1010,14 +917,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_mload:
-		M_MLoad_Key(key);
-		return;
-
-	case m_msave:
-		M_MSave_Key(key);
-		return;
 
 	case m_options:
 		M_Options_Key(key);

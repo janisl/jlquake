@@ -37,19 +37,20 @@ float LogoTargetPercent = 1;
 bool mqh_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
 
-const char* mh2_message;
-const char* mh2_message2;
-int mh2_message_time;
+static const char* mh2_message;
+static const char* mh2_message2;
+static int mh2_message_time;
 
 Cvar* mh2_oldmission;
 
-int setup_class;
+static int setup_class;
 
 static void MQH_Menu_SinglePlayer_f();
 static void MH2_Menu_Class_f();
 static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Load_f();
 static void MQH_Menu_Save_f();
+static void MQH_Menu_MultiPlayer_f();
 static void MQH_Menu_Net_f();
 static void MQH_Menu_LanConfig_f();
 static void MQH_Menu_Search_f();
@@ -140,7 +141,7 @@ void MQH_DrawTextBox2(int x, int y, int width, int lines)
 	MQH_DrawTextBox(x,  y + ((viddef.height - 200) >> 1), width, lines);
 }
 
-void MQH_DrawField(int x, int y, field_t* edit, bool showCursor)
+static void MQH_DrawField(int x, int y, field_t* edit, bool showCursor)
 {
 	MQH_DrawTextBox(x - 8, y - 8, edit->widthInChars, 1);
 	Field_Draw(edit, x + ((viddef.width - 320) >> 1), y, showCursor);
@@ -827,10 +828,13 @@ static void MH2_Difficulty_Key(int key)
 //=============================================================================
 /* LOAD/SAVE MENU */
 
-int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
+#define MAX_SAVEGAMES       12
+#define SAVEGAME_COMMENT_LENGTH 39
 
-char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
-bool mqh_loadable[MAX_SAVEGAMES];
+static int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
+
+static char mqh_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
+static bool mqh_loadable[MAX_SAVEGAMES];
 
 static void MQH_ScanSaves()
 {
@@ -1060,7 +1064,7 @@ static void MQH_Save_Key(int k)
 
 static int mqh_multiplayer_cursor;
 
-void MQH_Menu_MultiPlayer_f()
+static void MQH_Menu_MultiPlayer_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_multiplayer;
@@ -2870,22 +2874,30 @@ static void MQH_GameOptions_Key(int key)
 //=============================================================================
 /* SETUP MENU */
 
-int mqh_setup_cursor;
-int setup_cursor_table_q1[] = {40, 56, 80, 104, 140};
-int setup_cursor_table_h2[] = {40, 56, 80, 104, 128, 156};
-int setup_cursor_table_hw[] = {40, 56, 72, 88, 112, 136, 164};
-field_t setup_hostname;
-field_t setup_myname;
-int setup_oldtop;
-int setup_oldbottom;
-int setup_top;
-int setup_bottom;
-int class_limit;
-int which_class;
+#define NUM_SETUP_CMDS_Q1  5
+#define NUM_SETUP_CMDS_H2  6
+#define NUM_SETUP_CMDS_HW  7
 
-byte mqh_translationTable[256];
-byte mq1_menuplyr_pixels[4096];
-byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
+#define PLAYER_PIC_WIDTH 68
+#define PLAYER_PIC_HEIGHT 114
+
+static int mqh_setup_cursor;
+static int setup_cursor_table_q1[] = {40, 56, 80, 104, 140};
+static int setup_cursor_table_h2[] = {40, 56, 80, 104, 128, 156};
+static int setup_cursor_table_hw[] = {40, 56, 72, 88, 112, 136, 164};
+static field_t setup_hostname;
+static field_t setup_myname;
+static int setup_oldtop;
+static int setup_oldbottom;
+static int setup_top;
+static int setup_bottom;
+static int class_limit;
+static int which_class;
+
+static byte mqh_translationTable[256];
+static byte mq1_menuplyr_pixels[4096];
+static byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
+
 image_t* mq1_translate_texture;
 image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 
@@ -3393,6 +3405,95 @@ static void MH2_Menu_MSave_f()
 	m_state = m_msave;
 	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanMSaves();
+}
+
+static void MH2_MLoad_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_MultiPlayer_f();
+		break;
+
+	case K_ENTER:
+		S_StartLocalSound("raven/menu2.wav");
+		if (!mqh_loadable[mqh_load_cursor])
+		{
+			return;
+		}
+		m_state = m_none;
+		in_keyCatchers &= ~KEYCATCH_UI;
+
+		if (SV_IsServerActive())
+		{
+			Cbuf_AddText("disconnect\n");
+		}
+		Cbuf_AddText("listen 1\n");		// so host_netport will be re-examined
+
+		// Host_Loadgame_f can't bring up the loading plaque because too much
+		// stack space has been used, so do it now
+		SCRQH_BeginLoadingPlaque();
+
+		// issue the load command
+		Cbuf_AddText(va("load ms%i\n", mqh_load_cursor));
+		return;
+
+	case K_UPARROW:
+	case K_LEFTARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
+		{
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
+		{
+			mqh_load_cursor = 0;
+		}
+		break;
+	}
+}
+
+static void MH2_MSave_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_MultiPlayer_f();
+		break;
+
+	case K_ENTER:
+		m_state = m_none;
+		in_keyCatchers &= ~KEYCATCH_UI;
+		Cbuf_AddText(va("save ms%i\n", mqh_load_cursor));
+		return;
+
+	case K_UPARROW:
+	case K_LEFTARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		mqh_load_cursor--;
+		if (mqh_load_cursor < 0)
+		{
+			mqh_load_cursor = MAX_SAVEGAMES - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound("raven/menu1.wav");
+		mqh_load_cursor++;
+		if (mqh_load_cursor >= MAX_SAVEGAMES)
+		{
+			mqh_load_cursor = 0;
+		}
+		break;
+	}
 }
 
 //=============================================================================
@@ -4337,6 +4438,14 @@ void MQH_Keydown(int key)
 
 	case m_setup:
 		MQH_Setup_Key(key);
+		return;
+
+	case m_mload:
+		MH2_MLoad_Key(key);
+		return;
+
+	case m_msave:
+		MH2_MSave_Key(key);
 		return;
 	}
 }
