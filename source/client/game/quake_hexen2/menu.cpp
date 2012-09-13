@@ -23,8 +23,6 @@
 
 extern Cvar* r_gamma;
 
-void M_Draw();
-
 menu_state_t m_state;
 menu_state_t m_return_state;
 
@@ -41,7 +39,6 @@ float LogoTargetPercent = 1;
 
 bool mqh_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
-bool m_recursiveDraw;
 
 static const char* mh2_message;
 static const char* mh2_message2;
@@ -4835,17 +4832,6 @@ static void MQH_Quit_Draw()
 {
 	if (GGameType & GAME_Hexen2)
 	{
-		int i,x,y,place,topy;
-		image_t* p;
-
-		if (wasInMenus)
-		{
-			m_state = m_quit_prevstate;
-			m_recursiveDraw = true;
-			M_Draw();
-			m_state = m_quit;
-		}
-
 		LinePos += cls.frametime * 0.001 * 1.75;
 		if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
 		{
@@ -4868,7 +4854,7 @@ static void MQH_Quit_Draw()
 			}
 		}
 
-		y = 12;
+		int y = 12;
 		MQH_DrawTextBox(0, 0, 38, 23);
 		if (GGameType & GAME_HexenWorld)
 		{
@@ -4885,10 +4871,10 @@ static void MQH_Quit_Draw()
 			S_StartLocalSound("rj/steve.wav");
 			SoundPlayed = true;
 		}
-		topy = y;
-		place = floor(LinePos);
+		int topy = y;
+		int place = floor(LinePos);
 		y -= floor((LinePos - place) * 8);
-		for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
+		for (int i = 0; i < QUIT_SIZE_H2; i++,y += 8)
 		{
 			if (i + place - QUIT_SIZE_H2 >= MaxLines)
 			{
@@ -4909,10 +4895,10 @@ static void MQH_Quit_Draw()
 			}
 		}
 
-		p = R_CachePic("gfx/box_mm2.lmp");
-		x = 24;
+		image_t* p = R_CachePic("gfx/box_mm2.lmp");
+		int x = 24;
 		y = topy - 8;
-		for (i = 4; i < (GGameType & GAME_HexenWorld ? 36 : 38); i++,x += 8)
+		for (int i = 4; i < (GGameType & GAME_HexenWorld ? 36 : 38); i++,x += 8)
 		{
 			MQH_DrawPic(x, y, p);	//background at top for smooth scroll out
 			MQH_DrawPic(x, y + (QUIT_SIZE_H2 * 8), p);	//draw at bottom for smooth scroll in
@@ -4950,19 +4936,10 @@ static void MQH_Quit_Draw()
 			"0All rights reserved. Press y to exit",
 			NULL
 		};
-		const char** p;
-		int y;
 
-		if (wasInMenus)
-		{
-			m_state = m_quit_prevstate;
-			m_recursiveDraw = true;
-			M_Draw();
-			m_state = m_quit;
-		}
 		MQH_DrawTextBox(0, 0, 38, 23);
-		y = 12;
-		for (p = cmsg; *p; p++, y += 8)
+		int y = 12;
+		for (const char** p = cmsg; *p; p++, y += 8)
 		{
 			if (**p == '0')
 			{
@@ -4976,14 +4953,6 @@ static void MQH_Quit_Draw()
 	}
 	else
 	{
-		if (wasInMenus)
-		{
-			m_state = m_quit_prevstate;
-			m_recursiveDraw = true;
-			M_Draw();
-			m_state = m_quit;
-		}
-
 		MQH_DrawTextBox(0, 0, 38, 23);
 		MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
 		MQH_PrintWhite(16, 28,  "Programming        Art \n");

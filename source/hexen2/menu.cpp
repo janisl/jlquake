@@ -374,21 +374,14 @@ void M_Draw(void)
 		return;
 	}
 
-	if (!m_recursiveDraw)
+	if (con.displayFrac)
 	{
-		if (con.displayFrac)
-		{
-			Con_DrawFullBackground();
-			S_ExtraUpdate();
-		}
-		else
-		{
-			Draw_FadeScreen();
-		}
+		Con_DrawFullBackground();
+		S_ExtraUpdate();
 	}
 	else
 	{
-		m_recursiveDraw = false;
+		Draw_FadeScreen();
 	}
 
 	MQH_Draw();

@@ -59,7 +59,6 @@ extern bool wasInMenus;
 extern menu_state_t m_quit_prevstate;
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
-extern bool m_recursiveDraw;
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);
