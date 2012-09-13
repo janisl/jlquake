@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			if (!GetMessage(&msg, NULL, 0, 0))
 			{
-				Com_Quit();
+				Com_Quit_f();
 			}
 			sysMsgTime = msg.time;
 			TranslateMessage(&msg);

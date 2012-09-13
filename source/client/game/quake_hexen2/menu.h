@@ -55,8 +55,6 @@ extern float LogoTargetPercent;
 extern bool mqh_entersound;
 extern Cvar* mh2_oldmission;
 
-extern bool wasInMenus;
-extern menu_state_t m_quit_prevstate;
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 

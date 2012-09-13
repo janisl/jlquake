@@ -366,7 +366,7 @@ CL_Quit_f
 void CL_Quit_f(void)
 {
 	CL_Disconnect();
-	Com_Quit();
+	Com_Quit_f();
 }
 
 /*

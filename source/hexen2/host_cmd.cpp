@@ -12,11 +12,11 @@
 
 /*
 ==================
-Host_Quit_f
+Com_Quit_f
 ==================
 */
 
-void Host_Quit_f(void)
+void Com_Quit_f(void)
 {
 #ifndef DEDICATED
 	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != CA_DEDICATED)
@@ -563,7 +563,7 @@ Host_InitCommands
 */
 void Host_InitCommands(void)
 {
-	Cmd_AddCommand("quit", Host_Quit_f);
+	Cmd_AddCommand("quit", Com_Quit_f);
 #ifndef DEDICATED
 	Cmd_AddCommand("god", Host_God_f);
 	Cmd_AddCommand("notarget", Host_Notarget_f);

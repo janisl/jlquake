@@ -9,7 +9,6 @@ extern Cvar* r_gamma;
 void M_Keys_Draw(void);
 
 void M_Keys_Key(int key);
-void M_Quit_Key(int key);
 
 extern qboolean introPlaying;
 
@@ -320,40 +319,6 @@ void M_Keys_Key(int k)
 }
 
 //=============================================================================
-/* QUIT MENU */
-
-void M_Quit_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-	case 'n':
-	case 'N':
-		if (wasInMenus)
-		{
-			m_state = m_quit_prevstate;
-			mqh_entersound = true;
-		}
-		else
-		{
-			in_keyCatchers &= ~KEYCATCH_UI;
-			m_state = m_none;
-		}
-		break;
-
-	case 'Y':
-	case 'y':
-		in_keyCatchers |= KEYCATCH_CONSOLE;
-		Host_Quit_f();
-		break;
-
-	default:
-		break;
-	}
-
-}
-
-//=============================================================================
 /* Menu Subsystem */
 
 
@@ -410,10 +375,6 @@ void M_Keydown(int key)
 
 	case m_keys:
 		M_Keys_Key(key);
-		return;
-
-	case m_quit:
-		M_Quit_Key(key);
 		return;
 	}
 	MQH_Keydown(key);

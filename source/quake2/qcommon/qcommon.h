@@ -133,7 +133,7 @@ MISC
 void        Com_Printf(const char* fmt, ...);
 void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
-void        Com_Quit(void);
+void        Com_Quit_f(void);
 
 extern Cvar* log_stats;
 

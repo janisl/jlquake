@@ -4126,8 +4126,8 @@ static void MQH_Help_Key(int key)
 #define VSTR(x) # x
 #define VSTR2(x) VSTR(x)
 
-bool wasInMenus;
-menu_state_t m_quit_prevstate;
+static bool wasInMenus;
+static menu_state_t m_quit_prevstate;
 
 static float LinePos;
 static int LineTimes;
@@ -4978,6 +4978,37 @@ static void MQH_Quit_Draw()
 	}
 }
 
+static void MQH_Quit_Key(int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+	case 'n':
+	case 'N':
+		if (wasInMenus)
+		{
+			m_state = m_quit_prevstate;
+			mqh_entersound = true;
+		}
+		else
+		{
+			in_keyCatchers &= ~KEYCATCH_UI;
+			m_state = m_none;
+		}
+		break;
+
+	case 'Y':
+	case 'y':
+		in_keyCatchers |= KEYCATCH_CONSOLE;
+		Com_Quit_f();
+		break;
+
+	default:
+		break;
+	}
+
+}
+
 //=============================================================================
 /* Menu Subsystem */
 
@@ -5184,6 +5215,10 @@ void MQH_Keydown(int key)
 
 	case m_help:
 		MQH_Help_Key(key);
+		return;
+
+	case m_quit:
+		MQH_Quit_Key(key);
 		return;
 	}
 }

@@ -173,8 +173,7 @@ void CL_Quit_f(void)
 		MQH_Menu_Quit_f();
 		return;
 	}
-	CL_Disconnect();
-	Sys_Quit();
+	Com_Quit_f();
 }
 
 /*

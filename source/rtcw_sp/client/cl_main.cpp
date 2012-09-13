@@ -724,7 +724,7 @@ CL_Disconnect
 Called when a connection, demo, or cinematic is being terminated.
 Goes from a connected state to either a menu state or a console state
 Sends a disconnect message to the server
-This is also called on Com_Error and Com_Quit, so it shouldn't cause any errors
+This is also called on Com_Error and Com_Quit_f, so it shouldn't cause any errors
 =====================
 */
 void CL_Disconnect(qboolean showMainMenu)

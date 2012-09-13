@@ -27,6 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  6
 
+void Com_Quit_f()
+{
+	CL_Disconnect();
+	Sys_Quit();
+}
+
 qwusercmd_t nullcmd;// guarenteed to be zero
 
 static const char* safeargvs[NUM_SAFE_ARGVS] =

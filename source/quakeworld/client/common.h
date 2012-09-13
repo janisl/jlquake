@@ -31,3 +31,4 @@ void COM_Gamedir(char* dir);
 byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, unsigned mapchecksum);
 
 int build_number(void);
+void Com_Quit_f();

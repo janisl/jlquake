@@ -109,7 +109,7 @@ void Host_Shutdown(void);
 void Host_Error(const char* error, ...);
 void Host_EndGame(const char* message, ...);
 void Host_Frame(float time);
-void Host_Quit_f(void);
+void Com_Quit_f();
 
 extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss

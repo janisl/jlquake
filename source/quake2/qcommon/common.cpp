@@ -257,13 +257,13 @@ void Com_Error(int code, const char* fmt, ...)
 
 /*
 =============
-Com_Quit
+Com_Quit_f
 
 Both client and server can use this, and it will
 do the apropriate things.
 =============
 */
-void Com_Quit(void)
+void Com_Quit_f(void)
 {
 	SVQ2_Shutdown("Server quit\n", false);
 	CL_Shutdown();
@@ -440,7 +440,7 @@ void Qcommon_Init(int argc, char** argv)
 
 		if (com_dedicated->value)
 		{
-			Cmd_AddCommand("quit", Com_Quit);
+			Cmd_AddCommand("quit", Com_Quit_f);
 		}
 
 		Sys_Init();

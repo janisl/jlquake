@@ -74,6 +74,12 @@ into the cache directory, then opened there.
 
 */
 
+void Com_Quit_f()
+{
+	CL_Disconnect();
+	Sys_Quit();
+}
+
 /*
 ==============================================================================
 
