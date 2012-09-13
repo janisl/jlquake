@@ -17,8 +17,11 @@
 #include "../../client.h"
 #include "menu.h"
 #include "../../../server/public.h"
+#include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "network_channel.h"
+
+extern Cvar* r_gamma;
 
 menu_state_t m_state;
 menu_state_t m_return_state;
@@ -3499,12 +3502,499 @@ static void MH2_MSave_Key(int k)
 //=============================================================================
 /* OPTIONS MENU */
 
-int mqh_options_cursor;
+#define OPTIONS_ITEMS_Q1    12
+#define OPTIONS_ITEMS_QW    14
+
+enum
+{
+	OPT_CUSTOMIZE = 0,
+	OPT_CONSOLE,
+	OPT_DEFAULTS,
+	OPT_SCRSIZE,	//3
+	OPT_GAMMA,		//4
+	OPT_MOUSESPEED,	//5
+	OPT_MUSICVOL_MUSICTYPE,	//6
+	OPT_SNDVOL_MUSICVOL,	//7
+	OPT_ALWAYSRUN_SNDVOL,		//8
+	OPT_INVMOUSE_ALWAYRUN,	//9
+	OPT_LOOKSPRING_INVMOUSE,	//10
+	OPT_VIDEO_OLDSBAR_LOOKSPRING,	//11
+	OPT_HUDSWAP_CROSSHAIR,	//12
+	OPT_VIDEO_ALWAYSMLOOK,//13
+	OPT_VIDEO,		//14
+	OPTIONS_ITEMS
+};
+
+#define SLIDER_RANGE    10
+
+static int mqh_options_cursor;
 
 void MQH_Menu_Options_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
+	mqh_entersound = true;
+}
+
+static void MQH_DrawSlider(int x, int y, float range)
+{
+	if (range < 0)
+	{
+		range = 0;
+	}
+	if (range > 1)
+	{
+		range = 1;
+	}
+	MQH_DrawCharacter(x - 8, y, GGameType & GAME_Hexen2 ? 256 : 128);
+	for (int i = 0; i < SLIDER_RANGE; i++)
+	{
+		MQH_DrawCharacter(x + i * 8, y, GGameType & GAME_Hexen2 ? 257 : 129);
+	}
+	MQH_DrawCharacter(x + SLIDER_RANGE * 8, y, GGameType & GAME_Hexen2 ? 258 : 130);
+	MQH_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, GGameType & GAME_Hexen2 ? 259 : 131);
+}
+
+static void MQH_DrawCheckbox(int x, int y, int on)
+{
+	if (on)
+	{
+		MQH_Print(x, y, "on");
+	}
+	else
+	{
+		MQH_Print(x, y, "off");
+	}
+}
+
+static void MQH_Options_Draw()
+{
+	int itemsStartY;
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title3.lmp");
+		itemsStartY = 60;
+	}
+	else
+	{
+		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
+		image_t* p = R_CachePic("gfx/p_option.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		itemsStartY = 32;
+	}
+
+	int y = itemsStartY;
+	MQH_Print(16, y, "    Customize controls");
+	y += 8;
+	MQH_Print(16, y, "         Go to console");
+	y += 8;
+	MQH_Print(16, y, "     Reset to defaults");
+	y += 8;
+
+	MQH_Print(16, y, "           Screen size");
+	float r = (scr_viewsize->value - 30) / (120 - 30);
+	MQH_DrawSlider(220, y, r);
+	y += 8;
+
+	MQH_Print(16, y, "            Brightness");
+	r = (r_gamma->value - 1);
+	MQH_DrawSlider(220, y, r);
+	y += 8;
+
+	MQH_Print(16, y, "           Mouse Speed");
+	r = (cl_sensitivity->value - 1) / 10;
+	MQH_DrawSlider(220, y, r);
+	y += 8;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(16, y, "            Music Type");
+		if (String::ICmp(bgmtype->string,"midi") == 0)
+		{
+			MQH_Print(220, y, "MIDI");
+		}
+		else if (String::ICmp(bgmtype->string,"cd") == 0)
+		{
+			MQH_Print(220, y, "CD");
+		}
+		else
+		{
+			MQH_Print(220, y, "None");
+		}
+		y += 8;
+	}
+
+	MQH_Print(16, y, "          Music Volume");
+	r = bgmvolume->value;
+	MQH_DrawSlider(220, y, r);
+	y += 8;
+
+	MQH_Print(16, y, "          Sound Volume");
+	r = s_volume->value;
+	MQH_DrawSlider(220, y, r);
+	y += 8;
+
+	MQH_Print(16, y, "            Always Run");
+	MQH_DrawCheckbox(220, y, cl_forwardspeed->value > 200);
+	y += 8;
+
+	MQH_Print(16, y, "          Invert Mouse");
+	MQH_DrawCheckbox(220, y, m_pitch->value < 0);
+	y += 8;
+
+	MQH_Print(16, y, "            Lookspring");
+	MQH_DrawCheckbox(220, y, lookspring->value);
+	y += 8;
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		MQH_Print(16, y, "    Use old status bar");
+		MQH_DrawCheckbox(220, y, clqh_sbar->value);
+		y += 8;
+
+		MQH_Print(16, y, "      HUD on left side");
+		MQH_DrawCheckbox(220, y, clqw_hudswap->value);
+		y += 8;
+	}
+
+	if (GGameType & GAME_Hexen2)
+	{
+		MQH_Print(16, y, "        Show Crosshair");
+		MQH_DrawCheckbox(220, y, crosshair->value);
+		y += 8;
+
+		MQH_Print(16, y, "            Mouse Look");
+		MQH_DrawCheckbox(220, y, cl_freelook->value);
+		y += 8;
+	}
+
+	MQH_Print(16, y, "         Video Options");
+
+	// cursor
+	MQH_DrawCharacter(200, itemsStartY + mqh_options_cursor * 8, 12 + ((cls.realtime / 250) & 1));
+}
+
+static void MQH_AdjustSliders(int dir)
+{
+	S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu3.wav" : "misc/menu3.wav");
+
+	switch (mqh_options_cursor)
+	{
+	case OPT_SCRSIZE:	// screen size
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+		{
+			scr_viewsize->value = 30;
+		}
+		if (scr_viewsize->value > 120)
+		{
+			scr_viewsize->value = 120;
+		}
+		Cvar_SetValue("viewsize", scr_viewsize->value);
+		if (GGameType & GAME_Hexen2)
+		{
+			SbarH2_ViewSizeChanged();
+		}
+		break;
+	case OPT_GAMMA:	// gamma
+		r_gamma->value += dir * 0.1;
+		if (r_gamma->value < 1)
+		{
+			r_gamma->value = 1;
+		}
+		if (r_gamma->value > 2)
+		{
+			r_gamma->value = 2;
+		}
+		Cvar_SetValue("r_gamma", r_gamma->value);
+		break;
+	case OPT_MOUSESPEED:	// mouse speed
+		cl_sensitivity->value += dir * 0.5;
+		if (cl_sensitivity->value < 1)
+		{
+			cl_sensitivity->value = 1;
+		}
+		if (cl_sensitivity->value > 11)
+		{
+			cl_sensitivity->value = 11;
+		}
+		Cvar_SetValue("sensitivity", cl_sensitivity->value);
+		break;
+	case OPT_MUSICVOL_MUSICTYPE:	// music volume
+		if (GGameType & GAME_Hexen2)
+		{
+			if (String::ICmp(bgmtype->string,"midi") == 0)
+			{
+				if (dir < 0)
+				{
+					Cvar_Set("bgmtype","none");
+				}
+				else
+				{
+					Cvar_Set("bgmtype","cd");
+				}
+			}
+			else if (String::ICmp(bgmtype->string,"cd") == 0)
+			{
+				if (dir < 0)
+				{
+					Cvar_Set("bgmtype","midi");
+				}
+				else
+				{
+					Cvar_Set("bgmtype","none");
+				}
+			}
+			else
+			{
+				if (dir < 0)
+				{
+					Cvar_Set("bgmtype","cd");
+				}
+				else
+				{
+					Cvar_Set("bgmtype","midi");
+				}
+			}
+		}
+		else
+		{
+#ifdef _WIN32
+			bgmvolume->value += dir * 1.0;
+#else
+			bgmvolume->value += dir * 0.1;
+#endif
+			if (bgmvolume->value < 0)
+			{
+				bgmvolume->value = 0;
+			}
+			if (bgmvolume->value > 1)
+			{
+				bgmvolume->value = 1;
+			}
+			Cvar_SetValue("bgmvolume", bgmvolume->value);
+		}
+		break;
+	case OPT_SNDVOL_MUSICVOL:	// sfx volume
+		if (GGameType & GAME_Hexen2)
+		{
+			bgmvolume->value += dir * 0.1;
+
+			if (bgmvolume->value < 0)
+			{
+				bgmvolume->value = 0;
+			}
+			if (bgmvolume->value > 1)
+			{
+				bgmvolume->value = 1;
+			}
+			Cvar_SetValue("bgmvolume", bgmvolume->value);
+		}
+		else
+		{
+			s_volume->value += dir * 0.1;
+			if (s_volume->value < 0)
+			{
+				s_volume->value = 0;
+			}
+			if (s_volume->value > 1)
+			{
+				s_volume->value = 1;
+			}
+			Cvar_SetValue("s_volume", s_volume->value);
+		}
+		break;
+	case OPT_ALWAYSRUN_SNDVOL:	// allways run
+		if (GGameType & GAME_Hexen2)
+		{
+			s_volume->value += dir * 0.1;
+			if (s_volume->value < 0)
+			{
+				s_volume->value = 0;
+			}
+			if (s_volume->value > 1)
+			{
+				s_volume->value = 1;
+			}
+			Cvar_SetValue("s_volume", s_volume->value);
+		}
+		else
+		{
+			if (cl_forwardspeed->value > 200)
+			{
+				Cvar_SetValue("cl_forwardspeed", 200);
+				Cvar_SetValue("cl_backspeed", 200);
+			}
+			else
+			{
+				Cvar_SetValue("cl_forwardspeed", 400);
+				Cvar_SetValue("cl_backspeed", 400);
+			}
+		}
+		break;
+	case OPT_INVMOUSE_ALWAYRUN:	// invert mouse
+		if (GGameType & GAME_Hexen2)
+		{
+			if (cl_forwardspeed->value > 200)
+			{
+				Cvar_SetValue("cl_forwardspeed", 200);
+			}
+			else
+			{
+				Cvar_SetValue("cl_forwardspeed", 400);
+			}
+		}
+		else
+		{
+			Cvar_SetValue("m_pitch", -m_pitch->value);
+		}
+		break;
+
+	case OPT_LOOKSPRING_INVMOUSE:	// lookspring
+		if (GGameType & GAME_Hexen2)
+		{
+			Cvar_SetValue("m_pitch", -m_pitch->value);
+		}
+		else
+		{
+			Cvar_SetValue("lookspring", !lookspring->value);
+		}
+		break;
+
+	case OPT_VIDEO_OLDSBAR_LOOKSPRING:
+		if (GGameType & GAME_Hexen2)
+		{
+			Cvar_SetValue("lookspring", !lookspring->value);
+		}
+		else
+		{
+			Cvar_SetValue("cl_sbar", !clqh_sbar->value);
+		}
+		break;
+
+	case OPT_HUDSWAP_CROSSHAIR:
+		if (GGameType & GAME_Hexen2)
+		{
+			Cvar_SetValue("crosshair", !crosshair->value);
+		}
+		else
+		{
+			Cvar_SetValue("cl_hudswap", !clqw_hudswap->value);
+		}
+		break;
+
+	case OPT_VIDEO_ALWAYSMLOOK:
+		Cvar_SetValue("cl_freelook", !cl_freelook->value);
+		break;
+	}
+}
+
+static void MQH_Options_Key(int k)
+{
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Main_f();
+		break;
+
+	case K_ENTER:
+		mqh_entersound = true;
+		switch (mqh_options_cursor)
+		{
+		case OPT_CUSTOMIZE:
+			MQH_Menu_Keys_f();
+			break;
+		case OPT_CONSOLE:
+			m_state = m_none;
+			if (GGameType & GAME_HexenWorld)
+			{
+				in_keyCatchers &= ~KEYCATCH_UI;
+			}
+			else
+			{
+				Con_ToggleConsole_f();
+			}
+			break;
+		case OPT_DEFAULTS:
+			Cbuf_AddText("exec default.cfg\n");
+			break;
+		case OPT_VIDEO_OLDSBAR_LOOKSPRING:
+			if (GGameType & GAME_Quake && !(GGameType & GAME_QuakeWorld))
+			{
+				MQH_Menu_Video_f();
+			}
+			else
+			{
+				MQH_AdjustSliders(1);
+			}
+			break;
+		case OPT_VIDEO_ALWAYSMLOOK:
+			if (GGameType & GAME_QuakeWorld)
+			{
+				MQH_Menu_Video_f();
+			}
+			else
+			{
+				MQH_AdjustSliders(1);
+			}
+			break;
+		case OPT_VIDEO:
+			if (GGameType & GAME_Hexen2)
+			{
+				MQH_Menu_Video_f();
+				break;
+			}
+		default:
+			MQH_AdjustSliders(1);
+			break;
+		}
+		return;
+
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_options_cursor--;
+		if (mqh_options_cursor < 0)
+		{
+			mqh_options_cursor = (GGameType & GAME_Hexen2 ? OPTIONS_ITEMS : GGameType & GAME_QuakeWorld ? OPTIONS_ITEMS_QW : OPTIONS_ITEMS_Q1) - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_options_cursor++;
+		if (mqh_options_cursor >= (GGameType & GAME_Hexen2 ? OPTIONS_ITEMS : GGameType & GAME_QuakeWorld ? OPTIONS_ITEMS_QW : OPTIONS_ITEMS_Q1))
+		{
+			mqh_options_cursor = 0;
+		}
+		break;
+
+	case K_LEFTARROW:
+		MQH_AdjustSliders(-1);
+		break;
+
+	case K_RIGHTARROW:
+		MQH_AdjustSliders(1);
+		break;
+	}
+}
+
+//=============================================================================
+/* KEYS MENU */
+
+void MQH_Menu_Keys_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_keys;
+	mqh_entersound = true;
+}
+
+//=============================================================================
+/* VIDEO MENU */
+
+void MQH_Menu_Video_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_video;
 	mqh_entersound = true;
 }
 
@@ -4277,6 +4767,8 @@ void MQH_Init()
 {
 	Cmd_AddCommand("menu_main", MQH_Menu_Main_f);
 	Cmd_AddCommand("menu_options", MQH_Menu_Options_f);
+	Cmd_AddCommand("menu_keys", MQH_Menu_Keys_f);
+	Cmd_AddCommand("menu_video", MQH_Menu_Video_f);
 	Cmd_AddCommand("help", MQH_Menu_Help_f);
 	Cmd_AddCommand("menu_quit", MQH_Menu_Quit_f);
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
@@ -4374,6 +4866,10 @@ void MQH_Draw()
 	case m_setup:
 		MQH_Setup_Draw();
 		break;
+
+	case m_options:
+		MQH_Options_Draw();
+		break;
 	}
 }
 
@@ -4446,6 +4942,10 @@ void MQH_Keydown(int key)
 
 	case m_msave:
 		MH2_MSave_Key(key);
+		return;
+
+	case m_options:
+		MQH_Options_Key(key);
 		return;
 	}
 }

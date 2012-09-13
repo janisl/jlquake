@@ -47,7 +47,6 @@ static Cvar* v_ipitch_level;
 
 static Cvar* v_idlescale;
 
-Cvar* crosshair;
 Cvar* crosshaircolor;
 
 Cvar* cl_crossx;

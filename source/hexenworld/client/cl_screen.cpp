@@ -56,7 +56,6 @@ Cvar* scr_showturtle;
 Cvar* scr_showpause;
 Cvar* scr_printspeed;
 Cvar* show_fps;
-extern Cvar* crosshair;
 
 static Cvar* cl_netgraph;
 
@@ -407,7 +406,6 @@ void SCR_Init(void)
 	scr_turtle = R_PicFromWad("turtle");
 
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
-	clqh_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
 	cl_netgraph = Cvar_Get("cl_netgraph","0", 0);
 

@@ -647,5 +647,6 @@ void SCR_UpdateScreen();
 void CL_NextDemo();
 int SCR_ModalMessage(const char* text);
 void SCRQH_BeginLoadingPlaque();
+void Con_ToggleConsole_f();
 
 #endif

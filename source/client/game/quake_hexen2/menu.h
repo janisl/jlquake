@@ -55,7 +55,6 @@ extern float LogoTargetPercent;
 extern bool mqh_entersound;
 extern Cvar* mh2_oldmission;
 
-extern int mqh_options_cursor;
 extern int mqh_help_page;
 extern bool wasInMenus;
 extern int msgNumber;
@@ -66,28 +65,6 @@ extern int LineTimes;
 extern int MaxLines;
 extern const char** LineText;
 extern bool SoundPlayed;
-#define OPTIONS_ITEMS_Q1    13
-#define OPTIONS_ITEMS_QW    15
-enum
-{
-	OPT_CUSTOMIZE = 0,
-	OPT_CONSOLE,
-	OPT_DEFAULTS,
-	OPT_SCRSIZE,	//3
-	OPT_GAMMA,		//4
-	OPT_MOUSESPEED,	//5
-	OPT_MUSICTYPE,	//6
-	OPT_MUSICVOL,	//7
-	OPT_SNDVOL,		//8
-	OPT_ALWAYRUN,	//9
-	OPT_INVMOUSE,	//10
-	OPT_LOOKSPRING,	//11
-	OPT_CROSSHAIR,	//13
-	OPT_ALWAYSMLOOK,//14
-	OPT_VIDEO,		//15
-	OPTIONS_ITEMS
-};
-#define SLIDER_RANGE    10
 #define NUM_HELP_PAGES_Q1   6
 #define NUM_HELP_PAGES_H2   5
 #define NUM_SG_HELP_PAGES   10	//Siege has more help
@@ -98,6 +75,8 @@ extern const char* Credit2TextHW[MAX_LINES2_HW];
 #define QUIT_SIZE_H2 18
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
+#define MAX_COLUMN_SIZE     9
+#define MODE_AREA_HEIGHT    (MAX_COLUMN_SIZE + 2)
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);
@@ -113,3 +92,5 @@ void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
 void MQH_CharEvent(int key);
+void MQH_Menu_Keys_f();
+void MQH_Menu_Video_f();

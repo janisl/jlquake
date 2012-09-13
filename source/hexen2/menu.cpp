@@ -6,12 +6,6 @@
 
 extern Cvar* r_gamma;
 
-extern Cvar* crosshair;
-
-void M_Menu_Keys_f(void);
-void M_Menu_Video_f(void);
-
-void M_Options_Draw(void);
 void M_Keys_Draw(void);
 void M_Video_Draw(void);
 void M_Help_Draw(void);
@@ -19,7 +13,6 @@ void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 
-void M_Options_Key(int key);
 void M_Keys_Key(int key);
 void M_Video_Key(int key);
 void M_Help_Key(int key);
@@ -79,310 +72,6 @@ const char* plaquemessage = NULL;	// Pointer to current plaque message
 char* errormessage = NULL;
 
 //=============================================================================
-/* OPTIONS MENU */
-
-void M_AdjustSliders(int dir)
-{
-	S_StartLocalSound("raven/menu3.wav");
-
-	switch (mqh_options_cursor)
-	{
-	case OPT_SCRSIZE:	// screen size
-		scr_viewsize->value += dir * 10;
-		if (scr_viewsize->value < 30)
-		{
-			scr_viewsize->value = 30;
-		}
-		if (scr_viewsize->value > 120)
-		{
-			scr_viewsize->value = 120;
-		}
-		Cvar_SetValue("viewsize", scr_viewsize->value);
-		SbarH2_ViewSizeChanged();
-		break;
-	case OPT_GAMMA:	// gamma
-		r_gamma->value += dir * 0.1;
-		if (r_gamma->value < 1)
-		{
-			r_gamma->value = 1;
-		}
-		if (r_gamma->value > 2)
-		{
-			r_gamma->value = 2;
-		}
-		Cvar_SetValue("r_gamma", r_gamma->value);
-		break;
-	case OPT_MOUSESPEED:	// mouse speed
-		cl_sensitivity->value += dir * 0.5;
-		if (cl_sensitivity->value < 1)
-		{
-			cl_sensitivity->value = 1;
-		}
-		if (cl_sensitivity->value > 11)
-		{
-			cl_sensitivity->value = 11;
-		}
-		Cvar_SetValue("sensitivity", cl_sensitivity->value);
-		break;
-	case OPT_MUSICTYPE:	// bgm type
-		if (String::ICmp(bgmtype->string,"midi") == 0)
-		{
-			if (dir < 0)
-			{
-				Cvar_Set("bgmtype","none");
-			}
-			else
-			{
-				Cvar_Set("bgmtype","cd");
-			}
-		}
-		else if (String::ICmp(bgmtype->string,"cd") == 0)
-		{
-			if (dir < 0)
-			{
-				Cvar_Set("bgmtype","midi");
-			}
-			else
-			{
-				Cvar_Set("bgmtype","none");
-			}
-		}
-		else
-		{
-			if (dir < 0)
-			{
-				Cvar_Set("bgmtype","cd");
-			}
-			else
-			{
-				Cvar_Set("bgmtype","midi");
-			}
-		}
-		break;
-
-	case OPT_MUSICVOL:	// music volume
-		bgmvolume->value += dir * 0.1;
-
-		if (bgmvolume->value < 0)
-		{
-			bgmvolume->value = 0;
-		}
-		if (bgmvolume->value > 1)
-		{
-			bgmvolume->value = 1;
-		}
-		Cvar_SetValue("bgmvolume", bgmvolume->value);
-		break;
-	case OPT_SNDVOL:	// sfx volume
-		s_volume->value += dir * 0.1;
-		if (s_volume->value < 0)
-		{
-			s_volume->value = 0;
-		}
-		if (s_volume->value > 1)
-		{
-			s_volume->value = 1;
-		}
-		Cvar_SetValue("s_volume", s_volume->value);
-		break;
-
-	case OPT_ALWAYRUN:	// allways run
-		if (cl_forwardspeed->value > 200)
-		{
-			Cvar_SetValue("cl_forwardspeed", 200);
-		}
-		else
-		{
-			Cvar_SetValue("cl_forwardspeed", 400);
-		}
-		break;
-
-	case OPT_INVMOUSE:	// invert mouse
-		Cvar_SetValue("m_pitch", -m_pitch->value);
-		break;
-
-	case OPT_LOOKSPRING:	// lookspring
-		Cvar_SetValue("lookspring", !lookspring->value);
-		break;
-
-	case OPT_CROSSHAIR:
-		Cvar_SetValue("crosshair", !crosshair->value);
-		break;
-
-	case OPT_ALWAYSMLOOK:
-		Cvar_SetValue("cl_freelook", !cl_freelook->value);
-		break;
-	}
-}
-
-
-void M_DrawSlider(int x, int y, float range)
-{
-	int i;
-
-	if (range < 0)
-	{
-		range = 0;
-	}
-	if (range > 1)
-	{
-		range = 1;
-	}
-	MQH_DrawCharacter(x - 8, y, 256);
-	for (i = 0; i < SLIDER_RANGE; i++)
-		MQH_DrawCharacter(x + i * 8, y, 257);
-	MQH_DrawCharacter(x + i * 8, y, 258);
-	MQH_DrawCharacter(x + (SLIDER_RANGE - 1) * 8 * range, y, 259);
-}
-
-void M_DrawCheckbox(int x, int y, int on)
-{
-#if 0
-	if (on)
-	{
-		MQH_DrawCharacter(x, y, 131);
-	}
-	else
-	{
-		MQH_DrawCharacter(x, y, 129);
-	}
-#endif
-	if (on)
-	{
-		MQH_Print(x, y, "on");
-	}
-	else
-	{
-		MQH_Print(x, y, "off");
-	}
-}
-
-void M_Options_Draw(void)
-{
-	float r;
-
-	MH2_ScrollTitle("gfx/menu/title3.lmp");
-
-	MQH_Print(16, 60 + (0 * 8), "    Customize controls");
-	MQH_Print(16, 60 + (1 * 8), "         Go to console");
-	MQH_Print(16, 60 + (2 * 8), "     Reset to defaults");
-
-	MQH_Print(16, 60 + (3 * 8), "           Screen size");
-	r = (scr_viewsize->value - 30) / (120 - 30);
-	M_DrawSlider(220, 60 + (3 * 8), r);
-
-	MQH_Print(16, 60 + (4 * 8), "            Brightness");
-	r = (r_gamma->value - 1);
-	M_DrawSlider(220, 60 + (4 * 8), r);
-
-	MQH_Print(16, 60 + (5 * 8), "           Mouse Speed");
-	r = (cl_sensitivity->value - 1) / 10;
-	M_DrawSlider(220, 60 + (5 * 8), r);
-
-	MQH_Print(16, 60 + (6 * 8), "            Music Type");
-	if (String::ICmp(bgmtype->string,"midi") == 0)
-	{
-		MQH_Print(220, 60 + (6 * 8), "MIDI");
-	}
-	else if (String::ICmp(bgmtype->string,"cd") == 0)
-	{
-		MQH_Print(220, 60 + (6 * 8), "CD");
-	}
-	else
-	{
-		MQH_Print(220, 60 + (6 * 8), "None");
-	}
-
-	MQH_Print(16, 60 + (7 * 8), "          Music Volume");
-	r = bgmvolume->value;
-	M_DrawSlider(220, 60 + (7 * 8), r);
-
-	MQH_Print(16, 60 + (8 * 8), "          Sound Volume");
-	r = s_volume->value;
-	M_DrawSlider(220, 60 + (8 * 8), r);
-
-	MQH_Print(16, 60 + (9 * 8),              "            Always Run");
-	M_DrawCheckbox(220, 60 + (9 * 8), cl_forwardspeed->value > 200);
-
-	MQH_Print(16, 60 + (OPT_INVMOUSE * 8),   "          Invert Mouse");
-	M_DrawCheckbox(220, 60 + (OPT_INVMOUSE * 8), m_pitch->value < 0);
-
-	MQH_Print(16, 60 + (OPT_LOOKSPRING * 8), "            Lookspring");
-	M_DrawCheckbox(220, 60 + (OPT_LOOKSPRING * 8), lookspring->value);
-
-	MQH_Print(16, 60 + (OPT_CROSSHAIR * 8),  "        Show Crosshair");
-	M_DrawCheckbox(220, 60 + (OPT_CROSSHAIR * 8), crosshair->value);
-
-	MQH_Print(16,60 + (OPT_ALWAYSMLOOK * 8), "            Mouse Look");
-	M_DrawCheckbox(220, 60 + (OPT_ALWAYSMLOOK * 8), cl_freelook->value);
-
-	MQH_Print(16, 60 + (OPT_VIDEO * 8),  "         Video Options");
-
-// cursor
-	MQH_DrawCharacter(200, 60 + mqh_options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
-}
-
-
-void M_Options_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-		switch (mqh_options_cursor)
-		{
-		case OPT_CUSTOMIZE:
-			M_Menu_Keys_f();
-			break;
-		case OPT_CONSOLE:
-			m_state = m_none;
-			Con_ToggleConsole_f();
-			break;
-		case OPT_DEFAULTS:
-			Cbuf_AddText("exec default.cfg\n");
-			break;
-		case OPT_VIDEO:
-			M_Menu_Video_f();
-			break;
-		default:
-			M_AdjustSliders(1);
-			break;
-		}
-		return;
-
-	case K_UPARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_options_cursor--;
-		if (mqh_options_cursor < 0)
-		{
-			mqh_options_cursor = OPTIONS_ITEMS - 1;
-		}
-		break;
-
-	case K_DOWNARROW:
-		S_StartLocalSound("raven/menu1.wav");
-		mqh_options_cursor++;
-		if (mqh_options_cursor >= OPTIONS_ITEMS)
-		{
-			mqh_options_cursor = 0;
-		}
-		break;
-
-	case K_LEFTARROW:
-		M_AdjustSliders(-1);
-		break;
-
-	case K_RIGHTARROW:
-		M_AdjustSliders(1);
-		break;
-	}
-}
-
-//=============================================================================
 /* KEYS MENU */
 
 const char* bindnames[][2] =
@@ -438,14 +127,6 @@ const char* bindnames[][2] =
 int keys_cursor;
 int bind_grab;
 int keys_top = 0;
-
-void M_Menu_Keys_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_keys;
-	mqh_entersound = true;
-}
-
 
 void M_FindKeysForCommand(const char* command, int* twokeys)
 {
@@ -652,17 +333,6 @@ void M_Keys_Key(int k)
 //=============================================================================
 /* VIDEO MENU */
 
-#define MAX_COLUMN_SIZE     9
-#define MODE_AREA_HEIGHT    (MAX_COLUMN_SIZE + 2)
-
-void M_Menu_Video_f(void)
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_video;
-	mqh_entersound = true;
-}
-
-
 void M_Video_Draw(void)
 {
 	MH2_ScrollTitle("gfx/menu/title7.lmp");
@@ -847,8 +517,6 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
-	Cmd_AddCommand("menu_video", M_Menu_Video_f);
 
 	mh2_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
@@ -882,10 +550,6 @@ void M_Draw(void)
 	switch (m_state)
 	{
 
-	case m_options:
-		M_Options_Draw();
-		break;
-
 	case m_keys:
 		M_Keys_Draw();
 		break;
@@ -917,10 +581,6 @@ void M_Keydown(int key)
 {
 	switch (m_state)
 	{
-
-	case m_options:
-		M_Options_Key(key);
-		return;
 
 	case m_keys:
 		M_Keys_Key(key);

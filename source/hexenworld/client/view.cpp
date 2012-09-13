@@ -30,8 +30,6 @@ static Cvar* v_idlescale;
 
 static Cvar* r_drawviewmodel;
 
-Cvar* crosshair;
-
 Cvar* cl_crossx;
 Cvar* cl_crossy;
 

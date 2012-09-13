@@ -30,7 +30,6 @@ qhandle_t gun_model;
 
 //=============
 
-Cvar* crosshair;
 Cvar* cl_testparticles;
 Cvar* cl_testentities;
 Cvar* cl_testlights;

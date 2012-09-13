@@ -30,6 +30,7 @@ static Cvar* cl_graphscale;
 static Cvar* cl_graphshift;
 
 Cvar* scr_viewsize;
+Cvar* crosshair;
 
 float h2_introTime = 0.0;
 

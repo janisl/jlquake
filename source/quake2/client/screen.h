@@ -31,8 +31,6 @@ void    SCR_TouchPics(void);
 
 extern int sbqh_lines;
 
-extern Cvar* crosshair;
-
 extern vrect_t scr_vrect;			// position of render window
 
 extern char crosshair_pic[MAX_QPATH];

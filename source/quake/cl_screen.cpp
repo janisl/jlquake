@@ -76,8 +76,6 @@ Cvar* scr_showpause;
 Cvar* scr_printspeed;
 Cvar* show_fps;
 
-extern Cvar* crosshair;
-
 qboolean scr_initialized;			// ready to draw
 
 image_t* scr_net;

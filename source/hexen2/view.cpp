@@ -38,8 +38,6 @@ static Cvar* v_idlescale;
 
 static Cvar* r_drawviewmodel;
 
-Cvar* crosshair;
-
 static Cvar* v_centermove;
 
 static Cvar* v_centerrollspeed;

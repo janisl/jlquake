@@ -78,7 +78,6 @@ Cvar* scr_showpause;
 Cvar* scr_printspeed;
 Cvar* scr_allowsnap;
 Cvar* show_fps;
-extern Cvar* crosshair;
 
 static Cvar* cl_netgraph;
 

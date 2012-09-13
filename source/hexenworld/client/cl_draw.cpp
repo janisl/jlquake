@@ -29,7 +29,6 @@ void Draw_Init(void)
 
 void Draw_Crosshair(void)
 {
-	extern Cvar* crosshair;
 	extern Cvar* cl_crossx;
 	extern Cvar* cl_crossy;
 	int x, y;

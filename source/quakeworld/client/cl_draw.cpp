@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-extern Cvar* crosshair;
 extern Cvar* cl_crossx;
 extern Cvar* cl_crossy;
 extern Cvar* crosshaircolor;

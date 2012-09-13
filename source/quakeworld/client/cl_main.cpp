@@ -1618,3 +1618,4 @@ Cvar* qh_skill;
 Cvar* qh_timelimit;
 Cvar* qh_fraglimit;
 Cvar* h2_randomclass;
+int svh2_kingofhill;
