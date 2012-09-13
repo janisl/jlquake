@@ -7,14 +7,12 @@
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Video_Draw(void);
 void M_Help_Draw(void);
 void M_Quit_Draw(void);
 void M_SerialConfig_Draw(void);
 void M_ModemConfig_Draw(void);
 
 void M_Keys_Key(int key);
-void M_Video_Key(int key);
 void M_Help_Key(int key);
 void M_Quit_Key(int key);
 void M_SerialConfig_Key(int key);
@@ -331,38 +329,6 @@ void M_Keys_Key(int k)
 }
 
 //=============================================================================
-/* VIDEO MENU */
-
-void M_Video_Draw(void)
-{
-	MH2_ScrollTitle("gfx/menu/title7.lmp");
-
-	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
-		"Video modes must be set from the");
-	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
-		"console with set r_mode <number>");
-	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
-		"and set r_colorbits <bits-per-pixel>");
-	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
-		"Select windowed mode with set r_fullscreen 0");
-}
-
-
-void M_Video_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		S_StartLocalSound("raven/menu1.wav");
-		MQH_Menu_Options_f();
-		break;
-
-	default:
-		break;
-	}
-}
-
-//=============================================================================
 /* HELP MENU */
 
 void M_Help_Draw(void)
@@ -554,10 +520,6 @@ void M_Draw(void)
 		M_Keys_Draw();
 		break;
 
-	case m_video:
-		M_Video_Draw();
-		break;
-
 	case m_help:
 		M_Help_Draw();
 		break;
@@ -584,10 +546,6 @@ void M_Keydown(int key)
 
 	case m_keys:
 		M_Keys_Key(key);
-		return;
-
-	case m_video:
-		M_Video_Key(key);
 		return;
 
 	case m_help:

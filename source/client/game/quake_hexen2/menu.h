@@ -92,5 +92,3 @@ void MQH_Menu_Options_f();
 void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
 void MQH_CharEvent(int key);
-void MQH_Menu_Keys_f();
-void MQH_Menu_Video_f();

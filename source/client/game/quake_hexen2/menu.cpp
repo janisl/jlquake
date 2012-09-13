@@ -63,6 +63,8 @@ static void MQH_Menu_GameOptions_f();
 static void MQH_Menu_Setup_f();
 static void MH2_Menu_MLoad_f();
 static void MH2_Menu_MSave_f();
+static void MQH_Menu_Keys_f();
+static void MQH_Menu_Video_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic(int x, int y, image_t* pic)
@@ -3101,7 +3103,7 @@ static void MQH_Setup_Draw()
 			which_class = setup_class;
 		}
 
-		image_t* p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), mh2_menuplyr_pixels[which_class - 1]);
+		R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), mh2_menuplyr_pixels[which_class - 1]);
 		CL_CalcHexen2SkinTranslation(setup_top, setup_bottom, which_class, mqh_translationTable);
 		R_CreateOrUpdateTranslatedImage(mh2_translate_texture[which_class - 1], va("*translate_pic%d", which_class), mh2_menuplyr_pixels[which_class - 1], mqh_translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 		MQH_DrawPic(220, 72, mh2_translate_texture[which_class - 1]);
@@ -3981,7 +3983,7 @@ static void MQH_Options_Key(int k)
 //=============================================================================
 /* KEYS MENU */
 
-void MQH_Menu_Keys_f()
+static void MQH_Menu_Keys_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
@@ -3991,11 +3993,47 @@ void MQH_Menu_Keys_f()
 //=============================================================================
 /* VIDEO MENU */
 
-void MQH_Menu_Video_f()
+static void MQH_Menu_Video_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
 	mqh_entersound = true;
+}
+
+static void MQH_Video_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title7.lmp");
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/vidmodes.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+	}
+
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
+		"Video modes must be set from the");
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
+		"console with set r_mode <number>");
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 4,
+		"and set r_colorbits <bits-per-pixel>");
+	MQH_Print(3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
+		"Select windowed mode with set r_fullscreen 0");
+}
+
+static void MQH_Video_Key(int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		MQH_Menu_Options_f();
+		break;
+
+	default:
+		break;
+	}
 }
 
 //=============================================================================
@@ -4870,6 +4908,10 @@ void MQH_Draw()
 	case m_options:
 		MQH_Options_Draw();
 		break;
+
+	case m_video:
+		MQH_Video_Draw();
+		break;
 	}
 }
 
@@ -4946,6 +4988,10 @@ void MQH_Keydown(int key)
 
 	case m_options:
 		MQH_Options_Key(key);
+		return;
+
+	case m_video:
+		MQH_Video_Key(key);
 		return;
 	}
 }
