@@ -4130,7 +4130,6 @@ static void MQH_Help_Key(int key)
 #define VSTR2(x) VSTR(x)
 
 bool wasInMenus;
-static int msgNumber;
 menu_state_t m_quit_prevstate;
 
 static float LinePos;
@@ -4138,50 +4137,6 @@ static int LineTimes;
 static int MaxLines;
 static const char** LineText;
 static bool SoundPlayed;
-
-static const char* mq1_quitMessage [] =
-{
-/* .........1.........2.... */
-	"  Are you gonna quit    ",
-	"  this game just like   ",
-	"   everything else?     ",
-	"                        ",
-
-	" Milord, methinks that  ",
-	"   thou art a lowly     ",
-	" quitter. Is this true? ",
-	"                        ",
-
-	" Do I need to bust your ",
-	"  face open for trying  ",
-	"        to quit?        ",
-	"                        ",
-
-	" Man, I oughta smack you",
-	"   for trying to quit!  ",
-	"     Press Y to get     ",
-	"      smacked out.      ",
-
-	" Press Y to quit like a ",
-	"   big loser in life.   ",
-	"  Press N to stay proud ",
-	"    and successful!     ",
-
-	"   If you press Y to    ",
-	"  quit, I will summon   ",
-	"  Satan all over your   ",
-	"      hard drive!       ",
-
-	"  Um, Asmodeus dislikes ",
-	" his children trying to ",
-	" quit. Press Y to return",
-	"   to your Tinkertoys.  ",
-
-	"  If you quit now, I'll ",
-	"  throw a blanket-party ",
-	"   for you next time!   ",
-	"                        "
-};
 
 #define MAX_LINES_H2 138
 static const char* CreditTextH2[MAX_LINES_H2] =
@@ -4858,11 +4813,7 @@ void MQH_Menu_Quit_f()
 	m_quit_prevstate = m_state;
 	m_state = m_quit;
 	mqh_entersound = true;
-	if (GGameType & GAME_Quake)
-	{
-		msgNumber = rand() & 7;
-	}
-	else
+	if (GGameType & GAME_Hexen2)
 	{
 		LinePos = 0;
 		LineTimes = 0;
@@ -5033,7 +4984,6 @@ static void MQH_Quit_Draw()
 			m_state = m_quit;
 		}
 
-#ifdef _WIN32
 		MQH_DrawTextBox(0, 0, 38, 23);
 		MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
 		MQH_PrintWhite(16, 28,  "Programming        Art \n");
@@ -5056,13 +5006,6 @@ static void MQH_Quit_Draw()
 		MQH_PrintWhite(16, 164, "registered trademark licensed to\n");
 		MQH_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
 		MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
-#else
-		MQH_DrawTextBox(56, 76, 24, 4);
-		MQH_Print(64, 84,  mq1_quitMessage[msgNumber * 4 + 0]);
-		MQH_Print(64, 92,  mq1_quitMessage[msgNumber * 4 + 1]);
-		MQH_Print(64, 100, mq1_quitMessage[msgNumber * 4 + 2]);
-		MQH_Print(64, 108, mq1_quitMessage[msgNumber * 4 + 3]);
-#endif
 	}
 }
 
