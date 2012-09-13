@@ -7,16 +7,10 @@
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Help_Draw(void);
 void M_Quit_Draw(void);
-void M_SerialConfig_Draw(void);
-void M_ModemConfig_Draw(void);
 
 void M_Keys_Key(int key);
-void M_Help_Key(int key);
 void M_Quit_Key(int key);
-void M_SerialConfig_Key(int key);
-void M_ModemConfig_Key(int key);
 
 qboolean m_recursiveDraw;
 
@@ -329,44 +323,6 @@ void M_Keys_Key(int k)
 }
 
 //=============================================================================
-/* HELP MENU */
-
-void M_Help_Draw(void)
-{
-	MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", mqh_help_page + 1)));
-}
-
-
-void M_Help_Key(int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		MQH_Menu_Main_f();
-		break;
-
-	case K_UPARROW:
-	case K_RIGHTARROW:
-		mqh_entersound = true;
-		if (++mqh_help_page >= NUM_HELP_PAGES_H2)
-		{
-			mqh_help_page = 0;
-		}
-		break;
-
-	case K_DOWNARROW:
-	case K_LEFTARROW:
-		mqh_entersound = true;
-		if (--mqh_help_page < 0)
-		{
-			mqh_help_page = NUM_HELP_PAGES_H2 - 1;
-		}
-		break;
-	}
-
-}
-
-//=============================================================================
 /* QUIT MENU */
 
 void M_Quit_Key(int key)
@@ -520,10 +476,6 @@ void M_Draw(void)
 		M_Keys_Draw();
 		break;
 
-	case m_help:
-		M_Help_Draw();
-		break;
-
 	case m_quit:
 		M_Quit_Draw();
 		break;
@@ -546,10 +498,6 @@ void M_Keydown(int key)
 
 	case m_keys:
 		M_Keys_Key(key);
-		return;
-
-	case m_help:
-		M_Help_Key(key);
 		return;
 
 	case m_quit:

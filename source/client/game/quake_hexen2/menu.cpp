@@ -3993,6 +3993,9 @@ static void MQH_Menu_Keys_f()
 //=============================================================================
 /* VIDEO MENU */
 
+#define MAX_COLUMN_SIZE     9
+#define MODE_AREA_HEIGHT    (MAX_COLUMN_SIZE + 2)
+
 static void MQH_Menu_Video_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -4039,7 +4042,11 @@ static void MQH_Video_Key(int key)
 //=============================================================================
 /* HELP MENU */
 
-int mqh_help_page;
+#define NUM_HELP_PAGES_Q1   6
+#define NUM_HELP_PAGES_H2   5
+#define NUM_SG_HELP_PAGES   10	//Siege has more help
+
+static int mqh_help_page;
 
 static void MQH_Menu_Help_f()
 {
@@ -4047,6 +4054,68 @@ static void MQH_Menu_Help_f()
 	m_state = m_help;
 	mqh_entersound = true;
 	mqh_help_page = 0;
+}
+
+static void MQH_Help_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		if (GGameType & GAME_HexenWorld && clhw_siege)
+		{
+			MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/sghelp%02i.lmp", mqh_help_page + 1)));
+		}
+		else
+		{
+			MQH_DrawPic(0, 0, R_CachePic(va("gfx/menu/help%02i.lmp", mqh_help_page + 1)));
+		}
+	}
+	else
+	{
+		MQH_DrawPic(0, 0, R_CachePic(va("gfx/help%i.lmp", mqh_help_page)));
+	}
+}
+
+static void MQH_Help_Key(int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Main_f();
+		break;
+
+	case K_UPARROW:
+	case K_RIGHTARROW:
+		mqh_entersound = true;
+		if (GGameType & GAME_HexenWorld && clhw_siege)
+		{
+			if (++mqh_help_page >= NUM_SG_HELP_PAGES)
+			{
+				mqh_help_page = 0;
+			}
+		}
+		else if (++mqh_help_page >= (GGameType & GAME_Hexen2 ? NUM_HELP_PAGES_H2 : NUM_HELP_PAGES_Q1))
+		{
+			mqh_help_page = 0;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_LEFTARROW:
+		mqh_entersound = true;
+		if (--mqh_help_page < 0)
+		{
+			if (GGameType & GAME_HexenWorld && clhw_siege)
+			{
+				mqh_help_page = NUM_SG_HELP_PAGES - 1;
+			}
+			else
+			{
+				mqh_help_page = (GGameType & GAME_Hexen2 ? NUM_HELP_PAGES_H2 : NUM_HELP_PAGES_Q1) - 1;
+			}
+		}
+		break;
+	}
+
 }
 
 //=============================================================================
@@ -4912,6 +4981,10 @@ void MQH_Draw()
 	case m_video:
 		MQH_Video_Draw();
 		break;
+
+	case m_help:
+		MQH_Help_Draw();
+		break;
 	}
 }
 
@@ -4992,6 +5065,10 @@ void MQH_Keydown(int key)
 
 	case m_video:
 		MQH_Video_Key(key);
+		return;
+
+	case m_help:
+		MQH_Help_Key(key);
 		return;
 	}
 }
