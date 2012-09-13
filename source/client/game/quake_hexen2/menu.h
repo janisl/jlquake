@@ -56,21 +56,10 @@ extern bool mqh_entersound;
 extern Cvar* mh2_oldmission;
 
 extern bool wasInMenus;
-extern int msgNumber;
 extern menu_state_t m_quit_prevstate;
-extern const char* mq1_quitMessage [];
-extern float LinePos;
-extern int LineTimes;
-extern int MaxLines;
-extern const char** LineText;
-extern bool SoundPlayed;
-#define MAX_LINES2_H2 150
-#define MAX_LINES2_HW 158 + 27
-extern const char* Credit2TextH2[MAX_LINES2_H2];
-extern const char* Credit2TextHW[MAX_LINES2_HW];
-#define QUIT_SIZE_H2 18
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
+extern bool m_recursiveDraw;
 
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_DrawCharacter(int cx, int line, int num);

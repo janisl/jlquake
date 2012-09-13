@@ -7,12 +7,9 @@
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Quit_Draw(void);
 
 void M_Keys_Key(int key);
 void M_Quit_Key(int key);
-
-qboolean m_recursiveDraw;
 
 //=============================================================================
 /* Support Routines */
@@ -357,108 +354,6 @@ void M_Quit_Key(int key)
 
 }
 
-#define VSTR(x) # x
-#define VSTR2(x) VSTR(x)
-
-void M_Quit_Draw(void)
-{
-	int i,x,y,place,topy;
-	image_t* p;
-
-	if (wasInMenus)
-	{
-		m_state = m_quit_prevstate;
-		m_recursiveDraw = true;
-		M_Draw();
-		m_state = m_quit;
-	}
-
-	LinePos += host_frametime * 1.75;
-	if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
-	{
-		LinePos = 0;
-		SoundPlayed = false;
-		LineTimes++;
-		if (LineTimes >= 2)
-		{
-			MaxLines = MAX_LINES2_HW;
-			LineText = Credit2TextHW;
-		}
-	}
-
-	y = 12;
-	MQH_DrawTextBox(0, 0, 38, 23);
-	MQH_PrintWhite(16, y,  "      Hexen2World version " VSTR2(VERSION) "      ");    y += 8;
-	MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
-
-	if (LinePos > 55 && !SoundPlayed && LineText == Credit2TextHW)
-	{
-		S_StartLocalSound("rj/steve.wav");
-		SoundPlayed = true;
-	}
-	topy = y;
-	place = LinePos;
-	y -= (LinePos - (int)LinePos) * 8;
-	for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
-	{
-		if (i + place - QUIT_SIZE_H2 >= MaxLines)
-		{
-			break;
-		}
-		if (i + place < QUIT_SIZE_H2)
-		{
-			continue;
-		}
-
-		if (LineText[i + place - QUIT_SIZE_H2][0] == ' ')
-		{
-			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE_H2]);
-		}
-		else
-		{
-			MQH_Print(24,y,LineText[i + place - QUIT_SIZE_H2]);
-		}
-	}
-
-	p = R_CachePic("gfx/box_mm2.lmp");
-	x = 24;
-	y = topy - 8;
-	for (i = 4; i < 36; i++,x += 8)
-	{
-		MQH_DrawPic(x, y, p);
-	}
-
-	p = R_CachePic("gfx/box_mm2.lmp");
-	x = 24;
-	y = topy + (QUIT_SIZE_H2 * 8) - 8;
-	for (i = 4; i < 36; i++,x += 8)
-	{
-		MQH_DrawPic(x, y, p);
-	}
-
-	y += 8;
-	MQH_PrintWhite(16, y,  "          Press y to exit           ");
-
-/*	y = 12;
-    MQH_DrawTextBox (0, 0, 38, 23);
-    MQH_PrintWhite (16, y,  "        Hexen II version 0.0        ");	y += 8;
-    MQH_PrintWhite (16, y,  "         by Raven Software          ");	y += 16;
-    MQH_PrintWhite (16, y,  "Programming        Art              ");	y += 8;
-    MQH_Print (16, y,       " Ben Gokey          Shane Gurno     ");	y += 8;
-    MQH_Print (16, y,       " Rick Johnson       Mike Werckle    ");	y += 8;
-    MQH_Print (16, y,       " Bob Love           Mark Morgan     ");	y += 8;
-    MQH_Print (16, y,       " Mike Gummelt       Brian Pelletier ");	y += 8;
-    MQH_Print (16, y,       "                    Kim Lathrop     ");	y += 8;
-    MQH_PrintWhite (16, y,  "Design                              ");
-    MQH_Print (16, y,       "                    Les Dorscheid   ");	y += 8;
-    MQH_Print (16, y,       " Brian Raffel       Jim Sumwalt     ");	y += 8;
-    MQH_Print (16, y,       " Eric Biessman      Brian Shubat    ");	y += 16;
-    MQH_PrintWhite (16, y,  "Sound Effects      Intern           ");	y += 8;
-    MQH_Print (16, y,       " Kevin Schilder     Josh Weier      ");	y += 16;
-    MQH_PrintWhite (16, y,  "          Press y to exit           ");	y += 8;*/
-
-}
-
 //=============================================================================
 /* Menu Subsystem */
 
@@ -501,10 +396,6 @@ void M_Draw(void)
 
 	case m_keys:
 		M_Keys_Draw();
-		break;
-
-	case m_quit:
-		M_Quit_Draw();
 		break;
 	}
 

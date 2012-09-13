@@ -22,12 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Quit_Draw(void);
 
 void M_Keys_Key(int key);
 void M_Quit_Key(int key);
-
-qboolean m_recursiveDraw;
 
 //=============================================================================
 
@@ -304,71 +301,6 @@ void M_Quit_Key(int key)
 
 }
 
-void M_Quit_Draw(void)
-{
-#define VSTR(x) # x
-#define VSTR2(x) VSTR(x)
-	const char* cmsg[] = {
-//    0123456789012345678901234567890123456789
-		"0            QuakeWorld",
-		"1    version " VSTR2(VERSION) " by id Software",
-		"0Programming",
-		"1 John Carmack    Michael Abrash",
-		"1 John Cash       Christian Antkow",
-		"0Additional Programming",
-		"1 Dave 'Zoid' Kirsch",
-		"1 Jack 'morbid' Mathews",
-		"0Id Software is not responsible for",
-		"0providing technical support for",
-		"0QUAKEWORLD(tm). (c)1996 Id Software,",
-		"0Inc.  All Rights Reserved.",
-		"0QUAKEWORLD(tm) is a trademark of Id",
-		"0Software, Inc.",
-		"1NOTICE: THE COPYRIGHT AND TRADEMARK",
-		"1NOTICES APPEARING  IN YOUR COPY OF",
-		"1QUAKE(r) ARE NOT MODIFIED BY THE USE",
-		"1OF QUAKEWORLD(tm) AND REMAIN IN FULL",
-		"1FORCE.",
-		"0NIN(r) is a registered trademark",
-		"0licensed to Nothing Interactive, Inc.",
-		"0All rights reserved. Press y to exit",
-		NULL
-	};
-	const char** p;
-	int y;
-
-	if (wasInMenus)
-	{
-		m_state = m_quit_prevstate;
-		m_recursiveDraw = true;
-		M_Draw();
-		m_state = m_quit;
-	}
-#if 1
-	MQH_DrawTextBox(0, 0, 38, 23);
-	y = 12;
-	for (p = cmsg; *p; p++, y += 8)
-	{
-		if (**p == '0')
-		{
-			MQH_PrintWhite(16, y, *p + 1);
-		}
-		else
-		{
-			MQH_Print(16, y, *p + 1);
-		}
-	}
-#else
-	MQH_DrawTextBox(56, 76, 24, 4);
-	MQH_Print(64, 84,  mq1_quitMessage[msgNumber * 4 + 0]);
-	MQH_Print(64, 92,  mq1_quitMessage[msgNumber * 4 + 1]);
-	MQH_Print(64, 100, mq1_quitMessage[msgNumber * 4 + 2]);
-	MQH_Print(64, 108, mq1_quitMessage[msgNumber * 4 + 3]);
-#endif
-}
-
-
-
 //=============================================================================
 /* Menu Subsystem */
 
@@ -410,10 +342,6 @@ void M_Draw(void)
 	{
 	case m_keys:
 		M_Keys_Draw();
-		break;
-
-	case m_quit:
-		M_Quit_Draw();
 		break;
 	}
 

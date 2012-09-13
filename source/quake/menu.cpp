@@ -22,12 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Quit_Draw(void);
 
 void M_Keys_Key(int key);
 void M_Quit_Key(int key);
-
-qboolean m_recursiveDraw;
 
 //=============================================================================
 
@@ -303,48 +300,6 @@ void M_Quit_Key(int key)
 }
 
 
-void M_Quit_Draw(void)
-{
-	if (wasInMenus)
-	{
-		m_state = m_quit_prevstate;
-		m_recursiveDraw = true;
-		M_Draw();
-		m_state = m_quit;
-	}
-
-#ifdef _WIN32
-	MQH_DrawTextBox(0, 0, 38, 23);
-	MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
-	MQH_PrintWhite(16, 28,  "Programming        Art \n");
-	MQH_Print(16, 36,  " John Carmack       Adrian Carmack\n");
-	MQH_Print(16, 44,  " Michael Abrash     Kevin Cloud\n");
-	MQH_Print(16, 52,  " John Cash          Paul Steed\n");
-	MQH_Print(16, 60,  " Dave 'Zoid' Kirsch\n");
-	MQH_PrintWhite(16, 68,  "Design             Biz\n");
-	MQH_Print(16, 76,  " John Romero        Jay Wilbur\n");
-	MQH_Print(16, 84,  " Sandy Petersen     Mike Wilson\n");
-	MQH_Print(16, 92,  " American McGee     Donna Jackson\n");
-	MQH_Print(16, 100,  " Tim Willits        Todd Hollenshead\n");
-	MQH_PrintWhite(16, 108, "Support            Projects\n");
-	MQH_Print(16, 116, " Barrett Alexander  Shawn Green\n");
-	MQH_PrintWhite(16, 124, "Sound Effects\n");
-	MQH_Print(16, 132, " Trent Reznor and Nine Inch Nails\n\n");
-	MQH_PrintWhite(16, 140, "Quake is a trademark of Id Software,\n");
-	MQH_PrintWhite(16, 148, "inc., (c)1996 Id Software, inc. All\n");
-	MQH_PrintWhite(16, 156, "rights reserved. NIN logo is a\n");
-	MQH_PrintWhite(16, 164, "registered trademark licensed to\n");
-	MQH_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
-	MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
-#else
-	MQH_DrawTextBox(56, 76, 24, 4);
-	MQH_Print(64, 84,  mq1_quitMessage[msgNumber * 4 + 0]);
-	MQH_Print(64, 92,  mq1_quitMessage[msgNumber * 4 + 1]);
-	MQH_Print(64, 100, mq1_quitMessage[msgNumber * 4 + 2]);
-	MQH_Print(64, 108, mq1_quitMessage[msgNumber * 4 + 3]);
-#endif
-}
-
 //=============================================================================
 /* Menu Subsystem */
 
@@ -387,10 +342,6 @@ void M_Draw(void)
 
 	case m_keys:
 		M_Keys_Draw();
-		break;
-
-	case m_quit:
-		M_Quit_Draw();
 		break;
 	}
 

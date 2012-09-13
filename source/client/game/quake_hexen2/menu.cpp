@@ -23,6 +23,8 @@
 
 extern Cvar* r_gamma;
 
+void M_Draw();
+
 menu_state_t m_state;
 menu_state_t m_return_state;
 
@@ -39,6 +41,7 @@ float LogoTargetPercent = 1;
 
 bool mqh_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
+bool m_recursiveDraw;
 
 static const char* mh2_message;
 static const char* mh2_message2;
@@ -4121,17 +4124,22 @@ static void MQH_Help_Key(int key)
 //=============================================================================
 /* QUIT MENU */
 
+#define QUIT_SIZE_H2 18
+
+#define VSTR(x) # x
+#define VSTR2(x) VSTR(x)
+
 bool wasInMenus;
-int msgNumber;
+static int msgNumber;
 menu_state_t m_quit_prevstate;
 
-float LinePos;
-int LineTimes;
-int MaxLines;
-const char** LineText;
-bool SoundPlayed;
+static float LinePos;
+static int LineTimes;
+static int MaxLines;
+static const char** LineText;
+static bool SoundPlayed;
 
-const char* mq1_quitMessage [] =
+static const char* mq1_quitMessage [] =
 {
 /* .........1.........2.... */
 	"  Are you gonna quit    ",
@@ -4318,7 +4326,8 @@ static const char* CreditTextH2[MAX_LINES_H2] =
 	"making of this game!"
 };
 
-const char* Credit2TextH2[MAX_LINES2_H2] =
+#define MAX_LINES2_H2 150
+static const char* Credit2TextH2[MAX_LINES2_H2] =
 {
 	"PowerTrip: James (emorog) Monroe",
 	"Cartoons: Brian Raffel",
@@ -4648,7 +4657,8 @@ static const char* CreditTextHW[MAX_LINES_HW] =
 	"making of this game!"
 };
 
-const char* Credit2TextHW[MAX_LINES2_HW] =
+#define MAX_LINES2_HW 158 + 27
+static const char* Credit2TextHW[MAX_LINES2_HW] =
 {
 	"HexenWorld",
 	"",
@@ -4870,6 +4880,195 @@ void MQH_Menu_Quit_f()
 	}
 }
 
+static void MQH_Quit_Draw()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		int i,x,y,place,topy;
+		image_t* p;
+
+		if (wasInMenus)
+		{
+			m_state = m_quit_prevstate;
+			m_recursiveDraw = true;
+			M_Draw();
+			m_state = m_quit;
+		}
+
+		LinePos += cls.frametime * 0.001 * 1.75;
+		if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
+		{
+			LinePos = 0;
+			SoundPlayed = false;
+			LineTimes++;
+			if (LineTimes >= 2)
+			{
+				if (GGameType & GAME_HexenWorld)
+				{
+					MaxLines = MAX_LINES2_HW;
+					LineText = Credit2TextHW;
+				}
+				else
+				{
+					MaxLines = MAX_LINES2_H2;
+					LineText = Credit2TextH2;
+					CDAudio_Play(12, false);
+				}
+			}
+		}
+
+		y = 12;
+		MQH_DrawTextBox(0, 0, 38, 23);
+		if (GGameType & GAME_HexenWorld)
+		{
+			MQH_PrintWhite(16, y,  "      Hexen2World version " VSTR2(VERSION) "      ");    y += 8;
+		}
+		else
+		{
+			MQH_PrintWhite(16, y,  "        Hexen II version 1.12       ");  y += 8;
+		}
+		MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
+
+		if (LinePos > 55 && !SoundPlayed && LineText == (GGameType & GAME_HexenWorld ? Credit2TextHW : Credit2TextH2))
+		{
+			S_StartLocalSound("rj/steve.wav");
+			SoundPlayed = true;
+		}
+		topy = y;
+		place = floor(LinePos);
+		y -= floor((LinePos - place) * 8);
+		for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
+		{
+			if (i + place - QUIT_SIZE_H2 >= MaxLines)
+			{
+				break;
+			}
+			if (i + place < QUIT_SIZE_H2)
+			{
+				continue;
+			}
+
+			if (LineText[i + place - QUIT_SIZE_H2][0] == ' ')
+			{
+				MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE_H2]);
+			}
+			else
+			{
+				MQH_Print(24,y,LineText[i + place - QUIT_SIZE_H2]);
+			}
+		}
+
+		p = R_CachePic("gfx/box_mm2.lmp");
+		x = 24;
+		y = topy - 8;
+		for (i = 4; i < (GGameType & GAME_HexenWorld ? 36 : 38); i++,x += 8)
+		{
+			MQH_DrawPic(x, y, p);	//background at top for smooth scroll out
+			MQH_DrawPic(x, y + (QUIT_SIZE_H2 * 8), p);	//draw at bottom for smooth scroll in
+		}
+
+		y += (QUIT_SIZE_H2 * 8) + 8;
+		MQH_PrintWhite(16, y,  "          Press y to exit           ");
+	}
+	else if (GGameType & GAME_QuakeWorld)
+	{
+		const char* cmsg[] =
+		{
+		//    0123456789012345678901234567890123456789
+			"0            QuakeWorld",
+			"1    version " VSTR2(VERSION) " by id Software",
+			"0Programming",
+			"1 John Carmack    Michael Abrash",
+			"1 John Cash       Christian Antkow",
+			"0Additional Programming",
+			"1 Dave 'Zoid' Kirsch",
+			"1 Jack 'morbid' Mathews",
+			"0Id Software is not responsible for",
+			"0providing technical support for",
+			"0QUAKEWORLD(tm). (c)1996 Id Software,",
+			"0Inc.  All Rights Reserved.",
+			"0QUAKEWORLD(tm) is a trademark of Id",
+			"0Software, Inc.",
+			"1NOTICE: THE COPYRIGHT AND TRADEMARK",
+			"1NOTICES APPEARING  IN YOUR COPY OF",
+			"1QUAKE(r) ARE NOT MODIFIED BY THE USE",
+			"1OF QUAKEWORLD(tm) AND REMAIN IN FULL",
+			"1FORCE.",
+			"0NIN(r) is a registered trademark",
+			"0licensed to Nothing Interactive, Inc.",
+			"0All rights reserved. Press y to exit",
+			NULL
+		};
+		const char** p;
+		int y;
+
+		if (wasInMenus)
+		{
+			m_state = m_quit_prevstate;
+			m_recursiveDraw = true;
+			M_Draw();
+			m_state = m_quit;
+		}
+		MQH_DrawTextBox(0, 0, 38, 23);
+		y = 12;
+		for (p = cmsg; *p; p++, y += 8)
+		{
+			if (**p == '0')
+			{
+				MQH_PrintWhite(16, y, *p + 1);
+			}
+			else
+			{
+				MQH_Print(16, y, *p + 1);
+			}
+		}
+	}
+	else
+	{
+		if (wasInMenus)
+		{
+			m_state = m_quit_prevstate;
+			m_recursiveDraw = true;
+			M_Draw();
+			m_state = m_quit;
+		}
+
+#ifdef _WIN32
+		MQH_DrawTextBox(0, 0, 38, 23);
+		MQH_PrintWhite(16, 12,  "  Quake version 1.09 by id Software\n\n");
+		MQH_PrintWhite(16, 28,  "Programming        Art \n");
+		MQH_Print(16, 36,  " John Carmack       Adrian Carmack\n");
+		MQH_Print(16, 44,  " Michael Abrash     Kevin Cloud\n");
+		MQH_Print(16, 52,  " John Cash          Paul Steed\n");
+		MQH_Print(16, 60,  " Dave 'Zoid' Kirsch\n");
+		MQH_PrintWhite(16, 68,  "Design             Biz\n");
+		MQH_Print(16, 76,  " John Romero        Jay Wilbur\n");
+		MQH_Print(16, 84,  " Sandy Petersen     Mike Wilson\n");
+		MQH_Print(16, 92,  " American McGee     Donna Jackson\n");
+		MQH_Print(16, 100,  " Tim Willits        Todd Hollenshead\n");
+		MQH_PrintWhite(16, 108, "Support            Projects\n");
+		MQH_Print(16, 116, " Barrett Alexander  Shawn Green\n");
+		MQH_PrintWhite(16, 124, "Sound Effects\n");
+		MQH_Print(16, 132, " Trent Reznor and Nine Inch Nails\n\n");
+		MQH_PrintWhite(16, 140, "Quake is a trademark of Id Software,\n");
+		MQH_PrintWhite(16, 148, "inc., (c)1996 Id Software, inc. All\n");
+		MQH_PrintWhite(16, 156, "rights reserved. NIN logo is a\n");
+		MQH_PrintWhite(16, 164, "registered trademark licensed to\n");
+		MQH_PrintWhite(16, 172, "Nothing Interactive, Inc. All rights\n");
+		MQH_PrintWhite(16, 180, "reserved. Press y to exit\n");
+#else
+		MQH_DrawTextBox(56, 76, 24, 4);
+		MQH_Print(64, 84,  mq1_quitMessage[msgNumber * 4 + 0]);
+		MQH_Print(64, 92,  mq1_quitMessage[msgNumber * 4 + 1]);
+		MQH_Print(64, 100, mq1_quitMessage[msgNumber * 4 + 2]);
+		MQH_Print(64, 108, mq1_quitMessage[msgNumber * 4 + 3]);
+#endif
+	}
+}
+
+//=============================================================================
+/* Menu Subsystem */
+
 void MQH_Init()
 {
 	Cmd_AddCommand("menu_main", MQH_Menu_Main_f);
@@ -4984,6 +5183,10 @@ void MQH_Draw()
 
 	case m_help:
 		MQH_Help_Draw();
+		break;
+
+	case m_quit:
+		MQH_Quit_Draw();
 		break;
 	}
 }

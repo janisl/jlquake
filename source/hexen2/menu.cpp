@@ -7,12 +7,9 @@
 extern Cvar* r_gamma;
 
 void M_Keys_Draw(void);
-void M_Quit_Draw(void);
 
 void M_Keys_Key(int key);
 void M_Quit_Key(int key);
-
-qboolean m_recursiveDraw;
 
 extern qboolean introPlaying;
 
@@ -356,80 +353,6 @@ void M_Quit_Key(int key)
 
 }
 
-void M_Quit_Draw(void)
-{
-	int i,x,y,place,topy;
-	image_t* p;
-
-	if (wasInMenus)
-	{
-		m_state = m_quit_prevstate;
-		m_recursiveDraw = true;
-		M_Draw();
-		m_state = m_quit;
-	}
-
-	LinePos += host_frametime * 1.75;
-	if (LinePos > MaxLines + QUIT_SIZE_H2 + 2)
-	{
-		LinePos = 0;
-		SoundPlayed = false;
-		LineTimes++;
-		if (LineTimes >= 2)
-		{
-			MaxLines = MAX_LINES2_H2;
-			LineText = Credit2TextH2;
-			CDAudio_Play(12, false);
-		}
-	}
-
-	y = 12;
-	MQH_DrawTextBox(0, 0, 38, 23);
-	MQH_PrintWhite(16, y,  "        Hexen II version 1.12       ");  y += 8;
-	MQH_PrintWhite(16, y,  "         by Raven Software          ");  y += 16;
-
-	if (LinePos > 55 && !SoundPlayed && LineText == Credit2TextH2)
-	{
-		S_StartLocalSound("rj/steve.wav");
-		SoundPlayed = true;
-	}
-	topy = y;
-	place = floor(LinePos);
-	y -= floor((LinePos - place) * 8);
-	for (i = 0; i < QUIT_SIZE_H2; i++,y += 8)
-	{
-		if (i + place - QUIT_SIZE_H2 >= MaxLines)
-		{
-			break;
-		}
-		if (i + place < QUIT_SIZE_H2)
-		{
-			continue;
-		}
-
-		if (LineText[i + place - QUIT_SIZE_H2][0] == ' ')
-		{
-			MQH_PrintWhite(24,y,LineText[i + place - QUIT_SIZE_H2]);
-		}
-		else
-		{
-			MQH_Print(24,y,LineText[i + place - QUIT_SIZE_H2]);
-		}
-	}
-
-	p = R_CachePic("gfx/box_mm2.lmp");
-	x = 24;
-	y = topy - 8;
-	for (i = 4; i < 38; i++,x += 8)
-	{
-		MQH_DrawPic(x, y, p);	//background at top for smooth scroll out
-		MQH_DrawPic(x, y + (QUIT_SIZE_H2 * 8), p);	//draw at bottom for smooth scroll in
-	}
-
-	y += (QUIT_SIZE_H2 * 8) + 8;
-	MQH_PrintWhite(16, y,  "          Press y to exit           ");
-}
-
 //=============================================================================
 /* Menu Subsystem */
 
@@ -474,10 +397,6 @@ void M_Draw(void)
 
 	case m_keys:
 		M_Keys_Draw();
-		break;
-
-	case m_quit:
-		M_Quit_Draw();
 		break;
 	}
 
