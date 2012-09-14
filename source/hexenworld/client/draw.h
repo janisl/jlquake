@@ -5,7 +5,6 @@
 #define MAX_DISC 18
 
 void Draw_Init(void);
-void Draw_FadeScreen(void);
 void Draw_Crosshair(void);
 
 void R_NetGraph(void);

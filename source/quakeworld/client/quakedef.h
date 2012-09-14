@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../client/client.h"
 #include "../../client/game/quake/local.h"
+#include "../../client/game/quake_hexen2/menu.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -43,7 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "keys.h"
 #include "console.h"
 #include "view.h"
-#include "menu.h"
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))

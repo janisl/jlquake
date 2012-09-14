@@ -18,15 +18,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "../../client/game/quake_hexen2/menu.h"
-
-#define MNET_TCP        2
-
-extern int m_activenet;
-
-//
-// menus
-//
-void M_Init(void);
-void M_Draw(void);
-void M_ToggleMenu_f(void);

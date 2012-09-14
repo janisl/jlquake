@@ -46,17 +46,6 @@ extern menu_state_t m_return_state;
 extern bool m_return_onerror;
 extern char m_return_reason[32];
 
-extern image_t* char_menufonttexture;
-
-extern float TitlePercent;
-extern float TitleTargetPercent;
-extern float LogoPercent;
-extern float LogoTargetPercent;
-extern bool mqh_entersound;
-
-extern image_t* mq1_translate_texture;
-extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
-
 void MQH_DrawPic(int x, int y, image_t* pic);
 void MQH_Print(int cx, int cy, const char* str);
 void MQH_PrintWhite(int cx, int cy, const char* str);
@@ -65,8 +54,11 @@ void MQH_DrawTextBox2(int x, int y, int width, int lines);
 
 void MQH_Menu_Main_f();
 void MQH_Menu_Quit_f();
+void MQH_ToggleMenu_f();
 
 void MQH_Init();
+void MQH_InitImages();
+void MQH_FadeScreen();
 void MQH_Draw();
 void MQH_Keydown(int key);
 void MQH_CharEvent(int key);

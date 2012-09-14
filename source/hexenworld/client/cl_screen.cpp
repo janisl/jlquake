@@ -68,6 +68,8 @@ vrect_t scr_vrect;
 
 qboolean scr_drawloading;
 
+const char* plaquemessage = NULL;	// Pointer to current plaque message
+
 void Plaque_Draw(const char* message, qboolean AlwaysDraw);
 
 /*
@@ -156,6 +158,11 @@ void SCR_CenterPrint(char* str)
 
 	FindTextBreaks(scr_centerstring, 38);
 	scr_center_lines = lines;
+}
+
+void M_Print2(int cx, int cy, const char* str)
+{
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
 
 void SCR_DrawCenterString(void)
@@ -782,13 +789,13 @@ void SCR_UpdateScreen(void)
 	if (scr_drawdialog)
 	{
 		SbarH2_Draw();
-		Draw_FadeScreen();
+		MQH_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
 	{
 		SbarH2_Draw();
-		Draw_FadeScreen();
+		MQH_FadeScreen();
 		SCR_DrawLoading();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
@@ -813,11 +820,7 @@ void SCR_UpdateScreen(void)
 		Plaque_Draw(plaquemessage,0);
 		SCR_DrawNet();
 		Con_DrawConsole();
-		M_Draw();
-		if (errormessage)
-		{
-			Plaque_Draw(errormessage,1);
-		}
+		MQH_Draw();
 	}
 
 	V_UpdatePalette();

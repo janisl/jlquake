@@ -46,6 +46,7 @@ void Draw_Init(void)
 	// get the other pics we need
 	//
 	draw_backtile = R_PicFromWadRepeat("backtile");
+	MQH_InitImages();
 }
 
 void Draw_Crosshair(void)
@@ -66,17 +67,6 @@ void Draw_Crosshair(void)
 		UI_DrawChar(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
 	}
-}
-
-/*
-================
-Draw_FadeScreen
-
-================
-*/
-void Draw_FadeScreen(void)
-{
-	UI_Fill(0,0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 }
 
 #define NET_GRAPHHEIGHT 32

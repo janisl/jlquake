@@ -28,7 +28,6 @@ static void Mod_ClearAll(void)
 	R_BeginRegistration(&cls.glconfig);
 
 	CLH2_ClearEntityTextureArrays();
-	Com_Memset(mh2_translate_texture, 0, sizeof(mh2_translate_texture));
 
 	Draw_Init();
 	SbarH2_Init();

@@ -302,7 +302,6 @@ static void Mod_ClearAll(void)
 	R_BeginRegistration(&cls.glconfig);
 
 	CLH2_ClearEntityTextureArrays();
-	Com_Memset(mh2_translate_texture, 0, sizeof(mh2_translate_texture));
 
 	Draw_Init();
 	SbarH2_Init();
@@ -1366,7 +1365,7 @@ void Host_Init(quakeparms_t* parms)
 
 		Key_Init();
 		Con_Init();
-		M_Init();
+		MQH_Init();
 		ComH2_LoadStrings();
 
 		cls.state = CA_DISCONNECTED;

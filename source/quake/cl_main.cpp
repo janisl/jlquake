@@ -35,7 +35,6 @@ static void Mod_ClearAll(void)
 	R_BeginRegistration(&cls.glconfig);
 
 	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
-	mq1_translate_texture = NULL;
 
 	Draw_Init();
 	SbarQ1_Init();

@@ -74,6 +74,8 @@ static qboolean scr_needfull = false;
 
 int total_loading_size, current_loading_size, loading_stage;
 
+const char* plaquemessage = NULL;	// Pointer to current plaque message
+
 void Plaque_Draw(const char* message, qboolean AlwaysDraw);
 void Info_Plaque_Draw(const char* message);
 void Bottom_Plaque_Draw(const char* message);
@@ -216,6 +218,11 @@ void SCR_CenterPrint(char* str)
 	scr_center_lines = lines;
 }
 
+
+void M_Print2(int cx, int cy, const char* str)
+{
+	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
+}
 
 void SCR_DrawCenterString(void)
 {
@@ -1104,13 +1111,13 @@ void SCR_UpdateScreen(void)
 	if (scr_drawdialog)
 	{
 		SbarH2_Draw();
-		Draw_FadeScreen();
+		MQH_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
 	{
 		SbarH2_Draw();
-		Draw_FadeScreen();
+		MQH_FadeScreen();
 		SCR_DrawLoading();
 	}
 	else if (cl.qh_intermission >= 1 && cl.qh_intermission <= 12)
@@ -1119,7 +1126,7 @@ void SCR_UpdateScreen(void)
 		if (cl.qh_intermission < 12)
 		{
 			Con_DrawConsole();
-			M_Draw();
+			MQH_Draw();
 		}
 	}
 /*	else if (cl.intermission == 2 && in_keyCatchers == 0)
@@ -1142,11 +1149,7 @@ void SCR_UpdateScreen(void)
 		SbarH2_Draw();
 		Plaque_Draw(plaquemessage,0);
 		Con_DrawConsole();
-		M_Draw();
-		if (errormessage)
-		{
-			Plaque_Draw(errormessage,1);
-		}
+		MQH_Draw();
 
 #ifdef MISSIONPACK
 		if (info_up)

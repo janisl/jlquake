@@ -34,7 +34,7 @@ void CL_StopPlayback(void)
 
 	if (h2intro_playing)
 	{
-		M_ToggleMenu_f();
+		MQH_ToggleMenu_f();
 	}
 
 

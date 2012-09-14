@@ -197,7 +197,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		else
 		{
-			M_ToggleMenu_f();
+			MQH_ToggleMenu_f();
 		}
 		return;
 	}
@@ -234,7 +234,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 //
 	if (clc.demoplaying && down && consolekeys[key] && in_keyCatchers == 0)
 	{
-		M_ToggleMenu_f();
+		MQH_ToggleMenu_f();
 		return;
 	}
 

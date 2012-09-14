@@ -18,13 +18,13 @@ void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
 	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
-	char_menufonttexture = R_LoadBigFontImage("gfx/menu/bigfont2.lmp");
 
 	cs_texture = R_CreateCrosshairImage();
 
 	conback = R_CachePic("gfx/menu/conback.lmp");
 
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
+	MQH_InitImages();
 }
 
 void Draw_Crosshair(void)
@@ -46,26 +46,6 @@ void Draw_Crosshair(void)
 		UI_DrawChar(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value,
 			'+');
-	}
-}
-
-
-/*
-================
-Draw_FadeScreen
-
-================
-*/
-void Draw_FadeScreen(void)
-{
-	UI_Fill(0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2);
-	for (int c = 0; c < 40; c++)
-	{
-		int x = rand() % viddef.width - 20;
-		int y = rand() % viddef.height - 20;
-		int w = (rand() % 40) + 20;
-		int h = (rand() % 40) + 20;
-		UI_Fill(x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035);
 	}
 }
 

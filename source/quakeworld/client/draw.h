@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // to touch the vid buffer
 
 void Draw_Init(void);
-void Draw_FadeScreen(void);
 void Draw_Crosshair(void);
 
 void R_NetGraph(void);

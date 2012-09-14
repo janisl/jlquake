@@ -751,7 +751,7 @@ void SCR_UpdateScreen(void)
 	if (scr_drawdialog)
 	{
 		SbarQ1_Draw();
-		Draw_FadeScreen();
+		MQH_FadeScreen();
 		SCR_DrawNotifyString();
 	}
 	else if (scr_drawloading)
@@ -782,7 +782,7 @@ void SCR_UpdateScreen(void)
 		SCR_CheckDrawCenterString();
 		SbarQ1_Draw();
 		Con_DrawConsole();
-		M_Draw();
+		MQH_Draw();
 	}
 
 	V_UpdatePalette();

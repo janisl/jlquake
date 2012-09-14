@@ -11,7 +11,6 @@ add_executable(jlquake
 	host.cpp
 	host_cmd.cpp
 	keys.cpp
-	menu.cpp
 	net_main.cpp
 	r_part.cpp
 	snd_dma.cpp

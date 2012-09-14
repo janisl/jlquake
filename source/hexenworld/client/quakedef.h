@@ -2,6 +2,7 @@
 
 #include "../../client/client.h"
 #include "../../client/game/hexen2/local.h"
+#include "../../client/game/quake_hexen2/menu.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -23,7 +24,6 @@
 #include "keys.h"
 #include "console.h"
 #include "view.h"
-#include "menu.h"
 
 //=============================================================================
 

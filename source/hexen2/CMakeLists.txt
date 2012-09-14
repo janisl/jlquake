@@ -11,7 +11,6 @@ add_executable(jlhexen2
 	host.cpp
 	host_cmd.cpp
 	keys.cpp
-	menu.cpp
 	net_main.cpp
 	r_part.cpp
 	view.cpp

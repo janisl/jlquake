@@ -9,6 +9,7 @@
 #include "../client/client.h"
 #include "../client/game/hexen2/local.h"
 #include "../client/game/quake_hexen2/network_channel.h"
+#include "../client/game/quake_hexen2/menu.h"
 #else
 #include "../client/public.h"
 #endif
@@ -69,7 +70,6 @@
 #include "console.h"
 #ifndef DEDICATED
 #include "view.h"
-#include "menu.h"
 #endif
 
 //=============================================================================

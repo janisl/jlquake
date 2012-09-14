@@ -29,15 +29,15 @@ menu_state_t m_return_state;
 bool m_return_onerror;
 char m_return_reason[32];
 
-image_t* char_menufonttexture;
+static image_t* char_menufonttexture;
 static char BigCharWidth[27][27];
 
-float TitlePercent = 0;
-float TitleTargetPercent = 1;
-float LogoPercent = 0;
-float LogoTargetPercent = 1;
+static float TitlePercent = 0;
+static float TitleTargetPercent = 1;
+static float LogoPercent = 0;
+static float LogoTargetPercent = 1;
 
-bool mqh_entersound;			// play after drawing a frame, so caching
+static bool mqh_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
 
 static const char* mh2_message;
@@ -2912,8 +2912,8 @@ static byte mqh_translationTable[256];
 static byte mq1_menuplyr_pixels[4096];
 static byte mh2_menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT];
 
-image_t* mq1_translate_texture;
-image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
+static image_t* mq1_translate_texture;
+static image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 
 static void MQH_Menu_Setup_f()
 {
@@ -5304,8 +5304,44 @@ static void MQH_Quit_Key(int key)
 //=============================================================================
 /* Menu Subsystem */
 
+void MQH_ToggleMenu_f()
+{
+	mqh_entersound = true;
+
+	if (in_keyCatchers & KEYCATCH_UI)
+	{
+		if (m_state != m_main)
+		{
+			if (GGameType & GAME_Hexen2)
+			{
+				LogoTargetPercent = TitleTargetPercent = 1;
+				LogoPercent = TitlePercent = 0;
+			}
+			MQH_Menu_Main_f();
+			return;
+		}
+		in_keyCatchers &= ~KEYCATCH_UI;
+		m_state = m_none;
+		return;
+	}
+	if (in_keyCatchers & KEYCATCH_CONSOLE && (!(GGameType & GAME_HexenWorld) || cls.state == CA_ACTIVE))
+	{
+		Con_ToggleConsole_f();
+	}
+	else
+	{
+		if (GGameType & GAME_Hexen2)
+		{
+			LogoTargetPercent = TitleTargetPercent = 1;
+			LogoPercent = TitlePercent = 0;
+		}
+		MQH_Menu_Main_f();
+	}
+}
+
 void MQH_Init()
 {
+	Cmd_AddCommand("togglemenu", MQH_ToggleMenu_f);
 	Cmd_AddCommand("menu_main", MQH_Menu_Main_f);
 	Cmd_AddCommand("menu_options", MQH_Menu_Options_f);
 	Cmd_AddCommand("menu_keys", MQH_Menu_Keys_f);
@@ -5348,8 +5384,53 @@ void MQH_Init()
 	}
 }
 
+void MQH_InitImages()
+{
+	mq1_translate_texture = NULL;
+	Com_Memset(mh2_translate_texture, 0, sizeof(mh2_translate_texture));
+	if (GGameType & GAME_Hexen2)
+	{
+		char_menufonttexture = R_LoadBigFontImage("gfx/menu/bigfont2.lmp");
+	}
+}
+
+void MQH_FadeScreen()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		UI_Fill(0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2);
+		for (int c = 0; c < 40; c++)
+		{
+			int x = rand() % viddef.width - 20;
+			int y = rand() % viddef.height - 20;
+			int w = (rand() % 40) + 20;
+			int h = (rand() % 40) + 20;
+			UI_Fill(x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035);
+		}
+	}
+	else
+	{
+		UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
+	}
+}
+
 void MQH_Draw()
 {
+	if (m_state == m_none || !(in_keyCatchers & KEYCATCH_UI))
+	{
+		return;
+	}
+
+	if (con.displayFrac)
+	{
+		Con_DrawFullBackground();
+		S_ExtraUpdate();
+	}
+	else
+	{
+		MQH_FadeScreen();
+	}
+
 	switch (m_state)
 	{
 	case m_none:
@@ -5433,6 +5514,14 @@ void MQH_Draw()
 		MQH_Quit_Draw();
 		break;
 	}
+
+	if (mqh_entersound)
+	{
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		mqh_entersound = false;
+	}
+
+	S_ExtraUpdate();
 }
 
 void MQH_Keydown(int key)

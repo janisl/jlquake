@@ -38,17 +38,5 @@ void Draw_Init(void)
 	// get the other pics we need
 	//
 	draw_backtile = R_PicFromWadRepeat("backtile");
-}
-
-//=============================================================================
-
-/*
-================
-Draw_FadeScreen
-
-================
-*/
-void Draw_FadeScreen(void)
-{
-	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
+	MQH_InitImages();
 }

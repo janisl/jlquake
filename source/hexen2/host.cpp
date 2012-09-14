@@ -723,7 +723,7 @@ void Host_Init(quakeparms_t* parms)
 		ComH2_LoadStrings();
 		Con_Init();
 #ifndef DEDICATED
-		M_Init();
+		MQH_Init();
 #endif
 		PR_Init();
 		SVQH_Init();
