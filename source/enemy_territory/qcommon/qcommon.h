@@ -149,8 +149,6 @@ void Com_ReadCDKey(const char* filename);
 
 #define CPUID_AMD_3DNOW         0x30			// AMD K6 3DNOW!
 
-char* CopyString(const char* in);
-
 int QDECL Com_VPrintf(const char* fmt, va_list argptr) id_attribute((format(printf,1,0)));			// conforms to vprintf prototype for print callback passing
 void QDECL Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));			// this one calls to Com_VPrintf now
 void QDECL Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
@@ -190,21 +188,6 @@ extern int time_backend;			// renderer backend time
 
 extern int com_frameMsec;
 
-typedef enum {
-	TAG_FREE,
-	TAG_GENERAL,
-	TAG_SMALL,
-	TAG_STATIC
-} memtag_t;
-
-void* Z_TagMalloc(int size, int tag);	// NOT 0 filled memory
-void* Z_Malloc(int size);			// returns 0 filled memory
-void* S_Malloc(int size);			// NOT 0 filled memory only for small allocations
-void Z_Free(void* ptr);
-void Z_LogHeap(void);
-
-void Com_TouchMemory(void);
-
 // commandLine should not include the executable name (argv[0])
 void Com_Init(char* commandLine);
 void Com_Frame(void);
@@ -222,10 +205,6 @@ CLIENT / SERVER SYSTEMS
 //
 // client interface
 //
-void CL_InitKeyCommands(void);
-// the keyboard binding interface must be setup before execing
-// config files, but the rest of client startup will happen later
-
 void CL_Init(void);
 void CL_ClearStaticDownload(void);
 void CL_Disconnect(qboolean showMainMenu);
@@ -267,9 +246,6 @@ void CL_StartHunkUsers(void);
 void CL_CheckAutoUpdate(void);
 qboolean CL_NextUpdateServer(void);
 void CL_GetAutoUpdate(void);
-
-void Key_WriteBindings(fileHandle_t f);
-// for writing the config files
 
 //
 // UI interface

@@ -1100,9 +1100,6 @@ void CL_InitCGame(void)
 	// on the card even if the driver does deferred loading
 	R_EndRegistration();
 
-	// make sure everything is paged in
-	Com_TouchMemory();
-
 	// clear anything that got printed
 	Con_ClearNotify();
 }

@@ -552,85 +552,6 @@ qboolean Com_AddStartupCommands(void)
 }
 
 /*
-==============================================================================
-
-                        ZONE MEMORY ALLOCATION
-
-==============================================================================
-
-  The old zone is gone, mallocs replaced it. To keep the widespread code changes down to a bare minimum
-  Z_Malloc and Z_Free still work.
-*/
-
-
-/*
-========================
-Z_Free
-========================
-*/
-void Z_Free(void* ptr)
-{
-	free(ptr);
-}
-
-
-/*
-================
-Z_Malloc
-================
-*/
-void* Z_Malloc(int size)
-{
-	void* buf = malloc(size);
-	Com_Memset(buf, 0, size);
-	return buf;
-}
-
-/*
-========================
-CopyString
-
- NOTE:	never write over the memory CopyString returns because
-        memory from a memstatic_t might be returned
-========================
-*/
-char* CopyString(const char* in)
-{
-	char* out;
-
-	out = (char*)Z_Malloc(String::Length(in) + 1);
-	String::Cpy(out, in);
-	return out;
-}
-
-/*
-===============
-Com_TouchMemory
-
-Touch all known used data to make sure it is paged in
-===============
-*/
-void Com_TouchMemory(void)
-{
-}
-
-
-
-
-void Com_InitZoneMemory(void)
-{
-}
-
-/*
-=================
-Com_InitZoneMemory
-=================
-*/
-void Com_InitHunkMemory(void)
-{
-}
-
-/*
 ===================================================================
 
 EVENTS AND JOURNALING
@@ -1244,7 +1165,6 @@ void Com_Init(char* commandLine)
 		Com_InitByteOrder();
 		Cbuf_Init();
 
-		Com_InitZoneMemory();
 		Cmd_Init();
 
 		// override anything from the config files with command line args
@@ -1283,8 +1203,6 @@ void Com_Init(char* commandLine)
 #else
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_LATCH2);
 #endif
-		// allocate the stack based hunk allocator
-		Com_InitHunkMemory();
 
 		// if any archived cvars are modified after this, we will trigger a writing
 		// of the config file
