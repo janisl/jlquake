@@ -63,6 +63,7 @@ static void MQH_Menu_GameOptions_f();
 static void MQH_Menu_Setup_f();
 static void MH2_Menu_MLoad_f();
 static void MH2_Menu_MSave_f();
+static void MQH_Menu_Options_f();
 static void MQH_Menu_Keys_f();
 static void MQH_Menu_Video_f();
 static void MQH_Menu_Help_f();
@@ -73,7 +74,7 @@ void MQH_DrawPic(int x, int y, image_t* pic)
 }
 
 //	Draws one solid graphics character
-void MQH_DrawCharacter(int cx, int line, int num)
+static void MQH_DrawCharacter(int cx, int line, int num)
 {
 	UI_DrawChar(cx + ((viddef.width - 320) >> 1), line, num);
 }
@@ -217,7 +218,7 @@ static void MH2_DrawBigString(int x, int y, const char* string)
 	}
 }
 
-void MH2_ScrollTitle(const char* name)
+static void MH2_ScrollTitle(const char* name)
 {
 	static const char* LastName = "";
 	static bool CanSwitch = true;
@@ -3531,7 +3532,7 @@ enum
 
 static int mqh_options_cursor;
 
-void MQH_Menu_Options_f()
+static void MQH_Menu_Options_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
@@ -3983,11 +3984,294 @@ static void MQH_Options_Key(int k)
 //=============================================================================
 /* KEYS MENU */
 
+#define KEYS_SIZE 14
+
+static const char* mq1_bindnames[][2] =
+{
+	{"+attack",         "attack"},
+	{"impulse 10",      "change weapon"},
+	{"+jump",           "jump / swim up"},
+	{"+forward",        "walk forward"},
+	{"+back",           "backpedal"},
+	{"+left",           "turn left"},
+	{"+right",          "turn right"},
+	{"+speed",          "run"},
+	{"+moveleft",       "step left"},
+	{"+moveright",      "step right"},
+	{"+strafe",         "sidestep"},
+	{"+lookup",         "look up"},
+	{"+lookdown",       "look down"},
+	{"centerview",      "center view"},
+	{"+mlook",          "mouse look"},
+	{"+moveup",         "swim up"},
+	{"+movedown",       "swim down"}
+};
+
+static const char* mh2_bindnames[][2] =
+{
+	{"+attack",         "attack"},
+	{"impulse 10",      "change weapon"},
+	{"+jump",           "jump / swim up"},
+	{"+forward",        "walk forward"},
+	{"+back",           "backpedal"},
+	{"+left",           "turn left"},
+	{"+right",          "turn right"},
+	{"+speed",          "run"},
+	{"+moveleft",       "step left"},
+	{"+moveright",      "step right"},
+	{"+strafe",         "sidestep"},
+	{"+crouch",         "crouch"},
+	{"+lookup",         "look up"},
+	{"+lookdown",       "look down"},
+	{"centerview",      "center view"},
+	{"+mlook",          "mouse look"},
+	{"+moveup",         "swim up"},
+	{"+movedown",       "swim down"},
+	{"impulse 13",      "lift object"},
+	{"invuse",          "use inv item"},
+	{"impulse 44",      "drop inv item"},
+	{"+showinfo",       "full inventory"},
+	{"+showdm",         "info / frags"},
+	{"toggle_dm",       "toggle frags"},
+	{"+infoplaque",     "objectives"},
+	{"invleft",         "inv move left"},
+	{"invright",        "inv move right"},
+	{"impulse 100",     "inv:torch"},
+	{"impulse 101",     "inv:qrtz flask"},
+	{"impulse 102",     "inv:mystic urn"},
+	{"impulse 103",     "inv:krater"},
+	{"impulse 104",     "inv:chaos devc"},
+	{"impulse 105",     "inv:tome power"},
+	{"impulse 106",     "inv:summon stn"},
+	{"impulse 107",     "inv:invisiblty"},
+	{"impulse 108",     "inv:glyph"},
+	{"impulse 109",     "inv:boots"},
+	{"impulse 110",     "inv:repulsion"},
+	{"impulse 111",     "inv:bo peep"},
+	{"impulse 112",     "inv:flight"},
+	{"impulse 113",     "inv:force cube"},
+	{"impulse 114",     "inv:icon defn"}
+};
+
+static const char* mhw_bindnames[][2] =
+{
+	{"+attack",         "attack"},
+	{"impulse 10",      "change weapon"},
+	{"+jump",           "jump / swim up"},
+	{"+forward",        "walk forward"},
+	{"+back",           "backpedal"},
+	{"+left",           "turn left"},
+	{"+right",          "turn right"},
+	{"+speed",          "run"},
+	{"+moveleft",       "step left"},
+	{"+moveright",      "step right"},
+	{"+strafe",         "sidestep"},
+	{"+crouch",         "crouch"},
+	{"+lookup",         "look up"},
+	{"+lookdown",       "look down"},
+	{"centerview",      "center view"},
+	{"+mlook",          "mouse look"},
+	{"+moveup",         "swim up"},
+	{"+movedown",       "swim down"},
+	{"impulse 13",      "use object"},
+	{"invuse",          "use inv item"},
+	{"invdrop",         "drop inv item"},
+	{"+showinfo",       "full inventory"},
+	{"+showdm",         "info / frags"},
+	{"toggle_dm",       "toggle frags"},
+	{"+shownames",      "player names"},
+	{"invleft",         "inv move left"},
+	{"invright",        "inv move right"},
+	{"impulse 100",     "inv:torch"},
+	{"impulse 101",     "inv:qrtz flask"},
+	{"impulse 102",     "inv:mystic urn"},
+	{"impulse 103",     "inv:krater"},
+	{"impulse 104",     "inv:chaos devc"},
+	{"impulse 105",     "inv:tome power"},
+	{"impulse 106",     "inv:summon stn"},
+	{"impulse 107",     "inv:invisiblty"},
+	{"impulse 108",     "inv:glyph"},
+	{"impulse 109",     "inv:boots"},
+	{"impulse 110",     "inv:repulsion"},
+	{"impulse 111",     "inv:bo peep"},
+	{"impulse 112",     "inv:flight"},
+	{"impulse 113",     "inv:force cube"},
+	{"impulse 114",     "inv:icon defn"}
+};
+
+static int numBindNames;
+
+static int mqh_keys_cursor;
+static bool mqh_bind_grab;
+static int mqh_keys_top = 0;
+
 static void MQH_Menu_Keys_f()
 {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
 	mqh_entersound = true;
+	if (GGameType & GAME_HexenWorld)
+	{
+		numBindNames = sizeof(mhw_bindnames) / sizeof(mhw_bindnames[0]);
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		numBindNames = sizeof(mh2_bindnames) / sizeof(mh2_bindnames[0]);
+	}
+	else
+	{
+		numBindNames = sizeof(mq1_bindnames) / sizeof(mq1_bindnames[0]);
+	}
+}
+
+static void MQH_Keys_Draw()
+{
+	int topy;
+	if (GGameType & GAME_Hexen2)
+	{
+		MH2_ScrollTitle("gfx/menu/title6.lmp");
+		topy = 64;
+	}
+	else
+	{
+		image_t* p = R_CachePic("gfx/ttl_cstm.lmp");
+		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
+		topy = 32;
+	}
+
+	if (mqh_bind_grab)
+	{
+		MQH_Print(12, topy, "Press a key or button for this action");
+	}
+	else
+	{
+		MQH_Print(18, topy, "Enter to change, backspace to clear");
+	}
+
+	if (mqh_keys_top)
+	{
+		MQH_DrawCharacter(6, topy + 16, GGameType & GAME_Hexen2 ? 128 : '-');
+	}
+	if (mqh_keys_top + KEYS_SIZE < numBindNames)
+	{
+		MQH_DrawCharacter(6, topy + 16 + ((KEYS_SIZE - 1) * 8), GGameType & GAME_Hexen2 ? 129 : '+');
+	}
+
+	// search for known bindings
+	for (int i = 0; i < KEYS_SIZE; i++)
+	{
+		int y = topy + 16 + 8 * i;
+
+		const char** bindname = GGameType & GAME_HexenWorld ? mhw_bindnames[i + mqh_keys_top] :
+			GGameType & GAME_Hexen2 ? mh2_bindnames[i + mqh_keys_top] : mq1_bindnames[i + mqh_keys_top];
+		MQH_Print(16, y, bindname[1]);
+
+		int key1;
+		int key2;
+		Key_GetKeysForBinding(bindname[0], &key1, &key2);
+
+		if (key1 == -1)
+		{
+			MQH_Print(140, y, "???");
+		}
+		else
+		{
+			const char* name = Key_KeynumToString(key1, true);
+			MQH_Print(140, y, name);
+			int x = String::Length(name) * 8;
+			if (key2 != -1)
+			{
+				MQH_Print(140 + x + 8, y, "or");
+				MQH_Print(140 + x + 32, y, Key_KeynumToString(key2, true));
+			}
+		}
+	}
+
+	if (mqh_bind_grab)
+	{
+		MQH_DrawCharacter(130, topy + 16 + (mqh_keys_cursor - mqh_keys_top) * 8, '=');
+	}
+	else
+	{
+		MQH_DrawCharacter(130, topy + 16 + (mqh_keys_cursor - mqh_keys_top) * 8, 12 + ((cls.realtime / 250) & 1));
+	}
+}
+
+static void MQH_Keys_Key(int k)
+{
+	int keys[2];
+
+	if (mqh_bind_grab)
+	{	// defining a key
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		if (k == K_ESCAPE)
+		{
+			mqh_bind_grab = false;
+		}
+		else if (k != '`')
+		{
+			Key_SetBinding(k, GGameType & GAME_HexenWorld ? mhw_bindnames[mqh_keys_cursor][0] :
+				GGameType & GAME_Hexen2 ? mh2_bindnames[mqh_keys_cursor][0] : mq1_bindnames[mqh_keys_cursor][0]);
+		}
+
+		mqh_bind_grab = false;
+		return;
+	}
+
+	switch (k)
+	{
+	case K_ESCAPE:
+		MQH_Menu_Options_f();
+		break;
+
+	case K_LEFTARROW:
+	case K_UPARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_keys_cursor--;
+		if (mqh_keys_cursor < 0)
+		{
+			mqh_keys_cursor = numBindNames - 1;
+		}
+		break;
+
+	case K_DOWNARROW:
+	case K_RIGHTARROW:
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu1.wav" : "misc/menu1.wav");
+		mqh_keys_cursor++;
+		if (mqh_keys_cursor >= numBindNames)
+		{
+			mqh_keys_cursor = 0;
+		}
+		break;
+
+	case K_ENTER:		// go into bind mode
+		Key_GetKeysForBinding(GGameType & GAME_HexenWorld ? mhw_bindnames[mqh_keys_cursor][0] :
+			GGameType & GAME_Hexen2 ? mh2_bindnames[mqh_keys_cursor][0] : mq1_bindnames[mqh_keys_cursor][0], &keys[0], &keys[1]);
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		if (keys[1] != -1)
+		{
+			Key_UnbindCommand(GGameType & GAME_HexenWorld ? mhw_bindnames[mqh_keys_cursor][0] :
+				GGameType & GAME_Hexen2 ? mh2_bindnames[mqh_keys_cursor][0] : mq1_bindnames[mqh_keys_cursor][0]);
+		}
+		mqh_bind_grab = true;
+		break;
+
+	case K_BACKSPACE:		// delete bindings
+	case K_DEL:				// delete bindings
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
+		Key_UnbindCommand(GGameType & GAME_HexenWorld ? mhw_bindnames[mqh_keys_cursor][0] :
+			GGameType & GAME_Hexen2 ? mh2_bindnames[mqh_keys_cursor][0] : mq1_bindnames[mqh_keys_cursor][0]);
+		break;
+	}
+
+	if (mqh_keys_cursor < mqh_keys_top)
+	{
+		mqh_keys_top = mqh_keys_cursor;
+	}
+	else if (mqh_keys_cursor >= mqh_keys_top + KEYS_SIZE)
+	{
+		mqh_keys_top = mqh_keys_cursor - KEYS_SIZE + 1;
+	}
 }
 
 //=============================================================================
@@ -5120,6 +5404,10 @@ void MQH_Draw()
 		MQH_Options_Draw();
 		break;
 
+	case m_keys:
+		MQH_Keys_Draw();
+		break;
+
 	case m_video:
 		MQH_Video_Draw();
 		break;
@@ -5207,6 +5495,10 @@ void MQH_Keydown(int key)
 
 	case m_options:
 		MQH_Options_Key(key);
+		return;
+
+	case m_keys:
+		MQH_Keys_Key(key);
 		return;
 
 	case m_video:

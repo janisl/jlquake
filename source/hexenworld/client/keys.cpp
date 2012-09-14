@@ -183,7 +183,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		else if (in_keyCatchers & KEYCATCH_UI)
 		{
-			M_Keydown(key);
+			MQH_Keydown(key);
 		}
 		else
 		{
@@ -268,7 +268,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		M_Keydown(key);
+		MQH_Keydown(key);
 	}
 	else
 	{

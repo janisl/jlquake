@@ -59,16 +59,15 @@ extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
 
 void MQH_DrawPic(int x, int y, image_t* pic);
-void MQH_DrawCharacter(int cx, int line, int num);
 void MQH_Print(int cx, int cy, const char* str);
 void MQH_PrintWhite(int cx, int cy, const char* str);
 void MQH_DrawTextBox(int x, int y, int width, int lines);
 void MQH_DrawTextBox2(int x, int y, int width, int lines);
-void MH2_ScrollTitle(const char* name);
+
 void MQH_Menu_Main_f();
+void MQH_Menu_Quit_f();
+
 void MQH_Init();
 void MQH_Draw();
-void MQH_Menu_Options_f();
-void MQH_Menu_Quit_f();
 void MQH_Keydown(int key);
 void MQH_CharEvent(int key);

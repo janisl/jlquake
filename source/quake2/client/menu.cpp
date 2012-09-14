@@ -628,7 +628,6 @@ const char* bindnames[][2] =
 	{ 0, 0 }
 };
 
-int keys_cursor;
 static int bind_grab;
 
 static menuframework_s s_keys_menu;
