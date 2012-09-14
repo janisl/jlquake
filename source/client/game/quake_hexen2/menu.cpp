@@ -15,13 +15,12 @@
 //**************************************************************************
 
 #include "../../client.h"
+#include "../../renderer/cvars.h"
 #include "menu.h"
 #include "../../../server/public.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "network_channel.h"
-
-extern Cvar* r_gamma;
 
 menu_state_t m_state;
 menu_state_t m_return_state;
