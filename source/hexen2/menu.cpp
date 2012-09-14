@@ -64,8 +64,6 @@ void M_Init(void)
 	Cmd_AddCommand("togglemenu", M_ToggleMenu_f);
 
 	MQH_Init();
-
-	mh2_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
 
 
@@ -90,7 +88,7 @@ void M_Draw(void)
 
 	if (mqh_entersound)
 	{
-		S_StartLocalSound("raven/menu2.wav");
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
 		mqh_entersound = false;
 	}
 

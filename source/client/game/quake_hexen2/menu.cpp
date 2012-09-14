@@ -44,7 +44,7 @@ static const char* mh2_message;
 static const char* mh2_message2;
 static int mh2_message_time;
 
-Cvar* mh2_oldmission;
+static Cvar* mh2_oldmission;
 
 static int setup_class;
 
@@ -2245,7 +2245,7 @@ static void MQH_Menu_GameOptions_f()
 				mqh_gameoptions_cursor = 0;
 			}
 		}
-		if (!mh2_oldmission->value)
+		if (GGameType & GAME_H2Portals && !mh2_oldmission->value)
 		{
 			mqh_startepisode = MP_START;
 		}
@@ -2477,7 +2477,7 @@ static void MQH_ChangeCoop(int dir)
 		{
 			mqh_startepisode = REG_START;
 		}
-		if (!mh2_oldmission->value)
+		if (GGameType & GAME_H2Portals && !mh2_oldmission->value)
 		{
 			mqh_startepisode = MP_START;
 		}
@@ -2614,6 +2614,10 @@ static void MH2_ChangeStartEpisode(int dir)
 
 	if (qh_registered->value)
 	{
+		if (!(GGameType & GAME_H2Portals) && mqh_startepisode == MP_START)
+		{
+			mqh_startepisode += dir;
+		}
 		int count = DM_START;
 		if (!svqh_coop->value)
 		{
@@ -2621,7 +2625,11 @@ static void MH2_ChangeStartEpisode(int dir)
 		}
 		else
 		{
-			if (!mh2_oldmission->value)
+			if (!(GGameType & GAME_H2Portals))
+			{
+				count--;
+			}
+			if (GGameType & GAME_H2Portals && !mh2_oldmission->value)
 			{
 				mqh_startepisode = MP_START;
 			}
@@ -5317,6 +5325,11 @@ void MQH_Init()
 		Cmd_AddCommand("menu_class", MH2_Menu_Class2_f);
 
 		MH2_ReadBigCharWidth();
+
+		if (!(GGameType & GAME_HexenWorld))
+		{
+			mh2_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
+		}
 	}
 	if (GGameType & GAME_HexenWorld)
 	{

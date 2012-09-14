@@ -87,7 +87,7 @@ void M_Draw(void)
 
 	if (mqh_entersound)
 	{
-		S_StartLocalSound("raven/menu2.wav");
+		S_StartLocalSound(GGameType & GAME_Hexen2 ? "raven/menu2.wav" : "misc/menu2.wav");
 		mqh_entersound = false;
 	}
 

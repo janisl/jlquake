@@ -53,7 +53,6 @@ extern float TitleTargetPercent;
 extern float LogoPercent;
 extern float LogoTargetPercent;
 extern bool mqh_entersound;
-extern Cvar* mh2_oldmission;
 
 extern image_t* mq1_translate_texture;
 extern image_t* mh2_translate_texture[MAX_PLAYER_CLASS];
