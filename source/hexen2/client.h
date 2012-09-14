@@ -32,9 +32,6 @@ void CL_ClearState(void);
 int  CL_ReadFromServer(void);
 void CL_MouseEvent(int mx, int my);
 
-
-const char* Key_KeynumToString(int keynum);
-
 //
 // cl_demo.c
 //

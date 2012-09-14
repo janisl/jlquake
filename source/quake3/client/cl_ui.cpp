@@ -731,7 +731,7 @@ Key_KeynumToStringBuf
 */
 static void Key_KeynumToStringBuf(int keynum, char* buf, int buflen)
 {
-	String::NCpyZ(buf, Key_KeynumToString(keynum), buflen);
+	String::NCpyZ(buf, Key_KeynumToString(keynum, true), buflen);
 }
 
 /*

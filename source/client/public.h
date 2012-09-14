@@ -30,4 +30,9 @@ void SCR_DebugGraph(float value, int color);
 void CL_CvarChanged(Cvar* var);
 const char* CL_TranslateStringBuf(const char* string);
 
+void Key_WriteBindings(fileHandle_t f);
+void CL_InitKeyCommands();
+// the keyboard binding interface must be setup before execing
+// config files, but the rest of client startup will happen later
+
 #endif

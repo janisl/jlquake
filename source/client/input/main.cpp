@@ -19,8 +19,6 @@
 int in_keyCatchers;		// bit flags
 int anykeydown;
 
-bool key_overstrikeMode;
-
 int CL_GetKeyCatchers()
 {
 	return in_keyCatchers;

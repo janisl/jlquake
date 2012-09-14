@@ -20,9 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Key_Event(int key, qboolean down, unsigned time);
 void Key_Init(void);
-void Key_WriteBindings(fileHandle_t f);
-void Key_SetBinding(int keynum, const char* binding);
 void Key_ClearStates(void);
-int Key_GetKey(void);
 
 void IN_ProcessEvents();

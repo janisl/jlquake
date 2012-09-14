@@ -31,10 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 vm_t* uivm;
 
-
-// ydnar: can we put this in a header, pls?
-void Key_GetBindingByString(const char* binding, int* key1, int* key2);
-
 void CL_GetGlconfig(etglconfig_t* config);
 void CL_AddRefEntityToScene(const etrefEntity_t* ent);
 void CL_RenderScene(const etrefdef_t* refdef);
@@ -1096,7 +1092,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return 0;
 
 	case UI_KEY_BINDINGTOKEYS:
-		Key_GetBindingByString((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
+		Key_GetKeysForBinding((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
 		return 0;
 
 

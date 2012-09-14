@@ -141,8 +141,6 @@ void IN_Salute(void);
 
 void CL_VerifyCode(void);
 
-const char* Key_KeynumToString(int keynum, qboolean bTranslate);
-
 //
 // cl_parse.c
 //

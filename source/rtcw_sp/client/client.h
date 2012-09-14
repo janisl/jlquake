@@ -126,8 +126,6 @@ void IN_Salute(void);
 
 void CL_VerifyCode(void);
 
-const char* Key_KeynumToString(int keynum, qboolean bTranslate);
-
 void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 

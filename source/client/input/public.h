@@ -37,18 +37,11 @@ enum
 	MAX_JOYSTICK_AXIS
 };
 
-struct keyname_t
-{
-	const char* name;
-	int keynum;
-};
-
 struct qkey_t
 {
 	bool down;
 	int repeats;				// if > 1, it is autorepeating
 	char* binding;
-	int hash;
 };
 
 void IN_Init();
@@ -59,8 +52,16 @@ void Sys_SendKeyEvents();
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
-extern bool key_overstrikeMode;
 
 extern qkey_t keys[MAX_KEYS];
+extern bool key_overstrikeMode;
 
-extern keyname_t keynames[];
+bool Key_GetOverstrikeMode();
+void Key_SetOverstrikeMode(bool state);
+bool Key_IsDown(int keynum);
+const char* Key_KeynumToString(int keynum, bool translate);
+void Key_SetBinding(int keynum, const char* binding);
+const char* Key_GetBinding(int keynum);
+int Key_GetKey(const char* binding);
+void Key_GetKeysForBinding(const char* binding, int* key1, int* key2);
+void Key_UnbindCommand(const char* command);

@@ -109,8 +109,6 @@ void CL_WritePacket(void);
 
 void CL_VerifyCode(void);
 
-const char* Key_KeynumToString(int keynum);
-
 void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 

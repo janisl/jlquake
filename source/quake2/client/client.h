@@ -127,8 +127,6 @@ int  CL_ReadFromServer(void);
 void CL_WriteToServer(q2usercmd_t* cmd);
 void CL_MouseEvent(int mx, int my);
 
-const char* Key_KeynumToString(int keynum);
-
 //
 // cl_demo.c
 //

@@ -106,7 +106,7 @@ void CL_DrawInventory(void)
 		for (j = 0; j < 256; j++)
 			if (keys[j].binding && !String::ICmp(keys[j].binding, binding))
 			{
-				bind = Key_KeynumToString(j);
+				bind = Key_KeynumToString(j, true);
 				break;
 			}
 

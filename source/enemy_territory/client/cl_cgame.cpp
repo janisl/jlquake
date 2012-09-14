@@ -35,10 +35,6 @@ void Key_GetBindingBuf(int keynum, char* buf, int buflen);
 void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
 // -NERVE - SMF
 
-// ydnar: can we put this in a header, pls?
-void Key_GetBindingByString(const char* binding, int* key1, int* key2);
-
-
 /*
 ====================
 CL_GetGameState
@@ -1143,7 +1139,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return 0;
 
 	case CG_KEY_BINDINGTOKEYS:
-		Key_GetBindingByString((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
+		Key_GetKeysForBinding((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
 		return 0;
 
 	case CG_TRANSLATE_STRING:

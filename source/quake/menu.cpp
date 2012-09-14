@@ -86,59 +86,6 @@ const char* bindnames[][2] =
 int keys_cursor;
 int bind_grab;
 
-void M_FindKeysForCommand(const char* command, int* twokeys)
-{
-	int count;
-	int j;
-	int l;
-	char* b;
-
-	twokeys[0] = twokeys[1] = -1;
-	l = String::Length(command);
-	count = 0;
-
-	for (j = 0; j < 256; j++)
-	{
-		b = keys[j].binding;
-		if (!b)
-		{
-			continue;
-		}
-		if (!String::NCmp(b, command, l))
-		{
-			twokeys[count] = j;
-			count++;
-			if (count == 2)
-			{
-				break;
-			}
-		}
-	}
-}
-
-void M_UnbindCommand(const char* command)
-{
-	int j;
-	int l;
-	char* b;
-
-	l = String::Length(command);
-
-	for (j = 0; j < 256; j++)
-	{
-		b = keys[j].binding;
-		if (!b)
-		{
-			continue;
-		}
-		if (!String::NCmp(b, command, l))
-		{
-			Key_SetBinding(j, "");
-		}
-	}
-}
-
-
 void M_Keys_Draw(void)
 {
 	int i, l;
@@ -168,7 +115,7 @@ void M_Keys_Draw(void)
 
 		l = String::Length(bindnames[i][0]);
 
-		M_FindKeysForCommand(bindnames[i][0], keys);
+		Key_GetKeysForBinding(bindnames[i][0], &keys[0], &keys[1]);
 
 		if (keys[0] == -1)
 		{
@@ -176,13 +123,13 @@ void M_Keys_Draw(void)
 		}
 		else
 		{
-			name = Key_KeynumToString(keys[0]);
+			name = Key_KeynumToString(keys[0], true);
 			MQH_Print(140, y, name);
 			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
 				MQH_Print(140 + x + 8, y, "or");
-				MQH_Print(140 + x + 32, y, Key_KeynumToString(keys[1]));
+				MQH_Print(140 + x + 32, y, Key_KeynumToString(keys[1], true));
 			}
 		}
 	}
@@ -212,7 +159,7 @@ void M_Keys_Key(int k)
 		}
 		else if (k != '`')
 		{
-			sprintf(cmd, "bind \"%s\" \"%s\"\n", Key_KeynumToString(k), bindnames[keys_cursor][0]);
+			sprintf(cmd, "bind \"%s\" \"%s\"\n", Key_KeynumToString(k, false), bindnames[keys_cursor][0]);
 			Cbuf_InsertText(cmd);
 		}
 
@@ -247,11 +194,11 @@ void M_Keys_Key(int k)
 		break;
 
 	case K_ENTER:		// go into bind mode
-		M_FindKeysForCommand(bindnames[keys_cursor][0], keys);
+		Key_GetKeysForBinding(bindnames[keys_cursor][0], &keys[0], &keys[1]);
 		S_StartLocalSound("misc/menu2.wav");
 		if (keys[1] != -1)
 		{
-			M_UnbindCommand(bindnames[keys_cursor][0]);
+			Key_UnbindCommand(bindnames[keys_cursor][0]);
 		}
 		bind_grab = true;
 		break;
@@ -259,7 +206,7 @@ void M_Keys_Key(int k)
 	case K_BACKSPACE:		// delete bindings
 	case K_DEL:				// delete bindings
 		S_StartLocalSound("misc/menu2.wav");
-		M_UnbindCommand(bindnames[keys_cursor][0]);
+		Key_UnbindCommand(bindnames[keys_cursor][0]);
 		break;
 	}
 }

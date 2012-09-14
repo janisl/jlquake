@@ -69,3 +69,11 @@ const char* CL_TranslateStringBuf(const char* string)
 {
 	return string;
 }
+
+void Key_WriteBindings(fileHandle_t f)
+{
+}
+
+void CL_InitKeyCommands()
+{
+}

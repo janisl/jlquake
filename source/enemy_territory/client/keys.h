@@ -26,12 +26,4 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-void Key_WriteBindings(fileHandle_t f);
-void Key_SetBinding(int keynum, const char* binding);
-void Key_GetBindingByString(const char* binding, int* key1, int* key2);
-const char* Key_GetBinding(int keynum);
-qboolean Key_IsDown(int keynum);
-qboolean Key_GetOverstrikeMode(void);
-void Key_SetOverstrikeMode(qboolean state);
 void Key_ClearStates(void);
-int Key_GetKey(const char* binding);

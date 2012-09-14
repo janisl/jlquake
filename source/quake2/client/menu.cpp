@@ -657,58 +657,6 @@ static menuaction_s s_keys_inv_next_action;
 
 static menuaction_s s_keys_help_computer_action;
 
-static void M_UnbindCommand(const char* command)
-{
-	int j;
-	int l;
-	char* b;
-
-	l = String::Length(command);
-
-	for (j = 0; j < 256; j++)
-	{
-		b = keys[j].binding;
-		if (!b)
-		{
-			continue;
-		}
-		if (!String::NCmp(b, command, l))
-		{
-			Key_SetBinding(j, "");
-		}
-	}
-}
-
-static void M_FindKeysForCommand(const char* command, int* twokeys)
-{
-	int count;
-	int j;
-	int l;
-	char* b;
-
-	twokeys[0] = twokeys[1] = -1;
-	l = String::Length(command);
-	count = 0;
-
-	for (j = 0; j < 256; j++)
-	{
-		b = keys[j].binding;
-		if (!b)
-		{
-			continue;
-		}
-		if (!String::NCmp(b, command, l))
-		{
-			twokeys[count] = j;
-			count++;
-			if (count == 2)
-			{
-				break;
-			}
-		}
-	}
-}
-
 static void KeyCursorDrawFunc(menuframework_s* menu)
 {
 	if (bind_grab)
@@ -726,7 +674,7 @@ static void DrawKeyBindingFunc(void* self)
 	int keys[2];
 	menuaction_s* a = (menuaction_s*)self;
 
-	M_FindKeysForCommand(bindnames[a->generic.localdata[0]][0], keys);
+	Key_GetKeysForBinding(bindnames[a->generic.localdata[0]][0], &keys[0], &keys[1]);
 
 	if (keys[0] == -1)
 	{
@@ -737,7 +685,7 @@ static void DrawKeyBindingFunc(void* self)
 		int x;
 		const char* name;
 
-		name = Key_KeynumToString(keys[0]);
+		name = Key_KeynumToString(keys[0], true);
 
 		UI_DrawString(a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name);
 
@@ -746,7 +694,7 @@ static void DrawKeyBindingFunc(void* self)
 		if (keys[1] != -1)
 		{
 			UI_DrawString(a->generic.x + a->generic.parent->x + 24 + x, a->generic.y + a->generic.parent->y, "or");
-			UI_DrawString(a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString(keys[1]));
+			UI_DrawString(a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString(keys[1], true));
 		}
 	}
 }
@@ -756,11 +704,11 @@ static void KeyBindingFunc(void* self)
 	menuaction_s* a = (menuaction_s*)self;
 	int keys[2];
 
-	M_FindKeysForCommand(bindnames[a->generic.localdata[0]][0], keys);
+	Key_GetKeysForBinding(bindnames[a->generic.localdata[0]][0], &keys[0], &keys[1]);
 
 	if (keys[1] != -1)
 	{
-		M_UnbindCommand(bindnames[a->generic.localdata[0]][0]);
+		Key_UnbindCommand(bindnames[a->generic.localdata[0]][0]);
 	}
 
 	bind_grab = true;
@@ -1007,7 +955,7 @@ static const char* Keys_MenuKey(int key)
 		{
 			char cmd[1024];
 
-			String::Sprintf(cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString(key), bindnames[item->generic.localdata[0]][0]);
+			String::Sprintf(cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString(key, false), bindnames[item->generic.localdata[0]][0]);
 			Cbuf_InsertText(cmd);
 		}
 
@@ -1025,7 +973,7 @@ static const char* Keys_MenuKey(int key)
 	case K_BACKSPACE:		// delete bindings
 	case K_DEL:				// delete bindings
 	case K_KP_DEL:
-		M_UnbindCommand(bindnames[item->generic.localdata[0]][0]);
+		Key_UnbindCommand(bindnames[item->generic.localdata[0]][0]);
 		return menu_out_sound;
 	default:
 		return Default_MenuKey(&s_keys_menu, key);
