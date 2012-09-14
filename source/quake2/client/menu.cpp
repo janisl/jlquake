@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <io.h>
 #endif
 #include "client.h"
-#include "../client/qmenu.h"
+#include "../../client/game/quake2/qmenu.h"
 #include "../../client/renderer/cvars.h"
 
 static int m_main_cursor;
@@ -164,7 +164,7 @@ const char* Default_MenuKey(menuframework_s* m, int key)
 		{
 			if (item->type == MTYPE_FIELD)
 			{
-				if (Field_Key((menufield_s*)item, key))
+				if (MQ2_Field_Key((menufield_s*)item, key))
 				{
 					return NULL;
 				}
@@ -283,7 +283,7 @@ void Default_MenuChar(menuframework_s* m, int key)
 		{
 			if (item->type == MTYPE_FIELD)
 			{
-				Field_Char((menufield_s*)item, key);
+				MQ2_Field_Char((menufield_s*)item, key);
 			}
 		}
 	}
