@@ -37,8 +37,9 @@ struct menulayer_t
 extern menulayer_t mq2_layers[MAX_MENU_DEPTH];
 extern int mq2_menudepth;
 
-void MQ2_ForceMenuOff();
 void MQ2_Init();
+void MQ2_ForceMenuOff();
+void MQ2_AddToServerList(netadr_t adr, char* info);
 
 struct menuframework_s;
 
@@ -52,3 +53,5 @@ void MQ2_Print(int cx, int cy, const char* str);
 void MQ2_DrawCursor(int x, int y, int f);
 void MQ2_DrawTextBox(int x, int y, int width, int lines);
 void MQ2_Menu_Game_f();
+float ClampCvar(float min, float max, float value);
+void MQ2_Menu_Multiplayer_f();

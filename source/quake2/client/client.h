@@ -109,7 +109,6 @@ void CL_FixUpGender(void);
 void CL_Disconnect(void);
 void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);
-void CL_PingServers_f(void);
 void CL_Snd_Restart_f(void);
 void CL_RequestNextDownload(void);
 
@@ -175,7 +174,6 @@ void M_Keydown(int key);
 void M_CharEvent(int key);
 void M_Draw(void);
 void M_Menu_Main_f(void);
-void M_AddToServerList(netadr_t adr, char* info);
 
 //
 // cl_inv.c

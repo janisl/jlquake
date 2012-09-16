@@ -31,57 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Cvar* fs_gamedirvar;
 
 /*
-** FS_ListFiles
-*/
-char** FS_ListFiles(char* findname, int* numfiles, unsigned musthave, unsigned canthave)
-{
-	char* s;
-	int nfiles = 0;
-	char** list = 0;
-
-	s = Sys_FindFirst(findname, musthave, canthave);
-	while (s)
-	{
-		if (s[String::Length(s) - 1] != '.')
-		{
-			nfiles++;
-		}
-		s = Sys_FindNext(musthave, canthave);
-	}
-	Sys_FindClose();
-
-	if (!nfiles)
-	{
-		return NULL;
-	}
-
-	nfiles++;	// add space for a guard
-	*numfiles = nfiles;
-
-	list = (char**)malloc(sizeof(char*) * nfiles);
-	Com_Memset(list, 0, sizeof(char*) * nfiles);
-
-	s = Sys_FindFirst(findname, musthave, canthave);
-	nfiles = 0;
-	while (s)
-	{
-		if (s[String::Length(s) - 1] != '.')
-		{
-			list[nfiles] = strdup(s);
-#ifdef _WIN32
-			String::ToLower(list[nfiles]);
-#endif
-			nfiles++;
-		}
-		s = Sys_FindNext(musthave, canthave);
-	}
-	Sys_FindClose();
-
-	return list;
-}
-
-
-/*
 ================
 FS_InitFilesystem
 ================
@@ -116,9 +65,6 @@ void FS_InitFilesystem(void)
 		FS_SetGamedir(fs_gamedirvar->string);
 	}
 }
-
-
-
 
 bool CL_WWWBadChecksum(const char* pakname)
 {

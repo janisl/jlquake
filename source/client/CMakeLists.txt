@@ -110,6 +110,7 @@ set(CLIENT_FILES
 	ui/draw.cpp
 	ui/field.cpp
 	ui/screen.cpp
+	ui/view.cpp
 	chase.cpp
 	client_main.cpp
 	system_unix.cpp

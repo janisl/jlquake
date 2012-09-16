@@ -33,6 +33,12 @@ void (*mq2_charfunc)(int key);
 static void MQ2_Menu_LoadGame_f();
 static void MQ2_Menu_SaveGame_f();
 static void MQ2_Menu_Credits_f();
+static void MQ2_Menu_JoinServer_f();
+static void MQ2_Menu_AddressBook_f();
+static void MQ2_Menu_StartServer_f();
+static void MQ2_Menu_DMOptions_f();
+static void MQ2_Menu_PlayerConfig_f();
+static void MQ2_Menu_DownloadOptions_f();
 
 //=============================================================================
 /* Support Routines */
@@ -325,6 +331,19 @@ void MQ2_DrawTextBox(int x, int y, int width, int lines)
 		MQ2_DrawCharacter(cx, cy, 6);
 	}
 	MQ2_DrawCharacter(cx, cy + 8, 9);
+}
+
+float ClampCvar(float min, float max, float value)
+{
+	if (value < min)
+	{
+		return min;
+	}
+	if (value > max)
+	{
+		return max;
+	}
+	return value;
 }
 
 /*
@@ -1127,10 +1146,1732 @@ static void MQ2_Menu_Credits_f()
 	MQ2_PushMenu(MQ2_Credits_MenuDraw, MQ2_Credits_Key, NULL);
 }
 
+/*
+=======================================================================
+
+MULTIPLAYER MENU
+
+=======================================================================
+*/
+
+static menuframework_s s_multiplayer_menu;
+static menuaction_s s_join_network_server_action;
+static menuaction_s s_start_network_server_action;
+static menuaction_s s_player_setup_action;
+
+static void Multiplayer_MenuDraw()
+{
+	MQ2_Banner("m_banner_multiplayer");
+
+	Menu_AdjustCursor(&s_multiplayer_menu, 1);
+	Menu_Draw(&s_multiplayer_menu);
+}
+
+static void PlayerSetupFunc(void* unused)
+{
+	MQ2_Menu_PlayerConfig_f();
+}
+
+static void JoinNetworkServerFunc(void* unused)
+{
+	MQ2_Menu_JoinServer_f();
+}
+
+static void StartNetworkServerFunc(void* unused)
+{
+	MQ2_Menu_StartServer_f();
+}
+
+static void Multiplayer_MenuInit()
+{
+	s_multiplayer_menu.x = viddef.width * 0.50 - 64;
+	s_multiplayer_menu.nitems = 0;
+
+	s_join_network_server_action.generic.type   = MTYPE_ACTION;
+	s_join_network_server_action.generic.flags  = QMF_LEFT_JUSTIFY;
+	s_join_network_server_action.generic.x      = 0;
+	s_join_network_server_action.generic.y      = 0;
+	s_join_network_server_action.generic.name   = " join network server";
+	s_join_network_server_action.generic.callback = JoinNetworkServerFunc;
+
+	s_start_network_server_action.generic.type  = MTYPE_ACTION;
+	s_start_network_server_action.generic.flags  = QMF_LEFT_JUSTIFY;
+	s_start_network_server_action.generic.x     = 0;
+	s_start_network_server_action.generic.y     = 10;
+	s_start_network_server_action.generic.name  = " start network server";
+	s_start_network_server_action.generic.callback = StartNetworkServerFunc;
+
+	s_player_setup_action.generic.type  = MTYPE_ACTION;
+	s_player_setup_action.generic.flags  = QMF_LEFT_JUSTIFY;
+	s_player_setup_action.generic.x     = 0;
+	s_player_setup_action.generic.y     = 20;
+	s_player_setup_action.generic.name  = " player setup";
+	s_player_setup_action.generic.callback = PlayerSetupFunc;
+
+	Menu_AddItem(&s_multiplayer_menu, (void*)&s_join_network_server_action);
+	Menu_AddItem(&s_multiplayer_menu, (void*)&s_start_network_server_action);
+	Menu_AddItem(&s_multiplayer_menu, (void*)&s_player_setup_action);
+
+	Menu_SetStatusBar(&s_multiplayer_menu, NULL);
+
+	Menu_Center(&s_multiplayer_menu);
+}
+
+static const char* Multiplayer_MenuKey(int key)
+{
+	return Default_MenuKey(&s_multiplayer_menu, key);
+}
+
+void MQ2_Menu_Multiplayer_f()
+{
+	Multiplayer_MenuInit();
+	MQ2_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey, NULL);
+}
+
+/*
+=============================================================================
+
+JOIN SERVER MENU
+
+=============================================================================
+*/
+#define MAX_LOCAL_SERVERS 8
+
+static menuframework_s s_joinserver_menu;
+static menuseparator_s s_joinserver_server_title;
+static menuaction_s s_joinserver_search_action;
+static menuaction_s s_joinserver_address_book_action;
+static menuaction_s s_joinserver_server_actions[MAX_LOCAL_SERVERS];
+
+static int mq2_num_servers;
+#define NO_SERVER_STRING    "<no server>"
+
+// user readable information
+static char local_server_names[MAX_LOCAL_SERVERS][80];
+
+// network address
+static netadr_t local_server_netadr[MAX_LOCAL_SERVERS];
+
+void MQ2_AddToServerList(netadr_t adr, char* info)
+{
+	if (mq2_num_servers == MAX_LOCAL_SERVERS)
+	{
+		return;
+	}
+	while (*info == ' ')
+	{
+		info++;
+	}
+
+	// ignore if duplicated
+	for (int i = 0; i < mq2_num_servers; i++)
+	{
+		if (!String::Cmp(info, local_server_names[i]))
+		{
+			return;
+		}
+	}
+
+	local_server_netadr[mq2_num_servers] = adr;
+	String::NCpy(local_server_names[mq2_num_servers], info, sizeof(local_server_names[0]) - 1);
+	mq2_num_servers++;
+}
+
+static void JoinServerFunc(void* self)
+{
+	int index = (menuaction_s*)self - s_joinserver_server_actions;
+
+	if (String::ICmp(local_server_names[index], NO_SERVER_STRING) == 0)
+	{
+		return;
+	}
+
+	if (index >= mq2_num_servers)
+	{
+		return;
+	}
+
+	char buffer[128];
+	String::Sprintf(buffer, sizeof(buffer), "connect %s\n", SOCK_AdrToString(local_server_netadr[index]));
+	Cbuf_AddText(buffer);
+	MQ2_ForceMenuOff();
+}
+
+static void AddressBookFunc(void* self)
+{
+	MQ2_Menu_AddressBook_f();
+}
+
+static void SearchLocalGames()
+{
+	mq2_num_servers = 0;
+	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
+	{
+		String::Cpy(local_server_names[i], NO_SERVER_STRING);
+	}
+
+	MQ2_DrawTextBox(8, 120 - 48, 36, 3);
+	MQ2_Print(16 + 16, 120 - 48 + 8,  "Searching for local servers, this");
+	MQ2_Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
+	MQ2_Print(16 + 16, 120 - 48 + 24, "please be patient.");
+
+	// the text box won't show up unless we do a buffer swap
+	R_EndFrame(NULL, NULL);
+
+	// send out info packets
+	CLQ2_PingServers_f();
+}
+
+static void SearchLocalGamesFunc(void* self)
+{
+	SearchLocalGames();
+}
+
+static void JoinServer_MenuInit()
+{
+	s_joinserver_menu.x = viddef.width * 0.50 - 120;
+	s_joinserver_menu.nitems = 0;
+
+	s_joinserver_address_book_action.generic.type   = MTYPE_ACTION;
+	s_joinserver_address_book_action.generic.name   = "address book";
+	s_joinserver_address_book_action.generic.flags  = QMF_LEFT_JUSTIFY;
+	s_joinserver_address_book_action.generic.x      = 0;
+	s_joinserver_address_book_action.generic.y      = 0;
+	s_joinserver_address_book_action.generic.callback = AddressBookFunc;
+
+	s_joinserver_search_action.generic.type = MTYPE_ACTION;
+	s_joinserver_search_action.generic.name = "refresh server list";
+	s_joinserver_search_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_joinserver_search_action.generic.x    = 0;
+	s_joinserver_search_action.generic.y    = 10;
+	s_joinserver_search_action.generic.callback = SearchLocalGamesFunc;
+	s_joinserver_search_action.generic.statusbar = "search for servers";
+
+	s_joinserver_server_title.generic.type = MTYPE_SEPARATOR;
+	s_joinserver_server_title.generic.name = "connect to...";
+	s_joinserver_server_title.generic.x    = 80;
+	s_joinserver_server_title.generic.y    = 30;
+
+	for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
+	{
+		s_joinserver_server_actions[i].generic.type = MTYPE_ACTION;
+		String::Cpy(local_server_names[i], NO_SERVER_STRING);
+		s_joinserver_server_actions[i].generic.name = local_server_names[i];
+		s_joinserver_server_actions[i].generic.flags    = QMF_LEFT_JUSTIFY;
+		s_joinserver_server_actions[i].generic.x        = 0;
+		s_joinserver_server_actions[i].generic.y        = 40 + i * 10;
+		s_joinserver_server_actions[i].generic.callback = JoinServerFunc;
+		s_joinserver_server_actions[i].generic.statusbar = "press ENTER to connect";
+	}
+
+	Menu_AddItem(&s_joinserver_menu, &s_joinserver_address_book_action);
+	Menu_AddItem(&s_joinserver_menu, &s_joinserver_server_title);
+	Menu_AddItem(&s_joinserver_menu, &s_joinserver_search_action);
+
+	for (int i = 0; i < 8; i++)
+	{
+		Menu_AddItem(&s_joinserver_menu, &s_joinserver_server_actions[i]);
+	}
+
+	Menu_Center(&s_joinserver_menu);
+
+	SearchLocalGames();
+}
+
+static void JoinServer_MenuDraw()
+{
+	MQ2_Banner("m_banner_join_server");
+	Menu_Draw(&s_joinserver_menu);
+}
+
+static const char* JoinServer_MenuKey(int key)
+{
+	return Default_MenuKey(&s_joinserver_menu, key);
+}
+
+static void MQ2_Menu_JoinServer_f()
+{
+	JoinServer_MenuInit();
+	MQ2_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey, NULL);
+}
+
+/*
+=============================================================================
+
+ADDRESS BOOK MENU
+
+=============================================================================
+*/
+
+#define NUM_ADDRESSBOOK_ENTRIES 9
+
+static menuframework_s s_addressbook_menu;
+static menufield_s s_addressbook_fields[NUM_ADDRESSBOOK_ENTRIES];
+
+static void AddressBook_MenuInit()
+{
+	s_addressbook_menu.x = viddef.width / 2 - 142;
+	s_addressbook_menu.y = viddef.height / 2 - 58;
+	s_addressbook_menu.nitems = 0;
+
+	for (int i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++)
+	{
+		char buffer[20];
+		String::Sprintf(buffer, sizeof(buffer), "adr%d", i);
+
+		Cvar* adr = Cvar_Get(buffer, "", CVAR_ARCHIVE);
+
+		s_addressbook_fields[i].generic.type = MTYPE_FIELD;
+		s_addressbook_fields[i].generic.name = 0;
+		s_addressbook_fields[i].generic.callback = 0;
+		s_addressbook_fields[i].generic.x       = 0;
+		s_addressbook_fields[i].generic.y       = i * 18 + 0;
+		s_addressbook_fields[i].generic.localdata[0] = i;
+		s_addressbook_fields[i].field.cursor          = 0;
+		s_addressbook_fields[i].field.maxLength = 60;
+		s_addressbook_fields[i].field.widthInChars = 30;
+
+		String::Cpy(s_addressbook_fields[i].field.buffer, adr->string);
+
+		Menu_AddItem(&s_addressbook_menu, &s_addressbook_fields[i]);
+	}
+}
+
+static const char* AddressBook_MenuKey(int key)
+{
+	if (key == K_ESCAPE)
+	{
+		for (int index = 0; index < NUM_ADDRESSBOOK_ENTRIES; index++)
+		{
+			char buffer[20];
+			String::Sprintf(buffer, sizeof(buffer), "adr%d", index);
+			Cvar_SetLatched(buffer, s_addressbook_fields[index].field.buffer);
+		}
+	}
+	return Default_MenuKey(&s_addressbook_menu, key);
+}
+
+static void AddressBook_MenuDraw()
+{
+	MQ2_Banner("m_banner_addressbook");
+	Menu_Draw(&s_addressbook_menu);
+}
+
+static void AddressBook_MenuChar(int key)
+{
+	Default_MenuChar(&s_addressbook_menu, key);
+}
+
+static void MQ2_Menu_AddressBook_f()
+{
+	AddressBook_MenuInit();
+	MQ2_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, AddressBook_MenuChar);
+}
+
+/*
+=============================================================================
+
+START SERVER MENU
+
+=============================================================================
+*/
+
+static menuframework_s s_startserver_menu;
+static char** mapnames;
+static int nummaps;
+
+static menuaction_s s_startserver_start_action;
+static menuaction_s s_startserver_dmoptions_action;
+static menufield_s s_timelimit_field;
+static menufield_s s_fraglimit_field;
+static menufield_s s_maxclients_field;
+static menufield_s s_hostname_field;
+static menulist_s s_startmap_list;
+static menulist_s s_rules_box;
+
+static void DMOptionsFunc(void* self)
+{
+	if (s_rules_box.curvalue == 1)
+	{
+		return;
+	}
+	MQ2_Menu_DMOptions_f();
+}
+
+static void RulesChangeFunc(void* self)
+{
+	// DM
+	if (s_rules_box.curvalue == 0)
+	{
+		s_maxclients_field.generic.statusbar = NULL;
+		s_startserver_dmoptions_action.generic.statusbar = NULL;
+	}
+	else if (s_rules_box.curvalue == 1)		// coop				// PGM
+	{
+		s_maxclients_field.generic.statusbar = "4 maximum for cooperative";
+		if (String::Atoi(s_maxclients_field.field.buffer) > 4)
+		{
+			String::Cpy(s_maxclients_field.field.buffer, "4");
+		}
+		s_startserver_dmoptions_action.generic.statusbar = "N/A for cooperative";
+	}
+	// ROGUE GAMES
+	else if (FS_GetQuake2GameType() == 2)
+	{
+		if (s_rules_box.curvalue == 2)			// tag
+		{
+			s_maxclients_field.generic.statusbar = NULL;
+			s_startserver_dmoptions_action.generic.statusbar = NULL;
+		}
+	}
+}
+
+static void StartServerActionFunc(void* self)
+{
+	char startmap[1024];
+	String::Cpy(startmap, strchr(mapnames[s_startmap_list.curvalue], '\n') + 1);
+
+	int maxclients = String::Atoi(s_maxclients_field.field.buffer);
+	int timelimit = String::Atoi(s_timelimit_field.field.buffer);
+	int fraglimit = String::Atoi(s_fraglimit_field.field.buffer);
+
+	Cvar_SetValueLatched("maxclients", ClampCvar(0, maxclients, maxclients));
+	Cvar_SetValueLatched("timelimit", ClampCvar(0, timelimit, timelimit));
+	Cvar_SetValueLatched("fraglimit", ClampCvar(0, fraglimit, fraglimit));
+	Cvar_SetLatched("hostname", s_hostname_field.field.buffer);
+
+	if ((s_rules_box.curvalue < 2) || (FS_GetQuake2GameType() != 2))
+	{
+		Cvar_SetValueLatched("deathmatch", !s_rules_box.curvalue);
+		Cvar_SetValueLatched("coop", s_rules_box.curvalue);
+		Cvar_SetValueLatched("gamerules", 0);
+	}
+	else
+	{
+		Cvar_SetValueLatched("deathmatch", 1);	// deathmatch is always true for rogue games, right?
+		Cvar_SetValueLatched("coop", 0);			// FIXME - this might need to depend on which game we're running
+		Cvar_SetValueLatched("gamerules", s_rules_box.curvalue);
+	}
+
+	const char* spot = NULL;
+	if (s_rules_box.curvalue == 1)		// PGM
+	{
+		if (String::ICmp(startmap, "bunk1") == 0)
+		{
+			spot = "start";
+		}
+		else if (String::ICmp(startmap, "mintro") == 0)
+		{
+			spot = "start";
+		}
+		else if (String::ICmp(startmap, "fact1") == 0)
+		{
+			spot = "start";
+		}
+		else if (String::ICmp(startmap, "power1") == 0)
+		{
+			spot = "pstart";
+		}
+		else if (String::ICmp(startmap, "biggun") == 0)
+		{
+			spot = "bstart";
+		}
+		else if (String::ICmp(startmap, "hangar1") == 0)
+		{
+			spot = "unitstart";
+		}
+		else if (String::ICmp(startmap, "city1") == 0)
+		{
+			spot = "unitstart";
+		}
+		else if (String::ICmp(startmap, "boss1") == 0)
+		{
+			spot = "bosstart";
+		}
+	}
+
+	if (spot)
+	{
+		if (ComQ2_ServerState())
+		{
+			Cbuf_AddText("disconnect\n");
+		}
+		Cbuf_AddText(va("gamemap \"*%s$%s\"\n", startmap, spot));
+	}
+	else
+	{
+		Cbuf_AddText(va("map %s\n", startmap));
+	}
+
+	MQ2_ForceMenuOff();
+}
+
+static void StartServer_MenuInit()
+{
+	static const char* dm_coop_names[] =
+	{
+		"deathmatch",
+		"cooperative",
+		0
+	};
+	static const char* dm_coop_names_rogue[] =
+	{
+		"deathmatch",
+		"cooperative",
+		"tag",
+		0
+	};
+
+	//	load the list of map names
+	char* buffer;
+	int length = FS_ReadFile("maps.lst", (void**)&buffer);
+	if (length == -1)
+	{
+		common->Error("couldn't find maps.lst\n");
+	}
+
+	const char* s = buffer;
+
+	int i = 0;
+	while (i < length)
+	{
+		if (s[i] == '\r')
+		{
+			nummaps++;
+		}
+		i++;
+	}
+
+	if (nummaps == 0)
+	{
+		common->Error("no maps in maps.lst\n");
+	}
+
+	mapnames = (char**)Mem_Alloc(sizeof(char*) * (nummaps + 1));
+	Com_Memset(mapnames, 0, sizeof(char*) * (nummaps + 1));
+
+	s = buffer;
+
+	for (i = 0; i < nummaps; i++)
+	{
+		char shortname[MAX_TOKEN_CHARS_Q2];
+		String::Cpy(shortname, String::Parse2(&s));
+		int l = String::Length(shortname);
+		for (int j = 0; j < l; j++)
+		{
+			shortname[j] = String::ToUpper(shortname[j]);
+		}
+		char longname[MAX_TOKEN_CHARS_Q2];
+		String::Cpy(longname, String::Parse2(&s));
+		char scratch[200];
+		String::Sprintf(scratch, sizeof(scratch), "%s\n%s", longname, shortname);
+
+		mapnames[i] = (char*)Mem_Alloc(String::Length(scratch) + 1);
+		String::Cpy(mapnames[i], scratch);
+	}
+	mapnames[nummaps] = 0;
+
+	FS_FreeFile(buffer);
+
+	//	initialize the menu stuff
+	s_startserver_menu.x = viddef.width * 0.50;
+	s_startserver_menu.nitems = 0;
+
+	s_startmap_list.generic.type = MTYPE_SPINCONTROL;
+	s_startmap_list.generic.x   = 0;
+	s_startmap_list.generic.y   = 0;
+	s_startmap_list.generic.name    = "initial map";
+	s_startmap_list.itemnames = (const char**)mapnames;
+
+	s_rules_box.generic.type = MTYPE_SPINCONTROL;
+	s_rules_box.generic.x   = 0;
+	s_rules_box.generic.y   = 20;
+	s_rules_box.generic.name    = "rules";
+
+	//PGM - rogue games only available with rogue DLL.
+	if (FS_GetQuake2GameType() == 2)
+	{
+		s_rules_box.itemnames = dm_coop_names_rogue;
+	}
+	else
+	{
+		s_rules_box.itemnames = dm_coop_names;
+	}
+
+	if (Cvar_VariableValue("coop"))
+	{
+		s_rules_box.curvalue = 1;
+	}
+	else
+	{
+		s_rules_box.curvalue = 0;
+	}
+	s_rules_box.generic.callback = RulesChangeFunc;
+
+	s_timelimit_field.generic.type = MTYPE_FIELD;
+	s_timelimit_field.generic.name = "time limit";
+	s_timelimit_field.generic.flags = QMF_NUMBERSONLY;
+	s_timelimit_field.generic.x = 0;
+	s_timelimit_field.generic.y = 36;
+	s_timelimit_field.generic.statusbar = "0 = no limit";
+	s_timelimit_field.field.maxLength = 3;
+	s_timelimit_field.field.widthInChars = 3;
+	String::Cpy(s_timelimit_field.field.buffer, Cvar_VariableString("timelimit"));
+
+	s_fraglimit_field.generic.type = MTYPE_FIELD;
+	s_fraglimit_field.generic.name = "frag limit";
+	s_fraglimit_field.generic.flags = QMF_NUMBERSONLY;
+	s_fraglimit_field.generic.x = 0;
+	s_fraglimit_field.generic.y = 54;
+	s_fraglimit_field.generic.statusbar = "0 = no limit";
+	s_fraglimit_field.field.maxLength = 3;
+	s_fraglimit_field.field.widthInChars = 3;
+	String::Cpy(s_fraglimit_field.field.buffer, Cvar_VariableString("fraglimit"));
+
+	/*
+	** maxclients determines the maximum number of players that can join
+	** the game.  If maxclients is only "1" then we should default the menu
+	** option to 8 players, otherwise use whatever its current value is.
+	** Clamping will be done when the server is actually started.
+	*/
+	s_maxclients_field.generic.type = MTYPE_FIELD;
+	s_maxclients_field.generic.name = "max players";
+	s_maxclients_field.generic.flags = QMF_NUMBERSONLY;
+	s_maxclients_field.generic.x    = 0;
+	s_maxclients_field.generic.y    = 72;
+	s_maxclients_field.generic.statusbar = NULL;
+	s_maxclients_field.field.maxLength = 3;
+	s_maxclients_field.field.widthInChars = 3;
+	if (Cvar_VariableValue("maxclients") == 1)
+	{
+		String::Cpy(s_maxclients_field.field.buffer, "8");
+	}
+	else
+	{
+		String::Cpy(s_maxclients_field.field.buffer, Cvar_VariableString("maxclients"));
+	}
+
+	s_hostname_field.generic.type = MTYPE_FIELD;
+	s_hostname_field.generic.name = "hostname";
+	s_hostname_field.generic.flags = 0;
+	s_hostname_field.generic.x  = 0;
+	s_hostname_field.generic.y  = 90;
+	s_hostname_field.generic.statusbar = NULL;
+	s_hostname_field.field.maxLength = 12;
+	s_hostname_field.field.widthInChars = 12;
+	String::Cpy(s_hostname_field.field.buffer, Cvar_VariableString("hostname"));
+
+	s_startserver_dmoptions_action.generic.type = MTYPE_ACTION;
+	s_startserver_dmoptions_action.generic.name = " deathmatch flags";
+	s_startserver_dmoptions_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_startserver_dmoptions_action.generic.x    = 24;
+	s_startserver_dmoptions_action.generic.y    = 108;
+	s_startserver_dmoptions_action.generic.statusbar = NULL;
+	s_startserver_dmoptions_action.generic.callback = DMOptionsFunc;
+
+	s_startserver_start_action.generic.type = MTYPE_ACTION;
+	s_startserver_start_action.generic.name = " begin";
+	s_startserver_start_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_startserver_start_action.generic.x    = 24;
+	s_startserver_start_action.generic.y    = 128;
+	s_startserver_start_action.generic.callback = StartServerActionFunc;
+
+	Menu_AddItem(&s_startserver_menu, &s_startmap_list);
+	Menu_AddItem(&s_startserver_menu, &s_rules_box);
+	Menu_AddItem(&s_startserver_menu, &s_timelimit_field);
+	Menu_AddItem(&s_startserver_menu, &s_fraglimit_field);
+	Menu_AddItem(&s_startserver_menu, &s_maxclients_field);
+	Menu_AddItem(&s_startserver_menu, &s_hostname_field);
+	Menu_AddItem(&s_startserver_menu, &s_startserver_dmoptions_action);
+	Menu_AddItem(&s_startserver_menu, &s_startserver_start_action);
+
+	Menu_Center(&s_startserver_menu);
+
+	// call this now to set proper inital state
+	RulesChangeFunc(NULL);
+}
+
+static void StartServer_MenuDraw()
+{
+	Menu_Draw(&s_startserver_menu);
+}
+
+static const char* StartServer_MenuKey(int key)
+{
+	if (key == K_ESCAPE)
+	{
+		if (mapnames)
+		{
+			for (int i = 0; i < nummaps; i++)
+			{
+				Mem_Free(mapnames[i]);
+			}
+			Mem_Free(mapnames);
+		}
+		mapnames = 0;
+		nummaps = 0;
+	}
+
+	return Default_MenuKey(&s_startserver_menu, key);
+}
+
+static void StartServer_MenuChar(int key)
+{
+	Default_MenuChar(&s_startserver_menu, key);
+}
+
+static void MQ2_Menu_StartServer_f()
+{
+	StartServer_MenuInit();
+	MQ2_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, StartServer_MenuChar);
+}
+
+/*
+=============================================================================
+
+DMOPTIONS BOOK MENU
+
+=============================================================================
+*/
+static char dmoptions_statusbar[128];
+
+static menuframework_s s_dmoptions_menu;
+
+static menulist_s s_friendlyfire_box;
+static menulist_s s_falls_box;
+static menulist_s s_weapons_stay_box;
+static menulist_s s_instant_powerups_box;
+static menulist_s s_powerups_box;
+static menulist_s s_health_box;
+static menulist_s s_spawn_farthest_box;
+static menulist_s s_teamplay_box;
+static menulist_s s_samelevel_box;
+static menulist_s s_force_respawn_box;
+static menulist_s s_armor_box;
+static menulist_s s_allow_exit_box;
+static menulist_s s_infinite_ammo_box;
+static menulist_s s_fixed_fov_box;
+static menulist_s s_quad_drop_box;
+
+//ROGUE
+static menulist_s s_no_mines_box;
+static menulist_s s_no_nukes_box;
+static menulist_s s_stack_double_box;
+static menulist_s s_no_spheres_box;
+//ROGUE
+
+static void DMFlagCallback(void* self)
+{
+	menulist_s* f = (menulist_s*)self;
+
+	int flags = Cvar_VariableValue("dmflags");
+
+	int bit = 0;
+	if (f == &s_friendlyfire_box)
+	{
+		if (f->curvalue)
+		{
+			flags &= ~Q2DF_NO_FRIENDLY_FIRE;
+		}
+		else
+		{
+			flags |= Q2DF_NO_FRIENDLY_FIRE;
+		}
+		goto setvalue;
+	}
+	else if (f == &s_falls_box)
+	{
+		if (f->curvalue)
+		{
+			flags &= ~Q2DF_NO_FALLING;
+		}
+		else
+		{
+			flags |= Q2DF_NO_FALLING;
+		}
+		goto setvalue;
+	}
+	else if (f == &s_weapons_stay_box)
+	{
+		bit = Q2DF_WEAPONS_STAY;
+	}
+	else if (f == &s_instant_powerups_box)
+	{
+		bit = Q2DF_INSTANT_ITEMS;
+	}
+	else if (f == &s_allow_exit_box)
+	{
+		bit = Q2DF_ALLOW_EXIT;
+	}
+	else if (f == &s_powerups_box)
+	{
+		if (f->curvalue)
+		{
+			flags &= ~Q2DF_NO_ITEMS;
+		}
+		else
+		{
+			flags |= Q2DF_NO_ITEMS;
+		}
+		goto setvalue;
+	}
+	else if (f == &s_health_box)
+	{
+		if (f->curvalue)
+		{
+			flags &= ~Q2DF_NO_HEALTH;
+		}
+		else
+		{
+			flags |= Q2DF_NO_HEALTH;
+		}
+		goto setvalue;
+	}
+	else if (f == &s_spawn_farthest_box)
+	{
+		bit = Q2DF_SPAWN_FARTHEST;
+	}
+	else if (f == &s_teamplay_box)
+	{
+		if (f->curvalue == 1)
+		{
+			flags |=  Q2DF_SKINTEAMS;
+			flags &= ~Q2DF_MODELTEAMS;
+		}
+		else if (f->curvalue == 2)
+		{
+			flags |=  Q2DF_MODELTEAMS;
+			flags &= ~Q2DF_SKINTEAMS;
+		}
+		else
+		{
+			flags &= ~(Q2DF_MODELTEAMS | Q2DF_SKINTEAMS);
+		}
+
+		goto setvalue;
+	}
+	else if (f == &s_samelevel_box)
+	{
+		bit = Q2DF_SAME_LEVEL;
+	}
+	else if (f == &s_force_respawn_box)
+	{
+		bit = Q2DF_FORCE_RESPAWN;
+	}
+	else if (f == &s_armor_box)
+	{
+		if (f->curvalue)
+		{
+			flags &= ~Q2DF_NO_ARMOR;
+		}
+		else
+		{
+			flags |= Q2DF_NO_ARMOR;
+		}
+		goto setvalue;
+	}
+	else if (f == &s_infinite_ammo_box)
+	{
+		bit = Q2DF_INFINITE_AMMO;
+	}
+	else if (f == &s_fixed_fov_box)
+	{
+		bit = Q2DF_FIXED_FOV;
+	}
+	else if (f == &s_quad_drop_box)
+	{
+		bit = Q2DF_QUAD_DROP;
+	}
+	else if (FS_GetQuake2GameType() == 2)
+	{
+		if (f == &s_no_mines_box)
+		{
+			bit = Q2DF_NO_MINES;
+		}
+		else if (f == &s_no_nukes_box)
+		{
+			bit = Q2DF_NO_NUKES;
+		}
+		else if (f == &s_stack_double_box)
+		{
+			bit = Q2DF_NO_STACK_DOUBLE;
+		}
+		else if (f == &s_no_spheres_box)
+		{
+			bit = Q2DF_NO_SPHERES;
+		}
+	}
+
+	if (f)
+	{
+		if (f->curvalue == 0)
+		{
+			flags &= ~bit;
+		}
+		else
+		{
+			flags |= bit;
+		}
+	}
+
+setvalue:
+	Cvar_SetValueLatched("dmflags", flags);
+
+	String::Sprintf(dmoptions_statusbar, sizeof(dmoptions_statusbar), "dmflags = %d", flags);
+
+}
+
+static void DMOptions_MenuInit()
+{
+	static const char* yes_no_names[] =
+	{
+		"no", "yes", 0
+	};
+	static const char* teamplay_names[] =
+	{
+		"disabled", "by skin", "by model", 0
+	};
+	int dmflags = Cvar_VariableValue("dmflags");
+	int y = 0;
+
+	s_dmoptions_menu.x = viddef.width * 0.50;
+	s_dmoptions_menu.nitems = 0;
+
+	s_falls_box.generic.type = MTYPE_SPINCONTROL;
+	s_falls_box.generic.x   = 0;
+	s_falls_box.generic.y   = y;
+	s_falls_box.generic.name    = "falling damage";
+	s_falls_box.generic.callback = DMFlagCallback;
+	s_falls_box.itemnames = yes_no_names;
+	s_falls_box.curvalue = (dmflags & Q2DF_NO_FALLING) == 0;
+
+	s_weapons_stay_box.generic.type = MTYPE_SPINCONTROL;
+	s_weapons_stay_box.generic.x    = 0;
+	s_weapons_stay_box.generic.y    = y += 10;
+	s_weapons_stay_box.generic.name = "weapons stay";
+	s_weapons_stay_box.generic.callback = DMFlagCallback;
+	s_weapons_stay_box.itemnames = yes_no_names;
+	s_weapons_stay_box.curvalue = (dmflags & Q2DF_WEAPONS_STAY) != 0;
+
+	s_instant_powerups_box.generic.type = MTYPE_SPINCONTROL;
+	s_instant_powerups_box.generic.x    = 0;
+	s_instant_powerups_box.generic.y    = y += 10;
+	s_instant_powerups_box.generic.name = "instant powerups";
+	s_instant_powerups_box.generic.callback = DMFlagCallback;
+	s_instant_powerups_box.itemnames = yes_no_names;
+	s_instant_powerups_box.curvalue = (dmflags & Q2DF_INSTANT_ITEMS) != 0;
+
+	s_powerups_box.generic.type = MTYPE_SPINCONTROL;
+	s_powerups_box.generic.x    = 0;
+	s_powerups_box.generic.y    = y += 10;
+	s_powerups_box.generic.name = "allow powerups";
+	s_powerups_box.generic.callback = DMFlagCallback;
+	s_powerups_box.itemnames = yes_no_names;
+	s_powerups_box.curvalue = (dmflags & Q2DF_NO_ITEMS) == 0;
+
+	s_health_box.generic.type = MTYPE_SPINCONTROL;
+	s_health_box.generic.x  = 0;
+	s_health_box.generic.y  = y += 10;
+	s_health_box.generic.callback = DMFlagCallback;
+	s_health_box.generic.name   = "allow health";
+	s_health_box.itemnames = yes_no_names;
+	s_health_box.curvalue = (dmflags & Q2DF_NO_HEALTH) == 0;
+
+	s_armor_box.generic.type = MTYPE_SPINCONTROL;
+	s_armor_box.generic.x   = 0;
+	s_armor_box.generic.y   = y += 10;
+	s_armor_box.generic.name    = "allow armor";
+	s_armor_box.generic.callback = DMFlagCallback;
+	s_armor_box.itemnames = yes_no_names;
+	s_armor_box.curvalue = (dmflags & Q2DF_NO_ARMOR) == 0;
+
+	s_spawn_farthest_box.generic.type = MTYPE_SPINCONTROL;
+	s_spawn_farthest_box.generic.x  = 0;
+	s_spawn_farthest_box.generic.y  = y += 10;
+	s_spawn_farthest_box.generic.name   = "spawn farthest";
+	s_spawn_farthest_box.generic.callback = DMFlagCallback;
+	s_spawn_farthest_box.itemnames = yes_no_names;
+	s_spawn_farthest_box.curvalue = (dmflags & Q2DF_SPAWN_FARTHEST) != 0;
+
+	s_samelevel_box.generic.type = MTYPE_SPINCONTROL;
+	s_samelevel_box.generic.x   = 0;
+	s_samelevel_box.generic.y   = y += 10;
+	s_samelevel_box.generic.name    = "same map";
+	s_samelevel_box.generic.callback = DMFlagCallback;
+	s_samelevel_box.itemnames = yes_no_names;
+	s_samelevel_box.curvalue = (dmflags & Q2DF_SAME_LEVEL) != 0;
+
+	s_force_respawn_box.generic.type = MTYPE_SPINCONTROL;
+	s_force_respawn_box.generic.x   = 0;
+	s_force_respawn_box.generic.y   = y += 10;
+	s_force_respawn_box.generic.name    = "force respawn";
+	s_force_respawn_box.generic.callback = DMFlagCallback;
+	s_force_respawn_box.itemnames = yes_no_names;
+	s_force_respawn_box.curvalue = (dmflags & Q2DF_FORCE_RESPAWN) != 0;
+
+	s_teamplay_box.generic.type = MTYPE_SPINCONTROL;
+	s_teamplay_box.generic.x    = 0;
+	s_teamplay_box.generic.y    = y += 10;
+	s_teamplay_box.generic.name = "teamplay";
+	s_teamplay_box.generic.callback = DMFlagCallback;
+	s_teamplay_box.itemnames = teamplay_names;
+
+	s_allow_exit_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_exit_box.generic.x  = 0;
+	s_allow_exit_box.generic.y  = y += 10;
+	s_allow_exit_box.generic.name   = "allow exit";
+	s_allow_exit_box.generic.callback = DMFlagCallback;
+	s_allow_exit_box.itemnames = yes_no_names;
+	s_allow_exit_box.curvalue = (dmflags & Q2DF_ALLOW_EXIT) != 0;
+
+	s_infinite_ammo_box.generic.type = MTYPE_SPINCONTROL;
+	s_infinite_ammo_box.generic.x   = 0;
+	s_infinite_ammo_box.generic.y   = y += 10;
+	s_infinite_ammo_box.generic.name    = "infinite ammo";
+	s_infinite_ammo_box.generic.callback = DMFlagCallback;
+	s_infinite_ammo_box.itemnames = yes_no_names;
+	s_infinite_ammo_box.curvalue = (dmflags & Q2DF_INFINITE_AMMO) != 0;
+
+	s_fixed_fov_box.generic.type = MTYPE_SPINCONTROL;
+	s_fixed_fov_box.generic.x   = 0;
+	s_fixed_fov_box.generic.y   = y += 10;
+	s_fixed_fov_box.generic.name    = "fixed FOV";
+	s_fixed_fov_box.generic.callback = DMFlagCallback;
+	s_fixed_fov_box.itemnames = yes_no_names;
+	s_fixed_fov_box.curvalue = (dmflags & Q2DF_FIXED_FOV) != 0;
+
+	s_quad_drop_box.generic.type = MTYPE_SPINCONTROL;
+	s_quad_drop_box.generic.x   = 0;
+	s_quad_drop_box.generic.y   = y += 10;
+	s_quad_drop_box.generic.name    = "quad drop";
+	s_quad_drop_box.generic.callback = DMFlagCallback;
+	s_quad_drop_box.itemnames = yes_no_names;
+	s_quad_drop_box.curvalue = (dmflags & Q2DF_QUAD_DROP) != 0;
+
+	s_friendlyfire_box.generic.type = MTYPE_SPINCONTROL;
+	s_friendlyfire_box.generic.x    = 0;
+	s_friendlyfire_box.generic.y    = y += 10;
+	s_friendlyfire_box.generic.name = "friendly fire";
+	s_friendlyfire_box.generic.callback = DMFlagCallback;
+	s_friendlyfire_box.itemnames = yes_no_names;
+	s_friendlyfire_box.curvalue = (dmflags & Q2DF_NO_FRIENDLY_FIRE) == 0;
+
+	if (FS_GetQuake2GameType() == 2)
+	{
+		s_no_mines_box.generic.type = MTYPE_SPINCONTROL;
+		s_no_mines_box.generic.x    = 0;
+		s_no_mines_box.generic.y    = y += 10;
+		s_no_mines_box.generic.name = "remove mines";
+		s_no_mines_box.generic.callback = DMFlagCallback;
+		s_no_mines_box.itemnames = yes_no_names;
+		s_no_mines_box.curvalue = (dmflags & Q2DF_NO_MINES) != 0;
+
+		s_no_nukes_box.generic.type = MTYPE_SPINCONTROL;
+		s_no_nukes_box.generic.x    = 0;
+		s_no_nukes_box.generic.y    = y += 10;
+		s_no_nukes_box.generic.name = "remove nukes";
+		s_no_nukes_box.generic.callback = DMFlagCallback;
+		s_no_nukes_box.itemnames = yes_no_names;
+		s_no_nukes_box.curvalue = (dmflags & Q2DF_NO_NUKES) != 0;
+
+		s_stack_double_box.generic.type = MTYPE_SPINCONTROL;
+		s_stack_double_box.generic.x    = 0;
+		s_stack_double_box.generic.y    = y += 10;
+		s_stack_double_box.generic.name = "2x/4x stacking off";
+		s_stack_double_box.generic.callback = DMFlagCallback;
+		s_stack_double_box.itemnames = yes_no_names;
+		s_stack_double_box.curvalue = (dmflags & Q2DF_NO_STACK_DOUBLE) != 0;
+
+		s_no_spheres_box.generic.type = MTYPE_SPINCONTROL;
+		s_no_spheres_box.generic.x  = 0;
+		s_no_spheres_box.generic.y  = y += 10;
+		s_no_spheres_box.generic.name   = "remove spheres";
+		s_no_spheres_box.generic.callback = DMFlagCallback;
+		s_no_spheres_box.itemnames = yes_no_names;
+		s_no_spheres_box.curvalue = (dmflags & Q2DF_NO_SPHERES) != 0;
+
+	}
+
+	Menu_AddItem(&s_dmoptions_menu, &s_falls_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_weapons_stay_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_instant_powerups_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_powerups_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_health_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_armor_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_spawn_farthest_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_samelevel_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_force_respawn_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_teamplay_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_allow_exit_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_infinite_ammo_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_fixed_fov_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_quad_drop_box);
+	Menu_AddItem(&s_dmoptions_menu, &s_friendlyfire_box);
+
+	if (FS_GetQuake2GameType() == 2)
+	{
+		Menu_AddItem(&s_dmoptions_menu, &s_no_mines_box);
+		Menu_AddItem(&s_dmoptions_menu, &s_no_nukes_box);
+		Menu_AddItem(&s_dmoptions_menu, &s_stack_double_box);
+		Menu_AddItem(&s_dmoptions_menu, &s_no_spheres_box);
+	}
+
+	Menu_Center(&s_dmoptions_menu);
+
+	// set the original dmflags statusbar
+	DMFlagCallback(0);
+	Menu_SetStatusBar(&s_dmoptions_menu, dmoptions_statusbar);
+}
+
+static void DMOptions_MenuDraw()
+{
+	Menu_Draw(&s_dmoptions_menu);
+}
+
+static const char* DMOptions_MenuKey(int key)
+{
+	return Default_MenuKey(&s_dmoptions_menu, key);
+}
+
+static void MQ2_Menu_DMOptions_f()
+{
+	DMOptions_MenuInit();
+	MQ2_PushMenu(DMOptions_MenuDraw, DMOptions_MenuKey, NULL);
+}
+
+/*
+=============================================================================
+
+PLAYER CONFIG MENU
+
+=============================================================================
+*/
+
+static menuframework_s s_player_config_menu;
+static menufield_s s_player_name_field;
+static menulist_s s_player_model_box;
+static menulist_s s_player_skin_box;
+static menulist_s s_player_handedness_box;
+static menulist_s s_player_rate_box;
+static menuseparator_s s_player_skin_title;
+static menuseparator_s s_player_model_title;
+static menuseparator_s s_player_hand_title;
+static menuseparator_s s_player_rate_title;
+static menuaction_s s_player_download_action;
+
+#define MAX_DISPLAYNAME 16
+#define MAX_PLAYERMODELS 1024
+
+struct playermodelinfo_s
+{
+	int nskins;
+	char** skindisplaynames;
+	char displayname[MAX_DISPLAYNAME];
+	char directory[MAX_QPATH];
+};
+
+static playermodelinfo_s s_pmi[MAX_PLAYERMODELS];
+static char* s_pmnames[MAX_PLAYERMODELS];
+static int s_numplayermodels;
+
+static int rate_tbl[] = { 2500, 3200, 5000, 10000, 25000, 0 };
+static const char* rate_names[] = { "28.8 Modem", "33.6 Modem", "Single ISDN",
+									"Dual ISDN/Cable", "T1/LAN", "User defined", 0 };
+
+static void DownloadOptionsFunc(void* self)
+{
+	MQ2_Menu_DownloadOptions_f();
+}
+
+static void HandednessCallback(void* unused)
+{
+	Cvar_SetValueLatched("hand", s_player_handedness_box.curvalue);
+}
+
+static void RateCallback(void* unused)
+{
+	if (s_player_rate_box.curvalue != sizeof(rate_tbl) / sizeof(*rate_tbl) - 1)
+	{
+		Cvar_SetValueLatched("rate", rate_tbl[s_player_rate_box.curvalue]);
+	}
+}
+
+static void ModelCallback(void* unused)
+{
+	s_player_skin_box.itemnames = (const char**)s_pmi[s_player_model_box.curvalue].skindisplaynames;
+	s_player_skin_box.curvalue = 0;
+}
+
+static qboolean IconOfSkinExists(char* skin, char** pcxfiles, int npcxfiles)
+{
+	int i;
+	char scratch[1024];
+
+	String::Cpy(scratch, skin);
+	*String::RChr(scratch, '.') = 0;
+	String::Cat(scratch, sizeof(scratch), "_i.pcx");
+
+	for (i = 0; i < npcxfiles; i++)
+	{
+		if (String::Cmp(pcxfiles[i], scratch) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static void PlayerConfig_ScanDirectories(void)
+{
+	s_numplayermodels = 0;
+
+	//	get a list of directories
+	int ndirs = 0;
+	char** dirnames = FS_ListFiles("players", "/", &ndirs);
+	if (!dirnames)
+	{
+		return;
+	}
+
+	//	go through the subdirectories
+	int npms = ndirs;
+	if (npms > MAX_PLAYERMODELS)
+	{
+		npms = MAX_PLAYERMODELS;
+	}
+
+	for (int i = 0; i < npms; i++)
+	{
+		if (dirnames[i] == 0)
+		{
+			continue;
+		}
+
+		// verify the existence of tris.md2
+		char scratch[1024];
+		String::Cpy(scratch, "players/");
+		String::Cat(scratch, sizeof(scratch), dirnames[i]);
+		String::Cat(scratch, sizeof(scratch), "/tris.md2");
+		fileHandle_t f;
+		FS_FOpenFileRead(scratch, &f, false);
+		if (!f)
+		{
+			continue;
+		}
+		FS_FCloseFile(f);
+
+		// verify the existence of at least one pcx skin
+		String::Cpy(scratch, "players/");
+		String::Cat(scratch, sizeof(scratch), dirnames[i]);
+		int npcxfiles;
+		char** pcxnames = FS_ListFiles(scratch, ".pcx", &npcxfiles);
+
+		if (!pcxnames)
+		{
+			continue;
+		}
+
+		// count valid skins, which consist of a skin with a matching "_i" icon
+		int nskins = 0;
+		for (int k = 0; k < npcxfiles - 1; k++)
+		{
+			if (!strstr(pcxnames[k], "_i.pcx"))
+			{
+				if (IconOfSkinExists(pcxnames[k], pcxnames, npcxfiles - 1))
+				{
+					nskins++;
+				}
+			}
+		}
+		if (!nskins)
+		{
+			FS_FreeFileList(pcxnames);
+			continue;
+		}
+
+		char** skinnames = (char**)Mem_Alloc(sizeof(char*) * (nskins + 1));
+		Com_Memset(skinnames, 0, sizeof(char*) * (nskins + 1));
+
+		// copy the valid skins
+		for (int s = 0, k = 0; k < npcxfiles - 1; k++)
+		{
+			if (!strstr(pcxnames[k], "_i.pcx"))
+			{
+				if (IconOfSkinExists(pcxnames[k], pcxnames, npcxfiles - 1))
+				{
+					String::Cpy(scratch, pcxnames[k]);
+
+					if (String::RChr(scratch, '.'))
+					{
+						*String::RChr(scratch, '.') = 0;
+					}
+
+					skinnames[s] = __CopyString(scratch);
+					s++;
+				}
+			}
+		}
+
+		// at this point we have a valid player model
+		s_pmi[s_numplayermodels].nskins = nskins;
+		s_pmi[s_numplayermodels].skindisplaynames = skinnames;
+
+		// make short name for the model
+		String::NCpy(s_pmi[s_numplayermodels].displayname, dirnames[i], MAX_DISPLAYNAME - 1);
+		String::Cpy(s_pmi[s_numplayermodels].directory, dirnames[i]);
+
+		FS_FreeFileList(pcxnames);
+
+		s_numplayermodels++;
+	}
+	FS_FreeFileList(dirnames);
+}
+
+static int pmicmpfnc(const void* _a, const void* _b)
+{
+	const playermodelinfo_s* a = (const playermodelinfo_s*)_a;
+	const playermodelinfo_s* b = (const playermodelinfo_s*)_b;
+
+	/*
+	** sort by male, female, then alphabetical
+	*/
+	if (String::Cmp(a->directory, "male") == 0)
+	{
+		return -1;
+	}
+	else if (String::Cmp(b->directory, "male") == 0)
+	{
+		return 1;
+	}
+
+	if (String::Cmp(a->directory, "female") == 0)
+	{
+		return -1;
+	}
+	else if (String::Cmp(b->directory, "female") == 0)
+	{
+		return 1;
+	}
+
+	return String::Cmp(a->directory, b->directory);
+}
+
+static bool PlayerConfig_MenuInit()
+{
+	char currentdirectory[1024];
+	char currentskin[1024];
+	int i = 0;
+
+	int currentdirectoryindex = 0;
+	int currentskinindex = 0;
+
+	static const char* handedness[] = { "right", "left", "center", 0 };
+
+	PlayerConfig_ScanDirectories();
+
+	if (s_numplayermodels == 0)
+	{
+		return false;
+	}
+
+	if (q2_hand->value < 0 || q2_hand->value > 2)
+	{
+		Cvar_SetValueLatched("hand", 0);
+	}
+
+	String::Cpy(currentdirectory, clq2_skin->string);
+
+	if (strchr(currentdirectory, '/'))
+	{
+		String::Cpy(currentskin, strchr(currentdirectory, '/') + 1);
+		*strchr(currentdirectory, '/') = 0;
+	}
+	else if (strchr(currentdirectory, '\\'))
+	{
+		String::Cpy(currentskin, strchr(currentdirectory, '\\') + 1);
+		*strchr(currentdirectory, '\\') = 0;
+	}
+	else
+	{
+		String::Cpy(currentdirectory, "male");
+		String::Cpy(currentskin, "grunt");
+	}
+
+	qsort(s_pmi, s_numplayermodels, sizeof(s_pmi[0]), pmicmpfnc);
+
+	Com_Memset(s_pmnames, 0, sizeof(s_pmnames));
+	for (i = 0; i < s_numplayermodels; i++)
+	{
+		s_pmnames[i] = s_pmi[i].displayname;
+		if (String::ICmp(s_pmi[i].directory, currentdirectory) == 0)
+		{
+			int j;
+
+			currentdirectoryindex = i;
+
+			for (j = 0; j < s_pmi[i].nskins; j++)
+			{
+				if (String::ICmp(s_pmi[i].skindisplaynames[j], currentskin) == 0)
+				{
+					currentskinindex = j;
+					break;
+				}
+			}
+		}
+	}
+
+	s_player_config_menu.x = viddef.width / 2 - 95;
+	s_player_config_menu.y = viddef.height / 2 - 97;
+	s_player_config_menu.nitems = 0;
+
+	s_player_name_field.generic.type = MTYPE_FIELD;
+	s_player_name_field.generic.name = "name";
+	s_player_name_field.generic.callback = 0;
+	s_player_name_field.generic.x       = 0;
+	s_player_name_field.generic.y       = 0;
+	s_player_name_field.field.maxLength = 20;
+	s_player_name_field.field.widthInChars = 20;
+	String::Cpy(s_player_name_field.field.buffer, clq2_name->string);
+	s_player_name_field.field.cursor = String::Length(clq2_name->string);
+
+	s_player_model_title.generic.type = MTYPE_SEPARATOR;
+	s_player_model_title.generic.name = "model";
+	s_player_model_title.generic.x    = -8;
+	s_player_model_title.generic.y   = 60;
+
+	s_player_model_box.generic.type = MTYPE_SPINCONTROL;
+	s_player_model_box.generic.x    = -56;
+	s_player_model_box.generic.y    = 70;
+	s_player_model_box.generic.callback = ModelCallback;
+	s_player_model_box.generic.cursor_offset = -48;
+	s_player_model_box.curvalue = currentdirectoryindex;
+	s_player_model_box.itemnames = (const char**)s_pmnames;
+
+	s_player_skin_title.generic.type = MTYPE_SEPARATOR;
+	s_player_skin_title.generic.name = "skin";
+	s_player_skin_title.generic.x    = -16;
+	s_player_skin_title.generic.y    = 84;
+
+	s_player_skin_box.generic.type = MTYPE_SPINCONTROL;
+	s_player_skin_box.generic.x = -56;
+	s_player_skin_box.generic.y = 94;
+	s_player_skin_box.generic.name  = 0;
+	s_player_skin_box.generic.callback = 0;
+	s_player_skin_box.generic.cursor_offset = -48;
+	s_player_skin_box.curvalue = currentskinindex;
+	s_player_skin_box.itemnames = (const char**)s_pmi[currentdirectoryindex].skindisplaynames;
+
+	s_player_hand_title.generic.type = MTYPE_SEPARATOR;
+	s_player_hand_title.generic.name = "handedness";
+	s_player_hand_title.generic.x    = 32;
+	s_player_hand_title.generic.y    = 108;
+
+	s_player_handedness_box.generic.type = MTYPE_SPINCONTROL;
+	s_player_handedness_box.generic.x   = -56;
+	s_player_handedness_box.generic.y   = 118;
+	s_player_handedness_box.generic.name    = 0;
+	s_player_handedness_box.generic.cursor_offset = -48;
+	s_player_handedness_box.generic.callback = HandednessCallback;
+	s_player_handedness_box.curvalue = Cvar_VariableValue("hand");
+	s_player_handedness_box.itemnames = handedness;
+
+	for (i = 0; i < (int)(sizeof(rate_tbl) / sizeof(*rate_tbl) - 1); i++)
+		if (Cvar_VariableValue("rate") == rate_tbl[i])
+		{
+			break;
+		}
+
+	s_player_rate_title.generic.type = MTYPE_SEPARATOR;
+	s_player_rate_title.generic.name = "connect speed";
+	s_player_rate_title.generic.x    = 56;
+	s_player_rate_title.generic.y    = 156;
+
+	s_player_rate_box.generic.type = MTYPE_SPINCONTROL;
+	s_player_rate_box.generic.x = -56;
+	s_player_rate_box.generic.y = 166;
+	s_player_rate_box.generic.name  = 0;
+	s_player_rate_box.generic.cursor_offset = -48;
+	s_player_rate_box.generic.callback = RateCallback;
+	s_player_rate_box.curvalue = i;
+	s_player_rate_box.itemnames = rate_names;
+
+	s_player_download_action.generic.type = MTYPE_ACTION;
+	s_player_download_action.generic.name   = "download options";
+	s_player_download_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_player_download_action.generic.x  = -24;
+	s_player_download_action.generic.y  = 186;
+	s_player_download_action.generic.statusbar = NULL;
+	s_player_download_action.generic.callback = DownloadOptionsFunc;
+
+	Menu_AddItem(&s_player_config_menu, &s_player_name_field);
+	Menu_AddItem(&s_player_config_menu, &s_player_model_title);
+	Menu_AddItem(&s_player_config_menu, &s_player_model_box);
+	if (s_player_skin_box.itemnames)
+	{
+		Menu_AddItem(&s_player_config_menu, &s_player_skin_title);
+		Menu_AddItem(&s_player_config_menu, &s_player_skin_box);
+	}
+	Menu_AddItem(&s_player_config_menu, &s_player_hand_title);
+	Menu_AddItem(&s_player_config_menu, &s_player_handedness_box);
+	Menu_AddItem(&s_player_config_menu, &s_player_rate_title);
+	Menu_AddItem(&s_player_config_menu, &s_player_rate_box);
+	Menu_AddItem(&s_player_config_menu, &s_player_download_action);
+
+	return true;
+}
+
+static void PlayerConfig_MenuDraw()
+{
+	refdef_t refdef;
+	Com_Memset(&refdef, 0, sizeof(refdef));
+
+	refdef.x = viddef.width / 2;
+	refdef.y = viddef.height / 2 - 72;
+	refdef.width = 144;
+	refdef.height = 168;
+	refdef.fov_x = 40;
+	refdef.fov_y = CalcFov(refdef.fov_x, refdef.width, refdef.height);
+	refdef.time = cls.realtime;
+	AxisClear(refdef.viewaxis);
+
+	if (s_pmi[s_player_model_box.curvalue].skindisplaynames)
+	{
+		refEntity_t entity;
+		Com_Memset(&entity, 0, sizeof(entity));
+
+		char scratch[MAX_QPATH];
+		String::Sprintf(scratch, sizeof(scratch), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory);
+		entity.hModel = R_RegisterModel(scratch);
+		String::Sprintf(scratch, sizeof(scratch), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue]);
+		entity.customSkin = R_GetImageHandle(R_RegisterSkinQ2(scratch));
+		entity.renderfx = RF_ABSOLUTE_LIGHT;
+		entity.radius = 1;
+		entity.origin[0] = 80;
+		entity.origin[1] = 0;
+		entity.origin[2] = 0;
+		VectorCopy(entity.origin, entity.oldorigin);
+		entity.frame = 0;
+		entity.oldframe = 0;
+		entity.backlerp = 0.0;
+		vec3_t angles;
+		angles[0] = 0;
+		angles[1] = (cls.realtime / 10) % 360;
+		angles[2] = 0;
+		AnglesToAxis(angles, entity.axis);
+		R_ClearScene();
+		R_AddRefEntityToScene(&entity);
+
+		Com_Memset(refdef.areamask, 0, sizeof(refdef.areamask));
+		refdef.rdflags = RDF_NOWORLDMODEL;
+
+		Menu_Draw(&s_player_config_menu);
+
+		MQ2_DrawTextBox((refdef.x) * (320.0F / viddef.width) - 8, (viddef.height / 2) * (240.0F / viddef.height) - 77, refdef.width / 8, refdef.height / 8);
+		refdef.height += 4;
+		UI_Fill(refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1);
+
+		R_RenderScene(&refdef);
+
+		String::Sprintf(scratch, sizeof(scratch), "/players/%s/%s_i.pcx",
+			s_pmi[s_player_model_box.curvalue].directory,
+			s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue]);
+		UI_DrawNamedPic(s_player_config_menu.x - 40, refdef.y, scratch);
+	}
+}
+
+static const char* PlayerConfig_MenuKey(int key)
+{
+	if (key == K_ESCAPE)
+	{
+		Cvar_SetLatched("name", s_player_name_field.field.buffer);
+
+		char scratch[1024];
+		String::Sprintf(scratch, sizeof(scratch), "%s/%s",
+			s_pmi[s_player_model_box.curvalue].directory,
+			s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue]);
+
+		Cvar_SetLatched("skin", scratch);
+
+		for (int i = 0; i < s_numplayermodels; i++)
+		{
+			for (int j = 0; j < s_pmi[i].nskins; j++)
+			{
+				if (s_pmi[i].skindisplaynames[j])
+				{
+					Mem_Free(s_pmi[i].skindisplaynames[j]);
+				}
+				s_pmi[i].skindisplaynames[j] = 0;
+			}
+			Mem_Free(s_pmi[i].skindisplaynames);
+			s_pmi[i].skindisplaynames = 0;
+			s_pmi[i].nskins = 0;
+		}
+	}
+	return Default_MenuKey(&s_player_config_menu, key);
+}
+
+static void PlayerConfig_MenuChar(int key)
+{
+	Default_MenuChar(&s_player_config_menu, key);
+}
+
+static void MQ2_Menu_PlayerConfig_f()
+{
+	if (!PlayerConfig_MenuInit())
+	{
+		Menu_SetStatusBar(&s_multiplayer_menu, "No valid player models found");
+		return;
+	}
+	Menu_SetStatusBar(&s_multiplayer_menu, NULL);
+	MQ2_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, PlayerConfig_MenuChar);
+}
+
+/*
+=============================================================================
+
+DOWNLOADOPTIONS BOOK MENU
+
+=============================================================================
+*/
+static menuframework_s s_downloadoptions_menu;
+
+static menuseparator_s s_download_title;
+static menulist_s s_allow_download_box;
+static menulist_s s_allow_download_maps_box;
+static menulist_s s_allow_download_models_box;
+static menulist_s s_allow_download_players_box;
+static menulist_s s_allow_download_sounds_box;
+
+static void DownloadCallback(void* self)
+{
+	menulist_s* f = (menulist_s*)self;
+
+	if (f == &s_allow_download_box)
+	{
+		Cvar_SetValueLatched("allow_download", f->curvalue);
+	}
+
+	else if (f == &s_allow_download_maps_box)
+	{
+		Cvar_SetValueLatched("allow_download_maps", f->curvalue);
+	}
+
+	else if (f == &s_allow_download_models_box)
+	{
+		Cvar_SetValueLatched("allow_download_models", f->curvalue);
+	}
+
+	else if (f == &s_allow_download_players_box)
+	{
+		Cvar_SetValueLatched("allow_download_players", f->curvalue);
+	}
+
+	else if (f == &s_allow_download_sounds_box)
+	{
+		Cvar_SetValueLatched("allow_download_sounds", f->curvalue);
+	}
+}
+
+static void DownloadOptions_MenuInit()
+{
+	static const char* yes_no_names[] =
+	{
+		"no", "yes", 0
+	};
+	int y = 0;
+
+	s_downloadoptions_menu.x = viddef.width * 0.50;
+	s_downloadoptions_menu.nitems = 0;
+
+	s_download_title.generic.type = MTYPE_SEPARATOR;
+	s_download_title.generic.name = "Download Options";
+	s_download_title.generic.x    = 48;
+	s_download_title.generic.y   = y;
+
+	s_allow_download_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_download_box.generic.x  = 0;
+	s_allow_download_box.generic.y  = y += 20;
+	s_allow_download_box.generic.name   = "allow downloading";
+	s_allow_download_box.generic.callback = DownloadCallback;
+	s_allow_download_box.itemnames = yes_no_names;
+	s_allow_download_box.curvalue = (Cvar_VariableValue("allow_download") != 0);
+
+	s_allow_download_maps_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_download_maps_box.generic.x = 0;
+	s_allow_download_maps_box.generic.y = y += 20;
+	s_allow_download_maps_box.generic.name  = "maps";
+	s_allow_download_maps_box.generic.callback = DownloadCallback;
+	s_allow_download_maps_box.itemnames = yes_no_names;
+	s_allow_download_maps_box.curvalue = (Cvar_VariableValue("allow_download_maps") != 0);
+
+	s_allow_download_players_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_download_players_box.generic.x  = 0;
+	s_allow_download_players_box.generic.y  = y += 10;
+	s_allow_download_players_box.generic.name   = "player models/skins";
+	s_allow_download_players_box.generic.callback = DownloadCallback;
+	s_allow_download_players_box.itemnames = yes_no_names;
+	s_allow_download_players_box.curvalue = (Cvar_VariableValue("allow_download_players") != 0);
+
+	s_allow_download_models_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_download_models_box.generic.x   = 0;
+	s_allow_download_models_box.generic.y   = y += 10;
+	s_allow_download_models_box.generic.name    = "models";
+	s_allow_download_models_box.generic.callback = DownloadCallback;
+	s_allow_download_models_box.itemnames = yes_no_names;
+	s_allow_download_models_box.curvalue = (Cvar_VariableValue("allow_download_models") != 0);
+
+	s_allow_download_sounds_box.generic.type = MTYPE_SPINCONTROL;
+	s_allow_download_sounds_box.generic.x   = 0;
+	s_allow_download_sounds_box.generic.y   = y += 10;
+	s_allow_download_sounds_box.generic.name    = "sounds";
+	s_allow_download_sounds_box.generic.callback = DownloadCallback;
+	s_allow_download_sounds_box.itemnames = yes_no_names;
+	s_allow_download_sounds_box.curvalue = (Cvar_VariableValue("allow_download_sounds") != 0);
+
+	Menu_AddItem(&s_downloadoptions_menu, &s_download_title);
+	Menu_AddItem(&s_downloadoptions_menu, &s_allow_download_box);
+	Menu_AddItem(&s_downloadoptions_menu, &s_allow_download_maps_box);
+	Menu_AddItem(&s_downloadoptions_menu, &s_allow_download_players_box);
+	Menu_AddItem(&s_downloadoptions_menu, &s_allow_download_models_box);
+	Menu_AddItem(&s_downloadoptions_menu, &s_allow_download_sounds_box);
+
+	Menu_Center(&s_downloadoptions_menu);
+
+	// skip over title
+	if (s_downloadoptions_menu.cursor == 0)
+	{
+		s_downloadoptions_menu.cursor = 1;
+	}
+}
+
+static void DownloadOptions_MenuDraw()
+{
+	Menu_Draw(&s_downloadoptions_menu);
+}
+
+static const char* DownloadOptions_MenuKey(int key)
+{
+	return Default_MenuKey(&s_downloadoptions_menu, key);
+}
+
+static void MQ2_Menu_DownloadOptions_f()
+{
+	DownloadOptions_MenuInit();
+	MQ2_PushMenu(DownloadOptions_MenuDraw, DownloadOptions_MenuKey, NULL);
+}
+
 void MQ2_Init()
 {
 	Cmd_AddCommand("menu_game", MQ2_Menu_Game_f);
 	Cmd_AddCommand("menu_loadgame", MQ2_Menu_LoadGame_f);
 	Cmd_AddCommand("menu_savegame", MQ2_Menu_SaveGame_f);
 	Cmd_AddCommand("menu_credits", MQ2_Menu_Credits_f);
+	Cmd_AddCommand("menu_multiplayer", MQ2_Menu_Multiplayer_f);
+	Cmd_AddCommand("menu_joinserver", MQ2_Menu_JoinServer_f);
+	Cmd_AddCommand("menu_addressbook", MQ2_Menu_AddressBook_f);
+	Cmd_AddCommand("menu_startserver", MQ2_Menu_StartServer_f);
+	Cmd_AddCommand("menu_dmoptions", MQ2_Menu_DMOptions_f);
+	Cmd_AddCommand("menu_playerconfig", MQ2_Menu_PlayerConfig_f);
+	Cmd_AddCommand("menu_downloadoptions", MQ2_Menu_DownloadOptions_f);
 }

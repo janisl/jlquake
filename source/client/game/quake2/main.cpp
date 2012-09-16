@@ -19,5 +19,45 @@
 
 Cvar* q2_hand;
 Cvar* clq2_footsteps;
+Cvar* clq2_name;
+Cvar* clq2_skin;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];
+
+void CLQ2_PingServers_f()
+{
+	NET_Config(true);		// allow remote
+
+	// send a broadcast packet
+	common->Printf("pinging broadcast...\n");
+
+	Cvar* noudp = Cvar_Get("noudp", "0", CVAR_INIT);
+	if (!noudp->value)
+	{
+		netadr_t adr;
+		adr.type = NA_BROADCAST;
+		adr.port = BigShort(Q2PORT_SERVER);
+		NET_OutOfBandPrint(NS_CLIENT, adr, "info %i", Q2PROTOCOL_VERSION);
+	}
+
+	// send a packet to each address book entry
+	for (int i = 0; i < 16; i++)
+	{
+		char name[32];
+		String::Sprintf(name, sizeof(name), "adr%i", i);
+		const char* adrstring = Cvar_VariableString(name);
+		if (!adrstring || !adrstring[0])
+		{
+			continue;
+		}
+
+		common->Printf("pinging %s...\n", adrstring);
+		netadr_t adr;
+		if (!SOCK_StringToAdr(adrstring, &adr, Q2PORT_SERVER))
+		{
+			common->Printf("Bad address: %s\n", adrstring);
+			continue;
+		}
+		NET_OutOfBandPrint(NS_CLIENT, adr, "info %i", Q2PROTOCOL_VERSION);
+	}
+}

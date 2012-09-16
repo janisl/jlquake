@@ -375,7 +375,7 @@ static void SCR_CalcRefdef(void)
 	cl.refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
 	cl.refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
 	cl.refdef.fov_x = 90;
-	cl.refdef.fov_y = 2 * atan((float)cl.refdef.height / cl.refdef.width) * 180 / M_PI;
+	cl.refdef.fov_y = CalcFov(cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
 }
 
 

@@ -61,8 +61,6 @@ Cvar* cl_timedemo;
 //
 Cvar* info_password;
 Cvar* info_spectator;
-Cvar* name;
-Cvar* skin;
 Cvar* rate;
 Cvar* fov;
 Cvar* msg;
@@ -794,55 +792,9 @@ void CL_ParseStatusMessage(void)
 	s = net_message.ReadString2();
 
 	common->Printf("%s\n", s);
-	M_AddToServerList(net_from, const_cast<char*>(s));
+	MQ2_AddToServerList(net_from, const_cast<char*>(s));
 }
 
-
-/*
-=================
-CL_PingServers_f
-=================
-*/
-void CL_PingServers_f(void)
-{
-	int i;
-	netadr_t adr;
-	char name[32];
-	const char* adrstring;
-	Cvar* noudp;
-
-	NET_Config(true);		// allow remote
-
-	// send a broadcast packet
-	common->Printf("pinging broadcast...\n");
-
-	noudp = Cvar_Get("noudp", "0", CVAR_INIT);
-	if (!noudp->value)
-	{
-		adr.type = NA_BROADCAST;
-		adr.port = BigShort(Q2PORT_SERVER);
-		NET_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
-	}
-
-	// send a packet to each address book entry
-	for (i = 0; i < 16; i++)
-	{
-		String::Sprintf(name, sizeof(name), "adr%i", i);
-		adrstring = Cvar_VariableString(name);
-		if (!adrstring || !adrstring[0])
-		{
-			continue;
-		}
-
-		common->Printf("pinging %s...\n", adrstring);
-		if (!SOCK_StringToAdr(adrstring, &adr, Q2PORT_SERVER))
-		{
-			common->Printf("Bad address: %s\n", adrstring);
-			continue;
-		}
-		NET_OutOfBandPrint(NS_CLIENT, adr, va("info %i", Q2PROTOCOL_VERSION));
-	}
-}
 
 
 /*
@@ -1071,7 +1023,7 @@ void CL_FixUpGender(void)
 			return;
 		}
 
-		String::NCpy(sk, skin->string, sizeof(sk) - 1);
+		String::NCpy(sk, clq2_skin->string, sizeof(sk) - 1);
 		if ((p = strchr(sk, '/')) != NULL)
 		{
 			*p = 0;
@@ -1553,8 +1505,8 @@ void CL_InitLocal(void)
 	//
 	info_password = Cvar_Get("password", "", CVAR_USERINFO);
 	info_spectator = Cvar_Get("spectator", "0", CVAR_USERINFO);
-	name = Cvar_Get("name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE);
-	skin = Cvar_Get("skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_name = Cvar_Get("name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_skin = Cvar_Get("skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE);
 	rate = Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);		// FIXME
 	msg = Cvar_Get("msg", "1", CVAR_USERINFO | CVAR_ARCHIVE);
 	q2_hand = Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
@@ -1571,7 +1523,7 @@ void CL_InitLocal(void)
 	//
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("pause", CL_Pause_f);
-	Cmd_AddCommand("pingservers", CL_PingServers_f);
+	Cmd_AddCommand("pingservers", CLQ2_PingServers_f);
 	Cmd_AddCommand("skins", CL_Skins_f);
 
 	Cmd_AddCommand("userinfo", CL_Userinfo_f);
