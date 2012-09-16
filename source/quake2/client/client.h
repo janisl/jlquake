@@ -92,8 +92,6 @@ void CL_AddPacketEntities(q2frame_t* frame);
 void CL_PrepRefresh(void);
 void CL_RegisterSounds(void);
 
-void CL_Quit_f(void);
-
 void IN_Accumulate(void);
 
 void CL_ParseLayout(void);
@@ -165,15 +163,6 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org);
 // cl_pred.c
 //
 void CL_CheckPredictionError(void);
-
-//
-// menus
-//
-void M_Init(void);
-void M_Keydown(int key);
-void M_CharEvent(int key);
-void M_Draw(void);
-void M_Menu_Main_f(void);
 
 //
 // cl_inv.c

@@ -14,44 +14,10 @@
 //**
 //**************************************************************************
 
-#define NUM_CURSOR_FRAMES 15
-
-extern const char* menu_in_sound;
-extern const char* menu_move_sound;
-extern const char* menu_out_sound;
-extern bool mq2_entersound;			// play after drawing a frame, so caching
-								// won't disrupt the sound
-extern void (* mq2_drawfunc)(void);
-extern const char*(*mq2_keyfunc)(int key);
-extern void (*mq2_charfunc)(int key);
-
-#define MAX_MENU_DEPTH  8
-
-struct menulayer_t
-{
-	void (* draw)(void);
-	const char*(*key)(int k);
-	void (*charfunc)(int key);
-};
-
-extern menulayer_t mq2_layers[MAX_MENU_DEPTH];
-extern int mq2_menudepth;
-
 void MQ2_Init();
 void MQ2_ForceMenuOff();
 void MQ2_AddToServerList(netadr_t adr, char* info);
-
-struct menuframework_s;
-
-void MQ2_Banner(const char* name);
-void MQ2_PushMenu(void (* draw)(void), const char*(*key)(int k), void (*charfunc)(int key));
-void MQ2_PopMenu();
-const char* Default_MenuKey(menuframework_s* m, int key);
-void Default_MenuChar(menuframework_s* m, int key);
-void MQ2_DrawCharacter(int cx, int cy, int num);
-void MQ2_Print(int cx, int cy, const char* str);
-void MQ2_DrawCursor(int x, int y, int f);
-void MQ2_DrawTextBox(int x, int y, int width, int lines);
-void MQ2_Menu_Game_f();
-void MQ2_Menu_Multiplayer_f();
-void M_Menu_Video_f();
+void MQ2_Menu_Main_f();
+void MQ2_Draw();
+void MQ2_Keydown(int key);
+void MQ2_CharEvent(int key);

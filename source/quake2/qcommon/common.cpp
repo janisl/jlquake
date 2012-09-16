@@ -440,10 +440,7 @@ void Qcommon_Init(int argc, char** argv)
 		Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_INIT);
 
 
-		if (com_dedicated->value)
-		{
-			Cmd_AddCommand("quit", Com_Quit_f);
-		}
+		Cmd_AddCommand("quit", Com_Quit_f);
 
 		Sys_Init();
 

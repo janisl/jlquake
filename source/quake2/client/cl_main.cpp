@@ -357,17 +357,6 @@ void CL_Pause_f(void)
 }
 
 /*
-==================
-CL_Quit_f
-==================
-*/
-void CL_Quit_f(void)
-{
-	CL_Disconnect();
-	Com_Quit_f();
-}
-
-/*
 ================
 CL_Drop
 
@@ -1534,8 +1523,6 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("record", CL_Record_f);
 	Cmd_AddCommand("stop", CL_Stop_f);
 
-	Cmd_AddCommand("quit", CL_Quit_f);
-
 	Cmd_AddCommand("connect", CL_Connect_f);
 	Cmd_AddCommand("reconnect", CL_Reconnect_f);
 
@@ -1946,7 +1933,7 @@ void CL_Init(void)
 
 	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
-	M_Init();
+	MQ2_Init();
 
 	SCR_Init();
 	cls.disable_screen = true;	// don't draw yet
@@ -1980,6 +1967,7 @@ void CL_Shutdown(void)
 	}
 	isdown = true;
 
+	CL_Disconnect();
 	CL_WriteConfiguration();
 
 	CDAudio_Shutdown();

@@ -1137,7 +1137,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 	{
 		if (in_keyCatchers & KEYCATCH_UI)
 		{
-			M_Draw();
+			MQ2_Draw();
 		}
 		else if (in_keyCatchers & KEYCATCH_CONSOLE)
 		{
@@ -1181,7 +1181,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 
 		Con_DrawConsole();
 
-		M_Draw();
+		MQ2_Draw();
 
 		SCR_DrawLoading();
 	}

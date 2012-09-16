@@ -231,11 +231,11 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		else if (in_keyCatchers & KEYCATCH_UI)
 		{
-			M_Keydown(key);
+			MQ2_Keydown(key);
 		}
 		else
 		{
-			M_Menu_Main_f();
+			MQ2_Menu_Main_f();
 		}
 		return;
 	}
@@ -325,7 +325,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		M_Keydown(key);
+		MQ2_Keydown(key);
 	}
 	else
 	{
@@ -348,7 +348,7 @@ void Key_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		M_CharEvent(key);
+		MQ2_CharEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

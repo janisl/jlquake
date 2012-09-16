@@ -20,42 +20,58 @@
 #include "qmenu.h"
 #include "menu.h"
 
-const char* menu_in_sound = "misc/menu1.wav";
-const char* menu_move_sound = "misc/menu2.wav";
-const char* menu_out_sound = "misc/menu3.wav";
+#define NUM_CURSOR_FRAMES 15
 
-bool mq2_entersound;			// play after drawing a frame, so caching
+static const char* menu_in_sound = "misc/menu1.wav";
+static const char* menu_move_sound = "misc/menu2.wav";
+static const char* menu_out_sound = "misc/menu3.wav";
+
+static bool mq2_entersound;			// play after drawing a frame, so caching
 								// won't disrupt the sound
 
-void (* mq2_drawfunc)();
-const char*(*mq2_keyfunc)(int key);
-void (*mq2_charfunc)(int key);
+static void (* mq2_drawfunc)();
+static const char*(*mq2_keyfunc)(int key);
+static void (*mq2_charfunc)(int key);
 
+static void MQ2_Menu_Game_f();
 static void MQ2_Menu_LoadGame_f();
 static void MQ2_Menu_SaveGame_f();
 static void MQ2_Menu_Credits_f();
+static void MQ2_Menu_Multiplayer_f();
 static void MQ2_Menu_JoinServer_f();
 static void MQ2_Menu_AddressBook_f();
 static void MQ2_Menu_StartServer_f();
 static void MQ2_Menu_DMOptions_f();
 static void MQ2_Menu_PlayerConfig_f();
 static void MQ2_Menu_DownloadOptions_f();
-static void M_Menu_Keys_f();
+static void MQ2_Menu_Options_f();
+static void MQ2_Menu_Keys_f();
+static void MQ2_Menu_Video_f();
+static void MQ2_Menu_Quit_f();
 
 //=============================================================================
 /* Support Routines */
 
-menulayer_t mq2_layers[MAX_MENU_DEPTH];
-int mq2_menudepth;
+#define MAX_MENU_DEPTH  8
 
-void MQ2_Banner(const char* name)
+struct menulayer_t
+{
+	void (* draw)(void);
+	const char*(*key)(int k);
+	void (*charfunc)(int key);
+};
+
+static menulayer_t mq2_layers[MAX_MENU_DEPTH];
+static int mq2_menudepth;
+
+static void MQ2_Banner(const char* name)
 {
 	int w, h;
 	R_GetPicSize(&w, &h, name);
 	UI_DrawNamedPic(viddef.width / 2 - w / 2, viddef.height / 2 - 110, name);
 }
 
-void MQ2_PushMenu(void (*draw)(void), const char*(*key)(int k), void (*charfunc)(int key))
+static void MQ2_PushMenu(void (*draw)(void), const char*(*key)(int k), void (*charfunc)(int key))
 {
 	if (Cvar_VariableValue("maxclients") == 1 && ComQ2_ServerState())
 	{
@@ -106,7 +122,7 @@ void MQ2_ForceMenuOff()
 	Cvar_SetLatched("paused", "0");
 }
 
-void MQ2_PopMenu()
+static void MQ2_PopMenu()
 {
 	S_StartLocalSound(menu_out_sound);
 	if (mq2_menudepth < 1)
@@ -125,7 +141,7 @@ void MQ2_PopMenu()
 	}
 }
 
-const char* Default_MenuKey(menuframework_s* m, int key)
+static const char* Default_MenuKey(menuframework_s* m, int key)
 {
 	if (m)
 	{
@@ -244,7 +260,7 @@ const char* Default_MenuKey(menuframework_s* m, int key)
 	return sound;
 }
 
-void Default_MenuChar(menuframework_s* m, int key)
+static void Default_MenuChar(menuframework_s* m, int key)
 {
 	if (m)
 	{
@@ -262,12 +278,12 @@ void Default_MenuChar(menuframework_s* m, int key)
 //	Draws one solid graphics character
 // cx and cy are in 320*240 coordinates, and will be centered on
 // higher res screens.
-void MQ2_DrawCharacter(int cx, int cy, int num)
+static void MQ2_DrawCharacter(int cx, int cy, int num)
 {
 	UI_DrawChar(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), num);
 }
 
-void MQ2_Print(int cx, int cy, const char* str)
+static void MQ2_Print(int cx, int cy, const char* str)
 {
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str, 128);
 }
@@ -275,7 +291,7 @@ void MQ2_Print(int cx, int cy, const char* str)
 //	Draws an animating cursor with the point at
 // x,y.  The pic will extend to the left of x,
 // and both above and below y.
-void MQ2_DrawCursor(int x, int y, int f)
+static void MQ2_DrawCursor(int x, int y, int f)
 {
 	static bool cached;
 	if (!cached)
@@ -295,7 +311,7 @@ void MQ2_DrawCursor(int x, int y, int f)
 	UI_DrawNamedPic(x, y, cursorname);
 }
 
-void MQ2_DrawTextBox(int x, int y, int width, int lines)
+static void MQ2_DrawTextBox(int x, int y, int width, int lines)
 {
 	// draw left side
 	int cx = x;
@@ -346,6 +362,132 @@ static float ClampCvar(float min, float max, float value)
 		return max;
 	}
 	return value;
+}
+
+/*
+=======================================================================
+
+MAIN MENU
+
+=======================================================================
+*/
+
+#define MAIN_ITEMS  5
+
+static int m_main_cursor;
+
+static void M_Main_Draw()
+{
+	int i;
+	int w, h;
+	int ystart;
+	int xoffset;
+	int widest = -1;
+	int totalheight = 0;
+	char litname[80];
+	const char* names[] =
+	{
+		"m_main_game",
+		"m_main_multiplayer",
+		"m_main_options",
+		"m_main_video",
+		"m_main_quit",
+		0
+	};
+
+	for (i = 0; names[i] != 0; i++)
+	{
+		R_GetPicSize(&w, &h, names[i]);
+
+		if (w > widest)
+		{
+			widest = w;
+		}
+		totalheight += (h + 12);
+	}
+
+	ystart = (viddef.height / 2 - 110);
+	xoffset = (viddef.width - widest + 70) / 2;
+
+	for (i = 0; names[i] != 0; i++)
+	{
+		if (i != m_main_cursor)
+		{
+			UI_DrawNamedPic(xoffset, ystart + i * 40 + 13, names[i]);
+		}
+	}
+	String::Cpy(litname, names[m_main_cursor]);
+	String::Cat(litname, sizeof(litname), "_sel");
+	UI_DrawNamedPic(xoffset, ystart + m_main_cursor * 40 + 13, litname);
+
+	MQ2_DrawCursor(xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100) % NUM_CURSOR_FRAMES);
+
+	R_GetPicSize(&w, &h, "m_main_plaque");
+	UI_DrawNamedPic(xoffset - 30 - w, ystart, "m_main_plaque");
+
+	UI_DrawNamedPic(xoffset - 30 - w, ystart + h + 5, "m_main_logo");
+}
+
+static const char* M_Main_Key(int key)
+{
+	const char* sound = menu_move_sound;
+
+	switch (key)
+	{
+	case K_ESCAPE:
+		MQ2_PopMenu();
+		break;
+
+	case K_KP_DOWNARROW:
+	case K_DOWNARROW:
+		if (++m_main_cursor >= MAIN_ITEMS)
+		{
+			m_main_cursor = 0;
+		}
+		return sound;
+
+	case K_KP_UPARROW:
+	case K_UPARROW:
+		if (--m_main_cursor < 0)
+		{
+			m_main_cursor = MAIN_ITEMS - 1;
+		}
+		return sound;
+
+	case K_KP_ENTER:
+	case K_ENTER:
+		mq2_entersound = true;
+
+		switch (m_main_cursor)
+		{
+		case 0:
+			MQ2_Menu_Game_f();
+			break;
+
+		case 1:
+			MQ2_Menu_Multiplayer_f();
+			break;
+
+		case 2:
+			MQ2_Menu_Options_f();
+			break;
+
+		case 3:
+			MQ2_Menu_Video_f();
+			break;
+
+		case 4:
+			MQ2_Menu_Quit_f();
+			break;
+		}
+	}
+
+	return NULL;
+}
+
+void MQ2_Menu_Main_f()
+{
+	MQ2_PushMenu(M_Main_Draw, M_Main_Key, NULL);
 }
 
 /*
@@ -487,7 +629,7 @@ static const char* Game_MenuKey(int key)
 	return Default_MenuKey(&s_game_menu, key);
 }
 
-void MQ2_Menu_Game_f()
+static void MQ2_Menu_Game_f()
 {
 	Game_MenuInit();
 	MQ2_PushMenu(Game_MenuDraw, Game_MenuKey, NULL);
@@ -1224,7 +1366,7 @@ static const char* Multiplayer_MenuKey(int key)
 	return Default_MenuKey(&s_multiplayer_menu, key);
 }
 
-void MQ2_Menu_Multiplayer_f()
+static void MQ2_Menu_Multiplayer_f()
 {
 	Multiplayer_MenuInit();
 	MQ2_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey, NULL);
@@ -2899,7 +3041,7 @@ static void JoystickFunc(void* unused)
 
 static void CustomizeControlsFunc(void* unused)
 {
-	M_Menu_Keys_f();
+	MQ2_Menu_Keys_f();
 }
 
 static void AlwaysRunFunc(void* unused)
@@ -3134,7 +3276,7 @@ static const char* Options_MenuKey(int key)
 	return Default_MenuKey(&s_options_menu, key);
 }
 
-void M_Menu_Options_f()
+static void MQ2_Menu_Options_f()
 {
 	Options_MenuInit();
 	MQ2_PushMenu(Options_MenuDraw, Options_MenuKey, NULL);
@@ -3518,7 +3660,7 @@ static const char* Keys_MenuKey(int key)
 	}
 }
 
-static void M_Menu_Keys_f()
+static void MQ2_Menu_Keys_f()
 {
 	Keys_MenuInit();
 	MQ2_PushMenu(Keys_MenuDraw, Keys_MenuKey, NULL);
@@ -3758,14 +3900,60 @@ static const char* VID_MenuKey(int key)
 	return sound;
 }
 
-void M_Menu_Video_f()
+static void MQ2_Menu_Video_f()
 {
 	VID_MenuInit();
 	MQ2_PushMenu(VID_MenuDraw, VID_MenuKey, NULL);
 }
 
+/*
+=======================================================================
+
+QUIT MENU
+
+=======================================================================
+*/
+
+static const char* M_Quit_Key(int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+	case 'n':
+	case 'N':
+		MQ2_PopMenu();
+		break;
+
+	case 'Y':
+	case 'y':
+		Com_Quit_f();
+		break;
+
+	default:
+		break;
+	}
+
+	return NULL;
+}
+
+static void M_Quit_Draw()
+{
+	int w, h;
+	R_GetPicSize(&w, &h, "quit");
+	UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "quit");
+}
+
+static void MQ2_Menu_Quit_f()
+{
+	MQ2_PushMenu(M_Quit_Draw, M_Quit_Key, NULL);
+}
+
+//=============================================================================
+/* Menu Subsystem */
+
 void MQ2_Init()
 {
+	Cmd_AddCommand("menu_main", MQ2_Menu_Main_f);
 	Cmd_AddCommand("menu_game", MQ2_Menu_Game_f);
 	Cmd_AddCommand("menu_loadgame", MQ2_Menu_LoadGame_f);
 	Cmd_AddCommand("menu_savegame", MQ2_Menu_SaveGame_f);
@@ -3777,7 +3965,50 @@ void MQ2_Init()
 	Cmd_AddCommand("menu_dmoptions", MQ2_Menu_DMOptions_f);
 	Cmd_AddCommand("menu_playerconfig", MQ2_Menu_PlayerConfig_f);
 	Cmd_AddCommand("menu_downloadoptions", MQ2_Menu_DownloadOptions_f);
-	Cmd_AddCommand("menu_options", M_Menu_Options_f);
-	Cmd_AddCommand("menu_keys", M_Menu_Keys_f);
-	Cmd_AddCommand("menu_video", M_Menu_Video_f);
+	Cmd_AddCommand("menu_options", MQ2_Menu_Options_f);
+	Cmd_AddCommand("menu_keys", MQ2_Menu_Keys_f);
+	Cmd_AddCommand("menu_video", MQ2_Menu_Video_f);
+	Cmd_AddCommand("menu_quit", MQ2_Menu_Quit_f);
+}
+
+void MQ2_Draw()
+{
+	if (!(in_keyCatchers & KEYCATCH_UI))
+	{
+		return;
+	}
+
+	// dim everything behind it down
+	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
+
+	mq2_drawfunc();
+
+	// delay playing the enter sound until after the
+	// menu has been drawn, to avoid delay while
+	// caching images
+	if (mq2_entersound)
+	{
+		S_StartLocalSound(menu_in_sound);
+		mq2_entersound = false;
+	}
+}
+
+void MQ2_Keydown(int key)
+{
+	if (mq2_keyfunc)
+	{
+		const char* s = mq2_keyfunc(key);
+		if (s != 0)
+		{
+			S_StartLocalSound((char*)s);
+		}
+	}
+}
+
+void MQ2_CharEvent(int key)
+{
+	if (mq2_charfunc)
+	{
+		mq2_charfunc(key);
+	}
 }

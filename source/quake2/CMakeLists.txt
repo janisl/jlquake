@@ -10,7 +10,6 @@ add_executable(jlquake2
 	client/cl_view.cpp
 	client/console.cpp
 	client/keys.cpp
-	client/menu.cpp
 	client/snd_dma.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
