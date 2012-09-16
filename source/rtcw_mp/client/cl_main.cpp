@@ -78,8 +78,6 @@ Cvar* cl_updateavailable;
 Cvar* cl_updatefiles;
 // DHM - Nerve
 
-vm_t* cgvm;
-
 ping_t cl_pinglist[MAX_PINGREQUESTS];
 
 typedef struct serverStatus_s
@@ -702,7 +700,7 @@ void CL_ShutdownAll(void)
 	// clear sounds
 	S_DisableSounds();
 	// shutdown CGame
-	CL_ShutdownCGame();
+	CLT3_ShutdownCGame();
 	// shutdown UI
 	CL_ShutdownUI();
 
@@ -1356,7 +1354,7 @@ void CL_Vid_Restart_f(void)
 	// shutdown the UI
 	CL_ShutdownUI();
 	// shutdown the CGame
-	CL_ShutdownCGame();
+	CLT3_ShutdownCGame();
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 	// client is no longer pure untill new checksums are sent

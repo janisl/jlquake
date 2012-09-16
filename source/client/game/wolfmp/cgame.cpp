@@ -14,28 +14,20 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_PUBLIC_H
-#define _CLIENT_PUBLIC_H
+#include "../../client.h"
+#include "local.h"
+#include "cg_public.h"
 
-void S_ClearSoundBuffer(bool killStreaming);
-int CLH2_GetLightStyleValue(int style);
-void CL_ClearDrift();
-int CL_GetKeyCatchers();
-void CLQH_StopDemoLoop();
-void CL_ClearKeyCatchers();
-void CLQH_GetSpawnParams();
-bool CL_IsDemoPlaying();
-int CLQH_GetIntermission();
-void SCR_DebugGraph(float value, int color);
-void CL_CvarChanged(Cvar* var);
-const char* CL_TranslateStringBuf(const char* string);
+bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or)
+{
+	return VM_Call(cgvm, WMCG_GET_TAG, clientNum, tagname, _or);
+}
 
-void Key_WriteBindings(fileHandle_t f);
-void CL_InitKeyCommands();
-// the keyboard binding interface must be setup before execing
-// config files, but the rest of client startup will happen later
-
-bool CLT3_GameCommand();
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-
-#endif
+bool CLWM_CheckCenterView()
+{
+	if (!cgvm)
+	{
+		return true;
+	}
+	return VM_Call(cgvm, WMCG_CHECKCENTERVIEW);
+}

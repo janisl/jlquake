@@ -35,7 +35,6 @@ key up events are sent even if in console mode
 */
 
 qboolean UI_checkKeyExec(int key);			// NERVE - SMF
-qboolean CL_CGameCheckKeyExec(int key);
 
 /*
 ================
@@ -241,7 +240,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		if (in_keyCatchers & KEYCATCH_CGAME)
 		{
 			in_keyCatchers &= ~KEYCATCH_CGAME;
-			VM_Call(cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE);
+			CLT3_EventHandling();
 			return;
 		}
 
@@ -296,11 +295,11 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 				VM_Call(uivm, UI_KEY_EVENT, key, down);
 			}
 		}
-		else if (in_keyCatchers & KEYCATCH_CGAME && cgvm)
+		else if (in_keyCatchers & KEYCATCH_CGAME)
 		{
-			if (!onlybinds || VM_Call(cgvm, ETCG_WANTSBINDKEYS))
+			if (!onlybinds || CLET_WantsBindKeys())
 			{
-				VM_Call(cgvm, CG_KEY_EVENT, key, down);
+				CLT3_KeyEvent(key, down);
 			}
 		}
 
@@ -317,7 +316,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 				bypassMenu = true;
 			}
 		}
-		else if ((in_keyCatchers & KEYCATCH_UI && !UI_checkKeyExec(key)) || (in_keyCatchers & KEYCATCH_CGAME && !CL_CGameCheckKeyExec(key)))
+		else if ((in_keyCatchers & KEYCATCH_UI && !UI_checkKeyExec(key)) || (in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec(key)))
 		{
 			bypassMenu = true;
 		}
@@ -340,12 +339,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME && !bypassMenu)
 	{
-		if (cgvm)
+		if (!onlybinds || CLET_WantsBindKeys())
 		{
-			if (!onlybinds || VM_Call(cgvm, ETCG_WANTSBINDKEYS))
-			{
-				VM_Call(cgvm, CG_KEY_EVENT, key, down);
-			}
+			CLT3_KeyEvent(key, down);
 		}
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
@@ -425,7 +421,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
-		VM_Call(cgvm, CG_KEY_EVENT, key | K_CHAR_FLAG, true);
+		CLT3_KeyEvent(key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

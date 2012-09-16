@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../../client/game/et/cg_public.h"
 
 // NERVE - SMF
 void Key_GetBindingBuf(int keynum, char* buf, int buflen);
@@ -255,19 +256,6 @@ void CL_CgameError(const char* string)
 {
 	common->Error("%s", string);
 }
-
-qboolean CL_CGameCheckKeyExec(int key)
-{
-	if (cgvm)
-	{
-		return VM_Call(cgvm, ETCG_CHECKEXECKEY, key);
-	}
-	else
-	{
-		return false;
-	}
-}
-
 
 /*
 =====================
@@ -525,16 +513,6 @@ static int CL_BinaryMessageStatus(void)
 
 /*
 ====================
-CL_CGameBinaryMessageReceived
-====================
-*/
-void CL_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime)
-{
-	VM_Call(cgvm, ETCG_MESSAGERECEIVED, buf, buflen, serverTime);
-}
-
-/*
-====================
 CL_CM_LoadMap
 
 Just adds default parameters that cgame doesn't need to know about
@@ -696,25 +674,6 @@ bool R_inPVS(const vec3_t p1, const vec3_t p2)
 	byte* vis = CM_ClusterPVS(cluster);
 	cluster = CM_LeafCluster(CM_PointLeafnum(p2));
 	return !!(vis[cluster >> 3] & (1 << (cluster & 7)));
-}
-
-/*
-====================
-CL_ShutdonwCGame
-
-====================
-*/
-void CL_ShutdownCGame(void)
-{
-	in_keyCatchers &= ~KEYCATCH_CGAME;
-	cls.q3_cgameStarted = false;
-	if (!cgvm)
-	{
-		return;
-	}
-	VM_Call(cgvm, CG_SHUTDOWN);
-	VM_Free(cgvm);
-	cgvm = NULL;
 }
 
 /*
@@ -1245,45 +1204,6 @@ void CL_InitCGame(void)
 //	}
 }
 
-
-/*
-====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
-====================
-*/
-qboolean CL_GameCommand(void)
-{
-	if (!cgvm)
-	{
-		return false;
-	}
-
-	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
-}
-
-
-
-/*
-=====================
-CL_CGameRendering
-=====================
-*/
-void CL_CGameRendering(stereoFrame_t stereo)
-{
-/*	static int x = 0;
-    if(!((++x) % 20)) {
-        common->Printf( "numtraces: %i\n", numtraces / 20 );
-        numtraces = 0;
-    } else {
-    }*/
-
-	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
-	VM_Debug(0);
-}
-
-
 /*
 =================
 CL_AdjustTimeDelta
@@ -1565,19 +1485,4 @@ void CL_SetCGameTime(void)
 		}
 	}
 
-}
-
-/*
-====================
-CL_GetTag
-====================
-*/
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	if (!cgvm)
-	{
-		return false;
-	}
-
-	return VM_Call(cgvm, ETCG_GET_TAG, clientNum, tagname, _or);
 }

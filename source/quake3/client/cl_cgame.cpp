@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../../client/game/quake3/cg_public.h"
 
 /*
 ====================
@@ -512,25 +513,6 @@ void CL_RenderScene(const q3refdef_t* gameRefdef)
 }
 
 /*
-====================
-CL_ShutdonwCGame
-
-====================
-*/
-void CL_ShutdownCGame(void)
-{
-	in_keyCatchers &= ~KEYCATCH_CGAME;
-	cls.q3_cgameStarted = false;
-	if (!cgvm)
-	{
-		return;
-	}
-	VM_Call(cgvm, CG_SHUTDOWN);
-	VM_Free(cgvm);
-	cgvm = NULL;
-}
-
-/*
 =================
 R_inPVS
 =================
@@ -900,38 +882,6 @@ void CL_InitCGame(void)
 	Con_ClearNotify();
 }
 
-
-/*
-====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
-====================
-*/
-qboolean CL_GameCommand(void)
-{
-	if (!cgvm)
-	{
-		return false;
-	}
-
-	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
-}
-
-
-
-/*
-=====================
-CL_CGameRendering
-=====================
-*/
-void CL_CGameRendering(stereoFrame_t stereo)
-{
-	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
-	VM_Debug(0);
-}
-
-
 /*
 =================
 CL_AdjustTimeDelta
@@ -1202,9 +1152,4 @@ void CL_SetCGameTime(void)
 		}
 	}
 
-}
-
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	return false;
 }

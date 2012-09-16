@@ -15,8 +15,7 @@
 //**************************************************************************
 
 #include "../client.h"
-
-void IN_CenterViewWMP();
+#include "../game/wolfmp/local.h"
 
 struct kbutton_t
 {
@@ -551,8 +550,10 @@ static void IN_CenterView()
 	}
 	if (GGameType & GAME_WolfMP)
 	{
-		//	Needs cgame QVM.
-		IN_CenterViewWMP();
+		if (CLWM_CheckCenterView())
+		{
+			cl.viewangles[PITCH] = -SHORT2ANGLE(cl.wm_snap.ps.delta_angles[PITCH]);
+		}
 	}
 	//	Nothing for Enemy-territory
 }

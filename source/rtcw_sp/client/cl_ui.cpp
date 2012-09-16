@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
+#include "../../client/game/wolfsp/cg_public.h"
 
 vm_t* uivm;
 

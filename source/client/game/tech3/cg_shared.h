@@ -73,4 +73,6 @@ enum
 //	void (*CG_EventHandling)(int type);
 };
 
+extern vm_t* cgvm;				// interface to cgame dll or vm
+
 #endif

@@ -173,7 +173,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 		case CA_LOADING:
 		case CA_PRIMED:
 			// draw the game information screen and loading progress
-			CL_CGameRendering(stereoFrame);
+			CLT3_CGameRendering(stereoFrame);
 
 			// also draw the connection information, so it doesn't
 			// flash away too briefly on local or lan games
@@ -182,7 +182,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 			VM_Call(uivm, WMUI_DRAW_CONNECT_SCREEN, true);
 			break;
 		case CA_ACTIVE:
-			CL_CGameRendering(stereoFrame);
+			CLT3_CGameRendering(stereoFrame);
 			SCR_DrawDemoRecording();
 			break;
 		}

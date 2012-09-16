@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../client/public.h"
 
 bool Cmd_HandleNullCommand(const char* text)
 {
@@ -40,7 +41,7 @@ bool Cmd_HandleNullCommand(const char* text)
 void Cmd_HandleUnknownCommand()
 {
 	// check client game commands
-	if (com_cl_running && com_cl_running->integer && CL_GameCommand())
+	if (com_cl_running && com_cl_running->integer && CLT3_GameCommand())
 	{
 		return;
 	}

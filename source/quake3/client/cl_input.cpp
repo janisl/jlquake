@@ -60,7 +60,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
-		VM_Call(cgvm, CG_MOUSE_EVENT, dx, dy);
+		CLT3_MouseEvent(dx, dy);
 	}
 	else
 	{
@@ -369,8 +369,4 @@ void CL_InitInput(void)
 	CL_InitInputCommon();
 
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
-}
-
-void IN_CenterViewWMP()
-{
 }

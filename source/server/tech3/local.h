@@ -203,7 +203,4 @@ void SVT3_Trace(q3trace_t* results, const vec3_t start, const vec3_t mins, const
 // returns the CONTENTS_* value from the world and all entities at the given point.
 int SVT3_PointContents(const vec3_t p, int passEntityNum);
 
-
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-
 #endif

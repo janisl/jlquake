@@ -89,8 +89,6 @@ Cvar* cl_waverecording;	//bani
 Cvar* cl_wavefilename;	//bani
 Cvar* cl_waveoffset;	//bani
 
-vm_t* cgvm;
-
 ping_t cl_pinglist[MAX_PINGREQUESTS];
 
 typedef struct serverStatus_s
@@ -915,7 +913,7 @@ void CL_ShutdownAll(void)
 	// download subsystem
 	DL_Shutdown();
 	// shutdown CGame
-	CL_ShutdownCGame();
+	CLT3_ShutdownCGame();
 	// shutdown UI
 	CL_ShutdownUI();
 
@@ -1626,7 +1624,7 @@ void CL_Vid_Restart_f(void)
 	// shutdown the UI
 	CL_ShutdownUI();
 	// shutdown the CGame
-	CL_ShutdownCGame();
+	CLT3_ShutdownCGame();
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 	// client is no longer pure untill new checksums are sent

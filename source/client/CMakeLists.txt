@@ -3,6 +3,7 @@ set(CLIENT_FILES
 	cinematic/main.cpp
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
+	game/et/cgame.cpp
 	game/hexen2/chunk.cpp
 	game/hexen2/connection.cpp
 	game/hexen2/demo.cpp
@@ -40,6 +41,10 @@ set(CLIENT_FILES
 	game/quake2/qmenu.cpp
 	game/quake2/sustain.cpp
 	game/quake2/temporary_entities.cpp
+	game/quake3/cgame.cpp
+	game/tech3/cgame.cpp
+	game/wolfmp/cgame.cpp
+	game/wolfsp/cgame.cpp
 	game/camera.cpp
 	game/dynamic_lights.cpp
 	game/input.cpp

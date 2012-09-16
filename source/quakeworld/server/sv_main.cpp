@@ -382,10 +382,6 @@ void Host_Reconnect_f()
 {
 }
 
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	return false;
-}
 void CL_MapLoading(void)
 {
 }

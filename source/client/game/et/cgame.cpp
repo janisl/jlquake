@@ -14,76 +14,34 @@
 //**
 //**************************************************************************
 
-#include "../common/qcommon.h"
-#include "../client/public.h"
+#include "../../client.h"
+#include "local.h"
+#include "cg_public.h"
 
-void S_ClearSoundBuffer(bool killStreaming)
+bool CLET_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
+	return VM_Call(cgvm, ETCG_GET_TAG, clientNum, tagname, _or);
 }
 
-int CLH2_GetLightStyleValue(int style)
+bool CLET_CGameCheckKeyExec(int key)
 {
-	return 0;
+	if (!cgvm)
+	{
+		return false;
+	}
+	return VM_Call(cgvm, ETCG_CHECKEXECKEY, key);
 }
 
-void CL_ClearDrift()
+bool CLET_WantsBindKeys()
 {
+	if (!cgvm)
+	{
+		return false;
+	}
+	return VM_Call(cgvm, ETCG_WANTSBINDKEYS);
 }
 
-int CL_GetKeyCatchers()
+void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime)
 {
-	return 0;
-}
-
-void CLQH_StopDemoLoop()
-{
-}
-
-void CL_ClearKeyCatchers()
-{
-}
-
-void CLQH_GetSpawnParams()
-{
-}
-
-bool CL_IsDemoPlaying()
-{
-	return false;
-}
-
-int CLQH_GetIntermission()
-{
-	return 0;
-}
-
-void SCR_DebugGraph(float value, int color)
-{
-}
-
-void CL_CvarChanged(Cvar* var)
-{
-}
-
-const char* CL_TranslateStringBuf(const char* string)
-{
-	return string;
-}
-
-void Key_WriteBindings(fileHandle_t f)
-{
-}
-
-void CL_InitKeyCommands()
-{
-}
-
-bool CLT3_GameCommand()
-{
-	return false;
-}
-
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	return false;
+	VM_Call(cgvm, ETCG_MESSAGERECEIVED, buf, buflen, serverTime);
 }

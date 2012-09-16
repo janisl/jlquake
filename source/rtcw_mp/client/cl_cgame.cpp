@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../../client/game/wolfmp/cg_public.h"
 
 // RF, this is only used when running a local server
 extern void SVWM_SendMoveSpeedsToGame(int entnum, char* text);
@@ -497,25 +498,6 @@ void CL_CM_LoadMap(const char* mapname)
 	}
 
 	CM_LoadMap(mapname, true, &checksum);
-}
-
-/*
-====================
-CL_ShutdonwCGame
-
-====================
-*/
-void CL_ShutdownCGame(void)
-{
-	in_keyCatchers &= ~KEYCATCH_CGAME;
-	cls.q3_cgameStarted = false;
-	if (!cgvm)
-	{
-		return;
-	}
-	VM_Call(cgvm, CG_SHUTDOWN);
-	VM_Free(cgvm);
-	cgvm = NULL;
 }
 
 static refEntityType_t gameRefEntTypeToEngine[] =
@@ -1104,38 +1086,6 @@ void CL_InitCGame(void)
 	Con_ClearNotify();
 }
 
-
-/*
-====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
-====================
-*/
-qboolean CL_GameCommand(void)
-{
-	if (!cgvm)
-	{
-		return false;
-	}
-
-	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
-}
-
-
-
-/*
-=====================
-CL_CGameRendering
-=====================
-*/
-void CL_CGameRendering(stereoFrame_t stereo)
-{
-	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
-	VM_Debug(0);
-}
-
-
 /*
 =================
 CL_AdjustTimeDelta
@@ -1415,19 +1365,4 @@ void CL_SetCGameTime(void)
 		}
 	}
 
-}
-
-/*
-====================
-CL_GetTag
-====================
-*/
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	if (!cgvm)
-	{
-		return false;
-	}
-
-	return VM_Call(cgvm, WMCG_GET_TAG, clientNum, tagname, _or);
 }

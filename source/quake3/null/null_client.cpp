@@ -54,11 +54,6 @@ void CL_MapLoading(void)
 {
 }
 
-qboolean CL_GameCommand(void)
-{
-	return false;	// bk001204 - non-void
-}
-
 void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
@@ -97,8 +92,3 @@ void CL_ShutdownAll(void) {};
 
 // bk001208 - added new dummy (RC4)
 qboolean CL_CDKeyValidate(const char* key, const char* checksum) { return true; }
-
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
-	return false;
-}

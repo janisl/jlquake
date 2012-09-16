@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../../client/game/wolfsp/ui_public.h"
 #include "keys.h"
-#include "../../client/game/wolfsp/cg_public.h"
+#include "../../client/game/wolfsp/local.h"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 
@@ -47,7 +47,6 @@ typedef struct
 
 //=============================================================================
 
-extern vm_t* cgvm;				// interface to cgame dll or vm
 extern vm_t* uivm;				// interface to ui dll or vm
 
 
@@ -172,9 +171,6 @@ void CIN_CloseAllVideos(void);
 // cl_cgame.c
 //
 void CL_InitCGame(void);
-void CL_ShutdownCGame(void);
-qboolean CL_GameCommand(void);
-void CL_CGameRendering(stereoFrame_t stereo);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);

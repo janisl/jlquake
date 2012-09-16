@@ -14,28 +14,14 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_PUBLIC_H
-#define _CLIENT_PUBLIC_H
+#ifndef _CGAME_ET_LOCAL_H
+#define _CGAME_ET_LOCAL_H
 
-void S_ClearSoundBuffer(bool killStreaming);
-int CLH2_GetLightStyleValue(int style);
-void CL_ClearDrift();
-int CL_GetKeyCatchers();
-void CLQH_StopDemoLoop();
-void CL_ClearKeyCatchers();
-void CLQH_GetSpawnParams();
-bool CL_IsDemoPlaying();
-int CLQH_GetIntermission();
-void SCR_DebugGraph(float value, int color);
-void CL_CvarChanged(Cvar* var);
-const char* CL_TranslateStringBuf(const char* string);
+#include "../tech3/local.h"
 
-void Key_WriteBindings(fileHandle_t f);
-void CL_InitKeyCommands();
-// the keyboard binding interface must be setup before execing
-// config files, but the rest of client startup will happen later
-
-bool CLT3_GameCommand();
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
+bool CLET_GetTag(int clientNum, const char* tagname, orientation_t* _or);
+bool CLET_CGameCheckKeyExec(int key);
+bool CLET_WantsBindKeys();
+void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime);
 
 #endif

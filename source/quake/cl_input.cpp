@@ -167,7 +167,3 @@ void CL_SendCmd(void)
 
 	clc.netchan.message.Clear();
 }
-
-void IN_CenterViewWMP()
-{
-}

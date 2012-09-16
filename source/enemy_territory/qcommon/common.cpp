@@ -406,7 +406,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 void QDECL Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));
 
 //bani - moved
-void CL_ShutdownCGame(void);
+void CLT3_ShutdownCGame(void);
 
 /*
 =============
@@ -424,7 +424,7 @@ void Com_Quit_f(void)
 		SVT3_Shutdown("Server quit\n");
 //bani
 #ifndef DEDICATED
-		CL_ShutdownCGame();
+		CLT3_ShutdownCGame();
 #endif
 		CL_Shutdown();
 		Com_Shutdown(false);

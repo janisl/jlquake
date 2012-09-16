@@ -188,9 +188,3 @@ void CL_SendCmd(void)
 	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
 	clc.netchan.lastSent = curtime;
 }
-
-
-
-void IN_CenterViewWMP()
-{
-}

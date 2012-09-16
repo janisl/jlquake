@@ -977,7 +977,7 @@ void CL_ParseBinaryMessage(QMsg* msg)
 		return;
 	}
 
-	CL_CGameBinaryMessageReceived((char*)&msg->_data[msg->readcount], size, cl.et_snap.serverTime);
+	CLET_CGameBinaryMessageReceived((char*)&msg->_data[msg->readcount], size, cl.et_snap.serverTime);
 }
 
 /*

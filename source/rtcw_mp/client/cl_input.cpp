@@ -50,19 +50,6 @@ at the same time.
 ===============================================================================
 */
 
-void IN_CenterViewWMP(void)
-{
-	qboolean ok = true;
-	if (cgvm)
-	{
-		ok = VM_Call(cgvm, WMCG_CHECKCENTERVIEW);
-	}
-	if (ok)
-	{
-		cl.viewangles[PITCH] = -SHORT2ANGLE(cl.wm_snap.ps.delta_angles[PITCH]);
-	}
-}
-
 void IN_Notebook(void)
 {
 	//if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
@@ -105,7 +92,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
-		VM_Call(cgvm, CG_MOUSE_EVENT, dx, dy);
+		CLT3_MouseEvent(dx, dy);
 	}
 	else
 	{

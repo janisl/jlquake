@@ -20,6 +20,7 @@
 #include "../wolfsp/local.h"
 #include "../wolfmp/local.h"
 #include "../et/local.h"
+#include "../../client/public.h"
 
 vm_t* gvm = NULL;							// game virtual machine
 
