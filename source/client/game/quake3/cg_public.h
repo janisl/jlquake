@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef _QUAKE3_CG_PUBLIC_H
+#define _QUAKE3_CG_PUBLIC_H
+
+#include "../tech3/cg_shared.h"
+
 #define MAX_ENTITIES_IN_SNAPSHOT_Q3 256
 
 // snapshots are a view of the server at a given time
@@ -37,11 +42,6 @@ struct q3snapshot_t
 
 	int numServerCommands;		// text based server commands to execute when this
 	int serverCommandSequence;	// snapshot becomes current
-};
-
-enum
-{
-	Q3CGAME_EVENT_NONE
 };
 
 struct q3refEntity_t
@@ -255,52 +255,4 @@ enum
 	Q3CG_ACOS
 };
 
-/*
-==================================================================
-
-functions exported to the main executable
-
-==================================================================
-*/
-
-enum
-{
-	Q3CG_INIT,
-//	void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
-	// called when the level loads or when the renderer is restarted
-	// all media should be registered at this time
-	// cgame will display loading status by calling SCR_Update, which
-	// will call CG_DrawInformation during the loading process
-	// reliableCommandSequence will be 0 on fresh loads, but higher for
-	// demos, tourney restarts, or vid_restarts
-
-	Q3CG_SHUTDOWN,
-//	void (*CG_Shutdown)( void );
-	// oportunity to flush and close any open files
-
-	Q3CG_CONSOLE_COMMAND,
-//	qboolean (*CG_ConsoleCommand)( void );
-	// a console command has been issued locally that is not recognized by the
-	// main game system.
-	// use Cmd_Argc() / Cmd_Argv() to read the command, return false if the
-	// command is not known to the game
-
-	Q3CG_DRAW_ACTIVE_FRAME,
-//	void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
-	// Generates and draws a game scene and status information at the given time.
-	// If demoPlayback is set, local movement prediction will not be enabled
-
-	Q3CG_CROSSHAIR_PLAYER,
-//	int (*CG_CrosshairPlayer)( void );
-
-	Q3CG_LAST_ATTACKER,
-//	int (*CG_LastAttacker)( void );
-
-	Q3CG_KEY_EVENT,
-//	void	(*CG_KeyEvent)( int key, qboolean down );
-
-	Q3CG_MOUSE_EVENT,
-//	void	(*CG_MouseEvent)( int dx, int dy );
-	Q3CG_EVENT_HANDLING
-//	void (*CG_EventHandling)(int type);
-};
+#endif

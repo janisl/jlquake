@@ -525,7 +525,7 @@ void CL_ShutdownCGame(void)
 	{
 		return;
 	}
-	VM_Call(cgvm, Q3CG_SHUTDOWN);
+	VM_Call(cgvm, CG_SHUTDOWN);
 	VM_Free(cgvm);
 	cgvm = NULL;
 }
@@ -882,7 +882,7 @@ void CL_InitCGame(void)
 	// init for this gamestate
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
-	VM_Call(cgvm, Q3CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum);
+	VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -915,7 +915,7 @@ qboolean CL_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(cgvm, Q3CG_CONSOLE_COMMAND);
+	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
 }
 
 
@@ -927,7 +927,7 @@ CL_CGameRendering
 */
 void CL_CGameRendering(stereoFrame_t stereo)
 {
-	VM_Call(cgvm, Q3CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
+	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
 	VM_Debug(0);
 }
 

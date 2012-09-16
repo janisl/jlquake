@@ -226,7 +226,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		if (in_keyCatchers & KEYCATCH_CGAME)
 		{
 			in_keyCatchers &= ~KEYCATCH_CGAME;
-			VM_Call(cgvm, WMCG_EVENT_HANDLING, WMCGAME_EVENT_NONE);
+			VM_Call(cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE);
 			return;
 		}
 
@@ -272,7 +272,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME && cgvm)
 		{
-			VM_Call(cgvm, WMCG_KEY_EVENT, key, down);
+			VM_Call(cgvm, CG_KEY_EVENT, key, down);
 		}
 
 		return;
@@ -339,7 +339,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	{
 		if (cgvm)
 		{
-			VM_Call(cgvm, WMCG_KEY_EVENT, key, down);
+			VM_Call(cgvm, CG_KEY_EVENT, key, down);
 		}
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)

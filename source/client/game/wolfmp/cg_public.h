@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef _WOLFMP_CG_PUBLIC_H
+#define _WOLFMP_CG_PUBLIC_H
+
+#include "../tech3/cg_shared.h"
+
 #define MAX_ENTITIES_IN_SNAPSHOT_WM    256
 
 // snapshots are a view of the server at a given time
@@ -37,11 +42,6 @@ struct wmsnapshot_t
 
 	int numServerCommands;					// text based server commands to execute when this
 	int serverCommandSequence;				// snapshot becomes current
-};
-
-enum
-{
-	WMCGAME_EVENT_NONE
 };
 
 //	Overlaps with RF_WRAP_FRAMES
@@ -349,48 +349,11 @@ functions exported to the main executable
 
 enum
 {
-	WMCG_INIT,
-//	void CG_Init( int serverMessageNum, int serverCommandSequence )
-	// called when the level loads or when the renderer is restarted
-	// all media should be registered at this time
-	// cgame will display loading status by calling SCR_Update, which
-	// will call CG_DrawInformation during the loading process
-	// reliableCommandSequence will be 0 on fresh loads, but higher for
-	// demos, tourney restarts, or vid_restarts
-
-	WMCG_SHUTDOWN,
-//	void (*CG_Shutdown)( void );
-	// oportunity to flush and close any open files
-
-	WMCG_CONSOLE_COMMAND,
-//	qboolean (*CG_ConsoleCommand)( void );
-	// a console command has been issued locally that is not recognized by the
-	// main game system.
-	// use Cmd_Argc() / Cmd_Argv() to read the command, return false if the
-	// command is not known to the game
-
-	WMCG_DRAW_ACTIVE_FRAME,
-//	void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
-	// Generates and draws a game scene and status information at the given time.
-	// If demoPlayback is set, local movement prediction will not be enabled
-
-	WMCG_CROSSHAIR_PLAYER,
-//	int (*CG_CrosshairPlayer)( void );
-
-	WMCG_LAST_ATTACKER,
-//	int (*CG_LastAttacker)( void );
-
-	WMCG_KEY_EVENT,
-//	void	(*CG_KeyEvent)( int key, qboolean down );
-
-	WMCG_MOUSE_EVENT,
-//	void	(*CG_MouseEvent)( int dx, int dy );
-	WMCG_EVENT_HANDLING,
-//	void (*CG_EventHandling)(int type);
-
-	WMCG_GET_TAG,
+	WMCG_GET_TAG = 9,
 //	qboolean CG_GetTag( int clientNum, char *tagname, orientation_t *or );
 
 	WMCG_CHECKCENTERVIEW,
 //	qboolean CG_CheckCenterView();
 };
+
+#endif

@@ -102,7 +102,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 		}
 		else
 		{
-			VM_Call(cgvm, ETCG_MOUSE_EVENT, dx, dy);
+			VM_Call(cgvm, CG_MOUSE_EVENT, dx, dy);
 		}
 	}
 	else

@@ -712,7 +712,7 @@ void CL_ShutdownCGame(void)
 	{
 		return;
 	}
-	VM_Call(cgvm, ETCG_SHUTDOWN);
+	VM_Call(cgvm, CG_SHUTDOWN);
 	VM_Free(cgvm);
 	cgvm = NULL;
 }
@@ -1223,7 +1223,7 @@ void CL_InitCGame(void)
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	VM_Call(cgvm, ETCG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
+	VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1260,7 +1260,7 @@ qboolean CL_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(cgvm, ETCG_CONSOLE_COMMAND);
+	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
 }
 
 
@@ -1279,7 +1279,7 @@ void CL_CGameRendering(stereoFrame_t stereo)
     } else {
     }*/
 
-	VM_Call(cgvm, ETCG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
+	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
 	VM_Debug(0);
 }
 
