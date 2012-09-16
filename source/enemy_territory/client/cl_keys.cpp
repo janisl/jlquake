@@ -241,7 +241,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		if (in_keyCatchers & KEYCATCH_CGAME)
 		{
 			in_keyCatchers &= ~KEYCATCH_CGAME;
-			VM_Call(cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE);
+			VM_Call(cgvm, ETCG_EVENT_HANDLING, ETCGAME_EVENT_NONE);
 			return;
 		}
 
@@ -298,9 +298,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME && cgvm)
 		{
-			if (!onlybinds || VM_Call(cgvm, CG_WANTSBINDKEYS))
+			if (!onlybinds || VM_Call(cgvm, ETCG_WANTSBINDKEYS))
 			{
-				VM_Call(cgvm, CG_KEY_EVENT, key, down);
+				VM_Call(cgvm, ETCG_KEY_EVENT, key, down);
 			}
 		}
 
@@ -342,9 +342,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	{
 		if (cgvm)
 		{
-			if (!onlybinds || VM_Call(cgvm, CG_WANTSBINDKEYS))
+			if (!onlybinds || VM_Call(cgvm, ETCG_WANTSBINDKEYS))
 			{
-				VM_Call(cgvm, CG_KEY_EVENT, key, down);
+				VM_Call(cgvm, ETCG_KEY_EVENT, key, down);
 			}
 		}
 	}
@@ -425,7 +425,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
-		VM_Call(cgvm, CG_KEY_EVENT, key | K_CHAR_FLAG, true);
+		VM_Call(cgvm, ETCG_KEY_EVENT, key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

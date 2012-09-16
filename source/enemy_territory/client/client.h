@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../ui/ui_public.h"
 #include "keys.h"
-#include "../cgame/cg_public.h"
+#include "../../client/game/et/cg_public.h"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 

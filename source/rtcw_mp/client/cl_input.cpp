@@ -55,7 +55,7 @@ void IN_CenterViewWMP(void)
 	qboolean ok = true;
 	if (cgvm)
 	{
-		ok = VM_Call(cgvm, CG_CHECKCENTERVIEW);
+		ok = VM_Call(cgvm, WMCG_CHECKCENTERVIEW);
 	}
 	if (ok)
 	{
@@ -105,7 +105,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
-		VM_Call(cgvm, CG_MOUSE_EVENT, dx, dy);
+		VM_Call(cgvm, WMCG_MOUSE_EVENT, dx, dy);
 	}
 	else
 	{

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "../ui/ui_public.h"
 #include "keys.h"
-#include "../cgame/cg_public.h"
+#include "../../client/game/quake3/cg_public.h"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 

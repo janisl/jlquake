@@ -156,7 +156,7 @@ void    CL_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
 CL_GetSnapshot
 ====================
 */
-qboolean    CL_GetSnapshot(int snapshotNumber, snapshot_t* snapshot)
+qboolean    CL_GetSnapshot(int snapshotNumber, etsnapshot_t* snapshot)
 {
 	etclSnapshot_t* clSnap;
 	int i, count;
@@ -194,10 +194,10 @@ qboolean    CL_GetSnapshot(int snapshotNumber, snapshot_t* snapshot)
 	memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
 	snapshot->ps = clSnap->ps;
 	count = clSnap->numEntities;
-	if (count > MAX_ENTITIES_IN_SNAPSHOT)
+	if (count > MAX_ENTITIES_IN_SNAPSHOT_ET)
 	{
-		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT);
-		count = MAX_ENTITIES_IN_SNAPSHOT;
+		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_ET);
+		count = MAX_ENTITIES_IN_SNAPSHOT_ET;
 	}
 	snapshot->numEntities = count;
 	for (i = 0; i < count; i++)
@@ -260,7 +260,7 @@ qboolean CL_CGameCheckKeyExec(int key)
 {
 	if (cgvm)
 	{
-		return VM_Call(cgvm, CG_CHECKEXECKEY, key);
+		return VM_Call(cgvm, ETCG_CHECKEXECKEY, key);
 	}
 	else
 	{
@@ -530,7 +530,7 @@ CL_CGameBinaryMessageReceived
 */
 void CL_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime)
 {
-	VM_Call(cgvm, CG_MESSAGERECEIVED, buf, buflen, serverTime);
+	VM_Call(cgvm, ETCG_MESSAGERECEIVED, buf, buflen, serverTime);
 }
 
 /*
@@ -712,7 +712,7 @@ void CL_ShutdownCGame(void)
 	{
 		return;
 	}
-	VM_Call(cgvm, CG_SHUTDOWN);
+	VM_Call(cgvm, ETCG_SHUTDOWN);
 	VM_Free(cgvm);
 	cgvm = NULL;
 }
@@ -728,122 +728,122 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-	case CG_PRINT:
+	case ETCG_PRINT:
 		common->Printf("%s", (char*)VMA(1));
 		return 0;
-	case CG_ERROR:
+	case ETCG_ERROR:
 		common->Error("%s", (char*)VMA(1));
 		return 0;
-	case CG_MILLISECONDS:
+	case ETCG_MILLISECONDS:
 		return Sys_Milliseconds();
-	case CG_CVAR_REGISTER:
+	case ETCG_CVAR_REGISTER:
 		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
-	case CG_CVAR_UPDATE:
+	case ETCG_CVAR_UPDATE:
 		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
-	case CG_CVAR_SET:
+	case ETCG_CVAR_SET:
 		Cvar_Set((char*)VMA(1), (char*)VMA(2));
 		return 0;
-	case CG_CVAR_VARIABLESTRINGBUFFER:
+	case ETCG_CVAR_VARIABLESTRINGBUFFER:
 		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
-	case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+	case ETCG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
 		Cvar_LatchedVariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
-	case CG_ARGC:
+	case ETCG_ARGC:
 		return Cmd_Argc();
-	case CG_ARGV:
+	case ETCG_ARGV:
 		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case CG_ARGS:
+	case ETCG_ARGS:
 		Cmd_ArgsBuffer((char*)VMA(1), args[2]);
 		return 0;
-	case CG_FS_FOPENFILE:
+	case ETCG_FS_FOPENFILE:
 		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
-	case CG_FS_READ:
+	case ETCG_FS_READ:
 		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
-	case CG_FS_WRITE:
+	case ETCG_FS_WRITE:
 		return FS_Write(VMA(1), args[2], args[3]);
-	case CG_FS_FCLOSEFILE:
+	case ETCG_FS_FCLOSEFILE:
 		FS_FCloseFile(args[1]);
 		return 0;
-	case CG_FS_GETFILELIST:
+	case ETCG_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
-	case CG_FS_DELETEFILE:
+	case ETCG_FS_DELETEFILE:
 		return FS_Delete((char*)VMA(1));
-	case CG_SENDCONSOLECOMMAND:
+	case ETCG_SENDCONSOLECOMMAND:
 		Cbuf_AddText((char*)VMA(1));
 		return 0;
-	case CG_ADDCOMMAND:
+	case ETCG_ADDCOMMAND:
 		CL_AddCgameCommand((char*)VMA(1));
 		return 0;
-	case CG_REMOVECOMMAND:
+	case ETCG_REMOVECOMMAND:
 		Cmd_RemoveCommand((char*)VMA(1));
 		return 0;
-	case CG_SENDCLIENTCOMMAND:
+	case ETCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-	case CG_UPDATESCREEN:
+	case ETCG_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
-	case CG_CM_LOADMAP:
+	case ETCG_CM_LOADMAP:
 		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
-	case CG_CM_NUMINLINEMODELS:
+	case ETCG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
-	case CG_CM_INLINEMODEL:
+	case ETCG_CM_INLINEMODEL:
 		return CM_InlineModel(args[1]);
-	case CG_CM_TEMPBOXMODEL:
+	case ETCG_CM_TEMPBOXMODEL:
 		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), false);
-	case CG_CM_TEMPCAPSULEMODEL:
+	case ETCG_CM_TEMPCAPSULEMODEL:
 		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), true);
-	case CG_CM_POINTCONTENTS:
+	case ETCG_CM_POINTCONTENTS:
 		return CM_PointContentsQ3((float*)VMA(1), args[2]);
-	case CG_CM_TRANSFORMEDPOINTCONTENTS:
+	case ETCG_CM_TRANSFORMEDPOINTCONTENTS:
 		return CM_TransformedPointContentsQ3((float*)VMA(1), args[2], (float*)VMA(3), (float*)VMA(4));
-	case CG_CM_BOXTRACE:
+	case ETCG_CM_BOXTRACE:
 //		numtraces++;
 		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ false);
 		return 0;
-	case CG_CM_TRANSFORMEDBOXTRACE:
+	case ETCG_CM_TRANSFORMEDBOXTRACE:
 //		numtraces++;
 		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ false);
 		return 0;
-	case CG_CM_CAPSULETRACE:
+	case ETCG_CM_CAPSULETRACE:
 //		numtraces++;
 		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ true);
 		return 0;
-	case CG_CM_TRANSFORMEDCAPSULETRACE:
+	case ETCG_CM_TRANSFORMEDCAPSULETRACE:
 //		numtraces++;
 		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ true);
 		return 0;
-	case CG_CM_MARKFRAGMENTS:
+	case ETCG_CM_MARKFRAGMENTS:
 		return R_MarkFragmentsWolf(args[1], (const vec3_t*)VMA(2), (float*)VMA(3), args[4], (float*)VMA(5), args[6], (markFragment_t*)VMA(7));
 
-	case CG_R_PROJECTDECAL:
+	case ETCG_R_PROJECTDECAL:
 		R_ProjectDecal(args[1], args[2], (vec3_t*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7]);
 		return 0;
-	case CG_R_CLEARDECALS:
+	case ETCG_R_CLEARDECALS:
 		R_ClearDecals();
 		return 0;
 
-	case CG_S_STARTSOUND:
+	case ETCG_S_STARTSOUND:
 		S_StartSound((float*)VMA(1), args[2], args[3], args[4], args[5] / 255.0);
 		return 0;
 //----(SA)	added
-	case CG_S_STARTSOUNDEX:
+	case ETCG_S_STARTSOUNDEX:
 		S_StartSoundEx((float*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 		return 0;
 //----(SA)	end
-	case CG_S_STARTLOCALSOUND:
+	case ETCG_S_STARTLOCALSOUND:
 		S_StartLocalSound(args[1], args[2], args[3]);
 		return 0;
-	case CG_S_CLEARLOOPINGSOUNDS:
+	case ETCG_S_CLEARLOOPINGSOUNDS:
 		S_ClearLoopingSounds(true);
 		return 0;
-	case CG_S_CLEARSOUNDS:
+	case ETCG_S_CLEARSOUNDS:
 		if (args[1] == 0)
 		{
 			S_ClearSounds(true, false);
@@ -853,246 +853,246 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 			S_ClearSounds(true, true);
 		}
 		return 0;
-	case CG_S_ADDLOOPINGSOUND:
+	case ETCG_S_ADDLOOPINGSOUND:
 		// FIXME MrE: handling of looping sounds changed
 		S_AddLoopingSound(-1, (float*)VMA(1), (float*)VMA(2), args[3], args[4], args[5], args[6]);
 		return 0;
-	case CG_S_ADDREALLOOPINGSOUND:
+	case ETCG_S_ADDREALLOOPINGSOUND:
 		S_AddRealLoopingSound(-1, (float*)VMA(1), (float*)VMA(2), args[3], args[4], args[5], args[6]);
 		return 0;
-	case CG_S_STOPSTREAMINGSOUND:
+	case ETCG_S_STOPSTREAMINGSOUND:
 		S_StopEntStreamingSound(args[1]);
 		return 0;
-	case CG_S_UPDATEENTITYPOSITION:
+	case ETCG_S_UPDATEENTITYPOSITION:
 		S_UpdateEntityPosition(args[1], (float*)VMA(2));
 		return 0;
 // Ridah, talking animations
-	case CG_S_GETVOICEAMPLITUDE:
+	case ETCG_S_GETVOICEAMPLITUDE:
 		return S_GetVoiceAmplitude(args[1]);
 // done.
-	case CG_S_GETSOUNDLENGTH:
+	case ETCG_S_GETSOUNDLENGTH:
 		return S_GetSoundLength(args[1]);
 
 	// ydnar: for looped sound starts
-	case CG_S_GETCURRENTSOUNDTIME:
+	case ETCG_S_GETCURRENTSOUNDTIME:
 		return S_GetCurrentSoundTime();
 
-	case CG_S_RESPATIALIZE:
+	case ETCG_S_RESPATIALIZE:
 		S_Respatialize(args[1], (float*)VMA(2), (vec3_t*)VMA(3), args[4]);
 		return 0;
-	case CG_S_REGISTERSOUND:
+	case ETCG_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
-	case CG_S_STARTBACKGROUNDTRACK:
+	case ETCG_S_STARTBACKGROUNDTRACK:
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), args[3]);			//----(SA)	added fadeup time
 		return 0;
-	case CG_S_FADESTREAMINGSOUND:
+	case ETCG_S_FADESTREAMINGSOUND:
 		S_FadeStreamingSound(VMF(1), args[2], args[3]);		//----(SA)	added music/all-streaming options
 		return 0;
-	case CG_S_STARTSTREAMINGSOUND:
+	case ETCG_S_STARTSTREAMINGSOUND:
 		return S_StartStreamingSound((char*)VMA(1), (char*)VMA(2), args[3], args[4], args[5]);
-	case CG_R_LOADWORLDMAP:
+	case ETCG_R_LOADWORLDMAP:
 		R_LoadWorld((char*)VMA(1));
 		return 0;
-	case CG_R_REGISTERMODEL:
+	case ETCG_R_REGISTERMODEL:
 		return R_RegisterModel((char*)VMA(1));
-	case CG_R_REGISTERSKIN:
+	case ETCG_R_REGISTERSKIN:
 		return R_RegisterSkin((char*)VMA(1));
 
 	//----(SA)	added
-	case CG_R_GETSKINMODEL:
+	case ETCG_R_GETSKINMODEL:
 		return R_GetSkinModel(args[1], (char*)VMA(2), (char*)VMA(3));
-	case CG_R_GETMODELSHADER:
+	case ETCG_R_GETMODELSHADER:
 		return R_GetShaderFromModel(args[1], args[2], args[3]);
 	//----(SA)	end
 
-	case CG_R_REGISTERSHADER:
+	case ETCG_R_REGISTERSHADER:
 		return R_RegisterShader((char*)VMA(1));
-	case CG_R_REGISTERFONT:
+	case ETCG_R_REGISTERFONT:
 		R_RegisterFont((char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 		return 0;
-	case CG_R_REGISTERSHADERNOMIP:
+	case ETCG_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip((char*)VMA(1));
-	case CG_R_CLEARSCENE:
+	case ETCG_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
-	case CG_R_ADDREFENTITYTOSCENE:
+	case ETCG_R_ADDREFENTITYTOSCENE:
 		CL_AddRefEntityToScene((etrefEntity_t*)VMA(1));
 		return 0;
-	case CG_R_ADDPOLYTOSCENE:
+	case ETCG_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
 	// Ridah
-	case CG_R_ADDPOLYSTOSCENE:
+	case ETCG_R_ADDPOLYSTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), args[4]);
 		return 0;
-	case CG_R_ADDPOLYBUFFERTOSCENE:
+	case ETCG_R_ADDPOLYBUFFERTOSCENE:
 		R_AddPolyBufferToScene((polyBuffer_t*)VMA(1));
 		break;
 	// done.
-	case CG_R_ADDLIGHTTOSCENE:
+	case ETCG_R_ADDLIGHTTOSCENE:
 		// ydnar: new dlight code
 		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), args[7], args[8]);
 		return 0;
-	case CG_R_ADDCORONATOSCENE:
+	case ETCG_R_ADDCORONATOSCENE:
 		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
-	case CG_R_SETFOG:
+	case ETCG_R_SETFOG:
 		R_SetFog(args[1], args[2], args[3], VMF(4), VMF(5), VMF(6), VMF(7));
 		return 0;
-	case CG_R_SETGLOBALFOG:
+	case ETCG_R_SETGLOBALFOG:
 		R_SetGlobalFog(args[1], args[2], VMF(3), VMF(4), VMF(5), VMF(6));
 		return 0;
-	case CG_R_RENDERSCENE:
+	case ETCG_R_RENDERSCENE:
 		CL_RenderScene((etrefdef_t*)VMA(1));
 		return 0;
-	case CG_R_SAVEVIEWPARMS:
+	case ETCG_R_SAVEVIEWPARMS:
 		R_SaveViewParms();
 		return 0;
-	case CG_R_RESTOREVIEWPARMS:
+	case ETCG_R_RESTOREVIEWPARMS:
 		R_RestoreViewParms();
 		return 0;
-	case CG_R_SETCOLOR:
+	case ETCG_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
 		return 0;
-	case CG_R_DRAWSTRETCHPIC:
+	case ETCG_R_DRAWSTRETCHPIC:
 		R_StretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 		return 0;
-	case CG_R_DRAWROTATEDPIC:
+	case ETCG_R_DRAWROTATEDPIC:
 		R_RotatedPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9], VMF(10));
 		return 0;
-	case CG_R_DRAWSTRETCHPIC_GRADIENT:
+	case ETCG_R_DRAWSTRETCHPIC_GRADIENT:
 		R_StretchPicGradient(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9], (float*)VMA(10), args[11]);
 		return 0;
-	case CG_R_DRAW2DPOLYS:
+	case ETCG_R_DRAW2DPOLYS:
 		R_2DPolyies((polyVert_t*)VMA(1), args[2], args[3]);
 		return 0;
-	case CG_R_MODELBOUNDS:
+	case ETCG_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
-	case CG_R_LERPTAG:
+	case ETCG_R_LERPTAG:
 		return CL_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
-	case CG_GETGLCONFIG:
+	case ETCG_GETGLCONFIG:
 		CL_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
-	case CG_GETGAMESTATE:
+	case ETCG_GETGAMESTATE:
 		CL_GetGameState((etgameState_t*)VMA(1));
 		return 0;
-	case CG_GETCURRENTSNAPSHOTNUMBER:
+	case ETCG_GETCURRENTSNAPSHOTNUMBER:
 		CL_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
 		return 0;
-	case CG_GETSNAPSHOT:
-		return CL_GetSnapshot(args[1], (snapshot_t*)VMA(2));
-	case CG_GETSERVERCOMMAND:
+	case ETCG_GETSNAPSHOT:
+		return CL_GetSnapshot(args[1], (etsnapshot_t*)VMA(2));
+	case ETCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case CG_GETCURRENTCMDNUMBER:
+	case ETCG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
-	case CG_GETUSERCMD:
+	case ETCG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (etusercmd_t*)VMA(2));
-	case CG_SETUSERCMDVALUE:
+	case ETCG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
 		return 0;
-	case CG_SETCLIENTLERPORIGIN:
+	case ETCG_SETCLIENTLERPORIGIN:
 		CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
 		return 0;
-	case CG_MEMORY_REMAINING:
+	case ETCG_MEMORY_REMAINING:
 		return 0x4000000;
-	case CG_KEY_ISDOWN:
+	case ETCG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
-	case CG_KEY_GETCATCHER:
+	case ETCG_KEY_GETCATCHER:
 		return Key_GetCatcher();
-	case CG_KEY_SETCATCHER:
+	case ETCG_KEY_SETCATCHER:
 		Key_SetCatcher(args[1]);
 		return 0;
-	case CG_KEY_GETKEY:
+	case ETCG_KEY_GETKEY:
 		return Key_GetKey((char*)VMA(1));
 
-	case CG_KEY_GETOVERSTRIKEMODE:
+	case ETCG_KEY_GETOVERSTRIKEMODE:
 		return Key_GetOverstrikeMode();
-	case CG_KEY_SETOVERSTRIKEMODE:
+	case ETCG_KEY_SETOVERSTRIKEMODE:
 		Key_SetOverstrikeMode(args[1]);
 		return 0;
 
 
 
 
-	case CG_MEMSET:
+	case ETCG_MEMSET:
 		return (qintptr)memset(VMA(1), args[2], args[3]);
-	case CG_MEMCPY:
+	case ETCG_MEMCPY:
 		return (qintptr)memcpy(VMA(1), VMA(2), args[3]);
-	case CG_STRNCPY:
+	case ETCG_STRNCPY:
 		String::NCpy((char*)VMA(1), (char*)VMA(2), args[3]);
 		return args[1];
-	case CG_SIN:
+	case ETCG_SIN:
 		return FloatAsInt(sin(VMF(1)));
-	case CG_COS:
+	case ETCG_COS:
 		return FloatAsInt(cos(VMF(1)));
-	case CG_ATAN2:
+	case ETCG_ATAN2:
 		return FloatAsInt(atan2(VMF(1), VMF(2)));
-	case CG_SQRT:
+	case ETCG_SQRT:
 		return FloatAsInt(sqrt(VMF(1)));
-	case CG_FLOOR:
+	case ETCG_FLOOR:
 		return FloatAsInt(floor(VMF(1)));
-	case CG_CEIL:
+	case ETCG_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
-	case CG_ACOS:
+	case ETCG_ACOS:
 		return FloatAsInt(Q_acos(VMF(1)));
 
-	case CG_PC_ADD_GLOBAL_DEFINE:
+	case ETCG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
-	case CG_PC_LOAD_SOURCE:
+	case ETCG_PC_LOAD_SOURCE:
 		return PC_LoadSourceHandle((char*)VMA(1));
-	case CG_PC_FREE_SOURCE:
+	case ETCG_PC_FREE_SOURCE:
 		return PC_FreeSourceHandle(args[1]);
-	case CG_PC_READ_TOKEN:
+	case ETCG_PC_READ_TOKEN:
 		return PC_ReadTokenHandleET(args[1], (etpc_token_t*)VMA(2));
-	case CG_PC_SOURCE_FILE_AND_LINE:
+	case ETCG_PC_SOURCE_FILE_AND_LINE:
 		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
-	case CG_PC_UNREAD_TOKEN:
+	case ETCG_PC_UNREAD_TOKEN:
 		PC_UnreadLastTokenHandle(args[1]);
 		return 0;
 
-	case CG_S_STOPBACKGROUNDTRACK:
+	case ETCG_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
 
-	case CG_REAL_TIME:
+	case ETCG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
-	case CG_SNAPVECTOR:
+	case ETCG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
 
-	case CG_CIN_PLAYCINEMATIC:
+	case ETCG_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
-	case CG_CIN_STOPCINEMATIC:
+	case ETCG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 
-	case CG_CIN_RUNCINEMATIC:
+	case ETCG_CIN_RUNCINEMATIC:
 		return CIN_RunCinematic(args[1]);
 
-	case CG_CIN_DRAWCINEMATIC:
+	case ETCG_CIN_DRAWCINEMATIC:
 		CIN_DrawCinematic(args[1]);
 		return 0;
 
-	case CG_CIN_SETEXTENTS:
+	case ETCG_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 
-	case CG_R_REMAP_SHADER:
+	case ETCG_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-	case CG_TESTPRINTINT:
+	case ETCG_TESTPRINTINT:
 		common->Printf("%s%i\n", (char*)VMA(1), (int)args[2]);
 		return 0;
-	case CG_TESTPRINTFLOAT:
+	case ETCG_TESTPRINTFLOAT:
 		common->Printf("%s%f\n", (char*)VMA(1), VMF(2));
 		return 0;
 
-	case CG_LOADCAMERA:
+	case ETCG_LOADCAMERA:
 		return loadCamera(args[1], (char*)VMA(2));
 
-	case CG_STARTCAMERA:
+	case ETCG_STARTCAMERA:
 		if (args[1] == 0)		// CAM_PRIMARY
 		{
 			cl.wa_cameraMode = true;
@@ -1100,20 +1100,20 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		startCamera(args[1], args[2]);
 		return 0;
 
-	case CG_STOPCAMERA:
+	case ETCG_STOPCAMERA:
 		if (args[1] == 0)		// CAM_PRIMARY
 		{
 			cl.wa_cameraMode = false;
 		}
 		return 0;
 
-	case CG_GETCAMERAINFO:
+	case ETCG_GETCAMERAINFO:
 		return getCameraInfo(args[1], args[2], (float*)VMA(3), (float*)VMA(4), (float*)VMA(5));
 
-	case CG_GET_ENTITY_TOKEN:
+	case ETCG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
 
-	case CG_INGAME_POPUP:
+	case ETCG_INGAME_POPUP:
 		if (cls.state == CA_ACTIVE && !clc.demoplaying)
 		{
 			if (uivm)		// Gordon: can be called as the system is shutting down
@@ -1123,63 +1123,63 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		}
 		return 0;
 
-	case CG_INGAME_CLOSEPOPUP:
+	case ETCG_INGAME_CLOSEPOPUP:
 		return 0;
 
-	case CG_KEY_GETBINDINGBUF:
+	case ETCG_KEY_GETBINDINGBUF:
 		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case CG_KEY_SETBINDING:
+	case ETCG_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
 
-	case CG_KEY_KEYNUMTOSTRINGBUF:
+	case ETCG_KEY_KEYNUMTOSTRINGBUF:
 		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case CG_KEY_BINDINGTOKEYS:
+	case ETCG_KEY_BINDINGTOKEYS:
 		Key_GetKeysForBinding((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
 		return 0;
 
-	case CG_TRANSLATE_STRING:
+	case ETCG_TRANSLATE_STRING:
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
-	case CG_S_FADEALLSOUNDS:
+	case ETCG_S_FADEALLSOUNDS:
 		S_FadeAllSounds(VMF(1), args[2], args[3]);
 		return 0;
 
-	case CG_R_INPVS:
+	case ETCG_R_INPVS:
 		return R_inPVS((float*)VMA(1), (float*)VMA(2));
 
-	case CG_GETHUNKDATA:
+	case ETCG_GETHUNKDATA:
 		Com_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
 		return 0;
 
-	case CG_PUMPEVENTLOOP:
+	case ETCG_PUMPEVENTLOOP:
 //		Com_EventLoop();
 //		CL_WritePacket();
 		return 0;
 
 	//zinx - binary channel
-	case CG_SENDMESSAGE:
+	case ETCG_SENDMESSAGE:
 		CL_SendBinaryMessage((char*)VMA(1), args[2]);
 		return 0;
-	case CG_MESSAGESTATUS:
+	case ETCG_MESSAGESTATUS:
 		return CL_BinaryMessageStatus();
 	//bani - dynamic shaders
-	case CG_R_LOADDYNAMICSHADER:
+	case ETCG_R_LOADDYNAMICSHADER:
 		return R_LoadDynamicShader((char*)VMA(1), (char*)VMA(2));
 	// fretn - render to texture
-	case CG_R_RENDERTOTEXTURE:
+	case ETCG_R_RENDERTOTEXTURE:
 		R_RenderToTexture(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 	//bani
-	case CG_R_GETTEXTUREID:
+	case ETCG_R_GETTEXTUREID:
 		return R_GetTextureId((char*)VMA(1));
 	//bani - flush gl rendering buffers
-	case CG_R_FINISH:
+	case ETCG_R_FINISH:
 		R_Finish();
 		return 0;
 	default:
@@ -1223,7 +1223,7 @@ void CL_InitCGame(void)
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
 	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
+	VM_Call(cgvm, ETCG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -1260,7 +1260,7 @@ qboolean CL_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
+	return VM_Call(cgvm, ETCG_CONSOLE_COMMAND);
 }
 
 
@@ -1279,7 +1279,7 @@ void CL_CGameRendering(stereoFrame_t stereo)
     } else {
     }*/
 
-	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
+	VM_Call(cgvm, ETCG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
 	VM_Debug(0);
 }
 
@@ -1579,5 +1579,5 @@ bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 		return false;
 	}
 
-	return VM_Call(cgvm, CG_GET_TAG, clientNum, tagname, _or);
+	return VM_Call(cgvm, ETCG_GET_TAG, clientNum, tagname, _or);
 }

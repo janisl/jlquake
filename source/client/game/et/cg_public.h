@@ -1,39 +1,27 @@
-/*
-===========================================================================
+//**************************************************************************
+//**
+//**	See jlquake.txt for copyright info.
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 3
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
+//**
+//**************************************************************************
 
-Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
-
-Wolf ET Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wolf ET Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wolf ET Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Wolf: ET Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
-*/
-
-#define MAX_ENTITIES_IN_SNAPSHOT    512
+#define MAX_ENTITIES_IN_SNAPSHOT_ET    512
 
 // snapshots are a view of the server at a given time
 
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
-typedef struct
+struct etsnapshot_t
 {
 	int snapFlags;						// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
@@ -45,20 +33,16 @@ typedef struct
 	etplayerState_t ps;							// complete information about the current player at this time
 
 	int numEntities;						// all of the entities that need to be presented
-	etentityState_t entities[MAX_ENTITIES_IN_SNAPSHOT];		// at the time of this snapshot
+	etentityState_t entities[MAX_ENTITIES_IN_SNAPSHOT_ET];	// at the time of this snapshot
 
 	int numServerCommands;					// text based server commands to execute when this
 	int serverCommandSequence;				// snapshot becomes current
-} snapshot_t;
+};
 
-typedef enum cgameEvent_e {
-	CGAME_EVENT_NONE,
-	CGAME_EVENT_GAMEVIEW,
-	CGAME_EVENT_SPEAKEREDITOR,
-	CGAME_EVENT_CAMPAIGNBREIFING,
-	CGAME_EVENT_DEMO,				// OSP
-	CGAME_EVENT_FIRETEAMMSG,
-} cgameEvent_t;
+enum
+{
+	ETCGAME_EVENT_NONE
+};
 
 #define ETRF_NOSHADOW           0x000010
 #define ETRF_LIGHTING_ORIGIN    0x000020
@@ -213,197 +197,195 @@ functions imported from the main executable
 ==================================================================
 */
 
-#define CGAME_IMPORT_API_VERSION    3
-
-typedef enum {
-	CG_PRINT,
-	CG_ERROR,
-	CG_MILLISECONDS,
-	CG_CVAR_REGISTER,
-	CG_CVAR_UPDATE,
-	CG_CVAR_SET,
-	CG_CVAR_VARIABLESTRINGBUFFER,
-	CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
-	CG_ARGC,
-	CG_ARGV,
-	CG_ARGS,
-	CG_FS_FOPENFILE,
-	CG_FS_READ,
-	CG_FS_WRITE,
-	CG_FS_FCLOSEFILE,
-	CG_FS_GETFILELIST,
-	CG_FS_DELETEFILE,
-	CG_SENDCONSOLECOMMAND,
-	CG_ADDCOMMAND,
-	CG_SENDCLIENTCOMMAND,
-	CG_UPDATESCREEN,
-	CG_CM_LOADMAP,
-	CG_CM_NUMINLINEMODELS,
-	CG_CM_INLINEMODEL,
-	CG_CM_LOADMODEL,
-	CG_CM_TEMPBOXMODEL,
-	CG_CM_POINTCONTENTS,
-	CG_CM_TRANSFORMEDPOINTCONTENTS,
-	CG_CM_BOXTRACE,
-	CG_CM_TRANSFORMEDBOXTRACE,
+enum
+{
+	ETCG_PRINT,
+	ETCG_ERROR,
+	ETCG_MILLISECONDS,
+	ETCG_CVAR_REGISTER,
+	ETCG_CVAR_UPDATE,
+	ETCG_CVAR_SET,
+	ETCG_CVAR_VARIABLESTRINGBUFFER,
+	ETCG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
+	ETCG_ARGC,
+	ETCG_ARGV,
+	ETCG_ARGS,
+	ETCG_FS_FOPENFILE,
+	ETCG_FS_READ,
+	ETCG_FS_WRITE,
+	ETCG_FS_FCLOSEFILE,
+	ETCG_FS_GETFILELIST,
+	ETCG_FS_DELETEFILE,
+	ETCG_SENDCONSOLECOMMAND,
+	ETCG_ADDCOMMAND,
+	ETCG_SENDCLIENTCOMMAND,
+	ETCG_UPDATESCREEN,
+	ETCG_CM_LOADMAP,
+	ETCG_CM_NUMINLINEMODELS,
+	ETCG_CM_INLINEMODEL,
+	ETCG_CM_LOADMODEL,
+	ETCG_CM_TEMPBOXMODEL,
+	ETCG_CM_POINTCONTENTS,
+	ETCG_CM_TRANSFORMEDPOINTCONTENTS,
+	ETCG_CM_BOXTRACE,
+	ETCG_CM_TRANSFORMEDBOXTRACE,
 // MrE:
-	CG_CM_CAPSULETRACE,
-	CG_CM_TRANSFORMEDCAPSULETRACE,
-	CG_CM_TEMPCAPSULEMODEL,
+	ETCG_CM_CAPSULETRACE,
+	ETCG_CM_TRANSFORMEDCAPSULETRACE,
+	ETCG_CM_TEMPCAPSULEMODEL,
 // done.
-	CG_CM_MARKFRAGMENTS,
-	CG_R_PROJECTDECAL,			// ydnar: projects a decal onto brush models
-	CG_R_CLEARDECALS,			// ydnar: clears world/entity decals
-	CG_S_STARTSOUND,
-	CG_S_STARTSOUNDEX,	//----(SA)	added
-	CG_S_STARTLOCALSOUND,
-	CG_S_CLEARLOOPINGSOUNDS,
-	CG_S_CLEARSOUNDS,
-	CG_S_ADDLOOPINGSOUND,
-	CG_S_UPDATEENTITYPOSITION,
+	ETCG_CM_MARKFRAGMENTS,
+	ETCG_R_PROJECTDECAL,			// ydnar: projects a decal onto brush models
+	ETCG_R_CLEARDECALS,			// ydnar: clears world/entity decals
+	ETCG_S_STARTSOUND,
+	ETCG_S_STARTSOUNDEX,	//----(SA)	added
+	ETCG_S_STARTLOCALSOUND,
+	ETCG_S_CLEARLOOPINGSOUNDS,
+	ETCG_S_CLEARSOUNDS,
+	ETCG_S_ADDLOOPINGSOUND,
+	ETCG_S_UPDATEENTITYPOSITION,
 // Ridah, talking animations
-	CG_S_GETVOICEAMPLITUDE,
+	ETCG_S_GETVOICEAMPLITUDE,
 // done.
-	CG_S_RESPATIALIZE,
-	CG_S_REGISTERSOUND,
-	CG_S_STARTBACKGROUNDTRACK,
-	CG_S_FADESTREAMINGSOUND,	//----(SA)	modified
-	CG_S_FADEALLSOUNDS,			//----(SA)	added for fading out everything
-	CG_S_STARTSTREAMINGSOUND,
-	CG_S_GETSOUNDLENGTH,		// xkan - get the length (in milliseconds) of the sound
-	CG_S_GETCURRENTSOUNDTIME,
-	CG_R_LOADWORLDMAP,
-	CG_R_REGISTERMODEL,
-	CG_R_REGISTERSKIN,
-	CG_R_REGISTERSHADER,
+	ETCG_S_RESPATIALIZE,
+	ETCG_S_REGISTERSOUND,
+	ETCG_S_STARTBACKGROUNDTRACK,
+	ETCG_S_FADESTREAMINGSOUND,	//----(SA)	modified
+	ETCG_S_FADEALLSOUNDS,			//----(SA)	added for fading out everything
+	ETCG_S_STARTSTREAMINGSOUND,
+	ETCG_S_GETSOUNDLENGTH,		// xkan - get the length (in milliseconds) of the sound
+	ETCG_S_GETCURRENTSOUNDTIME,
+	ETCG_R_LOADWORLDMAP,
+	ETCG_R_REGISTERMODEL,
+	ETCG_R_REGISTERSKIN,
+	ETCG_R_REGISTERSHADER,
 
-	CG_R_GETSKINMODEL,			// client allowed to view what the .skin loaded so they can set their model appropriately
-	CG_R_GETMODELSHADER,		// client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
+	ETCG_R_GETSKINMODEL,			// client allowed to view what the .skin loaded so they can set their model appropriately
+	ETCG_R_GETMODELSHADER,		// client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
 
-	CG_R_REGISTERFONT,
-	CG_R_CLEARSCENE,
-	CG_R_ADDREFENTITYTOSCENE,
-	CG_GET_ENTITY_TOKEN,
-	CG_R_ADDPOLYTOSCENE,
+	ETCG_R_REGISTERFONT,
+	ETCG_R_CLEARSCENE,
+	ETCG_R_ADDREFENTITYTOSCENE,
+	ETCG_GET_ENTITY_TOKEN,
+	ETCG_R_ADDPOLYTOSCENE,
 // Ridah
-	CG_R_ADDPOLYSTOSCENE,
+	ETCG_R_ADDPOLYSTOSCENE,
 // done.
-	CG_R_ADDPOLYBUFFERTOSCENE,
-	CG_R_ADDLIGHTTOSCENE,
+	ETCG_R_ADDPOLYBUFFERTOSCENE,
+	ETCG_R_ADDLIGHTTOSCENE,
 
-	CG_R_ADDCORONATOSCENE,
-	CG_R_SETFOG,
-	CG_R_SETGLOBALFOG,
+	ETCG_R_ADDCORONATOSCENE,
+	ETCG_R_SETFOG,
+	ETCG_R_SETGLOBALFOG,
 
-	CG_R_RENDERSCENE,
-	CG_R_SAVEVIEWPARMS,
-	CG_R_RESTOREVIEWPARMS,
-	CG_R_SETCOLOR,
-	CG_R_DRAWSTRETCHPIC,
-	CG_R_DRAWSTRETCHPIC_GRADIENT,	//----(SA)	added
-	CG_R_MODELBOUNDS,
-	CG_R_LERPTAG,
-	CG_GETGLCONFIG,
-	CG_GETGAMESTATE,
-	CG_GETCURRENTSNAPSHOTNUMBER,
-	CG_GETSNAPSHOT,
-	CG_GETSERVERCOMMAND,
-	CG_GETCURRENTCMDNUMBER,
-	CG_GETUSERCMD,
-	CG_SETUSERCMDVALUE,
-	CG_SETCLIENTLERPORIGIN,			// DHM - Nerve
-	CG_R_REGISTERSHADERNOMIP,
-	CG_MEMORY_REMAINING,
+	ETCG_R_RENDERSCENE,
+	ETCG_R_SAVEVIEWPARMS,
+	ETCG_R_RESTOREVIEWPARMS,
+	ETCG_R_SETCOLOR,
+	ETCG_R_DRAWSTRETCHPIC,
+	ETCG_R_DRAWSTRETCHPIC_GRADIENT,	//----(SA)	added
+	ETCG_R_MODELBOUNDS,
+	ETCG_R_LERPTAG,
+	ETCG_GETGLCONFIG,
+	ETCG_GETGAMESTATE,
+	ETCG_GETCURRENTSNAPSHOTNUMBER,
+	ETCG_GETSNAPSHOT,
+	ETCG_GETSERVERCOMMAND,
+	ETCG_GETCURRENTCMDNUMBER,
+	ETCG_GETUSERCMD,
+	ETCG_SETUSERCMDVALUE,
+	ETCG_SETCLIENTLERPORIGIN,			// DHM - Nerve
+	ETCG_R_REGISTERSHADERNOMIP,
+	ETCG_MEMORY_REMAINING,
 
-	CG_KEY_ISDOWN,
-	CG_KEY_GETCATCHER,
-	CG_KEY_SETCATCHER,
-	CG_KEY_GETKEY,
-	CG_KEY_GETOVERSTRIKEMODE,
-	CG_KEY_SETOVERSTRIKEMODE,
+	ETCG_KEY_ISDOWN,
+	ETCG_KEY_GETCATCHER,
+	ETCG_KEY_SETCATCHER,
+	ETCG_KEY_GETKEY,
+	ETCG_KEY_GETOVERSTRIKEMODE,
+	ETCG_KEY_SETOVERSTRIKEMODE,
 
-	CG_PC_ADD_GLOBAL_DEFINE,
-	CG_PC_LOAD_SOURCE,
-	CG_PC_FREE_SOURCE,
-	CG_PC_READ_TOKEN,
-	CG_PC_SOURCE_FILE_AND_LINE,
-	CG_PC_UNREAD_TOKEN,
+	ETCG_PC_ADD_GLOBAL_DEFINE,
+	ETCG_PC_LOAD_SOURCE,
+	ETCG_PC_FREE_SOURCE,
+	ETCG_PC_READ_TOKEN,
+	ETCG_PC_SOURCE_FILE_AND_LINE,
+	ETCG_PC_UNREAD_TOKEN,
 
-	CG_S_STOPBACKGROUNDTRACK,
-	CG_REAL_TIME,
-	CG_SNAPVECTOR,
-	CG_REMOVECOMMAND,
-	CG_R_LIGHTFORPOINT,
+	ETCG_S_STOPBACKGROUNDTRACK,
+	ETCG_REAL_TIME,
+	ETCG_SNAPVECTOR,
+	ETCG_REMOVECOMMAND,
+	ETCG_R_LIGHTFORPOINT,
 
-	CG_CIN_PLAYCINEMATIC,
-	CG_CIN_STOPCINEMATIC,
-	CG_CIN_RUNCINEMATIC,
-	CG_CIN_DRAWCINEMATIC,
-	CG_CIN_SETEXTENTS,
-	CG_R_REMAP_SHADER,
-	CG_S_ADDREALLOOPINGSOUND,
-	CG_S_STOPSTREAMINGSOUND,	//----(SA)	added
+	ETCG_CIN_PLAYCINEMATIC,
+	ETCG_CIN_STOPCINEMATIC,
+	ETCG_CIN_RUNCINEMATIC,
+	ETCG_CIN_DRAWCINEMATIC,
+	ETCG_CIN_SETEXTENTS,
+	ETCG_R_REMAP_SHADER,
+	ETCG_S_ADDREALLOOPINGSOUND,
+	ETCG_S_STOPSTREAMINGSOUND,	//----(SA)	added
 
-	CG_LOADCAMERA,
-	CG_STARTCAMERA,
-	CG_STOPCAMERA,
-	CG_GETCAMERAINFO,
+	ETCG_LOADCAMERA,
+	ETCG_STARTCAMERA,
+	ETCG_STOPCAMERA,
+	ETCG_GETCAMERAINFO,
 
-	CG_MEMSET = 150,
-	CG_MEMCPY,
-	CG_STRNCPY,
-	CG_SIN,
-	CG_COS,
-	CG_ATAN2,
-	CG_SQRT,
-	CG_FLOOR,
-	CG_CEIL,
+	ETCG_MEMSET = 150,
+	ETCG_MEMCPY,
+	ETCG_STRNCPY,
+	ETCG_SIN,
+	ETCG_COS,
+	ETCG_ATAN2,
+	ETCG_SQRT,
+	ETCG_FLOOR,
+	ETCG_CEIL,
 
-	CG_TESTPRINTINT,
-	CG_TESTPRINTFLOAT,
-	CG_ACOS,
+	ETCG_TESTPRINTINT,
+	ETCG_TESTPRINTFLOAT,
+	ETCG_ACOS,
 
-	CG_INGAME_POPUP,		//----(SA)	added
+	ETCG_INGAME_POPUP,		//----(SA)	added
 
 	// NERVE - SMF
-	CG_INGAME_CLOSEPOPUP,
+	ETCG_INGAME_CLOSEPOPUP,
 
-	CG_R_DRAWROTATEDPIC,
-	CG_R_DRAW2DPOLYS,
+	ETCG_R_DRAWROTATEDPIC,
+	ETCG_R_DRAW2DPOLYS,
 
-	CG_KEY_GETBINDINGBUF,
-	CG_KEY_SETBINDING,
-	CG_KEY_KEYNUMTOSTRINGBUF,
-	CG_KEY_BINDINGTOKEYS,
+	ETCG_KEY_GETBINDINGBUF,
+	ETCG_KEY_SETBINDING,
+	ETCG_KEY_KEYNUMTOSTRINGBUF,
+	ETCG_KEY_BINDINGTOKEYS,
 
-	CG_TRANSLATE_STRING,
+	ETCG_TRANSLATE_STRING,
 	// -NERVE - SMF
 
-	CG_R_INPVS,
-	CG_GETHUNKDATA,
+	ETCG_R_INPVS,
+	ETCG_GETHUNKDATA,
 
-	CG_PUMPEVENTLOOP,
+	ETCG_PUMPEVENTLOOP,
 
 	// zinx
-	CG_SENDMESSAGE,
-	CG_MESSAGESTATUS,
+	ETCG_SENDMESSAGE,
+	ETCG_MESSAGESTATUS,
 	// -zinx
 
 	// bani
-	CG_R_LOADDYNAMICSHADER,
+	ETCG_R_LOADDYNAMICSHADER,
 	// -bani
 
 	// fretn
-	CG_R_RENDERTOTEXTURE,
+	ETCG_R_RENDERTOTEXTURE,
 	// -fretn
 	// bani
-	CG_R_GETTEXTUREID,
+	ETCG_R_GETTEXTUREID,
 	// -bani
 	// bani
-	CG_R_FINISH,
+	ETCG_R_FINISH,
 	// -bani
-} cgameImport_t;
-
+};
 
 /*
 ==================================================================
@@ -413,8 +395,9 @@ functions exported to the main executable
 ==================================================================
 */
 
-typedef enum {
-	CG_INIT,
+enum
+{
+	ETCG_INIT,
 //	void CG_Init( int serverMessageNum, int serverCommandSequence )
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
@@ -423,48 +406,45 @@ typedef enum {
 	// reliableCommandSequence will be 0 on fresh loads, but higher for
 	// demos, tourney restarts, or vid_restarts
 
-	CG_SHUTDOWN,
+	ETCG_SHUTDOWN,
 //	void (*CG_Shutdown)( void );
 	// oportunity to flush and close any open files
 
-	CG_CONSOLE_COMMAND,
+	ETCG_CONSOLE_COMMAND,
 //	qboolean (*CG_ConsoleCommand)( void );
 	// a console command has been issued locally that is not recognized by the
 	// main game system.
 	// use Cmd_Argc() / Cmd_Argv() to read the command, return false if the
 	// command is not known to the game
 
-	CG_DRAW_ACTIVE_FRAME,
+	ETCG_DRAW_ACTIVE_FRAME,
 //	void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
 	// Generates and draws a game scene and status information at the given time.
 	// If demoPlayback is set, local movement prediction will not be enabled
 
-	CG_CROSSHAIR_PLAYER,
+	ETCG_CROSSHAIR_PLAYER,
 //	int (*CG_CrosshairPlayer)( void );
 
-	CG_LAST_ATTACKER,
+	ETCG_LAST_ATTACKER,
 //	int (*CG_LastAttacker)( void );
 
-	CG_KEY_EVENT,
+	ETCG_KEY_EVENT,
 //	void	(*CG_KeyEvent)( int key, qboolean down );
 
-	CG_MOUSE_EVENT,
+	ETCG_MOUSE_EVENT,
 //	void	(*CG_MouseEvent)( int dx, int dy );
-	CG_EVENT_HANDLING,
+	ETCG_EVENT_HANDLING,
 //	void (*CG_EventHandling)(int type, qboolean fForced);
 
-	CG_GET_TAG,
+	ETCG_GET_TAG,
 //	qboolean CG_GetTag( int clientNum, char *tagname, orientation_t *or );
 
-	CG_CHECKEXECKEY,
+	ETCG_CHECKEXECKEY,
 
-	CG_WANTSBINDKEYS,
+	ETCG_WANTSBINDKEYS,
 
 	// zinx
-	CG_MESSAGERECEIVED,
+	ETCG_MESSAGERECEIVED,
 //	void (*CG_MessageReceived)( const char *buf, int buflen, int serverTime );
 	// -zinx
-
-} cgameExport_t;
-
-//----------------------------------------------
+};

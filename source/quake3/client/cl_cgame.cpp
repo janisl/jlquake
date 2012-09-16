@@ -525,7 +525,7 @@ void CL_ShutdownCGame(void)
 	{
 		return;
 	}
-	VM_Call(cgvm, CG_SHUTDOWN);
+	VM_Call(cgvm, Q3CG_SHUTDOWN);
 	VM_Free(cgvm);
 	cgvm = NULL;
 }
@@ -559,60 +559,60 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-	case CG_PRINT:
+	case Q3CG_PRINT:
 		common->Printf("%s", VMA(1));
 		return 0;
-	case CG_ERROR:
+	case Q3CG_ERROR:
 		common->Error("%s", VMA(1));
 		return 0;
-	case CG_MILLISECONDS:
+	case Q3CG_MILLISECONDS:
 		return Sys_Milliseconds();
-	case CG_CVAR_REGISTER:
+	case Q3CG_CVAR_REGISTER:
 		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
-	case CG_CVAR_UPDATE:
+	case Q3CG_CVAR_UPDATE:
 		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
-	case CG_CVAR_SET:
+	case Q3CG_CVAR_SET:
 		Cvar_Set((char*)VMA(1), (char*)VMA(2));
 		return 0;
-	case CG_CVAR_VARIABLESTRINGBUFFER:
+	case Q3CG_CVAR_VARIABLESTRINGBUFFER:
 		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
-	case CG_ARGC:
+	case Q3CG_ARGC:
 		return Cmd_Argc();
-	case CG_ARGV:
+	case Q3CG_ARGV:
 		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
-	case CG_ARGS:
+	case Q3CG_ARGS:
 		Cmd_ArgsBuffer((char*)VMA(1), args[2]);
 		return 0;
-	case CG_FS_FOPENFILE:
+	case Q3CG_FS_FOPENFILE:
 		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
-	case CG_FS_READ:
+	case Q3CG_FS_READ:
 		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
-	case CG_FS_WRITE:
+	case Q3CG_FS_WRITE:
 		FS_Write(VMA(1), args[2], args[3]);
 		return 0;
-	case CG_FS_FCLOSEFILE:
+	case Q3CG_FS_FCLOSEFILE:
 		FS_FCloseFile(args[1]);
 		return 0;
-	case CG_FS_SEEK:
+	case Q3CG_FS_SEEK:
 		return FS_Seek(args[1], args[2], args[3]);
-	case CG_SENDCONSOLECOMMAND:
+	case Q3CG_SENDCONSOLECOMMAND:
 		Cbuf_AddText((char*)VMA(1));
 		return 0;
-	case CG_ADDCOMMAND:
+	case Q3CG_ADDCOMMAND:
 		CL_AddCgameCommand((char*)VMA(1));
 		return 0;
-	case CG_REMOVECOMMAND:
+	case Q3CG_REMOVECOMMAND:
 		Cmd_RemoveCommand((char*)VMA(1));
 		return 0;
-	case CG_SENDCLIENTCOMMAND:
+	case Q3CG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-	case CG_UPDATESCREEN:
+	case Q3CG_UPDATESCREEN:
 		// this is used during lengthy level loading, so pump message loop
 //		Com_EventLoop();	// FIXME: if a server restarts here, BAD THINGS HAPPEN!
 // We can't call Com_EventLoop here, a restart will crash and this _does_ happen
@@ -620,214 +620,214 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 // ZOID
 		SCR_UpdateScreen();
 		return 0;
-	case CG_CM_LOADMAP:
+	case Q3CG_CM_LOADMAP:
 		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
-	case CG_CM_NUMINLINEMODELS:
+	case Q3CG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
-	case CG_CM_INLINEMODEL:
+	case Q3CG_CM_INLINEMODEL:
 		return CM_InlineModel(args[1]);
-	case CG_CM_TEMPBOXMODEL:
+	case Q3CG_CM_TEMPBOXMODEL:
 		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), /*int capsule*/ false);
-	case CG_CM_TEMPCAPSULEMODEL:
+	case Q3CG_CM_TEMPCAPSULEMODEL:
 		return CM_TempBoxModel((float*)VMA(1), (float*)VMA(2), /*int capsule*/ true);
-	case CG_CM_POINTCONTENTS:
+	case Q3CG_CM_POINTCONTENTS:
 		return CM_PointContentsQ3((float*)VMA(1), args[2]);
-	case CG_CM_TRANSFORMEDPOINTCONTENTS:
+	case Q3CG_CM_TRANSFORMEDPOINTCONTENTS:
 		return CM_TransformedPointContentsQ3((float*)VMA(1), args[2], (float*)VMA(3), (float*)VMA(4));
-	case CG_CM_BOXTRACE:
+	case Q3CG_CM_BOXTRACE:
 		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ false);
 		return 0;
-	case CG_CM_CAPSULETRACE:
+	case Q3CG_CM_CAPSULETRACE:
 		CM_BoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7],	/*int capsule*/ true);
 		return 0;
-	case CG_CM_TRANSFORMEDBOXTRACE:
+	case Q3CG_CM_TRANSFORMEDBOXTRACE:
 		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ false);
 		return 0;
-	case CG_CM_TRANSFORMEDCAPSULETRACE:
+	case Q3CG_CM_TRANSFORMEDCAPSULETRACE:
 		CM_TransformedBoxTraceQ3((q3trace_t*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4), (float*)VMA(5), args[6], args[7], (float*)VMA(8), (float*)VMA(9), /*int capsule*/ true);
 		return 0;
-	case CG_CM_MARKFRAGMENTS:
+	case Q3CG_CM_MARKFRAGMENTS:
 		return R_MarkFragments(args[1], (vec3_t*)VMA(2), (float*)VMA(3), args[4], (float*)VMA(5), args[6], (markFragment_t*)VMA(7));
-	case CG_S_STARTSOUND:
+	case Q3CG_S_STARTSOUND:
 		S_StartSound((float*)VMA(1), args[2], args[3], args[4]);
 		return 0;
-	case CG_S_STARTLOCALSOUND:
+	case Q3CG_S_STARTLOCALSOUND:
 		S_StartLocalSound(args[1], args[2], 127);
 		return 0;
-	case CG_S_CLEARLOOPINGSOUNDS:
+	case Q3CG_S_CLEARLOOPINGSOUNDS:
 		S_ClearLoopingSounds(args[1]);
 		return 0;
-	case CG_S_ADDLOOPINGSOUND:
+	case Q3CG_S_ADDLOOPINGSOUND:
 		S_AddLoopingSound(args[1], (float*)VMA(2), (float*)VMA(3), 0, args[4], 0, 0);
 		return 0;
-	case CG_S_ADDREALLOOPINGSOUND:
+	case Q3CG_S_ADDREALLOOPINGSOUND:
 		S_AddRealLoopingSound(args[1], (float*)VMA(2), (float*)VMA(3), 0, args[4], 0, 0);
 		return 0;
-	case CG_S_STOPLOOPINGSOUND:
+	case Q3CG_S_STOPLOOPINGSOUND:
 		S_StopLoopingSound(args[1]);
 		return 0;
-	case CG_S_UPDATEENTITYPOSITION:
+	case Q3CG_S_UPDATEENTITYPOSITION:
 		S_UpdateEntityPosition(args[1], (float*)VMA(2));
 		return 0;
-	case CG_S_RESPATIALIZE:
+	case Q3CG_S_RESPATIALIZE:
 		S_Respatialize(args[1], (float*)VMA(2), (vec3_t*)VMA(3), args[4]);
 		return 0;
-	case CG_S_REGISTERSOUND:
+	case Q3CG_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
-	case CG_S_STARTBACKGROUNDTRACK:
+	case Q3CG_S_STARTBACKGROUNDTRACK:
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
-	case CG_R_LOADWORLDMAP:
+	case Q3CG_R_LOADWORLDMAP:
 		R_LoadWorld((char*)VMA(1));
 		return 0;
-	case CG_R_REGISTERMODEL:
+	case Q3CG_R_REGISTERMODEL:
 		return R_RegisterModel((char*)VMA(1));
-	case CG_R_REGISTERSKIN:
+	case Q3CG_R_REGISTERSKIN:
 		return R_RegisterSkin((char*)VMA(1));
-	case CG_R_REGISTERSHADER:
+	case Q3CG_R_REGISTERSHADER:
 		return R_RegisterShader((char*)VMA(1));
-	case CG_R_REGISTERSHADERNOMIP:
+	case Q3CG_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip((char*)VMA(1));
-	case CG_R_REGISTERFONT:
+	case Q3CG_R_REGISTERFONT:
 		R_RegisterFont((char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
-	case CG_R_CLEARSCENE:
+	case Q3CG_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
-	case CG_R_ADDREFENTITYTOSCENE:
+	case Q3CG_R_ADDREFENTITYTOSCENE:
 		CL_AddRefEntityToScene((q3refEntity_t*)VMA(1));
 		return 0;
-	case CG_R_ADDPOLYTOSCENE:
+	case Q3CG_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
-	case CG_R_ADDPOLYSTOSCENE:
+	case Q3CG_R_ADDPOLYSTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), args[4]);
 		return 0;
-	case CG_R_LIGHTFORPOINT:
+	case Q3CG_R_LIGHTFORPOINT:
 		return R_LightForPoint((float*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4));
-	case CG_R_ADDLIGHTTOSCENE:
+	case Q3CG_R_ADDLIGHTTOSCENE:
 		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5));
 		return 0;
-	case CG_R_ADDADDITIVELIGHTTOSCENE:
+	case Q3CG_R_ADDADDITIVELIGHTTOSCENE:
 		R_AddAdditiveLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5));
 		return 0;
-	case CG_R_RENDERSCENE:
+	case Q3CG_R_RENDERSCENE:
 		CL_RenderScene((q3refdef_t*)VMA(1));
 		return 0;
-	case CG_R_SETCOLOR:
+	case Q3CG_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
 		return 0;
-	case CG_R_DRAWSTRETCHPIC:
+	case Q3CG_R_DRAWSTRETCHPIC:
 		R_StretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 		return 0;
-	case CG_R_MODELBOUNDS:
+	case Q3CG_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
-	case CG_R_LERPTAG:
+	case Q3CG_R_LERPTAG:
 		return R_LerpTag((orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6));
-	case CG_GETGLCONFIG:
+	case Q3CG_GETGLCONFIG:
 		CL_GetGlconfig((q3glconfig_t*)VMA(1));
 		return 0;
-	case CG_GETGAMESTATE:
+	case Q3CG_GETGAMESTATE:
 		CL_GetGameState((q3gameState_t*)VMA(1));
 		return 0;
-	case CG_GETCURRENTSNAPSHOTNUMBER:
+	case Q3CG_GETCURRENTSNAPSHOTNUMBER:
 		CL_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
 		return 0;
-	case CG_GETSNAPSHOT:
+	case Q3CG_GETSNAPSHOT:
 		return CL_GetSnapshot(args[1], (q3snapshot_t*)VMA(2));
-	case CG_GETSERVERCOMMAND:
+	case Q3CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case CG_GETCURRENTCMDNUMBER:
+	case Q3CG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
-	case CG_GETUSERCMD:
+	case Q3CG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (q3usercmd_t*)VMA(2));
-	case CG_SETUSERCMDVALUE:
+	case Q3CG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue(args[1], VMF(2));
 		return 0;
-	case CG_MEMORY_REMAINING:
+	case Q3CG_MEMORY_REMAINING:
 		return 0x4000000;
-	case CG_KEY_ISDOWN:
+	case Q3CG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
-	case CG_KEY_GETCATCHER:
+	case Q3CG_KEY_GETCATCHER:
 		return Key_GetCatcher();
-	case CG_KEY_SETCATCHER:
+	case Q3CG_KEY_SETCATCHER:
 		Key_SetCatcher(args[1]);
 		return 0;
-	case CG_KEY_GETKEY:
+	case Q3CG_KEY_GETKEY:
 		return Key_GetKey((char*)VMA(1));
 
 
 
-	case CG_MEMSET:
+	case Q3CG_MEMSET:
 		Com_Memset(VMA(1), args[2], args[3]);
 		return 0;
-	case CG_MEMCPY:
+	case Q3CG_MEMCPY:
 		Com_Memcpy(VMA(1), VMA(2), args[3]);
 		return 0;
-	case CG_STRNCPY:
+	case Q3CG_STRNCPY:
 		String::NCpy((char*)VMA(1), (char*)VMA(2), args[3]);
 		return (qintptr)(char*)VMA(1);
-	case CG_SIN:
+	case Q3CG_SIN:
 		return FloatAsInt(sin(VMF(1)));
-	case CG_COS:
+	case Q3CG_COS:
 		return FloatAsInt(cos(VMF(1)));
-	case CG_ATAN2:
+	case Q3CG_ATAN2:
 		return FloatAsInt(atan2(VMF(1), VMF(2)));
-	case CG_SQRT:
+	case Q3CG_SQRT:
 		return FloatAsInt(sqrt(VMF(1)));
-	case CG_FLOOR:
+	case Q3CG_FLOOR:
 		return FloatAsInt(floor(VMF(1)));
-	case CG_CEIL:
+	case Q3CG_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
-	case CG_ACOS:
+	case Q3CG_ACOS:
 		return FloatAsInt(Q_acos(VMF(1)));
 
-	case CG_PC_ADD_GLOBAL_DEFINE:
+	case Q3CG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
-	case CG_PC_LOAD_SOURCE:
+	case Q3CG_PC_LOAD_SOURCE:
 		return PC_LoadSourceHandle((char*)VMA(1));
-	case CG_PC_FREE_SOURCE:
+	case Q3CG_PC_FREE_SOURCE:
 		return PC_FreeSourceHandle(args[1]);
-	case CG_PC_READ_TOKEN:
+	case Q3CG_PC_READ_TOKEN:
 		return PC_ReadTokenHandleQ3(args[1], (q3pc_token_t*)VMA(2));
-	case CG_PC_SOURCE_FILE_AND_LINE:
+	case Q3CG_PC_SOURCE_FILE_AND_LINE:
 		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 
-	case CG_S_STOPBACKGROUNDTRACK:
+	case Q3CG_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
 
-	case CG_REAL_TIME:
+	case Q3CG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
-	case CG_SNAPVECTOR:
+	case Q3CG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
 
-	case CG_CIN_PLAYCINEMATIC:
+	case Q3CG_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
-	case CG_CIN_STOPCINEMATIC:
+	case Q3CG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 
-	case CG_CIN_RUNCINEMATIC:
+	case Q3CG_CIN_RUNCINEMATIC:
 		return CIN_RunCinematic(args[1]);
 
-	case CG_CIN_DRAWCINEMATIC:
+	case Q3CG_CIN_DRAWCINEMATIC:
 		CIN_DrawCinematic(args[1]);
 		return 0;
 
-	case CG_CIN_SETEXTENTS:
+	case Q3CG_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 
-	case CG_R_REMAP_SHADER:
+	case Q3CG_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-	case CG_GET_ENTITY_TOKEN:
+	case Q3CG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
-	case CG_R_INPVS:
+	case Q3CG_R_INPVS:
 		return R_inPVS((float*)VMA(1), (float*)VMA(2));
 
 	default:
@@ -882,7 +882,7 @@ void CL_InitCGame(void)
 	// init for this gamestate
 	// use the lastExecutedServerCommand instead of the serverCommandSequence
 	// otherwise server commands sent just before a gamestate are dropped
-	VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum);
+	VM_Call(cgvm, Q3CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
@@ -915,7 +915,7 @@ qboolean CL_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(cgvm, CG_CONSOLE_COMMAND);
+	return VM_Call(cgvm, Q3CG_CONSOLE_COMMAND);
 }
 
 
@@ -927,7 +927,7 @@ CL_CGameRendering
 */
 void CL_CGameRendering(stereoFrame_t stereo)
 {
-	VM_Call(cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
+	VM_Call(cgvm, Q3CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying);
 	VM_Debug(0);
 }
 
