@@ -847,7 +847,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (uivm && showMainMenu)
 	{
-		VM_Call(uivm, WMUI_SET_ACTIVE_MENU, UIMENU_NONE);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
 	}
 
 	SCR_StopCinematic();
@@ -2380,14 +2380,14 @@ void CL_Frame(int msec)
 	{
 		// bring up the cd error dialog if needed
 		cls.q3_cddialog = false;
-		VM_Call(uivm, WMUI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
 	}
 	else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
 			 !com_sv_running->integer)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		VM_Call(uivm, WMUI_SET_ACTIVE_MENU, UIMENU_MAIN);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -3356,7 +3356,7 @@ void CL_UpdateInfoPacket(netadr_t from)
 	if (!String::ICmp(cl_updateavailable->string, "1"))
 	{
 		Cvar_Set("cl_updatefiles", Cmd_Argv(2));
-		VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_AUTOUPDATE);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_AUTOUPDATE);
 	}
 }
 // DHM - Nerve

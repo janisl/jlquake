@@ -103,7 +103,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 
 	// if the menu is going to cover the entire screen, we
 	// don't need to render anything under it
-	if (!VM_Call(uivm, Q3UI_IS_FULLSCREEN))
+	if (!VM_Call(uivm, UI_IS_FULLSCREEN))
 	{
 		switch (cls.state)
 		{
@@ -116,14 +116,14 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 		case CA_DISCONNECTED:
 			// force menu up
 			S_StopAllSounds();
-			VM_Call(uivm, Q3UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+			VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
 			break;
 		case CA_CONNECTING:
 		case CA_CHALLENGING:
 		case CA_CONNECTED:
 			// connecting clients will only show the connection dialog
 			// refresh to update the time
-			VM_Call(uivm, Q3UI_REFRESH, cls.realtime);
+			VM_Call(uivm, UI_REFRESH, cls.realtime);
 			VM_Call(uivm, Q3UI_DRAW_CONNECT_SCREEN, false);
 			break;
 		case CA_LOADING:
@@ -134,7 +134,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 			// also draw the connection information, so it doesn't
 			// flash away too briefly on local or lan games
 			// refresh to update the time
-			VM_Call(uivm, Q3UI_REFRESH, cls.realtime);
+			VM_Call(uivm, UI_REFRESH, cls.realtime);
 			VM_Call(uivm, Q3UI_DRAW_CONNECT_SCREEN, true);
 			break;
 		case CA_ACTIVE:
@@ -147,7 +147,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 	// the menu draws next
 	if (in_keyCatchers & KEYCATCH_UI && uivm)
 	{
-		VM_Call(uivm, Q3UI_REFRESH, cls.realtime);
+		VM_Call(uivm, UI_REFRESH, cls.realtime);
 	}
 
 	// console draws next

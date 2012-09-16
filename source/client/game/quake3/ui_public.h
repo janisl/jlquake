@@ -126,30 +126,8 @@ enum
 
 enum
 {
-	Q3UI_GETAPIVERSION = 0,	// system reserved
 
-	Q3UI_INIT,
-//	void	Q3UI_Init( void );
-
-	Q3UI_SHUTDOWN,
-//	void	Q3UI_Shutdown( void );
-
-	Q3UI_KEY_EVENT,
-//	void	Q3UI_KeyEvent( int key );
-
-	Q3UI_MOUSE_EVENT,
-//	void	Q3UI_MouseEvent( int dx, int dy );
-
-	Q3UI_REFRESH,
-//	void	Q3UI_Refresh( int time );
-
-	Q3UI_IS_FULLSCREEN,
-//	qboolean UI_IsFullscreen( void );
-
-	Q3UI_SET_ACTIVE_MENU,
-//	void	Q3UI_SetActiveMenu( uiMenuCommand_t menu );
-
-	Q3UI_CONSOLE_COMMAND,
+	Q3UI_CONSOLE_COMMAND = 8,
 //	qboolean UI_ConsoleCommand( int realTime );
 
 	Q3UI_DRAW_CONNECT_SCREEN,

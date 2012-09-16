@@ -1224,7 +1224,7 @@ void CL_ShutdownUI(void)
 	{
 		return;
 	}
-	VM_Call(uivm, Q3UI_SHUTDOWN);
+	VM_Call(uivm, UI_SHUTDOWN);
 	VM_Free(uivm);
 	uivm = NULL;
 }
@@ -1258,12 +1258,12 @@ void CL_InitUI(void)
 	}
 
 	// sanity check
-	v = VM_Call(uivm, Q3UI_GETAPIVERSION);
+	v = VM_Call(uivm, UI_GETAPIVERSION);
 	if (v == UI_OLD_API_VERSION)
 	{
 //		common->Printf(S_COLOR_YELLOW "WARNING: loading old Quake III Arena User Interface version %d\n", v );
 		// init for this gamestate
-		VM_Call(uivm, Q3UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+		VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 	}
 	else if (v != Q3UI_API_VERSION)
 	{
@@ -1273,7 +1273,7 @@ void CL_InitUI(void)
 	else
 	{
 		// init for this gamestate
-		VM_Call(uivm, Q3UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+		VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 	}
 }
 

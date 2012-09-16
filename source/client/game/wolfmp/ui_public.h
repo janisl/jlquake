@@ -161,30 +161,8 @@ enum
 
 enum
 {
-	WMUI_GETAPIVERSION = 0,	// system reserved
 
-	WMUI_INIT,
-//	void	WMUI_Init( void );
-
-	WMUI_SHUTDOWN,
-//	void	WMUI_Shutdown( void );
-
-	WMUI_KEY_EVENT,
-//	void	WMUI_KeyEvent( int key );
-
-	WMUI_MOUSE_EVENT,
-//	void	WMUI_MouseEvent( int dx, int dy );
-
-	WMUI_REFRESH,
-//	void	WMUI_Refresh( int time );
-
-	WMUI_IS_FULLSCREEN,
-//	qboolean UI_IsFullscreen( void );
-
-	WMUI_SET_ACTIVE_MENU,
-//	void	WMUI_SetActiveMenu( uiMenuCommand_t menu );
-
-	WMUI_GET_ACTIVE_MENU,
+	WMUI_GET_ACTIVE_MENU = 8,
 //	void	WMUI_GetActiveMenu( void );
 
 	WMUI_CONSOLE_COMMAND,

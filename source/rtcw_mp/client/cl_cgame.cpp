@@ -968,44 +968,44 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 			// NERVE - SMF
 			if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_PICKTEAM"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_PICKTEAM);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_PICKTEAM);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_PICKPLAYER"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_PICKPLAYER);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_PICKPLAYER);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_QUICKMESSAGE"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_QUICKMESSAGE);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_QUICKMESSAGE);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_QUICKMESSAGEALT"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_QUICKMESSAGEALT);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_QUICKMESSAGEALT);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_LIMBO"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_LIMBO);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_LIMBO);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "UIMENU_WM_AUTOUPDATE"))
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_WM_AUTOUPDATE);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_AUTOUPDATE);
 			}
 			// -NERVE - SMF
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "hbook1"))				//----(SA)
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_BOOK1);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_BOOK1);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "hbook2"))				//----(SA)
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_BOOK2);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_BOOK2);
 			}
 			else if ((char*)VMA(1) && !String::ICmp((char*)VMA(1), "hbook3"))				//----(SA)
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_BOOK3);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_BOOK3);
 			}
 			else
 			{
-				VM_Call(uivm, WMUI_SET_ACTIVE_MENU, WMUIMENU_CLIPBOARD);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_CLIPBOARD);
 			}
 		}
 		return 0;
@@ -1017,8 +1017,8 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		{
 			if (VM_Call(uivm, WMUI_GET_ACTIVE_MENU) == WMUIMENU_WM_LIMBO)
 			{
-				VM_Call(uivm, WMUI_KEY_EVENT, K_ESCAPE, true);
-				VM_Call(uivm, WMUI_KEY_EVENT, K_ESCAPE, true);
+				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, true);
+				VM_Call(uivm, UI_KEY_EVENT, K_ESCAPE, true);
 			}
 		}
 		return 0;

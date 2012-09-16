@@ -177,30 +177,8 @@ enum
 
 enum
 {
-	ETUI_GETAPIVERSION = 0,	// system reserved
 
-	ETUI_INIT,
-//	void	ETUI_Init( void );
-
-	ETUI_SHUTDOWN,
-//	void	ETUI_Shutdown( void );
-
-	ETUI_KEY_EVENT,
-//	void	ETUI_KeyEvent( int key );
-
-	ETUI_MOUSE_EVENT,
-//	void	ETUI_MouseEvent( int dx, int dy );
-
-	ETUI_REFRESH,
-//	void	ETUI_Refresh( int time );
-
-	ETUI_IS_FULLSCREEN,
-//	qboolean UI_IsFullscreen( void );
-
-	ETUI_SET_ACTIVE_MENU,
-//	void	ETUI_SetActiveMenu( uiMenuCommand_t menu );
-
-	ETUI_GET_ACTIVE_MENU,
+	ETUI_GET_ACTIVE_MENU = 8,
 //	void	ETUI_GetActiveMenu( void );
 
 	ETUI_CONSOLE_COMMAND,

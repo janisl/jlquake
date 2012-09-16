@@ -56,7 +56,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 {
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, Q3UI_MOUSE_EVENT, dx, dy);
+		VM_Call(uivm, UI_MOUSE_EVENT, dx, dy);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{

@@ -1300,7 +1300,7 @@ void CL_ShutdownUI(void)
 	{
 		return;
 	}
-	VM_Call(uivm, WMUI_SHUTDOWN);
+	VM_Call(uivm, UI_SHUTDOWN);
 	VM_Free(uivm);
 	uivm = NULL;
 }
@@ -1322,7 +1322,7 @@ void CL_InitUI(void)
 	}
 
 	// sanity check
-	v = VM_Call(uivm, WMUI_GETAPIVERSION);
+	v = VM_Call(uivm, UI_GETAPIVERSION);
 	if (v != WMUI_API_VERSION)
 	{
 		common->FatalError("User Interface is version %d, expected %d", v, WMUI_API_VERSION);
@@ -1330,7 +1330,7 @@ void CL_InitUI(void)
 	}
 
 	// init for this gamestate
-	VM_Call(uivm, WMUI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 }
 
 

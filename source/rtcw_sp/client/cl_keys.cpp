@@ -234,13 +234,13 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_INGAME);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME);
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_MAIN);
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
 			}
 			return;
 		}
@@ -250,7 +250,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 			return;
 		}
 
-		VM_Call(uivm, WSUI_KEY_EVENT, key, down);
+		VM_Call(uivm, UI_KEY_EVENT, key, down);
 		return;
 	}
 
@@ -273,7 +273,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (in_keyCatchers & KEYCATCH_UI && uivm)
 		{
-			VM_Call(uivm, WSUI_KEY_EVENT, key, down);
+			VM_Call(uivm, UI_KEY_EVENT, key, down);
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME && cgvm)
 		{
@@ -329,7 +329,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (uivm)
 		{
-			VM_Call(uivm, WSUI_KEY_EVENT, key, down);
+			VM_Call(uivm, UI_KEY_EVENT, key, down);
 		}
 
 	}
@@ -401,7 +401,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, WSUI_KEY_EVENT, key | K_CHAR_FLAG, true);
+		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

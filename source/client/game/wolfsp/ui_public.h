@@ -159,30 +159,8 @@ enum
 
 enum
 {
-	WSUI_GETAPIVERSION = 0,	// system reserved
 
-	WSUI_INIT,
-//	void	WSUI_Init( void );
-
-	WSUI_SHUTDOWN,
-//	void	WSUI_Shutdown( void );
-
-	WSUI_KEY_EVENT,
-//	void	WSUI_KeyEvent( int key );
-
-	WSUI_MOUSE_EVENT,
-//	void	WSUI_MouseEvent( int dx, int dy );
-
-	WSUI_REFRESH,
-//	void	WSUI_Refresh( int time );
-
-	WSUI_IS_FULLSCREEN,
-//	qboolean UI_IsFullscreen( void );
-
-	WSUI_SET_ACTIVE_MENU,
-//	void	WSUI_SetActiveMenu( uiMenuCommand_t menu );
-
-	WSUI_GET_ACTIVE_MENU,
+	WSUI_GET_ACTIVE_MENU = 8,
 //	void	WSUI_GetActiveMenu( void );
 
 	WSUI_CONSOLE_COMMAND,

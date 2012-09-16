@@ -758,7 +758,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (uivm && showMainMenu)
 	{
-		VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_NONE);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
 	}
 
 	SCR_StopCinematic();
@@ -2134,22 +2134,22 @@ void CL_Frame(int msec)
 		// bring up the cd error dialog if needed
 		cls.q3_cddialog = false;
 #ifdef __MACOS__	//DAJ hide the cursor for intro movie
-		VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_BRIEFING);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_BRIEFING);
 #else
-		VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
 #endif
 	}
 	else if (cls.ws_endgamemenu)
 	{
 		cls.ws_endgamemenu = false;
-		VM_Call(uivm, WSUI_SET_ACTIVE_MENU, WSUIMENU_ENDGAME);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, WSUIMENU_ENDGAME);
 	}
 	else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
 			 !com_sv_running->integer)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_MAIN);
+		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
 	}
 
 	// if recording an avi, lock to a fixed fps
