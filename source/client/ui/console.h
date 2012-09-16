@@ -55,6 +55,7 @@ extern bool chat_limbo;
 extern int chat_playerNum;
 
 void Con_ClearNotify();
+void Con_ClearTyping();
 void Con_ConsolePrint(const char* txt);
 void Con_DrawFullBackground();
 void Con_DrawConsole();

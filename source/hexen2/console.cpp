@@ -7,7 +7,6 @@ qboolean con_forcedup;			// because no entities to refresh
 qboolean con_debuglog;
 
 #ifndef DEDICATED
-
 /*
 ================
 Con_ToggleConsole_f
@@ -22,8 +21,7 @@ void Con_ToggleConsole_f(void)
 		in_keyCatchers &= ~KEYCATCH_CONSOLE;
 		if (cls.state == CA_ACTIVE)
 		{
-			g_consoleField.buffer[0] = 0;	// clear any typing
-			g_consoleField.cursor = 0;
+			Con_ClearTyping();
 		}
 		else
 		{

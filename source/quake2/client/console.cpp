@@ -21,12 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-void Key_ClearTyping(void)
-{
-	g_consoleField.buffer[0] = 0;	// clear any typing
-	g_consoleField.cursor = 0;
-}
-
 /*
 ================
 Con_ToggleConsole_f
@@ -50,7 +44,7 @@ void Con_ToggleConsole_f(void)
 		return;
 	}
 
-	Key_ClearTyping();
+	Con_ClearTyping();
 	Con_ClearNotify();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)

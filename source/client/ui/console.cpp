@@ -57,6 +57,11 @@ static void Con_ClearText()
 	}
 }
 
+void Con_ClearTyping()
+{
+	Field_Clear(&g_consoleField);
+}
+
 //	If the line width has changed, reformat the buffer.
 static void Con_CheckResize()
 {

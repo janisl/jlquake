@@ -53,5 +53,5 @@ void MQ2_Print(int cx, int cy, const char* str);
 void MQ2_DrawCursor(int x, int y, int f);
 void MQ2_DrawTextBox(int x, int y, int width, int lines);
 void MQ2_Menu_Game_f();
-float ClampCvar(float min, float max, float value);
 void MQ2_Menu_Multiplayer_f();
+void M_Menu_Video_f();

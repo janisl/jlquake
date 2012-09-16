@@ -4,12 +4,6 @@
 
 qboolean con_debuglog;
 
-void Key_ClearTyping(void)
-{
-	g_consoleField.buffer[0] = 0;	// clear any typing
-	g_consoleField.cursor = 0;
-}
-
 /*
 ================
 Con_ToggleConsole_f
@@ -19,7 +13,7 @@ void Con_ToggleConsole_f(void)
 {
 	con.acLength = 0;
 
-	Key_ClearTyping();
+	Con_ClearTyping();
 
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
