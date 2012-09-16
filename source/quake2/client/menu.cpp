@@ -26,12 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int m_main_cursor;
 
-#define NUM_CURSOR_FRAMES 15
-
-static const char* menu_in_sound        = "misc/menu1.wav";
-static const char* menu_move_sound  = "misc/menu2.wav";
-static const char* menu_out_sound       = "misc/menu3.wav";
-
 void M_Menu_Main_f(void);
 void M_Menu_Game_f(void);
 void M_Menu_LoadGame_f(void);
@@ -50,340 +44,6 @@ void M_Menu_Keys_f(void);
 void M_Menu_Quit_f(void);
 
 void M_Menu_Credits(void);
-
-qboolean m_entersound;			// play after drawing a frame, so caching
-								// won't disrupt the sound
-
-void (* m_drawfunc)(void);
-const char*(*m_keyfunc)(int key);
-void (*m_charfunc)(int key);
-
-//=============================================================================
-/* Support Routines */
-
-#define MAX_MENU_DEPTH  8
-
-
-typedef struct
-{
-	void (* draw)(void);
-	const char*(*key)(int k);
-	void (*charfunc)(int key);
-} menulayer_t;
-
-menulayer_t m_layers[MAX_MENU_DEPTH];
-int m_menudepth;
-
-static void M_Banner(const char* name)
-{
-	int w, h;
-
-	R_GetPicSize(&w, &h, name);
-	UI_DrawNamedPic(viddef.width / 2 - w / 2, viddef.height / 2 - 110, name);
-}
-
-void M_PushMenu(void (* draw)(void), const char*(*key)(int k), void (*charfunc)(int key))
-{
-	int i;
-
-	if (Cvar_VariableValue("maxclients") == 1 &&
-		ComQ2_ServerState())
-	{
-		Cvar_SetLatched("paused", "1");
-	}
-
-	// if this menu is already present, drop back to that level
-	// to avoid stacking menus by hotkeys
-	for (i = 0; i < m_menudepth; i++)
-		if (m_layers[i].draw == draw &&
-			m_layers[i].key == key)
-		{
-			m_menudepth = i;
-		}
-
-	if (i == m_menudepth)
-	{
-		if (m_menudepth >= MAX_MENU_DEPTH)
-		{
-			common->FatalError("M_PushMenu: MAX_MENU_DEPTH");
-		}
-		m_layers[m_menudepth].draw = m_drawfunc;
-		m_layers[m_menudepth].key = m_keyfunc;
-		m_layers[m_menudepth].charfunc = m_charfunc;
-		m_menudepth++;
-	}
-
-	m_drawfunc = draw;
-	m_keyfunc = key;
-	m_charfunc = charfunc;
-
-	m_entersound = true;
-
-	in_keyCatchers |= KEYCATCH_UI;
-}
-
-void M_ForceMenuOff(void)
-{
-	m_drawfunc = 0;
-	m_keyfunc = 0;
-	m_charfunc = NULL;
-	in_keyCatchers &= ~KEYCATCH_UI;
-	m_menudepth = 0;
-	Key_ClearStates();
-	Cvar_SetLatched("paused", "0");
-}
-
-void M_PopMenu(void)
-{
-	S_StartLocalSound(menu_out_sound);
-	if (m_menudepth < 1)
-	{
-		common->FatalError("M_PopMenu: depth < 1");
-	}
-	m_menudepth--;
-
-	m_drawfunc = m_layers[m_menudepth].draw;
-	m_keyfunc = m_layers[m_menudepth].key;
-	m_charfunc = m_layers[m_menudepth].charfunc;
-
-	if (!m_menudepth)
-	{
-		M_ForceMenuOff();
-	}
-}
-
-
-const char* Default_MenuKey(menuframework_s* m, int key)
-{
-	const char* sound = NULL;
-	menucommon_s* item;
-
-	if (m)
-	{
-		if ((item = (menucommon_s*)Menu_ItemAtCursor(m)) != 0)
-		{
-			if (item->type == MTYPE_FIELD)
-			{
-				if (MQ2_Field_Key((menufield_s*)item, key))
-				{
-					return NULL;
-				}
-			}
-		}
-	}
-
-	switch (key)
-	{
-	case K_ESCAPE:
-		M_PopMenu();
-		return menu_out_sound;
-	case K_KP_UPARROW:
-	case K_UPARROW:
-		if (m)
-		{
-			m->cursor--;
-			Menu_AdjustCursor(m, -1);
-			sound = menu_move_sound;
-		}
-		break;
-	case K_TAB:
-		if (m)
-		{
-			m->cursor++;
-			Menu_AdjustCursor(m, 1);
-			sound = menu_move_sound;
-		}
-		break;
-	case K_KP_DOWNARROW:
-	case K_DOWNARROW:
-		if (m)
-		{
-			m->cursor++;
-			Menu_AdjustCursor(m, 1);
-			sound = menu_move_sound;
-		}
-		break;
-	case K_KP_LEFTARROW:
-	case K_LEFTARROW:
-		if (m)
-		{
-			Menu_SlideItem(m, -1);
-			sound = menu_move_sound;
-		}
-		break;
-	case K_KP_RIGHTARROW:
-	case K_RIGHTARROW:
-		if (m)
-		{
-			Menu_SlideItem(m, 1);
-			sound = menu_move_sound;
-		}
-		break;
-
-	case K_MOUSE1:
-	case K_MOUSE2:
-	case K_MOUSE3:
-	case K_JOY1:
-	case K_JOY2:
-	case K_JOY3:
-	case K_JOY4:
-	case K_AUX1:
-	case K_AUX2:
-	case K_AUX3:
-	case K_AUX4:
-	case K_AUX5:
-	case K_AUX6:
-	case K_AUX7:
-	case K_AUX8:
-	case K_AUX9:
-	case K_AUX10:
-	case K_AUX11:
-	case K_AUX12:
-	case K_AUX13:
-	case K_AUX14:
-	case K_AUX15:
-	case K_AUX16:
-	case K_AUX17:
-	case K_AUX18:
-	case K_AUX19:
-	case K_AUX20:
-	case K_AUX21:
-	case K_AUX22:
-	case K_AUX23:
-	case K_AUX24:
-	case K_AUX25:
-	case K_AUX26:
-	case K_AUX27:
-	case K_AUX28:
-	case K_AUX29:
-	case K_AUX30:
-	case K_AUX31:
-	case K_AUX32:
-
-	case K_KP_ENTER:
-	case K_ENTER:
-		if (m)
-		{
-			Menu_SelectItem(m);
-		}
-		sound = menu_move_sound;
-		break;
-	}
-
-	return sound;
-}
-
-void Default_MenuChar(menuframework_s* m, int key)
-{
-	menucommon_s* item;
-
-	if (m)
-	{
-		if ((item = (menucommon_s*)Menu_ItemAtCursor(m)) != 0)
-		{
-			if (item->type == MTYPE_FIELD)
-			{
-				MQ2_Field_Char((menufield_s*)item, key);
-			}
-		}
-	}
-}
-
-//=============================================================================
-
-/*
-================
-M_DrawCharacter
-
-Draws one solid graphics character
-cx and cy are in 320*240 coordinates, and will be centered on
-higher res screens.
-================
-*/
-void M_DrawCharacter(int cx, int cy, int num)
-{
-	UI_DrawChar(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), num);
-}
-
-void M_Print(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 240) >> 1), str, 128);
-}
-
-/*
-=============
-M_DrawCursor
-
-Draws an animating cursor with the point at
-x,y.  The pic will extend to the left of x,
-and both above and below y.
-=============
-*/
-void M_DrawCursor(int x, int y, int f)
-{
-	char cursorname[80];
-	static qboolean cached;
-
-	if (!cached)
-	{
-		int i;
-
-		for (i = 0; i < NUM_CURSOR_FRAMES; i++)
-		{
-			String::Sprintf(cursorname, sizeof(cursorname), "m_cursor%d", i);
-
-			R_RegisterPic(cursorname);
-		}
-		cached = true;
-	}
-
-	String::Sprintf(cursorname, sizeof(cursorname), "m_cursor%d", f);
-	UI_DrawNamedPic(x, y, cursorname);
-}
-
-void M_DrawTextBox(int x, int y, int width, int lines)
-{
-	int cx, cy;
-	int n;
-
-	// draw left side
-	cx = x;
-	cy = y;
-	M_DrawCharacter(cx, cy, 1);
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		M_DrawCharacter(cx, cy, 4);
-	}
-	M_DrawCharacter(cx, cy + 8, 7);
-
-	// draw middle
-	cx += 8;
-	while (width > 0)
-	{
-		cy = y;
-		M_DrawCharacter(cx, cy, 2);
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			M_DrawCharacter(cx, cy, 5);
-		}
-		M_DrawCharacter(cx, cy + 8, 8);
-		width -= 1;
-		cx += 8;
-	}
-
-	// draw right side
-	cy = y;
-	M_DrawCharacter(cx, cy, 3);
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-		M_DrawCharacter(cx, cy, 6);
-	}
-	M_DrawCharacter(cx, cy + 8, 9);
-}
-
 
 /*
 =======================================================================
@@ -439,7 +99,7 @@ void M_Main_Draw(void)
 	String::Cat(litname, sizeof(litname), "_sel");
 	UI_DrawNamedPic(xoffset, ystart + m_main_cursor * 40 + 13, litname);
 
-	M_DrawCursor(xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100) % NUM_CURSOR_FRAMES);
+	MQ2_DrawCursor(xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100) % NUM_CURSOR_FRAMES);
 
 	R_GetPicSize(&w, &h, "m_main_plaque");
 	UI_DrawNamedPic(xoffset - 30 - w, ystart, "m_main_plaque");
@@ -455,7 +115,7 @@ const char* M_Main_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		M_PopMenu();
+		MQ2_PopMenu();
 		break;
 
 	case K_KP_DOWNARROW:
@@ -476,7 +136,7 @@ const char* M_Main_Key(int key)
 
 	case K_KP_ENTER:
 	case K_ENTER:
-		m_entersound = true;
+		mq2_entersound = true;
 
 		switch (m_main_cursor)
 		{
@@ -508,7 +168,7 @@ const char* M_Main_Key(int key)
 
 void M_Menu_Main_f(void)
 {
-	M_PushMenu(M_Main_Draw, M_Main_Key, NULL);
+	MQ2_PushMenu(M_Main_Draw, M_Main_Key, NULL);
 }
 
 /*
@@ -525,7 +185,7 @@ static menuaction_s s_player_setup_action;
 
 static void Multiplayer_MenuDraw(void)
 {
-	M_Banner("m_banner_multiplayer");
+	MQ2_Banner("m_banner_multiplayer");
 
 	Menu_AdjustCursor(&s_multiplayer_menu, 1);
 	Menu_Draw(&s_multiplayer_menu);
@@ -589,7 +249,7 @@ const char* Multiplayer_MenuKey(int key)
 void M_Menu_Multiplayer_f(void)
 {
 	Multiplayer_MenuInit();
-	M_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey, NULL);
+	MQ2_PushMenu(Multiplayer_MenuDraw, Multiplayer_MenuKey, NULL);
 }
 
 /*
@@ -982,7 +642,7 @@ static const char* Keys_MenuKey(int key)
 void M_Menu_Keys_f(void)
 {
 	Keys_MenuInit();
-	M_PushMenu(Keys_MenuDraw, Keys_MenuKey, NULL);
+	MQ2_PushMenu(Keys_MenuDraw, Keys_MenuKey, NULL);
 }
 
 
@@ -1127,7 +787,7 @@ static void ConsoleFunc(void* unused)
 	Key_ClearTyping();
 	Con_ClearNotify();
 
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 	in_keyCatchers |= KEYCATCH_CONSOLE;
 }
 
@@ -1266,7 +926,7 @@ void Options_MenuInit(void)
 
 void Options_MenuDraw(void)
 {
-	M_Banner("m_banner_options");
+	MQ2_Banner("m_banner_options");
 	Menu_AdjustCursor(&s_options_menu, 1);
 	Menu_Draw(&s_options_menu);
 }
@@ -1279,7 +939,7 @@ const char* Options_MenuKey(int key)
 void M_Menu_Options_f(void)
 {
 	Options_MenuInit();
-	M_PushMenu(Options_MenuDraw, Options_MenuKey, NULL);
+	MQ2_PushMenu(Options_MenuDraw, Options_MenuKey, NULL);
 }
 
 /*
@@ -1344,12 +1004,12 @@ static void ApplyChanges(void* unused)
 	Cvar_SetValueLatched("r_finish", s_finish_box.curvalue);
 	Cvar_SetValueLatched("r_mode", s_mode_list.curvalue);
 
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 }
 
 static void CancelChanges(void* unused)
 {
-	M_PopMenu();
+	MQ2_PopMenu();
 }
 
 /*
@@ -1548,7 +1208,7 @@ static const char* VID_MenuKey(int key)
 void M_Menu_Video_f(void)
 {
 	VID_MenuInit();
-	M_PushMenu(VID_MenuDraw, VID_MenuKey, NULL);
+	MQ2_PushMenu(VID_MenuDraw, VID_MenuKey, NULL);
 }
 
 /*
@@ -1963,7 +1623,7 @@ const char* M_Credits_Key(int key)
 		{
 			FS_FreeFile(creditsBuffer);
 		}
-		M_PopMenu();
+		MQ2_PopMenu();
 		break;
 	}
 
@@ -2031,7 +1691,7 @@ void M_Menu_Credits_f(void)
 	}
 
 	credits_start_time = cls.realtime;
-	M_PushMenu(M_Credits_MenuDraw, M_Credits_Key, NULL);
+	MQ2_PushMenu(M_Credits_MenuDraw, M_Credits_Key, NULL);
 }
 
 /*
@@ -2057,7 +1717,7 @@ static void StartGame(void)
 {
 	// disable updates and start the cinematic going
 	cl.servercount = -1;
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 	Cvar_SetValueLatched("deathmatch", 0);
 	Cvar_SetValueLatched("coop", 0);
 
@@ -2163,7 +1823,7 @@ void Game_MenuInit(void)
 
 void Game_MenuDraw(void)
 {
-	M_Banner("m_banner_game");
+	MQ2_Banner("m_banner_game");
 	Menu_AdjustCursor(&s_game_menu, 1);
 	Menu_Draw(&s_game_menu);
 }
@@ -2176,7 +1836,7 @@ const char* Game_MenuKey(int key)
 void M_Menu_Game_f(void)
 {
 	Game_MenuInit();
-	M_PushMenu(Game_MenuDraw, Game_MenuKey, NULL);
+	MQ2_PushMenu(Game_MenuDraw, Game_MenuKey, NULL);
 	m_game_cursor = 1;
 }
 
@@ -2230,7 +1890,7 @@ void LoadGameCallback(void* self)
 	{
 		Cbuf_AddText(va("load save%i\n",  a->generic.localdata[0]));
 	}
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 }
 
 void LoadGame_MenuInit(void)
@@ -2265,7 +1925,7 @@ void LoadGame_MenuInit(void)
 
 void LoadGame_MenuDraw(void)
 {
-	M_Banner("m_banner_load_game");
+	MQ2_Banner("m_banner_load_game");
 //	Menu_AdjustCursor( &s_loadgame_menu, 1 );
 	Menu_Draw(&s_loadgame_menu);
 }
@@ -2286,7 +1946,7 @@ const char* LoadGame_MenuKey(int key)
 void M_Menu_LoadGame_f(void)
 {
 	LoadGame_MenuInit();
-	M_PushMenu(LoadGame_MenuDraw, LoadGame_MenuKey, NULL);
+	MQ2_PushMenu(LoadGame_MenuDraw, LoadGame_MenuKey, NULL);
 }
 
 
@@ -2304,12 +1964,12 @@ void SaveGameCallback(void* self)
 	menuaction_s* a = (menuaction_s*)self;
 
 	Cbuf_AddText(va("save save%i\n", a->generic.localdata[0]));
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 }
 
 void SaveGame_MenuDraw(void)
 {
-	M_Banner("m_banner_save_game");
+	MQ2_Banner("m_banner_save_game");
 	Menu_AdjustCursor(&s_savegame_menu, 1);
 	Menu_Draw(&s_savegame_menu);
 }
@@ -2362,7 +2022,7 @@ void M_Menu_SaveGame_f(void)
 
 	}
 	SaveGame_MenuInit();
-	M_PushMenu(SaveGame_MenuDraw, SaveGame_MenuKey, NULL);
+	MQ2_PushMenu(SaveGame_MenuDraw, SaveGame_MenuKey, NULL);
 	Create_Savestrings();
 }
 
@@ -2434,7 +2094,7 @@ void JoinServerFunc(void* self)
 
 	String::Sprintf(buffer, sizeof(buffer), "connect %s\n", SOCK_AdrToString(local_server_netadr[index]));
 	Cbuf_AddText(buffer);
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 }
 
 void AddressBookFunc(void* self)
@@ -2454,10 +2114,10 @@ void SearchLocalGames(void)
 	for (i = 0; i < MAX_LOCAL_SERVERS; i++)
 		String::Cpy(local_server_names[i], NO_SERVER_STRING);
 
-	M_DrawTextBox(8, 120 - 48, 36, 3);
-	M_Print(16 + 16, 120 - 48 + 8,  "Searching for local servers, this");
-	M_Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
-	M_Print(16 + 16, 120 - 48 + 24, "please be patient.");
+	MQ2_DrawTextBox(8, 120 - 48, 36, 3);
+	MQ2_Print(16 + 16, 120 - 48 + 8,  "Searching for local servers, this");
+	MQ2_Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
+	MQ2_Print(16 + 16, 120 - 48 + 24, "please be patient.");
 
 	// the text box won't show up unless we do a buffer swap
 	R_EndFrame(NULL, NULL);
@@ -2524,7 +2184,7 @@ void JoinServer_MenuInit(void)
 
 void JoinServer_MenuDraw(void)
 {
-	M_Banner("m_banner_join_server");
+	MQ2_Banner("m_banner_join_server");
 	Menu_Draw(&s_joinserver_menu);
 }
 
@@ -2537,7 +2197,7 @@ const char* JoinServer_MenuKey(int key)
 void M_Menu_JoinServer_f(void)
 {
 	JoinServer_MenuInit();
-	M_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey, NULL);
+	MQ2_PushMenu(JoinServer_MenuDraw, JoinServer_MenuKey, NULL);
 }
 
 
@@ -2695,7 +2355,7 @@ void StartServerActionFunc(void* self)
 		Cbuf_AddText(va("map %s\n", startmap));
 	}
 
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 }
 
 void StartServer_MenuInit(void)
@@ -2927,7 +2587,7 @@ static void StartServer_MenuChar(int key)
 void M_Menu_StartServer_f(void)
 {
 	StartServer_MenuInit();
-	M_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, StartServer_MenuChar);
+	MQ2_PushMenu(StartServer_MenuDraw, StartServer_MenuKey, StartServer_MenuChar);
 }
 
 /*
@@ -3354,7 +3014,7 @@ const char* DMOptions_MenuKey(int key)
 void M_Menu_DMOptions_f(void)
 {
 	DMOptions_MenuInit();
-	M_PushMenu(DMOptions_MenuDraw, DMOptions_MenuKey, NULL);
+	MQ2_PushMenu(DMOptions_MenuDraw, DMOptions_MenuKey, NULL);
 }
 
 /*
@@ -3488,7 +3148,7 @@ const char* DownloadOptions_MenuKey(int key)
 void M_Menu_DownloadOptions_f(void)
 {
 	DownloadOptions_MenuInit();
-	M_PushMenu(DownloadOptions_MenuDraw, DownloadOptions_MenuKey, NULL);
+	MQ2_PushMenu(DownloadOptions_MenuDraw, DownloadOptions_MenuKey, NULL);
 }
 /*
 =============================================================================
@@ -3553,7 +3213,7 @@ const char* AddressBook_MenuKey(int key)
 
 void AddressBook_MenuDraw(void)
 {
-	M_Banner("m_banner_addressbook");
+	MQ2_Banner("m_banner_addressbook");
 	Menu_Draw(&s_addressbook_menu);
 }
 
@@ -3565,7 +3225,7 @@ static void AddressBook_MenuChar(int key)
 void M_Menu_AddressBook_f(void)
 {
 	AddressBook_MenuInit();
-	M_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, AddressBook_MenuChar);
+	MQ2_PushMenu(AddressBook_MenuDraw, AddressBook_MenuKey, AddressBook_MenuChar);
 }
 
 /*
@@ -4077,7 +3737,7 @@ void PlayerConfig_MenuDraw(void)
 
 		Menu_Draw(&s_player_config_menu);
 
-		M_DrawTextBox((refdef.x) * (320.0F / viddef.width) - 8, (viddef.height / 2) * (240.0F / viddef.height) - 77, refdef.width / 8, refdef.height / 8);
+		MQ2_DrawTextBox((refdef.x) * (320.0F / viddef.width) - 8, (viddef.height / 2) * (240.0F / viddef.height) - 77, refdef.width / 8, refdef.height / 8);
 		refdef.height += 4;
 		UI_Fill(refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1);
 
@@ -4139,7 +3799,7 @@ void M_Menu_PlayerConfig_f(void)
 		return;
 	}
 	Menu_SetStatusBar(&s_multiplayer_menu, NULL);
-	M_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, PlayerConfig_MenuChar);
+	MQ2_PushMenu(PlayerConfig_MenuDraw, PlayerConfig_MenuKey, PlayerConfig_MenuChar);
 }
 
 
@@ -4156,7 +3816,7 @@ void M_Menu_Gallery_f(void)
 	extern void Gallery_MenuDraw(void);
 	extern const char* Gallery_MenuKey(int key);
 
-	M_PushMenu(Gallery_MenuDraw, Gallery_MenuKey);
+	MQ2_PushMenu(Gallery_MenuDraw, Gallery_MenuKey);
 }
 #endif
 
@@ -4175,7 +3835,7 @@ const char* M_Quit_Key(int key)
 	case K_ESCAPE:
 	case 'n':
 	case 'N':
-		M_PopMenu();
+		MQ2_PopMenu();
 		break;
 
 	case 'Y':
@@ -4204,7 +3864,7 @@ void M_Quit_Draw(void)
 
 void M_Menu_Quit_f(void)
 {
-	M_PushMenu(M_Quit_Draw, M_Quit_Key, NULL);
+	MQ2_PushMenu(M_Quit_Draw, M_Quit_Key, NULL);
 }
 
 
@@ -4254,15 +3914,15 @@ void M_Draw(void)
 	// dim everything behind it down
 	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 
-	m_drawfunc();
+	mq2_drawfunc();
 
 	// delay playing the enter sound until after the
 	// menu has been drawn, to avoid delay while
 	// caching images
-	if (m_entersound)
+	if (mq2_entersound)
 	{
 		S_StartLocalSound(menu_in_sound);
-		m_entersound = false;
+		mq2_entersound = false;
 	}
 }
 
@@ -4276,9 +3936,9 @@ void M_Keydown(int key)
 {
 	const char* s;
 
-	if (m_keyfunc)
+	if (mq2_keyfunc)
 	{
-		if ((s = m_keyfunc(key)) != 0)
+		if ((s = mq2_keyfunc(key)) != 0)
 		{
 			S_StartLocalSound((char*)s);
 		}
@@ -4287,8 +3947,8 @@ void M_Keydown(int key)
 
 void M_CharEvent(int key)
 {
-	if (m_charfunc)
+	if (mq2_charfunc)
 	{
-		m_charfunc(key);
+		mq2_charfunc(key);
 	}
 }

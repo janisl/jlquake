@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../client/client.h"
 #include "../../client/game/quake2/local.h"
+#include "../../client/game/quake2/menu.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -174,7 +175,6 @@ void M_Keydown(int key);
 void M_CharEvent(int key);
 void M_Draw(void);
 void M_Menu_Main_f(void);
-void M_ForceMenuOff(void);
 void M_AddToServerList(netadr_t adr, char* info);
 
 //

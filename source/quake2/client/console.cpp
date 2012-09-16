@@ -56,12 +56,12 @@ void Con_ToggleConsole_f(void)
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
 		in_keyCatchers &= ~KEYCATCH_CONSOLE;
-		M_ForceMenuOff();
+		MQ2_ForceMenuOff();
 		Cvar_SetLatched("paused", "0");
 	}
 	else
 	{
-		M_ForceMenuOff();
+		MQ2_ForceMenuOff();
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 
 		if (Cvar_VariableValue("maxclients") == 1 &&

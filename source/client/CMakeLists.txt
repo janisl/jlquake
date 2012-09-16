@@ -14,7 +14,6 @@ set(CLIENT_FILES
 	game/hexen2/parse.cpp
 	game/hexen2/particle_effects.cpp
 	game/hexen2/projectiles.cpp
-	game/quake2/qmenu.cpp
 	game/hexen2/status_bar.cpp
 	game/hexen2/stream.cpp
 	game/hexen2/temporary_entities.cpp
@@ -36,7 +35,9 @@ set(CLIENT_FILES
 	game/quake2/laser.cpp
 	game/quake2/light_effects.cpp
 	game/quake2/main.cpp
+	game/quake2/menu.cpp
 	game/quake2/particle_effects.cpp
+	game/quake2/qmenu.cpp
 	game/quake2/sustain.cpp
 	game/quake2/temporary_entities.cpp
 	game/camera.cpp

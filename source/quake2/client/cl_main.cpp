@@ -625,7 +625,7 @@ void CL_Disconnect(void)
 
 	VectorClear(v_blend);
 
-	M_ForceMenuOff();
+	MQ2_ForceMenuOff();
 
 	cls.q2_connect_time = 0;
 
