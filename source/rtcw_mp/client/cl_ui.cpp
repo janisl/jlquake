@@ -906,376 +906,376 @@ qintptr CL_UISystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-	case UI_ERROR:
+	case WMUI_ERROR:
 		common->Error("%s", VMA(1));
 		return 0;
 
-	case UI_PRINT:
+	case WMUI_PRINT:
 		common->Printf("%s", VMA(1));
 		return 0;
 
-	case UI_MILLISECONDS:
+	case WMUI_MILLISECONDS:
 		return Sys_Milliseconds();
 
-	case UI_CVAR_REGISTER:
+	case WMUI_CVAR_REGISTER:
 		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_CVAR_UPDATE:
+	case WMUI_CVAR_UPDATE:
 		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
 
-	case UI_CVAR_SET:
+	case WMUI_CVAR_SET:
 		Cvar_Set((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
-	case UI_CVAR_VARIABLEVALUE:
+	case WMUI_CVAR_VARIABLEVALUE:
 		return FloatAsInt(Cvar_VariableValue((char*)VMA(1)));
 
-	case UI_CVAR_VARIABLESTRINGBUFFER:
+	case WMUI_CVAR_VARIABLESTRINGBUFFER:
 		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CVAR_SETVALUE:
+	case WMUI_CVAR_SETVALUE:
 		Cvar_SetValue((char*)VMA(1), VMF(2));
 		return 0;
 
-	case UI_CVAR_RESET:
+	case WMUI_CVAR_RESET:
 		Cvar_Reset((char*)VMA(1));
 		return 0;
 
-	case UI_CVAR_CREATE:
+	case WMUI_CVAR_CREATE:
 		Cvar_Get((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CVAR_INFOSTRINGBUFFER:
+	case WMUI_CVAR_INFOSTRINGBUFFER:
 		Cvar_InfoStringBuffer(args[1], MAX_INFO_STRING_Q3, (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_ARGC:
+	case WMUI_ARGC:
 		return Cmd_Argc();
 
-	case UI_ARGV:
+	case WMUI_ARGV:
 		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CMD_EXECUTETEXT:
+	case WMUI_CMD_EXECUTETEXT:
 		Cbuf_ExecuteText(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_FS_FOPENFILE:
+	case WMUI_FS_FOPENFILE:
 		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
 
-	case UI_FS_READ:
+	case WMUI_FS_READ:
 		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
 
-	case UI_FS_WRITE:
+	case WMUI_FS_WRITE:
 		FS_Write(VMA(1), args[2], args[3]);
 		return 0;
 
-	case UI_FS_FCLOSEFILE:
+	case WMUI_FS_FCLOSEFILE:
 		FS_FCloseFile(args[1]);
 		return 0;
 
-	case UI_FS_DELETEFILE:
+	case WMUI_FS_DELETEFILE:
 		return FS_Delete((char*)VMA(1));
 
-	case UI_FS_GETFILELIST:
+	case WMUI_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
-	case UI_R_REGISTERMODEL:
+	case WMUI_R_REGISTERMODEL:
 		return R_RegisterModel((char*)VMA(1));
 
-	case UI_R_REGISTERSKIN:
+	case WMUI_R_REGISTERSKIN:
 		return R_RegisterSkin((char*)VMA(1));
 
-	case UI_R_REGISTERSHADERNOMIP:
+	case WMUI_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip((char*)VMA(1));
 
-	case UI_R_CLEARSCENE:
+	case WMUI_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
 
-	case UI_R_ADDREFENTITYTOSCENE:
+	case WMUI_R_ADDREFENTITYTOSCENE:
 		CL_AddRefEntityToScene((wmrefEntity_t*)VMA(1));
 		return 0;
 
-	case UI_R_ADDPOLYTOSCENE:
+	case WMUI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
 
 	// Ridah
-	case UI_R_ADDPOLYSTOSCENE:
+	case WMUI_R_ADDPOLYSTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), args[4]);
 		return 0;
 	// done.
 
-	case UI_R_ADDLIGHTTOSCENE:
+	case WMUI_R_ADDLIGHTTOSCENE:
 		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6]);
 		return 0;
 
-	case UI_R_ADDCORONATOSCENE:
+	case WMUI_R_ADDCORONATOSCENE:
 		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
 
-	case UI_R_RENDERSCENE:
+	case WMUI_R_RENDERSCENE:
 		CL_RenderScene((wmrefdef_t*)VMA(1));
 		return 0;
 
-	case UI_R_SETCOLOR:
+	case WMUI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
 		return 0;
 
-	case UI_R_DRAWSTRETCHPIC:
+	case WMUI_R_DRAWSTRETCHPIC:
 		R_StretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 		return 0;
 
-	case UI_R_MODELBOUNDS:
+	case WMUI_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
-	case UI_UPDATESCREEN:
+	case WMUI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 
-	case UI_CM_LERPTAG:
+	case WMUI_CM_LERPTAG:
 		return CL_LerpTag((orientation_t*)VMA(1), (wmrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 
-	case UI_S_REGISTERSOUND:
+	case WMUI_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
 
-	case UI_S_STARTLOCALSOUND:
+	case WMUI_S_STARTLOCALSOUND:
 		S_StartLocalSound(args[1], args[2], 127);
 		return 0;
 
-	case UI_KEY_KEYNUMTOSTRINGBUF:
+	case WMUI_KEY_KEYNUMTOSTRINGBUF:
 		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_KEY_GETBINDINGBUF:
+	case WMUI_KEY_GETBINDINGBUF:
 		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_KEY_SETBINDING:
+	case WMUI_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_KEY_ISDOWN:
+	case WMUI_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
 
-	case UI_KEY_GETOVERSTRIKEMODE:
+	case WMUI_KEY_GETOVERSTRIKEMODE:
 		return Key_GetOverstrikeMode();
 
-	case UI_KEY_SETOVERSTRIKEMODE:
+	case WMUI_KEY_SETOVERSTRIKEMODE:
 		Key_SetOverstrikeMode(args[1]);
 		return 0;
 
-	case UI_KEY_CLEARSTATES:
+	case WMUI_KEY_CLEARSTATES:
 		Key_ClearStates();
 		return 0;
 
-	case UI_KEY_GETCATCHER:
+	case WMUI_KEY_GETCATCHER:
 		return Key_GetCatcher();
 
-	case UI_KEY_SETCATCHER:
+	case WMUI_KEY_SETCATCHER:
 		Key_SetCatcher(args[1]);
 		return 0;
 
-	case UI_GETCLIPBOARDDATA:
+	case WMUI_GETCLIPBOARDDATA:
 		GetClipboardData((char*)VMA(1), args[2]);
 		return 0;
 
-	case UI_GETCLIENTSTATE:
+	case WMUI_GETCLIENTSTATE:
 		GetClientState((uiClientState_t*)VMA(1));
 		return 0;
 
-	case UI_GETGLCONFIG:
+	case WMUI_GETGLCONFIG:
 		CL_GetGlconfig((wmglconfig_t*)VMA(1));
 		return 0;
 
-	case UI_GETCONFIGSTRING:
+	case WMUI_GETCONFIGSTRING:
 		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 
-	case UI_LAN_LOADCACHEDSERVERS:
+	case WMUI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
 		return 0;
 
-	case UI_LAN_SAVECACHEDSERVERS:
+	case WMUI_LAN_SAVECACHEDSERVERS:
 		LAN_SaveServersToCache();
 		return 0;
 
-	case UI_LAN_ADDSERVER:
+	case WMUI_LAN_ADDSERVER:
 		return LAN_AddServer(args[1], (char*)VMA(2), (char*)VMA(3));
 
-	case UI_LAN_REMOVESERVER:
+	case WMUI_LAN_REMOVESERVER:
 		LAN_RemoveServer(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_LAN_GETPINGQUEUECOUNT:
+	case WMUI_LAN_GETPINGQUEUECOUNT:
 		return LAN_GetPingQueueCount();
 
-	case UI_LAN_CLEARPING:
+	case WMUI_LAN_CLEARPING:
 		LAN_ClearPing(args[1]);
 		return 0;
 
-	case UI_LAN_GETPING:
+	case WMUI_LAN_GETPING:
 		LAN_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
 		return 0;
 
-	case UI_LAN_GETPINGINFO:
+	case WMUI_LAN_GETPINGINFO:
 		LAN_GetPingInfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_LAN_GETSERVERCOUNT:
+	case WMUI_LAN_GETSERVERCOUNT:
 		return LAN_GetServerCount(args[1]);
 
-	case UI_LAN_GETSERVERADDRESSSTRING:
+	case WMUI_LAN_GETSERVERADDRESSSTRING:
 		LAN_GetServerAddressString(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_LAN_GETSERVERINFO:
+	case WMUI_LAN_GETSERVERINFO:
 		LAN_GetServerInfo(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_LAN_GETSERVERPING:
+	case WMUI_LAN_GETSERVERPING:
 		return LAN_GetServerPing(args[1], args[2]);
 
-	case UI_LAN_MARKSERVERVISIBLE:
+	case WMUI_LAN_MARKSERVERVISIBLE:
 		LAN_MarkServerVisible(args[1], args[2], args[3]);
 		return 0;
 
-	case UI_LAN_SERVERISVISIBLE:
+	case WMUI_LAN_SERVERISVISIBLE:
 		return LAN_ServerIsVisible(args[1], args[2]);
 
-	case UI_LAN_UPDATEVISIBLEPINGS:
+	case WMUI_LAN_UPDATEVISIBLEPINGS:
 		return LAN_UpdateVisiblePings(args[1]);
 
-	case UI_LAN_RESETPINGS:
+	case WMUI_LAN_RESETPINGS:
 		LAN_ResetPings(args[1]);
 		return 0;
 
-	case UI_LAN_SERVERSTATUS:
+	case WMUI_LAN_SERVERSTATUS:
 		return LAN_GetServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
 
-	case UI_SET_PBCLSTATUS:
+	case WMUI_SET_PBCLSTATUS:
 		return 0;
 
-	case UI_SET_PBSVSTATUS:
+	case WMUI_SET_PBSVSTATUS:
 		return 0;
 
-	case UI_LAN_COMPARESERVERS:
+	case WMUI_LAN_COMPARESERVERS:
 		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);
 
-	case UI_MEMORY_REMAINING:
+	case WMUI_MEMORY_REMAINING:
 		return 0x4000000;
 
-	case UI_GET_CDKEY:
+	case WMUI_GET_CDKEY:
 		CLUI_GetCDKey((char*)VMA(1), args[2]);
 		return 0;
 
-	case UI_SET_CDKEY:
+	case WMUI_SET_CDKEY:
 		CLUI_SetCDKey((char*)VMA(1));
 		return 0;
 
-	case UI_R_REGISTERFONT:
+	case WMUI_R_REGISTERFONT:
 		R_RegisterFont((char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 		return 0;
 
-	case UI_MEMSET:
+	case WMUI_MEMSET:
 		return (qintptr)memset(VMA(1), args[2], args[3]);
 
-	case UI_MEMCPY:
+	case WMUI_MEMCPY:
 		return (qintptr)memcpy(VMA(1), VMA(2), args[3]);
 
-	case UI_STRNCPY:
+	case WMUI_STRNCPY:
 		String::NCpy((char*)VMA(1), (char*)VMA(2), args[3]);
 		return args[1];
 
-	case UI_SIN:
+	case WMUI_SIN:
 		return FloatAsInt(sin(VMF(1)));
 
-	case UI_COS:
+	case WMUI_COS:
 		return FloatAsInt(cos(VMF(1)));
 
-	case UI_ATAN2:
+	case WMUI_ATAN2:
 		return FloatAsInt(atan2(VMF(1), VMF(2)));
 
-	case UI_SQRT:
+	case WMUI_SQRT:
 		return FloatAsInt(sqrt(VMF(1)));
 
-	case UI_FLOOR:
+	case WMUI_FLOOR:
 		return FloatAsInt(floor(VMF(1)));
 
-	case UI_CEIL:
+	case WMUI_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
 
-	case UI_PC_ADD_GLOBAL_DEFINE:
+	case WMUI_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
-	case UI_PC_LOAD_SOURCE:
+	case WMUI_PC_LOAD_SOURCE:
 		return PC_LoadSourceHandle((char*)VMA(1));
-	case UI_PC_FREE_SOURCE:
+	case WMUI_PC_FREE_SOURCE:
 		return PC_FreeSourceHandle(args[1]);
-	case UI_PC_READ_TOKEN:
+	case WMUI_PC_READ_TOKEN:
 		return PC_ReadTokenHandleQ3(args[1], (q3pc_token_t*)VMA(2));
-	case UI_PC_SOURCE_FILE_AND_LINE:
+	case WMUI_PC_SOURCE_FILE_AND_LINE:
 		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 
-	case UI_S_STOPBACKGROUNDTRACK:
+	case WMUI_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
-	case UI_S_STARTBACKGROUNDTRACK:
+	case WMUI_S_STARTBACKGROUNDTRACK:
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
 
-	case UI_REAL_TIME:
+	case WMUI_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 
-	case UI_CIN_PLAYCINEMATIC:
+	case WMUI_CIN_PLAYCINEMATIC:
 		common->DPrintf("UI_CIN_PlayCinematic\n");
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
-	case UI_CIN_STOPCINEMATIC:
+	case WMUI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 
-	case UI_CIN_RUNCINEMATIC:
+	case WMUI_CIN_RUNCINEMATIC:
 		return CIN_RunCinematic(args[1]);
 
-	case UI_CIN_DRAWCINEMATIC:
+	case WMUI_CIN_DRAWCINEMATIC:
 		CIN_DrawCinematic(args[1]);
 		return 0;
 
-	case UI_CIN_SETEXTENTS:
+	case WMUI_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 
-	case UI_R_REMAP_SHADER:
+	case WMUI_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-	case UI_VERIFY_CDKEY:
+	case WMUI_VERIFY_CDKEY:
 		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
 	// NERVE - SMF
-	case UI_CL_GETLIMBOSTRING:
+	case WMUI_CL_GETLIMBOSTRING:
 		return CL_GetLimboString(args[1], (char*)VMA(2));
 
-	case UI_CL_TRANSLATE_STRING:
+	case WMUI_CL_TRANSLATE_STRING:
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
 		return 0;
 	// -NERVE - SMF
 
 	// DHM - Nerve
-	case UI_CHECKAUTOUPDATE:
+	case WMUI_CHECKAUTOUPDATE:
 		CL_CheckAutoUpdate();
 		return 0;
 
-	case UI_GET_AUTOUPDATE:
+	case WMUI_GET_AUTOUPDATE:
 		CL_GetAutoUpdate();
 		return 0;
 	// DHM - Nerve
 
-	case UI_OPENURL:
+	case WMUI_OPENURL:
 		CL_OpenURL((const char*)VMA(1));
 		return 0;
 
@@ -1300,7 +1300,7 @@ void CL_ShutdownUI(void)
 	{
 		return;
 	}
-	VM_Call(uivm, UI_SHUTDOWN);
+	VM_Call(uivm, WMUI_SHUTDOWN);
 	VM_Free(uivm);
 	uivm = NULL;
 }
@@ -1322,15 +1322,15 @@ void CL_InitUI(void)
 	}
 
 	// sanity check
-	v = VM_Call(uivm, UI_GETAPIVERSION);
-	if (v != UI_API_VERSION)
+	v = VM_Call(uivm, WMUI_GETAPIVERSION);
+	if (v != WMUI_API_VERSION)
 	{
-		common->FatalError("User Interface is version %d, expected %d", v, UI_API_VERSION);
+		common->FatalError("User Interface is version %d, expected %d", v, WMUI_API_VERSION);
 		cls.q3_uiStarted = false;
 	}
 
 	// init for this gamestate
-	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+	VM_Call(uivm, WMUI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 }
 
 
@@ -1338,7 +1338,7 @@ qboolean UI_usesUniqueCDKey()
 {
 	if (uivm)
 	{
-		return (VM_Call(uivm, UI_HASUNIQUECDKEY) == true);
+		return (VM_Call(uivm, WMUI_HASUNIQUECDKEY) == true);
 	}
 	else
 	{
@@ -1350,7 +1350,7 @@ qboolean UI_checkKeyExec(int key)
 {
 	if (uivm)
 	{
-		return VM_Call(uivm, UI_CHECKEXECKEY, key);
+		return VM_Call(uivm, WMUI_CHECKEXECKEY, key);
 	}
 	else
 	{
@@ -1372,5 +1372,5 @@ qboolean UI_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(uivm, UI_CONSOLE_COMMAND, cls.realtime);
+	return VM_Call(uivm, WMUI_CONSOLE_COMMAND, cls.realtime);
 }

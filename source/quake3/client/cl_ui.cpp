@@ -861,344 +861,344 @@ qintptr CL_UISystemCalls(qintptr* args)
 {
 	switch (args[0])
 	{
-	case UI_ERROR:
+	case Q3UI_ERROR:
 		common->Error("%s", VMA(1));
 		return 0;
 
-	case UI_PRINT:
+	case Q3UI_PRINT:
 		common->Printf("%s", VMA(1));
 		return 0;
 
-	case UI_MILLISECONDS:
+	case Q3UI_MILLISECONDS:
 		return Sys_Milliseconds();
 
-	case UI_CVAR_REGISTER:
+	case Q3UI_CVAR_REGISTER:
 		Cvar_Register((vmCvar_t*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_CVAR_UPDATE:
+	case Q3UI_CVAR_UPDATE:
 		Cvar_Update((vmCvar_t*)VMA(1));
 		return 0;
 
-	case UI_CVAR_SET:
+	case Q3UI_CVAR_SET:
 		Cvar_Set((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
-	case UI_CVAR_VARIABLEVALUE:
+	case Q3UI_CVAR_VARIABLEVALUE:
 		return FloatAsInt(Cvar_VariableValue((char*)VMA(1)));
 
-	case UI_CVAR_VARIABLESTRINGBUFFER:
+	case Q3UI_CVAR_VARIABLESTRINGBUFFER:
 		Cvar_VariableStringBuffer((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CVAR_SETVALUE:
+	case Q3UI_CVAR_SETVALUE:
 		Cvar_SetValue((char*)VMA(1), VMF(2));
 		return 0;
 
-	case UI_CVAR_RESET:
+	case Q3UI_CVAR_RESET:
 		Cvar_Reset((char*)VMA(1));
 		return 0;
 
-	case UI_CVAR_CREATE:
+	case Q3UI_CVAR_CREATE:
 		Cvar_Get((char*)VMA(1), (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CVAR_INFOSTRINGBUFFER:
+	case Q3UI_CVAR_INFOSTRINGBUFFER:
 		Cvar_InfoStringBuffer(args[1], MAX_INFO_STRING_Q3, (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_ARGC:
+	case Q3UI_ARGC:
 		return Cmd_Argc();
 
-	case UI_ARGV:
+	case Q3UI_ARGV:
 		Cmd_ArgvBuffer(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_CMD_EXECUTETEXT:
+	case Q3UI_CMD_EXECUTETEXT:
 		Cbuf_ExecuteText(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_FS_FOPENFILE:
+	case Q3UI_FS_FOPENFILE:
 		return FS_FOpenFileByMode((char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3]);
 
-	case UI_FS_READ:
+	case Q3UI_FS_READ:
 		FS_Read(VMA(1), args[2], args[3]);
 		return 0;
 
-	case UI_FS_WRITE:
+	case Q3UI_FS_WRITE:
 		FS_Write(VMA(1), args[2], args[3]);
 		return 0;
 
-	case UI_FS_FCLOSEFILE:
+	case Q3UI_FS_FCLOSEFILE:
 		FS_FCloseFile(args[1]);
 		return 0;
 
-	case UI_FS_GETFILELIST:
+	case Q3UI_FS_GETFILELIST:
 		return FS_GetFileList((char*)VMA(1), (char*)VMA(2), (char*)VMA(3), args[4]);
 
-	case UI_FS_SEEK:
+	case Q3UI_FS_SEEK:
 		return FS_Seek(args[1], args[2], args[3]);
 
-	case UI_R_REGISTERMODEL:
+	case Q3UI_R_REGISTERMODEL:
 		return R_RegisterModel((char*)VMA(1));
 
-	case UI_R_REGISTERSKIN:
+	case Q3UI_R_REGISTERSKIN:
 		return R_RegisterSkin((char*)VMA(1));
 
-	case UI_R_REGISTERSHADERNOMIP:
+	case Q3UI_R_REGISTERSHADERNOMIP:
 		return R_RegisterShaderNoMip((char*)VMA(1));
 
-	case UI_R_CLEARSCENE:
+	case Q3UI_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
 
-	case UI_R_ADDREFENTITYTOSCENE:
+	case Q3UI_R_ADDREFENTITYTOSCENE:
 		CL_AddRefEntityToScene((q3refEntity_t*)VMA(1));
 		return 0;
 
-	case UI_R_ADDPOLYTOSCENE:
+	case Q3UI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
 
-	case UI_R_ADDLIGHTTOSCENE:
+	case Q3UI_R_ADDLIGHTTOSCENE:
 		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5));
 		return 0;
 
-	case UI_R_RENDERSCENE:
+	case Q3UI_R_RENDERSCENE:
 		CL_RenderScene((q3refdef_t*)VMA(1));
 		return 0;
 
-	case UI_R_SETCOLOR:
+	case Q3UI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
 		return 0;
 
-	case UI_R_DRAWSTRETCHPIC:
+	case Q3UI_R_DRAWSTRETCHPIC:
 		R_StretchPic(VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9]);
 		return 0;
 
-	case UI_R_MODELBOUNDS:
+	case Q3UI_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
-	case UI_UPDATESCREEN:
+	case Q3UI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 
-	case UI_CM_LERPTAG:
+	case Q3UI_CM_LERPTAG:
 		R_LerpTag((orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6));
 		return 0;
 
-	case UI_S_REGISTERSOUND:
+	case Q3UI_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
 
-	case UI_S_STARTLOCALSOUND:
+	case Q3UI_S_STARTLOCALSOUND:
 		S_StartLocalSound(args[1], args[2], 127);
 		return 0;
 
-	case UI_KEY_KEYNUMTOSTRINGBUF:
+	case Q3UI_KEY_KEYNUMTOSTRINGBUF:
 		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_KEY_GETBINDINGBUF:
+	case Q3UI_KEY_GETBINDINGBUF:
 		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_KEY_SETBINDING:
+	case Q3UI_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_KEY_ISDOWN:
+	case Q3UI_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
 
-	case UI_KEY_GETOVERSTRIKEMODE:
+	case Q3UI_KEY_GETOVERSTRIKEMODE:
 		return Key_GetOverstrikeMode();
 
-	case UI_KEY_SETOVERSTRIKEMODE:
+	case Q3UI_KEY_SETOVERSTRIKEMODE:
 		Key_SetOverstrikeMode(args[1]);
 		return 0;
 
-	case UI_KEY_CLEARSTATES:
+	case Q3UI_KEY_CLEARSTATES:
 		Key_ClearStates();
 		return 0;
 
-	case UI_KEY_GETCATCHER:
+	case Q3UI_KEY_GETCATCHER:
 		return Key_GetCatcher();
 
-	case UI_KEY_SETCATCHER:
+	case Q3UI_KEY_SETCATCHER:
 		Key_SetCatcher(args[1]);
 		return 0;
 
-	case UI_GETCLIPBOARDDATA:
+	case Q3UI_GETCLIPBOARDDATA:
 		GetClipboardData((char*)VMA(1), args[2]);
 		return 0;
 
-	case UI_GETCLIENTSTATE:
+	case Q3UI_GETCLIENTSTATE:
 		GetClientState((uiClientState_t*)VMA(1));
 		return 0;
 
-	case UI_GETGLCONFIG:
+	case Q3UI_GETGLCONFIG:
 		CL_GetGlconfig((q3glconfig_t*)VMA(1));
 		return 0;
 
-	case UI_GETCONFIGSTRING:
+	case Q3UI_GETCONFIGSTRING:
 		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 
-	case UI_LAN_LOADCACHEDSERVERS:
+	case Q3UI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
 		return 0;
 
-	case UI_LAN_SAVECACHEDSERVERS:
+	case Q3UI_LAN_SAVECACHEDSERVERS:
 		LAN_SaveServersToCache();
 		return 0;
 
-	case UI_LAN_ADDSERVER:
+	case Q3UI_LAN_ADDSERVER:
 		return LAN_AddServer(args[1], (char*)VMA(2), (char*)VMA(3));
 
-	case UI_LAN_REMOVESERVER:
+	case Q3UI_LAN_REMOVESERVER:
 		LAN_RemoveServer(args[1], (char*)VMA(2));
 		return 0;
 
-	case UI_LAN_GETPINGQUEUECOUNT:
+	case Q3UI_LAN_GETPINGQUEUECOUNT:
 		return LAN_GetPingQueueCount();
 
-	case UI_LAN_CLEARPING:
+	case Q3UI_LAN_CLEARPING:
 		LAN_ClearPing(args[1]);
 		return 0;
 
-	case UI_LAN_GETPING:
+	case Q3UI_LAN_GETPING:
 		LAN_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
 		return 0;
 
-	case UI_LAN_GETPINGINFO:
+	case Q3UI_LAN_GETPINGINFO:
 		LAN_GetPingInfo(args[1], (char*)VMA(2), args[3]);
 		return 0;
 
-	case UI_LAN_GETSERVERCOUNT:
+	case Q3UI_LAN_GETSERVERCOUNT:
 		return LAN_GetServerCount(args[1]);
 
-	case UI_LAN_GETSERVERADDRESSSTRING:
+	case Q3UI_LAN_GETSERVERADDRESSSTRING:
 		LAN_GetServerAddressString(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_LAN_GETSERVERINFO:
+	case Q3UI_LAN_GETSERVERINFO:
 		LAN_GetServerInfo(args[1], args[2], (char*)VMA(3), args[4]);
 		return 0;
 
-	case UI_LAN_GETSERVERPING:
+	case Q3UI_LAN_GETSERVERPING:
 		return LAN_GetServerPing(args[1], args[2]);
 
-	case UI_LAN_MARKSERVERVISIBLE:
+	case Q3UI_LAN_MARKSERVERVISIBLE:
 		LAN_MarkServerVisible(args[1], args[2], args[3]);
 		return 0;
 
-	case UI_LAN_SERVERISVISIBLE:
+	case Q3UI_LAN_SERVERISVISIBLE:
 		return LAN_ServerIsVisible(args[1], args[2]);
 
-	case UI_LAN_UPDATEVISIBLEPINGS:
+	case Q3UI_LAN_UPDATEVISIBLEPINGS:
 		return LAN_UpdateVisiblePings(args[1]);
 
-	case UI_LAN_RESETPINGS:
+	case Q3UI_LAN_RESETPINGS:
 		LAN_ResetPings(args[1]);
 		return 0;
 
-	case UI_LAN_SERVERSTATUS:
+	case Q3UI_LAN_SERVERSTATUS:
 		return LAN_GetServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
 
-	case UI_LAN_COMPARESERVERS:
+	case Q3UI_LAN_COMPARESERVERS:
 		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);
 
-	case UI_MEMORY_REMAINING:
+	case Q3UI_MEMORY_REMAINING:
 		return 0x4000000;
 
-	case UI_GET_CDKEY:
+	case Q3UI_GET_CDKEY:
 		CLUI_GetCDKey((char*)VMA(1), args[2]);
 		return 0;
 
-	case UI_SET_CDKEY:
+	case Q3UI_SET_CDKEY:
 		CLUI_SetCDKey((char*)VMA(1));
 		return 0;
 
-	case UI_SET_PBCLSTATUS:
+	case Q3UI_SET_PBCLSTATUS:
 		return 0;
 
-	case UI_R_REGISTERFONT:
+	case Q3UI_R_REGISTERFONT:
 		R_RegisterFont((char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 		return 0;
 
-	case UI_MEMSET:
+	case Q3UI_MEMSET:
 		Com_Memset(VMA(1), args[2], args[3]);
 		return 0;
 
-	case UI_MEMCPY:
+	case Q3UI_MEMCPY:
 		Com_Memcpy(VMA(1), VMA(2), args[3]);
 		return 0;
 
-	case UI_STRNCPY:
+	case Q3UI_STRNCPY:
 		String::NCpy((char*)VMA(1), (char*)VMA(2), args[3]);
 		return (qintptr)(char*)VMA(1);
 
-	case UI_SIN:
+	case Q3UI_SIN:
 		return FloatAsInt(sin(VMF(1)));
 
-	case UI_COS:
+	case Q3UI_COS:
 		return FloatAsInt(cos(VMF(1)));
 
-	case UI_ATAN2:
+	case Q3UI_ATAN2:
 		return FloatAsInt(atan2(VMF(1), VMF(2)));
 
-	case UI_SQRT:
+	case Q3UI_SQRT:
 		return FloatAsInt(sqrt(VMF(1)));
 
-	case UI_FLOOR:
+	case Q3UI_FLOOR:
 		return FloatAsInt(floor(VMF(1)));
 
-	case UI_CEIL:
+	case Q3UI_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
 
-	case UI_PC_ADD_GLOBAL_DEFINE:
+	case Q3UI_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));
-	case UI_PC_LOAD_SOURCE:
+	case Q3UI_PC_LOAD_SOURCE:
 		return PC_LoadSourceHandle((char*)VMA(1));
-	case UI_PC_FREE_SOURCE:
+	case Q3UI_PC_FREE_SOURCE:
 		return PC_FreeSourceHandle(args[1]);
-	case UI_PC_READ_TOKEN:
+	case Q3UI_PC_READ_TOKEN:
 		return PC_ReadTokenHandleQ3(args[1], (q3pc_token_t*)VMA(2));
-	case UI_PC_SOURCE_FILE_AND_LINE:
+	case Q3UI_PC_SOURCE_FILE_AND_LINE:
 		return PC_SourceFileAndLine(args[1], (char*)VMA(2), (int*)VMA(3));
 
-	case UI_S_STOPBACKGROUNDTRACK:
+	case Q3UI_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
-	case UI_S_STARTBACKGROUNDTRACK:
+	case Q3UI_S_STARTBACKGROUNDTRACK:
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
 
-	case UI_REAL_TIME:
+	case Q3UI_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 
-	case UI_CIN_PLAYCINEMATIC:
+	case Q3UI_CIN_PLAYCINEMATIC:
 		common->DPrintf("UI_CIN_PlayCinematic\n");
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
-	case UI_CIN_STOPCINEMATIC:
+	case Q3UI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 
-	case UI_CIN_RUNCINEMATIC:
+	case Q3UI_CIN_RUNCINEMATIC:
 		return CIN_RunCinematic(args[1]);
 
-	case UI_CIN_DRAWCINEMATIC:
+	case Q3UI_CIN_DRAWCINEMATIC:
 		CIN_DrawCinematic(args[1]);
 		return 0;
 
-	case UI_CIN_SETEXTENTS:
+	case Q3UI_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
 
-	case UI_R_REMAP_SHADER:
+	case Q3UI_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-	case UI_VERIFY_CDKEY:
+	case Q3UI_VERIFY_CDKEY:
 		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
 
@@ -1224,7 +1224,7 @@ void CL_ShutdownUI(void)
 	{
 		return;
 	}
-	VM_Call(uivm, UI_SHUTDOWN);
+	VM_Call(uivm, Q3UI_SHUTDOWN);
 	VM_Free(uivm);
 	uivm = NULL;
 }
@@ -1258,22 +1258,22 @@ void CL_InitUI(void)
 	}
 
 	// sanity check
-	v = VM_Call(uivm, UI_GETAPIVERSION);
+	v = VM_Call(uivm, Q3UI_GETAPIVERSION);
 	if (v == UI_OLD_API_VERSION)
 	{
 //		common->Printf(S_COLOR_YELLOW "WARNING: loading old Quake III Arena User Interface version %d\n", v );
 		// init for this gamestate
-		VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+		VM_Call(uivm, Q3UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 	}
-	else if (v != UI_API_VERSION)
+	else if (v != Q3UI_API_VERSION)
 	{
-		common->Error("User Interface is version %d, expected %d", v, UI_API_VERSION);
+		common->Error("User Interface is version %d, expected %d", v, Q3UI_API_VERSION);
 		cls.q3_uiStarted = false;
 	}
 	else
 	{
 		// init for this gamestate
-		VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+		VM_Call(uivm, Q3UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 	}
 }
 
@@ -1281,7 +1281,7 @@ qboolean UI_usesUniqueCDKey()
 {
 	if (uivm)
 	{
-		return (VM_Call(uivm, UI_HASUNIQUECDKEY) == true);
+		return (VM_Call(uivm, Q3UI_HASUNIQUECDKEY) == true);
 	}
 	else
 	{
@@ -1303,5 +1303,5 @@ qboolean UI_GameCommand(void)
 		return false;
 	}
 
-	return VM_Call(uivm, UI_CONSOLE_COMMAND, cls.realtime);
+	return VM_Call(uivm, Q3UI_CONSOLE_COMMAND, cls.realtime);
 }

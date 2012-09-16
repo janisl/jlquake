@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../../client/client.h"
 #include "../qcommon/qcommon.h"
-#include "../ui/ui_public.h"
+#include "../../client/game/wolfmp/ui_public.h"
 #include "keys.h"
 #include "../../client/game/wolfmp/cg_public.h"
 

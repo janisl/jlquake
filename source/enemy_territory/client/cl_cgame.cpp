@@ -1118,7 +1118,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		{
 			if (uivm)		// Gordon: can be called as the system is shutting down
 			{
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, args[1]);
+				VM_Call(uivm, ETUI_SET_ACTIVE_MENU, args[1]);
 			}
 		}
 		return 0;

@@ -208,7 +208,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 //----(SA)	get the active menu if in ui mode
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
-		activeMenu = VM_Call(uivm, UI_GET_ACTIVE_MENU);
+		activeMenu = VM_Call(uivm, WSUI_GET_ACTIVE_MENU);
 	}
 
 
@@ -234,23 +234,23 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME);
+				VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_INGAME);
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+				VM_Call(uivm, WSUI_SET_ACTIVE_MENU, UIMENU_MAIN);
 			}
 			return;
 		}
 
-		if (activeMenu == UIMENU_PREGAME)		// eat escape too at this point
+		if (activeMenu == WSUIMENU_PREGAME)		// eat escape too at this point
 		{
 			return;
 		}
 
-		VM_Call(uivm, UI_KEY_EVENT, key, down);
+		VM_Call(uivm, WSUI_KEY_EVENT, key, down);
 		return;
 	}
 
@@ -273,7 +273,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (in_keyCatchers & KEYCATCH_UI && uivm)
 		{
-			VM_Call(uivm, UI_KEY_EVENT, key, down);
+			VM_Call(uivm, WSUI_KEY_EVENT, key, down);
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME && cgvm)
 		{
@@ -293,12 +293,12 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	{
 		kb = keys[key].binding;
 
-		if (activeMenu == UIMENU_CLIPBOARD)
+		if (activeMenu == WSUIMENU_CLIPBOARD)
 		{
 			// any key gets out of clipboard
 			key = K_ESCAPE;
 		}
-		else if (activeMenu == UIMENU_PREGAME)
+		else if (activeMenu == WSUIMENU_PREGAME)
 		{
 			if (key != K_MOUSE1)
 			{
@@ -314,7 +314,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 			{
 				if (!String::ICmp("notebook", kb))
 				{
-					if (VM_Call(uivm, UI_GET_ACTIVE_MENU) == UIMENU_NOTEBOOK)
+					if (VM_Call(uivm, WSUI_GET_ACTIVE_MENU) == WSUIMENU_NOTEBOOK)
 					{
 						key = K_ESCAPE;
 					}
@@ -329,7 +329,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (uivm)
 		{
-			VM_Call(uivm, UI_KEY_EVENT, key, down);
+			VM_Call(uivm, WSUI_KEY_EVENT, key, down);
 		}
 
 	}
@@ -401,7 +401,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
+		VM_Call(uivm, WSUI_KEY_EVENT, key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
