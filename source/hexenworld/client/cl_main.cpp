@@ -4,6 +4,7 @@
 #ifdef _WIN32
 #include "../../client/windows_shared.h"
 #endif
+#include "../../server/public.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -38,8 +39,6 @@ double host_frametime;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 int host_framecount;
-
-netadr_t master_adr;				// address of the master server
 
 int fps_count;
 
@@ -1444,48 +1443,35 @@ float* CL_GetSimOrg()
 	return cl.qh_simorg;
 }
 
-bool SV_IsServerActive()
-{
-	return false;
-}
-void SV_CvarChanged(Cvar* var)
-{
-}
-int SVQH_GetMaxClients()
-{
-	return 0;
-}
-int SVQH_GetMaxClientsLimit()
-{
-	return 0;
-}
-void SVH2_RemoveGIPFiles(const char* path)
-{
-}
 void SCRQH_BeginLoadingPlaque()
 {
 }
-void NET_Ban_f()
+
+void server_referencer_dummy()
 {
+	svh2_kingofhill = 0;
 }
-void Loop_SearchForHosts(bool xmit)
-{
-}
-void SVWS_SendMoveSpeedsToGame(int entnum, char* text)
-{
-}
-int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo)
-{
-	return 0;
-}
-void SVWM_SendMoveSpeedsToGame(int entnum, char* text)
+
+void CL_EstablishConnection(const char* name)
 {
 }
 
-Cvar* svqh_teamplay;
-Cvar* svqh_coop;
-int svh2_kingofhill;
-Cvar* qh_skill;
-Cvar* qh_timelimit;
-Cvar* qh_fraglimit;
-Cvar* h2_randomclass;
+void SCR_BeginLoadingPlaque(bool Clear)
+{
+}
+
+void CL_Disconnect(qboolean showMainMenu)
+{
+}
+void CL_MapLoading(void)
+{
+}
+void CL_ShutdownAll(void)
+{
+}
+void Host_Reconnect_f()
+{
+}
+void CL_Drop()
+{
+}

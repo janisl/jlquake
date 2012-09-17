@@ -39,4 +39,4 @@ add_executable(jlhwcl
 	client/view.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlhwcl ${DEDCLIENTS_LIBS})
+target_link_libraries(jlhwcl ${CLIENTS_LIBS})

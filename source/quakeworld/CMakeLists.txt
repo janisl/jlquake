@@ -38,4 +38,4 @@ add_executable(jlqwcl
 	client/view.cpp
 )
 set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlqwcl ${DEDCLIENTS_LIBS})
+target_link_libraries(jlqwcl ${CLIENTS_LIBS})

@@ -127,13 +127,16 @@ void SV_CvarChanged(Cvar* var)
 		{
 			Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
 				64, 64, !svqh_highchars || !svqh_highchars->value, false);
-			if (GGameType & GAME_HexenWorld)
+			if (sv.state != SS_DEAD)
 			{
-				SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
-			}
-			else
-			{
-				SVQW_SendServerInfoChange(var->name, var->string);
+				if (GGameType & GAME_HexenWorld)
+				{
+					SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
+				}
+				else
+				{
+					SVQW_SendServerInfoChange(var->name, var->string);
+				}
 			}
 		}
 	}
