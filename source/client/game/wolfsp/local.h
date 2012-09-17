@@ -26,5 +26,6 @@ int UIWS_GetActiveMenu();
 bool UIWS_ConsoleCommand(int realTime);
 void UIWS_DrawConnectScreen(bool overlay);
 bool UIWS_HasUniqueCDKey();
+qintptr CLWS_UISystemCalls(qintptr* args);
 
 #endif
