@@ -20,6 +20,7 @@
 #include "../tech3/local.h"
 
 bool CLWS_GetTag(int clientNum, const char* tagname, orientation_t* _or);
+qintptr CLWS_CgameSystemCalls(qintptr* args);
 
 int UIWS_GetActiveMenu();
 bool UIWS_ConsoleCommand(int realTime);

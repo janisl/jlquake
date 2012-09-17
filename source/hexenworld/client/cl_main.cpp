@@ -1471,6 +1471,16 @@ void NET_Ban_f()
 void Loop_SearchForHosts(bool xmit)
 {
 }
+void SVWS_SendMoveSpeedsToGame(int entnum, char* text)
+{
+}
+int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo)
+{
+	return 0;
+}
+void SVWM_SendMoveSpeedsToGame(int entnum, char* text)
+{
+}
 
 Cvar* svqh_teamplay;
 Cvar* svqh_coop;

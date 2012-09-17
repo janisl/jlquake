@@ -23,6 +23,7 @@ bool CLET_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 bool CLET_CGameCheckKeyExec(int key);
 bool CLET_WantsBindKeys();
 void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime);
+qintptr CLET_CgameSystemCalls(qintptr* args);
 
 bool UIET_ConsoleCommand(int realTime);
 void UIET_DrawConnectScreen(bool overlay);

@@ -19,6 +19,8 @@
 
 #include "../tech3/local.h"
 
+qintptr CLQ3_CgameSystemCalls(qintptr* args);
+
 bool UIQ3_ConsoleCommand(int realTime);
 void UIQ3_DrawConnectScreen(bool overlay);
 bool UIQ3_HasUniqueCDKey();

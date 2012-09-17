@@ -21,6 +21,7 @@
 
 bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 bool CLWM_CheckCenterView();
+qintptr CLWM_CgameSystemCalls(qintptr* args);
 
 int UIWM_GetActiveMenu();
 bool UIWM_ConsoleCommand(int realTime);
