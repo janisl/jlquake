@@ -17,6 +17,9 @@
 #ifndef _CGAME_TECH3_LOCAL_H
 #define _CGAME_TECH3_LOCAL_H
 
+//
+//	CGame
+//
 void CLT3_ShutdownCGame();
 void CLT3_CGameRendering(stereoFrame_t stereo);
 int CLT3_CrosshairPlayer();
@@ -24,5 +27,20 @@ int CLT3_LastAttacker();
 void CLT3_KeyEvent(int key, bool down);
 void CLT3_MouseEvent(int dx, int dy);
 void CLT3_EventHandling();
+
+//
+//	UI
+//
+extern vm_t* uivm;				// interface to ui dll or vm
+
+void CLT3_ShutdownUI();
+void UIT3_KeyEvent(int key, bool down);
+void UIT3_MouseEvent(int dx, int dy);
+void UIT3_Refresh(int time);
+bool UIT3_IsFullscreen();
+void UIT3_SetActiveMenu(int menu);
+void UIT3_DrawConnectScreen(bool overlay);
+bool UIT3_UsesUniqueCDKey();
+bool UIT3_CheckKeyExec(int key);
 
 #endif

@@ -437,11 +437,7 @@ rescan:
 	}
 
 	if (!String::Cmp(cmd, "popup"))			// direct server to client popup request, bypassing cgame
-	{	//		trap_UI_Popup(Cmd_Argv(1));
-//		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-//			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_CLIPBOARD);
-//			Menus_OpenByName(Cmd_Argv(1));
-//		}
+	{
 		return false;
 	}
 
@@ -1077,7 +1073,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		{
 			if (uivm)		// Gordon: can be called as the system is shutting down
 			{
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, args[1]);
+				UIT3_SetActiveMenu(args[1]);
 			}
 		}
 		return 0;

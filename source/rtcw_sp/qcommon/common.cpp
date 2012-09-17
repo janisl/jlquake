@@ -35,6 +35,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/tech3/local.h"
 #include <setjmp.h>
 
+bool UIT3_UsesUniqueCDKey();
+
 #define DEF_COMZONEMEGS "30"
 
 extern char cl_cdkey[34];
@@ -1383,7 +1385,7 @@ void Com_WriteConfiguration(void)
 	// bk001119 - tentative "not needed for dedicated"
 #ifndef DEDICATED
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		Com_WriteCDKey(fs->string, &cl_cdkey[16]);
 	}

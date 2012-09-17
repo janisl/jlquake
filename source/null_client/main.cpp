@@ -87,3 +87,8 @@ bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	return false;
 }
+
+bool UIT3_GameCommand()
+{
+	return false;
+}

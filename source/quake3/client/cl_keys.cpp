@@ -231,18 +231,18 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME);
+				UIT3_SetActiveMenu(UIMENU_INGAME);
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+				UIT3_SetActiveMenu(UIMENU_MAIN);
 			}
 			return;
 		}
 
-		VM_Call(uivm, UI_KEY_EVENT, key, down);
+		UIT3_KeyEvent(key, down);
 		return;
 	}
 
@@ -258,9 +258,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		CL_AddKeyUpCommands(key, kb);
 
-		if (in_keyCatchers & KEYCATCH_UI && uivm)
+		if (in_keyCatchers & KEYCATCH_UI)
 		{
-			VM_Call(uivm, UI_KEY_EVENT, key, down);
+			UIT3_KeyEvent(key, down);
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME)
 		{
@@ -278,10 +278,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		if (uivm)
-		{
-			VM_Call(uivm, UI_KEY_EVENT, key, down);
-		}
+		UIT3_KeyEvent(key, down);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
@@ -375,7 +372,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
+		UIT3_KeyEvent(key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

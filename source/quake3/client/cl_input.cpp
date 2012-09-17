@@ -56,7 +56,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 {
 	if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_MOUSE_EVENT, dx, dy);
+		UIT3_MouseEvent(dx, dy);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{

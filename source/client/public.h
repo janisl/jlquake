@@ -38,4 +38,6 @@ void CL_InitKeyCommands();
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 
+bool UIT3_GameCommand();
+
 #endif

@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../server/tech3/local.h"
 #include <setjmp.h>
 
+bool UIT3_UsesUniqueCDKey();
+
 int demo_protocols[] =
 { 66, 67, 68, 0 };
 
@@ -1280,7 +1282,7 @@ void Com_WriteConfiguration(void)
 	// bk001119 - tentative "not needed for dedicated"
 #ifndef DEDICATED
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		Com_WriteCDKey(fs->string, &cl_cdkey[16]);
 	}

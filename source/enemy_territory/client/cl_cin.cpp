@@ -120,7 +120,7 @@ void CIN_StartedPlayback()
 	// close the menu
 	if (uivm)
 	{
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
+		UIT3_SetActiveMenu(UIMENU_NONE);
 	}
 
 	cls.state = CA_CINEMATIC;

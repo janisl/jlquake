@@ -24,4 +24,10 @@ bool CLET_CGameCheckKeyExec(int key);
 bool CLET_WantsBindKeys();
 void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime);
 
+bool UIET_ConsoleCommand(int realTime);
+void UIET_DrawConnectScreen(bool overlay);
+bool UIET_HasUniqueCDKey();
+bool UIET_CheckExecKey(int key);
+bool UIET_WantsBindKeys();
+
 #endif

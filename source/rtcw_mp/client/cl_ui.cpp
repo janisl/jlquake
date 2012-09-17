@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/game/wolfmp/cg_public.h"
 
-vm_t* uivm;
-
 void CL_GetGlconfig(wmglconfig_t* config);
 void CL_AddRefEntityToScene(const wmrefEntity_t* ent);
 void CL_RenderScene(const wmrefdef_t* refdef);
@@ -829,7 +827,7 @@ static void CLUI_GetCDKey(char* buf, int buflen)
 {
 	Cvar* fs;
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		memcpy(buf, &cl_cdkey[16], 16);
 		buf[16] = 0;
@@ -851,7 +849,7 @@ static void CLUI_SetCDKey(char* buf)
 {
 	Cvar* fs;
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		memcpy(&cl_cdkey[16], buf, 16);
 		cl_cdkey[32] = 0;
@@ -1290,24 +1288,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 
 /*
 ====================
-CL_ShutdownUI
-====================
-*/
-void CL_ShutdownUI(void)
-{
-	in_keyCatchers &= ~KEYCATCH_UI;
-	cls.q3_uiStarted = false;
-	if (!uivm)
-	{
-		return;
-	}
-	VM_Call(uivm, UI_SHUTDOWN);
-	VM_Free(uivm);
-	uivm = NULL;
-}
-
-/*
-====================
 CL_InitUI
 ====================
 */
@@ -1332,46 +1312,4 @@ void CL_InitUI(void)
 
 	// init for this gamestate
 	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
-}
-
-
-qboolean UI_usesUniqueCDKey()
-{
-	if (uivm)
-	{
-		return (VM_Call(uivm, WMUI_HASUNIQUECDKEY) == true);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-qboolean UI_checkKeyExec(int key)
-{
-	if (uivm)
-	{
-		return VM_Call(uivm, WMUI_CHECKEXECKEY, key);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-/*
-====================
-UI_GameCommand
-
-See if the current console command is claimed by the ui
-====================
-*/
-qboolean UI_GameCommand(void)
-{
-	if (!uivm)
-	{
-		return false;
-	}
-
-	return VM_Call(uivm, WMUI_CONSOLE_COMMAND, cls.realtime);
 }

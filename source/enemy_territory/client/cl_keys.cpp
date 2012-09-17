@@ -34,8 +34,6 @@ key up events are sent even if in console mode
 
 */
 
-qboolean UI_checkKeyExec(int key);			// NERVE - SMF
-
 /*
 ================
 Message_Key
@@ -255,19 +253,19 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 				}
 				else
 				{
-					VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME);
+					UIT3_SetActiveMenu(UIMENU_INGAME);
 				}
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+				UIT3_SetActiveMenu(UIMENU_MAIN);
 			}
 			return;
 		}
 
-		VM_Call(uivm, UI_KEY_EVENT, key, down);
+		UIT3_KeyEvent(key, down);
 		return;
 	}
 
@@ -290,9 +288,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (in_keyCatchers & KEYCATCH_UI && uivm)
 		{
-			if (!onlybinds || VM_Call(uivm, ETUI_WANTSBINDKEYS))
+			if (!onlybinds || UIET_WantsBindKeys())
 			{
-				VM_Call(uivm, UI_KEY_EVENT, key, down);
+				UIT3_KeyEvent(key, down);
 			}
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME)
@@ -316,7 +314,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 				bypassMenu = true;
 			}
 		}
-		else if ((in_keyCatchers & KEYCATCH_UI && !UI_checkKeyExec(key)) || (in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec(key)))
+		else if ((in_keyCatchers & KEYCATCH_UI && !UIT3_CheckKeyExec(key)) || (in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec(key)))
 		{
 			bypassMenu = true;
 		}
@@ -332,9 +330,9 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
 	{
-		if (!onlybinds || VM_Call(uivm, ETUI_WANTSBINDKEYS))
+		if (!onlybinds || UIET_WantsBindKeys())
 		{
-			VM_Call(uivm, UI_KEY_EVENT, key, down);
+			UIT3_KeyEvent(key, down);
 		}
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME && !bypassMenu)
@@ -417,7 +415,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		VM_Call(uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, true);
+		UIT3_KeyEvent(key | K_CHAR_FLAG, true);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{

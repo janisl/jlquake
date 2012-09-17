@@ -186,12 +186,6 @@ void CL_FlushMemory(void);
 void CL_StartHunkUsers(void);
 // start all the client stuff using the hunk
 
-//
-// UI interface
-//
-qboolean UI_GameCommand(void);
-qboolean UI_usesUniqueCDKey();
-
 /*
 ==============================================================
 

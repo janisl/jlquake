@@ -14,18 +14,31 @@
 //**
 //**************************************************************************
 
-#ifndef _CGAME_WOLFMP_LOCAL_H
-#define _CGAME_WOLFMP_LOCAL_H
+#include "../../client.h"
+#include "local.h"
+#include "ui_public.h"
 
-#include "../tech3/local.h"
+bool UIET_ConsoleCommand(int realTime)
+{
+	return VM_Call(uivm, ETUI_CONSOLE_COMMAND, realTime);
+}
 
-bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-bool CLWM_CheckCenterView();
+void UIET_DrawConnectScreen(bool overlay)
+{
+	VM_Call(uivm, ETUI_DRAW_CONNECT_SCREEN, overlay);
+}
 
-int UIWM_GetActiveMenu();
-bool UIWM_ConsoleCommand(int realTime);
-void UIWM_DrawConnectScreen(bool overlay);
-bool UIWM_HasUniqueCDKey();
-bool UIWM_CheckExecKey(int key);
+bool UIET_HasUniqueCDKey()
+{
+	return VM_Call(uivm, ETUI_HASUNIQUECDKEY);
+}
 
-#endif
+bool UIET_CheckExecKey(int key)
+{
+	return VM_Call(uivm, ETUI_CHECKEXECKEY, key);
+}
+
+bool UIET_WantsBindKeys()
+{
+	return VM_Call(uivm, ETUI_WANTSBINDKEYS);
+}

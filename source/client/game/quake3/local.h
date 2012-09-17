@@ -19,4 +19,8 @@
 
 #include "../tech3/local.h"
 
+bool UIQ3_ConsoleCommand(int realTime);
+void UIQ3_DrawConnectScreen(bool overlay);
+bool UIQ3_HasUniqueCDKey();
+
 #endif

@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include "../../client/game/quake3/cg_public.h"
 
-vm_t* uivm;
-
 void CL_GetGlconfig(q3glconfig_t* glconfig);
 void CL_AddRefEntityToScene(const q3refEntity_t* ent);
 void CL_RenderScene(const q3refdef_t* refdef);
@@ -785,7 +783,7 @@ static void CLUI_GetCDKey(char* buf, int buflen)
 {
 	Cvar* fs;
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		Com_Memcpy(buf, &cl_cdkey[16], 16);
 		buf[16] = 0;
@@ -807,7 +805,7 @@ static void CLUI_SetCDKey(char* buf)
 {
 	Cvar* fs;
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		Com_Memcpy(&cl_cdkey[16], buf, 16);
 		cl_cdkey[32] = 0;
@@ -1214,24 +1212,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 
 /*
 ====================
-CL_ShutdownUI
-====================
-*/
-void CL_ShutdownUI(void)
-{
-	in_keyCatchers &= ~KEYCATCH_UI;
-	cls.q3_uiStarted = false;
-	if (!uivm)
-	{
-		return;
-	}
-	VM_Call(uivm, UI_SHUTDOWN);
-	VM_Free(uivm);
-	uivm = NULL;
-}
-
-/*
-====================
 CL_InitUI
 ====================
 */
@@ -1276,33 +1256,4 @@ void CL_InitUI(void)
 		// init for this gamestate
 		VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 	}
-}
-
-qboolean UI_usesUniqueCDKey()
-{
-	if (uivm)
-	{
-		return (VM_Call(uivm, Q3UI_HASUNIQUECDKEY) == true);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-/*
-====================
-UI_GameCommand
-
-See if the current console command is claimed by the ui
-====================
-*/
-qboolean UI_GameCommand(void)
-{
-	if (!uivm)
-	{
-		return false;
-	}
-
-	return VM_Call(uivm, Q3UI_CONSOLE_COMMAND, cls.realtime);
 }

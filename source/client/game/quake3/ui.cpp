@@ -14,18 +14,21 @@
 //**
 //**************************************************************************
 
-#ifndef _CGAME_WOLFMP_LOCAL_H
-#define _CGAME_WOLFMP_LOCAL_H
+#include "../../client.h"
+#include "local.h"
+#include "ui_public.h"
 
-#include "../tech3/local.h"
+bool UIQ3_ConsoleCommand(int realTime)
+{
+	return VM_Call(uivm, Q3UI_CONSOLE_COMMAND, realTime);
+}
 
-bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-bool CLWM_CheckCenterView();
+void UIQ3_DrawConnectScreen(bool overlay)
+{
+	VM_Call(uivm, Q3UI_DRAW_CONNECT_SCREEN, overlay);
+}
 
-int UIWM_GetActiveMenu();
-bool UIWM_ConsoleCommand(int realTime);
-void UIWM_DrawConnectScreen(bool overlay);
-bool UIWM_HasUniqueCDKey();
-bool UIWM_CheckExecKey(int key);
-
-#endif
+bool UIQ3_HasUniqueCDKey()
+{
+	return VM_Call(uivm, Q3UI_HASUNIQUECDKEY);
+}

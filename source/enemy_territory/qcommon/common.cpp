@@ -49,6 +49,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #define DEF_COMZONEMEGS "24"// RF, increased this from 16, to account for botlib/AAS
 
+bool UIT3_UsesUniqueCDKey();
+
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
@@ -1780,7 +1782,7 @@ void Com_WriteConfiguration(void)
 
 #ifndef DEDICATED
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0)
+	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
 		Com_WriteCDKey(fs->string, &cl_cdkey[16]);
 	}

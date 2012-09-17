@@ -702,7 +702,7 @@ void CL_ShutdownAll(void)
 	// shutdown CGame
 	CLT3_ShutdownCGame();
 	// shutdown UI
-	CL_ShutdownUI();
+	CLT3_ShutdownUI();
 
 	// shutdown the renderer
 	R_Shutdown(false);			// don't destroy window or context
@@ -845,7 +845,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (uivm && showMainMenu)
 	{
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE);
+		UIT3_SetActiveMenu(UIMENU_NONE);
 	}
 
 	SCR_StopCinematic();
@@ -1352,7 +1352,7 @@ void CL_Vid_Restart_f(void)
 	// don't let them loop during the restart
 	S_StopAllSounds();
 	// shutdown the UI
-	CL_ShutdownUI();
+	CLT3_ShutdownUI();
 	// shutdown the CGame
 	CLT3_ShutdownCGame();
 	// shutdown the renderer and clear the renderer interface
@@ -1402,7 +1402,7 @@ Restart the ui subsystem
 */
 void CL_UI_Restart_f(void)				// NERVE - SMF
 {	// shutdown the UI
-	CL_ShutdownUI();
+	CLT3_ShutdownUI();
 
 	autoupdateChecked = false;
 
@@ -2378,14 +2378,14 @@ void CL_Frame(int msec)
 	{
 		// bring up the cd error dialog if needed
 		cls.q3_cddialog = false;
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD);
+		UIT3_SetActiveMenu(UIMENU_NEED_CD);
 	}
 	else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
 			 !com_sv_running->integer)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+		UIT3_SetActiveMenu(UIMENU_MAIN);
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -3091,7 +3091,7 @@ void CL_Shutdown(void)
 	S_Shutdown();
 	CL_ShutdownRef();
 
-	CL_ShutdownUI();
+	CLT3_ShutdownUI();
 
 	Cmd_RemoveCommand("cmd");
 	Cmd_RemoveCommand("configstrings");
@@ -3354,7 +3354,7 @@ void CL_UpdateInfoPacket(netadr_t from)
 	if (!String::ICmp(cl_updateavailable->string, "1"))
 	{
 		Cvar_Set("cl_updatefiles", Cmd_Argv(2));
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_WM_AUTOUPDATE);
+		UIT3_SetActiveMenu(WMUIMENU_WM_AUTOUPDATE);
 	}
 }
 // DHM - Nerve

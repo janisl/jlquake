@@ -53,7 +53,7 @@ void Cmd_HandleUnknownCommand()
 	}
 
 	// check ui commands
-	if (com_cl_running && com_cl_running->integer && UI_GameCommand())
+	if (com_cl_running && com_cl_running->integer && UIT3_GameCommand())
 	{
 		return;
 	}

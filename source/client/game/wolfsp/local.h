@@ -21,4 +21,9 @@
 
 bool CLWS_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 
+int UIWS_GetActiveMenu();
+bool UIWS_ConsoleCommand(int realTime);
+void UIWS_DrawConnectScreen(bool overlay);
+bool UIWS_HasUniqueCDKey();
+
 #endif

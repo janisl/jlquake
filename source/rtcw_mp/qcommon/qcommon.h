@@ -215,12 +215,6 @@ void CL_StartHunkUsers(void);
 void CL_CheckAutoUpdate(void);
 // Send a message to auto-update server
 
-//
-// UI interface
-//
-qboolean UI_GameCommand(void);
-qboolean UI_usesUniqueCDKey();
-
 /*
 ==============================================================
 

@@ -50,18 +50,11 @@ at the same time.
 ===============================================================================
 */
 
-void IN_Notebook(void)
-{
-	//if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-	//VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK);	// startup notebook
-	//}
-}
-
 void IN_Help(void)
 {
 	if (cls.state == CA_ACTIVE && !clc.demoplaying)
 	{
-		VM_Call(uivm, UI_SET_ACTIVE_MENU, WMUIMENU_HELP);			// startup help system
+		UIT3_SetActiveMenu(WMUIMENU_HELP);			// startup help system
 	}
 }
 
@@ -86,7 +79,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 		}
 		else
 		{
-			VM_Call(uivm, UI_MOUSE_EVENT, dx, dy);
+			UIT3_MouseEvent(dx, dy);
 		}
 
 	}

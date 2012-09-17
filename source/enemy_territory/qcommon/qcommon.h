@@ -246,12 +246,6 @@ void CL_CheckAutoUpdate(void);
 qboolean CL_NextUpdateServer(void);
 void CL_GetAutoUpdate(void);
 
-//
-// UI interface
-//
-qboolean UI_GameCommand(void);
-qboolean UI_usesUniqueCDKey();
-
 /*
 ==============================================================
 

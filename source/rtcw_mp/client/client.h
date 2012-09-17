@@ -47,9 +47,6 @@ typedef struct
 
 //=============================================================================
 
-extern vm_t* uivm;				// interface to ui dll or vm
-
-
 //
 // cvars
 //
@@ -194,7 +191,6 @@ void CL_ShaderStateChanged(void);
 // cl_ui.c
 //
 void CL_InitUI(void);
-void CL_ShutdownUI(void);
 int Key_GetCatcher(void);
 void Key_SetCatcher(int catcher);
 void LAN_LoadCachedServers();

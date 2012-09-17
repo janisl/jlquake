@@ -65,11 +65,6 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
 
-qboolean UI_GameCommand(void)
-{
-	return false;
-}
-
 void CL_ForwardCommandToServer(const char* string)
 {
 }
