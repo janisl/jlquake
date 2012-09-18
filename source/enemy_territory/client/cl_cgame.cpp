@@ -111,12 +111,6 @@ qboolean CL_GetUserCmd(int cmdNumber, etusercmd_t* ucmd)
 	return true;
 }
 
-int CL_GetCurrentCmdNumber(void)
-{
-	return cl.q3_cmdNumber;
-}
-
-
 /*
 ====================
 CL_GetParseEntityState
@@ -235,26 +229,6 @@ void CL_SetClientLerpOrigin(float x, float y, float z)
 	cl.wm_cgameClientLerpOrigin[0] = x;
 	cl.wm_cgameClientLerpOrigin[1] = y;
 	cl.wm_cgameClientLerpOrigin[2] = z;
-}
-
-/*
-==============
-CL_AddCgameCommand
-==============
-*/
-void CL_AddCgameCommand(const char* cmdName)
-{
-	Cmd_AddCommand(cmdName, NULL);
-}
-
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError(const char* string)
-{
-	common->Error("%s", string);
 }
 
 /*
@@ -507,27 +481,6 @@ static int CL_BinaryMessageStatus(void)
 	return ETMESSAGE_WAITING;
 }
 
-/*
-====================
-CL_CM_LoadMap
-
-Just adds default parameters that cgame doesn't need to know about
-====================
-*/
-void CL_CM_LoadMap(const char* mapname)
-{
-	int checksum;
-
-	if (com_sv_running->integer)
-	{
-		// TTimo
-		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
-		Cvar_Set("com_errorDiagnoseIP", "");
-	}
-
-	CM_LoadMap(mapname, true, &checksum);
-}
-
 static refEntityType_t gameRefEntTypeToEngine[] =
 {
 	RT_MODEL,
@@ -664,14 +617,6 @@ int CL_LerpTag(orientation_t* tag,  const etrefEntity_t* gameRefent, const char*
 	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
-bool R_inPVS(const vec3_t p1, const vec3_t p2)
-{
-	int cluster = CM_LeafCluster(CM_PointLeafnum(p1));
-	byte* vis = CM_ClusterPVS(cluster);
-	cluster = CM_LeafCluster(CM_PointLeafnum(p2));
-	return !!(vis[cluster >> 3] & (1 << (cluster & 7)));
-}
-
 /*
 ====================
 CL_CgameSystemCalls
@@ -684,18 +629,11 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //---------
-	case ETCG_ADDCOMMAND:
-		CL_AddCgameCommand((char*)VMA(1));
-		return 0;
-//---------
 	case ETCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
 	case ETCG_UPDATESCREEN:
 		SCR_UpdateScreen();
-		return 0;
-	case ETCG_CM_LOADMAP:
-		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
 //---------
 	case ETCG_R_ADDREFENTITYTOSCENE:
@@ -721,8 +659,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return CL_GetSnapshot(args[1], (etsnapshot_t*)VMA(2));
 	case ETCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case ETCG_GETCURRENTCMDNUMBER:
-		return CL_GetCurrentCmdNumber();
+//---------
 	case ETCG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (etusercmd_t*)VMA(2));
 	case ETCG_SETUSERCMDVALUE:
@@ -769,9 +706,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //---------
-	case ETCG_R_INPVS:
-		return R_inPVS((float*)VMA(1), (float*)VMA(2));
-
 	case ETCG_GETHUNKDATA:
 		Com_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
 		return 0;

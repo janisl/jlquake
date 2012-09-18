@@ -79,11 +79,16 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 	case WMCG_SENDCONSOLECOMMAND:
 		Cbuf_AddText((char*)VMA(1));
 		return 0;
-//-------------
+	case WMCG_ADDCOMMAND:
+		CLT3_AddCgameCommand((char*)VMA(1));
+		return 0;
 	case WMCG_REMOVECOMMAND:
 		Cmd_RemoveCommand((char*)VMA(1));
 		return 0;
 //-------------
+	case WMCG_CM_LOADMAP:
+		CLT3_CM_LoadMap((char*)VMA(1));
+		return 0;
 	case WMCG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
 	case WMCG_CM_INLINEMODEL:
@@ -200,6 +205,9 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 	case WMCG_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
+//-------------
+	case WMCG_GETCURRENTCMDNUMBER:
+		return CLT3_GetCurrentCmdNumber();
 //-------------
 	case WMCG_MEMORY_REMAINING:
 		return 0x4000000;

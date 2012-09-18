@@ -66,11 +66,16 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_SENDCONSOLECOMMAND:
 		Cbuf_AddText((char*)VMA(1));
 		return 0;
-//---------
+	case Q3CG_ADDCOMMAND:
+		CLT3_AddCgameCommand((char*)VMA(1));
+		return 0;
 	case Q3CG_REMOVECOMMAND:
 		Cmd_RemoveCommand((char*)VMA(1));
 		return 0;
 //---------
+	case Q3CG_CM_LOADMAP:
+		CLT3_CM_LoadMap((char*)VMA(1));
+		return 0;
 	case Q3CG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
 	case Q3CG_CM_INLINEMODEL:
@@ -170,6 +175,9 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_R_LERPTAG:
 		return R_LerpTag((orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6));
 //---------
+	case Q3CG_GETCURRENTCMDNUMBER:
+		return CLT3_GetCurrentCmdNumber();
+//---------
 	case Q3CG_MEMORY_REMAINING:
 		return 0x4000000;
 	case Q3CG_KEY_ISDOWN:
@@ -235,7 +243,8 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 
 	case Q3CG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
-//---------
+	case Q3CG_R_INPVS:
+		return CLT3_InPvs((float*)VMA(1), (float*)VMA(2));
 
 	default:
 		qassert(0);

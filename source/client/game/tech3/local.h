@@ -27,6 +27,10 @@ int CLT3_LastAttacker();
 void CLT3_KeyEvent(int key, bool down);
 void CLT3_MouseEvent(int dx, int dy);
 void CLT3_EventHandling();
+int CLT3_GetCurrentCmdNumber();
+void CLT3_AddCgameCommand(const char* cmdName);
+void CLT3_CM_LoadMap(const char* mapname);
+bool CLT3_InPvs(const vec3_t p1, const vec3_t p2);
 
 //
 //	UI

@@ -104,3 +104,34 @@ bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 	}
 	return false;
 }
+
+int CLT3_GetCurrentCmdNumber()
+{
+	return cl.q3_cmdNumber;
+}
+
+void CLT3_AddCgameCommand(const char* cmdName)
+{
+	Cmd_AddCommand(cmdName, NULL);
+}
+
+//	Just adds default parameters that cgame doesn't need to know about
+void CLT3_CM_LoadMap(const char* mapname)
+{
+	if (GGameType & (GAME_WolfMP | GAME_ET) && com_sv_running->integer)
+	{
+		// TTimo
+		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
+		Cvar_Set("com_errorDiagnoseIP", "");
+	}
+
+	int checksum;
+	CM_LoadMap(mapname, true, &checksum);
+}
+
+bool CLT3_InPvs(const vec3_t p1, const vec3_t p2)
+{
+	byte* vis = CM_ClusterPVS(CM_LeafCluster(CM_PointLeafnum(p1)));
+	int cluster = CM_LeafCluster(CM_PointLeafnum(p2));
+	return !!(vis[cluster >> 3] & (1 << (cluster & 7)));
+}

@@ -112,12 +112,6 @@ qboolean CL_GetUserCmd(int cmdNumber, wmusercmd_t* ucmd)
 	return true;
 }
 
-int CL_GetCurrentCmdNumber(void)
-{
-	return cl.q3_cmdNumber;
-}
-
-
 /*
 ====================
 CL_GetParseEntityState
@@ -238,27 +232,6 @@ void CL_SetClientLerpOrigin(float x, float y, float z)
 	cl.wm_cgameClientLerpOrigin[1] = y;
 	cl.wm_cgameClientLerpOrigin[2] = z;
 }
-
-/*
-==============
-CL_AddCgameCommand
-==============
-*/
-void CL_AddCgameCommand(const char* cmdName)
-{
-	Cmd_AddCommand(cmdName, NULL);
-}
-
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError(const char* string)
-{
-	common->Error("%s", string);
-}
-
 
 /*
 =====================
@@ -476,27 +449,6 @@ rescan:
 	return true;
 }
 
-/*
-====================
-CL_CM_LoadMap
-
-Just adds default parameters that cgame doesn't need to know about
-====================
-*/
-void CL_CM_LoadMap(const char* mapname)
-{
-	int checksum;
-
-	if (com_sv_running->integer)
-	{
-		// TTimo
-		// catch here when a local server is started to avoid outdated com_errorDiagnoseIP
-		Cvar_Set("com_errorDiagnoseIP", "");
-	}
-
-	CM_LoadMap(mapname, true, &checksum);
-}
-
 static refEntityType_t gameRefEntTypeToEngine[] =
 {
 	RT_MODEL,
@@ -622,10 +574,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //-------------
-	case WMCG_ADDCOMMAND:
-		CL_AddCgameCommand((char*)VMA(1));
-		return 0;
-//-------------
 	case WMCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
@@ -636,9 +584,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 // if there is a map change while we are downloading at pk3.
 // ZOID
 		SCR_UpdateScreen();
-		return 0;
-	case WMCG_CM_LOADMAP:
-		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
 //-------------
 	case WMCG_R_ADDREFENTITYTOSCENE:
@@ -664,8 +609,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return CL_GetSnapshot(args[1], (wmsnapshot_t*)VMA(2));
 	case WMCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case WMCG_GETCURRENTCMDNUMBER:
-		return CL_GetCurrentCmdNumber();
+//-------------
 	case WMCG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (wmusercmd_t*)VMA(2));
 	case WMCG_SETUSERCMDVALUE:

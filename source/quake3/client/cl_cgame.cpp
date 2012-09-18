@@ -92,12 +92,6 @@ qboolean CL_GetUserCmd(int cmdNumber, q3usercmd_t* ucmd)
 	return true;
 }
 
-int CL_GetCurrentCmdNumber(void)
-{
-	return cl.q3_cmdNumber;
-}
-
-
 /*
 ====================
 CL_GetParseEntityState
@@ -203,27 +197,6 @@ void CL_SetUserCmdValue(int userCmdValue, float sensitivityScale)
 	cl.q3_cgameUserCmdValue = userCmdValue;
 	cl.q3_cgameSensitivity = sensitivityScale;
 }
-
-/*
-=====================
-CL_AddCgameCommand
-=====================
-*/
-void CL_AddCgameCommand(const char* cmdName)
-{
-	Cmd_AddCommand(cmdName, NULL);
-}
-
-/*
-=====================
-CL_CgameError
-=====================
-*/
-void CL_CgameError(const char* string)
-{
-	common->Error("%s", string);
-}
-
 
 /*
 =====================
@@ -429,20 +402,6 @@ rescan:
 }
 
 
-/*
-====================
-CL_CM_LoadMap
-
-Just adds default parameters that cgame doesn't need to know about
-====================
-*/
-void CL_CM_LoadMap(const char* mapname)
-{
-	int checksum;
-
-	CM_LoadMap(mapname, true, &checksum);
-}
-
 static refEntityType_t gameRefEntTypeToEngine[] =
 {
 	RT_MODEL,
@@ -513,24 +472,6 @@ void CL_RenderScene(const q3refdef_t* gameRefdef)
 }
 
 /*
-=================
-R_inPVS
-=================
-*/
-static bool R_inPVS(const vec3_t p1, const vec3_t p2)
-{
-	int leaf = CM_PointLeafnum(p1);
-	byte* vis = CM_ClusterPVS(CM_LeafCluster(leaf));
-	leaf = CM_PointLeafnum(p2);
-
-	if (!(vis[CM_LeafCluster(leaf) >> 3] & (1 << (CM_LeafCluster(leaf) & 7))))
-	{
-		return false;
-	}
-	return true;
-}
-
-/*
 ====================
 CL_CgameSystemCalls
 
@@ -542,10 +483,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //---------
-	case Q3CG_ADDCOMMAND:
-		CL_AddCgameCommand((char*)VMA(1));
-		return 0;
-//---------
 	case Q3CG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
@@ -556,9 +493,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 // if there is a map change while we are downloading at pk3.
 // ZOID
 		SCR_UpdateScreen();
-		return 0;
-	case Q3CG_CM_LOADMAP:
-		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
 //---------
 	case Q3CG_R_ADDREFENTITYTOSCENE:
@@ -582,8 +516,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return CL_GetSnapshot(args[1], (q3snapshot_t*)VMA(2));
 	case Q3CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case Q3CG_GETCURRENTCMDNUMBER:
-		return CL_GetCurrentCmdNumber();
+//---------
 	case Q3CG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (q3usercmd_t*)VMA(2));
 	case Q3CG_SETUSERCMDVALUE:
@@ -608,9 +541,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	case Q3CG_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
-//---------
-	case Q3CG_R_INPVS:
-		return R_inPVS((float*)VMA(1), (float*)VMA(2));
 //---------
 	}
 	return CLQ3_CgameSystemCalls(args);

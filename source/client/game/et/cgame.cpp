@@ -128,11 +128,16 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_SENDCONSOLECOMMAND:
 		Cbuf_AddText((char*)VMA(1));
 		return 0;
-//---------
+	case ETCG_ADDCOMMAND:
+		CLT3_AddCgameCommand((char*)VMA(1));
+		return 0;
 	case ETCG_REMOVECOMMAND:
 		Cmd_RemoveCommand((char*)VMA(1));
 		return 0;
 //---------
+	case ETCG_CM_LOADMAP:
+		CLT3_CM_LoadMap((char*)VMA(1));
+		return 0;
 	case ETCG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
 	case ETCG_CM_INLINEMODEL:
@@ -283,6 +288,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 //---------
+	case ETCG_GETCURRENTCMDNUMBER:
+		return CLT3_GetCurrentCmdNumber();
+//---------
 	case ETCG_MEMORY_REMAINING:
 		return 0x4000000;
 	case ETCG_KEY_ISDOWN:
@@ -394,6 +402,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_S_FADEALLSOUNDS:
 		S_FadeAllSounds(VMF(1), args[2], args[3]);
 		return 0;
+
+	case ETCG_R_INPVS:
+		return CLT3_InPvs((float*)VMA(1), (float*)VMA(2));
 
 //---------
 

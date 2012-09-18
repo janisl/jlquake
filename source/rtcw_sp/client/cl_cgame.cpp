@@ -107,12 +107,6 @@ qboolean CL_GetUserCmd(int cmdNumber, wsusercmd_t* ucmd)
 	return true;
 }
 
-int CL_GetCurrentCmdNumber(void)
-{
-	return cl.q3_cmdNumber;
-}
-
-
 /*
 ====================
 CL_GetParseEntityState
@@ -220,27 +214,6 @@ void CL_SetUserCmdValue(int userCmdValue, int holdableValue, float sensitivitySc
 	cl.q3_cgameSensitivity         = sensitivityScale;
 	cl.ws_cgameCld                 = cld;
 }
-
-/*
-==============
-CL_AddCgameCommand
-==============
-*/
-void CL_AddCgameCommand(const char* cmdName)
-{
-	Cmd_AddCommand(cmdName, NULL);
-}
-
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError(const char* string)
-{
-	common->Error("%s", string);
-}
-
 
 /*
 =====================
@@ -442,20 +415,6 @@ rescan:
 }
 
 
-/*
-====================
-CL_CM_LoadMap
-
-Just adds default parameters that cgame doesn't need to know about
-====================
-*/
-void CL_CM_LoadMap(const char* mapname)
-{
-	int checksum;
-
-	CM_LoadMap(mapname, true, &checksum);
-}
-
 static refEntityType_t gameRefEntTypeToEngine[] =
 {
 	RT_MODEL,
@@ -587,10 +546,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //---------
-	case WSCG_ADDCOMMAND:
-		CL_AddCgameCommand((char*)VMA(1));
-		return 0;
-//---------
 	case WSCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
@@ -601,9 +556,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 // if there is a map change while we are downloading at pk3.
 // ZOID
 		SCR_UpdateScreen();
-		return 0;
-	case WSCG_CM_LOADMAP:
-		CL_CM_LoadMap((char*)VMA(1));
 		return 0;
 //---------
 	case WSCG_R_ADDREFENTITYTOSCENE:
@@ -629,8 +581,7 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return CL_GetSnapshot(args[1], (wssnapshot_t*)VMA(2));
 	case WSCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-	case WSCG_GETCURRENTCMDNUMBER:
-		return CL_GetCurrentCmdNumber();
+//---------
 	case WSCG_GETUSERCMD:
 		return CL_GetUserCmd(args[1], (wsusercmd_t*)VMA(2));
 	case WSCG_SETUSERCMDVALUE:
