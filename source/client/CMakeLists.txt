@@ -45,6 +45,7 @@ set(CLIENT_FILES
 	game/quake3/cgame.cpp
 	game/quake3/ui.cpp
 	game/tech3/cgame.cpp
+	game/tech3/main.cpp
 	game/tech3/ui.cpp
 	game/wolfmp/cgame.cpp
 	game/wolfmp/ui.cpp

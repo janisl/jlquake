@@ -37,10 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 
 bool UIT3_UsesUniqueCDKey();
 
-#define DEF_COMZONEMEGS "30"
-
-extern char cl_cdkey[34];
-
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
@@ -993,7 +989,7 @@ void Com_ReadCDKey(const char* filename)
 	FS_SV_FOpenFileRead(fbuffer, &f);
 	if (!f)
 	{
-		String::NCpyZ(cl_cdkey, "                ", 17);
+		String::NCpyZ(comt3_cdkey, "                ", 17);
 		return;
 	}
 
@@ -1004,11 +1000,11 @@ void Com_ReadCDKey(const char* filename)
 
 	if (CL_CDKeyValidate(buffer, NULL))
 	{
-		String::NCpyZ(cl_cdkey, buffer, 17);
+		String::NCpyZ(comt3_cdkey, buffer, 17);
 	}
 	else
 	{
-		String::NCpyZ(cl_cdkey, "                ", 17);
+		String::NCpyZ(comt3_cdkey, "                ", 17);
 	}
 }
 
@@ -1028,7 +1024,7 @@ void Com_AppendCDKey(const char* filename)
 	FS_SV_FOpenFileRead(fbuffer, &f);
 	if (!f)
 	{
-		String::NCpyZ(&cl_cdkey[16], "                ", 17);
+		String::NCpyZ(&comt3_cdkey[16], "                ", 17);
 		return;
 	}
 
@@ -1039,11 +1035,11 @@ void Com_AppendCDKey(const char* filename)
 
 	if (CL_CDKeyValidate(buffer, NULL))
 	{
-		strcat(&cl_cdkey[16], buffer);
+		strcat(&comt3_cdkey[16], buffer);
 	}
 	else
 	{
-		String::NCpyZ(&cl_cdkey[16], "                ", 17);
+		String::NCpyZ(&comt3_cdkey[16], "                ", 17);
 	}
 }
 
@@ -1387,11 +1383,11 @@ void Com_WriteConfiguration(void)
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
-		Com_WriteCDKey(fs->string, &cl_cdkey[16]);
+		Com_WriteCDKey(fs->string, &comt3_cdkey[16]);
 	}
 	else
 	{
-		Com_WriteCDKey("main", cl_cdkey);
+		Com_WriteCDKey("main", comt3_cdkey);
 	}
 #endif
 }

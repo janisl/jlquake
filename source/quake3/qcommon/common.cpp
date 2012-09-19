@@ -937,15 +937,6 @@ static void Com_Crash_f(void)
 	*(int*)0 = 0x12345678;
 }
 
-// TTimo: centralizing the cl_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version
-//   not sure it's necessary to have different defaults for regular and dedicated, but I don't want to risk it
-//   https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=470
-#ifndef DEDICATED
-char cl_cdkey[34] = "                                ";
-#else
-char cl_cdkey[34] = "123456789";
-#endif
-
 /*
 =================
 Com_ReadCDKey
@@ -963,7 +954,7 @@ void Com_ReadCDKey(const char* filename)
 	FS_SV_FOpenFileRead(fbuffer, &f);
 	if (!f)
 	{
-		String::NCpyZ(cl_cdkey, "                ", 17);
+		String::NCpyZ(comt3_cdkey, "                ", 17);
 		return;
 	}
 
@@ -974,11 +965,11 @@ void Com_ReadCDKey(const char* filename)
 
 	if (CL_CDKeyValidate(buffer, NULL))
 	{
-		String::NCpyZ(cl_cdkey, buffer, 17);
+		String::NCpyZ(comt3_cdkey, buffer, 17);
 	}
 	else
 	{
-		String::NCpyZ(cl_cdkey, "                ", 17);
+		String::NCpyZ(comt3_cdkey, "                ", 17);
 	}
 }
 
@@ -998,7 +989,7 @@ void Com_AppendCDKey(const char* filename)
 	FS_SV_FOpenFileRead(fbuffer, &f);
 	if (!f)
 	{
-		String::NCpyZ(&cl_cdkey[16], "                ", 17);
+		String::NCpyZ(&comt3_cdkey[16], "                ", 17);
 		return;
 	}
 
@@ -1009,11 +1000,11 @@ void Com_AppendCDKey(const char* filename)
 
 	if (CL_CDKeyValidate(buffer, NULL))
 	{
-		String::Cat(&cl_cdkey[16], sizeof(cl_cdkey) - 16, buffer);
+		String::Cat(&comt3_cdkey[16], sizeof(comt3_cdkey) - 16, buffer);
 	}
 	else
 	{
-		String::NCpyZ(&cl_cdkey[16], "                ", 17);
+		String::NCpyZ(&comt3_cdkey[16], "                ", 17);
 	}
 }
 
@@ -1284,11 +1275,11 @@ void Com_WriteConfiguration(void)
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
 	{
-		Com_WriteCDKey(fs->string, &cl_cdkey[16]);
+		Com_WriteCDKey(fs->string, &comt3_cdkey[16]);
 	}
 	else
 	{
-		Com_WriteCDKey("baseq3", cl_cdkey);
+		Com_WriteCDKey("baseq3", comt3_cdkey);
 	}
 #endif
 }

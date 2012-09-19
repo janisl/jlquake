@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/cinematic/local.h"
 #include "../../client/sound/local.h"
+#include "../../client/game/wolfsp/ui_public.h"
 
 #define LETTERBOX_OFFSET 105
 

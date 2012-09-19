@@ -171,7 +171,7 @@ enum
 	WSUI_HASUNIQUECDKEY
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
-// a GetClientState syscall will be made to get the current strings
+// a UIT3_GetClientState syscall will be made to get the current strings
 };
 
 #endif

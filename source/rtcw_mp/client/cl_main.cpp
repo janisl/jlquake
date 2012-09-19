@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <limits.h>
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
+#include "../../client/game/wolfmp/ui_public.h"
 
 #ifdef __linux__
 #include <sys/stat.h>
@@ -1013,19 +1014,19 @@ void CL_RequestAuthorization(void)
 
 	// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 	j = 0;
-	l = String::Length(cl_cdkey);
+	l = String::Length(comt3_cdkey);
 	if (l > 32)
 	{
 		l = 32;
 	}
 	for (i = 0; i < l; i++)
 	{
-		if ((cl_cdkey[i] >= '0' && cl_cdkey[i] <= '9') ||
-			(cl_cdkey[i] >= 'a' && cl_cdkey[i] <= 'z') ||
-			(cl_cdkey[i] >= 'A' && cl_cdkey[i] <= 'Z')
+		if ((comt3_cdkey[i] >= '0' && comt3_cdkey[i] <= '9') ||
+			(comt3_cdkey[i] >= 'a' && comt3_cdkey[i] <= 'z') ||
+			(comt3_cdkey[i] >= 'A' && comt3_cdkey[i] <= 'Z')
 			)
 		{
-			nums[j] = cl_cdkey[i];
+			nums[j] = comt3_cdkey[i];
 			j++;
 		}
 	}
@@ -3265,7 +3266,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 	}
 
 	// if not just sent a local broadcast or pinging local servers
-	if (cls.q3_pingUpdateSource != AS_LOCAL)
+	if (cls.q3_pingUpdateSource != WMAS_LOCAL)
 	{
 		return;
 	}
@@ -3607,7 +3608,7 @@ void CL_LocalServers_f(void)
 
 	// reset the list, waiting for response
 	cls.q3_numlocalservers = 0;
-	cls.q3_pingUpdateSource = AS_LOCAL;
+	cls.q3_pingUpdateSource = WMAS_LOCAL;
 
 	for (i = 0; i < MAX_OTHER_SERVERS_Q3; i++)
 	{
@@ -3668,13 +3669,13 @@ void CL_GlobalServers_f(void)
 	{
 		SOCK_StringToAdr("master.quake3world.com", &to, Q3PORT_MASTER);
 		cls.q3_nummplayerservers = -1;
-		cls.q3_pingUpdateSource = AS_MPLAYER;
+		cls.q3_pingUpdateSource = WMAS_MPLAYER;
 	}
 	else
 	{
 		SOCK_StringToAdr(WMMASTER_SERVER_NAME, &to, Q3PORT_MASTER);
 		cls.q3_numglobalservers = -1;
-		cls.q3_pingUpdateSource = AS_GLOBAL;
+		cls.q3_pingUpdateSource = WMAS_GLOBAL;
 	}
 	to.type = NA_IP;
 
@@ -3913,10 +3914,9 @@ qboolean CL_UpdateVisiblePings_f(int source)
 	int slots, i;
 	char buff[MAX_STRING_CHARS];
 	int pingTime;
-	int max;
 	qboolean status = false;
 
-	if (source < 0 || source > AS_FAVORITES)
+	if (source < 0 || source > WMAS_FAVORITES)
 	{
 		return false;
 	}
@@ -3926,33 +3926,16 @@ qboolean CL_UpdateVisiblePings_f(int source)
 	slots = CL_GetPingQueueCount();
 	if (slots < MAX_PINGREQUESTS)
 	{
-		q3serverInfo_t* server = NULL;
+		q3serverInfo_t* servers;
+		int max;
+		int* count;
+		CLT3_GetServersForSource(source, servers, max, count);
 
-		max = (source == AS_GLOBAL) ? MAX_GLOBAL_SERVERS_WM : MAX_OTHER_SERVERS_Q3;
-		switch (source)
+		for (i = 0; i < *count; i++)
 		{
-		case AS_LOCAL:
-			server = &cls.q3_localServers[0];
-			max = cls.q3_numlocalservers;
-			break;
-		case AS_MPLAYER:
-			server = &cls.q3_mplayerServers[0];
-			max = cls.q3_nummplayerservers;
-			break;
-		case AS_GLOBAL:
-			server = &cls.q3_globalServers[0];
-			max = cls.q3_numglobalservers;
-			break;
-		case AS_FAVORITES:
-			server = &cls.q3_favoriteServers[0];
-			max = cls.q3_numfavoriteservers;
-			break;
-		}
-		for (i = 0; i < max; i++)
-		{
-			if (server[i].visible)
+			if (servers[i].visible)
 			{
-				if (server[i].ping == -1)
+				if (servers[i].ping == -1)
 				{
 					int j;
 
@@ -3966,7 +3949,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 						{
 							continue;
 						}
-						if (SOCK_CompareAdr(cl_pinglist[j].adr, server[i].adr))
+						if (SOCK_CompareAdr(cl_pinglist[j].adr, servers[i].adr))
 						{
 							// already on the list
 							break;
@@ -3982,7 +3965,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 								break;
 							}
 						}
-						memcpy(&cl_pinglist[j].adr, &server[i].adr, sizeof(netadr_t));
+						memcpy(&cl_pinglist[j].adr, &servers[i].adr, sizeof(netadr_t));
 						cl_pinglist[j].start = cls.realtime;
 						cl_pinglist[j].time = 0;
 						NET_OutOfBandPrint(NS_CLIENT, cl_pinglist[j].adr, "getinfo xxx");
@@ -3991,17 +3974,17 @@ qboolean CL_UpdateVisiblePings_f(int source)
 				}
 				// if the server has a ping higher than cl_maxPing or
 				// the ping packet got lost
-				else if (server[i].ping == 0)
+				else if (servers[i].ping == 0)
 				{
 					// if we are updating global servers
-					if (source == AS_GLOBAL)
+					if (source == WMAS_GLOBAL)
 					{
 						//
 						if (cls.q3_numGlobalServerAddresses > 0)
 						{
 							// overwrite this server with one from the additional global servers
 							cls.q3_numGlobalServerAddresses--;
-							CL_InitServerInfo(&server[i], &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses]);
+							CL_InitServerInfo(&servers[i], &cls.q3_globalServerAddresses[cls.q3_numGlobalServerAddresses]);
 							// NOTE: the server[i].visible flag stays untouched
 						}
 					}

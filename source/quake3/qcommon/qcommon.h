@@ -75,10 +75,6 @@ MISC
 ==============================================================
 */
 
-// centralizing the declarations for cl_cdkey
-// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=470
-extern char cl_cdkey[34];
-
 // returnbed by Sys_GetProcessorId
 #define CPUID_GENERIC           0			// any unrecognized processor
 

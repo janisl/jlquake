@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include "../../client/sound/local.h"
 #include "../../client/cinematic/local.h"
+#include "../../client/game/quake3/ui_public.h"
 
 static int CL_handle = -1;
 

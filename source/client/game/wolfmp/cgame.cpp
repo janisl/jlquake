@@ -213,7 +213,11 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 		return 0x4000000;
 	case WMCG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
-//-------------
+	case WMCG_KEY_GETCATCHER:
+		return Key_GetCatcher();
+	case WMCG_KEY_SETCATCHER:
+		KeyWM_SetCatcher(args[1]);
+		return 0;
 	case WMCG_KEY_GETKEY:
 		return Key_GetKey((char*)VMA(1));
 
@@ -293,10 +297,16 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 		return R_GetEntityToken((char*)VMA(1), args[2]);
 
 //-------------
+
+	case WMCG_KEY_GETBINDINGBUF:
+		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
 	case WMCG_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
-//-------------
+	case WMCG_KEY_KEYNUMTOSTRINGBUF:
+		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
 
 	case WMCG_TRANSLATE_STRING:
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));

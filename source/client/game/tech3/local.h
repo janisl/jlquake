@@ -27,10 +27,16 @@ int CLT3_LastAttacker();
 void CLT3_KeyEvent(int key, bool down);
 void CLT3_MouseEvent(int dx, int dy);
 void CLT3_EventHandling();
-int CLT3_GetCurrentCmdNumber();
-void CLT3_AddCgameCommand(const char* cmdName);
-void CLT3_CM_LoadMap(const char* mapname);
-bool CLT3_InPvs(const vec3_t p1, const vec3_t p2);
+void Key_GetBindingBuf(int keynum, char* buf, int buflen);
+void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
+int Key_GetCatcher();
+void KeyQ3_SetCatcher(int catcher);
+void KeyWM_SetCatcher(int catcher);
+
+//
+//	Main
+//
+extern Cvar* clet_profile;
 
 //
 //	UI
@@ -46,5 +52,6 @@ void UIT3_SetActiveMenu(int menu);
 void UIT3_DrawConnectScreen(bool overlay);
 bool UIT3_UsesUniqueCDKey();
 bool UIT3_CheckKeyExec(int key);
+void CLT3_GetServersForSource(int source, q3serverInfo_t*& servers, int& max, int*& count);
 
 #endif

@@ -523,12 +523,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_SetUserCmdValue(args[1], VMF(2));
 		return 0;
 //---------
-	case Q3CG_KEY_GETCATCHER:
-		return Key_GetCatcher();
-	case Q3CG_KEY_SETCATCHER:
-		Key_SetCatcher(args[1]);
-		return 0;
-//---------
 	case Q3CG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 //---------

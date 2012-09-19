@@ -31,11 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/game/et/cg_public.h"
 
-// NERVE - SMF
-void Key_GetBindingBuf(int keynum, char* buf, int buflen);
-void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
-// -NERVE - SMF
-
 /*
 ====================
 CL_GetGameState
@@ -669,12 +664,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
 		return 0;
 //---------
-	case ETCG_KEY_GETCATCHER:
-		return Key_GetCatcher();
-	case ETCG_KEY_SETCATCHER:
-		Key_SetCatcher(args[1]);
-		return 0;
-//---------
 	case ETCG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 //---------
@@ -696,14 +685,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 				UIT3_SetActiveMenu(args[1]);
 			}
 		}
-		return 0;
-//---------
-	case ETCG_KEY_GETBINDINGBUF:
-		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
-		return 0;
-//---------
-	case ETCG_KEY_KEYNUMTOSTRINGBUF:
-		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //---------
 	case ETCG_GETHUNKDATA:

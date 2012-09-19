@@ -166,7 +166,13 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		S_StartLocalSound(args[1], args[2], 127);
 		return 0;
 
-//--------
+	case Q3UI_KEY_KEYNUMTOSTRINGBUF:
+		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
+
+	case Q3UI_KEY_GETBINDINGBUF:
+		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
 
 	case Q3UI_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
@@ -186,12 +192,82 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		Key_ClearStates();
 		return 0;
 
+	case Q3UI_KEY_GETCATCHER:
+		return Key_GetCatcher();
+
+	case Q3UI_KEY_SETCATCHER:
+		KeyQ3_SetCatcher(args[1]);
+		return 0;
+
+	case Q3UI_GETCLIPBOARDDATA:
+		CLT3_GetClipboardData((char*)VMA(1), args[2]);
+		return 0;
+
+	case Q3UI_GETCLIENTSTATE:
+		UIT3_GetClientState((uiClientState_t*)VMA(1));
+		return 0;
+
 //--------
+
+	case Q3UI_LAN_LOADCACHEDSERVERS:
+		LAN_LoadCachedServers();
+		return 0;
+
+	case Q3UI_LAN_SAVECACHEDSERVERS:
+		LAN_SaveServersToCache();
+		return 0;
+
+	case Q3UI_LAN_ADDSERVER:
+		return LAN_AddServer(args[1], (char*)VMA(2), (char*)VMA(3));
+
+	case Q3UI_LAN_REMOVESERVER:
+		LAN_RemoveServer(args[1], (char*)VMA(2));
+		return 0;
+
+//--------
+
+	case Q3UI_LAN_GETSERVERCOUNT:
+		return LAN_GetServerCount(args[1]);
+
+	case Q3UI_LAN_GETSERVERADDRESSSTRING:
+		LAN_GetServerAddressString(args[1], args[2], (char*)VMA(3), args[4]);
+		return 0;
+
+	case Q3UI_LAN_GETSERVERINFO:
+		LAN_GetServerInfo(args[1], args[2], (char*)VMA(3), args[4]);
+		return 0;
+
+	case Q3UI_LAN_GETSERVERPING:
+		return LAN_GetServerPing(args[1], args[2]);
+
+	case Q3UI_LAN_MARKSERVERVISIBLE:
+		LAN_MarkServerVisible(args[1], args[2], args[3]);
+		return 0;
+
+	case Q3UI_LAN_SERVERISVISIBLE:
+		return LAN_ServerIsVisible(args[1], args[2]);
+
+//--------
+
+	case Q3UI_LAN_RESETPINGS:
+		LAN_ResetPings(args[1]);
+		return 0;
+
+//--------
+
+	case Q3UI_LAN_COMPARESERVERS:
+		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);
 
 	case Q3UI_MEMORY_REMAINING:
 		return 0x4000000;
 
-//--------
+	case Q3UI_GET_CDKEY:
+		CLT3UI_GetCDKey((char*)VMA(1), args[2]);
+		return 0;
+
+	case Q3UI_SET_CDKEY:
+		CLT3UI_SetCDKey((char*)VMA(1));
+		return 0;
 
 	case Q3UI_SET_PBCLSTATUS:
 		return 0;

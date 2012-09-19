@@ -72,6 +72,9 @@ int time_after_game;
 
 static int q2server_state;
 
+// TTimo: centralizing the comt3_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version
+char comt3_cdkey[34] = "                                ";
+
 Interface::~Interface()
 {
 }

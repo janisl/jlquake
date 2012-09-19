@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 #include "../../client/game/wolfsp/cg_public.h"
+#include "../../client/game/wolfsp/ui_public.h"
 
 /*
 ====================
@@ -586,12 +587,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		return CL_GetUserCmd(args[1], (wsusercmd_t*)VMA(2));
 	case WSCG_SETUSERCMDVALUE:
 		CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);			//----(SA)	modified	// NERVE - SMF - added fourth arg [cld]
-		return 0;
-//---------
-	case WSCG_KEY_GETCATCHER:
-		return Key_GetCatcher();
-	case WSCG_KEY_SETCATCHER:
-		Key_SetCatcher(args[1]);
 		return 0;
 //---------
 	case WSCG_REAL_TIME:

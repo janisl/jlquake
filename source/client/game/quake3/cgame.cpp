@@ -182,7 +182,11 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 		return 0x4000000;
 	case Q3CG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
-//---------
+	case Q3CG_KEY_GETCATCHER:
+		return Key_GetCatcher();
+	case Q3CG_KEY_SETCATCHER:
+		KeyQ3_SetCatcher(args[1]);
+		return 0;
 	case Q3CG_KEY_GETKEY:
 		return Key_GetKey((char*)VMA(1));
 

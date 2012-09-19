@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../../client/client.h"
 #include "../qcommon/qcommon.h"
-#include "../../client/game/et/ui_public.h"
 #include "keys.h"
 #include "../../client/game/et/local.h"
 
@@ -72,7 +71,6 @@ extern Cvar* cl_allowDownload;
 extern Cvar* cl_missionStats;
 extern Cvar* cl_waitForFire;
 
-extern Cvar* cl_profile;
 extern Cvar* cl_defaultProfile;
 
 //=================================================
@@ -197,10 +195,6 @@ void CL_ShaderStateChanged(void);
 // cl_ui.c
 //
 void CL_InitUI(void);
-int Key_GetCatcher(void);
-void Key_SetCatcher(int catcher);
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 
 //

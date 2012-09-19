@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "../../client/client.h"
 #include "../qcommon/qcommon.h"
-#include "../../client/game/quake3/ui_public.h"
 #include "keys.h"
 #include "../../client/game/quake3/local.h"
 
@@ -157,10 +156,6 @@ void CL_ShaderStateChanged(void);
 // cl_ui.c
 //
 void CL_InitUI(void);
-int Key_GetCatcher(void);
-void Key_SetCatcher(int catcher);
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 
 //

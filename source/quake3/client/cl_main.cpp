@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <limits.h>
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
+#include "../../client/game/quake3/ui_public.h"
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
@@ -941,19 +942,19 @@ void CL_RequestAuthorization(void)
 
 	// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 	j = 0;
-	l = String::Length(cl_cdkey);
+	l = String::Length(comt3_cdkey);
 	if (l > 32)
 	{
 		l = 32;
 	}
 	for (i = 0; i < l; i++)
 	{
-		if ((cl_cdkey[i] >= '0' && cl_cdkey[i] <= '9') ||
-			(cl_cdkey[i] >= 'a' && cl_cdkey[i] <= 'z') ||
-			(cl_cdkey[i] >= 'A' && cl_cdkey[i] <= 'Z')
+		if ((comt3_cdkey[i] >= '0' && comt3_cdkey[i] <= '9') ||
+			(comt3_cdkey[i] >= 'a' && comt3_cdkey[i] <= 'z') ||
+			(comt3_cdkey[i] >= 'A' && comt3_cdkey[i] <= 'Z')
 			)
 		{
-			nums[j] = cl_cdkey[i];
+			nums[j] = comt3_cdkey[i];
 			j++;
 		}
 	}
@@ -2629,7 +2630,7 @@ void CL_ServerInfoPacket(netadr_t from, QMsg* msg)
 	}
 
 	// if not just sent a local broadcast or pinging local servers
-	if (cls.q3_pingUpdateSource != AS_LOCAL)
+	if (cls.q3_pingUpdateSource != Q3AS_LOCAL)
 	{
 		return;
 	}
@@ -2929,7 +2930,7 @@ void CL_LocalServers_f(void)
 
 	// reset the list, waiting for response
 	cls.q3_numlocalservers = 0;
-	cls.q3_pingUpdateSource = AS_LOCAL;
+	cls.q3_pingUpdateSource = Q3AS_LOCAL;
 
 	for (i = 0; i < MAX_OTHER_SERVERS_Q3; i++)
 	{
@@ -2990,13 +2991,13 @@ void CL_GlobalServers_f(void)
 	{
 		SOCK_StringToAdr(Q3MASTER_SERVER_NAME, &to, Q3PORT_MASTER);
 		cls.q3_nummplayerservers = -1;
-		cls.q3_pingUpdateSource = AS_MPLAYER;
+		cls.q3_pingUpdateSource = Q3AS_MPLAYER;
 	}
 	else
 	{
 		SOCK_StringToAdr(Q3MASTER_SERVER_NAME, &to, Q3PORT_MASTER);
 		cls.q3_numglobalservers = -1;
-		cls.q3_pingUpdateSource = AS_GLOBAL;
+		cls.q3_pingUpdateSource = Q3AS_GLOBAL;
 	}
 	to.type = NA_IP;
 
@@ -3235,10 +3236,10 @@ qboolean CL_UpdateVisiblePings_f(int source)
 	int slots, i;
 	char buff[MAX_STRING_CHARS];
 	int pingTime;
-	int max;
+	int* count;
 	qboolean status = false;
 
-	if (source < 0 || source > AS_FAVORITES)
+	if (source < 0 || source > Q3AS_FAVORITES)
 	{
 		return false;
 	}
@@ -3249,28 +3250,10 @@ qboolean CL_UpdateVisiblePings_f(int source)
 	if (slots < MAX_PINGREQUESTS)
 	{
 		q3serverInfo_t* server = NULL;
+		int max;
+		CLT3_GetServersForSource(source, server, max, count);
 
-		max = (source == AS_GLOBAL) ? MAX_GLOBAL_SERVERS_Q3 : MAX_OTHER_SERVERS_Q3;
-		switch (source)
-		{
-		case AS_LOCAL:
-			server = &cls.q3_localServers[0];
-			max = cls.q3_numlocalservers;
-			break;
-		case AS_MPLAYER:
-			server = &cls.q3_mplayerServers[0];
-			max = cls.q3_nummplayerservers;
-			break;
-		case AS_GLOBAL:
-			server = &cls.q3_globalServers[0];
-			max = cls.q3_numglobalservers;
-			break;
-		case AS_FAVORITES:
-			server = &cls.q3_favoriteServers[0];
-			max = cls.q3_numfavoriteservers;
-			break;
-		}
-		for (i = 0; i < max; i++)
+		for (i = 0; i < *count; i++)
 		{
 			if (server[i].visible)
 			{
@@ -3316,7 +3299,7 @@ qboolean CL_UpdateVisiblePings_f(int source)
 				else if (server[i].ping == 0)
 				{
 					// if we are updating global servers
-					if (source == AS_GLOBAL)
+					if (source == Q3AS_GLOBAL)
 					{
 						//
 						if (cls.q3_numGlobalServerAddresses > 0)

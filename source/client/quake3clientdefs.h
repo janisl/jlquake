@@ -21,6 +21,17 @@
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP_Q3
 
+// server browser sources
+// TTimo: Q3AS_MPLAYER is no longer used
+#define Q3AS_LOCAL        0
+#define Q3AS_MPLAYER      1
+#define Q3AS_GLOBAL       2
+#define Q3AS_FAVORITES    3
+#define WMAS_LOCAL        0
+#define WMAS_GLOBAL       1			// NERVE - SMF - modified
+#define WMAS_FAVORITES    2
+#define WMAS_MPLAYER      3
+
 #define MAX_GLOBAL_SERVERS_Q3               4096
 #define MAX_GLOBAL_SERVERS_WS               2048
 #define MAX_GLOBAL_SERVERS_WM               2048

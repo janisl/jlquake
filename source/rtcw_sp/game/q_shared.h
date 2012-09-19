@@ -196,12 +196,6 @@ void QDECL Com_Printf(const char* msg, ...);
 ==========================================================
 */
 
-// server browser sources
-#define AS_LOCAL            0
-#define AS_MPLAYER      1
-#define AS_GLOBAL           2
-#define AS_FAVORITES    3
-
 #define MAX_PINGREQUESTS            16
 #define MAX_SERVERSTATUSREQUESTS    16
 

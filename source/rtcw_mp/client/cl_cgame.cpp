@@ -30,11 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 #include "../../client/game/wolfmp/cg_public.h"
-
-// NERVE - SMF
-void Key_GetBindingBuf(int keynum, char* buf, int buflen);
-void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
-// -NERVE - SMF
+#include "../../client/game/wolfmp/ui_public.h"
 
 /*
 ====================
@@ -619,12 +615,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
 		return 0;
 //-------------
-	case WMCG_KEY_GETCATCHER:
-		return Key_GetCatcher();
-	case WMCG_KEY_SETCATCHER:
-		Key_SetCatcher(args[1]);
-		return 0;
-//-------------
 	case WMCG_REAL_TIME:
 		return Com_RealTime((qtime_t*)VMA(1));
 //-------------
@@ -703,14 +693,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		{
 			CL_AddToLimboChat((char*)VMA(1));
 		}
-		return 0;
-
-	case WMCG_KEY_GETBINDINGBUF:
-		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
-		return 0;
-//-------------
-	case WMCG_KEY_KEYNUMTOSTRINGBUF:
-		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
 		return 0;
 //-------------
 	}

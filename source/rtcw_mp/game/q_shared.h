@@ -245,12 +245,6 @@ MATHLIB
 void QDECL Com_Error(int level, const char* error, ...);
 void QDECL Com_Printf(const char* msg, ...);
 
-// server browser sources
-#define AS_LOCAL        0
-#define AS_GLOBAL       1			// NERVE - SMF - modified
-#define AS_FAVORITES    2
-#define AS_MPLAYER      3
-
 #define MAX_PINGREQUESTS            16
 #define MAX_SERVERSTATUSREQUESTS    16
 

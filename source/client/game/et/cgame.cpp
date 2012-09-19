@@ -295,7 +295,11 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		return 0x4000000;
 	case ETCG_KEY_ISDOWN:
 		return Key_IsDown(args[1]);
-//---------
+	case ETCG_KEY_GETCATCHER:
+		return Key_GetCatcher();
+	case ETCG_KEY_SETCATCHER:
+		KeyWM_SetCatcher(args[1]);
+		return 0;
 	case ETCG_KEY_GETKEY:
 		return Key_GetKey((char*)VMA(1));
 
@@ -386,11 +390,15 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_INGAME_CLOSEPOPUP:
 		return 0;
 
-//---------
+	case ETCG_KEY_GETBINDINGBUF:
+		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
 	case ETCG_KEY_SETBINDING:
 		Key_SetBinding(args[1], (char*)VMA(2));
 		return 0;
-//---------
+	case ETCG_KEY_KEYNUMTOSTRINGBUF:
+		Key_KeynumToStringBuf(args[1], (char*)VMA(2), args[3]);
+		return 0;
 	case ETCG_KEY_BINDINGTOKEYS:
 		Key_GetKeysForBinding((char*)VMA(1), (int*)VMA(2), (int*)VMA(3));
 		return 0;
