@@ -25,149 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/game/quake3/cg_public.h"
 
 /*
-====================
-CL_GetGameState
-====================
-*/
-void CL_GetGameState(q3gameState_t* gs)
-{
-	*gs = cl.q3_gameState;
-}
-
-/*
-====================
-CL_GetUserCmd
-====================
-*/
-qboolean CL_GetUserCmd(int cmdNumber, q3usercmd_t* ucmd)
-{
-	// cmds[cmdNumber] is the last properly generated command
-
-	// can't return anything that we haven't created yet
-	if (cmdNumber > cl.q3_cmdNumber)
-	{
-		common->Error("CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
-	}
-
-	// the usercmd has been overwritten in the wrapping
-	// buffer because it is too far out of date
-	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
-	{
-		return false;
-	}
-
-	*ucmd = cl.q3_cmds[cmdNumber & CMD_MASK_Q3];
-
-	return true;
-}
-
-/*
-====================
-CL_GetParseEntityState
-====================
-*/
-qboolean    CL_GetParseEntityState(int parseEntityNumber, q3entityState_t* state)
-{
-	// can't return anything that hasn't been parsed yet
-	if (parseEntityNumber >= cl.parseEntitiesNum)
-	{
-		common->Error("CL_GetParseEntityState: %i >= %i",
-			parseEntityNumber, cl.parseEntitiesNum);
-	}
-
-	// can't return anything that has been overwritten in the circular buffer
-	if (parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES_Q3)
-	{
-		return false;
-	}
-
-	*state = cl.q3_parseEntities[parseEntityNumber & (MAX_PARSE_ENTITIES_Q3 - 1)];
-	return true;
-}
-
-/*
-====================
-CL_GetCurrentSnapshotNumber
-====================
-*/
-void    CL_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
-{
-	*snapshotNumber = cl.q3_snap.messageNum;
-	*serverTime = cl.q3_snap.serverTime;
-}
-
-/*
-====================
-CL_GetSnapshot
-====================
-*/
-qboolean    CL_GetSnapshot(int snapshotNumber, q3snapshot_t* snapshot)
-{
-	q3clSnapshot_t* clSnap;
-	int i, count;
-
-	if (snapshotNumber > cl.q3_snap.messageNum)
-	{
-		common->Error("CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
-	}
-
-	// if the frame has fallen out of the circular buffer, we can't return it
-	if (cl.q3_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
-	{
-		return false;
-	}
-
-	// if the frame is not valid, we can't return it
-	clSnap = &cl.q3_snapshots[snapshotNumber & PACKET_MASK_Q3];
-	if (!clSnap->valid)
-	{
-		return false;
-	}
-
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
-	{
-		return false;
-	}
-
-	// write the snapshot
-	snapshot->snapFlags = clSnap->snapFlags;
-	snapshot->serverCommandSequence = clSnap->serverCommandNum;
-	snapshot->ping = clSnap->ping;
-	snapshot->serverTime = clSnap->serverTime;
-	Com_Memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
-	snapshot->ps = clSnap->ps;
-	count = clSnap->numEntities;
-	if (count > MAX_ENTITIES_IN_SNAPSHOT_Q3)
-	{
-		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_Q3);
-		count = MAX_ENTITIES_IN_SNAPSHOT_Q3;
-	}
-	snapshot->numEntities = count;
-	for (i = 0; i < count; i++)
-	{
-		snapshot->entities[i] =
-			cl.q3_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
-	}
-
-	// FIXME: configstring changes and server commands!!!
-
-	return true;
-}
-
-/*
-=====================
-CL_SetUserCmdValue
-=====================
-*/
-void CL_SetUserCmdValue(int userCmdValue, float sensitivityScale)
-{
-	cl.q3_cgameUserCmdValue = userCmdValue;
-	cl.q3_cgameSensitivity = sensitivityScale;
-}
-
-/*
 =====================
 CL_ConfigstringModified
 =====================
@@ -237,7 +94,6 @@ void CL_ConfigstringModified(void)
 	}
 
 }
-
 
 /*
 ===================
@@ -389,25 +245,8 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		SCR_UpdateScreen();
 		return 0;
 //---------
-	case Q3CG_GETGAMESTATE:
-		CL_GetGameState((q3gameState_t*)VMA(1));
-		return 0;
-	case Q3CG_GETCURRENTSNAPSHOTNUMBER:
-		CL_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
-		return 0;
-	case Q3CG_GETSNAPSHOT:
-		return CL_GetSnapshot(args[1], (q3snapshot_t*)VMA(2));
 	case Q3CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-//---------
-	case Q3CG_GETUSERCMD:
-		return CL_GetUserCmd(args[1], (q3usercmd_t*)VMA(2));
-	case Q3CG_SETUSERCMDVALUE:
-		CL_SetUserCmdValue(args[1], VMF(2));
-		return 0;
-//---------
-	case Q3CG_REAL_TIME:
-		return Com_RealTime((qtime_t*)VMA(1));
 //---------
 	case Q3CG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);

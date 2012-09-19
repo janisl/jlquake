@@ -34,6 +34,28 @@ bool UIQ3_HasUniqueCDKey()
 	return VM_Call(uivm, Q3UI_HASUNIQUECDKEY);
 }
 
+static int CLQ3_GetConfigString(int index, char* buf, int size)
+{
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
+	{
+		return false;
+	}
+
+	int offset = cl.q3_gameState.stringOffsets[index];
+	if (!offset)
+	{
+		if (size)
+		{
+			buf[0] = 0;
+		}
+		return false;
+	}
+
+	String::NCpyZ(buf, cl.q3_gameState.stringData + offset, size);
+
+	return true;
+}
+
 //	The ui module is making a system call
 qintptr CLQ3_UISystemCalls(qintptr* args)
 {
@@ -216,7 +238,8 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		CLQ3_GetGlconfig((q3glconfig_t*)VMA(1));
 		return 0;
 
-//--------
+	case Q3UI_GETCONFIGSTRING:
+		return CLQ3_GetConfigString(args[1], (char*)VMA(2), args[3]);
 
 	case Q3UI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
@@ -333,7 +356,8 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
 
-//--------
+	case Q3UI_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 
 	case Q3UI_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);

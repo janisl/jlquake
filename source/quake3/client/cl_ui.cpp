@@ -25,35 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ====================
-GetConfigString
-====================
-*/
-static int GetConfigString(int index, char* buf, int size)
-{
-	int offset;
-
-	if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
-	{
-		return false;
-	}
-
-	offset = cl.q3_gameState.stringOffsets[index];
-	if (!offset)
-	{
-		if (size)
-		{
-			buf[0] = 0;
-		}
-		return false;
-	}
-
-	String::NCpyZ(buf, cl.q3_gameState.stringData + offset, size);
-
-	return true;
-}
-
-/*
-====================
 CL_UISystemCalls
 
 The ui module is making a system call
@@ -67,9 +38,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case Q3UI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
-//--------
-	case Q3UI_GETCONFIGSTRING:
-		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 //--------
 	case Q3UI_LAN_GETPINGQUEUECOUNT:
 		return CL_GetPingQueueCount();
@@ -91,9 +59,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 //--------
 	case Q3UI_LAN_SERVERSTATUS:
 		return CL_ServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
-//--------
-	case Q3UI_REAL_TIME:
-		return Com_RealTime((qtime_t*)VMA(1));
 //--------
 	case Q3UI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);

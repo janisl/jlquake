@@ -113,6 +113,96 @@ void CLQ3_RenderScene(const q3refdef_t* gameRefdef)
 	R_RenderScene(&rd);
 }
 
+static void CLQ3_GetGameState(q3gameState_t* gs)
+{
+	*gs = cl.q3_gameState;
+}
+
+static void CLQ3_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
+{
+	*snapshotNumber = cl.q3_snap.messageNum;
+	*serverTime = cl.q3_snap.serverTime;
+}
+
+static bool CLQ3_GetSnapshot(int snapshotNumber, q3snapshot_t* snapshot)
+{
+	if (snapshotNumber > cl.q3_snap.messageNum)
+	{
+		common->Error("CLQ3_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
+	}
+
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if (cl.q3_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	// if the frame is not valid, we can't return it
+	q3clSnapshot_t* clSnap = &cl.q3_snapshots[snapshotNumber & PACKET_MASK_Q3];
+	if (!clSnap->valid)
+	{
+		return false;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
+	{
+		return false;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->serverCommandSequence = clSnap->serverCommandNum;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	Com_Memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
+	snapshot->ps = clSnap->ps;
+	int count = clSnap->numEntities;
+	if (count > MAX_ENTITIES_IN_SNAPSHOT_Q3)
+	{
+		common->DPrintf("CLQ3_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_Q3);
+		count = MAX_ENTITIES_IN_SNAPSHOT_Q3;
+	}
+	snapshot->numEntities = count;
+	for (int i = 0; i < count; i++)
+	{
+		snapshot->entities[i] = cl.q3_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
+	}
+
+	// FIXME: configstring changes and server commands!!!
+
+	return true;
+}
+
+static bool CLQ3_GetUserCmd(int cmdNumber, q3usercmd_t* ucmd)
+{
+	// cmds[cmdNumber] is the last properly generated command
+
+	// can't return anything that we haven't created yet
+	if (cmdNumber > cl.q3_cmdNumber)
+	{
+		common->Error("CLQ3_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
+	}
+
+	// the usercmd has been overwritten in the wrapping
+	// buffer because it is too far out of date
+	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	*ucmd = cl.q3_cmds[cmdNumber & CMD_MASK_Q3];
+
+	return true;
+}
+
+static void CLQ3_SetUserCmdValue(int userCmdValue, float sensitivityScale)
+{
+	cl.q3_cgameUserCmdValue = userCmdValue;
+	cl.q3_cgameSensitivity = sensitivityScale;
+}
+
 qintptr CLQ3_CgameSystemCalls(qintptr* args)
 {
 	switch (args[0])
@@ -276,10 +366,22 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_GETGLCONFIG:
 		CLQ3_GetGlconfig((q3glconfig_t*)VMA(1));
 		return 0;
+	case Q3CG_GETGAMESTATE:
+		CLQ3_GetGameState((q3gameState_t*)VMA(1));
+		return 0;
+	case Q3CG_GETCURRENTSNAPSHOTNUMBER:
+		CLQ3_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
+		return 0;
+	case Q3CG_GETSNAPSHOT:
+		return CLQ3_GetSnapshot(args[1], (q3snapshot_t*)VMA(2));
 //---------
 	case Q3CG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
-//---------
+	case Q3CG_GETUSERCMD:
+		return CLQ3_GetUserCmd(args[1], (q3usercmd_t*)VMA(2));
+	case Q3CG_SETUSERCMDVALUE:
+		CLQ3_SetUserCmdValue(args[1], VMF(2));
+		return 0;
 	case Q3CG_MEMORY_REMAINING:
 		return 0x4000000;
 	case Q3CG_KEY_ISDOWN:
@@ -331,7 +433,8 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 		S_StopBackgroundTrack();
 		return 0;
 
-//---------
+	case Q3CG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 	case Q3CG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
