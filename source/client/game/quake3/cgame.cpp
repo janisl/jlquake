@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 #include "cg_public.h"
+#include "cg_ui_shared.h"
 
 qintptr CLQ3_CgameSystemCalls(qintptr* args)
 {

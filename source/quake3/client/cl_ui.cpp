@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "client.h"
-#include "../../client/game/quake3/cg_public.h"
+#include "../../client/game/quake3/cg_ui_shared.h"
 #include "../../client/game/quake3/ui_public.h"
 
 void CL_GetGlconfig(q3glconfig_t* glconfig);

@@ -28,7 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
-#include "../../client/game/wolfsp/cg_public.h"
+#include "../../client/game/wolfsp/cg_ui_shared.h"
 #include "../../client/game/wolfsp/ui_public.h"
 
 void CL_GetGlconfig(wsglconfig_t* config);

@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/game/wolfmp/cg_public.h"
 #include "../../client/game/wolfmp/ui_public.h"
+#include "../../client/game/wolfmp/cg_ui_shared.h"
 
 /*
 ====================

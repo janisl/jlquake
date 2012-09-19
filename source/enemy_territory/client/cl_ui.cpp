@@ -28,8 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
-#include "../../client/game/et/cg_public.h"
 #include "../../client/game/et/ui_public.h"
+#include "../../client/game/et/cg_ui_shared.h"
 
 void CL_GetGlconfig(etglconfig_t* config);
 void CL_AddRefEntityToScene(const etrefEntity_t* ent);

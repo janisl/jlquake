@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 #include "cg_public.h"
+#include "cg_ui_shared.h"
 #include "../../../server/public.h"
 
 bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or)

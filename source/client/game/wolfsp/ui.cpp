@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 #include "ui_public.h"
+#include "cg_ui_shared.h"
 
 int UIWS_GetActiveMenu()
 {
