@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
-#include "../../client/game/quake3/cg_ui_shared.h"
 #include "../../client/game/quake3/cg_public.h"
 
 /*
@@ -34,37 +33,6 @@ void CL_GetGameState(q3gameState_t* gs)
 {
 	*gs = cl.q3_gameState;
 }
-
-/*
-====================
-CL_GetGlconfig
-====================
-*/
-void CL_GetGlconfig(q3glconfig_t* glconfig)
-{
-	String::NCpyZ(glconfig->renderer_string, cls.glconfig.renderer_string, sizeof(glconfig->renderer_string));
-	String::NCpyZ(glconfig->vendor_string, cls.glconfig.vendor_string, sizeof(glconfig->vendor_string));
-	String::NCpyZ(glconfig->version_string, cls.glconfig.version_string, sizeof(glconfig->version_string));
-	String::NCpyZ(glconfig->extensions_string, cls.glconfig.extensions_string, sizeof(glconfig->extensions_string));
-	glconfig->maxTextureSize = cls.glconfig.maxTextureSize;
-	glconfig->maxActiveTextures = cls.glconfig.maxActiveTextures;
-	glconfig->colorBits = cls.glconfig.colorBits;
-	glconfig->depthBits = cls.glconfig.depthBits;
-	glconfig->stencilBits = cls.glconfig.stencilBits;
-	glconfig->driverType = cls.glconfig.driverType;
-	glconfig->hardwareType = cls.glconfig.hardwareType;
-	glconfig->deviceSupportsGamma = cls.glconfig.deviceSupportsGamma;
-	glconfig->textureCompression = cls.glconfig.textureCompression;
-	glconfig->textureEnvAddAvailable = cls.glconfig.textureEnvAddAvailable;
-	glconfig->vidWidth = cls.glconfig.vidWidth;
-	glconfig->vidHeight = cls.glconfig.vidHeight;
-	glconfig->windowAspect = cls.glconfig.windowAspect;
-	glconfig->displayFrequency = cls.glconfig.displayFrequency;
-	glconfig->isFullscreen = cls.glconfig.isFullscreen;
-	glconfig->stereoEnabled = cls.glconfig.stereoEnabled;
-	glconfig->smpActive = cls.glconfig.smpActive;
-}
-
 
 /*
 ====================
@@ -402,76 +370,6 @@ rescan:
 	return true;
 }
 
-
-static refEntityType_t gameRefEntTypeToEngine[] =
-{
-	RT_MODEL,
-	RT_POLY,
-	RT_SPRITE,
-	RT_BEAM,
-	RT_RAIL_CORE,
-	RT_RAIL_RINGS,
-	RT_LIGHTNING,
-	RT_PORTALSURFACE,
-};
-
-static void CL_GameRefEntToEngine(const q3refEntity_t* gameRefent, refEntity_t* refent)
-{
-	Com_Memset(refent, 0, sizeof(*refent));
-	refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
-	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
-											   RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
-											   RF_SHADOW_PLANE | RF_WRAP_FRAMES);
-	refent->hModel = gameRefent->hModel;
-	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
-	refent->shadowPlane = gameRefent->shadowPlane;
-	AxisCopy(gameRefent->axis, refent->axis);
-	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
-	VectorCopy(gameRefent->origin, refent->origin);
-	refent->frame = gameRefent->frame;
-	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
-	refent->oldframe = gameRefent->oldframe;
-	refent->backlerp = gameRefent->backlerp;
-	refent->skinNum = gameRefent->skinNum;
-	refent->customSkin = gameRefent->customSkin;
-	refent->customShader = gameRefent->customShader;
-	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
-	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
-	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
-	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
-	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
-	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
-	refent->shaderTime = gameRefent->shaderTime;
-	refent->radius = gameRefent->radius;
-	refent->rotation = gameRefent->rotation;
-}
-
-void CL_AddRefEntityToScene(const q3refEntity_t* ent)
-{
-	refEntity_t refent;
-	CL_GameRefEntToEngine(ent, &refent);
-	R_AddRefEntityToScene(&refent);
-}
-
-void CL_RenderScene(const q3refdef_t* gameRefdef)
-{
-	refdef_t rd;
-	Com_Memset(&rd, 0, sizeof(rd));
-	rd.x = gameRefdef->x;
-	rd.y = gameRefdef->y;
-	rd.width = gameRefdef->width;
-	rd.height = gameRefdef->height;
-	rd.fov_x = gameRefdef->fov_x;
-	rd.fov_y = gameRefdef->fov_y;
-	VectorCopy(gameRefdef->vieworg, rd.vieworg);
-	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
-	rd.time = gameRefdef->time;
-	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE);
-	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
-	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
-	R_RenderScene(&rd);
-}
-
 /*
 ====================
 CL_CgameSystemCalls
@@ -488,25 +386,9 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
 	case Q3CG_UPDATESCREEN:
-		// this is used during lengthy level loading, so pump message loop
-//		Com_EventLoop();	// FIXME: if a server restarts here, BAD THINGS HAPPEN!
-// We can't call Com_EventLoop here, a restart will crash and this _does_ happen
-// if there is a map change while we are downloading at pk3.
-// ZOID
 		SCR_UpdateScreen();
 		return 0;
 //---------
-	case Q3CG_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene((q3refEntity_t*)VMA(1));
-		return 0;
-//---------
-	case Q3CG_R_RENDERSCENE:
-		CL_RenderScene((q3refdef_t*)VMA(1));
-		return 0;
-//---------
-	case Q3CG_GETGLCONFIG:
-		CL_GetGlconfig((q3glconfig_t*)VMA(1));
-		return 0;
 	case Q3CG_GETGAMESTATE:
 		CL_GetGameState((q3gameState_t*)VMA(1));
 		return 0;

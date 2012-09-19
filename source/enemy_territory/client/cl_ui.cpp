@@ -29,12 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 #include "../../client/game/et/ui_public.h"
-#include "../../client/game/et/cg_ui_shared.h"
-
-void CL_GetGlconfig(etglconfig_t* config);
-void CL_AddRefEntityToScene(const etrefEntity_t* ent);
-void CL_RenderScene(const etrefdef_t* refdef);
-int CL_LerpTag(orientation_t* tag,  const etrefEntity_t* refent, const char* tagName, int startIndex);
 
 /*
 =======================
@@ -106,25 +100,10 @@ qintptr CL_UISystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //-------
-	case ETUI_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene((etrefEntity_t*)VMA(1));
-		return 0;
-//-------
-	case ETUI_R_RENDERSCENE:
-		CL_RenderScene((etrefdef_t*)VMA(1));
-		return 0;
-//-------
 	case ETUI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
-
-	case ETUI_CM_LERPTAG:
-		return CL_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 //-------
-	case ETUI_GETGLCONFIG:
-		CL_GetGlconfig((etglconfig_t*)VMA(1));
-		return 0;
-
 	case ETUI_GETCONFIGSTRING:
 		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 //-------

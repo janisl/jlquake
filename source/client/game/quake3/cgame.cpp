@@ -19,6 +19,100 @@
 #include "cg_public.h"
 #include "cg_ui_shared.h"
 
+static refEntityType_t clq3_gameRefEntTypeToEngine[] =
+{
+	RT_MODEL,
+	RT_POLY,
+	RT_SPRITE,
+	RT_BEAM,
+	RT_RAIL_CORE,
+	RT_RAIL_RINGS,
+	RT_LIGHTNING,
+	RT_PORTALSURFACE,
+};
+
+void CLQ3_GetGlconfig(q3glconfig_t* glconfig)
+{
+	String::NCpyZ(glconfig->renderer_string, cls.glconfig.renderer_string, sizeof(glconfig->renderer_string));
+	String::NCpyZ(glconfig->vendor_string, cls.glconfig.vendor_string, sizeof(glconfig->vendor_string));
+	String::NCpyZ(glconfig->version_string, cls.glconfig.version_string, sizeof(glconfig->version_string));
+	String::NCpyZ(glconfig->extensions_string, cls.glconfig.extensions_string, sizeof(glconfig->extensions_string));
+	glconfig->maxTextureSize = cls.glconfig.maxTextureSize;
+	glconfig->maxActiveTextures = cls.glconfig.maxActiveTextures;
+	glconfig->colorBits = cls.glconfig.colorBits;
+	glconfig->depthBits = cls.glconfig.depthBits;
+	glconfig->stencilBits = cls.glconfig.stencilBits;
+	glconfig->driverType = cls.glconfig.driverType;
+	glconfig->hardwareType = cls.glconfig.hardwareType;
+	glconfig->deviceSupportsGamma = cls.glconfig.deviceSupportsGamma;
+	glconfig->textureCompression = cls.glconfig.textureCompression;
+	glconfig->textureEnvAddAvailable = cls.glconfig.textureEnvAddAvailable;
+	glconfig->vidWidth = cls.glconfig.vidWidth;
+	glconfig->vidHeight = cls.glconfig.vidHeight;
+	glconfig->windowAspect = cls.glconfig.windowAspect;
+	glconfig->displayFrequency = cls.glconfig.displayFrequency;
+	glconfig->isFullscreen = cls.glconfig.isFullscreen;
+	glconfig->stereoEnabled = cls.glconfig.stereoEnabled;
+	glconfig->smpActive = cls.glconfig.smpActive;
+}
+
+static void CLQ3_GameRefEntToEngine(const q3refEntity_t* gameRefent, refEntity_t* refent)
+{
+	Com_Memset(refent, 0, sizeof(*refent));
+	refent->reType = clq3_gameRefEntTypeToEngine[gameRefent->reType];
+	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
+											   RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
+											   RF_SHADOW_PLANE | RF_WRAP_FRAMES);
+	refent->hModel = gameRefent->hModel;
+	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
+	refent->shadowPlane = gameRefent->shadowPlane;
+	AxisCopy(gameRefent->axis, refent->axis);
+	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
+	VectorCopy(gameRefent->origin, refent->origin);
+	refent->frame = gameRefent->frame;
+	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
+	refent->oldframe = gameRefent->oldframe;
+	refent->backlerp = gameRefent->backlerp;
+	refent->skinNum = gameRefent->skinNum;
+	refent->customSkin = gameRefent->customSkin;
+	refent->customShader = gameRefent->customShader;
+	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
+	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
+	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
+	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
+	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
+	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
+	refent->shaderTime = gameRefent->shaderTime;
+	refent->radius = gameRefent->radius;
+	refent->rotation = gameRefent->rotation;
+}
+
+void CLQ3_AddRefEntityToScene(const q3refEntity_t* ent)
+{
+	refEntity_t refent;
+	CLQ3_GameRefEntToEngine(ent, &refent);
+	R_AddRefEntityToScene(&refent);
+}
+
+void CLQ3_RenderScene(const q3refdef_t* gameRefdef)
+{
+	refdef_t rd;
+	Com_Memset(&rd, 0, sizeof(rd));
+	rd.x = gameRefdef->x;
+	rd.y = gameRefdef->y;
+	rd.width = gameRefdef->width;
+	rd.height = gameRefdef->height;
+	rd.fov_x = gameRefdef->fov_x;
+	rd.fov_y = gameRefdef->fov_y;
+	VectorCopy(gameRefdef->vieworg, rd.vieworg);
+	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
+	rd.time = gameRefdef->time;
+	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE);
+	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
+	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
+	R_RenderScene(&rd);
+}
+
 qintptr CLQ3_CgameSystemCalls(qintptr* args)
 {
 	switch (args[0])
@@ -148,7 +242,9 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
-//---------
+	case Q3CG_R_ADDREFENTITYTOSCENE:
+		CLQ3_AddRefEntityToScene((q3refEntity_t*)VMA(1));
+		return 0;
 	case Q3CG_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
@@ -163,7 +259,9 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_R_ADDADDITIVELIGHTTOSCENE:
 		R_AddAdditiveLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5));
 		return 0;
-//---------
+	case Q3CG_R_RENDERSCENE:
+		CLQ3_RenderScene((q3refdef_t*)VMA(1));
+		return 0;
 	case Q3CG_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
 		return 0;
@@ -175,6 +273,9 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 		return 0;
 	case Q3CG_R_LERPTAG:
 		return R_LerpTag((orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6));
+	case Q3CG_GETGLCONFIG:
+		CLQ3_GetGlconfig((q3glconfig_t*)VMA(1));
+		return 0;
 //---------
 	case Q3CG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();

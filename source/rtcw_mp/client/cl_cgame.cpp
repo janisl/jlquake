@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/game/wolfmp/cg_public.h"
 #include "../../client/game/wolfmp/ui_public.h"
-#include "../../client/game/wolfmp/cg_ui_shared.h"
 
 /*
 ====================
@@ -42,45 +41,6 @@ void CL_GetGameState(wmgameState_t* gs)
 {
 	*gs = cl.wm_gameState;
 }
-
-/*
-====================
-CL_GetGlconfig
-====================
-*/
-void CL_GetGlconfig(wmglconfig_t* glconfig)
-{
-	String::NCpyZ(glconfig->renderer_string, cls.glconfig.renderer_string, sizeof(glconfig->renderer_string));
-	String::NCpyZ(glconfig->vendor_string, cls.glconfig.vendor_string, sizeof(glconfig->vendor_string));
-	String::NCpyZ(glconfig->version_string, cls.glconfig.version_string, sizeof(glconfig->version_string));
-	String::NCpyZ(glconfig->extensions_string, cls.glconfig.extensions_string, sizeof(glconfig->extensions_string));
-	glconfig->maxTextureSize = cls.glconfig.maxTextureSize;
-	glconfig->maxActiveTextures = cls.glconfig.maxActiveTextures;
-	glconfig->colorBits = cls.glconfig.colorBits;
-	glconfig->depthBits = cls.glconfig.depthBits;
-	glconfig->stencilBits = cls.glconfig.stencilBits;
-	glconfig->driverType = cls.glconfig.driverType;
-	glconfig->hardwareType = cls.glconfig.hardwareType;
-	glconfig->deviceSupportsGamma = cls.glconfig.deviceSupportsGamma;
-	glconfig->textureCompression = cls.glconfig.textureCompression;
-	glconfig->textureEnvAddAvailable = cls.glconfig.textureEnvAddAvailable;
-	glconfig->anisotropicAvailable = cls.glconfig.anisotropicAvailable;
-	glconfig->maxAnisotropy = cls.glconfig.maxAnisotropy;
-	glconfig->NVFogAvailable = cls.glconfig.NVFogAvailable;
-	glconfig->NVFogMode = cls.glconfig.NVFogMode;
-	glconfig->ATIMaxTruformTess = cls.glconfig.ATIMaxTruformTess;
-	glconfig->ATINormalMode = cls.glconfig.ATINormalMode;
-	glconfig->ATIPointMode = cls.glconfig.ATIPointMode;
-	glconfig->vidWidth = cls.glconfig.vidWidth;
-	glconfig->vidHeight = cls.glconfig.vidHeight;
-	glconfig->windowAspect = cls.glconfig.windowAspect;
-	glconfig->displayFrequency = cls.glconfig.displayFrequency;
-	glconfig->isFullscreen = cls.glconfig.isFullscreen;
-	glconfig->stereoEnabled = cls.glconfig.stereoEnabled;
-	glconfig->smpActive = cls.glconfig.smpActive;
-	glconfig->textureFilterAnisotropicAvailable = cls.glconfig.textureFilterAnisotropicAvailable;
-}
-
 
 /*
 ====================
@@ -446,119 +406,6 @@ rescan:
 	return true;
 }
 
-static refEntityType_t gameRefEntTypeToEngine[] =
-{
-	RT_MODEL,
-	RT_POLY,
-	RT_SPRITE,
-	RT_SPLASH,
-	RT_BEAM,
-	RT_RAIL_CORE,
-	RT_RAIL_CORE_TAPER,
-	RT_RAIL_RINGS,
-	RT_LIGHTNING,
-	RT_PORTALSURFACE,
-};
-
-static void CL_GameRefEntToEngine(const wmrefEntity_t* gameRefent, refEntity_t* refent)
-{
-	Com_Memset(refent, 0, sizeof(*refent));
-	if (gameRefent->reType < 0 || gameRefent->reType >= 10)
-	{
-		refent->reType = RT_MAX_REF_ENTITY_TYPE;
-	}
-	else
-	{
-		refent->reType = gameRefEntTypeToEngine[gameRefent->reType];
-	}
-	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
-											   RF_FIRST_PERSON | RF_DEPTHHACK | RF_NOSHADOW | RF_LIGHTING_ORIGIN |
-											   RF_SHADOW_PLANE | RF_WRAP_FRAMES);
-	if (gameRefent->renderfx & WMRF_BLINK)
-	{
-		refent->renderfx |= RF_BLINK;
-	}
-	refent->hModel = gameRefent->hModel;
-	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
-	refent->shadowPlane = gameRefent->shadowPlane;
-	AxisCopy(gameRefent->axis, refent->axis);
-	AxisCopy(gameRefent->torsoAxis, refent->torsoAxis);
-	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
-	VectorCopy(gameRefent->origin, refent->origin);
-	refent->frame = gameRefent->frame;
-	refent->torsoFrame = gameRefent->torsoFrame;
-	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
-	refent->oldframe = gameRefent->oldframe;
-	refent->oldTorsoFrame = gameRefent->oldTorsoFrame;
-	refent->backlerp = gameRefent->backlerp;
-	refent->torsoBacklerp = gameRefent->torsoBacklerp;
-	refent->skinNum = gameRefent->skinNum;
-	refent->customSkin = gameRefent->customSkin;
-	refent->customShader = gameRefent->customShader;
-	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
-	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
-	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
-	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
-	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
-	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
-	refent->shaderTime = gameRefent->shaderTime;
-	refent->radius = gameRefent->radius;
-	refent->rotation = gameRefent->rotation;
-	VectorCopy(gameRefent->fireRiseDir, refent->fireRiseDir);
-	refent->fadeStartTime = gameRefent->fadeStartTime;
-	refent->fadeEndTime = gameRefent->fadeEndTime;
-	refent->hilightIntensity = gameRefent->hilightIntensity;
-	refent->reFlags = gameRefent->reFlags & (REFLAG_ONLYHAND |
-											 REFLAG_FORCE_LOD | REFLAG_ORIENT_LOD | REFLAG_DEAD_LOD);
-	refent->entityNum = gameRefent->entityNum;
-}
-
-void CL_AddRefEntityToScene(const wmrefEntity_t* ent)
-{
-	refEntity_t refent;
-	CL_GameRefEntToEngine(ent, &refent);
-	R_AddRefEntityToScene(&refent);
-}
-
-void CL_RenderScene(const wmrefdef_t* gameRefdef)
-{
-	refdef_t rd;
-	Com_Memset(&rd, 0, sizeof(rd));
-	rd.x = gameRefdef->x;
-	rd.y = gameRefdef->y;
-	rd.width = gameRefdef->width;
-	rd.height = gameRefdef->height;
-	rd.fov_x = gameRefdef->fov_x;
-	rd.fov_y = gameRefdef->fov_y;
-	VectorCopy(gameRefdef->vieworg, rd.vieworg);
-	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
-	rd.time = gameRefdef->time;
-	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE |
-										RDF_SKYBOXPORTAL | RDF_UNDERWATER | RDF_DRAWINGSKY | RDF_SNOOPERVIEW);
-	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
-	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
-	rd.glfog.mode = gameRefdef->glfog.mode;
-	rd.glfog.hint = gameRefdef->glfog.hint;
-	rd.glfog.startTime = gameRefdef->glfog.startTime;
-	rd.glfog.finishTime = gameRefdef->glfog.finishTime;
-	Vector4Copy(gameRefdef->glfog.color, rd.glfog.color);
-	rd.glfog.start = gameRefdef->glfog.start;
-	rd.glfog.end = gameRefdef->glfog.end;
-	rd.glfog.useEndForClip = gameRefdef->glfog.useEndForClip;
-	rd.glfog.density = gameRefdef->glfog.density;
-	rd.glfog.registered = gameRefdef->glfog.registered;
-	rd.glfog.drawsky = gameRefdef->glfog.drawsky;
-	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
-	R_RenderScene(&rd);
-}
-
-int CL_LerpTag(orientation_t* tag,  const wmrefEntity_t* gameRefent, const char* tagName, int startIndex)
-{
-	refEntity_t refent;
-	CL_GameRefEntToEngine(gameRefent, &refent);
-	return R_LerpTag(tag, &refent, tagName, startIndex);
-}
-
 /*
 ====================
 CL_CgameSystemCalls
@@ -575,27 +422,9 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
 	case WMCG_UPDATESCREEN:
-		// this is used during lengthy level loading, so pump message loop
-//		Com_EventLoop();	// FIXME: if a server restarts here, BAD THINGS HAPPEN!
-// We can't call Com_EventLoop here, a restart will crash and this _does_ happen
-// if there is a map change while we are downloading at pk3.
-// ZOID
 		SCR_UpdateScreen();
 		return 0;
 //-------------
-	case WMCG_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene((wmrefEntity_t*)VMA(1));
-		return 0;
-//-------------
-	case WMCG_R_RENDERSCENE:
-		CL_RenderScene((wmrefdef_t*)VMA(1));
-		return 0;
-//-------------
-	case WMCG_R_LERPTAG:
-		return CL_LerpTag((orientation_t*)VMA(1), (wmrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
-	case WMCG_GETGLCONFIG:
-		CL_GetGlconfig((wmglconfig_t*)VMA(1));
-		return 0;
 	case WMCG_GETGAMESTATE:
 		CL_GetGameState((wmgameState_t*)VMA(1));
 		return 0;

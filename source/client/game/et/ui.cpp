@@ -148,7 +148,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		R_ClearScene();
 		return 0;
 
-//-------
+	case ETUI_R_ADDREFENTITYTOSCENE:
+		CLET_AddRefEntityToScene((etrefEntity_t*)VMA(1));
+		return 0;
 
 	case ETUI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
@@ -166,7 +168,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
 
-//-------
+	case ETUI_R_RENDERSCENE:
+		CLET_RenderScene((etrefdef_t*)VMA(1));
+		return 0;
 
 	case ETUI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
@@ -189,6 +193,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		return 0;
 
 //-------
+
+	case ETUI_CM_LERPTAG:
+		return CLET_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 
 	case ETUI_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
@@ -248,6 +255,10 @@ qintptr CLET_UISystemCalls(qintptr* args)
 
 	case ETUI_GETCLIENTSTATE:
 		UIT3_GetClientState((uiClientState_t*)VMA(1));
+		return 0;
+
+	case ETUI_GETGLCONFIG:
+		CLET_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
 
 //-------

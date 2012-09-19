@@ -111,4 +111,8 @@ struct q3glconfig_t
 	qboolean smpActive;		// dual processor
 };
 
+void CLQ3_GetGlconfig(q3glconfig_t* glconfig);
+void CLQ3_AddRefEntityToScene(const q3refEntity_t* ent);
+void CLQ3_RenderScene(const q3refdef_t* refdef);
+
 #endif

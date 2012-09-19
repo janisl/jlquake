@@ -139,7 +139,9 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		R_ClearScene();
 		return 0;
 
-//-------
+	case WSUI_R_ADDREFENTITYTOSCENE:
+		CLWS_AddRefEntityToScene((wsrefEntity_t*)VMA(1));
+		return 0;
 
 	case WSUI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
@@ -157,7 +159,9 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
 
-//-------
+	case WSUI_R_RENDERSCENE:
+		CLWS_RenderScene((wsrefdef_t*)VMA(1));
+		return 0;
 
 	case WSUI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
@@ -172,6 +176,9 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		return 0;
 
 //-------
+
+	case WSUI_CM_LERPTAG:
+		return CLWS_LerpTag((orientation_t*)VMA(1), (wsrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 
 	case WSUI_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
@@ -227,6 +234,10 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 
 	case WSUI_GETCLIENTSTATE:
 		UIT3_GetClientState((uiClientState_t*)VMA(1));
+		return 0;
+
+	case WSUI_GETGLCONFIG:
+		CLWS_GetGlconfig((wsglconfig_t*)VMA(1));
 		return 0;
 
 //-------

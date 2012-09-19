@@ -130,7 +130,9 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		R_ClearScene();
 		return 0;
 
-//--------
+	case Q3UI_R_ADDREFENTITYTOSCENE:
+		CLQ3_AddRefEntityToScene((q3refEntity_t*)VMA(1));
+		return 0;
 
 	case Q3UI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
@@ -140,7 +142,9 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		R_AddLightToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5));
 		return 0;
 
-//--------
+	case Q3UI_R_RENDERSCENE:
+		CLQ3_RenderScene((q3refdef_t*)VMA(1));
+		return 0;
 
 	case Q3UI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
@@ -206,6 +210,10 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 
 	case Q3UI_GETCLIENTSTATE:
 		UIT3_GetClientState((uiClientState_t*)VMA(1));
+		return 0;
+
+	case Q3UI_GETGLCONFIG:
+		CLQ3_GetGlconfig((q3glconfig_t*)VMA(1));
 		return 0;
 
 //--------

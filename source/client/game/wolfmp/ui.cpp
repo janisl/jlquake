@@ -140,7 +140,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		R_ClearScene();
 		return 0;
 
-//-------
+	case WMUI_R_ADDREFENTITYTOSCENE:
+		CLWM_AddRefEntityToScene((wmrefEntity_t*)VMA(1));
+		return 0;
 
 	case WMUI_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
@@ -158,7 +160,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		R_AddCoronaToScene((float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6], args[7]);
 		return 0;
 
-//-------
+	case WMUI_R_RENDERSCENE:
+		CLWM_RenderScene((wmrefdef_t*)VMA(1));
+		return 0;
 
 	case WMUI_R_SETCOLOR:
 		R_SetColor((float*)VMA(1));
@@ -173,6 +177,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		return 0;
 
 //-------
+
+	case WMUI_CM_LERPTAG:
+		return CLWM_LerpTag((orientation_t*)VMA(1), (wmrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 
 	case WMUI_S_REGISTERSOUND:
 		return S_RegisterSound((char*)VMA(1));
@@ -220,6 +227,10 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 
 	case WMUI_GETCLIENTSTATE:
 		UIT3_GetClientState((uiClientState_t*)VMA(1));
+		return 0;
+
+	case WMUI_GETGLCONFIG:
+		CLWM_GetGlconfig((wmglconfig_t*)VMA(1));
 		return 0;
 
 //-------

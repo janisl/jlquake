@@ -28,13 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "client.h"
-#include "../../client/game/wolfmp/cg_ui_shared.h"
 #include "../../client/game/wolfmp/ui_public.h"
-
-void CL_GetGlconfig(wmglconfig_t* config);
-void CL_AddRefEntityToScene(const wmrefEntity_t* ent);
-void CL_RenderScene(const wmrefdef_t* refdef);
-int CL_LerpTag(orientation_t* tag,  const wmrefEntity_t* refent, const char* tagName, int startIndex);
 
 /*
 ====================
@@ -77,25 +71,10 @@ qintptr CL_UISystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //-------
-	case WMUI_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene((wmrefEntity_t*)VMA(1));
-		return 0;
-//-------
-	case WMUI_R_RENDERSCENE:
-		CL_RenderScene((wmrefdef_t*)VMA(1));
-		return 0;
-//-------
 	case WMUI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
-
-	case WMUI_CM_LERPTAG:
-		return CL_LerpTag((orientation_t*)VMA(1), (wmrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
 //-------
-	case WMUI_GETGLCONFIG:
-		CL_GetGlconfig((wmglconfig_t*)VMA(1));
-		return 0;
-
 	case WMUI_GETCONFIGSTRING:
 		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 //-------

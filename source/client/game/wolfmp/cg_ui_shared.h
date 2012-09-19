@@ -156,4 +156,9 @@ struct wmglconfig_t
 	qboolean textureFilterAnisotropicAvailable;					//DAJ
 };
 
+void CLWM_GetGlconfig(wmglconfig_t* config);
+void CLWM_AddRefEntityToScene(const wmrefEntity_t* ent);
+void CLWM_RenderScene(const wmrefdef_t* refdef);
+int CLWM_LerpTag(orientation_t* tag,  const wmrefEntity_t* refent, const char* tagName, int startIndex);
+
 #endif

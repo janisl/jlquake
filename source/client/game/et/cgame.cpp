@@ -19,6 +19,20 @@
 #include "cg_public.h"
 #include "cg_ui_shared.h"
 
+static refEntityType_t clet_gameRefEntTypeToEngine[] =
+{
+	RT_MODEL,
+	RT_POLY,
+	RT_SPRITE,
+	RT_SPLASH,
+	RT_BEAM,
+	RT_RAIL_CORE,
+	RT_RAIL_CORE_TAPER,
+	RT_RAIL_RINGS,
+	RT_LIGHTNING,
+	RT_PORTALSURFACE,
+};
+
 bool CLET_GetTag(int clientNum, const char* tagname, orientation_t* _or)
 {
 	return VM_Call(cgvm, ETCG_GET_TAG, clientNum, tagname, _or);
@@ -45,6 +59,160 @@ bool CLET_WantsBindKeys()
 void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime)
 {
 	VM_Call(cgvm, ETCG_MESSAGERECEIVED, buf, buflen, serverTime);
+}
+
+void CLET_GetGlconfig(etglconfig_t* glconfig)
+{
+	String::NCpyZ(glconfig->renderer_string, cls.glconfig.renderer_string, sizeof(glconfig->renderer_string));
+	String::NCpyZ(glconfig->vendor_string, cls.glconfig.vendor_string, sizeof(glconfig->vendor_string));
+	String::NCpyZ(glconfig->version_string, cls.glconfig.version_string, sizeof(glconfig->version_string));
+	String::NCpyZ(glconfig->extensions_string, cls.glconfig.extensions_string, sizeof(glconfig->extensions_string));
+	glconfig->maxTextureSize = cls.glconfig.maxTextureSize;
+	glconfig->maxActiveTextures = cls.glconfig.maxActiveTextures;
+	glconfig->colorBits = cls.glconfig.colorBits;
+	glconfig->depthBits = cls.glconfig.depthBits;
+	glconfig->stencilBits = cls.glconfig.stencilBits;
+	glconfig->driverType = cls.glconfig.driverType;
+	glconfig->hardwareType = cls.glconfig.hardwareType;
+	glconfig->deviceSupportsGamma = cls.glconfig.deviceSupportsGamma;
+	glconfig->textureCompression = cls.glconfig.textureCompression;
+	glconfig->textureEnvAddAvailable = cls.glconfig.textureEnvAddAvailable;
+	glconfig->anisotropicAvailable = cls.glconfig.anisotropicAvailable;
+	glconfig->maxAnisotropy = cls.glconfig.maxAnisotropy;
+	glconfig->NVFogAvailable = cls.glconfig.NVFogAvailable;
+	glconfig->NVFogMode = cls.glconfig.NVFogMode;
+	glconfig->ATIMaxTruformTess = cls.glconfig.ATIMaxTruformTess;
+	glconfig->ATINormalMode = cls.glconfig.ATINormalMode;
+	glconfig->ATIPointMode = cls.glconfig.ATIPointMode;
+	glconfig->vidWidth = cls.glconfig.vidWidth;
+	glconfig->vidHeight = cls.glconfig.vidHeight;
+	glconfig->windowAspect = cls.glconfig.windowAspect;
+	glconfig->displayFrequency = cls.glconfig.displayFrequency;
+	glconfig->isFullscreen = cls.glconfig.isFullscreen;
+	glconfig->stereoEnabled = cls.glconfig.stereoEnabled;
+	glconfig->smpActive = cls.glconfig.smpActive;
+}
+
+static void CLET_GameRefEntToEngine(const etrefEntity_t* gameRefent, refEntity_t* refent)
+{
+	Com_Memset(refent, 0, sizeof(*refent));
+	if (gameRefent->reType < 0 || gameRefent->reType >= 10)
+	{
+		refent->reType = RT_MAX_REF_ENTITY_TYPE;
+	}
+	else
+	{
+		refent->reType = clet_gameRefEntTypeToEngine[gameRefent->reType];
+	}
+	refent->renderfx = gameRefent->renderfx & (RF_MINLIGHT | RF_THIRD_PERSON |
+											   RF_FIRST_PERSON | RF_DEPTHHACK);
+	if (gameRefent->renderfx & ETRF_NOSHADOW)
+	{
+		refent->renderfx |= RF_NOSHADOW;
+	}
+	if (gameRefent->renderfx & ETRF_LIGHTING_ORIGIN)
+	{
+		refent->renderfx |= RF_LIGHTING_ORIGIN;
+	}
+	if (gameRefent->renderfx & ETRF_SHADOW_PLANE)
+	{
+		refent->renderfx |= RF_SHADOW_PLANE;
+	}
+	if (gameRefent->renderfx & ETRF_WRAP_FRAMES)
+	{
+		refent->renderfx |= RF_WRAP_FRAMES;
+	}
+	if (gameRefent->renderfx & ETRF_BLINK)
+	{
+		refent->renderfx |= RF_BLINK;
+	}
+	if (gameRefent->renderfx & ETRF_FORCENOLOD)
+	{
+		refent->renderfx |= RF_FORCENOLOD;
+	}
+	refent->hModel = gameRefent->hModel;
+	VectorCopy(gameRefent->lightingOrigin, refent->lightingOrigin);
+	refent->shadowPlane = gameRefent->shadowPlane;
+	AxisCopy(gameRefent->axis, refent->axis);
+	AxisCopy(gameRefent->torsoAxis, refent->torsoAxis);
+	refent->nonNormalizedAxes = gameRefent->nonNormalizedAxes;
+	VectorCopy(gameRefent->origin, refent->origin);
+	refent->frame = gameRefent->frame;
+	refent->frameModel = gameRefent->frameModel;
+	refent->torsoFrame = gameRefent->torsoFrame;
+	refent->torsoFrameModel = gameRefent->torsoFrameModel;
+	VectorCopy(gameRefent->oldorigin, refent->oldorigin);
+	refent->oldframe = gameRefent->oldframe;
+	refent->oldframeModel = gameRefent->oldframeModel;
+	refent->oldTorsoFrame = gameRefent->oldTorsoFrame;
+	refent->oldTorsoFrameModel = gameRefent->oldTorsoFrameModel;
+	refent->backlerp = gameRefent->backlerp;
+	refent->torsoBacklerp = gameRefent->torsoBacklerp;
+	refent->skinNum = gameRefent->skinNum;
+	refent->customSkin = gameRefent->customSkin;
+	refent->customShader = gameRefent->customShader;
+	refent->shaderRGBA[0] = gameRefent->shaderRGBA[0];
+	refent->shaderRGBA[1] = gameRefent->shaderRGBA[1];
+	refent->shaderRGBA[2] = gameRefent->shaderRGBA[2];
+	refent->shaderRGBA[3] = gameRefent->shaderRGBA[3];
+	refent->shaderTexCoord[0] = gameRefent->shaderTexCoord[0];
+	refent->shaderTexCoord[1] = gameRefent->shaderTexCoord[1];
+	refent->shaderTime = gameRefent->shaderTime;
+	refent->radius = gameRefent->radius;
+	refent->rotation = gameRefent->rotation;
+	VectorCopy(gameRefent->fireRiseDir, refent->fireRiseDir);
+	refent->fadeStartTime = gameRefent->fadeStartTime;
+	refent->fadeEndTime = gameRefent->fadeEndTime;
+	refent->hilightIntensity = gameRefent->hilightIntensity;
+	refent->reFlags = gameRefent->reFlags & (REFLAG_ONLYHAND |
+											 REFLAG_FORCE_LOD | REFLAG_ORIENT_LOD | REFLAG_DEAD_LOD);
+	refent->entityNum = gameRefent->entityNum;
+}
+
+void CLET_AddRefEntityToScene(const etrefEntity_t* ent)
+{
+	refEntity_t refent;
+	CLET_GameRefEntToEngine(ent, &refent);
+	R_AddRefEntityToScene(&refent);
+}
+
+void CLET_RenderScene(const etrefdef_t* gameRefdef)
+{
+	refdef_t rd;
+	Com_Memset(&rd, 0, sizeof(rd));
+	rd.x = gameRefdef->x;
+	rd.y = gameRefdef->y;
+	rd.width = gameRefdef->width;
+	rd.height = gameRefdef->height;
+	rd.fov_x = gameRefdef->fov_x;
+	rd.fov_y = gameRefdef->fov_y;
+	VectorCopy(gameRefdef->vieworg, rd.vieworg);
+	AxisCopy(gameRefdef->viewaxis, rd.viewaxis);
+	rd.time = gameRefdef->time;
+	rd.rdflags = gameRefdef->rdflags & (RDF_NOWORLDMODEL | RDF_HYPERSPACE |
+										RDF_SKYBOXPORTAL | RDF_UNDERWATER | RDF_DRAWINGSKY | RDF_SNOOPERVIEW);
+	Com_Memcpy(rd.areamask, gameRefdef->areamask, sizeof(rd.areamask));
+	Com_Memcpy(rd.text, gameRefdef->text, sizeof(rd.text));
+	rd.glfog.mode = gameRefdef->glfog.mode;
+	rd.glfog.hint = gameRefdef->glfog.hint;
+	rd.glfog.startTime = gameRefdef->glfog.startTime;
+	rd.glfog.finishTime = gameRefdef->glfog.finishTime;
+	Vector4Copy(gameRefdef->glfog.color, rd.glfog.color);
+	rd.glfog.start = gameRefdef->glfog.start;
+	rd.glfog.end = gameRefdef->glfog.end;
+	rd.glfog.useEndForClip = gameRefdef->glfog.useEndForClip;
+	rd.glfog.density = gameRefdef->glfog.density;
+	rd.glfog.registered = gameRefdef->glfog.registered;
+	rd.glfog.drawsky = gameRefdef->glfog.drawsky;
+	rd.glfog.clearscreen = gameRefdef->glfog.clearscreen;
+	R_RenderScene(&rd);
+}
+
+int CLET_LerpTag(orientation_t* tag,  const etrefEntity_t* gameRefent, const char* tagName, int startIndex)
+{
+	refEntity_t refent;
+	CLET_GameRefEntToEngine(gameRefent, &refent);
+	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
 static void CLET_ClearSounds(int clearType)
@@ -241,7 +409,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_R_CLEARSCENE:
 		R_ClearScene();
 		return 0;
-//---------
+	case ETCG_R_ADDREFENTITYTOSCENE:
+		CLET_AddRefEntityToScene((etrefEntity_t*)VMA(1));
+		return 0;
 	case ETCG_R_ADDPOLYTOSCENE:
 		R_AddPolyToScene(args[1], args[2], (polyVert_t*)VMA(3), 1);
 		return 0;
@@ -263,7 +433,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_R_SETGLOBALFOG:
 		R_SetGlobalFog(args[1], args[2], VMF(3), VMF(4), VMF(5), VMF(6));
 		return 0;
-//---------
+	case ETCG_R_RENDERSCENE:
+		CLET_RenderScene((etrefdef_t*)VMA(1));
+		return 0;
 	case ETCG_R_SAVEVIEWPARMS:
 		R_SaveViewParms();
 		return 0;
@@ -287,6 +459,11 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		return 0;
 	case ETCG_R_MODELBOUNDS:
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
+		return 0;
+	case ETCG_R_LERPTAG:
+		return CLET_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
+	case ETCG_GETGLCONFIG:
+		CLET_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
 //---------
 	case ETCG_GETCURRENTCMDNUMBER:

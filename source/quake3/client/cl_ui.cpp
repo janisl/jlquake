@@ -21,12 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "client.h"
-#include "../../client/game/quake3/cg_ui_shared.h"
 #include "../../client/game/quake3/ui_public.h"
-
-void CL_GetGlconfig(q3glconfig_t* glconfig);
-void CL_AddRefEntityToScene(const q3refEntity_t* ent);
-void CL_RenderScene(const q3refdef_t* refdef);
 
 /*
 ====================
@@ -69,22 +64,10 @@ qintptr CL_UISystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //--------
-	case Q3UI_R_ADDREFENTITYTOSCENE:
-		CL_AddRefEntityToScene((q3refEntity_t*)VMA(1));
-		return 0;
-//--------
-	case Q3UI_R_RENDERSCENE:
-		CL_RenderScene((q3refdef_t*)VMA(1));
-		return 0;
-//--------
 	case Q3UI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 //--------
-	case Q3UI_GETGLCONFIG:
-		CL_GetGlconfig((q3glconfig_t*)VMA(1));
-		return 0;
-
 	case Q3UI_GETCONFIGSTRING:
 		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 //--------
