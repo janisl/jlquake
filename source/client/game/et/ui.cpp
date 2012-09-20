@@ -44,6 +44,63 @@ bool UIET_WantsBindKeys()
 	return VM_Call(uivm, ETUI_WANTSBINDKEYS);
 }
 
+void CLET_InGamePopup(int menu)
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		if (uivm)		// Gordon: can be called as the system is shutting down
+		{
+			UIT3_SetActiveMenu(menu);
+		}
+	}
+}
+
+static bool LAN_ServerIsInFavoriteList(int source, int n)
+{
+	if (source == WMAS_FAVORITES && n >= 0 && n < MAX_OTHER_SERVERS_Q3)
+	{
+		return true;
+	}
+
+	q3serverInfo_t* server = LAN_GetServerPtr(source, n);
+	if (!server)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < cls.q3_numfavoriteservers; i++)
+	{
+		if (SOCK_CompareAdr(cls.q3_favoriteServers[i].adr, server->adr))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static int CLET_GetConfigString(int index, char* buf, int size)
+{
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_ET)
+	{
+		return false;
+	}
+
+	int offset = cl.et_gameState.stringOffsets[index];
+	if (!offset)
+	{
+		if (size)
+		{
+			buf[0] = 0;
+		}
+		return false;
+	}
+
+	String::NCpyZ(buf, cl.et_gameState.stringData + offset, size);
+
+	return true;
+}
+
 //	The ui module is making a system call
 qintptr CLET_UISystemCalls(qintptr* args)
 {
@@ -261,7 +318,8 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		CLET_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
 
-//-------
+	case ETUI_GETCONFIGSTRING:
+		return CLET_GetConfigString(args[1], (char*)VMA(2), args[3]);
 
 	case ETUI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
@@ -308,6 +366,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		return 0;
 
 //-------
+
+	case ETUI_LAN_SERVERISINFAVORITELIST:
+		return LAN_ServerIsInFavoriteList(args[1], args[2]);
 
 	case ETUI_SET_PBCLSTATUS:
 		return 0;
@@ -385,7 +446,8 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), args[3]);			//----(SA)	added fadeup time
 		return 0;
 
-//-------
+	case ETUI_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 
 	case ETUI_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
@@ -408,6 +470,10 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		return 0;
 
 //-------
+
+	case ETUI_GETHUNKDATA:
+		CLET_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
+		return 0;
 
 	default:
 		common->Error("Bad UI system trap: %i", (int)args[0]);

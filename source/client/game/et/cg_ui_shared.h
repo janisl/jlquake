@@ -166,5 +166,7 @@ void CLET_GetGlconfig(etglconfig_t* config);
 void CLET_AddRefEntityToScene(const etrefEntity_t* ent);
 void CLET_RenderScene(const etrefdef_t* refdef);
 int CLET_LerpTag(orientation_t* tag,  const etrefEntity_t* refent, const char* tagName, int startIndex);
+void CLET_GetHunkInfo(int* hunkused, int* hunkexpected);
+void CLET_InGamePopup(int menu);
 
 #endif

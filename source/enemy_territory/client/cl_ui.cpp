@@ -31,64 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/game/et/ui_public.h"
 
 /*
-=======================
-LAN_ServerIsInFavoriteList
-=======================
-*/
-static bool LAN_ServerIsInFavoriteList(int source, int n)
-{
-	if (source == WMAS_FAVORITES && n >= 0 && n < MAX_OTHER_SERVERS_Q3)
-	{
-		return true;
-	}
-
-	q3serverInfo_t* server = LAN_GetServerPtr(source, n);
-	if (!server)
-	{
-		return false;
-	}
-
-	for (int i = 0; i < cls.q3_numfavoriteservers; i++)
-	{
-		if (SOCK_CompareAdr(cls.q3_favoriteServers[i].adr, server->adr))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
-====================
-GetConfigString
-====================
-*/
-static int GetConfigString(int index, char* buf, int size)
-{
-	int offset;
-
-	if (index < 0 || index >= MAX_CONFIGSTRINGS_ET)
-	{
-		return false;
-	}
-
-	offset = cl.et_gameState.stringOffsets[index];
-	if (!offset)
-	{
-		if (size)
-		{
-			buf[0] = 0;
-		}
-		return false;
-	}
-
-	String::NCpyZ(buf, cl.et_gameState.stringData + offset, size);
-
-	return true;
-}
-
-/*
 ====================
 CL_UISystemCalls
 
@@ -103,9 +45,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case ETUI_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
-//-------
-	case ETUI_GETCONFIGSTRING:
-		return GetConfigString(args[1], (char*)VMA(2), args[3]);
 //-------
 	case ETUI_LAN_GETPINGQUEUECOUNT:
 		return CL_GetPingQueueCount();
@@ -127,12 +66,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 //-------
 	case ETUI_LAN_SERVERSTATUS:
 		return CL_ServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
-
-	case ETUI_LAN_SERVERISINFAVORITELIST:
-		return LAN_ServerIsInFavoriteList(args[1], args[2]);
-//-------
-	case ETUI_REAL_TIME:
-		return Com_RealTime((qtime_t*)VMA(1));
 //-------
 	case ETUI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
@@ -161,10 +94,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 
 	case ETUI_OPENURL:
 		CL_OpenURL((const char*)VMA(1));
-		return 0;
-
-	case ETUI_GETHUNKDATA:
-		Com_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
 		return 0;
 //-------
 	}

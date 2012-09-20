@@ -32,163 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/game/et/cg_public.h"
 
 /*
-====================
-CL_GetGameState
-====================
-*/
-void CL_GetGameState(etgameState_t* gs)
-{
-	*gs = cl.et_gameState;
-}
-
-/*
-====================
-CL_GetUserCmd
-====================
-*/
-qboolean CL_GetUserCmd(int cmdNumber, etusercmd_t* ucmd)
-{
-	// cmds[cmdNumber] is the last properly generated command
-
-	// can't return anything that we haven't created yet
-	if (cmdNumber > cl.q3_cmdNumber)
-	{
-		common->Error("CL_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
-	}
-
-	// the usercmd has been overwritten in the wrapping
-	// buffer because it is too far out of date
-	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
-	{
-		return false;
-	}
-
-	*ucmd = cl.et_cmds[cmdNumber & CMD_MASK_Q3];
-
-	return true;
-}
-
-/*
-====================
-CL_GetParseEntityState
-====================
-*/
-qboolean    CL_GetParseEntityState(int parseEntityNumber, etentityState_t* state)
-{
-	// can't return anything that hasn't been parsed yet
-	if (parseEntityNumber >= cl.parseEntitiesNum)
-	{
-		common->Error("CL_GetParseEntityState: %i >= %i",
-			parseEntityNumber, cl.parseEntitiesNum);
-	}
-
-	// can't return anything that has been overwritten in the circular buffer
-	if (parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES_Q3)
-	{
-		return false;
-	}
-
-	*state = cl.et_parseEntities[parseEntityNumber & (MAX_PARSE_ENTITIES_Q3 - 1)];
-	return true;
-}
-
-/*
-====================
-CL_GetCurrentSnapshotNumber
-====================
-*/
-void    CL_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
-{
-	*snapshotNumber = cl.et_snap.messageNum;
-	*serverTime = cl.et_snap.serverTime;
-}
-
-/*
-====================
-CL_GetSnapshot
-====================
-*/
-qboolean    CL_GetSnapshot(int snapshotNumber, etsnapshot_t* snapshot)
-{
-	etclSnapshot_t* clSnap;
-	int i, count;
-
-	if (snapshotNumber > cl.et_snap.messageNum)
-	{
-		common->Error("CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
-	}
-
-	// if the frame has fallen out of the circular buffer, we can't return it
-	if (cl.et_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
-	{
-		return false;
-	}
-
-	// if the frame is not valid, we can't return it
-	clSnap = &cl.et_snapshots[snapshotNumber & PACKET_MASK_Q3];
-	if (!clSnap->valid)
-	{
-		return false;
-	}
-
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
-	{
-		return false;
-	}
-
-	// write the snapshot
-	snapshot->snapFlags = clSnap->snapFlags;
-	snapshot->serverCommandSequence = clSnap->serverCommandNum;
-	snapshot->ping = clSnap->ping;
-	snapshot->serverTime = clSnap->serverTime;
-	memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
-	snapshot->ps = clSnap->ps;
-	count = clSnap->numEntities;
-	if (count > MAX_ENTITIES_IN_SNAPSHOT_ET)
-	{
-		common->DPrintf("CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_ET);
-		count = MAX_ENTITIES_IN_SNAPSHOT_ET;
-	}
-	snapshot->numEntities = count;
-	for (i = 0; i < count; i++)
-	{
-		snapshot->entities[i] =
-			cl.et_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
-	}
-
-	// FIXME: configstring changes and server commands!!!
-
-	return true;
-}
-
-/*
-==============
-CL_SetUserCmdValue
-==============
-*/
-void CL_SetUserCmdValue(int userCmdValue, int flags, float sensitivityScale, int mpIdentClient)
-{
-	cl.q3_cgameUserCmdValue        = userCmdValue;
-	cl.et_cgameFlags               = flags;
-	cl.q3_cgameSensitivity         = sensitivityScale;
-	cl.wm_cgameMpIdentClient       = mpIdentClient;			// NERVE - SMF
-}
-
-/*
-==================
-CL_SetClientLerpOrigin
-==================
-*/
-void CL_SetClientLerpOrigin(float x, float y, float z)
-{
-	cl.wm_cgameClientLerpOrigin[0] = x;
-	cl.wm_cgameClientLerpOrigin[1] = y;
-	cl.wm_cgameClientLerpOrigin[2] = z;
-}
-
-/*
 =====================
 CL_ConfigstringModified
 =====================
@@ -402,44 +245,6 @@ rescan:
 
 /*
 ====================
-CL_SendBinaryMessage
-====================
-*/
-static void CL_SendBinaryMessage(const char* buf, int buflen)
-{
-	if (buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET)
-	{
-		common->Error("CL_SendBinaryMessage: bad length %i", buflen);
-		clc.et_binaryMessageLength = 0;
-		return;
-	}
-
-	clc.et_binaryMessageLength = buflen;
-	memcpy(clc.et_binaryMessage, buf, buflen);
-}
-
-/*
-====================
-CL_BinaryMessageStatus
-====================
-*/
-static int CL_BinaryMessageStatus(void)
-{
-	if (clc.et_binaryMessageLength == 0)
-	{
-		return ETMESSAGE_EMPTY;
-	}
-
-	if (clc.et_binaryMessageOverflowed)
-	{
-		return ETMESSAGE_WAITING_OVERFLOW;
-	}
-
-	return ETMESSAGE_WAITING;
-}
-
-/*
-====================
 CL_CgameSystemCalls
 
 The cgame module is making a system call
@@ -457,28 +262,8 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 		SCR_UpdateScreen();
 		return 0;
 //---------
-	case ETCG_GETGAMESTATE:
-		CL_GetGameState((etgameState_t*)VMA(1));
-		return 0;
-	case ETCG_GETCURRENTSNAPSHOTNUMBER:
-		CL_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
-		return 0;
-	case ETCG_GETSNAPSHOT:
-		return CL_GetSnapshot(args[1], (etsnapshot_t*)VMA(2));
 	case ETCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-//---------
-	case ETCG_GETUSERCMD:
-		return CL_GetUserCmd(args[1], (etusercmd_t*)VMA(2));
-	case ETCG_SETUSERCMDVALUE:
-		CL_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
-		return 0;
-	case ETCG_SETCLIENTLERPORIGIN:
-		CL_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
-		return 0;
-//---------
-	case ETCG_REAL_TIME:
-		return Com_RealTime((qtime_t*)VMA(1));
 //---------
 	case ETCG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
@@ -489,26 +274,6 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	case ETCG_CIN_SETEXTENTS:
 		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 		return 0;
-//---------
-	case ETCG_INGAME_POPUP:
-		if (cls.state == CA_ACTIVE && !clc.demoplaying)
-		{
-			if (uivm)		// Gordon: can be called as the system is shutting down
-			{
-				UIT3_SetActiveMenu(args[1]);
-			}
-		}
-		return 0;
-//---------
-	case ETCG_GETHUNKDATA:
-		Com_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
-		return 0;
-//---------
-	case ETCG_SENDMESSAGE:
-		CL_SendBinaryMessage((char*)VMA(1), args[2]);
-		return 0;
-	case ETCG_MESSAGESTATUS:
-		return CL_BinaryMessageStatus();
 //---------
 	}
 	return CLET_CgameSystemCalls(args);

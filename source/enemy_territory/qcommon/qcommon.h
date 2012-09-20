@@ -287,6 +287,4 @@ void Sys_Chmod(char* file, int mode);
 
 extern huffman_t clientHuffTables;
 
-void Com_GetHunkInfo(int* hunkused, int* hunkexpected);
-
 #endif	// _QCOMMON_H_

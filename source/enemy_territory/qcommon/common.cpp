@@ -2145,12 +2145,6 @@ command line completion
 ===========================================
 */
 
-void Com_GetHunkInfo(int* hunkused, int* hunkexpected)
-{
-	*hunkused =     0;
-	*hunkexpected = -1;
-}
-
 void CL_Disconnect()
 {
 }

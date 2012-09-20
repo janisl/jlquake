@@ -215,6 +215,12 @@ int CLET_LerpTag(orientation_t* tag,  const etrefEntity_t* gameRefent, const cha
 	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
+void CLET_GetHunkInfo(int* hunkused, int* hunkexpected)
+{
+	*hunkused = 0;
+	*hunkexpected = -1;
+}
+
 static void CLET_ClearSounds(int clearType)
 {
 	if (clearType == 0)
@@ -242,6 +248,134 @@ static void CLET_StopCamera(int camNum)
 	{
 		cl.wa_cameraMode = false;
 	}
+}
+
+static void CLET_GetGameState(etgameState_t* gs)
+{
+	*gs = cl.et_gameState;
+}
+
+static void CLET_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
+{
+	*snapshotNumber = cl.et_snap.messageNum;
+	*serverTime = cl.et_snap.serverTime;
+}
+
+static bool CLET_GetSnapshot(int snapshotNumber, etsnapshot_t* snapshot)
+{
+	if (snapshotNumber > cl.et_snap.messageNum)
+	{
+		common->Error("CLET_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
+	}
+
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if (cl.et_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	// if the frame is not valid, we can't return it
+	etclSnapshot_t* clSnap = &cl.et_snapshots[snapshotNumber & PACKET_MASK_Q3];
+	if (!clSnap->valid)
+	{
+		return false;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
+	{
+		return false;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->serverCommandSequence = clSnap->serverCommandNum;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
+	snapshot->ps = clSnap->ps;
+	int count = clSnap->numEntities;
+	if (count > MAX_ENTITIES_IN_SNAPSHOT_ET)
+	{
+		common->DPrintf("CLET_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_ET);
+		count = MAX_ENTITIES_IN_SNAPSHOT_ET;
+	}
+	snapshot->numEntities = count;
+	for (int i = 0; i < count; i++)
+	{
+		snapshot->entities[i] =
+			cl.et_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
+	}
+
+	// FIXME: configstring changes and server commands!!!
+
+	return true;
+}
+
+static bool CLET_GetUserCmd(int cmdNumber, etusercmd_t* ucmd)
+{
+	// cmds[cmdNumber] is the last properly generated command
+
+	// can't return anything that we haven't created yet
+	if (cmdNumber > cl.q3_cmdNumber)
+	{
+		common->Error("CLET_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
+	}
+
+	// the usercmd has been overwritten in the wrapping
+	// buffer because it is too far out of date
+	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	*ucmd = cl.et_cmds[cmdNumber & CMD_MASK_Q3];
+
+	return true;
+}
+
+static void CLET_SetUserCmdValue(int userCmdValue, int flags, float sensitivityScale, int mpIdentClient)
+{
+	cl.q3_cgameUserCmdValue = userCmdValue;
+	cl.et_cgameFlags = flags;
+	cl.q3_cgameSensitivity = sensitivityScale;
+	cl.wm_cgameMpIdentClient = mpIdentClient;			// NERVE - SMF
+}
+
+static void CLET_SetClientLerpOrigin(float x, float y, float z)
+{
+	cl.wm_cgameClientLerpOrigin[0] = x;
+	cl.wm_cgameClientLerpOrigin[1] = y;
+	cl.wm_cgameClientLerpOrigin[2] = z;
+}
+
+static void CLET_SendBinaryMessage(const char* buf, int buflen)
+{
+	if (buflen < 0 || buflen > MAX_BINARY_MESSAGE_ET)
+	{
+		common->Error("CLET_SendBinaryMessage: bad length %i", buflen);
+		clc.et_binaryMessageLength = 0;
+		return;
+	}
+
+	clc.et_binaryMessageLength = buflen;
+	Com_Memcpy(clc.et_binaryMessage, buf, buflen);
+}
+
+static int CLET_BinaryMessageStatus()
+{
+	if (clc.et_binaryMessageLength == 0)
+	{
+		return ETMESSAGE_EMPTY;
+	}
+
+	if (clc.et_binaryMessageOverflowed)
+	{
+		return ETMESSAGE_WAITING_OVERFLOW;
+	}
+
+	return ETMESSAGE_WAITING;
 }
 
 //	The cgame module is making a system call
@@ -465,10 +599,25 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_GETGLCONFIG:
 		CLET_GetGlconfig((etglconfig_t*)VMA(1));
 		return 0;
+	case ETCG_GETGAMESTATE:
+		CLET_GetGameState((etgameState_t*)VMA(1));
+		return 0;
+	case ETCG_GETCURRENTSNAPSHOTNUMBER:
+		CLET_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
+		return 0;
+	case ETCG_GETSNAPSHOT:
+		return CLET_GetSnapshot(args[1], (etsnapshot_t*)VMA(2));
 //---------
 	case ETCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
-//---------
+	case ETCG_GETUSERCMD:
+		return CLET_GetUserCmd(args[1], (etusercmd_t*)VMA(2));
+	case ETCG_SETUSERCMDVALUE:
+		CLET_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);
+		return 0;
+	case ETCG_SETCLIENTLERPORIGIN:
+		CLET_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
+		return 0;
 	case ETCG_MEMORY_REMAINING:
 		return 0x4000000;
 	case ETCG_KEY_ISDOWN:
@@ -527,7 +676,8 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		S_StopBackgroundTrack();
 		return 0;
 
-//---------
+	case ETCG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 	case ETCG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
@@ -564,7 +714,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
 
-//---------
+	case ETCG_INGAME_POPUP:
+		CLET_InGamePopup(args[1]);
+		return 0;
 	case ETCG_INGAME_CLOSEPOPUP:
 		return 0;
 
@@ -592,12 +744,18 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_R_INPVS:
 		return CLT3_InPvs((float*)VMA(1), (float*)VMA(2));
 
-//---------
+	case ETCG_GETHUNKDATA:
+		CLET_GetHunkInfo((int*)VMA(1), (int*)VMA(2));
+		return 0;
 
 	case ETCG_PUMPEVENTLOOP:
 		return 0;
 
-//---------
+	case ETCG_SENDMESSAGE:
+		CLET_SendBinaryMessage((char*)VMA(1), args[2]);
+		return 0;
+	case ETCG_MESSAGESTATUS:
+		return CLET_BinaryMessageStatus();
 	case ETCG_R_LOADDYNAMICSHADER:
 		return R_LoadDynamicShader((char*)VMA(1), (char*)VMA(2));
 	case ETCG_R_RENDERTOTEXTURE:
