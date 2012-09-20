@@ -209,6 +209,102 @@ static void CLWS_StopCamera(int camNum)
 	}
 }
 
+static void CLWS_GetGameState(wsgameState_t* gs)
+{
+	*gs = cl.ws_gameState;
+}
+
+static bool CLWS_GetUserCmd(int cmdNumber, wsusercmd_t* ucmd)
+{
+	// cmds[cmdNumber] is the last properly generated command
+
+	// can't return anything that we haven't created yet
+	if (cmdNumber > cl.q3_cmdNumber)
+	{
+		common->Error("CLWS_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
+	}
+
+	// the usercmd has been overwritten in the wrapping
+	// buffer because it is too far out of date
+	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	*ucmd = cl.ws_cmds[cmdNumber & CMD_MASK_Q3];
+
+	return true;
+}
+
+static void CLWS_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
+{
+	*snapshotNumber = cl.ws_snap.messageNum;
+	*serverTime = cl.ws_snap.serverTime;
+}
+
+static bool CLWS_GetSnapshot(int snapshotNumber, wssnapshot_t* snapshot)
+{
+	wsclSnapshot_t* clSnap;
+	int i, count;
+
+	if (snapshotNumber > cl.ws_snap.messageNum)
+	{
+		common->Error("CLWS_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
+	}
+
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if (cl.ws_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	// if the frame is not valid, we can't return it
+	clSnap = &cl.ws_snapshots[snapshotNumber & PACKET_MASK_Q3];
+	if (!clSnap->valid)
+	{
+		return false;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
+	{
+		return false;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->serverCommandSequence = clSnap->serverCommandNum;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
+	snapshot->ps = clSnap->ps;
+	count = clSnap->numEntities;
+	if (count > MAX_ENTITIES_IN_SNAPSHOT_WS)
+	{
+		common->DPrintf("CLWS_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_WS);
+		count = MAX_ENTITIES_IN_SNAPSHOT_WS;
+	}
+	snapshot->numEntities = count;
+	for (i = 0; i < count; i++)
+	{
+		snapshot->entities[i] =
+			cl.ws_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
+	}
+
+	// FIXME: configstring changes and server commands!!!
+
+	return true;
+}
+
+static void CLWS_SetUserCmdValue(int userCmdValue, int holdableValue, float sensitivityScale, int cld)
+{
+	cl.q3_cgameUserCmdValue = userCmdValue;
+	cl.wb_cgameUserHoldableValue = holdableValue;
+	cl.q3_cgameSensitivity = sensitivityScale;
+	cl.ws_cgameCld = cld;
+}
+
 //	The cgame module is making a system call
 qintptr CLWS_CgameSystemCalls(qintptr* args)
 {
@@ -395,10 +491,22 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 	case WSCG_GETGLCONFIG:
 		CLWS_GetGlconfig((wsglconfig_t*)VMA(1));
 		return 0;
+	case WSCG_GETGAMESTATE:
+		CLWS_GetGameState((wsgameState_t*)VMA(1));
+		return 0;
+	case WSCG_GETCURRENTSNAPSHOTNUMBER:
+		CLWS_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
+		return 0;
+	case WSCG_GETSNAPSHOT:
+		return CLWS_GetSnapshot(args[1], (wssnapshot_t*)VMA(2));
 //---------
 	case WSCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
-//---------
+	case WSCG_GETUSERCMD:
+		return CLWS_GetUserCmd(args[1], (wsusercmd_t*)VMA(2));
+	case WSCG_SETUSERCMDVALUE:
+		CLWS_SetUserCmdValue(args[1], args[2], VMF(3), args[4]);			//----(SA)	modified	// NERVE - SMF - added fourth arg [cld]
+		return 0;
 	case WSCG_MEMORY_REMAINING:
 		return 0x4000000;
 	case WSCG_KEY_ISDOWN:
@@ -448,6 +556,8 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 		S_StopBackgroundTrack();
 		return 0;
 
+	case WSCG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 	case WSCG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
@@ -488,7 +598,9 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 	case WSCG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
 
-//---------
+	case WSCG_INGAME_POPUP:
+		CLWS_InGamePopup((char*)VMA(1));
+		return 0;
 
 	case WSCG_INGAME_CLOSEPOPUP:
 		UIT3_KeyEvent(K_ESCAPE, true);

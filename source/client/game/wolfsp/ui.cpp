@@ -39,6 +39,79 @@ bool UIWS_HasUniqueCDKey()
 	return VM_Call(uivm, WSUI_HASUNIQUECDKEY);
 }
 
+void CLWS_InGamePopup(char* menu)
+{
+	if (menu && !String::ICmp(menu, "briefing"))				//----(SA) added
+	{
+		UIT3_SetActiveMenu(WSUIMENU_BRIEFING);
+		return;
+	}
+
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		// NERVE - SMF
+		if (menu && !String::ICmp(menu, "UIMENU_WM_PICKTEAM"))
+		{
+			UIT3_SetActiveMenu(WSUIMENU_WM_PICKTEAM);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_PICKPLAYER"))
+		{
+			UIT3_SetActiveMenu(WSUIMENU_WM_PICKPLAYER);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_QUICKMESSAGE"))
+		{
+			UIT3_SetActiveMenu(WSUIMENU_WM_QUICKMESSAGE);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_LIMBO"))
+		{
+			UIT3_SetActiveMenu(WSUIMENU_WM_LIMBO);
+		}
+		// -NERVE - SMF
+		else if (menu && !String::ICmp(menu, "hbook1"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WSUIMENU_BOOK1);
+		}
+		else if (menu && !String::ICmp(menu, "hbook2"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WSUIMENU_BOOK2);
+		}
+		else if (menu && !String::ICmp(menu, "hbook3"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WSUIMENU_BOOK3);
+		}
+		else if (menu && !String::ICmp(menu, "pregame"))					//----(SA) added
+		{
+			UIT3_SetActiveMenu(WSUIMENU_PREGAME);
+		}
+		else
+		{
+			UIT3_SetActiveMenu(WSUIMENU_CLIPBOARD);
+		}
+	}
+}
+
+static int CLWS_GetConfigString(int index, char* buf, int size)
+{
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_WS)
+	{
+		return false;
+	}
+
+	int offset = cl.ws_gameState.stringOffsets[index];
+	if (!offset)
+	{
+		if (size)
+		{
+			buf[0] = 0;
+		}
+		return false;
+	}
+
+	String::NCpyZ(buf, cl.ws_gameState.stringData + offset, size);
+
+	return true;
+}
+
 //	The ui module is making a system call
 qintptr CLWS_UISystemCalls(qintptr* args)
 {
@@ -240,7 +313,8 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		CLWS_GetGlconfig((wsglconfig_t*)VMA(1));
 		return 0;
 
-//-------
+	case WSUI_GETCONFIGSTRING:
+		return CLWS_GetConfigString(args[1], (char*)VMA(2), args[3]);
 
 	case WSUI_LAN_LOADCACHEDSERVERS:
 		//	Not applicable to single player
@@ -352,7 +426,8 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), args[3]);			//----(SA)	added fadeup time
 		return 0;
 
-//-------
+	case WSUI_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 
 	case WSUI_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);

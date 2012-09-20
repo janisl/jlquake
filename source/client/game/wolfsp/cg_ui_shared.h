@@ -168,5 +168,6 @@ void CLWS_GetGlconfig(wsglconfig_t* config);
 void CLWS_AddRefEntityToScene(const wsrefEntity_t* ent);
 void CLWS_RenderScene(const wsrefdef_t* refdef);
 int CLWS_LerpTag(orientation_t* tag,  const wsrefEntity_t* refent, const char* tagName, int startIndex);
+void CLWS_InGamePopup(char* menu);
 
 #endif
