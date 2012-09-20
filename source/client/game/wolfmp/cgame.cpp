@@ -180,6 +180,107 @@ int CLWM_LerpTag(orientation_t* tag,  const wmrefEntity_t* gameRefent, const cha
 	return R_LerpTag(tag, &refent, tagName, startIndex);
 }
 
+static void CLWM_GetGameState(wmgameState_t* gs)
+{
+	*gs = cl.wm_gameState;
+}
+
+static bool CLWM_GetUserCmd(int cmdNumber, wmusercmd_t* ucmd)
+{
+	// cmds[cmdNumber] is the last properly generated command
+
+	// can't return anything that we haven't created yet
+	if (cmdNumber > cl.q3_cmdNumber)
+	{
+		common->Error("CLWM_GetUserCmd: %i >= %i", cmdNumber, cl.q3_cmdNumber);
+	}
+
+	// the usercmd has been overwritten in the wrapping
+	// buffer because it is too far out of date
+	if (cmdNumber <= cl.q3_cmdNumber - CMD_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	*ucmd = cl.wm_cmds[cmdNumber & CMD_MASK_Q3];
+
+	return true;
+}
+
+static void CLWM_GetCurrentSnapshotNumber(int* snapshotNumber, int* serverTime)
+{
+	*snapshotNumber = cl.wm_snap.messageNum;
+	*serverTime = cl.wm_snap.serverTime;
+}
+
+static bool CLWM_GetSnapshot(int snapshotNumber, wmsnapshot_t* snapshot)
+{
+	if (snapshotNumber > cl.wm_snap.messageNum)
+	{
+		common->Error("CLWM_GetSnapshot: snapshotNumber > cl.snapshot.messageNum");
+	}
+
+	// if the frame has fallen out of the circular buffer, we can't return it
+	if (cl.wm_snap.messageNum - snapshotNumber >= PACKET_BACKUP_Q3)
+	{
+		return false;
+	}
+
+	// if the frame is not valid, we can't return it
+	wmclSnapshot_t* clSnap = &cl.wm_snapshots[snapshotNumber & PACKET_MASK_Q3];
+	if (!clSnap->valid)
+	{
+		return false;
+	}
+
+	// if the entities in the frame have fallen out of their
+	// circular buffer, we can't return it
+	if (cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES_Q3)
+	{
+		return false;
+	}
+
+	// write the snapshot
+	snapshot->snapFlags = clSnap->snapFlags;
+	snapshot->serverCommandSequence = clSnap->serverCommandNum;
+	snapshot->ping = clSnap->ping;
+	snapshot->serverTime = clSnap->serverTime;
+	memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
+	snapshot->ps = clSnap->ps;
+	int count = clSnap->numEntities;
+	if (count > MAX_ENTITIES_IN_SNAPSHOT_WM)
+	{
+		common->DPrintf("CLWM_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT_WM);
+		count = MAX_ENTITIES_IN_SNAPSHOT_WM;
+	}
+	snapshot->numEntities = count;
+	for (int i = 0; i < count; i++)
+	{
+		snapshot->entities[i] =
+			cl.wm_parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES_Q3 - 1)];
+	}
+
+	// FIXME: configstring changes and server commands!!!
+
+	return true;
+}
+
+static void CLWM_SetUserCmdValue(int userCmdValue, int holdableValue, float sensitivityScale, int mpSetup, int mpIdentClient)
+{
+	cl.q3_cgameUserCmdValue = userCmdValue;
+	cl.wb_cgameUserHoldableValue = holdableValue;
+	cl.q3_cgameSensitivity = sensitivityScale;
+	cl.wm_cgameMpSetup = mpSetup;				// NERVE - SMF
+	cl.wm_cgameMpIdentClient = mpIdentClient;	// NERVE - SMF
+}
+
+static void CLWM_SetClientLerpOrigin(float x, float y, float z)
+{
+	cl.wm_cgameClientLerpOrigin[0] = x;
+	cl.wm_cgameClientLerpOrigin[1] = y;
+	cl.wm_cgameClientLerpOrigin[2] = z;
+}
+
 //	The cgame module is making a system call
 qintptr CLWM_CgameSystemCalls(qintptr* args)
 {
@@ -361,10 +462,25 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 	case WMCG_GETGLCONFIG:
 		CLWM_GetGlconfig((wmglconfig_t*)VMA(1));
 		return 0;
+	case WMCG_GETGAMESTATE:
+		CLWM_GetGameState((wmgameState_t*)VMA(1));
+		return 0;
+	case WMCG_GETCURRENTSNAPSHOTNUMBER:
+		CLWM_GetCurrentSnapshotNumber((int*)VMA(1), (int*)VMA(2));
+		return 0;
+	case WMCG_GETSNAPSHOT:
+		return CLWM_GetSnapshot(args[1], (wmsnapshot_t*)VMA(2));
 //-------------
 	case WMCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
-//-------------
+	case WMCG_GETUSERCMD:
+		return CLWM_GetUserCmd(args[1], (wmusercmd_t*)VMA(2));
+	case WMCG_SETUSERCMDVALUE:
+		CLWM_SetUserCmdValue(args[1], args[2], VMF(3), args[4], args[5]);
+		return 0;
+	case WMCG_SETCLIENTLERPORIGIN:
+		CLWM_SetClientLerpOrigin(VMF(1), VMF(2), VMF(3));
+		return 0;
 	case WMCG_MEMORY_REMAINING:
 		return 0x4000000;
 	case WMCG_KEY_ISDOWN:
@@ -414,7 +530,8 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 		S_StopBackgroundTrack();
 		return 0;
 
-//-------------
+	case WMCG_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 	case WMCG_SNAPVECTOR:
 		Sys_SnapVector((float*)VMA(1));
 		return 0;
@@ -451,6 +568,14 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 
 	case WMCG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken((char*)VMA(1), args[2]);
+
+	case WMCG_INGAME_POPUP:
+		CLWM_InGamePopup((char*)VMA(1));
+		return 0;
+
+	case WMCG_INGAME_CLOSEPOPUP:
+		CLWM_InGameClosePopup((char*)VMA(1));
+		return 0;
 
 //-------------
 

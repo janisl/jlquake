@@ -44,6 +44,90 @@ bool UIWM_CheckExecKey(int key)
 	return VM_Call(uivm, WMUI_CHECKEXECKEY, key);
 }
 
+void CLWM_InGamePopup(char* menu)
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		// NERVE - SMF
+		if (menu && !String::ICmp(menu, "UIMENU_WM_PICKTEAM"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_PICKTEAM);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_PICKPLAYER"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_PICKPLAYER);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_QUICKMESSAGE"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_QUICKMESSAGE);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_QUICKMESSAGEALT"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_QUICKMESSAGEALT);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_LIMBO"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_LIMBO);
+		}
+		else if (menu && !String::ICmp(menu, "UIMENU_WM_AUTOUPDATE"))
+		{
+			UIT3_SetActiveMenu(WMUIMENU_WM_AUTOUPDATE);
+		}
+		// -NERVE - SMF
+		else if (menu && !String::ICmp(menu, "hbook1"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WMUIMENU_BOOK1);
+		}
+		else if (menu && !String::ICmp(menu, "hbook2"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WMUIMENU_BOOK2);
+		}
+		else if (menu && !String::ICmp(menu, "hbook3"))				//----(SA)
+		{
+			UIT3_SetActiveMenu(WMUIMENU_BOOK3);
+		}
+		else
+		{
+			UIT3_SetActiveMenu(WMUIMENU_CLIPBOARD);
+		}
+	}
+}
+
+void CLWM_InGameClosePopup(char* menu)
+{
+	// if popup menu is up, then close it
+	if (menu && !String::ICmp(menu, "UIMENU_WM_LIMBO"))
+	{
+		if (UIWM_GetActiveMenu() == WMUIMENU_WM_LIMBO)
+		{
+			UIT3_KeyEvent(K_ESCAPE, true);
+			UIT3_KeyEvent(K_ESCAPE, true);
+		}
+	}
+}
+
+static int CLWM_GetConfigString(int index, char* buf, int size)
+{
+	if (index < 0 || index >= MAX_CONFIGSTRINGS_WM)
+	{
+		return false;
+	}
+
+	int offset = cl.wm_gameState.stringOffsets[index];
+	if (!offset)
+	{
+		if (size)
+		{
+			buf[0] = 0;
+		}
+		return false;
+	}
+
+	String::NCpyZ(buf, cl.wm_gameState.stringData + offset, size);
+
+	return true;
+}
+
 //	The ui module is making a system call
 qintptr CLWM_UISystemCalls(qintptr* args)
 {
@@ -233,7 +317,8 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		CLWM_GetGlconfig((wmglconfig_t*)VMA(1));
 		return 0;
 
-//-------
+	case WMUI_GETCONFIGSTRING:
+		return CLWM_GetConfigString(args[1], (char*)VMA(2), args[3]);
 
 	case WMUI_LAN_LOADCACHEDSERVERS:
 		LAN_LoadCachedServers();
@@ -351,7 +436,8 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		S_StartBackgroundTrack((char*)VMA(1), (char*)VMA(2), 0);
 		return 0;
 
-//-------
+	case WMUI_REAL_TIME:
+		return Com_RealTime((qtime_t*)VMA(1));
 
 	case WMUI_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
