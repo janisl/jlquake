@@ -256,7 +256,20 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		LAN_RemoveServer(args[1], (char*)VMA(2));
 		return 0;
 
-//--------
+	case Q3UI_LAN_GETPINGQUEUECOUNT:
+		return CLT3_GetPingQueueCount();
+
+	case Q3UI_LAN_CLEARPING:
+		CLT3_ClearPing(args[1]);
+		return 0;
+
+	case Q3UI_LAN_GETPING:
+		CLT3_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
+		return 0;
+
+	case Q3UI_LAN_GETPINGINFO:
+		CLT3_GetPingInfo(args[1], (char*)VMA(2), args[3]);
+		return 0;
 
 	case Q3UI_LAN_GETSERVERCOUNT:
 		return LAN_GetServerCount(args[1]);
@@ -279,13 +292,15 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 	case Q3UI_LAN_SERVERISVISIBLE:
 		return LAN_ServerIsVisible(args[1], args[2]);
 
-//--------
+	case Q3UI_LAN_UPDATEVISIBLEPINGS:
+		return CLT3_UpdateVisiblePings(args[1]);
 
 	case Q3UI_LAN_RESETPINGS:
 		LAN_ResetPings(args[1]);
 		return 0;
 
-//--------
+	case Q3UI_LAN_SERVERSTATUS:
+		return CLT3_ServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
 
 	case Q3UI_LAN_COMPARESERVERS:
 		return LAN_CompareServers(args[1], args[2], args[3], args[4], args[5]);

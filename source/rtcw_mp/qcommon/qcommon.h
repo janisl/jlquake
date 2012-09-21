@@ -49,10 +49,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 
 #define PORT_UPDATE         27951
 #define Q3PORT_AUTHORIZE      27952
-#define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
-									// Q3PORT_SERVER so a single machine can
-									// run multiple servers
-
 
 /*
 ==============================================================

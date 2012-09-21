@@ -46,27 +46,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 		SCR_UpdateScreen();
 		return 0;
 //-------
-	case WMUI_LAN_GETPINGQUEUECOUNT:
-		return CL_GetPingQueueCount();
-
-	case WMUI_LAN_CLEARPING:
-		CL_ClearPing(args[1]);
-		return 0;
-
-	case WMUI_LAN_GETPING:
-		CL_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
-		return 0;
-
-	case WMUI_LAN_GETPINGINFO:
-		CL_GetPingInfo(args[1], (char*)VMA(2), args[3]);
-		return 0;
-//-------
-	case WMUI_LAN_UPDATEVISIBLEPINGS:
-		return CL_UpdateVisiblePings_f(args[1]);
-//-------
-	case WMUI_LAN_SERVERSTATUS:
-		return CL_ServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
-//-------
 	case WMUI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 //-------

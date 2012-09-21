@@ -812,12 +812,6 @@ struct etentityState_t
 #define MAX_RELIABLE_COMMANDS_WOLF   256	// bigger!
 #define BIGGEST_MAX_RELIABLE_COMMANDS   256	// bigger!
 
-#define MAX_NAME_LENGTH_WS     32		// max length of a client name
-#define MAX_NAME_LENGTH_WM     32		// max length of a client name
-// rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
-// with very long names
-#define MAX_NAME_LENGTH_ET     36		// max length of a client name
-
 // in_usercmd_t->button bits
 #define WOLFBUTTON_ACTIVATE     BIT(6)
 #define WOLFBUTTON_ANY          BIT(7)		// any key whatsoever

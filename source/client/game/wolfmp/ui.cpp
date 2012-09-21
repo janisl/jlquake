@@ -335,7 +335,20 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		LAN_RemoveServer(args[1], (char*)VMA(2));
 		return 0;
 
-//-------
+	case WMUI_LAN_GETPINGQUEUECOUNT:
+		return CLT3_GetPingQueueCount();
+
+	case WMUI_LAN_CLEARPING:
+		CLT3_ClearPing(args[1]);
+		return 0;
+
+	case WMUI_LAN_GETPING:
+		CLT3_GetPing(args[1], (char*)VMA(2), args[3], (int*)VMA(4));
+		return 0;
+
+	case WMUI_LAN_GETPINGINFO:
+		CLT3_GetPingInfo(args[1], (char*)VMA(2), args[3]);
+		return 0;
 
 	case WMUI_LAN_GETSERVERCOUNT:
 		return LAN_GetServerCount(args[1]);
@@ -358,13 +371,15 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 	case WMUI_LAN_SERVERISVISIBLE:
 		return LAN_ServerIsVisible(args[1], args[2]);
 
-//-------
+	case WMUI_LAN_UPDATEVISIBLEPINGS:
+		return CLT3_UpdateVisiblePings(args[1]);
 
 	case WMUI_LAN_RESETPINGS:
 		LAN_ResetPings(args[1]);
 		return 0;
 
-//-------
+	case WMUI_LAN_SERVERSTATUS:
+		return CLT3_ServerStatus((char*)VMA(1), (char*)VMA(2), args[3]);
 
 	case WMUI_SET_PBCLSTATUS:
 		return 0;

@@ -561,7 +561,7 @@ struct clientStatic_t
 	q3serverInfo_t q3_globalServers[BIGGEST_MAX_GLOBAL_SERVERS];
 	// additional global servers
 	int q3_numGlobalServerAddresses;
-	q3serverAddress_t q3_globalServerAddresses[BIGGEST_MAX_GLOBAL_SERVERS];
+	netadr_t q3_globalServerAddresses[BIGGEST_MAX_GLOBAL_SERVERS];
 
 	int q3_numfavoriteservers;
 	q3serverInfo_t q3_favoriteServers[MAX_OTHER_SERVERS_Q3];

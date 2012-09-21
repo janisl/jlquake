@@ -196,9 +196,6 @@ void QDECL Com_Printf(const char* msg, ...);
 ==========================================================
 */
 
-#define MAX_PINGREQUESTS            16
-#define MAX_SERVERSTATUSREQUESTS    16
-
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 

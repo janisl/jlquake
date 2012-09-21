@@ -36,7 +36,23 @@ void KeyWM_SetCatcher(int catcher);
 //
 //	Main
 //
+#define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
+
 extern Cvar* clet_profile;
+
+//
+//	ServerList
+//
+int CLT3_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen);
+void CLT3_ServerStatusResponse(netadr_t from, QMsg* msg);
+int CLT3_GetPingQueueCount();
+void CLT3_ClearPing(int n);
+void CLT3_GetPing(int n, char* buf, int buflen, int* pingtime);
+void CLT3_GetPingInfo(int n, char* buf, int buflen);
+bool CLT3_UpdateVisiblePings(int source);
+void CLT3_ServerInfoPacket(netadr_t from, QMsg* msg);
+void CLT3_ServersResponsePacket(netadr_t from, QMsg* msg);
+void CLT3_InitServerLists();
 
 //
 //	UI

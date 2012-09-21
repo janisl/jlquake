@@ -34,16 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "keys.h"
 #include "../../client/game/wolfmp/local.h"
 
-#define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
-
-typedef struct
-{
-	netadr_t adr;
-	int start;
-	int time;
-	char info[MAX_INFO_STRING_Q3];
-} ping_t;
-
 //=============================================================================
 
 //
@@ -94,15 +84,9 @@ void CL_ReadDemoMessage(void);
 void CL_InitDownloads(void);
 void CL_NextDownload(void);
 
-void CL_GetPing(int n, char* buf, int buflen, int* pingtime);
-void CL_GetPingInfo(int n, char* buf, int buflen);
-void CL_ClearPing(int n);
-int CL_GetPingQueueCount(void);
-
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 qboolean CL_CDKeyValidate(const char* key, const char* checksum);
-int CL_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen);
 
 void CL_AddToLimboChat(const char* str);					// NERVE - SMF
 qboolean CL_GetLimboString(int index, char* buf);			// NERVE - SMF
@@ -136,14 +120,6 @@ void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
-
-void    CL_ServerInfoPacket(netadr_t from, QMsg* msg);
-void    CL_LocalServers_f(void);
-void    CL_GlobalServers_f(void);
-void    CL_FavoriteServers_f(void);
-void    CL_Ping_f(void);
-qboolean CL_UpdateVisiblePings_f(int source);
-
 
 //
 // console

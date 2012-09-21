@@ -38,9 +38,6 @@ extern int demo_protocols[];
 #define UPDATE_SERVER_NAME  "update.quake3arena.com"
 
 #define PORT_UPDATE         27951
-#define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
-									// Q3PORT_SERVER so a single machine can
-									// run multiple servers
 
 //===========================================================================
 

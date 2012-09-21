@@ -83,6 +83,8 @@ struct q3outPacket_t
 	int p_realtime;			// cls.realtime when packet was sent
 };
 
+#define MAX_NAME_LENGTH_ET     36		// max length of a client name
+
 struct q3serverInfo_t
 {
 	netadr_t adr;
@@ -108,10 +110,4 @@ struct q3serverInfo_t
 	int needpass;
 	int weaprestrict;
 	int balancedteams;
-};
-
-struct q3serverAddress_t
-{
-	byte ip[4];
-	unsigned short port;
 };

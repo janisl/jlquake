@@ -16,7 +16,6 @@
 
 #include "../../client.h"
 #include "local.h"
-#include "ui_shared.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"
 #include "../wolfmp/local.h"
