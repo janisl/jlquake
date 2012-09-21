@@ -379,22 +379,6 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
-#ifndef DEDICATED
-	else if (code == ERR_AUTOUPDATE)
-	{
-		CL_Disconnect(true);
-		CL_FlushMemory();
-		com_errorEntered = false;
-		if (!String::NICmp(com_errorMessage, "Server is full", 14) && CL_NextUpdateServer())
-		{
-			CL_GetAutoUpdate();
-		}
-		else
-		{
-			longjmp(abortframe, -1);
-		}
-	}
-#endif
 	else
 	{
 		CL_Shutdown();

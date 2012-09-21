@@ -39,8 +39,6 @@
 #define BIGGEST_MAX_GLOBAL_SERVERS          4096
 #define MAX_OTHER_SERVERS_Q3                128
 
-#define MAX_AUTOUPDATE_SERVERS  5
-
 // the parseEntities array must be large enough to hold PACKET_BACKUP_Q3 frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original

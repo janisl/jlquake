@@ -84,14 +84,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case ETUI_CL_GETLIMBOSTRING:
 		return CL_GetLimboString(args[1], (char*)VMA(2));
 //-------
-	case ETUI_CHECKAUTOUPDATE:
-		CL_CheckAutoUpdate();
-		return 0;
-
-	case ETUI_GET_AUTOUPDATE:
-		CL_GetAutoUpdate();
-		return 0;
-
 	case ETUI_OPENURL:
 		CL_OpenURL((const char*)VMA(1));
 		return 0;

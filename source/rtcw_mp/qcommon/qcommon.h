@@ -47,22 +47,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 // NERVE - SMF - wolf multiplayer master servers
 #define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65
 
-// TTimo: allow override for easy dev/testing..
-// see cons -- update_server=myhost
-#if !defined(AUTOUPDATE_SERVER_NAME)
-  #define AUTOUPDATE_SERVER1_NAME   "au2rtcw1.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER2_NAME   "au2rtcw2.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER3_NAME   "au2rtcw3.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER4_NAME   "au2rtcw4.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER5_NAME   "au2rtcw5.activision.com"			// DHM - Nerve
-#else
-  #define AUTOUPDATE_SERVER1_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER2_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER3_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER4_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER5_NAME   AUTOUPDATE_SERVER_NAME
-#endif
-
 #define PORT_UPDATE         27951
 #define Q3PORT_AUTHORIZE      27952
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
@@ -102,8 +86,6 @@ void    FS_Restart(int checksumFeed);
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
 int     FS_LoadStack();
-
-char* FS_ShiftStr(const char* string, int shift);
 
 /*
 ==============================================================
@@ -204,10 +186,6 @@ void CL_FlushMemory(void);
 
 void CL_StartHunkUsers(void);
 // start all the client stuff using the hunk
-
-
-void CL_CheckAutoUpdate(void);
-// Send a message to auto-update server
 
 /*
 ==============================================================

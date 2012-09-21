@@ -83,9 +83,6 @@ void CL_AddReliableCommand(const char* cmd);
 
 void CL_StartHunkUsers(void);
 
-void CL_CheckAutoUpdate(void);
-void CL_GetAutoUpdate(void);
-
 void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);
 void CL_Vid_Restart_f(void);
@@ -139,8 +136,6 @@ void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
-
-void    CL_UpdateInfoPacket(netadr_t from);			// DHM - Nerve
 
 void    CL_ServerInfoPacket(netadr_t from, QMsg* msg);
 void    CL_LocalServers_f(void);

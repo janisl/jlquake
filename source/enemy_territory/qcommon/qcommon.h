@@ -46,29 +46,6 @@ You or the server may be running older versions of the game. Press the auto-upda
 
 #define MOTD_SERVER_NAME        "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?
 
-// TTimo: override autoupdate server for testing
-#ifndef AUTOUPDATE_SERVER_NAME
-//	#define AUTOUPDATE_SERVER_NAME "127.0.0.1"
-	#define AUTOUPDATE_SERVER_NAME "au2rtcw2.activision.com"
-#endif
-
-// TTimo: allow override for easy dev/testing..
-// FIXME: not planning to support more than 1 auto update server
-// see cons -- update_server=myhost
-#if !defined(AUTOUPDATE_SERVER_NAME)
-  #define AUTOUPDATE_SERVER1_NAME   "au2rtcw1.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER2_NAME   "au2rtcw2.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER3_NAME   "au2rtcw3.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER4_NAME   "au2rtcw4.activision.com"			// DHM - Nerve
-  #define AUTOUPDATE_SERVER5_NAME   "au2rtcw5.activision.com"			// DHM - Nerve
-#else
-  #define AUTOUPDATE_SERVER1_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER2_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER3_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER4_NAME   AUTOUPDATE_SERVER_NAME
-  #define AUTOUPDATE_SERVER5_NAME   AUTOUPDATE_SERVER_NAME
-#endif
-
 #define PORT_MOTD           27951
 #define NUM_SERVER_PORTS    4		// broadcast scan this many ports after
 									// Q3PORT_SERVER so a single machine can
@@ -108,8 +85,6 @@ void    FS_Restart(int checksumFeed);
 qboolean FS_OS_FileExists(const char* file);	// TTimo - test file existence given OS path
 
 int     FS_LoadStack();
-
-char* FS_ShiftStr(const char* string, int shift);
 
 unsigned int FS_ChecksumOSPath(char* OSPath);
 
@@ -235,10 +210,6 @@ void CL_FlushMemory(void);
 
 void CL_StartHunkUsers(void);
 // start all the client stuff using the hunk
-
-void CL_CheckAutoUpdate(void);
-qboolean CL_NextUpdateServer(void);
-void CL_GetAutoUpdate(void);
 
 /*
 ==============================================================

@@ -84,14 +84,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 	case WMUI_CL_GETLIMBOSTRING:
 		return CL_GetLimboString(args[1], (char*)VMA(2));
 //-------
-	case WMUI_CHECKAUTOUPDATE:
-		CL_CheckAutoUpdate();
-		return 0;
-
-	case WMUI_GET_AUTOUPDATE:
-		CL_GetAutoUpdate();
-		return 0;
-
 	case WMUI_OPENURL:
 		CL_OpenURL((const char*)VMA(1));
 		return 0;

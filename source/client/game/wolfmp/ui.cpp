@@ -459,6 +459,12 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
+	case WMUI_CHECKAUTOUPDATE:
+		return 0;
+
+	case WMUI_GET_AUTOUPDATE:
+		return 0;
+
 //-------
 
 	default:

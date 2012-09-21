@@ -582,13 +582,6 @@ struct clientStatic_t
 
 	bool ws_endgamemenu;			// bring up the end game credits menu next frame
 
-	// DHM - Nerve :: Auto-update Info
-	char wm_autoupdateServerNames[MAX_AUTOUPDATE_SERVERS][MAX_QPATH];
-	netadr_t wm_autoupdateServer;
-	bool et_autoUpdateServerChecked[MAX_AUTOUPDATE_SERVERS];
-	int et_autoupdatServerFirstIndex;			// to know when we went through all of them
-	int et_autoupdatServerIndex;				// to cycle through them
-
 	bool et_doCachePurge;			// Arnout: empty the renderer cache as soon as possible
 
 	// www downloading

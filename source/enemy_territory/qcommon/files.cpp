@@ -80,26 +80,6 @@ qboolean FS_OS_FileExists(const char* file)
 	return false;
 }
 
-/*
-==========
-FS_ShiftStr
-perform simple string shifting to avoid scanning from the exe
-==========
-*/
-char* FS_ShiftStr(const char* string, int shift)
-{
-	static char buf[MAX_STRING_CHARS];
-	int i,l;
-
-	l = String::Length(string);
-	for (i = 0; i < l; i++)
-	{
-		buf[i] = string[i] + shift;
-	}
-	buf[i] = '\0';
-	return buf;
-}
-
 //============================================================================
 
 /*

@@ -469,6 +469,12 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
 		return 0;
 
+	case ETUI_CHECKAUTOUPDATE:
+		return 0;
+
+	case ETUI_GET_AUTOUPDATE:
+		return 0;
+
 //-------
 
 	case ETUI_GETHUNKDATA:

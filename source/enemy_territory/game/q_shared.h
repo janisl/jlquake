@@ -199,7 +199,6 @@ typedef enum {
 	ERR_DROP,					// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,		// don't kill server
 	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_AUTOUPDATE
 } errorParm_t;
 
 /*
