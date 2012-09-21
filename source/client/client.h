@@ -547,8 +547,6 @@ struct clientStatic_t
 	// demo recording info must be here, so it isn't cleared on level change
 	bool q2_demowaiting;	// don't record until a non-delta message is received
 
-	bool q3_cddialog;			// bring up the cd needed dialog next frame
-
 	// when the server clears the hunk, all of these must be restarted
 	bool q3_rendererStarted;
 	bool q3_soundStarted;

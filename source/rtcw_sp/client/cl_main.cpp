@@ -99,20 +99,6 @@ void CL_EndgameMenu(void)
 	cls.ws_endgamemenu = true;		// start it next frame
 }
 
-
-/*
-===============
-CL_CDDialog
-
-Called by Com_Error when a cd is needed
-===============
-*/
-void CL_CDDialog(void)
-{
-	cls.q3_cddialog = true;	// start it next frame
-}
-
-
 /*
 =======================================================================
 
@@ -2126,17 +2112,7 @@ void CL_Frame(int msec)
 		return;
 	}
 
-	if (cls.q3_cddialog)
-	{
-		// bring up the cd error dialog if needed
-		cls.q3_cddialog = false;
-#ifdef __MACOS__	//DAJ hide the cursor for intro movie
-		UIT3_SetActiveMenu(UIMENU_BRIEFING);
-#else
-		UIT3_SetActiveMenu(UIMENU_NEED_CD);
-#endif
-	}
-	else if (cls.ws_endgamemenu)
+	if (cls.ws_endgamemenu)
 	{
 		cls.ws_endgamemenu = false;
 		UIT3_SetActiveMenu(WSUIMENU_ENDGAME);

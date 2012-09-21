@@ -169,9 +169,6 @@ void    CL_ForwardCommandToServer(const char* string);
 // so when they are typed in at the console, they will need to be forwarded.
 
 
-void CL_CDDialog(void);
-// bring up the "need a cd to play" dialog
-
 //----(SA)	added
 void CL_EndgameMenu(void);
 // bring up the "need a cd to play" dialog

@@ -77,10 +77,6 @@ void CL_JoystickEvent(int axis, int value, int time)
 {
 }
 
-void CL_CDDialog(void)
-{
-}
-
 void CL_FlushMemory(void)
 {
 }
