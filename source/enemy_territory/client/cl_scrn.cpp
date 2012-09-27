@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 // cl_scrn.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "client.h"
-#include "../../client/game/et/ui_public.h"
 
 qboolean scr_initialized;			// ready to draw
 
@@ -148,7 +147,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 		case CA_DISCONNECTED:
 			// force menu up
 			S_StopAllSounds();
-			UIT3_SetActiveMenu(UIMENU_MAIN);
+			UIT3_SetMainMenu();
 			break;
 		case CA_CONNECTING:
 		case CA_CHALLENGING:

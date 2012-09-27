@@ -32,7 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 #include <limits.h>
-#include "../../client/game/wolfsp/ui_public.h"
 
 Cvar* cl_nodelta;
 
@@ -721,9 +720,9 @@ void CL_Disconnect(qboolean showMainMenu)
 		clc.demofile = 0;
 	}
 
-	if (uivm && showMainMenu)
+	if (showMainMenu)
 	{
-		UIT3_SetActiveMenu(UIMENU_NONE);
+		UIT3_ForceMenuOff();
 	}
 
 	SCR_StopCinematic();
@@ -1934,14 +1933,14 @@ void CL_Frame(int msec)
 	if (cls.ws_endgamemenu)
 	{
 		cls.ws_endgamemenu = false;
-		UIT3_SetActiveMenu(WSUIMENU_ENDGAME);
+		UIWS_SetEndGameMenu();
 	}
 	else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
 			 !com_sv_running->integer)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		UIT3_SetActiveMenu(UIMENU_MAIN);
+		UIT3_SetMainMenu();
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -2378,6 +2377,8 @@ void CL_Init(void)
 	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 
 	cls.realtime = 0;
+
+	UIT3_Init();
 
 	CL_InitInput();
 

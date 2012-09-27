@@ -106,6 +106,53 @@ void CLWM_InGameClosePopup(char* menu)
 	}
 }
 
+void UIWM_KeyDownEvent(int key, bool down)
+{
+	if (UIWM_GetActiveMenu() == WMUIMENU_CLIPBOARD)
+	{
+		// any key gets out of clipboard
+		key = K_ESCAPE;
+	}
+	else
+	{
+		// when in the notebook, check for the key bound to "notebook" and allow that as an escape key
+		const char* kb = keys[key].binding;
+		if (kb)
+		{
+			if (!String::ICmp("notebook", kb))
+			{
+				if (UIWM_GetActiveMenu() == WMUIMENU_NOTEBOOK)
+				{
+					key = K_ESCAPE;
+				}
+			}
+
+			if (!String::ICmp("help", kb))
+			{
+				if (UIWM_GetActiveMenu() == WMUIMENU_HELP)
+				{
+					key = K_ESCAPE;
+				}
+			}
+		}
+	}
+
+	UIT3_KeyEvent(key, down);
+}
+
+static void UIWM_Help()
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		UIT3_SetActiveMenu(WMUIMENU_HELP);			// startup help system
+	}
+}
+
+void UIWM_Init()
+{
+	Cmd_AddCommand("help", UIWM_Help);
+}
+
 static int CLWM_GetConfigString(int index, char* buf, int size)
 {
 	if (index < 0 || index >= MAX_CONFIGSTRINGS_WM)

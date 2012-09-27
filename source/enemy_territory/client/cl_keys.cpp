@@ -27,7 +27,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "client.h"
-#include "../../client/game/et/ui_public.h"
 
 /*
 
@@ -254,19 +253,19 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 				}
 				else
 				{
-					UIT3_SetActiveMenu(UIMENU_INGAME);
+					UIT3_SetInGameMenu();
 				}
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				UIT3_SetActiveMenu(UIMENU_MAIN);
+				UIT3_SetMainMenu();
 			}
 			return;
 		}
 
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyDownEvent(key, down);
 		return;
 	}
 
@@ -333,7 +332,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	{
 		if (!onlybinds || UIET_WantsBindKeys())
 		{
-			UIT3_KeyEvent(key, down);
+			UIT3_KeyDownEvent(key, down);
 		}
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME && !bypassMenu)

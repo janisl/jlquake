@@ -34,7 +34,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/sound/local.h"
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
-#include "../../client/game/et/ui_public.h"
 
 Cvar* cl_wavefilerecord;
 Cvar* cl_nodelta;
@@ -1035,9 +1034,9 @@ void CL_Disconnect(qboolean showMainMenu)
 		clc.demofile = 0;
 	}
 
-	if (uivm && showMainMenu)
+	if (showMainMenu)
 	{
-		UIT3_SetActiveMenu(UIMENU_NONE);
+		UIT3_ForceMenuOff();
 	}
 
 	SCR_StopCinematic();
@@ -2597,7 +2596,7 @@ void CL_Frame(int msec)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		UIT3_SetActiveMenu(UIMENU_MAIN);
+		UIT3_SetMainMenu();
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -2973,6 +2972,8 @@ void CL_Init(void)
 	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 
 	cls.realtime = 0;
+
+	UIT3_Init();
 
 	CL_InitInput();
 

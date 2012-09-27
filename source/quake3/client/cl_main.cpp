@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <limits.h>
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
-#include "../../client/game/quake3/ui_public.h"
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
@@ -742,9 +741,9 @@ void CL_Disconnect(qboolean showMainMenu)
 		clc.demofile = 0;
 	}
 
-	if (uivm && showMainMenu)
+	if (showMainMenu)
 	{
-		UIT3_SetActiveMenu(UIMENU_NONE);
+		UIT3_ForceMenuOff();
 	}
 
 	SCR_StopCinematic();
@@ -1953,7 +1952,7 @@ void CL_Frame(int msec)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		UIT3_SetActiveMenu(UIMENU_MAIN);
+		UIT3_SetMainMenu();
 	}
 
 	// if recording an avi, lock to a fixed fps

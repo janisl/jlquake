@@ -59,12 +59,17 @@ void CLT3_InitServerLists();
 //
 extern vm_t* uivm;				// interface to ui dll or vm
 
+void UIT3_Init();
 void CLT3_ShutdownUI();
 void UIT3_KeyEvent(int key, bool down);
+void UIT3_KeyDownEvent(int key, bool down);
 void UIT3_MouseEvent(int dx, int dy);
 void UIT3_Refresh(int time);
 bool UIT3_IsFullscreen();
 void UIT3_SetActiveMenu(int menu);
+void UIT3_ForceMenuOff();
+void UIT3_SetMainMenu();
+void UIT3_SetInGameMenu();
 void UIT3_DrawConnectScreen(bool overlay);
 bool UIT3_UsesUniqueCDKey();
 bool UIT3_CheckKeyExec(int key);

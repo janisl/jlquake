@@ -28,6 +28,8 @@ bool UIWM_ConsoleCommand(int realTime);
 void UIWM_DrawConnectScreen(bool overlay);
 bool UIWM_HasUniqueCDKey();
 bool UIWM_CheckExecKey(int key);
+void UIWM_KeyDownEvent(int key, bool down);
+void UIWM_Init();
 qintptr CLWM_UISystemCalls(qintptr* args);
 
 #endif

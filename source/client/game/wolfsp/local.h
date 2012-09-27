@@ -26,6 +26,9 @@ int UIWS_GetActiveMenu();
 bool UIWS_ConsoleCommand(int realTime);
 void UIWS_DrawConnectScreen(bool overlay);
 bool UIWS_HasUniqueCDKey();
+void UIWS_SetEndGameMenu();
+void UIWS_KeyDownEvent(int key, bool down);
+void UIWS_Init();
 qintptr CLWS_UISystemCalls(qintptr* args);
 
 #endif

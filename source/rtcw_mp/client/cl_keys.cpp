@@ -27,7 +27,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "client.h"
-#include "../../client/game/wolfmp/ui_public.h"
 
 /*
 
@@ -233,18 +232,18 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				UIT3_SetActiveMenu(UIMENU_INGAME);
+				UIT3_SetInGameMenu();
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				UIT3_SetActiveMenu(UIMENU_MAIN);
+				UIT3_SetMainMenu();
 			}
 			return;
 		}
 
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyDownEvent(key, down);
 		return;
 	}
 
@@ -300,39 +299,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
 	{
-		kb = keys[key].binding;
-
-		if (UIWM_GetActiveMenu() == WMUIMENU_CLIPBOARD)
-		{
-			// any key gets out of clipboard
-			key = K_ESCAPE;
-		}
-		else
-		{
-
-			// when in the notebook, check for the key bound to "notebook" and allow that as an escape key
-
-			if (kb)
-			{
-				if (!String::ICmp("notebook", kb))
-				{
-					if (UIWM_GetActiveMenu() == WMUIMENU_NOTEBOOK)
-					{
-						key = K_ESCAPE;
-					}
-				}
-
-				if (!String::ICmp("help", kb))
-				{
-					if (UIWM_GetActiveMenu() == WMUIMENU_HELP)
-					{
-						key = K_ESCAPE;
-					}
-				}
-			}
-		}
-
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyDownEvent(key, down);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{

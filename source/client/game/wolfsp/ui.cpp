@@ -90,6 +90,58 @@ void CLWS_InGamePopup(char* menu)
 	}
 }
 
+void UIWS_SetEndGameMenu()
+{
+	UIT3_SetActiveMenu(WSUIMENU_ENDGAME);
+}
+
+void UIWS_KeyDownEvent(int key, bool down)
+{
+	if (UIWS_GetActiveMenu() == WSUIMENU_CLIPBOARD)
+	{
+		// any key gets out of clipboard
+		key = K_ESCAPE;
+	}
+	else if (UIWS_GetActiveMenu() == WSUIMENU_PREGAME)
+	{
+		if (key != K_MOUSE1)
+		{
+			return;	// eat all keys except mouse click
+		}
+	}
+	else
+	{
+		// when in the notebook, check for the key bound to "notebook" and allow that as an escape key
+		const char* kb = keys[key].binding;
+		if (kb)
+		{
+			if (!String::ICmp("notebook", kb))
+			{
+				if (UIWS_GetActiveMenu() == WSUIMENU_NOTEBOOK)
+				{
+					key = K_ESCAPE;
+				}
+			}
+		}
+	}
+
+	UIT3_KeyEvent(key, down);
+}
+
+static void UIWS_Notebook()
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		Cvar_Set("cg_youGotMail", "0");		// clear icon	//----(SA)	added
+		UIT3_SetActiveMenu(WSUIMENU_NOTEBOOK);		// startup notebook
+	}
+}
+
+void UIWS_Init()
+{
+	Cmd_AddCommand("notebook", UIWS_Notebook);
+}
+
 static int CLWS_GetConfigString(int index, char* buf, int size)
 {
 	if (index < 0 || index >= MAX_CONFIGSTRINGS_WS)

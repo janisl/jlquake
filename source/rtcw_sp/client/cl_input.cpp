@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 // cl.input.c  -- builds an intended movement command to send to the server
 
 #include "client.h"
-#include "../../client/game/wolfsp/ui_public.h"
 
 /*
 ===============================================================================
@@ -50,23 +49,6 @@ at the same time.
 
 ===============================================================================
 */
-
-void IN_Notebook(void)
-{
-	if (cls.state == CA_ACTIVE && !clc.demoplaying)
-	{
-		Cvar_Set("cg_youGotMail", "0");		// clear icon	//----(SA)	added
-		UIT3_SetActiveMenu(WSUIMENU_NOTEBOOK);		// startup notebook
-	}
-}
-
-void IN_Help(void)
-{
-	if (cls.state == CA_ACTIVE && !clc.demoplaying)
-	{
-		UIT3_SetActiveMenu(WSUIMENU_HELP);			// startup help system
-	}
-}
 
 //==========================================================================
 
@@ -391,9 +373,6 @@ CL_InitInput
 void CL_InitInput(void)
 {
 	CL_InitInputCommon();
-
-	Cmd_AddCommand("notebook",IN_Notebook);
-//	Cmd_AddCommand ("help",IN_Help);
 
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }

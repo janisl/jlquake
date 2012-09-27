@@ -55,6 +55,19 @@ void CLET_InGamePopup(int menu)
 	}
 }
 
+static void UIET_Help()
+{
+	if (cls.state == CA_ACTIVE && !clc.demoplaying)
+	{
+		UIT3_SetActiveMenu(ETUIMENU_HELP);			// startup help system
+	}
+}
+
+void UIET_Init()
+{
+	Cmd_AddCommand("help", UIET_Help);
+}
+
 static bool LAN_ServerIsInFavoriteList(int source, int n)
 {
 	if (source == WMAS_FAVORITES && n >= 0 && n < MAX_OTHER_SERVERS_Q3)

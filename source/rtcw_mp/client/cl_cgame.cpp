@@ -211,11 +211,7 @@ rescan:
 	}
 
 	if (!String::Cmp(cmd, "popup"))			// direct server to client popup request, bypassing cgame
-	{	//		trap_UI_Popup(Cmd_Argv(1));
-//		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-//			UIT3_SetActiveMenu(UIMENU_CLIPBOARD);
-//			Menus_OpenByName(Cmd_Argv(1));
-//		}
+	{
 		return false;
 	}
 

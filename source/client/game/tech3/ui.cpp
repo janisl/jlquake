@@ -24,6 +24,22 @@
 
 vm_t* uivm;
 
+void UIT3_Init()
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		UIWS_Init();
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		UIWM_Init();
+	}
+	if (GGameType & GAME_ET)
+	{
+		UIET_Init();
+	}
+}
+
 void CLT3_ShutdownUI()
 {
 	in_keyCatchers &= ~KEYCATCH_UI;
@@ -46,6 +62,22 @@ void UIT3_KeyEvent(int key, bool down)
 	VM_Call(uivm, UI_KEY_EVENT, key, down);
 }
 
+void UIT3_KeyDownEvent(int key, bool down)
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		UIWS_KeyDownEvent(key, down);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		UIWM_KeyDownEvent(key, down);
+	}
+	else
+	{
+		UIT3_KeyEvent(key, down);
+	}
+}
+
 void UIT3_MouseEvent(int dx, int dy)
 {
 	VM_Call(uivm, UI_MOUSE_EVENT, dx, dy);
@@ -64,6 +96,24 @@ bool UIT3_IsFullscreen()
 void UIT3_SetActiveMenu(int menu)
 {
 	VM_Call(uivm, UI_SET_ACTIVE_MENU, menu);
+}
+
+void UIT3_ForceMenuOff()
+{
+	if (uivm)
+	{
+		UIT3_SetActiveMenu(UIMENU_NONE);
+	}
+}
+
+void UIT3_SetMainMenu()
+{
+	UIT3_SetActiveMenu(UIMENU_MAIN);
+}
+
+void UIT3_SetInGameMenu()
+{
+	UIT3_SetActiveMenu(UIMENU_INGAME);
 }
 
 //	See if the current console command is claimed by the ui
@@ -182,7 +232,7 @@ void LAN_LoadCachedServers()
 		FS_Read(&cls.q3_numfavoriteservers, sizeof(int), fileIn);
 		int size;
 		FS_Read(&size, sizeof(int), fileIn);
-		if (size == sizeof(cls.q3_globalServers) + sizeof(cls.q3_favoriteServers) + (GGameType & GAME_ET ? 0 : sizeof(cls.q3_mplayerServers)))
+		if (size == static_cast<int>(sizeof(cls.q3_globalServers) + sizeof(cls.q3_favoriteServers) + (GGameType & GAME_ET ? 0 : sizeof(cls.q3_mplayerServers))))
 		{
 			FS_Read(&cls.q3_globalServers, sizeof(cls.q3_globalServers), fileIn);
 			if (!(GGameType & GAME_ET))

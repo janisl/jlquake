@@ -103,7 +103,6 @@ void CL_ReadPackets(void);
 
 void CL_WritePacket(void);
 void IN_Notebook(void);
-void IN_Help(void);
 
 //----(SA) salute
 void IN_Salute(void);

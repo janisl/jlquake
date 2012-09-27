@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include "../../client/sound/local.h"
 #include "../../client/cinematic/local.h"
-#include "../../client/game/et/ui_public.h"
 
 static int CL_handle = -1;
 
@@ -119,10 +118,7 @@ e_status CIN_StopCinematic(int handle)
 void CIN_StartedPlayback()
 {
 	// close the menu
-	if (uivm)
-	{
-		UIT3_SetActiveMenu(UIMENU_NONE);
-	}
+	UIT3_ForceMenuOff();
 
 	cls.state = CA_CINEMATIC;
 

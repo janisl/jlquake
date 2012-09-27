@@ -30,6 +30,7 @@ void UIET_DrawConnectScreen(bool overlay);
 bool UIET_HasUniqueCDKey();
 bool UIET_CheckExecKey(int key);
 bool UIET_WantsBindKeys();
+void UIET_Init();
 qintptr CLET_UISystemCalls(qintptr* args);
 
 #endif

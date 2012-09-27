@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "client.h"
-#include "../../client/game/quake3/ui_public.h"
 
 /*
 
@@ -232,18 +231,18 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				UIT3_SetActiveMenu(UIMENU_INGAME);
+				UIT3_SetInGameMenu();
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				UIT3_SetActiveMenu(UIMENU_MAIN);
+				UIT3_SetMainMenu();
 			}
 			return;
 		}
 
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyDownEvent(key, down);
 		return;
 	}
 
@@ -279,7 +278,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyDownEvent(key, down);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
