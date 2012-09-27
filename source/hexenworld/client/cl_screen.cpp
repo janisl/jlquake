@@ -820,7 +820,7 @@ void SCR_UpdateScreen(void)
 		Plaque_Draw(plaquemessage,0);
 		SCR_DrawNet();
 		Con_DrawConsole();
-		MQH_Draw();
+		UI_DrawMenu();
 	}
 
 	V_UpdatePalette();

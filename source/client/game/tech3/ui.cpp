@@ -62,19 +62,19 @@ void UIT3_KeyEvent(int key, bool down)
 	VM_Call(uivm, UI_KEY_EVENT, key, down);
 }
 
-void UIT3_KeyDownEvent(int key, bool down)
+void UIT3_KeyDownEvent(int key)
 {
 	if (GGameType & GAME_WolfSP)
 	{
-		UIWS_KeyDownEvent(key, down);
+		UIWS_KeyDownEvent(key);
 	}
 	else if (GGameType & GAME_WolfMP)
 	{
-		UIWM_KeyDownEvent(key, down);
+		UIWM_KeyDownEvent(key);
 	}
 	else
 	{
-		UIT3_KeyEvent(key, down);
+		UIT3_KeyEvent(key, true);
 	}
 }
 
@@ -85,7 +85,10 @@ void UIT3_MouseEvent(int dx, int dy)
 
 void UIT3_Refresh(int time)
 {
-	VM_Call(uivm, UI_REFRESH, time);
+	if (uivm)
+	{
+		VM_Call(uivm, UI_REFRESH, time);
+	}
 }
 
 bool UIT3_IsFullscreen()

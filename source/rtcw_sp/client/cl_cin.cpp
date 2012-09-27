@@ -115,7 +115,7 @@ e_status CIN_StopCinematic(int handle)
 void CIN_StartedPlayback()
 {
 	// close the menu
-	UIT3_ForceMenuOff();
+	UI_ForceMenuOff();
 
 	cls.state = CA_CINEMATIC;
 

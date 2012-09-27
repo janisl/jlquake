@@ -300,6 +300,11 @@ static int mqh_save_demonum;
 
 void MQH_Menu_Main_f()
 {
+	if (GGameType & GAME_Hexen2 && m_state == m_none)
+	{
+		LogoTargetPercent = TitleTargetPercent = 1;
+		LogoPercent = TitlePercent = 0;
+	}
 	if (!(in_keyCatchers & KEYCATCH_UI))
 	{
 		mqh_save_demonum = cls.qh_demonum;
@@ -5311,11 +5316,7 @@ void MQH_ToggleMenu_f()
 	{
 		if (m_state != m_main)
 		{
-			if (GGameType & GAME_Hexen2)
-			{
-				LogoTargetPercent = TitleTargetPercent = 1;
-				LogoPercent = TitlePercent = 0;
-			}
+			m_state = m_none;
 			MQH_Menu_Main_f();
 			return;
 		}
@@ -5329,11 +5330,6 @@ void MQH_ToggleMenu_f()
 	}
 	else
 	{
-		if (GGameType & GAME_Hexen2)
-		{
-			LogoTargetPercent = TitleTargetPercent = 1;
-			LogoPercent = TitlePercent = 0;
-		}
 		MQH_Menu_Main_f();
 	}
 }

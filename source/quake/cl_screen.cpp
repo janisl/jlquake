@@ -758,7 +758,7 @@ void SCR_UpdateScreen(void)
 		SCR_CheckDrawCenterString();
 		SbarQ1_Draw();
 		Con_DrawConsole();
-		MQH_Draw();
+		UI_DrawMenu();
 	}
 
 	V_UpdatePalette();

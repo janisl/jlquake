@@ -612,7 +612,7 @@ void CL_Disconnect(void)
 
 	VectorClear(v_blend);
 
-	MQ2_ForceMenuOff();
+	UI_ForceMenuOff();
 
 	cls.q2_connect_time = 0;
 
@@ -1933,7 +1933,7 @@ void CL_Init(void)
 
 	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
-	MQ2_Init();
+	UI_Init();
 
 	SCR_Init();
 	cls.disable_screen = true;	// don't draw yet
@@ -1979,4 +1979,13 @@ void CL_Shutdown(void)
 float* CL_GetSimOrg()
 {
 	return NULL;
+}
+
+int SCR_ModalMessage(const char* text)
+{
+	return false;
+}
+
+void CL_NextDemo()
+{
 }

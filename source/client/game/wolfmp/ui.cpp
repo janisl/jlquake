@@ -106,7 +106,7 @@ void CLWM_InGameClosePopup(char* menu)
 	}
 }
 
-void UIWM_KeyDownEvent(int key, bool down)
+void UIWM_KeyDownEvent(int key)
 {
 	if (UIWM_GetActiveMenu() == WMUIMENU_CLIPBOARD)
 	{
@@ -137,7 +137,7 @@ void UIWM_KeyDownEvent(int key, bool down)
 		}
 	}
 
-	UIT3_KeyEvent(key, down);
+	UIT3_KeyEvent(key, true);
 }
 
 static void UIWM_Help()

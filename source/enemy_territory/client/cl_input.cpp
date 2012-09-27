@@ -70,7 +70,7 @@ void CL_MouseEvent(int dx, int dy, int time)
 		}
 		else
 		{
-			UIT3_MouseEvent(dx, dy);
+			UI_MouseEvent(dx, dy);
 		}
 
 	}

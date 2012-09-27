@@ -111,7 +111,7 @@ bool CIN_IsInCinematicState()
 void CIN_StartedPlayback()
 {
 	// close the menu
-	UIT3_ForceMenuOff();
+	UI_ForceMenuOff();
 
 	cls.state = CA_CINEMATIC;
 

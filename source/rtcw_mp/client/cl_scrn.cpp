@@ -141,7 +141,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 
 	// if the menu is going to cover the entire screen, we
 	// don't need to render anything under it
-	if (!UIT3_IsFullscreen())
+	if (!UI_IsFullscreen())
 	{
 		switch (cls.state)
 		{
@@ -154,7 +154,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 		case CA_DISCONNECTED:
 			// force menu up
 			S_StopAllSounds();
-			UIT3_SetMainMenu();
+			UI_SetMainMenu();
 			break;
 		case CA_CONNECTING:
 		case CA_CHALLENGING:
@@ -189,9 +189,9 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 	}
 
 	// the menu draws next
-	if (in_keyCatchers & KEYCATCH_UI && uivm)
+	if (in_keyCatchers & KEYCATCH_UI)
 	{
-		UIT3_Refresh(cls.realtime);
+		UI_DrawMenu();
 	}
 
 	// console draws next

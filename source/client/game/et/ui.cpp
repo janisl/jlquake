@@ -41,6 +41,10 @@ bool UIET_CheckExecKey(int key)
 
 bool UIET_WantsBindKeys()
 {
+	if (!uivm)
+	{
+		return false;
+	}
 	return VM_Call(uivm, ETUI_WANTSBINDKEYS);
 }
 

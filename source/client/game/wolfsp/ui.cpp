@@ -95,7 +95,7 @@ void UIWS_SetEndGameMenu()
 	UIT3_SetActiveMenu(WSUIMENU_ENDGAME);
 }
 
-void UIWS_KeyDownEvent(int key, bool down)
+void UIWS_KeyDownEvent(int key)
 {
 	if (UIWS_GetActiveMenu() == WSUIMENU_CLIPBOARD)
 	{
@@ -125,7 +125,7 @@ void UIWS_KeyDownEvent(int key, bool down)
 		}
 	}
 
-	UIT3_KeyEvent(key, down);
+	UIT3_KeyEvent(key, true);
 }
 
 static void UIWS_Notebook()

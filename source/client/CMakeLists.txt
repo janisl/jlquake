@@ -121,6 +121,7 @@ set(CLIENT_FILES
 	ui/console.cpp
 	ui/draw.cpp
 	ui/field.cpp
+	ui/main.cpp
 	ui/screen.cpp
 	ui/view.cpp
 	chase.cpp

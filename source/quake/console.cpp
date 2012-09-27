@@ -44,7 +44,7 @@ void Con_ToggleConsole_f(void)
 		}
 		else
 		{
-			MQH_Menu_Main_f();
+			UI_SetMainMenu();
 		}
 	}
 	else

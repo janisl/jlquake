@@ -648,7 +648,7 @@ void Host_Init(quakeparms_t* parms)
 #endif
 		Con_Init();
 #ifndef DEDICATED
-		MQH_Init();
+		UI_Init();
 #endif
 		PR_Init();
 		SVQH_Init();

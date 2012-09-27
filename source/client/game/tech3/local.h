@@ -62,7 +62,7 @@ extern vm_t* uivm;				// interface to ui dll or vm
 void UIT3_Init();
 void CLT3_ShutdownUI();
 void UIT3_KeyEvent(int key, bool down);
-void UIT3_KeyDownEvent(int key, bool down);
+void UIT3_KeyDownEvent(int key);
 void UIT3_MouseEvent(int dx, int dy);
 void UIT3_Refresh(int time);
 bool UIT3_IsFullscreen();

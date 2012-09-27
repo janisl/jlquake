@@ -1503,7 +1503,7 @@ void Host_Init(quakeparms_t* parms)
 
 		Key_Init();
 		Con_Init();
-		MQH_Init();
+		UI_Init();
 
 		cls.state = CA_DISCONNECTED;
 		CL_Init();

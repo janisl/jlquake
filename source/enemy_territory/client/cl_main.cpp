@@ -1036,7 +1036,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (showMainMenu)
 	{
-		UIT3_ForceMenuOff();
+		UI_ForceMenuOff();
 	}
 
 	SCR_StopCinematic();
@@ -2596,7 +2596,7 @@ void CL_Frame(int msec)
 	{
 		// if disconnected, bring up the menu
 		S_StopAllSounds();
-		UIT3_SetMainMenu();
+		UI_SetMainMenu();
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -2973,7 +2973,7 @@ void CL_Init(void)
 
 	cls.realtime = 0;
 
-	UIT3_Init();
+	UI_Init();
 
 	CL_InitInput();
 
@@ -3403,4 +3403,9 @@ void CL_OpenURL(const char* url)
 float* CL_GetSimOrg()
 {
 	return NULL;
+}
+
+int SCR_ModalMessage(const char* text)
+{
+	return false;
 }

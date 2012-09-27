@@ -232,18 +232,18 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		{
 			if (cls.state == CA_ACTIVE && !clc.demoplaying)
 			{
-				UIT3_SetInGameMenu();
+				UI_SetInGameMenu();
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				UIT3_SetMainMenu();
+				UI_SetMainMenu();
 			}
 			return;
 		}
 
-		UIT3_KeyDownEvent(key, down);
+		UI_KeyDownEvent(key);
 		return;
 	}
 
@@ -266,7 +266,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 
 		if (in_keyCatchers & KEYCATCH_UI)
 		{
-			UIT3_KeyEvent(key, down);
+			UI_KeyEvent(key, down);
 		}
 		else if (in_keyCatchers & KEYCATCH_CGAME)
 		{
@@ -299,7 +299,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
 	{
-		UIT3_KeyDownEvent(key, down);
+		UI_KeyDownEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_CGAME)
 	{
@@ -366,7 +366,7 @@ void CL_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		UIT3_KeyEvent(key | K_CHAR_FLAG, true);
+		UI_CharEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

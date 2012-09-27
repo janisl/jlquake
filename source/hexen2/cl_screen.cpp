@@ -1126,7 +1126,7 @@ void SCR_UpdateScreen(void)
 		if (cl.qh_intermission < 12)
 		{
 			Con_DrawConsole();
-			MQH_Draw();
+			UI_DrawMenu();
 		}
 	}
 /*	else if (cl.intermission == 2 && in_keyCatchers == 0)
@@ -1149,7 +1149,7 @@ void SCR_UpdateScreen(void)
 		SbarH2_Draw();
 		Plaque_Draw(plaquemessage,0);
 		Con_DrawConsole();
-		MQH_Draw();
+		UI_DrawMenu();
 
 #ifdef MISSIONPACK
 		if (info_up)

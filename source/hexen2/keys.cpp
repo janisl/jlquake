@@ -178,11 +178,15 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		else if (in_keyCatchers & KEYCATCH_UI)
 		{
-			MQH_Keydown(key);
+			UI_KeyDownEvent(key);
+		}
+		else if (in_keyCatchers & KEYCATCH_CONSOLE && (!(GGameType & GAME_HexenWorld) || cls.state == CA_ACTIVE))
+		{
+			Con_ToggleConsole_f();
 		}
 		else
 		{
-			MQH_ToggleMenu_f();
+			UI_SetMainMenu();
 		}
 		return;
 	}
@@ -219,7 +223,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 //
 	if (clc.demoplaying && down && consolekeys[key] && in_keyCatchers == 0)
 	{
-		MQH_ToggleMenu_f();
+		UI_SetMainMenu();
 		return;
 	}
 
@@ -272,7 +276,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		MQH_Keydown(key);
+		UI_KeyDownEvent(key);
 	}
 	else
 	{
@@ -295,7 +299,7 @@ void Key_CharEvent(int key)
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{
-		MQH_CharEvent(key);
+		UI_CharEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{

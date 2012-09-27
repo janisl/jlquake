@@ -1364,7 +1364,7 @@ void Host_Init(quakeparms_t* parms)
 
 		Key_Init();
 		Con_Init();
-		MQH_Init();
+		UI_Init();
 		ComH2_LoadStrings();
 
 		cls.state = CA_DISCONNECTED;

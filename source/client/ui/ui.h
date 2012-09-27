@@ -79,3 +79,14 @@ void Field_Draw(field_t* edit, int x, int y, bool showCursor);
 void Field_BigDraw(field_t* edit, int x, int y, bool showCursor);
 
 float CalcFov(float fov_x, float width, float height);
+
+void UI_Init();
+void UI_KeyEvent(int key, bool down);
+void UI_KeyDownEvent(int key);
+void UI_CharEvent(int key);
+void UI_MouseEvent(int dx, int dy);
+void UI_DrawMenu();
+bool UI_IsFullscreen();
+void UI_ForceMenuOff();
+void UI_SetMainMenu();
+void UI_SetInGameMenu();
