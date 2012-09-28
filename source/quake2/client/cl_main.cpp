@@ -273,12 +273,7 @@ void Cmd_ForwardToServer(void)
 	}
 
 	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.Print(cmd);
-	if (Cmd_Argc() > 1)
-	{
-		clc.netchan.message.Print(" ");
-		clc.netchan.message.Print(Cmd_ArgsUnmodified());
-	}
+	clc.netchan.message.Print(Cmd_Cmd());
 }
 
 void CL_Setenv_f(void)

@@ -36,12 +36,7 @@ void Cmd_ForwardToServer(void)
 
 	}
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.Print(Cmd_Argv(0));
-	if (Cmd_Argc() > 1)
-	{
-		clc.netchan.message.Print(" ");
-		clc.netchan.message.Print(Cmd_ArgsUnmodified());
-	}
+	clc.netchan.message.Print(Cmd_Cmd());
 }
 
 // don't forward the first argument

@@ -89,15 +89,6 @@ void Cmd_ForwardToServer(void)
 
 	}
 	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.Print(Cmd_Argv(0));
-	clc.netchan.message.Print(" ");
-	if (Cmd_Argc() > 1)
-	{
-		clc.netchan.message.Print(Cmd_ArgsUnmodified());
-	}
-	else
-	{
-		clc.netchan.message.Print("\n");
-	}
+	clc.netchan.message.Print(Cmd_Cmd());
 #endif
 }
