@@ -29,6 +29,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 =============================================================================
 */
 
+#ifndef DEDICATED
+void Cmd_ForwardToServer_f(void)
+{
+	if (cls.state != CA_ACTIVE)
+	{
+		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		return;
+	}
+
+	if (clc.demoplaying)
+	{
+		return;		// not really connected
+
+	}
+
+	if (Cmd_Argc() > 1)
+	{
+		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		clc.netchan.message.Print(Cmd_ArgsUnmodified());
+	}
+}
+#endif
 
 /*
 ============
@@ -75,13 +97,10 @@ void Cmd_ForwardToServer(void)
 		return;		// not really connected
 
 	}
-	common->Printf("Forward to server %s %s\n", Cmd_Argv(0), Cmd_ArgsUnmodified());
+
 	clc.netchan.message.WriteByte(q1clc_stringcmd);
-	if (String::ICmp(Cmd_Argv(0), "cmd") != 0)
-	{
-		clc.netchan.message.Print(Cmd_Argv(0));
-		clc.netchan.message.Print(" ");
-	}
+	clc.netchan.message.Print(Cmd_Argv(0));
+	clc.netchan.message.Print(" ");
 	if (Cmd_Argc() > 1)
 	{
 		clc.netchan.message.Print(Cmd_ArgsUnmodified());
