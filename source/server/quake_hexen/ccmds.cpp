@@ -1069,7 +1069,7 @@ static void SVQH_ConStatus_f()
 {
 	if (sv.state == SS_DEAD)
 	{
-		Cmd_ForwardToServer();
+		CL_ForwardKnownCommandToServer();
 		return;
 	}
 
@@ -1396,7 +1396,7 @@ static void SVQH_ConKick_f()
 {
 	if (sv.state == SS_DEAD)
 	{
-		Cmd_ForwardToServer();
+		CL_ForwardKnownCommandToServer();
 		return;
 	}
 

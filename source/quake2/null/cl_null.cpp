@@ -28,7 +28,7 @@ void Con_ConsolePrint(const char* text)
 {
 }
 
-void Cmd_ForwardToServer(void)
+void CL_ForwardCommandToServer(void)
 {
 	char* cmd;
 

@@ -52,17 +52,17 @@ Sets client to godmode
 */
 void Host_God_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 void Host_Notarget_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 void Host_Noclip_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 /*
@@ -74,7 +74,7 @@ Sets client to flymode
 */
 void Host_Fly_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 /*
@@ -85,7 +85,7 @@ Host_Ping_f
 */
 void Host_Ping_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 #endif
 
@@ -176,7 +176,7 @@ void Host_Name_f(void)
 	Cvar_Set("_cl_name", newName);
 	if (cls.state == CA_ACTIVE)
 	{
-		Cmd_ForwardToServer();
+		CL_ForwardKnownCommandToServer();
 	}
 }
 
@@ -192,17 +192,17 @@ void Host_Version_f(void)
 
 void Host_Say_f()
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 void Host_Say_Team_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 void Host_Tell_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 void Host_Color_f(void)
@@ -243,7 +243,7 @@ void Host_Color_f(void)
 	Cvar_SetValue("_cl_color", playercolor);
 	if (cls.state == CA_ACTIVE)
 	{
-		Cmd_ForwardToServer();
+		CL_ForwardKnownCommandToServer();
 	}
 }
 
@@ -254,7 +254,7 @@ Host_Kill_f
 */
 void Host_Kill_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 
@@ -265,7 +265,7 @@ Host_Pause_f
 */
 void Host_Pause_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 /*
@@ -283,7 +283,7 @@ Host_Give_f
 */
 void Host_Give_f(void)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 }
 
 qhedict_t* FindViewthing(void)

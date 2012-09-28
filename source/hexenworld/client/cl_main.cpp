@@ -625,7 +625,7 @@ void CL_SetInfo_f(void)
 		String::ICmp(Cmd_Argv(1), "name") != 0, String::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 	{
-		Cmd_ForwardToServer();
+		CL_ForwardKnownCommandToServer();
 	}
 }
 

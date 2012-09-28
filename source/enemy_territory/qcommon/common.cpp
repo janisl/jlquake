@@ -2141,9 +2141,6 @@ void CL_EstablishConnection(const char* name)
 void Host_Reconnect_f()
 {
 }
-void Cmd_ForwardToServer()
-{
-}
 void CL_Drop()
 {
 }

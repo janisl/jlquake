@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-void Cmd_ForwardToServer(void);
+void CL_ForwardCommandToServer(void);
 
 /*
 =============================================================================
@@ -31,17 +31,19 @@ void Cmd_ForwardToServer(void);
 =============================================================================
 */
 
+void CL_ForwardKnownCommandToServer();
+
 bool Cmd_HandleNullCommand(const char* text)
 {
 	// forward to server command
-	Cmd_ExecuteString(va("cmd %s", text));
+	CL_ForwardKnownCommandToServer();
 	return true;
 }
 
 void Cmd_HandleUnknownCommand()
 {
 	// send it as a server command if we are connected
-	Cmd_ForwardToServer();
+	CL_ForwardCommandToServer();
 }
 
 /*

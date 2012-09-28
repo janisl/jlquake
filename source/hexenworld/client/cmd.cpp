@@ -12,40 +12,9 @@ Cvar* cl_warncmd;
 =============================================================================
 */
 
-#ifndef SERVERONLY		// FIXME
-/*
-===================
-Cmd_ForwardToServer
-
-adds the current command line as a h2clc_stringcmd to the client message.
-things like godmode, noclip, etc, are commands directed to the server,
-so when they are typed in at the console, they will need to be forwarded.
-===================
-*/
-void Cmd_ForwardToServer(void)
-{
-	if (cls.state == CA_DISCONNECTED)
-	{
-		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
-		return;
-	}
-
-	if (clc.demoplaying)
-	{
-		return;		// not really connected
-
-	}
-	CL_AddReliableCommand(Cmd_Cmd());
-}
-#else
-void Cmd_ForwardToServer(void)
-{
-}
-#endif
-
 bool Cmd_HandleNullCommand(const char* text)
 {
-	Cmd_ForwardToServer();
+	CL_ForwardKnownCommandToServer();
 	return true;
 }
 

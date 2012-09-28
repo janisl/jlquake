@@ -49,29 +49,3 @@ void Cmd_HandleUnknownCommand()
 {
 	common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
 }
-
-/*
-===================
-Cmd_ForwardToServer
-
-Sends the entire command line over to the server
-===================
-*/
-void Cmd_ForwardToServer(void)
-{
-#ifndef DEDICATED
-	if (cls.state != CA_ACTIVE)
-	{
-		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
-		return;
-	}
-
-	if (clc.demoplaying)
-	{
-		return;		// not really connected
-
-	}
-
-	CL_AddReliableCommand(Cmd_Cmd());
-#endif
-}

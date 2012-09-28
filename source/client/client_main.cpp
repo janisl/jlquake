@@ -263,6 +263,20 @@ void CL_AddReliableCommand(const char* cmd)
 	}
 }
 
+//	Adds the current command line as a clc_stringcmd to the client message.
+// things like godmode, noclip, etc, are commands directed to the server,
+// so when they are typed in at the console, they will need to be forwarded.
+void CL_ForwardKnownCommandToServer()
+{
+	if (cls.state != CA_ACTIVE || clc.demoplaying)
+	{
+		common->Printf("Not connected to a server.\n");
+		return;
+	}
+
+	CL_AddReliableCommand(Cmd_Cmd());
+}
+
 void CL_CvarChanged(Cvar* var)
 {
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))

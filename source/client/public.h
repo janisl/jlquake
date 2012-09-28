@@ -29,6 +29,7 @@ int CLQH_GetIntermission();
 void SCR_DebugGraph(float value, int color);
 void CL_CvarChanged(Cvar* var);
 const char* CL_TranslateStringBuf(const char* string);
+void CL_ForwardKnownCommandToServer();
 
 void Key_WriteBindings(fileHandle_t f);
 void CL_InitKeyCommands();
