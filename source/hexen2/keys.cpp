@@ -8,9 +8,6 @@ key up events are sent even if in console mode
 
 
 int shift_down = false;
-int key_lastpress;
-
-int key_count;				// incremented every key event
 
 qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
@@ -134,13 +131,6 @@ void Key_Event(int key, qboolean down, unsigned time)
 	if (!down)
 	{
 		keys[key].repeats = 0;
-	}
-
-	key_lastpress = key;
-	key_count++;
-	if (key_count <= 0)
-	{
-		return;		// just catching keys for Con_NotifyBox
 	}
 
 // update auto-repeat status

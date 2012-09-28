@@ -704,53 +704,6 @@ void SCRQH_BeginLoadingPlaque(void)
 
 //=============================================================================
 
-const char* scr_notifystring;
-qboolean scr_drawdialog;
-
-void SCR_DrawNotifyString(void)
-{
-	Plaque_Draw(scr_notifystring,1);
-}
-
-/*
-==================
-SCR_ModalMessage
-
-Displays a text string in the center of the screen and waits for a Y or N
-keypress.
-==================
-*/
-int SCR_ModalMessage(const char* text)
-{
-	if (cls.state == CA_DEDICATED)
-	{
-		return true;
-	}
-
-	scr_notifystring = text;
-
-	scr_drawdialog = true;
-	SCR_UpdateScreen();
-	scr_drawdialog = false;
-
-	S_ClearSoundBuffer(true);		// so dma doesn't loop current sound
-
-	do
-	{
-		key_count = -1;		// wait for a key down and up
-		Sys_SendKeyEvents();
-		IN_ProcessEvents();
-	}
-	while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
-
-	SCR_UpdateScreen();
-
-	return key_lastpress == 'y';
-}
-
-
-//=============================================================================
-
 void SCR_TileClear(void)
 {
 	if (scr_vrect.x > 0)
@@ -1108,13 +1061,7 @@ void SCR_UpdateScreen(void)
 	//
 	SCR_TileClear();
 
-	if (scr_drawdialog)
-	{
-		SbarH2_Draw();
-		MQH_FadeScreen();
-		SCR_DrawNotifyString();
-	}
-	else if (scr_drawloading)
+	if (scr_drawloading)
 	{
 		SbarH2_Draw();
 		MQH_FadeScreen();

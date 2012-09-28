@@ -30,8 +30,6 @@ void SCR_CenterPrint(const char* str);
 
 void SCRQH_BeginLoadingPlaque(void);
 
-int SCR_ModalMessage(const char* text);
-
 extern int sbqh_lines;
 
 void SCR_UpdateWholeScreen(void);

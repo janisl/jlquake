@@ -2753,8 +2753,3 @@ float* CL_GetSimOrg()
 {
 	return NULL;
 }
-
-int SCR_ModalMessage(const char* text)
-{
-	return false;
-}
