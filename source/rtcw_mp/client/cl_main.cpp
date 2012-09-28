@@ -981,26 +981,6 @@ CONSOLE COMMANDS
 
 /*
 ==================
-CL_ForwardToServer_f
-==================
-*/
-void CL_ForwardToServer_f(void)
-{
-	if (cls.state != CA_ACTIVE || clc.demoplaying)
-	{
-		common->Printf("Not connected to a server.\n");
-		return;
-	}
-
-	// don't forward the first argument
-	if (Cmd_Argc() > 1)
-	{
-		CL_AddReliableCommand(Cmd_Args());
-	}
-}
-
-/*
-==================
 CL_Setenv_f
 
 Mostly for controlling voodoo environment variables
@@ -2562,7 +2542,6 @@ void CL_Init(void)
 	//
 	// register our commands
 	//
-	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("configstrings", CL_Configstrings_f);
 	Cmd_AddCommand("clientinfo", CL_Clientinfo_f);
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);

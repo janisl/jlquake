@@ -310,28 +310,6 @@ void CL_Setenv_f(void)
 	}
 }
 
-
-/*
-==================
-CL_ForwardToServer_f
-==================
-*/
-void CL_ForwardToServer_f(void)
-{
-	if (cls.state != CA_CONNECTED && cls.state != CA_ACTIVE)
-	{
-		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
-		return;
-	}
-
-	// don't forward the first argument
-	if (Cmd_Argc() > 1)
-	{
-		CL_AddReliableCommand(Cmd_ArgsUnmodified());
-	}
-}
-
-
 /*
 ==================
 CL_Pause_f
@@ -1500,7 +1478,6 @@ void CL_InitLocal(void)
 	//
 	// register our commands
 	//
-	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("pause", CL_Pause_f);
 	Cmd_AddCommand("pingservers", CLQ2_PingServers_f);
 	Cmd_AddCommand("skins", CL_Skins_f);

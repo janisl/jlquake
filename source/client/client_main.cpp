@@ -45,10 +45,36 @@ int bitcounts[32];	/// just for protocol profiling
 
 float clqh_server_version = 0;	// version of server we connected to
 
+static void CL_ForwardToServer_f()
+{
+	if (cls.state != CA_ACTIVE || clc.demoplaying)
+	{
+		common->Printf("Not connected to a server.\n");
+		return;
+	}
+
+	if (GGameType & GAME_QuakeWorld && String::ICmp(Cmd_Argv(1), "snap") == 0)
+	{
+		Cbuf_InsertText("snap\n");
+		return;
+	}
+
+	// don't forward the first argument
+	if (Cmd_Argc() > 1)
+	{
+		CL_AddReliableCommand(GGameType & GAME_Tech3 ? Cmd_Args() : Cmd_ArgsUnmodified());
+	}
+}
+
 void CL_SharedInit()
 {
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
+
+	//
+	// register our commands
+	//
+	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 }
 
 int CL_ScaledMilliseconds()

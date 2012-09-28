@@ -15,34 +15,6 @@
 */
 
 /*
-===================
-Cmd_ForwardToServer
-
-Sends the entire command line over to the server
-===================
-*/
-#ifndef DEDICATED
-void Cmd_ForwardToServer_f(void)
-{
-	if (cls.state != CA_ACTIVE)
-	{
-		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
-		return;
-	}
-
-	if (clc.demoplaying)
-	{
-		return;		// not really connected
-
-	}
-	if (Cmd_Argc() > 1)
-	{
-		CL_AddReliableCommand(Cmd_ArgsUnmodified());
-	}
-}
-#endif
-
-/*
 ============
 Cmd_Init
 ============
@@ -50,9 +22,6 @@ Cmd_Init
 void Cmd_Init(void)
 {
 	Cmd_SharedInit();
-#ifndef DEDICATED
-	Cmd_AddCommand("cmd", Cmd_ForwardToServer_f);
-#endif
 }
 
 bool Cmd_HandleNullCommand(const char* text)

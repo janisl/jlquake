@@ -56,32 +56,6 @@ void Cmd_ForwardToServer(void)
 	}
 	CL_AddReliableCommand(Cmd_Cmd());
 }
-
-// don't forward the first argument
-void Cmd_ForwardToServer_f(void)
-{
-	if (cls.state == CA_DISCONNECTED)
-	{
-		common->Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
-		return;
-	}
-
-	if (String::ICmp(Cmd_Argv(1), "snap") == 0)
-	{
-		Cbuf_InsertText("snap\n");
-		return;
-	}
-
-	if (clc.demoplaying)
-	{
-		return;		// not really connected
-
-	}
-	if (Cmd_Argc() > 1)
-	{
-		CL_AddReliableCommand(Cmd_ArgsUnmodified());
-	}
-}
 #else
 void Cmd_ForwardToServer(void)
 {
@@ -110,9 +84,6 @@ Cmd_Init
 void Cmd_Init(void)
 {
 	Cmd_SharedInit();
-#ifndef SERVERONLY
-	Cmd_AddCommand("cmd", Cmd_ForwardToServer_f);
-#endif
 
 	cl_warncmd = Cvar_Get("cl_warncmd", "0", 0);
 }
