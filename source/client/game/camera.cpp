@@ -45,8 +45,7 @@ static void Cam_Lock(int playernum)
 {
 	char st[40];
 	String::Sprintf(st, sizeof(st), "ptrack %i", playernum);
-	clc.netchan.message.WriteByte(GGameType & GAME_Hexen2 ? h2clc_stringcmd : q1clc_stringcmd);
-	clc.netchan.message.WriteString2(st);
+	CL_AddReliableCommand(st);
 	spec_track = playernum;
 	locked = false;
 }
@@ -57,8 +56,7 @@ static void Cam_Unlock()
 	{
 		return;
 	}
-	clc.netchan.message.WriteByte(GGameType & GAME_Hexen2 ? h2clc_stringcmd : q1clc_stringcmd);
-	clc.netchan.message.WriteString2("ptrack");
+	CL_AddReliableCommand("ptrack");
 	autocam = CAM_NONE;
 	locked = false;
 }

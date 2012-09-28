@@ -212,6 +212,31 @@ int CLQH_GetIntermission()
 	return cl.qh_intermission;
 }
 
+//	The given command will be transmitted to the server, and is gauranteed to
+// not have future q3usercmd_t executed before it is executed
+void CL_AddReliableCommand(const char* cmd)
+{
+	if (GGameType & GAME_Tech3)
+	{
+		// if we would be losing an old command that hasn't been acknowledged,
+		// we must drop the connection
+		int maxReliableCommands = GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF;
+		if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > maxReliableCommands)
+		{
+			common->Error("Client command overflow");
+		}
+		clc.q3_reliableSequence++;
+		int index = clc.q3_reliableSequence & (maxReliableCommands - 1);
+		String::NCpyZ(clc.q3_reliableCommands[index], cmd, sizeof(clc.q3_reliableCommands[index]));
+	}
+	else
+	{
+		clc.netchan.message.WriteByte(GGameType & GAME_Quake ? q1clc_stringcmd :
+			GGameType & GAME_Hexen2 ? h2clc_stringcmd : q2clc_stringcmd);
+		clc.netchan.message.WriteString2(cmd);
+	}
+}
+
 void CL_CvarChanged(Cvar* var)
 {
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
@@ -225,8 +250,7 @@ void CL_CvarChanged(Cvar* var)
 			String::ICmp(var->name, "name") != 0, String::ICmp(var->name, "team") == 0);
 		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
 		{
-			clc.netchan.message.WriteByte(GGameType & GAME_HexenWorld ? h2clc_stringcmd : q1clc_stringcmd);
-			clc.netchan.message.WriteString2(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));
+			CL_AddReliableCommand(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));
 		}
 	}
 }

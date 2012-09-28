@@ -37,8 +37,7 @@ void Cmd_ForwardToServer_f(void)
 	}
 	if (Cmd_Argc() > 1)
 	{
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.Print(Cmd_ArgsUnmodified());
+		CL_AddReliableCommand(Cmd_ArgsUnmodified());
 	}
 }
 #endif
@@ -88,7 +87,6 @@ void Cmd_ForwardToServer(void)
 		return;		// not really connected
 
 	}
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.Print(Cmd_Cmd());
+	CL_AddReliableCommand(Cmd_Cmd());
 #endif
 }

@@ -96,24 +96,6 @@ The given command will be transmitted to the server, and is gauranteed to
 not have future wsusercmd_t executed before it is executed
 ======================
 */
-void CL_AddReliableCommand(const char* cmd)
-{
-	int index;
-
-	// if we would be losing an old command that hasn't been acknowledged,
-	// we must drop the connection
-//	if(cl.cameraMode)
-//		common->Printf ("cmd: %s\n", cmd);
-
-	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_WOLF)
-	{
-		common->Error("Client command overflow");
-	}
-	clc.q3_reliableSequence++;
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
-	String::NCpyZ(clc.q3_reliableCommands[index], cmd, sizeof(clc.q3_reliableCommands[index]));
-}
-
 /*
 ======================
 CL_ChangeReliableCommand

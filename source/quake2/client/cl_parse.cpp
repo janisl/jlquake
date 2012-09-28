@@ -92,9 +92,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
 	common->Printf("Downloading %s\n", clc.downloadName);
-	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("download %s", clc.downloadName));
+	CL_AddReliableCommand(va("download %s", clc.downloadName));
 
 	clc.downloadNumber++;
 
@@ -141,9 +139,7 @@ void    CL_Download_f(void)
 	String::StripExtension(clc.downloadName, clc.downloadTempName);
 	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("download %s", clc.downloadName));
+	CL_AddReliableCommand(va("download %s", clc.downloadName));
 
 	clc.downloadNumber++;
 }
@@ -234,8 +230,7 @@ void CL_ParseDownload(void)
 #endif
 		clc.downloadPercent = percent;
 
-		clc.netchan.message.WriteByte(q2clc_stringcmd);
-		clc.netchan.message.WriteString2("nextdl");
+		CL_AddReliableCommand("nextdl");
 	}
 	else
 	{

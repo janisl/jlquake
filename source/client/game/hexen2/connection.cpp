@@ -27,28 +27,19 @@ void CLH2_SignonReply()
 	switch (clc.qh_signon)
 	{
 	case 1:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("prespawn");
+		CL_AddReliableCommand("prespawn");
 		break;
 
 	case 2:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("playerclass %i\n", (int)clh2_playerclass->value));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
-
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
+		CL_AddReliableCommand(va("name \"%s\"\n", clqh_name->string));
+		CL_AddReliableCommand(va("playerclass %i\n", (int)clh2_playerclass->value));
+		CL_AddReliableCommand(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
 		sprintf(str, "spawn %s", cls.qh_spawnparms);
-		clc.netchan.message.WriteString2(str);
+		CL_AddReliableCommand(str);
 		break;
 
 	case 3:
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("begin");
+		CL_AddReliableCommand("begin");
 		break;
 
 	case 4:

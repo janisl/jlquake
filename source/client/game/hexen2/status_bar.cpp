@@ -1098,8 +1098,7 @@ void SbarH2_DeathmatchOverlay()
 	if (GGameType & GAME_HexenWorld && cls.realtime - cl.qh_last_ping_request * 1000 > 2000)
 	{
 		cl.qh_last_ping_request = cls.realtime * 0.001;
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("pings");
+		CL_AddReliableCommand("pings");
 	}
 
 	image_t* pic = R_CachePic("gfx/menu/title8.lmp");

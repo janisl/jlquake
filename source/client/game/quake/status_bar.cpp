@@ -1036,8 +1036,7 @@ static void SbarQ1_DeathmatchOverlay(int start)
 	if (cls.realtime - cl.qh_last_ping_request * 1000 > 2000)
 	{
 		cl.qh_last_ping_request = cls.realtime * 0.001;
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("pings");
+		CL_AddReliableCommand("pings");
 	}
 
 	int teamplay = GGameType & GAME_QuakeWorld && String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "teamplay"));

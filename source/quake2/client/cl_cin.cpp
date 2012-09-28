@@ -49,8 +49,7 @@ Called when either the cinematic completes, or it is aborted
 void CIN_FinishCinematic()
 {
 	// tell the server to advance to the next map / cinematic
-	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.WriteString2(va("nextserver %i\n", cl.servercount));
+	CL_AddReliableCommand(va("nextserver %i\n", cl.servercount));
 }
 
 //==========================================================================

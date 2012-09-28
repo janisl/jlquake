@@ -68,29 +68,6 @@ CLIENT RELIABLE COMMAND COMMUNICATION
 
 /*
 ======================
-CL_AddReliableCommand
-
-The given command will be transmitted to the server, and is gauranteed to
-not have future q3usercmd_t executed before it is executed
-======================
-*/
-void CL_AddReliableCommand(const char* cmd)
-{
-	int index;
-
-	// if we would be losing an old command that hasn't been acknowledged,
-	// we must drop the connection
-	if (clc.q3_reliableSequence - clc.q3_reliableAcknowledge > MAX_RELIABLE_COMMANDS_Q3)
-	{
-		common->Error("Client command overflow");
-	}
-	clc.q3_reliableSequence++;
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_Q3 - 1);
-	String::NCpyZ(clc.q3_reliableCommands[index], cmd, sizeof(clc.q3_reliableCommands[index]));
-}
-
-/*
-======================
 CL_ChangeReliableCommand
 ======================
 */

@@ -744,8 +744,7 @@ void CL_Reconnect_f(void)
 	if (cls.state == CA_CONNECTED)
 	{
 		common->Printf("reconnecting...\n");
-		clc.netchan.message.WriteChar(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("new");
+		CL_AddReliableCommand("new");
 		return;
 	}
 
@@ -792,8 +791,7 @@ void CL_ConnectionlessPacket(void)
 		}
 		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, 0);
 		clc.netchan.lastReceived = realtime * 1000;
-		clc.netchan.message.WriteChar(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("new");
+		CL_AddReliableCommand("new");
 		cls.state = CA_CONNECTED;
 		common->Printf("Connected.\n");
 		return;
@@ -931,8 +929,7 @@ void CL_Download_f(void)
 	clc.download = FS_FOpenFileWrite(clc.downloadName);
 	clc.downloadType = dl_single;
 
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
+	CL_AddReliableCommand(va("download %s\n",Cmd_Argv(1)));
 }
 
 void CL_Sensitivity_save_f(void)
@@ -976,9 +973,7 @@ static void Skin_Skins_f()
 
 	if (cls.state != CA_ACTIVE)
 	{	// get next signon phase
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2(
-			va("begin %i", cl.servercount));
+		CL_AddReliableCommand(va("begin %i", cl.servercount));
 	}
 }
 

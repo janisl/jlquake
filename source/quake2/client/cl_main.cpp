@@ -272,8 +272,7 @@ void Cmd_ForwardToServer(void)
 		return;
 	}
 
-	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.Print(Cmd_Cmd());
+	CL_AddReliableCommand(Cmd_Cmd());
 }
 
 void CL_Setenv_f(void)
@@ -328,8 +327,7 @@ void CL_ForwardToServer_f(void)
 	// don't forward the first argument
 	if (Cmd_Argc() > 1)
 	{
-		clc.netchan.message.WriteByte(q2clc_stringcmd);
-		clc.netchan.message.WriteString2(Cmd_ArgsUnmodified());
+		CL_AddReliableCommand(Cmd_ArgsUnmodified());
 	}
 }
 
@@ -740,8 +738,7 @@ void CL_Reconnect_f(void)
 	{
 		common->Printf("reconnecting...\n");
 		cls.state = CA_CONNECTED;
-		clc.netchan.message.WriteChar(q2clc_stringcmd);
-		clc.netchan.message.WriteString2("new");
+		CL_AddReliableCommand("new");
 		return;
 	}
 
@@ -840,8 +837,7 @@ void CL_ConnectionlessPacket(void)
 		}
 		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
 		clc.netchan.lastReceived = curtime;
-		clc.netchan.message.WriteChar(q2clc_stringcmd);
-		clc.netchan.message.WriteString2("new");
+		CL_AddReliableCommand("new");
 		cls.state = CA_CONNECTED;
 		return;
 	}
@@ -1389,8 +1385,7 @@ void CL_RequestNextDownload(void)
 	CL_RegisterSounds();
 	CL_PrepRefresh();
 
-	clc.netchan.message.WriteByte(q2clc_stringcmd);
-	clc.netchan.message.WriteString2(va("begin %i\n", precache_spawncount));
+	CL_AddReliableCommand(va("begin %i\n", precache_spawncount));
 }
 
 /*

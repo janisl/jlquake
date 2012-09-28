@@ -619,6 +619,7 @@ int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
 float CLQH_LerpPoint();
+void CL_AddReliableCommand(const char* cmd);
 
 void Chase_Init();
 void Chase_Update();

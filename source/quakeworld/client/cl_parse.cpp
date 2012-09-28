@@ -167,9 +167,8 @@ static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 	sprintf(st, "%d", (int)crc);
 	Info_SetValueForKey(cls.qh_userinfo, CVarName, st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
 	sprintf(st, "setinfo %s %d", CVarName, (int)crc);
-	clc.netchan.message.WriteString2(st);
+	CL_AddReliableCommand(st);
 }
 
 /*
@@ -256,9 +255,7 @@ void Model_NextDownload(void)
 	CM_MapChecksums(CheckSum1, CheckSum2);
 
 	// done with modellist, request first of static signon messages
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
-//	clc.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
-	clc.netchan.message.WriteString2(va(prespawn_name, cl.servercount, CheckSum2));
+	CL_AddReliableCommand(va(prespawn_name, cl.servercount, CheckSum2));
 }
 
 /*
@@ -305,9 +302,7 @@ void Sound_NextDownload(void)
 	clq1_playerindex = -1;
 	clq1_spikeindex = -1;
 	clqw_flagindex = -1;
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
-//	clc.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
-	clc.netchan.message.WriteString2(va(modellist_name, cl.servercount, 0));
+	CL_AddReliableCommand(va(modellist_name, cl.servercount, 0));
 }
 
 
@@ -414,8 +409,7 @@ void CL_ParseDownload(void)
 #endif
 		clc.downloadPercent = percent;
 
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("nextdl");
+		CL_AddReliableCommand("nextdl");
 	}
 	else
 	{
@@ -635,9 +629,7 @@ void CL_ParseServerData(void)
 
 	// ask for the sound list next
 	Com_Memset(cl.qh_sound_name, 0, sizeof(cl.qh_sound_name));
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
-//	clc.netchan.message.WriteString2(va("soundlist %i 0", cl.servercount));
-	clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
+	CL_AddReliableCommand(va(soundlist_name, cl.servercount, 0));
 
 	// now waiting for downloads, etc
 	cls.state = CA_LOADING;
@@ -678,9 +670,7 @@ void CL_ParseSoundlist(void)
 
 	if (n)
 	{
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-//		clc.netchan.message.WriteString2(va("soundlist %i %i", cl.servercount, n));
-		clc.netchan.message.WriteString2(va(soundlist_name, cl.servercount, n));
+		CL_AddReliableCommand(va(soundlist_name, cl.servercount, n));
 		return;
 	}
 
@@ -735,9 +725,7 @@ void CL_ParseModellist(void)
 
 	if (n)
 	{
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-//		clc.netchan.message.WriteString2(va("modellist %i %i", cl.servercount, n));
-		clc.netchan.message.WriteString2(va(modellist_name, cl.servercount, n));
+		CL_AddReliableCommand(va(modellist_name, cl.servercount, n));
 		return;
 	}
 

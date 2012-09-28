@@ -581,8 +581,7 @@ void SCR_RSShot_f(void)
 
 	if (!scr_allowsnap->integer)
 	{
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.Print("snap\n");
+		CL_AddReliableCommand("snap\n");
 		common->Printf("Refusing remote screen shot request.\n");
 		return;
 	}

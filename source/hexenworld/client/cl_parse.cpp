@@ -152,9 +152,7 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 	String::StripExtension(clc.downloadName, clc.downloadTempName);
 	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("download %s", clc.downloadName));
+	CL_AddReliableCommand(va("download %s", clc.downloadName));
 
 	clc.downloadNumber++;
 
@@ -236,9 +234,7 @@ void Model_NextDownload(void)
 	R_NewMap();
 
 	// done with modellist, request first of static signon messages
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("prespawn %i", cl.servercount));
+	CL_AddReliableCommand(va("prespawn %i", cl.servercount));
 }
 
 /*
@@ -281,9 +277,7 @@ void Sound_NextDownload(void)
 	S_EndRegistration();
 
 	// done with sounds, request models now
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("modellist %i", cl.servercount));
+	CL_AddReliableCommand(va("modellist %i", cl.servercount));
 }
 
 
@@ -377,8 +371,7 @@ void CL_ParseDownload(void)
 #endif
 		clc.downloadPercent = percent;
 
-		clc.netchan.message.WriteByte(h2clc_stringcmd);
-		clc.netchan.message.WriteString2("nextdl");
+		CL_AddReliableCommand("nextdl");
 	}
 	else
 	{
@@ -507,9 +500,7 @@ void CL_ParseServerData(void)
 	common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
 
 	// ask for the sound list next
-	clc.netchan.message.WriteByte(h2clc_stringcmd);
-	clc.netchan.message.WriteString2(
-		va("soundlist %i", cl.servercount));
+	CL_AddReliableCommand(va("soundlist %i", cl.servercount));
 
 	// now waiting for downloads, etc
 	cls.state = CA_LOADING;

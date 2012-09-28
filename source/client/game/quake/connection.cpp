@@ -27,25 +27,18 @@ void CLQ1_SignonReply()
 	switch (clc.qh_signon)
 	{
 	case 1:
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("prespawn");
+		CL_AddReliableCommand("prespawn");
 		break;
 
 	case 2:
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2(va("name \"%s\"\n", clqh_name->string));
-
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
-
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
+		CL_AddReliableCommand(va("name \"%s\"\n", clqh_name->string));
+		CL_AddReliableCommand(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
 		sprintf(str, "spawn %s", cls.qh_spawnparms);
-		clc.netchan.message.WriteString2(str);
+		CL_AddReliableCommand(str);
 		break;
 
 	case 3:
-		clc.netchan.message.WriteByte(q1clc_stringcmd);
-		clc.netchan.message.WriteString2("begin");
+		CL_AddReliableCommand("begin");
 		break;
 
 	case 4:
@@ -95,8 +88,7 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 	String::StripExtension(clc.downloadName, clc.downloadTempName);
 	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
 
-	clc.netchan.message.WriteByte(q1clc_stringcmd);
-	clc.netchan.message.WriteString2(va("download %s", clc.downloadName));
+	CL_AddReliableCommand(va("download %s", clc.downloadName));
 
 	clc.downloadNumber++;
 
