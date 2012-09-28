@@ -96,3 +96,7 @@ bool UIT3_GameCommand()
 void CL_ForwardKnownCommandToServer()
 {
 }
+
+void CL_ForwardCommandToServer()
+{
+}

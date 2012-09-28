@@ -60,7 +60,7 @@ void Cmd_HandleUnknownCommand()
 
 	// send it as a server command if we are connected
 	// this will usually result in a chat message
-	CL_ForwardCommandToServer(Cmd_Cmd());
+	CL_ForwardCommandToServer();
 }
 
 /*

@@ -159,12 +159,6 @@ void CL_MapLoading(void);
 // will be cleared, so the client must shutdown cgame, ui, and
 // the renderer
 
-void    CL_ForwardCommandToServer(const char* string);
-// adds the current command line as a q3clc_clientCommand to the client message.
-// things like godmode, noclip, etc, are commands directed to the server,
-// so when they are typed in at the console, they will need to be forwarded.
-
-
 //----(SA)	added
 void CL_EndgameMenu(void);
 // bring up the "need a cd to play" dialog

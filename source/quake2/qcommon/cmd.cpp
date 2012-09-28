@@ -20,18 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cmd.c -- Quake script command processing module
 
 #include "qcommon.h"
-
-void CL_ForwardCommandToServer(void);
-
-/*
-=============================================================================
-
-                    COMMAND EXECUTION
-
-=============================================================================
-*/
-
-void CL_ForwardKnownCommandToServer();
+#include "../../client/public.h"
 
 bool Cmd_HandleNullCommand(const char* text)
 {
@@ -42,6 +31,10 @@ bool Cmd_HandleNullCommand(const char* text)
 
 void Cmd_HandleUnknownCommand()
 {
+	if (com_dedicated->integer)
+	{
+		common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+	}
 	// send it as a server command if we are connected
 	CL_ForwardCommandToServer();
 }

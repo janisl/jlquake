@@ -81,11 +81,6 @@ void COM_Init(void);
 
 void    Cmd_Init(void);
 
-void    CL_ForwardCommandToServer(void);
-// adds the current command line as a q2clc_stringcmd to the client message.
-// things like godmode, noclip, etc, are commands directed to the server,
-// so when they are typed in at the console, they will need to be forwarded.
-
 /*
 ==============================================================
 

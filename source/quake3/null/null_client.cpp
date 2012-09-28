@@ -58,10 +58,6 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
 
-void CL_ForwardCommandToServer(const char* string)
-{
-}
-
 void Con_ConsolePrint(const char* txt)
 {
 }

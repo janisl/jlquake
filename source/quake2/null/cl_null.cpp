@@ -28,14 +28,6 @@ void Con_ConsolePrint(const char* text)
 {
 }
 
-void CL_ForwardCommandToServer(void)
-{
-	char* cmd;
-
-	cmd = Cmd_Argv(0);
-	common->Printf("Unknown command \"%s\"\n", cmd);
-}
-
 void SCR_BeginLoadingPlaque(bool)
 {
 }

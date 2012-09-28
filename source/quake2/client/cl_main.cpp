@@ -252,29 +252,6 @@ void CL_Record_f(void)
 
 //======================================================================
 
-/*
-===================
-CL_ForwardCommandToServer
-
-adds the current command line as a q2clc_stringcmd to the client message.
-things like godmode, noclip, etc, are commands directed to the server,
-so when they are typed in at the console, they will need to be forwarded.
-===================
-*/
-void CL_ForwardCommandToServer(void)
-{
-	char* cmd;
-
-	cmd = Cmd_Argv(0);
-	if (cls.state <= CA_CONNECTED || *cmd == '-' || *cmd == '+')
-	{
-		common->Printf("Unknown command \"%s\"\n", cmd);
-		return;
-	}
-
-	CL_AddReliableCommand(Cmd_Cmd());
-}
-
 void CL_Setenv_f(void)
 {
 	int argc = Cmd_Argc();

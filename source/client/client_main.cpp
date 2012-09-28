@@ -277,6 +277,35 @@ void CL_ForwardKnownCommandToServer()
 	CL_AddReliableCommand(Cmd_Cmd());
 }
 
+//	Adds the current command line as a clientCommand
+// things like godmode, noclip, etc, are commands directed to the server,
+// so when they are typed in at the console, they will need to be forwarded.
+void CL_ForwardCommandToServer()
+{
+	char* cmd = Cmd_Argv(0);
+
+	// ignore key up commands
+	if (cmd[0] == '-')
+	{
+		return;
+	}
+
+	if (clc.demoplaying || cls.state < CA_CONNECTED || cmd[0] == '+')
+	{
+		common->Printf("Unknown command \"%s\"\n", cmd);
+		return;
+	}
+
+	if (Cmd_Argc() > 1)
+	{
+		CL_AddReliableCommand(Cmd_Cmd());
+	}
+	else
+	{
+		CL_AddReliableCommand(cmd);
+	}
+}
+
 void CL_CvarChanged(Cvar* var)
 {
 	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
