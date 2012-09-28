@@ -103,6 +103,5 @@ extern int time_after_game;
 
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
-bool SVT3_GameCommand();
 
 #endif

@@ -5,7 +5,6 @@ add_executable(jlhexen2
 	cl_main.cpp
 	cl_parse.cpp
 	cl_screen.cpp
-	cmd.cpp
 	common.cpp
 	console.cpp
 	host.cpp
@@ -21,7 +20,6 @@ set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhexen2 ${CLIENTS_LIBS})
 
 add_executable(jlhexen2ded
-	cmd.cpp
 	common.cpp
 	console.cpp
 	host.cpp

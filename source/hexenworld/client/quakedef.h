@@ -17,7 +17,6 @@
 #include "screen.h"
 #include "net.h"
 #include "protocol.h"
-#include "cmd.h"
 #include "../../common/hexen2strings.h"
 #include "render.h"
 #include "client.h"

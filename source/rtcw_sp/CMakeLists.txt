@@ -17,7 +17,6 @@ set(WOLFSP_FILES
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
 
-	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 

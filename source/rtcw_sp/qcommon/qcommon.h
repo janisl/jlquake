@@ -47,18 +47,6 @@ PROTOCOL
 /*
 ==============================================================
 
-CMD
-
-Command text buffering and command execution
-
-==============================================================
-*/
-
-void    Cmd_Init(void);
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because

@@ -5,7 +5,6 @@ add_executable(jlquake
 	cl_main.cpp
 	cl_parse.cpp
 	cl_screen.cpp
-	cmd.cpp
 	common.cpp
 	console.cpp
 	host.cpp
@@ -21,7 +20,6 @@ set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake ${CLIENTS_LIBS})
 
 add_executable(jlquakeded
-	cmd.cpp
 	common.cpp
 	console.cpp
 	host.cpp

@@ -17,11 +17,6 @@
 #define H2MOVETYPE_PUSHPULL     13		// pushable/pullable object
 #define H2MOVETYPE_SWIM         14		// should keep the object in water
 
-//
-// cvars
-//
-extern Cvar* cl_warncmd;
-
 //=============================================================================
 
 extern qboolean nomaster;

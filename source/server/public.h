@@ -31,6 +31,8 @@ int SVQH_GetMaxClients();
 int SVQH_GetMaxClientsLimit();
 void SVH2_RemoveGIPFiles(const char* path);
 
+bool SVT3_GameCommand();
+
 // RF, this is only used when running a local server
 void SVWS_SendMoveSpeedsToGame(int entnum, char* text);
 int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo);

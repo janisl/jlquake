@@ -59,7 +59,6 @@
 #endif
 #include "net.h"
 #include "protocol.h"
-#include "cmd.h"
 #ifndef DEDICATED
 #include "render.h"
 #endif

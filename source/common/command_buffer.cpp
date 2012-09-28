@@ -15,6 +15,8 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "../client/public.h"
+#include "../server/public.h"
 
 #define MAX_CMD_LINE        1024
 #define MAX_ARGS            1024
@@ -43,9 +45,7 @@ struct cmd_function_t
 	xcommand_t function;
 };
 
-//	Game specific.
-bool Cmd_HandleNullCommand(const char* text);
-void Cmd_HandleUnknownCommand();
+static Cvar* cl_warncmd;
 
 static cmdalias_t* cmd_alias;
 
@@ -507,7 +507,7 @@ static void Cmd_List_f()
 =============================================================================
 */
 
-void Cmd_SharedInit()
+void Cmd_Init()
 {
 	//
 	// register our commands
@@ -525,6 +525,11 @@ void Cmd_SharedInit()
 	Cmd_AddCommand("exec",Cmd_Exec_f);
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		cl_warncmd = Cvar_Get("cl_warncmd", "0", 0);
+	}
 }
 
 void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
@@ -967,6 +972,55 @@ void Cmd_CommandCompletion(void (* callback)(const char* s))
 	}
 }
 
+static void Cmd_HandleUnknownCommand()
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (cl_warncmd->value || com_developer->value)
+		{
+			common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+		}
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		if (com_dedicated->integer)
+		{
+			common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
+			return;
+		}
+		// send it as a server command if we are connected
+		CL_ForwardCommandToServer();
+	}
+	else
+	{
+		// check client game commands
+		if (com_cl_running && com_cl_running->integer && CLT3_GameCommand())
+		{
+			return;
+		}
+
+		// check server game commands
+		if (com_sv_running && com_sv_running->integer && SVT3_GameCommand())
+		{
+			return;
+		}
+
+		// check ui commands
+		if (com_cl_running && com_cl_running->integer && UIT3_GameCommand())
+		{
+			return;
+		}
+
+		// send it as a server command if we are connected
+		// this will usually result in a chat message
+		CL_ForwardCommandToServer();
+	}
+}
+
 //	A complete command line has been parsed, so try to execute it
 void Cmd_ExecuteString(const char* text)
 {
@@ -993,10 +1047,12 @@ void Cmd_ExecuteString(const char* text)
 			// perform the action
 			if (!cmd->function)
 			{
-				if (!Cmd_HandleNullCommand(text))
+				if (GGameType & GAME_Tech3)
 				{
+					// let the cgame or game handle it
 					break;
 				}
+				CL_ForwardKnownCommandToServer();
 			}
 			else
 			{

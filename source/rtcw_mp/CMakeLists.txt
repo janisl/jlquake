@@ -24,7 +24,6 @@ set(WOLFMP_FILES
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
 
-	qcommon/cmd.cpp 
 	qcommon/common.cpp
 	qcommon/files.cpp
 
@@ -41,7 +40,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
-	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp

@@ -1,9 +1,6 @@
 
 #include "qwsvdef.h"
 
-extern Cvar* cl_warncmd;
-extern char* rd_buffer;
-
 /*
 ===============================================================================
 
@@ -101,5 +98,5 @@ void SV_InitOperatorCommands(void)
 	Cmd_AddCommand("quit", SV_Quit_f);
 	Cmd_AddCommand("gamedir", SV_Gamedir_f);
 
-	cl_warncmd->value = 1;
+	Cvar_Set("cl_warncmd", "1");
 }

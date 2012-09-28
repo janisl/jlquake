@@ -10,7 +10,6 @@ add_executable(jlqwsv
 	server/sv_send.cpp
 	server/sv_ccmds.cpp
 	server/sys_unix.cpp
-	client/cmd.cpp
 	client/common.cpp
 	client/net_chan.cpp
 )
@@ -28,7 +27,6 @@ add_executable(jlqwcl
 	client/cl_main.cpp
 	client/cl_parse.cpp
 	client/cl_screen.cpp
-	client/cmd.cpp
 	client/common.cpp
 	client/console.cpp
 	client/keys.cpp
