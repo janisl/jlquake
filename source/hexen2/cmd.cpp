@@ -26,8 +26,8 @@ void Cmd_Init(void)
 
 bool Cmd_HandleNullCommand(const char* text)
 {
-	common->FatalError("NULL command");
-	return false;
+	CL_ForwardKnownCommandToServer();
+	return true;
 }
 
 void Cmd_HandleUnknownCommand()

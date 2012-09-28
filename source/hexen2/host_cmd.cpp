@@ -31,42 +31,6 @@ void Com_Quit_f(void)
 	Sys_Quit();
 }
 
-#ifndef DEDICATED
-
-/*
-==================
-Host_God_f
-
-Sets client to godmode
-==================
-*/
-void Host_God_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-void Host_Notarget_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-void Host_Noclip_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-/*
-==================
-Host_Ping_f
-
-==================
-*/
-void Host_Ping_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-#endif
-
 /*
 ===============================================================================
 
@@ -214,21 +178,6 @@ void Host_Version_f(void)
 
 #ifndef DEDICATED
 
-void Host_Say_f()
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-void Host_Say_Team_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-void Host_Tell_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
 void Host_Color_f(void)
 {
 	int top, bottom;
@@ -270,27 +219,6 @@ void Host_Color_f(void)
 		CL_ForwardKnownCommandToServer();
 	}
 }
-
-/*
-==================
-Host_Kill_f
-==================
-*/
-void Host_Kill_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
-
-/*
-==================
-Host_Pause_f
-==================
-*/
-void Host_Pause_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
 #endif
 
 //===========================================================================
@@ -322,16 +250,6 @@ DEBUGGING TOOLS
 */
 
 #ifndef DEDICATED
-/*
-==================
-Host_Give_f
-==================
-*/
-void Host_Give_f(void)
-{
-	CL_ForwardKnownCommandToServer();
-}
-
 qhedict_t* FindViewthing(void)
 {
 	int i;
@@ -565,27 +483,24 @@ void Host_InitCommands(void)
 {
 	Cmd_AddCommand("quit", Com_Quit_f);
 #ifndef DEDICATED
-	Cmd_AddCommand("god", Host_God_f);
-	Cmd_AddCommand("notarget", Host_Notarget_f);
+	Cmd_AddCommand("god", NULL);
+	Cmd_AddCommand("notarget", NULL);
 	Cmd_AddCommand("connect", Host_Connect_f);
 	Cmd_AddCommand("reconnect", Host_Reconnect_f);
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("playerclass", Host_Class_f);
-	Cmd_AddCommand("noclip", Host_Noclip_f);
+	Cmd_AddCommand("noclip", NULL);
 #endif
 	Cmd_AddCommand("version", Host_Version_f);
 #ifndef DEDICATED
-	if (!com_dedicated->integer)
-	{
-		Cmd_AddCommand("say", Host_Say_f);
-		Cmd_AddCommand("say_team", Host_Say_Team_f);
-	}
-	Cmd_AddCommand("tell", Host_Tell_f);
+	Cmd_AddCommand("say", NULL);
+	Cmd_AddCommand("say_team", NULL);
+	Cmd_AddCommand("tell", NULL);
 	Cmd_AddCommand("color", Host_Color_f);
-	Cmd_AddCommand("kill", Host_Kill_f);
-	Cmd_AddCommand("pause", Host_Pause_f);
-	Cmd_AddCommand("ping", Host_Ping_f);
-	Cmd_AddCommand("give", Host_Give_f);
+	Cmd_AddCommand("kill", NULL);
+	Cmd_AddCommand("pause", NULL);
+	Cmd_AddCommand("ping", NULL);
+	Cmd_AddCommand("give", NULL);
 #endif
 
 	Cmd_AddCommand("startdemos", Host_Startdemos_f);
