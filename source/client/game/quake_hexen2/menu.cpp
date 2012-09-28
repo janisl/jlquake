@@ -48,6 +48,7 @@ static Cvar* mh2_oldmission;
 static int setup_class;
 
 static void MQH_Menu_SinglePlayer_f();
+static void MQH_Menu_SinglePlayerConfirm_f();
 static void MH2_Menu_Class_f();
 static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Load_f();
@@ -512,6 +513,25 @@ static void MQH_SinglePlayer_Draw()
 	}
 }
 
+static void MQH_NewGameConfirmed()
+{
+	in_keyCatchers &= ~KEYCATCH_UI;
+	if (SV_IsServerActive())
+	{
+		Cbuf_AddText("disconnect\n");
+	}
+	Cbuf_AddText("maxplayers 1\n");
+	if (GGameType & GAME_Hexen2)
+	{
+		SVH2_RemoveGIPFiles(NULL);
+		MH2_Menu_Class_f();
+	}
+	else
+	{
+		Cbuf_AddText("map start\n");
+	}
+}
+
 static void MQH_SinglePlayer_Key(int key)
 {
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
@@ -574,25 +594,11 @@ static void MQH_SinglePlayer_Key(int key)
 		case 3:
 			if (SV_IsServerActive())
 			{
-				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
-				{
-					break;
-				}
-			}
-			in_keyCatchers &= ~KEYCATCH_UI;
-			if (SV_IsServerActive())
-			{
-				Cbuf_AddText("disconnect\n");
-			}
-			Cbuf_AddText("maxplayers 1\n");
-			if (GGameType & GAME_Hexen2)
-			{
-				SVH2_RemoveGIPFiles(NULL);
-				MH2_Menu_Class_f();
+				MQH_Menu_SinglePlayerConfirm_f();
 			}
 			else
 			{
-				Cbuf_AddText("map start\n");
+				MQH_NewGameConfirmed();
 			}
 			break;
 
@@ -609,6 +615,34 @@ static void MQH_SinglePlayer_Key(int key)
 			Cbuf_AddText("playdemo t9\n");
 			break;
 		}
+	}
+}
+
+static void MQH_Menu_SinglePlayerConfirm_f()
+{
+	m_state = m_singleplayer_confirm;
+}
+
+static void MQH_SinglePlayerConfirm_Draw()
+{
+	int y = viddef.height * 0.35;
+	MQH_DrawTextBox(32, y - 16, 30, 4);
+	MQH_PrintWhite(64, y, "Are you sure you want to");
+	MQH_PrintWhite(92, y + 8, "start a new game?");
+}
+
+static void MQH_SinglePlayerConfirm_Key(int key)
+{
+	switch (key)
+	{
+	case 'n':
+	case K_ESCAPE:
+		MQH_Menu_SinglePlayer_f();
+		break;
+
+	case 'y':
+		MQH_NewGameConfirmed();
+		break;
 	}
 }
 
@@ -5439,6 +5473,10 @@ void MQH_Draw()
 		MQH_SinglePlayer_Draw();
 		break;
 
+	case m_singleplayer_confirm:
+		MQH_SinglePlayerConfirm_Draw();
+		break;
+
 	case m_class:
 		MH2_Class_Draw();
 		break;
@@ -5532,6 +5570,10 @@ void MQH_Keydown(int key)
 
 	case m_singleplayer:
 		MQH_SinglePlayer_Key(key);
+		return;
+
+	case m_singleplayer_confirm:
+		MQH_SinglePlayerConfirm_Key(key);
 		return;
 
 	case m_class:
