@@ -47,7 +47,7 @@ float clqh_server_version = 0;	// version of server we connected to
 
 static void CL_ForwardToServer_f()
 {
-	if (cls.state != CA_ACTIVE || clc.demoplaying)
+	if (cls.state < CA_CONNECTED || clc.demoplaying)
 	{
 		common->Printf("Not connected to a server.\n");
 		return;
@@ -268,7 +268,7 @@ void CL_AddReliableCommand(const char* cmd)
 // so when they are typed in at the console, they will need to be forwarded.
 void CL_ForwardKnownCommandToServer()
 {
-	if (cls.state != CA_ACTIVE || clc.demoplaying)
+	if (cls.state < CA_CONNECTED || clc.demoplaying)
 	{
 		common->Printf("Not connected to a server.\n");
 		return;
