@@ -638,6 +638,7 @@ void CL_WriteWaveFilePacket(int endtime);
 void SCR_UpdateScreen();
 void CL_NextDemo();
 void SCRQH_BeginLoadingPlaque();
+void SCRQ2_BeginLoadingPlaque(bool Clear);
 void Com_Quit_f();
 
 #endif

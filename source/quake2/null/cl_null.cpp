@@ -24,7 +24,7 @@ void CL_Frame(int msec)
 {
 }
 
-void SCR_BeginLoadingPlaque(bool)
+void SCRQ2_BeginLoadingPlaque(bool)
 {
 }
 

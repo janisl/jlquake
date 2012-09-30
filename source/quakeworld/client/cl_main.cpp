@@ -1562,19 +1562,6 @@ void Host_Shutdown(void)
 	R_Shutdown(true);
 }
 
-void CIN_StartedPlayback()
-{
-}
-
-bool CIN_IsInCinematicState()
-{
-	return false;
-}
-
-void CIN_FinishCinematic()
-{
-}
-
 float* CL_GetSimOrg()
 {
 	return cl.qh_simorg;
@@ -1593,7 +1580,7 @@ void CL_EstablishConnection(const char* name)
 {
 }
 
-void SCR_BeginLoadingPlaque(bool Clear)
+void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }
 

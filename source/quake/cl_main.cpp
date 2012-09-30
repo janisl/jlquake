@@ -283,19 +283,6 @@ void CL_Init(void)
 	Cmd_AddCommand("timedemo", CL_TimeDemo_f);
 }
 
-void CIN_StartedPlayback()
-{
-}
-
-bool CIN_IsInCinematicState()
-{
-	return false;
-}
-
-void CIN_FinishCinematic()
-{
-}
-
 float* CL_GetSimOrg()
 {
 	return clq1_entities[cl.viewentity].state.origin;

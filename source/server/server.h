@@ -59,6 +59,6 @@ void Host_Reconnect_f();
 void CL_MapLoading();
 void CL_ShutdownAll();
 void CL_Drop();
-void SCR_BeginLoadingPlaque(bool Clear);
+void SCRQ2_BeginLoadingPlaque(bool Clear);
 
 #endif

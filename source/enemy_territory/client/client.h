@@ -133,19 +133,6 @@ void    SCR_UpdateScreen(void);
 int     SCR_GetBigStringWidth(const char* str);		// returns in virtual 640x480 coordinates
 
 //
-// cl_cin.c
-//
-
-void CL_PlayCinematic_f(void);
-void SCR_DrawCinematic(void);
-void SCR_RunCinematic(void);
-void SCR_StopCinematic(void);
-e_status CIN_StopCinematic(int handle);
-void CIN_DrawCinematic(int handle);
-void CIN_SetExtents(int handle, int x, int y, int w, int h);
-void CIN_CloseAllVideos(void);
-
-//
 // cl_cgame.c
 //
 void CL_InitCGame(void);

@@ -20,7 +20,6 @@ set (ET_FILES
 	qcommon/dl_main_curl.cpp
 
 	client/cl_cgame.cpp
-	client/cl_cin.cpp
 	client/cl_input.cpp
 	client/cl_keys.cpp
 	client/cl_main.cpp

@@ -175,8 +175,6 @@ void CL_DrawInventory(void);
 //
 void CL_PredictMovement(void);
 
-void CIN_SkipCinematic();
-
 #if id386
 void x86_TimerStart(void);
 void x86_TimerStop(void);

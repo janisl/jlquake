@@ -392,6 +392,6 @@ void CL_Disconnect(qboolean showMainMenu)
 void CL_Drop()
 {
 }
-void SCR_BeginLoadingPlaque(bool Clear)
+void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }

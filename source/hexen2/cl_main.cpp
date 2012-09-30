@@ -306,19 +306,6 @@ void CL_Init(void)
 	Cmd_AddCommand("sensitivity_save", CL_Sensitivity_save_f);
 }
 
-void CIN_StartedPlayback()
-{
-}
-
-bool CIN_IsInCinematicState()
-{
-	return false;
-}
-
-void CIN_FinishCinematic()
-{
-}
-
 float* CL_GetSimOrg()
 {
 	return h2cl_entities[cl.viewentity].state.origin;

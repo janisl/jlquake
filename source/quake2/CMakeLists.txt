@@ -1,5 +1,4 @@
 add_executable(jlquake2
-	client/cl_cin.cpp
 	client/cl_ents.cpp
 	client/cl_input.cpp
 	client/cl_inv.cpp

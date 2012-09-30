@@ -98,7 +98,6 @@ qboolean com_fullyInitialized;
 char com_errorMessage[MAXPRINTMSG];
 
 void Com_WriteConfig_f(void);
-void CIN_CloseAllVideos();
 
 class idCommonLocal : public idCommon
 {
@@ -2144,6 +2143,6 @@ void Host_Reconnect_f()
 void CL_Drop()
 {
 }
-void SCR_BeginLoadingPlaque(bool Clear)
+void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }

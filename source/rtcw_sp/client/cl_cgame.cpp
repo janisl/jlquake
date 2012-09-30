@@ -242,25 +242,12 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //---------
-	case WSCG_SENDCLIENTCOMMAND:
-		CL_AddReliableCommand((char*)VMA(1));
-		return 0;
 	case WSCG_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 //---------
 	case WSCG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-//---------
-	case WSCG_CIN_STOPCINEMATIC:
-		return CIN_StopCinematic(args[1]);
-//---------
-	case WSCG_CIN_DRAWCINEMATIC:
-		CIN_DrawCinematic(args[1]);
-		return 0;
-	case WSCG_CIN_SETEXTENTS:
-		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-		return 0;
 //---------
 	case WSCG_LIMBOCHAT:
 		if (VMA(1))

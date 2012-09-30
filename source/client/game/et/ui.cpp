@@ -484,12 +484,19 @@ qintptr CLET_UISystemCalls(qintptr* args)
 	case ETUI_CIN_PLAYCINEMATIC:
 		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
-//-------
+	case ETUI_CIN_STOPCINEMATIC:
+		return CIN_StopCinematic(args[1]);
 
 	case ETUI_CIN_RUNCINEMATIC:
 		return CIN_RunCinematic(args[1]);
 
-//-------
+	case ETUI_CIN_DRAWCINEMATIC:
+		CIN_DrawCinematic(args[1]);
+		return 0;
+
+	case ETUI_CIN_SETEXTENTS:
+		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
+		return 0;
 
 	case ETUI_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));

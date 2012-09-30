@@ -1,20 +1,9 @@
-#  $DEDICATED_NAME = 'wolfupdate.' . $cpu;
-
-#  $COMMON_CFLAGS = '-pipe -fsigned-char -DPRE_RELEASE_DEMO ';
-#  $BASEGAME = 'demomain';
-#  $COMMON_CFLAGS = '-pipe -fsigned-char -DDO_LIGHT_DEDICATED ';
-#  $BASEGAME = 'main';
-#  $COMMON_CFLAGS = '-pipe -fsigned-char -DUPDATE_SERVER ';
-#  $BASEGAME = 'main';
-#  $COMMON_CFLAGS .= "-DAUTOUPDATE_SERVER_NAME=\\\"$update_server\\\" ";
-
 # NOTE TTimo using -fshort-enums increases warnings on enum issues
 #   this is for debugging and QA ONLY, the flag has ABI issues (OpenGL headers)
 #$COMMON_CFLAGS = $COMMON_CFLAGS . '-fshort-enums ';
 
 set(WOLFMP_FILES
 	client/cl_cgame.cpp
-	client/cl_cin.cpp
 	client/cl_input.cpp
 	client/cl_keys.cpp
 	client/cl_main.cpp

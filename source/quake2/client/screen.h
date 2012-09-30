@@ -35,11 +35,3 @@ extern vrect_t scr_vrect;			// position of render window
 
 extern char crosshair_pic[MAX_QPATH];
 extern int crosshair_width, crosshair_height;
-
-//
-// scr_cin.c
-//
-void SCR_PlayCinematic(char* name);
-qboolean SCR_DrawCinematic(void);
-void SCR_RunCinematic(void);
-void SCR_StopCinematic(void);

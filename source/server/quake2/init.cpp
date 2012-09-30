@@ -275,7 +275,7 @@ void SVQ2_InitGame()
 	{
 		// make sure the client is down
 		CL_Drop();
-		SCR_BeginLoadingPlaque(false);
+		SCRQ2_BeginLoadingPlaque(false);
 	}
 
 	// get any latched variable changes (maxclients, etc)
@@ -412,25 +412,25 @@ void SVQ2_Map(bool attractloop, const char* levelstring, bool loadgame)
 	l = String::Length(level);
 	if (l > 4 && !String::Cmp(level + l - 4, ".cin"))
 	{
-		SCR_BeginLoadingPlaque(false);			// for local system
+		SCRQ2_BeginLoadingPlaque(false);			// for local system
 		SVQ2_BroadcastCommand("changing\n");
 		SVQ2_SpawnServer(level, spawnpoint, SS_CINEMATIC, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".dm2"))
 	{
-		SCR_BeginLoadingPlaque(false);			// for local system
+		SCRQ2_BeginLoadingPlaque(false);			// for local system
 		SVQ2_BroadcastCommand("changing\n");
 		SVQ2_SpawnServer(level, spawnpoint, SS_DEMO, attractloop, loadgame);
 	}
 	else if (l > 4 && !String::Cmp(level + l - 4, ".pcx"))
 	{
-		SCR_BeginLoadingPlaque(false);			// for local system
+		SCRQ2_BeginLoadingPlaque(false);			// for local system
 		SVQ2_BroadcastCommand("changing\n");
 		SVQ2_SpawnServer(level, spawnpoint, SS_PIC, attractloop, loadgame);
 	}
 	else
 	{
-		SCR_BeginLoadingPlaque(false);			// for local system
+		SCRQ2_BeginLoadingPlaque(false);			// for local system
 		SVQ2_BroadcastCommand("changing\n");
 		SVQ2_SendClientMessages();
 		SVQ2_SpawnServer(level, spawnpoint, SS_GAME, attractloop, loadgame);

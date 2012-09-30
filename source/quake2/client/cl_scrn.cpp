@@ -454,10 +454,10 @@ void SCR_DrawLoading(void)
 
 /*
 ================
-SCR_BeginLoadingPlaque
+SCRQ2_BeginLoadingPlaque
 ================
 */
-void SCR_BeginLoadingPlaque(bool Clear)
+void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 	S_StopAllSounds();
 	cl.q2_sound_prepped = false;		// don't play ambients
@@ -491,7 +491,7 @@ SCR_Loading_f
 */
 void SCR_Loading_f(void)
 {
-	SCR_BeginLoadingPlaque();
+	SCRQ2_BeginLoadingPlaque();
 }
 
 void SCR_TimeRefresh_f(void)

@@ -140,7 +140,6 @@ void idCommonLocal::EndGame(const char* format, ...)
 }
 
 void Com_WriteConfig_f(void);
-void CIN_CloseAllVideos();
 
 //============================================================================
 
@@ -1607,6 +1606,6 @@ void Host_Reconnect_f()
 void CL_Drop()
 {
 }
-void SCR_BeginLoadingPlaque(bool Clear)
+void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }

@@ -244,13 +244,6 @@ public:
 	void SetExtents(int x, int y, int w, int h);
 	e_status Run();
 	void Reset();
-	void Upload(int Handle);
+	void Upload(int handle);
+	void Draw(int handle);
 };
-
-void CIN_MakeFullName(const char* Name, char* FullName);
-QCinematic* CIN_Open(const char* Name);
-int CIN_HandleForVideo();
-
-#define MAX_VIDEO_HANDLES   16
-
-extern QCinematicPlayer* cinTable[MAX_VIDEO_HANDLES];

@@ -238,25 +238,12 @@ qintptr CL_CgameSystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //---------
-	case Q3CG_SENDCLIENTCOMMAND:
-		CL_AddReliableCommand((char*)VMA(1));
-		return 0;
 	case Q3CG_UPDATESCREEN:
 		SCR_UpdateScreen();
 		return 0;
 //---------
 	case Q3CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand(args[1]);
-//---------
-	case Q3CG_CIN_STOPCINEMATIC:
-		return CIN_StopCinematic(args[1]);
-//---------
-	case Q3CG_CIN_DRAWCINEMATIC:
-		CIN_DrawCinematic(args[1]);
-		return 0;
-	case Q3CG_CIN_SETEXTENTS:
-		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-		return 0;
 //---------
 	}
 	return CLQ3_CgameSystemCalls(args);

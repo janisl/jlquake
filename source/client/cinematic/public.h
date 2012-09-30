@@ -30,18 +30,26 @@ enum e_status
 	FMV_ID_WAIT
 };
 
-#define CIN_system  1
-#define CIN_loop    2
-#define CIN_hold    4
-#define CIN_silent  8
-#define CIN_shader  16
-#define CIN_letterBox   BIT(5)
+enum
+{
+	CIN_system		= BIT(0),
+	CIN_loop		= BIT(1),
+	CIN_hold		= BIT(2),
+	CIN_silent		= BIT(3),
+	CIN_shader		= BIT(4),
+	CIN_letterBox	= BIT(5),
+};
 
-int CIN_PlayCinematic(const char* Name, int XPos, int YPos, int Width, int Height, int Bits);
-e_status CIN_RunCinematic(int Handle);
-void CIN_UploadCinematic(int Handle);
-
-//	callbacks
-void CIN_StartedPlayback();
-bool CIN_IsInCinematicState();
-void CIN_FinishCinematic();
+int CIN_PlayCinematic(const char* name, int xPos, int yPos, int width, int height, int bits);
+void CIN_SetExtents(int handle, int x, int y, int w, int h);
+e_status CIN_RunCinematic(int handle);
+void CIN_UploadCinematic(int handle);
+void CIN_DrawCinematic(int handle);
+e_status CIN_StopCinematic(int handle);
+void SCR_PlayCinematic(const char* name);
+void SCR_RunCinematic();
+bool SCR_DrawCinematic();
+void SCR_StopCinematic();
+void CIN_SkipCinematic();
+void CIN_CloseAllVideos();
+void CL_PlayCinematic_f();

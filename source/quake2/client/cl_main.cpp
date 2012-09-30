@@ -666,7 +666,7 @@ void CL_Changing_f(void)
 		return;
 	}
 
-	SCR_BeginLoadingPlaque();
+	SCRQ2_BeginLoadingPlaque();
 	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
 	common->Printf("\nChanging map...\n");
 }

@@ -39,17 +39,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 		SCR_UpdateScreen();
 		return 0;
 //--------
-	case Q3UI_CIN_STOPCINEMATIC:
-		return CIN_StopCinematic(args[1]);
-//--------
-	case Q3UI_CIN_DRAWCINEMATIC:
-		CIN_DrawCinematic(args[1]);
-		return 0;
-
-	case Q3UI_CIN_SETEXTENTS:
-		CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-		return 0;
-//--------
 	case Q3UI_VERIFY_CDKEY:
 		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 //--------
