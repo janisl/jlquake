@@ -7,7 +7,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
 add_executable(jlhwsv
 	server/sv_main.cpp
-	server/sv_send.cpp
 	server/sv_ccmds.cpp
 	server/sys_unix.cpp
 	client/common.cpp

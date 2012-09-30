@@ -24,10 +24,6 @@ void CL_Frame(int msec)
 {
 }
 
-void Con_ConsolePrint(const char* text)
-{
-}
-
 void SCR_BeginLoadingPlaque(bool)
 {
 }

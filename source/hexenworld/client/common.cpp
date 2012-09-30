@@ -8,6 +8,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "../../client/public.h"
 
 #define NUM_SAFE_ARGVS  6
 
@@ -292,25 +293,20 @@ void COM_InitFilesystem(void)
 	FS_SetSearchPathBase();
 }
 
-#ifndef SERVERONLY
 static qboolean con_debuglog;
+fileHandle_t sv_logfile;
 
 void Com_InitDebugLog()
 {
 	con_debuglog = COM_CheckParm("-condebug");
 }
 
-static void Con_DebugLog(const char* file, const char* fmt, ...)
+static void Con_DebugLog(const char* file, const char* msg)
 {
-	va_list argptr;
-	static char data[1024];
 	fileHandle_t fd;
 
-	va_start(argptr, fmt);
-	Q_vsnprintf(data, sizeof(data), fmt, argptr);
-	va_end(argptr);
 	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(data, String::Length(data), fd);
+	FS_Write(msg, String::Length(msg), fd);
 	FS_FCloseFile(fd);
 }
 
@@ -325,29 +321,45 @@ void Con_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-// also echo to debugging console
-	Sys_Print(msg);	// also echo to debugging console
-
-// log all messages to file
-	if (con_debuglog)
+	// add to redirected message
+	if (rd_buffer)
 	{
-		Con_DebugLog("qconsole.log", "%s", msg);
+		if (String::Length(msg) + String::Length(rd_buffer) > rd_buffersize - 1)
+		{
+			rd_flush(rd_buffer);
+		}
+		String::Cat(rd_buffer, rd_buffersize, msg);
+		return;
 	}
 
-// write it to the scrollable buffer
+	// also echo to debugging console
+	Sys_Print(msg);
+
+	// log all messages to file
+	if (con_debuglog)
+	{
+		Con_DebugLog("qconsole.log", msg);
+	}
+	if (sv_logfile)
+	{
+		FS_Printf(sv_logfile, "%s", msg);
+	}
+
+	// write it to the scrollable buffer
 	Con_ConsolePrint(msg);
 
-// update the screen immediately if the console is displayed
+#ifndef SERVERONLY
+	// update the screen immediately if the console is displayed
 	if (cls.state != CA_ACTIVE)
 	{
 		// protect against infinite loop if something in SCR_UpdateScreen calls
 		// Con_Printd
+		static bool inupdate;
 		if (!inupdate)
 		{
 			inupdate = true;
@@ -355,6 +367,7 @@ void Con_Printf(const char* fmt, ...)
 			inupdate = false;
 		}
 	}
+#endif
 }
 
 /*
@@ -372,15 +385,14 @@ void Con_DPrintf(const char* fmt, ...)
 	if (!com_developer || !com_developer->value)
 	{
 		return;			// don't confuse non-developers with techie stuff...
-
 	}
+
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
 	common->Printf("%s", msg);
 }
-#endif
 
 void FS_Restart(int checksumFeed)
 {

@@ -42,4 +42,6 @@ bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 
 bool UIT3_GameCommand();
 
+void Con_ConsolePrint(const char* txt);
+
 #endif

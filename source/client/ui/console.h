@@ -46,7 +46,6 @@ extern console_t con;
 
 void Con_ClearNotify();
 void Con_ClearTyping();
-void Con_ConsolePrint(const char* txt);
 void Con_DrawFullBackground();
 void Con_DrawConsole();
 void Con_KeyEvent(int key);

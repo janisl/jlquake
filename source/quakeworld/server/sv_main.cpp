@@ -33,8 +33,6 @@ qboolean host_initialized;			// true if into command execution (compatability)
 double host_frametime;
 double realtime;					// without any filtering or bounding
 
-fileHandle_t sv_logfile;
-
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 

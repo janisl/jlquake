@@ -100,3 +100,7 @@ void CL_ForwardKnownCommandToServer()
 void CL_ForwardCommandToServer()
 {
 }
+
+void Con_ConsolePrint(const char* txt)
+{
+}

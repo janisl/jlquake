@@ -319,17 +319,12 @@ void Com_InitDebugLog()
 Con_DebugLog
 ================
 */
-void Con_DebugLog(const char* file, const char* fmt, ...)
+void Con_DebugLog(const char* file, const char* msg)
 {
-	va_list argptr;
-	static char data[8 * 1024];
 	fileHandle_t fd;
 
-	va_start(argptr, fmt);
-	Q_vsnprintf(data, sizeof(data), fmt, argptr);
-	va_end(argptr);
 	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(data, String::Length(data), fd);
+	FS_Write(msg, String::Length(msg), fd);
 	FS_FCloseFile(fd);
 }
 
@@ -356,7 +351,7 @@ void Con_Printf(const char* fmt, ...)
 // log all messages to file
 	if (con_debuglog)
 	{
-		Con_DebugLog("qconsole.log", "%s", msg);
+		Con_DebugLog("qconsole.log", msg);
 	}
 
 #ifndef DEDICATED

@@ -65,10 +65,6 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
 
-void Con_ConsolePrint(const char* txt)
-{
-}
-
 void CL_JoystickEvent(int axis, int value, int time)
 {
 }
