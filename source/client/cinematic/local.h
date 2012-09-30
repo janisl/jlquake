@@ -246,4 +246,5 @@ public:
 	void Reset();
 	void Upload(int handle);
 	void Draw(int handle);
+	void DrawFullscreen(int handle);
 };

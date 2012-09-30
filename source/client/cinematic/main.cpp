@@ -18,8 +18,6 @@
 #include "local.h"
 #include "../sound/local.h"
 
-#define LETTERBOX_OFFSET 105
-
 #define MAX_VIDEO_HANDLES   16
 
 static QCinematicPlayer* cinTable[MAX_VIDEO_HANDLES];
@@ -270,12 +268,29 @@ e_status CIN_StopCinematic(int handle)
 	return FMV_EOF;
 }
 
+static int CIN_PlayFullscreenCinematic(const char* arg, int width, int height, int systemBits)
+{
+	int w;
+	int h;
+	if (width * viddef.height > viddef.width * height)
+	{
+		w = viddef.width;
+		h = viddef.width * height / width;
+	}
+	else
+	{
+		w = viddef.height * width / height;
+		h = viddef.height;
+	}
+	return CIN_PlayCinematic(arg, (viddef.width - w) / 2, (viddef.height - h) / 2, w, h, systemBits);
+}
+
 void SCR_PlayCinematic(const char* arg)
 {
 	// make sure CD isn't playing music
 	CDAudio_Stop();
 
-	CL_handle = CIN_PlayCinematic(arg, 0, 0, viddef.width, viddef.height, CIN_system);
+	CL_handle = CIN_PlayFullscreenCinematic(arg, 640, 480, CIN_system);
 }
 
 void SCR_RunCinematic()
@@ -309,7 +324,8 @@ bool SCR_DrawCinematic()
 		// pause if menu is up
 		return true;
 	}
-	CIN_DrawCinematic(CL_handle);
+
+	cinTable[CL_handle]->DrawFullscreen(CL_handle);
 	return true;
 }
 
@@ -388,11 +404,11 @@ void CL_PlayCinematic_f()
 
 	if (bits & CIN_letterBox)
 	{
-		CL_handle = CIN_PlayCinematic(arg, 0, LETTERBOX_OFFSET, viddef.width, viddef.height - (LETTERBOX_OFFSET * 2), bits);
+		CL_handle = CIN_PlayFullscreenCinematic(arg, 640, 270, bits);
 	}
 	else
 	{
-		CL_handle = CIN_PlayCinematic(arg, 0, 0, viddef.width, viddef.height, bits);
+		CL_handle = CIN_PlayFullscreenCinematic(arg, 640, 480, bits);
 	}
 
 	if (CL_handle >= 0)
@@ -544,17 +560,27 @@ void QCinematicPlayer::Draw(int handle)
 	float h = Height;
 	UI_AdjustFromVirtualScreen(&x, &y, &w, &h);
 
-	if (letterBox)
-	{
-		float vh = (float)cls.glconfig.vidHeight;
-		float barheight = ((float)LETTERBOX_OFFSET / 480.0f) * vh;
-
-		vec4_t colorBlack  = {0, 0, 0, 1};
-		R_SetColor(&colorBlack[0]);
-		R_StretchPic(0, 0, w, barheight, 0, 0, 0, 0, cls.whiteShader);
-		R_StretchPic(0, vh - barheight - 1, w, barheight + 1, 0, 0, 0, 0, cls.whiteShader);
-	}
-
 	R_StretchRaw(x, y, w, h, Cin->Width, Cin->Height, buf, handle, Cin->Dirty);
 	Cin->Dirty = false;
+}
+
+void QCinematicPlayer::DrawFullscreen(int handle)
+{
+	if (GGameType & GAME_Quake2 && XPos > 0)
+	{
+		UI_Fill(0, 0, XPos, viddef.height, 0, 0, 0, 1);
+		UI_Fill(XPos + Width, 0, viddef.width - XPos - Width, viddef.height, 0, 0, 0, 1);
+	}
+
+	if (GGameType & GAME_Tech3 && YPos > 0)
+	{
+		float vh = (float)cls.glconfig.vidHeight;
+		float barheight = ((float)YPos / 480.0f) * vh;
+		vec4_t colorBlack  = {0, 0, 0, 1};
+		R_SetColor(&colorBlack[0]);
+		R_StretchPic(0, 0, cls.glconfig.vidWidth, barheight, 0, 0, 0, 0, cls.whiteShader);
+		R_StretchPic(0, vh - barheight - 1, cls.glconfig.vidWidth, barheight + 1, 0, 0, 0, 0, cls.whiteShader);
+	}
+
+	Draw(handle);
 }
