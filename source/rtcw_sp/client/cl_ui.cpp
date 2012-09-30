@@ -64,7 +64,7 @@ qintptr CL_UISystemCalls(qintptr* args)
 		return CL_GetLimboString(args[1], (char*)VMA(2));
 //-------
 	}
-	return 0;
+	return CLWS_UISystemCalls(args);
 }
 
 /*
