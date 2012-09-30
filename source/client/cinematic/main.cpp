@@ -138,7 +138,7 @@ static void CIN_FinishCinematic()
 	CL_handle = -1;
 }
 
-int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBits)
+static int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBits)
 {
 	char name[MAX_OSPATH];
 	CIN_MakeFullName(arg, name);
@@ -181,12 +181,32 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 	return Handle;
 }
 
+//  For QVMs all drawing is done to a 640*480 virtual screen size,
+// it means it will be stretched on widescreen displays.
+static void CIN_AdjustToVirtualScreen(int& x, int& y, int& w, int& h)
+{
+	// scale for screen sizes
+	float xscale = (float)viddef.width / 640;
+	float yscale = (float)viddef.height / 480;
+	x *= xscale;
+	y *= yscale;
+	w *= xscale;
+	h *= yscale;
+}
+
+int CIN_PlayCinematicStretched(const char* arg, int x, int y, int w, int h, int systemBits)
+{
+	CIN_AdjustToVirtualScreen(x, y, w, h);
+	return CIN_PlayCinematic(arg, x, y, w, h, systemBits);
+}
+
 void CIN_SetExtents(int handle, int x, int y, int w, int h)
 {
 	if (handle < 0 || handle >= MAX_VIDEO_HANDLES || !cinTable[handle])
 	{
 		return;
 	}
+	CIN_AdjustToVirtualScreen(x, y, w, h);
 	cinTable[handle]->SetExtents(x, y, w, h);
 }
 

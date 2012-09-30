@@ -686,7 +686,7 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		return 0;
 
 	case ETCG_CIN_PLAYCINEMATIC:
-		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
+		return CIN_PlayCinematicStretched((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 	case ETCG_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);
 	case ETCG_CIN_RUNCINEMATIC:

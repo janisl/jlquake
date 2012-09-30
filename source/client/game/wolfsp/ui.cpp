@@ -497,7 +497,7 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 		return Com_RealTime((qtime_t*)VMA(1));
 
 	case WSUI_CIN_PLAYCINEMATIC:
-		return CIN_PlayCinematic((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
+		return CIN_PlayCinematicStretched((char*)VMA(1), args[2], args[3], args[4], args[5], args[6]);
 
 	case WSUI_CIN_STOPCINEMATIC:
 		return CIN_StopCinematic(args[1]);

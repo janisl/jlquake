@@ -40,7 +40,7 @@ enum
 	CIN_letterBox	= BIT(5),
 };
 
-int CIN_PlayCinematic(const char* name, int xPos, int yPos, int width, int height, int bits);
+int CIN_PlayCinematicStretched(const char* name, int xPos, int yPos, int width, int height, int bits);
 void CIN_SetExtents(int handle, int x, int y, int w, int h);
 e_status CIN_RunCinematic(int handle);
 void CIN_UploadCinematic(int handle);

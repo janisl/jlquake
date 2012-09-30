@@ -953,7 +953,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				common->Printf(S_COLOR_YELLOW "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
-			stage->bundle[0].videoMapHandle = CIN_PlayCinematic(token, 0, 0, 256, 256, (CIN_loop | CIN_silent | CIN_shader));
+			stage->bundle[0].videoMapHandle = CIN_PlayCinematicStretched(token, 0, 0, 256, 256, (CIN_loop | CIN_silent | CIN_shader));
 			if (stage->bundle[0].videoMapHandle != -1)
 			{
 				stage->bundle[0].isVideoMap = true;
