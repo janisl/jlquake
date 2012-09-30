@@ -721,8 +721,9 @@ void Host_Init(quakeparms_t* parms)
 		Key_Init();
 #endif
 		ComH2_LoadStrings();
-		Con_Init();
+		Com_InitDebugLog();
 #ifndef DEDICATED
+		Con_Init();
 		UI_Init();
 #endif
 		PR_Init();

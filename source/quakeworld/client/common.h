@@ -32,3 +32,7 @@ byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, unsigne
 
 int build_number(void);
 void Com_Quit_f();
+
+void Com_InitDebugLog();
+void Con_Printf(const char* fmt, ...);
+void Con_DPrintf(const char* fmt, ...);

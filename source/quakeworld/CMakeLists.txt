@@ -28,7 +28,6 @@ add_executable(jlqwcl
 	client/cl_parse.cpp
 	client/cl_screen.cpp
 	client/common.cpp
-	client/console.cpp
 	client/keys.cpp
 	client/net_chan.cpp
 	client/snd_dma.cpp

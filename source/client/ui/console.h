@@ -16,7 +16,6 @@
 
 #define NUM_CON_TIMES   4
 #define CON_TEXTSIZE    32768
-#define COMMAND_HISTORY 32
 
 struct console_t
 {
@@ -44,15 +43,6 @@ struct console_t
 };
 
 extern console_t con;
-extern field_t g_consoleField;
-
-extern image_t* conback;
-
-extern field_t chatField;
-extern bool chat_team;
-extern bool chat_buddy;
-extern bool chat_limbo;
-extern int chat_playerNum;
 
 void Con_ClearNotify();
 void Con_ClearTyping();
@@ -64,4 +54,7 @@ void Con_CharEvent(int key);
 void Con_MessageKeyEvent(int key);
 void Con_MessageCharEvent(int key);
 void Con_RunConsole();
-void Con_InitCommon();
+void Con_ToggleConsole_f();
+void Con_Init();
+void Con_Close();
+void Con_InitBackgroundImage();

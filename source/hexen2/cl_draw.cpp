@@ -18,8 +18,7 @@ void Draw_Init(void)
 	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
 	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
 
-	conback = R_CachePic("gfx/menu/conback.lmp");
-
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
+	Con_InitBackgroundImage();
 	MQH_InitImages();
 }

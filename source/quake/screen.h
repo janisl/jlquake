@@ -31,5 +31,6 @@ void SCR_CenterPrint(const char* str);
 void SCRQH_BeginLoadingPlaque(void);
 
 extern int sbqh_lines;
+extern qboolean con_forcedup;	// because no entities to refresh
 
 void SCR_UpdateWholeScreen(void);

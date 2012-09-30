@@ -15,31 +15,34 @@
 //**************************************************************************
 
 #include "../client.h"
+#include "../game/tech3/local.h"
 
+#define COMMAND_HISTORY 32
 #define DEFAULT_CONSOLE_WIDTH   78
 
 console_t con;
-field_t g_consoleField;
+static field_t g_consoleField;
 static field_t historyEditLines[COMMAND_HISTORY];
-static int nextHistoryLine;		// the last line in the history buffer, not masked
-static int historyLine;			// the line being displayed from history buffer
+static int nextHistoryLine;	// the last line in the history buffer, not masked
+static int historyLine;		// the line being displayed from history buffer
 							// will be <= nextHistoryLine
 
-image_t* conback;
+static image_t* conback;
 
 static Cvar* cl_noprint;
 static Cvar* cl_conXOffset;
 static Cvar* con_notifytime;
 static Cvar* con_drawnotify;
 static Cvar* con_conspeed;
+static Cvar* con_autoclear;
 
 static vec4_t console_highlightcolor = {0.5, 0.5, 0.2, 0.45};
 
-field_t chatField;
-bool chat_team;
-bool chat_buddy;
-bool chat_limbo;
-int chat_playerNum;
+static field_t chatField;
+static bool chat_team;
+static bool chat_buddy;
+static bool chat_limbo;
+static int chat_playerNum;
 
 void Con_ClearNotify()
 {
@@ -1110,10 +1113,44 @@ void Con_CharEvent(int key)
 	Field_CharEvent(&g_consoleField, key);
 }
 
+//	In game talk message
 void Con_MessageKeyEvent(int key)
 {
 	if (key == K_ESCAPE)
 	{
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
+		Field_Clear(&chatField);
+		return;
+	}
+
+	if (key == K_ENTER || key == K_KP_ENTER)
+	{
+		if (chatField.buffer[0] && cls.state == CA_ACTIVE)
+		{
+			char buffer[MAX_STRING_CHARS];
+			if (chat_playerNum != -1)
+			{
+				String::Sprintf(buffer, sizeof(buffer), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer);
+			}
+			else if (chat_team)
+			{
+				String::Sprintf(buffer, sizeof(buffer), "say_team \"%s\"\n", chatField.buffer);
+			}
+			else if (chat_limbo)
+			{
+				String::Sprintf(buffer, sizeof(buffer), "say_limbo \"%s\"\n", chatField.buffer);
+			}
+			else if (chat_buddy)
+			{
+				String::Sprintf(buffer, sizeof(buffer), "say_buddy \"%s\"\n", chatField.buffer);
+			}
+			else
+			{
+				String::Sprintf(buffer, sizeof(buffer), "say \"%s\"\n", chatField.buffer);
+			}
+			CL_AddReliableCommand(buffer);
+		}
+
 		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		Field_Clear(&chatField);
 		return;
@@ -1166,6 +1203,88 @@ void Con_RunConsole()
 		if (con.finalFrac < con.displayFrac)
 		{
 			con.displayFrac = con.finalFrac;
+		}
+	}
+}
+
+void Con_ToggleConsole_f()
+{
+	SCR_EndLoadingPlaque();		// get rid of loading plaque
+
+	if (GGameType & GAME_Quake2 && cl.q2_attractloop)
+	{
+		Cbuf_AddText("killserver\n");
+		return;
+	}
+
+	// closing a full screen console restarts the demo loop
+	if (GGameType & (GAME_Quake2 | GAME_Quake3 | GAME_WolfSP | GAME_WolfMP) &&
+		cls.state == CA_DISCONNECTED && (GGameType & GAME_Quake2 || in_keyCatchers == KEYCATCH_CONSOLE))
+	{
+		// start the demo loop again
+		Cbuf_AddText("d1\n");
+		if (GGameType & GAME_Tech3)
+		{
+			in_keyCatchers = 0;
+		}
+		return;
+	}
+
+	con.acLength = 0;
+
+	if (con_autoclear->integer)
+	{
+		Field_Clear(&g_consoleField);
+	}
+
+	Con_ClearNotify();
+
+	// ydnar: multiple console size support
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
+		if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) || cls.state == CA_ACTIVE)
+		{
+			in_keyCatchers &= ~KEYCATCH_CONSOLE;
+		}
+		con.desiredFrac = 0;
+		if (GGameType & GAME_QuakeHexen && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) && cls.state != CA_ACTIVE)
+		{
+			UI_SetMainMenu();
+		}
+		if (GGameType & GAME_Quake2)
+		{
+			UI_ForceMenuOff();
+			Cvar_SetLatched("paused", "0");
+		}
+	}
+	else
+	{
+		in_keyCatchers |= KEYCATCH_CONSOLE;
+
+		if (keys[K_CTRL].down)
+		{
+			// short console
+			con.desiredFrac = (5.0 * SMALLCHAR_HEIGHT) / cls.glconfig.vidHeight;
+		}
+		else if (keys[K_ALT].down)
+		{
+			// full console
+			con.desiredFrac = 1.0;
+		}
+		else
+		{
+			// normal half-screen console
+			con.desiredFrac = 0.5;
+		}
+		if (GGameType & GAME_Quake2)
+		{
+			UI_ForceMenuOff();
+
+			if (Cvar_VariableValue("maxclients") == 1 &&
+				ComQ2_ServerState())
+			{
+				Cvar_SetLatched("paused", "1");
+			}
 		}
 	}
 }
@@ -1259,6 +1378,34 @@ static void Con_MessageMode2_f()
 	in_keyCatchers ^= KEYCATCH_MESSAGE;
 }
 
+static void Con_MessageMode3_f()
+{
+	chat_playerNum = CLT3_CrosshairPlayer();
+	if (chat_playerNum < 0 || chat_playerNum >= (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS : GGameType & GAME_WolfMP ? MAX_CLIENTS_WM : MAX_CLIENTS_Q3))
+	{
+		chat_playerNum = -1;
+		return;
+	}
+	chat_team = false;
+	Field_Clear(&chatField);
+	chatField.widthInChars = 30;
+	in_keyCatchers ^= KEYCATCH_MESSAGE;
+}
+
+static void Con_MessageMode4_f()
+{
+	chat_playerNum = CLT3_LastAttacker();
+	if (chat_playerNum < 0 || chat_playerNum >= (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS : GGameType & GAME_WolfMP ? MAX_CLIENTS_WM : MAX_CLIENTS_Q3))
+	{
+		chat_playerNum = -1;
+		return;
+	}
+	chat_team = false;
+	Field_Clear(&chatField);
+	chatField.widthInChars = 30;
+	in_keyCatchers ^= KEYCATCH_MESSAGE;
+}
+
 static void Con_MessageModeBuddy_f()
 {
 	chat_team = false;
@@ -1278,7 +1425,7 @@ static void Con_StopLimboMode_f()
 	chat_limbo = false;
 }
 
-void Con_InitCommon()
+void Con_Init()
 {
 	Field_Clear(&g_consoleField);
 	for (int i = 0; i < COMMAND_HISTORY; i++)
@@ -1296,11 +1443,13 @@ void Con_InitCommon()
 	cl_conXOffset = Cvar_Get("cl_conXOffset", "0", 0);
 	con_notifytime = Cvar_Get("con_notifytime", "3", 0);
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
+	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 	if (GGameType & GAME_ET)
 	{
 		con_drawnotify = Cvar_Get("con_drawnotify", "0", CVAR_CHEAT);
 	}
 
+	Cmd_AddCommand("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand("clear", Con_Clear_f);
 	Cmd_AddCommand("condump", Con_Dump_f);
 	if (GGameType & GAME_ET)
@@ -1315,9 +1464,39 @@ void Con_InitCommon()
 		Cmd_AddCommand("messagemode", Con_MessageMode_f);
 		Cmd_AddCommand("messagemode2", Con_MessageMode2_f);
 	}
+	if (GGameType & (GAME_Quake3 | GAME_WolfSP | GAME_WolfMP))
+	{
+		Cmd_AddCommand("messagemode3", Con_MessageMode3_f);
+		Cmd_AddCommand("messagemode4", Con_MessageMode4_f);
+	}
 	if (GGameType & (GAME_WolfSP | GAME_WolfMP))
 	{
 		Cmd_AddCommand("startLimboMode", Con_StartLimboMode_f);
 		Cmd_AddCommand("stopLimboMode", Con_StopLimboMode_f);
+	}
+}
+
+void Con_Close()
+{
+	if (!com_cl_running->integer)
+	{
+		return;
+	}
+	Field_Clear(&g_consoleField);
+	Con_ClearNotify();
+	in_keyCatchers &= ~KEYCATCH_CONSOLE;
+	con.finalFrac = 0;				// none visible
+	con.displayFrac = 0;
+}
+
+void Con_InitBackgroundImage()
+{
+	if (GGameType & GAME_Quake)
+	{
+		conback = R_CachePic("gfx/conback.lmp");
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		conback = R_CachePic("gfx/menu/conback.lmp");
 	}
 }

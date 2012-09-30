@@ -8,7 +8,6 @@ add_executable(jlquake2
 	client/cl_pred.cpp
 	client/cl_scrn.cpp
 	client/cl_view.cpp
-	client/console.cpp
 	client/keys.cpp
 	client/snd_dma.cpp
 	qcommon/common.cpp

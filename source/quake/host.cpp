@@ -643,11 +643,10 @@ void Host_Init(quakeparms_t* parms)
 #endif
 		COM_Init(parms->basedir);
 		Host_InitLocal();
+		Com_InitDebugLog();
 #ifndef DEDICATED
 		Key_Init();
-#endif
 		Con_Init();
-#ifndef DEDICATED
 		UI_Init();
 #endif
 		PR_Init();

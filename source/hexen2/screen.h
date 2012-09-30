@@ -17,5 +17,6 @@ extern int sbqh_lines;
 extern int total_loading_size, current_loading_size, loading_stage;
 
 extern const char* plaquemessage;		// Pointer to current plaque
+extern qboolean con_forcedup;	// because no entities to refresh
 
 void SCR_UpdateWholeScreen(void);

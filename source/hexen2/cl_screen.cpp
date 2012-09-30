@@ -76,6 +76,8 @@ int total_loading_size, current_loading_size, loading_stage;
 
 const char* plaquemessage = NULL;	// Pointer to current plaque message
 
+qboolean con_forcedup;			// because no entities to refresh
+
 void Plaque_Draw(const char* message, qboolean AlwaysDraw);
 void Info_Plaque_Draw(const char* message);
 void Bottom_Plaque_Draw(const char* message);

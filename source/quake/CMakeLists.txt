@@ -6,7 +6,6 @@ add_executable(jlquake
 	cl_parse.cpp
 	cl_screen.cpp
 	common.cpp
-	console.cpp
 	host.cpp
 	host_cmd.cpp
 	keys.cpp
@@ -21,7 +20,6 @@ target_link_libraries(jlquake ${CLIENTS_LIBS})
 
 add_executable(jlquakeded
 	common.cpp
-	console.cpp
 	host.cpp
 	host_cmd.cpp
 	net_main.cpp

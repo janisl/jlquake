@@ -15,32 +15,6 @@ int keyshift[256];			// key to map to if shift held down in console
 
 //============================================================================
 
-void Key_Message(int key)
-{
-	if (key == K_ENTER)
-	{
-		if (chat_team)
-		{
-			Cbuf_AddText("say_team \"");
-		}
-		else
-		{
-			Cbuf_AddText("say \"");
-		}
-		Cbuf_AddText(chatField.buffer);
-		Cbuf_AddText("\"\n");
-
-		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		chatField.cursor = 0;
-		chatField.buffer[0] = 0;
-		return;
-	}
-
-	Con_MessageKeyEvent(key);
-}
-
-//============================================================================
-
 
 /*
 ===================
@@ -164,7 +138,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 		}
 		if (in_keyCatchers & KEYCATCH_MESSAGE)
 		{
-			Key_Message(key);
+			Con_MessageKeyEvent(key);
 		}
 		else if (in_keyCatchers & KEYCATCH_UI)
 		{
@@ -262,7 +236,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Key_Message(key);
+		Con_MessageKeyEvent(key);
 	}
 	else if (in_keyCatchers & KEYCATCH_UI)
 	{

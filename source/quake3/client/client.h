@@ -64,7 +64,6 @@ void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);
 void CL_Vid_Restart_f(void);
 void CL_Snd_Restart_f(void);
-void CL_StartDemoLoop(void);
 void CL_NextDemo(void);
 void CL_ReadDemoMessage(void);
 
@@ -92,14 +91,6 @@ void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
-
-//
-// console
-//
-void Con_Init(void);
-void Con_ToggleConsole_f(void);
-void Con_Close(void);
-
 
 //
 // cl_scrn.c

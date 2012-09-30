@@ -1358,6 +1358,7 @@ void Host_Init(quakeparms_t* parms)
 		Netchan_Init(0);
 
 		Key_Init();
+		Com_InitDebugLog();
 		Con_Init();
 		UI_Init();
 		ComH2_LoadStrings();

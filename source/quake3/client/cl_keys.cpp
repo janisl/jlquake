@@ -28,52 +28,6 @@ key up events are sent even if in console mode
 */
 
 /*
-================
-Message_Key
-
-In game talk message
-================
-*/
-void Message_Key(int key)
-{
-
-	char buffer[MAX_STRING_CHARS];
-
-	if (key == K_ENTER || key == K_KP_ENTER)
-	{
-		if (chatField.buffer[0] && cls.state == CA_ACTIVE)
-		{
-			if (chat_playerNum != -1)
-			{
-
-				String::Sprintf(buffer, sizeof(buffer), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer);
-			}
-
-			else if (chat_team)
-			{
-
-				String::Sprintf(buffer, sizeof(buffer), "say_team \"%s\"\n", chatField.buffer);
-			}
-			else
-			{
-				String::Sprintf(buffer, sizeof(buffer), "say \"%s\"\n", chatField.buffer);
-			}
-
-
-
-			CL_AddReliableCommand(buffer);
-		}
-		in_keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear(&chatField);
-		return;
-	}
-
-	Con_MessageKeyEvent(key);
-}
-
-//============================================================================
-
-/*
 ===================
 CL_AddKeyUpCommands
 ===================
@@ -215,7 +169,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 		if (in_keyCatchers & KEYCATCH_MESSAGE)
 		{
 			// clear message mode
-			Message_Key(key);
+			Con_MessageKeyEvent(key);
 			return;
 		}
 
@@ -286,7 +240,7 @@ void CL_KeyEvent(int key, qboolean down, unsigned time)
 	}
 	else if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		Message_Key(key);
+		Con_MessageKeyEvent(key);
 	}
 	else if (cls.state == CA_DISCONNECTED)
 	{

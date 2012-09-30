@@ -50,24 +50,17 @@
 #define SOUND_CHANNELS      8
 
 #include "common.h"
-#include "vid.h"
 #include "sys.h"
-
-#ifndef DEDICATED
-#include "draw.h"
-#include "screen.h"
-#endif
 #include "net.h"
 #include "protocol.h"
+
 #ifndef DEDICATED
+#include "vid.h"
+#include "draw.h"
+#include "screen.h"
 #include "render.h"
-#endif
 #include "client.h"
-#ifndef DEDICATED
 #include "keys.h"
-#endif
-#include "console.h"
-#ifndef DEDICATED
 #include "view.h"
 #endif
 

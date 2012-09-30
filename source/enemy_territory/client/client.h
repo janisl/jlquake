@@ -125,13 +125,6 @@ void CL_ParseServerMessage(QMsg* msg);
 //====================================================================
 
 //
-// console
-//
-void Con_Init(void);
-void Con_ToggleConsole_f(void);
-void Con_Close(void);
-
-//
 // cl_scrn.c
 //
 void    SCR_Init(void);

@@ -1499,6 +1499,7 @@ void Host_Init(quakeparms_t* parms)
 #endif
 
 		Key_Init();
+		Com_InitDebugLog();
 		Con_Init();
 		UI_Init();
 

@@ -85,6 +85,8 @@ vrect_t scr_vrect;
 
 qboolean scr_drawloading;
 
+qboolean con_forcedup;			// because no entities to refresh
+
 /*
 ===============================================================================
 
