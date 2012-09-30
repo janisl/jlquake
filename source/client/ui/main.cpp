@@ -126,7 +126,7 @@ void UI_SetMainMenu()
 	{
 		MQH_Menu_Main_f();
 	}
-	else if (GGameType & GAME_QuakeHexen)
+	else if (GGameType & GAME_Quake2)
 	{
 		MQ2_Menu_Main_f();
 	}
