@@ -18,13 +18,10 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "local.h"
 #include "../../common/file_formats/bsp29.h"
-
-// MACROS ------------------------------------------------------------------
+#include "../game/quake2/local.h"
 
 #define MAX_PLAYSOUNDS          128
 
@@ -48,8 +45,6 @@
 #define UNDERWATER_BIT_WB       8
 #define UNDERWATER_BIT_ET       16
 
-// TYPES -------------------------------------------------------------------
-
 struct loopSound_t
 {
 	vec3_t origin;
@@ -68,22 +63,9 @@ struct loopSound_t
 	int startTime, startSample;			// ydnar: so looping sounds can be out of phase
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-sfx_t* S_RegisterSexedSound(int entnum, char* base);
-int S_GetClFrameServertime();
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
 static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int* left_vol, int* right_vol, float range, int noAttenuation);
 static void S_UpdateThread();
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 dma_t dma;
 
@@ -116,8 +98,6 @@ portable_samplepair_t s_rawVolume[MAX_STREAMING_SOUNDS];
 sfx_t s_knownSfx[MAX_SFX];
 
 float s_volCurrent;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int s_soundStarted;
 static bool s_soundMuted;
@@ -177,15 +157,6 @@ static int volTime1;
 static int volTime2;
 static bool stopSounds;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Snd_Memset
-//
-//==========================================================================
-
-// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=371
 static void Snd_Memset(void* dest, const int val, const size_t count)
 {
 	if (!s_use_custom_memset)
@@ -201,12 +172,6 @@ static void Snd_Memset(void* dest, const int val, const size_t count)
 	}
 }
 
-//==========================================================================
-//
-//	S_ChannelFree
-//
-//==========================================================================
-
 static void S_ChannelFree(channel_t* v)
 {
 	v->sfx = NULL;
@@ -215,12 +180,6 @@ static void S_ChannelFree(channel_t* v)
 	endflist = v;
 	*(channel_t**)v = NULL;
 }
-
-//==========================================================================
-//
-//	S_ChannelMalloc
-//
-//==========================================================================
 
 static channel_t* S_ChannelMalloc()
 {
@@ -247,12 +206,6 @@ static channel_t* S_ChannelMalloc()
 	return v;
 }
 
-//==========================================================================
-//
-//	S_ChannelSetup
-//
-//==========================================================================
-
 static void S_ChannelSetup()
 {
 	channel_t* p, * q;
@@ -277,14 +230,7 @@ static void S_ChannelSetup()
 //	Registration of sounds
 //**************************************************************************
 
-//==========================================================================
-//
-//	S_HashSFXName
-//
 //	return a hash value for the sfx name
-//
-//==========================================================================
-
 static int S_HashSFXName(const char* Name)
 {
 	int Hash = 0;
@@ -307,14 +253,7 @@ static int S_HashSFXName(const char* Name)
 	return Hash;
 }
 
-//==========================================================================
-//
-//	S_FindName
-//
 //	Will allocate a new sfx if it isn't found
-//
-//==========================================================================
-
 sfx_t* S_FindName(const char* Name, bool Create)
 {
 	if (!Name)
@@ -399,12 +338,6 @@ sfx_t* S_FindName(const char* Name, bool Create)
 	return Sfx;
 }
 
-//==========================================================================
-//
-//	S_AliasName
-//
-//==========================================================================
-
 sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 {
 
@@ -473,12 +406,6 @@ static void S_DefaultSound(sfx_t* sfx)
 	sfx->LoopStart = -1;
 }
 
-//==========================================================================
-//
-//	S_BeginRegistration
-//
-//==========================================================================
-
 void S_BeginRegistration()
 {
 	if (GGameType & GAME_Quake2)
@@ -510,14 +437,7 @@ void S_BeginRegistration()
 	}
 }
 
-//==========================================================================
-//
-//	S_RegisterSound
-//
 //	Creates a default buzz sound if the file can't be loaded
-//
-//==========================================================================
-
 sfxHandle_t S_RegisterSound(const char* Name)
 {
 	if (!s_soundStarted)
@@ -558,12 +478,6 @@ sfxHandle_t S_RegisterSound(const char* Name)
 
 	return Sfx - s_knownSfx;
 }
-
-//==========================================================================
-//
-//	S_EndRegistration
-//
-//==========================================================================
 
 void S_EndRegistration()
 {
@@ -619,15 +533,8 @@ void S_EndRegistration()
 //	STREAMING SOUND
 //**************************************************************************
 
-//==========================================================================
-//
-//	S_ByteSwapRawSamples
-//
 //	If raw data has been loaded in little endien binary form, this must be done.
 //	If raw data was calculated, as with ADPCM, this should not be called.
-//
-//==========================================================================
-
 void S_ByteSwapRawSamples(int samples, int width, int s_channels, byte* data)
 {
 	int i;
@@ -651,14 +558,7 @@ void S_ByteSwapRawSamples(int samples, int width, int s_channels, byte* data)
 	}
 }
 
-//==========================================================================
-//
-//	S_RawSamples
-//
 //	Music and cinematic streaming
-//
-//==========================================================================
-
 void S_RawSamples(int samples, int rate, int width, int channels, const byte* data, float lvol, float rvol, int streamingIndex)
 {
 	int i;
@@ -687,7 +587,6 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 
 	scale = (float)rate / dma.speed;
 
-//common->Printf ("%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
 	if (channels == 2 && width == 2)
 	{
 		if (scale == 1.0)
@@ -774,12 +673,6 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 	}
 }
 
-//==========================================================================
-//
-//	FGetLittleLong
-//
-//==========================================================================
-
 static int FGetLittleLong(fileHandle_t f)
 {
 	int v;
@@ -788,12 +681,6 @@ static int FGetLittleLong(fileHandle_t f)
 
 	return LittleLong(v);
 }
-
-//==========================================================================
-//
-//	FGetLittleShort
-//
-//==========================================================================
 
 static int FGetLittleShort(fileHandle_t f)
 {
@@ -804,14 +691,7 @@ static int FGetLittleShort(fileHandle_t f)
 	return LittleShort(v);
 }
 
-//==========================================================================
-//
-//	FGetLittleShort
-//
 //	Returns the length of the data in the chunk, or 0 if not found
-//
-//==========================================================================
-
 static int S_FindWavChunk(fileHandle_t f, const char* Chunk)
 {
 	char Name[5];
@@ -998,12 +878,6 @@ float S_StartStreamingSound(const char* intro, const char* loop, int entnum, int
 
 	return (ss->samples / (float)ss->info.rate) * 1000.f;
 }
-
-//==========================================================================
-//
-//	S_StartBackgroundTrack
-//
-//==========================================================================
 
 void S_StartBackgroundTrack(const char* intro, const char* loop, int fadeupTime)
 {
@@ -1227,12 +1101,6 @@ void S_StopEntStreamingSound(int entNum)
 	}
 }
 
-//==========================================================================
-//
-//	S_StopBackgroundTrack
-//
-//==========================================================================
-
 void S_StopBackgroundTrack()
 {
 	S_StopStreamingSound(0);
@@ -1345,12 +1213,6 @@ static int S_CheckForQueuedMusic()
 
 	return 1;
 }
-
-//==========================================================================
-//
-//	S_UpdateStreamingSounds
-//
-//==========================================================================
 
 static void S_UpdateStreamingSounds()
 {
@@ -1579,12 +1441,6 @@ static void S_UpdateStreamingSounds()
 //	Commands
 //**************************************************************************
 
-//==========================================================================
-//
-//	S_SoundInfo_f
-//
-//==========================================================================
-
 static void S_SoundInfo_f()
 {
 	common->Printf("----- Sound Info -----\n");
@@ -1617,12 +1473,6 @@ static void S_SoundInfo_f()
 	common->Printf("----------------------\n");
 }
 
-//==========================================================================
-//
-//	S_Music_f
-//
-//==========================================================================
-
 static void S_Music_f()
 {
 	int c = Cmd_Argc();
@@ -1643,14 +1493,7 @@ static void S_Music_f()
 	}
 }
 
-//==========================================================================
-//
-//	S_UpdateEntityPosition
-//
 //	Let the sound system know where an entity currently is.
-//
-//==========================================================================
-
 void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
 {
 	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
@@ -1671,24 +1514,12 @@ void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
 	}
 }
 
-//==========================================================================
-//
-//	S_StopLoopingSound
-//
-//==========================================================================
-
 void S_StopLoopingSound(int EntityNum)
 {
 	loopSounds[EntityNum].active = false;
 //	loopSounds[EntityNum].sfx = NULL;
 	loopSounds[EntityNum].kill = false;
 }
-
-//==========================================================================
-//
-//	S_ClearLoopingSounds
-//
-//==========================================================================
 
 void S_ClearLoopingSounds(bool KillAll)
 {
@@ -1719,15 +1550,8 @@ void S_ClearLoopingSounds(bool KillAll)
 	}
 }
 
-//==========================================================================
-//
-//	S_AddLoopingSound
-//
 //	Called during entity generation for a frame
 //	Include velocity in case I get around to doing doppler...
-//
-//==========================================================================
-
 void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime)
 {
 	if (!s_soundStarted || s_soundMuted || cls.state != CA_ACTIVE)
@@ -1879,15 +1703,8 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 	loopSounds[index].framenum = cls.framecount;
 }
 
-//==========================================================================
-//
-//	S_AddRealLoopingSound
-//
 //	Called during entity generation for a frame
 //	Include velocity in case I get around to doing doppler...
-//
-//==========================================================================
-
 void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, const int range, sfxHandle_t sfxHandle, int volume, int soundTime)
 {
 	if (!s_soundStarted || s_soundMuted)
@@ -1976,12 +1793,6 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 	}
 }
 
-//==========================================================================
-//
-//	S_PickChannel
-//
-//==========================================================================
-
 static channel_t* S_PickChannel(int EntNum, int EntChannel)
 {
 	if ((GGameType & GAME_Quake2) && EntChannel < 0)
@@ -2037,14 +1848,7 @@ static channel_t* S_PickChannel(int EntNum, int EntChannel)
 	return Ch;
 }
 
-//==========================================================================
-//
-//	S_SpatializeOrigin
-//
 //	Used for spatializing channels.
-//
-//==========================================================================
-
 static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 	int* left_vol, int* right_vol, float range, int noAttenuation)
 {
@@ -2146,12 +1950,6 @@ static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult,
 		*left_vol = 0;
 	}
 }
-
-//==========================================================================
-//
-//	S_Spatialize
-//
-//==========================================================================
 
 static void S_Spatialize(channel_t* ch)
 {
@@ -2264,15 +2062,8 @@ void S_ClearSounds(bool clearStreaming, bool clearMusic)
 	}
 }
 
-//==========================================================================
-//
-//	S_ClearSoundBuffer
-//
 //	If we are about to perform file access, clear the buffer
 // so sound doesn't stutter.
-//
-//==========================================================================
-
 void S_ClearSoundBuffer(bool killStreaming)
 {
 	int clear;
@@ -2338,12 +2129,6 @@ void S_ClearSoundBuffer(bool killStreaming)
 	SNDDMA_Submit();
 }
 
-//==========================================================================
-//
-//	S_StopAllSounds
-//
-//==========================================================================
-
 void S_StopAllSounds()
 {
 	if (!s_soundStarted)
@@ -2394,12 +2179,6 @@ void S_StopAllSounds()
 	}
 }
 
-//==========================================================================
-//
-//	S_AllocPlaysound
-//
-//==========================================================================
-
 static playsound_t* S_AllocPlaysound()
 {
 	playsound_t* ps;
@@ -2416,12 +2195,6 @@ static playsound_t* S_AllocPlaysound()
 
 	return ps;
 }
-
-//==========================================================================
-//
-//	S_FreePlaysound
-//
-//==========================================================================
 
 static void S_FreePlaysound(playsound_t* ps)
 {
@@ -2657,16 +2430,68 @@ void S_StartSoundEx(const vec3_t origin, int entityNum, int entchannel, sfxHandl
 	S_ThreadStartSoundEx(origin, entityNum, entchannel, sfxHandle, flags, volume);
 }
 
-//==========================================================================
-//
-//	S_StartSound
-//
+static sfx_t* S_RegisterSexedSound(int entnum, char* base)
+{
+	int n;
+	char* p;
+	sfx_t* sfx;
+	fileHandle_t f;
+	char model[MAX_QPATH];
+	char sexedFilename[MAX_QPATH];
+	char maleFilename[MAX_QPATH];
+
+	// determine what model the client is using
+	model[0] = 0;
+	q2entity_state_t* ent = &clq2_entities[entnum].current;
+	n = Q2CS_PLAYERSKINS + ent->number - 1;
+	if (cl.q2_configstrings[n][0])
+	{
+		p = strchr(cl.q2_configstrings[n], '\\');
+		if (p)
+		{
+			p += 1;
+			String::Cpy(model, p);
+			p = strchr(model, '/');
+			if (p)
+			{
+				*p = 0;
+			}
+		}
+	}
+	// if we can't figure it out, they're male
+	if (!model[0])
+	{
+		String::Cpy(model, "male");
+	}
+
+	// see if we already know of the model specific sound
+	String::Sprintf(sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base + 1);
+	sfx = S_FindName(sexedFilename, false);
+
+	if (!sfx)
+	{
+		// no, so see if it exists
+		FS_FOpenFileRead(&sexedFilename[1], &f, false);
+		if (f)
+		{
+			// yes, close the file and register it
+			FS_FCloseFile(f);
+			sfx = s_knownSfx + S_RegisterSound(sexedFilename);
+		}
+		else
+		{
+			// no, revert to the male sound in the pak0.pak
+			String::Sprintf(maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base + 1);
+			sfx = S_AliasName(sexedFilename, maleFilename);
+		}
+	}
+
+	return sfx;
+}
+
 //	Validates the parms and ques the sound up
 //	if pos is NULL, the sound will be dynamically sourced from the entity
 //	Entchannel 0 will never override a playing sound
-//
-//==========================================================================
-
 void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHandle, float fvol, float attenuation, float timeofs)
 {
 	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
@@ -2804,16 +2629,16 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 		ps->sfx = sfx;
 
 		// drift s_beginofs
-		start = S_GetClFrameServertime() * 0.001 * dma.speed + s_beginofs;
+		start = cl.q2_frame.servertime * 0.001 * dma.speed + s_beginofs;
 		if (start < s_paintedtime)
 		{
 			start = s_paintedtime;
-			s_beginofs = start - (S_GetClFrameServertime() * 0.001 * dma.speed);
+			s_beginofs = start - (cl.q2_frame.servertime * 0.001 * dma.speed);
 		}
 		else if (start > s_paintedtime + 0.3 * dma.speed)
 		{
 			start = s_paintedtime + 0.1 * dma.speed;
-			s_beginofs = start - (S_GetClFrameServertime() * 0.001 * dma.speed);
+			s_beginofs = start - (cl.q2_frame.servertime * 0.001 * dma.speed);
 		}
 		else
 		{
@@ -2967,12 +2792,6 @@ void S_StartSound(const vec3_t origin, int entnum, int entchannel, sfxHandle_t s
 	}
 }
 
-//==========================================================================
-//
-//	S_StartLocalSound
-//
-//==========================================================================
-
 void S_StartLocalSound(const char* Sound)
 {
 	if (!s_soundStarted)
@@ -2992,26 +2811,13 @@ void S_StartLocalSound(const char* Sound)
 	}
 }
 
-//==========================================================================
-//
-//	S_StartLocalSound
-//
-//==========================================================================
-
 void S_StartLocalSound(sfxHandle_t sfxHandle, int channelNumber, int volume)
 {
 	S_StartSound(NULL, listener_number, channelNumber, sfxHandle, volume / 255.0);
 }
 
-//==========================================================================
-//
-//	S_IssuePlaysound
-//
 //	Take the next playsound and begin it on the channel
 // This is never called directly by S_Play*, but only by the update loop.
-//
-//==========================================================================
-
 void S_IssuePlaysound(playsound_t* ps)
 {
 	channel_t* ch;
@@ -3053,12 +2859,6 @@ void S_IssuePlaysound(playsound_t* ps)
 	S_FreePlaysound(ps);
 }
 
-//==========================================================================
-//
-//	S_StopSound
-//
-//==========================================================================
-
 void S_StopSound(int entnum, int entchannel)
 {
 	for (int i = 0; i < MAX_CHANNELS; i++)
@@ -3076,12 +2876,6 @@ void S_StopSound(int entnum, int entchannel)
 	}
 }
 
-//==========================================================================
-//
-//	S_UpdateSoundPos
-//
-//==========================================================================
-
 void S_UpdateSoundPos(int entnum, int entchannel, vec3_t origin)
 {
 	for (int i = 0; i < MAX_CHANNELS; i++)
@@ -3094,12 +2888,6 @@ void S_UpdateSoundPos(int entnum, int entchannel, vec3_t origin)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	S_StaticSound
-//
-//==========================================================================
 
 void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuation)
 {
@@ -3138,14 +2926,7 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 	ss->fixed_origin = true;
 }
 
-//==========================================================================
-//
-//	S_ScanChannelStarts
-//
 //	Returns true if any new sounds were started since the last mix
-//
-//==========================================================================
-
 static bool S_ScanChannelStarts()
 {
 	bool newSamples = false;
@@ -3176,12 +2957,6 @@ static bool S_ScanChannelStarts()
 
 	return newSamples;
 }
-
-//==========================================================================
-//
-//	S_UpdateAmbientSounds
-//
-//==========================================================================
 
 static void S_UpdateAmbientSounds()
 {
@@ -3285,15 +3060,8 @@ static void S_UpdateAmbientSounds()
 	}
 }
 
-//==========================================================================
-//
-//	S_AddLoopSounds
-//
 //	Spatialize all of the looping sounds. All sounds are on the same cycle,
 // so any duplicates can just sum up the channel multipliers.
-//
-//==========================================================================
-
 static void S_AddLoopSounds()
 {
 	int left_total, right_total, left, right;
@@ -3417,14 +3185,7 @@ static void S_AddLoopSounds()
 	}
 }
 
-//==========================================================================
-//
-//	S_Respatialize
-//
 //	Change the volumes of all the playing sounds for changes in their positions
-//
-//==========================================================================
-
 void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwater)
 {
 	if (!s_soundStarted || s_soundMuted)
@@ -3550,12 +3311,6 @@ void S_FadeAllSounds(float targetVol, int time, bool stopsounds)
 	}
 }
 
-//==========================================================================
-//
-//	GetSoundtime
-//
-//==========================================================================
-
 static void GetSoundtime()
 {
 	int samplepos;
@@ -3607,12 +3362,6 @@ static void GetSoundtime()
 #endif
 	}
 }
-
-//==========================================================================
-//
-//	S_Update_
-//
-//==========================================================================
 
 static void S_Update_()
 {
@@ -3785,14 +3534,7 @@ static void S_UpdateThread()
 	}
 }
 
-//==========================================================================
-//
-//	S_Update
-//
 //	Called once each time through the main loop
-//
-//==========================================================================
-
 void S_Update()
 {
 	if (!s_soundStarted || s_soundMuted)
@@ -3846,12 +3588,6 @@ void S_Update()
 	}
 }
 
-//==========================================================================
-//
-//	S_ExtraUpdate
-//
-//==========================================================================
-
 void S_ExtraUpdate()
 {
 	if (!s_soundStarted)
@@ -3868,12 +3604,6 @@ void S_ExtraUpdate()
 //**************************************************************************
 //	Console functions
 //**************************************************************************
-
-//==========================================================================
-//
-//	S_Play_f
-//
-//==========================================================================
 
 static void S_Play_f()
 {
@@ -3910,12 +3640,6 @@ static void S_Play_f()
 	}
 }
 
-//==========================================================================
-//
-//	S_PlayVol_f
-//
-//==========================================================================
-
 static void S_PlayVol_f()
 {
 	char name[256];
@@ -3951,12 +3675,6 @@ static void S_PlayVol_f()
 		i += 2;
 	}
 }
-
-//==========================================================================
-//
-//	S_SoundList_f
-//
-//==========================================================================
 
 static void S_SoundList_f()
 {
@@ -4033,12 +3751,6 @@ static void S_StreamingSound_f()
 		return;
 	}
 }
-
-//==========================================================================
-//
-//	S_Init
-//
-//==========================================================================
 
 void S_Init()
 {
@@ -4138,14 +3850,7 @@ void S_Init()
 	}
 }
 
-//==========================================================================
-//
-//	S_Shutdown
-//
 //	Shutdown sound engine
-//
-//==========================================================================
-
 void S_Shutdown()
 {
 	if (!s_soundStarted)
@@ -4187,15 +3892,8 @@ void S_Shutdown()
 	}
 }
 
-//==========================================================================
-//
-//	S_DisableSounds
-//
 //	Disables sounds until the next S_BeginRegistration.
 //	This is called when the hunk is cleared and the sounds are no longer valid.
-//
-//==========================================================================
-
 void S_DisableSounds()
 {
 	S_StopAllSounds();

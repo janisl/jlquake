@@ -15,8 +15,6 @@ set(WOLFMP_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 
-	client/snd_dma.cpp
-
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 	unix/linux_signals.cpp

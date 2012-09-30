@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include <limits.h>
 
-#include "../../client/sound/local.h"
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
 
@@ -77,17 +76,12 @@ Cvar* cl_demorecording;	// fretn
 Cvar* cl_demofilename;	// bani
 Cvar* cl_demooffset;	// bani
 
-Cvar* cl_waverecording;	//bani
-Cvar* cl_wavefilename;	//bani
-Cvar* cl_waveoffset;	//bani
-
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
 void CL_CheckForResend(void);
 void CL_ShowIP_f(void);
 
 // fretn
-void CL_WriteWaveClose(void);
 void CL_WavStopRecord_f(void);
 
 void CL_PurgeCache(void)
@@ -500,239 +494,6 @@ void CL_ReadDemoMessage(void)
 
 /*
 ====================
-
-  Wave file saving functions
-
-  FIXME: make this actually work
-
-====================
-*/
-
-/*
-==================
-CL_DemoFilename
-==================
-*/
-void CL_WavFilename(int number, char* fileName)
-{
-	if (number < 0 || number > 9999)
-	{
-		String::Sprintf(fileName, MAX_OSPATH, "wav9999");	// fretn - removed .tga
-		return;
-	}
-
-	String::Sprintf(fileName, MAX_OSPATH, "wav%04i", number);
-}
-
-typedef struct wav_hdr_s
-{
-	unsigned int ChunkID;		// big endian
-	unsigned int ChunkSize;		// little endian
-	unsigned int Format;		// big endian
-
-	unsigned int Subchunk1ID;	// big endian
-	unsigned int Subchunk1Size;	// little endian
-	unsigned short AudioFormat;	// little endian
-	unsigned short NumChannels;	// little endian
-	unsigned int SampleRate;	// little endian
-	unsigned int ByteRate;		// little endian
-	unsigned short BlockAlign;	// little endian
-	unsigned short BitsPerSample;	// little endian
-
-	unsigned int Subchunk2ID;	// big endian
-	unsigned int Subchunk2Size;		// little indian ;)
-
-	unsigned int NumSamples;
-} wav_hdr_t;
-
-wav_hdr_t hdr;
-
-static void CL_WriteWaveHeader(void)
-{
-	memset(&hdr, 0, sizeof(hdr));
-
-	hdr.ChunkID = 0x46464952;		// "RIFF"
-	hdr.ChunkSize = 0;			// total filesize - 8 bytes
-	hdr.Format = 0x45564157;		// "WAVE"
-
-	hdr.Subchunk1ID = 0x20746d66;		// "fmt "
-	hdr.Subchunk1Size = 16;			// 16 = pcm
-	hdr.AudioFormat = 1;			// 1 = linear quantization
-	hdr.NumChannels = 2;			// 2 = stereo
-
-	hdr.SampleRate = dma.speed;
-
-	hdr.BitsPerSample = 16;			// 16bits
-
-	// SampleRate * NumChannels * BitsPerSample/8
-	hdr.ByteRate = hdr.SampleRate * hdr.NumChannels * (hdr.BitsPerSample / 8);
-
-	// NumChannels * BitsPerSample/8
-	hdr.BlockAlign = hdr.NumChannels * (hdr.BitsPerSample / 8);
-
-	hdr.Subchunk2ID = 0x61746164;		// "data"
-
-	hdr.Subchunk2Size = 0;			// NumSamples * NumChannels * BitsPerSample/8
-
-	// ...
-	FS_Write(&hdr.ChunkID, 44, clc.wm_wavefile);
-}
-
-static char wavName[MAX_QPATH];		// compiler bug workaround
-void CL_WriteWaveOpen()
-{
-	// we will just save it as a 16bit stereo 22050kz pcm file
-
-	char name[MAX_OSPATH];
-	int len;
-	char* s;
-
-	if (Cmd_Argc() > 2)
-	{
-		common->Printf("wav_record <wavname>\n");
-		return;
-	}
-
-	if (clc.wm_waverecording)
-	{
-		common->Printf("Already recording a wav file\n");
-		return;
-	}
-
-	// yes ... no ? leave it up to them imo
-	//if (cl_avidemo.integer)
-	//	return;
-
-	if (Cmd_Argc() == 2)
-	{
-		s = Cmd_Argv(1);
-		String::NCpyZ(wavName, s, sizeof(wavName));
-		String::Sprintf(name, sizeof(name), "wav/%s.wav", wavName);
-	}
-	else
-	{
-		int number;
-
-		// I STOLE THIS
-		for (number = 0; number <= 9999; number++)
-		{
-			CL_WavFilename(number, wavName);
-			String::Sprintf(name, sizeof(name), "wav/%s.wav", wavName);
-
-			len = FS_FileExists(name);
-			if (len <= 0)
-			{
-				break;	// file doesn't exist
-			}
-		}
-	}
-
-	common->Printf("recording to %s.\n", name);
-	clc.wm_wavefile = FS_FOpenFileWrite(name);
-
-	if (!clc.wm_wavefile)
-	{
-		common->Printf("ERROR: couldn't open %s for writing.\n", name);
-		return;
-	}
-
-	CL_WriteWaveHeader();
-	clc.wm_wavetime = -1;
-
-	clc.wm_waverecording = true;
-
-	Cvar_Set("cl_waverecording", "1");
-	Cvar_Set("cl_wavefilename", wavName);
-	Cvar_Set("cl_waveoffset", "0");
-}
-
-void CL_WriteWaveClose()
-{
-	common->Printf("Stopped recording\n");
-
-	hdr.Subchunk2Size = hdr.NumSamples * hdr.NumChannels * (hdr.BitsPerSample / 8);
-	hdr.ChunkSize = 36 + hdr.Subchunk2Size;
-
-	FS_Seek(clc.wm_wavefile, 4, FS_SEEK_SET);
-	FS_Write(&hdr.ChunkSize, 4, clc.wm_wavefile);
-	FS_Seek(clc.wm_wavefile, 40, FS_SEEK_SET);
-	FS_Write(&hdr.Subchunk2Size, 4, clc.wm_wavefile);
-
-	// and we're outta here
-	FS_FCloseFile(clc.wm_wavefile);
-	clc.wm_wavefile = 0;
-}
-
-portable_samplepair_t wavbuffer[PAINTBUFFER_SIZE];
-
-void CL_WriteWaveFilePacket(int endtime)
-{
-	int total, i;
-
-	if (!clc.wm_waverecording || !clc.wm_wavefile)
-	{
-		return;
-	}
-
-	if (clc.wm_wavetime == -1)
-	{
-		clc.wm_wavetime = s_soundtime;
-
-		memcpy(wavbuffer, paintbuffer, sizeof(wavbuffer));
-		return;
-	}
-
-	if (s_soundtime <= clc.wm_wavetime)
-	{
-		return;
-	}
-
-	total = s_soundtime - clc.wm_wavetime;
-
-	if (total < 1)
-	{
-		return;
-	}
-
-	clc.wm_wavetime = s_soundtime;
-
-	for (i = 0; i < total; i++)
-	{
-		int parm;
-		short out;
-
-		parm = (wavbuffer[i].left) >> 8;
-		if (parm > 32767)
-		{
-			parm = 32767;
-		}
-		if (parm < -32768)
-		{
-			parm = -32768;
-		}
-		out = parm;
-		FS_Write(&out, 2, clc.wm_wavefile);
-
-		parm = (wavbuffer[i].right) >> 8;
-		if (parm > 32767)
-		{
-			parm = 32767;
-		}
-		if (parm < -32768)
-		{
-			parm = -32768;
-		}
-		out = parm;
-		FS_Write(&out, 2, clc.wm_wavefile);
-		hdr.NumSamples++;
-	}
-	memcpy(wavbuffer, paintbuffer, sizeof(wavbuffer));
-
-	Cvar_Set("cl_waveoffset", va("%d", FS_FTell(clc.wm_wavefile)));
-}
-
-/*
-====================
 CL_PlayDemo_f
 
 demo <demoname>
@@ -804,10 +565,6 @@ void CL_PlayDemo_f(void)
 	// don't get the first snapshot this frame, to prevent the long
 	// time from the gamestate load from messing causing a time skip
 	clc.q3_firstDemoFrameSkipped = false;
-//	if (clc.waverecording) {
-//		CL_WriteWaveClose();
-//		clc.waverecording = false;
-//	}
 }
 
 /*
@@ -2959,9 +2716,6 @@ void CL_Init(void)
 	cl_demorecording = Cvar_Get("cl_demorecording", "0", CVAR_ROM);
 	cl_demofilename = Cvar_Get("cl_demofilename", "", CVAR_ROM);
 	cl_demooffset = Cvar_Get("cl_demooffset", "0", CVAR_ROM);
-	cl_waverecording = Cvar_Get("cl_waverecording", "0", CVAR_ROM);
-	cl_wavefilename = Cvar_Get("cl_wavefilename", "", CVAR_ROM);
-	cl_waveoffset = Cvar_Get("cl_waveoffset", "0", CVAR_ROM);
 
 	//bani
 	cl_packetloss = Cvar_Get("cl_packetloss", "0", CVAR_CHEAT);
@@ -3067,6 +2821,9 @@ void CL_Init(void)
 
 	Cmd_AddCommand("wav_record", CL_WavRecord_f);
 	Cmd_AddCommand("wav_stoprecord", CL_WavStopRecord_f);
+	Cvar_Get("cl_waverecording", "0", CVAR_ROM);
+	Cvar_Get("cl_wavefilename", "", CVAR_ROM);
+	Cvar_Get("cl_waveoffset", "0", CVAR_ROM);
 
 	CL_InitRef();
 

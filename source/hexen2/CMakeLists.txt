@@ -13,7 +13,6 @@ add_executable(jlhexen2
 	r_part.cpp
 	view.cpp
 	sys_linux.cpp
-	snd_dma.cpp
 )
 set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhexen2 ${CLIENTS_LIBS})

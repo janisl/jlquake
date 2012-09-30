@@ -8,7 +8,6 @@ add_executable(jlquake2
 	client/cl_scrn.cpp
 	client/cl_view.cpp
 	client/keys.cpp
-	client/snd_dma.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	qcommon/net_chan.cpp

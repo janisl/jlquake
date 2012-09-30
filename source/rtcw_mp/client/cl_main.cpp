@@ -29,7 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../../client/sound/local.h"
 #include <limits.h>
 #include "../../server/server.h"
 #include "../../server/tech3/local.h"
@@ -443,69 +442,6 @@ void CL_ReadDemoMessage(void)
 
 /*
 ====================
-
-  Wave file saving functions
-
-====================
-*/
-
-void CL_WriteWaveOpen()
-{
-	// we will just save it as a 16bit stereo 22050kz pcm file
-	clc.wm_wavefile = FS_FOpenFileWrite("demodata.pcm");
-	clc.wm_wavetime = -1;
-}
-
-void CL_WriteWaveClose()
-{
-	// and we're outta here
-	FS_FCloseFile(clc.wm_wavefile);
-}
-
-
-void CL_WriteWaveFilePacket()
-{
-	int total, i;
-	if (clc.wm_wavetime == -1)
-	{
-		clc.wm_wavetime = s_soundtime;
-		return;
-	}
-
-	total = s_soundtime - clc.wm_wavetime;
-	clc.wm_wavetime = s_soundtime;
-
-	for (i = 0; i < total; i++)
-	{
-		int parm;
-		short out;
-		parm =  (paintbuffer[i].left) >> 8;
-		if (parm > 32767)
-		{
-			parm = 32767;
-		}
-		if (parm < -32768)
-		{
-			parm = -32768;
-		}
-		out = parm;
-		FS_Write(&out, 2, clc.wm_wavefile);
-		parm =  (paintbuffer[i].right) >> 8;
-		if (parm > 32767)
-		{
-			parm = 32767;
-		}
-		if (parm < -32768)
-		{
-			parm = -32768;
-		}
-		out = parm;
-		FS_Write(&out, 2, clc.wm_wavefile);
-	}
-}
-
-/*
-====================
 CL_PlayDemo_f
 
 demo <demoname>
@@ -557,31 +493,16 @@ void CL_PlayDemo_f(void)
 	cls.state = CA_CONNECTED;
 	clc.demoplaying = true;
 
-	if (Cvar_VariableValue("cl_wavefilerecord"))
-	{
-		CL_WriteWaveOpen();
-		clc.wm_waverecording = true;
-	}
-
 	String::NCpyZ(cls.servername, Cmd_Argv(1), sizeof(cls.servername));
 
 	// read demo messages until connected
 	while (cls.state >= CA_CONNECTED && cls.state < CA_PRIMED)
 	{
 		CL_ReadDemoMessage();
-		if (clc.wm_waverecording)
-		{
-			CL_WriteWaveFilePacket();
-		}
 	}
 	// don't get the first snapshot this frame, to prevent the long
 	// time from the gamestate load from messing causing a time skip
 	clc.q3_firstDemoFrameSkipped = false;
-	if (clc.wm_waverecording)
-	{
-		CL_WriteWaveClose();
-		clc.wm_waverecording = false;
-	}
 }
 
 /*

@@ -29,7 +29,6 @@ add_executable(jlqwcl
 	client/common.cpp
 	client/keys.cpp
 	client/net_chan.cpp
-	client/snd_dma.cpp
 	client/sys_linux.cpp
 	client/view.cpp
 )

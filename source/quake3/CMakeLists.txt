@@ -11,7 +11,6 @@ set(QUAKE3_FILES
 	client/cl_parse.cpp
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
-	client/snd_dma.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp

@@ -30,7 +30,6 @@ add_executable(jlhwcl
 	client/keys.cpp
 	client/net_chan.cpp
 	client/r_part.cpp
-	client/snd_dma.cpp
 	client/sys_linux.cpp
 	client/view.cpp
 )

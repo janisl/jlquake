@@ -84,6 +84,9 @@ int S_GetVoiceAmplitude(int entityNum);
 int S_GetSoundLength(sfxHandle_t sfxHandle);
 int S_GetCurrentSoundTime();
 
+void CL_WriteWaveOpen();
+void CL_WriteWaveClose();
+
 qboolean MIDI_Init();
 void MIDI_Cleanup();
 void MIDI_Play(char* Name);

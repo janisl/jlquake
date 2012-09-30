@@ -18,30 +18,12 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "local.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define TALK_FUTURE_SEC 0.25		// go this far into the future (seconds)
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 unsigned char s_entityTalkAmplitude[MAX_CLIENTS_WS];
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 extern "C"
@@ -51,14 +33,6 @@ int snd_linear_count;
 short* snd_out;
 }
 static int snd_vol;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	S_WriteLinearBlastStereo16
-//
-//==========================================================================
 
 #if id386 && defined _MSC_VER
 static __declspec(naked) void S_WriteLinearBlastStereo16()
@@ -143,12 +117,6 @@ static void S_WriteLinearBlastStereo16()
 }
 #endif
 
-//==========================================================================
-//
-//	S_TransferStereo16
-//
-//==========================================================================
-
 static void S_TransferStereo16(int endtime)
 {
 	snd_p = (int*)paintbuffer;
@@ -176,12 +144,6 @@ static void S_TransferStereo16(int endtime)
 		lpaintedtime += (snd_linear_count >> 1);
 	}
 }
-
-//==========================================================================
-//
-//	S_TransferPaintBuffer
-//
-//==========================================================================
 
 static void S_TransferPaintBuffer(int endtime)
 {
@@ -310,15 +272,226 @@ int S_GetVoiceAmplitude(int entityNum)
 
 //**************************************************************************
 //
-//	CHANNEL MIXING
+//	Wave file saving functions
 //
 //**************************************************************************
 
-//==========================================================================
+struct wav_hdr_t
+{
+	unsigned int ChunkID;		// big endian
+	unsigned int ChunkSize;		// little endian
+	unsigned int Format;		// big endian
+
+	unsigned int Subchunk1ID;	// big endian
+	unsigned int Subchunk1Size;	// little endian
+	unsigned short AudioFormat;	// little endian
+	unsigned short NumChannels;	// little endian
+	unsigned int SampleRate;	// little endian
+	unsigned int ByteRate;		// little endian
+	unsigned short BlockAlign;	// little endian
+	unsigned short BitsPerSample;	// little endian
+
+	unsigned int Subchunk2ID;	// big endian
+	unsigned int Subchunk2Size;		// little indian ;)
+
+	unsigned int NumSamples;
+};
+
+static wav_hdr_t hdr;
+
+static portable_samplepair_t wavbuffer[PAINTBUFFER_SIZE];
+
+static void CL_WavFilename(int number, char* fileName)
+{
+	if (number < 0 || number > 9999)
+	{
+		String::Sprintf(fileName, MAX_QPATH, "wav9999");	// fretn - removed .tga
+		return;
+	}
+
+	String::Sprintf(fileName, MAX_QPATH, "wav%04i", number);
+}
+
+static void CL_WriteWaveHeader()
+{
+	memset(&hdr, 0, sizeof(hdr));
+
+	hdr.ChunkID = 0x46464952;		// "RIFF"
+	hdr.ChunkSize = 0;			// total filesize - 8 bytes
+	hdr.Format = 0x45564157;		// "WAVE"
+
+	hdr.Subchunk1ID = 0x20746d66;		// "fmt "
+	hdr.Subchunk1Size = 16;			// 16 = pcm
+	hdr.AudioFormat = 1;			// 1 = linear quantization
+	hdr.NumChannels = 2;			// 2 = stereo
+
+	hdr.SampleRate = dma.speed;
+
+	hdr.BitsPerSample = 16;			// 16bits
+
+	// SampleRate * NumChannels * BitsPerSample/8
+	hdr.ByteRate = hdr.SampleRate * hdr.NumChannels * (hdr.BitsPerSample / 8);
+
+	// NumChannels * BitsPerSample/8
+	hdr.BlockAlign = hdr.NumChannels * (hdr.BitsPerSample / 8);
+
+	hdr.Subchunk2ID = 0x61746164;		// "data"
+
+	hdr.Subchunk2Size = 0;			// NumSamples * NumChannels * BitsPerSample/8
+
+	// ...
+	FS_Write(&hdr.ChunkID, 44, clc.wm_wavefile);
+}
+
+void CL_WriteWaveOpen()
+{
+	if (Cmd_Argc() > 2)
+	{
+		common->Printf("wav_record <wavname>\n");
+		return;
+	}
+
+	if (clc.wm_waverecording)
+	{
+		common->Printf("Already recording a wav file\n");
+		return;
+	}
+
+	char wavName[MAX_QPATH];
+	char name[MAX_QPATH];
+	if (Cmd_Argc() == 2)
+	{
+		const char* s = Cmd_Argv(1);
+		String::NCpyZ(wavName, s, sizeof(wavName));
+		String::Sprintf(name, sizeof(name), "wav/%s.wav", wavName);
+	}
+	else
+	{
+		for (int number = 0; number <= 9999; number++)
+		{
+			char wavName[MAX_QPATH];
+			CL_WavFilename(number, wavName);
+			String::Sprintf(name, sizeof(name), "wav/%s.wav", wavName);
+
+			int len = FS_FileExists(name);
+			if (len <= 0)
+			{
+				break;	// file doesn't exist
+			}
+		}
+	}
+
+	common->Printf("recording to %s.\n", name);
+	clc.wm_wavefile = FS_FOpenFileWrite(name);
+
+	if (!clc.wm_wavefile)
+	{
+		common->Printf("ERROR: couldn't open %s for writing.\n", name);
+		return;
+	}
+
+	CL_WriteWaveHeader();
+	clc.wm_wavetime = -1;
+
+	clc.wm_waverecording = true;
+
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Set("cl_waverecording", "1");
+		Cvar_Set("cl_wavefilename", wavName);
+		Cvar_Set("cl_waveoffset", "0");
+	}
+}
+
+void CL_WriteWaveClose()
+{
+	common->Printf("Stopped recording\n");
+
+	hdr.Subchunk2Size = hdr.NumSamples * hdr.NumChannels * (hdr.BitsPerSample / 8);
+	hdr.ChunkSize = 36 + hdr.Subchunk2Size;
+
+	FS_Seek(clc.wm_wavefile, 4, FS_SEEK_SET);
+	FS_Write(&hdr.ChunkSize, 4, clc.wm_wavefile);
+	FS_Seek(clc.wm_wavefile, 40, FS_SEEK_SET);
+	FS_Write(&hdr.Subchunk2Size, 4, clc.wm_wavefile);
+
+	// and we're outta here
+	FS_FCloseFile(clc.wm_wavefile);
+	clc.wm_wavefile = 0;
+}
+
+void CL_WriteWaveFilePacket(int endtime)
+{
+	if (!clc.wm_waverecording || !clc.wm_wavefile)
+	{
+		return;
+	}
+
+	if (clc.wm_wavetime == -1)
+	{
+		clc.wm_wavetime = s_soundtime;
+
+		memcpy(wavbuffer, paintbuffer, sizeof(wavbuffer));
+		return;
+	}
+
+	if (s_soundtime <= clc.wm_wavetime)
+	{
+		return;
+	}
+
+	int total = s_soundtime - clc.wm_wavetime;
+
+	if (total < 1)
+	{
+		return;
+	}
+
+	clc.wm_wavetime = s_soundtime;
+
+	for (int i = 0; i < total; i++)
+	{
+		int parm;
+		short out;
+
+		parm = (wavbuffer[i].left) >> 8;
+		if (parm > 32767)
+		{
+			parm = 32767;
+		}
+		if (parm < -32768)
+		{
+			parm = -32768;
+		}
+		out = parm;
+		FS_Write(&out, 2, clc.wm_wavefile);
+
+		parm = (wavbuffer[i].right) >> 8;
+		if (parm > 32767)
+		{
+			parm = 32767;
+		}
+		if (parm < -32768)
+		{
+			parm = -32768;
+		}
+		out = parm;
+		FS_Write(&out, 2, clc.wm_wavefile);
+		hdr.NumSamples++;
+	}
+	memcpy(wavbuffer, paintbuffer, sizeof(wavbuffer));
+
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Set("cl_waveoffset", va("%d", FS_FTell(clc.wm_wavefile)));
+	}
+}
+
+//**************************************************************************
 //
-//	S_PaintChannelFrom16
+//	CHANNEL MIXING
 //
-//==========================================================================
+//**************************************************************************
 
 static void S_PaintChannelFrom16(channel_t* ch, const sfx_t* sc, int count,
 	int sampleOffset, int bufferOffset)
@@ -364,12 +537,6 @@ static void S_PaintChannelFrom16(channel_t* ch, const sfx_t* sc, int count,
 	}
 }
 
-//==========================================================================
-//
-//	S_PaintChannels
-//
-//==========================================================================
-
 void S_PaintChannels(int endtime)
 {
 	int i, si;
@@ -396,7 +563,6 @@ void S_PaintChannels(int endtime)
 		snd_vol = (int)((float)snd_vol * s_volCurrent);
 	}
 
-//common->Printf ("%i to %i\n", s_paintedtime, endtime);
 	while (s_paintedtime < endtime)
 	{
 		// if paintbuffer is smaller than DMA buffer
