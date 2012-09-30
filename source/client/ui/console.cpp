@@ -336,7 +336,7 @@ static void Con_DrawBackground(float frac, int lines)
 			if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && frac >= 0.5f)
 			{
 				// draw the logo
-				SCR_DrawPic(192, 70, 256, 128, cls.consoleShader2);
+				SCR_DrawPic((viddef.width - 256) / 2, 70, 256, 128, cls.consoleShader2);
 			}
 		}
 

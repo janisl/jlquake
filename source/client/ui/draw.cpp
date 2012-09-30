@@ -308,14 +308,6 @@ void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
 	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 
-void SCR_DrawNamedPic(float x, float y, float width, float height, const char* picname)
-{
-	qassert(width != 0);
-	qhandle_t hShader = R_RegisterShader(picname);
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
-}
-
 static void SCR_DrawChar(int x, int y, float size, int ch)
 {
 	ch &= 255;

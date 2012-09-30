@@ -58,7 +58,6 @@ void UI_DrawSmallString(int x, int y, const char* str);
 
 void SCR_FillRect(float x, float y, float width, float height, const float* color);
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader);
-void SCR_DrawNamedPic(float x, float y, float width, float height, const char* picname);
 void SCR_DrawSmallChar(int x, int y, int ch);
 void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setColor, bool forceColor);
 void SCR_DrawBigString(int x, int y, const char* s, float alpha);		// draws a string with embedded color control characters with fade
