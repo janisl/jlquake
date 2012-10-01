@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // view.c -- player eye positioning
 
 #include "quakedef.h"
+#include "../../client/game/quake_hexen2/view.h"
+#include "../../client/game/hexen2/local.h"
 
 /*
 
@@ -30,23 +32,6 @@ when crossing a water boudnary.
 
 */
 
-static Cvar* cl_bob;
-static Cvar* cl_bobcycle;
-static Cvar* cl_bobup;
-
-static Cvar* v_kicktime;
-static Cvar* v_kickroll;
-static Cvar* v_kickpitch;
-
-static Cvar* v_iyaw_cycle;
-static Cvar* v_iroll_cycle;
-static Cvar* v_ipitch_cycle;
-static Cvar* v_iyaw_level;
-static Cvar* v_iroll_level;
-static Cvar* v_ipitch_level;
-
-static Cvar* v_idlescale;
-
 Cvar* crosshaircolor;
 
 Cvar* cl_crossx;
@@ -56,15 +41,8 @@ static Cvar* gl_cshiftpercent;
 
 static Cvar* v_contentblend;
 
-static Cvar* r_drawviewmodel;
-
-static Cvar* v_centermove;
-
 static Cvar* cl_polyblend;
 
-static float v_dmg_time, v_dmg_roll, v_dmg_pitch;
-
-qwframe_t* view_frame;
 static qwplayer_state_t* view_message;
 
 static cshift_t cshift_empty = { {130,80,50}, 0 };
@@ -73,140 +51,6 @@ static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
 
 static float v_blend[4];			// rgba 0.0 - 1.0
-
-/*
-===============
-V_CalcBob
-
-===============
-*/
-static float V_CalcBob(void)
-{
-	static double bobtime;
-	static float bob;
-	float cycle;
-
-	if (cl.qh_spectator)
-	{
-		return 0;
-	}
-
-	if (qh_pmove.onground == -1)
-	{
-		return bob;		// just use old value
-
-	}
-	bobtime += host_frametime;
-	cycle = bobtime - (int)(bobtime / cl_bobcycle->value) * cl_bobcycle->value;
-	cycle /= cl_bobcycle->value;
-	if (cycle < cl_bobup->value)
-	{
-		cycle = M_PI * cycle / cl_bobup->value;
-	}
-	else
-	{
-		cycle = M_PI + M_PI * (cycle - cl_bobup->value) / (1.0 - cl_bobup->value);
-	}
-
-// bob is proportional to simulated velocity in the xy plane
-// (don't count Z, or jumping messes it up)
-
-	bob = sqrt(cl.qh_simvel[0] * cl.qh_simvel[0] + cl.qh_simvel[1] * cl.qh_simvel[1]) * cl_bob->value;
-	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
-	if (bob > 4)
-	{
-		bob = 4;
-	}
-	else if (bob < -7)
-	{
-		bob = -7;
-	}
-	return bob;
-
-}
-
-
-//=============================================================================
-
-/*
-===============
-V_DriftPitch
-
-Moves the client pitch angle towards cl.idealpitch sent by the server.
-
-If the user is adjusting pitch manually, either with lookup/lookdown,
-mlook and mouse, or klook and keyboard, pitch drifting is constantly stopped.
-
-Drifting is enabled when the center view key is hit, mlook is released and
-lookspring is non 0, or when
-===============
-*/
-static void V_DriftPitch(void)
-{
-	float delta, move;
-
-	if (view_message->onground == -1 || clc.demoplaying)
-	{
-		cl.qh_driftmove = 0;
-		cl.qh_pitchvel = 0;
-		return;
-	}
-
-// don't count small mouse motion
-	if (cl.qh_nodrift)
-	{
-		if (abs(cl.qw_frames[(clc.netchan.outgoingSequence - 1) & UPDATE_MASK_QW].cmd.forwardmove) < 200)
-		{
-			cl.qh_driftmove = 0;
-		}
-		else
-		{
-			cl.qh_driftmove += host_frametime;
-		}
-
-		if (cl.qh_driftmove > v_centermove->value)
-		{
-			CLQH_StartPitchDrift();
-		}
-		return;
-	}
-
-	delta = 0 - cl.viewangles[PITCH];
-
-	if (!delta)
-	{
-		cl.qh_pitchvel = 0;
-		return;
-	}
-
-	move = host_frametime * cl.qh_pitchvel;
-	cl.qh_pitchvel += host_frametime * v_centerspeed->value;
-
-//common->Printf ("move: %f (%f)\n", move, host_frametime);
-
-	if (delta > 0)
-	{
-		if (move > delta)
-		{
-			cl.qh_pitchvel = 0;
-			move = delta;
-		}
-		cl.viewangles[PITCH] += move;
-	}
-	else if (delta < 0)
-	{
-		if (move > -delta)
-		{
-			cl.qh_pitchvel = 0;
-			move = -delta;
-		}
-		cl.viewangles[PITCH] -= move;
-	}
-}
-
-
-
-
 
 /*
 ==============================================================================
@@ -282,12 +126,12 @@ void V_ParseDamage(void)
 	AngleVectors(cl.qh_simangles, forward, right, up);
 
 	side = DotProduct(from, right);
-	v_dmg_roll = count * side * v_kickroll->value;
+	v_dmg_roll = count * side * vqh_kickroll->value;
 
 	side = DotProduct(from, forward);
-	v_dmg_pitch = count * side * v_kickpitch->value;
+	v_dmg_pitch = count * side * vqh_kickpitch->value;
 
-	v_dmg_time = v_kicktime->value;
+	v_dmg_time = vqh_kicktime->value;
 }
 
 
@@ -505,221 +349,6 @@ void V_UpdatePalette(void)
 */
 
 /*
-==================
-CalcGunAngle
-==================
-*/
-static void CalcGunAngle(vec3_t viewangles)
-{
-	cl.q1_viewent.state.angles[YAW] = viewangles[YAW];
-	cl.q1_viewent.state.angles[PITCH] = -viewangles[PITCH];
-}
-
-/*
-==============
-V_AddIdle
-
-Idle swaying
-==============
-*/
-static void V_AddIdle(vec3_t viewangles)
-{
-	viewangles[ROLL] += v_idlescale->value * sin(cl.qh_serverTimeFloat * v_iroll_cycle->value) * v_iroll_level->value;
-	viewangles[PITCH] += v_idlescale->value * sin(cl.qh_serverTimeFloat * v_ipitch_cycle->value) * v_ipitch_level->value;
-	viewangles[YAW] += v_idlescale->value * sin(cl.qh_serverTimeFloat * v_iyaw_cycle->value) * v_iyaw_level->value;
-
-	cl.q1_viewent.state.angles[ROLL] -= v_idlescale->value * sin(cl.qh_serverTimeFloat * v_iroll_cycle->value) * v_iroll_level->value;
-	cl.q1_viewent.state.angles[PITCH] -= v_idlescale->value * sin(cl.qh_serverTimeFloat * v_ipitch_cycle->value) * v_ipitch_level->value;
-	cl.q1_viewent.state.angles[YAW] -= v_idlescale->value * sin(cl.qh_serverTimeFloat * v_iyaw_cycle->value) * v_iyaw_level->value;
-}
-
-
-/*
-==============
-V_CalcViewRoll
-
-Roll is induced by movement and damage
-==============
-*/
-static void V_CalcViewRoll(vec3_t viewangles)
-{
-	float side;
-
-	side = VQH_CalcRoll(cl.qh_simangles, cl.qh_simvel);
-	viewangles[ROLL] += side;
-
-	if (v_dmg_time > 0)
-	{
-		viewangles[ROLL] += v_dmg_time / v_kicktime->value * v_dmg_roll;
-		viewangles[PITCH] += v_dmg_time / v_kicktime->value * v_dmg_pitch;
-		v_dmg_time -= host_frametime;
-	}
-
-}
-
-
-/*
-==================
-V_CalcIntermissionRefdef
-
-==================
-*/
-static void V_CalcIntermissionRefdef(void)
-{
-	q1entity_t* view;
-	float old;
-
-// view is the weapon model
-	view = &cl.q1_viewent;
-
-	VectorCopy(cl.qh_simorg, cl.refdef.vieworg);
-	vec3_t viewangles;
-	VectorCopy(cl.qh_simangles, viewangles);
-	view->state.modelindex = 0;
-
-// allways idle in intermission
-	old = v_idlescale->value;
-	v_idlescale->value = 1;
-	V_AddIdle(viewangles);
-	AnglesToAxis(viewangles, cl.refdef.viewaxis);
-	v_idlescale->value = old;
-}
-
-/*
-==================
-V_CalcRefdef
-
-==================
-*/
-static void V_CalcRefdef(void)
-{
-	q1entity_t* view;
-	int i;
-	vec3_t forward, right, up;
-	float bob;
-	static float oldz = 0;
-
-	V_DriftPitch();
-
-// view is the weapon model (only visible from inside body)
-	view = &cl.q1_viewent;
-
-	bob = V_CalcBob();
-
-// refresh position from simulated origin
-	VectorCopy(cl.qh_simorg, cl.refdef.vieworg);
-
-	cl.refdef.vieworg[2] += bob;
-
-// never let it sit exactly on a node line, because a water plane can
-// dissapear when viewed with the eye exactly on it.
-// the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
-	cl.refdef.vieworg[0] += 1.0 / 16;
-	cl.refdef.vieworg[1] += 1.0 / 16;
-	cl.refdef.vieworg[2] += 1.0 / 16;
-
-	vec3_t viewangles;
-	VectorCopy(cl.qh_simangles, viewangles);
-	V_CalcViewRoll(viewangles);
-	V_AddIdle(viewangles);
-
-	if (view_message->flags & QWPF_GIB)
-	{
-		cl.refdef.vieworg[2] += 8;	// gib view height
-	}
-	else if (view_message->flags & QWPF_DEAD)
-	{
-		cl.refdef.vieworg[2] -= 16;	// corpse view height
-	}
-	else
-	{
-		cl.refdef.vieworg[2] += 22;	// view height
-
-	}
-	if (view_message->flags & QWPF_DEAD)		// QWPF_GIB will also set QWPF_DEAD
-	{
-		viewangles[ROLL] = 80;	// dead view angle
-
-
-	}
-// offsets
-	AngleVectors(cl.qh_simangles, forward, right, up);
-
-// set up gun position
-	VectorCopy(cl.qh_simangles, view->state.angles);
-
-	CalcGunAngle(viewangles);
-
-	VectorCopy(cl.qh_simorg, view->state.origin);
-	view->state.origin[2] += 22;
-
-	for (i = 0; i < 3; i++)
-	{
-		view->state.origin[i] += forward[i] * bob * 0.4;
-//		view->origin[i] += right[i]*bob*0.4;
-//		view->origin[i] += up[i]*bob*0.8;
-	}
-	view->state.origin[2] += bob;
-
-// fudge position around to keep amount of weapon visible
-// roughly equal with different FOV
-	if (scr_viewsize->value == 110)
-	{
-		view->state.origin[2] += 1;
-	}
-	else if (scr_viewsize->value == 100)
-	{
-		view->state.origin[2] += 2;
-	}
-	else if (scr_viewsize->value == 90)
-	{
-		view->state.origin[2] += 1;
-	}
-	else if (scr_viewsize->value == 80)
-	{
-		view->state.origin[2] += 0.5;
-	}
-
-	if (view_message->flags & (QWPF_GIB | QWPF_DEAD))
-	{
-		view->state.modelindex = 0;
-	}
-	else
-	{
-		view->state.modelindex = cl.qh_stats[Q1STAT_WEAPON];
-	}
-	view->state.frame = view_message->weaponframe;
-
-// set up the refresh position
-	viewangles[PITCH] += cl.qh_punchangle;
-	AnglesToAxis(viewangles, cl.refdef.viewaxis);
-
-// smooth out stair step ups
-	if ((view_message->onground != -1) && (cl.qh_simorg[2] - oldz > 0))
-	{
-		float steptime;
-
-		steptime = host_frametime;
-
-		oldz += steptime * 80;
-		if (oldz > cl.qh_simorg[2])
-		{
-			oldz = cl.qh_simorg[2];
-		}
-		if (cl.qh_simorg[2] - oldz > 12)
-		{
-			oldz = cl.qh_simorg[2] - 12;
-		}
-		cl.refdef.vieworg[2] += oldz - cl.qh_simorg[2];
-		view->state.origin[2] += oldz - cl.qh_simorg[2];
-	}
-	else
-	{
-		oldz = cl.qh_simorg[2];
-	}
-}
-
-/*
 =============
 DropPunchAngle
 =============
@@ -731,53 +360,6 @@ void DropPunchAngle(void)
 	{
 		cl.qh_punchangle = 0;
 	}
-}
-
-/*
-=============
-CL_AddViewModel
-=============
-*/
-static void CL_AddViewModel()
-{
-	if (!r_drawviewmodel->value)
-	{
-		return;
-	}
-
-	if (!Cam_DrawViewModel())
-	{
-		return;
-	}
-
-	if (cl.qh_stats[QWSTAT_ITEMS] & Q1IT_INVISIBILITY)
-	{
-		return;
-	}
-
-	if (cl.qh_stats[Q1STAT_HEALTH] <= 0)
-	{
-		return;
-	}
-
-	if (!cl.q1_viewent.state.modelindex)
-	{
-		return;
-	}
-
-	refEntity_t gun;
-
-	Com_Memset(&gun, 0, sizeof(gun));
-	gun.reType = RT_MODEL;
-	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(cl.q1_viewent.state.origin, gun.origin);
-	gun.hModel = cl.model_draw[cl.q1_viewent.state.modelindex];
-	CLQ1_SetRefEntAxis(&gun, cl.q1_viewent.state.angles);
-	gun.frame = cl.q1_viewent.state.frame;
-	gun.skinNum = cl.q1_viewent.state.skinnum;
-	gun.syncBase = cl.q1_viewent.syncbase;
-
-	R_AddRefEntityToScene(&gun);
 }
 
 /*
@@ -812,7 +394,7 @@ void V_RenderScene()
 
 	CLQW_EmitEntities();
 
-	CL_AddViewModel();
+	VQH_AddViewModel();
 
 	CL_AddDLights();
 
@@ -861,17 +443,17 @@ void V_RenderView(void)
 		Cvar_Set("r_wateralpha", "1");
 	}
 
-	view_frame = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
+	qwframe_t* view_frame = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
 	view_message = &view_frame->playerstate[cl.playernum];
 
 	DropPunchAngle();
 	if (cl.qh_intermission)
 	{	// intermission / finale rendering
-		V_CalcIntermissionRefdef();
+		VQH_CalcIntermissionRefdef();
 	}
 	else
 	{
-		V_CalcRefdef();
+		VQH_CalcRefdef(view_message, NULL);
 	}
 	V_RenderScene();
 }
@@ -885,37 +467,18 @@ V_Init
 */
 void V_Init(void)
 {
+	VQH_SharedInit();
+
 	Cmd_AddCommand("v_cshift", V_cshift_f);
 	Cmd_AddCommand("bf", V_BonusFlash_f);
 
-	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
-
-	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);
-	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5", 0);
-	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1", 0);
-	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3", 0);
-	v_iroll_level = Cvar_Get("v_iroll_level", "0.1", 0);
-	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3", 0);
-
 	v_contentblend = Cvar_Get("v_contentblend", "1", 0);
 
-	v_idlescale = Cvar_Get("v_idlescale", "0", 0);
 	crosshaircolor = Cvar_Get("crosshaircolor", "79", CVAR_ARCHIVE);
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
 	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
 	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
-
-	VQH_InitRollCvars();
-	cl_bob = Cvar_Get("cl_bob","0.02", 0);
-	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
-	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);
-
-	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
-	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
-	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
-
-	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 
 	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
 }

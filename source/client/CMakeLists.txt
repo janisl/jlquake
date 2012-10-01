@@ -31,6 +31,7 @@ set(CLIENT_FILES
 	game/quake_hexen2/menu.cpp
 	game/quake_hexen2/network_channel.cpp
 	game/quake_hexen2/predict.cpp
+	game/quake_hexen2/view.cpp
 	game/quake2/beam.cpp
 	game/quake2/effects.cpp
 	game/quake2/explosion.cpp
