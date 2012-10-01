@@ -38,8 +38,6 @@ enum
 	WMUIMENU_WM_AUTOUPDATE		// NERVE - DHM
 };
 
-#define WMUI_API_VERSION  4
-
 enum
 {
 	WMUI_ERROR,

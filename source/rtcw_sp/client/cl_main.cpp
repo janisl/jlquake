@@ -2169,7 +2169,7 @@ void CL_StartHunkUsers(void)
 	if (!cls.q3_uiStarted)
 	{
 		cls.q3_uiStarted = true;
-		CL_InitUI();
+		CLT3_InitUI();
 	}
 }
 
@@ -2284,6 +2284,7 @@ void CL_Init(void)
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
 
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
+	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
 	cl_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
@@ -2471,82 +2472,6 @@ CL_ShowIP_f
 void CL_ShowIP_f(void)
 {
 	SOCK_ShowIP();
-}
-
-// NERVE - SMF
-/*
-=======================
-CL_AddToLimboChat
-
-=======================
-*/
-void CL_AddToLimboChat(const char* str)
-{
-	int len;
-	char* p, * ls;
-	int lastcolor;
-	int chatHeight;
-	int i;
-
-	chatHeight = LIMBOCHAT_HEIGHT_WA;
-	cl.wa_limboChatPos = LIMBOCHAT_HEIGHT_WA - 1;
-	len = 0;
-
-	// copy old strings
-	for (i = cl.wa_limboChatPos; i > 0; i--)
-	{
-		String::Cpy(cl.wa_limboChatMsgs[i], cl.wa_limboChatMsgs[i - 1]);
-	}
-
-	// copy new string
-	p = cl.wa_limboChatMsgs[0];
-	*p = 0;
-
-	lastcolor = '7';
-
-	ls = NULL;
-	while (*str)
-	{
-		if (len > LIMBOCHAT_WIDTH_WA - 1)
-		{
-#if 0
-			if (ls)
-			{
-				str -= (p - ls);
-				str++;
-				p -= (p - ls);
-			}
-			*p = 0;
-
-			if (cl.limboChatPos < LIMBOCHAT_HEIGHT_WA - 1)
-			{
-				cl.limboChatPos++;
-			}
-			p = cl.wa_limboChatMsgs[cl.limboChatPos];
-			*p = 0;
-			*p++ = Q_COLOR_ESCAPE;
-			*p++ = lastcolor;
-			len = 0;
-			ls = NULL;
-#endif
-			break;
-		}
-
-		if (Q_IsColorString(str))
-		{
-			*p++ = *str++;
-			lastcolor = *str;
-			*p++ = *str++;
-			continue;
-		}
-		if (*str == ' ')
-		{
-			ls = p;
-		}
-		*p++ = *str++;
-		len++;
-	}
-	*p = 0;
 }
 
 float* CL_GetSimOrg()

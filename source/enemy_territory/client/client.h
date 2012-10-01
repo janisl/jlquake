@@ -46,7 +46,6 @@ extern Cvar* cl_packetdup;
 extern Cvar* cl_shownuments;				// DHM - Nerve
 extern Cvar* cl_visibleClients;				// DHM - Nerve
 extern Cvar* cl_showSend;
-extern Cvar* cl_showServerCommands;			// NERVE - SMF
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_showTimeDelta;
 extern Cvar* cl_freezeDemo;
@@ -89,8 +88,6 @@ void CL_NextDownload(void);
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
-void CL_AddToLimboChat(const char* str);					// NERVE - SMF
-
 void CL_Record(const char* name);
 
 //
@@ -115,7 +112,6 @@ void CL_VerifyCode(void);
 //
 extern int cl_connectedToPureServer;
 
-void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
@@ -135,12 +131,6 @@ void CL_InitCGame(void);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);
-
-//
-// cl_ui.c
-//
-void CL_InitUI(void);
-
 
 //
 // cl_net_chan.c

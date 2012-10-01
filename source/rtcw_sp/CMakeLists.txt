@@ -13,7 +13,6 @@ set(WOLFSP_FILES
 	client/cl_net_chan.cpp
 	client/cl_parse.cpp
 	client/cl_scrn.cpp
-	client/cl_ui.cpp
 
 	qcommon/common.cpp
 	qcommon/files.cpp

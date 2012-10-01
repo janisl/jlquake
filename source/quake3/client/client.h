@@ -86,7 +86,6 @@ void CL_WritePacket(void);
 
 void CL_VerifyCode(void);
 
-void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
@@ -104,11 +103,6 @@ void CL_InitCGame(void);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);
-
-//
-// cl_ui.c
-//
-void CL_InitUI(void);
 
 
 //

@@ -203,6 +203,7 @@ static void CLQ3_SetUserCmdValue(int userCmdValue, float sensitivityScale)
 	cl.q3_cgameSensitivity = sensitivityScale;
 }
 
+//	The cgame module is making a system call
 qintptr CLQ3_CgameSystemCalls(qintptr* args)
 {
 	switch (args[0])
@@ -260,7 +261,9 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-//---------
+	case Q3CG_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 	case Q3CG_CM_LOADMAP:
 		CLT3_CM_LoadMap((char*)VMA(1));
 		return 0;
@@ -377,7 +380,8 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 		return 0;
 	case Q3CG_GETSNAPSHOT:
 		return CLQ3_GetSnapshot(args[1], (q3snapshot_t*)VMA(2));
-//---------
+	case Q3CG_GETSERVERCOMMAND:
+		return CLT3_GetServerCommand(args[1]);
 	case Q3CG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
 	case Q3CG_GETUSERCMD:

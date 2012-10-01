@@ -42,6 +42,10 @@ enum
 	UIMENU_NEED_CD
 };
 
+#define Q3UI_OLD_API_VERSION  4
+#define Q3UI_API_VERSION      6
+#define WOLFUI_API_VERSION    4
+
 enum
 {
 	UI_GETAPIVERSION = 0,	// system reserved

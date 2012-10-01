@@ -87,6 +87,7 @@ public:
 	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
 };
 
 static idCommonLocal commonLocal;
@@ -150,6 +151,18 @@ void idCommonLocal::EndGame(const char* format, ...)
 	va_end(argPtr);
 
 	throw EndGameException(string);
+}
+
+void idCommonLocal::ServerDisconnected(const char* format, ...)
+{
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	Com_Error(ERR_SERVERDISCONNECT, "%s", string);
 }
 
 //============================================================================

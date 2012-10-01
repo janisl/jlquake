@@ -52,7 +52,6 @@ Cvar* cl_freezeDemo;
 Cvar* cl_shownuments;			// DHM - Nerve
 Cvar* cl_visibleClients;		// DHM - Nerve
 Cvar* cl_showSend;
-Cvar* cl_showServerCommands;	// NERVE - SMF
 Cvar* cl_timedemo;
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
@@ -83,38 +82,6 @@ void CL_ShowIP_f(void);
 
 // fretn
 void CL_WavStopRecord_f(void);
-
-void CL_PurgeCache(void)
-{
-	cls.et_doCachePurge = true;
-}
-
-void CL_DoPurgeCache(void)
-{
-	if (!cls.et_doCachePurge)
-	{
-		return;
-	}
-
-	cls.et_doCachePurge = false;
-
-	if (!com_cl_running)
-	{
-		return;
-	}
-
-	if (!com_cl_running->integer)
-	{
-		return;
-	}
-
-	if (!cls.q3_rendererStarted)
-	{
-		return;
-	}
-
-	R_PurgeCache();
-}
 
 /*
 =======================================================================
@@ -616,7 +583,7 @@ void CL_ShutdownAll(void)
 	// shutdown the renderer
 	R_Shutdown(false);			// don't destroy window or context
 
-	CL_DoPurgeCache();
+	CLET_DoPurgeCache();
 
 	cls.q3_uiStarted = false;
 	cls.q3_cgameStarted = false;
@@ -821,7 +788,7 @@ void CL_Disconnect(qboolean showMainMenu)
 		CLT3_ShutdownUI();
 
 		// init the UI
-		CL_InitUI();
+		CLT3_InitUI();
 	}
 	else
 	{
@@ -1294,7 +1261,7 @@ void CL_UI_Restart_f(void)				// NERVE - SMF
 	CLT3_ShutdownUI();
 
 	// init the UI
-	CL_InitUI();
+	CLT3_InitUI();
 }
 
 /*
@@ -2569,7 +2536,7 @@ void CL_StartHunkUsers(void)
 	if (!cls.q3_uiStarted)
 	{
 		cls.q3_uiStarted = true;
-		CL_InitUI();
+		CLT3_InitUI();
 	}
 }
 
@@ -2659,7 +2626,7 @@ void CL_Init(void)
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
 	cl_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
 	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
-	cl_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
+	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
 	cl_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
@@ -2903,62 +2870,6 @@ CL_ShowIP_f
 void CL_ShowIP_f(void)
 {
 	SOCK_ShowIP();
-}
-
-// NERVE - SMF
-/*
-=======================
-CL_AddToLimboChat
-
-=======================
-*/
-void CL_AddToLimboChat(const char* str)
-{
-	int len;
-	char* p, * ls;
-	int lastcolor;
-	int chatHeight;
-	int i;
-
-	chatHeight = LIMBOCHAT_HEIGHT_WA;
-	cl.wa_limboChatPos = LIMBOCHAT_HEIGHT_WA - 1;
-	len = 0;
-
-	// copy old strings
-	for (i = cl.wa_limboChatPos; i > 0; i--)
-	{
-		String::Cpy(cl.wa_limboChatMsgs[i], cl.wa_limboChatMsgs[i - 1]);
-	}
-
-	// copy new string
-	p = cl.wa_limboChatMsgs[0];
-	*p = 0;
-
-	lastcolor = '7';
-
-	ls = NULL;
-	while (*str)
-	{
-		if (len > LIMBOCHAT_WIDTH_WA - 1)
-		{
-			break;
-		}
-
-		if (Q_IsColorString(str))
-		{
-			*p++ = *str++;
-			lastcolor = *str;
-			*p++ = *str++;
-			continue;
-		}
-		if (*str == ' ')
-		{
-			ls = p;
-		}
-		*p++ = *str++;
-		len++;
-	}
-	*p = 0;
 }
 
 float* CL_GetSimOrg()

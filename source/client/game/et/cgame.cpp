@@ -440,7 +440,9 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 	case ETCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-//---------
+	case ETCG_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 	case ETCG_CM_LOADMAP:
 		CLT3_CM_LoadMap((char*)VMA(1));
 		return 0;
@@ -610,7 +612,8 @@ qintptr CLET_CgameSystemCalls(qintptr* args)
 		return 0;
 	case ETCG_GETSNAPSHOT:
 		return CLET_GetSnapshot(args[1], (etsnapshot_t*)VMA(2));
-//---------
+	case ETCG_GETSERVERCOMMAND:
+		return CLT3_GetServerCommand(args[1]);
 	case ETCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
 	case ETCG_GETUSERCMD:

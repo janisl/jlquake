@@ -372,77 +372,6 @@ void CL_ParseSnapshot(QMsg* msg)
 
 /*
 ==================
-CL_SystemInfoChanged
-
-The systeminfo configstring has been changed, so parse
-new information out of it.  This will happen at every
-gamestate, and possibly during gameplay.
-==================
-*/
-void CL_SystemInfoChanged(void)
-{
-	char* systemInfo;
-	const char* s, * t;
-	char key[BIG_INFO_KEY];
-	char value[BIG_INFO_VALUE];
-	qboolean gameSet;
-
-	systemInfo = cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[Q3CS_SYSTEMINFO];
-	// NOTE TTimo:
-	// when the serverId changes, any further messages we send to the server will use this new serverId
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
-	// in some cases, outdated cp commands might get sent with this news serverId
-	cl.q3_serverId = String::Atoi(Info_ValueForKey(systemInfo, "sv_serverid"));
-
-	// don't set any vars when playing a demo
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	s = Info_ValueForKey(systemInfo, "sv_cheats");
-	if (String::Atoi(s) == 0)
-	{
-		Cvar_SetCheatState();
-	}
-
-	// check pure server string
-	s = Info_ValueForKey(systemInfo, "sv_paks");
-	t = Info_ValueForKey(systemInfo, "sv_pakNames");
-	FS_PureServerSetLoadedPaks(s, t);
-
-	s = Info_ValueForKey(systemInfo, "sv_referencedPaks");
-	t = Info_ValueForKey(systemInfo, "sv_referencedPakNames");
-	FS_PureServerSetReferencedPaks(s, t);
-
-	gameSet = false;
-	// scan through all the variables in the systeminfo and locally set cvars to match
-	s = systemInfo;
-	while (s)
-	{
-		Info_NextPair(&s, key, value);
-		if (!key[0])
-		{
-			break;
-		}
-		// ehw!
-		if (!String::ICmp(key, "fs_game"))
-		{
-			gameSet = true;
-		}
-
-		Cvar_Set(key, value);
-	}
-	// if game folder should not be set and it is set at the client side
-	if (!gameSet && *Cvar_VariableString("fs_game"))
-	{
-		Cvar_Set("fs_game", "");
-	}
-	cl_connectedToPureServer = Cvar_VariableValue("sv_pure");
-}
-
-/*
-==================
 CL_ParseGamestate
 ==================
 */
@@ -520,7 +449,7 @@ void CL_ParseGamestate(QMsg* msg)
 	clc.q3_checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
-	CL_SystemInfoChanged();
+	CLT3_SystemInfoChanged();
 
 	// reinitialize the filesystem if the game directory has changed
 	FS_ConditionalRestart(clc.q3_checksumFeed);

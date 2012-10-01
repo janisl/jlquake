@@ -39,8 +39,6 @@ enum
 	WSUIMENU_BRIEFING			//----(SA)	added
 };
 
-#define WSUI_API_VERSION  4
-
 enum
 {
 	WSUI_ERROR,

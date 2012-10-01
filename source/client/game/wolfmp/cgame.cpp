@@ -336,7 +336,9 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 	case WMCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-//-------------
+	case WMCG_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 	case WMCG_CM_LOADMAP:
 		CLT3_CM_LoadMap((char*)VMA(1));
 		return 0;
@@ -473,7 +475,8 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 		return 0;
 	case WMCG_GETSNAPSHOT:
 		return CLWM_GetSnapshot(args[1], (wmsnapshot_t*)VMA(2));
-//-------------
+	case WMCG_GETSERVERCOMMAND:
+		return CLT3_GetServerCommand(args[1]);
 	case WMCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
 	case WMCG_GETUSERCMD:
@@ -586,7 +589,9 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 		CLWM_InGameClosePopup((char*)VMA(1));
 		return 0;
 
-//-------------
+	case WMCG_LIMBOCHAT:
+		CLT3_AddToLimboChat((char*)VMA(1));
+		return 0;
 
 	case WMCG_KEY_GETBINDINGBUF:
 		Key_GetBindingBuf(args[1], (char*)VMA(2), args[3]);

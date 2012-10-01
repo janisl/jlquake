@@ -60,8 +60,6 @@ MESSAGE PARSING
 */
 #if 1
 
-int entLastVisible[MAX_CLIENTS_WM];
-
 qboolean isEntVisible(wmentityState_t* ent)
 {
 	q3trace_t tr;
@@ -538,67 +536,6 @@ void CL_ParseSnapshot(QMsg* msg)
 
 /*
 ==================
-CL_SystemInfoChanged
-
-The systeminfo configstring has been changed, so parse
-new information out of it.  This will happen at every
-gamestate, and possibly during gameplay.
-==================
-*/
-void CL_SystemInfoChanged(void)
-{
-	char* systemInfo;
-	const char* s, * t;
-	char key[BIG_INFO_KEY];
-	char value[BIG_INFO_VALUE];
-
-	systemInfo = cl.wm_gameState.stringData + cl.wm_gameState.stringOffsets[Q3CS_SYSTEMINFO];
-	// NOTE TTimo:
-	// when the serverId changes, any further messages we send to the server will use this new serverId
-	// show_bug.cgi?id=475
-	// in some cases, outdated cp commands might get sent with this news serverId
-	cl.q3_serverId = String::Atoi(Info_ValueForKey(systemInfo, "sv_serverid"));
-
-	memset(&entLastVisible, 0, sizeof(entLastVisible));
-
-	// don't set any vars when playing a demo
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	s = Info_ValueForKey(systemInfo, "sv_cheats");
-	if (String::Atoi(s) == 0)
-	{
-		Cvar_SetCheatState();
-	}
-
-	// check pure server string
-	s = Info_ValueForKey(systemInfo, "sv_paks");
-	t = Info_ValueForKey(systemInfo, "sv_pakNames");
-	FS_PureServerSetLoadedPaks(s, t);
-
-	s = Info_ValueForKey(systemInfo, "sv_referencedPaks");
-	t = Info_ValueForKey(systemInfo, "sv_referencedPakNames");
-	FS_PureServerSetReferencedPaks(s, t);
-
-	// scan through all the variables in the systeminfo and locally set cvars to match
-	s = systemInfo;
-	while (s)
-	{
-		Info_NextPair(&s, key, value);
-		if (!key[0])
-		{
-			break;
-		}
-
-		Cvar_Set(key, value);
-	}
-	cl_connectedToPureServer = Cvar_VariableValue("sv_pure");
-}
-
-/*
-==================
 CL_ParseGamestate
 ==================
 */
@@ -676,7 +613,7 @@ void CL_ParseGamestate(QMsg* msg)
 	clc.q3_checksumFeed = msg->ReadLong();
 
 	// parse serverId and other cvars
-	CL_SystemInfoChanged();
+	CLT3_SystemInfoChanged();
 
 	// reinitialize the filesystem if the game directory has changed
 	if (FS_ConditionalRestart(clc.q3_checksumFeed))

@@ -32,6 +32,8 @@ public:
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
 
 	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+
+	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
 };
 
 extern idCommon* common;

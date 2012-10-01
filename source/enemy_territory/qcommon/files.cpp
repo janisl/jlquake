@@ -200,15 +200,8 @@ void FS_InitFilesystem(void)
 FS_Restart
 ================
 */
-//void CL_PurgeCache( void );
 void FS_Restart(int checksumFeed)
 {
-
-#ifndef DEDICATED
-	// Arnout: big hack to clear the image cache on a FS_Restart
-//	CL_PurgeCache();
-#endif
-
 	// free anything we currently have loaded
 	FS_Shutdown();
 

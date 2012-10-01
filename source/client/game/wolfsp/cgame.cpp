@@ -360,7 +360,9 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 	case WSCG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand((char*)VMA(1));
 		return 0;
-//---------
+	case WSCG_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 	case WSCG_CM_LOADMAP:
 		CLT3_CM_LoadMap((char*)VMA(1));
 		return 0;
@@ -502,7 +504,8 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 		return 0;
 	case WSCG_GETSNAPSHOT:
 		return CLWS_GetSnapshot(args[1], (wssnapshot_t*)VMA(2));
-//---------
+	case WSCG_GETSERVERCOMMAND:
+		return CLT3_GetServerCommand(args[1]);
 	case WSCG_GETCURRENTCMDNUMBER:
 		return CLT3_GetCurrentCmdNumber();
 	case WSCG_GETUSERCMD:
@@ -615,7 +618,9 @@ qintptr CLWS_CgameSystemCalls(qintptr* args)
 		UIT3_KeyEvent(K_ESCAPE, true);
 		return 0;
 
-//---------
+	case WSCG_LIMBOCHAT:
+		CLT3_AddToLimboChat((char*)VMA(1));
+		return 0;
 
 	case WSCG_GETMODELINFO:
 		return SVWS_GetModelInfo(args[1], (char*)VMA(2), (animModelInfo_t**)VMA(3));

@@ -79,5 +79,7 @@ int CLT3_GetCurrentCmdNumber();
 void CLT3_AddCgameCommand(const char* cmdName);
 void CLT3_CM_LoadMap(const char* mapname);
 bool CLT3_InPvs(const vec3_t p1, const vec3_t p2);
+bool CLT3_GetServerCommand(int serverCommandNumber);
+void CLT3_AddToLimboChat(const char* str);
 
 #endif

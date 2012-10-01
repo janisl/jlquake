@@ -47,6 +47,17 @@ void KeyWM_SetCatcher(int catcher);
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 
 extern Cvar* clet_profile;
+extern Cvar* clt3_showServerCommands;
+
+void CLET_PurgeCache();
+void CLET_DoPurgeCache();
+
+//
+//	Parse
+//
+extern int entLastVisible[MAX_CLIENTS_WM];
+
+void CLT3_SystemInfoChanged();
 
 //
 //	ServerList
@@ -68,6 +79,7 @@ void CLT3_InitServerLists();
 extern vm_t* uivm;				// interface to ui dll or vm
 
 void UIT3_Init();
+void CLT3_InitUI();
 void CLT3_ShutdownUI();
 void UIT3_KeyEvent(int key, bool down);
 void UIT3_KeyDownEvent(int key);

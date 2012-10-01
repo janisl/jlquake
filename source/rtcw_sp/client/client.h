@@ -82,8 +82,6 @@ void CL_NextDownload(void);
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
-void CL_AddToLimboChat(const char* str);					// NERVE - SMF
-
 //
 // cl_input
 //
@@ -101,7 +99,6 @@ void IN_Salute(void);
 
 void CL_VerifyCode(void);
 
-void CL_SystemInfoChanged(void);
 void CL_ParseServerMessage(QMsg* msg);
 
 //====================================================================
@@ -121,11 +118,6 @@ void CL_InitCGame(void);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);
-//
-// cl_ui.c
-//
-void CL_InitUI(void);
-
 
 //
 // cl_net_chan.c

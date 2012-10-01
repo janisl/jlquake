@@ -27,8 +27,6 @@ enum
 	ETUIMENU_HELP,
 };
 
-#define ETUI_API_VERSION  4
-
 enum
 {
 	ETUI_ERROR,

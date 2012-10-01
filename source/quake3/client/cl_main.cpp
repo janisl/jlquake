@@ -1974,7 +1974,7 @@ void CL_StartHunkUsers(void)
 	if (!cls.q3_uiStarted)
 	{
 		cls.q3_uiStarted = true;
-		CL_InitUI();
+		CLT3_InitUI();
 	}
 }
 
@@ -2048,6 +2048,7 @@ void CL_Init(void)
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
 
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
+	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
 	cl_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);

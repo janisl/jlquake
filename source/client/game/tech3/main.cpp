@@ -22,3 +22,36 @@
 #include "../et/local.h"
 
 Cvar* clet_profile;
+Cvar* clt3_showServerCommands;
+
+void CLET_PurgeCache()
+{
+	cls.et_doCachePurge = true;
+}
+
+void CLET_DoPurgeCache()
+{
+	if (!cls.et_doCachePurge)
+	{
+		return;
+	}
+
+	cls.et_doCachePurge = false;
+
+	if (!com_cl_running)
+	{
+		return;
+	}
+
+	if (!com_cl_running->integer)
+	{
+		return;
+	}
+
+	if (!cls.q3_rendererStarted)
+	{
+		return;
+	}
+
+	R_PurgeCache();
+}

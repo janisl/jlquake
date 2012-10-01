@@ -423,7 +423,7 @@ struct clientConnection_t
 
 	// reliable messages received from server
 	int q3_serverCommandSequence;
-	int q3_lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
+	int q3_lastExecutedServerCommand;		// last server command grabbed or executed with CLT3_GetServerCommand
 	char q3_serverCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	char q3_demoName[MAX_QPATH];

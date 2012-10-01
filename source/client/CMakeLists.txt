@@ -47,6 +47,7 @@ set(CLIENT_FILES
 	game/tech3/cdkey.cpp
 	game/tech3/cgame.cpp
 	game/tech3/main.cpp
+	game/tech3/parse.cpp
 	game/tech3/serverlist.cpp
 	game/tech3/ui.cpp
 	game/wolfmp/cgame.cpp

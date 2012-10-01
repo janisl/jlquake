@@ -135,3 +135,406 @@ bool CLT3_InPvs(const vec3_t p1, const vec3_t p2)
 	int cluster = CM_LeafCluster(CM_PointLeafnum(p2));
 	return !!(vis[cluster >> 3] & (1 << (cluster & 7)));
 }
+
+static void CLT3_ConfigstringModified()
+{
+	int index = String::Atoi(Cmd_Argv(1));
+	// get everything after "cs <num>"
+	const char* s = Cmd_ArgsFrom(2);
+
+	if (GGameType & GAME_Quake3)
+	{
+		if (index < 0 || index >= MAX_CONFIGSTRINGS_Q3)
+		{
+			common->Error("configstring > MAX_CONFIGSTRINGS_Q3");
+		}
+
+		const char* old = cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[index];
+		if (!String::Cmp(old, s))
+		{
+			return;		// unchanged
+		}
+
+		// build the new q3gameState_t
+		q3gameState_t oldGs = cl.q3_gameState;
+
+		Com_Memset(&cl.q3_gameState, 0, sizeof(cl.q3_gameState));
+
+		// leave the first 0 for uninitialized strings
+		cl.q3_gameState.dataCount = 1;
+
+		for (int i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
+		{
+			const char* dup;
+			if (i == index)
+			{
+				dup = s;
+			}
+			else
+			{
+				dup = oldGs.stringData + oldGs.stringOffsets[i];
+			}
+			if (!dup[0])
+			{
+				continue;		// leave with the default empty string
+			}
+
+			int len = String::Length(dup);
+
+			if (len + 1 + cl.q3_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+			{
+				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+			}
+
+			// append it to the gameState string buffer
+			cl.q3_gameState.stringOffsets[i] = cl.q3_gameState.dataCount;
+			Com_Memcpy(cl.q3_gameState.stringData + cl.q3_gameState.dataCount, dup, len + 1);
+			cl.q3_gameState.dataCount += len + 1;
+		}
+
+		if (index == Q3CS_SYSTEMINFO)
+		{
+			// parse serverId and other cvars
+			CLT3_SystemInfoChanged();
+		}
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		if (index < 0 || index >= MAX_CONFIGSTRINGS_WS)
+		{
+			common->Error("configstring > MAX_CONFIGSTRINGS_WS");
+		}
+
+		const char* old = cl.ws_gameState.stringData + cl.ws_gameState.stringOffsets[index];
+		if (!String::Cmp(old, s))
+		{
+			return;		// unchanged
+		}
+
+		// build the new wsgameState_t
+		wsgameState_t oldGs = cl.ws_gameState;
+
+		memset(&cl.ws_gameState, 0, sizeof(cl.ws_gameState));
+
+		// leave the first 0 for uninitialized strings
+		cl.ws_gameState.dataCount = 1;
+
+		for (int i = 0; i < MAX_CONFIGSTRINGS_WS; i++)
+		{
+			const char* dup;
+			if (i == index)
+			{
+				dup = s;
+			}
+			else
+			{
+				dup = oldGs.stringData + oldGs.stringOffsets[i];
+			}
+			if (!dup[0])
+			{
+				continue;		// leave with the default empty string
+			}
+
+			int len = String::Length(dup);
+
+			if (len + 1 + cl.ws_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+			{
+				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+			}
+
+			// append it to the gameState string buffer
+			cl.ws_gameState.stringOffsets[i] = cl.ws_gameState.dataCount;
+			memcpy(cl.ws_gameState.stringData + cl.ws_gameState.dataCount, dup, len + 1);
+			cl.ws_gameState.dataCount += len + 1;
+		}
+
+		if (index == Q3CS_SYSTEMINFO)
+		{
+			// parse serverId and other cvars
+			CLT3_SystemInfoChanged();
+		}
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		if (index < 0 || index >= MAX_CONFIGSTRINGS_WM)
+		{
+			common->Error("configstring > MAX_CONFIGSTRINGS_WM");
+		}
+
+		const char* old = cl.wm_gameState.stringData + cl.wm_gameState.stringOffsets[index];
+		if (!String::Cmp(old, s))
+		{
+			return;		// unchanged
+		}
+
+		// build the new wmgameState_t
+		wmgameState_t oldGs = cl.wm_gameState;
+
+		memset(&cl.wm_gameState, 0, sizeof(cl.wm_gameState));
+
+		// leave the first 0 for uninitialized strings
+		cl.wm_gameState.dataCount = 1;
+
+		for (int i = 0; i < MAX_CONFIGSTRINGS_WM; i++)
+		{
+			const char* dup;
+			if (i == index)
+			{
+				dup = s;
+			}
+			else
+			{
+				dup = oldGs.stringData + oldGs.stringOffsets[i];
+			}
+			if (!dup[0])
+			{
+				continue;		// leave with the default empty string
+			}
+
+			int len = String::Length(dup);
+
+			if (len + 1 + cl.wm_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+			{
+				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+			}
+
+			// append it to the gameState string buffer
+			cl.wm_gameState.stringOffsets[i] = cl.wm_gameState.dataCount;
+			memcpy(cl.wm_gameState.stringData + cl.wm_gameState.dataCount, dup, len + 1);
+			cl.wm_gameState.dataCount += len + 1;
+		}
+
+		if (index == Q3CS_SYSTEMINFO)
+		{
+			// parse serverId and other cvars
+			CLT3_SystemInfoChanged();
+		}
+	}
+	else
+	{
+		if (index < 0 || index >= MAX_CONFIGSTRINGS_ET)
+		{
+			common->Error("configstring > MAX_CONFIGSTRINGS_ET");
+		}
+
+		const char* old = cl.et_gameState.stringData + cl.et_gameState.stringOffsets[index];
+		if (!String::Cmp(old, s))
+		{
+			return;		// unchanged
+		}
+
+		// build the new etgameState_t
+		etgameState_t oldGs = cl.et_gameState;
+
+		memset(&cl.et_gameState, 0, sizeof(cl.et_gameState));
+
+		// leave the first 0 for uninitialized strings
+		cl.et_gameState.dataCount = 1;
+
+		for (int i = 0; i < MAX_CONFIGSTRINGS_ET; i++)
+		{
+			const char* dup;
+			if (i == index)
+			{
+				dup = s;
+			}
+			else
+			{
+				dup = oldGs.stringData + oldGs.stringOffsets[i];
+			}
+			if (!dup[0])
+			{
+				continue;		// leave with the default empty string
+			}
+
+			int len = String::Length(dup);
+
+			if (len + 1 + cl.et_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+			{
+				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+			}
+
+			// append it to the gameState string buffer
+			cl.et_gameState.stringOffsets[i] = cl.et_gameState.dataCount;
+			memcpy(cl.et_gameState.stringData + cl.et_gameState.dataCount, dup, len + 1);
+			cl.et_gameState.dataCount += len + 1;
+		}
+
+		if (index == Q3CS_SYSTEMINFO)
+		{
+			// parse serverId and other cvars
+			CLT3_SystemInfoChanged();
+		}
+	}
+}
+
+//	Set up argc/argv for the given command
+bool CLT3_GetServerCommand(int serverCommandNumber)
+{
+	static char bigConfigString[BIG_INFO_STRING];
+
+	// if we have irretrievably lost a reliable command, drop the connection
+	int maxReliableCommands = GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF;
+	if (serverCommandNumber <= clc.q3_serverCommandSequence - maxReliableCommands)
+	{
+		// when a demo record was started after the client got a whole bunch of
+		// reliable commands then the client never got those first reliable commands
+		if (clc.demoplaying)
+		{
+			return false;
+		}
+		common->Error("CLT3_GetServerCommand: a reliable command was cycled out");
+		return false;
+	}
+
+	if (serverCommandNumber > clc.q3_serverCommandSequence)
+	{
+		common->Error("CLT3_GetServerCommand: requested a command not received");
+		return false;
+	}
+
+	const char* s = clc.q3_serverCommands[serverCommandNumber & (maxReliableCommands - 1)];
+	clc.q3_lastExecutedServerCommand = serverCommandNumber;
+
+	if (clt3_showServerCommands->integer)
+	{
+		common->DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
+	}
+
+rescan:
+	Cmd_TokenizeString(s);
+	const char* cmd = Cmd_Argv(0);
+	int argc = Cmd_Argc();
+
+	if (!String::Cmp(cmd, "disconnect"))
+	{
+		// allow server to indicate why they were disconnected
+		if (argc >= 2)
+		{
+			common->ServerDisconnected("Server Disconnected - %s", Cmd_Argv(1));
+		}
+		else
+		{
+			common->ServerDisconnected("Server disconnected\n");
+		}
+	}
+
+	if (!String::Cmp(cmd, "bcs0"))
+	{
+		String::Sprintf(bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2));
+		return false;
+	}
+
+	if (!String::Cmp(cmd, "bcs1"))
+	{
+		s = Cmd_Argv(2);
+		if (String::Length(bigConfigString) + String::Length(s) >= BIG_INFO_STRING)
+		{
+			common->Error("bcs exceeded BIG_INFO_STRING");
+		}
+		String::Cat(bigConfigString, sizeof(bigConfigString), s);
+		return false;
+	}
+
+	if (!String::Cmp(cmd, "bcs2"))
+	{
+		s = Cmd_Argv(2);
+		if (String::Length(bigConfigString) + String::Length(s) + 1 >= BIG_INFO_STRING)
+		{
+			common->Error("bcs exceeded BIG_INFO_STRING");
+		}
+		String::Cat(bigConfigString, sizeof(bigConfigString), s);
+		String::Cat(bigConfigString, sizeof(bigConfigString), "\"");
+		s = bigConfigString;
+		goto rescan;
+	}
+
+	if (!String::Cmp(cmd, "cs"))
+	{
+		CLT3_ConfigstringModified();
+		// reparse the string, because CLT3_ConfigstringModified may have done another Cmd_TokenizeString()
+		Cmd_TokenizeString(s);
+		return true;
+	}
+
+	if (!String::Cmp(cmd, "map_restart"))
+	{
+		// clear notify lines and outgoing commands before passing
+		// the restart to the cgame
+		Con_ClearNotify();
+		Com_Memset(cl.q3_cmds, 0, sizeof(cl.q3_cmds));
+		Com_Memset(cl.ws_cmds, 0, sizeof(cl.ws_cmds));
+		Com_Memset(cl.wm_cmds, 0, sizeof(cl.wm_cmds));
+		Com_Memset(cl.et_cmds, 0, sizeof(cl.et_cmds));
+		return true;
+	}
+
+	// the clientLevelShot command is used during development
+	// to generate 128*128 screenshots from the intermission
+	// point of levels for the menu system to use
+	// we pass it along to the cgame to make apropriate adjustments,
+	// but we also clear the console and notify lines here
+	if (!String::Cmp(cmd, "clientLevelShot"))
+	{
+		// don't do it if we aren't running the server locally,
+		// otherwise malicious remote servers could overwrite
+		// the existing thumbnails
+		if (!com_sv_running->integer)
+		{
+			return false;
+		}
+		// close the console
+		Con_Close();
+		// take a special screenshot next frame
+		Cbuf_AddText("wait ; wait ; wait ; wait ; screenshot levelshot\n");
+		return true;
+	}
+
+	if (!(GGameType & GAME_Quake3) && !String::Cmp(cmd, "popup"))			// direct server to client popup request, bypassing cgame
+	{
+		return false;
+	}
+
+	// we may want to put a "connect to other server" command here
+
+	// cgame can now act on the command
+	return true;
+}
+
+void CLT3_AddToLimboChat(const char* str)
+{
+	if (!str)
+	{
+		return;
+	}
+	cl.wa_limboChatPos = LIMBOCHAT_HEIGHT_WA - 1;
+
+	// copy old strings
+	for (int i = cl.wa_limboChatPos; i > 0; i--)
+	{
+		String::Cpy(cl.wa_limboChatMsgs[i], cl.wa_limboChatMsgs[i - 1]);
+	}
+
+	// copy new string
+	char* p = cl.wa_limboChatMsgs[0];
+	*p = 0;
+
+	int len = 0;
+	while (*str)
+	{
+		if (len > LIMBOCHAT_WIDTH_WA - 1)
+		{
+			break;
+		}
+
+		if (Q_IsColorString(str))
+		{
+			*p++ = *str++;
+			*p++ = *str++;
+			continue;
+		}
+		*p++ = *str++;
+		len++;
+	}
+	*p = 0;
+}

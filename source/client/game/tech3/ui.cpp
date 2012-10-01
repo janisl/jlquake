@@ -40,6 +40,59 @@ void UIT3_Init()
 	}
 }
 
+void CLT3_InitUI()
+{
+	if (GGameType & GAME_Quake3)
+	{
+		vmInterpret_t interpret;
+		// load the dll or bytecode
+		if (cl_connectedToPureServer != 0)
+		{
+			// if sv_pure is set we only allow qvms to be loaded
+			interpret = VMI_COMPILED;
+		}
+		else
+		{
+			interpret = (vmInterpret_t)(int)Cvar_VariableValue("vm_ui");
+		}
+		uivm = VM_Create("ui", CLQ3_UISystemCalls, interpret);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		uivm = VM_Create("ui", CLWS_UISystemCalls, VMI_NATIVE);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		uivm = VM_Create("ui", CLWM_UISystemCalls, VMI_NATIVE);
+	}
+	else
+	{
+		uivm = VM_Create("ui", CLET_UISystemCalls, VMI_NATIVE);
+	}
+
+	if (!uivm)
+	{
+		common->FatalError("VM_Create on UI failed");
+	}
+
+	// sanity check
+	int v = VM_Call(uivm, UI_GETAPIVERSION);
+	if (GGameType & GAME_Quake3 && v != Q3UI_OLD_API_VERSION && v != Q3UI_API_VERSION)
+	{
+		common->Error("User Interface is version %d, expected %d", v, Q3UI_API_VERSION);
+		cls.q3_uiStarted = false;
+		return;
+	}
+	else if (!(GGameType & GAME_Quake3) && v != WOLFUI_API_VERSION)
+	{
+		common->FatalError("User Interface is version %d, expected %d", v, WOLFUI_API_VERSION);
+		cls.q3_uiStarted = false;
+	}
+
+	// init for this gamestate
+	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
+}
+
 void CLT3_ShutdownUI()
 {
 	in_keyCatchers &= ~KEYCATCH_UI;
