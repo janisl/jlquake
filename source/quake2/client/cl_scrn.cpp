@@ -38,9 +38,6 @@ qboolean scr_initialized;			// ready to draw
 
 int scr_draw_loading;
 
-vrect_t scr_vrect;			// position of render window on screen
-
-
 Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;

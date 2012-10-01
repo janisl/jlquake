@@ -7,6 +7,7 @@
  */
 
 #include "quakedef.h"
+#include "../client/game/quake_hexen2/view.h"
 
 /*
 ===============
@@ -21,4 +22,5 @@ void Draw_Init(void)
 	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
 	Con_InitBackgroundImage();
 	MQH_InitImages();
+	VQH_InitCrosshairTexture();
 }

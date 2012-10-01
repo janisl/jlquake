@@ -1,10 +1,6 @@
 
 // refresh.h -- public interface to refresh functions
 
-void V_RenderScene(void);		// must set cl.refdef first
-void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
-// called whenever cl.refdef or vid change
-
 void R_ParseParticleEffect(void);
 
 void R_ParseParticleEffect2(void);

@@ -82,8 +82,6 @@ qboolean scr_initialized;			// ready to draw
 image_t* scr_net;
 image_t* scr_turtle;
 
-vrect_t scr_vrect;
-
 qboolean scr_drawloading;
 
 qboolean con_forcedup;			// because no entities to refresh
@@ -352,39 +350,6 @@ void SCR_SizeDown_f(void)
 }
 
 /*
-====================
-R_TimeRefresh_f
-
-For program optimization
-====================
-*/
-static void R_TimeRefresh_f(void)
-{
-	int i;
-	float start, stop, time;
-
-	start = Sys_DoubleTime();
-	vec3_t viewangles;
-	viewangles[0] = 0;
-	viewangles[1] = 0;
-	viewangles[2] = 0;
-	for (i = 0; i < 128; i++)
-	{
-		viewangles[1] = i / 128.0 * 360.0;
-		AnglesToAxis(viewangles, cl.refdef.viewaxis);
-		R_BeginFrame(STEREO_CENTER);
-		V_RenderScene();
-		R_EndFrame(NULL, NULL);
-	}
-
-	stop = Sys_DoubleTime();
-	time = stop - start;
-	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
-}
-
-//============================================================================
-
-/*
 ==================
 SCR_Init
 ==================
@@ -405,7 +370,6 @@ void SCR_Init(void)
 //
 	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
-	Cmd_AddCommand("timerefresh", R_TimeRefresh_f);
 
 	scr_net = R_PicFromWad("net");
 	scr_turtle = R_PicFromWad("turtle");
@@ -640,7 +604,7 @@ void SCR_UpdateScreen(void)
 //
 	con_forcedup = cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS;
 
-	V_RenderView();
+	VQH_RenderView();
 
 	//
 	// draw any areas not covered by the refresh
@@ -663,11 +627,6 @@ void SCR_UpdateScreen(void)
 	}
 	else
 	{
-		if (crosshair->value)
-		{
-			UI_DrawChar(scr_vrect.x + scr_vrect.width / 2, scr_vrect.y + scr_vrect.height / 2, '+');
-		}
-
 		SCR_DrawNet();
 		SCR_DrawFPS();
 		SCR_DrawTurtle();

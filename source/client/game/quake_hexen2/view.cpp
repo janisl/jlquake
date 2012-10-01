@@ -48,6 +48,10 @@ static Cvar* vqh_ipitch_level;
 
 static Cvar* vqh_drawviewmodel;
 
+static Cvar* crosshaircolor;
+static Cvar* cl_crossx;
+static Cvar* cl_crossy;
+
 static float v_dmg_time;
 static float v_dmg_roll;
 static float v_dmg_pitch;
@@ -56,6 +60,8 @@ static cshift_t cshift_empty = { {130,80,50}, 0 };
 static cshift_t cshift_water = { {130,80,50}, 128 };
 static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
+
+static image_t* cs_texture;	// crosshair texture
 
 /*
 ==============================================================================
@@ -351,7 +357,7 @@ static void VQH_CalcBlend(float* blendColour)
 	}
 }
 
-void VQH_DrawColourBlend()
+static void VQH_DrawColourBlend()
 {
 	VQH_SetContentsColor(CM_PointContentsQ1(cl.refdef.vieworg, 0));
 	if (GGameType & GAME_Hexen2)
@@ -746,7 +752,7 @@ static void VQH_CalcGunAngle(vec3_t viewangles)
 	}
 }
 
-void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMessage)
+static void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMessage)
 {
 	static float oldz = 0;
 
@@ -1142,7 +1148,7 @@ void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMes
 	}
 }
 
-void VQH_CalcIntermissionRefdef()
+static void VQH_CalcIntermissionRefdef()
 {
 	vec3_t viewangles;
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
@@ -1186,7 +1192,7 @@ void VQH_CalcIntermissionRefdef()
 	vqh_idlescale->value = old;
 }
 
-void VQH_AddViewModel()
+static void VQH_AddViewModel()
 {
 	if (!vqh_drawviewmodel->value)
 	{
@@ -1266,6 +1272,172 @@ void VQH_AddViewModel()
 	R_AddRefEntityToScene(&gun);
 }
 
+//	cl.refdef must be set before the first call
+static void VQH_RenderScene()
+{
+	R_ClearScene();
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		CLQW_EmitEntities();
+	}
+	else if (GGameType & GAME_Quake)
+	{
+		CLQ1_EmitEntities();
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		CLHW_EmitEntities();
+	}
+	else
+	{
+		CLH2_EmitEntities();
+	}
+
+	VQH_AddViewModel();
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		CLH2_UpdateEffects();
+	}
+
+	CL_AddDLights();
+
+	CL_RunLightStyles();
+
+	CL_AddLightStyles();
+	CL_AddParticles();
+
+	cl.refdef.time = cl.serverTime;
+
+	R_RenderScene(&cl.refdef);
+
+	VQH_DrawColourBlend();
+}
+
+static void VQH_DropPunchAngle()
+{
+	cl.qh_punchangle -= cls.frametime / 100;
+	if (cl.qh_punchangle < 0)
+	{
+		cl.qh_punchangle = 0;
+	}
+}
+
+static void VQH_DrawCrosshair()
+{
+	if (cl.qh_intermission)
+	{
+		return;
+	}
+
+	if (crosshair->value == 2)
+	{
+		int x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
+		int y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
+		unsigned char* pColor = r_palette[crosshaircolor->integer];
+		UI_DrawStretchPicWithColour(x - 4, y - 4, 16, 16, cs_texture, pColor);
+	}
+	else if (crosshair->value)
+	{
+		UI_DrawChar(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
+			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
+	}
+}
+
+//	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
+// the entity origin, so any view position inside that will be valid
+void VQH_RenderView()
+{
+	if (GGameType & GAME_QuakeWorld)
+	{
+		cl.qh_simangles[ROLL] = 0;	// FIXME @@@
+	}
+
+	if (cls.state != CA_ACTIVE || (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) && clc.qh_signon != SIGNONS))
+	{
+		return;
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) && !cl.qh_validsequence)
+	{
+		return;
+	}
+
+	// don't allow cheats in multiplayer
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) || cl.qh_maxclients > 1)
+	{
+		Cvar_Set("r_fullbright", "0");
+		Cvar_Set("r_lightmap", "0");
+		if (GGameType & GAME_QuakeWorld && !String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "watervis")))
+		{
+			Cvar_Set("r_wateralpha", "1");
+		}
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		VQH_DropPunchAngle();
+	}
+	if (cl.qh_intermission)
+	{	// intermission / finale rendering
+		VQH_CalcIntermissionRefdef();
+	}
+	else if (GGameType & GAME_QuakeWorld)
+	{
+		qwframe_t* view_frame = &cl.qw_frames[clc.netchan.incomingSequence & UPDATE_MASK_QW];
+		qwplayer_state_t* view_message = &view_frame->playerstate[cl.playernum];
+		VQH_CalcRefdef(view_message, NULL);
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		hwframe_t* view_frame = &cl.hw_frames[clc.netchan.incomingSequence & UPDATE_MASK_HW];
+		hwplayer_state_t* view_message = &view_frame->playerstate[cl.playernum];
+		VQH_CalcRefdef(NULL, view_message);
+	}
+	else
+	{
+		if (!cl.qh_paused /* && (sv.maxclients > 1 || in_keyCatchers == 0) */)
+		{
+			VQH_CalcRefdef(NULL, NULL);
+		}
+	}
+	VQH_RenderScene();
+
+	VQH_DrawCrosshair();
+}
+
+//	For program optimization
+static void VQH_TimeRefresh_f()
+{
+	int i;
+	float start, stop, time;
+
+	if (cls.state != CA_ACTIVE)
+	{
+		common->Printf("Not connected to a server\n");
+		return;
+	}
+
+	start = Sys_DoubleTime();
+	vec3_t viewangles;
+	viewangles[0] = 0;
+	viewangles[1] = 0;
+	viewangles[2] = 0;
+	for (i = 0; i < 128; i++)
+	{
+		viewangles[1] = i / 128.0 * 360.0;
+		AnglesToAxis(viewangles, cl.refdef.viewaxis);
+		R_BeginFrame(STEREO_CENTER);
+		VQH_RenderScene();
+		R_EndFrame(NULL, NULL);
+	}
+
+	stop = Sys_DoubleTime();
+	time = stop - start;
+	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
+}
+
 void VQH_Init()
 {
 	Cmd_AddCommand("v_cshift", V_cshift_f);
@@ -1278,6 +1450,7 @@ void VQH_Init()
 			Cmd_AddCommand("wf", V_WhiteFlash_f);
 		}
 	}
+	Cmd_AddCommand("timerefresh", VQH_TimeRefresh_f);
 
 	v_contentblend = Cvar_Get("v_contentblend", "1", 0);
 	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
@@ -1306,4 +1479,13 @@ void VQH_Init()
 	vqh_ipitch_level = Cvar_Get("v_ipitch_level", "0.3", 0);
 
 	vqh_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
+
+	crosshaircolor = Cvar_Get("crosshaircolor", "79", CVAR_ARCHIVE);
+	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
+	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
+}
+
+void VQH_InitCrosshairTexture()
+{
+	cs_texture = R_CreateCrosshairImage();
 }

@@ -34,6 +34,8 @@ Cvar* crosshair;
 
 float h2_introTime = 0.0;
 
+vrect_t scr_vrect;
+
 void SCR_InitCommon()
 {
 	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);

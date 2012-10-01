@@ -71,8 +71,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "render.h"
 #include "client.h"
 #include "keys.h"
-#include "view.h"
-#include "menu.h"
 #endif
 
 //=============================================================================

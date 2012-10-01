@@ -67,6 +67,7 @@ void SCR_DrawSmallString(int x, int y, const char* string);
 extern Cvar* scr_viewsize;
 extern Cvar* crosshair;
 extern float h2_introTime;
+extern vrect_t scr_vrect;			// position of render window
 
 void SCR_InitCommon();
 void SCR_EndLoadingPlaque();

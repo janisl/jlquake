@@ -21,6 +21,7 @@ static Cvar* cl_polyblend;
 
 void V_SharedInit()
 {
+	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
 
 	if (GGameType & GAME_QuakeHexen)

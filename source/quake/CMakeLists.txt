@@ -12,7 +12,6 @@ add_executable(jlquake
 	net_main.cpp
 	r_part.cpp
 	sys_linux.cpp
-	view.cpp
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake ${CLIENTS_LIBS})

@@ -1353,7 +1353,7 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-		V_Init();
+		V_SharedInit();
 
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 

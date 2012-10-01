@@ -80,8 +80,3 @@ qboolean CL_IsUploading(void);
 void CL_NextUpload(void);
 void CL_StartUpload(byte* data, int size);
 void CL_StopUpload(void);
-
-//
-// view.c
-//
-void V_RenderView(void);

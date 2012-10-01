@@ -717,7 +717,7 @@ void Host_Init(quakeparms_t* parms)
 		Cmd_Init();
 		Cvar_Init();
 #ifndef DEDICATED
-		V_Init();
+		V_SharedInit();
 		Chase_Init();
 #endif
 		COM_Init(parms->basedir);

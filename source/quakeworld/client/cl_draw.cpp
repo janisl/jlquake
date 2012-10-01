@@ -22,12 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // vid buffer
 
 #include "quakedef.h"
-
-extern Cvar* cl_crossx;
-extern Cvar* cl_crossy;
-extern Cvar* crosshaircolor;
-
-image_t* cs_texture;	// crosshair texture
+#include "../../client/game/quake_hexen2/view.h"
 
 /*
 ===============
@@ -38,34 +33,13 @@ void Draw_Init(void)
 {
 	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 
-	cs_texture = R_CreateCrosshairImage();
-
 	//
 	// get the other pics we need
 	//
 	draw_backtile = R_PicFromWadRepeat("backtile");
 	Con_InitBackgroundImage();
 	MQH_InitImages();
-}
-
-void Draw_Crosshair(void)
-{
-	int x, y;
-	extern vrect_t scr_vrect;
-	unsigned char* pColor;
-
-	if (crosshair->value == 2)
-	{
-		x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
-		y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
-		pColor = r_palette[crosshaircolor->integer];
-		UI_DrawStretchPicWithColour(x - 4, y - 4, 16, 16, cs_texture, pColor);
-	}
-	else if (crosshair->value)
-	{
-		UI_DrawChar(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
-			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
-	}
+	VQH_InitCrosshairTexture();
 }
 
 #define NET_GRAPHHEIGHT 32

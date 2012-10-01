@@ -23,8 +23,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // refresh
 //
-void V_RenderScene(void);		// must set cl.refdef first
-void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
-// called whenever cl.refdef or vid change
-
 void R_ParseParticleEffect(void);

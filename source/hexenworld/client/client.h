@@ -65,11 +65,6 @@ void CL_ParseServerMessage(void);
 void CL_NewTranslation(int slot);
 
 //
-// view
-//
-void V_RenderView(void);
-
-//
 // cl_pred.c
 //
 qboolean CL_CheckOrDownloadFile(char* filename);

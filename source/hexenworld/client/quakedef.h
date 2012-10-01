@@ -21,7 +21,6 @@
 #include "render.h"
 #include "client.h"
 #include "keys.h"
-#include "view.h"
 
 //=============================================================================
 

@@ -30,7 +30,6 @@ add_executable(jlqwcl
 	client/keys.cpp
 	client/net_chan.cpp
 	client/sys_linux.cpp
-	client/view.cpp
 )
 set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlqwcl ${CLIENTS_LIBS})

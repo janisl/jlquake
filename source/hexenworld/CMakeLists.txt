@@ -31,7 +31,6 @@ add_executable(jlhwcl
 	client/net_chan.cpp
 	client/r_part.cpp
 	client/sys_linux.cpp
-	client/view.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhwcl ${CLIENTS_LIBS})
