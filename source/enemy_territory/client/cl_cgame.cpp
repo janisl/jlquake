@@ -29,64 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
-#include "../../client/game/et/cg_public.h"
-
-/*
-====================
-CL_InitCGame
-
-Should only by called by CL_StartHunkUsers
-====================
-*/
-void CL_InitCGame(void)
-{
-	const char* info;
-	const char* mapname;
-	int t1, t2;
-
-	t1 = Sys_Milliseconds();
-
-	// put away the console
-	Con_Close();
-
-	// find the current mapname
-	info = cl.et_gameState.stringData + cl.et_gameState.stringOffsets[Q3CS_SERVERINFO];
-	mapname = Info_ValueForKey(info, "mapname");
-	String::Sprintf(cl.q3_mapname, sizeof(cl.q3_mapname), "maps/%s.bsp", mapname);
-
-	// load the dll
-	cgvm = VM_Create("cgame", CLET_CgameSystemCalls, VMI_NATIVE);
-	if (!cgvm)
-	{
-		common->Error("VM_Create on cgame failed");
-	}
-	cls.state = CA_LOADING;
-
-	// init for this gamestate
-	// use the lastExecutedServerCommand instead of the serverCommandSequence
-	// otherwise server commands sent just before a gamestate are dropped
-	//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
-	VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
-
-	// we will send a usercmd this frame, which
-	// will cause the server to send us the first snapshot
-	cls.state = CA_PRIMED;
-
-	t2 = Sys_Milliseconds();
-
-	common->Printf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
-
-	// have the renderer touch all its images, so they are present
-	// on the card even if the driver does deferred loading
-	R_EndRegistration();
-
-	// clear anything that got printed
-	Con_ClearNotify();
-
-//	if( cl_autorecord->integer ) {
-//		Cvar_Set( "g_synchronousClients", "1" );
-//	}
-}
 
 /*
 =================

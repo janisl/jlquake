@@ -99,7 +99,6 @@ void    SCR_UpdateScreen(void);
 //
 // cl_cgame.c
 //
-void CL_InitCGame(void);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);

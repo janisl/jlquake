@@ -122,7 +122,6 @@ int     SCR_GetBigStringWidth(const char* str);		// returns in virtual 640x480 c
 //
 // cl_cgame.c
 //
-void CL_InitCGame(void);
 void CL_SetCGameTime(void);
 void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);

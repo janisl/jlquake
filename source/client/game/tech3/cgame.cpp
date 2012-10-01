@@ -24,6 +24,84 @@
 
 vm_t* cgvm;
 
+//	Should only be called by CL_StartHunkUsers
+void CLT3_InitCGame()
+{
+	int t1 = Sys_Milliseconds();
+
+	// put away the console
+	Con_Close();
+
+	// find the current mapname
+	const char* info = GGameType & GAME_WolfSP ? cl.ws_gameState.stringData + cl.ws_gameState.stringOffsets[Q3CS_SERVERINFO] :
+		GGameType & GAME_WolfMP ? cl.wm_gameState.stringData + cl.wm_gameState.stringOffsets[Q3CS_SERVERINFO] :
+		GGameType & GAME_ET ? cl.et_gameState.stringData + cl.et_gameState.stringOffsets[Q3CS_SERVERINFO] :
+		cl.q3_gameState.stringData + cl.q3_gameState.stringOffsets[Q3CS_SERVERINFO];
+	const char* mapname = Info_ValueForKey(info, "mapname");
+	String::Sprintf(cl.q3_mapname, sizeof(cl.q3_mapname), "maps/%s.bsp", mapname);
+
+	if (GGameType & GAME_Quake3)
+	{
+		// load the dll or bytecode
+		vmInterpret_t interpret;
+		if (cl_connectedToPureServer != 0)
+		{
+			// if sv_pure is set we only allow qvms to be loaded
+			interpret = VMI_COMPILED;
+		}
+		else
+		{
+			interpret = (vmInterpret_t)(int)Cvar_VariableValue("vm_cgame");
+		}
+		cgvm = VM_Create("cgame", CLQ3_CgameSystemCalls, interpret);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		cgvm = VM_Create("cgame", CLWS_CgameSystemCalls, VMI_NATIVE);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		cgvm = VM_Create("cgame", CLWM_CgameSystemCalls, VMI_NATIVE);
+	}
+	else
+	{
+		cgvm = VM_Create("cgame", CLET_CgameSystemCalls, VMI_NATIVE);
+	}
+	if (!cgvm)
+	{
+		common->Error("VM_Create on cgame failed");
+	}
+	cls.state = CA_LOADING;
+
+	// init for this gamestate
+	// use the lastExecutedServerCommand instead of the serverCommandSequence
+	// otherwise server commands sent just before a gamestate are dropped
+	if (GGameType & GAME_ET)
+	{
+		//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
+		VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying);
+	}
+	else
+	{
+		VM_Call(cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum);
+	}
+
+	// we will send a usercmd this frame, which
+	// will cause the server to send us the first snapshot
+	cls.state = CA_PRIMED;
+
+	int t2 = Sys_Milliseconds();
+
+	common->Printf("CLT3_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
+
+	// have the renderer touch all its images, so they are present
+	// on the card even if the driver does deferred loading
+	R_EndRegistration();
+
+	// clear anything that got printed
+	Con_ClearNotify();
+}
+
 void CLT3_ShutdownCGame()
 {
 	in_keyCatchers &= ~KEYCATCH_CGAME;

@@ -1151,7 +1151,7 @@ void CL_Vid_Restart_f(void)
 	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)
 	{
 		cls.q3_cgameStarted = true;
-		CL_InitCGame();
+		CLT3_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
 	}
@@ -1302,7 +1302,7 @@ void CL_DownloadsComplete(void)
 
 	// initialize the CGame
 	cls.q3_cgameStarted = true;
-	CL_InitCGame();
+	CLT3_InitCGame();
 
 	// set pure checksums
 	CL_SendPureChecksums();

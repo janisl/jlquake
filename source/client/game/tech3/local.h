@@ -28,6 +28,7 @@ void CLT3UI_SetCDKey(char* buf);
 //
 //	CGame
 //
+void CLT3_InitCGame();
 void CLT3_ShutdownCGame();
 void CLT3_CGameRendering(stereoFrame_t stereo);
 int CLT3_CrosshairPlayer();
