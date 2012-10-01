@@ -1431,7 +1431,7 @@ CL_CalcViewValues
 Sets cl.refdef view values
 ===============
 */
-void CL_CalcViewValues(void)
+void CL_CalcViewValues(float* blendColour)
 {
 	int i;
 	float lerp, backlerp;
@@ -1513,7 +1513,7 @@ void CL_CalcViewValues(void)
 
 	// don't interpolate blend color
 	for (i = 0; i < 4; i++)
-		v_blend[i] = ps->blend[i];
+		blendColour[i] = ps->blend[i];
 
 	if (cl_add_entities->integer)
 	{

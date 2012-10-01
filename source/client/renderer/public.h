@@ -24,8 +24,6 @@ typedef int qhandle_t;
 
 #define MAX_DLIGHTS     32			// can't be increased, because bit flags are used on surfaces
 
-#define ZOMBIEFX_FADEOUT_TIME   10000
-
 /*
 ** glconfig_t
 **

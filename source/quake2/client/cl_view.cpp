@@ -35,12 +35,8 @@ Cvar* cl_testentities;
 Cvar* cl_testlights;
 Cvar* cl_testblend;
 
-Cvar* cl_polyblend;
-
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
 int num_cl_weaponmodels;
-
-float v_blend[4];				// final blending color
 
 /*
 ================
@@ -306,25 +302,6 @@ void V_Gun_Model_f(void)
 //============================================================================
 
 /*
-============
-R_PolyBlend
-============
-*/
-static void R_PolyBlend(refdef_t* fd)
-{
-	if (!cl_polyblend->value)
-	{
-		return;
-	}
-	if (!v_blend[3])
-	{
-		return;
-	}
-
-	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
-}
-
-/*
 =================
 SCR_DrawCrosshair
 =================
@@ -387,7 +364,8 @@ void V_RenderView(float stereo_separation)
 
 	R_ClearScene();
 
-	CL_CalcViewValues();
+	float v_blend[4];
+	CL_CalcViewValues(v_blend);
 
 	if (cl_add_entities->integer)
 	{
@@ -478,7 +456,7 @@ void V_RenderView(float stereo_separation)
 
 	R_RenderScene(&cl.refdef);
 
-	R_PolyBlend(&cl.refdef);
+	R_PolyBlend(&cl.refdef, v_blend);
 
 	SCR_DrawCrosshair();
 }
@@ -516,5 +494,5 @@ void V_Init(void)
 	cl_testentities = Cvar_Get("cl_testentities", "0", 0);
 	cl_testlights = Cvar_Get("cl_testlights", "0", 0);
 
-	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
+	V_SharedInit();
 }

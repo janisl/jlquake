@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "quakedef.h"
+#include "../../client/game/quake_hexen2/view.h"
 
 #include <time.h>
 
@@ -710,8 +711,6 @@ void SCR_UpdateScreen(void)
 		Con_DrawConsole();
 		UI_DrawMenu();
 	}
-
-	V_UpdatePalette();
 
 	R_EndFrame(NULL, NULL);
 }

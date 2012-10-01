@@ -15,22 +15,46 @@
 //**************************************************************************
 
 #include "../client.h"
+#include "../game/quake_hexen2/view.h"
 
-float CalcFov(float fov_x, float width, float height)
+static Cvar* cl_polyblend;
+
+void V_SharedInit()
 {
-	float a;
-	float x;
+	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
 
-	if (fov_x < 1 || fov_x > 179)
+	if (GGameType & GAME_QuakeHexen)
 	{
-		common->Error("Bad fov: %f", fov_x);
+		VQH_Init();
+	}
+}
+
+float CalcFov(float fovX, float width, float height)
+{
+	if (fovX < 1 || fovX > 179)
+	{
+		common->Error("Bad fov: %f", fovX);
 	}
 
-	x = width / tan(fov_x / 360 * M_PI);
+	float x = width / tan(fovX / 360 * M_PI);
 
-	a = atan(height / x);
+	float a = atan(height / x);
 
 	a = a * 360 / M_PI;
 
 	return a;
+}
+
+void R_PolyBlend(refdef_t* fd, float* blendColour)
+{
+	if (!cl_polyblend->value)
+	{
+		return;
+	}
+	if (!blendColour[3])
+	{
+		return;
+	}
+
+	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, blendColour[0], blendColour[1], blendColour[2], blendColour[3]);
 }

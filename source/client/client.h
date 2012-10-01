@@ -103,8 +103,7 @@ struct clientActive_t
 	int parseEntitiesNum;	// index (not anded off) into cl_parse_entities[]
 
 	//	Only for Quake and Hexen 2
-	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups
-	cshift_t qh_prev_cshifts[NUM_CSHIFTS];	// and content types
+	cshift_t qh_cshifts[NUM_CSHIFTS];		// color shifts for damage, powerups and content types
 
 	int qh_num_entities;	// held in cl_entities array
 	int qh_num_statics;		// held in cl_staticentities array

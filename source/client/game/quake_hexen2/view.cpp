@@ -19,6 +19,14 @@
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 
+//	The view is allowed to move slightly from it's true position for bobbing,
+// but if it exceeds 8 pixels linear distance (spherical, not box), the list
+// of entities sent from the server may not include everything in the pvs,
+// especially when crossing a water boudnary.
+
+static Cvar* v_contentblend;
+static Cvar* gl_cshiftpercent;
+
 static Cvar* vqh_centermove;
 static Cvar* vh2_centerrollspeed;
 
@@ -26,9 +34,9 @@ static Cvar* clqh_bob;
 static Cvar* clqh_bobcycle;
 static Cvar* clqh_bobup;
 
-Cvar* vqh_kicktime;
-Cvar* vqh_kickroll;
-Cvar* vqh_kickpitch;
+static Cvar* vqh_kicktime;
+static Cvar* vqh_kickroll;
+static Cvar* vqh_kickpitch;
 
 static Cvar* vqh_idlescale;
 static Cvar* vqh_iyaw_cycle;
@@ -40,7 +48,335 @@ static Cvar* vqh_ipitch_level;
 
 static Cvar* vqh_drawviewmodel;
 
-float v_dmg_time, v_dmg_roll, v_dmg_pitch;
+static float v_dmg_time;
+static float v_dmg_roll;
+static float v_dmg_pitch;
+
+static cshift_t cshift_empty = { {130,80,50}, 0 };
+static cshift_t cshift_water = { {130,80,50}, 128 };
+static cshift_t cshift_slime = { {0,25,5}, 150 };
+static cshift_t cshift_lava = { {255,80,0}, 150 };
+
+/*
+==============================================================================
+
+                        PALETTE FLASHES
+
+==============================================================================
+*/
+
+void VQH_ParseDamage(QMsg& message)
+{
+	int armor = message.ReadByte();
+	int blood = message.ReadByte();
+	vec3_t from;
+	message.ReadPos(from);
+
+	float count = blood * 0.5 + armor * 0.5;
+	if (count < 10)
+	{
+		count = 10;
+	}
+
+	if (GGameType & GAME_Quake)
+	{
+		cl.q1_faceanimtime = cl.qh_serverTimeFloat + 0.2;		// but sbar face into pain frame
+	}
+
+	cl.qh_cshifts[CSHIFT_DAMAGE].percent += 3 * count;
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent < 0)
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 0;
+	}
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent > 150)
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 150;
+	}
+
+	if (armor > blood)
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 200;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 100;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 100;
+	}
+	else if (armor)
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 220;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 50;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 50;
+	}
+	else
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[1] = 0;
+		cl.qh_cshifts[CSHIFT_DAMAGE].destcolor[2] = 0;
+	}
+
+	//
+	// calculate view angle kicks
+	//
+	vec3_t forward, right, up;
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		VectorSubtract(from, cl.qh_simorg, from);
+		VectorNormalize(from);
+
+		AngleVectors(cl.qh_simangles, forward, right, up);
+	}
+	else if (GGameType & GAME_Quake)
+	{
+		q1entity_t* ent = &clq1_entities[cl.viewentity];
+
+		VectorSubtract(from, ent->state.origin, from);
+		VectorNormalize(from);
+
+		AngleVectors(ent->state.angles, forward, right, up);
+	}
+	else
+	{
+		h2entity_t* ent = &h2cl_entities[cl.viewentity];
+
+		VectorSubtract(from, ent->state.origin, from);
+		VectorNormalize(from);
+
+		AngleVectors(ent->state.angles, forward, right, up);
+	}
+
+	float side = DotProduct(from, right);
+	v_dmg_roll = count * side * vqh_kickroll->value;
+
+	side = DotProduct(from, forward);
+	v_dmg_pitch = count * side * vqh_kickpitch->value;
+
+	v_dmg_time = vqh_kicktime->value;
+}
+
+static void V_cshift_f()
+{
+	cshift_empty.destcolor[0] = String::Atoi(Cmd_Argv(1));
+	cshift_empty.destcolor[1] = String::Atoi(Cmd_Argv(2));
+	cshift_empty.destcolor[2] = String::Atoi(Cmd_Argv(3));
+	cshift_empty.percent = String::Atoi(Cmd_Argv(4));
+}
+
+//	When you run over an item, the server sends this command
+static void V_BonusFlash_f()
+{
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 215;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 186;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 69;
+	cl.qh_cshifts[CSHIFT_BONUS].percent = 50;
+}
+
+static void V_DarkFlash_f()
+{
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 0;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 0;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 0;
+	cl.qh_cshifts[CSHIFT_BONUS].percent = 255;
+}
+
+static void V_WhiteFlash_f()
+{
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
+	cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 255;
+	cl.qh_cshifts[CSHIFT_BONUS].percent = 255;
+}
+
+//	Underwater, lava, etc each has a color shift
+static void VQH_SetContentsColor(int contents)
+{
+	if (!v_contentblend->value)
+	{
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		return;
+	}
+
+	switch (contents)
+	{
+	case BSP29CONTENTS_EMPTY:
+	case BSP29CONTENTS_SOLID:
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		break;
+	case BSP29CONTENTS_LAVA:
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_lava;
+		break;
+	case BSP29CONTENTS_SLIME:
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_slime;
+		break;
+	default:
+		cl.qh_cshifts[CSHIFT_CONTENTS] = cshift_water;
+	}
+}
+
+static void VQ1_CalcPowerupCshift()
+{
+	int items = GGameType & GAME_QuakeWorld ? cl.qh_stats[QWSTAT_ITEMS] : cl.q1_items;
+
+	if (items & Q1IT_QUAD)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
+	}
+	else if (items & Q1IT_SUIT)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 20;
+	}
+	else if (items & Q1IT_INVISIBILITY)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
+	}
+	else if (items & Q1IT_INVULNERABILITY)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
+	}
+	else
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 0;
+	}
+}
+
+static void VH2_CalcPowerupCshift()
+{
+	if ((int)cl.h2_v.artifact_active & (GGameType & GAME_HexenWorld ? HWARTFLAG_DIVINE_INTERVENTION : H2ARTFLAG_DIVINE_INTERVENTION))
+	{
+		cl.qh_cshifts[CSHIFT_BONUS].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_BONUS].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_BONUS].destcolor[2] = 255;
+		cl.qh_cshifts[CSHIFT_BONUS].percent = 256;
+	}
+
+	if ((int)cl.h2_v.artifact_active & (GGameType & GAME_HexenWorld ? HWARTFLAG_FROZEN : H2ARTFLAG_FROZEN))
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 20;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 70;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 65;
+	}
+	else if ((int)cl.h2_v.artifact_active & (GGameType & GAME_HexenWorld ? HWARTFLAG_STONED : H2ARTFLAG_STONED))
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 205;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 205;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 205;
+		//JL FIXME grayscale
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 80;
+		//cl.qh_cshifts[CSHIFT_POWERUP].percent = 11000;
+	}
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVISIBILITY)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 100;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 100;
+	}
+	else if ((int)cl.h2_v.artifact_active & H2ARTFLAG_INVINCIBILITY)
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[0] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[1] = 255;
+		cl.qh_cshifts[CSHIFT_POWERUP].destcolor[2] = 0;
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 30;
+	}
+	else
+	{
+		cl.qh_cshifts[CSHIFT_POWERUP].percent = 0;
+	}
+}
+
+static void VQH_UpdateCShifts()
+{
+	// drop the damage value
+	cl.qh_cshifts[CSHIFT_DAMAGE].percent -= cls.frametime * 3 / 20;
+	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent <= 0)
+	{
+		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 0;
+	}
+
+	// drop the bonus value
+	cl.qh_cshifts[CSHIFT_BONUS].percent -= cls.frametime / 10;
+	if (cl.qh_cshifts[CSHIFT_BONUS].percent <= 0)
+	{
+		cl.qh_cshifts[CSHIFT_BONUS].percent = 0;
+	}
+}
+
+static void VQH_CalcBlend(float* blendColour)
+{
+	float r = 0;
+	float g = 0;
+	float b = 0;
+	float a = 0;
+
+	for (int j = 0; j < NUM_CSHIFTS; j++)
+	{
+		if (!gl_cshiftpercent->value)
+		{
+			continue;
+		}
+
+		float a2 = (cl.qh_cshifts[j].percent * gl_cshiftpercent->value / 100.0) / 255.0;
+		if (!a2)
+		{
+			continue;
+		}
+		a = a + a2 * (1 - a);
+		a2 = a2 / a;
+		r = r * (1 - a2) + cl.qh_cshifts[j].destcolor[0] * a2;
+		g = g * (1 - a2) + cl.qh_cshifts[j].destcolor[1] * a2;
+		b = b * (1 - a2) + cl.qh_cshifts[j].destcolor[2] * a2;
+	}
+
+	blendColour[0] = r / 255.0;
+	blendColour[1] = g / 255.0;
+	blendColour[2] = b / 255.0;
+	blendColour[3] = a;
+	if (blendColour[3] > 1)
+	{
+		blendColour[3] = 1;
+	}
+	if (blendColour[3] < 0)
+	{
+		blendColour[3] = 0;
+	}
+}
+
+void VQH_DrawColourBlend()
+{
+	VQH_SetContentsColor(CM_PointContentsQ1(cl.refdef.vieworg, 0));
+	if (GGameType & GAME_Hexen2)
+	{
+		VH2_CalcPowerupCshift();
+	}
+	else
+	{
+		VQ1_CalcPowerupCshift();
+	}
+	VQH_UpdateCShifts();
+
+	float v_blend[4];
+	VQH_CalcBlend(v_blend);
+
+	R_PolyBlend(&cl.refdef, v_blend);
+}
+
+/*
+==============================================================================
+
+                        VIEW RENDERING
+
+==============================================================================
+*/
 
 //	Moves the client pitch angle towards cl.idealpitch sent by the server.
 //
@@ -412,8 +748,6 @@ static void VQH_CalcGunAngle(vec3_t viewangles)
 
 void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMessage)
 {
-	int i;
-	vec3_t forward, right, up;
 	static float oldz = 0;
 
 	if (!(GGameType & GAME_Hexen2) || !cl.h2_v.cameramode)
@@ -494,6 +828,7 @@ void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMes
 	VQH_CalcViewRoll(viewangles);
 	VQH_AddIdle(viewangles);
 
+	vec3_t forward, right, up;
 	if (GGameType & GAME_QuakeWorld)
 	{
 		if (qwViewMessage->flags & QWPF_GIB)
@@ -601,7 +936,7 @@ void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMes
 			q1view->state.origin[2] += cl.qh_viewheight;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			q1view->state.origin[i] += forward[i] * bob * 0.4;
 		}
@@ -671,7 +1006,7 @@ void VQH_CalcRefdef(qwplayer_state_t* qwViewMessage, hwplayer_state_t* hwViewMes
 			h2view->state.origin[2] += cl.qh_viewheight;
 		}
 
-		for (i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			h2view->state.origin[i] += forward[i] * bob * 0.4;
 		}
@@ -931,8 +1266,22 @@ void VQH_AddViewModel()
 	R_AddRefEntityToScene(&gun);
 }
 
-void VQH_SharedInit()
+void VQH_Init()
 {
+	Cmd_AddCommand("v_cshift", V_cshift_f);
+	Cmd_AddCommand("bf", V_BonusFlash_f);
+	if (GGameType & GAME_Hexen2)
+	{
+		Cmd_AddCommand("df", V_DarkFlash_f);
+		if (!(GGameType & GAME_HexenWorld))
+		{
+			Cmd_AddCommand("wf", V_WhiteFlash_f);
+		}
+	}
+
+	v_contentblend = Cvar_Get("v_contentblend", "1", 0);
+	gl_cshiftpercent = Cvar_Get("gl_cshiftpercent", "100", 0);
+
 	vqh_centermove = Cvar_Get("v_centermove", "0.15", 0);
 	if (GGameType & GAME_Hexen2)
 	{

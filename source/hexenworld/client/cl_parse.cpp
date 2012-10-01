@@ -1,6 +1,7 @@
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
+#include "../../client/game/quake_hexen2/view.h"
 
 const char* svc_strings[] =
 {
@@ -1039,7 +1040,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_damage:
-			V_ParseDamage();
+			VQH_ParseDamage(net_message);
 			break;
 
 		case hwsvc_serverdata:

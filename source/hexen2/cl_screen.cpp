@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "../client/game/quake_hexen2/view.h"
 
 /*
 
@@ -1113,8 +1114,6 @@ void SCR_UpdateScreen(void)
 	{
 		SCR_DrawLoading();
 	}
-
-	V_UpdatePalette();
 
 	R_EndFrame(NULL, NULL);
 }

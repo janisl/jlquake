@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../common/file_formats/spr.h"
+#include "../client/game/quake_hexen2/view.h"
 
 const char* svc_strings[] =
 {
@@ -608,7 +609,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_damage:
-			V_ParseDamage();
+			VQH_ParseDamage(net_message);
 			break;
 
 		case q1svc_serverinfo:

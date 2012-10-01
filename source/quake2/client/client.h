@@ -83,7 +83,7 @@ void CL_ParseFrame(void);
 
 void CL_ParseConfigString(void);
 
-void CL_CalcViewValues();
+void CL_CalcViewValues(float* blendColour);
 void CL_AddPacketEntities(q2frame_t* frame);
 
 //=================================================
@@ -147,8 +147,6 @@ void CL_Download_f(void);
 //
 extern int gun_frame;
 extern qhandle_t gun_model;
-
-extern float v_blend[4];
 
 void V_Init(void);
 void V_RenderView(float stereo_separation);

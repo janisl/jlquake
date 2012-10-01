@@ -558,8 +558,6 @@ void CL_Disconnect(void)
 		}
 	}
 
-	VectorClear(v_blend);
-
 	UI_ForceMenuOff();
 
 	cls.q2_connect_time = 0;

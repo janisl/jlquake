@@ -9,6 +9,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "../client/game/quake_hexen2/view.h"
 
 const char* svc_strings[] =
 {
@@ -787,7 +788,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_damage:
-			V_ParseDamage();
+			VQH_ParseDamage(net_message);
 			break;
 
 		case h2svc_serverinfo:
