@@ -18,6 +18,14 @@
 #define _CGAME_TECH3_LOCAL_H
 
 //
+//	CDKey
+//
+bool CLT3_CDKeyValidate(const char* key, const char* checksum);
+void CLT3_CDKeyForAuthorize(char* nums);
+void CLT3UI_GetCDKey(char* buf, int buflen);
+void CLT3UI_SetCDKey(char* buf);
+
+//
 //	CGame
 //
 void CLT3_ShutdownCGame();

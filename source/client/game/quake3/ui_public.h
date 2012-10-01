@@ -19,6 +19,7 @@
 
 #include "../tech3/ui_shared.h"
 
+#define Q3UI_OLD_API_VERSION  4
 #define Q3UI_API_VERSION  6
 
 enum

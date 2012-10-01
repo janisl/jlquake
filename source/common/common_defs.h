@@ -244,6 +244,3 @@ extern bool com_errorEntered;
 
 int ComQ2_ServerState();		// this should have just been a cvar...
 void ComQ2_SetServerState(int state);
-
-// centralizing the declarations for comt3_cdkey
-extern char comt3_cdkey[34];

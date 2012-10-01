@@ -72,7 +72,6 @@ void CL_NextDownload(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
-qboolean CL_CDKeyValidate(const char* key, const char* checksum);
 
 
 //

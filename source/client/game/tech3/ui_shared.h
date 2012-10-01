@@ -83,7 +83,5 @@ int LAN_ServerIsVisible(int source, int n);
 void LAN_ResetPings(int source);
 int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int s2);
 void CLT3_GetClipboardData(char* buf, int buflen);
-void CLT3UI_GetCDKey(char* buf, int buflen);
-void CLT3UI_SetCDKey(char* buf);
 
 #endif

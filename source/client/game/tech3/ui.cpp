@@ -698,36 +698,3 @@ void KeyWM_SetCatcher(int catcher)
 	}
 
 }
-
-void CLT3UI_GetCDKey(char* buf, int buflen)
-{
-	Cvar* fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
-	{
-		Com_Memcpy(buf, &comt3_cdkey[16], 16);
-		buf[16] = 0;
-	}
-	else
-	{
-		Com_Memcpy(buf, comt3_cdkey, 16);
-		buf[16] = 0;
-	}
-}
-
-void CLT3UI_SetCDKey(char* buf)
-{
-	Cvar* fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (UIT3_UsesUniqueCDKey() && fs && fs->string[0] != 0)
-	{
-		Com_Memcpy(&comt3_cdkey[16], buf, 16);
-		comt3_cdkey[32] = 0;
-		// set the flag so the fle will be written at the next opportunity
-		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	}
-	else
-	{
-		Com_Memcpy(comt3_cdkey, buf, 16);
-		// set the flag so the fle will be written at the next opportunity
-		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	}
-}

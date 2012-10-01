@@ -85,7 +85,6 @@ void CL_NextDownload(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
-qboolean CL_CDKeyValidate(const char* key, const char* checksum);
 
 void CL_AddToLimboChat(const char* str);					// NERVE - SMF
 qboolean CL_GetLimboString(int index, char* buf);			// NERVE - SMF

@@ -38,6 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../client/public.h"
 
 static Cvar* fs_basegame;
 static Cvar* fs_gamedirvar;
@@ -64,9 +65,6 @@ int FS_LoadStack()
 }
 
 //============================================================================
-
-void Com_AppendCDKey(const char* filename);
-void Com_ReadCDKey(const char* filename);
 
 /*
 ================
@@ -121,11 +119,11 @@ static void FS_Startup(const char* gameName)
 		}
 	}
 
-	Com_ReadCDKey(BASEGAME);
+	CLT3_ReadCDKey(BASEGAME);
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 	if (fs && fs->string[0] != 0)
 	{
-		Com_AppendCDKey(fs->string);
+		CLT3_AppendCDKey(fs->string);
 	}
 
 	// print the current search paths

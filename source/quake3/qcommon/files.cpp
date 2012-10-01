@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../client/public.h"
 
 static Cvar* fs_basegame;
 static Cvar* fs_gamedirvar;
@@ -55,9 +56,6 @@ bool CL_WWWBadChecksum(const char* pakname)
 {
 	return false;
 }
-
-void Com_AppendCDKey(const char* filename);
-void Com_ReadCDKey(const char* filename);
 
 /*
 ================
@@ -113,11 +111,11 @@ static void FS_Startup(const char* gameName)
 		}
 	}
 
-	Com_ReadCDKey("baseq3");
+	CLT3_ReadCDKey("baseq3");
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 	if (fs && fs->string[0] != 0)
 	{
-		Com_AppendCDKey(fs->string);
+		CLT3_AppendCDKey(fs->string);
 	}
 
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=506

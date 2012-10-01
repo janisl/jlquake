@@ -307,7 +307,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
-//-------
+	case WMUI_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 
 	case WMUI_CM_LERPTAG:
 		return CLWM_LerpTag((orientation_t*)VMA(1), (wmrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
@@ -521,6 +523,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 	case WMUI_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
+
+	case WMUI_VERIFY_CDKEY:
+		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
 //-------
 

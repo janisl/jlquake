@@ -266,7 +266,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
-//-------
+	case ETUI_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 
 	case ETUI_CM_LERPTAG:
 		return CLET_LerpTag((orientation_t*)VMA(1), (etrefEntity_t*)VMA(2), (char*)VMA(3), args[4]);
@@ -501,6 +503,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 	case ETUI_R_REMAP_SHADER:
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
+
+	case ETUI_VERIFY_CDKEY:
+		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
 //-------
 

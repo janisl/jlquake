@@ -44,6 +44,7 @@ set(CLIENT_FILES
 	game/quake2/temporary_entities.cpp
 	game/quake3/cgame.cpp
 	game/quake3/ui.cpp
+	game/tech3/cdkey.cpp
 	game/tech3/cgame.cpp
 	game/tech3/main.cpp
 	game/tech3/serverlist.cpp

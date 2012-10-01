@@ -908,7 +908,6 @@ in anyway.
 void CL_RequestAuthorization(void)
 {
 	char nums[64];
-	int i, j, l;
 	Cvar* fs;
 
 	if (!cls.authorizeServer.port)
@@ -930,25 +929,7 @@ void CL_RequestAuthorization(void)
 		return;
 	}
 
-	// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
-	j = 0;
-	l = String::Length(comt3_cdkey);
-	if (l > 32)
-	{
-		l = 32;
-	}
-	for (i = 0; i < l; i++)
-	{
-		if ((comt3_cdkey[i] >= '0' && comt3_cdkey[i] <= '9') ||
-			(comt3_cdkey[i] >= 'a' && comt3_cdkey[i] <= 'z') ||
-			(comt3_cdkey[i] >= 'A' && comt3_cdkey[i] <= 'Z')
-			)
-		{
-			nums[j] = comt3_cdkey[i];
-			j++;
-		}
-	}
-	nums[j] = 0;
+	CLT3_CDKeyForAuthorize(nums);
 
 	fs = Cvar_Get("cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO);
 	NET_OutOfBandPrint(NS_CLIENT, cls.authorizeServer, va("getKeyAuthorize %i %s", fs->integer, nums));
@@ -2922,79 +2903,6 @@ CL_ShowIP_f
 void CL_ShowIP_f(void)
 {
 	SOCK_ShowIP();
-}
-
-/*
-=================
-bool CL_CDKeyValidate
-=================
-*/
-qboolean CL_CDKeyValidate(const char* key, const char* checksum)
-{
-	char ch;
-	byte sum;
-	char chs[3];
-	int i, len;
-
-	len = String::Length(key);
-	if (len != CDKEY_LEN)
-	{
-		return false;
-	}
-
-	if (checksum && String::Length(checksum) != CDCHKSUM_LEN)
-	{
-		return false;
-	}
-
-	sum = 0;
-	// for loop gets rid of conditional assignment warning
-	for (i = 0; i < len; i++)
-	{
-		ch = *key++;
-		if (ch >= 'a' && ch <= 'z')
-		{
-			ch -= 32;
-		}
-		switch (ch)
-		{
-		case '2':
-		case '3':
-		case '7':
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'G':
-		case 'H':
-		case 'J':
-		case 'L':
-		case 'P':
-		case 'R':
-		case 'S':
-		case 'T':
-		case 'W':
-			sum = (sum << 1) ^ ch;
-			continue;
-		default:
-			return false;
-		}
-	}
-
-
-	sprintf(chs, "%02x", sum);
-
-	if (checksum && !String::ICmp(chs, checksum))
-	{
-		return true;
-	}
-
-	if (!checksum)
-	{
-		return true;
-	}
-
-	return false;
 }
 
 // NERVE - SMF

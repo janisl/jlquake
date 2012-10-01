@@ -25,34 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ====================
-CL_UISystemCalls
-
-The ui module is making a system call
-====================
-*/
-qintptr CL_UISystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//--------
-	case Q3UI_UPDATESCREEN:
-		SCR_UpdateScreen();
-		return 0;
-//--------
-	case Q3UI_VERIFY_CDKEY:
-		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
-//--------
-	}
-	return CLQ3_UISystemCalls(args);
-}
-
-/*
-====================
 CL_InitUI
 ====================
 */
-#define UI_OLD_API_VERSION  4
-
 void CL_InitUI(void)
 {
 	int v;
@@ -68,7 +43,7 @@ void CL_InitUI(void)
 	{
 		interpret = (vmInterpret_t)(int)Cvar_VariableValue("vm_ui");
 	}
-	uivm = VM_Create("ui", CL_UISystemCalls, interpret);
+	uivm = VM_Create("ui", CLQ3_UISystemCalls, interpret);
 	if (!uivm)
 	{
 		common->FatalError("VM_Create on UI failed");
@@ -76,7 +51,7 @@ void CL_InitUI(void)
 
 	// sanity check
 	v = VM_Call(uivm, UI_GETAPIVERSION);
-	if (v == UI_OLD_API_VERSION)
+	if (v == Q3UI_OLD_API_VERSION)
 	{
 //		common->Printf(S_COLOR_YELLOW "WARNING: loading old Quake III Arena User Interface version %d\n", v );
 		// init for this gamestate

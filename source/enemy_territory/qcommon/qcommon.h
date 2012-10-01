@@ -91,9 +91,6 @@ MISC
 ==============================================================
 */
 
-void Com_AppendCDKey(const char* filename);
-void Com_ReadCDKey(const char* filename);
-
 // returnbed by Sys_GetProcessorId
 #define CPUID_GENERIC           0			// any unrecognized processor
 

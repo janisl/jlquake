@@ -237,7 +237,4 @@ MATHLIB
 void QDECL Com_Error(int level, const char* error, ...);
 void QDECL Com_Printf(const char* msg, ...);
 
-#define CDKEY_LEN 16
-#define CDCHKSUM_LEN 2
-
 #endif	// __Q_SHARED_H

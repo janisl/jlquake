@@ -221,7 +221,4 @@ void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
 ==========================================================
 */
 
-#define CDKEY_LEN 16
-#define CDCHKSUM_LEN 2
-
 #endif	// __Q_SHARED_H

@@ -41,6 +41,9 @@ bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 
 bool UIT3_GameCommand();
+void CLT3_ReadCDKey(const char* gameName);
+void CLT3_AppendCDKey(const char* gameName);
+void CLT3_WriteCDKey();
 
 void Con_ConsolePrint(const char* txt);
 

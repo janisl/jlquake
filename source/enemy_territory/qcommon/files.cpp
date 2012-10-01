@@ -39,6 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
+#include "../../client/public.h"
 
 //bani - made fs_gamedir non-static
 static Cvar* fs_buildgame;
@@ -136,11 +137,11 @@ static void FS_Startup(const char* gameName)
 		}
 	}
 
-	Com_ReadCDKey(BASEGAME);
+	CLT3_ReadCDKey(BASEGAME);
 	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
 	if (fs && fs->string[0] != 0)
 	{
-		Com_AppendCDKey(fs->string);
+		CLT3_AppendCDKey(fs->string);
 	}
 
 	// show_bug.cgi?id=506

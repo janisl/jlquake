@@ -180,7 +180,9 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		R_ModelBounds(args[1], (float*)VMA(2), (float*)VMA(3));
 		return 0;
 
-//--------
+	case Q3UI_UPDATESCREEN:
+		SCR_UpdateScreen();
+		return 0;
 
 	case Q3UI_CM_LERPTAG:
 		R_LerpTag((orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6));
@@ -395,7 +397,8 @@ qintptr CLQ3_UISystemCalls(qintptr* args)
 		R_RemapShader((char*)VMA(1), (char*)VMA(2), (char*)VMA(3));
 		return 0;
 
-//--------
+	case Q3UI_VERIFY_CDKEY:
+		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
 	default:
 		common->Error("Bad UI system trap: %i", static_cast<int>(args[0]));

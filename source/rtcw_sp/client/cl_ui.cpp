@@ -42,13 +42,6 @@ qintptr CL_UISystemCalls(qintptr* args)
 	switch (args[0])
 	{
 //-------
-	case WSUI_UPDATESCREEN:
-		SCR_UpdateScreen();
-		return 0;
-//-------
-	case WSUI_VERIFY_CDKEY:
-		return CL_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
-
 	case WSUI_CL_GETLIMBOSTRING:
 		return CL_GetLimboString(args[1], (char*)VMA(2));
 //-------

@@ -104,3 +104,15 @@ void CL_ForwardCommandToServer()
 void Con_ConsolePrint(const char* txt)
 {
 }
+
+void CLT3_ReadCDKey(const char* gameName)
+{
+}
+
+void CLT3_AppendCDKey(const char* gameName)
+{
+}
+
+void CLT3_WriteCDKey()
+{
+}
