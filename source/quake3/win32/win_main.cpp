@@ -29,16 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static char sys_cmdline[MAX_STRING_CHARS];
 
 /*
-==================
-Sys_BeginProfiling
-==================
-*/
-void Sys_BeginProfiling(void)
-{
-	// this is just used on the mac build
-}
-
-/*
 =============
 Sys_Error
 

@@ -171,9 +171,6 @@ void    Sys_DisplaySystemConsole(qboolean show);
 
 int     Sys_GetProcessorId(void);
 
-void    Sys_BeginProfiling(void);
-void    Sys_EndProfiling(void);
-
 unsigned int Sys_ProcessorCount();
 
 extern huffman_t clientHuffTables;

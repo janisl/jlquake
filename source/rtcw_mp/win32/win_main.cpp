@@ -43,16 +43,6 @@ If you have questions concerning this license or the applicable additional terms
 static char sys_cmdline[MAX_STRING_CHARS];
 
 /*
-==================
-Sys_BeginProfiling
-==================
-*/
-void Sys_BeginProfiling(void)
-{
-	// this is just used on the mac build
-}
-
-/*
 =============
 Sys_Error
 

@@ -47,12 +47,9 @@ extern Cvar* cl_shownuments;				// DHM - Nerve
 extern Cvar* cl_visibleClients;				// DHM - Nerve
 extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
-extern Cvar* cl_showTimeDelta;
 extern Cvar* cl_freezeDemo;
 
 extern Cvar* cl_timedemo;
-
-extern Cvar* cl_activeAction;
 
 extern Cvar* cl_allowDownload;
 
@@ -123,7 +120,6 @@ int     SCR_GetBigStringWidth(const char* str);		// returns in virtual 640x480 c
 // cl_cgame.c
 //
 void CL_SetCGameTime(void);
-void CL_FirstSnapshot(void);
 void CL_ShaderStateChanged(void);
 
 

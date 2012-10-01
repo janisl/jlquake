@@ -46,7 +46,6 @@ Cvar* cl_timeout;
 Cvar* cl_maxpackets;
 Cvar* cl_packetdup;
 Cvar* cl_timeNudge;
-Cvar* cl_showTimeDelta;
 Cvar* cl_freezeDemo;
 
 Cvar* cl_shownuments;			// DHM - Nerve
@@ -55,8 +54,6 @@ Cvar* cl_showSend;
 Cvar* cl_timedemo;
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
-
-Cvar* cl_activeAction;
 
 Cvar* cl_autorecord;
 
@@ -2628,10 +2625,10 @@ void CL_Init(void)
 	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
 	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
-	cl_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
+	clt3_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
 	rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
-	cl_activeAction = Cvar_Get("activeAction", "", CVAR_TEMP);
+	clt3_activeAction = Cvar_Get("activeAction", "", CVAR_TEMP);
 	cl_autorecord = Cvar_Get("cl_autorecord", "0", CVAR_TEMP);
 
 	cl_timedemo = Cvar_Get("timedemo", "0", 0);

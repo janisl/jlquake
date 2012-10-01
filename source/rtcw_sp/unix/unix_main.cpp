@@ -67,10 +67,6 @@ void InitSig(void);
 // General routines
 // =======================================================================
 
-void Sys_BeginProfiling(void)
-{
-}
-
 /*
 =================
 Sys_In_Restart_f

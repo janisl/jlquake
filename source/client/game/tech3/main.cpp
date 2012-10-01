@@ -23,6 +23,8 @@
 
 Cvar* clet_profile;
 Cvar* clt3_showServerCommands;
+Cvar* clt3_showTimeDelta;
+Cvar* clt3_activeAction;
 
 void CLET_PurgeCache()
 {

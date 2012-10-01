@@ -43,10 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // General routines
 // =======================================================================
 
-void Sys_BeginProfiling(void)
-{
-}
-
 #ifndef DEDICATED
 /*
 =================

@@ -62,10 +62,6 @@ unsigned sys_frame_time;
 
 uid_t saved_euid;
 
-void Sys_BeginProfiling(void)
-{
-}
-
 /*
 =================
 Sys_In_Restart_f

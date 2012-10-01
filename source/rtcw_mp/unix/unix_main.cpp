@@ -66,10 +66,6 @@ uid_t saved_euid;
 // General routines
 // =======================================================================
 
-void Sys_BeginProfiling(void)
-{
-}
-
 #ifndef DEDICATED
 /*
 =================

@@ -41,6 +41,8 @@ void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
 int Key_GetCatcher();
 void KeyQ3_SetCatcher(int catcher);
 void KeyWM_SetCatcher(int catcher);
+void CLT3_AdjustTimeDelta();
+void CLT3_FirstSnapshot();
 
 //
 //	Main
@@ -49,6 +51,8 @@ void KeyWM_SetCatcher(int catcher);
 
 extern Cvar* clet_profile;
 extern Cvar* clt3_showServerCommands;
+extern Cvar* clt3_showTimeDelta;
+extern Cvar* clt3_activeAction;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();

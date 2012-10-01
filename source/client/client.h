@@ -278,7 +278,7 @@ struct clientActive_t
 	int q3_serverTimeDelta;	// cl.serverTime = cls.realtime + cl.serverTimeDelta
 	// this value changes as net lag varies
 	bool q3_extrapolatedSnapshot;	// set if any cgame frame has been forced to extrapolate
-									// cleared when CL_AdjustTimeDelta looks at it
+									// cleared when CLT3_AdjustTimeDelta looks at it
 	bool q3_newSnapshots;		// set on parse of any valid packet
 
 	q3gameState_t q3_gameState;			// configstrings

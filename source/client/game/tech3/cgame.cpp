@@ -22,6 +22,8 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 
+#define RESET_TIME  500
+
 vm_t* cgvm;
 
 //	Should only be called by CL_StartHunkUsers
@@ -615,4 +617,184 @@ void CLT3_AddToLimboChat(const char* str)
 		len++;
 	}
 	*p = 0;
+}
+
+//	Adjust the clients view of server time.
+//
+//	We attempt to have cl.serverTime exactly equal the server's view
+// of time plus the timeNudge, but with variable latencies over
+// the internet it will often need to drift a bit to match conditions.
+//
+//	Our ideal time would be to have the adjusted time approach, but not pass,
+// the very latest snapshot.
+//
+//	Adjustments are only made when a new snapshot arrives with a rational
+// latency, which keeps the adjustment process framerate independent and
+// prevents massive overadjustment during times of significant packet loss
+// or bursted delayed packets.
+void CLT3_AdjustTimeDelta()
+{
+	cl.q3_newSnapshots = false;
+
+	// the delta never drifts when replaying a demo
+	if (clc.demoplaying)
+	{
+		return;
+	}
+
+	// if the current time is WAY off, just correct to the current value
+	int resetTime;
+	if (com_sv_running->integer)
+	{
+		resetTime = 100;
+	}
+	else
+	{
+		resetTime = RESET_TIME;
+	}
+
+	int newDelta = GGameType & GAME_WolfSP ? cl.ws_snap.serverTime - cls.realtime :
+		GGameType & GAME_WolfMP ? cl.wm_snap.serverTime - cls.realtime :
+		GGameType & GAME_ET ? cl.et_snap.serverTime - cls.realtime :
+		cl.q3_snap.serverTime - cls.realtime;
+	int deltaDelta = abs(newDelta - cl.q3_serverTimeDelta);
+
+	if (deltaDelta > RESET_TIME)
+	{
+		cl.q3_serverTimeDelta = newDelta;
+		if (GGameType & GAME_WolfSP)
+		{
+			cl.q3_oldServerTime = cl.ws_snap.serverTime;	// FIXME: is this a problem for cgame?
+			cl.serverTime = cl.ws_snap.serverTime;
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			cl.q3_oldServerTime = cl.wm_snap.serverTime;	// FIXME: is this a problem for cgame?
+			cl.serverTime = cl.wm_snap.serverTime;
+		}
+		else if (GGameType & GAME_ET)
+		{
+			cl.q3_oldServerTime = cl.et_snap.serverTime;	// FIXME: is this a problem for cgame?
+			cl.serverTime = cl.et_snap.serverTime;
+		}
+		else
+		{
+			cl.q3_oldServerTime = cl.q3_snap.serverTime;	// FIXME: is this a problem for cgame?
+			cl.serverTime = cl.q3_snap.serverTime;
+		}
+		if (clt3_showTimeDelta->integer)
+		{
+			common->Printf("<RESET> ");
+		}
+	}
+	else if (deltaDelta > 100)
+	{
+		// fast adjust, cut the difference in half
+		if (clt3_showTimeDelta->integer)
+		{
+			common->Printf("<FAST> ");
+		}
+		cl.q3_serverTimeDelta = (cl.q3_serverTimeDelta + newDelta) >> 1;
+	}
+	else
+	{
+		// slow drift adjust, only move 1 or 2 msec
+
+		// if any of the frames between this and the previous snapshot
+		// had to be extrapolated, nudge our sense of time back a little
+		// the granularity of +1 / -2 is too high for timescale modified frametimes
+		if (com_timescale->value == 0 || com_timescale->value == 1)
+		{
+			if (cl.q3_extrapolatedSnapshot)
+			{
+				cl.q3_extrapolatedSnapshot = false;
+				cl.q3_serverTimeDelta -= 2;
+			}
+			else
+			{
+				// otherwise, move our sense of time forward to minimize total latency
+				cl.q3_serverTimeDelta++;
+			}
+		}
+	}
+
+	if (clt3_showTimeDelta->integer)
+	{
+		common->Printf("%i ", cl.q3_serverTimeDelta);
+	}
+}
+
+void CLT3_FirstSnapshot()
+{
+	if (GGameType & GAME_WolfSP)
+	{
+		// ignore snapshots that don't have entities
+		if (cl.ws_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE)
+		{
+			return;
+		}
+		cls.state = CA_ACTIVE;
+
+		// set the timedelta so we are exactly on this first frame
+		cl.q3_serverTimeDelta = cl.ws_snap.serverTime - cls.realtime;
+		cl.q3_oldServerTime = cl.ws_snap.serverTime;
+
+		clc.q3_timeDemoBaseTime = cl.ws_snap.serverTime;
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		// ignore snapshots that don't have entities
+		if (cl.wm_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE)
+		{
+			return;
+		}
+		cls.state = CA_ACTIVE;
+
+		// set the timedelta so we are exactly on this first frame
+		cl.q3_serverTimeDelta = cl.wm_snap.serverTime - cls.realtime;
+		cl.q3_oldServerTime = cl.wm_snap.serverTime;
+
+		clc.q3_timeDemoBaseTime = cl.wm_snap.serverTime;
+	}
+	else if (GGameType & GAME_ET)
+	{
+		// ignore snapshots that don't have entities
+		if (cl.et_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE)
+		{
+			return;
+		}
+		cls.state = CA_ACTIVE;
+
+		// set the timedelta so we are exactly on this first frame
+		cl.q3_serverTimeDelta = cl.et_snap.serverTime - cls.realtime;
+		cl.q3_oldServerTime = cl.et_snap.serverTime;
+
+		clc.q3_timeDemoBaseTime = cl.et_snap.serverTime;
+	}
+	else
+	{
+		// ignore snapshots that don't have entities
+		if (cl.q3_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE)
+		{
+			return;
+		}
+		cls.state = CA_ACTIVE;
+
+		// set the timedelta so we are exactly on this first frame
+		cl.q3_serverTimeDelta = cl.q3_snap.serverTime - cls.realtime;
+		cl.q3_oldServerTime = cl.q3_snap.serverTime;
+
+		clc.q3_timeDemoBaseTime = cl.q3_snap.serverTime;
+	}
+
+	// if this is the first frame of active play,
+	// execute the contents of activeAction now
+	// this is to allow scripting a timedemo to start right
+	// after loading
+	if (clt3_activeAction->string[0])
+	{
+		Cbuf_AddText(clt3_activeAction->string);
+		Cbuf_AddText("\n");
+		Cvar_Set("activeAction", "");
+	}
 }

@@ -187,9 +187,6 @@ int     Sys_GetProcessorId(void);
 
 void    Sys_SetErrorText(const char* text);
 
-void    Sys_BeginProfiling(void);
-void    Sys_EndProfiling(void);
-
 unsigned int Sys_ProcessorCount();
 
 int Sys_GetHighQualityCPU();
