@@ -2549,24 +2549,6 @@ void CL_AddToLimboChat(const char* str)
 	*p = 0;
 }
 
-/*
-=======================
-CL_GetLimboString
-
-=======================
-*/
-qboolean CL_GetLimboString(int index, char* buf)
-{
-	if (index >= LIMBOCHAT_HEIGHT_WA)
-	{
-		return false;
-	}
-
-	String::NCpy(buf, cl.wa_limboChatMsgs[index], 140);
-	return true;
-}
-// -NERVE - SMF
-
 float* CL_GetSimOrg()
 {
 	return NULL;

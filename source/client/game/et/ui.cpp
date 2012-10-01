@@ -507,7 +507,8 @@ qintptr CLET_UISystemCalls(qintptr* args)
 	case ETUI_VERIFY_CDKEY:
 		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
-//-------
+	case ETUI_CL_GETLIMBOSTRING:
+		return CLT3_GetLimboString(args[1], (char*)VMA(2));
 
 	case ETUI_CL_TRANSLATE_STRING:
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
@@ -519,7 +520,9 @@ qintptr CLET_UISystemCalls(qintptr* args)
 	case ETUI_GET_AUTOUPDATE:
 		return 0;
 
-//-------
+	case ETUI_OPENURL:
+		CLT3_OpenURL((const char*)VMA(1));
+		return 0;
 
 	case ETUI_GETHUNKDATA:
 		CLET_GetHunkInfo((int*)VMA(1), (int*)VMA(2));

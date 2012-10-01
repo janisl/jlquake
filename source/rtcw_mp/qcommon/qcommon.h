@@ -192,9 +192,6 @@ void    Sys_EndProfiling(void);
 
 unsigned int Sys_ProcessorCount();
 
-// NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour
-void Sys_StartProcess(const char* exeName, qboolean doexit);				// NERVE - SMF
-void Sys_OpenURL(const char* url, qboolean doexit);							// NERVE - SMF
 int Sys_GetHighQualityCPU();
 
 #ifdef __linux__

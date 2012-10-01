@@ -14,38 +14,12 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "client.h"
 #include "windows_shared.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 HWND GMainWindow;
 bool Minimized;
 bool ActiveApp;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Sys_GetClipboardData
-//
-//==========================================================================
 
 char* Sys_GetClipboardData()
 {
@@ -69,4 +43,61 @@ char* Sys_GetClipboardData()
 		CloseClipboard();
 	}
 	return data;
+}
+
+void Sys_StartProcess(const char* exeName, bool doExit)
+{
+	STARTUPINFO si;
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+
+	TCHAR szPathOrig[_MAX_PATH];
+	GetCurrentDirectory(_MAX_PATH, szPathOrig);
+
+	PROCESS_INFORMATION pi;
+	if (!CreateProcess(NULL, va("%s\\%s", szPathOrig, exeName), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+	{
+		// couldn't start it, popup error box
+		common->Error("Could not start process: '%s\\%s' ", szPathOrig, exeName);
+		return;
+	}
+
+	// TTimo: similar way of exiting as used in Sys_OpenURL below
+	if (doExit)
+	{
+		Cbuf_ExecuteText(EXEC_APPEND, "quit\n");
+	}
+}
+
+void Sys_OpenURL(const char* url, bool doexit)
+{
+	static bool doexit_spamguard = false;
+
+	if (doexit_spamguard)
+	{
+		common->DPrintf("Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url);
+		return;
+	}
+
+	common->Printf("Open URL: %s\n", url);
+
+	if (!ShellExecute(NULL, "open", url, NULL, NULL, SW_RESTORE))
+	{
+		// couldn't start it, popup error box
+		common->Error("Could not open url: '%s' ", url);
+		return;
+	}
+
+	HWND wnd = GetForegroundWindow();
+
+	if (wnd)
+	{
+		ShowWindow(wnd, SW_MAXIMIZE);
+	}
+
+	if (doexit)
+	{
+		doexit_spamguard = true;
+		Cbuf_ExecuteText(EXEC_APPEND, "quit\n");
+	}
 }

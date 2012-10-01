@@ -522,7 +522,8 @@ qintptr CLWS_UISystemCalls(qintptr* args)
 	case WSUI_VERIFY_CDKEY:
 		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
-//-------
+	case WSUI_CL_GETLIMBOSTRING:
+		return CLT3_GetLimboString(args[1], (char*)VMA(2));
 
 	default:
 		common->Error("Bad UI system trap: %i", static_cast<int>(args[0]));

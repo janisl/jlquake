@@ -2961,39 +2961,6 @@ void CL_AddToLimboChat(const char* str)
 	*p = 0;
 }
 
-/*
-=======================
-CL_GetLimboString
-
-=======================
-*/
-qboolean CL_GetLimboString(int index, char* buf)
-{
-	if (index >= LIMBOCHAT_HEIGHT_WA)
-	{
-		return false;
-	}
-
-	String::NCpy(buf, cl.wa_limboChatMsgs[index], 140);
-	return true;
-}
-// -NERVE - SMF
-
-/*
-=======================
-CL_OpenURLForCvar
-=======================
-*/
-void CL_OpenURL(const char* url)
-{
-	if (!url || !String::Length(url))
-	{
-		common->Printf("%s", CL_TranslateStringBuf("invalid/empty URL\n"));
-		return;
-	}
-	Sys_OpenURL(url, true);
-}
-
 float* CL_GetSimOrg()
 {
 	return NULL;

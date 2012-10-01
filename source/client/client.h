@@ -625,6 +625,8 @@ void Chase_Init();
 void Chase_Update();
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
+void Sys_StartProcess(const char* exeName, bool doExit);
+void Sys_OpenURL(const char* url, bool doExit);
 
 float frand();	// 0 to 1
 float crand();	// -1 to 1

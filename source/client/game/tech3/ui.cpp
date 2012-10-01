@@ -698,3 +698,24 @@ void KeyWM_SetCatcher(int catcher)
 	}
 
 }
+
+bool CLT3_GetLimboString(int index, char* buf)
+{
+	if (index >= LIMBOCHAT_HEIGHT_WA)
+	{
+		return false;
+	}
+
+	String::NCpy(buf, cl.wa_limboChatMsgs[index], 140);
+	return true;
+}
+
+void CLT3_OpenURL(const char* url)
+{
+	if (!url || !String::Length(url))
+	{
+		common->Printf("%s", CL_TranslateStringBuf("invalid/empty URL\n"));
+		return;
+	}
+	Sys_OpenURL(url, true);
+}

@@ -37,6 +37,8 @@ bool stdin_active = true;
 
 static char HomePathSuffix[MAX_OSPATH];
 
+char exit_cmdline[MAX_CMD] = "";
+
 //	Test an file given OS path:
 //	returns -1 if not found
 //	returns 1 if directory
@@ -401,5 +403,40 @@ void Sys_UnloadDll(void* handle)
 	if (err != NULL)
 	{
 		common->Printf("Sys_UnloadDll: failed on dlclose: \"%s\"!\n", err);
+	}
+}
+
+//	actually forks and starts a process
+//
+//UGLY HACK:
+//  Sys_StartProcess works with a command line only
+//  if this command line is actually a binary with command line parameters,
+//  the only way to do this on unix is to use a system() call
+//  but system doesn't replace the current process, which leads to a situation like:
+//  wolf.x86--spawned_process.x86
+//  in the case of auto-update for instance, this will cause write access denied on wolf.x86:
+//  wolf-beta/2002-March/000079.html
+//  we hack the implementation here, if there are no space in the command line, assume it's a straight process and use execl
+//  otherwise, use system ..
+//  The clean solution would be Sys_StartProcess and Sys_StartProcess_Args..
+void Sys_DoStartProcess(const char* cmdline)
+{
+	switch (fork())
+	{
+	case -1:
+		// main thread
+		break;
+	case 0:
+		if (strchr(cmdline, ' '))
+		{
+			system(cmdline);
+		}
+		else
+		{
+			execl(cmdline, cmdline, NULL);
+			printf("execl failed: %s\n", strerror(errno));
+		}
+		_exit(0);
+		break;
 	}
 }

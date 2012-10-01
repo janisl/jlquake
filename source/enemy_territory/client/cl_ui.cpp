@@ -32,29 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 /*
 ====================
-CL_UISystemCalls
-
-The ui module is making a system call
-====================
-*/
-qintptr CL_UISystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//-------
-	case ETUI_CL_GETLIMBOSTRING:
-		return CL_GetLimboString(args[1], (char*)VMA(2));
-//-------
-	case ETUI_OPENURL:
-		CL_OpenURL((const char*)VMA(1));
-		return 0;
-//-------
-	}
-	return CLET_UISystemCalls(args);
-}
-
-/*
-====================
 CL_InitUI
 ====================
 */
@@ -63,7 +40,7 @@ void CL_InitUI(void)
 {
 	int v;
 
-	uivm = VM_Create("ui", CL_UISystemCalls, VMI_NATIVE);
+	uivm = VM_Create("ui", CLET_UISystemCalls, VMI_NATIVE);
 	if (!uivm)
 	{
 		common->FatalError("VM_Create on UI failed");

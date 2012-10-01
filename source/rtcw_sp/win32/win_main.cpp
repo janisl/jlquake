@@ -42,66 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static char sys_cmdline[MAX_STRING_CHARS];
 
-//----(SA)	from NERVE MP codebase (10/15/01)  (checkins at time of this file should be related)
-/*
-==================
-Sys_StartProcess
-==================
-*/
-void Sys_StartProcess(const char* exeName, qboolean doexit)					// NERVE - SMF
-{
-	TCHAR szPathOrig[_MAX_PATH];
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-
-	ZeroMemory(&si, sizeof(si));
-	si.cb = sizeof(si);
-
-	GetCurrentDirectory(_MAX_PATH, szPathOrig);
-	if (!CreateProcess(NULL, va("%s\\%s", szPathOrig, exeName), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
-	{
-		// couldn't start it, popup error box
-		common->Error("Could not start process: '%s\\%s' ", szPathOrig, exeName);
-		return;
-	}
-
-	// TTimo: similar way of exiting as used in Sys_OpenURL below
-	if (doexit)
-	{
-		Cbuf_ExecuteText(EXEC_APPEND, "quit");
-	}
-}
-
-/*
-==================
-Sys_OpenURL
-==================
-*/
-void Sys_OpenURL(char* url, qboolean doexit)					// NERVE - SMF
-{
-	HWND wnd;
-
-	if (!ShellExecute(NULL, "open", url, NULL, NULL, SW_RESTORE))
-	{
-		// couldn't start it, popup error box
-		common->Error("Could not open url: '%s' ", url);
-		return;
-	}
-
-	wnd = GetForegroundWindow();
-
-	if (wnd)
-	{
-		ShowWindow(wnd, SW_MAXIMIZE);
-	}
-
-	if (doexit)
-	{
-		Cbuf_ExecuteText(EXEC_APPEND, "quit");
-	}
-}
-//----(SA)	end
-
 /*
 ==================
 Sys_BeginProfiling

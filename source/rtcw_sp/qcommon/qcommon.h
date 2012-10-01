@@ -190,11 +190,6 @@ void    Sys_EndProfiling(void);
 
 unsigned int Sys_ProcessorCount();
 
-void Sys_StartProcess(const char* exeName, qboolean doexit);				// NERVE - SMF
-// TTimo
-// show_bug.cgi?id=447
-//int Sys_ShellExecute(char *op, char *file, qboolean doexit, char *params, char *dir);	//----(SA) added
-void Sys_OpenURL(char* url, qboolean doexit);						// NERVE - SMF
 int Sys_GetHighQualityCPU();
 
 extern huffman_t clientHuffTables;

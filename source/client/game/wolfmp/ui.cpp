@@ -527,7 +527,8 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 	case WMUI_VERIFY_CDKEY:
 		return CLT3_CDKeyValidate((char*)VMA(1), (char*)VMA(2));
 
-//-------
+	case WMUI_CL_GETLIMBOSTRING:
+		return CLT3_GetLimboString(args[1], (char*)VMA(2));
 
 	case WMUI_CL_TRANSLATE_STRING:
 		CL_TranslateString((char*)VMA(1), (char*)VMA(2));
@@ -539,7 +540,9 @@ qintptr CLWM_UISystemCalls(qintptr* args)
 	case WMUI_GET_AUTOUPDATE:
 		return 0;
 
-//-------
+	case WMUI_OPENURL:
+		CLT3_OpenURL((const char*)VMA(1));
+		return 0;
 
 	default:
 		common->Error("Bad UI system trap: %i", static_cast<int>(args[0]));

@@ -89,10 +89,6 @@ void Sys_In_Restart_f(void)
 // general sys routines
 // =============================================================
 
-#define MAX_CMD 1024
-static char exit_cmdline[MAX_CMD] = "";
-void Sys_DoStartProcess(const char* cmdline);
-
 // single exit point (regular exit or in case of signal fault)
 void Sys_Exit(int ex)
 {
@@ -396,124 +392,6 @@ void Sys_Chmod(char* file, int mode)
 		common->Printf("chmod('%s', %d) failed: errno %d\n", file, perm, errno);
 	}
 	common->DPrintf("chmod +%d '%s'\n", mode, file);
-}
-
-/*
-==================
-Sys_DoStartProcess
-actually forks and starts a process
-
-UGLY HACK:
-  Sys_StartProcess works with a command line only
-  if this command line is actually a binary with command line parameters,
-  the only way to do this on unix is to use a system() call
-  but system doesn't replace the current process, which leads to a situation like:
-  wolf.x86--spawned_process.x86
-  in the case of auto-update for instance, this will cause write access denied on wolf.x86:
-  wolf-beta/2002-March/000079.html
-  we hack the implementation here, if there are no space in the command line, assume it's a straight process and use execl
-  otherwise, use system ..
-  The clean solution would be Sys_StartProcess and Sys_StartProcess_Args..
-==================
-*/
-void Sys_DoStartProcess(const char* cmdline)
-{
-	switch (fork())
-	{
-	case -1:
-		// main thread
-		break;
-	case 0:
-		if (strchr(cmdline, ' '))
-		{
-			system(cmdline);
-		}
-		else
-		{
-			execl(cmdline, cmdline, NULL);
-			printf("execl failed: %s\n", strerror(errno));
-		}
-		_exit(0);
-		break;
-	}
-}
-
-/*
-==================
-Sys_StartProcess
-if !doexit, start the process asap
-otherwise, push it for execution at exit
-(i.e. let complete shutdown of the game and freeing of resources happen)
-NOTE: might even want to add a small delay?
-==================
-*/
-void Sys_StartProcess(const char* cmdline, qboolean doexit)
-{
-
-	if (doexit)
-	{
-		common->DPrintf("Sys_StartProcess %s (delaying to final exit)\n", cmdline);
-		String::NCpyZ(exit_cmdline, cmdline, MAX_CMD);
-		Cbuf_ExecuteText(EXEC_APPEND, "quit\n");
-		return;
-	}
-
-	common->DPrintf("Sys_StartProcess %s\n", cmdline);
-	Sys_DoStartProcess(cmdline);
-}
-
-/*
-=================
-Sys_OpenURL
-=================
-*/
-void Sys_OpenURL(const char* url, qboolean doexit)
-{
-	const char* basepath, * homepath, * pwdpath;
-	char fname[20];
-	char fn[MAX_OSPATH];
-	char cmdline[MAX_CMD];
-
-	common->Printf("Sys_OpenURL %s\n", url);
-	// opening an URL on *nix can mean a lot of things ..
-	// just spawn a script instead of deciding for the user :-)
-
-	// do the setup before we fork
-	// search for an openurl.sh script
-	// search procedure taken from Sys_VM_LoadDll
-	String::NCpyZ(fname, "openurl.sh", 20);
-
-	pwdpath = Sys_Cwd();
-	String::Sprintf(fn, MAX_OSPATH, "%s/%s", pwdpath, fname);
-	if (access(fn, X_OK) == -1)
-	{
-		common->DPrintf("%s not found\n", fn);
-		// try in home path
-		homepath = Cvar_VariableString("fs_homepath");
-		String::Sprintf(fn, MAX_OSPATH, "%s/%s", homepath, fname);
-		if (access(fn, X_OK) == -1)
-		{
-			common->DPrintf("%s not found\n", fn);
-			// basepath, last resort
-			basepath = Cvar_VariableString("fs_basepath");
-			String::Sprintf(fn, MAX_OSPATH, "%s/%s", basepath, fname);
-			if (access(fn, X_OK) == -1)
-			{
-				common->DPrintf("%s not found\n", fn);
-				common->Printf("Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname);
-				// we won't quit
-				return;
-			}
-		}
-	}
-
-	common->DPrintf("URL script: %s\n", fn);
-
-	// build the command line
-	String::Sprintf(cmdline, MAX_CMD, "%s '%s' &", fn, url);
-
-	Sys_StartProcess(cmdline, doexit);
-
 }
 
 void Sys_ParseArgs(int argc, char* argv[])

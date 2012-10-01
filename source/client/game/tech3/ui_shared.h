@@ -83,5 +83,7 @@ int LAN_ServerIsVisible(int source, int n);
 void LAN_ResetPings(int source);
 int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int s2);
 void CLT3_GetClipboardData(char* buf, int buflen);
+bool CLT3_GetLimboString(int index, char* buf);
+void CLT3_OpenURL(const char* url);
 
 #endif

@@ -17,6 +17,10 @@
 #ifndef _SYSTEM_UNIX_H
 #define _SYSTEM_UNIX_H
 
+#define MAX_CMD 1024
+
+void Sys_DoStartProcess(const char* cmdline);
+
 void Sys_ConsoleInputInit();
 void Sys_ConsoleInputShutdown();
 void tty_Hide();
@@ -25,6 +29,8 @@ void tty_Show();
 extern bool stdin_active;
 
 extern unsigned long sys_timeBase;
+
+extern char exit_cmdline[MAX_CMD];
 
 extern Cvar* ttycon;
 extern bool ttycon_on;

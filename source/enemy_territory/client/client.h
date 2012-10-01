@@ -90,9 +90,6 @@ void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
 void CL_AddToLimboChat(const char* str);					// NERVE - SMF
-qboolean CL_GetLimboString(int index, char* buf);			// NERVE - SMF
-
-void CL_OpenURL(const char* url);	// TTimo
 
 void CL_Record(const char* name);
 

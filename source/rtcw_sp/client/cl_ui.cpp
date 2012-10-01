@@ -32,25 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 /*
 ====================
-CL_UISystemCalls
-
-The ui module is making a system call
-====================
-*/
-qintptr CL_UISystemCalls(qintptr* args)
-{
-	switch (args[0])
-	{
-//-------
-	case WSUI_CL_GETLIMBOSTRING:
-		return CL_GetLimboString(args[1], (char*)VMA(2));
-//-------
-	}
-	return CLWS_UISystemCalls(args);
-}
-
-/*
-====================
 CL_InitUI
 ====================
 */
@@ -60,7 +41,7 @@ void CL_InitUI(void)
 	int v;
 //----(SA)	always dll
 
-	uivm = VM_Create("ui", CL_UISystemCalls, VMI_NATIVE);
+	uivm = VM_Create("ui", CLWS_UISystemCalls, VMI_NATIVE);
 
 	if (!uivm)
 	{
