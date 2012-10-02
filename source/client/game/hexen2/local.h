@@ -192,5 +192,15 @@ void SbarH2_InvChanged();
 void SbarH2_InvReset();
 void SbarH2_ViewSizeChanged();
 
+#define PLAQUE_WIDTH 26
+
+#define MAXLINES_H2 27
+extern int scrh2_lines;
+extern int scrh2_StartC[MAXLINES_H2],scrh2_EndC[MAXLINES_H2];
+
+void SCRH2_FindTextBreaks(const char* message, int Width);
+void MH2_Print2(int cx, int cy, const char* str);
+void SCRH2_DrawCenterString(const char* message);
+
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

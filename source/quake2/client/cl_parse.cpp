@@ -772,7 +772,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_centerprint:
-			SCR_CenterPrint(const_cast<char*>(net_message.ReadString2()));
+			SCR_CenterPrint(net_message.ReadString2());
 			break;
 
 		case q2svc_stufftext:

@@ -38,10 +38,8 @@ qboolean scr_initialized;			// ready to draw
 
 int scr_draw_loading;
 
-Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
-Cvar* scr_printspeed;
 
 Cvar* scr_netgraph;
 Cvar* scr_timegraph;
@@ -94,160 +92,6 @@ void CL_AddNetgraph(void)
 		ping = 30;
 	}
 	SCR_DebugGraph(ping, 0xd0);
-}
-
-/*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
-*/
-
-char scr_centerstring[1024];
-float scr_centertime_start;			// for slow victory printing
-float scr_centertime_off;
-int scr_center_lines;
-
-/*
-==============
-SCR_CenterPrint
-
-Called for important messages that should stay in the center of the screen
-for a few moments
-==============
-*/
-void SCR_CenterPrint(char* str)
-{
-	char* s;
-	char line[64];
-	int i, j, l;
-
-	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
-	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.serverTime;
-
-	// count the number of lines for centering
-	scr_center_lines = 1;
-	s = str;
-	while (*s)
-	{
-		if (*s == '\n')
-		{
-			scr_center_lines++;
-		}
-		s++;
-	}
-
-	// echo it to the console
-	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-
-	s = str;
-	do
-	{
-		// scan the width of the line
-		for (l = 0; l < 40; l++)
-			if (s[l] == '\n' || !s[l])
-			{
-				break;
-			}
-		for (i = 0; i < (40 - l) / 2; i++)
-			line[i] = ' ';
-
-		for (j = 0; j < l; j++)
-		{
-			line[i++] = s[j];
-		}
-
-		line[i] = '\n';
-		line[i + 1] = 0;
-
-		common->Printf("%s", line);
-
-		while (*s && *s != '\n')
-			s++;
-
-		if (!*s)
-		{
-			break;
-		}
-		s++;		// skip the \n
-	}
-	while (1);
-	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-	Con_ClearNotify();
-}
-
-void SCRQ2_DrawCenterString()
-{
-	char* start;
-	int l;
-	int x, y;
-	int remaining;
-
-	// the finale prints the characters one at a time
-	remaining = 9999;
-
-	start = scr_centerstring;
-
-	if (scr_center_lines <= 4)
-	{
-		y = viddef.height * 0.35;
-	}
-	else
-	{
-		y = 48;
-	}
-
-	do
-	{
-		// scan the width of the line
-		char buf[41];
-		for (l = 0; l < 40; l++)
-		{
-			if (start[l] == '\n' || !start[l])
-			{
-				break;
-			}
-			buf[l] = start[l];
-			if (!remaining--)
-			{
-				break;
-			}
-			remaining--;
-		}
-		buf[l] = 0;
-		x = (viddef.width - l * 8) / 2;
-		UI_DrawString(x, y, buf);
-		if (!remaining)
-		{
-			return;
-		}
-
-		y += 8;
-
-		while (*start && *start != '\n')
-			start++;
-
-		if (!*start)
-		{
-			break;
-		}
-		start++;		// skip the \n
-	}
-	while (1);
-}
-
-void SCR_CheckDrawCenterString(void)
-{
-	scr_centertime_off -= cls.q2_frametimeFloat;
-
-	if (scr_centertime_off <= 0)
-	{
-		return;
-	}
-
-	SCRQ2_DrawCenterString();
 }
 
 //=============================================================================
@@ -364,8 +208,6 @@ void SCR_Init(void)
 	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
 	scr_showturtle = Cvar_Get("scr_showturtle", "0", 0);
 	scr_showpause = Cvar_Get("scr_showpause", "1", 0);
-	scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
-	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
 	scr_timegraph = Cvar_Get("timegraph", "0", 0);
 	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
@@ -567,22 +409,6 @@ void SCR_TileClear(void)
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
 #define ICON_SPACE  8
-
-void SCRQ2_DrawHud()
-{
-	SCRQ2_DrawStats();
-	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)
-	{
-		SCRQ2_DrawLayout();
-	}
-	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 2)
-	{
-		CLQ2_DrawInventory();
-	}
-
-	SCRQ2_DrawNet();
-	SCR_CheckDrawCenterString();
-}
 
 //=======================================================
 

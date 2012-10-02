@@ -203,8 +203,6 @@ static void R_NewMap(void)
 	R_EndRegistration();
 }
 
-extern float scr_centertime_off;
-
 /*
 ==================
 CL_ParseServerInfo
@@ -224,7 +222,7 @@ void CL_ParseServerInfo(void)
 //
 	CL_ClearState();
 
-	scr_centertime_off = 0;
+	SCR_ClearCenterString();
 
 // parse protocol version number
 	i = net_message.ReadLong();

@@ -71,10 +71,8 @@ console is:
 */
 
 Cvar* scr_fov;
-Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
-Cvar* scr_printspeed;
 Cvar* show_fps;
 
 qboolean scr_initialized;			// ready to draw
@@ -85,129 +83,6 @@ image_t* scr_turtle;
 qboolean scr_drawloading;
 
 qboolean con_forcedup;			// because no entities to refresh
-
-/*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
-*/
-
-char scr_centerstring[1024];
-float scr_centertime_start;			// for slow victory printing
-float scr_centertime_off;
-int scr_center_lines;
-int scr_erase_lines;
-
-/*
-==============
-SCR_CenterPrint
-
-Called for important messages that should stay in the center of the screen
-for a few moments
-==============
-*/
-void SCR_CenterPrint(const char* str)
-{
-	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
-	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.qh_serverTimeFloat;
-
-// count the number of lines for centering
-	scr_center_lines = 1;
-	while (*str)
-	{
-		if (*str == '\n')
-		{
-			scr_center_lines++;
-		}
-		str++;
-	}
-}
-
-
-void SCR_DrawCenterString(void)
-{
-	char* start;
-	int l;
-	int j;
-	int x, y;
-	int remaining;
-
-// the finale prints the characters one at a time
-	if (cl.qh_intermission)
-	{
-		remaining = scr_printspeed->value * (cl.qh_serverTimeFloat - scr_centertime_start);
-	}
-	else
-	{
-		remaining = 9999;
-	}
-
-	start = scr_centerstring;
-
-	if (scr_center_lines <= 4)
-	{
-		y = viddef.height * 0.35;
-	}
-	else
-	{
-		y = 48;
-	}
-
-	do
-	{
-		// scan the width of the line
-		for (l = 0; l < 40; l++)
-			if (start[l] == '\n' || !start[l])
-			{
-				break;
-			}
-		x = (viddef.width - l * 8) / 2;
-		for (j = 0; j < l; j++, x += 8)
-		{
-			UI_DrawChar(x, y, start[j]);
-			if (!remaining--)
-			{
-				return;
-			}
-		}
-
-		y += 8;
-
-		while (*start && *start != '\n')
-			start++;
-
-		if (!*start)
-		{
-			break;
-		}
-		start++;		// skip the \n
-	}
-	while (1);
-}
-
-void SCR_CheckDrawCenterString(void)
-{
-	if (scr_center_lines > scr_erase_lines)
-	{
-		scr_erase_lines = scr_center_lines;
-	}
-
-	scr_centertime_off -= host_frametime;
-
-	if (scr_centertime_off <= 0 && !cl.qh_intermission)
-	{
-		return;
-	}
-	if (in_keyCatchers != 0)
-	{
-		return;
-	}
-
-	SCR_DrawCenterString();
-}
 
 //=============================================================================
 
@@ -356,10 +231,8 @@ void SCR_Init(void)
 {
 	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
-	scr_centertime = Cvar_Get("scr_centertime", "2", 0);
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
-	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	SCR_InitCommon();
 
@@ -521,7 +394,7 @@ void SCRQH_BeginLoadingPlaque(void)
 
 // redraw with no console and the loading plaque
 	Con_ClearNotify();
-	scr_centertime_off = 0;
+	SCR_ClearCenterString();
 	con.displayFrac = 0;
 
 	scr_drawloading = true;

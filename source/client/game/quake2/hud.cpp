@@ -105,7 +105,7 @@ static void SCRQ2_DrawHUDString(const char* string, int x, int y, int centerwidt
 	}
 }
 
-void SCRQ2_ExecuteLayoutString(const char* s)
+static void SCRQ2_ExecuteLayoutString(const char* s)
 {
 	if (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped)
 	{
@@ -419,12 +419,12 @@ void SCRQ2_ExecuteLayoutString(const char* s)
 
 //	The status bar is a small layout program that
 // is based on the stats array
-void SCRQ2_DrawStats()
+static void SCRQ2_DrawStats()
 {
 	SCRQ2_ExecuteLayoutString(cl.q2_configstrings[Q2CS_STATUSBAR]);
 }
 
-void SCRQ2_DrawLayout()
+static void SCRQ2_DrawLayout()
 {
 	if (!cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS])
 	{
@@ -441,7 +441,7 @@ void CLQ2_ParseInventory(QMsg& message)
 	}
 }
 
-void CLQ2_DrawInventory()
+static void CLQ2_DrawInventory()
 {
 	enum { DISPLAY_ITEMS = 17 };
 	int selected = cl.q2_frame.playerstate.stats[Q2STAT_SELECTED_ITEM];
@@ -505,7 +505,7 @@ void CLQ2_DrawInventory()
 	}
 }
 
-void SCRQ2_DrawNet()
+static void SCRQ2_DrawNet()
 {
 	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1)
 	{
@@ -513,4 +513,20 @@ void SCRQ2_DrawNet()
 	}
 
 	UI_DrawNamedPic(scr_vrect.x + 64, scr_vrect.y, "net");
+}
+
+void SCRQ2_DrawHud()
+{
+	SCRQ2_DrawStats();
+	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)
+	{
+		SCRQ2_DrawLayout();
+	}
+	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 2)
+	{
+		CLQ2_DrawInventory();
+	}
+
+	SCRQ2_DrawNet();
+	SCR_CheckDrawCenterString();
 }

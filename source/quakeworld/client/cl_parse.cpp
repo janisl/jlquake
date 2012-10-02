@@ -1119,7 +1119,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_centerprint:
-			SCR_CenterPrint(const_cast<char*>(net_message.ReadString2()));
+			SCR_CenterPrint(net_message.ReadString2());
 			break;
 
 		case q1svc_stufftext:
@@ -1247,7 +1247,7 @@ void CL_ParseServerMessage(void)
 		case q1svc_finale:
 			cl.qh_intermission = 2;
 			cl.qh_completed_time = realtime;
-			SCR_CenterPrint(const_cast<char*>(net_message.ReadString2()));
+			SCR_CenterPrint(net_message.ReadString2());
 			break;
 
 		case q1svc_sellscreen:

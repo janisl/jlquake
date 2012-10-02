@@ -216,8 +216,6 @@ static void R_NewMap(void)
 	R_EndRegistration();
 }
 
-extern float scr_centertime_off;
-
 /*
 ==================
 CL_ParseServerInfo
@@ -238,7 +236,7 @@ void CL_ParseServerInfo(void)
 //
 	CL_ClearState();
 
-	scr_centertime_off = 0;
+	SCR_ClearCenterString();
 
 // parse protocol version number
 	i = net_message.ReadLong();
@@ -779,12 +777,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_centerprint:
-			//Bottom_Plaque_Draw(net_message.ReadString2(),true);
-			SCR_CenterPrint(const_cast<char*>(net_message.ReadString2()));
+			SCR_CenterPrint(net_message.ReadString2());
 			break;
 
 		case h2svc_stufftext:
-			Cbuf_AddText(const_cast<char*>(net_message.ReadString2()));
+			Cbuf_AddText(net_message.ReadString2());
 			break;
 
 		case h2svc_damage:

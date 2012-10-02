@@ -56,10 +56,8 @@ console is:
 
 
 Cvar* scr_fov;
-Cvar* scr_centertime;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
-Cvar* scr_printspeed;
 Cvar* show_fps;
 
 qboolean scr_initialized;			// ready to draw
@@ -69,8 +67,6 @@ image_t* scr_turtle;
 
 qboolean scr_drawloading;
 
-static qboolean scr_needfull = false;
-
 int total_loading_size, current_loading_size, loading_stage;
 
 const char* plaquemessage = NULL;	// Pointer to current plaque message
@@ -79,25 +75,6 @@ qboolean con_forcedup;			// because no entities to refresh
 
 void Plaque_Draw(const char* message, qboolean AlwaysDraw);
 void Info_Plaque_Draw(const char* message);
-void Bottom_Plaque_Draw(const char* message);
-
-/*
-===============================================================================
-
-CENTER PRINTING
-
-===============================================================================
-*/
-
-char scr_centerstring[1024];
-float scr_centertime_start;			// for slow victory printing
-float scr_centertime_off;
-int scr_center_lines;
-int scr_erase_lines;
-
-static int lines;
-#define MAXLINES 27
-static int StartC[MAXLINES],EndC[MAXLINES];
 
 #ifdef MISSIONPACK
 #define MAX_INFO 1024
@@ -144,142 +121,6 @@ void UpdateInfoMessage(void)
 	}
 }
 #endif
-
-void FindTextBreaks(const char* message, int Width)
-{
-	int length,pos,start,lastspace,oldlast;
-
-	length = String::Length(message);
-	lines = pos = start = 0;
-	lastspace = -1;
-
-	while (1)
-	{
-		if (pos - start >= Width || message[pos] == '@' ||
-			message[pos] == 0)
-		{
-			oldlast = lastspace;
-			if (message[pos] == '@' || lastspace == -1 || message[pos] == 0)
-			{
-				lastspace = pos;
-			}
-
-			StartC[lines] = start;
-			EndC[lines] = lastspace;
-			lines++;
-			if (lines == MAXLINES)
-			{
-				return;
-			}
-			if (message[pos] == '@')
-			{
-				start = pos + 1;
-			}
-			else if (oldlast == -1)
-			{
-				start = lastspace;
-			}
-			else
-			{
-				start = lastspace + 1;
-			}
-
-			lastspace = -1;
-		}
-
-		if (message[pos] == 32)
-		{
-			lastspace = pos;
-		}
-		else if (message[pos] == 0)
-		{
-			break;
-		}
-
-		pos++;
-	}
-}
-
-/*
-==============
-SCR_CenterPrint
-
-Called for important messages that should stay in the center of the screen
-for a few moments
-==============
-*/
-void SCR_CenterPrint(char* str)
-{
-	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
-	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.qh_serverTimeFloat;
-
-	FindTextBreaks(scr_centerstring, 38);
-	scr_center_lines = lines;
-}
-
-
-void M_Print2(int cx, int cy, const char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
-}
-
-void SCR_DrawCenterString(void)
-{
-	int i;
-	int bx, by;
-	int remaining;
-	char temp[80];
-
-// the finale prints the characters one at a time
-	if (cl.qh_intermission)
-	{
-		remaining = scr_printspeed->value * (cl.qh_serverTimeFloat - scr_centertime_start);
-	}
-	else
-	{
-		remaining = 9999;
-	}
-
-	FindTextBreaks(scr_centerstring, 38);
-
-	by = ((25 - lines) * 8) / 2;
-	for (i = 0; i < lines; i++,by += 8)
-	{
-		String::NCpy(temp,&scr_centerstring[StartC[i]],EndC[i] - StartC[i]);
-		temp[EndC[i] - StartC[i]] = 0;
-		bx = ((40 - String::Length(temp)) * 8) / 2;
-		M_Print2(bx, by, temp);
-	}
-}
-
-void SCR_CheckDrawCenterString(void)
-{
-	if (scr_center_lines > scr_erase_lines)
-	{
-		scr_erase_lines = scr_center_lines;
-	}
-
-	scr_centertime_off -= host_frametime;
-
-	if (scr_centertime_off <= 0 && !cl.qh_intermission)
-	{
-		return;
-	}
-	if (in_keyCatchers != 0)
-	{
-		return;
-	}
-
-	if (h2intro_playing)
-	{
-		Bottom_Plaque_Draw(scr_centerstring);
-	}
-	else
-	{
-		SCR_DrawCenterString();
-	}
-}
 
 //=============================================================================
 
@@ -413,10 +254,8 @@ void SCR_Init(void)
 {
 	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
-	scr_centertime = Cvar_Get("scr_centertime", "4", 0);
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
-	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	SCR_InitCommon();
 
@@ -656,7 +495,7 @@ void SCRQH_BeginLoadingPlaque(void)
 
 // redraw with no console and the loading plaque
 	Con_ClearNotify();
-	scr_centertime_off = 0;
+	SCR_ClearCenterString();
 	con.displayFrac = 0;
 
 	scr_drawloading = true;
@@ -685,9 +524,6 @@ void SCR_TileClear(void)
 	}
 }
 
-// This is also located in screen.c
-#define PLAQUE_WIDTH 26
-
 void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 {
 	int i;
@@ -704,17 +540,17 @@ void Plaque_Draw(const char* message, qboolean AlwaysDraw)
 		return;
 	}
 
-	FindTextBreaks(message, PLAQUE_WIDTH);
+	SCRH2_FindTextBreaks(message, PLAQUE_WIDTH);
 
-	by = ((25 - lines) * 8) / 2;
-	MQH_DrawTextBox2(32, by - 16, 30, lines + 2);
+	by = ((25 - scrh2_lines) * 8) / 2;
+	MQH_DrawTextBox2(32, by - 16, 30, scrh2_lines + 2);
 
-	for (i = 0; i < lines; i++,by += 8)
+	for (i = 0; i < scrh2_lines; i++,by += 8)
 	{
-		String::NCpy(temp,&message[StartC[i]],EndC[i] - StartC[i]);
-		temp[EndC[i] - StartC[i]] = 0;
+		String::NCpy(temp,&message[scrh2_StartC[i]],scrh2_EndC[i] - scrh2_StartC[i]);
+		temp[scrh2_EndC[i] - scrh2_StartC[i]] = 0;
 		bx = ((40 - String::Length(temp)) * 8) / 2;
-		M_Print2(bx, by, temp);
+		MH2_Print2(bx, by, temp);
 	}
 }
 
@@ -734,25 +570,23 @@ void Info_Plaque_Draw(const char* message)
 		return;
 	}
 
-	scr_needfull = true;
+	SCRH2_FindTextBreaks(message, PLAQUE_WIDTH + 4);
 
-	FindTextBreaks(message, PLAQUE_WIDTH + 4);
-
-	if (lines == MAXLINES)
+	if (scrh2_lines == MAXLINES_H2)
 	{
 		common->DPrintf("Info_Plaque_Draw: line overflow error\n");
-		lines = MAXLINES - 1;
+		scrh2_lines = MAXLINES_H2 - 1;
 	}
 
-	by = ((25 - lines) * 8) / 2;
-	MQH_DrawTextBox2(15, by - 16, PLAQUE_WIDTH + 4 + 4, lines + 2);
+	by = ((25 - scrh2_lines) * 8) / 2;
+	MQH_DrawTextBox2(15, by - 16, PLAQUE_WIDTH + 4 + 4, scrh2_lines + 2);
 
-	for (i = 0; i < lines; i++,by += 8)
+	for (i = 0; i < scrh2_lines; i++,by += 8)
 	{
-		String::NCpy(temp,&message[StartC[i]],EndC[i] - StartC[i]);
-		temp[EndC[i] - StartC[i]] = 0;
+		String::NCpy(temp,&message[scrh2_StartC[i]],scrh2_EndC[i] - scrh2_StartC[i]);
+		temp[scrh2_EndC[i] - scrh2_StartC[i]] = 0;
 		bx = ((40 - String::Length(temp)) * 8) / 2;
-		M_Print2(bx, by, temp);
+		MH2_Print2(bx, by, temp);
 	}
 }
 
@@ -761,33 +595,6 @@ void I_Print(int cx, int cy, char* str)
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
 
-void Bottom_Plaque_Draw(const char* message)
-{
-	int i;
-	char temp[80];
-	int bx,by;
-
-	if (!*message)
-	{
-		return;
-	}
-
-	scr_needfull = true;
-
-	FindTextBreaks(message, PLAQUE_WIDTH);
-
-	by = (((viddef.height) / 8) - lines - 2) * 8;
-
-	MQH_DrawTextBox(32, by - 16, 30, lines + 2);
-
-	for (i = 0; i < lines; i++,by += 8)
-	{
-		String::NCpy(temp,&message[StartC[i]],EndC[i] - StartC[i]);
-		temp[EndC[i] - StartC[i]] = 0;
-		bx = ((40 - String::Length(temp)) * 8) / 2;
-		MQH_Print(bx, by, temp);
-	}
-}
 //==========================================================================
 //
 // SB_IntermissionOverlay
@@ -909,7 +716,7 @@ void SB_IntermissionOverlay(void)
 		message = &prh2_global_strings[prh2_string_index[561]];
 	}
 
-	FindTextBreaks(message, 38);
+	SCRH2_FindTextBreaks(message, 38);
 
 	if (cl.qh_intermission == 8)
 	{
@@ -917,13 +724,13 @@ void SB_IntermissionOverlay(void)
 	}
 	else
 	{
-		by = ((25 - lines) * 8) / 2;
+		by = ((25 - scrh2_lines) * 8) / 2;
 	}
 
-	for (i = 0; i < lines; i++,by += 8)
+	for (i = 0; i < scrh2_lines; i++,by += 8)
 	{
-		size = EndC[i] - StartC[i];
-		String::NCpy(temp,&message[StartC[i]],size);
+		size = scrh2_EndC[i] - scrh2_StartC[i];
+		String::NCpy(temp,&message[scrh2_StartC[i]],size);
 
 		if (size > elapsed)
 		{
@@ -948,7 +755,7 @@ void SB_IntermissionOverlay(void)
 		}
 	}
 
-	if (i == lines && elapsed >= 300 && cl.qh_intermission >= 6 && cl.qh_intermission <= 7)
+	if (i == scrh2_lines && elapsed >= 300 && cl.qh_intermission >= 6 && cl.qh_intermission <= 7)
 	{
 		cl.qh_intermission++;
 		cl.qh_completed_time = cl.qh_serverTimeFloat;

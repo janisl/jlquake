@@ -39,6 +39,11 @@ extern image_t* char_texture;
 extern image_t* char_smalltexture;
 extern vec4_t g_color_table[32];
 
+extern Cvar* scr_viewsize;
+extern Cvar* crosshair;
+extern float h2_introTime;
+extern vrect_t scr_vrect;			// position of render window
+
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
 void UI_DrawNamedPic(int x, int y, const char* name);
@@ -64,14 +69,12 @@ void SCR_DrawBigString(int x, int y, const char* s, float alpha);		// draws a st
 void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color);	// ignores embedded color control characters
 void SCR_DrawSmallString(int x, int y, const char* string);
 
-extern Cvar* scr_viewsize;
-extern Cvar* crosshair;
-extern float h2_introTime;
-extern vrect_t scr_vrect;			// position of render window
-
 void SCR_InitCommon();
 void SCR_EndLoadingPlaque();
 void SCR_DrawDebugGraph();
+void SCR_CenterPrint(const char* str);
+void SCR_CheckDrawCenterString();
+void SCR_ClearCenterString();
 
 bool Field_KeyDownEvent(field_t* edit, int key);
 void Field_CharEvent(field_t* edit, int ch);
