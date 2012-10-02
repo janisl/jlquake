@@ -42,26 +42,10 @@ extern int num_cl_weaponmodels;
 //
 extern Cvar* cl_stereo_separation;
 
-extern Cvar* cl_gun;
-extern Cvar* cl_add_blend;
-extern Cvar* cl_add_particles;
-extern Cvar* cl_add_entities;
-extern Cvar* cl_predict;
 extern Cvar* cl_noskins;
 extern Cvar* cl_autoskins;
 
 extern Cvar* cl_showmiss;
-extern Cvar* cl_showclamp;
-
-extern Cvar* cl_timedemo;
-
-extern Cvar* cl_vwep;
-
-// the cl_parse_entities must be large enough to hold UPDATE_BACKUP_Q2 frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original
-#define MAX_PARSE_ENTITIES  1024
-extern q2entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
 
 //=============================================================================
 
@@ -82,9 +66,6 @@ void CL_ParseDelta(q2entity_state_t* from, q2entity_state_t* to, int number, int
 void CL_ParseFrame(void);
 
 void CL_ParseConfigString(void);
-
-void CL_CalcViewValues(float* blendColour);
-void CL_AddPacketEntities(q2frame_t* frame);
 
 //=================================================
 
@@ -141,15 +122,6 @@ void CL_LoadClientinfo(q2clientinfo_t* ci, const char* s);
 void SHOWNET(const char* s);
 void CL_ParseClientinfo(int player);
 void CL_Download_f(void);
-
-//
-// cl_view.c
-//
-extern int gun_frame;
-extern qhandle_t gun_model;
-
-void V_Init(void);
-void V_RenderView(float stereo_separation);
 
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized

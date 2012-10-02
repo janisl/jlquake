@@ -21,6 +21,8 @@ Cvar* q2_hand;
 Cvar* clq2_footsteps;
 Cvar* clq2_name;
 Cvar* clq2_skin;
+Cvar* clq2_vwep;
+Cvar* clq2_predict;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];
 

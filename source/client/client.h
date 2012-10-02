@@ -601,6 +601,8 @@ extern int bitcounts[32];
 
 extern Cvar* cl_inGameVideo;
 
+extern Cvar* cl_timedemo;
+
 extern Cvar* clqh_nolerp;
 
 extern Cvar* clqh_name;

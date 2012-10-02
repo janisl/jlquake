@@ -49,8 +49,6 @@ extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 
-extern Cvar* cl_timedemo;
-
 extern Cvar* cl_allowDownload;
 
 extern Cvar* cl_missionStats;

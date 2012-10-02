@@ -33,7 +33,7 @@ void CL_CheckPredictionError(void)
 	int i;
 	int len;
 
-	if (!cl_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
+	if (!clq2_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
 	{
 		return;
 	}
@@ -86,8 +86,8 @@ void CL_ClipMoveToEntities(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q
 
 	for (i = 0; i < cl.q2_frame.num_entities; i++)
 	{
-		num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
-		ent = &cl_parse_entities[num];
+		num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES_Q2 - 1);
+		ent = &clq2_parse_entities[num];
 
 		if (!ent->solid)
 		{
@@ -188,8 +188,8 @@ int     CL_PMpointcontents(vec3_t point)
 
 	for (i = 0; i < cl.q2_frame.num_entities; i++)
 	{
-		num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
-		ent = &cl_parse_entities[num];
+		num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES_Q2 - 1);
+		ent = &clq2_parse_entities[num];
 
 		if (ent->solid != 31)	// special value for bmodel
 		{
@@ -237,7 +237,7 @@ void CL_PredictMovement(void)
 		return;
 	}
 
-	if (!cl_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
+	if (!clq2_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
 	{	// just set angles
 		for (i = 0; i < 3; i++)
 		{

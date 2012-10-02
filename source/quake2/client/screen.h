@@ -27,9 +27,4 @@ void    SCR_SizeUp(void);
 void    SCR_SizeDown(void);
 void    SCR_CenterPrint(char* str);
 
-void    SCR_TouchPics(void);
-
 extern int sbqh_lines;
-
-extern char crosshair_pic[MAX_QPATH];
-extern int crosshair_width, crosshair_height;

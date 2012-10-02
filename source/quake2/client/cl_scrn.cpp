@@ -47,9 +47,6 @@ Cvar* scr_netgraph;
 Cvar* scr_timegraph;
 Cvar* scr_debuggraph;
 
-char crosshair_pic[MAX_QPATH];
-int crosshair_width, crosshair_height;
-
 void SCR_TimeRefresh_f(void);
 void SCR_Loading_f(void);
 
@@ -587,13 +584,6 @@ void SCR_TileClear(void)
 
 
 #define STAT_MINUS      10	// num frame for '-' stats digit
-const char* sb_nums[2][11] =
-{
-	{"num_0", "num_1", "num_2", "num_3", "num_4", "num_5",
-	 "num_6", "num_7", "num_8", "num_9", "num_minus"},
-	{"anum_0", "anum_1", "anum_2", "anum_3", "anum_4", "anum_5",
-	 "anum_6", "anum_7", "anum_8", "anum_9", "anum_minus"}
-};
 
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
@@ -720,38 +710,6 @@ void SCR_DrawField(int x, int y, int color, int width, int value)
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
-	}
-}
-
-
-/*
-===============
-SCR_TouchPics
-
-Allows rendering code to cache all needed sbar graphics
-===============
-*/
-void SCR_TouchPics(void)
-{
-	int i, j;
-
-	for (i = 0; i < 2; i++)
-		for (j = 0; j < 11; j++)
-			R_RegisterPic(sb_nums[i][j]);
-
-	if (crosshair->value)
-	{
-		if (crosshair->value > 3 || crosshair->value < 0)
-		{
-			crosshair->value = 3;
-		}
-
-		String::Sprintf(crosshair_pic, sizeof(crosshair_pic), "ch%i", (int)(crosshair->value));
-		R_GetPicSize(&crosshair_width, &crosshair_height, crosshair_pic);
-		if (!crosshair_width)
-		{
-			crosshair_pic[0] = 0;
-		}
 	}
 }
 
@@ -1149,7 +1107,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 		// clear any dirty part of the background
 		SCR_TileClear();
 
-		V_RenderView(separation);
+		VQ2_RenderView(separation);
 
 		SCR_DrawStats();
 		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)

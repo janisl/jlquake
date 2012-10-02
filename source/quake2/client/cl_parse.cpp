@@ -460,7 +460,7 @@ void CL_LoadClientinfo(q2clientinfo_t* ci, const char* s)
 				String::Sprintf(weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
 				ci->weaponmodel[i] = R_RegisterModel(weapon_filename);
 			}
-			if (!cl_vwep->value)
+			if (!clq2_vwep->value)
 			{
 				break;	// only one when vwep is off
 			}

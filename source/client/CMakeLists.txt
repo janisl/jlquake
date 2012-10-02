@@ -34,7 +34,9 @@ set(CLIENT_FILES
 	game/quake_hexen2/view.cpp
 	game/quake2/beam.cpp
 	game/quake2/effects.cpp
+	game/quake2/entities.cpp
 	game/quake2/explosion.cpp
+	game/quake2/hud.cpp
 	game/quake2/laser.cpp
 	game/quake2/light_effects.cpp
 	game/quake2/main.cpp
@@ -43,6 +45,7 @@ set(CLIENT_FILES
 	game/quake2/qmenu.cpp
 	game/quake2/sustain.cpp
 	game/quake2/temporary_entities.cpp
+	game/quake2/view.cpp
 	game/quake3/cgame.cpp
 	game/quake3/ui.cpp
 	game/tech3/cdkey.cpp

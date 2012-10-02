@@ -47,7 +47,6 @@ Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
 Cvar* cl_showSend;
-Cvar* cl_timedemo;
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
 

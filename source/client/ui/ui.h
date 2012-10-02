@@ -78,7 +78,7 @@ void Field_CharEvent(field_t* edit, int ch);
 void Field_Draw(field_t* edit, int x, int y, bool showCursor);
 void Field_BigDraw(field_t* edit, int x, int y, bool showCursor);
 
-void V_SharedInit();
+void V_Init();
 float CalcFov(float fovX, float width, float height);
 void R_PolyBlend(refdef_t* fd, float* blendColour);
 

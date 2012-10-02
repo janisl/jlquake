@@ -42,19 +42,10 @@ Cvar* rcon_address;
 Cvar* cl_noskins;
 Cvar* cl_autoskins;
 Cvar* cl_timeout;
-Cvar* cl_predict;
 //Cvar	*cl_minfps;
 Cvar* cl_maxfps;
-Cvar* cl_gun;
-
-Cvar* cl_add_particles;
-Cvar* cl_add_entities;
-Cvar* cl_add_blend;
 
 Cvar* cl_showmiss;
-Cvar* cl_showclamp;
-
-Cvar* cl_timedemo;
 
 //
 // userinfo
@@ -67,10 +58,6 @@ Cvar* msg;
 Cvar* gender;
 Cvar* gender_auto;
 
-Cvar* cl_vwep;
-
-q2entity_state_t cl_parse_entities[MAX_PARSE_ENTITIES];
-
 extern Cvar* allow_download;
 extern Cvar* allow_download_players;
 extern Cvar* allow_download_models;
@@ -78,6 +65,9 @@ extern Cvar* allow_download_sounds;
 extern Cvar* allow_download_maps;
 
 static bool vid_restart_requested;
+
+char cl_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
+int num_cl_weaponmodels;
 
 //======================================================================
 
@@ -1410,21 +1400,16 @@ void CL_InitLocal(void)
 //
 	cl_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
 
-	cl_add_blend = Cvar_Get("cl_blend", "1", 0);
-	cl_add_particles = Cvar_Get("cl_particles", "1", 0);
-	cl_add_entities = Cvar_Get("clq2_entities", "1", 0);
-	cl_gun = Cvar_Get("cl_gun", "1", 0);
 	clq2_footsteps = Cvar_Get("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
-	cl_predict = Cvar_Get("cl_predict", "1", 0);
+	clq2_predict = Cvar_Get("cl_predict", "1", 0);
 //	cl_minfps = Cvar_Get ("cl_minfps", "5", 0);
 	cl_maxfps = Cvar_Get("cl_maxfps", "90", 0);
 
 
 
 	cl_showmiss = Cvar_Get("cl_showmiss", "0", 0);
-	cl_showclamp = Cvar_Get("showclamp", "0", 0);
 	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
 	cl_paused = Cvar_Get("paused", "0", 0);
 	cl_timedemo = Cvar_Get("timedemo", "0", 0);
@@ -1447,7 +1432,7 @@ void CL_InitLocal(void)
 	gender_auto = Cvar_Get("gender_auto", "1", CVAR_ARCHIVE);
 	gender->modified = false;	// clear this so we know when user sets it manually
 
-	cl_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
+	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
 
 
 	//
@@ -1706,8 +1691,8 @@ void CL_UpdateSounds()
 	S_ClearLoopingSounds(false);
 	for (int i = 0; i < cl.q2_frame.num_entities; i++)
 	{
-		int num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES - 1);
-		q2entity_state_t* ent = &cl_parse_entities[num];
+		int num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES_Q2 - 1);
+		q2entity_state_t* ent = &clq2_parse_entities[num];
 		if (!ent->sound)
 		{
 			continue;
@@ -1925,4 +1910,153 @@ float* CL_GetSimOrg()
 
 void CL_NextDemo()
 {
+}
+
+//===================================================================
+
+/*
+@@@@@@@@@@@@@@@@@@@@@
+R_BeginRegistrationAndLoadWorld
+
+Specifies the model that will be used as the world
+@@@@@@@@@@@@@@@@@@@@@
+*/
+static void R_BeginRegistrationAndLoadWorld(const char* model)
+{
+	char fullname[MAX_QPATH];
+
+	String::Sprintf(fullname, sizeof(fullname), "maps/%s.bsp", model);
+
+	R_Shutdown(false);
+	CL_InitRenderStuff();
+
+	R_LoadWorld(fullname);
+
+}
+
+/*
+=================
+CL_PrepRefresh
+
+Call before entering a new level, or after changing dlls
+=================
+*/
+void CL_PrepRefresh(void)
+{
+	char mapname[32];
+	int i;
+	char name[MAX_QPATH];
+	float rotate;
+	vec3_t axis;
+
+	if (!cl.q2_configstrings[Q2CS_MODELS + 1][0])
+	{
+		return;		// no map loaded
+
+	}
+	// let the render dll load the map
+	String::Cpy(mapname, cl.q2_configstrings[Q2CS_MODELS + 1] + 5);		// skip "maps/"
+	mapname[String::Length(mapname) - 4] = 0;		// cut off ".bsp"
+
+	// register models, pics, and skins
+	common->Printf("Map: %s\r", mapname);
+	SCR_UpdateScreen();
+	R_BeginRegistrationAndLoadWorld(mapname);
+	common->Printf("                                     \r");
+
+	// precache status bar pics
+	common->Printf("pics\r");
+	SCR_UpdateScreen();
+	SCR_TouchPics();
+	common->Printf("                                     \r");
+
+	CLQ2_RegisterTEntModels();
+
+	num_cl_weaponmodels = 1;
+	String::Cpy(cl_weaponmodels[0], "weapon.md2");
+
+	for (i = 1; i < MAX_MODELS_Q2 && cl.q2_configstrings[Q2CS_MODELS + i][0]; i++)
+	{
+		String::Cpy(name, cl.q2_configstrings[Q2CS_MODELS + i]);
+		name[37] = 0;	// never go beyond one line
+		if (name[0] != '*')
+		{
+			common->Printf("%s\r", name);
+		}
+		SCR_UpdateScreen();
+		Sys_SendKeyEvents();	// pump message loop
+		IN_ProcessEvents();
+		if (name[0] == '#')
+		{
+			// special player weapon model
+			if (num_cl_weaponmodels < MAX_CLIENTWEAPONMODELS_Q2)
+			{
+				String::NCpy(cl_weaponmodels[num_cl_weaponmodels], cl.q2_configstrings[Q2CS_MODELS + i] + 1,
+					sizeof(cl_weaponmodels[num_cl_weaponmodels]) - 1);
+				num_cl_weaponmodels++;
+			}
+		}
+		else
+		{
+			cl.model_draw[i] = R_RegisterModel(cl.q2_configstrings[Q2CS_MODELS + i]);
+			if (name[0] == '*')
+			{
+				cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.q2_configstrings[Q2CS_MODELS + i] + 1));
+			}
+			else
+			{
+				cl.model_clip[i] = 0;
+			}
+		}
+		if (name[0] != '*')
+		{
+			common->Printf("                                     \r");
+		}
+	}
+
+	common->Printf("images\r", i);
+	SCR_UpdateScreen();
+	for (i = 1; i < MAX_IMAGES_Q2 && cl.q2_configstrings[Q2CS_IMAGES + i][0]; i++)
+	{
+		cl.q2_image_precache[i] = R_RegisterPic(cl.q2_configstrings[Q2CS_IMAGES + i]);
+		Sys_SendKeyEvents();	// pump message loop
+		IN_ProcessEvents();
+	}
+
+	common->Printf("                                     \r");
+	for (i = 0; i < MAX_CLIENTS_Q2; i++)
+	{
+		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS + i][0])
+		{
+			continue;
+		}
+		common->Printf("client %i\r", i);
+		SCR_UpdateScreen();
+		Sys_SendKeyEvents();	// pump message loop
+		IN_ProcessEvents();
+		CL_ParseClientinfo(i);
+		common->Printf("                                     \r");
+	}
+
+	CL_LoadClientinfo(&cl.q2_baseclientinfo, "unnamed\\male/grunt");
+
+	// set sky textures and speed
+	common->Printf("sky\r", i);
+	SCR_UpdateScreen();
+	rotate = String::Atof(cl.q2_configstrings[Q2CS_SKYROTATE]);
+	sscanf(cl.q2_configstrings[Q2CS_SKYAXIS], "%f %f %f",
+		&axis[0], &axis[1], &axis[2]);
+	R_SetSky(cl.q2_configstrings[Q2CS_SKY], rotate, axis);
+	common->Printf("                                     \r");
+
+	R_EndRegistration();
+
+	// clear any lines of console text
+	Con_ClearNotify();
+
+	SCR_UpdateScreen();
+	cl.q2_refresh_prepped = true;
+
+	// start the cd track
+	CDAudio_Play(String::Atoi(cl.q2_configstrings[Q2CS_CDTRACK]), true);
 }

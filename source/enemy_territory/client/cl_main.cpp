@@ -51,7 +51,6 @@ Cvar* cl_freezeDemo;
 Cvar* cl_shownuments;			// DHM - Nerve
 Cvar* cl_visibleClients;		// DHM - Nerve
 Cvar* cl_showSend;
-Cvar* cl_timedemo;
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
 

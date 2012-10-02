@@ -16,10 +16,11 @@
 
 #include "../client.h"
 #include "../game/quake_hexen2/view.h"
+#include "../game/quake2/local.h"
 
 static Cvar* cl_polyblend;
 
-void V_SharedInit()
+void V_Init()
 {
 	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
 	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
@@ -27,6 +28,10 @@ void V_SharedInit()
 	if (GGameType & GAME_QuakeHexen)
 	{
 		VQH_Init();
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		VQ2_Init();
 	}
 }
 
