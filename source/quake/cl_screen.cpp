@@ -99,7 +99,6 @@ float scr_centertime_start;			// for slow victory printing
 float scr_centertime_off;
 int scr_center_lines;
 int scr_erase_lines;
-int scr_erase_center;
 
 /*
 ==============
@@ -146,7 +145,6 @@ void SCR_DrawCenterString(void)
 		remaining = 9999;
 	}
 
-	scr_erase_center = 0;
 	start = scr_centerstring;
 
 	if (scr_center_lines <= 4)

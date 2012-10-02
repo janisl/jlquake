@@ -108,7 +108,6 @@ char scr_centerstring[1024];
 float scr_centertime_start;			// for slow victory printing
 float scr_centertime_off;
 int scr_center_lines;
-int scr_erase_center;
 
 /*
 ==============
@@ -179,18 +178,16 @@ void SCR_CenterPrint(char* str)
 	Con_ClearNotify();
 }
 
-
-void SCR_DrawCenterString(void)
+void SCRQ2_DrawCenterString()
 {
 	char* start;
 	int l;
 	int x, y;
 	int remaining;
 
-// the finale prints the characters one at a time
+	// the finale prints the characters one at a time
 	remaining = 9999;
 
-	scr_erase_center = 0;
 	start = scr_centerstring;
 
 	if (scr_center_lines <= 4)
@@ -250,7 +247,7 @@ void SCR_CheckDrawCenterString(void)
 		return;
 	}
 
-	SCR_DrawCenterString();
+	SCRQ2_DrawCenterString();
 }
 
 //=============================================================================
@@ -384,22 +381,6 @@ void SCR_Init(void)
 	Cmd_AddCommand("sky",SCR_Sky_f);
 
 	scr_initialized = true;
-}
-
-
-/*
-==============
-SCR_DrawNet
-==============
-*/
-void SCR_DrawNet(void)
-{
-	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1)
-	{
-		return;
-	}
-
-	UI_DrawNamedPic(scr_vrect.x + 64, scr_vrect.y, "net");
 }
 
 /*
@@ -583,492 +564,24 @@ void SCR_TileClear(void)
 //===============================================================
 
 
-#define STAT_MINUS      10	// num frame for '-' stats digit
-
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
-#define CHAR_WIDTH  16
 #define ICON_SPACE  8
 
-
-
-/*
-================
-SizeHUDString
-
-Allow embedded \n in the string
-================
-*/
-void SizeHUDString(char* string, int* w, int* h)
+void SCRQ2_DrawHud()
 {
-	int lines, width, current;
-
-	lines = 1;
-	width = 0;
-
-	current = 0;
-	while (*string)
+	SCRQ2_DrawStats();
+	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)
 	{
-		if (*string == '\n')
-		{
-			lines++;
-			current = 0;
-		}
-		else
-		{
-			current++;
-			if (current > width)
-			{
-				width = current;
-			}
-		}
-		string++;
+		SCRQ2_DrawLayout();
+	}
+	if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 2)
+	{
+		CLQ2_DrawInventory();
 	}
 
-	*w = width * 8;
-	*h = lines * 8;
-}
-
-void DrawHUDString(char* string, int x, int y, int centerwidth, int _xor)
-{
-	int margin;
-	char line[1024];
-	int width;
-
-	margin = x;
-
-	while (*string)
-	{
-		// scan out one line of text from the string
-		width = 0;
-		while (*string && *string != '\n')
-			line[width++] = *string++;
-		line[width] = 0;
-
-		if (centerwidth)
-		{
-			x = margin + (centerwidth - width * 8) / 2;
-		}
-		else
-		{
-			x = margin;
-		}
-		UI_DrawString(x, y, line, _xor);
-		if (*string)
-		{
-			string++;	// skip the \n
-			x = margin;
-			y += 8;
-		}
-	}
-}
-
-
-/*
-==============
-SCR_DrawField
-==============
-*/
-void SCR_DrawField(int x, int y, int color, int width, int value)
-{
-	char num[16], * ptr;
-	int l;
-	int frame;
-
-	if (width < 1)
-	{
-		return;
-	}
-
-	// draw number string
-	if (width > 5)
-	{
-		width = 5;
-	}
-
-	String::Sprintf(num, sizeof(num), "%i", value);
-	l = String::Length(num);
-	if (l > width)
-	{
-		l = width;
-	}
-	x += 2 + CHAR_WIDTH * (width - l);
-
-	ptr = num;
-	while (*ptr && l)
-	{
-		if (*ptr == '-')
-		{
-			frame = STAT_MINUS;
-		}
-		else
-		{
-			frame = *ptr - '0';
-		}
-
-		UI_DrawNamedPic(x,y,sb_nums[color][frame]);
-		x += CHAR_WIDTH;
-		ptr++;
-		l--;
-	}
-}
-
-/*
-================
-SCR_ExecuteLayoutString
-
-================
-*/
-void SCR_ExecuteLayoutString(const char* s)
-{
-	int x, y;
-	int value;
-	char* token;
-	int width;
-	int index;
-	q2clientinfo_t* ci;
-
-	if (cls.state != CA_ACTIVE || !cl.q2_refresh_prepped)
-	{
-		return;
-	}
-
-	if (!s[0])
-	{
-		return;
-	}
-
-	x = 0;
-	y = 0;
-	width = 3;
-
-	while (s)
-	{
-		token = String::Parse2(&s);
-		if (!String::Cmp(token, "xl"))
-		{
-			token = String::Parse2(&s);
-			x = String::Atoi(token);
-			continue;
-		}
-		if (!String::Cmp(token, "xr"))
-		{
-			token = String::Parse2(&s);
-			x = viddef.width + String::Atoi(token);
-			continue;
-		}
-		if (!String::Cmp(token, "xv"))
-		{
-			token = String::Parse2(&s);
-			x = viddef.width / 2 - 160 + String::Atoi(token);
-			continue;
-		}
-
-		if (!String::Cmp(token, "yt"))
-		{
-			token = String::Parse2(&s);
-			y = String::Atoi(token);
-			continue;
-		}
-		if (!String::Cmp(token, "yb"))
-		{
-			token = String::Parse2(&s);
-			y = viddef.height + String::Atoi(token);
-			continue;
-		}
-		if (!String::Cmp(token, "yv"))
-		{
-			token = String::Parse2(&s);
-			y = viddef.height / 2 - 120 + String::Atoi(token);
-			continue;
-		}
-
-		if (!String::Cmp(token, "pic"))
-		{	// draw a pic from a stat number
-			token = String::Parse2(&s);
-			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
-			if (value >= MAX_IMAGES_Q2)
-			{
-				common->Error("Pic >= MAX_IMAGES_Q2");
-			}
-			if (cl.q2_configstrings[Q2CS_IMAGES + value])
-			{
-				UI_DrawNamedPic(x, y, cl.q2_configstrings[Q2CS_IMAGES + value]);
-			}
-			continue;
-		}
-
-		if (!String::Cmp(token, "client"))
-		{	// draw a deathmatch client block
-			int score, ping, time;
-
-			token = String::Parse2(&s);
-			x = viddef.width / 2 - 160 + String::Atoi(token);
-			token = String::Parse2(&s);
-			y = viddef.height / 2 - 120 + String::Atoi(token);
-
-			token = String::Parse2(&s);
-			value = String::Atoi(token);
-			if (value >= MAX_CLIENTS_Q2 || value < 0)
-			{
-				common->Error("client >= MAX_CLIENTS_Q2");
-			}
-			ci = &cl.q2_clientinfo[value];
-
-			token = String::Parse2(&s);
-			score = String::Atoi(token);
-
-			token = String::Parse2(&s);
-			ping = String::Atoi(token);
-
-			token = String::Parse2(&s);
-			time = String::Atoi(token);
-
-			UI_DrawString(x + 32, y, ci->name, 0x80);
-			UI_DrawString(x + 32, y + 8,  "Score: ");
-			UI_DrawString(x + 32 + 7 * 8, y + 8,  va("%i", score), 0x80);
-			UI_DrawString(x + 32, y + 16, va("Ping:  %i", ping));
-			UI_DrawString(x + 32, y + 24, va("Time:  %i", time));
-
-			if (!ci->icon)
-			{
-				ci = &cl.q2_baseclientinfo;
-			}
-			UI_DrawNamedPic(x, y, ci->iconname);
-			continue;
-		}
-
-		if (!String::Cmp(token, "ctf"))
-		{	// draw a ctf client block
-			int score, ping;
-			char block[80];
-
-			token = String::Parse2(&s);
-			x = viddef.width / 2 - 160 + String::Atoi(token);
-			token = String::Parse2(&s);
-			y = viddef.height / 2 - 120 + String::Atoi(token);
-
-			token = String::Parse2(&s);
-			value = String::Atoi(token);
-			if (value >= MAX_CLIENTS_Q2 || value < 0)
-			{
-				common->Error("client >= MAX_CLIENTS_Q2");
-			}
-			ci = &cl.q2_clientinfo[value];
-
-			token = String::Parse2(&s);
-			score = String::Atoi(token);
-
-			token = String::Parse2(&s);
-			ping = String::Atoi(token);
-			if (ping > 999)
-			{
-				ping = 999;
-			}
-
-			sprintf(block, "%3d %3d %-12.12s", score, ping, ci->name);
-
-			if (value == cl.playernum)
-			{
-				UI_DrawString(x, y, block, 0x80);
-			}
-			else
-			{
-				UI_DrawString(x, y, block);
-			}
-			continue;
-		}
-
-		if (!String::Cmp(token, "picn"))
-		{	// draw a pic from a name
-			token = String::Parse2(&s);
-			UI_DrawNamedPic(x, y, token);
-			continue;
-		}
-
-		if (!String::Cmp(token, "num"))
-		{	// draw a number
-			token = String::Parse2(&s);
-			width = String::Atoi(token);
-			token = String::Parse2(&s);
-			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
-			SCR_DrawField(x, y, 0, width, value);
-			continue;
-		}
-
-		if (!String::Cmp(token, "hnum"))
-		{	// health number
-			int color;
-
-			width = 3;
-			value = cl.q2_frame.playerstate.stats[Q2STAT_HEALTH];
-			if (value > 25)
-			{
-				color = 0;	// green
-			}
-			else if (value > 0)
-			{
-				color = (cl.q2_frame.serverframe >> 2) & 1;			// flash
-			}
-			else
-			{
-				color = 1;
-			}
-
-			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 1)
-			{
-				UI_DrawNamedPic(x, y, "field_3");
-			}
-
-			SCR_DrawField(x, y, color, width, value);
-			continue;
-		}
-
-		if (!String::Cmp(token, "anum"))
-		{	// ammo number
-			int color;
-
-			width = 3;
-			value = cl.q2_frame.playerstate.stats[Q2STAT_AMMO];
-			if (value > 5)
-			{
-				color = 0;	// green
-			}
-			else if (value >= 0)
-			{
-				color = (cl.q2_frame.serverframe >> 2) & 1;			// flash
-			}
-			else
-			{
-				continue;	// negative number = don't show
-
-			}
-			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 4)
-			{
-				UI_DrawNamedPic(x, y, "field_3");
-			}
-
-			SCR_DrawField(x, y, color, width, value);
-			continue;
-		}
-
-		if (!String::Cmp(token, "rnum"))
-		{	// armor number
-			int color;
-
-			width = 3;
-			value = cl.q2_frame.playerstate.stats[Q2STAT_ARMOR];
-			if (value < 1)
-			{
-				continue;
-			}
-
-			color = 0;	// green
-
-			if (cl.q2_frame.playerstate.stats[Q2STAT_FLASHES] & 2)
-			{
-				UI_DrawNamedPic(x, y, "field_3");
-			}
-
-			SCR_DrawField(x, y, color, width, value);
-			continue;
-		}
-
-
-		if (!String::Cmp(token, "stat_string"))
-		{
-			token = String::Parse2(&s);
-			index = String::Atoi(token);
-			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
-			{
-				common->Error("Bad stat_string index");
-			}
-			index = cl.q2_frame.playerstate.stats[index];
-			if (index < 0 || index >= MAX_CONFIGSTRINGS_Q2)
-			{
-				common->Error("Bad stat_string index");
-			}
-			UI_DrawString(x, y, cl.q2_configstrings[index]);
-			continue;
-		}
-
-		if (!String::Cmp(token, "cstring"))
-		{
-			token = String::Parse2(&s);
-			DrawHUDString(token, x, y, 320, 0);
-			continue;
-		}
-
-		if (!String::Cmp(token, "string"))
-		{
-			token = String::Parse2(&s);
-			UI_DrawString(x, y, token);
-			continue;
-		}
-
-		if (!String::Cmp(token, "cstring2"))
-		{
-			token = String::Parse2(&s);
-			DrawHUDString(token, x, y, 320,0x80);
-			continue;
-		}
-
-		if (!String::Cmp(token, "string2"))
-		{
-			token = String::Parse2(&s);
-			UI_DrawString(x, y, token, 0x80);
-			continue;
-		}
-
-		if (!String::Cmp(token, "if"))
-		{	// draw a number
-			token = String::Parse2(&s);
-			value = cl.q2_frame.playerstate.stats[String::Atoi(token)];
-			if (!value)
-			{	// skip to endif
-				while (s && String::Cmp(token, "endif"))
-				{
-					token = String::Parse2(&s);
-				}
-			}
-
-			continue;
-		}
-
-
-	}
-}
-
-
-/*
-================
-SCR_DrawStats
-
-The status bar is a small layout program that
-is based on the stats array
-================
-*/
-void SCR_DrawStats(void)
-{
-	SCR_ExecuteLayoutString(cl.q2_configstrings[Q2CS_STATUSBAR]);
-}
-
-
-/*
-================
-SCR_DrawLayout
-
-================
-*/
-#define Q2STAT_LAYOUTS      13
-
-void SCR_DrawLayout(void)
-{
-	if (!cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS])
-	{
-		return;
-	}
-	SCR_ExecuteLayoutString(cl.q2_layout);
+	SCRQ2_DrawNet();
+	SCR_CheckDrawCenterString();
 }
 
 //=======================================================
@@ -1109,18 +622,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 
 		VQ2_RenderView(separation);
 
-		SCR_DrawStats();
-		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 1)
-		{
-			SCR_DrawLayout();
-		}
-		if (cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] & 2)
-		{
-			CL_DrawInventory();
-		}
-
-		SCR_DrawNet();
-		SCR_CheckDrawCenterString();
+		SCRQ2_DrawHud();
 
 		if (scr_timegraph->value)
 		{

@@ -819,7 +819,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_inventory:
-			CL_ParseInventory();
+			CLQ2_ParseInventory(net_message);
 			break;
 
 		case q2svc_layout:

@@ -84,6 +84,14 @@ void CLQ2_AddExplosions();
 //
 extern const char* sb_nums[2][11];
 
+void SCRQ2_ExecuteLayoutString(const char* s);
+void SCRQ2_DrawStats();
+void SCRQ2_DrawLayout();
+void CLQ2_ParseInventory(QMsg& message);
+void CLQ2_DrawInventory();
+void SCRQ2_DrawNet();
+void SCRQ2_DrawCenterString();
+
 //
 //	Laser
 //

@@ -134,13 +134,6 @@ void CL_GetEntitySoundOrigin(int ent, vec3_t org);
 void CL_CheckPredictionError(void);
 
 //
-// cl_inv.c
-//
-void CL_ParseInventory(void);
-void CL_KeyInventory(int key);
-void CL_DrawInventory(void);
-
-//
 // cl_pred.c
 //
 void CL_PredictMovement(void);
