@@ -67,8 +67,6 @@ double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 int host_framecount;
 
-int fps_count;
-
 jmp_buf host_abort;
 
 void Master_Connect_f(void);
@@ -1438,7 +1436,6 @@ void Host_Frame(float time)
 
 		host_framecount++;
 		cls.framecount++;
-		fps_count++;
 	}
 	catch (DropException& e)
 	{

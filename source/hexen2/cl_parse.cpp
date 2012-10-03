@@ -314,9 +314,9 @@ void CL_ParseServerInfo(void)
 // now we try to load everything else until a cache allocation fails
 //
 
-	total_loading_size = nummodels + numsounds;
-	current_loading_size = 1;
-	loading_stage = 2;
+	clh2_total_loading_size = nummodels + numsounds;
+	clh2_current_loading_size = 1;
+	clh2_loading_stage = 2;
 
 	//always precache the world!!!
 	CM_LoadMap(model_precache[1], true, NULL);
@@ -325,7 +325,7 @@ void CL_ParseServerInfo(void)
 	for (i = 2; i < nummodels; i++)
 	{
 		cl.model_draw[i] = R_RegisterModel(model_precache[i]);
-		current_loading_size++;
+		clh2_current_loading_size++;
 		SCR_UpdateScreen();
 
 		if (cl.model_draw[i] == 0)
@@ -346,15 +346,15 @@ void CL_ParseServerInfo(void)
 	for (i = 1; i < numsounds; i++)
 	{
 		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
-		current_loading_size++;
+		clh2_current_loading_size++;
 		SCR_UpdateScreen();
 
 		CL_KeepaliveMessage();
 	}
 	S_EndRegistration();
 
-	total_loading_size = 0;
-	loading_stage = 0;
+	clh2_total_loading_size = 0;
+	clh2_loading_stage = 0;
 
 
 // local state
@@ -599,11 +599,11 @@ void CL_Plaque(void)
 
 	if (index > 0 && index <= prh2_string_count)
 	{
-		plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
+		clh2_plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
 	}
 	else
 	{
-		plaquemessage = "";
+		clh2_plaquemessage = "";
 	}
 }
 

@@ -36,11 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean scr_initialized;			// ready to draw
 
-int scr_draw_loading;
-
-Cvar* scr_showturtle;
-Cvar* scr_showpause;
-
 Cvar* scr_netgraph;
 Cvar* scr_timegraph;
 Cvar* scr_debuggraph;
@@ -93,10 +88,6 @@ void CL_AddNetgraph(void)
 	SCR_DebugGraph(ping, 0xd0);
 }
 
-//=============================================================================
-
-#include "../../client/game/quake/local.h"
-
 /*
 =================
 SCR_Sky_f
@@ -147,8 +138,6 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_showturtle = Cvar_Get("scr_showturtle", "0", 0);
-	scr_showpause = Cvar_Get("scr_showpause", "1", 0);
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
 	scr_timegraph = Cvar_Get("timegraph", "0", 0);
 	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
@@ -158,48 +147,6 @@ void SCR_Init(void)
 	Cmd_AddCommand("sky",SCR_Sky_f);
 
 	scr_initialized = true;
-}
-
-/*
-==============
-SCR_DrawPause
-==============
-*/
-void SCR_DrawPause(void)
-{
-	int w, h;
-
-	if (!scr_showpause->value)		// turn off for screenshots
-	{
-		return;
-	}
-
-	if (!cl_paused->value)
-	{
-		return;
-	}
-
-	R_GetPicSize(&w, &h, "pause");
-	UI_DrawNamedPic((viddef.width - w) / 2, viddef.height / 2 + 8, "pause");
-}
-
-/*
-==============
-SCR_DrawLoading
-==============
-*/
-void SCR_DrawLoading(void)
-{
-	int w, h;
-
-	if (!scr_draw_loading)
-	{
-		return;
-	}
-
-	scr_draw_loading = false;
-	R_GetPicSize(&w, &h, "loading");
-	UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
 }
 
 //=============================================================================
@@ -349,14 +296,15 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 			SCR_DrawDebugGraph();
 		}
 
-		SCR_DrawPause();
+		SCRQ2_DrawPause();
 
 		Con_DrawConsole();
 
 		UI_DrawMenu();
 
-		SCR_DrawLoading();
+		SCRQ2_DrawLoading();
 	}
+	SCR_DrawFPS();
 }
 
 /*

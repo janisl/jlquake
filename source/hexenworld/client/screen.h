@@ -10,6 +10,4 @@ void SCR_SizeDown(void);
 
 extern int sbqh_lines;
 
-extern const char* plaquemessage;		// Pointer to current plaque
-
 void SCR_UpdateWholeScreen(void);

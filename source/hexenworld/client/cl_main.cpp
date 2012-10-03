@@ -40,8 +40,6 @@ double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 int host_framecount;
 
-int fps_count;
-
 jmp_buf host_abort;
 
 void Master_Connect_f(void);
@@ -337,7 +335,7 @@ void CL_ClearState(void)
 	CL_ClearLightStyles();
 	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
 
-	plaquemessage = "";
+	clh2_plaquemessage = "";
 
 	SbarH2_InvReset();
 }
@@ -1303,7 +1301,6 @@ void Host_Frame(float time)
 
 		host_framecount++;
 		cls.framecount++;
-		fps_count++;
 	}
 	catch (DropException& e)
 	{

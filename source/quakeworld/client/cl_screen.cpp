@@ -72,19 +72,11 @@ console is:
 
 */
 
-Cvar* scr_showturtle;
-Cvar* scr_showpause;
 Cvar* scr_allowsnap;
-Cvar* show_fps;
 
 static Cvar* cl_netgraph;
 
 qboolean scr_initialized;						// ready to draw
-
-image_t* scr_net;
-image_t* scr_turtle;
-
-qboolean scr_drawloading;
 
 void SCR_RSShot_f(void);
 
@@ -95,149 +87,17 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_showturtle = Cvar_Get("showturtle","0", 0);
-	scr_showpause = Cvar_Get("showpause","1", 0);
 	scr_allowsnap = Cvar_Get("scr_allowsnap", "1", 0);
 	SCR_InitCommon();
 
 	Cmd_AddCommand("snap",SCR_RSShot_f);
 
-	scr_net = R_PicFromWad("net");
-	scr_turtle = R_PicFromWad("turtle");
-
-	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	clqh_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
 	cl_netgraph = Cvar_Get("cl_netgraph", "0", 0);
 
 	scr_initialized = true;
 }
-
-/*
-==============
-SCR_DrawTurtle
-==============
-*/
-void SCR_DrawTurtle(void)
-{
-	static int count;
-
-	if (!scr_showturtle->value)
-	{
-		return;
-	}
-
-	if (host_frametime < 0.1)
-	{
-		count = 0;
-		return;
-	}
-
-	count++;
-	if (count < 3)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x, scr_vrect.y, scr_turtle);
-}
-
-/*
-==============
-SCR_DrawNet
-==============
-*/
-void SCR_DrawNet(void)
-{
-	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_QW - 1)
-	{
-		return;
-	}
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x + 64, scr_vrect.y, scr_net);
-}
-
-void SCR_DrawFPS(void)
-{
-	static double lastframetime;
-	double t;
-	extern int fps_count;
-	static int lastfps;
-	int x, y;
-	char st[80];
-
-	if (!show_fps->value)
-	{
-		return;
-	}
-
-	t = Sys_DoubleTime();
-	if ((t - lastframetime) >= 1.0)
-	{
-		lastfps = fps_count;
-		fps_count = 0;
-		lastframetime = t;
-	}
-
-	sprintf(st, "%3d FPS", lastfps);
-	x = viddef.width - String::Length(st) * 8 - 8;
-	y = viddef.height - sbqh_lines - 8;
-	UI_DrawString(x, y, st);
-}
-
-
-/*
-==============
-DrawPause
-==============
-*/
-void SCR_DrawPause(void)
-{
-	image_t* pic;
-
-	if (!scr_showpause->value)				// turn off for screenshots
-	{
-		return;
-	}
-
-	if (!cl.qh_paused)
-	{
-		return;
-	}
-
-	pic = R_CachePic("gfx/pause.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2,
-		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
-}
-
-
-
-/*
-==============
-SCR_DrawLoading
-==============
-*/
-void SCR_DrawLoading(void)
-{
-	image_t* pic;
-
-	if (!scr_drawloading)
-	{
-		return;
-	}
-
-	pic = R_CachePic("gfx/loading.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2,
-		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
-}
-
-
-
-//=============================================================================
 
 /*
 ==================
@@ -357,9 +217,9 @@ void SCR_UpdateScreen(void)
 		R_NetGraph();
 	}
 
-	if (scr_drawloading)
+	if (scr_draw_loading)
 	{
-		SCR_DrawLoading();
+		SCRQ1_DrawLoading();
 		SbarQ1_Draw();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
@@ -375,8 +235,8 @@ void SCR_UpdateScreen(void)
 	{
 		SCR_DrawNet();
 		SCR_DrawFPS();
-		SCR_DrawTurtle();
-		SCR_DrawPause();
+		SCRQH_DrawTurtle();
+		SCRQ1_DrawPause();
 		SCR_CheckDrawCenterString();
 		SbarQ1_Draw();
 		Con_DrawConsole();

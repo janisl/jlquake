@@ -14,8 +14,35 @@
 //**
 //**************************************************************************
 
-void VQH_ParseDamage(QMsg& message);
-void VQH_RenderView();
-void SCRQH_DrawTurtle();
-void VQH_Init();
-void VQH_InitCrosshairTexture();
+#include "../../client.h"
+#include "local.h"
+
+void SCRQ2_DrawPause()
+{
+	if (!scr_showpause->value)		// turn off for screenshots
+	{
+		return;
+	}
+
+	if (!cl_paused->value)
+	{
+		return;
+	}
+
+	int w, h;
+	R_GetPicSize(&w, &h, "pause");
+	UI_DrawNamedPic((viddef.width - w) / 2, viddef.height / 2 + 8, "pause");
+}
+
+void SCRQ2_DrawLoading()
+{
+	if (!scr_draw_loading)
+	{
+		return;
+	}
+
+	scr_draw_loading = false;
+	int w, h;
+	R_GetPicSize(&w, &h, "loading");
+	UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
+}

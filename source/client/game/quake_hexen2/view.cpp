@@ -52,7 +52,9 @@ static Cvar* crosshaircolor;
 static Cvar* cl_crossx;
 static Cvar* cl_crossy;
 
-Cvar* scr_fov;
+static Cvar* scr_fov;
+
+static Cvar* scr_showturtle;
 
 static float v_dmg_time;
 static float v_dmg_roll;
@@ -64,6 +66,8 @@ static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
 
 static image_t* cs_texture;	// crosshair texture
+
+static image_t* scr_turtle;
 
 /*
 ==============================================================================
@@ -1431,6 +1435,30 @@ void VQH_RenderView()
 	VQH_DrawCrosshair();
 }
 
+void SCRQH_DrawTurtle()
+{
+	static int count;
+
+	if (!scr_showturtle->value)
+	{
+		return;
+	}
+
+	if (cls.frametime < 100)
+	{
+		count = 0;
+		return;
+	}
+
+	count++;
+	if (count < 3)
+	{
+		return;
+	}
+
+	UI_DrawPic(scr_vrect.x, scr_vrect.y, scr_turtle);
+}
+
 //	For program optimization
 static void VQH_TimeRefresh_f()
 {
@@ -1509,9 +1537,12 @@ void VQH_Init()
 	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
 
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
+
+	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 }
 
 void VQH_InitCrosshairTexture()
 {
 	cs_texture = R_CreateCrosshairImage();
+	scr_turtle = R_PicFromWad("turtle");
 }

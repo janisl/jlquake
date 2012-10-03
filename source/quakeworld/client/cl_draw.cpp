@@ -40,6 +40,7 @@ void Draw_Init(void)
 	Con_InitBackgroundImage();
 	MQH_InitImages();
 	VQH_InitCrosshairTexture();
+	SCRQH_InitImages();
 }
 
 #define NET_GRAPHHEIGHT 32

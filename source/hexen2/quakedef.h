@@ -45,7 +45,6 @@
 #else
 #define NUM_CLASSES                 NUM_CLASSES_H2
 #endif
-#define ABILITIES_STR_INDEX         400
 
 #define SOUND_CHANNELS      8
 

@@ -51,22 +51,9 @@ console is:
 
 */
 
-Cvar* scr_showturtle;
-Cvar* scr_showpause;
-Cvar* show_fps;
-
 static Cvar* cl_netgraph;
 
 qboolean scr_initialized;						// ready to draw
-
-image_t* scr_net;
-image_t* scr_turtle;
-
-qboolean scr_drawloading;
-
-const char* plaquemessage = NULL;	// Pointer to current plaque message
-
-void Plaque_Draw(const char* message, qboolean AlwaysDraw);
 
 /*
 ==================
@@ -75,172 +62,12 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_showturtle = Cvar_Get("showturtle", "0", 0);
-	scr_showpause = Cvar_Get("showpause", "1", 0);
 	SCR_InitCommon();
-
-	scr_net = R_PicFromWad("net");
-	scr_turtle = R_PicFromWad("turtle");
-
-	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 
 	cl_netgraph = Cvar_Get("cl_netgraph","0", 0);
 
 	scr_initialized = true;
 }
-
-/*
-==============
-SCR_DrawTurtle
-==============
-*/
-void SCR_DrawTurtle(void)
-{
-	static int count;
-
-	if (!scr_showturtle->value)
-	{
-		return;
-	}
-
-	if (host_frametime < 0.1)
-	{
-		count = 0;
-		return;
-	}
-
-	count++;
-	if (count < 3)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x, scr_vrect.y, scr_turtle);
-}
-
-/*
-==============
-SCR_DrawNet
-==============
-*/
-void SCR_DrawNet(void)
-{
-	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_HW - 1)
-	{
-		return;
-	}
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x + 64, scr_vrect.y, scr_net);
-}
-
-void SCR_DrawFPS(void)
-{
-	static double lastframetime;
-	double t;
-	extern int fps_count;
-	static int lastfps;
-	int x, y;
-	char st[80];
-
-	if (!show_fps->value)
-	{
-		return;
-	}
-
-	t = Sys_DoubleTime();
-	if ((t - lastframetime) >= 1.0)
-	{
-		lastfps = fps_count;
-		fps_count = 0;
-		lastframetime = t;
-	}
-
-	sprintf(st, "%3d FPS", lastfps);
-	x = viddef.width - String::Length(st) * 8 - 8;
-	y = viddef.height - sbqh_lines - 8;
-	UI_DrawString(x, y, st);
-}
-
-
-/*
-==============
-DrawPause
-==============
-*/
-void SCR_DrawPause(void)
-{
-	image_t* pic;
-	float delta;
-	static qboolean newdraw = false;
-	int finaly;
-	static float LogoPercent,LogoTargetPercent;
-
-	if (!scr_showpause->value)		// turn off for screenshots
-	{
-		return;
-	}
-
-	if (!cl.qh_paused)
-	{
-		newdraw = false;
-		return;
-	}
-
-	if (!newdraw)
-	{
-		newdraw = true;
-		LogoTargetPercent = 1;
-		LogoPercent = 0;
-	}
-
-	pic = R_CachePic("gfx/menu/paused.lmp");
-//	UI_DrawPic ( (viddef.width - pic->width)/2,
-//		(viddef.height - 48 - pic->height)/2, pic);
-
-	if (LogoPercent < LogoTargetPercent)
-	{
-		delta = ((LogoTargetPercent - LogoPercent) / .5) * host_frametime;
-		if (delta < 0.004)
-		{
-			delta = 0.004;
-		}
-		LogoPercent += delta;
-		if (LogoPercent > LogoTargetPercent)
-		{
-			LogoPercent = LogoTargetPercent;
-		}
-	}
-
-	finaly = ((float)R_GetImageHeight(pic) * LogoPercent) - R_GetImageHeight(pic);
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2, finaly, pic);
-}
-
-/*
-==============
-SCR_DrawLoading
-==============
-*/
-void SCR_DrawLoading(void)
-{
-	image_t* pic;
-
-	if (!scr_drawloading)
-	{
-		return;
-	}
-
-	pic = R_CachePic("gfx/loading.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2,
-		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
-}
-
-
-
-//=============================================================================
 
 void SCR_TileClear(void)
 {
@@ -292,66 +119,6 @@ void SCR_TileClear(void)
 				(scr_vrect.height + scr_vrect.y), draw_backtile);
 		}
 	}
-}
-
-void Plaque_Draw(const char* message, qboolean AlwaysDraw)
-{
-	int i;
-	char temp[80];
-	int bx,by;
-
-	if (con.displayFrac == 1 && !AlwaysDraw)
-	{
-		return;		// console is full screen
-
-	}
-	if (!*message)
-	{
-		return;
-	}
-
-	SCRH2_FindTextBreaks(message, PLAQUE_WIDTH);
-
-	by = ((25 - scrh2_lines) * 8) / 2;
-	MQH_DrawTextBox2(32, by - 16, 30, scrh2_lines + 2);
-
-	for (i = 0; i < scrh2_lines; i++,by += 8)
-	{
-		String::NCpy(temp,&message[scrh2_StartC[i]],scrh2_EndC[i] - scrh2_StartC[i]);
-		temp[scrh2_EndC[i] - scrh2_StartC[i]] = 0;
-		bx = ((40 - String::Length(temp)) * 8) / 2;
-		MH2_Print2(bx, by, temp);
-	}
-}
-
-void I_Print(int cx, int cy, char* str)
-{
-	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
-}
-
-//==========================================================================
-//
-// SB_IntermissionOverlay
-//
-//==========================================================================
-
-void SB_IntermissionOverlay(void)
-{
-	SbarH2_DeathmatchOverlay();
-}
-
-//==========================================================================
-//
-// SB_FinaleOverlay
-//
-//==========================================================================
-
-void SB_FinaleOverlay(void)
-{
-	image_t* pic;
-
-	pic = R_CachePic("gfx/finale.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2, 16, pic);
 }
 
 /*
@@ -410,11 +177,11 @@ void SCR_UpdateScreen(void)
 		R_NetGraph();
 	}
 
-	if (scr_drawloading)
+	if (scr_draw_loading)
 	{
 		SbarH2_Draw();
 		MQH_FadeScreen();
-		SCR_DrawLoading();
+		SCRH2_DrawLoading();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
 	{
@@ -426,11 +193,11 @@ void SCR_UpdateScreen(void)
 	else
 	{
 		SCR_DrawFPS();
-		SCR_DrawTurtle();
-		SCR_DrawPause();
+		SCRQH_DrawTurtle();
+		SCRH2_DrawPause();
 		SCR_CheckDrawCenterString();
 		SbarH2_Draw();
-		Plaque_Draw(plaquemessage,0);
+		SCRH2_Plaque_Draw(clh2_plaquemessage,0);
 		SCR_DrawNet();
 		Con_DrawConsole();
 		UI_DrawMenu();

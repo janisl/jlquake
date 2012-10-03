@@ -22,6 +22,8 @@
 
 #define BE_ON           (1 << 0)
 
+#define ABILITIES_STR_INDEX         400
+
 struct effect_entity_t
 {
 	h2entity_state_t state;
@@ -191,15 +193,19 @@ void SbarH2_Draw();
 void SbarH2_InvChanged();
 void SbarH2_InvReset();
 
-#define PLAQUE_WIDTH 26
+#define MAX_INFO_H2 1024
 
-#define MAXLINES_H2 27
-extern int scrh2_lines;
-extern int scrh2_StartC[MAXLINES_H2],scrh2_EndC[MAXLINES_H2];
+extern int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
+extern char scrh2_infomessage[MAX_INFO_H2];
+extern const char* clh2_plaquemessage;		// Pointer to current plaque
 
-void SCRH2_FindTextBreaks(const char* message, int Width);
-void MH2_Print2(int cx, int cy, const char* str);
 void SCRH2_DrawCenterString(const char* message);
+void SCRH2_DrawPause();
+void SCRH2_DrawLoading();
+void SCRH2_UpdateInfoMessage();
+void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw);
+void SCRH2_Info_Plaque_Draw(const char* message);
+void SBH2_IntermissionOverlay();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

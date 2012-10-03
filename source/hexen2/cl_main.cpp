@@ -61,7 +61,7 @@ void CL_ClearState(void)
 	cl.h2_reference_frame = cl.h2_last_sequence = 199;
 	cl.h2_need_build = 2;
 
-	plaquemessage = "";
+	clh2_plaquemessage = "";
 
 	SbarH2_InvReset();
 }
@@ -78,7 +78,7 @@ void CL_Disconnect(void)
 {
 	CL_ClearParticles();	//jfm: need to clear parts because some now check world
 	S_StopAllSounds();	// stop sounds (especially looping!)
-	loading_stage = 0;
+	clh2_loading_stage = 0;
 
 // if running a local server, shut it down
 	if (clc.demoplaying)

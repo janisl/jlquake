@@ -505,16 +505,6 @@ static void CLQ2_DrawInventory()
 	}
 }
 
-static void SCRQ2_DrawNet()
-{
-	if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1)
-	{
-		return;
-	}
-
-	UI_DrawNamedPic(scr_vrect.x + 64, scr_vrect.y, "net");
-}
-
 void SCRQ2_DrawHud()
 {
 	SCRQ2_DrawStats();
@@ -527,6 +517,6 @@ void SCRQ2_DrawHud()
 		CLQ2_DrawInventory();
 	}
 
-	SCRQ2_DrawNet();
+	SCR_DrawNet();
 	SCR_CheckDrawCenterString();
 }

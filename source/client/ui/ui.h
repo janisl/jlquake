@@ -43,6 +43,8 @@ extern Cvar* scr_viewsize;
 extern Cvar* crosshair;
 extern float h2_introTime;
 extern vrect_t scr_vrect;			// position of render window
+extern Cvar* scr_showpause;
+extern int scr_draw_loading;
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
@@ -76,6 +78,9 @@ void SCR_CenterPrint(const char* str);
 void SCR_CheckDrawCenterString();
 void SCR_ClearCenterString();
 void SCR_CalcVrect();
+void SCR_DrawNet();
+void SCRQH_InitImages();
+void SCR_DrawFPS();
 
 bool Field_KeyDownEvent(field_t* edit, int key);
 void Field_CharEvent(field_t* edit, int ch);

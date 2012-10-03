@@ -100,6 +100,12 @@ void CLQ2_AddLasers();
 void CLQ2_PingServers_f();
 
 //
+//	Screen
+//
+void SCRQ2_DrawPause();
+void SCRQ2_DrawLoading();
+
+//
 //	Sustain
 //
 void CLQ2_ClearSustains();

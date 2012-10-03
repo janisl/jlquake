@@ -851,11 +851,11 @@ void CL_Plaque(void)
 
 	if (index > 0 && index <= prh2_string_count)
 	{
-		plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
+		clh2_plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
 	}
 	else
 	{
-		plaquemessage = "";
+		clh2_plaquemessage = "";
 	}
 }
 

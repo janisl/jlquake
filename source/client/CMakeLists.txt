@@ -25,6 +25,7 @@ set(CLIENT_FILES
 	game/quake/light_effects.cpp
 	game/quake/particle_effects.cpp
 	game/quake/projectiles.cpp
+	game/quake/screen.cpp
 	game/quake/skin.cpp
 	game/quake/status_bar.cpp
 	game/quake/temporary_entities.cpp
@@ -44,6 +45,7 @@ set(CLIENT_FILES
 	game/quake2/menu.cpp
 	game/quake2/particle_effects.cpp
 	game/quake2/qmenu.cpp
+	game/quake2/screen.cpp
 	game/quake2/sustain.cpp
 	game/quake2/temporary_entities.cpp
 	game/quake2/view.cpp

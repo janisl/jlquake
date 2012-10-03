@@ -70,16 +70,7 @@ console is:
 
 */
 
-Cvar* scr_showturtle;
-Cvar* scr_showpause;
-Cvar* show_fps;
-
 qboolean scr_initialized;			// ready to draw
-
-image_t* scr_net;
-image_t* scr_turtle;
-
-qboolean scr_drawloading;
 
 qboolean con_forcedup;			// because no entities to refresh
 
@@ -90,141 +81,10 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_showturtle = Cvar_Get("showturtle", "0", 0);
-	scr_showpause = Cvar_Get("showpause", "1", 0);
-	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	SCR_InitCommon();
-
-	scr_net = R_PicFromWad("net");
-	scr_turtle = R_PicFromWad("turtle");
 
 	scr_initialized = true;
 }
-
-/*
-==============
-SCR_DrawTurtle
-==============
-*/
-void SCR_DrawTurtle(void)
-{
-	static int count;
-
-	if (!scr_showturtle->value)
-	{
-		return;
-	}
-
-	if (host_frametime < 0.1)
-	{
-		count = 0;
-		return;
-	}
-
-	count++;
-	if (count < 3)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x, scr_vrect.y, (image_t*)scr_turtle);
-}
-
-/*
-==============
-SCR_DrawNet
-==============
-*/
-void SCR_DrawNet(void)
-{
-	if (realtime - cl.qh_last_received_message < 0.3)
-	{
-		return;
-	}
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	UI_DrawPic(scr_vrect.x + 64, scr_vrect.y, (image_t*)scr_net);
-}
-
-void SCR_DrawFPS(void)
-{
-	static double lastframetime;
-	double t;
-	extern int fps_count;
-	static int lastfps;
-	int x, y;
-	char st[80];
-
-	if (!show_fps->value)
-	{
-		return;
-	}
-
-	t = Sys_DoubleTime();
-	if ((t - lastframetime) >= 1.0)
-	{
-		lastfps = fps_count;
-		fps_count = 0;
-		lastframetime = t;
-	}
-
-	sprintf(st, "%3d FPS", lastfps);
-	x = viddef.width - String::Length(st) * 8 - 8;
-	y = viddef.height - sbqh_lines - 8;
-	UI_DrawString(x, y, st);
-}
-
-/*
-==============
-DrawPause
-==============
-*/
-void SCR_DrawPause(void)
-{
-	image_t* pic;
-
-	if (!scr_showpause->value)		// turn off for screenshots
-	{
-		return;
-	}
-
-	if (!cl.qh_paused)
-	{
-		return;
-	}
-
-	pic = R_CachePic("gfx/pause.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2,
-		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
-}
-
-
-
-/*
-==============
-SCR_DrawLoading
-==============
-*/
-void SCR_DrawLoading(void)
-{
-	image_t* pic;
-
-	if (!scr_drawloading)
-	{
-		return;
-	}
-
-	pic = R_CachePic("gfx/loading.lmp");
-	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2,
-		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
-}
-
-
-
-//=============================================================================
 
 /*
 ===============
@@ -250,9 +110,9 @@ void SCRQH_BeginLoadingPlaque(void)
 	SCR_ClearCenterString();
 	con.displayFrac = 0;
 
-	scr_drawloading = true;
+	scr_draw_loading = true;
 	SCR_UpdateScreen();
-	scr_drawloading = false;
+	scr_draw_loading = false;
 
 	cls.disable_screen = realtime * 1000;
 }
@@ -335,9 +195,9 @@ void SCR_UpdateScreen(void)
 	//
 	SCR_TileClear();
 
-	if (scr_drawloading)
+	if (scr_draw_loading)
 	{
-		SCR_DrawLoading();
+		SCRQ1_DrawLoading();
 		SbarQ1_Draw();
 	}
 	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
@@ -353,8 +213,8 @@ void SCR_UpdateScreen(void)
 	{
 		SCR_DrawNet();
 		SCR_DrawFPS();
-		SCR_DrawTurtle();
-		SCR_DrawPause();
+		SCRQH_DrawTurtle();
+		SCRQ1_DrawPause();
 		SCR_CheckDrawCenterString();
 		SbarQ1_Draw();
 		Con_DrawConsole();

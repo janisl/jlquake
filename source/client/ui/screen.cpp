@@ -33,6 +33,10 @@ static Cvar* cl_graphshift;
 Cvar* scr_viewsize;
 Cvar* crosshair;
 
+static Cvar* show_fps;
+
+Cvar* scr_showpause;
+
 float h2_introTime = 0.0;
 
 vrect_t scr_vrect;
@@ -44,6 +48,10 @@ static char scr_centerstring[1024];
 static float scr_centertime_start;				// for slow victory printing
 static float scr_centertime_off;
 static int scr_center_lines;
+
+static image_t* scr_net;
+
+int scr_draw_loading;
 
 void SCR_EndLoadingPlaque()
 {
@@ -378,6 +386,75 @@ static void SCR_SizeDown_f()
 	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
 }
 
+void SCR_DrawNet()
+{
+	if (GGameType & GAME_Quake2)
+	{
+		if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1)
+		{
+			return;
+		}
+	}
+	else if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_QW - 1)
+		{
+			return;
+		}
+	}
+	else
+	{
+		if (cls.realtime - cl.qh_last_received_message * 1000 < 300)
+		{
+			return;
+		}
+	}
+	if (clc.demoplaying)
+	{
+		return;
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		UI_DrawNamedPic(scr_vrect.x + 64, scr_vrect.y, "net");
+	}
+	else
+	{
+		UI_DrawPic(scr_vrect.x + 64, scr_vrect.y, scr_net);
+	}
+}
+
+void SCR_DrawFPS()
+{
+	static int lastframetime;
+	static int lastframecount;
+	static int lastfps;
+
+	if (!show_fps->value)
+	{
+		return;
+	}
+
+	int t = Sys_Milliseconds();
+	if ((t - lastframetime) >= 1000)
+	{
+		lastfps = cls.framecount - lastframecount;
+		lastframecount = cls.framecount;
+		lastframetime = t;
+	}
+
+	char st[80];
+	sprintf(st, "%3d FPS", lastfps);
+	int x = viddef.width - String::Length(st) * 8 - 8;
+	int y = viddef.height - sbqh_lines - 8;
+	UI_DrawString(x, y, st);
+}
+
+void SCRQH_InitImages()
+{
+	scr_net = R_PicFromWad("net");
+}
+
 void SCR_InitCommon()
 {
 	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
@@ -387,6 +464,8 @@ void SCR_InitCommon()
 	{
 		scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
 		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
+		show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
+		scr_showpause = Cvar_Get("scr_showpause", "1", 0);
 	}
 	if (GGameType & GAME_Quake)
 	{

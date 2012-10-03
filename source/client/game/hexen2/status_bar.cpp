@@ -27,7 +27,6 @@
 #define BAR_TOTAL_HEIGHT            (BAR_TOP_HEIGHT + BAR_BOTTOM_HEIGHT)
 #define BAR_BUMP_HEIGHT             23.0
 #define INVENTORY_DISPLAY_TIME      4
-#define ABILITIES_STR_INDEX         400
 
 #define RING_FLIGHT                 1
 #define RING_WATER                  2
