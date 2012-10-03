@@ -45,29 +45,6 @@ static float scr_centertime_start;				// for slow victory printing
 static float scr_centertime_off;
 static int scr_center_lines;
 
-void SCR_InitCommon()
-{
-	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
-	cl_graphscale = Cvar_Get("graphscale", "1", CVAR_CHEAT);
-	cl_graphshift = Cvar_Get("graphshift", "0", CVAR_CHEAT);
-	if (!(GGameType & GAME_Tech3))
-	{
-		scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
-	}
-	if (GGameType & GAME_Quake)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "2", 0);
-	}
-	else if (GGameType & GAME_Hexen2)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "4", 0);
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
-	}
-}
-
 void SCR_EndLoadingPlaque()
 {
 	cls.disable_screen = 0;
@@ -312,4 +289,124 @@ void SCR_CheckDrawCenterString()
 void SCR_ClearCenterString()
 {
 	scr_centertime_off = 0;
+}
+
+//	Sets scr_vrect, the coordinates of the rendered window
+void SCR_CalcVrect()
+{
+	// bound viewsize
+	if (GGameType & GAME_QuakeHexen)
+	{
+		if (scr_viewsize->value < 30)
+		{
+			Cvar_Set("viewsize","30");
+		}
+		if (scr_viewsize->value > 120)
+		{
+			Cvar_Set("viewsize","120");
+		}
+
+		if (GGameType & GAME_Hexen2)
+		{
+			// intermission is always full screen
+			if (cl.qh_intermission || scr_viewsize->value >= 110)
+			{
+				// No status bar
+				sbqh_lines = 0;
+			}
+			else
+			{
+				sbqh_lines = 36;
+			}
+		}
+		else
+		{
+			// intermission is always full screen
+			if (cl.qh_intermission || scr_viewsize->value >= 120)
+			{
+				sbqh_lines = 0;		// no status bar at all
+			}
+			else if (scr_viewsize->value >= 110)
+			{
+				sbqh_lines = 24;	// no inventory
+			}
+			else
+			{
+				sbqh_lines = 24 + 16 + 8;
+			}
+		}
+	}
+	else
+	{
+		if (scr_viewsize->value < 40)
+		{
+			Cvar_Set("viewsize","40");
+		}
+		if (scr_viewsize->value > 100)
+		{
+			Cvar_Set("viewsize","100");
+		}
+	}
+
+	int size = !(GGameType & GAME_Quake2) && (scr_viewsize->value >= 100 || cl.qh_intermission) ? 100 : scr_viewsize->value;
+
+	int h = (GGameType & GAME_QuakeWorld && !clqh_sbar->value && size == 100) || GGameType & GAME_Quake2 ? viddef.height : viddef.height - sbqh_lines;
+
+	scr_vrect.width = viddef.width * size / 100;
+	scr_vrect.width &= ~7;
+
+	scr_vrect.height = viddef.height * size / 100;
+	if (scr_vrect.height > h)
+	{
+		scr_vrect.height = h;
+	}
+	scr_vrect.height &= ~1;
+
+	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
+	scr_vrect.y = (h - scr_vrect.height) / 2;
+}
+
+//	Keybinding command
+static void SCR_SizeUp_f()
+{
+	Cvar_SetValue("viewsize",scr_viewsize->value + 10);
+}
+
+//	Keybinding command
+static void SCR_SizeDown_f()
+{
+	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
+}
+
+void SCR_InitCommon()
+{
+	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
+	cl_graphscale = Cvar_Get("graphscale", "1", CVAR_CHEAT);
+	cl_graphshift = Cvar_Get("graphshift", "0", CVAR_CHEAT);
+	if (!(GGameType & GAME_Tech3))
+	{
+		scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_Quake)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "2", 0);
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "4", 0);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
+	}
+
+	//
+	// register our commands
+	//
+	if (!(GGameType & GAME_Tech3))
+	{
+		Cmd_AddCommand("sizeup", SCR_SizeUp_f);
+		Cmd_AddCommand("sizedown", SCR_SizeDown_f);
+	}
 }

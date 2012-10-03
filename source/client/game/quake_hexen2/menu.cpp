@@ -3740,10 +3740,6 @@ static void MQH_AdjustSliders(int dir)
 			scr_viewsize->value = 120;
 		}
 		Cvar_SetValue("viewsize", scr_viewsize->value);
-		if (GGameType & GAME_Hexen2)
-		{
-			SbarH2_ViewSizeChanged();
-		}
 		break;
 	case OPT_GAMMA:	// gamma
 		r_gamma->value += dir * 0.1;

@@ -81,26 +81,7 @@ Internal use only
 */
 static void SCR_CalcRefdef(void)
 {
-	float size;
-	int h;
-
-
-// force the status bar to redraw
-	SbarH2_InvChanged();
-
-//========================================
-
-// bound viewsize
-	if (scr_viewsize->value < 30)
-	{
-		Cvar_Set("viewsize","30");
-	}
-	if (scr_viewsize->value > 120)
-	{
-		Cvar_Set("viewsize","120");
-	}
-
-// bound field of view
+	// bound field of view
 	if (scr_fov->value < 10)
 	{
 		Cvar_Set("fov","10");
@@ -110,57 +91,7 @@ static void SCR_CalcRefdef(void)
 		Cvar_Set("fov","170");
 	}
 
-// intermission is always full screen
-	if (cl.qh_intermission)
-	{
-		size = 110;
-	}
-	else
-	{
-		size = scr_viewsize->value;
-	}
-
-//	if (size >= 120)
-//		sbqh_lines = 0;		// no status bar at all
-//	else if (size >= 110)
-//		sbqh_lines = 24;		// no inventory
-//	else
-//		sbqh_lines = 24+16+8;
-
-	if (size >= 110)
-	{	// No status bar
-		sbqh_lines = 0;
-	}
-	else
-	{
-		sbqh_lines = 36;
-	}
-
-	size = scr_viewsize->value > 100 ? 100 : scr_viewsize->value;
-	if (cl.qh_intermission)
-	{
-		size = 100;
-
-		sbqh_lines = 0;
-	}
-	size /= 100;
-
-	h = viddef.height - sbqh_lines;
-	scr_vrect.width = viddef.width * size;
-	if (scr_vrect.width < 96)
-	{
-		size = 96.0 / viddef.width;
-		scr_vrect.width = 96;	// min for icons
-	}
-
-	scr_vrect.height = viddef.height * size;
-	if (scr_vrect.height > (int)viddef.height - sbqh_lines)
-	{
-		scr_vrect.height = viddef.height - sbqh_lines;
-	}
-
-	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
-	scr_vrect.y = (h - scr_vrect.height) / 2;
+	SCR_CalcVrect();
 
 	cl.refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
 	cl.refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
@@ -171,53 +102,16 @@ static void SCR_CalcRefdef(void)
 }
 
 /*
-=================
-SCR_SizeUp_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeUp_f(void)
-{
-	if (scr_viewsize->value < 110)
-	{
-		Cvar_SetValue("viewsize",scr_viewsize->value + 10);
-		SbarH2_ViewSizeChanged();
-	}
-}
-
-
-/*
-=================
-SCR_SizeDown_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeDown_f(void)
-{
-	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
-	SbarH2_ViewSizeChanged();
-}
-
-/*
 ==================
 SCR_Init
 ==================
 */
 void SCR_Init(void)
 {
-	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	SCR_InitCommon();
-
-//
-// register our commands
-//
-	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
 
 	scr_net = R_PicFromWad("net");
 	scr_turtle = R_PicFromWad("turtle");

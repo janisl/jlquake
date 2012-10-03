@@ -75,6 +75,7 @@ void SCR_DrawDebugGraph();
 void SCR_CenterPrint(const char* str);
 void SCR_CheckDrawCenterString();
 void SCR_ClearCenterString();
+void SCR_CalcVrect();
 
 bool Field_KeyDownEvent(field_t* edit, int key);
 void Field_CharEvent(field_t* edit, int ch);

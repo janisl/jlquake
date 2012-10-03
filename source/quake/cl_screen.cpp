@@ -84,8 +84,6 @@ qboolean scr_drawloading;
 
 qboolean con_forcedup;			// because no entities to refresh
 
-//=============================================================================
-
 /*
 =================
 SCR_CalcRefdef
@@ -96,21 +94,9 @@ Internal use only
 */
 static void SCR_CalcRefdef(void)
 {
-	float size;
-	int h;
-	qboolean full = false;
+	SCR_CalcVrect();
 
-// bound viewsize
-	if (scr_viewsize->value < 30)
-	{
-		Cvar_Set("viewsize","30");
-	}
-	if (scr_viewsize->value > 120)
-	{
-		Cvar_Set("viewsize","120");
-	}
-
-// bound field of view
+	// bound field of view
 	if (scr_fov->value < 10)
 	{
 		Cvar_Set("fov","10");
@@ -118,74 +104,6 @@ static void SCR_CalcRefdef(void)
 	if (scr_fov->value > 170)
 	{
 		Cvar_Set("fov","170");
-	}
-
-// intermission is always full screen
-	if (cl.qh_intermission)
-	{
-		size = 120;
-	}
-	else
-	{
-		size = scr_viewsize->value;
-	}
-
-	if (size >= 120)
-	{
-		sbqh_lines = 0;		// no status bar at all
-	}
-	else if (size >= 110)
-	{
-		sbqh_lines = 24;		// no inventory
-	}
-	else
-	{
-		sbqh_lines = 24 + 16 + 8;
-	}
-
-	if (scr_viewsize->value >= 100.0)
-	{
-		full = true;
-		size = 100.0;
-	}
-	else
-	{
-		size = scr_viewsize->value;
-	}
-	if (cl.qh_intermission)
-	{
-		full = true;
-		size = 100;
-		sbqh_lines = 0;
-	}
-	size /= 100.0;
-
-	h = viddef.height - sbqh_lines;
-
-	scr_vrect.width = viddef.width * size;
-	if (scr_vrect.width < 96)
-	{
-		size = 96.0 / scr_vrect.width;
-		scr_vrect.width = 96;	// min for icons
-	}
-
-	scr_vrect.height = viddef.height * size;
-	if (scr_vrect.height > (int)viddef.height - sbqh_lines)
-	{
-		scr_vrect.height = viddef.height - sbqh_lines;
-	}
-	if (scr_vrect.height > (int)viddef.height)
-	{
-		scr_vrect.height = viddef.height;
-	}
-	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
-	if (full)
-	{
-		scr_vrect.y = 0;
-	}
-	else
-	{
-		scr_vrect.y = (h - scr_vrect.height) / 2;
 	}
 
 	cl.refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
@@ -196,32 +114,6 @@ static void SCR_CalcRefdef(void)
 	cl.refdef.fov_y = CalcFov(cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
 }
 
-
-/*
-=================
-SCR_SizeUp_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeUp_f(void)
-{
-	Cvar_SetValue("viewsize",scr_viewsize->value + 10);
-}
-
-
-/*
-=================
-SCR_SizeDown_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeDown_f(void)
-{
-	Cvar_SetValue("viewsize",scr_viewsize->value - 10);
-}
-
 /*
 ==================
 SCR_Init
@@ -229,18 +121,11 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	SCR_InitCommon();
-
-//
-// register our commands
-//
-	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
 
 	scr_net = R_PicFromWad("net");
 	scr_turtle = R_PicFromWad("turtle");

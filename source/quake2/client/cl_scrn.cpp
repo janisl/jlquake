@@ -96,64 +96,7 @@ void CL_AddNetgraph(void)
 
 //=============================================================================
 
-/*
-=================
-SCR_CalcVrect
-
-Sets scr_vrect, the coordinates of the rendered window
-=================
-*/
-static void SCR_CalcVrect(void)
-{
-	int size;
-
-	// bound viewsize
-	if (scr_viewsize->value < 40)
-	{
-		Cvar_SetLatched("viewsize","40");
-	}
-	if (scr_viewsize->value > 100)
-	{
-		Cvar_SetLatched("viewsize","100");
-	}
-
-	size = scr_viewsize->value;
-
-	scr_vrect.width = viddef.width * size / 100;
-	scr_vrect.width &= ~7;
-
-	scr_vrect.height = viddef.height * size / 100;
-	scr_vrect.height &= ~1;
-
-	scr_vrect.x = (viddef.width - scr_vrect.width) / 2;
-	scr_vrect.y = (viddef.height - scr_vrect.height) / 2;
-}
-
-
-/*
-=================
-SCR_SizeUp_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeUp_f(void)
-{
-	Cvar_SetValueLatched("viewsize",scr_viewsize->value + 10);
-}
-
-
-/*
-=================
-SCR_SizeDown_f
-
-Keybinding command
-=================
-*/
-void SCR_SizeDown_f(void)
-{
-	Cvar_SetValueLatched("viewsize",scr_viewsize->value - 10);
-}
+#include "../../client/game/quake/local.h"
 
 /*
 =================
@@ -205,7 +148,6 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
 	scr_showturtle = Cvar_Get("scr_showturtle", "0", 0);
 	scr_showpause = Cvar_Get("scr_showpause", "1", 0);
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
@@ -213,13 +155,8 @@ void SCR_Init(void)
 	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
 	SCR_InitCommon();
 
-//
-// register our commands
-//
 	Cmd_AddCommand("timerefresh",SCR_TimeRefresh_f);
 	Cmd_AddCommand("loading",SCR_Loading_f);
-	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
 	Cmd_AddCommand("sky",SCR_Sky_f);
 
 	scr_initialized = true;

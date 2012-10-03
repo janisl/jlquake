@@ -190,7 +190,6 @@ void SbarH2_DeathmatchOverlay();
 void SbarH2_Draw();
 void SbarH2_InvChanged();
 void SbarH2_InvReset();
-void SbarH2_ViewSizeChanged();
 
 #define PLAQUE_WIDTH 26
 

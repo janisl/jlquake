@@ -41,7 +41,6 @@
 #define SPEC_FRAGS -9999
 
 static float BarHeight;
-static float BarTargetHeight;
 
 static Cvar* BarSpeed;
 static Cvar* DMMode;
@@ -121,20 +120,11 @@ static void ShowInfoDown_f()
 		return;
 	}
 	S_StartLocalSound("misc/barmovup.wav");
-	BarTargetHeight = BAR_TOTAL_HEIGHT;
 	sbh2_ShowInfo = true;
 }
 
 static void ShowInfoUp_f()
 {
-	if (cl.qh_intermission || (scr_viewsize->value >= 110.0 && !sbtrans->value))
-	{
-		BarTargetHeight = 0.0 - BAR_BUMP_HEIGHT;
-	}
-	else
-	{
-		BarTargetHeight = BAR_TOP_HEIGHT;
-	}
 	S_StartLocalSound("misc/barmovdn.wav");
 	sbh2_ShowInfo = false;
 }
@@ -308,7 +298,7 @@ void SbarH2_Init()
 	BarSpeed = Cvar_Get("barspeed", "5", 0);
 	DMMode = Cvar_Get("dm_mode", "1", CVAR_ARCHIVE);
 	sbtrans = Cvar_Get("sbtrans", "0", CVAR_ARCHIVE);
-	BarHeight = BarTargetHeight = BAR_TOP_HEIGHT;
+	BarHeight = BAR_TOP_HEIGHT;
 }
 
 // Relative to the current status bar location.
@@ -389,6 +379,20 @@ static void SbarH2_DrawNum(int x, int y, int number, int digits)
 
 static void UpdateHeight()
 {
+	float BarTargetHeight;
+	if (sbh2_ShowInfo && !cl.qh_intermission)
+	{
+		BarTargetHeight = BAR_TOTAL_HEIGHT;
+	}
+	else if (cl.qh_intermission || (scr_viewsize->value >= 110.0 && !sbtrans->value))
+	{
+		BarTargetHeight = 0.0 - BAR_BUMP_HEIGHT;
+	}
+	else
+	{
+		BarTargetHeight = BAR_TOP_HEIGHT;
+	}
+
 	if (BarHeight < BarTargetHeight)
 	{
 		float delta = ((BarTargetHeight - BarHeight) * BarSpeed->value)
@@ -1714,16 +1718,4 @@ void SbarH2_InvReset()
 	cl.h2_inv_count = cl.h2_inv_startpos = 0;
 	cl.h2_inv_selected = -1;
 	sbh2_inv_flg = false;
-}
-
-void SbarH2_ViewSizeChanged()
-{
-	if (cl.qh_intermission || (scr_viewsize->value >= 110.0 && !sbtrans->value))
-	{
-		BarTargetHeight = 0.0 - BAR_BUMP_HEIGHT;
-	}
-	else
-	{
-		BarTargetHeight = BAR_TOP_HEIGHT;
-	}
 }
