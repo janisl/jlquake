@@ -52,6 +52,8 @@ static Cvar* crosshaircolor;
 static Cvar* cl_crossx;
 static Cvar* cl_crossy;
 
+Cvar* scr_fov;
+
 static float v_dmg_time;
 static float v_dmg_roll;
 static float v_dmg_pitch;
@@ -383,6 +385,26 @@ static void VQH_DrawColourBlend()
 
 ==============================================================================
 */
+
+static void VQH_CalcRefdef()
+{
+	// bound field of view
+	if (scr_fov->value < 10)
+	{
+		Cvar_Set("fov","10");
+	}
+	if (scr_fov->value > 170)
+	{
+		Cvar_Set("fov","170");
+	}
+
+	cl.refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
+	cl.refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
+	cl.refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
+	cl.refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
+	cl.refdef.fov_x = GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld) ? 90 : scr_fov->value;
+	cl.refdef.fov_y = CalcFov(cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
+}
 
 //	Moves the client pitch angle towards cl.idealpitch sent by the server.
 //
@@ -1364,6 +1386,8 @@ void VQH_RenderView()
 		return;
 	}
 
+	VQH_CalcRefdef();
+
 	// don't allow cheats in multiplayer
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) || cl.qh_maxclients > 1)
 	{
@@ -1483,6 +1507,8 @@ void VQH_Init()
 	crosshaircolor = Cvar_Get("crosshaircolor", "79", CVAR_ARCHIVE);
 	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
 	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
+
+	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
 }
 
 void VQH_InitCrosshairTexture()

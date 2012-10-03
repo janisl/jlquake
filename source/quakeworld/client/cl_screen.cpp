@@ -72,7 +72,6 @@ console is:
 
 */
 
-Cvar* scr_fov;
 Cvar* scr_showturtle;
 Cvar* scr_showpause;
 Cvar* scr_allowsnap;
@@ -89,38 +88,6 @@ qboolean scr_drawloading;
 
 void SCR_RSShot_f(void);
 
-//=============================================================================
-
-/*
-=================
-SCR_CalcRefdef
-
-Must be called whenever vid changes
-Internal use only
-=================
-*/
-static void SCR_CalcRefdef(void)
-{
-	// bound field of view
-	if (scr_fov->value < 10)
-	{
-		Cvar_Set("fov","10");
-	}
-	if (scr_fov->value > 170)
-	{
-		Cvar_Set("fov","170");
-	}
-
-	SCR_CalcVrect();
-
-	cl.refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
-	cl.refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
-	cl.refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
-	cl.refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
-	cl.refdef.fov_x = scr_fov->value;
-	cl.refdef.fov_y = CalcFov(cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
-}
-
 /*
 ==================
 SCR_Init
@@ -128,7 +95,6 @@ SCR_Init
 */
 void SCR_Init(void)
 {
-	scr_fov = Cvar_Get("fov","90", 0);	// 10 - 170
 	scr_showturtle = Cvar_Get("showturtle","0", 0);
 	scr_showpause = Cvar_Get("showpause","1", 0);
 	scr_allowsnap = Cvar_Get("scr_allowsnap", "1", 0);
@@ -374,7 +340,7 @@ void SCR_UpdateScreen(void)
 	//
 	// determine size of refresh window
 	//
-	SCR_CalcRefdef();
+	SCR_CalcVrect();
 
 //
 // do 3D refresh drawing, and then update the screen

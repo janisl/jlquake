@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+extern Cvar* scr_fov;
+
 void VQH_ParseDamage(QMsg& message);
 void VQH_RenderView();
 void VQH_Init();
