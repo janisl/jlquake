@@ -45,7 +45,6 @@ Cvar* scr_netgraph;
 Cvar* scr_timegraph;
 Cvar* scr_debuggraph;
 
-void SCR_TimeRefresh_f(void);
 void SCR_Loading_f(void);
 
 
@@ -155,7 +154,6 @@ void SCR_Init(void)
 	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
 	SCR_InitCommon();
 
-	Cmd_AddCommand("timerefresh",SCR_TimeRefresh_f);
 	Cmd_AddCommand("loading",SCR_Loading_f);
 	Cmd_AddCommand("sky",SCR_Sky_f);
 
@@ -246,52 +244,6 @@ SCR_Loading_f
 void SCR_Loading_f(void)
 {
 	SCRQ2_BeginLoadingPlaque();
-}
-
-void SCR_TimeRefresh_f(void)
-{
-	int i;
-	int start, stop;
-	float time;
-
-	if (cls.state != CA_ACTIVE)
-	{
-		return;
-	}
-
-	start = Sys_Milliseconds_();
-
-	vec3_t viewangles;
-	viewangles[0] = 0;
-	viewangles[1] = 0;
-	viewangles[2] = 0;
-	if (Cmd_Argc() == 2)
-	{	// run without page flipping
-		R_BeginFrame(STEREO_CENTER);
-		for (i = 0; i < 128; i++)
-		{
-			viewangles[1] = i / 128.0 * 360.0;
-			AnglesToAxis(viewangles, cl.refdef.viewaxis);
-			R_RenderScene(&cl.refdef);
-		}
-		R_EndFrame(NULL, NULL);
-	}
-	else
-	{
-		for (i = 0; i < 128; i++)
-		{
-			viewangles[1] = i / 128.0 * 360.0;
-			AnglesToAxis(viewangles, cl.refdef.viewaxis);
-
-			R_BeginFrame(STEREO_CENTER);
-			R_RenderScene(&cl.refdef);
-			R_EndFrame(NULL, NULL);
-		}
-	}
-
-	stop = Sys_Milliseconds_();
-	time = (stop - start) / 1000.0;
-	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
 }
 
 /*

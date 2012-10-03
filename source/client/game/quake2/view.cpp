@@ -506,6 +506,66 @@ static void VQ2_Viewpos_f()
 		(int)VecToYaw(cl.refdef.viewaxis[0]));
 }
 
+static void VQ2_TimeRefreshScene()
+{
+	R_ClearScene();
+	if (clq2_add_entities->integer)
+	{
+		CLQ2_AddPacketEntities(&cl.q2_frame);
+		CLQ2_AddTEnts();
+	}
+	if (clq2_add_particles->integer)
+	{
+		CL_AddParticles();
+	}
+	CL_AddDLights();
+	CL_AddLightStyles();
+	R_RenderScene(&cl.refdef);
+}
+
+static void SCRQ2_TimeRefresh_f()
+{
+	if (cls.state != CA_ACTIVE)
+	{
+		return;
+	}
+
+	int start = Sys_Milliseconds();
+
+	vec3_t viewangles;
+	viewangles[0] = 0;
+	viewangles[1] = 0;
+	viewangles[2] = 0;
+	if (Cmd_Argc() == 2)
+	{
+		// run without page flipping
+		R_BeginFrame(STEREO_CENTER);
+		for (int i = 0; i < 128; i++)
+		{
+			viewangles[1] = i / 128.0 * 360.0;
+			AnglesToAxis(viewangles, cl.refdef.viewaxis);
+			VQ2_TimeRefreshScene();
+		}
+		R_EndFrame(NULL, NULL);
+	}
+	else
+	{
+		for (int i = 0; i < 128; i++)
+		{
+			viewangles[1] = i / 128.0 * 360.0;
+			AnglesToAxis(viewangles, cl.refdef.viewaxis);
+
+			R_BeginFrame(STEREO_CENTER);
+			VQ2_TimeRefreshScene();
+			R_EndFrame(NULL, NULL);
+		}
+	}
+
+	int stop = Sys_Milliseconds();
+	float time = (stop - start) / 1000.0;
+	common->Printf("%f seconds (%f fps)\n", time, 128 / time);
+}
+
 void VQ2_Init()
 {
 	Cmd_AddCommand("gun_next", VQ2_Gun_Next_f);
@@ -513,6 +573,7 @@ void VQ2_Init()
 	Cmd_AddCommand("gun_model", VQ2_Gun_Model_f);
 
 	Cmd_AddCommand("viewpos", VQ2_Viewpos_f);
+	Cmd_AddCommand("timerefresh", SCRQ2_TimeRefresh_f);
 
 	clq2_showclamp = Cvar_Get("showclamp", "0", 0);
 	clq2_gun = Cvar_Get("cl_gun", "1", 0);
