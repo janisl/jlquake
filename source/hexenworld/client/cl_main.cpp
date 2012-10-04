@@ -1428,20 +1428,12 @@ float* CL_GetSimOrg()
 	return cl.qh_simorg;
 }
 
-void SCRQH_BeginLoadingPlaque()
-{
-}
-
 void server_referencer_dummy()
 {
 	svh2_kingofhill = 0;
 }
 
 void CL_EstablishConnection(const char* name)
-{
-}
-
-void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }
 

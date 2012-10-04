@@ -112,44 +112,12 @@ void SCR_Init(void)
 
 /*
 ================
-SCRQ2_BeginLoadingPlaque
-================
-*/
-void SCRQ2_BeginLoadingPlaque(bool Clear)
-{
-	S_StopAllSounds();
-	cl.q2_sound_prepped = false;		// don't play ambients
-	CDAudio_Stop();
-	if (cls.disable_screen)
-	{
-		return;
-	}
-	if (com_developer->value)
-	{
-		return;
-	}
-	if (cls.state == CA_DISCONNECTED)
-	{
-		return;	// if at console, don't bring up the plaque
-	}
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		return;
-	}
-	scr_draw_loading = Clear ? 2 : 1;
-	SCR_UpdateScreen();
-	cls.disable_screen = Sys_Milliseconds_();
-	cls.q2_disable_servercount = cl.servercount;
-}
-
-/*
-================
 SCR_Loading_f
 ================
 */
 void SCR_Loading_f(void)
 {
-	SCRQ2_BeginLoadingPlaque();
+	SCRQ2_BeginLoadingPlaque(false);
 }
 
 #define ICON_WIDTH  24

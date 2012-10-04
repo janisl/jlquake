@@ -76,37 +76,6 @@ void SCR_Init(void)
 //=============================================================================
 
 /*
-===============
-SCRQH_BeginLoadingPlaque
-
-================
-*/
-void SCRQH_BeginLoadingPlaque(void)
-{
-	S_StopAllSounds();
-
-	if (cls.state != CA_ACTIVE)
-	{
-		return;
-	}
-	if (clc.qh_signon != SIGNONS)
-	{
-		return;
-	}
-
-// redraw with no console and the loading plaque
-	Con_ClearNotify();
-	SCR_ClearCenterString();
-	con.displayFrac = 0;
-
-	scr_draw_loading = true;
-	SCR_UpdateScreen();
-	scr_draw_loading = false;
-
-	cls.disable_screen = realtime * 1000;
-}
-
-/*
 ==================
 SCR_UpdateScreen
 

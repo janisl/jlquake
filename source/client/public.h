@@ -31,6 +31,8 @@ void CL_CvarChanged(Cvar* var);
 const char* CL_TranslateStringBuf(const char* string);
 void CL_ForwardKnownCommandToServer();
 void CL_ForwardCommandToServer();
+void SCRQH_BeginLoadingPlaque();
+void SCRQ2_BeginLoadingPlaque(bool Clear);
 
 void Key_WriteBindings(fileHandle_t f);
 void CL_InitKeyCommands();

@@ -375,9 +375,6 @@ void SV_Init(quakeparms_t* parms)
 	}
 }
 
-void SCRQH_BeginLoadingPlaque()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }
@@ -395,8 +392,5 @@ void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CL_Drop()
-{
-}
-void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }

@@ -116,3 +116,11 @@ void CLT3_AppendCDKey(const char* gameName)
 void CLT3_WriteCDKey()
 {
 }
+
+void SCRQH_BeginLoadingPlaque()
+{
+}
+
+void SCRQ2_BeginLoadingPlaque(bool Clear)
+{
+}

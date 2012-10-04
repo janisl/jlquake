@@ -16,6 +16,7 @@
 
 #include "../server.h"
 #include "local.h"
+#include "../../client/public.h"
 
 static int SVQ2_FindIndex(const char* name, int start, int max)
 {

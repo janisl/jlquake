@@ -617,9 +617,6 @@ int Com_Milliseconds()
 	return Sys_Milliseconds();
 }
 
-void SCRQH_BeginLoadingPlaque()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }

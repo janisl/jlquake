@@ -58,6 +58,58 @@ int scr_draw_loading;
 
 Cvar* scr_netgraph;
 
+void SCRQH_BeginLoadingPlaque()
+{
+	S_StopAllSounds();
+
+	if (cls.state != CA_ACTIVE)
+	{
+		return;
+	}
+	if (clc.qh_signon != SIGNONS)
+	{
+		return;
+	}
+
+	// redraw with no console and the loading plaque
+	Con_ClearNotify();
+	SCR_ClearCenterString();
+	con.displayFrac = 0;
+
+	scr_draw_loading = true;
+	SCR_UpdateScreen();
+	scr_draw_loading = false;
+
+	cls.disable_screen = cls.realtime;
+}
+
+void SCRQ2_BeginLoadingPlaque(bool Clear)
+{
+	S_StopAllSounds();
+	cl.q2_sound_prepped = false;		// don't play ambients
+	CDAudio_Stop();
+	if (cls.disable_screen)
+	{
+		return;
+	}
+	if (com_developer->value)
+	{
+		return;
+	}
+	if (cls.state == CA_DISCONNECTED)
+	{
+		return;	// if at console, don't bring up the plaque
+	}
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
+		return;
+	}
+	scr_draw_loading = Clear ? 2 : 1;
+	SCR_UpdateScreen();
+	cls.disable_screen = Sys_Milliseconds();
+	cls.q2_disable_servercount = cl.servercount;
+}
+
 void SCR_EndLoadingPlaque()
 {
 	cls.disable_screen = 0;

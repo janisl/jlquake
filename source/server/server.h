@@ -53,12 +53,10 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 //
 void CL_Disconnect();
 void CL_Disconnect(qboolean showMainMenu);
-void SCRQH_BeginLoadingPlaque();
 void CL_EstablishConnection(const char* name);
 void Host_Reconnect_f();
 void CL_MapLoading();
 void CL_ShutdownAll();
 void CL_Drop();
-void SCRQ2_BeginLoadingPlaque(bool Clear);
 
 #endif

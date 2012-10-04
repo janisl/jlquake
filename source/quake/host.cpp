@@ -743,9 +743,6 @@ void Host_Shutdown(void)
 void CL_Disconnect()
 {
 }
-void SCRQH_BeginLoadingPlaque()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }
@@ -764,8 +761,5 @@ void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CL_Drop()
-{
-}
-void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }
