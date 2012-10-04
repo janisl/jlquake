@@ -55,7 +55,6 @@
 
 #ifndef DEDICATED
 #include "vid.h"
-#include "draw.h"
 #include "screen.h"
 #include "render.h"
 #include "client.h"

@@ -24,24 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../../client/game/quake_hexen2/view.h"
 
-/*
-===============
-Draw_Init
-===============
-*/
-void Draw_Init(void)
-{
-	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
-
-	//
-	// get the other pics we need
-	//
-	Con_InitBackgroundImage();
-	MQH_InitImages();
-	VQH_InitCrosshairTexture();
-	SCRQH_InitImages();
-}
-
 #define NET_GRAPHHEIGHT 32
 
 static void R_LineGraph(int h)

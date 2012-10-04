@@ -66,7 +66,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sys.h"
 #include "net.h"
 #ifndef DEDICATED
-#include "draw.h"
 #include "screen.h"
 #include "render.h"
 #include "client.h"

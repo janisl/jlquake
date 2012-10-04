@@ -1,6 +1,5 @@
 add_executable(jlquake
 	cl_demo.cpp
-	cl_draw.cpp
 	cl_input.cpp
 	cl_main.cpp
 	cl_parse.cpp

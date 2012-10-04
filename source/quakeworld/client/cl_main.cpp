@@ -380,7 +380,7 @@ static void Mod_ClearAll(void)
 
 	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
 
-	Draw_Init();
+	SCRQH_InitImages();
 	SbarQ1_Init();
 }
 
@@ -1514,7 +1514,7 @@ void Host_Init(quakeparms_t* parms)
 
 		IN_Init();
 		VID_Init();
-		Draw_Init();
+		SCRQH_InitImages();
 		SCR_Init();
 		S_Init();
 		CLQ1_InitTEnts();

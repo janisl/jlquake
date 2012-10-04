@@ -29,7 +29,7 @@ static void Mod_ClearAll(void)
 
 	CLH2_ClearEntityTextureArrays();
 
-	Draw_Init();
+	SCRQH_InitImages();
 	SbarH2_Init();
 }
 

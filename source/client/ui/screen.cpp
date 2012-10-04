@@ -15,6 +15,8 @@
 //**************************************************************************
 
 #include "../client.h"
+#include "../game/quake_hexen2/menu.h"
+#include "../game/quake_hexen2/view.h"
 #include "../game/hexen2/local.h"
 
 struct graphsamp_t
@@ -524,11 +526,17 @@ void SCRQH_InitImages()
 	if (GGameType & GAME_Quake)
 	{
 		draw_backtile = R_PicFromWadRepeat("backtile");
+		char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 	}
 	else
 	{
 		draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
+		char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
+		char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
 	}
+	Con_InitBackgroundImage();
+	MQH_InitImages();
+	VQH_InitCrosshairTexture();
 }
 
 void SCR_InitCommon()

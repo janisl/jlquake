@@ -5,25 +5,6 @@
 #include "quakedef.h"
 #include "../../client/game/quake_hexen2/view.h"
 
-//=============================================================================
-/* Support Routines */
-
-/*
-===============
-Draw_Init
-===============
-*/
-void Draw_Init(void)
-{
-	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
-	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
-
-	Con_InitBackgroundImage();
-	MQH_InitImages();
-	VQH_InitCrosshairTexture();
-	SCRQH_InitImages();
-}
-
 #define NET_GRAPHHEIGHT 32
 
 #define NET_TIMINGS 256
