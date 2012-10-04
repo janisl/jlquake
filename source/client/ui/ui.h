@@ -81,6 +81,7 @@ void SCR_CalcVrect();
 void SCR_DrawNet();
 void SCRQH_InitImages();
 void SCR_DrawFPS();
+void SCR_TileClear();
 
 bool Field_KeyDownEvent(field_t* edit, int key);
 void Field_CharEvent(field_t* edit, int ch);

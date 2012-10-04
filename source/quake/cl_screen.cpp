@@ -117,34 +117,6 @@ void SCRQH_BeginLoadingPlaque(void)
 	cls.disable_screen = realtime * 1000;
 }
 
-//=============================================================================
-
-void SCR_TileClear(void)
-{
-	if (scr_vrect.x > 0)
-	{
-		// left
-		UI_TileClear(0, 0, scr_vrect.x, viddef.height - sbqh_lines, draw_backtile);
-		// right
-		UI_TileClear(scr_vrect.x + scr_vrect.width, 0,
-			viddef.width - scr_vrect.x + scr_vrect.width,
-			viddef.height - sbqh_lines, draw_backtile);
-	}
-	if (scr_vrect.y > 0)
-	{
-		// top
-		UI_TileClear(scr_vrect.x, 0,
-			scr_vrect.x + scr_vrect.width,
-			scr_vrect.y, draw_backtile);
-		// bottom
-		UI_TileClear(scr_vrect.x,
-			scr_vrect.y + scr_vrect.height,
-			scr_vrect.width,
-			viddef.height - sbqh_lines -
-			(scr_vrect.height + scr_vrect.y), draw_backtile);
-	}
-}
-
 /*
 ==================
 SCR_UpdateScreen

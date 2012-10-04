@@ -1498,11 +1498,6 @@ void SbarQ1_Draw()
 
 	bool headsup = GGameType & GAME_QuakeWorld && !(clqh_sbar->value || scr_viewsize->value < 100);
 
-	if (!(GGameType & GAME_QuakeWorld) && sbqh_lines && viddef.width > 320)
-	{
-		UI_TileClear(0, viddef.height - sbqh_lines, viddef.width, sbqh_lines, draw_backtile);
-	}
-
 	// top line
 	if (sbqh_lines > 24)
 	{
@@ -1582,12 +1577,6 @@ void SbarQ1_Draw()
 	else if (GGameType & GAME_QuakeWorld && sbq1_showteamscores)
 	{
 		SbarQW_TeamOverlay();
-	}
-
-	// clear unused areas in gl
-	if (GGameType & GAME_QuakeWorld && viddef.width > 320 && !headsup)
-	{
-		UI_TileClear(320, viddef.height - sbqh_lines, viddef.width - 320, sbqh_lines, draw_backtile);
 	}
 
 	if (viddef.width > 320 && sbqh_lines > 0)

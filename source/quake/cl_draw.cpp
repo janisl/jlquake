@@ -36,7 +36,6 @@ void Draw_Init(void)
 	//
 	// get the other pics we need
 	//
-	draw_backtile = R_PicFromWadRepeat("backtile");
 	Con_InitBackgroundImage();
 	MQH_InitImages();
 	VQH_InitCrosshairTexture();

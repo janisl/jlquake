@@ -50,6 +50,7 @@ static float scr_centertime_off;
 static int scr_center_lines;
 
 static image_t* scr_net;
+static image_t* draw_backtile;
 
 int scr_draw_loading;
 
@@ -450,9 +451,84 @@ void SCR_DrawFPS()
 	UI_DrawString(x, y, st);
 }
 
+//	Clear any parts of the tiled background that were drawn on last frame
+void SCR_TileClear()
+{
+	if (con.displayFrac == 1.0)
+	{
+		return;		// full screen console
+	}
+	if (scr_vrect.height == viddef.height)
+	{
+		return;		// full screen rendering
+	}
+
+	int top = scr_vrect.y;
+	int bottom = top + scr_vrect.height;
+	int left = scr_vrect.x;
+	int right = left + scr_vrect.width;
+
+	if (top > 0)
+	{
+		// clear above view screen
+		if (GGameType & GAME_Quake2)
+		{
+			UI_NamedTileClear(0, 0, viddef.width, top, "backtile");
+		}
+		else
+		{
+			UI_TileClear(0, 0, viddef.width, top, draw_backtile);
+		}
+	}
+	if (viddef.height > bottom)
+	{
+		// clear below view screen
+		if (GGameType & GAME_Quake2)
+		{
+			UI_NamedTileClear(0, bottom, viddef.width, viddef.height - bottom, "backtile");
+		}
+		else
+		{
+			UI_TileClear(0, bottom, viddef.width, viddef.height - bottom, draw_backtile);
+		}
+	}
+	if (left > 0)
+	{
+		// clear left of view screen
+		if (GGameType & GAME_Quake2)
+		{
+			UI_NamedTileClear(0, top, left, scr_vrect.height, "backtile");
+		}
+		else
+		{
+			UI_TileClear(0, top, left, scr_vrect.height, draw_backtile);
+		}
+	}
+	if (viddef.width > right)
+	{
+		// clear left of view screen
+		if (GGameType & GAME_Quake2)
+		{
+			UI_NamedTileClear(right, top, viddef.width - right, scr_vrect.height, "backtile");
+		}
+		else
+		{
+			UI_TileClear(right, top, viddef.width - right, scr_vrect.height, draw_backtile);
+		}
+	}
+}
+
 void SCRQH_InitImages()
 {
 	scr_net = R_PicFromWad("net");
+	if (GGameType & GAME_Quake)
+	{
+		draw_backtile = R_PicFromWadRepeat("backtile");
+	}
+	else
+	{
+		draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
+	}
 }
 
 void SCR_InitCommon()

@@ -193,55 +193,6 @@ void SCR_Loading_f(void)
 	SCRQ2_BeginLoadingPlaque();
 }
 
-/*
-==============
-SCR_TileClear
-
-Clear any parts of the tiled background that were drawn on last frame
-==============
-*/
-void SCR_TileClear(void)
-{
-	if (con.displayFrac == 1.0)
-	{
-		return;		// full screen console
-	}
-	if (scr_viewsize->value == 100)
-	{
-		return;		// full screen rendering
-
-	}
-	int top = scr_vrect.y;
-	int bottom = top + scr_vrect.height;
-	int left = scr_vrect.x;
-	int right = left + scr_vrect.width;
-
-	if (top > 0)
-	{
-		// clear above view screen
-		UI_NamedTileClear(0, 0, cls.glconfig.vidWidth, top, "backtile");
-	}
-	if (cls.glconfig.vidHeight > bottom)
-	{
-		// clear below view screen
-		UI_NamedTileClear(0, bottom, cls.glconfig.vidWidth, cls.glconfig.vidHeight - bottom, "backtile");
-	}
-	if (0 < left)
-	{
-		// clear left of view screen
-		UI_NamedTileClear(0, top, left, bottom - top, "backtile");
-	}
-	if (cls.glconfig.vidWidth > right)
-	{
-		// clear left of view screen
-		UI_NamedTileClear(right, top, cls.glconfig.vidWidth - right, bottom - top, "backtile");
-	}
-}
-
-
-//===============================================================
-
-
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
 #define ICON_SPACE  8
