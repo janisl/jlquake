@@ -835,7 +835,7 @@ void CL_ParseServerMessage(void)
 		}
 	}
 
-	CL_AddNetgraph();
+	CLQ2_AddNetgraph();
 
 	//
 	// we don't know if it is ok to save a demo message until

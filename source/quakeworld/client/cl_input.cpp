@@ -117,7 +117,7 @@ void CL_SendCmd(void)
 	buf.WriteByte(0);
 
 	// write our lossage percentage
-	lost = CL_CalcNet();
+	lost = CLQW_CalcNet();
 	buf.WriteByte((byte)lost);
 
 	i = (clc.netchan.outgoingSequence - 2) & UPDATE_MASK_QW;

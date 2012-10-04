@@ -18,3 +18,7 @@ extern Cvar* clqh_sbar;
 extern Cvar* qhw_topcolor;
 extern Cvar* qhw_bottomcolor;
 extern Cvar* qhw_spectator;
+
+#define NET_TIMINGS_QH 256
+#define NET_TIMINGSMASK_QH 255
+extern int clqh_packet_latency[NET_TIMINGS_QH];

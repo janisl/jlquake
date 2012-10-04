@@ -56,6 +56,8 @@ static image_t* draw_backtile;
 
 int scr_draw_loading;
 
+Cvar* scr_netgraph;
+
 void SCR_EndLoadingPlaque()
 {
 	cls.disable_screen = 0;

@@ -104,51 +104,6 @@ const char* svc_strings[] =
 
 //=============================================================================
 
-int packet_latency[NET_TIMINGS];
-
-int CL_CalcNet(void)
-{
-	int a, i;
-	qwframe_t* frame;
-	int lost;
-
-	for (i = clc.netchan.outgoingSequence - UPDATE_BACKUP_QW + 1
-		 ; i <= clc.netchan.outgoingSequence
-		 ; i++)
-	{
-		frame = &cl.qw_frames[i & UPDATE_MASK_QW];
-		if (frame->receivedtime == -1)
-		{
-			packet_latency[i & NET_TIMINGSMASK] = 9999;		// dropped
-		}
-		else if (frame->receivedtime == -2)
-		{
-			packet_latency[i & NET_TIMINGSMASK] = 10000;	// choked
-		}
-		else if (frame->invalid)
-		{
-			packet_latency[i & NET_TIMINGSMASK] = 9998;		// invalid delta
-		}
-		else
-		{
-			packet_latency[i & NET_TIMINGSMASK] = (frame->receivedtime - frame->senttime) * 20;
-		}
-	}
-
-	lost = 0;
-	for (a = 0; a < NET_TIMINGS; a++)
-	{
-		i = (clc.netchan.outgoingSequence - a) & NET_TIMINGSMASK;
-		if (packet_latency[i] == 9999)
-		{
-			lost++;
-		}
-	}
-	return lost * 100 / NET_TIMINGS;
-}
-
-//=============================================================================
-
 static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 {
 	Array<byte> Buffer;

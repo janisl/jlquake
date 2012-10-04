@@ -36,10 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean scr_initialized;			// ready to draw
 
-Cvar* scr_netgraph;
-Cvar* scr_timegraph;
-Cvar* scr_debuggraph;
-
 void SCR_Loading_f(void);
 
 
@@ -50,43 +46,6 @@ BAR GRAPHS
 
 ===============================================================================
 */
-
-/*
-==============
-CL_AddNetgraph
-
-A new packet was just parsed
-==============
-*/
-void CL_AddNetgraph(void)
-{
-	int i;
-	int in;
-	int ping;
-
-	// if using the debuggraph for something else, don't
-	// add the net lines
-	if (scr_debuggraph->value || scr_timegraph->value)
-	{
-		return;
-	}
-
-	for (i = 0; i < clc.netchan.dropped; i++)
-		SCR_DebugGraph(30, 0x40);
-
-	for (i = 0; i < cl.q2_surpressCount; i++)
-		SCR_DebugGraph(30, 0xdf);
-
-	// see what the latency was on this packet
-	in = clc.netchan.incomingAcknowledged & (CMD_BACKUP_Q2 - 1);
-	ping = cls.realtime - cl.q2_cmd_time[in];
-	ping /= 30;
-	if (ping > 30)
-	{
-		ping = 30;
-	}
-	SCR_DebugGraph(ping, 0xd0);
-}
 
 /*
 =================
@@ -139,8 +98,8 @@ SCR_Init
 void SCR_Init(void)
 {
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
-	scr_timegraph = Cvar_Get("timegraph", "0", 0);
-	scr_debuggraph = Cvar_Get("debuggraph", "0", 0);
+	scrq2_timegraph = Cvar_Get("timegraph", "0", 0);
+	scrq2_debuggraph = Cvar_Get("debuggraph", "0", 0);
 	SCR_InitCommon();
 
 	Cmd_AddCommand("loading",SCR_Loading_f);
@@ -237,12 +196,12 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 
 		SCRQ2_DrawHud();
 
-		if (scr_timegraph->value)
+		if (scrq2_timegraph->value)
 		{
 			SCR_DebugGraph(cls.q2_frametimeFloat * 300, 0);
 		}
 
-		if (scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value)
+		if (scrq2_debuggraph->value || scrq2_timegraph->value || scr_netgraph->value)
 		{
 			SCR_DrawDebugGraph();
 		}

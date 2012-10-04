@@ -13,7 +13,6 @@
 #include "common.h"
 #include "vid.h"
 #include "sys.h"
-#include "draw.h"
 #include "screen.h"
 #include "net.h"
 #include "protocol.h"

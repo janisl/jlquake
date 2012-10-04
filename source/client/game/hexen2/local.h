@@ -206,6 +206,7 @@ void SCRH2_UpdateInfoMessage();
 void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw);
 void SCRH2_Info_Plaque_Draw(const char* message);
 void SBH2_IntermissionOverlay();
+void CLHW_NetGraph();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

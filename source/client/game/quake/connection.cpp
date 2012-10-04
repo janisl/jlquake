@@ -94,3 +94,40 @@ bool CLQW_CheckOrDownloadFile(const char* filename)
 
 	return false;
 }
+
+int CLQW_CalcNet()
+{
+	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_QW + 1
+		 ; i <= clc.netchan.outgoingSequence
+		 ; i++)
+	{
+		qwframe_t* frame = &cl.qw_frames[i & UPDATE_MASK_QW];
+		if (frame->receivedtime == -1)
+		{
+			clqh_packet_latency[i & NET_TIMINGSMASK_QH] = 9999;		// dropped
+		}
+		else if (frame->receivedtime == -2)
+		{
+			clqh_packet_latency[i & NET_TIMINGSMASK_QH] = 10000;	// choked
+		}
+		else if (frame->invalid)
+		{
+			clqh_packet_latency[i & NET_TIMINGSMASK_QH] = 9998;		// invalid delta
+		}
+		else
+		{
+			clqh_packet_latency[i & NET_TIMINGSMASK_QH] = (frame->receivedtime - frame->senttime) * 20;
+		}
+	}
+
+	int lost = 0;
+	for (int a = 0; a < NET_TIMINGS_QH; a++)
+	{
+		int i = (clc.netchan.outgoingSequence - a) & NET_TIMINGSMASK_QH;
+		if (clqh_packet_latency[i] == 9999)
+		{
+			lost++;
+		}
+	}
+	return lost * 100 / NET_TIMINGS_QH;
+}

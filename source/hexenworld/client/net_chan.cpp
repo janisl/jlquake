@@ -46,8 +46,6 @@ address spoofing.
 
 */
 
-int packet_latency[256];
-
 netadr_t net_from;
 QMsg net_message;
 

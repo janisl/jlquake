@@ -102,8 +102,12 @@ void CLQ2_PingServers_f();
 //
 //	Screen
 //
+extern Cvar* scrq2_debuggraph;
+extern Cvar* scrq2_timegraph;
+
 void SCRQ2_DrawPause();
 void SCRQ2_DrawLoading();
+void CLQ2_AddNetgraph();
 
 //
 //	Sustain

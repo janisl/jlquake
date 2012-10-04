@@ -54,8 +54,6 @@ extern QMsg net_message;
 
 qboolean    CL_CheckOrDownloadFile(char* filename);
 
-void CL_AddNetgraph(void);
-
 //=================================================
 
 #define BLASTER_PARTICLE_COLOR      0xe0

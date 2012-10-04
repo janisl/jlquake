@@ -74,8 +74,6 @@ console is:
 
 Cvar* scr_allowsnap;
 
-static Cvar* cl_netgraph;
-
 qboolean scr_initialized;						// ready to draw
 
 void SCR_RSShot_f(void);
@@ -94,7 +92,7 @@ void SCR_Init(void)
 
 	clqh_sbar     = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
-	cl_netgraph = Cvar_Get("cl_netgraph", "0", 0);
+	scr_netgraph = Cvar_Get("cl_netgraph", "0", 0);
 
 	scr_initialized = true;
 }
@@ -184,9 +182,9 @@ void SCR_UpdateScreen(void)
 	//
 	SCR_TileClear();
 
-	if (cl_netgraph->value)
+	if (scr_netgraph->value)
 	{
-		R_NetGraph();
+		CLQW_NetGraph();
 	}
 
 	if (scr_draw_loading)

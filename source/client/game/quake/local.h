@@ -33,6 +33,7 @@ extern Cvar* clqw_noskins;
 
 void CLQ1_SignonReply();
 bool CLQW_CheckOrDownloadFile(const char* filename);
+int CLQW_CalcNet();
 
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
@@ -74,6 +75,7 @@ void SbarQ1_FinaleOverlay();
 
 void SCRQ1_DrawPause();
 void SCRQ1_DrawLoading();
+void CLQW_NetGraph();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

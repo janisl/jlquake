@@ -70,10 +70,6 @@ void CL_TimeDemo_f(void);
 //
 // cl_parse.c
 //
-#define NET_TIMINGS 256
-#define NET_TIMINGSMASK 255
-extern int packet_latency[NET_TIMINGS];
-int CL_CalcNet(void);
 void CL_ParseServerMessage(void);
 void CL_NewTranslation(int slot);
 qboolean CL_IsUploading(void);

@@ -45,6 +45,7 @@ extern float h2_introTime;
 extern vrect_t scr_vrect;			// position of render window
 extern Cvar* scr_showpause;
 extern int scr_draw_loading;
+extern Cvar* scr_netgraph;
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
