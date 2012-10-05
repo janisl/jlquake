@@ -637,7 +637,6 @@ float crand();	// -1 to 1
 //	Called by Windows driver.
 void Key_ClearStates();
 float* CL_GetSimOrg();
-void SCR_UpdateScreen();
 void CL_NextDemo();
 void Com_Quit_f();
 

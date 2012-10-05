@@ -110,7 +110,6 @@ void CL_ParseServerMessage(QMsg* msg);
 // cl_scrn.c
 //
 void    SCR_Init(void);
-void    SCR_UpdateScreen(void);
 
 //
 // cl_cgame.c

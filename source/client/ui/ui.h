@@ -49,6 +49,7 @@ extern Cvar* scr_netgraph;
 extern Cvar* cl_debuggraph;
 extern Cvar* cl_timegraph;
 extern bool scr_initialized;			// ready to draw
+extern Cvar* clq2_stereo_separation;
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
@@ -86,6 +87,7 @@ void SCR_DrawNet();
 void SCRQH_InitImages();
 void SCR_DrawFPS();
 void SCR_TileClear();
+void SCR_UpdateScreen();
 
 bool Field_KeyDownEvent(field_t* edit, int key);
 void Field_CharEvent(field_t* edit, int ch);

@@ -40,8 +40,6 @@ extern int num_cl_weaponmodels;
 //
 // cvars
 //
-extern Cvar* cl_stereo_separation;
-
 extern Cvar* cl_noskins;
 extern Cvar* cl_autoskins;
 

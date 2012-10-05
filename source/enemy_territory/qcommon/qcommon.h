@@ -137,9 +137,6 @@ extern Cvar* com_logosPlaying;
 extern Cvar* com_watchdog;
 extern Cvar* com_watchdog_cmd;
 
-extern int time_frontend;
-extern int time_backend;			// renderer backend time
-
 extern int com_frameMsec;
 
 // commandLine should not include the executable name (argv[0])

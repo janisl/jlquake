@@ -100,6 +100,8 @@ extern Cvar* com_speeds;
 extern int t3time_game;
 extern int time_before_game;
 extern int time_after_game;
+extern int time_frontend;
+extern int time_backend;			// renderer backend time
 
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);

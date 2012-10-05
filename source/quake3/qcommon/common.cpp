@@ -56,10 +56,6 @@ Cvar* com_cameraMode;
 Cvar* com_noErrorInterrupt;
 #endif
 
-// com_speeds times
-int time_frontend;			// renderer frontend time
-int time_backend;			// renderer backend time
-
 int com_frameNumber;
 
 qboolean com_fullyInitialized;

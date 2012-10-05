@@ -34,8 +34,6 @@ Cvar* adr6;
 Cvar* adr7;
 Cvar* adr8;
 
-Cvar* cl_stereo_separation;
-
 Cvar* rcon_client_password;
 Cvar* rcon_address;
 
@@ -1398,8 +1396,6 @@ void CL_InitLocal(void)
 //
 // register our variables
 //
-	cl_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
-
 	clq2_footsteps = Cvar_Get("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);

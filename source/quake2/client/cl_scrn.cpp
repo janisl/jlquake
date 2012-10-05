@@ -118,68 +118,6 @@ void SCR_Loading_f(void)
 	SCRQ2_BeginLoadingPlaque(false);
 }
 
-#define ICON_WIDTH  24
-#define ICON_HEIGHT 24
-#define ICON_SPACE  8
-
-/*
-==================
-SCR_UpdateScreen
-
-This is called every frame, and can also be called explicitly to flush
-text to the screen.
-==================
-*/
-void SCR_UpdateScreen(void)
-{
-	// if the screen is disabled (loading plaque is up, or vid mode changing)
-	// do nothing at all
-	if (cls.disable_screen)
-	{
-		if (Sys_Milliseconds_() - cls.disable_screen > 120000)
-		{
-			cls.disable_screen = 0;
-			common->Printf("Loading plaque timed out.\n");
-		}
-		return;
-	}
-
-	if (!scr_initialized)
-	{
-		return;				// not initialized yet
-
-	}
-	/*
-	** range check cl_camera_separation so we don't inadvertently fry someone's
-	** brain
-	*/
-	if (cl_stereo_separation->value > 1.0)
-	{
-		Cvar_SetValueLatched("cl_stereo_separation", 1.0);
-	}
-	else if (cl_stereo_separation->value < 0)
-	{
-		Cvar_SetValueLatched("cl_stereo_separation", 0.0);
-	}
-
-	if (cls.glconfig.stereoEnabled)
-	{
-		SCRQ2_DrawScreen(STEREO_LEFT, -cl_stereo_separation->value / 2);
-		SCRQ2_DrawScreen(STEREO_RIGHT, cl_stereo_separation->value / 2);
-	}
-	else
-	{
-		SCRQ2_DrawScreen(STEREO_CENTER, 0);
-	}
-
-	R_EndFrame(NULL, NULL);
-
-	if (cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid)
-	{
-		CL_UpdateParticles(800);
-	}
-}
-
 /*
 ===============
 Draw_InitLocal

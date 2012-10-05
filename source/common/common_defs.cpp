@@ -65,10 +65,14 @@ void (* rd_flush)(char* buffer);
 
 bool com_errorEntered;
 
+// com_speeds times
 Cvar* com_speeds;
 int t3time_game;
 int time_before_game;
 int time_after_game;
+int time_frontend;			// renderer frontend time
+int time_backend;			// renderer backend time
+
 
 static int q2server_state;
 

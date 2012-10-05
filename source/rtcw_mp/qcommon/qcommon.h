@@ -111,10 +111,6 @@ extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
 
-// com_speeds times
-extern int time_frontend;
-extern int time_backend;			// renderer backend time
-
 extern int com_frameMsec;
 
 // commandLine should not include the executable name (argv[0])

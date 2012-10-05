@@ -66,10 +66,6 @@ Cvar* cl_notebook;
 
 Cvar* com_hunkused;			// Ridah
 
-// com_speeds times
-int time_frontend;			// renderer frontend time
-int time_backend;			// renderer backend time
-
 int com_frameMsec;
 int com_frameNumber;
 

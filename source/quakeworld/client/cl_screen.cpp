@@ -129,25 +129,6 @@ void SCR_RSShot_f(void)
 	CL_StartUpload(buffer.Ptr(), buffer.Num());
 }
 
-
-
-
-/*
-==================
-SCR_UpdateScreen
-
-This is called every frame, and can also be called explicitly to flush
-text to the screen.
-
-WARNING: be very careful calling this from elsewhere, because the refresh
-needs almost the entire 256k of stack space!
-==================
-*/
-void SCR_UpdateScreen(void)
-{
-	SCRQ1_DrawScreen(STEREO_CENTER);
-}
-
 void VID_Init()
 {
 	R_BeginRegistration(&cls.glconfig);

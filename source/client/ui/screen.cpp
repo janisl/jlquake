@@ -17,7 +17,10 @@
 #include "../client.h"
 #include "../game/quake_hexen2/menu.h"
 #include "../game/quake_hexen2/view.h"
+#include "../game/quake/local.h"
 #include "../game/hexen2/local.h"
+#include "../game/quake2/local.h"
+#include "../game/tech3/local.h"
 
 struct graphsamp_t
 {
@@ -61,6 +64,8 @@ int scr_draw_loading;
 Cvar* scr_netgraph;
 Cvar* cl_debuggraph;
 Cvar* cl_timegraph;
+
+Cvar* clq2_stereo_separation;
 
 void SCRQH_BeginLoadingPlaque()
 {
@@ -620,6 +625,7 @@ void SCR_InitCommon()
 	else if (GGameType & GAME_Quake2)
 	{
 		scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
+		clq2_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
 	}
 
 	//
@@ -629,5 +635,118 @@ void SCR_InitCommon()
 	{
 		Cmd_AddCommand("sizeup", SCR_SizeUp_f);
 		Cmd_AddCommand("sizedown", SCR_SizeDown_f);
+	}
+}
+
+//	This is called every frame, and can also be called explicitly to flush
+// text to the screen.
+void SCR_UpdateScreen()
+{
+	if (GGameType & GAME_Quake)
+	{
+		SCRQ1_DrawScreen(STEREO_CENTER);
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		SCRH2_DrawScreen(STEREO_CENTER);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		// if the screen is disabled (loading plaque is up, or vid mode changing)
+		// do nothing at all
+		if (cls.disable_screen)
+		{
+			if (Sys_Milliseconds() - cls.disable_screen > 120000)
+			{
+				cls.disable_screen = 0;
+				common->Printf("Loading plaque timed out.\n");
+			}
+			return;
+		}
+
+		if (!scr_initialized)
+		{
+			return;				// not initialized yet
+
+		}
+		/*
+		** range check cl_camera_separation so we don't inadvertently fry someone's
+		** brain
+		*/
+		if (clq2_stereo_separation->value > 1.0)
+		{
+			Cvar_SetValueLatched("cl_stereo_separation", 1.0);
+		}
+		else if (clq2_stereo_separation->value < 0)
+		{
+			Cvar_SetValueLatched("cl_stereo_separation", 0.0);
+		}
+
+		if (cls.glconfig.stereoEnabled)
+		{
+			SCRQ2_DrawScreen(STEREO_LEFT, -clq2_stereo_separation->value / 2);
+			SCRQ2_DrawScreen(STEREO_RIGHT, clq2_stereo_separation->value / 2);
+		}
+		else
+		{
+			SCRQ2_DrawScreen(STEREO_CENTER, 0);
+		}
+
+		R_EndFrame(NULL, NULL);
+
+		if (cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid)
+		{
+			CL_UpdateParticles(800);
+		}
+	}
+	else
+	{
+		static int recursive;
+
+		if (!scr_initialized)
+		{
+			return;				// not initialized yet
+		}
+
+		if (GGameType & GAME_ET)
+		{
+			if (++recursive >= 2)
+			{
+				recursive = 0;
+				// Gordon: i'm breaking this again, because we've removed most of our cases but still have one which will not fix easily
+				return;
+				//Com_Error( ERR_FATAL, "SCR_UpdateScreen: recursively called" );
+			}
+		}
+		else
+		{
+			if (++recursive > 2)
+			{
+				common->FatalError("SCR_UpdateScreen: recursively called");
+			}
+		}
+		recursive = 1;
+
+		// if running in stereo, we need to draw the frame twice
+		if (cls.glconfig.stereoEnabled)
+		{
+			SCRT3_DrawScreenField(STEREO_LEFT);
+			SCRT3_DrawScreenField(STEREO_RIGHT);
+		}
+		else
+		{
+			SCRT3_DrawScreenField(STEREO_CENTER);
+		}
+
+		if (com_speeds->integer)
+		{
+			R_EndFrame(&time_frontend, &time_backend);
+		}
+		else
+		{
+			R_EndFrame(NULL, NULL);
+		}
+
+		recursive = 0;
 	}
 }
