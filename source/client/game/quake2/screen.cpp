@@ -137,3 +137,48 @@ void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation)
 	}
 	SCR_DrawFPS();
 }
+
+//	Set a specific sky and rotation speed
+static void SCR_Sky_f()
+{
+	if (Cmd_Argc() < 2)
+	{
+		common->Printf("Usage: sky <basename> <rotate> <axis x y z>\n");
+		return;
+	}
+	float rotate;
+	if (Cmd_Argc() > 2)
+	{
+		rotate = String::Atof(Cmd_Argv(2));
+	}
+	else
+	{
+		rotate = 0;
+	}
+	vec3_t axis;
+	if (Cmd_Argc() == 6)
+	{
+		axis[0] = String::Atof(Cmd_Argv(3));
+		axis[1] = String::Atof(Cmd_Argv(4));
+		axis[2] = String::Atof(Cmd_Argv(5));
+	}
+	else
+	{
+		axis[0] = 0;
+		axis[1] = 0;
+		axis[2] = 1;
+	}
+
+	R_SetSky(Cmd_Argv(1), rotate, axis);
+}
+
+static void SCR_Loading_f()
+{
+	SCRQ2_BeginLoadingPlaque(false);
+}
+
+void SCRQ2_Init()
+{
+	Cmd_AddCommand("loading", SCR_Loading_f);
+	Cmd_AddCommand("sky", SCR_Sky_f);
+}

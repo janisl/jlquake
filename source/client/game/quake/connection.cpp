@@ -17,6 +17,10 @@
 #include "../../client.h"
 #include "local.h"
 
+static byte* clqw_upload_data;
+static int clqw_upload_pos;
+static int clqw_upload_size;
+
 //	An q1svc_signonnum has been received, perform a client side setup
 void CLQ1_SignonReply()
 {
@@ -130,4 +134,86 @@ int CLQW_CalcNet()
 		}
 	}
 	return lost * 100 / NET_TIMINGS_QH;
+}
+
+void CLQW_NextUpload()
+{
+	if (!clqw_upload_data)
+	{
+		return;
+	}
+
+	int r = clqw_upload_size - clqw_upload_pos;
+	if (r > 768)
+	{
+		r = 768;
+	}
+	byte buffer[1024];
+	Com_Memcpy(buffer, clqw_upload_data + clqw_upload_pos, r);
+	clc.netchan.message.WriteByte(qwclc_upload);
+	clc.netchan.message.WriteShort(r);
+
+	clqw_upload_pos += r;
+	int size = clqw_upload_size;
+	if (!size)
+	{
+		size = 1;
+	}
+	int percent = clqw_upload_pos * 100 / size;
+	clc.netchan.message.WriteByte(percent);
+	clc.netchan.message.WriteData(buffer, r);
+
+	common->DPrintf("UPLOAD: %6d: %d written\n", clqw_upload_pos - r, r);
+
+	if (clqw_upload_pos != clqw_upload_size)
+	{
+		return;
+	}
+
+	common->Printf("Upload completed\n");
+
+	Mem_Free(clqw_upload_data);
+	clqw_upload_data = 0;
+	clqw_upload_pos = clqw_upload_size = 0;
+}
+
+void CLQW_StartUpload(const byte* data, int size)
+{
+	if (cls.state < CA_LOADING)
+	{
+		return;	// gotta be connected
+
+	}
+	// override
+	if (clqw_upload_data)
+	{
+		free(clqw_upload_data);
+	}
+
+	common->DPrintf("Upload starting of %d...\n", size);
+
+	clqw_upload_data = (byte*)Mem_Alloc(size);
+	Com_Memcpy(clqw_upload_data, data, size);
+	clqw_upload_size = size;
+	clqw_upload_pos = 0;
+
+	CLQW_NextUpload();
+}
+
+bool CLQW_IsUploading()
+{
+	if (clqw_upload_data)
+	{
+		return true;
+	}
+	return false;
+}
+
+void CLQW_StopUpload()
+{
+	if (clqw_upload_data)
+	{
+		Mem_Free(clqw_upload_data);
+	}
+	clqw_upload_data = NULL;
 }

@@ -583,61 +583,6 @@ void SCR_TileClear()
 	}
 }
 
-void SCRQH_InitImages()
-{
-	scr_net = R_PicFromWad("net");
-	if (GGameType & GAME_Quake)
-	{
-		draw_backtile = R_PicFromWadRepeat("backtile");
-		char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
-	}
-	else
-	{
-		draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
-		char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
-		char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
-	}
-	Con_InitBackgroundImage();
-	MQH_InitImages();
-	VQH_InitCrosshairTexture();
-}
-
-void SCR_InitCommon()
-{
-	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
-	cl_graphscale = Cvar_Get("graphscale", "1", CVAR_CHEAT);
-	cl_graphshift = Cvar_Get("graphshift", "0", CVAR_CHEAT);
-	if (!(GGameType & GAME_Tech3))
-	{
-		scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
-		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
-		show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
-		scr_showpause = Cvar_Get("scr_showpause", "1", 0);
-	}
-	if (GGameType & GAME_Quake)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "2", 0);
-	}
-	else if (GGameType & GAME_Hexen2)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "4", 0);
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
-		clq2_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
-	}
-
-	//
-	// register our commands
-	//
-	if (!(GGameType & GAME_Tech3))
-	{
-		Cmd_AddCommand("sizeup", SCR_SizeUp_f);
-		Cmd_AddCommand("sizedown", SCR_SizeDown_f);
-	}
-}
-
 //	This is called every frame, and can also be called explicitly to flush
 // text to the screen.
 void SCR_UpdateScreen()
@@ -749,4 +694,79 @@ void SCR_UpdateScreen()
 
 		recursive = 0;
 	}
+}
+
+void SCRQH_InitImages()
+{
+	scr_net = R_PicFromWad("net");
+	if (GGameType & GAME_Quake)
+	{
+		draw_backtile = R_PicFromWadRepeat("backtile");
+		char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
+	}
+	else
+	{
+		draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
+		char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
+		char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
+	}
+	Con_InitBackgroundImage();
+	MQH_InitImages();
+	VQH_InitCrosshairTexture();
+}
+
+void SCR_Init()
+{
+	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
+	cl_graphscale = Cvar_Get("graphscale", "1", CVAR_CHEAT);
+	cl_graphshift = Cvar_Get("graphshift", "0", CVAR_CHEAT);
+	if (!(GGameType & GAME_Tech3))
+	{
+		scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+		scr_viewsize = Cvar_Get("viewsize", "100", CVAR_ARCHIVE);
+		show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
+		scr_showpause = Cvar_Get("scr_showpause", "1", 0);
+	}
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		cl_timegraph = Cvar_Get("timegraph", "0", CVAR_CHEAT);
+		cl_debuggraph = Cvar_Get("debuggraph", "0", CVAR_CHEAT);
+	}
+	if (GGameType & GAME_Quake)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "2", 0);
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "4", 0);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		scr_centertime = Cvar_Get("scr_centertime", "2.5", 0);
+		clq2_stereo_separation = Cvar_Get("cl_stereo_separation", "0.4", CVAR_ARCHIVE);
+	}
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		scr_netgraph = Cvar_Get("netgraph", "0", 0);
+	}
+
+	//
+	// register our commands
+	//
+	if (!(GGameType & GAME_Tech3))
+	{
+		Cmd_AddCommand("sizeup", SCR_SizeUp_f);
+		Cmd_AddCommand("sizedown", SCR_SizeDown_f);
+	}
+
+	if (GGameType & GAME_Quake)
+	{
+		SCRQ1_Init();
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		SCRQ2_Init();
+	}
+
+	scr_initialized = true;
 }

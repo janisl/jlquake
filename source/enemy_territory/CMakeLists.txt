@@ -25,7 +25,6 @@ set (ET_FILES
 	client/cl_main.cpp
 	client/cl_net_chan.cpp
 	client/cl_parse.cpp
-	client/cl_scrn.cpp
 
 	unix/linux_signals.cpp
 	unix/unix_main.cpp

@@ -96,13 +96,6 @@ void CL_VerifyCode(void);
 
 void CL_ParseServerMessage(QMsg* msg);
 
-//====================================================================
-
-//
-// cl_scrn.c
-//
-void    SCR_Init(void);
-
 //
 // cl_cgame.c
 //

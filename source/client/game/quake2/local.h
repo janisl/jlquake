@@ -104,6 +104,7 @@ void CLQ2_PingServers_f();
 //
 void CLQ2_AddNetgraph();
 void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation);
+void SCRQ2_Init();
 
 //
 //	Sustain

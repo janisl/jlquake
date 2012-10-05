@@ -17,6 +17,9 @@
 #include "../../client.h"
 #include "local.h"
 #include "../quake_hexen2/view.h"
+#include <time.h>
+
+static Cvar* scrqw_allowsnap;
 
 static void SCRQ1_DrawPause()
 {
@@ -165,4 +168,44 @@ void SCRQ1_DrawScreen(stereoFrame_t stereoFrame)
 	}
 
 	R_EndFrame(NULL, NULL);
+}
+
+static void SCRQW_RSShot_f()
+{
+	if (CLQW_IsUploading())
+	{
+		return;	// already one pending
+	}
+
+	if (cls.state < CA_LOADING)
+	{
+		return;	// gotta be connected
+	}
+
+	if (!scrqw_allowsnap->integer)
+	{
+		CL_AddReliableCommand("snap\n");
+		common->Printf("Refusing remote screen shot request.\n");
+		return;
+	}
+
+	common->Printf("Remote screen shot requested.\n");
+
+	time_t now;
+	time(&now);
+
+	Array<byte> buffer;
+	R_CaptureRemoteScreenShot(ctime(&now), cls.servername, clqh_name->string, buffer);
+	CLQW_StartUpload(buffer.Ptr(), buffer.Num());
+}
+
+void SCRQ1_Init()
+{
+	if (GGameType & GAME_QuakeWorld)
+	{
+		Cmd_AddCommand("snap", SCRQW_RSShot_f);
+
+		scrqw_allowsnap = Cvar_Get("scr_allowsnap", "1", 0);
+		clqh_sbar = Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+	}
 }

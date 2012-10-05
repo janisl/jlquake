@@ -461,7 +461,7 @@ void CL_Disconnect(void)
 		clc.download = 0;
 	}
 
-	CL_StopUpload();
+	CLQW_StopUpload();
 
 }
 
@@ -1176,8 +1176,8 @@ void CL_Init(void)
 	Cmd_AddCommand("color", CL_Color_f);
 	Cmd_AddCommand("download", CL_Download_f);
 
-	Cmd_AddCommand("nextul", CL_NextUpload);
-	Cmd_AddCommand("stopul", CL_StopUpload);
+	Cmd_AddCommand("nextul", CLQW_NextUpload);
+	Cmd_AddCommand("stopul", CLQW_StopUpload);
 
 	//
 	// forward to server commands

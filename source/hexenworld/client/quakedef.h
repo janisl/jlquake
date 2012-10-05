@@ -13,7 +13,6 @@
 #include "common.h"
 #include "vid.h"
 #include "sys.h"
-#include "screen.h"
 #include "net.h"
 #include "protocol.h"
 #include "../../common/hexen2strings.h"
