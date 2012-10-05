@@ -27,10 +27,6 @@ state bit 2 is edge triggered on the down to up transition
 */
 
 
-#ifdef MISSIONPACK
-extern qboolean info_up;
-#endif
-
 void CL_MouseEvent(int mx, int my)
 {
 	cl.mouseDx[cl.mouseIndex] += mx;
@@ -101,7 +97,7 @@ void IN_infoPlaqueUp(void)
 	if (in_keyCatchers == 0)
 	{
 		//They want to lower the plaque
-		info_up = 0;
+		clh2_info_up = 0;
 	}
 }
 
@@ -110,7 +106,7 @@ void IN_infoPlaqueDown(void)
 	if (in_keyCatchers == 0)
 	{
 		//They want to see the plaque
-		info_up = 1;
+		clh2_info_up = 1;
 	}
 }
 #endif

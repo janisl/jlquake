@@ -34,8 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-qboolean scr_initialized;			// ready to draw
-
 void SCR_Loading_f(void);
 
 
@@ -98,8 +96,8 @@ SCR_Init
 void SCR_Init(void)
 {
 	scr_netgraph = Cvar_Get("netgraph", "0", 0);
-	scrq2_timegraph = Cvar_Get("timegraph", "0", 0);
-	scrq2_debuggraph = Cvar_Get("debuggraph", "0", 0);
+	cl_timegraph = Cvar_Get("timegraph", "0", 0);
+	cl_debuggraph = Cvar_Get("debuggraph", "0", 0);
 	SCR_InitCommon();
 
 	Cmd_AddCommand("loading",SCR_Loading_f);
@@ -123,67 +121,6 @@ void SCR_Loading_f(void)
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
 #define ICON_SPACE  8
-
-//=======================================================
-
-static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
-{
-	R_BeginFrame(stereoFrame);
-
-	if (scr_draw_loading == 2)
-	{	//  loading plaque over black screen
-		int w, h;
-
-		UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 1);
-		scr_draw_loading = false;
-		R_GetPicSize(&w, &h, "loading");
-		UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
-	}
-	// if a cinematic is supposed to be running, handle menus
-	// and console specially
-	else if (SCR_DrawCinematic())
-	{
-		if (in_keyCatchers & KEYCATCH_UI)
-		{
-			UI_DrawMenu();
-		}
-		else if (in_keyCatchers & KEYCATCH_CONSOLE)
-		{
-			Con_DrawConsole();
-		}
-	}
-	else
-	{
-		// do 3D refresh drawing, and then update the screen
-		SCR_CalcVrect();
-
-		// clear any dirty part of the background
-		SCR_TileClear();
-
-		VQ2_RenderView(separation);
-
-		SCRQ2_DrawHud();
-
-		if (scrq2_timegraph->value)
-		{
-			SCR_DebugGraph(cls.q2_frametimeFloat * 300, 0);
-		}
-
-		if (scrq2_debuggraph->value || scrq2_timegraph->value || scr_netgraph->value)
-		{
-			SCR_DrawDebugGraph();
-		}
-
-		SCRQ2_DrawPause();
-
-		Con_DrawConsole();
-
-		UI_DrawMenu();
-
-		SCRQ2_DrawLoading();
-	}
-	SCR_DrawFPS();
-}
 
 /*
 ==================
@@ -227,12 +164,12 @@ void SCR_UpdateScreen(void)
 
 	if (cls.glconfig.stereoEnabled)
 	{
-		SCR_DrawScreen(STEREO_LEFT, -cl_stereo_separation->value / 2);
-		SCR_DrawScreen(STEREO_RIGHT, cl_stereo_separation->value / 2);
+		SCRQ2_DrawScreen(STEREO_LEFT, -cl_stereo_separation->value / 2);
+		SCRQ2_DrawScreen(STEREO_RIGHT, cl_stereo_separation->value / 2);
 	}
 	else
 	{
-		SCR_DrawScreen(STEREO_CENTER, 0);
+		SCRQ2_DrawScreen(STEREO_CENTER, 0);
 	}
 
 	R_EndFrame(NULL, NULL);

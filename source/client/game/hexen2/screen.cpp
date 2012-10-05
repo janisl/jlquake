@@ -17,15 +17,20 @@
 #include "../../client.h"
 #include "local.h"
 #include "../quake_hexen2/menu.h"
+#include "../quake_hexen2/view.h"
 #include "../../../common/hexen2strings.h"
 
 #define PLAQUE_WIDTH 26
 
+#define MAX_INFO_H2 1024
+
 int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
 
-char scrh2_infomessage[MAX_INFO_H2];
+static char scrh2_infomessage[MAX_INFO_H2];
 
 const char* clh2_plaquemessage = NULL;	// Pointer to current plaque message
+
+bool clh2_info_up = false;
 
 /*
 ===============================================================================
@@ -144,7 +149,7 @@ void SCRH2_DrawCenterString(const char* message)
 	}
 }
 
-void SCRH2_DrawPause()
+static void SCRH2_DrawPause()
 {
 	image_t* pic;
 	float delta;
@@ -190,7 +195,7 @@ void SCRH2_DrawPause()
 	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2, finaly, pic);
 }
 
-void SCRH2_DrawLoading()
+static void SCRH2_DrawLoading()
 {
 	int size, count, offset;
 	image_t* pic;
@@ -245,7 +250,7 @@ void SCRH2_DrawLoading()
 	UI_FillPal(offset + 42, 97 + 5, count, 1, 168);
 }
 
-void SCRH2_UpdateInfoMessage()
+static void SCRH2_UpdateInfoMessage()
 {
 	String::Cpy(scrh2_infomessage, "Objectives:");
 
@@ -279,7 +284,7 @@ void SCRH2_UpdateInfoMessage()
 	}
 }
 
-void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw)
+static void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw)
 {
 	int i;
 	char temp[80];
@@ -309,7 +314,7 @@ void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw)
 	}
 }
 
-void SCRH2_Info_Plaque_Draw(const char* message)
+static void SCRH2_Info_Plaque_Draw(const char* message)
 {
 	if (con.displayFrac == 1)
 	{
@@ -347,7 +352,7 @@ static void I_Print(int cx, int cy, char* str)
 	UI_DrawString(cx + ((viddef.width - 320) >> 1), cy + ((viddef.height - 200) >> 1), str, 256);
 }
 
-void SBH2_IntermissionOverlay()
+static void SBH2_IntermissionOverlay()
 {
 	image_t* pic;
 	int elapsed, size, bx, by, i;
@@ -506,4 +511,158 @@ void SBH2_IntermissionOverlay()
 		cl.qh_intermission++;
 		cl.qh_completed_time = cl.qh_serverTimeFloat;
 	}
+}
+
+#define NET_GRAPHHEIGHT 32
+
+static void CLHW_LineGraph(int h)
+{
+	int colour;
+	if (h == 10000)
+	{
+		// yellow
+		colour = 0x00ffff;
+	}
+	else if (h == 9999)
+	{
+		// red
+		colour = 0x0000ff;
+	}
+	else if (h == 9998)
+	{
+		// blue
+		colour = 0xff0000;
+	}
+	else
+	{
+		// white
+		colour = 0xffffff;
+	}
+
+	if (h > NET_GRAPHHEIGHT)
+	{
+		h = NET_GRAPHHEIGHT;
+	}
+
+	SCR_DebugGraph(h, colour);
+}
+
+static void CLHW_NetGraph()
+{
+	static int lastOutgoingSequence = 0;
+
+	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++)
+	{
+		hwframe_t* frame = &cl.hw_frames[i & UPDATE_MASK_HW];
+		if (frame->receivedtime == -1)
+		{
+			clqh_packet_latency[i & 255] = 9999;		// dropped
+		}
+		else if (frame->receivedtime == -2)
+		{
+			clqh_packet_latency[i & 255] = 10000;	// choked
+		}
+		else if (frame->invalid)
+		{
+			clqh_packet_latency[i & 255] = 9998;		// invalid delta
+		}
+		else
+		{
+			clqh_packet_latency[i & 255] = (frame->receivedtime - frame->senttime) * 20;
+		}
+	}
+
+	for (int a = lastOutgoingSequence + 1; a <= clc.netchan.outgoingSequence; a++)
+	{
+		int i = a & 255;
+		CLHW_LineGraph(clqh_packet_latency[i]);
+	}
+	lastOutgoingSequence = clc.netchan.outgoingSequence;
+	SCR_DrawDebugGraph();
+}
+
+void SCRH2_DrawScreen(stereoFrame_t stereoFrame)
+{
+	if (cls.disable_screen)
+	{
+		if (cls.realtime - cls.disable_screen > 60000)
+		{
+			cls.disable_screen = 0;
+			clh2_total_loading_size = 0;
+			clh2_loading_stage = 0;
+			common->Printf("load failed.\n");
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	if (!scr_initialized || !cls.glconfig.vidWidth)
+	{
+		return;				// not initialized yet
+
+	}
+	R_BeginFrame(stereoFrame);
+
+	//
+	// determine size of refresh window
+	//
+	SCR_CalcVrect();
+
+	//
+	// do 3D refresh drawing, and then update the screen
+	//
+	VQH_RenderView();
+
+	//
+	// draw any areas not covered by the refresh
+	//
+	SCR_TileClear();
+
+	if (GGameType & GAME_HexenWorld && scr_netgraph->value)
+	{
+		CLHW_NetGraph();
+	}
+
+	if (scr_draw_loading)
+	{
+		SbarH2_Draw();
+		MQH_FadeScreen();
+		SCRH2_DrawLoading();
+	}
+	else if (cl.qh_intermission >= 1 && cl.qh_intermission <= 12)
+	{
+		SBH2_IntermissionOverlay();
+		if (cl.qh_intermission < 12)
+		{
+			Con_DrawConsole();
+			UI_DrawMenu();
+		}
+	}
+	else
+	{
+		SCR_DrawFPS();
+		SCRQH_DrawTurtle();
+		SCRH2_DrawPause();
+		SCR_CheckDrawCenterString();
+		SbarH2_Draw();
+		SCRH2_Plaque_Draw(clh2_plaquemessage,0);
+		SCR_DrawNet();
+		Con_DrawConsole();
+		UI_DrawMenu();
+
+		if (GGameType & GAME_H2Portals && clh2_info_up)
+		{
+			SCRH2_UpdateInfoMessage();
+			SCRH2_Info_Plaque_Draw(scrh2_infomessage);
+		}
+	}
+
+	if (clh2_loading_stage)
+	{
+		SCRH2_DrawLoading();
+	}
+
+	R_EndFrame(NULL, NULL);
 }

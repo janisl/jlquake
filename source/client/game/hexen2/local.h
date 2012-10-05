@@ -193,20 +193,12 @@ void SbarH2_Draw();
 void SbarH2_InvChanged();
 void SbarH2_InvReset();
 
-#define MAX_INFO_H2 1024
-
 extern int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
-extern char scrh2_infomessage[MAX_INFO_H2];
 extern const char* clh2_plaquemessage;		// Pointer to current plaque
+extern bool clh2_info_up;
 
 void SCRH2_DrawCenterString(const char* message);
-void SCRH2_DrawPause();
-void SCRH2_DrawLoading();
-void SCRH2_UpdateInfoMessage();
-void SCRH2_Plaque_Draw(const char* message, bool AlwaysDraw);
-void SCRH2_Info_Plaque_Draw(const char* message);
-void SBH2_IntermissionOverlay();
-void CLHW_NetGraph();
+void SCRH2_DrawScreen(stereoFrame_t stereoFrame);
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

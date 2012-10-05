@@ -18,10 +18,7 @@
 #include "local.h"
 #include "../quake_hexen2/main.h"
 
-Cvar* scrq2_debuggraph;
-Cvar* scrq2_timegraph;
-
-void SCRQ2_DrawPause()
+static void SCRQ2_DrawPause()
 {
 	if (!scr_showpause->value)		// turn off for screenshots
 	{
@@ -38,7 +35,7 @@ void SCRQ2_DrawPause()
 	UI_DrawNamedPic((viddef.width - w) / 2, viddef.height / 2 + 8, "pause");
 }
 
-void SCRQ2_DrawLoading()
+static void SCRQ2_DrawLoading()
 {
 	if (!scr_draw_loading)
 	{
@@ -51,80 +48,12 @@ void SCRQ2_DrawLoading()
 	UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
 }
 
-#define NET_GRAPHHEIGHT 32
-
-static void CLHW_LineGraph(int h)
-{
-	int colour;
-	if (h == 10000)
-	{
-		// yellow
-		colour = 0x00ffff;
-	}
-	else if (h == 9999)
-	{
-		// red
-		colour = 0x0000ff;
-	}
-	else if (h == 9998)
-	{
-		// blue
-		colour = 0xff0000;
-	}
-	else
-	{
-		// white
-		colour = 0xffffff;
-	}
-
-	if (h > NET_GRAPHHEIGHT)
-	{
-		h = NET_GRAPHHEIGHT;
-	}
-
-	SCR_DebugGraph(h, colour);
-}
-
-void CLHW_NetGraph()
-{
-	static int lastOutgoingSequence = 0;
-
-	for (int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++)
-	{
-		hwframe_t* frame = &cl.hw_frames[i & UPDATE_MASK_HW];
-		if (frame->receivedtime == -1)
-		{
-			clqh_packet_latency[i & 255] = 9999;		// dropped
-		}
-		else if (frame->receivedtime == -2)
-		{
-			clqh_packet_latency[i & 255] = 10000;	// choked
-		}
-		else if (frame->invalid)
-		{
-			clqh_packet_latency[i & 255] = 9998;		// invalid delta
-		}
-		else
-		{
-			clqh_packet_latency[i & 255] = (frame->receivedtime - frame->senttime) * 20;
-		}
-	}
-
-	for (int a = lastOutgoingSequence + 1; a <= clc.netchan.outgoingSequence; a++)
-	{
-		int i = a & 255;
-		CLHW_LineGraph(clqh_packet_latency[i]);
-	}
-	lastOutgoingSequence = clc.netchan.outgoingSequence;
-	SCR_DrawDebugGraph();
-}
-
 //	A new packet was just parsed
 void CLQ2_AddNetgraph()
 {
 	// if using the debuggraph for something else, don't
 	// add the net lines
-	if (scrq2_debuggraph->value || scrq2_timegraph->value)
+	if (cl_debuggraph->value || cl_timegraph->value)
 	{
 		return;
 	}
@@ -148,4 +77,63 @@ void CLQ2_AddNetgraph()
 		ping = 30;
 	}
 	SCR_DebugGraph(ping, 0xd0);
+}
+
+void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation)
+{
+	R_BeginFrame(stereoFrame);
+
+	if (scr_draw_loading == 2)
+	{	//  loading plaque over black screen
+		int w, h;
+
+		UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 1);
+		scr_draw_loading = false;
+		R_GetPicSize(&w, &h, "loading");
+		UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
+	}
+	// if a cinematic is supposed to be running, handle menus
+	// and console specially
+	else if (SCR_DrawCinematic())
+	{
+		if (in_keyCatchers & KEYCATCH_UI)
+		{
+			UI_DrawMenu();
+		}
+		else if (in_keyCatchers & KEYCATCH_CONSOLE)
+		{
+			Con_DrawConsole();
+		}
+	}
+	else
+	{
+		// do 3D refresh drawing, and then update the screen
+		SCR_CalcVrect();
+
+		// clear any dirty part of the background
+		SCR_TileClear();
+
+		VQ2_RenderView(separation);
+
+		SCRQ2_DrawHud();
+
+		if (cl_timegraph->value)
+		{
+			SCR_DebugGraph(cls.q2_frametimeFloat * 300, 0);
+		}
+
+		if (cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value)
+		{
+			SCR_DrawDebugGraph();
+		}
+
+		SCRQ2_DrawPause();
+
+		Con_DrawConsole();
+
+		UI_DrawMenu();
+
+		SCRQ2_DrawLoading();
+	}
+	SCR_DrawFPS();
 }

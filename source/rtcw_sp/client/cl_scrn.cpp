@@ -30,69 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "client.h"
 
-qboolean scr_initialized;			// ready to draw
-
-Cvar* cl_timegraph;
-Cvar* cl_debuggraph;
-
-/*
-** SCR_Strlen -- skips color escape codes
-*/
-static int SCR_Strlen(const char* str)
-{
-	const char* s = str;
-	int count = 0;
-
-	while (*s)
-	{
-		if (Q_IsColorString(s))
-		{
-			s += 2;
-		}
-		else
-		{
-			count++;
-			s++;
-		}
-	}
-
-	return count;
-}
-
-/*
-** SCR_GetBigStringWidth
-*/
-int SCR_GetBigStringWidth(const char* str)
-{
-	return SCR_Strlen(str) * 16;
-}
-
-
-//===============================================================================
-
-/*
-=================
-SCR_DrawDemoRecording
-=================
-*/
-void SCR_DrawDemoRecording(void)
-{
-	char string[1024];
-	int pos;
-
-	if (!clc.demorecording)
-	{
-		return;
-	}
-
-	pos = FS_FTell(clc.demofile);
-	sprintf(string, "RECORDING %s: %ik", clc.q3_demoName, pos / 1024);
-
-	SCR_DrawStringExt(320 - String::Length(string) * 4, 20, 8, string, g_color_table[7], true);
-}
-
-//=============================================================================
-
 /*
 ==================
 SCR_Init
@@ -109,100 +46,6 @@ void SCR_Init(void)
 
 
 //=======================================================
-
-/*
-==================
-SCR_DrawScreenField
-
-This will be called twice if rendering in stereo mode
-==================
-*/
-void SCR_DrawScreenField(stereoFrame_t stereoFrame)
-{
-	R_BeginFrame(stereoFrame);
-
-	// wide aspect ratio screens need to have the sides cleared
-	// unless they are displaying game renderings
-	if (cls.state != CA_ACTIVE)
-	{
-		if (cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640)
-		{
-			R_SetColor(g_color_table[0]);
-			R_StretchPic(0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader);
-			R_SetColor(NULL);
-		}
-	}
-
-	if (!uivm)
-	{
-		common->DPrintf("draw screen without UI loaded\n");
-		return;
-	}
-
-	// if the menu is going to cover the entire screen, we
-	// don't need to render anything under it
-	if (!UI_IsFullscreen())
-	{
-		switch (cls.state)
-		{
-		default:
-			common->FatalError("SCR_DrawScreenField: bad cls.state");
-			break;
-		case CA_CINEMATIC:
-			SCR_DrawCinematic();
-			break;
-		case CA_DISCONNECTED:
-			// force menu up
-			S_StopAllSounds();
-			UI_SetMainMenu();
-			break;
-		case CA_CONNECTING:
-		case CA_CHALLENGING:
-		case CA_CONNECTED:
-			// connecting clients will only show the connection dialog
-			// refresh to update the time
-			UIT3_Refresh(cls.realtime);
-			UIT3_DrawConnectScreen(false);
-			break;
-//			// Ridah, if the cgame is valid, fall through to there
-//			if (!cls.cgameStarted || !com_sv_running->integer) {
-//				// connecting clients will only show the connection dialog
-//				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, false );
-//				break;
-//			}
-		case CA_LOADING:
-		case CA_PRIMED:
-			// draw the game information screen and loading progress
-			CLT3_CGameRendering(stereoFrame);
-
-			// also draw the connection information, so it doesn't
-			// flash away too briefly on local or lan games
-			//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats"))	// Ridah, don't draw useless text if not in dev mode
-			UIT3_Refresh(cls.realtime);
-			UIT3_DrawConnectScreen(true);
-			break;
-		case CA_ACTIVE:
-			CLT3_CGameRendering(stereoFrame);
-			SCR_DrawDemoRecording();
-			break;
-		}
-	}
-
-	// the menu draws next
-	if (in_keyCatchers & KEYCATCH_UI)
-	{
-		UI_DrawMenu();
-	}
-
-	// console draws next
-	Con_DrawConsole();
-
-	// debug graph can be drawn on top of anything
-	if (cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer)
-	{
-		SCR_DrawDebugGraph();
-	}
-}
 
 /*
 ==================
@@ -230,12 +73,12 @@ void SCR_UpdateScreen(void)
 	// if running in stereo, we need to draw the frame twice
 	if (cls.glconfig.stereoEnabled)
 	{
-		SCR_DrawScreenField(STEREO_LEFT);
-		SCR_DrawScreenField(STEREO_RIGHT);
+		SCRT3_DrawScreenField(STEREO_LEFT);
+		SCRT3_DrawScreenField(STEREO_RIGHT);
 	}
 	else
 	{
-		SCR_DrawScreenField(STEREO_CENTER);
+		SCRT3_DrawScreenField(STEREO_CENTER);
 	}
 
 	if (com_speeds->integer)

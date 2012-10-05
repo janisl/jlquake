@@ -205,7 +205,7 @@ void Key_Event(int key, qboolean down, unsigned time)
 //
 	if (((in_keyCatchers & KEYCATCH_UI) && menubound[key]) ||
 		((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key]) ||
-		(in_keyCatchers == 0 && (!con_forcedup || !consolekeys[key])))
+		(in_keyCatchers == 0 && (!(cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS) || !consolekeys[key])))
 	{
 		kb = keys[key].binding;
 		if (kb)

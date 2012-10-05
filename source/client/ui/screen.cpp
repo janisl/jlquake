@@ -25,6 +25,8 @@ struct graphsamp_t
 	int color;
 };
 
+bool scr_initialized;			// ready to draw
+
 static int current;
 static graphsamp_t values[1024];
 
@@ -57,6 +59,8 @@ static image_t* draw_backtile;
 int scr_draw_loading;
 
 Cvar* scr_netgraph;
+Cvar* cl_debuggraph;
+Cvar* cl_timegraph;
 
 void SCRQH_BeginLoadingPlaque()
 {

@@ -16,8 +16,9 @@
 
 #include "../../client.h"
 #include "local.h"
+#include "../quake_hexen2/view.h"
 
-void SCRQ1_DrawPause()
+static void SCRQ1_DrawPause()
 {
 	if (!scr_showpause->value)		// turn off for screenshots
 	{
@@ -34,7 +35,7 @@ void SCRQ1_DrawPause()
 		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
 }
 
-void SCRQ1_DrawLoading()
+static void SCRQ1_DrawLoading()
 {
 	if (!scr_draw_loading)
 	{
@@ -80,7 +81,7 @@ static void R_LineGraph(int h)
 	SCR_DebugGraph(h, colour);
 }
 
-void CLQW_NetGraph()
+static void CLQW_NetGraph()
 {
 	static int lastOutgoingSequence = 0;
 
@@ -93,4 +94,75 @@ void CLQW_NetGraph()
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
+}
+
+void SCRQ1_DrawScreen(stereoFrame_t stereoFrame)
+{
+	if (cls.disable_screen)
+	{
+		if (cls.realtime - cls.disable_screen > 60000)
+		{
+			cls.disable_screen = 0;
+			common->Printf("load failed.\n");
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	if (!scr_initialized || !cls.glconfig.vidWidth)
+	{
+		return;				// not initialized yet
+
+	}
+	R_BeginFrame(stereoFrame);
+
+	//
+	// determine size of refresh window
+	//
+	SCR_CalcVrect();
+
+//
+// do 3D refresh drawing, and then update the screen
+//
+	VQH_RenderView();
+
+	//
+	// draw any areas not covered by the refresh
+	//
+	SCR_TileClear();
+
+	if (GGameType & GAME_QuakeWorld && scr_netgraph->value)
+	{
+		CLQW_NetGraph();
+	}
+
+	if (scr_draw_loading)
+	{
+		SCRQ1_DrawLoading();
+		SbarQ1_Draw();
+	}
+	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
+	{
+		SbarQ1_IntermissionOverlay();
+	}
+	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
+	{
+		SbarQ1_FinaleOverlay();
+		SCR_CheckDrawCenterString();
+	}
+	else
+	{
+		SCR_DrawNet();
+		SCR_DrawFPS();
+		SCRQH_DrawTurtle();
+		SCRQ1_DrawPause();
+		SCR_CheckDrawCenterString();
+		SbarQ1_Draw();
+		Con_DrawConsole();
+		UI_DrawMenu();
+	}
+
+	R_EndFrame(NULL, NULL);
 }

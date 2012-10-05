@@ -51,8 +51,6 @@ console is:
 
 */
 
-qboolean scr_initialized;						// ready to draw
-
 /*
 ==================
 SCR_Init
@@ -80,76 +78,7 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen(void)
 {
-	if (cls.disable_screen)
-	{
-		if (realtime * 1000 - cls.disable_screen > 60000)
-		{
-			cls.disable_screen = 0;
-			common->Printf("load failed.\n");
-		}
-		else
-		{
-			return;
-		}
-	}
-
-	if (!scr_initialized || !cls.glconfig.vidWidth)
-	{
-		return;							// not initialized yet
-
-	}
-	R_BeginFrame(STEREO_CENTER);
-
-	//
-	// determine size of refresh window
-	//
-	SCR_CalcVrect();
-
-//
-// do 3D refresh drawing, and then update the screen
-//
-	if (cl.qh_intermission < 1 || cl.qh_intermission > 12)
-	{
-		VQH_RenderView();
-	}
-
-	//
-	// draw any areas not covered by the refresh
-	//
-	SCR_TileClear();
-
-	if (scr_netgraph->value)
-	{
-		CLHW_NetGraph();
-	}
-
-	if (scr_draw_loading)
-	{
-		SbarH2_Draw();
-		MQH_FadeScreen();
-		SCRH2_DrawLoading();
-	}
-	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
-	{
-	}
-	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
-	{
-		SCR_CheckDrawCenterString();
-	}
-	else
-	{
-		SCR_DrawFPS();
-		SCRQH_DrawTurtle();
-		SCRH2_DrawPause();
-		SCR_CheckDrawCenterString();
-		SbarH2_Draw();
-		SCRH2_Plaque_Draw(clh2_plaquemessage,0);
-		SCR_DrawNet();
-		Con_DrawConsole();
-		UI_DrawMenu();
-	}
-
-	R_EndFrame(NULL, NULL);
+	SCRH2_DrawScreen(STEREO_CENTER);
 }
 
 /*

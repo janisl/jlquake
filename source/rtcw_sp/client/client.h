@@ -104,8 +104,6 @@ void CL_ParseServerMessage(QMsg* msg);
 void    SCR_Init(void);
 void    SCR_UpdateScreen(void);
 
-int     SCR_GetBigStringWidth(const char* str);		// returns in virtual 640x480 coordinates
-
 //
 // cl_cgame.c
 //

@@ -70,10 +70,6 @@ console is:
 
 */
 
-qboolean scr_initialized;			// ready to draw
-
-qboolean con_forcedup;			// because no entities to refresh
-
 /*
 ==================
 SCR_Init
@@ -99,70 +95,7 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen(void)
 {
-	if (cls.disable_screen)
-	{
-		if (realtime * 1000 - cls.disable_screen > 60000)
-		{
-			cls.disable_screen = 0;
-			common->Printf("load failed.\n");
-		}
-		else
-		{
-			return;
-		}
-	}
-
-	if (!scr_initialized)
-	{
-		return;				// not initialized yet
-
-	}
-	R_BeginFrame(STEREO_CENTER);
-
-	//
-	// determine size of refresh window
-	//
-	SCR_CalcVrect();
-
-//
-// do 3D refresh drawing, and then update the screen
-//
-	con_forcedup = cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS;
-
-	VQH_RenderView();
-
-	//
-	// draw any areas not covered by the refresh
-	//
-	SCR_TileClear();
-
-	if (scr_draw_loading)
-	{
-		SCRQ1_DrawLoading();
-		SbarQ1_Draw();
-	}
-	else if (cl.qh_intermission == 1 && in_keyCatchers == 0)
-	{
-		SbarQ1_IntermissionOverlay();
-	}
-	else if (cl.qh_intermission == 2 && in_keyCatchers == 0)
-	{
-		SbarQ1_FinaleOverlay();
-		SCR_CheckDrawCenterString();
-	}
-	else
-	{
-		SCR_DrawNet();
-		SCR_DrawFPS();
-		SCRQH_DrawTurtle();
-		SCRQ1_DrawPause();
-		SCR_CheckDrawCenterString();
-		SbarQ1_Draw();
-		Con_DrawConsole();
-		UI_DrawMenu();
-	}
-
-	R_EndFrame(NULL, NULL);
+	SCRQ1_DrawScreen(STEREO_CENTER);
 }
 
 void VID_Init()

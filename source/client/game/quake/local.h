@@ -73,9 +73,7 @@ void SbarQ1_Draw();
 void SbarQ1_IntermissionOverlay();
 void SbarQ1_FinaleOverlay();
 
-void SCRQ1_DrawPause();
-void SCRQ1_DrawLoading();
-void CLQW_NetGraph();
+void SCRQ1_DrawScreen(stereoFrame_t stereoFrame);
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

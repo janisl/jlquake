@@ -65,6 +65,11 @@ extern int entLastVisible[MAX_CLIENTS_WM];
 void CLT3_SystemInfoChanged();
 
 //
+//	Screen
+//
+void SCRT3_DrawScreenField(stereoFrame_t stereoFrame);
+
+//
 //	ServerList
 //
 int CLT3_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen);
