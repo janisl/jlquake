@@ -71,8 +71,6 @@ void IN_Accumulate(void);
 
 void CL_ParseLayout(void);
 
-void CL_InitRenderStuff();
-
 //
 // cl_main
 //
@@ -139,5 +137,3 @@ void x86_TimerStop(void);
 void x86_TimerInit(unsigned long smallest, unsigned longest);
 unsigned long* x86_TimerGetHistogram(void);
 #endif
-
-void Draw_InitLocal();

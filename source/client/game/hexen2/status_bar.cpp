@@ -269,12 +269,6 @@ static void ToggleDM_f()
 
 void SbarH2_Init()
 {
-	for (int i = 0; i < 10; i++)
-	{
-		sbh2_nums[i] = R_PicFromWad(va("num_%i",i));
-	}
-	sbh2_nums[10] = R_PicFromWad("num_minus");
-
 	Cmd_AddCommand("+showinfo", ShowInfoDown_f);
 	Cmd_AddCommand("-showinfo", ShowInfoUp_f);
 	Cmd_AddCommand("+showdm", ShowDMDown_f);
@@ -298,6 +292,15 @@ void SbarH2_Init()
 	DMMode = Cvar_Get("dm_mode", "1", CVAR_ARCHIVE);
 	sbtrans = Cvar_Get("sbtrans", "0", CVAR_ARCHIVE);
 	BarHeight = BAR_TOP_HEIGHT;
+}
+
+void SbarH2_InitImages()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		sbh2_nums[i] = R_PicFromWad(va("num_%i",i));
+	}
+	sbh2_nums[10] = R_PicFromWad("num_minus");
 }
 
 // Relative to the current status bar location.

@@ -4,7 +4,6 @@ add_executable(jlquake2
 	client/cl_main.cpp
 	client/cl_parse.cpp
 	client/cl_pred.cpp
-	client/cl_scrn.cpp
 	client/keys.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp

@@ -126,6 +126,15 @@ void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate)
 	}
 }
 
+void CLH2_InitPlayerTranslation()
+{
+	FS_ReadFile("gfx/player.lmp", (void**)&playerTranslation);
+	if (!playerTranslation)
+	{
+		common->FatalError("Couldn't load gfx/player.lmp");
+	}
+}
+
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate)
 {
 	for (int i = 0; i < 256; i++)

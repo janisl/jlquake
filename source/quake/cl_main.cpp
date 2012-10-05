@@ -32,12 +32,7 @@ Mod_ClearAll
 static void Mod_ClearAll(void)
 {
 	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
-
-	SCRQH_InitImages();
-	SbarQ1_Init();
+	CL_InitRenderer();
 }
 
 /*

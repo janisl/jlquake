@@ -376,12 +376,7 @@ Mod_ClearAll
 static void Mod_ClearAll(void)
 {
 	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
-
-	SCRQH_InitImages();
-	SbarQ1_Init();
+	CL_InitRenderer();
 }
 
 /*
@@ -1513,8 +1508,8 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Execute();
 
 		IN_Init();
-		VID_Init();
-		SCRQH_InitImages();
+		CL_InitRenderer();
+		Sys_ShowConsole(0, false);
 		SCR_Init();
 		S_Init();
 		CLQ1_InitTEnts();

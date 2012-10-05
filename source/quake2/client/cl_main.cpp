@@ -1581,30 +1581,6 @@ void CL_FixCvarCheats(void)
 }
 
 /*
-** VID_NewWindow
-*/
-static void VID_NewWindow(int width, int height)
-{
-	viddef.width  = width;
-	viddef.height = height;
-}
-
-/*
-===============
-CL_InitRenderStuff
-===============
-*/
-void CL_InitRenderStuff()
-{
-	R_BeginRegistration(&cls.glconfig);
-
-	// let the sound and input subsystems know about the new window
-	VID_NewWindow(cls.glconfig.vidWidth, cls.glconfig.vidHeight);
-
-	Draw_InitLocal();
-}
-
-/*
 ============
 VID_CheckChanges
 
@@ -1626,7 +1602,7 @@ static void VID_CheckChanges(void)
 		cls.disable_screen = true;
 
 		R_Shutdown(true);
-		CL_InitRenderStuff();
+		CL_InitRenderer();
 		cls.disable_screen = false;
 	}
 }
@@ -1846,9 +1822,9 @@ void CL_Init(void)
 	IN_Init();
 #if defined __linux__ || defined __sgi
 	S_Init();
-	CL_InitRenderStuff();
+	CL_InitRenderer();
 #else
-	CL_InitRenderStuff();
+	CL_InitRenderer();
 	S_Init();	// sound must be initialized after window is created
 #endif
 
@@ -1924,7 +1900,7 @@ static void R_BeginRegistrationAndLoadWorld(const char* model)
 	String::Sprintf(fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	R_Shutdown(false);
-	CL_InitRenderStuff();
+	CL_InitRenderer();
 
 	R_LoadWorld(fullname);
 

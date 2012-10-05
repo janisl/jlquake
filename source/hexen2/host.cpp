@@ -675,25 +675,6 @@ void Host_Frame(float time)
 	}
 }
 
-//============================================================================
-
-#ifndef DEDICATED
-/*
-===============
-CL_InitRenderStuff
-===============
-*/
-static void CL_InitRenderStuff(void)
-{
-	FS_ReadFile("gfx/player.lmp", (void**)&playerTranslation);
-	if (!playerTranslation)
-	{
-		common->FatalError("Couldn't load gfx/player.lmp");
-	}
-}
-#endif
-
-
 /*
 ====================
 Host_Init
@@ -750,9 +731,8 @@ void Host_Init(quakeparms_t* parms)
 		if (cls.state != CA_DEDICATED)
 		{
 			IN_Init();
-			VID_Init();
-			SCRQH_InitImages();
-			CL_InitRenderStuff();
+			CL_InitRenderer();
+			Sys_ShowConsole(0, false);
 			SCR_Init();
 			S_Init();
 			CLH2_InitTEnts();

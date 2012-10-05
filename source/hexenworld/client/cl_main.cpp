@@ -301,12 +301,7 @@ Mod_ClearAll
 static void Mod_ClearAll(void)
 {
 	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	CLH2_ClearEntityTextureArrays();
-
-	SCRQH_InitImages();
-	SbarH2_Init();
+	CL_InitRenderer();
 }
 
 /*
@@ -1312,23 +1307,6 @@ void Host_Frame(float time)
 	}
 }
 
-
-//============================================================================
-
-/*
-===============
-CL_InitRenderStuff
-===============
-*/
-static void CL_InitRenderStuff(void)
-{
-	FS_ReadFile("gfx/player.lmp", (void**)&playerTranslation);
-	if (!playerTranslation)
-	{
-		common->FatalError("Couldn't load gfx/player.lmp");
-	}
-}
-
 /*
 ====================
 Host_Init
@@ -1373,9 +1351,8 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Execute();
 
 		IN_Init();
-		VID_Init();
-		SCRQH_InitImages();
-		CL_InitRenderStuff();
+		CL_InitRenderer();
+		Sys_ShowConsole(0, false);
 		SCR_Init();
 		S_Init();
 		CLH2_InitTEnts();

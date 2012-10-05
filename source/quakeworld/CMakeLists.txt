@@ -24,7 +24,6 @@ add_executable(jlqwcl
 	client/cl_input.cpp
 	client/cl_main.cpp
 	client/cl_parse.cpp
-	client/cl_screen.cpp
 	client/common.cpp
 	client/keys.cpp
 	client/net_chan.cpp

@@ -3,7 +3,6 @@ add_executable(jlhexen2
 	cl_input.cpp
 	cl_main.cpp
 	cl_parse.cpp
-	cl_screen.cpp
 	common.cpp
 	host.cpp
 	host_cmd.cpp

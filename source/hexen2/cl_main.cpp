@@ -25,12 +25,7 @@ Mod_ClearAll
 static void Mod_ClearAll(void)
 {
 	R_Shutdown(false);
-	R_BeginRegistration(&cls.glconfig);
-
-	CLH2_ClearEntityTextureArrays();
-
-	SCRQH_InitImages();
-	SbarH2_Init();
+	CL_InitRenderer();
 }
 
 /*

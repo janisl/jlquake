@@ -16,6 +16,8 @@
 
 #include "../client.h"
 #include "../game/quake_hexen2/menu.h"
+#include "../game/quake/local.h"
+#include "../game/hexen2/local.h"
 #include "../game/quake2/menu.h"
 #include "../game/tech3/local.h"
 
@@ -139,4 +141,106 @@ void UI_SetMainMenu()
 void UI_SetInGameMenu()
 {
 	UIT3_SetInGameMenu();
+}
+
+void CL_InitRenderer()
+{
+	// this sets up the renderer and calls R_Init
+	R_BeginRegistration(&cls.glconfig);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		Cvar* conwidth = Cvar_Get("conwidth", "0", 0);
+		Cvar* conheight = Cvar_Get("conheight", "0", 0);
+		if (conwidth->integer)
+		{
+			viddef.width = conwidth->integer;
+		}
+		else
+		{
+			viddef.width = 640;
+		}
+
+		viddef.width &= 0xfff8;	// make it a multiple of eight
+
+		if (viddef.width < 320)
+		{
+			viddef.width = 320;
+		}
+
+		// pick a conheight that matches with correct aspect
+		viddef.height = viddef.width / cls.glconfig.windowAspect;
+
+		if (conheight->integer)
+		{
+			viddef.height = conheight->integer;
+		}
+		if (viddef.height < 200)
+		{
+			viddef.height = 200;
+		}
+
+		if (viddef.height > cls.glconfig.vidHeight)
+		{
+			viddef.height = cls.glconfig.vidHeight;
+		}
+		if (viddef.width > cls.glconfig.vidWidth)
+		{
+			viddef.width = cls.glconfig.vidWidth;
+		}
+
+		SCRQH_InitImages();
+		if (GGameType & GAME_Hexen2)
+		{
+			CLH2_InitColourShadeTables();
+			CLH2_InitPlayerTranslation();
+			CLH2_ClearEntityTextureArrays();
+			SbarH2_InitImages();
+		}
+		else
+		{
+			Com_Memset(clq1_playertextures, 0, sizeof(clq1_playertextures));
+			SbarQ1_InitImages();
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		viddef.width = cls.glconfig.vidWidth;
+		viddef.height = cls.glconfig.vidHeight;
+
+		char_texture = R_LoadQuake2FontImage("pics/conchars.pcx");
+	}
+	else
+	{
+		// all drawing is done to a 480 pixels high virtual screen size
+		// and will be automatically scaled to the real resolution
+		viddef.width = 480 * cls.glconfig.windowAspect;
+		viddef.height = 480;
+
+		// load character sets
+		cls.whiteShader = R_RegisterShader("white");
+		if (GGameType & GAME_WolfSP)
+		{
+			cls.charSetShader = R_RegisterShader("gfx/2d/bigchars");
+			cls.consoleShader = R_RegisterShader("console");
+			cls.consoleShader2 = R_RegisterShader("console2");
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			cls.charSetShader = R_RegisterShader("gfx/2d/hudchars");
+			cls.consoleShader = R_RegisterShader("console-16bit");	// JPW NERVE shader works with 16bit
+			cls.consoleShader2 = R_RegisterShader("console2-16bit");	// JPW NERVE same
+		}
+		else if (GGameType & GAME_ET)
+		{
+			cls.charSetShader = R_RegisterShader("gfx/2d/consolechars");
+			cls.consoleShader = R_RegisterShader("console-16bit");	// JPW NERVE shader works with 16bit
+			cls.consoleShader2 = R_RegisterShader("console2-16bit");	// JPW NERVE same
+		}
+		else
+		{
+			cls.charSetShader = R_RegisterShader("gfx/2d/bigchars");
+			cls.consoleShader = R_RegisterShader("console");
+		}
+	}
 }

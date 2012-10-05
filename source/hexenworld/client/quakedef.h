@@ -11,7 +11,6 @@
 #include "bothdefs.h"
 
 #include "common.h"
-#include "vid.h"
 #include "sys.h"
 #include "net.h"
 #include "protocol.h"

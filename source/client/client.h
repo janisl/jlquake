@@ -618,6 +618,7 @@ extern Cvar* chase_active;
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
+void CLH2_InitPlayerTranslation();
 void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
 float CLQH_LerpPoint();
 void CL_AddReliableCommand(const char* cmd);

@@ -108,3 +108,4 @@ bool UI_IsFullscreen();
 void UI_ForceMenuOff();
 void UI_SetMainMenu();
 void UI_SetInGameMenu();
+void CL_InitRenderer();

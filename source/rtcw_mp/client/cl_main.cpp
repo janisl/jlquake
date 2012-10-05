@@ -2149,31 +2149,6 @@ void CL_ShutdownRef(void)
 }
 
 /*
-============
-CL_InitRenderer
-============
-*/
-void CL_InitRenderer(void)
-{
-	// this sets up the renderer and calls R_Init
-	R_BeginRegistration(&cls.glconfig);
-
-	// all drawing is done to a 480 pixels high virtual screen size
-	// and will be automatically scaled to the real resolution
-	viddef.width = 480 * cls.glconfig.windowAspect;
-	viddef.height = 480;
-
-	// load character sets
-	cls.charSetShader = R_RegisterShader("gfx/2d/hudchars");
-	cls.whiteShader = R_RegisterShader("white");
-
-// JPW NERVE
-
-	cls.consoleShader = R_RegisterShader("console-16bit");	// JPW NERVE shader works with 16bit
-	cls.consoleShader2 = R_RegisterShader("console2-16bit");	// JPW NERVE same
-}
-
-/*
 ============================
 CL_StartHunkUsers
 

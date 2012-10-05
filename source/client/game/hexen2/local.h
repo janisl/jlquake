@@ -188,6 +188,7 @@ void CLH2_SignonReply();
 
 int SbarQH_itoa(int num, char* buf);
 void SbarH2_Init();
+void SbarH2_InitImages();
 void SbarH2_DeathmatchOverlay();
 void SbarH2_Draw();
 void SbarH2_InvChanged();

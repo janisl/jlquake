@@ -109,6 +109,18 @@ static void SbarQW_DontShowTeamScores()
 
 void SbarQ1_Init()
 {
+	Cmd_AddCommand("+showscores", SbarQ1_ShowScores);
+	Cmd_AddCommand("-showscores", SbarQ1_DontShowScores);
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		Cmd_AddCommand("+showteamscores", SbarQW_ShowTeamScores);
+		Cmd_AddCommand("-showteamscores", SbarQW_DontShowTeamScores);
+	}
+}
+
+void SbarQ1_InitImages()
+{
 	for (int i = 0; i < 10; i++)
 	{
 		sbq1_nums[0][i] = R_PicFromWad(va("num_%i",i));
@@ -186,15 +198,6 @@ void SbarQ1_Init()
 	sbq1_face_invuln = R_PicFromWad("face_invul2");
 	sbq1_face_invis_invuln = R_PicFromWad("face_inv2");
 	sbq1_face_quad = R_PicFromWad("face_quad");
-
-	Cmd_AddCommand("+showscores", SbarQ1_ShowScores);
-	Cmd_AddCommand("-showscores", SbarQ1_DontShowScores);
-
-	if (GGameType & GAME_QuakeWorld)
-	{
-		Cmd_AddCommand("+showteamscores", SbarQW_ShowTeamScores);
-		Cmd_AddCommand("-showteamscores", SbarQW_DontShowTeamScores);
-	}
 
 	sbq1_sbar = R_PicFromWad("sbar");
 	sbq1_ibar = R_PicFromWad("ibar");

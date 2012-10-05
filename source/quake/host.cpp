@@ -673,8 +673,8 @@ void Host_Init(quakeparms_t* parms)
 		if (cls.state != CA_DEDICATED)
 		{
 			IN_Init();
-			VID_Init();
-			SCRQH_InitImages();
+			CL_InitRenderer();
+			Sys_ShowConsole(0, false);
 			SCR_Init();
 			S_Init();
 			CLQ1_InitTEnts();
