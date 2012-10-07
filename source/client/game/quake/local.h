@@ -65,6 +65,7 @@ void CLQ1_ClearState();
 //	Parse
 //
 void CLQ1_ParseClientdata(QMsg& message);
+void CLQW_ParseClientdata();
 void CLQ1_ParseVersion(QMsg& message);
 void CLQW_ParseDisconnect();
 void CLQ1_ParsePrint(QMsg& message);
@@ -91,7 +92,11 @@ void CLQW_MuzzleFlash(QMsg& message);
 void CLQW_ParseUpdateUserinfo(QMsg& message);
 void CLQW_ParseSetInfo(QMsg& message);
 void CLQW_ParseServerInfo(QMsg& message);
-void CLQW_CalcModelChecksum(const char* ModelName, const char* CVarName);
+void CLQW_ParseChokeCount(QMsg& message);
+void CLQW_ParseDownload(QMsg& message);
+void CLQW_ParseModelList(QMsg& message);
+void CLQW_ParseSoundList(QMsg& message);
+void CLQW_ParseSetPause(QMsg& message);
 
 //
 //	Projectiles

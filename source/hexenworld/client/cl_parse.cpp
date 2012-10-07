@@ -171,7 +171,6 @@ void Model_NextDownload(void)
 {
 	char* s;
 	int i;
-	extern char gamedirfile[];
 
 	if (clc.downloadNumber == 0)
 	{
@@ -215,7 +214,7 @@ void Model_NextDownload(void)
 			common->Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
 				cl.qh_model_name[i]);
 			common->Printf("You may need to download or purchase a %s client "
-					   "pack in order to play on this server.\n\n", gamedirfile);
+					   "pack in order to play on this server.\n\n", fsqhw_gamedirfile);
 			CL_Disconnect();
 			return;
 		}
@@ -413,7 +412,7 @@ void CL_ParseServerData(void)
 {
 	char* str;
 	qboolean cflag = false;
-	extern char gamedirfile[MAX_OSPATH];
+	extern char fsqhw_gamedirfile[MAX_OSPATH];
 	int protover;
 
 	common->DPrintf("Serverdata packet received.\n");
@@ -436,7 +435,7 @@ void CL_ParseServerData(void)
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
 
-	if (String::ICmp(gamedirfile, str))
+	if (String::ICmp(fsqhw_gamedirfile, str))
 	{
 		// save current config
 		Host_WriteConfiguration("config.cfg");

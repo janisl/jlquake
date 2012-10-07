@@ -104,271 +104,6 @@ const char* svc_strings[] =
 	"NEW PROTOCOL"
 };
 
-//=============================================================================
-
-/*
-=================
-CLQW_Model_NextDownload
-=================
-*/
-void CLQW_Model_NextDownload(void)
-{
-	char* s;
-	int i;
-	extern char gamedirfile[];
-
-	if (clc.downloadNumber == 0)
-	{
-		common->Printf("Checking models...\n");
-		clc.downloadNumber = 1;
-	}
-
-	clc.downloadType = dl_model;
-	for (
-		; cl.qh_model_name[clc.downloadNumber][0]
-		; clc.downloadNumber++)
-	{
-		s = cl.qh_model_name[clc.downloadNumber];
-		if (s[0] == '*')
-		{
-			continue;	// inline brush model
-		}
-		if (!CLQW_CheckOrDownloadFile(s))
-		{
-			return;		// started a download
-		}
-	}
-
-	CM_LoadMap(cl.qh_model_name[1], true, NULL);
-	cl.model_clip[1] = 0;
-	R_LoadWorld(cl.qh_model_name[1]);
-
-	for (i = 2; i < MAX_MODELS_Q1; i++)
-	{
-		if (!cl.qh_model_name[i][0])
-		{
-			break;
-		}
-
-		cl.model_draw[i] = R_RegisterModel(cl.qh_model_name[i]);
-		if (cl.qh_model_name[i][0] == '*')
-		{
-			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.qh_model_name[i] + 1));
-		}
-
-		if (!cl.model_draw[i])
-		{
-			common->Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
-				cl.qh_model_name[i]);
-			common->Printf("You may need to download or purchase a %s client "
-					   "pack in order to play on this server.\n\n", gamedirfile);
-			CL_Disconnect();
-			return;
-		}
-	}
-
-	CLQW_CalcModelChecksum("progs/player.mdl", "pmodel");
-	CLQW_CalcModelChecksum("progs/eyes.mdl", "emodel");
-
-	// all done
-	R_EndRegistration();
-
-	int CheckSum1;
-	int CheckSum2;
-	CM_MapChecksums(CheckSum1, CheckSum2);
-
-	// done with modellist, request first of static signon messages
-	CL_AddReliableCommand(va("prespawn %i 0 %i", cl.servercount, CheckSum2));
-}
-
-/*
-=================
-Sound_NextDownload
-=================
-*/
-void Sound_NextDownload(void)
-{
-	char* s;
-	int i;
-
-	if (clc.downloadNumber == 0)
-	{
-		common->Printf("Checking sounds...\n");
-		clc.downloadNumber = 1;
-	}
-
-	clc.downloadType = dl_sound;
-	for (
-		; cl.qh_sound_name[clc.downloadNumber][0]
-		; clc.downloadNumber++)
-	{
-		s = cl.qh_sound_name[clc.downloadNumber];
-		if (!CLQW_CheckOrDownloadFile(va("sound/%s",s)))
-		{
-			return;		// started a download
-		}
-	}
-
-	S_BeginRegistration();
-	for (i = 1; i < MAX_SOUNDS_Q1; i++)
-	{
-		if (!cl.qh_sound_name[i][0])
-		{
-			break;
-		}
-		cl.sound_precache[i] = S_RegisterSound(cl.qh_sound_name[i]);
-	}
-	S_EndRegistration();
-
-	// done with sounds, request models now
-	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
-	clq1_playerindex = -1;
-	clq1_spikeindex = -1;
-	clqw_flagindex = -1;
-	CL_AddReliableCommand(va("modellist %i %i", cl.servercount, 0));
-}
-
-
-/*
-======================
-CL_RequestNextDownload
-======================
-*/
-void CL_RequestNextDownload(void)
-{
-	switch (clc.downloadType)
-	{
-	case dl_single:
-		break;
-	case dl_skin:
-		CLQW_SkinNextDownload();
-		break;
-	case dl_model:
-		CLQW_Model_NextDownload();
-		break;
-	case dl_sound:
-		Sound_NextDownload();
-		break;
-	case dl_none:
-	default:
-		common->DPrintf("Unknown download type.\n");
-	}
-}
-
-/*
-=====================
-CL_ParseDownload
-
-A download message has been received from the server
-=====================
-*/
-void CL_ParseDownload(void)
-{
-	int size, percent;
-	char name[1024];
-
-	// read the data
-	size = net_message.ReadShort();
-	percent = net_message.ReadByte();
-
-	if (clc.demoplaying)
-	{
-		if (size > 0)
-		{
-			net_message.readcount += size;
-		}
-		return;	// not in demo playback
-	}
-
-	if (size == -1)
-	{
-		common->Printf("File not found.\n");
-		if (clc.download)
-		{
-			common->Printf("cls.download shouldn't have been set\n");
-			FS_FCloseFile(clc.download);
-			clc.download = 0;
-		}
-		CL_RequestNextDownload();
-		return;
-	}
-
-	// open the file if not opened yet
-	if (!clc.download)
-	{
-		if (String::NCmp(clc.downloadTempName, "skins/", 6))
-		{
-			clc.download = FS_FOpenFileWrite(clc.downloadTempName);
-		}
-		else
-		{
-			sprintf(name, "qw/%s", clc.downloadTempName);
-			clc.download = FS_SV_FOpenFileWrite(name);
-		}
-
-		if (!clc.download)
-		{
-			net_message.readcount += size;
-			common->Printf("Failed to open %s\n", clc.downloadTempName);
-			CL_RequestNextDownload();
-			return;
-		}
-	}
-
-	FS_Write(net_message._data + net_message.readcount, size, clc.download);
-	net_message.readcount += size;
-
-	if (percent != 100)
-	{
-// change display routines by zoid
-		// request next block
-#if 0
-		common->Printf(".");
-		if (10 * (percent / 10) != cls.downloadpercent)
-		{
-			cls.downloadpercent = 10 * (percent / 10);
-			common->Printf("%i%%", cls.downloadpercent);
-		}
-#endif
-		clc.downloadPercent = percent;
-
-		CL_AddReliableCommand("nextdl");
-	}
-	else
-	{
-		char oldn[MAX_OSPATH];
-		char newn[MAX_OSPATH];
-
-#if 0
-		common->Printf("100%%\n");
-#endif
-
-		FS_FCloseFile(clc.download);
-
-		// rename the temp file to it's final name
-		if (String::Cmp(clc.downloadTempName, clc.downloadName))
-		{
-			if (String::NCmp(clc.downloadTempName,"skins/",6))
-			{
-				FS_Rename(clc.downloadTempName, clc.downloadName);
-			}
-			else
-			{
-				sprintf(oldn, "qw/%s", clc.downloadTempName);
-				sprintf(newn, "qw/%s", clc.downloadName);
-				FS_SV_Rename(oldn, newn);
-			}
-		}
-
-		clc.download = 0;
-		clc.downloadPercent = 0;
-
-		// get another file if needed
-
-		CL_RequestNextDownload();
-	}
-}
-
 /*
 =====================================================================
 
@@ -386,7 +121,6 @@ void CL_ParseServerData(void)
 {
 	char* str;
 	qboolean cflag = false;
-	extern char gamedirfile[MAX_OSPATH];
 	int protover;
 
 	common->DPrintf("Serverdata packet received.\n");
@@ -415,7 +149,7 @@ void CL_ParseServerData(void)
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
 
-	if (String::ICmp(gamedirfile, str))
+	if (String::ICmp(fsqhw_gamedirfile, str))
 	{
 		// save current config
 		Host_WriteConfiguration();
@@ -475,105 +209,6 @@ void CL_ParseServerData(void)
 }
 
 /*
-==================
-CL_ParseSoundlist
-==================
-*/
-void CL_ParseSoundlist(void)
-{
-	int numsounds;
-	char* str;
-	int n;
-
-// precache sounds
-//	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
-
-	numsounds = net_message.ReadByte();
-
-	for (;; )
-	{
-		str = const_cast<char*>(net_message.ReadString2());
-		if (!str[0])
-		{
-			break;
-		}
-		numsounds++;
-		if (numsounds == MAX_SOUNDS_Q1)
-		{
-			common->Error("Server sent too many sound_precache");
-		}
-		String::Cpy(cl.qh_sound_name[numsounds], str);
-	}
-
-	n = net_message.ReadByte();
-
-	if (n)
-	{
-		CL_AddReliableCommand(va("soundlist %i %i", cl.servercount, n));
-		return;
-	}
-
-	clc.downloadNumber = 0;
-	clc.downloadType = dl_sound;
-	Sound_NextDownload();
-}
-
-/*
-==================
-CL_ParseModellist
-==================
-*/
-void CL_ParseModellist(void)
-{
-	int nummodels;
-	char* str;
-	int n;
-
-// precache models and note certain default indexes
-	nummodels = net_message.ReadByte();
-
-	for (;; )
-	{
-		str = const_cast<char*>(net_message.ReadString2());
-		if (!str[0])
-		{
-			break;
-		}
-		nummodels++;
-		if (nummodels == MAX_MODELS_Q1)
-		{
-			common->Error("Server sent too many model_precache");
-		}
-		String::Cpy(cl.qh_model_name[nummodels], str);
-
-		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/spike.mdl"))
-		{
-			clq1_spikeindex = nummodels;
-		}
-		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/player.mdl"))
-		{
-			clq1_playerindex = nummodels;
-		}
-		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
-		{
-			clqw_flagindex = nummodels;
-		}
-	}
-
-	n = net_message.ReadByte();
-
-	if (n)
-	{
-		CL_AddReliableCommand(va("modellist %i %i", cl.servercount, n));
-		return;
-	}
-
-	clc.downloadNumber = 0;
-	clc.downloadType = dl_model;
-	CLQW_Model_NextDownload();
-}
-
-/*
 =====================================================================
 
 ACTION MESSAGES
@@ -581,63 +216,19 @@ ACTION MESSAGES
 =====================================================================
 */
 
-/*
-==================
-CL_ParseClientdata
-
-Server information pertaining to this client only, sent every frame
-==================
-*/
-void CL_ParseClientdata(void)
-{
-	float latency;
-	qwframe_t* frame;
-
-// calculate simulated time of message
-	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
-	frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
-
-	frame->receivedtime = realtime;
-
-// calculate latency
-	latency = frame->receivedtime - frame->senttime;
-
-	if (latency < 0 || latency > 1.0)
-	{
-//		common->Printf ("Odd latency: %5.2f\n", latency);
-	}
-	else
-	{
-		// drift the average latency towards the observed latency
-		if (latency < cls.qh_latency)
-		{
-			cls.qh_latency = latency;
-		}
-		else
-		{
-			cls.qh_latency += 0.001;	// drift up, so correction are needed
-		}
-	}
-}
-
 #define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
 =====================
 CL_ParseServerMessage
 =====================
 */
-int received_framecount;
 void CL_ParseServerMessage(void)
 {
-	int cmd;
-	int i, j;
-
-	received_framecount = host_framecount;
 	CLQ1_ClearProjectiles();
 
-//
-// if recording demos, copy the message out
-//
+	//
+	// if recording demos, copy the message out
+	//
 	if (cl_shownet->value == 1)
 	{
 		common->Printf("%i ",net_message.cursize);
@@ -647,12 +238,11 @@ void CL_ParseServerMessage(void)
 		common->Printf("------------------\n");
 	}
 
+	CLQW_ParseClientdata();
 
-	CL_ParseClientdata();
-
-//
-// parse the message
-//
+	//
+	// parse the message
+	//
 	while (1)
 	{
 		if (net_message.badread)
@@ -661,7 +251,7 @@ void CL_ParseServerMessage(void)
 			break;
 		}
 
-		cmd = net_message.ReadByte();
+		int cmd = net_message.ReadByte();
 
 		if (cmd == -1)
 		{
@@ -778,32 +368,24 @@ void CL_ParseServerMessage(void)
 		case qwsvc_serverinfo:
 			CLQW_ParseServerInfo(net_message);
 			break;
-
 		case qwsvc_download:
-			CL_ParseDownload();
+			CLQW_ParseDownload(net_message);
 			break;
-
 		case qwsvc_playerinfo:
 			CLQW_ParsePlayerinfo(net_message);
 			break;
 		case qwsvc_nails:
 			CLQW_ParseNails(net_message);
 			break;
-
-		case qwsvc_chokecount:		// some preceding packets were choked
-			i = net_message.ReadByte();
-			for (j = 0; j < i; j++)
-				cl.qw_frames[(clc.netchan.incomingAcknowledged - 1 - j) & UPDATE_MASK_QW].receivedtime = -2;
+		case qwsvc_chokecount:
+			CLQW_ParseChokeCount(net_message);
 			break;
-
 		case qwsvc_modellist:
-			CL_ParseModellist();
+			CLQW_ParseModelList(net_message);
 			break;
-
 		case qwsvc_soundlist:
-			CL_ParseSoundlist();
+			CLQW_ParseSoundList(net_message);
 			break;
-
 		case qwsvc_packetentities:
 			CLQW_ParsePacketEntities(net_message);
 			break;
@@ -816,19 +398,9 @@ void CL_ParseServerMessage(void)
 		case qwsvc_entgravity:
 			CLQHW_ParseEntGravity(net_message);
 			break;
-
 		case q1svc_setpause:
-			cl.qh_paused = net_message.ReadByte();
-			if (cl.qh_paused)
-			{
-				CDAudio_Pause();
-			}
-			else
-			{
-				CDAudio_Resume();
-			}
+			CLQW_ParseSetPause(net_message);
 			break;
-
 		}
 	}
 

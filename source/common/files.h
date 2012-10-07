@@ -80,6 +80,7 @@ extern Cvar* fs_basepath;
 
 extern bool fs_ProtectKeyFile;
 extern char fs_gamedir[MAX_OSPATH];
+extern char fsqhw_gamedirfile[MAX_OSPATH];	//JL What's the difference?
 extern const char* fs_PrimaryBaseGame;
 
 void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);

@@ -641,5 +641,6 @@ void Key_ClearStates();
 float* CL_GetSimOrg();
 void CL_NextDemo();
 void Com_Quit_f();
+void CL_Disconnect();
 
 #endif

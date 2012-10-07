@@ -315,6 +315,7 @@ static searchpath_t* fs_searchpaths;
 static searchpath_t* fs_base_searchpaths;		// without gamedirs
 
 char fs_gamedir[MAX_OSPATH];					// this will be a single file name with no separators
+char fsqhw_gamedirfile[MAX_OSPATH];
 Cvar* fs_homepath;
 Cvar* fs_basepath;
 static Cvar* fs_debug;

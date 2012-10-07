@@ -416,7 +416,6 @@ void CL_Record_f(void)
 	q1entity_t* ent;
 	q1entity_state_t* es, blankes;
 	q1player_info_t* player;
-	extern char gamedirfile[];
 	int seq = 1;
 
 	c = Cmd_Argc();
@@ -464,7 +463,7 @@ void CL_Record_f(void)
 	buf.WriteByte(qwsvc_serverdata);
 	buf.WriteLong(QWPROTOCOL_VERSION);
 	buf.WriteLong(cl.servercount);
-	buf.WriteString2(gamedirfile);
+	buf.WriteString2(fsqhw_gamedirfile);
 
 	if (cl.qh_spectator)
 	{

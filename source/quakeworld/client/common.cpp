@@ -50,8 +50,6 @@ void COM_InitFilesystem(void);
 #define PAK0_COUNT      339
 #define PAK0_CRC        52883
 
-char gamedirfile[MAX_OSPATH];
-
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
 {
@@ -205,11 +203,11 @@ void COM_Gamedir(char* dir)
 		return;
 	}
 
-	if (!String::Cmp(gamedirfile, dir))
+	if (!String::Cmp(fsqhw_gamedirfile, dir))
 	{
 		return;		// still the same
 	}
-	String::Cpy(gamedirfile, dir);
+	String::Cpy(fsqhw_gamedirfile, dir);
 
 	//
 	// free up any current game dir info

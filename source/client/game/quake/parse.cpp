@@ -154,6 +154,36 @@ void CLQ1_ParseClientdata(QMsg& message)
 	}
 }
 
+//	Server information pertaining to this client only, sent every frame
+void CLQW_ParseClientdata()
+{
+	// calculate simulated time of message
+	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
+	qwframe_t* frame = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW];
+
+	frame->receivedtime = cls.realtime * 0.001;
+
+	// calculate latency
+	float latency = frame->receivedtime - frame->senttime;
+
+	if (latency < 0 || latency > 1.0)
+	{
+		//common->Printf ("Odd latency: %5.2f\n", latency);
+	}
+	else
+	{
+		// drift the average latency towards the observed latency
+		if (latency < cls.qh_latency)
+		{
+			cls.qh_latency = latency;
+		}
+		else
+		{
+			cls.qh_latency += 0.001;	// drift up, so correction are needed
+		}
+	}
+}
+
 void CLQ1_ParseVersion(QMsg& message)
 {
 	int i = message.ReadLong();
@@ -507,7 +537,17 @@ void CLQW_ParseServerInfo(QMsg& message)
 	}
 }
 
-void CLQW_CalcModelChecksum(const char* modelName, const char* cvarName)
+// some preceding packets were choked
+void CLQW_ParseChokeCount(QMsg& message)
+{
+	int i = message.ReadByte();
+	for (int j = 0; j < i; j++)
+	{
+		cl.qw_frames[(clc.netchan.incomingAcknowledged - 1 - j) & UPDATE_MASK_QW].receivedtime = -2;
+	}
+}
+
+static void CLQW_CalcModelChecksum(const char* modelName, const char* cvarName)
 {
 	Array<byte> buffer;
 	if (!FS_ReadFile(modelName, buffer))
@@ -528,4 +568,313 @@ void CLQW_CalcModelChecksum(const char* modelName, const char* cvarName)
 
 	sprintf(st, "setinfo %s %d", cvarName, (int)crc);
 	CL_AddReliableCommand(st);
+}
+
+static void CLQW_Model_NextDownload()
+{
+	if (clc.downloadNumber == 0)
+	{
+		common->Printf("Checking models...\n");
+		clc.downloadNumber = 1;
+	}
+
+	clc.downloadType = dl_model;
+	for (
+		; cl.qh_model_name[clc.downloadNumber][0]
+		; clc.downloadNumber++)
+	{
+		const char* s = cl.qh_model_name[clc.downloadNumber];
+		if (s[0] == '*')
+		{
+			continue;	// inline brush model
+		}
+		if (!CLQW_CheckOrDownloadFile(s))
+		{
+			return;		// started a download
+		}
+	}
+
+	CM_LoadMap(cl.qh_model_name[1], true, NULL);
+	cl.model_clip[1] = 0;
+	R_LoadWorld(cl.qh_model_name[1]);
+
+	for (int i = 2; i < MAX_MODELS_Q1; i++)
+	{
+		if (!cl.qh_model_name[i][0])
+		{
+			break;
+		}
+
+		cl.model_draw[i] = R_RegisterModel(cl.qh_model_name[i]);
+		if (cl.qh_model_name[i][0] == '*')
+		{
+			cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.qh_model_name[i] + 1));
+		}
+
+		if (!cl.model_draw[i])
+		{
+			common->Printf("\nThe required model file '%s' could not be found or downloaded.\n\n",
+				cl.qh_model_name[i]);
+			common->Printf("You may need to download or purchase a %s client "
+					   "pack in order to play on this server.\n\n", fs_gamedir);
+			CL_Disconnect();
+			return;
+		}
+	}
+
+	CLQW_CalcModelChecksum("progs/player.mdl", "pmodel");
+	CLQW_CalcModelChecksum("progs/eyes.mdl", "emodel");
+
+	// all done
+	R_EndRegistration();
+
+	int CheckSum1;
+	int CheckSum2;
+	CM_MapChecksums(CheckSum1, CheckSum2);
+
+	// done with modellist, request first of static signon messages
+	CL_AddReliableCommand(va("prespawn %i 0 %i", cl.servercount, CheckSum2));
+}
+
+static void CLQW_Sound_NextDownload()
+{
+	if (clc.downloadNumber == 0)
+	{
+		common->Printf("Checking sounds...\n");
+		clc.downloadNumber = 1;
+	}
+
+	clc.downloadType = dl_sound;
+	for (
+		; cl.qh_sound_name[clc.downloadNumber][0]
+		; clc.downloadNumber++)
+	{
+		char* s = cl.qh_sound_name[clc.downloadNumber];
+		if (!CLQW_CheckOrDownloadFile(va("sound/%s",s)))
+		{
+			return;		// started a download
+		}
+	}
+
+	S_BeginRegistration();
+	for (int i = 1; i < MAX_SOUNDS_Q1; i++)
+	{
+		if (!cl.qh_sound_name[i][0])
+		{
+			break;
+		}
+		cl.sound_precache[i] = S_RegisterSound(cl.qh_sound_name[i]);
+	}
+	S_EndRegistration();
+
+	// done with sounds, request models now
+	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
+	clq1_playerindex = -1;
+	clq1_spikeindex = -1;
+	clqw_flagindex = -1;
+	CL_AddReliableCommand(va("modellist %i %i", cl.servercount, 0));
+}
+
+static void CLQW_RequestNextDownload()
+{
+	switch (clc.downloadType)
+	{
+	case dl_single:
+		break;
+	case dl_skin:
+		CLQW_SkinNextDownload();
+		break;
+	case dl_model:
+		CLQW_Model_NextDownload();
+		break;
+	case dl_sound:
+		CLQW_Sound_NextDownload();
+		break;
+	case dl_none:
+	default:
+		common->DPrintf("Unknown download type.\n");
+	}
+}
+
+void CLQW_ParseDownload(QMsg& message)
+{
+	// read the data
+	int size = message.ReadShort();
+	int percent = message.ReadByte();
+
+	if (clc.demoplaying)
+	{
+		if (size > 0)
+		{
+			message.readcount += size;
+		}
+		return;	// not in demo playback
+	}
+
+	if (size == -1)
+	{
+		common->Printf("File not found.\n");
+		if (clc.download)
+		{
+			common->Printf("cls.download shouldn't have been set\n");
+			FS_FCloseFile(clc.download);
+			clc.download = 0;
+		}
+		CLQW_RequestNextDownload();
+		return;
+	}
+
+	// open the file if not opened yet
+	if (!clc.download)
+	{
+		if (String::NCmp(clc.downloadTempName, "skins/", 6))
+		{
+			clc.download = FS_FOpenFileWrite(clc.downloadTempName);
+		}
+		else
+		{
+			char name[1024];
+			sprintf(name, "qw/%s", clc.downloadTempName);
+			clc.download = FS_SV_FOpenFileWrite(name);
+		}
+
+		if (!clc.download)
+		{
+			message.readcount += size;
+			common->Printf("Failed to open %s\n", clc.downloadTempName);
+			CLQW_RequestNextDownload();
+			return;
+		}
+	}
+
+	FS_Write(message._data + message.readcount, size, clc.download);
+	message.readcount += size;
+
+	if (percent != 100)
+	{
+		// change display routines by zoid
+		// request next block
+		clc.downloadPercent = percent;
+
+		CL_AddReliableCommand("nextdl");
+	}
+	else
+	{
+		FS_FCloseFile(clc.download);
+
+		// rename the temp file to it's final name
+		if (String::Cmp(clc.downloadTempName, clc.downloadName))
+		{
+			if (String::NCmp(clc.downloadTempName,"skins/",6))
+			{
+				FS_Rename(clc.downloadTempName, clc.downloadName);
+			}
+			else
+			{
+				char oldn[MAX_OSPATH];
+				sprintf(oldn, "qw/%s", clc.downloadTempName);
+				char newn[MAX_OSPATH];
+				sprintf(newn, "qw/%s", clc.downloadName);
+				FS_SV_Rename(oldn, newn);
+			}
+		}
+
+		clc.download = 0;
+		clc.downloadPercent = 0;
+
+		// get another file if needed
+
+		CLQW_RequestNextDownload();
+	}
+}
+
+void CLQW_ParseModelList(QMsg& message)
+{
+	// precache models and note certain default indexes
+	int nummodels = message.ReadByte();
+
+	for (;;)
+	{
+		const char* str = message.ReadString2();
+		if (!str[0])
+		{
+			break;
+		}
+		nummodels++;
+		if (nummodels == MAX_MODELS_Q1)
+		{
+			common->Error("Server sent too many model_precache");
+		}
+		String::Cpy(cl.qh_model_name[nummodels], str);
+
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/spike.mdl"))
+		{
+			clq1_spikeindex = nummodels;
+		}
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/player.mdl"))
+		{
+			clq1_playerindex = nummodels;
+		}
+		if (!String::Cmp(cl.qh_model_name[nummodels],"progs/flag.mdl"))
+		{
+			clqw_flagindex = nummodels;
+		}
+	}
+
+	int n = message.ReadByte();
+
+	if (n)
+	{
+		CL_AddReliableCommand(va("modellist %i %i", cl.servercount, n));
+		return;
+	}
+
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_model;
+	CLQW_Model_NextDownload();
+}
+
+void CLQW_ParseSoundList(QMsg& message)
+{
+	int numsounds = message.ReadByte();
+
+	for (;; )
+	{
+		const char* str = message.ReadString2();
+		if (!str[0])
+		{
+			break;
+		}
+		numsounds++;
+		if (numsounds == MAX_SOUNDS_Q1)
+		{
+			common->Error("Server sent too many sound_precache");
+		}
+		String::Cpy(cl.qh_sound_name[numsounds], str);
+	}
+
+	int n = message.ReadByte();
+
+	if (n)
+	{
+		CL_AddReliableCommand(va("soundlist %i %i", cl.servercount, n));
+		return;
+	}
+
+	clc.downloadNumber = 0;
+	clc.downloadType = dl_sound;
+	CLQW_Sound_NextDownload();
+}
+
+void CLQW_ParseSetPause(QMsg& message)
+{
+	cl.qh_paused = message.ReadByte();
+	if (cl.qh_paused)
+	{
+		CDAudio_Pause();
+	}
+	else
+	{
+		CDAudio_Resume();
+	}
 }
