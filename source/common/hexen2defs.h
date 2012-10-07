@@ -930,6 +930,10 @@ struct h2client_entvars_t
 #define SC2_OBJ                 (1 << 22)
 #define SC2_OBJ2                (1 << 23)
 
+// This is to mask out those items in the inventory (for inventory changes)
+#define SC1_INV 0x01fffc00
+#define SC2_INV 0x00000000
+
 #define H2PROTOCOL_VERSION      19
 #define HWOLD_PROTOCOL_VERSION  24
 #define HWPROTOCOL_VERSION      25

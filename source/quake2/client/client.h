@@ -49,8 +49,6 @@ extern Cvar* cl_showmiss;
 extern netadr_t net_from;
 extern QMsg net_message;
 
-qboolean    CL_CheckOrDownloadFile(char* filename);
-
 //=================================================
 
 #define BLASTER_PARTICLE_COLOR      0xe0

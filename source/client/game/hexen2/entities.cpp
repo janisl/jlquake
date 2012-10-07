@@ -20,9 +20,6 @@
 
 #define H2MAX_EXTRA_TEXTURES 156	// 255-100+1
 
-Cvar* clh2_playerclass;
-Cvar* clhw_teamcolor;
-
 h2entity_state_t clh2_baselines[MAX_EDICTS_QH];
 
 h2entity_t h2cl_entities[MAX_EDICTS_QH];
@@ -1174,13 +1171,13 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 void CLH2_TranslatePlayerSkin(int playernum)
 {
 	h2player_info_t* player = &cl.h2_players[playernum];
+	if (!player->playerclass)
+	{
+		return;
+	}
 	if (GGameType & GAME_HexenWorld)
 	{
 		if (!player->name[0])
-		{
-			return;
-		}
-		if (!player->playerclass)
 		{
 			return;
 		}

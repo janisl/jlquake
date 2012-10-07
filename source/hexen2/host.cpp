@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "../common/hexen2strings.h"
 
 /*
 

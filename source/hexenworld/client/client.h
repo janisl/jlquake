@@ -59,13 +59,11 @@ void CL_TimeDemo_f(void);
 //
 // cl_parse.c
 //
-void CL_ParseServerMessage(void);
-void CL_NewTranslation(int slot);
+void CL_ParseServerMessage(QMsg& message);
 
 //
 // cl_pred.c
 //
-qboolean CL_CheckOrDownloadFile(char* filename);
 void CL_WriteDemoCmd(hwusercmd_t* pcmd);
 void CL_SendConnectPacket(void);
 void Host_WriteConfiguration(const char* fname);

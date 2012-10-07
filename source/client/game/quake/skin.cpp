@@ -158,7 +158,7 @@ void CLQW_SkinNextDownload()
 		{
 			continue;
 		}
-		if (!CLQW_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
+		if (!CL_CheckOrDownloadFile(va("skins/%s.pcx", sc->skin->name)))
 		{
 			return;		// started a download
 		}

@@ -77,11 +77,6 @@ const char* svc_strings[] =
 	"h2svc_toggle_statbar"
 };
 
-int LastServerMessageSize;
-extern Cvar* precache;
-
-//=============================================================================
-
 /*
 ==================
 CL_KeepaliveMessage
@@ -92,11 +87,7 @@ so the server doesn't disconnect.
 */
 void CL_KeepaliveMessage(void)
 {
-	float time;
 	static float lastmsg;
-	int ret;
-	QMsg old;
-	byte olddata[MAX_MSGLEN_H2];
 
 	if (sv.state != SS_DEAD)
 	{
@@ -107,9 +98,12 @@ void CL_KeepaliveMessage(void)
 		return;
 	}
 
-// read messages from server, should just be nops
+	// read messages from server, should just be nops
+	QMsg old;
+	byte olddata[MAX_MSGLEN_H2];
 	old.Copy(olddata, sizeof(olddata), net_message);
 
+	int ret;
 	do
 	{
 		ret = CL_GetMessage();
@@ -134,15 +128,15 @@ void CL_KeepaliveMessage(void)
 
 	net_message.Copy(net_message._data, net_message.maxsize, old);
 
-// check time
-	time = Sys_DoubleTime();
+	// check time
+	float time = Sys_DoubleTime();
 	if (time - lastmsg < 5)
 	{
 		return;
 	}
 	lastmsg = time;
 
-// write out a nop
+	// write out a nop
 	common->Printf("--> client to server keepalive\n");
 
 	clc.netchan.message.WriteByte(h2clc_nop);
@@ -151,84 +145,71 @@ void CL_KeepaliveMessage(void)
 }
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
 ==================
 CL_ParseServerInfo
 ==================
 */
-void CL_ParseServerInfo(void)
+void CL_ParseServerInfo(QMsg& message)
 {
-	char* str;
-	int i;
-	int nummodels, numsounds;
-	char model_precache[MAX_MODELS_H2][MAX_QPATH];
-	char sound_precache[MAX_SOUNDS_H2][MAX_QPATH];
-// rjr	qhedict_t		*ent;
-
 	common->DPrintf("Serverinfo packet received.\n");
-//
-// wipe the clientActive_t struct
-//
-	Mod_ClearAll();
+
+	R_Shutdown(false);
+	CL_InitRenderer();
+
 	clc.qh_signon = 0;
 
+	//
+	// wipe the clientActive_t struct
+	//
 	CL_ClearState();
 
 	SCR_ClearCenterString();
 
-// parse protocol version number
-	i = net_message.ReadLong();
+	// parse protocol version number
+	int i = message.ReadLong();
 	if (i != H2PROTOCOL_VERSION)
 	{
 		common->Printf("Server returned version %i, not %i", i, H2PROTOCOL_VERSION);
 		return;
 	}
 
-// parse maxclients
-	cl.qh_maxclients = net_message.ReadByte();
+	// parse maxclients
+	cl.qh_maxclients = message.ReadByte();
 	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
 	{
 		common->Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
 		return;
 	}
 
-// parse gametype
-	cl.qh_gametype = net_message.ReadByte();
+	// parse gametype
+	cl.qh_gametype = message.ReadByte();
 
 	if (cl.qh_gametype == QHGAME_DEATHMATCH)
 	{
-		svh2_kingofhill = net_message.ReadShort();
+		svh2_kingofhill = message.ReadShort();
 	}
 
-// parse signon message
-	str = const_cast<char*>(net_message.ReadString2());
+	// parse signon message
+	const char* str = message.ReadString2();
 	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
 
-// seperate the printfs so the server message can have a color
+	// seperate the printfs so the server message can have a color
 	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
 	common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
 
-//
-// first we go through and touch all of the precache data that still
-// happens to be in the cache, so precaching something else doesn't
-// needlessly purge it
-//
+	//
+	// first we go through and touch all of the precache data that still
+	// happens to be in the cache, so precaching something else doesn't
+	// needlessly purge it
+	//
 
-// precache models
+	// precache models
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
+	int nummodels;
+	char model_precache[MAX_MODELS_H2][MAX_QPATH];
 	for (nummodels = 1;; nummodels++)
 	{
-		str = const_cast<char*>(net_message.ReadString2());
+		str = message.ReadString2();
 		if (!str[0])
 		{
 			break;
@@ -241,11 +222,13 @@ void CL_ParseServerInfo(void)
 		String::Cpy(model_precache[nummodels], str);
 	}
 
-// precache sounds
+	// precache sounds
 	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
+	int numsounds;
+	char sound_precache[MAX_SOUNDS_H2][MAX_QPATH];
 	for (numsounds = 1;; numsounds++)
 	{
-		str = const_cast<char*>(net_message.ReadString2());
+		str = message.ReadString2();
 		if (!str[0])
 		{
 			break;
@@ -258,10 +241,9 @@ void CL_ParseServerInfo(void)
 		String::Cpy(sound_precache[numsounds], str);
 	}
 
-//
-// now we try to load everything else until a cache allocation fails
-//
-
+	//
+	// now we try to load everything else until a cache allocation fails
+	//
 	clh2_total_loading_size = nummodels + numsounds;
 	clh2_current_loading_size = 1;
 	clh2_loading_stage = 2;
@@ -309,118 +291,6 @@ void CL_ParseServerInfo(void)
 	R_EndRegistration();
 }
 
-/*
-=====================
-CL_NewTranslation
-=====================
-*/
-void CL_NewTranslation(int slot)
-{
-	if (slot > cl.qh_maxclients)
-	{
-		common->FatalError("CL_NewTranslation: slot > cl.maxclients");
-	}
-	if (!cl.h2_players[slot].playerclass)
-	{
-		return;
-	}
-
-	CLH2_TranslatePlayerSkin(slot);
-}
-
-/*
-===================
-CL_ParseStaticSound
-===================
-*/
-void CL_ParseStaticSound(void)
-{
-	vec3_t org;
-	int sound_num, vol, atten;
-	int i;
-
-	for (i = 0; i < 3; i++)
-		org[i] = net_message.ReadCoord();
-	sound_num = net_message.ReadShort();
-	vol = net_message.ReadByte();
-	atten = net_message.ReadByte();
-
-	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
-}
-
-
-void CL_Plaque(void)
-{
-	int index;
-
-	index = net_message.ReadShort();
-
-	if (index > 0 && index <= prh2_string_count)
-	{
-		clh2_plaquemessage = &prh2_global_strings[prh2_string_index[index - 1]];
-	}
-	else
-	{
-		clh2_plaquemessage = "";
-	}
-}
-
-void CL_ParticleExplosion(void)
-{
-	vec3_t org;
-	short color, radius, counter;
-
-	org[0] = net_message.ReadCoord();
-	org[1] = net_message.ReadCoord();
-	org[2] = net_message.ReadCoord();
-	color = net_message.ReadShort();
-	radius = net_message.ReadShort();
-	counter = net_message.ReadShort();
-
-	CLH2_ColouredParticleExplosion(org,color,radius,counter);
-}
-
-void CL_ParseRainEffect(void)
-{
-	vec3_t org, e_size;
-	short color,count;
-	int x_dir, y_dir;
-
-	org[0] = net_message.ReadCoord();
-	org[1] = net_message.ReadCoord();
-	org[2] = net_message.ReadCoord();
-	e_size[0] = net_message.ReadCoord();
-	e_size[1] = net_message.ReadCoord();
-	e_size[2] = net_message.ReadCoord();
-	x_dir = net_message.ReadAngle();
-	y_dir = net_message.ReadAngle();
-	color = net_message.ReadShort();
-	count = net_message.ReadShort();
-
-	CLH2_RainEffect(org,e_size,x_dir,y_dir,color,count);
-}
-
-static void CL_ParsePrint()
-{
-	const char* txt = net_message.ReadString2();
-	if (h2intro_playing)
-	{
-		return;
-	}
-	if (txt[0] == 1)
-	{
-		S_StartLocalSound("misc/comm.wav");
-	}
-	if (txt[0] == 1 || txt[0] == 2)
-	{
-		common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE, txt + 1);
-	}
-	else
-	{
-		common->Printf("%s", txt);
-	}
-}
-
 #define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 
 /*
@@ -428,29 +298,13 @@ static void CL_ParsePrint()
 CL_ParseServerMessage
 =====================
 */
-void CL_ParseServerMessage(void)
+void CL_ParseServerMessage(QMsg& message)
 {
-	int cmd;
-	int i,j;
-	int EntityCount = 0;
-	int EntitySize = 0;
-	int before;
 	static double lasttime;
-	int sc1, sc2;
-	byte test;
-	float compangles[2][3];
-	vec3_t deltaangles;
 
-//
-// if recording demos, copy the message out
-//
-	if (net_message.cursize > LastServerMessageSize)
-	{
-		LastServerMessageSize = net_message.cursize;
-	}
 	if (cl_shownet->value == 1)
 	{
-		common->Printf("Time: %2.2f Pck: %i ",host_time - lasttime,net_message.cursize);
+		common->Printf("Time: %2.2f Pck: %i ", host_time - lasttime, message.cursize);
 		lasttime = host_time;
 	}
 	else if (cl_shownet->value == 2)
@@ -459,25 +313,27 @@ void CL_ParseServerMessage(void)
 	}
 
 	cl.qh_onground = false;	// unless the server says otherwise
-//
-// parse the message
-//
-	net_message.BeginReadingOOB();
+	//
+	// parse the message
+	//
+	message.BeginReadingOOB();
 
+	int EntityCount = 0;
+	int EntitySize = 0;
 	while (1)
 	{
-		if (net_message.badread)
+		if (message.badread)
 		{
 			common->Error("CL_ParseServerMessage: Bad server message");
 		}
 
-		cmd = net_message.ReadByte();
+		int cmd = message.ReadByte();
 
 		if (cmd == -1)
 		{
 			if (cl_shownet->value == 1)
 			{
-				common->Printf("Ent: %i (%i bytes)",EntityCount,EntitySize);
+				common->Printf("Ent: %i (%i bytes)", EntityCount, EntitySize);
 			}
 
 			SHOWNET("END OF MESSAGE");
@@ -487,12 +343,12 @@ void CL_ParseServerMessage(void)
 		// if the high bit of the command byte is set, it is a fast update
 		if (cmd & 128)
 		{
-			before = net_message.readcount;
+			int before = message.readcount;
 			SHOWNET("fast update");
-			CLH2_ParseUpdate(net_message, cmd & 127);
+			CLH2_ParseUpdate(message, cmd & 127);
 
 			EntityCount++;
-			EntitySize += net_message.readcount - before + 1;
+			EntitySize += message.readcount - before + 1;
 			continue;
 		}
 
@@ -506,238 +362,101 @@ void CL_ParseServerMessage(void)
 			break;
 		case h2svc_nop:
 			break;
-
 		case h2svc_time:
-			CLQH_ParseTime(net_message);
+			CLQH_ParseTime(message);
 			break;
 		case h2svc_clientdata:
-			CLH2_ParseClientdata(net_message);
+			CLH2_ParseClientdata(message);
 			break;
-
 		case h2svc_version:
-			i = net_message.ReadLong();
-			if (i != H2PROTOCOL_VERSION)
-			{
-				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, H2PROTOCOL_VERSION);
-			}
+			CLH2_ParseVersion(message);
 			break;
-
 		case h2svc_disconnect:
 			CLQH_ParseDisconnect();
 			break;
-
 		case h2svc_print:
-			CL_ParsePrint();
+			CLH2_ParsePrint(message);
 			break;
-
 		case h2svc_centerprint:
-			CL_ParseCenterPrint(net_message);
+			CL_ParseCenterPrint(message);
 			break;
 		case h2svc_stufftext:
-			CL_ParseStuffText(net_message);
+			CL_ParseStuffText(message);
 			break;
 		case h2svc_damage:
-			VQH_ParseDamage(net_message);
+			VQH_ParseDamage(message);
 			break;
 
 		case h2svc_serverinfo:
-			CL_ParseServerInfo();
+			CL_ParseServerInfo(message);
 			break;
 
 		case h2svc_setangle:
-			CLQH_ParseSetAngle(net_message);
+			CLQH_ParseSetAngle(message);
 			break;
-
 		case h2svc_setangle_interpolate:
-
-			compangles[0][0] = net_message.ReadAngle();
-			compangles[0][1] = net_message.ReadAngle();
-			compangles[0][2] = net_message.ReadAngle();
-
-			for (i = 0; i < 3; i++)
-			{
-				compangles[1][i] = cl.viewangles[i];
-				for (j = 0; j < 2; j++)
-				{	//standardize both old and new angles to +-180
-					if (compangles[j][i] >= 360)
-					{
-						compangles[j][i] -= 360 * ((int)(compangles[j][i] / 360));
-					}
-					else if (compangles[j][i] <= 360)
-					{
-						compangles[j][i] += 360 * (1 + (int)(-compangles[j][i] / 360));
-					}
-					if (compangles[j][i] > 180)
-					{
-						compangles[j][i] = -360 + compangles[j][i];
-					}
-					else if (compangles[j][i] < -180)
-					{
-						compangles[j][i] = 360 + compangles[j][i];
-					}
-				}
-				//get delta
-				deltaangles[i] = compangles[0][i] - compangles[1][i];
-				//cap delta to <=180,>=-180
-				if (deltaangles[i] > 180)
-				{
-					deltaangles[i] += -360;
-				}
-				else if (deltaangles[i] < -180)
-				{
-					deltaangles[i] += 360;
-				}
-				//add the delta
-				cl.viewangles[i] += (deltaangles[i] / 8);	//8 step interpolation
-				//cap newangles to +-180
-				if (cl.viewangles[i] >= 360)
-				{
-					cl.viewangles[i] -= 360 * ((int)(cl.viewangles[i] / 360));
-				}
-				else if (cl.viewangles[i] <= 360)
-				{
-					cl.viewangles[i] += 360 * (1 + (int)(-cl.viewangles[i] / 360));
-				}
-				if (cl.viewangles[i] > 180)
-				{
-					cl.viewangles[i] += -360;
-				}
-				else if (cl.viewangles[i] < -180)
-				{
-					cl.viewangles[i] += 360;
-				}
-			}
+			CLH2_ParseSetAngleInterpolate(message);
 			break;
-
 		case h2svc_setview:
-			CLQH_ParseSetView(net_message);
+			CLQH_ParseSetView(message);
 			break;
 		case h2svc_lightstyle:
-			CLQH_ParseLightStyle(net_message);
+			CLQH_ParseLightStyle(message);
 			break;
-
 		case h2svc_sound:
-			CLQH_ParseStartSoundPacket(net_message, H2SND_OVERFLOW);
+			CLH2_ParseStartSoundPacket(message);
 			break;
-
 		case h2svc_sound_update_pos:
-		{	//FIXME: put a field on the entity that lists the channels
-		//it should update when it moves- if a certain flag
-		//is on the ent, this update_channels field could
-		//be set automatically by each sound and stopSound
-		//called for this ent?
-			vec3_t pos;
-			int channel, ent;
-
-			channel = net_message.ReadShort();
-
-			ent = channel >> 3;
-			channel &= 7;
-
-			if (ent > MAX_EDICTS_QH)
-			{
-				common->Error("h2svc_sound_update_pos: ent = %i", ent);
-			}
-
-			for (i = 0; i < 3; i++)
-				pos[i] = net_message.ReadCoord();
-
-			S_UpdateSoundPos(ent, channel, pos);
-		}
-		break;
-
+			CLH2_ParseSoundUpdatePos(message);
+			break;
 		case h2svc_stopsound:
-			CLQH_ParseStopSound(net_message);
+			CLQH_ParseStopSound(message);
 			break;
-
 		case h2svc_updatename:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: svc_updatename > MAX_CLIENTS_QH");
-			}
-			String::Cpy(cl.h2_players[i].name, net_message.ReadString2());
+			CLH2_ParseUpdateName(message);
 			break;
-
 		case h2svc_updateclass:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: h2svc_updateclass > MAX_CLIENTS_QH");
-			}
-			cl.h2_players[i].playerclass = net_message.ReadByte();
-			CL_NewTranslation(i);	// update the color
+			CLH2_ParseUpdateClass(message);
 			break;
-
 		case h2svc_updatefrags:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: h2svc_updatefrags > MAX_CLIENTS_QH");
-			}
-			cl.h2_players[i].frags = net_message.ReadShort();
+			CLH2_UpdateFrags(message);
 			break;
-
 		case h2svc_update_kingofhill:
-			svh2_kingofhill = net_message.ReadShort() - 1;
+			CLH2_ParseUpdateKingOfHill(message);
 			break;
-
 		case h2svc_updatecolors:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: h2svc_updatecolors > MAX_CLIENTS_QH");
-			}
-			j = net_message.ReadByte();
-			cl.h2_players[i].topColour = (j & 0xf0) >> 4;
-			cl.h2_players[i].bottomColour = (j & 15);
-			CL_NewTranslation(i);
+			CLH2_ParseUpdateColors(message);
 			break;
-
 		case h2svc_particle:
-			R_ParseParticleEffect();
+			CLH2_ParseParticleEffect(message);
 			break;
-
 		case h2svc_particle2:
-			R_ParseParticleEffect2();
+			CLH2_ParseParticleEffect2(message);
 			break;
-
 		case h2svc_particle3:
-			R_ParseParticleEffect3();
+			CLH2_ParseParticleEffect3(message);
 			break;
-
 		case h2svc_particle4:
-			R_ParseParticleEffect4();
+			CLH2_ParseParticleEffect4(message);
 			break;
-
 		case h2svc_spawnbaseline:
-			CLH2_ParseSpawnBaseline(net_message);
+			CLH2_ParseSpawnBaseline(message);
 			break;
 		case h2svc_spawnstatic:
-			CLH2_ParseSpawnStatic(net_message);
+			CLH2_ParseSpawnStatic(message);
 			break;
-
 		case h2svc_raineffect:
-			CL_ParseRainEffect();
+			CLH2_ParseRainEffect(message);
 			break;
-
 		case h2svc_temp_entity:
-			CLH2_ParseTEnt(net_message);
+			CLH2_ParseTEnt(message);
 			break;
 		case h2svc_setpause:
-			CLQH_ParseSetPause(net_message);
+			CLQH_ParseSetPause(message);
 			break;
-
 		case h2svc_signonnum:
-			i = net_message.ReadByte();
-			if (i <= clc.qh_signon)
-			{
-				common->Error("Received signon %i when at %i", i, clc.qh_signon);
-			}
-			clc.qh_signon = i;
-			CLH2_SignonReply();
+			CLH2_ParseSignonNum(message);
 			break;
-
 		case h2svc_killedmonster:
 			CLQH_ParseKilledMonster();
 			break;
@@ -745,362 +464,52 @@ void CL_ParseServerMessage(void)
 			CLQH_ParseFoundSecret();
 			break;
 		case h2svc_updatestat:
-			CLQH_UpdateStat(net_message);
+			CLQH_UpdateStat(message);
 			break;
-
 		case h2svc_spawnstaticsound:
-			CL_ParseStaticSound();
+			CLH2_ParseStaticSound(message);
 			break;
-
 		case h2svc_cdtrack:
-		{
-			int cdtrack = net_message.ReadByte();
-			net_message.ReadByte();	//	looptrack
-			if (String::ICmp(bgmtype->string,"cd") == 0)
-			{
-				if ((clc.demoplaying || clc.demorecording) && (cls.qh_forcetrack != -1))
-				{
-					CDAudio_Play((byte)cls.qh_forcetrack, true);
-				}
-				else
-				{
-					CDAudio_Play(cdtrack, true);
-				}
-			}
-			else
-			{
-				CDAudio_Stop();
-			}
-		}
-		break;
-
+			CLH2_ParseCDTrack(message);
+			break;
 		case h2svc_midi_name:
-		{
-			char midi_name[MAX_QPATH];		// midi file name
-			String::Cpy(midi_name,net_message.ReadString2());
-			if (String::ICmp(bgmtype->string,"midi") == 0)
-			{
-				MIDI_Play(midi_name);
-			}
-			else
-			{
-				MIDI_Stop();
-			}
-		}
-		break;
-
+			CLH2_ParseMidiName(message);
+			break;
 		case h2svc_toggle_statbar:
 			break;
-
 		case h2svc_intermission:
-			cl.qh_intermission = net_message.ReadByte();
-			cl.qh_completed_time = cl.qh_serverTimeFloat;
+			CLH2_ParseIntermission(message);
 			break;
-
 		case h2svc_set_view_flags:
-			cl.h2_viewent.state.drawflags |= net_message.ReadByte();
+			CLH2_ParseSetViewFlags(message);
 			break;
-
 		case h2svc_clear_view_flags:
-			cl.h2_viewent.state.drawflags &= ~net_message.ReadByte();
+			CLH2_ParseClearViewFlags(message);
 			break;
-
 		case h2svc_start_effect:
-			CLH2_ParseEffect(net_message);
+			CLH2_ParseEffect(message);
 			break;
 		case h2svc_end_effect:
-			CLH2_ParseEndEffect(net_message);
+			CLH2_ParseEndEffect(message);
 			break;
-
 		case h2svc_plaque:
-			CL_Plaque();
+			CLH2_ParsePlaque(message);
 			break;
-
 		case h2svc_particle_explosion:
-			CL_ParticleExplosion();
+			CLH2_ParseParticleExplosion(message);
 			break;
-
 		case h2svc_set_view_tint:
-			i = net_message.ReadByte();
-			cl.h2_viewent.state.colormap = i;
+			CLH2_ParseSetViewTint(message);
 			break;
-
 		case h2svc_reference:
-			CLH2_ParseReference(net_message);
+			CLH2_ParseReference(message);
 			break;
 		case h2svc_clear_edicts:
-			CLH2_ParseClearEdicts(net_message);
+			CLH2_ParseClearEdicts(message);
 			break;
-
 		case h2svc_update_inv:
-			sc1 = sc2 = 0;
-
-			test = net_message.ReadByte();
-			if (test & 1)
-			{
-				sc1 |= ((int)net_message.ReadByte());
-			}
-			if (test & 2)
-			{
-				sc1 |= ((int)net_message.ReadByte()) << 8;
-			}
-			if (test & 4)
-			{
-				sc1 |= ((int)net_message.ReadByte()) << 16;
-			}
-			if (test & 8)
-			{
-				sc1 |= ((int)net_message.ReadByte()) << 24;
-			}
-			if (test & 16)
-			{
-				sc2 |= ((int)net_message.ReadByte());
-			}
-			if (test & 32)
-			{
-				sc2 |= ((int)net_message.ReadByte()) << 8;
-			}
-			if (test & 64)
-			{
-				sc2 |= ((int)net_message.ReadByte()) << 16;
-			}
-			if (test & 128)
-			{
-				sc2 |= ((int)net_message.ReadByte()) << 24;
-			}
-
-			if (sc1 & SC1_HEALTH)
-			{
-				cl.h2_v.health = net_message.ReadShort();
-			}
-			if (sc1 & SC1_LEVEL)
-			{
-				cl.h2_v.level = net_message.ReadByte();
-			}
-			if (sc1 & SC1_INTELLIGENCE)
-			{
-				cl.h2_v.intelligence = net_message.ReadByte();
-			}
-			if (sc1 & SC1_WISDOM)
-			{
-				cl.h2_v.wisdom = net_message.ReadByte();
-			}
-			if (sc1 & SC1_STRENGTH)
-			{
-				cl.h2_v.strength = net_message.ReadByte();
-			}
-			if (sc1 & SC1_DEXTERITY)
-			{
-				cl.h2_v.dexterity = net_message.ReadByte();
-			}
-			if (sc1 & SC1_WEAPON)
-			{
-				cl.h2_v.weapon = net_message.ReadByte();
-			}
-			if (sc1 & SC1_BLUEMANA)
-			{
-				cl.h2_v.bluemana = net_message.ReadByte();
-			}
-			if (sc1 & SC1_GREENMANA)
-			{
-				cl.h2_v.greenmana = net_message.ReadByte();
-			}
-			if (sc1 & SC1_EXPERIENCE)
-			{
-				cl.h2_v.experience = net_message.ReadLong();
-			}
-			if (sc1 & SC1_CNT_TORCH)
-			{
-				cl.h2_v.cnt_torch = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_H_BOOST)
-			{
-				cl.h2_v.cnt_h_boost = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_SH_BOOST)
-			{
-				cl.h2_v.cnt_sh_boost = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_MANA_BOOST)
-			{
-				cl.h2_v.cnt_mana_boost = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_TELEPORT)
-			{
-				cl.h2_v.cnt_teleport = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_TOME)
-			{
-				cl.h2_v.cnt_tome = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_SUMMON)
-			{
-				cl.h2_v.cnt_summon = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_INVISIBILITY)
-			{
-				cl.h2_v.cnt_invisibility = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_GLYPH)
-			{
-				cl.h2_v.cnt_glyph = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_HASTE)
-			{
-				cl.h2_v.cnt_haste = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_BLAST)
-			{
-				cl.h2_v.cnt_blast = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_POLYMORPH)
-			{
-				cl.h2_v.cnt_polymorph = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_FLIGHT)
-			{
-				cl.h2_v.cnt_flight = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_CUBEOFFORCE)
-			{
-				cl.h2_v.cnt_cubeofforce = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CNT_INVINCIBILITY)
-			{
-				cl.h2_v.cnt_invincibility = net_message.ReadByte();
-			}
-			if (sc1 & SC1_ARTIFACT_ACTIVE)
-			{
-				cl.h2_v.artifact_active = net_message.ReadFloat();
-			}
-			if (sc1 & SC1_ARTIFACT_LOW)
-			{
-				cl.h2_v.artifact_low = net_message.ReadFloat();
-			}
-			if (sc1 & SC1_MOVETYPE)
-			{
-				cl.h2_v.movetype = net_message.ReadByte();
-			}
-			if (sc1 & SC1_CAMERAMODE)
-			{
-				cl.h2_v.cameramode = net_message.ReadByte();
-			}
-			if (sc1 & SC1_HASTED)
-			{
-				cl.h2_v.hasted = net_message.ReadFloat();
-			}
-			if (sc1 & SC1_INVENTORY)
-			{
-				cl.h2_v.inventory = net_message.ReadByte();
-			}
-			if (sc1 & SC1_RINGS_ACTIVE)
-			{
-				cl.h2_v.rings_active = net_message.ReadFloat();
-			}
-
-			if (sc2 & SC2_RINGS_LOW)
-			{
-				cl.h2_v.rings_low = net_message.ReadFloat();
-			}
-			if (sc2 & SC2_AMULET)
-			{
-				cl.h2_v.armor_amulet = net_message.ReadByte();
-			}
-			if (sc2 & SC2_BRACER)
-			{
-				cl.h2_v.armor_bracer = net_message.ReadByte();
-			}
-			if (sc2 & SC2_BREASTPLATE)
-			{
-				cl.h2_v.armor_breastplate = net_message.ReadByte();
-			}
-			if (sc2 & SC2_HELMET)
-			{
-				cl.h2_v.armor_helmet = net_message.ReadByte();
-			}
-			if (sc2 & SC2_FLIGHT_T)
-			{
-				cl.h2_v.ring_flight = net_message.ReadByte();
-			}
-			if (sc2 & SC2_WATER_T)
-			{
-				cl.h2_v.ring_water = net_message.ReadByte();
-			}
-			if (sc2 & SC2_TURNING_T)
-			{
-				cl.h2_v.ring_turning = net_message.ReadByte();
-			}
-			if (sc2 & SC2_REGEN_T)
-			{
-				cl.h2_v.ring_regeneration = net_message.ReadByte();
-			}
-			if (sc2 & SC2_HASTE_T)
-			{
-				cl.h2_v.haste_time = net_message.ReadFloat();
-			}
-			if (sc2 & SC2_TOME_T)
-			{
-				cl.h2_v.tome_time = net_message.ReadFloat();
-			}
-			if (sc2 & SC2_PUZZLE1)
-			{
-				sprintf(cl.h2_puzzle_pieces[0], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE2)
-			{
-				sprintf(cl.h2_puzzle_pieces[1], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE3)
-			{
-				sprintf(cl.h2_puzzle_pieces[2], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE4)
-			{
-				sprintf(cl.h2_puzzle_pieces[3], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE5)
-			{
-				sprintf(cl.h2_puzzle_pieces[4], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE6)
-			{
-				sprintf(cl.h2_puzzle_pieces[5], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE7)
-			{
-				sprintf(cl.h2_puzzle_pieces[6], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_PUZZLE8)
-			{
-				sprintf(cl.h2_puzzle_pieces[7], "%.9s", net_message.ReadString2());
-			}
-			if (sc2 & SC2_MAXHEALTH)
-			{
-				cl.h2_v.max_health = net_message.ReadShort();
-			}
-			if (sc2 & SC2_MAXMANA)
-			{
-				cl.h2_v.max_mana = net_message.ReadByte();
-			}
-			if (sc2 & SC2_FLAGS)
-			{
-				cl.h2_v.flags = net_message.ReadFloat();
-			}
-			if (sc2 & SC2_OBJ)
-			{
-				cl.h2_info_mask = net_message.ReadLong();
-			}
-			if (sc2 & SC2_OBJ2)
-			{
-				cl.h2_info_mask2 = net_message.ReadLong();
-			}
-
-			if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
-			{
-				SbarH2_InvChanged();
-			}
+			CLH2_ParseUpdateInv(message);
 			break;
 		}
 	}
-
 }

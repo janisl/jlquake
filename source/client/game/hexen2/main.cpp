@@ -17,6 +17,10 @@
 #include "../../client.h"
 #include "local.h"
 
+Cvar* clh2_playerclass;
+Cvar* clhw_teamcolor;
+Cvar* clhw_talksounds;
+
 void CLH2_ClearState()
 {
 	// clear other arrays

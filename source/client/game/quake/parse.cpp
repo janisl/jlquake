@@ -588,7 +588,7 @@ static void CLQW_Model_NextDownload()
 		{
 			continue;	// inline brush model
 		}
-		if (!CLQW_CheckOrDownloadFile(s))
+		if (!CL_CheckOrDownloadFile(s))
 		{
 			return;		// started a download
 		}
@@ -650,7 +650,7 @@ static void CLQW_Sound_NextDownload()
 		; clc.downloadNumber++)
 	{
 		char* s = cl.qh_sound_name[clc.downloadNumber];
-		if (!CLQW_CheckOrDownloadFile(va("sound/%s",s)))
+		if (!CL_CheckOrDownloadFile(va("sound/%s",s)))
 		{
 			return;		// started a download
 		}

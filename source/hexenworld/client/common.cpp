@@ -199,7 +199,7 @@ COM_Gamedir
 Sets the gamedir and path to a different directory.
 ================
 */
-void COM_Gamedir(char* dir)
+void COM_Gamedir(const char* dir)
 {
 	if (strstr(dir, "..") || strstr(dir, "/") ||
 		strstr(dir, "\\") || strstr(dir, ":"))

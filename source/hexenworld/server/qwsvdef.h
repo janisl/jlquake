@@ -15,7 +15,6 @@
 #include "sys.h"
 
 #include "net.h"
-#include "protocol.h"
 
 #include "server.h"
 

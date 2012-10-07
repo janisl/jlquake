@@ -8,7 +8,6 @@ add_executable(jlhexen2
 	host_cmd.cpp
 	keys.cpp
 	net_main.cpp
-	r_part.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

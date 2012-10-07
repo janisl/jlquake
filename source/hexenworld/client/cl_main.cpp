@@ -5,6 +5,7 @@
 #include "../../client/windows_shared.h"
 #endif
 #include "../../server/public.h"
+#include "../../common/hexen2strings.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -25,7 +26,6 @@ Cvar* team;
 Cvar* skin;
 Cvar* rate;
 Cvar* noaim;
-Cvar* talksounds;
 Cvar* msg;
 
 double connect_time = -1;				// for connection retransmits
@@ -841,7 +841,7 @@ void CL_ReadPackets(void)
 			continue;		// wasn't accepted for some reason
 		}
 		clc.netchan.lastReceived = realtime * 1000;
-		CL_ParseServerMessage();
+		CL_ParseServerMessage(net_message);
 
 //		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
 //			return;
@@ -986,7 +986,7 @@ void CL_Init(void)
 	rate = Cvar_Get("rate","2500", CVAR_ARCHIVE | CVAR_USERINFO);
 	msg = Cvar_Get("msg","1", CVAR_ARCHIVE | CVAR_USERINFO);
 	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE | CVAR_USERINFO);
-	talksounds = Cvar_Get("talksounds", "1", CVAR_ARCHIVE);
+	clhw_talksounds = Cvar_Get("talksounds", "1", CVAR_ARCHIVE);
 
 	clhw_teamcolor = Cvar_Get("clhw_teamcolor", "187", CVAR_ARCHIVE);
 

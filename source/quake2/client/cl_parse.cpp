@@ -65,43 +65,6 @@ void CL_DownloadFileName(char* dest, int destlen, char* fn)
 
 /*
 ===============
-CL_CheckOrDownloadFile
-
-Returns true if the file exists, otherwise it attempts
-to start a download from the server.
-===============
-*/
-qboolean    CL_CheckOrDownloadFile(char* filename)
-{
-	if (strstr(filename, ".."))
-	{
-		common->Printf("Refusing to download a path with ..\n");
-		return true;
-	}
-
-	if (FS_ReadFile(filename, NULL) != -1)
-	{	// it exists, no need to download
-		return true;
-	}
-
-	String::Cpy(clc.downloadName, filename);
-
-	// download to a temp name, and only rename
-	// to the real name when done, so if interrupted
-	// a runt file wont be left
-	String::StripExtension(clc.downloadName, clc.downloadTempName);
-	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
-
-	common->Printf("Downloading %s\n", clc.downloadName);
-	CL_AddReliableCommand(va("download %s", clc.downloadName));
-
-	clc.downloadNumber++;
-
-	return false;
-}
-
-/*
-===============
 CL_Download_f
 
 Request a download from the server

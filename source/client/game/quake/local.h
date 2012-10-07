@@ -35,7 +35,6 @@ extern Cvar* clqw_noskins;
 //	Connection
 //
 void CLQ1_SignonReply();
-bool CLQW_CheckOrDownloadFile(const char* filename);
 int CLQW_CalcNet();
 bool CLQW_IsUploading();
 void CLQW_NextUpload();

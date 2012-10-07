@@ -623,6 +623,7 @@ void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* tr
 float CLQH_LerpPoint();
 void CL_AddReliableCommand(const char* cmd);
 void CL_ClearState();
+bool CL_CheckOrDownloadFile(const char* filename);
 
 void Chase_Init();
 void Chase_Update();

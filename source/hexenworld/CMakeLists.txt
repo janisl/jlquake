@@ -27,7 +27,6 @@ add_executable(jlhwcl
 	client/common.cpp
 	client/keys.cpp
 	client/net_chan.cpp
-	client/r_part.cpp
 	client/sys_linux.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

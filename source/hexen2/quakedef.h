@@ -17,7 +17,6 @@
 #include "../server/quake_hexen/local.h"
 #include "../server/hexen2/local.h"
 #include "../server/progsvm/progsvm.h"
-#include "../common/hexen2strings.h"
 
 //#define MISSIONPACK
 
@@ -51,10 +50,8 @@
 #include "common.h"
 #include "sys.h"
 #include "net.h"
-#include "protocol.h"
 
 #ifndef DEDICATED
-#include "render.h"
 #include "client.h"
 #include "keys.h"
 #endif

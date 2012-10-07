@@ -13,9 +13,6 @@
 #include "common.h"
 #include "sys.h"
 #include "net.h"
-#include "protocol.h"
-#include "../../common/hexen2strings.h"
-#include "render.h"
 #include "client.h"
 #include "keys.h"
 
@@ -39,8 +36,6 @@ typedef struct
 // host
 //
 extern quakeparms_t host_parms;
-
-extern Cvar* talksounds;
 
 extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;

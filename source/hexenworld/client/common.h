@@ -8,7 +8,7 @@ void COM_InitArgv2(int argc, char** argv);
 
 //============================================================================
 
-void COM_Gamedir(char* dir);
+void COM_Gamedir(const char* dir);
 void Com_Quit_f();
 
 void Com_InitDebugLog();
