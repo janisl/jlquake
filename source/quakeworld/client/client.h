@@ -37,8 +37,6 @@ qboolean CL_DemoBehind(void);
 
 void CL_BeginServerConnect(void);
 
-extern char emodel_name[], pmodel_name[], prespawn_name[], modellist_name[], soundlist_name[];
-
 //
 // cl_input
 //

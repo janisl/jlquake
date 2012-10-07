@@ -167,8 +167,8 @@ void CLQW_Model_NextDownload(void)
 		}
 	}
 
-	CLQW_CalcModelChecksum("progs/player.mdl", pmodel_name);
-	CLQW_CalcModelChecksum("progs/eyes.mdl", emodel_name);
+	CLQW_CalcModelChecksum("progs/player.mdl", "pmodel");
+	CLQW_CalcModelChecksum("progs/eyes.mdl", "emodel");
 
 	// all done
 	R_EndRegistration();
@@ -178,7 +178,7 @@ void CLQW_Model_NextDownload(void)
 	CM_MapChecksums(CheckSum1, CheckSum2);
 
 	// done with modellist, request first of static signon messages
-	CL_AddReliableCommand(va(prespawn_name, cl.servercount, CheckSum2));
+	CL_AddReliableCommand(va("prespawn %i 0 %i", cl.servercount, CheckSum2));
 }
 
 /*
@@ -225,7 +225,7 @@ void Sound_NextDownload(void)
 	clq1_playerindex = -1;
 	clq1_spikeindex = -1;
 	clqw_flagindex = -1;
-	CL_AddReliableCommand(va(modellist_name, cl.servercount, 0));
+	CL_AddReliableCommand(va("modellist %i %i", cl.servercount, 0));
 }
 
 
@@ -468,7 +468,7 @@ void CL_ParseServerData(void)
 
 	// ask for the sound list next
 	Com_Memset(cl.qh_sound_name, 0, sizeof(cl.qh_sound_name));
-	CL_AddReliableCommand(va(soundlist_name, cl.servercount, 0));
+	CL_AddReliableCommand(va("soundlist %i %i", cl.servercount, 0));
 
 	// now waiting for downloads, etc
 	cls.state = CA_LOADING;
@@ -509,7 +509,7 @@ void CL_ParseSoundlist(void)
 
 	if (n)
 	{
-		CL_AddReliableCommand(va(soundlist_name, cl.servercount, n));
+		CL_AddReliableCommand(va("soundlist %i %i", cl.servercount, n));
 		return;
 	}
 
@@ -564,7 +564,7 @@ void CL_ParseModellist(void)
 
 	if (n)
 	{
-		CL_AddReliableCommand(va(modellist_name, cl.servercount, n));
+		CL_AddReliableCommand(va("modellist %i %i", cl.servercount, n));
 		return;
 	}
 

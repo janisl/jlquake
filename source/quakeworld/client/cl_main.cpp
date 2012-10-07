@@ -71,20 +71,6 @@ jmp_buf host_abort;
 
 void Master_Connect_f(void);
 
-char emodel_name[] =
-{ 'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
-char pmodel_name[] =
-{ 'p' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
-char prespawn_name[] =
-{ 'p' ^ 0xff, 'r' ^ 0xff, 'e' ^ 0xff, 's' ^ 0xff, 'p' ^ 0xff, 'a' ^ 0xff, 'w' ^ 0xff, 'n' ^ 0xff,
-  ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '0' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
-char modellist_name[] =
-{ 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff,
-  ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
-char soundlist_name[] =
-{ 's' ^ 0xff, 'o' ^ 0xff, 'u' ^ 0xff, 'n' ^ 0xff, 'd' ^ 0xff, 'l' ^ 0xff, 'i' ^ 0xff, 's' ^ 0xff, 't' ^ 0xff,
-  ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, ' ' ^ 0xff, '%' ^ 0xff, 'i' ^ 0xff, 0 };
-
 class idCommonLocal : public idCommon
 {
 public:
@@ -619,7 +605,7 @@ void CL_FullInfo_f(void)
 			s++;
 		}
 
-		if (!String::ICmp(key, pmodel_name) || !String::ICmp(key, emodel_name))
+		if (!String::ICmp(key, "pmodel") || !String::ICmp(key, "emodel"))
 		{
 			continue;
 		}
@@ -654,7 +640,7 @@ void CL_SetInfo_f(void)
 		common->Printf("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
-	if (!String::ICmp(Cmd_Argv(1), pmodel_name) || !String::Cmp(Cmd_Argv(1), emodel_name))
+	if (!String::ICmp(Cmd_Argv(1), "pmodel") || !String::Cmp(Cmd_Argv(1), "emodel"))
 	{
 		return;
 	}
@@ -1405,21 +1391,6 @@ void Host_Frame(float time)
 	}
 }
 
-static void simple_crypt(char* buf, int len)
-{
-	while (len--)
-		*buf++ ^= 0xff;
-}
-
-void Host_FixupModelNames(void)
-{
-	simple_crypt(emodel_name, sizeof(emodel_name) - 1);
-	simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
-	simple_crypt(prespawn_name,  sizeof(prespawn_name)  - 1);
-	simple_crypt(modellist_name, sizeof(modellist_name) - 1);
-	simple_crypt(soundlist_name, sizeof(soundlist_name) - 1);
-}
-
 //============================================================================
 
 /*
@@ -1447,8 +1418,6 @@ void Host_Init(quakeparms_t* parms)
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
 		COM_Init();
-
-		Host_FixupModelNames();
 
 		NET_Init(QWPORT_CLIENT);
 		// pick a port value that should be nice and random
