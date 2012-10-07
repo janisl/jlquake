@@ -18,50 +18,6 @@
 static float save_sensitivity;
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
-=====================
-CL_ClearState
-
-=====================
-*/
-void CL_ClearState(void)
-{
-	Mod_ClearAll();
-	clc.qh_signon = 0;
-
-	// wipe the entire cl structure
-	Com_Memset(&cl, 0, sizeof(cl));
-
-	clc.netchan.message.Clear();
-
-// clear other arrays
-	Com_Memset(h2cl_entities, 0, sizeof(h2cl_entities));
-	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
-	CL_ClearDlights();
-	CL_ClearLightStyles();
-	CLH2_ClearTEnts();
-	CLH2_ClearEffects();
-
-	cl.h2_current_frame = cl.h2_current_sequence = 99;
-	cl.h2_reference_frame = cl.h2_last_sequence = 199;
-	cl.h2_need_build = 2;
-
-	clh2_plaquemessage = "";
-
-	SbarH2_InvReset();
-}
-
-/*
 =====================
 CL_Disconnect
 

@@ -31,6 +31,9 @@ extern int clqw_flagindex;
 extern Cvar* clqw_baseskin;
 extern Cvar* clqw_noskins;
 
+//
+//	Connection
+//
 void CLQ1_SignonReply();
 bool CLQW_CheckOrDownloadFile(const char* filename);
 int CLQW_CalcNet();
@@ -39,6 +42,9 @@ void CLQW_NextUpload();
 void CLQW_StartUpload(const byte* data, int size);
 void CLQW_StopUpload();
 
+//
+//	Entities
+//
 void CLQ1_ParseSpawnBaseline(QMsg& message);
 void CLQ1_ParseSpawnStatic(QMsg& message);
 void CLQ1_ParseUpdate(QMsg& message, int bits);
@@ -50,24 +56,43 @@ void CLQ1_TranslatePlayerSkin(int playernum);
 void CLQ1_EmitEntities();
 void CLQW_EmitEntities();
 
-void CLQ1_InitTEnts();
-void CLQ1_ClearTEnts();
-void CLQ1_ParseTEnt(QMsg& message);
-void CLQW_ParseTEnt(QMsg& message);
-void CLQ1_UpdateTEnts();
+//
+//	Main
+//
+void CLQ1_ClearState();
 
+//
+//	Parse
+//
+void CLQ1_ParseClientdata(QMsg& message);
+void CLQ1_ParseVersion(QMsg& message);
+void CLQ1_ParsePrint(QMsg& message);
+
+//
+//	Projectiles
+//
 void CLQ1_ClearProjectiles();
 void CLQW_ParseNails(QMsg& message);
 void CLQ1_LinkProjectiles();
 
-void CLQ1_ParseClientdata(QMsg& message);
+//
+//	Screen
+//
+void SCRQ1_DrawScreen(stereoFrame_t stereoFrame);
+void SCRQ1_Init();
 
+//
+//	Skin
+//
 void CLQW_SkinFind(q1player_info_t* sc);
 byte* CLQW_SkinCache(qw_skin_t* skin);
 void CLQW_SkinNextDownload();
 void CLQW_SkinSkins_f();
 void CLQW_SkinAllSkins_f();
 
+//
+//	Status bar
+//
 extern int sbqh_lines;					// scan lines to draw
 extern Cvar* clqw_hudswap;
 
@@ -80,8 +105,14 @@ void SbarQ1_Draw();
 void SbarQ1_IntermissionOverlay();
 void SbarQ1_FinaleOverlay();
 
-void SCRQ1_DrawScreen(stereoFrame_t stereoFrame);
-void SCRQ1_Init();
+//
+//	Temporary entities
+//
+void CLQ1_InitTEnts();
+void CLQ1_ClearTEnts();
+void CLQ1_ParseTEnt(QMsg& message);
+void CLQW_ParseTEnt(QMsg& message);
+void CLQ1_UpdateTEnts();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"

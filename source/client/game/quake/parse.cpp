@@ -152,3 +152,30 @@ void CLQ1_ParseClientdata(QMsg& message)
 		}
 	}
 }
+
+void CLQ1_ParseVersion(QMsg& message)
+{
+	int i = message.ReadLong();
+	if (i != Q1PROTOCOL_VERSION)
+	{
+		common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, Q1PROTOCOL_VERSION);
+	}
+}
+
+void CLQ1_ParsePrint(QMsg& message)
+{
+	const char* txt = message.ReadString2();
+
+	if (txt[0] == 1)
+	{
+		S_StartLocalSound("misc/talk.wav");
+	}
+	if (txt[0] == 1 || txt[0] == 2)
+	{
+		common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt + 1);
+	}
+	else
+	{
+		common->Printf("%s", txt);
+	}
+}

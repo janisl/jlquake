@@ -495,27 +495,6 @@ void CL_Rcon_f(void)
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
 }
 
-
-/*
-=====================
-CL_ClearState
-
-=====================
-*/
-void CL_ClearState(void)
-{
-	S_StopAllSounds();
-	CLQ2_ClearEffects();
-	CLQ2_ClearTEnts();
-
-// wipe the entire cl structure
-	Com_Memset(&cl, 0, sizeof(cl));
-	Com_Memset(&clq2_entities, 0, sizeof(clq2_entities));
-
-	clc.netchan.message.Clear();
-
-}
-
 /*
 =====================
 CL_Disconnect

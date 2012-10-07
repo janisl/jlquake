@@ -16,6 +16,9 @@
 
 #include "client.h"
 #include "../server/public.h"
+#include "game/quake/local.h"
+#include "game/hexen2/local.h"
+#include "game/quake2/local.h"
 
 Cvar* cl_inGameVideo;
 
@@ -332,5 +335,39 @@ void CL_CvarChanged(Cvar* var)
 		{
 			CL_AddReliableCommand(va("setinfo \"%s\" \"%s\"\n", var->name, var->string));
 		}
+	}
+}
+
+//	Called before parsing a gamestate
+void CL_ClearState()
+{
+	// wipe the entire cl structure
+	Com_Memset(&cl, 0, sizeof(cl));
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 | GAME_WolfSP))
+	{
+		S_StopAllSounds();
+	}
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		clc.netchan.message.Clear();
+
+		CL_ClearParticles();
+		CL_ClearDlights();
+		CL_ClearLightStyles();
+	}
+
+	if (GGameType & GAME_Quake)
+	{
+		CLQ1_ClearState();
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		CLH2_ClearState();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_ClearState();
 	}
 }

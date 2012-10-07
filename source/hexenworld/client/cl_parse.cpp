@@ -169,8 +169,6 @@ R_NewMap
 */
 static void R_NewMap(void)
 {
-	CL_ClearParticles();
-
 	R_EndRegistration();
 }
 
@@ -406,6 +404,17 @@ void CL_ParseDownload(void)
 */
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll(void)
+{
+	R_Shutdown(false);
+	CL_InitRenderer();
+}
+
+/*
 ==================
 CL_ParseServerData
 ==================
@@ -421,6 +430,8 @@ void CL_ParseServerData(void)
 //
 // wipe the clientActive_t struct
 //
+	Mod_ClearAll();
+
 	CL_ClearState();
 
 // parse protocol version number

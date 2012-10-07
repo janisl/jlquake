@@ -630,22 +630,6 @@ void CL_MapLoading(void)
 
 /*
 =====================
-CL_ClearState
-
-Called before parsing a gamestate
-=====================
-*/
-void CL_ClearState(void)
-{
-
-	S_StopAllSounds();
-
-	memset(&cl, 0, sizeof(cl));
-}
-
-
-/*
-=====================
 CL_Disconnect
 
 Called when a connection, demo, or cinematic is being terminated.

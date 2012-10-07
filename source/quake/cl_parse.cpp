@@ -142,14 +142,23 @@ void CL_KeepaliveMessage(void)
 }
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll(void)
+{
+	R_Shutdown(false);
+	CL_InitRenderer();
+}
+
+/*
 ===============
 R_NewMap
 ===============
 */
 static void R_NewMap(void)
 {
-	CL_ClearParticles();
-
 	R_EndRegistration();
 }
 
@@ -170,6 +179,9 @@ void CL_ParseServerInfo(void)
 //
 // wipe the clientActive_t struct
 //
+	Mod_ClearAll();
+	clc.qh_signon = 0;
+
 	CL_ClearState();
 
 	SCR_ClearCenterString();
@@ -281,23 +293,6 @@ void CL_NewTranslation(int slot)
 	CLQ1_TranslatePlayerSkin(slot);
 }
 
-static void CL_ParsePrint()
-{
-	const char* txt = net_message.ReadString2();
-	if (txt[0] == 1)
-	{
-		S_StartLocalSound("misc/talk.wav");
-	}
-	if (txt[0] == 1 || txt[0] == 2)
-	{
-		common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt + 1);
-	}
-	else
-	{
-		common->Printf("%s", txt);
-	}
-}
-
 #define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 
 /*
@@ -367,23 +362,15 @@ void CL_ParseServerMessage(void)
 		case q1svc_clientdata:
 			CLQ1_ParseClientdata(net_message);
 			break;
-
 		case q1svc_version:
-			i = net_message.ReadLong();
-			if (i != Q1PROTOCOL_VERSION)
-			{
-				common->Error("CL_ParseServerMessage: Server is protocol %i instead of %i\n", i, Q1PROTOCOL_VERSION);
-			}
+			CLQ1_ParseVersion(net_message);
 			break;
-
 		case q1svc_disconnect:
 			CLQH_ParseDisconnect();
 			break;
-
 		case q1svc_print:
-			CL_ParsePrint();
+			CLQ1_ParsePrint(net_message);
 			break;
-
 		case q1svc_centerprint:
 			CL_ParseCenterPrint(net_message);
 			break;

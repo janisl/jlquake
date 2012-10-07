@@ -12,6 +12,7 @@ set(CLIENT_FILES
 	game/hexen2/entities.cpp
 	game/hexen2/explosion.cpp
 	game/hexen2/light_effects.cpp
+	game/hexen2/main.cpp
 	game/hexen2/menu.cpp
 	game/hexen2/parse.cpp
 	game/hexen2/particle_effects.cpp
@@ -23,6 +24,7 @@ set(CLIENT_FILES
 	game/quake/connection.cpp
 	game/quake/entities.cpp
 	game/quake/light_effects.cpp
+	game/quake/main.cpp
 	game/quake/parse.cpp
 	game/quake/particle_effects.cpp
 	game/quake/projectiles.cpp

@@ -483,13 +483,6 @@ vec3_t monster_flash_offset [] =
 	{ 0.0, 0.0, 0.0 }
 };
 
-void CLQ2_ClearEffects()
-{
-	CL_ClearParticles();
-	CL_ClearDlights();
-	CL_ClearLightStyles();
-}
-
 void CLQ2_LogoutEffect(vec3_t org, int type)
 {
 	if (type == Q2MZ_LOGIN)

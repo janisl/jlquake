@@ -63,3 +63,9 @@ void CLQ2_PingServers_f()
 		NET_OutOfBandPrint(NS_CLIENT, adr, "info %i", Q2PROTOCOL_VERSION);
 	}
 }
+
+void CLQ2_ClearState()
+{
+	Com_Memset(&clq2_entities, 0, sizeof(clq2_entities));
+	CLQ2_ClearTEnts();
+}

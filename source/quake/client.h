@@ -47,9 +47,6 @@ void CL_NextDemo(void);
 void CL_InitInput(void);
 void CL_SendCmd(void);
 
-void CL_ClearState(void);
-
-
 int  CL_ReadFromServer(void);
 void CL_MouseEvent(int mx, int my);
 

@@ -82,7 +82,6 @@ void CL_InitRef(void);
 //
 void CL_InitInput(void);
 void CL_SendCmd(void);
-void CL_ClearState(void);
 void CL_ReadPackets(void);
 
 void CL_WritePacket(void);

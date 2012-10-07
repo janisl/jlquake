@@ -672,18 +672,6 @@ void CL_MapLoading(void)
 
 /*
 =====================
-CL_ClearState
-
-Called before parsing a gamestate
-=====================
-*/
-void CL_ClearState(void)
-{
-	Com_Memset(&cl, 0, sizeof(cl));
-}
-
-/*
-=====================
 CL_ClearStaticDownload
 Clear download information that we keep in cls (disconnected download support)
 =====================

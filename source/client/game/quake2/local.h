@@ -45,7 +45,6 @@ void CLQ2_AddPlayerBeams();
 //
 //	Effects
 //
-void CLQ2_ClearEffects();
 void CLQ2_LogoutEffect(vec3_t org, int type);
 void CLQ2_ParseMuzzleFlash(QMsg& message);
 void CLQ2_ParseMuzzleFlash2(QMsg& message);
@@ -98,6 +97,7 @@ void CLQ2_AddLasers();
 //	Main
 //
 void CLQ2_PingServers_f();
+void CLQ2_ClearState();
 
 //
 //	Screen

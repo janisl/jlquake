@@ -25,41 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
-=====================
-CL_ClearState
-
-=====================
-*/
-void CL_ClearState(void)
-{
-	Mod_ClearAll();
-	clc.qh_signon = 0;
-
-	// wipe the entire cl structure
-	Com_Memset(&cl, 0, sizeof(cl));
-
-	clc.netchan.message.Clear();
-
-// clear other arrays
-	Com_Memset(clq1_entities, 0, sizeof(clq1_entities));
-	Com_Memset(clq1_baselines, 0, sizeof(clq1_baselines));
-	CL_ClearDlights();
-	CL_ClearLightStyles();
-	CLQ1_ClearTEnts();
-}
-
-/*
 =====================
 CL_Disconnect
 

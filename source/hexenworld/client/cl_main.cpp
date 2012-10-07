@@ -294,48 +294,6 @@ void CL_Rcon_f(void)
 
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
-=====================
-CL_ClearState
-
-=====================
-*/
-void CL_ClearState(void)
-{
-	S_StopAllSounds();
-
-	common->DPrintf("Clearing memory\n");
-	Mod_ClearAll();
-
-	CLH2_ClearTEnts();
-	CLH2_ClearEffects();
-
-// wipe the entire cl structure
-	Com_Memset(&cl, 0, sizeof(cl));
-
-	clc.netchan.message.Clear();
-
-// clear other arrays
-	CL_ClearDlights();
-	CL_ClearLightStyles();
-	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
-
-	clh2_plaquemessage = "";
-
-	SbarH2_InvReset();
-}
-
-/*
 =====================
 CL_Disconnect
 

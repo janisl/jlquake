@@ -157,9 +157,18 @@ R_NewMap
 */
 static void R_NewMap(void)
 {
-	CL_ClearParticles();
-
 	R_EndRegistration();
+}
+
+/*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll(void)
+{
+	R_Shutdown(false);
+	CL_InitRenderer();
 }
 
 /*
@@ -180,6 +189,9 @@ void CL_ParseServerInfo(void)
 //
 // wipe the clientActive_t struct
 //
+	Mod_ClearAll();
+	clc.qh_signon = 0;
+
 	CL_ClearState();
 
 	SCR_ClearCenterString();

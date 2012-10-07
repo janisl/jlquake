@@ -64,6 +64,36 @@ extern int sbqh_lines;					// scan lines to draw
 extern const char* h2_ClassNames[NUM_CLASSES_H2MP];
 extern const char* hw_ClassNames[MAX_PLAYER_CLASS];
 
+//
+//	Chunk
+//
+void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
+void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
+void CLH2_InitChunkAngles(vec3_t angles);
+void CLH2_InitChunkAngleVelocity(vec3_t avel);
+void CLH2_InitChunkEffect(h2EffectT& effect);
+
+//
+//	Connection
+//
+void CLH2_SignonReply();
+
+//
+//	Effects
+//
+void CLHW_InitEffects();
+void CLH2_ClearEffects();
+int CLH2_NewEffectEntity();
+void CLH2_ParseEffect(QMsg& message);
+void CLHW_ParseMultiEffect(QMsg& message);
+void CLHW_ParseReviseEffect(QMsg& message);
+void CLHW_ParseTurnEffect(QMsg& message);
+void CLH2_ParseEndEffect(QMsg& message);
+void CLH2_UpdateEffects();
+
+//
+//	Entities
+//
 void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
@@ -83,42 +113,9 @@ void CLH2_HandleCustomSkin(refEntity_t* entity, int playerIndex);
 void CLH2_EmitEntities();
 void CLHW_EmitEntities();
 
-void CLH2_ClearStreams();
-void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamSunstaff1(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamSunstaffPower(int ent, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
-void CLH2_ParseStream(QMsg& message, int type);
-void CLH2_UpdateStreams();
-
-void CLH2_InitTEnts();
-void CLH2_ClearTEnts();
-int CLH2_TempSoundChannel();
-h2entity_state_t* CLH2_FindState(int EntNum);
-void CLH2_ParseTEnt(QMsg& message);
-void CLHW_ParseTEnt(QMsg& message);
-void CLHW_UpdateHammer(refEntity_t* ent, int edict_num);
-void CLHW_UpdateBug(refEntity_t* ent);
-void CLH2_UpdateTEnts();
-
-void CLHW_InitEffects();
-void CLH2_ClearEffects();
-int CLH2_NewEffectEntity();
-void CLH2_ParseEffect(QMsg& message);
-void CLHW_ParseMultiEffect(QMsg& message);
-void CLHW_ParseReviseEffect(QMsg& message);
-void CLHW_ParseTurnEffect(QMsg& message);
-void CLH2_ParseEndEffect(QMsg& message);
-void CLH2_UpdateEffects();
-
-void CLH2_InitChunkModel(int chType, int* model, int* skinNum, int* drawFlags, int* frame, int* absoluteLight);
-void CLH2_InitChunkVelocity(vec3_t srcvel, vec3_t velocity);
-void CLH2_InitChunkAngles(vec3_t angles);
-void CLH2_InitChunkAngleVelocity(vec3_t avel);
-void CLH2_InitChunkEffect(h2EffectT& effect);
-
+//
+//	Explosion
+//
 void CLHW_InitExplosionSounds();
 void CLH2_ClearExplosions();
 void CLHW_SpawnDeathBubble(const vec3_t pos);
@@ -177,6 +174,19 @@ void CLHW_ClearTarget();
 void CLHW_ParseTarget(QMsg& message);
 void CLHW_UpdateTargetBall();
 
+//
+//	Main
+//
+void CLH2_ClearState();
+
+//
+//	Parse
+//
+void CLH2_ParseClientdata(QMsg& message);
+
+//
+//	Projectiles
+//
 void CLH2_ClearProjectiles();
 void CLH2_ClearMissiles();
 void CLHW_ParseNails(QMsg& message);
@@ -184,10 +194,19 @@ void CLHW_ParsePackMissiles(QMsg& message);
 void CLH2_LinkProjectiles();
 void CLH2_LinkMissiles();
 
-void CLH2_ParseClientdata(QMsg& message);
+//
+//	Screen
+//
+extern int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
+extern const char* clh2_plaquemessage;		// Pointer to current plaque
+extern bool clh2_info_up;
 
-void CLH2_SignonReply();
+void SCRH2_DrawCenterString(const char* message);
+void SCRH2_DrawScreen(stereoFrame_t stereoFrame);
 
+//
+//	Status bar
+//
 int SbarQH_itoa(int num, char* buf);
 void SbarH2_Init();
 void SbarH2_InitImages();
@@ -196,12 +215,31 @@ void SbarH2_Draw();
 void SbarH2_InvChanged();
 void SbarH2_InvReset();
 
-extern int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
-extern const char* clh2_plaquemessage;		// Pointer to current plaque
-extern bool clh2_info_up;
+//
+//	Stream
+//
+void CLH2_ClearStreams();
+void CLH2_CreateStreamChain(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamSunstaff1(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamSunstaffPower(int ent, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamLightning(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamColourBeam(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_CreateStreamIceChunks(int ent, int tag, int flags, int skin, int duration, const vec3_t source, const vec3_t dest);
+void CLH2_ParseStream(QMsg& message, int type);
+void CLH2_UpdateStreams();
 
-void SCRH2_DrawCenterString(const char* message);
-void SCRH2_DrawScreen(stereoFrame_t stereoFrame);
+//
+//	Temporary entities
+//
+void CLH2_InitTEnts();
+void CLH2_ClearTEnts();
+int CLH2_TempSoundChannel();
+h2entity_state_t* CLH2_FindState(int EntNum);
+void CLH2_ParseTEnt(QMsg& message);
+void CLHW_ParseTEnt(QMsg& message);
+void CLHW_UpdateHammer(refEntity_t* ent, int edict_num);
+void CLHW_UpdateBug(refEntity_t* ent);
+void CLH2_UpdateTEnts();
 
 #include "../quake_hexen2/main.h"
 #include "../quake_hexen2/predict.h"
