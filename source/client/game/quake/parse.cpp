@@ -17,23 +17,18 @@
 #include "../../client.h"
 #include "local.h"
 
-bool clhw_siege;
-int clhw_keyholder = -1;
-int clhw_doc = -1;
-float clhw_timelimit;
-float clhw_server_time_offset;
-byte clhw_fraglimit;
-unsigned int clhw_defLosses;		// Defenders losses in Siege
-unsigned int clhw_attLosses;		// Attackers Losses in Siege
-
 //	Server information pertaining to this client only
-void CLH2_ParseClientdata(QMsg& message)
+void CLQ1_ParseClientdata(QMsg& message)
 {
 	int bits = message.ReadShort();
 
 	if (bits & Q1SU_VIEWHEIGHT)
 	{
 		cl.qh_viewheight = message.ReadChar();
+	}
+	else
+	{
+		cl.qh_viewheight = Q1DEFAULT_VIEWHEIGHT;
 	}
 
 	if (bits & Q1SU_IDEALPITCH)
@@ -42,11 +37,7 @@ void CLH2_ParseClientdata(QMsg& message)
 	}
 	else
 	{
-	}
-
-	if (bits & H2SU_IDEALROLL)
-	{
-		cl.h2_idealroll = message.ReadChar();
+		cl.qh_idealpitch = 0;
 	}
 
 	VectorCopy(cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
@@ -56,10 +47,34 @@ void CLH2_ParseClientdata(QMsg& message)
 		{
 			cl.qh_punchangles[i] = message.ReadChar();
 		}
+		else
+		{
+			cl.qh_punchangles[i] = 0;
+		}
 		if (bits & (Q1SU_VELOCITY1 << i))
 		{
 			cl.qh_mvelocity[0][i] = message.ReadChar() * 16;
 		}
+		else
+		{
+			cl.qh_mvelocity[0][i] = 0;
+		}
+	}
+
+	// [always sent]	if (bits & Q1SU_ITEMS)
+	int i = message.ReadLong();
+
+	if (cl.q1_items != i)
+	{
+		// set flash times
+		for (int j = 0; j < 32; j++)
+		{
+			if ((i & (1 << j)) && !(cl.q1_items & (1 << j)))
+			{
+				cl.q1_item_gettime[j] = cl.qh_serverTimeFloat;
+			}
+		}
+		cl.q1_items = i;
 	}
 
 	cl.qh_onground = (bits & Q1SU_ONGROUND) != 0;
@@ -68,14 +83,72 @@ void CLH2_ParseClientdata(QMsg& message)
 	{
 		cl.qh_stats[Q1STAT_WEAPONFRAME] = message.ReadByte();
 	}
+	else
+	{
+		cl.qh_stats[Q1STAT_WEAPONFRAME] = 0;
+	}
 
 	if (bits & Q1SU_ARMOR)
 	{
-		cl.qh_stats[Q1STAT_ARMOR] = message.ReadByte();
+		i = message.ReadByte();
+	}
+	else
+	{
+		i = 0;
+	}
+	if (cl.qh_stats[Q1STAT_ARMOR] != i)
+	{
+		cl.qh_stats[Q1STAT_ARMOR] = i;
 	}
 
 	if (bits & Q1SU_WEAPON)
 	{
-		cl.qh_stats[Q1STAT_WEAPON] = message.ReadShort();
+		i = message.ReadByte();
+	}
+	else
+	{
+		i = 0;
+	}
+	if (cl.qh_stats[Q1STAT_WEAPON] != i)
+	{
+		cl.qh_stats[Q1STAT_WEAPON] = i;
+	}
+
+	i = message.ReadShort();
+	if (cl.qh_stats[Q1STAT_HEALTH] != i)
+	{
+		cl.qh_stats[Q1STAT_HEALTH] = i;
+	}
+
+	i = message.ReadByte();
+	if (cl.qh_stats[Q1STAT_AMMO] != i)
+	{
+		cl.qh_stats[Q1STAT_AMMO] = i;
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		int j = message.ReadByte();
+		if (cl.qh_stats[Q1STAT_SHELLS + i] != j)
+		{
+			cl.qh_stats[Q1STAT_SHELLS + i] = j;
+		}
+	}
+
+	i = message.ReadByte();
+
+	if (q1_standard_quake)
+	{
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != i)
+		{
+			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = i;
+		}
+	}
+	else
+	{
+		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != (1 << i))
+		{
+			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = (1 << i);
+		}
 	}
 }

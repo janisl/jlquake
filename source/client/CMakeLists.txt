@@ -23,6 +23,7 @@ set(CLIENT_FILES
 	game/quake/connection.cpp
 	game/quake/entities.cpp
 	game/quake/light_effects.cpp
+	game/quake/parse.cpp
 	game/quake/particle_effects.cpp
 	game/quake/projectiles.cpp
 	game/quake/screen.cpp
@@ -32,6 +33,7 @@ set(CLIENT_FILES
 	game/quake_hexen2/main.cpp
 	game/quake_hexen2/menu.cpp
 	game/quake_hexen2/network_channel.cpp
+	game/quake_hexen2/parse.cpp
 	game/quake_hexen2/predict.cpp
 	game/quake_hexen2/view.cpp
 	game/quake2/beam.cpp
@@ -66,6 +68,7 @@ set(CLIENT_FILES
 	game/dynamic_lights.cpp
 	game/input.cpp
 	game/light_styles.cpp
+	game/parse.cpp
 	game/particles.cpp
 	input/keys.cpp
 	input/main.cpp

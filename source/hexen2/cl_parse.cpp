@@ -10,6 +10,8 @@
 #include <windows.h>
 #endif
 #include "../client/game/quake_hexen2/view.h"
+#include "../client/game/quake_hexen2/parse.h"
+#include "../client/game/parse.h"
 
 const char* svc_strings[] =
 {
@@ -79,62 +81,6 @@ int LastServerMessageSize;
 extern Cvar* precache;
 
 //=============================================================================
-
-/*
-==================
-CL_ParseStartSoundPacket
-==================
-*/
-void CL_ParseStartSoundPacket(void)
-{
-	vec3_t pos;
-	int channel, ent;
-	int sound_num;
-	int volume;
-	int field_mask;
-	float attenuation;
-	int i;
-
-	field_mask = net_message.ReadByte();
-
-	if (field_mask & QHSND_VOLUME)
-	{
-		volume = net_message.ReadByte();
-	}
-	else
-	{
-		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
-	}
-
-	if (field_mask & QHSND_ATTENUATION)
-	{
-		attenuation = net_message.ReadByte() / 64.0;
-	}
-	else
-	{
-		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
-	}
-
-	channel = net_message.ReadShort();
-	sound_num = net_message.ReadByte();
-	if (field_mask & H2SND_OVERFLOW)
-	{
-		sound_num += 255;
-	}
-
-	ent = channel >> 3;
-	channel &= 7;
-
-	if (ent > MAX_EDICTS_QH)
-	{
-		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
-	}
-
-	for (i = 0; i < 3; i++)
-		pos[i] = net_message.ReadCoord();
-
-	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
-}
 
 /*
 ==================
@@ -362,195 +308,6 @@ void CL_ParseServerInfo(void)
 }
 
 /*
-==================
-CL_ParseClientdata
-
-Server information pertaining to this client only
-==================
-*/
-void CL_ParseClientdata(int bits)
-{
-	if (bits & Q1SU_VIEWHEIGHT)
-	{
-		cl.qh_viewheight = net_message.ReadChar();
-	}
-
-	if (bits & Q1SU_IDEALPITCH)
-	{
-		cl.qh_idealpitch = net_message.ReadChar();
-	}
-	else
-	{
-	}
-
-	if (bits & H2SU_IDEALROLL)
-	{
-		cl.h2_idealroll = net_message.ReadChar();
-	}
-//rjr	else
-//rjr		cl.idealroll = 0;
-
-	VectorCopy(cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
-	for (int i = 0; i < 3; i++)
-	{
-		if (bits & (Q1SU_PUNCH1 << i))
-		{
-			cl.qh_punchangles[i] = net_message.ReadChar();
-		}
-//rjr		else
-//rjr			cl.punchangle[i] = 0;
-		if (bits & (Q1SU_VELOCITY1 << i))
-		{
-			cl.qh_mvelocity[0][i] = net_message.ReadChar() * 16;
-		}
-//rjr		else
-//rjr			cl.mvelocity[0][i] = 0;
-	}
-
-	cl.qh_onground = (bits & Q1SU_ONGROUND) != 0;
-
-	if (bits & Q1SU_WEAPONFRAME)
-	{
-		cl.qh_stats[Q1STAT_WEAPONFRAME] = net_message.ReadByte();
-	}
-//rjr	else
-//rjr		cl.stats[Q1STAT_WEAPONFRAME] = 0;
-
-	if (bits & Q1SU_ARMOR)
-	{
-		cl.qh_stats[Q1STAT_ARMOR] = net_message.ReadByte();
-	}
-
-	if (bits & Q1SU_WEAPON)
-	{
-		cl.qh_stats[Q1STAT_WEAPON] = net_message.ReadShort();
-	}
-
-/*	sc1 = sc2 = 0;
-
-    if (bits & H2SU_SC1)
-        sc1 = net_message.ReadLong ();
-    if (bits & H2SU_SC2)
-        sc2 = net_message.ReadLong ();
-
-    if (sc1 & SC1_HEALTH)
-        cl.h2_v.health = net_message.ReadShort();
-    if (sc1 & SC1_LEVEL)
-        cl.h2_v.level = net_message.ReadByte();
-    if (sc1 & SC1_INTELLIGENCE)
-        cl.h2_v.intelligence = net_message.ReadByte();
-    if (sc1 & SC1_WISDOM)
-        cl.h2_v.wisdom = net_message.ReadByte();
-    if (sc1 & SC1_STRENGTH)
-        cl.h2_v.strength = net_message.ReadByte();
-    if (sc1 & SC1_DEXTERITY)
-        cl.h2_v.dexterity = net_message.ReadByte();
-    if (sc1 & SC1_WEAPON)
-        cl.h2_v.weapon = net_message.ReadByte();
-    if (sc1 & SC1_BLUEMANA)
-        cl.h2_v.bluemana = net_message.ReadByte();
-    if (sc1 & SC1_GREENMANA)
-        cl.h2_v.greenmana = net_message.ReadByte();
-    if (sc1 & SC1_EXPERIENCE)
-        cl.h2_v.experience = net_message.ReadLong();
-    if (sc1 & SC1_CNT_TORCH)
-        cl.h2_v.cnt_torch = net_message.ReadByte();
-    if (sc1 & SC1_CNT_H_BOOST)
-        cl.h2_v.cnt_h_boost = net_message.ReadByte();
-    if (sc1 & SC1_CNT_SH_BOOST)
-        cl.h2_v.cnt_sh_boost = net_message.ReadByte();
-    if (sc1 & SC1_CNT_MANA_BOOST)
-        cl.h2_v.cnt_mana_boost = net_message.ReadByte();
-    if (sc1 & SC1_CNT_TELEPORT)
-        cl.h2_v.cnt_teleport = net_message.ReadByte();
-    if (sc1 & SC1_CNT_TOME)
-        cl.h2_v.cnt_tome = net_message.ReadByte();
-    if (sc1 & SC1_CNT_SUMMON)
-        cl.h2_v.cnt_summon = net_message.ReadByte();
-    if (sc1 & SC1_CNT_INVISIBILITY)
-        cl.h2_v.cnt_invisibility = net_message.ReadByte();
-    if (sc1 & SC1_CNT_GLYPH)
-        cl.h2_v.cnt_glyph = net_message.ReadByte();
-    if (sc1 & SC1_CNT_HASTE)
-        cl.h2_v.cnt_haste = net_message.ReadByte();
-    if (sc1 & SC1_CNT_BLAST)
-        cl.h2_v.cnt_blast = net_message.ReadByte();
-    if (sc1 & SC1_CNT_POLYMORPH)
-        cl.h2_v.cnt_polymorph = net_message.ReadByte();
-    if (sc1 & SC1_CNT_FLIGHT)
-        cl.h2_v.cnt_flight = net_message.ReadByte();
-    if (sc1 & SC1_CNT_CUBEOFFORCE)
-        cl.h2_v.cnt_cubeofforce = net_message.ReadByte();
-    if (sc1 & SC1_CNT_INVINCIBILITY)
-        cl.h2_v.cnt_invincibility = net_message.ReadByte();
-    if (sc1 & SC1_ARTIFACT_ACTIVE)
-        cl.h2_v.artifact_active = net_message.ReadFloat();
-    if (sc1 & SC1_ARTIFACT_LOW)
-        cl.h2_v.artifact_low = net_message.ReadFloat();
-    if (sc1 & SC1_MOVETYPE)
-        cl.h2_v.movetype = net_message.ReadByte();
-    if (sc1 & SC1_CAMERAMODE)
-        cl.h2_v.cameramode = net_message.ReadByte();
-    if (sc1 & SC1_HASTED)
-        cl.h2_v.hasted = net_message.ReadFloat();
-    if (sc1 & SC1_INVENTORY)
-        cl.h2_v.inventory = net_message.ReadByte();
-    if (sc1 & SC1_RINGS_ACTIVE)
-        cl.h2_v.rings_active = net_message.ReadFloat();
-
-    if (sc2 & SC2_RINGS_LOW)
-        cl.h2_v.rings_low = net_message.ReadFloat();
-    if (sc2 & SC2_AMULET)
-        cl.h2_v.armor_amulet = net_message.ReadByte();
-    if (sc2 & SC2_BRACER)
-        cl.h2_v.armor_bracer = net_message.ReadByte();
-    if (sc2 & SC2_BREASTPLATE)
-        cl.h2_v.armor_breastplate = net_message.ReadByte();
-    if (sc2 & SC2_HELMET)
-        cl.h2_v.armor_helmet = net_message.ReadByte();
-    if (sc2 & SC2_FLIGHT_T)
-        cl.h2_v.ring_flight = net_message.ReadByte();
-    if (sc2 & SC2_WATER_T)
-        cl.h2_v.ring_water = net_message.ReadByte();
-    if (sc2 & SC2_TURNING_T)
-        cl.h2_v.ring_turning = net_message.ReadByte();
-    if (sc2 & SC2_REGEN_T)
-        cl.h2_v.ring_regeneration = net_message.ReadByte();
-    if (sc2 & SC2_HASTE_T)
-        cl.h2_v.haste_time = net_message.ReadFloat();
-    if (sc2 & SC2_TOME_T)
-        cl.h2_v.tome_time = net_message.ReadFloat();
-    if (sc2 & SC2_PUZZLE1)
-        sprintf(cl.puzzle_pieces[0], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE2)
-        sprintf(cl.puzzle_pieces[1], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE3)
-        sprintf(cl.puzzle_pieces[2], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE4)
-        sprintf(cl.puzzle_pieces[3], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE5)
-        sprintf(cl.puzzle_pieces[4], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE6)
-        sprintf(cl.puzzle_pieces[5], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE7)
-        sprintf(cl.puzzle_pieces[6], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_PUZZLE8)
-        sprintf(cl.puzzle_pieces[7], "%.9s", net_message.ReadString2());
-    if (sc2 & SC2_MAXHEALTH)
-        cl.h2_v.max_health = net_message.ReadShort();
-    if (sc2 & SC2_MAXMANA)
-        cl.h2_v.max_mana = net_message.ReadByte();
-    if (sc2 & SC2_FLAGS)
-        cl.h2_v.flags = net_message.ReadFloat();
-
-    if ((sc1 & SC1_STAT_BAR) || (sc2 & SC2_STAT_BAR))
-        SB_Changed();
-
-    if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
-        SbarH2_InvChanged();*/
-}
-
-/*
 =====================
 CL_NewTranslation
 =====================
@@ -582,7 +339,6 @@ void CL_ParseStaticSound(void)
 
 	for (i = 0; i < 3; i++)
 		org[i] = net_message.ReadCoord();
-
 	sound_num = net_message.ReadShort();
 	vol = net_message.ReadByte();
 	atten = net_message.ReadByte();
@@ -746,19 +502,14 @@ void CL_ParseServerMessage(void)
 		default:
 			common->Error("CL_ParseServerMessage: Illegible server message\n");
 			break;
-
 		case h2svc_nop:
-//			common->Printf ("h2svc_nop\n");
 			break;
 
 		case h2svc_time:
-			cl.qh_mtime[1] = cl.qh_mtime[0];
-			cl.qh_mtime[0] = net_message.ReadFloat();
+			CLQH_ParseTime(net_message);
 			break;
-
 		case h2svc_clientdata:
-			i = net_message.ReadShort();
-			CL_ParseClientdata(i);
+			CLH2_ParseClientdata(net_message);
 			break;
 
 		case h2svc_version:
@@ -770,20 +521,19 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_disconnect:
-			common->EndGame("Server disconnected\n");
+			CLQH_ParseDisconnect();
+			break;
 
 		case h2svc_print:
 			CL_ParsePrint();
 			break;
 
 		case h2svc_centerprint:
-			SCR_CenterPrint(net_message.ReadString2());
+			CL_ParseCenterPrint(net_message);
 			break;
-
 		case h2svc_stufftext:
-			Cbuf_AddText(net_message.ReadString2());
+			CL_ParseStuffText(net_message);
 			break;
-
 		case h2svc_damage:
 			VQH_ParseDamage(net_message);
 			break;
@@ -793,9 +543,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_setangle:
-			for (i = 0; i < 3; i++)
-				cl.viewangles[i] = net_message.ReadAngle();
-
+			CLQH_ParseSetAngle(net_message);
 			break;
 
 		case h2svc_setangle_interpolate:
@@ -860,16 +608,14 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_setview:
-			cl.viewentity = net_message.ReadShort();
+			CLQH_ParseSetView(net_message);
 			break;
-
 		case h2svc_lightstyle:
-			i = net_message.ReadByte();
-			CL_SetLightStyle(i, net_message.ReadString2());
+			CLQH_ParseLightStyle(net_message);
 			break;
 
 		case h2svc_sound:
-			CL_ParseStartSoundPacket();
+			CLQH_ParseStartSoundPacket(net_message, H2SND_OVERFLOW);
 			break;
 
 		case h2svc_sound_update_pos:
@@ -899,15 +645,14 @@ void CL_ParseServerMessage(void)
 		break;
 
 		case h2svc_stopsound:
-			i = net_message.ReadShort();
-			S_StopSound(i >> 3, i & 7);
+			CLQH_ParseStopSound(net_message);
 			break;
 
 		case h2svc_updatename:
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				common->Error("CL_ParseServerMessage: h2svc_updatename > MAX_CLIENTS_QH");
+				common->Error("CL_ParseServerMessage: svc_updatename > MAX_CLIENTS_QH");
 			}
 			String::Cpy(cl.h2_players[i].name, net_message.ReadString2());
 			break;
@@ -954,9 +699,11 @@ void CL_ParseServerMessage(void)
 		case h2svc_particle2:
 			R_ParseParticleEffect2();
 			break;
+
 		case h2svc_particle3:
 			R_ParseParticleEffect3();
 			break;
+
 		case h2svc_particle4:
 			R_ParseParticleEffect4();
 			break;
@@ -975,21 +722,9 @@ void CL_ParseServerMessage(void)
 		case h2svc_temp_entity:
 			CLH2_ParseTEnt(net_message);
 			break;
-
 		case h2svc_setpause:
-		{
-			cl.qh_paused = net_message.ReadByte();
-
-			if (cl.qh_paused)
-			{
-				CDAudio_Pause();
-			}
-			else
-			{
-				CDAudio_Resume();
-			}
-		}
-		break;
+			CLQH_ParseSetPause(net_message);
+			break;
 
 		case h2svc_signonnum:
 			i = net_message.ReadByte();
@@ -1002,20 +737,13 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_killedmonster:
-			cl.qh_stats[Q1STAT_MONSTERS]++;
+			CLQH_ParseKilledMonster();
 			break;
-
 		case h2svc_foundsecret:
-			cl.qh_stats[Q1STAT_SECRETS]++;
+			CLQH_ParseFoundSecret();
 			break;
-
 		case h2svc_updatestat:
-			i = net_message.ReadByte();
-			if (i < 0 || i >= MAX_CL_STATS)
-			{
-				common->FatalError("h2svc_updatestat: %i is invalid", i);
-			}
-			cl.qh_stats[i] = net_message.ReadLong();;
+			CLQH_UpdateStat(net_message);
 			break;
 
 		case h2svc_spawnstaticsound:

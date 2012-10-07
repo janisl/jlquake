@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../common/file_formats/spr.h"
 #include "../client/game/quake_hexen2/view.h"
+#include "../client/game/parse.h"
+#include "../client/game/quake_hexen2/parse.h"
 
 const char* svc_strings[] =
 {
@@ -70,58 +72,6 @@ const char* svc_strings[] =
 };
 
 //=============================================================================
-
-/*
-==================
-CL_ParseStartSoundPacket
-==================
-*/
-void CL_ParseStartSoundPacket(void)
-{
-	vec3_t pos;
-	int channel, ent;
-	int sound_num;
-	int volume;
-	int field_mask;
-	float attenuation;
-	int i;
-
-	field_mask = net_message.ReadByte();
-
-	if (field_mask & QHSND_VOLUME)
-	{
-		volume = net_message.ReadByte();
-	}
-	else
-	{
-		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
-	}
-
-	if (field_mask & QHSND_ATTENUATION)
-	{
-		attenuation = net_message.ReadByte() / 64.0;
-	}
-	else
-	{
-		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
-	}
-
-	channel = net_message.ReadShort();
-	sound_num = net_message.ReadByte();
-
-	ent = channel >> 3;
-	channel &= 7;
-
-	if (ent > MAX_EDICTS_QH)
-	{
-		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
-	}
-
-	for (i = 0; i < 3; i++)
-		pos[i] = net_message.ReadCoord();
-
-	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
-}
 
 /*
 ==================
@@ -318,145 +268,6 @@ void CL_ParseServerInfo(void)
 }
 
 /*
-==================
-CL_ParseClientdata
-
-Server information pertaining to this client only
-==================
-*/
-void CL_ParseClientdata(int bits)
-{
-	int i, j;
-
-	if (bits & Q1SU_VIEWHEIGHT)
-	{
-		cl.qh_viewheight = net_message.ReadChar();
-	}
-	else
-	{
-		cl.qh_viewheight = Q1DEFAULT_VIEWHEIGHT;
-	}
-
-	if (bits & Q1SU_IDEALPITCH)
-	{
-		cl.qh_idealpitch = net_message.ReadChar();
-	}
-	else
-	{
-		cl.qh_idealpitch = 0;
-	}
-
-	VectorCopy(cl.qh_mvelocity[0], cl.qh_mvelocity[1]);
-	for (i = 0; i < 3; i++)
-	{
-		if (bits & (Q1SU_PUNCH1 << i))
-		{
-			cl.qh_punchangles[i] = net_message.ReadChar();
-		}
-		else
-		{
-			cl.qh_punchangles[i] = 0;
-		}
-		if (bits & (Q1SU_VELOCITY1 << i))
-		{
-			cl.qh_mvelocity[0][i] = net_message.ReadChar() * 16;
-		}
-		else
-		{
-			cl.qh_mvelocity[0][i] = 0;
-		}
-	}
-
-// [always sent]	if (bits & Q1SU_ITEMS)
-	i = net_message.ReadLong();
-
-	if (cl.q1_items != i)
-	{	// set flash times
-		for (j = 0; j < 32; j++)
-			if ((i & (1 << j)) && !(cl.q1_items & (1 << j)))
-			{
-				cl.q1_item_gettime[j] = cl.qh_serverTimeFloat;
-			}
-		cl.q1_items = i;
-	}
-
-	cl.qh_onground = (bits & Q1SU_ONGROUND) != 0;
-
-	if (bits & Q1SU_WEAPONFRAME)
-	{
-		cl.qh_stats[Q1STAT_WEAPONFRAME] = net_message.ReadByte();
-	}
-	else
-	{
-		cl.qh_stats[Q1STAT_WEAPONFRAME] = 0;
-	}
-
-	if (bits & Q1SU_ARMOR)
-	{
-		i = net_message.ReadByte();
-	}
-	else
-	{
-		i = 0;
-	}
-	if (cl.qh_stats[Q1STAT_ARMOR] != i)
-	{
-		cl.qh_stats[Q1STAT_ARMOR] = i;
-	}
-
-	if (bits & Q1SU_WEAPON)
-	{
-		i = net_message.ReadByte();
-	}
-	else
-	{
-		i = 0;
-	}
-	if (cl.qh_stats[Q1STAT_WEAPON] != i)
-	{
-		cl.qh_stats[Q1STAT_WEAPON] = i;
-	}
-
-	i = net_message.ReadShort();
-	if (cl.qh_stats[Q1STAT_HEALTH] != i)
-	{
-		cl.qh_stats[Q1STAT_HEALTH] = i;
-	}
-
-	i = net_message.ReadByte();
-	if (cl.qh_stats[Q1STAT_AMMO] != i)
-	{
-		cl.qh_stats[Q1STAT_AMMO] = i;
-	}
-
-	for (i = 0; i < 4; i++)
-	{
-		j = net_message.ReadByte();
-		if (cl.qh_stats[Q1STAT_SHELLS + i] != j)
-		{
-			cl.qh_stats[Q1STAT_SHELLS + i] = j;
-		}
-	}
-
-	i = net_message.ReadByte();
-
-	if (q1_standard_quake)
-	{
-		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != i)
-		{
-			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = i;
-		}
-	}
-	else
-	{
-		if (cl.qh_stats[Q1STAT_ACTIVEWEAPON] != (1 << i))
-		{
-			cl.qh_stats[Q1STAT_ACTIVEWEAPON] = (1 << i);
-		}
-	}
-}
-
-/*
 =====================
 CL_NewTranslation
 =====================
@@ -468,26 +279,6 @@ void CL_NewTranslation(int slot)
 		common->FatalError("CL_NewTranslation: slot > cl.maxclients");
 	}
 	CLQ1_TranslatePlayerSkin(slot);
-}
-
-/*
-===================
-CL_ParseStaticSound
-===================
-*/
-void CL_ParseStaticSound(void)
-{
-	vec3_t org;
-	int sound_num, vol, atten;
-	int i;
-
-	for (i = 0; i < 3; i++)
-		org[i] = net_message.ReadCoord();
-	sound_num = net_message.ReadByte();
-	vol = net_message.ReadByte();
-	atten = net_message.ReadByte();
-
-	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
 }
 
 static void CL_ParsePrint()
@@ -568,19 +359,13 @@ void CL_ParseServerMessage(void)
 		default:
 			common->Error("CL_ParseServerMessage: Illegible server message\n");
 			break;
-
 		case q1svc_nop:
-//			common->Printf ("q1svc_nop\n");
 			break;
-
 		case q1svc_time:
-			cl.qh_mtime[1] = cl.qh_mtime[0];
-			cl.qh_mtime[0] = net_message.ReadFloat();
+			CLQH_ParseTime(net_message);
 			break;
-
 		case q1svc_clientdata:
-			i = net_message.ReadShort();
-			CL_ParseClientdata(i);
+			CLQ1_ParseClientdata(net_message);
 			break;
 
 		case q1svc_version:
@@ -592,20 +377,19 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_disconnect:
-			common->EndGame("Server disconnected\n");
+			CLQH_ParseDisconnect();
+			break;
 
 		case q1svc_print:
 			CL_ParsePrint();
 			break;
 
 		case q1svc_centerprint:
-			SCR_CenterPrint(net_message.ReadString2());
+			CL_ParseCenterPrint(net_message);
 			break;
-
 		case q1svc_stufftext:
-			Cbuf_AddText(net_message.ReadString2());
+			CL_ParseStuffText(net_message);
 			break;
-
 		case q1svc_damage:
 			VQH_ParseDamage(net_message);
 			break;
@@ -615,33 +399,28 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_setangle:
-			for (i = 0; i < 3; i++)
-				cl.viewangles[i] = net_message.ReadAngle();
+			CLQH_ParseSetAngle(net_message);
 			break;
-
 		case q1svc_setview:
-			cl.viewentity = net_message.ReadShort();
+			CLQH_ParseSetView(net_message);
 			break;
-
 		case q1svc_lightstyle:
-			i = net_message.ReadByte();
-			CL_SetLightStyle(i, net_message.ReadString2());
+			CLQH_ParseLightStyle(net_message);
 			break;
 
 		case q1svc_sound:
-			CL_ParseStartSoundPacket();
+			CLQH_ParseStartSoundPacket(net_message, 0);
 			break;
 
 		case q1svc_stopsound:
-			i = net_message.ReadShort();
-			S_StopSound(i >> 3, i & 7);
+			CLQH_ParseStopSound(net_message);
 			break;
 
 		case q1svc_updatename:
 			i = net_message.ReadByte();
 			if (i >= cl.qh_maxclients)
 			{
-				common->Error("CL_ParseServerMessage: q1svc_updatename > MAX_CLIENTS_QH");
+				common->Error("CL_ParseServerMessage: svc_updatename > MAX_CLIENTS_QH");
 			}
 			String::Cpy(cl.q1_players[i].name, net_message.ReadString2());
 			break;
@@ -682,21 +461,9 @@ void CL_ParseServerMessage(void)
 		case q1svc_temp_entity:
 			CLQ1_ParseTEnt(net_message);
 			break;
-
 		case q1svc_setpause:
-		{
-			cl.qh_paused = net_message.ReadByte();
-
-			if (cl.qh_paused)
-			{
-				CDAudio_Pause();
-			}
-			else
-			{
-				CDAudio_Resume();
-			}
-		}
-		break;
+			CLQH_ParseSetPause(net_message);
+			break;
 
 		case q1svc_signonnum:
 			i = net_message.ReadByte();
@@ -709,24 +476,16 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_killedmonster:
-			cl.qh_stats[Q1STAT_MONSTERS]++;
+			CLQH_ParseKilledMonster();
 			break;
-
 		case q1svc_foundsecret:
-			cl.qh_stats[Q1STAT_SECRETS]++;
+			CLQH_ParseFoundSecret();
 			break;
-
 		case q1svc_updatestat:
-			i = net_message.ReadByte();
-			if (i < 0 || i >= MAX_CL_STATS)
-			{
-				common->FatalError("q1svc_updatestat: %i is invalid", i);
-			}
-			cl.qh_stats[i] = net_message.ReadLong();;
+			CLQH_UpdateStat(net_message);
 			break;
-
 		case q1svc_spawnstaticsound:
-			CL_ParseStaticSound();
+			CLQH_ParseStaticSound(net_message);
 			break;
 
 		case q1svc_cdtrack:
@@ -762,7 +521,7 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_sellscreen:
-			Cmd_ExecuteString("help");
+			CLQH_ParseSellScreen();
 			break;
 		}
 	}

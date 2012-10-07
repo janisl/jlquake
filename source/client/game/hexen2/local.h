@@ -184,6 +184,8 @@ void CLHW_ParsePackMissiles(QMsg& message);
 void CLH2_LinkProjectiles();
 void CLH2_LinkMissiles();
 
+void CLH2_ParseClientdata(QMsg& message);
+
 void CLH2_SignonReply();
 
 int SbarQH_itoa(int num, char* buf);

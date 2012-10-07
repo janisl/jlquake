@@ -2,6 +2,8 @@
 
 #include "quakedef.h"
 #include "../../client/game/quake_hexen2/view.h"
+#include "../../client/game/quake_hexen2/parse.h"
+#include "../../client/game/parse.h"
 
 const char* svc_strings[] =
 {
@@ -632,85 +634,12 @@ void CL_ParseModellist(void)
 }
 
 /*
-===================
-CL_ParseStaticSound
-===================
-*/
-void CL_ParseStaticSound(void)
-{
-	vec3_t org;
-	int sound_num, vol, atten;
-	int i;
-
-	for (i = 0; i < 3; i++)
-		org[i] = net_message.ReadCoord();
-	sound_num = net_message.ReadByte();
-	vol = net_message.ReadByte();
-	atten = net_message.ReadByte();
-
-	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
-}
-
-
-
-/*
 =====================================================================
 
 ACTION MESSAGES
 
 =====================================================================
 */
-
-/*
-==================
-CL_ParseStartSoundPacket
-==================
-*/
-void CL_ParseStartSoundPacket(void)
-{
-	vec3_t pos;
-	int channel, ent;
-	int sound_num;
-	int volume;
-	float attenuation;
-	int i;
-
-	channel = net_message.ReadShort();
-
-	if (channel & QHWSND_VOLUME)
-	{
-		volume = net_message.ReadByte();
-	}
-	else
-	{
-		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
-	}
-
-	if (channel & QHWSND_ATTENUATION)
-	{
-		attenuation = net_message.ReadByte() / 32.0;
-	}
-	else
-	{
-		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
-	}
-
-	sound_num = net_message.ReadByte();
-
-	for (i = 0; i < 3; i++)
-		pos[i] = net_message.ReadCoord();
-
-	ent = (channel >> 3) & 1023;
-	channel &= 7;
-
-	if (ent > MAX_EDICTS_QH)
-	{
-		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
-	}
-
-	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
-}
-
 
 /*
 ==================
@@ -959,7 +888,6 @@ int LastServerMessageSize = 0;
 void CL_ParseServerMessage(void)
 {
 	int cmd;
-	char* s;
 	int i, j;
 	unsigned sc1, sc2;
 	byte test;
@@ -1016,9 +944,7 @@ void CL_ParseServerMessage(void)
 		default:
 			common->Error("CL_ParseServerMessage: Illegible server message\n");
 			break;
-
 		case h2svc_nop:
-//			common->Printf ("h2svc_nop\n");
 			break;
 
 		case h2svc_disconnect:
@@ -1030,15 +956,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_centerprint:
-			SCR_CenterPrint(net_message.ReadString2());
+			CL_ParseCenterPrint(net_message);
 			break;
-
 		case h2svc_stufftext:
-			s = const_cast<char*>(net_message.ReadString2());
-			common->DPrintf("stufftext: %s\n", s);
-			Cbuf_AddText(s);
+			CL_ParseStuffText(net_message);
 			break;
-
 		case h2svc_damage:
 			VQH_ParseDamage(net_message);
 			break;
@@ -1049,18 +971,14 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_setangle:
-			for (i = 0; i < 3; i++)
-				cl.viewangles[i] = net_message.ReadAngle();
-//			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
+			CLQH_ParseSetAngle(net_message);
 			break;
-
 		case h2svc_lightstyle:
-			i = net_message.ReadByte();
-			CL_SetLightStyle(i, net_message.ReadString2());
+			CLQH_ParseLightStyle(net_message);
 			break;
 
 		case h2svc_sound:
-			CL_ParseStartSoundPacket();
+			CLQHW_ParseStartSoundPacket(net_message, 32.0);
 			break;
 
 		case hwsvc_sound_update_pos:
@@ -1090,8 +1008,7 @@ void CL_ParseServerMessage(void)
 		break;
 
 		case h2svc_stopsound:
-			i = net_message.ReadShort();
-			S_StopSound(i >> 3, i & 7);
+			CLQH_ParseStopSound(net_message);
 			break;
 
 		case h2svc_updatefrags:
@@ -1200,13 +1117,11 @@ void CL_ParseServerMessage(void)
 		case h2svc_temp_entity:
 			CLHW_ParseTEnt(net_message);
 			break;
-
 		case h2svc_killedmonster:
-			cl.qh_stats[Q1STAT_MONSTERS]++;
+			CLQH_ParseKilledMonster();
 			break;
-
 		case h2svc_foundsecret:
-			cl.qh_stats[Q1STAT_SECRETS]++;
+			CLQH_ParseFoundSecret();
 			break;
 
 		case h2svc_updatestat:
@@ -1222,15 +1137,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case h2svc_spawnstaticsound:
-			CL_ParseStaticSound();
+			CLQH_ParseStaticSound(net_message);
 			break;
-
 		case h2svc_cdtrack:
-		{
-			byte cdtrack = net_message.ReadByte();
-			CDAudio_Play(cdtrack, true);
-		}
-		break;
+			CLQHW_ParseCDTrack(net_message);
+			break;
 
 		case h2svc_intermission:
 //			if(clhw_siege)
@@ -1253,21 +1164,16 @@ void CL_ParseServerMessage(void)
             }
 */
 		case h2svc_finale:
-			cl.qh_intermission = 2;
-			cl.qh_completed_time = realtime;
-			SCR_CenterPrint(net_message.ReadString2());
+			CLQHW_ParseFinale(net_message);
 			break;
-
 		case h2svc_sellscreen:
-			Cmd_ExecuteString("help");
+			CLQH_ParseSellScreen();
 			break;
-
 		case hwsvc_smallkick:
-			cl.qh_punchangle = -2;
+			CLQHW_ParseSmallKick();
 			break;
-
 		case hwsvc_bigkick:
-			cl.qh_punchangle = -4;
+			CLQHW_ParseBigKick();
 			break;
 
 		case hwsvc_muzzleflash:
@@ -1315,13 +1221,11 @@ void CL_ParseServerMessage(void)
 		case hwsvc_deltapacketentities:
 			CLHW_ParseDeltaPacketEntities(net_message);
 			break;
-
 		case hwsvc_maxspeed:
-			movevars.maxspeed = net_message.ReadFloat();
+			CLQHW_ParseMaxSpeed(net_message);
 			break;
-
 		case hwsvc_entgravity:
-			movevars.entgravity = net_message.ReadFloat();
+			CLQHW_ParseEntGravity(net_message);
 			break;
 
 		case hwsvc_plaque:

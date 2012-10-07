@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_parse.c  -- parse a message received from the server
 
 #include "client.h"
+#include "../../client/game/parse.h"
 
 const char* svc_strings[256] =
 {
@@ -744,15 +745,13 @@ void CL_ParseServerMessage(void)
 		switch (cmd)
 		{
 		default:
-			Com_Error(ERR_DROP,"CL_ParseServerMessage: Illegible server message\n");
+			Com_Error(ERR_DROP, "CL_ParseServerMessage: Illegible server message\n");
 			break;
-
 		case q2svc_nop:
-//			common->Printf ("q2svc_nop\n");
 			break;
 
 		case q2svc_disconnect:
-			Com_Error(ERR_DISCONNECT,"Server disconnected\n");
+			Com_Error(ERR_DISCONNECT, "Server disconnected\n");
 			break;
 
 		case q2svc_reconnect:
@@ -772,13 +771,10 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q2svc_centerprint:
-			SCR_CenterPrint(net_message.ReadString2());
+			CL_ParseCenterPrint(net_message);
 			break;
-
 		case q2svc_stufftext:
-			s = const_cast<char*>(net_message.ReadString2());
-			common->DPrintf("stufftext: %s\n", s);
-			Cbuf_AddText(s);
+			CL_ParseStuffText(net_message);
 			break;
 
 		case q2svc_serverdata:
@@ -801,11 +797,9 @@ void CL_ParseServerMessage(void)
 		case q2svc_temp_entity:
 			CLQ2_ParseTEnt(net_message);
 			break;
-
 		case q2svc_muzzleflash:
 			CLQ2_ParseMuzzleFlash(net_message);
 			break;
-
 		case q2svc_muzzleflash2:
 			CLQ2_ParseMuzzleFlash2(net_message);
 			break;

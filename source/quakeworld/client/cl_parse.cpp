@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
+#include "../../client/game/parse.h"
+#include "../../client/game/quake_hexen2/parse.h"
 #include "../../client/game/quake_hexen2/view.h"
 
 const char* svc_strings[] =
@@ -601,85 +603,12 @@ void CL_ParseModellist(void)
 }
 
 /*
-===================
-CL_ParseStaticSound
-===================
-*/
-void CL_ParseStaticSound(void)
-{
-	vec3_t org;
-	int sound_num, vol, atten;
-	int i;
-
-	for (i = 0; i < 3; i++)
-		org[i] = net_message.ReadCoord();
-	sound_num = net_message.ReadByte();
-	vol = net_message.ReadByte();
-	atten = net_message.ReadByte();
-
-	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
-}
-
-
-
-/*
 =====================================================================
 
 ACTION MESSAGES
 
 =====================================================================
 */
-
-/*
-==================
-CL_ParseStartSoundPacket
-==================
-*/
-void CL_ParseStartSoundPacket(void)
-{
-	vec3_t pos;
-	int channel, ent;
-	int sound_num;
-	int volume;
-	float attenuation;
-	int i;
-
-	channel = net_message.ReadShort();
-
-	if (channel & QHWSND_VOLUME)
-	{
-		volume = net_message.ReadByte();
-	}
-	else
-	{
-		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
-	}
-
-	if (channel & QHWSND_ATTENUATION)
-	{
-		attenuation = net_message.ReadByte() / 64.0;
-	}
-	else
-	{
-		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
-	}
-
-	sound_num = net_message.ReadByte();
-
-	for (i = 0; i < 3; i++)
-		pos[i] = net_message.ReadCoord();
-
-	ent = (channel >> 3) & 1023;
-	channel &= 7;
-
-	if (ent > MAX_EDICTS_QH)
-	{
-		common->Error("CL_ParseStartSoundPacket: ent = %i", ent);
-	}
-
-	S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
-}
-
 
 /*
 ==================
@@ -913,7 +842,6 @@ int received_framecount;
 void CL_ParseServerMessage(void)
 {
 	int cmd;
-	char* s;
 	int i, j;
 
 	received_framecount = host_framecount;
@@ -962,9 +890,7 @@ void CL_ParseServerMessage(void)
 		default:
 			common->Error("CL_ParseServerMessage: Illegible server message");
 			break;
-
 		case q1svc_nop:
-//			common->Printf ("q1svc_nop\n");
 			break;
 
 		case q1svc_disconnect:
@@ -984,15 +910,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_centerprint:
-			SCR_CenterPrint(net_message.ReadString2());
+			CL_ParseCenterPrint(net_message);
 			break;
-
 		case q1svc_stufftext:
-			s = const_cast<char*>(net_message.ReadString2());
-			common->DPrintf("stufftext: %s\n", s);
-			Cbuf_AddText(s);
+			CL_ParseStuffText(net_message);
 			break;
-
 		case q1svc_damage:
 			VQH_ParseDamage(net_message);
 			break;
@@ -1003,23 +925,18 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_setangle:
-			for (i = 0; i < 3; i++)
-				cl.viewangles[i] = net_message.ReadAngle();
-//			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
+			CLQH_ParseSetAngle(net_message);
 			break;
-
 		case q1svc_lightstyle:
-			i = net_message.ReadByte();
-			CL_SetLightStyle(i, net_message.ReadString2());
+			CLQH_ParseLightStyle(net_message);
 			break;
 
 		case q1svc_sound:
-			CL_ParseStartSoundPacket();
+			CLQHW_ParseStartSoundPacket(net_message, 64.0);
 			break;
 
 		case q1svc_stopsound:
-			i = net_message.ReadShort();
-			S_StopSound(i >> 3, i & 7);
+			CLQH_ParseStopSound(net_message);
 			break;
 
 		case q1svc_updatefrags:
@@ -1068,13 +985,11 @@ void CL_ParseServerMessage(void)
 		case q1svc_temp_entity:
 			CLQW_ParseTEnt(net_message);
 			break;
-
 		case q1svc_killedmonster:
-			cl.qh_stats[Q1STAT_MONSTERS]++;
+			CLQH_ParseKilledMonster();
 			break;
-
 		case q1svc_foundsecret:
-			cl.qh_stats[Q1STAT_SECRETS]++;
+			CLQH_ParseFoundSecret();
 			break;
 
 		case q1svc_updatestat:
@@ -1089,15 +1004,11 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_spawnstaticsound:
-			CL_ParseStaticSound();
+			CLQH_ParseStaticSound(net_message);
 			break;
-
 		case q1svc_cdtrack:
-		{
-			byte cdtrack = net_message.ReadByte();
-			CDAudio_Play(cdtrack, true);
-		}
-		break;
+			CLQHW_ParseCDTrack(net_message);
+			break;
 
 		case q1svc_intermission:
 			cl.qh_intermission = 1;
@@ -1110,20 +1021,16 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case q1svc_finale:
-			cl.qh_intermission = 2;
-			cl.qh_completed_time = realtime;
-			SCR_CenterPrint(net_message.ReadString2());
+			CLQHW_ParseFinale(net_message);
 			break;
-
 		case q1svc_sellscreen:
-			Cmd_ExecuteString("help");
+			CLQH_ParseSellScreen();
 			break;
-
 		case qwsvc_smallkick:
-			cl.qh_punchangle = -2;
+			CLQHW_ParseSmallKick();
 			break;
 		case qwsvc_bigkick:
-			cl.qh_punchangle = -4;
+			CLQHW_ParseBigKick();
 			break;
 
 		case qwsvc_muzzleflash:
@@ -1149,7 +1056,6 @@ void CL_ParseServerMessage(void)
 		case qwsvc_playerinfo:
 			CLQW_ParsePlayerinfo(net_message);
 			break;
-
 		case qwsvc_nails:
 			CLQW_ParseNails(net_message);
 			break;
@@ -1171,17 +1077,14 @@ void CL_ParseServerMessage(void)
 		case qwsvc_packetentities:
 			CLQW_ParsePacketEntities(net_message);
 			break;
-
 		case qwsvc_deltapacketentities:
 			CLQW_ParseDeltaPacketEntities(net_message);
 			break;
-
 		case qwsvc_maxspeed:
-			movevars.maxspeed = net_message.ReadFloat();
+			CLQHW_ParseMaxSpeed(net_message);
 			break;
-
 		case qwsvc_entgravity:
-			movevars.entgravity = net_message.ReadFloat();
+			CLQHW_ParseEntGravity(net_message);
 			break;
 
 		case q1svc_setpause:
