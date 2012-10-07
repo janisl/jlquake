@@ -8,7 +8,6 @@ add_executable(jlquake
 	host_cmd.cpp
 	keys.cpp
 	net_main.cpp
-	r_part.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

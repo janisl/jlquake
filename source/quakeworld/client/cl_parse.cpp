@@ -106,45 +106,12 @@ const char* svc_strings[] =
 
 //=============================================================================
 
-static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
-{
-	Array<byte> Buffer;
-	if (!FS_ReadFile(ModelName, Buffer))
-	{
-		common->Error("Couldn't load %s", ModelName);
-	}
-
-	unsigned short crc;
-	CRC_Init(&crc);
-	for (int i = 0; i < Buffer.Num(); i++)
-	{
-		CRC_ProcessByte(&crc, Buffer[i]);
-	}
-
-	char st[40];
-	sprintf(st, "%d", (int)crc);
-	Info_SetValueForKey(cls.qh_userinfo, CVarName, st, MAX_INFO_STRING_QW, 64, 64, true, false);
-
-	sprintf(st, "setinfo %s %d", CVarName, (int)crc);
-	CL_AddReliableCommand(st);
-}
-
-/*
-===============
-R_NewMap
-===============
-*/
-static void R_NewMap(void)
-{
-	R_EndRegistration();
-}
-
 /*
 =================
-Model_NextDownload
+CLQW_Model_NextDownload
 =================
 */
-void Model_NextDownload(void)
+void CLQW_Model_NextDownload(void)
 {
 	char* s;
 	int i;
@@ -200,11 +167,11 @@ void Model_NextDownload(void)
 		}
 	}
 
-	CL_CalcModelChecksum("progs/player.mdl", pmodel_name);
-	CL_CalcModelChecksum("progs/eyes.mdl", emodel_name);
+	CLQW_CalcModelChecksum("progs/player.mdl", pmodel_name);
+	CLQW_CalcModelChecksum("progs/eyes.mdl", emodel_name);
 
 	// all done
-	R_NewMap();
+	R_EndRegistration();
 
 	int CheckSum1;
 	int CheckSum2;
@@ -277,7 +244,7 @@ void CL_RequestNextDownload(void)
 		CLQW_SkinNextDownload();
 		break;
 	case dl_model:
-		Model_NextDownload();
+		CLQW_Model_NextDownload();
 		break;
 	case dl_sound:
 		Sound_NextDownload();
@@ -411,17 +378,6 @@ void CL_ParseDownload(void)
 */
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
 ==================
 CL_ParseServerData
 ==================
@@ -434,11 +390,15 @@ void CL_ParseServerData(void)
 	int protover;
 
 	common->DPrintf("Serverdata packet received.\n");
-//
-// wipe the clientActive_t struct
-//
-	Mod_ClearAll();
 
+	Cbuf_Execute();			// make sure any stuffed commands are done
+
+	R_Shutdown(false);
+	CL_InitRenderer();
+
+	//
+	// wipe the clientActive_t struct
+	//
 	CL_ClearState();
 
 // parse protocol version number
@@ -610,7 +570,7 @@ void CL_ParseModellist(void)
 
 	clc.downloadNumber = 0;
 	clc.downloadType = dl_model;
-	Model_NextDownload();
+	CLQW_Model_NextDownload();
 }
 
 /*
@@ -657,189 +617,6 @@ void CL_ParseClientdata(void)
 		{
 			cls.qh_latency += 0.001;	// drift up, so correction are needed
 		}
-	}
-}
-
-/*
-=====================
-CL_NewTranslation
-=====================
-*/
-void CL_NewTranslation(int slot)
-{
-	if (slot > MAX_CLIENTS_QHW)
-	{
-		common->FatalError("CL_NewTranslation: slot > MAX_CLIENTS_QHW");
-	}
-
-	CLQ1_TranslatePlayerSkin(slot);
-}
-
-/*
-==============
-CL_UpdateUserinfo
-==============
-*/
-void CL_ProcessUserInfo(int slot, q1player_info_t* player)
-{
-	String::NCpy(player->name, Info_ValueForKey(player->userinfo, "name"), sizeof(player->name) - 1);
-	player->topcolor = String::Atoi(Info_ValueForKey(player->userinfo, "topcolor"));
-	player->bottomcolor = String::Atoi(Info_ValueForKey(player->userinfo, "bottomcolor"));
-	if (Info_ValueForKey(player->userinfo, "*spectator")[0])
-	{
-		player->spectator = true;
-	}
-	else
-	{
-		player->spectator = false;
-	}
-
-	if (cls.state == CA_ACTIVE)
-	{
-		CLQW_SkinFind(player);
-	}
-
-	CL_NewTranslation(slot);
-}
-
-/*
-==============
-CL_UpdateUserinfo
-==============
-*/
-void CL_UpdateUserinfo(void)
-{
-	int slot;
-	q1player_info_t* player;
-
-	slot = net_message.ReadByte();
-	if (slot >= MAX_CLIENTS_QHW)
-	{
-		common->Error("CL_ParseServerMessage: qwsvc_updateuserinfo > MAX_CLIENTS_QHW");
-	}
-
-	player = &cl.q1_players[slot];
-	player->userid = net_message.ReadLong();
-	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo) - 1);
-
-	CL_ProcessUserInfo(slot, player);
-}
-
-/*
-==============
-CL_SetInfo
-==============
-*/
-void CL_SetInfo(void)
-{
-	int slot;
-	q1player_info_t* player;
-	char key[MAX_MSGLEN_QW];
-	char value[MAX_MSGLEN_QW];
-
-	slot = net_message.ReadByte();
-	if (slot >= MAX_CLIENTS_QHW)
-	{
-		common->Error("CL_ParseServerMessage: qwsvc_setinfo > MAX_CLIENTS_QHW");
-	}
-
-	player = &cl.q1_players[slot];
-
-	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
-	key[sizeof(key) - 1] = 0;
-	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
-	key[sizeof(value) - 1] = 0;
-
-	common->DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
-
-	if (key[0] != '*')
-	{
-		Info_SetValueForKey(player->userinfo, key, value, MAX_INFO_STRING_QW, 64, 64,
-			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
-	}
-
-	CL_ProcessUserInfo(slot, player);
-}
-
-/*
-==============
-CL_ServerInfo
-==============
-*/
-void CL_ServerInfo(void)
-{
-	char key[MAX_MSGLEN_QW];
-	char value[MAX_MSGLEN_QW];
-
-	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
-	key[sizeof(key) - 1] = 0;
-	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
-	key[sizeof(value) - 1] = 0;
-
-	common->DPrintf("SERVERINFO: %s=%s\n", key, value);
-
-	if (key[0] != '*')
-	{
-		Info_SetValueForKey(cl.qh_serverinfo, key, value, MAX_SERVERINFO_STRING, 64, 64,
-			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
-	}
-}
-
-/*
-=====================
-CL_SetStat
-=====================
-*/
-void CL_SetStat(int stat, int value)
-{
-	int j;
-	if (stat < 0 || stat >= MAX_CL_STATS)
-	{
-		common->FatalError("CL_SetStat: %i is invalid", stat);
-	}
-
-	if (stat == QWSTAT_ITEMS)
-	{	// set flash times
-		for (j = 0; j < 32; j++)
-			if ((value & (1 << j)) && !(cl.qh_stats[stat] & (1 << j)))
-			{
-				cl.q1_item_gettime[j] = cl.qh_serverTimeFloat;
-			}
-	}
-
-	cl.qh_stats[stat] = value;
-}
-
-/*
-==============
-CL_MuzzleFlash
-==============
-*/
-void CL_MuzzleFlash(void)
-{
-	int i = net_message.ReadShort();
-
-	if ((unsigned)(i - 1) >= MAX_CLIENTS_QHW)
-	{
-		return;
-	}
-	qwplayer_state_t* pl = &cl.qw_frames[cl.qh_parsecount &  UPDATE_MASK_QW].playerstate[i - 1];
-	CLQ1_MuzzleFlashLight(i, pl->origin, pl->viewangles);
-}
-
-static void CL_ParsePrint()
-{
-	int i = net_message.ReadByte();
-	const char* txt = net_message.ReadString2();
-
-	if (i == PRINT_CHAT)
-	{
-		S_StartLocalSound("misc/talk.wav");
-		common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt);
-	}
-	else
-	{
-		common->Printf("%s", txt);
 	}
 }
 
@@ -903,23 +680,12 @@ void CL_ParseServerMessage(void)
 			break;
 		case q1svc_nop:
 			break;
-
 		case q1svc_disconnect:
-			if (cls.state == CA_CONNECTED)
-			{
-				common->Error("Server disconnected\n"
-							 "Server version may not be compatible");
-			}
-			else
-			{
-				common->Error("Server disconnected");
-			}
+			CLQW_ParseDisconnect();
 			break;
-
 		case q1svc_print:
-			CL_ParsePrint();
+			CLQW_ParsePrint(net_message);
 			break;
-
 		case q1svc_centerprint:
 			CL_ParseCenterPrint(net_message);
 			break;
@@ -931,7 +697,6 @@ void CL_ParseServerMessage(void)
 			break;
 
 		case qwsvc_serverdata:
-			Cbuf_Execute();			// make sure any stuffed commands are done
 			CL_ParseServerData();
 			break;
 
@@ -941,52 +706,24 @@ void CL_ParseServerMessage(void)
 		case q1svc_lightstyle:
 			CLQH_ParseLightStyle(net_message);
 			break;
-
 		case q1svc_sound:
-			CLQHW_ParseStartSoundPacket(net_message, 64.0);
+			CLQW_ParseStartSoundPacket(net_message);
 			break;
-
 		case q1svc_stopsound:
 			CLQH_ParseStopSound(net_message);
 			break;
-
 		case q1svc_updatefrags:
-			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QHW)
-			{
-				common->Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QHW");
-			}
-			cl.q1_players[i].frags = net_message.ReadShort();
+			CLQW_ParseUpdateFrags(net_message);
 			break;
-
 		case qwsvc_updateping:
-			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QHW)
-			{
-				common->Error("CL_ParseServerMessage: qwsvc_updateping > MAX_CLIENTS_QHW");
-			}
-			cl.q1_players[i].ping = net_message.ReadShort();
+			CLQW_ParseUpdatePing(net_message);
 			break;
-
 		case qwsvc_updatepl:
-			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QHW)
-			{
-				common->Error("CL_ParseServerMessage: qwsvc_updatepl > MAX_CLIENTS_QHW");
-			}
-			cl.q1_players[i].pl = net_message.ReadByte();
+			CLQW_ParseUpdatePacketLossage(net_message);
 			break;
-
 		case qwsvc_updateentertime:
-			// time is sent over as seconds ago
-			i = net_message.ReadByte();
-			if (i >= MAX_CLIENTS_QHW)
-			{
-				common->Error("CL_ParseServerMessage: qwsvc_updateentertime > MAX_CLIENTS_QHW");
-			}
-			cl.q1_players[i].entertime = realtime - net_message.ReadFloat();
+			CLQW_ParseUpdateEnterTime(net_message);
 			break;
-
 		case q1svc_spawnbaseline:
 			CLQ1_ParseSpawnBaseline(net_message);
 			break;
@@ -1002,35 +739,21 @@ void CL_ParseServerMessage(void)
 		case q1svc_foundsecret:
 			CLQH_ParseFoundSecret();
 			break;
-
 		case q1svc_updatestat:
-			i = net_message.ReadByte();
-			j = net_message.ReadByte();
-			CL_SetStat(i, j);
+			CLQW_ParseUpdateStat(net_message);
 			break;
 		case qwsvc_updatestatlong:
-			i = net_message.ReadByte();
-			j = net_message.ReadLong();
-			CL_SetStat(i, j);
+			CLQW_ParseUpdateStatLong(net_message);
 			break;
-
 		case q1svc_spawnstaticsound:
 			CLQH_ParseStaticSound(net_message);
 			break;
 		case q1svc_cdtrack:
 			CLQHW_ParseCDTrack(net_message);
 			break;
-
 		case q1svc_intermission:
-			cl.qh_intermission = 1;
-			cl.qh_completed_time = realtime;
-			for (i = 0; i < 3; i++)
-				cl.qh_simorg[i] = net_message.ReadCoord();
-			for (i = 0; i < 3; i++)
-				cl.qh_simangles[i] = net_message.ReadAngle();
-			VectorCopy(vec3_origin, cl.qh_simvel);
+			CLQW_ParseIntermission(net_message);
 			break;
-
 		case q1svc_finale:
 			CLQHW_ParseFinale(net_message);
 			break;
@@ -1043,21 +766,17 @@ void CL_ParseServerMessage(void)
 		case qwsvc_bigkick:
 			CLQHW_ParseBigKick();
 			break;
-
 		case qwsvc_muzzleflash:
-			CL_MuzzleFlash();
+			CLQW_MuzzleFlash(net_message);
 			break;
-
 		case qwsvc_updateuserinfo:
-			CL_UpdateUserinfo();
+			CLQW_ParseUpdateUserinfo(net_message);
 			break;
-
 		case qwsvc_setinfo:
-			CL_SetInfo();
+			CLQW_ParseSetInfo(net_message);
 			break;
-
 		case qwsvc_serverinfo:
-			CL_ServerInfo();
+			CLQW_ParseServerInfo(net_message);
 			break;
 
 		case qwsvc_download:

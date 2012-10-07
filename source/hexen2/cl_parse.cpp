@@ -151,16 +151,6 @@ void CL_KeepaliveMessage(void)
 }
 
 /*
-===============
-R_NewMap
-===============
-*/
-static void R_NewMap(void)
-{
-	R_EndRegistration();
-}
-
-/*
 ===================
 Mod_ClearAll
 ===================
@@ -315,8 +305,8 @@ void CL_ParseServerInfo(void)
 	clh2_loading_stage = 0;
 
 
-// local state
-	R_NewMap();
+	// local state
+	R_EndRegistration();
 }
 
 /*

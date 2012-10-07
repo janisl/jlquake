@@ -142,32 +142,11 @@ void CL_KeepaliveMessage(void)
 }
 
 /*
-===================
-Mod_ClearAll
-===================
-*/
-static void Mod_ClearAll(void)
-{
-	R_Shutdown(false);
-	CL_InitRenderer();
-}
-
-/*
-===============
-R_NewMap
-===============
-*/
-static void R_NewMap(void)
-{
-	R_EndRegistration();
-}
-
-/*
 ==================
 CL_ParseServerInfo
 ==================
 */
-void CL_ParseServerInfo(void)
+void CL_ParseServerInfo(QMsg& message)
 {
 	const char* str;
 	int i;
@@ -176,18 +155,20 @@ void CL_ParseServerInfo(void)
 	char sound_precache[MAX_SOUNDS_Q1][MAX_QPATH];
 
 	common->DPrintf("Serverinfo packet received.\n");
-//
-// wipe the clientActive_t struct
-//
-	Mod_ClearAll();
+
+	R_Shutdown(false);
+	CL_InitRenderer();
 	clc.qh_signon = 0;
 
+	//
+	// wipe the clientActive_t struct
+	//
 	CL_ClearState();
 
 	SCR_ClearCenterString();
 
 // parse protocol version number
-	i = net_message.ReadLong();
+	i = message.ReadLong();
 	if (i != Q1PROTOCOL_VERSION)
 	{
 		common->Printf("Server returned version %i, not %i", i, Q1PROTOCOL_VERSION);
@@ -195,7 +176,7 @@ void CL_ParseServerInfo(void)
 	}
 
 // parse maxclients
-	cl.qh_maxclients = net_message.ReadByte();
+	cl.qh_maxclients = message.ReadByte();
 	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
 	{
 		common->Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
@@ -203,10 +184,10 @@ void CL_ParseServerInfo(void)
 	}
 
 // parse gametype
-	cl.qh_gametype = net_message.ReadByte();
+	cl.qh_gametype = message.ReadByte();
 
 // parse signon message
-	str = net_message.ReadString2();
+	str = message.ReadString2();
 	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
 
 // seperate the printfs so the server message can have a color
@@ -217,7 +198,7 @@ void CL_ParseServerInfo(void)
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
 	for (nummodels = 1;; nummodels++)
 	{
-		str = net_message.ReadString2();
+		str = message.ReadString2();
 		if (!str[0])
 		{
 			break;
@@ -234,7 +215,7 @@ void CL_ParseServerInfo(void)
 	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 	for (numsounds = 1;; numsounds++)
 	{
-		str = net_message.ReadString2();
+		str = message.ReadString2();
 		if (!str[0])
 		{
 			break;
@@ -274,23 +255,8 @@ void CL_ParseServerInfo(void)
 	}
 	S_EndRegistration();
 
-
-// local state
-	R_NewMap();
-}
-
-/*
-=====================
-CL_NewTranslation
-=====================
-*/
-void CL_NewTranslation(int slot)
-{
-	if (slot > cl.qh_maxclients)
-	{
-		common->FatalError("CL_NewTranslation: slot > cl.maxclients");
-	}
-	CLQ1_TranslatePlayerSkin(slot);
+	// local state
+	R_EndRegistration();
 }
 
 #define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
@@ -300,17 +266,11 @@ void CL_NewTranslation(int slot)
 CL_ParseServerMessage
 =====================
 */
-void CL_ParseServerMessage(void)
+void CL_ParseServerMessage(QMsg& message)
 {
-	int cmd;
-	int i;
-
-//
-// if recording demos, copy the message out
-//
 	if (cl_shownet->value == 1)
 	{
-		common->Printf("%i ",net_message.cursize);
+		common->Printf("%i ", message.cursize);
 	}
 	else if (cl_shownet->value == 2)
 	{
@@ -318,19 +278,19 @@ void CL_ParseServerMessage(void)
 	}
 
 	cl.qh_onground = false;	// unless the server says otherwise
-//
-// parse the message
-//
-	net_message.BeginReadingOOB();
+	//
+	// parse the message
+	//
+	message.BeginReadingOOB();
 
 	while (1)
 	{
-		if (net_message.badread)
+		if (message.badread)
 		{
 			common->Error("CL_ParseServerMessage: Bad server message");
 		}
 
-		cmd = net_message.ReadByte();
+		int cmd = message.ReadByte();
 
 		if (cmd == -1)
 		{
@@ -342,7 +302,7 @@ void CL_ParseServerMessage(void)
 		if (cmd & Q1U_SIGNAL)
 		{
 			SHOWNET("fast update");
-			CLQ1_ParseUpdate(net_message, cmd & 127);
+			CLQ1_ParseUpdate(message, cmd & 127);
 			continue;
 		}
 
@@ -357,111 +317,76 @@ void CL_ParseServerMessage(void)
 		case q1svc_nop:
 			break;
 		case q1svc_time:
-			CLQH_ParseTime(net_message);
+			CLQH_ParseTime(message);
 			break;
 		case q1svc_clientdata:
-			CLQ1_ParseClientdata(net_message);
+			CLQ1_ParseClientdata(message);
 			break;
 		case q1svc_version:
-			CLQ1_ParseVersion(net_message);
+			CLQ1_ParseVersion(message);
 			break;
 		case q1svc_disconnect:
 			CLQH_ParseDisconnect();
 			break;
 		case q1svc_print:
-			CLQ1_ParsePrint(net_message);
+			CLQ1_ParsePrint(message);
 			break;
 		case q1svc_centerprint:
-			CL_ParseCenterPrint(net_message);
+			CL_ParseCenterPrint(message);
 			break;
 		case q1svc_stufftext:
-			CL_ParseStuffText(net_message);
+			CL_ParseStuffText(message);
 			break;
 		case q1svc_damage:
-			VQH_ParseDamage(net_message);
+			VQH_ParseDamage(message);
 			break;
 
 		case q1svc_serverinfo:
-			CL_ParseServerInfo();
+			CL_ParseServerInfo(message);
 			break;
 
 		case q1svc_setangle:
-			CLQH_ParseSetAngle(net_message);
+			CLQH_ParseSetAngle(message);
 			break;
 		case q1svc_setview:
-			CLQH_ParseSetView(net_message);
+			CLQH_ParseSetView(message);
 			break;
 		case q1svc_lightstyle:
-			CLQH_ParseLightStyle(net_message);
+			CLQH_ParseLightStyle(message);
 			break;
-
 		case q1svc_sound:
-			CLQH_ParseStartSoundPacket(net_message, 0);
+			CLQ1_ParseStartSoundPacket(message);
 			break;
-
 		case q1svc_stopsound:
-			CLQH_ParseStopSound(net_message);
+			CLQH_ParseStopSound(message);
 			break;
-
 		case q1svc_updatename:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: svc_updatename > MAX_CLIENTS_QH");
-			}
-			String::Cpy(cl.q1_players[i].name, net_message.ReadString2());
+			CLQ1_UpdateName(message);
 			break;
-
 		case q1svc_updatefrags:
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: q1svc_updatefrags > MAX_CLIENTS_QH");
-			}
-			cl.q1_players[i].frags = net_message.ReadShort();
+			CLQ1_ParseUpdateFrags(message);
 			break;
-
 		case q1svc_updatecolors:
-		{
-			i = net_message.ReadByte();
-			if (i >= cl.qh_maxclients)
-			{
-				common->Error("CL_ParseServerMessage: q1svc_updatecolors > MAX_CLIENTS_QH");
-			}
-			int j = net_message.ReadByte();
-			cl.q1_players[i].topcolor = (j & 0xf0) >> 4;
-			cl.q1_players[i].bottomcolor = (j & 15);
-			CL_NewTranslation(i);
-		}
-		break;
-
-		case q1svc_particle:
-			R_ParseParticleEffect();
+			CLQ1_ParseUpdateColours(message);
 			break;
-
+		case q1svc_particle:
+			CLQ1_ParseParticleEffect(message);
+			break;
 		case q1svc_spawnbaseline:
-			CLQ1_ParseSpawnBaseline(net_message);
+			CLQ1_ParseSpawnBaseline(message);
 			break;
 		case q1svc_spawnstatic:
-			CLQ1_ParseSpawnStatic(net_message);
+			CLQ1_ParseSpawnStatic(message);
 			break;
 		case q1svc_temp_entity:
-			CLQ1_ParseTEnt(net_message);
+			CLQ1_ParseTEnt(message);
 			break;
 		case q1svc_setpause:
-			CLQH_ParseSetPause(net_message);
+			CLQH_ParseSetPause(message);
 			break;
-
 		case q1svc_signonnum:
-			i = net_message.ReadByte();
-			if (i <= clc.qh_signon)
-			{
-				common->Error("Received signon %i when at %i", i, clc.qh_signon);
-			}
-			clc.qh_signon = i;
-			CLQ1_SignonReply();
+			CLQ1_ParseSignonNum(message);
 			break;
-
 		case q1svc_killedmonster:
 			CLQH_ParseKilledMonster();
 			break;
@@ -469,44 +394,23 @@ void CL_ParseServerMessage(void)
 			CLQH_ParseFoundSecret();
 			break;
 		case q1svc_updatestat:
-			CLQH_UpdateStat(net_message);
+			CLQH_UpdateStat(message);
 			break;
 		case q1svc_spawnstaticsound:
-			CLQH_ParseStaticSound(net_message);
+			CLQH_ParseStaticSound(message);
 			break;
-
 		case q1svc_cdtrack:
-		{
-			byte cdtrack = net_message.ReadByte();
-			net_message.ReadByte();	//	looptrack
-			if ((clc.demoplaying || clc.demorecording) && (cls.qh_forcetrack != -1))
-			{
-				CDAudio_Play((byte)cls.qh_forcetrack, true);
-			}
-			else
-			{
-				CDAudio_Play(cdtrack, true);
-			}
-		}
-		break;
-
+			CLQ1_ParseCDTrack(message);
+			break;
 		case q1svc_intermission:
-			cl.qh_intermission = 1;
-			cl.qh_completed_time = cl.qh_serverTimeFloat;
+			CLQ1_ParseIntermission();
 			break;
-
 		case q1svc_finale:
-			cl.qh_intermission = 2;
-			cl.qh_completed_time = cl.qh_serverTimeFloat;
-			SCR_CenterPrint(net_message.ReadString2());
+			CLQ1_ParseFinale(message);
 			break;
-
 		case q1svc_cutscene:
-			cl.qh_intermission = 3;
-			cl.qh_completed_time = cl.qh_serverTimeFloat;
-			SCR_CenterPrint(net_message.ReadString2());
+			CLQ1_ParseCutscene(message);
 			break;
-
 		case q1svc_sellscreen:
 			CLQH_ParseSellScreen();
 			break;

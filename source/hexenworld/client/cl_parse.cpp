@@ -163,16 +163,6 @@ qboolean    CL_CheckOrDownloadFile(char* filename)
 }
 
 /*
-===============
-R_NewMap
-===============
-*/
-static void R_NewMap(void)
-{
-	R_EndRegistration();
-}
-
-/*
 =================
 Model_NextDownload
 =================
@@ -232,7 +222,7 @@ void Model_NextDownload(void)
 	}
 
 	// all done
-	R_NewMap();
+	R_EndRegistration();
 
 	// done with modellist, request first of static signon messages
 	CL_AddReliableCommand(va("prespawn %i", cl.servercount));
