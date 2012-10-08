@@ -277,26 +277,6 @@ void FS_Restart(int checksumFeed)
 
 }
 
-/*
-=================
-FS_ConditionalRestart
-restart if necessary
-
-FIXME TTimo
-this doesn't catch all cases where an FS_Restart is necessary
-see show_bug.cgi?id=478
-=================
-*/
-qboolean FS_ConditionalRestart(int checksumFeed)
-{
-	if (fs_gamedirvar->modified || checksumFeed != fs_checksumFeed)
-	{
-		FS_Restart(checksumFeed);
-		return true;
-	}
-	return false;
-}
-
 unsigned int FS_ChecksumOSPath(char* OSPath)
 {
 	FILE* f;

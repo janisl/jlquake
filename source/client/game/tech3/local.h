@@ -63,6 +63,8 @@ void CLET_DoPurgeCache();
 extern int entLastVisible[MAX_CLIENTS_WM];
 
 void CLT3_SystemInfoChanged();
+void CLT3_ParseCommandString(QMsg* msg);
+void CLT3_ParseGamestate(QMsg* msg);
 
 //
 //	Screen

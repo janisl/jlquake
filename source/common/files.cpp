@@ -3899,3 +3899,14 @@ void FS_ExecAutoexec()
 		Cbuf_AddText("exec autoexec.cfg\n");
 	}
 }
+
+//	restart if necessary
+bool FS_ConditionalRestart(int checksumFeed)
+{
+	if (fs_gamedirvar->modified || checksumFeed != fs_checksumFeed)
+	{
+		FS_Restart(checksumFeed);
+		return true;
+	}
+	return false;
+}

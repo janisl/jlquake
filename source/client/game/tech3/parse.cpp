@@ -114,3 +114,26 @@ void CLT3_SystemInfoChanged()
 		cl_connectedToPureServer = Cvar_VariableValue("sv_pure");
 	}
 }
+
+//	Command strings are just saved off until cgame asks for them
+// when it transitions a snapshot
+void CLT3_ParseCommandString(QMsg* msg)
+{
+	const char* s;
+	int seq;
+	int index;
+
+	seq = msg->ReadLong();
+	s = msg->ReadString();
+
+	// see if we have already executed stored it off
+	if (clc.q3_serverCommandSequence >= seq)
+	{
+		return;
+	}
+	clc.q3_serverCommandSequence = seq;
+
+	int maxReliableCommands = GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF;
+	index = seq & (maxReliableCommands - 1);
+	String::NCpyZ(clc.q3_serverCommands[index], s, sizeof(clc.q3_serverCommands[index]));
+}

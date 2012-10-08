@@ -568,22 +568,8 @@ void CL_ParseSnapshot(QMsg* msg)
 }
 
 
-//=====================================================================
-
-/*
-==================
-CL_ParseGamestate
-==================
-*/
-void CL_ParseGamestate(QMsg* msg)
+void CLT3_ParseGamestate(QMsg* msg)
 {
-	int i;
-	etentityState_t* es;
-	int newnum;
-	etentityState_t nullstate;
-	int cmd;
-	const char* s;
-
 	Con_Close();
 
 	clc.q3_connectPacketCount = 0;
@@ -595,10 +581,25 @@ void CL_ParseGamestate(QMsg* msg)
 	clc.q3_serverCommandSequence = msg->ReadLong();
 
 	// parse all the configstrings and baselines
-	cl.et_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
+	if (GGameType & GAME_Quake3)
+	{
+		cl.q3_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		cl.ws_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		cl.wm_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
+	}
+	else
+	{
+		cl.et_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
+	}
 	while (1)
 	{
-		cmd = msg->ReadByte();
+		int cmd = msg->ReadByte();
 
 		if (cmd == q3svc_EOF)
 		{
@@ -607,40 +608,101 @@ void CL_ParseGamestate(QMsg* msg)
 
 		if (cmd == q3svc_configstring)
 		{
-			int len;
-
-			i = msg->ReadShort();
-			if (i < 0 || i >= MAX_CONFIGSTRINGS_ET)
+			int i = msg->ReadShort();
+			int maxConfigStrings = GGameType & GAME_WolfSP ? MAX_CONFIGSTRINGS_WS :
+				GGameType & GAME_WolfMP ? MAX_CONFIGSTRINGS_WM :
+				GGameType & GAME_ET ? MAX_CONFIGSTRINGS_ET : MAX_CONFIGSTRINGS_Q3;
+			if (i < 0 || i >= maxConfigStrings)
 			{
-				common->Error("configstring > MAX_CONFIGSTRINGS_ET");
+				common->Error("configstring > MAX_CONFIGSTRINGS");
 			}
-			s = msg->ReadBigString();
-			len = String::Length(s);
+			const char* s = msg->ReadBigString();
+			int len = String::Length(s);
 
-			if (len + 1 + cl.et_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+			if (GGameType & GAME_Quake3)
 			{
-				common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
-			}
+				if (len + 1 + cl.q3_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+				{
+					common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+				}
 
-			// append it to the gameState string buffer
-			cl.et_gameState.stringOffsets[i] = cl.et_gameState.dataCount;
-			memcpy(cl.et_gameState.stringData + cl.et_gameState.dataCount, s, len + 1);
-			cl.et_gameState.dataCount += len + 1;
+				// append it to the gameState string buffer
+				cl.q3_gameState.stringOffsets[i] = cl.q3_gameState.dataCount;
+				Com_Memcpy(cl.q3_gameState.stringData + cl.q3_gameState.dataCount, s, len + 1);
+				cl.q3_gameState.dataCount += len + 1;
+			}
+			else if (GGameType & GAME_WolfSP)
+			{
+				if (len + 1 + cl.ws_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+				{
+					common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+				}
+
+				// append it to the gameState string buffer
+				cl.ws_gameState.stringOffsets[i] = cl.ws_gameState.dataCount;
+				Com_Memcpy(cl.ws_gameState.stringData + cl.ws_gameState.dataCount, s, len + 1);
+				cl.ws_gameState.dataCount += len + 1;
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				if (len + 1 + cl.wm_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+				{
+					common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+				}
+
+				// append it to the gameState string buffer
+				cl.wm_gameState.stringOffsets[i] = cl.wm_gameState.dataCount;
+				Com_Memcpy(cl.wm_gameState.stringData + cl.wm_gameState.dataCount, s, len + 1);
+				cl.wm_gameState.dataCount += len + 1;
+			}
+			else
+			{
+				if (len + 1 + cl.et_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3)
+				{
+					common->Error("MAX_GAMESTATE_CHARS_Q3 exceeded");
+				}
+
+				// append it to the gameState string buffer
+				cl.et_gameState.stringOffsets[i] = cl.et_gameState.dataCount;
+				Com_Memcpy(cl.et_gameState.stringData + cl.et_gameState.dataCount, s, len + 1);
+				cl.et_gameState.dataCount += len + 1;
+			}
 		}
 		else if (cmd == q3svc_baseline)
 		{
-			newnum = msg->ReadBits(GENTITYNUM_BITS_Q3);
+			int newnum = msg->ReadBits(GENTITYNUM_BITS_Q3);
 			if (newnum < 0 || newnum >= MAX_GENTITIES_Q3)
 			{
 				common->Error("Baseline number out of range: %i", newnum);
 			}
-			memset(&nullstate, 0, sizeof(nullstate));
-			es = &cl.et_entityBaselines[newnum];
-			MSGET_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			if (GGameType & GAME_Quake3)
+			{
+				q3entityState_t nullstate = {};
+				q3entityState_t* es = &cl.q3_entityBaselines[newnum];
+				MSGQ3_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			}
+			else if (GGameType & GAME_WolfSP)
+			{
+				wsentityState_t nullstate = {};
+				wsentityState_t* es = &cl.ws_entityBaselines[newnum];
+				MSGWS_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				wmentityState_t nullstate = {};
+				wmentityState_t* es = &cl.wm_entityBaselines[newnum];
+				MSGWM_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			}
+			else
+			{
+				etentityState_t nullstate = {};
+				etentityState_t* es = &cl.et_entityBaselines[newnum];
+				MSGET_ReadDeltaEntity(msg, &nullstate, es, newnum);
+			}
 		}
 		else
 		{
-			common->Error("CL_ParseGamestate: bad command byte");
+			common->Error("CLT3_ParseGamestate: bad command byte");
 		}
 	}
 
@@ -653,7 +715,7 @@ void CL_ParseGamestate(QMsg* msg)
 
 	// Arnout: verify if we have all official pakfiles. As we won't
 	// be downloading them, we should be kicked for not having them.
-	if (cl_connectedToPureServer && !FS_VerifyOfficialPaks())
+	if (GGameType & GAME_ET && cl_connectedToPureServer && !FS_VerifyOfficialPaks())
 	{
 		common->Error("Couldn't load an official pak file; verify your installation and make sure it has been updated to the latest version.");
 	}
@@ -668,7 +730,6 @@ void CL_ParseGamestate(QMsg* msg)
 	// make sure the game starts
 	Cvar_Set("cl_paused", "0");
 }
-
 
 //=====================================================================
 
@@ -843,34 +904,6 @@ void CL_ParseDownload(QMsg* msg)
 
 /*
 =====================
-CL_ParseCommandString
-
-Command strings are just saved off until cgame asks for them
-when it transitions a snapshot
-=====================
-*/
-void CL_ParseCommandString(QMsg* msg)
-{
-	const char* s;
-	int seq;
-	int index;
-
-	seq = msg->ReadLong();
-	s = msg->ReadString();
-
-	// see if we have already executed stored it off
-	if (clc.q3_serverCommandSequence >= seq)
-	{
-		return;
-	}
-	clc.q3_serverCommandSequence = seq;
-
-	index = seq & (MAX_RELIABLE_COMMANDS_WOLF - 1);
-	String::NCpyZ(clc.q3_serverCommands[index], s, sizeof(clc.q3_serverCommands[index]));
-}
-
-/*
-=====================
 CL_ParseBinaryMessage
 =====================
 */
@@ -960,10 +993,10 @@ void CL_ParseServerMessage(QMsg* msg)
 		case q3svc_nop:
 			break;
 		case q3svc_serverCommand:
-			CL_ParseCommandString(msg);
+			CLT3_ParseCommandString(msg);
 			break;
 		case q3svc_gamestate:
-			CL_ParseGamestate(msg);
+			CLT3_ParseGamestate(msg);
 			break;
 		case q3svc_snapshot:
 			CL_ParseSnapshot(msg);

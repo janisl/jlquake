@@ -224,19 +224,3 @@ void FS_Restart(int checksumFeed)
 	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
 
 }
-
-/*
-=================
-FS_ConditionalRestart
-restart if necessary
-=================
-*/
-qboolean FS_ConditionalRestart(int checksumFeed)
-{
-	if (fs_gamedirvar->modified || checksumFeed != fs_checksumFeed)
-	{
-		FS_Restart(checksumFeed);
-		return true;
-	}
-	return false;
-}
