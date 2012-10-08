@@ -45,6 +45,11 @@ void CLT3_AdjustTimeDelta();
 void CLT3_FirstSnapshot();
 
 //
+//	Connection
+//
+void CLT3_BeginDownload(const char* localName, const char* remoteName);
+
+//
 //	Main
 //
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits

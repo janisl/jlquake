@@ -1450,37 +1450,6 @@ void CL_DownloadsComplete(void)
 
 /*
 =================
-CL_BeginDownload
-
-Requests a file to download from the server.  Stores it in the current
-game directory.
-=================
-*/
-void CL_BeginDownload(const char* localName, const char* remoteName)
-{
-
-	common->DPrintf("***** CL_BeginDownload *****\n"
-				"Localname: %s\n"
-				"Remotename: %s\n"
-				"****************************\n", localName, remoteName);
-
-	String::NCpyZ(cls.et_downloadName, localName, sizeof(cls.et_downloadName));
-	String::Sprintf(cls.et_downloadTempName, sizeof(cls.et_downloadTempName), "%s.tmp", localName);
-
-	// Set so UI gets access to it
-	Cvar_Set("cl_downloadName", remoteName);
-	Cvar_Set("cl_downloadSize", "0");
-	Cvar_Set("cl_downloadCount", "0");
-	Cvar_SetValue("cl_downloadTime", cls.realtime);
-
-	clc.downloadBlock = 0;	// Starting new file
-	clc.downloadCount = 0;
-
-	CL_AddReliableCommand(va("download %s", remoteName));
-}
-
-/*
-=================
 CL_NextDownload
 
 A download completed or failed
@@ -1522,7 +1491,7 @@ void CL_NextDownload(void)
 			s = localName + String::Length(localName);	// point at the nul byte
 
 		}
-		CL_BeginDownload(localName, remoteName);
+		CLT3_BeginDownload(localName, remoteName);
 
 		cls.et_downloadRestart = true;
 

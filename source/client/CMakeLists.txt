@@ -60,6 +60,7 @@ set(CLIENT_FILES
 	game/quake3/ui.cpp
 	game/tech3/cdkey.cpp
 	game/tech3/cgame.cpp
+	game/tech3/connection.cpp
 	game/tech3/main.cpp
 	game/tech3/parse.cpp
 	game/tech3/screen.cpp
