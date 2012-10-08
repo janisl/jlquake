@@ -122,6 +122,14 @@ void idCommonLocal::EndGame(const char* format, ...)
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
 {
+	va_list argPtr;
+	char string[MAXPRINTMSG];
+
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
+
+	Com_Error(ERR_DISCONNECT, string);
 }
 
 /*

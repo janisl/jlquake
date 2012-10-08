@@ -29,20 +29,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "keys.h"
 
-//=============================================================================
-
-extern char cl_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
-extern int num_cl_weaponmodels;
-
-//=============================================================================
-
 //
 // cvars
 //
-extern Cvar* cl_noskins;
 extern Cvar* cl_autoskins;
-
-extern Cvar* cl_showmiss;
 
 //=============================================================================
 
@@ -54,16 +44,9 @@ extern QMsg net_message;
 #define BLASTER_PARTICLE_COLOR      0xe0
 // ========
 
-int CL_ParseEntityBits(unsigned* bits);
-void CL_ParseDelta(q2entity_state_t* from, q2entity_state_t* to, int number, int bits);
-void CL_ParseFrame(void);
-
 void CL_ParseConfigString(void);
 
 //=================================================
-
-void CL_PrepRefresh(void);
-void CL_RegisterSounds(void);
 
 void IN_Accumulate(void);
 
@@ -79,7 +62,6 @@ void CL_Disconnect(void);
 void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);
 void CL_Snd_Restart_f(void);
-void CL_RequestNextDownload(void);
 
 //
 // cl_input
@@ -104,23 +86,7 @@ void CL_Record_f(void);
 //
 // cl_parse.c
 //
-extern const char* svc_strings[256];
-
-void CL_ParseServerMessage(void);
-void CL_LoadClientinfo(q2clientinfo_t* ci, const char* s);
-void SHOWNET(const char* s);
-void CL_ParseClientinfo(int player);
 void CL_Download_f(void);
-
-// the sound code makes callbacks to the client for entitiy position
-// information, so entities can be dynamically re-spatialized
-void CL_GetEntitySoundOrigin(int ent, vec3_t org);
-
-
-//
-// cl_pred.c
-//
-void CL_CheckPredictionError(void);
 
 //
 // cl_pred.c

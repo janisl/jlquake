@@ -415,3 +415,11 @@ bool CL_CheckOrDownloadFile(const char* filename)
 
 	return false;
 }
+
+void SHOWNET(QMsg& msg, const char* s)
+{
+	if (cl_shownet->integer >= 2)
+	{
+		common->Printf("%3i:%s\n", msg.readcount - 1, s);
+	}
+}

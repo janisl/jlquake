@@ -20,54 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-
-/*
-===================
-CL_CheckPredictionError
-===================
-*/
-void CL_CheckPredictionError(void)
-{
-	int frame;
-	int delta[3];
-	int i;
-	int len;
-
-	if (!clq2_predict->value || (cl.q2_frame.playerstate.pmove.pm_flags & Q2PMF_NO_PREDICTION))
-	{
-		return;
-	}
-
-	// calculate the last q2usercmd_t we sent that the server has processed
-	frame = clc.netchan.incomingAcknowledged;
-	frame &= (CMD_BACKUP_Q2 - 1);
-
-	// compare what the server returned with what we had predicted it to be
-	VectorSubtract(cl.q2_frame.playerstate.pmove.origin, cl.q2_predicted_origins[frame], delta);
-
-	// save the prediction error for interpolation
-	len = abs(delta[0]) + abs(delta[1]) + abs(delta[2]);
-	if (len > 640)	// 80 world units
-	{	// a teleport or something
-		VectorClear(cl.q2_prediction_error);
-	}
-	else
-	{
-		if (cl_showmiss->value && (delta[0] || delta[1] || delta[2]))
-		{
-			common->Printf("prediction miss on %i: %i\n", cl.q2_frame.serverframe,
-				delta[0] + delta[1] + delta[2]);
-		}
-
-		VectorCopy(cl.q2_frame.playerstate.pmove.origin, cl.q2_predicted_origins[frame]);
-
-		// save for error itnerpolation
-		for (i = 0; i < 3; i++)
-			cl.q2_prediction_error[i] = delta[i] * 0.125;
-	}
-}
-
-
 /*
 ====================
 CL_ClipMoveToEntities
@@ -252,7 +204,7 @@ void CL_PredictMovement(void)
 	// if we are too far out of date, just freeze
 	if (current - ack >= CMD_BACKUP_Q2)
 	{
-		if (cl_showmiss->value)
+		if (clq2_showmiss->value)
 		{
 			common->Printf("exceeded CMD_BACKUP_Q2\n");
 		}

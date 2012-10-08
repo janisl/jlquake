@@ -20,6 +20,8 @@ extern Cvar* clq2_name;
 extern Cvar* clq2_skin;
 extern Cvar* clq2_vwep;
 extern Cvar* clq2_predict;
+extern Cvar* clq2_noskins;
+extern Cvar* clq2_showmiss;
 
 extern sfxHandle_t clq2_sfx_footsteps[4];
 
@@ -27,7 +29,12 @@ extern qhandle_t clq2_mod_powerscreen;
 
 extern q2centity_t clq2_entities[MAX_EDICTS_Q2];
 
+extern char clq2_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
+extern int clq2_num_weaponmodels;
+
 extern vec3_t monster_flash_offset[];
+
+extern const char* svcq2_strings[256];
 
 //
 //	Beam
@@ -41,6 +48,17 @@ void CLQ2_MonsterHeatBeam(int ent, vec3_t start, vec3_t end);
 void CLQ2_LightningBeam(int srcEnt, int destEnt, vec3_t start, vec3_t end);
 void CLQ2_AddBeams();
 void CLQ2_AddPlayerBeams();
+
+//
+//	Connection
+//
+extern int clq2_precache_check;	// for autodownload of precache items
+extern int clq2_precache_model_skin;
+extern byte* clq2_precache_model;	// used for skin checking in alias models
+extern int clq2_precache_spawncount;
+
+void CLQ2_RegisterSounds();
+void CLQ2_RequestNextDownload();
 
 //
 //	Effects
@@ -60,7 +78,12 @@ void CLQ2_EntityEvent(q2entity_state_t* ent);
 #define MAX_PARSE_ENTITIES_Q2  1024
 extern q2entity_state_t clq2_parse_entities[MAX_PARSE_ENTITIES_Q2];
 
+void CLQ2_ParseBaseline(QMsg& message);
+void CLQ2_ParseFrame(QMsg& message);
 void CLQ2_AddPacketEntities(q2frame_t* frame);
+// the sound code makes callbacks to the client for entitiy position
+// information, so entities can be dynamically re-spatialized
+void CLQ2_GetEntitySoundOrigin(int ent, vec3_t org);
 
 //
 //	Explosion
@@ -98,6 +121,19 @@ void CLQ2_AddLasers();
 //
 void CLQ2_PingServers_f();
 void CLQ2_ClearState();
+void CLQ2_PrepRefresh();
+
+//
+//	Parse
+//
+void CLQ2_LoadClientinfo(q2clientinfo_t* ci, const char* s);
+void CLQ2_ParseClientinfo(int player);
+void CLQ2_ParseServerMessage(QMsg& message);
+
+//
+//	Predict
+//
+void CLQ2_CheckPredictionError();
 
 //
 //	Screen

@@ -216,7 +216,6 @@ ACTION MESSAGES
 =====================================================================
 */
 
-#define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
 /*
 =====================
 CL_ParseServerMessage
@@ -256,11 +255,11 @@ void CL_ParseServerMessage(void)
 		if (cmd == -1)
 		{
 			net_message.readcount++;	// so the EOM showner has the right value
-			SHOWNET("END OF MESSAGE");
+			SHOWNET(net_message, "END OF MESSAGE");
 			break;
 		}
 
-		SHOWNET(svc_strings[cmd]);
+		SHOWNET(net_message, svc_strings[cmd]);
 
 		// other commands
 		switch (cmd)

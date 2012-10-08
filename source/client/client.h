@@ -624,6 +624,7 @@ float CLQH_LerpPoint();
 void CL_AddReliableCommand(const char* cmd);
 void CL_ClearState();
 bool CL_CheckOrDownloadFile(const char* filename);
+void SHOWNET(QMsg& msg, const char* s);
 
 void Chase_Init();
 void Chase_Update();

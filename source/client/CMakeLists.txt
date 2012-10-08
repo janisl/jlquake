@@ -39,6 +39,7 @@ set(CLIENT_FILES
 	game/quake_hexen2/predict.cpp
 	game/quake_hexen2/view.cpp
 	game/quake2/beam.cpp
+	game/quake2/connection.cpp
 	game/quake2/effects.cpp
 	game/quake2/entities.cpp
 	game/quake2/explosion.cpp
@@ -47,7 +48,9 @@ set(CLIENT_FILES
 	game/quake2/light_effects.cpp
 	game/quake2/main.cpp
 	game/quake2/menu.cpp
+	game/quake2/parse.cpp
 	game/quake2/particle_effects.cpp
+	game/quake2/predict.cpp
 	game/quake2/qmenu.cpp
 	game/quake2/screen.cpp
 	game/quake2/sustain.cpp

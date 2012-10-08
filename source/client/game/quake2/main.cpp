@@ -23,8 +23,13 @@ Cvar* clq2_name;
 Cvar* clq2_skin;
 Cvar* clq2_vwep;
 Cvar* clq2_predict;
+Cvar* clq2_noskins;
+Cvar* clq2_showmiss;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];
+
+char clq2_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
+int clq2_num_weaponmodels;
 
 void CLQ2_PingServers_f()
 {
@@ -68,4 +73,128 @@ void CLQ2_ClearState()
 {
 	Com_Memset(&clq2_entities, 0, sizeof(clq2_entities));
 	CLQ2_ClearTEnts();
+}
+
+//	Specifies the model that will be used as the world
+static void R_BeginRegistrationAndLoadWorld(const char* model)
+{
+	char fullname[MAX_QPATH];
+	String::Sprintf(fullname, sizeof(fullname), "maps/%s.bsp", model);
+
+	R_Shutdown(false);
+	CL_InitRenderer();
+
+	R_LoadWorld(fullname);
+}
+
+//	Call before entering a new level, or after changing dlls
+void CLQ2_PrepRefresh()
+{
+	if (!cl.q2_configstrings[Q2CS_MODELS + 1][0])
+	{
+		return;		// no map loaded
+
+	}
+	// let the render dll load the map
+	char mapname[32];
+	String::Cpy(mapname, cl.q2_configstrings[Q2CS_MODELS + 1] + 5);		// skip "maps/"
+	mapname[String::Length(mapname) - 4] = 0;		// cut off ".bsp"
+
+	// register models, pics, and skins
+	common->Printf("Map: %s\r", mapname);
+	SCR_UpdateScreen();
+	R_BeginRegistrationAndLoadWorld(mapname);
+	common->Printf("                                     \r");
+
+	// precache status bar pics
+	common->Printf("pics\r");
+	SCR_UpdateScreen();
+	SCR_TouchPics();
+	common->Printf("                                     \r");
+
+	CLQ2_RegisterTEntModels();
+
+	clq2_num_weaponmodels = 1;
+	String::Cpy(clq2_weaponmodels[0], "weapon.md2");
+
+	for (int i = 1; i < MAX_MODELS_Q2 && cl.q2_configstrings[Q2CS_MODELS + i][0]; i++)
+	{
+		char name[MAX_QPATH];
+		String::Cpy(name, cl.q2_configstrings[Q2CS_MODELS + i]);
+		name[37] = 0;	// never go beyond one line
+		if (name[0] != '*')
+		{
+			common->Printf("%s\r", name);
+		}
+		SCR_UpdateScreen();
+		if (name[0] == '#')
+		{
+			// special player weapon model
+			if (clq2_num_weaponmodels < MAX_CLIENTWEAPONMODELS_Q2)
+			{
+				String::NCpy(clq2_weaponmodels[clq2_num_weaponmodels], cl.q2_configstrings[Q2CS_MODELS + i] + 1,
+					sizeof(clq2_weaponmodels[clq2_num_weaponmodels]) - 1);
+				clq2_num_weaponmodels++;
+			}
+		}
+		else
+		{
+			cl.model_draw[i] = R_RegisterModel(cl.q2_configstrings[Q2CS_MODELS + i]);
+			if (name[0] == '*')
+			{
+				cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.q2_configstrings[Q2CS_MODELS + i] + 1));
+			}
+			else
+			{
+				cl.model_clip[i] = 0;
+			}
+		}
+		if (name[0] != '*')
+		{
+			common->Printf("                                     \r");
+		}
+	}
+
+	common->Printf("images\r");
+	SCR_UpdateScreen();
+	for (int i = 1; i < MAX_IMAGES_Q2 && cl.q2_configstrings[Q2CS_IMAGES + i][0]; i++)
+	{
+		cl.q2_image_precache[i] = R_RegisterPic(cl.q2_configstrings[Q2CS_IMAGES + i]);
+	}
+
+	common->Printf("                                     \r");
+	for (int i = 0; i < MAX_CLIENTS_Q2; i++)
+	{
+		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS + i][0])
+		{
+			continue;
+		}
+		common->Printf("client %i\r", i);
+		SCR_UpdateScreen();
+		CLQ2_ParseClientinfo(i);
+		common->Printf("                                     \r");
+	}
+
+	CLQ2_LoadClientinfo(&cl.q2_baseclientinfo, "unnamed\\male/grunt");
+
+	// set sky textures and speed
+	common->Printf("sky\r");
+	SCR_UpdateScreen();
+	float rotate = String::Atof(cl.q2_configstrings[Q2CS_SKYROTATE]);
+	vec3_t axis;
+	sscanf(cl.q2_configstrings[Q2CS_SKYAXIS], "%f %f %f",
+		&axis[0], &axis[1], &axis[2]);
+	R_SetSky(cl.q2_configstrings[Q2CS_SKY], rotate, axis);
+	common->Printf("                                     \r");
+
+	R_EndRegistration();
+
+	// clear any lines of console text
+	Con_ClearNotify();
+
+	SCR_UpdateScreen();
+	cl.q2_refresh_prepped = true;
+
+	// start the cd track
+	CDAudio_Play(String::Atoi(cl.q2_configstrings[Q2CS_CDTRACK]), true);
 }

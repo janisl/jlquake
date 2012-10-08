@@ -41,7 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/public.h"
 
 static Cvar* fs_basegame;
-static Cvar* fs_gamedirvar;
 static int fs_loadStack;					// total files in memory
 
 // last valid game folder used

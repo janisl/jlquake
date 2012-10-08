@@ -42,15 +42,6 @@ const char* svc_strings[256] = {
 	"q3svc_snapshot"
 };
 
-void SHOWNET(QMsg* msg, const char* s)
-{
-	if (cl_shownet->integer >= 2)
-	{
-		common->Printf("%3i:%s\n", msg->readcount - 1, s);
-	}
-}
-
-
 /*
 =========================================================================
 
@@ -470,7 +461,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	msg->ReadData(&newSnap.areamask, len);
 
 	// read playerinfo
-	SHOWNET(msg, "playerstate");
+	SHOWNET(*msg, "playerstate");
 	if (old)
 	{
 		MSGWM_ReadDeltaPlayerstate(msg, &old->ps, &newSnap.ps);
@@ -481,7 +472,7 @@ void CL_ParseSnapshot(QMsg* msg)
 	}
 
 	// read packet entities
-	SHOWNET(msg, "packet entities");
+	SHOWNET(*msg, "packet entities");
 	CL_ParsePacketEntities(msg, old, &newSnap);
 
 	// if not valid, dump the entire thing now that it has
@@ -815,7 +806,7 @@ void CL_ParseServerMessage(QMsg* msg)
 
 		if (cmd == q3svc_EOF)
 		{
-			SHOWNET(msg, "END OF MESSAGE");
+			SHOWNET(*msg, "END OF MESSAGE");
 			break;
 		}
 
@@ -827,7 +818,7 @@ void CL_ParseServerMessage(QMsg* msg)
 			}
 			else
 			{
-				SHOWNET(msg, svc_strings[cmd]);
+				SHOWNET(*msg, svc_strings[cmd]);
 			}
 		}
 

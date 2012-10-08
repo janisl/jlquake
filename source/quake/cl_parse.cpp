@@ -259,8 +259,6 @@ void CL_ParseServerInfo(QMsg& message)
 	R_EndRegistration();
 }
 
-#define SHOWNET(x) if (cl_shownet->value == 2) {common->Printf("%3i:%s\n", net_message.readcount - 1, x); }
-
 /*
 =====================
 CL_ParseServerMessage
@@ -294,19 +292,19 @@ void CL_ParseServerMessage(QMsg& message)
 
 		if (cmd == -1)
 		{
-			SHOWNET("END OF MESSAGE");
+			SHOWNET(message, "END OF MESSAGE");
 			return;		// end of message
 		}
 
 		// if the high bit of the command byte is set, it is a fast update
 		if (cmd & Q1U_SIGNAL)
 		{
-			SHOWNET("fast update");
+			SHOWNET(message, "fast update");
 			CLQ1_ParseUpdate(message, cmd & 127);
 			continue;
 		}
 
-		SHOWNET(svc_strings[cmd]);
+		SHOWNET(message, svc_strings[cmd]);
 
 		// other commands
 		switch (cmd)

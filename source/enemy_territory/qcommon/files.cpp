@@ -44,7 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 //bani - made fs_gamedir non-static
 static Cvar* fs_buildgame;
 static Cvar* fs_basegame;
-static Cvar* fs_gamedirvar;
 static int fs_loadStack;					// total files in memory
 
 // last valid game folder used

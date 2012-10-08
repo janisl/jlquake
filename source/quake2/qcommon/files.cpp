@@ -20,16 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-// if a packfile directory differs from this, it is assumed to be hacked
-// Full version
-#define PAK0_CHECKSUM   0x40e614e0
-// Demo
-//#define	PAK0_CHECKSUM	0xb2c6d7ea
-// OEM
-//#define	PAK0_CHECKSUM	0x78e135c
-
-Cvar* fs_gamedirvar;
-
 /*
 ================
 FS_InitFilesystem

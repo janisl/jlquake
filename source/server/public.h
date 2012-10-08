@@ -24,6 +24,11 @@ extern Cvar* qh_skill;
 extern Cvar* qh_timelimit;
 extern Cvar* qh_fraglimit;
 extern Cvar* h2_randomclass;
+extern Cvar* allow_download;
+extern Cvar* allow_download_players;
+extern Cvar* allow_download_models;
+extern Cvar* allow_download_sounds;
+extern Cvar* allow_download_maps;
 
 bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);

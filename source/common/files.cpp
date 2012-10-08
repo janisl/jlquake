@@ -318,6 +318,7 @@ char fs_gamedir[MAX_OSPATH];					// this will be a single file name with no sepa
 char fsqhw_gamedirfile[MAX_OSPATH];
 Cvar* fs_homepath;
 Cvar* fs_basepath;
+Cvar* fs_gamedirvar;
 static Cvar* fs_debug;
 
 static filelink_t* fs_links;

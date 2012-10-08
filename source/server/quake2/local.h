@@ -55,11 +55,6 @@ void SVQ2_Map(bool attractloop, const char* levelstring, bool loadgame);
 //
 //	Main
 //
-extern Cvar* allow_download;
-extern Cvar* allow_download_players;
-extern Cvar* allow_download_models;
-extern Cvar* allow_download_sounds;
-extern Cvar* allow_download_maps;
 extern Cvar* svq2_enforcetime;
 extern Cvar* svq2_noreload;					// don't reload level state when reentering
 extern Cvar* svq2_airaccelerate;
