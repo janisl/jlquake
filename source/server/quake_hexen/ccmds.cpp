@@ -51,7 +51,7 @@ static void SVQH_Map_f()
 	CLQH_StopDemoLoop();		// stop demo loop in case this fails
 
 	CL_Disconnect();
-	SVQH_Shutdown(false);
+	SVQH_Shutdown();
 
 	CL_ClearKeyCatchers();			// remove console or menu
 	SCRQH_BeginLoadingPlaque();
@@ -738,7 +738,7 @@ static void SVQ1_Loadgame_f()
 	float time = String::Atof(GetLine(ReadPos));
 
 	CL_Disconnect();
-	SVQH_Shutdown(false);
+	SVQH_Shutdown();
 
 	SVQH_SpawnServer(mapname, "");
 	if (sv.state == SS_DEAD)

@@ -136,7 +136,7 @@ void Host_EndGame(const char* message, ...)
 
 	if (sv.state != SS_DEAD)
 	{
-		SVQH_Shutdown(false);
+		SVQH_Shutdown();
 	}
 
 #ifdef DEDICATED
@@ -189,7 +189,7 @@ void Host_Error(const char* error, ...)
 
 	if (sv.state != SS_DEAD)
 	{
-		SVQH_Shutdown(false);
+		SVQH_Shutdown();
 	}
 
 #ifdef DEDICATED

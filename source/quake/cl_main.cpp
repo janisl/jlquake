@@ -61,7 +61,7 @@ void CL_Disconnect(void)
 		cls.state = CA_DISCONNECTED;
 		if (sv.state != SS_DEAD)
 		{
-			SVQH_Shutdown(false);
+			SVQH_Shutdown();
 		}
 	}
 
@@ -74,7 +74,7 @@ void CL_Disconnect_f(void)
 	CL_Disconnect();
 	if (sv.state != SS_DEAD)
 	{
-		SVQH_Shutdown(false);
+		SVQH_Shutdown();
 	}
 }
 

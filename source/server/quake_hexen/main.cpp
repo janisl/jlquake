@@ -1420,7 +1420,7 @@ void SVQHW_Master_Shutdown()
 }
 
 //	This only happens at the end of a game, not between levels
-void SVQH_Shutdown(bool crash)
+void SVQH_Shutdown()
 {
 	if (sv.state == SS_DEAD)
 	{
@@ -1482,7 +1482,7 @@ void SVQH_Shutdown(bool crash)
 	{
 		if (host_client->state >= CS_CONNECTED)
 		{
-			SVQH_DropClient(host_client, crash);
+			SVQH_DropClient(host_client, false);
 		}
 	}
 
