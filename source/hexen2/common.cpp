@@ -329,7 +329,6 @@ void Con_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
@@ -344,18 +343,19 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", msg);
 	}
 
-#ifndef DEDICATED
-	if (com_dedicated->integer)
+	if (!com_dedicated || com_dedicated->integer)
 	{
 		return;		// no graphics mode
-
 	}
+
+#ifndef DEDICATED
 // write it to the scrollable buffer
 	Con_ConsolePrint(msg);
 
 // update the screen if the console is displayed
 	if (clc.qh_signon != SIGNONS && !cls.disable_screen)
 	{
+		static bool inupdate;
 		// protect against infinite loop if something in SCR_UpdateScreen calls
 		// Con_Printd
 		if (!inupdate)

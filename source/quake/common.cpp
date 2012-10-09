@@ -354,7 +354,7 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", msg);
 	}
 
-	if (com_dedicated->integer)
+	if (!com_dedicated || com_dedicated->integer)
 	{
 		return;		// no graphics mode
 	}
