@@ -1736,6 +1736,69 @@ static void SVH2_Edicts_f()
 	SVH2_Edicts(Name);
 }
 
+static void SVQH_FindMaxClients()
+{
+	svs.qh_maxclients = 1;
+
+	int i = COM_CheckParm("-dedicated");
+	if (i)
+	{
+		if (i != (COM_Argc() - 1))
+		{
+			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
+		}
+		else
+		{
+			svs.qh_maxclients = 8;
+		}
+	}
+	else if (com_dedicated->integer)
+	{
+		svs.qh_maxclients = 8;
+	}
+
+	i = COM_CheckParm("-listen");
+	if (i)
+	{
+		if (com_dedicated->integer)
+		{
+			common->FatalError("Only one of -dedicated or -listen can be specified");
+		}
+		if (i != (COM_Argc() - 1))
+		{
+			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
+		}
+		else
+		{
+			svs.qh_maxclients = 8;
+		}
+	}
+	if (svs.qh_maxclients < 1)
+	{
+		svs.qh_maxclients = 8;
+	}
+	else if (svs.qh_maxclients > MAX_CLIENTS_QH)
+	{
+		svs.qh_maxclients = MAX_CLIENTS_QH;
+	}
+
+	svs.qh_maxclientslimit = svs.qh_maxclients;
+	if (svs.qh_maxclientslimit < 4)
+	{
+		svs.qh_maxclientslimit = 4;
+	}
+	svs.clients = (client_t*)Mem_ClearedAlloc(svs.qh_maxclientslimit * sizeof(client_t));
+
+	if (svs.qh_maxclients > 1)
+	{
+		Cvar_SetValue("deathmatch", 1.0);
+	}
+	else
+	{
+		Cvar_SetValue("deathmatch", 0.0);
+	}
+}
+
 static void SVQHW_InitNet()
 {
 	svqhw_net_port = GGameType & GAME_HexenWorld ? HWPORT_SERVER : QWPORT_SERVER;
@@ -1799,6 +1862,8 @@ void SVQH_Init()
 		}
 
 		SVQH_InitOperatorCommands();
+
+		SVQH_FindMaxClients();
 	}
 	else
 	{

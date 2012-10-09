@@ -199,87 +199,6 @@ void Host_Error(const char* error, ...)
 #endif
 }
 
-/*
-================
-Host_FindMaxClients
-================
-*/
-void    Host_FindMaxClients(void)
-{
-	int i;
-
-	svs.qh_maxclients = 1;
-
-	i = COM_CheckParm("-dedicated");
-	if (i)
-	{
-		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
-
-		if (i != (COM_Argc() - 1))
-		{
-			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
-		}
-		else
-		{
-			svs.qh_maxclients = 8;
-		}
-	}
-	else
-	{
-#ifdef DEDICATED
-		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
-		svs.qh_maxclients = 8;
-#else
-		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
-
-		cls.state = CA_DISCONNECTED;
-#endif
-	}
-
-#ifndef DEDICATED
-	i = COM_CheckParm("-listen");
-	if (i)
-	{
-		if (com_dedicated->integer)
-		{
-			common->FatalError("Only one of -dedicated or -listen can be specified");
-		}
-		if (i != (COM_Argc() - 1))
-		{
-			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
-		}
-		else
-		{
-			svs.qh_maxclients = 8;
-		}
-	}
-#endif
-	if (svs.qh_maxclients < 1)
-	{
-		svs.qh_maxclients = 8;
-	}
-	else if (svs.qh_maxclients > MAX_CLIENTS_QH)
-	{
-		svs.qh_maxclients = MAX_CLIENTS_QH;
-	}
-
-	svs.qh_maxclientslimit = svs.qh_maxclients;
-	if (svs.qh_maxclientslimit < 4)
-	{
-		svs.qh_maxclientslimit = 4;
-	}
-	svs.clients = (client_t*)Mem_ClearedAlloc(svs.qh_maxclientslimit * sizeof(client_t));
-
-	if (svs.qh_maxclients > 1)
-	{
-		Cvar_SetValue("deathmatch", 1.0);
-	}
-	else
-	{
-		Cvar_SetValue("deathmatch", 0.0);
-	}
-}
-
 #ifndef DEDICATED
 /*
 ===============
@@ -326,7 +245,20 @@ void Host_InitLocal(void)
 
 	sys_adaptive = Cvar_Get("sys_adaptive","1", CVAR_ARCHIVE);
 
-	Host_FindMaxClients();
+	if (COM_CheckParm("-dedicated"))
+	{
+		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+	}
+	else
+	{
+#ifdef DEDICATED
+		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+#else
+		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
+
+		cls.state = CA_DISCONNECTED;
+#endif
+	}
 
 	Host_InitCommands();
 
