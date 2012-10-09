@@ -9,6 +9,9 @@
 #undef GetClassName
 #endif
 #include <time.h>
+#include "../server/server.h"
+#include "../server/progsvm/progsvm.h"
+#include "../server/quake_hexen/local.h"
 
 /*
 ==================

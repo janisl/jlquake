@@ -1,5 +1,7 @@
 
 #include "qwsvdef.h"
+#include "../../server/server.h"
+#include "../../server/quake_hexen/local.h"
 
 /*
 ===============================================================================

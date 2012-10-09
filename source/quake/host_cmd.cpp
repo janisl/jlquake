@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
+#include "../server/server.h"
+#include "../server/quake_hexen/local.h"
+#include "../server/progsvm/progsvm.h"
 
 /*
 ==================

@@ -19,10 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for server
 
-#include "../../server/server.h"
-#include "../../server/quake_hexen/local.h"
-#include "../../server/quake/local.h"
-#include "../../server/progsvm/progsvm.h"
+#include "../../common/qcommon.h"
 
 //define	PARANOID			// speed sapping error checking
 

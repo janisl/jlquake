@@ -28,10 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include "../client/public.h"
 #endif
-#include "../server/server.h"
-#include "../server/quake_hexen/local.h"
-#include "../server/quake/local.h"
-#include "../server/progsvm/progsvm.h"
 
 #define VERSION             1.09
 #define GLQUAKE_VERSION     1.00

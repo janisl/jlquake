@@ -6,6 +6,9 @@
 #include <dirent.h>
 #endif
 #include "../../common/hexen2strings.h"
+#include "../../server/server.h"
+#include "../../server/quake_hexen/local.h"
+#include "../../server/progsvm/progsvm.h"
 
 quakeparms_t host_parms;
 

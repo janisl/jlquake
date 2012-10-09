@@ -13,10 +13,6 @@
 #else
 #include "../client/public.h"
 #endif
-#include "../server/server.h"
-#include "../server/quake_hexen/local.h"
-#include "../server/hexen2/local.h"
-#include "../server/progsvm/progsvm.h"
 
 //#define MISSIONPACK
 

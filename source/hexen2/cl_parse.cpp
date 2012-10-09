@@ -12,6 +12,7 @@
 #include "../client/game/quake_hexen2/view.h"
 #include "../client/game/quake_hexen2/parse.h"
 #include "../client/game/parse.h"
+#include "../server/server.h"
 
 const char* svc_strings[] =
 {

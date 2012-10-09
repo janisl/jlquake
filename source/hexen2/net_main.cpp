@@ -1,6 +1,8 @@
 // net_main.c
 
 #include "quakedef.h"
+#include "../server/server.h"
+#include "../server/quake_hexen/local.h"
 
 QMsg net_message;
 byte net_message_buf[MAX_MSGLEN_H2];

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/game/quake_hexen2/view.h"
 #include "../client/game/parse.h"
 #include "../client/game/quake_hexen2/parse.h"
+#include "../server/server.h"
 
 const char* svc_strings[] =
 {

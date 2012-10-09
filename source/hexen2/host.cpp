@@ -6,6 +6,9 @@
 
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
+#include "../server/server.h"
+#include "../server/progsvm/progsvm.h"
+#include "../server/quake_hexen/local.h"
 
 /*
 
