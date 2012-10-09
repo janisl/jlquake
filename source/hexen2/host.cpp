@@ -783,7 +783,7 @@ void Host_Shutdown(void)
 	CDAudio_Shutdown();
 	MIDI_Cleanup();
 #endif
-	SVQH_Shutdown();
+	SVQH_ShutdownNetwork();
 #ifndef DEDICATED
 	CLQH_ShutdownNetwork();
 #endif

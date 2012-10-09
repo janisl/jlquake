@@ -724,7 +724,7 @@ void Host_Shutdown(void)
 #ifndef DEDICATED
 	CDAudio_Shutdown();
 #endif
-	SVQH_Shutdown();
+	SVQH_ShutdownNetwork();
 #ifndef DEDICATED
 	CLQH_ShutdownNetwork();
 #endif

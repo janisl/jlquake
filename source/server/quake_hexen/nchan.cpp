@@ -736,7 +736,7 @@ void MaxPlayers_f()
 	}
 }
 
-void SVQH_Shutdown()
+void SVQH_ShutdownNetwork()
 {
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.qh_maxclients; i++, client++)
