@@ -161,3 +161,23 @@ int SVQH_GetMaxClientsLimit()
 {
 	return svs.qh_maxclientslimit;
 }
+
+void SV_Shutdown(const char* finalMessage)
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		SVQHW_Shutdown(finalMessage);
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		SVQH_Shutdown();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		SVQ2_Shutdown(finalMessage, false);
+	}
+	else
+	{
+		SVT3_Shutdown(finalMessage);
+	}
+}

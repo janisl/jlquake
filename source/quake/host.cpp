@@ -144,10 +144,7 @@ void Host_EndGame(const char* message, ...)
 	va_end(argptr);
 	common->DPrintf("Host_EndGame: %s\n",string);
 
-	if (sv.state != SS_DEAD)
-	{
-		SVQH_Shutdown();
-	}
+	SV_Shutdown("");
 
 #ifdef DEDICATED
 	Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
@@ -197,10 +194,7 @@ void Host_Error(const char* error, ...)
 	va_end(argptr);
 	common->Printf("Host_Error: %s\n",string);
 
-	if (sv.state != SS_DEAD)
-	{
-		SVQH_Shutdown();
-	}
+	SV_Shutdown("");
 
 #ifdef DEDICATED
 	Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit

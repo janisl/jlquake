@@ -845,7 +845,7 @@ void CL_Connect_f(void)
 	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
 	{
 		// if running a local server, kill it
-		SVT3_Shutdown("Server quit\n");
+		SV_Shutdown("Server quit\n");
 	}
 
 	// make sure a local server is killed

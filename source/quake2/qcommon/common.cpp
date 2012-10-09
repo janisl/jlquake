@@ -249,14 +249,14 @@ void Com_Error(int code, const char* fmt, ...)
 	else if (code == ERR_DROP)
 	{
 		common->Printf("********************\nERROR: %s\n********************\n", msg);
-		SVQ2_Shutdown(va("Server crashed: %s\n", msg), false);
+		SV_Shutdown(va("Server crashed: %s\n", msg));
 		CL_Drop();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
 	else
 	{
-		SVQ2_Shutdown(va("Server fatal crashed: %s\n", msg), false);
+		SV_Shutdown(va("Server fatal crashed: %s\n", msg));
 		CL_Shutdown();
 	}
 
@@ -280,7 +280,7 @@ do the apropriate things.
 */
 void Com_Quit_f(void)
 {
-	SVQ2_Shutdown("Server quit\n", false);
+	SV_Shutdown("Server quit\n");
 	CL_Shutdown();
 
 	if (logfile)

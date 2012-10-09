@@ -59,10 +59,7 @@ void CL_Disconnect(void)
 		NET_Close(cls.qh_netcon, &clc.netchan);
 
 		cls.state = CA_DISCONNECTED;
-		if (sv.state != SS_DEAD)
-		{
-			SVQH_Shutdown();
-		}
+		SV_Shutdown("");
 	}
 
 	clc.demoplaying = cls.qh_timedemo = false;
@@ -72,10 +69,7 @@ void CL_Disconnect(void)
 void CL_Disconnect_f(void)
 {
 	CL_Disconnect();
-	if (sv.state != SS_DEAD)
-	{
-		SVQH_Shutdown();
-	}
+	SV_Shutdown("");
 }
 
 

@@ -38,7 +38,7 @@ void Com_Quit_f(void)
 	}
 	CL_Disconnect();
 #endif
-	SVQH_Shutdown();
+	SV_Shutdown("");
 
 	Sys_Quit();
 }

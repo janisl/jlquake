@@ -1497,7 +1497,7 @@ void SVQH_Shutdown()
 // clients before the server goes down.  The messages are sent immediately,
 // not just stuck on the outgoing message list, because the server is going
 // to totally exit after returning from this function.
-void SVQHW_FinalMessage(const char* message)
+static void SVQHW_FinalMessage(const char* message)
 {
 	QMsg net_message;
 	byte net_message_buffer[MAX_DATAGRAM];

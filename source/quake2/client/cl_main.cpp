@@ -404,7 +404,7 @@ void CL_Connect_f(void)
 
 	if (ComQ2_ServerState())
 	{	// if running a local server, kill it and reissue
-		SVQ2_Shutdown("Server quit\n", false);
+		SV_Shutdown("Server quit\n");
 	}
 	else
 	{

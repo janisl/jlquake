@@ -124,7 +124,7 @@ void SV_Error(const char* error, ...)
 
 	common->Printf("SV_Error: %s\n",string);
 
-	SVQHW_Shutdown(va("server crashed: %s\n", string));
+	SV_Shutdown(va("server crashed: %s\n", string));
 	if (sv_logfile)
 	{
 		FS_FCloseFile(sv_logfile);

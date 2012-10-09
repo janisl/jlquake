@@ -34,6 +34,8 @@ bool SV_IsServerActive();
 void SV_CvarChanged(Cvar* var);
 int SVQH_GetMaxClients();
 int SVQH_GetMaxClientsLimit();
+void SV_Shutdown(const char* finalMessage);
+
 void SVH2_RemoveGIPFiles(const char* path);
 
 void PR_SetPlayerClassGlobal(float newClass);
