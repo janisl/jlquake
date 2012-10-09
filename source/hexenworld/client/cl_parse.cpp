@@ -154,7 +154,7 @@ void CL_ParseServerData(QMsg& message)
 		cflag = true;
 	}
 
-	COM_Gamedir(str);
+	FS_SetGamedirQHW(str);
 
 	//ZOID--run the autoexec.cfg in the gamedir
 	//if it exists

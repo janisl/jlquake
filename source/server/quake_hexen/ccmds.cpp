@@ -1903,6 +1903,34 @@ static void SVQHW_Floodprotmsg_f()
 	sprintf(qhw_fp_msg, "%s", Cmd_Argv(1));
 }
 
+//	Sets the gamedir and path to a different directory.
+static void SVQHW_Gamedir_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("Current gamedir: %s\n", fs_gamedir);
+		return;
+	}
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage: gamedir <newdir>\n");
+		return;
+	}
+
+	char* dir = Cmd_Argv(1);
+
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":"))
+	{
+		common->Printf("Gamedir should be a single filename, not a path\n");
+		return;
+	}
+
+	FS_SetGamedirQHW(dir);
+	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
+}
+
 //	Sets the fake *gamedir to a different directory.
 void SVQHW_FakeGamedir_f()
 {
@@ -2063,6 +2091,7 @@ void SVQHW_InitOperatorCommands()
 	Cmd_AddCommand("user", SVQHW_User_f);
 	Cmd_AddCommand("floodprot", SVQHW_Floodprot_f);
 	Cmd_AddCommand("floodprotmsg", SVQHW_Floodprotmsg_f);
+	Cmd_AddCommand("gamedir", SVQHW_Gamedir_f);
 	Cmd_AddCommand("sv_gamedir", SVQHW_FakeGamedir_f);
 	if (GGameType & GAME_QuakeWorld)
 	{

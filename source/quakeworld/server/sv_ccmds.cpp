@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qwsvdef.h"
-#include "../../server/server.h"
-#include "../../server/quake_hexen/local.h"
+#include "../../server/public.h"
 
 /*
 ===============================================================================
@@ -75,42 +74,6 @@ void SV_Logfile_f(void)
 }
 
 /*
-================
-SV_Gamedir_f
-
-Sets the gamedir and path to a different directory.
-================
-*/
-void SV_Gamedir_f(void)
-{
-	char* dir;
-
-	if (Cmd_Argc() == 1)
-	{
-		common->Printf("Current gamedir: %s\n", fs_gamedir);
-		return;
-	}
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("Usage: gamedir <newdir>\n");
-		return;
-	}
-
-	dir = Cmd_Argv(1);
-
-	if (strstr(dir, "..") || strstr(dir, "/") ||
-		strstr(dir, "\\") || strstr(dir, ":"))
-	{
-		common->Printf("Gamedir should be a single filename, not a path\n");
-		return;
-	}
-
-	COM_Gamedir(dir);
-	Info_SetValueForKey(svs.qh_info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value);
-}
-
-/*
 ==================
 SV_InitOperatorCommands
 ==================
@@ -120,7 +83,6 @@ void SV_InitOperatorCommands(void)
 	Cmd_AddCommand("logfile", SV_Logfile_f);
 
 	Cmd_AddCommand("quit", SV_Quit_f);
-	Cmd_AddCommand("gamedir", SV_Gamedir_f);
 
 	Cvar_Set("cl_warncmd", "1");
 }

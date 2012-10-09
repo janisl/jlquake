@@ -3840,6 +3840,39 @@ const char* FS_Gamedir()
 }
 
 //	Sets the gamedir and path to a different directory.
+void FS_SetGamedirQHW(const char* dir)
+{
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":"))
+	{
+		common->Printf("Gamedir should be a single filename, not a path\n");
+		return;
+	}
+
+	if (!String::Cmp(fsqhw_gamedirfile, dir))
+	{
+		return;		// still the same
+	}
+	String::Cpy(fsqhw_gamedirfile, dir);
+
+	//
+	// free up any current game dir info
+	//
+	FS_ResetSearchPathToBase();
+
+	if (!String::Cmp(dir, fs_PrimaryBaseGame) || !String::Cmp(dir, GGameType & GAME_HexenWorld ? "hw" : "qw"))
+	{
+		return;
+	}
+
+	FS_AddGameDirectory(fs_basepath->string, dir, GGameType & GAME_HexenWorld ? ADDPACKS_First10 : ADDPACKS_UntilMissing);
+	if (fs_homepath->string[0])
+	{
+		FS_AddGameDirectory(fs_homepath->string, dir, GGameType & GAME_HexenWorld ? ADDPACKS_First10 : ADDPACKS_UntilMissing);
+	}
+}
+
+//	Sets the gamedir and path to a different directory.
 void FS_SetGamedir(const char* dir)
 {
 	if (strstr(dir, "..") || strstr(dir, "/") ||

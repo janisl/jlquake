@@ -26,8 +26,6 @@ extern qwusercmd_t nullcmd;
 void COM_Init(void);
 void COM_InitArgv2(int argc, char** argv);
 
-void COM_Gamedir(char* dir);
-
 byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, unsigned mapchecksum);
 
 int build_number(void);
