@@ -43,7 +43,6 @@ extern Cvar* cl_nodelta;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
 extern Cvar* cl_packetdup;
-extern Cvar* cl_shownuments;				// DHM - Nerve
 extern Cvar* cl_visibleClients;				// DHM - Nerve
 extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;

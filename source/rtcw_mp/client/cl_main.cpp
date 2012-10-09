@@ -51,7 +51,6 @@ Cvar* cl_packetdup;
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
-Cvar* cl_shownuments;			// DHM - Nerve
 Cvar* cl_visibleClients;		// DHM - Nerve
 Cvar* cl_showSend;
 Cvar* cl_avidemo;
@@ -206,12 +205,7 @@ static char demoName[MAX_QPATH];		// compiler bug workaround
 void CL_Record_f(void)
 {
 	char name[MAX_OSPATH];
-	byte bufData[MAX_MSGLEN_WOLF];
-	QMsg buf;
-	int i;
 	int len;
-	wmentityState_t* ent;
-	wmentityState_t nullstate;
 	char* s;
 
 	if (Cmd_Argc() > 2)
@@ -263,85 +257,7 @@ void CL_Record_f(void)
 		}
 	}
 
-	// open the demo file
-
-#ifdef __MACOS__	//DAJ MacOS file typing
-	{
-		extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-		_ftype = 'WlfB';
-		_fcreator = 'WlfM';
-	}
-#endif
-	common->Printf("recording to %s.\n", name);
-	clc.demofile = FS_FOpenFileWrite(name);
-	if (!clc.demofile)
-	{
-		common->Printf("ERROR: couldn't open.\n");
-		return;
-	}
-	clc.demorecording = true;
-	String::NCpyZ(clc.q3_demoName, demoName, sizeof(clc.q3_demoName));
-
-	// don't start saving messages until a non-delta compressed message is received
-	clc.q3_demowaiting = true;
-
-	// write out the gamestate message
-	buf.Init(bufData, sizeof(bufData));
-	buf.Bitstream();
-
-	// NOTE, MRE: all server->client messages now acknowledge
-	buf.WriteLong(clc.q3_reliableSequence);
-
-	buf.WriteByte(q3svc_gamestate);
-	buf.WriteLong(clc.q3_serverCommandSequence);
-
-	// configstrings
-	for (i = 0; i < MAX_CONFIGSTRINGS_WM; i++)
-	{
-		if (!cl.wm_gameState.stringOffsets[i])
-		{
-			continue;
-		}
-		s = cl.wm_gameState.stringData + cl.wm_gameState.stringOffsets[i];
-		buf.WriteByte(q3svc_configstring);
-		buf.WriteShort(i);
-		buf.WriteBigString(s);
-	}
-
-	// baselines
-	memset(&nullstate, 0, sizeof(nullstate));
-	for (i = 0; i < MAX_GENTITIES_Q3; i++)
-	{
-		ent = &cl.wm_entityBaselines[i];
-		if (!ent->number)
-		{
-			continue;
-		}
-		buf.WriteByte(q3svc_baseline);
-		MSGWM_WriteDeltaEntity(&buf, &nullstate, ent, true);
-	}
-
-	buf.WriteByte(q3svc_EOF);
-
-	// finished writing the gamestate stuff
-
-	// write the client num
-	buf.WriteLong(clc.q3_clientNum);
-	// write the checksum feed
-	buf.WriteLong(clc.q3_checksumFeed);
-
-	// finished writing the client packet
-	buf.WriteByte(q3svc_EOF);
-
-	// write it to the demo file
-	len = LittleLong(clc.q3_serverMessageSequence - 1);
-	FS_Write(&len, 4, clc.demofile);
-
-	len = LittleLong(buf.cursize);
-	FS_Write(&len, 4, clc.demofile);
-	FS_Write(buf._data, buf.cursize, clc.demofile);
-
-	// the rest of the demo file will be copied from net messages
+	CLT3_Record(demoName, name);
 }
 
 /*
@@ -2228,7 +2144,7 @@ void CL_Init(void)
 	cl_wavefilerecord = Cvar_Get("cl_wavefilerecord", "0", CVAR_TEMP);
 
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
-	cl_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
+	clwm_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
 	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
 	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
 	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);

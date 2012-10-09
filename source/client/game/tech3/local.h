@@ -50,6 +50,11 @@ void CLT3_FirstSnapshot();
 void CLT3_BeginDownload(const char* localName, const char* remoteName);
 
 //
+//	Demo
+//
+void CLT3_Record(const char* demoName, const char* name);
+
+//
 //	Main
 //
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
@@ -58,6 +63,8 @@ extern Cvar* clet_profile;
 extern Cvar* clt3_showServerCommands;
 extern Cvar* clt3_showTimeDelta;
 extern Cvar* clt3_activeAction;
+extern Cvar* clwm_shownuments;
+extern Cvar* clet_autorecord;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();
@@ -70,6 +77,10 @@ extern int entLastVisible[MAX_CLIENTS_WM];
 void CLT3_SystemInfoChanged();
 void CLT3_ParseCommandString(QMsg* msg);
 void CLT3_ParseGamestate(QMsg* msg);
+void CLQ3_ParseSnapshot(QMsg* msg);
+void CLWS_ParseSnapshot(QMsg* msg);
+void CLWM_ParseSnapshot(QMsg* msg);
+void CLET_ParseSnapshot(QMsg* msg);
 
 //
 //	Screen

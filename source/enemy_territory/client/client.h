@@ -43,13 +43,10 @@ extern Cvar* cl_nodelta;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
 extern Cvar* cl_packetdup;
-extern Cvar* cl_shownuments;				// DHM - Nerve
 extern Cvar* cl_visibleClients;				// DHM - Nerve
 extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
-
-extern Cvar* cl_autorecord;
 
 extern Cvar* cl_allowDownload;
 
@@ -83,8 +80,6 @@ void CL_NextDownload(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
-
-void CL_Record(const char* name);
 
 //
 // cl_input

@@ -211,12 +211,7 @@ static char demoName[MAX_QPATH];		// compiler bug workaround
 void CL_Record_f(void)
 {
 	char name[MAX_OSPATH];
-	byte bufData[MAX_MSGLEN_WOLF];
-	QMsg buf;
-	int i;
 	int len;
-	wsentityState_t* ent;
-	wsentityState_t nullstate;
 	char* s;
 
 	if (Cmd_Argc() > 2)
@@ -267,85 +262,7 @@ void CL_Record_f(void)
 		}
 	}
 
-	// open the demo file
-#ifdef __MACOS__	//DAJ MacOS file typing
-	{
-		extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-		_ftype = 'WlfB';
-		_fcreator = 'WlfS';
-	}
-#endif
-
-	common->Printf("recording to %s.\n", name);
-	clc.demofile = FS_FOpenFileWrite(name);
-	if (!clc.demofile)
-	{
-		common->Printf("ERROR: couldn't open.\n");
-		return;
-	}
-	clc.demorecording = true;
-	String::NCpyZ(clc.q3_demoName, demoName, sizeof(clc.q3_demoName));
-
-	// don't start saving messages until a non-delta compressed message is received
-	clc.q3_demowaiting = true;
-
-	// write out the gamestate message
-	buf.Init(bufData, sizeof(bufData));
-	buf.Bitstream();
-
-	// NOTE, MRE: all server->client messages now acknowledge
-	buf.WriteLong(clc.q3_reliableSequence);
-
-	buf.WriteByte(q3svc_gamestate);
-	buf.WriteLong(clc.q3_serverCommandSequence);
-
-	// configstrings
-	for (i = 0; i < MAX_CONFIGSTRINGS_WS; i++)
-	{
-		if (!cl.ws_gameState.stringOffsets[i])
-		{
-			continue;
-		}
-		s = cl.ws_gameState.stringData + cl.ws_gameState.stringOffsets[i];
-		buf.WriteByte(q3svc_configstring);
-		buf.WriteShort(i);
-		buf.WriteBigString(s);
-	}
-
-	// baselines
-	memset(&nullstate, 0, sizeof(nullstate));
-	for (i = 0; i < MAX_GENTITIES_Q3; i++)
-	{
-		ent = &cl.ws_entityBaselines[i];
-		if (!ent->number)
-		{
-			continue;
-		}
-		buf.WriteByte(q3svc_baseline);
-		MSGWS_WriteDeltaEntity(&buf, &nullstate, ent, true);
-	}
-
-	buf.WriteByte(q3svc_EOF);
-
-	// finished writing the gamestate stuff
-
-	// write the client num
-	buf.WriteLong(clc.q3_clientNum);
-	// write the checksum feed
-	buf.WriteLong(clc.q3_checksumFeed);
-
-	// finished writing the client packet
-	buf.WriteByte(q3svc_EOF);
-
-	// write it to the demo file
-	len = LittleLong(clc.q3_serverMessageSequence - 1);
-	FS_Write(&len, 4, clc.demofile);
-
-	len = LittleLong(buf.cursize);
-	FS_Write(&len, 4, clc.demofile);
-	FS_Write(buf._data, buf.cursize, clc.demofile);
-
-	// the rest of the demo file will be copied from net messages
+	CLT3_Record(demoName, name);
 }
 
 /*

@@ -25,6 +25,8 @@ Cvar* clet_profile;
 Cvar* clt3_showServerCommands;
 Cvar* clt3_showTimeDelta;
 Cvar* clt3_activeAction;
+Cvar* clwm_shownuments;			// DHM - Nerve
+Cvar* clet_autorecord;
 
 void CLET_PurgeCache()
 {

@@ -61,6 +61,7 @@ set(CLIENT_FILES
 	game/tech3/cdkey.cpp
 	game/tech3/cgame.cpp
 	game/tech3/connection.cpp
+	game/tech3/demo.cpp
 	game/tech3/main.cpp
 	game/tech3/parse.cpp
 	game/tech3/screen.cpp
