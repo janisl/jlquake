@@ -1694,6 +1694,8 @@ static void SVH2_Edicts_f()
 
 void SVQH_Init()
 {
+	PR_Init();
+
 	SVQH_RegisterPhysicsCvars();
 
 	svqh_teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);

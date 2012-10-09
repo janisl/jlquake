@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <time.h>
 #include "../../server/server.h"
 #include "../../server/quake_hexen/local.h"
-#include "../../server/progsvm/progsvm.h"
 
 quakeparms_t host_parms;
 
@@ -337,8 +336,6 @@ void SV_Init(quakeparms_t* parms)
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
 		COM_Init();
-
-		PR_Init();
 
 		SV_InitNet();
 

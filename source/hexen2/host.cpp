@@ -7,7 +7,6 @@
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
 #include "../server/server.h"
-#include "../server/progsvm/progsvm.h"
 #include "../server/quake_hexen/local.h"
 
 /*
@@ -714,7 +713,6 @@ void Host_Init(quakeparms_t* parms)
 		Con_Init();
 		UI_Init();
 #endif
-		PR_Init();
 		SVQH_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
