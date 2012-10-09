@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../server/server.h"
-#include "../server/quake_hexen/local.h"
 
 /*
 
@@ -533,7 +532,7 @@ void _Host_Frame(float time)
 
 			if (cl.qh_serverTimeFloat != cl.qh_oldtime)
 			{
-				CL_UpdateParticles(svqh_gravity->value);
+				CL_UpdateParticles(Cvar_VariableValue("sv_gravity"));
 			}
 		}
 

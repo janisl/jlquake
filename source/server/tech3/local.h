@@ -152,7 +152,6 @@ void SVT3_SendServerCommand(client_t* cl, const char* fmt, ...) id_attribute((fo
 int SVET_LoadTag(const char* mod_name);
 void SVT3_MasterShutdown();
 void SVT3_MasterGameCompleteStatus();
-void SVT3_PacketEvent(netadr_t from, QMsg* msg);
 void SVT3_Frame(int msec);
 
 //

@@ -24,8 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 #include "../../client/client.h"
-#include "../../server/server.h"
-#include "../../server/tech3/local.h"
+#include "../../server/public.h"
 #include <setjmp.h>
 
 bool UIT3_UsesUniqueCDKey();

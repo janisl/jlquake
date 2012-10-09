@@ -38,11 +38,13 @@ void SV_Init();
 void SV_Shutdown(const char* finalMessage);
 void SV_Frame(int msec);
 
+void SVQH_ShutdownNetwork();
 void SVH2_RemoveGIPFiles(const char* path);
 
 void PR_SetPlayerClassGlobal(float newClass);
 
 bool SVT3_GameCommand();
+void SVT3_PacketEvent(netadr_t from, QMsg* msg);
 
 // RF, this is only used when running a local server
 void SVWS_SendMoveSpeedsToGame(int entnum, char* text);

@@ -12,7 +12,7 @@
 #include "../client/game/quake_hexen2/view.h"
 #include "../client/game/quake_hexen2/parse.h"
 #include "../client/game/parse.h"
-#include "../server/server.h"
+#include "../server/public.h"
 
 const char* svc_strings[] =
 {
@@ -90,7 +90,7 @@ void CL_KeepaliveMessage(void)
 {
 	static float lastmsg;
 
-	if (sv.state != SS_DEAD)
+	if (SV_IsServerActive())
 	{
 		return;		// no need if server is local
 	}

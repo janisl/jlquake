@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/game/quake_hexen2/view.h"
 #include "../client/game/parse.h"
 #include "../client/game/quake_hexen2/parse.h"
-#include "../server/server.h"
+#include "../server/public.h"
 
 const char* svc_strings[] =
 {
@@ -90,7 +90,7 @@ void CL_KeepaliveMessage(void)
 	QMsg old;
 	byte olddata[8192];
 
-	if (sv.state != SS_DEAD)
+	if (SV_IsServerActive())
 	{
 		return;		// no need if server is local
 	}

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 #include "../../common/file_formats/md2.h"
-#include "../../server/server.h"
-#include "../../server/quake2/local.h"
+#include "../../server/public.h"
 
 Cvar* adr0;
 Cvar* adr1;

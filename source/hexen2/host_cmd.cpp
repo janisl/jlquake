@@ -9,8 +9,7 @@
 #undef GetClassName
 #endif
 #include <time.h>
-#include "../server/server.h"
-#include "../server/quake_hexen/local.h"
+#include "../server/public.h"
 
 /*
 ==================
@@ -260,7 +259,7 @@ void Host_Startdemos_f(void)
 	if (cls.state == CA_DEDICATED)
 #endif
 	{
-		if (sv.state == SS_DEAD)
+		if (!SV_IsServerActive())
 		{
 			Cbuf_AddText("map start\n");
 		}
@@ -279,7 +278,7 @@ void Host_Startdemos_f(void)
 	for (i = 1; i < c + 1; i++)
 		String::NCpy(cls.qh_demos[i - 1], Cmd_Argv(i), sizeof(cls.qh_demos[0]) - 1);
 
-	if (sv.state == SS_DEAD && cls.qh_demonum != -1 && !clc.demoplaying)
+	if (!SV_IsServerActive() && cls.qh_demonum != -1 && !clc.demoplaying)
 	{
 		cls.qh_demonum = 0;
 		CL_NextDemo();

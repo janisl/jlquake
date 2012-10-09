@@ -232,7 +232,6 @@ qsocket_t* NET_CheckNewConnections(netadr_t* outaddr);
 // This is a reliable *blocking* send to all attached clients.
 int NET_SendToAll(QMsg* data, int blocktime);
 void MaxPlayers_f();
-void SVQH_ShutdownNetwork();
 
 //
 //	Physics

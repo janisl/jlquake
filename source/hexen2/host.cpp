@@ -7,7 +7,6 @@
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
 #include "../server/server.h"
-#include "../server/quake_hexen/local.h"
 
 /*
 
@@ -544,7 +543,7 @@ void _Host_Frame(float time)
 
 				if (cl.qh_serverTimeFloat != cl.qh_oldtime)
 				{
-					CL_UpdateParticles(svqh_gravity->value);
+					CL_UpdateParticles(Cvar_VariableValue("sv_gravity"));
 				}
 				CLH2_UpdateEffects();
 			}

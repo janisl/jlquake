@@ -11,8 +11,7 @@
 #else
 #include <dirent.h>
 #endif
-#include "../server/server.h"
-#include "../server/quake_hexen/local.h"
+#include "../server/public.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
