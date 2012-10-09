@@ -37,6 +37,8 @@ int SVQH_GetMaxClientsLimit();
 void SV_Init();
 void SV_Shutdown(const char* finalMessage);
 void SV_Frame(int msec);
+int SVQH_GetNumConnectedClients();
+void SVQH_SetRealTime(int time);
 
 void SVQH_ShutdownNetwork();
 void SVH2_RemoveGIPFiles(const char* path);

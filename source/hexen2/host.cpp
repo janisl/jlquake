@@ -7,7 +7,6 @@
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
 #include "../server/public.h"
-#include "../server/server.h"
 
 /*
 
@@ -304,11 +303,11 @@ Returns false if the time is too short to run a frame
 qboolean Host_FilterTime(float time)
 {
 	realtime += time;
+	SVQH_SetRealTime(realtime * 1000);
 #ifdef DEDICATED
 	if (realtime - oldrealtime < 1.0 / 72.0)
 #else
 	cls.realtime = realtime * 1000;
-	svs.realtime = realtime * 1000;
 
 	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / 72.0)
 #endif
@@ -413,7 +412,7 @@ void _Host_Frame(float time)
 		NET_Poll();
 
 // if running the server locally, make intentions now
-		if (sv.state != SS_DEAD)
+		if (SV_IsServerActive())
 		{
 			CL_SendCmd();
 		}
@@ -455,7 +454,7 @@ void _Host_Frame(float time)
 #ifndef DEDICATED
 			// if running the server remotely, send intentions now after
 			// the incoming messages have been read
-			if (sv.state == SS_DEAD)
+			if (!SV_IsServerActive())
 			{
 				CL_SendCmd();
 			}
@@ -554,7 +553,7 @@ void Host_Frame(float time)
 		double time1, time2;
 		static double timetotal;
 		static int timecount;
-		int i, c, m;
+		int m;
 
 		if (!serverprofile->value)
 		{
@@ -577,16 +576,8 @@ void Host_Frame(float time)
 		m = timetotal * 1000 / timecount;
 		timecount = 0;
 		timetotal = 0;
-		c = 0;
-		for (i = 0; i < svs.qh_maxclients; i++)
-		{
-			if (svs.clients[i].state >= CS_CONNECTED)
-			{
-				c++;
-			}
-		}
 
-		common->Printf("serverprofile: %2i clients %2i msec\n",  c,  m);
+		common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
 	}
 	catch (Exception& e)
 	{

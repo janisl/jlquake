@@ -217,3 +217,21 @@ void SV_Frame(int msec)
 		SVT3_Frame(msec);
 	}
 }
+
+int SVQH_GetNumConnectedClients()
+{
+	int c = 0;
+	for (int i = 0; i < svs.qh_maxclients; i++)
+	{
+		if (svs.clients[i].state >= CS_CONNECTED)
+		{
+			c++;
+		}
+	}
+	return c;
+}
+
+void SVQH_SetRealTime(int time)
+{
+	svs.realtime = time;
+}
