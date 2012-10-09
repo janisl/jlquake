@@ -25,8 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #endif
 #include <time.h>
-#include "../../server/server.h"
-#include "../../server/quake_hexen/local.h"
+#include "../../server/public.h"
 
 quakeparms_t host_parms;
 
@@ -235,36 +234,6 @@ void COM_ServerFrame(float time)
 
 /*
 ====================
-SV_InitNet
-====================
-*/
-void SV_InitNet(void)
-{
-	int p;
-
-	svqhw_net_port = QWPORT_SERVER;
-	p = COM_CheckParm("-port");
-	if (p && p < COM_Argc())
-	{
-		svqhw_net_port = String::Atoi(COM_Argv(p + 1));
-		common->Printf("Port: %i\n", svqhw_net_port);
-	}
-	NET_Init(svqhw_net_port);
-
-	// pick a port value that should be nice and random
-#ifdef _WIN32
-	Netchan_Init((int)(timeGetTime() * 1000) * time(NULL));
-#else
-	Netchan_Init((int)(getpid() + getuid() * 1000) * time(NULL));
-#endif
-
-	// heartbeats will allways be sent to the id master
-	svs.qh_last_heartbeat = -99999;		// send immediately
-}
-
-
-/*
-====================
 COM_InitServer
 ====================
 */
@@ -289,7 +258,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		COM_Init();
 
-		SV_InitNet();
+		NET_Init();
 
 		SV_InitOperatorCommands();
 
@@ -312,11 +281,11 @@ void COM_InitServer(quakeparms_t* parms)
 		Cbuf_Execute();
 
 // if a map wasn't specified on the command line, spawn start.map
-		if (sv.state == SS_DEAD)
+		if (!SV_IsServerActive())
 		{
 			Cmd_ExecuteString("map start");
 		}
-		if (sv.state == SS_DEAD)
+		if (!SV_IsServerActive())
 		{
 			common->Error("Couldn't spawn a server");
 		}

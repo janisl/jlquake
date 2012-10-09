@@ -88,10 +88,8 @@ byte net_message_buffer[MAX_UDP_PACKET];
 NET_Init
 ====================
 */
-void NET_Init(int port)
+void NET_Init()
 {
-	NETQHW_InitCommon(port);
-
 	//
 	// init the message buffer
 	//

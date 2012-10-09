@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern netadr_t net_from;			// address of who sent the packet
 extern QMsg net_message;
 
-void        NET_Init(int port);
+void        NET_Init();
 
 //============================================================================
 

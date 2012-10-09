@@ -6,8 +6,7 @@
 #include <dirent.h>
 #endif
 #include "../../common/hexen2strings.h"
-#include "../../server/server.h"
-#include "../../server/quake_hexen/local.h"
+#include "../../server/public.h"
 
 quakeparms_t host_parms;
 
@@ -214,33 +213,6 @@ void CL_Disconnect()
 
 /*
 ====================
-SV_InitNet
-====================
-*/
-void SV_InitNet(void)
-{
-	int p;
-
-	svqhw_net_port = HWPORT_SERVER;
-	p = COM_CheckParm("-port");
-	if (p && p < COM_Argc())
-	{
-		svqhw_net_port = String::Atoi(COM_Argv(p + 1));
-		common->Printf("Port: %i\n", svqhw_net_port);
-	}
-	NET_Init(svqhw_net_port);
-
-	Netchan_Init(0);
-
-	// heartbeats will allways be sent to the id master
-	svs.qh_last_heartbeat = -99999;		// send immediately
-
-	SOCK_StringToAdr("208.135.137.23", &hw_idmaster_adr, 26900);
-}
-
-
-/*
-====================
 COM_InitServer
 ====================
 */
@@ -267,7 +239,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		ComH2_LoadStrings();
 
-		SV_InitNet();
+		NET_Init();
 
 		SV_InitOperatorCommands();
 
@@ -288,11 +260,11 @@ void COM_InitServer(quakeparms_t* parms)
 
 // if a map wasn't specified on the command line, spawn start.map
 
-		if (sv.state == SS_DEAD)
+		if (!SV_IsServerActive())
 		{
 			Cmd_ExecuteString("map demo1");
 		}
-		if (sv.state == SS_DEAD)
+		if (!SV_IsServerActive())
 		{
 			common->Error("Couldn't spawn a server");
 		}

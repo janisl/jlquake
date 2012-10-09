@@ -836,7 +836,7 @@ static int UDP_OpenSocket(int port)
 	return newsocket;
 }
 
-void NETQHW_InitCommon(int port)
+void NETQHW_Init(int port)
 {
 	if (GGameType & GAME_HexenWorld)
 	{

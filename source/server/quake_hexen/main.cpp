@@ -1736,6 +1736,29 @@ static void SVH2_Edicts_f()
 	SVH2_Edicts(Name);
 }
 
+static void SVQHW_InitNet()
+{
+	svqhw_net_port = GGameType & GAME_HexenWorld ? HWPORT_SERVER : QWPORT_SERVER;
+	int p = COM_CheckParm("-port");
+	if (p && p < COM_Argc())
+	{
+		svqhw_net_port = String::Atoi(COM_Argv(p + 1));
+		common->Printf("Port: %i\n", svqhw_net_port);
+	}
+	NETQHW_Init(svqhw_net_port);
+
+	// pick a port value that should be nice and random
+	Netchan_Init(Com_Milliseconds() & 0xffff);
+
+	// heartbeats will allways be sent to the id master
+	svs.qh_last_heartbeat = -99999;		// send immediately
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		SOCK_StringToAdr("208.135.137.23", &hw_idmaster_adr, 26900);
+	}
+}
+
 void SVQH_Init()
 {
 	PR_Init();
@@ -1832,6 +1855,8 @@ void SVQH_Init()
 			sv_ce_max_size = Cvar_Get("sv_ce_max_size", "0", CVAR_ARCHIVE);
 			Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 		}
+
+		SVQHW_InitNet();
 
 		VQH_InitRollCvars();
 

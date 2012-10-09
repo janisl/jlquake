@@ -150,7 +150,7 @@ void Netchan_TransmitNextFragment(netchan_t* chan);
 void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
 bool Netchan_CanReliable(netchan_t* chan);
 bool Netchan_Process(netchan_t* chan, QMsg* msg);
-void NETQHW_InitCommon(int port);
+void NETQHW_Init(int port);
 bool NET_GetCvars();
 void NET_Config(bool enableNetworking);
 void NETQ23_Init();

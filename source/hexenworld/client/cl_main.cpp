@@ -1292,7 +1292,9 @@ void Host_Init(quakeparms_t* parms)
 
 		COM_Init(parms->basedir);
 
-		NET_Init(HWPORT_CLIENT);
+		NETQHW_Init(HWPORT_CLIENT);
+
+		NET_Init();
 		Netchan_Init(0);
 
 		Key_Init();

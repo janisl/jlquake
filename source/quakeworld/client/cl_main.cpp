@@ -1419,13 +1419,10 @@ void Host_Init(quakeparms_t* parms)
 
 		COM_Init();
 
-		NET_Init(QWPORT_CLIENT);
+		NETQHW_Init(QWPORT_CLIENT);
+		NET_Init();
 		// pick a port value that should be nice and random
-#ifdef _WIN32
-		Netchan_Init((int)(timeGetTime() * 1000) * time(NULL));
-#else
-		Netchan_Init((int)(getpid() + getuid() * 1000) * time(NULL));
-#endif
+		Netchan_Init(Com_Milliseconds() & 0xffff);
 
 		Key_Init();
 		Com_InitDebugLog();
