@@ -599,6 +599,16 @@ void PR_InitGlobals()
 	}
 }
 
+void PR_SetPlayerClassGlobal(float newClass)
+{
+	// when classes changes after map load, update cl_playerclass, cl_playerclass should
+	// probably only be used in worldspawn, though
+	if (pr_globalVars.cl_playerclass)
+	{
+		*pr_globalVars.cl_playerclass = newClass;
+	}
+}
+
 static void PR_LoadProgsFile(const char* name, int expectedHeaderCrc)
 {
 	ED_ClearGEFVCache();

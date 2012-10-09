@@ -10,7 +10,6 @@
 #endif
 #include <time.h>
 #include "../server/server.h"
-#include "../server/progsvm/progsvm.h"
 #include "../server/quake_hexen/local.h"
 
 /*
@@ -129,10 +128,8 @@ void Host_Name_f(void)
 	}
 }
 
-void Host_Class_f(void)
+void Host_Class_f()
 {
-	float newClass;
-
 	if (Cmd_Argc() == 1)
 	{
 		if (!(int)clh2_playerclass->value)
@@ -145,6 +142,8 @@ void Host_Class_f(void)
 		}
 		return;
 	}
+
+	float newClass;
 	if (Cmd_Argc() == 2)
 	{
 		newClass = String::Atof(Cmd_Argv(1));
@@ -158,12 +157,7 @@ void Host_Class_f(void)
 
 	if (GGameType & GAME_H2Portals)
 	{
-		// when classes changes after map load, update cl_playerclass, cl_playerclass should
-		// probably only be used in worldspawn, though
-		if (pr_globalVars.cl_playerclass)
-		{
-			*pr_globalVars.cl_playerclass = newClass;
-		}
+		PR_SetPlayerClassGlobal(newClass);
 	}
 
 	if (cls.state == CA_ACTIVE)

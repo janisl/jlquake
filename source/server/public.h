@@ -36,6 +36,8 @@ int SVQH_GetMaxClients();
 int SVQH_GetMaxClientsLimit();
 void SVH2_RemoveGIPFiles(const char* path);
 
+void PR_SetPlayerClassGlobal(float newClass);
+
 bool SVT3_GameCommand();
 
 // RF, this is only used when running a local server
