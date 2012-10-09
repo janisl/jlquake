@@ -870,25 +870,6 @@ int R_ModelSyncType(qhandle_t Handle)
 
 //==========================================================================
 //
-//	R_PrintModelFrameName
-//
-//==========================================================================
-
-void R_PrintModelFrameName(qhandle_t Handle, int Frame)
-{
-	model_t* Model = R_GetModelByHandle(Handle);
-	if (Model->type != MOD_MESH1)
-	{
-		return;
-	}
-
-	mesh1hdr_t* hdr = (mesh1hdr_t*)Model->q1_cache;
-	mmesh1framedesc_t* pframedesc = &hdr->frames[Frame];
-	common->Printf("frame %i: %s\n", Frame, pframedesc->name);
-}
-
-//==========================================================================
-//
 //	R_CalculateModelScaleOffset
 //
 //==========================================================================
