@@ -6,6 +6,7 @@
 
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
+#include "../server/public.h"
 #include "../server/server.h"
 
 /*
@@ -135,14 +136,12 @@ void Host_EndGame(const char* message, ...)
 
 	SV_Shutdown("");
 
-#ifdef DEDICATED
-		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
-#else
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
 
 	}
+#ifndef DEDICATED
 	if (cls.qh_demonum != -1)
 	{
 		CL_NextDemo();
@@ -185,14 +184,12 @@ void Host_Error(const char* error, ...)
 
 	SV_Shutdown("");
 
-#ifdef DEDICATED
-	Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
-#else
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
-
 	}
+
+#ifndef DEDICATED
 	CL_Disconnect();
 	cls.qh_demonum = -1;
 
@@ -218,9 +215,6 @@ void    Host_FindMaxClients(void)
 	{
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
-#ifndef DEDICATED
-		cls.state = CA_DEDICATED;
-#endif
 		if (i != (COM_Argc() - 1))
 		{
 			svs.qh_maxclients = String::Atoi(COM_Argv(i + 1));
@@ -246,7 +240,7 @@ void    Host_FindMaxClients(void)
 	i = COM_CheckParm("-listen");
 	if (i)
 	{
-		if (cls.state == CA_DEDICATED)
+		if (com_dedicated->integer)
 		{
 			common->FatalError("Only one of -dedicated or -listen can be specified");
 		}
@@ -708,7 +702,7 @@ void Host_Init(quakeparms_t* parms)
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 
 #ifndef DEDICATED
-		if (cls.state != CA_DEDICATED)
+		if (!com_dedicated->integer)
 		{
 			CL_Init();
 		}
@@ -720,7 +714,7 @@ void Host_Init(quakeparms_t* parms)
 		NET_Init();
 
 #ifndef DEDICATED
-		if (cls.state != CA_DEDICATED)
+		if (!com_dedicated->integer)
 		{
 			IN_Init();
 			CL_InitRenderer();
@@ -782,7 +776,7 @@ void Host_Shutdown(void)
 	S_Shutdown();
 	IN_Shutdown();
 
-	if (cls.state != CA_DEDICATED)
+	if (!com_dedicated->integer)
 	{
 		R_Shutdown(true);
 	}

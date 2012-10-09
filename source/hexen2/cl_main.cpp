@@ -79,7 +79,7 @@ Host should be either "local" or a net address to be passed on
 */
 void CL_EstablishConnection(const char* host)
 {
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		return;
 	}

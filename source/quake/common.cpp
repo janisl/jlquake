@@ -354,12 +354,12 @@ void Con_Printf(const char* fmt, ...)
 		Con_DebugLog("qconsole.log", msg);
 	}
 
-#ifndef DEDICATED
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		return;		// no graphics mode
-
 	}
+
+#ifndef DEDICATED
 // write it to the scrollable buffer
 	Con_ConsolePrint(msg);
 

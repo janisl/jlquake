@@ -476,8 +476,6 @@ enum connstate_t
 	CA_CINEMATIC,		// playing a cinematic or a static pic, not connected to a server
 
 	//	New statuses.
-	//	This should be replaced with cvar check.
-	CA_DEDICATED,
 	//	This is stupid, should get rid of it.
 	CA_DEMOSTART
 };

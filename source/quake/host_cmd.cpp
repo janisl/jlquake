@@ -30,7 +30,7 @@ Com_Quit_f
 void Com_Quit_f(void)
 {
 #ifndef DEDICATED
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && cls.state != CA_DEDICATED)
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && !com_dedicated->integer)
 	{
 		MQH_Menu_Quit_f();
 		return;
@@ -204,9 +204,9 @@ void Host_Startdemos_f(void)
 {
 #ifndef DEDICATED
 	int i, c;
-
-	if (cls.state == CA_DEDICATED)
 #endif
+
+	if (com_dedicated->integer)
 	{
 		if (!SV_IsServerActive())
 		{
@@ -249,7 +249,7 @@ Return to looping demos
 */
 void Host_Demos_f(void)
 {
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		return;
 	}
@@ -270,7 +270,7 @@ Return to looping demos
 */
 void Host_Stopdemo_f(void)
 {
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		return;
 	}

@@ -146,9 +146,7 @@ int main(int c, char** v)
 		newtime = Sys_DoubleTime();
 		time = newtime - oldtime;
 
-#ifndef DEDICATED
-		if (cls.state == CA_DEDICATED)
-#endif
+		if (com_dedicated->integer)
 		{	// play vcrfiles at max speed
 			if (time < sys_ticrate->value)
 			{

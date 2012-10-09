@@ -345,7 +345,7 @@ void Con_Printf(const char* fmt, ...)
 	}
 
 #ifndef DEDICATED
-	if (cls.state == CA_DEDICATED)
+	if (com_dedicated->integer)
 	{
 		return;		// no graphics mode
 
