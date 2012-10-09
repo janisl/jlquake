@@ -387,26 +387,6 @@ void CL_ParseDownload(QMsg* msg)
 
 /*
 =====================
-CL_ParseBinaryMessage
-=====================
-*/
-void CL_ParseBinaryMessage(QMsg* msg)
-{
-	int size;
-
-	msg->Uncompressed();
-
-	size = msg->cursize - msg->readcount;
-	if (size <= 0 || size > MAX_BINARY_MESSAGE_ET)
-	{
-		return;
-	}
-
-	CLET_CGameBinaryMessageReceived((char*)&msg->_data[msg->readcount], size, cl.et_snap.serverTime);
-}
-
-/*
-=====================
 CL_ParseServerMessage
 =====================
 */
@@ -490,5 +470,5 @@ void CL_ParseServerMessage(QMsg* msg)
 		}
 	}
 
-	CL_ParseBinaryMessage(msg);
+	CLET_ParseBinaryMessage(msg);
 }

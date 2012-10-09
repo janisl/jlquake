@@ -16,10 +16,7 @@
 
 #include "../../client.h"
 #include "local.h"
-//#include "../quake3/local.h"
-//#include "../wolfsp/local.h"
-//#include "../wolfmp/local.h"
-//#include "../et/local.h"
+#include "../et/local.h"
 
 int entLastVisible[MAX_CLIENTS_WM];
 
@@ -1651,4 +1648,17 @@ void CLET_ParseSnapshot(QMsg* msg)
 	}
 
 	cl.q3_newSnapshots = true;
+}
+
+void CLET_ParseBinaryMessage(QMsg* msg)
+{
+	msg->Uncompressed();
+
+	int size = msg->cursize - msg->readcount;
+	if (size <= 0 || size > MAX_BINARY_MESSAGE_ET)
+	{
+		return;
+	}
+
+	CLET_CGameBinaryMessageReceived((char*)&msg->_data[msg->readcount], size, cl.et_snap.serverTime);
 }

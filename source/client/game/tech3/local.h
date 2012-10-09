@@ -81,6 +81,7 @@ void CLQ3_ParseSnapshot(QMsg* msg);
 void CLWS_ParseSnapshot(QMsg* msg);
 void CLWM_ParseSnapshot(QMsg* msg);
 void CLET_ParseSnapshot(QMsg* msg);
+void CLET_ParseBinaryMessage(QMsg* msg);
 
 //
 //	Screen
