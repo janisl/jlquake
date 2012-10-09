@@ -1520,6 +1520,19 @@ void SVQHW_FinalMessage(const char* message)
 	}
 }
 
+//	Quake calls this before calling Sys_Quit or Sys_Error
+void SVQHW_Shutdown(const char* finalMessage)
+{
+	SVQHW_FinalMessage(finalMessage);
+	SVQHW_Master_Shutdown();
+	if (svqhw_fraglogfile)
+	{
+		FS_FCloseFile(svqhw_fraglogfile);
+		svqhw_fraglogfile = 0;
+	}
+	NET_Shutdown();
+}
+
 void SVQH_ServerFrame(float frametime)
 {
 	// run the world state

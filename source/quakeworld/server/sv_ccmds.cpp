@@ -38,9 +38,13 @@ SV_Quit_f
 */
 void SV_Quit_f(void)
 {
-	SVQHW_FinalMessage("server shutdown\n");
 	common->Printf("Shutting down.\n");
-	SVQHW_Shutdown();
+	SVQHW_Shutdown("server shutdown\n");
+	if (sv_logfile)
+	{
+		FS_FCloseFile(sv_logfile);
+		sv_logfile = 0;
+	}
 	Sys_Quit();
 }
 

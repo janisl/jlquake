@@ -199,6 +199,7 @@ void SVQH_SendServerinfo(client_t* client);
 void SVQHW_Master_Shutdown();
 void SVQH_Shutdown(bool crash);
 void SVQHW_FinalMessage(const char* message);
+void SVQHW_Shutdown(const char* finalMessage);
 void SVQH_ServerFrame(float frametime);
 void SVQHW_ServerFrame();
 void SVQH_Init();

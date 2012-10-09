@@ -24,7 +24,6 @@ extern fileHandle_t sv_logfile;
 //
 // sv_main.c
 //
-void SVQHW_Shutdown(void);
 void SV_Frame(float time);
 
 void SV_InitOperatorCommands(void);

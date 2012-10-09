@@ -124,29 +124,6 @@ void CL_Disconnect()
 
 /*
 ================
-SVQHW_Shutdown
-
-Quake calls this before calling Sys_Quit or Sys_Error
-================
-*/
-void SVQHW_Shutdown()
-{
-	SVQHW_Master_Shutdown();
-	if (sv_logfile)
-	{
-		FS_FCloseFile(sv_logfile);
-		sv_logfile = 0;
-	}
-	if (svqhw_fraglogfile)
-	{
-		FS_FCloseFile(svqhw_fraglogfile);
-		svqhw_fraglogfile = 0;
-	}
-	NET_Shutdown();
-}
-
-/*
-================
 SV_Error
 
 Sends a datagram to all the clients informing them of the server crash,
@@ -171,9 +148,12 @@ void SV_Error(const char* error, ...)
 
 	common->Printf("SV_Error: %s\n",string);
 
-	SVQHW_FinalMessage(va("server crashed: %s\n", string));
-
-	SVQHW_Shutdown();
+	SVQHW_Shutdown(va("server crashed: %s\n", string));
+	if (sv_logfile)
+	{
+		FS_FCloseFile(sv_logfile);
+		sv_logfile = 0;
+	}
 
 	Sys_Error("SV_Error: %s\n",string);
 }
