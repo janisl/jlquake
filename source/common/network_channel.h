@@ -202,7 +202,6 @@ struct hostcache_t
 extern int hostCacheCount;
 extern hostcache_t hostcache[HOSTCACHESIZE];
 extern int net_activeconnections;
-extern int net_numsockets;
 extern double net_time;
 extern bool tcpipAvailable;
 extern int net_acceptsocket;

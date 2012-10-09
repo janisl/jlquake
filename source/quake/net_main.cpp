@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // net_main.c
 
 #include "quakedef.h"
-#include "../server/server.h"
-#include "../server/quake_hexen/local.h"
 
 QMsg net_message;
 byte net_message_buf[MAX_MSGLEN_Q1];
@@ -36,7 +34,6 @@ NET_Init
 
 void NET_Init(void)
 {
-	net_numsockets = svs.qh_maxclientslimit;
 	NET_CommonInit();
 
 	// allocate space for network message buffer
@@ -45,5 +42,4 @@ void NET_Init(void)
 #ifndef DEDICATED
 	Cmd_AddCommand("slist", NET_Slist_f);
 #endif
-	Cmd_AddCommand("maxplayers", MaxPlayers_f);
 }

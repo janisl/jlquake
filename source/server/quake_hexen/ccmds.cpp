@@ -2016,6 +2016,7 @@ static void SVQW_SnapAll_f()
 
 void SVQH_InitOperatorCommands()
 {
+	Cmd_AddCommand("maxplayers", MaxPlayers_f);
 	Cmd_AddCommand("map", SVQH_Map_f);
 	Cmd_AddCommand("changelevel", SVQH_Changelevel_f);
 	Cmd_AddCommand("status", SVQH_ConStatus_f);

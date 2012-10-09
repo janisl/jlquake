@@ -76,6 +76,7 @@
 //		address of a server that is not running locally.
 
 #include "qcommon.h"
+#include "../server/public.h"
 
 struct packetBuffer_t
 {
@@ -89,7 +90,7 @@ int DEFAULTnet_hostport;
 
 static qsocket_t* net_activeSockets = NULL;
 static qsocket_t* net_freeSockets = NULL;
-int net_numsockets = 0;
+static int net_numsockets = 0;
 
 double net_time;
 
@@ -1119,6 +1120,7 @@ static void NET_Port_f()
 
 void NET_CommonInit()
 {
+	net_numsockets = SVQH_GetMaxClientsLimit();
 	DEFAULTnet_hostport = GGameType & GAME_Hexen2 ? 26900 : 26000;
 
 	int i = COM_CheckParm("-port");
