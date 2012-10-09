@@ -1535,6 +1535,11 @@ void SVQHW_Shutdown(const char* finalMessage)
 
 void SVQH_ServerFrame(float frametime)
 {
+	if (sv.state == SS_DEAD)
+	{
+		return;
+	}
+
 	// run the world state
 	*pr_globalVars.frametime = frametime;
 

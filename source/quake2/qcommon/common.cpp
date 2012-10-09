@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // common.c -- misc functions used in client and server
 #include "qcommon.h"
 #include "../client/client.h"
-#include "../../server/server.h"
-#include "../../server/quake2/local.h"
+#include "../../server/public.h"
 #include <setjmp.h>
 
 
@@ -571,7 +570,7 @@ void Qcommon_Frame(int msec)
 			time_before = Sys_Milliseconds_();
 		}
 
-		SVQ2_Frame(msec);
+		SV_Frame(msec);
 
 		if (com_speeds->value)
 		{

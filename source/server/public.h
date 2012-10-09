@@ -36,6 +36,7 @@ int SVQH_GetMaxClients();
 int SVQH_GetMaxClientsLimit();
 void SV_Init();
 void SV_Shutdown(const char* finalMessage);
+void SV_Frame(int msec);
 
 void SVH2_RemoveGIPFiles(const char* path);
 

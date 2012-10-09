@@ -484,10 +484,7 @@ void _Host_Frame(float time)
 // check for commands typed to the host
 		Host_GetConsoleCommands();
 
-		if (sv.state != SS_DEAD)
-		{
-			SVQH_ServerFrame(host_frametime);
-		}
+		SV_Frame(host_frametime * 1000);
 
 //-------------------
 //

@@ -197,3 +197,23 @@ void SV_Shutdown(const char* finalMessage)
 		SVT3_Shutdown(finalMessage);
 	}
 }
+
+void SV_Frame(int msec)
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		SVQHW_ServerFrame(msec);
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		SVQH_ServerFrame(msec * 0.001);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		SVQ2_Frame(msec);
+	}
+	else
+	{
+		SVT3_Frame(msec);
+	}
+}

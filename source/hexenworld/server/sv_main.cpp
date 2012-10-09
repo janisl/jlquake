@@ -194,7 +194,7 @@ void COM_ServerFrame(float time)
 // process console commands
 		Cbuf_Execute();
 
-		SVQHW_ServerFrame(time * 1000);
+		SV_Frame(time * 1000);
 	}
 	catch (DropException& e)
 	{

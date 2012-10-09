@@ -519,10 +519,7 @@ void _Host_Frame(float time)
 
 		do
 		{
-			if (sv.state != SS_DEAD)
-			{
-				SVQH_ServerFrame(host_frametime);
-			}
+			SV_Frame(host_frametime * 1000);
 
 			//-------------------
 			//

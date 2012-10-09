@@ -1830,7 +1830,7 @@ void Com_Frame(void)
 			timeBeforeServer = Sys_Milliseconds();
 		}
 
-		SVT3_Frame(msec);
+		SV_Frame(msec);
 
 		// if "dedicated" has been modified, start up
 		// or shut down the client system.

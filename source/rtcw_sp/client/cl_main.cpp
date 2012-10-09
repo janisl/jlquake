@@ -29,8 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // cl_main.c  -- client main loop
 
 #include "client.h"
-#include "../../server/server.h"
-#include "../../server/tech3/local.h"
+#include "../../server/public.h"
 #include <limits.h>
 
 Cvar* cl_nodelta;
@@ -840,7 +839,7 @@ void CL_Connect_f(void)
 
 	// make sure a local server is killed
 	Cvar_Set("sv_killserver", "1");
-	SVT3_Frame(0);
+	SV_Frame(0);
 
 	CL_Disconnect(true);
 	Con_Close();

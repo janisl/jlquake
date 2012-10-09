@@ -31,8 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "client.h"
 #include <limits.h>
 
-#include "../../server/server.h"
-#include "../../server/tech3/local.h"
+#include "../../server/public.h"
 
 Cvar* cl_wavefilerecord;
 Cvar* cl_nodelta;
@@ -919,7 +918,7 @@ void CL_Connect_f(void)
 
 	// make sure a local server is killed
 	Cvar_Set("sv_killserver", "1");
-	SVT3_Frame(0);
+	SV_Frame(0);
 
 	CL_Disconnect(true);
 	Con_Close();
