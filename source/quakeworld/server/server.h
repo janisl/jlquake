@@ -45,7 +45,7 @@ extern fileHandle_t sv_logfile;
 //
 // sv_main.c
 //
-void SV_Frame(float time);
+void COM_ServerFrame(float time);
 
 void SV_InitOperatorCommands(void);
 

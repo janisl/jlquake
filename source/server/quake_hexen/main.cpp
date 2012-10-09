@@ -1632,8 +1632,20 @@ static void SVQHW_CheckTimeouts()
 	}
 }
 
-void SVQHW_ServerFrame()
+void SVQHW_ServerFrame(int msec)
 {
+	static double start, end;
+
+	start = Sys_DoubleTime();
+	svs.qh_stats.idle += start - end;
+
+	// decide the simulation time
+	if (!sv.qh_paused || GGameType & GAME_HexenWorld)
+	{
+		sv.qh_time += msec * 0.001;
+		svs.realtime += msec;
+	}
+
 	SVQHW_CheckVars();
 
 	// check timeouts
@@ -1656,6 +1668,20 @@ void SVQHW_ServerFrame()
 
 	// send a heartbeat to the master if needed
 	SVQHW_Master_Heartbeat();
+
+	// collect timing statistics
+	end = Sys_DoubleTime();
+	svs.qh_stats.active += end - start;
+	if (++svs.qh_stats.count == QHW_STATFRAMES)
+	{
+		svs.qh_stats.latched_active = svs.qh_stats.active;
+		svs.qh_stats.latched_idle = svs.qh_stats.idle;
+		svs.qh_stats.latched_packets = svs.qh_stats.packets;
+		svs.qh_stats.active = 0;
+		svs.qh_stats.idle = 0;
+		svs.qh_stats.packets = 0;
+		svs.qh_stats.count = 0;
+	}
 }
 
 static void SVH2_Edicts(const char* Name)

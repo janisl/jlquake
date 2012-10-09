@@ -105,7 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	COM_InitServer(&parms);
 
 // run one frame immediately for first heartbeat
-	SV_Frame(0.1);
+	COM_ServerFrame(0.1);
 
 //
 // main loop
@@ -140,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		time = newtime - oldtime;
 		oldtime = newtime;
 
-		SV_Frame(time);
+		COM_ServerFrame(time);
 	}
 
 	return true;

@@ -13,8 +13,6 @@ quakeparms_t host_parms;
 
 qboolean host_initialized;			// true if into command execution (compatability)
 
-double realtime;					// without any filtering or bounding
-
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 
@@ -160,26 +158,16 @@ void SV_GetConsoleCommands(void)
 
 /*
 ==================
-SV_Frame
+COM_ServerFrame
 
 ==================
 */
-void SV_Frame(float time)
+void COM_ServerFrame(float time)
 {
 	try
 	{
-		static double start, end;
-
-		start = Sys_DoubleTime();
-		svs.qh_stats.idle += start - end;
-
 // keep the random time dependent
 		rand();
-
-// decide the simulation time
-		realtime += time;
-		sv.qh_time += time;
-		svs.realtime = realtime * 1000;
 
 		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
 		{
@@ -206,21 +194,7 @@ void SV_Frame(float time)
 // process console commands
 		Cbuf_Execute();
 
-		SVQHW_ServerFrame();
-
-// collect timing statistics
-		end = Sys_DoubleTime();
-		svs.qh_stats.active += end - start;
-		if (++svs.qh_stats.count == QHW_STATFRAMES)
-		{
-			svs.qh_stats.latched_active = svs.qh_stats.active;
-			svs.qh_stats.latched_idle = svs.qh_stats.idle;
-			svs.qh_stats.latched_packets = svs.qh_stats.packets;
-			svs.qh_stats.active = 0;
-			svs.qh_stats.idle = 0;
-			svs.qh_stats.packets = 0;
-			svs.qh_stats.count = 0;
-		}
+		SVQHW_ServerFrame(time * 1000);
 	}
 	catch (DropException& e)
 	{

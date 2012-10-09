@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 	COM_InitServer(&parms);
 
 // run one frame immediately for first heartbeat
-	SV_Frame(0.1);
+	COM_ServerFrame(0.1);
 
 	Sys_ConsoleInputInit();
 
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 		time = newtime - oldtime;
 		oldtime = newtime;
 
-		SV_Frame(time);
+		COM_ServerFrame(time);
 
 		// extrasleep is just a way to generate a fucked up connection on purpose
 		if (sys_extrasleep->value)

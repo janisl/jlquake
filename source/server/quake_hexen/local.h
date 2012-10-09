@@ -200,7 +200,7 @@ void SVQHW_Master_Shutdown();
 void SVQH_Shutdown();
 void SVQHW_Shutdown(const char* finalMessage);
 void SVQH_ServerFrame(float frametime);
-void SVQHW_ServerFrame();
+void SVQHW_ServerFrame(int msec);
 void SVQH_Init();
 
 //
