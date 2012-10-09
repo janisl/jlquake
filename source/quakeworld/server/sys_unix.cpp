@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 	parms.argv = argv;
 	parms.basedir = ".";
 
-	SV_Init(&parms);
+	COM_InitServer(&parms);
 
 // run one frame immediately for first heartbeat
 	SV_Frame(0.1);

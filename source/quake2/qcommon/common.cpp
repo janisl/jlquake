@@ -461,7 +461,7 @@ void Qcommon_Init(int argc, char** argv)
 		// pick a port value that should be nice and random
 		Netchan_Init(Sys_Milliseconds_());
 
-		SVQ2_Init();
+		SV_Init();
 		CL_Init();
 
 		// add + commands from command line

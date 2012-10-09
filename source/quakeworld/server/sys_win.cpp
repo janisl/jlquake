@@ -102,7 +102,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	parms.basedir = ".";
 
-	SV_Init(&parms);
+	COM_InitServer(&parms);
 
 // run one frame immediately for first heartbeat
 	SV_Frame(0.1);

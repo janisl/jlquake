@@ -40,4 +40,4 @@ extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
 void SV_Error(const char* error, ...);
-void SV_Init(quakeparms_t* parms);
+void COM_InitServer(quakeparms_t* parms);

@@ -267,10 +267,10 @@ void SV_InitNet(void)
 
 /*
 ====================
-SV_Init
+COM_InitServer
 ====================
 */
-void SV_Init(quakeparms_t* parms)
+void COM_InitServer(quakeparms_t* parms)
 {
 	try
 	{
@@ -297,7 +297,7 @@ void SV_Init(quakeparms_t* parms)
 
 		SV_InitOperatorCommands();
 
-		SVQH_Init();
+		SV_Init();
 		Sys_Init();
 		PMQH_Init();
 

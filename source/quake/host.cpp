@@ -648,7 +648,7 @@ void Host_Init(quakeparms_t* parms)
 		Con_Init();
 		UI_Init();
 #endif
-		SVQH_Init();
+		SV_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 
