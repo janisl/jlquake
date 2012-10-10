@@ -25,12 +25,8 @@ key up events are sent even if in console mode
 
 */
 
-
-int shift_down = false;
-
 qboolean consolekeys[256];		// if true, can't be rebound while in console
 qboolean menubound[256];	// if true, can't be rebound while in menu
-int keyshift[256];			// key to map to if shift held down in console
 
 //============================================================================
 
@@ -68,32 +64,6 @@ void Key_Init(void)
 	consolekeys[K_MWHEELDOWN] = true;
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
-
-	for (i = 0; i < 256; i++)
-		keyshift[i] = i;
-	for (i = 'a'; i <= 'z'; i++)
-		keyshift[i] = i - 'a' + 'A';
-	keyshift['1'] = '!';
-	keyshift['2'] = '@';
-	keyshift['3'] = '#';
-	keyshift['4'] = '$';
-	keyshift['5'] = '%';
-	keyshift['6'] = '^';
-	keyshift['7'] = '&';
-	keyshift['8'] = '*';
-	keyshift['9'] = '(';
-	keyshift['0'] = ')';
-	keyshift['-'] = '_';
-	keyshift['='] = '+';
-	keyshift[','] = '<';
-	keyshift['.'] = '>';
-	keyshift['/'] = '?';
-	keyshift[';'] = ':';
-	keyshift['\''] = '"';
-	keyshift['['] = '{';
-	keyshift[']'] = '}';
-	keyshift['`'] = '~';
-	keyshift['\\'] = '|';
 
 	menubound[K_ESCAPE] = true;
 	for (i = 0; i < 12; i++)
@@ -135,11 +105,6 @@ void Key_Event(int key, qboolean down, unsigned time)
 		{
 			common->Printf("%s is unbound, hit F4 to set.\n", Key_KeynumToString(key, true));
 		}
-	}
-
-	if (key == K_SHIFT)
-	{
-		shift_down = down;
 	}
 
 //
@@ -185,15 +150,6 @@ void Key_Event(int key, qboolean down, unsigned time)
 			sprintf(cmd, "-%s %i %d\n", kb + 1, key, time);
 			Cbuf_AddText(cmd);
 		}
-		if (keyshift[key] != key)
-		{
-			kb = keys[keyshift[key]].binding;
-			if (kb && kb[0] == '+')
-			{
-				sprintf(cmd, "-%s %i %d\n", kb + 1, key, time);
-				Cbuf_AddText(cmd);
-			}
-		}
 		return;
 	}
 
@@ -234,10 +190,6 @@ void Key_Event(int key, qboolean down, unsigned time)
 	{
 		return;		// other systems only care about key down events
 
-	}
-	if (shift_down)
-	{
-		key = keyshift[key];
 	}
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
