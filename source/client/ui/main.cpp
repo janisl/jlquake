@@ -140,7 +140,18 @@ void UI_SetMainMenu()
 
 void UI_SetInGameMenu()
 {
-	UIT3_SetInGameMenu();
+	if (GGameType & GAME_QuakeHexen)
+	{
+		MQH_Menu_Main_f();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		MQ2_Menu_Main_f();
+	}
+	else
+	{
+		UIT3_SetInGameMenu();
+	}
 }
 
 void CL_InitRenderer()

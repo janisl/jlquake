@@ -42,19 +42,11 @@ void CL_PacketEvent(netadr_t from, QMsg* msg)
 {
 }
 
-void CL_CharEvent(int key)
-{
-}
-
 void CL_Disconnect(qboolean showMainMenu)
 {
 }
 
 void CL_MapLoading(void)
-{
-}
-
-void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
 

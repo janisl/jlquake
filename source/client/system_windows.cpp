@@ -101,3 +101,16 @@ void Sys_OpenURL(const char* url, bool doexit)
 		Cbuf_ExecuteText(EXEC_APPEND, "quit\n");
 	}
 }
+
+bool Sys_IsNumLockDown()
+{
+	// thx juz ;)
+	SHORT state = GetKeyState(VK_NUMLOCK);
+
+	if (state & 0x01)
+	{
+		return true;
+	}
+
+	return false;
+}

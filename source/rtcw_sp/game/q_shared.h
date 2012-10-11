@@ -47,7 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 #include <assert.h>
-#include <time.h>
 #include <ctype.h>
 #include <limits.h>
 #include <stdint.h>

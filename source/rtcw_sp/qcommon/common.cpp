@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/client.h"
 #include "../../server/public.h"
 #include <setjmp.h>
+#include <time.h>
 
 bool UIT3_UsesUniqueCDKey();
 

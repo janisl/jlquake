@@ -55,6 +55,9 @@ extern int anykeydown;
 
 extern qkey_t keys[MAX_KEYS];
 extern bool key_overstrikeMode;
+extern bool consoleButtonWasPressed;
+extern Cvar* clwm_missionStats;
+extern Cvar* clwm_waitForFire;
 
 bool Key_GetOverstrikeMode();
 void Key_SetOverstrikeMode(bool state);
@@ -65,3 +68,4 @@ const char* Key_GetBinding(int keynum);
 int Key_GetKey(const char* binding);
 void Key_GetKeysForBinding(const char* binding, int* key1, int* key2);
 void Key_UnbindCommand(const char* command);
+void Key_ClearStates();

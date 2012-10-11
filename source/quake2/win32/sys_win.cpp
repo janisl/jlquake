@@ -97,7 +97,7 @@ void Sys_Init(void)
 ================
 Sys_SendKeyEvents
 
-Send Key_Event calls
+Send CL_KeyEvent calls
 ================
 */
 void Sys_SendKeyEvents(void)

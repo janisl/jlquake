@@ -630,17 +630,17 @@ void Chase_Update();
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 void Sys_StartProcess(const char* exeName, bool doExit);
 void Sys_OpenURL(const char* url, bool doExit);
+bool Sys_IsNumLockDown();
 
 float frand();	// 0 to 1
 float crand();	// -1 to 1
 
 //---------------------------------------------
 //	Must be provided
-//	Called by Windows driver.
-void Key_ClearStates();
 float* CL_GetSimOrg();
 void CL_NextDemo();
 void Com_Quit_f();
 void CL_Disconnect();
+void CL_Disconnect_f();
 
 #endif

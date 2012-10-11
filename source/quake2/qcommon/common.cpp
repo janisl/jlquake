@@ -366,7 +366,6 @@ byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, int cha
 
 //========================================================
 
-void Key_Init(void);
 void SCR_EndLoadingPlaque(void);
 
 /*
@@ -412,7 +411,7 @@ void Qcommon_Init(int argc, char** argv)
 		Cmd_Init();
 		Cvar_Init();
 
-		Key_Init();
+		CL_InitKeyCommands();
 
 		// we need to add the early commands twice, because
 		// a basedir or cddir needs to be set before execing

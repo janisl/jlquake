@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../common/qcommon.h"
 
 #include <assert.h>
-#include <time.h>
 
 #define ERR_FATAL           0		// exit the entire game with a popup window
 #define ERR_DROP            1		// print to console and disconnect from game

@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/client.h"
 #include "../../server/public.h"
 #include <setjmp.h>
+#include <time.h>
 
 // htons
 #ifdef __linux__
@@ -800,7 +801,7 @@ Returns last event time
 */
 
 #ifndef DEDICATED
-extern qboolean consoleButtonWasPressed;
+extern bool consoleButtonWasPressed;
 #endif
 
 int Com_EventLoop(void)

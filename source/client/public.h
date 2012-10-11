@@ -35,9 +35,12 @@ void SCRQH_BeginLoadingPlaque();
 void SCRQ2_BeginLoadingPlaque(bool Clear);
 
 void Key_WriteBindings(fileHandle_t f);
-void CL_InitKeyCommands();
 // the keyboard binding interface must be setup before execing
 // config files, but the rest of client startup will happen later
+void CL_InitKeyCommands();
+void CL_KeyEvent(int key, bool down, unsigned time);
+// char events are for field typing, not game control
+void CL_CharEvent(int key);
 
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);

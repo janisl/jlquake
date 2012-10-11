@@ -4,10 +4,6 @@
 
 #include "../qcommon/qcommon.h"
 
-void Key_Bind_Null_f(void)
-{
-}
-
 void CL_Init(void)
 {
 }
@@ -26,11 +22,6 @@ void CL_Frame(int msec)
 
 void SCR_EndLoadingPlaque(void)
 {
-}
-
-void Key_Init(void)
-{
-	Cmd_AddCommand("bind", Key_Bind_Null_f);
 }
 
 void CL_Disconnect()

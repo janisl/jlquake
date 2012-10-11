@@ -14,8 +14,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "../renderer/local.h"
 #include "../unix_shared.h"
@@ -28,30 +26,14 @@
 #include <limits.h>
 #endif
 
-// MACROS ------------------------------------------------------------------
-
 //#define KBD_DBG
 
 #define MOUSE_RESET_DELAY   50
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 Cvar* in_dgamouse;						// user pref for dga mouse
 Cvar* in_nograb;						// this is strictly for developers
 
 Cvar* in_joystick;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static Cvar* in_shiftedkeys;
 
@@ -93,8 +75,6 @@ static int joy_keys[16] =
 };
 #endif
 
-// CODE --------------------------------------------------------------------
-
 //**************************************************************************
 //
 //	KEYBOARD
@@ -108,12 +88,6 @@ static int joy_keys[16] =
 //	you can turn on some debugging and verbose of the keyboard code with #define KBD_DBG
 //
 //**************************************************************************
-
-//==========================================================================
-//
-//	XLateKey
-//
-//==========================================================================
 
 static char* XLateKey(XKeyEvent* ev, int& key)
 {
@@ -434,10 +408,6 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	return buf;
 }
 
-//==========================================================================
-//
-//	X11_PendingInput
-//
 //	bk001206 - from Ryan's Fakk2
 //
 //	XPending() actually performs a blocking read if no events available.
@@ -446,9 +416,6 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 // is that you get focus handling for free, which is a major win with debug
 // and windowed mode. It rests on the assumption that the X server will use
 // the same timestamp on press/release event pairs for key repeats.
-//
-//==========================================================================
-
 static bool X11_PendingInput()
 {
 	qassert(dpy != NULL);
@@ -477,14 +444,7 @@ static bool X11_PendingInput()
 	return false;
 }
 
-//==========================================================================
-//
-//	repeated_press
-//
 // bk001206 - from Ryan's Fakk2. See above.
-//
-//==========================================================================
-
 static bool repeated_press(XEvent* event)
 {
 	qassert(dpy != NULL);
@@ -513,14 +473,7 @@ static bool repeated_press(XEvent* event)
 //
 //**************************************************************************
 
-//==========================================================================
-//
-//	CreateNullCursor
-//
 //	Makes a null cursor.
-//
-//==========================================================================
-
 static Cursor CreateNullCursor(Display* display, Window root)
 {
 	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1 /*depth*/);
@@ -538,12 +491,6 @@ static Cursor CreateNullCursor(Display* display, Window root)
 	XFreeGC(display, gc);
 	return cursor;
 }
-
-//==========================================================================
-//
-//	install_grabs
-//
-//==========================================================================
 
 static void install_grabs()
 {
@@ -608,12 +555,6 @@ static void install_grabs()
 	XSync(dpy, False);
 }
 
-//==========================================================================
-//
-//	uninstall_grabs
-//
-//==========================================================================
-
 static void uninstall_grabs()
 {
 	if (in_dgamouse->value)
@@ -633,12 +574,6 @@ static void uninstall_grabs()
 	// inviso cursor
 	XUndefineCursor(dpy, win);
 }
-
-//==========================================================================
-//
-//	IN_ActivateMouse
-//
-//==========================================================================
 
 void IN_ActivateMouse()
 {
@@ -660,12 +595,6 @@ void IN_ActivateMouse()
 		mouse_active = true;
 	}
 }
-
-//==========================================================================
-//
-//	IN_DeactivateMouse
-//
-//==========================================================================
 
 void IN_DeactivateMouse()
 {
@@ -694,10 +623,6 @@ void IN_DeactivateMouse()
 //
 //**************************************************************************
 
-//==========================================================================
-//
-//	Sys_XTimeToSysTime
-//
 //	Sub-frame timing of events returned by X
 //	X uses the Time typedef - unsigned long
 //	disable with in_subframe 0
@@ -709,9 +634,6 @@ void IN_DeactivateMouse()
 // we clamp sys_timeBase*1000 to unsigned long, that gives us the current
 // origin for xtime the computation will still work if xtime wraps (at
 // ~49 days period since the Epoch) after we set sys_timeBase.
-//
-//==========================================================================
-
 static int Sys_XTimeToSysTime(unsigned long xtime)
 {
 	int ret, time, test;
@@ -754,12 +676,6 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 
 	return ret;
 }
-
-//==========================================================================
-//
-//	Sys_SendKeyEvents
-//
-//==========================================================================
 
 void Sys_SendKeyEvents()
 {
@@ -810,7 +726,10 @@ void Sys_SendKeyEvents()
 				}
 			}
 			XLateKey(&event.xkey, key);
-			Sys_QueEvent(t, SE_KEY, key, false, 0, NULL);
+			if (key)
+			{
+				Sys_QueEvent(t, SE_KEY, key, false, 0, NULL);
+			}
 			break;
 
 		case ButtonPress:
@@ -997,12 +916,6 @@ void Sys_SendKeyEvents()
 
 #ifdef __linux__
 
-//==========================================================================
-//
-//	IN_StartupJoystick
-//
-//==========================================================================
-
 static void IN_StartupJoystick()
 {
 	joy_fd = -1;
@@ -1066,12 +979,6 @@ static void IN_StartupJoystick()
 		return;
 	}
 }
-
-//==========================================================================
-//
-//	IN_JoyMove
-//
-//==========================================================================
 
 static void IN_JoyMove()
 {
@@ -1161,21 +1068,9 @@ static void IN_JoyMove()
 
 #else
 
-//==========================================================================
-//
-//	IN_StartupJoystick
-//
-//==========================================================================
-
 static void IN_StartupJoystick()
 {
 }
-
-//==========================================================================
-//
-//	IN_JoyMove
-//
-//==========================================================================
 
 static void IN_JoyMove()
 {
@@ -1188,12 +1083,6 @@ static void IN_JoyMove()
 //	MAIN INPUT API
 //
 //**************************************************************************
-
-//==========================================================================
-//
-//	IN_Init
-//
-//==========================================================================
 
 void IN_Init()
 {
@@ -1231,22 +1120,10 @@ void IN_Init()
 	common->Printf("------------------------------------\n");
 }
 
-//==========================================================================
-//
-//	IN_Shutdown
-//
-//==========================================================================
-
 void IN_Shutdown()
 {
 	mouse_avail = false;
 }
-
-//==========================================================================
-//
-//	IN_Frame
-//
-//==========================================================================
 
 void IN_Frame()
 {

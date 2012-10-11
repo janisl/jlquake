@@ -436,9 +436,3 @@ int main(int argc, char* argv[])
 
 	}
 }
-
-qboolean Sys_IsNumLockDown(void)
-{
-	// Gordon: FIXME for timothee
-	return false;
-}

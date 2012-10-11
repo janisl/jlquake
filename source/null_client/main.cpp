@@ -74,8 +74,16 @@ void Key_WriteBindings(fileHandle_t f)
 {
 }
 
+static void Key_Bind_Null_f()
+{
+}
+
 void CL_InitKeyCommands()
 {
+	if (GGameType & GAME_Quake2)
+	{
+		Cmd_AddCommand("bind", Key_Bind_Null_f);
+	}
 }
 
 bool CLT3_GameCommand()
@@ -122,5 +130,13 @@ void SCRQH_BeginLoadingPlaque()
 }
 
 void SCRQ2_BeginLoadingPlaque(bool Clear)
+{
+}
+
+void CL_KeyEvent(int key, bool down, unsigned time)
+{
+}
+
+void CL_CharEvent(int key)
 {
 }

@@ -49,19 +49,11 @@ void CL_PacketEvent(netadr_t from, QMsg* msg)
 {
 }
 
-void CL_CharEvent(int key)
-{
-}
-
 void CL_Disconnect(qboolean showMainMenu)
 {
 }
 
 void CL_MapLoading(void)
-{
-}
-
-void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
 }
 
@@ -79,8 +71,3 @@ void CL_StartHunkUsers(void)
 
 // bk001119 - added new dummy for sv_init.c
 void CL_ShutdownAll(void) {};
-
-// TTimo added for win32 dedicated
-void Key_ClearStates(void)
-{
-}

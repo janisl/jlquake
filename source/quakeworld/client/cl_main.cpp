@@ -1424,7 +1424,7 @@ void Host_Init(quakeparms_t* parms)
 		// pick a port value that should be nice and random
 		Netchan_Init(Com_Milliseconds() & 0xffff);
 
-		Key_Init();
+		CL_InitKeyCommands();
 		Com_InitDebugLog();
 		Con_Init();
 		UI_Init();

@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../../client/client.h"
 #include "../qcommon/qcommon.h"
-#include "keys.h"
 #include "../../client/game/wolfsp/local.h"
 
 //=============================================================================
@@ -48,9 +47,6 @@ extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 
 extern Cvar* cl_allowDownload;
-
-extern Cvar* cl_missionStats;
-extern Cvar* cl_waitForFire;
 //=================================================
 
 //

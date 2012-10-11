@@ -612,7 +612,7 @@ void Host_Init(quakeparms_t* parms)
 		COM_Init(parms->basedir);
 		Host_InitLocal();
 #ifndef DEDICATED
-		Key_Init();
+		CL_InitKeyCommands();
 #endif
 		ComH2_LoadStrings();
 		Com_InitDebugLog();

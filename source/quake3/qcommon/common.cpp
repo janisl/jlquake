@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/client.h"
 #include "../../server/public.h"
 #include <setjmp.h>
+#include <time.h>
 
 bool UIT3_UsesUniqueCDKey();
 

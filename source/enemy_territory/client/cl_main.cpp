@@ -58,8 +58,6 @@ Cvar* cl_allowDownload;
 Cvar* cl_wwwDownload;
 
 Cvar* cl_trn;
-Cvar* cl_missionStats;
-Cvar* cl_waitForFire;
 
 Cvar* cl_defaultProfile;
 
@@ -2556,9 +2554,6 @@ void CL_Init(void)
 	Cvar_Get("cg_viewsize", "100", CVAR_ARCHIVE);
 
 	Cvar_Get("cg_autoReload", "1", CVAR_ARCHIVE);
-
-	cl_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
-	cl_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
 
 	//
 	// register our commands

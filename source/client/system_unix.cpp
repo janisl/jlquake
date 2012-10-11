@@ -100,3 +100,9 @@ void Sys_OpenURL(const char* url, bool doexit)
 
 	Sys_StartProcess(cmdline, doexit);
 }
+
+bool Sys_IsNumLockDown()
+{
+	// Gordon: FIXME for timothee
+	return false;
+}

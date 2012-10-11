@@ -160,10 +160,6 @@ void CL_ClearStaticDownload(void);
 void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
-void CL_KeyEvent(int key, qboolean down, unsigned time);
-
-void CL_CharEvent(int key);
-// char events are for field typing, not game control
 
 void CL_MouseEvent(int dx, int dy, int time);
 
@@ -195,7 +191,6 @@ NON-PORTABLE SYSTEM SERVICES
 sysEvent_t  Sys_GetEvent(void);
 
 void    Sys_Init(void);
-qboolean Sys_IsNumLockDown(void);
 
 const char* Sys_GetCurrentUser(void);
 

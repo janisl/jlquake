@@ -421,16 +421,3 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// never gets here
 }
-
-qboolean Sys_IsNumLockDown(void)
-{
-	// thx juz ;)
-	SHORT state = GetKeyState(VK_NUMLOCK);
-
-	if (state & 0x01)
-	{
-		return true;
-	}
-
-	return false;
-}

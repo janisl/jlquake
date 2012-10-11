@@ -15,6 +15,8 @@
 //**************************************************************************
 
 #include "../client.h"
+#include "../game/tech3/local.h"
+#include "../game/et/local.h"
 
 struct keyname_t
 {
@@ -25,6 +27,14 @@ struct keyname_t
 qkey_t keys[MAX_KEYS];
 
 bool key_overstrikeMode;
+
+static bool consolekeys[256];	// if true, can't be rebound while in console
+static bool menubound[256];	// if true, can't be rebound while in menu
+
+bool consoleButtonWasPressed = false;
+
+Cvar* clwm_missionStats;
+Cvar* clwm_waitForFire;
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 static keyname_t keynames[] =
@@ -1078,6 +1088,53 @@ static void Key_Bindlist_f()
 
 void CL_InitKeyCommands()
 {
+	//
+	// init ascii characters in console mode
+	//
+	for (int i = 32; i < 128; i++)
+	{
+		consolekeys[i] = true;
+	}
+	consolekeys[K_ENTER] = true;
+	consolekeys[K_KP_ENTER] = true;
+	consolekeys[K_TAB] = true;
+	consolekeys[K_LEFTARROW] = true;
+	consolekeys[K_KP_LEFTARROW] = true;
+	consolekeys[K_RIGHTARROW] = true;
+	consolekeys[K_KP_RIGHTARROW] = true;
+	consolekeys[K_UPARROW] = true;
+	consolekeys[K_KP_UPARROW] = true;
+	consolekeys[K_DOWNARROW] = true;
+	consolekeys[K_KP_DOWNARROW] = true;
+	consolekeys[K_BACKSPACE] = true;
+	consolekeys[K_HOME] = true;
+	consolekeys[K_KP_HOME] = true;
+	consolekeys[K_END] = true;
+	consolekeys[K_KP_END] = true;
+	consolekeys[K_PGUP] = true;
+	consolekeys[K_KP_PGUP] = true;
+	consolekeys[K_PGDN] = true;
+	consolekeys[K_KP_PGDN] = true;
+	consolekeys[K_INS] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_DEL] = true;
+	consolekeys[K_KP_DEL] = true;
+	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_PLUS] = true;
+	consolekeys[K_KP_MINUS] = true;
+	consolekeys[K_KP_5] = true;
+	consolekeys[K_SHIFT] = true;
+	consolekeys[K_MWHEELUP] = true;
+	consolekeys[K_MWHEELDOWN] = true;
+	consolekeys['`'] = false;
+	consolekeys['~'] = false;
+
+	menubound[K_ESCAPE] = true;
+	for (int i = 0; i < 12; i++)
+	{
+		menubound[K_F1 + i] = true;
+	}
+
 	// register our functions
 	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_AddCommand("unbind", Key_Unbind_f);
@@ -1096,5 +1153,533 @@ void Key_WriteBindings(fileHandle_t f)
 		{
 			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i, false), keys[i].binding);
 		}
+	}
+}
+
+static void CL_AddKeyDownCommands(int key, unsigned time)
+{
+	char* kb = keys[key].binding;
+	if (!kb)
+	{
+		if (key >= 200)
+		{
+			common->Printf("%s is unbound, use controls menu to set.\n",
+				Key_KeynumToString(key, true));
+		}
+		return;
+	}
+
+	if (kb[0] == '+')
+	{
+		char button[1024];
+		char* buttonPtr = button;
+		for (int i = 0;; i++)
+		{
+			if (kb[i] == ';' || !kb[i])
+			{
+				*buttonPtr = '\0';
+				if (button[0] == '+')
+				{
+					// button commands add keynum and time as parms so that multiple
+					// sources can be discriminated and subframe corrected
+					char cmd[1024];
+					String::Sprintf(cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
+					Cbuf_AddText(cmd);
+				}
+				else
+				{
+					// down-only command
+					Cbuf_AddText(button);
+					Cbuf_AddText("\n");
+				}
+				buttonPtr = button;
+				while ((kb[i] <= ' ' || kb[i] == ';') && kb[i] != 0)
+				{
+					i++;
+				}
+			}
+			*buttonPtr++ = kb[i];
+			if (!kb[i])
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		// down-only command
+		Cbuf_AddText(kb);
+		Cbuf_AddText("\n");
+	}
+}
+
+static void CL_AddKeyUpCommands(int key, unsigned time)
+{
+	char* kb = keys[key].binding;
+
+	if (!kb)
+	{
+		return;
+	}
+	bool keyevent = false;
+	char button[1024];
+	char* buttonPtr = button;
+	for (int i = 0;; i++)
+	{
+		if (kb[i] == ';' || !kb[i])
+		{
+			*buttonPtr = '\0';
+			if (button[0] == '+')
+			{
+				// button commands add keynum and time as parms so that multiple
+				// sources can be discriminated and subframe corrected
+				char cmd[1024];
+				String::Sprintf(cmd, sizeof(cmd), "-%s %i %i\n", button + 1, key, time);
+				Cbuf_AddText(cmd);
+				keyevent = true;
+			}
+			else if (keyevent)
+			{
+				// down-only command
+				Cbuf_AddText(button);
+				Cbuf_AddText("\n");
+			}
+			buttonPtr = button;
+			while ((kb[i] <= ' ' || kb[i] == ';') && kb[i] != 0)
+			{
+				i++;
+			}
+		}
+		*buttonPtr++ = kb[i];
+		if (!kb[i])
+		{
+			break;
+		}
+	}
+}
+
+//	Called by the system for both key up and key down events
+void CL_KeyEvent(int key, bool down, unsigned time)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	// update auto-repeat status and BUTTON_ANY status
+	keys[key].down = down;
+
+	if (down)
+	{
+		keys[key].repeats++;
+		if (keys[key].repeats == 1)
+		{
+			anykeydown++;
+		}
+	}
+	else
+	{
+		keys[key].repeats = 0;
+		anykeydown--;
+		if (anykeydown < 0)
+		{
+			anykeydown = 0;
+		}
+	}
+
+#ifdef __linux__
+	if (key == K_ENTER)
+	{
+		if (down)
+		{
+			if (keys[K_ALT].down)
+			{
+				Key_ClearStates();
+				if (Cvar_VariableValue("r_fullscreen") == 0)
+				{
+					common->Printf("Switching to fullscreen rendering\n");
+					Cvar_Set("r_fullscreen", "1");
+				}
+				else
+				{
+					common->Printf("Switching to windowed rendering\n");
+					Cvar_Set("r_fullscreen", "0");
+				}
+				Cbuf_ExecuteText(EXEC_APPEND, "vid_restart\n");
+				return;
+			}
+		}
+	}
+#endif
+
+	if (GGameType & GAME_WolfMP)
+	{
+		// are we waiting to clear stats and move to briefing screen
+		if (down && clwm_waitForFire && clwm_waitForFire->integer)			//DAJ BUG in dedicated clwm_waitForFire don't exist
+		{
+			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the consol
+			{
+				Con_ToggleConsole_f();
+			}
+			// clear all input controls
+			CL_ClearKeys();
+			// allow only attack command input
+			char* kb = keys[key].binding;
+			if (!String::ICmp(kb, "+attack"))
+			{
+				// clear the stats out, ignore the keypress
+				Cvar_Set("g_missionStats", "xx");			// just remove the stats, but still wait until we're done loading, and player has hit fire to begin playing
+				Cvar_Set("clwm_waitForFire", "0");
+			}
+			return;		// no buttons while waiting
+		}
+
+		// are we waiting to begin the level
+		if (down && clwm_missionStats && clwm_missionStats->string[0] && clwm_missionStats->string[1])		//DAJ BUG in dedicated clwm_missionStats don't exist
+		{
+			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the consol
+			{
+				Con_ToggleConsole_f();
+			}
+			// clear all input controls
+			CL_ClearKeys();
+			// allow only attack command input
+			char* kb = keys[key].binding;
+			if (!String::ICmp(kb, "+attack"))
+			{
+				// clear the stats out, ignore the keypress
+				Cvar_Set("com_expectedhunkusage", "-1");
+				Cvar_Set("g_missionStats", "0");
+			}
+			return;		// no buttons while waiting
+		}
+	}
+
+	// console key is hardcoded, so the user can never unbind it
+	if (key == '`' || key == '~')
+	{
+		if (!down)
+		{
+			return;
+		}
+		Con_ToggleConsole_f();
+
+		// the console key should never be used as a char
+		consoleButtonWasPressed = true;
+		return;
+	}
+	else
+	{
+		consoleButtonWasPressed = false;
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_ET) && cl.wa_cameraMode)
+	{
+		if (!(in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CONSOLE)))			// let menu/console handle keys if necessary
+		{
+			// in cutscenes we need to handle keys specially (pausing not allowed in camera mode)
+			if ((key == K_ESCAPE ||
+				 key == K_SPACE ||
+				 key == K_ENTER) && down)
+			{
+				CL_AddReliableCommand("cameraInterrupt");
+				return;
+			}
+
+			// eat all keys
+			if (down)
+			{
+				return;
+			}
+		}
+
+		if ((in_keyCatchers & KEYCATCH_CONSOLE) && key == K_ESCAPE)
+		{
+			// don't allow menu starting when console is down and camera running
+			return;
+		}
+	}
+
+	// any key during the attract mode will bring up the menu
+	if (GGameType & GAME_Quake2 && cl.q2_attractloop && !(in_keyCatchers & KEYCATCH_UI))
+	{
+		key = K_ESCAPE;
+	}
+
+	// keys can still be used for bound actions
+	if (GGameType & GAME_Tech3 && down && (key < 128 || key == K_MOUSE1) &&
+		(clc.demoplaying || cls.state == CA_CINEMATIC) && !in_keyCatchers)
+	{
+		if (!(GGameType & GAME_Quake3) || Cvar_VariableValue("com_cameraMode") == 0)
+		{
+			Cvar_Set("nextdemo","");
+			key = K_ESCAPE;
+		}
+	}
+
+	// escape is always handled special
+	if (key == K_ESCAPE && down)
+	{
+		if (in_keyCatchers & KEYCATCH_MESSAGE)
+		{
+			// clear message mode
+			Con_MessageKeyEvent(key);
+			return;
+		}
+
+		// escape always gets out of CGAME stuff
+		if (in_keyCatchers & KEYCATCH_CGAME)
+		{
+			in_keyCatchers &= ~KEYCATCH_CGAME;
+			if (GGameType & GAME_Tech3)
+			{
+				CLT3_EventHandling();
+			}
+			return;
+		}
+
+		if (in_keyCatchers & KEYCATCH_UI)
+		{
+			UI_KeyDownEvent(key);
+			return;
+		}
+
+		if (GGameType & GAME_Quake2 && cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] && in_keyCatchers == 0)
+		{
+			// put away help computer / inventory
+			Cbuf_AddText("cmd putaway\n");
+			return;
+		}
+
+		if (cls.state == CA_ACTIVE && !clc.demoplaying)
+		{
+			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the console
+			{
+				Con_ToggleConsole_f();
+			}
+			else
+			{
+				UI_SetInGameMenu();
+			}
+		}
+		else
+		{
+			if (GGameType & GAME_QuakeHexen && in_keyCatchers & KEYCATCH_CONSOLE && (!(GGameType & GAME_HexenWorld) || cls.state == CA_ACTIVE))
+			{
+				Con_ToggleConsole_f();
+				return;
+			}
+
+			if (GGameType & GAME_Tech3)
+			{
+				CL_Disconnect_f();
+				S_StopAllSounds();
+			}
+			UI_SetMainMenu();
+		}
+		return;
+	}
+
+	bool onlybinds = false;
+	if (GGameType & GAME_ET)
+	{
+		switch (key)
+		{
+		case K_KP_PGUP:
+		case K_KP_EQUALS:
+		case K_KP_5:
+		case K_KP_LEFTARROW:
+		case K_KP_UPARROW:
+		case K_KP_RIGHTARROW:
+		case K_KP_DOWNARROW:
+		case K_KP_END:
+		case K_KP_PGDN:
+		case K_KP_INS:
+		case K_KP_DEL:
+		case K_KP_HOME:
+			if (Sys_IsNumLockDown())
+			{
+				onlybinds = true;
+			}
+			break;
+		}
+	}
+
+	//
+	// key up events only perform actions if the game key binding is
+	// a button command (leading + sign).  These will be processed even in
+	// console mode and menu mode, to keep the character from continuing
+	// an action started before a mode switch.
+	//
+	if (!down)
+	{
+		CL_AddKeyUpCommands(key, time);
+
+		if (in_keyCatchers & KEYCATCH_UI)
+		{
+			if (!(GGameType & GAME_ET) || !onlybinds || UIET_WantsBindKeys())
+			{
+				UI_KeyEvent(key, down);
+			}
+		}
+		else if (GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME)
+		{
+			if (!(GGameType & GAME_ET) || !onlybinds || CLET_WantsBindKeys())
+			{
+				CLT3_KeyEvent(key, down);
+			}
+		}
+
+		return;
+	}
+
+	//
+	// during demo playback, most keys bring up the main menu
+	//
+	if (GGameType & GAME_QuakeHexen && clc.demoplaying && consolekeys[key] && in_keyCatchers == 0)
+	{
+		UI_SetMainMenu();
+		return;
+	}
+
+	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld) && cl.qh_intermission == 12)
+	{
+		Cbuf_AddText(GGameType & GAME_H2Portals ? "map keep1\n" : "map demo1\n");
+	}
+
+	// NERVE - SMF - if we just want to pass it along to game
+	bool bypassMenu = false;
+	if (GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput && cl_bypassMouseInput->integer)
+	{
+		if ((key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5))
+		{
+			if (cl_bypassMouseInput->integer == 1)
+			{
+				bypassMenu = true;
+			}
+		}
+		else if ((in_keyCatchers & KEYCATCH_UI && !UIT3_CheckKeyExec(key)) ||
+			(GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec(key)))
+		{
+			bypassMenu = true;
+		}
+	}
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		//
+		// if not a consolekey, send to the interpreter no matter what mode is
+		//
+		if (((in_keyCatchers & KEYCATCH_UI) && menubound[key]) ||
+			((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key]) ||
+			(in_keyCatchers == 0 && ((cls.state == CA_ACTIVE && (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2) || clc.qh_signon == SIGNONS)) || !consolekeys[key])))
+		{
+			CL_AddKeyDownCommands(key, time);
+			return;
+		}
+
+		if (in_keyCatchers & KEYCATCH_MESSAGE)
+		{
+			Con_MessageKeyEvent(key);
+		}
+		else if (in_keyCatchers & KEYCATCH_UI)
+		{
+			UI_KeyDownEvent(key);
+		}
+		else
+		{
+			Con_KeyEvent(key);
+		}
+	}
+	else
+	{
+		// distribute the key down event to the apropriate handler
+		if (in_keyCatchers & KEYCATCH_CONSOLE)
+		{
+			if (!onlybinds)
+			{
+				Con_KeyEvent(key);
+			}
+		}
+		else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
+		{
+			if (!(GGameType & GAME_ET) || !onlybinds || UIET_WantsBindKeys())
+			{
+				UI_KeyDownEvent(key);
+			}
+		}
+		else if (in_keyCatchers & KEYCATCH_CGAME && !bypassMenu)
+		{
+			if (!(GGameType & GAME_ET) || !onlybinds || CLET_WantsBindKeys())
+			{
+				CLT3_KeyEvent(key, down);
+			}
+		}
+		else if (in_keyCatchers & KEYCATCH_MESSAGE)
+		{
+			if (!onlybinds)
+			{
+				Con_MessageKeyEvent(key);
+			}
+		}
+		else if (cls.state == CA_DISCONNECTED)
+		{
+			if (!onlybinds)
+			{
+				Con_KeyEvent(key);
+			}
+		}
+		else
+		{
+			// send the bound action
+			CL_AddKeyDownCommands(key, time);
+		}
+	}
+}
+
+//	Normal keyboard characters, already shifted / capslocked / etc
+void CL_CharEvent(int key)
+{
+	// the console key should never be used as a char
+	if (key == '`' || key == '~' || key == 0xac)
+	{
+		return;
+	}
+
+	// distribute the key down event to the apropriate handler
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
+	{
+		Con_CharEvent(key);
+	}
+	else if (in_keyCatchers & KEYCATCH_UI)
+	{
+		UI_CharEvent(key);
+	}
+	else if (GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME)
+	{
+		CLT3_KeyEvent(key | K_CHAR_FLAG, true);
+	}
+	else if (in_keyCatchers & KEYCATCH_MESSAGE)
+	{
+		Con_MessageCharEvent(key);
+	}
+	else if (cls.state == CA_DISCONNECTED)
+	{
+		Con_CharEvent(key);
+	}
+}
+
+void Key_ClearStates()
+{
+	anykeydown = 0;
+
+	for (int i = 0; i < MAX_KEYS; i++)
+	{
+		if (keys[i].down)
+		{
+			CL_KeyEvent(i, false, 0);
+		}
+		keys[i].down = false;
+		keys[i].repeats = 0;
 	}
 }

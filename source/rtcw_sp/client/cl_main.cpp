@@ -54,8 +54,6 @@ Cvar* cl_motdString;
 Cvar* cl_allowDownload;
 
 Cvar* cl_trn;
-Cvar* cl_missionStats;
-Cvar* cl_waitForFire;
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
@@ -2178,9 +2176,6 @@ void CL_Init(void)
 
 	// cgame might not be initialized before menu is used
 	Cvar_Get("cg_viewsize", "100", CVAR_ARCHIVE);
-
-	cl_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
-	cl_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
 
 	//
 	// register our commands

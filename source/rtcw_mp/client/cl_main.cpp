@@ -60,8 +60,6 @@ Cvar* cl_motdString;
 Cvar* cl_allowDownload;
 
 Cvar* cl_trn;
-Cvar* cl_missionStats;
-Cvar* cl_waitForFire;
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
@@ -2226,8 +2224,8 @@ void CL_Init(void)
 
 	Cvar_Get("cg_autoReload", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 
-	cl_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
-	cl_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
+	clwm_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
+	clwm_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
 
 	//
 	// register our commands
