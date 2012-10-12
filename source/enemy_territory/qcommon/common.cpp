@@ -1770,9 +1770,11 @@ void Com_Frame(void)
 		timeBeforeClient = 0;
 		timeAfter = 0;
 
-
 		// old net chan encryption key
 		key = 0x87243987;
+
+		// make sure mouse and joystick are only called once a frame
+		IN_Frame();
 
 		// write config file if anything changed
 		Com_WriteConfiguration();

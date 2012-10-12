@@ -14,42 +14,17 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "qcommon.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 sysEvent_t eventQue[MAX_QUED_EVENTS];
 int eventHead;
 int eventTail;
 
-// CODE --------------------------------------------------------------------
+static byte sys_packetReceived[MAX_MSGLEN];
 
-//==========================================================================
-//
-//	Sys_QueEvent
-//
 //	A time of 0 will get the current time
 //	Ptr should either be null, or point to a block of data that can
 // be freed by the game later.
-//
-//==========================================================================
-
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr)
 {
 	sysEvent_t* ev;
@@ -81,14 +56,25 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 	ev->evPtr = ptr;
 }
 
-//==========================================================================
-//
-//	Sys_SharedGetEvent
-//
-//==========================================================================
-
 sysEvent_t Sys_SharedGetEvent()
 {
+	if (GGameType & GAME_Tech3)
+	{
+		// check for network packets
+		QMsg netmsg;
+		netmsg.Init(sys_packetReceived, sizeof(sys_packetReceived));
+		netadr_t adr;
+		if (NET_GetUdpPacket(NS_SERVER, &adr, &netmsg))
+		{
+			// copy out to a seperate buffer for qeueing
+			int len = sizeof(netadr_t) + netmsg.cursize;
+			netadr_t* buf = (netadr_t*)Mem_Alloc(len);
+			*buf = adr;
+			Com_Memcpy(buf + 1, netmsg._data, netmsg.cursize);
+			Sys_QueEvent(0, SE_PACKET, 0, 0, len, buf);
+		}
+	}
+
 	// return if we have data
 	if (eventHead > eventTail)
 	{

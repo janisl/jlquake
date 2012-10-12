@@ -1274,10 +1274,6 @@ void Com_Frame(void)
 		int timeBeforeClient;
 		int timeAfter;
 
-
-
-
-
 		if (setjmp(abortframe))
 		{
 			return;		// an ERR_DROP was thrown
@@ -1294,6 +1290,11 @@ void Com_Frame(void)
 
 		// old net chan encryption key
 		key = 0x87243987;
+
+#ifndef DEDICATED
+		// make sure mouse and joystick are only called once a frame
+		IN_Frame();
+#endif
 
 		// write config file if anything changed
 		Com_WriteConfiguration();

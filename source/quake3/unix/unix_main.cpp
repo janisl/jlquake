@@ -179,8 +179,6 @@ EVENT LOOP
 ========================================================================
 */
 
-byte sys_packetReceived[MAX_MSGLEN_Q3];
-
 /*
 ================
 Sys_GetEvent
@@ -190,8 +188,6 @@ Sys_GetEvent
 sysEvent_t Sys_GetEvent(void)
 {
 	char* s;
-	QMsg netmsg;
-	netadr_t adr;
 
 	// return if we have data
 	if (eventHead > eventTail)
@@ -216,26 +212,6 @@ sysEvent_t Sys_GetEvent(void)
 		b = (char*)Mem_Alloc(len);
 		String::Cpy(b, s);
 		Sys_QueEvent(0, SE_CONSOLE, 0, 0, len, b);
-	}
-
-#ifndef DEDICATED
-	// check for other input devices
-	IN_Frame();
-#endif
-
-	// check for network packets
-	netmsg.Init(sys_packetReceived, sizeof(sys_packetReceived));
-	if (NET_GetUdpPacket(NS_SERVER, &adr, &netmsg))
-	{
-		netadr_t* buf;
-		int len;
-
-		// copy out to a seperate buffer for qeueing
-		len = sizeof(netadr_t) + netmsg.cursize;
-		buf = (netadr_t*)Mem_Alloc(len);
-		*buf = adr;
-		Com_Memcpy(buf + 1, netmsg._data, netmsg.cursize);
-		Sys_QueEvent(0, SE_PACKET, 0, 0, len, buf);
 	}
 
 	return Sys_SharedGetEvent();
@@ -332,7 +308,6 @@ int main(int argc, char* argv[])
 
 	// bk000306 - clear queues
 	Com_Memset(&eventQue[0], 0, MAX_QUED_EVENTS * sizeof(sysEvent_t));
-	Com_Memset(&sys_packetReceived[0], 0, MAX_MSGLEN_Q3 * sizeof(byte));
 
 	Com_Init(cmdline);
 	NETQ23_Init();

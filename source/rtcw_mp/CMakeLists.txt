@@ -23,6 +23,7 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	null/null_client.cpp
+	null/null_input.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp

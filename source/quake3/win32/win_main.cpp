@@ -97,8 +97,6 @@ EVENT LOOP
 ========================================================================
 */
 
-byte sys_packetReceived[MAX_MSGLEN_Q3];
-
 /*
 ================
 Sys_GetEvent
@@ -109,8 +107,6 @@ sysEvent_t Sys_GetEvent(void)
 {
 	MSG msg;
 	char* s;
-	QMsg netmsg;
-	netadr_t adr;
 
 	// return if we have data
 	if (eventHead > eventTail)
@@ -145,22 +141,6 @@ sysEvent_t Sys_GetEvent(void)
 		b = (char*)Mem_Alloc(len);
 		String::NCpyZ(b, s, len - 1);
 		Sys_QueEvent(0, SE_CONSOLE, 0, 0, len, b);
-	}
-
-	// check for network packets
-	netmsg.Init(sys_packetReceived, sizeof(sys_packetReceived));
-	if (NET_GetUdpPacket(NS_SERVER, &adr, &netmsg))
-	{
-		netadr_t* buf;
-		int len;
-
-		// copy out to a seperate buffer for qeueing
-		// the readcount stepahead is for SOCKS support
-		len = sizeof(netadr_t) + netmsg.cursize - netmsg.readcount;
-		buf = (netadr_t*)Mem_Alloc(len);
-		*buf = adr;
-		Com_Memcpy(buf + 1, &netmsg._data[netmsg.readcount], netmsg.cursize - netmsg.readcount);
-		Sys_QueEvent(0, SE_PACKET, 0, 0, len, buf);
 	}
 
 	return Sys_SharedGetEvent();
@@ -379,11 +359,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// syscall turns them back on!
 
 		startTime = Sys_Milliseconds();
-
-#ifndef DEDICATED
-		// make sure mouse and joystick are only called once a frame
-		IN_Frame();
-#endif
 
 		// run the game
 		Com_Frame();
