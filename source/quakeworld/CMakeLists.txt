@@ -10,6 +10,7 @@ add_executable(jlqwsv
 	server/sv_ccmds.cpp
 	server/sys_unix.cpp
 	client/common.cpp
+	client/keys.cpp
 	client/net_chan.cpp
 )
 set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")

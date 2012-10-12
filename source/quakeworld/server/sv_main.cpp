@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include <time.h>
 #include "../../server/public.h"
+#include "../client/keys.h"
 
 quakeparms_t host_parms;
 
@@ -193,24 +194,7 @@ void COM_ServerFrame(float time)
 // keep the random time dependent
 		rand();
 
-		for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
-		{
-			switch (ev.evType)
-			{
-			case SE_CONSOLE:
-				Cbuf_AddText((char*)ev.evPtr);
-				Cbuf_AddText("\n");
-				break;
-			default:
-				break;
-			}
-
-			// free any block data
-			if (ev.evPtr)
-			{
-				Mem_Free(ev.evPtr);
-			}
-		}
+		Com_EventLoop();
 
 // check for commands typed to the host
 		SV_GetConsoleCommands();
