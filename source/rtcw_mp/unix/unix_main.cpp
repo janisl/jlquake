@@ -265,8 +265,6 @@ Sys_GetEvent
 */
 sysEvent_t Sys_GetEvent(void)
 {
-	char* s;
-
 	// return if we have data
 	if (eventHead > eventTail)
 	{
@@ -279,19 +277,6 @@ sysEvent_t Sys_GetEvent(void)
 	// in vga this calls KBD_Update, under X, it calls GetEvent
 	Sys_SendKeyEvents();
 #endif
-
-	// check for console commands
-	s = Sys_ConsoleInput();
-	if (s)
-	{
-		char* b;
-		int len;
-
-		len = String::Length(s) + 1;
-		b = (char*)Mem_Alloc(len);
-		String::Cpy(b, s);
-		Sys_QueEvent(0, SE_CONSOLE, 0, 0, len, b);
-	}
 
 	return Sys_SharedGetEvent();
 }

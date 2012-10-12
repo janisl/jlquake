@@ -498,7 +498,6 @@ void Qcommon_Frame(int msec)
 {
 	try
 	{
-		char* s;
 		int time_before, time_between, time_after;
 
 		if (setjmp(abortframe))
@@ -553,15 +552,7 @@ void Qcommon_Frame(int msec)
 			c_pointcontents = 0;
 		}
 
-		do
-		{
-			s = Sys_ConsoleInput();
-			if (s)
-			{
-				Cbuf_AddText(va("%s\n",s));
-			}
-		}
-		while (s);
+		Com_EventLoop();
 		Cbuf_Execute();
 
 		if (com_speeds->value)

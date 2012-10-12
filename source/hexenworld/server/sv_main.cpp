@@ -135,28 +135,6 @@ void SV_Error(const char* error, ...)
 //============================================================================
 
 /*
-===================
-SV_GetConsoleCommands
-
-Add them exactly as if they had been typed at the console
-===================
-*/
-void SV_GetConsoleCommands(void)
-{
-	char* cmd;
-
-	while (1)
-	{
-		cmd = Sys_ConsoleInput();
-		if (!cmd)
-		{
-			break;
-		}
-		Cbuf_AddText(cmd);
-	}
-}
-
-/*
 ==================
 COM_ServerFrame
 
@@ -166,15 +144,12 @@ void COM_ServerFrame(float time)
 {
 	try
 	{
-// keep the random time dependent
+		// keep the random time dependent
 		rand();
 
 		Com_EventLoop();
 
-// check for commands typed to the host
-		SV_GetConsoleCommands();
-
-// process console commands
+		// process console commands
 		Cbuf_Execute();
 
 		SV_Frame(time * 1000);

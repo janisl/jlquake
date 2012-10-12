@@ -21,8 +21,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "qcommon.h"
 #include "system_unix.h"
 #include <signal.h>
@@ -32,23 +30,7 @@
 // FIXME TTimo should we gard this? most *nix system should comply?
 #include <termios.h>
 
-// MACROS ------------------------------------------------------------------
-
 #define TTY_HISTORY     32
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
@@ -78,16 +60,7 @@ static int hist_count = 0;
 
 static char returnedText[256];
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Sys_ConsoleInputInit
-//
 // initialize the console input (tty mode if wanted and possible)
-//
-//==========================================================================
-
 void Sys_ConsoleInputInit()
 {
 	termios tc;
@@ -154,14 +127,7 @@ void Sys_ConsoleInputInit()
 	common->Printf("Started tty console (use +set ttycon 0 to disable)\n");
 }
 
-//==========================================================================
-//
-//	Sys_ConsoleInputShutdown
-//
 // never exit without calling this, or your terminal will be left in a pretty bad state
-//
-//==========================================================================
-
 void Sys_ConsoleInputShutdown()
 {
 	if (ttycon_on)
@@ -172,15 +138,8 @@ void Sys_ConsoleInputShutdown()
 	}
 }
 
-//==========================================================================
-//
-//	tty_FlushIn
-//
 //	flush stdin, I suspect some terminals are sending a LOT of shit
 //	FIXME TTimo relevant?
-//
-//==========================================================================
-
 static void tty_FlushIn()
 {
 	char key;
@@ -188,17 +147,10 @@ static void tty_FlushIn()
 		;
 }
 
-//==========================================================================
-//
-//	tty_Back
-//
 // do a backspace
 // TTimo NOTE: it seems on some terminals just sending '\b' is not enough
 //   so for now, in any case we send "\b \b" .. yeah well ..
 //   (there may be a way to find out if '\b' alone would work though)
-//
-//==========================================================================
-
 static void tty_Back()
 {
 	char key;
@@ -210,15 +162,8 @@ static void tty_Back()
 	write(1, &key, 1);
 }
 
-//==========================================================================
-//
-//	tty_Hide
-//
 // clear the display of the line currently edited
 // bring cursor back to beginning of line
-//
-//==========================================================================
-
 void tty_Hide()
 {
 	qassert(ttycon_on);
@@ -237,15 +182,8 @@ void tty_Hide()
 	ttycon_hide++;
 }
 
-//==========================================================================
-//
-//	tty_Show
-//
 //	show the current line
 //	FIXME TTimo need to position the cursor if needed??
-//
-//==========================================================================
-
 void tty_Show()
 {
 	qassert(ttycon_on);
@@ -262,12 +200,6 @@ void tty_Show()
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Hist_Add
-//
-//==========================================================================
 
 static void Hist_Add(field_t* field)
 {
@@ -288,12 +220,6 @@ static void Hist_Add(field_t* field)
 	hist_current = -1;	// re-init
 }
 
-//==========================================================================
-//
-//	Hist_Prev
-//
-//==========================================================================
-
 static field_t* Hist_Prev()
 {
 	qassert(hist_count <= TTY_HISTORY);
@@ -308,12 +234,6 @@ static field_t* Hist_Prev()
 	hist_current++;
 	return &(ttyEditLines[hist_current]);
 }
-
-//==========================================================================
-//
-//	Hist_Next
-//
-//==========================================================================
 
 static field_t* Hist_Next()
 {
@@ -332,15 +252,8 @@ static field_t* Hist_Next()
 	return &(ttyEditLines[hist_current]);
 }
 
-//==========================================================================
-//
-//	Sys_ConsoleInput
-//
 //	Checks for a complete line of text typed in at the console, then forwards
 // it to the host command processor
-//
-//==========================================================================
-
 char* Sys_ConsoleInput()
 {
 	if (ttycon && ttycon->value)
@@ -503,24 +416,11 @@ char* Sys_ConsoleInput()
 	}
 }
 
-//==========================================================================
-//
-//	Sys_ConsoleInput
-//
-//==========================================================================
-
 void Sys_ShowConsole(int visLevel, bool quitOnClose)
 {
 }
 
-//==========================================================================
-//
-//	Sys_Print
-//
 //	Print text to the dedicated console
-//
-//==========================================================================
-
 void  Sys_Print(const char* msg)
 {
 	if (ttycon_on)

@@ -321,30 +321,6 @@ qboolean Host_FilterTime(float time)
 	return true;
 }
 
-
-/*
-===================
-Host_GetConsoleCommands
-
-Add them exactly as if they had been typed at the console
-===================
-*/
-void Host_GetConsoleCommands(void)
-{
-	char* cmd;
-
-	while (1)
-	{
-		cmd = Sys_ConsoleInput();
-		if (!cmd)
-		{
-			break;
-		}
-		Cbuf_AddText(cmd);
-	}
-}
-
-
 /*
 ==================
 Host_Frame
@@ -403,9 +379,6 @@ void _Host_Frame(float time)
 // server operations
 //
 //-------------------
-
-// check for commands typed to the host
-		Host_GetConsoleCommands();
 
 		SV_Frame(host_frametime * 1000);
 

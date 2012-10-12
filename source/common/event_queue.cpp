@@ -58,6 +58,16 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 
 sysEvent_t Sys_SharedGetEvent()
 {
+	// check for console commands
+	const char* s = Sys_ConsoleInput();
+	if (s)
+	{
+		int len = String::Length(s) + 1;
+		char* b = (char*)Mem_Alloc(len);
+		String::NCpyZ(b, s, len);
+		Sys_QueEvent(0, SE_CONSOLE, 0, 0, len, b);
+	}
+
 	if (GGameType & GAME_Tech3)
 	{
 		// check for network packets

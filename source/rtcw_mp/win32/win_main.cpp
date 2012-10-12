@@ -116,8 +116,6 @@ Sys_GetEvent
 sysEvent_t Sys_GetEvent(void)
 {
 	MSG msg;
-	sysEvent_t ev;
-	char* s;
 
 	// return if we have data
 	if (eventHead > eventTail)
@@ -139,19 +137,6 @@ sysEvent_t Sys_GetEvent(void)
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-	}
-
-	// check for console commands
-	s = Sys_ConsoleInput();
-	if (s)
-	{
-		char* b;
-		int len;
-
-		len = String::Length(s) + 1;
-		b = (char*)Mem_Alloc(len);
-		String::NCpyZ(b, s, len - 1);
-		Sys_QueEvent(0, SE_CONSOLE, 0, 0, len, b);
 	}
 
 	return Sys_SharedGetEvent();
