@@ -116,7 +116,6 @@
     <ClInclude Include="net.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="sys.h" />
-    <ClInclude Include="winquake.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

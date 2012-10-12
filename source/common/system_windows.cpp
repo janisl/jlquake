@@ -522,3 +522,22 @@ void Sys_UnloadDll(void* handle)
 		common->FatalError("Sys_UnloadDll FreeLibrary failed");
 	}
 }
+
+void Sys_MessageLoop()
+{
+	MSG msg;
+
+	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	{
+		if (!GetMessage(&msg, NULL, 0, 0))
+		{
+			Com_Quit_f();
+		}
+
+		// save the msg time, because wndprocs don't have access to the timestamp
+		sysMsgTime = msg.time;
+
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}

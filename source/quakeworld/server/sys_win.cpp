@@ -113,17 +113,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	oldtime = Sys_DoubleTime() - 0.1;
 	while (1)
 	{
-		MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-		{
-			if (!GetMessage(&msg, NULL, 0, 0))
-			{
-				Sys_Quit();
-			}
-
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		Sys_MessageLoop();
 
 		// select on the net socket and stdin
 		// the only reason we have a timeout at all is so that if the last

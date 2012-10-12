@@ -39,3 +39,5 @@ char* Sys_GetMPDllName(const char* name);
 void* Sys_LoadDll(const char* name);
 void* Sys_GetDllFunction(void* handle, const char* name);
 void Sys_UnloadDll(void* handle);
+
+void Sys_MessageLoop();

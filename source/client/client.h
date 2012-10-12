@@ -639,7 +639,6 @@ float crand();	// -1 to 1
 //	Must be provided
 float* CL_GetSimOrg();
 void CL_NextDemo();
-void Com_Quit_f();
 void CL_Disconnect();
 void CL_Disconnect_f();
 

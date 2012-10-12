@@ -180,7 +180,6 @@ WinMain
 */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	MSG msg;
 	int time, oldtime, newtime;
 
 	/* previous instances do not exist in Win32 */
@@ -208,16 +207,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Sleep(1);
 		}
 
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-		{
-			if (!GetMessage(&msg, NULL, 0, 0))
-			{
-				Com_Quit_f();
-			}
-			sysMsgTime = msg.time;
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		Sys_MessageLoop();
 
 		do
 		{

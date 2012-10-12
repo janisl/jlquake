@@ -107,20 +107,7 @@ void Sys_Sleep(void)
 
 void Sys_SendKeyEvents(void)
 {
-	MSG msg;
-
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-		if (!GetMessage(&msg, NULL, 0, 0))
-		{
-			Sys_Quit();
-		}
-		// save the msg time, because wndprocs don't have access to the timestamp
-		sysMsgTime = msg.time;
-
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+	Sys_MessageLoop();
 }
 
 

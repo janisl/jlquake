@@ -105,5 +105,6 @@ extern int time_backend;			// renderer backend time
 
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
+void Com_Quit_f();
 
 #endif
