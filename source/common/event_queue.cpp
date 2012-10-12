@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "../client/public.h"
 
 sysEvent_t eventQue[MAX_QUED_EVENTS];
 int eventHead;
@@ -56,8 +57,19 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 	ev->evPtr = ptr;
 }
 
-sysEvent_t Sys_SharedGetEvent()
+sysEvent_t Sys_GetEvent()
 {
+	// return if we have data
+	if (eventHead > eventTail)
+	{
+		eventTail++;
+		return eventQue[(eventTail - 1) & MASK_QUED_EVENTS];
+	}
+
+	// pump the message loop
+	Sys_MessageLoop();
+	Sys_SendKeyEvents();
+
 	// check for console commands
 	const char* s = Sys_ConsoleInput();
 	if (s)

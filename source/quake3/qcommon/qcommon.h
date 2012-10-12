@@ -146,8 +146,6 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-sysEvent_t  Sys_GetEvent(void);
-
 void    Sys_Init(void);
 
 const char* Sys_GetCurrentUser(void);

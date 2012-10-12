@@ -100,37 +100,6 @@ void Sys_Quit(void)
 }
 
 /*
-========================================================================
-
-EVENT LOOP
-
-========================================================================
-*/
-
-/*
-================
-Sys_GetEvent
-
-================
-*/
-sysEvent_t Sys_GetEvent(void)
-{
-	// return if we have data
-	if (eventHead > eventTail)
-	{
-		eventTail++;
-		return eventQue[(eventTail - 1) & MASK_QUED_EVENTS];
-	}
-
-	// pump the message loop
-	Sys_MessageLoop();
-
-	return Sys_SharedGetEvent();
-}
-
-//================================================================
-
-/*
 =================
 Sys_In_Restart_f
 

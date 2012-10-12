@@ -704,9 +704,7 @@ void CL_Skins_f(void)
 		}
 		common->Printf("client %i: %s\n", i, cl.q2_configstrings[Q2CS_PLAYERSKINS + i]);
 		SCR_UpdateScreen();
-		Sys_MessageLoop();
-		Sys_SendKeyEvents();	// pump message loop
-		Com_EventLoop();
+		Com_EventLoop();	// pump message loop
 		CLQ2_ParseClientinfo(i);
 	}
 }

@@ -552,8 +552,6 @@ void Qcommon_Frame(int msec)
 			c_pointcontents = 0;
 		}
 
-		Sys_MessageLoop();
-
 		Com_EventLoop();
 		Cbuf_Execute();
 
@@ -575,9 +573,6 @@ void Qcommon_Frame(int msec)
 #endif
 
 		// get new key events
-		Sys_MessageLoop();
-		Sys_SendKeyEvents();
-
 		Com_EventLoop();
 
 		// process console commands

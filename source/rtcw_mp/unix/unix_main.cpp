@@ -249,40 +249,6 @@ void floating_point_exception_handler(int whatever)
 	signal(SIGFPE, floating_point_exception_handler);
 }
 
-/*
-========================================================================
-
-EVENT LOOP
-
-========================================================================
-*/
-
-/*
-================
-Sys_GetEvent
-
-================
-*/
-sysEvent_t Sys_GetEvent(void)
-{
-	// return if we have data
-	if (eventHead > eventTail)
-	{
-		eventTail++;
-		return eventQue[(eventTail - 1) & MASK_QUED_EVENTS];
-	}
-
-#ifndef DEDICATED
-	// pump the message loop
-	// in vga this calls KBD_Update, under X, it calls GetEvent
-	Sys_SendKeyEvents();
-#endif
-
-	return Sys_SharedGetEvent();
-}
-
-/*****************************************************************************/
-
 void Sys_AppActivate(void)
 {
 }

@@ -40,7 +40,7 @@ struct sysEvent_t
 };
 
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
-sysEvent_t Sys_SharedGetEvent();
+sysEvent_t Sys_GetEvent();
 
 extern sysEvent_t eventQue[MAX_QUED_EVENTS];
 extern int eventHead, eventTail;

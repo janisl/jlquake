@@ -171,39 +171,6 @@ void  Sys_Error(const char* error, ...)
 	Sys_Exit(1);// bk010104 - use single exit point.
 }
 
-/*
-========================================================================
-
-EVENT LOOP
-
-========================================================================
-*/
-
-/*
-================
-Sys_GetEvent
-
-================
-*/
-sysEvent_t Sys_GetEvent(void)
-{
-	// return if we have data
-	if (eventHead > eventTail)
-	{
-		eventTail++;
-		return eventQue[(eventTail - 1) & MASK_QUED_EVENTS];
-	}
-
-#ifndef DEDICATED
-	// pump the message loop
-	Sys_SendKeyEvents();
-#endif
-
-	return Sys_SharedGetEvent();
-}
-
-/*****************************************************************************/
-
 void Sys_AppActivate(void)
 {
 }

@@ -349,11 +349,7 @@ void _Host_Frame(float time)
 		if (!Host_FilterTime(time))
 		{
 			return;		// don't run too fast, or packets will flood out
-
 		}
-		Sys_MessageLoop();
-// get new key events
-		Sys_SendKeyEvents();
 
 #ifndef DEDICATED
 // allow mice or other external controllers to add commands

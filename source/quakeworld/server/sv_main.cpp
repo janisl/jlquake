@@ -170,8 +170,6 @@ void COM_ServerFrame(float time)
 		// keep the random time dependent
 		rand();
 
-		Sys_MessageLoop();
-
 		Com_EventLoop();
 
 		// process console commands
