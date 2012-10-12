@@ -103,19 +103,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="client\cl_cgame.cpp" />
-    <ClCompile Include="client\cl_cin.cpp" />
-    <ClCompile Include="client\cl_console.cpp" />
     <ClCompile Include="client\cl_input.cpp" />
-    <ClCompile Include="client\cl_keys.cpp" />
     <ClCompile Include="client\cl_main.cpp" />
     <ClCompile Include="client\cl_net_chan.cpp" />
     <ClCompile Include="client\cl_parse.cpp" />
-    <ClCompile Include="client\cl_scrn.cpp" />
-    <ClCompile Include="client\cl_ui.cpp" />
-    <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="client\snd_dma.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
     <ClCompile Include="qcommon\dl_main.cpp">
@@ -133,10 +126,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cgame\cg_public.h" />
     <ClInclude Include="client\client.h" />
-    <ClInclude Include="game\g_public.h" />
-    <ClInclude Include="client\keys.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="win32\win_local.h" />

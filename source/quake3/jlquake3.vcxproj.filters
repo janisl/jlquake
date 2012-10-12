@@ -18,16 +18,7 @@
     <ClCompile Include="client\cl_cgame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_cin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client\cl_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="client\cl_main.cpp">
@@ -39,22 +30,10 @@
     <ClCompile Include="client\cl_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_scrn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_ui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\files.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
@@ -65,13 +44,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cgame\cg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\q_shared.h">
@@ -81,9 +54,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\ui_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

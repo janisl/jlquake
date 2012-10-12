@@ -101,38 +101,23 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cin.cpp" />
-    <ClCompile Include="client\cl_ents.cpp" />
     <ClCompile Include="client\cl_input.cpp" />
-    <ClCompile Include="client\cl_inv.cpp" />
     <ClCompile Include="client\cl_main.cpp" />
-    <ClCompile Include="client\cl_parse.cpp" />
     <ClCompile Include="client\cl_pred.cpp" />
-    <ClCompile Include="client\cl_scrn.cpp" />
-    <ClCompile Include="client\cl_view.cpp" />
-    <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
-    <ClCompile Include="client\console.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="client\keys.cpp" />
-    <ClCompile Include="client\menu.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="qcommon\q_shared.cpp" />
-    <ClCompile Include="win32\q_shwin.cpp" />
-    <ClCompile Include="client\qmenu.cpp" />
-    <ClCompile Include="client\snd_dma.cpp" />
     <ClCompile Include="client\x86.cpp" />
     <ClCompile Include="win32\sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\client.h" />
-    <ClInclude Include="client\console.h" />
     <ClInclude Include="client\keys.h" />
     <ClInclude Include="qcommon\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
-    <ClInclude Include="client\qmenu.h" />
     <ClInclude Include="win32\resource.h" />
-    <ClInclude Include="client\screen.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="win32\q2.ico" />

@@ -14,16 +14,7 @@
     <ClCompile Include="client\cl_cgame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_cin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client\cl_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="client\cl_main.cpp">
@@ -35,22 +26,10 @@
     <ClCompile Include="client\cl_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_scrn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_ui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\files.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
@@ -61,55 +40,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="botai\botai.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\botlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cgame\cg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\g_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\q_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qcommon\qcommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer\qgl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game\surfaceflags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer\tr_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer\tr_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cgame\tr_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\ui_public.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\win_local.h">

@@ -101,54 +101,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cl_demo.cpp" />
-    <ClCompile Include="cl_draw.cpp" />
     <ClCompile Include="cl_input.cpp" />
     <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="cl_parse.cpp" />
-    <ClCompile Include="cl_screen.cpp" />
-    <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />
-    <ClCompile Include="console.cpp" />
     <ClCompile Include="host.cpp" />
     <ClCompile Include="host_cmd.cpp" />
     <ClCompile Include="keys.cpp" />
-    <ClCompile Include="menu.cpp" />
     <ClCompile Include="net_main.cpp" />
-    <ClCompile Include="r_part.cpp" />
-    <ClCompile Include="sbar.cpp" />
-    <ClCompile Include="snd_dma.cpp" />
     <ClCompile Include="sys_win.cpp" />
-    <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h" />
-    <ClInclude Include="cmd.h" />
     <ClInclude Include="common.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="draw.h" />
-    <ClInclude Include="glquake.h" />
     <ClInclude Include="keys.h" />
-    <ClInclude Include="menu.h" />
     <ClInclude Include="net.h" />
-    <ClInclude Include="net_dgrm.h" />
-    <ClInclude Include="net_loop.h" />
-    <ClInclude Include="pr_comp.h" />
-    <ClInclude Include="progdefs.h" />
-    <ClInclude Include="progs.h" />
-    <ClInclude Include="protocol.h" />
     <ClInclude Include="quakedef.h" />
-    <ClInclude Include="r_local.h" />
-    <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sbar.h" />
-    <ClInclude Include="screen.h" />
-    <ClInclude Include="server.h" />
     <ClInclude Include="sys.h" />
-    <ClInclude Include="vid.h" />
-    <ClInclude Include="view.h" />
-    <ClInclude Include="winquake.h" />
-    <ClInclude Include="world.h" />
-    <ClInclude Include="zone.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="quake.ico" />

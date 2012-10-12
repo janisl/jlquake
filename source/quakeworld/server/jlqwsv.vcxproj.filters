@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\client\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,27 +27,18 @@
     <ClCompile Include="sv_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sv_send.cpp">
+    <ClCompile Include="sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sys_win.cpp">
+    <ClCompile Include="..\client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\quake\v2\client\net.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\client\bothdefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\cmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\client\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\client\net.h">

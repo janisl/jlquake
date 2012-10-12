@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\client\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\client\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,10 +27,10 @@
     <ClCompile Include="sv_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sv_send.cpp">
+    <ClCompile Include="sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sys_win.cpp">
+    <ClCompile Include="..\client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,9 +18,6 @@
     <ClCompile Include="cl_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cl_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cl_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,37 +27,16 @@
     <ClCompile Include="cl_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cl_screen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="snd_dma.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sys_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,22 +47,10 @@
     <ClInclude Include="client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="keys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net.h">
@@ -98,25 +62,10 @@
     <ClInclude Include="quakedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="screen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

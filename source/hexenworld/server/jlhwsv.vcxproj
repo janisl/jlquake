@@ -105,12 +105,11 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\client\cmd.cpp" />
     <ClCompile Include="..\client\common.cpp" />
+    <ClCompile Include="..\client\keys.cpp" />
     <ClCompile Include="..\client\net_chan.cpp" />
     <ClCompile Include="sv_ccmds.cpp" />
     <ClCompile Include="sv_main.cpp" />
-    <ClCompile Include="sv_send.cpp" />
     <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>

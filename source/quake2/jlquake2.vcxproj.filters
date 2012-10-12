@@ -15,40 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_ents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client\cl_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_inv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="client\cl_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_parse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client\cl_pred.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_scrn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_view.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\files.cpp">
@@ -57,22 +33,10 @@
     <ClCompile Include="client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\q_shared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win32\q_shwin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\qmenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="client\x86.cpp">
@@ -86,9 +50,6 @@
     <ClInclude Include="client\client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="client\console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="client\keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -98,13 +59,7 @@
     <ClInclude Include="qcommon\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="client\qmenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="win32\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

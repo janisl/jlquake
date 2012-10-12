@@ -100,41 +100,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cl_demo.cpp" />
-    <ClCompile Include="cl_draw.cpp" />
     <ClCompile Include="cl_input.cpp" />
     <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="cl_parse.cpp" />
-    <ClCompile Include="cl_screen.cpp" />
-    <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />
-    <ClCompile Include="console.cpp" />
     <ClCompile Include="keys.cpp" />
-    <ClCompile Include="menu.cpp" />
     <ClCompile Include="net_chan.cpp" />
-    <ClCompile Include="sbar.cpp" />
-    <ClCompile Include="snd_dma.cpp" />
     <ClCompile Include="sys_win.cpp" />
-    <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bothdefs.h" />
     <ClInclude Include="client.h" />
-    <ClInclude Include="cmd.h" />
     <ClInclude Include="common.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="draw.h" />
     <ClInclude Include="keys.h" />
-    <ClInclude Include="menu.h" />
     <ClInclude Include="net.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="quakedef.h" />
-    <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sbar.h" />
-    <ClInclude Include="screen.h" />
     <ClInclude Include="sys.h" />
-    <ClInclude Include="vid.h" />
-    <ClInclude Include="view.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="quakeworld.bmp" />
@@ -150,6 +133,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\common\common.vcxproj">
       <Project>{0e31d872-f284-45b8-b4fd-11009667b854}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\server\server.vcxproj">
+      <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

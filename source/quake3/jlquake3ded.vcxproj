@@ -105,7 +105,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="qcommon\cmd.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="null\null_client.cpp" />

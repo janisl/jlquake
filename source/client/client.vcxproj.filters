@@ -46,6 +46,21 @@
     <Filter Include="game\quake_hexen2">
       <UniqueIdentifier>{49cfab2e-c7b9-4cb1-9044-4677ca6bf954}</UniqueIdentifier>
     </Filter>
+    <Filter Include="game\et">
+      <UniqueIdentifier>{e48ee0a2-b7df-454c-851c-6c4c4236036b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\quake3">
+      <UniqueIdentifier>{967b72f9-5ca4-4b4b-a2e4-80753b2b24eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\tech3">
+      <UniqueIdentifier>{b21515bf-b567-4bee-9a34-dfa5b374d6c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\wolfmp">
+      <UniqueIdentifier>{a5fd434b-c0c8-4c3d-8513-76dedd1a8b3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\wolfsp">
+      <UniqueIdentifier>{aed61661-df02-4817-914b-0f81ff5f0c79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="renderer\backend.cpp">
@@ -368,6 +383,126 @@
     <ClCompile Include="game\quake_hexen2\network_channel.cpp">
       <Filter>game\quake_hexen2</Filter>
     </ClCompile>
+    <ClCompile Include="game\quake\main.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\parse.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\screen.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake\status_bar.cpp">
+      <Filter>game\quake</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\main.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\menu.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\screen.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hexen2\status_bar.cpp">
+      <Filter>game\hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\main.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\parse.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\view.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\connection.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\entities.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\hud.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\menu.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\parse.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\predict.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\qmenu.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\screen.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\view.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\main.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\view.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="game\et\cgame.cpp">
+      <Filter>game\et</Filter>
+    </ClCompile>
+    <ClCompile Include="game\et\ui.cpp">
+      <Filter>game\et</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\cdkey.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\cgame.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\connection.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\demo.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\main.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\parse.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\screen.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\serverlist.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\ui.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\wolfmp\cgame.cpp">
+      <Filter>game\wolfmp</Filter>
+    </ClCompile>
+    <ClCompile Include="game\wolfmp\ui.cpp">
+      <Filter>game\wolfmp</Filter>
+    </ClCompile>
+    <ClCompile Include="game\wolfsp\cgame.cpp">
+      <Filter>game\wolfsp</Filter>
+    </ClCompile>
+    <ClCompile Include="game\wolfsp\ui.cpp">
+      <Filter>game\wolfsp</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake3\cgame.cpp">
+      <Filter>game\quake3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake3\ui.cpp">
+      <Filter>game\quake3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\parse.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer\cvars.h">
@@ -410,9 +545,6 @@
       <Filter>sound\midi</Filter>
     </ClInclude>
     <ClInclude Include="ui\console.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\screen.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="ui\ui.h">
@@ -485,6 +617,84 @@
     </ClInclude>
     <ClInclude Include="game\quake_hexen2\network_channel.h">
       <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\hexen2\local.h">
+      <Filter>game\hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake_hexen2\main.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake_hexen2\parse.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake_hexen2\view.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake2\menu.h">
+      <Filter>game\quake2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake2\qmenu.h">
+      <Filter>game\quake2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\et\cg_public.h">
+      <Filter>game\et</Filter>
+    </ClInclude>
+    <ClInclude Include="game\et\cg_ui_shared.h">
+      <Filter>game\et</Filter>
+    </ClInclude>
+    <ClInclude Include="game\et\local.h">
+      <Filter>game\et</Filter>
+    </ClInclude>
+    <ClInclude Include="game\et\ui_public.h">
+      <Filter>game\et</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tech3\cg_shared.h">
+      <Filter>game\tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tech3\local.h">
+      <Filter>game\tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tech3\ui_shared.h">
+      <Filter>game\tech3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfmp\cg_public.h">
+      <Filter>game\wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfmp\cg_ui_shared.h">
+      <Filter>game\wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfmp\local.h">
+      <Filter>game\wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfmp\ui_public.h">
+      <Filter>game\wolfmp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfsp\cg_public.h">
+      <Filter>game\wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfsp\cg_ui_shared.h">
+      <Filter>game\wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfsp\local.h">
+      <Filter>game\wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wolfsp\ui_public.h">
+      <Filter>game\wolfsp</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake3\cg_public.h">
+      <Filter>game\quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake3\cg_ui_shared.h">
+      <Filter>game\quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake3\local.h">
+      <Filter>game\quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake3\ui_public.h">
+      <Filter>game\quake3</Filter>
+    </ClInclude>
+    <ClInclude Include="game\parse.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

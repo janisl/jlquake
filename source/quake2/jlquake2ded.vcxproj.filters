@@ -18,9 +18,6 @@
     <ClCompile Include="null\cl_null.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,10 +30,10 @@
     <ClCompile Include="qcommon\q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\q_shwin.cpp">
+    <ClCompile Include="win32\sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\sys_win.cpp">
+    <ClCompile Include="client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
