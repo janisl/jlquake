@@ -258,9 +258,6 @@ int main(int argc, char* argv[])
 		String::Cat(cmdline, len, argv[i]);
 	}
 
-	// bk000306 - clear queues
-	Com_Memset(&eventQue[0], 0, MAX_QUED_EVENTS * sizeof(sysEvent_t));
-
 	Com_Init(cmdline);
 	NETQ23_Init();
 

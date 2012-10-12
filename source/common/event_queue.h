@@ -14,9 +14,6 @@
 //**
 //**************************************************************************
 
-#define MAX_QUED_EVENTS     256
-#define MASK_QUED_EVENTS    (MAX_QUED_EVENTS - 1)
-
 enum sysEventType_t
 {
 	// bk001129 - make sure SE_NONE is zero
@@ -39,8 +36,8 @@ struct sysEvent_t
 	void* evPtr;					// this must be manually freed if not NULL
 };
 
+void Com_InitEventQueue();
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
 sysEvent_t Com_GetRealEvent();
-
-extern sysEvent_t eventQue[MAX_QUED_EVENTS];
-extern int eventHead, eventTail;
+void Com_PushEvent(sysEvent_t* event);
+sysEvent_t Com_GetEvent();

@@ -17,11 +17,44 @@
 #include "qcommon.h"
 #include "../client/public.h"
 
-sysEvent_t eventQue[MAX_QUED_EVENTS];
-int eventHead;
-int eventTail;
+/*
+===================================================================
+
+EVENTS AND JOURNALING
+
+In addition to these events, .cfg files are also copied to the
+journaled file
+===================================================================
+*/
+
+#define MAX_QUED_EVENTS     256
+#define MASK_QUED_EVENTS    (MAX_QUED_EVENTS - 1)
+
+static sysEvent_t eventQue[MAX_QUED_EVENTS];
+static int eventHead;
+static int eventTail;
+
+#define MAX_PUSHED_EVENTS               1024
+
+static int com_pushedEventsHead = 0;
+static int com_pushedEventsTail = 0;
+static sysEvent_t com_pushedEvents[MAX_PUSHED_EVENTS];
 
 static byte sys_packetReceived[MAX_MSGLEN];
+
+void Com_InitEventQueue()
+{
+	// clear queues
+	Com_Memset(&eventQue[0], 0, MAX_QUED_EVENTS * sizeof(sysEvent_t));
+
+	// clear the static buffer array
+	// this requires SE_NONE to be accepted as a valid but NOP event
+	Com_Memset(com_pushedEvents, 0, sizeof(com_pushedEvents));
+	// reset counters while we are at it
+	// beware: GetEvent might still return an SE_NONE from the buffer
+	com_pushedEventsHead = 0;
+	com_pushedEventsTail = 0;
+}
 
 //	A time of 0 will get the current time
 //	Ptr should either be null, or point to a block of data that can
@@ -160,4 +193,44 @@ sysEvent_t Com_GetRealEvent()
 	}
 
 	return ev;
+}
+
+void Com_PushEvent(sysEvent_t* event)
+{
+	static bool printedWarning = false;
+
+	sysEvent_t* ev = &com_pushedEvents[com_pushedEventsHead & (MAX_PUSHED_EVENTS - 1)];
+
+	if (com_pushedEventsHead - com_pushedEventsTail >= MAX_PUSHED_EVENTS)
+	{
+		// don't print the warning constantly, or it can give time for more...
+		if (!printedWarning)
+		{
+			printedWarning = true;
+			common->Printf("WARNING: Com_PushEvent overflow\n");
+		}
+
+		if (ev->evPtr)
+		{
+			Mem_Free(ev->evPtr);
+		}
+		com_pushedEventsTail++;
+	}
+	else
+	{
+		printedWarning = false;
+	}
+
+	*ev = *event;
+	com_pushedEventsHead++;
+}
+
+sysEvent_t Com_GetEvent()
+{
+	if (com_pushedEventsHead > com_pushedEventsTail)
+	{
+		com_pushedEventsTail++;
+		return com_pushedEvents[(com_pushedEventsTail - 1) & (MAX_PUSHED_EVENTS - 1)];
+	}
+	return Com_GetRealEvent();
 }

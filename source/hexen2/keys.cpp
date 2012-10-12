@@ -2,7 +2,7 @@
 
 void Com_EventLoop()
 {
-	for (sysEvent_t ev = Com_GetRealEvent(); ev.evType; ev = Com_GetRealEvent())
+	for (sysEvent_t ev = Com_GetEvent(); ev.evType; ev = Com_GetEvent())
 	{
 		switch (ev.evType)
 		{

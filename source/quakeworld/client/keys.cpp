@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Com_EventLoop()
 {
-	for (sysEvent_t ev = Com_GetRealEvent(); ev.evType; ev = Com_GetRealEvent())
+	for (sysEvent_t ev = Com_GetEvent(); ev.evType; ev = Com_GetEvent())
 	{
 		switch (ev.evType)
 		{
