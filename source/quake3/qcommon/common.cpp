@@ -586,61 +586,6 @@ void Com_InitJournaling(void)
 
 /*
 =================
-Com_GetRealEvent
-=================
-*/
-sysEvent_t  Com_GetRealEvent(void)
-{
-	int r;
-	sysEvent_t ev;
-
-	// either get an event from the system or the journal file
-	if (com_journal->integer == 2)
-	{
-		r = FS_Read(&ev, sizeof(ev), com_journalFile);
-		if (r != sizeof(ev))
-		{
-			common->FatalError("Error reading from journal file");
-		}
-		if (ev.evPtrLength)
-		{
-			ev.evPtr = Mem_Alloc(ev.evPtrLength);
-			r = FS_Read(ev.evPtr, ev.evPtrLength, com_journalFile);
-			if (r != ev.evPtrLength)
-			{
-				common->FatalError("Error reading from journal file");
-			}
-		}
-	}
-	else
-	{
-		ev = Sys_GetEvent();
-
-		// write the journal value out if needed
-		if (com_journal->integer == 1)
-		{
-			r = FS_Write(&ev, sizeof(ev), com_journalFile);
-			if (r != sizeof(ev))
-			{
-				common->FatalError("Error writing to journal file");
-			}
-			if (ev.evPtrLength)
-			{
-				r = FS_Write(ev.evPtr, ev.evPtrLength, com_journalFile);
-				if (r != ev.evPtrLength)
-				{
-					common->FatalError("Error writing to journal file");
-				}
-			}
-		}
-	}
-
-	return ev;
-}
-
-
-/*
-=================
 Com_InitPushEvent
 =================
 */

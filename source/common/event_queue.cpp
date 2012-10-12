@@ -57,7 +57,7 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 	ev->evPtr = ptr;
 }
 
-sysEvent_t Sys_GetEvent()
+static sysEvent_t Sys_GetEvent()
 {
 	// return if we have data
 	if (eventHead > eventTail)
@@ -110,6 +110,54 @@ sysEvent_t Sys_GetEvent()
 	Com_Memset(&ev, 0, sizeof(ev));
 	//	Windows uses timeGetTime();
 	ev.evTime = Sys_Milliseconds();
+
+	return ev;
+}
+
+sysEvent_t Com_GetRealEvent()
+{
+	sysEvent_t ev;
+
+	// either get an event from the system or the journal file
+	if (com_journal && com_journal->integer == 2)
+	{
+		int r = FS_Read(&ev, sizeof(ev), com_journalFile);
+		if (r != sizeof(ev))
+		{
+			common->FatalError("Error reading from journal file");
+		}
+		if (ev.evPtrLength)
+		{
+			ev.evPtr = Mem_Alloc(ev.evPtrLength);
+			r = FS_Read(ev.evPtr, ev.evPtrLength, com_journalFile);
+			if (r != ev.evPtrLength)
+			{
+				common->FatalError("Error reading from journal file");
+			}
+		}
+	}
+	else
+	{
+		ev = Sys_GetEvent();
+
+		// write the journal value out if needed
+		if (com_journal && com_journal->integer == 1)
+		{
+			int r = FS_Write(&ev, sizeof(ev), com_journalFile);
+			if (r != sizeof(ev))
+			{
+				common->FatalError("Error writing to journal file");
+			}
+			if (ev.evPtrLength)
+			{
+				r = FS_Write(ev.evPtr, ev.evPtrLength, com_journalFile);
+				if (r != ev.evPtrLength)
+				{
+					common->FatalError("Error writing to journal file");
+				}
+			}
+		}
+	}
 
 	return ev;
 }
