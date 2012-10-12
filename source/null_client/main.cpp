@@ -148,3 +148,7 @@ void CL_MouseEvent(int dx, int dy)
 void CL_JoystickEvent(int axis, int value)
 {
 }
+
+void Sys_SendKeyEvents()
+{
+}

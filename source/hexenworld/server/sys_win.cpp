@@ -95,8 +95,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	oldtime = Sys_DoubleTime() - HX_FRAME_TIME;
 	while (1)
 	{
-		Sys_MessageLoop();
-
 		// select on the net socket and stdin
 		// the only reason we have a timeout at all is so that if the last
 		// connected client times out, the message would not otherwise

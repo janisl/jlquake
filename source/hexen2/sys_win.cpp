@@ -85,13 +85,6 @@ static void Sys_Sleep(void)
 	Sleep(1);
 }
 
-
-void Sys_SendKeyEvents(void)
-{
-	Sys_MessageLoop();
-}
-
-
 /*
 ==============================================================================
 

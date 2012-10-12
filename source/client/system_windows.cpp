@@ -114,3 +114,7 @@ bool Sys_IsNumLockDown()
 
 	return false;
 }
+
+void Sys_SendKeyEvents()
+{
+}

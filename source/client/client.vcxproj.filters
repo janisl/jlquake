@@ -696,5 +696,6 @@
     <ClInclude Include="game\parse.h">
       <Filter>game</Filter>
     </ClInclude>
+    <ClInclude Include="public.h" />
   </ItemGroup>
 </Project>

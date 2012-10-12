@@ -440,3 +440,7 @@ void Sys_DoStartProcess(const char* cmdline)
 		break;
 	}
 }
+
+void Sys_MessageLoop()
+{
+}

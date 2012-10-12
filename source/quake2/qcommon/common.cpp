@@ -552,6 +552,8 @@ void Qcommon_Frame(int msec)
 			c_pointcontents = 0;
 		}
 
+		Sys_MessageLoop();
+
 		Com_EventLoop();
 		Cbuf_Execute();
 
@@ -570,10 +572,11 @@ void Qcommon_Frame(int msec)
 #ifndef DEDICATED_ONLY
 		// let the mouse activate or deactivate
 		IN_Frame();
+#endif
 
 		// get new key events
+		Sys_MessageLoop();
 		Sys_SendKeyEvents();
-#endif
 
 		Com_EventLoop();
 

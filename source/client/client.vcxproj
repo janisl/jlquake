@@ -993,6 +993,7 @@
     <ClInclude Include="game\wolfsp\local.h" />
     <ClInclude Include="game\wolfsp\ui_public.h" />
     <ClInclude Include="hexen2clientdefs.h" />
+    <ClInclude Include="public.h" />
     <ClInclude Include="quake2clientdefs.h" />
     <ClInclude Include="quake3clientdefs.h" />
     <ClInclude Include="quakeclientdefs.h" />

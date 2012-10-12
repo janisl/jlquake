@@ -1181,6 +1181,7 @@ void Host_Frame(float time)
 		cls.realFrametime = cls.frametime;
 
 		// get new key events
+		Sys_MessageLoop();
 		Sys_SendKeyEvents();
 
 		// allow mice or other external controllers to add commands

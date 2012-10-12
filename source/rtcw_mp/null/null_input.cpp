@@ -39,7 +39,3 @@ void IN_Frame(void)
 void IN_Shutdown(void)
 {
 }
-
-void Sys_SendKeyEvents(void)
-{
-}

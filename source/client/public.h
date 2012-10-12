@@ -43,6 +43,7 @@ void CL_KeyEvent(int key, bool down, unsigned time);
 void CL_CharEvent(int key);
 void CL_MouseEvent(int dx, int dy);
 void CL_JoystickEvent(int axis, int value);
+void Sys_SendKeyEvents();
 
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);

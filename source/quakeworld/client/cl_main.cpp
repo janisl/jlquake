@@ -1308,6 +1308,7 @@ void Host_Frame(float time)
 		cls.realFrametime = cls.frametime;
 
 		// get new key events
+		Sys_MessageLoop();
 		Sys_SendKeyEvents();
 		Com_EventLoop();
 

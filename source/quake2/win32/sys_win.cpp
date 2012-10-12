@@ -94,29 +94,6 @@ void Sys_Init(void)
 }
 
 /*
-================
-Sys_SendKeyEvents
-
-Send CL_KeyEvent calls
-================
-*/
-void Sys_SendKeyEvents(void)
-{
-	MSG msg;
-
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-		if (!GetMessage(&msg, NULL, 0, 0))
-		{
-			Sys_Quit();
-		}
-		sysMsgTime = msg.time;
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-}
-
-/*
 ==============================================================================
 
  WINDOWS CRAP
@@ -206,8 +183,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			Sleep(1);
 		}
-
-		Sys_MessageLoop();
 
 		do
 		{

@@ -372,10 +372,11 @@ void _Host_Frame(float time)
 			return;		// don't run too fast, or packets will flood out
 
 		}
-#ifndef DEDICATED
+		Sys_MessageLoop();
 // get new key events
 		Sys_SendKeyEvents();
 
+#ifndef DEDICATED
 // allow mice or other external controllers to add commands
 		IN_Frame();
 #endif
