@@ -1302,14 +1302,6 @@ CL_SendCommand
 */
 void CL_SendCommand(void)
 {
-	// get new key events
-	Sys_SendKeyEvents();
-
-	Com_EventLoop();
-
-	// process console commands
-	Cbuf_Execute();
-
 	// fix any cheating cvars
 	CL_FixCvarCheats();
 
@@ -1387,9 +1379,6 @@ void CL_Frame(int msec)
 			return;			// framerate is too high
 		}
 	}
-
-	// let the mouse activate or deactivate
-	IN_Frame();
 
 	// decide the simulation time
 	cls.frametime = extratime;

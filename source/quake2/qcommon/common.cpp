@@ -576,6 +576,19 @@ void Qcommon_Frame(int msec)
 			time_between = Sys_Milliseconds_();
 		}
 
+#ifndef DEDICATED_ONLY
+		// let the mouse activate or deactivate
+		IN_Frame();
+
+		// get new key events
+		Sys_SendKeyEvents();
+#endif
+
+		Com_EventLoop();
+
+		// process console commands
+		Cbuf_Execute();
+
 		CL_Frame(msec);
 
 		if (com_speeds->value)

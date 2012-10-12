@@ -49,8 +49,8 @@
 
 #ifndef DEDICATED
 #include "client.h"
-#include "keys.h"
 #endif
+#include "keys.h"
 
 //=============================================================================
 

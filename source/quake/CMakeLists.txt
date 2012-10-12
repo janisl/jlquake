@@ -17,6 +17,7 @@ add_executable(jlquakeded
 	common.cpp
 	host.cpp
 	host_cmd.cpp
+	keys.cpp
 	net_main.cpp
 	sys_linux.cpp
 )
