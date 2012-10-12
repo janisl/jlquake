@@ -705,7 +705,7 @@ void CL_Skins_f(void)
 		common->Printf("client %i: %s\n", i, cl.q2_configstrings[Q2CS_PLAYERSKINS + i]);
 		SCR_UpdateScreen();
 		Sys_SendKeyEvents();	// pump message loop
-		IN_ProcessEvents();
+		Com_EventLoop();
 		CLQ2_ParseClientinfo(i);
 	}
 }
@@ -1305,7 +1305,7 @@ void CL_SendCommand(void)
 	// get new key events
 	Sys_SendKeyEvents();
 
-	IN_ProcessEvents();
+	Com_EventLoop();
 
 	// process console commands
 	Cbuf_Execute();

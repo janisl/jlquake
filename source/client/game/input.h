@@ -49,7 +49,6 @@ extern Cvar* lookspring;
 extern Cvar* cl_bypassMouseInput;
 extern Cvar* cl_debugMove;
 
-void CL_JoystickEvent(int axis, int value, int time);
 void CLQH_StartPitchDrift();
 void CL_InitInputCommon();
 in_usercmd_t CL_CreateCmd();

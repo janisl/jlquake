@@ -1,1 +1,1 @@
-void IN_ProcessEvents();
+void Com_EventLoop();

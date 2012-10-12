@@ -41,6 +41,8 @@ void CL_InitKeyCommands();
 void CL_KeyEvent(int key, bool down, unsigned time);
 // char events are for field typing, not game control
 void CL_CharEvent(int key);
+void CL_MouseEvent(int dx, int dy);
+void CL_JoystickEvent(int axis, int value);
 
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);

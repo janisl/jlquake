@@ -1309,7 +1309,7 @@ void Host_Frame(float time)
 
 		// get new key events
 		Sys_SendKeyEvents();
-		IN_ProcessEvents();
+		Com_EventLoop();
 
 		// allow mice or other external controllers to add commands
 		IN_Frame();

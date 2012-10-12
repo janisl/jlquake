@@ -74,7 +74,6 @@ void CL_ReadPackets(void);
 
 int  CL_ReadFromServer(void);
 void CL_WriteToServer(q2usercmd_t* cmd);
-void CL_MouseEvent(int mx, int my);
 
 //
 // cl_demo.c

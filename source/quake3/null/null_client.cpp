@@ -30,10 +30,6 @@ void CL_Init(void)
 {
 }
 
-void CL_MouseEvent(int dx, int dy, int time)
-{
-}
-
 void CL_Frame(int msec)
 {
 }
@@ -47,10 +43,6 @@ void CL_Disconnect(qboolean showMainMenu)
 }
 
 void CL_MapLoading(void)
-{
-}
-
-void CL_JoystickEvent(int axis, int value, int time)
 {
 }
 

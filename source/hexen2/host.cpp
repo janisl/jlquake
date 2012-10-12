@@ -402,7 +402,7 @@ void _Host_Frame(float time)
 // allow mice or other external controllers to add commands
 		IN_Frame();
 
-		IN_ProcessEvents();
+		Com_EventLoop();
 #endif
 
 // process console commands

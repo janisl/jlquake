@@ -161,8 +161,6 @@ void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 
-void CL_MouseEvent(int dx, int dy, int time);
-
 void CL_PacketEvent(netadr_t from, QMsg* msg);
 
 void CL_MapLoading(void);

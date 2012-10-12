@@ -176,8 +176,42 @@ static void IN_KeyUp(kbutton_t* b)
 	b->active = false;
 }
 
+void CL_MouseEvent(int dx, int dy)
+{
+	if (GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_UI)
+	{
+		// NERVE - SMF - if we just want to pass it along to game
+		if (GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput->integer == 1)
+		{
+			cl.mouseDx[cl.mouseIndex] += dx;
+			cl.mouseDy[cl.mouseIndex] += dy;
+		}
+		else
+		{
+			UI_MouseEvent(dx, dy);
+		}
+	}
+	else if (GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME)
+	{
+		if (GGameType & GAME_ET && cl_bypassMouseInput->integer == 1)
+		{
+			cl.mouseDx[cl.mouseIndex] += dx;
+			cl.mouseDy[cl.mouseIndex] += dy;
+		}
+		else
+		{
+			CLT3_MouseEvent(dx, dy);
+		}
+	}
+	else
+	{
+		cl.mouseDx[cl.mouseIndex] += dx;
+		cl.mouseDy[cl.mouseIndex] += dy;
+	}
+}
+
 //	Joystick values stay set until changed
-void CL_JoystickEvent(int axis, int value, int time)
+void CL_JoystickEvent(int axis, int value)
 {
 	if (axis < 0 || axis >= MAX_JOYSTICK_AXIS)
 	{

@@ -51,12 +51,6 @@ CL_KeyEvent (int key, qboolean down, unsigned time);
 
 //==========================================================================
 
-void CL_MouseEvent(int mx, int my)
-{
-	cl.mouseDx[cl.mouseIndex] += mx;
-	cl.mouseDy[cl.mouseIndex] += my;
-}
-
 /*
 ============
 CL_InitInput

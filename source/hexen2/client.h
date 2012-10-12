@@ -28,7 +28,6 @@ void CL_InitInput(void);
 void CL_SendCmd(void);
 
 int  CL_ReadFromServer(void);
-void CL_MouseEvent(int mx, int my);
 
 //
 // cl_demo.c

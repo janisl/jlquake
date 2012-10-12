@@ -140,3 +140,11 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 void CL_CharEvent(int key)
 {
 }
+
+void CL_MouseEvent(int dx, int dy)
+{
+}
+
+void CL_JoystickEvent(int axis, int value)
+{
+}

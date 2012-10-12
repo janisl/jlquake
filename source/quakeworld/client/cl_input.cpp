@@ -46,12 +46,6 @@ state bit 2 is edge triggered on the down to up transition
 
 //==========================================================================
 
-void CL_MouseEvent(int mx, int my)
-{
-	cl.mouseDx[cl.mouseIndex] += mx;
-	cl.mouseDy[cl.mouseIndex] += my;
-}
-
 /*
 =================
 CL_SendCmd

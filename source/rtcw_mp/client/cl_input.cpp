@@ -54,39 +54,6 @@ at the same time.
 
 /*
 =================
-CL_MouseEvent
-=================
-*/
-void CL_MouseEvent(int dx, int dy, int time)
-{
-	if (in_keyCatchers & KEYCATCH_UI)
-	{
-
-		// NERVE - SMF - if we just want to pass it along to game
-		if (cl_bypassMouseInput->integer == 1)
-		{
-			cl.mouseDx[cl.mouseIndex] += dx;
-			cl.mouseDy[cl.mouseIndex] += dy;
-		}
-		else
-		{
-			UI_MouseEvent(dx, dy);
-		}
-
-	}
-	else if (in_keyCatchers & KEYCATCH_CGAME)
-	{
-		CLT3_MouseEvent(dx, dy);
-	}
-	else
-	{
-		cl.mouseDx[cl.mouseIndex] += dx;
-		cl.mouseDy[cl.mouseIndex] += dy;
-	}
-}
-
-/*
-=================
 CL_CreateNewCommands
 
 Create a new wmusercmd_t structure for this frame

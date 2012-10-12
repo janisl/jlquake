@@ -1,6 +1,6 @@
 #include "quakedef.h"
 
-void IN_ProcessEvents()
+void Com_EventLoop()
 {
 	for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
 	{
@@ -16,7 +16,7 @@ void IN_ProcessEvents()
 			CL_MouseEvent(ev.evValue, ev.evValue2);
 			break;
 		case SE_JOYSTICK_AXIS:
-			CL_JoystickEvent(ev.evValue, ev.evValue2, ev.evTime);
+			CL_JoystickEvent(ev.evValue, ev.evValue2);
 			break;
 		case SE_CONSOLE:
 			Cbuf_AddText((char*)ev.evPtr);
