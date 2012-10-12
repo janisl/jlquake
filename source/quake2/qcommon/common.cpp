@@ -620,11 +620,6 @@ void Qcommon_Shutdown(void)
 {
 }
 
-int Com_Milliseconds()
-{
-	return Sys_Milliseconds();
-}
-
 void CL_EstablishConnection(const char* name)
 {
 }

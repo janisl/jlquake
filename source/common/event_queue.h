@@ -38,6 +38,5 @@ struct sysEvent_t
 
 void Com_InitEventQueue();
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
-sysEvent_t Com_GetRealEvent();
-void Com_PushEvent(sysEvent_t* event);
 sysEvent_t Com_GetEvent();
+int Com_Milliseconds();

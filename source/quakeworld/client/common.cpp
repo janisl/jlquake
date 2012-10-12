@@ -388,8 +388,3 @@ bool CL_WWWBadChecksum(const char* pakname)
 {
 	return false;
 }
-
-int Com_Milliseconds()
-{
-	return Sys_Milliseconds();
-}

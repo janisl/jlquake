@@ -84,7 +84,6 @@ void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
 int         Com_EventLoop(void);
-int         Com_Milliseconds(void);		// will be journaled properly
 qboolean    Com_SafeMode(void);
 
 void        Com_StartupVariable(const char* match);

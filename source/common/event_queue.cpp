@@ -147,7 +147,7 @@ static sysEvent_t Sys_GetEvent()
 	return ev;
 }
 
-sysEvent_t Com_GetRealEvent()
+static sysEvent_t Com_GetRealEvent()
 {
 	sysEvent_t ev;
 
@@ -195,7 +195,7 @@ sysEvent_t Com_GetRealEvent()
 	return ev;
 }
 
-void Com_PushEvent(sysEvent_t* event)
+static void Com_PushEvent(sysEvent_t* event)
 {
 	static bool printedWarning = false;
 
@@ -233,4 +233,22 @@ sysEvent_t Com_GetEvent()
 		return com_pushedEvents[(com_pushedEventsTail - 1) & (MAX_PUSHED_EVENTS - 1)];
 	}
 	return Com_GetRealEvent();
+}
+
+//	Can be used for profiling, but will be journaled accurately
+int Com_Milliseconds()
+{
+	// get events and push them until we get a null event with the current time
+	sysEvent_t ev;
+	do
+	{
+		ev = Com_GetRealEvent();
+		if (ev.evType != SE_NONE)
+		{
+			Com_PushEvent(&ev);
+		}
+	}
+	while (ev.evType != SE_NONE);
+
+	return ev.evTime;
 }

@@ -59,8 +59,6 @@
 #include "precompiler.h"
 #include "game_utils.h"
 
-int Com_Milliseconds();
-
 char* __CopyString(const char* in);
 
 extern Cvar* com_dedicated;
