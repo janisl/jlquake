@@ -244,3 +244,11 @@ extern bool com_errorEntered;
 
 int ComQ2_ServerState();		// this should have just been a cvar...
 void ComQ2_SetServerState(int state);
+
+void Com_ParseCommandLine(char* commandLine);
+bool Com_SafeMode();
+bool Com_AddStartupCommands();
+// checks for and removes command line "+set var arg" constructs
+// if match is NULL, all set commands will be executed, otherwise
+// only a set with the exact name.  Only used during startup.
+void Com_StartupVariable(const char* match);

@@ -75,8 +75,11 @@ int time_after_game;
 int time_frontend;			// renderer frontend time
 int time_backend;			// renderer backend time
 
-
 static int q2server_state;
+
+#define MAX_CONSOLE_LINES   32
+static int com_numConsoleLines;
+static char* com_consoleLines[MAX_CONSOLE_LINES];
 
 Interface::~Interface()
 {
@@ -976,4 +979,120 @@ int ComQ2_ServerState()
 void ComQ2_SetServerState(int state)
 {
 	q2server_state = state;
+}
+
+/*
+============================================================================
+
+COMMAND LINE FUNCTIONS
+
++ characters seperate the commandLine string into multiple console
+command lines.
+
+All of these are valid:
+
+quake3 +set test blah +map test
+quake3 set test blah+map test
+quake3 set test blah + map test
+
+============================================================================
+*/
+
+//	Break it up into multiple console lines
+void Com_ParseCommandLine(char* commandLine)
+{
+	int inq = 0;
+	com_consoleLines[0] = commandLine;
+	com_numConsoleLines = 1;
+
+	while (*commandLine)
+	{
+		if (*commandLine == '"')
+		{
+			inq = !inq;
+		}
+		// look for a + seperating character
+		// if commandLine came from a file, we might have real line seperators
+		if ((*commandLine == '+' && !inq) || *commandLine == '\n' || *commandLine == '\r')
+		{
+			if (com_numConsoleLines == MAX_CONSOLE_LINES)
+			{
+				return;
+			}
+			com_consoleLines[com_numConsoleLines] = commandLine + 1;
+			com_numConsoleLines++;
+			*commandLine = 0;
+		}
+		commandLine++;
+	}
+}
+
+//	Check for "safe" on the command line, which will
+// skip loading of q3config.cfg
+bool Com_SafeMode()
+{
+	for (int i = 0; i < com_numConsoleLines; i++)
+	{
+		Cmd_TokenizeString(com_consoleLines[i]);
+		if (!String::ICmp(Cmd_Argv(0), "safe") ||
+			!String::ICmp(Cmd_Argv(0), "cvar_restart"))
+		{
+			com_consoleLines[i][0] = 0;
+			return true;
+		}
+	}
+	return false;
+}
+
+//	Adds command line parameters as script statements
+// Commands are seperated by + signs
+//	Returns true if any late commands were added, which
+// will keep the demoloop from immediately starting
+bool Com_AddStartupCommands()
+{
+	bool added = false;
+	// quote every token, so args with semicolons can work
+	for (int i = 0; i < com_numConsoleLines; i++)
+	{
+		if (!com_consoleLines[i] || !com_consoleLines[i][0])
+		{
+			continue;
+		}
+
+		// set commands won't override menu startup
+		if (String::NICmp(com_consoleLines[i], "set", 3))
+		{
+			added = true;
+		}
+		Cbuf_AddText(com_consoleLines[i]);
+		Cbuf_AddText("\n");
+	}
+
+	return added;
+}
+
+//	Searches for command line parameters that are set commands.
+// If match is not NULL, only that cvar will be looked for.
+// That is necessary because cddir and basedir need to be set
+// before the filesystem is started, but all other sets shouls
+// be after execing the config and default.
+void Com_StartupVariable(const char* match)
+{
+	for (int i = 0; i < com_numConsoleLines; i++)
+	{
+		Cmd_TokenizeString(com_consoleLines[i]);
+		if (String::Cmp(Cmd_Argv(0), "set"))
+		{
+			continue;
+		}
+
+		const char* s = Cmd_Argv(1);
+		if (!match || !String::Cmp(s, match))
+		{
+			Cvar_Set(s, Cmd_Argv(2));
+			Cvar* cv = Cvar_Get(s, "", 0);
+			cv->flags |= CVAR_USER_CREATED;
+//			com_consoleLines[i] = 0;
+		}
+	}
 }

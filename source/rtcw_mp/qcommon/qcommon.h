@@ -94,9 +94,7 @@ void QDECL Com_Printf(const char* fmt, ...);
 void QDECL Com_DPrintf(const char* fmt, ...);
 void QDECL Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
-qboolean    Com_SafeMode(void);
 
-void        Com_StartupVariable(const char* match);
 void        Com_SetRecommended();
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
