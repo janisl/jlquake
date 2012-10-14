@@ -70,6 +70,13 @@ void CLET_PurgeCache();
 void CLET_DoPurgeCache();
 
 //
+//	Network channel
+//
+void CLT3_Netchan_TransmitNextFragment(netchan_t* chan);
+bool CLT3_Netchan_Process(netchan_t* chan, QMsg* msg);
+void CLT3_Netchan_Transmit(netchan_t* chan, QMsg* msg);
+
+//
 //	Parse
 //
 extern int entLastVisible[MAX_CLIENTS_WM];

@@ -63,6 +63,7 @@ set(CLIENT_FILES
 	game/tech3/connection.cpp
 	game/tech3/demo.cpp
 	game/tech3/main.cpp
+	game/tech3/network_channel.cpp
 	game/tech3/parse.cpp
 	game/tech3/screen.cpp
 	game/tech3/serverlist.cpp

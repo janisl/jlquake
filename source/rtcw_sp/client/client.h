@@ -94,10 +94,3 @@ void CL_ParseServerMessage(QMsg* msg);
 //
 void CL_SetCGameTime(void);
 void CL_ShaderStateChanged(void);
-
-//
-// cl_net_chan.c
-//
-void CL_Netchan_Transmit(netchan_t* chan, QMsg* msg);	//int length, const byte *data );
-void CL_Netchan_TransmitNextFragment(netchan_t* chan);
-qboolean CL_Netchan_Process(netchan_t* chan, QMsg* msg);

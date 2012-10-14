@@ -22,7 +22,6 @@ set (ET_FILES
 	client/cl_cgame.cpp
 	client/cl_input.cpp
 	client/cl_main.cpp
-	client/cl_net_chan.cpp
 	client/cl_parse.cpp
 
 	unix/linux_signals.cpp

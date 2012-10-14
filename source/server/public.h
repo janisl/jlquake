@@ -53,4 +53,6 @@ void SVWS_SendMoveSpeedsToGame(int entnum, char* text);
 int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo);
 void SVWM_SendMoveSpeedsToGame(int entnum, char* text);
 
+bool SVET_GameIsSinglePlayer();
+
 #endif

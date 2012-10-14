@@ -1583,7 +1583,7 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 		return;
 	}
 
-	if (!CL_Netchan_Process(&clc.netchan, msg))
+	if (!CLT3_Netchan_Process(&clc.netchan, msg))
 	{
 		return;		// out of order, duplicated, etc
 	}

@@ -295,14 +295,14 @@ void CL_WritePacket(void)
 		common->Printf("%i ", buf.cursize);
 	}
 //	Netchan_Transmit (&clc.netchan, buf.cursize, buf.data);
-	CL_Netchan_Transmit(&clc.netchan, &buf);
+	CLT3_Netchan_Transmit(&clc.netchan, &buf);
 
 	// clients never really should have messages large enough
 	// to fragment, but in case they do, fire them all off
 	// at once
 	while (clc.netchan.unsentFragments)
 	{
-		CL_Netchan_TransmitNextFragment(&clc.netchan);
+		CLT3_Netchan_TransmitNextFragment(&clc.netchan);
 	}
 }
 

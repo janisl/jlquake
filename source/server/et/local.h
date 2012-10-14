@@ -26,7 +26,6 @@
 etsharedEntity_t* SVET_GentityNum(int num);
 etplayerState_t* SVET_GameClientNum(int num);
 q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
-bool SVET_GameIsSinglePlayer();
 bool SVET_GameIsCoop();
 void SVET_ClientThink(client_t* cl, etusercmd_t* cmd);
 bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy);
