@@ -16,6 +16,7 @@
 
 #include "qcommon.h"
 #include "../client/public.h"
+#include "../server/public.h"
 
 /*
 ===================================================================
@@ -26,6 +27,16 @@ In addition to these events, .cfg files are also copied to the
 journaled file
 ===================================================================
 */
+
+struct sysEvent_t
+{
+	int evTime;
+	sysEventType_t evType;
+	int evValue;
+	int evValue2;
+	int evPtrLength;				// bytes of data pointed to by evPtr, for journaling
+	void* evPtr;					// this must be manually freed if not NULL
+};
 
 #define MAX_QUED_EVENTS     256
 #define MASK_QUED_EVENTS    (MAX_QUED_EVENTS - 1)
@@ -225,7 +236,7 @@ static void Com_PushEvent(sysEvent_t* event)
 	com_pushedEventsHead++;
 }
 
-sysEvent_t Com_GetEvent()
+static sysEvent_t Com_GetEvent()
 {
 	if (com_pushedEventsHead > com_pushedEventsTail)
 	{
@@ -233,6 +244,141 @@ sysEvent_t Com_GetEvent()
 		return com_pushedEvents[(com_pushedEventsTail - 1) & (MAX_PUSHED_EVENTS - 1)];
 	}
 	return Com_GetRealEvent();
+}
+
+static void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
+{
+	int t1, t2, msec;
+
+	t1 = 0;
+
+	if (com_speeds->integer)
+	{
+		t1 = Sys_Milliseconds();
+	}
+
+	SVT3_PacketEvent(*evFrom, buf);
+
+	if (com_speeds->integer)
+	{
+		t2 = Sys_Milliseconds();
+		msec = t2 - t1;
+		if (com_speeds->integer == 3)
+		{
+			common->Printf("SVT3_PacketEvent time: %i\n", msec);
+		}
+	}
+}
+
+//	Returns last event time
+int Com_EventLoop()
+{
+	netadr_t evFrom;
+	byte bufData[MAX_MSGLEN];
+	QMsg buf;
+
+	buf.Init(bufData, sizeof(bufData));
+
+	while (1)
+	{
+		sysEvent_t ev = Com_GetEvent();
+
+		// if no more events are available
+		if (ev.evType == SE_NONE)
+		{
+			if (GGameType & GAME_Tech3)
+			{
+				// manually send packet events for the loopback channel
+				while (NET_GetLoopPacket(NS_CLIENT, &evFrom, &buf))
+				{
+					CLT3_PacketEvent(evFrom, &buf);
+				}
+
+				while (NET_GetLoopPacket(NS_SERVER, &evFrom, &buf))
+				{
+					// if the server just shut down, flush the events
+					if (com_sv_running->integer)
+					{
+						Com_RunAndTimeServerPacket(&evFrom, &buf);
+					}
+				}
+			}
+
+			return ev.evTime;
+		}
+
+		switch (ev.evType)
+		{
+		default:
+			common->FatalError("Com_EventLoop: bad event type %i", ev.evType);
+			break;
+		case SE_NONE:
+			break;
+		case SE_KEY:
+			CL_KeyEvent(ev.evValue, ev.evValue2, ev.evTime);
+			break;
+		case SE_CHAR:
+			CL_CharEvent(ev.evValue);
+			break;
+		case SE_MOUSE:
+			CL_MouseEvent(ev.evValue, ev.evValue2);
+			break;
+		case SE_JOYSTICK_AXIS:
+			CL_JoystickEvent(ev.evValue, ev.evValue2);
+			break;
+		case SE_CONSOLE:
+			Cbuf_AddText((char*)ev.evPtr);
+			Cbuf_AddText("\n");
+			break;
+		case SE_PACKET:
+			if (GGameType & GAME_Tech3)
+			{
+				// this cvar allows simulation of connections that
+				// drop a lot of packets.  Note that loopback connections
+				// don't go through here at all.
+				if (com_dropsim->value > 0)
+				{
+					static int seed;
+
+					if (Q_random(&seed) < com_dropsim->value)
+					{
+						break;		// drop this packet
+					}
+				}
+
+				evFrom = *(netadr_t*)ev.evPtr;
+				buf.cursize = ev.evPtrLength - sizeof(evFrom);
+
+				// we must copy the contents of the message out, because
+				// the event buffers are only large enough to hold the
+				// exact payload, but channel messages need to be large
+				// enough to hold fragment reassembly
+				if ((unsigned)buf.cursize > (unsigned)buf.maxsize)
+				{
+					common->Printf("Com_EventLoop: oversize packet\n");
+					continue;
+				}
+				Com_Memcpy(buf._data, (byte*)((netadr_t*)ev.evPtr + 1), buf.cursize);
+				if (com_sv_running->integer)
+				{
+					Com_RunAndTimeServerPacket(&evFrom, &buf);
+				}
+				else
+				{
+					CLT3_PacketEvent(evFrom, &buf);
+				}
+			}
+			break;
+		}
+
+		// free any block data
+		if (ev.evPtr)
+		{
+			Mem_Free(ev.evPtr);
+		}
+	}
+
+	return 0;	// never reached
 }
 
 //	Can be used for profiling, but will be journaled accurately

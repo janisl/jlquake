@@ -388,3 +388,6 @@ bool CL_WWWBadChecksum(const char* pakname)
 {
 	return false;
 }
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
+{
+}

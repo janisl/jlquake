@@ -6,7 +6,6 @@ add_executable(jlhexen2
 	common.cpp
 	host.cpp
 	host_cmd.cpp
-	keys.cpp
 	net_main.cpp
 	sys_linux.cpp
 )
@@ -17,7 +16,6 @@ add_executable(jlhexen2ded
 	common.cpp
 	host.cpp
 	host_cmd.cpp
-	keys.cpp
 	net_main.cpp
 	sys_linux.cpp
 )

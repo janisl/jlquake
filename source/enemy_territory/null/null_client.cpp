@@ -41,7 +41,7 @@ void CL_Frame(int msec)
 {
 }
 
-void CL_PacketEvent(netadr_t from, QMsg* msg)
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 }
 

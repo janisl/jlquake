@@ -38,6 +38,8 @@ Cvar* cl_shownet;
 
 Cvar* qh_registered;
 
+Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
+
 fileHandle_t com_journalFile;			// events are written here
 fileHandle_t com_journalDataFile;		// config files are written here
 

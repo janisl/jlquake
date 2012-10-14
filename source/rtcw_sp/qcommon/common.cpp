@@ -44,7 +44,6 @@ FILE* debuglogfile;
 static fileHandle_t logfile;
 
 Cvar* com_fixedtime;
-Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 Cvar* com_maxfps;
 Cvar* com_timedemo;
 Cvar* com_logfile;			// 1 = buffer log, 2 = flush after each print
@@ -584,13 +583,6 @@ void Com_InitJournaling(void)
 	if (com_journal->integer == 1)
 	{
 		common->Printf("Journaling events\n");
-#ifdef __MACOS__	//DAJ MacOS file typing
-		{
-			extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-			_ftype = 'WlfB';
-			_fcreator = 'WlfS';
-		}
-#endif
 		com_journalFile = FS_FOpenFileWrite("journal.dat");
 		com_journalDataFile = FS_FOpenFileWrite("journaldata.dat");
 	}
@@ -609,151 +601,6 @@ void Com_InitJournaling(void)
 		common->Printf("Couldn't open journal files\n");
 	}
 }
-
-/*
-=================
-Com_RunAndTimeServerPacket
-=================
-*/
-void Com_RunAndTimeServerPacket(netadr_t* evFrom, QMsg* buf)
-{
-	int t1, t2, msec;
-
-	t1 = 0;
-
-	if (com_speeds->integer)
-	{
-		t1 = Sys_Milliseconds();
-	}
-
-	SVT3_PacketEvent(*evFrom, buf);
-
-	if (com_speeds->integer)
-	{
-		t2 = Sys_Milliseconds();
-		msec = t2 - t1;
-		if (com_speeds->integer == 3)
-		{
-			common->Printf("SVT3_PacketEvent time: %i\n", msec);
-		}
-	}
-}
-
-/*
-=================
-Com_EventLoop
-
-Returns last event time
-=================
-*/
-int Com_EventLoop(void)
-{
-	sysEvent_t ev;
-	netadr_t evFrom;
-	byte bufData[MAX_MSGLEN_WOLF];
-	QMsg buf;
-
-	buf.Init(bufData, sizeof(bufData));
-
-	while (1)
-	{
-		ev = Com_GetEvent();
-
-		// if no more events are available
-		if (ev.evType == SE_NONE)
-		{
-			// manually send packet events for the loopback channel
-			while (NET_GetLoopPacket(NS_CLIENT, &evFrom, &buf))
-			{
-				CL_PacketEvent(evFrom, &buf);
-			}
-
-			while (NET_GetLoopPacket(NS_SERVER, &evFrom, &buf))
-			{
-				// if the server just shut down, flush the events
-				if (com_sv_running->integer)
-				{
-					Com_RunAndTimeServerPacket(&evFrom, &buf);
-				}
-			}
-
-			return ev.evTime;
-		}
-
-
-		switch (ev.evType)
-		{
-		default:
-			// bk001129 - was ev.evTime
-			common->FatalError("Com_EventLoop: bad event type %i", ev.evType);
-			break;
-		case SE_NONE:
-			break;
-		case SE_KEY:
-			CL_KeyEvent(ev.evValue, ev.evValue2, ev.evTime);
-			break;
-		case SE_CHAR:
-			CL_CharEvent(ev.evValue);
-			break;
-		case SE_MOUSE:
-			CL_MouseEvent(ev.evValue, ev.evValue2);
-			break;
-		case SE_JOYSTICK_AXIS:
-			CL_JoystickEvent(ev.evValue, ev.evValue2);
-			break;
-		case SE_CONSOLE:
-			Cbuf_AddText((char*)ev.evPtr);
-			Cbuf_AddText("\n");
-			break;
-		case SE_PACKET:
-			// this cvar allows simulation of connections that
-			// drop a lot of packets.  Note that loopback connections
-			// don't go through here at all.
-			if (com_dropsim->value > 0)
-			{
-				static int seed;
-
-				if (Q_random(&seed) < com_dropsim->value)
-				{
-					break;		// drop this packet
-				}
-			}
-
-			evFrom = *(netadr_t*)ev.evPtr;
-			buf.cursize = ev.evPtrLength - sizeof(evFrom);
-
-			// we must copy the contents of the message out, because
-			// the event buffers are only large enough to hold the
-			// exact payload, but channel messages need to be large
-			// enough to hold fragment reassembly
-			if ((unsigned)buf.cursize > buf.maxsize)
-			{
-				common->Printf("Com_EventLoop: oversize packet\n");
-				continue;
-			}
-			memcpy(buf._data, (byte*)((netadr_t*)ev.evPtr + 1), buf.cursize);
-			if (com_sv_running->integer)
-			{
-				Com_RunAndTimeServerPacket(&evFrom, &buf);
-			}
-			else
-			{
-				CL_PacketEvent(evFrom, &buf);
-			}
-			break;
-		}
-
-		// free any block data
-		if (ev.evPtr)
-		{
-			Mem_Free(ev.evPtr);
-		}
-	}
-
-	return 0;	// never reached
-}
-
-//============================================================================
 
 /*
 =============

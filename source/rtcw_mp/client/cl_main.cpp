@@ -1403,7 +1403,7 @@ void CL_DisconnectPacket(netadr_t from)
 
 	// if we have received packets within three seconds, ignore (it might be a malicious spoof)
 	// NOTE TTimo:
-	// there used to be a  clc.q3_lastPacketTime = cls.realtime; line in CL_PacketEvent before calling CL_ConnectionLessPacket
+	// there used to be a  clc.q3_lastPacketTime = cls.realtime; line in CLT3_PacketEvent before calling CL_ConnectionLessPacket
 	// therefore .. packets never got through this check, clients never disconnected
 	// switched the clc.q3_lastPacketTime = cls.realtime to happen after the connectionless packets have been processed
 	// you still can't spoof disconnects, cause legal netchan packets will maintain realtime - lastPacketTime below the threshold
@@ -1631,12 +1631,12 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 
 /*
 =================
-CL_PacketEvent
+CLT3_PacketEvent
 
 A packet has arrived from the main event loop
 =================
 */
-void CL_PacketEvent(netadr_t from, QMsg* msg)
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 	int headerBytes;
 

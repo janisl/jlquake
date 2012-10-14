@@ -26,17 +26,7 @@ enum sysEventType_t
 	SE_PACKET			// evPtr is a netadr_t followed by data bytes to evPtrLength
 };
 
-struct sysEvent_t
-{
-	int evTime;
-	sysEventType_t evType;
-	int evValue;
-	int evValue2;
-	int evPtrLength;				// bytes of data pointed to by evPtr, for journaling
-	void* evPtr;					// this must be manually freed if not NULL
-};
-
 void Com_InitEventQueue();
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
-sysEvent_t Com_GetEvent();
+int Com_EventLoop();
 int Com_Milliseconds();

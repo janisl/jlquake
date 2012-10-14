@@ -50,7 +50,6 @@
 #ifndef DEDICATED
 #include "client.h"
 #endif
-#include "keys.h"
 
 //=============================================================================
 

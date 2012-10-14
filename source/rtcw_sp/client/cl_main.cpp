@@ -1546,12 +1546,12 @@ void CL_ConnectionlessPacket(netadr_t from, QMsg* msg)
 
 /*
 =================
-CL_PacketEvent
+CLT3_PacketEvent
 
 A packet has arrived from the main event loop
 =================
 */
-void CL_PacketEvent(netadr_t from, QMsg* msg)
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 	int headerBytes;
 

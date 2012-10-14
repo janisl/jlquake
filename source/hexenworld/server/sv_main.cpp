@@ -7,7 +7,6 @@
 #endif
 #include "../../common/hexen2strings.h"
 #include "../../server/public.h"
-#include "../client/keys.h"
 
 quakeparms_t host_parms;
 

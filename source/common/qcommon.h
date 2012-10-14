@@ -80,6 +80,8 @@ extern Cvar* com_cl_running;
 extern Cvar* cl_paused;
 extern Cvar* sv_paused;
 
+extern Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
+
 extern fileHandle_t com_journalFile;
 extern fileHandle_t com_journalDataFile;
 
@@ -104,5 +106,6 @@ extern int time_backend;			// renderer backend time
 void FS_Restart(int checksumFeed);
 bool CL_WWWBadChecksum(const char* pakname);
 void Com_Quit_f();
+void CLT3_PacketEvent(netadr_t from, QMsg* msg);
 
 #endif

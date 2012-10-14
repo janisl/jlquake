@@ -88,7 +88,6 @@ void QDECL Com_Printf(const char* fmt, ...);
 void QDECL Com_DPrintf(const char* fmt, ...);
 void QDECL Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
-int         Com_EventLoop(void);
 qboolean    Com_SafeMode(void);
 
 void        Com_StartupVariable(const char* match);
@@ -127,7 +126,7 @@ void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 
-void CL_PacketEvent(netadr_t from, QMsg* msg);
+void CLT3_PacketEvent(netadr_t from, QMsg* msg);
 
 void CL_MapLoading(void);
 // do a screen update before starting to load a map

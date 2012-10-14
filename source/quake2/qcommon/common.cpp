@@ -636,3 +636,6 @@ void CL_ShutdownAll(void)
 void CL_Disconnect(qboolean showMainMenu)
 {
 }
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
+{
+}

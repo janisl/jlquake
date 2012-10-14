@@ -53,7 +53,6 @@ extern int anykeydown;
 
 extern qkey_t keys[MAX_KEYS];
 extern bool key_overstrikeMode;
-extern bool consoleButtonWasPressed;
 extern Cvar* clwm_missionStats;
 extern Cvar* clwm_waitForFire;
 

@@ -31,7 +31,7 @@ bool key_overstrikeMode;
 static bool consolekeys[256];	// if true, can't be rebound while in console
 static bool menubound[256];	// if true, can't be rebound while in menu
 
-bool consoleButtonWasPressed = false;
+static bool consoleButtonWasPressed = false;
 
 Cvar* clwm_missionStats;
 Cvar* clwm_waitForFire;
@@ -1640,6 +1640,17 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 //	Normal keyboard characters, already shifted / capslocked / etc
 void CL_CharEvent(int key)
 {
+	// fretn
+	// we just pressed the console button,
+	// so ignore this event
+	// this prevents chars appearing at console input
+	// when you just opened it
+	if (GGameType & GAME_ET && consoleButtonWasPressed)
+	{
+		consoleButtonWasPressed = false;
+		return;
+	}
+
 	// the console key should never be used as a char
 	if (key == '`' || key == '~' || key == 0xac)
 	{
