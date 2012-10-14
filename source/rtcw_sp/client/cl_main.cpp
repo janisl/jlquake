@@ -32,8 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/public.h"
 #include <limits.h>
 
-Cvar* cl_nodelta;
-
 Cvar* cl_motd;
 
 Cvar* rcon_client_password;

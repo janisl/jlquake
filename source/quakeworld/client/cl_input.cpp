@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-Cvar* cl_nodelta;
-
 /*
 ===============================================================================
 
@@ -160,16 +158,4 @@ void CL_SendCmd(void)
 // deliver the message
 //
 	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
-}
-
-/*
-============
-CL_InitInput
-============
-*/
-void CL_InitInput(void)
-{
-	CL_InitInputCommon();
-
-	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
 }

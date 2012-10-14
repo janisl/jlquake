@@ -30,7 +30,7 @@ static char scrh2_infomessage[MAX_INFO_H2];
 
 const char* clh2_plaquemessage = NULL;	// Pointer to current plaque message
 
-bool clh2_info_up = false;
+static bool clh2_info_up = false;
 
 /*
 ===============================================================================
@@ -665,4 +665,31 @@ void SCRH2_DrawScreen(stereoFrame_t stereoFrame)
 	}
 
 	R_EndFrame(NULL, NULL);
+}
+
+static void INH2_infoPlaqueUp_f()
+{
+	if (in_keyCatchers == 0)
+	{
+		//They want to lower the plaque
+		clh2_info_up = 0;
+	}
+}
+
+static void INH2_infoPlaqueDown_f()
+{
+	if (in_keyCatchers == 0)
+	{
+		//They want to see the plaque
+		clh2_info_up = 1;
+	}
+}
+
+void SCRH2_Init()
+{
+	if (!(GGameType & GAME_HexenWorld) && GGameType & GAME_H2Portals)
+	{
+		Cmd_AddCommand("+infoplaque", INH2_infoPlaqueDown_f);
+		Cmd_AddCommand("-infoplaque", INH2_infoPlaqueUp_f);
+	}
 }

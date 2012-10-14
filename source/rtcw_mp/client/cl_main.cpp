@@ -37,7 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 Cvar* cl_wavefilerecord;
-Cvar* cl_nodelta;
 
 Cvar* cl_motd;
 

@@ -71,6 +71,7 @@ static Cvar* cl_doubletapdelay;
 static Cvar* cl_recoilPitch;
 static Cvar* cl_lightlevel;
 Cvar* cl_debugMove;
+Cvar* cl_nodelta;
 
 int in_impulse;
 
@@ -1285,7 +1286,7 @@ in_usercmd_t CL_CreateCmd()
 	return cmd;
 }
 
-void CL_InitInputCommon()
+void CL_InitInput()
 {
 	Cmd_AddCommand("+moveup",IN_UpDown);
 	Cmd_AddCommand("-moveup",IN_UpUp);
@@ -1438,6 +1439,10 @@ void CL_InitInputCommon()
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
 	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
+	if (!(GGameType & GAME_QuakeHexen) || GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
+	}
 	if (!(GGameType & GAME_Tech3))
 	{
 		m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);

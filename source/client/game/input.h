@@ -48,8 +48,9 @@ extern Cvar* v_centerspeed;
 extern Cvar* lookspring;
 extern Cvar* cl_bypassMouseInput;
 extern Cvar* cl_debugMove;
+extern Cvar* cl_nodelta;
 
 void CLQH_StartPitchDrift();
-void CL_InitInputCommon();
+void CL_InitInput();
 in_usercmd_t CL_CreateCmd();
 void CL_ClearKeys();

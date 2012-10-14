@@ -763,6 +763,10 @@ void SCR_Init()
 	{
 		SCRQ1_Init();
 	}
+	if (GGameType & GAME_Hexen2)
+	{
+		SCRH2_Init();
+	}
 	if (GGameType & GAME_Quake2)
 	{
 		SCRQ2_Init();

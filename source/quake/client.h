@@ -44,7 +44,6 @@ void CL_NextDemo(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 
 int  CL_ReadFromServer(void);

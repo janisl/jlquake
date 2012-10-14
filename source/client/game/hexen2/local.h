@@ -261,10 +261,10 @@ void CLH2_LinkMissiles();
 //
 extern int clh2_total_loading_size, clh2_current_loading_size, clh2_loading_stage;
 extern const char* clh2_plaquemessage;		// Pointer to current plaque
-extern bool clh2_info_up;
 
 void SCRH2_DrawCenterString(const char* message);
 void SCRH2_DrawScreen(stereoFrame_t stereoFrame);
+void SCRH2_Init();
 
 //
 //	Status bar

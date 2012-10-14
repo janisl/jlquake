@@ -34,7 +34,6 @@ qboolean CL_DemoBehind(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 void CL_SendMove(hwusercmd_t* cmd);
 

@@ -101,17 +101,6 @@ static void CL_SendMove(in_usercmd_t* cmd)
 }
 
 /*
-============
-CL_InitInput
-============
-*/
-void CL_InitInput(void)
-{
-	CL_InitInputCommon();
-}
-
-
-/*
 =================
 CL_SendCmd
 =================

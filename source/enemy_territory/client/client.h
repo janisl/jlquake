@@ -38,7 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 //
 // cvars
 //
-extern Cvar* cl_nodelta;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
 extern Cvar* cl_packetdup;
@@ -80,7 +79,6 @@ void CL_InitRef(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 void CL_ReadPackets(void);
 

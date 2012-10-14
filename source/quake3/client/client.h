@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // cvars
 //
-extern Cvar* cl_nodelta;
 extern Cvar* cl_timegraph;
 extern Cvar* cl_maxpackets;
 extern Cvar* cl_packetdup;
@@ -71,7 +70,6 @@ void CL_InitRef(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 void CL_ReadPackets(void);
 

@@ -27,8 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
-Cvar* cl_nodelta;
-
 Cvar* cl_motd;
 
 Cvar* rcon_client_password;

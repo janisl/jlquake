@@ -85,40 +85,6 @@ static void CL_SendMove(in_usercmd_t* cmd)
 	}
 }
 
-#ifdef MISSIONPACK
-void IN_infoPlaqueUp(void)
-{
-	if (in_keyCatchers == 0)
-	{
-		//They want to lower the plaque
-		clh2_info_up = 0;
-	}
-}
-
-void IN_infoPlaqueDown(void)
-{
-	if (in_keyCatchers == 0)
-	{
-		//They want to see the plaque
-		clh2_info_up = 1;
-	}
-}
-#endif
-
-/*
-============
-CL_InitInput
-============
-*/
-void CL_InitInput(void)
-{
-	CL_InitInputCommon();
-#ifdef MISSIONPACK
-	Cmd_AddCommand("+infoplaque", IN_infoPlaqueDown);
-	Cmd_AddCommand("-infoplaque", IN_infoPlaqueUp);
-#endif
-}
-
 /*
 =================
 CL_SendCmd

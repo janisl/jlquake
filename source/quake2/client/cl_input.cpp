@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-Cvar* cl_nodelta;
-
 /*
 ===============================================================================
 
@@ -48,22 +46,6 @@ CL_KeyEvent (int key, qboolean down, unsigned time);
 
 ===============================================================================
 */
-
-//==========================================================================
-
-/*
-============
-CL_InitInput
-============
-*/
-void CL_InitInput(void)
-{
-	CL_InitInputCommon();
-
-	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
-}
-
-
 
 /*
 =================

@@ -40,7 +40,6 @@ void CL_BeginServerConnect(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 void CL_SendMove(qwusercmd_t* cmd);
 

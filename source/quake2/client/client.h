@@ -64,7 +64,6 @@ void CL_Snd_Restart_f(void);
 //
 // cl_input
 //
-void CL_InitInput(void);
 void CL_SendCmd(void);
 void CL_SendMove(q2usercmd_t* cmd);
 

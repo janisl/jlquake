@@ -350,15 +350,3 @@ void CL_SendCmd(void)
 
 	CL_WritePacket();
 }
-
-/*
-============
-CL_InitInput
-============
-*/
-void CL_InitInput(void)
-{
-	CL_InitInputCommon();
-
-	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
-}
