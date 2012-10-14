@@ -26,7 +26,12 @@ enum sysEventType_t
 	SE_PACKET			// evPtr is a netadr_t followed by data bytes to evPtrLength
 };
 
+extern Cvar* com_journal;
+extern fileHandle_t com_journalFile;
+extern fileHandle_t com_journalDataFile;
+
 void Com_InitEventQueue();
+void Com_InitJournaling();
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
 int Com_EventLoop();
 int Com_Milliseconds();

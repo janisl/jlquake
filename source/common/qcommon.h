@@ -65,8 +65,6 @@ extern Cvar* com_dedicated;
 extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar* com_timescale;
 
-extern Cvar* com_journal;
-
 extern Cvar* com_developer;
 
 extern Cvar* com_crashed;
@@ -81,9 +79,6 @@ extern Cvar* cl_paused;
 extern Cvar* sv_paused;
 
 extern Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
-
-extern fileHandle_t com_journalFile;
-extern fileHandle_t com_journalDataFile;
 
 extern int com_frameTime;
 

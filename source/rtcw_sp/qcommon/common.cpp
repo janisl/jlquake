@@ -403,52 +403,6 @@ void Com_Quit_f(void)
 }
 
 /*
-===================================================================
-
-EVENTS AND JOURNALING
-
-In addition to these events, .cfg files are also copied to the
-journaled file
-===================================================================
-*/
-
-/*
-=================
-Com_InitJournaling
-=================
-*/
-void Com_InitJournaling(void)
-{
-	Com_StartupVariable("journal");
-	com_journal = Cvar_Get("journal", "0", CVAR_INIT);
-	if (!com_journal->integer)
-	{
-		return;
-	}
-
-	if (com_journal->integer == 1)
-	{
-		common->Printf("Journaling events\n");
-		com_journalFile = FS_FOpenFileWrite("journal.dat");
-		com_journalDataFile = FS_FOpenFileWrite("journaldata.dat");
-	}
-	else if (com_journal->integer == 2)
-	{
-		common->Printf("Replaying journaled events\n");
-		FS_FOpenFileRead("journal.dat", &com_journalFile, true);
-		FS_FOpenFileRead("journaldata.dat", &com_journalDataFile, true);
-	}
-
-	if (!com_journalFile || !com_journalDataFile)
-	{
-		Cvar_Set("com_journal", "0");
-		com_journalFile = 0;
-		com_journalDataFile = 0;
-		common->Printf("Couldn't open journal files\n");
-	}
-}
-
-/*
 =============
 Com_Error_f
 

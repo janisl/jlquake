@@ -23,8 +23,6 @@ Cvar* com_dedicated;
 Cvar* com_viewlog;
 Cvar* com_timescale;
 
-Cvar* com_journal;
-
 Cvar* com_developer;
 
 Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
@@ -39,9 +37,6 @@ Cvar* cl_shownet;
 Cvar* qh_registered;
 
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
-
-fileHandle_t com_journalFile;			// events are written here
-fileHandle_t com_journalDataFile;		// config files are written here
 
 int GGameType;
 
