@@ -80,170 +80,6 @@ void CL_ChangeReliableCommand(void)
 }
 
 /*
-=======================================================================
-
-CLIENT SIDE DEMO RECORDING
-
-=======================================================================
-*/
-
-/*
-====================
-CL_StopRecording_f
-
-stop recording a demo
-====================
-*/
-void CL_StopRecord_f(void)
-{
-	int len;
-
-	if (!clc.demorecording)
-	{
-		common->Printf("Not recording a demo.\n");
-		return;
-	}
-
-	// finish up
-	len = -1;
-	FS_Write(&len, 4, clc.demofile);
-	FS_Write(&len, 4, clc.demofile);
-	FS_FCloseFile(clc.demofile);
-	clc.demofile = 0;
-	clc.demorecording = false;
-	clc.q3_spDemoRecording = false;
-	common->Printf("Stopped demo.\n");
-}
-
-/*
-==================
-CL_DemoFilename
-==================
-*/
-void CL_DemoFilename(int number, char* fileName)
-{
-	int a,b,c,d;
-
-	if (number < 0 || number > 9999)
-	{
-		String::Sprintf(fileName, MAX_OSPATH, "demo9999.tga");
-		return;
-	}
-
-	a = number / 1000;
-	number -= a * 1000;
-	b = number / 100;
-	number -= b * 100;
-	c = number / 10;
-	number -= c * 10;
-	d = number;
-
-	String::Sprintf(fileName, MAX_OSPATH, "demo%i%i%i%i",
-		a, b, c, d);
-}
-
-/*
-====================
-CL_Record_f
-
-record <demoname>
-
-Begins recording a demo from the current position
-====================
-*/
-static char demoName[MAX_QPATH];		// compiler bug workaround
-void CL_Record_f(void)
-{
-	char name[MAX_OSPATH];
-	int len;
-	char* s;
-
-	if (Cmd_Argc() > 2)
-	{
-		common->Printf("record <demoname>\n");
-		return;
-	}
-
-	if (clc.demorecording)
-	{
-		if (!clc.q3_spDemoRecording)
-		{
-			common->Printf("Already recording.\n");
-		}
-		return;
-	}
-
-	if (cls.state != CA_ACTIVE)
-	{
-		common->Printf("You must be in a level to record.\n");
-		return;
-	}
-
-	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
-	if (!Cvar_VariableValue("g_synchronousClients"))
-	{
-		common->Printf(S_COLOR_YELLOW "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n");
-	}
-
-	if (Cmd_Argc() == 2)
-	{
-		s = Cmd_Argv(1);
-		String::NCpyZ(demoName, s, sizeof(demoName));
-		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, Q3PROTOCOL_VERSION);
-	}
-	else
-	{
-		int number;
-
-		// scan for a free demo name
-		for (number = 0; number <= 9999; number++)
-		{
-			CL_DemoFilename(number, demoName);
-			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, Q3PROTOCOL_VERSION);
-
-			len = FS_ReadFile(name, NULL);
-			if (len <= 0)
-			{
-				break;	// file doesn't exist
-			}
-		}
-	}
-
-	CLT3_Record(demoName, name);
-}
-
-/*
-=======================================================================
-
-CLIENT SIDE DEMO PLAYBACK
-
-=======================================================================
-*/
-
-/*
-=================
-CL_DemoCompleted
-=================
-*/
-void CL_DemoCompleted(void)
-{
-	if (cl_timedemo && cl_timedemo->integer)
-	{
-		int time;
-
-		time = Sys_Milliseconds() - clc.q3_timeDemoStart;
-		if (time > 0)
-		{
-			common->Printf("%i frames, %3.1f seconds: %3.1f fps\n", clc.q3_timeDemoFrames,
-				time / 1000.0, clc.q3_timeDemoFrames * 1000.0 / time);
-		}
-	}
-
-	CL_Disconnect(true);
-	CL_NextDemo();
-}
-
-/*
 =================
 CL_ReadDemoMessage
 =================
@@ -257,7 +93,7 @@ void CL_ReadDemoMessage(void)
 
 	if (!clc.demofile)
 	{
-		CL_DemoCompleted();
+		CLT3_DemoCompleted();
 		return;
 	}
 
@@ -265,7 +101,7 @@ void CL_ReadDemoMessage(void)
 	r = FS_Read(&s, 4, clc.demofile);
 	if (r != 4)
 	{
-		CL_DemoCompleted();
+		CLT3_DemoCompleted();
 		return;
 	}
 	clc.q3_serverMessageSequence = LittleLong(s);
@@ -277,13 +113,13 @@ void CL_ReadDemoMessage(void)
 	r = FS_Read(&buf.cursize, 4, clc.demofile);
 	if (r != 4)
 	{
-		CL_DemoCompleted();
+		CLT3_DemoCompleted();
 		return;
 	}
 	buf.cursize = LittleLong(buf.cursize);
 	if (buf.cursize == -1)
 	{
-		CL_DemoCompleted();
+		CLT3_DemoCompleted();
 		return;
 	}
 	if (buf.cursize > buf.maxsize)
@@ -294,7 +130,7 @@ void CL_ReadDemoMessage(void)
 	if (r != buf.cursize)
 	{
 		common->Printf("Demo file was truncated.\n");
-		CL_DemoCompleted();
+		CLT3_DemoCompleted();
 		return;
 	}
 
@@ -553,7 +389,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (clc.demorecording)
 	{
-		CL_StopRecord_f();
+		CLT3_StopRecord_f();
 	}
 
 	if (clc.download)
@@ -1922,10 +1758,10 @@ void CL_Init(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CL_Record_f);
+	Cmd_AddCommand("record", CLT3_Record_f);
 	Cmd_AddCommand("demo", CL_PlayDemo_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("stoprecord", CL_StopRecord_f);
+	Cmd_AddCommand("stoprecord", CLT3_StopRecord_f);
 	Cmd_AddCommand("connect", CL_Connect_f);
 	Cmd_AddCommand("reconnect", CL_Reconnect_f);
 	Cmd_AddCommand("rcon", CL_Rcon_f);

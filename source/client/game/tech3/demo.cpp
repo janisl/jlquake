@@ -17,6 +17,14 @@
 #include "../../client.h"
 #include "local.h"
 
+/*
+=======================================================================
+
+CLIENT SIDE DEMO RECORDING
+
+=======================================================================
+*/
+
 void CLT3_Record(const char* demoName, const char* name)
 {
 	int i;
@@ -216,4 +224,135 @@ void CLT3_WriteDemoMessage(QMsg* msg, int headerBytes)
 	swlen = LittleLong(len);
 	FS_Write(&swlen, 4, clc.demofile);
 	FS_Write(msg->_data + headerBytes, len, clc.demofile);
+}
+
+//	stop recording a demo
+void CLT3_StopRecord_f()
+{
+	if (!clc.demorecording)
+	{
+		common->Printf("Not recording a demo.\n");
+		return;
+	}
+
+	// finish up
+	int len = -1;
+	FS_Write(&len, 4, clc.demofile);
+	FS_Write(&len, 4, clc.demofile);
+	FS_FCloseFile(clc.demofile);
+	clc.demofile = 0;
+	clc.demorecording = false;
+	if (GGameType & GAME_Quake3)
+	{
+		clc.q3_spDemoRecording = false;
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Set("cl_demorecording", "0");
+		Cvar_Set("cl_demofilename", "");
+		Cvar_Set("cl_demooffset", "0");
+	}
+	common->Printf("Stopped demo.\n");
+}
+
+static void CLT3_DemoFilename(int number, char* fileName)
+{
+	if (number < 0 || number > 9999)
+	{
+		String::Sprintf(fileName, MAX_QPATH, "demo9999");
+		return;
+	}
+
+	String::Sprintf(fileName, MAX_QPATH, "demo%04i", number);
+}
+
+//	Begins recording a demo from the current position
+void CLT3_Record_f()
+{
+	if (Cmd_Argc() > 2)
+	{
+		common->Printf("record <demoname>\n");
+		return;
+	}
+
+	if (clc.demorecording)
+	{
+		if (!(GGameType & GAME_Quake3) || !clc.q3_spDemoRecording)
+		{
+			common->Printf("Already recording.\n");
+		}
+		return;
+	}
+
+	if (cls.state != CA_ACTIVE)
+	{
+		common->Printf("You must be in a level to record.\n");
+		return;
+	}
+
+	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
+	if (!Cvar_VariableValue("g_synchronousClients"))
+	{
+		common->Printf(S_COLOR_YELLOW "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n");
+	}
+
+	int protocolVersion = GGameType & GAME_WolfSP ? WSPROTOCOL_VERSION :
+		GGameType & GAME_WolfMP ? WMPROTOCOL_VERSION :
+		GGameType & GAME_ET ? ETPROTOCOL_VERSION : Q3PROTOCOL_VERSION;
+	char demoName[MAX_QPATH];
+	char name[MAX_OSPATH];
+	if (Cmd_Argc() == 2)
+	{
+		const char* s = Cmd_Argv(1);
+		String::NCpyZ(demoName, s, sizeof(demoName));
+		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, protocolVersion);
+	}
+	else
+	{
+		// scan for a free demo name
+		for (int number = 0; number <= 9999; number++)
+		{
+			CLT3_DemoFilename(number, demoName);
+			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", demoName, protocolVersion);
+
+			int len = FS_ReadFile(name, NULL);
+			if (len <= 0)
+			{
+				break;	// file doesn't exist
+			}
+		}
+	}
+
+	CLT3_Record(demoName, name);
+}
+
+/*
+=======================================================================
+
+CLIENT SIDE DEMO PLAYBACK
+
+=======================================================================
+*/
+
+void CLT3_DemoCompleted()
+{
+	if (cl_timedemo && cl_timedemo->integer)
+	{
+		int time = Sys_Milliseconds() - clc.q3_timeDemoStart;
+		if (time > 0)
+		{
+			common->Printf("%i frames, %3.1f seconds: %3.1f fps\n", clc.q3_timeDemoFrames,
+				time / 1000.0, clc.q3_timeDemoFrames * 1000.0 / time);
+		}
+	}
+
+	// fretn
+	if (GGameType & GAME_ET && clc.wm_waverecording)
+	{
+		CL_WriteWaveClose();
+		clc.wm_waverecording = false;
+	}
+
+	CL_Disconnect(true);
+	CL_NextDemo();
 }

@@ -648,6 +648,7 @@ float crand();	// -1 to 1
 float* CL_GetSimOrg();
 void CL_NextDemo();
 void CL_Disconnect();
+void CL_Disconnect(qboolean showMainMenu);
 void CL_Disconnect_f();
 
 #endif

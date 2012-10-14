@@ -54,6 +54,9 @@ void CLT3_BeginDownload(const char* localName, const char* remoteName);
 //
 void CLT3_Record(const char* demoName, const char* name);
 void CLT3_WriteDemoMessage(QMsg* msg, int headerBytes);
+void CLT3_StopRecord_f();
+void CLT3_Record_f();
+void CLT3_DemoCompleted();
 
 //
 //	Main

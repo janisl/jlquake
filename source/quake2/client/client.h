@@ -73,12 +73,6 @@ int  CL_ReadFromServer(void);
 void CL_WriteToServer(q2usercmd_t* cmd);
 
 //
-// cl_demo.c
-//
-void CL_Stop_f(void);
-void CL_Record_f(void);
-
-//
 // cl_parse.c
 //
 void CL_Download_f(void);
