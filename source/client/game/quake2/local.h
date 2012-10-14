@@ -64,6 +64,8 @@ void CLQ2_RequestNextDownload();
 //	Demo
 //
 void CLQ2_WriteDemoMessage(QMsg* msg, int headerBytes);
+void CLQ2_Stop_f();
+void CLQ2_Record_f();
 
 //
 //	Effects
