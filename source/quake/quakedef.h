@@ -90,7 +90,6 @@ extern Cvar* sys_ticrate;
 
 extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
-extern int host_framecount;				// incremented every frame, never reset
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 

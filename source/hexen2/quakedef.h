@@ -78,7 +78,6 @@ extern Cvar* sys_ticrate;
 
 extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
-extern int host_framecount;				// incremented every frame, never reset
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
@@ -95,7 +94,6 @@ extern qboolean msg_suppress_1;			// suppresses resolution and cache size consol
 
 extern qboolean isDedicated;
 
-extern int num_intro_msg;
 extern qboolean check_bottom;
 
 extern double host_time;

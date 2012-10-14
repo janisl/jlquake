@@ -51,15 +51,7 @@ void CL_WriteToServer(qwusercmd_t* cmd);
 //
 // cl_demo.c
 //
-void CL_StopPlayback(void);
-qboolean CL_GetMessage(void);
-void CL_WriteDemoCmd(qwusercmd_t* pcmd);
-
-void CL_Stop_f(void);
-void CL_Record_f(void);
 void CL_ReRecord_f(void);
-void CL_PlayDemo_f(void);
-void CL_TimeDemo_f(void);
 
 //
 // cl_parse.c

@@ -32,6 +32,7 @@ set(CLIENT_FILES
 	game/quake/skin.cpp
 	game/quake/status_bar.cpp
 	game/quake/temporary_entities.cpp
+	game/quake_hexen2/demo.cpp
 	game/quake_hexen2/main.cpp
 	game/quake_hexen2/menu.cpp
 	game/quake_hexen2/network_channel.cpp
@@ -40,6 +41,7 @@ set(CLIENT_FILES
 	game/quake_hexen2/view.cpp
 	game/quake2/beam.cpp
 	game/quake2/connection.cpp
+	game/quake2/demo.cpp
 	game/quake2/effects.cpp
 	game/quake2/entities.cpp
 	game/quake2/explosion.cpp

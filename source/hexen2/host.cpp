@@ -29,7 +29,6 @@ double host_frametime;
 double host_time;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
-int host_framecount;
 
 jmp_buf host_abortserver;
 
@@ -502,7 +501,6 @@ void _Host_Frame(float time)
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
 
-		host_framecount++;
 #ifndef DEDICATED
 		cls.framecount++;
 #endif

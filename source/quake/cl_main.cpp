@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../server/public.h"
+#include "../client/game/quake_hexen2/demo.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -41,13 +42,13 @@ void CL_Disconnect(void)
 // if running a local server, shut it down
 	if (clc.demoplaying)
 	{
-		CL_StopPlayback();
+		CLQH_StopPlayback();
 	}
 	else if (cls.state == CA_ACTIVE)
 	{
 		if (clc.demorecording)
 		{
-			CL_Stop_f();
+			CLQH_Stop_f();
 		}
 
 		common->DPrintf("Sending q1clc_disconnect\n");
@@ -184,7 +185,7 @@ int CL_ReadFromServer(void)
 
 	do
 	{
-		ret = CL_GetMessage();
+		ret = CLQH_GetMessage(net_message);
 		if (ret == -1)
 		{
 			common->Error("CL_ReadFromServer: lost server connection");
@@ -232,10 +233,10 @@ void CL_Init(void)
 
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CL_Record_f);
-	Cmd_AddCommand("stop", CL_Stop_f);
-	Cmd_AddCommand("playdemo", CL_PlayDemo_f);
-	Cmd_AddCommand("timedemo", CL_TimeDemo_f);
+	Cmd_AddCommand("record", CLQH_Record_f);
+	Cmd_AddCommand("stop", CLQH_Stop_f);
+	Cmd_AddCommand("playdemo", CLQH_PlayDemo_f);
+	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
 }
 
 float* CL_GetSimOrg()

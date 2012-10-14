@@ -75,7 +75,6 @@ void CL_WriteToServer(q2usercmd_t* cmd);
 //
 // cl_demo.c
 //
-void CL_WriteDemoMessage(void);
 void CL_Stop_f(void);
 void CL_Record_f(void);
 

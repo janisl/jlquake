@@ -29,17 +29,6 @@ void CL_SendCmd(void);
 int  CL_ReadFromServer(void);
 
 //
-// cl_demo.c
-//
-void CL_StopPlayback(void);
-int CL_GetMessage(void);
-
-void CL_Stop_f(void);
-void CL_Record_f(void);
-void CL_PlayDemo_f(void);
-void CL_TimeDemo_f(void);
-
-//
 // cl_parse.c
 //
 void CL_ParseServerMessage(QMsg& message);

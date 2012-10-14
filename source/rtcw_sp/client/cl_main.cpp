@@ -117,30 +117,6 @@ CLIENT SIDE DEMO RECORDING
 
 /*
 ====================
-CL_WriteDemoMessage
-
-Dumps the current net message, prefixed by the length
-====================
-*/
-void CL_WriteDemoMessage(QMsg* msg, int headerBytes)
-{
-	int len, swlen;
-
-	// write the packet sequence
-	len = clc.q3_serverMessageSequence;
-	swlen = LittleLong(len);
-	FS_Write(&swlen, 4, clc.demofile);
-
-	// skip the packet sequencing information
-	len = msg->cursize - headerBytes;
-	swlen = LittleLong(len);
-	FS_Write(&swlen, 4, clc.demofile);
-	FS_Write(msg->_data + headerBytes, len, clc.demofile);
-}
-
-
-/*
-====================
 CL_StopRecording_f
 
 stop recording a demo
@@ -1605,7 +1581,7 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 	//
 	if (clc.demorecording && !clc.q3_demowaiting)
 	{
-		CL_WriteDemoMessage(msg, headerBytes);
+		CLT3_WriteDemoMessage(msg, headerBytes);
 	}
 }
 

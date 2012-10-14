@@ -61,6 +61,11 @@ void CLQ2_RegisterSounds();
 void CLQ2_RequestNextDownload();
 
 //
+//	Demo
+//
+void CLQ2_WriteDemoMessage(QMsg* msg, int headerBytes);
+
+//
 //	Effects
 //
 void CLQ2_LogoutEffect(vec3_t org, int type);

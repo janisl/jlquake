@@ -473,11 +473,7 @@ enum connstate_t
 	CA_LOADING,			// only during cgame initialization, never during main loop
 	CA_PRIMED,			// got gamestate, waiting for first frame
 	CA_ACTIVE,			// game views should be displayed
-	CA_CINEMATIC,		// playing a cinematic or a static pic, not connected to a server
-
-	//	New statuses.
-	//	This is stupid, should get rid of it.
-	CA_DEMOSTART
+	CA_CINEMATIC		// playing a cinematic or a static pic, not connected to a server
 };
 
 struct clientStatic_t
@@ -517,7 +513,7 @@ struct clientStatic_t
 	// entering a map (and clearing client_state_t)
 	bool qh_timedemo;
 	int qh_td_lastframe;		// to meter out one message a frame
-	int qh_td_startframe;		// host_framecount at start
+	int qh_td_startframe;		// cls.framecount at start
 	float qh_td_starttime;		// realtime at second frame of timedemo
 
 	int qh_forcetrack;			// -1 = use normal cd track
@@ -613,6 +609,15 @@ extern float clqh_server_version;	// version of server we connected to
 
 extern Cvar* chase_active;
 
+//
+//	Chase
+//
+void Chase_Init();
+void Chase_Update();
+
+//
+//	Client main
+//
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
@@ -624,14 +629,17 @@ void CL_ClearState();
 bool CL_CheckOrDownloadFile(const char* filename);
 void SHOWNET(QMsg& msg, const char* s);
 
-void Chase_Init();
-void Chase_Update();
-
+//
+//	System
+//
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 void Sys_StartProcess(const char* exeName, bool doExit);
 void Sys_OpenURL(const char* url, bool doExit);
 bool Sys_IsNumLockDown();
 
+//
+//	Utils
+//
 float frand();	// 0 to 1
 float crand();	// -1 to 1
 

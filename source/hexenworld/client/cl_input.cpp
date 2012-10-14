@@ -1,6 +1,7 @@
 // cl.input.c  -- builds an intended movement command to send to the server
 
 #include "quakedef.h"
+#include "../../client/game/quake_hexen2/demo.h"
 
 /*
 ===============================================================================
@@ -106,7 +107,7 @@ void CL_SendCmd(void)
 
 	if (clc.demorecording)
 	{
-		CL_WriteDemoCmd(cmd);
+		CLHW_WriteDemoCmd(cmd);
 	}
 
 //

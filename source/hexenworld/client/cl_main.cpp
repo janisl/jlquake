@@ -6,6 +6,7 @@
 #endif
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
+#include "../../client/game/quake_hexen2/demo.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -38,7 +39,6 @@ qboolean nomaster;
 double host_frametime;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
-int host_framecount;
 
 jmp_buf host_abort;
 
@@ -318,13 +318,13 @@ void CL_Disconnect(void)
 // if running a local server, shut it down
 	if (clc.demoplaying)
 	{
-		CL_StopPlayback();
+		CLQH_StopPlayback();
 	}
 	else if (cls.state != CA_DISCONNECTED)
 	{
 		if (clc.demorecording)
 		{
-			CL_Stop_f();
+			CLQH_Stop_f();
 		}
 
 		final[0] = h2clc_stringcmd;
@@ -809,7 +809,7 @@ CL_ReadPackets
 */
 void CL_ReadPackets(void)
 {
-	while (CL_GetMessage())
+	while (CLQHW_GetMessage(net_message, net_from))
 	{
 		//
 		// remote command packet
@@ -994,11 +994,11 @@ void CL_Init(void)
 
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CL_Record_f);
+	Cmd_AddCommand("record", CLHW_Record_f);
 	Cmd_AddCommand("rerecord", CL_ReRecord_f);
-	Cmd_AddCommand("stop", CL_Stop_f);
-	Cmd_AddCommand("playdemo", CL_PlayDemo_f);
-	Cmd_AddCommand("timedemo", CL_TimeDemo_f);
+	Cmd_AddCommand("stop", CLQH_Stop_f);
+	Cmd_AddCommand("playdemo", CLQHW_PlayDemo_f);
+	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
 
 	Cmd_AddCommand("skins", Skin_Skins_f);
 
@@ -1249,7 +1249,6 @@ void Host_Frame(float time)
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
 
-		host_framecount++;
 		cls.framecount++;
 	}
 	catch (DropException& e)
@@ -1258,7 +1257,7 @@ void Host_Frame(float time)
 	}
 	catch (Exception& e)
 	{
-		Sys_Error("%s", e.What());
+		Host_FatalError("%s", e.What());
 	}
 }
 

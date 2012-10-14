@@ -59,25 +59,6 @@ static bool vid_restart_requested;
 
 /*
 ====================
-CL_WriteDemoMessage
-
-Dumps the current net message, prefixed by the length
-====================
-*/
-void CL_WriteDemoMessage(void)
-{
-	int len, swlen;
-
-	// the first eight bytes are just packet sequencing stuff
-	len = net_message.cursize - 8;
-	swlen = LittleLong(len);
-	FS_Write(&swlen, 4, clc.demofile);
-	FS_Write(net_message._data + 8, len, clc.demofile);
-}
-
-
-/*
-====================
 CL_Stop_f
 
 stop recording a demo
@@ -873,7 +854,7 @@ void CL_ReadPackets(void)
 		//
 		if (clc.demorecording && !cls.q2_demowaiting)
 		{
-			CL_WriteDemoMessage();
+			CLQ2_WriteDemoMessage(&net_message, 8);
 		}
 	}
 

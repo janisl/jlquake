@@ -45,14 +45,7 @@ void CL_WriteToServer(hwusercmd_t* cmd);
 //
 // cl_demo.c
 //
-void CL_StopPlayback(void);
-qboolean CL_GetMessage(void);
-
-void CL_Stop_f(void);
-void CL_Record_f(void);
 void CL_ReRecord_f(void);
-void CL_PlayDemo_f(void);
-void CL_TimeDemo_f(void);
 
 //
 // cl_parse.c
@@ -62,6 +55,5 @@ void CL_ParseServerMessage(QMsg& message);
 //
 // cl_pred.c
 //
-void CL_WriteDemoCmd(hwusercmd_t* pcmd);
 void CL_SendConnectPacket(void);
 void Host_WriteConfiguration(const char* fname);

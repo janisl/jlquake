@@ -202,3 +202,18 @@ void CLT3_Record(const char* demoName, const char* name)
 
 	// the rest of the demo file will be copied from net messages
 }
+
+//	Dumps the current net message, prefixed by the length
+void CLT3_WriteDemoMessage(QMsg* msg, int headerBytes)
+{
+	// write the packet sequence
+	int len = clc.q3_serverMessageSequence;
+	int swlen = LittleLong(len);
+	FS_Write(&swlen, 4, clc.demofile);
+
+	// skip the packet sequencing information
+	len = msg->cursize - headerBytes;
+	swlen = LittleLong(len);
+	FS_Write(&swlen, 4, clc.demofile);
+	FS_Write(msg->_data + headerBytes, len, clc.demofile);
+}

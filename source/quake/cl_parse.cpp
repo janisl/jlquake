@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/game/quake_hexen2/view.h"
 #include "../client/game/parse.h"
 #include "../client/game/quake_hexen2/parse.h"
+#include "../client/game/quake_hexen2/demo.h"
 #include "../server/public.h"
 
 const char* svc_strings[] =
@@ -104,11 +105,11 @@ void CL_KeepaliveMessage(void)
 
 	do
 	{
-		ret = CL_GetMessage();
+		ret = CLQH_GetMessage(net_message);
 		switch (ret)
 		{
 		default:
-			common->Error("CL_KeepaliveMessage: CL_GetMessage failed");
+			common->Error("CL_KeepaliveMessage: CLQH_GetMessage failed");
 		case 0:
 			break;	// nothing waiting
 		case 1:

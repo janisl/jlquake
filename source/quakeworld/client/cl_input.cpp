@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl.input.c  -- builds an intended movement command to send to the server
 
 #include "quakedef.h"
+#include "../../client/game/quake_hexen2/demo.h"
 
 /*
 ===============================================================================
@@ -151,7 +152,7 @@ void CL_SendCmd(void)
 
 	if (clc.demorecording)
 	{
-		CL_WriteDemoCmd(cmd);
+		CLQW_WriteDemoCmd(cmd);
 	}
 
 //

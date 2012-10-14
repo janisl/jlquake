@@ -10,6 +10,7 @@
 #endif
 #include <time.h>
 #include "../server/public.h"
+#include "../client/game/quake_hexen2/demo.h"
 
 /*
 ==================
@@ -73,7 +74,7 @@ void Host_Connect_f(void)
 	cls.qh_demonum = -1;		// stop demo loop in case this fails
 	if (clc.demoplaying)
 	{
-		CL_StopPlayback();
+		CLQH_StopPlayback();
 		CL_Disconnect();
 	}
 	String::Cpy(name, Cmd_Argv(1));
@@ -329,7 +330,7 @@ void Host_Stopdemo_f(void)
 	{
 		return;
 	}
-	CL_StopPlayback();
+	CLQH_StopPlayback();
 	CL_Disconnect();
 }
 #endif
