@@ -152,7 +152,7 @@ void CL_ParseServerData(void)
 	if (String::ICmp(fsqhw_gamedirfile, str))
 	{
 		// save current config
-		Host_WriteConfiguration();
+		Com_WriteConfiguration();
 		cflag = true;
 	}
 

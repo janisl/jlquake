@@ -902,3 +902,5 @@ enum
 #define WSMASTER_SERVER_NAME    "master.gmistudios.com"
 #define WMMASTER_SERVER_NAME    "wolfmaster.idsoftware.com"
 #define ETMASTER_SERVER_NAME    "etmaster.idsoftware.com"
+
+#define ETCONFIG_NAME   "etconfig.cfg"

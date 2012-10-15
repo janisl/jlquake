@@ -28,7 +28,6 @@ extern qboolean nomaster;
 // cl_main
 //
 void CL_Init(void);
-void Host_WriteConfiguration(void);
 
 void CL_Disconnect(void);
 void CL_Disconnect_f(void);

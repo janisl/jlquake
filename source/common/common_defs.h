@@ -252,3 +252,9 @@ bool Com_AddStartupCommands();
 // if match is NULL, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
 void Com_StartupVariable(const char* match);
+
+extern bool com_fullyInitialized;
+
+void Com_WriteConfigToFile(const char* filename);
+void Com_WriteConfiguration();
+void Com_WriteConfig_f();

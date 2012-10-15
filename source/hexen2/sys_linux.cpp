@@ -7,8 +7,6 @@
 #include <fcntl.h>
 #include <execinfo.h>
 
-qboolean isDedicated;
-
 int nostdout = 0;
 
 const char* basedir = ".";

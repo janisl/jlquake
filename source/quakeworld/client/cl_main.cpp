@@ -60,7 +60,6 @@ double connect_time = -1;				// for connection retransmits
 
 quakeparms_t host_parms;
 
-qboolean host_initialized;			// true if into command execution
 qboolean nomaster;
 
 double host_frametime;
@@ -1190,33 +1189,6 @@ void Host_FatalError(const char* error, ...)
 	Sys_Error("Host_FatalError: %s\n",string);
 }
 
-
-/*
-===============
-Host_WriteConfiguration
-
-Writes key bindings and archived cvars to config.cfg
-===============
-*/
-void Host_WriteConfiguration(void)
-{
-	if (host_initialized)
-	{
-		fileHandle_t f = FS_FOpenFileWrite("config.cfg");
-		if (!f)
-		{
-			common->Printf("Couldn't write config.cfg.\n");
-			return;
-		}
-
-		Key_WriteBindings(f);
-		Cvar_WriteVariables(f);
-
-		FS_FCloseFile(f);
-	}
-}
-
-
 //============================================================================
 
 #if 0
@@ -1445,7 +1417,7 @@ void Host_Init(quakeparms_t* parms)
 
 		Cbuf_AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 
@@ -1477,7 +1449,7 @@ void Host_Shutdown(void)
 	}
 	isdown = true;
 
-	Host_WriteConfiguration();
+	Com_WriteConfiguration();
 
 	CDAudio_Shutdown();
 	NET_Shutdown();

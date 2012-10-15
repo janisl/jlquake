@@ -56,4 +56,3 @@ void CL_ParseServerMessage(QMsg& message);
 // cl_pred.c
 //
 void CL_SendConnectPacket(void);
-void Host_WriteConfiguration(const char* fname);

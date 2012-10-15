@@ -19,11 +19,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-void Host_WriteConfiguration(const char* fname);
-
 quakeparms_t host_parms;
-
-qboolean host_initialized;			// true if into command execution
 
 double host_frametime;
 double host_time;
@@ -197,31 +193,6 @@ void Host_Error(const char* error, ...)
 #endif
 }
 
-#ifndef DEDICATED
-/*
-===============
-Host_SaveConfig_f
-===============
-*/
-void Host_SaveConfig_f(void)
-{
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("saveConfig <savename> : save a config file\n");
-		return;
-	}
-
-	if (strstr(Cmd_Argv(1), ".."))
-	{
-		common->Printf("Relative pathnames are not allowed.\n");
-		return;
-	}
-
-	Host_WriteConfiguration(Cmd_Argv(1));
-}
-#endif
-
-
 /*
 =======================
 Host_InitLocal
@@ -230,7 +201,7 @@ Host_InitLocal
 void Host_InitLocal(void)
 {
 #ifndef DEDICATED
-	Cmd_AddCommand("saveconfig", Host_SaveConfig_f);
+	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 #endif
 
 	COM_InitCommonCvars();
@@ -262,35 +233,6 @@ void Host_InitLocal(void)
 
 	host_time = 1.0;		// so a think at time 0 won't get called
 }
-
-#ifndef DEDICATED
-/*
-===============
-Host_WriteConfiguration
-
-Writes key bindings and archived cvars to config.cfg
-===============
-*/
-void Host_WriteConfiguration(const char* fname)
-{
-	// dedicated servers initialize the host but don't parse and set the
-	// config.cfg cvars
-	if (host_initialized & !isDedicated)
-	{
-		fileHandle_t f = FS_FOpenFileWrite(fname);
-		if (!f)
-		{
-			common->Printf("Couldn't write %s.\n",fname);
-			return;
-		}
-
-		Key_WriteBindings(f);
-		Cvar_WriteVariables(f);
-
-		FS_FCloseFile(f);
-	}
-}
-#endif
 
 /*
 ===================
@@ -620,7 +562,7 @@ void Host_Init(quakeparms_t* parms)
 		}
 #endif
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("======== Hexen II Initialized =========\n");
 	}
@@ -654,7 +596,7 @@ void Host_Shutdown(void)
 // keep common->Printf from trying to update the screen
 	cls.disable_screen = true;
 
-	Host_WriteConfiguration("config.cfg");
+	Com_WriteConfiguration();
 
 	CDAudio_Shutdown();
 	MIDI_Cleanup();

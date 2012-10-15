@@ -481,6 +481,7 @@ void Qcommon_Init(int argc, char** argv)
 			SCR_EndLoadingPlaque();
 		}
 
+		com_fullyInitialized = true;
 		common->Printf("====== Quake2 Initialized ======\n\n");
 	}
 	catch (Exception& e)

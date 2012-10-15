@@ -29,8 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 quakeparms_t host_parms;
 
-qboolean host_initialized;			// true if into command execution (compatability)
-
 double host_frametime;
 
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
@@ -224,7 +222,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		Cbuf_InsertText("exec server.cfg\n");
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 

@@ -35,7 +35,5 @@ typedef struct
 //
 extern quakeparms_t host_parms;
 
-extern qboolean host_initialized;			// true if into command execution
-
 void SV_Error(const char* error, ...);
 void COM_InitServer(quakeparms_t* parms);

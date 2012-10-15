@@ -10,8 +10,6 @@
 
 quakeparms_t host_parms;
 
-qboolean host_initialized;			// true if into command execution (compatability)
-
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 
@@ -207,7 +205,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		Cbuf_InsertText("exec server.cfg\n");
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 		common->Printf("======== HexenWorld Initialized ========\n");

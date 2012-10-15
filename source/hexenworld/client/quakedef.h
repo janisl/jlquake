@@ -36,7 +36,6 @@ typedef struct
 //
 extern quakeparms_t host_parms;
 
-extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset

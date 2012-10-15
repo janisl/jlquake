@@ -51,8 +51,6 @@ If you have questions concerning this license or the applicable additional terms
 // 1.1b - TTimo SP linux release (+ MP updates)
 // 1.1b5 - Mac update merge in
 
-#define CONFIG_NAME     "etconfig.cfg"
-
 #if defined(ppc) || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 #define idppc 1
 #endif

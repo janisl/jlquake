@@ -33,7 +33,6 @@ double connect_time = -1;				// for connection retransmits
 
 quakeparms_t host_parms;
 
-qboolean host_initialized;			// true if into command execution
 qboolean nomaster;
 
 double host_frametime;
@@ -938,7 +937,6 @@ static void Skin_Skins_f()
 CL_Init
 =================
 */
-void Host_SaveConfig_f(void);
 void CL_Init(void)
 {
 	CL_SharedInit();
@@ -961,7 +959,7 @@ void CL_Init(void)
 //
 // register our commands
 //
-	Cmd_AddCommand("saveconfig", Host_SaveConfig_f);
+	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
@@ -1086,52 +1084,6 @@ void Host_FatalError(const char* error, ...)
 // FIXME
 	Sys_Error("Host_FatalError: %s\n",string);
 }
-
-
-/*
-===============
-Host_WriteConfiguration
-
-Writes key bindings and archived cvars to config.cfg
-===============
-*/
-void Host_WriteConfiguration(const char* fname)
-{
-	if (host_initialized)
-	{
-		fileHandle_t f = FS_FOpenFileWrite(fname);
-		if (!f)
-		{
-			common->Printf("Couldn't write %s.\n",fname);
-			return;
-		}
-
-		Key_WriteBindings(f);
-		Cvar_WriteVariables(f);
-
-		FS_FCloseFile(f);
-	}
-}
-
-void Host_SaveConfig_f(void)
-{
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("saveconfig <savename> : save a config file\n");
-		return;
-	}
-
-	if (strstr(Cmd_Argv(1), ".."))
-	{
-		common->Printf("Relative pathnames are not allowed.\n");
-		return;
-	}
-
-	Host_WriteConfiguration(Cmd_Argv(1));
-}
-
-//============================================================================
 
 /*
 ==================
@@ -1316,7 +1268,7 @@ void Host_Init(quakeparms_t* parms)
 		MIDI_Init();
 		SbarH2_Init();
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("������� HexenWorld Initialized �������\n");
 	}
@@ -1346,7 +1298,7 @@ void Host_Shutdown(void)
 	}
 	isdown = true;
 
-	Host_WriteConfiguration("config.cfg");
+	Com_WriteConfiguration();
 
 	CDAudio_Shutdown();
 	MIDI_Cleanup();

@@ -76,7 +76,6 @@ extern quakeparms_t host_parms;
 
 extern Cvar* sys_ticrate;
 
-extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
@@ -91,8 +90,6 @@ void Com_Quit_f();
 
 extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
-
-extern qboolean isDedicated;
 
 extern qboolean check_bottom;
 

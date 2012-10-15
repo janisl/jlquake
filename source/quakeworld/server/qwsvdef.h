@@ -56,7 +56,6 @@ typedef struct
 //
 extern quakeparms_t host_parms;
 
-extern qboolean host_initialized;			// true if into command execution
 extern double host_frametime;
 
 void SV_Error(const char* error, ...);

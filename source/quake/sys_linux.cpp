@@ -9,8 +9,6 @@
 /* get REG_EIP from ucontext.h */
 #include <ucontext.h>
 
-qboolean isDedicated;
-
 int nostdout = 0;
 
 const char* basedir = ".";

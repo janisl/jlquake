@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS   50
 
-qboolean isDedicated;
-
 static HANDLE tevent;
 
 /*
@@ -181,8 +179,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
-	isDedicated = (COM_CheckParm("-dedicated") != 0);
-
 	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	if (!tevent)
@@ -200,7 +196,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/* main window message loop */
 	while (1)
 	{
-		if (isDedicated)
+		if (com_dedicated->integer)
 		{
 			newtime = Sys_DoubleTime();
 			time = newtime - oldtime;

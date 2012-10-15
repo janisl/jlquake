@@ -35,8 +35,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 quakeparms_t host_parms;
 
-qboolean host_initialized;			// true if into command execution
-
 double host_frametime;
 double host_time;
 double realtime;					// without any filtering or bounding
@@ -240,36 +238,6 @@ void Host_InitLocal(void)
 	Host_InitCommands();
 
 	host_time = 1.0;		// so a think at time 0 won't get called
-}
-
-
-/*
-===============
-Host_WriteConfiguration
-
-Writes key bindings and archived cvars to config.cfg
-===============
-*/
-void Host_WriteConfiguration(void)
-{
-#ifndef DEDICATED
-	// dedicated servers initialize the host but don't parse and set the
-	// config.cfg cvars
-	if (host_initialized & !isDedicated)
-	{
-		fileHandle_t f = FS_FOpenFileWrite("config.cfg");
-		if (!f)
-		{
-			common->Printf("Couldn't write config.cfg.\n");
-			return;
-		}
-
-		Key_WriteBindings(f);
-		Cvar_WriteVariables(f);
-
-		FS_FCloseFile(f);
-	}
-#endif
 }
 
 /*
@@ -558,7 +526,7 @@ void Host_Init(quakeparms_t* parms)
 		}
 #endif
 
-		host_initialized = true;
+		com_fullyInitialized = true;
 
 		common->Printf("========Quake Initialized=========\n");
 	}
@@ -593,7 +561,7 @@ void Host_Shutdown(void)
 	cls.disable_screen = true;
 #endif
 
-	Host_WriteConfiguration();
+	Com_WriteConfiguration();
 
 #ifndef DEDICATED
 	CDAudio_Shutdown();
