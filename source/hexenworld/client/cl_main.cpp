@@ -840,7 +840,7 @@ void CL_ReadPackets(void)
 			continue;		// wasn't accepted for some reason
 		}
 		clc.netchan.lastReceived = realtime * 1000;
-		CL_ParseServerMessage(net_message);
+		CLHW_ParseServerMessage(net_message);
 
 //		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
 //			return;

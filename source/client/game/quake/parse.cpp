@@ -67,6 +67,86 @@ static const char* svcq1_strings[] =
 	"q1svc_cutscene"
 };
 
+static const char* svcqw_strings[] =
+{
+	"q1svc_bad",
+	"q1svc_nop",
+	"q1svc_disconnect",
+	"q1svc_updatestat",
+	"q1svc_version",		// [long] server version
+	"q1svc_setview",		// [short] entity number
+	"q1svc_sound",			// <see code>
+	"q1svc_time",			// [float] server time
+	"q1svc_print",			// [string] null terminated string
+	"q1svc_stufftext",		// [string] stuffed into client's console buffer
+	// the string should be \n terminated
+	"q1svc_setangle",		// [vec3] set the view angle to this absolute value
+
+	"qwsvc_serverdata",		// [long] version ...
+	"q1svc_lightstyle",		// [byte] [string]
+	"q1svc_updatename",		// [byte] [string]
+	"q1svc_updatefrags",	// [byte] [short]
+	"q1svc_clientdata",		// <shortbits + data>
+	"q1svc_stopsound",		// <see code>
+	"q1svc_updatecolors",	// [byte] [byte]
+	"q1svc_particle",		// [vec3] <variable>
+	"q1svc_damage",			// [byte] impact [byte] blood [vec3] from
+
+	"q1svc_spawnstatic",
+	"OBSOLETE svc_spawnbinary",
+	"q1svc_spawnbaseline",
+
+	"q1svc_temp_entity",		// <variable>
+	"q1svc_setpause",
+	"q1svc_signonnum",
+	"q1svc_centerprint",
+	"q1svc_killedmonster",
+	"q1svc_foundsecret",
+	"q1svc_spawnstaticsound",
+	"q1svc_intermission",
+	"q1svc_finale",
+
+	"q1svc_cdtrack",
+	"q1svc_sellscreen",
+
+	"qwsvc_smallkick",
+	"qwsvc_bigkick",
+
+	"qwsvc_updateping",
+	"qwsvc_updateentertime",
+
+	"qwsvc_updatestatlong",
+	"qwsvc_muzzleflash",
+	"qwsvc_updateuserinfo",
+	"qwsvc_download",
+	"qwsvc_playerinfo",
+	"qwsvc_nails",
+	"svc_choke",
+	"qwsvc_modellist",
+	"qwsvc_soundlist",
+	"qwsvc_packetentities",
+	"qwsvc_deltapacketentities",
+	"qwsvc_maxspeed",
+	"qwsvc_entgravity",
+
+	"qwsvc_setinfo",
+	"qwsvc_serverinfo",
+	"qwsvc_updatepl",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL"
+};
+
 //	Server information pertaining to this client only
 static void CLQ1_ParseClientdata(QMsg& message)
 {
@@ -204,7 +284,7 @@ static void CLQ1_ParseClientdata(QMsg& message)
 }
 
 //	Server information pertaining to this client only, sent every frame
-void CLQW_ParseClientdata()
+static void CLQW_ParseClientdata()
 {
 	// calculate simulated time of message
 	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
@@ -242,7 +322,7 @@ static void CLQ1_ParseVersion(QMsg& message)
 	}
 }
 
-void CLQW_ParseDisconnect()
+static void CLQW_ParseDisconnect()
 {
 	if (cls.state == CA_CONNECTED)
 	{
@@ -273,7 +353,7 @@ static void CLQ1_ParsePrint(QMsg& message)
 	}
 }
 
-void CLQW_ParsePrint(QMsg& message)
+static void CLQW_ParsePrint(QMsg& message)
 {
 	int i = message.ReadByte();
 	const char* txt = message.ReadString2();
@@ -294,7 +374,7 @@ static void CLQ1_ParseStartSoundPacket(QMsg& message)
 	CLQH_ParseStartSoundPacket(message, 0);
 }
 
-void CLQW_ParseStartSoundPacket(QMsg& message)
+static void CLQW_ParseStartSoundPacket(QMsg& message)
 {
 	CLQHW_ParseStartSoundPacket(message, 64.0);
 }
@@ -319,7 +399,7 @@ static void CLQ1_ParseUpdateFrags(QMsg& message)
 	cl.q1_players[i].frags = message.ReadShort();
 }
 
-void CLQW_ParseUpdateFrags(QMsg& message)
+static void CLQW_ParseUpdateFrags(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -343,7 +423,7 @@ static void CLQ1_ParseUpdateColours(QMsg& message)
 	CLQ1_TranslatePlayerSkin(i);
 }
 
-void CLQW_ParseUpdatePing(QMsg& message)
+static void CLQW_ParseUpdatePing(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -353,7 +433,7 @@ void CLQW_ParseUpdatePing(QMsg& message)
 	cl.q1_players[i].ping = message.ReadShort();
 }
 
-void CLQW_ParseUpdatePacketLossage(QMsg& message)
+static void CLQW_ParseUpdatePacketLossage(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -363,7 +443,7 @@ void CLQW_ParseUpdatePacketLossage(QMsg& message)
 	cl.q1_players[i].pl = message.ReadByte();
 }
 
-void CLQW_ParseUpdateEnterTime(QMsg& message)
+static void CLQW_ParseUpdateEnterTime(QMsg& message)
 {
 	// time is sent over as seconds ago
 	int i = message.ReadByte();
@@ -430,14 +510,14 @@ static void CLQW_SetStat(int stat, int value)
 	cl.qh_stats[stat] = value;
 }
 
-void CLQW_ParseUpdateStat(QMsg& message)
+static void CLQW_ParseUpdateStat(QMsg& message)
 {
 	int i = message.ReadByte();
 	int j = message.ReadByte();
 	CLQW_SetStat(i, j);
 }
 
-void CLQW_ParseUpdateStatLong(QMsg& message)
+static void CLQW_ParseUpdateStatLong(QMsg& message)
 {
 	int i = message.ReadByte();
 	int j = message.ReadLong();
@@ -465,7 +545,7 @@ static void CLQ1_ParseIntermission()
 	cl.qh_completed_time = cl.qh_serverTimeFloat;
 }
 
-void CLQW_ParseIntermission(QMsg& message)
+static void CLQW_ParseIntermission(QMsg& message)
 {
 	cl.qh_intermission = 1;
 	cl.qh_completed_time = cls.realtime * 0.001;
@@ -491,7 +571,7 @@ static void CLQ1_ParseCutscene(QMsg& message)
 	SCR_CenterPrint(message.ReadString2());
 }
 
-void CLQW_MuzzleFlash(QMsg& message)
+static void CLQW_MuzzleFlash(QMsg& message)
 {
 	int i = message.ReadShort();
 
@@ -525,7 +605,7 @@ static void CLQW_ProcessUserInfo(int slot, q1player_info_t* player)
 	CLQ1_TranslatePlayerSkin(slot);
 }
 
-void CLQW_ParseUpdateUserinfo(QMsg& message)
+static void CLQW_ParseUpdateUserinfo(QMsg& message)
 {
 	int slot = message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
@@ -540,7 +620,7 @@ void CLQW_ParseUpdateUserinfo(QMsg& message)
 	CLQW_ProcessUserInfo(slot, player);
 }
 
-void CLQW_ParseSetInfo(QMsg& message)
+static void CLQW_ParseSetInfo(QMsg& message)
 {
 	int slot = message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
@@ -568,7 +648,7 @@ void CLQW_ParseSetInfo(QMsg& message)
 	CLQW_ProcessUserInfo(slot, player);
 }
 
-void CLQW_ParseServerInfo(QMsg& message)
+static void CLQW_ParseServerInfo(QMsg& message)
 {
 	char key[MAX_MSGLEN_QW];
 	String::NCpy(key, message.ReadString2(), sizeof(key) - 1);
@@ -587,7 +667,7 @@ void CLQW_ParseServerInfo(QMsg& message)
 }
 
 // some preceding packets were choked
-void CLQW_ParseChokeCount(QMsg& message)
+static void CLQW_ParseChokeCount(QMsg& message)
 {
 	int i = message.ReadByte();
 	for (int j = 0; j < i; j++)
@@ -745,7 +825,7 @@ static void CLQW_RequestNextDownload()
 	}
 }
 
-void CLQW_ParseDownload(QMsg& message)
+static void CLQW_ParseDownload(QMsg& message)
 {
 	// read the data
 	int size = message.ReadShort();
@@ -837,7 +917,7 @@ void CLQW_ParseDownload(QMsg& message)
 	}
 }
 
-void CLQW_ParseModelList(QMsg& message)
+static void CLQW_ParseModelList(QMsg& message)
 {
 	// precache models and note certain default indexes
 	int nummodels = message.ReadByte();
@@ -883,7 +963,7 @@ void CLQW_ParseModelList(QMsg& message)
 	CLQW_Model_NextDownload();
 }
 
-void CLQW_ParseSoundList(QMsg& message)
+static void CLQW_ParseSoundList(QMsg& message)
 {
 	int numsounds = message.ReadByte();
 
@@ -915,7 +995,7 @@ void CLQW_ParseSoundList(QMsg& message)
 	CLQW_Sound_NextDownload();
 }
 
-void CLQW_ParseSetPause(QMsg& message)
+static void CLQW_ParseSetPause(QMsg& message)
 {
 	cl.qh_paused = message.ReadByte();
 	if (cl.qh_paused)
@@ -1038,6 +1118,94 @@ static void CLQ1_ParseServerInfo(QMsg& message)
 
 	// local state
 	R_EndRegistration();
+}
+
+static void CLQW_ParseServerData(QMsg& message)
+{
+	common->DPrintf("Serverdata packet received.\n");
+
+	Cbuf_Execute();			// make sure any stuffed commands are done
+
+	R_Shutdown(false);
+	CL_InitRenderer();
+
+	//
+	// wipe the clientActive_t struct
+	//
+	CL_ClearState();
+
+	// parse protocol version number
+	// allow 2.2 and 2.29 demos to play
+	int protover = message.ReadLong();
+	if (protover != QWPROTOCOL_VERSION &&
+		!(clc.demoplaying && (protover == 26 || protover == 27 || protover == 28)))
+	{
+		common->Error("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, QWPROTOCOL_VERSION);
+	}
+
+	cl.servercount = message.ReadLong();
+
+	// game directory
+	const char* str = message.ReadString2();
+
+	bool cflag = false;
+	if (String::ICmp(fsqhw_gamedirfile, str))
+	{
+		// save current config
+		Com_WriteConfiguration();
+		cflag = true;
+	}
+
+	FS_SetGamedirQHW(str);
+
+	//ZOID--run the autoexec.cfg in the gamedir
+	//if it exists
+	if (cflag)
+	{
+		if (FS_FileExists("config.cfg"))
+		{
+			Cbuf_AddText("cl_warncmd 0\n");
+			Cbuf_AddText("exec config.cfg\n");
+			Cbuf_AddText("exec frontend.cfg\n");
+			Cbuf_AddText("cl_warncmd 1\n");
+		}
+	}
+
+	// parse player slot, high bit means spectator
+	cl.playernum = message.ReadByte();
+	if (cl.playernum & 128)
+	{
+		cl.qh_spectator = true;
+		cl.playernum &= ~128;
+	}
+	cl.viewentity = cl.playernum + 1;
+
+	// get the full level name
+	str = const_cast<char*>(message.ReadString2());
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
+
+	// get the movevars
+	movevars.gravity            = message.ReadFloat();
+	movevars.stopspeed          = message.ReadFloat();
+	movevars.maxspeed           = message.ReadFloat();
+	movevars.spectatormaxspeed  = message.ReadFloat();
+	movevars.accelerate         = message.ReadFloat();
+	movevars.airaccelerate      = message.ReadFloat();
+	movevars.wateraccelerate    = message.ReadFloat();
+	movevars.friction           = message.ReadFloat();
+	movevars.waterfriction      = message.ReadFloat();
+	movevars.entgravity         = message.ReadFloat();
+
+	// seperate the printfs so the server message can have a color
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE "\n", str);
+
+	// ask for the sound list next
+	Com_Memset(cl.qh_sound_name, 0, sizeof(cl.qh_sound_name));
+	CL_AddReliableCommand(va("soundlist %i %i", cl.servercount, 0));
+
+	// now waiting for downloads, etc
+	cls.state = CA_LOADING;
 }
 
 void CLQ1_ParseServerMessage(QMsg& message)
@@ -1188,4 +1356,187 @@ void CLQ1_ParseServerMessage(QMsg& message)
 			break;
 		}
 	}
+}
+
+void CLQW_ParseServerMessage(QMsg& message)
+{
+	CLQ1_ClearProjectiles();
+
+	//
+	// if recording demos, copy the message out
+	//
+	if (cl_shownet->value == 1)
+	{
+		common->Printf("%i ",message.cursize);
+	}
+	else if (cl_shownet->value == 2)
+	{
+		common->Printf("------------------\n");
+	}
+
+	CLQW_ParseClientdata();
+
+	//
+	// parse the message
+	//
+	while (1)
+	{
+		if (message.badread)
+		{
+			common->Error("CLQW_ParseServerMessage: Bad server message");
+			break;
+		}
+
+		int cmd = message.ReadByte();
+
+		if (cmd == -1)
+		{
+			message.readcount++;	// so the EOM showner has the right value
+			SHOWNET(message, "END OF MESSAGE");
+			break;
+		}
+
+		SHOWNET(message, svcqw_strings[cmd]);
+
+		// other commands
+		switch (cmd)
+		{
+		default:
+			common->Error("CLQW_ParseServerMessage: Illegible server message");
+			break;
+		case q1svc_nop:
+			break;
+		case q1svc_disconnect:
+			CLQW_ParseDisconnect();
+			break;
+		case q1svc_print:
+			CLQW_ParsePrint(message);
+			break;
+		case q1svc_centerprint:
+			CL_ParseCenterPrint(message);
+			break;
+		case q1svc_stufftext:
+			CL_ParseStuffText(message);
+			break;
+		case q1svc_damage:
+			VQH_ParseDamage(message);
+			break;
+		case qwsvc_serverdata:
+			CLQW_ParseServerData(message);
+			break;
+		case q1svc_setangle:
+			CLQH_ParseSetAngle(message);
+			break;
+		case q1svc_lightstyle:
+			CLQH_ParseLightStyle(message);
+			break;
+		case q1svc_sound:
+			CLQW_ParseStartSoundPacket(message);
+			break;
+		case q1svc_stopsound:
+			CLQH_ParseStopSound(message);
+			break;
+		case q1svc_updatefrags:
+			CLQW_ParseUpdateFrags(message);
+			break;
+		case qwsvc_updateping:
+			CLQW_ParseUpdatePing(message);
+			break;
+		case qwsvc_updatepl:
+			CLQW_ParseUpdatePacketLossage(message);
+			break;
+		case qwsvc_updateentertime:
+			CLQW_ParseUpdateEnterTime(message);
+			break;
+		case q1svc_spawnbaseline:
+			CLQ1_ParseSpawnBaseline(message);
+			break;
+		case q1svc_spawnstatic:
+			CLQ1_ParseSpawnStatic(message);
+			break;
+		case q1svc_temp_entity:
+			CLQW_ParseTEnt(message);
+			break;
+		case q1svc_killedmonster:
+			CLQH_ParseKilledMonster();
+			break;
+		case q1svc_foundsecret:
+			CLQH_ParseFoundSecret();
+			break;
+		case q1svc_updatestat:
+			CLQW_ParseUpdateStat(message);
+			break;
+		case qwsvc_updatestatlong:
+			CLQW_ParseUpdateStatLong(message);
+			break;
+		case q1svc_spawnstaticsound:
+			CLQH_ParseStaticSound(message);
+			break;
+		case q1svc_cdtrack:
+			CLQHW_ParseCDTrack(message);
+			break;
+		case q1svc_intermission:
+			CLQW_ParseIntermission(message);
+			break;
+		case q1svc_finale:
+			CLQHW_ParseFinale(message);
+			break;
+		case q1svc_sellscreen:
+			CLQH_ParseSellScreen();
+			break;
+		case qwsvc_smallkick:
+			CLQHW_ParseSmallKick();
+			break;
+		case qwsvc_bigkick:
+			CLQHW_ParseBigKick();
+			break;
+		case qwsvc_muzzleflash:
+			CLQW_MuzzleFlash(message);
+			break;
+		case qwsvc_updateuserinfo:
+			CLQW_ParseUpdateUserinfo(message);
+			break;
+		case qwsvc_setinfo:
+			CLQW_ParseSetInfo(message);
+			break;
+		case qwsvc_serverinfo:
+			CLQW_ParseServerInfo(message);
+			break;
+		case qwsvc_download:
+			CLQW_ParseDownload(message);
+			break;
+		case qwsvc_playerinfo:
+			CLQW_ParsePlayerinfo(message);
+			break;
+		case qwsvc_nails:
+			CLQW_ParseNails(message);
+			break;
+		case qwsvc_chokecount:
+			CLQW_ParseChokeCount(message);
+			break;
+		case qwsvc_modellist:
+			CLQW_ParseModelList(message);
+			break;
+		case qwsvc_soundlist:
+			CLQW_ParseSoundList(message);
+			break;
+		case qwsvc_packetentities:
+			CLQW_ParsePacketEntities(message);
+			break;
+		case qwsvc_deltapacketentities:
+			CLQW_ParseDeltaPacketEntities(message);
+			break;
+		case qwsvc_maxspeed:
+			CLQHW_ParseMaxSpeed(message);
+			break;
+		case qwsvc_entgravity:
+			CLQHW_ParseEntGravity(message);
+			break;
+		case q1svc_setpause:
+			CLQW_ParseSetPause(message);
+			break;
+		}
+	}
+
+	CLQW_SetSolidEntities();
 }

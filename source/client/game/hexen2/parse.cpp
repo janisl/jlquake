@@ -162,6 +162,108 @@ static const char* svch2_strings[] =
 	"h2svc_toggle_statbar"
 };
 
+static const char* svchw_strings[] =
+{
+	"h2svc_bad",
+	"h2svc_nop",
+	"h2svc_disconnect",
+	"h2svc_updatestat",
+	"h2svc_version",		// [long] server version
+	"h2svc_setview",		// [short] entity number
+	"h2svc_sound",			// <see code>
+	"h2svc_time",			// [float] server time
+	"h2svc_print",			// [string] null terminated string
+	"h2svc_stufftext",		// [string] stuffed into client's console buffer
+	// the string should be \n terminated
+	"h2svc_setangle",		// [vec3] set the view angle to this absolute value
+
+	"hwsvc_serverdata",		// [long] version ...
+	"h2svc_lightstyle",		// [byte] [string]
+	"h2svc_updatename",		// [byte] [string]
+	"h2svc_updatefrags",	// [byte] [short]
+	"h2svc_clientdata",		// <shortbits + data>
+	"h2svc_stopsound",		// <see code>
+	"h2svc_updatecolors",	// [byte] [byte]
+	"h2svc_particle",		// [vec3] <variable>
+	"h2svc_damage",			// [byte] impact [byte] blood [vec3] from
+
+	"h2svc_spawnstatic",
+	"OBSOLETE svc_spawnbinary",
+	"h2svc_spawnbaseline",
+
+	"h2svc_temp_entity",		// <variable>
+	"h2svc_setpause",
+	"h2svc_signonnum",
+	"h2svc_centerprint",
+	"h2svc_killedmonster",
+	"h2svc_foundsecret",
+	"h2svc_spawnstaticsound",
+	"h2svc_intermission",
+	"h2svc_finale",
+
+	"h2svc_cdtrack",
+	"h2svc_sellscreen",
+
+	"hwsvc_smallkick",
+	"hwsvc_bigkick",
+
+	"hwsvc_updateping",
+	"hwsvc_updateentertime",
+
+	"hwsvc_updatestatlong",
+	"hwsvc_muzzleflash",
+	"hwsvc_updateuserinfo",
+	"hwsvc_download",
+	"hwsvc_playerinfo",
+	"hwsvc_nails",
+	"svc_choke",
+	"hwsvc_modellist",
+	"hwsvc_soundlist",
+	"hwsvc_packetentities",
+	"hwsvc_deltapacketentities",
+	"hwsvc_maxspeed",
+	"hwsvc_entgravity",
+
+	"hwsvc_plaque",
+	"hwsvc_particle_explosion",
+	"hwsvc_set_view_tint",
+	"hwsvc_start_effect",
+	"hwsvc_end_effect",
+	"hwsvc_set_view_flags",
+	"hwsvc_clear_view_flags",
+	"hwsvc_update_inv",
+	"hwsvc_particle2",
+	"hwsvc_particle3",
+	"hwsvc_particle4",
+	"hwsvc_turn_effect",
+	"hwsvc_update_effect",
+	"hwsvc_multieffect",
+	"hwsvc_midi_name",
+	"hwsvc_raineffect",
+	"hwsvc_packmissile",
+
+	"hwsvc_indexed_print",
+	"hwsvc_targetupdate",
+	"hwsvc_name_print",
+	"hwsvc_sound_update_pos",
+	"hwsvc_update_piv",
+	"hwsvc_player_sound",
+	"hwsvc_updatepclass",
+	"hwsvc_updatedminfo",	// [byte] [short] [byte]
+	"hwsvc_updatesiegeinfo",	// [byte] [byte]
+	"hwsvc_updatesiegeteam",	// [byte] [byte]
+	"hwsvc_updatesiegelosses",	// [byte] [byte]
+	"hwsvc_haskey",		//[byte] [byte]
+	"hwsvc_nonehaskey",		//[byte]
+	"hwsvc_isdoc",		//[byte] [byte]
+	"hwsvc_nodoc",		//[byte]
+	"hwsvc_playerskipped"	//[byte]
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL",
+	"NEW PROTOCOL"
+};
+
 //	Server information pertaining to this client only
 static void CLH2_ParseClientdata(QMsg& message)
 {
@@ -217,7 +319,7 @@ static void CLH2_ParseClientdata(QMsg& message)
 }
 
 //	Server information pertaining to this client only, sent every frame
-void CLHW_ParseClientdata()
+static void CLHW_ParseClientdata()
 {
 	// calculate simulated time of message
 	cl.qh_parsecount = clc.netchan.incomingAcknowledged;
@@ -255,7 +357,7 @@ static void CLH2_ParseVersion(QMsg& message)
 	}
 }
 
-void CLHW_ParseDisconnect()
+static void CLHW_ParseDisconnect()
 {
 	common->Error("Server disconnected\n");
 }
@@ -282,7 +384,7 @@ static void CLH2_ParsePrint(QMsg& message)
 	}
 }
 
-void CLHW_ParsePrint(QMsg& message)
+static void CLHW_ParsePrint(QMsg& message)
 {
 	int i = message.ReadByte();
 	const char* txt = message.ReadString2();
@@ -377,12 +479,12 @@ static void CLH2_ParseStartSoundPacket(QMsg& message)
 	CLQH_ParseStartSoundPacket(message, H2SND_OVERFLOW);
 }
 
-void CLHW_ParseStartSoundPacket(QMsg& message)
+static void CLHW_ParseStartSoundPacket(QMsg& message)
 {
 	CLQHW_ParseStartSoundPacket(message, 32.0);
 }
 
-void CLH2_ParseSoundUpdatePos(QMsg& message)
+static void CLH2_ParseSoundUpdatePos(QMsg& message)
 {
 	//FIXME: put a field on the entity that lists the channels
 	//it should update when it moves- if a certain flag
@@ -425,7 +527,7 @@ static void CLH2_ParseUpdateClass(QMsg& message)
 	CLH2_TranslatePlayerSkin(i);
 }
 
-void CLHW_ParseUpdateClass(QMsg& message)
+static void CLHW_ParseUpdateClass(QMsg& message)
 {
 	// playerclass has changed for this dude
 	int i = message.ReadByte();
@@ -448,7 +550,7 @@ static void CLH2_UpdateFrags(QMsg& message)
 	cl.h2_players[i].frags = message.ReadShort();
 }
 
-void CLHW_UpdateFrags(QMsg& message)
+static void CLHW_UpdateFrags(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -476,7 +578,7 @@ static void CLH2_ParseUpdateColors(QMsg& message)
 	CLH2_TranslatePlayerSkin(i);
 }
 
-void CLHW_ParseUpdatePing(QMsg& message)
+static void CLHW_ParseUpdatePing(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -486,7 +588,7 @@ void CLHW_ParseUpdatePing(QMsg& message)
 	cl.h2_players[i].ping = message.ReadShort();
 }
 
-void CLHW_ParseUpdateEnterTime(QMsg& message)
+static void CLHW_ParseUpdateEnterTime(QMsg& message)
 {
 	// time is sent over as seconds ago
 	int i = message.ReadByte();
@@ -497,7 +599,7 @@ void CLHW_ParseUpdateEnterTime(QMsg& message)
 	cl.h2_players[i].entertime = cls.realtime * 0.001 - message.ReadFloat();
 }
 
-void CLHW_ParseUpdateDMInfo(QMsg& message)
+static void CLHW_ParseUpdateDMInfo(QMsg& message)
 {
 	// This dude killed someone, update his frags and level
 	int i = message.ReadByte();
@@ -511,13 +613,13 @@ void CLHW_ParseUpdateDMInfo(QMsg& message)
 	cl.h2_players[i].playerclass = cl.h2_players[i].playerclass >> 5;
 }
 
-void CLHW_ParseUpdateSiegeLosses(QMsg& message)
+static void CLHW_ParseUpdateSiegeLosses(QMsg& message)
 {
 	clhw_defLosses = message.ReadByte();
 	clhw_attLosses = message.ReadByte();
 }
 
-void CLHW_ParseUpdateSiegeTeam(QMsg& message)
+static void CLHW_ParseUpdateSiegeTeam(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= MAX_CLIENTS_QHW)
@@ -527,39 +629,39 @@ void CLHW_ParseUpdateSiegeTeam(QMsg& message)
 	cl.h2_players[i].siege_team = message.ReadByte();
 }
 
-void CLHW_ParseUpdateSiegeInfo(QMsg& message)
+static void CLHW_ParseUpdateSiegeInfo(QMsg& message)
 {
 	clhw_siege = true;
 	clhw_timelimit = message.ReadByte() * 60;
 	clhw_fraglimit = message.ReadByte();
 }
 
-void CLHW_ParseHasKey(QMsg& message)
+static void CLHW_ParseHasKey(QMsg& message)
 {
 	clhw_keyholder = message.ReadShort() - 1;
 }
 
-void CLHW_ParseIsDoc(QMsg& message)
+static void CLHW_ParseIsDoc(QMsg& message)
 {
 	clhw_doc = message.ReadShort() - 1;
 }
 
-void CLHW_ParseNoneHasKey()
+static void CLHW_ParseNoneHasKey()
 {
 	clhw_keyholder = -1;
 }
 
-void CLHW_ParseNoDoc()
+static void CLHW_ParseNoDoc()
 {
 	clhw_doc = -1;
 }
 
-void CLHW_ParseTime(QMsg& message)
+static void CLHW_ParseTime(QMsg& message)
 {
 	clhw_server_time_offset = ((int)message.ReadFloat()) - cl.qh_serverTimeFloat;
 }
 
-void CLH2_ParseParticleEffect(QMsg& message)
+static void CLH2_ParseParticleEffect(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -602,7 +704,7 @@ static void CLH2_ParseParticleEffect2(QMsg& message)
 	CLH2_RunParticleEffect2(org, dmin, dmax, colour, hexen2ParticleTypeTable[effect], msgcount);
 }
 
-void CLHW_ParseParticleEffect2(QMsg& message)
+static void CLHW_ParseParticleEffect2(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -639,7 +741,7 @@ static void CLH2_ParseParticleEffect3(QMsg& message)
 	CLH2_RunParticleEffect3(org, box, colour, hexen2ParticleTypeTable[effect], msgcount);
 }
 
-void CLHW_ParseParticleEffect3(QMsg& message)
+static void CLHW_ParseParticleEffect3(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -667,7 +769,7 @@ static void CLH2_ParseParticleEffect4(QMsg& message)
 	CLH2_RunParticleEffect4(org, radius, color, hexen2ParticleTypeTable[effect], msgcount);
 }
 
-void CLHW_ParseParticleEffect4(QMsg& message)
+static void CLHW_ParseParticleEffect4(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -679,7 +781,7 @@ void CLHW_ParseParticleEffect4(QMsg& message)
 	CLH2_RunParticleEffect4(org, radius, color, hexenWorldParticleTypeTable[effect], msgcount);
 }
 
-void CLH2_ParseRainEffect(QMsg& message)
+static void CLH2_ParseRainEffect(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -693,7 +795,7 @@ void CLH2_ParseRainEffect(QMsg& message)
 	CLH2_RainEffect(org, e_size, x_dir, y_dir, colour, count);
 }
 
-void CLH2_ParseSignonNum(QMsg& message)
+static void CLH2_ParseSignonNum(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i <= clc.qh_signon)
@@ -714,14 +816,14 @@ static void CLHW_SetStat(int stat, int value)
 	cl.qh_stats[stat] = value;
 }
 
-void CLHW_ParseUpdateStat(QMsg& message)
+static void CLHW_ParseUpdateStat(QMsg& message)
 {
 	int i = message.ReadByte();
 	int j = message.ReadByte();
 	CLHW_SetStat(i, j);
 }
 
-void CLHW_ParseUpdateStatLong(QMsg& message)
+static void CLHW_ParseUpdateStatLong(QMsg& message)
 {
 	int i = message.ReadByte();
 	int j = message.ReadLong();
@@ -761,7 +863,7 @@ static void CLH2_ParseCDTrack(QMsg& message)
 	}
 }
 
-void CLH2_ParseMidiName(QMsg& message)
+static void CLH2_ParseMidiName(QMsg& message)
 {
 	char midi_name[MAX_QPATH];		// midi file name
 	String::Cpy(midi_name, message.ReadString2());
@@ -781,13 +883,13 @@ static void CLH2_ParseIntermission(QMsg& message)
 	cl.qh_completed_time = cl.qh_serverTimeFloat;
 }
 
-void CLHW_ParseIntermission(QMsg& message)
+static void CLHW_ParseIntermission(QMsg& message)
 {
 	cl.qh_intermission = message.ReadByte();
 	cl.qh_completed_time = cls.realtime * 0.001;
 }
 
-void CLHW_MuzzleFlash(QMsg& message)
+static void CLHW_MuzzleFlash(QMsg& message)
 {
 	int i = message.ReadShort();
 	if ((unsigned)(i - 1) >= MAX_CLIENTS_QHW)
@@ -798,7 +900,7 @@ void CLHW_MuzzleFlash(QMsg& message)
 	CLH2_MuzzleFlashLight(i, pl->origin, pl->viewangles, false);
 }
 
-void CLHW_UpdateUserinfo(QMsg& message)
+static void CLHW_UpdateUserinfo(QMsg& message)
 {
 	int slot = message.ReadByte();
 	if (slot >= MAX_CLIENTS_QHW)
@@ -935,7 +1037,7 @@ static void CLHW_RequestNextDownload()
 }
 
 //	A download message has been received from the server
-void CLHW_ParseDownload(QMsg& message)
+static void CLHW_ParseDownload(QMsg& message)
 {
 	// read the data
 	int size = message.ReadShort();
@@ -1003,7 +1105,7 @@ void CLHW_ParseDownload(QMsg& message)
 }
 
 // some preceding packets were choked
-void CLHW_ParseChokeCount(QMsg& message)
+static void CLHW_ParseChokeCount(QMsg& message)
 {
 	int i = message.ReadByte();
 	for (int j = 0; j < i; j++)
@@ -1012,7 +1114,7 @@ void CLHW_ParseChokeCount(QMsg& message)
 	}
 }
 
-void CLHW_ParseModelList(QMsg& message)
+static void CLHW_ParseModelList(QMsg& message)
 {
 	// precache models and note certain default indexes
 	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
@@ -1095,7 +1197,7 @@ void CLHW_ParseModelList(QMsg& message)
 	CLHW_Model_NextDownload();
 }
 
-void CLHW_ParseSoundList(QMsg& message)
+static void CLHW_ParseSoundList(QMsg& message)
 {
 	// precache sounds
 	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
@@ -1118,17 +1220,17 @@ void CLHW_ParseSoundList(QMsg& message)
 	CLHW_Sound_NextDownload();
 }
 
-void CLH2_ParseSetViewFlags(QMsg& message)
+static void CLH2_ParseSetViewFlags(QMsg& message)
 {
 	cl.h2_viewent.state.drawflags |= message.ReadByte();
 }
 
-void CLH2_ParseClearViewFlags(QMsg& message)
+static void CLH2_ParseClearViewFlags(QMsg& message)
 {
 	cl.h2_viewent.state.drawflags &= ~message.ReadByte();
 }
 
-void CLH2_ParsePlaque(QMsg& message)
+static void CLH2_ParsePlaque(QMsg& message)
 {
 	int index = message.ReadShort();
 
@@ -1142,7 +1244,7 @@ void CLH2_ParsePlaque(QMsg& message)
 	}
 }
 
-void CLHW_IndexedPrint(QMsg& message)
+static void CLHW_IndexedPrint(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i == PRINT_CHAT)
@@ -1165,7 +1267,7 @@ void CLHW_IndexedPrint(QMsg& message)
 	}
 }
 
-void CLHW_NamePrint(QMsg& message)
+static void CLHW_NamePrint(QMsg& message)
 {
 	int i = message.ReadByte();
 	int index = message.ReadByte();
@@ -1188,7 +1290,7 @@ void CLHW_NamePrint(QMsg& message)
 	}
 }
 
-void CLH2_ParseParticleExplosion(QMsg& message)
+static void CLH2_ParseParticleExplosion(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -1205,7 +1307,7 @@ static void CLH2_ParseSetViewTint(QMsg& message)
 	cl.h2_viewent.state.colormap = i;
 }
 
-void CLHw_ParseSetViewTint(QMsg& message)
+static void CLHw_ParseSetViewTint(QMsg& message)
 {
 	message.ReadByte();
 	//cl.h2_viewent.colorshade = i;
@@ -1482,7 +1584,7 @@ static void CLH2_ParseUpdateInv(QMsg& message)
 	}
 }
 
-void CLHW_ParseUpdateInv(QMsg& message)
+static void CLHW_ParseUpdateInv(QMsg& message)
 {
 	unsigned sc1 = 0;
 	unsigned sc2 = 0;
@@ -1737,12 +1839,12 @@ void CLHW_ParseUpdateInv(QMsg& message)
 	}
 }
 
-void CLHW_ParseUpdatePiv(QMsg& message)
+static void CLHW_ParseUpdatePiv(QMsg& message)
 {
 	cl.hw_PIV = message.ReadLong();
 }
 
-void CLHW_ParsePlayerSound(QMsg& message)
+static void CLHW_ParsePlayerSound(QMsg& message)
 {
 	byte entityNumber = message.ReadByte();
 	vec3_t pos;
@@ -1892,6 +1994,108 @@ static void CLH2_ParseServerInfo(QMsg& message)
 
 	// local state
 	R_EndRegistration();
+}
+
+static void CLHW_ParseServerData(QMsg& message)
+{
+	common->DPrintf("Serverdata packet received.\n");
+
+	Cbuf_Execute();			// make sure any stuffed commands are done
+	//
+	// wipe the clientActive_t struct
+	//
+	R_Shutdown(false);
+	CL_InitRenderer();
+
+	CL_ClearState();
+
+	// parse protocol version number
+	int protover = message.ReadLong();
+	if (protover != HWPROTOCOL_VERSION && protover != HWOLD_PROTOCOL_VERSION)
+	{
+		common->Error("Server returned version %i, not %i", protover, HWPROTOCOL_VERSION);
+	}
+
+	cl.servercount = message.ReadLong();
+
+	// game directory
+	const char* str = message.ReadString2();
+
+	bool cflag = false;
+	if (String::ICmp(fsqhw_gamedirfile, str))
+	{
+		// save current config
+		Com_WriteConfiguration();
+		cflag = true;
+	}
+
+	FS_SetGamedirQHW(str);
+
+	//ZOID--run the autoexec.cfg in the gamedir
+	//if it exists
+	if (cflag)
+	{
+		if (FS_FileExists("config.cfg"))
+		{
+			Cbuf_AddText("cl_warncmd 0\n");
+			Cbuf_AddText("exec config.cfg\n");
+			Cbuf_AddText("exec frontend.cfg\n");
+			Cbuf_AddText("cl_warncmd 1\n");
+		}
+	}
+
+	// parse player slot, high bit means spectator
+	cl.playernum = message.ReadByte();
+	if (cl.playernum & 128)
+	{
+		cl.qh_spectator = true;
+		cl.playernum &= ~128;
+	}
+	cl.viewentity = cl.playernum + 1;
+
+	// get the full level name
+	str = message.ReadString2();
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
+
+	// get the movevars
+	if (protover == HWPROTOCOL_VERSION)
+	{
+		movevars.gravity            = message.ReadFloat();
+		movevars.stopspeed          = message.ReadFloat();
+		movevars.maxspeed           = message.ReadFloat();
+		movevars.spectatormaxspeed  = message.ReadFloat();
+		movevars.accelerate         = message.ReadFloat();
+		movevars.airaccelerate      = message.ReadFloat();
+		movevars.wateraccelerate    = message.ReadFloat();
+		movevars.friction           = message.ReadFloat();
+		movevars.waterfriction      = message.ReadFloat();
+		movevars.entgravity         = message.ReadFloat();
+	}
+	else
+	{
+		movevars.gravity            = 800;
+		movevars.stopspeed          = 100;
+		movevars.maxspeed           = 320;
+		movevars.spectatormaxspeed  = 500;
+		movevars.accelerate         = 10;
+		movevars.airaccelerate      = 0.7;
+		movevars.wateraccelerate    = 10;
+		movevars.friction           = 6;
+		movevars.waterfriction      = 1;
+		movevars.entgravity         = 1.0;
+	}
+
+	// seperate the printfs so the server message can have a color
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_RED "%s" S_COLOR_WHITE "\n", str);
+
+	// ask for the sound list next
+	CL_AddReliableCommand(va("soundlist %i", cl.servercount));
+
+	// now waiting for downloads, etc
+	cls.state = CA_LOADING;
+	clhw_keyholder = -1;
+	clhw_doc = -1;
 }
 
 void CLH2_ParseServerMessage(QMsg& message)
@@ -2106,4 +2310,280 @@ void CLH2_ParseServerMessage(QMsg& message)
 			break;
 		}
 	}
+}
+
+void CLHW_ParseServerMessage(QMsg& message)
+{
+	CLH2_ClearProjectiles();
+	CLH2_ClearMissiles();
+	// This clears out the target field on each netupdate; it won't be drawn unless another update comes...
+	CLHW_ClearTarget();
+
+	if (cl_shownet->value == 1)
+	{
+		common->Printf("%i ",message.cursize);
+	}
+	else if (cl_shownet->value == 2)
+	{
+		common->Printf("------------------\n");
+	}
+
+	CLHW_ParseClientdata();
+
+	//
+	// parse the message
+	//
+	while (1)
+	{
+		if (message.badread)
+		{
+			common->Error("CLHW_ParseServerMessage: Bad server message");
+			break;
+		}
+
+		int cmd = message.ReadByte();
+
+		if (cmd == -1)
+		{
+			message.readcount++;	// so the EOM showner has the right value
+			SHOWNET(message, "END OF MESSAGE");
+			break;
+		}
+
+		SHOWNET(message, svchw_strings[cmd]);
+
+		// other commands
+		switch (cmd)
+		{
+		default:
+			common->Error("CLHW_ParseServerMessage: Illegible server message\n");
+			break;
+		case h2svc_nop:
+			break;
+		case h2svc_disconnect:
+			CLHW_ParseDisconnect();
+			break;
+		case h2svc_print:
+			CLHW_ParsePrint(message);
+			break;
+		case h2svc_centerprint:
+			CL_ParseCenterPrint(message);
+			break;
+		case h2svc_stufftext:
+			CL_ParseStuffText(message);
+			break;
+		case h2svc_damage:
+			VQH_ParseDamage(message);
+			break;
+		case hwsvc_serverdata:
+			CLHW_ParseServerData(message);
+			break;
+		case h2svc_setangle:
+			CLQH_ParseSetAngle(message);
+			break;
+		case h2svc_lightstyle:
+			CLQH_ParseLightStyle(message);
+			break;
+		case h2svc_sound:
+			CLHW_ParseStartSoundPacket(message);
+			break;
+		case hwsvc_sound_update_pos:
+			CLH2_ParseSoundUpdatePos(message);
+			break;
+		case h2svc_stopsound:
+			CLQH_ParseStopSound(message);
+			break;
+		case h2svc_updatefrags:
+			CLHW_UpdateFrags(message);
+			break;
+		case hwsvc_updateping:
+			CLHW_ParseUpdatePing(message);
+			break;
+		case hwsvc_updateentertime:
+			CLHW_ParseUpdateEnterTime(message);
+			break;
+		case hwsvc_updatepclass:
+			CLHW_ParseUpdateClass(message);
+			break;
+		case hwsvc_updatedminfo:
+			CLHW_ParseUpdateDMInfo(message);
+			break;
+		case hwsvc_updatesiegelosses:
+			CLHW_ParseUpdateSiegeLosses(message);
+			break;
+		case hwsvc_updatesiegeteam:
+			CLHW_ParseUpdateSiegeTeam(message);
+			break;
+		case hwsvc_updatesiegeinfo:
+			CLHW_ParseUpdateSiegeInfo(message);
+			break;
+		case hwsvc_haskey:
+			CLHW_ParseHasKey(message);
+			break;
+		case hwsvc_isdoc:
+			CLHW_ParseIsDoc(message);
+			break;
+		case hwsvc_nonehaskey:
+			CLHW_ParseNoneHasKey();
+			break;
+		case hwsvc_nodoc:
+			CLHW_ParseNoDoc();
+			break;
+		case h2svc_time:
+			CLHW_ParseTime(message);
+			break;
+		case h2svc_spawnbaseline:
+			CLH2_ParseSpawnBaseline(message);
+			break;
+		case h2svc_spawnstatic:
+			CLH2_ParseSpawnStatic(message);
+			break;
+		case h2svc_temp_entity:
+			CLHW_ParseTEnt(message);
+			break;
+		case h2svc_killedmonster:
+			CLQH_ParseKilledMonster();
+			break;
+		case h2svc_foundsecret:
+			CLQH_ParseFoundSecret();
+			break;
+		case h2svc_updatestat:
+			CLHW_ParseUpdateStat(message);
+			break;
+		case hwsvc_updatestatlong:
+			CLHW_ParseUpdateStatLong(message);
+			break;
+		case h2svc_spawnstaticsound:
+			CLQH_ParseStaticSound(message);
+			break;
+		case h2svc_cdtrack:
+			CLQHW_ParseCDTrack(message);
+			break;
+		case h2svc_intermission:
+			CLHW_ParseIntermission(message);
+			break;
+		case h2svc_finale:
+			CLQHW_ParseFinale(message);
+			break;
+		case h2svc_sellscreen:
+			CLQH_ParseSellScreen();
+			break;
+		case hwsvc_smallkick:
+			CLQHW_ParseSmallKick();
+			break;
+		case hwsvc_bigkick:
+			CLQHW_ParseBigKick();
+			break;
+		case hwsvc_muzzleflash:
+			CLHW_MuzzleFlash(message);
+			break;
+		case hwsvc_updateuserinfo:
+			CLHW_UpdateUserinfo(message);
+			break;
+		case hwsvc_download:
+			CLHW_ParseDownload(message);
+			break;
+		case hwsvc_playerinfo:
+			CLHW_ParsePlayerinfo(message);
+			break;
+		case hwsvc_playerskipped:
+			CLHW_SavePlayer(message);
+			break;
+		case hwsvc_nails:
+			CLHW_ParseNails(message);
+			break;
+		case hwsvc_packmissile:
+			CLHW_ParsePackMissiles(message);
+			break;
+		case hwsvc_chokecount:
+			CLHW_ParseChokeCount(message);
+			break;
+		case hwsvc_modellist:
+			CLHW_ParseModelList(message);
+			break;
+		case hwsvc_soundlist:
+			CLHW_ParseSoundList(message);
+			break;
+		case hwsvc_packetentities:
+			CLHW_ParsePacketEntities(message);
+			break;
+		case hwsvc_deltapacketentities:
+			CLHW_ParseDeltaPacketEntities(message);
+			break;
+		case hwsvc_maxspeed:
+			CLQHW_ParseMaxSpeed(message);
+			break;
+		case hwsvc_entgravity:
+			CLQHW_ParseEntGravity(message);
+			break;
+		case hwsvc_plaque:
+			CLH2_ParsePlaque(message);
+			break;
+		case hwsvc_indexed_print:
+			CLHW_IndexedPrint(message);
+			break;
+		case hwsvc_name_print:
+			CLHW_NamePrint(message);
+			break;
+		case hwsvc_particle_explosion:
+			CLH2_ParseParticleExplosion(message);
+			break;
+		case hwsvc_set_view_tint:
+			CLHw_ParseSetViewTint(message);
+			break;
+		case hwsvc_start_effect:
+			CLH2_ParseEffect(message);
+			break;
+		case hwsvc_end_effect:
+			CLH2_ParseEndEffect(message);
+			break;
+		case hwsvc_set_view_flags:
+			CLH2_ParseSetViewFlags(message);
+			break;
+		case hwsvc_clear_view_flags:
+			CLH2_ParseClearViewFlags(message);
+			break;
+		case hwsvc_update_inv:
+			CLHW_ParseUpdateInv(message);
+			break;
+		case h2svc_particle:
+			CLH2_ParseParticleEffect(message);
+			break;
+		case hwsvc_particle2:
+			CLHW_ParseParticleEffect2(message);
+			break;
+		case hwsvc_particle3:
+			CLHW_ParseParticleEffect3(message);
+			break;
+		case hwsvc_particle4:
+			CLHW_ParseParticleEffect4(message);
+			break;
+		case hwsvc_turn_effect:
+			CLHW_ParseTurnEffect(message);
+			break;
+		case hwsvc_update_effect:
+			CLHW_ParseReviseEffect(message);
+			break;
+		case hwsvc_multieffect:
+			CLHW_ParseMultiEffect(message);
+			break;
+		case hwsvc_midi_name:
+			CLH2_ParseMidiName(message);
+			break;
+		case hwsvc_raineffect:
+			CLH2_ParseRainEffect(message);
+			break;
+		case hwsvc_targetupdate:
+			CLHW_ParseTarget(message);
+			break;
+		case hwsvc_update_piv:
+			CLHW_ParseUpdatePiv(message);
+			break;
+		case hwsvc_player_sound:
+			CLHW_ParsePlayerSound(message);
+			break;
+		}
+	}
+
+	CLHW_SetSolidEntities();
 }

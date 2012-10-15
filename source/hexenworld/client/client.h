@@ -48,11 +48,6 @@ void CL_WriteToServer(hwusercmd_t* cmd);
 void CL_ReRecord_f(void);
 
 //
-// cl_parse.c
-//
-void CL_ParseServerMessage(QMsg& message);
-
-//
 // cl_pred.c
 //
 void CL_SendConnectPacket(void);

@@ -63,27 +63,8 @@ void CLQ1_ClearState();
 //
 //	Parse
 //
-void CLQW_ParseClientdata();
-void CLQW_ParseDisconnect();
-void CLQW_ParsePrint(QMsg& message);
-void CLQW_ParseStartSoundPacket(QMsg& message);
-void CLQW_ParseUpdateFrags(QMsg& message);
-void CLQW_ParseUpdatePing(QMsg& message);
-void CLQW_ParseUpdatePacketLossage(QMsg& message);
-void CLQW_ParseUpdateEnterTime(QMsg& message);
-void CLQW_ParseUpdateStat(QMsg& message);
-void CLQW_ParseUpdateStatLong(QMsg& message);
-void CLQW_ParseIntermission(QMsg& message);
-void CLQW_MuzzleFlash(QMsg& message);
-void CLQW_ParseUpdateUserinfo(QMsg& message);
-void CLQW_ParseSetInfo(QMsg& message);
-void CLQW_ParseServerInfo(QMsg& message);
-void CLQW_ParseChokeCount(QMsg& message);
-void CLQW_ParseDownload(QMsg& message);
-void CLQW_ParseModelList(QMsg& message);
-void CLQW_ParseSoundList(QMsg& message);
-void CLQW_ParseSetPause(QMsg& message);
 void CLQ1_ParseServerMessage(QMsg& message);
+void CLQW_ParseServerMessage(QMsg& message);
 
 //
 //	Projectiles

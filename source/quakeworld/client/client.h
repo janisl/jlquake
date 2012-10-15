@@ -51,8 +51,3 @@ void CL_WriteToServer(qwusercmd_t* cmd);
 // cl_demo.c
 //
 void CL_ReRecord_f(void);
-
-//
-// cl_parse.c
-//
-void CL_ParseServerMessage(void);
