@@ -10,7 +10,6 @@ add_executable(jlhwsv
 	server/sv_ccmds.cpp
 	server/sys_unix.cpp
 	client/common.cpp
-	client/net_chan.cpp
 )
 set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
 target_link_libraries(jlhwsv ${SERVERS_LIBS})
@@ -24,7 +23,6 @@ add_executable(jlhwcl
 	client/cl_input.cpp
 	client/cl_main.cpp
 	client/common.cpp
-	client/net_chan.cpp
 	client/sys_linux.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

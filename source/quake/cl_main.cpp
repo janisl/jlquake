@@ -183,6 +183,11 @@ int CL_ReadFromServer(void)
 	cl.qh_serverTimeFloat += host_frametime;
 	cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
 
+	// allocate space for network message buffer
+	QMsg net_message;
+	byte net_message_buf[MAX_MSGLEN_Q1];
+	net_message.InitOOB(net_message_buf, MAX_MSGLEN_Q1);
+
 	do
 	{
 		ret = CLQH_GetMessage(net_message);
@@ -237,6 +242,7 @@ void CL_Init(void)
 	Cmd_AddCommand("stop", CLQH_Stop_f);
 	Cmd_AddCommand("playdemo", CLQH_PlayDemo_f);
 	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
+	Cmd_AddCommand("slist", NET_Slist_f);
 }
 
 float* CL_GetSimOrg()

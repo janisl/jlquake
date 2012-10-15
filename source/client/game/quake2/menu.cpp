@@ -1396,7 +1396,7 @@ static char local_server_names[MAX_LOCAL_SERVERS][80];
 // network address
 static netadr_t local_server_netadr[MAX_LOCAL_SERVERS];
 
-void MQ2_AddToServerList(netadr_t adr, char* info)
+void MQ2_AddToServerList(netadr_t adr, const char* info)
 {
 	if (mq2_num_servers == MAX_LOCAL_SERVERS)
 	{

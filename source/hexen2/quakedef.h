@@ -45,7 +45,6 @@
 
 #include "common.h"
 #include "sys.h"
-#include "net.h"
 
 #ifndef DEDICATED
 #include "client.h"

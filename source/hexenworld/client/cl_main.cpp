@@ -720,20 +720,20 @@ CL_ConnectionlessPacket
 Responses to broadcasts, etc
 =================
 */
-void CL_ConnectionlessPacket(void)
+void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
 {
 	char* s;
 	int c;
 
-	net_message.BeginReadingOOB();
-	net_message.ReadLong();			// skip the -1
+	message.BeginReadingOOB();
+	message.ReadLong();			// skip the -1
 
-	c = net_message.ReadByte();
+	c = message.ReadByte();
 	if (!clc.demoplaying)
 	{
 		common->Printf("%s:\n", SOCK_AdrToString(net_from));
 	}
-	common->DPrintf("%s", net_message._data + 5);
+	common->DPrintf("%s", message._data + 5);
 	if (c == S2C_CONNECTION)
 	{
 		if (cls.state == CA_CONNECTED)
@@ -763,14 +763,14 @@ void CL_ConnectionlessPacket(void)
 		ShowWindow(GMainWindow, SW_RESTORE);
 		SetForegroundWindow(GMainWindow);
 #endif
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 		Cbuf_AddText(s);
 		return;
 	}
 	// print command from somewhere
 	if (c == A2C_PRINT)
 	{
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 		common->Printf(s);
 		return;
 	}
@@ -808,6 +808,11 @@ CL_ReadPackets
 */
 void CL_ReadPackets(void)
 {
+	netadr_t net_from;
+	QMsg net_message;
+	static byte net_message_buffer[MAX_MSGLEN_HW + 9];	// one more than msg + header
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
 	while (CLQHW_GetMessage(net_message, net_from))
 	{
 		//
@@ -815,7 +820,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket();
+			CL_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 
@@ -1242,7 +1247,6 @@ void Host_Init(quakeparms_t* parms)
 
 		NETQHW_Init(HWPORT_CLIENT);
 
-		NET_Init();
 		Netchan_Init(0);
 
 		CL_InitKeyCommands();

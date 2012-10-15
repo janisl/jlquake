@@ -32,16 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 extern Cvar* cl_autoskins;
 
-//=============================================================================
-
-extern netadr_t net_from;
-extern QMsg net_message;
-
-//=================================================
-
-#define BLASTER_PARTICLE_COLOR      0xe0
-// ========
-
 void CL_ParseConfigString(void);
 
 //=================================================

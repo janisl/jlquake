@@ -250,5 +250,5 @@ int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
 bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan);
-void NET_CommonInit();
+void NETQH_Init();
 void NETQH_Shutdown();

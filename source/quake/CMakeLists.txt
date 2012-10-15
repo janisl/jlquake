@@ -4,7 +4,6 @@ add_executable(jlquake
 	common.cpp
 	host.cpp
 	host_cmd.cpp
-	net_main.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
@@ -14,7 +13,6 @@ add_executable(jlquakeded
 	common.cpp
 	host.cpp
 	host_cmd.cpp
-	net_main.cpp
 	sys_linux.cpp
 )
 set_target_properties(jlquakeded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")

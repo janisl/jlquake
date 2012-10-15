@@ -510,7 +510,7 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_InsertText("exec quake.rc\n");
 		Cbuf_Execute();
 
-		NET_Init();
+		NETQH_Init();
 
 #ifndef DEDICATED
 		if (!com_dedicated->integer)

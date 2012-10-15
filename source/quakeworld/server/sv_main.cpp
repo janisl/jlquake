@@ -212,8 +212,6 @@ void COM_InitServer(quakeparms_t* parms)
 
 		COM_Init();
 
-		NET_Init();
-
 		SV_InitOperatorCommands();
 
 		SV_Init();

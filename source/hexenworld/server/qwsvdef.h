@@ -10,8 +10,6 @@
 #include "common.h"
 #include "sys.h"
 
-#include "net.h"
-
 #include "server.h"
 
 //=============================================================================

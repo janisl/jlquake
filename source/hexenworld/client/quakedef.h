@@ -12,7 +12,6 @@
 
 #include "common.h"
 #include "sys.h"
-#include "net.h"
 #include "client.h"
 
 //=============================================================================

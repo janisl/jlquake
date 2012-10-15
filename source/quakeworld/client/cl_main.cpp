@@ -804,15 +804,15 @@ CL_ConnectionlessPacket
 Responses to broadcasts, etc
 =================
 */
-void CL_ConnectionlessPacket(void)
+void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
 {
 	char* s;
 	int c;
 
-	net_message.BeginReadingOOB();
-	net_message.ReadLong();			// skip the -1
+	message.BeginReadingOOB();
+	message.ReadLong();			// skip the -1
 
-	c = net_message.ReadByte();
+	c = message.ReadByte();
 	if (!clc.demoplaying)
 	{
 		common->Printf("%s: ", SOCK_AdrToString(net_from));
@@ -853,12 +853,12 @@ void CL_ConnectionlessPacket(void)
 		ShowWindow(GMainWindow, SW_RESTORE);
 		SetForegroundWindow(GMainWindow);
 #endif
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 
 		String::NCpy(cmdtext, s, sizeof(cmdtext) - 1);
 		cmdtext[sizeof(cmdtext) - 1] = 0;
 
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 
 		while (*s && String::IsSpace(*s))
 			s++;
@@ -895,7 +895,7 @@ void CL_ConnectionlessPacket(void)
 	{
 		common->Printf("print\n");
 
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 		Con_ConsolePrint(s);
 		return;
 	}
@@ -922,7 +922,7 @@ void CL_ConnectionlessPacket(void)
 	{
 		common->Printf("challenge\n");
 
-		s = const_cast<char*>(net_message.ReadString2());
+		s = const_cast<char*>(message.ReadString2());
 		cls.challenge = String::Atoi(s);
 		CL_SendConnectPacket();
 		return;
@@ -949,6 +949,11 @@ CL_ReadPackets
 */
 void CL_ReadPackets(void)
 {
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_QW * 2];	// one more than msg + header
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
 	while (CLQHW_GetMessage(net_message, net_from))
 	{
 		//
@@ -956,7 +961,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket();
+			CL_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 
@@ -1390,7 +1395,6 @@ void Host_Init(quakeparms_t* parms)
 		COM_Init();
 
 		NETQHW_Init(QWPORT_CLIENT);
-		NET_Init();
 		// pick a port value that should be nice and random
 		Netchan_Init(Com_Milliseconds() & 0xffff);
 

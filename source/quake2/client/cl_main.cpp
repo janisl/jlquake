@@ -500,14 +500,12 @@ CL_ParseStatusMessage
 Handle a reply from a ping
 =================
 */
-void CL_ParseStatusMessage(void)
+void CL_ParseStatusMessage(QMsg& message, netadr_t& from)
 {
-	const char* s;
-
-	s = net_message.ReadString2();
+	const char* s = message.ReadString2();
 
 	common->Printf("%s\n", s);
-	MQ2_AddToServerList(net_from, const_cast<char*>(s));
+	MQ2_AddToServerList(from, s);
 }
 
 
@@ -544,7 +542,7 @@ CL_ConnectionlessPacket
 Responses to broadcasts, etc
 =================
 */
-void CL_ConnectionlessPacket(void)
+void CL_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
 {
 	char* s;
 	char* c;
@@ -578,7 +576,7 @@ void CL_ConnectionlessPacket(void)
 	// server responding to a status broadcast
 	if (!String::Cmp(c, "info"))
 	{
-		CL_ParseStatusMessage();
+		CL_ParseStatusMessage(net_message, net_from);
 		return;
 	}
 
@@ -640,6 +638,10 @@ when they overflow
 */
 void CL_DumpPackets(void)
 {
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_Q2];
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
 	{
 		common->Printf("dumnping a packet\n");
@@ -653,6 +655,11 @@ CL_ReadPackets
 */
 void CL_ReadPackets(void)
 {
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_Q2];
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
 	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
 	{
 //	common->Printf ("packet\n");
@@ -661,7 +668,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket();
+			CL_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 
@@ -1299,8 +1306,6 @@ void CL_Init(void)
 #endif
 
 	V_Init();
-
-	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
 	UI_Init();
 

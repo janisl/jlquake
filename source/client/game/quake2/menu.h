@@ -16,7 +16,7 @@
 
 void MQ2_Init();
 void MQ2_ForceMenuOff();
-void MQ2_AddToServerList(netadr_t adr, char* info);
+void MQ2_AddToServerList(netadr_t adr, const char* info);
 void MQ2_Menu_Main_f();
 void MQ2_Draw();
 void MQ2_Keydown(int key);

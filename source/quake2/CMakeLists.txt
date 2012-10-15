@@ -4,7 +4,6 @@ add_executable(jlquake2
 	client/cl_pred.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 	qcommon/q_shared.cpp
 	linux/sys_linux.cpp
 )
@@ -14,7 +13,6 @@ target_link_libraries(jlquake2 ${CLIENTS_LIBS})
 add_executable(jlquake2ded
 	qcommon/common.cpp
 	qcommon/files.cpp
-	qcommon/net_chan.cpp
 	qcommon/q_shared.cpp
 	linux/sys_linux.cpp
 	null/cl_null.cpp

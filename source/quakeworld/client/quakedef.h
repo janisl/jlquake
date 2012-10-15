@@ -32,8 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "common.h"
 #include "sys.h"
-#include "net.h"
-#include "protocol.h"
 #include "client.h"
 
 #ifndef max

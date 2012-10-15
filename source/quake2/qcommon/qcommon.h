@@ -80,22 +80,6 @@ void COM_Init(void);
 /*
 ==============================================================
 
-NET
-
-==============================================================
-*/
-
-#define OLD_AVG     0.99		// total = oldtotal*OLD_AVG + new*(1-OLD_AVG)
-
-#define MAX_LATENT  32
-
-extern netadr_t net_from;
-extern QMsg net_message;
-extern byte net_message_buffer[MAX_MSGLEN_Q2];
-
-/*
-==============================================================
-
 FILESYSTEM
 
 ==============================================================

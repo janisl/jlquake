@@ -195,8 +195,6 @@ void COM_InitServer(quakeparms_t* parms)
 
 		ComH2_LoadStrings();
 
-		NET_Init();
-
 		SV_InitOperatorCommands();
 
 		SV_Init();

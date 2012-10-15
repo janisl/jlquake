@@ -1118,7 +1118,7 @@ static void NET_Port_f()
 	}
 }
 
-void NET_CommonInit()
+void NETQH_Init()
 {
 	net_numsockets = SVQH_GetMaxClientsLimit();
 	DEFAULTnet_hostport = GGameType & GAME_Hexen2 ? 26900 : 26000;
