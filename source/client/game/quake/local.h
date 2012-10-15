@@ -63,30 +63,17 @@ void CLQ1_ClearState();
 //
 //	Parse
 //
-void CLQ1_ParseClientdata(QMsg& message);
 void CLQW_ParseClientdata();
-void CLQ1_ParseVersion(QMsg& message);
 void CLQW_ParseDisconnect();
-void CLQ1_ParsePrint(QMsg& message);
 void CLQW_ParsePrint(QMsg& message);
-void CLQ1_ParseStartSoundPacket(QMsg& message);
 void CLQW_ParseStartSoundPacket(QMsg& message);
-void CLQ1_UpdateName(QMsg& message);
-void CLQ1_ParseUpdateFrags(QMsg& message);
 void CLQW_ParseUpdateFrags(QMsg& message);
-void CLQ1_ParseUpdateColours(QMsg& message);
 void CLQW_ParseUpdatePing(QMsg& message);
 void CLQW_ParseUpdatePacketLossage(QMsg& message);
 void CLQW_ParseUpdateEnterTime(QMsg& message);
-void CLQ1_ParseParticleEffect(QMsg& message);
-void CLQ1_ParseSignonNum(QMsg& message);
 void CLQW_ParseUpdateStat(QMsg& message);
 void CLQW_ParseUpdateStatLong(QMsg& message);
-void CLQ1_ParseCDTrack(QMsg& message);
-void CLQ1_ParseIntermission();
 void CLQW_ParseIntermission(QMsg& message);
-void CLQ1_ParseFinale(QMsg& message);
-void CLQ1_ParseCutscene(QMsg& message);
 void CLQW_MuzzleFlash(QMsg& message);
 void CLQW_ParseUpdateUserinfo(QMsg& message);
 void CLQW_ParseSetInfo(QMsg& message);
@@ -96,6 +83,7 @@ void CLQW_ParseDownload(QMsg& message);
 void CLQW_ParseModelList(QMsg& message);
 void CLQW_ParseSoundList(QMsg& message);
 void CLQW_ParseSetPause(QMsg& message);
+void CLQ1_ParseServerMessage(QMsg& message);
 
 //
 //	Projectiles

@@ -196,7 +196,7 @@ int CL_ReadFromServer(void)
 		}
 
 		cl.qh_last_received_message = realtime;
-		CL_ParseServerMessage(net_message);
+		CLQ1_ParseServerMessage(net_message);
 	}
 	while (ret && cls.state == CA_ACTIVE);
 

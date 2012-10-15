@@ -183,23 +183,13 @@ void CLH2_ClearState();
 //
 //	Parse
 //
-void CLH2_ParseClientdata(QMsg& message);
 void CLHW_ParseClientdata();
-void CLH2_ParseVersion(QMsg& message);
 void CLHW_ParseDisconnect();
-void CLH2_ParsePrint(QMsg& message);
 void CLHW_ParsePrint(QMsg& message);
-void CLH2_ParseSetAngleInterpolate(QMsg& message);
-void CLH2_ParseStartSoundPacket(QMsg& message);
 void CLHW_ParseStartSoundPacket(QMsg& message);
 void CLH2_ParseSoundUpdatePos(QMsg& message);
-void CLH2_ParseUpdateName(QMsg& message);
-void CLH2_ParseUpdateClass(QMsg& message);
 void CLHW_ParseUpdateClass(QMsg& message);
-void CLH2_UpdateFrags(QMsg& message);
 void CLHW_UpdateFrags(QMsg& message);
-void CLH2_ParseUpdateKingOfHill(QMsg& message);
-void CLH2_ParseUpdateColors(QMsg& message);
 void CLHW_ParseUpdatePing(QMsg& message);
 void CLHW_ParseUpdateEnterTime(QMsg& message);
 void CLHW_ParseUpdateDMInfo(QMsg& message);
@@ -212,20 +202,14 @@ void CLHW_ParseNoneHasKey();
 void CLHW_ParseNoDoc();
 void CLHW_ParseTime(QMsg& message);
 void CLH2_ParseParticleEffect(QMsg& message);
-void CLH2_ParseParticleEffect2(QMsg& message);
 void CLHW_ParseParticleEffect2(QMsg& message);
-void CLH2_ParseParticleEffect3(QMsg& message);
 void CLHW_ParseParticleEffect3(QMsg& message);
-void CLH2_ParseParticleEffect4(QMsg& message);
 void CLHW_ParseParticleEffect4(QMsg& message);
 void CLH2_ParseRainEffect(QMsg& message);
 void CLH2_ParseSignonNum(QMsg& message);
 void CLHW_ParseUpdateStat(QMsg& message);
 void CLHW_ParseUpdateStatLong(QMsg& message);
-void CLH2_ParseStaticSound(QMsg& message);
-void CLH2_ParseCDTrack(QMsg& message);
 void CLH2_ParseMidiName(QMsg& message);
-void CLH2_ParseIntermission(QMsg& message);
 void CLHW_ParseIntermission(QMsg& message);
 void CLHW_MuzzleFlash(QMsg& message);
 void CLHW_UpdateUserinfo(QMsg& message);
@@ -239,12 +223,11 @@ void CLH2_ParsePlaque(QMsg& message);
 void CLHW_IndexedPrint(QMsg& message);
 void CLHW_NamePrint(QMsg& message);
 void CLH2_ParseParticleExplosion(QMsg& message);
-void CLH2_ParseSetViewTint(QMsg& message);
 void CLHw_ParseSetViewTint(QMsg& message);
-void CLH2_ParseUpdateInv(QMsg& message);
 void CLHW_ParseUpdateInv(QMsg& message);
 void CLHW_ParseUpdatePiv(QMsg& message);
 void CLHW_ParsePlayerSound(QMsg& message);
+void CLH2_ParseServerMessage(QMsg& message);
 
 //
 //	Projectiles

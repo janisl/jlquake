@@ -162,7 +162,7 @@ void CLQH_ParseFoundSecret()
 	cl.qh_stats[Q1STAT_SECRETS]++;
 }
 
-void CLQH_UpdateStat(QMsg& message)
+void CLQH_ParseUpdateStat(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i < 0 || i >= MAX_CL_STATS)

@@ -25,7 +25,7 @@ void CLQH_ParseStopSound(QMsg& message);
 void CLQH_ParseSetPause(QMsg& message);
 void CLQH_ParseKilledMonster();
 void CLQH_ParseFoundSecret();
-void CLQH_UpdateStat(QMsg& message);
+void CLQH_ParseUpdateStat(QMsg& message);
 void CLQH_ParseStaticSound(QMsg& message);
 void CLQHW_ParseCDTrack(QMsg& message);
 void CLQH_ParseSellScreen();

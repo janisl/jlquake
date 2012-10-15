@@ -27,8 +27,3 @@ void CL_NextDemo(void);
 void CL_SendCmd(void);
 
 int  CL_ReadFromServer(void);
-
-//
-// cl_parse.c
-//
-void CL_ParseServerMessage(QMsg& message);

@@ -16,10 +16,59 @@
 
 #include "../../client.h"
 #include "local.h"
+#include "../parse.h"
 #include "../quake_hexen2/parse.h"
+#include "../quake_hexen2/connection.h"
+#include "../quake_hexen2/view.h"
+
+static const char* svcq1_strings[] =
+{
+	"q1svc_bad",
+	"q1svc_nop",
+	"q1svc_disconnect",
+	"q1svc_updatestat",
+	"q1svc_version",		// [long] server version
+	"q1svc_setview",		// [short] entity number
+	"q1svc_sound",			// <see code>
+	"q1svc_time",			// [float] server time
+	"q1svc_print",			// [string] null terminated string
+	"q1svc_stufftext",		// [string] stuffed into client's console buffer
+	// the string should be \n terminated
+	"q1svc_setangle",		// [vec3] set the view angle to this absolute value
+
+	"q1svc_serverinfo",		// [long] version
+	// [string] signon string
+	// [string]..[0]model cache [string]...[0]sounds cache
+	// [string]..[0]item cache
+	"q1svc_lightstyle",		// [byte] [string]
+	"q1svc_updatename",		// [byte] [string]
+	"q1svc_updatefrags",	// [byte] [short]
+	"q1svc_clientdata",		// <shortbits + data>
+	"q1svc_stopsound",		// <see code>
+	"q1svc_updatecolors",	// [byte] [byte]
+	"q1svc_particle",		// [vec3] <variable>
+	"q1svc_damage",			// [byte] impact [byte] blood [vec3] from
+
+	"q1svc_spawnstatic",
+	"OBSOLETE svc_spawnbinary",
+	"q1svc_spawnbaseline",
+
+	"q1svc_temp_entity",		// <variable>
+	"q1svc_setpause",
+	"q1svc_signonnum",
+	"q1svc_centerprint",
+	"q1svc_killedmonster",
+	"q1svc_foundsecret",
+	"q1svc_spawnstaticsound",
+	"q1svc_intermission",
+	"q1svc_finale",			// [string] music [string] text
+	"q1svc_cdtrack",			// [byte] track [byte] looptrack
+	"q1svc_sellscreen",
+	"q1svc_cutscene"
+};
 
 //	Server information pertaining to this client only
-void CLQ1_ParseClientdata(QMsg& message)
+static void CLQ1_ParseClientdata(QMsg& message)
 {
 	int bits = message.ReadShort();
 
@@ -184,7 +233,7 @@ void CLQW_ParseClientdata()
 	}
 }
 
-void CLQ1_ParseVersion(QMsg& message)
+static void CLQ1_ParseVersion(QMsg& message)
 {
 	int i = message.ReadLong();
 	if (i != Q1PROTOCOL_VERSION)
@@ -206,7 +255,7 @@ void CLQW_ParseDisconnect()
 	}
 }
 
-void CLQ1_ParsePrint(QMsg& message)
+static void CLQ1_ParsePrint(QMsg& message)
 {
 	const char* txt = message.ReadString2();
 
@@ -240,7 +289,7 @@ void CLQW_ParsePrint(QMsg& message)
 	}
 }
 
-void CLQ1_ParseStartSoundPacket(QMsg& message)
+static void CLQ1_ParseStartSoundPacket(QMsg& message)
 {
 	CLQH_ParseStartSoundPacket(message, 0);
 }
@@ -250,7 +299,7 @@ void CLQW_ParseStartSoundPacket(QMsg& message)
 	CLQHW_ParseStartSoundPacket(message, 64.0);
 }
 
-void CLQ1_UpdateName(QMsg& message)
+static void CLQ1_UpdateName(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= cl.qh_maxclients)
@@ -260,7 +309,7 @@ void CLQ1_UpdateName(QMsg& message)
 	String::Cpy(cl.q1_players[i].name, message.ReadString2());
 }
 
-void CLQ1_ParseUpdateFrags(QMsg& message)
+static void CLQ1_ParseUpdateFrags(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= cl.qh_maxclients)
@@ -280,7 +329,7 @@ void CLQW_ParseUpdateFrags(QMsg& message)
 	cl.q1_players[i].frags = message.ReadShort();
 }
 
-void CLQ1_ParseUpdateColours(QMsg& message)
+static void CLQ1_ParseUpdateColours(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i >= cl.qh_maxclients)
@@ -325,7 +374,7 @@ void CLQW_ParseUpdateEnterTime(QMsg& message)
 	cl.q1_players[i].entertime = cls.realtime * 0.001 - message.ReadFloat();
 }
 
-void CLQ1_ParseParticleEffect(QMsg& message)
+static void CLQ1_ParseParticleEffect(QMsg& message)
 {
 	vec3_t org;
 	message.ReadPos(org);
@@ -348,7 +397,7 @@ void CLQ1_ParseParticleEffect(QMsg& message)
 	}
 }
 
-void CLQ1_ParseSignonNum(QMsg& message)
+static void CLQ1_ParseSignonNum(QMsg& message)
 {
 	int i = message.ReadByte();
 	if (i <= clc.qh_signon)
@@ -395,7 +444,7 @@ void CLQW_ParseUpdateStatLong(QMsg& message)
 	CLQW_SetStat(i, j);
 }
 
-void CLQ1_ParseCDTrack(QMsg& message)
+static void CLQ1_ParseCDTrack(QMsg& message)
 {
 	byte cdtrack = message.ReadByte();
 	message.ReadByte();	//	looptrack
@@ -410,7 +459,7 @@ void CLQ1_ParseCDTrack(QMsg& message)
 	}
 }
 
-void CLQ1_ParseIntermission()
+static void CLQ1_ParseIntermission()
 {
 	cl.qh_intermission = 1;
 	cl.qh_completed_time = cl.qh_serverTimeFloat;
@@ -428,14 +477,14 @@ void CLQW_ParseIntermission(QMsg& message)
 	VectorCopy(vec3_origin, cl.qh_simvel);
 }
 
-void CLQ1_ParseFinale(QMsg& message)
+static void CLQ1_ParseFinale(QMsg& message)
 {
 	cl.qh_intermission = 2;
 	cl.qh_completed_time = cl.qh_serverTimeFloat;
 	SCR_CenterPrint(message.ReadString2());
 }
 
-void CLQ1_ParseCutscene(QMsg& message)
+static void CLQ1_ParseCutscene(QMsg& message)
 {
 	cl.qh_intermission = 3;
 	cl.qh_completed_time = cl.qh_serverTimeFloat;
@@ -876,5 +925,267 @@ void CLQW_ParseSetPause(QMsg& message)
 	else
 	{
 		CDAudio_Resume();
+	}
+}
+
+static void CLQ1_ParseServerInfo(QMsg& message)
+{
+	common->DPrintf("Serverinfo packet received.\n");
+
+	R_Shutdown(false);
+	CL_InitRenderer();
+
+	clc.qh_signon = 0;
+
+	//
+	// wipe the clientActive_t struct
+	//
+	CL_ClearState();
+
+	SCR_ClearCenterString();
+
+	// parse protocol version number
+	int i = message.ReadLong();
+	if (i != Q1PROTOCOL_VERSION)
+	{
+		common->Printf("Server returned version %i, not %i", i, Q1PROTOCOL_VERSION);
+		return;
+	}
+
+	// parse maxclients
+	cl.qh_maxclients = message.ReadByte();
+	if (cl.qh_maxclients < 1 || cl.qh_maxclients > MAX_CLIENTS_QH)
+	{
+		common->Printf("Bad maxclients (%u) from server\n", cl.qh_maxclients);
+		return;
+	}
+
+	// parse gametype
+	cl.qh_gametype = message.ReadByte();
+
+	// parse signon message
+	const char* str = message.ReadString2();
+	String::NCpy(cl.qh_levelname, str, sizeof(cl.qh_levelname) - 1);
+
+	// seperate the printfs so the server message can have a color
+	common->Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
+	common->Printf(S_COLOR_ORANGE "%s" S_COLOR_WHITE "\n", str);
+
+	// precache models
+	Com_Memset(cl.model_draw, 0, sizeof(cl.model_draw));
+	char model_precache[MAX_MODELS_Q1][MAX_QPATH];
+	int nummodels;
+	for (nummodels = 1;; nummodels++)
+	{
+		str = message.ReadString2();
+		if (!str[0])
+		{
+			break;
+		}
+		if (nummodels == MAX_MODELS_Q1)
+		{
+			common->Printf("Server sent too many model precaches\n");
+			return;
+		}
+		String::Cpy(model_precache[nummodels], str);
+	}
+
+	// precache sounds
+	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
+	char sound_precache[MAX_SOUNDS_Q1][MAX_QPATH];
+	int numsounds;
+	for (numsounds = 1;; numsounds++)
+	{
+		str = message.ReadString2();
+		if (!str[0])
+		{
+			break;
+		}
+		if (numsounds == MAX_SOUNDS_Q1)
+		{
+			common->Printf("Server sent too many sound precaches\n");
+			return;
+		}
+		String::Cpy(sound_precache[numsounds], str);
+	}
+
+	//
+	// now we try to load everything else until a cache allocation fails
+	//
+
+	CM_LoadMap(model_precache[1], true, NULL);
+	R_LoadWorld(model_precache[1]);
+	CLQH_KeepaliveMessage();
+
+	for (i = 2; i < nummodels; i++)
+	{
+		cl.model_draw[i] = R_RegisterModel(model_precache[i]);
+		if (cl.model_draw[i] == 0)
+		{
+			common->Printf("Model %s not found\n", model_precache[i]);
+			return;
+		}
+		CLQH_KeepaliveMessage();
+	}
+
+	S_BeginRegistration();
+	for (i = 1; i < numsounds; i++)
+	{
+		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
+		CLQH_KeepaliveMessage();
+	}
+	S_EndRegistration();
+
+	// local state
+	R_EndRegistration();
+}
+
+void CLQ1_ParseServerMessage(QMsg& message)
+{
+	if (cl_shownet->value == 1)
+	{
+		common->Printf("%i ", message.cursize);
+	}
+	else if (cl_shownet->value == 2)
+	{
+		common->Printf("------------------\n");
+	}
+
+	cl.qh_onground = false;	// unless the server says otherwise
+	//
+	// parse the message
+	//
+	message.BeginReadingOOB();
+
+	while (1)
+	{
+		if (message.badread)
+		{
+			common->Error("CLQ1_ParseServerMessage: Bad server message");
+		}
+
+		int cmd = message.ReadByte();
+
+		if (cmd == -1)
+		{
+			SHOWNET(message, "END OF MESSAGE");
+			return;		// end of message
+		}
+
+		// if the high bit of the command byte is set, it is a fast update
+		if (cmd & Q1U_SIGNAL)
+		{
+			SHOWNET(message, "fast update");
+			CLQ1_ParseUpdate(message, cmd & 127);
+			continue;
+		}
+
+		SHOWNET(message, svcq1_strings[cmd]);
+
+		// other commands
+		switch (cmd)
+		{
+		default:
+			common->Error("CLQ1_ParseServerMessage: Illegible server message\n");
+			break;
+		case q1svc_nop:
+			break;
+		case q1svc_time:
+			CLQH_ParseTime(message);
+			break;
+		case q1svc_clientdata:
+			CLQ1_ParseClientdata(message);
+			break;
+		case q1svc_version:
+			CLQ1_ParseVersion(message);
+			break;
+		case q1svc_disconnect:
+			CLQH_ParseDisconnect();
+			break;
+		case q1svc_print:
+			CLQ1_ParsePrint(message);
+			break;
+		case q1svc_centerprint:
+			CL_ParseCenterPrint(message);
+			break;
+		case q1svc_stufftext:
+			CL_ParseStuffText(message);
+			break;
+		case q1svc_damage:
+			VQH_ParseDamage(message);
+			break;
+		case q1svc_serverinfo:
+			CLQ1_ParseServerInfo(message);
+			break;
+		case q1svc_setangle:
+			CLQH_ParseSetAngle(message);
+			break;
+		case q1svc_setview:
+			CLQH_ParseSetView(message);
+			break;
+		case q1svc_lightstyle:
+			CLQH_ParseLightStyle(message);
+			break;
+		case q1svc_sound:
+			CLQ1_ParseStartSoundPacket(message);
+			break;
+		case q1svc_stopsound:
+			CLQH_ParseStopSound(message);
+			break;
+		case q1svc_updatename:
+			CLQ1_UpdateName(message);
+			break;
+		case q1svc_updatefrags:
+			CLQ1_ParseUpdateFrags(message);
+			break;
+		case q1svc_updatecolors:
+			CLQ1_ParseUpdateColours(message);
+			break;
+		case q1svc_particle:
+			CLQ1_ParseParticleEffect(message);
+			break;
+		case q1svc_spawnbaseline:
+			CLQ1_ParseSpawnBaseline(message);
+			break;
+		case q1svc_spawnstatic:
+			CLQ1_ParseSpawnStatic(message);
+			break;
+		case q1svc_temp_entity:
+			CLQ1_ParseTEnt(message);
+			break;
+		case q1svc_setpause:
+			CLQH_ParseSetPause(message);
+			break;
+		case q1svc_signonnum:
+			CLQ1_ParseSignonNum(message);
+			break;
+		case q1svc_killedmonster:
+			CLQH_ParseKilledMonster();
+			break;
+		case q1svc_foundsecret:
+			CLQH_ParseFoundSecret();
+			break;
+		case q1svc_updatestat:
+			CLQH_ParseUpdateStat(message);
+			break;
+		case q1svc_spawnstaticsound:
+			CLQH_ParseStaticSound(message);
+			break;
+		case q1svc_cdtrack:
+			CLQ1_ParseCDTrack(message);
+			break;
+		case q1svc_intermission:
+			CLQ1_ParseIntermission();
+			break;
+		case q1svc_finale:
+			CLQ1_ParseFinale(message);
+			break;
+		case q1svc_cutscene:
+			CLQ1_ParseCutscene(message);
+			break;
+		case q1svc_sellscreen:
+			CLQH_ParseSellScreen();
+			break;
+		}
 	}
 }

@@ -32,6 +32,7 @@ set(CLIENT_FILES
 	game/quake/skin.cpp
 	game/quake/status_bar.cpp
 	game/quake/temporary_entities.cpp
+	game/quake_hexen2/connection.cpp
 	game/quake_hexen2/demo.cpp
 	game/quake_hexen2/main.cpp
 	game/quake_hexen2/menu.cpp
