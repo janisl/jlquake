@@ -32,9 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cvars
 //
 extern Cvar* cl_timegraph;
-extern Cvar* cl_maxpackets;
-extern Cvar* cl_packetdup;
-extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 
@@ -66,16 +63,7 @@ void CL_NextDownload(void);
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
-
-//
-// cl_input
-//
-void CL_SendCmd(void);
 void CL_ReadPackets(void);
-
-void CL_WritePacket(void);
-
-void CL_VerifyCode(void);
 
 void CL_ParseServerMessage(QMsg* msg);
 

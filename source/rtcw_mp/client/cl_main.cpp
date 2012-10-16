@@ -44,13 +44,10 @@ Cvar* rcon_client_password;
 Cvar* rconAddress;
 
 Cvar* cl_timeout;
-Cvar* cl_maxpackets;
-Cvar* cl_packetdup;
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
 Cvar* cl_visibleClients;		// DHM - Nerve
-Cvar* cl_showSend;
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
 
@@ -404,9 +401,9 @@ void CL_Disconnect(qboolean showMainMenu)
 	if (cls.state >= CA_CONNECTED)
 	{
 		CL_AddReliableCommand("disconnect");
-		CL_WritePacket();
-		CL_WritePacket();
-		CL_WritePacket();
+		CLT3_WritePacket();
+		CLT3_WritePacket();
+		CLT3_WritePacket();
 	}
 
 	CL_ClearState();
@@ -1014,9 +1011,9 @@ void CL_DownloadsComplete(void)
 	// set pure checksums
 	CL_SendPureChecksums();
 
-	CL_WritePacket();
-	CL_WritePacket();
-	CL_WritePacket();
+	CLT3_WritePacket();
+	CLT3_WritePacket();
+	CLT3_WritePacket();
 }
 
 /*
@@ -1626,7 +1623,7 @@ void CL_Frame(int msec)
 	CL_CheckTimeout();
 
 	// send intentions now
-	CL_SendCmd();
+	CLT3_SendCmd();
 
 	// resend a connection request if necessary
 	CL_CheckForResend();
@@ -1958,7 +1955,7 @@ void CL_Init(void)
 	clwm_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
 	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
 	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
-	cl_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
+	clt3_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
 	clt3_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
 	rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
@@ -1970,8 +1967,8 @@ void CL_Init(void)
 
 	rconAddress = Cvar_Get("rconAddress", "", 0);
 
-	cl_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
-	cl_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
+	clt3_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
+	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
 
 	cl_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
 

@@ -39,10 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 // cvars
 //
 extern Cvar* cl_timegraph;
-extern Cvar* cl_maxpackets;
-extern Cvar* cl_packetdup;
 extern Cvar* cl_visibleClients;				// DHM - Nerve
-extern Cvar* cl_showSend;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 
@@ -74,20 +71,7 @@ void CL_NextDownload(void);
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
-//
-// cl_input
-//
-void CL_SendCmd(void);
 void CL_ReadPackets(void);
-
-void CL_WritePacket(void);
-void IN_Notebook(void);
-
-//----(SA) salute
-void IN_Salute(void);
-//----(SA)
-
-void CL_VerifyCode(void);
 
 //
 // cl_parse.c

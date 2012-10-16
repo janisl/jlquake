@@ -27,6 +27,9 @@ Cvar* clt3_showTimeDelta;
 Cvar* clt3_activeAction;
 Cvar* clwm_shownuments;			// DHM - Nerve
 Cvar* clet_autorecord;
+Cvar* clt3_maxpackets;
+Cvar* clt3_showSend;
+Cvar* clt3_packetdup;
 
 void CLET_PurgeCache()
 {

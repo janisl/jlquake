@@ -377,8 +377,8 @@ void CL_ParseDownload(QMsg* msg)
 		// loading right away.  If we take a while to load, the server is happily trying
 		// to send us that last block over and over.
 		// Write it twice to help make sure we acknowledge the download
-		CL_WritePacket();
-		CL_WritePacket();
+		CLT3_WritePacket();
+		CLT3_WritePacket();
 
 		// get another file if needed
 		CL_NextDownload();
