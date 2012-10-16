@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../server/public.h"
+#include "../client/game/quake_hexen2/connection.h"
 
 /*
 
@@ -334,7 +335,7 @@ void _Host_Frame(float time)
 // if running the server locally, make intentions now
 		if (SV_IsServerActive())
 		{
-			CL_SendCmd();
+			CLQH_SendCmd();
 		}
 #endif
 
@@ -357,7 +358,7 @@ void _Host_Frame(float time)
 // the incoming messages have been read
 		if (!SV_IsServerActive())
 		{
-			CL_SendCmd();
+			CLQH_SendCmd();
 		}
 #endif
 

@@ -17,6 +17,27 @@
 #include "../client.h"
 #include "../game/wolfmp/local.h"
 
+// builds an intended movement command to send to the server
+/*
+===============================================================================
+
+KEY BUTTONS
+
+Continuous button event tracking is complicated by the fact that two different
+input sources (say, mouse button 1 and the control key) can both press the
+same button, but the button should only be released when both of the
+pressing key have been released.
+
+When a key event issues a button command (+forward, +attack, etc), it appends
+its key number as argv(1) so it can be matched up with the release.
+
+argv(2) will be set to the time the event happened, which allows exact
+control even at low framerates when the down and up events may both get qued
+at the same time.
+
+===============================================================================
+*/
+
 struct kbutton_t
 {
 	int down[2];		// key nums holding it down

@@ -77,3 +77,111 @@ void CLQH_KeepaliveMessage()
 	NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
 	clc.netchan.message.Clear();
 }
+
+static void CLQH_SendMove(in_usercmd_t* cmd)
+{
+	cl.qh_cmd = *cmd;
+
+	//
+	// deliver the message
+	//
+	if (clc.demoplaying)
+	{
+		return;
+	}
+
+	//
+	// allways dump the first two message, because it may contain leftover inputs
+	// from the last level
+	//
+	if (++cl.qh_movemessages <= 2)
+	{
+		return;
+	}
+
+	QMsg buf;
+	byte data[128];
+
+	buf.InitOOB(data, 128);
+
+	//
+	// send the movement message
+	//
+	if (GGameType & GAME_Hexen2)
+	{
+		buf.WriteByte(h2clc_frame);
+		buf.WriteByte(cl.h2_reference_frame);
+		buf.WriteByte(cl.h2_current_sequence);
+
+		buf.WriteByte(h2clc_move);
+	}
+	else
+	{
+		buf.WriteByte(q1clc_move);
+	}
+	buf.WriteFloat(cmd->mtime);
+	for (int i = 0; i < 3; i++)
+	{
+		buf.WriteAngle(cmd->fAngles[i]);
+	}
+	buf.WriteShort(cmd->forwardmove);
+	buf.WriteShort(cmd->sidemove);
+	buf.WriteShort(cmd->upmove);
+	buf.WriteByte(cmd->buttons);
+	buf.WriteByte(cmd->impulse);
+	if (GGameType & GAME_Hexen2)
+	{
+		buf.WriteByte(cmd->lightlevel);
+	}
+
+	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
+	{
+		common->Printf("CL_SendMove: lost server connection\n");
+		CL_Disconnect();
+	}
+}
+
+void CLQH_SendCmd()
+{
+	if (cls.state != CA_ACTIVE)
+	{
+		return;
+	}
+
+	if (clc.qh_signon == SIGNONS)
+	{
+		// grab frame time
+		com_frameTime = Sys_Milliseconds();
+
+		in_usercmd_t cmd = CL_CreateCmd();
+
+		// send the unreliable message
+		CLQH_SendMove(&cmd);
+
+	}
+
+	if (clc.demoplaying)
+	{
+		clc.netchan.message.Clear();
+		return;
+	}
+
+	// send the reliable message
+	if (!clc.netchan.message.cursize)
+	{
+		return;		// no message at all
+
+	}
+	if (!NET_CanSendMessage(cls.qh_netcon, &clc.netchan))
+	{
+		common->DPrintf("CL_WriteToServer: can't send\n");
+		return;
+	}
+
+	if (NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
+	{
+		common->Error("CL_WriteToServer: lost server connection");
+	}
+
+	clc.netchan.message.Clear();
+}

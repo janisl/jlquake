@@ -7,6 +7,7 @@
 #include "quakedef.h"
 #include "../common/hexen2strings.h"
 #include "../server/public.h"
+#include "../client/game/quake_hexen2/connection.h"
 
 /*
 
@@ -329,7 +330,7 @@ void _Host_Frame(float time)
 // if running the server locally, make intentions now
 		if (SV_IsServerActive())
 		{
-			CL_SendCmd();
+			CLQH_SendCmd();
 		}
 #endif
 
@@ -368,7 +369,7 @@ void _Host_Frame(float time)
 			// the incoming messages have been read
 			if (!SV_IsServerActive())
 			{
-				CL_SendCmd();
+				CLQH_SendCmd();
 			}
 
 			host_time += host_frametime;
