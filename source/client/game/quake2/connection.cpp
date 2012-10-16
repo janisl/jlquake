@@ -370,3 +370,112 @@ void CLQ2_RequestNextDownload()
 
 	CL_AddReliableCommand(va("begin %i\n", clq2_precache_spawncount));
 }
+
+void CLQ2_SendCmd()
+{
+	// build a command even if not connected
+
+	// save this command off for prediction
+	int i = clc.netchan.outgoingSequence & (CMD_BACKUP_Q2 - 1);
+	q2usercmd_t* cmd = &cl.q2_cmds[i];
+	cl.q2_cmd_time[i] = cls.realtime;	// for netgraph ping calculation
+
+	// grab frame time
+	com_frameTime = Sys_Milliseconds();
+
+	in_usercmd_t inCmd = CL_CreateCmd();
+	Com_Memset(cmd, 0, sizeof(*cmd));
+	cmd->forwardmove = inCmd.forwardmove;
+	cmd->sidemove = inCmd.sidemove;
+	cmd->upmove = inCmd.upmove;
+	cmd->buttons = inCmd.buttons;
+	for (int i = 0; i < 3; i++)
+	{
+		cmd->angles[i] = inCmd.angles[i];
+	}
+	cmd->impulse = inCmd.impulse;
+	cmd->msec = inCmd.msec;
+	cmd->lightlevel = inCmd.lightlevel;
+
+	if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
+	{
+		return;
+	}
+
+	if (cls.state == CA_CONNECTED)
+	{
+		if (clc.netchan.message.cursize || com_frameTime - clc.netchan.lastSent > 1000)
+		{
+			Netchan_Transmit(&clc.netchan, 0, clc.netchan.message._data);
+			clc.netchan.lastSent = com_frameTime;
+		}
+		return;
+	}
+
+	// send a userinfo update if needed
+	if (cvar_modifiedFlags & CVAR_USERINFO)
+	{
+		CLQ2_FixUpGender();
+		cvar_modifiedFlags &= ~CVAR_USERINFO;
+		clc.netchan.message.WriteByte(q2clc_userinfo);
+		clc.netchan.message.WriteString2(Cvar_InfoString(
+				CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2, MAX_INFO_VALUE_Q2, true, false));
+	}
+
+	QMsg buf;
+	byte data[128];
+	buf.InitOOB(data, sizeof(data));
+
+	if (cmd->buttons)
+	{
+		// skip the rest of the cinematic
+		CIN_SkipCinematic();
+	}
+
+	// begin a client move command
+	buf.WriteByte(q2clc_move);
+
+	// save the position for a checksum byte
+	int checksumIndex = buf.cursize;
+	buf.WriteByte(0);
+
+	// let the server know what the last frame we
+	// got was, so the next message can be delta compressed
+	if (cl_nodelta->value || !cl.q2_frame.valid || cls.q2_demowaiting)
+	{
+		buf.WriteLong(-1);	// no compression
+	}
+	else
+	{
+		buf.WriteLong(cl.q2_frame.serverframe);
+	}
+
+	// send this and the previous cmds in the message, so
+	// if the last packet was dropped, it can be recovered
+	i = (clc.netchan.outgoingSequence - 2) & (CMD_BACKUP_Q2 - 1);
+	cmd = &cl.q2_cmds[i];
+	q2usercmd_t nullcmd;
+	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+	MSGQ2_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
+	q2usercmd_t* oldcmd = cmd;
+
+	i = (clc.netchan.outgoingSequence - 1) & (CMD_BACKUP_Q2 - 1);
+	cmd = &cl.q2_cmds[i];
+	MSGQ2_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+	oldcmd = cmd;
+
+	i = (clc.netchan.outgoingSequence) & (CMD_BACKUP_Q2 - 1);
+	cmd = &cl.q2_cmds[i];
+	MSGQ2_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+
+	// calculate a checksum over the move commands
+	buf._data[checksumIndex] = COMQ2_BlockSequenceCRCByte(
+		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
+		clc.netchan.outgoingSequence);
+
+	//
+	// deliver the message
+	//
+	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
+	clc.netchan.lastSent = com_frameTime;
+}

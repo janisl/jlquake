@@ -25,6 +25,8 @@ Cvar* clq2_vwep;
 Cvar* clq2_predict;
 Cvar* clq2_noskins;
 Cvar* clq2_showmiss;
+Cvar* clq2_gender;
+Cvar* clq2_gender_auto;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];
 
@@ -197,4 +199,40 @@ void CLQ2_PrepRefresh()
 
 	// start the cd track
 	CDAudio_Play(String::Atoi(cl.q2_configstrings[Q2CS_CDTRACK]), true);
+}
+
+void CLQ2_FixUpGender()
+{
+	char* p;
+	char sk[80];
+
+	if (clq2_gender_auto->value)
+	{
+
+		if (clq2_gender->modified)
+		{
+			// was set directly, don't override the user
+			clq2_gender->modified = false;
+			return;
+		}
+
+		String::NCpy(sk, clq2_skin->string, sizeof(sk) - 1);
+		if ((p = strchr(sk, '/')) != NULL)
+		{
+			*p = 0;
+		}
+		if (String::ICmp(sk, "male") == 0 || String::ICmp(sk, "cyborg") == 0)
+		{
+			Cvar_SetLatched("gender", "male");
+		}
+		else if (String::ICmp(sk, "female") == 0 || String::ICmp(sk, "crackhor") == 0)
+		{
+			Cvar_SetLatched("gender", "female");
+		}
+		else
+		{
+			Cvar_SetLatched("gender", "none");
+		}
+		clq2_gender->modified = false;
+	}
 }

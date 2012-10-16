@@ -22,6 +22,8 @@ extern Cvar* clq2_vwep;
 extern Cvar* clq2_predict;
 extern Cvar* clq2_noskins;
 extern Cvar* clq2_showmiss;
+extern Cvar* clq2_gender;
+extern Cvar* clq2_gender_auto;
 
 extern sfxHandle_t clq2_sfx_footsteps[4];
 
@@ -59,6 +61,7 @@ extern int clq2_precache_spawncount;
 
 void CLQ2_RegisterSounds();
 void CLQ2_RequestNextDownload();
+void CLQ2_SendCmd();
 
 //
 //	Demo
@@ -129,6 +132,7 @@ void CLQ2_AddLasers();
 void CLQ2_PingServers_f();
 void CLQ2_ClearState();
 void CLQ2_PrepRefresh();
+void CLQ2_FixUpGender();
 
 //
 //	Parse

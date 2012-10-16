@@ -49,8 +49,6 @@ Cvar* info_spectator;
 Cvar* rate;
 Cvar* fov;
 Cvar* msg;
-Cvar* gender;
-Cvar* gender_auto;
 
 static bool vid_restart_requested;
 
@@ -736,47 +734,6 @@ void CL_ReadPackets(void)
 
 /*
 ==============
-CL_FixUpGender_f
-==============
-*/
-void CL_FixUpGender(void)
-{
-	char* p;
-	char sk[80];
-
-	if (gender_auto->value)
-	{
-
-		if (gender->modified)
-		{
-			// was set directly, don't override the user
-			gender->modified = false;
-			return;
-		}
-
-		String::NCpy(sk, clq2_skin->string, sizeof(sk) - 1);
-		if ((p = strchr(sk, '/')) != NULL)
-		{
-			*p = 0;
-		}
-		if (String::ICmp(sk, "male") == 0 || String::ICmp(sk, "cyborg") == 0)
-		{
-			Cvar_SetLatched("gender", "male");
-		}
-		else if (String::ICmp(sk, "female") == 0 || String::ICmp(sk, "crackhor") == 0)
-		{
-			Cvar_SetLatched("gender", "female");
-		}
-		else
-		{
-			Cvar_SetLatched("gender", "none");
-		}
-		gender->modified = false;
-	}
-}
-
-/*
-==============
 CL_Userinfo_f
 ==============
 */
@@ -942,9 +899,9 @@ void CL_InitLocal(void)
 	msg = Cvar_Get("msg", "1", CVAR_USERINFO | CVAR_ARCHIVE);
 	q2_hand = Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 	fov = Cvar_Get("fov", "90", CVAR_USERINFO | CVAR_ARCHIVE);
-	gender = Cvar_Get("gender", "male", CVAR_USERINFO | CVAR_ARCHIVE);
-	gender_auto = Cvar_Get("gender_auto", "1", CVAR_ARCHIVE);
-	gender->modified = false;	// clear this so we know when user sets it manually
+	clq2_gender = Cvar_Get("gender", "male", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_gender_auto = Cvar_Get("gender_auto", "1", CVAR_ARCHIVE);
+	clq2_gender->modified = false;	// clear this so we know when user sets it manually
 
 	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
 
@@ -1109,7 +1066,7 @@ void CL_SendCommand(void)
 	CL_FixCvarCheats();
 
 	// send intentions now
-	CL_SendCmd();
+	CLQ2_SendCmd();
 
 	// resend a connection request if necessary
 	CL_CheckForResend();
