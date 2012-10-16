@@ -31,12 +31,6 @@ void CL_Disconnect_f(void);
 void CL_NextDemo(void);
 qboolean CL_DemoBehind(void);
 
-//
-// cl_input
-//
-void CL_SendCmd(void);
-void CL_SendMove(hwusercmd_t* cmd);
-
 void CL_ReadPackets(void);
 
 int  CL_ReadFromServer(void);

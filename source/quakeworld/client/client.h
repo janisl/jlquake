@@ -36,12 +36,6 @@ qboolean CL_DemoBehind(void);
 
 void CL_BeginServerConnect(void);
 
-//
-// cl_input
-//
-void CL_SendCmd(void);
-void CL_SendMove(qwusercmd_t* cmd);
-
 void CL_ReadPackets(void);
 
 int  CL_ReadFromServer(void);

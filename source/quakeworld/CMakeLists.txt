@@ -20,7 +20,6 @@ target_link_libraries(jlqwsv ${SERVERS_LIBS})
 
 add_executable(jlqwcl
 	client/cl_demo.cpp
-	client/cl_input.cpp
 	client/cl_main.cpp
 	client/common.cpp
 	client/sys_linux.cpp

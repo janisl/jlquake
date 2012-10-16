@@ -36,8 +36,6 @@ void Com_Quit_f()
 	Sys_Quit();
 }
 
-qwusercmd_t nullcmd;// guarenteed to be zero
-
 static const char* safeargvs[NUM_SAFE_ARGVS] =
 {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 

@@ -78,6 +78,7 @@ void CLH2_InitChunkEffect(h2EffectT& effect);
 //	Connection
 //
 void CLH2_SignonReply();
+void CLHW_SendCmd();
 
 //
 //	Effects

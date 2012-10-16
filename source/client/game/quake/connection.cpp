@@ -16,6 +16,7 @@
 
 #include "../../client.h"
 #include "local.h"
+#include "../quake_hexen2/demo.h"
 
 static byte* clqw_upload_data;
 static int clqw_upload_pos;
@@ -168,4 +169,109 @@ void CLQW_StopUpload()
 		Mem_Free(clqw_upload_data);
 	}
 	clqw_upload_data = NULL;
+}
+
+void CLQW_SendCmd()
+{
+	if (clc.demoplaying)
+	{
+		return;	// sendcmds come from the demo
+
+	}
+	// save this command off for prediction
+	int i = clc.netchan.outgoingSequence & UPDATE_MASK_QW;
+	qwusercmd_t* cmd = &cl.qw_frames[i].cmd;
+	cl.qw_frames[i].senttime = cls.realtime * 0.001;
+	cl.qw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
+
+	int seq_hash = clc.netchan.outgoingSequence;
+
+	// get basic movement from keyboard
+	// grab frame time
+	com_frameTime = Sys_Milliseconds();
+
+	Com_Memset(cmd, 0, sizeof(*cmd));
+
+	in_usercmd_t inCmd = CL_CreateCmd();
+
+	cmd->forwardmove = inCmd.forwardmove;
+	cmd->sidemove = inCmd.sidemove;
+	cmd->upmove = inCmd.upmove;
+	cmd->buttons = inCmd.buttons;
+	cmd->impulse = inCmd.impulse;
+	cmd->msec = inCmd.msec;
+	VectorCopy(inCmd.fAngles, cmd->angles);
+
+	//
+	// allways dump the first two message, because it may contain leftover inputs
+	// from the last level
+	//
+	if (++cl.qh_movemessages <= 2)
+	{
+		return;
+	}
+
+	// send this and the previous cmds in the message, so
+	// if the last packet was dropped, it can be recovered
+	QMsg buf;
+	byte data[128];
+	buf.InitOOB(data, 128);
+
+	buf.WriteByte(q1clc_move);
+
+	// save the position for a checksum byte
+	int checksumIndex = buf.cursize;
+	buf.WriteByte(0);
+
+	// write our lossage percentage
+	int lost = CLQW_CalcNet();
+	buf.WriteByte((byte)lost);
+
+	i = (clc.netchan.outgoingSequence - 2) & UPDATE_MASK_QW;
+	cmd = &cl.qw_frames[i].cmd;
+	qwusercmd_t nullcmd = {};
+	MSGQW_WriteDeltaUsercmd(&buf, &nullcmd, cmd);
+	qwusercmd_t* oldcmd = cmd;
+
+	i = (clc.netchan.outgoingSequence - 1) & UPDATE_MASK_QW;
+	cmd = &cl.qw_frames[i].cmd;
+	MSGQW_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+	oldcmd = cmd;
+
+	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_QW;
+	cmd = &cl.qw_frames[i].cmd;
+	MSGQW_WriteDeltaUsercmd(&buf, oldcmd, cmd);
+
+	// calculate a checksum over the move commands
+	buf._data[checksumIndex] = COMQW_BlockSequenceCRCByte(
+		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
+		seq_hash);
+
+	// request delta compression of entities
+	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_QW - 1)
+	{
+		cl.qh_validsequence = 0;
+	}
+
+	if (cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
+		!clc.demorecording)
+	{
+		cl.qw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_QW].delta_sequence = cl.qh_validsequence;
+		buf.WriteByte(qwclc_delta);
+		buf.WriteByte(cl.qh_validsequence & 255);
+	}
+	else
+	{
+		cl.qw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_QW].delta_sequence = -1;
+	}
+
+	if (clc.demorecording)
+	{
+		CLQW_WriteDemoCmd(cmd);
+	}
+
+	//
+	// deliver the message
+	//
+	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
 }

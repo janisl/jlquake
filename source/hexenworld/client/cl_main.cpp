@@ -1156,7 +1156,7 @@ void Host_Frame(float time)
 		}
 		else
 		{
-			CL_SendCmd();
+			CLHW_SendCmd();
 		}
 
 		// Set up prediction for other players

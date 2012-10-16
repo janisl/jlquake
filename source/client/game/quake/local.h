@@ -40,6 +40,7 @@ bool CLQW_IsUploading();
 void CLQW_NextUpload();
 void CLQW_StartUpload(const byte* data, int size);
 void CLQW_StopUpload();
+void CLQW_SendCmd();
 
 //
 //	Entities

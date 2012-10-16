@@ -19,10 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
-extern qwusercmd_t nullcmd;
-
-//============================================================================
-
 void COM_Init(void);
 void COM_InitArgv2(int argc, char** argv);
 
