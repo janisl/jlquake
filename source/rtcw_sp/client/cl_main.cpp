@@ -159,7 +159,7 @@ void CL_ReadDemoMessage(void)
 
 	clc.q3_lastPacketTime = cls.realtime;
 	buf.readcount = 0;
-	CL_ParseServerMessage(&buf);
+	CLT3_ParseServerMessage(&buf);
 }
 
 /*
@@ -1188,7 +1188,7 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 	clc.q3_serverMessageSequence = LittleLong(*(int*)msg->_data);
 
 	clc.q3_lastPacketTime = cls.realtime;
-	CL_ParseServerMessage(msg);
+	CLT3_ParseServerMessage(msg);
 
 	//
 	// we don't know if it is ok to save a demo message until

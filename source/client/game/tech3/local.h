@@ -94,16 +94,8 @@ void CLT3_Netchan_Transmit(netchan_t* chan, QMsg* msg);
 //
 //	Parse
 //
-extern int entLastVisible[MAX_CLIENTS_WM];
-
 void CLT3_SystemInfoChanged();
-void CLT3_ParseCommandString(QMsg* msg);
-void CLT3_ParseGamestate(QMsg* msg);
-void CLQ3_ParseSnapshot(QMsg* msg);
-void CLWS_ParseSnapshot(QMsg* msg);
-void CLWM_ParseSnapshot(QMsg* msg);
-void CLET_ParseSnapshot(QMsg* msg);
-void CLET_ParseBinaryMessage(QMsg* msg);
+void CLT3_ParseServerMessage(QMsg* msg);
 
 //
 //	Screen

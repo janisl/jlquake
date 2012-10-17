@@ -162,7 +162,7 @@ void CL_ReadDemoMessage(void)
 
 	clc.q3_lastPacketTime = cls.realtime;
 	buf.readcount = 0;
-	CL_ParseServerMessage(&buf);
+	CLT3_ParseServerMessage(&buf);
 }
 
 /*
@@ -1360,7 +1360,7 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 	clc.q3_serverMessageSequence = LittleLong(*(int*)msg->_data);
 
 	clc.q3_lastPacketTime = cls.realtime;
-	CL_ParseServerMessage(msg);
+	CLT3_ParseServerMessage(msg);
 
 	//
 	// we don't know if it is ok to save a demo message until
@@ -1465,7 +1465,7 @@ void CL_WWWDownload(void)
 
 	if (ret == DL_DONE)
 	{
-		// taken from CL_ParseDownload
+		// taken from CLT3_ParseDownload
 		// we work with OS paths
 		clc.download = 0;
 		to_ospath = FS_BuildOSPath(Cvar_VariableString("fs_homepath"), cls.et_originalDownloadName, "");
@@ -1513,7 +1513,7 @@ void CL_WWWDownload(void)
 		}
 		else
 		{
-			// see CL_ParseDownload, same abort strategy
+			// see CLT3_ParseDownload, same abort strategy
 			common->Printf("Download failure while getting '%s'\n", cls.et_downloadName);
 			CL_AddReliableCommand("wwwdl fail");
 			clc.et_bWWWDlAborting = true;

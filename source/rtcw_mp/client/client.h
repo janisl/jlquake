@@ -69,8 +69,6 @@ void CL_ReadPackets(void);
 //
 extern int cl_connectedToPureServer;
 
-void CL_ParseServerMessage(QMsg* msg);
-
 //
 // cl_cgame.c
 //

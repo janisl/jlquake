@@ -63,8 +63,6 @@ void CL_InitRef(void);
 
 void CL_ReadPackets(void);
 
-void CL_ParseServerMessage(QMsg* msg);
-
 //
 // cl_cgame.c
 //
