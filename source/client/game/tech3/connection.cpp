@@ -395,9 +395,31 @@ void CLT3_SendCmd()
 	CLT3_WritePacket();
 }
 
+void CLT3_SendPureChecksums()
+{
+	// if we are pure we need to send back a command with our referenced pk3 checksums
+	const char* pChecksums = FS_ReferencedPakPureChecksums();
+
+	char cMsg[MAX_INFO_VALUE_Q3];
+	String::Sprintf(cMsg, sizeof(cMsg), "cp ");
+	String::Cat(cMsg, sizeof(cMsg), va("%d ", cl.q3_serverId));
+	String::Cat(cMsg, sizeof(cMsg), pChecksums);
+	CL_AddReliableCommand(cMsg);
+}
+
+//	Clear download information that we keep in cls (disconnected download support)
+void CLET_ClearStaticDownload()
+{
+	qassert(!cls.et_bWWWDlDisconnected);		// reset before calling
+	cls.et_downloadRestart = false;
+	cls.et_downloadTempName[0] = '\0';
+	cls.et_downloadName[0] = '\0';
+	cls.et_originalDownloadName[0] = '\0';
+}
+
 //	Requests a file to download from the server.  Stores it in the current
 // game directory.
-void CLT3_BeginDownload(const char* localName, const char* remoteName)
+static void CLT3_BeginDownload(const char* localName, const char* remoteName)
 {
 	common->DPrintf("***** CLT3_BeginDownload *****\n"
 				"Localname: %s\n"
@@ -425,4 +447,200 @@ void CLT3_BeginDownload(const char* localName, const char* remoteName)
 	clc.downloadCount = 0;
 
 	CL_AddReliableCommand(va("download %s", remoteName));
+}
+
+//	Called when all downloading has been completed
+static void CLT3_DownloadsComplete()
+{
+	// if we downloaded files we need to restart the file system
+	if (GGameType & GAME_ET ? cls.et_downloadRestart : clc.downloadRestart)
+	{
+		clc.downloadRestart = false;
+		cls.et_downloadRestart = false;
+
+		FS_Restart(clc.q3_checksumFeed);	// We possibly downloaded a pak, restart the file system to load it
+
+		if (!(GGameType & GAME_ET) || !cls.et_bWWWDlDisconnected)
+		{
+			// inform the server so we get new gamestate info
+			CL_AddReliableCommand("donedl");
+		}
+
+		if (GGameType & GAME_ET)
+		{
+			// we can reset that now
+			cls.et_bWWWDlDisconnected = false;
+			CLET_ClearStaticDownload();
+		}
+
+		// by sending the donedl command we request a new gamestate
+		// so we don't want to load stuff yet
+		return;
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		// TTimo: I wonder if that happens - it should not but I suspect it could happen if a download fails in the middle or is aborted
+		qassert(!cls.et_bWWWDlDisconnected);
+	}
+
+	// let the client game init and load data
+	cls.state = CA_LOADING;
+
+	// Pump the loop, this may change gamestate!
+	Com_EventLoop();
+
+	// if the gamestate was changed by calling Com_EventLoop
+	// then we loaded everything already and we don't want to do it again.
+	if (cls.state != CA_LOADING)
+	{
+		return;
+	}
+
+	// starting to load a map so we get out of full screen ui mode
+	Cvar_Set("r_uiFullScreen", "0");
+
+	// flush client memory and start loading stuff
+	// this will also (re)load the UI
+	// if this is a local client then only the client part of the hunk
+	// will be cleared, note that this is done after the hunk mark has been set
+	CLT3_FlushMemory();
+
+	// initialize the CGame
+	cls.q3_cgameStarted = true;
+	CLT3_InitCGame();
+
+	// set pure checksums
+	CLT3_SendPureChecksums();
+
+	CLT3_WritePacket();
+	CLT3_WritePacket();
+	CLT3_WritePacket();
+}
+
+//	A download completed or failed
+void CLT3_NextDownload()
+{
+	// We are looking to start a download here
+	if (*clc.downloadList)
+	{
+		char* s = clc.downloadList;
+
+		// format is:
+		//  @remotename@localname@remotename@localname, etc.
+
+		if (*s == '@')
+		{
+			s++;
+		}
+		char* remoteName = s;
+
+		if ((s = strchr(s, '@')) == NULL)
+		{
+			CLT3_DownloadsComplete();
+			return;
+		}
+
+		*s++ = 0;
+		char* localName = s;
+		if ((s = strchr(s, '@')) != NULL)
+		{
+			*s++ = 0;
+		}
+		else
+		{
+			s = localName + String::Length(localName);	// point at the nul byte
+
+		}
+		CLT3_BeginDownload(localName, remoteName);
+
+		if (GGameType & GAME_ET)
+		{
+			cls.et_downloadRestart = true;
+		}
+		else
+		{
+			clc.downloadRestart = true;
+		}
+
+		// move over the rest
+		memmove(clc.downloadList, s, String::Length(s) + 1);
+
+		return;
+	}
+
+	CLT3_DownloadsComplete();
+}
+
+//	After receiving a valid game state, we valid the cgame and local zip files here
+// and determine if we need to download them
+void CLT3_InitDownloads()
+{
+	if (GGameType & GAME_ET)
+	{
+		// TTimo
+		// init some of the www dl data
+		clc.et_bWWWDl = false;
+		clc.et_bWWWDlAborting = false;
+		cls.et_bWWWDlDisconnected = false;
+		CLET_ClearStaticDownload();
+	}
+
+	if (GGameType & GAME_Quake3 && !clt3_allowDownload->integer)
+	{
+		// autodownload is disabled on the client
+		// but it's possible that some referenced files on the server are missing
+		char missingfiles[1024];
+		if (FS_ComparePaks(missingfiles, sizeof(missingfiles), false))
+		{
+			// NOTE TTimo I would rather have that printed as a modal message box
+			//   but at this point while joining the game we don't know wether we will successfully join or not
+			common->Printf("\nWARNING: You are missing some files referenced by the server:\n%s"
+					   "You might not be able to join the game\n"
+					   "Go to the setting menu to turn on autodownload, or get the file elsewhere\n\n", missingfiles);
+		}
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
+		char missingfiles[1024];
+		if (FS_ComparePaks(missingfiles, sizeof(missingfiles), false))
+		{
+			Cvar_Set("com_missingFiles", missingfiles);
+		}
+		else
+		{
+			Cvar_Set("com_missingFiles", "");
+		}
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		// reset the redirect checksum tracking
+		clc.et_redirectedList[0] = '\0';
+	}
+
+	if (clt3_allowDownload->integer && FS_ComparePaks(clc.downloadList, sizeof(clc.downloadList), true))
+	{
+		if (GGameType & (GAME_WolfMP | GAME_ET))
+		{
+			// this gets printed to UI, i18n
+			common->Printf(CL_TranslateStringBuf("Need paks: %s\n"), clc.downloadList);
+		}
+		else
+		{
+			common->Printf("Need paks: %s\n", clc.downloadList);
+		}
+
+		if (*clc.downloadList)
+		{
+			// if autodownloading is not enabled on the server
+			cls.state = CA_CONNECTED;
+			CLT3_NextDownload();
+			return;
+		}
+	}
+
+	CLT3_DownloadsComplete();
 }

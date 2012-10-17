@@ -49,7 +49,10 @@ void CLT3_FirstSnapshot();
 //
 void CLT3_WritePacket();
 void CLT3_SendCmd();
-void CLT3_BeginDownload(const char* localName, const char* remoteName);
+void CLT3_SendPureChecksums();
+void CLET_ClearStaticDownload();
+void CLT3_NextDownload();
+void CLT3_InitDownloads();
 
 //
 //	Demo
@@ -74,6 +77,7 @@ extern Cvar* clet_autorecord;
 extern Cvar* clt3_maxpackets;
 extern Cvar* clt3_showSend;
 extern Cvar* clt3_packetdup;
+extern Cvar* clt3_allowDownload;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();

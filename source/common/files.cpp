@@ -3271,7 +3271,6 @@ bool FS_ComparePaks(char* neededpaks, int len, bool dlstring)
 
 	if (*neededpaks)
 	{
-		common->Printf("Need paks: %s\n", neededpaks);
 		return true;
 	}
 

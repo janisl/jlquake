@@ -41,8 +41,6 @@ Cvar* cl_forceavidemo;
 
 Cvar* cl_motdString;
 
-Cvar* cl_allowDownload;
-
 Cvar* cl_trn;
 
 void CL_CheckForResend(void);
@@ -618,10 +616,6 @@ void CL_Connect_f(void)
 	CL_Disconnect(true);
 	Con_Close();
 
-	/* MrE: 2000-09-13: now called in CL_DownloadsComplete
-	CLT3_FlushMemory( );
-	*/
-
 	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
 
 	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER))
@@ -708,32 +702,6 @@ void CL_Rcon_f(void)
 
 /*
 =================
-CL_SendPureChecksums
-=================
-*/
-void CL_SendPureChecksums(void)
-{
-	const char* pChecksums;
-	char cMsg[MAX_INFO_VALUE_Q3];
-	int i;
-
-	// if we are pure we need to send back a command with our referenced pk3 checksums
-	pChecksums = FS_ReferencedPakPureChecksums();
-
-	// "cp"
-	// "Yf"
-	String::Sprintf(cMsg, sizeof(cMsg), "Yf ");
-	String::Cat(cMsg, sizeof(cMsg), va("%d ", cl.q3_serverId));
-	String::Cat(cMsg, sizeof(cMsg), pChecksums);
-	for (i = 0; i < 2; i++)
-	{
-		cMsg[i] += 10;
-	}
-	CL_AddReliableCommand(cMsg);
-}
-
-/*
-=================
 CL_ResetPureClientAtServer
 =================
 */
@@ -792,7 +760,7 @@ void CL_Vid_Restart_f(void)
 		cls.q3_cgameStarted = true;
 		CLT3_InitCGame();
 		// send pure checksums
-		CL_SendPureChecksums();
+		CLT3_SendPureChecksums();
 	}
 }
 
@@ -878,164 +846,6 @@ void CL_Clientinfo_f(void)
 
 
 //====================================================================
-
-/*
-=================
-CL_DownloadsComplete
-
-Called when all downloading has been completed
-=================
-*/
-void CL_DownloadsComplete(void)
-{
-
-	// if we downloaded files we need to restart the file system
-	if (clc.downloadRestart)
-	{
-		clc.downloadRestart = false;
-
-		FS_Restart(clc.q3_checksumFeed);// We possibly downloaded a pak, restart the file system to load it
-
-		// inform the server so we get new gamestate info
-		CL_AddReliableCommand("donedl");
-
-		// by sending the donedl command we request a new gamestate
-		// so we don't want to load stuff yet
-		return;
-	}
-
-	// let the client game init and load data
-	cls.state = CA_LOADING;
-
-	// Pump the loop, this may change gamestate!
-	Com_EventLoop();
-
-	// if the gamestate was changed by calling Com_EventLoop
-	// then we loaded everything already and we don't want to do it again.
-	if (cls.state != CA_LOADING)
-	{
-		return;
-	}
-
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set("r_uiFullScreen", "0");
-
-	// flush client memory and start loading stuff
-	// this will also (re)load the UI
-	// if this is a local client then only the client part of the hunk
-	// will be cleared, note that this is done after the hunk mark has been set
-	CLT3_FlushMemory();
-
-	// initialize the CGame
-	cls.q3_cgameStarted = true;
-	CLT3_InitCGame();
-
-	// set pure checksums
-	CL_SendPureChecksums();
-
-	CLT3_WritePacket();
-	CLT3_WritePacket();
-	CLT3_WritePacket();
-}
-
-/*
-=================
-CL_NextDownload
-
-A download completed or failed
-=================
-*/
-void CL_NextDownload(void)
-{
-	char* s;
-	char* remoteName, * localName;
-
-	// We are looking to start a download here
-	if (*clc.downloadList)
-	{
-		s = clc.downloadList;
-
-		// format is:
-		//  @remotename@localname@remotename@localname, etc.
-
-		if (*s == '@')
-		{
-			s++;
-		}
-		remoteName = s;
-
-		if ((s = strchr(s, '@')) == NULL)
-		{
-			CL_DownloadsComplete();
-			return;
-		}
-
-		*s++ = 0;
-		localName = s;
-		if ((s = strchr(s, '@')) != NULL)
-		{
-			*s++ = 0;
-		}
-		else
-		{
-			s = localName + String::Length(localName);	// point at the nul byte
-
-		}
-		CLT3_BeginDownload(localName, remoteName);
-
-		clc.downloadRestart = true;
-
-		// move over the rest
-		memmove(clc.downloadList, s, String::Length(s) + 1);
-
-		return;
-	}
-
-	CL_DownloadsComplete();
-}
-
-/*
-=================
-CL_InitDownloads
-
-After receiving a valid game state, we valid the cgame and local zip files here
-and determine if we need to download them
-=================
-*/
-void CL_InitDownloads(void)
-{
-	char missingfiles[1024];
-
-	if (!cl_allowDownload->integer)
-	{
-		// autodownload is disabled on the client
-		// but it's possible that some referenced files on the server are missing
-		if (FS_ComparePaks(missingfiles, sizeof(missingfiles), false))
-		{
-			// NOTE TTimo I would rather have that printed as a modal message box
-			//   but at this point while joining the game we don't know wether we will successfully join or not
-			common->Printf("\nWARNING: You are missing some files referenced by the server:\n%s"
-					   "You might not be able to join the game\n"
-					   "Go to the setting menu to turn on autodownload, or get the file elsewhere\n\n", missingfiles);
-		}
-	}
-	else if (FS_ComparePaks(clc.downloadList, sizeof(clc.downloadList), true))
-	{
-
-		common->Printf("Need paks: %s\n", clc.downloadList);
-
-		if (*clc.downloadList)
-		{
-			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
-			CL_NextDownload();
-			return;
-		}
-
-	}
-
-	CL_DownloadsComplete();
-}
 
 /*
 =================
@@ -1624,7 +1434,7 @@ void CL_Init(void)
 	clt3_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
 	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
 
-	cl_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
+	clt3_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
 
 	// init autoswitch so the ui will have it correctly even
 	// if the cgame hasn't been started

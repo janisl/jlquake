@@ -152,7 +152,6 @@ CLIENT / SERVER SYSTEMS
 // client interface
 //
 void CL_Init(void);
-void CL_ClearStaticDownload(void);
 void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(void);
 void CL_Frame(int msec);

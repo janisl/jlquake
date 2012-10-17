@@ -50,7 +50,6 @@ Cvar* cl_forceavidemo;
 
 Cvar* cl_motdString;
 
-Cvar* cl_allowDownload;
 Cvar* cl_wwwDownload;
 
 Cvar* cl_trn;
@@ -191,10 +190,6 @@ void CL_PlayDemo_f(void)
 
 	CL_Disconnect(true);
 
-
-//	CLT3_FlushMemory();	//----(SA)	MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
-
-
 	// open the demo file
 	arg = Cmd_Argv(1);
 	prot_ver = ETPROTOCOL_VERSION - 1;
@@ -318,21 +313,6 @@ void CL_MapLoading(void)
 
 /*
 =====================
-CL_ClearStaticDownload
-Clear download information that we keep in cls (disconnected download support)
-=====================
-*/
-void CL_ClearStaticDownload(void)
-{
-	assert(!cls.et_bWWWDlDisconnected);		// reset before calling
-	cls.et_downloadRestart = false;
-	cls.et_downloadTempName[0] = '\0';
-	cls.et_downloadName[0] = '\0';
-	cls.et_originalDownloadName[0] = '\0';
-}
-
-/*
-=====================
 CL_Disconnect
 
 Called when a connection, demo, or cinematic is being terminated.
@@ -398,7 +378,7 @@ void CL_Disconnect(qboolean showMainMenu)
 
 	if (!cls.et_bWWWDlDisconnected)
 	{
-		CL_ClearStaticDownload();
+		CLET_ClearStaticDownload();
 	}
 
 	// allow cheats locally
@@ -783,31 +763,6 @@ void CL_Rcon_f(void)
 
 /*
 =================
-CL_SendPureChecksums
-=================
-*/
-void CL_SendPureChecksums(void)
-{
-	const char* pChecksums;
-	char cMsg[MAX_INFO_VALUE_Q3];
-	int i;
-
-	// if we are pure we need to send back a command with our referenced pk3 checksums
-	pChecksums = FS_ReferencedPakPureChecksums();
-
-	// "cp"
-	String::Sprintf(cMsg, sizeof(cMsg), "Va ");
-	String::Cat(cMsg, sizeof(cMsg), va("%d ", cl.q3_serverId));
-	String::Cat(cMsg, sizeof(cMsg), pChecksums);
-	for (i = 0; i < 2; i++)
-	{
-		cMsg[i] += 13 + (i * 2);
-	}
-	CL_AddReliableCommand(cMsg);
-}
-
-/*
-=================
 CL_ResetPureClientAtServer
 =================
 */
@@ -875,7 +830,7 @@ void CL_Vid_Restart_f(void)
 		cls.q3_cgameStarted = true;
 		CLT3_InitCGame();
 		// send pure checksums
-		CL_SendPureChecksums();
+		CLT3_SendPureChecksums();
 	}
 }
 
@@ -987,178 +942,6 @@ void CL_EatMe_f(void)
 }
 
 //====================================================================
-
-/*
-=================
-CL_DownloadsComplete
-
-Called when all downloading has been completed
-=================
-*/
-void CL_DownloadsComplete(void)
-{
-	// if we downloaded files we need to restart the file system
-	if (cls.et_downloadRestart)
-	{
-		cls.et_downloadRestart = false;
-
-		FS_Restart(clc.q3_checksumFeed);	// We possibly downloaded a pak, restart the file system to load it
-
-		if (!cls.et_bWWWDlDisconnected)
-		{
-			// inform the server so we get new gamestate info
-			CL_AddReliableCommand("donedl");
-		}
-		// we can reset that now
-		cls.et_bWWWDlDisconnected = false;
-		CL_ClearStaticDownload();
-
-		// by sending the donedl command we request a new gamestate
-		// so we don't want to load stuff yet
-		return;
-	}
-
-	// TTimo: I wonder if that happens - it should not but I suspect it could happen if a download fails in the middle or is aborted
-	assert(!cls.et_bWWWDlDisconnected);
-
-	// let the client game init and load data
-	cls.state = CA_LOADING;
-
-	// Pump the loop, this may change gamestate!
-	Com_EventLoop();
-
-	// if the gamestate was changed by calling Com_EventLoop
-	// then we loaded everything already and we don't want to do it again.
-	if (cls.state != CA_LOADING)
-	{
-		return;
-	}
-
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set("r_uiFullScreen", "0");
-
-	// flush client memory and start loading stuff
-	// this will also (re)load the UI
-	// if this is a local client then only the client part of the hunk
-	// will be cleared, note that this is done after the hunk mark has been set
-	CLT3_FlushMemory();
-
-	// initialize the CGame
-	cls.q3_cgameStarted = true;
-	CLT3_InitCGame();
-
-	// set pure checksums
-	CL_SendPureChecksums();
-
-	CLT3_WritePacket();
-	CLT3_WritePacket();
-	CLT3_WritePacket();
-}
-
-/*
-=================
-CL_NextDownload
-
-A download completed or failed
-=================
-*/
-void CL_NextDownload(void)
-{
-	char* s;
-	char* remoteName, * localName;
-
-	// We are looking to start a download here
-	if (*clc.downloadList)
-	{
-		s = clc.downloadList;
-
-		// format is:
-		//  @remotename@localname@remotename@localname, etc.
-
-		if (*s == '@')
-		{
-			s++;
-		}
-		remoteName = s;
-
-		if ((s = strchr(s, '@')) == NULL)
-		{
-			CL_DownloadsComplete();
-			return;
-		}
-
-		*s++ = 0;
-		localName = s;
-		if ((s = strchr(s, '@')) != NULL)
-		{
-			*s++ = 0;
-		}
-		else
-		{
-			s = localName + String::Length(localName);	// point at the nul byte
-
-		}
-		CLT3_BeginDownload(localName, remoteName);
-
-		cls.et_downloadRestart = true;
-
-		// move over the rest
-		memmove(clc.downloadList, s, String::Length(s) + 1);
-
-		return;
-	}
-
-	CL_DownloadsComplete();
-}
-
-/*
-=================
-CL_InitDownloads
-
-After receiving a valid game state, we valid the cgame and local zip files here
-and determine if we need to download them
-=================
-*/
-void CL_InitDownloads(void)
-{
-	char missingfiles[1024];
-
-	// TTimo
-	// init some of the www dl data
-	clc.et_bWWWDl = false;
-	clc.et_bWWWDlAborting = false;
-	cls.et_bWWWDlDisconnected = false;
-	CL_ClearStaticDownload();
-
-	// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
-	if (FS_ComparePaks(missingfiles, sizeof(missingfiles), false))
-	{
-		Cvar_Set("com_missingFiles", missingfiles);
-	}
-	else
-	{
-		Cvar_Set("com_missingFiles", "");
-	}
-
-	// reset the redirect checksum tracking
-	clc.et_redirectedList[0] = '\0';
-
-	if (cl_allowDownload->integer && FS_ComparePaks(clc.downloadList, sizeof(clc.downloadList), true))
-	{
-		// this gets printed to UI, i18n
-		common->Printf(CL_TranslateStringBuf("Need paks: %s\n"), clc.downloadList);
-
-		if (*clc.downloadList)
-		{
-			// if autodownloading is not enabled on the server
-			cls.state = CA_CONNECTED;
-			CL_NextDownload();
-			return;
-		}
-	}
-
-	CL_DownloadsComplete();
-}
 
 /*
 =================
@@ -1725,7 +1508,7 @@ void CL_WWWDownload(void)
 			// this may happen for a regular dl or an auto update
 			const char* error = va("Download failure while getting '%s'\n", cls.et_downloadName);	// get the msg before clearing structs
 			cls.et_bWWWDlDisconnected = false;	// need clearing structs before ERR_DROP, or it goes into endless reload
-			CL_ClearStaticDownload();
+			CLET_ClearStaticDownload();
 			common->Error("%s", error);
 		}
 		else
@@ -1739,7 +1522,7 @@ void CL_WWWDownload(void)
 	}
 
 	clc.et_bWWWDl = false;
-	CL_NextDownload();
+	CLT3_NextDownload();
 }
 
 /*
@@ -2133,7 +1916,7 @@ void CL_Init(void)
 	clt3_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
 	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
 
-	cl_allowDownload = Cvar_Get("cl_allowDownload", "1", CVAR_ARCHIVE);
+	clt3_allowDownload = Cvar_Get("cl_allowDownload", "1", CVAR_ARCHIVE);
 	cl_wwwDownload = Cvar_Get("cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE);
 
 	clet_profile = Cvar_Get("cl_profile", "", CVAR_ROM);

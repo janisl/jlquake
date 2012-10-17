@@ -31,6 +31,7 @@ Cvar* clet_autorecord;
 Cvar* clt3_maxpackets;
 Cvar* clt3_showSend;
 Cvar* clt3_packetdup;
+Cvar* clt3_allowDownload;
 
 void CLET_PurgeCache()
 {

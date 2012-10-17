@@ -42,7 +42,6 @@ extern Cvar* cl_timegraph;
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 
-extern Cvar* cl_allowDownload;
 //=================================================
 
 //
@@ -58,9 +57,6 @@ void CL_Vid_Restart_f(void);
 void CL_Snd_Restart_f(void);
 void CL_NextDemo(void);
 void CL_ReadDemoMessage(void);
-
-void CL_InitDownloads(void);
-void CL_NextDownload(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);

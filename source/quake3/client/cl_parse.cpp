@@ -200,7 +200,7 @@ void CLT3_ParseGamestate(QMsg* msg)
 
 	// This used to call CLT3_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
-	CL_InitDownloads();
+	CLT3_InitDownloads();
 
 	// make sure the game starts
 	Cvar_Set("cl_paused", "0");
@@ -264,7 +264,7 @@ void CL_ParseDownload(QMsg* msg)
 		{
 			common->Printf("Could not create %s\n", clc.downloadTempName);
 			CL_AddReliableCommand("stopdl");
-			CL_NextDownload();
+			CLT3_NextDownload();
 			return;
 		}
 	}
@@ -304,7 +304,7 @@ void CL_ParseDownload(QMsg* msg)
 		CLT3_WritePacket();
 
 		// get another file if needed
-		CL_NextDownload();
+		CLT3_NextDownload();
 	}
 }
 

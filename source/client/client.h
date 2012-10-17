@@ -579,7 +579,7 @@ struct clientStatic_t
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects
-	// if new stuff gets added, CL_ClearStaticDownload code needs to be updated for clear up
+	// if new stuff gets added, CLET_ClearStaticDownload code needs to be updated for clear up
 	bool et_bWWWDlDisconnected;	// keep going with the download after server disconnect
 	char et_downloadName[MAX_OSPATH];
 	char et_downloadTempName[MAX_OSPATH];	// in wwwdl mode, this is OS path (it's a qpath otherwise)
