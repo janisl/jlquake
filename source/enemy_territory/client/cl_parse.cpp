@@ -206,7 +206,7 @@ void CLT3_ParseGamestate(QMsg* msg)
 	// reinitialize the filesystem if the game directory has changed
 	FS_ConditionalRestart(clc.q3_checksumFeed);
 
-	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
+	// This used to call CLT3_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
 	CL_InitDownloads();
 

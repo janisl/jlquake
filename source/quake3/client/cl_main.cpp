@@ -277,49 +277,6 @@ void CL_NextDemo(void)
 
 /*
 =====================
-CL_ShutdownAll
-=====================
-*/
-void CL_ShutdownAll(void)
-{
-
-	// clear sounds
-	S_DisableSounds();
-	// shutdown CGame
-	CLT3_ShutdownCGame();
-	// shutdown UI
-	CLT3_ShutdownUI();
-
-	// shutdown the renderer
-	R_Shutdown(false);		// don't destroy window or context
-
-	cls.q3_uiStarted = false;
-	cls.q3_cgameStarted = false;
-	cls.q3_rendererStarted = false;
-	cls.q3_soundRegistered = false;
-}
-
-/*
-=================
-CL_FlushMemory
-
-Called by CL_MapLoading, CL_Connect_f, CL_PlayDemo_f, and CLT3_ParseGamestate the only
-ways a client gets into a game
-Also called by Com_Error
-=================
-*/
-void CL_FlushMemory(void)
-{
-	// shutdown all the client stuff
-	CL_ShutdownAll();
-
-	CIN_CloseAllVideos();
-
-	CL_StartHunkUsers();
-}
-
-/*
-=====================
 CL_MapLoading
 
 A local server is starting to load a map, so update the
@@ -662,7 +619,7 @@ void CL_Connect_f(void)
 	Con_Close();
 
 	/* MrE: 2000-09-13: now called in CL_DownloadsComplete
-	CL_FlushMemory( );
+	CLT3_FlushMemory( );
 	*/
 
 	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
@@ -827,7 +784,7 @@ void CL_Vid_Restart_f(void)
 	CL_InitRef();
 
 	// startup all the client stuff
-	CL_StartHunkUsers();
+	CLT3_StartHunkUsers();
 
 	// start the cgame if connected
 	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)
@@ -967,7 +924,7 @@ void CL_DownloadsComplete(void)
 	// this will also (re)load the UI
 	// if this is a local client then only the client part of the hunk
 	// will be cleared, note that this is done after the hunk mark has been set
-	CL_FlushMemory();
+	CLT3_FlushMemory();
 
 	// initialize the CGame
 	cls.q3_cgameStarted = true;
@@ -1579,51 +1536,6 @@ CL_ShutdownRef
 void CL_ShutdownRef()
 {
 	R_Shutdown(true);
-}
-
-/*
-============================
-CL_StartHunkUsers
-
-After the server has cleared the hunk, these will need to be restarted
-This is the only place that any of these functions are called from
-============================
-*/
-void CL_StartHunkUsers(void)
-{
-	if (!com_cl_running)
-	{
-		return;
-	}
-
-	if (!com_cl_running->integer)
-	{
-		return;
-	}
-
-	if (!cls.q3_rendererStarted)
-	{
-		cls.q3_rendererStarted = true;
-		CL_InitRenderer();
-	}
-
-	if (!cls.q3_soundStarted)
-	{
-		cls.q3_soundStarted = true;
-		S_Init();
-	}
-
-	if (!cls.q3_soundRegistered)
-	{
-		cls.q3_soundRegistered = true;
-		S_BeginRegistration();
-	}
-
-	if (!cls.q3_uiStarted)
-	{
-		cls.q3_uiStarted = true;
-		CLT3_InitUI();
-	}
 }
 
 /*

@@ -20,6 +20,7 @@
 #include "../wolfsp/local.h"
 #include "../wolfmp/local.h"
 #include "../et/local.h"
+#include "../../client/public.h"
 
 #define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
 
@@ -766,7 +767,7 @@ void SVT3_SpawnServer(const char* server, bool killBots)
 	CL_MapLoading();
 
 	// make sure all the client stuff is unloaded
-	CL_ShutdownAll();
+	CLT3_ShutdownAll();
 
 	// init client structures and svs.q3_numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running"))

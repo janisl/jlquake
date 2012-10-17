@@ -137,15 +137,6 @@ void CL_EndgameMenu(void);
 // bring up the "need a cd to play" dialog
 //----(SA)	end
 
-void CL_ShutdownAll(void);
-// shutdown all the client stuff
-
-void CL_FlushMemory(void);
-// dump all memory on an error
-
-void CL_StartHunkUsers(void);
-// start all the client stuff using the hunk
-
 /*
 ==============================================================
 

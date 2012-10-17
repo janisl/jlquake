@@ -17,7 +17,6 @@
 set (ET_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
-	qcommon/dl_main_curl.cpp
 
 	client/cl_cgame.cpp
 	client/cl_main.cpp
@@ -30,7 +29,7 @@ set (ET_FILES
 
 add_executable(jlet ${ET_FILES})
 set_target_properties(jlet PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlet ${CLIENTS_LIBS} curl)
+target_link_libraries(jlet ${CLIENTS_LIBS})
 
 #local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 
@@ -44,7 +43,6 @@ set (ETDED_FILES
 
 	null/null_client.cpp
 	null/null_input.cpp
-	qcommon/dl_main_stubs.cpp
 )
 
 add_executable(jletded ${ETDED_FILES})

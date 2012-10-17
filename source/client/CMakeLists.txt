@@ -4,6 +4,7 @@ set(CLIENT_FILES
 	cinematic/pcx.cpp
 	cinematic/roq.cpp
 	game/et/cgame.cpp
+	game/et/dl_main_curl.cpp
 	game/et/ui.cpp
 	game/hexen2/chunk.cpp
 	game/hexen2/connection.cpp

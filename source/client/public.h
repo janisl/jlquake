@@ -45,6 +45,13 @@ void CL_MouseEvent(int dx, int dy);
 void CL_JoystickEvent(int axis, int value);
 void Sys_SendKeyEvents();
 
+// start all the client stuff using the hunk
+void CLT3_StartHunkUsers();
+// shutdown all the client stuff
+void CLT3_ShutdownAll();
+// dump all memory on an error
+void CLT3_FlushMemory();
+
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);
 

@@ -316,7 +316,7 @@ void Com_Error(int code, const char* fmt, ...)
 	if (code == ERR_SERVERDISCONNECT)
 	{
 		CL_Disconnect(true);
-		CL_FlushMemory();
+		CLT3_FlushMemory();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
@@ -325,7 +325,7 @@ void Com_Error(int code, const char* fmt, ...)
 		common->Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
 		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
 		CL_Disconnect(true);
-		CL_FlushMemory();
+		CLT3_FlushMemory();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
@@ -586,7 +586,7 @@ void Com_Init(char* commandLine)
 		// start in full screen ui mode
 		Cvar_Set("r_uiFullScreen", "1");
 
-		CL_StartHunkUsers();
+		CLT3_StartHunkUsers();
 
 		// make sure single player is off by default
 		Cvar_Set("ui_singlePlayerActive", "0");

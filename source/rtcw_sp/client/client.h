@@ -50,11 +50,7 @@ extern Cvar* cl_allowDownload;
 //
 
 void CL_Init(void);
-void CL_FlushMemory(void);
-void CL_ShutdownAll(void);
 void CL_AddReliableCommand(const char* cmd);
-
-void CL_StartHunkUsers(void);
 
 void CL_Disconnect_f(void);
 void CL_GetChallengePacket(void);

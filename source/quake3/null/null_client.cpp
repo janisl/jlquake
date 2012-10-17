@@ -45,14 +45,3 @@ void CL_Disconnect(qboolean showMainMenu)
 void CL_MapLoading(void)
 {
 }
-
-void CL_FlushMemory(void)
-{
-}
-
-void CL_StartHunkUsers(void)
-{
-}
-
-// bk001119 - added new dummy for sv_init.c
-void CL_ShutdownAll(void) {};

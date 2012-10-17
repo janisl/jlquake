@@ -80,7 +80,7 @@ DOWNLOAD
 ==============================================================
 */
 
-#include "dl_public.h"
+#include "../../client/game/et/dl_public.h"
 
 /*
 ==============================================================
@@ -164,15 +164,6 @@ void CL_MapLoading(void);
 // when the server is going to load a new map, the entire hunk
 // will be cleared, so the client must shutdown cgame, ui, and
 // the renderer
-
-void CL_ShutdownAll(void);
-// shutdown all the client stuff
-
-void CL_FlushMemory(void);
-// dump all memory on an error
-
-void CL_StartHunkUsers(void);
-// start all the client stuff using the hunk
 
 /*
 ==============================================================

@@ -239,9 +239,6 @@ void Host_Reconnect_f()
 void CL_MapLoading(void)
 {
 }
-void CL_ShutdownAll(void)
-{
-}
 void CL_Disconnect(qboolean showMainMenu)
 {
 }

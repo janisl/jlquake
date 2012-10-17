@@ -152,3 +152,15 @@ void CL_JoystickEvent(int axis, int value)
 void Sys_SendKeyEvents()
 {
 }
+
+void CLT3_StartHunkUsers()
+{
+}
+
+void CLT3_ShutdownAll()
+{
+}
+
+void CLT3_FlushMemory()
+{
+}

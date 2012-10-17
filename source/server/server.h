@@ -56,7 +56,6 @@ void CL_Disconnect(qboolean showMainMenu);
 void CL_EstablishConnection(const char* name);
 void Host_Reconnect_f();
 void CL_MapLoading();
-void CL_ShutdownAll();
 void CL_Drop();
 
 #endif

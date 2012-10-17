@@ -1482,9 +1482,6 @@ void CL_Disconnect(qboolean showMainMenu)
 void CL_MapLoading(void)
 {
 }
-void CL_ShutdownAll(void)
-{
-}
 void Host_Reconnect_f()
 {
 }
