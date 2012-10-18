@@ -192,7 +192,6 @@ static inline float idSqrt(float x)
 // parameters to the main Error routine
 typedef enum {
 	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_VID_FATAL,				// exit the entire game with a popup window and doesn't delete profile.pid
 	ERR_DROP,					// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,		// don't kill server
 	ERR_DISCONNECT,				// client disconnected from the server

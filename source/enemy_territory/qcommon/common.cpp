@@ -388,7 +388,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 		SV_Shutdown(va("Server fatal crashed: %s\n", com_errorMessage));
 	}
 
-	Com_Shutdown(code == ERR_VID_FATAL ? true : false);
+	Com_Shutdown();
 
 	Sys_Error("%s", com_errorMessage);
 }
@@ -416,7 +416,7 @@ void Com_Quit_f(void)
 		CLT3_ShutdownCGame();
 #endif
 		CL_Shutdown();
-		Com_Shutdown(false);
+		Com_Shutdown();
 		FS_Shutdown();
 	}
 	Sys_Quit();
@@ -1369,13 +1369,13 @@ void Com_Frame(void)
 Com_Shutdown
 =================
 */
-void Com_Shutdown(qboolean badProfile)
+void Com_Shutdown()
 {
 	const char* cl_profileStr = Cvar_VariableString("cl_profile");
 
 
 	// delete pid file
-	if (comet_gameInfo.usesProfiles && cl_profileStr[0] && !badProfile)
+	if (comet_gameInfo.usesProfiles && cl_profileStr[0])
 	{
 		if (FS_FileExists(va("profiles/%s/profile.pid", cl_profileStr)))
 		{
