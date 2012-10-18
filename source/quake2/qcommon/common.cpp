@@ -128,7 +128,7 @@ void idCommonLocal::ServerDisconnected(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	Com_Error(ERR_DISCONNECT, string);
+	Com_Error(ERR_SERVERDISCONNECT, string);
 }
 
 /*
@@ -239,7 +239,7 @@ void Com_Error(int code, const char* fmt, ...)
 	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end(argptr);
 
-	if (code == ERR_DISCONNECT)
+	if (code == ERR_SERVERDISCONNECT)
 	{
 		CL_Drop();
 		com_errorEntered = false;
