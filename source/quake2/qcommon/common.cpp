@@ -241,7 +241,7 @@ void Com_Error(int code, const char* fmt, ...)
 
 	if (code == ERR_SERVERDISCONNECT)
 	{
-		CL_Drop();
+		CLQ2_Drop();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
@@ -249,7 +249,7 @@ void Com_Error(int code, const char* fmt, ...)
 	{
 		common->Printf("********************\nERROR: %s\n********************\n", msg);
 		SV_Shutdown(va("Server crashed: %s\n", msg));
-		CL_Drop();
+		CLQ2_Drop();
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}

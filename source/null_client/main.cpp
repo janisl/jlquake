@@ -176,3 +176,7 @@ void CL_Disconnect(bool showMainMenu)
 void CLQH_EstablishConnection(const char* name)
 {
 }
+
+void CLQ2_Drop()
+{
+}

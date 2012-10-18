@@ -247,6 +247,3 @@ void COM_InitServer(quakeparms_t* parms)
 void CL_MapLoading(void)
 {
 }
-void CL_Drop()
-{
-}

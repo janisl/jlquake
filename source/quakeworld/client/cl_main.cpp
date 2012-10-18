@@ -1265,6 +1265,3 @@ void server_referencer_dummy()
 void CL_MapLoading(void)
 {
 }
-void CL_Drop()
-{
-}

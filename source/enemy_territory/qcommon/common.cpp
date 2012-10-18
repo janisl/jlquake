@@ -1395,7 +1395,3 @@ void Com_Shutdown()
 		com_journalFile = 0;
 	}
 }
-
-void CL_Drop()
-{
-}

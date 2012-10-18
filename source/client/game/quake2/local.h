@@ -63,6 +63,10 @@ void CLQ2_RegisterSounds();
 void CLQ2_RequestNextDownload();
 void CLQ2_SendCmd();
 void CLQ2_Disconnect();
+void CLQ2_SendConnectPacket();
+void CLQ2_CheckForResend();
+void CLQ2_Connect_f();
+void CLQ2_Reconnect_f();
 
 //
 //	Demo

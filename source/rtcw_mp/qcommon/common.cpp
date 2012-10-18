@@ -953,7 +953,3 @@ void Com_Shutdown(void)
 	}
 
 }
-
-void CL_Drop()
-{
-}

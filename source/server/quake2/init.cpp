@@ -275,7 +275,7 @@ void SVQ2_InitGame()
 	else
 	{
 		// make sure the client is down
-		CL_Drop();
+		CLQ2_Drop();
 		SCRQ2_BeginLoadingPlaque(false);
 	}
 

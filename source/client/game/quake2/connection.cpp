@@ -528,3 +528,148 @@ void CLQ2_Disconnect()
 
 	cls.state = CA_DISCONNECTED;
 }
+
+//	Called after an ERR_DROP was thrown
+void CLQ2_Drop()
+{
+	if (cls.state == CA_UNINITIALIZED)
+	{
+		return;
+	}
+	if (cls.state == CA_DISCONNECTED)
+	{
+		return;
+	}
+
+	CL_Disconnect(true);
+
+	// drop loading plaque unless this is the initial game start
+	if (cls.q2_disable_servercount != -1)
+	{
+		SCR_EndLoadingPlaque();		// get rid of loading plaque
+	}
+}
+
+//	We have gotten a challenge from the server, so try and connect.
+void CLQ2_SendConnectPacket()
+{
+	netadr_t adr;
+	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
+	{
+		common->Printf("Bad server address\n");
+		cls.q2_connect_time = 0;
+		return;
+	}
+
+	int port = Cvar_VariableValue("qport");
+	cvar_modifiedFlags &= ~CVAR_USERINFO;
+
+	NET_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
+		Q2PROTOCOL_VERSION, port, cls.challenge,
+		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
+}
+
+//	Resend a connect message if the last one has timed out
+void CLQ2_CheckForResend()
+{
+	// if the local server is running and we aren't
+	// then connect
+	if (cls.state == CA_DISCONNECTED && ComQ2_ServerState())
+	{
+		cls.state = CA_CONNECTING;
+		String::NCpy(cls.servername, "localhost", sizeof(cls.servername) - 1);
+		// we don't need a challenge on the localhost
+		CLQ2_SendConnectPacket();
+		return;
+	}
+
+	// resend if we haven't gotten a reply yet
+	if (cls.state != CA_CONNECTING)
+	{
+		return;
+	}
+
+	if (cls.realtime - cls.q2_connect_time < 3000)
+	{
+		return;
+	}
+
+	netadr_t adr;
+	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
+	{
+		common->Printf("Bad server address\n");
+		cls.state = CA_DISCONNECTED;
+		return;
+	}
+
+	cls.q2_connect_time = cls.realtime;	// for retransmit requests
+
+	common->Printf("Connecting to %s...\n", cls.servername);
+
+	NET_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
+}
+
+void CLQ2_Connect_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("usage: connect <server>\n");
+		return;
+	}
+
+	if (ComQ2_ServerState())
+	{	// if running a local server, kill it and reissue
+		SV_Shutdown("Server quit\n");
+	}
+	else
+	{
+		CL_Disconnect(true);
+	}
+
+	const char* server = Cmd_Argv(1);
+
+	NET_Config(true);		// allow remote
+
+	CL_Disconnect(true);
+
+	cls.state = CA_CONNECTING;
+	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
+	cls.q2_connect_time = -99999;	// CLQ2_CheckForResend() will fire immediately
+}
+
+//	The server is changing levels
+void CLQ2_Reconnect_f()
+{
+	//ZOID
+	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
+	if (clc.download)
+	{
+		return;
+	}
+
+	S_StopAllSounds();
+	if (cls.state == CA_CONNECTED)
+	{
+		common->Printf("reconnecting...\n");
+		cls.state = CA_CONNECTED;
+		CL_AddReliableCommand("new");
+		return;
+	}
+
+	if (*cls.servername)
+	{
+		if (cls.state >= CA_CONNECTED)
+		{
+			CL_Disconnect(true);
+			cls.q2_connect_time = cls.realtime - 1500;
+		}
+		else
+		{
+			cls.q2_connect_time = -99999;	// fire immediately
+
+		}
+		cls.state = CA_CONNECTING;
+		common->Printf("reconnecting...\n");
+	}
+}

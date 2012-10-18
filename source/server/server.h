@@ -52,6 +52,5 @@ void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool pr
 // Must be provided
 //
 void CL_MapLoading();
-void CL_Drop();
 
 #endif

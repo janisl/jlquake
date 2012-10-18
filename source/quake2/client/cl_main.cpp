@@ -104,148 +104,6 @@ void CL_Pause_f(void)
 	Cvar_SetValueLatched("paused", !cl_paused->value);
 }
 
-/*
-================
-CL_Drop
-
-Called after an ERR_DROP was thrown
-================
-*/
-void CL_Drop(void)
-{
-	if (cls.state == CA_UNINITIALIZED)
-	{
-		return;
-	}
-	if (cls.state == CA_DISCONNECTED)
-	{
-		return;
-	}
-
-	CL_Disconnect(true);
-
-	// drop loading plaque unless this is the initial game start
-	if (cls.q2_disable_servercount != -1)
-	{
-		SCR_EndLoadingPlaque();		// get rid of loading plaque
-	}
-}
-
-
-/*
-=======================
-CL_SendConnectPacket
-
-We have gotten a challenge from the server, so try and
-connect.
-======================
-*/
-void CL_SendConnectPacket(void)
-{
-	netadr_t adr;
-	int port;
-
-	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
-	{
-		common->Printf("Bad server address\n");
-		cls.q2_connect_time = 0;
-		return;
-	}
-
-	port = Cvar_VariableValue("qport");
-	cvar_modifiedFlags &= ~CVAR_USERINFO;
-
-	NET_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
-		Q2PROTOCOL_VERSION, port, cls.challenge,
-		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
-			MAX_INFO_VALUE_Q2, true, false));
-}
-
-/*
-=================
-CL_CheckForResend
-
-Resend a connect message if the last one has timed out
-=================
-*/
-void CL_CheckForResend(void)
-{
-	netadr_t adr;
-
-	// if the local server is running and we aren't
-	// then connect
-	if (cls.state == CA_DISCONNECTED && ComQ2_ServerState())
-	{
-		cls.state = CA_CONNECTING;
-		String::NCpy(cls.servername, "localhost", sizeof(cls.servername) - 1);
-		// we don't need a challenge on the localhost
-		CL_SendConnectPacket();
-		return;
-//		cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
-	}
-
-	// resend if we haven't gotten a reply yet
-	if (cls.state != CA_CONNECTING)
-	{
-		return;
-	}
-
-	if (cls.realtime - cls.q2_connect_time < 3000)
-	{
-		return;
-	}
-
-	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
-	{
-		common->Printf("Bad server address\n");
-		cls.state = CA_DISCONNECTED;
-		return;
-	}
-
-	cls.q2_connect_time = cls.realtime;	// for retransmit requests
-
-	common->Printf("Connecting to %s...\n", cls.servername);
-
-	NET_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
-}
-
-
-/*
-================
-CL_Connect_f
-
-================
-*/
-void CL_Connect_f(void)
-{
-	char* server;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("usage: connect <server>\n");
-		return;
-	}
-
-	if (ComQ2_ServerState())
-	{	// if running a local server, kill it and reissue
-		SV_Shutdown("Server quit\n");
-	}
-	else
-	{
-		CL_Disconnect(true);
-	}
-
-	server = Cmd_Argv(1);
-
-	NET_Config(true);		// allow remote
-
-	CL_Disconnect(true);
-
-	cls.state = CA_CONNECTING;
-	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
-	cls.q2_connect_time = -99999;	// CL_CheckForResend() will fire immediately
-}
-
 
 /*
 =====================
@@ -387,49 +245,6 @@ void CL_Changing_f(void)
 	common->Printf("\nChanging map...\n");
 }
 
-
-/*
-=================
-CL_Reconnect_f
-
-The server is changing levels
-=================
-*/
-void CL_Reconnect_f(void)
-{
-	//ZOID
-	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
-	if (clc.download)
-	{
-		return;
-	}
-
-	S_StopAllSounds();
-	if (cls.state == CA_CONNECTED)
-	{
-		common->Printf("reconnecting...\n");
-		cls.state = CA_CONNECTED;
-		CL_AddReliableCommand("new");
-		return;
-	}
-
-	if (*cls.servername)
-	{
-		if (cls.state >= CA_CONNECTED)
-		{
-			CL_Disconnect(true);
-			cls.q2_connect_time = cls.realtime - 1500;
-		}
-		else
-		{
-			cls.q2_connect_time = -99999;	// fire immediately
-
-		}
-		cls.state = CA_CONNECTING;
-		common->Printf("reconnecting...\n");
-	}
-}
-
 /*
 =================
 CL_ParseStatusMessage
@@ -550,7 +365,7 @@ void CL_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
 	if (!String::Cmp(c, "challenge"))
 	{
 		cls.challenge = String::Atoi(Cmd_Argv(1));
-		CL_SendConnectPacket();
+		CLQ2_SendConnectPacket();
 		return;
 	}
 
@@ -860,8 +675,8 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("record", CLQ2_Record_f);
 	Cmd_AddCommand("stop", CLQ2_Stop_f);
 
-	Cmd_AddCommand("connect", CL_Connect_f);
-	Cmd_AddCommand("reconnect", CL_Reconnect_f);
+	Cmd_AddCommand("connect", CLQ2_Connect_f);
+	Cmd_AddCommand("reconnect", CLQ2_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 
@@ -1008,7 +823,7 @@ void CL_SendCommand(void)
 	CLQ2_SendCmd();
 
 	// resend a connection request if necessary
-	CL_CheckForResend();
+	CLQ2_CheckForResend();
 }
 
 

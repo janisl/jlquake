@@ -49,6 +49,8 @@ void Sys_SendKeyEvents();
 
 void CLQH_EstablishConnection(const char* name);
 
+void CLQ2_Drop();
+
 // start all the client stuff using the hunk
 void CLT3_StartHunkUsers();
 // shutdown all the client stuff

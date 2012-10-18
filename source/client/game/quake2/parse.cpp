@@ -60,7 +60,7 @@ static void CLQ2_ParseReconnect()
 		clc.download = 0;
 	}
 	cls.state = CA_CONNECTING;
-	cls.q2_connect_time = -99999;	// CL_CheckForResend() will fire immediately
+	cls.q2_connect_time = -99999;	// CLQ2_CheckForResend() will fire immediately
 }
 
 static void CLQ2_ParsePrint(QMsg& message)
