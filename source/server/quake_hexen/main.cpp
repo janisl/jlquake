@@ -1430,7 +1430,7 @@ void SVQH_Shutdown()
 	sv.state = SS_DEAD;
 
 	// stop all client sounds immediately
-	CL_Disconnect();
+	CL_Disconnect(false);
 
 	QMsg net_message;
 	byte net_message_buffer[MAX_MSGLEN];

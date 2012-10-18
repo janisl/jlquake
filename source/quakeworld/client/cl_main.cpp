@@ -286,7 +286,7 @@ void CL_Connect_f(void)
 
 	server = Cmd_Argv(1);
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
 	CL_BeginServerConnect();
@@ -352,22 +352,9 @@ void CL_Rcon_f(void)
 }
 
 
-/*
-=====================
-CL_Disconnect
-
-Sends a disconnect message to the server
-This is also called on Host_FatalError, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect(void)
-{
-	CLQHW_Disconnect();
-}
-
 void CL_Disconnect_f(void)
 {
-	CL_Disconnect();
+	CL_Disconnect(true);
 }
 
 /*
@@ -750,7 +737,7 @@ void CL_Reconnect_f(void)
 		return;
 	}
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	CL_BeginServerConnect();
 }
 
@@ -956,7 +943,7 @@ void CL_ReadPackets(void)
 		realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
 	{
 		common->Printf("\nServer connection timed out.\n");
-		CL_Disconnect();
+		CL_Disconnect(true);
 		return;
 	}
 
@@ -1114,7 +1101,7 @@ void Host_EndGame(const char* message, ...)
 	common->Printf("Host_EndGame: %s\n",string);
 	common->Printf("===========================\n\n");
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	longjmp(host_abort, 1);
 }
@@ -1142,7 +1129,7 @@ void Host_FatalError(const char* error, ...)
 	va_end(argptr);
 	common->Printf("Host_FatalError: %s\n",string);
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	cls.qh_demonum = -1;
 
 	com_errorEntered = false;
@@ -1433,9 +1420,6 @@ void CL_EstablishConnection(const char* name)
 {
 }
 
-void CL_Disconnect(qboolean showMainMenu)
-{
-}
 void CL_MapLoading(void)
 {
 }

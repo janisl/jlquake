@@ -76,7 +76,7 @@ into the cache directory, then opened there.
 void Com_Quit_f()
 {
 #ifndef SERVERONLY
-	CL_Disconnect();
+	CL_Disconnect(true);
 #endif
 	Sys_Quit();
 }

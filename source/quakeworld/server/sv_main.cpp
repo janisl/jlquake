@@ -114,10 +114,6 @@ void idCommonLocal::ServerDisconnected(const char* format, ...)
 
 //============================================================================
 
-void CL_Disconnect()
-{
-}
-
 /*
 ================
 SV_Error
@@ -256,9 +252,6 @@ void Host_Reconnect_f()
 }
 
 void CL_MapLoading(void)
-{
-}
-void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CL_Drop()

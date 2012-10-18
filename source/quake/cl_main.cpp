@@ -24,27 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/game/quake_hexen2/demo.h"
 #include "../client/game/quake_hexen2/connection.h"
 
-/*
-=====================
-CL_Disconnect
-
-Sends a disconnect message to the server
-This is also called on common->Error, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect(void)
-{
-	CLQH_Disconnect();
-}
-
 void CL_Disconnect_f(void)
 {
-	CL_Disconnect();
+	CL_Disconnect(true);
 	SV_Shutdown("");
 }
-
-
-
 
 /*
 =====================
@@ -65,7 +49,7 @@ void CL_EstablishConnection(const char* host)
 		return;
 	}
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	netadr_t addr = {};
 	Netchan_Setup(NS_CLIENT, &clc.netchan, addr, 0);

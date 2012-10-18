@@ -141,7 +141,7 @@ static void CLQH_SendMove(in_usercmd_t* cmd)
 	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
 	{
 		common->Printf("CL_SendMove: lost server connection\n");
-		CL_Disconnect();
+		CL_Disconnect(true);
 	}
 }
 

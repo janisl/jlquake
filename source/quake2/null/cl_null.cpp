@@ -19,11 +19,3 @@ void CL_Shutdown(void)
 void CL_Frame(int msec)
 {
 }
-
-void SCR_EndLoadingPlaque(void)
-{
-}
-
-void CL_Disconnect()
-{
-}

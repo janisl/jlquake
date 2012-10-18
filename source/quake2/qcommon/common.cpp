@@ -366,8 +366,6 @@ byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, int cha
 
 //========================================================
 
-void SCR_EndLoadingPlaque(void);
-
 /*
 =============
 Com_Error_f
@@ -629,9 +627,6 @@ void Host_Reconnect_f()
 }
 
 void CL_MapLoading(void)
-{
-}
-void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CLT3_PacketEvent(netadr_t from, QMsg* msg)

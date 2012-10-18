@@ -133,6 +133,10 @@ void SCRQ2_BeginLoadingPlaque(bool Clear)
 {
 }
 
+void SCR_EndLoadingPlaque()
+{
+}
+
 void CL_KeyEvent(int key, bool down, unsigned time)
 {
 }
@@ -162,5 +166,9 @@ void CLT3_ShutdownAll()
 }
 
 void CLT3_FlushMemory()
+{
+}
+
+void CL_Disconnect(bool showMainMenu)
 {
 }

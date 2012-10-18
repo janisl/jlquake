@@ -33,6 +33,8 @@ void CL_ForwardKnownCommandToServer();
 void CL_ForwardCommandToServer();
 void SCRQH_BeginLoadingPlaque();
 void SCRQ2_BeginLoadingPlaque(bool Clear);
+void SCR_EndLoadingPlaque();
+void CL_Disconnect(bool showMainMenu);
 
 void Key_WriteBindings(fileHandle_t f);
 // the keyboard binding interface must be setup before execing

@@ -1402,9 +1402,6 @@ command line completion
 ===========================================
 */
 
-void CL_Disconnect()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }

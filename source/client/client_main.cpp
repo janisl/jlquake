@@ -18,7 +18,9 @@
 #include "../server/public.h"
 #include "game/quake/local.h"
 #include "game/hexen2/local.h"
+#include "game/quake_hexen2/connection.h"
 #include "game/quake2/local.h"
+#include "game/tech3/local.h"
 
 Cvar* cl_inGameVideo;
 
@@ -421,5 +423,29 @@ void SHOWNET(QMsg& msg, const char* s)
 	if (cl_shownet->integer >= 2)
 	{
 		common->Printf("%3i:%s\n", msg.readcount - 1, s);
+	}
+}
+
+//	Called when a connection, demo, or cinematic is being terminated.
+//	Goes from a connected state to either a menu state or a console state
+//	Sends a disconnect message to the server
+//	This is also called on Com_Error and Com_Quit_f, so it shouldn't cause any errors
+void CL_Disconnect(bool showMainMenu)
+{
+	if (GGameType & (GAME_QuakeWorld |GAME_HexenWorld))
+	{
+		CLQHW_Disconnect();
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		CLQH_Disconnect();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_Disconnect();
+	}
+	else
+	{
+		CLT3_Disconnect(showMainMenu);
 	}
 }

@@ -979,9 +979,6 @@ void Com_Shutdown(void)
 
 }
 
-void CL_Disconnect()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }

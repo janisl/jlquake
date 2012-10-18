@@ -108,7 +108,6 @@ CLIENT / SERVER SYSTEMS
 //
 
 void CL_Init(void);
-void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 

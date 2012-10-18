@@ -746,7 +746,7 @@ static void CLQW_Model_NextDownload()
 				cl.qh_model_name[i]);
 			common->Printf("You may need to download or purchase a %s client "
 					   "pack in order to play on this server.\n\n", fs_gamedir);
-			CL_Disconnect();
+			CL_Disconnect(true);
 			return;
 		}
 	}

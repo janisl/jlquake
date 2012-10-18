@@ -68,6 +68,6 @@ void CL_ReRecord_f(void)
 	common->Printf("recording to %s.\n", name);
 	clc.demorecording = true;
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	CL_BeginServerConnect();
 }

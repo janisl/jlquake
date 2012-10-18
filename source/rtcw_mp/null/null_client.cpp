@@ -45,10 +45,6 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 }
 
-void CL_Disconnect(qboolean showMainMenu)
-{
-}
-
 void CL_MapLoading(void)
 {
 }

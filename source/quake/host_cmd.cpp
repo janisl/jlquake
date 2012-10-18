@@ -36,7 +36,7 @@ void Com_Quit_f(void)
 		MQH_Menu_Quit_f();
 		return;
 	}
-	CL_Disconnect();
+	CL_Disconnect(true);
 #endif
 	SV_Shutdown("");
 
@@ -81,7 +81,7 @@ void Host_Connect_f(void)
 	if (clc.demoplaying)
 	{
 		CLQH_StopPlayback();
-		CL_Disconnect();
+		CL_Disconnect(true);
 	}
 	String::Cpy(name, Cmd_Argv(1));
 	CL_EstablishConnection(name);
@@ -280,7 +280,7 @@ void Host_Stopdemo_f(void)
 		return;
 	}
 	CLQH_StopPlayback();
-	CL_Disconnect();
+	CL_Disconnect(true);
 }
 #endif
 

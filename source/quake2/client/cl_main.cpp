@@ -122,7 +122,7 @@ void CL_Drop(void)
 		return;
 	}
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	// drop loading plaque unless this is the initial game start
 	if (cls.q2_disable_servercount != -1)
@@ -232,14 +232,14 @@ void CL_Connect_f(void)
 	}
 	else
 	{
-		CL_Disconnect();
+		CL_Disconnect(true);
 	}
 
 	server = Cmd_Argv(1);
 
 	NET_Config(true);		// allow remote
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	cls.state = CA_CONNECTING;
 	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
@@ -305,20 +305,6 @@ void CL_Rcon_f(void)
 	}
 
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
-}
-
-/*
-=====================
-CL_Disconnect
-
-Goes from a connected state to full screen console state
-Sends a disconnect message to the server
-This is also called on Com_Error, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect(void)
-{
-	CLQ2_Disconnect();
 }
 
 void CL_Disconnect_f(void)
@@ -431,7 +417,7 @@ void CL_Reconnect_f(void)
 	{
 		if (cls.state >= CA_CONNECTED)
 		{
-			CL_Disconnect();
+			CL_Disconnect(true);
 			cls.q2_connect_time = cls.realtime - 1500;
 		}
 		else
@@ -671,7 +657,7 @@ void CL_ReadPackets(void)
 		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
 		{
 			common->Printf("\nServer connection timed out.\n");
-			CL_Disconnect();
+			CL_Disconnect(true);
 			return;
 		}
 	}
@@ -1251,7 +1237,7 @@ void CL_Shutdown(void)
 	}
 	isdown = true;
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	Com_WriteConfiguration();
 
 	CDAudio_Shutdown();

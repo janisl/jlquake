@@ -50,7 +50,7 @@ static void SVQH_Map_f()
 
 	CLQH_StopDemoLoop();		// stop demo loop in case this fails
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	SVQH_Shutdown();
 
 	CL_ClearKeyCatchers();			// remove console or menu
@@ -737,7 +737,7 @@ static void SVQ1_Loadgame_f()
 	String::Cpy(mapname, GetLine(ReadPos));
 	float time = String::Atof(GetLine(ReadPos));
 
-	CL_Disconnect();
+	CL_Disconnect(true);
 	SVQH_Shutdown();
 
 	SVQH_SpawnServer(mapname, "");
@@ -951,7 +951,7 @@ static void SVH2_Loadgame_f()
 	}
 
 	CLQH_StopDemoLoop();		// stop demo loop in case this fails
-	CL_Disconnect();
+	CL_Disconnect(true);
 	SVH2_RemoveGIPFiles(NULL);
 
 	common->Printf("Loading game from %s...\n", Cmd_Argv(1));

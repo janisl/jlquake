@@ -143,7 +143,7 @@ void Host_EndGame(const char* message, ...)
 	}
 	else
 	{
-		CL_Disconnect();
+		CL_Disconnect(true);
 	}
 
 	longjmp(host_abortserver, 1);
@@ -185,7 +185,7 @@ void Host_Error(const char* error, ...)
 	}
 
 #ifndef DEDICATED
-	CL_Disconnect();
+	CL_Disconnect(true);
 	cls.qh_demonum = -1;
 
 	com_errorEntered = false;
@@ -619,9 +619,6 @@ void Host_Shutdown(void)
 }
 
 #ifdef DEDICATED
-void CL_Disconnect()
-{
-}
 void CL_EstablishConnection(const char* name)
 {
 }
@@ -631,9 +628,6 @@ void Host_Reconnect_f()
 #endif
 
 void CL_MapLoading(void)
-{
-}
-void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CL_Drop()

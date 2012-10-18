@@ -916,7 +916,7 @@ void CLHW_Record_f()
 
 	if (cls.state != CA_DISCONNECTED)
 	{
-		CL_Disconnect();
+		CL_Disconnect(true);
 	}
 
 	common->Printf("recording to %s.\n", name);
@@ -941,7 +941,7 @@ void CLQH_PlayDemo_f()
 //
 // disconnect from server
 //
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 //
 // open the demo file
@@ -1009,7 +1009,7 @@ void CLQHW_PlayDemo_f()
 	//
 	// disconnect from server
 	//
-	CL_Disconnect();
+	CL_Disconnect(true);
 
 	//
 	// open the demo file

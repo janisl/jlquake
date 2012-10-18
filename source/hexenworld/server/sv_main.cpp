@@ -163,10 +163,6 @@ void COM_ServerFrame(float time)
 
 //============================================================================
 
-void CL_Disconnect()
-{
-}
-
 /*
 ====================
 COM_InitServer
@@ -237,9 +233,6 @@ void Host_Reconnect_f()
 }
 
 void CL_MapLoading(void)
-{
-}
-void CL_Disconnect(qboolean showMainMenu)
 {
 }
 void CL_Drop()

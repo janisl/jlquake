@@ -77,7 +77,6 @@ void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color);	// ignor
 void SCR_DrawSmallString(int x, int y, const char* string);
 
 void SCR_Init();
-void SCR_EndLoadingPlaque();
 void SCR_DrawDebugGraph();
 void SCR_CenterPrint(const char* str);
 void SCR_CheckDrawCenterString();
