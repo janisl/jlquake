@@ -7,6 +7,7 @@
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/game/quake_hexen2/demo.h"
+#include "../../client/game/quake_hexen2/connection.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -28,8 +29,6 @@ Cvar* skin;
 Cvar* rate;
 Cvar* noaim;
 Cvar* msg;
-
-double connect_time = -1;				// for connection retransmits
 
 quakeparms_t host_parms;
 
@@ -170,12 +169,12 @@ void CL_SendConnectPacket(void)
 	if (!SOCK_StringToAdr(cls.servername, &adr, HWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
-		connect_time = -1;
+		clqhw_connect_time = -1;
 		return;
 	}
 	t2 = Sys_DoubleTime();
 
-	connect_time = realtime + t2 - t1;	// for retransmit requests
+	clqhw_connect_time = realtime + t2 - t1;	// for retransmit requests
 
 	common->Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cconnect %d \"%s\"\n",
@@ -193,7 +192,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend(void)
 {
-	if (connect_time == -1)
+	if (clqhw_connect_time == -1)
 	{
 		return;
 	}
@@ -201,7 +200,7 @@ void CL_CheckForResend(void)
 	{
 		return;
 	}
-	if (realtime - connect_time > 5.0)
+	if (realtime - clqhw_connect_time > 5.0)
 	{
 		CL_SendConnectPacket();
 	}
@@ -302,42 +301,7 @@ This is also called on Host_FatalError, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-	byte final[10];
-
-	connect_time = -1;
-
-#ifdef _WIN32
-	SetWindowText(GMainWindow, "HexenWorld: disconnected");
-#endif
-
-// stop sounds (especially looping!)
-	clhw_siege = false;	//no more siege display, etc.
-	S_StopAllSounds();
-
-// if running a local server, shut it down
-	if (clc.demoplaying)
-	{
-		CLQH_StopPlayback();
-	}
-	else if (cls.state != CA_DISCONNECTED)
-	{
-		if (clc.demorecording)
-		{
-			CLQH_Stop_f();
-		}
-
-		final[0] = h2clc_stringcmd;
-		String::Cpy((char*)final + 1, "drop");
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
-
-		cls.state = CA_DISCONNECTED;
-
-		clc.demoplaying = clc.demorecording = cls.qh_timedemo = false;
-	}
-	Cam_Reset();
-
+	CLQHW_Disconnect();
 }
 
 void CL_Disconnect_f(void)

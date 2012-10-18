@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "../../server/public.h"
 #include "../../client/game/quake_hexen2/demo.h"
+#include "../../client/game/quake_hexen2/connection.h"
 
 
 // we need to declare some mouse variables here, because the menu system
@@ -55,8 +56,6 @@ Cvar* skin;
 Cvar* rate;
 Cvar* noaim;
 Cvar* msg;
-
-double connect_time = -1;				// for connection retransmits
 
 quakeparms_t host_parms;
 
@@ -201,13 +200,13 @@ void CL_SendConnectPacket(void)
 	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
-		connect_time = -1;
+		clqhw_connect_time = -1;
 		return;
 	}
 
 	t2 = Sys_DoubleTime();
 
-	connect_time = realtime + t2 - t1;	// for retransmit requests
+	clqhw_connect_time = realtime + t2 - t1;	// for retransmit requests
 
 	cls.quakePort = Cvar_VariableValue("qport");
 
@@ -233,7 +232,7 @@ void CL_CheckForResend(void)
 	char data[2048];
 	double t1, t2;
 
-	if (connect_time == -1)
+	if (clqhw_connect_time == -1)
 	{
 		return;
 	}
@@ -241,7 +240,7 @@ void CL_CheckForResend(void)
 	{
 		return;
 	}
-	if (connect_time && realtime - connect_time < 5.0)
+	if (clqhw_connect_time && realtime - clqhw_connect_time < 5.0)
 	{
 		return;
 	}
@@ -250,13 +249,13 @@ void CL_CheckForResend(void)
 	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
 	{
 		common->Printf("Bad server address\n");
-		connect_time = -1;
+		clqhw_connect_time = -1;
 		return;
 	}
 
 	t2 = Sys_DoubleTime();
 
-	connect_time = realtime + t2 - t1;	// for retransmit requests
+	clqhw_connect_time = realtime + t2 - t1;	// for retransmit requests
 
 	common->Printf("Connecting to %s...\n", cls.servername);
 	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
@@ -265,7 +264,7 @@ void CL_CheckForResend(void)
 
 void CL_BeginServerConnect(void)
 {
-	connect_time = 0;
+	clqhw_connect_time = 0;
 	CL_CheckForResend();
 }
 
@@ -363,49 +362,7 @@ This is also called on Host_FatalError, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-	byte final[10];
-
-	connect_time = -1;
-
-#ifdef _WIN32
-	SetWindowText(GMainWindow, "QuakeWorld: disconnected");
-#endif
-
-// stop sounds (especially looping!)
-	S_StopAllSounds();
-
-// if running a local server, shut it down
-	if (clc.demoplaying)
-	{
-		CLQH_StopPlayback();
-	}
-	else if (cls.state != CA_DISCONNECTED)
-	{
-		if (clc.demorecording)
-		{
-			CLQH_Stop_f();
-		}
-
-		final[0] = q1clc_stringcmd;
-		String::Cpy((char*)final + 1, "drop");
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
-		Netchan_Transmit(&clc.netchan, 6, final);
-
-		cls.state = CA_DISCONNECTED;
-
-		clc.demoplaying = clc.demorecording = cls.qh_timedemo = false;
-	}
-	Cam_Reset();
-
-	if (clc.download)
-	{
-		FS_FCloseFile(clc.download);
-		clc.download = 0;
-	}
-
-	CLQW_StopUpload();
-
+	CLQHW_Disconnect();
 }
 
 void CL_Disconnect_f(void)

@@ -13,6 +13,7 @@
 #endif
 #include "../server/public.h"
 #include "../client/game/quake_hexen2/demo.h"
+#include "../client/game/quake_hexen2/connection.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -29,37 +30,7 @@ This is also called on common->Error, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-	CL_ClearParticles();	//jfm: need to clear parts because some now check world
-	S_StopAllSounds();	// stop sounds (especially looping!)
-	clh2_loading_stage = 0;
-
-// if running a local server, shut it down
-	if (clc.demoplaying)
-	{
-		CLQH_StopPlayback();
-	}
-	else if (cls.state == CA_ACTIVE)
-	{
-		if (clc.demorecording)
-		{
-			CLQH_Stop_f();
-		}
-
-		common->DPrintf("Sending h2clc_disconnect\n");
-		clc.netchan.message.Clear();
-		clc.netchan.message.WriteByte(h2clc_disconnect);
-		NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
-		clc.netchan.message.Clear();
-		NET_Close(cls.qh_netcon, &clc.netchan);
-
-		cls.state = CA_DISCONNECTED;
-		SV_Shutdown("");
-
-		SVH2_RemoveGIPFiles(NULL);
-	}
-
-	clc.demoplaying = cls.qh_timedemo = false;
-	clc.qh_signon = 0;
+	CLQH_Disconnect();
 }
 
 void CL_Disconnect_f(void)

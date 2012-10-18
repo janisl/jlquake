@@ -22,9 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../server/public.h"
 #include "../client/game/quake_hexen2/demo.h"
-
-// we need to declare some mouse variables here, because the menu system
-// references them even when on a unix system.
+#include "../client/game/quake_hexen2/connection.h"
 
 /*
 =====================
@@ -36,34 +34,7 @@ This is also called on common->Error, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-// stop sounds (especially looping!)
-	S_StopAllSounds();
-
-// if running a local server, shut it down
-	if (clc.demoplaying)
-	{
-		CLQH_StopPlayback();
-	}
-	else if (cls.state == CA_ACTIVE)
-	{
-		if (clc.demorecording)
-		{
-			CLQH_Stop_f();
-		}
-
-		common->DPrintf("Sending q1clc_disconnect\n");
-		clc.netchan.message.Clear();
-		clc.netchan.message.WriteByte(q1clc_disconnect);
-		NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
-		clc.netchan.message.Clear();
-		NET_Close(cls.qh_netcon, &clc.netchan);
-
-		cls.state = CA_DISCONNECTED;
-		SV_Shutdown("");
-	}
-
-	clc.demoplaying = cls.qh_timedemo = false;
-	clc.qh_signon = 0;
+	CLQH_Disconnect();
 }
 
 void CL_Disconnect_f(void)

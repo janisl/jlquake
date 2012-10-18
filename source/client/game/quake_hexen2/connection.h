@@ -14,5 +14,9 @@
 //**
 //**************************************************************************
 
+extern double clqhw_connect_time;			// for connection retransmits
+
 void CLQH_KeepaliveMessage();
 void CLQH_SendCmd();
+void CLQH_Disconnect();
+void CLQHW_Disconnect();

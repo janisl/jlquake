@@ -18,6 +18,10 @@
 #include "connection.h"
 #include "demo.h"
 #include "../../../server/public.h"
+#include "../quake/local.h"
+#include "../hexen2/local.h"
+
+double clqhw_connect_time = -1;				// for connection retransmits
 
 //	When the client is taking a long time to load stuff, send keepalive messages
 // so the server doesn't disconnect.
@@ -184,4 +188,93 @@ void CLQH_SendCmd()
 	}
 
 	clc.netchan.message.Clear();
+}
+
+void CLQH_Disconnect()
+{
+	//jfm: need to clear parts because some now check world
+	CL_ClearParticles();
+	// stop sounds (especially looping!)
+	S_StopAllSounds();
+	clh2_loading_stage = 0;
+
+	// if running a local server, shut it down
+	if (clc.demoplaying)
+	{
+		CLQH_StopPlayback();
+	}
+	else if (cls.state != CA_DISCONNECTED)
+	{
+		if (clc.demorecording)
+		{
+			CLQH_Stop_f();
+		}
+
+		common->DPrintf("Sending clc_disconnect\n");
+		clc.netchan.message.Clear();
+		clc.netchan.message.WriteByte(GGameType & GAME_Hexen2 ? h2clc_disconnect : q1clc_disconnect);
+		NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
+		clc.netchan.message.Clear();
+		NET_Close(cls.qh_netcon, &clc.netchan);
+
+		cls.state = CA_DISCONNECTED;
+		SV_Shutdown("");
+
+		if (GGameType & GAME_Hexen2)
+		{
+			SVH2_RemoveGIPFiles(NULL);
+		}
+	}
+
+	clc.demoplaying = cls.qh_timedemo = false;
+	clc.qh_signon = 0;
+}
+
+void CLQHW_Disconnect()
+{
+	clqhw_connect_time = -1;
+
+	// stop sounds (especially looping!)
+	S_StopAllSounds();
+
+	if (GGameType & GAME_Hexen2)
+	{
+		clhw_siege = false;	//no more siege display, etc.
+	}
+
+	// if running a local server, shut it down
+	if (clc.demoplaying)
+	{
+		CLQH_StopPlayback();
+	}
+	else if (cls.state != CA_DISCONNECTED)
+	{
+		if (clc.demorecording)
+		{
+			CLQH_Stop_f();
+		}
+
+		byte final[10];
+		final[0] = GGameType & GAME_Hexen2 ? h2clc_stringcmd : q1clc_stringcmd;
+		String::Cpy((char*)final + 1, "drop");
+		Netchan_Transmit(&clc.netchan, 6, final);
+		Netchan_Transmit(&clc.netchan, 6, final);
+		Netchan_Transmit(&clc.netchan, 6, final);
+
+		cls.state = CA_DISCONNECTED;
+
+		clc.demoplaying = clc.demorecording = cls.qh_timedemo = false;
+	}
+	Cam_Reset();
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		if (clc.download)
+		{
+			FS_FCloseFile(clc.download);
+			clc.download = 0;
+		}
+
+		CLQW_StopUpload();
+	}
 }
