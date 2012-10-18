@@ -318,54 +318,7 @@ This is also called on Com_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-	byte final[32];
-
-	if (cls.state == CA_DISCONNECTED)
-	{
-		return;
-	}
-
-	if (cl_timedemo && cl_timedemo->value)
-	{
-		int time;
-
-		time = Sys_Milliseconds_() - cl.q2_timedemo_start;
-		if (time > 0)
-		{
-			common->Printf("%i frames, %3.1f seconds: %3.1f fps\n", cl.q2_timedemo_frames,
-				time / 1000.0, cl.q2_timedemo_frames * 1000.0 / time);
-		}
-	}
-
-	UI_ForceMenuOff();
-
-	cls.q2_connect_time = 0;
-
-	SCR_StopCinematic();
-
-	if (clc.demorecording)
-	{
-		CLQ2_Stop_f();
-	}
-
-	// send a disconnect message to the server
-	final[0] = q2clc_stringcmd;
-	String::Cpy((char*)final + 1, "disconnect");
-	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
-	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
-	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
-	clc.netchan.lastSent = curtime;
-
-	CL_ClearState();
-
-	// stop download
-	if (clc.download)
-	{
-		FS_FCloseFile(clc.download);
-		clc.download = 0;
-	}
-
-	cls.state = CA_DISCONNECTED;
+	CLQ2_Disconnect();
 }
 
 void CL_Disconnect_f(void)

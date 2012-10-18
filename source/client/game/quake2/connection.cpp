@@ -479,3 +479,52 @@ void CLQ2_SendCmd()
 	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
 	clc.netchan.lastSent = com_frameTime;
 }
+
+void CLQ2_Disconnect()
+{
+	if (cls.state == CA_DISCONNECTED)
+	{
+		return;
+	}
+
+	if (cl_timedemo && cl_timedemo->value)
+	{
+		int time = Sys_Milliseconds() - cl.q2_timedemo_start;
+		if (time > 0)
+		{
+			common->Printf("%i frames, %3.1f seconds: %3.1f fps\n", cl.q2_timedemo_frames,
+				time / 1000.0, cl.q2_timedemo_frames * 1000.0 / time);
+		}
+	}
+
+	UI_ForceMenuOff();
+
+	cls.q2_connect_time = 0;
+
+	SCR_StopCinematic();
+
+	if (clc.demorecording)
+	{
+		CLQ2_Stop_f();
+	}
+
+	// send a disconnect message to the server
+	byte final[32];
+	final[0] = q2clc_stringcmd;
+	String::Cpy((char*)final + 1, "disconnect");
+	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
+	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
+	Netchan_Transmit(&clc.netchan, String::Length((char*)final), final);
+	clc.netchan.lastSent = Sys_Milliseconds();
+
+	CL_ClearState();
+
+	// stop download
+	if (clc.download)
+	{
+		FS_FCloseFile(clc.download);
+		clc.download = 0;
+	}
+
+	cls.state = CA_DISCONNECTED;
+}

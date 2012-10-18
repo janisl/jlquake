@@ -62,6 +62,7 @@ extern int clq2_precache_spawncount;
 void CLQ2_RegisterSounds();
 void CLQ2_RequestNextDownload();
 void CLQ2_SendCmd();
+void CLQ2_Disconnect();
 
 //
 //	Demo
