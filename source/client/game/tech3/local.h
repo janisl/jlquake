@@ -53,6 +53,7 @@ void CLT3_SendPureChecksums();
 void CLET_ClearStaticDownload();
 void CLT3_NextDownload();
 void CLT3_InitDownloads();
+void CLT3_Disconnect(bool showMainMenu);
 
 //
 //	Demo

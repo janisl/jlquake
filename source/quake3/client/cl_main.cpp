@@ -331,63 +331,7 @@ This is also called on Com_Error and Com_Quit_f, so it shouldn't cause any error
 */
 void CL_Disconnect(qboolean showMainMenu)
 {
-	if (!com_cl_running || !com_cl_running->integer)
-	{
-		return;
-	}
-
-	// shutting down the client so enter full screen ui mode
-	Cvar_Set("r_uiFullScreen", "1");
-
-	if (clc.demorecording)
-	{
-		CLT3_StopRecord_f();
-	}
-
-	if (clc.download)
-	{
-		FS_FCloseFile(clc.download);
-		clc.download = 0;
-	}
-	*clc.downloadTempName = *clc.downloadName = 0;
-	Cvar_Set("cl_downloadName", "");
-
-	if (clc.demofile)
-	{
-		FS_FCloseFile(clc.demofile);
-		clc.demofile = 0;
-	}
-
-	if (showMainMenu)
-	{
-		UI_ForceMenuOff();
-	}
-
-	SCR_StopCinematic();
-	S_ClearSoundBuffer(true);
-
-	// send a disconnect message to the server
-	// send it a few times in case one is dropped
-	if (cls.state >= CA_CONNECTED)
-	{
-		CL_AddReliableCommand("disconnect");
-		CLT3_WritePacket();
-		CLT3_WritePacket();
-		CLT3_WritePacket();
-	}
-
-	CL_ClearState();
-
-	// wipe the client connection
-	Com_Memset(&clc, 0, sizeof(clc));
-
-	cls.state = CA_DISCONNECTED;
-
-	// allow cheats locally
-	Cvar_Set("sv_cheats", "1");
-
-	// not connected to a pure server anymore
-	cl_connectedToPureServer = false;
+	CLT3_Disconnect(showMainMenu);
 }
 
 /*

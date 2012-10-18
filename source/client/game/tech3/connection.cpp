@@ -644,3 +644,95 @@ void CLT3_InitDownloads()
 
 	CLT3_DownloadsComplete();
 }
+
+void CLT3_Disconnect(bool showMainMenu)
+{
+	if (!com_cl_running || !com_cl_running->integer)
+	{
+		return;
+	}
+
+	// shutting down the client so enter full screen ui mode
+	Cvar_Set("r_uiFullScreen", "1");
+
+	if (clc.demorecording)
+	{
+		CLT3_StopRecord_f();
+	}
+
+	if (!(GGameType & GAME_ET) || !cls.et_bWWWDlDisconnected)
+	{
+		if (clc.download)
+		{
+			FS_FCloseFile(clc.download);
+			clc.download = 0;
+		}
+		if (GGameType & GAME_ET)
+		{
+			*cls.et_downloadTempName = *cls.et_downloadName = 0;
+		}
+		else
+		{
+			*clc.downloadTempName = *clc.downloadName = 0;
+		}
+		Cvar_Set("cl_downloadName", "");
+	}
+
+	if (clc.demofile)
+	{
+		FS_FCloseFile(clc.demofile);
+		clc.demofile = 0;
+	}
+
+	if (showMainMenu)
+	{
+		UI_ForceMenuOff();
+	}
+
+	SCR_StopCinematic();
+	S_ClearSoundBuffer(true);
+
+	// send a disconnect message to the server
+	// send it a few times in case one is dropped
+	if (cls.state >= CA_CONNECTED)
+	{
+		CL_AddReliableCommand("disconnect");
+		CLT3_WritePacket();
+		CLT3_WritePacket();
+		CLT3_WritePacket();
+	}
+
+	CL_ClearState();
+
+	// wipe the client connection
+	Com_Memset(&clc, 0, sizeof(clc));
+
+	if (GGameType & GAME_ET && !cls.et_bWWWDlDisconnected)
+	{
+		CLET_ClearStaticDownload();
+	}
+
+	// allow cheats locally
+	Cvar_Set("sv_cheats", "1");
+
+	// not connected to a pure server anymore
+	cl_connectedToPureServer = false;
+
+	// show_bug.cgi?id=589
+	// don't try a restart if uivm is NULL, as we might be in the middle of a restart already
+	if (GGameType & GAME_ET && uivm && cls.state > CA_DISCONNECTED)
+	{
+		// restart the UI
+		cls.state = CA_DISCONNECTED;
+
+		// shutdown the UI
+		CLT3_ShutdownUI();
+
+		// init the UI
+		CLT3_InitUI();
+	}
+	else
+	{
+		cls.state = CA_DISCONNECTED;
+	}
+}
