@@ -1,6 +1,7 @@
 
 #include "quakedef.h"
 #include "../../client/game/quake_hexen2/demo.h"
+#include "../../client/game/quake_hexen2/connection.h"
 
 /*
 ====================
@@ -50,5 +51,5 @@ void CL_ReRecord_f(void)
 	clc.demorecording = true;
 
 	CL_Disconnect(true);
-	CL_SendConnectPacket();
+	CLQHW_BeginServerConnect();
 }

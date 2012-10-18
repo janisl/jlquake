@@ -32,8 +32,6 @@ void CL_Init(void);
 void CL_NextDemo(void);
 qboolean CL_DemoBehind(void);
 
-void CL_BeginServerConnect(void);
-
 void CL_ReadPackets(void);
 
 int  CL_ReadFromServer(void);

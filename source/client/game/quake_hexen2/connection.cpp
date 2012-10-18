@@ -22,7 +22,7 @@
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 
-double clqhw_connect_time = -1;				// for connection retransmits
+static int clqhw_connect_time = -1;				// for connection retransmits
 
 //	When the client is taking a long time to load stuff, send keepalive messages
 // so the server doesn't disconnect.
@@ -336,4 +336,142 @@ void CLQH_Reconnect_f()
 
 	SCRQH_BeginLoadingPlaque();
 	clc.qh_signon = 0;		// need new connection messages
+}
+
+//	called by CLQHW_Connect_f and CL_CheckResend
+void CLQHW_SendConnectPacket()
+{
+	// JACK: Fixed bug where DNS lookups would cause two connects real fast
+	//       Now, adds lookup time to the connect time.
+	//		 Should I add it to realtime instead?!?!
+
+	if (cls.state != CA_DISCONNECTED)
+	{
+		return;
+	}
+
+	int t1 = Sys_Milliseconds();
+
+	netadr_t adr;
+	if (!SOCK_StringToAdr(cls.servername, &adr, GGameType & GAME_HexenWorld ? HWPORT_SERVER : QWPORT_SERVER))
+	{
+		common->Printf("Bad server address\n");
+		clqhw_connect_time = -1;
+		return;
+	}
+
+	int t2 = Sys_Milliseconds();
+
+	clqhw_connect_time = cls.realtime + t2 - t1;	// for retransmit requests
+
+	char data[2048];
+	if (GGameType & GAME_QuakeWorld)
+	{
+		cls.quakePort = Cvar_VariableValue("qport");
+
+		Info_SetValueForKey(cls.qh_userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING_QW, 64, 64, true, false);
+
+		sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
+			255, 255, 255, 255, QWPROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo);
+	}
+	else
+	{
+		common->Printf("Connecting to %s...\n", cls.servername);
+		sprintf(data, "%c%c%c%cconnect %d \"%s\"\n",
+			255, 255, 255, 255, com_portals, cls.qh_userinfo);
+	}
+
+	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
+}
+
+//	Resend a connect message if the last one has timed out
+void CLQHW_CheckForResend()
+{
+	if (clqhw_connect_time == -1)
+	{
+		return;
+	}
+	if (cls.state != CA_DISCONNECTED)
+	{
+		return;
+	}
+	if (clqhw_connect_time && cls.realtime - clqhw_connect_time < 5000)
+	{
+		return;
+	}
+
+	if (GGameType & GAME_HexenWorld)
+	{
+		CLQHW_SendConnectPacket();
+		return;
+	}
+
+	int t1 = Sys_Milliseconds();
+	netadr_t adr;
+	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
+	{
+		common->Printf("Bad server address\n");
+		clqhw_connect_time = -1;
+		return;
+	}
+
+	int t2 = Sys_Milliseconds();
+
+	clqhw_connect_time = cls.realtime + t2 - t1;	// for retransmit requests
+
+	common->Printf("Connecting to %s...\n", cls.servername);
+	char data[2048];
+	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
+	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
+}
+
+void CLQHW_BeginServerConnect()
+{
+	clqhw_connect_time = 0;
+	CLQHW_CheckForResend();
+}
+
+void CLQHW_Connect_f()
+{
+	char* server;
+
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("usage: connect <server>\n");
+		return;
+	}
+
+	server = Cmd_Argv(1);
+
+	CL_Disconnect(true);
+
+	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
+	CLQHW_BeginServerConnect();
+}
+
+//	The server is changing levels
+void CLQHW_Reconnect_f()
+{
+	if (GGameType & GAME_QuakeWorld && clc.download)	// don't change when downloading
+	{
+		return;
+	}
+
+	S_StopAllSounds();
+
+	if (cls.state == CA_CONNECTED)
+	{
+		common->Printf("reconnecting...\n");
+		CL_AddReliableCommand("new");
+		return;
+	}
+
+	if (!*cls.servername)
+	{
+		common->Printf("No server to reconnect to...\n");
+		return;
+	}
+
+	CL_Disconnect(true);
+	CLQHW_BeginServerConnect();
 }

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../../client/game/quake_hexen2/demo.h"
+#include "../../client/game/quake_hexen2/connection.h"
 
 /*
 ====================
@@ -69,5 +70,5 @@ void CL_ReRecord_f(void)
 	clc.demorecording = true;
 
 	CL_Disconnect(true);
-	CL_BeginServerConnect();
+	CLQHW_BeginServerConnect();
 }

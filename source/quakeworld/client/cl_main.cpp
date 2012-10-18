@@ -173,126 +173,6 @@ void CL_Version_f(void)
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 }
 
-
-/*
-=======================
-CL_SendConnectPacket
-
-called by CL_Connect_f and CL_CheckResend
-======================
-*/
-void CL_SendConnectPacket(void)
-{
-	netadr_t adr;
-	char data[2048];
-	double t1, t2;
-// JACK: Fixed bug where DNS lookups would cause two connects real fast
-//       Now, adds lookup time to the connect time.
-//		 Should I add it to realtime instead?!?!
-
-	if (cls.state != CA_DISCONNECTED)
-	{
-		return;
-	}
-
-	t1 = Sys_DoubleTime();
-
-	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
-	{
-		common->Printf("Bad server address\n");
-		clqhw_connect_time = -1;
-		return;
-	}
-
-	t2 = Sys_DoubleTime();
-
-	clqhw_connect_time = realtime + t2 - t1;	// for retransmit requests
-
-	cls.quakePort = Cvar_VariableValue("qport");
-
-	Info_SetValueForKey(cls.qh_userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING_QW, 64, 64, true, false);
-
-//	common->Printf ("Connecting to %s...\n", cls.servername);
-	sprintf(data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
-		255, 255, 255, 255, QWPROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo);
-	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
-}
-
-/*
-=================
-CL_CheckForResend
-
-Resend a connect message if the last one has timed out
-
-=================
-*/
-void CL_CheckForResend(void)
-{
-	netadr_t adr;
-	char data[2048];
-	double t1, t2;
-
-	if (clqhw_connect_time == -1)
-	{
-		return;
-	}
-	if (cls.state != CA_DISCONNECTED)
-	{
-		return;
-	}
-	if (clqhw_connect_time && realtime - clqhw_connect_time < 5.0)
-	{
-		return;
-	}
-
-	t1 = Sys_DoubleTime();
-	if (!SOCK_StringToAdr(cls.servername, &adr, QWPORT_SERVER))
-	{
-		common->Printf("Bad server address\n");
-		clqhw_connect_time = -1;
-		return;
-	}
-
-	t2 = Sys_DoubleTime();
-
-	clqhw_connect_time = realtime + t2 - t1;	// for retransmit requests
-
-	common->Printf("Connecting to %s...\n", cls.servername);
-	sprintf(data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket(NS_CLIENT, String::Length(data), data, adr);
-}
-
-void CL_BeginServerConnect(void)
-{
-	clqhw_connect_time = 0;
-	CL_CheckForResend();
-}
-
-/*
-================
-CL_Connect_f
-
-================
-*/
-void CL_Connect_f(void)
-{
-	char* server;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("usage: connect <server>\n");
-		return;
-	}
-
-	server = Cmd_Argv(1);
-
-	CL_Disconnect(true);
-
-	String::NCpy(cls.servername, server, sizeof(cls.servername) - 1);
-	CL_BeginServerConnect();
-}
-
-
 /*
 =====================
 CL_Rcon_f
@@ -707,40 +587,6 @@ void CL_Changing_f(void)
 	common->Printf("\nChanging map...\n");
 }
 
-
-/*
-=================
-CL_Reconnect_f
-
-The server is changing levels
-=================
-*/
-void CL_Reconnect_f(void)
-{
-	if (clc.download)	// don't change when downloading
-	{
-		return;
-	}
-
-	S_StopAllSounds();
-
-	if (cls.state == CA_CONNECTED)
-	{
-		common->Printf("reconnecting...\n");
-		CL_AddReliableCommand("new");
-		return;
-	}
-
-	if (!*cls.servername)
-	{
-		common->Printf("No server to reconnect to...\n");
-		return;
-	}
-
-	CL_Disconnect(true);
-	CL_BeginServerConnect();
-}
-
 /*
 =================
 CL_ConnectionlessPacket
@@ -868,7 +714,7 @@ void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
 
 		s = const_cast<char*>(message.ReadString2());
 		cls.challenge = String::Atoi(s);
-		CL_SendConnectPacket();
+		CLQHW_SendConnectPacket();
 		return;
 	}
 
@@ -1053,8 +899,8 @@ void CL_Init(void)
 
 	Cmd_AddCommand("quit", CL_Quit_f);
 
-	Cmd_AddCommand("connect", CL_Connect_f);
-	Cmd_AddCommand("reconnect", CL_Reconnect_f);
+	Cmd_AddCommand("connect", CLQHW_Connect_f);
+	Cmd_AddCommand("reconnect", CLQHW_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("packet", CL_Packet_f);
@@ -1244,7 +1090,7 @@ void Host_Frame(float time)
 		// resend a connection request if necessary
 		if (cls.state == CA_DISCONNECTED)
 		{
-			CL_CheckForResend();
+			CLQHW_CheckForResend();
 		}
 		else
 		{

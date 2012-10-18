@@ -14,11 +14,14 @@
 //**
 //**************************************************************************
 
-extern double clqhw_connect_time;			// for connection retransmits
-
 void CLQH_KeepaliveMessage();
 void CLQH_SendCmd();
 void CLQH_Disconnect();
 void CLQHW_Disconnect();
 void CLQH_Connect_f();
 void CLQH_Reconnect_f();
+void CLQHW_SendConnectPacket();
+void CLQHW_CheckForResend();
+void CLQHW_BeginServerConnect();
+void CLQHW_Connect_f();
+void CLQHW_Reconnect_f();

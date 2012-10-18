@@ -38,8 +38,3 @@ void CL_WriteToServer(hwusercmd_t* cmd);
 // cl_demo.c
 //
 void CL_ReRecord_f(void);
-
-//
-// cl_pred.c
-//
-void CL_SendConnectPacket(void);
