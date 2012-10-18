@@ -20,3 +20,5 @@ void CLQH_KeepaliveMessage();
 void CLQH_SendCmd();
 void CLQH_Disconnect();
 void CLQHW_Disconnect();
+void CLQH_Connect_f();
+void CLQH_Reconnect_f();

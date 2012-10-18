@@ -26,45 +26,6 @@ void CL_Disconnect_f(void)
 	SV_Shutdown("");
 }
 
-
-
-
-/*
-=====================
-CL_EstablishConnection
-
-Host should be either "local" or a net address to be passed on
-=====================
-*/
-void CL_EstablishConnection(const char* host)
-{
-	if (com_dedicated->integer)
-	{
-		return;
-	}
-
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	CL_Disconnect(true);
-
-	netadr_t addr = {};
-	Netchan_Setup(NS_CLIENT, &clc.netchan, addr, 0);
-	cls.qh_netcon = NET_Connect(host, &clc.netchan);
-	if (!cls.qh_netcon)
-	{
-		common->Error("CL_Connect: connect failed\n");
-	}
-	clc.netchan.lastReceived = net_time * 1000;
-	common->DPrintf("CL_EstablishConnection: connected to %s\n", host);
-
-	cls.qh_demonum = -1;			// not in the demo loop now
-	cls.state = CA_ACTIVE;
-	clc.qh_signon = 0;				// need all the signon messages before playing
-}
-
 /*
 =====================
 CL_NextDemo

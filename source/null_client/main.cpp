@@ -172,3 +172,7 @@ void CLT3_FlushMemory()
 void CL_Disconnect(bool showMainMenu)
 {
 }
+
+void CLQH_EstablishConnection(const char* name)
+{
+}

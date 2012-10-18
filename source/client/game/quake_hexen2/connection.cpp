@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "connection.h"
 #include "demo.h"
+#include "network_channel.h"
 #include "../../../server/public.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
@@ -277,4 +278,62 @@ void CLQHW_Disconnect()
 
 		CLQW_StopUpload();
 	}
+}
+
+//	Host should be either "local" or a net address to be passed on
+void CLQH_EstablishConnection(const char* host)
+{
+	if (com_dedicated->integer)
+	{
+		return;
+	}
+
+	if (clc.demoplaying)
+	{
+		return;
+	}
+
+	CL_Disconnect(true);
+
+	netadr_t addr = {};
+	Netchan_Setup(NS_CLIENT, &clc.netchan, addr, 0);
+	cls.qh_netcon = NET_Connect(host, &clc.netchan);
+	if (!cls.qh_netcon)
+	{
+		common->Error("CL_Connect: connect failed\n");
+	}
+	clc.netchan.lastReceived = net_time * 1000;
+	common->DPrintf("CLQH_EstablishConnection: connected to %s\n", host);
+
+	cls.qh_demonum = -1;			// not in the demo loop now
+	cls.state = CA_ACTIVE;
+	clc.qh_signon = 0;				// need all the signon messages before playing
+}
+
+//	User command to connect to server
+void CLQH_Connect_f()
+{
+	cls.qh_demonum = -1;		// stop demo loop in case this fails
+	if (clc.demoplaying)
+	{
+		CLQH_StopPlayback();
+		CL_Disconnect(true);
+	}
+
+	char name[MAX_QPATH];
+	String::Cpy(name, Cmd_Argv(1));
+	CLQH_EstablishConnection(name);
+}
+
+//	This command causes the client to wait for the signon messages again.
+// This is sent just before a server changes levels
+void CLQH_Reconnect_f()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		CL_ClearParticles();	//jfm: for restarts which didn't use to clear parts.
+	}
+
+	SCRQH_BeginLoadingPlaque();
+	clc.qh_signon = 0;		// need new connection messages
 }

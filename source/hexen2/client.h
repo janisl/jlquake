@@ -11,8 +11,6 @@
 //
 void CL_Init(void);
 
-void CL_EstablishConnection(const char* host);
-
 void CL_Disconnect_f(void);
 void CL_NextDemo(void);
 

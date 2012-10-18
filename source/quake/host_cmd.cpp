@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../server/public.h"
 #include "../client/game/quake_hexen2/demo.h"
+#include "../client/game/quake_hexen2/connection.h"
 
 /*
 ==================
@@ -52,42 +53,6 @@ SERVER TRANSITIONS
 */
 
 #ifndef DEDICATED
-/*
-==================
-Host_Reconnect_f
-
-This command causes the client to wait for the signon messages again.
-This is sent just before a server changes levels
-==================
-*/
-void Host_Reconnect_f(void)
-{
-	SCRQH_BeginLoadingPlaque();
-	clc.qh_signon = 0;		// need new connection messages
-}
-
-/*
-=====================
-Host_Connect_f
-
-User command to connect to server
-=====================
-*/
-void Host_Connect_f(void)
-{
-	char name[MAX_QPATH];
-
-	cls.qh_demonum = -1;		// stop demo loop in case this fails
-	if (clc.demoplaying)
-	{
-		CLQH_StopPlayback();
-		CL_Disconnect(true);
-	}
-	String::Cpy(name, Cmd_Argv(1));
-	CL_EstablishConnection(name);
-	Host_Reconnect_f();
-}
-
 /*
 ======================
 Host_Name_f
@@ -298,8 +263,8 @@ void Host_InitCommands(void)
 	Cmd_AddCommand("god", NULL);
 	Cmd_AddCommand("notarget", NULL);
 	Cmd_AddCommand("fly", NULL);
-	Cmd_AddCommand("connect", Host_Connect_f);
-	Cmd_AddCommand("reconnect", Host_Reconnect_f);
+	Cmd_AddCommand("connect", CLQH_Connect_f);
+	Cmd_AddCommand("reconnect", CLQH_Reconnect_f);
 	Cmd_AddCommand("name", Host_Name_f);
 	Cmd_AddCommand("noclip", NULL);
 #endif

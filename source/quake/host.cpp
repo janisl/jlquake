@@ -583,15 +583,6 @@ void Host_Shutdown(void)
 #endif
 }
 
-#ifdef DEDICATED
-void CL_EstablishConnection(const char* name)
-{
-}
-void Host_Reconnect_f()
-{
-}
-#endif
-
 void CL_MapLoading(void)
 {
 }

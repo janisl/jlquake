@@ -1273,14 +1273,7 @@ void server_referencer_dummy()
 	svh2_kingofhill = 0;
 }
 
-void CL_EstablishConnection(const char* name)
-{
-}
-
 void CL_MapLoading(void)
-{
-}
-void Host_Reconnect_f()
 {
 }
 void CL_Drop()

@@ -47,6 +47,8 @@ void CL_MouseEvent(int dx, int dy);
 void CL_JoystickEvent(int axis, int value);
 void Sys_SendKeyEvents();
 
+void CLQH_EstablishConnection(const char* name);
+
 // start all the client stuff using the hunk
 void CLT3_StartHunkUsers();
 // shutdown all the client stuff

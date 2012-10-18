@@ -619,13 +619,6 @@ void Qcommon_Shutdown(void)
 {
 }
 
-void CL_EstablishConnection(const char* name)
-{
-}
-void Host_Reconnect_f()
-{
-}
-
 void CL_MapLoading(void)
 {
 }

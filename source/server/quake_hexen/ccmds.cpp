@@ -807,8 +807,7 @@ static void SVQ1_Loadgame_f()
 
 	if (!com_dedicated->integer)
 	{
-		CL_EstablishConnection("local");
-		Host_Reconnect_f();
+		CLQH_EstablishConnection("local");
 	}
 }
 
@@ -1060,8 +1059,7 @@ static void SVH2_Loadgame_f()
 
 	if (!com_dedicated->integer)
 	{
-		CL_EstablishConnection("local");
-		Host_Reconnect_f();
+		CLQH_EstablishConnection("local");
 	}
 }
 
