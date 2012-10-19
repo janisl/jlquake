@@ -582,7 +582,8 @@ bool CM_HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 //
 //==========================================================================
 
-q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
+q2trace_t CM_BoxTraceQ2(const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
+	clipHandle_t Model, int BrushMask)
 {
 	return GetModel(Model)->BoxTraceQ2(Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask);
 }
@@ -593,8 +594,8 @@ q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clip
 //
 //==========================================================================
 
-q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
-	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
+q2trace_t CM_TransformedBoxTraceQ2(const vec3_t Start, const vec3_t End, const vec3_t Mins,
+	const vec3_t Maxs, clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles)
 {
 	return GetModel(Model)->TransformedBoxTraceQ2(Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles);
 }

@@ -1,6 +1,5 @@
 add_executable(jlquake2
 	client/cl_main.cpp
-	client/cl_pred.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	qcommon/q_shared.cpp

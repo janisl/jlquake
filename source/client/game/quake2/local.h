@@ -150,6 +150,7 @@ void CLQ2_ParseServerMessage(QMsg& message);
 //	Predict
 //
 void CLQ2_CheckPredictionError();
+void CLQ2_PredictMovement();
 
 //
 //	Screen

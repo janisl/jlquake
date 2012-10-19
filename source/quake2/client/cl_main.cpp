@@ -700,7 +700,7 @@ void CL_Frame(int msec)
 	CL_SendCommand();
 
 	// predict all unacknowledged movements
-	CL_PredictMovement();
+	CLQ2_PredictMovement();
 
 	// allow rendering DLL change
 	VID_CheckChanges();

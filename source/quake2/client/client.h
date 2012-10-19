@@ -50,12 +50,4 @@ void CL_Snd_Restart_f(void);
 
 void CL_WriteToServer(q2usercmd_t* cmd);
 
-//
-// cl_parse.c
-//
 void CL_Download_f(void);
-
-//
-// cl_pred.c
-//
-void CL_PredictMovement(void);

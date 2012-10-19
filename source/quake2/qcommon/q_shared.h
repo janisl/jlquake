@@ -63,9 +63,6 @@ COLLISION DETECTION
 ==============================================================
 */
 
-// content masks
-#define MASK_PLAYERSOLID        (BSP38CONTENTS_SOLID | BSP38CONTENTS_PLAYERCLIP | BSP38CONTENTS_WINDOW | BSP38CONTENTS_MONSTER)
-
 /*
 ROGUE - VERSIONS
 1234	08/13/1998		Activision

@@ -132,8 +132,8 @@ struct q2pmove_t
 	int waterlevel;
 
 	// callbacks to test the world
-	q2trace_t (* trace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
-	int (* pointcontents)(vec3_t point);
+	q2trace_t (* trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end);
+	int (* pointcontents)(const vec3_t point);
 };
 
 extern movevars_t movevars;

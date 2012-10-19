@@ -50,8 +50,8 @@
 //
 //==========================================================================
 
-q2trace_t QClipMap38::BoxTraceQ2(vec3_t Start, vec3_t End,
-	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
+q2trace_t QClipMap38::BoxTraceQ2(const vec3_t Start, const vec3_t End,
+	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask)
 {
 	cmodel_t* cmod = ClipHandleToModel(Model);
 	checkcount++;		// for multi-check avoidance
@@ -156,10 +156,10 @@ q2trace_t QClipMap38::BoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-q2trace_t QClipMap38::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
-	vec3_t Mins, vec3_t Maxs,
+q2trace_t QClipMap38::TransformedBoxTraceQ2(const vec3_t Start, const vec3_t End,
+	const vec3_t Mins, const vec3_t Maxs,
 	clipHandle_t Model, int BrushMask,
-	vec3_t Origin, vec3_t Angles)
+	const vec3_t Origin, const vec3_t Angles)
 {
 	// subtract origin offset
 	vec3_t start_l, end_l;
@@ -217,7 +217,7 @@ q2trace_t QClipMap38::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 //
 //==========================================================================
 
-void QClipMap38::RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
+void QClipMap38::RecursiveHullCheck(int num, float p1f, float p2f, const vec3_t p1, const vec3_t p2)
 {
 	cnode_t* node;
 	cplane_t* plane;
