@@ -2040,6 +2040,14 @@ static void SVQW_SnapAll_f()
 	}
 }
 
+static void SVQH_Startdemos_f()
+{
+	if (!SV_IsServerActive())
+	{
+		Cbuf_AddText("map start\n");
+	}
+}
+
 void SVQH_InitOperatorCommands()
 {
 	Cmd_AddCommand("maxplayers", MaxPlayers_f);
@@ -2050,6 +2058,7 @@ void SVQH_InitOperatorCommands()
 	if (com_dedicated->integer)
 	{
 		Cmd_AddCommand("say", SVQH_ConSay_f);
+		Cmd_AddCommand("startdemos", SVQH_Startdemos_f);
 	}
 	if (GGameType & GAME_Quake)
 	{

@@ -20,6 +20,7 @@
 #include "demo.h"
 #include "menu.h"
 #include "connection.h"
+#include "../../../server/public.h"
 
 /*
 ==============================================================================
@@ -1139,4 +1140,68 @@ void CLQH_NextDemo()
 	sprintf(str, "playdemo %s\n", cls.qh_demos[cls.qh_demonum]);
 	Cbuf_InsertText(str);
 	cls.qh_demonum++;
+}
+
+void CLQH_Startdemos_f()
+{
+	if (com_dedicated->integer)
+	{
+		if (!SV_IsServerActive())
+		{
+			Cbuf_AddText("map start\n");
+		}
+		return;
+	}
+
+	int c = Cmd_Argc() - 1;
+	if (c > MAX_DEMOS)
+	{
+		common->Printf("Max %i demos in demoloop\n", MAX_DEMOS);
+		c = MAX_DEMOS;
+	}
+	common->Printf("%i demo(s) in loop\n", c);
+
+	for (int i = 1; i < c + 1; i++)
+	{
+		String::NCpy(cls.qh_demos[i - 1], Cmd_Argv(i), sizeof(cls.qh_demos[0]) - 1);
+	}
+
+	if (!SV_IsServerActive() && cls.qh_demonum != -1 && !clc.demoplaying)
+	{
+		cls.qh_demonum = 0;
+		CL_NextDemo();
+	}
+	else
+	{
+		cls.qh_demonum = -1;
+	}
+}
+
+//	Return to looping demos
+void CLQH_Demos_f()
+{
+	if (com_dedicated->integer)
+	{
+		return;
+	}
+	if (cls.qh_demonum == -1)
+	{
+		cls.qh_demonum = 1;
+	}
+	CL_Disconnect_f();
+	CL_NextDemo();
+}
+
+void CLQH_Stopdemo_f()
+{
+	if (com_dedicated->integer)
+	{
+		return;
+	}
+	if (!clc.demoplaying)
+	{
+		return;
+	}
+	CLQH_StopPlayback();
+	CL_Disconnect(true);
 }
