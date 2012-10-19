@@ -68,12 +68,6 @@ void Sys_Error(const char* error, ...)
 
 /*****************************************************************************/
 
-void Sys_AppActivate(void)
-{
-}
-
-/*****************************************************************************/
-
 static void signal_handler(int sig)
 {
 	fprintf(stderr, "Received signal %d, exiting...\n", sig);

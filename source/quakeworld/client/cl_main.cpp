@@ -639,10 +639,7 @@ void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
 			common->Printf("Command packet from remote host.  Ignored.\n");
 			return;
 		}
-#ifdef _WIN32
-		ShowWindow(GMainWindow, SW_RESTORE);
-		SetForegroundWindow(GMainWindow);
-#endif
+		Sys_AppActivate();
 		s = const_cast<char*>(message.ReadString2());
 
 		String::NCpy(cmdtext, s, sizeof(cmdtext) - 1);

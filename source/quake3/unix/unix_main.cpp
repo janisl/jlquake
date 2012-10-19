@@ -171,10 +171,6 @@ void  Sys_Error(const char* error, ...)
 	Sys_Exit(1);// bk010104 - use single exit point.
 }
 
-void Sys_AppActivate(void)
-{
-}
-
 void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 {
 #ifdef __linux__

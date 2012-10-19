@@ -247,23 +247,6 @@ void CL_Changing_f(void)
 
 /*
 =================
-CL_ParseStatusMessage
-
-Handle a reply from a ping
-=================
-*/
-void CL_ParseStatusMessage(QMsg& message, netadr_t& from)
-{
-	const char* s = message.ReadString2();
-
-	common->Printf("%s\n", s);
-	MQ2_AddToServerList(from, s);
-}
-
-
-
-/*
-=================
 CL_Skins_f
 
 Load or download any custom player skins and models
@@ -285,100 +268,6 @@ void CL_Skins_f(void)
 		CLQ2_ParseClientinfo(i);
 	}
 }
-
-
-/*
-=================
-CL_ConnectionlessPacket
-
-Responses to broadcasts, etc
-=================
-*/
-void CL_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
-{
-	char* s;
-	char* c;
-
-	net_message.BeginReadingOOB();
-	net_message.ReadLong();	// skip the -1
-
-	s = const_cast<char*>(net_message.ReadStringLine2());
-
-	Cmd_TokenizeString(s, false);
-
-	c = Cmd_Argv(0);
-
-	common->Printf("%s: %s\n", SOCK_AdrToString(net_from), c);
-
-	// server connection
-	if (!String::Cmp(c, "client_connect"))
-	{
-		if (cls.state == CA_CONNECTED)
-		{
-			common->Printf("Dup connect received.  Ignored.\n");
-			return;
-		}
-		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
-		clc.netchan.lastReceived = curtime;
-		CL_AddReliableCommand("new");
-		cls.state = CA_CONNECTED;
-		return;
-	}
-
-	// server responding to a status broadcast
-	if (!String::Cmp(c, "info"))
-	{
-		CL_ParseStatusMessage(net_message, net_from);
-		return;
-	}
-
-	// remote command from gui front end
-	if (!String::Cmp(c, "cmd"))
-	{
-		if (!SOCK_IsLocalAddress(net_from))
-		{
-			common->Printf("Command packet from remote host.  Ignored.\n");
-			return;
-		}
-		Sys_AppActivate();
-		s = const_cast<char*>(net_message.ReadString2());
-		Cbuf_AddText(s);
-		Cbuf_AddText("\n");
-		return;
-	}
-	// print command from somewhere
-	if (!String::Cmp(c, "print"))
-	{
-		s = const_cast<char*>(net_message.ReadString2());
-		common->Printf("%s", s);
-		return;
-	}
-
-	// ping from somewhere
-	if (!String::Cmp(c, "ping"))
-	{
-		NET_OutOfBandPrint(NS_CLIENT, net_from, "ack");
-		return;
-	}
-
-	// challenge from the server we are connecting to
-	if (!String::Cmp(c, "challenge"))
-	{
-		cls.challenge = String::Atoi(Cmd_Argv(1));
-		CLQ2_SendConnectPacket();
-		return;
-	}
-
-	// echo request from server
-	if (!String::Cmp(c, "echo"))
-	{
-		NET_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
-		return;
-	}
-
-	common->Printf("Unknown command.\n");
-}
-
 
 /*
 =================
@@ -420,7 +309,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket(net_message, net_from);
+			CLQ2_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 

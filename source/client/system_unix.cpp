@@ -106,3 +106,7 @@ bool Sys_IsNumLockDown()
 	// Gordon: FIXME for timothee
 	return false;
 }
+
+void Sys_AppActivate()
+{
+}

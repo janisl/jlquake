@@ -67,12 +67,6 @@ void Sys_Error(const char* error, ...)
 
 /*****************************************************************************/
 
-void Sys_AppActivate(void)
-{
-}
-
-/*****************************************************************************/
-
 int main(int argc, char** argv)
 {
 	int time, oldtime, newtime;

@@ -102,19 +102,6 @@ void Sys_Init(void)
 */
 
 /*
-=================
-Sys_AppActivate
-=================
-*/
-void Sys_AppActivate(void)
-{
-#ifndef DEDICATED_ONLY
-	ShowWindow(GMainWindow, SW_RESTORE);
-	SetForegroundWindow(GMainWindow);
-#endif
-}
-
-/*
 ==================
 ParseCommandLine
 

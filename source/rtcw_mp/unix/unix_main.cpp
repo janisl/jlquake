@@ -249,10 +249,6 @@ void floating_point_exception_handler(int whatever)
 	signal(SIGFPE, floating_point_exception_handler);
 }
 
-void Sys_AppActivate(void)
-{
-}
-
 void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 {
 #ifdef __linux__

@@ -118,3 +118,9 @@ bool Sys_IsNumLockDown()
 void Sys_SendKeyEvents()
 {
 }
+
+void Sys_AppActivate()
+{
+	ShowWindow(GMainWindow, SW_RESTORE);
+	SetForegroundWindow(GMainWindow);
+}

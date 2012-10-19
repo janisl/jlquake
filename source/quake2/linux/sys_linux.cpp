@@ -51,10 +51,6 @@ void Sys_Error(const char* error, ...)
 
 }
 
-void Sys_AppActivate(void)
-{
-}
-
 /*****************************************************************************/
 
 static void signal_handler(int sig, siginfo_t* info, void* secret)

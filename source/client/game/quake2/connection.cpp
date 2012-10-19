@@ -18,6 +18,7 @@
 #include "local.h"
 #include "../../../server/public.h"
 #include "../../../common/file_formats/md2.h"
+#include "menu.h"
 
 #define PLAYER_MULT 5
 
@@ -672,4 +673,96 @@ void CLQ2_Reconnect_f()
 		cls.state = CA_CONNECTING;
 		common->Printf("reconnecting...\n");
 	}
+}
+
+//	Handle a reply from a ping
+static void CLQ2_ParseStatusMessage(QMsg& message, netadr_t& from)
+{
+	const char* s = message.ReadString2();
+
+	common->Printf("%s\n", s);
+	MQ2_AddToServerList(from, s);
+}
+
+//	Responses to broadcasts, etc
+void CLQ2_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
+{
+	net_message.BeginReadingOOB();
+	net_message.ReadLong();	// skip the -1
+
+	const char* s = net_message.ReadStringLine2();
+
+	Cmd_TokenizeString(s, false);
+
+	const char* c = Cmd_Argv(0);
+
+	common->Printf("%s: %s\n", SOCK_AdrToString(net_from), c);
+
+	// server connection
+	if (!String::Cmp(c, "client_connect"))
+	{
+		if (cls.state == CA_CONNECTED)
+		{
+			common->Printf("Dup connect received.  Ignored.\n");
+			return;
+		}
+		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
+		clc.netchan.lastReceived = Sys_Milliseconds();
+		CL_AddReliableCommand("new");
+		cls.state = CA_CONNECTED;
+		return;
+	}
+
+	// server responding to a status broadcast
+	if (!String::Cmp(c, "info"))
+	{
+		CLQ2_ParseStatusMessage(net_message, net_from);
+		return;
+	}
+
+	// remote command from gui front end
+	if (!String::Cmp(c, "cmd"))
+	{
+		if (!SOCK_IsLocalAddress(net_from))
+		{
+			common->Printf("Command packet from remote host.  Ignored.\n");
+			return;
+		}
+		Sys_AppActivate();
+		s = net_message.ReadString2();
+		Cbuf_AddText(s);
+		Cbuf_AddText("\n");
+		return;
+	}
+	// print command from somewhere
+	if (!String::Cmp(c, "print"))
+	{
+		s = net_message.ReadString2();
+		common->Printf("%s", s);
+		return;
+	}
+
+	// ping from somewhere
+	if (!String::Cmp(c, "ping"))
+	{
+		NET_OutOfBandPrint(NS_CLIENT, net_from, "ack");
+		return;
+	}
+
+	// challenge from the server we are connecting to
+	if (!String::Cmp(c, "challenge"))
+	{
+		cls.challenge = String::Atoi(Cmd_Argv(1));
+		CLQ2_SendConnectPacket();
+		return;
+	}
+
+	// echo request from server
+	if (!String::Cmp(c, "echo"))
+	{
+		NET_OutOfBandPrint(NS_CLIENT, net_from, "%s", Cmd_Argv(1));
+		return;
+	}
+
+	common->Printf("Unknown command.\n");
 }

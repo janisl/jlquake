@@ -636,6 +636,7 @@ char* Sys_GetClipboardData();	// note that this isn't journaled...
 void Sys_StartProcess(const char* exeName, bool doExit);
 void Sys_OpenURL(const char* url, bool doExit);
 bool Sys_IsNumLockDown();
+void Sys_AppActivate();
 
 //
 //	Utils
