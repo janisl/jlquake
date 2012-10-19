@@ -35,7 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 Cvar* rcon_client_password;
 Cvar* rconAddress;
 
-Cvar* cl_timeout;
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 

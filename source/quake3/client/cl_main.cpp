@@ -30,7 +30,6 @@ void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* poi
 Cvar* rcon_client_password;
 Cvar* rconAddress;
 
-Cvar* cl_timeout;
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 

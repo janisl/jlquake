@@ -27,6 +27,8 @@ Cvar* cl_inGameVideo;
 
 Cvar* cl_timedemo;
 
+Cvar* cl_timeout;
+
 Cvar* clqh_nolerp;
 
 // these two are not intended to be set directly

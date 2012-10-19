@@ -552,7 +552,7 @@ void CLQ2_Drop()
 }
 
 //	We have gotten a challenge from the server, so try and connect.
-void CLQ2_SendConnectPacket()
+static void CLQ2_SendConnectPacket()
 {
 	netadr_t adr;
 	if (!SOCK_StringToAdr(cls.servername, &adr, Q2PORT_SERVER))
@@ -685,7 +685,7 @@ static void CLQ2_ParseStatusMessage(QMsg& message, netadr_t& from)
 }
 
 //	Responses to broadcasts, etc
-void CLQ2_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
+static void CLQ2_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
 {
 	net_message.BeginReadingOOB();
 	net_message.ReadLong();	// skip the -1
@@ -765,4 +765,80 @@ void CLQ2_ConnectionlessPacket(QMsg& net_message, netadr_t& net_from)
 	}
 
 	common->Printf("Unknown command.\n");
+}
+
+void CLQ2_ReadPackets()
+{
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_Q2];
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
+	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
+	{
+		//
+		// remote command packet
+		//
+		if (*(int*)net_message._data == -1)
+		{
+			CLQ2_ConnectionlessPacket(net_message, net_from);
+			continue;
+		}
+
+		if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
+		{
+			continue;		// dump it if not connected
+
+		}
+		if (net_message.cursize < 8)
+		{
+			common->Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
+			continue;
+		}
+
+		//
+		// packet from server
+		//
+		if (!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
+		{
+			common->DPrintf("%s:sequenced packet without connection\n",
+				SOCK_AdrToString(net_from));
+			continue;
+		}
+		if (!Netchan_Process(&clc.netchan, &net_message))
+		{
+			continue;		// wasn't accepted for some reason
+		}
+		clc.netchan.lastReceived = Sys_Milliseconds();
+		CLQ2_ParseServerMessage(net_message);
+
+		CLQ2_AddNetgraph();
+
+		//
+		// we don't know if it is ok to save a demo message until
+		// after we have parsed the frame
+		//
+		if (clc.demorecording && !cls.q2_demowaiting)
+		{
+			CLQ2_WriteDemoMessage(&net_message, 8);
+		}
+	}
+
+	//
+	// check timeout
+	//
+	if (cls.state >= CA_CONNECTED &&
+		cls.realtime - clc.netchan.lastReceived > cl_timeout->value * 1000)
+	{
+		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
+		{
+			common->Printf("\nServer connection timed out.\n");
+			CL_Disconnect(true);
+			return;
+		}
+	}
+	else
+	{
+		cl.timeoutcount = 0;
+	}
 }

@@ -37,8 +37,6 @@ Cvar* rcon_client_password;
 Cvar* rcon_address;
 
 Cvar* cl_autoskins;
-Cvar* cl_timeout;
-//Cvar	*cl_minfps;
 Cvar* cl_maxfps;
 
 //
@@ -269,110 +267,6 @@ void CL_Skins_f(void)
 	}
 }
 
-/*
-=================
-CL_DumpPackets
-
-A vain attempt to help bad TCP stacks that cause problems
-when they overflow
-=================
-*/
-void CL_DumpPackets(void)
-{
-	netadr_t net_from;
-	QMsg net_message;
-	byte net_message_buffer[MAX_MSGLEN_Q2];
-	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
-	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
-	{
-		common->Printf("dumnping a packet\n");
-	}
-}
-
-/*
-=================
-CL_ReadPackets
-=================
-*/
-void CL_ReadPackets(void)
-{
-	netadr_t net_from;
-	QMsg net_message;
-	byte net_message_buffer[MAX_MSGLEN_Q2];
-	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
-
-	while (NET_GetPacket(NS_CLIENT, &net_from, &net_message))
-	{
-//	common->Printf ("packet\n");
-		//
-		// remote command packet
-		//
-		if (*(int*)net_message._data == -1)
-		{
-			CLQ2_ConnectionlessPacket(net_message, net_from);
-			continue;
-		}
-
-		if (cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING)
-		{
-			continue;		// dump it if not connected
-
-		}
-		if (net_message.cursize < 8)
-		{
-			common->Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
-			continue;
-		}
-
-		//
-		// packet from server
-		//
-		if (!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
-		{
-			common->DPrintf("%s:sequenced packet without connection\n",
-				SOCK_AdrToString(net_from));
-			continue;
-		}
-		if (!Netchan_Process(&clc.netchan, &net_message))
-		{
-			continue;		// wasn't accepted for some reason
-		}
-		clc.netchan.lastReceived = curtime;
-		CLQ2_ParseServerMessage(net_message);
-
-		CLQ2_AddNetgraph();
-
-		//
-		// we don't know if it is ok to save a demo message until
-		// after we have parsed the frame
-		//
-		if (clc.demorecording && !cls.q2_demowaiting)
-		{
-			CLQ2_WriteDemoMessage(&net_message, 8);
-		}
-	}
-
-	//
-	// check timeout
-	//
-	if (cls.state >= CA_CONNECTED &&
-		cls.realtime - clc.netchan.lastReceived > cl_timeout->value * 1000)
-	{
-		if (++cl.timeoutcount > 5)	// timeoutcount saves debugger
-		{
-			common->Printf("\nServer connection timed out.\n");
-			CL_Disconnect(true);
-			return;
-		}
-	}
-	else
-	{
-		cl.timeoutcount = 0;
-	}
-
-}
-
-
 //=============================================================================
 
 /*
@@ -402,22 +296,15 @@ void CL_Snd_Restart_f(void)
 	CLQ2_RegisterSounds();
 }
 
-/*
-=================
-CL_Precache_f
-
-The server will send this command right
-before allowing the client into the server
-=================
-*/
-void CL_Precache_f(void)
+//	The server will send this command right
+// before allowing the client into the server
+void CLQ2_Precache_f()
 {
 	//Yet another hack to let old demos work
 	//the old precache sequence
 	if (Cmd_Argc() < 2)
 	{
 		int map_checksum;		// for detecting cheater maps
-
 		CM_LoadMap(cl.q2_configstrings[Q2CS_MODELS + 1], true, &map_checksum);
 		CLQ2_RegisterSounds();
 		CLQ2_PrepRefresh();
@@ -573,7 +460,7 @@ void CL_InitLocal(void)
 
 	Cmd_AddCommand("setenv", CL_Setenv_f);
 
-	Cmd_AddCommand("precache", CL_Precache_f);
+	Cmd_AddCommand("precache", CLQ2_Precache_f);
 
 	Cmd_AddCommand("download", CL_Download_f);
 
@@ -807,7 +694,7 @@ void CL_Frame(int msec)
 	}
 
 	// fetch results from server
-	CL_ReadPackets();
+	CLQ2_ReadPackets();
 
 	// send a new command message to the server
 	CL_SendCommand();

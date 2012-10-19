@@ -16,8 +16,6 @@ Cvar* rcon_password;
 
 Cvar* rcon_address;
 
-Cvar* cl_timeout;
-
 Cvar* entlatency;
 
 //
