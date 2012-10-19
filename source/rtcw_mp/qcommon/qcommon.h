@@ -33,20 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 /*
 ==============================================================
 
-PROTOCOL
-
-==============================================================
-*/
-
-// long version used by the client in diagnostic window
-#define PROTOCOL_MISMATCH_ERROR_LONG "ERROR: Protocol Mismatch Between Client and Server.\n\n\
-The server you attempted to join is running an incompatible version of the game.\n\
-You or the server may be running older versions of the game. Press the auto-update\
- button if it appears on the Main Menu screen."
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because

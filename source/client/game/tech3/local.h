@@ -55,9 +55,9 @@ void CLT3_NextDownload();
 void CLT3_InitDownloads();
 void CLT3_Disconnect(bool showMainMenu);
 void CLT3_CheckForResend();
-void CLT3_RequestMotd();
 void CLT3_Connect_f();
 void CLT3_Reconnect_f();
+void CLT3_ConnectionlessPacket(netadr_t from, QMsg* msg);
 
 //
 //	Demo
