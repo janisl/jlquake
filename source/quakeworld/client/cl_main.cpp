@@ -43,10 +43,6 @@ Cvar* cl_maxfps;
 
 Cvar* entlatency;
 
-Cvar* localid;
-
-static qboolean allowremotecmd = true;
-
 //
 // info mirrors
 //
@@ -589,148 +585,6 @@ void CL_Changing_f(void)
 
 /*
 =================
-CL_ConnectionlessPacket
-
-Responses to broadcasts, etc
-=================
-*/
-void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
-{
-	char* s;
-	int c;
-
-	message.BeginReadingOOB();
-	message.ReadLong();			// skip the -1
-
-	c = message.ReadByte();
-	if (!clc.demoplaying)
-	{
-		common->Printf("%s: ", SOCK_AdrToString(net_from));
-	}
-//	common->DPrintf ("%s", net_message.data + 5);
-	if (c == S2C_CONNECTION)
-	{
-		common->Printf("connection\n");
-		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
-		{
-			if (!clc.demoplaying)
-			{
-				common->Printf("Dup connect received.  Ignored.\n");
-			}
-			return;
-		}
-		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, cls.quakePort);
-		clc.netchan.lastReceived = realtime * 1000;
-		CL_AddReliableCommand("new");
-		cls.state = CA_CONNECTED;
-		common->Printf("Connected.\n");
-		allowremotecmd = false;	// localid required now for remote cmds
-		return;
-	}
-	// remote command from gui front end
-	if (c == A2C_CLIENT_COMMAND)
-	{
-		char cmdtext[2048];
-
-		common->Printf("client command\n");
-
-		if (!SOCK_IsLocalIP(net_from))
-		{
-			common->Printf("Command packet from remote host.  Ignored.\n");
-			return;
-		}
-		Sys_AppActivate();
-		s = const_cast<char*>(message.ReadString2());
-
-		String::NCpy(cmdtext, s, sizeof(cmdtext) - 1);
-		cmdtext[sizeof(cmdtext) - 1] = 0;
-
-		s = const_cast<char*>(message.ReadString2());
-
-		while (*s && String::IsSpace(*s))
-			s++;
-		while (*s && String::IsSpace(s[String::Length(s) - 1]))
-			s[String::Length(s) - 1] = 0;
-
-		if (!allowremotecmd && (!*localid->string || String::Cmp(localid->string, s)))
-		{
-			if (!*localid->string)
-			{
-				common->Printf("===========================\n");
-				common->Printf("Command packet received from local host, but no "
-						   "localid has been set.  You may need to upgrade your server "
-						   "browser.\n");
-				common->Printf("===========================\n");
-				return;
-			}
-			common->Printf("===========================\n");
-			common->Printf("Invalid localid on command packet received from local host. "
-					   "\n|%s| != |%s|\n"
-					   "You may need to reload your server browser and QuakeWorld.\n",
-				s, localid->string);
-			common->Printf("===========================\n");
-			Cvar_Set("localid", "");
-			return;
-		}
-
-		Cbuf_AddText(cmdtext);
-		allowremotecmd = false;
-		return;
-	}
-	// print command from somewhere
-	if (c == A2C_PRINT)
-	{
-		common->Printf("print\n");
-
-		s = const_cast<char*>(message.ReadString2());
-		Con_ConsolePrint(s);
-		return;
-	}
-
-	// ping from somewhere
-	if (c == A2A_PING)
-	{
-		char data[6];
-
-		common->Printf("ping\n");
-
-		data[0] = 0xff;
-		data[1] = 0xff;
-		data[2] = 0xff;
-		data[3] = 0xff;
-		data[4] = A2A_ACK;
-		data[5] = 0;
-
-		NET_SendPacket(NS_CLIENT, 6, &data, net_from);
-		return;
-	}
-
-	if (c == S2C_CHALLENGE)
-	{
-		common->Printf("challenge\n");
-
-		s = const_cast<char*>(message.ReadString2());
-		cls.challenge = String::Atoi(s);
-		CLQHW_SendConnectPacket();
-		return;
-	}
-
-#if 0
-	if (c == q1svc_disconnect)
-	{
-		common->Printf("disconnect\n");
-
-		common->Error("Server disconnected");
-		return;
-	}
-#endif
-
-	common->Printf("unknown:  %c\n", c);
-}
-
-
-/*
-=================
 CL_ReadPackets
 =================
 */
@@ -748,7 +602,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket(net_message, net_from);
+			CLQHW_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 
@@ -862,7 +716,7 @@ void CL_Init(void)
 
 	entlatency = Cvar_Get("entlatency", "20", 0);
 
-	localid = Cvar_Get("localid", "", 0);
+	clqw_localid = Cvar_Get("localid", "", 0);
 
 	clqw_baseskin = Cvar_Get("baseskin", "base", 0);
 	clqw_noskins = Cvar_Get("noskins", "0", 0);

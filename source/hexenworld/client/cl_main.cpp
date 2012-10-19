@@ -552,91 +552,6 @@ void CL_Changing_f(void)
 
 /*
 =================
-CL_ConnectionlessPacket
-
-Responses to broadcasts, etc
-=================
-*/
-void CL_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
-{
-	char* s;
-	int c;
-
-	message.BeginReadingOOB();
-	message.ReadLong();			// skip the -1
-
-	c = message.ReadByte();
-	if (!clc.demoplaying)
-	{
-		common->Printf("%s:\n", SOCK_AdrToString(net_from));
-	}
-	common->DPrintf("%s", message._data + 5);
-	if (c == S2C_CONNECTION)
-	{
-		if (cls.state == CA_CONNECTED)
-		{
-			if (!clc.demoplaying)
-			{
-				common->Printf("Dup connect received.  Ignored.\n");
-			}
-			return;
-		}
-		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, 0);
-		clc.netchan.lastReceived = realtime * 1000;
-		CL_AddReliableCommand("new");
-		cls.state = CA_CONNECTED;
-		common->Printf("Connected.\n");
-		return;
-	}
-	// remote command from gui front end
-	if (c == A2C_CLIENT_COMMAND)
-	{
-		if (!SOCK_IsLocalIP(net_from))
-		{
-			common->Printf("Command packet from remote host.  Ignored.\n");
-			return;
-		}
-		Sys_AppActivate();
-		s = const_cast<char*>(message.ReadString2());
-		Cbuf_AddText(s);
-		return;
-	}
-	// print command from somewhere
-	if (c == A2C_PRINT)
-	{
-		s = const_cast<char*>(message.ReadString2());
-		common->Printf(s);
-		return;
-	}
-
-	// ping from somewhere
-	if (c == A2A_PING)
-	{
-		char data[6];
-
-		data[0] = 0xff;
-		data[1] = 0xff;
-		data[2] = 0xff;
-		data[3] = 0xff;
-		data[4] = A2A_ACK;
-		data[5] = 0;
-
-		NET_SendPacket(NS_CLIENT, 6, &data, net_from);
-		return;
-	}
-
-	if (c == h2svc_disconnect)
-	{
-		common->Error("Server disconnected\n");
-		return;
-	}
-
-	common->Printf("Unknown command:\n%c\n", c);
-}
-
-
-/*
-=================
 CL_ReadPackets
 =================
 */
@@ -654,7 +569,7 @@ void CL_ReadPackets(void)
 		//
 		if (*(int*)net_message._data == -1)
 		{
-			CL_ConnectionlessPacket(net_message, net_from);
+			CLQHW_ConnectionlessPacket(net_message, net_from);
 			continue;
 		}
 

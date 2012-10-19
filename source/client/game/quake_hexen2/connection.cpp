@@ -24,6 +24,9 @@
 
 static int clqhw_connect_time = -1;				// for connection retransmits
 
+static bool clqw_allowremotecmd = true;
+Cvar* clqw_localid;
+
 //	When the client is taking a long time to load stuff, send keepalive messages
 // so the server doesn't disconnect.
 void CLQH_KeepaliveMessage()
@@ -474,4 +477,141 @@ void CLQHW_Reconnect_f()
 
 	CL_Disconnect(true);
 	CLQHW_BeginServerConnect();
+}
+
+//	Responses to broadcasts, etc
+void CLQHW_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
+{
+	message.BeginReadingOOB();
+	message.ReadLong();			// skip the -1
+
+	int c = message.ReadByte();
+	if (!clc.demoplaying)
+	{
+		common->Printf("%s: ", SOCK_AdrToString(net_from));
+	}
+	if (c == S2C_CONNECTION)
+	{
+		common->Printf("connection\n");
+		if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
+		{
+			if (!clc.demoplaying)
+			{
+				common->Printf("Dup connect received.  Ignored.\n");
+			}
+			return;
+		}
+		Netchan_Setup(NS_CLIENT, &clc.netchan, net_from, GGameType & GAME_HexenWorld ? 0 : cls.quakePort);
+		clc.netchan.lastReceived = cls.realtime;
+		CL_AddReliableCommand("new");
+		cls.state = CA_CONNECTED;
+		common->Printf("Connected.\n");
+		if (GGameType & GAME_QuakeWorld)
+		{
+			clqw_allowremotecmd = false;	// localid required now for remote cmds
+		}
+		return;
+	}
+	// remote command from gui front end
+	if (c == A2C_CLIENT_COMMAND)
+	{
+		common->Printf("client command\n");
+
+		if (!SOCK_IsLocalIP(net_from))
+		{
+			common->Printf("Command packet from remote host.  Ignored.\n");
+			return;
+		}
+		Sys_AppActivate();
+
+		const char* s = message.ReadString2();
+		char cmdtext[2048];
+		String::NCpyZ(cmdtext, s, sizeof(cmdtext));
+
+		if (GGameType & GAME_QuakeWorld)
+		{
+			char* s2 = const_cast<char*>(message.ReadString2());
+
+			while (*s2 && String::IsSpace(*s2))
+			{
+				s2++;
+			}
+			while (*s2 && String::IsSpace(s2[String::Length(s2) - 1]))
+			{
+				s2[String::Length(s2) - 1] = 0;
+			}
+
+			if (!clqw_allowremotecmd && (!*clqw_localid->string || String::Cmp(clqw_localid->string, s2)))
+			{
+				if (!*clqw_localid->string)
+				{
+					common->Printf("===========================\n");
+					common->Printf("Command packet received from local host, but no "
+						"localid has been set.  You may need to upgrade your server "
+						"browser.\n");
+					common->Printf("===========================\n");
+					return;
+				}
+				common->Printf("===========================\n");
+				common->Printf("Invalid localid on command packet received from local host. "
+					"\n|%s| != |%s|\n"
+					"You may need to reload your server browser and QuakeWorld.\n",
+					s2, clqw_localid->string);
+				common->Printf("===========================\n");
+				Cvar_Set("localid", "");
+				return;
+			}
+		}
+
+		Cbuf_AddText(cmdtext);
+		if (GGameType & GAME_QuakeWorld)
+		{
+			clqw_allowremotecmd = false;
+		}
+		return;
+	}
+	// print command from somewhere
+	if (c == A2C_PRINT)
+	{
+		common->Printf("print\n");
+
+		const char* s = message.ReadString2();
+		Con_ConsolePrint(s);
+		return;
+	}
+
+	// ping from somewhere
+	if (c == A2A_PING)
+	{
+		common->Printf("ping\n");
+
+		char data[6];
+		data[0] = 0xff;
+		data[1] = 0xff;
+		data[2] = 0xff;
+		data[3] = 0xff;
+		data[4] = A2A_ACK;
+		data[5] = 0;
+
+		NET_SendPacket(NS_CLIENT, 6, &data, net_from);
+		return;
+	}
+
+	if (GGameType & GAME_QuakeWorld && c == S2C_CHALLENGE)
+	{
+		common->Printf("challenge\n");
+
+		const char* s = message.ReadString2();
+		cls.challenge = String::Atoi(s);
+		CLQHW_SendConnectPacket();
+		return;
+	}
+
+	if (GGameType & GAME_HexenWorld && c == h2svc_disconnect)
+	{
+		common->Error("Server disconnected\n");
+		return;
+	}
+
+	common->Printf("unknown:  %c\n", c);
 }

@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+extern Cvar* clqw_localid;
+
 void CLQH_KeepaliveMessage();
 void CLQH_SendCmd();
 void CLQH_Disconnect();
@@ -25,3 +27,4 @@ void CLQHW_CheckForResend();
 void CLQHW_BeginServerConnect();
 void CLQHW_Connect_f();
 void CLQHW_Reconnect_f();
+void CLQHW_ConnectionlessPacket(QMsg& message, netadr_t& net_from);
