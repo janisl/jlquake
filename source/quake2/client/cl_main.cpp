@@ -954,7 +954,3 @@ float* CL_GetSimOrg()
 {
 	return NULL;
 }
-
-void CL_NextDemo()
-{
-}

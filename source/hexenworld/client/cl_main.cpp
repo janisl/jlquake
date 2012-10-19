@@ -500,20 +500,6 @@ void CL_Packet_f(void)
 	NET_SendPacket(NS_CLIENT, out - send, send, adr);
 }
 
-
-/*
-=====================
-CL_NextDemo
-
-Called to play the next demo in the demo loop
-=====================
-*/
-void CL_NextDemo(void)
-{
-	CLQH_NextDemo();
-}
-
-
 /*
 =================
 CL_Changing_f
@@ -575,9 +561,6 @@ void CL_ReadPackets(void)
 		}
 		clc.netchan.lastReceived = realtime * 1000;
 		CLHW_ParseServerMessage(net_message);
-
-//		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
-//			return;
 	}
 
 	//

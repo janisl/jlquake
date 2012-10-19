@@ -17,6 +17,11 @@
 #include "../../client.h"
 #include "local.h"
 
+// maintain a list of compatible protocols for demo playing
+// NOTE: that stuff only works with two digits protocols
+static int clq3_demo_protocols[] =
+{ 66, 67, 68, 0 };
+
 /*
 =======================================================================
 
@@ -334,7 +339,7 @@ CLIENT SIDE DEMO PLAYBACK
 =======================================================================
 */
 
-void CLT3_DemoCompleted()
+static void CLT3_DemoCompleted()
 {
 	if (cl_timedemo && cl_timedemo->integer)
 	{
@@ -355,4 +360,237 @@ void CLT3_DemoCompleted()
 
 	CL_Disconnect(true);
 	CL_NextDemo();
+}
+
+void CLT3_ReadDemoMessage()
+{
+	if (!clc.demofile)
+	{
+		CLT3_DemoCompleted();
+		return;
+	}
+
+	// get the sequence number
+	int s;
+	int r = FS_Read(&s, 4, clc.demofile);
+	if (r != 4)
+	{
+		CLT3_DemoCompleted();
+		return;
+	}
+	clc.q3_serverMessageSequence = LittleLong(s);
+
+	// init the message
+	QMsg buf;
+	byte bufData[MAX_MSGLEN];
+	buf.Init(bufData, sizeof(bufData));
+
+	// get the length
+	r = FS_Read(&buf.cursize, 4, clc.demofile);
+	if (r != 4)
+	{
+		CLT3_DemoCompleted();
+		return;
+	}
+	buf.cursize = LittleLong(buf.cursize);
+	if (buf.cursize == -1)
+	{
+		CLT3_DemoCompleted();
+		return;
+	}
+	if (buf.cursize > buf.maxsize)
+	{
+		common->Error("CLT3_ReadDemoMessage: demoMsglen > MAX_MSGLEN");
+	}
+	r = FS_Read(buf._data, buf.cursize, clc.demofile);
+	if (r != buf.cursize)
+	{
+		common->Printf("Demo file was truncated.\n");
+		CLT3_DemoCompleted();
+		return;
+	}
+
+	clc.q3_lastPacketTime = cls.realtime;
+	buf.readcount = 0;
+	CLT3_ParseServerMessage(&buf);
+}
+
+static void CLQ3_WalkDemoExt(const char* arg, char* name, int* demofile)
+{
+	int i = 0;
+	*demofile = 0;
+	while (clq3_demo_protocols[i])
+	{
+		String::Sprintf(name, MAX_OSPATH, "demos/%s.dm_%d", arg, clq3_demo_protocols[i]);
+		FS_FOpenFileRead(name, demofile, true);
+		if (*demofile)
+		{
+			common->Printf("Demo file: %s\n", name);
+			break;
+		}
+		else
+		{
+			common->Printf("Not found: %s\n", name);
+		}
+		i++;
+	}
+}
+
+void CLT3_PlayDemo_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("playdemo <demoname>\n");
+		return;
+	}
+
+	// make sure a local server is killed
+	Cvar_Set("sv_killserver", "1");
+
+	CL_Disconnect(true);
+
+	// open the demo file
+	const char* arg = Cmd_Argv(1);
+
+	// check for an extension .dm_?? (?? is protocol)
+	const char* ext_test = arg + String::Length(arg) - 6;
+	char name[MAX_OSPATH];
+	if ((String::Length(arg) > 6) && (ext_test[0] == '.') && ((ext_test[1] == 'd') || (ext_test[1] == 'D')) && ((ext_test[2] == 'm') || (ext_test[2] == 'M')) && (ext_test[3] == '_'))
+	{
+		int protocol = String::Atoi(ext_test + 4);
+		if (GGameType & GAME_Quake3)
+		{
+			int i = 0;
+			while (clq3_demo_protocols[i])
+			{
+				if (clq3_demo_protocols[i] == protocol)
+				{
+					break;
+				}
+				i++;
+			}
+			if (clq3_demo_protocols[i])
+			{
+				String::Sprintf(name, sizeof(name), "demos/%s", arg);
+				FS_FOpenFileRead(name, &clc.demofile, true);
+			}
+			else
+			{
+				common->Printf("Protocol %d not supported for demos\n", protocol);
+				char retry[MAX_OSPATH];
+				String::NCpyZ(retry, arg, sizeof(retry));
+				retry[String::Length(retry) - 6] = 0;
+				CLQ3_WalkDemoExt(retry, name, &clc.demofile);
+			}
+		}
+		else if (GGameType & GAME_WolfSP)
+		{
+			if (protocol == WSPROTOCOL_VERSION)
+			{
+				String::Sprintf(name, sizeof(name), "demos/%s", arg);
+				FS_FOpenFileRead(name, &clc.demofile, true);
+			}
+			else
+			{
+				common->Printf("Protocol %d not supported for demos\n", protocol);
+				return;
+			}
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			if (protocol == WMPROTOCOL_VERSION)
+			{
+				String::Sprintf(name, sizeof(name), "demos/%s", arg);
+				FS_FOpenFileRead(name, &clc.demofile, true);
+			}
+			else
+			{
+				common->Printf("Protocol %d not supported for demos\n", protocol);
+				return;
+			}
+		}
+		else
+		{
+			int prot_ver = ETPROTOCOL_VERSION - 1;
+			while (prot_ver <= ETPROTOCOL_VERSION && !clc.demofile)
+			{
+				if (prot_ver == protocol)
+				{
+					String::Sprintf(name, sizeof(name), "demos/%s", arg);
+					FS_FOpenFileRead(name, &clc.demofile, true);
+				}
+				prot_ver++;
+			}
+		}
+	}
+	else if (GGameType & GAME_Quake3)
+	{
+		CLQ3_WalkDemoExt(arg, name, &clc.demofile);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, WSPROTOCOL_VERSION);
+		FS_FOpenFileRead(name, &clc.demofile, true);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, WMPROTOCOL_VERSION);
+		FS_FOpenFileRead(name, &clc.demofile, true);
+	}
+	else
+	{
+		int prot_ver = ETPROTOCOL_VERSION - 1;
+		while (prot_ver <= ETPROTOCOL_VERSION && !clc.demofile)
+		{
+			String::Sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, prot_ver);
+			FS_FOpenFileRead(name, &clc.demofile, true);
+			prot_ver++;
+		}
+	}
+
+	if (!clc.demofile)
+	{
+		common->Error("couldn't open %s", name);
+		return;
+	}
+	String::NCpyZ(clc.q3_demoName, Cmd_Argv(1), sizeof(clc.q3_demoName));
+
+	Con_Close();
+
+	cls.state = CA_CONNECTED;
+	clc.demoplaying = true;
+
+	if (GGameType & GAME_ET && Cvar_VariableValue("cl_wavefilerecord"))
+	{
+		CL_WriteWaveOpen();
+	}
+
+	String::NCpyZ(cls.servername, Cmd_Argv(1), sizeof(cls.servername));
+
+	// read demo messages until connected
+	while (cls.state >= CA_CONNECTED && cls.state < CA_PRIMED)
+	{
+		CLT3_ReadDemoMessage();
+	}
+	// don't get the first snapshot this frame, to prevent the long
+	// time from the gamestate load from messing causing a time skip
+	clc.q3_firstDemoFrameSkipped = false;
+}
+
+//	If the "nextdemo" cvar is set, that command will be issued
+void CLT3_NextDemo()
+{
+	char v[MAX_STRING_CHARS];
+	String::NCpyZ(v, Cvar_VariableString("nextdemo"), sizeof(v));
+	v[MAX_STRING_CHARS - 1] = 0;
+	common->DPrintf("CL_NextDemo: %s\n", v);
+	if (!v[0])
+	{
+		return;
+	}
+
+	Cvar_Set("nextdemo","");
+	Cbuf_AddText(v);
+	Cbuf_AddText("\n");
+	Cbuf_Execute();
 }

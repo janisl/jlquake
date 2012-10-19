@@ -19,6 +19,7 @@
 #include "game/quake/local.h"
 #include "game/hexen2/local.h"
 #include "game/quake_hexen2/connection.h"
+#include "game/quake_hexen2/demo.h"
 #include "game/quake2/local.h"
 #include "game/tech3/local.h"
 
@@ -447,5 +448,18 @@ void CL_Disconnect(bool showMainMenu)
 	else
 	{
 		CLT3_Disconnect(showMainMenu);
+	}
+}
+
+//	Called when a demo or cinematic finishes
+void CL_NextDemo()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		CLQH_NextDemo();
+	}
+	else if (GGameType & GAME_Tech3)
+	{
+		CLT3_NextDemo();
 	}
 }

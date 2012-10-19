@@ -47,8 +47,6 @@ void CL_AddReliableCommand(const char* cmd);
 void CL_GetChallengePacket(void);
 void CL_Vid_Restart_f(void);
 void CL_Snd_Restart_f(void);
-void CL_NextDemo(void);
-void CL_ReadDemoMessage(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);

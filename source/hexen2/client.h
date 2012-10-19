@@ -12,6 +12,5 @@
 void CL_Init(void);
 
 void CL_Disconnect_f(void);
-void CL_NextDemo(void);
 
 int  CL_ReadFromServer(void);

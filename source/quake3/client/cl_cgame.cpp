@@ -46,7 +46,7 @@ void CL_SetCGameTime(void)
 				clc.q3_firstDemoFrameSkipped = true;
 				return;
 			}
-			CL_ReadDemoMessage();
+			CLT3_ReadDemoMessage();
 		}
 		if (cl.q3_newSnapshots)
 		{
@@ -156,7 +156,7 @@ void CL_SetCGameTime(void)
 	{
 		// feed another messag, which should change
 		// the contents of cl.snap
-		CL_ReadDemoMessage();
+		CLT3_ReadDemoMessage();
 		if (cls.state != CA_ACTIVE)
 		{
 			return;		// end of demo

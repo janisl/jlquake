@@ -27,18 +27,6 @@ void CL_Disconnect_f(void)
 }
 
 /*
-=====================
-CL_NextDemo
-
-Called to play the next demo in the demo loop
-=====================
-*/
-void CL_NextDemo(void)
-{
-	CLQH_NextDemo();
-}
-
-/*
 ==============
 CL_PrintEntities_f
 ==============

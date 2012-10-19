@@ -32,6 +32,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void CL_Init(void);
 
 void CL_Disconnect_f(void);
-void CL_NextDemo(void);
 
 int  CL_ReadFromServer(void);

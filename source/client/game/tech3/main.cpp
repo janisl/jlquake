@@ -173,7 +173,7 @@ void CLT3_ShutdownAll()
 	}
 }
 
-//	Called by CLT3_MapLoading, CLT3_Connect_f, CL_PlayDemo_f, and CLT3_ParseGamestate the only
+//	Called by CLT3_MapLoading, CLT3_Connect_f, CLT3_PlayDemo_f, and CLT3_ParseGamestate the only
 // ways a client gets into a game
 // Also called by Com_Error
 void CLT3_FlushMemory()

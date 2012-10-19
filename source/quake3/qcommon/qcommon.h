@@ -26,18 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 ==============================================================
 
-PROTOCOL
-
-==============================================================
-*/
-
-// maintain a list of compatible protocols for demo playing
-// NOTE: that stuff only works with two digits protocols
-extern int demo_protocols[];
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because

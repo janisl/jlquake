@@ -628,6 +628,7 @@ void CL_AddReliableCommand(const char* cmd);
 void CL_ClearState();
 bool CL_CheckOrDownloadFile(const char* filename);
 void SHOWNET(QMsg& msg, const char* s);
+void CL_NextDemo();
 
 //
 //	System
@@ -647,7 +648,6 @@ float crand();	// -1 to 1
 //---------------------------------------------
 //	Must be provided
 float* CL_GetSimOrg();
-void CL_NextDemo();
 void CL_Disconnect_f();
 
 #endif
