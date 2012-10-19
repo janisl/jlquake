@@ -1238,7 +1238,7 @@ static void CLT3_PrintPacket(netadr_t from, QMsg* msg)
 }
 
 //	Responses to broadcasts, etc
-void CLT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
+static void CLT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
 {
 	msg->BeginReadingOOB();
 	msg->ReadLong();	// skip the -1
@@ -1369,4 +1369,104 @@ void CLT3_ConnectionlessPacket(netadr_t from, QMsg* msg)
 	}
 
 	common->DPrintf("Unknown connectionless packet command.\n");
+}
+
+//	A packet has arrived from the main event loop
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
+{
+	if (GGameType & (GAME_Quake3 | GAME_WolfSP))
+	{
+		clc.q3_lastPacketTime = cls.realtime;
+	}
+
+	if (msg->cursize >= 4 && *(int*)msg->_data == -1)
+	{
+		CLT3_ConnectionlessPacket(from, msg);
+		return;
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		clc.q3_lastPacketTime = cls.realtime;
+	}
+
+	if (cls.state < CA_CONNECTED)
+	{
+		return;		// can't be a valid sequenced packet
+	}
+
+	if (msg->cursize < 4)
+	{
+		common->Printf("%s: Runt packet\n",SOCK_AdrToString(from));
+		return;
+	}
+
+	//
+	// packet from server
+	//
+	if (!SOCK_CompareAdr(from, clc.netchan.remoteAddress))
+	{
+		common->DPrintf("%s:sequenced packet without connection\n",
+			SOCK_AdrToString(from));
+		// FIXME: send a client disconnect?
+		return;
+	}
+
+	if (!CLT3_Netchan_Process(&clc.netchan, msg))
+	{
+		return;		// out of order, duplicated, etc
+	}
+
+	// the header is different lengths for reliable and unreliable messages
+	int headerBytes = msg->readcount;
+
+	// track the last message received so it can be returned in
+	// client messages, allowing the server to detect a dropped
+	// gamestate
+	clc.q3_serverMessageSequence = LittleLong(*(int*)msg->_data);
+
+	clc.q3_lastPacketTime = cls.realtime;
+	CLT3_ParseServerMessage(msg);
+
+	//
+	// we don't know if it is ok to save a demo message until
+	// after we have parsed the frame
+	//
+	if (clc.demorecording && !clc.q3_demowaiting)
+	{
+		CLT3_WriteDemoMessage(msg, headerBytes);
+	}
+}
+
+void CLT3_CheckTimeout()
+{
+	//
+	// check timeout
+	//
+	if ((!cl_paused->integer || !sv_paused->integer) &&
+		cls.state >= CA_CONNECTED && cls.state != CA_CINEMATIC &&
+		cls.realtime - clc.q3_lastPacketTime > cl_timeout->value * 1000)
+	{
+		if (++cl.timeoutcount > 5)			// timeoutcount saves debugger
+		{
+			if (GGameType & GAME_WolfMP)
+			{
+				Cvar_Set("com_errorMessage", CL_TranslateStringBuf("Server connection timed out."));
+			}
+			else if (GGameType & GAME_ET)
+			{
+				Cvar_Set("com_errorMessage", "Server connection timed out.");
+			}
+			else
+			{
+				common->Printf("\nServer connection timed out.\n");
+			}
+			CL_Disconnect(true);
+			return;
+		}
+	}
+	else
+	{
+		cl.timeoutcount = 0;
+	}
 }

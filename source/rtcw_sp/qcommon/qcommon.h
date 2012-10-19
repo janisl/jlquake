@@ -108,8 +108,6 @@ void CL_Init(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 
-void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
 //----(SA)	added
 void CL_EndgameMenu(void);
 // bring up the "need a cd to play" dialog

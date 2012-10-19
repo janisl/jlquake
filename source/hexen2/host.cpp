@@ -617,7 +617,3 @@ void Host_Shutdown(void)
 	}
 #endif
 }
-
-void CLT3_PacketEvent(netadr_t from, QMsg* msg)
-{
-}

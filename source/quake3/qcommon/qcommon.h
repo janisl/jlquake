@@ -94,8 +94,6 @@ void CL_Init(void);
 void CL_Shutdown(void);
 void CL_Frame(int msec);
 
-void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
 /*
 ==============================================================
 

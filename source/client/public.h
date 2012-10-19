@@ -62,6 +62,7 @@ void CLT3_FlushMemory();
 // will be cleared, so the client must shutdown cgame, ui, and
 // the renderer
 void CLT3_MapLoading();
+void CLT3_PacketEvent(netadr_t from, QMsg* msg);
 
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);

@@ -334,105 +334,6 @@ void CL_Clientinfo_f(void)
 	common->Printf("--------------------------------------\n");
 }
 
-
-//====================================================================
-
-/*
-=================
-CLT3_PacketEvent
-
-A packet has arrived from the main event loop
-=================
-*/
-void CLT3_PacketEvent(netadr_t from, QMsg* msg)
-{
-	int headerBytes;
-
-	clc.q3_lastPacketTime = cls.realtime;
-
-	if (msg->cursize >= 4 && *(int*)msg->_data == -1)
-	{
-		CLT3_ConnectionlessPacket(from, msg);
-		return;
-	}
-
-	if (cls.state < CA_CONNECTED)
-	{
-		return;		// can't be a valid sequenced packet
-	}
-
-	if (msg->cursize < 4)
-	{
-		common->Printf("%s: Runt packet\n",SOCK_AdrToString(from));
-		return;
-	}
-
-	//
-	// packet from server
-	//
-	if (!SOCK_CompareAdr(from, clc.netchan.remoteAddress))
-	{
-		common->DPrintf("%s:sequenced packet without connection\n",
-			SOCK_AdrToString(from));
-		// FIXME: send a client disconnect?
-		return;
-	}
-
-	if (!CLT3_Netchan_Process(&clc.netchan, msg))
-	{
-		return;		// out of order, duplicated, etc
-	}
-
-	// the header is different lengths for reliable and unreliable messages
-	headerBytes = msg->readcount;
-
-	// track the last message received so it can be returned in
-	// client messages, allowing the server to detect a dropped
-	// gamestate
-	clc.q3_serverMessageSequence = LittleLong(*(int*)msg->_data);
-
-	clc.q3_lastPacketTime = cls.realtime;
-	CLT3_ParseServerMessage(msg);
-
-	//
-	// we don't know if it is ok to save a demo message until
-	// after we have parsed the frame
-	//
-	if (clc.demorecording && !clc.q3_demowaiting)
-	{
-		CLT3_WriteDemoMessage(msg, headerBytes);
-	}
-}
-
-/*
-==================
-CL_CheckTimeout
-
-==================
-*/
-void CL_CheckTimeout(void)
-{
-	//
-	// check timeout
-	//
-	if ((!cl_paused->integer || !sv_paused->integer) &&
-		cls.state >= CA_CONNECTED && cls.state != CA_CINEMATIC &&
-		cls.realtime - clc.q3_lastPacketTime > cl_timeout->value * 1000)
-	{
-		if (++cl.timeoutcount > 5)		// timeoutcount saves debugger
-		{
-			common->Printf("\nServer connection timed out.\n");
-			CL_Disconnect(true);
-			return;
-		}
-	}
-	else
-	{
-		cl.timeoutcount = 0;
-	}
-}
-
-
 //============================================================================
 
 /*
@@ -518,7 +419,7 @@ void CL_Frame(int msec)
 
 	// if we haven't gotten a packet in a long time,
 	// drop the connection
-	CL_CheckTimeout();
+	CLT3_CheckTimeout();
 
 	// send intentions now
 	CLT3_SendCmd();

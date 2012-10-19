@@ -184,3 +184,7 @@ void CLQ2_Drop()
 void CLT3_MapLoading()
 {
 }
+
+void CLT3_PacketEvent(netadr_t from, QMsg* msg)
+{
+}
