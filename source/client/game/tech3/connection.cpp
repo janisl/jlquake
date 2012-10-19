@@ -16,6 +16,7 @@
 
 #include "../../client.h"
 #include "local.h"
+#include "../../../server/public.h"
 
 //	Create a new usercmd_t structure for this frame
 static void CLT3_CreateNewCommands()
@@ -735,4 +736,368 @@ void CLT3_Disconnect(bool showMainMenu)
 	{
 		cls.state = CA_DISCONNECTED;
 	}
+}
+
+//	Authorization server protocol
+//	-----------------------------
+//
+//	All commands are text in Q3 out of band packets (leading 0xff 0xff 0xff 0xff).
+//
+//	Whenever the client tries to get a challenge from the server it wants to
+// connect to, it also blindly fires off a packet to the authorize server:
+//
+//	getKeyAuthorize <challenge> <cdkey>
+//
+//	cdkey may be "demo"
+//
+//#OLD The authorize server returns a:
+//#OLD
+//#OLD keyAthorize <challenge> <accept | deny>
+//#OLD
+//#OLD A client will be accepted if the cdkey is valid and it has not been used by any other IP
+//#OLD address in the last 15 minutes.
+//
+//	The server sends a:
+//
+//	getIpAuthorize <challenge> <ip>
+//
+//	The authorize server returns a:
+//
+//	ipAuthorize <challenge> <accept | deny | demo | unknown >
+//
+//	A client will be accepted if a valid cdkey was sent by that ip (only) in the last 15 minutes.
+// If no response is received from the authorize server after two tries, the client will be let
+// in anyway.
+static void CLT3_RequestAuthorization()
+{
+	if (!cls.q3_authorizeServer.port)
+	{
+		const char* authorizeServerName = GGameType & GAME_WolfSP ? WSAUTHORIZE_SERVER_NAME :
+			GGameType & GAME_WolfMP ? WMAUTHORIZE_SERVER_NAME : Q3AUTHORIZE_SERVER_NAME;
+		common->Printf("Resolving %s\n", authorizeServerName);
+		if (!SOCK_StringToAdr(authorizeServerName, &cls.q3_authorizeServer, Q3PORT_AUTHORIZE))
+		{
+			common->Printf("Couldn't resolve address\n");
+			return;
+		}
+
+		common->Printf("%s resolved to %s\n", authorizeServerName, SOCK_AdrToString(cls.q3_authorizeServer));
+	}
+	if (cls.q3_authorizeServer.type == NA_BAD)
+	{
+		return;
+	}
+
+	char nums[64];
+	CLT3_CDKeyForAuthorize(nums);
+
+	Cvar* fs = Cvar_Get("cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO);
+
+	NET_OutOfBandPrint(NS_CLIENT, cls.q3_authorizeServer, "getKeyAuthorize %i %s", fs->integer, nums);
+}
+
+//	Resend a connect message if the last one has timed out
+void CLT3_CheckForResend()
+{
+	// don't send anything if playing back a demo
+	if (clc.demoplaying)
+	{
+		return;
+	}
+
+	// resend if we haven't gotten a reply yet
+	if (cls.state != CA_CONNECTING && cls.state != CA_CHALLENGING)
+	{
+		return;
+	}
+
+	if (cls.realtime - clc.q3_connectTime < RETRANSMIT_TIMEOUT)
+	{
+		return;
+	}
+
+	clc.q3_connectTime = cls.realtime;	// for retransmit requests
+	clc.q3_connectPacketCount++;
+
+	int port, i;
+	char info[MAX_INFO_STRING_Q3];
+	char data[MAX_INFO_STRING_Q3];
+	switch (cls.state)
+	{
+	case CA_CONNECTING:
+		// requesting a challenge
+		if (!(GGameType & GAME_ET) && !SOCK_IsLANAddress(clc.q3_serverAddress))
+		{
+			CLT3_RequestAuthorization();
+		}
+		NET_OutOfBandPrint(NS_CLIENT, clc.q3_serverAddress, "getchallenge");
+		break;
+
+	case CA_CHALLENGING:
+		// sending back the challenge
+		port = Cvar_VariableValue("net_qport");
+
+		String::NCpyZ(info, Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3), sizeof(info));
+		if (GGameType & GAME_WolfSP)
+		{
+			Info_SetValueForKey(info, "protocol", va("%i", WSPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			Info_SetValueForKey(info, "protocol", va("%i", WMPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		}
+		else if (GGameType & GAME_ET)
+		{
+			Info_SetValueForKey(info, "protocol", va("%i", ETPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		}
+		else
+		{
+			Info_SetValueForKey(info, "protocol", va("%i", Q3PROTOCOL_VERSION), MAX_INFO_STRING_Q3);
+		}
+		Info_SetValueForKey(info, "qport", va("%i", port), MAX_INFO_STRING_Q3);
+		Info_SetValueForKey(info, "challenge", va("%i", clc.q3_challenge), MAX_INFO_STRING_Q3);
+
+		if (GGameType & GAME_WolfSP)
+		{
+			NET_OutOfBandPrint(NS_CLIENT, clc.q3_serverAddress, "connect \"%s\"", info);
+		}
+		else
+		{
+			String::Cpy(data, "connect ");
+			// TTimo adding " " around the userinfo string to avoid truncated userinfo on the server
+			//   (Com_TokenizeString tokenizes around spaces)
+			data[8] = '\"';
+
+			for (i = 0; i < String::Length(info); i++)
+			{
+				data[9 + i] = info[i];		// + (clc.q3_challenge)&0x3;
+			}
+			data[9 + i] = '\"';
+			data[10 + i] = 0;
+
+			// NOTE TTimo don't forget to set the right data length!
+			NET_OutOfBandData(NS_CLIENT, clc.q3_serverAddress, (byte*)&data[0], i + 10);
+		}
+		// the most current userinfo has been sent, so watch for any
+		// newer changes to userinfo variables
+		cvar_modifiedFlags &= ~CVAR_USERINFO;
+		break;
+
+	default:
+		common->FatalError("CLT3_CheckForResend: bad cls.state");
+	}
+}
+
+//	A local server is starting to load a map, so update the
+// screen to let the user know about it, then dump all client
+// memory on the hunk from cgame, ui, and renderer
+void CLT3_MapLoading()
+{
+	if (!com_cl_running->integer)
+	{
+		return;
+	}
+
+	Con_Close();
+	in_keyCatchers = 0;
+
+	// if we are already connected to the local host, stay connected
+	if (cls.state >= CA_CONNECTED && !String::ICmp(cls.servername, "localhost"))
+	{
+		cls.state = CA_CONNECTED;		// so the connect screen is drawn
+		Com_Memset(cls.q3_updateInfoString, 0, sizeof(cls.q3_updateInfoString));
+		Com_Memset(clc.q3_serverMessage, 0, sizeof(clc.q3_serverMessage));
+		Com_Memset(&cl.q3_gameState, 0, sizeof(cl.q3_gameState));
+		Com_Memset(&cl.ws_gameState, 0, sizeof(cl.ws_gameState));
+		Com_Memset(&cl.wm_gameState, 0, sizeof(cl.wm_gameState));
+		Com_Memset(&cl.et_gameState, 0, sizeof(cl.et_gameState));
+		clc.q3_lastPacketSentTime = -9999;
+		SCR_UpdateScreen();
+	}
+	else
+	{
+		// clear nextmap so the cinematic shutdown doesn't execute it
+		Cvar_Set("nextmap", "");
+		CL_Disconnect(true);
+		String::NCpyZ(cls.servername, "localhost", sizeof(cls.servername));
+		cls.state = CA_CHALLENGING;		// so the connect screen is drawn
+		in_keyCatchers = 0;
+		SCR_UpdateScreen();
+		clc.q3_connectTime = -RETRANSMIT_TIMEOUT;
+		SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER);
+		// we don't need a challenge on the localhost
+
+		CLT3_CheckForResend();
+	}
+
+	if (GGameType & GAME_WolfSP)
+	{
+		// make sure sound is quiet
+		S_FadeAllSounds(0, 0, false);
+	}
+}
+
+void CLT3_RequestMotd()
+{
+	if (!clt3_motd->integer)
+	{
+		return;
+	}
+	const char* motdServerName = GGameType & GAME_WolfSP ? WSMOTD_SERVER_NAME :
+		GGameType & GAME_WolfMP ? WMMOTD_SERVER_NAME :
+		GGameType & GAME_ET ? ETMOTD_SERVER_NAME : Q3MOTD_SERVER_NAME;
+	common->Printf("Resolving %s\n", motdServerName);
+	if (!SOCK_StringToAdr(motdServerName, &cls.q3_updateServer, Q3PORT_MOTD))
+	{
+		common->Printf("Couldn't resolve address\n");
+		return;
+	}
+	common->Printf("%s resolved to %s\n", motdServerName, SOCK_AdrToString(cls.q3_updateServer));
+
+	if (GGameType & GAME_Quake3)
+	{
+		// NOTE TTimo xoring against Com_Milliseconds, otherwise we may not have a true randomization
+		// only srand I could catch before here is tr_noise.c l:26 srand(1001)
+		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=382
+		// NOTE: the Com_Milliseconds xoring only affects the lower 16-bit word,
+		//   but I decided it was enough randomization
+		String::Sprintf(cls.q3_updateChallenge, sizeof(cls.q3_updateChallenge), "%i", ((rand() << 16) ^ rand()) ^ Com_Milliseconds());
+	}
+	else
+	{
+		String::Sprintf(cls.q3_updateChallenge, sizeof(cls.q3_updateChallenge), "%i", rand());
+	}
+
+	char info[MAX_INFO_STRING_Q3];
+	info[0] = 0;
+	Info_SetValueForKey(info, "challenge", cls.q3_updateChallenge, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(info, "version", comt3_version->string, MAX_INFO_STRING_Q3);
+
+	NET_OutOfBandPrint(NS_CLIENT, cls.q3_updateServer, "getmotd \"%s\"\n", info);
+}
+
+void CLT3_Connect_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("usage: connect [server]\n");
+		return;
+	}
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		S_StopAllSounds();		// NERVE - SMF
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
+	else
+	{
+		// starting to load a map so we get out of full screen ui mode
+		Cvar_Set("r_uiFullScreen", "0");
+	}
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Set("ui_connecting", "1");
+	}
+
+	// fire a message off to the motd server
+	CLT3_RequestMotd();
+
+	// clear any previous "server full" type messages
+	clc.q3_serverMessage[0] = 0;
+
+	const char* server = Cmd_Argv(1);
+
+	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
+	{
+		// if running a local server, kill it
+		SV_Shutdown("Server quit\n");
+	}
+
+	// make sure a local server is killed
+	Cvar_Set("sv_killserver", "1");
+	SV_Frame(0);
+
+	CL_Disconnect(true);
+	Con_Close();
+
+	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
+
+	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER))
+	{
+		common->Printf("Bad server address\n");
+		cls.state = CA_DISCONNECTED;
+		if (GGameType & GAME_ET)
+		{
+			Cvar_Set("ui_connecting", "0");
+		}
+		return;
+	}
+	common->Printf("%s resolved to %s\n", cls.servername, SOCK_AdrToString(clc.q3_serverAddress));
+
+	// if we aren't playing on a lan, we need to authenticate
+	// with the cd key
+	if (SOCK_IsLocalAddress(clc.q3_serverAddress))
+	{
+		cls.state = CA_CHALLENGING;
+	}
+	else
+	{
+		cls.state = CA_CONNECTING;
+	}
+
+	in_keyCatchers = 0;
+	clc.q3_connectTime = -99999;	// CLT3_CheckForResend() will fire immediately
+	clc.q3_connectPacketCount = 0;
+
+	// server connection string
+	Cvar_Set("cl_currentServerAddress", server);
+
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		// show_bug.cgi?id=507
+		// prepare to catch a connection process that would turn bad
+		Cvar_Set("com_errorDiagnoseIP", SOCK_AdrToString(clc.q3_serverAddress));
+		// ATVI Wolfenstein Misc #439
+		// we need to setup a correct default for this, otherwise the first val we set might reappear
+		Cvar_Set("com_errorMessage", "");
+
+		// Gordon: um, couldnt this be handled
+		// NERVE - SMF - reset some cvars
+		Cvar_Set("mp_playerType", "0");
+		Cvar_Set("mp_currentPlayerType", "0");
+		Cvar_Set("mp_weapon", "0");
+		Cvar_Set("mp_team", "0");
+		Cvar_Set("mp_currentTeam", "0");
+
+		Cvar_Set("ui_limboOptions", "0");
+		Cvar_Set("ui_limboPrevOptions", "0");
+		Cvar_Set("ui_limboObjective", "0");
+		// -NERVE - SMF
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Set("cl_currentServerIP", SOCK_AdrToString(clc.q3_serverAddress));
+
+		Cvar_Set("cl_avidemo", "0");
+	}
+}
+
+void CLT3_Reconnect_f()
+{
+	if (!String::Length(cls.servername) || !String::Cmp(cls.servername, "localhost"))
+	{
+		common->Printf("Can't reconnect to localhost.\n");
+		return;
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
+	Cbuf_AddText(va("connect %s\n", cls.servername));
 }

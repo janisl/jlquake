@@ -50,7 +50,6 @@ Cvar* com_maxfps;
 Cvar* com_timedemo;
 Cvar* com_logfile;			// 1 = buffer log, 2 = flush after each print
 Cvar* com_showtrace;
-Cvar* com_version;
 Cvar* com_blood;
 Cvar* com_buildScript;		// for automated data building scripts
 Cvar* com_introPlayed;
@@ -609,7 +608,7 @@ void Com_Init(char* commandLine)
 		Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 
 		s = va("%s %s %s", Q3_VERSION, CPUSTRING, __DATE__);
-		com_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);
+		comt3_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);
 
 		Sys_Init();
 		Netchan_Init(Com_Milliseconds() & 0xffff);	// pick a port value that should be nice and random

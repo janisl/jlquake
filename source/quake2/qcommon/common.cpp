@@ -619,9 +619,6 @@ void Qcommon_Shutdown(void)
 {
 }
 
-void CL_MapLoading(void)
-{
-}
 void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 }

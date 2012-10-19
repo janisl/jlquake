@@ -44,12 +44,6 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-// NERVE - SMF - wolf multiplayer master servers
-#define UPDATE_SERVER_NAME      "wolfmotd.idsoftware.com"			// 192.246.40.65
-
-#define PORT_UPDATE         27951
-#define Q3PORT_AUTHORIZE      27952
-
 /*
 ==============================================================
 
@@ -101,7 +95,6 @@ void        Com_SetRecommended();
 // only a set with the exact name.  Only used during startup.
 
 
-extern Cvar* com_version;
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
@@ -131,12 +124,6 @@ void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
-void CL_MapLoading(void);
-// do a screen update before starting to load a map
-// when the server is going to load a new map, the entire hunk
-// will be cleared, so the client must shutdown cgame, ui, and
-// the renderer
 
 /*
 ==============================================================

@@ -54,6 +54,10 @@ void CLET_ClearStaticDownload();
 void CLT3_NextDownload();
 void CLT3_InitDownloads();
 void CLT3_Disconnect(bool showMainMenu);
+void CLT3_CheckForResend();
+void CLT3_RequestMotd();
+void CLT3_Connect_f();
+void CLT3_Reconnect_f();
 
 //
 //	Demo
@@ -79,6 +83,7 @@ extern Cvar* clt3_maxpackets;
 extern Cvar* clt3_showSend;
 extern Cvar* clt3_packetdup;
 extern Cvar* clt3_allowDownload;
+extern Cvar* clt3_motd;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();

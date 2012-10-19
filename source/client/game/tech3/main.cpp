@@ -32,6 +32,7 @@ Cvar* clt3_maxpackets;
 Cvar* clt3_showSend;
 Cvar* clt3_packetdup;
 Cvar* clt3_allowDownload;
+Cvar* clt3_motd;
 
 void CLET_PurgeCache()
 {
@@ -172,7 +173,7 @@ void CLT3_ShutdownAll()
 	}
 }
 
-//	Called by CL_MapLoading, CL_Connect_f, CL_PlayDemo_f, and CLT3_ParseGamestate the only
+//	Called by CLT3_MapLoading, CLT3_Connect_f, CL_PlayDemo_f, and CLT3_ParseGamestate the only
 // ways a client gets into a game
 // Also called by Com_Error
 void CLT3_FlushMemory()

@@ -1261,7 +1261,3 @@ void server_referencer_dummy()
 {
 	svh2_kingofhill = 0;
 }
-
-void CL_MapLoading(void)
-{
-}

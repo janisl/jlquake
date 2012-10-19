@@ -38,8 +38,6 @@ If you have questions concerning this license or the applicable additional terms
 
 Cvar* cl_wavefilerecord;
 
-Cvar* cl_motd;
-
 Cvar* rcon_client_password;
 Cvar* rconAddress;
 
@@ -57,7 +55,6 @@ Cvar* cl_trn;
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
-void CL_CheckForResend(void);
 void CL_ShowIP_f(void);
 
 /*
@@ -244,158 +241,6 @@ void CL_NextDemo(void)
 	Cbuf_Execute();
 }
 
-
-//======================================================================
-
-/*
-=====================
-CL_MapLoading
-
-A local server is starting to load a map, so update the
-screen to let the user know about it, then dump all client
-memory on the hunk from cgame, ui, and renderer
-=====================
-*/
-void CL_MapLoading(void)
-{
-	if (!com_cl_running->integer)
-	{
-		return;
-	}
-
-	Con_Close();
-	in_keyCatchers = 0;
-
-	// if we are already connected to the local host, stay connected
-	if (cls.state >= CA_CONNECTED && !String::ICmp(cls.servername, "localhost"))
-	{
-		cls.state = CA_CONNECTED;		// so the connect screen is drawn
-		memset(cls.q3_updateInfoString, 0, sizeof(cls.q3_updateInfoString));
-		memset(clc.q3_serverMessage, 0, sizeof(clc.q3_serverMessage));
-		memset(&cl.wm_gameState, 0, sizeof(cl.wm_gameState));
-		clc.q3_lastPacketSentTime = -9999;
-		SCR_UpdateScreen();
-	}
-	else
-	{
-		// clear nextmap so the cinematic shutdown doesn't execute it
-		Cvar_Set("nextmap", "");
-		CL_Disconnect(true);
-		String::NCpyZ(cls.servername, "localhost", sizeof(cls.servername));
-		cls.state = CA_CHALLENGING;		// so the connect screen is drawn
-		in_keyCatchers = 0;
-		SCR_UpdateScreen();
-		clc.q3_connectTime = -RETRANSMIT_TIMEOUT;
-		SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER);
-		// we don't need a challenge on the localhost
-
-		CL_CheckForResend();
-	}
-}
-
-/*
-===================
-CL_RequestMotd
-
-===================
-*/
-void CL_RequestMotd(void)
-{
-	char info[MAX_INFO_STRING_Q3];
-
-	if (!cl_motd->integer)
-	{
-		return;
-	}
-	common->Printf("Resolving %s\n", UPDATE_SERVER_NAME);
-	if (!SOCK_StringToAdr(UPDATE_SERVER_NAME, &cls.q3_updateServer, PORT_UPDATE))
-	{
-		common->Printf("Couldn't resolve address\n");
-		return;
-	}
-	common->Printf("%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
-		cls.q3_updateServer.ip[0], cls.q3_updateServer.ip[1],
-		cls.q3_updateServer.ip[2], cls.q3_updateServer.ip[3],
-		BigShort(cls.q3_updateServer.port));
-
-	info[0] = 0;
-	String::Sprintf(cls.q3_updateChallenge, sizeof(cls.q3_updateChallenge), "%i", rand());
-
-	Info_SetValueForKey(info, "challenge", cls.q3_updateChallenge, MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(info, "version", com_version->string, MAX_INFO_STRING_Q3);
-
-	NET_OutOfBandPrint(NS_CLIENT, cls.q3_updateServer, "getmotd \"%s\"\n", info);
-}
-
-/*
-===================
-CL_RequestAuthorization
-
-Authorization server protocol
------------------------------
-
-All commands are text in Q3 out of band packets (leading 0xff 0xff 0xff 0xff).
-
-Whenever the client tries to get a challenge from the server it wants to
-connect to, it also blindly fires off a packet to the authorize server:
-
-getKeyAuthorize <challenge> <cdkey>
-
-cdkey may be "demo"
-
-
-#OLD The authorize server returns a:
-#OLD
-#OLD keyAthorize <challenge> <accept | deny>
-#OLD
-#OLD A client will be accepted if the cdkey is valid and it has not been used by any other IP
-#OLD address in the last 15 minutes.
-
-
-The server sends a:
-
-getIpAuthorize <challenge> <ip>
-
-The authorize server returns a:
-
-ipAuthorize <challenge> <accept | deny | demo | unknown >
-
-A client will be accepted if a valid cdkey was sent by that ip (only) in the last 15 minutes.
-If no response is received from the authorize server after two tries, the client will be let
-in anyway.
-===================
-*/
-void CL_RequestAuthorization(void)
-{
-	char nums[64];
-	Cvar* fs;
-
-	if (!cls.q3_authorizeServer.port)
-	{
-		common->Printf("Resolving %s\n", WMAUTHORIZE_SERVER_NAME);
-		if (!SOCK_StringToAdr(WMAUTHORIZE_SERVER_NAME, &cls.q3_authorizeServer, Q3PORT_AUTHORIZE))
-		{
-			common->Printf("Couldn't resolve address\n");
-			return;
-		}
-
-		common->Printf("%s resolved to %i.%i.%i.%i:%i\n", WMAUTHORIZE_SERVER_NAME,
-			cls.q3_authorizeServer.ip[0], cls.q3_authorizeServer.ip[1],
-			cls.q3_authorizeServer.ip[2], cls.q3_authorizeServer.ip[3],
-			BigShort(cls.q3_authorizeServer.port));
-	}
-	if (cls.q3_authorizeServer.type == NA_BAD)
-	{
-		return;
-	}
-
-	CLT3_CDKeyForAuthorize(nums);
-
-	fs = Cvar_Get("cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO);
-	NET_OutOfBandPrint(NS_CLIENT, cls.q3_authorizeServer, va("getKeyAuthorize %i %s", fs->integer, nums));
-}
-
 /*
 ======================================================================
 
@@ -463,121 +308,6 @@ void CL_Disconnect_f(void)
 	{
 		Com_Error(ERR_DISCONNECT, "Disconnected from server");
 	}
-}
-
-
-/*
-================
-CL_Reconnect_f
-
-================
-*/
-void CL_Reconnect_f(void)
-{
-	if (!String::Length(cls.servername) || !String::Cmp(cls.servername, "localhost"))
-	{
-		common->Printf("Can't reconnect to localhost.\n");
-		return;
-	}
-	Cbuf_AddText(va("connect %s\n", cls.servername));
-}
-
-/*
-================
-CL_Connect_f
-
-================
-*/
-void CL_Connect_f(void)
-{
-	char* server;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("usage: connect [server]\n");
-		return;
-	}
-
-	S_StopAllSounds();		// NERVE - SMF
-
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set("r_uiFullScreen", "0");
-
-	// fire a message off to the motd server
-	CL_RequestMotd();
-
-	// clear any previous "server full" type messages
-	clc.q3_serverMessage[0] = 0;
-
-	server = Cmd_Argv(1);
-
-	if (com_sv_running->integer && !String::Cmp(server, "localhost"))
-	{
-		// if running a local server, kill it
-		SV_Shutdown("Server quit\n");
-	}
-
-	// make sure a local server is killed
-	Cvar_Set("sv_killserver", "1");
-	SV_Frame(0);
-
-	CL_Disconnect(true);
-	Con_Close();
-
-	String::NCpyZ(cls.servername, server, sizeof(cls.servername));
-
-	if (!SOCK_StringToAdr(cls.servername, &clc.q3_serverAddress, Q3PORT_SERVER))
-	{
-		common->Printf("Bad server address\n");
-		cls.state = CA_DISCONNECTED;
-		return;
-	}
-	if (clc.q3_serverAddress.port == 0)
-	{
-		clc.q3_serverAddress.port = BigShort(Q3PORT_SERVER);
-	}
-	common->Printf("%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
-		clc.q3_serverAddress.ip[0], clc.q3_serverAddress.ip[1],
-		clc.q3_serverAddress.ip[2], clc.q3_serverAddress.ip[3],
-		BigShort(clc.q3_serverAddress.port));
-
-	// if we aren't playing on a lan, we need to authenticate
-	// with the cd key
-	if (SOCK_IsLocalAddress(clc.q3_serverAddress))
-	{
-		cls.state = CA_CHALLENGING;
-	}
-	else
-	{
-		cls.state = CA_CONNECTING;
-	}
-
-	// show_bug.cgi?id=507
-	// prepare to catch a connection process that would turn bad
-	Cvar_Set("com_errorDiagnoseIP", SOCK_AdrToString(clc.q3_serverAddress));
-	// ATVI Wolfenstein Misc #439
-	// we need to setup a correct default for this, otherwise the first val we set might reappear
-	Cvar_Set("com_errorMessage", "");
-
-	in_keyCatchers = 0;
-	clc.q3_connectTime = -99999;	// CL_CheckForResend() will fire immediately
-	clc.q3_connectPacketCount = 0;
-
-	// server connection string
-	Cvar_Set("cl_currentServerAddress", server);
-
-	// NERVE - SMF - reset some cvars
-	Cvar_Set("mp_playerType", "0");
-	Cvar_Set("mp_currentPlayerType", "0");
-	Cvar_Set("mp_weapon", "0");
-	Cvar_Set("mp_team", "0");
-	Cvar_Set("mp_currentTeam", "0");
-
-	Cvar_Set("ui_limboOptions", "0");
-	Cvar_Set("ui_limboPrevOptions", "0");
-	Cvar_Set("ui_limboObjective", "0");
-	// -NERVE - SMF
-
 }
 
 
@@ -805,82 +535,6 @@ void CL_Clientinfo_f(void)
 
 
 //====================================================================
-
-/*
-=================
-CL_CheckForResend
-
-Resend a connect message if the last one has timed out
-=================
-*/
-void CL_CheckForResend(void)
-{
-	int port, i;
-	char info[MAX_INFO_STRING_Q3];
-	char data[MAX_INFO_STRING_Q3];
-
-	// don't send anything if playing back a demo
-	if (clc.demoplaying)
-	{
-		return;
-	}
-
-	// resend if we haven't gotten a reply yet
-	if (cls.state != CA_CONNECTING && cls.state != CA_CHALLENGING)
-	{
-		return;
-	}
-
-	if (cls.realtime - clc.q3_connectTime < RETRANSMIT_TIMEOUT)
-	{
-		return;
-	}
-
-	clc.q3_connectTime = cls.realtime;	// for retransmit requests
-	clc.q3_connectPacketCount++;
-
-
-	switch (cls.state)
-	{
-	case CA_CONNECTING:
-		// requesting a challenge
-		if (!SOCK_IsLANAddress(clc.q3_serverAddress))
-		{
-			CL_RequestAuthorization();
-		}
-		NET_OutOfBandPrint(NS_CLIENT, clc.q3_serverAddress, "getchallenge");
-		break;
-
-	case CA_CHALLENGING:
-		// sending back the challenge
-		port = Cvar_VariableValue("net_qport");
-
-		String::NCpyZ(info, Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3), sizeof(info));
-		Info_SetValueForKey(info, "protocol", va("%i", WMPROTOCOL_VERSION), MAX_INFO_STRING_Q3);
-		Info_SetValueForKey(info, "qport", va("%i", port), MAX_INFO_STRING_Q3);
-		Info_SetValueForKey(info, "challenge", va("%i", clc.q3_challenge), MAX_INFO_STRING_Q3);
-
-		String::Cpy(data, "connect ");
-
-		data[8] = '\"';				// NERVE - SMF - spaces in name bugfix
-
-		for (i = 0; i < String::Length(info); i++)
-		{
-			data[9 + i] = info[i];		// + (clc.q3_challenge)&0x3;
-		}
-		data[9 + i] = '\"';		// NERVE - SMF - spaces in name bugfix
-		data[10 + i] = 0;
-
-		NET_OutOfBandData(NS_CLIENT, clc.q3_serverAddress, (byte*)&data[0], i + 10);
-		// the most current userinfo has been sent, so watch for any
-		// newer changes to userinfo variables
-		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		break;
-
-	default:
-		common->FatalError("CL_CheckForResend: bad cls.state");
-	}
-}
 
 /*
 ===================
@@ -1321,7 +975,7 @@ void CL_Frame(int msec)
 	CLT3_SendCmd();
 
 	// resend a connection request if necessary
-	CL_CheckForResend();
+	CLT3_CheckForResend();
 
 	// decide on the serverTime to render
 	CL_SetCGameTime();
@@ -1595,7 +1249,7 @@ void CL_Init(void)
 	//
 	// register our variables
 	//
-	cl_motd = Cvar_Get("cl_motd", "1", 0);
+	clt3_motd = Cvar_Get("cl_motd", "1", 0);
 
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
 
@@ -1701,8 +1355,8 @@ void CL_Init(void)
 	Cmd_AddCommand("demo", CL_PlayDemo_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
 	Cmd_AddCommand("stoprecord", CLT3_StopRecord_f);
-	Cmd_AddCommand("connect", CL_Connect_f);
-	Cmd_AddCommand("reconnect", CL_Reconnect_f);
+	Cmd_AddCommand("connect", CLT3_Connect_f);
+	Cmd_AddCommand("reconnect", CLT3_Reconnect_f);
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("setenv", CL_Setenv_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);

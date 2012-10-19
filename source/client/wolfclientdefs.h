@@ -129,3 +129,9 @@ struct etdoubleTap_t
 
 	int lastdoubleTap;
 };
+
+//----(SA)	yes, these are bogus addresses.  I'm guessing these will be set to a machine at Activision or id eventually
+#define WSMOTD_SERVER_NAME      "update.gmistudios.com"
+// NERVE - SMF - wolf multiplayer master servers
+#define WMMOTD_SERVER_NAME      "wolfmotd.idsoftware.com"	// 192.246.40.65
+#define ETMOTD_SERVER_NAME      "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?

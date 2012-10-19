@@ -80,6 +80,8 @@ extern Cvar* sv_paused;
 
 extern Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
+extern Cvar* comt3_version;
+
 extern int com_frameTime;
 
 extern int cl_connectedToPureServer;

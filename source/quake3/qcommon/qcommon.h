@@ -35,10 +35,6 @@ PROTOCOL
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
 
-#define UPDATE_SERVER_NAME  "update.quake3arena.com"
-
-#define PORT_UPDATE         27951
-
 /*
 ==============================================================
 
@@ -84,7 +80,6 @@ void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
 
-extern Cvar* com_version;
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
@@ -112,12 +107,6 @@ void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
-void CL_MapLoading(void);
-// do a screen update before starting to load a map
-// when the server is going to load a new map, the entire hunk
-// will be cleared, so the client must shutdown cgame, ui, and
-// the renderer
 
 /*
 ==============================================================

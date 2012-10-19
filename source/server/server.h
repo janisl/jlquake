@@ -48,9 +48,4 @@ extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
 
 void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
 
-//
-// Must be provided
-//
-void CL_MapLoading();
-
 #endif

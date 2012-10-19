@@ -618,9 +618,6 @@ void Host_Shutdown(void)
 #endif
 }
 
-void CL_MapLoading(void)
-{
-}
 void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 }

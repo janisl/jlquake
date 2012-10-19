@@ -243,7 +243,3 @@ void COM_InitServer(quakeparms_t* parms)
 		Sys_Error("%s", e.What());
 	}
 }
-
-void CL_MapLoading(void)
-{
-}

@@ -44,10 +44,6 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-#define MOTD_SERVER_NAME        "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?
-
-#define PORT_MOTD           27951
-
 /*
 ==============================================================
 
@@ -122,7 +118,6 @@ extern Cvar* com_ignorecrash;		//bani
 
 extern Cvar* com_pid;		//bani
 
-extern Cvar* com_version;
 //extern	Cvar	*com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
@@ -156,12 +151,6 @@ void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
-void CL_MapLoading(void);
-// do a screen update before starting to load a map
-// when the server is going to load a new map, the entire hunk
-// will be cleared, so the client must shutdown cgame, ui, and
-// the renderer
 
 /*
 ==============================================================

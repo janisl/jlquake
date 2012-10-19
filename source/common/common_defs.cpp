@@ -39,6 +39,8 @@ Cvar* qh_registered;
 
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
+Cvar* comt3_version;
+
 int GGameType;
 
 int com_frameTime;

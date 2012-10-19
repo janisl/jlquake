@@ -57,6 +57,11 @@ void CLT3_StartHunkUsers();
 void CLT3_ShutdownAll();
 // dump all memory on an error
 void CLT3_FlushMemory();
+// do a screen update before starting to load a map
+// when the server is going to load a new map, the entire hunk
+// will be cleared, so the client must shutdown cgame, ui, and
+// the renderer
+void CLT3_MapLoading();
 
 bool CLT3_GameCommand();
 bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or);

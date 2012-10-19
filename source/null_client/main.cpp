@@ -180,3 +180,7 @@ void CLQH_EstablishConnection(const char* name)
 void CLQ2_Drop()
 {
 }
+
+void CLT3_MapLoading()
+{
+}

@@ -111,3 +111,6 @@ struct q3serverInfo_t
 	int weaprestrict;
 	int balancedteams;
 };
+
+#define Q3MOTD_SERVER_NAME  "update.quake3arena.com"
+#define Q3PORT_MOTD         27951

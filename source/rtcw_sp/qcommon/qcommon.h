@@ -33,20 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 /*
 ==============================================================
 
-PROTOCOL
-
-==============================================================
-*/
-
-//----(SA)	yes, these are bogus addresses.  I'm guessing these will be set to a machine at Activision or id eventually
-#define UPDATE_SERVER_NAME      "update.gmistudios.com"
-
-#define PORT_UPDATE         27951
-#define Q3PORT_AUTHORIZE    27952
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because
@@ -95,7 +81,6 @@ void        Com_SetRecommended(qboolean vid_restart);
 // only a set with the exact name.  Only used during startup.
 
 
-extern Cvar* com_version;
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
@@ -124,12 +109,6 @@ void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 void CLT3_PacketEvent(netadr_t from, QMsg* msg);
-
-void CL_MapLoading(void);
-// do a screen update before starting to load a map
-// when the server is going to load a new map, the entire hunk
-// will be cleared, so the client must shutdown cgame, ui, and
-// the renderer
 
 //----(SA)	added
 void CL_EndgameMenu(void);

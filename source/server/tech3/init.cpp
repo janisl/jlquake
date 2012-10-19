@@ -762,9 +762,9 @@ void SVT3_SpawnServer(const char* server, bool killBots)
 	common->Printf("------ Server Initialization ------\n");
 	common->Printf("Server: %s\n",server);
 
-	// if not running a dedicated server CL_MapLoading will connect the client to the server
+	// if not running a dedicated server CLT3_MapLoading will connect the client to the server
 	// also print some status stuff
-	CL_MapLoading();
+	CLT3_MapLoading();
 
 	// make sure all the client stuff is unloaded
 	CLT3_ShutdownAll();

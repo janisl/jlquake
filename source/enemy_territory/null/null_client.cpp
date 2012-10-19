@@ -44,7 +44,3 @@ void CL_Frame(int msec)
 void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 {
 }
-
-void CL_MapLoading(void)
-{
-}
