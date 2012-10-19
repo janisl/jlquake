@@ -59,8 +59,6 @@ void CL_Snd_Restart_f(void);
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
-void CL_ReadPackets(void);
-
 //
 // cl_parse.c
 //

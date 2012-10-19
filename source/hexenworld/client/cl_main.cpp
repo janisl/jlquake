@@ -514,66 +514,6 @@ void CL_Changing_f(void)
 	common->Printf("\nChanging map...\n");
 }
 
-/*
-=================
-CL_ReadPackets
-=================
-*/
-void CL_ReadPackets(void)
-{
-	netadr_t net_from;
-	QMsg net_message;
-	static byte net_message_buffer[MAX_MSGLEN_HW + 9];	// one more than msg + header
-	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
-
-	while (CLQHW_GetMessage(net_message, net_from))
-	{
-		//
-		// remote command packet
-		//
-		if (*(int*)net_message._data == -1)
-		{
-			CLQHW_ConnectionlessPacket(net_message, net_from);
-			continue;
-		}
-
-		if (net_message.cursize < 8)
-		{
-			common->Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
-			continue;
-		}
-
-		//
-		// packet from server
-		//
-		if (!clc.demoplaying &&
-			!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
-		{
-			common->Printf("%s:sequenced packet without connection\n",
-				SOCK_AdrToString(net_from));
-			continue;
-		}
-		if (!Netchan_Process(&clc.netchan, &net_message))
-		{
-			continue;		// wasn't accepted for some reason
-		}
-		clc.netchan.lastReceived = realtime * 1000;
-		CLHW_ParseServerMessage(net_message);
-	}
-
-	//
-	// check timeout
-	//
-	if ((cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE) &&
-		realtime - clc.netchan.lastReceived / 1000.0 > cl_timeout->value)
-	{
-		common->Printf("\nServer connection timed out.\n");
-		CL_Disconnect(true);
-		return;
-	}
-
-}
-
 //=============================================================================
 
 /*
@@ -856,7 +796,7 @@ void Host_Frame(float time)
 		Cbuf_Execute();
 
 		// fetch results from server
-		CL_ReadPackets();
+		CLQHW_ReadPackets();
 
 		// send intentions now
 		// resend a connection request if necessary

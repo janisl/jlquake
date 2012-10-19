@@ -658,3 +658,64 @@ void CLQH_ReadFromServer()
 		common->Printf("\n");
 	}
 }
+
+void CLQHW_ReadPackets()
+{
+	netadr_t net_from;
+	QMsg net_message;
+	byte net_message_buffer[MAX_MSGLEN_HW + 9];	// one more than msg + header
+	net_message.InitOOB(net_message_buffer, GGameType & GAME_HexenWorld ? MAX_MSGLEN_HW + 9 : MAX_MSGLEN_QW * 2);
+
+	while (CLQHW_GetMessage(net_message, net_from))
+	{
+		//
+		// remote command packet
+		//
+		if (*(int*)net_message._data == -1)
+		{
+			CLQHW_ConnectionlessPacket(net_message, net_from);
+			continue;
+		}
+
+		if (net_message.cursize < 8)
+		{
+			common->Printf("%s: Runt packet\n",SOCK_AdrToString(net_from));
+			continue;
+		}
+
+		//
+		// packet from server
+		//
+		if (!clc.demoplaying &&
+			!SOCK_CompareAdr(net_from, clc.netchan.remoteAddress))
+		{
+			common->DPrintf("%s:sequenced packet without connection\n",
+				SOCK_AdrToString(net_from));
+			continue;
+		}
+		if (!Netchan_Process(&clc.netchan, &net_message))
+		{
+			continue;		// wasn't accepted for some reason
+		}
+		clc.netchan.lastReceived = cls.realtime;
+		if (GGameType & GAME_HexenWorld)
+		{
+			CLHW_ParseServerMessage(net_message);
+		}
+		else
+		{
+			CLQW_ParseServerMessage(net_message);
+		}
+	}
+
+	//
+	// check timeout
+	//
+	if ((cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE) &&
+		cls.realtime - clc.netchan.lastReceived > cl_timeout->value * 1000)
+	{
+		common->Printf("\nServer connection timed out.\n");
+		CL_Disconnect(true);
+		return;
+	}
+}

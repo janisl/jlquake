@@ -26,6 +26,6 @@ extern qboolean nomaster;
 //
 void CL_Init(void);
 
-void CL_ReadPackets(void);
+void CLQHW_ReadPackets(void);
 
 void CL_WriteToServer(hwusercmd_t* cmd);
