@@ -50,7 +50,6 @@ void CL_Snd_Restart_f(void);
 
 void CL_ReadPackets(void);
 
-int  CL_ReadFromServer(void);
 void CL_WriteToServer(q2usercmd_t* cmd);
 
 //

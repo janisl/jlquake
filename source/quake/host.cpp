@@ -368,7 +368,7 @@ void _Host_Frame(float time)
 // fetch results from server
 		if (cls.state == CA_ACTIVE)
 		{
-			CL_ReadFromServer();
+			CLQH_ReadFromServer();
 		}
 
 // update video

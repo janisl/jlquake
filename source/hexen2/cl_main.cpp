@@ -49,54 +49,6 @@ void CL_PrintEntities_f(void)
 	}
 }
 
-/*
-===============
-CL_ReadFromServer
-
-Read all incoming data from the server
-===============
-*/
-int CL_ReadFromServer(void)
-{
-	int ret;
-
-	cl.qh_oldtime = cl.qh_serverTimeFloat;
-	cl.qh_serverTimeFloat += host_frametime;
-	cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
-
-	// allocate space for network message buffer
-	QMsg net_message;
-	byte net_message_buf[MAX_MSGLEN_H2];
-	net_message.InitOOB(net_message_buf, MAX_MSGLEN_H2);
-
-	do
-	{
-		ret = CLQH_GetMessage(net_message);
-		if (ret == -1)
-		{
-			common->Error("CL_ReadFromServer: lost server connection");
-		}
-		if (!ret)
-		{
-			break;
-		}
-
-		cl.qh_last_received_message = realtime;
-		CLH2_ParseServerMessage(net_message);
-	}
-	while (ret && cls.state == CA_ACTIVE);
-
-	if (cl_shownet->value)
-	{
-		common->Printf("\n");
-	}
-
-//
-// bring the links up to date
-//
-	return 0;
-}
-
 void CL_Sensitivity_save_f(void)
 {
 	if (Cmd_Argc() != 2)

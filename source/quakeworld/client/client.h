@@ -31,5 +31,4 @@ void CL_Init(void);
 
 void CL_ReadPackets(void);
 
-int  CL_ReadFromServer(void);
 void CL_WriteToServer(qwusercmd_t* cmd);

@@ -28,5 +28,4 @@ void CL_Init(void);
 
 void CL_ReadPackets(void);
 
-int  CL_ReadFromServer(void);
 void CL_WriteToServer(hwusercmd_t* cmd);

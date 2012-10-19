@@ -12,5 +12,3 @@
 void CL_Init(void);
 
 void CL_Disconnect_f(void);
-
-int  CL_ReadFromServer(void);

@@ -615,3 +615,46 @@ void CLQHW_ConnectionlessPacket(QMsg& message, netadr_t& net_from)
 
 	common->Printf("unknown:  %c\n", c);
 }
+
+//	Read all incoming data from the server
+void CLQH_ReadFromServer()
+{
+	cl.qh_oldtime = cl.qh_serverTimeFloat;
+	cl.qh_serverTimeFloat += cls.frametime * 0.001;
+	cl.serverTime = (int)(cl.qh_serverTimeFloat * 1000);
+
+	// allocate space for network message buffer
+	QMsg net_message;
+	byte net_message_buf[MAX_MSGLEN];
+	net_message.InitOOB(net_message_buf, GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_MSGLEN_Q1);
+
+	int ret;
+	do
+	{
+		ret = CLQH_GetMessage(net_message);
+		if (ret == -1)
+		{
+			common->Error("CLQH_ReadFromServer: lost server connection");
+		}
+		if (!ret)
+		{
+			break;
+		}
+
+		cl.qh_last_received_message = cls.realtime * 0.001;
+		if (GGameType & GAME_Hexen2)
+		{
+			CLH2_ParseServerMessage(net_message);
+		}
+		else
+		{
+			CLQ1_ParseServerMessage(net_message);
+		}
+	}
+	while (ret && cls.state == CA_ACTIVE);
+
+	if (cl_shownet->value)
+	{
+		common->Printf("\n");
+	}
+}
