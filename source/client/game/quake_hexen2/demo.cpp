@@ -1108,3 +1108,35 @@ void CLQHW_ReRecord_f()
 	CL_Disconnect(true);
 	CLQHW_BeginServerConnect();
 }
+
+void CLQH_NextDemo()
+{
+	if (cls.qh_demonum == -1)
+	{
+		return;		// don't play demos
+	}
+
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		SCRQH_BeginLoadingPlaque();
+	}
+
+	if (!cls.qh_demos[cls.qh_demonum][0] || cls.qh_demonum == MAX_DEMOS)
+	{
+		cls.qh_demonum = 0;
+		if (!cls.qh_demos[cls.qh_demonum][0])
+		{
+			if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+			{
+				common->Printf("No demos listed with startdemos\n");
+			}
+			cls.qh_demonum = -1;
+			return;
+		}
+	}
+
+	char str[1024];
+	sprintf(str, "playdemo %s\n", cls.qh_demos[cls.qh_demonum]);
+	Cbuf_InsertText(str);
+	cls.qh_demonum++;
+}

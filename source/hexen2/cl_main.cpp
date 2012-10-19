@@ -35,29 +35,7 @@ Called to play the next demo in the demo loop
 */
 void CL_NextDemo(void)
 {
-	char str[1024];
-
-	if (cls.qh_demonum == -1)
-	{
-		return;		// don't play demos
-
-	}
-	SCRQH_BeginLoadingPlaque();
-
-	if (!cls.qh_demos[cls.qh_demonum][0] || cls.qh_demonum == MAX_DEMOS)
-	{
-		cls.qh_demonum = 0;
-		if (!cls.qh_demos[cls.qh_demonum][0])
-		{
-			common->Printf("No demos listed with startdemos\n");
-			cls.qh_demonum = -1;
-			return;
-		}
-	}
-
-	sprintf(str,"playdemo %s\n", cls.qh_demos[cls.qh_demonum]);
-	Cbuf_InsertText(str);
-	cls.qh_demonum++;
+	CLQH_NextDemo();
 }
 
 /*
