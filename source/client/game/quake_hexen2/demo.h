@@ -27,3 +27,4 @@ void CLHW_Record_f();
 void CLQH_PlayDemo_f();
 void CLQHW_PlayDemo_f();
 void CLQH_TimeDemo_f();
+void CLQHW_ReRecord_f();

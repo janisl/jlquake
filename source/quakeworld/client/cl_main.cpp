@@ -740,7 +740,7 @@ void CL_Init(void)
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand("record", CLQW_Record_f);
-	Cmd_AddCommand("rerecord", CL_ReRecord_f);
+	Cmd_AddCommand("rerecord", CLQHW_ReRecord_f);
 	Cmd_AddCommand("stop", CLQH_Stop_f);
 	Cmd_AddCommand("playdemo", CLQHW_PlayDemo_f);
 	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);

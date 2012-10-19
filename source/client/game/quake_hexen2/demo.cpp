@@ -19,6 +19,7 @@
 #include "../hexen2/local.h"
 #include "demo.h"
 #include "menu.h"
+#include "connection.h"
 
 /*
 ==============================================================================
@@ -1064,4 +1065,46 @@ void CLQH_TimeDemo_f()
 	cls.qh_td_starttime = 0;
 	cls.qh_td_startframe = cls.framecount;
 	cls.qh_td_lastframe = -1;		// get a new message this frame
+}
+
+void CLQHW_ReRecord_f()
+{
+	int c = Cmd_Argc();
+	if (c != 2)
+	{
+		common->Printf("rerecord <demoname>\n");
+		return;
+	}
+
+	if (!*cls.servername)
+	{
+		common->Printf("No server to reconnect to...\n");
+		return;
+	}
+
+	if (clc.demorecording)
+	{
+		CLQH_Stop_f();
+	}
+
+	char name[MAX_OSPATH];
+	String::Cpy(name, Cmd_Argv(1));
+
+	//
+	// open the demo file
+	//
+	String::DefaultExtension(name, sizeof(name), ".qwd");
+
+	clc.demofile = FS_FOpenFileWrite(name);
+	if (!clc.demofile)
+	{
+		common->Printf("ERROR: couldn't open.\n");
+		return;
+	}
+
+	common->Printf("recording to %s.\n", name);
+	clc.demorecording = true;
+
+	CL_Disconnect(true);
+	CLQHW_BeginServerConnect();
 }

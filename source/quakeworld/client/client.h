@@ -36,8 +36,3 @@ void CL_ReadPackets(void);
 
 int  CL_ReadFromServer(void);
 void CL_WriteToServer(qwusercmd_t* cmd);
-
-//
-// cl_demo.c
-//
-void CL_ReRecord_f(void);
