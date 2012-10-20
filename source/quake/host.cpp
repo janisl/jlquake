@@ -509,7 +509,7 @@ void Host_Init(quakeparms_t* parms)
 #ifndef DEDICATED
 		if (!com_dedicated->integer)
 		{
-			CL_Init();
+			CL_SharedInit();
 		}
 #endif
 

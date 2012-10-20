@@ -21,6 +21,7 @@
 #include "network_channel.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
+#include "../../../server/public.h"
 
 Cvar* clqh_sbar;
 
@@ -30,6 +31,184 @@ Cvar* qhw_spectator;
 Cvar* clqhw_rate;
 
 int clqh_packet_latency[NET_TIMINGS_QH];
+
+static float save_sensitivity;
+
+static void CLQH_PrintEntities_f()
+{
+	if (GGameType & GAME_Hexen2)
+	{
+		h2entity_t* ent;
+		int i;
+
+		for (i = 0,ent = h2cl_entities; i < cl.qh_num_entities; i++,ent++)
+		{
+			common->Printf("%3i:",i);
+			if (!ent->state.modelindex)
+			{
+				common->Printf("EMPTY\n");
+				continue;
+			}
+			common->Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
+				R_ModelName(cl.model_draw[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
+		}
+	}
+	else
+	{
+		q1entity_t* ent;
+		int i;
+
+		for (i = 0,ent = clq1_entities; i < cl.qh_num_entities; i++,ent++)
+		{
+			common->Printf("%3i:",i);
+			if (!ent->state.modelindex)
+			{
+				common->Printf("EMPTY\n");
+				continue;
+			}
+			common->Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
+				R_ModelName(cl.model_draw[ent->state.modelindex]),ent->state.frame, ent->state.origin[0], ent->state.origin[1], ent->state.origin[2], ent->state.angles[0], ent->state.angles[1], ent->state.angles[2]);
+		}
+	}
+}
+
+static void CLH2_Sensitivity_save_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("sensitivity_save <save/restore>\n");
+		return;
+	}
+
+	if (String::ICmp(Cmd_Argv(1),"save") == 0)
+	{
+		save_sensitivity = cl_sensitivity->value;
+	}
+	else if (String::ICmp(Cmd_Argv(1),"restore") == 0)
+	{
+		Cvar_SetValue("sensitivity", save_sensitivity);
+	}
+}
+
+static void CLQH_Name_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("\"name\" is \"%s\"\n", clqh_name->string);
+		return;
+	}
+	char* newName;
+	if (Cmd_Argc() == 2)
+	{
+		newName = Cmd_Argv(1);
+	}
+	else
+	{
+		newName = Cmd_ArgsUnmodified();
+	}
+	newName[15] = 0;
+
+	if (GGameType & GAME_Hexen2)
+	{
+		//this is for the fuckers who put braces in the name causing loadgame to crash.
+		char* pdest = strchr(newName,'{');
+		if (pdest)
+		{
+			*pdest = 0;	//zap the brace
+			common->Printf("Illegal char in name removed!\n");
+		}
+	}
+
+	if (String::Cmp(clqh_name->string, newName) == 0)
+	{
+		return;
+	}
+	Cvar_Set("_cl_name", newName);
+	if (cls.state == CA_ACTIVE)
+	{
+		CL_ForwardKnownCommandToServer();
+	}
+}
+
+static void CLQH_Color_f()
+{
+	int top, bottom;
+	int playercolor;
+
+	if (Cmd_Argc() == 1)
+	{
+		common->Printf("\"color\" is \"%i %i\"\n", ((int)clqh_color->value) >> 4, ((int)clqh_color->value) & 0x0f);
+		common->Printf("color <0-13> [0-13]\n");
+		return;
+	}
+
+	if (Cmd_Argc() == 2)
+	{
+		top = bottom = String::Atoi(Cmd_Argv(1));
+	}
+	else
+	{
+		top = String::Atoi(Cmd_Argv(1));
+		bottom = String::Atoi(Cmd_Argv(2));
+	}
+
+	top &= 15;
+	if (top > 13)
+	{
+		top = 13;
+	}
+	bottom &= 15;
+	if (bottom > 13)
+	{
+		bottom = 13;
+	}
+
+	playercolor = top * 16 + bottom;
+
+	Cvar_SetValue("_cl_color", playercolor);
+	if (cls.state == CA_ACTIVE)
+	{
+		CL_ForwardKnownCommandToServer();
+	}
+}
+
+static void CLH2_Class_f()
+{
+	if (Cmd_Argc() == 1)
+	{
+		if (!(int)clh2_playerclass->value)
+		{
+			common->Printf("\"playerclass\" is %d (\"unknown\")\n", (int)clh2_playerclass->value);
+		}
+		else
+		{
+			common->Printf("\"playerclass\" is %d (\"%s\")\n", (int)clh2_playerclass->value,h2_ClassNames[(int)clh2_playerclass->value - 1]);
+		}
+		return;
+	}
+
+	float newClass;
+	if (Cmd_Argc() == 2)
+	{
+		newClass = String::Atof(Cmd_Argv(1));
+	}
+	else
+	{
+		newClass = String::Atof(Cmd_ArgsUnmodified());
+	}
+
+	Cvar_SetValue("_cl_playerclass", newClass);
+
+	if (GGameType & GAME_H2Portals)
+	{
+		PR_SetPlayerClassGlobal(newClass);
+	}
+
+	if (cls.state == CA_ACTIVE)
+	{
+		CL_ForwardKnownCommandToServer();
+	}
+}
 
 void CLQH_Init()
 {
@@ -49,6 +228,9 @@ void CLQH_Init()
 		Cmd_AddCommand("startdemos", CLQH_Startdemos_f);
 		Cmd_AddCommand("demos", CLQH_Demos_f);
 		Cmd_AddCommand("stopdemo", CLQH_Stopdemo_f);
+		Cmd_AddCommand("entities", CLQH_PrintEntities_f);
+		Cmd_AddCommand("name", CLQH_Name_f);
+		Cmd_AddCommand("color", CLQH_Color_f);
 
 		Cmd_AddCommand("god", NULL);
 		Cmd_AddCommand("notarget", NULL);
@@ -70,6 +252,9 @@ void CLQH_Init()
 		else
 		{
 			clh2_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
+
+			Cmd_AddCommand("sensitivity_save", CLH2_Sensitivity_save_f);
+			Cmd_AddCommand("playerclass", CLH2_Class_f);
 		}
 	}
 	else

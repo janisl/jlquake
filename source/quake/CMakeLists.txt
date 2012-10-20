@@ -1,5 +1,4 @@
 add_executable(jlquake
-	cl_main.cpp
 	common.cpp
 	host.cpp
 	host_cmd.cpp

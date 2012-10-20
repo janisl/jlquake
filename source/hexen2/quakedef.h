@@ -46,10 +46,6 @@
 #include "common.h"
 #include "sys.h"
 
-#ifndef DEDICATED
-#include "client.h"
-#endif
-
 //=============================================================================
 
 // the host system specifies the base of the directory tree, the
