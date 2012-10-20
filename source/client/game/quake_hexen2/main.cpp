@@ -27,4 +27,13 @@ int clqh_packet_latency[NET_TIMINGS_QH];
 
 void CLQH_Init()
 {
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		qhw_topcolor = Cvar_Get("topcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);
+		qhw_bottomcolor = Cvar_Get("bottomcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);
+		qhw_spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
+	}
+	else
+	{
+	}
 }

@@ -62,8 +62,6 @@ void CL_Init(void)
 {
 	CL_SharedInit();
 
-	CL_InitInput();
-
 	//
 	// register our commands
 	//

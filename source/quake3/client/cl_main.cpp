@@ -464,15 +464,11 @@ void CL_Init(void)
 
 	CL_SharedInit();
 
-	Con_Init();
-
 	CL_ClearState();
 
 	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 
 	cls.realtime = 0;
-
-	CL_InitInput();
 
 	CLT3_InitServerLists();
 
@@ -555,8 +551,6 @@ void CL_Init(void)
 	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);
 	Cmd_AddCommand("model", CL_SetModel_f);
 	CL_InitRef();
-
-	SCR_Init();
 
 	Cbuf_Execute();
 

@@ -765,17 +765,11 @@ void CL_Init(void)
 
 	CL_SharedInit();
 
-	Con_Init();
-
 	CL_ClearState();
 
 	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 
 	cls.realtime = 0;
-
-	UI_Init();
-
-	CL_InitInput();
 
 	CLT3_InitServerLists();
 
@@ -886,8 +880,6 @@ void CL_Init(void)
 	CL_InitTranslation();
 
 	CL_InitRef();
-
-	SCR_Init();
 
 	Cbuf_Execute();
 

@@ -494,8 +494,6 @@ void Host_Init(quakeparms_t* parms)
 		Com_InitDebugLog();
 #ifndef DEDICATED
 		CL_InitKeyCommands();
-		Con_Init();
-		UI_Init();
 #endif
 		SV_Init();
 
@@ -519,7 +517,6 @@ void Host_Init(quakeparms_t* parms)
 			IN_Init();
 			CL_InitRenderer();
 			Sys_ShowConsole(0, false);
-			SCR_Init();
 			S_Init();
 			CLQ1_InitTEnts();
 			CDAudio_Init();

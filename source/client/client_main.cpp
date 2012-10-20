@@ -78,6 +78,14 @@ static void CL_ForwardToServer_f()
 
 void CL_SharedInit()
 {
+	Con_Init();
+
+	UI_Init();
+
+	CL_InitInput();
+
+	SCR_Init();
+
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
 

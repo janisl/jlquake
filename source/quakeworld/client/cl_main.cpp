@@ -598,7 +598,6 @@ void CL_Init(void)
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForKey(cls.qh_userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
-	CL_InitInput();
 	CLQHW_InitPrediction();
 	CL_InitCam();
 	PMQH_Init();
@@ -627,11 +626,8 @@ void CL_Init(void)
 	//
 	clqh_name = Cvar_Get("name", "unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
 	password = Cvar_Get("password", "", CVAR_USERINFO);
-	qhw_spectator = Cvar_Get("spectator", "", CVAR_USERINFO);
 	skin = Cvar_Get("skin", "", CVAR_ARCHIVE | CVAR_USERINFO);
 	team = Cvar_Get("team", "", CVAR_ARCHIVE | CVAR_USERINFO);
-	qhw_topcolor = Cvar_Get("topcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);
-	qhw_bottomcolor = Cvar_Get("bottomcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);
 	rate = Cvar_Get("rate", "2500", CVAR_ARCHIVE | CVAR_USERINFO);
 	msg = Cvar_Get("msg", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 	noaim = Cvar_Get("noaim", "0", CVAR_ARCHIVE | CVAR_USERINFO);
@@ -942,8 +938,6 @@ void Host_Init(quakeparms_t* parms)
 
 		CL_InitKeyCommands();
 		Com_InitDebugLog();
-		Con_Init();
-		UI_Init();
 
 		cls.state = CA_DISCONNECTED;
 		CL_Init();
@@ -955,7 +949,6 @@ void Host_Init(quakeparms_t* parms)
 		IN_Init();
 		CL_InitRenderer();
 		Sys_ShowConsole(0, false);
-		SCR_Init();
 		S_Init();
 		CLQ1_InitTEnts();
 		CDAudio_Init();

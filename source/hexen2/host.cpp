@@ -528,10 +528,6 @@ void Host_Init(quakeparms_t* parms)
 #endif
 		ComH2_LoadStrings();
 		Com_InitDebugLog();
-#ifndef DEDICATED
-		Con_Init();
-		UI_Init();
-#endif
 		SV_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
@@ -554,7 +550,6 @@ void Host_Init(quakeparms_t* parms)
 			IN_Init();
 			CL_InitRenderer();
 			Sys_ShowConsole(0, false);
-			SCR_Init();
 			S_Init();
 			CLH2_InitTEnts();
 			CDAudio_Init();

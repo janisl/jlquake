@@ -351,8 +351,6 @@ void CL_InitLocal(void)
 	cls.state = CA_DISCONNECTED;
 	cls.realtime = Sys_Milliseconds_();
 
-	CL_InitInput();
-
 	adr0 = Cvar_Get("adr0", "", CVAR_ARCHIVE);
 	adr1 = Cvar_Get("adr1", "", CVAR_ARCHIVE);
 	adr2 = Cvar_Get("adr2", "", CVAR_ARCHIVE);
@@ -745,7 +743,6 @@ void CL_Init(void)
 
 	// all archived variables will now be loaded
 
-	Con_Init();
 	IN_Init();
 #if defined __linux__ || defined __sgi
 	S_Init();
@@ -757,9 +754,6 @@ void CL_Init(void)
 
 	V_Init();
 
-	UI_Init();
-
-	SCR_Init();
 	cls.disable_screen = true;	// don't draw yet
 
 	CDAudio_Init();
