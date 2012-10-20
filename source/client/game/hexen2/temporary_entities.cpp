@@ -86,7 +86,7 @@ h2entity_state_t* CLH2_FindState(int entityNumber)
 	{
 		if (entityNumber == cl.viewentity)
 		{
-			VectorCopy(CL_GetSimOrg(), pretend_player.origin);
+			VectorCopy(cl.qh_simorg, pretend_player.origin);
 		}
 		else
 		{

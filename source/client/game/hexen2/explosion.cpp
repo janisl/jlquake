@@ -3117,7 +3117,7 @@ void CLHW_UpdateTargetBall()
 	}
 
 	vec3_t newOrg;
-	VectorCopy(CL_GetSimOrg(), newOrg);
+	VectorCopy(cl.qh_simorg, newOrg);
 	newOrg[0] += cos(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
 	newOrg[1] += sin(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
 	newOrg[2] += 44 + sin(clh2_targetPitch * M_PI * 2 / 256.0) * 50 + cos(cl.serverTime * 0.001 * 2) * 5;

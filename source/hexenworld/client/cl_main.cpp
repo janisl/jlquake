@@ -900,11 +900,6 @@ void Host_Shutdown(void)
 	R_Shutdown(true);
 }
 
-float* CL_GetSimOrg()
-{
-	return cl.qh_simorg;
-}
-
 void server_referencer_dummy()
 {
 	svh2_kingofhill = 0;

@@ -648,8 +648,4 @@ void Sys_AppActivate();
 float frand();	// 0 to 1
 float crand();	// -1 to 1
 
-//---------------------------------------------
-//	Must be provided
-float* CL_GetSimOrg();
-
 #endif

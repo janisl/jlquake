@@ -696,8 +696,3 @@ void CL_Shutdown(void)
 	IN_Shutdown();
 	R_Shutdown(true);
 }
-
-float* CL_GetSimOrg()
-{
-	return NULL;
-}

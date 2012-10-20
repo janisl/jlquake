@@ -121,7 +121,8 @@ static void CLQ1_UpdateBeams()
 		// if coming from the player, update the start position
 		if (beam->entity == cl.viewentity)
 		{
-			VectorCopy(CL_GetSimOrg(), beam->start);
+			float* org = GGameType & GAME_QuakeWorld ? cl.qh_simorg : clq1_entities[cl.viewentity].state.origin;
+			VectorCopy(org, beam->start);
 		}
 
 		// calculate pitch and yaw

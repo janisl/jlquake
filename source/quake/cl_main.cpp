@@ -61,8 +61,3 @@ void CL_Init(void)
 	//
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 }
-
-float* CL_GetSimOrg()
-{
-	return clq1_entities[cl.viewentity].state.origin;
-}

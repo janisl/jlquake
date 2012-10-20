@@ -76,8 +76,3 @@ void CL_Init(void)
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 	Cmd_AddCommand("sensitivity_save", CL_Sensitivity_save_f);
 }
-
-float* CL_GetSimOrg()
-{
-	return h2cl_entities[cl.viewentity].state.origin;
-}

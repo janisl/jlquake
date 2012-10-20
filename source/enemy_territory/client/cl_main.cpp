@@ -961,8 +961,3 @@ void CL_ShowIP_f(void)
 {
 	SOCK_ShowIP();
 }
-
-float* CL_GetSimOrg()
-{
-	return NULL;
-}
