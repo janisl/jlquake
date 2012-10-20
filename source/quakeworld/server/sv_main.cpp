@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include <time.h>
 #include "../../server/public.h"
+#include "../../client/public.h"
 
 quakeparms_t host_parms;
 
@@ -43,6 +44,7 @@ public:
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Disconnect(const char* message);
 };
 
 static idCommonLocal commonLocal;
@@ -110,6 +112,12 @@ void idCommonLocal::EndGame(const char* format, ...)
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
 {
+}
+
+void idCommonLocal::Disconnect(const char* message)
+{
+	CL_Disconnect(true);
+	SV_Shutdown("");
 }
 
 //============================================================================

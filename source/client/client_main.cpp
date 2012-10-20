@@ -76,6 +76,28 @@ static void CL_ForwardToServer_f()
 	}
 }
 
+void CL_Disconnect_f()
+{
+	if (GGameType & GAME_Tech3)
+	{
+		SCR_StopCinematic();
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		// RF, make sure loading variables are turned off
+		Cvar_Set("savegame_loading", "0");
+		Cvar_Set("g_reloading", "0");
+	}
+	if (!(GGameType & GAME_Tech3) || (cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC))
+	{
+		common->Disconnect("Disconnected from server");
+	}
+}
+
 void CL_SharedInit()
 {
 	Con_Init();
@@ -97,6 +119,7 @@ void CL_SharedInit()
 	// register our commands
 	//
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
+	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 
 	if (GGameType & GAME_QuakeHexen)
 	{

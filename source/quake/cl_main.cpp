@@ -24,12 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/game/quake_hexen2/demo.h"
 #include "../client/game/quake_hexen2/connection.h"
 
-void CL_Disconnect_f(void)
-{
-	CL_Disconnect(true);
-	SV_Shutdown("");
-}
-
 /*
 ==============
 CL_PrintEntities_f
@@ -66,7 +60,6 @@ void CL_Init(void)
 	// register our commands
 	//
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 }
 
 float* CL_GetSimOrg()

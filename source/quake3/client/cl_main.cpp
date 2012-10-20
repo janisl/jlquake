@@ -77,21 +77,6 @@ CONSOLE COMMANDS
 */
 
 /*
-==================
-CL_Disconnect_f
-==================
-*/
-void CL_Disconnect_f(void)
-{
-	SCR_StopCinematic();
-	Cvar_Set("ui_singlePlayerActive", "0");
-	if (cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC)
-	{
-		Com_Error(ERR_DISCONNECT, "Disconnected from server");
-	}
-}
-
-/*
 =====================
 CL_Rcon_f
 
@@ -487,7 +472,6 @@ void CL_Init(void)
 	Cmd_AddCommand("clientinfo", CL_Clientinfo_f);
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);

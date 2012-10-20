@@ -96,23 +96,6 @@ CONSOLE COMMANDS
 */
 
 /*
-==================
-CL_Disconnect_f
-==================
-*/
-void CL_Disconnect_f(void)
-{
-	SCR_StopCinematic();
-	Cvar_Set("savegame_loading", "0");
-	Cvar_Set("g_reloading", "0");
-	if (cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC)
-	{
-		Com_Error(ERR_DISCONNECT, "Disconnected from server");
-	}
-}
-
-
-/*
 =====================
 CL_Rcon_f
 
@@ -848,7 +831,6 @@ void CL_Init(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
 	Cmd_AddCommand("ui_restart", CL_UI_Restart_f);				// NERVE - SMF
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);

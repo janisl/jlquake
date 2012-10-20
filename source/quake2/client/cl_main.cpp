@@ -109,12 +109,6 @@ void CL_Rcon_f(void)
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
 }
 
-void CL_Disconnect_f(void)
-{
-	common->Error("Disconnected from server");
-}
-
-
 /*
 ====================
 CL_Packet_f
@@ -351,7 +345,6 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 

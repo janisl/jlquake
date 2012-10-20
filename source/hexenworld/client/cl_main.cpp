@@ -39,6 +39,7 @@ public:
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Disconnect(const char* message);
 };
 
 static idCommonLocal commonLocal;
@@ -106,6 +107,12 @@ void idCommonLocal::EndGame(const char* format, ...)
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
 {
+}
+
+void idCommonLocal::Disconnect(const char* message)
+{
+	CL_Disconnect(true);
+	SV_Shutdown("");
 }
 
 /*
@@ -191,12 +198,6 @@ void CL_Rcon_f(void)
 	}
 
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
-}
-
-
-void CL_Disconnect_f(void)
-{
-	CL_Disconnect(true);
 }
 
 /*
@@ -603,7 +604,6 @@ void CL_Init(void)
 	Cmd_AddCommand("version", CL_Version_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 
 	Cmd_AddCommand("skins", Skin_Skins_f);
 

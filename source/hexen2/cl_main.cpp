@@ -20,12 +20,6 @@
 
 static float save_sensitivity;
 
-void CL_Disconnect_f(void)
-{
-	CL_Disconnect(true);
-	SV_Shutdown("");
-}
-
 /*
 ==============
 CL_PrintEntities_f
@@ -80,7 +74,6 @@ void CL_Init(void)
 // register our commands
 //
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
-	Cmd_AddCommand("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand("sensitivity_save", CL_Sensitivity_save_f);
 }
 

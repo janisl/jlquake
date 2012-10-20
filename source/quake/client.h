@@ -30,5 +30,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_main
 //
 void CL_Init(void);
-
-void CL_Disconnect_f(void);

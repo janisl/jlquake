@@ -106,7 +106,6 @@ int main(int argc, char* argv[])
 {
 	double time, oldtime, newtime;
 	quakeparms_t parms;
-	int j;
 
 	Com_Memset(&parms, 0, sizeof(parms));
 

@@ -64,6 +64,7 @@ public:
 	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
 	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Disconnect(const char* message);
 };
 
 static idCommonLocal commonLocal;
@@ -139,6 +140,11 @@ void idCommonLocal::ServerDisconnected(const char* format, ...)
 	va_end(argPtr);
 
 	Com_Error(ERR_SERVERDISCONNECT, "%s", string);
+}
+
+void idCommonLocal::Disconnect(const char* message)
+{
+	Com_Error(ERR_DISCONNECT, "Disconnected from server");
 }
 
 /*
