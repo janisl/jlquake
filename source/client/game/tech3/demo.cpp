@@ -560,7 +560,7 @@ void CLT3_PlayDemo_f()
 	cls.state = CA_CONNECTED;
 	clc.demoplaying = true;
 
-	if (GGameType & GAME_ET && Cvar_VariableValue("cl_wavefilerecord"))
+	if (GGameType & GAME_ET && clwm_wavefilerecord->integer)
 	{
 		CL_WriteWaveOpen();
 	}

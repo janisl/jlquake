@@ -18,16 +18,6 @@ Cvar* rcon_address;
 
 Cvar* entlatency;
 
-//
-// info mirrors
-//
-Cvar* password;
-Cvar* team;
-Cvar* skin;
-Cvar* rate;
-Cvar* noaim;
-Cvar* msg;
-
 quakeparms_t host_parms;
 
 qboolean nomaster;
@@ -598,18 +588,6 @@ void CL_Init(void)
 
 	cls.state = CA_DISCONNECTED;
 
-	Info_SetValueForKey(cls.qh_userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, false, false);
-	Info_SetValueForKey(cls.qh_userinfo, "playerclass", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "topcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "bottomcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "rate", "2500", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "msg", "1", MAX_INFO_STRING_QW, 64, 64, true, false);
-
-	CLQHW_InitPrediction();
-	CLHW_InitEffects();
-	CL_InitCam();
-	PMQH_Init();
-
 //
 // register our commands
 //
@@ -617,44 +595,19 @@ void CL_Init(void)
 
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
-
 	rcon_password = Cvar_Get("rcon_password", "", 0);
 	rcon_address = Cvar_Get("rcon_address", "", 0);
 
 	entlatency = Cvar_Get("entlatency", "20", 0);
 
-	//
-	// info mirrors
-	//
-	clqh_name = Cvar_Get("name","unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
-	clh2_playerclass = Cvar_Get("playerclass", "0", CVAR_ARCHIVE | CVAR_USERINFO);
-	password = Cvar_Get("password", "", CVAR_USERINFO);
-	skin = Cvar_Get("skin","", CVAR_ARCHIVE | CVAR_USERINFO);
-	team = Cvar_Get("team","", CVAR_ARCHIVE | CVAR_USERINFO);
-	rate = Cvar_Get("rate","2500", CVAR_ARCHIVE | CVAR_USERINFO);
-	msg = Cvar_Get("msg","1", CVAR_ARCHIVE | CVAR_USERINFO);
-	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE | CVAR_USERINFO);
-	clhw_talksounds = Cvar_Get("talksounds", "1", CVAR_ARCHIVE);
-
-	clhw_teamcolor = Cvar_Get("clhw_teamcolor", "187", CVAR_ARCHIVE);
-
 	Cmd_AddCommand("version", CL_Version_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CLHW_Record_f);
-	Cmd_AddCommand("rerecord", CLQHW_ReRecord_f);
-	Cmd_AddCommand("stop", CLQH_Stop_f);
-	Cmd_AddCommand("playdemo", CLQHW_PlayDemo_f);
-	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
 
 	Cmd_AddCommand("skins", Skin_Skins_f);
 
 	Cmd_AddCommand("quit", CL_Quit_f);
-
-	Cmd_AddCommand("connect", CLQHW_Connect_f);
-	Cmd_AddCommand("reconnect", CLQHW_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("packet", CL_Packet_f);
@@ -669,14 +622,6 @@ void CL_Init(void)
 	Cmd_AddCommand("download", CL_Download_f);
 
 	Cmd_AddCommand("sensitivity_save", CL_Sensitivity_save_f);
-
-//
-// forward to server commands
-//
-	Cmd_AddCommand("kill", NULL);
-	Cmd_AddCommand("say", NULL);
-	Cmd_AddCommand("say_team", NULL);
-	Cmd_AddCommand("serverinfo", NULL);
 }
 
 
@@ -768,7 +713,7 @@ void Host_Frame(float time)
 
 #define max(a, b)   ((a) > (b) ? (a) : (b))
 #define min(a, b)   ((a) < (b) ? (a) : (b))
-		fps = max(30.0, min(rate->value / 80.0, 72.0));
+		fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
 
 		if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / fps)
 		{

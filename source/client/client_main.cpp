@@ -88,6 +88,10 @@ void CL_SharedInit()
 
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		cl_timedemo = Cvar_Get("timedemo", "0", 0);
+	}
 
 	//
 	// register our commands

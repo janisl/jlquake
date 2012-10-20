@@ -179,26 +179,6 @@ void Host_Color_f(void)
 }
 #endif
 
-//===========================================================================
-
-int strdiff(const char* s1, const char* s2)
-{
-	int L1,L2,i;
-
-	L1 = String::Length(s1);
-	L2 = String::Length(s2);
-
-	for (i = 0; (i < L1 && i < L2); i++)
-	{
-		if (String::ToLower(s1[i]) != String::ToLower(s2[i]))
-		{
-			break;
-		}
-	}
-
-	return i;
-}
-
 /*
 ==================
 Host_InitCommands
@@ -207,28 +187,10 @@ Host_InitCommands
 void Host_InitCommands(void)
 {
 	Cmd_AddCommand("quit", Com_Quit_f);
-#ifndef DEDICATED
-	Cmd_AddCommand("god", NULL);
-	Cmd_AddCommand("notarget", NULL);
-	Cmd_AddCommand("connect", CLQH_Connect_f);
-	Cmd_AddCommand("reconnect", CLQH_Reconnect_f);
-	Cmd_AddCommand("name", Host_Name_f);
-	Cmd_AddCommand("playerclass", Host_Class_f);
-	Cmd_AddCommand("noclip", NULL);
-#endif
 	Cmd_AddCommand("version", Host_Version_f);
 #ifndef DEDICATED
-	Cmd_AddCommand("say", NULL);
-	Cmd_AddCommand("say_team", NULL);
-	Cmd_AddCommand("tell", NULL);
+	Cmd_AddCommand("name", Host_Name_f);
+	Cmd_AddCommand("playerclass", Host_Class_f);
 	Cmd_AddCommand("color", Host_Color_f);
-	Cmd_AddCommand("kill", NULL);
-	Cmd_AddCommand("pause", NULL);
-	Cmd_AddCommand("ping", NULL);
-	Cmd_AddCommand("give", NULL);
-
-	Cmd_AddCommand("startdemos", CLQH_Startdemos_f);
-	Cmd_AddCommand("demos", CLQH_Demos_f);
-	Cmd_AddCommand("stopdemo", CLQH_Stopdemo_f);
 #endif
 }

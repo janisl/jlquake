@@ -65,19 +65,8 @@ void CL_Init(void)
 	//
 	// register our commands
 	//
-	clqh_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
-	clqh_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
-	clqh_nolerp = Cvar_Get("cl_nolerp", "0", 0);
-
-	cl_doubleeyes = Cvar_Get("cl_doubleeyes", "1", 0);
-
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CLQH_Record_f);
-	Cmd_AddCommand("stop", CLQH_Stop_f);
-	Cmd_AddCommand("playdemo", CLQH_PlayDemo_f);
-	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
-	Cmd_AddCommand("slist", NET_Slist_f);
 }
 
 float* CL_GetSimOrg()

@@ -239,4 +239,74 @@ void CLQ2_FixUpGender()
 
 void CLQ2_Init()
 {
+	//
+	// register our variables
+	//
+	clq2_footsteps = Cvar_Get("cl_footsteps", "1", 0);
+	clq2_noskins = Cvar_Get("cl_noskins", "0", 0);
+	clq2_predict = Cvar_Get("cl_predict", "1", 0);
+	clq2_showmiss = Cvar_Get("clq2_showmiss", "0", 0);
+	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
+	cl_paused = Cvar_Get("paused", "0", 0);
+	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
+
+	Cvar_Get("adr0", "", CVAR_ARCHIVE);
+	Cvar_Get("adr1", "", CVAR_ARCHIVE);
+	Cvar_Get("adr2", "", CVAR_ARCHIVE);
+	Cvar_Get("adr3", "", CVAR_ARCHIVE);
+	Cvar_Get("adr4", "", CVAR_ARCHIVE);
+	Cvar_Get("adr5", "", CVAR_ARCHIVE);
+	Cvar_Get("adr6", "", CVAR_ARCHIVE);
+	Cvar_Get("adr7", "", CVAR_ARCHIVE);
+	Cvar_Get("adr8", "", CVAR_ARCHIVE);
+
+	//
+	// userinfo
+	//
+	Cvar_Get("password", "", CVAR_USERINFO);
+	Cvar_Get("spectator", "0", CVAR_USERINFO);
+	clq2_name = Cvar_Get("name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_skin = Cvar_Get("skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE);
+	Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);		// FIXME
+	Cvar_Get("msg", "1", CVAR_USERINFO | CVAR_ARCHIVE);
+	q2_hand = Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	Cvar_Get("fov", "90", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_gender = Cvar_Get("gender", "male", CVAR_USERINFO | CVAR_ARCHIVE);
+	clq2_gender_auto = Cvar_Get("gender_auto", "1", CVAR_ARCHIVE);
+	clq2_gender->modified = false;	// clear this so we know when user sets it manually
+
+	//
+	// register our commands
+	//
+	Cmd_AddCommand("pingservers", CLQ2_PingServers_f);
+	Cmd_AddCommand("record", CLQ2_Record_f);
+	Cmd_AddCommand("stop", CLQ2_Stop_f);
+	Cmd_AddCommand("connect", CLQ2_Connect_f);
+	Cmd_AddCommand("reconnect", CLQ2_Reconnect_f);
+
+	//
+	// forward to server commands
+	//
+	// the only thing this does is allow command completion
+	// to work -- all unknown commands are automatically
+	// forwarded to the server
+	Cmd_AddCommand("wave", NULL);
+	Cmd_AddCommand("inven", NULL);
+	Cmd_AddCommand("kill", NULL);
+	Cmd_AddCommand("use", NULL);
+	Cmd_AddCommand("drop", NULL);
+	Cmd_AddCommand("say", NULL);
+	Cmd_AddCommand("say_team", NULL);
+	Cmd_AddCommand("info", NULL);
+	Cmd_AddCommand("prog", NULL);
+	Cmd_AddCommand("give", NULL);
+	Cmd_AddCommand("god", NULL);
+	Cmd_AddCommand("notarget", NULL);
+	Cmd_AddCommand("noclip", NULL);
+	Cmd_AddCommand("invuse", NULL);
+	Cmd_AddCommand("invprev", NULL);
+	Cmd_AddCommand("invnext", NULL);
+	Cmd_AddCommand("invdrop", NULL);
+	Cmd_AddCommand("weapnext", NULL);
+	Cmd_AddCommand("weapprev", NULL);
 }

@@ -33,6 +33,7 @@ Cvar* clt3_showSend;
 Cvar* clt3_packetdup;
 Cvar* clt3_allowDownload;
 Cvar* clt3_motd;
+Cvar* clwm_wavefilerecord;
 
 void CLET_PurgeCache()
 {
@@ -195,4 +196,145 @@ void CLT3_FlushMemory()
 
 void CLT3_Init()
 {
+	CLT3_InitServerLists();
+
+	//
+	// register our variables
+	//
+	clt3_motd = Cvar_Get("cl_motd", "1", 0);
+	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
+	clt3_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
+	clt3_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
+	clt3_activeAction = Cvar_Get("activeAction", "", CVAR_TEMP);
+	clt3_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
+	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
+	clt3_allowDownload = Cvar_Get("cl_allowDownload", GGameType & GAME_ET ? "1" : "0", CVAR_ARCHIVE);
+	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
+
+	// init autoswitch so the ui will have it correctly even
+	// if the cgame hasn't been started
+	// -NERVE - SMF - disabled autoswitch by default
+	Cvar_Get("cg_autoswitch", GGameType & GAME_Quake3 ? "1" : GGameType & GAME_WolfSP ? "2" : "0", CVAR_ARCHIVE);
+
+	Cvar_Get("cl_motdString", "", CVAR_ROM);
+	Cvar_Get("cl_maxPing", "800", CVAR_ARCHIVE);
+
+	// cgame might not be initialized before menu is used
+	Cvar_Get("cg_viewsize", "100", CVAR_ARCHIVE);
+
+	if (!(GGameType & GAME_Quake3))
+	{
+		// Rafael - particle switch
+		Cvar_Get("cg_wolfparticles", "1", CVAR_ARCHIVE);
+	}
+	if (GGameType & (GAME_WolfMP | GAME_ET))
+	{
+		clwm_wavefilerecord = Cvar_Get("cl_wavefilerecord", "0", CVAR_TEMP);
+		clwm_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
+		Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
+
+		Cvar_Get("cg_drawCompass", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_drawNotifyText", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_quickMessageAlt", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_popupLimboMenu", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_descriptiveText", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_drawTeamOverlay", "2", CVAR_ARCHIVE);
+		Cvar_Get("cg_drawGun", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_cursorHints", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_voiceSpriteTime", "6000", CVAR_ARCHIVE);
+		Cvar_Get("cg_crosshairSize", "48", CVAR_ARCHIVE);
+		Cvar_Get("cg_drawCrosshair", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_zoomDefaultSniper", "20", CVAR_ARCHIVE);
+		Cvar_Get("cg_zoomstepsniper", "2", CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_WolfMP)
+	{
+		Cvar_Get("cg_uselessNostalgia", "0", CVAR_ARCHIVE);		// JPW NERVE
+		Cvar_Get("cg_teamChatsOnly", "0", CVAR_ARCHIVE);
+		Cvar_Get("cg_noVoiceChats", "0", CVAR_ARCHIVE);
+		Cvar_Get("cg_noVoiceText", "0", CVAR_ARCHIVE);
+
+		Cvar_Get("mp_playerType", "0", 0);
+		Cvar_Get("mp_currentPlayerType", "0", 0);
+		Cvar_Get("mp_weapon", "0", 0);
+		Cvar_Get("mp_team", "0", 0);
+		Cvar_Get("mp_currentTeam", "0", 0);
+	}
+	if (GGameType & GAME_ET)
+	{
+		clet_autorecord = Cvar_Get("clet_autorecord", "0", CVAR_TEMP);
+		clet_profile = Cvar_Get("cl_profile", "", CVAR_ROM);
+		Cvar_Get("cl_defaultProfile", "", CVAR_ROM);
+
+		//bani
+		cl_packetloss = Cvar_Get("cl_packetloss", "0", CVAR_CHEAT);
+		cl_packetdelay = Cvar_Get("cl_packetdelay", "0", CVAR_CHEAT);
+
+		//bani - make these cvars visible to cgame
+		Cvar_Get("cl_demorecording", "0", CVAR_ROM);
+		Cvar_Get("cl_demofilename", "", CVAR_ROM);
+		Cvar_Get("cl_demooffset", "0", CVAR_ROM);
+	}
+
+	// userinfo
+	Cvar_Get("snaps", "20", CVAR_USERINFO | CVAR_ARCHIVE);
+	Cvar_Get("cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	Cvar_Get("password", "", CVAR_USERINFO);
+	if (!(GGameType & GAME_ET))
+	{
+		Cvar_Get("handicap", "100", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("cg_predictItems", "1", CVAR_USERINFO | CVAR_ARCHIVE);
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		Cvar_Get("name", "UnnamedPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("rate", "3000", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("model", "sarge", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("headmodel", "sarge", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("team_model", "james", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("team_headmodel", "*james", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("g_redTeam", "Stroggs", CVAR_SERVERINFO | CVAR_ARCHIVE);
+		Cvar_Get("g_blueTeam", "Pagans", CVAR_SERVERINFO | CVAR_ARCHIVE);
+		Cvar_Get("color1", "4", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("color2", "5", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("teamtask", "0", CVAR_USERINFO);
+	}
+	else if (GGameType & GAME_WolfSP)
+	{
+		Cvar_Get("name", "Player", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("rate", "3000", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("model", "bj2", CVAR_USERINFO | CVAR_ARCHIVE);		// temp until we have an skeletal american model
+		Cvar_Get("head", "default", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("color", "4", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("cg_autoactivate", "1", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("cg_emptyswitch", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		Cvar_Get("name", "WolfPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("rate", "5000", CVAR_USERINFO | CVAR_ARCHIVE);			// NERVE - SMF - changed from 3000
+		Cvar_Get("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("head", "default", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("color", "4", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("cg_autoactivate", "1", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("cg_autoReload", "1", CVAR_ARCHIVE | CVAR_USERINFO);
+	}
+	else
+	{
+		Cvar_Get("name", "ETPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
+		Cvar_Get("rate", "5000", CVAR_USERINFO | CVAR_ARCHIVE);			// NERVE - SMF - changed from 3000
+		Cvar_Get("cg_predictItems", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_autoactivate", "1", CVAR_ARCHIVE);
+		Cvar_Get("cg_autoReload", "1", CVAR_ARCHIVE);
+	}
+
+	//
+	// register our commands
+	//
+	Cmd_AddCommand("record", CLT3_Record_f);
+	Cmd_AddCommand("demo", CLT3_PlayDemo_f);
+	Cmd_AddCommand("stoprecord", CLT3_StopRecord_f);
+	Cmd_AddCommand("connect", CLT3_Connect_f);
+	Cmd_AddCommand("reconnect", CLT3_Reconnect_f);
 }

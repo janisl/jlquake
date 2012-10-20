@@ -36,19 +36,14 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/stat.h>
 #endif
 
-Cvar* cl_wavefilerecord;
-
 Cvar* rcon_client_password;
 Cvar* rconAddress;
 
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
-Cvar* cl_visibleClients;		// DHM - Nerve
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
-
-Cvar* cl_motdString;
 
 Cvar* cl_trn;
 
@@ -691,100 +686,17 @@ void CL_Init(void)
 
 	cls.realtime = 0;
 
-	CLT3_InitServerLists();
-
 	//
 	// register our variables
 	//
-	clt3_motd = Cvar_Get("cl_motd", "1", 0);
-
-	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
-
-	cl_wavefilerecord = Cvar_Get("cl_wavefilerecord", "0", CVAR_TEMP);
-
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
-	clwm_shownuments = Cvar_Get("cl_shownuments", "0", CVAR_TEMP);
-	cl_visibleClients = Cvar_Get("cl_visibleClients", "0", CVAR_TEMP);
-	clt3_showServerCommands = Cvar_Get("cl_showServerCommands", "0", 0);
-	clt3_showSend = Cvar_Get("cl_showSend", "0", CVAR_TEMP);
-	clt3_showTimeDelta = Cvar_Get("cl_showTimeDelta", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
 	rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
-	clt3_activeAction = Cvar_Get("activeAction", "", CVAR_TEMP);
 
-	cl_timedemo = Cvar_Get("timedemo", "0", 0);
 	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
 	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
 
 	rconAddress = Cvar_Get("rconAddress", "", 0);
-
-	clt3_maxpackets = Cvar_Get("cl_maxpackets", "30", CVAR_ARCHIVE);
-	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
-
-	clt3_allowDownload = Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
-
-	// init autoswitch so the ui will have it correctly even
-	// if the cgame hasn't been started
-	// -NERVE - SMF - disabled autoswitch by default
-	Cvar_Get("cg_autoswitch", "0", CVAR_ARCHIVE);
-
-	// Rafael - particle switch
-	Cvar_Get("cg_wolfparticles", "1", CVAR_ARCHIVE);
-	// done
-
-	cl_motdString = Cvar_Get("cl_motdString", "", CVAR_ROM);
-
-	Cvar_Get("cl_maxPing", "800", CVAR_ARCHIVE);
-
-	// NERVE - SMF
-	Cvar_Get("cg_drawCompass", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawNotifyText", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_quickMessageAlt", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_popupLimboMenu", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_descriptiveText", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawTeamOverlay", "2", CVAR_ARCHIVE);
-	Cvar_Get("cg_uselessNostalgia", "0", CVAR_ARCHIVE);		// JPW NERVE
-	Cvar_Get("cg_drawGun", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_cursorHints", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_voiceSpriteTime", "6000", CVAR_ARCHIVE);
-	Cvar_Get("cg_teamChatsOnly", "0", CVAR_ARCHIVE);
-	Cvar_Get("cg_noVoiceChats", "0", CVAR_ARCHIVE);
-	Cvar_Get("cg_noVoiceText", "0", CVAR_ARCHIVE);
-	Cvar_Get("cg_crosshairSize", "48", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawCrosshair", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_zoomDefaultSniper", "20", CVAR_ARCHIVE);
-	Cvar_Get("cg_zoomstepsniper", "2", CVAR_ARCHIVE);
-
-	Cvar_Get("mp_playerType", "0", 0);
-	Cvar_Get("mp_currentPlayerType", "0", 0);
-	Cvar_Get("mp_weapon", "0", 0);
-	Cvar_Get("mp_team", "0", 0);
-	Cvar_Get("mp_currentTeam", "0", 0);
-	// -NERVE - SMF
-
-	// userinfo
-	Cvar_Get("name", "WolfPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("rate", "5000", CVAR_USERINFO | CVAR_ARCHIVE);			// NERVE - SMF - changed from 3000
-	Cvar_Get("snaps", "20", CVAR_USERINFO | CVAR_ARCHIVE);
-//	Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );	// temp until we have an skeletal american model
-	Cvar_Get("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("head", "default", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("color", "4", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("handicap", "100", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-
-	Cvar_Get("password", "", CVAR_USERINFO);
-	Cvar_Get("cg_predictItems", "1", CVAR_USERINFO | CVAR_ARCHIVE);
-
-//----(SA) added
-	Cvar_Get("cg_autoactivate", "1", CVAR_USERINFO | CVAR_ARCHIVE);
-//----(SA) end
-
-	// cgame might not be initialized before menu is used
-	Cvar_Get("cg_viewsize", "100", CVAR_ARCHIVE);
-
-	Cvar_Get("cg_autoReload", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 
 	clwm_missionStats = Cvar_Get("g_missionStats", "0", CVAR_ROM);
 	clwm_waitForFire = Cvar_Get("cl_waitForFire", "0", CVAR_ROM);
@@ -798,12 +710,7 @@ void CL_Init(void)
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
 	Cmd_AddCommand("ui_restart", CL_UI_Restart_f);				// NERVE - SMF
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CLT3_Record_f);
-	Cmd_AddCommand("demo", CLT3_PlayDemo_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("stoprecord", CLT3_StopRecord_f);
-	Cmd_AddCommand("connect", CLT3_Connect_f);
-	Cmd_AddCommand("reconnect", CLT3_Reconnect_f);
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);
 	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);

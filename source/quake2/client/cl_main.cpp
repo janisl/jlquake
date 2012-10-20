@@ -23,30 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../common/file_formats/md2.h"
 #include "../../server/public.h"
 
-Cvar* adr0;
-Cvar* adr1;
-Cvar* adr2;
-Cvar* adr3;
-Cvar* adr4;
-Cvar* adr5;
-Cvar* adr6;
-Cvar* adr7;
-Cvar* adr8;
-
 Cvar* rcon_client_password;
 Cvar* rcon_address;
 
 Cvar* cl_autoskins;
 Cvar* cl_maxfps;
-
-//
-// userinfo
-//
-Cvar* info_password;
-Cvar* info_spectator;
-Cvar* rate;
-Cvar* fov;
-Cvar* msg;
 
 static bool vid_restart_requested;
 
@@ -351,59 +332,19 @@ void CL_InitLocal(void)
 	cls.state = CA_DISCONNECTED;
 	cls.realtime = Sys_Milliseconds_();
 
-	adr0 = Cvar_Get("adr0", "", CVAR_ARCHIVE);
-	adr1 = Cvar_Get("adr1", "", CVAR_ARCHIVE);
-	adr2 = Cvar_Get("adr2", "", CVAR_ARCHIVE);
-	adr3 = Cvar_Get("adr3", "", CVAR_ARCHIVE);
-	adr4 = Cvar_Get("adr4", "", CVAR_ARCHIVE);
-	adr5 = Cvar_Get("adr5", "", CVAR_ARCHIVE);
-	adr6 = Cvar_Get("adr6", "", CVAR_ARCHIVE);
-	adr7 = Cvar_Get("adr7", "", CVAR_ARCHIVE);
-	adr8 = Cvar_Get("adr8", "", CVAR_ARCHIVE);
-
 //
 // register our variables
 //
-	clq2_footsteps = Cvar_Get("cl_footsteps", "1", 0);
-	clq2_noskins = Cvar_Get("cl_noskins", "0", 0);
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
-	clq2_predict = Cvar_Get("cl_predict", "1", 0);
-//	cl_minfps = Cvar_Get ("cl_minfps", "5", 0);
 	cl_maxfps = Cvar_Get("cl_maxfps", "90", 0);
-
-
-
-	clq2_showmiss = Cvar_Get("clq2_showmiss", "0", 0);
-	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
-	cl_paused = Cvar_Get("paused", "0", 0);
-	cl_timedemo = Cvar_Get("timedemo", "0", 0);
 
 	rcon_client_password = Cvar_Get("rcon_password", "", 0);
 	rcon_address = Cvar_Get("rcon_address", "", 0);
 
 	//
-	// userinfo
-	//
-	info_password = Cvar_Get("password", "", CVAR_USERINFO);
-	info_spectator = Cvar_Get("spectator", "0", CVAR_USERINFO);
-	clq2_name = Cvar_Get("name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE);
-	clq2_skin = Cvar_Get("skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE);
-	rate = Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);		// FIXME
-	msg = Cvar_Get("msg", "1", CVAR_USERINFO | CVAR_ARCHIVE);
-	q2_hand = Cvar_Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-	fov = Cvar_Get("fov", "90", CVAR_USERINFO | CVAR_ARCHIVE);
-	clq2_gender = Cvar_Get("gender", "male", CVAR_USERINFO | CVAR_ARCHIVE);
-	clq2_gender_auto = Cvar_Get("gender_auto", "1", CVAR_ARCHIVE);
-	clq2_gender->modified = false;	// clear this so we know when user sets it manually
-
-	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
-
-
-	//
 	// register our commands
 	//
 	Cmd_AddCommand("pause", CL_Pause_f);
-	Cmd_AddCommand("pingservers", CLQ2_PingServers_f);
 	Cmd_AddCommand("skins", CL_Skins_f);
 
 	Cmd_AddCommand("userinfo", CL_Userinfo_f);
@@ -411,47 +352,16 @@ void CL_InitLocal(void)
 
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CLQ2_Record_f);
-	Cmd_AddCommand("stop", CLQ2_Stop_f);
-
-	Cmd_AddCommand("connect", CLQ2_Connect_f);
-	Cmd_AddCommand("reconnect", CLQ2_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 
 //  Cmd_AddCommand ("packet", CL_Packet_f); // this is dangerous to leave in
 
-	Cmd_AddCommand("precache", CLQ2_Precache_f);
-
 	Cmd_AddCommand("download", CL_Download_f);
 
 	Cmd_AddCommand("vid_restart", VID_Restart_f);
 
-	//
-	// forward to server commands
-	//
-	// the only thing this does is allow command completion
-	// to work -- all unknown commands are automatically
-	// forwarded to the server
-	Cmd_AddCommand("wave", NULL);
-	Cmd_AddCommand("inven", NULL);
-	Cmd_AddCommand("kill", NULL);
-	Cmd_AddCommand("use", NULL);
-	Cmd_AddCommand("drop", NULL);
-	Cmd_AddCommand("say", NULL);
-	Cmd_AddCommand("say_team", NULL);
-	Cmd_AddCommand("info", NULL);
-	Cmd_AddCommand("prog", NULL);
-	Cmd_AddCommand("give", NULL);
-	Cmd_AddCommand("god", NULL);
-	Cmd_AddCommand("notarget", NULL);
-	Cmd_AddCommand("noclip", NULL);
-	Cmd_AddCommand("invuse", NULL);
-	Cmd_AddCommand("invprev", NULL);
-	Cmd_AddCommand("invnext", NULL);
-	Cmd_AddCommand("invdrop", NULL);
-	Cmd_AddCommand("weapnext", NULL);
-	Cmd_AddCommand("weapprev", NULL);
+	Cmd_AddCommand("precache", CLQ2_Precache_f);
 }
 
 /*

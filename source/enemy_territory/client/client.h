@@ -39,7 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 // cvars
 //
 extern Cvar* cl_timegraph;
-extern Cvar* cl_visibleClients;				// DHM - Nerve
 extern Cvar* cl_timeNudge;
 extern Cvar* cl_freezeDemo;
 

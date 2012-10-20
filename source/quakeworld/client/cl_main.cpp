@@ -41,16 +41,6 @@ Cvar* cl_maxfps;
 
 Cvar* entlatency;
 
-//
-// info mirrors
-//
-Cvar* password;
-Cvar* team;
-Cvar* skin;
-Cvar* rate;
-Cvar* noaim;
-Cvar* msg;
-
 quakeparms_t host_parms;
 
 qboolean nomaster;
@@ -584,71 +574,32 @@ CL_Init
 */
 void CL_Init(void)
 {
-	char st[80];
-
 	CL_SharedInit();
 
 	cls.state = CA_DISCONNECTED;
 
-	Info_SetValueForKey(cls.qh_userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, false, false);
-	Info_SetValueForKey(cls.qh_userinfo, "topcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "bottomcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "rate", "2500", MAX_INFO_STRING_QW, 64, 64, true, false);
-	Info_SetValueForKey(cls.qh_userinfo, "msg", "1", MAX_INFO_STRING_QW, 64, 64, true, false);
+	char st[80];
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForKey(cls.qh_userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
-
-	CLQHW_InitPrediction();
-	CL_InitCam();
-	PMQH_Init();
 
 	//
 	// register our commands
 	//
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	clqw_hudswap  = Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_maxfps   = Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
-	cl_timeout = Cvar_Get("cl_timeout", "60", 0);
 
 	rcon_password = Cvar_Get("rcon_password", "", 0);
 	rcon_address = Cvar_Get("rcon_address", "", 0);
 
 	entlatency = Cvar_Get("entlatency", "20", 0);
 
-	clqw_localid = Cvar_Get("localid", "", 0);
-
-	clqw_baseskin = Cvar_Get("baseskin", "base", 0);
-	clqw_noskins = Cvar_Get("noskins", "0", 0);
-
-	//
-	// info mirrors
-	//
-	clqh_name = Cvar_Get("name", "unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
-	password = Cvar_Get("password", "", CVAR_USERINFO);
-	skin = Cvar_Get("skin", "", CVAR_ARCHIVE | CVAR_USERINFO);
-	team = Cvar_Get("team", "", CVAR_ARCHIVE | CVAR_USERINFO);
-	rate = Cvar_Get("rate", "2500", CVAR_ARCHIVE | CVAR_USERINFO);
-	msg = Cvar_Get("msg", "1", CVAR_ARCHIVE | CVAR_USERINFO);
-	noaim = Cvar_Get("noaim", "0", CVAR_ARCHIVE | CVAR_USERINFO);
-
 	Cmd_AddCommand("version", CL_Version_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand("record", CLQW_Record_f);
-	Cmd_AddCommand("rerecord", CLQHW_ReRecord_f);
-	Cmd_AddCommand("stop", CLQH_Stop_f);
-	Cmd_AddCommand("playdemo", CLQHW_PlayDemo_f);
-	Cmd_AddCommand("timedemo", CLQH_TimeDemo_f);
-
-	Cmd_AddCommand("skins", CLQW_SkinSkins_f);
-	Cmd_AddCommand("allskins", CLQW_SkinAllSkins_f);
 
 	Cmd_AddCommand("quit", CL_Quit_f);
-
-	Cmd_AddCommand("connect", CLQHW_Connect_f);
-	Cmd_AddCommand("reconnect", CLQHW_Reconnect_f);
 
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("packet", CL_Packet_f);
@@ -661,18 +612,6 @@ void CL_Init(void)
 
 	Cmd_AddCommand("color", CL_Color_f);
 	Cmd_AddCommand("download", CL_Download_f);
-
-	Cmd_AddCommand("nextul", CLQW_NextUpload);
-	Cmd_AddCommand("stopul", CLQW_StopUpload);
-
-	//
-	// forward to server commands
-	//
-	Cmd_AddCommand("kill", NULL);
-	Cmd_AddCommand("pause", NULL);
-	Cmd_AddCommand("say", NULL);
-	Cmd_AddCommand("say_team", NULL);
-	Cmd_AddCommand("serverinfo", NULL);
 }
 
 
@@ -757,7 +696,7 @@ qboolean Host_SimulationTime(float time)
 	}
 	else
 	{
-		fps = max(30.0, min(rate.value / 80.0, 72.0));
+		fps = max(30.0, min(clqhw_rate.value / 80.0, 72.0));
 	}
 
 	if (!cls.timedemo && (realtime + time) - oldrealtime < 1.0 / fps)
@@ -805,7 +744,7 @@ void Host_Frame(float time)
 		}
 		else
 		{
-			fps = max(30.0, min(rate->value / 80.0, 72.0));
+			fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
 		}
 
 		if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / fps)

@@ -86,6 +86,7 @@ extern Cvar* clt3_showSend;
 extern Cvar* clt3_packetdup;
 extern Cvar* clt3_allowDownload;
 extern Cvar* clt3_motd;
+extern Cvar* clwm_wavefilerecord;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();
