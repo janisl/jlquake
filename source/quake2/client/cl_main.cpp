@@ -50,41 +50,6 @@ Cvar* msg;
 
 static bool vid_restart_requested;
 
-void CL_Setenv_f(void)
-{
-	int argc = Cmd_Argc();
-
-	if (argc > 2)
-	{
-		char buffer[1000];
-		int i;
-
-		String::Cpy(buffer, Cmd_Argv(1));
-		String::Cat(buffer, sizeof(buffer), "=");
-
-		for (i = 2; i < argc; i++)
-		{
-			String::Cat(buffer, sizeof(buffer), Cmd_Argv(i));
-			String::Cat(buffer, sizeof(buffer), " ");
-		}
-
-		putenv(buffer);
-	}
-	else if (argc == 2)
-	{
-		char* env = getenv(Cmd_Argv(1));
-
-		if (env)
-		{
-			common->Printf("%s=%s\n", Cmd_Argv(1), env);
-		}
-		else
-		{
-			common->Printf("%s undefined\n", Cmd_Argv(1), env);
-		}
-	}
-}
-
 /*
 ==================
 CL_Pause_f
@@ -457,8 +422,6 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("rcon", CL_Rcon_f);
 
 //  Cmd_AddCommand ("packet", CL_Packet_f); // this is dangerous to leave in
-
-	Cmd_AddCommand("setenv", CL_Setenv_f);
 
 	Cmd_AddCommand("precache", CLQ2_Precache_f);
 
