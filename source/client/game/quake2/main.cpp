@@ -236,3 +236,7 @@ void CLQ2_FixUpGender()
 		clq2_gender->modified = false;
 	}
 }
+
+void CLQ2_Init()
+{
+}

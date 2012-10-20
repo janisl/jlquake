@@ -24,3 +24,7 @@ Cvar* qhw_bottomcolor;
 Cvar* qhw_spectator;
 
 int clqh_packet_latency[NET_TIMINGS_QH];
+
+void CLQH_Init()
+{
+}

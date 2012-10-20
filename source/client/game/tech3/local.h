@@ -91,6 +91,7 @@ void CLET_PurgeCache();
 void CLET_DoPurgeCache();
 void CLET_WavRecord_f();
 void CLET_WavStopRecord_f();
+void CLT3_Init();
 
 //
 //	Network channel

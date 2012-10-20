@@ -138,6 +138,7 @@ void CLQ2_PingServers_f();
 void CLQ2_ClearState();
 void CLQ2_PrepRefresh();
 void CLQ2_FixUpGender();
+void CLQ2_Init();
 
 //
 //	Parse

@@ -192,3 +192,7 @@ void CLT3_FlushMemory()
 
 	CLT3_StartHunkUsers();
 }
+
+void CLT3_Init()
+{
+}

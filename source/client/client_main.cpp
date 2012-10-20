@@ -85,6 +85,19 @@ void CL_SharedInit()
 	// register our commands
 	//
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		CLQH_Init();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_Init();
+	}
+	else
+	{
+		CLT3_Init();
+	}
 }
 
 int CL_ScaledMilliseconds()
