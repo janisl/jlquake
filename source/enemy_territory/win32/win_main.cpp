@@ -235,8 +235,6 @@ void Sys_Init(void)
 	common->Printf("%s\n", Cvar_VariableString("sys_cpustring"));
 
 	Cvar_Set("username", Sys_GetCurrentUser());
-
-//	IN_Init();		// FIXME: not in dedicated?
 }
 
 
@@ -276,10 +274,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Com_Init(sys_cmdline);
 	NETQ23_Init();
-
-#ifndef DEDICATED
-	IN_Init();	// fretn - directinput must be inited after video etc
-#endif
 
 	_getcwd(cwd, sizeof(cwd));
 	common->Printf("Working directory: %s\n", cwd);

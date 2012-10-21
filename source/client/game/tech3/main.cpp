@@ -196,7 +196,7 @@ void CLT3_FlushMemory()
 		CM_ClearMap();
 	}
 
-	CLT3_StartHunkUsers();
+	CL_StartHunkUsers();
 }
 
 void CLT3_ShutdownRef()
@@ -261,7 +261,7 @@ void CLT3_Vid_Restart_f()
 	CLT3_InitRef();
 
 	// startup all the client stuff
-	CLT3_StartHunkUsers();
+	CL_StartHunkUsers();
 
 #ifdef _WIN32
 	if (GGameType & GAME_ET)

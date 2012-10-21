@@ -153,7 +153,7 @@ static void CL_Rcon_f()
 	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
 }
 
-void CL_SharedInit()
+void CL_Init()
 {
 	common->Printf("----- Client Initialization -----\n");
 
@@ -208,7 +208,24 @@ void CL_SharedInit()
 		CLT3_Init();
 	}
 
+	IN_Init();
+
 	common->Printf("----- Client Initialization Complete -----\n");
+}
+
+void CL_StartHunkUsers()
+{
+	if (GGameType & GAME_Tech3)
+	{
+		CLT3_StartHunkUsers();
+	}
+	else
+	{
+		V_Init();
+		CL_InitRenderer();
+		S_Init();
+		CDAudio_Init();
+	}
 }
 
 int CL_ScaledMilliseconds()

@@ -210,10 +210,6 @@ void Sys_Init(void)
 	common->Printf("%s\n", Cvar_VariableString("sys_cpustring"));
 
 	Cvar_Set("username", Sys_GetCurrentUser());
-
-#ifndef DEDICATED
-	IN_Init();		// FIXME: not in dedicated?
-#endif
 }
 
 

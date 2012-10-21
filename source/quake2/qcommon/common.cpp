@@ -464,7 +464,11 @@ void Qcommon_Init(int argc, char** argv)
 		Netchan_Init(Sys_Milliseconds_());
 
 		SV_Init();
-		CL_Init();
+		if (!com_dedicated->value)
+		{
+			CL_Init();
+			CL_StartHunkUsers();
+		}
 
 		// add + commands from command line
 		if (!Cbuf_AddLateCommands())

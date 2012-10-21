@@ -26,7 +26,6 @@
 
 vm_t* cgvm;
 
-//	Should only be called by CLT3_StartHunkUsers
 void CLT3_InitCGame()
 {
 	int t1 = Sys_Milliseconds();

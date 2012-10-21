@@ -35,7 +35,7 @@ void SCRQH_BeginLoadingPlaque();
 void SCRQ2_BeginLoadingPlaque(bool Clear);
 void SCR_EndLoadingPlaque();
 void CL_Disconnect(bool showMainMenu);
-void CL_SharedInit();
+void CL_Init();
 
 void Key_WriteBindings(fileHandle_t f);
 // the keyboard binding interface must be setup before execing
@@ -54,7 +54,7 @@ void CLQH_EstablishConnection(const char* name);
 void CLQ2_Drop();
 
 // start all the client stuff using the hunk
-void CLT3_StartHunkUsers();
+void CL_StartHunkUsers();
 // shutdown all the client stuff
 void CLT3_ShutdownAll();
 // dump all memory on an error

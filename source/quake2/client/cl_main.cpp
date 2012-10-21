@@ -293,46 +293,6 @@ void CL_Frame(int msec)
 	}
 }
 
-
-//============================================================================
-
-/*
-====================
-CL_Init
-====================
-*/
-void CL_Init(void)
-{
-	if (com_dedicated->value)
-	{
-		return;		// nothing running on the client
-
-	}
-	CL_SharedInit();
-
-	// all archived variables will now be loaded
-
-	IN_Init();
-#if defined __linux__ || defined __sgi
-	S_Init();
-	CL_InitRenderer();
-#else
-	CL_InitRenderer();
-	S_Init();	// sound must be initialized after window is created
-#endif
-
-	V_Init();
-
-	cls.disable_screen = true;	// don't draw yet
-
-	CDAudio_Init();
-
-	FS_ExecAutoexec();
-	Cbuf_Execute();
-
-}
-
-
 /*
 ===============
 CL_Shutdown

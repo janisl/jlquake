@@ -520,10 +520,6 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-#ifndef DEDICATED
-		V_Init();
-		Chase_Init();
-#endif
 		COM_Init(parms->basedir);
 		Host_InitLocal();
 #ifndef DEDICATED
@@ -538,7 +534,7 @@ void Host_Init(quakeparms_t* parms)
 #ifndef DEDICATED
 		if (!com_dedicated->integer)
 		{
-			CL_SharedInit();
+			CL_Init();
 		}
 #endif
 
@@ -550,14 +546,8 @@ void Host_Init(quakeparms_t* parms)
 #ifndef DEDICATED
 		if (!com_dedicated->integer)
 		{
-			IN_Init();
-			CL_InitRenderer();
+			CL_StartHunkUsers();
 			Sys_ShowConsole(0, false);
-			S_Init();
-			CLH2_InitTEnts();
-			CDAudio_Init();
-			MIDI_Init();
-			SbarH2_Init();
 		}
 #endif
 

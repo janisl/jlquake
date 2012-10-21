@@ -157,7 +157,7 @@ void Sys_SendKeyEvents()
 {
 }
 
-void CLT3_StartHunkUsers()
+void CL_StartHunkUsers()
 {
 }
 
@@ -193,6 +193,6 @@ void IN_Frame()
 {
 }
 
-void CL_SharedInit()
+void CL_Init()
 {
 }

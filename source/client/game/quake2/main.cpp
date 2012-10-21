@@ -448,4 +448,9 @@ void CLQ2_Init()
 	Cmd_AddCommand("invdrop", NULL);
 	Cmd_AddCommand("weapnext", NULL);
 	Cmd_AddCommand("weapprev", NULL);
+
+	cls.disable_screen = true;	// don't draw yet
+
+	FS_ExecAutoexec();
+	Cbuf_Execute();
 }

@@ -154,12 +154,13 @@ void CL_Version_f(void)
 
 /*
 =================
-CL_Init
+CL_InitLocal
 =================
 */
-void CL_Init(void)
+void CL_InitLocal(void)
 {
-	CL_SharedInit();
+	CL_Init();
+	CL_StartHunkUsers();
 
 	char st[80];
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());
@@ -393,7 +394,6 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-		V_Init();
 
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
@@ -406,19 +406,13 @@ void Host_Init(quakeparms_t* parms)
 		CL_InitKeyCommands();
 		Com_InitDebugLog();
 
-		CL_Init();
-
 		Cbuf_InsertText("exec quake.rc\n");
 		Cbuf_AddText("cl_warncmd 1\n");
 		Cbuf_Execute();
 
-		IN_Init();
-		CL_InitRenderer();
+		CL_InitLocal();
+
 		Sys_ShowConsole(0, false);
-		S_Init();
-		CLQ1_InitTEnts();
-		CDAudio_Init();
-		SbarQ1_Init();
 
 		Cbuf_AddText("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 

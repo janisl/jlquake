@@ -561,7 +561,7 @@ void Com_Init(char* commandLine)
 		com_dedicated->modified = false;
 		if (!com_dedicated->integer)
 		{
-			CL_SharedInit();
+			CL_Init();
 			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 
@@ -588,7 +588,7 @@ void Com_Init(char* commandLine)
 		// start in full screen ui mode
 		Cvar_Set("r_uiFullScreen", "1");
 
-		CLT3_StartHunkUsers();
+		CL_StartHunkUsers();
 
 		// make sure single player is off by default
 		Cvar_Set("ui_singlePlayerActive", "0");
@@ -776,7 +776,7 @@ void Com_Frame(void)
 			com_dedicated->modified = false;
 			if (!com_dedicated->integer)
 			{
-				CL_SharedInit();
+				CL_Init();
 				Sys_ShowConsole(com_viewlog->integer, false);
 			}
 			else

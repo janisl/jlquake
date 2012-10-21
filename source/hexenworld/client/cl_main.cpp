@@ -133,12 +133,13 @@ void CL_Version_f(void)
 
 /*
 =================
-CL_Init
+CL_InitLocal
 =================
 */
-void CL_Init(void)
+void CL_InitLocal(void)
 {
-	CL_SharedInit();
+	CL_Init();
+	CL_StartHunkUsers();
 
 //
 // register our commands
@@ -358,7 +359,6 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-		V_Init();
 
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
@@ -372,20 +372,12 @@ void Host_Init(quakeparms_t* parms)
 		Com_InitDebugLog();
 		ComH2_LoadStrings();
 
-		CL_Init();
-
 		Cbuf_InsertText("exec hexen.rc\n");
 		Cbuf_AddText("cl_warncmd 1\n");
 		Cbuf_Execute();
 
-		IN_Init();
-		CL_InitRenderer();
+		CL_InitLocal();
 		Sys_ShowConsole(0, false);
-		S_Init();
-		CLH2_InitTEnts();
-		CDAudio_Init();
-		MIDI_Init();
-		SbarH2_Init();
 
 		com_fullyInitialized = true;
 

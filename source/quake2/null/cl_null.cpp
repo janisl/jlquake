@@ -4,10 +4,6 @@
 
 #include "../qcommon/qcommon.h"
 
-void CL_Init(void)
-{
-}
-
 void CL_Shutdown(void)
 {
 }
