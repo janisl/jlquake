@@ -204,6 +204,8 @@ void COM_InitFilesystem(void)
 	int i;
 	char com_basedir[MAX_OSPATH];
 
+	fs_PrimaryBaseGame = "data1";
+
 	FS_SharedStartup();
 
 //

@@ -231,6 +231,7 @@ void COM_InitFilesystem(void)
 {
 	char basedir[MAX_OSPATH];
 
+	fs_PrimaryBaseGame = GAMENAME;
 	//
 	// -basedir <path>
 	// Overrides the system supplied base directory (under GAMENAME)
