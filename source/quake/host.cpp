@@ -238,8 +238,6 @@ void Host_InitLocal(void)
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 #else
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
-
-		cls.state = CA_DISCONNECTED;
 #endif
 	}
 

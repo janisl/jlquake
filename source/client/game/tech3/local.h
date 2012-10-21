@@ -88,6 +88,8 @@ extern Cvar* clt3_motd;
 extern Cvar* clwm_wavefilerecord;
 extern Cvar* clt3_timeNudge;
 extern Cvar* clt3_freezeDemo;
+extern Cvar* clt3_avidemo;
+extern Cvar* clt3_forceavidemo;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();
@@ -96,7 +98,7 @@ void CLET_WavStopRecord_f();
 void CLT3_Init();
 void CLT3_ShutdownRef();
 void CLT3_InitRef();
-void CLT3_ResetPureClientAtServer();
+void CLT3_Vid_Restart_f();
 
 //
 //	Network channel

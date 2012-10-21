@@ -163,8 +163,6 @@ void CL_Init(void)
 {
 	CL_SharedInit();
 
-	cls.state = CA_DISCONNECTED;
-
 	char st[80];
 	sprintf(st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForKey(cls.qh_userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
@@ -410,7 +408,6 @@ void Host_Init(quakeparms_t* parms)
 		CL_InitKeyCommands();
 		Com_InitDebugLog();
 
-		cls.state = CA_DISCONNECTED;
 		CL_Init();
 
 		Cbuf_InsertText("exec quake.rc\n");

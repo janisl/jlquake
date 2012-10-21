@@ -155,6 +155,8 @@ static void CL_Rcon_f()
 
 void CL_SharedInit()
 {
+	common->Printf("----- Client Initialization -----\n");
+
 	Con_Init();
 
 	UI_Init();
@@ -162,6 +164,8 @@ void CL_SharedInit()
 	CL_InitInput();
 
 	SCR_Init();
+
+	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
 
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
@@ -203,6 +207,8 @@ void CL_SharedInit()
 	{
 		CLT3_Init();
 	}
+
+	common->Printf("----- Client Initialization Complete -----\n");
 }
 
 int CL_ScaledMilliseconds()

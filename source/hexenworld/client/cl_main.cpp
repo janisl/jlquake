@@ -142,8 +142,6 @@ void CL_Init(void)
 {
 	CL_SharedInit();
 
-	cls.state = CA_DISCONNECTED;
-
 //
 // register our commands
 //
@@ -376,7 +374,6 @@ void Host_Init(quakeparms_t* parms)
 		Com_InitDebugLog();
 		ComH2_LoadStrings();
 
-		cls.state = CA_DISCONNECTED;
 		CL_Init();
 
 		Cbuf_InsertText("exec hexen.rc\n");

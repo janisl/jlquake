@@ -25,157 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <limits.h>
 #include "../../server/public.h"
 
-Cvar* cl_avidemo;
-Cvar* cl_forceavidemo;
-
-Cvar* cl_trn;
-
-void CL_ShowIP_f(void);
-
-/*
-======================================================================
-
-CONSOLE COMMANDS
-
-======================================================================
-*/
-
-/*
-=================
-CL_Vid_Restart_f
-
-Restart the video subsystem
-
-we also have to reload the UI and CGame because the renderer
-doesn't know what graphics to reload
-=================
-*/
-void CL_Vid_Restart_f(void)
-{
-
-	// don't let them loop during the restart
-	S_StopAllSounds();
-	// shutdown the UI
-	CLT3_ShutdownUI();
-	// shutdown the CGame
-	CLT3_ShutdownCGame();
-	// shutdown the renderer and clear the renderer interface
-	CLT3_ShutdownRef();
-	// client is no longer pure untill new checksums are sent
-	CLT3_ResetPureClientAtServer();
-	// clear pak references
-	FS_ClearPakReferences(FS_UI_REF | FS_CGAME_REF);
-	// reinitialize the filesystem if the game directory or checksum has changed
-	FS_ConditionalRestart(clc.q3_checksumFeed);
-
-	cls.q3_rendererStarted = false;
-	cls.q3_uiStarted = false;
-	cls.q3_cgameStarted = false;
-	cls.q3_soundRegistered = false;
-
-	// unpause so the cgame definately gets a snapshot and renders a frame
-	Cvar_Set("cl_paused", "0");
-
-	CIN_CloseAllVideos();
-
-	// initialize the renderer interface
-	CLT3_InitRef();
-
-	// startup all the client stuff
-	CLT3_StartHunkUsers();
-
-	// start the cgame if connected
-	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)
-	{
-		cls.q3_cgameStarted = true;
-		CLT3_InitCGame();
-		// send pure checksums
-		CLT3_SendPureChecksums();
-	}
-}
-
-/*
-=================
-CL_Snd_Restart_f
-
-Restart the sound subsystem
-The cgame and game must also be forced to restart because
-handles will be invalid
-=================
-*/
-void CL_Snd_Restart_f(void)
-{
-	S_Shutdown();
-	S_Init();
-
-	CL_Vid_Restart_f();
-}
-
-
-/*
-==================
-CL_PK3List_f
-==================
-*/
-void CL_OpenedPK3List_f(void)
-{
-	common->Printf("Opened PK3 Names: %s\n", FS_LoadedPakNames());
-}
-
-/*
-==================
-CL_PureList_f
-==================
-*/
-void CL_ReferencedPK3List_f(void)
-{
-	common->Printf("Referenced PK3 Names: %s\n", FS_ReferencedPakNames());
-}
-
-/*
-==================
-CL_Configstrings_f
-==================
-*/
-void CL_Configstrings_f(void)
-{
-	int i;
-	int ofs;
-
-	if (cls.state != CA_ACTIVE)
-	{
-		common->Printf("Not connected to a server.\n");
-		return;
-	}
-
-	for (i = 0; i < MAX_CONFIGSTRINGS_Q3; i++)
-	{
-		ofs = cl.q3_gameState.stringOffsets[i];
-		if (!ofs)
-		{
-			continue;
-		}
-		common->Printf("%4i: %s\n", i, cl.q3_gameState.stringData + ofs);
-	}
-}
-
-/*
-==============
-CL_Clientinfo_f
-==============
-*/
-void CL_Clientinfo_f(void)
-{
-	common->Printf("--------- Client Information ---------\n");
-	common->Printf("state: %i\n", cls.state);
-	common->Printf("Server: %s\n", cls.servername);
-	common->Printf("User info settings:\n");
-	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3));
-	common->Printf("--------------------------------------\n");
-}
-
-//============================================================================
-
 /*
 ==================
 CL_CheckUserinfo
@@ -226,15 +75,15 @@ void CL_Frame(int msec)
 	}
 
 	// if recording an avi, lock to a fixed fps
-	if (cl_avidemo->integer && msec)
+	if (clt3_avidemo->integer && msec)
 	{
 		// save the current screen
-		if (cls.state == CA_ACTIVE || cl_forceavidemo->integer)
+		if (cls.state == CA_ACTIVE || clt3_forceavidemo->integer)
 		{
 			Cbuf_ExecuteText(EXEC_NOW, "screenshot silent\n");
 		}
 		// fixed time for next frame'
-		msec = (1000 / cl_avidemo->integer) * com_timescale->value;
+		msec = (1000 / clt3_avidemo->integer) * com_timescale->value;
 		if (msec == 0)
 		{
 			msec = 1;
@@ -284,24 +133,6 @@ void CL_Frame(int msec)
 	cls.framecount++;
 }
 
-void CL_SetModel_f(void)
-{
-	char* arg;
-	char name[256];
-
-	arg = Cmd_Argv(1);
-	if (arg[0])
-	{
-		Cvar_Set("model", arg);
-		Cvar_Set("headmodel", arg);
-	}
-	else
-	{
-		Cvar_VariableStringBuffer("model", name, sizeof(name));
-		common->Printf("model is set to %s\n", name);
-	}
-}
-
 /*
 ====================
 CL_Init
@@ -309,41 +140,7 @@ CL_Init
 */
 void CL_Init(void)
 {
-	common->Printf("----- Client Initialization -----\n");
-
 	CL_SharedInit();
-
-	CL_ClearState();
-
-	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
-
-	cls.realtime = 0;
-
-	//
-	// register our variables
-	//
-	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
-	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
-
-	//
-	// register our commands
-	//
-	Cmd_AddCommand("configstrings", CL_Configstrings_f);
-	Cmd_AddCommand("clientinfo", CL_Clientinfo_f);
-	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
-	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
-	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("showip", CL_ShowIP_f);
-	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
-	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);
-	Cmd_AddCommand("model", CL_SetModel_f);
-	CLT3_InitRef();
-
-	Cbuf_Execute();
-
-	Cvar_Set("cl_running", "1");
-
-	common->Printf("----- Client Initialization Complete -----\n");
 }
 
 
@@ -401,14 +198,4 @@ void CL_Shutdown(void)
 
 	common->Printf("-----------------------\n");
 
-}
-
-/*
-==================
-CL_ShowIP_f
-==================
-*/
-void CL_ShowIP_f(void)
-{
-	SOCK_ShowIP();
 }

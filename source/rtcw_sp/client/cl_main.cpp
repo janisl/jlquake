@@ -32,14 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../server/public.h"
 #include <limits.h>
 
-Cvar* cl_avidemo;
-Cvar* cl_forceavidemo;
-
-Cvar* cl_trn;
-
-void CL_ShowIP_f(void);
-
-
 /*
 ==============
 CL_EndgameMenu
@@ -51,168 +43,6 @@ void CL_EndgameMenu(void)
 {
 	cls.ws_endgamemenu = true;		// start it next frame
 }
-
-/*
-======================================================================
-
-CONSOLE COMMANDS
-
-======================================================================
-*/
-
-/*
-=================
-CL_Vid_Restart_f
-
-Restart the video subsystem
-
-we also have to reload the UI and CGame because the renderer
-doesn't know what graphics to reload
-=================
-*/
-void CL_Vid_Restart_f(void)
-{
-
-	vmCvar_t musicCvar;
-
-	// RF, don't show percent bar, since the memory usage will just sit at the same level anyway
-	Cvar_Set("com_expectedhunkusage", "-1");
-
-	// don't let them loop during the restart
-	S_StopAllSounds();
-	// shutdown the UI
-	CLT3_ShutdownUI();
-	// shutdown the CGame
-	CLT3_ShutdownCGame();
-	// shutdown the renderer and clear the renderer interface
-	CLT3_ShutdownRef();
-	// client is no longer pure untill new checksums are sent
-	CLT3_ResetPureClientAtServer();
-	// clear pak references
-	FS_ClearPakReferences(FS_UI_REF | FS_CGAME_REF);
-	// reinitialize the filesystem if the game directory or checksum has changed
-	FS_ConditionalRestart(clc.q3_checksumFeed);
-
-	S_BeginRegistration();	// all sound handles are now invalid
-
-	cls.q3_rendererStarted = false;
-	cls.q3_uiStarted = false;
-	cls.q3_cgameStarted = false;
-	cls.q3_soundRegistered = false;
-
-	// unpause so the cgame definately gets a snapshot and renders a frame
-	Cvar_Set("cl_paused", "0");
-
-	CIN_CloseAllVideos();
-
-	// initialize the renderer interface
-	CLT3_InitRef();
-
-	// startup all the client stuff
-	CLT3_StartHunkUsers();
-
-	// start the cgame if connected
-	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)
-	{
-		cls.q3_cgameStarted = true;
-		CLT3_InitCGame();
-		// send pure checksums
-		CLT3_SendPureChecksums();
-	}
-
-	// start music if there was any
-
-	Cvar_Register(&musicCvar, "s_currentMusic", "", CVAR_ROM);
-	if (String::Length(musicCvar.string))
-	{
-		S_StartBackgroundTrack(musicCvar.string, musicCvar.string, 1000);
-	}
-
-	// fade up volume
-	S_FadeAllSounds(1, 0, false);
-}
-
-/*
-=================
-CL_Snd_Restart_f
-
-Restart the sound subsystem
-The cgame and game must also be forced to restart because
-handles will be invalid
-=================
-*/
-void CL_Snd_Restart_f(void)
-{
-	S_Shutdown();
-	S_Init();
-
-	CL_Vid_Restart_f();
-}
-
-
-/*
-==================
-CL_PK3List_f
-==================
-*/
-void CL_OpenedPK3List_f(void)
-{
-	common->Printf("Opened PK3 Names: %s\n", FS_LoadedPakNames());
-}
-
-/*
-==================
-CL_PureList_f
-==================
-*/
-void CL_ReferencedPK3List_f(void)
-{
-	common->Printf("Referenced PK3 Names: %s\n", FS_ReferencedPakNames());
-}
-
-/*
-==================
-CL_Configstrings_f
-==================
-*/
-void CL_Configstrings_f(void)
-{
-	int i;
-	int ofs;
-
-	if (cls.state != CA_ACTIVE)
-	{
-		common->Printf("Not connected to a server.\n");
-		return;
-	}
-
-	for (i = 0; i < MAX_CONFIGSTRINGS_WS; i++)
-	{
-		ofs = cl.ws_gameState.stringOffsets[i];
-		if (!ofs)
-		{
-			continue;
-		}
-		common->Printf("%4i: %s\n", i, cl.ws_gameState.stringData + ofs);
-	}
-}
-
-/*
-==============
-CL_Clientinfo_f
-==============
-*/
-void CL_Clientinfo_f(void)
-{
-	common->Printf("--------- Client Information ---------\n");
-	common->Printf("state: %i\n", cls.state);
-	common->Printf("Server: %s\n", cls.servername);
-	common->Printf("User info settings:\n");
-	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3));
-	common->Printf("--------------------------------------\n");
-}
-
-//============================================================================
 
 /*
 ==================
@@ -269,15 +99,15 @@ void CL_Frame(int msec)
 	}
 
 	// if recording an avi, lock to a fixed fps
-	if (cl_avidemo->integer && msec)
+	if (clt3_avidemo->integer && msec)
 	{
 		// save the current screen
-		if (cls.state == CA_ACTIVE || cl_forceavidemo->integer)
+		if (cls.state == CA_ACTIVE || clt3_forceavidemo->integer)
 		{
 			Cbuf_ExecuteText(EXEC_NOW, "screenshot silent\n");
 		}
 		// fixed time for next frame
-		msec = (1000 / cl_avidemo->integer) * com_timescale->value;
+		msec = (1000 / clt3_avidemo->integer) * com_timescale->value;
 		if (msec == 0)
 		{
 			msec = 1;
@@ -335,184 +165,6 @@ void CL_Frame(int msec)
 	cls.framecount++;
 }
 
-
-//============================================================================
-// Ridah, startup-caching system
-typedef struct
-{
-	char name[MAX_QPATH];
-	int hits;
-	int lastSetIndex;
-} cacheItem_t;
-typedef enum {
-	CACHE_SOUNDS,
-	CACHE_MODELS,
-	CACHE_IMAGES,
-
-	CACHE_NUMGROUPS
-} cacheGroup_t;
-static cacheItem_t cacheGroups[CACHE_NUMGROUPS] = {
-	{{'s','o','u','n','d',0}, CACHE_SOUNDS},
-	{{'m','o','d','e','l',0}, CACHE_MODELS},
-	{{'i','m','a','g','e',0}, CACHE_IMAGES},
-};
-#define MAX_CACHE_ITEMS     4096
-#define CACHE_HIT_RATIO     0.75		// if hit on this percentage of maps, it'll get cached
-
-static int cacheIndex;
-static cacheItem_t cacheItems[CACHE_NUMGROUPS][MAX_CACHE_ITEMS];
-
-static void CL_Cache_StartGather_f(void)
-{
-	cacheIndex = 0;
-	memset(cacheItems, 0, sizeof(cacheItems));
-
-	Cvar_Set("cl_cacheGathering", "1");
-}
-
-static void CL_Cache_UsedFile_f(void)
-{
-	char groupStr[MAX_QPATH];
-	char itemStr[MAX_QPATH];
-	int i,group;
-	cacheItem_t* item;
-
-	if (Cmd_Argc() < 2)
-	{
-		common->Error("usedfile without enough parameters\n");
-		return;
-	}
-
-	String::Cpy(groupStr, Cmd_Argv(1));
-
-	String::Cpy(itemStr, Cmd_Argv(2));
-	for (i = 3; i < Cmd_Argc(); i++)
-	{
-		strcat(itemStr, " ");
-		strcat(itemStr, Cmd_Argv(i));
-	}
-	String::ToLower(itemStr);
-
-	// find the cache group
-	for (i = 0; i < CACHE_NUMGROUPS; i++)
-	{
-		if (!String::NCmp(groupStr, cacheGroups[i].name, MAX_QPATH))
-		{
-			break;
-		}
-	}
-	if (i == CACHE_NUMGROUPS)
-	{
-		common->Error("usedfile without a valid cache group\n");
-		return;
-	}
-
-	// see if it's already there
-	group = i;
-	for (i = 0, item = cacheItems[group]; i < MAX_CACHE_ITEMS; i++, item++)
-	{
-		if (!item->name[0])
-		{
-			// didn't find it, so add it here
-			String::NCpyZ(item->name, itemStr, MAX_QPATH);
-			if (cacheIndex > 9999)		// hack, but yeh
-			{
-				item->hits = cacheIndex;
-			}
-			else
-			{
-				item->hits++;
-			}
-			item->lastSetIndex = cacheIndex;
-			break;
-		}
-		if (item->name[0] == itemStr[0] && !String::NCmp(item->name, itemStr, MAX_QPATH))
-		{
-			if (item->lastSetIndex != cacheIndex)
-			{
-				item->hits++;
-				item->lastSetIndex = cacheIndex;
-			}
-			break;
-		}
-	}
-}
-
-static void CL_Cache_SetIndex_f(void)
-{
-	if (Cmd_Argc() < 2)
-	{
-		common->Error("setindex needs an index\n");
-		return;
-	}
-
-	cacheIndex = String::Atoi(Cmd_Argv(1));
-}
-
-static void CL_Cache_MapChange_f(void)
-{
-	cacheIndex++;
-}
-
-static void CL_Cache_EndGather_f(void)
-{
-	// save the frequently used files to the cache list file
-	int i, j, handle, cachePass;
-	char filename[MAX_QPATH];
-
-	cachePass = (int)floor((float)cacheIndex * CACHE_HIT_RATIO);
-
-	for (i = 0; i < CACHE_NUMGROUPS; i++)
-	{
-		String::NCpyZ(filename, cacheGroups[i].name, MAX_QPATH);
-		String::Cat(filename, MAX_QPATH, ".cache");
-
-#ifdef __MACOS__	//DAJ MacOS file typing
-		{
-			extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-			_ftype = 'WlfB';
-			_fcreator = 'WlfS';
-		}
-#endif
-		handle = FS_FOpenFileWrite(filename);
-
-		for (j = 0; j < MAX_CACHE_ITEMS; j++)
-		{
-			// if it's a valid filename, and it's been hit enough times, cache it
-			if (cacheItems[i][j].hits >= cachePass && strstr(cacheItems[i][j].name, "/"))
-			{
-				FS_Write(cacheItems[i][j].name, String::Length(cacheItems[i][j].name), handle);
-				FS_Write("\n", 1, handle);
-			}
-		}
-
-		FS_FCloseFile(handle);
-	}
-
-	Cvar_Set("cl_cacheGathering", "0");
-}
-
-// done.
-//============================================================================
-
-/*
-================
-CL_MapRestart_f
-================
-*/
-void CL_MapRestart_f(void)
-{
-	if (!com_cl_running)
-	{
-		return;
-	}
-	if (!com_cl_running->integer)
-	{
-		return;
-	}
-	common->Printf("This command is no longer functional.\nUse \"loadgame current\" to load the current map.");
-}
-
 /*
 ================
 CL_SetRecommended_f
@@ -531,66 +183,6 @@ void CL_SetRecommended_f(void)
 
 }
 
-// RF, trap manual client damage commands so users can't issue them manually
-void CL_ClientDamageCommand(void)
-{
-	// do nothing
-}
-
-// NERVE - SMF
-void CL_startMultiplayer_f(void)
-{
-#ifdef __MACOS__	//DAJ
-	Sys_StartProcess("Wolfenstein MP", true);
-#elif defined(__linux__)
-	Sys_StartProcess("./wolf.x86", true);
-#else
-	Sys_StartProcess("WolfMP.exe", true);
-#endif
-}
-// -NERVE - SMF
-
-//----(SA) added
-/*
-==============
-CL_ShellExecute_URL_f
-Format:
-  shellExecute "open" <url> <doExit>
-
-TTimo
-  show_bug.cgi?id=447
-  only supporting "open" syntax for URL openings, others are not portable or need to be added on a case-by-case basis
-  the shellExecute syntax as been kept to remain compatible with win32 SP demo pk3, but this thing only does open URL
-
-==============
-*/
-
-void CL_ShellExecute_URL_f(void)
-{
-	qboolean doexit;
-
-	common->DPrintf("CL_ShellExecute_URL_f\n");
-
-	if (String::ICmp(Cmd_Argv(1),"open"))
-	{
-		common->DPrintf("invalid CL_ShellExecute_URL_f syntax (shellExecute \"open\" <url> <doExit>)\n");
-		return;
-	}
-
-	if (Cmd_Argc() < 4)
-	{
-		doexit = true;
-	}
-	else
-	{
-		doexit = (qboolean)(String::Atoi(Cmd_Argv(3)));
-	}
-
-	Sys_OpenURL(Cmd_Argv(2),doexit);
-}
-//----(SA) end
-//===========================================================================================
-
 /*
 ====================
 CL_Init
@@ -598,68 +190,10 @@ CL_Init
 */
 void CL_Init(void)
 {
-	common->Printf("----- Client Initialization -----\n");
-
 	CL_SharedInit();
 
-	CL_ClearState();
-
-	cls.state = CA_DISCONNECTED;	// no longer CA_UNINITIALIZED
-
-	cls.realtime = 0;
-
-	//
-	// register our variables
-	//
-	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
-	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
-
-	//
-	// register our commands
-	//
-	Cmd_AddCommand("configstrings", CL_Configstrings_f);
-	Cmd_AddCommand("clientinfo", CL_Clientinfo_f);
-	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
-	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
-	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("showip", CL_ShowIP_f);
-	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
-	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);
-
-	// Ridah, startup-caching system
-	Cmd_AddCommand("cache_startgather", CL_Cache_StartGather_f);
-	Cmd_AddCommand("cache_usedfile", CL_Cache_UsedFile_f);
-	Cmd_AddCommand("cache_setindex", CL_Cache_SetIndex_f);
-	Cmd_AddCommand("cache_mapchange", CL_Cache_MapChange_f);
-	Cmd_AddCommand("cache_endgather", CL_Cache_EndGather_f);
-
-	Cmd_AddCommand("updatescreen", SCR_UpdateScreen);
-	// done.
-
-	// RF, add this command so clients can't bind a key to send client damage commands to the server
-	Cmd_AddCommand("cld", CL_ClientDamageCommand);
-
-	Cmd_AddCommand("startMultiplayer", CL_startMultiplayer_f);			// NERVE - SMF
-
 	// TTimo
-	// show_bug.cgi?id=447
-	Cmd_AddCommand("shellExecute", CL_ShellExecute_URL_f);
-	//Cmd_AddCommand ( "shellExecute", CL_ShellExecute_f );	//----(SA) added (mainly for opening web pages from the menu)
-
-	// RF, prevent users from issuing a map_restart manually
-	Cmd_AddCommand("map_restart", CL_MapRestart_f);
-
 	Cmd_AddCommand("setRecommended", CL_SetRecommended_f);
-
-	CL_InitTranslation();
-
-	CLT3_InitRef();
-
-	Cbuf_Execute();
-
-	Cvar_Set("cl_running", "1");
-
-	common->Printf("----- Client Initialization Complete -----\n");
 }
 
 
@@ -726,15 +260,4 @@ void CL_Shutdown(void)
 	memset(&cls, 0, sizeof(cls));
 
 	common->Printf("-----------------------\n");
-}
-
-
-/*
-==================
-CL_ShowIP_f
-==================
-*/
-void CL_ShowIP_f(void)
-{
-	SOCK_ShowIP();
 }

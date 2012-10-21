@@ -504,92 +504,35 @@ void Com_CPUSpeed_f(void)
 
 void Com_SetRecommended()
 {
-	Cvar* com_recommended;
-	qboolean goodVideo;
-	float cpuSpeed;
-	//qboolean goodCPU;
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	com_recommended = Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
-	goodVideo = true;
+	Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
 
-	cpuSpeed = Sys_GetCPUSpeed();
+	float cpuSpeed = Sys_GetCPUSpeed();
 
 	if (cpuSpeed > 1500)
 	{
-		if (goodVideo)
-		{
-			common->Printf("Found high quality video and fast CPU\n");
-			Cbuf_AddText("exec preset_high.cfg\n");
-			Cvar_Set("com_recommended", "0");
-		}
-		else
-		{
-			common->Printf("Found low quality video and fast CPU\n");
-			Cbuf_AddText("exec preset_normal.cfg\n");
-			Cvar_Set("com_recommended", "1");
-		}
+		common->Printf("Found high quality video and fast CPU\n");
+		Cbuf_AddText("exec preset_high.cfg\n");
+		Cvar_Set("com_recommended", "0");
 	}
 	else if (cpuSpeed > 850)
 	{
-		if (goodVideo)
-		{
-			common->Printf("Found high quality video and normal CPU\n");
-		}
-		else
-		{
-			common->Printf("Found low quality video and normal CPU\n");
-		}
+		common->Printf("Found high quality video and normal CPU\n");
 		Cbuf_AddText("exec preset_normal.cfg\n");
 		Cvar_Set("com_recommended", "1");
 	}
 	else if (cpuSpeed < 200)		// do the < 200 check just in case we barf, better than falling back to ugly fast
 	{
-		if (goodVideo)
-		{
-			common->Printf("Found high quality video but didn't manage to detect a CPU properly\n");
-		}
-		else
-		{
-			common->Printf("Found low quality video but didn't manage to detect a CPU properly\n");
-		}
+		common->Printf("Found high quality video but didn't manage to detect a CPU properly\n");
 		Cbuf_AddText("exec preset_normal.cfg\n");
 		Cvar_Set("com_recommended", "1");
 	}
 	else
 	{
-		if (goodVideo)
-		{
-			common->Printf("Found high quality video and slow CPU\n");
-			Cbuf_AddText("exec preset_fast.cfg\n");
-			Cvar_Set("com_recommended", "2");
-		}
-		else
-		{
-			common->Printf("Found low quality video and slow CPU\n");
-			Cbuf_AddText("exec preset_fastest.cfg\n");
-			Cvar_Set("com_recommended", "3");
-		}
+		common->Printf("Found high quality video and slow CPU\n");
+		Cbuf_AddText("exec preset_fast.cfg\n");
+		Cvar_Set("com_recommended", "2");
 	}
-
-
-	/*goodCPU = Sys_GetHighQualityCPU();
-
-	if (goodVideo && goodCPU) {
-	    common->Printf ("Found high quality video and CPU\n");
-	    Cbuf_AddText ("exec highVidhighCPU.cfg\n");
-	} else if (goodVideo && !goodCPU) {
-	    Cbuf_AddText ("exec highVidlowCPU.cfg\n");
-	    common->Printf ("Found high quality video and low quality CPU\n");
-	} else if (!goodVideo && goodCPU) {
-	    Cbuf_AddText ("exec lowVidhighCPU.cfg\n");
-	    common->Printf ("Found low quality video and high quality CPU\n");
-	} else {
-	    Cbuf_AddText ("exec lowVidlowCPU.cfg\n");
-	    common->Printf ("Found low quality video and low quality CPU\n");
-	}*/
-
-// (SA) set the cvar so the menu will reflect this on first run
-//	Cvar_Set("ui_glCustom", "999");	// 'recommended'
 }
 
 void Com_GetGameInfo()

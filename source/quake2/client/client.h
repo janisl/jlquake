@@ -46,7 +46,6 @@ void CL_ParseLayout(void);
 void CL_Init(void);
 
 void CL_GetChallengePacket(void);
-void CL_Snd_Restart_f(void);
 
 void CL_WriteToServer(q2usercmd_t* cmd);
 

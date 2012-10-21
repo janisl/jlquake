@@ -1084,7 +1084,7 @@ void CLT3_Connect_f()
 	{
 		Cvar_Set("cl_currentServerIP", SOCK_AdrToString(clc.q3_serverAddress));
 
-		Cvar_Set("cl_avidemo", "0");
+		Cvar_Set("clt3_avidemo", "0");
 	}
 }
 

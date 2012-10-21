@@ -207,7 +207,6 @@ CL_InitLocal
 */
 void CL_InitLocal(void)
 {
-	cls.state = CA_DISCONNECTED;
 	cls.realtime = Sys_Milliseconds_();
 
 //

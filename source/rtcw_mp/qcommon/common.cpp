@@ -455,35 +455,18 @@ static void Com_Crash_f(void)
 
 void Com_SetRecommended()
 {
-	qboolean goodVideo;
-	qboolean goodCPU;
-	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	goodVideo = true;
-	goodCPU = Sys_GetHighQualityCPU();
+	bool goodCPU = Sys_GetHighQualityCPU();
 
-	if (goodVideo && goodCPU)
+	if (goodCPU)
 	{
 		common->Printf("Found high quality video and CPU\n");
 		Cbuf_AddText("exec highVidhighCPU.cfg\n");
 	}
-	else if (goodVideo && !goodCPU)
+	else
 	{
 		Cbuf_AddText("exec highVidlowCPU.cfg\n");
 		common->Printf("Found high quality video and low quality CPU\n");
 	}
-	else if (!goodVideo && goodCPU)
-	{
-		Cbuf_AddText("exec lowVidhighCPU.cfg\n");
-		common->Printf("Found low quality video and high quality CPU\n");
-	}
-	else
-	{
-		Cbuf_AddText("exec lowVidlowCPU.cfg\n");
-		common->Printf("Found low quality video and low quality CPU\n");
-	}
-
-// (SA) set the cvar so the menu will reflect this on first run
-//	Cvar_Set("ui_glCustom", "999");	// 'recommended'
 }
 
 /*
