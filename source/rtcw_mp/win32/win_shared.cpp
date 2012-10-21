@@ -179,116 +179,6 @@ static int IsMMX(void)
 	}
 	return false;
 }
-
-static int IsP3()
-{
-	unsigned regs[4];
-
-	// get CPU feature bits
-	CPUID(1, regs);
-	if (regs[0] < 6)
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x1))
-	{
-		return false;		// fp
-	}
-
-	if (!(regs[3] & 0x8000))		// cmov
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x800000))		// mmx
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x2000000))			// simd
-	{
-		return false;
-	}
-
-	return true;
-}
-
-static int IsAthlon()
-{
-	unsigned regs[4];
-	char pstring[16];
-	char processorString[13];
-
-	// get name of processor
-	CPUID(0, (unsigned int*)pstring);
-	processorString[0] = pstring[4];
-	processorString[1] = pstring[5];
-	processorString[2] = pstring[6];
-	processorString[3] = pstring[7];
-	processorString[4] = pstring[12];
-	processorString[5] = pstring[13];
-	processorString[6] = pstring[14];
-	processorString[7] = pstring[15];
-	processorString[8] = pstring[8];
-	processorString[9] = pstring[9];
-	processorString[10] = pstring[10];
-	processorString[11] = pstring[11];
-	processorString[12] = 0;
-
-	if (String::Cmp(processorString, "AuthenticAMD"))
-	{
-		return false;
-	}
-
-	CPUID(0x80000000, regs);
-
-	if (regs[0] < 0x80000001)
-	{
-		return false;
-	}
-
-	// get CPU feature bits
-	CPUID(1, regs);
-	if (regs[0] < 6)
-	{
-		return false;
-	}
-
-	CPUID(0x80000001, regs);
-
-	if (!(regs[3] & 0x1))
-	{
-		return false;		// fp
-	}
-
-	if (!(regs[3] & 0x8000))		// cmov
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x800000))		// mmx
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x400000))		// k7 mmx
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x80000000))		// 3dnow
-	{
-		return false;
-	}
-
-	if (!(regs[3] & 0x40000000))		// advanced 3dnow
-	{
-		return false;
-	}
-
-	return true;
-}
 #endif
 
 int Sys_GetProcessorId(void)
@@ -329,15 +219,6 @@ int Sys_GetProcessorId(void)
 	// by default we're functionally a vanilla Pentium/MMX or P2/MMX
 	return CPUID_INTEL_MMX;
 
-#endif
-}
-
-int Sys_GetHighQualityCPU()
-{
-#if defined _M_X64
-	return 1;
-#else
-	return (!IsP3() && !IsAthlon()) ? 0 : 1;
 #endif
 }
 

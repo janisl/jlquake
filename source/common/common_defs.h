@@ -258,3 +258,5 @@ extern bool com_fullyInitialized;
 void Com_WriteConfigToFile(const char* filename);
 void Com_WriteConfiguration();
 void Com_WriteConfig_f();
+
+void Com_SetRecommended(bool vid_restart);

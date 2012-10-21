@@ -453,22 +453,6 @@ static void Com_Crash_f(void)
 	*(int*)0 = 0x12345678;
 }
 
-void Com_SetRecommended()
-{
-	bool goodCPU = Sys_GetHighQualityCPU();
-
-	if (goodCPU)
-	{
-		common->Printf("Found high quality video and CPU\n");
-		Cbuf_AddText("exec highVidhighCPU.cfg\n");
-	}
-	else
-	{
-		Cbuf_AddText("exec highVidlowCPU.cfg\n");
-		common->Printf("Found high quality video and low quality CPU\n");
-	}
-}
-
 /*
 =================
 Com_Init
@@ -636,8 +620,7 @@ void Com_Init(char* commandLine)
 		// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
 		if (!com_recommendedSet->integer && !safeMode)
 		{
-			Com_SetRecommended();
-			Cbuf_ExecuteText(EXEC_APPEND, "vid_restart\n");
+			Com_SetRecommended(true);
 		}
 		Cvar_Set("com_recommendedSet", "1");
 

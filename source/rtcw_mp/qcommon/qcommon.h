@@ -75,12 +75,6 @@ void QDECL Com_DPrintf(const char* fmt, ...);
 void QDECL Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
 
-void        Com_SetRecommended();
-// checks for and removes command line "+set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
-
-
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
@@ -132,8 +126,6 @@ int     Sys_GetProcessorId(void);
 void    Sys_SetErrorText(const char* text);
 
 unsigned int Sys_ProcessorCount();
-
-int Sys_GetHighQualityCPU();
 
 #ifdef __linux__
 // TTimo only on linux .. maybe on Mac too?

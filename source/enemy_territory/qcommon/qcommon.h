@@ -90,11 +90,6 @@ void QDECL Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
 void QDECL Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));
 void        Com_Quit_f(void);
 
-void        Com_SetRecommended();
-// checks for and removes command line "+set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
-
 //bani - profile functions
 void Com_TrackProfile(char* profile_path);
 qboolean Com_CheckProfile(char* profile_path);
@@ -160,7 +155,6 @@ void    Sys_SetErrorText(const char* text);
 
 unsigned int Sys_ProcessorCount();
 
-int Sys_GetHighQualityCPU();
 float Sys_GetCPUSpeed(void);
 
 #ifdef __linux__

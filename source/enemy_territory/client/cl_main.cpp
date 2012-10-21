@@ -271,18 +271,6 @@ void CL_Frame(int msec)
 
 
 /*
-================
-CL_SetRecommended_f
-================
-*/
-void CL_SetRecommended_f(void)
-{
-	Com_SetRecommended();
-}
-
-//===========================================================================================
-
-/*
 ====================
 CL_Init
 ====================
@@ -290,11 +278,6 @@ CL_Init
 void CL_Init(void)
 {
 	CL_SharedInit();
-
-	//
-	// register our commands
-	//
-	Cmd_AddCommand("setRecommended", CL_SetRecommended_f);
 }
 
 

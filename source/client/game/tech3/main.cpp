@@ -646,6 +646,18 @@ static void CLET_EatMe_f()
 	//do nothing kthxbye
 }
 
+static void CLT3_SetRecommended_f()
+{
+	if (GGameType & GAME_WolfSP && Cmd_Argc() > 1)
+	{
+		Com_SetRecommended(true);
+	}
+	else
+	{
+		Com_SetRecommended(false);
+	}
+}
+
 void CLT3_Init()
 {
 	CL_ClearState();
@@ -832,6 +844,7 @@ void CLT3_Init()
 		Cmd_AddCommand("cache_endgather", CL_Cache_EndGather_f);
 
 		Cmd_AddCommand("updatescreen", SCR_UpdateScreen);
+		Cmd_AddCommand("setRecommended", CLT3_SetRecommended_f);
 
 		CL_InitTranslation();
 	}

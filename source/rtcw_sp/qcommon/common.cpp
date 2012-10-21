@@ -468,29 +468,6 @@ static void Com_Crash_f(void)
 	*(int*)0 = 0x12345678;
 }
 
-void Com_SetRecommended(qboolean vidrestart)
-{
-	bool goodCPU = Sys_GetHighQualityCPU();
-
-	if (goodCPU)
-	{
-		common->Printf("Found high quality video and CPU\n");
-		Cbuf_AddText("exec highVidhighCPU.cfg\n");
-	}
-	else
-	{
-		Cbuf_AddText("exec highVidlowCPU.cfg\n");
-		common->Printf("Found high quality video and low quality CPU\n");
-	}
-
-	// (SA) set the cvar so the menu will reflect this on first run
-	Cvar_Set("ui_glCustom", "999");		// 'recommended'
-
-	if (vidrestart)
-	{
-		Cbuf_AddText("vid_restart\n");
-	}
-}
 /*
 =================
 Com_Init
@@ -657,8 +634,8 @@ void Com_Init(char* commandLine)
 		if (!com_recommendedSet->integer)
 		{
 			Com_SetRecommended(true);
-			Cvar_Set("com_recommendedSet", "1");
 		}
+		Cvar_Set("com_recommendedSet", "1");
 
 		if (!com_dedicated->integer)
 		{

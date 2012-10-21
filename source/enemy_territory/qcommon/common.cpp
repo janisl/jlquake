@@ -502,39 +502,6 @@ void Com_CPUSpeed_f(void)
 	common->Printf("CPU Speed: %.2f Mhz\n", Sys_GetCPUSpeed());
 }
 
-void Com_SetRecommended()
-{
-	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
-
-	float cpuSpeed = Sys_GetCPUSpeed();
-
-	if (cpuSpeed > 1500)
-	{
-		common->Printf("Found high quality video and fast CPU\n");
-		Cbuf_AddText("exec preset_high.cfg\n");
-		Cvar_Set("com_recommended", "0");
-	}
-	else if (cpuSpeed > 850)
-	{
-		common->Printf("Found high quality video and normal CPU\n");
-		Cbuf_AddText("exec preset_normal.cfg\n");
-		Cvar_Set("com_recommended", "1");
-	}
-	else if (cpuSpeed < 200)		// do the < 200 check just in case we barf, better than falling back to ugly fast
-	{
-		common->Printf("Found high quality video but didn't manage to detect a CPU properly\n");
-		Cbuf_AddText("exec preset_normal.cfg\n");
-		Cvar_Set("com_recommended", "1");
-	}
-	else
-	{
-		common->Printf("Found high quality video and slow CPU\n");
-		Cbuf_AddText("exec preset_fast.cfg\n");
-		Cvar_Set("com_recommended", "2");
-	}
-}
-
 void Com_GetGameInfo()
 {
 	char* f;
@@ -986,8 +953,7 @@ void Com_Init(char* commandLine)
 		// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
 		if (!com_recommendedSet->integer && !safeMode)
 		{
-			Com_SetRecommended();
-			Cbuf_ExecuteText(EXEC_APPEND, "vid_restart\n");
+			Com_SetRecommended(true);
 		}
 		Cvar_Set("com_recommendedSet", "1");
 

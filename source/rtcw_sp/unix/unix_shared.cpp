@@ -59,14 +59,7 @@ char* strlwr(char* s)
 int Sys_GetProcessorId(void)
 {
 	// TODO TTimo add better CPU identification?
-	// see Sys_GetHighQualityCPU
 	return CPUID_GENERIC;
-}
-
-int Sys_GetHighQualityCPU()
-{
-	// TODO TTimo see win_shared.c IsP3 || IsAthlon
-	return 0;
 }
 
 const char* Sys_GetCurrentUser(void)

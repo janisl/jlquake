@@ -1183,3 +1183,29 @@ void Com_WriteConfig_f()
 	common->Printf("Writing %s.\n", filename);
 	Com_WriteConfigToFile(filename);
 }
+
+void Com_SetRecommended(bool vid_restart)
+{
+	common->Printf("Assume high quality video and fast CPU\n");
+	if (GGameType & GAME_ET)
+	{
+		Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
+		Cbuf_AddText("exec preset_high.cfg\n");
+		Cvar_Set("com_recommended", "0");
+	}
+	else
+	{
+		Cbuf_AddText("exec highVidhighCPU.cfg\n");
+	}
+
+	if (GGameType & GAME_WolfSP)
+	{
+		// (SA) set the cvar so the menu will reflect this on first run
+		Cvar_Set("ui_glCustom", "999");		// 'recommended'
+	}
+
+	if (vid_restart)
+	{
+		Cbuf_AddText("vid_restart\n");
+	}
+}

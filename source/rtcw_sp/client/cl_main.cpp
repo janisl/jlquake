@@ -166,24 +166,6 @@ void CL_Frame(int msec)
 }
 
 /*
-================
-CL_SetRecommended_f
-================
-*/
-void CL_SetRecommended_f(void)
-{
-	if (Cmd_Argc() > 1)
-	{
-		Com_SetRecommended(true);
-	}
-	else
-	{
-		Com_SetRecommended(false);
-	}
-
-}
-
-/*
 ====================
 CL_Init
 ====================
@@ -191,9 +173,6 @@ CL_Init
 void CL_Init(void)
 {
 	CL_SharedInit();
-
-	// TTimo
-	Cmd_AddCommand("setRecommended", CL_SetRecommended_f);
 }
 
 
