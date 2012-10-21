@@ -134,56 +134,6 @@ void CL_Version_f(void)
 }
 
 /*
-====================
-CL_Packet_f
-
-packet <destination> <contents>
-
-Contents allows \n escape character
-====================
-*/
-void CL_Packet_f(void)
-{
-	char send[2048];
-	int i, l;
-	char* in, * out;
-	netadr_t adr;
-
-	if (Cmd_Argc() != 3)
-	{
-		common->Printf("packet <destination> <contents>\n");
-		return;
-	}
-
-	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, 0))
-	{
-		common->Printf("Bad address\n");
-		return;
-	}
-
-	in = Cmd_Argv(2);
-	out = send + 4;
-	send[0] = send[1] = send[2] = send[3] = 0xff;
-
-	l = String::Length(in);
-	for (i = 0; i < l; i++)
-	{
-		if (in[i] == '\\' && in[i + 1] == 'n')
-		{
-			*out++ = '\n';
-			i++;
-		}
-		else
-		{
-			*out++ = in[i];
-		}
-	}
-	*out = 0;
-
-	NET_SendPacket(NS_CLIENT, out - send, send, adr);
-}
-
-/*
 =================
 CL_Init
 =================
@@ -204,8 +154,6 @@ void CL_Init(void)
 	Cmd_AddCommand("version", CL_Version_f);
 
 	Cmd_AddCommand("quit", CL_Quit_f);
-
-	Cmd_AddCommand("packet", CL_Packet_f);
 }
 
 

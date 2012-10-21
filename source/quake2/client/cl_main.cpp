@@ -45,59 +45,6 @@ void CL_Pause_f(void)
 	Cvar_SetValueLatched("paused", !cl_paused->value);
 }
 
-
-/*
-====================
-CL_Packet_f
-
-packet <destination> <contents>
-
-Contents allows \n escape character
-====================
-*/
-void CL_Packet_f(void)
-{
-	char send[2048];
-	int i, l;
-	char* in, * out;
-	netadr_t adr;
-
-	if (Cmd_Argc() != 3)
-	{
-		common->Printf("packet <destination> <contents>\n");
-		return;
-	}
-
-	NET_Config(true);		// allow remote
-
-	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, Q2PORT_SERVER))
-	{
-		common->Printf("Bad address\n");
-		return;
-	}
-
-	in = Cmd_Argv(2);
-	out = send + 4;
-	send[0] = send[1] = send[2] = send[3] = (char)0xff;
-
-	l = String::Length(in);
-	for (i = 0; i < l; i++)
-	{
-		if (in[i] == '\\' && in[i + 1] == 'n')
-		{
-			*out++ = '\n';
-			i++;
-		}
-		else
-		{
-			*out++ = in[i];
-		}
-	}
-	*out = 0;
-
-	NET_SendPacket(NS_CLIENT, out - send, send, adr);
-}
-
 /*
 =================
 CL_Changing_f
@@ -279,8 +226,6 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
-
-//  Cmd_AddCommand ("packet", CL_Packet_f); // this is dangerous to leave in
 
 	Cmd_AddCommand("download", CL_Download_f);
 
