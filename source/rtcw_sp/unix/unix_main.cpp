@@ -50,9 +50,9 @@ If you have questions concerning this license or the applicable additional terms
 // FIXME TTimo should we gard this? most *nix system should comply?
 #include <termios.h>
 
-#include "../client/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
+#include "../../client/client.h"
 #include "../../common/system_unix.h"
 
 #include "linux_local.h"// bk001204

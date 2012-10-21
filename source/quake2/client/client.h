@@ -28,23 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../qcommon/qcommon.h"
 
 //
-// cvars
-//
-void CL_ParseConfigString(void);
-
-//=================================================
-
-void IN_Accumulate(void);
-
-void CL_ParseLayout(void);
-
-//
 // cl_main
 //
 void CL_Init(void);
-
-void CL_GetChallengePacket(void);
-
-void CL_WriteToServer(q2usercmd_t* cmd);
-
-void CL_Download_f(void);

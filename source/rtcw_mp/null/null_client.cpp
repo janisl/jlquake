@@ -26,14 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-
-#include "../client/client.h"
-
 void CL_Shutdown(void)
-{
-}
-
-void CL_Init(void)
 {
 }
 

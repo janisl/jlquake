@@ -192,3 +192,7 @@ void CLT3_PacketEvent(netadr_t from, QMsg* msg)
 void IN_Frame()
 {
 }
+
+void CL_SharedInit()
+{
+}

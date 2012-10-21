@@ -19,16 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
-extern qboolean nomaster;
-
-//=============================================================================
-
-
 //
 // cl_main
 //
 void CL_Init(void);
-
-void CLQHW_ReadPackets(void);
-
-void CL_WriteToServer(qwusercmd_t* cmd);

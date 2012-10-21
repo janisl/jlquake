@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // cl_main.c  -- client main loop
 
-#include "client.h"
+#include "../game/q_shared.h"
+#include "../../client/client.h"
+#include "../qcommon/qcommon.h"
+#include "../../client/game/quake3/local.h"
 #include <limits.h>
 #include "../../server/public.h"
 
@@ -132,17 +135,6 @@ void CL_Frame(int msec)
 
 	cls.framecount++;
 }
-
-/*
-====================
-CL_Init
-====================
-*/
-void CL_Init(void)
-{
-	CL_SharedInit();
-}
-
 
 /*
 ===============

@@ -28,7 +28,10 @@ If you have questions concerning this license or the applicable additional terms
 
 // cl_main.c  -- client main loop
 
-#include "client.h"
+#include "../game/q_shared.h"
+#include "../../client/client.h"
+#include "../qcommon/qcommon.h"
+#include "../../client/game/et/local.h"
 #include <limits.h>
 
 #include "../../server/public.h"
@@ -268,18 +271,6 @@ void CL_Frame(int msec)
 
 	cls.framecount++;
 }
-
-
-/*
-====================
-CL_Init
-====================
-*/
-void CL_Init(void)
-{
-	CL_SharedInit();
-}
-
 
 /*
 ===============

@@ -46,7 +46,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../client/client.h"
 #include "../../client/renderer/local.h"
-#include "../client/client.h"
 #include "linux_local.h"// bk001130
 
 static qboolean signalcaught = false;;

@@ -620,7 +620,6 @@ void Chase_Update();
 //
 //	Client main
 //
-void CL_SharedInit();
 int CL_ScaledMilliseconds();
 void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
 void CLH2_InitPlayerTranslation();
