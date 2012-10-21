@@ -21,6 +21,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../et/dl_public.h"
+#include "../../../server/public.h"
 
 Cvar* clet_profile;
 Cvar* clt3_showServerCommands;
@@ -194,6 +195,28 @@ void CLT3_FlushMemory()
 	}
 
 	CLT3_StartHunkUsers();
+}
+
+void CLT3_ShutdownRef()
+{
+	R_Shutdown(true);
+}
+
+void CLT3_InitRef()
+{
+	common->Printf("----- Initializing Renderer ----\n");
+
+	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
+
+	common->Printf("-------------------------------\n");
+
+	// unpause so the cgame definately gets a snapshot and renders a frame
+	Cvar_Set("cl_paused", "0");
+}
+
+void CLT3_ResetPureClientAtServer()
+{
+	CL_AddReliableCommand(va("vdr"));
 }
 
 void CLT3_Init()

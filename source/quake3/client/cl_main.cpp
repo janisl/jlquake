@@ -25,8 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <limits.h>
 #include "../../server/public.h"
 
-void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
-
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
 
@@ -35,50 +33,12 @@ Cvar* cl_trn;
 void CL_ShowIP_f(void);
 
 /*
-=======================================================================
-
-CLIENT RELIABLE COMMAND COMMUNICATION
-
-=======================================================================
-*/
-
-/*
-======================
-CL_ChangeReliableCommand
-======================
-*/
-void CL_ChangeReliableCommand(void)
-{
-	int r, index, l;
-
-	r = clc.q3_reliableSequence - (random() * 5);
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_Q3 - 1);
-	l = String::Length(clc.q3_reliableCommands[index]);
-	if (l >= MAX_STRING_CHARS - 1)
-	{
-		l = MAX_STRING_CHARS - 2;
-	}
-	clc.q3_reliableCommands[index][l] = '\n';
-	clc.q3_reliableCommands[index][l + 1] = '\0';
-}
-
-/*
 ======================================================================
 
 CONSOLE COMMANDS
 
 ======================================================================
 */
-
-/*
-=================
-CL_ResetPureClientAtServer
-=================
-*/
-void CL_ResetPureClientAtServer(void)
-{
-	CL_AddReliableCommand(va("vdr"));
-}
 
 /*
 =================
@@ -100,9 +60,9 @@ void CL_Vid_Restart_f(void)
 	// shutdown the CGame
 	CLT3_ShutdownCGame();
 	// shutdown the renderer and clear the renderer interface
-	CL_ShutdownRef();
+	CLT3_ShutdownRef();
 	// client is no longer pure untill new checksums are sent
-	CL_ResetPureClientAtServer();
+	CLT3_ResetPureClientAtServer();
 	// clear pak references
 	FS_ClearPakReferences(FS_UI_REF | FS_CGAME_REF);
 	// reinitialize the filesystem if the game directory or checksum has changed
@@ -119,7 +79,7 @@ void CL_Vid_Restart_f(void)
 	CIN_CloseAllVideos();
 
 	// initialize the renderer interface
-	CL_InitRef();
+	CLT3_InitRef();
 
 	// startup all the client stuff
 	CLT3_StartHunkUsers();
@@ -324,40 +284,6 @@ void CL_Frame(int msec)
 	cls.framecount++;
 }
 
-
-//============================================================================
-
-/*
-============
-CL_ShutdownRef
-============
-*/
-void CL_ShutdownRef()
-{
-	R_Shutdown(true);
-}
-
-/*
-============
-CL_InitRef
-============
-*/
-void CL_InitRef(void)
-{
-	common->Printf("----- Initializing Renderer ----\n");
-
-	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
-
-	common->Printf("-------------------------------\n");
-
-	// unpause so the cgame definately gets a snapshot and renders a frame
-	Cvar_Set("cl_paused", "0");
-}
-
-
-//===========================================================================================
-
-
 void CL_SetModel_f(void)
 {
 	char* arg;
@@ -411,7 +337,7 @@ void CL_Init(void)
 	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
 	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);
 	Cmd_AddCommand("model", CL_SetModel_f);
-	CL_InitRef();
+	CLT3_InitRef();
 
 	Cbuf_Execute();
 
@@ -443,7 +369,7 @@ void CL_Shutdown(void)
 	CL_Disconnect(true);
 
 	S_Shutdown();
-	CL_ShutdownRef();
+	CLT3_ShutdownRef();
 
 	CLT3_ShutdownUI();
 

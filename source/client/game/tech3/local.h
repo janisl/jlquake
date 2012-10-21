@@ -41,8 +41,6 @@ void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
 int Key_GetCatcher();
 void KeyQ3_SetCatcher(int catcher);
 void KeyWM_SetCatcher(int catcher);
-void CLT3_AdjustTimeDelta();
-void CLT3_FirstSnapshot();
 void CLT3_SetCGameTime();
 
 //
@@ -96,6 +94,9 @@ void CLET_DoPurgeCache();
 void CLET_WavRecord_f();
 void CLET_WavStopRecord_f();
 void CLT3_Init();
+void CLT3_ShutdownRef();
+void CLT3_InitRef();
+void CLT3_ResetPureClientAtServer();
 
 //
 //	Network channel

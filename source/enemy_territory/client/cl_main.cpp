@@ -40,46 +40,7 @@ Cvar* cl_wwwDownload;
 
 Cvar* cl_trn;
 
-void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
-
 void CL_ShowIP_f(void);
-
-/*
-=======================================================================
-
-CLIENT RELIABLE COMMAND COMMUNICATION
-
-=======================================================================
-*/
-
-/*
-======================
-CL_AddReliableCommand
-
-The given command will be transmitted to the server, and is gauranteed to
-not have future etusercmd_t executed before it is executed
-======================
-*/
-/*
-======================
-CL_ChangeReliableCommand
-======================
-*/
-void CL_ChangeReliableCommand(void)
-{
-	int r, index, l;
-
-	// NOTE TTimo: what is the randomize for?
-	r = clc.q3_reliableSequence - (random() * 5);
-	index = clc.q3_reliableSequence & (MAX_RELIABLE_COMMANDS_WOLF - 1);
-	l = String::Length(clc.q3_reliableCommands[index]);
-	if (l >= MAX_STRING_CHARS - 1)
-	{
-		l = MAX_STRING_CHARS - 2;
-	}
-	clc.q3_reliableCommands[index][l] = '\n';
-	clc.q3_reliableCommands[index][l + 1] = '\0';
-}
 
 /*
 ======================================================================
@@ -88,16 +49,6 @@ CONSOLE COMMANDS
 
 ======================================================================
 */
-
-/*
-=================
-CL_ResetPureClientAtServer
-=================
-*/
-void CL_ResetPureClientAtServer(void)
-{
-	CL_AddReliableCommand(va("vdr"));
-}
 
 /*
 =================
@@ -123,9 +74,9 @@ void CL_Vid_Restart_f(void)
 	// shutdown the CGame
 	CLT3_ShutdownCGame();
 	// shutdown the renderer and clear the renderer interface
-	CL_ShutdownRef();
+	CLT3_ShutdownRef();
 	// client is no longer pure untill new checksums are sent
-	CL_ResetPureClientAtServer();
+	CLT3_ResetPureClientAtServer();
 	// clear pak references
 	FS_ClearPakReferences(FS_UI_REF | FS_CGAME_REF);
 	// reinitialize the filesystem if the game directory or checksum has changed
@@ -144,7 +95,7 @@ void CL_Vid_Restart_f(void)
 	CIN_CloseAllVideos();
 
 	// initialize the renderer interface
-	CL_InitRef();
+	CLT3_InitRef();
 
 	// startup all the client stuff
 	CLT3_StartHunkUsers();
@@ -670,33 +621,6 @@ void CL_SetRecommended_f(void)
 	Com_SetRecommended();
 }
 
-/*
-============
-CL_ShutdownRef
-============
-*/
-void CL_ShutdownRef(void)
-{
-	R_Shutdown(true);
-}
-
-/*
-============
-CL_InitRef
-============
-*/
-void CL_InitRef(void)
-{
-	common->Printf("----- Initializing Renderer ----\n");
-
-	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
-
-	common->Printf("-------------------------------\n");
-
-	// unpause so the cgame definately gets a snapshot and renders a frame
-	Cvar_Set("cl_paused", "0");
-}
-
 // RF, trap manual client damage commands so users can't issue them manually
 void CL_ClientDamageCommand(void)
 {
@@ -795,7 +719,7 @@ void CL_Init(void)
 	Cvar_Get("cl_wavefilename", "", CVAR_ROM);
 	Cvar_Get("cl_waveoffset", "0", CVAR_ROM);
 
-	CL_InitRef();
+	CLT3_InitRef();
 
 	Cbuf_Execute();
 
@@ -835,7 +759,7 @@ void CL_Shutdown(void)
 
 	S_Shutdown();
 	DL_Shutdown();
-	CL_ShutdownRef();
+	CLT3_ShutdownRef();
 
 	CLT3_ShutdownUI();
 

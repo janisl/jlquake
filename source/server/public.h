@@ -47,6 +47,7 @@ void PR_SetPlayerClassGlobal(float newClass);
 
 bool SVT3_GameCommand();
 void SVT3_PacketEvent(netadr_t from, QMsg* msg);
+void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
 // RF, this is only used when running a local server
 void SVWS_SendMoveSpeedsToGame(int entnum, char* text);

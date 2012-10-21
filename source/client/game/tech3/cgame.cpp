@@ -632,7 +632,7 @@ void CLT3_AddToLimboChat(const char* str)
 // latency, which keeps the adjustment process framerate independent and
 // prevents massive overadjustment during times of significant packet loss
 // or bursted delayed packets.
-void CLT3_AdjustTimeDelta()
+static void CLT3_AdjustTimeDelta()
 {
 	cl.q3_newSnapshots = false;
 
@@ -724,7 +724,7 @@ void CLT3_AdjustTimeDelta()
 	}
 }
 
-void CLT3_FirstSnapshot()
+static void CLT3_FirstSnapshot()
 {
 	if (GGameType & GAME_WolfSP)
 	{
