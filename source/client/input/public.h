@@ -46,7 +46,7 @@ struct qkey_t
 
 void IN_Init();
 void IN_Shutdown();
-void IN_Frame();
+void In_Restart_f();
 
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;

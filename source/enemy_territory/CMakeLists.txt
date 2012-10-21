@@ -40,7 +40,6 @@ set (ETDED_FILES
 	unix/unix_shared.cpp
 
 	null/null_client.cpp
-	null/null_input.cpp
 )
 
 add_executable(jletded ${ETDED_FILES})

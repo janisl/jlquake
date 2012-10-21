@@ -63,23 +63,6 @@ uid_t saved_euid;
 
 void InitSig(void);
 
-// =======================================================================
-// General routines
-// =======================================================================
-
-/*
-=================
-Sys_In_Restart_f
-
-Restart the input subsystem
-=================
-*/
-void Sys_In_Restart_f(void)
-{
-	IN_Shutdown();
-	IN_Init();
-}
-
 // =============================================================
 // general sys routines
 // =============================================================
@@ -123,8 +106,6 @@ void Sys_Quit(void)
 
 void Sys_Init(void)
 {
-	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
-
 #if defined __linux__
 #if defined __i386__
 	Cvar_Set("arch", "linux i386");

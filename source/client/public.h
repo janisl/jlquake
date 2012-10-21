@@ -46,6 +46,7 @@ void CL_CharEvent(int key);
 void CL_MouseEvent(int dx, int dy);
 void CL_JoystickEvent(int axis, int value);
 void Sys_SendKeyEvents();
+void IN_Frame();
 
 void CLQH_EstablishConnection(const char* name);
 

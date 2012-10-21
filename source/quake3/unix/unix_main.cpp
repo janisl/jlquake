@@ -39,25 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "linux_local.h"// bk001204
 #include "../../common/system_unix.h"
 
-// =======================================================================
-// General routines
-// =======================================================================
-
-#ifndef DEDICATED
-/*
-=================
-Sys_In_Restart_f
-
-Restart the input subsystem
-=================
-*/
-void Sys_In_Restart_f(void)
-{
-	IN_Shutdown();
-	IN_Init();
-}
-#endif
-
 // =============================================================
 // general sys routines
 // =============================================================
@@ -91,10 +72,6 @@ void Sys_Quit(void)
 
 void Sys_Init(void)
 {
-#ifndef DEDICATED
-	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
-#endif
-
 #if defined __linux__
 #if defined __i386__
 	Cvar_Set("arch", "linux i386");

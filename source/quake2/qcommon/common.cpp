@@ -572,10 +572,8 @@ void Qcommon_Frame(int msec)
 			time_between = Sys_Milliseconds_();
 		}
 
-#ifndef DEDICATED_ONLY
 		// let the mouse activate or deactivate
 		IN_Frame();
-#endif
 
 		// get new key events
 		Com_EventLoop();

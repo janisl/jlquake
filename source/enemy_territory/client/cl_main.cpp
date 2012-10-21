@@ -60,11 +60,6 @@ we also have to reload the UI and CGame because the renderer
 doesn't know what graphics to reload
 =================
 */
-
-#ifdef _WIN32
-extern void Sys_In_Restart_f(void);		// fretn
-#endif
-
 void CL_Vid_Restart_f(void)
 {
 	// don't let them loop during the restart
@@ -101,7 +96,7 @@ void CL_Vid_Restart_f(void)
 	CLT3_StartHunkUsers();
 
 #ifdef _WIN32
-	Sys_In_Restart_f();	// fretn
+	In_Restart_f();	// fretn
 #endif
 	// start the cgame if connected
 	if (cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC)

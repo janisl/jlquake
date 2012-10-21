@@ -23,3 +23,10 @@ int CL_GetKeyCatchers()
 {
 	return in_keyCatchers;
 }
+
+//	Restart the input subsystem
+void In_Restart_f()
+{
+	IN_Shutdown();
+	IN_Init();
+}

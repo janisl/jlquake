@@ -364,4 +364,6 @@ void CLT3_Init()
 	Cmd_AddCommand("stoprecord", CLT3_StopRecord_f);
 	Cmd_AddCommand("connect", CLT3_Connect_f);
 	Cmd_AddCommand("reconnect", CLT3_Reconnect_f);
+
+	Cmd_AddCommand("in_restart", In_Restart_f);
 }

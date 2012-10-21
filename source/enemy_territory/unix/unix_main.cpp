@@ -62,21 +62,6 @@ unsigned sys_frame_time;
 
 uid_t saved_euid;
 
-/*
-=================
-Sys_In_Restart_f
-
-Restart the input subsystem
-=================
-*/
-#ifndef DEDICATED
-void Sys_In_Restart_f(void)
-{
-	IN_Shutdown();
-	IN_Init();
-}
-#endif
-
 // =============================================================
 // general sys routines
 // =============================================================
@@ -110,10 +95,6 @@ void Sys_Quit(void)
 
 void Sys_Init(void)
 {
-#ifndef DEDICATED
-	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
-#endif
-
 #if defined __linux__
 #if defined __i386__
 	Cvar_Set("arch", "linux i386");

@@ -101,20 +101,6 @@ void Sys_Quit(void)
 
 /*
 =================
-Sys_In_Restart_f
-
-Restart the input subsystem
-=================
-*/
-void Sys_In_Restart_f(void)
-{
-	IN_Shutdown();
-	IN_Init();
-}
-
-
-/*
-=================
 Sys_Net_Restart_f
 
 Restart the network subsystem
@@ -145,7 +131,6 @@ void Sys_Init(void)
 	// NT gets 18ms resolution
 	timeBeginPeriod(1);
 
-	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
 	Cmd_AddCommand("net_restart", Sys_Net_Restart_f);
 	Cmd_AddCommand("clearviewlog", Sys_ClearViewlog_f);
 
