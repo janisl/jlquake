@@ -39,8 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 // cvars
 //
 extern Cvar* cl_timegraph;
-extern Cvar* cl_timeNudge;
-extern Cvar* cl_freezeDemo;
 
 //=================================================
 
@@ -57,9 +55,3 @@ void CL_Snd_Restart_f(void);
 
 void CL_ShutdownRef(void);
 void CL_InitRef(void);
-
-//
-// cl_cgame.c
-//
-void CL_SetCGameTime(void);
-void CL_ShaderStateChanged(void);

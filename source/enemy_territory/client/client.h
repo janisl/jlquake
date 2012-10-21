@@ -39,8 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 // cvars
 //
 extern Cvar* cl_timegraph;
-extern Cvar* cl_timeNudge;
-extern Cvar* cl_freezeDemo;
 
 extern Cvar* cl_defaultProfile;
 
@@ -61,9 +59,3 @@ void CL_ShutdownRef(void);
 void CL_InitRef(void);
 
 extern int cl_connectedToPureServer;
-
-//
-// cl_cgame.c
-//
-void CL_SetCGameTime(void);
-void CL_ShaderStateChanged(void);

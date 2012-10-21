@@ -18,7 +18,6 @@ set (ET_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 
-	client/cl_cgame.cpp
 	client/cl_main.cpp
 
 	unix/linux_signals.cpp

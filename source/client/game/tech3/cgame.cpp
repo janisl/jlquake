@@ -798,3 +798,246 @@ void CLT3_FirstSnapshot()
 		Cvar_Set("activeAction", "");
 	}
 }
+
+void CLT3_SetCGameTime()
+{
+	// getting a valid frame message ends the connection process
+	if (cls.state != CA_ACTIVE)
+	{
+		if (cls.state != CA_PRIMED)
+		{
+			return;
+		}
+		if (clc.demoplaying)
+		{
+			// we shouldn't get the first snapshot on the same frame
+			// as the gamestate, because it causes a bad time skip
+			if (!clc.q3_firstDemoFrameSkipped)
+			{
+				clc.q3_firstDemoFrameSkipped = true;
+				return;
+			}
+			CLT3_ReadDemoMessage();
+		}
+		if (cl.q3_newSnapshots)
+		{
+			cl.q3_newSnapshots = false;
+			CLT3_FirstSnapshot();
+		}
+		if (cls.state != CA_ACTIVE)
+		{
+			return;
+		}
+	}
+
+	// if we have gotten to this point, cl.snap is guaranteed to be valid
+	if (GGameType & GAME_WolfSP)
+	{
+		if (!cl.ws_snap.valid)
+		{
+			common->Error("CLT3_SetCGameTime: !cl.snap.valid");
+		}
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		if (!cl.wm_snap.valid)
+		{
+			common->Error("CLT3_SetCGameTime: !cl.snap.valid");
+		}
+	}
+	else if (GGameType & GAME_ET)
+	{
+		if (!cl.et_snap.valid)
+		{
+			common->Error("CLT3_SetCGameTime: !cl.snap.valid");
+		}
+	}
+	else
+	{
+		if (!cl.q3_snap.valid)
+		{
+			common->Error("CLT3_SetCGameTime: !cl.snap.valid");
+		}
+	}
+
+	// allow pause in single player
+	if (sv_paused->integer && cl_paused->integer && com_sv_running->integer)
+	{
+		// paused
+		return;
+	}
+
+	if (GGameType & GAME_WolfSP)
+	{
+		if (cl.ws_snap.serverTime < cl.q3_oldFrameServerTime)
+		{
+			// Ridah, if this is a localhost, then we are probably loading a savegame
+			if (!String::ICmp(cls.servername, "localhost"))
+			{
+				// do nothing?
+				CLT3_FirstSnapshot();
+			}
+			else
+			{
+				common->Error("cl.ws_snap.serverTime < cl.oldFrameServerTime");
+			}
+		}
+		cl.q3_oldFrameServerTime = cl.ws_snap.serverTime;
+	}
+	else if (GGameType & GAME_WolfMP)
+	{
+		if (cl.wm_snap.serverTime < cl.q3_oldFrameServerTime)
+		{
+			// Ridah, if this is a localhost, then we are probably loading a savegame
+			if (!String::ICmp(cls.servername, "localhost"))
+			{
+				// do nothing?
+				CLT3_FirstSnapshot();
+			}
+			else
+			{
+				common->Error("cl.wm_snap.serverTime < cl.oldFrameServerTime");
+			}
+		}
+		cl.q3_oldFrameServerTime = cl.wm_snap.serverTime;
+	}
+	else if (GGameType & GAME_ET)
+	{
+		if (cl.et_snap.serverTime < cl.q3_oldFrameServerTime)
+		{
+			// Ridah, if this is a localhost, then we are probably loading a savegame
+			if (!String::ICmp(cls.servername, "localhost"))
+			{
+				// do nothing?
+				CLT3_FirstSnapshot();
+			}
+			else
+			{
+				common->Error("cl.et_snap.serverTime < cl.oldFrameServerTime");
+			}
+		}
+		cl.q3_oldFrameServerTime = cl.et_snap.serverTime;
+	}
+	else
+	{
+		if (cl.q3_snap.serverTime < cl.q3_oldFrameServerTime)
+		{
+			common->Error("cl.snap.serverTime < cl.oldFrameServerTime");
+		}
+		cl.q3_oldFrameServerTime = cl.q3_snap.serverTime;
+	}
+
+	// get our current view of time
+
+	if (clc.demoplaying && clt3_freezeDemo->integer)
+	{
+		// cl_freezeDemo is used to lock a demo in place for single frame advances
+
+	}
+	else
+	{
+		// cl_timeNudge is a user adjustable cvar that allows more
+		// or less latency to be added in the interest of better
+		// smoothness or better responsiveness.
+		int tn;
+
+		tn = clt3_timeNudge->integer;
+		if (tn < -30)
+		{
+			tn = -30;
+		}
+		else if (tn > 30)
+		{
+			tn = 30;
+		}
+
+		cl.serverTime = cls.realtime + cl.q3_serverTimeDelta - tn;
+
+		// guarantee that time will never flow backwards, even if
+		// serverTimeDelta made an adjustment or cl_timeNudge was changed
+		if (cl.serverTime < cl.q3_oldServerTime)
+		{
+			cl.serverTime = cl.q3_oldServerTime;
+		}
+		cl.q3_oldServerTime = cl.serverTime;
+
+		// note if we are almost past the latest frame (without timeNudge),
+		// so we will try and adjust back a bit when the next snapshot arrives
+		if (GGameType & GAME_WolfSP)
+		{
+			if (cls.realtime + cl.q3_serverTimeDelta >= cl.ws_snap.serverTime - 5)
+			{
+				cl.q3_extrapolatedSnapshot = true;
+			}
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			if (cls.realtime + cl.q3_serverTimeDelta >= cl.wm_snap.serverTime - 5)
+			{
+				cl.q3_extrapolatedSnapshot = true;
+			}
+		}
+		else if (GGameType & GAME_ET)
+		{
+			if (cls.realtime + cl.q3_serverTimeDelta >= cl.et_snap.serverTime - 5)
+			{
+				cl.q3_extrapolatedSnapshot = true;
+			}
+		}
+		else
+		{
+			if (cls.realtime + cl.q3_serverTimeDelta >= cl.q3_snap.serverTime - 5)
+			{
+				cl.q3_extrapolatedSnapshot = true;
+			}
+		}
+	}
+
+	// if we have gotten new snapshots, drift serverTimeDelta
+	// don't do this every frame, or a period of packet loss would
+	// make a huge adjustment
+	if (cl.q3_newSnapshots)
+	{
+		CLT3_AdjustTimeDelta();
+	}
+
+	if (!clc.demoplaying)
+	{
+		return;
+	}
+
+	// if we are playing a demo back, we can just keep reading
+	// messages from the demo file until the cgame definately
+	// has valid snapshots to interpolate between
+
+	// a timedemo will always use a deterministic set of time samples
+	// no matter what speed machine it is run on,
+	// while a normal demo may have different time samples
+	// each time it is played back
+	if (cl_timedemo->integer)
+	{
+		if (!clc.q3_timeDemoStart)
+		{
+			clc.q3_timeDemoStart = Sys_Milliseconds();
+		}
+		clc.q3_timeDemoFrames++;
+		cl.serverTime = clc.q3_timeDemoBaseTime + clc.q3_timeDemoFrames * 50;
+	}
+
+	while (cl.serverTime >= (GGameType & GAME_WolfSP ? cl.ws_snap.serverTime :
+		GGameType & GAME_WolfMP ? cl.wm_snap.serverTime :
+		GGameType & GAME_ET ? cl.et_snap.serverTime : cl.q3_snap.serverTime))
+	{
+		// feed another messag, which should change
+		// the contents of cl.snap
+		CLT3_ReadDemoMessage();
+		if (cls.state != CA_ACTIVE)
+		{
+			if (GGameType & GAME_ET)
+			{
+				Cvar_Set("timescale", "1");
+			}
+			return;		// end of demo
+		}
+	}
+}

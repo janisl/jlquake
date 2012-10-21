@@ -43,6 +43,7 @@ void KeyQ3_SetCatcher(int catcher);
 void KeyWM_SetCatcher(int catcher);
 void CLT3_AdjustTimeDelta();
 void CLT3_FirstSnapshot();
+void CLT3_SetCGameTime();
 
 //
 //	Connection
@@ -87,6 +88,8 @@ extern Cvar* clt3_packetdup;
 extern Cvar* clt3_allowDownload;
 extern Cvar* clt3_motd;
 extern Cvar* clwm_wavefilerecord;
+extern Cvar* clt3_timeNudge;
+extern Cvar* clt3_freezeDemo;
 
 void CLET_PurgeCache();
 void CLET_DoPurgeCache();

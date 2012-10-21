@@ -36,9 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/stat.h>
 #endif
 
-Cvar* cl_timeNudge;
-Cvar* cl_freezeDemo;
-
 Cvar* cl_avidemo;
 Cvar* cl_forceavidemo;
 
@@ -350,7 +347,7 @@ void CL_Frame(int msec)
 	CLT3_CheckForResend();
 
 	// decide on the serverTime to render
-	CL_SetCGameTime();
+	CLT3_SetCGameTime();
 
 	// update the screen
 	SCR_UpdateScreen();
@@ -613,9 +610,6 @@ void CL_Init(void)
 	//
 	// register our variables
 	//
-	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
-	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
-
 	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
 	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
 

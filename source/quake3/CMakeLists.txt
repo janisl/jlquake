@@ -3,7 +3,6 @@
 #############################################################################
 
 set(QUAKE3_FILES
-	client/cl_cgame.cpp
 	client/cl_main.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp

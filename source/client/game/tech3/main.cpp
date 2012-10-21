@@ -34,6 +34,8 @@ Cvar* clt3_packetdup;
 Cvar* clt3_allowDownload;
 Cvar* clt3_motd;
 Cvar* clwm_wavefilerecord;
+Cvar* clt3_timeNudge;
+Cvar* clt3_freezeDemo;
 
 void CLET_PurgeCache()
 {
@@ -210,6 +212,8 @@ void CLT3_Init()
 	clt3_packetdup = Cvar_Get("cl_packetdup", "1", CVAR_ARCHIVE);
 	clt3_allowDownload = Cvar_Get("cl_allowDownload", GGameType & GAME_ET ? "1" : "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "200", 0);
+	clt3_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
+	clt3_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
 
 	// init autoswitch so the ui will have it correctly even
 	// if the cgame hasn't been started
