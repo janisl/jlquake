@@ -9,13 +9,6 @@
 #include "../../client/game/quake_hexen2/demo.h"
 #include "../../client/game/quake_hexen2/connection.h"
 
-// we need to declare some mouse variables here, because the menu system
-// references them even when on a unix system.
-
-Cvar* rcon_password;
-
-Cvar* rcon_address;
-
 Cvar* entlatency;
 
 quakeparms_t host_parms;
@@ -140,64 +133,6 @@ void CL_Version_f(void)
 {
 	common->Printf("Version %4.2f\n", VERSION);
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-}
-
-/*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
-void CL_Rcon_f(void)
-{
-	char message[1024];
-	int i;
-	netadr_t to;
-
-	if (!rcon_password->string)
-	{
-		common->Printf("You must set 'rcon_password' before\n"
-				   "issuing an rcon command.\n");
-		return;
-	}
-
-	message[0] = 255;
-	message[1] = 255;
-	message[2] = 255;
-	message[3] = 255;
-	message[4] = 0;
-
-	String::Cat(message, sizeof(message), "rcon ");
-
-	String::Cat(message, sizeof(message), rcon_password->string);
-	String::Cat(message, sizeof(message), " ");
-
-	for (i = 1; i < Cmd_Argc(); i++)
-	{
-		String::Cat(message, sizeof(message), Cmd_Argv(i));
-		String::Cat(message, sizeof(message), " ");
-	}
-
-	if (cls.state == CA_CONNECTED || cls.state == CA_LOADING || cls.state == CA_ACTIVE)
-	{
-		to = clc.netchan.remoteAddress;
-	}
-	else
-	{
-		if (!String::Length(rcon_address->string))
-		{
-			common->Printf("You must either be connected,\n"
-					   "or set the 'rcon_address' cvar\n"
-					   "to issue rcon commands\n");
-
-			return;
-		}
-		SOCK_StringToAdr(rcon_address->string, &to, HWPORT_SERVER);
-	}
-
-	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
 }
 
 /*
@@ -596,9 +531,6 @@ void CL_Init(void)
 
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	rcon_password = Cvar_Get("rcon_password", "", 0);
-	rcon_address = Cvar_Get("rcon_address", "", 0);
-
 	entlatency = Cvar_Get("entlatency", "20", 0);
 
 	Cmd_AddCommand("version", CL_Version_f);
@@ -609,7 +541,6 @@ void CL_Init(void)
 
 	Cmd_AddCommand("quit", CL_Quit_f);
 
-	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("packet", CL_Packet_f);
 	Cmd_AddCommand("user", CL_User_f);
 	Cmd_AddCommand("users", CL_Users_f);

@@ -23,9 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../common/file_formats/md2.h"
 #include "../../server/public.h"
 
-Cvar* rcon_client_password;
-Cvar* rcon_address;
-
 Cvar* cl_autoskins;
 Cvar* cl_maxfps;
 
@@ -48,66 +45,6 @@ void CL_Pause_f(void)
 	Cvar_SetValueLatched("paused", !cl_paused->value);
 }
 
-
-/*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
-void CL_Rcon_f(void)
-{
-	char message[1024];
-	int i;
-	netadr_t to;
-
-	if (!rcon_client_password->string)
-	{
-		common->Printf("You must set 'rcon_password' before\n"
-				   "issuing an rcon command.\n");
-		return;
-	}
-
-	message[0] = (char)255;
-	message[1] = (char)255;
-	message[2] = (char)255;
-	message[3] = (char)255;
-	message[4] = 0;
-
-	NET_Config(true);		// allow remote
-
-	String::Cat(message, sizeof(message), "rcon ");
-
-	String::Cat(message, sizeof(message), rcon_client_password->string);
-	String::Cat(message, sizeof(message), " ");
-
-	for (i = 1; i < Cmd_Argc(); i++)
-	{
-		String::Cat(message, sizeof(message), Cmd_Argv(i));
-		String::Cat(message, sizeof(message), " ");
-	}
-
-	if (cls.state >= CA_CONNECTED)
-	{
-		to = clc.netchan.remoteAddress;
-	}
-	else
-	{
-		if (!String::Length(rcon_address->string))
-		{
-			common->Printf("You must either be connected,\n"
-					   "or set the 'rcon_address' cvar\n"
-					   "to issue rcon commands\n");
-
-			return;
-		}
-		SOCK_StringToAdr(rcon_address->string, &to, Q2PORT_SERVER);
-	}
-
-	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
-}
 
 /*
 ====================
@@ -332,9 +269,6 @@ void CL_InitLocal(void)
 	cl_autoskins = Cvar_Get("cl_autoskins", "0", 0);
 	cl_maxfps = Cvar_Get("cl_maxfps", "90", 0);
 
-	rcon_client_password = Cvar_Get("rcon_password", "", 0);
-	rcon_address = Cvar_Get("rcon_address", "", 0);
-
 	//
 	// register our commands
 	//
@@ -345,8 +279,6 @@ void CL_InitLocal(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 
 	Cmd_AddCommand("changing", CL_Changing_f);
-
-	Cmd_AddCommand("rcon", CL_Rcon_f);
 
 //  Cmd_AddCommand ("packet", CL_Packet_f); // this is dangerous to leave in
 

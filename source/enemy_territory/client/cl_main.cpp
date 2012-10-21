@@ -33,9 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../server/public.h"
 
-Cvar* rcon_client_password;
-Cvar* rconAddress;
-
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
@@ -94,64 +91,6 @@ CONSOLE COMMANDS
 
 ======================================================================
 */
-
-/*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
-void CL_Rcon_f(void)
-{
-	char message[1024];
-	netadr_t to;
-
-	if (!rcon_client_password->string)
-	{
-		common->Printf("You must set 'rconPassword' before\n"
-				   "issuing an rcon command.\n");
-		return;
-	}
-
-	message[0] = -1;
-	message[1] = -1;
-	message[2] = -1;
-	message[3] = -1;
-	message[4] = 0;
-
-	strcat(message, "rcon ");
-
-	strcat(message, rcon_client_password->string);
-	strcat(message, " ");
-
-	// ATVI Wolfenstein Misc #284
-	strcat(message, Cmd_Cmd() + 5);
-
-	if (cls.state >= CA_CONNECTED)
-	{
-		to = clc.netchan.remoteAddress;
-	}
-	else
-	{
-		if (!String::Length(rconAddress->string))
-		{
-			common->Printf("You must either be connected,\n"
-					   "or set the 'rconAddress' cvar\n"
-					   "to issue rcon commands\n");
-
-			return;
-		}
-		SOCK_StringToAdr(rconAddress->string, &to, Q3PORT_SERVER);
-		if (to.port == 0)
-		{
-			to.port = BigShort(Q3PORT_SERVER);
-		}
-	}
-
-	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
-}
 
 /*
 =================
@@ -815,12 +754,10 @@ void CL_Init(void)
 	//
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
-	rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
 
 	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
 	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
 
-	rconAddress = Cvar_Get("rconAddress", "", 0);
 	cl_wwwDownload = Cvar_Get("cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE);
 
 	//
@@ -832,7 +769,6 @@ void CL_Init(void)
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
 	Cmd_AddCommand("ui_restart", CL_UI_Restart_f);				// NERVE - SMF
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);
 	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
 	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);

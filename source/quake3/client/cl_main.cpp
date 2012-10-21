@@ -27,9 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
 
-Cvar* rcon_client_password;
-Cvar* rconAddress;
-
 Cvar* cl_timeNudge;
 Cvar* cl_freezeDemo;
 
@@ -75,60 +72,6 @@ CONSOLE COMMANDS
 
 ======================================================================
 */
-
-/*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
-void CL_Rcon_f(void)
-{
-	char message[1024];
-	netadr_t to;
-
-	if (!rcon_client_password->string)
-	{
-		common->Printf("You must set 'rconpassword' before\n"
-				   "issuing an rcon command.\n");
-		return;
-	}
-
-	message[0] = -1;
-	message[1] = -1;
-	message[2] = -1;
-	message[3] = -1;
-	message[4] = 0;
-
-	String::Cat(message, sizeof(message), "rcon ");
-
-	String::Cat(message, sizeof(message), rcon_client_password->string);
-	String::Cat(message, sizeof(message), " ");
-
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=543
-	String::Cat(message, sizeof(message), Cmd_Cmd() + 5);
-
-	if (cls.state >= CA_CONNECTED)
-	{
-		to = clc.netchan.remoteAddress;
-	}
-	else
-	{
-		if (!String::Length(rconAddress->string))
-		{
-			common->Printf("You must either be connected,\n"
-					   "or set the 'rconAddress' cvar\n"
-					   "to issue rcon commands\n");
-
-			return;
-		}
-		SOCK_StringToAdr(rconAddress->string, &to, Q3PORT_SERVER);
-	}
-
-	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
-}
 
 /*
 =================
@@ -458,12 +401,9 @@ void CL_Init(void)
 	//
 	cl_timeNudge = Cvar_Get("cl_timeNudge", "0", CVAR_TEMP);
 	cl_freezeDemo = Cvar_Get("cl_freezeDemo", "0", CVAR_TEMP);
-	rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
 
 	cl_avidemo = Cvar_Get("cl_avidemo", "0", 0);
 	cl_forceavidemo = Cvar_Get("cl_forceavidemo", "0", 0);
-
-	rconAddress = Cvar_Get("rconAddress", "", 0);
 
 	//
 	// register our commands
@@ -473,7 +413,6 @@ void CL_Init(void)
 	Cmd_AddCommand("snd_restart", CL_Snd_Restart_f);
 	Cmd_AddCommand("vid_restart", CL_Vid_Restart_f);
 	Cmd_AddCommand("cinematic", CL_PlayCinematic_f);
-	Cmd_AddCommand("rcon", CL_Rcon_f);
 	Cmd_AddCommand("showip", CL_ShowIP_f);
 	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
 	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);

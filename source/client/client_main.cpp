@@ -35,6 +35,9 @@ Cvar* clqh_nolerp;
 Cvar* clqh_name;
 Cvar* clqh_color;
 
+static Cvar* rcon_client_password;
+static Cvar* rconAddress;
+
 clientActive_t cl;
 clientConnection_t clc;
 clientStatic_t cls;
@@ -98,6 +101,58 @@ void CL_Disconnect_f()
 	}
 }
 
+//	Send the rest of the command line over as an unconnected command.
+static void CL_Rcon_f()
+{
+	if (!rcon_client_password->string)
+	{
+		common->Printf("You must set '%s' before\n"
+			"issuing an rcon command.\n", rcon_client_password->name);
+		return;
+	}
+
+	char message[1024];
+	message[0] = -1;
+	message[1] = -1;
+	message[2] = -1;
+	message[3] = -1;
+	message[4] = 0;
+
+	if (GGameType & GAME_Quake2)
+	{
+		NET_Config(true);		// allow remote
+	}
+
+	String::Cat(message, sizeof(message), "rcon ");
+
+	String::Cat(message, sizeof(message), rcon_client_password->string);
+	String::Cat(message, sizeof(message), " ");
+
+	String::Cat(message, sizeof(message), Cmd_Cmd() + 5);
+
+	netadr_t to;
+	if (cls.state >= CA_CONNECTED)
+	{
+		to = clc.netchan.remoteAddress;
+	}
+	else
+	{
+		if (!String::Length(rconAddress->string))
+		{
+			common->Printf("You must either be connected,\n"
+					   "or set the '%s' cvar\n"
+					   "to issue rcon commands\n", rconAddress->name);
+			return;
+		}
+
+		SOCK_StringToAdr(rconAddress->string, &to, GGameType & GAME_QuakeWorld ? QWPORT_SERVER :
+			GGameType & GAME_HexenWorld ? HWPORT_SERVER :
+			GGameType & GAME_Quake2 ? Q2PORT_SERVER : Q3PORT_SERVER);
+	}
+
+	NET_SendPacket(NS_CLIENT, String::Length(message) + 1, message, to);
+}
+
 void CL_SharedInit()
 {
 	Con_Init();
@@ -120,6 +175,21 @@ void CL_SharedInit()
 	//
 	Cmd_AddCommand("cmd", CL_ForwardToServer_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
+
+	if (!(GGameType & GAME_QuakeHexen) || GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (!(GGameType & GAME_Tech3))
+		{
+			rcon_client_password = Cvar_Get("rcon_password", "", 0);
+			rconAddress = Cvar_Get("rcon_address", "", 0);
+		}
+		else
+		{
+			rcon_client_password = Cvar_Get("rconPassword", "", CVAR_TEMP);
+			rconAddress = Cvar_Get("rconAddress", "", 0);
+		}
+		Cmd_AddCommand("rcon", CL_Rcon_f);
+	}
 
 	if (GGameType & GAME_QuakeHexen)
 	{
