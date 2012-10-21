@@ -36,6 +36,8 @@ void SCRQ2_BeginLoadingPlaque(bool Clear);
 void SCR_EndLoadingPlaque();
 void CL_Disconnect(bool showMainMenu);
 void CL_Init();
+void CL_Shutdown();
+void CL_FrameCommon();
 
 void Key_WriteBindings(fileHandle_t f);
 // the keyboard binding interface must be setup before execing

@@ -93,7 +93,6 @@ Sys_Quit
 void Sys_Quit(void)
 {
 	timeEndPeriod(1);
-	IN_Shutdown();
 	Sys_DestroyConsole();
 
 	exit(0);

@@ -382,7 +382,7 @@ void _Host_Frame(float time)
 
 		Con_RunConsole();
 
-		SCR_UpdateScreen();
+		CL_FrameCommon();
 
 		if (com_speeds->value)
 		{
@@ -539,37 +539,9 @@ to run quit through here before the final handoff to the sys code.
 */
 void Host_Shutdown(void)
 {
-	static qboolean isdown = false;
-
-	if (isdown)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-	isdown = true;
-
-#ifndef DEDICATED
-// keep common->Printf from trying to update the screen
-	cls.disable_screen = true;
-#endif
-
-	Com_WriteConfiguration();
-
-#ifndef DEDICATED
-	CDAudio_Shutdown();
-#endif
 	SVQH_ShutdownNetwork();
 #ifndef DEDICATED
-	CLQH_ShutdownNetwork();
+	CL_Shutdown();
 #endif
 	NETQH_Shutdown();
-#ifndef DEDICATED
-	S_Shutdown();
-	IN_Shutdown();
-
-	if (!com_dedicated->integer)
-	{
-		R_Shutdown(true);
-	}
-#endif
 }

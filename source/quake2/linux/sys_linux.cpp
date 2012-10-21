@@ -6,6 +6,7 @@
 #include "../qcommon/qcommon.h"
 
 #include "../../common/system_unix.h"
+#include "../../client/public.h"
 
 Cvar* nostdout;
 

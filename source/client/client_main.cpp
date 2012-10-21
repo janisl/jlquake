@@ -20,8 +20,10 @@
 #include "game/hexen2/local.h"
 #include "game/quake_hexen2/connection.h"
 #include "game/quake_hexen2/demo.h"
+#include "game/quake_hexen2/network_channel.h"
 #include "game/quake2/local.h"
 #include "game/tech3/local.h"
+#include "game/et/dl_public.h"
 
 Cvar* cl_inGameVideo;
 
@@ -605,4 +607,92 @@ void CL_NextDemo()
 	{
 		CLT3_NextDemo();
 	}
+}
+
+void CL_Shutdown()
+{
+	static bool recursive = false;
+
+	common->Printf("----- CL_Shutdown -----\n");
+
+	if (recursive)
+	{
+		printf("recursive shutdown\n");
+		return;
+	}
+	recursive = true;
+
+	if (GGameType & GAME_ET && clc.wm_waverecording)		// fretn - write wav header when we quit
+	{
+		CLET_WavStopRecord_f();
+	}
+
+	CL_Disconnect(true);
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		Com_WriteConfiguration();
+	}
+
+	if (GGameType & GAME_QuakeHexen && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		// keep common->Printf from trying to update the screen
+		cls.disable_screen = true;
+
+		CLQH_ShutdownNetwork();
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		MIDI_Cleanup();
+	}
+	CDAudio_Shutdown();
+	S_Shutdown();
+	DL_Shutdown();
+	R_Shutdown(true);
+	IN_Shutdown();
+
+	if (GGameType & GAME_Tech3)
+	{
+		CLT3_ShutdownUI();
+
+		Cmd_RemoveCommand("cmd");
+		Cmd_RemoveCommand("configstrings");
+		Cmd_RemoveCommand("userinfo");
+		Cmd_RemoveCommand("snd_restart");
+		Cmd_RemoveCommand("vid_restart");
+		Cmd_RemoveCommand("disconnect");
+		Cmd_RemoveCommand("record");
+		Cmd_RemoveCommand("demo");
+		Cmd_RemoveCommand("cinematic");
+		Cmd_RemoveCommand("stoprecord");
+		Cmd_RemoveCommand("connect");
+		Cmd_RemoveCommand("localservers");
+		Cmd_RemoveCommand("globalservers");
+		Cmd_RemoveCommand("rcon");
+		Cmd_RemoveCommand("ping");
+		Cmd_RemoveCommand("serverstatus");
+		Cmd_RemoveCommand("showip");
+		Cmd_RemoveCommand("model");
+		Cmd_RemoveCommand("cache_startgather");
+		Cmd_RemoveCommand("cache_usedfile");
+		Cmd_RemoveCommand("cache_setindex");
+		Cmd_RemoveCommand("cache_mapchange");
+		Cmd_RemoveCommand("cache_endgather");
+		Cmd_RemoveCommand("wav_record");
+		Cmd_RemoveCommand("wav_stoprecord");
+
+		Cvar_Set("cl_running", "0");
+	}
+
+	recursive = false;
+
+	Com_Memset(&cls, 0, sizeof(cls));
+
+	common->Printf("-----------------------\n");
+}
+
+void CL_FrameCommon()
+{
+	// update the screen
+	SCR_UpdateScreen();
 }

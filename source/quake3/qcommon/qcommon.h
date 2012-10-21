@@ -90,7 +90,6 @@ CLIENT / SERVER SYSTEMS
 // client interface
 //
 
-void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 /*

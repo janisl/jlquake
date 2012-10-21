@@ -296,7 +296,7 @@ void Host_Frame(float time)
 
 		Con_RunConsole();
 
-		SCR_UpdateScreen();
+		CL_FrameCommon();
 
 		if (com_speeds->value)
 		{
@@ -400,23 +400,8 @@ to run quit through here before the final handoff to the sys code.
 */
 void Host_Shutdown(void)
 {
-	static qboolean isdown = false;
-
-	if (isdown)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-	isdown = true;
-
-	Com_WriteConfiguration();
-
-	CDAudio_Shutdown();
-	MIDI_Cleanup();
+	CL_Shutdown();
 	NET_Shutdown();
-	S_Shutdown();
-	IN_Shutdown();
-	R_Shutdown(true);
 }
 
 void server_referencer_dummy()

@@ -196,3 +196,7 @@ void IN_Frame()
 void CL_Init()
 {
 }
+
+void CL_Shutdown()
+{
+}

@@ -26,10 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-void CL_Shutdown(void)
-{
-}
-
 void CL_Frame(int msec)
 {
 }

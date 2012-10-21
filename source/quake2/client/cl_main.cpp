@@ -244,7 +244,7 @@ void CL_Frame(int msec)
 	{
 		time_before_ref = Sys_Milliseconds_();
 	}
-	SCR_UpdateScreen();
+	CL_FrameCommon();
 	if (com_speeds->value)
 	{
 		time_after_ref = Sys_Milliseconds_();
@@ -291,32 +291,4 @@ void CL_Frame(int msec)
 			}
 		}
 	}
-}
-
-/*
-===============
-CL_Shutdown
-
-FIXME: this is a callback from Sys_Quit and Com_Error.  It would be better
-to run quit through here before the final handoff to the sys code.
-===============
-*/
-void CL_Shutdown(void)
-{
-	static qboolean isdown = false;
-
-	if (isdown)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-	isdown = true;
-
-	CL_Disconnect(true);
-	Com_WriteConfiguration();
-
-	CDAudio_Shutdown();
-	S_Shutdown();
-	IN_Shutdown();
-	R_Shutdown(true);
 }

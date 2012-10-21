@@ -122,8 +122,7 @@ void CL_Frame(int msec)
 	// decide on the serverTime to render
 	CLT3_SetCGameTime();
 
-	// update the screen
-	SCR_UpdateScreen();
+	CL_FrameCommon();
 
 	// update audio
 	S_Update();
@@ -134,60 +133,4 @@ void CL_Frame(int msec)
 	Con_RunConsole();
 
 	cls.framecount++;
-}
-
-/*
-===============
-CL_Shutdown
-
-===============
-*/
-void CL_Shutdown(void)
-{
-	static qboolean recursive = false;
-
-	common->Printf("----- CL_Shutdown -----\n");
-
-	if (recursive)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-	recursive = true;
-
-	CL_Disconnect(true);
-
-	S_Shutdown();
-	CLT3_ShutdownRef();
-
-	CLT3_ShutdownUI();
-
-	Cmd_RemoveCommand("cmd");
-	Cmd_RemoveCommand("configstrings");
-	Cmd_RemoveCommand("userinfo");
-	Cmd_RemoveCommand("snd_restart");
-	Cmd_RemoveCommand("vid_restart");
-	Cmd_RemoveCommand("disconnect");
-	Cmd_RemoveCommand("record");
-	Cmd_RemoveCommand("demo");
-	Cmd_RemoveCommand("cinematic");
-	Cmd_RemoveCommand("stoprecord");
-	Cmd_RemoveCommand("connect");
-	Cmd_RemoveCommand("localservers");
-	Cmd_RemoveCommand("globalservers");
-	Cmd_RemoveCommand("rcon");
-	Cmd_RemoveCommand("setenv");
-	Cmd_RemoveCommand("ping");
-	Cmd_RemoveCommand("serverstatus");
-	Cmd_RemoveCommand("showip");
-	Cmd_RemoveCommand("model");
-
-	Cvar_Set("cl_running", "0");
-
-	recursive = false;
-
-	Com_Memset(&cls, 0, sizeof(cls));
-
-	common->Printf("-----------------------\n");
-
 }

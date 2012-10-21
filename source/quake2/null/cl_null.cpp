@@ -4,10 +4,6 @@
 
 #include "../qcommon/qcommon.h"
 
-void CL_Shutdown(void)
-{
-}
-
 void CL_Frame(int msec)
 {
 }

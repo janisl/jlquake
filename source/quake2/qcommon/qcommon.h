@@ -143,7 +143,6 @@ CLIENT / SERVER SYSTEMS
 ==============================================================
 */
 
-void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 #endif

@@ -81,9 +81,6 @@ Sys_Quit
 void Sys_Quit(void)
 {
 	timeEndPeriod(1);
-#ifndef DEDICATED
-	IN_Shutdown();
-#endif
 	Sys_DestroyConsole();
 
 	exit(0);

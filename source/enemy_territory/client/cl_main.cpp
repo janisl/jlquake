@@ -258,8 +258,7 @@ void CL_Frame(int msec)
 	// decide on the serverTime to render
 	CLT3_SetCGameTime();
 
-	// update the screen
-	SCR_UpdateScreen();
+	CL_FrameCommon();
 
 	// update the sound
 	S_Update();
@@ -270,78 +269,4 @@ void CL_Frame(int msec)
 	Con_RunConsole();
 
 	cls.framecount++;
-}
-
-/*
-===============
-CL_Shutdown
-
-===============
-*/
-void CL_Shutdown(void)
-{
-	static qboolean recursive = false;
-
-	common->Printf("----- CL_Shutdown -----\n");
-
-	if (recursive)
-	{
-		printf("recursive shutdown\n");
-		return;
-	}
-	recursive = true;
-
-	if (clc.wm_waverecording)		// fretn - write wav header when we quit
-	{
-		CLET_WavStopRecord_f();
-	}
-
-	CL_Disconnect(true);
-
-	S_Shutdown();
-	DL_Shutdown();
-	CLT3_ShutdownRef();
-
-	CLT3_ShutdownUI();
-
-	Cmd_RemoveCommand("cmd");
-	Cmd_RemoveCommand("configstrings");
-	Cmd_RemoveCommand("userinfo");
-	Cmd_RemoveCommand("snd_reload");
-	Cmd_RemoveCommand("snd_restart");
-	Cmd_RemoveCommand("vid_restart");
-	Cmd_RemoveCommand("disconnect");
-	Cmd_RemoveCommand("record");
-	Cmd_RemoveCommand("demo");
-	Cmd_RemoveCommand("cinematic");
-	Cmd_RemoveCommand("stoprecord");
-	Cmd_RemoveCommand("connect");
-	Cmd_RemoveCommand("localservers");
-	Cmd_RemoveCommand("globalservers");
-	Cmd_RemoveCommand("rcon");
-	Cmd_RemoveCommand("setenv");
-	Cmd_RemoveCommand("ping");
-	Cmd_RemoveCommand("serverstatus");
-	Cmd_RemoveCommand("showip");
-	Cmd_RemoveCommand("model");
-
-	// Ridah, startup-caching system
-	Cmd_RemoveCommand("cache_startgather");
-	Cmd_RemoveCommand("cache_usedfile");
-	Cmd_RemoveCommand("cache_setindex");
-	Cmd_RemoveCommand("cache_mapchange");
-	Cmd_RemoveCommand("cache_endgather");
-
-	Cmd_RemoveCommand("updatehunkusage");
-	Cmd_RemoveCommand("wav_record");
-	Cmd_RemoveCommand("wav_stoprecord");
-	// done.
-
-	Cvar_Set("cl_running", "0");
-
-	recursive = false;
-
-	memset(&cls, 0, sizeof(cls));
-
-	common->Printf("-----------------------\n");
 }
