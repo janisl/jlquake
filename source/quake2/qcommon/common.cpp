@@ -134,7 +134,7 @@ void idCommonLocal::ServerDisconnected(const char* format, ...)
 
 void idCommonLocal::Disconnect(const char* message)
 {
-	common->Error(message);
+	common->Error("%s", message);
 }
 
 /*

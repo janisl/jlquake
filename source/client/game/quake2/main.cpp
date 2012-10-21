@@ -27,11 +27,14 @@ Cvar* clq2_noskins;
 Cvar* clq2_showmiss;
 Cvar* clq2_gender;
 Cvar* clq2_gender_auto;
+Cvar* clq2_maxfps;
 
 q2centity_t clq2_entities[MAX_EDICTS_Q2];
 
 char clq2_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
 int clq2_num_weaponmodels;
+
+bool vid_restart_requested;
 
 void CLQ2_PingServers_f()
 {
@@ -203,9 +206,6 @@ void CLQ2_PrepRefresh()
 
 void CLQ2_FixUpGender()
 {
-	char* p;
-	char sk[80];
-
 	if (clq2_gender_auto->value)
 	{
 
@@ -216,7 +216,9 @@ void CLQ2_FixUpGender()
 			return;
 		}
 
+		char sk[80];
 		String::NCpy(sk, clq2_skin->string, sizeof(sk) - 1);
+		char* p;
 		if ((p = strchr(sk, '/')) != NULL)
 		{
 			*p = 0;
@@ -237,8 +239,136 @@ void CLQ2_FixUpGender()
 	}
 }
 
+static void CLQ2_Pause_f()
+{
+	// never pause in multiplayer
+	if (Cvar_VariableValue("maxclients") > 1 || !ComQ2_ServerState())
+	{
+		Cvar_SetValueLatched("paused", 0);
+		return;
+	}
+
+	Cvar_SetValueLatched("paused", !cl_paused->value);
+}
+
+//	Just sent as a hint to the client that they should drop to full console
+static void CLQ2_Changing_f()
+{
+	//ZOID
+	//if we are downloading, we don't change!  This so we don't suddenly stop downloading a map
+	if (clc.download)
+	{
+		return;
+	}
+
+	SCRQ2_BeginLoadingPlaque(false);
+	cls.state = CA_CONNECTED;	// not active anymore, but not disconnected
+	common->Printf("\nChanging map...\n");
+}
+
+//	Load or download any custom player skins and models
+static void CLQ2_Skins_f()
+{
+	for (int i = 0; i < MAX_CLIENTS_Q2; i++)
+	{
+		if (!cl.q2_configstrings[Q2CS_PLAYERSKINS + i][0])
+		{
+			continue;
+		}
+		common->Printf("client %i: %s\n", i, cl.q2_configstrings[Q2CS_PLAYERSKINS + i]);
+		SCR_UpdateScreen();
+		Com_EventLoop();	// pump message loop
+		CLQ2_ParseClientinfo(i);
+	}
+}
+
+static void CLQ2_Userinfo_f()
+{
+	common->Printf("User info settings:\n");
+	Info_Print(Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q2, MAX_INFO_KEY_Q2,
+			MAX_INFO_VALUE_Q2, true, false));
+}
+
+//	The server will send this command right
+// before allowing the client into the server
+static void CLQ2_Precache_f()
+{
+	//Yet another hack to let old demos work
+	//the old precache sequence
+	if (Cmd_Argc() < 2)
+	{
+		int map_checksum;		// for detecting cheater maps
+		CM_LoadMap(cl.q2_configstrings[Q2CS_MODELS + 1], true, &map_checksum);
+		CLQ2_RegisterSounds();
+		CLQ2_PrepRefresh();
+		return;
+	}
+
+	clq2_precache_check = Q2CS_MODELS;
+	clq2_precache_spawncount = String::Atoi(Cmd_Argv(1));
+	clq2_precache_model = 0;
+	clq2_precache_model_skin = 0;
+
+	CLQ2_RequestNextDownload();
+}
+
+//	Request a download from the server
+static void CLQ2_Download_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("Usage: download <filename>\n");
+		return;
+	}
+
+	char filename[MAX_OSPATH];
+	String::Sprintf(filename, sizeof(filename), "%s", Cmd_Argv(1));
+
+	if (strstr(filename, ".."))
+	{
+		common->Printf("Refusing to download a path with ..\n");
+		return;
+	}
+
+	if (FS_ReadFile(filename, NULL) != -1)
+	{	// it exists, no need to download
+		common->Printf("File already exists.\n");
+		return;
+	}
+
+	String::Cpy(clc.downloadName, filename);
+	common->Printf("Downloading %s\n", clc.downloadName);
+
+	// download to a temp name, and only rename
+	// to the real name when done, so if interrupted
+	// a runt file wont be left
+	String::StripExtension(clc.downloadName, clc.downloadTempName);
+	String::Cat(clc.downloadTempName, sizeof(clc.downloadTempName), ".tmp");
+
+	CL_AddReliableCommand(va("download %s", clc.downloadName));
+
+	clc.downloadNumber++;
+}
+
+//	Restart the sound subsystem so it can pick up
+// new parameters and flush all sounds
+static void CLQ2_Snd_Restart_f()
+{
+	S_Shutdown();
+	S_Init();
+	CLQ2_RegisterSounds();
+}
+
+//	Console command to re-start the video mode and refresh.
+static void VID_Restart_f()
+{
+	vid_restart_requested = true;
+}
+
 void CLQ2_Init()
 {
+	cls.realtime = Sys_Milliseconds();
+
 	//
 	// register our variables
 	//
@@ -249,6 +379,7 @@ void CLQ2_Init()
 	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
 	cl_paused = Cvar_Get("paused", "0", 0);
 	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
+	clq2_maxfps = Cvar_Get("cl_maxfps", "90", 0);
 
 	Cvar_Get("adr0", "", CVAR_ARCHIVE);
 	Cvar_Get("adr1", "", CVAR_ARCHIVE);
@@ -283,6 +414,14 @@ void CLQ2_Init()
 	Cmd_AddCommand("stop", CLQ2_Stop_f);
 	Cmd_AddCommand("connect", CLQ2_Connect_f);
 	Cmd_AddCommand("reconnect", CLQ2_Reconnect_f);
+	Cmd_AddCommand("pause", CLQ2_Pause_f);
+	Cmd_AddCommand("changing", CLQ2_Changing_f);
+	Cmd_AddCommand("skins", CLQ2_Skins_f);
+	Cmd_AddCommand("userinfo", CLQ2_Userinfo_f);
+	Cmd_AddCommand("precache", CLQ2_Precache_f);
+	Cmd_AddCommand("download", CLQ2_Download_f);
+	Cmd_AddCommand("snd_restart", CLQ2_Snd_Restart_f);
+	Cmd_AddCommand("vid_restart", VID_Restart_f);
 
 	//
 	// forward to server commands

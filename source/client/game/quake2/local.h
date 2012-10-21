@@ -24,6 +24,7 @@ extern Cvar* clq2_noskins;
 extern Cvar* clq2_showmiss;
 extern Cvar* clq2_gender;
 extern Cvar* clq2_gender_auto;
+extern Cvar* clq2_maxfps;
 
 extern sfxHandle_t clq2_sfx_footsteps[4];
 
@@ -134,6 +135,8 @@ void CLQ2_AddLasers();
 //
 //	Main
 //
+extern bool vid_restart_requested;
+
 void CLQ2_PingServers_f();
 void CLQ2_ClearState();
 void CLQ2_PrepRefresh();
