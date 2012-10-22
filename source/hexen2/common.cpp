@@ -8,6 +8,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "../client/client.h"
 
 #define NUM_SAFE_ARGVS  7
 

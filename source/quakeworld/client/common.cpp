@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 #include "../../client/public.h"
+#include "../../client/client.h"
 
 #define NUM_SAFE_ARGVS  6
 

@@ -9,6 +9,7 @@
 #include <windows.h>
 #endif
 #include "../../client/public.h"
+#include "../../client/client.h"
 
 #define NUM_SAFE_ARGVS  6
 

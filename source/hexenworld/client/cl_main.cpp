@@ -4,10 +4,12 @@
 #ifdef _WIN32
 #include "../../client/windows_shared.h"
 #endif
+#include "../../client/client.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/game/quake_hexen2/demo.h"
 #include "../../client/game/quake_hexen2/connection.h"
+#include "../../client/game/hexen2/local.h"
 
 quakeparms_t host_parms;
 
@@ -105,22 +107,6 @@ void idCommonLocal::Disconnect(const char* message)
 }
 
 /*
-==================
-CL_Quit_f
-==================
-*/
-void CL_Quit_f(void)
-{
-	if (1 /* !(in_keyCatchers & KEYCATCH_CONSOLE) */ /* && cls.state != ca_dedicated */)
-	{
-		MQH_Menu_Quit_f();
-		return;
-	}
-	CL_Disconnect(true);
-	Sys_Quit();
-}
-
-/*
 =======================
 CL_Version_f
 ======================
@@ -150,7 +136,7 @@ void CL_InitLocal(void)
 
 	Cmd_AddCommand("version", CL_Version_f);
 
-	Cmd_AddCommand("quit", CL_Quit_f);
+	Cmd_AddCommand("quit", Com_Quit_f);
 }
 
 

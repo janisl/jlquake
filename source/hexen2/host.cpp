@@ -8,6 +8,7 @@
 #include "../common/hexen2strings.h"
 #include "../server/public.h"
 #include "../client/game/quake_hexen2/connection.h"
+#include "../client/client.h"
 
 /*
 

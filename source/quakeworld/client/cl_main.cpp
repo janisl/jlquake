@@ -26,8 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #endif
 #include "../../server/public.h"
-#include "../../client/game/quake_hexen2/demo.h"
-#include "../../client/game/quake_hexen2/connection.h"
+#include "../../client/public.h"
+#include "../../client/client.h"
+#include "../../client/game/quake/local.h"
 
 Cvar* cl_maxfps;
 
@@ -127,21 +128,6 @@ void idCommonLocal::Disconnect(const char* message)
 }
 
 /*
-==================
-CL_Quit_f
-==================
-*/
-void CL_Quit_f(void)
-{
-	if (1 /* !(in_keyCatchers & KEYCATCH_CONSOLE) */ /* && cls.state != ca_dedicated */)
-	{
-		MQH_Menu_Quit_f();
-		return;
-	}
-	Com_Quit_f();
-}
-
-/*
 =======================
 CL_Version_f
 ======================
@@ -175,7 +161,7 @@ void CL_InitLocal(void)
 
 	Cmd_AddCommand("version", CL_Version_f);
 
-	Cmd_AddCommand("quit", CL_Quit_f);
+	Cmd_AddCommand("quit", Com_Quit_f);
 }
 
 

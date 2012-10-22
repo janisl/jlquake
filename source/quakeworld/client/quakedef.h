@@ -19,9 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client
 
-#include "../../client/client.h"
-#include "../../client/game/quake/local.h"
-#include "../../client/game/quake_hexen2/menu.h"
+#include "../../common/qcommon.h"
 
 //define	PARANOID			// speed sapping error checking
 

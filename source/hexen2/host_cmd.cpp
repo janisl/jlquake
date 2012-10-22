@@ -4,6 +4,7 @@
 
 #include "quakedef.h"
 #include "../server/public.h"
+#include "../client/public.h"
 
 void Com_Quit_f()
 {

@@ -1,8 +1,6 @@
 // quakedef.h -- primary header for client
 
-#include "../../client/client.h"
-#include "../../client/game/hexen2/local.h"
-#include "../../client/game/quake_hexen2/menu.h"
+#include "../../common/qcommon.h"
 
 //define	PARANOID			// speed sapping error checking
 

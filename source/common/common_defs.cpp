@@ -16,7 +16,7 @@
 
 #include "qcommon.h"
 #include <time.h>
-#include "../client/client.h"
+#include "../client/public.h"
 
 #define MAX_NUM_ARGVS   50
 
