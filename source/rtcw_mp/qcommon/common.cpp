@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
-#include "../../client/client.h"
+#include "../../client/public.h"
 #include "../../server/public.h"
 #include <setjmp.h>
 #include <time.h>

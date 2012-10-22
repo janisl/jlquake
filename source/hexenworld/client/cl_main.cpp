@@ -4,11 +4,10 @@
 #ifdef _WIN32
 #include "../../client/windows_shared.h"
 #endif
+#include "../../client/public.h"
 #include "../../client/client.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
-#include "../../client/game/quake_hexen2/demo.h"
-#include "../../client/game/quake_hexen2/connection.h"
 #include "../../client/game/hexen2/local.h"
 
 quakeparms_t host_parms;
