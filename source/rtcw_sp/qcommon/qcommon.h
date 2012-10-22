@@ -86,20 +86,6 @@ void Com_Init(char* commandLine);
 void Com_Frame(void);
 void Com_Shutdown(void);
 
-
-/*
-==============================================================
-
-CLIENT / SERVER SYSTEMS
-
-==============================================================
-*/
-
-//----(SA)	added
-void CL_EndgameMenu(void);
-// bring up the "need a cd to play" dialog
-//----(SA)	end
-
 /*
 ==============================================================
 

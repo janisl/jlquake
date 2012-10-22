@@ -103,7 +103,6 @@ extern int time_before_ref;
 extern int time_after_ref;
 
 void FS_Restart(int checksumFeed);
-bool CL_WWWBadChecksum(const char* pakname);
 void Com_Quit_f();
 
 #endif

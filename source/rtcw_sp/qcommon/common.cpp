@@ -357,7 +357,7 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 			CL_Disconnect(true);
 			CLT3_FlushMemory();
 			com_errorEntered = false;
-			CL_EndgameMenu();
+			CLWS_EndgameMenu();
 		}
 		longjmp(abortframe, -1);
 	}

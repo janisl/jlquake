@@ -38,6 +38,7 @@ void CL_Disconnect(bool showMainMenu);
 void CL_Init();
 void CL_Shutdown();
 void CL_Frame(int msec);
+bool CL_WWWBadChecksum(const char* pakname);
 
 void Key_WriteBindings(fileHandle_t f);
 // the keyboard binding interface must be setup before execing
@@ -75,6 +76,7 @@ bool UIT3_GameCommand();
 void CLT3_ReadCDKey(const char* gameName);
 void CLT3_AppendCDKey(const char* gameName);
 void CLT3_WriteCDKey();
+void CLWS_EndgameMenu();
 
 void Con_ConsolePrint(const char* txt);
 

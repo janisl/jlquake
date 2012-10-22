@@ -51,11 +51,6 @@ int FS_LoadStack()
 	return fs_loadStack;
 }
 
-bool CL_WWWBadChecksum(const char* pakname)
-{
-	return false;
-}
-
 /*
 ================
 FS_Startup

@@ -898,3 +898,9 @@ void CLT3_CheckUserinfo()
 	}
 
 }
+
+//	Called by Com_Error when a game has ended and is dropping out to main menu in the "endgame" menu ('credits' right now)
+void CLWS_EndgameMenu()
+{
+	cls.ws_endgamemenu = true;		// start it next frame
+}

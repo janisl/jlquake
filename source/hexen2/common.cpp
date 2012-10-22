@@ -396,8 +396,3 @@ void Con_DPrintf(const char* fmt, ...)
 void FS_Restart(int checksumFeed)
 {
 }
-
-bool CL_WWWBadChecksum(const char* pakname)
-{
-	return false;
-}

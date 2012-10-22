@@ -6,8 +6,6 @@
 #-malign-functions=2
 
 set(WOLFSP_FILES
-	client/cl_main.cpp
-
 	qcommon/common.cpp
 	qcommon/files.cpp
 

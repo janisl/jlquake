@@ -971,3 +971,25 @@ void CL_Frame(int msec)
 
 	cls.framecount++;
 }
+
+//	FS code calls this when doing FS_ComparePaks
+// we can detect files that we got from a www dl redirect with a wrong checksum
+// this indicates that the redirect setup is broken, and next dl attempt should NOT redirect
+bool CL_WWWBadChecksum(const char* pakname)
+{
+	if (GGameType & GAME_ET && strstr(clc.et_redirectedList, va("@%s", pakname)))
+	{
+		common->Printf("WARNING: file %s obtained through download redirect has wrong checksum\n", pakname);
+		common->Printf("         this likely means the server configuration is broken\n");
+		if (String::Length(clc.et_badChecksumList) + String::Length(pakname) + 1 >= (int)sizeof(clc.et_badChecksumList))
+		{
+			common->Printf("ERROR: badChecksumList overflowed (%s)\n", clc.et_badChecksumList);
+			return false;
+		}
+		strcat(clc.et_badChecksumList, "@");
+		strcat(clc.et_badChecksumList, pakname);
+		common->DPrintf("bad checksums: %s\n", clc.et_badChecksumList);
+		return true;
+	}
+	return false;
+}
