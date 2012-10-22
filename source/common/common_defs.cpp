@@ -72,6 +72,8 @@ int time_before_game;
 int time_after_game;
 int time_frontend;			// renderer frontend time
 int time_backend;			// renderer backend time
+int time_before_ref;
+int time_after_ref;
 
 static int q2server_state;
 

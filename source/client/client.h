@@ -447,7 +447,7 @@ struct clientConnection_t
 
 	// www downloading
 	bool et_bWWWDl;		// we have a www download going
-	bool et_bWWWDlAborting;		// disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
+	bool et_bWWWDlAborting;		// disable the CLET_WWWDownload until server gets us a gamestate (used for aborts)
 	char et_redirectedList[MAX_INFO_STRING_Q3];			// list of files that we downloaded through a redirect since last FS_ComparePaks
 	char et_badChecksumList[MAX_INFO_STRING_Q3];		// list of files for which wwwdl redirect is broken (wrong checksum)
 };

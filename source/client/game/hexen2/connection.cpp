@@ -51,6 +51,10 @@ void CLH2_SignonReply()
 
 void CLHW_SendCmd()
 {
+	if (cls.state == CA_DISCONNECTED)
+	{
+		return;
+	}
 	if (clc.demoplaying)
 	{
 		// sendcmds come from the demo

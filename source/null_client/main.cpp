@@ -200,3 +200,7 @@ void CL_Init()
 void CL_Shutdown()
 {
 }
+
+void CL_Frame(int msec)
+{
+}

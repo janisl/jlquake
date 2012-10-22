@@ -135,13 +135,14 @@ void CLQ2_AddLasers();
 //
 //	Main
 //
-extern bool vid_restart_requested;
-
 void CLQ2_PingServers_f();
 void CLQ2_ClearState();
 void CLQ2_PrepRefresh();
 void CLQ2_FixUpGender();
 void CLQ2_Init();
+void CLQ2_UpdateSounds();
+void CLQ2_CheckVidChanges();
+void CLQ2_FixCvarCheats();
 
 //
 //	Parse

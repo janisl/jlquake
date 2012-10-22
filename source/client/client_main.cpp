@@ -23,6 +23,7 @@
 #include "game/quake_hexen2/network_channel.h"
 #include "game/quake2/local.h"
 #include "game/tech3/local.h"
+#include "game/wolfsp/local.h"
 #include "game/et/dl_public.h"
 
 Cvar* cl_inGameVideo;
@@ -691,8 +692,282 @@ void CL_Shutdown()
 	common->Printf("-----------------------\n");
 }
 
-void CL_FrameCommon()
+void CL_Frame(int msec)
 {
+	if (GGameType & GAME_Quake2)
+	{
+		static int extratime;
+
+		if (com_dedicated->value)
+		{
+			return;
+		}
+
+		extratime += msec;
+
+		if (!cl_timedemo->value)
+		{
+			if (cls.state == CA_CONNECTED && extratime < 100)
+			{
+				return;			// don't flood packets out while connecting
+			}
+			if (extratime < 1000 / clq2_maxfps->value)
+			{
+				return;			// framerate is too high
+			}
+		}
+		msec = extratime;
+		extratime = 0;
+
+		cl.serverTime += msec;
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		if (!com_cl_running->integer)
+		{
+			return;
+		}
+
+		if (GGameType & GAME_WolfSP && cls.ws_endgamemenu)
+		{
+			cls.ws_endgamemenu = false;
+			UIWS_SetEndGameMenu();
+		}
+		else if (cls.state == CA_DISCONNECTED && !(in_keyCatchers & KEYCATCH_UI) &&
+				!com_sv_running->integer)
+		{
+			// if disconnected, bring up the menu
+			S_StopAllSounds();
+			UI_SetMainMenu();
+		}
+
+		// if recording an avi, lock to a fixed fps
+		if (clt3_avidemo->integer && msec)
+		{
+			// save the current screen
+			if (cls.state == CA_ACTIVE || clt3_forceavidemo->integer)
+			{
+				Cbuf_ExecuteText(EXEC_NOW, "screenshot silent\n");
+			}
+			// fixed time for next frame
+			msec = (1000 / clt3_avidemo->integer) * com_timescale->value;
+			if (msec == 0)
+			{
+				msec = 1;
+			}
+		}
+	}
+
+	// save the msec before checking pause
+	cls.realFrametime = msec;
+
+	// decide the simulation time
+	cls.frametime = msec;
+
+	cls.realtime += cls.frametime;
+
+	if (GGameType & GAME_Quake2 && cls.frametime > 200)
+	{
+		cls.frametime = 200;
+	}
+
+	if (GGameType & GAME_Tech3 && cl_timegraph->integer)
+	{
+		SCR_DebugGraph(cls.realFrametime * 0.25, 0);
+	}
+
+	// if in the debugger last frame, don't timeout
+	if (GGameType & GAME_Quake2 && msec > 5000)
+	{
+		clc.netchan.lastReceived = Sys_Milliseconds();
+	}
+
+	if (GGameType & GAME_HexenWorld && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		NET_Poll();
+	}
+
+	// fetch results from server
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		CLQHW_ReadPackets();
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		if (cls.state == CA_ACTIVE)
+		{
+			CLQH_ReadFromServer();
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_ReadPackets();
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		// fix any cheating cvars
+		CLQ2_FixCvarCheats();
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		// see if we need to update any userinfo
+		CLT3_CheckUserinfo();
+
+		// if we haven't gotten a packet in a long time,
+		// drop the connection
+		CLT3_CheckTimeout();
+	}
+
+	// wwwdl download may survive a server disconnect
+	if (GGameType & GAME_ET && ((cls.state == CA_CONNECTED && clc.et_bWWWDl) || cls.et_bWWWDlDisconnected))
+	{
+		CLET_WWWDownload();
+	}
+
+	// send intentions now
+	if (GGameType & GAME_QuakeWorld)
+	{
+		CLQW_SendCmd();
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		CLHW_SendCmd();
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		CLQH_SendCmd();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_SendCmd();
+	}
+	else
+	{
+		CLT3_SendCmd();
+	}
+
+	// resend a connection request if necessary
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		CLQHW_CheckForResend();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CLQ2_CheckForResend();
+	}
+	else if (GGameType & GAME_Tech3)
+	{
+		CLT3_CheckForResend();
+	}
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		// Set up prediction for other players
+		CLQW_SetUpPlayerPrediction(false);
+
+		// do client side motion prediction
+		CLQW_PredictMove();
+
+		// Set up prediction for other players
+		CLQW_SetUpPlayerPrediction(true);
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		// Set up prediction for other players
+		CLHW_SetUpPlayerPrediction(false);
+
+		// do client side motion prediction
+		CLHW_PredictMove();
+
+		// Set up prediction for other players
+		CLHW_SetUpPlayerPrediction(true);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		// predict all unacknowledged movements
+		CLQ2_PredictMovement();
+
+		// allow rendering DLL change
+		CLQ2_CheckVidChanges();
+		if (!cl.q2_refresh_prepped && cls.state == CA_ACTIVE)
+		{
+			CLQ2_PrepRefresh();
+		}
+	}
+	else if (GGameType & GAME_Tech3)
+	{
+		// decide on the serverTime to render
+		CLT3_SetCGameTime();
+	}
+
+	if (com_speeds->value)
+	{
+		time_before_ref = Sys_Milliseconds();
+	}
+
 	// update the screen
 	SCR_UpdateScreen();
+
+	if (com_speeds->value)
+	{
+		time_after_ref = Sys_Milliseconds();
+	}
+
+	// update audio
+	if (cls.state == CA_ACTIVE)
+	{
+		if (GGameType & GAME_Quake2)
+		{
+			CLQ2_UpdateSounds();
+		}
+
+		S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
+	}
+
+	S_Update();
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		//JL why not Quake 2?
+		CDAudio_Update();
+	}
+
+	// advance local effects for next frame
+	if (!(GGameType & GAME_Tech3))
+	{
+		CL_RunDLights();
+		CL_RunLightStyles();
+	}
+	if (cls.state == CA_ACTIVE)
+	{
+		if (GGameType & GAME_QuakeWorld)
+		{
+			CL_UpdateParticles(800);
+		}
+		else if (GGameType & GAME_HexenWorld)
+		{
+			CL_UpdateParticles(movevars.gravity);
+		}
+		else if (GGameType & GAME_QuakeHexen && clc.qh_signon == SIGNONS)
+		{
+			if (cl.qh_serverTimeFloat != cl.qh_oldtime)
+			{
+				CL_UpdateParticles(Cvar_VariableValue("sv_gravity"));
+			}
+		}
+
+		//JL Might be wrong place causing no effect entities to be added. Need to check.
+		if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
+		{
+			CLH2_UpdateEffects();
+		}
+	}
+	SCR_RunCinematic();
+
+	Con_RunConsole();
+
+	cls.framecount++;
 }

@@ -249,8 +249,6 @@ void Host_Frame(float time)
 {
 	try
 	{
-		static double time1 = 0;
-		static double time2 = 0;
 		static double time3 = 0;
 		int pass1, pass2, pass3;
 		float fps;
@@ -261,7 +259,6 @@ void Host_Frame(float time)
 		}
 		// decide the simulation time
 		realtime += time;
-		cls.realtime = realtime * 1000;
 		if (oldrealtime > realtime)
 		{
 			oldrealtime = 0;
@@ -287,8 +284,6 @@ void Host_Frame(float time)
 		{
 			host_frametime = 0.2;
 		}
-		cls.frametime = (int)(host_frametime * 1000);
-		cls.realFrametime = cls.frametime;
 
 		// get new key events
 		Com_EventLoop();
@@ -299,68 +294,17 @@ void Host_Frame(float time)
 		// process console commands
 		Cbuf_Execute();
 
-		// fetch results from server
-		CLQHW_ReadPackets();
-
-		// send intentions now
-		// resend a connection request if necessary
-		if (cls.state == CA_DISCONNECTED)
-		{
-			CLQHW_CheckForResend();
-		}
-		else
-		{
-			CLQW_SendCmd();
-		}
-
-		// Set up prediction for other players
-		CLQW_SetUpPlayerPrediction(false);
-
-		// do client side motion prediction
-		CLQW_PredictMove();
-
-		// Set up prediction for other players
-		CLQW_SetUpPlayerPrediction(true);
-
-		// update video
-		if (com_speeds->value)
-		{
-			time1 = Sys_DoubleTime();
-		}
-
-		Con_RunConsole();
-
-		CL_FrameCommon();
+		CL_Frame(host_frametime * 1000);
 
 		if (com_speeds->value)
 		{
-			time2 = Sys_DoubleTime();
-		}
-
-		// update audio
-		if (cls.state == CA_ACTIVE)
-		{
-			S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
-			CL_RunDLights();
-
-			CL_UpdateParticles(800);
-		}
-
-		S_Update();
-
-		CDAudio_Update();
-
-		if (com_speeds->value)
-		{
-			pass1 = (time1 - time3) * 1000;
+			pass1 = time_before_ref - time3 * 1000;
 			time3 = Sys_DoubleTime();
-			pass2 = (time2 - time1) * 1000;
-			pass3 = (time3 - time2) * 1000;
+			pass2 = time_after_ref - time_before_ref;
+			pass3 = time3 * 1000 - time_after_ref;
 			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
-
-		cls.framecount++;
 	}
 	catch (DropException& e)
 	{

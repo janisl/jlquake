@@ -17,6 +17,7 @@
 #include "../../client.h"
 #include "local.h"
 #include "../../../server/public.h"
+#include "../et/dl_public.h"
 
 //	Create a new usercmd_t structure for this frame
 static void CLT3_CreateNewCommands()
@@ -1469,4 +1470,94 @@ void CLT3_CheckTimeout()
 	{
 		cl.timeoutcount = 0;
 	}
+}
+
+void CLET_WWWDownload()
+{
+	char* to_ospath;
+	dlStatus_t ret;
+	static qboolean bAbort = false;
+
+	if (clc.et_bWWWDlAborting)
+	{
+		if (!bAbort)
+		{
+			common->DPrintf("CLET_WWWDownload: WWWDlAborting\n");
+			bAbort = true;
+		}
+		return;
+	}
+	if (bAbort)
+	{
+		common->DPrintf("CLET_WWWDownload: WWWDlAborting done\n");
+		bAbort = false;
+	}
+
+	ret = DL_DownloadLoop();
+
+	if (ret == DL_CONTINUE)
+	{
+		return;
+	}
+
+	if (ret == DL_DONE)
+	{
+		// taken from CLT3_ParseDownload
+		// we work with OS paths
+		clc.download = 0;
+		to_ospath = FS_BuildOSPath(Cvar_VariableString("fs_homepath"), cls.et_originalDownloadName, "");
+		to_ospath[String::Length(to_ospath) - 1] = '\0';
+		if (rename(cls.et_downloadTempName, to_ospath))
+		{
+			FS_CopyFile(cls.et_downloadTempName, to_ospath);
+			remove(cls.et_downloadTempName);
+		}
+		*cls.et_downloadTempName = *cls.et_downloadName = 0;
+		Cvar_Set("cl_downloadName", "");
+		if (cls.et_bWWWDlDisconnected)
+		{
+			// reconnect to the server, which might send us to a new disconnected download
+			Cbuf_ExecuteText(EXEC_APPEND, "reconnect\n");
+		}
+		else
+		{
+			CL_AddReliableCommand("wwwdl done");
+			// tracking potential web redirects leading us to wrong checksum - only works in connected mode
+			if (String::Length(clc.et_redirectedList) + String::Length(cls.et_originalDownloadName) + 1 >= (int)sizeof(clc.et_redirectedList))
+			{
+				// just to be safe
+				common->Printf("ERROR: redirectedList overflow (%s)\n", clc.et_redirectedList);
+			}
+			else
+			{
+				strcat(clc.et_redirectedList, "@");
+				strcat(clc.et_redirectedList, cls.et_originalDownloadName);
+			}
+		}
+	}
+	else
+	{
+		if (cls.et_bWWWDlDisconnected)
+		{
+			// in a connected download, we'd tell the server about failure and wait for a reply
+			// but in this case we can't get anything from server
+			// if we just reconnect it's likely we'll get the same disconnected download message, and error out again
+			// this may happen for a regular dl or an auto update
+			const char* error = va("Download failure while getting '%s'\n", cls.et_downloadName);	// get the msg before clearing structs
+			cls.et_bWWWDlDisconnected = false;	// need clearing structs before ERR_DROP, or it goes into endless reload
+			CLET_ClearStaticDownload();
+			common->Error("%s", error);
+		}
+		else
+		{
+			// see CLT3_ParseDownload, same abort strategy
+			common->Printf("Download failure while getting '%s'\n", cls.et_downloadName);
+			CL_AddReliableCommand("wwwdl fail");
+			clc.et_bWWWDlAborting = true;
+		}
+		return;
+	}
+
+	clc.et_bWWWDl = false;
+	CLT3_NextDownload();
 }

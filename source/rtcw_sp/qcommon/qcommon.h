@@ -95,11 +95,6 @@ CLIENT / SERVER SYSTEMS
 ==============================================================
 */
 
-//
-// client interface
-//
-void CL_Frame(int msec);
-
 //----(SA)	added
 void CL_EndgameMenu(void);
 // bring up the "need a cd to play" dialog

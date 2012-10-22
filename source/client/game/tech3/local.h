@@ -57,6 +57,8 @@ void CLT3_CheckForResend();
 void CLT3_Connect_f();
 void CLT3_Reconnect_f();
 void CLT3_CheckTimeout();
+void CLET_WWWDownload();
+void CLT3_CheckUserinfo();
 
 //
 //	Demo

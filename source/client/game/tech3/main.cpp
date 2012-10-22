@@ -877,3 +877,24 @@ void CLT3_Init()
 
 	Cvar_Set("cl_running", "1");
 }
+
+void CLT3_CheckUserinfo()
+{
+	// don't add reliable commands when not yet connected
+	if (cls.state < CA_CHALLENGING)
+	{
+		return;
+	}
+	// don't overflow the reliable command buffer when paused
+	if (cl_paused->integer)
+	{
+		return;
+	}
+	// send a reliable userinfo update if needed
+	if (cvar_modifiedFlags & CVAR_USERINFO)
+	{
+		cvar_modifiedFlags &= ~CVAR_USERINFO;
+		CL_AddReliableCommand(va("userinfo \"%s\"", Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING_Q3)));
+	}
+
+}

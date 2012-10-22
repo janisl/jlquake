@@ -115,20 +115,6 @@ void Com_Init(char* commandLine);
 void Com_Frame(void);
 void Com_Shutdown();
 
-
-/*
-==============================================================
-
-CLIENT / SERVER SYSTEMS
-
-==============================================================
-*/
-
-//
-// client interface
-//
-void CL_Frame(int msec);
-
 /*
 ==============================================================
 

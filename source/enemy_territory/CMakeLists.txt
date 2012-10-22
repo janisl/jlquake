@@ -38,8 +38,6 @@ set (ETDED_FILES
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-
-	null/null_client.cpp
 )
 
 add_executable(jletded ${ETDED_FILES})

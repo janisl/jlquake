@@ -34,7 +34,31 @@ q2centity_t clq2_entities[MAX_EDICTS_Q2];
 char clq2_weaponmodels[MAX_CLIENTWEAPONMODELS_Q2][MAX_QPATH];
 int clq2_num_weaponmodels;
 
-bool vid_restart_requested;
+static bool vid_restart_requested;
+
+struct cheatvar_t
+{
+	const char* name;
+	const char* value;
+	Cvar* var;
+};
+
+static cheatvar_t cheatvars[] =
+{
+	{"timescale", "1"},
+	{"timedemo", "0"},
+	{"r_drawworld", "1"},
+	{"cl_testlights", "0"},
+	{"r_fullbright", "0"},
+	{"r_drawflat", "0"},
+	{"paused", "0"},
+	{"fixedtime", "0"},
+	{"r_lightmap", "0"},
+	{"r_saturatelighting", "0"},
+	{NULL, NULL}
+};
+
+static int numcheatvars;
 
 void CLQ2_PingServers_f()
 {
@@ -453,4 +477,87 @@ void CLQ2_Init()
 
 	FS_ExecAutoexec();
 	Cbuf_Execute();
+}
+
+void CLQ2_UpdateSounds()
+{
+	if (cl_paused->value)
+	{
+		return;
+	}
+
+	if (!cl.q2_sound_prepped)
+	{
+		return;
+	}
+
+	for (int i = 0; i < MAX_EDICTS_Q2; i++)
+	{
+		vec3_t origin;
+		CLQ2_GetEntitySoundOrigin(i, origin);
+		S_UpdateEntityPosition(i, origin);
+	}
+
+	S_ClearLoopingSounds(false);
+	for (int i = 0; i < cl.q2_frame.num_entities; i++)
+	{
+		int num = (cl.q2_frame.parse_entities + i) & (MAX_PARSE_ENTITIES_Q2 - 1);
+		q2entity_state_t* ent = &clq2_parse_entities[num];
+		if (!ent->sound)
+		{
+			continue;
+		}
+		S_AddLoopingSound(num, ent->origin, vec3_origin, 0, cl.sound_precache[ent->sound], 0, 0);
+	}
+}
+
+//	This function gets called once just before drawing each frame, and it's sole purpose in life
+// is to check to see if any of the video mode parameters have changed, and if they have to
+// update the rendering DLL and/or video mode to match.
+void CLQ2_CheckVidChanges()
+{
+	if (vid_restart_requested)
+	{
+		S_StopAllSounds();
+		/*
+		** refresh has changed
+		*/
+		vid_restart_requested = false;
+		cl.q2_refresh_prepped = false;
+		cls.disable_screen = true;
+
+		R_Shutdown(true);
+		CL_InitRenderer();
+		cls.disable_screen = false;
+	}
+}
+
+void CLQ2_FixCvarCheats()
+{
+	if (!String::Cmp(cl.q2_configstrings[Q2CS_MAXCLIENTS], "1") ||
+		!cl.q2_configstrings[Q2CS_MAXCLIENTS][0])
+	{
+		return;		// single player can cheat
+
+	}
+	// find all the cvars if we haven't done it yet
+	if (!numcheatvars)
+	{
+		while (cheatvars[numcheatvars].name)
+		{
+			cheatvars[numcheatvars].var = Cvar_Get(cheatvars[numcheatvars].name,
+				cheatvars[numcheatvars].value, 0);
+			numcheatvars++;
+		}
+	}
+
+	// make sure they are all set to the proper values
+	cheatvar_t* var = cheatvars;
+	for (int i = 0; i < numcheatvars; i++, var++)
+	{
+		if (String::Cmp(var->var->string, var->value))
+		{
+			Cvar_SetLatched(var->name, var->value);
+		}
+	}
 }

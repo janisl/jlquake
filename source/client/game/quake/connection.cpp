@@ -173,6 +173,10 @@ void CLQW_StopUpload()
 
 void CLQW_SendCmd()
 {
+	if (cls.state == CA_DISCONNECTED)
+	{
+		return;
+	}
 	if (clc.demoplaying)
 	{
 		return;	// sendcmds come from the demo

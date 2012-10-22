@@ -119,7 +119,7 @@ void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation)
 
 		if (cl_timegraph->value)
 		{
-			SCR_DebugGraph(cls.q2_frametimeFloat * 300, 0);
+			SCR_DebugGraph(cls.frametime * 0.25, 0);
 		}
 
 		if (cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value)

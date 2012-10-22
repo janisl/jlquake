@@ -3,8 +3,6 @@
 #$COMMON_CFLAGS = $COMMON_CFLAGS . '-fshort-enums ';
 
 set(WOLFMP_FILES
-	client/cl_main.cpp
-
 	qcommon/common.cpp
 	qcommon/files.cpp
 
@@ -18,7 +16,6 @@ set_target_properties(jlwolfmp PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
-	null/null_client.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp

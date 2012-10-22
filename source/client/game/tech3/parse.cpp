@@ -1876,7 +1876,7 @@ static void CLT3_ParseDownload(QMsg* msg)
 			{
 				// setting bWWWDl to false after sending the wwwdl fail doesn't work
 				// not sure why, but I suspect we have to eat all remaining block -1 that the server has sent us
-				// still leave a flag so that CL_WWWDownload is inactive
+				// still leave a flag so that CLET_WWWDownload is inactive
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand("wwwdl fail");
 				clc.et_bWWWDlAborting = true;

@@ -1,5 +1,4 @@
 add_executable(jlquake2
-	client/cl_main.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	qcommon/q_shared.cpp
@@ -13,7 +12,6 @@ add_executable(jlquake2ded
 	qcommon/files.cpp
 	qcommon/q_shared.cpp
 	linux/sys_linux.cpp
-	null/cl_null.cpp
 )
 set_target_properties(jlquake2ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED_ONLY")
 target_link_libraries(jlquake2ded ${SERVERS_LIBS})

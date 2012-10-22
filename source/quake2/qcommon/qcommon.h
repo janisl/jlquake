@@ -110,14 +110,6 @@ void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
 void        Com_Quit_f(void);
 
-extern Cvar* log_stats;
-
-extern fileHandle_t log_stats_file;
-
-// com_speeds times
-extern int time_before_ref;
-extern int time_after_ref;
-
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
 void Qcommon_Shutdown(void);
@@ -134,15 +126,5 @@ void    Sys_Init(void);
 
 void    Sys_Error(const char* error, ...);
 void    Sys_Quit(void);
-
-/*
-==============================================================
-
-CLIENT / SERVER SYSTEMS
-
-==============================================================
-*/
-
-void CL_Frame(int msec);
 
 #endif

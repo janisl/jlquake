@@ -3,7 +3,6 @@
 #############################################################################
 
 set(QUAKE3_FILES
-	client/cl_main.cpp
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
@@ -25,7 +24,6 @@ set(QUAKE3_DEDICATED_FILES
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	null/null_client.cpp
 )
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})

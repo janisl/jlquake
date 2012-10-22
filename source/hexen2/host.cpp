@@ -254,8 +254,6 @@ qboolean Host_FilterTime(float time)
 #ifdef DEDICATED
 	if (realtime - oldrealtime < 1.0 / 72.0)
 #else
-	cls.realtime = realtime * 1000;
-
 	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / 72.0)
 #endif
 	{
@@ -280,11 +278,6 @@ qboolean Host_FilterTime(float time)
 			host_frametime = 0.001;
 		}
 	}
-
-#ifndef DEDICATED
-	cls.frametime = (int)(host_frametime * 1000);
-	cls.realFrametime = cls.frametime;
-#endif
 	return true;
 }
 
@@ -297,8 +290,6 @@ Runs all active servers
 */
 void _Host_Frame(float time)
 {
-	static double time1 = 0;
-	static double time2 = 0;
 	static double time3 = 0;
 	int pass1, pass2, pass3;
 	double save_host_frametime,total_host_frametime;
@@ -326,16 +317,6 @@ void _Host_Frame(float time)
 
 // process console commands
 		Cbuf_Execute();
-
-#ifndef DEDICATED
-		NET_Poll();
-
-// if running the server locally, make intentions now
-		if (SV_IsServerActive())
-		{
-			CLQH_SendCmd();
-		}
-#endif
 
 //-------------------
 //
@@ -368,26 +349,7 @@ void _Host_Frame(float time)
 			//-------------------
 
 #ifndef DEDICATED
-			// if running the server remotely, send intentions now after
-			// the incoming messages have been read
-			if (!SV_IsServerActive())
-			{
-				CLQH_SendCmd();
-			}
-
 			host_time += host_frametime;
-
-			// fetch results from server
-			if (cls.state == CA_ACTIVE)
-			{
-				CLQH_ReadFromServer();
-
-				if (cl.qh_serverTimeFloat != cl.qh_oldtime)
-				{
-					CL_UpdateParticles(Cvar_VariableValue("sv_gravity"));
-				}
-				CLH2_UpdateEffects();
-			}
 #endif
 
 			if (!sys_adaptive->value)
@@ -410,46 +372,18 @@ void _Host_Frame(float time)
 		host_frametime = save_host_frametime;
 
 #ifndef DEDICATED
-// update video
-		if (com_speeds->value)
-		{
-			time1 = Sys_DoubleTime();
-		}
-
-		Con_RunConsole();
-
-		CL_FrameCommon();
-
-		if (com_speeds->value)
-		{
-			time2 = Sys_DoubleTime();
-		}
-
-// update audio
-		if (clc.qh_signon == SIGNONS)
-		{
-			S_Respatialize(cl.viewentity, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
-			CL_RunDLights();
-		}
-
-		S_Update();
-
-		CDAudio_Update();
+		CL_Frame(host_frametime * 1000);
 #endif
 
 		if (com_speeds->value)
 		{
-			pass1 = (time1 - time3) * 1000;
+			pass1 = time_before_ref - time3 * 1000;
 			time3 = Sys_DoubleTime();
-			pass2 = (time2 - time1) * 1000;
-			pass3 = (time3 - time2) * 1000;
+			pass2 = time_after_ref - time_before_ref;
+			pass3 = time3 * 1000 - time_after_ref;
 			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
-
-#ifndef DEDICATED
-		cls.framecount++;
-#endif
 	}
 	catch (DropException& e)
 	{

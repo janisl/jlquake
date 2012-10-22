@@ -43,11 +43,9 @@ SYSTEM SPECIFIC
 ==============================================================
 */
 
-extern int curtime;			// time returned by last Sys_Milliseconds
 inline int Sys_Milliseconds_()
 {
-	curtime = Sys_Milliseconds();
-	return curtime;
+	return Sys_Milliseconds();
 }
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link

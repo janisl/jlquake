@@ -1329,8 +1329,6 @@ static void VQH_RenderScene()
 
 	CL_AddDLights();
 
-	CL_RunLightStyles();
-
 	CL_AddLightStyles();
 	CL_AddParticles();
 

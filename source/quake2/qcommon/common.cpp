@@ -19,31 +19,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // common.c -- misc functions used in client and server
 #include "qcommon.h"
-#include "../client/client.h"
+#include "../../client/public.h"
 #include "../../server/public.h"
 #include <setjmp.h>
 
-
-int curtime;
 
 int realtime;
 
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
-fileHandle_t log_stats_file;
-
-Cvar* log_stats;
 Cvar* timescale;
 Cvar* fixedtime;
 Cvar* logfile_active;		// 1 = buffer log, 2 = flush after each print
 Cvar* showtrace;
 
 static fileHandle_t logfile;
-
-// host_speeds times
-int time_before_ref;
-int time_after_ref;
 
 class idCommonLocal : public idCommon
 {
@@ -440,7 +431,6 @@ void Qcommon_Init(int argc, char** argv)
 		COM_InitCommonCvars();
 
 		com_speeds = Cvar_Get("host_speeds", "0", 0);
-		log_stats = Cvar_Get("log_stats", "0", 0);
 		timescale = Cvar_Get("timescale", "1", 0);
 		fixedtime = Cvar_Get("fixedtime", "0", 0);
 		logfile_active = Cvar_Get("logfile", "0", 0);
@@ -512,32 +502,6 @@ void Qcommon_Frame(int msec)
 		if (setjmp(abortframe))
 		{
 			return;		// an ERR_DROP was thrown
-
-		}
-		if (log_stats->modified)
-		{
-			log_stats->modified = false;
-			if (log_stats->value)
-			{
-				if (log_stats_file)
-				{
-					FS_FCloseFile(log_stats_file);
-					log_stats_file = 0;
-				}
-				log_stats_file = FS_FOpenFileWrite("stats.log");
-				if (log_stats_file)
-				{
-					FS_Printf(log_stats_file, "entities,dlights,parts,frame time\n");
-				}
-			}
-			else
-			{
-				if (log_stats_file)
-				{
-					FS_FCloseFile(log_stats_file);
-					log_stats_file = 0;
-				}
-			}
 		}
 
 		if (fixedtime->value)
