@@ -7,14 +7,7 @@
 
 void Com_Quit_f()
 {
-#ifndef DEDICATED
-	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && !com_dedicated->integer)
-	{
-		MQH_Menu_Quit_f();
-		return;
-	}
 	CL_Disconnect(true);
-#endif
 	SV_Shutdown("");
 
 	Sys_Quit();
