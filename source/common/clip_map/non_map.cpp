@@ -18,25 +18,11 @@
 //
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../qcommon.h"
 #include "local.h"
 #include "../file_formats/bsp29.h"
 #include "../file_formats/mdl.h"
 #include "../file_formats/spr.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-class QNonBspModelException : public Exception
-{
-public:
-	QNonBspModelException()
-	: Exception("Non bsp model")
-	{}
-};
 
 class QClipMapNonMap : public QClipMap
 {
@@ -44,6 +30,11 @@ private:
 	void LoadAliasModel(const void* buffer);
 	void LoadAliasModelNew(const void* buffer);
 	void LoadSpriteModel(const void* buffer);
+
+	void NotBspModelError()
+	{
+		common->FatalError("Non bsp model");
+	}
 
 public:
 	//
@@ -81,23 +72,23 @@ public:
 	void SetTempBoxModelContents(clipHandle_t handle, int contents)
 	{}
 	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int PointLeafnum(const vec3_t P) const
 	{ return 0; }
 	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const
 	{ return 0; }
 	int PointContentsQ1(const vec3_t P, clipHandle_t Model)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int PointContentsQ2(const vec3_t p, clipHandle_t Model)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int PointContentsQ3(const vec3_t P, clipHandle_t Model)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return 0; }
 	bool HeadnodeVisible(int NodeNum, byte* VisBits)
 	{ return false; }
 	byte* ClusterPVS(int Cluster)
@@ -117,19 +108,19 @@ public:
 	void ReadPortalState(fileHandle_t f)
 	{}
 	bool HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return false; }
 	q2trace_t BoxTraceQ2(const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return q2trace_t(); }
 	q2trace_t TransformedBoxTraceQ2(const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); return q2trace_t(); }
 	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, int Capsule)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); }
 	void TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, const vec3_t Mins, const vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
-	{ throw QNonBspModelException(); }
+	{ NotBspModelError(); }
 	void DrawDebugSurface(void (* drawPoly)(int color, int numPoints, float* points))
 	{}
 };
@@ -156,27 +147,7 @@ public:
 	void AliasTransformVector(vec3_t in, vec3_t out);
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 Array<QClipMap*>        CMNonMapModels;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	CM_PrecacheModel
-//
-//==========================================================================
 
 clipHandle_t CM_PrecacheModel(const char* Name)
 {
@@ -232,12 +203,6 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	return CMNonMapModels.Num() << CMH_NON_MAP_SHIFT;
 }
 
-//==========================================================================
-//
-//	QClipMapNonMap::LoadMap
-//
-//==========================================================================
-
 void QClipMapNonMap::LoadMap(const char* name, const Array<quint8>& Buffer)
 {
 	this->Name = name;
@@ -264,12 +229,6 @@ void QClipMapNonMap::LoadMap(const char* name, const Array<quint8>& Buffer)
 	}
 }
 
-//==========================================================================
-//
-//	QClipMapNonMap::LoadAliasModel
-//
-//==========================================================================
-
 void QClipMapNonMap::LoadAliasModel(const void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
@@ -284,12 +243,6 @@ void QClipMapNonMap::LoadAliasModel(const void* buffer)
 	}
 }
 
-//==========================================================================
-//
-//	QClipMapNonMap::LoadAliasModelNew
-//
-//==========================================================================
-
 void QClipMapNonMap::LoadAliasModelNew(const void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
@@ -303,12 +256,6 @@ void QClipMapNonMap::LoadAliasModelNew(const void* buffer)
 		ModelMaxs[0] = ModelMaxs[1] = ModelMaxs[2] = 16;
 	}
 }
-
-//==========================================================================
-//
-//	QMdlBoundsLoader::LoadAliasModel
-//
-//==========================================================================
 
 void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 {
@@ -363,14 +310,7 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	mod->ModelMaxs[2] = maxs[2] + 10;
 }
 
-//==========================================================================
-//
-//	QMdlBoundsLoader::LoadAliasModelNew
-//
 //	Reads extra field for num ST verts, and extra index list of them
-//
-//==========================================================================
-
 void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer)
 {
 	newmdl_t* pinmodel = (newmdl_t*)buffer;
@@ -425,12 +365,6 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	mod->ModelMaxs[2] = maxs[2] + 10;
 }
 
-//==========================================================================
-//
-//	QMdlBoundsLoader::LoadAllSkins
-//
-//==========================================================================
-
 void* QMdlBoundsLoader::LoadAllSkins(int numskins, dmdl_skintype_t* pskintype)
 {
 	for (int i = 0; i < numskins; i++)
@@ -440,12 +374,6 @@ void* QMdlBoundsLoader::LoadAllSkins(int numskins, dmdl_skintype_t* pskintype)
 	}
 	return (void*)pskintype;
 }
-
-//==========================================================================
-//
-//	QMdlBoundsLoader::LoadAliasFrame
-//
-//==========================================================================
 
 void* QMdlBoundsLoader::LoadAliasFrame(void* pin)
 {
@@ -481,12 +409,6 @@ void* QMdlBoundsLoader::LoadAliasFrame(void* pin)
 	pinframe += numverts;
 	return (void*)pinframe;
 }
-
-//==========================================================================
-//
-//	QMdlBoundsLoader::LoadAliasGroup
-//
-//==========================================================================
 
 void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 {
@@ -530,24 +452,12 @@ void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 	return ptemp;
 }
 
-//==========================================================================
-//
-//	QMdlBoundsLoader::AliasTransformVector
-//
-//==========================================================================
-
 void QMdlBoundsLoader::AliasTransformVector(vec3_t in, vec3_t out)
 {
 	out[0] = DotProduct(in, aliastransform[0]) + aliastransform[0][3];
 	out[1] = DotProduct(in, aliastransform[1]) + aliastransform[1][3];
 	out[2] = DotProduct(in, aliastransform[2]) + aliastransform[2][3];
 }
-
-//==========================================================================
-//
-//	QClipMapNonMap::LoadSpriteModel
-//
-//==========================================================================
 
 void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 {
@@ -565,14 +475,7 @@ void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 	ModelMaxs[2] = LittleLong(pin->height) / 2;
 }
 
-//==========================================================================
-//
-//	QClipMapNonMap::ModelBounds
-//
 //	The only valid thing that can be called on non BSP model.
-//
-//==========================================================================
-
 void QClipMapNonMap::ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
 {
 	VectorCopy(ModelMins, Mins);

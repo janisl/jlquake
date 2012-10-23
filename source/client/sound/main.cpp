@@ -1508,7 +1508,7 @@ void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
 	{
 		if (EntityNum < 0 || EntityNum > MAX_LOOPSOUNDS)
 		{
-			DropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
+			common->Error("S_UpdateEntityPosition: bad entitynum %i", EntityNum);
 		}
 		VectorCopy(Origin, loopSounds[EntityNum].origin);
 	}
@@ -1605,7 +1605,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		{
 			return;
 		}
-		DropException(va("%s has length 0", sfx->Name));
+		common->Error("%s has length 0", sfx->Name);
 	}
 
 	VectorCopy(origin, loopSounds[index].origin);
@@ -1754,7 +1754,7 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 
 	if (!sfx->Length)
 	{
-		DropException(va("%s has length 0", sfx->Name));
+		common->Error("%s has length 0", sfx->Name);
 	}
 
 	VectorCopy(origin, loopSounds[index].origin);
@@ -1797,7 +1797,7 @@ static channel_t* S_PickChannel(int EntNum, int EntChannel)
 {
 	if ((GGameType & GAME_Quake2) && EntChannel < 0)
 	{
-		DropException("S_PickChannel: entchannel<0");
+		common->Error("S_PickChannel: entchannel<0");
 	}
 
 	// Check for replacement sound, or find the best one to replace
