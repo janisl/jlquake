@@ -274,6 +274,24 @@ void Con_ConsolePrint(const char* txt)
 			con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 		}
 	}
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		// update the screen if the console is displayed
+		if ((!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) && clc.qh_signon != SIGNONS && !cls.disable_screen) ||
+			(GGameType & (GAME_QuakeWorld | GAME_HexenWorld) && cls.state != CA_ACTIVE))
+		{
+			// protect against infinite loop if something in SCR_UpdateScreen calls
+			// Con_Printd
+			static bool inupdate;
+			if (!inupdate)
+			{
+				inupdate = true;
+				SCR_UpdateScreen();
+				inupdate = false;
+			}
+		}
+	}
 }
 
 static void Con_DrawBackground(float frac, int lines)

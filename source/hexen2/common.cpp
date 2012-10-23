@@ -8,7 +8,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "../client/client.h"
+#include "../client/public.h"
 
 #define NUM_SAFE_ARGVS  7
 
@@ -350,24 +350,8 @@ void Con_Printf(const char* fmt, ...)
 		return;		// no graphics mode
 	}
 
-#ifndef DEDICATED
-// write it to the scrollable buffer
+	// write it to the scrollable buffer
 	Con_ConsolePrint(msg);
-
-// update the screen if the console is displayed
-	if (clc.qh_signon != SIGNONS && !cls.disable_screen)
-	{
-		static bool inupdate;
-		// protect against infinite loop if something in SCR_UpdateScreen calls
-		// Con_Printd
-		if (!inupdate)
-		{
-			inupdate = true;
-			SCR_UpdateScreen();
-			inupdate = false;
-		}
-	}
-#endif
 }
 
 /*

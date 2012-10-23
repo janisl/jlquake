@@ -9,7 +9,6 @@
 #include <windows.h>
 #endif
 #include "../../client/public.h"
-#include "../../client/client.h"
 
 #define NUM_SAFE_ARGVS  6
 
@@ -316,22 +315,6 @@ void Con_Printf(const char* fmt, ...)
 
 	// write it to the scrollable buffer
 	Con_ConsolePrint(msg);
-
-#ifndef SERVERONLY
-	// update the screen immediately if the console is displayed
-	if (cls.state != CA_ACTIVE)
-	{
-		// protect against infinite loop if something in SCR_UpdateScreen calls
-		// Con_Printd
-		static bool inupdate;
-		if (!inupdate)
-		{
-			inupdate = true;
-			SCR_UpdateScreen();
-			inupdate = false;
-		}
-	}
-#endif
 }
 
 /*
