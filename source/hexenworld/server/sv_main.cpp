@@ -62,7 +62,7 @@ void idCommonLocal::Error(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw DropException(string);
+	SV_Error("%s", string);
 }
 
 void idCommonLocal::FatalError(const char* format, ...)
@@ -74,19 +74,11 @@ void idCommonLocal::FatalError(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw Exception(string);
+	Sys_Error("%s", string);
 }
 
 void idCommonLocal::EndGame(const char* format, ...)
 {
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	throw EndGameException(string);
 }
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
@@ -147,8 +139,6 @@ COM_ServerFrame
 */
 void COM_ServerFrame(float time)
 {
-	try
-	{
 		// keep the random time dependent
 		rand();
 
@@ -158,15 +148,6 @@ void COM_ServerFrame(float time)
 		Cbuf_Execute();
 
 		SV_Frame(time * 1000);
-	}
-	catch (DropException& e)
-	{
-		SV_Error("%s", e.What());
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 //============================================================================
@@ -178,8 +159,6 @@ COM_InitServer
 */
 void COM_InitServer(quakeparms_t* parms)
 {
-	try
-	{
 		GGameType = GAME_Hexen2 | GAME_HexenWorld;
 		Sys_SetHomePathSuffix("jlhexen2");
 
@@ -226,9 +205,4 @@ void COM_InitServer(quakeparms_t* parms)
 		{
 			common->Error("Couldn't spawn a server");
 		}
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }

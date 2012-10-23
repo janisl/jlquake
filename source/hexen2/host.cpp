@@ -85,7 +85,7 @@ void idCommonLocal::Error(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw DropException(string);
+	Host_Error(string);
 }
 
 void idCommonLocal::FatalError(const char* format, ...)
@@ -97,7 +97,7 @@ void idCommonLocal::FatalError(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw Exception(string);
+	Sys_Error("%s", string);
 }
 
 void idCommonLocal::EndGame(const char* format, ...)
@@ -109,7 +109,7 @@ void idCommonLocal::EndGame(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw EndGameException(string);
+	Host_EndGame(string);
 }
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
@@ -300,8 +300,6 @@ void _Host_Frame(float time)
 		return;			// something bad happened, or the server disconnected
 
 	}
-	try
-	{
 // keep the random time dependent
 		rand();
 
@@ -385,21 +383,10 @@ void _Host_Frame(float time)
 			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
-	}
-	catch (DropException& e)
-	{
-		Host_Error(e.What());
-	}
-	catch (EndGameException& e)
-	{
-		Host_EndGame(e.What());
-	}
 }
 
 void Host_Frame(float time)
 {
-	try
-	{
 		double time1, time2;
 		static double timetotal;
 		static int timecount;
@@ -428,11 +415,6 @@ void Host_Frame(float time)
 		timetotal = 0;
 
 		common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 /*
@@ -442,8 +424,6 @@ Host_Init
 */
 void Host_Init(quakeparms_t* parms)
 {
-	try
-	{
 		GGameType = GAME_Hexen2;
 #ifdef MISSIONPACK
 		GGameType |= GAME_H2Portals;
@@ -489,11 +469,6 @@ void Host_Init(quakeparms_t* parms)
 		com_fullyInitialized = true;
 
 		common->Printf("======== Hexen II Initialized =========\n");
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 

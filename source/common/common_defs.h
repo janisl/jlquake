@@ -260,3 +260,5 @@ void Com_WriteConfiguration();
 void Com_WriteConfig_f();
 
 void Com_SetRecommended(bool vid_restart);
+
+#define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

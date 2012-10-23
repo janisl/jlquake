@@ -28,7 +28,6 @@
 #include "Common.h"
 #include "memory.h"		//	Memory allocation
 #include "endian.h"		//	Endianes handling
-#include "exception.h"	//	Exception handling
 #include "array.h"		//	Dynamic array
 #include "strings.h"	//	Strings
 #include "info_string.h"

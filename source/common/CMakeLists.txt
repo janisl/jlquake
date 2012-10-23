@@ -23,7 +23,6 @@ set(COMMON_FILES
 	crc.cpp
 	endian.cpp
 	event_queue.cpp
-	exception.cpp
 	files.cpp
 	game_utils1.cpp
 	hexen2strings.cpp

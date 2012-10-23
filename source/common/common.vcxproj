@@ -121,7 +121,6 @@
     <ClInclude Include="crc.h" />
     <ClInclude Include="endian.h" />
     <ClInclude Include="event_queue.h" />
-    <ClInclude Include="exception.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="huffman.h" />
     <ClInclude Include="info_string.h" />
@@ -279,7 +278,6 @@
     <ClCompile Include="crc.cpp" />
     <ClCompile Include="endian.cpp" />
     <ClCompile Include="event_queue.cpp" />
-    <ClCompile Include="exception.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="huffman.cpp" />
     <ClCompile Include="info_string.cpp" />

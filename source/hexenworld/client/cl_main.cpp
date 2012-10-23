@@ -68,7 +68,7 @@ void idCommonLocal::Error(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw DropException(string);
+	Host_EndGame(string);
 }
 
 void idCommonLocal::FatalError(const char* format, ...)
@@ -80,19 +80,11 @@ void idCommonLocal::FatalError(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw Exception(string);
+	Host_FatalError("%s", string);
 }
 
 void idCommonLocal::EndGame(const char* format, ...)
 {
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	throw EndGameException(string);
 }
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
@@ -205,8 +197,6 @@ Runs all active servers
 int nopacketcount;
 void Host_Frame(float time)
 {
-	try
-	{
 		static double time3 = 0;
 		int pass1, pass2, pass3;
 		float fps;
@@ -256,15 +246,6 @@ void Host_Frame(float time)
 			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3);
 		}
-	}
-	catch (DropException& e)
-	{
-		Host_EndGame(e.What());
-	}
-	catch (Exception& e)
-	{
-		Host_FatalError("%s", e.What());
-	}
 }
 
 /*
@@ -274,8 +255,6 @@ Host_Init
 */
 void Host_Init(quakeparms_t* parms)
 {
-	try
-	{
 		GGameType = GAME_Hexen2 | GAME_HexenWorld;
 		Sys_SetHomePathSuffix("jlhexen2");
 
@@ -311,11 +290,6 @@ void Host_Init(quakeparms_t* parms)
 		com_fullyInitialized = true;
 
 		common->Printf("������� HexenWorld Initialized �������\n");
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 

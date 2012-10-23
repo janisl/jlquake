@@ -137,7 +137,7 @@ void idCommonLocal::Error(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw DropException(string);
+	Com_Error(ERR_DROP, "%s", string);
 }
 
 void idCommonLocal::FatalError(const char* format, ...)
@@ -149,19 +149,11 @@ void idCommonLocal::FatalError(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw Exception(string);
+	Sys_Error("%s", string);
 }
 
 void idCommonLocal::EndGame(const char* format, ...)
 {
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	throw EndGameException(string);
 }
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
@@ -709,8 +701,6 @@ Com_Init
 */
 void Com_Init(char* commandLine)
 {
-	try
-	{
 		char* s;
 		int pid;
 		// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
@@ -971,11 +961,6 @@ void Com_Init(char* commandLine)
 		com_fullyInitialized = true;
 		fs_ProtectKeyFile = true;
 		common->Printf("--- Common Initialization Complete ---\n");
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 /*
@@ -1048,8 +1033,6 @@ Com_Frame
 */
 void Com_Frame(void)
 {
-	try
-	{
 		int msec, minMsec;
 		static int lastTime;
 		int key;
@@ -1267,15 +1250,6 @@ void Com_Frame(void)
 		key = lastTime * 0x87243987;
 
 		com_frameNumber++;
-	}
-	catch (DropException& e)
-	{
-		Com_Error(ERR_DROP, "%s", e.What());
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 /*

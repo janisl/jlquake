@@ -84,7 +84,7 @@ void idCommonLocal::Error(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw DropException(string);
+	Com_Error(ERR_DROP, string);
 }
 
 void idCommonLocal::FatalError(const char* format, ...)
@@ -96,19 +96,11 @@ void idCommonLocal::FatalError(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	throw Exception(string);
+	Sys_Error("%s", string);
 }
 
 void idCommonLocal::EndGame(const char* format, ...)
 {
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	throw EndGameException(string);
 }
 
 void idCommonLocal::ServerDisconnected(const char* format, ...)
@@ -384,8 +376,6 @@ Qcommon_Init
 */
 void Qcommon_Init(int argc, char** argv)
 {
-	try
-	{
 		char* s;
 
 		if (setjmp(abortframe))
@@ -481,11 +471,6 @@ void Qcommon_Init(int argc, char** argv)
 
 		com_fullyInitialized = true;
 		common->Printf("====== Quake2 Initialized ======\n\n");
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 /*
@@ -495,8 +480,6 @@ Qcommon_Frame
 */
 void Qcommon_Frame(int msec)
 {
-	try
-	{
 		int time_before, time_between, time_after;
 
 		if (setjmp(abortframe))
@@ -571,15 +554,6 @@ void Qcommon_Frame(int msec)
 			common->Printf("all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
 				all, sv, gm, cl, rf);
 		}
-	}
-	catch (DropException& e)
-	{
-		Com_Error(ERR_DROP, e.What());
-	}
-	catch (Exception& e)
-	{
-		Sys_Error("%s", e.What());
-	}
 }
 
 /*
