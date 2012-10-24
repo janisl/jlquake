@@ -67,8 +67,6 @@ void Sys_Error(const char* error, ...)
 
 void Sys_Quit(void)
 {
-	Host_Shutdown();
-
 	if (tevent)
 	{
 		CloseHandle(tevent);

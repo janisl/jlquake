@@ -112,7 +112,6 @@ void        Com_Quit_f(void);
 
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
-void Qcommon_Shutdown(void);
 
 /*
 ==============================================================

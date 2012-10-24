@@ -46,7 +46,6 @@ void Sys_Error(const char* error, ...)
 	char text[1024];
 
 	CL_Shutdown();
-	Qcommon_Shutdown();
 
 	va_start(argptr, error);
 	Q_vsnprintf(text, 1024, error, argptr);
@@ -73,9 +72,6 @@ void Sys_Error(const char* error, ...)
 void Sys_Quit(void)
 {
 	timeEndPeriod(1);
-
-	CL_Shutdown();
-	Qcommon_Shutdown();
 
 	Sys_DestroyConsole();
 	exit(0);

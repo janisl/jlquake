@@ -63,7 +63,6 @@ void Sys_Exit(int ex)
 
 void Sys_Quit(void)
 {
-	CL_Shutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	Sys_Exit(0);
 }

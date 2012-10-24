@@ -27,6 +27,7 @@ void Com_Quit_f()
 	CL_Disconnect(true);
 	SV_Shutdown("");
 
+	Host_Shutdown();
 	Sys_Quit();
 }
 

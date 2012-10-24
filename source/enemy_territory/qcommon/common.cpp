@@ -359,9 +359,6 @@ void QDECL Com_Error(int code, const char* fmt, ...)
 }
 void QDECL Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));
 
-//bani - moved
-void CLT3_ShutdownCGame(void);
-
 /*
 =============
 Com_Quit_f
@@ -376,10 +373,6 @@ void Com_Quit_f(void)
 	if (!com_errorEntered)
 	{
 		SV_Shutdown("Server quit\n");
-//bani
-#ifndef DEDICATED
-		CLT3_ShutdownCGame();
-#endif
 		CL_Shutdown();
 		Com_Shutdown();
 		FS_Shutdown();

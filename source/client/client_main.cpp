@@ -654,6 +654,7 @@ void CL_Shutdown()
 
 	if (GGameType & GAME_Tech3)
 	{
+		CLT3_ShutdownCGame();
 		CLT3_ShutdownUI();
 
 		Cmd_RemoveCommand("cmd");

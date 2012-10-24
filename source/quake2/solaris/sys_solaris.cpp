@@ -27,8 +27,6 @@ Cvar* nostdout;
 void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-	CL_Shutdown();
-	Qcommon_Shutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	_exit(0);
 }
@@ -60,7 +58,6 @@ void Sys_Error(const char* error, ...)
 
 	Sys_ConsoleInputShutdown();
 	CL_Shutdown();
-	Qcommon_Shutdown();
 	_exit(1);
 
 }

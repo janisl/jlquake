@@ -9,6 +9,7 @@
 #include <windows.h>
 #endif
 #include "../../client/public.h"
+#include "../../server/public.h"
 
 #define NUM_SAFE_ARGVS  6
 
@@ -77,6 +78,11 @@ void Com_Quit_f()
 {
 #ifndef SERVERONLY
 	CL_Disconnect(true);
+	Host_Shutdown();
+#else
+	common->Printf("Shutting down.\n");
+	SV_Shutdown("server shutdown\n");
+	Com_Shutdown();
 #endif
 	Sys_Quit();
 }

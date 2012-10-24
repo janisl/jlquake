@@ -113,7 +113,6 @@ void Sys_Error(const char* error, ...)
 
 void Sys_Quit(void)
 {
-	Host_Shutdown();
 #ifndef SERVERONLY
 	if (tevent)
 	{

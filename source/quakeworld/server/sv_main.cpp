@@ -192,7 +192,9 @@ void COM_InitServer(quakeparms_t* parms)
 
 		COM_Init();
 
-		SV_InitOperatorCommands();
+		Cmd_AddCommand("quit", Com_Quit_f);
+
+		Cvar_Set("cl_warncmd", "1");
 
 		SV_Init();
 		Sys_Init();

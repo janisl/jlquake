@@ -56,7 +56,6 @@ void Sys_Error(const char* error, ...)
 void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-	Host_Shutdown();
 	exit(0);
 }
 

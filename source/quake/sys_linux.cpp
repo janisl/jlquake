@@ -20,7 +20,6 @@ const char* basedir = ".";
 void Sys_Quit(void)
 {
 	Sys_ConsoleInputShutdown();
-	Host_Shutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	fflush(stdout);
 	exit(0);
@@ -81,7 +80,10 @@ static void signal_handler(int sig, siginfo_t* info, void* secret)
 	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
-	Sys_Quit();
+	Sys_ConsoleInputShutdown();
+	Host_Shutdown();
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
+	fflush(stdout);
 	exit(0);
 }
 
