@@ -71,17 +71,6 @@ void Sys_Error(const char* error, ...)
 }
 
 /*
-================
-Sys_Quit
-================
-*/
-void Sys_Quit(void)
-{
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	Sys_Exit(0);		// appkit isn't running
-}
-
-/*
 =============
 Sys_Init
 

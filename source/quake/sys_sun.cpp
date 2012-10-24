@@ -52,11 +52,6 @@ void Sys_Error(const char* error, ...)
 	Sys_Exit(1);
 }
 
-void Sys_Quit(void)
-{
-	Sys_Exit(0);
-}
-
 void Sys_Init(void)
 {
 }

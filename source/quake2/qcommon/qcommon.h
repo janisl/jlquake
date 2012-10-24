@@ -124,6 +124,5 @@ NON-PORTABLE SYSTEM SERVICES
 void    Sys_Init(void);
 
 void    Sys_Error(const char* error, ...);
-void    Sys_Quit(void);
 
 #endif

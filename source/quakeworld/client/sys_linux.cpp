@@ -34,12 +34,6 @@ const char* basedir = ".";
 // General routines
 // =======================================================================
 
-void Sys_Quit(void)
-{
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	Sys_Exit(0);
-}
-
 void Sys_Init(void)
 {
 }

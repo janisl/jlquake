@@ -41,3 +41,4 @@ void* Sys_GetDllFunction(void* handle, const char* name);
 void Sys_UnloadDll(void* handle);
 
 void Sys_MessageLoop();
+void Sys_Quit();

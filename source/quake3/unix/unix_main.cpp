@@ -41,12 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // general sys routines
 // =============================================================
 
-void Sys_Quit(void)
-{
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	Sys_Exit(0);
-}
-
 void Sys_Init(void)
 {
 #if defined __linux__

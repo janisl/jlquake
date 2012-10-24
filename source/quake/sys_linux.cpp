@@ -17,13 +17,6 @@ const char* basedir = ".";
 // General routines
 // =======================================================================
 
-void Sys_Quit(void)
-{
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	fflush(stdout);
-	Sys_Exit(0);
-}
-
 void Sys_Error(const char* error, ...)
 {
 	va_list argptr;

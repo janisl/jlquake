@@ -35,11 +35,6 @@ void Sys_Error(const char* error, ...)
 	exit(1);
 }
 
-void Sys_Quit(void)
-{
-	exit(0);
-}
-
 //=============================================================================
 
 void main(int argc, char** argv)

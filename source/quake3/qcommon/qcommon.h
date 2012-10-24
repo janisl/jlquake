@@ -89,7 +89,6 @@ void    Sys_Init(void);
 const char* Sys_GetCurrentUser(void);
 
 void    Sys_Error(const char* error, ...);
-void    Sys_Quit(void);
 
 // the system console is shown when a dedicated server is running
 void    Sys_DisplaySystemConsole(qboolean show);
