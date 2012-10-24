@@ -26,9 +26,8 @@ Cvar* nostdout;
 
 void Sys_Quit(void)
 {
-	Sys_ConsoleInputShutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	_exit(0);
+	Sys_Exit(0);
 }
 
 void Sys_Init(void)
@@ -56,9 +55,8 @@ void Sys_Error(const char* error, ...)
 	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
-	Sys_ConsoleInputShutdown();
 	CL_Shutdown();
-	_exit(1);
+	Sys_Exit(1);
 
 }
 

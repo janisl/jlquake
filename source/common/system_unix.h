@@ -20,6 +20,7 @@
 #define MAX_CMD 1024
 
 void Sys_DoStartProcess(const char* cmdline);
+void Sys_Exit(int ex);
 
 void Sys_ConsoleInputInit();
 void Sys_ConsoleInputShutdown();

@@ -67,36 +67,6 @@ void InitSig(void);
 // general sys routines
 // =============================================================
 
-// single exit point (regular exit or in case of signal fault)
-void Sys_Exit(int ex)
-{
-	Sys_ConsoleInputShutdown();
-
-	// we may be exiting to spawn another process
-	if (exit_cmdline[0] != '\0')
-	{
-		// temporize, it seems if you spawn too fast before GL is released, or if you exit too fast after the fork
-		// some kernel can panic (my 2.4.17 does)
-		sleep(1);
-		Sys_DoStartProcess(exit_cmdline);
-		sleep(1);
-	}
-
-#ifdef NDEBUG	// regular behavior
-
-	// We can't do this
-	//  as long as GL DLL's keep installing with atexit...
-	//exit(ex);
-	_exit(ex);
-#else
-
-	// Give me a backtrace on error exits.
-	assert(ex == 0);
-	exit(ex);
-#endif
-}
-
-
 void Sys_Quit(void)
 {
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);

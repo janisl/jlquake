@@ -36,9 +36,8 @@ const char* basedir = ".";
 
 void Sys_Quit(void)
 {
-	Sys_ConsoleInputShutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	exit(0);
+	Sys_Exit(0);
 }
 
 void Sys_Init(void)
@@ -63,9 +62,8 @@ void Sys_Error(const char* error, ...)
 	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
-	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
-	exit(1);
+	Sys_Exit(1);
 
 }
 
@@ -100,10 +98,9 @@ static void signal_handler(int sig, siginfo_t* info, void* secret)
 	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
-	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	exit(0);
+	Sys_Exit(0);
 }
 
 void InitSig(void)

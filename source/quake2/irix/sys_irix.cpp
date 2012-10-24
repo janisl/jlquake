@@ -27,9 +27,8 @@ Cvar* nostdout;
 
 void Sys_Quit(void)
 {
-	Sys_ConsoleInputShutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	_exit(0);
+	Sys_Exit(0);
 }
 
 void Sys_Init(void)
@@ -57,9 +56,8 @@ void Sys_Error(const char* error, ...)
 	va_end(argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
-	Sys_ConsoleInputShutdown();
 	CL_Shutdown();
-	_exit(1);
+	Sys_Exit(1);
 
 }
 
@@ -69,7 +67,7 @@ static void signal_handler(int sig)
 {
 	fprintf(stderr, "Received signal %d, exiting...\n", sig);
 	GLimp_Shutdown();
-	_exit(0);
+	Sys_Exit(0);
 }
 
 static void InitSig(void)

@@ -28,10 +28,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/client.h"
 #include "../../client/renderer/local.h"
 #endif
+#include "../../common/system_unix.h"
 
 static qboolean signalcaught = false;;
-
-void Sys_Exit(int);	// bk010104 - abstraction
 
 static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 - replace this... (NOTE TTimo huh?)
 {

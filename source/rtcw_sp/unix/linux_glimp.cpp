@@ -46,11 +46,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../client/client.h"
 #include "../../client/renderer/local.h"
+#include "../../common/system_unix.h"
 #include "linux_local.h"// bk001130
 
 static qboolean signalcaught = false;;
-
-void Sys_Exit(int);		// bk010104 - abstraction
 
 static void signal_handler(int sig, siginfo_t* info, void* secret)	// bk010104 - replace this... (NOTE TTimo huh?)
 {

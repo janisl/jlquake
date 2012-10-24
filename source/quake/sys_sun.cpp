@@ -48,15 +48,13 @@ void Sys_Error(const char* error, ...)
 	vprintf(error,argptr);
 	va_end(argptr);
 	printf("\n");
-	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
-	exit(1);
+	Sys_Exit(1);
 }
 
 void Sys_Quit(void)
 {
-	Sys_ConsoleInputShutdown();
-	exit(0);
+	Sys_Exit(0);
 }
 
 void Sys_Init(void)

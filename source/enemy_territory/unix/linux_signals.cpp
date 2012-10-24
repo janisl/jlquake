@@ -34,13 +34,12 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/client.h"
 #include "../../client/renderer/local.h"
 #endif
+#include "../../common/system_unix.h"
 
 // rain - don't bother building this in debug builds now, since we
 // aren't calling the signal handler at all
 #ifndef _DEBUG
 static qboolean signalcaught = false;;
-
-void Sys_Exit(int);		// bk010104 - abstraction
 
 static void signal_handler(int sig)		// bk010104 - replace this... (NOTE TTimo huh?)
 {

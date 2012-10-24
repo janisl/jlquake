@@ -66,37 +66,6 @@ uid_t saved_euid;
 // general sys routines
 // =============================================================
 
-// single exit point (regular exit or in case of signal fault)
-void Sys_Exit(int ex)
-{
-	Sys_ConsoleInputShutdown();
-
-	// we may be exiting to spawn another process
-	if (exit_cmdline[0] != '\0')
-	{
-		// possible race conditions?
-		// buggy kernels / buggy GL driver, I don't know for sure
-		// but it's safer to wait an eternity before and after the fork
-		sleep(1);
-		Sys_DoStartProcess(exit_cmdline);
-		sleep(1);
-	}
-
-#ifdef NDEBUG	// regular behavior
-
-	// We can't do this
-	//  as long as GL DLL's keep installing with atexit...
-	//exit(ex);
-	_exit(ex);
-#else
-
-	// Give me a backtrace on error exits.
-	assert(ex == 0);
-	exit(ex);
-#endif
-}
-
-
 void Sys_Quit(void)
 {
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);

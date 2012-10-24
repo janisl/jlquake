@@ -67,8 +67,7 @@ void Sys_Error(const char* error, ...)
 	va_end(argptr);
 	printf("Fatal error: %s\n",string);
 
-	Sys_ConsoleInputShutdown();
-	exit(1);
+	Sys_Exit(1);
 }
 
 /*
@@ -78,9 +77,8 @@ Sys_Quit
 */
 void Sys_Quit(void)
 {
-	Sys_ConsoleInputShutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	exit(0);		// appkit isn't running
+	Sys_Exit(0);		// appkit isn't running
 }
 
 /*
