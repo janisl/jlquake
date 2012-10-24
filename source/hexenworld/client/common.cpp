@@ -256,21 +256,8 @@ void COM_InitFilesystem(void)
 	FS_SetSearchPathBase();
 }
 
-static qboolean con_debuglog;
-fileHandle_t sv_logfile;
-
 void Com_InitDebugLog()
 {
-	con_debuglog = COM_CheckParm("-condebug");
-}
-
-static void Con_DebugLog(const char* file, const char* msg)
-{
-	fileHandle_t fd;
-
-	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(msg, String::Length(msg), fd);
-	FS_FCloseFile(fd);
 }
 
 /*
@@ -304,14 +291,7 @@ void Con_Printf(const char* fmt, ...)
 	Sys_Print(msg);
 
 	// log all messages to file
-	if (con_debuglog)
-	{
-		Con_DebugLog("qconsole.log", msg);
-	}
-	if (sv_logfile)
-	{
-		FS_Printf(sv_logfile, "%s", msg);
-	}
+	Com_LogToFile(msg);
 
 	// write it to the scrollable buffer
 	Con_ConsolePrint(msg);

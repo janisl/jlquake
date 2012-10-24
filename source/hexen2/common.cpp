@@ -292,33 +292,9 @@ void COM_InitFilesystem(void)
 //	Cvar_Set ("*gamedir", com_gamedir);	//removed to prevent full path
 }
 
-static qboolean con_debuglog;
-
 void Com_InitDebugLog()
 {
-	const char* t2 = "qconsole.log";
-
-	con_debuglog = COM_CheckParm("-condebug");
-
-	if (con_debuglog)
-	{
-		FS_FCloseFile(FS_FOpenFileWrite(t2));
-	}
 }
-
-/*
-================
-Con_DebugLog
-================
-*/
-void Con_DebugLog(const char* file, const char* msg)
-{
-	fileHandle_t fd;
-	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(msg, String::Length(msg), fd);
-	FS_FCloseFile(fd);
-}
-
 
 /*
 ================
@@ -340,10 +316,7 @@ void Con_Printf(const char* fmt, ...)
 	Sys_Print(msg);	// also echo to debugging console
 
 // log all messages to file
-	if (con_debuglog)
-	{
-		Con_DebugLog("qconsole.log", msg);
-	}
+	Com_LogToFile(msg);
 
 	if (!com_dedicated || com_dedicated->integer)
 	{

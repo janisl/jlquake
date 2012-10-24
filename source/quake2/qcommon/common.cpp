@@ -31,10 +31,7 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 Cvar* timescale;
 Cvar* fixedtime;
-Cvar* logfile_active;		// 1 = buffer log, 2 = flush after each print
 Cvar* showtrace;
-
-static fileHandle_t logfile;
 
 class idCommonLocal : public idCommon
 {
@@ -162,21 +159,7 @@ void Com_Printf(const char* fmt, ...)
 	Sys_Print(msg);
 
 	// logfile
-	if (logfile_active && logfile_active->value)
-	{
-		if (!logfile)
-		{
-			logfile = FS_FOpenFileWrite("qconsole.log");
-		}
-		if (logfile)
-		{
-			FS_Printf(logfile, "%s", msg);
-		}
-		if (logfile_active->value > 1)
-		{
-			FS_Flush(logfile);		// force it to save every time
-		}
-	}
+	Com_LogToFile(msg);
 }
 
 
@@ -248,11 +231,7 @@ void Com_Error(int code, const char* fmt, ...)
 		CL_Shutdown();
 	}
 
-	if (logfile)
-	{
-		FS_FCloseFile(logfile);
-		logfile = 0;
-	}
+	Com_Shutdown();
 
 	Sys_Error("%s", msg);
 }
@@ -271,11 +250,7 @@ void Com_Quit_f(void)
 	SV_Shutdown("Server quit\n");
 	CL_Shutdown();
 
-	if (logfile)
-	{
-		FS_FCloseFile(logfile);
-		logfile = 0;
-	}
+	Com_Shutdown();
 
 	Sys_Quit();
 }
@@ -423,7 +398,6 @@ void Qcommon_Init(int argc, char** argv)
 		com_speeds = Cvar_Get("host_speeds", "0", 0);
 		timescale = Cvar_Get("timescale", "1", 0);
 		fixedtime = Cvar_Get("fixedtime", "0", 0);
-		logfile_active = Cvar_Get("logfile", "0", 0);
 		showtrace = Cvar_Get("showtrace", "0", 0);
 #ifdef DEDICATED_ONLY
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_INIT);

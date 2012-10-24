@@ -305,6 +305,7 @@ void Host_Shutdown(void)
 {
 	CL_Shutdown();
 	NET_Shutdown();
+	Com_Shutdown();
 }
 
 void server_referencer_dummy()

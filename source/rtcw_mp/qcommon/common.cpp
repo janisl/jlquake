@@ -43,12 +43,10 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
 FILE* debuglogfile;
-static fileHandle_t logfile;
 
 Cvar* com_fixedtime;
 Cvar* com_maxfps;
 Cvar* com_timedemo;
-Cvar* com_logfile;			// 1 = buffer log, 2 = flush after each print
 Cvar* com_showtrace;
 Cvar* com_blood;
 Cvar* com_buildScript;		// for automated data building scripts
@@ -169,7 +167,6 @@ void QDECL Com_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	static qboolean opening_qconsole = false;
 
 	va_start(argptr,fmt);
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -200,43 +197,7 @@ void QDECL Com_Printf(const char* fmt, ...)
 	Sys_Print(msg);
 
 	// logfile
-	if (com_logfile && com_logfile->integer)
-	{
-		// TTimo: only open the qconsole.log if the filesystem is in an initialized state
-		//   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
-		if (!logfile && FS_Initialized() && !opening_qconsole)
-		{
-			struct tm* newtime;
-			time_t aclock;
-
-			opening_qconsole = true;
-
-			time(&aclock);
-			newtime = localtime(&aclock);
-
-#ifdef __MACOS__	//DAJ MacOS file typing
-			{
-				extern _MSL_IMP_EXP_C long _fcreator, _ftype;
-				_ftype = 'TEXT';
-				_fcreator = 'R*ch';
-			}
-#endif
-			logfile = FS_FOpenFileWrite("rtcwconsole.log");
-			common->Printf("logfile opened on %s\n", asctime(newtime));
-			if (com_logfile->integer > 1)
-			{
-				// force it to not buffer so we get valid
-				// data even if we are crashing
-				FS_ForceFlush(logfile);
-			}
-
-			opening_qconsole = false;
-		}
-		if (logfile && FS_Initialized())
-		{
-			FS_Write(msg, String::Length(msg), logfile);
-		}
-	}
+	Com_LogToFile(msg);
 }
 
 
@@ -528,8 +489,6 @@ void Com_Init(char* commandLine)
 		COM_InitCommonCvars();
 		com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE | CVAR_LATCH2);
 		com_blood = Cvar_Get("com_blood", "1", CVAR_ARCHIVE);
-
-		com_logfile = Cvar_Get("logfile", "0", CVAR_TEMP);
 
 		com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 		com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
@@ -876,25 +835,4 @@ void Com_Frame(void)
 		key = lastTime * 0x87243987;
 
 		com_frameNumber++;
-}
-
-/*
-=================
-Com_Shutdown
-=================
-*/
-void Com_Shutdown(void)
-{
-	if (logfile)
-	{
-		FS_FCloseFile(logfile);
-		logfile = 0;
-	}
-
-	if (com_journalFile)
-	{
-		FS_FCloseFile(com_journalFile);
-		com_journalFile = 0;
-	}
-
 }

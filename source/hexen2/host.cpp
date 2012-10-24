@@ -487,4 +487,5 @@ void Host_Shutdown(void)
 	CL_Shutdown();
 #endif
 	NETQH_Shutdown();
+	Com_Shutdown();
 }

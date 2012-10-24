@@ -83,6 +83,9 @@ static char* com_consoleLines[MAX_CONSOLE_LINES];
 
 bool com_fullyInitialized;
 
+static fileHandle_t logfile_;
+static Cvar* com_logfile;			// 1 = buffer log, 2 = flush after each print
+
 Interface::~Interface()
 {
 }
@@ -744,6 +747,7 @@ void COM_InitCommonCvars()
 	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
 	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
+	com_logfile = Cvar_Get("logfile", "0", CVAR_TEMP);
 }
 
 int Com_HashKey(const char* string, int maxlen)
@@ -1209,5 +1213,66 @@ void Com_SetRecommended(bool vid_restart)
 	if (vid_restart)
 	{
 		Cbuf_AddText("vid_restart\n");
+	}
+}
+
+void Com_LogToFile(const char* msg)
+{
+	if (com_logfile && com_logfile->integer)
+	{
+		// TTimo: only open the qconsole.log if the filesystem is in an initialized state
+		//   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
+		static bool opening_qconsole = false;
+		if (!logfile_ && FS_Initialized() && !opening_qconsole)
+		{
+			opening_qconsole = true;
+
+			time_t aclock;
+			time(&aclock);
+			tm* newtime = localtime(&aclock);
+
+			logfile_ = FS_FOpenFileWrite("qconsole.log");
+			common->Printf("logfile opened on %s\n", asctime(newtime));
+			if (com_logfile->integer > 1)
+			{
+				// force it to not buffer so we get valid
+				// data even if we are crashing
+				FS_ForceFlush(logfile_);
+			}
+
+			opening_qconsole = false;
+		}
+		if (logfile_ && FS_Initialized())
+		{
+			FS_Write(msg, String::Length(msg), logfile_);
+		}
+	}
+}
+
+void Com_Shutdown()
+{
+	if (GGameType & GAME_ET)
+	{
+		// delete pid file
+		const char* cl_profileStr = Cvar_VariableString("cl_profile");
+		if (comet_gameInfo.usesProfiles && cl_profileStr[0])
+		{
+			if (FS_FileExists(va("profiles/%s/profile.pid", cl_profileStr)))
+			{
+				FS_Delete(va("profiles/%s/profile.pid", cl_profileStr));
+			}
+		}
+	}
+
+	if (logfile_)
+	{
+		FS_FCloseFile(logfile_);
+		logfile_ = 0;
+	}
+
+	if (com_journalFile)
+	{
+		FS_FCloseFile(com_journalFile);
+		com_journalFile = 0;
 	}
 }
