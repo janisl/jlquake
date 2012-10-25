@@ -7,8 +7,6 @@
 #include <fcntl.h>
 #include <execinfo.h>
 
-int nostdout = 0;
-
 const char* basedir = ".";
 
 int main(int c, char** v)
@@ -30,16 +28,6 @@ int main(int c, char** v)
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
 
 	Host_Init(&parms);
-
-	if (COM_CheckParm("-nostdout"))
-	{
-		nostdout = 1;
-	}
-	else
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
-		printf("Linux Quake -- Version %0.3f\n", HEXEN2_VERSION);
-	}
 
 	Sys_ConsoleInputInit();
 

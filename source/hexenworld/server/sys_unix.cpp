@@ -17,54 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <sys/types.h>
+
 #include "qwsvdef.h"
 #include "../../common/system_unix.h"
-
-#ifdef NeXT
-#include <libc.h>
-#endif
-
-#if defined(__linux__) || defined(sun)
-#include <sys/stat.h>
 #include <unistd.h>
-#include <sys/time.h>
-#include <errno.h>
-#else
-#include <sys/dir.h>
-#endif
 #include <fcntl.h>
 
-Cvar* sys_nostdout;
-Cvar* sys_extrasleep;
-
-/*
-===============================================================================
-
-                REQUIRED SYS FUNCTIONS
-
-===============================================================================
-*/
-
-/*
-=============
-Sys_Init
-
-Quake calls this so the system can register variables before host_hunklevel
-is marked
-=============
-*/
-void Sys_Init(void)
-{
-	sys_nostdout = Cvar_Get("sys_nostdout", "0", 0);
-	sys_extrasleep = Cvar_Get("sys_extrasleep","0", 0);
-}
-
-/*
-=============
-main
-=============
-*/
 int main(int argc, char* argv[])
 {
 	double time, oldtime, newtime;
@@ -80,16 +38,16 @@ int main(int argc, char* argv[])
 
 	COM_InitServer(&parms);
 
-// run one frame immediately for first heartbeat
+	// run one frame immediately for first heartbeat
 	COM_ServerFrame(0.1);
 
 	Sys_ConsoleInputInit();
 
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
 
-//
-// main loop
-//
+	//
+	// main loop
+	//
 	oldtime = Sys_DoubleTime() - 0.1;
 	while (1)
 	{

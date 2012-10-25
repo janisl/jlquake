@@ -28,7 +28,12 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <execinfo.h>
+/* get REG_EIP from ucontext.h */
+#include <ucontext.h>
 #include <pwd.h>
+#ifdef __linux__
+#include <fpu_control.h>	// bk001213 - force dumps on divide by zero
+#endif
 #include "../client/public.h"
 
 #define MAX_FOUND_FILES     0x1000
@@ -44,6 +49,8 @@ bool stdin_active = true;
 static char HomePathSuffix[MAX_OSPATH];
 
 char exit_cmdline[MAX_CMD] = "";
+
+Cvar* sys_extrasleep;
 
 //	Test an file given OS path:
 //	returns -1 if not found
@@ -600,4 +607,103 @@ const char* Sys_GetCurrentUser()
 		return "player";
 	}
 	return p->pw_name;
+}
+
+void Sys_Init()
+{
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		sys_extrasleep = Cvar_Get("sys_extrasleep","0", 0);
+	}
+
+	if (!(GGameType & GAME_Tech3))
+	{
+		return;
+	}
+
+#if defined __linux__
+#if defined __i386__
+	Cvar_Set("arch", "linux i386");
+#elif defined __x86_64__
+	Cvar_Set("arch", "linux x86_86");
+#elif defined __alpha__
+	Cvar_Set("arch", "linux alpha");
+#elif defined __sparc__
+	Cvar_Set("arch", "linux sparc");
+#elif defined __FreeBSD__
+
+#if defined __i386__// FreeBSD
+	Cvar_Set("arch", "freebsd i386");
+#elif defined __x86_64__
+	Cvar_Set("arch", "freebsd x86_86");
+#elif defined __alpha__
+	Cvar_Set("arch", "freebsd alpha");
+#else
+	Cvar_Set("arch", "freebsd unknown");
+#endif	// FreeBSD
+
+#else
+	Cvar_Set("arch", "linux unknown");
+#endif
+#elif defined __sun__
+#if defined __i386__
+	Cvar_Set("arch", "solaris x86");
+#elif defined __x86_64__
+	Cvar_Set("arch", "solaris x86_86");
+#elif defined __sparc__
+	Cvar_Set("arch", "solaris sparc");
+#else
+	Cvar_Set("arch", "solaris unknown");
+#endif
+#elif defined __sgi__
+#if defined __mips__
+	Cvar_Set("arch", "sgi mips");
+#else
+	Cvar_Set("arch", "sgi unknown");
+#endif
+#else
+	Cvar_Set("arch", "unknown");
+#endif
+
+	Cvar_Set("username", Sys_GetCurrentUser());
+}
+
+void Sys_ConfigureFPU()	// bk001213 - divide by zero
+{
+#ifdef __linux__
+#ifdef __i386
+#ifdef NDEBUG
+	static int fpu_word = _FPU_DEFAULT;
+	_FPU_SETCW(fpu_word);
+#endif	// NDEBUG
+#endif	// __i386
+#endif	// __linux
+}
+
+static void Sys_PrintBinVersion(const char* name)
+{
+	const char* date = __DATE__;
+	const char* time = __TIME__;
+	const char* sep = "==============================================================";
+	fprintf(stdout, "\n\n%s\n", sep);
+#ifdef DEDICATED
+	fprintf(stdout, "Linux JLQuake Dedicated Server [%s %s]\n", date, time);
+#else
+	fprintf(stdout, "Linux JLQuake Full Executable  [%s %s]\n", date, time);
+#endif
+	fprintf(stdout, " local install: %s\n", name);
+	fprintf(stdout, "%s\n\n", sep);
+}
+
+void Sys_ParseArgs(int argc, char* argv[])
+{
+	if (argc == 2)
+	{
+		if ((!String::Cmp(argv[1], "--version")) ||
+			(!String::Cmp(argv[1], "-v")))
+		{
+			Sys_PrintBinVersion(argv[0]);
+			Sys_Exit(0);
+		}
+	}
 }

@@ -17,32 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <signal.h>
-#include <sys/time.h>
-#include <fcntl.h>
-#include <execinfo.h>
-/* get REG_EIP from ucontext.h */
-#include <ucontext.h>
 
 #include "quakedef.h"
 #include "../../common/system_unix.h"
-
-int noconinput = 0;
-int nostdout = 0;
+#include <fcntl.h>
 
 const char* basedir = ".";
 
-// =======================================================================
-// General routines
-// =======================================================================
-
-void Sys_Init(void)
-{
-}
-
 int main(int c, char** v)
 {
-
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 
@@ -55,16 +38,7 @@ int main(int c, char** v)
 	parms.argv = v;
 	parms.basedir = basedir;
 
-	noconinput = COM_CheckParm("-noconinput");
-	if (!noconinput)
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
-	}
-
-	if (COM_CheckParm("-nostdout"))
-	{
-		nostdout = 1;
-	}
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
 
 	Sys_Init();
 
@@ -75,7 +49,7 @@ int main(int c, char** v)
 	oldtime = Sys_DoubleTime();
 	while (1)
 	{
-// find time spent rendering last frame
+		// find time spent rendering last frame
 		newtime = Sys_DoubleTime();
 		time = newtime - oldtime;
 

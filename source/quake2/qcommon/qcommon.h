@@ -113,14 +113,4 @@ void        Com_Quit_f(void);
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
 
-/*
-==============================================================
-
-NON-PORTABLE SYSTEM SERVICES
-
-==============================================================
-*/
-
-void    Sys_Init(void);
-
 #endif

@@ -9,8 +9,6 @@
 /* get REG_EIP from ucontext.h */
 #include <ucontext.h>
 
-int nostdout = 0;
-
 const char* basedir = ".";
 
 int main(int c, char** v)
@@ -33,15 +31,7 @@ int main(int c, char** v)
 
 	Host_Init(&parms);
 
-	if (COM_CheckParm("-nostdout"))
-	{
-		nostdout = 1;
-	}
-	else
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
-		printf("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
-	}
+	printf("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
 
 	Sys_ConsoleInputInit();
 

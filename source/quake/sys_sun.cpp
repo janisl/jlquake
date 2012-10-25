@@ -34,12 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/mman.h>
 #include <stdio.h>
 
-void Sys_Init(void)
-{
-}
-
-//=============================================================================
-
 int main(int argc, char** argv)
 {
 	static quakeparms_t parms;
@@ -56,8 +50,6 @@ int main(int argc, char** argv)
 
 	printf("Host_Init\n");
 	Host_Init(&parms);
-
-	Sys_Init();
 
 	// unroll the simulation loop to give the video side a chance to see _vid_default_mode
 	Host_Frame(0.1);

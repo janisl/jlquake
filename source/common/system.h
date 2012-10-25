@@ -44,3 +44,4 @@ void Sys_MessageLoop();
 void Sys_Quit();
 void Sys_Error(const char* error, ...);
 const char* Sys_GetCurrentUser();
+void Sys_Init();

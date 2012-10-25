@@ -22,6 +22,8 @@
 void Sys_DoStartProcess(const char* cmdline);
 void Sys_Exit(int ex);
 void InitSig();
+void Sys_ConfigureFPU();
+void Sys_ParseArgs(int argc, char* argv[]);
 
 void Sys_ConsoleInputInit();
 void Sys_ConsoleInputShutdown();
@@ -33,6 +35,8 @@ extern bool stdin_active;
 extern unsigned long sys_timeBase;
 
 extern char exit_cmdline[MAX_CMD];
+
+extern Cvar* sys_extrasleep;
 
 extern Cvar* ttycon;
 extern bool ttycon_on;

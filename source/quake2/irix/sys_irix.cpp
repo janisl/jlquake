@@ -23,15 +23,6 @@
 
 #include "../../common/system_unix.h"
 
-Cvar* nostdout;
-
-void Sys_Init(void)
-{
-#if id386
-//	Sys_SetFPCW();
-#endif
-}
-
 int main(int argc, char** argv)
 {
 	int time, oldtime, newtime;
@@ -42,15 +33,6 @@ int main(int argc, char** argv)
 	seteuid(getuid());
 
 	Qcommon_Init(argc, argv);
-
-/*  fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
-
-	nostdout = Cvar_Get("nostdout", "0", 0);
-	if (!nostdout->value)
-	{
-/*      fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY); */
-//		printf ("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
-	}
 
 	Sys_ConsoleInputInit();
 

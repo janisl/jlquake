@@ -26,154 +26,17 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <signal.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <ctype.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
-#ifdef __linux__// rb010123
-  #include <mntent.h>
-#endif
-
-#ifdef __linux__
-  #include <fpu_control.h>	// bk001213 - force dumps on divide by zero
-#endif
-
-// FIXME TTimo should we gard this? most *nix system should comply?
-#include <termios.h>
-
+#include "../../common/qcommon.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../../common/system_unix.h"
-#include "../../client/public.h"
-
-unsigned sys_frame_time;
-
-uid_t saved_euid;
-
-// =============================================================
-// general sys routines
-// =============================================================
-
-void Sys_Init(void)
-{
-#if defined __linux__
-#if defined __i386__
-	Cvar_Set("arch", "linux i386");
-#elif defined __x86_64__
-	Cvar_Set("arch", "linux x86_64");
-#elif defined __alpha__
-	Cvar_Set("arch", "linux alpha");
-#elif defined __sparc__
-	Cvar_Set("arch", "linux sparc");
-#elif defined __FreeBSD__
-
-#if defined __i386__// FreeBSD
-	Cvar_Set("arch", "freebsd i386");
-#elif defined __alpha__
-	Cvar_Set("arch", "freebsd alpha");
-#else
-	Cvar_Set("arch", "freebsd unknown");
-#endif	// FreeBSD
-
-#else
-	Cvar_Set("arch", "linux unknown");
-#endif
-#elif defined __sun__
-#if defined __i386__
-	Cvar_Set("arch", "solaris x86");
-#elif defined __sparc__
-	Cvar_Set("arch", "solaris sparc");
-#else
-	Cvar_Set("arch", "solaris unknown");
-#endif
-#elif defined __sgi__
-#if defined __mips__
-	Cvar_Set("arch", "sgi mips");
-#else
-	Cvar_Set("arch", "sgi unknown");
-#endif
-#else
-	Cvar_Set("arch", "unknown");
-#endif
-
-	Cvar_Set("username", Sys_GetCurrentUser());
-}
-
-void    Sys_ConfigureFPU()	// bk001213 - divide by zero
-{
-#ifdef __linux__
-#ifdef __i386
-#ifndef NDEBUG
-
-	// bk0101022 - enable FPE's in debug mode
-	static int fpu_word = _FPU_DEFAULT & ~(_FPU_MASK_ZM | _FPU_MASK_IM);
-	int current = 0;
-	_FPU_GETCW(current);
-	if (current != fpu_word)
-	{
-#if 0
-		common->Printf("FPU Control 0x%x (was 0x%x)\n", fpu_word, current);
-		_FPU_SETCW(fpu_word);
-		_FPU_GETCW(current);
-		assert(fpu_word == current);
-#endif
-	}
-#else	// NDEBUG
-	static int fpu_word = _FPU_DEFAULT;
-	_FPU_SETCW(fpu_word);
-#endif	// NDEBUG
-#endif	// __i386
-#endif	// __linux
-}
-
-void Sys_PrintBinVersion(const char* name)
-{
-	const char* date = __DATE__;
-	const char* time = __TIME__;
-	const char* sep = "==============================================================";
-	fprintf(stdout, "\n\n%s\n", sep);
-#ifdef DEDICATED
-	fprintf(stdout, "Linux Quake3 Dedicated Server [%s %s]\n", date, time);
-#else
-	fprintf(stdout, "Linux Quake3 Full Executable  [%s %s]\n", date, time);
-#endif
-	fprintf(stdout, " local install: %s\n", name);
-	fprintf(stdout, "%s\n\n", sep);
-}
-
-void Sys_ParseArgs(int argc, char* argv[])
-{
-
-	if (argc == 2)
-	{
-		if ((!String::Cmp(argv[1], "--version")) ||
-			(!String::Cmp(argv[1], "-v")))
-		{
-			Sys_PrintBinVersion(argv[0]);
-			Sys_Exit(0);
-		}
-	}
-}
+#include <fcntl.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[])
 {
-	// int  oldtime, newtime; // bk001204 - unused
 	int len, i;
 	char* cmdline;
-
-	// go back to real user for config loads
-	saved_euid = geteuid();
-	seteuid(getuid());
 
 	InitSig();
 
