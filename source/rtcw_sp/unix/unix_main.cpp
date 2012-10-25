@@ -112,52 +112,6 @@ void Sys_Init(void)
 	Cvar_Set("username", Sys_GetCurrentUser());
 }
 
-void Sys_Warn(char* warning, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr,warning);
-	vsprintf(string,warning,argptr);
-	va_end(argptr);
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	fprintf(stderr, "Warning: %s", string);
-
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int Sys_FileTime(char* path)
-{
-	struct  stat buf;
-
-	if (stat(path,&buf) == -1)
-	{
-		return -1;
-	}
-
-	return buf.st_mtime;
-}
-
-void floating_point_exception_handler(int whatever)
-{
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
 void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 {
 #ifdef __linux__

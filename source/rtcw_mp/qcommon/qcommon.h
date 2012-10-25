@@ -106,12 +106,6 @@ void    Sys_SetErrorText(const char* text);
 
 unsigned int Sys_ProcessorCount();
 
-#ifdef __linux__
-// TTimo only on linux .. maybe on Mac too?
-// will OR with the existing mode (chmod ..+..)
-void Sys_Chmod(char* file, int mode);
-#endif
-
 extern huffman_t clientHuffTables;
 
 #endif	// _QCOMMON_H_

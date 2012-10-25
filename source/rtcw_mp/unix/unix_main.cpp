@@ -111,53 +111,6 @@ void Sys_Init(void)
 	Cvar_Set("username", Sys_GetCurrentUser());
 }
 
-void Sys_Warn(char* warning, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr,warning);
-	vsprintf(string,warning,argptr);
-	va_end(argptr);
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	fprintf(stderr, "Warning: %s", string);
-
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int Sys_FileTime(char* path)
-{
-	struct  stat buf;
-
-	if (stat(path,&buf) == -1)
-	{
-		return -1;
-	}
-
-	return buf.st_mtime;
-}
-
-// NOTE TTimo: huh?
-void floating_point_exception_handler(int whatever)
-{
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
 void    Sys_ConfigureFPU()	// bk001213 - divide by zero
 {
 #ifdef __linux__
@@ -198,28 +151,6 @@ void Sys_PrintBinVersion(const char* name)
 #endif
 	fprintf(stdout, " local install: %s\n", name);
 	fprintf(stdout, "%s\n\n", sep);
-}
-
-/*
-==================
-chmod OR on a file
-==================
-*/
-void Sys_Chmod(char* file, int mode)
-{
-	struct stat s_buf;
-	int perm;
-	if (stat(file, &s_buf) != 0)
-	{
-		common->Printf("stat('%s')  failed: errno %d\n", file, errno);
-		return;
-	}
-	perm = s_buf.st_mode | mode;
-	if (chmod(file, perm) != 0)
-	{
-		common->Printf("chmod('%s', %d) failed: errno %d\n", file, perm, errno);
-	}
-	common->DPrintf("chmod +%d '%s'\n", mode, file);
 }
 
 void Sys_ParseArgs(int argc, char* argv[])
