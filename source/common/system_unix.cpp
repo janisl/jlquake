@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <execinfo.h>
+#include <pwd.h>
 #include "../client/public.h"
 
 #define MAX_FOUND_FILES     0x1000
@@ -589,4 +590,14 @@ void InitSig()
 	sigaction(SIGSEGV, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 #endif
+}
+
+const char* Sys_GetCurrentUser()
+{
+	passwd* p = getpwuid(getuid());
+	if (p == NULL)
+	{
+		return "player";
+	}
+	return p->pw_name;
 }

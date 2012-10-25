@@ -445,16 +445,6 @@ static void Com_Crash_f(void)
 	*(int*)0 = 0x12345678;
 }
 
-/*
-=============
-Com_CPUSpeed_f
-=============
-*/
-void Com_CPUSpeed_f(void)
-{
-	common->Printf("CPU Speed: %.2f Mhz\n", Sys_GetCPUSpeed());
-}
-
 void Com_GetGameInfo()
 {
 	char* f;
@@ -857,7 +847,6 @@ void Com_Init(char* commandLine)
 			Cmd_AddCommand("error", Com_Error_f);
 			Cmd_AddCommand("crash", Com_Crash_f);
 			Cmd_AddCommand("freeze", Com_Freeze_f);
-			Cmd_AddCommand("cpuspeed", Com_CPUSpeed_f);
 		}
 		Cmd_AddCommand("quit", Com_Quit_f);
 		Cmd_AddCommand("writeconfig", Com_WriteConfig_f);

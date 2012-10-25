@@ -6,7 +6,6 @@ set(QUAKE3_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
-	unix/unix_shared.cpp
 )
 
 add_executable(jlquake3 ${QUAKE3_FILES})
@@ -21,7 +20,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
-	unix/unix_shared.cpp
 )
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})

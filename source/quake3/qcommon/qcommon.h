@@ -86,14 +86,10 @@ NON-PORTABLE SYSTEM SERVICES
 
 void    Sys_Init(void);
 
-const char* Sys_GetCurrentUser(void);
-
 // the system console is shown when a dedicated server is running
 void    Sys_DisplaySystemConsole(qboolean show);
 
 int     Sys_GetProcessorId(void);
-
-unsigned int Sys_ProcessorCount();
 
 extern huffman_t clientHuffTables;
 

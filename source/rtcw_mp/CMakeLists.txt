@@ -5,9 +5,7 @@
 set(WOLFMP_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
-
 	unix/unix_main.cpp
-	unix/unix_shared.cpp
 )
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
@@ -18,7 +16,6 @@ set(WOLFMPDED_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 	unix/unix_main.cpp
-	unix/unix_shared.cpp
 )
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})

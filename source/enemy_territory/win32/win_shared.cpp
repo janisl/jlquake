@@ -357,30 +357,6 @@ float Sys_RealGetCPUSpeed(void)
 	return((float)total / 3.f);
 }
 
-float Sys_GetCPUSpeed(void)
-{
-	float cpuSpeed;
-
-#ifndef __GNUC__
-	__try
-#else
-	if (1)
-#endif
-	{
-		cpuSpeed = Sys_RealGetCPUSpeed();
-	}
-#ifndef __GNUC__
-	__except(EXCEPTION_EXECUTE_HANDLER)
-#else
-	if (0)
-#endif
-	{
-		cpuSpeed = 100.f;
-	}
-
-	return cpuSpeed;
-}
-
 /*
 **
 ** Re-enable optimizations back to what they were
