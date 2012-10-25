@@ -47,30 +47,6 @@ Cvar* sys_extrasleep;
 */
 
 /*
-================
-Sys_Error
-================
-*/
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-	printf("Fatal error: %s\n",string);
-
-	Sys_Exit(1);
-}
-
-/*
 =============
 Sys_Init
 

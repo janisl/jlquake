@@ -17,6 +17,7 @@
 #include "qcommon.h"
 #include <time.h>
 #include "../client/public.h"
+#include "../server/public.h"
 
 #define MAX_NUM_ARGVS   50
 
@@ -1275,4 +1276,21 @@ void Com_Shutdown()
 		FS_FCloseFile(com_journalFile);
 		com_journalFile = 0;
 	}
+}
+
+//	FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
+// to run quit through here before the final handoff to the sys code.
+void ComQH_HostShutdown()
+{
+	CL_Shutdown();
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		SVQH_ShutdownNetwork();
+		NETQH_Shutdown();
+	}
+	else
+	{
+		NET_Shutdown();
+	}
+	Com_Shutdown();
 }

@@ -263,5 +263,6 @@ void Com_SetRecommended(bool vid_restart);
 
 void Com_LogToFile(const char* msg);
 void Com_Shutdown();
+void ComQH_HostShutdown();
 
 #define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

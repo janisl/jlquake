@@ -120,7 +120,6 @@ void SV_Error(const char* error, ...)
 	common->Printf("SV_Error: %s\n",string);
 
 	SV_Shutdown(va("server crashed: %s\n", string));
-	Com_Shutdown();
 
 	Sys_Error("SV_Error: %s\n",string);
 }

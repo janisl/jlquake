@@ -78,7 +78,7 @@ void Com_Quit_f()
 {
 #ifndef SERVERONLY
 	CL_Disconnect(true);
-	Host_Shutdown();
+	ComQH_HostShutdown();
 #else
 	common->Printf("Shutting down.\n");
 	SV_Shutdown("server shutdown\n");

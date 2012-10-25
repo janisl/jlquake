@@ -291,24 +291,3 @@ void Host_Init(quakeparms_t* parms)
 
 		common->Printf("������� HexenWorld Initialized �������\n");
 }
-
-
-/*
-===============
-Host_Shutdown
-
-FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
-to run quit through here before the final handoff to the sys code.
-===============
-*/
-void Host_Shutdown(void)
-{
-	CL_Shutdown();
-	NET_Shutdown();
-	Com_Shutdown();
-}
-
-void server_referencer_dummy()
-{
-	svh2_kingofhill = 0;
-}

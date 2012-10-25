@@ -57,7 +57,7 @@ void Sys_Error(const char* error, ...)
 	char text[1024], text2[1024];
 	DWORD dummy;
 
-	Host_Shutdown();
+	ComQH_HostShutdown();
 
 	va_start(argptr, error);
 	Q_vsnprintf(text, 1024, error, argptr);

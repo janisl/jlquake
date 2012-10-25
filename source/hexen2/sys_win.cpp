@@ -51,7 +51,7 @@ void Sys_Error(const char* error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-	Host_Shutdown();
+	ComQH_HostShutdown();
 
 	// wait for the user to quit
 	MSG msg;

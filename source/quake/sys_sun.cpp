@@ -34,24 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/mman.h>
 #include <stdio.h>
 
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	printf("Sys_Error: ");
-	va_start(argptr,error);
-	vprintf(error,argptr);
-	va_end(argptr);
-	printf("\n");
-	Host_Shutdown();
-	Sys_Exit(1);
-}
-
 void Sys_Init(void)
 {
 }

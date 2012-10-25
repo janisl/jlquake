@@ -32,29 +32,6 @@ void Sys_Init(void)
 #endif
 }
 
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-// change stdin to non blocking
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-	fprintf(stderr, "Error: %s\n", string);
-
-	CL_Shutdown();
-	Sys_Exit(1);
-
-}
-
 /*****************************************************************************/
 
 static void signal_handler(int sig)

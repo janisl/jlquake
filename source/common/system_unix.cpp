@@ -25,6 +25,8 @@
 #include <sys/time.h>
 #include <dlfcn.h>
 #include <assert.h>
+#include <fcntl.h>
+#include "../client/public.h"
 
 #define MAX_FOUND_FILES     0x1000
 
@@ -479,4 +481,36 @@ void Sys_Quit()
 {
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	Sys_Exit(0);
+}
+
+void Sys_Error(const char* error, ...)
+{
+	va_list argptr;
+	char string[1024];
+
+	// change stdin to non blocking
+	// NOTE TTimo not sure how well that goes with tty console mode
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
+
+	// don't bother do a show on this one heh
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+
+	va_start(argptr,error);
+	Q_vsnprintf(string, sizeof(string), error, argptr);
+	va_end(argptr);
+	fprintf(stderr, "Sys_Error: %s\n", string);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		ComQH_HostShutdown();
+	}
+	else
+	{
+		CL_Shutdown();
+	}
+
+	Sys_Exit(1);	// bk010104 - use single exit point.
 }

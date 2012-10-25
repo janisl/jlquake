@@ -40,29 +40,6 @@ void Sys_Init(void)
 {
 }
 
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-// change stdin to non blocking
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-	fprintf(stderr, "Error: %s\n", string);
-
-	Host_Shutdown();
-	Sys_Exit(1);
-
-}
-
 static void signal_handler(int sig, siginfo_t* info, void* secret)
 {
 	void* trace[64];
@@ -94,7 +71,7 @@ static void signal_handler(int sig, siginfo_t* info, void* secret)
 	for (i = 1; i < trace_size; ++i)
 		printf("[bt] %s\n", messages[i]);
 
-	Host_Shutdown();
+	ComQH_HostShutdown();
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
 	Sys_Exit(0);
 }

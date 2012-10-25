@@ -22,21 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "errno.h"
 
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-
-	printf("Sys_Error: ");
-	va_start(argptr,error);
-	vprintf(error,argptr);
-	va_end(argptr);
-	printf("\n");
-
-	exit(1);
-}
-
-//=============================================================================
-
 void main(int argc, char** argv)
 {
 	static quakeparms_t parms;

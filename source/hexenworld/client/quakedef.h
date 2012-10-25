@@ -39,7 +39,6 @@ extern double realtime;					// not bounded in any way, changed at
 
 void Host_InitCommands(void);
 void Host_Init(quakeparms_t* parms);
-void Host_Shutdown(void);
 void Host_FatalError(const char* error, ...);
 void Host_EndGame(const char* message, ...);
 void Host_Frame(float time);

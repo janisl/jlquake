@@ -48,8 +48,6 @@ inline int Sys_Milliseconds_()
 	return Sys_Milliseconds();
 }
 
-// this is only here so the functions in q_shared.c and q_shwin.c can link
-void Sys_Error(const char* error, ...);
 void Com_Printf(const char* msg, ...);
 
 

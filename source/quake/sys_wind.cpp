@@ -25,22 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys\types.h>
 #include <sys\timeb.h>
 
-
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr,error);
-	Q_vsnprintf(text, 1024, error, argptr);
-	va_end(argptr);
-
-//    MessageBox(NULL, text, "Error", 0 /* MB_OK */ );
-	printf("ERROR: %s\n", text);
-
-	exit(1);
-}
-
 void Sys_Quit(void)
 {
 	exit(0);

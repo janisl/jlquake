@@ -142,8 +142,6 @@ void SV_Error(const char* error, ...)
 
 	SV_Shutdown(va("server crashed: %s\n", string));
 
-	Com_Shutdown();
-
 	Sys_Error("SV_Error: %s\n",string);
 }
 

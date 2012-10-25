@@ -111,31 +111,6 @@ void Sys_Init(void)
 	Cvar_Set("username", Sys_GetCurrentUser());
 }
 
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	// change stdin to non blocking
-	// NOTE TTimo not sure how well that goes with tty console mode
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) & ~FNDELAY);
-
-	// don't bother do a show on this one heh
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-
-	CL_Shutdown();
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, sizeof(string), error, argptr);
-	va_end(argptr);
-	fprintf(stderr, "Sys_Error: %s\n", string);
-
-	Sys_Exit(1);	// bk010104 - use single exit point.
-}
-
 void Sys_Warn(char* warning, ...)
 {
 	va_list argptr;

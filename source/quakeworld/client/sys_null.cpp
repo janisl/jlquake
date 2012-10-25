@@ -3,27 +3,6 @@
 #include "quakedef.h"
 #include "errno.h"
 
-/*
-===============================================================================
-
-SYSTEM IO
-
-===============================================================================
-*/
-
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-
-	printf("I_Error: ");
-	va_start(argptr,error);
-	vprintf(error,argptr);
-	va_end(argptr);
-	printf("\n");
-
-	exit(1);
-}
-
 void Sys_Sleep(void)
 {
 }

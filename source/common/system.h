@@ -42,3 +42,4 @@ void Sys_UnloadDll(void* handle);
 
 void Sys_MessageLoop();
 void Sys_Quit();
+void Sys_Error(const char* error, ...);
