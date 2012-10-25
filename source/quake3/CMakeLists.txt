@@ -7,7 +7,6 @@ set(QUAKE3_FILES
 	qcommon/files.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_signals.cpp
 )
 
 add_executable(jlquake3 ${QUAKE3_FILES})
@@ -21,7 +20,6 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 set(QUAKE3_DEDICATED_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
-	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 )

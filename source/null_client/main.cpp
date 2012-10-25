@@ -209,3 +209,7 @@ bool CL_WWWBadChecksum(const char* pakname)
 {
 	return false;
 }
+
+void CL_ShutdownOnSignal()
+{
+}

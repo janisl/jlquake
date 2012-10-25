@@ -8,7 +8,6 @@ set(WOLFMP_FILES
 
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_signals.cpp
 )
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
@@ -20,7 +19,6 @@ set(WOLFMPDED_FILES
 	qcommon/files.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_signals.cpp
 )
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})

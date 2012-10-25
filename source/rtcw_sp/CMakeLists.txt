@@ -11,7 +11,6 @@ set(WOLFSP_FILES
 
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_glimp.cpp
 )
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

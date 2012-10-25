@@ -55,17 +55,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../client/public.h"
 #include "../../common/system_unix.h"
 
-#include "linux_local.h"// bk001204
-
 unsigned sys_frame_time;
 
 uid_t saved_euid;
-
-void InitSig(void);
-
-// =============================================================
-// general sys routines
-// =============================================================
 
 void Sys_Init(void)
 {

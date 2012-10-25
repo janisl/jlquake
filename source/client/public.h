@@ -39,6 +39,7 @@ void CL_Init();
 void CL_Shutdown();
 void CL_Frame(int msec);
 bool CL_WWWBadChecksum(const char* pakname);
+void CL_ShutdownOnSignal();
 
 void Key_WriteBindings(fileHandle_t f);
 // the keyboard binding interface must be setup before execing

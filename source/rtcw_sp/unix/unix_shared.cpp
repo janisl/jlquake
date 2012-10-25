@@ -39,23 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-char* strlwr(char* s)
-{
-	if (s == NULL)		// bk001204 - paranoia
-	{
-		assert(0);
-		return s;
-	}
-	while (*s)
-	{
-		*s = tolower(*s);
-		s++;
-	}
-	return s;	// bk001204 - duh
-}
-
-//============================================
-
 int Sys_GetProcessorId(void)
 {
 	// TODO TTimo add better CPU identification?

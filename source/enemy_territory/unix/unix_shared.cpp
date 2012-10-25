@@ -40,23 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../qcommon/qcommon.h"
 #include "../../common/system_unix.h"
 
-char* strlwr(char* s)
-{
-	if (s == NULL)		// bk001204 - paranoia
-	{
-		assert(0);
-		return s;
-	}
-	while (*s)
-	{
-		*s = tolower(*s);
-		s++;
-	}
-	return s;	// bk001204 - duh
-}
-
-//============================================
-
 void GetClockTicks(double* t)
 {
 	unsigned long lo, hi;

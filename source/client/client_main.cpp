@@ -25,6 +25,7 @@
 #include "game/tech3/local.h"
 #include "game/wolfsp/local.h"
 #include "game/et/dl_public.h"
+#include "renderer/local.h"
 
 Cvar* cl_inGameVideo;
 
@@ -993,4 +994,20 @@ bool CL_WWWBadChecksum(const char* pakname)
 		return true;
 	}
 	return false;
+}
+
+void CL_ShutdownOnSignal()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		ComQH_HostShutdown();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CL_Shutdown();
+	}
+	else
+	{
+		GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
+	}
 }

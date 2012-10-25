@@ -21,6 +21,7 @@
 
 void Sys_DoStartProcess(const char* cmdline);
 void Sys_Exit(int ex);
+void InitSig();
 
 void Sys_ConsoleInputInit();
 void Sys_ConsoleInputShutdown();

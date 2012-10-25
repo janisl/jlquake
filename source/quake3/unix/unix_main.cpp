@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../../client/public.h"
-
-#include "linux_local.h"// bk001204
 #include "../../common/system_unix.h"
 
 // =============================================================

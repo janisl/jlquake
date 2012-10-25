@@ -18,7 +18,6 @@ set (ET_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 
-	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 )
@@ -33,7 +32,6 @@ set (ETDED_FILES
 	qcommon/common.cpp
 	qcommon/files.cpp
 
-	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
 )
