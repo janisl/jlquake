@@ -213,3 +213,7 @@ bool CL_WWWBadChecksum(const char* pakname)
 void CL_ShutdownOnSignal()
 {
 }
+
+void CL_ShutdownOnWindowsError()
+{
+}

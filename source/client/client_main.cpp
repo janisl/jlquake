@@ -1011,3 +1011,19 @@ void CL_ShutdownOnSignal()
 		GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
 	}
 }
+
+void CL_ShutdownOnWindowsError()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		ComQH_HostShutdown();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		CL_Shutdown();
+	}
+	else
+	{
+		IN_Shutdown();
+	}
+}

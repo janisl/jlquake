@@ -38,41 +38,6 @@ void Sys_Init(void)
 	timeBeginPeriod(1);
 }
 
-
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char text[1024];
-	static int in_sys_error1 = 0;
-
-	va_start(argptr, error);
-	Q_vsnprintf(text, 1024, error, argptr);
-	va_end(argptr);
-
-	Sys_Print(text);
-	Sys_Print("\n");
-
-	Sys_SetErrorText(text);
-	Sys_ShowConsole(1, true);
-
-	if (!in_sys_error1)
-	{
-		in_sys_error1 = 1;
-		ComQH_HostShutdown();
-	}
-
-	// wait for the user to quit
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	Sys_DestroyConsole();
-	exit(1);
-}
-
 static void Sys_Sleep(void)
 {
 	Sleep(1);

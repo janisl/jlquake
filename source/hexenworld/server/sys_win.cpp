@@ -1,39 +1,7 @@
 #include <sys/timeb.h>
 #include "qwsvdef.h"
 #include "../../common/system_windows.h"
-
-
-/*
-================
-Sys_Error
-================
-*/
-void Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr,error);
-	Q_vsnprintf(text, 1024, error, argptr);
-	va_end(argptr);
-
-	Sys_Print(text);
-	Sys_Print("\n");
-
-	Sys_SetErrorText(text);
-	Sys_ShowConsole(1, true);
-
-	// wait for the user to quit
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	Sys_DestroyConsole();
-	exit(1);
-}
+#include "../../client/public.h"
 
 /*
 =============

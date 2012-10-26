@@ -45,51 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 static char sys_cmdline[MAX_STRING_CHARS];
 
 /*
-=============
-Sys_Error
-
-Show the early console as an error dialog
-=============
-*/
-void QDECL Sys_Error(const char* error, ...)
-{
-	va_list argptr;
-	char text[4096];
-	MSG msg;
-
-	va_start(argptr, error);
-	Q_vsnprintf(text, sizeof(text), error, argptr);
-	va_end(argptr);
-
-	Sys_Print(text);
-	Sys_Print("\n");
-
-	Sys_SetErrorText(text);
-	Sys_ShowConsole(1, true);
-
-	timeEndPeriod(1);
-
-#ifndef DEDICATED
-	IN_Shutdown();
-#endif
-
-	// wait for the user to quit
-	while (1)
-	{
-		if (!GetMessage(&msg, NULL, 0, 0))
-		{
-			Com_Quit_f();
-		}
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	Sys_DestroyConsole();
-
-	exit(1);
-}
-
-/*
 ================
 Sys_Init
 

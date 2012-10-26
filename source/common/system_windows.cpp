@@ -16,6 +16,7 @@
 
 #include "qcommon.h"
 #include "system_windows.h"
+#include "../client/public.h"
 #include <direct.h>
 #include <io.h>
 #include <sys/stat.h>
@@ -547,4 +548,36 @@ void Sys_Quit()
 	timeEndPeriod(1);
 	Sys_DestroyConsole();
 	exit(0);
+}
+
+//	Show the early console as an error dialog
+void Sys_Error(const char* error, ...)
+{
+	va_list argptr;
+	char text[4096];
+
+	va_start(argptr, error);
+	Q_vsnprintf(text, 4096, error, argptr);
+	va_end(argptr);
+
+	Sys_Print(text);
+	Sys_Print("\n");
+
+	Sys_SetErrorText(text);
+	Sys_ShowConsole(1, true);
+
+	timeEndPeriod(1);
+
+	CL_ShutdownOnWindowsError();
+
+	// wait for the user to quit
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	Sys_DestroyConsole();
+	exit(1);
 }
