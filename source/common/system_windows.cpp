@@ -581,3 +581,20 @@ void Sys_Error(const char* error, ...)
 	Sys_DestroyConsole();
 	exit(1);
 }
+
+const char* Sys_GetCurrentUser()
+{
+	static char s_userName[1024];
+	unsigned long size = sizeof(s_userName);
+	if (!GetUserName(s_userName, &size))
+	{
+		String::Cpy(s_userName, "player");
+	}
+
+	if (!s_userName[0])
+	{
+		String::Cpy(s_userName, "player");
+	}
+
+	return s_userName;
+}
