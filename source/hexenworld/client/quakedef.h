@@ -9,7 +9,6 @@
 #include "bothdefs.h"
 
 #include "common.h"
-#include "sys.h"
 #include "client.h"
 
 //=============================================================================

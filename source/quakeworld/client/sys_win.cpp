@@ -28,39 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS   50
 
-/*
-===============================================================================
-
-SYSTEM IO
-
-===============================================================================
-*/
-
-/*
-================
-Sys_Init
-================
-*/
-void Sys_Init(void)
-{
-	LARGE_INTEGER PerformanceFreq;
-	unsigned int lowpart, highpart;
-
-	// make sure the timer is high precision, otherwise
-	// NT gets 18ms resolution
-	timeBeginPeriod(1);
-}
-
-
-void Sys_Sleep(void)
-{
-}
-
-/*
-==================
-WinMain
-==================
-*/
 char* argv[MAX_NUM_ARGVS];
 static char* empty_string = "";
 

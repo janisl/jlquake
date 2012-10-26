@@ -3,24 +3,6 @@
 #include "../../common/system_windows.h"
 #include "../../client/public.h"
 
-/*
-=============
-Sys_Init
-
-Quake calls this so the system can register variables before host_hunklevel
-is marked
-=============
-*/
-void Sys_Init(void)
-{
-}
-
-/*
-==================
-main
-
-==================
-*/
 char* newargv[256];
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)

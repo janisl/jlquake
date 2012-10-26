@@ -42,6 +42,4 @@ void Sys_DestroyConsole();
 void Sys_SetErrorText(const char* text);
 void Sys_ClearViewlog_f();
 
-void SysT3_InitCpu();
-
 #endif

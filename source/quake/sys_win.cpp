@@ -28,16 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS   50
 
-/*
-================
-Sys_Init
-================
-*/
-void Sys_Init(void)
-{
-	timeBeginPeriod(1);
-}
-
 static void Sys_Sleep(void)
 {
 	Sleep(1);

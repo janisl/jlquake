@@ -770,7 +770,7 @@ static int Sys_GetProcessorId()
 #endif
 }
 
-void SysT3_InitCpu()
+static void SysT3_InitCpu()
 {
 	//
 	// figure out our CPU
@@ -846,4 +846,38 @@ void SysT3_InitCpu()
 	}
 	Cvar_SetValue("sys_cpuid", cpuid);
 	common->Printf("%s\n", Cvar_VariableString("sys_cpustring"));
+}
+
+//	Called after the common systems (cvars, files, etc)
+// are initialized
+void Sys_Init()
+{
+	// make sure the timer is high precision, otherwise
+	// NT gets 18ms resolution
+	timeBeginPeriod(1);
+
+	OSVERSIONINFO osversion;
+	osversion.dwOSVersionInfoSize = sizeof(osversion);
+
+	if (!GetVersionEx(&osversion))
+	{
+		Sys_Error("Couldn't get OS info");
+	}
+
+	if (osversion.dwMajorVersion < 5)
+	{
+		Sys_Error("JLQuake requires Windows version 4 or greater");
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		Cvar_Set("arch", "winnt");
+
+		SysT3_InitCpu();
+
+		Cvar_Set("username", Sys_GetCurrentUser());
+
+		Cmd_AddCommand("net_restart", Net_Restart_f);
+	}
+	Cmd_AddCommand("clearviewlog", Sys_ClearViewlog_f);
 }

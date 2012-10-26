@@ -29,45 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static char sys_cmdline[MAX_STRING_CHARS];
 
-/*
-================
-Sys_Init
-
-Called after the common systems (cvars, files, etc)
-are initialized
-================
-*/
-void Sys_Init(void)
-{
-	// make sure the timer is high precision, otherwise
-	// NT gets 18ms resolution
-	timeBeginPeriod(1);
-
-	Cmd_AddCommand("net_restart", Net_Restart_f);
-
-	OSVERSIONINFO osversion;
-	osversion.dwOSVersionInfoSize = sizeof(osversion);
-
-	if (!GetVersionEx(&osversion))
-	{
-		Sys_Error("Couldn't get OS info");
-	}
-
-	if (osversion.dwMajorVersion < 5)
-	{
-		Sys_Error("Quake3 requires Windows version 5 or greater");
-	}
-
-	Cvar_Set("arch", "winnt");
-
-	SysT3_InitCpu();
-
-	Cvar_Set("username", Sys_GetCurrentUser());
-}
-
-
-//=======================================================================
-
 int totalMsec, countMsec;
 
 /*

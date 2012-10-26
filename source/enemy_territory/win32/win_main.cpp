@@ -44,57 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static char sys_cmdline[MAX_STRING_CHARS];
 
-/*
-================
-Sys_Init
-
-Called after the common systems (cvars, files, etc)
-are initialized
-================
-*/
-void Sys_Init(void)
-{
-	// make sure the timer is high precision, otherwise
-	// NT gets 18ms resolution
-	timeBeginPeriod(1);
-
-	Cmd_AddCommand("net_restart", Net_Restart_f);
-	Cmd_AddCommand("clearviewlog", Sys_ClearViewlog_f);
-
-	OSVERSIONINFO osversion;
-	osversion.dwOSVersionInfoSize = sizeof(osversion);
-
-	if (!GetVersionEx(&osversion))
-	{
-		Sys_Error("Couldn't get OS info");
-	}
-
-	if (osversion.dwMajorVersion < 5)
-	{
-		Sys_Error("JLQuake requires Windows version 4 or greater");
-	}
-	if (osversion.dwPlatformId == VER_PLATFORM_WIN32s)
-	{
-		Sys_Error("JLQuake doesn't run on Win32s");
-	}
-
-	if (osversion.dwPlatformId == VER_PLATFORM_WIN32_NT)
-	{
-		Cvar_Set("arch", "winnt");
-	}
-	else
-	{
-		Cvar_Set("arch", "unknown Windows variant");
-	}
-
-	SysT3_InitCpu();
-
-	Cvar_Set("username", Sys_GetCurrentUser());
-}
-
-
-//=======================================================================
-
 int totalMsec, countMsec;
 
 
