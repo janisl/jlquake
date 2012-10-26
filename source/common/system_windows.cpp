@@ -598,3 +598,252 @@ const char* Sys_GetCurrentUser()
 
 	return s_userName;
 }
+
+#ifndef _WIN64
+#ifndef __GNUC__
+
+//	Disable all optimizations temporarily so this code works correctly!
+#pragma optimize( "", off )
+
+static bool IsPentium()
+{
+	__asm
+	{
+		pushfd						// save eflags
+		pop eax
+		test eax, 0x00200000		// check ID bit
+		jz set21					// bit 21 is not set, so jump to set_21
+		and eax, 0xffdfffff			// clear bit 21
+		push eax					// save new value in register
+		popfd						// store new value in flags
+		pushfd
+		pop eax
+		test eax, 0x00200000		// check ID bit
+		jz good
+		jmp err						// cpuid not supported
+set21:
+		or eax, 0x00200000			// set ID bit
+		push eax					// store new value
+		popfd						// store new value in EFLAGS
+		pushfd
+		pop eax
+		test eax, 0x00200000		// if bit 21 is on
+		jnz good
+		jmp err
+	}
+
+err:
+	return false;
+good:
+	return true;
+}
+
+static void CPUID(int func, unsigned regs[4])
+{
+	unsigned regEAX, regEBX, regECX, regEDX;
+
+	__asm mov eax, func
+	__asm cpuid
+	__asm mov regEAX, eax
+	__asm mov regEBX, ebx
+	__asm mov regECX, ecx
+	__asm mov regEDX, edx
+
+	regs[0] = regEAX;
+	regs[1] = regEBX;
+	regs[2] = regECX;
+	regs[3] = regEDX;
+}
+
+//	Re-enable optimizations back to what they were
+#pragma optimize( "", on )
+
+#else
+
+static bool IsPentium()
+{
+	return true;
+}
+
+static void CPUID(int func, unsigned regs[4])
+{
+	// rain - gcc style inline asm
+	asm (
+		"cpuid\n"
+		: "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])		// outputs
+		: "a" (func)	// inputs
+		);
+}
+
+#endif
+
+static bool Is3DNOW()
+{
+	unsigned regs[4];
+
+	// check AMD-specific functions
+	CPUID(0x80000000, regs);
+	if (regs[0] < 0x80000000)
+	{
+		return false;
+	}
+
+	// bit 31 of EDX denotes 3DNOW! support
+	CPUID(0x80000001, regs);
+	if (regs[3] & (1 << 31))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+static bool IsKNI()
+{
+	unsigned regs[4];
+
+	// get CPU feature bits
+	CPUID(1, regs);
+
+	// bit 25 of EDX denotes KNI existence
+	if (regs[3] & (1 << 25))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+static bool IsMMX()
+{
+	unsigned regs[4];
+
+	// get CPU feature bits
+	CPUID(1, regs);
+
+	// bit 23 of EDX denotes MMX existence
+	if (regs[3] & (1 << 23))
+	{
+		return true;
+	}
+	return false;
+}
+
+#endif
+
+static int Sys_GetProcessorId()
+{
+#if defined _M_ALPHA
+	return CPUID_AXP;
+#elif defined _M_X64
+	return CPUID_INTEL_KATMAI;
+#elif !defined _M_IX86
+	return CPUID_GENERIC;
+#else
+	// verify we're at least a Pentium or 486 w/ CPUID support
+	if (!IsPentium())
+	{
+		return CPUID_INTEL_UNSUPPORTED;
+	}
+
+	// check for MMX
+	if (!IsMMX())
+	{
+		// Pentium or PPro
+		return CPUID_INTEL_PENTIUM;
+	}
+
+	// see if we're an AMD 3DNOW! processor
+	if (Is3DNOW())
+	{
+		return CPUID_AMD_3DNOW;
+	}
+
+	// see if we're an Intel Katmai
+	if (IsKNI())
+	{
+		return CPUID_INTEL_KATMAI;
+	}
+
+	// by default we're functionally a vanilla Pentium/MMX or P2/MMX
+	return CPUID_INTEL_MMX;
+#endif
+}
+
+void SysT3_InitCpu()
+{
+	//
+	// figure out our CPU
+	//
+	Cvar_Get("sys_cpustring", "detect", 0);
+	int cpuid;
+	if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "detect"))
+	{
+		common->Printf("...detecting CPU, found ");
+
+		cpuid = Sys_GetProcessorId();
+
+		switch (cpuid)
+		{
+		case CPUID_GENERIC:
+			Cvar_Set("sys_cpustring", "generic");
+			break;
+		case CPUID_INTEL_UNSUPPORTED:
+			Cvar_Set("sys_cpustring", "x86 (pre-Pentium)");
+			break;
+		case CPUID_INTEL_PENTIUM:
+			Cvar_Set("sys_cpustring", "x86 (P5/PPro, non-MMX)");
+			break;
+		case CPUID_INTEL_MMX:
+			Cvar_Set("sys_cpustring", "x86 (P5/Pentium2, MMX)");
+			break;
+		case CPUID_INTEL_KATMAI:
+			Cvar_Set("sys_cpustring", "Intel Pentium III");
+			break;
+		case CPUID_AMD_3DNOW:
+			Cvar_Set("sys_cpustring", "AMD w/ 3DNow!");
+			break;
+		case CPUID_AXP:
+			Cvar_Set("sys_cpustring", "Alpha AXP");
+			break;
+		default:
+			common->FatalError("Unknown cpu type %d\n", cpuid);
+			break;
+		}
+	}
+	else
+	{
+		common->Printf("...forcing CPU type to ");
+		if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "generic"))
+		{
+			cpuid = CPUID_GENERIC;
+		}
+		else if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "x87"))
+		{
+			cpuid = CPUID_INTEL_PENTIUM;
+		}
+		else if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "mmx"))
+		{
+			cpuid = CPUID_INTEL_MMX;
+		}
+		else if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "3dnow"))
+		{
+			cpuid = CPUID_AMD_3DNOW;
+		}
+		else if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "PentiumIII"))
+		{
+			cpuid = CPUID_INTEL_KATMAI;
+		}
+		else if (!String::ICmp(Cvar_VariableString("sys_cpustring"), "axp"))
+		{
+			cpuid = CPUID_AXP;
+		}
+		else
+		{
+			common->Printf("WARNING: unknown sys_cpustring '%s'\n", Cvar_VariableString("sys_cpustring"));
+			cpuid = CPUID_GENERIC;
+		}
+	}
+	Cvar_SetValue("sys_cpuid", cpuid);
+	common->Printf("%s\n", Cvar_VariableString("sys_cpustring"));
+}

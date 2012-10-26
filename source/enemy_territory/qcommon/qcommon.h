@@ -62,18 +62,6 @@ MISC
 ==============================================================
 */
 
-// returnbed by Sys_GetProcessorId
-#define CPUID_GENERIC           0			// any unrecognized processor
-
-#define CPUID_AXP               0x10
-
-#define CPUID_INTEL_UNSUPPORTED 0x20			// Intel 386/486
-#define CPUID_INTEL_PENTIUM     0x21			// Intel Pentium or PPro
-#define CPUID_INTEL_MMX         0x22			// Intel Pentium/MMX or P2/MMX
-#define CPUID_INTEL_KATMAI      0x23			// Intel Katmai
-
-#define CPUID_AMD_3DNOW         0x30			// AMD K6 3DNOW!
-
 int QDECL Com_VPrintf(const char* fmt, va_list argptr) id_attribute((format(printf,1,0)));			// conforms to vprintf prototype for print callback passing
 void QDECL Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));			// this one calls to Com_VPrintf now
 void QDECL Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
@@ -103,15 +91,5 @@ extern int com_frameMsec;
 // commandLine should not include the executable name (argv[0])
 void Com_Init(char* commandLine);
 void Com_Frame(void);
-
-/*
-==============================================================
-
-NON-PORTABLE SYSTEM SERVICES
-
-==============================================================
-*/
-
-int     Sys_GetProcessorId(void);
 
 #endif	// _QCOMMON_H_
