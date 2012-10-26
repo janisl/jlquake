@@ -99,17 +99,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\client\common.cpp" />
-    <ClCompile Include="..\client\keys.cpp" />
-    <ClCompile Include="..\client\net_chan.cpp" />
-    <ClCompile Include="sv_ccmds.cpp" />
     <ClCompile Include="sv_main.cpp" />
     <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\bothdefs.h" />
     <ClInclude Include="..\client\common.h" />
-    <ClInclude Include="..\client\net.h" />
-    <ClInclude Include="..\client\protocol.h" />
     <ClInclude Include="qwsvdef.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="sys.h" />

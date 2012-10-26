@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../client/windows_shared.h"
+#include "../client/client.h"
 
 #define PAUSE_SLEEP     50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP 20				// sleep time when not focus

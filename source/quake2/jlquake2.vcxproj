@@ -101,20 +101,12 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_input.cpp" />
-    <ClCompile Include="client\cl_main.cpp" />
-    <ClCompile Include="client\cl_pred.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="client\keys.cpp" />
-    <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="qcommon\q_shared.cpp" />
-    <ClCompile Include="client\x86.cpp" />
     <ClCompile Include="win32\sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\client.h" />
-    <ClInclude Include="client\keys.h" />
     <ClInclude Include="qcommon\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="win32\resource.h" />

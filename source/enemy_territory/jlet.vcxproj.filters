@@ -9,26 +9,8 @@
       <UniqueIdentifier>{d2c78142-b7cd-4edb-873d-e6072b6c2525}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
     </Filter>
-    <Filter Include="download">
-      <UniqueIdentifier>{b09b4274-69b4-4bef-b50b-704a2c70ba2c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cgame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_net_chan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\cl_parse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,20 +23,8 @@
     <ClCompile Include="win32\win_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\dl_main.cpp">
-      <Filter>download</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\dl_main_curl.cpp">
-      <Filter>download</Filter>
-    </ClCompile>
-    <ClCompile Include="qcommon\dl_main_stubs.cpp">
-      <Filter>download</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\q_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,12 +33,6 @@
     </ClInclude>
     <ClInclude Include="win32\win_local.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\dl_local.h">
-      <Filter>download</Filter>
-    </ClInclude>
-    <ClInclude Include="qcommon\dl_public.h">
-      <Filter>download</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

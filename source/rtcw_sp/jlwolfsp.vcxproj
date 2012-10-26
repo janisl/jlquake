@@ -86,18 +86,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cgame.cpp" />
-    <ClCompile Include="client\cl_input.cpp" />
-    <ClCompile Include="client\cl_main.cpp" />
-    <ClCompile Include="client\cl_net_chan.cpp" />
-    <ClCompile Include="client\cl_parse.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\client.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="win32\win_local.h" />

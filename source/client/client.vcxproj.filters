@@ -503,6 +503,21 @@
     <ClCompile Include="game\parse.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="game\quake_hexen2\connection.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake_hexen2\demo.cpp">
+      <Filter>game\quake_hexen2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tech3\network_channel.cpp">
+      <Filter>game\tech3</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quake2\demo.cpp">
+      <Filter>game\quake2</Filter>
+    </ClCompile>
+    <ClCompile Include="game\et\dl_main_curl.cpp">
+      <Filter>game\et</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer\cvars.h">
@@ -697,5 +712,14 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="public.h" />
+    <ClInclude Include="game\quake_hexen2\connection.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quake_hexen2\demo.h">
+      <Filter>game\quake_hexen2</Filter>
+    </ClInclude>
+    <ClInclude Include="game\et\dl_public.h">
+      <Filter>game\et</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

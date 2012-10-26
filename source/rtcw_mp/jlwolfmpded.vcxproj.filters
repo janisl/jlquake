@@ -17,12 +17,6 @@
     <ClCompile Include="qcommon\files.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="null\null_client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="null\null_input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

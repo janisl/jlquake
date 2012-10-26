@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // win_main.c
 
-#include "../client/client.h"
+#include "../../common/qcommon.h"
+#include "../../client/client.h"
 #include "../qcommon/qcommon.h"
 #include "../../client/windows_shared.h"
 #include <direct.h>

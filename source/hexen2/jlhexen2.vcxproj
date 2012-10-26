@@ -103,15 +103,9 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cl_demo.cpp" />
-    <ClCompile Include="cl_input.cpp" />
-    <ClCompile Include="cl_main.cpp" />
-    <ClCompile Include="cl_parse.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="host.cpp" />
     <ClCompile Include="host_cmd.cpp" />
-    <ClCompile Include="keys.cpp" />
-    <ClCompile Include="net_main.cpp" />
     <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,12 +128,8 @@
     <None Include="qe3.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Keys.h" />
-    <ClInclude Include="Net.h" />
     <ClInclude Include="Quakedef.h" />
-    <ClInclude Include="Sys.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>

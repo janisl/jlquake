@@ -18,19 +18,10 @@
     <ClCompile Include="..\client\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\client\net_chan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sv_ccmds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sv_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sys_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

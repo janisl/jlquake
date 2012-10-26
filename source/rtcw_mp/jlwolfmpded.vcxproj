@@ -88,8 +88,6 @@
   <ItemGroup>
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\files.cpp" />
-    <ClCompile Include="null\null_client.cpp" />
-    <ClCompile Include="null\null_input.cpp" />
     <ClCompile Include="win32\win_main.cpp" />
     <ClCompile Include="win32\win_shared.cpp" />
   </ItemGroup>

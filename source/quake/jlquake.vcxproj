@@ -100,25 +100,15 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cl_demo.cpp" />
-    <ClCompile Include="cl_input.cpp" />
-    <ClCompile Include="cl_main.cpp" />
-    <ClCompile Include="cl_parse.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="host.cpp" />
     <ClCompile Include="host_cmd.cpp" />
-    <ClCompile Include="keys.cpp" />
-    <ClCompile Include="net_main.cpp" />
     <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client.h" />
     <ClInclude Include="common.h" />
-    <ClInclude Include="keys.h" />
-    <ClInclude Include="net.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sys.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="quake.ico" />

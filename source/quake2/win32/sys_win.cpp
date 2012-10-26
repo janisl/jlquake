@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #include "../../common/system_windows.h"
+#include "../../client/public.h"
 #ifndef DEDICATED_ONLY
 #include "../../client/windows_shared.h"
 #endif

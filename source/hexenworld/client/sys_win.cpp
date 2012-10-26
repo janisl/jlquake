@@ -2,6 +2,7 @@
 
 #include "quakedef.h"
 #include "../../client/windows_shared.h"
+#include "../../client/client.h"
 
 #define PAUSE_SLEEP     50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP 20				// sleep time when not focus

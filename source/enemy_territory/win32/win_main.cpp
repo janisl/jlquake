@@ -28,7 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 
 // win_main.h
 
-#include "../client/client.h"
+#include "../../common/qcommon.h"
+#include "../../client/client.h"
+#include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
 #include "resource.h"
@@ -67,7 +69,9 @@ void QDECL Sys_Error(const char* error, ...)
 
 	timeEndPeriod(1);
 
+#ifndef DEDICATED
 	IN_Shutdown();
+#endif
 
 	// wait for the user to quit
 	while (1)
