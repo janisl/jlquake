@@ -98,17 +98,6 @@ void idCommonLocal::Disconnect(const char* message)
 }
 
 /*
-=======================
-CL_Version_f
-======================
-*/
-void CL_Version_f(void)
-{
-	common->Printf("Version %4.2f\n", VERSION);
-	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-}
-
-/*
 =================
 CL_InitLocal
 =================
@@ -122,8 +111,6 @@ void CL_InitLocal(void)
 // register our commands
 //
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
-
-	Cmd_AddCommand("version", CL_Version_f);
 
 	COM_InitCommonCommands();
 }

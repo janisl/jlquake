@@ -242,7 +242,7 @@ void Host_InitLocal(void)
 #endif
 	}
 
-	Host_InitCommands();
+	COM_InitCommonCommands();
 
 	host_time = 1.0;		// so a think at time 0 won't get called
 }
