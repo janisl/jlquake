@@ -6,15 +6,6 @@
 #include "../server/public.h"
 #include "../client/public.h"
 
-void Com_Quit_f()
-{
-	CL_Disconnect(true);
-	SV_Shutdown("");
-
-	ComQH_HostShutdown();
-	Sys_Quit();
-}
-
 void Host_Version_f()
 {
 	common->Printf("Version %4.2f\n", HEXEN2_VERSION);
@@ -23,6 +14,6 @@ void Host_Version_f()
 
 void Host_InitCommands()
 {
-	Cmd_AddCommand("quit", Com_Quit_f);
+	COM_InitCommonCommands();
 	Cmd_AddCommand("version", Host_Version_f);
 }

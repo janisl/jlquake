@@ -102,6 +102,5 @@ extern int time_before_ref;
 extern int time_after_ref;
 
 void FS_Restart(int checksumFeed);
-void Com_Quit_f();
 
 #endif

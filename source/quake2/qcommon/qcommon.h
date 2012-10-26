@@ -108,7 +108,6 @@ MISC
 void        Com_Printf(const char* fmt, ...);
 void        Com_DPrintf(const char* fmt, ...);
 void        Com_Error(int code, const char* fmt, ...);
-void        Com_Quit_f(void);
 
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);

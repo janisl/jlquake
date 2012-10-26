@@ -209,10 +209,6 @@ Host_InitLocal
 */
 void Host_InitLocal(void)
 {
-#ifndef DEDICATED
-	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
-#endif
-
 	COM_InitCommonCvars();
 
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion

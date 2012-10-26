@@ -153,7 +153,7 @@ void CL_InitLocal(void)
 
 	Cmd_AddCommand("version", CL_Version_f);
 
-	Cmd_AddCommand("quit", Com_Quit_f);
+	COM_InitCommonCommands();
 }
 
 

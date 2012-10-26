@@ -361,27 +361,6 @@ void QDECL Com_Error(int code, const char* fmt, ...) id_attribute((format(printf
 
 /*
 =============
-Com_Quit_f
-
-Both client and server can use this, and it will
-do the apropriate things.
-=============
-*/
-void Com_Quit_f(void)
-{
-	// don't try to shutdown if we are in a recursive error
-	if (!com_errorEntered)
-	{
-		SV_Shutdown("Server quit\n");
-		CL_Shutdown();
-		Com_Shutdown();
-		FS_Shutdown();
-	}
-	Sys_Quit();
-}
-
-/*
-=============
 Com_Error_f
 
 Just throw a fatal error to
@@ -848,8 +827,7 @@ void Com_Init(char* commandLine)
 			Cmd_AddCommand("crash", Com_Crash_f);
 			Cmd_AddCommand("freeze", Com_Freeze_f);
 		}
-		Cmd_AddCommand("quit", Com_Quit_f);
-		Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
+		COM_InitCommonCommands();
 
 		s = va("%s %s %s", Q3_VERSION, CPUSTRING, __DATE__);
 		comt3_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);

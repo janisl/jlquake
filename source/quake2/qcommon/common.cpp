@@ -236,25 +236,6 @@ void Com_Error(int code, const char* fmt, ...)
 	Sys_Error("%s", msg);
 }
 
-
-/*
-=============
-Com_Quit_f
-
-Both client and server can use this, and it will
-do the apropriate things.
-=============
-*/
-void Com_Quit_f(void)
-{
-	SV_Shutdown("Server quit\n");
-	CL_Shutdown();
-
-	Com_Shutdown();
-
-	Sys_Quit();
-}
-
 /// just for debugging
 int memsearch(byte* start, int count, int search)
 {
@@ -409,7 +390,7 @@ void Qcommon_Init(int argc, char** argv)
 		Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_INIT);
 
 
-		Cmd_AddCommand("quit", Com_Quit_f);
+		COM_InitCommonCommands();
 
 		Sys_Init();
 

@@ -59,47 +59,6 @@ unsigned short pop[] =
 };
 
 /*
-
-
-All of Quake's data access is through a hierchal file system, but the contents of the file system can be transparently merged from several sources.
-
-The "base directory" is the path to the directory holding the quake.exe and all game directories.  The sys_* files pass this to host_init in quakeparms_t->basedir.  This can be overridden with the "-basedir" command line parm to allow code debugging in a different directory.  The base directory is
-only used during filesystem initialization.
-
-The "game directory" is the first tree on the search path and directory that all generated files (savegames, screenshots, demos, config files) will be saved to.  This can be overridden with the "-game" command line parameter.  The game directory can never be changed while quake is executing.  This is a precacution against having a malicious server instruct clients to write files over areas they shouldn't.
-
-The "cache directory" is only used during development to save network bandwidth, especially over ISDN / T1 lines.  If there is a cache directory
-specified, when a file is found by the normal search path, it will be mirrored
-into the cache directory, then opened there.
-
-*/
-
-void Com_Quit_f()
-{
-#ifndef SERVERONLY
-	CL_Disconnect(true);
-	ComQH_HostShutdown();
-#else
-	common->Printf("Shutting down.\n");
-	SV_Shutdown("server shutdown\n");
-	Com_Shutdown();
-#endif
-	Sys_Quit();
-}
-
-/*
-==============================================================================
-
-            MESSAGE IO FUNCTIONS
-
-Handles byte ordering and avoids alignment errors
-==============================================================================
-*/
-
-
-//============================================================================
-
-/*
 ================
 COM_CheckRegistered
 

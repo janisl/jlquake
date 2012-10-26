@@ -265,4 +265,7 @@ void Com_LogToFile(const char* msg);
 void Com_Shutdown();
 void ComQH_HostShutdown();
 
+void Com_Quit_f();
+void COM_InitCommonCommands();
+
 #define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

@@ -29,19 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  6
 
-void Com_Quit_f()
-{
-#ifndef SERVERONLY
-	CL_Disconnect(true);
-	ComQH_HostShutdown();
-#else
-	common->Printf("Shutting down.\n");
-	SV_Shutdown("server shutdown\n");
-	Com_Shutdown();
-#endif
-	Sys_Quit();
-}
-
 static const char* safeargvs[NUM_SAFE_ARGVS] =
 {"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 

@@ -1294,3 +1294,41 @@ void ComQH_HostShutdown()
 	}
 	Com_Shutdown();
 }
+
+//	Both client and server can use this, and it will
+// do the apropriate things.
+void Com_Quit_f()
+{
+	// don't try to shutdown if we are in a recursive error
+	if (!com_errorEntered)
+	{
+		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+		{
+			CL_Disconnect(true);
+			CL_Shutdown();
+			SV_Shutdown("server shutdown\n");
+			NET_Shutdown();
+			Com_Shutdown();
+		}
+		else if (GGameType & GAME_QuakeHexen)
+		{
+			CL_Disconnect(true);
+			SV_Shutdown("");
+			ComQH_HostShutdown();
+		}
+		else
+		{
+			SV_Shutdown("Server quit\n");
+			CL_Shutdown();
+			Com_Shutdown();
+		}
+		FS_Shutdown();
+	}
+	Sys_Quit();
+}
+
+void COM_InitCommonCommands()
+{
+	Cmd_AddCommand("quit", Com_Quit_f);
+	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
+}

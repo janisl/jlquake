@@ -173,7 +173,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		ComH2_LoadStrings();
 
-		Cmd_AddCommand("quit", Com_Quit_f);
+		COM_InitCommonCommands();
 
 		Cvar_Set("cl_warncmd", "1");
 

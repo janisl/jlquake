@@ -121,13 +121,11 @@ void CL_InitLocal(void)
 //
 // register our commands
 //
-	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
-
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	Cmd_AddCommand("version", CL_Version_f);
 
-	Cmd_AddCommand("quit", Com_Quit_f);
+	COM_InitCommonCommands();
 }
 
 
