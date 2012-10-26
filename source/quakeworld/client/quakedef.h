@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "bothdefs.h"
 
 #include "common.h"
-#include "client.h"
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))

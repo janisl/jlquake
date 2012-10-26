@@ -8,7 +8,6 @@
 #include "bothdefs.h"
 
 #include "common.h"
-#include "sys.h"
 
 #include "server.h"
 
