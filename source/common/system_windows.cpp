@@ -541,3 +541,10 @@ void Sys_MessageLoop()
 		DispatchMessage(&msg);
 	}
 }
+
+void Sys_Quit()
+{
+	timeEndPeriod(1);
+	Sys_DestroyConsole();
+	exit(0);
+}

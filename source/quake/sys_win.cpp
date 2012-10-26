@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS   50
 
-static HANDLE tevent;
-
 /*
 ================
 Sys_Init
@@ -75,42 +73,10 @@ void Sys_Error(const char* error, ...)
 	exit(1);
 }
 
-void Sys_Quit(void)
-{
-	if (tevent)
-	{
-		CloseHandle(tevent);
-	}
-
-	Sys_DestroyConsole();
-	exit(0);
-}
-
 static void Sys_Sleep(void)
 {
 	Sleep(1);
 }
-
-/*
-==============================================================================
-
- WINDOWS CRAP
-
-==============================================================================
-*/
-
-
-/*
-==================
-WinMain
-==================
-*/
-void SleepUntilInput(int time)
-{
-
-	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
-}
-
 
 /*
 ==================
@@ -178,13 +144,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
-	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-	if (!tevent)
-	{
-		common->FatalError("Couldn't create event");
-	}
-
 	Sys_Init();
 
 	common->Printf("Host_Init\n");
@@ -210,13 +169,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		else
 		{
 			// yield the CPU for a little while when paused, minimized, or not the focus
-			if ((cl.qh_paused && !ActiveApp) || Minimized)
+			if (!ActiveApp || Minimized)
 			{
-				SleepUntilInput(PAUSE_SLEEP);
-			}
-			else if (!ActiveApp)
-			{
-				SleepUntilInput(NOT_FOCUS_SLEEP);
+				Sleep(5);
 			}
 
 			newtime = Sys_DoubleTime();

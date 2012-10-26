@@ -28,10 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS   50
 
-HANDLE qwclsemaphore;
-
-static HANDLE tevent;
-
 /*
 ===============================================================================
 
@@ -49,28 +45,6 @@ void Sys_Init(void)
 {
 	LARGE_INTEGER PerformanceFreq;
 	unsigned int lowpart, highpart;
-
-#ifndef SERVERONLY
-	// allocate a named semaphore on the client so the
-	// front end can tell if it is alive
-
-	// mutex will fail if semephore allready exists
-	qwclsemaphore = CreateMutex(
-		NULL,			/* Security attributes */
-		0,				/* owner       */
-		"qwcl");/* Semaphore name      */
-	if (!qwclsemaphore)
-	{
-		common->FatalError("QWCL is already running on this system");
-	}
-	CloseHandle(qwclsemaphore);
-
-	qwclsemaphore = CreateSemaphore(
-		NULL,			/* Security attributes */
-		0,				/* Initial count       */
-		1,				/* Maximum count       */
-		"qwcl");/* Semaphore name      */
-#endif
 
 	// make sure the timer is high precision, otherwise
 	// NT gets 18ms resolution
@@ -96,10 +70,6 @@ void Sys_Error(const char* error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-#ifndef SERVERONLY
-	CloseHandle(qwclsemaphore);
-#endif
-
 	// wait for the user to quit
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -112,48 +82,9 @@ void Sys_Error(const char* error, ...)
 	exit(1);
 }
 
-void Sys_Quit(void)
-{
-#ifndef SERVERONLY
-	if (tevent)
-	{
-		CloseHandle(tevent);
-	}
-
-	if (qwclsemaphore)
-	{
-		CloseHandle(qwclsemaphore);
-	}
-#endif
-
-	Sys_DestroyConsole();
-	exit(0);
-}
-
 void Sys_Sleep(void)
 {
 }
-
-/*
-==============================================================================
-
- WINDOWS CRAP
-
-==============================================================================
-*/
-
-/*
-==================
-WinMain
-==================
-*/
-void SleepUntilInput(int time)
-{
-
-	MsgWaitForMultipleObjects(1, &tevent, FALSE, time, QS_ALLINPUT);
-}
-
-
 
 /*
 ==================
@@ -223,13 +154,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Sys_CreateConsole("QuakeWorld Console");
 
-	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-	if (!tevent)
-	{
-		common->FatalError("Couldn't create event");
-	}
-
 	Sys_Init();
 
 	common->Printf("Host_Init\n");
@@ -241,13 +165,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while (1)
 	{
 		// yield the CPU for a little while when paused, minimized, or not the focus
-		if ((cl.qh_paused && !ActiveApp) || Minimized)
+		if (Minimized || !ActiveApp)
 		{
-			SleepUntilInput(PAUSE_SLEEP);
-		}
-		else if (!ActiveApp)
-		{
-			SleepUntilInput(NOT_FOCUS_SLEEP);
+			Sleep(5);
 		}
 
 		newtime = Sys_DoubleTime();

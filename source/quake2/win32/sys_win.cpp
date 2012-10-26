@@ -70,16 +70,6 @@ void Sys_Error(const char* error, ...)
 	exit(1);
 }
 
-void Sys_Quit(void)
-{
-	timeEndPeriod(1);
-
-	Sys_DestroyConsole();
-	exit(0);
-}
-
-//================================================================
-
 /*
 ================
 Sys_Init

@@ -9,8 +9,6 @@
 
 #define MAX_NUM_ARGVS   50
 
-HANDLE qwclsemaphore;
-
 /*
 ===============================================================================
 
@@ -26,28 +24,6 @@ Sys_Init
 */
 void Sys_Init(void)
 {
-#ifndef SERVERONLY
-	// allocate a named semaphore on the client so the
-	// front end can tell if it is alive
-
-	// mutex will fail if semephore allready exists
-	qwclsemaphore = CreateMutex(
-		NULL,			/* Security attributes */
-		0,				/* owner       */
-		"hwcl");/* Semaphore name      */
-	if (!qwclsemaphore)
-	{
-		common->FatalError("HWCL is already running on this system");
-	}
-	CloseHandle(qwclsemaphore);
-
-	qwclsemaphore = CreateSemaphore(
-		NULL,			/* Security attributes */
-		0,				/* Initial count       */
-		1,				/* Maximum count       */
-		"hwcl");/* Semaphore name      */
-#endif
-
 	timeBeginPeriod(1);
 }
 
@@ -70,10 +46,6 @@ void Sys_Error(const char* error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-#ifndef SERVERONLY
-	CloseHandle(qwclsemaphore);
-#endif
-
 	// wait for the user to quit
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -84,19 +56,6 @@ void Sys_Error(const char* error, ...)
 
 	Sys_DestroyConsole();
 	exit(1);
-}
-
-void Sys_Quit(void)
-{
-#ifndef SERVERONLY
-	if (qwclsemaphore)
-	{
-		CloseHandle(qwclsemaphore);
-	}
-#endif
-
-	Sys_DestroyConsole();
-	exit(0);
 }
 
 void Sys_Sleep(void)

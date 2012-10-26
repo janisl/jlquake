@@ -87,19 +87,6 @@ void QDECL Sys_Error(const char* error, ...)
 }
 
 /*
-==============
-Sys_Quit
-==============
-*/
-void Sys_Quit(void)
-{
-	timeEndPeriod(1);
-	Sys_DestroyConsole();
-
-	exit(0);
-}
-
-/*
 =================
 Sys_Net_Restart_f
 

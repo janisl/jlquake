@@ -36,18 +36,6 @@ void Sys_Error(const char* error, ...)
 }
 
 /*
-================
-Sys_Quit
-================
-*/
-void Sys_Quit(void)
-{
-	Sys_DestroyConsole();
-	exit(0);
-}
-
-
-/*
 =============
 Sys_Init
 
