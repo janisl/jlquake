@@ -97,7 +97,6 @@
   <ItemGroup>
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
-    <ClInclude Include="win32\win_local.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\client\client.vcxproj">

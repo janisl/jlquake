@@ -26,37 +26,17 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-// win_main.h
-
 #include "../../common/qcommon.h"
-#include "../../client/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "win_local.h"
-#include "resource.h"
-#include <errno.h>
-#include <float.h>
-#include <fcntl.h>
-#include <stdio.h>
+#include "../../client/windows_shared.h"
 #include <direct.h>
-#include <io.h>
-#include <conio.h>
 
 static char sys_cmdline[MAX_STRING_CHARS];
 
-int totalMsec, countMsec;
-
-
-/*
-==================
-WinMain
-
-==================
-*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	char cwd[MAX_OSPATH];
-	int startTime, endTime;
 
 	// should never get a previous instance in Win32
 	if (hPrevInstance)
@@ -104,19 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Sleep(5);
 		}
 
-		// set low precision every frame, because some system calls
-		// reset it arbitrarily
-//		_controlfp( _PC_24, _MCW_PC );
-//    _controlfp( -1, _MCW_EM  ); // no exceptions, even if some crappy
-		// syscall turns them back on!
-
-		startTime = Sys_Milliseconds();
-
 		Com_Frame();
-
-		endTime = Sys_Milliseconds();
-		totalMsec += endTime - startTime;
-		countMsec++;
 	}
 
 	// never gets here

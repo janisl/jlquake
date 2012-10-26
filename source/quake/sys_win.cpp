@@ -20,27 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sys_win.c -- Win32 system interface code
 
 #include "quakedef.h"
+#include "../common/system_windows.h"
 #include "../client/windows_shared.h"
-#include "../client/client.h"
-
-#define PAUSE_SLEEP     50				// sleep time on pause or minimization
-#define NOT_FOCUS_SLEEP 20				// sleep time when not focus
-
-#define MAX_NUM_ARGVS   50
-
-static void Sys_Sleep(void)
-{
-	Sleep(1);
-}
-
-/*
-==================
-WinMain
-==================
-*/
-char* argv[MAX_NUM_ARGVS];
-static char* empty_string = "";
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -69,33 +50,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	parms.basedir = cwd;
-
-	parms.argc = 1;
-	argv[0] = empty_string;
-
-	while (*lpCmdLine && (parms.argc < MAX_NUM_ARGVS))
-	{
-		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
-			lpCmdLine++;
-
-		if (*lpCmdLine)
-		{
-			argv[parms.argc] = lpCmdLine;
-			parms.argc++;
-
-			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
-				lpCmdLine++;
-
-			if (*lpCmdLine)
-			{
-				*lpCmdLine = 0;
-				lpCmdLine++;
-			}
-
-		}
-	}
-
-	parms.argv = argv;
+	parms.argc = __argc;
+	parms.argv = __argv;
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
@@ -116,7 +72,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			while (time < sys_ticrate->value)
 			{
-				Sys_Sleep();
+				Sleep(1);
 				newtime = Sys_DoubleTime();
 				time = newtime - oldtime;
 			}

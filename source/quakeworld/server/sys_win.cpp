@@ -17,12 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <sys/timeb.h>
 #include "qwsvdef.h"
 #include "../../common/system_windows.h"
-#include "../../client/public.h"
-
-char* newargv[256];
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

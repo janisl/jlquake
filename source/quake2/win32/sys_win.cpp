@@ -21,58 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #include "../../common/system_windows.h"
-#include "../../client/public.h"
 #ifndef DEDICATED_ONLY
 #include "../../client/windows_shared.h"
 #endif
-#include <direct.h>
-#include <dsound.h>
 
-#define MAX_NUM_ARGVS   128
-int argc;
-char* argv[MAX_NUM_ARGVS];
-
-/*
-==================
-ParseCommandLine
-
-==================
-*/
-void ParseCommandLine(LPSTR lpCmdLine)
-{
-	argc = 1;
-	argv[0] = "exe";
-
-	while (*lpCmdLine && (argc < MAX_NUM_ARGVS))
-	{
-		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
-			lpCmdLine++;
-
-		if (*lpCmdLine)
-		{
-			argv[argc] = lpCmdLine;
-			argc++;
-
-			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
-				lpCmdLine++;
-
-			if (*lpCmdLine)
-			{
-				*lpCmdLine = 0;
-				lpCmdLine++;
-			}
-
-		}
-	}
-
-}
-
-/*
-==================
-WinMain
-
-==================
-*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	int time, oldtime, newtime;
@@ -87,9 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Sys_CreateConsole("Quake 2 Console");
 
-	ParseCommandLine(lpCmdLine);
-
-	Qcommon_Init(argc, argv);
+	Qcommon_Init(__argc, __argv);
 	oldtime = Sys_Milliseconds_();
 
 	/* main window message loop */
@@ -108,10 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			time = newtime - oldtime;
 		}
 		while (time < 1);
-//			common->Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime, oldtime, time);
 
-		//	_controlfp( ~( _EM_ZERODIVIDE /*| _EM_INVALID*/ ), _MCW_EM );
-		//_controlfp( _PC_24, _MCW_PC );
 		Qcommon_Frame(time);
 
 		oldtime = newtime;

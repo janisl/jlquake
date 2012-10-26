@@ -22,25 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // win_main.c
 
 #include "../../common/qcommon.h"
-#include "../../client/client.h"
 #include "../qcommon/qcommon.h"
 #include "../../client/windows_shared.h"
 #include <direct.h>
 
 static char sys_cmdline[MAX_STRING_CHARS];
 
-int totalMsec, countMsec;
-
-/*
-==================
-WinMain
-
-==================
-*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	char cwd[MAX_OSPATH];
-	int startTime, endTime;
 
 	// should never get a previous instance in Win32
 	if (hPrevInstance)
@@ -84,20 +74,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Sleep(5);
 		}
 
-		// set low precision every frame, because some system calls
-		// reset it arbitrarily
-//		_controlfp( _PC_24, _MCW_PC );
-//    _controlfp( -1, _MCW_EM  ); // no exceptions, even if some crappy
-		// syscall turns them back on!
-
-		startTime = Sys_Milliseconds();
-
 		// run the game
 		Com_Frame();
-
-		endTime = Sys_Milliseconds();
-		totalMsec += endTime - startTime;
-		countMsec++;
 	}
 
 	// never gets here

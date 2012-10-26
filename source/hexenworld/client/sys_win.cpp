@@ -2,16 +2,6 @@
 
 #include "quakedef.h"
 #include "../../client/windows_shared.h"
-#include "../../client/client.h"
-
-#define PAUSE_SLEEP     50				// sleep time on pause or minimization
-#define NOT_FOCUS_SLEEP 20				// sleep time when not focus
-
-#define MAX_NUM_ARGVS   50
-
-char* argv[MAX_NUM_ARGVS];
-static char* empty_string = "";
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -40,33 +30,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	parms.basedir = cwd;
-
-	parms.argc = 1;
-	argv[0] = empty_string;
-
-	while (*lpCmdLine && (parms.argc < MAX_NUM_ARGVS))
-	{
-		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
-			lpCmdLine++;
-
-		if (*lpCmdLine)
-		{
-			argv[parms.argc] = lpCmdLine;
-			parms.argc++;
-
-			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
-				lpCmdLine++;
-
-			if (*lpCmdLine)
-			{
-				*lpCmdLine = 0;
-				lpCmdLine++;
-			}
-
-		}
-	}
-
-	parms.argv = argv;
+	parms.argc = __argc;
+	parms.argv = __argv;
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
@@ -83,13 +48,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while (1)
 	{
 		// yield the CPU for a little while when paused, minimized, or not the focus
-		if ((cl.qh_paused && !ActiveApp) || Minimized)
+		if (Minimized || !ActiveApp)
 		{
-			Sleep(PAUSE_SLEEP);
-		}
-		else if (!ActiveApp)
-		{
-			Sleep(NOT_FOCUS_SLEEP);
+			Sleep(5);
 		}
 
 		newtime = Sys_DoubleTime();

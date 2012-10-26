@@ -437,6 +437,7 @@ void Host_Init(quakeparms_t* parms)
 		Cvar_Init();
 		COM_Init(parms->basedir);
 		Host_InitLocal();
+		SVH2_RemoveGIPFiles(NULL);
 #ifndef DEDICATED
 		CL_InitKeyCommands();
 #endif

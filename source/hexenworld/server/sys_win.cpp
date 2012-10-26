@@ -1,9 +1,5 @@
-#include <sys/timeb.h>
 #include "qwsvdef.h"
 #include "../../common/system_windows.h"
-#include "../../client/public.h"
-
-char* newargv[256];
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

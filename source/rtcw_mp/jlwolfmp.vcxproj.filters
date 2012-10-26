@@ -28,8 +28,5 @@
     <ClInclude Include="qcommon\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="win32\win_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

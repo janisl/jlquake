@@ -6,46 +6,18 @@
 
 #include "quakedef.h"
 #include "../client/windows_shared.h"
-#include "../server/public.h"
-#include "../client/client.h"
-
-#define PAUSE_SLEEP     50				// sleep time on pause or minimization
-#define NOT_FOCUS_SLEEP 20				// sleep time when not focus
-
-#define MAX_NUM_ARGVS   50
-
-Cvar* sys_delay;
-
-static void Sys_Sleep(void)
-{
-	Sleep(1);
-}
-
-/*
-==================
-WinMain
-==================
-*/
-char* argv[MAX_NUM_ARGVS];
-static char* empty_string = "";
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	quakeparms_t parms;
-	double time, oldtime, newtime;
-	static char cwd[1024];
-
 	/* previous instances do not exist in Win32 */
 	if (hPrevInstance)
 	{
 		return 0;
 	}
 
-	SVH2_RemoveGIPFiles(NULL);
-
 	global_hInstance = hInstance;
 
+	static char cwd[1024];
 	if (!GetCurrentDirectory(sizeof(cwd), cwd))
 	{
 		common->FatalError("Couldn't determine current directory");
@@ -56,34 +28,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cwd[String::Length(cwd) - 1] = 0;
 	}
 
+	quakeparms_t parms;
 	parms.basedir = cwd;
-
-	parms.argc = 1;
-	argv[0] = empty_string;
-
-	while (*lpCmdLine && (parms.argc < MAX_NUM_ARGVS))
-	{
-		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
-			lpCmdLine++;
-
-		if (*lpCmdLine)
-		{
-			argv[parms.argc] = lpCmdLine;
-			parms.argc++;
-
-			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
-				lpCmdLine++;
-
-			if (*lpCmdLine)
-			{
-				*lpCmdLine = 0;
-				lpCmdLine++;
-			}
-
-		}
-	}
-
-	parms.argv = argv;
+	parms.argc = __argc;
+	parms.argv = __argv;
 
 	COM_InitArgv2(parms.argc, parms.argv);
 
@@ -94,13 +42,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	common->Printf("Host_Init\n");
 	Host_Init(&parms);
 
-	oldtime = Sys_DoubleTime();
+	double oldtime = Sys_DoubleTime();
 
-	sys_delay = Cvar_Get("sys_delay", "0", CVAR_ARCHIVE);
+	Cvar* sys_delay = Cvar_Get("sys_delay", "0", CVAR_ARCHIVE);
 
 	/* main window message loop */
 	while (1)
 	{
+		double newtime;
+		double time;
 		if (com_dedicated->integer)
 		{
 			newtime = Sys_DoubleTime();
@@ -108,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			while (time < sys_ticrate->value)
 			{
-				Sys_Sleep();
+				Sleep(1);
 				newtime = Sys_DoubleTime();
 				time = newtime - oldtime;
 			}
@@ -136,5 +86,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	/* return success of application */
-	return TRUE;
+	return 0;
 }
