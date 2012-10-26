@@ -87,19 +87,6 @@ void QDECL Sys_Error(const char* error, ...)
 }
 
 /*
-=================
-Sys_Net_Restart_f
-
-Restart the network subsystem
-=================
-*/
-void Sys_Net_Restart_f(void)
-{
-	NET_Restart();
-}
-
-
-/*
 ================
 Sys_Init
 
@@ -107,9 +94,6 @@ Called after the common systems (cvars, files, etc)
 are initialized
 ================
 */
-#define OSR2_BUILD_NUMBER 1111
-#define WIN98_BUILD_NUMBER 1998
-
 void Sys_Init(void)
 {
 	int cpuid;
@@ -118,7 +102,7 @@ void Sys_Init(void)
 	// NT gets 18ms resolution
 	timeBeginPeriod(1);
 
-	Cmd_AddCommand("net_restart", Sys_Net_Restart_f);
+	Cmd_AddCommand("net_restart", Net_Restart_f);
 
 	OSVERSIONINFO osversion;
 	osversion.dwOSVersionInfoSize = sizeof(osversion);

@@ -1063,6 +1063,12 @@ void NET_Restart()
 	NET_Config(networkingEnabled);
 }
 
+//	Restart the network subsystem
+void Net_Restart_f()
+{
+	NET_Restart();
+}
+
 // sleeps msec or until net socket is ready
 //JL: Quake 3 Note on Windows this  method was empty.
 void NET_Sleep(int msec)

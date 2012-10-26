@@ -156,6 +156,7 @@ void NET_Config(bool enableNetworking);
 void NETQ23_Init();
 void NET_Shutdown();
 void NET_Restart();
+void Net_Restart_f();
 void NET_Sleep(int msec);
 
 #define NET_NAME_ID         "HEXENII"
