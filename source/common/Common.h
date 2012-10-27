@@ -66,6 +66,4 @@ enum
 	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
 };
 
-void Com_Printf(const char* fmt, ...);
-void Com_DPrintf(const char* fmt, ...);
 void Com_Error(int code, const char* fmt, ...);

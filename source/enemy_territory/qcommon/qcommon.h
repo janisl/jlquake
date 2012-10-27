@@ -62,8 +62,6 @@ MISC
 ==============================================================
 */
 
-int QDECL Com_VPrintf(const char* fmt, va_list argptr) id_attribute((format(printf,1,0)));			// conforms to vprintf prototype for print callback passing
-
 //bani - profile functions
 void Com_TrackProfile(char* profile_path);
 qboolean Com_CheckProfile(char* profile_path);

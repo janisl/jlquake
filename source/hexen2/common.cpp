@@ -296,61 +296,6 @@ void Com_InitDebugLog()
 {
 }
 
-/*
-================
-Com_Printf
-
-Handles cursor positioning, line wrapping, etc
-================
-*/
-void Com_Printf(const char* fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end(argptr);
-
-// also echo to debugging console
-	Sys_Print(msg);	// also echo to debugging console
-
-// log all messages to file
-	Com_LogToFile(msg);
-
-	if (!com_dedicated || com_dedicated->integer)
-	{
-		return;		// no graphics mode
-	}
-
-	// write it to the scrollable buffer
-	Con_ConsolePrint(msg);
-}
-
-/*
-================
-Com_DPrintf
-
-A common->Printf that only shows up if the "developer" cvar is set
-================
-*/
-void Com_DPrintf(const char* fmt, ...)
-{
-	va_list argptr;
-	char msg[MAXPRINTMSG];
-
-	if (!com_developer || !com_developer->value)
-	{
-		return;			// don't confuse non-developers with techie stuff...
-
-	}
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end(argptr);
-
-	common->Printf("%s", msg);
-}
-
 void FS_Restart(int checksumFeed)
 {
 }
