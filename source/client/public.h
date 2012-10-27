@@ -55,6 +55,8 @@ void Sys_SendKeyEvents();
 void IN_Frame();
 
 void CLQH_EstablishConnection(const char* name);
+void CLQH_OnEndGame();
+bool CLQH_IsTimeDemo();
 
 void CLQ2_Drop();
 

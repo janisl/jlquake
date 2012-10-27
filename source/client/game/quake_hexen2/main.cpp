@@ -28,7 +28,6 @@ Cvar* clqh_sbar;
 Cvar* qhw_topcolor;
 Cvar* qhw_bottomcolor;
 Cvar* qhw_spectator;
-Cvar* clqhw_rate;
 
 int clqh_packet_latency[NET_TIMINGS_QH];
 
@@ -561,6 +560,10 @@ void CLQH_Init()
 		Info_SetValueForKey(cls.qh_userinfo, "bottomcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false);
 		Info_SetValueForKey(cls.qh_userinfo, "rate", "2500", MAX_INFO_STRING_QW, 64, 64, true, false);
 		Info_SetValueForKey(cls.qh_userinfo, "msg", "1", MAX_INFO_STRING_QW, 64, 64, true, false);
+		if (GGameType & GAME_QuakeWorld)
+		{
+			Info_SetValueForKey(cls.qh_userinfo, "*ver", JLQUAKE_VERSION_STRING, MAX_INFO_STRING_QW, 64, 64, true, false);
+		}
 	
 		clqh_name = Cvar_Get("name", "unnamed", CVAR_ARCHIVE | CVAR_USERINFO);
 		qhw_topcolor = Cvar_Get("topcolor", "0", CVAR_ARCHIVE | CVAR_USERINFO);
@@ -645,4 +648,21 @@ void CLQH_Init()
 		MIDI_Init();
 		SbarH2_Init();
 	}
+}
+
+void CLQH_OnEndGame()
+{
+	if (cls.qh_demonum != -1)
+	{
+		CL_NextDemo();
+	}
+	else
+	{
+		CL_Disconnect(true);
+	}
+}
+
+bool CLQH_IsTimeDemo()
+{
+	return cls.qh_timedemo;
 }

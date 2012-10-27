@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "../../server/public.h"
 #include "../../client/public.h"
-#include "../../client/client.h"
-#include "../../client/game/quake/local.h"
 
 Cvar* cl_maxfps;
 
@@ -74,10 +72,6 @@ void CL_InitLocal(void)
 {
 	CL_Init();
 	CL_StartHunkUsers();
-
-	char st[80];
-	sprintf(st, "%4.2f-%04d", VERSION, build_number());
-	Info_SetValueForKey(cls.qh_userinfo, "*ver", st, MAX_INFO_STRING_QW, 64, 64, true, false);
 
 	//
 	// register our commands
@@ -138,7 +132,7 @@ void Host_FatalError(const char* error, ...)
 	common->Printf("Host_FatalError: %s\n",string);
 
 	CL_Disconnect(true);
-	cls.qh_demonum = -1;
+	CLQH_StopDemoLoop();
 
 	com_errorEntered = false;
 
@@ -182,7 +176,7 @@ void Host_Frame(float time)
 			fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
 		}
 
-		if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / fps)
+		if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / fps)
 		{
 			return;		// framerate is too high
 

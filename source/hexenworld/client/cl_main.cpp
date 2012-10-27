@@ -5,10 +5,8 @@
 #include "../../client/windows_shared.h"
 #endif
 #include "../../client/public.h"
-#include "../../client/client.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
-#include "../../client/game/hexen2/local.h"
 
 quakeparms_t host_parms;
 
@@ -110,7 +108,7 @@ void Host_FatalError(const char* error, ...)
 	common->Printf("Host_FatalError: %s\n",string);
 
 	CL_Disconnect(true);
-	cls.qh_demonum = -1;
+	CLQH_StopDemoLoop();
 
 	com_errorEntered = false;
 
@@ -147,7 +145,7 @@ void Host_Frame(float time)
 #define min(a, b)   ((a) < (b) ? (a) : (b))
 		fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
 
-		if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / fps)
+		if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / fps)
 		{
 			return;		// framerate is too high
 		}

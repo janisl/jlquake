@@ -18,7 +18,6 @@ extern Cvar* clqh_sbar;
 extern Cvar* qhw_topcolor;
 extern Cvar* qhw_bottomcolor;
 extern Cvar* qhw_spectator;
-extern Cvar* clqhw_rate;
 
 #define NET_TIMINGS_QH 256
 #define NET_TIMINGSMASK_QH 255

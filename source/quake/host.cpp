@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../server/public.h"
 #include "../client/public.h"
-#include "../client/client.h"
 
 /*
 
@@ -95,18 +94,9 @@ void Host_EndGame(const char* message, ...)
 		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
 	}
 
-#ifndef DEDICATED
-	if (cls.qh_demonum != -1)
-	{
-		CL_NextDemo();
-	}
-	else
-	{
-		CL_Disconnect(true);
-	}
+	CLQH_OnEndGame();
 
 	longjmp(host_abortserver, 1);
-#endif
 }
 
 /*
@@ -143,14 +133,12 @@ void Host_Error(const char* error, ...)
 		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
 	}
 
-#ifndef DEDICATED
 	CL_Disconnect(true);
-	cls.qh_demonum = -1;
+	CLQH_StopDemoLoop();
 
 	com_errorEntered = false;
 
 	longjmp(host_abortserver, 1);
-#endif
 }
 
 /*
@@ -197,11 +185,7 @@ qboolean Host_FilterTime(float time)
 {
 	realtime += time;
 	SVQH_SetRealTime(realtime * 1000);
-#ifdef DEDICATED
-	if (realtime - oldrealtime < 1.0 / 72.0)
-#else
-	if (!cls.qh_timedemo && realtime - oldrealtime < 1.0 / 72.0)
-#endif
+	if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / 72.0)
 	{
 		return false;		// framerate is too high
 

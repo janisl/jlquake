@@ -71,6 +71,7 @@ extern Cvar* com_crashed;
 extern Cvar* cl_shownet;
 
 extern Cvar* qh_registered;
+extern Cvar* clqhw_rate;
 
 extern Cvar* com_sv_running;
 extern Cvar* com_cl_running;

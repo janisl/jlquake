@@ -217,3 +217,12 @@ void CL_ShutdownOnSignal()
 void CL_ShutdownOnWindowsError()
 {
 }
+
+void CLQH_OnEndGame()
+{
+}
+
+bool CLQH_IsTimeDemo()
+{
+	return false;
+}
