@@ -919,7 +919,7 @@ void CL_Frame(int msec)
 	}
 
 	// update audio
-	if (cls.state == CA_ACTIVE)
+	if (cls.state == CA_ACTIVE && !(GGameType & GAME_Tech3))
 	{
 		if (GGameType & GAME_Quake2)
 		{
