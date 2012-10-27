@@ -22,11 +22,44 @@ void Com_Error(int code, const char* fmt, ...)
 {
 	if (code == ERR_DROP)
 	{
-		Host_EndGame(fmt);
+		//	Call this to drop to a console without exiting the qwcl
+		va_list argptr;
+		char string[1024];
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(string, 1024, fmt, argptr);
+		va_end(argptr);
+		common->Printf("\n===========================\n");
+		common->Printf("Host_EndGame: %s\n",string);
+		common->Printf("===========================\n\n");
+
+		CL_Disconnect(true);
+
+		longjmp(host_abort, 1);
 	}
 	else if (code == ERR_FATAL)
 	{
-		Host_FatalError("%s", fmt);
+		//	This shuts down the client and exits qwcl
+		va_list argptr;
+		char string[1024];
+
+		if (com_errorEntered)
+		{
+			Sys_Error("Host_FatalError: recursively entered");
+		}
+		com_errorEntered = true;
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(string, 1024, fmt, argptr);
+		va_end(argptr);
+		common->Printf("Host_FatalError: %s\n",string);
+
+		CL_Disconnect(true);
+		CLQH_StopDemoLoop();
+
+		com_errorEntered = false;
+
+		Sys_Error("Host_FatalError: %s\n",string);
 	}
 	else if (code == ERR_DISCONNECT)
 	{
@@ -57,63 +90,6 @@ void CL_InitLocal(void)
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	COM_InitCommonCommands();
-}
-
-
-/*
-================
-Host_EndGame
-
-Call this to drop to a console without exiting the qwcl
-================
-*/
-void Host_EndGame(const char* message, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr,message);
-	Q_vsnprintf(string, 1024, message, argptr);
-	va_end(argptr);
-	common->Printf("\n===========================\n");
-	common->Printf("Host_EndGame: %s\n",string);
-	common->Printf("===========================\n\n");
-
-	CL_Disconnect(true);
-
-	longjmp(host_abort, 1);
-}
-
-/*
-================
-Host_FatalError
-
-This shuts down the client and exits qwcl
-================
-*/
-void Host_FatalError(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	if (com_errorEntered)
-	{
-		Sys_Error("Host_FatalError: recursively entered");
-	}
-	com_errorEntered = true;
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-	common->Printf("Host_FatalError: %s\n",string);
-
-	CL_Disconnect(true);
-	CLQH_StopDemoLoop();
-
-	com_errorEntered = false;
-
-// FIXME
-	Sys_Error("Host_FatalError: %s\n",string);
 }
 
 /*

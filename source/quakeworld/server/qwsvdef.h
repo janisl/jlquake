@@ -54,5 +54,4 @@ extern quakeparms_t host_parms;
 
 extern double host_frametime;
 
-void SV_Error(const char* error, ...);
 void COM_InitServer(quakeparms_t* parms);

@@ -67,8 +67,6 @@ extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
 void Host_Init(quakeparms_t* parms);
-void Host_Error(const char* error, ...);
-void Host_EndGame(const char* message, ...);
 void Host_Frame(float time);
 
 extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output

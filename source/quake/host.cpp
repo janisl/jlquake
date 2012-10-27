@@ -52,7 +52,36 @@ void Com_Error(int code, const char* fmt, ...)
 {
 	if (code == ERR_DROP)
 	{
-		Host_Error(fmt);
+		//	This shuts down both the client and server
+		va_list argptr;
+		char string[1024];
+
+		if (com_errorEntered)
+		{
+			Sys_Error("Host_Error: recursively entered");
+		}
+		com_errorEntered = true;
+
+		SCR_EndLoadingPlaque();			// reenable screen updates
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(string, 1024, fmt, argptr);
+		va_end(argptr);
+		common->Printf("Host_Error: %s\n",string);
+
+		SV_Shutdown("");
+
+		if (com_dedicated->integer)
+		{
+			Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
+		}
+
+		CL_Disconnect(true);
+		CLQH_StopDemoLoop();
+
+		com_errorEntered = false;
+
+		longjmp(host_abortserver, 1);
 	}
 	else if (code == ERR_FATAL)
 	{
@@ -68,77 +97,25 @@ void Com_Error(int code, const char* fmt, ...)
 	}
 	else if (code == ERR_ENDGAME)
 	{
-		Host_EndGame(fmt);
+		va_list argptr;
+		char string[1024];
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(string, 1024, fmt, argptr);
+		va_end(argptr);
+		common->DPrintf("Host_EndGame: %s\n",string);
+
+		SV_Shutdown("");
+
+		if (com_dedicated->integer)
+		{
+			Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
+		}
+
+		CLQH_OnEndGame();
+
+		longjmp(host_abortserver, 1);
 	}
-}
-
-/*
-================
-Host_EndGame
-================
-*/
-void Host_EndGame(const char* message, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	va_start(argptr,message);
-	Q_vsnprintf(string, 1024, message, argptr);
-	va_end(argptr);
-	common->DPrintf("Host_EndGame: %s\n",string);
-
-	SV_Shutdown("");
-
-	if (com_dedicated->integer)
-	{
-		Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
-	}
-
-	CLQH_OnEndGame();
-
-	longjmp(host_abortserver, 1);
-}
-
-/*
-================
-Host_Error
-
-This shuts down both the client and server
-================
-*/
-void Host_Error(const char* error, ...)
-{
-	va_list argptr;
-	char string[1024];
-
-	if (com_errorEntered)
-	{
-		Sys_Error("Host_Error: recursively entered");
-	}
-	com_errorEntered = true;
-
-#ifndef DEDICATED
-	SCR_EndLoadingPlaque();			// reenable screen updates
-#endif
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-	common->Printf("Host_Error: %s\n",string);
-
-	SV_Shutdown("");
-
-	if (com_dedicated->integer)
-	{
-		Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
-	}
-
-	CL_Disconnect(true);
-	CLQH_StopDemoLoop();
-
-	com_errorEntered = false;
-
-	longjmp(host_abortserver, 1);
 }
 
 /*

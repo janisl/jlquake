@@ -37,13 +37,29 @@ void SVQHW_Master_Shutdown(void);
 
 void Com_Error(int code, const char* fmt, ...)
 {
-	if (code == ERR_DROP)
+	if (code == ERR_DROP || code == ERR_FATAL)
 	{
-		SV_Error("%s", fmt);
-	}
-	else if (code == ERR_FATAL)
-	{
-		Sys_Error("%s", fmt);
+		//	Sends a datagram to all the clients informing them of the server crash,
+		// then exits
+		va_list argptr;
+		static char string[1024];
+
+		if (com_errorEntered)
+		{
+			Sys_Error("SV_Error: recursively entered (%s)", string);
+		}
+
+		com_errorEntered = true;
+
+		va_start(argptr, fmt);
+		Q_vsnprintf(string, 1024, fmt, argptr);
+		va_end(argptr);
+
+		common->Printf("SV_Error: %s\n",string);
+
+		SV_Shutdown(va("server crashed: %s\n", string));
+
+		Sys_Error("SV_Error: %s\n",string);
 	}
 	else if (code == ERR_DISCONNECT)
 	{
@@ -56,37 +72,6 @@ void Com_Error(int code, const char* fmt, ...)
 	else if (code == ERR_ENDGAME)
 	{
 	}
-}
-
-/*
-================
-SV_Error
-
-Sends a datagram to all the clients informing them of the server crash,
-then exits
-================
-*/
-void SV_Error(const char* error, ...)
-{
-	va_list argptr;
-	static char string[1024];
-
-	if (com_errorEntered)
-	{
-		Sys_Error("SV_Error: recursively entered (%s)", string);
-	}
-
-	com_errorEntered = true;
-
-	va_start(argptr,error);
-	Q_vsnprintf(string, 1024, error, argptr);
-	va_end(argptr);
-
-	common->Printf("SV_Error: %s\n",string);
-
-	SV_Shutdown(va("server crashed: %s\n", string));
-
-	Sys_Error("SV_Error: %s\n",string);
 }
 
 /*

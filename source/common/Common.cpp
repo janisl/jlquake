@@ -17,6 +17,18 @@
 #include "qcommon.h"
 #include "../client/public.h"
 
+class idCommonLocal : public idCommon
+{
+public:
+	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Disconnect(const char* message);
+};
+
 static idCommonLocal commonLocal;
 idCommon* common = &commonLocal;
 
