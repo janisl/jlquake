@@ -134,30 +134,4 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #endif
 
-//=============================================================
-
-#ifdef ERR_FATAL
-#undef ERR_FATAL			// this is be defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-typedef enum {
-	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_DROP,					// print to console and disconnect from game
-	ERR_SERVERDISCONNECT,		// don't kill server
-	ERR_DISCONNECT,				// client disconnected from the server
-} errorParm_t;
-
-/*
-==============================================================
-
-MATHLIB
-
-==============================================================
-*/
-
-// this is only here so the functions in q_shared.c and bg_*.c can link
-void    Com_Error(int level, const char* error, ...);
-void    Com_Printf(const char* msg, ...);
-
 #endif	// __Q_SHARED_H

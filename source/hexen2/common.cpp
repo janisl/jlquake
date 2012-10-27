@@ -298,12 +298,12 @@ void Com_InitDebugLog()
 
 /*
 ================
-Con_Printf
+Com_Printf
 
 Handles cursor positioning, line wrapping, etc
 ================
 */
-void Con_Printf(const char* fmt, ...)
+void Com_Printf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
@@ -329,12 +329,12 @@ void Con_Printf(const char* fmt, ...)
 
 /*
 ================
-Con_DPrintf
+Com_DPrintf
 
 A common->Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf(const char* fmt, ...)
+void Com_DPrintf(const char* fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];

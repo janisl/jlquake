@@ -14,84 +14,28 @@ quakeparms_t host_parms;
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 
-class idCommonLocal : public idCommon
+void Com_Error(int code, const char* fmt, ...)
 {
-public:
-	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Disconnect(const char* message);
-};
-
-static idCommonLocal commonLocal;
-idCommon* common = &commonLocal;
-
-void idCommonLocal::Printf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Con_Printf("%s", string);
+	if (code == ERR_DROP)
+	{
+		SV_Error("%s", fmt);
+	}
+	else if (code == ERR_FATAL)
+	{
+		Sys_Error("%s", fmt);
+	}
+	else if (code == ERR_DISCONNECT)
+	{
+		CL_Disconnect(true);
+		SV_Shutdown("");
+	}
+	else if (code == ERR_SERVERDISCONNECT)
+	{
+	}
+	else if (code == ERR_ENDGAME)
+	{
+	}
 }
-
-void idCommonLocal::DPrintf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Con_DPrintf("%s", string);
-}
-
-void idCommonLocal::Error(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	SV_Error("%s", string);
-}
-
-void idCommonLocal::FatalError(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Sys_Error("%s", string);
-}
-
-void idCommonLocal::EndGame(const char* format, ...)
-{
-}
-
-void idCommonLocal::ServerDisconnected(const char* format, ...)
-{
-}
-
-void idCommonLocal::Disconnect(const char* message)
-{
-	CL_Disconnect(true);
-	SV_Shutdown("");
-}
-
-//============================================================================
 
 /*
 ================

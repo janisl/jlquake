@@ -58,10 +58,6 @@ MISC
 ==============================================================
 */
 
-void QDECL Com_Printf(const char* fmt, ...);
-void QDECL Com_DPrintf(const char* fmt, ...);
-void QDECL Com_Error(int code, const char* fmt, ...);
-
 extern Cvar* com_blood;
 extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;

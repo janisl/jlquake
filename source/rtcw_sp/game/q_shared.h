@@ -146,19 +146,6 @@ If you have questions concerning this license or the applicable additional terms
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-#ifdef  ERR_FATAL
-#undef  ERR_FATAL				// this is be defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-typedef enum {
-	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_DROP,					// print to console and disconnect from game
-	ERR_SERVERDISCONNECT,		// don't kill server
-	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
-} errorParm_t;
-
 /*
 ==============================================================
 
@@ -172,11 +159,5 @@ MATHLIB
 #else
 #define Q_putenv putenv
 #endif
-
-//=============================================
-
-// this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error(int level, const char* error, ...);
-void QDECL Com_Printf(const char* msg, ...);
 
 #endif	// __Q_SHARED_H

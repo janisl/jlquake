@@ -33,90 +33,6 @@ Cvar* timescale;
 Cvar* fixedtime;
 Cvar* showtrace;
 
-class idCommonLocal : public idCommon
-{
-public:
-	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Disconnect(const char* message);
-};
-
-static idCommonLocal commonLocal;
-idCommon* common = &commonLocal;
-
-void idCommonLocal::Printf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Printf("%s", string);
-}
-
-void idCommonLocal::DPrintf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_DPrintf("%s", string);
-}
-
-void idCommonLocal::Error(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Error(ERR_DROP, string);
-}
-
-void idCommonLocal::FatalError(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Sys_Error("%s", string);
-}
-
-void idCommonLocal::EndGame(const char* format, ...)
-{
-}
-
-void idCommonLocal::ServerDisconnected(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Error(ERR_SERVERDISCONNECT, string);
-}
-
-void idCommonLocal::Disconnect(const char* message)
-{
-	common->Error("%s", message);
-}
-
 /*
 ============================================================================
 
@@ -217,7 +133,7 @@ void Com_Error(int code, const char* fmt, ...)
 		com_errorEntered = false;
 		longjmp(abortframe, -1);
 	}
-	else if (code == ERR_DROP)
+	else if (code == ERR_DROP || code == ERR_DISCONNECT)
 	{
 		common->Printf("********************\nERROR: %s\n********************\n", msg);
 		SV_Shutdown(va("Server crashed: %s\n", msg));

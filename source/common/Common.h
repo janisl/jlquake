@@ -39,3 +39,33 @@ public:
 };
 
 extern idCommon* common;
+
+class idCommonLocal : public idCommon
+{
+public:
+	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Disconnect(const char* message);
+};
+
+#ifdef  ERR_FATAL
+#undef  ERR_FATAL				// this is be defined in malloc.h
+#endif
+
+// parameters to the main Error routine
+enum
+{
+	ERR_FATAL,					// exit the entire game with a popup window
+	ERR_DROP,					// print to console and disconnect from game
+	ERR_SERVERDISCONNECT,		// don't kill server
+	ERR_DISCONNECT,				// client disconnected from the server
+	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
+};
+
+void Com_Printf(const char* fmt, ...);
+void Com_DPrintf(const char* fmt, ...);
+void Com_Error(int code, const char* fmt, ...);

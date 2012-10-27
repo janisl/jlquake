@@ -63,9 +63,6 @@ MISC
 */
 
 int QDECL Com_VPrintf(const char* fmt, va_list argptr) id_attribute((format(printf,1,0)));			// conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));			// this one calls to Com_VPrintf now
-void QDECL Com_DPrintf(const char* fmt, ...) id_attribute((format(printf,1,2)));
-void QDECL Com_Error(int code, const char* fmt, ...) id_attribute((format(printf,2,3)));
 
 //bani - profile functions
 void Com_TrackProfile(char* profile_path);

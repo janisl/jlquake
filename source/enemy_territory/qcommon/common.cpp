@@ -87,92 +87,6 @@ int com_frameNumber;
 
 char com_errorMessage[MAXPRINTMSG];
 
-class idCommonLocal : public idCommon
-{
-public:
-	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Disconnect(const char* message);
-};
-
-static idCommonLocal commonLocal;
-idCommon* common = &commonLocal;
-
-void idCommonLocal::Printf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Printf("%s", string);
-}
-
-void idCommonLocal::DPrintf(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_DPrintf("%s", string);
-}
-
-void idCommonLocal::Error(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Error(ERR_DROP, "%s", string);
-}
-
-void idCommonLocal::FatalError(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Sys_Error("%s", string);
-}
-
-void idCommonLocal::EndGame(const char* format, ...)
-{
-}
-
-void idCommonLocal::ServerDisconnected(const char* format, ...)
-{
-	va_list argPtr;
-	char string[MAXPRINTMSG];
-
-	va_start(argPtr, format);
-	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
-	va_end(argPtr);
-
-	Com_Error(ERR_SERVERDISCONNECT, "%s", string);
-}
-
-void idCommonLocal::Disconnect(const char* message)
-{
-	Com_Error(ERR_DISCONNECT, "Disconnected from server");
-}
-
-//============================================================================
-
 /*
 =============
 Com_Printf
@@ -231,7 +145,6 @@ void QDECL Com_Printf(const char* fmt, ...)
 	Com_VPrintf(fmt, argptr);
 	va_end(argptr);
 }
-void QDECL Com_Printf(const char* fmt, ...) id_attribute((format(printf,1,2)));
 
 /*
 ================

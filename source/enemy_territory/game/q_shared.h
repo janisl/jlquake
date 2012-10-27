@@ -185,36 +185,10 @@ static inline float idSqrt(float x)
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-#ifdef  ERR_FATAL
-#undef  ERR_FATAL				// this is be defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-typedef enum {
-	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_DROP,					// print to console and disconnect from game
-	ERR_SERVERDISCONNECT,		// don't kill server
-	ERR_DISCONNECT,				// client disconnected from the server
-} errorParm_t;
-
 #ifdef _WIN32
 #define Q_putenv _putenv
 #else
 #define Q_putenv putenv
 #endif
-
-//=============================================
-
-// this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error(int level, const char* error, ...) id_attribute((format(printf,2,3)));
-void QDECL Com_Printf(const char* msg, ...) id_attribute((format(printf,1,2)));
-
-/*
-==========================================================
-
-  RELOAD STATES
-
-==========================================================
-*/
 
 #endif	// __Q_SHARED_H
