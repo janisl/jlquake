@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#include <setjmp.h>
+
 class idCommon : public Interface
 {
 public:
@@ -35,23 +37,10 @@ public:
 
 	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
 
-	virtual void Disconnect(const char* message) = 0;
+	virtual void Disconnect(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
 };
 
 extern idCommon* common;
 
-#ifdef  ERR_FATAL
-#undef  ERR_FATAL				// this is be defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-enum
-{
-	ERR_FATAL,					// exit the entire game with a popup window
-	ERR_DROP,					// print to console and disconnect from game
-	ERR_SERVERDISCONNECT,		// don't kill server
-	ERR_DISCONNECT,				// client disconnected from the server
-	ERR_ENDGAME					// not an error.  just clean up properly, exit to the menu, and start up the "endgame" menu  //----(SA)	added
-};
-
-void Com_Error(int code, const char* fmt, ...);
+extern char com_errorMessage[MAXPRINTMSG];
+extern jmp_buf abortframe;

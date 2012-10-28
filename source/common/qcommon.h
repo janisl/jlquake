@@ -65,6 +65,10 @@ extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar* com_timescale;
 
 extern Cvar* com_developer;
+#if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
+extern Cvar* com_noErrorInterrupt;
+#endif
+extern Cvar* com_buildScript;			// for building release pak files
 
 extern Cvar* com_crashed;
 

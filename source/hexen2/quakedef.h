@@ -14,8 +14,6 @@
 
 #define GAMENAME    "data1"		// directory to look in by default
 
-#include <setjmp.h>
-
 #if id386
 #define UNALIGNED_OK    1	// set to 0 if unaligned accesses are not supported
 #else

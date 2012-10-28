@@ -226,3 +226,7 @@ bool CLQH_IsTimeDemo()
 {
 	return false;
 }
+
+void CLWS_EndgameMenu()
+{
+}

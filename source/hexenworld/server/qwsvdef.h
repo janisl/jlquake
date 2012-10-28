@@ -2,8 +2,6 @@
 
 //define	PARANOID			// speed sapping error checking
 
-#include <setjmp.h>
-
 #include "../../common/qcommon.h"
 #include "bothdefs.h"
 

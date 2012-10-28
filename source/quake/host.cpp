@@ -41,82 +41,10 @@ double host_time;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 
-jmp_buf host_abortserver;
-
 Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
 Cvar* serverprofile;
-
-void Com_Error(int code, const char* fmt, ...)
-{
-	if (code == ERR_DROP)
-	{
-		//	This shuts down both the client and server
-		va_list argptr;
-		char string[1024];
-
-		if (com_errorEntered)
-		{
-			Sys_Error("Host_Error: recursively entered");
-		}
-		com_errorEntered = true;
-
-		SCR_EndLoadingPlaque();			// reenable screen updates
-
-		va_start(argptr, fmt);
-		Q_vsnprintf(string, 1024, fmt, argptr);
-		va_end(argptr);
-		common->Printf("Host_Error: %s\n",string);
-
-		SV_Shutdown("");
-
-		if (com_dedicated->integer)
-		{
-			Sys_Error("Host_Error: %s\n",string);	// dedicated servers exit
-		}
-
-		CL_Disconnect(true);
-		CLQH_StopDemoLoop();
-
-		com_errorEntered = false;
-
-		longjmp(host_abortserver, 1);
-	}
-	else if (code == ERR_FATAL)
-	{
-		Sys_Error("%s", fmt);
-	}
-	else if (code == ERR_DISCONNECT)
-	{
-		CL_Disconnect(true);
-		SV_Shutdown("");
-	}
-	else if (code == ERR_SERVERDISCONNECT)
-	{
-	}
-	else if (code == ERR_ENDGAME)
-	{
-		va_list argptr;
-		char string[1024];
-
-		va_start(argptr, fmt);
-		Q_vsnprintf(string, 1024, fmt, argptr);
-		va_end(argptr);
-		common->DPrintf("Host_EndGame: %s\n",string);
-
-		SV_Shutdown("");
-
-		if (com_dedicated->integer)
-		{
-			Sys_Error("Host_EndGame: %s\n",string);		// dedicated servers exit
-		}
-
-		CLQH_OnEndGame();
-
-		longjmp(host_abortserver, 1);
-	}
-}
 
 /*
 =======================
@@ -200,7 +128,7 @@ void _Host_Frame(float time)
 	static double time3 = 0;
 	int pass1, pass2, pass3;
 
-		if (setjmp(host_abortserver))
+		if (setjmp(abortframe))
 		{
 			return;		// something bad happened, or the server disconnected
 

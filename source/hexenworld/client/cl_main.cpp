@@ -14,64 +14,11 @@ double host_frametime;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 
-jmp_buf host_abort;
-
 void Master_Connect_f(void);
 
-void Com_Error(int code, const char* fmt, ...)
+void aaa()
 {
-	if (code == ERR_DROP)
-	{
-		//	Call this to drop to a console without exiting the qwcl
-		va_list argptr;
-		char string[1024];
-
-		va_start(argptr, fmt);
-		Q_vsnprintf(string, 1024, fmt, argptr);
-		va_end(argptr);
-		common->Printf("\n===========================\n");
-		common->Printf("Host_EndGame: %s\n",string);
-		common->Printf("===========================\n\n");
-
-		CL_Disconnect(true);
-
-		longjmp(host_abort, 1);
-	}
-	else if (code == ERR_FATAL)
-	{
-		//	This shuts down the client and exits qwcl
-		va_list argptr;
-		char string[1024];
-
-		if (com_errorEntered)
-		{
-			Sys_Error("Host_FatalError: recursively entered");
-		}
-		com_errorEntered = true;
-
-		va_start(argptr, fmt);
-		Q_vsnprintf(string, 1024, fmt, argptr);
-		va_end(argptr);
-		common->Printf("Host_FatalError: %s\n",string);
-
-		CL_Disconnect(true);
-		CLQH_StopDemoLoop();
-
-		com_errorEntered = false;
-
-		Sys_Error("Host_FatalError: %s\n",string);
-	}
-	else if (code == ERR_DISCONNECT)
-	{
-		CL_Disconnect(true);
-		SV_Shutdown("");
-	}
-	else if (code == ERR_SERVERDISCONNECT)
-	{
-	}
-	else if (code == ERR_ENDGAME)
-	{
-	}
+	SV_IsServerActive();
 }
 
 /*
@@ -105,7 +52,7 @@ void Host_Frame(float time)
 		static double time3 = 0;
 		int pass1, pass2, pass3;
 		float fps;
-		if (setjmp(host_abort))
+		if (setjmp(abortframe))
 		{
 			return;		// something bad happened, or the server disconnected
 

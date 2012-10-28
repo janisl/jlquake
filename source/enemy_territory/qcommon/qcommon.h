@@ -72,7 +72,6 @@ extern Cvar* com_ignorecrash;		//bani
 extern Cvar* com_pid;		//bani
 
 //extern	Cvar	*com_blood;
-extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
 extern Cvar* com_logosPlaying;
 

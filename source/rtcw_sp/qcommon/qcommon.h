@@ -59,7 +59,6 @@ MISC
 */
 
 extern Cvar* com_blood;
-extern Cvar* com_buildScript;			// for building release pak files
 extern Cvar* com_cameraMode;
 
 extern int com_frameMsec;

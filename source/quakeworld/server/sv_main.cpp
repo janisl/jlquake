@@ -35,45 +35,6 @@ double host_frametime;
 void SV_AcceptClient(netadr_t adr, int userid, char* userinfo);
 void SVQHW_Master_Shutdown(void);
 
-void Com_Error(int code, const char* fmt, ...)
-{
-	if (code == ERR_DROP || code == ERR_FATAL)
-	{
-		//	Sends a datagram to all the clients informing them of the server crash,
-		// then exits
-		va_list argptr;
-		static char string[1024];
-
-		if (com_errorEntered)
-		{
-			Sys_Error("SV_Error: recursively entered (%s)", string);
-		}
-
-		com_errorEntered = true;
-
-		va_start(argptr, fmt);
-		Q_vsnprintf(string, 1024, fmt, argptr);
-		va_end(argptr);
-
-		common->Printf("SV_Error: %s\n",string);
-
-		SV_Shutdown(va("server crashed: %s\n", string));
-
-		Sys_Error("SV_Error: %s\n",string);
-	}
-	else if (code == ERR_DISCONNECT)
-	{
-		CL_Disconnect(true);
-		SV_Shutdown("");
-	}
-	else if (code == ERR_SERVERDISCONNECT)
-	{
-	}
-	else if (code == ERR_ENDGAME)
-	{
-	}
-}
-
 /*
 ==================
 COM_ServerFrame

@@ -57,19 +57,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #endif
 
-
-// for windows fastcall option
-
-#define QDECL
-
 //======================= WIN32 DEFINES =================================
 
 #ifdef WIN32
 
 #define MAC_STATIC
-
-#undef QDECL
-#define QDECL   __cdecl
 
 // buildstring will be incorporated into the version string
 #ifdef NDEBUG

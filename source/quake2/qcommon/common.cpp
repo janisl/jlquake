@@ -21,65 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
-#include <setjmp.h>
 
 
 int realtime;
 
-jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
-
-
 Cvar* timescale;
 Cvar* fixedtime;
 Cvar* showtrace;
-
-/*
-=============
-Com_Error
-
-Both client and server can use this, and it will
-do the apropriate things.
-=============
-*/
-void Com_Error(int code, const char* fmt, ...)
-{
-	va_list argptr;
-	static char msg[MAXPRINTMSG];
-
-	if (com_errorEntered)
-	{
-		Sys_Error("recursive error after: %s", msg);
-	}
-	com_errorEntered = true;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end(argptr);
-
-	if (code == ERR_SERVERDISCONNECT)
-	{
-		CLQ2_Drop();
-		com_errorEntered = false;
-		longjmp(abortframe, -1);
-	}
-	else if (code == ERR_DROP || code == ERR_DISCONNECT)
-	{
-		common->Printf("********************\nERROR: %s\n********************\n", msg);
-		SV_Shutdown(va("Server crashed: %s\n", msg));
-		CLQ2_Drop();
-		com_errorEntered = false;
-		longjmp(abortframe, -1);
-	}
-	else
-	{
-		SV_Shutdown(va("Server fatal crashed: %s\n", msg));
-		CL_Shutdown();
-	}
-
-	Com_Shutdown();
-
-	Sys_Error("%s", msg);
-}
 
 /// just for debugging
 int memsearch(byte* start, int count, int search)

@@ -25,15 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
-#include <setjmp.h>
 #include <time.h>
 
 bool UIT3_UsesUniqueCDKey();
 
 #define DEF_COMZONEMEGS "16"
-
-jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
-
 
 FILE* debuglogfile;
 
@@ -42,110 +38,10 @@ Cvar* com_maxfps;
 Cvar* com_timedemo;
 Cvar* com_showtrace;
 Cvar* com_blood;
-Cvar* com_buildScript;		// for automated data building scripts
 Cvar* com_introPlayed;
 Cvar* com_cameraMode;
-#if defined(_WIN32) && defined(_DEBUG)
-Cvar* com_noErrorInterrupt;
-#endif
 
 int com_frameNumber;
-
-char com_errorMessage[MAXPRINTMSG];
-
-/*
-=============
-Com_Error
-
-Both client and server can use this, and it will
-do the apropriate things.
-=============
-*/
-void Com_Error(int code, const char* fmt, ...)
-{
-	va_list argptr;
-	static int lastErrorTime;
-	static int errorCount;
-	int currentTime;
-
-#if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
-	if (code != ERR_DISCONNECT)
-	{
-		if (!com_noErrorInterrupt->integer)
-		{
-			__asm {
-				int 0x03
-			}
-		}
-	}
-#endif
-
-	// when we are running automated scripts, make sure we
-	// know if anything failed
-	if (com_buildScript && com_buildScript->integer)
-	{
-		code = ERR_FATAL;
-	}
-
-	// make sure we can get at our local stuff
-	FS_PureServerSetLoadedPaks("", "");
-
-	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
-	currentTime = Sys_Milliseconds();
-	if (currentTime - lastErrorTime < 100)
-	{
-		if (++errorCount > 3)
-		{
-			code = ERR_FATAL;
-		}
-	}
-	else
-	{
-		errorCount = 0;
-	}
-	lastErrorTime = currentTime;
-
-	if (com_errorEntered)
-	{
-		Sys_Error("recursive error after: %s", com_errorMessage);
-	}
-	com_errorEntered = true;
-
-	va_start(argptr,fmt);
-	Q_vsnprintf(com_errorMessage, MAXPRINTMSG, fmt,argptr);
-	va_end(argptr);
-
-	if (code != ERR_DISCONNECT)
-	{
-		Cvar_Set("com_errorMessage", com_errorMessage);
-	}
-
-	if (code == ERR_SERVERDISCONNECT)
-	{
-		CL_Disconnect(true);
-		CLT3_FlushMemory();
-		com_errorEntered = false;
-		longjmp(abortframe, -1);
-	}
-	else if (code == ERR_DROP || code == ERR_DISCONNECT)
-	{
-		common->Printf("********************\nERROR: %s\n********************\n", com_errorMessage);
-		SV_Shutdown(va("Server crashed: %s\n",  com_errorMessage));
-		CL_Disconnect(true);
-		CLT3_FlushMemory();
-		com_errorEntered = false;
-		longjmp(abortframe, -1);
-	}
-	else
-	{
-		CL_Shutdown();
-		SV_Shutdown(va("Server fatal crashed: %s\n", com_errorMessage));
-	}
-
-	Com_Shutdown();
-
-	Sys_Error("%s", com_errorMessage);
-}
 
 /*
 =============
@@ -304,13 +200,8 @@ void Com_Init(char* commandLine)
 		sv_paused = Cvar_Get("sv_paused", "0", CVAR_ROM);
 		com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
 		com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
-		com_buildScript = Cvar_Get("com_buildScript", "0", 0);
 
 		com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
-
-#if defined(_WIN32) && defined(_DEBUG)
-		com_noErrorInterrupt = Cvar_Get("com_noErrorInterrupt", "0", 0);
-#endif
 
 		if (com_dedicated->integer)
 		{
