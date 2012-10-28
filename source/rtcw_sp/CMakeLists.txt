@@ -7,7 +7,6 @@
 
 set(WOLFSP_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 

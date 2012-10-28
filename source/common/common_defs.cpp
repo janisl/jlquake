@@ -47,6 +47,9 @@ Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
 Cvar* comt3_version;
 
+Cvar* com_ignorecrash = NULL;		// bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
+Cvar* com_pid;			// bani - process id
+
 int GGameType;
 
 int com_frameTime;
@@ -1355,4 +1358,105 @@ void COM_InitCommonCommands()
 	{
 		Cmd_AddCommand("version", COM_Version_f);
 	}
+}
+
+// bani - checks if profile.pid is valid
+// return true if it is
+// return false if it isn't(!)
+bool ComET_CheckProfile(const char* profile_path)
+{
+	//let user override this
+	if (com_ignorecrash->integer)
+	{
+		return true;
+	}
+
+	fileHandle_t f;
+	if (FS_FOpenFileRead(profile_path, &f, true) < 0)
+	{
+		//no profile found, we're ok
+		return true;
+	}
+
+	char f_data[32];
+	if (FS_Read(&f_data, sizeof(f_data) - 1, f) < 0)
+	{
+		//b0rk3d!
+		FS_FCloseFile(f);
+		//try to delete corrupted pid file
+		FS_Delete(profile_path);
+		return false;
+	}
+
+	int f_pid = String::Atoi(f_data);
+	if (f_pid != com_pid->integer)
+	{
+		//pid doesn't match
+		FS_FCloseFile(f);
+		return false;
+	}
+
+	//we're all ok
+	FS_FCloseFile(f);
+	return true;
+}
+
+//bani - from files.c
+static char last_fs_gamedir[MAX_OSPATH];
+static char last_profile_path[MAX_OSPATH];
+
+//bani - track profile changes, delete old profile.pid if we change fs_game(dir)
+//hackish, we fiddle with fs_gamedir to make FS_* calls work "right"
+static void ComET_TrackProfile(const char* profile_path)
+{
+	char temp_fs_gamedir[MAX_OSPATH];
+
+	//have we changed fs_game(dir)?
+	if (String::Cmp(last_fs_gamedir, fs_gamedir))
+	{
+		if (String::Length(last_fs_gamedir) && String::Length(last_profile_path))
+		{
+			//save current fs_gamedir
+			String::NCpyZ(temp_fs_gamedir, fs_gamedir, sizeof(temp_fs_gamedir));
+			//set fs_gamedir temporarily to make FS_* stuff work "right"
+			String::NCpyZ(fs_gamedir, last_fs_gamedir, sizeof(fs_gamedir));
+			if (FS_FileExists(last_profile_path))
+			{
+				common->Printf("Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path);
+				FS_Delete(last_profile_path);
+			}
+			//restore current fs_gamedir
+			String::NCpyZ(fs_gamedir, temp_fs_gamedir, sizeof(fs_gamedir));
+		}
+		//and save current vars for future reference
+		String::NCpyZ(last_fs_gamedir, fs_gamedir, sizeof(last_fs_gamedir));
+		String::NCpyZ(last_profile_path, profile_path, sizeof(last_profile_path));
+	}
+}
+
+// bani - writes pid to profile
+// returns true if successful
+// returns false if not(!!)
+bool ComET_WriteProfile(const char* profile_path)
+{
+	if (FS_FileExists(profile_path))
+	{
+		FS_Delete(profile_path);
+	}
+
+	fileHandle_t f = FS_FOpenFileWrite(profile_path);
+	if (f < 0)
+	{
+		common->Printf("Com_WriteProfile: Can't write %s.\n", profile_path);
+		return false;
+	}
+
+	FS_Printf(f, "%d", com_pid->integer);
+
+	FS_FCloseFile(f);
+
+	//track profile changes
+	ComET_TrackProfile(profile_path);
+
+	return true;
 }

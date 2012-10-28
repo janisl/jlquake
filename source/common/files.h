@@ -61,8 +61,6 @@ enum fsMode_t
 
 extern bool com_portals;
 
-extern int fs_checksumFeed;
-
 // never load anything from pk3 files that are not present at the server when pure
 extern Cvar* fs_homepath;
 extern Cvar* fs_basepath;
@@ -72,8 +70,6 @@ extern bool fs_ProtectKeyFile;
 extern char fs_gamedir[MAX_OSPATH];
 extern char fsqhw_gamedirfile[MAX_OSPATH];	//JL What's the difference?
 extern const char* fs_PrimaryBaseGame;
-extern char lastValidBase[MAX_OSPATH];
-extern char lastValidGame[MAX_OSPATH];
 
 void FS_CopyFile(const char* fromOSPath, const char* toOSPath);
 void FS_CopyFileOS(const char* from, const char* to);
@@ -200,6 +196,10 @@ bool FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char*
 void FS_Startup();
 void FS_InitFilesystem();
 void FS_Shutdown();
+
+// shutdown and restart the filesystem so changes to fs_gamedir can take effect
+void FS_Restart(int checksumFeed);
+
 const char* FS_Gamedir();
 void FS_SetGamedirQHW(const char* dir);
 void FS_SetGamedir(const char* dir);

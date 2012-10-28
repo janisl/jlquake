@@ -4,7 +4,6 @@
 
 set(WOLFMP_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 
@@ -14,7 +13,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 
 set(WOLFMPDED_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 

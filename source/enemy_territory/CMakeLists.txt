@@ -16,7 +16,6 @@
 
 set (ET_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 
@@ -24,11 +23,8 @@ add_executable(jlet ${ET_FILES})
 set_target_properties(jlet PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlet ${CLIENTS_LIBS})
 
-#local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
-
 set (ETDED_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 

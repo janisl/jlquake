@@ -320,7 +320,7 @@ bool fs_ProtectKeyFile;
 static fileHandleData_t fsh[MAX_FILE_HANDLES];
 
 static int fs_packFiles;								// total number of files in packs
-int fs_checksumFeed;
+static int fs_checksumFeed;
 static searchpath_t* fs_searchpaths;
 static searchpath_t* fs_base_searchpaths;		// without gamedirs
 
@@ -354,8 +354,8 @@ static bool fs_reordered;
 static int fs_filter_flag = 0;
 
 // last valid game folder used
-char lastValidBase[MAX_OSPATH];
-char lastValidGame[MAX_OSPATH];
+static char lastValidBase[MAX_OSPATH];
+static char lastValidGame[MAX_OSPATH];
 
 //**************************************************************************
 //
@@ -3876,6 +3876,98 @@ void FS_Shutdown()
 	Cmd_RemoveCommand("dir");
 	Cmd_RemoveCommand("fdir");
 	Cmd_RemoveCommand("link");
+}
+
+void FS_Restart(int checksumFeed)
+{
+	// free anything we currently have loaded
+	FS_Shutdown();
+
+	// set the checksum feed
+	fs_checksumFeed = checksumFeed;
+
+	// clear pak references
+	FS_ClearPakReferences(0);
+
+	// try to start up normally
+	FS_Startup();
+
+	// if we can't find default.cfg, assume that the paths are
+	// busted and error out now, rather than getting an unreadable
+	// graphics screen when the font fails to load
+	if (FS_ReadFile("default.cfg", NULL) <= 0)
+	{
+		// this might happen when connecting to a pure server not using BASEGAME/pak0.pk3
+		// (for instance a TA demo server)
+		if (lastValidBase[0])
+		{
+			FS_PureServerSetLoadedPaks("", "");
+			Cvar_Set("fs_basepath", lastValidBase);
+			Cvar_Set("fs_gamedirvar", lastValidGame);
+			lastValidBase[0] = '\0';
+			lastValidGame[0] = '\0';
+			FS_Restart(checksumFeed);
+			common->Error("Invalid game folder\n");
+			return;
+		}
+		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
+		common->FatalError("Couldn't load default.cfg - I am missing essential files - verify your installation?");
+	}
+
+	// bk010116 - new check before safeMode
+	if (String::ICmp(fs_gamedirvar->string, lastValidGame))
+	{
+		// skip the q3config.cfg if "safe" is on the command line
+		if (!Com_SafeMode())
+		{
+			if (GGameType & GAME_Quake3)
+			{
+				Cbuf_AddText("exec q3config.cfg\n");
+			}
+			else if (GGameType & GAME_WolfSP)
+			{
+				Cbuf_AddText("exec wolfconfig.cfg\n");
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				Cbuf_AddText("exec wolfconfig_mp.cfg\n");
+			}
+			else
+			{
+				const char* cl_profileStr = Cvar_VariableString("cl_profile");
+
+				if (comet_gameInfo.usesProfiles && cl_profileStr[0])
+				{
+					// bani - check existing pid file and make sure it's ok
+					if (!ComET_CheckProfile(va("profiles/%s/profile.pid", cl_profileStr)))
+					{
+#ifndef _DEBUG
+						common->Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
+						// ydnar: set crashed state
+						Cbuf_AddText("set com_crashed 1\n");
+#endif
+					}
+
+					// bani - write a new one
+					if (!ComET_WriteProfile(va("profiles/%s/profile.pid", cl_profileStr)))
+					{
+						common->Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
+					}
+
+					// exec the config
+					Cbuf_AddText(va("exec profiles/%s/%s\n", cl_profileStr, ETCONFIG_NAME));
+
+				}
+				else
+				{
+					Cbuf_AddText(va("exec %s\n", ETCONFIG_NAME));
+				}
+			}
+		}
+	}
+
+	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
+	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
 }
 
 //	Allows enumerating all of the directories in the search path

@@ -214,7 +214,3 @@ int build_number(void)
 
 	return b;
 }
-
-void FS_Restart(int checksumFeed)
-{
-}

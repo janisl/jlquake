@@ -215,8 +215,3 @@ int     memsearch(byte* start, int count, int search)
 		}
 	return -1;
 }
-
-
-void FS_Restart(int checksumFeed)
-{
-}

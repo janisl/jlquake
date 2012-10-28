@@ -268,4 +268,7 @@ void ComQH_HostShutdown();
 void Com_Quit_f();
 void COM_InitCommonCommands();
 
+bool ComET_CheckProfile(const char* profile_path);
+bool ComET_WriteProfile(const char* profile_path);
+
 #define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

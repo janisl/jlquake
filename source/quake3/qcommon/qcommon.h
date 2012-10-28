@@ -26,22 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 ==============================================================
 
-FILESYSTEM
-
-No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
-issues.
-==============================================================
-*/
-
-void    FS_Restart(int checksumFeed);
-// shutdown and restart the filesystem so changes to fs_gamedir can take effect
-
-int     FS_LoadStack();
-
-/*
-==============================================================
-
 MISC
 
 ==============================================================

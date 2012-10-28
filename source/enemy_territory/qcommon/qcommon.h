@@ -33,39 +33,10 @@ If you have questions concerning this license or the applicable additional terms
 /*
 ==============================================================
 
-FILESYSTEM
-
-No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
-issues.
-==============================================================
-*/
-
-void    FS_Restart(int checksumFeed);
-// shutdown and restart the filesystem so changes to fs_gamedir can take effect
-
-qboolean FS_OS_FileExists(const char* file);	// TTimo - test file existence given OS path
-
-int     FS_LoadStack();
-
-unsigned int FS_ChecksumOSPath(char* OSPath);
-
-/*
-==============================================================
-
 MISC
 
 ==============================================================
 */
-
-//bani - profile functions
-void Com_TrackProfile(char* profile_path);
-qboolean Com_CheckProfile(char* profile_path);
-qboolean Com_WriteProfile(char* profile_path);
-
-extern Cvar* com_ignorecrash;		//bani
-
-extern Cvar* com_pid;		//bani
 
 //extern	Cvar	*com_blood;
 extern Cvar* com_cameraMode;

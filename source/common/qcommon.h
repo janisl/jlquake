@@ -86,6 +86,9 @@ extern Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
 extern Cvar* comt3_version;
 
+extern Cvar* com_ignorecrash;		//bani
+extern Cvar* com_pid;		//bani
+
 extern int com_frameTime;
 
 extern int cl_connectedToPureServer;
@@ -105,7 +108,5 @@ extern int time_frontend;
 extern int time_backend;			// renderer backend time
 extern int time_before_ref;
 extern int time_after_ref;
-
-void FS_Restart(int checksumFeed);
 
 #endif

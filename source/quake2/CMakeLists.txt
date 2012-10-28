@@ -1,6 +1,5 @@
 add_executable(jlquake2
 	qcommon/common.cpp
-	qcommon/files.cpp
 	qcommon/q_shared.cpp
 	linux/sys_linux.cpp
 )
@@ -9,7 +8,6 @@ target_link_libraries(jlquake2 ${CLIENTS_LIBS})
 
 add_executable(jlquake2ded
 	qcommon/common.cpp
-	qcommon/files.cpp
 	qcommon/q_shared.cpp
 	linux/sys_linux.cpp
 )

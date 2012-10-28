@@ -4,7 +4,6 @@
 
 set(QUAKE3_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 
@@ -18,7 +17,6 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 
 set(QUAKE3_DEDICATED_FILES
 	qcommon/common.cpp
-	qcommon/files.cpp
 	unix/unix_main.cpp
 )
 
