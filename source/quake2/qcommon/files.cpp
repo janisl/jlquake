@@ -20,17 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-/*
-================
-FS_InitFilesystem
-================
-*/
-void FS_InitFilesystem(void)
-{
-	fs_PrimaryBaseGame = BASEDIRNAME;
-	FS_Startup();
-}
-
 void FS_Restart(int checksumFeed)
 {
 }

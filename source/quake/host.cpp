@@ -232,7 +232,6 @@ void Host_Init(quakeparms_t* parms)
 		Cvar_Init();
 		COM_Init();
 		Host_InitLocal();
-		Com_InitDebugLog();
 #ifndef DEDICATED
 		CL_InitKeyCommands();
 #endif

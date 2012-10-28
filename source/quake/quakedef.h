@@ -30,8 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //define	PARANOID			// speed sapping error checking
 
-#define GAMENAME    "id1"		// directory to look in by default
-
 #if id386
 #define UNALIGNED_OK    1	// set to 0 if unaligned accesses are not supported
 #else

@@ -25,5 +25,3 @@ void COM_InitArgv2(int argc, char** argv);
 byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, unsigned mapchecksum);
 
 int build_number(void);
-
-void Com_InitDebugLog();

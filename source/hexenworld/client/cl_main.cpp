@@ -129,7 +129,6 @@ void Host_Init(quakeparms_t* parms)
 		Netchan_Init(0);
 
 		CL_InitKeyCommands();
-		Com_InitDebugLog();
 		ComH2_LoadStrings();
 
 		Cbuf_InsertText("exec hexen.rc\n");

@@ -41,10 +41,6 @@ issues.
 ==============================================================
 */
 
-#define BASEGAME "main"
-
-void    FS_InitFilesystem(void);
-
 void    FS_Restart(int checksumFeed);
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
 

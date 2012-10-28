@@ -20,9 +20,6 @@ int static_registered = 1;		// only for startup check, then set
 
 qboolean msg_suppress_1 = 0;
 
-void COM_InitFilesystem(void);
-
-
 // if a packfile directory differs from this, it is assumed to be hacked
 // retail
 #define PAK0_COUNT              797
@@ -133,7 +130,7 @@ void COM_Init()
 
 	qh_registered = Cvar_Get("registered", "0", 0);
 
-	COM_InitFilesystem();
+	FS_InitFilesystem();
 	COM_CheckRegistered();
 }
 
@@ -149,42 +146,6 @@ int memsearch(byte* start, int count, int search)
 			return i;
 		}
 	return -1;
-}
-
-/*
-=============================================================================
-
-QUAKE FILESYSTEM
-
-=============================================================================
-*/
-
-/*
-================
-COM_InitFilesystem
-================
-*/
-void COM_InitFilesystem(void)
-{
-	int i;
-
-	fs_PrimaryBaseGame = "data1";
-
-//
-// -basedir <path>
-// Overrides the system supplied base directory (under id1)
-//
-	i = COM_CheckParm("-basedir");
-	if (i && i < COM_Argc() - 1)
-	{
-		Cvar_Set("fs_basepath", COM_Argv(i + 1));
-	}
-
-	FS_Startup();
-}
-
-void Com_InitDebugLog()
-{
 }
 
 void FS_Restart(int checksumFeed)

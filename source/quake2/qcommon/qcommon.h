@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     3.19
 
-#define BASEDIRNAME "baseq2"
-
 #ifdef WIN32
 
 #ifdef NDEBUG
@@ -76,17 +74,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 void COM_Init(void);
-
-/*
-==============================================================
-
-FILESYSTEM
-
-==============================================================
-*/
-
-void    FS_InitFilesystem(void);
-
 
 /*
 ==============================================================

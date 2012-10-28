@@ -161,7 +161,6 @@ void Host_Init(quakeparms_t* parms)
 		Netchan_Init(Com_Milliseconds() & 0xffff);
 
 		CL_InitKeyCommands();
-		Com_InitDebugLog();
 
 		Cbuf_InsertText("exec quake.rc\n");
 		Cbuf_AddText("cl_warncmd 1\n");

@@ -42,10 +42,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static int fs_loadStack;					// total files in memory
 
-// last valid game folder used
-char lastValidBase[MAX_OSPATH];
-char lastValidGame[MAX_OSPATH];
-
 /*
 =================
 FS_LoadStack
@@ -56,41 +52,6 @@ int FS_LoadStack()
 {
 	return fs_loadStack;
 }
-
-/*
-================
-FS_InitFilesystem
-
-Called only at inital startup, not when the filesystem
-is resetting due to a game change
-================
-*/
-void FS_InitFilesystem(void)
-{
-	// allow command line parms to override our defaults
-	// we have to specially handle this, because normal command
-	// line variable sets don't happen until after the filesystem
-	// has already been initialized
-	fs_PrimaryBaseGame = BASEGAME;
-	Com_StartupVariable("fs_basepath");
-	Com_StartupVariable("fs_homepath");
-	Com_StartupVariable("fs_game");
-
-	// try to start up normally
-	FS_Startup();
-
-	// if we can't find default.cfg, assume that the paths are
-	// busted and error out now, rather than getting an unreadable
-	// graphics screen when the font fails to load
-	if (FS_ReadFile("default.cfg", NULL) <= 0)
-	{
-		common->FatalError("Couldn't load default.cfg");
-	}
-
-	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
-	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
-}
-
 
 /*
 ================

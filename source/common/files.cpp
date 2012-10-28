@@ -353,6 +353,10 @@ static bool fs_reordered;
 
 static int fs_filter_flag = 0;
 
+// last valid game folder used
+char lastValidBase[MAX_OSPATH];
+char lastValidGame[MAX_OSPATH];
+
 //**************************************************************************
 //
 //	Internal utilities
@@ -3779,6 +3783,55 @@ void FS_Startup()
 	common->Printf("----------------------\n");
 
 	common->Printf("%d files in pk3 files\n", fs_packFiles);
+}
+
+//	Called only at inital startup, not when the filesystem
+// is resetting due to a game change
+void FS_InitFilesystem()
+{
+	fs_PrimaryBaseGame = GGameType & GAME_Quake ? "id1" :
+		GGameType & GAME_Hexen2 ? "data1" :
+		GGameType & GAME_Quake2 ? "baseq2" :
+		GGameType & GAME_Quake3 ? "baseq3" :
+		GGameType & (GAME_WolfSP | GAME_WolfMP) ? "main" : "etmain";
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		// Overrides the system supplied base directory
+		int i = COM_CheckParm("-basedir");
+		if (i && i < COM_Argc() - 1)
+		{
+			Cvar_Set("fs_basepath", COM_Argv(i + 1));
+		}
+	}
+	if (GGameType & GAME_Tech3)
+	{
+		// allow command line parms to override our defaults
+		// we have to specially handle this, because normal command
+		// line variable sets don't happen until after the filesystem
+		// has already been initialized
+		Com_StartupVariable("fs_basepath");
+		Com_StartupVariable("fs_homepath");
+		Com_StartupVariable("fs_game");
+	}
+
+	// try to start up normally
+	FS_Startup();
+
+	if (GGameType & GAME_Tech3)
+	{
+		// if we can't find default.cfg, assume that the paths are
+		// busted and error out now, rather than getting an unreadable
+		// graphics screen when the font fails to load
+		if (FS_ReadFile("default.cfg", NULL) <= 0)
+		{
+			// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
+			common->FatalError("Couldn't load default.cfg - I am missing essential files - verify your installation?");
+		}
+
+		String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
+		String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
+	}
 }
 
 //	Frees all resources and closes all files

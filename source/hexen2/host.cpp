@@ -267,7 +267,6 @@ void Host_Init(quakeparms_t* parms)
 		CL_InitKeyCommands();
 #endif
 		ComH2_LoadStrings();
-		Com_InitDebugLog();
 		SV_Init();
 
 		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
