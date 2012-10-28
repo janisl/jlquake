@@ -34,8 +34,6 @@ int main(int argc, char* argv[])
 	parms.argc = argc;
 	parms.argv = argv;
 
-	parms.basedir = ".";
-
 	COM_InitServer(&parms);
 
 	// run one frame immediately for first heartbeat

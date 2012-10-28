@@ -230,7 +230,7 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-		COM_Init(parms->basedir);
+		COM_Init();
 		Host_InitLocal();
 		Com_InitDebugLog();
 #ifndef DEDICATED

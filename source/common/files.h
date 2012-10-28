@@ -56,22 +56,11 @@ enum fsMode_t
 	FS_APPEND_SYNC
 };
 
-enum
-{
-	//	Quake adds pak0.pak, pak1.pak ... untill one is missing
-	ADDPACKS_UntilMissing,
-	//	Hexen 2 and Quake 2 add pak0.pak ... pak9.pak
-	ADDPACKS_First10,
-	//	Quake 3 doesn't use them anymore.
-	ADDPACKS_None,
-};
-
 #define FS_EXCLUDE_DIR 0x1
 #define FS_EXCLUDE_PK3 0x2
 
 extern bool com_portals;
 
-extern int fs_packFiles;
 extern int fs_checksumFeed;
 
 // never load anything from pk3 files that are not present at the server when pure
@@ -84,12 +73,8 @@ extern char fs_gamedir[MAX_OSPATH];
 extern char fsqhw_gamedirfile[MAX_OSPATH];	//JL What's the difference?
 extern const char* fs_PrimaryBaseGame;
 
-void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks);
-void FS_SetSearchPathBase();
-void FS_ResetSearchPathToBase();
 void FS_CopyFile(const char* fromOSPath, const char* toOSPath);
 void FS_CopyFileOS(const char* from, const char* to);
-void FS_ReorderPurePaks();
 char* FS_NextPath(char* prevpath);
 int FS_GetQuake2GameType();
 
@@ -208,11 +193,9 @@ bool FS_VerifyOfficialPaks();
 
 bool FS_VerifyPak(const char* pak);
 
-void FS_Path_f();
-
 bool FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename);
 
-void FS_SharedStartup();
+void FS_Startup();
 void FS_Shutdown();
 const char* FS_Gamedir();
 void FS_SetGamedirQHW(const char* dir);

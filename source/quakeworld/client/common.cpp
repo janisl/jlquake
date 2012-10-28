@@ -188,7 +188,6 @@ COM_InitFilesystem
 void COM_InitFilesystem(void)
 {
 	int i;
-	char com_basedir[MAX_OSPATH];
 
 	fs_PrimaryBaseGame = "id1";
 	//
@@ -198,32 +197,10 @@ void COM_InitFilesystem(void)
 	i = COM_CheckParm("-basedir");
 	if (i && i < COM_Argc() - 1)
 	{
-		String::Cpy(com_basedir, COM_Argv(i + 1));
-	}
-	else
-	{
-		String::Cpy(com_basedir, host_parms.basedir);
-	}
-	Cvar_Set("fs_basepath", com_basedir);
-
-	FS_SharedStartup();
-
-	//
-	// start up with id1 by default
-	//
-	FS_AddGameDirectory(fs_basepath->string, "id1", ADDPACKS_UntilMissing);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "id1", ADDPACKS_UntilMissing);
-	}
-	FS_AddGameDirectory(fs_basepath->string, "qw", ADDPACKS_UntilMissing);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "qw", ADDPACKS_UntilMissing);
+		Cvar_Set("fs_basepath", COM_Argv(i + 1));
 	}
 
-	// any set gamedirs will be freed up to here
-	FS_SetSearchPathBase();
+	FS_Startup();
 }
 
 // char *date = "Oct 24 1996";

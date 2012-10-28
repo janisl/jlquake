@@ -28,32 +28,7 @@ FS_InitFilesystem
 void FS_InitFilesystem(void)
 {
 	fs_PrimaryBaseGame = BASEDIRNAME;
-	FS_SharedStartup();
-
-	//
-	// basedir <path>
-	// allows the game to run from outside the data tree
-	//
-
-	//
-	// start up with baseq2 by default
-	//
-	FS_AddGameDirectory(fs_basepath->string, BASEDIRNAME, ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, BASEDIRNAME, ADDPACKS_First10);
-	}
-
-	// any set gamedirs will be freed up to here
-	FS_SetSearchPathBase();
-
-	// check for game override
-	Cvar_Get("gamedir", "", CVAR_SERVERINFO | CVAR_INIT);
-	fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
-	if (fs_gamedirvar->string[0])
-	{
-		FS_SetGamedir(fs_gamedirvar->string);
-	}
+	FS_Startup();
 }
 
 void FS_Restart(int checksumFeed)

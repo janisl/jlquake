@@ -17,19 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	global_hInstance = hInstance;
 
-	static char cwd[1024];
-	if (!GetCurrentDirectory(sizeof(cwd), cwd))
-	{
-		common->FatalError("Couldn't determine current directory");
-	}
-
-	if (cwd[String::Length(cwd) - 1] == '/')
-	{
-		cwd[String::Length(cwd) - 1] = 0;
-	}
-
 	quakeparms_t parms;
-	parms.basedir = cwd;
 	parms.argc = __argc;
 	parms.argv = __argv;
 

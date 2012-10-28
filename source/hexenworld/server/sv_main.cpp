@@ -57,7 +57,7 @@ void COM_InitServer(quakeparms_t* parms)
 
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
-		COM_Init(parms->basedir);
+		COM_Init();
 
 		ComH2_LoadStrings();
 

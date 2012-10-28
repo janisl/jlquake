@@ -183,6 +183,16 @@ or configs will never get loaded from disk!
 
 #define MAX_PAKFILES        1024
 
+enum
+{
+	//	Quake adds pak0.pak, pak1.pak ... untill one is missing
+	ADDPACKS_UntilMissing,
+	//	Hexen 2 and Quake 2 add pak0.pak ... pak9.pak
+	ADDPACKS_First10,
+	//	Quake 3 doesn't use them anymore.
+	ADDPACKS_None,
+};
+
 //
 // in memory
 //
@@ -309,7 +319,7 @@ bool fs_ProtectKeyFile;
 
 static fileHandleData_t fsh[MAX_FILE_HANDLES];
 
-int fs_packFiles;								// total number of files in packs
+static int fs_packFiles;								// total number of files in packs
 int fs_checksumFeed;
 static searchpath_t* fs_searchpaths;
 static searchpath_t* fs_base_searchpaths;		// without gamedirs
@@ -318,6 +328,7 @@ char fs_gamedir[MAX_OSPATH];					// this will be a single file name with no sepa
 char fsqhw_gamedirfile[MAX_OSPATH];
 Cvar* fs_homepath;
 Cvar* fs_basepath;
+static Cvar* fs_basegame;
 Cvar* fs_gamedirvar;
 static Cvar* fs_debug;
 
@@ -860,7 +871,7 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 
 //	Sets fs_gamedir, adds the directory to the head of the path,
 // then loads the pak1.pak pak2.pak ... and zip headers
-void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks)
+static void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks)
 {
 	for (searchpath_t* sp = fs_searchpaths; sp; sp = sp->next)
 	{
@@ -973,6 +984,20 @@ void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks)
 
 	// done
 	Sys_FreeFileList(pakfiles);
+}
+
+static void FS_AddGameDirectories(const char* dir, int addPacks)
+{
+	if (fs_basepath->string[0])
+	{
+		FS_AddGameDirectory(fs_basepath->string, dir, addPacks);
+	}
+	// fs_homepath is somewhat particular to *nix systems, only add if relevant
+	// NOTE: same filtering below for mods and basegame
+	if (fs_basepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string))
+	{
+		FS_AddGameDirectory(fs_homepath->string, dir, addPacks);
+	}
 }
 
 //**************************************************************************
@@ -3279,7 +3304,7 @@ bool FS_ComparePaks(char* neededpaks, int len, bool dlstring)
 
 //	NOTE TTimo: the reordering that happens here is not reflected in the cvars (\cvarlist *pak*)
 // this can lead to misleading situations, see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540
-void FS_ReorderPurePaks()
+static void FS_ReorderPurePaks()
 {
 	searchpath_t* s;
 	int i;
@@ -3404,7 +3429,7 @@ bool FS_VerifyPak(const char* pak)
 //
 //**************************************************************************
 
-void FS_Path_f()
+static void FS_Path_f()
 {
 	common->Printf("Current search path:\n");
 	for (searchpath_t* s = fs_searchpaths; s; s = s->next)
@@ -3602,8 +3627,41 @@ bool FS_Initialized()
 	return fs_searchpaths != NULL;
 }
 
-void FS_SharedStartup()
+static void FS_SetSearchPathBase()
 {
+	fs_base_searchpaths = fs_searchpaths;
+}
+
+static void FS_ResetSearchPathToBase()
+{
+	while (fs_searchpaths != fs_base_searchpaths)
+	{
+		if (fs_searchpaths->pack)
+		{
+			fclose(fs_searchpaths->pack->handle);
+			delete[] fs_searchpaths->pack->files;
+			delete fs_searchpaths->pack;
+		}
+		if (fs_searchpaths->pack3)
+		{
+			unzClose(fs_searchpaths->pack3->handle);
+			Mem_Free(fs_searchpaths->pack3->buildBuffer);
+			Mem_Free(fs_searchpaths->pack3);
+		}
+		if (fs_searchpaths->dir)
+		{
+			delete fs_searchpaths->dir;
+		}
+		searchpath_t* next = fs_searchpaths->next;
+		delete fs_searchpaths;
+		fs_searchpaths = next;
+	}
+}
+
+void FS_Startup()
+{
+	common->Printf("----- FS_Startup -----\n");
+
 	fs_debug = Cvar_Get("fs_debug", "0", 0);
 	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
 	const char* homePath = Sys_DefaultHomePath();
@@ -3612,6 +3670,16 @@ void FS_SharedStartup()
 		homePath = fs_basepath->string;
 	}
 	fs_homepath = Cvar_Get("fs_homepath", homePath, CVAR_INIT);
+	if (GGameType & GAME_Quake2)
+	{
+		Cvar_Get("gamedir", "", CVAR_SERVERINFO | CVAR_INIT);
+		fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+	}
+	if (GGameType & GAME_Tech3)
+	{
+		fs_basegame = Cvar_Get("fs_basegame", "", CVAR_INIT);
+		fs_gamedirvar = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+	}
 
 	// add our commands
 	Cmd_AddCommand("path", FS_Path_f);
@@ -3621,6 +3689,96 @@ void FS_SharedStartup()
 	{
 		Cmd_AddCommand("link", FS_Link_f);
 	}
+
+	int addPacks = GGameType & GAME_Quake ? ADDPACKS_UntilMissing :
+		GGameType & (GAME_Hexen2 | GAME_Quake2) ? ADDPACKS_First10 : ADDPACKS_None;
+
+	// add search path elements in reverse priority order
+	FS_AddGameDirectories(fs_PrimaryBaseGame, addPacks);
+
+	if (GGameType & GAME_QuakeWorld)
+	{
+		FS_AddGameDirectories("qw", addPacks);
+	}
+	else if (GGameType & GAME_Quake)
+	{
+		if (COM_CheckParm("-rogue"))
+		{
+			FS_AddGameDirectories("rogue", addPacks);
+		}
+		if (COM_CheckParm("-hipnotic"))
+		{
+			FS_AddGameDirectories("hipnotic", addPacks);
+		}
+	}
+	else if (GGameType & GAME_HexenWorld)
+	{
+		FS_AddGameDirectories("portals", addPacks);
+		FS_AddGameDirectories("hw", addPacks);
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		if (GGameType & GAME_H2Portals)
+		{
+			FS_AddGameDirectories("portals", addPacks);
+		}
+	}
+
+	// check for additional base game so mods can be based upon other mods
+	if (GGameType & GAME_Tech3 && fs_basegame->string[0] && String::ICmp(fs_basegame->string, fs_PrimaryBaseGame))
+	{
+		FS_AddGameDirectories(fs_basegame->string, addPacks);
+	}
+
+	if (GGameType & GAME_QuakeHexen && !(GGameType & GAME_QuakeWorld))
+	{
+		int i = COM_CheckParm("-game");
+		if (i && i < COM_Argc() - 1)
+		{
+			FS_AddGameDirectories(COM_Argv(i + 1), addPacks);
+		}
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		// any set gamedirs will be freed up to here
+		FS_SetSearchPathBase();
+	}
+
+	// check for additional game folder for mods
+	if (GGameType & GAME_Quake2 && fs_gamedirvar->string[0])
+	{
+		FS_SetGamedir(fs_gamedirvar->string);
+	}
+	if (GGameType & GAME_Tech3 && fs_gamedirvar->string[0] && String::ICmp(fs_gamedirvar->string, fs_PrimaryBaseGame))
+	{
+		FS_AddGameDirectories(fs_gamedirvar->string, ADDPACKS_None);
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		CLT3_ReadCDKey(fs_PrimaryBaseGame);
+		Cvar* fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
+		if (fs && fs->string[0] != 0)
+		{
+			CLT3_AppendCDKey(fs->string);
+		}
+
+		// reorder the pure pk3 files according to server order
+		FS_ReorderPurePaks();
+	}
+
+	// print the current search paths
+	FS_Path_f();
+
+	if (GGameType & GAME_Tech3)
+	{
+		fs_gamedirvar->modified = false;	// We just loaded, it's not modified
+	}
+
+	common->Printf("----------------------\n");
+
+	common->Printf("%d files in pk3 files\n", fs_packFiles);
 }
 
 //	Frees all resources and closes all files
@@ -3664,38 +3822,7 @@ void FS_Shutdown()
 	Cmd_RemoveCommand("path");
 	Cmd_RemoveCommand("dir");
 	Cmd_RemoveCommand("fdir");
-	Cmd_RemoveCommand("touchFile");
-}
-
-void FS_SetSearchPathBase()
-{
-	fs_base_searchpaths = fs_searchpaths;
-}
-
-void FS_ResetSearchPathToBase()
-{
-	while (fs_searchpaths != fs_base_searchpaths)
-	{
-		if (fs_searchpaths->pack)
-		{
-			fclose(fs_searchpaths->pack->handle);
-			delete[] fs_searchpaths->pack->files;
-			delete fs_searchpaths->pack;
-		}
-		if (fs_searchpaths->pack3)
-		{
-			unzClose(fs_searchpaths->pack3->handle);
-			Mem_Free(fs_searchpaths->pack3->buildBuffer);
-			Mem_Free(fs_searchpaths->pack3);
-		}
-		if (fs_searchpaths->dir)
-		{
-			delete fs_searchpaths->dir;
-		}
-		searchpath_t* next = fs_searchpaths->next;
-		delete fs_searchpaths;
-		fs_searchpaths = next;
-	}
+	Cmd_RemoveCommand("link");
 }
 
 //	Allows enumerating all of the directories in the search path
@@ -3864,11 +3991,7 @@ void FS_SetGamedirQHW(const char* dir)
 		return;
 	}
 
-	FS_AddGameDirectory(fs_basepath->string, dir, GGameType & GAME_HexenWorld ? ADDPACKS_First10 : ADDPACKS_UntilMissing);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, dir, GGameType & GAME_HexenWorld ? ADDPACKS_First10 : ADDPACKS_UntilMissing);
-	}
+	FS_AddGameDirectories(dir, GGameType & GAME_HexenWorld ? ADDPACKS_First10 : ADDPACKS_UntilMissing);
 }
 
 //	Sets the gamedir and path to a different directory.
@@ -3904,11 +4027,7 @@ void FS_SetGamedir(const char* dir)
 	else
 	{
 		Cvar_Set("gamedir", dir);
-		FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
-		if (fs_homepath->string[0])
-		{
-			FS_AddGameDirectory(fs_homepath->string, dir, ADDPACKS_First10);
-		}
+		FS_AddGameDirectories(dir, ADDPACKS_First10);
 	}
 }
 

@@ -17,7 +17,6 @@
 
 typedef struct
 {
-	const char* basedir;
 	int argc;
 	char** argv;
 } quakeparms_t;

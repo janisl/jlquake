@@ -249,9 +249,10 @@ Host_Init
 void Host_Init(quakeparms_t* parms)
 {
 		GGameType = GAME_Hexen2;
-#ifdef MISSIONPACK
-		GGameType |= GAME_H2Portals;
-#endif
+		if (COM_CheckParm("-portals"))
+		{
+			GGameType |= GAME_H2Portals;
+		}
 		Sys_SetHomePathSuffix("jlhexen2");
 
 		host_parms = *parms;
@@ -259,7 +260,7 @@ void Host_Init(quakeparms_t* parms)
 		Cbuf_Init();
 		Cmd_Init();
 		Cvar_Init();
-		COM_Init(parms->basedir);
+		COM_Init();
 		Host_InitLocal();
 		SVH2_RemoveGIPFiles(NULL);
 #ifndef DEDICATED

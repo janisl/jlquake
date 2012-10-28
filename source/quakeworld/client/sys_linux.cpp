@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../common/system_unix.h"
 #include <fcntl.h>
 
-const char* basedir = ".";
-
 int main(int c, char** v)
 {
 	double time, oldtime, newtime;
@@ -36,7 +34,6 @@ int main(int c, char** v)
 	COM_InitArgv2(c, v);
 	parms.argc = c;
 	parms.argv = v;
-	parms.basedir = basedir;
 
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
 

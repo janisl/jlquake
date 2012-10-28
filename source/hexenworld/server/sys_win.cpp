@@ -16,8 +16,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	parms.argc = __argc;
 	parms.argv = __argv;
 
-	parms.basedir = ".";
-
 	COM_InitServer(&parms);
 
 // run one frame immediately for first heartbeat

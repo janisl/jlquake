@@ -32,7 +32,6 @@ int main(int argc, char* argv[])
 	COM_InitArgv2(argc, argv);
 	parms.argc = argc;
 	parms.argv = argv;
-	parms.basedir = ".";
 
 	COM_InitServer(&parms);
 

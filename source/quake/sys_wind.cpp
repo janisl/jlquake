@@ -25,38 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys\types.h>
 #include <sys\timeb.h>
 
-void Sys_Quit(void)
-{
-	exit(0);
-}
-
-/*
-==================
-main
-
-==================
-*/
-char* newargv[256];
-
 int main(int argc, char** argv)
 {
 	MSG msg;
 	quakeparms_t parms;
 	double time, oldtime;
-	static char cwd[1024];
 
 	Com_Memset(&parms, 0, sizeof(parms));
-
-	parms.memsize = 16384 * 1024;
-	parms.membase = malloc(parms.memsize);
-
-	_getcwd(cwd, sizeof(cwd));
-	if (cwd[String::Length(cwd) - 1] == '\\')
-	{
-		cwd[String::Length(cwd) - 1] = 0;
-	}
-	parms.basedir = cwd;//"f:/quake";
-//	parms.basedir = "f:\\quake";
 
 	COM_InitArgv2(argc, argv);
 

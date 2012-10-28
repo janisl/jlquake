@@ -189,7 +189,7 @@ void COM_InitArgv2(int argc, char** argv)
 COM_Init
 ================
 */
-void COM_Init(const char* basedir)
+void COM_Init()
 {
 	Com_InitByteOrder();
 
@@ -230,8 +230,6 @@ COM_InitFilesystem
 */
 void COM_InitFilesystem(void)
 {
-	char basedir[MAX_OSPATH];
-
 	fs_PrimaryBaseGame = GAMENAME;
 	//
 	// -basedir <path>
@@ -240,56 +238,10 @@ void COM_InitFilesystem(void)
 	int i = COM_CheckParm("-basedir");
 	if (i && i < COM_Argc() - 1)
 	{
-		String::Cpy(basedir, COM_Argv(i + 1));
-	}
-	else
-	{
-		String::Cpy(basedir, host_parms.basedir);
-	}
-	int j = String::Length(basedir);
-	if (j > 0)
-	{
-		if ((basedir[j - 1] == '\\') || (basedir[j - 1] == '/'))
-		{
-			basedir[j - 1] = 0;
-		}
-	}
-	Cvar_Set("fs_basepath", basedir);
-
-	FS_SharedStartup();
-
-//
-// start up with GAMENAME by default (id1)
-//
-	FS_AddGameDirectory(basedir, GAMENAME, ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, GAMENAME, ADDPACKS_First10);
-	}
-#ifdef MISSIONPACK
-	FS_AddGameDirectory(basedir, "portals", ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "portals", ADDPACKS_First10);
-	}
-#endif
-
-//
-// -game <gamedir>
-// Adds basedir/gamedir as an override game
-//
-	i = COM_CheckParm("-game");
-	if (i && i < COM_Argc() - 1)
-	{
-		FS_AddGameDirectory(basedir, COM_Argv(i + 1), ADDPACKS_First10);
-		if (fs_homepath->string[0])
-		{
-			FS_AddGameDirectory(fs_homepath->string, COM_Argv(i + 1), ADDPACKS_First10);
-		}
+		Cvar_Set("fs_basepath", COM_Argv(i + 1));
 	}
 
-//Mimic qw style cvar to help gamespy, do we really need a way to change it?
-//	Cvar_Set ("*gamedir", com_gamedir);	//removed to prevent full path
+	FS_Startup();
 }
 
 void Com_InitDebugLog()

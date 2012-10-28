@@ -3,19 +3,12 @@
 #include "quakedef.h"
 #include "errno.h"
 
-void Sys_Sleep(void)
-{
-}
-
-//=============================================================================
-
 void main(int argc, char** argv)
 {
 	quakeparms_t parms;
 
 	parms.memsize = 5861376;
 	parms.membase = malloc(parms.memsize);
-	parms.basedir = ".";
 
 	COM_InitArgv2(argc, argv);
 

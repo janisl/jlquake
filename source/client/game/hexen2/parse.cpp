@@ -1975,7 +1975,10 @@ static void CLH2_ParseServerInfo(QMsg& message)
 	clh2_player_models[1] = R_RegisterModel("models/crusader.mdl");
 	clh2_player_models[2] = R_RegisterModel("models/necro.mdl");
 	clh2_player_models[3] = R_RegisterModel("models/assassin.mdl");
-	clh2_player_models[4] = R_RegisterModel("models/succubus.mdl");
+	if (GGameType & GAME_H2Portals)
+	{
+		clh2_player_models[4] = R_RegisterModel("models/succubus.mdl");
+	}
 
 	S_BeginRegistration();
 	for (i = 1; i < numsounds; i++)

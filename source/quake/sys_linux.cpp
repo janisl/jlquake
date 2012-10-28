@@ -9,8 +9,6 @@
 /* get REG_EIP from ucontext.h */
 #include <ucontext.h>
 
-const char* basedir = ".";
-
 int main(int c, char** v)
 {
 
@@ -24,8 +22,6 @@ int main(int c, char** v)
 	COM_InitArgv2(c, v);
 	parms.argc = c;
 	parms.argv = v;
-
-	parms.basedir = basedir;
 
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
 

@@ -125,7 +125,7 @@ void COM_InitArgv2(int argc, char** argv)
 COM_Init
 ================
 */
-void COM_Init(const char* basedir)
+void COM_Init()
 {
 	Com_InitByteOrder();
 
@@ -167,11 +167,8 @@ COM_InitFilesystem
 void COM_InitFilesystem(void)
 {
 	int i;
-	char com_basedir[MAX_OSPATH];
 
 	fs_PrimaryBaseGame = "data1";
-
-	FS_SharedStartup();
 
 //
 // -basedir <path>
@@ -180,45 +177,10 @@ void COM_InitFilesystem(void)
 	i = COM_CheckParm("-basedir");
 	if (i && i < COM_Argc() - 1)
 	{
-		String::Cpy(com_basedir, COM_Argv(i + 1));
-	}
-	else
-	{
-		String::Cpy(com_basedir, host_parms.basedir);
-	}
-	Cvar_Set("fs_basepath", com_basedir);
-
-//
-// start up with id1 by default
-//
-	FS_AddGameDirectory(fs_basepath->string, "data1", ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "data1", ADDPACKS_First10);
-	}
-	FS_AddGameDirectory(fs_basepath->string, "portals", ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "portals", ADDPACKS_First10);
-	}
-	FS_AddGameDirectory(fs_basepath->string, "hw", ADDPACKS_First10);
-	if (fs_homepath->string[0])
-	{
-		FS_AddGameDirectory(fs_homepath->string, "hw", ADDPACKS_First10);
+		Cvar_Set("fs_basepath", COM_Argv(i + 1));
 	}
 
-	i = COM_CheckParm("-game");
-	if (i && i < COM_Argc() - 1)
-	{
-		FS_AddGameDirectory(fs_basepath->string, COM_Argv(i + 1), ADDPACKS_First10);
-		if (fs_homepath->string[0])
-		{
-			FS_AddGameDirectory(fs_homepath->string, COM_Argv(i + 1), ADDPACKS_First10);
-		}
-	}
-
-	// any set gamedirs will be freed up to here
-	FS_SetSearchPathBase();
+	FS_Startup();
 }
 
 void Com_InitDebugLog()

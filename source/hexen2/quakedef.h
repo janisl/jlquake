@@ -6,8 +6,6 @@
 
 #include "../common/qcommon.h"
 
-//#define MISSIONPACK
-
 #define HEXEN2_VERSION      1.12
 
 //define	PARANOID			// speed sapping error checking
@@ -25,12 +23,6 @@
 
 #define UNUSED(x)   (x = x)	// for pesky compiler / lint warnings
 
-#ifdef MISSIONPACK
-#define NUM_CLASSES                 NUM_CLASSES_H2MP
-#else
-#define NUM_CLASSES                 NUM_CLASSES_H2
-#endif
-
 #define SOUND_CHANNELS      8
 
 #include "common.h"
@@ -43,7 +35,6 @@
 
 typedef struct
 {
-	const char* basedir;
 	int argc;
 	char** argv;
 } quakeparms_t;

@@ -41,9 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon.h"
 #include "../../client/public.h"
 
-//bani - made fs_gamedir non-static
-static Cvar* fs_buildgame;
-static Cvar* fs_basegame;
 static int fs_loadStack;					// total files in memory
 
 // last valid game folder used
@@ -73,83 +70,6 @@ qboolean FS_OS_FileExists(const char* file)
 	return false;
 }
 
-//============================================================================
-
-/*
-================
-FS_Startup
-================
-*/
-static void FS_Startup(const char* gameName)
-{
-	Cvar* fs;
-
-	common->Printf("----- FS_Startup -----\n");
-
-	FS_SharedStartup();
-	fs_buildgame = Cvar_Get("fs_buildgame", BASEGAME, CVAR_INIT);
-	fs_basegame = Cvar_Get("fs_basegame", "", CVAR_INIT);
-	fs_gamedirvar = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-
-	// add search path elements in reverse priority order
-	if (fs_basepath->string[0])
-	{
-		FS_AddGameDirectory(fs_basepath->string, gameName, ADDPACKS_None);
-	}
-	// fs_homepath is somewhat particular to *nix systems, only add if relevant
-	// NOTE: same filtering below for mods and basegame
-	if (fs_basepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string))
-	{
-		FS_AddGameDirectory(fs_homepath->string, gameName, ADDPACKS_None);
-	}
-
-	// check for additional base game so mods can be based upon other mods
-	if (fs_basegame->string[0] && !String::ICmp(gameName, BASEGAME) && String::ICmp(fs_basegame->string, gameName))
-	{
-		if (fs_basepath->string[0])
-		{
-			FS_AddGameDirectory(fs_basepath->string, fs_basegame->string, ADDPACKS_None);
-		}
-		if (fs_homepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string))
-		{
-			FS_AddGameDirectory(fs_homepath->string, fs_basegame->string, ADDPACKS_None);
-		}
-	}
-
-	// check for additional game folder for mods
-	if (fs_gamedirvar->string[0] && !String::ICmp(gameName, BASEGAME) && String::ICmp(fs_gamedirvar->string, gameName))
-	{
-		if (fs_basepath->string[0])
-		{
-			FS_AddGameDirectory(fs_basepath->string, fs_gamedirvar->string, ADDPACKS_None);
-		}
-		if (fs_homepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string))
-		{
-			FS_AddGameDirectory(fs_homepath->string, fs_gamedirvar->string, ADDPACKS_None);
-		}
-	}
-
-	CLT3_ReadCDKey(BASEGAME);
-	fs = Cvar_Get("fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO);
-	if (fs && fs->string[0] != 0)
-	{
-		CLT3_AppendCDKey(fs->string);
-	}
-
-	// show_bug.cgi?id=506
-	// reorder the pure pk3 files according to server order
-	FS_ReorderPurePaks();
-
-	// print the current search paths
-	FS_Path_f();
-
-	fs_gamedirvar->modified = false;	// We just loaded, it's not modified
-
-	common->Printf("----------------------\n");
-
-	common->Printf("%d files in pk3 files\n", fs_packFiles);
-}
-
 /*
 ================
 FS_InitFilesystem
@@ -166,12 +86,11 @@ void FS_InitFilesystem(void)
 	// has already been initialized
 	fs_PrimaryBaseGame = BASEGAME;
 	Com_StartupVariable("fs_basepath");
-	Com_StartupVariable("fs_buildgame");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_game");
 
 	// try to start up normally
-	FS_Startup(BASEGAME);
+	FS_Startup();
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
@@ -204,7 +123,7 @@ void FS_Restart(int checksumFeed)
 	FS_ClearPakReferences(0);
 
 	// try to start up normally
-	FS_Startup(BASEGAME);
+	FS_Startup();
 
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable

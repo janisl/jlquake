@@ -122,7 +122,7 @@ void Host_Init(quakeparms_t* parms)
 
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
-		COM_Init(parms->basedir);
+		COM_Init();
 
 		NETQHW_Init(HWPORT_CLIENT);
 
