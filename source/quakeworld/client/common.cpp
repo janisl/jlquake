@@ -19,124 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // common.c -- misc functions used in client and server
 
-#ifdef SERVERONLY
+#ifdef DEDICATED
 #include "qwsvdef.h"
 #else
 #include "quakedef.h"
 #endif
 #include "../../client/public.h"
 #include "../../server/public.h"
-
-#define NUM_SAFE_ARGVS  6
-
-static const char* safeargvs[NUM_SAFE_ARGVS] =
-{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
-
-int static_registered = 1;		// only for startup check, then set
-
-qboolean msg_suppress_1 = 0;
-
-// if a packfile directory differs from this, it is assumed to be hacked
-#define PAK0_COUNT      339
-#define PAK0_CRC        52883
-
-// this graphic needs to be in the pak file to use registered features
-unsigned short pop[] =
-{
-	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,
-	0x0000,0x0000,0x6600,0x0000,0x0000,0x0000,0x6600,0x0000,
-	0x0000,0x0066,0x0000,0x0000,0x0000,0x0000,0x0067,0x0000,
-	0x0000,0x6665,0x0000,0x0000,0x0000,0x0000,0x0065,0x6600,
-	0x0063,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6563,
-	0x0064,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6564,
-	0x0064,0x6564,0x0000,0x6469,0x6969,0x6400,0x0064,0x6564,
-	0x0063,0x6568,0x6200,0x0064,0x6864,0x0000,0x6268,0x6563,
-	0x0000,0x6567,0x6963,0x0064,0x6764,0x0063,0x6967,0x6500,
-	0x0000,0x6266,0x6769,0x6a68,0x6768,0x6a69,0x6766,0x6200,
-	0x0000,0x0062,0x6566,0x6666,0x6666,0x6666,0x6562,0x0000,
-	0x0000,0x0000,0x0062,0x6364,0x6664,0x6362,0x0000,0x0000,
-	0x0000,0x0000,0x0000,0x0062,0x6662,0x0000,0x0000,0x0000,
-	0x0000,0x0000,0x0000,0x0061,0x6661,0x0000,0x0000,0x0000,
-	0x0000,0x0000,0x0000,0x0000,0x6500,0x0000,0x0000,0x0000,
-	0x0000,0x0000,0x0000,0x0000,0x6400,0x0000,0x0000,0x0000
-};
-
-/*
-
-
-All of Quake's data access is through a hierchal file system, but the contents of the file system can be transparently merged from several sources.
-
-The "base directory" is the path to the directory holding the quake.exe and all game directories.  The sys_* files pass this to host_init in quakeparms_t->basedir.  This can be overridden with the "-basedir" command line parm to allow code debugging in a different directory.  The base directory is
-only used during filesystem initialization.
-
-The "game directory" is the first tree on the search path and directory that all generated files (savegames, screenshots, demos, config files) will be saved to.  This can be overridden with the "-game" command line parameter.  The game directory can never be changed while quake is executing.  This is a precacution against having a malicious server instruct clients to write files over areas they shouldn't.
-
-The "cache directory" is only used during development to save network bandwidth, especially over ISDN / T1 lines.  If there is a cache directory
-specified, when a file is found by the normal search path, it will be mirrored
-into the cache directory, then opened there.
-
-*/
-
-/*
-================
-COM_CheckRegistered
-
-Looks for the pop.txt file and verifies it.
-Sets the "registered" cvar.
-Immediately exits out if an alternate game was attempted to be started without
-being registered.
-================
-*/
-void COM_CheckRegistered(void)
-{
-	fileHandle_t h;
-	unsigned short check[128];
-	int i;
-
-	FS_FOpenFileRead("gfx/pop.lmp", &h, true);
-	static_registered = 0;
-
-	if (!h)
-	{
-		common->Printf("Playing shareware version.\n");
-		return;
-	}
-
-	FS_Read(check, sizeof(check), h);
-	FS_FCloseFile(h);
-
-	for (i = 0; i < 128; i++)
-		if (pop[i] != (unsigned short)BigShort(check[i]))
-		{
-			common->FatalError("Corrupted data file.");
-		}
-
-	Cvar_Set("registered", "1");
-	static_registered = 1;
-	common->Printf("Playing registered version.\n");
-}
-
-
-
-/*
-================
-COM_InitArgv
-================
-*/
-void COM_InitArgv2(int argc, char** argv)
-{
-	COM_InitArgv(argc, const_cast<const char**>(argv));
-
-	if (COM_CheckParm("-safe"))
-	{
-		// force all the safe-mode switches. Note that we reserved extra space in
-		// case we need to add these, so we don't need an overflow check
-		for (int i = 0; i < NUM_SAFE_ARGVS; i++)
-		{
-			COM_AddParm(safeargvs[i]);
-		}
-	}
-}
 
 /*
 ================
@@ -152,23 +41,8 @@ void COM_Init(void)
 	qh_registered = Cvar_Get("registered", "0", 0);
 
 	FS_InitFilesystem();
-	COM_CheckRegistered();
+	COMQH_CheckRegistered();
 }
-
-
-/// just for debugging
-int memsearch(byte* start, int count, int search)
-{
-	int i;
-
-	for (i = 0; i < count; i++)
-		if (start[i] == search)
-		{
-			return i;
-		}
-	return -1;
-}
-
 
 // char *date = "Oct 24 1996";
 static const char* date = __DATE__;

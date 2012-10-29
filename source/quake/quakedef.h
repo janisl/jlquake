@@ -56,7 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	int argc;
-	char** argv;
+	const char** argv;
 } quakeparms_t;
 
 
@@ -76,8 +76,5 @@ extern double realtime;					// not bounded in any way, changed at
 
 void Host_Init(quakeparms_t* parms);
 void Host_Frame(float time);
-
-extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
-										//  an fullscreen DIB focus gain/loss
 
 extern double host_time;

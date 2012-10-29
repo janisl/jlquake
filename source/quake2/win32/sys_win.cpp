@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #include "../../common/system_windows.h"
-#ifndef DEDICATED_ONLY
+#ifndef DEDICATED
 #include "../../client/windows_shared.h"
 #endif
 
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/* main window message loop */
 	while (1)
 	{
-#ifndef DEDICATED_ONLY
+#ifndef DEDICATED
 		if (Minimized || (com_dedicated && com_dedicated->value))
 #endif
 		{

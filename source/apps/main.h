@@ -14,29 +14,10 @@
 //**
 //**************************************************************************
 
-#ifndef _SYSTEM_UNIX_H
-#define _SYSTEM_UNIX_H
+#ifndef _APPS_MAIN_H
+#define _APPS_MAIN_H
 
-#define MAX_CMD 1024
-
-void Sys_DoStartProcess(const char* cmdline);
-void Sys_Exit(int ex);
-void InitSig();
-void Sys_ConfigureFPU();
-void Sys_ParseArgs(int argc, const char* argv[]);
-
-void Sys_ConsoleInputInit();
-void Sys_ConsoleInputShutdown();
-void tty_Hide();
-void tty_Show();
-
-extern bool stdin_active;
-
-extern unsigned long sys_timeBase;
-
-extern char exit_cmdline[MAX_CMD];
-
-extern Cvar* ttycon;
-extern bool ttycon_on;
+void Com_SharedInit(int argc, const char* argv[], char* cmdline);
+void Com_SharedFrame();
 
 #endif

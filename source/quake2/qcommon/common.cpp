@@ -21,29 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
-
+#include "../../apps/main.h"
 
 int realtime;
 
 Cvar* timescale;
 Cvar* fixedtime;
 Cvar* showtrace;
-
-/// just for debugging
-int memsearch(byte* start, int count, int search)
-{
-	int i;
-
-	for (i = 0; i < count; i++)
-		if (start[i] == search)
-		{
-			return i;
-		}
-	return -1;
-}
-
-//============================================================================
-
 
 /*
 ====================
@@ -123,7 +107,7 @@ void Com_Error_f(void)
 Qcommon_Init
 =================
 */
-void Qcommon_Init(int argc, char** argv)
+void Qcommon_Init(int argc, const char** argv)
 {
 		char* s;
 
@@ -137,7 +121,7 @@ void Qcommon_Init(int argc, char** argv)
 
 		// prepare enough of the subsystems to handle
 		// cvar and command buffer management
-		COM_InitArgv(argc, const_cast<const char**>(argv));
+		COM_InitArgv(argc, argv);
 
 		Com_InitByteOrder();
 		Cbuf_Init();
@@ -173,7 +157,7 @@ void Qcommon_Init(int argc, char** argv)
 		timescale = Cvar_Get("timescale", "1", 0);
 		fixedtime = Cvar_Get("fixedtime", "0", 0);
 		showtrace = Cvar_Get("showtrace", "0", 0);
-#ifdef DEDICATED_ONLY
+#ifdef DEDICATED
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_INIT);
 #else
 		com_dedicated = Cvar_Get("dedicated", "0", CVAR_INIT);
@@ -303,3 +287,29 @@ void Qcommon_Frame(int msec)
 				all, sv, gm, cl, rf);
 		}
 }
+
+#ifndef _WIN32
+static int oldtime;
+
+void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+{
+	Qcommon_Init(argc, argv);
+
+	oldtime = Sys_Milliseconds_();
+}
+
+void Com_SharedFrame()
+{
+	// find time spent rendering last frame
+	int newtime;
+	int time;
+	do
+	{
+		newtime = Sys_Milliseconds_();
+		time = newtime - oldtime;
+	}
+	while (time < 1);
+	Qcommon_Frame(time);
+	oldtime = newtime;
+}
+#endif

@@ -17,7 +17,7 @@
 typedef struct
 {
 	int argc;
-	char** argv;
+	const char** argv;
 } quakeparms_t;
 
 
@@ -34,6 +34,3 @@ extern double realtime;					// not bounded in any way, changed at
 
 void Host_Init(quakeparms_t* parms);
 void Host_Frame(float time);
-
-extern qboolean msg_suppress_1;			// suppresses resolution and cache size console output
-										//  an fullscreen DIB focus gain/loss

@@ -6,8 +6,8 @@
 #-malign-functions=2
 
 set(WOLFSP_FILES
+	../apps/unix.cpp
 	qcommon/common.cpp
-	unix/unix_main.cpp
 )
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

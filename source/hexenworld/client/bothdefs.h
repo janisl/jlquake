@@ -6,7 +6,7 @@
 #define LINUX_VERSION 0.94
 
 
-#ifdef SERVERONLY		// no asm in dedicated server
+#ifdef DEDICATED		// no asm in dedicated server
 #undef id386
 #endif
 

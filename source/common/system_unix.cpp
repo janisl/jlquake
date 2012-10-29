@@ -50,8 +50,6 @@ static char HomePathSuffix[MAX_OSPATH];
 
 char exit_cmdline[MAX_CMD] = "";
 
-Cvar* sys_extrasleep;
-
 //	Test an file given OS path:
 //	returns -1 if not found
 //	returns 1 if directory
@@ -611,11 +609,6 @@ const char* Sys_GetCurrentUser()
 
 void Sys_Init()
 {
-	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-	{
-		sys_extrasleep = Cvar_Get("sys_extrasleep","0", 0);
-	}
-
 	if (!(GGameType & GAME_Tech3))
 	{
 		return;
@@ -695,7 +688,7 @@ static void Sys_PrintBinVersion(const char* name)
 	fprintf(stdout, "%s\n\n", sep);
 }
 
-void Sys_ParseArgs(int argc, char* argv[])
+void Sys_ParseArgs(int argc, const char* argv[])
 {
 	if (argc == 2)
 	{
@@ -706,4 +699,9 @@ void Sys_ParseArgs(int argc, char* argv[])
 			Sys_Exit(0);
 		}
 	}
+}
+
+void Sys_Sleep(int msec)
+{
+	usleep(msec * 1000);
 }

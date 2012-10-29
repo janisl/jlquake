@@ -3,8 +3,8 @@
 #############################################################################
 
 set(QUAKE3_FILES
+	../apps/unix.cpp
 	qcommon/common.cpp
-	unix/unix_main.cpp
 )
 
 add_executable(jlquake3 ${QUAKE3_FILES})
@@ -16,10 +16,10 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 #############################################################################
 
 set(QUAKE3_DEDICATED_FILES
+	../apps/unix.cpp
 	qcommon/common.cpp
-	unix/unix_main.cpp
 )
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})
-set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED -DC_ONLY")
+set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")
 target_link_libraries(jlquake3ded ${SERVERS_LIBS})

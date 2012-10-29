@@ -7,6 +7,7 @@
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
+#include "../../apps/main.h"
 
 quakeparms_t host_parms;
 
@@ -111,8 +112,6 @@ void Host_Init(quakeparms_t* parms)
 		Sys_SetHomePathSuffix("jlhexen2");
 
 		COM_InitArgv2(parms->argc, parms->argv);
-//	COM_AddParm ("-game");
-//	COM_AddParm ("hw");
 
 		host_parms = *parms;
 
@@ -142,3 +141,33 @@ void Host_Init(quakeparms_t* parms)
 
 		common->Printf("������� HexenWorld Initialized �������\n");
 }
+
+#ifndef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+
+	COM_InitArgv2(argc, argv);
+	parms.argc = argc;
+	parms.argv = argv;
+
+	Sys_Init();
+
+	Host_Init(&parms);
+
+	oldtime = Sys_DoubleTime();
+}
+
+void Com_SharedFrame()
+{
+	// find time spent rendering last frame
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	Host_Frame(time);
+	oldtime = newtime;
+}
+#endif

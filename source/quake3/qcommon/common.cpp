@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include <time.h>
+#include "../../apps/main.h"
 
 bool UIT3_UsesUniqueCDKey();
 
@@ -516,3 +517,16 @@ void Com_Frame(void)
 
 		com_frameNumber++;
 }
+
+#ifndef _WIN32
+void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+{
+	Com_Init(cmdline);
+	NETQ23_Init();
+}
+
+void Com_SharedFrame()
+{
+	Com_Frame();
+}
+#endif

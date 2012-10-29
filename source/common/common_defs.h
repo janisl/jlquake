@@ -173,6 +173,7 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 int COM_Argc();
 const char* COM_Argv(int arg);	// range and null checked
 void COM_InitArgv(int argc, const char** argv);
+void COM_InitArgv2(int argc, const char** argv);
 void COM_AddParm(const char* parm);
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
@@ -270,5 +271,7 @@ void COM_InitCommonCommands();
 
 bool ComET_CheckProfile(const char* profile_path);
 bool ComET_WriteProfile(const char* profile_path);
+
+void COMQH_CheckRegistered();
 
 #define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../server/public.h"
 #include "../client/public.h"
+#include "../apps/main.h"
 
 /*
 
@@ -263,3 +264,51 @@ void Host_Init(quakeparms_t* parms)
 
 		common->Printf("========Quake Initialized=========\n");
 }
+
+#ifndef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+{
+	COM_InitArgv2(argc, argv);
+
+	quakeparms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+	parms.argc = argc;
+	parms.argv = argv;
+
+	Host_Init(&parms);
+
+	printf("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
+
+	oldtime = Sys_DoubleTime() - 0.1;
+}
+
+void Com_SharedFrame()
+{
+	// find time spent rendering last frame
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	if (com_dedicated->integer)
+	{
+		if (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			return;		// not time to run a server only tic yet
+		}
+		time = sys_ticrate->value;
+	}
+
+	if (time > sys_ticrate->value * 2)
+	{
+		oldtime = newtime;
+	}
+	else
+	{
+		oldtime += time;
+	}
+
+	Host_Frame(time);
+}
+#endif

@@ -83,7 +83,7 @@ MISC
 ==============================================================
 */
 
-void Qcommon_Init(int argc, char** argv);
+void Qcommon_Init(int argc, const char** argv);
 void Qcommon_Frame(int msec);
 
 #endif

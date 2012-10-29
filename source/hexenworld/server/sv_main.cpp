@@ -8,6 +8,7 @@
 #include "../../common/hexen2strings.h"
 #include "../../server/public.h"
 #include "../../client/public.h"
+#include "../../apps/main.h"
 
 quakeparms_t host_parms;
 
@@ -91,3 +92,43 @@ void COM_InitServer(quakeparms_t* parms)
 			common->Error("Couldn't spawn a server");
 		}
 }
+
+#ifndef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+
+	COM_InitArgv2(argc, argv);
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitServer(&parms);
+
+	// run one frame immediately for first heartbeat
+	COM_ServerFrame(0.1);
+
+	oldtime = Sys_DoubleTime() - 0.1;
+}
+
+void Com_SharedFrame()
+{
+	// select on the net socket and stdin
+	// the only reason we have a timeout at all is so that if the last
+	// connected client times out, the message would not otherwise
+	// be printed until the next event.
+	if (!SOCK_Sleep(ip_sockets[0], 1000))
+	{
+		return;
+	}
+
+	// find time passed since last cycle
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+	oldtime = newtime;
+
+	COM_ServerFrame(time);
+}
+#endif
