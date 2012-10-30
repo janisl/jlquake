@@ -109,16 +109,12 @@
     <ClCompile Include="qcommon\common.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\apps\resource.h" />
     <ClInclude Include="game\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="win32\background.bmp" />
-    <None Include="win32\clear.bmp" />
-    <None Include="win32\qe3.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="win32\winquake.rc" />
+    <ResourceCompile Include="..\apps\jlquake.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -35,5 +35,13 @@
     <ClInclude Include="sys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\apps\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\apps\jlquake.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

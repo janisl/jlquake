@@ -104,19 +104,12 @@
     <ClCompile Include="common.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\apps\resource.h" />
     <ClInclude Include="bothdefs.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="sys.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="quakeworld.bmp" />
-    <None Include="qwcl2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winquake.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\client\client.vcxproj">
@@ -129,6 +122,14 @@
     <ProjectReference Include="..\..\server\server.vcxproj">
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\apps\jlquake.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\apps\hexen2.ico" />
+    <None Include="..\..\apps\hexenworld.ico" />
+    <None Include="..\..\apps\quake.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

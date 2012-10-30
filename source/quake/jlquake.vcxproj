@@ -106,15 +106,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\apps\main.h" />
+    <ClInclude Include="..\apps\resource.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="quake.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winquake.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\client\client.vcxproj">
@@ -128,6 +123,27 @@
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apps\jlquake.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\apps\hexen2.ico" />
+    <None Include="..\apps\hexenworld.ico" />
+    <None Include="..\apps\quake.ico" />
+    <None Include="..\apps\quake2.ico" />
+    <None Include="..\apps\quake3.ico" />
+    <None Include="..\apps\wolfet.ico" />
+    <None Include="..\apps\wolfmp.ico" />
+    <None Include="..\apps\wolfsp.ico" />
+    <None Include="hexen2.ico" />
+    <None Include="hexenworld.ico" />
+    <None Include="quake.ico" />
+    <None Include="quake2.ico" />
+    <None Include="quake3.ico" />
+    <None Include="wolfet.ico" />
+    <None Include="wolfmp.ico" />
+    <None Include="wolfsp.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

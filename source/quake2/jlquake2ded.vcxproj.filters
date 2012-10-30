@@ -32,14 +32,12 @@
     <ClInclude Include="qcommon\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="win32\q2.ico">
+    <ClInclude Include="..\apps\resource.h">
       <Filter>Resource Files</Filter>
-    </None>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="win32\q2.rc">
+    <ResourceCompile Include="..\apps\jlquake.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

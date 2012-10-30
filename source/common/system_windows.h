@@ -18,9 +18,7 @@
 #define _SYSTEM_WINDOWS_H
 
 #include <windows.h>
-
-//	Copied from resources.h
-#define IDI_ICON1                       1
+#include "../apps/resource.h"
 
 extern HINSTANCE global_hInstance;
 extern unsigned sysMsgTime;

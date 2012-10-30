@@ -108,15 +108,9 @@
     <ClCompile Include="host.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="qe3.ico" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="..\apps\resource.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Quakedef.h" />
-    <ClInclude Include="Resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winquake.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\client\client.vcxproj">
@@ -130,6 +124,9 @@
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apps\jlquake.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

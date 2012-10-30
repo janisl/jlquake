@@ -29,20 +29,12 @@
     <ClInclude Include="qcommon\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\apps\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="win32\background.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="win32\clear.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="win32\qe3.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="win32\winquake.rc">
+    <ResourceCompile Include="..\apps\jlquake.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

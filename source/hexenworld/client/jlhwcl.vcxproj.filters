@@ -41,21 +41,24 @@
     <ClInclude Include="sys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="..\..\apps\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="quakeworld.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="qwcl2.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winquake.rc">
+    <ResourceCompile Include="..\..\apps\jlquake.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\apps\quake.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\apps\hexen2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\apps\hexenworld.ico">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -106,15 +106,9 @@
     <ClCompile Include="qcommon\q_shared.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\apps\resource.h" />
     <ClInclude Include="qcommon\q_shared.h" />
     <ClInclude Include="qcommon\qcommon.h" />
-    <ClInclude Include="win32\resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="win32\q2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="win32\q2.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\client\client.vcxproj">
@@ -127,6 +121,15 @@
     <ProjectReference Include="..\server\server.vcxproj">
       <Project>{dedbf7cf-b614-4d3b-a990-71a43294f301}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apps\jlquake.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\apps\hexen2.ico" />
+    <None Include="..\apps\hexenworld.ico" />
+    <None Include="..\apps\quake.ico" />
+    <None Include="..\apps\quake2.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

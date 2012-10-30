@@ -26,23 +26,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="qe3.ico">
-      <Filter>Resources</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Quakedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="..\apps\resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="winquake.rc">
+    <ResourceCompile Include="..\apps\jlquake.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>

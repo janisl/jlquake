@@ -38,15 +38,63 @@
     <ClInclude Include="..\apps\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\apps\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apps\jlquake.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="quake.ico">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winquake.rc">
+    <None Include="..\apps\quake.ico">
       <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    </None>
+    <None Include="hexen2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\hexen2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="hexenworld.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="quake2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\hexenworld.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\quake2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="quake3.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfsp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfmp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfet.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\quake3.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\wolfsp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\wolfmp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\apps\wolfet.ico">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
