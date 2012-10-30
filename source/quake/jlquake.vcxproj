@@ -102,7 +102,6 @@
   <ItemGroup>
     <ClCompile Include="common.cpp" />
     <ClCompile Include="host.cpp" />
-    <ClCompile Include="host_cmd.cpp" />
     <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>

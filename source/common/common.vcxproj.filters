@@ -194,5 +194,6 @@
     <ClCompile Include="network_channel_netquake.cpp" />
     <ClCompile Include="player_move2.cpp" />
     <ClCompile Include="hexen2strings.cpp" />
+    <ClCompile Include="Common.cpp" />
   </ItemGroup>
 </Project>

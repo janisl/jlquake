@@ -21,9 +21,6 @@
     <ClCompile Include="host.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="host_cmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

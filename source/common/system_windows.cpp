@@ -881,3 +881,8 @@ void Sys_Init()
 	}
 	Cmd_AddCommand("clearviewlog", Sys_ClearViewlog_f);
 }
+
+void Sys_Sleep(int msec)
+{
+	Sleep(msec);
+}

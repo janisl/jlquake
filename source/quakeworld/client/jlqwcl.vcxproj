@@ -105,11 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bothdefs.h" />
-    <ClInclude Include="client.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="sys.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="quakeworld.bmp" />

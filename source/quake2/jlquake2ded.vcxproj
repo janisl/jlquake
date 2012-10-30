@@ -95,7 +95,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="qcommon\common.cpp" />
-    <ClCompile Include="qcommon\files.cpp" />
     <ClCompile Include="qcommon\q_shared.cpp" />
     <ClCompile Include="win32\sys_win.cpp" />
   </ItemGroup>

@@ -107,7 +107,6 @@
     <ClInclude Include="..\client\common.h" />
     <ClInclude Include="qwsvdef.h" />
     <ClInclude Include="server.h" />
-    <ClInclude Include="sys.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.vcxproj">

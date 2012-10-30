@@ -234,6 +234,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="Common.cpp" />
     <ClCompile Include="game_utils1.cpp" />
     <ClCompile Include="hexen2strings.cpp" />
     <ClCompile Include="message_utils1.cpp" />
