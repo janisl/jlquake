@@ -22,20 +22,9 @@
 //	Copied from resources.h
 #define IDI_ICON1                       1
 
-// returnbed by Sys_GetProcessorId
-#define CPUID_GENERIC           0			// any unrecognized processor
-
-#define CPUID_AXP               0x10
-
-#define CPUID_INTEL_UNSUPPORTED 0x20			// Intel 386/486
-#define CPUID_INTEL_PENTIUM     0x21			// Intel Pentium or PPro
-#define CPUID_INTEL_MMX         0x22			// Intel Pentium/MMX or P2/MMX
-#define CPUID_INTEL_KATMAI      0x23			// Intel Katmai
-
-#define CPUID_AMD_3DNOW         0x30			// AMD K6 3DNOW!
-
 extern HINSTANCE global_hInstance;
 extern unsigned sysMsgTime;
+extern bool Minimized;
 
 void Sys_CreateConsole(const char* Title);
 void Sys_DestroyConsole();

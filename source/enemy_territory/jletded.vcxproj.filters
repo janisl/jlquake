@@ -14,7 +14,7 @@
     <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\win_main.cpp">
+    <ClCompile Include="..\apps\windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -105,9 +105,9 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\windows.cpp" />
     <ClCompile Include="..\client\common.cpp" />
     <ClCompile Include="sv_main.cpp" />
-    <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qwsvdef.h" />

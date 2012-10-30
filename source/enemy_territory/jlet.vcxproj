@@ -90,8 +90,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\apps\windows.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
-    <ClCompile Include="win32\win_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\q_shared.h" />

@@ -101,9 +101,9 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\apps\windows.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
     <ClCompile Include="qcommon\q_shared.cpp" />
-    <ClCompile Include="win32\sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qcommon\q_shared.h" />

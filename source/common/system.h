@@ -46,3 +46,4 @@ void Sys_Error(const char* error, ...);
 const char* Sys_GetCurrentUser();
 void Sys_Init();
 void Sys_Sleep(int msec);
+int Sys_GetCurrentProcessId();

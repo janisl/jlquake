@@ -18,7 +18,6 @@
 #include "windows_shared.h"
 
 HWND GMainWindow;
-bool Minimized;
 bool ActiveApp;
 
 char* Sys_GetClipboardData()

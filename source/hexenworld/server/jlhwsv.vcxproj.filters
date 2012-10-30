@@ -18,10 +18,10 @@
     <ClCompile Include="..\client\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sv_main.cpp">
+    <ClCompile Include="..\..\apps\windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sys_win.cpp">
+    <ClCompile Include="sv_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

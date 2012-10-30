@@ -1,9 +1,6 @@
 // cl_main.c  -- client main loop
 
 #include "quakedef.h"
-#ifdef _WIN32
-#include "../../client/windows_shared.h"
-#endif
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
@@ -142,7 +139,34 @@ void Host_Init(quakeparms_t* parms)
 		common->Printf("������� HexenWorld Initialized �������\n");
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitArgv2(parms.argc, parms.argv);
+
+	Sys_Init();
+
+	common->Printf("Host_Init\n");
+	Host_Init(&parms);
+
+	oldtime = Sys_DoubleTime();
+}
+
+void Com_SharedFrame()
+{
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	Host_Frame(time);
+	oldtime = newtime;
+}
+#else
 static double oldtime;
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

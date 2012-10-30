@@ -288,7 +288,30 @@ void Qcommon_Frame(int msec)
 		}
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+static int oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	Qcommon_Init(argc, argv);
+	oldtime = Sys_Milliseconds_();
+}
+
+void Com_SharedFrame()
+{
+	int time, newtime;
+	do
+	{
+		newtime = Sys_Milliseconds_();
+		time = newtime - oldtime;
+	}
+	while (time < 1);
+
+	Qcommon_Frame(time);
+
+	oldtime = newtime;
+}
+#else
 static int oldtime;
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

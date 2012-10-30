@@ -549,7 +549,23 @@ void Com_Frame(void)
 		com_frameNumber++;
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	// get the initial time base
+	Sys_Milliseconds();
+
+	Com_Init(cmdline);
+	NETQ23_Init();
+
+	common->Printf("Working directory: %s\n", Sys_Cwd());
+}
+
+void Com_SharedFrame()
+{
+	Com_Frame();
+}
+#else
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	Com_Init(cmdline);

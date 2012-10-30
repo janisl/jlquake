@@ -99,9 +99,9 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\windows.cpp" />
     <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="common.cpp" />
-    <ClCompile Include="sys_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bothdefs.h" />

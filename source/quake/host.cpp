@@ -265,7 +265,50 @@ void Host_Init(quakeparms_t* parms)
 		common->Printf("========Quake Initialized=========\n");
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitArgv2(parms.argc, parms.argv);
+
+	Sys_Init();
+
+	common->Printf("Host_Init\n");
+	Host_Init(&parms);
+
+	oldtime = Sys_DoubleTime();
+}
+
+void Com_SharedFrame()
+{
+	double time, newtime;
+	if (com_dedicated->integer)
+	{
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+
+		while (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
+		}
+	}
+	else
+	{
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+	}
+
+	Host_Frame(time);
+	oldtime = newtime;
+}
+#else
 static double oldtime;
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

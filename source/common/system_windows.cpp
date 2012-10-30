@@ -23,10 +23,23 @@
 
 #define MAX_FOUND_FILES     0x1000
 
+// returnbed by Sys_GetProcessorId
+#define CPUID_GENERIC           0			// any unrecognized processor
+
+#define CPUID_AXP               0x10
+
+#define CPUID_INTEL_UNSUPPORTED 0x20			// Intel 386/486
+#define CPUID_INTEL_PENTIUM     0x21			// Intel Pentium or PPro
+#define CPUID_INTEL_MMX         0x22			// Intel Pentium/MMX or P2/MMX
+#define CPUID_INTEL_KATMAI      0x23			// Intel Katmai
+
+#define CPUID_AMD_3DNOW         0x30			// AMD K6 3DNOW!
+
 HINSTANCE global_hInstance;
 // when we get a windows message, we store the time off so keyboard processing
 // can know the exact time of an event
 unsigned sysMsgTime;
+bool Minimized;
 
 static char HomePathSuffix[MAX_OSPATH];
 
@@ -885,4 +898,9 @@ void Sys_Init()
 void Sys_Sleep(int msec)
 {
 	Sleep(msec);
+}
+
+int Sys_GetCurrentProcessId()
+{
+	return GetCurrentProcessId();
 }

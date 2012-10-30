@@ -1,8 +1,6 @@
 
 #include "qwsvdef.h"
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifndef _WIN32
 #include <dirent.h>
 #endif
 #include "../../common/hexen2strings.h"
@@ -93,7 +91,49 @@ void COM_InitServer(quakeparms_t* parms)
 		}
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+
+	COM_InitArgv2(argc, argv);
+
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitServer(&parms);
+
+// run one frame immediately for first heartbeat
+	COM_ServerFrame(HX_FRAME_TIME);
+
+//
+// main loop
+//
+	oldtime = Sys_DoubleTime() - HX_FRAME_TIME;
+}
+
+void Com_SharedFrame()
+{
+	// select on the net socket and stdin
+	// the only reason we have a timeout at all is so that if the last
+	// connected client times out, the message would not otherwise
+	// be printed until the next event.
+	//JL: Originally timeout was 0.1 ms
+	if (!SOCK_Sleep(ip_sockets[0], 1))
+	{
+		return;
+	}
+
+	// find time passed since last cycle
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+	oldtime = newtime;
+
+	COM_ServerFrame(time);
+}
+#else
 static double oldtime;
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

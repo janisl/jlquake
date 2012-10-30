@@ -28,7 +28,6 @@ void IN_Activate(bool active);
 
 extern HWND GMainWindow;
 extern Cvar* in_joystick;
-extern bool Minimized;
 extern bool ActiveApp;
 
 #endif

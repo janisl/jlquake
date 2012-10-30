@@ -19,12 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qwsvdef.h"
-#ifdef _WIN32
-#include "../../client/windows_shared.h"
-#else
+#ifndef _WIN32
 #include <unistd.h>
-#endif
 #include <time.h>
+#endif
 #include "../../server/public.h"
 #include "../../client/public.h"
 #include "../../apps/main.h"
@@ -114,7 +112,49 @@ void COM_InitServer(quakeparms_t* parms)
 		}
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+
+	COM_InitArgv2(argc, argv);
+
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitServer(&parms);
+
+// run one frame immediately for first heartbeat
+	COM_ServerFrame(0.1);
+
+//
+// main loop
+//
+	oldtime = Sys_DoubleTime() - 0.1;
+}
+
+void Com_SharedFrame()
+{
+	// select on the net socket and stdin
+	// the only reason we have a timeout at all is so that if the last
+	// connected client times out, the message would not otherwise
+	// be printed until the next event.
+	//JL: Originally timeout was 0.1 ms
+	if (!SOCK_Sleep(ip_sockets[0], 1))
+	{
+		return;
+	}
+
+	// find time passed since last cycle
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+	oldtime = newtime;
+
+	COM_ServerFrame(time);
+}
+#else
 static double oldtime;
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

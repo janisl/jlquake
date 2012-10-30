@@ -8,6 +8,7 @@
 #include "../common/hexen2strings.h"
 #include "../server/public.h"
 #include "../client/public.h"
+#include "../apps/main.h"
 
 /*
 
@@ -295,3 +296,93 @@ void Host_Init(quakeparms_t* parms)
 
 		common->Printf("======== Hexen II Initialized =========\n");
 }
+
+#ifdef _WIN32
+static double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	parms.argc = argc;
+	parms.argv = argv;
+
+	COM_InitArgv2(parms.argc, parms.argv);
+
+	Sys_Init();
+
+	common->Printf("Host_Init\n");
+	Host_Init(&parms);
+
+	oldtime = Sys_DoubleTime();
+}
+
+void Com_SharedFrame()
+{
+	double newtime;
+	double time;
+	if (com_dedicated->integer)
+	{
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+
+		while (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
+		}
+	}
+	else
+	{
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+	}
+
+	Host_Frame(time);
+	oldtime = newtime;
+}
+#else
+static double oldtime;
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	quakeparms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+
+	COM_InitArgv2(argc, argv);
+	parms.argc = argc;
+	parms.argv = argv;
+
+	Host_Init(&parms);
+
+	oldtime = Sys_DoubleTime() - 0.1;
+}
+
+void Com_SharedFrame()
+{
+	// find time spent rendering last frame
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	if (com_dedicated->integer)
+	{	// play vcrfiles at max speed
+		if (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			return;		// not time to run a server only tic yet
+		}
+		time = sys_ticrate->value;
+	}
+
+	if (time > sys_ticrate->value * 2)
+	{
+		oldtime = newtime;
+	}
+	else
+	{
+		oldtime += time;
+	}
+
+	Host_Frame(time);
+}
+#endif

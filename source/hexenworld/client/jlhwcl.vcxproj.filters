@@ -21,7 +21,7 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sys_win.cpp">
+    <ClCompile Include="..\..\apps\windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
