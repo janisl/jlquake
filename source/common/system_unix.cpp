@@ -688,7 +688,7 @@ static void Sys_PrintBinVersion(const char* name)
 	fprintf(stdout, "%s\n\n", sep);
 }
 
-void Sys_ParseArgs(int argc, const char* argv[])
+void Sys_ParseArgs(int argc, char* argv[])
 {
 	if (argc == 2)
 	{

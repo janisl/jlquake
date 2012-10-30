@@ -550,7 +550,7 @@ void Com_Frame(void)
 }
 
 #ifndef _WIN32
-void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	Com_Init(cmdline);
 	NETQ23_Init();

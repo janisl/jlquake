@@ -268,7 +268,7 @@ void Host_Init(quakeparms_t* parms)
 #ifndef _WIN32
 static double oldtime;
 
-void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	COM_InitArgv2(argc, argv);
 

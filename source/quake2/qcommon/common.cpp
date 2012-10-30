@@ -107,7 +107,7 @@ void Com_Error_f(void)
 Qcommon_Init
 =================
 */
-void Qcommon_Init(int argc, const char** argv)
+void Qcommon_Init(int argc, char** argv)
 {
 		char* s;
 
@@ -291,7 +291,7 @@ void Qcommon_Frame(int msec)
 #ifndef _WIN32
 static int oldtime;
 
-void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	Qcommon_Init(argc, argv);
 

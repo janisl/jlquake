@@ -723,7 +723,7 @@ const char* COM_Argv(int arg)
 	return com_argv[arg];
 }
 
-void COM_InitArgv(int argc, const char** argv)
+void COM_InitArgv(int argc, char** argv)
 {
 	if (argc > MAX_NUM_ARGVS)
 	{
@@ -762,7 +762,7 @@ void COM_ClearArgv(int arg)
 	com_argv[arg] = "";
 }
 
-void COM_InitArgv2(int argc, const char** argv)
+void COM_InitArgv2(int argc, char** argv)
 {
 	COM_InitArgv(argc, argv);
 

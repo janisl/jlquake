@@ -17,7 +17,7 @@
 #ifndef _APPS_MAIN_H
 #define _APPS_MAIN_H
 
-void Com_SharedInit(int argc, const char* argv[], char* cmdline);
+void Com_SharedInit(int argc, char* argv[], char* cmdline);
 void Com_SharedFrame();
 
 #endif

@@ -26,7 +26,7 @@ void COM_Init()
 #ifndef _WIn32
 static double oldtime;
 
-void Com_SharedInit(int argc, const char* argv[], char* cmdline)
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	quakeparms_t parms;
 	Com_Memset(&parms, 0, sizeof(parms));

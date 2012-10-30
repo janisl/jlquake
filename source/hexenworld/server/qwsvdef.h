@@ -18,7 +18,7 @@
 typedef struct
 {
 	int argc;
-	const char** argv;
+	char** argv;
 } quakeparms_t;
 
 
