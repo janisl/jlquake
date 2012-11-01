@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // common.c -- misc functions used in client and server
 
-#include "../game/q_shared.h"
-#include "qcommon.h"
+#include "../../common/qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../apps/main.h"
+
+#define Q3_VERSION      "Q3 1.32b"
+// 1.32 released 7-10-2002
 
 FILE* debuglogfile;
 

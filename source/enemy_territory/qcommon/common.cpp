@@ -28,11 +28,27 @@ If you have questions concerning this license or the applicable additional terms
 
 // common.c -- misc functions used in client and server
 
-#include "../game/q_shared.h"
-#include "qcommon.h"
+#include "../../common/qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../apps/main.h"
+
+#define Q3_VERSION      "ET 2.60d"
+// 2.60d: Mac OSX universal binaries
+// 2.60c: Mac OSX universal binaries
+// 2.60b: CVE-2006-2082 fix
+// 2.6x: Enemy Territory - ETPro team maintenance release
+// 2.5x: Enemy Territory FINAL
+// 2.4x: Enemy Territory RC's
+// 2.3x: Enemy Territory TEST
+// 2.2+: post SP removal
+// 2.1+: post Enemy Territory moved standalone
+// 2.x: post Enemy Territory
+// 1.x: pre Enemy Territory
+////
+// 1.3-MP : final for release
+// 1.1b - TTimo SP linux release (+ MP updates)
+// 1.1b5 - Mac update merge in
 
 FILE* debuglogfile;
 

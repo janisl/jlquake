@@ -1,6 +1,6 @@
 // cl_main.c  -- client main loop
 
-#include "quakedef.h"
+#include "../../common/qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../common/hexen2strings.h"
@@ -11,8 +11,6 @@ double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
 
 static double oldtime;
-
-void Master_Connect_f(void);
 
 void aaa()
 {
@@ -119,7 +117,14 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
-	COM_Init();
+	Com_InitByteOrder();
+
+	COM_InitCommonCvars();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 
 	NETQHW_Init(HWPORT_CLIENT);
 

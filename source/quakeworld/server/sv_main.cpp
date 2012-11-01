@@ -18,10 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "qwsvdef.h"
+#include "../../common/qcommon.h"
 #include "../../server/public.h"
 #include "../../client/public.h"
 #include "../../apps/main.h"
+
+#define VERSION     2.40
 
 static double oldtime;
 
@@ -68,7 +70,14 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
-	COM_Init();
+	Com_InitByteOrder();
+
+	COM_InitCommonCvars();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 
 	COM_InitCommonCommands();
 
@@ -84,7 +93,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 
-	common->Printf("\nServer Version %4.2f (Build %04d)\n\n", VERSION, build_number());
+	common->Printf("\nServer Version %4.2f\n\n", VERSION);
 
 	common->Printf("======== QuakeWorld Initialized ========\n");
 

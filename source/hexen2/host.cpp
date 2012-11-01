@@ -4,7 +4,7 @@
  * $Header: /H2 Mission Pack/HOST.C 6     3/12/98 6:31p Mgummelt $
  */
 
-#include "quakedef.h"
+#include "../common/qcommon.h"
 #include "../common/hexen2strings.h"
 #include "../server/public.h"
 #include "../client/public.h"
@@ -195,9 +195,7 @@ void _Host_Frame(float time)
 
 	host_frametime = save_host_frametime;
 
-#ifndef DEDICATED
 	CL_Frame(host_frametime * 1000);
-#endif
 
 	if (com_speeds->value)
 	{
@@ -275,36 +273,35 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	Cbuf_Init();
 	Cmd_Init();
 	Cvar_Init();
-	COM_Init();
+	Com_InitByteOrder();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 	Host_InitLocal();
 	SVH2_RemoveGIPFiles(NULL);
-#ifndef DEDICATED
 	CL_InitKeyCommands();
-#endif
 	ComH2_LoadStrings();
 	SV_Init();
 
 	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
 
-#ifndef DEDICATED
 	if (!com_dedicated->integer)
 	{
 		CL_Init();
 	}
-#endif
 
 	Cbuf_InsertText("exec hexen.rc\n");
 	Cbuf_Execute();
 
 	NETQH_Init();
 
-#ifndef DEDICATED
 	if (!com_dedicated->integer)
 	{
 		CL_StartHunkUsers();
 		Sys_ShowConsole(0, false);
 	}
-#endif
 
 	com_fullyInitialized = true;
 

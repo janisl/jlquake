@@ -55,6 +55,12 @@
 #define id386   0
 #endif
 
+#if (defined(powerc) || defined(powerpc) || defined(ppc) || defined(__ppc) || defined(__ppc__)) && !defined(C_ONLY)
+#define idppc   1
+#else
+#define idppc   0
+#endif
+
 //==========================================================================
 //
 //	Basic types

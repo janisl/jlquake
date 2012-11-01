@@ -28,12 +28,18 @@ If you have questions concerning this license or the applicable additional terms
 
 // common.c -- misc functions used in client and server
 
-#include "../game/q_shared.h"
-#include "qcommon.h"
+#include "../../common/qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
-#include <time.h>
 #include "../../apps/main.h"
+
+#define Q3_VERSION      "Wolf 1.41"
+// ver 1.0.0	- release
+// ver 1.0.1	- post-release work
+// ver 1.1.0	- patch 1 (12/12/01)
+// ver 1.1b		- TTimo SP linux release (+ MP update)
+// ver 1.2.b5	- Mac code merge in
+// ver 1.3		- patch 2 (02/13/02)
 
 FILE* debuglogfile;
 

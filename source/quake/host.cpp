@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // host.c -- coordinates spawning and killing of local servers
 
-#include "quakedef.h"
+#include "../common/qcommon.h"
 #include "../server/public.h"
 #include "../client/public.h"
 #include "../apps/main.h"
@@ -241,7 +241,12 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	Cbuf_Init();
 	Cmd_Init();
 	Cvar_Init();
-	COM_Init();
+	Com_InitByteOrder();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 	Host_InitLocal();
 	CL_InitKeyCommands();
 	SV_Init();

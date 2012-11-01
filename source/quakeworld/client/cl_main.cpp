@@ -19,10 +19,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_main.c  -- client main loop
 
-#include "quakedef.h"
+#include "../../common/qcommon.h"
 #include "../../server/public.h"
 #include "../../client/public.h"
 #include "../../apps/main.h"
+
+#define VERSION     2.40
+
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
 
 static double oldtime;
 
@@ -31,8 +38,6 @@ Cvar* cl_maxfps;
 double host_frametime;
 double realtime;					// without any filtering or bounding
 double oldrealtime;					// last frame run
-
-void Master_Connect_f(void);
 
 void aaa()
 {
@@ -149,7 +154,14 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
 
-	COM_Init();
+	Com_InitByteOrder();
+
+	COM_InitCommonCvars();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 
 	NETQHW_Init(QWPORT_CLIENT);
 	// pick a port value that should be nice and random
@@ -171,7 +183,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	oldtime = Sys_DoubleTime();
 
-	common->Printf("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
+	common->Printf("\nClient Version %4.2f\n\n", VERSION);
 
 	common->Printf("������� QuakeWorld Initialized �������\n");
 }

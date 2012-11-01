@@ -18,10 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // common.c -- misc functions used in client and server
-#include "qcommon.h"
+#include "../../common/qcommon.h"
 #include "../../client/public.h"
 #include "../../server/public.h"
 #include "../../apps/main.h"
+
+#define VERSION     3.19
 
 int realtime;
 
@@ -30,65 +32,6 @@ static int oldtime;
 Cvar* timescale;
 Cvar* fixedtime;
 Cvar* showtrace;
-
-/*
-====================
-COM_BlockSequenceCheckByte
-
-For proxy protecting
-
-// THIS IS MASSIVELY BROKEN!  CHALLENGE MAY BE NEGATIVE
-// DON'T USE THIS FUNCTION!!!!!
-
-====================
-*/
-byte    COM_BlockSequenceCheckByte(byte* base, int length, int sequence, int challenge)
-{
-	Sys_Error("COM_BlockSequenceCheckByte called\n");
-
-#if 0
-	int checksum;
-	byte buf[68];
-	byte* p;
-	float temp;
-	byte c;
-
-	temp = bytedirs[(sequence / 3) % NUMVERTEXNORMALS][sequence % 3];
-	temp = LittleFloat(temp);
-	p = ((byte*)&temp);
-
-	if (length > 60)
-	{
-		length = 60;
-	}
-	Com_Memcpy(buf, base, length);
-
-	buf[length] = (sequence & 0xff) ^ p[0];
-	buf[length + 1] = p[1];
-	buf[length + 2] = ((sequence >> 8) & 0xff) ^ p[2];
-	buf[length + 3] = p[3];
-
-	temp = bytedirs[((sequence + challenge) / 3) % NUMVERTEXNORMALS][(sequence + challenge) % 3];
-	temp = LittleFloat(temp);
-	p = ((byte*)&temp);
-
-	buf[length + 4] = (sequence & 0xff) ^ p[3];
-	buf[length + 5] = (challenge & 0xff) ^ p[2];
-	buf[length + 6] = ((sequence >> 8) & 0xff) ^ p[1];
-	buf[length + 7] = ((challenge >> 7) & 0xff) ^ p[0];
-
-	length += 8;
-
-	checksum = LittleLong(Com_BlockChecksum(buf, length));
-
-	checksum &= 0xff;
-
-	return checksum;
-#endif
-	return 0;
-}
-
-//========================================================
 
 /*
 =============
@@ -159,7 +102,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	com_dedicated = Cvar_Get("dedicated", "0", CVAR_INIT);
 #endif
 
-	s = va("%4.2f %s %s %s", VERSION, CPUSTRING, __DATE__, BUILDSTRING);
+	s = va("%4.2f %s %s", VERSION, CPUSTRING, __DATE__);
 	Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_INIT);
 
 
@@ -169,7 +112,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	NETQ23_Init();
 	// pick a port value that should be nice and random
-	Netchan_Init(Sys_Milliseconds_());
+	Netchan_Init(Sys_Milliseconds());
 
 	SV_Init();
 	if (!com_dedicated->value)
@@ -197,7 +140,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 		SCR_EndLoadingPlaque();
 	}
 
-	oldtime = Sys_Milliseconds_();
+	oldtime = Sys_Milliseconds();
 
 	com_fullyInitialized = true;
 	common->Printf("====== Quake2 Initialized ======\n\n");
@@ -210,7 +153,7 @@ void Com_SharedFrame()
 	int msec;
 	do
 	{
-		newtime = Sys_Milliseconds_();
+		newtime = Sys_Milliseconds();
 		msec = newtime - oldtime;
 	}
 	while (msec < 1);
@@ -248,14 +191,14 @@ void Com_SharedFrame()
 
 	if (com_speeds->value)
 	{
-		time_before = Sys_Milliseconds_();
+		time_before = Sys_Milliseconds();
 	}
 
 	SV_Frame(msec);
 
 	if (com_speeds->value)
 	{
-		time_between = Sys_Milliseconds_();
+		time_between = Sys_Milliseconds();
 	}
 
 	// let the mouse activate or deactivate
@@ -271,7 +214,7 @@ void Com_SharedFrame()
 
 	if (com_speeds->value)
 	{
-		time_after = Sys_Milliseconds_();
+		time_after = Sys_Milliseconds();
 	}
 
 

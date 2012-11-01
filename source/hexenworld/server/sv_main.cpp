@@ -1,4 +1,4 @@
-#include "qwsvdef.h"
+#include "../../common/qcommon.h"
 #include "../../common/hexen2strings.h"
 #include "../../server/public.h"
 #include "../../client/public.h"
@@ -47,7 +47,14 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 
-	COM_Init();
+	Com_InitByteOrder();
+
+	COM_InitCommonCvars();
+
+	qh_registered = Cvar_Get("registered", "0", 0);
+
+	FS_InitFilesystem();
+	COMQH_CheckRegistered();
 
 	ComH2_LoadStrings();
 
