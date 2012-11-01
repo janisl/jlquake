@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include <time.h>
 #include "../../apps/main.h"
 
-bool UIT3_UsesUniqueCDKey();
-
 FILE* debuglogfile;
 
 Cvar* com_fixedtime;
@@ -126,178 +124,185 @@ static void Com_Crash_f(void)
 Com_Init
 =================
 */
-void Com_Init(char* commandLine)
+void Com_SharedInit(int argc, char* argv[], char* commandLine)
 {
-		char* s;
+	// get the initial time base
+	Sys_Milliseconds();
 
-		common->Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
+	char* s;
 
-		if (setjmp(abortframe))
-		{
-			Sys_Error("Error during initialization");
-		}
+	common->Printf("%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__);
 
-		GGameType = GAME_WolfSP;
-		Sys_SetHomePathSuffix("jlwolf");
+	if (setjmp(abortframe))
+	{
+		Sys_Error("Error during initialization");
+	}
 
-		// bk001129 - do this before anything else decides to push events
-		Com_InitEventQueue();
+	GGameType = GAME_WolfSP;
+	Sys_SetHomePathSuffix("jlwolf");
 
-		Cvar_Init();
+	// bk001129 - do this before anything else decides to push events
+	Com_InitEventQueue();
 
-		// prepare enough of the subsystems to handle
-		// cvar and command buffer management
-		Com_ParseCommandLine(commandLine);
+	Cvar_Init();
 
-		Com_InitByteOrder();
-		Cbuf_Init();
+	// prepare enough of the subsystems to handle
+	// cvar and command buffer management
+	Com_ParseCommandLine(commandLine);
 
-		Cmd_Init();
+	Com_InitByteOrder();
+	Cbuf_Init();
 
-		// override anything from the config files with command line args
-		Com_StartupVariable(NULL);
+	Cmd_Init();
 
-		// get the developer cvar set as early as possible
-		Com_StartupVariable("developer");
+	// override anything from the config files with command line args
+	Com_StartupVariable(NULL);
 
-		// done early so bind command exists
-		CL_InitKeyCommands();
+	// get the developer cvar set as early as possible
+	Com_StartupVariable("developer");
 
-		FS_InitFilesystem();
+	// done early so bind command exists
+	CL_InitKeyCommands();
 
-		Com_InitJournaling();
+	FS_InitFilesystem();
 
-		Cbuf_AddText("exec default.cfg\n");
+	Com_InitJournaling();
 
-		Cbuf_AddText("exec language.cfg\n");//----(SA)	added
+	Cbuf_AddText("exec default.cfg\n");
 
-		// skip the q3config.cfg if "safe" is on the command line
-		if (!Com_SafeMode())
-		{
-			Cbuf_AddText("exec wolfconfig.cfg\n");
-		}
+	Cbuf_AddText("exec language.cfg\n");//----(SA)	added
 
-		Cbuf_AddText("exec autoexec.cfg\n");
+	// skip the q3config.cfg if "safe" is on the command line
+	if (!Com_SafeMode())
+	{
+		Cbuf_AddText("exec wolfconfig.cfg\n");
+	}
 
-		Cbuf_Execute();
+	Cbuf_AddText("exec autoexec.cfg\n");
 
-		// override anything from the config files with command line args
-		Com_StartupVariable(NULL);
+	Cbuf_Execute();
 
-		// get dedicated here for proper hunk megs initialization
+	// override anything from the config files with command line args
+	Com_StartupVariable(NULL);
+
+	// get dedicated here for proper hunk megs initialization
 #ifdef DEDICATED
-		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 #else
-		com_dedicated = Cvar_Get("dedicated", "0", CVAR_LATCH2);
+	com_dedicated = Cvar_Get("dedicated", "0", CVAR_LATCH2);
 #endif
 
-		// if any archived cvars are modified after this, we will trigger a writing
-		// of the config file
-		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+	// if any archived cvars are modified after this, we will trigger a writing
+	// of the config file
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-		//
-		// init commands and vars
-		//
-		COM_InitCommonCvars();
-		com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE);
-		com_blood = Cvar_Get("com_blood", "1", CVAR_ARCHIVE);
+	//
+	// init commands and vars
+	//
+	COM_InitCommonCvars();
+	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE);
+	com_blood = Cvar_Get("com_blood", "1", CVAR_ARCHIVE);
 
-		com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
-		com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
-		com_dropsim = Cvar_Get("com_dropsim", "0", CVAR_CHEAT);
-		com_speeds = Cvar_Get("com_speeds", "0", 0);
-		com_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
-		com_cameraMode = Cvar_Get("com_cameraMode", "0", CVAR_CHEAT);
+	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
+	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
+	com_dropsim = Cvar_Get("com_dropsim", "0", CVAR_CHEAT);
+	com_speeds = Cvar_Get("com_speeds", "0", 0);
+	com_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
+	com_cameraMode = Cvar_Get("com_cameraMode", "0", CVAR_CHEAT);
 
-		cl_paused = Cvar_Get("cl_paused", "0", CVAR_ROM);
-		sv_paused = Cvar_Get("sv_paused", "0", CVAR_ROM);
-		com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
-		com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
+	cl_paused = Cvar_Get("cl_paused", "0", CVAR_ROM);
+	sv_paused = Cvar_Get("sv_paused", "0", CVAR_ROM);
+	com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
+	com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
 
-		com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
-		com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
+	com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
+	com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
 
-		Cvar_Get("savegame_loading", "0", CVAR_ROM);
+	Cvar_Get("savegame_loading", "0", CVAR_ROM);
 
-		com_hunkused = Cvar_Get("com_hunkused", "0", 0);
+	com_hunkused = Cvar_Get("com_hunkused", "0", 0);
 
-		if (com_dedicated->integer)
+	if (com_dedicated->integer)
+	{
+		if (!com_viewlog->integer)
 		{
-			if (!com_viewlog->integer)
-			{
-				Cvar_Set("viewlog", "1");
-			}
+			Cvar_Set("viewlog", "1");
 		}
+	}
 
-		if (com_developer && com_developer->integer)
+	if (com_developer && com_developer->integer)
+	{
+		Cmd_AddCommand("error", Com_Error_f);
+		Cmd_AddCommand("crash", Com_Crash_f);
+		Cmd_AddCommand("freeze", Com_Freeze_f);
+	}
+	COM_InitCommonCommands();
+
+	s = va("%s %s %s", Q3_VERSION, CPUSTRING, __DATE__);
+	comt3_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);
+
+	Sys_Init();
+	Netchan_Init(Com_Milliseconds() & 0xffff);	// pick a port value that should be nice and random
+	VM_Init();
+	SV_Init();
+
+	com_dedicated->modified = false;
+	if (!com_dedicated->integer)
+	{
+		CL_Init();
+		Sys_ShowConsole(com_viewlog->integer, false);
+	}
+
+	// set com_frameTime so that if a map is started on the
+	// command line it will still be able to count on com_frameTime
+	// being random enough for a serverid
+	com_frameTime = Com_Milliseconds();
+
+	// add + commands from command line
+	if (!Com_AddStartupCommands())
+	{
+		// if the user didn't give any commands, run default action
+	}
+
+	// start in full screen ui mode
+	Cvar_Set("r_uiFullScreen", "1");
+
+	CL_StartHunkUsers();
+
+	// delay this so potential wicked3d dll can find a wolf window
+	if (!com_dedicated->integer)
+	{
+		Sys_ShowConsole(com_viewlog->integer, false);
+	}
+
+	if (!com_recommendedSet->integer)
+	{
+		Com_SetRecommended(true);
+	}
+	Cvar_Set("com_recommendedSet", "1");
+
+	if (!com_dedicated->integer)
+	{
+		//Cbuf_AddText ("cinematic gmlogo.RoQ\n");
+		if (!com_introPlayed->integer)
 		{
-			Cmd_AddCommand("error", Com_Error_f);
-			Cmd_AddCommand("crash", Com_Crash_f);
-			Cmd_AddCommand("freeze", Com_Freeze_f);
+	#ifdef __MACOS__
+			extern void PlayIntroMovies(void);
+			PlayIntroMovies();
+	#endif
+			//Cvar_Set( com_introPlayed->name, "1" );		//----(SA)	force this to get played every time (but leave cvar for override)
+			Cbuf_AddText("cinematic wolfintro.RoQ 3\n");
+			//Cvar_Set( "nextmap", "cinematic wolfintro.RoQ" );
 		}
-		COM_InitCommonCommands();
+	}
 
-		s = va("%s %s %s", Q3_VERSION, CPUSTRING, __DATE__);
-		comt3_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);
+	NETQ23_Init();
 
-		Sys_Init();
-		Netchan_Init(Com_Milliseconds() & 0xffff);	// pick a port value that should be nice and random
-		VM_Init();
-		SV_Init();
+	common->Printf("Working directory: %s\n", Sys_Cwd());
 
-		com_dedicated->modified = false;
-		if (!com_dedicated->integer)
-		{
-			CL_Init();
-			Sys_ShowConsole(com_viewlog->integer, false);
-		}
-
-		// set com_frameTime so that if a map is started on the
-		// command line it will still be able to count on com_frameTime
-		// being random enough for a serverid
-		com_frameTime = Com_Milliseconds();
-
-		// add + commands from command line
-		if (!Com_AddStartupCommands())
-		{
-			// if the user didn't give any commands, run default action
-		}
-
-		// start in full screen ui mode
-		Cvar_Set("r_uiFullScreen", "1");
-
-		CL_StartHunkUsers();
-
-		// delay this so potential wicked3d dll can find a wolf window
-		if (!com_dedicated->integer)
-		{
-			Sys_ShowConsole(com_viewlog->integer, false);
-		}
-
-		if (!com_recommendedSet->integer)
-		{
-			Com_SetRecommended(true);
-		}
-		Cvar_Set("com_recommendedSet", "1");
-
-		if (!com_dedicated->integer)
-		{
-			//Cbuf_AddText ("cinematic gmlogo.RoQ\n");
-			if (!com_introPlayed->integer)
-			{
-		#ifdef __MACOS__
-				extern void PlayIntroMovies(void);
-				PlayIntroMovies();
-		#endif
-				//Cvar_Set( com_introPlayed->name, "1" );		//----(SA)	force this to get played every time (but leave cvar for override)
-				Cbuf_AddText("cinematic wolfintro.RoQ 3\n");
-				//Cvar_Set( "nextmap", "cinematic wolfintro.RoQ" );
-			}
-		}
-
-		com_fullyInitialized = true;
-		fs_ProtectKeyFile = true;
-		common->Printf("--- Common Initialization Complete ---\n");
+	com_fullyInitialized = true;
+	fs_ProtectKeyFile = true;
+	common->Printf("--- Common Initialization Complete ---\n");
 }
 
 /*
@@ -368,212 +373,183 @@ int Com_ModifyMsec(int msec)
 Com_Frame
 =================
 */
-void Com_Frame(void)
+void Com_SharedFrame()
 {
-		int msec, minMsec;
-		static int lastTime;
-		int key;
+	int msec, minMsec;
+	static int lastTime;
+	int key;
 
-		int timeBeforeFirstEvents;
-		int timeBeforeServer;
-		int timeBeforeEvents;
-		int timeBeforeClient;
-		int timeAfter;
+	int timeBeforeFirstEvents;
+	int timeBeforeServer;
+	int timeBeforeEvents;
+	int timeBeforeClient;
+	int timeAfter;
 
-		if (setjmp(abortframe))
+	if (setjmp(abortframe))
+	{
+		return;		// an ERR_DROP was thrown
+	}
+
+	// bk001204 - init to zero.
+	//  also:  might be clobbered by `longjmp' or `vfork'
+	timeBeforeFirstEvents = 0;
+	timeBeforeServer = 0;
+	timeBeforeEvents = 0;
+	timeBeforeClient = 0;
+	timeAfter = 0;
+
+	// old net chan encryption key
+	key = 0x87243987;
+
+	// make sure mouse and joystick are only called once a frame
+	IN_Frame();
+
+	// write config file if anything changed
+	Com_WriteConfiguration();
+
+	// if "viewlog" has been modified, show or hide the log console
+	if (com_viewlog->modified)
+	{
+		if (!com_dedicated->value)
 		{
-			return;		// an ERR_DROP was thrown
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
+		com_viewlog->modified = false;
+	}
 
-		// bk001204 - init to zero.
-		//  also:  might be clobbered by `longjmp' or `vfork'
-		timeBeforeFirstEvents = 0;
-		timeBeforeServer = 0;
-		timeBeforeEvents = 0;
-		timeBeforeClient = 0;
-		timeAfter = 0;
+	//
+	// main event loop
+	//
+	if (com_speeds->integer)
+	{
+		timeBeforeFirstEvents = Sys_Milliseconds();
+	}
 
-		// old net chan encryption key
-		key = 0x87243987;
-
-		// make sure mouse and joystick are only called once a frame
-		IN_Frame();
-
-		// write config file if anything changed
-		Com_WriteConfiguration();
-
-		// if "viewlog" has been modified, show or hide the log console
-		if (com_viewlog->modified)
+	// we may want to spin here if things are going too fast
+	if (!com_dedicated->integer && com_maxfps->integer > 0 && !com_timedemo->integer)
+	{
+		minMsec = 1000 / com_maxfps->integer;
+	}
+	else
+	{
+		minMsec = 1;
+	}
+	do
+	{
+		com_frameTime = Com_EventLoop();
+		if (lastTime > com_frameTime)
 		{
-			if (!com_dedicated->value)
-			{
-				Sys_ShowConsole(com_viewlog->integer, false);
-			}
-			com_viewlog->modified = false;
+			lastTime = com_frameTime;	// possible on first frame
 		}
+		msec = com_frameTime - lastTime;
+	}
+	while (msec < minMsec);
+	Cbuf_Execute();
 
-		//
-		// main event loop
-		//
-		if (com_speeds->integer)
-		{
-			timeBeforeFirstEvents = Sys_Milliseconds();
-		}
+	lastTime = com_frameTime;
 
-		// we may want to spin here if things are going too fast
-		if (!com_dedicated->integer && com_maxfps->integer > 0 && !com_timedemo->integer)
+	// mess with msec if needed
+	com_frameMsec = msec;
+	msec = Com_ModifyMsec(msec);
+
+	//
+	// server side
+	//
+	if (com_speeds->integer)
+	{
+		timeBeforeServer = Sys_Milliseconds();
+	}
+
+	SV_Frame(msec);
+
+	// if "dedicated" has been modified, start up
+	// or shut down the client system.
+	// Do this after the server may have started,
+	// but before the client tries to auto-connect
+	if (com_dedicated->modified)
+	{
+		// get the latched value
+		Cvar_Get("dedicated", "0", 0);
+		com_dedicated->modified = false;
+		if (!com_dedicated->integer)
 		{
-			minMsec = 1000 / com_maxfps->integer;
+			CL_Init();
+			Sys_ShowConsole(com_viewlog->integer, false);
 		}
 		else
 		{
-			minMsec = 1;
+			CL_Shutdown();
+			Sys_ShowConsole(1, true);
 		}
-		do
+	}
+
+	//
+	// client system
+	//
+	if (!com_dedicated->integer)
+	{
+		//
+		// run event loop a second time to get server to client packets
+		// without a frame of latency
+		//
+		if (com_speeds->integer)
 		{
-			com_frameTime = Com_EventLoop();
-			if (lastTime > com_frameTime)
-			{
-				lastTime = com_frameTime;	// possible on first frame
-			}
-			msec = com_frameTime - lastTime;
+			timeBeforeEvents = Sys_Milliseconds();
 		}
-		while (msec < minMsec);
+		Com_EventLoop();
 		Cbuf_Execute();
 
-		lastTime = com_frameTime;
-
-		// mess with msec if needed
-		com_frameMsec = msec;
-		msec = Com_ModifyMsec(msec);
 
 		//
-		// server side
+		// client side
 		//
 		if (com_speeds->integer)
 		{
-			timeBeforeServer = Sys_Milliseconds();
+			timeBeforeClient = Sys_Milliseconds();
 		}
 
-		SV_Frame(msec);
+		CL_Frame(msec);
 
-		// if "dedicated" has been modified, start up
-		// or shut down the client system.
-		// Do this after the server may have started,
-		// but before the client tries to auto-connect
-		if (com_dedicated->modified)
-		{
-			// get the latched value
-			Cvar_Get("dedicated", "0", 0);
-			com_dedicated->modified = false;
-			if (!com_dedicated->integer)
-			{
-				CL_Init();
-				Sys_ShowConsole(com_viewlog->integer, false);
-			}
-			else
-			{
-				CL_Shutdown();
-				Sys_ShowConsole(1, true);
-			}
-		}
-
-		//
-		// client system
-		//
-		if (!com_dedicated->integer)
-		{
-			//
-			// run event loop a second time to get server to client packets
-			// without a frame of latency
-			//
-			if (com_speeds->integer)
-			{
-				timeBeforeEvents = Sys_Milliseconds();
-			}
-			Com_EventLoop();
-			Cbuf_Execute();
-
-
-			//
-			// client side
-			//
-			if (com_speeds->integer)
-			{
-				timeBeforeClient = Sys_Milliseconds();
-			}
-
-			CL_Frame(msec);
-
-			if (com_speeds->integer)
-			{
-				timeAfter = Sys_Milliseconds();
-			}
-		}
-
-		//
-		// report timing information
-		//
 		if (com_speeds->integer)
 		{
-			int all, sv, ev, cl;
-
-			all = timeAfter - timeBeforeServer;
-			sv = timeBeforeEvents - timeBeforeServer;
-			ev = timeBeforeServer - timeBeforeFirstEvents + timeBeforeClient - timeBeforeEvents;
-			cl = timeAfter - timeBeforeClient;
-			sv -= t3time_game;
-			cl -= time_frontend + time_backend;
-
-			common->Printf("frame:%i all:%3i sv:%3i ev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
-				com_frameNumber, all, sv, ev, cl, t3time_game, time_frontend, time_backend);
+			timeAfter = Sys_Milliseconds();
 		}
+	}
 
-		//
-		// trace optimization tracking
-		//
-		if (com_showtrace->integer)
-		{
+	//
+	// report timing information
+	//
+	if (com_speeds->integer)
+	{
+		int all, sv, ev, cl;
 
-			common->Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
-				c_brush_traces, c_patch_traces, c_pointcontents);
-			c_traces = 0;
-			c_brush_traces = 0;
-			c_patch_traces = 0;
-			c_pointcontents = 0;
-		}
+		all = timeAfter - timeBeforeServer;
+		sv = timeBeforeEvents - timeBeforeServer;
+		ev = timeBeforeServer - timeBeforeFirstEvents + timeBeforeClient - timeBeforeEvents;
+		cl = timeAfter - timeBeforeClient;
+		sv -= t3time_game;
+		cl -= time_frontend + time_backend;
 
-		// old net chan encryption key
-		key = lastTime * 0x87243987;
+		common->Printf("frame:%i all:%3i sv:%3i ev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
+			com_frameNumber, all, sv, ev, cl, t3time_game, time_frontend, time_backend);
+	}
 
-		com_frameNumber++;
+	//
+	// trace optimization tracking
+	//
+	if (com_showtrace->integer)
+	{
+
+		common->Printf("%4i traces  (%ib %ip) %4i points\n", c_traces,
+			c_brush_traces, c_patch_traces, c_pointcontents);
+		c_traces = 0;
+		c_brush_traces = 0;
+		c_patch_traces = 0;
+		c_pointcontents = 0;
+	}
+
+	// old net chan encryption key
+	key = lastTime * 0x87243987;
+
+	com_frameNumber++;
 }
-
-#ifdef _WIN32
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	// get the initial time base
-	Sys_Milliseconds();
-
-	Com_Init(cmdline);
-	NETQ23_Init();
-
-	common->Printf("Working directory: %s\n", Sys_Cwd());
-}
-
-void Com_SharedFrame()
-{
-	Com_Frame();
-}
-#else
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	Com_Init(cmdline);
-	NETQ23_Init();
-}
-
-void Com_SharedFrame()
-{
-	Com_Frame();
-}
-#endif

@@ -43,8 +43,4 @@ extern Cvar* com_cameraMode;
 
 extern int com_frameMsec;
 
-// commandLine should not include the executable name (argv[0])
-void Com_Init(char* commandLine);
-void Com_Frame(void);
-
 #endif	// _QCOMMON_H_

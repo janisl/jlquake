@@ -21,8 +21,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-quakeparms_t host_parms;
-
 double host_frametime;
 double host_time;
 double realtime;					// without any filtering or bounding
@@ -34,6 +32,8 @@ Cvar* sys_ticrate;
 Cvar* serverprofile;
 
 Cvar* sys_adaptive;
+
+static double oldtime;
 
 /*
 =======================
@@ -123,24 +123,24 @@ void _Host_Frame(float time)
 	if (setjmp(abortframe))
 	{
 		return;			// something bad happened, or the server disconnected
-
 	}
+
 // keep the random time dependent
-		rand();
+	rand();
 
 // decide the simulation time
-		if (!Host_FilterTime(time))
-		{
-			return;		// don't run too fast, or packets will flood out
-		}
+	if (!Host_FilterTime(time))
+	{
+		return;		// don't run too fast, or packets will flood out
+	}
 
 // allow mice or other external controllers to add commands
-		IN_Frame();
+	IN_Frame();
 
-		Com_EventLoop();
+	Com_EventLoop();
 
 // process console commands
-		Cbuf_Execute();
+	Cbuf_Execute();
 
 //-------------------
 //
@@ -148,214 +148,66 @@ void _Host_Frame(float time)
 //
 //-------------------
 
-		save_host_frametime = total_host_frametime = host_frametime;
-		if (sys_adaptive->value)
-		{
-			if (host_frametime > 0.05)
-			{
-				host_frametime = 0.05;
-			}
-		}
-
-		if (total_host_frametime > 1.0)
-		{
-			total_host_frametime = 0.05;
-		}
-
-		do
-		{
-			SV_Frame(host_frametime * 1000);
-
-			//-------------------
-			//
-			// client operations
-			//
-			//-------------------
-
-#ifndef DEDICATED
-			host_time += host_frametime;
-#endif
-
-			if (!sys_adaptive->value)
-			{
-				break;
-			}
-
-			total_host_frametime -= 0.05;
-			if (total_host_frametime > 0 && total_host_frametime < 0.05)
-			{
-				save_host_frametime -= total_host_frametime;
-				oldrealtime -= total_host_frametime;
-				break;
-			}
-
-		}
-		while (total_host_frametime > 0);
-
-
-		host_frametime = save_host_frametime;
-
-#ifndef DEDICATED
-		CL_Frame(host_frametime * 1000);
-#endif
-
-		if (com_speeds->value)
-		{
-			pass1 = time_before_ref - time3 * 1000;
-			time3 = Sys_DoubleTime();
-			pass2 = time_after_ref - time_before_ref;
-			pass3 = time3 * 1000 - time_after_ref;
-			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
-				pass1 + pass2 + pass3, pass1, pass2, pass3);
-		}
-}
-
-void Host_Frame(float time)
-{
-		double time1, time2;
-		static double timetotal;
-		static int timecount;
-		int m;
-
-		if (!serverprofile->value)
-		{
-			_Host_Frame(time);
-			return;
-		}
-
-		time1 = Sys_DoubleTime();
-		_Host_Frame(time);
-		time2 = Sys_DoubleTime();
-
-		timetotal += time2 - time1;
-		timecount++;
-
-		if (timecount < 1000)
-		{
-			return;
-		}
-
-		m = timetotal * 1000 / timecount;
-		timecount = 0;
-		timetotal = 0;
-
-		common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
-}
-
-/*
-====================
-Host_Init
-====================
-*/
-void Host_Init(quakeparms_t* parms)
-{
-		GGameType = GAME_Hexen2;
-		if (COM_CheckParm("-portals"))
-		{
-			GGameType |= GAME_H2Portals;
-		}
-		Sys_SetHomePathSuffix("jlhexen2");
-
-		host_parms = *parms;
-
-		Cbuf_Init();
-		Cmd_Init();
-		Cvar_Init();
-		COM_Init();
-		Host_InitLocal();
-		SVH2_RemoveGIPFiles(NULL);
-#ifndef DEDICATED
-		CL_InitKeyCommands();
-#endif
-		ComH2_LoadStrings();
-		SV_Init();
-
-		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-
-#ifndef DEDICATED
-		if (!com_dedicated->integer)
-		{
-			CL_Init();
-		}
-#endif
-
-		Cbuf_InsertText("exec hexen.rc\n");
-		Cbuf_Execute();
-
-		NETQH_Init();
-
-#ifndef DEDICATED
-		if (!com_dedicated->integer)
-		{
-			CL_StartHunkUsers();
-			Sys_ShowConsole(0, false);
-		}
-#endif
-
-		com_fullyInitialized = true;
-
-		common->Printf("======== Hexen II Initialized =========\n");
-}
-
-#ifdef _WIN32
-static double oldtime;
-
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	quakeparms_t parms;
-	parms.argc = argc;
-	parms.argv = argv;
-
-	COM_InitArgv2(parms.argc, parms.argv);
-
-	Sys_Init();
-
-	common->Printf("Host_Init\n");
-	Host_Init(&parms);
-
-	oldtime = Sys_DoubleTime();
-}
-
-void Com_SharedFrame()
-{
-	double newtime;
-	double time;
-	if (com_dedicated->integer)
+	save_host_frametime = total_host_frametime = host_frametime;
+	if (sys_adaptive->value)
 	{
-		newtime = Sys_DoubleTime();
-		time = newtime - oldtime;
-
-		while (time < sys_ticrate->value)
+		if (host_frametime > 0.05)
 		{
-			Sys_Sleep(1);
-			newtime = Sys_DoubleTime();
-			time = newtime - oldtime;
+			host_frametime = 0.05;
 		}
 	}
-	else
+
+	if (total_host_frametime > 1.0)
 	{
-		newtime = Sys_DoubleTime();
-		time = newtime - oldtime;
+		total_host_frametime = 0.05;
 	}
 
-	Host_Frame(time);
-	oldtime = newtime;
-}
-#else
-static double oldtime;
+	do
+	{
+		SV_Frame(host_frametime * 1000);
 
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	quakeparms_t parms;
-	Com_Memset(&parms, 0, sizeof(parms));
+		//-------------------
+		//
+		// client operations
+		//
+		//-------------------
 
-	COM_InitArgv2(argc, argv);
-	parms.argc = argc;
-	parms.argv = argv;
+#ifndef DEDICATED
+		host_time += host_frametime;
+#endif
 
-	Host_Init(&parms);
+		if (!sys_adaptive->value)
+		{
+			break;
+		}
 
-	oldtime = Sys_DoubleTime() - 0.1;
+		total_host_frametime -= 0.05;
+		if (total_host_frametime > 0 && total_host_frametime < 0.05)
+		{
+			save_host_frametime -= total_host_frametime;
+			oldrealtime -= total_host_frametime;
+			break;
+		}
+
+	}
+	while (total_host_frametime > 0);
+
+
+	host_frametime = save_host_frametime;
+
+#ifndef DEDICATED
+	CL_Frame(host_frametime * 1000);
+#endif
+
+	if (com_speeds->value)
+	{
+		pass1 = time_before_ref - time3 * 1000;
+		time3 = Sys_DoubleTime();
+		pass2 = time_after_ref - time_before_ref;
+		pass3 = time3 * 1000 - time_after_ref;
+		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
+			pass1 + pass2 + pass3, pass1, pass2, pass3);
+	}
 }
 
 void Com_SharedFrame()
@@ -365,24 +217,98 @@ void Com_SharedFrame()
 	double time = newtime - oldtime;
 
 	if (com_dedicated->integer)
-	{	// play vcrfiles at max speed
-		if (time < sys_ticrate->value)
+	{
+		while (time < sys_ticrate->value)
 		{
 			Sys_Sleep(1);
-			return;		// not time to run a server only tic yet
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
 		}
-		time = sys_ticrate->value;
 	}
 
-	if (time > sys_ticrate->value * 2)
+	double time1, time2;
+	static double timetotal;
+	static int timecount;
+	int m;
+
+	if (!serverprofile->value)
+	{
+		_Host_Frame(time);
+		oldtime = newtime;
+		return;
+	}
+
+	time1 = Sys_DoubleTime();
+	_Host_Frame(time);
+	time2 = Sys_DoubleTime();
+
+	timetotal += time2 - time1;
+	timecount++;
+
+	if (timecount < 1000)
 	{
 		oldtime = newtime;
-	}
-	else
-	{
-		oldtime += time;
+		return;
 	}
 
-	Host_Frame(time);
+	m = timetotal * 1000 / timecount;
+	timecount = 0;
+	timetotal = 0;
+
+	common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
+	oldtime = newtime;
 }
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	COM_InitArgv2(argc, argv);
+
+	Sys_Init();
+
+	GGameType = GAME_Hexen2;
+	if (COM_CheckParm("-portals"))
+	{
+		GGameType |= GAME_H2Portals;
+	}
+	Sys_SetHomePathSuffix("jlhexen2");
+
+	Cbuf_Init();
+	Cmd_Init();
+	Cvar_Init();
+	COM_Init();
+	Host_InitLocal();
+	SVH2_RemoveGIPFiles(NULL);
+#ifndef DEDICATED
+	CL_InitKeyCommands();
 #endif
+	ComH2_LoadStrings();
+	SV_Init();
+
+	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
+
+#ifndef DEDICATED
+	if (!com_dedicated->integer)
+	{
+		CL_Init();
+	}
+#endif
+
+	Cbuf_InsertText("exec hexen.rc\n");
+	Cbuf_Execute();
+
+	NETQH_Init();
+
+#ifndef DEDICATED
+	if (!com_dedicated->integer)
+	{
+		CL_StartHunkUsers();
+		Sys_ShowConsole(0, false);
+	}
+#endif
+
+	com_fullyInitialized = true;
+
+	oldtime = Sys_DoubleTime();
+
+	common->Printf("======== Hexen II Initialized =========\n");
+}

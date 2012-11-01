@@ -35,8 +35,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-quakeparms_t host_parms;
-
 double host_frametime;
 double host_time;
 double realtime;					// without any filtering or bounding
@@ -46,6 +44,8 @@ Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
 Cvar* serverprofile;
+
+static double oldtime;
 
 /*
 =======================
@@ -182,151 +182,6 @@ void _Host_Frame(float time)
 		}
 }
 
-void Host_Frame(float time)
-{
-		double time1, time2;
-		static double timetotal;
-		static int timecount;
-		int m;
-
-		if (!serverprofile->value)
-		{
-			_Host_Frame(time);
-			return;
-		}
-
-		time1 = Sys_DoubleTime();
-		_Host_Frame(time);
-		time2 = Sys_DoubleTime();
-
-		timetotal += time2 - time1;
-		timecount++;
-
-		if (timecount < 1000)
-		{
-			return;
-		}
-
-		m = timetotal * 1000 / timecount;
-		timecount = 0;
-		timetotal = 0;
-
-		common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
-}
-
-//============================================================================
-
-/*
-====================
-Host_Init
-====================
-*/
-void Host_Init(quakeparms_t* parms)
-{
-		GGameType = GAME_Quake;
-		Sys_SetHomePathSuffix("jlquake");
-
-		host_parms = *parms;
-
-		Cbuf_Init();
-		Cmd_Init();
-		Cvar_Init();
-		COM_Init();
-		Host_InitLocal();
-#ifndef DEDICATED
-		CL_InitKeyCommands();
-#endif
-		SV_Init();
-
-		common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-
-#ifndef DEDICATED
-		if (!com_dedicated->integer)
-		{
-			CL_Init();
-		}
-#endif
-
-		Cbuf_InsertText("exec quake.rc\n");
-		Cbuf_Execute();
-
-		NETQH_Init();
-
-#ifndef DEDICATED
-		if (!com_dedicated->integer)
-		{
-			CL_StartHunkUsers();
-			Sys_ShowConsole(0, false);
-		}
-#endif
-
-		com_fullyInitialized = true;
-
-		common->Printf("========Quake Initialized=========\n");
-}
-
-#ifdef _WIN32
-static double oldtime;
-
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	quakeparms_t parms;
-	parms.argc = argc;
-	parms.argv = argv;
-
-	COM_InitArgv2(parms.argc, parms.argv);
-
-	Sys_Init();
-
-	common->Printf("Host_Init\n");
-	Host_Init(&parms);
-
-	oldtime = Sys_DoubleTime();
-}
-
-void Com_SharedFrame()
-{
-	double time, newtime;
-	if (com_dedicated->integer)
-	{
-		newtime = Sys_DoubleTime();
-		time = newtime - oldtime;
-
-		while (time < sys_ticrate->value)
-		{
-			Sys_Sleep(1);
-			newtime = Sys_DoubleTime();
-			time = newtime - oldtime;
-		}
-	}
-	else
-	{
-		newtime = Sys_DoubleTime();
-		time = newtime - oldtime;
-	}
-
-	Host_Frame(time);
-	oldtime = newtime;
-}
-#else
-static double oldtime;
-
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
-{
-	COM_InitArgv2(argc, argv);
-
-	quakeparms_t parms;
-	Com_Memset(&parms, 0, sizeof(parms));
-	parms.argc = argc;
-	parms.argv = argv;
-
-	Host_Init(&parms);
-
-	printf("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
-
-	oldtime = Sys_DoubleTime() - 0.1;
-}
-
 void Com_SharedFrame()
 {
 	// find time spent rendering last frame
@@ -335,23 +190,83 @@ void Com_SharedFrame()
 
 	if (com_dedicated->integer)
 	{
-		if (time < sys_ticrate->value)
+		while (time < sys_ticrate->value)
 		{
 			Sys_Sleep(1);
-			return;		// not time to run a server only tic yet
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
 		}
-		time = sys_ticrate->value;
 	}
 
-	if (time > sys_ticrate->value * 2)
+	oldtime = newtime;
+	double time1, time2;
+	static double timetotal;
+	static int timecount;
+	int m;
+
+	if (!serverprofile->value)
 	{
-		oldtime = newtime;
-	}
-	else
-	{
-		oldtime += time;
+		_Host_Frame(time);
+		return;
 	}
 
-	Host_Frame(time);
+	time1 = Sys_DoubleTime();
+	_Host_Frame(time);
+	time2 = Sys_DoubleTime();
+
+	timetotal += time2 - time1;
+	timecount++;
+
+	if (timecount < 1000)
+	{
+		return;
+	}
+
+	m = timetotal * 1000 / timecount;
+	timecount = 0;
+	timetotal = 0;
+
+	common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
 }
-#endif
+
+void Com_SharedInit(int argc, char* argv[], char* cmdline)
+{
+	COM_InitArgv2(argc, argv);
+
+	Sys_Init();
+
+	GGameType = GAME_Quake;
+	Sys_SetHomePathSuffix("jlquake");
+
+	Cbuf_Init();
+	Cmd_Init();
+	Cvar_Init();
+	COM_Init();
+	Host_InitLocal();
+	CL_InitKeyCommands();
+	SV_Init();
+
+	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
+
+	if (!com_dedicated->integer)
+	{
+		CL_Init();
+	}
+
+	Cbuf_InsertText("exec quake.rc\n");
+	Cbuf_Execute();
+
+	NETQH_Init();
+
+	if (!com_dedicated->integer)
+	{
+		CL_StartHunkUsers();
+		Sys_ShowConsole(0, false);
+	}
+
+	com_fullyInitialized = true;
+
+	oldtime = Sys_DoubleTime();
+
+	common->Printf("========Quake Initialized=========\n");
+}

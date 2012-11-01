@@ -705,3 +705,8 @@ void Sys_Sleep(int msec)
 {
 	usleep(msec * 1000);
 }
+
+int Sys_GetCurrentProcessId()
+{
+	return getpid();
+}

@@ -196,7 +196,6 @@ void SVQHW_ExtractFromUserinfo(client_t* cl);
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
 void SVQH_SendServerinfo(client_t* client);
-void SVQHW_Master_Shutdown();
 void SVQH_Shutdown();
 void SVQHW_Shutdown(const char* finalMessage);
 void SVQH_ServerFrame(float frametime);

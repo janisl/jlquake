@@ -33,30 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
-//=============================================================================
-
-// the host system specifies the base of the directory tree, the
-// command line parms passed to the program, and the amount of memory
-// available for the program to use
-
-typedef struct
-{
-	int argc;
-	char** argv;
-} quakeparms_t;
-
-
-//=============================================================================
-
 //
 // host
 //
-extern quakeparms_t host_parms;
-
 extern double host_frametime;
 extern double realtime;					// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void Host_Init(quakeparms_t* parms);
 qboolean Host_SimulationTime(float time);
 void Host_Frame(float time);

@@ -1395,7 +1395,7 @@ static void SVQHW_Master_Heartbeat()
 }
 
 //	Informs all masters that this server is going down
-void SVQHW_Master_Shutdown()
+static void SVQHW_Master_Shutdown()
 {
 	char string[2048];
 	sprintf(string, "%c\n", S2M_SHUTDOWN);
