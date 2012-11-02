@@ -48,9 +48,9 @@ int main(int argc, char* argv[])
 
 	Com_Init(argc, argv, cmdline);
 
-	Sys_ConsoleInputInit();
-
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
+
+	Sys_ConsoleInputInit();
 
 	while (1)
 	{
