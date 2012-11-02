@@ -41,87 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 // ver 1.2.b5	- Mac code merge in
 // ver 1.3		- patch 2 (02/13/02)
 
-FILE* debuglogfile;
-
-Cvar* com_blood;
-Cvar* com_introPlayed;
-Cvar* com_recommendedSet;
-
-// Rafael Notebook
-Cvar* cl_notebook;
-
-Cvar* com_hunkused;			// Ridah
-
-/*
-=============
-Com_Error_f
-
-Just throw a fatal error to
-test error shutdown procedures
-=============
-*/
-static void Com_Error_f(void)
-{
-	if (Cmd_Argc() > 1)
-	{
-		common->Error("Testing drop error");
-	}
-	else
-	{
-		common->FatalError("Testing fatal error");
-	}
-}
-
-
-/*
-=============
-Com_Freeze_f
-
-Just freeze in place for a given number of seconds to test
-error recovery
-=============
-*/
-static void Com_Freeze_f(void)
-{
-	float s;
-	int start, now;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("freeze <seconds>\n");
-		return;
-	}
-	s = String::Atof(Cmd_Argv(1));
-
-	start = Com_Milliseconds();
-
-	while (1)
-	{
-		now = Com_Milliseconds();
-		if ((now - start) * 0.001 > s)
-		{
-			break;
-		}
-	}
-}
-
-/*
-=================
-Com_Crash_f
-
-A way to force a bus error for development reasons
-=================
-*/
-static void Com_Crash_f(void)
-{
-	*(int*)0 = 0x12345678;
-}
-
-/*
-=================
-Com_Init
-=================
-*/
 void Com_SharedInit(int argc, char* argv[], char* commandLine)
 {
 	// get the initial time base
@@ -199,7 +118,6 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	//
 	COM_InitCommonCvars();
 	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE);
-	com_blood = Cvar_Get("com_blood", "1", CVAR_ARCHIVE);
 
 	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
@@ -212,15 +130,10 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
 	com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
 
-	com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
-	com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
-
 	Cvar_Get("savegame_loading", "0", CVAR_ROM);
 
 	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
 	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
-
-	com_hunkused = Cvar_Get("com_hunkused", "0", 0);
 
 	if (com_dedicated->integer)
 	{
@@ -275,6 +188,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 		Sys_ShowConsole(com_viewlog->integer, false);
 	}
 
+	Cvar* com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
 	if (!com_recommendedSet->integer)
 	{
 		Com_SetRecommended(true);
@@ -283,16 +197,11 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 
 	if (!com_dedicated->integer)
 	{
-		//Cbuf_AddText ("cinematic gmlogo.RoQ\n");
+		Cvar* com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
 		if (!com_introPlayed->integer)
 		{
-	#ifdef __MACOS__
-			extern void PlayIntroMovies(void);
-			PlayIntroMovies();
-	#endif
 			//Cvar_Set( com_introPlayed->name, "1" );		//----(SA)	force this to get played every time (but leave cvar for override)
 			Cbuf_AddText("cinematic wolfintro.RoQ 3\n");
-			//Cvar_Set( "nextmap", "cinematic wolfintro.RoQ" );
 		}
 	}
 

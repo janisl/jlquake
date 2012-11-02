@@ -11,12 +11,7 @@ void aaa()
 	SV_IsServerActive();
 }
 
-/*
-=================
-CL_InitLocal
-=================
-*/
-void CL_InitLocal(void)
+void CL_InitLocal()
 {
 	CL_Init();
 	CL_StartHunkUsers();

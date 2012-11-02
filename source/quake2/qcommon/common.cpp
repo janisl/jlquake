@@ -25,19 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     3.19
 
-/*
-=============
-Com_Error_f
-
-Just throw a fatal error to
-test error shutdown procedures
-=============
-*/
-void Com_Error_f(void)
-{
-	common->FatalError("%s", Cmd_Argv(1));
-}
-
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	char* s;

@@ -10,23 +10,7 @@
 #include "../client/public.h"
 #include "../apps/main.h"
 
-/*
-
-A server can allways be started, even if the system started out as a client
-to a remote system.
-
-A client can NOT be started if the system started as a dedicated server.
-
-Memory is cleared / released when a server or client begins, not when they end.
-
-*/
-
-/*
-=======================
-Host_InitLocal
-======================
-*/
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
 	COM_InitCommonCvars();
 

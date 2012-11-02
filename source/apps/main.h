@@ -89,6 +89,10 @@
 void Com_Init(int argc, char* argv[], char* cmdline);
 void Com_SharedInit(int argc, char* argv[], char* cmdline);
 void Com_Frame();
+void Com_Error_f();
+void Com_Freeze_f();
+void Com_Crash_f();
+void ComET_GetGameInfo();
 
 extern Cvar* com_maxfps;
 extern Cvar* com_fixedtime;

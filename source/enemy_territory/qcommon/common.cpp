@@ -50,182 +50,6 @@ If you have questions concerning this license or the applicable additional terms
 // 1.1b - TTimo SP linux release (+ MP updates)
 // 1.1b5 - Mac update merge in
 
-FILE* debuglogfile;
-
-//Cvar	*com_blood;
-Cvar* com_introPlayed;
-Cvar* com_logosPlaying;
-Cvar* com_recommendedSet;
-
-// Rafael Notebook
-Cvar* cl_notebook;
-
-Cvar* com_hunkused;			// Ridah
-
-/*
-=============
-Com_Error_f
-
-Just throw a fatal error to
-test error shutdown procedures
-=============
-*/
-static void Com_Error_f(void)
-{
-	if (Cmd_Argc() > 1)
-	{
-		common->Error("Testing drop error");
-	}
-	else
-	{
-		common->FatalError("Testing fatal error");
-	}
-}
-
-
-/*
-=============
-Com_Freeze_f
-
-Just freeze in place for a given number of seconds to test
-error recovery
-=============
-*/
-static void Com_Freeze_f(void)
-{
-	float s;
-	int start, now;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("freeze <seconds>\n");
-		return;
-	}
-	s = String::Atof(Cmd_Argv(1));
-
-	start = Com_Milliseconds();
-
-	while (1)
-	{
-		now = Com_Milliseconds();
-		if ((now - start) * 0.001 > s)
-		{
-			break;
-		}
-	}
-}
-
-/*
-=================
-Com_Crash_f
-
-A way to force a bus error for development reasons
-=================
-*/
-static void Com_Crash_f(void)
-{
-	*(int*)0 = 0x12345678;
-}
-
-void Com_GetGameInfo()
-{
-	char* f;
-	const char* buf;
-	char* token;
-
-	memset(&comet_gameInfo, 0, sizeof(comet_gameInfo));
-
-	if (FS_ReadFile("gameinfo.dat", (void**)&f) > 0)
-	{
-
-		buf = f;
-
-		while ((token = String::Parse3(&buf)) != NULL && token[0])
-		{
-			if (!String::ICmp(token, "spEnabled"))
-			{
-				comet_gameInfo.spEnabled = true;
-			}
-			else if (!String::ICmp(token, "spGameTypes"))
-			{
-				while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.spGameTypes |= (1 << String::Atoi(token));
-				}
-			}
-			else if (!String::ICmp(token, "defaultSPGameType"))
-			{
-				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.defaultSPGameType = String::Atoi(token);
-				}
-				else
-				{
-					FS_FreeFile(f);
-					common->FatalError("Com_GetGameInfo: bad syntax.");
-				}
-			}
-			else if (!String::ICmp(token, "coopGameTypes"))
-			{
-
-				while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.coopGameTypes |= (1 << String::Atoi(token));
-				}
-			}
-			else if (!String::ICmp(token, "defaultCoopGameType"))
-			{
-				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.defaultCoopGameType = String::Atoi(token);
-				}
-				else
-				{
-					FS_FreeFile(f);
-					common->FatalError("Com_GetGameInfo: bad syntax.");
-				}
-			}
-			else if (!String::ICmp(token, "defaultGameType"))
-			{
-				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.defaultGameType = String::Atoi(token);
-				}
-				else
-				{
-					FS_FreeFile(f);
-					common->FatalError("Com_GetGameInfo: bad syntax.");
-				}
-			}
-			else if (!String::ICmp(token, "usesProfiles"))
-			{
-				if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
-				{
-					comet_gameInfo.usesProfiles = String::Atoi(token);
-				}
-				else
-				{
-					FS_FreeFile(f);
-					common->FatalError("Com_GetGameInfo: bad syntax.");
-				}
-			}
-			else
-			{
-				FS_FreeFile(f);
-				common->FatalError("Com_GetGameInfo: bad syntax.");
-			}
-		}
-
-		// all is good
-		FS_FreeFile(f);
-	}
-}
-
-/*
-=================
-Com_Init
-=================
-*/
 void Com_SharedInit(int argc, char* argv[], char* commandLine)
 {
 	// get the initial time base
@@ -285,7 +109,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 
 	Com_InitJournaling();
 
-	Com_GetGameInfo();
+	ComET_GetGameInfo();
 
 	Cbuf_AddText("exec default.cfg\n");
 	Cbuf_AddText("exec language.cfg\n");	// NERVE - SMF
@@ -377,7 +201,6 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	COM_InitCommonCvars();
 	// Gordon: no need to latch this in ET, our recoil is framerate independant
 	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE /*|CVAR_LATCH2*/);
-//	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
@@ -393,13 +216,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
 	com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
 
-	com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
-	com_logosPlaying = Cvar_Get("com_logosPlaying", "0", CVAR_ROM);
-	com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
-
 	Cvar_Get("savegame_loading", "0", CVAR_ROM);
-
-	com_hunkused = Cvar_Get("com_hunkused", "0", 0);
 
 	if (com_dedicated->integer)
 	{
@@ -455,6 +272,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	}
 
 	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
+	Cvar* com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
 	if (!com_recommendedSet->integer && !safeMode)
 	{
 		Com_SetRecommended(true);
@@ -463,13 +281,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 
 	if (!com_dedicated->integer)
 	{
-		//Cvar_Set( "com_logosPlaying", "1" );
 		Cbuf_AddText("cinematic etintro.roq\n");
-		/*Cvar_Set( "nextmap", "cinematic avlogo.roq" );
-		if( !com_introPlayed->integer ) {
-			Cvar_Set( com_introPlayed->name, "1" );
-			//Cvar_Set( "nextmap", "cinematic avlogo.roq" );
-		}*/
 	}
 
 	NETQ23_Init();

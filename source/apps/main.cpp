@@ -324,6 +324,139 @@ void Com_Frame()
 	com_frameNumber++;
 }
 
+//	Just throw a fatal error to test error shutdown procedures
+void Com_Error_f()
+{
+	if (Cmd_Argc() > 1)
+	{
+		common->Error("Testing drop error");
+	}
+	else
+	{
+		common->FatalError("Testing fatal error");
+	}
+}
+
+//	Just freeze in place for a given number of seconds to test
+// error recovery
+void Com_Freeze_f()
+{
+	if (Cmd_Argc() != 2)
+	{
+		common->Printf("freeze <seconds>\n");
+		return;
+	}
+	float s = String::Atof(Cmd_Argv(1));
+
+	int start = Com_Milliseconds();
+
+	while (1)
+	{
+		int now = Com_Milliseconds();
+		if ((now - start) * 0.001 > s)
+		{
+			break;
+		}
+	}
+}
+
+//	A way to force a bus error for development reasons
+void Com_Crash_f()
+{
+	*(int*)0 = 0x12345678;
+}
+
+void ComET_GetGameInfo()
+{
+	Com_Memset(&comet_gameInfo, 0, sizeof(comet_gameInfo));
+
+	char* f;
+	if (FS_ReadFile("gameinfo.dat", (void**)&f) <= 0)
+	{
+		return;
+	}
+
+	const char* buf = f;
+	char* token;
+	while ((token = String::Parse3(&buf)) != NULL && token[0])
+	{
+		if (!String::ICmp(token, "spEnabled"))
+		{
+			comet_gameInfo.spEnabled = true;
+		}
+		else if (!String::ICmp(token, "spGameTypes"))
+		{
+			while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.spGameTypes |= (1 << String::Atoi(token));
+			}
+		}
+		else if (!String::ICmp(token, "defaultSPGameType"))
+		{
+			if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.defaultSPGameType = String::Atoi(token);
+			}
+			else
+			{
+				FS_FreeFile(f);
+				common->FatalError("ComET_GetGameInfo: bad syntax.");
+			}
+		}
+		else if (!String::ICmp(token, "coopGameTypes"))
+		{
+			while ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.coopGameTypes |= (1 << String::Atoi(token));
+			}
+		}
+		else if (!String::ICmp(token, "defaultCoopGameType"))
+		{
+			if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.defaultCoopGameType = String::Atoi(token);
+			}
+			else
+			{
+				FS_FreeFile(f);
+				common->FatalError("ComET_GetGameInfo: bad syntax.");
+			}
+		}
+		else if (!String::ICmp(token, "defaultGameType"))
+		{
+			if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.defaultGameType = String::Atoi(token);
+			}
+			else
+			{
+				FS_FreeFile(f);
+				common->FatalError("ComET_GetGameInfo: bad syntax.");
+			}
+		}
+		else if (!String::ICmp(token, "usesProfiles"))
+		{
+			if ((token = String::ParseExt(&buf, false)) != NULL && token[0])
+			{
+				comet_gameInfo.usesProfiles = String::Atoi(token);
+			}
+			else
+			{
+				FS_FreeFile(f);
+				common->FatalError("ComET_GetGameInfo: bad syntax.");
+			}
+		}
+		else
+		{
+			FS_FreeFile(f);
+			common->FatalError("ComET_GetGameInfo: bad syntax.");
+		}
+	}
+
+	// all is good
+	FS_FreeFile(f);
+}
+
 void Com_Init(int argc, char* argv[], char* cmdline)
 {
 	Com_SharedInit(argc, argv, cmdline);

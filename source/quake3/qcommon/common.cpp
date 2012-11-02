@@ -29,82 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define Q3_VERSION      "Q3 1.32b"
 // 1.32 released 7-10-2002
 
-FILE* debuglogfile;
-
-Cvar* com_blood;
-Cvar* com_introPlayed;
-
-/*
-=============
-Com_Error_f
-
-Just throw a fatal error to
-test error shutdown procedures
-=============
-*/
-static void Com_Error_f(void)
-{
-	if (Cmd_Argc() > 1)
-	{
-		common->Error("Testing drop error");
-	}
-	else
-	{
-		common->FatalError("Testing fatal error");
-	}
-}
-
-
-/*
-=============
-Com_Freeze_f
-
-Just freeze in place for a given number of seconds to test
-error recovery
-=============
-*/
-static void Com_Freeze_f(void)
-{
-	float s;
-	int start, now;
-
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("freeze <seconds>\n");
-		return;
-	}
-	s = String::Atof(Cmd_Argv(1));
-
-	start = Com_Milliseconds();
-
-	while (1)
-	{
-		now = Com_Milliseconds();
-		if ((now - start) * 0.001 > s)
-		{
-			break;
-		}
-	}
-}
-
-/*
-=================
-Com_Crash_f
-
-A way to force a bus error for development reasons
-=================
-*/
-static void Com_Crash_f(void)
-{
-	*(int*)0 = 0x12345678;
-}
-
-/*
-=================
-Com_Init
-=================
-*/
-
 void Com_SharedInit(int argc, char* argv[], char* commandLine)
 {
 	// get the initial time base
@@ -182,7 +106,6 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	COM_InitCommonCvars();
 
 	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE);
-	com_blood = Cvar_Get("com_blood", "1", CVAR_ARCHIVE);
 
 	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
 	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
@@ -195,8 +118,6 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 	sv_paused = Cvar_Get("sv_paused", "0", CVAR_ROM);
 	com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
 	com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
-
-	com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
 
 	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
 	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
@@ -244,6 +165,7 @@ void Com_SharedInit(int argc, char* argv[], char* commandLine)
 		if (!com_dedicated->integer)
 		{
 			Cbuf_AddText("cinematic idlogo.RoQ\n");
+			Cvar* com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
 			if (!com_introPlayed->integer)
 			{
 				Cvar_Set(com_introPlayed->name, "1");
