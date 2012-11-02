@@ -66,7 +66,7 @@ void Com_SharedFrame()
 	int newtime = Sys_Milliseconds();
 	int time = newtime - oldtime;
 
-	static double time3 = 0;
+	static int time3 = 0;
 	int pass1, pass2, pass3;
 	float fps;
 	if (setjmp(abortframe))
@@ -109,10 +109,10 @@ void Com_SharedFrame()
 
 	if (com_speeds->value)
 	{
-		pass1 = time_before_ref - time3 * 1000;
-		time3 = Sys_DoubleTime();
+		pass1 = time_before_ref - time3;
+		time3 = Sys_Milliseconds();
 		pass2 = time_after_ref - time_before_ref;
-		pass3 = time3 * 1000 - time_after_ref;
+		pass3 = time3 - time_after_ref;
 		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 			pass1 + pass2 + pass3, pass1, pass2, pass3);
 	}
