@@ -37,7 +37,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 Cvar* host_framerate;	// set for slow motion
 
-static double oldtime;
+static int oldtime;
 
 /*
 =======================
@@ -77,15 +77,15 @@ void Com_SharedFrame()
 	}
 
 	// find time spent rendering last frame
-	double newtime = Sys_DoubleTime();
-	double time = newtime - oldtime;
+	int newtime = Sys_Milliseconds();
+	int time = newtime - oldtime;
 
-	while (!CLQH_IsTimeDemo() && time < 1.0 / com_maxfps->value)
+	while (!CLQH_IsTimeDemo() && time < 1000 / com_maxfps->value)
 	{
 		// framerate is too high
 		// don't run too fast, or packets will flood out
 		Sys_Sleep(1);
-		newtime = Sys_DoubleTime();
+		newtime = Sys_Milliseconds();
 		time = newtime - oldtime;
 	}
 
@@ -98,23 +98,23 @@ void Com_SharedFrame()
 	rand();
 
 	// decide the simulation time
-	SVQH_SetRealTime(newtime * 1000);
+	SVQH_SetRealTime(newtime);
 
-	double host_frametime = time;
+	int frametime = time;
 
 	if (host_framerate->value > 0)
 	{
-		host_frametime = host_framerate->value;
+		frametime = host_framerate->value;
 	}
 	else
 	{	// don't allow really long or short frames
-		if (host_frametime > 0.1)
+		if (frametime > 100)
 		{
-			host_frametime = 0.1;
+			frametime = 100;
 		}
-		if (host_frametime < 0.001)
+		if (frametime < 1)
 		{
-			host_frametime = 0.001;
+			frametime = 1;
 		}
 	}
 
@@ -132,7 +132,7 @@ void Com_SharedFrame()
 //
 //-------------------
 
-	SV_Frame(host_frametime * 1000);
+	SV_Frame(frametime);
 
 //-------------------
 //
@@ -140,9 +140,7 @@ void Com_SharedFrame()
 //
 //-------------------
 
-#ifndef DEDICATED
-	CL_Frame(host_frametime * 1000);
-#endif
+	CL_Frame(frametime);
 
 	if (com_speeds->value)
 	{
@@ -197,7 +195,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_fullyInitialized = true;
 
-	oldtime = Sys_DoubleTime();
+	oldtime = Sys_Milliseconds();
 
 	common->Printf("========Quake Initialized=========\n");
 }

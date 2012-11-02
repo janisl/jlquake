@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     2.40
 
-static double oldtime;
+static int oldtime;
 
 void Com_SharedFrame()
 {
@@ -40,8 +40,8 @@ void Com_SharedFrame()
 	}
 
 	// find time passed since last cycle
-	double newtime = Sys_DoubleTime();
-	double time = newtime - oldtime;
+	int newtime = Sys_Milliseconds();
+	int time = newtime - oldtime;
 	oldtime = newtime;
 
 	// keep the random time dependent
@@ -52,7 +52,7 @@ void Com_SharedFrame()
 	// process console commands
 	Cbuf_Execute();
 
-	SV_Frame(time * 1000);
+	SV_Frame(time);
 }
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
@@ -112,5 +112,5 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 		common->Error("Couldn't spawn a server");
 	}
 
-	oldtime = Sys_DoubleTime() - 0.1;
+	oldtime = Sys_Milliseconds() - 100;
 }

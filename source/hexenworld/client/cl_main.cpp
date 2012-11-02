@@ -6,7 +6,7 @@
 #include "../../common/hexen2strings.h"
 #include "../../apps/main.h"
 
-static double oldtime;
+static int oldtime;
 
 void aaa()
 {
@@ -39,7 +39,6 @@ Host_Frame
 Runs all active servers
 ==================
 */
-int nopacketcount;
 void Com_SharedFrame()
 {
 	if (setjmp(abortframe))
@@ -48,8 +47,8 @@ void Com_SharedFrame()
 	}
 
 	// find time spent rendering last frame
-	double newtime = Sys_DoubleTime();
-	double time = newtime - oldtime;
+	int newtime = Sys_Milliseconds();
+	int time = newtime - oldtime;
 
 	static double time3 = 0;
 	int pass1, pass2, pass3;
@@ -57,15 +56,15 @@ void Com_SharedFrame()
 	// decide the simulation time
 	fps = com_maxfps->value;
 
-	if (!CLQH_IsTimeDemo() && time < 1.0 / fps)
+	if (!CLQH_IsTimeDemo() && time < 1000 / fps)
 	{
 		return;		// framerate is too high
 	}
 	oldtime = newtime;
-	double host_frametime = time;
-	if (host_frametime > 0.2)
+	int frametime = time;
+	if (frametime > 200)
 	{
-		host_frametime = 0.2;
+		frametime = 200;
 	}
 
 	// allow mice or other external controllers to add commands
@@ -76,7 +75,7 @@ void Com_SharedFrame()
 	// process console commands
 	Cbuf_Execute();
 
-	CL_Frame(host_frametime * 1000);
+	CL_Frame(frametime);
 
 	if (com_speeds->value)
 	{
@@ -87,7 +86,6 @@ void Com_SharedFrame()
 		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 			pass1 + pass2 + pass3, pass1, pass2, pass3);
 	}
-	oldtime = newtime;
 }
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
@@ -130,7 +128,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_fullyInitialized = true;
 
-	oldtime = Sys_DoubleTime();
+	oldtime = Sys_Milliseconds();
 
 	common->Printf("������� HexenWorld Initialized �������\n");
 }
