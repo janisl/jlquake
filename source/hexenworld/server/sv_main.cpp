@@ -52,6 +52,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	COM_InitCommonCvars();
 
 	qh_registered = Cvar_Get("registered", "0", 0);
+	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
 
 	FS_InitFilesystem();
 	COMQH_CheckRegistered();

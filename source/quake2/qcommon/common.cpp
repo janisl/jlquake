@@ -99,6 +99,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 #else
 	com_dedicated = Cvar_Get("dedicated", "0", CVAR_INIT);
 #endif
+	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
 
 	s = va("%4.2f %s %s", VERSION, CPUSTRING, __DATE__);
 	Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_INIT);

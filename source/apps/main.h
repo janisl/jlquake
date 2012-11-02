@@ -91,4 +91,6 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline);
 void Com_Frame();
 void Com_SharedFrame();
 
+extern Cvar* com_maxfps;
+
 #endif

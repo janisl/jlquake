@@ -26,14 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     2.40
 
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
-
 static double oldtime;
-
-Cvar* cl_maxfps;
 
 void aaa()
 {
@@ -55,7 +48,7 @@ void CL_InitLocal(void)
 	//
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	cl_maxfps   = Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
+	com_maxfps = Cvar_Get("com_maxfps", "72", CVAR_ARCHIVE);
 
 	COM_InitCommonCommands();
 }
@@ -83,9 +76,9 @@ void Com_SharedFrame()
 
 	}
 	// decide the simulation time
-	if (cl_maxfps->value)
+	if (com_maxfps->value)
 	{
-		fps = max(30.0, min(cl_maxfps->value, 72.0));
+		fps = com_maxfps->value;
 	}
 	else
 	{

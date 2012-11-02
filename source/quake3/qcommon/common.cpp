@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 FILE* debuglogfile;
 
 Cvar* com_fixedtime;
-Cvar* com_maxfps;
 Cvar* com_timedemo;
 Cvar* com_showtrace;
 Cvar* com_blood;

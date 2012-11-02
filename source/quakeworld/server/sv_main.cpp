@@ -69,6 +69,7 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	Cvar_Init();
 
 	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
 
 	Com_InitByteOrder();
 

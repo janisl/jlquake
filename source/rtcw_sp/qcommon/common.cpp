@@ -44,7 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 FILE* debuglogfile;
 
 Cvar* com_fixedtime;
-Cvar* com_maxfps;
 Cvar* com_timedemo;
 Cvar* com_showtrace;
 Cvar* com_blood;

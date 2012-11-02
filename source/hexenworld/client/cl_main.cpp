@@ -27,6 +27,7 @@ void CL_InitLocal(void)
 // register our commands
 //
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
+	com_maxfps = Cvar_Get("com_maxfps", "72", CVAR_ARCHIVE);
 
 	COM_InitCommonCommands();
 }
@@ -54,7 +55,7 @@ void Com_SharedFrame()
 	int pass1, pass2, pass3;
 	float fps;
 	// decide the simulation time
-	fps = 72.0;
+	fps = com_maxfps->value;
 
 	if (!CLQH_IsTimeDemo() && time < 1.0 / fps)
 	{

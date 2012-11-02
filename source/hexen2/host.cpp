@@ -23,8 +23,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 Cvar* host_framerate;	// set for slow motion
 
-Cvar* sys_ticrate;
-
 static double oldtime;
 
 /*
@@ -38,8 +36,7 @@ void Host_InitLocal(void)
 
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
-
-	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
+	com_maxfps = Cvar_Get("com_maxfps", "72", CVAR_ARCHIVE);
 
 	if (COM_CheckParm("-dedicated"))
 	{
@@ -63,16 +60,7 @@ void Com_SharedFrame()
 	double newtime = Sys_DoubleTime();
 	double time = newtime - oldtime;
 
-	if (com_dedicated->integer)
-	{
-		while (time < sys_ticrate->value)
-		{
-			Sys_Sleep(1);
-			newtime = Sys_DoubleTime();
-			time = newtime - oldtime;
-		}
-	}
-	if (!CLQH_IsTimeDemo() && time < 1.0 / 72.0)
+	if (!CLQH_IsTimeDemo() && time < 1.0 / com_maxfps->value)
 	{
 		// framerate is too high
 		// don't run too fast, or packets will flood out

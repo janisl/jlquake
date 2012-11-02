@@ -17,6 +17,8 @@
 #include "../common/qcommon.h"
 #include "main.h"
 
+Cvar* com_maxfps;
+
 void Com_Frame()
 {
 	Com_SharedFrame();
