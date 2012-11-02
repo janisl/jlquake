@@ -383,7 +383,6 @@ void Com_SharedFrame()
 {
 	int msec, minMsec;
 	static int lastTime;
-	int key;
 
 	int timeBeforeFirstEvents;
 	int timeBeforeServer;
@@ -403,9 +402,6 @@ void Com_SharedFrame()
 	timeBeforeEvents = 0;
 	timeBeforeClient = 0;
 	timeAfter = 0;
-
-	// old net chan encryption key
-	key = 0x87243987;
 
 	// make sure mouse and joystick are only called once a frame
 	IN_Frame();
@@ -553,9 +549,6 @@ void Com_SharedFrame()
 		c_patch_traces = 0;
 		c_pointcontents = 0;
 	}
-
-	// old net chan encryption key
-	key = lastTime * 0x87243987;
 
 	com_frameNumber++;
 }

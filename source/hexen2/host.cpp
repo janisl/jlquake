@@ -29,7 +29,6 @@ double oldrealtime;					// last frame run
 Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
-Cvar* serverprofile;
 
 Cvar* sys_adaptive;
 
@@ -48,7 +47,6 @@ void Host_InitLocal(void)
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
-	serverprofile = Cvar_Get("serverprofile", "0", 0);
 
 	sys_adaptive = Cvar_Get("sys_adaptive","1", CVAR_ARCHIVE);
 
@@ -107,15 +105,24 @@ qboolean Host_FilterTime(float time)
 	return true;
 }
 
-/*
-==================
-Host_Frame
-
-Runs all active servers
-==================
-*/
-void _Host_Frame(float time)
+void Com_SharedFrame()
 {
+	// find time spent rendering last frame
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	if (com_dedicated->integer)
+	{
+		while (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
+		}
+	}
+
+	oldtime = newtime;
+
 	static double time3 = 0;
 	int pass1, pass2, pass3;
 	double save_host_frametime,total_host_frametime;
@@ -206,55 +213,6 @@ void _Host_Frame(float time)
 		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
 			pass1 + pass2 + pass3, pass1, pass2, pass3);
 	}
-}
-
-void Com_SharedFrame()
-{
-	// find time spent rendering last frame
-	double newtime = Sys_DoubleTime();
-	double time = newtime - oldtime;
-
-	if (com_dedicated->integer)
-	{
-		while (time < sys_ticrate->value)
-		{
-			Sys_Sleep(1);
-			newtime = Sys_DoubleTime();
-			time = newtime - oldtime;
-		}
-	}
-
-	double time1, time2;
-	static double timetotal;
-	static int timecount;
-	int m;
-
-	if (!serverprofile->value)
-	{
-		_Host_Frame(time);
-		oldtime = newtime;
-		return;
-	}
-
-	time1 = Sys_DoubleTime();
-	_Host_Frame(time);
-	time2 = Sys_DoubleTime();
-
-	timetotal += time2 - time1;
-	timecount++;
-
-	if (timecount < 1000)
-	{
-		oldtime = newtime;
-		return;
-	}
-
-	m = timetotal * 1000 / timecount;
-	timecount = 0;
-	timetotal = 0;
-
-	common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
-	oldtime = newtime;
 }
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)

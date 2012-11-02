@@ -43,7 +43,6 @@ double oldrealtime;					// last frame run
 Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
-Cvar* serverprofile;
 
 static double oldtime;
 
@@ -60,7 +59,6 @@ void Host_InitLocal(void)
 	com_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
-	serverprofile = Cvar_Get("serverprofile", "0", 0);
 
 	if (COM_CheckParm("-dedicated"))
 	{
@@ -117,71 +115,6 @@ qboolean Host_FilterTime(float time)
 	return true;
 }
 
-/*
-==================
-Host_Frame
-
-Runs all active servers
-==================
-*/
-void _Host_Frame(float time)
-{
-	static double time3 = 0;
-	int pass1, pass2, pass3;
-
-		if (setjmp(abortframe))
-		{
-			return;		// something bad happened, or the server disconnected
-
-		}
-// keep the random time dependent
-		rand();
-
-// decide the simulation time
-		if (!Host_FilterTime(time))
-		{
-			return;		// don't run too fast, or packets will flood out
-		}
-
-// allow mice or other external controllers to add commands
-		IN_Frame();
-
-		Com_EventLoop();
-
-// process console commands
-		Cbuf_Execute();
-
-//-------------------
-//
-// server operations
-//
-//-------------------
-
-		SV_Frame(host_frametime * 1000);
-
-//-------------------
-//
-// client operations
-//
-//-------------------
-
-		host_time += host_frametime;
-
-#ifndef DEDICATED
-		CL_Frame(host_frametime * 1000);
-#endif
-
-		if (com_speeds->value)
-		{
-			pass1 = time_before_ref - time3 * 1000;
-			time3 = Sys_DoubleTime();
-			pass2 = time_after_ref - time_before_ref;
-			pass3 = time3 * 1000 - time_after_ref;
-			common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
-				pass1 + pass2 + pass3, pass1, pass2, pass3);
-		}
-}
-
 void Com_SharedFrame()
 {
 	// find time spent rendering last frame
@@ -199,34 +132,61 @@ void Com_SharedFrame()
 	}
 
 	oldtime = newtime;
-	double time1, time2;
-	static double timetotal;
-	static int timecount;
-	int m;
 
-	if (!serverprofile->value)
+	static double time3 = 0;
+	int pass1, pass2, pass3;
+
+	if (setjmp(abortframe))
 	{
-		_Host_Frame(time);
-		return;
+		return;		// something bad happened, or the server disconnected
 	}
 
-	time1 = Sys_DoubleTime();
-	_Host_Frame(time);
-	time2 = Sys_DoubleTime();
+// keep the random time dependent
+	rand();
 
-	timetotal += time2 - time1;
-	timecount++;
-
-	if (timecount < 1000)
+// decide the simulation time
+	if (!Host_FilterTime(time))
 	{
-		return;
+		return;		// don't run too fast, or packets will flood out
 	}
 
-	m = timetotal * 1000 / timecount;
-	timecount = 0;
-	timetotal = 0;
+// allow mice or other external controllers to add commands
+	IN_Frame();
 
-	common->Printf("serverprofile: %2i clients %2i msec\n",  SVQH_GetNumConnectedClients(),  m);
+	Com_EventLoop();
+
+// process console commands
+	Cbuf_Execute();
+
+//-------------------
+//
+// server operations
+//
+//-------------------
+
+	SV_Frame(host_frametime * 1000);
+
+//-------------------
+//
+// client operations
+//
+//-------------------
+
+	host_time += host_frametime;
+
+#ifndef DEDICATED
+	CL_Frame(host_frametime * 1000);
+#endif
+
+	if (com_speeds->value)
+	{
+		pass1 = time_before_ref - time3 * 1000;
+		time3 = Sys_DoubleTime();
+		pass2 = time_after_ref - time_before_ref;
+		pass3 = time3 * 1000 - time_after_ref;
+		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
+			pass1 + pass2 + pass3, pass1, pass2, pass3);
+	}
 }
 
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
