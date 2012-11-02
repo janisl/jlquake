@@ -661,8 +661,3 @@ void CLQH_OnEndGame()
 		CL_Disconnect(true);
 	}
 }
-
-bool CLQH_IsTimeDemo()
-{
-	return cls.qh_timedemo;
-}

@@ -67,9 +67,6 @@ void CLHW_SendCmd()
 	cl.hw_frames[i].senttime = cls.realtime * 0.001;
 	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
 
-	// grab frame time
-	com_frameTime = Sys_Milliseconds();
-
 	Com_Memset(cmd, 0, sizeof(*cmd));
 	in_usercmd_t inCmd = CL_CreateCmd();
 

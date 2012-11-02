@@ -25,36 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     2.40
 
-static int oldtime;
-
-void Com_SharedFrame()
-{
-	// select on the net socket and stdin
-	// the only reason we have a timeout at all is so that if the last
-	// connected client times out, the message would not otherwise
-	// be printed until the next event.
-	//JL: Originally timeout was 0.1 ms
-	if (!SOCK_Sleep(ip_sockets[0], 1))
-	{
-		return;
-	}
-
-	// find time passed since last cycle
-	int newtime = Sys_Milliseconds();
-	int time = newtime - oldtime;
-	oldtime = newtime;
-
-	// keep the random time dependent
-	rand();
-
-	Com_EventLoop();
-
-	// process console commands
-	Cbuf_Execute();
-
-	SV_Frame(time);
-}
-
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	GGameType = GAME_Quake | GAME_QuakeWorld;
@@ -70,6 +40,11 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 
 	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
+	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
+	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
+
+	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
+	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
 
 	Com_InitByteOrder();
 
@@ -111,6 +86,4 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	{
 		common->Error("Couldn't spawn a server");
 	}
-
-	oldtime = Sys_Milliseconds() - 100;
 }

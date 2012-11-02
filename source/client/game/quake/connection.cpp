@@ -191,9 +191,6 @@ void CLQW_SendCmd()
 	int seq_hash = clc.netchan.outgoingSequence;
 
 	// get basic movement from keyboard
-	// grab frame time
-	com_frameTime = Sys_Milliseconds();
-
 	Com_Memset(cmd, 0, sizeof(*cmd));
 
 	in_usercmd_t inCmd = CL_CreateCmd();

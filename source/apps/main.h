@@ -89,8 +89,13 @@
 void Com_Init(int argc, char* argv[], char* cmdline);
 void Com_SharedInit(int argc, char* argv[], char* cmdline);
 void Com_Frame();
-void Com_SharedFrame();
 
 extern Cvar* com_maxfps;
+extern Cvar* com_fixedtime;
+extern Cvar* comq3_cameraMode;
+extern Cvar* com_watchdog;
+extern Cvar* com_watchdog_cmd;
+extern Cvar* com_showtrace;
+extern int com_frameNumber;
 
 #endif

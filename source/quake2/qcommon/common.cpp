@@ -25,12 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define VERSION     3.19
 
-static int oldtime;
-
-Cvar* timescale;
-Cvar* fixedtime;
-Cvar* showtrace;
-
 /*
 =============
 Com_Error_f
@@ -91,15 +85,17 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	COM_InitCommonCvars();
 
 	com_speeds = Cvar_Get("host_speeds", "0", 0);
-	timescale = Cvar_Get("timescale", "1", 0);
-	fixedtime = Cvar_Get("fixedtime", "0", 0);
-	showtrace = Cvar_Get("showtrace", "0", 0);
+	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
+	com_showtrace = Cvar_Get("com_showtrace", "0", 0);
 #ifdef DEDICATED
 	com_dedicated = Cvar_Get("dedicated", "1", CVAR_INIT);
 #else
 	com_dedicated = Cvar_Get("dedicated", "0", CVAR_INIT);
 #endif
 	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
+
+	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
+	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
 
 	s = va("%4.2f %s %s", VERSION, CPUSTRING, __DATE__);
 	Cvar_Get("version", s, CVAR_SERVERINFO | CVAR_INIT);
@@ -139,98 +135,6 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 		SCR_EndLoadingPlaque();
 	}
 
-	oldtime = Sys_Milliseconds();
-
 	com_fullyInitialized = true;
 	common->Printf("====== Quake2 Initialized ======\n\n");
-}
-
-void Com_SharedFrame()
-{
-	// find time spent rendering last frame
-	int newtime;
-	int msec;
-	do
-	{
-		newtime = Sys_Milliseconds();
-		msec = newtime - oldtime;
-	}
-	while (msec < 1);
-
-	int time_before, time_between, time_after;
-
-	if (setjmp(abortframe))
-	{
-		return;		// an ERR_DROP was thrown
-	}
-
-	if (fixedtime->value)
-	{
-		msec = fixedtime->value;
-	}
-	else if (timescale->value)
-	{
-		msec *= timescale->value;
-		if (msec < 1)
-		{
-			msec = 1;
-		}
-	}
-
-	if (showtrace->value)
-	{
-		common->Printf("%4i traces  %4i points\n", c_traces, c_pointcontents);
-		c_traces = 0;
-		c_brush_traces = 0;
-		c_pointcontents = 0;
-	}
-
-	Com_EventLoop();
-	Cbuf_Execute();
-
-	if (com_speeds->value)
-	{
-		time_before = Sys_Milliseconds();
-	}
-
-	SV_Frame(msec);
-
-	if (com_speeds->value)
-	{
-		time_between = Sys_Milliseconds();
-	}
-
-	// let the mouse activate or deactivate
-	IN_Frame();
-
-	// get new key events
-	Com_EventLoop();
-
-	// process console commands
-	Cbuf_Execute();
-
-	CL_Frame(msec);
-
-	if (com_speeds->value)
-	{
-		time_after = Sys_Milliseconds();
-	}
-
-
-	if (com_speeds->value)
-	{
-		int all, sv, gm, cl, rf;
-
-		all = time_after - time_before;
-		sv = time_between - time_before;
-		cl = time_after - time_between;
-		gm = time_after_game - time_before_game;
-		rf = time_after_ref - time_before_ref;
-		sv -= gm;
-		cl -= rf;
-		common->Printf("all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
-			all, sv, gm, cl, rf);
-	}
-
-	oldtime = newtime;
 }

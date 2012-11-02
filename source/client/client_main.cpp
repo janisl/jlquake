@@ -1027,3 +1027,16 @@ void CL_ShutdownOnWindowsError()
 		IN_Shutdown();
 	}
 }
+
+bool CL_IsTimeDemo()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		return cls.qh_timedemo;
+	}
+	if (GGameType & GAME_Tech3)
+	{
+		return comt3_timedemo->integer;
+	}
+	return false;
+}

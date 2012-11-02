@@ -158,9 +158,6 @@ void CLQH_SendCmd()
 
 	if (clc.qh_signon == SIGNONS)
 	{
-		// grab frame time
-		com_frameTime = Sys_Milliseconds();
-
 		in_usercmd_t cmd = CL_CreateCmd();
 
 		// send the unreliable message

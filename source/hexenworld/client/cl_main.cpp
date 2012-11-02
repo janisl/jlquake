@@ -6,8 +6,6 @@
 #include "../../common/hexen2strings.h"
 #include "../../apps/main.h"
 
-static int oldtime;
-
 void aaa()
 {
 	SV_IsServerActive();
@@ -32,62 +30,6 @@ void CL_InitLocal(void)
 	COM_InitCommonCommands();
 }
 
-/*
-==================
-Host_Frame
-
-Runs all active servers
-==================
-*/
-void Com_SharedFrame()
-{
-	if (setjmp(abortframe))
-	{
-		return;		// something bad happened, or the server disconnected
-	}
-
-	// find time spent rendering last frame
-	int newtime = Sys_Milliseconds();
-	int time = newtime - oldtime;
-
-	static int time3 = 0;
-	int pass1, pass2, pass3;
-	float fps;
-	// decide the simulation time
-	fps = com_maxfps->value;
-
-	if (!CLQH_IsTimeDemo() && time < 1000 / fps)
-	{
-		return;		// framerate is too high
-	}
-	oldtime = newtime;
-	int frametime = time;
-	if (frametime > 200)
-	{
-		frametime = 200;
-	}
-
-	// allow mice or other external controllers to add commands
-	IN_Frame();
-
-	Com_EventLoop();
-
-	// process console commands
-	Cbuf_Execute();
-
-	CL_Frame(frametime);
-
-	if (com_speeds->value)
-	{
-		pass1 = time_before_ref - time3;
-		time3 = Sys_Milliseconds();
-		pass2 = time_after_ref - time_before_ref;
-		pass3 = time3 - time_after_ref;
-		common->Printf("%3i tot %3i server %3i gfx %3i snd\n",
-			pass1 + pass2 + pass3, pass1, pass2, pass3);
-	}
-}
-
 void Com_SharedInit(int argc, char* argv[], char* cmdline)
 {
 	Sys_Init();
@@ -108,6 +50,11 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	COM_InitCommonCvars();
 
 	qh_registered = Cvar_Get("registered", "0", 0);
+	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
+	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
+
+	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
+	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
 
 	FS_InitFilesystem();
 	COMQH_CheckRegistered();
@@ -127,8 +74,6 @@ void Com_SharedInit(int argc, char* argv[], char* cmdline)
 	Sys_ShowConsole(0, false);
 
 	com_fullyInitialized = true;
-
-	oldtime = Sys_Milliseconds();
 
 	common->Printf("������� HexenWorld Initialized �������\n");
 }

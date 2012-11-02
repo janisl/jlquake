@@ -222,7 +222,7 @@ void CLQH_OnEndGame()
 {
 }
 
-bool CLQH_IsTimeDemo()
+bool CL_IsTimeDemo()
 {
 	return false;
 }

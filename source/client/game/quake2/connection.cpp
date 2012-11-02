@@ -381,9 +381,6 @@ void CLQ2_SendCmd()
 	q2usercmd_t* cmd = &cl.q2_cmds[i];
 	cl.q2_cmd_time[i] = cls.realtime;	// for netgraph ping calculation
 
-	// grab frame time
-	com_frameTime = Sys_Milliseconds();
-
 	in_usercmd_t inCmd = CL_CreateCmd();
 	Com_Memset(cmd, 0, sizeof(*cmd));
 	cmd->forwardmove = inCmd.forwardmove;

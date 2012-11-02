@@ -1639,6 +1639,11 @@ static void SVQHW_CheckTimeouts()
 
 void SVQHW_ServerFrame(int msec)
 {
+	if (sv.state == SS_DEAD)
+	{
+		return;
+	}
+
 	static double start, end;
 
 	start = Sys_DoubleTime();
@@ -1649,6 +1654,16 @@ void SVQHW_ServerFrame(int msec)
 	{
 		sv.qh_time += msec * 0.001;
 		svs.realtime += msec;
+	}
+
+	// select on the net socket and stdin
+	// the only reason we have a timeout at all is so that if the last
+	// connected client times out, the message would not otherwise
+	// be printed until the next event.
+	//JL: Originally timeout was 0.1 ms
+	if (!SOCK_Sleep(ip_sockets[0], 1))
+	{
+		return;
 	}
 
 	SVQHW_CheckVars();

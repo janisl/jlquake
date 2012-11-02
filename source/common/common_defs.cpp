@@ -45,6 +45,7 @@ Cvar* qh_registered;
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
 Cvar* comt3_version;
+Cvar* comt3_timedemo;
 
 Cvar* com_ignorecrash = NULL;		// bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
 Cvar* com_pid;			// bani - process id
