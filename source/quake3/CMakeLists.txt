@@ -3,6 +3,7 @@
 #############################################################################
 
 set(QUAKE3_FILES
+	../apps/main.cpp
 	../apps/unix.cpp
 	qcommon/common.cpp
 )
@@ -16,6 +17,7 @@ target_link_libraries(jlquake3 ${CLIENTS_LIBS})
 #############################################################################
 
 set(QUAKE3_DEDICATED_FILES
+	../apps/main.cpp
 	../apps/unix.cpp
 	qcommon/common.cpp
 )

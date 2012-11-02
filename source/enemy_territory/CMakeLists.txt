@@ -15,6 +15,7 @@
 #g_env.Append( CPPFLAGS = '-fno-strict-aliasing' )
 
 set (ET_FILES
+	../apps/main.cpp
 	../apps/unix.cpp
 	qcommon/common.cpp
 )
@@ -24,6 +25,7 @@ set_target_properties(jlet PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
 target_link_libraries(jlet ${CLIENTS_LIBS})
 
 set (ETDED_FILES
+	../apps/main.cpp
 	../apps/unix.cpp
 	qcommon/common.cpp
 )

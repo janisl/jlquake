@@ -6,6 +6,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 #############################################################################
 
 add_executable(jlhwsv
+	../apps/main.cpp
 	../apps/unix.cpp
 	server/sv_main.cpp
 )
@@ -17,6 +18,7 @@ target_link_libraries(jlhwsv ${SERVERS_LIBS})
 #############################################################################
 
 add_executable(jlhwcl
+	../apps/main.cpp
 	../apps/unix.cpp
 	client/cl_main.cpp
 )

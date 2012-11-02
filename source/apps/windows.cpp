@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// no abort/retry/fail errors
 	SetErrorMode(SEM_FAILCRITICALERRORS);
 
-	Com_SharedInit(__argc, __argv, sys_cmdline);
+	Com_Init(__argc, __argv, sys_cmdline);
 
 	// hide the early console since we've reached the point where we
 	// have a working graphics subsystems
@@ -56,7 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		// run the game
-		Com_SharedFrame();
+		Com_Frame();
 	}
 
 	// never gets here

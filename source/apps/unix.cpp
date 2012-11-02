@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 		String::Cat(cmdline, len, argv[i]);
 	}
 
-	Com_SharedInit(argc, argv, cmdline);
+	Com_Init(argc, argv, cmdline);
 
 	Sys_ConsoleInputInit();
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 #ifdef __linux__
 		Sys_ConfigureFPU();
 #endif
-		Com_SharedFrame();
+		Com_Frame();
 
 		if (com_dedicated && com_dedicated->integer && com_sv_running && !com_sv_running->integer)
 		{

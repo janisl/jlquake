@@ -86,7 +86,9 @@
 
 #endif
 
+void Com_Init(int argc, char* argv[], char* cmdline);
 void Com_SharedInit(int argc, char* argv[], char* cmdline);
+void Com_Frame();
 void Com_SharedFrame();
 
 #endif
