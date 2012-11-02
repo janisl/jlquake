@@ -577,7 +577,7 @@ void CLQH_Init()
 		Cvar_Get("password", "", CVAR_USERINFO);
 		Cvar_Get("skin", "", CVAR_ARCHIVE | CVAR_USERINFO);
 		Cvar_Get("team", "", CVAR_ARCHIVE | CVAR_USERINFO);
-		clqhw_rate = Cvar_Get("rate", "2500", CVAR_ARCHIVE | CVAR_USERINFO);
+		Cvar_Get("rate", "1000000", CVAR_ARCHIVE | CVAR_USERINFO);
 		Cvar_Get("msg", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 		Cvar_Get("noaim", "0", CVAR_ARCHIVE | CVAR_USERINFO);
 

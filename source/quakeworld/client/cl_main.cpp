@@ -35,10 +35,6 @@ static double oldtime;
 
 Cvar* cl_maxfps;
 
-double host_frametime;
-double realtime;					// without any filtering or bounding
-double oldrealtime;					// last frame run
-
 void aaa()
 {
 	SV_IsServerActive();
@@ -87,29 +83,22 @@ void Com_SharedFrame()
 
 	}
 	// decide the simulation time
-	realtime += time;
-	if (oldrealtime > realtime)
-	{
-		oldrealtime = 0;
-	}
-
 	if (cl_maxfps->value)
 	{
 		fps = max(30.0, min(cl_maxfps->value, 72.0));
 	}
 	else
 	{
-		fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
+		fps = 72.0;
 	}
 
-	if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / fps)
+	if (!CLQH_IsTimeDemo() && time < 1.0 / fps)
 	{
-		oldtime = newtime;
 		return;		// framerate is too high
 	}
+	oldtime = newtime;
 
-	host_frametime = realtime - oldrealtime;
-	oldrealtime = realtime;
+	double host_frametime = time;
 	if (host_frametime > 0.2)
 	{
 		host_frametime = 0.2;

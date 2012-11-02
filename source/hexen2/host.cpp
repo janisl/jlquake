@@ -21,16 +21,9 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-double host_frametime;
-double host_time;
-double realtime;					// without any filtering or bounding
-double oldrealtime;					// last frame run
-
 Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
-
-Cvar* sys_adaptive;
 
 static double oldtime;
 
@@ -48,8 +41,6 @@ void Host_InitLocal(void)
 
 	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
 
-	sys_adaptive = Cvar_Get("sys_adaptive","1", CVAR_ARCHIVE);
-
 	if (COM_CheckParm("-dedicated"))
 	{
 		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
@@ -64,45 +55,6 @@ void Host_InitLocal(void)
 	}
 
 	COM_InitCommonCommands();
-
-	host_time = 1.0;		// so a think at time 0 won't get called
-}
-
-/*
-===================
-Host_FilterTime
-
-Returns false if the time is too short to run a frame
-===================
-*/
-qboolean Host_FilterTime(float time)
-{
-	realtime += time;
-	SVQH_SetRealTime(realtime * 1000);
-	if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / 72.0)
-	{
-		return false;		// framerate is too high
-
-	}
-	host_frametime = realtime - oldrealtime;
-	oldrealtime = realtime;
-
-	if (host_framerate->value > 0)
-	{
-		host_frametime = host_framerate->value;
-	}
-	else
-	{	// don't allow really long or short frames
-		if (host_frametime > 0.05 && !sys_adaptive->value)
-		{
-			host_frametime = 0.05;
-		}
-		if (host_frametime < 0.001)
-		{
-			host_frametime = 0.001;
-		}
-	}
-	return true;
 }
 
 void Com_SharedFrame()
@@ -120,25 +72,47 @@ void Com_SharedFrame()
 			time = newtime - oldtime;
 		}
 	}
+	if (!CLQH_IsTimeDemo() && time < 1.0 / 72.0)
+	{
+		// framerate is too high
+		// don't run too fast, or packets will flood out
+		Sys_Sleep(1);
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+	}
 
 	oldtime = newtime;
 
 	static double time3 = 0;
 	int pass1, pass2, pass3;
-	double save_host_frametime,total_host_frametime;
 
 	if (setjmp(abortframe))
 	{
 		return;			// something bad happened, or the server disconnected
 	}
 
-// keep the random time dependent
+	// keep the random time dependent
 	rand();
 
-// decide the simulation time
-	if (!Host_FilterTime(time))
+	// decide the simulation time
+	SVQH_SetRealTime(newtime * 1000);
+
+	double host_frametime = time;
+
+	if (host_framerate->value > 0)
 	{
-		return;		// don't run too fast, or packets will flood out
+		host_frametime = host_framerate->value;
+	}
+	else
+	{	// don't allow really long or short frames
+		if (host_frametime > 0.05)
+		{
+			host_frametime = 0.05;
+		}
+		if (host_frametime < 0.001)
+		{
+			host_frametime = 0.001;
+		}
 	}
 
 // allow mice or other external controllers to add commands
@@ -155,52 +129,7 @@ void Com_SharedFrame()
 //
 //-------------------
 
-	save_host_frametime = total_host_frametime = host_frametime;
-	if (sys_adaptive->value)
-	{
-		if (host_frametime > 0.05)
-		{
-			host_frametime = 0.05;
-		}
-	}
-
-	if (total_host_frametime > 1.0)
-	{
-		total_host_frametime = 0.05;
-	}
-
-	do
-	{
-		SV_Frame(host_frametime * 1000);
-
-		//-------------------
-		//
-		// client operations
-		//
-		//-------------------
-
-#ifndef DEDICATED
-		host_time += host_frametime;
-#endif
-
-		if (!sys_adaptive->value)
-		{
-			break;
-		}
-
-		total_host_frametime -= 0.05;
-		if (total_host_frametime > 0 && total_host_frametime < 0.05)
-		{
-			save_host_frametime -= total_host_frametime;
-			oldrealtime -= total_host_frametime;
-			break;
-		}
-
-	}
-	while (total_host_frametime > 0);
-
-
-	host_frametime = save_host_frametime;
+	SV_Frame(host_frametime * 1000);
 
 	CL_Frame(host_frametime * 1000);
 

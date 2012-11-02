@@ -41,7 +41,6 @@ Cvar* sv_paused;
 Cvar* cl_shownet;
 
 Cvar* qh_registered;
-Cvar* clqhw_rate;
 
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 

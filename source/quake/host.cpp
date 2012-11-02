@@ -35,11 +35,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-double host_frametime;
-double host_time;
-double realtime;					// without any filtering or bounding
-double oldrealtime;					// last frame run
-
 Cvar* host_framerate;	// set for slow motion
 
 Cvar* sys_ticrate;
@@ -74,28 +69,49 @@ void Host_InitLocal(void)
 	}
 
 	COM_InitCommonCommands();
-
-	host_time = 1.0;		// so a think at time 0 won't get called
 }
 
-/*
-===================
-Host_FilterTime
-
-Returns false if the time is too short to run a frame
-===================
-*/
-qboolean Host_FilterTime(float time)
+void Com_SharedFrame()
 {
-	realtime += time;
-	SVQH_SetRealTime(realtime * 1000);
-	if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / 72.0)
+	if (setjmp(abortframe))
 	{
-		return false;		// framerate is too high
-
+		return;		// something bad happened, or the server disconnected
 	}
-	host_frametime = realtime - oldrealtime;
-	oldrealtime = realtime;
+
+	// find time spent rendering last frame
+	double newtime = Sys_DoubleTime();
+	double time = newtime - oldtime;
+
+	if (com_dedicated->integer)
+	{
+		while (time < sys_ticrate->value)
+		{
+			Sys_Sleep(1);
+			newtime = Sys_DoubleTime();
+			time = newtime - oldtime;
+		}
+	}
+	while (!CLQH_IsTimeDemo() && time < 1.0 / 72.0)
+	{
+		// framerate is too high
+		// don't run too fast, or packets will flood out
+		Sys_Sleep(1);
+		newtime = Sys_DoubleTime();
+		time = newtime - oldtime;
+	}
+
+	oldtime = newtime;
+
+	static double time3 = 0;
+	int pass1, pass2, pass3;
+
+	// keep the random time dependent
+	rand();
+
+	// decide the simulation time
+	SVQH_SetRealTime(newtime * 1000);
+
+	double host_frametime = time;
 
 	if (host_framerate->value > 0)
 	{
@@ -112,45 +128,8 @@ qboolean Host_FilterTime(float time)
 			host_frametime = 0.001;
 		}
 	}
-	return true;
-}
 
-void Com_SharedFrame()
-{
-	// find time spent rendering last frame
-	double newtime = Sys_DoubleTime();
-	double time = newtime - oldtime;
-
-	if (com_dedicated->integer)
-	{
-		while (time < sys_ticrate->value)
-		{
-			Sys_Sleep(1);
-			newtime = Sys_DoubleTime();
-			time = newtime - oldtime;
-		}
-	}
-
-	oldtime = newtime;
-
-	static double time3 = 0;
-	int pass1, pass2, pass3;
-
-	if (setjmp(abortframe))
-	{
-		return;		// something bad happened, or the server disconnected
-	}
-
-// keep the random time dependent
-	rand();
-
-// decide the simulation time
-	if (!Host_FilterTime(time))
-	{
-		return;		// don't run too fast, or packets will flood out
-	}
-
-// allow mice or other external controllers to add commands
+	// allow mice or other external controllers to add commands
 	IN_Frame();
 
 	Com_EventLoop();
@@ -171,8 +150,6 @@ void Com_SharedFrame()
 // client operations
 //
 //-------------------
-
-	host_time += host_frametime;
 
 #ifndef DEDICATED
 	CL_Frame(host_frametime * 1000);

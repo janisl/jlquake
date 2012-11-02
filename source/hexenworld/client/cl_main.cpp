@@ -6,10 +6,6 @@
 #include "../../common/hexen2strings.h"
 #include "../../apps/main.h"
 
-double host_frametime;
-double realtime;					// without any filtering or bounding
-double oldrealtime;					// last frame run
-
 static double oldtime;
 
 void aaa()
@@ -58,23 +54,14 @@ void Com_SharedFrame()
 	int pass1, pass2, pass3;
 	float fps;
 	// decide the simulation time
-	realtime += time;
-	if (oldrealtime > realtime)
-	{
-		oldrealtime = 0;
-	}
+	fps = 72.0;
 
-#define max(a, b)   ((a) > (b) ? (a) : (b))
-#define min(a, b)   ((a) < (b) ? (a) : (b))
-	fps = max(30.0, min(clqhw_rate->value / 80.0, 72.0));
-
-	if (!CLQH_IsTimeDemo() && realtime - oldrealtime < 1.0 / fps)
+	if (!CLQH_IsTimeDemo() && time < 1.0 / fps)
 	{
-		oldtime = newtime;
 		return;		// framerate is too high
 	}
-	host_frametime = realtime - oldrealtime;
-	oldrealtime = realtime;
+	oldtime = newtime;
+	double host_frametime = time;
 	if (host_frametime > 0.2)
 	{
 		host_frametime = 0.2;
