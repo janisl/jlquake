@@ -225,6 +225,10 @@ void CL_StartHunkUsers()
 	}
 	else
 	{
+		if (cls.state == CA_UNINITIALIZED)
+		{
+			return;
+		}
 		V_Init();
 		CL_InitRenderer();
 		S_Init();

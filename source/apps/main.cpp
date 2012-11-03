@@ -17,16 +17,86 @@
 #include "../common/qcommon.h"
 #include "../server/public.h"
 #include "../client/public.h"
+#include "../common/hexen2strings.h"
 #include "main.h"
 
-Cvar* com_maxfps;
-Cvar* com_fixedtime;
-Cvar* comq3_cameraMode;
-Cvar* com_watchdog;
-Cvar* com_watchdog_cmd;
-Cvar* com_showtrace;
+//======================= WIN32 DEFINES =================================
+#ifdef WIN32
 
-int com_frameNumber;
+// buildstring will be incorporated into the version string
+#ifdef NDEBUG
+#ifdef _M_IX86
+#define CPUSTRING   "win-x86"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64"
+#elif defined _M_ALPHA
+#define CPUSTRING   "win-AXP"
+#endif
+#else
+#ifdef _M_IX86
+#define CPUSTRING   "win-x86-debug"
+#elif defined _M_X64
+#define CPUSTRING   "win-x86_64-debug"
+#elif defined _M_ALPHA
+#define CPUSTRING   "win-AXP-debug"
+#endif
+#endif
+
+#endif
+
+//======================= MAC OS X DEFINES =====================
+#if defined(MACOS_X)
+
+#ifdef __ppc__
+#define CPUSTRING   "MacOSX-ppc"
+#elif defined __i386__
+#define CPUSTRING   "MacOSX-i386"
+#elif defined __x86_64__
+#define CPUSTRING   "MaxOSX-x86_64"
+#else
+#define CPUSTRING   "MacOSX-other"
+#endif
+
+#endif
+
+//======================= LINUX DEFINES =================================
+#ifdef __linux__
+
+#ifdef __i386__
+#define CPUSTRING   "linux-i386"
+#elif defined __x86_64__
+#define CPUSTRING   "linux-x86_64"
+#elif defined __axp__
+#define CPUSTRING   "linux-alpha"
+#else
+#define CPUSTRING   "linux-other"
+#endif
+
+#endif
+
+//======================= FreeBSD DEFINES =====================
+#ifdef __FreeBSD__	// rb010123
+
+#ifdef __i386__
+#define CPUSTRING       "freebsd-i386"
+#elif defined __axp__
+#define CPUSTRING       "freebsd-alpha"
+#elif defined __x86_64__
+#define CPUSTRING       "freebsd-x86_64"
+#else
+#define CPUSTRING       "freebsd-other"
+#endif
+
+#endif
+
+static Cvar* com_maxfps;
+static Cvar* com_fixedtime;
+static Cvar* comq3_cameraMode;
+static Cvar* com_watchdog;
+static Cvar* com_watchdog_cmd;
+static Cvar* com_showtrace;
+
+static int com_frameNumber;
 
 static int Com_ModifyMsec(int msec)
 {
@@ -325,7 +395,7 @@ void Com_Frame()
 }
 
 //	Just throw a fatal error to test error shutdown procedures
-void Com_Error_f()
+static void Com_Error_f()
 {
 	if (Cmd_Argc() > 1)
 	{
@@ -339,7 +409,7 @@ void Com_Error_f()
 
 //	Just freeze in place for a given number of seconds to test
 // error recovery
-void Com_Freeze_f()
+static void Com_Freeze_f()
 {
 	if (Cmd_Argc() != 2)
 	{
@@ -361,12 +431,12 @@ void Com_Freeze_f()
 }
 
 //	A way to force a bus error for development reasons
-void Com_Crash_f()
+static void Com_Crash_f()
 {
 	*(int*)0 = 0x12345678;
 }
 
-void ComET_GetGameInfo()
+static void ComET_GetGameInfo()
 {
 	Com_Memset(&comet_gameInfo, 0, sizeof(comet_gameInfo));
 
@@ -457,7 +527,468 @@ void ComET_GetGameInfo()
 	FS_FreeFile(f);
 }
 
-void Com_Init(int argc, char* argv[], char* cmdline)
+void Com_Init(int argc, char* argv[], char* commandLine)
 {
-	Com_SharedInit(argc, argv, cmdline);
+	if (setjmp(abortframe))
+	{
+		Sys_Error("Error during initialization");
+	}
+
+	common->Printf("JLQuake " JLQUAKE_VERSION_STRING " " CPUSTRING " " __DATE__ "\n");
+
+	// get the initial time base
+	Sys_Milliseconds();
+
+	Com_InitByteOrder();
+
+	// bk001129 - do this before anything else decides to push events
+	Com_InitEventQueue();
+
+	// prepare enough of the subsystems to handle
+	// cvar and command buffer management
+	COM_InitArgv2(argc, argv);
+	Com_ParseCommandLine(commandLine);
+
+	Com_SharedInit();
+
+	Cvar_Init();
+
+	Cbuf_Init();
+
+	Cmd_Init();
+
+	if (GGameType & GAME_Quake2)
+	{
+		// we need to add the early commands twice, because
+		// a basedir or cddir needs to be set before execing
+		// config files, but we want other parms to override
+		// the settings of the config files
+		Cbuf_AddEarlyCommands(false);
+		Cbuf_Execute();
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		// override anything from the config files with command line args
+		Com_StartupVariable(NULL);
+
+		// get the developer cvar set as early as possible
+		Com_StartupVariable("developer");
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		// bani: init this early
+		Com_StartupVariable("com_ignorecrash");
+		com_ignorecrash = Cvar_Get("com_ignorecrash", "0", 0);
+
+		// ydnar: init crashed variable as early as possible
+		com_crashed = Cvar_Get("com_crashed", "0", CVAR_TEMP);
+
+		// bani: init pid
+		int pid = Sys_GetCurrentProcessId();
+		char* s = va("%d", pid);
+		com_pid = Cvar_Get("com_pid", s, CVAR_ROM);
+	}
+
+	FS_InitFilesystem();
+
+	// done early so bind command exists
+	CL_InitKeyCommands();
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		COMQH_CheckRegistered();
+	}
+	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
+	{
+		SVH2_RemoveGIPFiles(NULL);
+	}
+
+	if (GGameType & GAME_QuakeWorld && !com_dedicated->integer)
+	{
+		NETQHW_Init(QWPORT_CLIENT);
+	}
+	if (GGameType & GAME_HexenWorld && !com_dedicated->integer)
+	{
+		NETQHW_Init(HWPORT_CLIENT);
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		Cbuf_AddText("exec default.cfg\n");
+		Cbuf_AddText("exec config.cfg\n");
+
+		Cbuf_AddEarlyCommands(true);
+		Cbuf_Execute();
+	}
+
+	if (GGameType & GAME_ET)
+	{
+		ComET_GetGameInfo();
+	}
+
+	bool safeMode = false;
+	if (GGameType & GAME_Tech3)
+	{
+		Com_InitJournaling();
+
+		Cbuf_AddText("exec default.cfg\n");
+		if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+		{
+			Cbuf_AddText("exec language.cfg\n");
+		}
+		
+		// skip the q3config.cfg if "safe" is on the command line
+		safeMode = Com_SafeMode();
+		if (!safeMode)
+		{
+			if (GGameType & GAME_Quake3)
+			{
+				Cbuf_AddText("exec q3config.cfg\n");
+			}
+			else if (GGameType & GAME_WolfSP)
+			{
+				Cbuf_AddText("exec wolfconfig.cfg\n");
+			}
+			else if (GGameType & GAME_WolfMP)
+			{
+				Cbuf_AddText("exec wolfconfig_mp.cfg\n");
+			}
+			else if (GGameType & GAME_ET)
+			{
+				if (comet_gameInfo.usesProfiles)
+				{
+					const char* cl_profileStr = Cvar_VariableString("cl_profile");
+					if (!cl_profileStr[0])
+					{
+						char* defaultProfile = NULL;
+
+						FS_ReadFile("profiles/defaultprofile.dat", (void**)&defaultProfile);
+
+						if (defaultProfile)
+						{
+							const char* text_p = defaultProfile;
+							char* token = String::Parse3(&text_p);
+
+							if (token && *token)
+							{
+								Cvar_Set("cl_defaultProfile", token);
+								Cvar_Set("cl_profile", token);
+							}
+
+							FS_FreeFile(defaultProfile);
+
+							cl_profileStr = Cvar_VariableString("cl_defaultProfile");
+						}
+					}
+
+					if (cl_profileStr[0])
+					{
+						// bani - check existing pid file and make sure it's ok
+						if (!ComET_CheckProfile(va("profiles/%s/profile.pid", cl_profileStr)))
+						{
+#ifndef _DEBUG
+							common->Printf("^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr);
+							// ydnar: set crashed state
+							Cbuf_AddText("set com_crashed 1\n");
+#endif
+						}
+
+						// bani - write a new one
+						if (!ComET_WriteProfile(va("profiles/%s/profile.pid", cl_profileStr)))
+						{
+							common->Printf("^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr);
+						}
+
+						// exec the config
+						Cbuf_AddText(va("exec profiles/%s/%s\n", cl_profileStr, ETCONFIG_NAME));
+					}
+				}
+				else
+				{
+					Cbuf_AddText(va("exec %s\n", ETCONFIG_NAME));
+				}
+			}
+		}
+
+		Cbuf_AddText("exec autoexec.cfg\n");
+
+		if (GGameType & GAME_ET)
+		{
+			// ydnar: reset crashed state
+			Cbuf_AddText("set com_crashed 0\n");
+		}
+
+		Cbuf_Execute();
+
+		// override anything from the config files with command line args
+		Com_StartupVariable(NULL);
+	}
+
+#ifdef DEDICATED
+	// TTimo: default to internet dedicated, not LAN dedicated
+	com_dedicated = Cvar_Get("dedicated", "2", CVAR_ROM);
+#else
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2))
+	{
+		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
+	}
+	else if (GGameType & GAME_Tech3)
+	{
+		com_dedicated = Cvar_Get("dedicated", "0", CVAR_LATCH2);
+	}
+	else if (COM_CheckParm("-dedicated"))
+	{
+		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+	}
+	else
+	{
+		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
+	}
+#endif
+
+	// if any archived cvars are modified after this, we will trigger a writing
+	// of the config file
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+
+	//
+	// init commands and vars
+	//
+	COM_InitCommonCvars();
+
+	com_maxfps = Cvar_Get("com_maxfps", GGameType & GAME_Tech3 ? "85" :
+		GGameType & GAME_Quake2 || com_dedicated->integer ? "0" : "72", CVAR_ARCHIVE);
+
+	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
+	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
+
+	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
+	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
+
+	if (GGameType & GAME_Quake3)
+	{
+		comq3_cameraMode = Cvar_Get("com_cameraMode", "0", CVAR_CHEAT);
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		com_dropsim = Cvar_Get("com_dropsim", "0", CVAR_CHEAT);
+		comt3_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
+
+		cl_paused = Cvar_Get("cl_paused", "0", CVAR_ROM);
+		sv_paused = Cvar_Get("sv_paused", "0", CVAR_ROM);
+		com_sv_running = Cvar_Get("sv_running", "0", CVAR_ROM);
+		com_cl_running = Cvar_Get("cl_running", "0", CVAR_ROM);
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_ET))
+	{
+		Cvar_Get("savegame_loading", "0", CVAR_ROM);
+	}
+
+	if (com_dedicated->integer)
+	{
+		if (!com_viewlog->integer)
+		{
+			Cvar_Set("viewlog", "1");
+		}
+	}
+
+	if (com_developer && com_developer->integer)
+	{
+		Cmd_AddCommand("error", Com_Error_f);
+		Cmd_AddCommand("crash", Com_Crash_f);
+		Cmd_AddCommand("freeze", Com_Freeze_f);
+	}
+	COM_InitCommonCommands();
+
+	if (GGameType & (GAME_Quake2 | GAME_Tech3))
+	{
+		com_version = Cvar_Get("version", "JLQuake " JLQUAKE_VERSION_STRING " " CPUSTRING " " __DATE__,
+			CVAR_ROM | CVAR_SERVERINFO);
+	}
+
+	Sys_Init();
+
+	if (GGameType & GAME_Hexen2)
+	{
+		ComH2_LoadStrings();
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		if (com_dedicated->integer)
+		{
+			Cvar_Set("cl_warncmd", "1");
+
+			Cbuf_InsertText("exec server.cfg\n");
+		}
+		else
+		{
+			Cbuf_InsertText(GGameType & GAME_Hexen2 ? "exec hexen.rc\n" : "exec quake.rc\n");
+			Cbuf_AddText("cl_warncmd 1\n");
+			Cbuf_Execute();
+		}
+	}
+
+	if (GGameType & GAME_Quake2)
+	{
+		NETQ23_Init();
+	}
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 | GAME_Tech3))
+	{
+		// pick a port value that should be nice and random
+		Netchan_Init(Com_Milliseconds() & 0xffff);
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		VM_Init();
+	}
+	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) || com_dedicated->integer)
+	{
+		SV_Init();
+	}
+
+	com_dedicated->modified = false;
+	if (!com_dedicated->integer)
+	{
+		CL_Init();
+		Sys_ShowConsole(com_viewlog->integer, false);
+	}
+
+	// set com_frameTime so that if a map is started on the
+	// command line it will still be able to count on com_frameTime
+	// being random enough for a serverid
+	com_frameTime = Com_Milliseconds();
+
+	if (GGameType & GAME_QuakeHexen && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
+	{
+		Cbuf_InsertText(GGameType & GAME_Hexen2 ? "exec hexen.rc\n" : "exec quake.rc\n");
+		Cbuf_Execute();
+
+		NETQH_Init();
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		// add + commands from command line
+		if (!Com_AddStartupCommands())
+		{
+			// if the user didn't give any commands, run default action
+			if (GGameType & GAME_Quake3 && !com_dedicated->integer)
+			{
+				Cbuf_AddText("cinematic idlogo.RoQ\n");
+				Cvar* com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
+				if (!com_introPlayed->integer)
+				{
+					Cvar_Set(com_introPlayed->name, "1");
+					Cvar_Set("nextmap", "cinematic intro.RoQ");
+				}
+			}
+		}
+
+		// start in full screen ui mode
+		Cvar_Set("r_uiFullScreen", "1");
+	}
+
+	CL_StartHunkUsers();
+
+	if (GGameType & GAME_Quake2)
+	{
+		// add + commands from command line
+		if (!Cbuf_AddLateCommands())
+		{
+			// if the user didn't give any commands, run default action
+			if (!com_dedicated->value)
+			{
+				Cbuf_AddText("d1\n");
+			}
+			else
+			{
+				Cbuf_AddText("dedicated_start\n");
+			}
+			Cbuf_Execute();
+		}
+		else
+		{
+			// the user asked for something explicit
+			// so drop the loading plaque
+			SCR_EndLoadingPlaque();
+		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		// make sure single player is off by default
+		Cvar_Set("ui_singlePlayerActive", "0");
+	}
+
+	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
+	{
+		Cvar* com_recommendedSet = Cvar_Get("com_recommendedSet", "0", CVAR_ARCHIVE);
+		if (!com_recommendedSet->integer && !safeMode)
+		{
+			Com_SetRecommended(true);
+		}
+		Cvar_Set("com_recommendedSet", "1");
+	}
+
+	if (!com_dedicated->integer)
+	{
+		if (GGameType & GAME_WolfSP)
+		{
+			Cvar* com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
+			if (!com_introPlayed->integer)
+			{
+				//----(SA)	force this to get played every time (but leave cvar for override)
+				Cbuf_AddText("cinematic wolfintro.RoQ 3\n");
+			}
+		}
+		else if (GGameType & GAME_WolfMP)
+		{
+			Cbuf_AddText("cinematic gmlogo.RoQ\n");
+			Cvar* com_introPlayed = Cvar_Get("com_introplayed", "0", CVAR_ARCHIVE);
+			if (!com_introPlayed->integer)
+			{
+				Cvar_Set(com_introPlayed->name, "1");
+				Cvar_Set("nextmap", "cinematic wolfintro.RoQ");
+			}
+		}
+		else if (GGameType & GAME_ET)
+		{
+			Cbuf_AddText("cinematic etintro.roq\n");
+		}
+	}
+
+	if (GGameType & GAME_Tech3)
+	{
+		NETQ23_Init();
+	}
+
+	common->Printf("Working directory: %s\n", Sys_Cwd());
+
+	fs_ProtectKeyFile = true;
+	com_fullyInitialized = true;
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) && com_dedicated->integer)
+	{
+		// process command line arguments
+		Cbuf_AddLateCommands();
+		Cbuf_Execute();
+
+		// if a map wasn't specified on the command line, spawn start.map
+		if (!SV_IsServerActive())
+		{
+			Cmd_ExecuteString(GGameType & GAME_HexenWorld ? "map demo1" : "map start");
+		}
+		if (!SV_IsServerActive())
+		{
+			common->Error("Couldn't spawn a server");
+		}
+	}
+
+	common->Printf("--- Common Initialization Complete ---\n");
 }

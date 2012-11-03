@@ -3708,10 +3708,14 @@ void FS_Startup()
 	{
 		if (COM_CheckParm("-rogue"))
 		{
+			q1_rogue = true;
+			q1_standard_quake = false;
 			FS_AddGameDirectories("rogue", addPacks);
 		}
 		if (COM_CheckParm("-hipnotic"))
 		{
+			q1_hipnotic = true;
+			q1_standard_quake = false;
 			FS_AddGameDirectories("hipnotic", addPacks);
 		}
 	}
@@ -3722,8 +3726,9 @@ void FS_Startup()
 	}
 	else if (GGameType & GAME_Hexen2)
 	{
-		if (GGameType & GAME_H2Portals)
+		if (COM_CheckParm("-portals"))
 		{
+			GGameType |= GAME_H2Portals;
 			FS_AddGameDirectories("portals", addPacks);
 		}
 	}

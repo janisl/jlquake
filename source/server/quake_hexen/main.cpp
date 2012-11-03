@@ -1825,9 +1825,6 @@ static void SVQHW_InitNet()
 	}
 	NETQHW_Init(svqhw_net_port);
 
-	// pick a port value that should be nice and random
-	Netchan_Init(Com_Milliseconds() & 0xffff);
-
 	// heartbeats will allways be sent to the id master
 	svs.qh_last_heartbeat = -99999;		// send immediately
 
@@ -1941,6 +1938,8 @@ void SVQH_Init()
 		VQH_InitRollCvars();
 
 		SVQHW_InitOperatorCommands();
+
+		PMQH_Init();
 
 		Cmd_AddCommand("addip", SVQHW_AddIP_f);
 		Cmd_AddCommand("removeip", SVQHW_RemoveIP_f);

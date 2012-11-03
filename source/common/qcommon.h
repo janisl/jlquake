@@ -83,7 +83,7 @@ extern Cvar* sv_paused;
 
 extern Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
-extern Cvar* comt3_version;
+extern Cvar* com_version;
 extern Cvar* comt3_timedemo;
 
 extern Cvar* com_ignorecrash;		//bani

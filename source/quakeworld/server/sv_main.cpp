@@ -19,71 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "../../common/qcommon.h"
-#include "../../server/public.h"
-#include "../../client/public.h"
 #include "../../apps/main.h"
 
-#define VERSION     2.40
-
-void Com_SharedInit(int argc, char* argv[], char* cmdline)
+void Com_SharedInit()
 {
 	GGameType = GAME_Quake | GAME_QuakeWorld;
 	Sys_SetHomePathSuffix("jlquake");
-
-	COM_InitArgv2(argc, argv);
-	COM_AddParm("-game");
-	COM_AddParm("qw");
-
-	Cbuf_Init();
-	Cmd_Init();
-	Cvar_Init();
-
-	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
-	com_maxfps = Cvar_Get("com_maxfps", "0", CVAR_ARCHIVE);
-	com_fixedtime = Cvar_Get("fixedtime", "0", CVAR_CHEAT);
-	com_showtrace = Cvar_Get("com_showtrace", "0", CVAR_CHEAT);
-
-	com_watchdog = Cvar_Get("com_watchdog", "60", CVAR_ARCHIVE);
-	com_watchdog_cmd = Cvar_Get("com_watchdog_cmd", "", CVAR_ARCHIVE);
-
-	Com_InitByteOrder();
-
-	COM_InitCommonCvars();
-
-	qh_registered = Cvar_Get("registered", "0", 0);
-
-	FS_InitFilesystem();
-	COMQH_CheckRegistered();
-
-	COM_InitCommonCommands();
-
-	Cvar_Set("cl_warncmd", "1");
-
-	SV_Init();
-	Sys_Init();
-	PMQH_Init();
-
-	Cbuf_InsertText("exec server.cfg\n");
-
-	com_fullyInitialized = true;
-
-	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-
-	common->Printf("\nServer Version %4.2f\n\n", VERSION);
-
-	common->Printf("======== QuakeWorld Initialized ========\n");
-
-// process command line arguments
-	Cbuf_AddLateCommands();
-	Cbuf_Execute();
-
-// if a map wasn't specified on the command line, spawn start.map
-	if (!SV_IsServerActive())
-	{
-		Cmd_ExecuteString("map start");
-	}
-	if (!SV_IsServerActive())
-	{
-		common->Error("Couldn't spawn a server");
-	}
 }

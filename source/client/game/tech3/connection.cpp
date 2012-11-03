@@ -973,7 +973,7 @@ static void CLT3_RequestMotd()
 	info[0] = 0;
 	Info_SetValueForKey(info, "challenge", cls.q3_updateChallenge, MAX_INFO_STRING_Q3);
 	Info_SetValueForKey(info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING_Q3);
-	Info_SetValueForKey(info, "version", comt3_version->string, MAX_INFO_STRING_Q3);
+	Info_SetValueForKey(info, "version", com_version->string, MAX_INFO_STRING_Q3);
 
 	NET_OutOfBandPrint(NS_CLIENT, cls.q3_updateServer, "getmotd \"%s\"\n", info);
 }

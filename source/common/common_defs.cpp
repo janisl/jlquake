@@ -44,7 +44,7 @@ Cvar* qh_registered;
 
 Cvar* com_dropsim;			// 0.0 to 1.0, simulated packet drops
 
-Cvar* comt3_version;
+Cvar* com_version;
 Cvar* comt3_timedemo;
 
 Cvar* com_ignorecrash = NULL;		// bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
@@ -775,21 +775,6 @@ void COM_InitArgv2(int argc, char** argv)
 			COM_AddParm(safeargvs[i]);
 		}
 	}
-
-	if (GGameType & GAME_Quake && !(GGameType & GAME_QuakeWorld))
-	{
-		if (COM_CheckParm("-rogue"))
-		{
-			q1_rogue = true;
-			q1_standard_quake = false;
-		}
-
-		if (COM_CheckParm("-hipnotic"))
-		{
-			q1_hipnotic = true;
-			q1_standard_quake = false;
-		}
-	}
 }
 
 //	Returns the position (1 to argc-1) in the program's argument list
@@ -813,6 +798,7 @@ void COM_InitCommonCvars()
 	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
 	com_logfile = Cvar_Get("logfile", "0", CVAR_TEMP);
+	com_speeds = Cvar_Get("com_speeds", "0", 0);
 
 #if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
 	com_noErrorInterrupt = Cvar_Get("com_noErrorInterrupt", "0", 0);
@@ -1523,6 +1509,8 @@ bool ComET_WriteProfile(const char* profile_path)
 // being registered.
 void COMQH_CheckRegistered()
 {
+	qh_registered = Cvar_Get("registered", "0", 0);
+
 	fileHandle_t h;
 	FS_FOpenFileRead("gfx/pop.lmp", &h, true);
 
