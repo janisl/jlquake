@@ -1530,8 +1530,8 @@ void CLET_WWWDownload()
 			}
 			else
 			{
-				strcat(clc.et_redirectedList, "@");
-				strcat(clc.et_redirectedList, cls.et_originalDownloadName);
+				String::Cat(clc.et_redirectedList, sizeof(clc.et_redirectedList), "@");
+				String::Cat(clc.et_redirectedList, sizeof(clc.et_redirectedList), cls.et_originalDownloadName);
 			}
 		}
 	}

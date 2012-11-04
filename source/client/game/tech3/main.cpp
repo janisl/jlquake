@@ -469,8 +469,8 @@ static void CL_Cache_UsedFile_f()
 	String::Cpy(itemStr, Cmd_Argv(2));
 	for (int i = 3; i < Cmd_Argc(); i++)
 	{
-		strcat(itemStr, " ");
-		strcat(itemStr, Cmd_Argv(i));
+		String::Cat(itemStr, sizeof(itemStr), " ");
+		String::Cat(itemStr, sizeof(itemStr), Cmd_Argv(i));
 	}
 	String::ToLower(itemStr);
 

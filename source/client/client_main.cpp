@@ -992,8 +992,8 @@ bool CL_WWWBadChecksum(const char* pakname)
 			common->Printf("ERROR: badChecksumList overflowed (%s)\n", clc.et_badChecksumList);
 			return false;
 		}
-		strcat(clc.et_badChecksumList, "@");
-		strcat(clc.et_badChecksumList, pakname);
+		String::Cat(clc.et_badChecksumList, sizeof(clc.et_badChecksumList), "@");
+		String::Cat(clc.et_badChecksumList, sizeof(clc.et_badChecksumList), pakname);
 		common->DPrintf("bad checksums: %s\n", clc.et_badChecksumList);
 		return true;
 	}

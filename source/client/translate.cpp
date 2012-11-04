@@ -239,7 +239,7 @@ static bool CL_CheckTranslationString(const char* original, const char* translat
 			continue;
 		}
 
-		strcat(format_org, va("%c%c ", '%', original[i + 1]));
+		String::Cat(format_org, sizeof(format_org), va("%c%c ", '%', original[i + 1]));
 	}
 
 	// generate formatting string for translated
@@ -256,7 +256,7 @@ static bool CL_CheckTranslationString(const char* original, const char* translat
 			continue;
 		}
 
-		strcat(format_trans, va("%c%c ", '%', translated[i + 1]));
+		String::Cat(format_trans, sizeof(format_trans), va("%c%c ", '%', translated[i + 1]));
 	}
 
 	// compare
