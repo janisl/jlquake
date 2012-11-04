@@ -18,29 +18,14 @@
     <ClCompile Include="cl_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common.cpp">
+    <ClCompile Include="..\..\apps\windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\apps\windows.cpp">
+    <ClCompile Include="..\..\apps\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bothdefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="quakedef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\apps\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>

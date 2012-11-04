@@ -98,16 +98,12 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\main.cpp" />
     <ClCompile Include="..\..\apps\windows.cpp" />
-    <ClCompile Include="..\client\common.cpp" />
     <ClCompile Include="sv_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\resource.h" />
-    <ClInclude Include="..\client\bothdefs.h" />
-    <ClInclude Include="..\client\common.h" />
-    <ClInclude Include="qwsvdef.h" />
-    <ClInclude Include="server.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.vcxproj">

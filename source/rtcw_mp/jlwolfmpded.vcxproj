@@ -86,13 +86,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\apps\main.cpp" />
     <ClCompile Include="..\apps\windows.cpp" />
     <ClCompile Include="qcommon\common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\apps\resource.h" />
-    <ClInclude Include="game\q_shared.h" />
-    <ClInclude Include="qcommon\qcommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.vcxproj">

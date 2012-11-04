@@ -99,16 +99,12 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\main.cpp" />
     <ClCompile Include="..\..\apps\windows.cpp" />
     <ClCompile Include="cl_main.cpp" />
-    <ClCompile Include="common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\resource.h" />
-    <ClInclude Include="bothdefs.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="quakedef.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\client\client.vcxproj">
