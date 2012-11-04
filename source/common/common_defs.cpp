@@ -1380,20 +1380,10 @@ void Com_Quit_f()
 	Sys_Quit();
 }
 
-void COM_Version_f()
-{
-	common->Printf("Version " JLQUAKE_VERSION_STRING "\n");
-	common->Printf("Exe: "__TIME__ " "__DATE__ "\n");
-}
-
 void COM_InitCommonCommands()
 {
 	Cmd_AddCommand("quit", Com_Quit_f);
 	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
-	if (GGameType & GAME_QuakeHexen)
-	{
-		Cmd_AddCommand("version", COM_Version_f);
-	}
 }
 
 // bani - checks if profile.pid is valid

@@ -798,11 +798,8 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	}
 	COM_InitCommonCommands();
 
-	if (GGameType & (GAME_Quake2 | GAME_Tech3))
-	{
-		com_version = Cvar_Get("version", "JLQuake " JLQUAKE_VERSION_STRING " " CPUSTRING " " __DATE__,
-			CVAR_ROM | CVAR_SERVERINFO);
-	}
+	com_version = Cvar_Get("version", "JLQuake " JLQUAKE_VERSION_STRING " " CPUSTRING " " __DATE__,
+		CVAR_ROM | CVAR_SERVERINFO);
 
 	Sys_Init();
 
