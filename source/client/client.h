@@ -57,7 +57,7 @@
 struct cshift_t
 {
 	int destcolor[3];
-	int percent;			// 0-256
+	float percent;			// 0-256
 };
 
 //	The clientActive_t structure is wiped completely at every new gamestate_t,

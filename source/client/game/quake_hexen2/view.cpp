@@ -309,14 +309,14 @@ static void VH2_CalcPowerupCshift()
 static void VQH_UpdateCShifts()
 {
 	// drop the damage value
-	cl.qh_cshifts[CSHIFT_DAMAGE].percent -= cls.frametime * 3 / 20;
+	cl.qh_cshifts[CSHIFT_DAMAGE].percent -= cls.frametime * 0.15f;
 	if (cl.qh_cshifts[CSHIFT_DAMAGE].percent <= 0)
 	{
 		cl.qh_cshifts[CSHIFT_DAMAGE].percent = 0;
 	}
 
 	// drop the bonus value
-	cl.qh_cshifts[CSHIFT_BONUS].percent -= cls.frametime / 10;
+	cl.qh_cshifts[CSHIFT_BONUS].percent -= cls.frametime * 0.1f;
 	if (cl.qh_cshifts[CSHIFT_BONUS].percent <= 0)
 	{
 		cl.qh_cshifts[CSHIFT_BONUS].percent = 0;
