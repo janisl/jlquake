@@ -610,15 +610,6 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 		SVH2_RemoveGIPFiles(NULL);
 	}
 
-	if (GGameType & GAME_QuakeWorld && !com_dedicated->integer)
-	{
-		NETQHW_Init(QWPORT_CLIENT);
-	}
-	if (GGameType & GAME_HexenWorld && !com_dedicated->integer)
-	{
-		NETQHW_Init(HWPORT_CLIENT);
-	}
-
 	if (GGameType & GAME_Quake2)
 	{
 		Cbuf_AddText("exec default.cfg\n");
@@ -819,6 +810,15 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	if (GGameType & GAME_Hexen2)
 	{
 		ComH2_LoadStrings();
+	}
+
+	if (GGameType & GAME_QuakeWorld && !com_dedicated->integer)
+	{
+		NETQHW_Init(QWPORT_CLIENT);
+	}
+	if (GGameType & GAME_HexenWorld && !com_dedicated->integer)
+	{
+		NETQHW_Init(HWPORT_CLIENT);
 	}
 
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
