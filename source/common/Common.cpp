@@ -165,18 +165,6 @@ void idCommonLocal::VError(int code, const char* format, va_list argPtr)
 	}
 #endif
 
-	// when we are running automated scripts, make sure we
-	// know if anything failed
-	if (com_buildScript && com_buildScript->integer)
-	{
-
-		// ERR_ENDGAME is not really an error, don't die if building a script
-		if (code != ERR_ENDGAME)
-		{
-			code = ERR_FATAL;
-		}
-	}
-
 	// make sure we can get at our local stuff
 	FS_PureServerSetLoadedPaks("", "");
 

@@ -29,7 +29,6 @@ Cvar* com_developer;
 #if defined(_WIN32) && defined(_DEBUG)
 Cvar* com_noErrorInterrupt;
 #endif
-Cvar* com_buildScript;		// for automated data building scripts
 
 Cvar* com_crashed = NULL;	// ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -803,11 +802,6 @@ void COM_InitCommonCvars()
 #if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
 	com_noErrorInterrupt = Cvar_Get("com_noErrorInterrupt", "0", 0);
 #endif
-
-	if (GGameType & GAME_Tech3)
-	{
-		com_buildScript = Cvar_Get("com_buildScript", "0", 0);
-	}
 }
 
 int Com_HashKey(const char* string, int maxlen)

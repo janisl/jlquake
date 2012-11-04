@@ -485,8 +485,8 @@ static void SVT3_Map_f()
 	char smapname[MAX_QPATH];
 	if (GGameType & GAME_WolfSP || (GGameType & GAME_ET && SVET_GameIsSinglePlayer()))
 	{
-		bool buildScript = Cvar_VariableIntegerValue("com_buildScript");
-		if (!buildScript && svt3_reloading->integer && svt3_reloading->integer != RELOAD_NEXTMAP)		// game is in 'reload' mode, don't allow starting new maps yet.
+		// game is in 'reload' mode, don't allow starting new maps yet.
+		if (svt3_reloading->integer && svt3_reloading->integer != RELOAD_NEXTMAP)
 		{
 			return;
 		}
