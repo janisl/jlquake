@@ -1,6 +1,5 @@
 ------------------- Common -----------------------
 
--basedir
 -bpp
 -cddev
 -condebug
@@ -70,6 +69,7 @@ Parameter                Console command                      Saved
 -window                  set r_fullscreen 0                   Yes
 -gamma                   set r_gamma <value>                  Yes
 -nomtex                  set r_ext_multitexture 0             Yes
+-basedir                 set fs_basepath <path>               No
 
 -dinput
   Enabled by default, disable with:

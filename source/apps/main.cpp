@@ -549,6 +549,11 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	COM_InitArgv2(argc, argv);
 	Com_ParseCommandLine(commandLine);
 
+#ifdef DEDICATED
+	FS_InitGame(true);
+#else
+	FS_InitGame(false);
+#endif
 	Com_SharedInit();
 
 	Cvar_Init();

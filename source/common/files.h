@@ -193,7 +193,7 @@ bool FS_VerifyPak(const char* pak);
 
 bool FS_CL_ExtractFromPakFile(const char* path, const char* gamedir, const char* filename);
 
-void FS_Startup();
+void FS_InitGame(bool dedicatedBuild);
 void FS_InitFilesystem();
 void FS_Shutdown();
 

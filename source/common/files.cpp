@@ -3662,12 +3662,18 @@ static void FS_ResetSearchPathToBase()
 	}
 }
 
-void FS_Startup()
+void FS_InitGame(bool dedicatedBuild)
+{
+	Com_StartupVariable("fs_basepath");
+	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
+
+}
+
+static void FS_Startup()
 {
 	common->Printf("----- FS_Startup -----\n");
 
 	fs_debug = Cvar_Get("fs_debug", "0", 0);
-	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
 	const char* homePath = Sys_DefaultHomePath();
 	if (!homePath || !homePath[0])
 	{
@@ -3800,22 +3806,12 @@ void FS_InitFilesystem()
 		GGameType & GAME_Quake3 ? "baseq3" :
 		GGameType & (GAME_WolfSP | GAME_WolfMP) ? "main" : "etmain";
 
-	if (GGameType & GAME_QuakeHexen)
-	{
-		// Overrides the system supplied base directory
-		int i = COM_CheckParm("-basedir");
-		if (i && i < COM_Argc() - 1)
-		{
-			Cvar_Set("fs_basepath", COM_Argv(i + 1));
-		}
-	}
 	if (GGameType & GAME_Tech3)
 	{
 		// allow command line parms to override our defaults
 		// we have to specially handle this, because normal command
 		// line variable sets don't happen until after the filesystem
 		// has already been initialized
-		Com_StartupVariable("fs_basepath");
 		Com_StartupVariable("fs_homepath");
 		Com_StartupVariable("fs_game");
 	}
