@@ -8,7 +8,6 @@
 set(WOLFSP_FILES
 	../apps/main.cpp
 	../apps/unix.cpp
-	qcommon/common.cpp
 )
 
 add_executable(jlwolfsp ${WOLFSP_FILES})

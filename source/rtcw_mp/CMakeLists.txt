@@ -5,7 +5,6 @@
 set(WOLFMP_FILES
 	../apps/main.cpp
 	../apps/unix.cpp
-	qcommon/common.cpp
 )
 
 add_executable(jlwolfmp ${WOLFMP_FILES})
@@ -15,7 +14,6 @@ target_link_libraries(jlwolfmp ${CLIENTS_LIBS})
 set(WOLFMPDED_FILES
 	../apps/main.cpp
 	../apps/unix.cpp
-	qcommon/common.cpp
 )
 
 add_executable(jlwolfmpded ${WOLFMPDED_FILES})

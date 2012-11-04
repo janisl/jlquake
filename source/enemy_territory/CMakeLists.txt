@@ -17,7 +17,6 @@
 set (ET_FILES
 	../apps/main.cpp
 	../apps/unix.cpp
-	qcommon/common.cpp
 )
 
 add_executable(jlet ${ET_FILES})
@@ -27,7 +26,6 @@ target_link_libraries(jlet ${CLIENTS_LIBS})
 set (ETDED_FILES
 	../apps/main.cpp
 	../apps/unix.cpp
-	qcommon/common.cpp
 )
 
 add_executable(jletded ${ETDED_FILES})

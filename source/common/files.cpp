@@ -2336,6 +2336,18 @@ static bool FS_SV_FileExists(const char* file)
 	return false;
 }
 
+static bool FS_BasePathFileExists(const char* gamedir, const char* file)
+{
+	char* testpath = FS_BuildOSPath(fs_basepath->string, gamedir, file);
+	FILE* f = fopen(testpath, "rb");
+	if (f)
+	{
+		fclose(f);
+		return true;
+	}
+	return false;
+}
+
 //**************************************************************************
 //
 //	DIRECTORY SCANNING FUNCTIONS
@@ -3667,6 +3679,50 @@ void FS_InitGame(bool dedicatedBuild)
 	Com_StartupVariable("fs_basepath");
 	fs_basepath = Cvar_Get("fs_basepath", Sys_Cwd(), CVAR_INIT);
 
+	if (FS_BasePathFileExists("id1", "pak0.pak"))
+	{
+		fs_PrimaryBaseGame = "id1";
+		Sys_SetHomePathSuffix("jlquake");
+		GGameType = GAME_Quake;
+		if (dedicatedBuild || !String::ICmp(COM_Argv(1), "-quakeworld"))
+			GGameType |= GAME_QuakeWorld;
+	}
+	else if (FS_BasePathFileExists("data1", "pak0.pak"))
+	{
+		fs_PrimaryBaseGame = "data1";
+		Sys_SetHomePathSuffix("jlhexen2");
+		GGameType = GAME_Hexen2;
+		if (dedicatedBuild || !String::ICmp(COM_Argv(1), "-hexenworld"))
+			GGameType |= GAME_HexenWorld;
+	}
+	else if (FS_BasePathFileExists("baseq2", "pak0.pak"))
+	{
+		fs_PrimaryBaseGame = "baseq2";
+		Sys_SetHomePathSuffix("jlquake2");
+		GGameType = GAME_Quake2;
+	}
+	else if (FS_BasePathFileExists("baseq3", "pak0.pk3"))
+	{
+		fs_PrimaryBaseGame = "baseq3";
+		Sys_SetHomePathSuffix("jlquake3");
+		GGameType = GAME_Quake3;
+	}
+	else if (FS_BasePathFileExists("main", "pak0.pk3"))
+	{
+		fs_PrimaryBaseGame = "main";
+		Sys_SetHomePathSuffix("jlwolf");
+		GGameType = dedicatedBuild || !String::ICmp(COM_Argv(1), "-multiplayer") ? GAME_WolfMP : GAME_WolfSP;
+	}
+	else if (FS_BasePathFileExists("etmain", "pak0.pk3"))
+	{
+		fs_PrimaryBaseGame = "etmain";
+		Sys_SetHomePathSuffix("jlet");
+		GGameType = GAME_ET;
+	}
+	else
+	{
+		common->FatalError("Cannot detect game");
+	}
 }
 
 static void FS_Startup()
@@ -3800,12 +3856,6 @@ static void FS_Startup()
 // is resetting due to a game change
 void FS_InitFilesystem()
 {
-	fs_PrimaryBaseGame = GGameType & GAME_Quake ? "id1" :
-		GGameType & GAME_Hexen2 ? "data1" :
-		GGameType & GAME_Quake2 ? "baseq2" :
-		GGameType & GAME_Quake3 ? "baseq3" :
-		GGameType & (GAME_WolfSP | GAME_WolfMP) ? "main" : "etmain";
-
 	if (GGameType & GAME_Tech3)
 	{
 		// allow command line parms to override our defaults

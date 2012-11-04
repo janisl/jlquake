@@ -18,7 +18,6 @@
 #define _APPS_MAIN_H
 
 void Com_Init(int argc, char* argv[], char* cmdline);
-void Com_SharedInit();
 void Com_Frame();
 
 #endif

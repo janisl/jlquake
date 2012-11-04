@@ -554,7 +554,6 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 #else
 	FS_InitGame(false);
 #endif
-	Com_SharedInit();
 
 	Cvar_Init();
 
