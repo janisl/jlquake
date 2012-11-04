@@ -2,24 +2,20 @@
 # CLIENT/SERVER
 #############################################################################
 
-set(QUAKE3_FILES
+add_executable(jlquake
 	../apps/main.cpp
 	../apps/unix.cpp
 )
-
-add_executable(jlquake3 ${QUAKE3_FILES})
-set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlquake3 ${CLIENTS_LIBS})
+set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
+target_link_libraries(jlquake ${CLIENTS_LIBS})
 
 #############################################################################
 # DEDICATED SERVER                        
 #############################################################################
 
-set(QUAKE3_DEDICATED_FILES
+add_executable(jlquakeded
 	../apps/main.cpp
 	../apps/unix.cpp
 )
-
-add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})
-set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")
-target_link_libraries(jlquake3ded ${SERVERS_LIBS})
+set_target_properties(jlquakeded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED")
+target_link_libraries(jlquakeded ${SERVERS_LIBS})

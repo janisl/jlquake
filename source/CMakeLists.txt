@@ -1,3 +1,9 @@
+# NOTE TTimo using -fshort-enums increases warnings on enum issues
+#   this is for debugging and QA ONLY, the flag has ABI issues (OpenGL headers)
+#$COMMON_CFLAGS = $COMMON_CFLAGS . '-fshort-enums ';
+# maintain this dangerous optimization off at all times
+#g_env.Append( CPPFLAGS = '-fno-strict-aliasing' )
+
 set(BASE_CFLAGS "-Wall -pipe -fsigned-char -fvisibility=hidden")
 set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -march=pentiumpro -O6 -ffast-math -funroll-loops -fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
@@ -12,13 +18,4 @@ add_subdirectory(common)
 add_subdirectory(client)
 add_subdirectory(null_client)
 add_subdirectory(server)
-
-add_subdirectory(quake)
-add_subdirectory(quakeworld)
-add_subdirectory(hexen2)
-add_subdirectory(hexenworld)
-add_subdirectory(quake2)
-add_subdirectory(quake3)
-add_subdirectory(rtcw_sp)
-add_subdirectory(rtcw_mp)
-add_subdirectory(enemy_territory)
+add_subdirectory(apps)
