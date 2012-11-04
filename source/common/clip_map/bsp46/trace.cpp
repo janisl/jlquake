@@ -1279,7 +1279,7 @@ void QClipMap46::TraceThroughVerticalCylinder(traceWork_t* tw, vec3_t origin, fl
 	d = b * b - 4.0f * c;	// * a;
 	if (d > 0)
 	{
-		sqrtd = SquareRootFloat(d);
+		sqrtd = SQRTFAST(d);
 		// = (- b + sqrtd) * 0.5f;// / (2.0f * a);
 		fraction = (-b - sqrtd) * 0.5f;	// / (2.0f * a);
 		//
@@ -1384,7 +1384,7 @@ void QClipMap46::TraceThroughSphere(traceWork_t* tw, vec3_t origin, float radius
 	d = b * b - 4.0f * c;	// * a;
 	if (d > 0)
 	{
-		sqrtd = SquareRootFloat(d);
+		sqrtd = SQRTFAST(d);
 		// = (- b + sqrtd) * 0.5f; // / (2.0f * a);
 		fraction = (-b - sqrtd) * 0.5f;	// / (2.0f * a);
 		//
@@ -1753,36 +1753,6 @@ void QClipMap46::TestCapsuleInCapsule(traceWork_t* tw, clipHandle_t model)
 			tw->trace.fraction = 0;
 		}
 	}
-}
-
-/*
-===============================================================================
-
-BASIC MATH
-
-===============================================================================
-*/
-
-//==========================================================================
-//
-//	QClipMap46::SquareRootFloat
-//
-//==========================================================================
-
-float QClipMap46::SquareRootFloat(float number)
-{
-	int i;
-	float x2, y;
-	const float threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	y  = number;
-	i  = *(int*)&y;
-	i  = 0x5f3759df - (i >> 1);
-	y  = *(float*)&i;
-	y  = y * (threehalfs - (x2 * y * y));
-	y  = y * (threehalfs - (x2 * y * y));
-	return number * y;
 }
 
 //==========================================================================

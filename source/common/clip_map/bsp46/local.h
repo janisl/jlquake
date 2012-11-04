@@ -244,7 +244,6 @@ private:
 	static void TestBoxInBrush(traceWork_t* tw, cbrush_t* brush);
 	void TestBoundingBoxInCapsule(traceWork_t* tw, clipHandle_t model);
 	void TestCapsuleInCapsule(traceWork_t* tw, clipHandle_t model);
-	static float SquareRootFloat(float number);
 
 public:
 	int numShaders;
