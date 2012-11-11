@@ -25,7 +25,6 @@ enum menu_state_t
 	m_load,
 	m_save,
 	m_multiplayer,
-	m_net,
 	m_lanconfig,
 	m_search,
 	m_slist,

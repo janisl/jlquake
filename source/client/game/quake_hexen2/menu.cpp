@@ -54,7 +54,6 @@ static void MH2_Menu_Difficulty_f();
 static void MQH_Menu_Load_f();
 static void MQH_Menu_Save_f();
 static void MQH_Menu_MultiPlayer_f();
-static void MQH_Menu_Net_f();
 static void MQH_Menu_LanConfig_f();
 static void MQH_Menu_Search_f();
 static void MQH_Menu_ServerList_f();
@@ -1234,7 +1233,7 @@ static void MQH_MultiPlayer_Key(int key)
 			}
 			else if (tcpipAvailable)
 			{
-				MQH_Menu_Net_f();
+				MQH_Menu_LanConfig_f();
 			}
 			break;
 
@@ -1245,7 +1244,7 @@ static void MQH_MultiPlayer_Key(int key)
 			}
 			else if (tcpipAvailable)
 			{
-				MQH_Menu_Net_f();
+				MQH_Menu_LanConfig_f();
 			}
 			break;
 
@@ -1261,84 +1260,6 @@ static void MQH_MultiPlayer_Key(int key)
 			MH2_Menu_MSave_f();
 			break;
 		}
-	}
-}
-
-//=============================================================================
-/* NET MENU */
-
-static const char* net_helpMessage[] =
-{
-	" Commonly used to play  ",
-	" over the Internet, but ",
-	" also used on a Local   ",
-	" Area Network.          "
-};
-
-static void MQH_Menu_Net_f()
-{
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_net;
-	mqh_entersound = true;
-}
-
-static void MQH_Net_Draw()
-{
-	if (GGameType & GAME_Hexen2)
-	{
-		MH2_ScrollTitle("gfx/menu/title4.lmp");
-
-		MH2_DrawBigString(72, 89, "TCP/IP");
-	}
-	else
-	{
-		MQH_DrawPic(16, 4, R_CachePic("gfx/qplaque.lmp"));
-		image_t* p = R_CachePic("gfx/p_multi.lmp");
-		MQH_DrawPic((320 - R_GetImageWidth(p)) / 2, 4, p);
-
-		if (tcpipAvailable)
-		{
-			p = R_CachePic("gfx/netmen4.lmp");
-		}
-		else
-		{
-			p = R_CachePic("gfx/dim_tcp.lmp");
-		}
-		MQH_DrawPic(72, 89, p);
-	}
-
-	int f = (320 - 26 * 8) / 2;
-	MQH_DrawTextBox(f, 134, 24, 4);
-	f += 8;
-	MQH_Print(f, 142, net_helpMessage[0]);
-	MQH_Print(f, 150, net_helpMessage[1]);
-	MQH_Print(f, 158, net_helpMessage[2]);
-	MQH_Print(f, 166, net_helpMessage[3]);
-
-	if (GGameType & GAME_Hexen2)
-	{
-		f = (cls.realtime / 100) % 8;
-		MQH_DrawPic(43, 84, R_CachePic(va("gfx/menu/menudot%i.lmp", f + 1)));
-	}
-	else
-	{
-		f = (cls.realtime / 100) % 6;
-		MQH_DrawPic(54, 92, R_CachePic(va("gfx/menudot%i.lmp", f + 1)));
-	}
-}
-
-static void MQH_Net_Key(int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		MQH_Menu_MultiPlayer_f();
-		break;
-
-	case K_ENTER:
-		mqh_entersound = true;
-		MQH_Menu_LanConfig_f();
-		break;
 	}
 }
 
@@ -1469,7 +1390,7 @@ static void MQH_LanConfig_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		MQH_Menu_Net_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -2830,7 +2751,7 @@ static void MQH_GameOptions_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		MQH_Menu_Net_f();
+		MQH_Menu_MultiPlayer_f();
 		break;
 
 	case K_UPARROW:
@@ -5495,10 +5416,6 @@ void MQH_Draw()
 		MQH_MultiPlayer_Draw();
 		break;
 
-	case m_net:
-		MQH_Net_Draw();
-		break;
-
 	case m_lanconfig:
 		MQH_LanConfig_Draw();
 		break;
@@ -5590,10 +5507,6 @@ void MQH_Keydown(int key)
 
 	case m_multiplayer:
 		MQH_MultiPlayer_Key(key);
-		return;
-
-	case m_net:
-		MQH_Net_Key(key);
 		return;
 
 	case m_lanconfig:
