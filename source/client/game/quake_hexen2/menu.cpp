@@ -1098,9 +1098,6 @@ static void MQH_Save_Key(int k)
 //=============================================================================
 /* MULTIPLAYER MENU */
 
-#define StartingGame    (mqh_multiplayer_cursor == 1)
-#define JoiningGame     (mqh_multiplayer_cursor == 0)
-
 #define MULTIPLAYER_ITEMS_Q1    3
 #define MULTIPLAYER_ITEMS_H2    5
 #define MULTIPLAYER_ITEMS_HW    2
@@ -1244,7 +1241,7 @@ static void MQH_MultiPlayer_Key(int key)
 			}
 			else if (tcpipAvailable)
 			{
-				MQH_Menu_LanConfig_f();
+				MQH_Menu_GameOptions_f();
 			}
 			break;
 
@@ -1277,26 +1274,8 @@ static int lanConfig_port;
 static field_t lanConfig_portname;
 static field_t lanConfig_joinname;
 
-static void MQH_Menu_LanConfig_f()
+static void MQH_InitPortName()
 {
-	in_keyCatchers |= KEYCATCH_UI;
-	m_state = m_lanconfig;
-	mqh_entersound = true;
-	if (mqh_lanConfig_cursor == -1)
-	{
-		if (JoiningGame)
-		{
-			mqh_lanConfig_cursor = 2;
-		}
-		else
-		{
-			mqh_lanConfig_cursor = 1;
-		}
-	}
-	if (StartingGame && mqh_lanConfig_cursor == 2)
-	{
-		mqh_lanConfig_cursor = 1;
-	}
 	lanConfig_port = DEFAULTnet_hostport;
 	sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
 	lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
@@ -1305,6 +1284,18 @@ static void MQH_Menu_LanConfig_f()
 	Field_Clear(&lanConfig_joinname);
 	lanConfig_joinname.maxLength = 29;
 	lanConfig_joinname.widthInChars = GGameType & GAME_Hexen2 ? 30 : 22;
+}
+
+static void MQH_Menu_LanConfig_f()
+{
+	in_keyCatchers |= KEYCATCH_UI;
+	m_state = m_lanconfig;
+	mqh_entersound = true;
+	if (mqh_lanConfig_cursor == -1)
+	{
+		mqh_lanConfig_cursor = 2;
+	}
+	MQH_InitPortName();
 
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
@@ -1336,39 +1327,21 @@ static void MQH_LanConfig_Draw()
 		MQH_DrawPic(basex, 4, p);
 	}
 
-	const char* startJoin;
-	if (StartingGame)
-	{
-		startJoin = "New Game";
-	}
-	else
-	{
-		startJoin = "Join Game";
-	}
-	const char* protocol = "TCP/IP";
-	MQH_Print(basex, GGameType & GAME_Hexen2 ? 60 : 32, va("%s - %s", startJoin, protocol));
+	MQH_Print(basex, GGameType & GAME_Hexen2 ? 60 : 32, "Join Game - TCP/IP");
 	basex += 8;
 
 	MQH_Print(basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[0] : lanConfig_cursor_table_q1[0], "Port");
 	MQH_DrawField(basex + 9 * 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[0] : lanConfig_cursor_table_q1[0], &lanConfig_portname, mqh_lanConfig_cursor == 0);
 
-	if (JoiningGame)
+	if (GGameType & GAME_Hexen2)
 	{
-		if (GGameType & GAME_Hexen2)
-		{
-			MQH_Print(basex, lanConfig_cursor_table_h2[1], "Class:");
-			MQH_Print(basex + 8 * 7, lanConfig_cursor_table_h2[1], h2_ClassNames[setup_class]);
-		}
+		MQH_Print(basex, lanConfig_cursor_table_h2[1], "Class:");
+		MQH_Print(basex + 8 * 7, lanConfig_cursor_table_h2[1], h2_ClassNames[setup_class]);
+	}
 
-		MQH_Print(basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[2] : lanConfig_cursor_table_q1[1], "Search for local games...");
-		MQH_Print(basex, GGameType & GAME_Hexen2 ? 136 : 88, "Join game at:");
-		MQH_DrawField(basex + 16, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[3] : lanConfig_cursor_table_q1[2], &lanConfig_joinname, mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 3 : 2));
-	}
-	else
-	{
-		MQH_DrawTextBox(basex, (GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[1] : lanConfig_cursor_table_q1[1]) - 8, 2, 1);
-		MQH_Print(basex + 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[1] : lanConfig_cursor_table_q1[1], "OK");
-	}
+	MQH_Print(basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[2] : lanConfig_cursor_table_q1[1], "Search for local games...");
+	MQH_Print(basex, GGameType & GAME_Hexen2 ? 136 : 88, "Join game at:");
+	MQH_DrawField(basex + 16, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[3] : lanConfig_cursor_table_q1[2], &lanConfig_joinname, mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 3 : 2));
 
 	MQH_DrawCharacter(basex - 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[mqh_lanConfig_cursor] : lanConfig_cursor_table_q1[mqh_lanConfig_cursor], 12 + ((cls.realtime / 250) & 1));
 
@@ -1383,6 +1356,20 @@ static void MQH_ConfigureNetSubsystem()
 	Cbuf_AddText("stopdemo\n");
 
 	net_hostport = lanConfig_port;
+}
+
+static void MQH_CheckPortValue()
+{
+	int l =  String::Atoi(lanConfig_portname.buffer);
+	if (l > 65535)
+	{
+		sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
+		lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
+	}
+	else
+	{
+		lanConfig_port = l;
+	}
 }
 
 static void MQH_LanConfig_Key(int key)
@@ -1400,14 +1387,7 @@ static void MQH_LanConfig_Key(int key)
 		{
 			if (GGameType & GAME_Hexen2)
 			{
-				if (JoiningGame)
-				{
-					mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_H2 - 1;
-				}
-				else
-				{
-					mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_H2 - 2;
-				}
+				mqh_lanConfig_cursor = NUM_LANCONFIG_CMDS_H2 - 1;
 			}
 			else
 			{
@@ -1426,27 +1406,21 @@ static void MQH_LanConfig_Key(int key)
 		break;
 
 	case K_ENTER:
-		if (mqh_lanConfig_cursor == 0 || (GGameType & GAME_Hexen2 && JoiningGame && mqh_lanConfig_cursor == 1))
+		if (mqh_lanConfig_cursor == 0 || (GGameType & GAME_Hexen2 && mqh_lanConfig_cursor == 1))
 		{
 			break;
 		}
 
 		mqh_entersound = true;
-		if (GGameType & GAME_Hexen2 && JoiningGame)
+		if (GGameType & GAME_Hexen2)
 		{
 			Cbuf_AddText(va("playerclass %d\n", setup_class + 1));
 		}
 
 		MQH_ConfigureNetSubsystem();
 
-		if ((JoiningGame && mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 2 : 1)) ||
-			(!JoiningGame && mqh_lanConfig_cursor == 1))
+		if (mqh_lanConfig_cursor == (GGameType & GAME_Hexen2 ? 2 : 1))
 		{
-			if (StartingGame)
-			{
-				MQH_Menu_GameOptions_f();
-				break;
-			}
 			MQH_Menu_Search_f();
 			break;
 		}
@@ -1463,7 +1437,7 @@ static void MQH_LanConfig_Key(int key)
 		break;
 
 	case K_LEFTARROW:
-		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1 || !JoiningGame)
+		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1)
 		{
 			break;
 		}
@@ -1477,7 +1451,7 @@ static void MQH_LanConfig_Key(int key)
 		break;
 
 	case K_RIGHTARROW:
-		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1 || !JoiningGame)
+		if (!(GGameType & GAME_Hexen2) || mqh_lanConfig_cursor != 1)
 		{
 			break;
 		}
@@ -1499,28 +1473,7 @@ static void MQH_LanConfig_Key(int key)
 		Field_KeyDownEvent(&lanConfig_joinname, key);
 	}
 
-	if (StartingGame && mqh_lanConfig_cursor == 2)
-	{
-		if (key == K_UPARROW)
-		{
-			mqh_lanConfig_cursor = 1;
-		}
-		else
-		{
-			mqh_lanConfig_cursor = 0;
-		}
-	}
-
-	int l =  String::Atoi(lanConfig_portname.buffer);
-	if (l > 65535)
-	{
-		sprintf(lanConfig_portname.buffer, "%u", lanConfig_port);
-		lanConfig_portname.cursor = String::Length(lanConfig_portname.buffer);
-	}
-	else
-	{
-		lanConfig_port = l;
-	}
+	MQH_CheckPortValue();
 }
 
 static void MQH_LanConfig_Char(int key)
@@ -1890,8 +1843,8 @@ static void MHW_Connect_Char(int k)
 //=============================================================================
 /* GAME OPTIONS MENU */
 
-#define NUM_GAMEOPTIONS_Q1  9
-#define NUM_GAMEOPTIONS_H2  11
+#define NUM_GAMEOPTIONS_Q1  10
+#define NUM_GAMEOPTIONS_H2  12
 
 #define OEM_START 9
 #define REG_START 2
@@ -2157,8 +2110,8 @@ static episode_t mh2_episodes[] =
 static bool mqh_serverInfoMessage = false;
 static int mqh_serverInfoMessageTime;
 
-static int mq1_gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 112, 120};
-static int mh2_gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 104, 112, 128, 136};
+static int mq1_gameoptions_cursor_table[] = {40, 56, 66, 74, 82, 90, 98, 106, 122, 130};
+static int mh2_gameoptions_cursor_table[] = {40, 56, 66, 74, 82, 90, 98, 106, 114, 122, 138, 146};
 
 static void MQH_Menu_GameOptions_f()
 {
@@ -2174,6 +2127,7 @@ static void MQH_Menu_GameOptions_f()
 		mqh_maxplayers = SVQH_GetMaxClientsLimit();
 	}
 
+	MQH_InitPortName();
 	if (GGameType & GAME_Hexen2)
 	{
 		setup_class = clh2_playerclass->value;
@@ -2232,6 +2186,10 @@ static void MQH_GameOptions_Draw()
 
 	MQH_DrawTextBox(startx + 152, starty, 10, 1);
 	MQH_Print(startx + 160, starty + 8, "begin game");
+
+	MQH_Print(startx + 0, starty + 24, "             Port");
+	MQH_DrawField(startx + 160, starty + 24, &lanConfig_portname, mqh_gameoptions_cursor == 1);
+	starty += 10;
 
 	MQH_Print(startx + 0, starty + 24, "      Max players");
 	MQH_Print(startx + 160, starty + 24, va("%i", mqh_maxplayers));
@@ -2669,19 +2627,19 @@ static void MQH_NetStart_Change(int dir)
 {
 	switch (mqh_gameoptions_cursor)
 	{
-	case 1:
+	case 2:
 		MQH_ChangeMaxPlayers(dir);
 		break;
 
-	case 2:
+	case 3:
 		MQH_ChangeCoop(dir);
 		break;
 
-	case 3:
+	case 4:
 		MQH_ChangeTeamplay(dir);
 		break;
 
-	case 4:
+	case 5:
 		if (GGameType & GAME_Hexen2)
 		{
 			MQH_ChangeClass(dir);
@@ -2692,7 +2650,7 @@ static void MQH_NetStart_Change(int dir)
 		}
 		break;
 
-	case 5:
+	case 6:
 		if (GGameType & GAME_Hexen2)
 		{
 			MQH_ChangeSkill(dir);
@@ -2703,7 +2661,7 @@ static void MQH_NetStart_Change(int dir)
 		}
 		break;
 
-	case 6:
+	case 7:
 		if (GGameType & GAME_Hexen2)
 		{
 			MQH_ChangeFragLimit(dir);
@@ -2714,7 +2672,7 @@ static void MQH_NetStart_Change(int dir)
 		}
 		break;
 
-	case 7:
+	case 8:
 		if (GGameType & GAME_Hexen2)
 		{
 			MQH_ChangeTimeLimit(dir);
@@ -2725,7 +2683,7 @@ static void MQH_NetStart_Change(int dir)
 		}
 		break;
 
-	case 8:
+	case 9:
 		if (GGameType & GAME_Hexen2)
 		{
 			MQH_ChangeRandomClass(dir);
@@ -2736,11 +2694,11 @@ static void MQH_NetStart_Change(int dir)
 		}
 		break;
 
-	case 9:
+	case 10:
 		MH2_ChangeStartEpisode(dir);
 		break;
 
-	case 10:
+	case 11:
 		MQH_ChangeStartLevel(dir);
 		break;
 	}
@@ -2841,6 +2799,24 @@ static void MQH_GameOptions_Key(int key)
 
 		MQH_NetStart_Change(1);
 		break;
+	}
+
+	if (mqh_lanConfig_cursor == 0)
+	{
+		Field_KeyDownEvent(&lanConfig_portname, key);
+	}
+	MQH_CheckPortValue();
+}
+
+static void MQH_GameOptions_Char(int key)
+{
+	if (mqh_gameoptions_cursor == 1)
+	{
+		if (key >= 32 && (key < '0' || key > '9'))
+		{
+			return;
+		}
+		Field_CharEvent(&lanConfig_portname, key);
 	}
 }
 
@@ -5577,6 +5553,10 @@ void MQH_CharEvent(int key)
 
 	case m_setup:
 		MQH_Setup_Char(key);
+		break;
+
+	case m_gameoptions:
+		MQH_GameOptions_Char(key);
 		break;
 
 	default:
