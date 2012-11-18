@@ -1265,7 +1265,7 @@ static bool CLHW_ParseEffectScarabChain(int index, QMsg& message)
 	cl.h2_Effects[index].Chain.owner &= 0x0fff;
 	cl.h2_Effects[index].Chain.height = 16;
 
-	cl.h2_Effects[index].Chain.sound_time = cl.serverTime * 0.001;
+	cl.h2_Effects[index].Chain.sound_time = cl.serverTime;
 
 	cl.h2_Effects[index].Chain.state = 0;	//state 0: move slowly toward owner
 
@@ -2914,9 +2914,9 @@ static void CLHW_UpdateEffectScarabChain(int index, float frametime)
 	{
 	case 0:	//zooming in toward owner
 		es = CLH2_FindState(cl.h2_Effects[index].Chain.owner);
-		if (cl.h2_Effects[index].Chain.sound_time * 1000 <= cl.serverTime)
+		if (cl.h2_Effects[index].Chain.sound_time <= cl.serverTime)
 		{
-			cl.h2_Effects[index].Chain.sound_time = cl.serverTime * 0.001 + 0.5;
+			cl.h2_Effects[index].Chain.sound_time = cl.serverTime + 500;
 			S_StartSound(ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabhome, 1, 1);
 		}
 		if (es)

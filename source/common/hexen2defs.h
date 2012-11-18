@@ -298,7 +298,8 @@ struct h2EffectT
 			vec3_t velocity;
 			int ent1,owner;
 			int state,material,tag;
-			float time_amount,height,sound_time;
+			float time_amount,height;
+			int sound_time;
 		} Chain;
 		struct
 		{
