@@ -14,23 +14,30 @@
 //**
 //**************************************************************************
 
-#ifndef _SERVER_HEXEN2_LOCAL_H
-#define _SERVER_HEXEN2_LOCAL_H
+#ifndef __idHexen2EffectsRandom__
+#define __idHexen2EffectsRandom__
 
-extern Cvar* sv_ce_scale;
-extern Cvar* sv_ce_max_size;
+// this random generator can have its effects duplicated on the client
+// side by passing the randomseed over the network, as opposed to sending
+// all the generated values
+class idHexen2EffectsRandom
+{
+public:
+	unsigned int seed;
 
-void SVHW_SendEffect(QMsg* sb, int index);
-void SVH2_UpdateEffects(QMsg* sb);
-void SVH2_ParseEffect(QMsg* sb);
-void SVHW_ParseMultiEffect(QMsg* sb);
-float SVHW_GetMultiEffectId();
-void SVH2_SaveEffects(fileHandle_t FH);
-const char* SVH2_LoadEffects(const char* Data);
+	void setSeed(unsigned int seed);
+	float seedRand();
+};
 
-extern unsigned int info_mask, info_mask2;
+inline void idHexen2EffectsRandom::setSeed(unsigned int seed)
+{
+	this->seed = seed;
+}
 
-void PRH2_InitBuiltins();
-void PRHW_InitBuiltins();
+inline float idHexen2EffectsRandom::seedRand()
+{
+	seed = (seed * 877 + 573) % 9968;
+	return (float)seed / 9968;
+}
 
 #endif

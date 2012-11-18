@@ -20,6 +20,7 @@
 #include "local.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
+#include "../../common/Hexen2EffectsRandom.h"
 
 #define WF_NORMAL_ADVANCE 0
 #define WF_CYCLE_STARTED 1
@@ -1209,14 +1210,16 @@ static void PF_updateSiegeInfo()
 	}
 }
 
+static idHexen2EffectsRandom svh2_random;
+
 static void PF_setseed()
 {
-	SVHW_setseed(G_FLOAT(OFS_PARM0));
+	svh2_random.setSeed(G_FLOAT(OFS_PARM0));
 }
 
 static void PF_seedrand()
 {
-	G_FLOAT(OFS_RETURN) = SVHW_seedrand();
+	G_FLOAT(OFS_RETURN) = svh2_random.seedRand();
 }
 
 static void PF_multieffect()

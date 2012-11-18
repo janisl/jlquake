@@ -16,6 +16,7 @@
 
 #include "../../client.h"
 #include "local.h"
+#include "../../../common/Hexen2EffectsRandom.h"
 
 effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];
 static bool EntityUsed[MAX_EFFECT_ENTITIES_H2];
@@ -45,20 +46,6 @@ static sfxHandle_t clh2_fxsfx_met2stn;
 
 static sfxHandle_t clh2_fxsfx_ripple;
 static sfxHandle_t clh2_fxsfx_splash;
-
-static unsigned int randomseed;
-
-static void setseed(unsigned int seed)
-{
-	randomseed = seed;
-}
-
-//unsigned int seedrand(int max)
-static float seedrand()
-{
-	randomseed = (randomseed * 877 + 573) % 9968;
-	return (float)randomseed / 9968;
-}
 
 void CLHW_InitEffects()
 {
@@ -1147,7 +1134,8 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 	cl.h2_Effects[index].Xbow.turnedbolts = message.ReadByte();
 	cl.h2_Effects[index].Xbow.activebolts = message.ReadByte();
 
-	setseed(cl.h2_Effects[index].Xbow.randseed);
+	idHexen2EffectsRandom clh2_random;
+	clh2_random.setSeed(cl.h2_Effects[index].Xbow.randseed);
 
 	vec3_t forward, right, up;
 	AngleVectors(cl.h2_Effects[index].Xbow.angle, forward, right, up);
@@ -1166,18 +1154,18 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 
 	for (int i = 0; i < cl.h2_Effects[index].Xbow.bolts; i++)
 	{
-		cl.h2_Effects[index].Xbow.gonetime[i] = 1 + seedrand() * 2;
+		cl.h2_Effects[index].Xbow.gonetime[i] = 1 + clh2_random.seedRand() * 2;
 		cl.h2_Effects[index].Xbow.state[i] = 0;
 
 		if ((1 << i) & cl.h2_Effects[index].Xbow.turnedbolts)
 		{
 			vec3_t forward2;
 			CLHW_ParseEffectXBowThunderbolt(index, message, i, forward2);
-			VectorScale(forward2, 800 + seedrand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
+			VectorScale(forward2, 800 + clh2_random.seedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
 		}
 		else
 		{
-			VectorScale(forward, 800 + seedrand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
+			VectorScale(forward, 800 + clh2_random.seedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
 
 			vec3_t vtemp;
 			VectorScale(right, i * 100 - (cl.h2_Effects[index].Xbow.bolts - 1) * 50, vtemp);

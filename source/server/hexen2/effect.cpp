@@ -1842,19 +1842,3 @@ const char* SVH2_LoadEffects(const char* Data)
 	}
 	return Data;
 }
-
-// this random generator can have its effects duplicated on the client
-// side by passing the randomseed over the network, as opposed to sending
-// all the generated values
-static unsigned int randomseed;
-
-void SVHW_setseed(int seed)
-{
-	randomseed = seed;
-}
-
-float SVHW_seedrand()
-{
-	randomseed = (randomseed * 877 + 573) % 9968;
-	return (float)randomseed / 9968;
-}
