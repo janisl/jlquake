@@ -274,7 +274,7 @@ struct server_t
 	int qh_time;
 
 	int qh_lastcheck;					// used by PF_checkclient
-	double qh_lastchecktime;
+	int qh_lastchecktime;
 
 	char qh_modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
 	const char* qh_model_precache[BIGGEST_MAX_MODELS];	// NULL terminated
