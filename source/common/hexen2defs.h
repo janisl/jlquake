@@ -256,7 +256,7 @@ struct h2entity_state_t
 struct h2EffectT
 {
 	int type;
-	float expire_time;
+	int expire_time;
 	unsigned client_list;
 
 	union
@@ -264,7 +264,7 @@ struct h2EffectT
 		struct
 		{
 			vec3_t min_org, max_org, e_size, dir;
-			float next_time,wait;
+			float next_time, wait;
 			int color, count;
 		} Rain;
 		struct
