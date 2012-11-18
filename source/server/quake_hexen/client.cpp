@@ -301,11 +301,11 @@ static void SVQH_Spawn_f(client_t* host_client)
 
 			// call the spawn function
 
-			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.time = sv.qh_time * 0.001f;
 			*pr_globalVars.self = EDICT_TO_PROG(ent);
 			PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
-			if ((Sys_DoubleTime() - host_client->qh_netconnection->connecttime) <= sv.qh_time)
+			if ((Sys_Milliseconds() - host_client->qh_netconnection->connecttime * 1000) <= sv.qh_time)
 			{
 				common->Printf("%s entered the game\n", host_client->name);
 			}
@@ -322,7 +322,7 @@ static void SVQH_Spawn_f(client_t* host_client)
 
 	// send time of update
 	host_client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_time : q1svc_time);
-	host_client->qh_message.WriteFloat(sv.qh_time);
+	host_client->qh_message.WriteFloat(sv.qh_time * 0.001f);
 
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.qh_maxclients; i++, client++)
@@ -911,7 +911,7 @@ static void SVQHW_Begin_f(client_t* client)
 			}
 
 			// call the spawn function
-			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.time = sv.qh_time * 0.001f;
 			*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 			PR_ExecuteProgram(qhw_SpectatorConnect);
 		}
@@ -930,12 +930,12 @@ static void SVQHW_Begin_f(client_t* client)
 		}
 
 		// call the spawn function
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 		PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
 		// actually spawn the player
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 		PR_ExecuteProgram(*pr_globalVars.PutClientInServer);
 	}
@@ -1825,7 +1825,7 @@ static void SVQH_Kill_f(client_t* client)
 		return;
 	}
 
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 	*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 	PR_ExecuteProgram(*pr_globalVars.ClientKill);
 }
@@ -2441,7 +2441,7 @@ static void SVQW_RunCmd(client_t* host_client, qwusercmd_t* ucmd)
 	{
 		*pr_globalVars.frametime = host_frametime;
 
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
@@ -2582,7 +2582,7 @@ static void SVHW_RunCmd(client_t* host_client, hwusercmd_t* ucmd)
 	{
 		*pr_globalVars.frametime = host_frametime;
 
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
@@ -2603,7 +2603,7 @@ static void SVHW_RunCmd(client_t* host_client, hwusercmd_t* ucmd)
 	qh_pmove.hasted = sv_player->GetHasted();
 	qh_pmove.movetype = sv_player->GetMoveType();
 	qh_pmove.crouched = (sv_player->GetHull() == HWHULL_CROUCH);
-	qh_pmove.teleport_time = (sv_player->GetTeleportTime() - sv.qh_time);
+	qh_pmove.teleport_time = (sv_player->GetTeleportTime() - sv.qh_time * 0.001f);
 
 	movevars.entgravity = sv_player->GetGravity();
 	movevars.maxspeed = host_client->qh_maxspeed;
@@ -2672,14 +2672,14 @@ static void SVQHW_PostRunCmd(client_t* client)
 
 	if (!client->qh_spectator)
 	{
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 		PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
 		SVQH_RunNewmis(svs.realtime * 0.001);
 	}
 	else if (qhw_SpectatorThink)
 	{
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(client->qh_edict);
 		PR_ExecuteProgram(qhw_SpectatorThink);
 	}
@@ -2696,7 +2696,7 @@ static void SVQ1_ReadClientMove(client_t* cl, QMsg& message)
 	q1usercmd_t* move = &cl->q1_lastUsercmd;
 
 	// read ping time
-	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time - message.ReadFloat();
+	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time * 0.001f - message.ReadFloat();
 	cl->qh_num_pings++;
 
 	// read current angles
@@ -2730,7 +2730,7 @@ static void SVH2_ReadClientMove(client_t* cl, QMsg& message)
 	h2usercmd_t* move = &cl->h2_lastUsercmd;
 
 	// read ping time
-	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time - message.ReadFloat();
+	cl->qh_ping_times[cl->qh_num_pings % NUM_PING_TIMES] = sv.qh_time * 0.001f - message.ReadFloat();
 	cl->qh_num_pings++;
 
 	// read current angles
@@ -3110,7 +3110,7 @@ void SVQW_ExecuteClientMessage(client_t* cl, QMsg& message)
 
 	// mark time so clients will know how much to predict
 	// other players
-	cl->qh_localtime = sv.qh_time;
+	cl->qh_localtime = sv.qh_time * 0.001f;
 	cl->qh_delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{
@@ -3183,7 +3183,7 @@ void SVHW_ExecuteClientMessage(client_t* cl, QMsg& message)
 
 	// mark time so clients will know how much to predict
 	// other players
-	cl->qh_localtime = sv.qh_time;
+	cl->qh_localtime = sv.qh_time * 0.001f;
 	cl->qh_delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{

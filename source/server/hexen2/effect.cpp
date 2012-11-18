@@ -899,7 +899,7 @@ static void SVH2_ParseEffectSmoke(int index)
 	{
 		sv.h2_Effects[index].Smoke.frame = 0;
 	}
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectFlameWall(int index)
@@ -908,19 +908,19 @@ static void SVH2_ParseEffectFlameWall(int index)
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Smoke.velocity);
 	sv.h2_Effects[index].Smoke.framelength = 0.05;
 	sv.h2_Effects[index].Smoke.frame = G_FLOAT(OFS_PARM3);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectSmokeFlash(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Smoke.origin);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectFlash(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Flash.origin);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectRiderDeath(int index)
@@ -931,7 +931,7 @@ static void SVH2_ParseEffectRiderDeath(int index)
 static void SVH2_ParseEffectTeleporterPuffs(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Teleporter.origin);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectTeleporterBody(int index)
@@ -939,7 +939,7 @@ static void SVH2_ParseEffectTeleporterBody(int index)
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Teleporter.origin);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Teleporter.velocity[0]);
 	sv.h2_Effects[index].Teleporter.skinnum = G_FLOAT(OFS_PARM3);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 1;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 1;
 }
 
 static void SVH2_ParseEffectBoneShrapnel(int index)
@@ -949,7 +949,7 @@ static void SVH2_ParseEffectBoneShrapnel(int index)
 	VectorCopy(G_VECTOR(OFS_PARM3), sv.h2_Effects[index].Missile.angle);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Missile.avelocity);
 
-	sv.h2_Effects[index].expire_time = sv.qh_time + 10;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 10;
 }
 
 static void SVH2_ParseEffectGravityWell(int index)
@@ -966,14 +966,14 @@ static void SVH2_ParseEffectChunk(int index)
 	VectorCopy(G_VECTOR(OFS_PARM3), sv.h2_Effects[index].Chunk.srcVel);
 	sv.h2_Effects[index].Chunk.numChunks = G_FLOAT(OFS_PARM4);
 
-	sv.h2_Effects[index].expire_time = sv.qh_time + 3;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 3;
 }
 
 static void SVHW_ParseEffectRavenStaff(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Missile.origin);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Missile.velocity);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 10;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 10;
 }
 
 static void SVHW_ParseEffectDeathBubbles(int index)
@@ -981,7 +981,7 @@ static void SVHW_ParseEffectDeathBubbles(int index)
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Bubble.offset);
 	sv.h2_Effects[index].Bubble.owner = G_EDICTNUM(OFS_PARM1);
 	sv.h2_Effects[index].Bubble.count = G_FLOAT(OFS_PARM3);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 30;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 30;
 }
 
 static void SVHW_ParseEffectDrilla(int index)
@@ -989,21 +989,21 @@ static void SVHW_ParseEffectDrilla(int index)
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Missile.origin);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Missile.angle);
 	sv.h2_Effects[index].Missile.speed = G_FLOAT(OFS_PARM3);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 10;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 10;
 }
 
 static void SVHW_ParseEffectTripMineStill(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Chain.origin);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Chain.velocity);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 70;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 70;
 }
 
 static void SVHW_ParseEffectTripMine(int index)
 {
 	VectorCopy(G_VECTOR(OFS_PARM1), sv.h2_Effects[index].Chain.origin);
 	VectorCopy(G_VECTOR(OFS_PARM2), sv.h2_Effects[index].Chain.velocity);
-	sv.h2_Effects[index].expire_time = sv.qh_time + 10;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 10;
 }
 
 static void SVHW_ParseEffectScarabChain(int index)
@@ -1013,7 +1013,7 @@ static void SVHW_ParseEffectScarabChain(int index)
 	sv.h2_Effects[index].Chain.material = G_INT(OFS_PARM3);
 	sv.h2_Effects[index].Chain.tag = G_INT(OFS_PARM4);
 	sv.h2_Effects[index].Chain.state = 0;
-	sv.h2_Effects[index].expire_time = sv.qh_time + 15;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 15;
 }
 
 static void SVHW_ParseEffectSheepinator(int index)
@@ -1029,7 +1029,7 @@ static void SVHW_ParseEffectSheepinator(int index)
 	sv.h2_Effects[index].Xbow.activebolts = 31;
 	sv.h2_Effects[index].Xbow.randseed = 0;
 	sv.h2_Effects[index].Xbow.turnedbolts = 0;
-	sv.h2_Effects[index].expire_time = sv.qh_time + 7;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 7;
 }
 
 static void SVHW_ParseEffectXBowShoot(int index)
@@ -1052,7 +1052,7 @@ static void SVHW_ParseEffectXBowShoot(int index)
 	{
 		sv.h2_Effects[index].Xbow.activebolts = 31;
 	}
-	sv.h2_Effects[index].expire_time = sv.qh_time + 15;
+	sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 15;
 }
 
 static void SVH2_ParseEffectDetails(int index)
@@ -1282,7 +1282,7 @@ void SVH2_ParseEffect(QMsg* sb)
 	for (index = 0; index < MAX_EFFECTS_H2; index++)
 	{
 		if (!sv.h2_Effects[index].type ||
-			(sv.h2_Effects[index].expire_time && sv.h2_Effects[index].expire_time <= sv.qh_time))
+			(sv.h2_Effects[index].expire_time && sv.h2_Effects[index].expire_time * 1000 <= sv.qh_time))
 		{
 			break;
 		}
@@ -1334,7 +1334,7 @@ static void SVHW_ParseMultiEffectRavenPower(QMsg* sb, byte effect)
 		for (index = 0; index < MAX_EFFECTS_H2; index++)
 		{
 			if (!sv.h2_Effects[index].type ||
-				(sv.h2_Effects[index].expire_time && sv.h2_Effects[index].expire_time <= sv.qh_time))
+				(sv.h2_Effects[index].expire_time && sv.h2_Effects[index].expire_time * 1000 <= sv.qh_time))
 			{
 				break;
 			}
@@ -1348,7 +1348,7 @@ static void SVHW_ParseMultiEffectRavenPower(QMsg* sb, byte effect)
 		sv.h2_Effects[index].type = HWCE_HWRAVENPOWER;
 		VectorCopy(orig, sv.h2_Effects[index].Missile.origin);
 		VectorCopy(vel, sv.h2_Effects[index].Missile.velocity);
-		sv.h2_Effects[index].expire_time = sv.qh_time + 10;
+		sv.h2_Effects[index].expire_time = sv.qh_time * 0.001f + 10;
 		MultiEffectIds[count] = index;
 	}
 }

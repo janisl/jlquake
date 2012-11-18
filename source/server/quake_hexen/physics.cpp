@@ -152,14 +152,14 @@ bool SVQH_RunThink(qhedict_t* ent, float frametime)
 		{
 			return true;
 		}
-		if (thinktime > sv.qh_time + frametime)
+		if (thinktime > sv.qh_time * 0.001f + frametime)
 		{
 			return true;
 		}
 
-		if (thinktime < sv.qh_time)
+		if (thinktime < sv.qh_time * 0.001f)
 		{
-			thinktime = sv.qh_time;	// don't let things stay in the past.
+			thinktime = sv.qh_time * 0.001f;	// don't let things stay in the past.
 		}
 		// it is possible to start that way
 		// by a trigger with a local time.
@@ -185,7 +185,7 @@ static void SVQH_Impact(qhedict_t* e1, qhedict_t* e2)
 	int old_self = *pr_globalVars.self;
 	int old_other = *pr_globalVars.other;
 
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 	if (e1->GetTouch() && e1->GetSolid() != QHSOLID_NOT)
 	{
 		*pr_globalVars.self = EDICT_TO_PROG(e1);
@@ -1008,7 +1008,7 @@ static void SVQH_Physics_Pusher(qhedict_t* ent, float frametime)
 		vec3_t oldorg;
 		VectorCopy(ent->GetOrigin(), oldorg);
 		ent->SetNextThink(0);
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG(ent);
 		*pr_globalVars.other = EDICT_TO_PROG(sv.qh_edicts);
 		PR_ExecuteProgram(ent->GetThink());
@@ -1474,7 +1474,7 @@ static void SVQH_Physics_Client(qhedict_t* ent, int num, float frametime)
 	//
 	// call standard client pre-think
 	//
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 	*pr_globalVars.self = EDICT_TO_PROG(ent);
 	PR_ExecuteProgram(*pr_globalVars.PlayerPreThink);
 
@@ -1551,7 +1551,7 @@ static void SVQH_Physics_Client(qhedict_t* ent, int num, float frametime)
 	//
 	SVQH_LinkEdict(ent, true);
 
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 	*pr_globalVars.self = EDICT_TO_PROG(ent);
 	PR_ExecuteProgram(*pr_globalVars.PlayerPostThink);
 }
@@ -1561,7 +1561,7 @@ void SVQH_ProgStartFrame()
 	// let the progs know that a new frame has started
 	*pr_globalVars.self = EDICT_TO_PROG(sv.qh_edicts);
 	*pr_globalVars.other = EDICT_TO_PROG(sv.qh_edicts);
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 	PR_ExecuteProgram(*pr_globalVars.StartFrame);
 }
 
@@ -1736,7 +1736,7 @@ void SVQH_RunPhysicsAndUpdateTime(float frametime, float realtime)
 {
 	SVQH_Physics(frametime, realtime);
 
-	sv.qh_time += frametime;
+	sv.qh_time += frametime * 1000;
 }
 
 void SVQH_RunPhysicsForTime(float realtime)
@@ -2009,7 +2009,7 @@ static void SVQH_WaterMove(client_t* client, float frametime)
 
 static void SVQH_WaterJump(qhedict_t* sv_player)
 {
-	if (sv.qh_time > sv_player->GetTeleportTime() ||
+	if (sv.qh_time > sv_player->GetTeleportTime() * 1000 ||
 		!sv_player->GetWaterLevel())
 	{
 		sv_player->SetFlags((int)sv_player->GetFlags() & ~QHFL_WATERJUMP);
@@ -2039,7 +2039,7 @@ static void SVQH_AirMove(client_t* client, float frametime)
 	}
 
 	// hack to not let you back into teleporter
-	if (sv.qh_time < sv_player->GetTeleportTime() && fmove < 0)
+	if (sv.qh_time < sv_player->GetTeleportTime() * 1000 && fmove < 0)
 	{
 		fmove = 0;
 	}

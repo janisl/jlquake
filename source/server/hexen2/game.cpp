@@ -888,7 +888,7 @@ static void PF_turneffect()
 
 	sv.multicast.WriteByte(hwsvc_turn_effect);
 	sv.multicast.WriteByte(index);
-	sv.multicast.WriteFloat(sv.qh_time);
+	sv.multicast.WriteFloat(sv.qh_time * 0.001f);
 	sv.multicast.WriteCoord(pos[0]);
 	sv.multicast.WriteCoord(pos[1]);
 	sv.multicast.WriteCoord(pos[2]);

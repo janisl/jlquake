@@ -271,7 +271,7 @@ struct server_t
 
 	bool qh_paused;
 
-	double qh_time;
+	int qh_time;
 
 	int qh_lastcheck;					// used by PF_checkclient
 	double qh_lastchecktime;

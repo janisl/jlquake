@@ -87,7 +87,7 @@ static void SVQH_TouchLinks(qhedict_t* ent, worldSector_t* node)
 
 		*pr_globalVars.self = EDICT_TO_PROG(touch);
 		*pr_globalVars.other = EDICT_TO_PROG(ent);
-		*pr_globalVars.time = sv.qh_time;
+		*pr_globalVars.time = sv.qh_time * 0.001f;
 		PR_ExecuteProgram(touch->GetTouch());
 
 		*pr_globalVars.self = old_self;

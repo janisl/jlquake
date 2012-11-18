@@ -162,7 +162,7 @@ void SVQHW_FullClientUpdate(client_t* client, QMsg* buf)
 			buf->WriteByte(*pr_globalVars.attLosses);
 
 			buf->WriteByte(h2svc_time);	//send server time upon connection
-			buf->WriteFloat(sv.qh_time);
+			buf->WriteFloat(sv.qh_time * 0.001f);
 		}
 	}
 	else
@@ -1652,7 +1652,7 @@ void SVQHW_ServerFrame(int msec)
 	// decide the simulation time
 	if (!sv.qh_paused || GGameType & GAME_HexenWorld)
 	{
-		sv.qh_time += msec * 0.001;
+		sv.qh_time += msec;
 		svs.realtime += msec;
 	}
 
@@ -1714,7 +1714,7 @@ static void SVH2_Edicts(const char* Name)
 	}
 
 	FS_Printf(FH, "Number of Edicts: %d\n", sv.qh_num_edicts);
-	FS_Printf(FH, "Server Time: %f\n", sv.qh_time);
+	FS_Printf(FH, "Server Time: %f\n", sv.qh_time * 0.001f);
 	FS_Printf(FH, "\n");
 	FS_Printf(FH, "Num.     Time Class Name                     Model                          Think                                    Touch                                    Use\n");
 	FS_Printf(FH, "---- -------- ------------------------------ ------------------------------ ---------------------------------------- ---------------------------------------- ----------------------------------------\n");

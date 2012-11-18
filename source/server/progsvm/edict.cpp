@@ -938,7 +938,7 @@ qhedict_t* ED_Alloc()
 		qhedict_t* e = QH_EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500))
 		{
 			ED_ClearEdict(e);
 			return e;
@@ -987,7 +987,7 @@ void ED_Free(qhedict_t* ed)
 	ed->SetNextThink(-1);
 	ed->SetSolid(0);
 
-	ed->freetime = sv.qh_time;
+	ed->freetime = sv.qh_time * 0.001f;
 	ed->alloctime = -1;
 }
 
@@ -1005,10 +1005,10 @@ qhedict_t* ED_Alloc_Temp()
 		e = QH_EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime > 0.5))
+		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500))
 		{
 			ED_ClearEdict(e);
-			e->alloctime = sv.qh_time;
+			e->alloctime = sv.qh_time * 0.001f;
 
 			return e;
 		}
@@ -1023,7 +1023,7 @@ qhedict_t* ED_Alloc_Temp()
 
 	ED_Free(Least);
 	ED_ClearEdict(Least);
-	Least->alloctime = sv.qh_time;
+	Least->alloctime = sv.qh_time * 0.001f;
 
 	return Least;
 }
@@ -1043,7 +1043,7 @@ void ED_LoadFromFile(const char* data)
 
 	ent = NULL;
 	inhibit = 0;
-	*pr_globalVars.time = sv.qh_time;
+	*pr_globalVars.time = sv.qh_time * 0.001f;
 
 	// parse ents
 	while (1)

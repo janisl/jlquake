@@ -440,7 +440,7 @@ void SVQH_SpawnServer(const char* server, const char* startspot)
 		sv.qh_paused = false;
 	}
 
-	sv.qh_time = 1.0;
+	sv.qh_time = 1000;
 
 	String::Cpy(sv.name, server);
 	sprintf(sv.qh_modelname,"maps/%s.bsp", server);

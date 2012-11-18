@@ -1484,7 +1484,7 @@ static void SVQW_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* 
 
 		if (pflags & QWPF_MSEC)
 		{
-			int msec = 1000 * (sv.qh_time - cl->qh_localtime);
+			int msec = sv.qh_time - 1000 * cl->qh_localtime;
 			if (msec > 255)
 			{
 				msec = 255;
@@ -1878,7 +1878,7 @@ static void SVHW_WritePlayersToClient(client_t* client, qhedict_t* clent, byte* 
 
 		if (pflags & HWPF_MSEC)
 		{
-			int msec = 1000 * (sv.qh_time - cl->qh_localtime);
+			int msec = sv.qh_time - 1000 * cl->qh_localtime;
 			if (msec > 255)
 			{
 				msec = 255;
@@ -2169,7 +2169,7 @@ void SVHW_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg)
 		{
 			sc1 |= SC1_DEXTERITY;
 		}
-		if (ent->GetTeleportTime() > sv.qh_time)
+		if (ent->GetTeleportTime() > sv.qh_time * 0.001f)
 		{
 			sc1 |= SC1_TELEPORT_TIME;
 		}

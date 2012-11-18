@@ -1751,7 +1751,7 @@ static bool SVQH_SendClientDatagram(client_t* client)
 	msg.InitOOB(buf, GGameType & GAME_Hexen2 ? MAX_MSGLEN_H2 : MAX_DATAGRAM_QH);
 
 	msg.WriteByte(GGameType & GAME_Hexen2 ? h2svc_time : q1svc_time);
-	msg.WriteFloat(sv.qh_time);
+	msg.WriteFloat(sv.qh_time * 0.001f);
 
 	// add the client specific data to the datagram
 	SVQH_WriteClientdataToMessage(client, &msg);
@@ -1953,9 +1953,9 @@ static void UpdatePIV()
 static void SVQHW_UpdateToReliableMessages()
 {
 	bool CheckPIV = false;
-	if (GGameType & GAME_HexenWorld && sv.qh_time - sv.hw_next_PIV_time >= 1)
+	if (GGameType & GAME_HexenWorld && sv.qh_time - sv.hw_next_PIV_time * 1000 >= 1000)
 	{
-		sv.hw_next_PIV_time = sv.qh_time + 1;
+		sv.hw_next_PIV_time = sv.qh_time * 0.001f + 1;
 		CheckPIV = true;
 		UpdatePIV();
 	}

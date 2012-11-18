@@ -267,7 +267,7 @@ void SVH2_SaveGamestate(bool clientsOnly)
 		FS_Printf(f, "%s\n", comment);
 		FS_Printf(f, "%f\n", qh_skill->value);
 		FS_Printf(f, "%s\n", sv.name);
-		FS_Printf(f, "%f\n", sv.qh_time);
+		FS_Printf(f, "%f\n", sv.qh_time * 0.001f);
 
 		// write the light styles
 
@@ -327,7 +327,7 @@ static void SVH2_RestoreClients()
 		return;
 	}
 
-	time_diff = sv.qh_time - h2_old_time;
+	time_diff = sv.qh_time * 0.001 - h2_old_time;
 
 	client_t* host_client = svs.clients;
 	for (int i = 0; i < svs.qh_maxclients; i++, host_client++)
@@ -349,7 +349,7 @@ static void SVH2_RestoreClients()
 
 			// call the spawn function
 
-			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.time = sv.qh_time * 0.001f;
 			*pr_globalVars.self = EDICT_TO_PROG(ent);
 			G_FLOAT(OFS_PARM0) = time_diff;
 			PR_ExecuteProgram(*pr_globalVars.ClientReEnter);
@@ -489,7 +489,7 @@ static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode)
 	//sv.num_edicts = entnum;
 	if (ClientsMode == 0)
 	{
-		sv.qh_time = time;
+		sv.qh_time = time * 1000;
 		sv.qh_paused = true;
 
 		*pr_globalVars.serverflags = svs.qh_serverflags;
@@ -498,11 +498,11 @@ static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode)
 	}
 	else if (ClientsMode == 2)
 	{
-		sv.qh_time = time;
+		sv.qh_time = time * 1000;
 	}
 	else if (ClientsMode == 3)
 	{
-		sv.qh_time = time;
+		sv.qh_time = time * 1000;
 
 		*pr_globalVars.serverflags = svs.qh_serverflags;
 
@@ -588,7 +588,7 @@ static void SVH2_Changelevel2_f()
 	SVQH_SaveSpawnparms();
 
 	// save the current level's state
-	h2_old_time = sv.qh_time;
+	h2_old_time = sv.qh_time * 0.001f;
 	SVH2_SaveGamestate(false);
 
 	// try to restore the new level
@@ -662,7 +662,7 @@ static void SVQ1_Savegame_f()
 	}
 	FS_Printf(f, "%d\n", svqh_current_skill);
 	FS_Printf(f, "%s\n", sv.name);
-	FS_Printf(f, "%f\n",sv.qh_time);
+	FS_Printf(f, "%f\n",sv.qh_time * 0.001f);
 
 	// write the light styles
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
@@ -798,7 +798,7 @@ static void SVQ1_Loadgame_f()
 	}
 
 	sv.qh_num_edicts = entnum;
-	sv.qh_time = time;
+	sv.qh_time = time * 1000;
 
 	for (int i = 0; i < NUM_SPAWN_PARMS; i++)
 	{
@@ -928,7 +928,7 @@ static void SVH2_Savegame_f()
 	}
 	FS_Printf(f, "%d\n", svqh_current_skill);
 	FS_Printf(f, "%s\n", sv.name);
-	FS_Printf(f, "%f\n", sv.qh_time);
+	FS_Printf(f, "%f\n", sv.qh_time * 0.001f);
 	FS_Printf(f, "%d\n", svs.qh_maxclients);
 	FS_Printf(f, "%f\n", svqh_deathmatch->value);
 	FS_Printf(f, "%f\n", svqh_coop->value);
@@ -1123,7 +1123,7 @@ static void SVQHW_Status_f()
 	int f_limit = Cvar_VariableValue("fraglimit");
 	if (GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE)
 	{
-		int num_min = floor((t_limit * 60) - sv.qh_time);
+		int num_min = (t_limit * 60) - sv.qh_time / 1000;
 		int num_sec = (int)(t_limit - num_min) % 60;
 		num_min = (num_min - num_sec) / 60;
 		common->Printf("timeleft         : %i:", num_min);
@@ -1133,7 +1133,7 @@ static void SVQHW_Status_f()
 	}
 	else
 	{
-		common->Printf("time             : %5.2f\n", sv.qh_time);
+		common->Printf("time             : %5.2f\n", sv.qh_time * 0.001f);
 		common->Printf("timelimit        : %i\n", t_limit);
 		common->Printf("fraglimit        : %i\n", f_limit);
 	}
@@ -1496,7 +1496,7 @@ static void SVQHW_Kick_f()
 
 			if (GGameType & GAME_HexenWorld)
 			{
-				*pr_globalVars.time = sv.qh_time;
+				*pr_globalVars.time = sv.qh_time * 0.001f;
 				*pr_globalVars.self = EDICT_TO_PROG(cl->qh_edict);
 				PR_ExecuteProgram(*pr_globalVars.ClientKill);
 			}
@@ -1531,7 +1531,7 @@ static void SVHW_Smite_f()
 			int old_self = *pr_globalVars.self;
 
 			//call the hc SmitePlayer function
-			*pr_globalVars.time = sv.qh_time;
+			*pr_globalVars.time = sv.qh_time * 0.001f;
 			*pr_globalVars.self = EDICT_TO_PROG(cl->qh_edict);
 			PR_ExecuteProgram(*pr_globalVars.SmitePlayer);
 

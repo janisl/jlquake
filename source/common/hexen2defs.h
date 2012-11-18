@@ -18,6 +18,7 @@
 
 // Timing macros
 #define HX_FRAME_TIME       0.05
+#define HX_FRAME_MSTIME     50
 
 // Player Classes
 #define NUM_CLASSES_H2          4

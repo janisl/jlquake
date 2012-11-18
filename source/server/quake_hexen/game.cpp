@@ -334,10 +334,10 @@ static int PF_newcheckclient(int check)
 void PF_checkclient()
 {
 	// find a new check if on a new frame
-	if (sv.qh_time - sv.qh_lastchecktime >= (GGameType & GAME_HexenWorld ? HX_FRAME_TIME : 0.1))
+	if (sv.qh_time - sv.qh_lastchecktime * 1000 >= (GGameType & GAME_HexenWorld ? HX_FRAME_MSTIME : 100))
 	{
 		sv.qh_lastcheck = PF_newcheckclient(sv.qh_lastcheck);
-		sv.qh_lastchecktime = sv.qh_time;
+		sv.qh_lastchecktime = sv.qh_time * 0.001f;
 	}
 
 	// return check if it might be visible
