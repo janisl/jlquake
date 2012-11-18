@@ -32,8 +32,8 @@ struct h2explosion_t
 {
 	vec3_t origin;
 	vec3_t oldorg;	// holds position from last frame
-	float startTime;
-	float endTime;
+	int startTime;
+	int endTime;
 	vec3_t velocity;
 	vec3_t accel;
 	vec3_t angles;
@@ -139,7 +139,7 @@ static h2explosion_t* CLH2_AllocExplosion()
 	// find the oldest explosion
 	if (!freeSlot)
 	{
-		float time = cl.serverTime * 0.001;
+		int time = cl.serverTime;
 
 		for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
 		{
@@ -200,7 +200,7 @@ static void BubbleThink(h2explosion_t* ex)
 	}
 	else
 	{
-		ex->endTime = cl.serverTime * 0.001;
+		ex->endTime = cl.serverTime;
 	}
 }
 
@@ -213,8 +213,8 @@ void CLHW_SpawnDeathBubble(const vec3_t pos)
 	ex->data = cl.serverTime * 0.001;
 	ex->scale = 128;
 	ex->frameFunc = BubbleThink;
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = cl.serverTime * 0.001 + 15;
+	ex->startTime = cl.serverTime;
+	ex->endTime = cl.serverTime + 15000;
 	ex->model = R_RegisterModel("models/s_bubble.spr");
 	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 	ex->abslight = 175;
@@ -243,8 +243,8 @@ void CLHW_ParseMissileFlash(QMsg& message)
 	VectorCopy(vel, ex->angles);
 	ex->frameFunc = MissileFlashThink;
 	ex->model = R_RegisterModel("models/handfx.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 2;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 2000;
 	ex->exflags = EXFLAG_ROTATE;
 	ex->avel[2] = rand() * 360 + 360;
 	ex->flags = H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT;
@@ -262,8 +262,8 @@ void CLHW_ParseDrillaExplode(QMsg& message)
 
 	ex->model = R_RegisterModel("models/gen_expl.spr");
 
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 
 	// sound
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_explode, 1, 1);
@@ -299,18 +299,18 @@ static void MultiGrenadePieceThink(h2explosion_t* ex)
 	}
 
 	float ftemp = (rand() / RAND_MAX * 0.2) - 0.1;
-	ex->startTime = cl.serverTime * 0.001 + ((1 - (ex->data - 69) / 180.0) + ftemp - 0.3) * 1.25;
-	if (ex->startTime < cl.serverTime * 0.001)
+	ex->startTime = cl.serverTime + ((1 - (ex->data - 69) / 180.0) + ftemp - 0.3) * 1250;
+	if (ex->startTime < cl.serverTime)
 	{
-		ex->startTime = cl.serverTime * 0.001;
+		ex->startTime = cl.serverTime;
 	}
 	ftemp = (rand() / RAND_MAX * 0.4) - 0.4;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100 + ftemp * 1000;
 
 	if (R_ModelNumFrames(ex->model) > 14)
 	{
-		ex->startTime -= 0.4;
-		ex->endTime -= 0.4;
+		ex->startTime -= 400;
+		ex->endTime -= 400;
 	}
 
 	if (ex->data <= 71)
@@ -349,8 +349,8 @@ static void MultiGrenadePieceThink(h2explosion_t* ex)
 
 		ftemp = rand() / RAND_MAX * 0.5;
 
-		missile->startTime = cl.serverTime * 0.001 + 0.01;
-		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
+		missile->startTime = cl.serverTime + 10;
+		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 100;
 	}
 }
 
@@ -367,9 +367,9 @@ static void MultiGrenadePiece2Think(h2explosion_t* ex)
 		ex->data = 70;
 	}
 
-	ex->startTime = cl.serverTime * 0.001 + ((1 - (ex->data - 69) / 200.0) * 1.5) - 0.2;
+	ex->startTime = cl.serverTime + 1300 - (ex->data - 69) * 15 / 2;
 	float ftemp = (rand() / RAND_MAX * 0.4) - 0.2;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100 + ftemp * 1000;
 
 	if (ex->data <= 71)
 	{
@@ -407,8 +407,8 @@ static void MultiGrenadePiece2Think(h2explosion_t* ex)
 
 		ftemp = rand() / RAND_MAX * 0.5;
 
-		missile->startTime = cl.serverTime * 0.001 + 0.01;
-		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
+		missile->startTime = cl.serverTime + 10;
+		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 100;
 	}
 }
 
@@ -450,9 +450,9 @@ static void MultiGrenadeThink(h2explosion_t* ex)
 			missile->velocity[1] = (rand() % 600) - 300;
 			missile->velocity[2] = 0;
 
-			missile->startTime = cl.serverTime * 0.001;
+			missile->startTime = cl.serverTime;
 			ftemp = (rand() / RAND_MAX * 0.3) - 0.15;
-			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 100 + ftemp * 1000;
 			break;
 		case 1:
 			missile->frameFunc = MultiGrenadePiece2Think;
@@ -460,9 +460,9 @@ static void MultiGrenadeThink(h2explosion_t* ex)
 			missile->velocity[1] = (rand() % 80) - 40;
 			missile->velocity[2] = (rand() % 150) + 150;
 
-			missile->startTime = cl.serverTime * 0.001;
+			missile->startTime = cl.serverTime;
 			ftemp = (rand() / RAND_MAX  * 0.3) - 0.15;
-			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 100 + ftemp * 1000;
 			break;
 		default://some extra explosions for at first
 			missile->frameFunc = NULL;
@@ -471,9 +471,9 @@ static void MultiGrenadeThink(h2explosion_t* ex)
 			missile->origin[2] += (rand() % 50) - 25;
 
 			ftemp = rand() / RAND_MAX * 0.2;
-			missile->startTime = cl.serverTime * 0.001 + ftemp;
+			missile->startTime = cl.serverTime + ftemp * 1000;
 			ftemp = (rand() / RAND_MAX * 0.2) - 0.1;
-			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 100 + ftemp * 1000;
 			break;
 		}
 
@@ -497,8 +497,8 @@ void CLHW_ParseBigGrenade(QMsg& message)
 	ex->frameFunc = MultiGrenadeThink;
 	ex->data = 250;
 	ex->model = R_RegisterModel("models/sm_expld.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 }
 
 static void CLHW_XBowHit(const vec3_t pos, const vec3_t vel, int damage, int absoluteLight, void (* frameFunc)(h2explosion_t* ex))
@@ -512,8 +512,8 @@ static void CLHW_XBowHit(const vec3_t pos, const vec3_t vel, int damage, int abs
 	VecToAnglesBuggy(vel, ex->angles);
 	ex->avel[2] = (rand() % 500) + 200;
 	ex->scale = 10;
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = cl.serverTime * 0.001 + 0.3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = cl.serverTime + 300;
 	ex->model = R_RegisterModel("models/arrowhit.mdl");
 	ex->exflags = EXFLAG_ROTATE;
 	ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
@@ -530,8 +530,8 @@ static void CLHW_XBowHit(const vec3_t pos, const vec3_t vel, int damage, int abs
 		ex->velocity[1] = 0.0;
 		ex->velocity[2] = 80.0;
 		VecToAnglesBuggy(vel, ex->angles);
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = cl.serverTime * 0.001 + 0.35;
+		ex->startTime = cl.serverTime;
+		ex->endTime = cl.serverTime + 350;
 		ex->model = R_RegisterModel("models/whtsmk1.spr");
 		ex->flags = H2DRF_TRANSLUCENT;
 	}
@@ -571,8 +571,8 @@ void CLHW_ParseBonePower(QMsg& message)
 	VectorMA(ex->origin, -6, movedir, ex->origin);
 	ex->data = 250;
 	ex->model = R_RegisterModel("models/sm_expld.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 	for (int cnt2 = 0; cnt2 < cnt; cnt2++)
 	{
 		vec3_t offset;
@@ -588,8 +588,8 @@ void CLHW_ParseBonePower(QMsg& message)
 		ex->model = R_RegisterModel("models/ghost.spr");
 		ex->abslight = 128;
 		ex->flags = H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 	}
 	for (int cnt2 = 0; cnt2 < 20; cnt2++)
 	{
@@ -616,8 +616,8 @@ void CLHW_ParseBonePower(QMsg& message)
 		VectorCopy(offset, ex->velocity);
 		ex->data = 250;
 		ex->model = R_RegisterModel("models/boneshrd.mdl");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + rand() * 50 / 100;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + rand() * 500;
 		ex->flags |= EXFLAG_ROTATE | EXFLAG_COLLIDE;
 		ex->angles[0] = rand() % 700;
 		ex->angles[1] = rand() % 700;
@@ -640,8 +640,8 @@ void CLHW_ParseBonePower2(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 
 	//sound
 	if (cnt2)
@@ -663,8 +663,8 @@ static void NewRavenDieExplosion(const vec3_t pos, float velocityY, const char* 
 	ex->velocity[1] = velocityY;
 	ex->velocity[2] = -10;
 	ex->model = R_RegisterModel(modelName);
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + HX_FRAME_MSTIME * 10;
 }
 
 void CLHW_CreateRavenDeath(const vec3_t pos)
@@ -690,8 +690,8 @@ static void NewRavenExplodeExplosion(const vec3_t pos, float originAdjust)
 	ex->origin[2] -= originAdjust;
 	ex->velocity[2] = 8;
 	ex->model = R_RegisterModel("models/whtsmk1.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + HX_FRAME_MSTIME * 10;
 }
 
 void CLHW_CreateRavenExplosions(const vec3_t pos)
@@ -752,13 +752,13 @@ static void ChunkThink(h2explosion_t* ex)
 		moving = false;
 	}
 
-	if (cl.serverTime * 0.001 + cls.frametime * 0.001 * 5 > ex->endTime)
+	if (cl.serverTime + cls.frametime * 5 > ex->endTime)
 	{
 		// chunk leaves in 5 frames about
 		switch ((int)ex->data)
 		{
 		case H2THINGTYPE_METEOR:
-			if (cl.serverTime * 0.001 + cls.frametime * 0.001 * 4 < ex->endTime)
+			if (cl.serverTime + cls.frametime * 4 < ex->endTime)
 			{
 				// just crossed the threshold
 				ex->abslight = 200;
@@ -836,8 +836,8 @@ static void CLHW_InitChunkExplosionCommon(h2explosion_t* ex, int chType)
 		VectorScale(ex->avel, 4.0, ex->avel);
 	}
 
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 4.0;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 4000;
 }
 
 void CLHW_ParseChunk(QMsg& message)
@@ -959,8 +959,8 @@ void CLHW_ParseMeteorHit(QMsg& message)
 		ex->skin = 0;
 		VectorScale(ex->avel, 4.0, ex->avel);
 
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + 4.0;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 4000;
 	}
 
 	// make the actual explosion
@@ -997,8 +997,8 @@ void CLHW_ParseMeteorHit(QMsg& message)
 		ex->abslight = 160 + rand() % 64;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 40;
 	}
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_axeExplode, 1, 1);
 }
@@ -1048,11 +1048,11 @@ void CLHW_ParseIceHit(QMsg& message)
 			ex->flags |= H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 			ex->abslight = 128;
 
-			ex->startTime = cl.serverTime * 0.001;
-			ex->endTime = ex->startTime + 2.0;
+			ex->startTime = cl.serverTime;
+			ex->endTime = ex->startTime + 2000;
 			if (cnt2 == 2)
 			{
-				ex->endTime += 3.0;
+				ex->endTime += 3000;
 			}
 		}
 	}
@@ -1067,8 +1067,8 @@ void CLHW_ParseIceHit(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/icehit.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 100;
 
 	// Add in the sound
 	if (cnt2 == 1)
@@ -1143,8 +1143,8 @@ void CLHW_ParsePlayerDeath(QMsg& message)
 
 		ex->skin = 0;
 
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + 4.0;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 4000;
 	}
 
 	switch (style)
@@ -1206,8 +1206,8 @@ void CLHW_ParseAcidBlob(QMsg& message)
 		ex->abslight = 1;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 	}
 
 	// always make 8 meteors
@@ -1240,8 +1240,8 @@ void CLHW_ParseAcidBlob(QMsg& message)
 		ex->skin = 0;
 		VectorScale(ex->avel, 4.0, ex->avel);
 
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + 4.0;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 4000;
 	}
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_acidhit, 1, 1);
@@ -1287,8 +1287,8 @@ void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage,
 					int tmpAbsoluteLight;
 					CLH2_InitChunkModel(H2THINGTYPE_WOOD, &ex->model, &ex->skin, &ex->flags, &tmpFrame, &tmpAbsoluteLight);
 
-					ex->startTime = cl.serverTime * 0.001;
-					ex->endTime = ex->startTime + 4.0;
+					ex->startTime = cl.serverTime;
+					ex->endTime = ex->startTime + 4000;
 				}
 			}
 			else if (rand() & 1)//whole go
@@ -1318,8 +1318,8 @@ void CLHW_XbowImpact(const vec3_t pos, const vec3_t vel, int chType, int damage,
 
 				ex->model = R_RegisterModel("models/arrow.mdl");
 
-				ex->startTime = cl.serverTime * 0.001;
-				ex->endTime = ex->startTime + 4.0;
+				ex->startTime = cl.serverTime;
+				ex->endTime = ex->startTime + 4000;
 			}
 		}
 	}
@@ -1346,8 +1346,8 @@ void CLHW_ParseTeleport(QMsg& message)
 	VectorCopy(pos, ex->origin);
 	ex->frameFunc = TeleportFlashThink;
 	ex->model = R_RegisterModel("models/teleport.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 2;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 2000;
 	ex->avel[2] = rand() * 360 + 360;
 	ex->flags = H2SCALE_TYPE_XYONLY | H2DRF_TRANSLUCENT;
 	ex->skin = cnt;
@@ -1360,8 +1360,8 @@ void CLHW_ParseTeleport(QMsg& message)
 		ex = CLH2_AllocExplosion();
 		VectorCopy(pos, ex->origin);
 		ex->model = R_RegisterModel("models/telesmk2.spr");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + .5;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 500;
 		ex->velocity[0] = cosval;
 		ex->velocity[1] = sinval;
 		ex->flags = H2DRF_TRANSLUCENT;
@@ -1370,8 +1370,8 @@ void CLHW_ParseTeleport(QMsg& message)
 		VectorCopy(pos, ex->origin);
 		ex->origin[2] += 64;
 		ex->model = R_RegisterModel("models/telesmk2.spr");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + .5;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 500;
 		ex->velocity[0] = cosval;
 		ex->velocity[1] = sinval;
 		ex->flags = H2DRF_TRANSLUCENT;
@@ -1380,7 +1380,7 @@ void CLHW_ParseTeleport(QMsg& message)
 
 static void SwordFrameFunc(h2explosion_t* ex)
 {
-	ex->scale = (ex->endTime - cl.serverTime * 0.001) * 150 + 1;
+	ex->scale = (ex->endTime - cl.serverTime) * 0.15 + 1;
 	if ((cl.serverTime / 50) % 2)
 	{
 		ex->skin = 0;
@@ -1397,8 +1397,8 @@ void CLHW_SwordExplosion(const vec3_t pos)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/vorpshok.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 1.0;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 1000;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 	ex->skin = 0;
@@ -1416,12 +1416,12 @@ void CLHW_ParseAxeBounce(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/spark.spr");
-	ex->startTime = cl.serverTime * 0.001;
+	ex->startTime = cl.serverTime;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 	ex->skin = 0;
 	ex->scale = 100;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_axeBounce, 1, 1);
 }
@@ -1465,8 +1465,8 @@ void CLHW_ParseAxeExplode(QMsg& message)
 		ex->abslight = 160 + rand() % 24;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 	}
 
 
@@ -1508,8 +1508,8 @@ void CLHW_ParseTimeBomb(QMsg& message)
 		ex->abslight = 160 + rand() % 24;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 	}
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_axeExplode, 1, 1);
@@ -1517,7 +1517,7 @@ void CLHW_ParseTimeBomb(QMsg& message)
 
 static void fireBallUpdate(h2explosion_t* ex)
 {
-	ex->scale = (int)(((cl.serverTime * 0.001 - ex->startTime) / 1.0) * 250) + 1;
+	ex->scale = ((cl.serverTime - ex->startTime) / 4) + 1;
 }
 
 void CLHW_ParseFireBall(QMsg& message)
@@ -1532,8 +1532,8 @@ void CLHW_ParseFireBall(QMsg& message)
 	ex->abslight = 128;
 	ex->skin = 0;
 	ex->scale = 1;
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 1.0;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 1000;
 	ex->frameFunc = fireBallUpdate;
 
 	ex->exflags = EXFLAG_ROTATE;
@@ -1547,7 +1547,7 @@ void CLHW_ParseFireBall(QMsg& message)
 
 static void sunBallUpdate(h2explosion_t* ex)
 {
-	ex->scale = 121 - (int)(((cl.serverTime * 0.001 - ex->startTime) / .8) * 120);
+	ex->scale = 121 - ((cl.serverTime - ex->startTime) * 3 / 20);
 }
 
 void CLHW_SunStaffExplosions(const vec3_t pos)
@@ -1572,8 +1572,8 @@ void CLHW_SunStaffExplosions(const vec3_t pos)
 		ex->abslight = 128;
 		ex->skin = 0;
 		ex->scale = 200;
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + .8;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 800;
 
 		ex->exflags = EXFLAG_ROTATE;
 
@@ -1593,12 +1593,12 @@ void CLHW_ParsePurify2Explode(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/xplod29.spr");
-	ex->startTime = cl.serverTime * 0.001;
+	ex->startTime = cl.serverTime;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 	ex->skin = 0;
 	ex->scale = 100;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 
 	for (int i = 0; i < 12; i++)
 	{
@@ -1632,8 +1632,8 @@ void CLHW_ParsePurify2Explode(QMsg& message)
 		ex->abslight = 160 + rand() % 64;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 40;
 	}
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_purify2, 1, 1);
@@ -1661,12 +1661,12 @@ void CLHW_ParsePurify1Effect(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(endPos, ex->origin);
 	ex->model = R_RegisterModel("models/fcircle.spr");
-	ex->startTime = cl.serverTime * 0.001;
+	ex->startTime = cl.serverTime;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 	ex->skin = 0;
 	ex->scale = 100;
-	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 }
 
 static void telPuffMove(h2explosion_t* ex)
@@ -1695,7 +1695,7 @@ static void telPuffMove(h2explosion_t* ex)
 
 static void telEffectUpdate(h2explosion_t* ex)
 {
-	if (ex->endTime - cl.serverTime * 0.001 <= 1.2)
+	if (ex->endTime - cl.serverTime <= 1200)
 	{
 		ex->frameFunc = NULL;
 	}
@@ -1719,8 +1719,8 @@ static void telEffectUpdate(h2explosion_t* ex)
 			VectorSubtract(ex->origin, ex2->origin, tvec);
 			VectorScale(tvec, 20, tvec);
 			ex2->model = R_RegisterModel("models/sm_blue.spr");
-			ex2->startTime = cl.serverTime * 0.001;
-			ex2->endTime = ex2->startTime + 3.2;
+			ex2->startTime = cl.serverTime;
+			ex2->endTime = ex2->startTime + 3200;
 
 			ex2->scale = 100;
 
@@ -1737,9 +1737,9 @@ static void telEffectUpdate(h2explosion_t* ex)
 		}
 	}
 
-	if (ex->endTime > cl.serverTime * 0.001 + 0.01)
+	if (ex->endTime > cl.serverTime + 10)
 	{
-		ex->startTime = cl.serverTime * 0.001 + 0.01;
+		ex->startTime = cl.serverTime + 10;
 	}
 }
 
@@ -1752,13 +1752,13 @@ void CLHW_ParseTeleportLinger(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/bspark.spr");
-	ex->startTime = cl.serverTime * 0.001;
+	ex->startTime = cl.serverTime;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 	ex->frameFunc = telEffectUpdate;
 	ex->skin = 0;
 	ex->scale = 0;
-	ex->endTime = ex->startTime + duration;
+	ex->endTime = ex->startTime + duration * 1000;
 }
 
 void CLHW_ParseLineExplosion(QMsg& message)
@@ -1804,8 +1804,8 @@ void CLHW_ParseLineExplosion(QMsg& message)
 			ex->skin = 0;
 			ratio = (float)i / (float)distance;
 			ex->scale = 200 - (int)(150.0 * ratio);
-			ex->startTime = cl.serverTime * 0.001 + ratio * 0.75;
-			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025 + FRANDOM() * 0.01);
+			ex->startTime = cl.serverTime + ratio * 750;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (25 + FRANDOM() * 10);
 
 			VectorAdd(curPos, distVec, curPos);
 		}
@@ -1834,8 +1834,8 @@ void CLHW_ParseLineExplosion(QMsg& message)
 			ex->skin = 0;
 			ratio = (float)i / (float)distance;
 			ex->scale = 200 - (int)(150.0 * ratio);
-			ex->startTime = cl.serverTime * 0.001 + ratio * 0.75;
-			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025 + FRANDOM() * 0.01);
+			ex->startTime = cl.serverTime + ratio * 750;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (25 + FRANDOM() * 10);
 
 			VectorAdd(curPos, distVec, curPos);
 		}
@@ -1908,8 +1908,8 @@ static void MeteorBlastThink(h2explosion_t* ex)
 			ex2->abslight = 160 + rand() % 64;
 			ex2->skin = 0;
 			ex2->scale = 80 + rand() % 40;
-			ex2->startTime = cl.serverTime * 0.001 + (rand() % 30 / 200.0);
-			ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.03;
+			ex2->startTime = cl.serverTime + 5 * (rand() % 30);
+			ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 30;
 		}
 		if (rand() & 1)
 		{
@@ -1917,7 +1917,7 @@ static void MeteorBlastThink(h2explosion_t* ex)
 		}
 
 		ex->model = 0;
-		ex->endTime = cl.serverTime * 0.001;
+		ex->endTime = cl.serverTime;
 	}
 }
 
@@ -1949,8 +1949,8 @@ static void MeteorCrushSpawnThink(h2explosion_t* ex)
 		ex2->origin[0] += (rand() % 160) - 80;
 		ex2->origin[1] += (rand() % 160) - 80;
 		ex2->model = R_RegisterModel("models/tempmetr.mdl");
-		ex2->startTime = cl.serverTime * 0.001;
-		ex2->endTime = ex2->startTime + 2.0;
+		ex2->startTime = cl.serverTime;
+		ex2->endTime = ex2->startTime + 2000;
 		ex2->frameFunc = MeteorBlastThink;
 
 		ex2->exflags = EXFLAG_ROTATE;
@@ -1979,8 +1979,8 @@ void CLHW_ParseMeteorCrush(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/null.spr");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 0.4;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 400;
 	ex->frameFunc = MeteorCrushSpawnThink;
 	ex->data = maxDist;
 
@@ -2013,8 +2013,8 @@ void CLHW_ParseAcidBall(QMsg& message)
 		ex->abslight = 160 + rand() % 24;
 		ex->skin = 0;
 		ex->scale = 80 + rand() % 40;
-		ex->startTime = cl.serverTime * 0.001 + (rand() % 50 / 200.0);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 5 * (rand() % 50);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 	}
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_acidhit, 1, 1);
@@ -2058,8 +2058,8 @@ void CLHW_ParseFireWall(QMsg& message)
 			ex->model = R_RegisterModel("models/firewal4.spr");
 			break;
 		}
-		ex->startTime = cl.serverTime * 0.001 + .3 / 8.0 * i;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 300 * i / 8;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 
 		int PtContents;
 		do
@@ -2086,8 +2086,8 @@ void CLHW_ParseFireWall(QMsg& message)
 		ex->origin[1] += (rand() % 8) - 4;
 		ex->origin[2] += (rand() % 6) - 3;
 		ex->model = R_RegisterModel("models/flamestr.spr");
-		ex->startTime = cl.serverTime * 0.001 + .3 / 8.0 * i;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 300 * i / 8;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 		ex->flags |= H2DRF_TRANSLUCENT;
 
 		VectorAdd(curPos, posAdd, curPos);
@@ -2109,8 +2109,8 @@ void CLHW_ParseFireWallImpact(QMsg& message)
 		ex->origin[1] += (rand() % 32) - 16;
 		ex->origin[2] += (rand() % 32) - 16;
 		ex->model = R_RegisterModel("models/fboom.spr");
-		ex->startTime = cl.serverTime * 0.001 + ((rand() % 150) / 200);
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 5 * (rand() % 150);
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 	}
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 0, clh2_sfx_flameend, 1, 1);
@@ -2159,8 +2159,8 @@ void CLHW_ParsePowerFlame(QMsg& message)
 		ex->origin[1] += (rand() % 8) - 4;
 		ex->origin[2] += (rand() % 6) - 3;
 		ex->model = R_RegisterModel("models/flamestr.spr");
-		ex->startTime = cl.serverTime * 0.001 + .3 / 8.0 * i;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 300 * i / 8;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 		ex->flags |= H2DRF_TRANSLUCENT;
 
 		ex->velocity[0] = 0;
@@ -2177,8 +2177,8 @@ void CLHW_ParsePowerFlame(QMsg& message)
 		ex->origin[1] += (rand() % 8) - 4;
 		ex->origin[2] += (rand() % 6) - 3;
 		ex->model = R_RegisterModel("models/flamestr.spr");
-		ex->startTime = cl.serverTime * 0.001 + .3 / 8.0 * i;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime + 300 * i / 8;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 		ex->flags |= H2DRF_TRANSLUCENT;
 
 		ex->velocity[0] = 0;
@@ -2198,7 +2198,7 @@ static void updateBloodRain(h2explosion_t* ex)
 	ex->scale -= cls.frametime / 5.0;
 	if (ex->scale <= 0)
 	{
-		ex->endTime = cl.serverTime * 0.001 - 1;
+		ex->endTime = cl.serverTime - 1000;
 	}
 }
 
@@ -2219,8 +2219,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/sucwp1p.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3 / 240.0;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 10 / 8;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	ex->scale = health;
@@ -2242,8 +2242,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 		VectorCopy(pos, ex->origin);
 		VectorMA(ex->origin, 7, right, ex->origin);
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + trailLen * .3 / 240.0;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + trailLen * 10 / 8;
 		ex->angles[0] = travelPitch * 360 / 6.28;
 		ex->angles[1] = travelAng * 360 / 6.28;
 		ex->scale = health - 90;
@@ -2254,8 +2254,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 		VectorCopy(pos, ex->origin);
 		VectorMA(ex->origin, -7, right, ex->origin);
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + trailLen * .3 / 240.0;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + trailLen * 10 / 8;
 		ex->angles[0] = travelPitch * 360 / 6.28;
 		ex->angles[1] = travelAng * 360 / 6.28;
 		ex->scale = health - 90;
@@ -2281,8 +2281,8 @@ void CLHW_ParseAxe(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/axblade.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2291,8 +2291,8 @@ void CLHW_ParseAxe(QMsg& message)
 	ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/axtail.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2306,15 +2306,15 @@ void CLHW_ParseAxe(QMsg& message)
 
 static void SmokeRingFrameFunc(h2explosion_t* ex)
 {
-	if (cl.serverTime * 0.001 - ex->startTime < .3)
+	if (cl.serverTime - ex->startTime < 300)
 	{
 		ex->skin = 0;
 	}
-	else if (cl.serverTime * 0.001 - ex->startTime < .6)
+	else if (cl.serverTime - ex->startTime < 600)
 	{
 		ex->skin = 1;
 	}
-	else if (cl.serverTime * 0.001 - ex->startTime < .9)
+	else if (cl.serverTime - ex->startTime < 900)
 	{
 		ex->skin = 2;
 	}
@@ -2343,8 +2343,8 @@ static void updatePurify2(h2explosion_t* ex)
 		h2explosion_t* ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/ring.mdl");
-		ex2->startTime = cl.serverTime * 0.001;
-		ex2->endTime = ex2->startTime + 1.2;
+		ex2->startTime = cl.serverTime;
+		ex2->endTime = ex2->startTime + 1200;
 
 		ex2->scale = 150;
 
@@ -2377,8 +2377,8 @@ void CLHW_ParsePurify2Missile(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/drgnball.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2424,8 +2424,8 @@ void CLHW_ParseSwordShot(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/vorpshot.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2457,8 +2457,8 @@ void CLHW_ParseIceShot(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/iceshot1.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2477,8 +2477,8 @@ void CLHW_ParseIceShot(QMsg& message)
 	ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/iceshot2.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2512,8 +2512,8 @@ void CLHW_ParseMeteor(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/tempmetr.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2544,8 +2544,8 @@ void CLHW_ParseMegaMeteor(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/tempmetr.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2568,7 +2568,7 @@ void CLHW_ParseLightningBall(QMsg& message)
 	float travelAng = message.ReadByte() * 6.28 / 256.0;
 	float travelPitch = message.ReadByte() * 6.28 / 256.0;
 	float speed = message.ReadShort();
-	float trailLen = message.ReadByte() * .01;
+	float trailLen = message.ReadByte();
 
 	// light
 	CLH2_ExplosionLight(pos);
@@ -2581,8 +2581,8 @@ void CLHW_ParseLightningBall(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/lball.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .2;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 2;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2610,8 +2610,8 @@ void CLHW_ParseAcidBallFly(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/sucwp2p.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 300;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2633,8 +2633,8 @@ static void updateAcidBlob(h2explosion_t* ex)
 			h2explosion_t* ex2 = CLH2_AllocExplosion();
 			VectorCopy(ex->origin, ex2->origin);
 			ex2->model = R_RegisterModel("models/muzzle1.spr");
-			ex2->startTime = cl.serverTime * 0.001;
-			ex2->endTime = ex2->startTime + .4;
+			ex2->startTime = cl.serverTime;
+			ex2->endTime = ex2->startTime + 400;
 
 			VectorCopy(ex->angles, ex2->angles);
 			ex2->angles[2] += 90;
@@ -2655,7 +2655,7 @@ void CLHW_ParseAcidBlobFly(QMsg& message)
 	message.ReadPos(pos);
 	float travelAng = message.ReadByte() * 6.28 / 256.0;
 	float travelPitch = message.ReadByte() * 6.28 / 256.0;
-	float trailLen = message.ReadByte() * .01;
+	float trailLen = message.ReadByte();
 
 	vec3_t vel;
 	vel[0] = cos(travelAng) * cos(travelPitch) * 1000;
@@ -2665,8 +2665,8 @@ void CLHW_ParseAcidBlobFly(QMsg& message)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/sucwp2p.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + trailLen * .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + trailLen * 3;
 	ex->angles[0] = travelPitch * 360 / 6.28;
 	ex->angles[1] = travelAng * 360 / 6.28;
 	VectorCopy(vel, ex->velocity);
@@ -2677,8 +2677,8 @@ void CLHW_ParseAcidBlobFly(QMsg& message)
 
 static void zapFrameFunc(h2explosion_t* ex)
 {
-	ex->scale = (ex->endTime - cl.serverTime * 0.001) * (150 / .3) + 1;
-	if (((int)(cl.serverTime * 0.001 * 20.0)) % 2)
+	ex->scale = (ex->endTime - cl.serverTime) / 2 + 1;
+	if ((cl.serverTime / 50) % 2)
 	{
 		ex->skin = 0;
 	}
@@ -2693,8 +2693,8 @@ void CLHW_ChainLightningExplosion(const vec3_t pos)
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
 	ex->model = R_RegisterModel("models/vorpshok.mdl");
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + .3;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 300;
 	ex->flags |= H2MLS_ABSLIGHT;
 	ex->abslight = 224;
 	ex->skin = rand() & 1;
@@ -2706,8 +2706,8 @@ void CLHW_CreateExplosionWithSound(const vec3_t pos)
 {
 	h2explosion_t* ex = CLH2_AllocExplosion();
 	VectorCopy(pos, ex->origin);
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + HX_FRAME_MSTIME * 10;
 	ex->model = R_RegisterModel("models/sm_expld.spr");
 
 	S_StartSound(pos, CLH2_TempSoundChannel(), 1, clh2_sfx_explode, 1, 1);
@@ -2740,8 +2740,8 @@ void CLHW_UpdatePoisonGas(const vec3_t pos, const vec3_t angles)
 		h2explosion_t* ex = CLH2_AllocExplosion();
 		VectorCopy(pos, ex->origin);
 		ex->model = R_RegisterModel("models/grnsmk1.spr");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + .7 + (rand() % 200) * .001;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 700 + (rand() % 200);
 
 		ex->scale = 100;
 
@@ -2771,8 +2771,8 @@ void CLHW_UpdateAcidBlob(const vec3_t pos, const vec3_t angles)
 			h2explosion_t* ex = CLH2_AllocExplosion();
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/muzzle1.spr");
-			ex->startTime = cl.serverTime * 0.001;
-			ex->endTime = ex->startTime + .4;
+			ex->startTime = cl.serverTime;
+			ex->endTime = ex->startTime + 400;
 
 			ex->scale = 100;
 
@@ -2814,8 +2814,8 @@ void CLHW_UpdateOnFire(refEntity_t* ent, const vec3_t angles, int edict_num)
 			break;
 		}
 
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 50;
 
 		ex->scale = 100;
 
@@ -2849,8 +2849,8 @@ static void PowerFlameBurnRemove(h2explosion_t* ex)
 		ex2->model = R_RegisterModel("models/pow.spr");
 		break;
 	}
-	ex2->startTime = cl.serverTime * 0.001;
-	ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
+	ex2->startTime = cl.serverTime;
+	ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 50;
 
 	ex2->scale = 100;
 
@@ -2874,8 +2874,8 @@ void CLHW_UpdatePowerFlameBurn(refEntity_t* ent, int edict_num)
 		ex->origin[1] += (rand() % 120) - 60;
 		ex->origin[2] += (rand() % 120) - 60 + 120;
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
-		ex->startTime = cl.serverTime * 0.001;
-		ex->endTime = ex->startTime + .25;
+		ex->startTime = cl.serverTime;
+		ex->endTime = ex->startTime + 250;
 		ex->removeFunc = PowerFlameBurnRemove;
 
 		ex->scale = 100;
@@ -2895,8 +2895,8 @@ void CLHW_UpdatePowerFlameBurn(refEntity_t* ent, int edict_num)
 		h2explosion_t* ex2 = CLH2_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/flamestr.spr");
-		ex2->startTime = cl.serverTime * 0.001;
-		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
+		ex2->startTime = cl.serverTime;
+		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 50;
 		ex2->flags |= H2DRF_TRANSLUCENT;
 	}
 }
@@ -2933,8 +2933,8 @@ static void CLHW_CreateIceChunk(const vec3_t origin)
 	ex->flags |= H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
 	ex->abslight = 128;
 
-	ex->startTime = cl.serverTime * 0.001;
-	ex->endTime = ex->startTime + 2.0;
+	ex->startTime = cl.serverTime;
+	ex->endTime = ex->startTime + 2000;
 }
 
 void CLHW_UpdateIceStorm(refEntity_t* ent, int edict_num)
@@ -2996,7 +2996,7 @@ void CLH2_UpdateExplosions()
 		}
 
 		// if we hit endTime, get rid of explosion (i assume endTime is greater than startTime, etc)
-		if (ex->endTime <= cl.serverTime * 0.001)
+		if (ex->endTime <= cl.serverTime)
 		{
 			if (ex->removeFunc)
 			{
@@ -3017,7 +3017,7 @@ void CLH2_UpdateExplosions()
 		}
 		else
 		{
-			f = (R_ModelNumFrames(ex->model) - 1) * (cl.serverTime * 0.001 - ex->startTime) / (ex->endTime - ex->startTime);
+			f = (R_ModelNumFrames(ex->model) - 1) * (cl.serverTime - ex->startTime) / (ex->endTime - ex->startTime);
 		}
 
 		// apply velocity
@@ -3036,7 +3036,7 @@ void CLH2_UpdateExplosions()
 			VectorMA(ex->angles, cls.frametime * 0.001, ex->avel, ex->angles);
 		}
 		// you can set startTime to some point in the future to delay the explosion showing up or thinking; it'll still move, though
-		if (ex->startTime > cl.serverTime * 0.001)
+		if (ex->startTime > cl.serverTime)
 		{
 			continue;
 		}
@@ -3047,7 +3047,7 @@ void CLH2_UpdateExplosions()
 		}
 
 		// allow for the possibility for the frame func to reset startTime
-		if (ex->startTime > cl.serverTime * 0.001)
+		if (ex->startTime > cl.serverTime)
 		{
 			continue;
 		}
@@ -3099,7 +3099,7 @@ void CLHW_UpdateTargetBall()
 	h2explosion_t* ex2 = NULL;
 	for (int i = 0; i < H2MAX_EXPLOSIONS; i++)
 	{
-		if (clh2_explosions[i].endTime > cl.serverTime * 0.001)
+		if (clh2_explosions[i].endTime > cl.serverTime)
 		{
 			// make certain it's an active one
 			if (clh2_explosions[i].model == iceMod)
@@ -3146,8 +3146,8 @@ void CLHW_UpdateTargetBall()
 
 	VectorScale(ex1->origin, (.75 - cls.frametime * 0.001 * 1.5), ex1->origin);	// FIXME this should be affected by frametime...
 	VectorMA(ex1->origin, (.25 + cls.frametime * 0.001 * 1.5), newOrg, ex1->origin);
-	ex1->startTime = cl.serverTime * 0.001;
-	ex1->endTime = ex1->startTime + cls.frametime * 0.001 + 0.2;
+	ex1->startTime = cl.serverTime;
+	ex1->endTime = ex1->startTime + cls.frametime + 200;
 	ex1->scale = (ex1->scale * (.75 - cls.frametime * 0.001 * 1.5) + newScale * (.25 + cls.frametime * 0.001 * 1.5));
 	ex1->angles[0] = clh2_targetPitch * 360 / 256.0;
 	ex1->angles[1] = clh2_targetAngle * 360 / 256.0;
@@ -3175,8 +3175,8 @@ void CLHW_UpdateTargetBall()
 		ex2->scale = newScale;
 	}
 	VectorCopy(ex1->origin, ex2->origin);
-	ex2->startTime = cl.serverTime * 0.001;
-	ex2->endTime = ex2->startTime + cls.frametime * 0.001 + 0.2;
+	ex2->startTime = cl.serverTime;
+	ex2->endTime = ex2->startTime + cls.frametime + 200;
 	ex2->scale = (ex2->scale * (.75 - cls.frametime * 0.001 * 1.5) + newScale * (.25 + cls.frametime * 0.001 * 1.5));
 	ex2->angles[0] = ex1->angles[0];
 	ex2->angles[1] = ex1->angles[1];
