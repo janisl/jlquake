@@ -1157,13 +1157,13 @@ void CLH2_SetRefEntAxis(refEntity_t* entity, vec3_t entityAngles, vec3_t angleAd
 	if (mls == H2MLS_ABSLIGHT)
 	{
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
-		entity->radius = absoluteLight / 256.0;
+		entity->absoluteLight = absoluteLight / 256.0;
 	}
 	else if (mls != H2MLS_NONE)
 	{
 		// Use a model light style (25-30)
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
-		entity->radius = cl_lightstyle[24 + mls].value[0] / 2;
+		entity->absoluteLight = cl_lightstyle[24 + mls].value[0] / 2;
 	}
 }
 

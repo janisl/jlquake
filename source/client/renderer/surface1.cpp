@@ -721,7 +721,7 @@ void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override)
 	{
 		// tr.currentEntity->abslight   0 - 255
 		GL_TexEnv(GL_MODULATE);
-		intensity = tr.currentEntity->e.radius;
+		intensity = tr.currentEntity->e.absoluteLight;
 	}
 
 	if (!override)
@@ -897,7 +897,7 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 			{
 				// tr.currentEntity->abslight   0 - 255
 				GL_TexEnv(GL_MODULATE);
-				intensity = tr.currentEntity->e.radius;
+				intensity = tr.currentEntity->e.absoluteLight;
 			}
 
 			qglColor4f(intensity, intensity, intensity, alpha_val);

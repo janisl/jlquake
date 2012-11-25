@@ -186,7 +186,7 @@ void CLQ2_AddBeams()
 			VectorCopy(b->end, ent.origin);
 			ent.hModel = b->model;
 			ent.renderfx = RF_ABSOLUTE_LIGHT;
-			ent.radius = 1;
+			ent.absoluteLight = 1;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -203,7 +203,7 @@ void CLQ2_AddBeams()
 			if (b->model == clq2_mod_lightning)
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
-				ent.radius = 1;
+				ent.absoluteLight = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = rand() % 360;
@@ -394,7 +394,7 @@ void CLQ2_AddPlayerBeams()
 			VectorCopy(b->end, ent.origin);
 			ent.hModel = b->model;
 			ent.renderfx = RF_ABSOLUTE_LIGHT;
-			ent.radius = 1;
+			ent.absoluteLight = 1;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -411,7 +411,7 @@ void CLQ2_AddPlayerBeams()
 			if (clq2_mod_heatbeam && (b->model == clq2_mod_heatbeam))
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
-				ent.radius = 1;
+				ent.absoluteLight = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = (cl.serverTime) % 360;
@@ -420,7 +420,7 @@ void CLQ2_AddPlayerBeams()
 			else if (b->model == clq2_mod_lightning)
 			{
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
-				ent.radius = 1;
+				ent.absoluteLight = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = rand() % 360;

@@ -1334,7 +1334,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 	if (e->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		ambientlight = shadelight = tr.currentEntity->e.radius * 256.0;
+		ambientlight = shadelight = tr.currentEntity->e.absoluteLight * 256.0;
 	}
 
 	float tmp_yaw = VecToYaw(e->e.axis[0]);

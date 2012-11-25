@@ -2790,7 +2790,7 @@ static void PlayerConfig_MenuDraw()
 		String::Sprintf(scratch, sizeof(scratch), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue]);
 		entity.customSkin = R_GetImageHandle(R_RegisterSkinQ2(scratch));
 		entity.renderfx = RF_ABSOLUTE_LIGHT;
-		entity.radius = 1;
+		entity.absoluteLight = 1;
 		entity.origin[0] = 80;
 		entity.origin[1] = 0;
 		entity.origin[2] = 0;

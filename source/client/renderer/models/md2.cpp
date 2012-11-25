@@ -586,7 +586,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			md2_shadelight[i] = e->e.radius;
+			md2_shadelight[i] = e->e.absoluteLight;
 		}
 	}
 	else

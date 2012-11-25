@@ -687,7 +687,7 @@ void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
-		ent->radius = 1.0;
+		ent->absoluteLight = 1.0;
 	}
 }
 

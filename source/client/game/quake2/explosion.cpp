@@ -113,7 +113,7 @@ void CLQ2_SmokeAndFlash(vec3_t origin)
 	explosion = NewExplosion(origin);
 	explosion->type = ex_flash;
 	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->frames = 2;
 	explosion->entity.hModel = clq2_mod_flash;
 	AxisClear(explosion->entity.axis);
@@ -128,7 +128,7 @@ static q2explosion_t* NewBlasterExplosion(vec3_t pos, vec3_t dir)
 
 	explosion->type = ex_misc;
 	explosion->entity.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->entity.hModel = clq2_mod_explode;
 	explosion->frames = 4;
 	explosion->light = 150;
@@ -147,7 +147,7 @@ void CLQ2_GrenadeExplosion(vec3_t pos)
 	q2explosion_t* explosion = NewExplosion(pos);
 	explosion->type = ex_poly;
 	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->light = 350;
 	explosion->lightColour[0] = 1.0;
 	explosion->lightColour[1] = 0.5;
@@ -167,7 +167,7 @@ void CLQ2_RocketExplosion(vec3_t pos)
 	q2explosion_t* explosion = NewExplosion(pos);
 	explosion->type = ex_poly;
 	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->light = 350;
 	explosion->lightColour[0] = 1.0;
 	explosion->lightColour[1] = 0.5;
@@ -190,7 +190,7 @@ void CLQ2_BigExplosion(vec3_t pos)
 	q2explosion_t* explosion = NewExplosion(pos);
 	explosion->type = ex_poly;
 	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->light = 350;
 	explosion->lightColour[0] = 1.0;
 	explosion->lightColour[1] = 0.5;
@@ -213,7 +213,7 @@ void CLQ2_BfgExplosion(vec3_t pos)
 	q2explosion_t* explosion = NewExplosion(pos);
 	explosion->type = ex_poly;
 	explosion->entity.renderfx = RF_ABSOLUTE_LIGHT;
-	explosion->entity.radius = 1;
+	explosion->entity.absoluteLight = 1;
 	explosion->light = 350;
 	explosion->lightColour[0] = 0.0;
 	explosion->lightColour[1] = 1.0;

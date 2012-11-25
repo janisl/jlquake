@@ -1010,7 +1010,7 @@ static void R_DrawNullModel()
 	vec3_t shadelight;
 	if (tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.radius;
+		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.absoluteLight;
 	}
 	else
 	{

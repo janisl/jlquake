@@ -65,7 +65,7 @@ enum glHardwareType_t
 #define RF_WATERTRANS       16		// translucent, alpha from r_wateralpha cvar.
 #define RF_TRANSLUCENT      32		// translucent, alpha in shaderRGBA
 #define RF_COLORSHADE       1024	// multiply light with colour in shaderRGBA
-#define RF_ABSOLUTE_LIGHT   2048	// fixed light, value in radius
+#define RF_ABSOLUTE_LIGHT   2048	// fixed light
 #define RF_COLOUR_SHELL     4096	// draws coloured shell for the model
 #define RF_GLOW             8192	// pulse lighting for bonus items
 #define RF_IR_VISIBLE       16384	// in red light when infrared googles are on
@@ -283,6 +283,7 @@ struct refEntity_t
 	float rotation;
 
 	float syncBase;
+	float absoluteLight;
 
 	vec3_t scale;		//----(SA)	added
 
