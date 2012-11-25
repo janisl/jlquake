@@ -30,8 +30,8 @@ struct h2stream_t
 	vec3_t source;
 	vec3_t dest;
 	vec3_t offset;
-	float endTime;
-	float lastTrailTime;
+	int endTime;
+	int lastTrailTime;
 };
 
 static h2stream_t clh2_Streams[MAX_STREAMS_H2];
@@ -57,7 +57,7 @@ static h2stream_t* CLH2_NewStream(int ent, int tag)
 	// Search for a free stream
 	for (i = 0, stream = clh2_Streams; i < MAX_STREAMS_H2; i++, stream++)
 	{
-		if (!stream->models[0] || stream->endTime < cl.serverTime * 0.001)
+		if (!stream->models[0] || stream->endTime < cl.serverTime)
 		{
 			return stream;
 		}
@@ -78,7 +78,7 @@ static void CLH2_CreateStream(int type, int ent, int tag, int flags, int skin, i
 	stream->tag = tag;
 	stream->flags = flags;
 	stream->skin = skin;
-	stream->endTime = (cl.serverTime + duration) * 0.001;
+	stream->endTime = cl.serverTime + duration;
 	stream->lastTrailTime = 0;
 	VectorCopy(source, stream->source);
 	VectorCopy(dest, stream->dest);
@@ -256,20 +256,20 @@ void CLH2_UpdateStreams()
 			continue;
 		}
 
-		if (stream->endTime * 1000 < cl.serverTime)
+		if (stream->endTime < cl.serverTime)
 		{
 			// Inactive
 			if (stream->type != H2TE_STREAM_LIGHTNING && stream->type != H2TE_STREAM_LIGHTNING_SMALL)
 			{
 				continue;
 			}
-			else if (stream->endTime * 1000 + 250 < cl.serverTime)
+			else if (stream->endTime + 250 < cl.serverTime)
 			{
 				continue;
 			}
 		}
 
-		if (stream->flags & H2STREAM_ATTACHED && stream->endTime * 1000 >= cl.serverTime)
+		if (stream->flags & H2STREAM_ATTACHED && stream->endTime >= cl.serverTime)
 		{
 			// Attach the start position to owner
 			h2entity_state_t* state = CLH2_FindState(stream->entity);
@@ -295,7 +295,7 @@ void CLH2_UpdateStreams()
 			vec3_t discard;
 			AngleVectors(angles, discard, right, up);
 
-			lifeTime = ((stream->endTime - cl.serverTime * 0.001) / .8);
+			lifeTime = (stream->endTime - cl.serverTime) / 800.0f;
 			cosTime = cos(cl.serverTime * 0.001 * 5);
 			sinTime = sin(cl.serverTime * 0.001 * 5);
 			cos2Time = cos(cl.serverTime * 0.001 * 5 + 3.14);
@@ -329,7 +329,7 @@ void CLH2_UpdateStreams()
 				angles[2] = (cl.serverTime / 100) % 360;
 				if (GGameType & GAME_HexenWorld)
 				{
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTime * 0.001) / .3), 0, 128, H2MLS_ABSLIGHT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + (stream->endTime - cl.serverTime) / 3, 0, 128, H2MLS_ABSLIGHT);
 				}
 				else
 				{
@@ -344,7 +344,7 @@ void CLH2_UpdateStreams()
 				angles[2] = (cl.serverTime / 20) % 360;
 				if (GGameType & GAME_HexenWorld)
 				{
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.serverTime * 0.001) / .5), 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 50 + (stream->endTime - cl.serverTime) * 0.2f, 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -401,10 +401,10 @@ void CLH2_UpdateStreams()
 				}
 				break;
 			case H2TE_STREAM_LIGHTNING:
-				if (stream->endTime * 1000 < cl.serverTime)
+				if (stream->endTime < cl.serverTime)
 				{	//fixme: keep last non-translucent frame and angle
 					angles[2] = 0;
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime / 1000.0) * 192, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime) * 192 / 1000.0, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -416,10 +416,10 @@ void CLH2_UpdateStreams()
 				break;
 			case H2TE_STREAM_LIGHTNING_SMALL:
 			case HWTE_STREAM_LIGHTNING_SMALL:
-				if (stream->endTime * 1000 < cl.serverTime)
+				if (stream->endTime < cl.serverTime)
 				{
 					angles[2] = 0;
-					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime / 1000.0) * 192, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
+					CLH2_SetRefEntAxis(&ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.serverTime) * 192 / 1000.0, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT);
 				}
 				else
 				{
@@ -469,9 +469,9 @@ void CLH2_UpdateStreams()
 		if (stream->type == H2TE_STREAM_SUNSTAFF1 ||
 			(!(GGameType & GAME_HexenWorld) && stream->type == H2TE_STREAM_SUNSTAFF2))
 		{
-			if (stream->lastTrailTime * 1000 + 200 < cl.serverTime)
+			if (stream->lastTrailTime + 200 < cl.serverTime)
 			{
-				stream->lastTrailTime = cl.serverTime / 1000.0;
+				stream->lastTrailTime = cl.serverTime;
 				CLH2_SunStaffTrail(stream->source, stream->dest);
 			}
 
