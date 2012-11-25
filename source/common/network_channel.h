@@ -222,6 +222,7 @@ void Loop_SearchForHosts(bool xmit);
 qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
 qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
 int  UDPNQ_OpenSocket(int port);
+int UDP_CloseSocket(int socket);
 int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Broadcast(int socket, byte* buf, int len);

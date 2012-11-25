@@ -469,7 +469,7 @@ static qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
 ErrorReturn:
 	NET_FreeQSocket(sock);
 ErrorReturn2:
-	UDPNQ_OpenSocket(newsock);
+	UDP_CloseSocket(newsock);
 	if (m_return_onerror)
 	{
 		in_keyCatchers |= KEYCATCH_UI;

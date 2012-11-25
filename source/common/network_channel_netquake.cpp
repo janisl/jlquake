@@ -362,7 +362,7 @@ static int UDP_Init()
 	return net_controlsocket;
 }
 
-static int UDP_CloseSocket(int socket)
+int UDP_CloseSocket(int socket)
 {
 	SOCK_Close(socket);
 	return 0;
@@ -881,7 +881,7 @@ static void Datagram_Shutdown()
 
 static void Datagram_Close(qsocket_t* sock, netchan_t* chan)
 {
-	UDPNQ_OpenSocket(sock->socket);
+	UDP_CloseSocket(sock->socket);
 }
 
 static void Datagram_Listen(bool state)
