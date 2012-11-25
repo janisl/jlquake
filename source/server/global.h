@@ -78,8 +78,6 @@ struct client_t
 	double qh_last_message;				// reliable messages must be sent
 										// periodically
 
-	qsocket_t* qh_netconnection;		// communications handle
-
 	QMsg qh_message;					// can be added to at any time,
 										// copied and clear once per frame
 	byte qh_messageBuffer[MAX_MSGLEN_H2];

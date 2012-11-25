@@ -39,10 +39,10 @@ void SVQH_DropClient(client_t* host_client, bool crash)
 	if (!crash)
 	{
 		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+		if (NET_CanSendMessage(&host_client->netchan))
 		{
 			host_client->qh_message.WriteByte(GGameType & GAME_Hexen2 ? h2svc_disconnect : q1svc_disconnect);
-			NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
+			NET_SendMessage(&host_client->netchan, &host_client->qh_message);
 		}
 
 		if (host_client->qh_edict && host_client->state == CS_ACTIVE)
@@ -59,8 +59,7 @@ void SVQH_DropClient(client_t* host_client, bool crash)
 	}
 
 	// break the net connection
-	NET_Close(host_client->qh_netconnection, &host_client->netchan);
-	host_client->qh_netconnection = NULL;
+	NET_Close(&host_client->netchan);
 
 	// free the client (the body stays around)
 	host_client->state = CS_FREE;
@@ -305,7 +304,7 @@ static void SVQH_Spawn_f(client_t* host_client)
 			*pr_globalVars.self = EDICT_TO_PROG(ent);
 			PR_ExecuteProgram(*pr_globalVars.ClientConnect);
 
-			if ((Sys_Milliseconds() - host_client->qh_netconnection->connecttime * 1000) <= sv.qh_time)
+			if ((Sys_Milliseconds() - host_client->netchan.connecttime) <= sv.qh_time)
 			{
 				common->Printf("%s entered the game\n", host_client->name);
 			}
@@ -1919,7 +1918,7 @@ static void SVQH_Status_f(client_t* host_client)
 		{
 			continue;
 		}
-		seconds = (int)(net_time - client->qh_netconnection->connecttime);
+		seconds = (int)(net_time - client->netchan.connecttime / 1000);
 		minutes = seconds / 60;
 		if (minutes)
 		{
@@ -1935,7 +1934,7 @@ static void SVQH_Status_f(client_t* host_client)
 			hours = 0;
 		}
 		SVQH_ClientPrintf(host_client, 0, "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-		SVQH_ClientPrintf(host_client, 0, "   %s\n", client->qh_netconnection->address);
+		SVQH_ClientPrintf(host_client, 0, "   %s\n", SOCK_AdrToString(client->netchan.remoteAddress));
 	}
 }
 
@@ -3239,7 +3238,7 @@ static bool SVQH_ReadClientMessage(client_t* client)
 
 	do
 	{
-		int ret = NET_GetMessage(client->qh_netconnection, &client->netchan, &message);
+		int ret = NET_GetMessage(&client->netchan, &message);
 		if (ret == -1)
 		{
 			common->Printf("SV_ReadClientMessage: NET_GetMessage failed\n");

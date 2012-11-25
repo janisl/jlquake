@@ -102,6 +102,8 @@ void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qpor
 	chan->remoteAddress = adr;
 	chan->qport = qport;
 	chan->incomingSequence = 0;
+	chan->connecttime = net_time * 1000;
+	chan->canSend = true;
 	if (!(GGameType & GAME_QuakeHexen))
 	{
 		chan->outgoingSequence = 1;

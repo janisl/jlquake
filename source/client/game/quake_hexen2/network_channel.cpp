@@ -315,34 +315,29 @@ void NET_Slist_f()
 	hostCacheCount = 0;
 }
 
-static qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
+static bool Datagram_Connect(const char* host, netchan_t* chan)
 {
 	if (!udp_initialized)
 	{
-		return NULL;
+		return false;
 	}
 
 	// see if we can resolve the host name
 	netadr_t sendaddr;
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 	{
-		return NULL;
+		return false;
 	}
 
 	int newsock = UDPNQ_OpenSocket(0);
 	if (newsock == -1)
 	{
-		return NULL;
+		return false;
 	}
 
-	qsocket_t* sock = NET_NewQSocket();
 	double start_time;
 	int ret;
-	if (sock == NULL)
-	{
-		goto ErrorReturn2;
-	}
-	sock->socket = newsock;
+	chan->socket = newsock;
 
 	// send the connection request
 	common->Printf("trying...\n"); SCR_UpdateScreen();
@@ -458,17 +453,13 @@ static qsocket_t* Datagram_Connect(const char* host, netchan_t* chan)
 		goto ErrorReturn;
 	}
 
-	UDP_GetNameFromAddr(&sendaddr, sock->address);
-
 	common->Printf("Connection accepted\n");
 	chan->lastReceived = SetNetTime() * 1000;
 
 	m_return_onerror = false;
-	return sock;
+	return true;
 
 ErrorReturn:
-	NET_FreeQSocket(sock);
-ErrorReturn2:
 	UDP_CloseSocket(newsock);
 	if (m_return_onerror)
 	{
@@ -476,10 +467,10 @@ ErrorReturn2:
 		m_state = m_return_state;
 		m_return_onerror = false;
 	}
-	return NULL;
+	return false;
 }
 
-qsocket_t* NET_Connect(const char* host, netchan_t* chan)
+bool NET_Connect(const char* host, netchan_t* chan)
 {
 	SetNetTime();
 
@@ -546,7 +537,7 @@ qsocket_t* NET_Connect(const char* host, netchan_t* chan)
 	}
 
 JustDoIt:
-	qsocket_t* ret = Loop_Connect(host, chan);
+	bool ret = Loop_Connect(host, chan);
 	if (ret)
 	{
 		return ret;
@@ -574,8 +565,5 @@ JustDoIt:
 
 void CLQH_ShutdownNetwork()
 {
-	if (cls.qh_netcon)
-	{
-		NET_Close(cls.qh_netcon, &clc.netchan);
-	}
+	NET_Close(&clc.netchan);
 }

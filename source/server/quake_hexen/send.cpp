@@ -1782,7 +1782,7 @@ static bool SVQH_SendClientDatagram(client_t* client)
 	}
 
 	// send the datagram
-	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
+	if (NET_SendUnreliableMessage(&client->netchan, &msg) == -1)
 	{
 		SVQH_DropClient(client, true);// if the message couldn't send, kick off
 		return false;
@@ -2088,7 +2088,7 @@ static void SVQH_SendNop(client_t* client)
 
 	msg.WriteChar(GGameType & GAME_Hexen2 ? h2svc_nop : q1svc_nop);
 
-	if (NET_SendUnreliableMessage(client->qh_netconnection, &client->netchan, &msg) == -1)
+	if (NET_SendUnreliableMessage(&client->netchan, &msg) == -1)
 	{
 		SVQH_DropClient(client, true);	// if the message couldn't send, kick off
 	}
@@ -2145,7 +2145,7 @@ void SVQH_SendClientMessages()
 
 		if (host_client->qh_message.cursize || host_client->qh_dropasap)
 		{
-			if (!NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+			if (!NET_CanSendMessage(&host_client->netchan))
 			{
 				continue;
 			}
@@ -2156,8 +2156,7 @@ void SVQH_SendClientMessages()
 			}
 			else
 			{
-				if (NET_SendMessage(host_client->qh_netconnection,
-						&host_client->netchan, &host_client->qh_message) == -1)
+				if (NET_SendMessage(&host_client->netchan, &host_client->qh_message) == -1)
 				{
 					SVQH_DropClient(host_client, true);	// if the message couldn't send, kick off
 				}

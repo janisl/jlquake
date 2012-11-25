@@ -1083,7 +1083,7 @@ static void SVQH_ConStatus_f()
 		{
 			continue;
 		}
-		int seconds = (int)(net_time - client->qh_netconnection->connecttime);
+		int seconds = (int)(net_time - client->netchan.connecttime);
 		int minutes = seconds / 60;
 		int hours = 0;
 		if (minutes)
@@ -1100,7 +1100,7 @@ static void SVQH_ConStatus_f()
 			hours = 0;
 		}
 		common->Printf("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, (int)client->qh_edict->GetFrags(), hours, minutes, seconds);
-		common->Printf("   %s\n", client->qh_netconnection->address);
+		common->Printf("   %s\n", SOCK_AdrToString(client->netchan.remoteAddress));
 	}
 }
 

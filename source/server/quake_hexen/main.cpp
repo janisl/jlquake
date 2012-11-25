@@ -457,14 +457,13 @@ static void SVQH_ConnectClient(int clientnum)
 {
 	client_t* client = svs.clients + clientnum;
 
-	common->DPrintf("Client %s connected\n", client->qh_netconnection->address);
+	common->DPrintf("Client %s connected\n", SOCK_AdrToString(client->netchan.remoteAddress));
 
 	int edictnum = clientnum + 1;
 
 	qhedict_t* ent = QH_EDICT_NUM(edictnum);
 
 	// set up the client_t
-	qsocket_t* netconnection = client->qh_netconnection;
 	netchan_t netchan = client->netchan;
 
 	float spawn_parms[NUM_SPAWN_PARMS];
@@ -477,7 +476,6 @@ static void SVQH_ConnectClient(int clientnum)
 	{
 		client->h2_send_all_v = true;
 	}
-	client->qh_netconnection = netconnection;
 	client->netchan = netchan;
 
 	String::Cpy(client->name, "unconnected");
@@ -519,7 +517,8 @@ static void SVQH_CheckForNewClients()
 	while (1)
 	{
 		netadr_t addr;
-		qsocket_t* ret = NET_CheckNewConnections(&addr);
+		int socket;
+		bool ret = NET_CheckNewConnections(&addr, socket);
 		if (!ret)
 		{
 			break;
@@ -542,8 +541,8 @@ static void SVQH_CheckForNewClients()
 		}
 
 		Netchan_Setup(NS_SERVER, &svs.clients[i].netchan, addr, 0);
+		svs.clients[i].netchan.socket = socket;
 		svs.clients[i].netchan.lastReceived = net_time * 1000;
-		svs.clients[i].qh_netconnection = ret;
 		SVQH_ConnectClient(i);
 
 		net_activeconnections++;
@@ -1447,14 +1446,14 @@ void SVQH_Shutdown()
 		{
 			if (host_client->state >= CS_CONNECTED && host_client->qh_message.cursize)
 			{
-				if (NET_CanSendMessage(host_client->qh_netconnection, &host_client->netchan))
+				if (NET_CanSendMessage(&host_client->netchan))
 				{
-					NET_SendMessage(host_client->qh_netconnection, &host_client->netchan, &host_client->qh_message);
+					NET_SendMessage(&host_client->netchan, &host_client->qh_message);
 					host_client->qh_message.Clear();
 				}
 				else
 				{
-					NET_GetMessage(host_client->qh_netconnection, &host_client->netchan, &net_message);
+					NET_GetMessage(&host_client->netchan, &net_message);
 					count++;
 				}
 			}

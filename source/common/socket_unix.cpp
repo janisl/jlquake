@@ -676,23 +676,3 @@ bool SOCK_GetAddr(int socket, netadr_t* addr)
 	SockadrToNetadr(&sadr, addr);
 	return true;
 }
-
-//==========================================================================
-//
-//	SOCK_GetHostByAddr
-//
-//==========================================================================
-
-const char* SOCK_GetHostByAddr(netadr_t* addr)
-{
-	sockaddr_in sadr;
-	NetadrToSockadr(addr, &sadr);
-
-	hostent* hostentry = gethostbyaddr((char*)&sadr.sin_addr, sizeof(in_addr), AF_INET);
-	if (hostentry)
-	{
-		return hostentry->h_name;
-	}
-
-	return NULL;
-}

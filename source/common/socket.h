@@ -39,7 +39,6 @@ struct netadr_t
 };
 
 bool SOCK_StringToAdr(const char* string, netadr_t* Address, int DefaultPort);
-const char* SOCK_GetHostByAddr(netadr_t* Address);
 const char* SOCK_AdrToString(const netadr_t& Address);
 const char* SOCK_BaseAdrToString(const netadr_t& Address);
 bool SOCK_CompareAdr(const netadr_t& AddressA, const netadr_t& AddressB);

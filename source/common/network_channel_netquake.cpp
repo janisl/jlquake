@@ -88,10 +88,6 @@ struct packetBuffer_t
 int net_hostport;
 int DEFAULTnet_hostport;
 
-static qsocket_t* net_activeSockets = NULL;
-static qsocket_t* net_freeSockets = NULL;
-static int net_numsockets = 0;
-
 double net_time;
 
 int net_activeconnections = 0;
@@ -99,8 +95,6 @@ int hostCacheCount = 0;
 hostcache_t hostcache[HOSTCACHESIZE];
 
 static bool localconnectpending = false;
-static qsocket_t* loop_client = NULL;
-static qsocket_t* loop_server = NULL;
 
 bool tcpipAvailable = false;
 
@@ -133,113 +127,38 @@ static Cvar* net_messagetimeout;
 bool datagram_initialized;
 bool net_listening = false;
 
-//	Called by drivers when a new communications endpoint is required
-// The sequence and buffer fields will be filled in properly
-qsocket_t* NET_NewQSocket()
-{
-	if (net_freeSockets == NULL)
-	{
-		return NULL;
-	}
-
-	// get one from free list
-	qsocket_t* sock = net_freeSockets;
-	net_freeSockets = sock->next;
-
-	// add it to active list
-	sock->next = net_activeSockets;
-	net_activeSockets = sock;
-
-	sock->disconnected = false;
-	sock->connecttime = net_time;
-	String::Cpy(sock->address,"UNSET ADDRESS");
-	sock->socket = 0;
-	sock->canSend = true;
-	sock->sendNext = false;
-
-	return sock;
-}
-
-void NET_FreeQSocket(qsocket_t* sock)
-{
-	// remove it from active list
-	if (sock == net_activeSockets)
-	{
-		net_activeSockets = net_activeSockets->next;
-	}
-	else
-	{
-		qsocket_t* s;
-		for (s = net_activeSockets; s; s = s->next)
-		{
-			if (s->next == sock)
-			{
-				s->next = sock->next;
-				break;
-			}
-		}
-		if (!s)
-		{
-			common->FatalError("NET_FreeQSocket: not active\n");
-		}
-	}
-
-	// add it to free list
-	sock->next = net_freeSockets;
-	net_freeSockets = sock;
-	sock->disconnected = true;
-}
-
 double SetNetTime()
 {
 	net_time = Sys_DoubleTime();
 	return net_time;
 }
 
-qsocket_t* Loop_Connect(const char* host, netchan_t* chan)
+bool Loop_Connect(const char* host, netchan_t* chan)
 {
 	if (String::Cmp(host,"local") != 0)
 	{
-		return NULL;
+		return false;
 	}
 
 	localconnectpending = true;
 
-	if (!loop_client)
-	{
-		if ((loop_client = NET_NewQSocket()) == NULL)
-		{
-			common->Printf("Loop_Connect: no qsocket available\n");
-			return NULL;
-		}
-		String::Cpy(loop_client->address, "localhost");
-	}
 	loopbacks[0].send = 0;
 	loopbacks[0].get = 0;
 	loopbacks[0].canSend = true;
 
-	if (!loop_server)
-	{
-		if ((loop_server = NET_NewQSocket()) == NULL)
-		{
-			common->Printf("Loop_Connect: no qsocket available\n");
-			return NULL;
-		}
-		String::Cpy(loop_server->address, "LOCAL");
-	}
 	loopbacks[1].send = 0;
 	loopbacks[1].get = 0;
 	loopbacks[1].canSend = true;
 
 	chan->remoteAddress.type = NA_LOOPBACK;
-	return loop_client;
+	return true;
 }
 
-qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
+bool Loop_CheckNewConnections(netadr_t* outaddr)
 {
 	if (!localconnectpending)
 	{
-		return NULL;
+		return false;
 	}
 
 	localconnectpending = false;
@@ -250,7 +169,7 @@ qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr)
 	loopbacks[0].get = 0;
 	loopbacks[0].canSend = true;
 	outaddr->type = NA_LOOPBACK;
-	return loop_server;
+	return true;
 }
 
 static int Loop_GetMessage(netchan_t* chan, QMsg* message)
@@ -297,19 +216,11 @@ static bool Loop_CanSendMessage(netchan_t* chan)
 	return loopbacks[chan->sock].canSend;
 }
 
-static void Loop_Close(qsocket_t* sock, netchan_t* chan)
+static void Loop_Close(netchan_t* chan)
 {
 	loopbacks[chan->sock].send = 0;
 	loopbacks[chan->sock].get = 0;
 	loopbacks[chan->sock].canSend = true;
-	if (sock == loop_client)
-	{
-		loop_client = NULL;
-	}
-	else
-	{
-		loop_server = NULL;
-	}
 }
 
 int UDPNQ_OpenSocket(int port)
@@ -465,20 +376,7 @@ int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 	return -1;
 }
 
-int UDP_GetNameFromAddr(netadr_t* addr, char* name)
-{
-	const char* host = SOCK_GetHostByAddr(addr);
-	if (host)
-	{
-		String::NCpy(name, host, NET_NAMELEN_Q1 - 1);
-		return 0;
-	}
-
-	String::Cpy(name, SOCK_AdrToString(*addr));
-	return 0;
-}
-
-static int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+static int Datagram_SendMessage(netchan_t* chan, QMsg* data)
 {
 #ifdef DEBUG
 	if (data->cursize == 0)
@@ -518,9 +416,9 @@ static int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
 	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
-	sock->canSend = false;
+	chan->canSend = false;
 
-	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(chan->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 	{
 		return -1;
 	}
@@ -530,7 +428,7 @@ static int Datagram_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return 1;
 }
 
-static int SendMessageNext(qsocket_t* sock, netchan_t* chan)
+static int SendMessageNext(netchan_t* chan)
 {
 	unsigned int dataLen;
 	unsigned int eom;
@@ -550,9 +448,9 @@ static int SendMessageNext(qsocket_t* sock, netchan_t* chan)
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence++);
 	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
-	sock->sendNext = false;
+	chan->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(chan->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 	{
 		return -1;
 	}
@@ -562,7 +460,7 @@ static int SendMessageNext(qsocket_t* sock, netchan_t* chan)
 	return 1;
 }
 
-static int ReSendMessage(qsocket_t* sock, netchan_t* chan)
+static int ReSendMessage(netchan_t* chan)
 {
 	unsigned int dataLen;
 	unsigned int eom;
@@ -582,9 +480,9 @@ static int ReSendMessage(qsocket_t* sock, netchan_t* chan)
 	packetBuffer.sequence = BigLong(chan->outgoingReliableSequence - 1);
 	Com_Memcpy(packetBuffer.data, chan->reliableOrUnsentBuffer, dataLen);
 
-	sock->sendNext = false;
+	chan->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(chan->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 	{
 		return -1;
 	}
@@ -594,17 +492,17 @@ static int ReSendMessage(qsocket_t* sock, netchan_t* chan)
 	return 1;
 }
 
-static bool Datagram_CanSendMessage(qsocket_t* sock, netchan_t* chan)
+static bool Datagram_CanSendMessage(netchan_t* chan)
 {
-	if (sock->sendNext)
+	if (chan->sendNext)
 	{
-		SendMessageNext(sock, chan);
+		SendMessageNext(chan);
 	}
 
-	return sock->canSend;
+	return chan->canSend;
 }
 
-static int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+static int Datagram_SendUnreliableMessage(netchan_t* chan, QMsg* data)
 {
 #ifdef DEBUG
 	if (data->cursize == 0)
@@ -624,7 +522,7 @@ static int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg
 	packetBuffer.sequence = BigLong(chan->outgoingSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
-	if (UDP_Write(sock->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
+	if (UDP_Write(chan->socket, (byte*)&packetBuffer, packetLen, &chan->remoteAddress) == -1)
 	{
 		return -1;
 	}
@@ -633,7 +531,7 @@ static int Datagram_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg
 	return 1;
 }
 
-static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
+static int Datagram_GetMessage(netchan_t* chan, QMsg* message)
 {
 	int length;
 	unsigned int flags;
@@ -641,17 +539,17 @@ static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 	netadr_t readaddr;
 	unsigned int count;
 
-	if (!sock->canSend)
+	if (!chan->canSend)
 	{
 		if ((net_time * 1000 - chan->lastSent) > 1000)
 		{
-			ReSendMessage(sock, chan);
+			ReSendMessage(chan);
 		}
 	}
 
 	while (1)
 	{
-		length = UDP_Read(sock->socket, (byte*)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
+		length = UDP_Read(chan->socket, (byte*)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
 
 //	if ((rand() & 255) > 220)
 //		continue;
@@ -671,7 +569,7 @@ static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 		{
 #ifdef DEBUG
 			common->DPrintf("Forged packet received\n");
-			common->DPrintf("Expected: %s\n", SOCK_AdrToString(sock->addr));
+			common->DPrintf("Expected: %s\n", SOCK_AdrToString(chan->remoteAddress));
 			common->DPrintf("Received: %s\n", SOCK_AdrToString(readaddr));
 #endif
 			continue;
@@ -744,12 +642,12 @@ static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 			if (chan->reliableOrUnsentLength > 0)
 			{
 				Com_Memcpy(chan->reliableOrUnsentBuffer, chan->reliableOrUnsentBuffer + MAX_DATAGRAM_QH, chan->reliableOrUnsentLength);
-				sock->sendNext = true;
+				chan->sendNext = true;
 			}
 			else
 			{
 				chan->reliableOrUnsentLength = 0;
-				sock->canSend = true;
+				chan->canSend = true;
 			}
 			continue;
 		}
@@ -758,7 +656,7 @@ static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 		{
 			packetBuffer.length = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
 			packetBuffer.sequence = BigLong(sequence);
-			UDP_Write(sock->socket, (byte*)&packetBuffer, NET_HEADERSIZE, &readaddr);
+			UDP_Write(chan->socket, (byte*)&packetBuffer, NET_HEADERSIZE, &readaddr);
 
 			if (sequence != chan->incomingReliableSequence)
 			{
@@ -786,67 +684,26 @@ static int Datagram_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 		}
 	}
 
-	if (sock->sendNext)
+	if (chan->sendNext)
 	{
-		SendMessageNext(sock, chan);
+		SendMessageNext(chan);
 	}
 
 	return ret;
 }
 
-static void PrintStats(qsocket_t* s)
-{
-	common->Printf("canSend = %4u   \n", s->canSend);
-//	common->Printf("sendSeq = %4u   ", s->outgoingReliableSequence);
-//	common->Printf("recvSeq = %4u   \n", s->incomingReliableSequence);
-	common->Printf("\n");
-}
-
 static void NET_Stats_f()
 {
-	qsocket_t* s;
-
-	if (Cmd_Argc() == 1)
-	{
-		common->Printf("unreliable messages sent   = %i\n", unreliableMessagesSent);
-		common->Printf("unreliable messages recv   = %i\n", unreliableMessagesReceived);
-		common->Printf("reliable messages sent     = %i\n", messagesSent);
-		common->Printf("reliable messages received = %i\n", messagesReceived);
-		common->Printf("packetsSent                = %i\n", packetsSent);
-		common->Printf("packetsReSent              = %i\n", packetsReSent);
-		common->Printf("packetsReceived            = %i\n", packetsReceived);
-		common->Printf("receivedDuplicateCount     = %i\n", receivedDuplicateCount);
-		common->Printf("shortPacketCount           = %i\n", shortPacketCount);
-		common->Printf("droppedDatagrams           = %i\n", droppedDatagrams);
-	}
-	else if (String::Cmp(Cmd_Argv(1), "*") == 0)
-	{
-		for (s = net_activeSockets; s; s = s->next)
-			PrintStats(s);
-		for (s = net_freeSockets; s; s = s->next)
-			PrintStats(s);
-	}
-	else
-	{
-		for (s = net_activeSockets; s; s = s->next)
-			if (String::ICmp(Cmd_Argv(1), s->address) == 0)
-			{
-				break;
-			}
-		if (s == NULL)
-		{
-			for (s = net_freeSockets; s; s = s->next)
-				if (String::ICmp(Cmd_Argv(1), s->address) == 0)
-				{
-					break;
-				}
-		}
-		if (s == NULL)
-		{
-			return;
-		}
-		PrintStats(s);
-	}
+	common->Printf("unreliable messages sent   = %i\n", unreliableMessagesSent);
+	common->Printf("unreliable messages recv   = %i\n", unreliableMessagesReceived);
+	common->Printf("reliable messages sent     = %i\n", messagesSent);
+	common->Printf("reliable messages received = %i\n", messagesReceived);
+	common->Printf("packetsSent                = %i\n", packetsSent);
+	common->Printf("packetsReSent              = %i\n", packetsReSent);
+	common->Printf("packetsReceived            = %i\n", packetsReceived);
+	common->Printf("receivedDuplicateCount     = %i\n", receivedDuplicateCount);
+	common->Printf("shortPacketCount           = %i\n", shortPacketCount);
+	common->Printf("droppedDatagrams           = %i\n", droppedDatagrams);
 }
 
 static int Datagram_Init()
@@ -879,9 +736,10 @@ static void Datagram_Shutdown()
 	}
 }
 
-static void Datagram_Close(qsocket_t* sock, netchan_t* chan)
+static void Datagram_Close(netchan_t* chan)
 {
-	UDP_CloseSocket(sock->socket);
+	UDP_CloseSocket(chan->socket);
+	chan->socket = 0;
 }
 
 static void Datagram_Listen(bool state)
@@ -892,14 +750,14 @@ static void Datagram_Listen(bool state)
 	}
 }
 
-void NET_Close(qsocket_t* sock, netchan_t* chan)
+void NET_Close(netchan_t* chan)
 {
-	if (!sock)
+	if (!chan)
 	{
 		return;
 	}
 
-	if (sock->disconnected)
+	if (chan->disconnected)
 	{
 		return;
 	}
@@ -909,28 +767,28 @@ void NET_Close(qsocket_t* sock, netchan_t* chan)
 	// call the driver_Close function
 	if (chan->remoteAddress.type == NA_LOOPBACK)
 	{
-		Loop_Close(sock, chan);
+		Loop_Close(chan);
 	}
 	else
 	{
-		Datagram_Close(sock, chan);
+		Datagram_Close(chan);
 	}
 
-	NET_FreeQSocket(sock);
+	chan->disconnected = true;
 }
 
 //	If there is a complete message, return it in net_message
 //	returns 0 if no data is waiting
 //	returns 1 if a message was received
 //	returns -1 if connection is invalid
-int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
+int NET_GetMessage(netchan_t* chan, QMsg* message)
 {
-	if (!sock)
+	if (!chan)
 	{
 		return -1;
 	}
 
-	if (sock->disconnected)
+	if (chan->disconnected)
 	{
 		common->Printf("NET_GetMessage: disconnected socket\n");
 		return -1;
@@ -945,7 +803,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 	}
 	else
 	{
-		ret = Datagram_GetMessage(sock, chan, message);
+		ret = Datagram_GetMessage(chan, message);
 	}
 
 	// see if this connection has timed out
@@ -953,7 +811,7 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 	{
 		if (net_time - chan->lastReceived / 1000.0 > net_messagetimeout->value)
 		{
-			NET_Close(sock, chan);
+			NET_Close(chan);
 			return -1;
 		}
 	}
@@ -983,14 +841,14 @@ int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message)
 //        is still considered valid
 // returns 1 if the message was sent properly
 // returns -1 if the connection died
-int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+int NET_SendMessage(netchan_t* chan, QMsg* data)
 {
-	if (!sock)
+	if (!chan)
 	{
 		return -1;
 	}
 
-	if (sock->disconnected)
+	if (chan->disconnected)
 	{
 		common->Printf("NET_SendMessage: disconnected socket\n");
 		return -1;
@@ -1004,7 +862,7 @@ int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	}
 	else
 	{
-		r = Datagram_SendMessage(sock, chan, data);
+		r = Datagram_SendMessage(chan, data);
 	}
 	if (r == 1 && chan->remoteAddress.type == NA_IP)
 	{
@@ -1014,14 +872,14 @@ int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	return r;
 }
 
-int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
+int NET_SendUnreliableMessage(netchan_t* chan, QMsg* data)
 {
-	if (!sock)
+	if (!chan)
 	{
 		return -1;
 	}
 
-	if (sock->disconnected)
+	if (chan->disconnected)
 	{
 		common->Printf("NET_SendMessage: disconnected socket\n");
 		return -1;
@@ -1035,7 +893,7 @@ int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 	}
 	else
 	{
-		r = Datagram_SendUnreliableMessage(sock, chan, data);
+		r = Datagram_SendUnreliableMessage(chan, data);
 	}
 	if (r == 1 && chan->remoteAddress.type == NA_IP)
 	{
@@ -1047,14 +905,14 @@ int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data)
 
 //	Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
-bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan)
+bool NET_CanSendMessage(netchan_t* chan)
 {
-	if (!sock)
+	if (!chan)
 	{
 		return false;
 	}
 
-	if (sock->disconnected)
+	if (chan->disconnected)
 	{
 		return false;
 	}
@@ -1068,7 +926,7 @@ bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan)
 	}
 	else
 	{
-		r = Datagram_CanSendMessage(sock, chan);
+		r = Datagram_CanSendMessage(chan);
 	}
 
 	return r;
@@ -1120,7 +978,6 @@ static void NET_Port_f()
 
 void NETQH_Init()
 {
-	net_numsockets = SVQH_GetMaxClientsLimit();
 	DEFAULTnet_hostport = GGameType & GAME_Hexen2 ? 26900 : 26000;
 
 	int i = COM_CheckParm("-port");
@@ -1146,20 +1003,8 @@ void NETQH_Init()
 	{
 		net_listening = true;
 	}
-	if (!com_dedicated->integer)
-	{
-		net_numsockets++;
-	}
 
 	SetNetTime();
-
-	for (i = 0; i < net_numsockets; i++)
-	{
-		qsocket_t* s = (qsocket_t*)Mem_Alloc(sizeof(qsocket_t));
-		s->next = net_freeSockets;
-		net_freeSockets = s;
-		s->disconnected = true;
-	}
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
 	sv_hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);

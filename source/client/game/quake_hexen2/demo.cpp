@@ -699,7 +699,7 @@ int CLQH_GetMessage(QMsg& message)
 	int r;
 	while (1)
 	{
-		r = NET_GetMessage(cls.qh_netcon, &clc.netchan, &message);
+		r = NET_GetMessage(&clc.netchan, &message);
 
 		if (r != 1 && r != 2)
 		{

@@ -77,22 +77,13 @@ struct netchan_t
 	byte messageBuffer[MAX_MSGLEN];
 
 	int dropCount;			// dropped packets, cleared each level
-};
-
-#define NET_NAMELEN_Q1          64
-
-struct qsocket_t
-{
-	qsocket_t* next;
-	double connecttime;
-
-	qboolean disconnected;
-	qboolean canSend;
-	qboolean sendNext;
 
 	int socket;
+	int connecttime;
 
-	char address[NET_NAMELEN_Q1];
+	bool canSend;
+	bool sendNext;
+	bool disconnected;
 };
 
 // there needs to be enough loopback messages to hold a complete
@@ -215,18 +206,15 @@ extern bool datagram_initialized;
 extern bool net_listening;
 extern int DEFAULTnet_hostport;
 
-qsocket_t* NET_NewQSocket();
-void NET_FreeQSocket(qsocket_t*);
 double SetNetTime();
 void Loop_SearchForHosts(bool xmit);
-qsocket_t* Loop_Connect(const char* host, netchan_t* chan);
-qsocket_t* Loop_CheckNewConnections(netadr_t* outaddr);
+bool Loop_Connect(const char* host, netchan_t* chan);
+bool Loop_CheckNewConnections(netadr_t* outaddr);
 int  UDPNQ_OpenSocket(int port);
 int UDP_CloseSocket(int socket);
 int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
 int  UDP_Broadcast(int socket, byte* buf, int len);
-int  UDP_GetNameFromAddr(netadr_t* addr, char* name);
 int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
 int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
 void NET_Ban_f();
@@ -236,21 +224,21 @@ void NET_Ban_f();
 // like an illegal protocal conversation.  Client calls when disconnecting
 // from a server.
 // A netcon_t number will not be reused until this function is called for it
-void NET_Close(qsocket_t* sock, netchan_t* chan);
+void NET_Close(netchan_t* chan);
 // returns data in net_message sizebuf
 // returns 0 if no data is waiting
 // returns 1 if a message was received
 // returns 2 if an unreliable message was received
 // returns -1 if the connection died
-int NET_GetMessage(qsocket_t* sock, netchan_t* chan, QMsg* message);
+int NET_GetMessage(netchan_t* chan, QMsg* message);
 // returns 0 if the message connot be delivered reliably, but the connection
 //		is still considered valid
 // returns 1 if the message was sent properly
 // returns -1 if the connection died
-int NET_SendMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
-int NET_SendUnreliableMessage(qsocket_t* sock, netchan_t* chan, QMsg* data);
+int NET_SendMessage(netchan_t* chan, QMsg* data);
+int NET_SendUnreliableMessage(netchan_t* chan, QMsg* data);
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
-bool NET_CanSendMessage(qsocket_t* sock, netchan_t* chan);
+bool NET_CanSendMessage(netchan_t* chan);
 void NETQH_Init();
 void NETQH_Shutdown();

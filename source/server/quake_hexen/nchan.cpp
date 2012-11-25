@@ -278,17 +278,17 @@ void NET_Ban_f()
 	}
 }
 
-static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
+static bool Datagram_CheckNewConnections(netadr_t* outaddr, int& outSocket)
 {
 	if (!udp_initialized)
 	{
-		return NULL;
+		return false;
 	}
 
 	int acceptsock = net_acceptsocket;
 	if (acceptsock == -1)
 	{
-		return NULL;
+		return false;
 	}
 
 	QMsg net_message;
@@ -300,7 +300,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	int len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < (int)sizeof(int))
 	{
-		return NULL;
+		return false;
 	}
 	net_message.cursize = len;
 
@@ -309,15 +309,15 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	net_message.ReadLong();
 	if (control == -1)
 	{
-		return NULL;
+		return false;
 	}
 	if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 	{
-		return NULL;
+		return false;
 	}
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 	{
-		return NULL;
+		return false;
 	}
 
 	int command = net_message.ReadByte();
@@ -325,7 +325,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	{
 		if (String::Cmp(net_message.ReadString2(), GGameType & GAME_Hexen2 ? NET_NAME_ID : "QUAKE") != 0)
 		{
-			return NULL;
+			return false;
 		}
 
 		net_message.Clear();
@@ -344,7 +344,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
-		return NULL;
+		return false;
 	}
 
 	if (command == CCREQ_PLAYER_INFO)
@@ -369,7 +369,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		}
 		if (clientNumber == svs.qh_maxclients)
 		{
-			return NULL;
+			return false;
 		}
 
 		net_message.Clear();
@@ -380,13 +380,13 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		net_message.WriteString2(client->name);
 		net_message.WriteLong(client->qh_colors);
 		net_message.WriteLong((int)client->qh_edict->GetFrags());
-		net_message.WriteLong((int)(net_time - client->qh_netconnection->connecttime));
-		net_message.WriteString2(client->qh_netconnection->address);
+		net_message.WriteLong(net_time - client->netchan.connecttime / 1000);
+		net_message.WriteString2(SOCK_AdrToString(client->netchan.remoteAddress));
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
-		return NULL;
+		return false;
 	}
 
 	if (command == CCREQ_RULE_INFO)
@@ -401,7 +401,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 			var = Cvar_FindVar(prevCvarName);
 			if (!var)
 			{
-				return NULL;
+				return false;
 			}
 			var = var->next;
 		}
@@ -435,17 +435,17 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
-		return NULL;
+		return false;
 	}
 
 	if (command != CCREQ_CONNECT)
 	{
-		return NULL;
+		return false;
 	}
 
 	if (String::Cmp(net_message.ReadString2(), GGameType & GAME_Hexen2 ? NET_NAME_ID : "QUAKE") != 0)
 	{
-		return NULL;
+		return false;
 	}
 
 	if (net_message.ReadByte() != (GGameType & GAME_Hexen2 ? H2NET_PROTOCOL_VERSION : Q1NET_PROTOCOL_VERSION))
@@ -458,7 +458,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
-		return NULL;
+		return false;
 	}
 
 	// check for a ban
@@ -475,7 +475,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 			*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 			net_message.Clear();
-			return NULL;
+			return false;
 		}
 	}
 
@@ -483,15 +483,10 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.qh_maxclients; i++, client++)
 	{
-		if (!client->qh_netconnection)
-		{
-			continue;
-		}
 		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
-		qsocket_t* s = client->qh_netconnection;
 		if (client->netchan.remoteAddress.type != NA_IP)
 		{
 			continue;
@@ -500,7 +495,7 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
-			if (ret == 0 && net_time - s->connecttime < 2.0)
+			if (ret == 0 && net_time * 1000 - client->netchan.connecttime < 2000)
 			{
 				// yes, so send a duplicate reply
 				net_message.Clear();
@@ -508,17 +503,17 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 				net_message.WriteLong(0);
 				net_message.WriteByte(CCREP_ACCEPT);
 				netadr_t newaddr;
-				SOCK_GetAddr(s->socket, &newaddr);
+				SOCK_GetAddr(client->netchan.socket, &newaddr);
 				net_message.WriteLong(SOCK_GetPort(&newaddr));
 				*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 				net_message.Clear();
-				return NULL;
+				return false;
 			}
 			// it's somebody coming back in from a crash/disconnect
 			// so close the old qsocket and let their retry get them back in
-			NET_Close(s, &client->netchan);
-			return NULL;
+			NET_Close(&client->netchan);
+			return false;
 		}
 	}
 
@@ -533,37 +528,19 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
-		return NULL;
-	}
-
-	// allocate a QSocket
-	qsocket_t* sock = NET_NewQSocket();
-	if (sock == NULL)
-	{
-		// no room; try to let him know
-		net_message.Clear();
-		// save space for the header, filled in later
-		net_message.WriteLong(0);
-		net_message.WriteByte(CCREP_REJECT);
-		net_message.WriteString2("Server is full.\n");
-		*((int*)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
-		net_message.Clear();
-		return NULL;
+		return false;
 	}
 
 	// allocate a network socket
 	int newsock = UDPNQ_OpenSocket(0);
 	if (newsock == -1)
 	{
-		NET_FreeQSocket(sock);
-		return NULL;
+		return false;
 	}
 
 	// everything is allocated, just fill in the details
-	sock->socket = newsock;
+	outSocket = newsock;
 	*outaddr = clientaddr;
-	String::Cpy(sock->address, SOCK_AdrToString(clientaddr));
 
 	// send him back the info about the server connection he has been allocated
 	net_message.Clear();
@@ -577,17 +554,16 @@ static qsocket_t* Datagram_CheckNewConnections(netadr_t* outaddr)
 	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 	net_message.Clear();
 
-	return sock;
+	return true;
 }
 
-qsocket_t* NET_CheckNewConnections(netadr_t* outaddr)
+bool NET_CheckNewConnections(netadr_t* outaddr, int& outSocket)
 {
 	Com_Memset(outaddr, 0, sizeof(*outaddr));
-	qsocket_t* ret;
 
 	SetNetTime();
 
-	ret = Loop_CheckNewConnections(outaddr);
+	bool ret = Loop_CheckNewConnections(outaddr);
 	if (ret)
 	{
 		return ret;
@@ -595,19 +571,19 @@ qsocket_t* NET_CheckNewConnections(netadr_t* outaddr)
 
 	if (!datagram_initialized)
 	{
-		return NULL;
+		return false;
 	}
 	if (net_listening == false)
 	{
-		return NULL;
+		return false;
 	}
-	ret = Datagram_CheckNewConnections(outaddr);
+	ret = Datagram_CheckNewConnections(outaddr, outSocket);
 	if (ret)
 	{
 		return ret;
 	}
 
-	return NULL;
+	return false;
 }
 
 int NET_SendToAll(QMsg* data, int blocktime)
@@ -619,15 +595,11 @@ int NET_SendToAll(QMsg* data, int blocktime)
 	client_t* client;
 	for (i = 0, client = svs.clients; i < svs.qh_maxclients; i++, client++)
 	{
-		if (!client->qh_netconnection)
-		{
-			continue;
-		}
 		if (client->state >= CS_CONNECTED)
 		{
 			if (client->netchan.remoteAddress.type == NA_LOOPBACK)
 			{
-				NET_SendMessage(client->qh_netconnection, &client->netchan, data);
+				NET_SendMessage(&client->netchan, data);
 				state1[i] = true;
 				state2[i] = true;
 				continue;
@@ -655,14 +627,14 @@ int NET_SendToAll(QMsg* data, int blocktime)
 		{
 			if (!state1[i])
 			{
-				if (NET_CanSendMessage(client->qh_netconnection, &client->netchan))
+				if (NET_CanSendMessage(&client->netchan))
 				{
 					state1[i] = true;
-					NET_SendMessage(client->qh_netconnection, &client->netchan, data);
+					NET_SendMessage(&client->netchan, data);
 				}
 				else
 				{
-					NET_GetMessage(client->qh_netconnection, &client->netchan, &net_message);
+					NET_GetMessage(&client->netchan, &net_message);
 				}
 				count++;
 				continue;
@@ -670,13 +642,13 @@ int NET_SendToAll(QMsg* data, int blocktime)
 
 			if (!state2[i])
 			{
-				if (NET_CanSendMessage(client->qh_netconnection, &client->netchan))
+				if (NET_CanSendMessage(&client->netchan))
 				{
 					state2[i] = true;
 				}
 				else
 				{
-					NET_GetMessage(client->qh_netconnection, &client->netchan, &net_message);
+					NET_GetMessage(&client->netchan, &net_message);
 				}
 				count++;
 				continue;
@@ -741,14 +713,10 @@ void SVQH_ShutdownNetwork()
 	client_t* client = svs.clients;
 	for (int i = 0; i < svs.qh_maxclients; i++, client++)
 	{
-		if (!client->qh_netconnection)
-		{
-			continue;
-		}
 		if (client->state < CS_CONNECTED)
 		{
 			continue;
 		}
-		NET_Close(client->qh_netconnection, &client->netchan);
+		NET_Close(&client->netchan);
 	}
 }

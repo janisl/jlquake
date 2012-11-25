@@ -227,7 +227,7 @@ void SVQH_ClientReliableWrite_Short(client_t* cl, int c);
 void SVQH_ClientReliableWrite_String(client_t* cl, const char* s);
 void SVQH_ClientReliableWrite_SZ(client_t* cl, const void* data, int len);
 // returns a new connection number if there is one pending, else -1
-qsocket_t* NET_CheckNewConnections(netadr_t* outaddr);
+bool NET_CheckNewConnections(netadr_t* outaddr, int& outSocket);
 // This is a reliable *blocking* send to all attached clients.
 int NET_SendToAll(QMsg* data, int blocktime);
 void MaxPlayers_f();

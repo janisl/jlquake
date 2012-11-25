@@ -82,7 +82,7 @@ void CLQH_KeepaliveMessage()
 	common->Printf("--> client to server keepalive\n");
 
 	clc.netchan.message.WriteByte(GGameType & GAME_Hexen2 ? h2clc_nop : q1clc_nop);
-	NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
+	NET_SendMessage(&clc.netchan, &clc.netchan.message);
 	clc.netchan.message.Clear();
 }
 
@@ -142,7 +142,7 @@ static void CLQH_SendMove(in_usercmd_t* cmd)
 		buf.WriteByte(cmd->lightlevel);
 	}
 
-	if (NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &buf) == -1)
+	if (NET_SendUnreliableMessage(&clc.netchan, &buf) == -1)
 	{
 		common->Printf("CL_SendMove: lost server connection\n");
 		CL_Disconnect(true);
@@ -177,13 +177,13 @@ void CLQH_SendCmd()
 		return;		// no message at all
 
 	}
-	if (!NET_CanSendMessage(cls.qh_netcon, &clc.netchan))
+	if (!NET_CanSendMessage(&clc.netchan))
 	{
 		common->DPrintf("CL_WriteToServer: can't send\n");
 		return;
 	}
 
-	if (NET_SendMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message) == -1)
+	if (NET_SendMessage(&clc.netchan, &clc.netchan.message) == -1)
 	{
 		common->Error("CL_WriteToServer: lost server connection");
 	}
@@ -214,9 +214,9 @@ void CLQH_Disconnect()
 		common->DPrintf("Sending clc_disconnect\n");
 		clc.netchan.message.Clear();
 		clc.netchan.message.WriteByte(GGameType & GAME_Hexen2 ? h2clc_disconnect : q1clc_disconnect);
-		NET_SendUnreliableMessage(cls.qh_netcon, &clc.netchan, &clc.netchan.message);
+		NET_SendUnreliableMessage(&clc.netchan, &clc.netchan.message);
 		clc.netchan.message.Clear();
-		NET_Close(cls.qh_netcon, &clc.netchan);
+		NET_Close(&clc.netchan);
 
 		cls.state = CA_DISCONNECTED;
 		SV_Shutdown("");
@@ -297,8 +297,7 @@ void CLQH_EstablishConnection(const char* host)
 
 	netadr_t addr = {};
 	Netchan_Setup(NS_CLIENT, &clc.netchan, addr, 0);
-	cls.qh_netcon = NET_Connect(host, &clc.netchan);
-	if (!cls.qh_netcon)
+	if (!NET_Connect(host, &clc.netchan))
 	{
 		common->Error("CL_Connect: connect failed\n");
 	}
