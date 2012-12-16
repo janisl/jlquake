@@ -123,6 +123,7 @@ extern Cvar* r_keeptjunctions;
 extern Cvar* r_texsort;
 extern Cvar* r_dynamic;
 extern Cvar* r_saturatelighting;
+extern Cvar* r_fullBrightColours;
 
 extern Cvar* r_nocurves;
 extern Cvar* r_facePlaneCull;			// enables culling of planar surfaces with back side test
@@ -189,7 +190,5 @@ extern Cvar* r_clampToEdge;				// ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
 extern Cvar* r_trisColor;				// enables modifying of the wireframe colour (in 0xRRGGBB[AA] format, alpha defaults to FF)
 extern Cvar* r_normallength;			// length of the normals
-
-extern Cvar* r_buildScript;
 
 #endif

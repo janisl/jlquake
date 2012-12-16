@@ -14,14 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "local.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
 
 struct vidmode_t
 {
@@ -30,16 +24,6 @@ struct vidmode_t
 	int height;
 	float pixelAspect;				// pixel width / height
 };
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 Cvar* r_logFile;
 
@@ -145,6 +129,7 @@ Cvar* r_keeptjunctions;
 Cvar* r_texsort;
 Cvar* r_dynamic;
 Cvar* r_saturatelighting;
+Cvar* r_fullBrightColours;
 
 Cvar* r_nocurves;
 Cvar* r_facePlaneCull;
@@ -212,10 +197,6 @@ Cvar* r_clampToEdge;
 Cvar* r_trisColor;
 Cvar* r_normallength;
 
-Cvar* r_buildScript;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static vidmode_t r_vidModes[] =
 {
 	{ "Mode  0: 320x240",       320,    240,    1 },
@@ -234,14 +215,6 @@ static vidmode_t r_vidModes[] =
 static int s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
 const char* gl_system_extensions_string;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_GetModeInfo
-//
-//==========================================================================
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 {
@@ -271,12 +244,6 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 	return true;
 }
 
-//==========================================================================
-//
-//	R_ModeList_f
-//
-//==========================================================================
-
 static void R_ModeList_f()
 {
 	common->Printf("\n");
@@ -286,12 +253,6 @@ static void R_ModeList_f()
 	}
 	common->Printf("\n");
 }
-
-//==========================================================================
-//
-//	AssertCvarRange
-//
-//==========================================================================
 
 static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
 {
@@ -315,12 +276,6 @@ static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeI
 		Cvar_Set(cv->name, va("%f", maxVal));
 	}
 }
-
-//==========================================================================
-//
-//	GfxInfo_f
-//
-//==========================================================================
 
 static void GfxInfo_f()
 {
@@ -444,12 +399,6 @@ static void GfxInfo_f()
 		common->Printf("Forcing glFinish\n");
 	}
 }
-
-//==========================================================================
-//
-//	R_Register
-//
-//==========================================================================
 
 static void R_Register()
 {
@@ -606,6 +555,7 @@ static void R_Register()
 	r_texsort = Cvar_Get("r_texsort", "1", 0);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", 0);
+	r_fullBrightColours = Cvar_Get("r_fullBrightColours", "1", 0);
 	r_nocurves = Cvar_Get("r_nocurves", "0", CVAR_CHEAT);
 	r_novis = Cvar_Get("r_novis", "0", CVAR_CHEAT);
 	r_lockpvs = Cvar_Get("r_lockpvs", "0", CVAR_CHEAT);
@@ -634,7 +584,6 @@ static void R_Register()
 	r_bonesDebug = Cvar_Get("r_bonesDebug", "0", CVAR_CHEAT);
 	r_wolffog = Cvar_Get("r_wolffog", "1", 0);
 	r_drawfoliage = Cvar_Get("r_drawfoliage", "1", CVAR_CHEAT);
-	r_buildScript = Cvar_Get("com_buildscript", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
@@ -647,12 +596,6 @@ static void R_Register()
 	Cmd_AddCommand("gfxinfo", GfxInfo_f);
 	Cmd_AddCommand("modellist", R_Modellist_f);
 }
-
-//==========================================================================
-//
-//	R_GetTitleForWindow
-//
-//==========================================================================
 
 const char* R_GetTitleForWindow()
 {
@@ -690,12 +633,6 @@ const char* R_GetTitleForWindow()
 	}
 	return "Unknown";
 }
-
-//==========================================================================
-//
-//	R_SetMode
-//
-//==========================================================================
 
 static void R_SetMode()
 {
@@ -744,18 +681,11 @@ static void R_SetMode()
 	common->FatalError("R_SetMode() - could not initialise OpenGL subsystem\n");
 }
 
-//==========================================================================
-//
-//	InitOpenGLSubsystem
-//
 //	This is the OpenGL initialization function.  It is responsible for
 // initialising OpenGL, setting extensions, creating a window of the
 // appropriate size, doing fullscreen manipulations, etc.  Its overall
 // responsibility is to make sure that a functional OpenGL subsystem is
 // operating when it returns.
-//
-//==========================================================================
-
 static void InitOpenGLSubsystem()
 {
 	common->Printf("Initializing OpenGL subsystem\n");
@@ -803,12 +733,6 @@ static void InitOpenGLSubsystem()
 		Cvar_SetValue("r_texsort", 0.0);
 	}
 }
-
-//==========================================================================
-//
-//	GL_SetDefaultState
-//
-//==========================================================================
 
 static void GL_SetDefaultState()
 {
@@ -892,17 +816,10 @@ static void GL_SetDefaultState()
 	}
 }
 
-//==========================================================================
-//
-//	InitOpenGL
-//
 //	This function is responsible for initializing a valid OpenGL subsystem.
 // This is done by calling InitOpenGLSubsystem (which gives us a working OGL
 // subsystem) then setting variables, checking GL constants, and reporting
 // the gfx system config to the user.
-//
-//==========================================================================
-
 static void InitOpenGL()
 {
 	//
@@ -936,12 +853,6 @@ static void InitOpenGL()
 	GL_SetDefaultState();
 }
 
-//==========================================================================
-//
-//	R_InitFunctionTables
-//
-//==========================================================================
-
 static void R_InitFunctionTables()
 {
 	//
@@ -971,12 +882,6 @@ static void R_InitFunctionTables()
 		}
 	}
 }
-
-//==========================================================================
-//
-//	R_Init
-//
-//==========================================================================
 
 static void R_Init()
 {
@@ -1024,12 +929,6 @@ static void R_Init()
 	common->Printf("----- finished R_Init -----\n");
 }
 
-//==========================================================================
-//
-//	R_BeginRegistration
-//
-//==========================================================================
-
 void R_BeginRegistration(glconfig_t* glconfigOut)
 {
 	R_Init();
@@ -1057,14 +956,7 @@ void R_BeginRegistration(glconfig_t* glconfigOut)
 	}
 }
 
-//==========================================================================
-//
-//	R_EndRegistration
-//
 //	Touch all images to make sure they are resident
-//
-//==========================================================================
-
 void R_EndRegistration()
 {
 	if (GGameType & GAME_QuakeHexen)
@@ -1081,12 +973,6 @@ void R_PurgeCache()
 	R_PurgeBackupImages(9999999);
 	R_PurgeModels(9999999);
 }
-
-//==========================================================================
-//
-//	R_Shutdown
-//
-//==========================================================================
 
 void R_Shutdown(bool destroyWindow)
 {

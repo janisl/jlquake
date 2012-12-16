@@ -14,46 +14,20 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../../client.h"
 #include "../local.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define ANIM_CYCLE      2
 
 #define SUBDIVIDE_SIZE  64
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 mbrush29_texture_t* r_notexture_mip;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte* mod_base;
 
 static mbrush29_surface_t* warpface;
 
 static byte mod_novis[BSP29_MAX_MAP_LEAFS / 8];
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_InitBsp29NoTextureMip
-//
-//==========================================================================
 
 void R_InitBsp29NoTextureMip()
 {
@@ -85,12 +59,6 @@ void R_InitBsp29NoTextureMip()
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadTextures
-//
-//==========================================================================
 
 static void Mod_LoadTextures(bsp29_lump_t* l)
 {
@@ -152,10 +120,17 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 			sprintf(search, "%s_%d_%d", mt->name, tx->width, tx->height);
 			tx->gl_texture = R_FindImage(search);
 
+			char searchFullBright[64];
+			sprintf(searchFullBright, "%s_%d_%d_fb", mt->name, tx->width, tx->height);
+			tx->fullBrightTexture = r_fullBrightColours->integer ? R_FindImage(searchFullBright) : NULL;
+
 			if (!tx->gl_texture)
 			{
 				byte* pic32 = R_ConvertImage8To32((byte*)(tx + 1), tx->width, tx->height, IMG8MODE_Normal);
+				byte* picFullBright = R_GetFullBrightImage((byte*)(tx + 1), pic32, tx->width, tx->height);
 				tx->gl_texture = R_CreateImage(search, pic32, tx->width, tx->height, true, true, GL_REPEAT, false);
+				tx->fullBrightTexture = !picFullBright ? NULL :
+					R_CreateImage(searchFullBright, picFullBright, tx->width, tx->height, true, true, GL_REPEAT, false);
 				delete[] pic32;
 			}
 		}
@@ -284,12 +259,6 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadLighting
-//
-//==========================================================================
-
 static void Mod_LoadLighting(bsp29_lump_t* l)
 {
 	if (!l->filelen)
@@ -300,12 +269,6 @@ static void Mod_LoadLighting(bsp29_lump_t* l)
 	loadmodel->brush29_lightdata = new byte[l->filelen];
 	Com_Memcpy(loadmodel->brush29_lightdata, mod_base + l->fileofs, l->filelen);
 }
-
-//==========================================================================
-//
-//	Mod_LoadVisibility
-//
-//==========================================================================
 
 static void Mod_LoadVisibility(bsp29_lump_t* l)
 {
@@ -318,12 +281,6 @@ static void Mod_LoadVisibility(bsp29_lump_t* l)
 	Com_Memcpy(loadmodel->brush29_visdata, mod_base + l->fileofs, l->filelen);
 }
 
-//==========================================================================
-//
-//	Mod_LoadEntities
-//
-//==========================================================================
-
 static void Mod_LoadEntities(bsp29_lump_t* l)
 {
 	if (!l->filelen)
@@ -334,12 +291,6 @@ static void Mod_LoadEntities(bsp29_lump_t* l)
 	loadmodel->brush29_entities = new char[l->filelen];
 	Com_Memcpy(loadmodel->brush29_entities, mod_base + l->fileofs, l->filelen);
 }
-
-//==========================================================================
-//
-//	Mod_LoadVertexes
-//
-//==========================================================================
 
 static void Mod_LoadVertexes(bsp29_lump_t* l)
 {
@@ -362,12 +313,6 @@ static void Mod_LoadVertexes(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadEdges
-//
-//==========================================================================
-
 static void Mod_LoadEdges(bsp29_lump_t* l)
 {
 	bsp29_dedge_t* in = (bsp29_dedge_t*)(mod_base + l->fileofs);
@@ -388,12 +333,6 @@ static void Mod_LoadEdges(bsp29_lump_t* l)
 		out->v[1] = (unsigned short)LittleShort(in->v[1]);
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadTexinfo
-//
-//==========================================================================
 
 static void Mod_LoadTexinfo(bsp29_lump_t* l)
 {
@@ -459,14 +398,7 @@ static void Mod_LoadTexinfo(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	CalcSurfaceExtents
-//
 //	Fills in s->texturemins[] and s->extents[]
-//
-//==========================================================================
-
 static void CalcSurfaceExtents(mbrush29_surface_t* s)
 {
 	float mins[2], maxs[2];
@@ -520,12 +452,6 @@ static void CalcSurfaceExtents(mbrush29_surface_t* s)
 	}
 }
 
-//==========================================================================
-//
-//	BoundPoly
-//
-//==========================================================================
-
 static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 {
 	ClearBounds(mins, maxs);
@@ -535,12 +461,6 @@ static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 		AddPointToBounds(v, mins, maxs);
 	}
 }
-
-//==========================================================================
-//
-//	SubdividePolygon
-//
-//==========================================================================
 
 static void SubdividePolygon(int numverts, float* verts)
 {
@@ -633,15 +553,8 @@ static void SubdividePolygon(int numverts, float* verts)
 	}
 }
 
-//==========================================================================
-//
-//	GL_SubdivideSurface
-//
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
-//
-//==========================================================================
-
 static void GL_SubdivideSurface(mbrush29_surface_t* fa)
 {
 	warpface = fa;
@@ -670,12 +583,6 @@ static void GL_SubdivideSurface(mbrush29_surface_t* fa)
 
 	SubdividePolygon(numverts, verts[0]);
 }
-
-//==========================================================================
-//
-//	Mod_LoadFaces
-//
-//==========================================================================
 
 static void Mod_LoadFaces(bsp29_lump_t* l)
 {
@@ -757,12 +664,6 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_SetParent
-//
-//==========================================================================
-
 static void Mod_SetParent(mbrush29_node_t* node, mbrush29_node_t* parent)
 {
 	node->parent = parent;
@@ -773,12 +674,6 @@ static void Mod_SetParent(mbrush29_node_t* node, mbrush29_node_t* parent)
 	Mod_SetParent(node->children[0], node);
 	Mod_SetParent(node->children[1], node);
 }
-
-//==========================================================================
-//
-//	Mod_LoadNodes
-//
-//==========================================================================
 
 static void Mod_LoadNodes(bsp29_lump_t* l)
 {
@@ -824,12 +719,6 @@ static void Mod_LoadNodes(bsp29_lump_t* l)
 
 	Mod_SetParent(loadmodel->brush29_nodes, NULL);	// sets nodes and leafs
 }
-
-//==========================================================================
-//
-//	Mod_LoadLeafs
-//
-//==========================================================================
 
 static void Mod_LoadLeafs(bsp29_lump_t* l)
 {
@@ -901,12 +790,6 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadMarksurfaces
-//
-//==========================================================================
-
 static void Mod_LoadMarksurfaces(bsp29_lump_t* l)
 {
 	short* in = (short*)(mod_base + l->fileofs);
@@ -931,12 +814,6 @@ static void Mod_LoadMarksurfaces(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadSurfedges
-//
-//==========================================================================
-
 static void Mod_LoadSurfedges(bsp29_lump_t* l)
 {
 	int* in = (int*)(mod_base + l->fileofs);
@@ -955,12 +832,6 @@ static void Mod_LoadSurfedges(bsp29_lump_t* l)
 		out[i] = LittleLong(in[i]);
 	}
 }
-
-//==========================================================================
-//
-//	Mod_FreeBsp29
-//
-//==========================================================================
 
 static void Mod_LoadPlanes(bsp29_lump_t* l)
 {
@@ -988,12 +859,6 @@ static void Mod_LoadPlanes(bsp29_lump_t* l)
 		SetPlaneSignbits(out);
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadSubmodelsQ1
-//
-//==========================================================================
 
 static void Mod_LoadSubmodelsQ1(bsp29_lump_t* l)
 {
@@ -1024,12 +889,6 @@ static void Mod_LoadSubmodelsQ1(bsp29_lump_t* l)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadSubmodelsH2
-//
-//==========================================================================
-
 static void Mod_LoadSubmodelsH2(bsp29_lump_t* l)
 {
 	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
@@ -1058,12 +917,6 @@ static void Mod_LoadSubmodelsH2(bsp29_lump_t* l)
 		out->numfaces = LittleLong(in->numfaces);
 	}
 }
-
-//==========================================================================
-//
-//	Mod_FreeBsp29
-//
-//==========================================================================
 
 void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 {
@@ -1144,12 +997,6 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	}
 }
 
-//==========================================================================
-//
-//	Mod_FreeBsp29
-//
-//==========================================================================
-
 void Mod_FreeBsp29(model_t* mod)
 {
 	if (mod->name[0] == '*')
@@ -1202,12 +1049,6 @@ void Mod_FreeBsp29(model_t* mod)
 	delete[] mod->brush29_submodels;
 }
 
-//==========================================================================
-//
-//	Mod_DecompressVis
-//
-//==========================================================================
-
 static byte* Mod_DecompressVis(byte* in, model_t* model)
 {
 	static byte decompressed[BSP29_MAX_MAP_LEAFS / 8];
@@ -1247,12 +1088,6 @@ static byte* Mod_DecompressVis(byte* in, model_t* model)
 	return decompressed;
 }
 
-//==========================================================================
-//
-//	Mod_LeafPVS
-//
-//==========================================================================
-
 byte* Mod_LeafPVS(mbrush29_leaf_t* leaf, model_t* model)
 {
 	if (leaf == model->brush29_leafs)
@@ -1261,12 +1096,6 @@ byte* Mod_LeafPVS(mbrush29_leaf_t* leaf, model_t* model)
 	}
 	return Mod_DecompressVis(leaf->compressed_vis, model);
 }
-
-//==========================================================================
-//
-//	Mod_PointInLeafQ1
-//
-//==========================================================================
 
 mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t p, model_t* model)
 {

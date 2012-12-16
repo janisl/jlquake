@@ -14,24 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "local.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 mbrush29_glpoly_t* lightmap_polys[MAX_LIGHTMAPS];
 
@@ -43,8 +27,6 @@ mbrush29_surface_t* skychain = NULL;
 mbrush29_surface_t* waterchain = NULL;
 
 int skytexturenum;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 static bool lightmap_modified[MAX_LIGHTMAPS];
@@ -58,8 +40,6 @@ static unsigned blocklights_q1[18 * 18];
 
 static mbrush29_vertex_t* r_pcurrentvertbase;
 
-// CODE --------------------------------------------------------------------
-
 /*
 =============================================================================
 
@@ -68,14 +48,7 @@ static mbrush29_vertex_t* r_pcurrentvertbase;
 =============================================================================
 */
 
-//==========================================================================
-//
-//	AllocBlock
-//
 // returns a texture number and the position inside it
-//
-//==========================================================================
-
 static int AllocBlock(int w, int h, int* x, int* y)
 {
 	for (int texnum = 0; texnum < MAX_LIGHTMAPS; texnum++)
@@ -122,12 +95,6 @@ static int AllocBlock(int w, int h, int* x, int* y)
 	common->FatalError("AllocBlock: full");
 	return 0;
 }
-
-//==========================================================================
-//
-//	R_AddDynamicLightsQ1
-//
-//==========================================================================
 
 static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 {
@@ -196,14 +163,7 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 	}
 }
 
-//==========================================================================
-//
-//	R_BuildLightMapQ1
-//
 //	Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-//
-//==========================================================================
-
 static void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride)
 {
 	int smax, tmax;
@@ -275,12 +235,6 @@ store:
 	}
 }
 
-//==========================================================================
-//
-//	GL_CreateSurfaceLightmapQ1
-//
-//==========================================================================
-
 static void GL_CreateSurfaceLightmapQ1(mbrush29_surface_t* surf)
 {
 	if (surf->flags & (BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB))
@@ -296,12 +250,6 @@ static void GL_CreateSurfaceLightmapQ1(mbrush29_surface_t* surf)
 	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * 4;
 	R_BuildLightMapQ1(surf, base, BLOCK_WIDTH * 4);
 }
-
-//==========================================================================
-//
-//	BuildSurfaceDisplayList
-//
-//==========================================================================
 
 static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 {
@@ -404,14 +352,7 @@ static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 	poly->numverts = lnumverts;
 }
 
-//==========================================================================
-//
-//	GL_BuildLightmaps
-//
 //	Builds the lightmap texture with all the surfaces from all brush models
-//
-//==========================================================================
-
 void GL_BuildLightmaps()
 {
 	Com_Memset(allocated, 0, sizeof(allocated));
@@ -485,14 +426,7 @@ void GL_BuildLightmaps()
 	}
 }
 
-//==========================================================================
-//
-//	R_TextureAnimationQ1
-//
 //	Returns the proper texture for a given time and base texture
-//
-//==========================================================================
-
 static mbrush29_texture_t* R_TextureAnimationQ1(mbrush29_texture_t* base)
 {
 	if (tr.currentEntity->e.frame)
@@ -527,14 +461,7 @@ static mbrush29_texture_t* R_TextureAnimationQ1(mbrush29_texture_t* base)
 	return base;
 }
 
-//==========================================================================
-//
-//	R_RenderDynamicLightmaps
-//
 //	Multitexture
-//
-//==========================================================================
-
 static void R_RenderDynamicLightmaps(mbrush29_surface_t* fa)
 {
 	c_brush_polys++;
@@ -597,12 +524,6 @@ dynamic:
 	}
 }
 
-//==========================================================================
-//
-//	DrawGLPolyQ1
-//
-//==========================================================================
-
 static void DrawGLPolyQ1(mbrush29_glpoly_t* p)
 {
 	qglBegin(GL_POLYGON);
@@ -615,14 +536,7 @@ static void DrawGLPolyQ1(mbrush29_glpoly_t* p)
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	DrawGLWaterPoly
-//
 //	Warp the vertex coordinates
-//
-//==========================================================================
-
 static void DrawGLWaterPoly(mbrush29_glpoly_t* p)
 {
 	qglBegin(GL_TRIANGLE_FAN);
@@ -640,12 +554,6 @@ static void DrawGLWaterPoly(mbrush29_glpoly_t* p)
 	}
 	qglEnd();
 }
-
-//==========================================================================
-//
-//	DrawGLWaterPolyLightmap
-//
-//==========================================================================
 
 static void DrawGLWaterPolyLightmap(mbrush29_glpoly_t* p)
 {
@@ -665,14 +573,7 @@ static void DrawGLWaterPolyLightmap(mbrush29_glpoly_t* p)
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	EmitWaterPolysQ1
-//
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
-//
-//==========================================================================
-
 void EmitWaterPolysQ1(mbrush29_surface_t* fa)
 {
 	for (mbrush29_glpoly_t* p = fa->polys; p; p = p->next)
@@ -696,12 +597,6 @@ void EmitWaterPolysQ1(mbrush29_surface_t* fa)
 		qglEnd();
 	}
 }
-
-//==========================================================================
-//
-//	R_RenderBrushPolyQ1
-//
-//==========================================================================
 
 void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override)
 {
@@ -823,15 +718,23 @@ dynamic:
 	}
 }
 
-//==========================================================================
-//
-//	R_DrawSequentialPoly
-//
+void R_DrawFullBrightPoly(mbrush29_surface_t* s)
+{
+	mbrush29_glpoly_t* p = s->polys;
+
+	mbrush29_texture_t* t = R_TextureAnimationQ1(s->texinfo->texture);
+	if (!t->fullBrightTexture)
+	{
+		return;
+	}
+	GL_Bind(t->fullBrightTexture);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	DrawGLPolyQ1(p);
+	GL_State(GLS_DEFAULT);
+}
+
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
-//
-//==========================================================================
-
 void R_DrawSequentialPoly(mbrush29_surface_t* s)
 {
 	//
@@ -879,6 +782,7 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 			qglEnd();
 			qglDisable(GL_TEXTURE_2D);
 			GL_SelectTexture(0);
+			R_DrawFullBrightPoly(s);
 			return;
 		}
 		else
@@ -938,6 +842,10 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 				GL_TexEnv(GL_REPLACE);
 				qglColor4f(1, 1, 1, 1);
 			}
+			if (!(tr.currentEntity->e.renderfx & RF_WATERTRANS))
+			{
+				R_DrawFullBrightPoly(s);
+			}
 		}
 		return;
 	}
@@ -977,11 +885,10 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 	// underwater warped with lightmap
 	//
 	R_RenderDynamicLightmaps(s);
+	mbrush29_glpoly_t* p = s->polys;
+	mbrush29_texture_t* t = R_TextureAnimationQ1(s->texinfo->texture);
 	if (qglActiveTextureARB)
 	{
-		mbrush29_glpoly_t* p = s->polys;
-
-		mbrush29_texture_t* t = R_TextureAnimationQ1(s->texinfo->texture);
 		GL_SelectTexture(0);
 		GL_Bind(t->gl_texture);
 		GL_TexEnv(GL_REPLACE);
@@ -1022,9 +929,6 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 	}
 	else
 	{
-		mbrush29_glpoly_t* p = s->polys;
-
-		mbrush29_texture_t* t = R_TextureAnimationQ1(s->texinfo->texture);
 		GL_Bind(t->gl_texture);
 		DrawGLWaterPoly(p);
 
@@ -1033,13 +937,14 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 		DrawGLWaterPolyLightmap(p);
 		GL_State(GLS_DEFAULT);
 	}
+	if (t->fullBrightTexture)
+	{
+		GL_Bind(t->fullBrightTexture);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		DrawGLWaterPoly(p);
+		GL_State(GLS_DEFAULT);
+	}
 }
-
-//==========================================================================
-//
-//	R_BlendLightmapsQ1
-//
-//==========================================================================
 
 void R_BlendLightmapsQ1()
 {
@@ -1104,12 +1009,6 @@ void R_BlendLightmapsQ1()
 	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
 }
 
-//==========================================================================
-//
-//	DrawTextureChainsQ1
-//
-//==========================================================================
-
 void DrawTextureChainsQ1()
 {
 	if (!r_texsort->value)
@@ -1164,12 +1063,6 @@ void DrawTextureChainsQ1()
 		t->texturechain = NULL;
 	}
 }
-
-//==========================================================================
-//
-//	R_DrawWaterSurfaces
-//
-//==========================================================================
 
 void R_DrawWaterSurfaces()
 {

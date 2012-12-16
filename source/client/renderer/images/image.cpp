@@ -382,7 +382,7 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 byte* R_GetFullBrightImage(byte* data8, byte* data32, int width, int height)
 {
 	//	Only Quake has fullbright colours in palette.
-	if (!(GGameType & GAME_Quake))
+	if (!(GGameType & GAME_Quake) || !r_fullBrightColours->integer)
 	{
 		return NULL;
 	}

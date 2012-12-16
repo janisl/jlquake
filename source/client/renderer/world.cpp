@@ -14,34 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client.h"
 #include "local.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_CullTriSurf
-//
-//==========================================================================
 
 static bool R_CullTriSurf(srfTriangles_t* cv)
 {
@@ -50,15 +24,8 @@ static bool R_CullTriSurf(srfTriangles_t* cv)
 	return boxCull == CULL_OUT;
 }
 
-//==========================================================================
-//
-//	R_CullGrid
-//
 //	Returns true if the grid is completely culled away.
 //	Also sets the clipped hint bit in tess
-//
-//==========================================================================
-
 static bool R_CullGrid(srfGridMesh_t* cv)
 {
 	if (r_nocurves->integer)
@@ -201,17 +168,10 @@ static bool R_CullSurfaceET(surfaceType_t* surface, shader_t* shader, int* front
 	return false;
 }
 
-//==========================================================================
-//
-//	R_CullSurface
-//
 //	Tries to back face cull surfaces before they are lighted or added to the
 // sorting list.
 //
 //	This will also allow mirrors on both sides of a model without recursion.
-//
-//==========================================================================
-
 static bool R_CullSurface(surfaceType_t* surface, shader_t* shader, int* frontFace)
 {
 	if (GGameType & GAME_ET)
@@ -277,12 +237,6 @@ static bool R_CullSurface(surfaceType_t* surface, shader_t* shader, int* frontFa
 	return false;
 }
 
-//==========================================================================
-//
-//	R_DlightFace
-//
-//==========================================================================
-
 static int R_DlightFace(srfSurfaceFace_t* face, int dlightBits)
 {
 	for (int i = 0; i < tr.refdef.num_dlights; i++)
@@ -308,12 +262,6 @@ static int R_DlightFace(srfSurfaceFace_t* face, int dlightBits)
 	face->dlightBits[tr.smpFrame] = dlightBits;
 	return dlightBits;
 }
-
-//==========================================================================
-//
-//	R_DlightGrid
-//
-//==========================================================================
 
 static int R_DlightGrid(srfGridMesh_t* grid, int dlightBits)
 {
@@ -344,12 +292,6 @@ static int R_DlightGrid(srfGridMesh_t* grid, int dlightBits)
 	grid->dlightBits[tr.smpFrame] = dlightBits;
 	return dlightBits;
 }
-
-//==========================================================================
-//
-//	R_DlightTrisurf
-//
-//==========================================================================
 
 static int R_DlightTrisurf(srfTriangles_t* surf, int dlightBits)
 {
@@ -441,15 +383,8 @@ static int R_DlightSurfaceET(mbrush46_surface_t* surface, int dlightBits)
 	return dlightBits;
 }
 
-//==========================================================================
-//
-//	R_DlightSurface
-//
 //	The given surface is going to be drawn, and it touches a leaf that is
 // touched by one or more dlights, so try to throw out more dlights if possible.
-//
-//==========================================================================
-
 static int R_DlightSurface(mbrush46_surface_t* surf, int dlightBits)
 {
 	if (GGameType & GAME_ET)
@@ -481,12 +416,6 @@ static int R_DlightSurface(mbrush46_surface_t* surf, int dlightBits)
 
 	return dlightBits;
 }
-
-//==========================================================================
-//
-//	R_AddWorldSurface
-//
-//==========================================================================
 
 static void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dlightBits, int decalBits)
 {
@@ -535,12 +464,6 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, shader_t* shader, int dl
 
 =============================================================
 */
-
-//==========================================================================
-//
-//	R_DrawBrushModelQ1
-//
-//==========================================================================
 
 void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent)
 {
@@ -605,14 +528,31 @@ void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent)
 		R_BlendLightmapsQ1();
 	}
 
+	if (r_texsort->value && !(tr.currentEntity->e.renderfx & RF_WATERTRANS))
+	{
+		for (int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++)
+		{
+			if (psurf->flags & (BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB))
+			{
+				continue;
+			}
+			
+			// find which side of the node we are on
+			cplane_t* pplane = psurf->plane;
+
+			float dot = DotProduct(tr.orient.viewOrigin, pplane->normal) - pplane->dist;
+
+			// draw the polygon
+			if (((psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+				(!(psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+			{
+				R_DrawFullBrightPoly(psurf);
+			}
+		}
+	}
+
 	qglPopMatrix();
 }
-
-//==========================================================================
-//
-//	R_DrawInlineBModel
-//
-//==========================================================================
 
 static void R_DrawInlineBModel()
 {
@@ -682,12 +622,6 @@ static void R_DrawInlineBModel()
 	}
 }
 
-//==========================================================================
-//
-//	R_DrawBrushModelQ2
-//
-//==========================================================================
-
 void R_DrawBrushModelQ2(trRefEntity_t* e)
 {
 	if (tr.currentModel->brush38_nummodelsurfaces == 0)
@@ -740,12 +674,6 @@ static int R_BmodelFogNum(trRefEntity_t* re, mbrush46_model_t* bmodel)
 
 	return 0;
 }
-
-//==========================================================================
-//
-//	R_AddBrushModelSurfaces
-//
-//==========================================================================
 
 void R_AddBrushModelSurfaces(trRefEntity_t* ent)
 {
@@ -846,12 +774,6 @@ void R_AddBrushModelSurfaces(trRefEntity_t* ent)
 
 =============================================================
 */
-
-//==========================================================================
-//
-//	R_RecursiveWorldNodeQ1
-//
-//==========================================================================
 
 static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 {
@@ -982,12 +904,6 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 	R_RecursiveWorldNodeQ1(node->children[!side]);
 }
 
-//==========================================================================
-//
-//	R_MarkLeavesQ1
-//
-//==========================================================================
-
 static void R_MarkLeavesQ1()
 {
 	// current viewleaf
@@ -1033,12 +949,6 @@ static void R_MarkLeavesQ1()
 	}
 }
 
-//==========================================================================
-//
-//	R_DrawWorldQ1
-//
-//==========================================================================
-
 void R_DrawWorldQ1()
 {
 	R_MarkLeavesQ1();
@@ -1056,12 +966,6 @@ void R_DrawWorldQ1()
 
 	R_BlendLightmapsQ1();
 }
-
-//==========================================================================
-//
-//	R_RecursiveWorldNodeQ2
-//
-//==========================================================================
 
 static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 {
@@ -1190,12 +1094,6 @@ static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 	R_RecursiveWorldNodeQ2(node->children[!side]);
 }
 
-//==========================================================================
-//
-//	R_FindViewCluster
-//
-//==========================================================================
-
 static void R_FindViewCluster()
 {
 	r_oldviewcluster = r_viewcluster;
@@ -1230,14 +1128,7 @@ static void R_FindViewCluster()
 	}
 }
 
-//==========================================================================
-//
-//	R_MarkLeavesQ2
-//
 //	Mark the leaves and nodes that are in the PVS for the current cluster
-//
-//==========================================================================
-
 static void R_MarkLeavesQ2()
 {
 	// current viewcluster
@@ -1312,12 +1203,6 @@ static void R_MarkLeavesQ2()
 		}
 	}
 }
-
-//==========================================================================
-//
-//	R_DrawWorldQ2
-//
-//==========================================================================
 
 void R_DrawWorldQ2()
 {
@@ -1402,12 +1287,6 @@ static void R_AddLeafSurfacesQ3(mbrush46_node_t* node, int dlightBits, int decal
 		mark++;
 	}
 }
-
-//==========================================================================
-//
-//	R_RecursiveWorldNodeQ3
-//
-//==========================================================================
 
 static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dlightBits, int decalBits)
 {
@@ -1604,14 +1483,7 @@ static void R_RecursiveWorldNodeQ3(mbrush46_node_t* node, int planeBits, int dli
 	R_AddLeafSurfacesQ3(node, dlightBits, decalBits);
 }
 
-//==========================================================================
-//
-//	R_MarkLeavesQ3
-//
 //	Mark the leaves and nodes that are in the PVS for the current cluster
-//
-//==========================================================================
-
 static void R_MarkLeavesQ3()
 {
 	// lockpvs lets designers walk around to determine the
@@ -1707,12 +1579,6 @@ static void R_MarkLeavesQ3()
 		while (parent);
 	}
 }
-
-//==========================================================================
-//
-//	R_AddWorldSurfaces
-//
-//==========================================================================
 
 void R_AddWorldSurfaces()
 {

@@ -854,6 +854,7 @@ struct gllightmapstate_t
 
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override);
+void R_DrawFullBrightPoly(mbrush29_surface_t* s);
 void R_DrawSequentialPoly(mbrush29_surface_t* s);
 void R_BlendLightmapsQ1();
 void EmitWaterPolysQ1(mbrush29_surface_t* fa);
