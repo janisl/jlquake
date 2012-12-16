@@ -130,6 +130,7 @@ Cvar* r_texsort;
 Cvar* r_dynamic;
 Cvar* r_saturatelighting;
 Cvar* r_fullBrightColours;
+Cvar* r_drawOverBrights;
 
 Cvar* r_nocurves;
 Cvar* r_facePlaneCull;
@@ -556,6 +557,7 @@ static void R_Register()
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", 0);
 	r_fullBrightColours = Cvar_Get("r_fullBrightColours", "1", 0);
+	r_drawOverBrights = Cvar_Get("r_drawOverBrights", "1", 0);
 	r_nocurves = Cvar_Get("r_nocurves", "0", CVAR_CHEAT);
 	r_novis = Cvar_Get("r_novis", "0", CVAR_CHEAT);
 	r_lockpvs = Cvar_Get("r_lockpvs", "0", CVAR_CHEAT);

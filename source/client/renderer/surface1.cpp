@@ -51,7 +51,7 @@ static mbrush29_vertex_t* r_pcurrentvertbase;
 // returns a texture number and the position inside it
 static int AllocBlock(int w, int h, int* x, int* y)
 {
-	for (int texnum = 0; texnum < MAX_LIGHTMAPS; texnum++)
+	for (int texnum = 0; texnum < MAX_LIGHTMAPS / 2; texnum++)
 	{
 		int best = BLOCK_HEIGHT;
 
@@ -164,7 +164,7 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 }
 
 //	Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-static void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride)
+static void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, byte* overbrightDest, int stride)
 {
 	int smax, tmax;
 	int t;
@@ -217,12 +217,13 @@ static void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride)
 store:
 	stride -= (smax << 2);
 	bl = blocklights_q1;
-	for (i = 0; i < tmax; i++, dest += stride)
+	for (i = 0; i < tmax; i++, dest += stride, overbrightDest += stride)
 	{
 		for (j = 0; j < smax; j++)
 		{
 			t = *bl++;
 			t >>= 7;
+			int t2 = t - 256;
 			if (t > 255)
 			{
 				t = 255;
@@ -231,6 +232,18 @@ store:
 			dest[1] = t;
 			dest[2] = t;
 			dest += 4;
+			if (t2 < 0)
+			{
+				t2 = 0;
+			}
+			else if (t2 > 255)
+			{
+				t2 = 255;
+			}
+			overbrightDest[0] = t2;
+			overbrightDest[1] = t2;
+			overbrightDest[2] = t2;
+			overbrightDest += 4;
 		}
 	}
 }
@@ -248,7 +261,9 @@ static void GL_CreateSurfaceLightmapQ1(mbrush29_surface_t* surf)
 	surf->lightmaptexturenum = AllocBlock(smax, tmax, &surf->light_s, &surf->light_t);
 	byte* base = lightmaps + surf->lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * 4;
-	R_BuildLightMapQ1(surf, base, BLOCK_WIDTH * 4);
+	byte* overbrightBase = lightmaps + (surf->lightmaptexturenum + MAX_LIGHTMAPS / 2) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
+	overbrightBase += (surf->light_t * BLOCK_WIDTH + surf->light_s) * 4;
+	R_BuildLightMapQ1(surf, base, overbrightBase, BLOCK_WIDTH * 4);
 }
 
 static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
@@ -411,18 +426,20 @@ void GL_BuildLightmaps()
 	//
 	// upload all lightmaps that were filled
 	//
-	for (int i = 0; i < MAX_LIGHTMAPS; i++)
+	for (int i = 0; i < MAX_LIGHTMAPS / 2; i++)
 	{
 		if (!allocated[i][0])
 		{
 			break;		// no more used
 		}
 		lightmap_modified[i] = false;
+		lightmap_modified[i + MAX_LIGHTMAPS / 2] = false;
 		lightmap_rectchange[i].l = BLOCK_WIDTH;
 		lightmap_rectchange[i].t = BLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
 		R_ReUploadImage(tr.lightmaps[i], lightmaps + i * BLOCK_WIDTH * BLOCK_HEIGHT * 4);
+		R_ReUploadImage(tr.lightmaps[i + MAX_LIGHTMAPS / 2], lightmaps + (i + MAX_LIGHTMAPS / 2) * BLOCK_WIDTH * BLOCK_HEIGHT * 4);
 	}
 }
 
@@ -490,6 +507,7 @@ dynamic:
 		if (r_dynamic->value)
 		{
 			lightmap_modified[fa->lightmaptexturenum] = true;
+			lightmap_modified[fa->lightmaptexturenum + MAX_LIGHTMAPS / 2] = true;
 			glRect_t* theRect = &lightmap_rectchange[fa->lightmaptexturenum];
 			if (fa->light_t < theRect->t)
 			{
@@ -519,7 +537,9 @@ dynamic:
 			}
 			byte* base = lightmaps + fa->lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			R_BuildLightMapQ1(fa, base, BLOCK_WIDTH * 4);
+			byte* overbrightBase = lightmaps + (fa->lightmaptexturenum + MAX_LIGHTMAPS / 2) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
+			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
+			R_BuildLightMapQ1(fa, base, overbrightBase, BLOCK_WIDTH * 4);
 		}
 	}
 }
@@ -673,6 +693,7 @@ dynamic:
 		if (r_dynamic->value)
 		{
 			lightmap_modified[fa->lightmaptexturenum] = true;
+			lightmap_modified[fa->lightmaptexturenum + MAX_LIGHTMAPS / 2] = true;
 			glRect_t* theRect = &lightmap_rectchange[fa->lightmaptexturenum];
 			if (fa->light_t < theRect->t)
 			{
@@ -702,7 +723,9 @@ dynamic:
 			}
 			byte* base = lightmaps + fa->lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			R_BuildLightMapQ1(fa, base, BLOCK_WIDTH * 4);
+			byte* overbrightBase = lightmaps + (fa->lightmaptexturenum + MAX_LIGHTMAPS / 2) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
+			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
+			R_BuildLightMapQ1(fa, base, overbrightBase, BLOCK_WIDTH * 4);
 		}
 	}
 
@@ -756,8 +779,9 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 			// Binds lightmap to texenv 1
 			GL_SelectTexture(1);
 			qglEnable(GL_TEXTURE_2D);
-			GL_Bind(tr.lightmaps[s->lightmaptexturenum]);
+
 			int i = s->lightmaptexturenum;
+			GL_Bind(tr.lightmaps[i]);
 			if (lightmap_modified[i])
 			{
 				lightmap_modified[i] = false;
@@ -780,6 +804,39 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 				qglVertex3fv(v);
 			}
 			qglEnd();
+
+			if (r_drawOverBrights->integer)
+			{
+				GL_State(GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
+
+				i = s->lightmaptexturenum;
+				GL_Bind(tr.lightmaps[i + MAX_LIGHTMAPS / 2]);
+				if (lightmap_modified[i + MAX_LIGHTMAPS / 2])
+				{
+					lightmap_modified[i + MAX_LIGHTMAPS / 2] = false;
+					glRect_t* theRect = &lightmap_rectchange[i];
+					qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t,
+						BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+						lightmaps + ((i + MAX_LIGHTMAPS / 2) * BLOCK_HEIGHT + theRect->t) * BLOCK_WIDTH * 4);
+					theRect->l = BLOCK_WIDTH;
+					theRect->t = BLOCK_HEIGHT;
+					theRect->h = 0;
+					theRect->w = 0;
+				}
+				GL_TexEnv(GL_MODULATE);
+				qglBegin(GL_POLYGON);
+				v = p->verts[0];
+				for (i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE)
+				{
+					qglMultiTexCoord2fARB(GL_TEXTURE0_ARB, v[3], v[4]);
+					qglMultiTexCoord2fARB(GL_TEXTURE1_ARB, v[5], v[6]);
+					qglVertex3fv(v);
+				}
+				qglEnd();
+
+				GL_State(GLS_DEFAULT);
+			}
+
 			qglDisable(GL_TEXTURE_2D);
 			GL_SelectTexture(0);
 			R_DrawFullBrightPoly(s);
@@ -894,8 +951,9 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 		GL_TexEnv(GL_REPLACE);
 		GL_SelectTexture(1);
 		qglEnable(GL_TEXTURE_2D);
-		GL_Bind(tr.lightmaps[s->lightmaptexturenum]);
+		
 		int i = s->lightmaptexturenum;
+		GL_Bind(tr.lightmaps[s->lightmaptexturenum]);
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
@@ -924,6 +982,45 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 			qglVertex3fv(nv);
 		}
 		qglEnd();
+
+		if (r_drawOverBrights->integer)
+		{
+			GL_State(GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
+
+			i = s->lightmaptexturenum;
+			GL_Bind(tr.lightmaps[i + MAX_LIGHTMAPS / 2]);
+			if (lightmap_modified[i + MAX_LIGHTMAPS / 2])
+			{
+				lightmap_modified[i + MAX_LIGHTMAPS / 2] = false;
+				glRect_t* theRect = &lightmap_rectchange[i];
+				qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t,
+					BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+					lightmaps + ((i + MAX_LIGHTMAPS / 2) * BLOCK_HEIGHT + theRect->t) * BLOCK_WIDTH * 4);
+				theRect->l = BLOCK_WIDTH;
+				theRect->t = BLOCK_HEIGHT;
+				theRect->h = 0;
+				theRect->w = 0;
+			}
+			GL_TexEnv(GL_MODULATE);
+			qglBegin(GL_TRIANGLE_FAN);
+			v = p->verts[0];
+			for (i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE)
+			{
+				qglMultiTexCoord2fARB(GL_TEXTURE0_ARB, v[3], v[4]);
+				qglMultiTexCoord2fARB(GL_TEXTURE1_ARB, v[5], v[6]);
+
+				vec3_t nv;
+				nv[0] = v[0] + 8 * sin(v[1] * 0.05 + tr.refdef.floatTime) * sin(v[2] * 0.05 + tr.refdef.floatTime);
+				nv[1] = v[1] + 8 * sin(v[0] * 0.05 + tr.refdef.floatTime) * sin(v[2] * 0.05 + tr.refdef.floatTime);
+				nv[2] = v[2];
+
+				qglVertex3fv(nv);
+			}
+			qglEnd();
+
+			GL_State(GLS_DEFAULT);
+		}
+
 		qglDisable(GL_TEXTURE_2D);
 		GL_SelectTexture(0);
 	}

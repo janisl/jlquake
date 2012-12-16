@@ -124,6 +124,7 @@ extern Cvar* r_texsort;
 extern Cvar* r_dynamic;
 extern Cvar* r_saturatelighting;
 extern Cvar* r_fullBrightColours;
+extern Cvar* r_drawOverBrights;
 
 extern Cvar* r_nocurves;
 extern Cvar* r_facePlaneCull;			// enables culling of planar surfaces with back side test
