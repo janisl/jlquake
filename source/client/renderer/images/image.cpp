@@ -14,12 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../../client.h"
 #include "../local.h"
-
-// MACROS ------------------------------------------------------------------
 
 //#define IMAGE_HASH_SIZE		1024
 #define IMAGE_HASH_SIZE     4096
@@ -29,24 +25,12 @@
 
 #define DEFAULT_SIZE        16
 
-// TYPES -------------------------------------------------------------------
-
 struct textureMode_t
 {
 	const char* name;
 	GLenum minimize;
 	GLenum maximize;
 };
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 byte host_basepal[768];
 byte r_palette[256][4];
@@ -63,8 +47,6 @@ unsigned ColorPercent[16] =
 };
 
 bool scrap_dirty;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte s_gammatable[256];
 static byte s_intensitytable[256];
@@ -125,14 +107,6 @@ static byte cs_data[64] =
 	0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_SetPalette
-//
-//==========================================================================
-
 static void R_SetPalette(byte* pal)
 {
 	//
@@ -150,12 +124,6 @@ static void R_SetPalette(byte* pal)
 	r_palette[255][3] = 0;	// 255 is transparent
 }
 
-//==========================================================================
-//
-//	R_InitQ1Palette
-//
-//==========================================================================
-
 void R_InitQ1Palette()
 {
 	Array<byte> Pal;
@@ -166,12 +134,6 @@ void R_InitQ1Palette()
 	R_SetPalette(Pal.Ptr());
 	Com_Memcpy(host_basepal, Pal.Ptr(), 768);
 }
-
-//==========================================================================
-//
-//	R_InitQ2Palette
-//
-//==========================================================================
 
 void R_InitQ2Palette()
 {
@@ -193,14 +155,7 @@ void R_InitQ2Palette()
 	delete[] pal;
 }
 
-//==========================================================================
-//
-//	R_FloodFillSkin
-//
 //	Fill background pixels so mipmapping doesn't have haloes
-//
-//==========================================================================
-
 static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 {
 	int filledcolor = 0;
@@ -285,12 +240,6 @@ static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 #undef FLOODFILL_STEP
 	}
 }
-
-//==========================================================================
-//
-//	R_ConvertImage8To32
-//
-//==========================================================================
 
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 {
@@ -430,14 +379,46 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 	return DataOut;
 }
 
-//==========================================================================
-//
-//	R_LoadImage
-//
-//	Loads any of the supported image types into a cannonical 32 bit format.
-//
-//==========================================================================
+byte* R_GetFullBrightImage(byte* data8, byte* data32, int width, int height)
+{
+	//	Only Quake has fullbright colours in palette.
+	if (!(GGameType & GAME_Quake))
+	{
+		return NULL;
+	}
 
+	int count = width * height;
+	bool haveFullBrights = false;
+	for (int i = 0; i < count; i++)
+	{
+		int p = data8[i];
+		if (p >= 224 && p < 255)
+		{
+			haveFullBrights = true;
+			break;
+		}
+	}
+	if (!haveFullBrights)
+	{
+		return NULL;
+	}
+
+	byte* dataOut = new byte[count * 4];
+	Com_Memcpy(dataOut, data32, count * 4);
+
+	for (int i = 0; i < count; i++)
+	{
+		int p = data8[i];
+		if (p < 224)
+		{
+			dataOut[i * 4 + 3] = 0;
+		}
+	}
+
+	return dataOut;
+}
+
+//	Loads any of the supported image types into a cannonical 32 bit format.
 void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode, byte* TransPixels)
 {
 	*pic = NULL;
@@ -486,19 +467,12 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 	}
 }
 
-//==========================================================================
-//
-//	R_ResampleTexture
-//
 //	Used to resample images in a more general than quartering fashion.
 //
 //	This will only be filtered properly if the resampled size is greater
 // than half the original size.
 //
 //	If a larger shrinking is needed, use the mipmap function before or after.
-//
-//==========================================================================
-
 static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
 {
 	if (outwidth > 2048)
@@ -545,15 +519,8 @@ static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* o
 	}
 }
 
-//==========================================================================
-//
-//	R_MipMap2
-//
 //	Operates in place, quartering the size of the texture
 //	Proper linear filter
-//
-//==========================================================================
-
 static void R_MipMap2(byte* in, int inWidth, int inHeight)
 {
 	int outWidth = inWidth >> 1;
@@ -599,14 +566,7 @@ static void R_MipMap2(byte* in, int inWidth, int inHeight)
 	Com_Memcpy(in, temp.Ptr(), outWidth * outHeight * 4);
 }
 
-//==========================================================================
-//
-//	R_MipMap
-//
 //	Operates in place, quartering the size of the texture
-//
-//==========================================================================
-
 static void R_MipMap(byte* in, int width, int height)
 {
 	if (!r_simpleMipMaps->integer)
@@ -650,14 +610,7 @@ static void R_MipMap(byte* in, int width, int height)
 	}
 }
 
-//==========================================================================
-//
-//	R_LightScaleTexture
-//
 //	Scale up the pixel values in a texture to increase the lighting range
-//
-//==========================================================================
-
 static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
 {
 	if (only_gamma)
@@ -701,14 +654,7 @@ static void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean on
 	}
 }
 
-//==========================================================================
-//
-//	R_BlendOverTexture
-//
 //	Apply a color blend over a set of pixels
-//
-//==========================================================================
-
 static void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 {
 	int inverseAlpha = 255 - blend[3];
@@ -724,12 +670,6 @@ static void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
 		data[2] = (data[2] * inverseAlpha + premult[2]) >> 9;
 	}
 }
-
-//==========================================================================
-//
-//	GL_CheckErrors
-//
-//==========================================================================
 
 static void GL_CheckErrors()
 {
@@ -770,12 +710,6 @@ static void GL_CheckErrors()
 
 	common->FatalError("GL_CheckErrors: %s", s);
 }
-
-//==========================================================================
-//
-//	R_UploadImage
-//
-//==========================================================================
 
 static void R_UploadImage(byte* data, int width, int height, bool mipmap,
 	bool picmip, bool characterMip, bool lightMap, int* format,
@@ -1016,17 +950,10 @@ done:
 	GL_CheckErrors();
 }
 
-//==========================================================================
-//
-//	R_ScrapAllocBlock
-//
 //	scrap allocation
 //
 //	Allocate all the little status bar obejcts into a single texture
 // to crutch up stupid hardware / drivers
-//
-//==========================================================================
-
 static bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 {
 	int best = SCRAP_BLOCK_HEIGHT;
@@ -1068,12 +995,6 @@ static bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 	return true;
 }
 
-//==========================================================================
-//
-//	R_ScrapUpload
-//
-//==========================================================================
-
 void R_ScrapUpload()
 {
 	scrap_uploads++;
@@ -1081,14 +1002,7 @@ void R_ScrapUpload()
 	scrap_dirty = false;
 }
 
-//==========================================================================
-//
-//	generateHashValue
-//
 //	return a hash value for the filename
-//
-//==========================================================================
-
 static long generateHashValue(const char* fname)
 {
 	int i;
@@ -1115,14 +1029,7 @@ static long generateHashValue(const char* fname)
 	return hash;
 }
 
-//==========================================================================
-//
-//	R_CreateImage
-//
 //	This is the only way any image_t is created
-//
-//==========================================================================
-
 image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap,
 	bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap, bool characterMip)
 {
@@ -1244,17 +1151,10 @@ nonscrap:
 	return image;
 }
 
-//==========================================================================
-//
-//	R_ReUploadImage
-//
 //	Parameters of the image are the same as when it was created.
 //	This is a very bad thing to do, but unfortunately it was a quite common
 // practice to use this for dynamicaly changing images. Most, if not all of
 // those cases can be rewritten not to do reuploading of data.
-//
-//==========================================================================
-
 void R_ReUploadImage(image_t* image, byte* data)
 {
 	GL_Bind(image);
@@ -1317,12 +1217,6 @@ bool R_TouchImage(image_t* inImage)
 	return true;
 }
 
-//==========================================================================
-//
-//	R_FindImage
-//
-//==========================================================================
-
 image_t* R_FindImage(const char* name)
 {
 	long hash = generateHashValue(name);
@@ -1360,14 +1254,7 @@ static image_t* R_FindCachedImage(const char* name)
 	return NULL;
 }
 
-//==========================================================================
-//
-//	R_FindImageFile
-//
 //	Finds or loads the given image. Returns NULL if it fails, not a default image.
-//
-//==========================================================================
-
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels,
 	bool characterMIP, bool lightmap)
@@ -1476,12 +1363,6 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 	return image;
 }
 
-//==========================================================================
-//
-//	R_SetColorMappings
-//
-//==========================================================================
-
 void R_SetColorMappings()
 {
 	// setup the overbright lighting
@@ -1577,12 +1458,6 @@ void R_SetColorMappings()
 	}
 }
 
-//==========================================================================
-//
-//	R_GammaCorrect
-//
-//==========================================================================
-
 void R_GammaCorrect(byte* Buffer, int BufferSize)
 {
 	for (int i = 0; i < BufferSize; i++)
@@ -1590,12 +1465,6 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 		Buffer[i] = s_gammatable[Buffer[i]];
 	}
 }
-
-//==========================================================================
-//
-//	R_CreateDefaultImage
-//
-//==========================================================================
 
 static void R_CreateDefaultImage()
 {
@@ -1627,12 +1496,6 @@ static void R_CreateDefaultImage()
 	tr.defaultImage = R_CreateImage("*default", (byte*)data, DEFAULT_SIZE, DEFAULT_SIZE, true, false, GL_REPEAT, false);
 }
 
-//==========================================================================
-//
-//	R_CreateDlightImage
-//
-//==========================================================================
-
 static void R_CreateDlightImage()
 {
 	enum { DLIGHT_SIZE = 16 };
@@ -1663,12 +1526,6 @@ static void R_CreateDlightImage()
 	tr.dlightImage = R_CreateImage("*dlight", (byte*)data, DLIGHT_SIZE, DLIGHT_SIZE, false, false, GL_CLAMP, false);
 }
 
-//==========================================================================
-//
-//	R_InitFogTable
-//
-//==========================================================================
-
 void R_InitFogTable()
 {
 	float exp = 0.5;
@@ -1680,16 +1537,9 @@ void R_InitFogTable()
 	}
 }
 
-//==========================================================================
-//
-//	R_FogFactor
-//
 //	Returns a 0.0 to 1.0 fog density value. This is called for each texel
 // of the fog texture on startup and for each vertex of transparent shaders
 // in fog dynamically
-//
-//==========================================================================
-
 float R_FogFactor(float s, float t)
 {
 	s -= 1.0 / 512;
@@ -1718,12 +1568,6 @@ float R_FogFactor(float s, float t)
 
 	return d;
 }
-
-//==========================================================================
-//
-//	R_CreateFogImage
-//
-//==========================================================================
 
 static void R_CreateFogImage()
 {
@@ -1817,12 +1661,6 @@ static void R_CreateFogImageET()
 	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
-//==========================================================================
-//
-//	R_CreateBuiltinImages
-//
-//==========================================================================
-
 static void R_CreateBuiltinImages()
 {
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
@@ -1900,12 +1738,6 @@ static void R_LoadCacheImages()
 	FS_FreeFile(buf);
 }
 
-//==========================================================================
-//
-//	R_InitImages
-//
-//==========================================================================
-
 void R_InitImages()
 {
 	Com_Memset(ImageHashTable, 0, sizeof(ImageHashTable));
@@ -1924,12 +1756,6 @@ void R_InitImages()
 		R_LoadWadFile();
 	}
 }
-
-//==========================================================================
-//
-//	R_DeleteTextures
-//
-//==========================================================================
 
 void R_DeleteTextures()
 {
@@ -1955,12 +1781,6 @@ void R_DeleteTextures()
 		qglBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
-
-//==========================================================================
-//
-//	GL_TextureMode
-//
-//==========================================================================
 
 void GL_TextureMode(const char* string)
 {
@@ -2022,12 +1842,6 @@ void GL_TextureAnisotropy(float anisotropy)
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy);
 	}
 }
-
-//==========================================================================
-//
-//	R_ImageList_f
-//
-//==========================================================================
 
 void R_ImageList_f()
 {
@@ -2098,12 +1912,6 @@ void R_ImageList_f()
 	common->Printf(" %i total images\n\n", tr.numImages);
 }
 
-//==========================================================================
-//
-//	R_SumOfUsedImages
-//
-//==========================================================================
-
 int R_SumOfUsedImages()
 {
 	int total = 0;
@@ -2118,12 +1926,6 @@ int R_SumOfUsedImages()
 	return total;
 }
 
-//==========================================================================
-//
-//	R_GetImageHandle
-//
-//==========================================================================
-
 qhandle_t R_GetImageHandle(image_t* Image)
 {
 	for (int i = 0; i < tr.numImages; i++)
@@ -2136,22 +1938,10 @@ qhandle_t R_GetImageHandle(image_t* Image)
 	return 0;
 }
 
-//==========================================================================
-//
-//	R_GetImageName
-//
-//==========================================================================
-
 const char* R_GetImageName(qhandle_t Handle)
 {
 	return tr.images[Handle]->imgName;
 }
-
-//==========================================================================
-//
-//	R_UploadCinematic
-//
-//==========================================================================
 
 void R_UploadCinematic(int cols, int rows, const byte* data, int client, bool dirty)
 {
@@ -2204,12 +1994,6 @@ void R_UploadCinematic(int cols, int rows, const byte* data, int client, bool di
 	}
 }
 
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedImageEx
-//
-//==========================================================================
-
 static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height, bool allowPicMip, int mode)
 {
 	byte* translated = new byte[width * height];
@@ -2233,33 +2017,15 @@ static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name,
 	delete[] translated32;
 }
 
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedImage
-//
-//==========================================================================
-
 void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height)
 {
 	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, false, IMG8MODE_Normal);
 }
 
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedSkin
-//
-//==========================================================================
-
 void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height)
 {
 	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, true, IMG8MODE_Skin);
 }
-
-//==========================================================================
-//
-//	R_LoadRawFontImage
-//
-//==========================================================================
 
 static image_t* R_LoadRawFontImage(const char* name, byte* data8, int width, int height)
 {
@@ -2274,12 +2040,6 @@ static image_t* R_LoadRawFontImage(const char* name, byte* data8, int width, int
 	return image;
 }
 
-//==========================================================================
-//
-//	R_LoadRawFontImageFromFile
-//
-//==========================================================================
-
 image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height)
 {
 	Array<byte> data;
@@ -2287,34 +2047,16 @@ image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height)
 	return R_LoadRawFontImage(name, data.Ptr(), width, height);
 }
 
-//==========================================================================
-//
-//	R_LoadRawFontImageFromWad
-//
-//==========================================================================
-
 image_t* R_LoadRawFontImageFromWad(const char* name, int width, int height)
 {
 	byte* data = (byte*)R_GetWadLumpByName(name);
 	return R_LoadRawFontImage(name, data, width, height);
 }
 
-//==========================================================================
-//
-//	R_LoadBigFontImage
-//
-//==========================================================================
-
 image_t* R_LoadBigFontImage(const char* name)
 {
 	return R_FindImageFile(name, false, false, GL_CLAMP, false, IMG8MODE_Holey);
 }
-
-//==========================================================================
-//
-//	R_LoadQuake2FontImage
-//
-//==========================================================================
 
 image_t* R_LoadQuake2FontImage(const char* name)
 {
@@ -2324,12 +2066,6 @@ image_t* R_LoadQuake2FontImage(const char* name)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	return image;
 }
-
-//==========================================================================
-//
-//	R_CreateCrosshairImage
-//
-//==========================================================================
 
 image_t* R_CreateCrosshairImage()
 {
@@ -2342,12 +2078,6 @@ image_t* R_CreateCrosshairImage()
 	return R_CreateImage("crosshair", data, 8, 8, false, false, GL_CLAMP, false);
 }
 
-//==========================================================================
-//
-//	R_CachePic
-//
-//==========================================================================
-
 image_t* R_CachePic(const char* path)
 {
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
@@ -2357,12 +2087,6 @@ image_t* R_CachePic(const char* path)
 	}
 	return pic;
 }
-
-//==========================================================================
-//
-//	R_CachePicRepeat
-//
-//==========================================================================
 
 image_t* R_CachePicRepeat(const char* path)
 {
@@ -2374,12 +2098,6 @@ image_t* R_CachePicRepeat(const char* path)
 	return pic;
 }
 
-//==========================================================================
-//
-//	R_CachePicWithTransPixels
-//
-//==========================================================================
-
 image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels)
 {
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
@@ -2389,12 +2107,6 @@ image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels)
 	}
 	return pic;
 }
-
-//==========================================================================
-//
-//	R_RegisterPic
-//
-//==========================================================================
 
 static image_t* R_RegisterPic(const char* name, GLenum wrapClampMode)
 {
@@ -2410,55 +2122,25 @@ static image_t* R_RegisterPic(const char* name, GLenum wrapClampMode)
 	}
 }
 
-//==========================================================================
-//
-//	R_RegisterPic
-//
-//==========================================================================
-
 image_t* R_RegisterPic(const char* name)
 {
 	return R_RegisterPic(name, GL_CLAMP);
 }
-
-//==========================================================================
-//
-//	R_RegisterPicRepeat
-//
-//==========================================================================
 
 image_t* R_RegisterPicRepeat(const char* name)
 {
 	return R_RegisterPic(name, GL_REPEAT);
 }
 
-//==========================================================================
-//
-//	R_GetImageWidth
-//
-//==========================================================================
-
 int R_GetImageWidth(image_t* pic)
 {
 	return pic->width;
 }
 
-//==========================================================================
-//
-//	R_GetImageHeight
-//
-//==========================================================================
-
 int R_GetImageHeight(image_t* pic)
 {
 	return pic->height;
 }
-
-//==========================================================================
-//
-//	R_GetPicSize
-//
-//==========================================================================
 
 void R_GetPicSize(int* w, int* h, const char* pic)
 {

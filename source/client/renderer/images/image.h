@@ -59,6 +59,7 @@ struct image_t
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
+byte* R_GetFullBrightImage(byte* data8, byte* data32, int width, int height);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 image_t* R_CreateImage(const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap, bool characterMip = false);
 void R_ReUploadImage(image_t* image, byte* data);
