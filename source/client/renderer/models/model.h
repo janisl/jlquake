@@ -720,6 +720,7 @@ struct mesh1hdr_t
 	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
 	int* commands;					// gl command list with embedded s/t
 	image_t* gl_texture[MAX_MESH1_SKINS][4];
+	image_t* fullBrightTexture[MAX_MESH1_SKINS][4];
 	mmesh1framedesc_t frames[1];	// variable sized
 };
 

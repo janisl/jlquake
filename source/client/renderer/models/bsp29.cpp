@@ -129,9 +129,16 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 				byte* pic32 = R_ConvertImage8To32((byte*)(tx + 1), tx->width, tx->height, IMG8MODE_Normal);
 				byte* picFullBright = R_GetFullBrightImage((byte*)(tx + 1), pic32, tx->width, tx->height);
 				tx->gl_texture = R_CreateImage(search, pic32, tx->width, tx->height, true, true, GL_REPEAT, false);
-				tx->fullBrightTexture = !picFullBright ? NULL :
-					R_CreateImage(searchFullBright, picFullBright, tx->width, tx->height, true, true, GL_REPEAT, false);
 				delete[] pic32;
+				if (picFullBright)
+				{
+					tx->fullBrightTexture = R_CreateImage(searchFullBright, picFullBright, tx->width, tx->height, true, true, GL_REPEAT, false);
+					delete[] picFullBright;
+				}
+				else
+				{
+					tx->fullBrightTexture = NULL;
+				}
 			}
 		}
 	}

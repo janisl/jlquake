@@ -681,14 +681,6 @@ void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		VectorScale(ent->axis[2], 2, ent->axis[2]);
 		ent->nonNormalizedAxes = true;
 	}
-
-	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!String::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
-		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
-	{
-		ent->renderfx |= RF_ABSOLUTE_LIGHT;
-		ent->absoluteLight = 1.0;
-	}
 }
 
 static void CLQ1_LinkStaticEntities()

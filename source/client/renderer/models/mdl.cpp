@@ -14,12 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../../client.h"
 #include "../local.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define MAX_LBM_HEIGHT      480
 
@@ -31,22 +27,8 @@
 #define MAXALIASVERTS       2000
 #define MAXALIASTRIS        2048
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 byte q1_player_8bit_texels[320 * 200];
 byte h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static float aliastransform[3][4];
 
@@ -87,26 +69,12 @@ static float shadelight;
 static float ambientlight;
 static float model_constant_alpha;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_AliasTransformVector
-//
-//==========================================================================
-
 static void R_AliasTransformVector(const vec3_t in, vec3_t out)
 {
 	out[0] = DotProduct(in, aliastransform[0]) + aliastransform[0][3];
 	out[1] = DotProduct(in, aliastransform[1]) + aliastransform[1][3];
 	out[2] = DotProduct(in, aliastransform[2]) + aliastransform[2][3];
 }
-
-//==========================================================================
-//
-//	Mod_LoadAliasFrame
-//
-//==========================================================================
 
 static const void* Mod_LoadAliasFrame(const void* pin, mmesh1framedesc_t* frame)
 {
@@ -160,12 +128,6 @@ static const void* Mod_LoadAliasFrame(const void* pin, mmesh1framedesc_t* frame)
 
 	return (const void*)pinframe;
 }
-
-//==========================================================================
-//
-//	Mod_LoadAliasGroup
-//
-//==========================================================================
 
 static const void* Mod_LoadAliasGroup(const void* pin, mmesh1framedesc_t* frame)
 {
@@ -231,12 +193,6 @@ static const void* Mod_LoadAliasGroup(const void* pin, mmesh1framedesc_t* frame)
 	return ptemp;
 }
 
-//==========================================================================
-//
-//	Mod_LoadAllSkins
-//
-//==========================================================================
-
 static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_flags)
 {
 	if (numskins < 1 || numskins > MAX_MESH1_SKINS)
@@ -268,6 +224,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 		if (pskintype->type == ALIAS_SKIN_SINGLE)
 		{
 			byte* pic32 = R_ConvertImage8To32((byte*)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
+			byte* picFullBright = R_GetFullBrightImage((byte*)(pskintype + 1), pic32, pheader->skinwidth, pheader->skinheight);
 
 			// save 8 bit texels for the player model to remap
 			if ((GGameType & GAME_Quake) && !String::Cmp(loadmodel->name,"progs/player.mdl"))
@@ -339,6 +296,24 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 						pheader->gl_texture[i][3] =
 							R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 			delete[] pic32;
+			if (picFullBright)
+			{
+				char fbname[32];
+				sprintf(fbname, "%s_%i_fb", loadmodel->name, i);
+				pheader->fullBrightTexture[i][0] =
+					pheader->fullBrightTexture[i][1] =
+						pheader->fullBrightTexture[i][2] =
+							pheader->fullBrightTexture[i][3] =
+								R_CreateImage(fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
+				delete[] picFullBright;
+			}
+			else
+			{
+				pheader->fullBrightTexture[i][0] =
+					pheader->fullBrightTexture[i][1] =
+						pheader->fullBrightTexture[i][2] =
+							pheader->fullBrightTexture[i][3] = NULL;
+			}
 			pskintype = (dmdl_skintype_t*)((byte*)(pskintype + 1) + s);
 		}
 		else
@@ -358,26 +333,33 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				sprintf(name, "%s_%i_%i", loadmodel->name, i, j);
 
 				byte* pic32 = R_ConvertImage8To32((byte*)pskintype, pheader->skinwidth, pheader->skinheight, texture_mode);
+				byte* picFullBright = R_GetFullBrightImage((byte*)pskintype, pic32, pheader->skinwidth, pheader->skinheight);
 				pheader->gl_texture[i][j & 3] = R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 				delete[] pic32;
+				if (picFullBright)
+				{
+					char fbname[32];
+					sprintf(fbname, "%s_%i_%i_fb", loadmodel->name, i, j);
+					pheader->fullBrightTexture[i][j & 3] = R_CreateImage(fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
+					delete[] picFullBright;
+				}
+				else
+				{
+					pheader->fullBrightTexture[i][j & 3] = NULL;
+				}
 				pskintype = (dmdl_skintype_t*)((byte*)pskintype + s);
 			}
 			int k = j;
 			for (/* */; j < 4; j++)
 			{
 				pheader->gl_texture[i][j & 3] = pheader->gl_texture[i][j - k];
+				pheader->fullBrightTexture[i][j & 3] = pheader->fullBrightTexture[i][j - k];
 			}
 		}
 	}
 
 	return (void*)pskintype;
 }
-
-//==========================================================================
-//
-//	StripLength
-//
-//==========================================================================
 
 static int StripLength(int starttri, int startv)
 {
@@ -473,12 +455,6 @@ done:
 	return stripcount;
 }
 
-//==========================================================================
-//
-//	FanLength
-//
-//==========================================================================
-
 static int FanLength(int starttri, int startv)
 {
 	used[starttri] = 2;
@@ -566,15 +542,8 @@ done:
 	return stripcount;
 }
 
-//==========================================================================
-//
-//	BuildTris
-//
 //	Generate a list of trifans or strips for the model, which holds for all
 // frames
-//
-//==========================================================================
-
 static void BuildTris()
 {
 	//
@@ -670,12 +639,6 @@ static void BuildTris()
 	common->DPrintf("%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands);
 }
 
-//==========================================================================
-//
-//	GL_MakeAliasModelDisplayLists
-//
-//==========================================================================
-
 static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 {
 	aliasmodel = m;
@@ -749,12 +712,6 @@ static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadMdlModel
-//
-//==========================================================================
 
 void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 {
@@ -909,14 +866,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 	mod->q1_cache = pheader;
 }
 
-//==========================================================================
-//
-//	Mod_LoadMdlModelNew
-//
 //	Reads extra field for num ST verts, and extra index list of them
-//
-//==========================================================================
-
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 {
 	newmdl_t* pinmodel = (newmdl_t*)buffer;
@@ -1067,12 +1017,6 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	mod->q1_cache = pheader;
 }
 
-//==========================================================================
-//
-//	Mod_FreeMdlModel
-//
-//==========================================================================
-
 void Mod_FreeMdlModel(model_t* mod)
 {
 	mesh1hdr_t* pheader = (mesh1hdr_t*)mod->q1_cache;
@@ -1081,13 +1025,7 @@ void Mod_FreeMdlModel(model_t* mod)
 	Mem_Free(pheader);
 }
 
-//==========================================================================
-//
-//	GL_DrawAliasFrame
-//
-//==========================================================================
-
-static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum)
+static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum, bool fullBrigts)
 {
 	lastposenum = posenum;
 
@@ -1132,7 +1070,7 @@ static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum)
 			order += 2;
 
 			// normals and vertexes come from the frame list
-			float l = shadedots[verts->lightnormalindex] * shadelight;
+			float l = fullBrigts ? 1 : shadedots[verts->lightnormalindex] * shadelight;
 			qglColor4f(r * l, g * l, b * l, model_constant_alpha);
 			qglVertex3f(verts->v[0], verts->v[1], verts->v[2]);
 			verts++;
@@ -1142,12 +1080,6 @@ static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum)
 		qglEnd();
 	}
 }
-
-//==========================================================================
-//
-//	GL_DrawAliasShadow
-//
-//==========================================================================
 
 static void GL_DrawAliasShadow(mesh1hdr_t* paliashdr, int posenum)
 {
@@ -1203,13 +1135,7 @@ static void GL_DrawAliasShadow(mesh1hdr_t* paliashdr, int posenum)
 	}
 }
 
-//==========================================================================
-//
-//	R_SetupAliasFrame
-//
-//==========================================================================
-
-static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr)
+static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr, bool fullBrigts)
 {
 	if (frame >= paliashdr->numframes || frame < 0)
 	{
@@ -1226,14 +1152,8 @@ static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr)
 		pose += (int)(tr.refdef.floatTime / interval) % numposes;
 	}
 
-	GL_DrawAliasFrame(paliashdr, pose);
+	GL_DrawAliasFrame(paliashdr, pose, fullBrigts);
 }
-
-//==========================================================================
-//
-//	R_CalcEntityLight
-//
-//==========================================================================
 
 float R_CalcEntityLight(refEntity_t* e)
 {
@@ -1276,12 +1196,6 @@ float R_CalcEntityLight(refEntity_t* e)
 	}
 	return light;
 }
-
-//==========================================================================
-//
-//	R_DrawMdlModel
-//
-//==========================================================================
 
 void R_DrawMdlModel(trRefEntity_t* e)
 {
@@ -1396,19 +1310,28 @@ void R_DrawMdlModel(trRefEntity_t* e)
 		model_constant_alpha = 1.0f;
 	}
 
+	int anim = (int)(tr.refdef.floatTime * 10) & 3;
 	if (e->e.customSkin)
 	{
 		GL_Bind(tr.images[e->e.customSkin]);
 	}
 	else
 	{
-		int anim = (int)(tr.refdef.floatTime * 10) & 3;
 		GL_Bind(paliashdr->gl_texture[e->e.skinNum][anim]);
 	}
 
 	GL_TexEnv(GL_MODULATE);
 
-	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr);
+	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, false);
+
+	GL_TexEnv(GL_REPLACE);
+
+	if (!e->e.customSkin && paliashdr->fullBrightTexture[e->e.skinNum][anim])
+	{
+		GL_Bind(paliashdr->fullBrightTexture[e->e.skinNum][anim]);
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, true);
+	}
 
 	GL_State(GLS_DEFAULT);
 
@@ -1416,8 +1339,6 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	{
 		GL_Cull(CT_FRONT_SIDED);
 	}
-
-	GL_TexEnv(GL_REPLACE);
 
 	qglPopMatrix();
 
@@ -1440,12 +1361,6 @@ void R_DrawMdlModel(trRefEntity_t* e)
 		qglPopMatrix();
 	}
 }
-
-//==========================================================================
-//
-//	R_MdlHasHexen2Transparency
-//
-//==========================================================================
 
 bool R_MdlHasHexen2Transparency(model_t* Model)
 {
