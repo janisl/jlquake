@@ -444,7 +444,7 @@ void Sys_MessageLoop()
 		}
 
 		// save the msg time, because wndprocs don't have access to the timestamp
-		sysMsgTime = msg.time;
+		sysMsgTime = msg.time - sys_timeBase;
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
