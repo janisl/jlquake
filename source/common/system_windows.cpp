@@ -48,6 +48,9 @@ static double curtime = 0.0;
 static int lowshift;
 static double pfreq;
 
+static bool sys_timeInitialised;
+static int sys_timeBase;
+
 //	Test an file given OS path:
 //	returns -1 if not found
 //	returns 1 if directory
@@ -314,44 +317,36 @@ void Sys_FreeFileList(char** list)
 
 int Sys_Milliseconds()
 {
-	static int base;
-	static bool initialized = false;
-
-	if (!initialized)
+	if (!sys_timeInitialised)
 	{
-		base = timeGetTime();
-		initialized = true;
+		sys_timeBase = timeGetTime();
+		sys_timeInitialised = true;
 	}
-	return timeGetTime() - base;
+	return timeGetTime() - sys_timeBase;
 }
 
 double Sys_DoubleTime()
 {
-	static DWORD starttime;
-	static qboolean first = true;
-	DWORD now;
-	double t;
+	DWORD now = timeGetTime();
 
-	now = timeGetTime();
-
-	if (first)
+	if (!sys_timeInitialised)
 	{
-		first = false;
-		starttime = now;
+		sys_timeInitialised = true;
+		sys_timeBase = now;
 		return 0.0;
 	}
 
-	if (now < starttime)// wrapped?
+	if (now < (DWORD)sys_timeBase)// wrapped?
 	{
-		return (now / 1000.0) + (LONG_MAX - starttime / 1000.0);
+		return (now / 1000.0) + (LONG_MAX - (DWORD)sys_timeBase / 1000.0);
 	}
 
-	if (now - starttime == 0)
+	if (now - (DWORD)sys_timeBase == 0)
 	{
 		return 0.0;
 	}
 
-	return (now - starttime) / 1000.0;
+	return (now - (DWORD)sys_timeBase) / 1000.0;
 }
 
 bool Sys_Quake3DllWarningConfirmation()
