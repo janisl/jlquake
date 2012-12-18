@@ -1206,7 +1206,7 @@ void SVT3_DirectConnect(netadr_t from)
 		Info_SetValueForKey(userinfo, "ip", "localhost", MAX_INFO_STRING_Q3);
 	}
 
-	client_t temp;
+	static client_t temp;
 	client_t* newcl = &temp;
 	Com_Memset(newcl, 0, sizeof(client_t));
 
