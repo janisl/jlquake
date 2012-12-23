@@ -529,7 +529,7 @@ static void R_Register()
 	r_logFile = Cvar_Get("r_logFile", "0", CVAR_CHEAT);
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
-	r_lightmap = Cvar_Get("r_lightmap", "0", GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) ? CVAR_CHEAT : 0);
+	r_lightmap = Cvar_Get("r_lightmap", "0", CVAR_CHEAT);
 	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
 	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
 	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
@@ -555,7 +555,7 @@ static void R_Register()
 	r_ignore = Cvar_Get("r_ignore", "1", CVAR_CHEAT);
 	r_texsort = Cvar_Get("r_texsort", "1", 0);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
-	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", 0);
+	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", CVAR_CHEAT);
 	r_fullBrightColours = Cvar_Get("r_fullBrightColours", "1", 0);
 	r_drawOverBrights = Cvar_Get("r_drawOverBrights", "1", 0);
 	r_nocurves = Cvar_Get("r_nocurves", "0", CVAR_CHEAT);

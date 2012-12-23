@@ -584,5 +584,5 @@ void VQ2_Init()
 	clq2_testblend = Cvar_Get("cl_testblend", "0", 0);
 	clq2_testparticles = Cvar_Get("cl_testparticles", "0", 0);
 	clq2_testentities = Cvar_Get("cl_testentities", "0", 0);
-	clq2_testlights = Cvar_Get("cl_testlights", "0", 0);
+	clq2_testlights = Cvar_Get("cl_testlights", "0", CVAR_CHEAT);
 }

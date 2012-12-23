@@ -870,8 +870,8 @@ void SVQ2_Init()
 	q2_timeout = Cvar_Get("timeout", "125", 0);
 	q2_zombietime = Cvar_Get("zombietime", "2", 0);
 	svq2_showclamp = Cvar_Get("showclamp", "0", 0);
-	sv_paused = Cvar_Get("paused", "0", 0);
-	svq2_timedemo = Cvar_Get("timedemo", "0", 0);
+	sv_paused = Cvar_Get("paused", "0", CVAR_CHEAT);
+	svq2_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
 	svq2_enforcetime = Cvar_Get("sv_enforcetime", "0", 0);
 	allow_download = Cvar_Get("allow_download", "0", CVAR_ARCHIVE);
 	allow_download_players  = Cvar_Get("allow_download_players", "0", CVAR_ARCHIVE);

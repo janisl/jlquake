@@ -36,30 +36,6 @@ int clq2_num_weaponmodels;
 
 static bool vid_restart_requested;
 
-struct cheatvar_t
-{
-	const char* name;
-	const char* value;
-	Cvar* var;
-};
-
-static cheatvar_t cheatvars[] =
-{
-	{"timescale", "1"},
-	{"timedemo", "0"},
-	{"r_drawworld", "1"},
-	{"cl_testlights", "0"},
-	{"r_fullbright", "0"},
-	{"r_drawflat", "0"},
-	{"paused", "0"},
-	{"fixedtime", "0"},
-	{"r_lightmap", "0"},
-	{"r_saturatelighting", "0"},
-	{NULL, NULL}
-};
-
-static int numcheatvars;
-
 void CLQ2_PingServers_f()
 {
 	NET_Config(true);		// allow remote
@@ -401,7 +377,7 @@ void CLQ2_Init()
 	clq2_predict = Cvar_Get("cl_predict", "1", 0);
 	clq2_showmiss = Cvar_Get("clq2_showmiss", "0", 0);
 	clq2_vwep = Cvar_Get("cl_vwep", "1", CVAR_ARCHIVE);
-	cl_paused = Cvar_Get("paused", "0", 0);
+	cl_paused = Cvar_Get("paused", "0", CVAR_CHEAT);
 	cl_timeout = Cvar_Get("cl_timeout", "120", 0);
 	clq2_maxfps = Cvar_Get("cl_maxfps", "90", 0);
 
@@ -538,26 +514,6 @@ void CLQ2_FixCvarCheats()
 		!cl.q2_configstrings[Q2CS_MAXCLIENTS][0])
 	{
 		return;		// single player can cheat
-
 	}
-	// find all the cvars if we haven't done it yet
-	if (!numcheatvars)
-	{
-		while (cheatvars[numcheatvars].name)
-		{
-			cheatvars[numcheatvars].var = Cvar_Get(cheatvars[numcheatvars].name,
-				cheatvars[numcheatvars].value, 0);
-			numcheatvars++;
-		}
-	}
-
-	// make sure they are all set to the proper values
-	cheatvar_t* var = cheatvars;
-	for (int i = 0; i < numcheatvars; i++, var++)
-	{
-		if (String::Cmp(var->var->string, var->value))
-		{
-			Cvar_SetLatched(var->name, var->value);
-		}
-	}
+	Cvar_SetCheatState();
 }

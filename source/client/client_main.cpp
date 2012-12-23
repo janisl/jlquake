@@ -175,7 +175,7 @@ void CL_Init()
 	cl_shownet = Cvar_Get("cl_shownet", "0", CVAR_TEMP);
 	if (!(GGameType & GAME_QuakeHexen))
 	{
-		cl_timedemo = Cvar_Get("timedemo", "0", 0);
+		cl_timedemo = Cvar_Get("timedemo", "0", CVAR_CHEAT);
 	}
 
 	//
