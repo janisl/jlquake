@@ -1393,8 +1393,7 @@ void VQH_RenderView()
 	// don't allow cheats in multiplayer
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) || cl.qh_maxclients > 1)
 	{
-		Cvar_Set("r_fullbright", "0");
-		Cvar_Set("r_lightmap", "0");
+		Cvar_SetCheatState();
 		if (GGameType & GAME_QuakeWorld && !String::Atoi(Info_ValueForKey(cl.qh_serverinfo, "watervis")))
 		{
 			Cvar_Set("r_wateralpha", "1");
