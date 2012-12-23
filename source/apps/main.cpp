@@ -567,8 +567,7 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 		// a basedir or cddir needs to be set before execing
 		// config files, but we want other parms to override
 		// the settings of the config files
-		Cbuf_AddEarlyCommands(false);
-		Cbuf_Execute();
+		Com_StartupVariable(NULL);
 	}
 
 	if (GGameType & GAME_Tech3)
@@ -614,7 +613,7 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 		Cbuf_AddText("exec default.cfg\n");
 		Cbuf_AddText("exec config.cfg\n");
 
-		Cbuf_AddEarlyCommands(true);
+		Com_StartupVariable(NULL);
 		Cbuf_Execute();
 	}
 
@@ -900,7 +899,7 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	if (GGameType & GAME_Quake2)
 	{
 		// add + commands from command line
-		if (!Cbuf_AddLateCommands())
+		if (!Com_AddStartupCommands())
 		{
 			// if the user didn't give any commands, run default action
 			if (!com_dedicated->value)
@@ -977,7 +976,7 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) && com_dedicated->integer)
 	{
 		// process command line arguments
-		Cbuf_AddLateCommands();
+		Com_AddStartupCommands();
 		Cbuf_Execute();
 
 		// if a map wasn't specified on the command line, spawn start.map

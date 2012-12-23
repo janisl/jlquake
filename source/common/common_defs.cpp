@@ -1118,6 +1118,11 @@ bool Com_AddStartupCommands()
 		{
 			continue;
 		}
+		//	Allow old style command line arguments before any + argument.
+		if (!(GGameType & GAME_Tech3) && i == 0 && com_consoleLines[i][0] == '-')
+		{
+			continue;
+		}
 
 		// set commands won't override menu startup
 		if (String::NICmp(com_consoleLines[i], "set", 3))
@@ -1129,6 +1134,30 @@ bool Com_AddStartupCommands()
 	}
 
 	return added;
+}
+
+//	Adds command line parameters as script statements. Commands lead with
+// a +, and continue until a - or another +
+//	quake +prog jctest.qp +cmd amlev1
+//	quake -nosound +cmd amlev1
+void Cmd_StuffCmds_f()
+{
+	//	Go backwards because text is inserted instead of added.
+	for (int i = com_numConsoleLines - 1; i >= 0; i--)
+	{
+		if (!com_consoleLines[i] || !com_consoleLines[i][0])
+		{
+			continue;
+		}
+		//	Allow old style command line arguments before any + argument.
+		if (i == 0 && com_consoleLines[i][0] == '-')
+		{
+			continue;
+		}
+
+		Cbuf_InsertText("\n");
+		Cbuf_InsertText(com_consoleLines[i]);
+	}
 }
 
 //	Searches for command line parameters that are set commands.

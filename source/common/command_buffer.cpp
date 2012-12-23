@@ -224,104 +224,6 @@ void Cbuf_InsertFromDefer()
 	defer_text_buf[0] = 0;
 }
 
-//	Adds command line parameters as script statements
-//	Commands lead with a +, and continue until another +
-//	Set commands are added early, so they are guaranteed to be set before
-// the client and server initialize for the first time.
-//	Other commands are added late, after all initialization is complete.
-void Cbuf_AddEarlyCommands(bool Clear)
-{
-	for (int i = 0; i < COM_Argc(); i++)
-	{
-		const char* s = COM_Argv(i);
-		if (String::Cmp(s, "+set"))
-		{
-			continue;
-		}
-		Cbuf_AddText(va("set %s %s\n", COM_Argv(i + 1), COM_Argv(i + 2)));
-		if (Clear)
-		{
-			COM_ClearArgv(i);
-			COM_ClearArgv(i + 1);
-			COM_ClearArgv(i + 2);
-		}
-		i += 2;
-	}
-}
-
-//	Adds command line parameters as script statements. Commands lead with
-// a + and continue until another + or -
-//	quake +vid_ref gl +map amlev1
-//	Returns true if any late commands were added, which will keep the
-// demoloop from immediately starting
-bool Cbuf_AddLateCommands(bool Insert)
-{
-	// build the combined string to parse from
-	int s = 0;
-	int argc = COM_Argc();
-	for (int i = 1; i < argc; i++)
-	{
-		s += String::Length(COM_Argv(i)) + 1;
-	}
-	if (!s)
-	{
-		return false;
-	}
-
-	char* Text = new char[s + 1];
-	Text[0] = 0;
-	for (int i = 1; i < argc; i++)
-	{
-		String::Cat(Text, s + 1, COM_Argv(i));
-		if (i != argc - 1)
-		{
-			String::Cat(Text, s + 1, " ");
-		}
-	}
-
-	// pull out the commands
-	char* Build = new char[s + 1];
-	Build[0] = 0;
-
-	for (int i = 0; i < s - 1; i++)
-	{
-		if (Text[i] == '+')
-		{
-			i++;
-
-			int j;
-			for (j = i; (Text[j] != '+') && (Text[j] != '-') && (Text[j] != 0); j++)
-				;
-
-			char c = Text[j];
-			Text[j] = 0;
-
-			String::Cat(Build, s + 1, Text + i);
-			String::Cat(Build, s + 1, "\n");
-			Text[j] = c;
-			i = j - 1;
-		}
-	}
-
-	bool Ret = (Build[0] != 0);
-	if (Ret)
-	{
-		if (Insert)
-		{
-			Cbuf_InsertText(Build);
-		}
-		else
-		{
-			Cbuf_AddText(Build);
-		}
-	}
-
-	delete[] Text;
-	delete[] Build;
-
-	return Ret;
-}
-
 /*
 ==============================================================================
 
@@ -343,15 +245,6 @@ static void Cmd_Wait_f()
 	{
 		cmd_wait = 1;
 	}
-}
-
-//	Adds command line parameters as script statements. Commands lead with
-// a +, and continue until a - or another +
-//	quake +prog jctest.qp +cmd amlev1
-//	quake -nosound +cmd amlev1
-static void Cmd_StuffCmds_f()
-{
-	Cbuf_AddLateCommands(true);
 }
 
 //	Just prints the rest of the line to the console
