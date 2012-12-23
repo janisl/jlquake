@@ -964,12 +964,6 @@ void CL_Frame(int msec)
 				CL_UpdateParticles(Cvar_VariableValue("sv_gravity"));
 			}
 		}
-
-		//JL Might be wrong place causing no effect entities to be added. Need to check.
-		if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
-		{
-			CLH2_UpdateEffects();
-		}
 	}
 	SCR_RunCinematic();
 

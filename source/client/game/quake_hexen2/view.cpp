@@ -1322,7 +1322,7 @@ static void VQH_RenderScene()
 
 	VQH_AddViewModel();
 
-	if (GGameType & GAME_HexenWorld)
+	if (GGameType & GAME_Hexen2)
 	{
 		CLH2_UpdateEffects();
 	}
