@@ -987,7 +987,7 @@ static void Cmd_HandleUnknownCommand()
 	}
 	else if (GGameType & GAME_Quake2)
 	{
-		if (com_dedicated->integer)
+		if (com_dedicated && com_dedicated->integer)
 		{
 			common->Printf("Unknown command \"%s\"\n", Cmd_Argv(0));
 			return;
