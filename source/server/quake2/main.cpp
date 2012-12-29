@@ -231,7 +231,7 @@ static void SVQ2C_DirectConnect(const netadr_t& from)
 		}
 	}
 
-	client_t temp;
+	static client_t temp;
 	client_t* newcl = &temp;
 	Com_Memset(newcl, 0, sizeof(client_t));
 
