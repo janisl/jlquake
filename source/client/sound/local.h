@@ -26,7 +26,7 @@
 // of custom player sounds
 #define MAX_SFX                 4096
 
-#define MAX_RAW_SAMPLES         16384
+#define MAX_RAW_SAMPLES         (16384 * 2)
 
 #define PAINTBUFFER_SIZE        4096					// this is in samples
 
