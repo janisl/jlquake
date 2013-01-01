@@ -579,10 +579,10 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte* da
 	intVolumeL = 256;
 	intVolumeR = 256;
 
-	if (s_rawend[streamingIndex] < s_soundtime)
+	if (s_rawend[streamingIndex] < s_paintedtime)
 	{
-		common->DPrintf("S_RawSamples: resetting minimum: %i < %i\n", s_rawend[streamingIndex], s_soundtime);
-		s_rawend[streamingIndex] = s_soundtime;
+		common->DPrintf("S_RawSamples: resetting minimum: %i < %i\n", s_rawend[streamingIndex], s_paintedtime);
+		s_rawend[streamingIndex] = s_paintedtime;
 	}
 
 	scale = (float)rate / dma.speed;

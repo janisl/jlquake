@@ -207,7 +207,7 @@ bool QCinematicRoq::Update(int NewTime)
 	//	Wolf SP does this, I don't know if it helps anything.
 	if (played && sound)
 	{
-		if (s_rawend[CIN_STREAM] < s_soundtime && (s_soundtime - s_rawend[CIN_STREAM]) < 100)
+		if (s_rawend[CIN_STREAM] < s_paintedtime && (s_paintedtime - s_rawend[CIN_STREAM]) < 100)
 		{
 			//cinTable[currentHandle].startTime -= ( s_soundtime - s_rawend[CIN_STREAM] );
 			do
@@ -217,7 +217,7 @@ bool QCinematicRoq::Update(int NewTime)
 					return false;
 				}
 			}
-			while (s_rawend[CIN_STREAM] < s_soundtime);
+			while (s_rawend[CIN_STREAM] < s_paintedtime);
 		}
 	}
 	return true;
@@ -805,7 +805,7 @@ redump:
 			if (numQuads == -1)
 			{
 				S_Update();
-				s_rawend[CIN_STREAM] = s_soundtime;
+				s_rawend[CIN_STREAM] = s_paintedtime;
 			}
 			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
 			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f, 1.0f, CIN_STREAM);
