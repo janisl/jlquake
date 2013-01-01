@@ -3848,14 +3848,8 @@ static void MQH_Options_Key(int k)
 			break;
 		case OPT_CONSOLE:
 			m_state = m_none;
-			if (GGameType & GAME_HexenWorld)
-			{
-				in_keyCatchers &= ~KEYCATCH_UI;
-			}
-			else
-			{
-				Con_ToggleConsole_f();
-			}
+			in_keyCatchers &= ~KEYCATCH_UI;
+			Con_ToggleConsole_f();
 			break;
 		case OPT_DEFAULTS:
 			Cbuf_AddText("exec default.cfg\n");
