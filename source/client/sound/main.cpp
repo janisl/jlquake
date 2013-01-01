@@ -3350,7 +3350,6 @@ static void GetSoundtime()
 		}
 #endif
 
-#ifdef _WIN32
 		if (dma.submission_chunk < 256)
 		{
 			s_paintedtime = s_soundtime + s_mixPreStep->value * dma.speed;
@@ -3359,7 +3358,6 @@ static void GetSoundtime()
 		{
 			s_paintedtime = s_soundtime + dma.submission_chunk;
 		}
-#endif
 	}
 }
 
