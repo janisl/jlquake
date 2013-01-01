@@ -637,14 +637,12 @@ void CLQH_Init()
 
 	if (GGameType & GAME_Quake)
 	{
-		CLQ1_InitTEnts();
 		SbarQ1_Init();
 	}
 	else
 	{
 		Cmd_AddCommand("sensitivity_save", CLH2_Sensitivity_save_f);
 
-		CLH2_InitTEnts();
 		MIDI_Init();
 		SbarH2_Init();
 	}

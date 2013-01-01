@@ -786,6 +786,7 @@ static void CLQW_Sound_NextDownload()
 	}
 
 	S_BeginRegistration();
+	CLQ1_InitTEnts();
 	for (int i = 1; i < MAX_SOUNDS_Q1; i++)
 	{
 		if (!cl.qh_sound_name[i][0])
@@ -1109,6 +1110,7 @@ static void CLQ1_ParseServerInfo(QMsg& message)
 	}
 
 	S_BeginRegistration();
+	CLQ1_InitTEnts();
 	for (i = 1; i < numsounds; i++)
 	{
 		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
