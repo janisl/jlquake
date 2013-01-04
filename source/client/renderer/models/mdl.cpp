@@ -1025,7 +1025,7 @@ void Mod_FreeMdlModel(model_t* mod)
 	Mem_Free(pheader);
 }
 
-static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum, bool fullBrigts)
+static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights)
 {
 	lastposenum = posenum;
 
@@ -1070,7 +1070,11 @@ static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum, bool fullBrigt
 			order += 2;
 
 			// normals and vertexes come from the frame list
-			float l = fullBrigts ? 1 : shadedots[verts->lightnormalindex] * shadelight;
+			float l = fullBrigts ? 1 : ambientlight / 256 + (shadedots[verts->lightnormalindex] - 1) * shadelight;
+			if (overBrights)
+			{
+				l -= 1;
+			}
 			qglColor4f(r * l, g * l, b * l, model_constant_alpha);
 			qglVertex3f(verts->v[0], verts->v[1], verts->v[2]);
 			verts++;
@@ -1135,7 +1139,7 @@ static void GL_DrawAliasShadow(mesh1hdr_t* paliashdr, int posenum)
 	}
 }
 
-static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr, bool fullBrigts)
+static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights)
 {
 	if (frame >= paliashdr->numframes || frame < 0)
 	{
@@ -1152,7 +1156,7 @@ static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr, bool fullBrigts)
 		pose += (int)(tr.refdef.floatTime / interval) % numposes;
 	}
 
-	GL_DrawAliasFrame(paliashdr, pose, fullBrigts);
+	GL_DrawAliasFrame(paliashdr, pose, fullBrigts, overBrights);
 }
 
 float R_CalcEntityLight(refEntity_t* e)
@@ -1276,6 +1280,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
+	bool doOverBright = !!r_drawOverBrights->integer;
 	if (GGameType & GAME_Hexen2)
 	{
 		if (clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS)
@@ -1283,21 +1288,25 @@ void R_DrawMdlModel(trRefEntity_t* e)
 			model_constant_alpha = 1.0f;
 			GL_Cull(CT_TWO_SIDED);
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
+			doOverBright = false;
 		}
 		else if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
 		{
 			model_constant_alpha = r_wateralpha->value;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+			doOverBright = false;
 		}
 		else if (clmodel->q1_flags & H2MDLEF_TRANSPARENT)
 		{
 			model_constant_alpha = 1.0f;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+			doOverBright = false;
 		}
 		else if (clmodel->q1_flags & H2MDLEF_HOLEY)
 		{
 			model_constant_alpha = 1.0f;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+			doOverBright = false;
 		}
 		else
 		{
@@ -1322,7 +1331,13 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 	GL_TexEnv(GL_MODULATE);
 
-	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, false);
+	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, false, false);
+
+	if (doOverBright)
+	{
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
+		R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, false, true);
+	}
 
 	GL_TexEnv(GL_REPLACE);
 
@@ -1330,7 +1345,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	{
 		GL_Bind(paliashdr->fullBrightTexture[e->e.skinNum][anim]);
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-		R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, true);
+		R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr, true, false);
 	}
 
 	GL_State(GLS_DEFAULT);
