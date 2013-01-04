@@ -22,6 +22,7 @@
 #include "../../../server/public.h"
 #include "../quake_hexen2/main.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 
 #define Q1SBAR_HEIGHT     24
 

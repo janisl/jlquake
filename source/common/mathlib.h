@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __MATHLIB_H__
+#define __MATHLIB_H__
+
+#include "qcommon.h"
+
 #if idppc
 static inline float Q_rsqrt(float number)
 {
@@ -291,3 +296,5 @@ float DistanceFromLineSquaredDir(const vec3_t p, const vec3_t lp1, const vec3_t 
 float DistanceFromLineSquared(const vec3_t p, const vec3_t lp1, const vec3_t lp2);
 float Q_random(int* seed);
 extern "C" void Sys_SnapVector(float* v);
+
+#endif

@@ -19,9 +19,15 @@
 #include "../hexen2/local.h"
 #include "../../common/hexen2strings.h"
 #include "../../common/common_defs.h"
+#include "../../common/command_buffer.h"
 #include "../../client/public.h"
 #include "../worldsector.h"
 #include "../public.h"
+#include "../../common/strings.h"
+#include "../../common/message_utils.h"
+#include "../../common/game_utils.h"
+#include "../../common/player_move.h"
+#include "../../common/system.h"
 
 #define MAX_FORWARD 6
 #define ON_EPSILON      0.1			// point on plane side epsilon

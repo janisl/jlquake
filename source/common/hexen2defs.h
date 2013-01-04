@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __HEXEN2DEFS_H__
+#define __HEXEN2DEFS_H__
+
+#include "qcommon.h"
+
 #define MAX_CLIENT_STATES_H2    150
 
 // Timing macros
@@ -948,3 +953,5 @@ struct h2client_entvars_t
 #define HWPORT_CLIENT 26901
 #define HWPORT_MASTER 26900
 #define HWPORT_SERVER 26950
+
+#endif

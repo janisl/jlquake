@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __EVENT_QUEUE_H__
+#define __EVENT_QUEUE_H__
+
+#include "console_variable.h"
+
 enum sysEventType_t
 {
 	// bk001129 - make sure SE_NONE is zero
@@ -35,3 +40,5 @@ void Com_InitJournaling();
 void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
 int Com_EventLoop();
 int Com_Milliseconds();
+
+#endif

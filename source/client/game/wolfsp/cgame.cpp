@@ -24,6 +24,9 @@
 #include "cg_ui_shared.h"
 #include "../../../server/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/precompiler.h"
+#include "../../../common/system.h"
 
 static refEntityType_t clws_gameRefEntTypeToEngine[] =
 {

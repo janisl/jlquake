@@ -17,6 +17,10 @@
 #include "local.h"
 #include <time.h>
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/endian.h"
+#include "../../common/system.h"
 
 /*
 ===============================================================================

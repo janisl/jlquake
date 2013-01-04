@@ -17,6 +17,9 @@
 #include "local.h"
 #include "../../client_main.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/player_move.h"
+#include "../../../common/content_types.h"
 
 // content masks
 #define MASK_PLAYERSOLID        (BSP38CONTENTS_SOLID | BSP38CONTENTS_PLAYERCLIP | BSP38CONTENTS_WINDOW | BSP38CONTENTS_MONSTER)

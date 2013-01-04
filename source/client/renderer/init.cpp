@@ -16,6 +16,8 @@
 
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
 
 struct vidmode_t
 {

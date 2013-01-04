@@ -18,7 +18,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "strings.h"
 #include "common_defs.h"
 
 #if !defined _WIN32

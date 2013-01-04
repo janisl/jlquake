@@ -25,6 +25,7 @@
 #include "../ui/ui.h"
 #include "../ui/console.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 struct keyname_t
 {

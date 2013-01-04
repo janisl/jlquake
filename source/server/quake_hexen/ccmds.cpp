@@ -19,8 +19,11 @@
 #include "../hexen2/local.h"
 #include "../../client/public.h"
 #include "../public.h"
+#include "../../common/strings.h"
 #include "../../common/command_line_args.h"
 #include "../../common/common_defs.h"
+#include "../../common/command_buffer.h"
+#include "../../common/system.h"
 #include <time.h>
 
 #define Q1_SAVEGAME_VERSION    5

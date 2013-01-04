@@ -17,6 +17,8 @@
 #include "camera.h"
 #include "../client_main.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/player_move.h"
 
 int spec_track = 0;	// player# of who we are tracking
 int autocam = CAM_NONE;

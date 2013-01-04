@@ -182,37 +182,6 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 
 #define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }
 
-#include "Common.h"
 #include "memory.h"		//	Memory allocation
-#include "endian.h"		//	Endianes handling
-#include "array.h"		//	Dynamic array
-#include "strings.h"	//	Strings
-#include "info_string.h"
-#include "mathlib.h"
-#include "files.h"
-#include "command_buffer.h"
-#include "console_variable.h"
-#include "crc.h"
-#include "md4.h"
-#include "system.h"
-#include "clip_map/public.h"
-#include "content_types.h"
-#include "event_queue.h"
-#include "socket.h"
-#include "shareddefs.h"
-#include "quakedefs.h"
-#include "hexen2defs.h"
-#include "quake2defs.h"
-#include "quake3defs.h"
-#include "wolfdefs.h"
-#include "message.h"
-#include "huffman.h"
-#include "virtual_machine/public.h"
-#include "player_move.h"
-#include "network_channel.h"
-#include "message_utils.h"
-#include "script.h"
-#include "precompiler.h"
-#include "game_utils.h"
 
 #endif

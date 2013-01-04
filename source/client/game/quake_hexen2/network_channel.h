@@ -18,6 +18,7 @@
 #define __QUAKE_HEXEN2_NETWORK_CHANNEL_H__
 
 #include "../../../common/qcommon.h"
+#include "../../../common/network_channel.h"
 
 extern bool slistInProgress;
 extern bool slistSilent;

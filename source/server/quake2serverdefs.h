@@ -17,6 +17,7 @@
 #ifndef __QUAKE2SERVERDEFS_H__
 #define __QUAKE2SERVERDEFS_H__
 
+#include "../common/quake2defs.h"
 #include "../common/file_formats/bsp38.h"
 
 #define LATENCY_COUNTS  16

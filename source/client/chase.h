@@ -17,7 +17,7 @@
 #ifndef __CHASE_H__
 #define __CHASE_H__
 
-#include "../common/qcommon.h"
+#include "../common/console_variable.h"
 
 extern Cvar* chase_active;
 

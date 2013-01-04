@@ -17,6 +17,9 @@
 #ifndef _CM_LOCAL_H
 #define _CM_LOCAL_H
 
+#include "public.h"
+#include "../strings.h"
+
 #define CMH_NON_MAP_MASK    0xffff0000
 #define CMH_NON_MAP_SHIFT   16
 #define CMH_MODEL_MASK      0x0000ffff

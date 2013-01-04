@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "script.h"
+#include "strings.h"
 
 //longer punctuations first
 static punctuation_t default_punctuations[] =

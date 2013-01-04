@@ -17,6 +17,8 @@
 #ifndef __MATH_VECTOR_H__
 #define __MATH_VECTOR_H__
 
+#include "../../common/mathlib.h"
+
 #ifndef EQUAL_EPSILON
 #define EQUAL_EPSILON   0.001
 #endif

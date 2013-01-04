@@ -16,8 +16,11 @@
 
 #include "../../common/qcommon.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 #include "local.h"
 #include "../../common/file_formats/bsp46.h"
+#include "../../common/content_types.h"
+#include "../../common/system.h"
 
 //maximum number of reachability links
 #define AAS_MAX_REACHABILITYSIZE            128000

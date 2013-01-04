@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "precompiler.h"
+#include "mathlib.h"
+#include "strings.h"
 
 #define PATHSEPERATOR_CHAR      '/'
 

@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __WOLFDEFS_H__
+#define __WOLFDEFS_H__
+
+#include "quake3defs.h"
+#include "clip_map/public.h"
+
 #define MAX_CLIENTS_WS         128		// absolute limit
 #define MAX_CLIENTS_WM         64	// JPW NERVE back to q3ta default was 128		// absolute limit
 #define MAX_CLIENTS_ET         64	// JPW NERVE back to q3ta default was 128		// absolute limit
@@ -904,3 +910,5 @@ enum
 #define ETMASTER_SERVER_NAME    "etmaster.idsoftware.com"
 
 #define ETCONFIG_NAME   "etconfig.cfg"
+
+#endif

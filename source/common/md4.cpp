@@ -16,7 +16,7 @@
 
 /* GLOBAL.H - RSAREF types and constants */
 
-#include "qcommon.h"
+#include "md4.h"
 
 /* POINTER defines a generic pointer type */
 typedef unsigned char* POINTER;

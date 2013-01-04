@@ -20,6 +20,12 @@
 #include "../et/local.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/huffman.h"
+#include "../../common/event_queue.h"
+#include "../../common/system.h"
+#include "../../common/endian.h"
 
 #define HEARTBEAT_MSEC      300 * 1000
 #define Q3HEARTBEAT_GAME    "QuakeArena-1"

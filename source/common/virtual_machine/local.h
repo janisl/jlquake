@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#include "public.h"
+#include "../files.h"
 #include "../file_formats/qvm.h"
 
 enum opcode_t

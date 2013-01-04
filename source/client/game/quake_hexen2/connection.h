@@ -17,7 +17,8 @@
 #ifndef __QUAKE_HEXEN2_CONNECTION_H__
 #define __QUAKE_HEXEN2_CONNECTION_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/socket.h"
+#include "../../../common/message.h"
 
 extern Cvar* clqw_localid;
 

@@ -14,8 +14,15 @@
 //**
 //**************************************************************************
 
+#ifndef __CRC_H__
+#define __CRC_H__
+
+#include "qcommon.h"
+
 void CRC_Init(unsigned short* crcvalue);
 void CRC_ProcessByte(unsigned short* crcvalue, byte data);
 unsigned short CRC_Value(unsigned short crcvalue);
 unsigned short CRC_Block(const byte* start, int count);
 void CRC_ContinueProcessString(unsigned short* crc, char* data, int length);
+
+#endif

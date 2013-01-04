@@ -18,6 +18,7 @@
 #include "../et/local.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 // first four bytes of the data are always:
 //	long reliableAcknowledge;

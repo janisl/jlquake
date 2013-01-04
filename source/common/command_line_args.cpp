@@ -16,6 +16,8 @@
 
 #include "command_line_args.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
 
 #define MAX_NUM_ARGVS       50
 #define NUM_SAFE_ARGVS      4

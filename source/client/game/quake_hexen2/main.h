@@ -17,7 +17,7 @@
 #ifndef __QUAKE_HEXEN2_MAIN_H__
 #define __QUAKE_HEXEN2_MAIN_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/console_variable.h"
 
 extern Cvar* clqh_sbar;
 extern Cvar* qhw_topcolor;

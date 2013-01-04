@@ -18,6 +18,8 @@
 #include "../../public.h"
 #include "../quake_hexen2/demo.h"
 #include "../../client_main.h"
+#include "../../../common/strings.h"
+#include "../../../common/message_utils.h"
 
 //	An h2svc_signonnum has been received, perform a client side setup
 void CLH2_SignonReply()

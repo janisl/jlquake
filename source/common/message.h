@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __MESSAGE_H__
+#define __MESSAGE_H__
+
+#include "mathlib.h"
+
 class QMsg
 {
 public:
@@ -80,3 +85,5 @@ public:
 	float ReadAngle16();
 	void ReadData(void* Buffer, int Size);
 };
+
+#endif

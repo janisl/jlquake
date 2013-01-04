@@ -23,6 +23,9 @@
 #include "../cinematic/public.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/content_types.h"
 
 // MACROS ------------------------------------------------------------------
 

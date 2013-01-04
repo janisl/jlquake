@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE3DEFS_H__
+#define __QUAKE3DEFS_H__
+
+#include "mathlib.h"
+
 #define MAX_TOKEN_CHARS_Q3  1024	// max length of an individual token
 
 #define MAX_CLIENTS_Q3      64		// absolute limit
@@ -309,3 +314,5 @@ enum
 #define Q3MAX_PACKET_USERCMDS   32		// max number of q3usercmd_t in a packet
 
 #define Q3MASTER_SERVER_NAME  "master.quake3arena.com"
+
+#endif

@@ -17,7 +17,9 @@
 #ifndef __QUAKE3CLIENTDEFS_H__
 #define __QUAKE3CLIENTDEFS_H__
 
-#include "../common/qcommon.h"
+#include "../common/socket.h"
+#include "../common/shareddefs.h"
+#include "../common/quake3defs.h"
 
 //!!!!!!! Used in cgame QVM, do not change !!!!!!!
 #define CMD_BACKUP_Q3       64

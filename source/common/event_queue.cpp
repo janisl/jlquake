@@ -14,9 +14,13 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "event_queue.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
 #include "command_line_args.h"
+#include "network_channel.h"
+#include "system.h"
 #include "../client/public.h"
 #include "../server/public.h"
 

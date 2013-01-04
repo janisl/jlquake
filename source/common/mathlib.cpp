@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "mathlib.h"
 #include "common_defs.h"
 
 //	Should be const

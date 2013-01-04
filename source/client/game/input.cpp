@@ -21,6 +21,7 @@
 #include "../game/wolfmp/local.h"
 #include "../ui/ui.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 // builds an intended movement command to send to the server
 /*

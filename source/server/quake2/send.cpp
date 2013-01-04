@@ -14,9 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/system.h"
+#include "../../common/endian.h"
 
 //	Sends text across to be displayed if the level passes
 void SVQ2_ClientPrintf(client_t* cl, int level, const char* fmt, ...)

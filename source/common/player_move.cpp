@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "player_move.h"
 
 #define STOP_EPSILON    0.1
 

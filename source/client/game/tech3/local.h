@@ -19,6 +19,8 @@
 
 #include "../../quake3clientdefs.h"
 #include "../../renderer/public.h"
+#include "../../../common/network_channel.h"
+#include "../../../common/virtual_machine/public.h"
 
 //
 //	CDKey

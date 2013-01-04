@@ -17,7 +17,9 @@
 #ifndef _CLIENT_PUBLIC_H
 #define _CLIENT_PUBLIC_H
 
-#include "../common/qcommon.h"
+#include "../common/socket.h"
+#include "../common/message.h"
+#include "../common/quake3defs.h"
 
 void S_ClearSoundBuffer(bool killStreaming);
 int CLH2_GetLightStyleValue(int style);

@@ -34,6 +34,12 @@
 //**
 //**************************************************************************
 
+#ifndef __CONSOLE_VARIABLE_H__
+#define __CONSOLE_VARIABLE_H__
+
+#include "info_string.h"
+#include "files.h"
+
 #define CVAR_ARCHIVE        BIT(0)	// set to cause it to be saved to vars.rc
 									// used for system variables, not for player
 									// specific configurations
@@ -172,3 +178,5 @@ extern int cvar_modifiedFlags;
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
 // etc, variables have been modified since the last check.  The bit
 // can then be cleared to allow another change detection.
+
+#endif

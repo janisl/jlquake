@@ -19,6 +19,7 @@
 #include "../../common/file_formats/bsp29.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 Cvar* svqh_aim;
 

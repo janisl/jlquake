@@ -16,8 +16,9 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "qcommon.h"
 #include "socket_local.h"
+#include "strings.h"
+#include "console_variable.h"
 #include "system_unix.h"
 #include <errno.h>
 #include <ifaddrs.h>

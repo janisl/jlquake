@@ -18,6 +18,7 @@
 
 #include "../../qcommon.h"
 #include "../../common_defs.h"
+#include "../../content_types.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

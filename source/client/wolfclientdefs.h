@@ -17,6 +17,8 @@
 #ifndef __WOLFCLIENTDEFS_H__
 #define __WOLFCLIENTDEFS_H__
 
+#include "../common/wolfdefs.h"
+
 #define LIMBOCHAT_WIDTH_WA     140		// NERVE - SMF
 #define LIMBOCHAT_HEIGHT_WA    7		// NERVE - SMF
 

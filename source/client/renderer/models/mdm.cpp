@@ -17,6 +17,8 @@
 #include "../local.h"
 #include "skeletal_model_inlines.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/endian.h"
 
 #define LL(x) x = LittleLong(x)
 

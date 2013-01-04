@@ -14,6 +14,13 @@
 //**
 //**************************************************************************
 
+#ifndef __MD4_H__
+#define __MD4_H__
+
+#include "qcommon.h"
+
 unsigned Com_BlockChecksum(const void* Buffer, int Length);
 unsigned Com_BlockChecksumKey(const void* Buffer, int Length, int Key);
 void Com_BlockFullChecksum(const void* Buffer, int Length, unsigned char* OutBuf);
+
+#endif

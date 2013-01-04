@@ -75,9 +75,13 @@
 //		a full address and port in a string.  It is used for returning the
 //		address of a server that is not running locally.
 
-#include "qcommon.h"
+#include "network_channel.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "endian.h"
+#include "command_buffer.h"
 #include "command_line_args.h"
+#include "system.h"
 #include "../server/public.h"
 
 struct packetBuffer_t

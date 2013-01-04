@@ -17,7 +17,7 @@
 #ifndef __QUAKE2_MENU_H__
 #define __QUAKE2_MENU_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/socket.h"
 
 void MQ2_Init();
 void MQ2_ForceMenuOff();

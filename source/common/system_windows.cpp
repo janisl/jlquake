@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "system.h"
 #include "system_windows.h"
 #include "../client/public.h"
 #include <direct.h>

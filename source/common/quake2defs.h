@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE2DEFS_H__
+#define __QUAKE2DEFS_H__
+
+#include "mathlib.h"
+
 #define MAX_TOKEN_CHARS_Q2  128		// max length of an individual token
 
 #define MAX_EDICTS_Q2       1024	// must change protocol to increase more
@@ -782,3 +787,5 @@ enum
 #define Q2DF_NO_NUKES           0x00080000
 #define Q2DF_NO_SPHERES         0x00100000
 //ROGUE
+
+#endif

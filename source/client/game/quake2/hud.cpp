@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../../client_main.h"
 #include "../../ui/ui.h"
+#include "../../../common/strings.h"
 
 #define STAT_MINUS      10	// num frame for '-' stats digit
 #define CHAR_WIDTH      16

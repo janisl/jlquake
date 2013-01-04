@@ -17,6 +17,7 @@
 #ifndef __CGAME_HEXEN2_LOCAL_H__
 #define __CGAME_HEXEN2_LOCAL_H__
 
+#include "../../../common/message.h"
 #include "../../hexen2clientdefs.h"
 #include "../../sound/public.h"
 #include "../../renderer/public.h"

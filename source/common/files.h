@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __FILES_H__
+#define __FILES_H__
+
+#include "array.h"
+
 struct Cvar;
 
 #if defined __MACOS__
@@ -205,3 +210,5 @@ void FS_SetGamedirQHW(const char* dir);
 void FS_SetGamedir(const char* dir);
 void FS_ExecAutoexec();
 bool FS_ConditionalRestart(int checksumFeed);
+
+#endif

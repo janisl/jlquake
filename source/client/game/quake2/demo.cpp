@@ -16,6 +16,10 @@
 
 #include "local.h"
 #include "../../client_main.h"
+#include "../../../common/strings.h"
+#include "../../../common/command_buffer.h"
+#include "../../../common/message_utils.h"
+#include "../../../common/endian.h"
 
 //	Dumps the current net message, prefixed by the length
 void CLQ2_WriteDemoMessage(QMsg* msg, int headerBytes)

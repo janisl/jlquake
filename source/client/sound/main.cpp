@@ -24,6 +24,11 @@
 #include "../../common/file_formats/bsp29.h"
 #include "../game/quake2/local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/event_queue.h"
+#include "../../common/system.h"
+#include "../../common/endian.h"
 
 #define MAX_PLAYSOUNDS          128
 

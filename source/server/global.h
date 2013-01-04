@@ -18,6 +18,8 @@
 #define __SERVER_GLOBAL_H__
 
 #include "../common/qcommon.h"
+#include "../common/console_variable.h"
+#include "../common/network_channel.h"
 #include "../common/file_formats/md3.h"
 #include "progsvm/edict.h"
 #include "quakeserverdefs.h"

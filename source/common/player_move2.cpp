@@ -14,8 +14,9 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "player_move.h"
 #include "file_formats/bsp38.h"
+#include "content_types.h"
 
 #define MASK_WATER              (BSP38CONTENTS_WATER | BSP38CONTENTS_LAVA | BSP38CONTENTS_SLIME)
 #define MASK_CURRENT            (BSP38CONTENTS_CURRENT_0 | BSP38CONTENTS_CURRENT_90 | BSP38CONTENTS_CURRENT_180 | BSP38CONTENTS_CURRENT_270 | BSP38CONTENTS_CURRENT_UP | BSP38CONTENTS_CURRENT_DOWN)

@@ -17,7 +17,8 @@
 #ifndef __SOUND_PUBLIC_H__
 #define __SOUND_PUBLIC_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/mathlib.h"
+#include "../../common/console_variable.h"
 
 typedef int sfxHandle_t;
 

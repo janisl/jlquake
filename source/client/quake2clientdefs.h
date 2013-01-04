@@ -17,8 +17,9 @@
 #ifndef __QUAKE2CLIENTDEFS_H__
 #define __QUAKE2CLIENTDEFS_H__
 
-#include "renderer/public.h"
+#include "../common/quake2defs.h"
 #include "../common/file_formats/bsp38.h"
+#include "renderer/public.h"
 
 #define MAX_CLIENTWEAPONMODELS_Q2       20		// PGM -- upped from 16 to fit the chainfist vwep
 

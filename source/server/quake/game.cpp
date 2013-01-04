@@ -17,6 +17,8 @@
 #include "../progsvm/progsvm.h"
 #include "../quake_hexen/local.h"
 #include "local.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
 
 static void PFQ1_makestatic()
 {

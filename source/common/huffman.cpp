@@ -21,7 +21,8 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "huffman.h"
+#include "Common.h"
 
 static int bloc = 0;
 

@@ -16,8 +16,8 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "qcommon.h"
 #include "socket_local.h"
+#include "console_variable.h"
 #include <windows.h>
 #include <iphlpapi.h>
 

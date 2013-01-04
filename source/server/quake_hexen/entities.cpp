@@ -16,7 +16,9 @@
 
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../../common/strings.h"
 #include "../../common/file_formats/bsp29.h"
+#include "../../common/message_utils.h"
 
 /*
 =============================================================================

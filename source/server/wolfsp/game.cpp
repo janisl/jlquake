@@ -20,6 +20,10 @@
 #include "../botlib/public.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/precompiler.h"
+#include "../../common/system.h"
 
 wssharedEntity_t* SVWS_GentityNum(int num)
 {

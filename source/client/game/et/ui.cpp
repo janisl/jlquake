@@ -21,6 +21,9 @@
 #include "ui_public.h"
 #include "cg_ui_shared.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/precompiler.h"
+#include "../../../common/system.h"
 
 bool UIET_ConsoleCommand(int realTime)
 {

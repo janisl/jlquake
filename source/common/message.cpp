@@ -20,8 +20,11 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "message.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "huffman.h"
+#include "endian.h"
 
 static bool msgInit = false;
 static huffman_t msgHuff;

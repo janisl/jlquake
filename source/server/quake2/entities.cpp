@@ -14,8 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
 #include "local.h"
+#include "../../common/message_utils.h"
+#include "../../common/endian.h"
 
 static byte svq2_fatpvs[65536 / 8];			// 32767 is MAX_MAP_LEAFS
 

@@ -14,9 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../qcommon.h"
-#include "../common_defs.h"
 #include "local.h"
+#include "../common_defs.h"
+#include "../endian.h"
+#include "../strings.h"
+#include "../command_buffer.h"
+#include "../system.h"
 
 #define MAX_VM      3
 

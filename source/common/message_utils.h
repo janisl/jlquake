@@ -14,6 +14,15 @@
 //**
 //**************************************************************************
 
+#ifndef __MESSAGE_UTILS_H__
+#define __MESSAGE_UTILS_H__
+
+#include "message.h"
+#include "quakedefs.h"
+#include "hexen2defs.h"
+#include "quake2defs.h"
+#include "wolfdefs.h"
+
 void MSGQW_WriteDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
 void MSGQW_ReadDeltaUsercmd(QMsg* sb, qwusercmd_t* from, qwusercmd_t* cmd);
 void MSGHW_WriteUsercmd(QMsg* sb, hwusercmd_t* cmd, bool long_msg);
@@ -49,3 +58,5 @@ void MSGET_WriteDeltaPlayerstate(QMsg* msg, etplayerState_t* from, etplayerState
 void MSGET_ReadDeltaPlayerstate(QMsg* msg, etplayerState_t* from, etplayerState_t* to);
 void MSGET_PrioritiseEntitystateFields();
 void MSGET_PrioritisePlayerStateFields();
+
+#endif

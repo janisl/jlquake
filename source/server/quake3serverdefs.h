@@ -17,6 +17,10 @@
 #ifndef __QUAKE3SERVERDEFS_H__
 #define __QUAKE3SERVERDEFS_H__
 
+#include "../common/shareddefs.h"
+#include "../common/wolfdefs.h"
+#include "../common/network_channel.h"
+
 enum
 {
 	Q3GT_FFA,				// free for all

@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../../common/qcommon.h"
+#include "../../common/strings.h"
 #include "local.h"
 #include "../tech3/local.h"
 

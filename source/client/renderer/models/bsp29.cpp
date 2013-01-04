@@ -16,6 +16,9 @@
 
 #include "../local.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/content_types.h"
+#include "../../../common/endian.h"
 
 #define ANIM_CYCLE      2
 

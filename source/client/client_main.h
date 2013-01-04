@@ -18,6 +18,8 @@
 #define _CLIENT_MAIN_H
 
 #include "../common/qcommon.h"
+#include "../common/console_variable.h"
+#include "../common/network_channel.h"
 #include "sound/public.h"
 #include "renderer/public.h"
 #include "input/public.h"

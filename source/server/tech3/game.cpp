@@ -22,6 +22,8 @@
 #include "../et/local.h"
 #include "../../client/public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/event_queue.h"
 
 vm_t* gvm = NULL;							// game virtual machine
 

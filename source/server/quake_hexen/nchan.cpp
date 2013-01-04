@@ -17,6 +17,10 @@
 #include "../public.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/endian.h"
+#include "../../common/system.h"
 
 // check to see if client block will fit, if not, rotate buffers
 void SVQH_ClientReliableCheckBlock(client_t* cl, int maxsize)

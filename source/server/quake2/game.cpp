@@ -14,9 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
 #include "local.h"
 #include "../../client/public.h"
+#include "../../common/system.h"
 
 q2game_export_t* ge;
 

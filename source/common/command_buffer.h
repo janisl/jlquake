@@ -18,6 +18,11 @@
 //**
 //**************************************************************************
 
+#ifndef __COMMAND_BUFFER_H__
+#define __COMMAND_BUFFER_H__
+
+#include "qcommon.h"
+
 //==========================================================================
 //
 //	Any number of commands can be added in a frame, from several different
@@ -126,3 +131,5 @@ struct field_t
 
 void Field_Clear(field_t* Edit);
 void Field_CompleteCommand(field_t* Edit, int& acLength);
+
+#endif

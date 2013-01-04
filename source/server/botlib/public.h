@@ -17,6 +17,8 @@
 #ifndef _BOTLIB_PUBLIC_H
 #define _BOTLIB_PUBLIC_H
 
+#include "../../common/mathlib.h"
+
 //botlib error codes
 #define BLERR_NOERROR                   0	//no error
 #define BLERR_LIBRARYNOTSETUP           1	//library not setup

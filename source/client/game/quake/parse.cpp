@@ -26,6 +26,9 @@
 #include "../quake_hexen2/view.h"
 #include "../quake_hexen2/predict.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/player_move.h"
+#include "../../../common/crc.h"
 
 static const char* svcq1_strings[] =
 {

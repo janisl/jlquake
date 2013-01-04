@@ -17,7 +17,8 @@
 #ifndef __COMMON_DEFS_H__
 #define __COMMON_DEFS_H__
 
-#include "qcommon.h"
+#include "console_variable.h"
+#include "wolfdefs.h"
 
 //==========================================================================
 //

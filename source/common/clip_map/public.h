@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __CLIP_MAP_PUBLIC_H__
+#define __CLIP_MAP_PUBLIC_H__
+
+#include "../files.h"
+#include "../mathlib.h"
+
 typedef int clipHandle_t;
 
 struct q1plane_t
@@ -140,3 +146,5 @@ extern int c_pointcontents;
 extern int c_traces;
 extern int c_brush_traces;
 extern int c_patch_traces;
+
+#endif

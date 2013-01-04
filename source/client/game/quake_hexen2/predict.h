@@ -17,7 +17,7 @@
 #ifndef __QUAKE_HEXEN2_PREDICT_H__
 #define __QUAKE_HEXEN2_PREDICT_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/console_variable.h"
 #include "../../quakeclientdefs.h"
 #include "../../hexen2clientdefs.h"
 

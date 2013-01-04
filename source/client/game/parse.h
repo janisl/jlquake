@@ -17,7 +17,7 @@
 #ifndef __CGAME_PARSE_H__
 #define __CGAME_PARSE_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/message.h"
 
 void CL_ParseCenterPrint(QMsg& net_message);
 void CL_ParseStuffText(QMsg& message);

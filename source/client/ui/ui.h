@@ -17,7 +17,7 @@
 #ifndef __UI_H__
 #define __UI_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/command_buffer.h"
 #include "../renderer/public.h"
 
 #define SMALLCHAR_WIDTH     8

@@ -17,7 +17,7 @@
 #ifndef __idPlayerState3__
 #define __idPlayerState3__
 
-#include "../../common/qcommon.h"
+#include "../../common/mathlib.h"
 
 //	This is initial portion of shared entity struct that is common in all
 // Tech3 games.

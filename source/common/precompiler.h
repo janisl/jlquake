@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __PRECOMPILER_H__
+#define __PRECOMPILER_H__
+
+#include "script.h"
+
 //!!!!!!!!!!!!!!! Used by game VMs, do not change !!!!!!!!!!!!!!!!!!!!!
 #define MAX_TOKENLENGTH     1024
 
@@ -120,3 +125,5 @@ int PC_ReadTokenHandleET(int handle, etpc_token_t* pc_token);
 void PC_UnreadLastTokenHandle(int handle);
 int PC_SourceFileAndLine(int handle, char* filename, int* line);
 void PC_CheckOpenSourceHandles();
+
+#endif

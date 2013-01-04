@@ -24,6 +24,7 @@
 #include "../quake_hexen2/main.h"
 #include "../../../common/hexen2strings.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 
 #define PLAQUE_WIDTH 26
 

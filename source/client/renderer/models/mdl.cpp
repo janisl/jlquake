@@ -17,6 +17,8 @@
 #include "../../hexen2clientdefs.h"
 #include "../local.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/endian.h"
 
 #define MAX_LBM_HEIGHT      480
 

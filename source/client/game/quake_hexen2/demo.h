@@ -17,7 +17,10 @@
 #ifndef __QUAKE_HEXEN2_DEMO_H__
 #define __QUAKE_HEXEN2_DEMO_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/socket.h"
+#include "../../../common/quakedefs.h"
+#include "../../../common/hexen2defs.h"
+#include "../../../common/message.h"
 
 void CLQW_WriteDemoCmd(qwusercmd_t* pcmd);
 void CLHW_WriteDemoCmd(hwusercmd_t* pcmd);

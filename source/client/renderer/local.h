@@ -18,6 +18,8 @@
 #define _R_LOCAL_H
 
 #include "public.h"
+#include "../../common/shareddefs.h"
+#include "../../common/hexen2defs.h"
 
 #ifdef _WIN32
 #include <windows.h>

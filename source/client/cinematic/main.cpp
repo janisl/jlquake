@@ -20,6 +20,7 @@
 #include "../ui/console.h"
 #include "../sound/local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 #define MAX_VIDEO_HANDLES   16
 

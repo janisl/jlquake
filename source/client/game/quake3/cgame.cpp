@@ -19,8 +19,11 @@
 #include "../../ui/ui.h"
 #include "../../cinematic/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 #include "cg_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/precompiler.h"
+#include "../../../common/system.h"
 
 static refEntityType_t clq3_gameRefEntTypeToEngine[] =
 {

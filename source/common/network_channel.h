@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __NETWORK_CHANNEL_H__
+#define __NETWORK_CHANNEL_H__
+
+#include "socket.h"
+#include "message.h"
+
 #define MAX_MSGLEN_Q1       8192		// max length of a reliable message
 #define MAX_MSGLEN_QW       1450		// max length of a reliable message
 #define MAX_MSGLEN_H2       16384
@@ -242,3 +248,5 @@ int NET_SendUnreliableMessage(netchan_t* chan, QMsg* data);
 bool NET_CanSendMessage(netchan_t* chan);
 void NETQH_Init();
 void NETQH_Shutdown();
+
+#endif

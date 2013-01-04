@@ -17,7 +17,10 @@
 #ifndef __RENDERER_PUBLIC_H__
 #define __RENDERER_PUBLIC_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/files.h"
+#include "../../common/info_string.h"
+#include "../../common/shareddefs.h"
+#include "../../common/quake3defs.h"
 
 typedef int qhandle_t;
 

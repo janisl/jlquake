@@ -14,6 +14,14 @@
 //**
 //**************************************************************************
 
+#ifndef __PLAYER_MOVE_H__
+#define __PLAYER_MOVE_H__
+
+#include "clip_map/public.h"
+#include "quakedefs.h"
+#include "hexen2defs.h"
+#include "quake2defs.h"
+
 #define STEPSIZE        18
 
 #define MAX_FLY_MOVE_CLIP_PLANES    5
@@ -154,3 +162,5 @@ void PMQH_PlayerMove();
 extern float pmq2_airaccelerate;
 
 void PMQ2_Pmove(q2pmove_t* pmove);
+
+#endif

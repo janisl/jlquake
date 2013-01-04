@@ -14,5 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __GAME_UTILS_H__
+#define __GAME_UTILS_H__
+
+#include "mathlib.h"
+
 void VQH_InitRollCvars();
 float VQH_CalcRoll(const vec3_t angles, const vec3_t velocity);
+
+#endif

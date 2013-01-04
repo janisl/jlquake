@@ -15,11 +15,20 @@
 //**************************************************************************
 
 #include "../common/qcommon.h"
-#include "../server/public.h"
-#include "../client/public.h"
-#include "../common/hexen2strings.h"
-#include "../common/command_line_args.h"
 #include "../common/common_defs.h"
+#include "../common/strings.h"
+#include "../common/command_line_args.h"
+#include "../common/command_buffer.h"
+#include "../common/system.h"
+#include "../common/network_channel.h"
+#include "../common/hexen2strings.h"
+#include "../common/virtual_machine/public.h"
+#include "../common/event_queue.h"
+#include "../common/quakedefs.h"
+#include "../common/hexen2defs.h"
+#include "../common/endian.h"
+#include "../client/public.h"
+#include "../server/public.h"
 #include "main.h"
 
 //======================= WIN32 DEFINES =================================

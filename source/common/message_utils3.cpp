@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "message_utils.h"
 #include "common_defs.h"
 
 #define LOG(x) if (cl_shownet && cl_shownet->integer == 4) { common->Printf("%s ", x); };

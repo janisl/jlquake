@@ -18,6 +18,7 @@
 #define _TECH3_LOCAL_H
 
 #include "../global.h"
+#include "../../common/virtual_machine/public.h"
 
 //
 //	Bot

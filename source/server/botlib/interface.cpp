@@ -16,6 +16,7 @@
 
 #include "../../common/qcommon.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 #include "local.h"
 #include "ai_weight.h"
 #include "../global.h"

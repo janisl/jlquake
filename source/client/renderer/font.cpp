@@ -67,6 +67,8 @@
 
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/endian.h"
 #include <freetype/ftsystem.h>
 #include <freetype/ftimage.h>
 #include <freetype/freetype.h>

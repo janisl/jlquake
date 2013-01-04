@@ -19,6 +19,7 @@
 
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/content_types.h"
 
 // MACROS ------------------------------------------------------------------
 

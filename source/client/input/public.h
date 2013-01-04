@@ -17,7 +17,7 @@
 #ifndef __INPUT_PUBLIC__H__
 #define __INPUT_PUBLIC__H__
 
-#include "../../common/qcommon.h"
+#include "../../common/console_variable.h"
 
 #define MAX_KEYS        256
 

@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../../server/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/endian.h"
 
 // first 12 bytes of the data are always:
 //  long serverId;

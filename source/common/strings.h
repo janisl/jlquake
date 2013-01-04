@@ -18,6 +18,11 @@
 //**
 //**************************************************************************
 
+#ifndef __STRINGS_H__
+#define __STRINGS_H__
+
+#include "array.h"
+
 class String
 {
 private:
@@ -434,3 +439,5 @@ char* va(const char* Format, ...) id_attribute((format(printf, 1, 2)));
 #define _vsnprintf use_Q_vsnprintf
 #define vsnprintf use_Q_vsnprintf
 int Q_vsnprintf(char* dest, int size, const char* fmt, va_list argptr);
+
+#endif

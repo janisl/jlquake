@@ -17,6 +17,7 @@
 #ifndef __CGAME_QUAKE_LOCAL_H__
 #define __CGAME_QUAKE_LOCAL_H__
 
+#include "../../../common/message.h"
 #include "../../quakeclientdefs.h"
 #include "../../renderer/public.h"
 

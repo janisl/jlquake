@@ -17,7 +17,7 @@
 #ifndef __QUAKE_HEXEN2_PARSE_H__
 #define __QUAKE_HEXEN2_PARSE_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/message.h"
 
 void CLQH_ParseTime(QMsg& message);
 void CLQH_ParseDisconnect();

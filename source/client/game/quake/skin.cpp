@@ -16,6 +16,8 @@
 
 #include "local.h"
 #include "../../client_main.h"
+#include "../../../common/strings.h"
+#include "../../../common/command_buffer.h"
 
 #define MAX_CACHED_SKINS        128
 

@@ -18,6 +18,11 @@
 //**
 //**************************************************************************
 
+#ifndef __ARRAY_H__
+#define __ARRAY_H__
+
+#include "Common.h"
+
 #ifdef MEM_DEBUG_NEW
 #undef new
 #endif
@@ -245,4 +250,6 @@ private:
 
 #ifdef MEM_DEBUG_NEW
 #define new MEM_DEBUG_NEW
+#endif
+
 #endif

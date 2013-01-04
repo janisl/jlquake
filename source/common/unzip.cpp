@@ -23,7 +23,8 @@
  *
  *****************************************************************************/
 
-#include "qcommon.h"
+#include "strings.h"
+#include "endian.h"
 #include "unzip.h"
 
 

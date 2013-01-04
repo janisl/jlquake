@@ -17,6 +17,8 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/player_move.h"
+#include "../../common/content_types.h"
 
 //	Returns false if any part of the bottom of the entity is off an edge that
 // is not a staircase.

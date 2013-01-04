@@ -16,6 +16,7 @@
 
 #include "../../common/qcommon.h"
 #include "../../common/common_defs.h"
+#include "../../common/content_types.h"
 #include "local.h"
 
 aas_settings_t aassettings;

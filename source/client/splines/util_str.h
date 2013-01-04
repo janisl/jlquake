@@ -19,6 +19,8 @@
 #ifndef __UTIL_STR_H__
 #define __UTIL_STR_H__
 
+#include "../../common/strings.h"
+
 class strdata
 {
 public:

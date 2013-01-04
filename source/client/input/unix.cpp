@@ -16,6 +16,10 @@
 
 #include "public.h"
 #include "keycodes.h"
+#include "../../common/strings.h"
+#include "../../common/event_queue.h"
+#include "../../common/command_buffer.h"
+#include "../../common/system.h"
 #include "../public.h"
 #include "../renderer/local.h"
 #include "../unix_shared.h"

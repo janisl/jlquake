@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#include "../../common/player_move.h"
+
 // game.h -- game dll information visible to server
 
 #define Q2GAME_API_VERSION  3

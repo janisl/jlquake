@@ -17,7 +17,8 @@
 #ifndef __CGAME_INPUT_H__
 #define __CGAME_INPUT_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/mathlib.h"
+#include "../../common/console_variable.h"
 
 struct in_usercmd_t
 {

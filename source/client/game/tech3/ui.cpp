@@ -23,6 +23,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 
 vm_t* uivm;
 

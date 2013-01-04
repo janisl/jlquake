@@ -18,6 +18,7 @@
 #include "local.h"
 #include "../worldsector.h"
 #include "../../common/common_defs.h"
+#include "../../common/content_types.h"
 
 /*
 

@@ -16,6 +16,7 @@
 
 #include "../common/qcommon.h"
 #include "../common/common_defs.h"
+#include "../common/command_buffer.h"
 #include "../client/public.h"
 
 void S_ClearSoundBuffer(bool killStreaming)

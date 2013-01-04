@@ -18,6 +18,7 @@
 
 #include "public.h"
 #include "keycodes.h"
+#include "../../common/event_queue.h"
 #include "../public.h"
 #include "../windows_shared.h"
 #define DIRECTINPUT_VERSION 0x0300

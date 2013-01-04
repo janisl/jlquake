@@ -17,7 +17,7 @@
 #ifndef __CLIENT_TRANSLATE_H__
 #define __CLIENT_TRANSLATE_H__
 
-#include "../common/qcommon.h"
+#include "../common/console_variable.h"
 
 enum
 {

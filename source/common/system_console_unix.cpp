@@ -23,6 +23,8 @@
 
 #include "qcommon.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
 #include "system_unix.h"
 #include <signal.h>
 #include <unistd.h>

@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../../public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2

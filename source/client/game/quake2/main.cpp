@@ -20,6 +20,10 @@
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/event_queue.h"
+#include "../../../common/system.h"
+#include "../../../common/endian.h"
 
 Cvar* q2_hand;
 Cvar* clq2_footsteps;

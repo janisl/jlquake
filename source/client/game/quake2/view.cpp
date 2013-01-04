@@ -20,6 +20,8 @@
 #include "../particles.h"
 #include "../dynamic_lights.h"
 #include "../light_styles.h"
+#include "../../../common/strings.h"
+#include "../../../common/system.h"
 
 static Cvar* clq2_showclamp;
 static Cvar* clq2_gun;

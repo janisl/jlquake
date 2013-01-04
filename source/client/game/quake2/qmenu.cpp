@@ -16,6 +16,8 @@
 
 #include "qmenu.h"
 #include "../../ui/ui.h"
+#include "../../../common/strings.h"
+#include "../../../common/system.h"
 
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16

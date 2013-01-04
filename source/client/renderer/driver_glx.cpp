@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "local.h"
+#include "../../common/strings.h"
 #include "../unix_shared.h"
 #include <X11/extensions/xf86vmode.h>
 #include <X11/extensions/Xxf86dga.h>

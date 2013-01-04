@@ -23,6 +23,10 @@
 #include "../quake_hexen2/predict.h"
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/message_utils.h"
+#include "../../../common/game_utils.h"
+#include "../../../common/player_move.h"
 
 Cvar* cl_doubleeyes;
 

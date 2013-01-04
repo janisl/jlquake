@@ -19,6 +19,9 @@
 #include "../../ui/ui.h"
 #include "menu.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/system.h"
+#include "../../../common/endian.h"
 
 struct PollProcedure
 {

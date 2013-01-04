@@ -21,6 +21,7 @@
 #include "../et/local.h"
 #include "../worldsector.h"
 #include "../../common/common_defs.h"
+#include "../../common/content_types.h"
 
 struct q3moveclip_t
 {

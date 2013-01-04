@@ -36,6 +36,9 @@
 #include "cinematic/public.h"
 #include "../server/public.h"
 #include "../common/common_defs.h"
+#include "../common/strings.h"
+#include "../common/player_move.h"
+#include "../common/system.h"
 
 Cvar* cl_inGameVideo;
 

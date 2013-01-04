@@ -18,6 +18,7 @@
 #define _SND_LOCAL_H
 
 #include "public.h"
+#include "../../common/wolfdefs.h"
 
 #define WAV_FORMAT_PCM          1
 

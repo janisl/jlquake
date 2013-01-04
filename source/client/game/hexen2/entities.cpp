@@ -22,6 +22,10 @@
 #include "../quake_hexen2/predict.h"
 #include "../../chase.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/message_utils.h"
+#include "../../../common/game_utils.h"
+#include "../../../common/player_move.h"
 #include "../../../common/file_formats/spr.h"
 
 #define H2MAX_EXTRA_TEXTURES 156	// 255-100+1

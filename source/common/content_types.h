@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __CONTENT_TYPES_H__
+#define __CONTENT_TYPES_H__
+
 //==========================================================================
 //
 //	Quake content types
@@ -135,3 +138,5 @@
 //	Only in RTCW single player.
 #define BSP47CONTENTS_AI_NOSIGHT     0x1000	// AI cannot see through this
 #define BSP47CONTENTS_CLIPSHOT       0x2000	// bullets hit this
+
+#endif

@@ -17,6 +17,8 @@
 #ifndef _RENDER_CVARS_H
 #define _RENDER_CVARS_H
 
+#include "../../common/console_variable.h"
+
 extern Cvar* r_logFile;					// number of frames to emit GL logs
 extern Cvar* r_verbose;					// used for verbose debug spew
 

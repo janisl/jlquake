@@ -17,7 +17,8 @@
 #ifndef __HEXEN2CLIENTDEFS_H__
 #define __HEXEN2CLIENTDEFS_H__
 
-#include "../common/qcommon.h"
+#include "../common/quakedefs.h"
+#include "../common/hexen2defs.h"
 
 //	.MDL model effect flags.
 enum

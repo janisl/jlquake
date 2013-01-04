@@ -18,6 +18,7 @@
 #include "../quake_hexen/local.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 Cvar* sv_ce_scale;
 Cvar* sv_ce_max_size;

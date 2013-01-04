@@ -18,6 +18,7 @@
 #include "local.h"
 #include "../hexen2/local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 
 unsigned clients_multicast;
 

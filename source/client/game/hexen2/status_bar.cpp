@@ -22,6 +22,7 @@
 #include "../quake_hexen2/menu.h"
 #include "../../../server/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 
 #define STAT_MINUS 10	// num frame for '-' stats digit
 

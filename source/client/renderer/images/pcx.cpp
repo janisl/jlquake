@@ -22,6 +22,7 @@
 
 #include "../local.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/endian.h"
 
 // MACROS ------------------------------------------------------------------
 

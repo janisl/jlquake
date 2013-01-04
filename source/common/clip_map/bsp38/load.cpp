@@ -17,6 +17,10 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "../../qcommon.h"
+#include "../../endian.h"
+#include "../../console_variable.h"
+#include "../../content_types.h"
+#include "../../md4.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

@@ -160,10 +160,17 @@ or configs will never get loaded from disk!
 */
 //**************************************************************************
 
-#include "qcommon.h"
+#include "files.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
 #include "unzip.h"
 #include "command_line_args.h"
+#include "system.h"
+#include "event_queue.h"
+#include "md4.h"
+#include "crc.h"
+#include "endian.h"
 #include "../client/public.h"
 
 // number of id paks that will never be autodownloaded from baseq3

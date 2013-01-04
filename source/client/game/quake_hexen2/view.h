@@ -17,7 +17,7 @@
 #ifndef __QUAKE_HEXEN2_VIEW_H__
 #define __QUAKE_HEXEN2_VIEW_H__
 
-#include "../../../common/qcommon.h"
+#include "../../../common/message.h"
 
 void VQH_ParseDamage(QMsg& message);
 void VQH_RenderView();

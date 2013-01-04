@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __SHAREDDEFS_H__
+#define __SHAREDDEFS_H__
+
 //
 //	!!! Used in refdef which is used in Quake 3 VMs, Do not change!
 //
@@ -63,3 +66,5 @@
 #define PRINT_CHAT          3		// chat messages
 //	HexenWorld only
 #define PRINT_SOUND         4		// says a sound
+
+#endif

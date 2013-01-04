@@ -17,6 +17,7 @@
 #include "../common/qcommon.h"
 #include "../common/system_unix.h"
 #include "../common/common_defs.h"
+#include "../common/strings.h"
 #include "main.h"
 #include <unistd.h>
 #include <fcntl.h>

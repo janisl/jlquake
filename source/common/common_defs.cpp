@@ -15,6 +15,13 @@
 //**************************************************************************
 
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
+#include "network_channel.h"
+#include "system.h"
+#include "event_queue.h"
+#include "crc.h"
+#include "endian.h"
 #include <time.h>
 #include "../client/public.h"
 #include "../server/public.h"

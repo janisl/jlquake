@@ -37,8 +37,12 @@ to the new value before sending out any replies.
 
 */
 
-#include "qcommon.h"
+#include "network_channel.h"
 #include "common_defs.h"
+#include "endian.h"
+#include "strings.h"
+#include "huffman.h"
+#include "system.h"
 
 struct delaybuf_t
 {

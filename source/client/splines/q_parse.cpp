@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
+#include "../../common/strings.h"
+#include "../../common/quake3defs.h"
+#include "../../common/files.h"
 #include "q_parse.h"
 
 #define MAX_PARSE_INFO  16

@@ -15,6 +15,9 @@
 //**************************************************************************
 
 #include "progsvm.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/console_variable.h"
 #include "../global.h"
 
 static char pr_string_temp[128];

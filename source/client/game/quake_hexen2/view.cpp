@@ -25,6 +25,11 @@
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/game_utils.h"
+#include "../../../common/player_move.h"
+#include "../../../common/content_types.h"
+#include "../../../common/system.h"
 
 //	The view is allowed to move slightly from it's true position for bobbing,
 // but if it exceeds 8 pixels linear distance (spherical, not box), the list

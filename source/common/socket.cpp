@@ -16,9 +16,10 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "qcommon.h"
-#include "common_defs.h"
 #include "socket_local.h"
+#include "common_defs.h"
+#include "strings.h"
+#include "endian.h"
 
 // MACROS ------------------------------------------------------------------
 

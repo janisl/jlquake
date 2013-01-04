@@ -18,6 +18,7 @@
 #define _BOTLIB_LOCAL_H
 
 #include "public.h"
+#include "../../common/precompiler.h"
 
 #define BOTFILESBASEFOLDER      "botfiles"
 

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __INFO_STRING_H__
+#define __INFO_STRING_H__
+
+#include "qcommon.h"
+
 #define BIG_INFO_STRING     8192	// used for system info key only
 #define BIG_INFO_KEY        8192
 #define BIG_INFO_VALUE      8192
@@ -30,3 +35,5 @@ void Info_SetValueForKey(char* S, const char* Key, const char* Value,
 bool Info_Validate(const char* S);
 void Info_NextPair(const char** s, char* key, char* value);
 void Info_Print(const char* s);
+
+#endif

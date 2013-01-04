@@ -14,8 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/message_utils.h"
 #include "local.h"
 #include "../public.h"
 

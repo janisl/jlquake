@@ -19,6 +19,9 @@
 #include "../worldsector.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/crc.h"
 
 char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];	// local game info
 

@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "game_utils.h"
+#include "console_variable.h"
 
 static Cvar* cl_rollspeed;
 static Cvar* cl_rollangle;

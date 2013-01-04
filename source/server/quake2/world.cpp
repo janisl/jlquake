@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../../common/qcommon.h"
+#include "../../common/content_types.h"
 #include "local.h"
 #include "../worldsector.h"
 

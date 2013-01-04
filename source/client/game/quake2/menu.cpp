@@ -23,6 +23,8 @@
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/system.h"
 
 #define NUM_CURSOR_FRAMES 15
 

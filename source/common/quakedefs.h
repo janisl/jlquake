@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKEDEFS_H__
+#define __QUAKEDEFS_H__
+
+#include "mathlib.h"
+
 #define MAX_EDICTS_QH       768			// FIXME: ouch! ouch! ouch!
 
 // entity effects
@@ -424,3 +429,5 @@ struct qwpacket_entities_t
 #define QWPORT_CLIENT 27001
 #define QWPORT_MASTER 27000
 #define QWPORT_SERVER 27500
+
+#endif

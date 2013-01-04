@@ -17,6 +17,9 @@
 #include "public.h"
 #include "q_parse.h"
 #include "splines.h"
+#include "../../common/command_buffer.h"
+#include "../../common/strings.h"
+#include "../../common/files.h"
 
 // TTimo
 // handy stuff when tracking isnan problems

@@ -34,6 +34,9 @@ solid_edge items only clip against bsp models.
 #include "local.h"
 #include "../../client/public.h"
 #include "../../common/common_defs.h"
+#include "../../common/game_utils.h"
+#include "../../common/player_move.h"
+#include "../../common/content_types.h"
 
 Cvar* svqh_gravity;
 Cvar* svqh_maxspeed;

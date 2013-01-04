@@ -17,6 +17,7 @@
 #include "particles.h"
 #include "../client_main.h"
 #include "../../common/common_defs.h"
+#include "../../common/content_types.h"
 
 cparticle_t particles[MAX_PARTICLES];
 int cl_numparticles = MAX_PARTICLES;

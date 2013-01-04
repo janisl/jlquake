@@ -15,8 +15,10 @@
 //**************************************************************************
 // cvar.c -- dynamic variable tracking
 
-#include "qcommon.h"
+#include "console_variable.h"
 #include "common_defs.h"
+#include "strings.h"
+#include "command_buffer.h"
 #include "../server/public.h"
 #include "../client/public.h"
 

@@ -17,7 +17,9 @@
 #ifndef __PROGSVM_EDICT_H__
 #define __PROGSVM_EDICT_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/console_variable.h"
+#include "../../common/quakedefs.h"
+#include "../../common/hexen2defs.h"
 #include "../link.h"
 
 #define MAX_ENT_LEAFS   16

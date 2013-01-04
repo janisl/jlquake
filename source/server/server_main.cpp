@@ -20,6 +20,8 @@
 #include "quake2/local.h"
 #include "tech3/local.h"
 #include "../common/common_defs.h"
+#include "../common/strings.h"
+#include "../common/command_buffer.h"
 
 serverStatic_t svs;					// persistant server info
 server_t sv;						// local server

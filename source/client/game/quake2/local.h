@@ -17,6 +17,7 @@
 #ifndef __CGAME_QUAKE2_LOCAL_H__
 #define __CGAME_QUAKE2_LOCAL_H__
 
+#include "../../../common/message.h"
 #include "../../quake2clientdefs.h"
 #include "../../sound/public.h"
 

@@ -27,6 +27,8 @@
 #include "../quake_hexen2/predict.h"
 #include "../../../server/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/player_move.h"
 #include "../../../common/hexen2strings.h"
 
 bool clhw_siege;

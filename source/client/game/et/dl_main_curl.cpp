@@ -21,8 +21,9 @@
 
 #include <curl/curl.h>
 
-#include "../../../common/qcommon.h"
 #include "dl_public.h"
+#include "../../../common/strings.h"
+#include "../../../common/console_variable.h"
 
 #define APP_NAME        "ID_DOWNLOAD"
 #define APP_VERSION     "2.0"

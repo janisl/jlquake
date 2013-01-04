@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __VIRTUAL_MACHINE_PUBLIC_H__
+#define __VIRTUAL_MACHINE_PUBLIC_H__
+
+#include "../qcommon.h"
+
 enum vmInterpret_t
 {
 	VMI_NATIVE,
@@ -65,3 +70,5 @@ inline int FloatAsInt(float f)
 
 	return temp;
 }
+
+#endif

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __SOCKET_H__
+#define __SOCKET_H__
+
+#include "console_variable.h"
+
 enum netadrtype_t
 {
 	NA_BOT,
@@ -71,3 +76,5 @@ extern Cvar* net_socksServer;
 extern Cvar* net_socksPort;
 extern Cvar* net_socksUsername;
 extern Cvar* net_socksPassword;
+
+#endif

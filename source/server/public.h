@@ -17,7 +17,9 @@
 #ifndef _SERVER_PUBLIC_H
 #define _SERVER_PUBLIC_H
 
-#include "../common/qcommon.h"
+#include "../common/socket.h"
+#include "../common/message.h"
+#include "../common/wolfdefs.h"
 
 extern int svh2_kingofhill;
 extern Cvar* svqh_coop;

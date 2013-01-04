@@ -18,8 +18,11 @@
 #include "../../ui/ui.h"
 #include "../../cinematic/public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/precompiler.h"
+#include "../../../common/system.h"
 
 bool UIQ3_ConsoleCommand(int realTime)
 {

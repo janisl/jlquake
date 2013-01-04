@@ -18,6 +18,8 @@
 
 #include "../qcommon.h"
 #include "../common_defs.h"
+#include "../endian.h"
+#include "../console_variable.h"
 #include "local.h"
 #include "../file_formats/bsp29.h"
 #include "../file_formats/bsp38.h"

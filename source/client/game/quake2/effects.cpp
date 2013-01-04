@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
+#include "../../../common/strings.h"
 
 // this file is included in both the game dll and quake2,
 // the game needs it to source shot locations, the client

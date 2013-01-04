@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __SCRIPT_H__
+#define __SCRIPT_H__
+
+#include "files.h"
+
 //!!!!!!!!!!!!!!! Used by game VMs, do not change !!!!!!!!!!!!!!!!!!!!!
 //token types
 #define TT_STRING           1			// string
@@ -173,3 +178,5 @@ bool EndOfScript(script_t* script);
 void StripDoubleQuotes(char* string);
 //remove any leading and trailing single quotes from the token
 void StripSingleQuotes(char* string);
+
+#endif

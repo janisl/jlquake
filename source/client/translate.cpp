@@ -18,6 +18,8 @@
 #include "client_main.h"
 #include "public.h"
 #include "../common/common_defs.h"
+#include "../common/strings.h"
+#include "../common/command_buffer.h"
 
 #define MAX_TRANS_STRING    4096
 #define MAX_VA_STRING       32000

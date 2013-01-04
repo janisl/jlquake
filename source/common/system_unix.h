@@ -17,6 +17,8 @@
 #ifndef _SYSTEM_UNIX_H
 #define _SYSTEM_UNIX_H
 
+#include "console_variable.h"
+
 #define MAX_CMD 1024
 
 void Sys_DoStartProcess(const char* cmdline);

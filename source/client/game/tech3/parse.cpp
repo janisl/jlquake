@@ -21,6 +21,10 @@
 #include "../et/local.h"
 #include "../et/dl_public.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/command_buffer.h"
+#include "../../../common/message_utils.h"
+#include "../../../common/content_types.h"
 
 static int entLastVisible[MAX_CLIENTS_WM];
 

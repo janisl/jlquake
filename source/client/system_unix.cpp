@@ -15,6 +15,10 @@
 //**************************************************************************
 
 #include "system.h"
+#include "../common/system.h"
+#include "../common/strings.h"
+#include "../common/command_buffer.h"
+#include "../common/console_variable.h"
 #include "unix_shared.h"
 #include <unistd.h>
 #include <errno.h>

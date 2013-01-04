@@ -17,6 +17,7 @@
 #include "predict.h"
 #include "../../client_main.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/player_move.h"
 
 struct predicted_player
 {

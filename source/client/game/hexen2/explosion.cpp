@@ -18,6 +18,8 @@
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
+#include "../../../common/player_move.h"
+#include "../../../common/content_types.h"
 
 #define FRANDOM() (rand() * (1.0 / RAND_MAX))
 

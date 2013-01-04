@@ -19,6 +19,10 @@
 #include "g_public.h"
 #include "../botlib/public.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../../common/precompiler.h"
+#include "../../common/system.h"
 
 wmsharedEntity_t* SVWM_GentityNum(int num)
 {

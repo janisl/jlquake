@@ -16,6 +16,10 @@
 
 #include "../../common/qcommon.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
+#include "../../common/content_types.h"
+#include "../../common/crc.h"
+#include "../../common/endian.h"
 #include "local.h"
 #include "../tech3/local.h"
 

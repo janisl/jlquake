@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __HUFFMAN_H__
+#define __HUFFMAN_H__
+
+#include "message.h"
+
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined
  * by the location of a node within a doubly-linked list */
@@ -68,3 +73,5 @@ void Huff_Decompress(QMsg* buf, int offset);
 void HuffInit();
 void HuffDecode(unsigned char* in, unsigned char* out, int inlen, int* outlen);
 void HuffEncode(unsigned char* in,unsigned char* out,int inlen,int* outlen);
+
+#endif

@@ -17,11 +17,16 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../common/common_defs.h"
+#include "../../common/strings.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
 #include "../hexen2/local.h"
 #include "../public.h"
+#include "../../common/command_buffer.h"
 #include "../../common/command_line_args.h"
+#include "../../common/game_utils.h"
+#include "../../common/player_move.h"
+#include "../../common/system.h"
 
 #define HEARTBEAT_SECONDS   300
 

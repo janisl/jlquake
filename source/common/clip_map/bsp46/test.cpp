@@ -18,6 +18,7 @@
 
 #include "../../qcommon.h"
 #include "../../common_defs.h"
+#include "../../console_variable.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

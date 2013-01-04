@@ -14,8 +14,10 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "player_move.h"
 #include "common_defs.h"
+#include "shareddefs.h"
+#include "content_types.h"
 
 struct qhpml_t
 {

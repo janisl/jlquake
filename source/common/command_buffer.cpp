@@ -14,8 +14,9 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "command_buffer.h"
 #include "common_defs.h"
+#include "strings.h"
 #include "command_line_args.h"
 #include "../client/public.h"
 #include "../server/public.h"

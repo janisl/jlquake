@@ -20,6 +20,8 @@
 #include "../parse.h"
 #include "../light_styles.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/command_buffer.h"
 
 const char* svcq2_strings[256] =
 {

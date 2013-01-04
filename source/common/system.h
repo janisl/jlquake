@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __SYSTEM_H__
+#define __SYSTEM_H__
+
+#include "qcommon.h"
+
 int Sys_StatFile(const char* ospath);
 void Sys_Mkdir(const char* path);
 int Sys_Rmdir(const char* path);
@@ -47,3 +52,5 @@ const char* Sys_GetCurrentUser();
 void Sys_Init();
 void Sys_Sleep(int msec);
 int Sys_GetCurrentProcessId();
+
+#endif

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __ENDIAN_H__
+#define __ENDIAN_H__
+
+#include "qcommon.h"
+
 //	Endianess handling
 extern bool GBigEndian;
 
@@ -25,3 +30,5 @@ extern float (* LittleFloat)(float);
 extern float (* BigFloat)(float);
 
 void Com_InitByteOrder();
+
+#endif

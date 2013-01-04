@@ -14,6 +14,10 @@
 //**
 //**************************************************************************
 
+#ifndef __idCommon__
+#define __idCommon__
+
+#include "qcommon.h"
 #include <setjmp.h>
 
 class idCommon : public Interface
@@ -44,3 +48,5 @@ extern idCommon* common;
 
 extern char com_errorMessage[MAXPRINTMSG];
 extern jmp_buf abortframe;
+
+#endif

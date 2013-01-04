@@ -24,6 +24,10 @@
 #include "../../../common/file_formats/md2.h"
 #include "menu.h"
 #include "../../../common/common_defs.h"
+#include "../../../common/strings.h"
+#include "../../../common/message_utils.h"
+#include "../../../common/system.h"
+#include "../../../common/endian.h"
 
 #define PLAYER_MULT 5
 

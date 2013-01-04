@@ -17,7 +17,7 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
-#include "../../common/qcommon.h"
+#include "../../common/mathlib.h"
 
 #define NUM_CON_TIMES   4
 #define CON_TEXTSIZE    32768
