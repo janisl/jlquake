@@ -271,6 +271,7 @@ void idCommonLocal::VError(int code, const char* format, va_list argPtr)
 				Sys_Error("Host_EndGame: %s\n", com_errorMessage);		// dedicated servers exit
 			}
 			CLQH_OnEndGame();
+			com_errorEntered = false;
 		}
 		longjmp(abortframe, -1);
 	}
