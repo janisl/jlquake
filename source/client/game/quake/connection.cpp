@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../../client_main.h"
 #include "../../public.h"
+#include "../../../common/common_defs.h"
 #include "../quake_hexen2/demo.h"
 #include "../quake_hexen2/main.h"
 

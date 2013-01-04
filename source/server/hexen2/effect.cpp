@@ -17,6 +17,7 @@
 #include "../progsvm/progsvm.h"
 #include "../quake_hexen/local.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 Cvar* sv_ce_scale;
 Cvar* sv_ce_max_size;

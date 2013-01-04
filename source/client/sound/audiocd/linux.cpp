@@ -30,6 +30,8 @@
 #include <linux/cdrom.h>
 
 #include "../public.h"
+#include "../../../common/common_defs.h"
+#include "../../../common/command_line_args.h"
 
 // MACROS ------------------------------------------------------------------
 

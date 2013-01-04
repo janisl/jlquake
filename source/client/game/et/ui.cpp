@@ -20,6 +20,7 @@
 #include "../../cinematic/public.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/common_defs.h"
 
 bool UIET_ConsoleCommand(int realTime)
 {

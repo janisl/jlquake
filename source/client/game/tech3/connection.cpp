@@ -22,6 +22,7 @@
 #include "../../ui/console.h"
 #include "../../../server/public.h"
 #include "../et/dl_public.h"
+#include "../../../common/common_defs.h"
 
 //	Create a new usercmd_t structure for this frame
 static void CLT3_CreateNewCommands()

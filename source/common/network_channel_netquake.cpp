@@ -76,6 +76,7 @@
 //		address of a server that is not running locally.
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "command_line_args.h"
 #include "../server/public.h"
 

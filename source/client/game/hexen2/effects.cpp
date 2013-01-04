@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
+#include "../../../common/common_defs.h"
 #include "../../../common/Hexen2EffectsRandom.h"
 
 effect_entity_t EffectEntities[MAX_EFFECT_ENTITIES_H2];

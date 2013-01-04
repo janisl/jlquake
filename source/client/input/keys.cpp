@@ -24,6 +24,7 @@
 #include "../game/et/local.h"
 #include "../ui/ui.h"
 #include "../ui/console.h"
+#include "../../common/common_defs.h"
 
 struct keyname_t
 {

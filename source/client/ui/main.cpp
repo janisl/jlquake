@@ -22,6 +22,7 @@
 #include "../game/quake2/menu.h"
 #include "../game/tech3/local.h"
 #include "../input/keycodes.h"
+#include "../../common/common_defs.h"
 
 void UI_Init()
 {

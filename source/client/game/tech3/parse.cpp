@@ -20,6 +20,7 @@
 #include "../../ui/console.h"
 #include "../et/local.h"
 #include "../et/dl_public.h"
+#include "../../../common/common_defs.h"
 
 static int entLastVisible[MAX_CLIENTS_WM];
 

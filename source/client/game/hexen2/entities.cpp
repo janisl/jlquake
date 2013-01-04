@@ -21,6 +21,7 @@
 #include "../light_styles.h"
 #include "../quake_hexen2/predict.h"
 #include "../../chase.h"
+#include "../../../common/common_defs.h"
 #include "../../../common/file_formats/spr.h"
 
 #define H2MAX_EXTRA_TEXTURES 156	// 255-100+1

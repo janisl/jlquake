@@ -66,6 +66,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "local.h"
+#include "../../common/common_defs.h"
 #include <freetype/ftsystem.h>
 #include <freetype/ftimage.h>
 #include <freetype/freetype.h>

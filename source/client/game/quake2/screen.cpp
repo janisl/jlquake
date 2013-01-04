@@ -21,6 +21,7 @@
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
 #include "../quake_hexen2/main.h"
+#include "../../../common/common_defs.h"
 
 static void SCRQ2_DrawPause()
 {

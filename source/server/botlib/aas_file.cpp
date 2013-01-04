@@ -16,6 +16,7 @@
 
 #include "../../common/qcommon.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 static int AAS_WriteAASLump_offset;
 

@@ -16,6 +16,7 @@
 
 #include "../public.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 // check to see if client block will fit, if not, rotate buffers
 void SVQH_ClientReliableCheckBlock(client_t* cl, int maxsize)

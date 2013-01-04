@@ -16,10 +16,7 @@
 
 #include "local.h"
 #include "../../client_main.h"
-//#include "../quake3/local.h"
-//#include "../wolfsp/local.h"
-//#include "../wolfmp/local.h"
-//#include "../et/local.h"
+#include "../../../common/common_defs.h"
 
 #define MAX_SERVERSTATUSREQUESTS    16
 #define MAX_PINGREQUESTS            32

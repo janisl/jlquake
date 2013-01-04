@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../local.h"
+#include "../../../common/common_defs.h"
 
 //#define IMAGE_HASH_SIZE		1024
 #define IMAGE_HASH_SIZE     4096

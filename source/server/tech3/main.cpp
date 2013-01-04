@@ -19,6 +19,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 #define HEARTBEAT_MSEC      300 * 1000
 #define Q3HEARTBEAT_GAME    "QuakeArena-1"

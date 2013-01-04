@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../../common/qcommon.h"
+#include "../../common/common_defs.h"
 #include "../quake3serverdefs.h"
 #include "local.h"
 

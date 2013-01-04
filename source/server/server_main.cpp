@@ -19,6 +19,7 @@
 #include "quake_hexen/local.h"
 #include "quake2/local.h"
 #include "tech3/local.h"
+#include "../common/common_defs.h"
 
 serverStatic_t svs;					// persistant server info
 server_t sv;						// local server

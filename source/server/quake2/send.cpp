@@ -16,6 +16,7 @@
 
 #include "../../common/qcommon.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 //	Sends text across to be displayed if the level passes
 void SVQ2_ClientPrintf(client_t* cl, int level, const char* fmt, ...)

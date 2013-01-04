@@ -38,6 +38,7 @@ to the new value before sending out any replies.
 */
 
 #include "qcommon.h"
+#include "common_defs.h"
 
 struct delaybuf_t
 {

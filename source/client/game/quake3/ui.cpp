@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../../ui/ui.h"
 #include "../../cinematic/public.h"
+#include "../../../common/common_defs.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
 

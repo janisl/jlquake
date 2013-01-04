@@ -16,6 +16,7 @@
 
 #include "progsvm.h"
 #include "../global.h"
+#include "../../common/common_defs.h"
 
 #define MAX_STACK_DEPTH 32
 #define LOCALSTACK_SIZE 2048

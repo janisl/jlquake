@@ -20,6 +20,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 /*
 ===============================================================================

@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "local.h"
+#include "../../common/common_defs.h"
 
 static bool R_CullTriSurf(srfTriangles_t* cv)
 {

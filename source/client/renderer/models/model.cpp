@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../local.h"
+#include "../../../common/common_defs.h"
 
 model_t* loadmodel;
 

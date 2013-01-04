@@ -18,6 +18,7 @@
 #include "local.h"
 #include "../hexen2/local.h"
 #include "../../common/hexen2strings.h"
+#include "../../common/common_defs.h"
 #include "../../client/public.h"
 #include "../worldsector.h"
 #include "../public.h"

@@ -25,6 +25,7 @@
 #include "../../../server/public.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
+#include "../../../common/common_defs.h"
 
 static int clqhw_connect_time = -1;				// for connection retransmits
 

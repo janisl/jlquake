@@ -19,6 +19,7 @@
 #include "g_public.h"
 #include "../botlib/public.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 wssharedEntity_t* SVWS_GentityNum(int num)
 {

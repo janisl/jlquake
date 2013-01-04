@@ -16,6 +16,7 @@
 
 #include "../dynamic_lights.h"
 #include "../../client_main.h"
+#include "../../../common/common_defs.h"
 
 void CLQ1_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles)
 {

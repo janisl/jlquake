@@ -19,6 +19,7 @@
 #include "../../cinematic/public.h"
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
+#include "../../../common/common_defs.h"
 
 static void SCRT3_DrawDemoRecording()
 {

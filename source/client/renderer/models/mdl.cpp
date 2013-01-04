@@ -16,6 +16,7 @@
 
 #include "../../hexen2clientdefs.h"
 #include "../local.h"
+#include "../../../common/common_defs.h"
 
 #define MAX_LBM_HEIGHT      480
 

@@ -19,6 +19,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 
 #if !defined _WIN32
 #define stricmp     strcasecmp

@@ -16,6 +16,7 @@
 
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
 #include "../hexen2/local.h"

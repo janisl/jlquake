@@ -19,6 +19,7 @@
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;

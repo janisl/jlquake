@@ -161,6 +161,7 @@ or configs will never get loaded from disk!
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "unzip.h"
 #include "command_line_args.h"
 #include "../client/public.h"

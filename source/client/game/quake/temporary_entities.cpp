@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
+#include "../../../common/common_defs.h"
 
 enum { MAX_BEAMS_Q1 = 24 };
 

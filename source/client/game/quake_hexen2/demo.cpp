@@ -23,6 +23,7 @@
 #include "menu.h"
 #include "connection.h"
 #include "../../../server/public.h"
+#include "../../../common/common_defs.h"
 
 /*
 ==============================================================================

@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../ui/ui.h"
 #include "menu.h"
+#include "../../../common/common_defs.h"
 
 struct PollProcedure
 {

@@ -18,6 +18,7 @@
 
 #include "../client_main.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 // MACROS ------------------------------------------------------------------
 

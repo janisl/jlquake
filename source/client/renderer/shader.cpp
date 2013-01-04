@@ -22,6 +22,7 @@
 
 #include "../cinematic/public.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 // MACROS ------------------------------------------------------------------
 

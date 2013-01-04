@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../ui/ui.h"
 #include "../../cinematic/public.h"
+#include "../../../common/common_defs.h"
 #include "cg_public.h"
 #include "cg_ui_shared.h"
 

@@ -26,6 +26,7 @@
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "../../../server/public.h"
+#include "../../../common/common_defs.h"
 
 Cvar* clqh_sbar;
 

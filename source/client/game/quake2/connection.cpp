@@ -23,6 +23,7 @@
 #include "../../../server/public.h"
 #include "../../../common/file_formats/md2.h"
 #include "menu.h"
+#include "../../../common/common_defs.h"
 
 #define PLAYER_MULT 5
 

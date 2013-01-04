@@ -16,6 +16,7 @@
 // cvar.c -- dynamic variable tracking
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "../server/public.h"
 #include "../client/public.h"
 

@@ -20,6 +20,7 @@
 #include "g_public.h"
 #include "../botlib/public.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 etsharedEntity_t* SVET_GentityNum(int num)
 {

@@ -21,6 +21,7 @@
 #include "../translate.h"
 #include "../input/keycodes.h"
 #include "../game/tech3/local.h"
+#include "../../common/common_defs.h"
 
 #define COMMAND_HISTORY 32
 #define DEFAULT_CONSOLE_WIDTH   78

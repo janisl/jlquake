@@ -20,6 +20,7 @@
 #include "../../client/public.h"
 #include "../public.h"
 #include "../../common/command_line_args.h"
+#include "../../common/common_defs.h"
 #include <time.h>
 
 #define Q1_SAVEGAME_VERSION    5

@@ -21,6 +21,7 @@
 #include "../../ui/ui.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/common_defs.h"
 
 int UIWS_GetActiveMenu()
 {

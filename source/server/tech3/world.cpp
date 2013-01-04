@@ -20,6 +20,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../worldsector.h"
+#include "../../common/common_defs.h"
 
 struct q3moveclip_t
 {

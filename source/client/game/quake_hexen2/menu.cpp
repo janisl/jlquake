@@ -26,6 +26,7 @@
 #include "network_channel.h"
 #include "main.h"
 #include "../../ui/console.h"
+#include "../../../common/common_defs.h"
 
 menu_state_t m_state;
 menu_state_t m_return_state;

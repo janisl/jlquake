@@ -18,6 +18,7 @@
 #include "../light_styles.h"
 #include "../../client_main.h"
 #include "../../public.h"
+#include "../../../common/common_defs.h"
 
 void CLH2_MuzzleFlashLight(int key, vec3_t origin, const vec3_t angles, bool adjustZ)
 {

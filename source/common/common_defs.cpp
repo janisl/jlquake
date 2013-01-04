@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "qcommon.h"
+#include "common_defs.h"
 #include <time.h>
 #include "../client/public.h"
 #include "../server/public.h"

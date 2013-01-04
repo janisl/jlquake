@@ -18,6 +18,7 @@
 #include "../client_main.h"
 #include "../system.h"
 #include "../input/keycodes.h"
+#include "../../common/common_defs.h"
 
 static void Field_Paste(field_t* edit)
 {

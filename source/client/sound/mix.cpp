@@ -20,6 +20,7 @@
 
 #include "../client_main.h"
 #include "local.h"
+#include "../../common/common_defs.h"
 
 #define TALK_FUTURE_SEC 0.25		// go this far into the future (seconds)
 

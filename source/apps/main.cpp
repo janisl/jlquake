@@ -19,6 +19,7 @@
 #include "../client/public.h"
 #include "../common/hexen2strings.h"
 #include "../common/command_line_args.h"
+#include "../common/common_defs.h"
 #include "main.h"
 
 //======================= WIN32 DEFINES =================================

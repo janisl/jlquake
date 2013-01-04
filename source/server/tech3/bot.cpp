@@ -21,6 +21,7 @@
 #include "../et/local.h"
 #include "../botlib/local.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 int bot_enable;
 

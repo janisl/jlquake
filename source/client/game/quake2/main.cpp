@@ -19,6 +19,7 @@
 #include "../../public.h"
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
+#include "../../../common/common_defs.h"
 
 Cvar* q2_hand;
 Cvar* clq2_footsteps;

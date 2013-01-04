@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 
 struct qhpml_t
 {

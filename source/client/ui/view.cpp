@@ -17,6 +17,7 @@
 #include "ui.h"
 #include "../game/quake_hexen2/view.h"
 #include "../game/quake2/local.h"
+#include "../../common/common_defs.h"
 
 static Cvar* cl_polyblend;
 

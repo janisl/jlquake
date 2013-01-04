@@ -15,11 +15,9 @@
 //**************************************************************************
 
 #include "local.h"
-//#include "../quake3/local.h"
-//#include "../wolfsp/local.h"
-//#include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 // first four bytes of the data are always:
 //	long reliableAcknowledge;

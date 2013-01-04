@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "local.h"
+#include "../../../common/common_defs.h"
 
 static void CLH2_InitChunkGlass(float final, qhandle_t* model)
 {

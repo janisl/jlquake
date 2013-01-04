@@ -21,6 +21,7 @@
 #include "../quake_hexen2/view.h"
 #include "../quake_hexen2/main.h"
 #include "../../ui/console.h"
+#include "../../../common/common_defs.h"
 #include <time.h>
 
 static Cvar* scrqw_allowsnap;

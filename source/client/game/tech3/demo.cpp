@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../ui/console.h"
+#include "../../../common/common_defs.h"
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols

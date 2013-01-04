@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "system_unix.h"
 #include <sys/stat.h>
 #include <unistd.h>

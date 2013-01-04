@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../../common/qcommon.h"
+#include "../../common/common_defs.h"
 #include "local.h"
 
 #define NUM_BBOXAREASCACHE          128

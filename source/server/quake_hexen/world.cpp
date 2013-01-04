@@ -17,6 +17,7 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../worldsector.h"
+#include "../../common/common_defs.h"
 
 /*
 

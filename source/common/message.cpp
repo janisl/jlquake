@@ -21,6 +21,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 
 static bool msgInit = false;
 static huffman_t msgHuff;

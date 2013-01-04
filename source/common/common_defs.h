@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __COMMON_DEFS_H__
+#define __COMMON_DEFS_H__
+
+#include "qcommon.h"
+
 //==========================================================================
 //
 //	Which game are we playing
@@ -151,3 +156,5 @@ bool ComET_CheckProfile(const char* profile_path);
 bool ComET_WriteProfile(const char* profile_path);
 
 void COMQH_CheckRegistered();
+
+#endif

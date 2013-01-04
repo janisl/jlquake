@@ -22,6 +22,7 @@
 #include "../../cinematic/public.h"
 #include "cg_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/common_defs.h"
 
 static refEntityType_t clet_gameRefEntTypeToEngine[] =
 {

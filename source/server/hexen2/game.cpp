@@ -22,6 +22,7 @@
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
 #include "../../common/Hexen2EffectsRandom.h"
+#include "../../common/common_defs.h"
 
 #define WF_NORMAL_ADVANCE 0
 #define WF_CYCLE_STARTED 1

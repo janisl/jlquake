@@ -18,6 +18,7 @@
 #include "local.h"
 #include "g_public.h"
 #include "../botlib/public.h"
+#include "../../common/common_defs.h"
 
 wmsharedEntity_t* SVWM_GentityNum(int num)
 {

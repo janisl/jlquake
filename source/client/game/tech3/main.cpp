@@ -27,6 +27,7 @@
 #include "../et/local.h"
 #include "../et/dl_public.h"
 #include "../../../server/public.h"
+#include "../../../common/common_defs.h"
 
 Cvar* clet_profile;
 Cvar* clt3_showServerCommands;

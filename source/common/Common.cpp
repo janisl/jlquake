@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "../client/public.h"
 #include "../server/public.h"
 

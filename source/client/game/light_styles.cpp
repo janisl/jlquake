@@ -19,6 +19,7 @@
 
 #include "light_styles.h"
 #include "../client_main.h"
+#include "../../common/common_defs.h"
 
 clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 

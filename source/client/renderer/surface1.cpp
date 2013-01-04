@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "local.h"
+#include "../../common/common_defs.h"
 
 mbrush29_glpoly_t* lightmap_polys[MAX_LIGHTMAPS];
 

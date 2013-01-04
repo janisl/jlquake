@@ -17,6 +17,7 @@
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../hexen2/local.h"
+#include "../../common/common_defs.h"
 
 unsigned clients_multicast;
 

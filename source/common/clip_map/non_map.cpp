@@ -19,6 +19,7 @@
 //**************************************************************************
 
 #include "../qcommon.h"
+#include "../common_defs.h"
 #include "local.h"
 #include "../file_formats/bsp29.h"
 #include "../file_formats/mdl.h"

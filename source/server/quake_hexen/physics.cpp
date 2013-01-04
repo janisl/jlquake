@@ -33,6 +33,7 @@ solid_edge items only clip against bsp models.
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../client/public.h"
+#include "../../common/common_defs.h"
 
 Cvar* svqh_gravity;
 Cvar* svqh_maxspeed;

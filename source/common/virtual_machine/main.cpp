@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "../qcommon.h"
+#include "../common_defs.h"
 #include "local.h"
 
 #define MAX_VM      3

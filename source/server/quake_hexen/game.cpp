@@ -18,6 +18,7 @@
 #include "local.h"
 #include "../../common/file_formats/bsp29.h"
 #include "../public.h"
+#include "../../common/common_defs.h"
 
 Cvar* svqh_aim;
 

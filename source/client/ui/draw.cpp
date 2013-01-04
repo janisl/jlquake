@@ -16,6 +16,7 @@
 
 #include "ui.h"
 #include "../client_main.h"
+#include "../../common/common_defs.h"
 
 viddef_t viddef;
 

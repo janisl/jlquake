@@ -214,6 +214,5 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 #include "script.h"
 #include "precompiler.h"
 #include "game_utils.h"
-#include "common_defs.h"
 
 #endif

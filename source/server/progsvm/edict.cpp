@@ -18,6 +18,7 @@
 #include "../public.h"
 #include "progsvm.h"
 #include "../quake_hexen/local.h"
+#include "../../common/common_defs.h"
 
 #define MAX_FIELD_LEN   64
 #define GEFV_CACHESIZE  2

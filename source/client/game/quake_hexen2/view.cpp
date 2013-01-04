@@ -24,6 +24,7 @@
 #include "../light_styles.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
+#include "../../../common/common_defs.h"
 
 //	The view is allowed to move slightly from it's true position for bobbing,
 // but if it exceeds 8 pixels linear distance (spherical, not box), the list

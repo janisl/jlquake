@@ -22,6 +22,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "common_defs.h"
 #include "system_unix.h"
 #include <signal.h>
 #include <unistd.h>

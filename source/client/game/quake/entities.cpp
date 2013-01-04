@@ -22,6 +22,7 @@
 #include "../camera.h"
 #include "../quake_hexen2/predict.h"
 #include "../../../common/file_formats/spr.h"
+#include "../../../common/common_defs.h"
 
 Cvar* cl_doubleeyes;
 
