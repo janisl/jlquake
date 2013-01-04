@@ -18,6 +18,7 @@ set(COMMON_FILES
 	virtual_machine/interpreted.cpp
 	virtual_machine/main.cpp
 	command_buffer.cpp
+	command_line_args.cpp
 	Common.cpp
 	common_defs.cpp
 	console_variable.cpp

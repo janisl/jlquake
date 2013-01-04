@@ -18,6 +18,7 @@
 #include "../server/public.h"
 #include "../client/public.h"
 #include "../common/hexen2strings.h"
+#include "../common/command_line_args.h"
 #include "main.h"
 
 //======================= WIN32 DEFINES =================================

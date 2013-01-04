@@ -20,6 +20,7 @@
 #include "../../client/public.h"
 #include "../hexen2/local.h"
 #include "../public.h"
+#include "../../common/command_line_args.h"
 
 #define HEARTBEAT_SECONDS   300
 

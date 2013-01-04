@@ -162,6 +162,7 @@ or configs will never get loaded from disk!
 
 #include "qcommon.h"
 #include "unzip.h"
+#include "command_line_args.h"
 #include "../client/public.h"
 
 // number of id paks that will never be autodownloaded from baseq3

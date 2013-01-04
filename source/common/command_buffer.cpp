@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "command_line_args.h"
 #include "../client/public.h"
 #include "../server/public.h"
 

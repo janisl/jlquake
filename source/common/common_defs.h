@@ -172,20 +172,6 @@ void Com_Memcpy(void* dest, const void* src, const size_t count);
 
 //==========================================================================
 //
-//	Command line arguments
-//
-//==========================================================================
-
-int COM_Argc();
-const char* COM_Argv(int arg);	// range and null checked
-void COM_InitArgv(int argc, char** argv);
-void COM_InitArgv2(int argc, char** argv);
-void COM_AddParm(const char* parm);
-void COM_ClearArgv(int arg);
-int COM_CheckParm(const char* parm);
-
-//==========================================================================
-//
 //	Which game are we playing
 //
 //==========================================================================
@@ -251,15 +237,6 @@ extern bool com_errorEntered;
 
 int ComQ2_ServerState();		// this should have just been a cvar...
 void ComQ2_SetServerState(int state);
-
-void Com_ParseCommandLine(char* commandLine);
-bool Com_SafeMode();
-bool Com_AddStartupCommands();
-// checks for and removes command line "+set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
-void Cmd_StuffCmds_f();
-void Com_StartupVariable(const char* match);
 
 extern bool com_fullyInitialized;
 
