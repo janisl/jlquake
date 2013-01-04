@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "progsvm.h"
+#include "../global.h"
 
 #define MAX_STACK_DEPTH 32
 #define LOCALSTACK_SIZE 2048

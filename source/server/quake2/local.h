@@ -17,6 +17,7 @@
 #ifndef _SERVER_QUAKE2_LOCAL_H
 #define _SERVER_QUAKE2_LOCAL_H
 
+#include "../global.h"
 #include "game.h"
 
 #define Q2_EDICT_NUM(n) ((q2edict_t*)((byte*)ge->edicts + ge->edict_size * (n)))

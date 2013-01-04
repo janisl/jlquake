@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
 #include "../hexen2/local.h"
+#include "../public.h"
 
 #define HEARTBEAT_SECONDS   300
 

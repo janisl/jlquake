@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __SERVER_LINK_H__
+#define __SERVER_LINK_H__
+
+#include "../common/qcommon.h"
+
 //!!!!! Used by Quake 2 game DLLs, do not change.
 // link_t is only used for entity area links now
 struct link_t
@@ -30,3 +35,5 @@ struct link_t
 void ClearLink(link_t* l);
 void RemoveLink(link_t* l);
 void InsertLinkBefore(link_t* l, link_t* before);
+
+#endif

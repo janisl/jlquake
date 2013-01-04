@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "../tech3/local.h"
 #include "local.h"
 

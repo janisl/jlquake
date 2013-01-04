@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "local.h"
 #include "../../common/file_formats/tag.h"
 #include "../wolfmp/local.h"
 #include "../et/local.h"
+#include "../public.h"
 
 #define HEARTBEAT_MSEC      300 * 1000
 #define Q3HEARTBEAT_GAME    "QuakeArena-1"

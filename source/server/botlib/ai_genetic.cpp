@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 
 static int GeneticSelection(int numranks, float* rankings)

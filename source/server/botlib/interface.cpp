@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 #include "ai_weight.h"
+#include "../global.h"
 
 bot_debugpoly_t* debugpolygons;
 int bot_maxdebugpolys;

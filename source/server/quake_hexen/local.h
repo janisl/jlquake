@@ -17,6 +17,8 @@
 #ifndef _QUAKE_HEXEN_LOCAL_H
 #define _QUAKE_HEXEN_LOCAL_H
 
+#include "../global.h"
+
 #define QHEDICT_FROM_AREA(l) STRUCT_FROM_LINK(l, qhedict_t, area)
 
 #define MULTICAST_ALL           0

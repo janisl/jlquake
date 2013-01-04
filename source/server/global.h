@@ -14,6 +14,20 @@
 //**
 //**************************************************************************
 
+#ifndef __SERVER_GLOBAL_H__
+#define __SERVER_GLOBAL_H__
+
+#include "../common/qcommon.h"
+#include "../common/file_formats/md3.h"
+#include "progsvm/edict.h"
+#include "quakeserverdefs.h"
+#include "hexen2serverdefs.h"
+#include "quake2serverdefs.h"
+#include "quake3serverdefs.h"
+#include "wolfserverdefs.h"
+#include "tech3/Entity3.h"
+#include "tech3/PlayerState3.h"
+
 enum clientState_t
 {
 	CS_FREE,		// can be reused for a new connection
@@ -489,3 +503,20 @@ struct serverStatic_t
 
 extern serverStatic_t svs;					// persistant server info across maps
 extern server_t sv;							// cleared each map
+
+struct ucmd_t
+{
+	const char* name;
+	void (*func)(client_t* cl);
+	bool allowedpostmapchange;
+};
+
+#define MAX_MASTERS 8				// max recipients for heartbeat packets
+
+extern Cvar* sv_maxclients;
+
+extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
+
+void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
+
+#endif

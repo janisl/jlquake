@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../public.h"
 #include "local.h"
 
 // check to see if client block will fit, if not, rotate buffers

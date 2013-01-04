@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 
 //	Sends text across to be displayed if the level passes

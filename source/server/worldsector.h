@@ -14,6 +14,13 @@
 //**
 //**************************************************************************
 
+#ifndef __WORLDSECTOR_H__
+#define __WORLDSECTOR_H__
+
+#include "../common/qcommon.h"
+#include "link.h"
+#include "quake3serverdefs.h"
+
 #define AREA_DEPTH  4
 #define AREA_NODES  32
 
@@ -31,3 +38,5 @@ extern worldSector_t sv_worldSectors[AREA_NODES];
 
 // called after the world model has been loaded, before linking any entities
 void SV_ClearWorld();
+
+#endif

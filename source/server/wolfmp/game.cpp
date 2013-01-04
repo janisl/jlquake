@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
 #include "g_public.h"

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 #include "ai_weight.h"
 

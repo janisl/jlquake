@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 #include "ai_weight.h"
+#include "../quake3serverdefs.h"
 
 //minimum avoid goal time
 #define AVOID_MINIMUM_TIME      10

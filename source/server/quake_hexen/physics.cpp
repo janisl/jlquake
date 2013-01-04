@@ -30,7 +30,6 @@ flying/floating monsters are QHSOLID_SLIDEBOX and QHMOVETYPE_FLY
 solid_edge items only clip against bsp models.
 */
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../client/public.h"

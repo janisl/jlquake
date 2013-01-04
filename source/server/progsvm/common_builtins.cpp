@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "progsvm.h"
+#include "../global.h"
 
 static char pr_string_temp[128];
 

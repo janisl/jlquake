@@ -17,7 +17,9 @@
 #ifndef _PROGSVM_H
 #define _PROGSVM_H
 
+#include "../../common/qcommon.h"
 #include "progs_file.h"
+#include "edict.h"
 
 #define G_FLOAT(o) (pr_globals[o])
 #define G_INT(o) (*(int*)&pr_globals[o])

@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 #include "../../client/public.h"
+#include "../worldsector.h"
 
 static int SVQ2_FindIndex(const char* name, int start, int max)
 {

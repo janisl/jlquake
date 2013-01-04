@@ -14,13 +14,14 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "local.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../../client/public.h"
+#include "../worldsector.h"
+#include "../public.h"
 
 #define RELIABLE_COMMANDS_CHARS     384		// we can scale this down from the max of 1024, since not all commands are going to use that many chars
 

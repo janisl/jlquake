@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
+#include "../quake3serverdefs.h"
 #include "local.h"
 
 // Ridah, always use the default world for entities

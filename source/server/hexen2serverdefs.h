@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __HEXEN2SERVERDEFS_H__
+#define __HEXEN2SERVERDEFS_H__
+
 struct hwclient_frame_t
 {
 	double senttime;
@@ -60,3 +63,5 @@ struct h2client_state2_t
 #define HWHULL_CROUCH         4	//'-16 -16 0', '16 16 28'
 #define HWHULL_HYDRA          5	//'-28 -28 -24', '28 28 24'
 #define HWHULL_GOLEM          6	//???,???
+
+#endif

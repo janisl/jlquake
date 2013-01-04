@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "server.h"
+#include "worldsector.h"
 
 worldSector_t sv_worldSectors[AREA_NODES];
 static int sv_numworldSectors;

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 
 static const fielddef_t* FindField(const fielddef_t* defs, const char* name)

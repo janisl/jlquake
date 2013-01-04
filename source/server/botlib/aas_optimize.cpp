@@ -17,7 +17,7 @@
 //	decreases the .aas file size after the reachabilities have
 // been calculated, just dumps all the faces, edges and vertexes
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 
 struct optimized_t

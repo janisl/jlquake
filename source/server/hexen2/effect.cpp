@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "../quake_hexen/local.h"
 #include "local.h"

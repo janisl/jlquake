@@ -17,6 +17,8 @@
 #ifndef _SERVER_PUBLIC_H
 #define _SERVER_PUBLIC_H
 
+#include "../common/qcommon.h"
+
 extern int svh2_kingofhill;
 extern Cvar* svqh_coop;
 extern Cvar* svqh_teamplay;

@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE3SERVERDEFS_H__
+#define __QUAKE3SERVERDEFS_H__
+
 enum
 {
 	Q3GT_FFA,				// free for all
@@ -145,3 +148,5 @@ struct q3svEntity_t
 #define Q3FRAMETIME         100					// msec
 
 #define Q3MAX_MASTER_SERVERS    5
+
+#endif

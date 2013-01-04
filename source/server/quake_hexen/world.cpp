@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../worldsector.h"
 
 /*
 

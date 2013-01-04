@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
+#include "../public.h"
 #include "local.h"
 
 Cvar* allow_download;

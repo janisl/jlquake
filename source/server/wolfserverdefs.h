@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __WOLFSERVERDEFS_H__
+#define __WOLFSERVERDEFS_H__
+
 enum
 {
 	WMGT_WOLF = 5,			// DHM - Nerve :: Wolfenstein Multiplayer
@@ -224,3 +227,5 @@ enum gamestate_t
 #define RELOAD_FAILED           0x08
 
 #define ETSERVER_PERFORMANCECOUNTER_FRAMES    600
+
+#endif

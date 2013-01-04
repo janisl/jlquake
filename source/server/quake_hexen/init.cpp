@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
+#include "../worldsector.h"
+#include "../public.h"
 
 char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];	// local game info
 

@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../common/file_formats/bsp29.h"

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __idEntity3__
+#define __idEntity3__
+
+#include "../../common/qcommon.h"
+
 //	This is initial portion of shared entity struct that is common in all
 // Tech3 games.
 struct sharedEntityCommon_t
@@ -206,3 +211,5 @@ inline void idEntity3::SetOtherEntityNum(int value)
 {
 	gentity->otherEntityNum = value;
 }
+
+#endif

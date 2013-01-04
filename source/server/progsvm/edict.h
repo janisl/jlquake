@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __PROGSVM_EDICT_H__
+#define __PROGSVM_EDICT_H__
+
+#include "../../common/qcommon.h"
+#include "../link.h"
+
 #define MAX_ENT_LEAFS   16
 
 typedef int func_t;
@@ -484,3 +490,5 @@ inline void qhedict_t::SetVectorField(idEntVarDef& field, const vec3_t value)
 {
 	VectorCopy(value, (float*)((byte*)&v + field.offset));
 }
+
+#endif

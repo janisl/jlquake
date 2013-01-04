@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE2SERVERDEFS_H__
+#define __QUAKE2SERVERDEFS_H__
+
+#include "../common/file_formats/bsp38.h"
+
 #define LATENCY_COUNTS  16
 #define RATE_MESSAGES   10
 
@@ -99,3 +104,5 @@ enum q2multicast_t
 // FIXME: eliminate AREA_ distinction?
 #define Q2AREA_SOLID    1
 #define Q2AREA_TRIGGERS 2
+
+#endif

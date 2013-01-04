@@ -14,13 +14,13 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "local.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../botlib/local.h"
+#include "../public.h"
 
 int bot_enable;
 

@@ -17,6 +17,8 @@
 #ifndef _TECH3_LOCAL_H
 #define _TECH3_LOCAL_H
 
+#include "../global.h"
+
 //
 //	Bot
 //

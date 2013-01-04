@@ -14,12 +14,13 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../hexen2/local.h"
 #include "../../common/hexen2strings.h"
 #include "../../client/public.h"
+#include "../worldsector.h"
+#include "../public.h"
 
 #define MAX_FORWARD 6
 #define ON_EPSILON      0.1			// point on plane side epsilon

@@ -14,8 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
+#include "../public.h"
 
 //	Called when the player is totally leaving the server, either willingly
 // or unwillingly.  This is NOT called if the entire server is quiting

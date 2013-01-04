@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKESERVERDEFS_H__
+#define __QUAKESERVERDEFS_H__
+
 #define NUM_SPAWN_PARMS     16
 #define NUM_PING_TIMES      16
 
@@ -64,3 +67,5 @@ struct qwclient_frame_t
 #define SAVEGAME_COMMENT_LENGTH 39
 
 #define QHW_STATFRAMES  100
+
+#endif

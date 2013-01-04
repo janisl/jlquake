@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "../tech3/local.h"
 #include "local.h"
 #include "g_public.h"
 #include "../botlib/public.h"
+#include "../public.h"
 
 wssharedEntity_t* SVWS_GentityNum(int num)
 {

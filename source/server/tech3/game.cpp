@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../public.h"
 #include "local.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"

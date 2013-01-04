@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
 #include "progsvm.h"
 #include "../quake_hexen/local.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
+#include "../public.h"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;

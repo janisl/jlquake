@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "local.h"
 
 static byte svq2_fatpvs[65536 / 8];			// 32767 is MAX_MAP_LEAFS

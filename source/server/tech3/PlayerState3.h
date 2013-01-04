@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __idPlayerState3__
+#define __idPlayerState3__
+
+#include "../../common/qcommon.h"
+
 //	This is initial portion of shared entity struct that is common in all
 // Tech3 games.
 struct sharedPlayerState_t
@@ -84,3 +89,5 @@ inline void idPlayerState3::SetOrigin(const vec3_t value)
 {
 	VectorCopy(value, ps->origin);
 }
+
+#endif

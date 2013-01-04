@@ -14,11 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../server.h"
+#include "../../common/qcommon.h"
 #include "../tech3/local.h"
 #include "local.h"
 #include "g_public.h"
 #include "../botlib/public.h"
+#include "../public.h"
 
 etsharedEntity_t* SVET_GentityNum(int num)
 {
