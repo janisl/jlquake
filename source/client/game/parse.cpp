@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../ui/ui.h"
 #include "parse.h"
+#include "../ui/ui.h"
 
 void CL_ParseCenterPrint(QMsg& message)
 {

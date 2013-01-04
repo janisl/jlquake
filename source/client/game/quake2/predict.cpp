@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client_main.h"
 #include "local.h"
+#include "../../client_main.h"
 
 // content masks
 #define MASK_PLAYERSOLID        (BSP38CONTENTS_SOLID | BSP38CONTENTS_PLAYERCLIP | BSP38CONTENTS_WINDOW | BSP38CONTENTS_MONSTER)

@@ -14,13 +14,14 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../chase.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
 #include "../camera.h"
+#include "../quake_hexen2/predict.h"
 #include "../../../common/file_formats/spr.h"
-#include "local.h"
 
 Cvar* cl_doubleeyes;
 

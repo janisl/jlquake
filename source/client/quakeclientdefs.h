@@ -17,6 +17,8 @@
 #ifndef __QUAKECLIENTDEFS_H__
 #define __QUAKECLIENTDEFS_H__
 
+#include "../common/qcommon.h"
+
 //	Model effects
 enum
 {

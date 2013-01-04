@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
-#include "local.h"
 
 #define MAX_STREAMS_H2              32
 

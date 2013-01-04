@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client_main.h"
 #include "local.h"
+#include "../../client_main.h"
 
 Cvar* clh2_playerclass;
 Cvar* clhw_teamcolor;

@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../public.h"
 #include "../../system.h"
-#include "local.h"
 #include "ui_shared.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"

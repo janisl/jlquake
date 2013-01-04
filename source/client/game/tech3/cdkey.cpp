@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../public.h"
 #include "local.h"
+#include "../../public.h"
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2

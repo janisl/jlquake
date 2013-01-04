@@ -14,5 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __CGAME_PARSE_H__
+#define __CGAME_PARSE_H__
+
+#include "../../common/qcommon.h"
+
 void CL_ParseCenterPrint(QMsg& net_message);
 void CL_ParseStuffText(QMsg& message);
+
+#endif

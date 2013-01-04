@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../input/keycodes.h"
 #include "../../cinematic/public.h"
 #include "../../ui/ui.h"
 #include "../../translate.h"
-#include "local.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
 

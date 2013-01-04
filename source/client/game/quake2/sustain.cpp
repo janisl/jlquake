@@ -14,10 +14,10 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../utils.h"
 #include "../particles.h"
-#include "local.h"
 
 enum { MAX_SUSTAINS_Q2 = 32 };
 

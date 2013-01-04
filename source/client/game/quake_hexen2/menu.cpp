@@ -14,16 +14,17 @@
 //**
 //**************************************************************************
 
+#include "menu.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../input/keycodes.h"
 #include "../../ui/ui.h"
 #include "../../renderer/cvars.h"
-#include "menu.h"
 #include "../../../server/public.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "network_channel.h"
+#include "main.h"
 #include "../../ui/console.h"
 
 menu_state_t m_state;

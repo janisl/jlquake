@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __CGAME_QUAKE_LOCAL_H__
+#define __CGAME_QUAKE_LOCAL_H__
+
 #include "../../quakeclientdefs.h"
 #include "../../renderer/public.h"
 
@@ -116,5 +119,4 @@ void CLQ1_ParseTEnt(QMsg& message);
 void CLQW_ParseTEnt(QMsg& message);
 void CLQ1_UpdateTEnts();
 
-#include "../quake_hexen2/main.h"
-#include "../quake_hexen2/predict.h"
+#endif

@@ -22,7 +22,7 @@
 
 #include "midstuff.h"
 #include "midi.h"
-#include "../../client.h"
+#include "../public.h"
 
 
 BOOL bMidiInited,bFileOpen, bPlaying, bBuffersPrepared;

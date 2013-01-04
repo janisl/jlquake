@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
-#include "local.h"
 
 #define MAX_PROJECTILES_H2  32
 #define MAX_MISSILES_H2     32

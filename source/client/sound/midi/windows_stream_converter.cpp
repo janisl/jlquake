@@ -23,7 +23,7 @@
 
 #include "midi.h"
 #include "midstuff.h"
-#include "../../client.h"
+#include "../public.h"
 
 // Global stuff which is defined in the main module
 //

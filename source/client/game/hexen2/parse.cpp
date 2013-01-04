@@ -14,16 +14,17 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../ui/ui.h"
-#include "local.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
 #include "../parse.h"
 #include "../quake_hexen2/parse.h"
 #include "../quake_hexen2/connection.h"
 #include "../quake_hexen2/view.h"
+#include "../quake_hexen2/predict.h"
 #include "../../../server/public.h"
 #include "../../../common/hexen2strings.h"
 

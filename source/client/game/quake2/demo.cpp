@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client_main.h"
 #include "local.h"
+#include "../../client_main.h"
 
 //	Dumps the current net message, prefixed by the length
 void CLQ2_WriteDemoMessage(QMsg* msg, int headerBytes)

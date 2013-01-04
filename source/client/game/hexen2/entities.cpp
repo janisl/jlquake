@@ -14,11 +14,12 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
 #include "../light_styles.h"
-#include "local.h"
+#include "../quake_hexen2/predict.h"
 #include "../../chase.h"
 #include "../../../common/file_formats/spr.h"
 

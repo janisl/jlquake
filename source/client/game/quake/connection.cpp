@@ -14,10 +14,11 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../public.h"
-#include "local.h"
 #include "../quake_hexen2/demo.h"
+#include "../quake_hexen2/main.h"
 
 static byte* clqw_upload_data;
 static int clqw_upload_pos;

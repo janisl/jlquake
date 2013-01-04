@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../cinematic/public.h"
 #include "../parse.h"
 #include "../light_styles.h"
-#include "local.h"
 
 const char* svcq2_strings[256] =
 {

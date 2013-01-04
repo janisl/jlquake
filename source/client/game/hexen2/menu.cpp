@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../../../common/qcommon.h"
 #include "local.h"
 
 const char* h2_ClassNames[NUM_CLASSES_H2MP] =

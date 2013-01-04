@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
+#include "connection.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../system.h"
 #include "../particles.h"
 #include "../camera.h"
-#include "connection.h"
 #include "demo.h"
 #include "network_channel.h"
 #include "../../../server/public.h"

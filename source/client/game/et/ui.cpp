@@ -14,10 +14,10 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../translate.h"
 #include "../../ui/ui.h"
 #include "../../cinematic/public.h"
-#include "local.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
 

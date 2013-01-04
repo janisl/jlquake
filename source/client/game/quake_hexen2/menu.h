@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_MENU_H__
+#define __QUAKE_HEXEN2_MENU_H__
+
+#include "../../../common/qcommon.h"
+#include "../../renderer/public.h"
+
 enum menu_state_t
 {
 	m_none,
@@ -62,3 +68,5 @@ void MQH_FadeScreen();
 void MQH_Draw();
 void MQH_Keydown(int key);
 void MQH_CharEvent(int key);
+
+#endif

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_CONNECTION_H__
+#define __QUAKE_HEXEN2_CONNECTION_H__
+
+#include "../../../common/qcommon.h"
+
 extern Cvar* clqw_localid;
 
 void CLQH_KeepaliveMessage();
@@ -30,3 +35,5 @@ void CLQHW_Reconnect_f();
 void CLQHW_ConnectionlessPacket(QMsg& message, netadr_t& net_from);
 void CLQH_ReadFromServer();
 void CLQHW_ReadPackets();
+
+#endif

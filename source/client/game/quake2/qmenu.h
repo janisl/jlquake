@@ -17,6 +17,8 @@
 #ifndef _CLIENT_QUAKE2_QMENU_H
 #define _CLIENT_QUAKE2_QMENU_H
 
+#include "../../../common/qcommon.h"
+
 #define MAXMENUITEMS    64
 
 enum

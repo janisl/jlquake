@@ -14,14 +14,15 @@
 //**
 //**************************************************************************
 
+#include "main.h"
 #include "../../public.h"
 #include "../../client_main.h"
 #include "../../chase.h"
 #include "../camera.h"
-#include "main.h"
 #include "demo.h"
 #include "connection.h"
 #include "network_channel.h"
+#include "predict.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 #include "../../../server/public.h"

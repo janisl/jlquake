@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_MAIN_H__
+#define __QUAKE_HEXEN2_MAIN_H__
+
+#include "../../../common/qcommon.h"
+
 extern Cvar* clqh_sbar;
 extern Cvar* qhw_topcolor;
 extern Cvar* qhw_bottomcolor;
@@ -24,3 +29,5 @@ extern Cvar* qhw_spectator;
 extern int clqh_packet_latency[NET_TIMINGS_QH];
 
 void CLQH_Init();
+
+#endif

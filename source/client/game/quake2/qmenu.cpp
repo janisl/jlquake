@@ -14,9 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../ui/ui.h"
-#include "local.h"
 #include "qmenu.h"
+#include "../../ui/ui.h"
 
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16

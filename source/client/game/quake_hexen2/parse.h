@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_PARSE_H__
+#define __QUAKE_HEXEN2_PARSE_H__
+
+#include "../../../common/qcommon.h"
+
 void CLQH_ParseTime(QMsg& message);
 void CLQH_ParseDisconnect();
 void CLQH_ParseSetAngle(QMsg& message);
@@ -34,3 +39,5 @@ void CLQHW_ParseSmallKick();
 void CLQHW_ParseBigKick();
 void CLQHW_ParseMaxSpeed(QMsg& message);
 void CLQHW_ParseEntGravity(QMsg& message);
+
+#endif

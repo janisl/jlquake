@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../ui/ui.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
 #include "../light_styles.h"
-#include "local.h"
 
 static Cvar* clq2_showclamp;
 static Cvar* clq2_gun;

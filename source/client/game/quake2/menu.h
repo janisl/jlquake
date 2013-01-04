@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE2_MENU_H__
+#define __QUAKE2_MENU_H__
+
+#include "../../../common/qcommon.h"
+
 void MQ2_Init();
 void MQ2_ForceMenuOff();
 void MQ2_AddToServerList(netadr_t adr, const char* info);
@@ -21,3 +26,5 @@ void MQ2_Menu_Main_f();
 void MQ2_Draw();
 void MQ2_Keydown(int key);
 void MQ2_CharEvent(int key);
+
+#endif

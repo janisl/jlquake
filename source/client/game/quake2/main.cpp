@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
-#include "local.h"
 
 Cvar* q2_hand;
 Cvar* clq2_footsteps;

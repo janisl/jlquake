@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../cinematic/public.h"
 #include "../../ui/ui.h"
 #include "../../translate.h"
 #include "../../splines/public.h"
-#include "local.h"
 #include "cg_public.h"
 #include "cg_ui_shared.h"
 #include "../../../server/public.h"

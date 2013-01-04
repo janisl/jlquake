@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../utils.h"
-#include "local.h"
 
 enum { MAX_EXPLOSIONS_Q2 = 32 };
 

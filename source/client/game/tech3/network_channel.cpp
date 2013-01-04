@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client_main.h"
 #include "local.h"
+#include "../../client_main.h"
 #include "../../../server/public.h"
 
 // first 12 bytes of the data are always:

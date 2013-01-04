@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client_main.h"
 #include "local.h"
+#include "../../client_main.h"
 
 #define MAX_CACHED_SKINS        128
 

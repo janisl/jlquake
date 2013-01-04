@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
+#include "demo.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../light_styles.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
-#include "demo.h"
 #include "menu.h"
 #include "connection.h"
 #include "../../../server/public.h"

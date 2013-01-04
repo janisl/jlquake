@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __CGAME_QUAKE2_LOCAL_H__
+#define __CGAME_QUAKE2_LOCAL_H__
+
 #include "../../quake2clientdefs.h"
 #include "../../sound/public.h"
 
@@ -191,3 +194,5 @@ void CLQ2_AddTEnts();
 void SCR_TouchPics();
 void VQ2_RenderView(float stereo_separation);
 void VQ2_Init();
+
+#endif

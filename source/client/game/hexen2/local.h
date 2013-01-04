@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __CGAME_HEXEN2_LOCAL_H__
+#define __CGAME_HEXEN2_LOCAL_H__
+
 #include "../../hexen2clientdefs.h"
 #include "../../sound/public.h"
 #include "../../renderer/public.h"
@@ -248,5 +251,4 @@ void CLHW_UpdateHammer(refEntity_t* ent, int edict_num);
 void CLHW_UpdateBug(refEntity_t* ent);
 void CLH2_UpdateTEnts();
 
-#include "../quake_hexen2/main.h"
-#include "../quake_hexen2/predict.h"
+#endif

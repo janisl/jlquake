@@ -14,8 +14,15 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_VIEW_H__
+#define __QUAKE_HEXEN2_VIEW_H__
+
+#include "../../../common/qcommon.h"
+
 void VQH_ParseDamage(QMsg& message);
 void VQH_RenderView();
 void SCRQH_DrawTurtle();
 void VQH_Init();
 void VQH_InitCrosshairTexture();
+
+#endif

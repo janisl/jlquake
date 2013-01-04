@@ -14,6 +14,7 @@
 //**
 //**************************************************************************
 
+#include "view.h"
 #include "../../client_main.h"
 #include "../../ui/ui.h"
 #include "../../chase.h"
@@ -21,7 +22,6 @@
 #include "../camera.h"
 #include "../dynamic_lights.h"
 #include "../light_styles.h"
-#include "view.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
 

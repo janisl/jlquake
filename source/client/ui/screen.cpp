@@ -19,6 +19,7 @@
 #include "../client_main.h"
 #include "../public.h"
 #include "../game/particles.h"
+#include "../game/quake_hexen2/main.h"
 #include "../game/quake_hexen2/menu.h"
 #include "../game/quake_hexen2/view.h"
 #include "../game/quake/local.h"

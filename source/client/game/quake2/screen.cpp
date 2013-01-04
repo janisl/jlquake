@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../../cinematic/public.h"
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
-#include "local.h"
 #include "../quake_hexen2/main.h"
 
 static void SCRQ2_DrawPause()

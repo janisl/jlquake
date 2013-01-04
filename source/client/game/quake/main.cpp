@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../../../common/qcommon.h"
 #include "local.h"
 
 void CLQ1_ClearState()

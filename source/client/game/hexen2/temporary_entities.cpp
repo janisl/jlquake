@@ -14,10 +14,10 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
-#include "local.h"
 
 static sfxHandle_t clh2_sfx_tink1;
 static sfxHandle_t clh2_sfx_ric1;

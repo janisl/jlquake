@@ -14,11 +14,11 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../../cinematic/public.h"
 #include "../../ui/ui.h"
 #include "../../ui/console.h"
-#include "local.h"
 
 static void SCRT3_DrawDemoRecording()
 {

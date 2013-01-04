@@ -14,6 +14,10 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE_HEXEN2_PREDICT_H__
+#define __QUAKE_HEXEN2_PREDICT_H__
+
+#include "../../../common/qcommon.h"
 #include "../../quakeclientdefs.h"
 #include "../../hexen2clientdefs.h"
 
@@ -30,3 +34,5 @@ void CLQHW_SetSolidPlayers(int playernum);
 void CLQW_PredictMove();
 void CLHW_PredictMove();
 void CLQHW_InitPrediction();
+
+#endif

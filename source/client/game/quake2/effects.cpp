@@ -14,10 +14,10 @@
 //**
 //**************************************************************************
 
+#include "local.h"
 #include "../../client_main.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
-#include "local.h"
 
 // this file is included in both the game dll and quake2,
 // the game needs it to source shot locations, the client
