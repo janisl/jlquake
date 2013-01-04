@@ -14,7 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../public.h"
+#include "../../client_main.h"
+#include "../../system.h"
+#include "../../ui/ui.h"
+#include "../../cinematic/public.h"
 #include "local.h"
 #include "../../../server/public.h"
 #include "../../../common/file_formats/md2.h"

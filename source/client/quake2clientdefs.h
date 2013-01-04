@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE2CLIENTDEFS_H__
+#define __QUAKE2CLIENTDEFS_H__
+
+#include "renderer/public.h"
+#include "../common/file_formats/bsp38.h"
+
 #define MAX_CLIENTWEAPONMODELS_Q2       20		// PGM -- upped from 16 to fit the chainfist vwep
 
 #define CMD_BACKUP_Q2       64	// allow a lot of command backups for very fast systems
@@ -54,3 +60,5 @@ struct q2clientinfo_t
 	qhandle_t model;
 	qhandle_t weaponmodel[MAX_CLIENTWEAPONMODELS_Q2];
 };
+
+#endif

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __SOUND_PUBLIC_H__
+#define __SOUND_PUBLIC_H__
+
+#include "../../common/qcommon.h"
+
 typedef int sfxHandle_t;
 
 //!!!!!!!! Used by Wolf QVMs, do not change !!!!!!!!!!!
@@ -106,3 +111,5 @@ void CDAudio_Activate(qboolean active);
 extern Cvar* s_volume;
 extern Cvar* bgmvolume;
 extern Cvar* bgmtype;
+
+#endif

@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#include "../../quakeclientdefs.h"
+#include "../../renderer/public.h"
+
 #define MAX_STATIC_ENTITIES_Q1  128			// torches, etc
 
 extern Cvar* cl_doubleeyes;

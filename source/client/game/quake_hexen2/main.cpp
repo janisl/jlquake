@@ -14,7 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../public.h"
+#include "../../client_main.h"
+#include "../../chase.h"
+#include "../camera.h"
 #include "main.h"
 #include "demo.h"
 #include "connection.h"

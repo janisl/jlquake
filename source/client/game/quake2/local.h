@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#include "../../quake2clientdefs.h"
+#include "../../sound/public.h"
+
 extern Cvar* q2_hand;
 extern Cvar* clq2_footsteps;
 extern Cvar* clq2_name;

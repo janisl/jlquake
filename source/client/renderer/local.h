@@ -17,6 +17,8 @@
 #ifndef _R_LOCAL_H
 #define _R_LOCAL_H
 
+#include "public.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif

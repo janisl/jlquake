@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __LIGHT_STYLES_H__
+#define __LIGHT_STYLES_H__
+
+#include "../renderer/public.h"
+
 #define MAX_STYLESTRING 64
 
 struct clightstyle_t
@@ -31,3 +36,5 @@ void CL_ClearLightStyles();
 void CL_SetLightStyle(int i, const char* map);
 void CL_RunLightStyles();
 void CL_AddLightStyles();
+
+#endif

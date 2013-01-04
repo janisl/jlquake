@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __CINEMATIC_PUBLIC_H__
+#define __CINEMATIC_PUBLIC_H__
+
+#include "../../common/qcommon.h"
+
 //
 //	These constants are used by Quake 3 VMs, do not change.
 //
@@ -53,3 +58,5 @@ void SCR_StopCinematic();
 void CIN_SkipCinematic();
 void CIN_CloseAllVideos();
 void CL_PlayCinematic_f();
+
+#endif

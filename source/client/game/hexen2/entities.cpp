@@ -14,8 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../particles.h"
+#include "../dynamic_lights.h"
+#include "../light_styles.h"
 #include "local.h"
+#include "../../chase.h"
 #include "../../../common/file_formats/spr.h"
 
 #define H2MAX_EXTRA_TEXTURES 156	// 255-100+1

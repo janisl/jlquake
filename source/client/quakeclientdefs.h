@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKECLIENTDEFS_H__
+#define __QUAKECLIENTDEFS_H__
+
 //	Model effects
 enum
 {
@@ -111,3 +114,5 @@ struct q1player_info_t
 	int spectator;
 	qw_skin_t* skin;
 };
+
+#endif

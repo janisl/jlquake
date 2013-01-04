@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../ui/ui.h"
 #include "network_channel.h"
 #include "menu.h"
 

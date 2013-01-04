@@ -15,7 +15,6 @@
 //**************************************************************************
 // handles projection of decals (nee marks) onto brush model surfaces
 
-#include "../client.h"
 #include "local.h"
 
 #define SIDE_FRONT  0

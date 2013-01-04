@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../ui/ui.h"
+#include "../../ui/console.h"
 #include "local.h"
 #include "../../../common/hexen2strings.h"
 #include "../quake_hexen2/menu.h"

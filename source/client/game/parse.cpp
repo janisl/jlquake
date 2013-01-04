@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "../ui/ui.h"
 #include "parse.h"
 
 void CL_ParseCenterPrint(QMsg& message)

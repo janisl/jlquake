@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __INPUT_PUBLIC__H__
+#define __INPUT_PUBLIC__H__
+
+#include "../../common/qcommon.h"
+
 #define MAX_KEYS        256
 
 // in order from highest priority to lowest
@@ -66,3 +71,5 @@ int Key_GetKey(const char* binding);
 void Key_GetKeysForBinding(const char* binding, int* key1, int* key2);
 void Key_UnbindCommand(const char* command);
 void Key_ClearStates();
+
+#endif

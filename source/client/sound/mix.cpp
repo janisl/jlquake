@@ -18,7 +18,7 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "../client_main.h"
 #include "local.h"
 
 #define TALK_FUTURE_SEC 0.25		// go this far into the future (seconds)

@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../system.h"
+#include "../../ui/console.h"
 #include "local.h"
 #include "../et/local.h"
 #include "../et/dl_public.h"

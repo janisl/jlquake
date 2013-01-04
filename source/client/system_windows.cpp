@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "client.h"
+#include "system.h"
 #include "windows_shared.h"
 
 HWND GMainWindow;

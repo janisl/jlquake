@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "client.h"
+#include "system.h"
 #include "unix_shared.h"
 #include <unistd.h>
 #include <errno.h>

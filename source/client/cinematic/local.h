@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __CINEMATIC_LOCAL_H__
+#define __CINEMATIC_LOCAL_H__
+
+#include "public.h"
+#include "../client_main.h"
+
 #define CIN_STREAM  0	//	Const for the sound stream used for cinematics
 
 //
@@ -248,3 +254,5 @@ public:
 	void Draw(int handle);
 	void DrawFullscreen(int handle);
 };
+
+#endif

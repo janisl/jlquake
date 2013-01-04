@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __PARTICLES_H__
+#define __PARTICLES_H__
+
+#include "../../common/qcommon.h"
+#include "../quake2clientdefs.h"
+
 enum
 {
 	MAX_PARTICLES = 7000,
@@ -227,3 +233,5 @@ void CLQ2_ColorExplosionParticles(vec3_t origin, int colour, int run);
 void CLQ2_ParticleSmokeEffect(vec3_t origin, vec3_t direction, int colour, int count, int magnitude);
 void CLQ2_BlasterParticles2(vec3_t origin, vec3_t direction, unsigned int colour);
 void CLQ2_BlasterTrail2(vec3_t start, vec3_t end);
+
+#endif

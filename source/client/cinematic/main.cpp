@@ -14,8 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
 #include "local.h"
+#include "../public.h"
+#include "../ui/ui.h"
+#include "../ui/console.h"
 #include "../sound/local.h"
 
 #define MAX_VIDEO_HANDLES   16

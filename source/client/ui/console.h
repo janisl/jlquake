@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __CONSOLE_H__
+#define __CONSOLE_H__
+
+#include "../../common/qcommon.h"
+
 #define NUM_CON_TIMES   4
 #define CON_TEXTSIZE    32768
 
@@ -57,3 +62,5 @@ void Con_ToggleConsole_f();
 void Con_Init();
 void Con_Close();
 void Con_InitBackgroundImage();
+
+#endif

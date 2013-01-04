@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../particles.h"
+#include "../../client_main.h"
+#include "../../utils.h"
 
 void CLQ2_ParticleEffect(vec3_t origin, vec3_t direction, int colour, int count)
 {

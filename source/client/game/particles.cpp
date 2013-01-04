@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "particles.h"
+#include "../client_main.h"
 
 cparticle_t particles[MAX_PARTICLES];
 int cl_numparticles = MAX_PARTICLES;

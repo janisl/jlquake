@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "client.h"
+#include "chase.h"
+#include "client_main.h"
 
 Cvar* chase_active;
 

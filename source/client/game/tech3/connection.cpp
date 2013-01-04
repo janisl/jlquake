@@ -14,7 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
+#include "../../cinematic/public.h"
+#include "../../ui/ui.h"
+#include "../../ui/console.h"
 #include "local.h"
 #include "../../../server/public.h"
 #include "../et/dl_public.h"

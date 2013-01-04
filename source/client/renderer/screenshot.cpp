@@ -35,7 +35,6 @@ FIXME: the statics don't get a reinit between fs_game changes
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

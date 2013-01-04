@@ -14,8 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "input.h"
+#include "../public.h"
+#include "../client_main.h"
+#include "../game/camera.h"
 #include "../game/wolfmp/local.h"
+#include "../ui/ui.h"
 
 // builds an intended movement command to send to the server
 /*

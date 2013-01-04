@@ -17,6 +17,8 @@
 #ifndef _TECH3_UI_SHARED_H
 #define _TECH3_UI_SHARED_H
 
+#include "../../client_main.h"
+
 struct uiClientState_t
 {
 	connstate_t connState;

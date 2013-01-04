@@ -17,6 +17,9 @@
 #ifndef _CGAME_TECH3_LOCAL_H
 #define _CGAME_TECH3_LOCAL_H
 
+#include "../../quake3clientdefs.h"
+#include "../../renderer/public.h"
+
 //
 //	CDKey
 //

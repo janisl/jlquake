@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../particles.h"
 #include "local.h"
 
 enum { MAX_BEAMS_Q2 = 32 };

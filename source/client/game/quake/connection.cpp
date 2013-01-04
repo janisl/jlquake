@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
 #include "local.h"
 #include "../quake_hexen2/demo.h"
 

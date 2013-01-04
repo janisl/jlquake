@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "public.h"
+#include "../public.h"
 
 int in_keyCatchers;		// bit flags
 int anykeydown;

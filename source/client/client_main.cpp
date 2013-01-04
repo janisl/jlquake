@@ -14,8 +14,11 @@
 //**
 //**************************************************************************
 
-#include "client.h"
-#include "../server/public.h"
+#include "client_main.h"
+#include "public.h"
+#include "game/particles.h"
+#include "game/dynamic_lights.h"
+#include "game/light_styles.h"
 #include "game/quake/local.h"
 #include "game/hexen2/local.h"
 #include "game/quake_hexen2/connection.h"
@@ -26,6 +29,10 @@
 #include "game/wolfsp/local.h"
 #include "game/et/dl_public.h"
 #include "renderer/local.h"
+#include "ui/ui.h"
+#include "ui/console.h"
+#include "cinematic/public.h"
+#include "../server/public.h"
 
 Cvar* cl_inGameVideo;
 

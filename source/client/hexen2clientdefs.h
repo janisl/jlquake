@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __HEXEN2CLIENTDEFS_H__
+#define __HEXEN2CLIENTDEFS_H__
+
+#include "../common/qcommon.h"
+
 //	.MDL model effect flags.
 enum
 {
@@ -134,3 +139,5 @@ struct h2client_frames2_t
 	h2entity_state_t states[MAX_CLIENT_STATES_H2 * 2];
 	int count;
 };
+
+#endif

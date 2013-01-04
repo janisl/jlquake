@@ -17,7 +17,8 @@
 // light animations
 // 'm' is normal light, 'a' is no light, 'z' is double bright
 
-#include "../client.h"
+#include "light_styles.h"
+#include "../client_main.h"
 
 clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 

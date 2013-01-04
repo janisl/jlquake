@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
 #include "predict.h"
 
 struct predicted_player

@@ -14,8 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../ui/ui.h"
+#include "../camera.h"
 #include "local.h"
+#include "../../ui/console.h"
 #include "../../../server/public.h"
 
 #define Q1SBAR_HEIGHT     24

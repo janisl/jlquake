@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../renderer/public.h"
 #include "local.h"
 
 static void CLH2_InitChunkGlass(float final, qhandle_t* model)

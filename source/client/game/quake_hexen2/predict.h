@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#include "../../quakeclientdefs.h"
+#include "../../hexen2clientdefs.h"
+
 extern Cvar* cl_predict_players;
 extern Cvar* cl_predict_players2;
 

@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __CLIENT_TRANSLATE_H__
+#define __CLIENT_TRANSLATE_H__
+
+#include "../common/qcommon.h"
+
 enum
 {
 	LANGUAGE_FRENCH = 0,
@@ -27,3 +32,5 @@ extern Cvar* cl_language;
 
 void CL_InitTranslation();
 void CL_TranslateString(const char* string, char* dest_buffer);
+
+#endif

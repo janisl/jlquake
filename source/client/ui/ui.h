@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __UI_H__
+#define __UI_H__
+
+#include "../../common/qcommon.h"
+#include "../renderer/public.h"
+
 #define SMALLCHAR_WIDTH     8
 #define SMALLCHAR_HEIGHT    16
 
@@ -108,3 +114,5 @@ void UI_ForceMenuOff();
 void UI_SetMainMenu();
 void UI_SetInGameMenu();
 void CL_InitRenderer();
+
+#endif

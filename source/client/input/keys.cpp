@@ -14,9 +14,16 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "public.h"
+#include "keycodes.h"
+#include "../client_main.h"
+#include "../public.h"
+#include "../system.h"
+#include "../translate.h"
 #include "../game/tech3/local.h"
 #include "../game/et/local.h"
+#include "../ui/ui.h"
+#include "../ui/console.h"
 
 struct keyname_t
 {

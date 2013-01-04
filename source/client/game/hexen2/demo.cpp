@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../../common/qcommon.h"
 #include "local.h"
 
 bool h2intro_playing = false;

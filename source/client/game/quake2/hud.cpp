@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../ui/ui.h"
 #include "local.h"
 
 #define STAT_MINUS      10	// num frame for '-' stats digit

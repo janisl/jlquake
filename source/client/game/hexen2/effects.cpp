@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../particles.h"
 #include "local.h"
 #include "../../../common/Hexen2EffectsRandom.h"
 

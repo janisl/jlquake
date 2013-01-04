@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
+#include "../../ui/console.h"
 #include "local.h"
 #include "cg_shared.h"
 #include "../quake3/local.h"

@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
+#include "../particles.h"
 #include "local.h"
 
 q2entity_state_t clq2_parse_entities[MAX_PARSE_ENTITIES_Q2];

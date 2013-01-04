@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../public.h"
 #include "local.h"
 
 #define CDKEY_LEN 16

@@ -14,32 +14,19 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+#ifndef _CLIENT_MAIN_H
+#define _CLIENT_MAIN_H
 
 #include "../common/qcommon.h"
-#include "public.h"
-#include "../common/file_formats/bsp38.h"
-
 #include "sound/public.h"
 #include "renderer/public.h"
-#include "input/keycodes.h"
 #include "input/public.h"
-#include "cinematic/public.h"
 #include "quakeclientdefs.h"
 #include "hexen2clientdefs.h"
 #include "quake2clientdefs.h"
 #include "quake3clientdefs.h"
 #include "wolfclientdefs.h"
-#include "ui/ui.h"
-#include "ui/console.h"
-#include "game/particles.h"
-#include "game/dynamic_lights.h"
-#include "game/light_styles.h"
 #include "game/input.h"
-#include "game/camera.h"
-#include "splines/public.h"
-#include "translate.h"
 
 #define CSHIFT_CONTENTS 0
 #define CSHIFT_DAMAGE   1
@@ -604,14 +591,6 @@ extern Cvar* clqh_color;
 extern byte* playerTranslation;
 extern int color_offsets[MAX_PLAYER_CLASS];
 
-extern Cvar* chase_active;
-
-//
-//	Chase
-//
-void Chase_Init();
-void Chase_Update();
-
 //
 //	Client main
 //
@@ -626,20 +605,5 @@ bool CL_CheckOrDownloadFile(const char* filename);
 void SHOWNET(QMsg& msg, const char* s);
 void CL_NextDemo();
 void CL_Disconnect_f();
-
-//
-//	System
-//
-char* Sys_GetClipboardData();	// note that this isn't journaled...
-void Sys_StartProcess(const char* exeName, bool doExit);
-void Sys_OpenURL(const char* url, bool doExit);
-bool Sys_IsNumLockDown();
-void Sys_AppActivate();
-
-//
-//	Utils
-//
-float frand();	// 0 to 1
-float crand();	// -1 to 1
 
 #endif

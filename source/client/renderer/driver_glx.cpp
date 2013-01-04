@@ -16,7 +16,6 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
 #include "../unix_shared.h"
 #include <X11/extensions/xf86vmode.h>

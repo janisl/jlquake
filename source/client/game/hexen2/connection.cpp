@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../public.h"
 #include "local.h"
 #include "../quake_hexen2/demo.h"
+#include "../../client_main.h"
 
 //	An h2svc_signonnum has been received, perform a client side setup
 void CLH2_SignonReply()

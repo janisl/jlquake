@@ -14,7 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "console.h"
+#include "ui.h"
+#include "../public.h"
+#include "../client_main.h"
+#include "../translate.h"
+#include "../input/keycodes.h"
 #include "../game/tech3/local.h"
 
 #define COMMAND_HISTORY 32

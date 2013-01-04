@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
 #include "local.h"
 
 static bool R_CullTriSurf(srfTriangles_t* cv)

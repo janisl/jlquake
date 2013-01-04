@@ -14,6 +14,13 @@
 //**
 //**************************************************************************
 
+#ifndef __SPLINES_PUBLIC__H__
+#define __SPLINES_PUBLIC__H__
+
+#include "../../common/qcommon.h"
+
 bool loadCamera(int camNum, const char* name);
 void startCamera(int camNum, int time);
 bool getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov);
+
+#endif

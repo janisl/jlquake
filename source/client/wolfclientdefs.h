@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __WOLFCLIENTDEFS_H__
+#define __WOLFCLIENTDEFS_H__
+
 #define LIMBOCHAT_WIDTH_WA     140		// NERVE - SMF
 #define LIMBOCHAT_HEIGHT_WA    7		// NERVE - SMF
 
@@ -135,3 +138,5 @@ struct etdoubleTap_t
 // NERVE - SMF - wolf multiplayer master servers
 #define WMMOTD_SERVER_NAME      "wolfmotd.idsoftware.com"	// 192.246.40.65
 #define ETMOTD_SERVER_NAME      "etmaster.idsoftware.com"	//"etmotd.idsoftware.com"			// ?.?.?.?
+
+#endif

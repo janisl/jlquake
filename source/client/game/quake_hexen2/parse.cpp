@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../ui/ui.h"
+#include "../light_styles.h"
 #include "parse.h"
 
 void CLQH_ParseTime(QMsg& message)

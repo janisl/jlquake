@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "dynamic_lights.h"
+#include "../client_main.h"
 
 cdlight_t cl_dlights[MAX_DLIGHTS];
 

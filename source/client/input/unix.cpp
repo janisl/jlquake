@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "public.h"
+#include "keycodes.h"
+#include "../public.h"
 #include "../renderer/local.h"
 #include "../unix_shared.h"
 #include <X11/Xutil.h>

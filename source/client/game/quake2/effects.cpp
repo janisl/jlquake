@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../particles.h"
+#include "../dynamic_lights.h"
 #include "local.h"
 
 // this file is included in both the game dll and quake2,

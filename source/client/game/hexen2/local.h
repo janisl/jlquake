@@ -14,6 +14,10 @@
 //**
 //**************************************************************************
 
+#include "../../hexen2clientdefs.h"
+#include "../../sound/public.h"
+#include "../../renderer/public.h"
+
 #define H2STREAM_ATTACHED           16
 
 #define MAX_STATIC_ENTITIES_H2      256			// torches, etc

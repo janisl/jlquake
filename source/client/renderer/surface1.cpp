@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
 #include "local.h"
 
 mbrush29_glpoly_t* lightmap_polys[MAX_LIGHTMAPS];

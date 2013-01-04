@@ -14,8 +14,11 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../input/keycodes.h"
 #include "../../renderer/cvars.h"
+#include "../../ui/ui.h"
+#include "../../ui/console.h"
 #include "local.h"
 #include "qmenu.h"
 #include "menu.h"

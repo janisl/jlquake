@@ -14,7 +14,10 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "ui.h"
+#include "../client_main.h"
+#include "../system.h"
+#include "../input/keycodes.h"
 
 static void Field_Paste(field_t* edit)
 {

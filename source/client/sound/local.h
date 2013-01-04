@@ -17,6 +17,8 @@
 #ifndef _SND_LOCAL_H
 #define _SND_LOCAL_H
 
+#include "public.h"
+
 #define WAV_FORMAT_PCM          1
 
 //#define MAX_CHANNELS			96

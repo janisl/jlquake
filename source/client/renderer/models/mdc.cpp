@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
 #include "../local.h"
 
 #define NUMMDCVERTEXNORMALS 256

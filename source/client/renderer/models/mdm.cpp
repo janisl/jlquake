@@ -14,7 +14,6 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
 #include "../local.h"
 #include "skeletal_model_inlines.h"
 

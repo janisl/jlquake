@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../dynamic_lights.h"
+#include "../../client_main.h"
 
 void CLQ2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, float radius, int delay, vec3_t colour)
 {

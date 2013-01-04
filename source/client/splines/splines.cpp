@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../common/qcommon.h"
+#include "public.h"
 #include "q_parse.h"
 #include "splines.h"
 

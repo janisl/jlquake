@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "client.h"
+#include "translate.h"
+#include "client_main.h"
+#include "public.h"
 
 #define MAX_TRANS_STRING    4096
 #define MAX_VA_STRING       32000

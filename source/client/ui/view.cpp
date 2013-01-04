@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "ui.h"
 #include "../game/quake_hexen2/view.h"
 #include "../game/quake2/local.h"
 

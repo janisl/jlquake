@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef __CGAME_INPUT_H__
+#define __CGAME_INPUT_H__
+
+#include "../../common/qcommon.h"
+
 struct in_usercmd_t
 {
 	int forwardmove;
@@ -54,3 +59,5 @@ void CLQH_StartPitchDrift();
 void CL_InitInput();
 in_usercmd_t CL_CreateCmd();
 void CL_ClearKeys();
+
+#endif

@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __QUAKE3CLIENTDEFS_H__
+#define __QUAKE3CLIENTDEFS_H__
+
 //!!!!!!! Used in cgame QVM, do not change !!!!!!!
 #define CMD_BACKUP_Q3       64
 #define CMD_MASK_Q3         (CMD_BACKUP_Q3 - 1)
@@ -114,3 +117,5 @@ struct q3serverInfo_t
 
 #define Q3MOTD_SERVER_NAME  "update.quake3arena.com"
 #define Q3PORT_MOTD         27951
+
+#endif

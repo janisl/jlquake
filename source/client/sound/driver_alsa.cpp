@@ -16,7 +16,6 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
 #include <alsa/asoundlib.h>
 

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
 #include "local.h"
 
 enum { MAX_LASERS_Q2 = 32 };

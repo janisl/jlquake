@@ -18,7 +18,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "../client_main.h"
+#include "../public.h"
 #include "local.h"
 #include "../../common/file_formats/bsp29.h"
 #include "../game/quake2/local.h"

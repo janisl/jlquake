@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
 #include "local.h"
 #include "../../../server/public.h"
 

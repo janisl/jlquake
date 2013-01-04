@@ -17,6 +17,8 @@
 #ifndef _CLIENT_PUBLIC_H
 #define _CLIENT_PUBLIC_H
 
+#include "../common/qcommon.h"
+
 void S_ClearSoundBuffer(bool killStreaming);
 int CLH2_GetLightStyleValue(int style);
 void CL_ClearDrift();

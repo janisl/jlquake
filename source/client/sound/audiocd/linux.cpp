@@ -29,7 +29,7 @@
 
 #include <linux/cdrom.h>
 
-#include "../../client.h"
+#include "../public.h"
 
 // MACROS ------------------------------------------------------------------
 

@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../particles.h"
+#include "../dynamic_lights.h"
 #include "local.h"
 
 static sfxHandle_t clq2_sfx_ric1;

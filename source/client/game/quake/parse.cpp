@@ -14,8 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
+#include "../../ui/ui.h"
 #include "local.h"
+#include "../particles.h"
+#include "../dynamic_lights.h"
 #include "../parse.h"
 #include "../quake_hexen2/parse.h"
 #include "../quake_hexen2/connection.h"

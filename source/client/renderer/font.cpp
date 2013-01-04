@@ -65,7 +65,6 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
 #include <freetype/ftsystem.h>
 #include <freetype/ftimage.h>

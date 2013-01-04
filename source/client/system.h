@@ -14,23 +14,15 @@
 //**
 //**************************************************************************
 
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#ifndef __CLIENT_SYSTEM_H__
+#define __CLIENT_SYSTEM_H__
 
-#include "../../common/qcommon.h"
-#include "input.h"
+#include "../common/qcommon.h"
 
-#define CAM_NONE    0
-#define CAM_TRACK   1
-
-extern int spec_track;	// player# of who we are tracking
-extern int autocam;
-
-void CL_InitCam();
-void Cam_Reset();
-void Cam_Track(in_usercmd_t* cmd);
-void Cam_FinishMove(const in_usercmd_t* cmd);
-bool Cam_DrawViewModel();
-bool Cam_DrawPlayer(int playernum);
+char* Sys_GetClipboardData();	// note that this isn't journaled...
+void Sys_StartProcess(const char* exeName, bool doExit);
+void Sys_OpenURL(const char* url, bool doExit);
+bool Sys_IsNumLockDown();
+void Sys_AppActivate();
 
 #endif

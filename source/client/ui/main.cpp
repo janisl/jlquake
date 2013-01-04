@@ -14,12 +14,14 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "ui.h"
+#include "../client_main.h"
 #include "../game/quake_hexen2/menu.h"
 #include "../game/quake/local.h"
 #include "../game/hexen2/local.h"
 #include "../game/quake2/menu.h"
 #include "../game/tech3/local.h"
+#include "../input/keycodes.h"
 
 void UI_Init()
 {

@@ -47,7 +47,6 @@ up to five or more times in a frame with 3D status bar icons).
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

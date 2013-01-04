@@ -14,6 +14,9 @@
 //**
 //**************************************************************************
 
+#ifndef __KEYCODES_H__
+#define __KEYCODES_H__
+
 //
 // these are the key numbers that should be passed to KeyEvent
 //
@@ -180,3 +183,5 @@ enum
 // to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG (ugly)
 #define K_CHAR_FLAG     1024
+
+#endif

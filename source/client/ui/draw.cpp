@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "ui.h"
+#include "../client_main.h"
 
 viddef_t viddef;
 

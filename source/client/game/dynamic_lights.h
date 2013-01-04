@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef __DYNAMIC_LIGHTS_H__
+#define __DYNAMIC_LIGHTS_H__
+
+#include "../../common/qcommon.h"
+#include "../renderer/public.h"
+
 struct cdlight_t
 {
 	int key;			// so entities can reuse same entry
@@ -54,3 +60,5 @@ void CLQ2_MuzzleFlashLight(int key, vec3_t origin, vec3_t angles, float radius, 
 void CLQ2_MuzzleFlash2Light(int key, vec3_t origin, float radius, int delay, vec3_t colour);
 void CLQ2_Flashlight(int key, vec3_t origin);
 void CLQ2_ColorFlash(int key, vec3_t origin, int intensity, float r, float g, float b);
+
+#endif

@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "../client.h"
+#include "camera.h"
+#include "../client_main.h"
 
 int spec_track = 0;	// player# of who we are tracking
 int autocam = CAM_NONE;

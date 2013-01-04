@@ -14,7 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../../client.h"
+#include "../../client_main.h"
+#include "../../public.h"
+#include "../../system.h"
+#include "../../translate.h"
+#include "../../cinematic/public.h"
+#include "../../ui/ui.h"
 #include "local.h"
 #include "../quake3/local.h"
 #include "../wolfsp/local.h"
