@@ -418,7 +418,7 @@ void Cam_FinishMove(const in_usercmd_t* cmd)
 		return;
 	}
 
-	if (cls.state != CA_ACTIVE || (GGameType & GAME_HexenWorld && clqh_server_version < 1.57))
+	if (cls.state != CA_ACTIVE)
 	{
 		return;
 	}

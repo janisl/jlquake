@@ -60,8 +60,6 @@ int color_offsets[MAX_PLAYER_CLASS] =
 
 int bitcounts[32];	/// just for protocol profiling
 
-float clqh_server_version = 0;	// version of server we connected to
-
 static void CL_ForwardToServer_f()
 {
 	if (cls.state < CA_CONNECTED || clc.demoplaying)

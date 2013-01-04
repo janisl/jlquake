@@ -332,23 +332,6 @@ static void CLQHW_FullServerinfo_f()
 	}
 
 	String::Cpy(cl.qh_serverinfo, Cmd_Argv(1));
-
-	if (GGameType & GAME_HexenWorld)
-	{
-		const char* p = Info_ValueForKey(cl.qh_serverinfo, "*version");
-		if (p && *p)
-		{
-			float v = String::Atof(p);
-			if (v)
-			{
-				if (!clqh_server_version)
-				{
-					common->Printf("Version %1.2f Server\n", v);
-				}
-				clqh_server_version = v;
-			}
-		}
-	}
 }
 
 //	Allow clients to change userinfo
