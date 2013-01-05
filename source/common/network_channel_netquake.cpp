@@ -744,7 +744,10 @@ static void Datagram_Shutdown()
 
 static void Datagram_Close(netchan_t* chan)
 {
-	UDP_CloseSocket(chan->socket);
+	if (chan->socket > 0)
+	{
+		UDP_CloseSocket(chan->socket);
+	}
 	chan->socket = 0;
 }
 
