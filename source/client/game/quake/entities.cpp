@@ -21,6 +21,7 @@
 #include "../dynamic_lights.h"
 #include "../camera.h"
 #include "../quake_hexen2/predict.h"
+#include "../../../common/Common.h"
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

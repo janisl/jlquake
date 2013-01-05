@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "message_utils.h"
+#include "Common.h"
 
 void MSGQ2_WriteDeltaUsercmd(QMsg* buf, q2usercmd_t* from, q2usercmd_t* cmd)
 {

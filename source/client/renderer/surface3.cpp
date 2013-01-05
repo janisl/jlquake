@@ -30,6 +30,7 @@ use the shader system.
 // HEADER FILES ------------------------------------------------------------
 
 #include "local.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 
 // MACROS ------------------------------------------------------------------

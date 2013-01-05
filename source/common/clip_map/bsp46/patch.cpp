@@ -43,7 +43,7 @@ properly.
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../../qcommon.h"
+#include "../../Common.h"
 #include "../../common_defs.h"
 #include "../../console_variable.h"
 #include "local.h"

@@ -23,6 +23,7 @@
 #include "local.h"
 #include "../../common/file_formats/bsp29.h"
 #include "../game/quake2/local.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"

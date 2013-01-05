@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "socket_local.h"
+#include "Common.h"
 #include "strings.h"
 #include "console_variable.h"
 #include "system_unix.h"

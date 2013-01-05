@@ -18,7 +18,7 @@
 //
 //**************************************************************************
 
-#include "../qcommon.h"
+#include "../Common.h"
 #include "../common_defs.h"
 #include "../endian.h"
 #include "local.h"

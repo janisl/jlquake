@@ -16,6 +16,7 @@
 // cvar.c -- dynamic variable tracking
 
 #include "console_variable.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "command_buffer.h"

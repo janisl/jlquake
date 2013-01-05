@@ -20,6 +20,7 @@
 #include "../../common_defs.h"
 #include "../../endian.h"
 #include "../../md4.h"
+#include "../../Common.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------

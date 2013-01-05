@@ -22,6 +22,7 @@
 
 #include "info_string.h"
 #include "strings.h"
+#include "Common.h"
 
 // MACROS ------------------------------------------------------------------
 

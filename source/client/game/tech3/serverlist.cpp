@@ -21,6 +21,7 @@
 #include "../../../common/command_buffer.h"
 #include "../../../common/event_queue.h"
 #include "../../../common/endian.h"
+#include "../../../common/Common.h"
 
 #define MAX_SERVERSTATUSREQUESTS    16
 #define MAX_PINGREQUESTS            32

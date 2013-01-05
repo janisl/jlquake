@@ -14,6 +14,7 @@
 //**
 //**************************************************************************
 
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/quake3defs.h"
 #include "../../common/files.h"

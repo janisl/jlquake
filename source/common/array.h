@@ -21,7 +21,7 @@
 #ifndef __ARRAY_H__
 #define __ARRAY_H__
 
-#include "Common.h"
+#include "qcommon.h"
 
 #ifdef MEM_DEBUG_NEW
 #undef new

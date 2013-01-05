@@ -19,6 +19,7 @@
 #include "../hexen2/local.h"
 #include "../../client/public.h"
 #include "../public.h"
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/command_line_args.h"
 #include "../../common/common_defs.h"

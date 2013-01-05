@@ -26,6 +26,7 @@
 #include "../wolfmp/local.h"
 #include "../et/local.h"
 #include "../et/dl_public.h"
+#include "../../../common/Common.h"
 #include "../../../server/public.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

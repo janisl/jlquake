@@ -76,6 +76,7 @@
 //		address of a server that is not running locally.
 
 #include "network_channel.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "endian.h"

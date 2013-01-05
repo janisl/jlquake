@@ -19,6 +19,7 @@
 #include "local.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
+#include "../../common/Common.h"
 
 Cvar* sv_ce_scale;
 Cvar* sv_ce_max_size;

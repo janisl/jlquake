@@ -17,6 +17,7 @@
 #include "precompiler.h"
 #include "mathlib.h"
 #include "strings.h"
+#include "Common.h"
 
 #define PATHSEPERATOR_CHAR      '/'
 

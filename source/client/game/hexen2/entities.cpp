@@ -21,6 +21,7 @@
 #include "../light_styles.h"
 #include "../quake_hexen2/predict.h"
 #include "../../chase.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/message_utils.h"

@@ -21,6 +21,7 @@
 #include "../translate.h"
 #include "../input/keycodes.h"
 #include "../game/tech3/local.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 

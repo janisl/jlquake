@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "../../qcommon.h"
+#include "../../Common.h"
 #include "../../endian.h"
 #include "../../console_variable.h"
 #include "../../content_types.h"

@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "../../qcommon.h"
+#include "../../Common.h"
 #include "../../content_types.h"
 #include "local.h"
 

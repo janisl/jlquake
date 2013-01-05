@@ -22,6 +22,7 @@
 #include "../quake_hexen2/menu.h"
 #include "../quake_hexen2/view.h"
 #include "../quake_hexen2/main.h"
+#include "../../../common/Common.h"
 #include "../../../common/hexen2strings.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

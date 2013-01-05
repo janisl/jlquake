@@ -22,6 +22,7 @@
 #include "../../ui/console.h"
 #include "../../../server/public.h"
 #include "../et/dl_public.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/message_utils.h"

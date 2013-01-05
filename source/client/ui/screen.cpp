@@ -26,6 +26,7 @@
 #include "../game/hexen2/local.h"
 #include "../game/quake2/local.h"
 #include "../game/tech3/local.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/system.h"

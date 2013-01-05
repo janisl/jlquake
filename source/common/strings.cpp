@@ -19,6 +19,7 @@
 //**************************************************************************
 
 #include "strings.h"
+#include "Common.h"
 #include "common_defs.h"
 
 #if !defined _WIN32

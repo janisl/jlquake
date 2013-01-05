@@ -23,6 +23,7 @@
 #include "../../../server/public.h"
 #include "../../../common/file_formats/md2.h"
 #include "menu.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/message_utils.h"

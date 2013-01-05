@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../public.h"
 #include "../particles.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 

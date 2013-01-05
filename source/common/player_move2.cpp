@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "player_move.h"
+#include "Common.h"
 #include "file_formats/bsp38.h"
 #include "content_types.h"
 

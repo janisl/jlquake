@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "common_defs.h"
+#include "Common.h"
 #include "strings.h"
 #include "command_buffer.h"
 #include "network_channel.h"

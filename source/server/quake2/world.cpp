@@ -14,9 +14,10 @@
 //**
 //**************************************************************************
 
+#include "local.h"
+#include "../../common/Common.h"
 #include "../../common/qcommon.h"
 #include "../../common/content_types.h"
-#include "local.h"
 #include "../worldsector.h"
 
 #define EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,q2edict_t,area)

@@ -22,6 +22,7 @@
 #include <curl/curl.h>
 
 #include "dl_public.h"
+#include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/console_variable.h"
 

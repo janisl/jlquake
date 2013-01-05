@@ -14,6 +14,7 @@
 //**
 //**************************************************************************
 
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 #include "local.h"

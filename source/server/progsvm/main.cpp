@@ -20,6 +20,7 @@
 #include "../hexen2/local.h"
 #include "../public.h"
 #include "../../common/common_defs.h"
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 #include "../../common/crc.h"

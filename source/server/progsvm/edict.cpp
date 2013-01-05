@@ -18,6 +18,7 @@
 #include "../public.h"
 #include "progsvm.h"
 #include "../quake_hexen/local.h"
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/common_defs.h"
 #include "../../common/command_buffer.h"

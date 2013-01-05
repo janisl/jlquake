@@ -21,6 +21,7 @@
 //**************************************************************************
 
 #include "message.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "huffman.h"

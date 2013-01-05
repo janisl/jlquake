@@ -16,6 +16,7 @@
 
 #include "particles.h"
 #include "../client_main.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
 

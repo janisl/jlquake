@@ -19,6 +19,7 @@
 #include "local.h"
 #include "../../common/strings.h"
 #include "../../common/endian.h"
+#include "../../common/Common.h"
 
 // MACROS ------------------------------------------------------------------
 

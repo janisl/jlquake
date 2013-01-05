@@ -17,6 +17,7 @@
 #include "public.h"
 #include "q_parse.h"
 #include "splines.h"
+#include "../../common/Common.h"
 #include "../../common/command_buffer.h"
 #include "../../common/strings.h"
 #include "../../common/files.h"

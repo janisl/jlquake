@@ -161,6 +161,7 @@ or configs will never get loaded from disk!
 //**************************************************************************
 
 #include "files.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "command_buffer.h"

@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "local.h"
+#include "../Common.h"
 #include "../common_defs.h"
 #include "../endian.h"
 #include "../strings.h"

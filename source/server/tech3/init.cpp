@@ -22,6 +22,7 @@
 #include "../../client/public.h"
 #include "../worldsector.h"
 #include "../public.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/event_queue.h"

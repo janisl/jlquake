@@ -33,6 +33,7 @@ solid_edge items only clip against bsp models.
 #include "../progsvm/progsvm.h"
 #include "local.h"
 #include "../../client/public.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/game_utils.h"
 #include "../../common/player_move.h"

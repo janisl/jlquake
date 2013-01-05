@@ -16,6 +16,7 @@
 
 #include "public.h"
 #include "keycodes.h"
+#include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/event_queue.h"
 #include "../../common/command_buffer.h"

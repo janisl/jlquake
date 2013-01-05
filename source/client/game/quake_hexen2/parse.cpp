@@ -18,6 +18,7 @@
 #include "../../client_main.h"
 #include "../../ui/ui.h"
 #include "../light_styles.h"
+#include "../../../common/Common.h"
 #include "../../../common/player_move.h"
 
 void CLQH_ParseTime(QMsg& message)

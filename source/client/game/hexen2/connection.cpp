@@ -18,6 +18,7 @@
 #include "../../public.h"
 #include "../quake_hexen2/demo.h"
 #include "../../client_main.h"
+#include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/message_utils.h"
 

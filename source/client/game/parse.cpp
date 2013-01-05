@@ -16,6 +16,7 @@
 
 #include "parse.h"
 #include "../ui/ui.h"
+#include "../../common/Common.h"
 
 void CL_ParseCenterPrint(QMsg& message)
 {

@@ -38,6 +38,7 @@ to the new value before sending out any replies.
 */
 
 #include "network_channel.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "endian.h"
 #include "strings.h"

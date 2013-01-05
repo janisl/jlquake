@@ -24,6 +24,7 @@
 #include "../game/et/local.h"
 #include "../ui/ui.h"
 #include "../ui/console.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 

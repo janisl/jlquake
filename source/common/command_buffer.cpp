@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "command_buffer.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "command_line_args.h"

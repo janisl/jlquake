@@ -19,6 +19,7 @@
 #include "../../cinematic/public.h"
 #include "../parse.h"
 #include "../light_styles.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/command_buffer.h"

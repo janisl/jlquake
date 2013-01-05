@@ -17,6 +17,7 @@
 #include "local.h"
 #include "../particles.h"
 #include "../dynamic_lights.h"
+#include "../../../common/Common.h"
 #include "../../../common/strings.h"
 
 static sfxHandle_t clq2_sfx_ric1;

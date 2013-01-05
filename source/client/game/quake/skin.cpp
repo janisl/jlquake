@@ -16,6 +16,7 @@
 
 #include "local.h"
 #include "../../client_main.h"
+#include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/command_buffer.h"
 

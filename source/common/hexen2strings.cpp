@@ -16,6 +16,7 @@
 
 #include "hexen2strings.h"
 #include "common_defs.h"
+#include "Common.h"
 
 // For international stuff
 int* prh2_string_index = NULL;

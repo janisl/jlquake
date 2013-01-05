@@ -14,12 +14,13 @@
 //**
 //**************************************************************************
 
+#include "local.h"
+#include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 #include "../../common/system.h"
 #include "../public.h"
-#include "local.h"
 
 Cvar* allow_download;
 Cvar* allow_download_players;

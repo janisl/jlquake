@@ -24,6 +24,7 @@
 #include "../light_styles.h"
 #include "../quake/local.h"
 #include "../hexen2/local.h"
+#include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/game_utils.h"

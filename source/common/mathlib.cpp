@@ -16,6 +16,7 @@
 
 #include "mathlib.h"
 #include "common_defs.h"
+#include "Common.h"
 
 //	Should be const
 vec3_t vec3_origin = {0, 0, 0};

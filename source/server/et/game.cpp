@@ -25,6 +25,7 @@
 #include "../../common/command_buffer.h"
 #include "../../common/precompiler.h"
 #include "../../common/system.h"
+#include "../../common/Common.h"
 
 etsharedEntity_t* SVET_GentityNum(int num)
 {

@@ -21,6 +21,7 @@
 #include "../../../common/strings.h"
 #include "ui_public.h"
 #include "cg_ui_shared.h"
+#include "../../../common/Common.h"
 #include "../../../common/precompiler.h"
 #include "../../../common/system.h"
 

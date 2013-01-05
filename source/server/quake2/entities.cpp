@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "local.h"
+#include "../../common/Common.h"
 #include "../../common/message_utils.h"
 #include "../../common/endian.h"
 

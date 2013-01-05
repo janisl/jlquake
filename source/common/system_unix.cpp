@@ -17,6 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "system.h"
+#include "Common.h"
 #include "common_defs.h"
 #include "strings.h"
 #include "system_unix.h"

@@ -35,6 +35,7 @@
 #include "ui/console.h"
 #include "cinematic/public.h"
 #include "../server/public.h"
+#include "../common/Common.h"
 #include "../common/common_defs.h"
 #include "../common/strings.h"
 #include "../common/player_move.h"

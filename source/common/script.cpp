@@ -16,6 +16,7 @@
 
 #include "script.h"
 #include "strings.h"
+#include "Common.h"
 
 //longer punctuations first
 static punctuation_t default_punctuations[] =
