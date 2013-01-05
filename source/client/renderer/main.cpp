@@ -1589,7 +1589,7 @@ static bool SurfIsOffscreen(const drawSurf_t* drawSurf, vec4_t clipDest[128])
 	RB_BeginSurface(shader, fogNum);
 	rb_surfaceTable[*drawSurf->surface](drawSurf->surface);
 
-	qassert(tess.numVertexes < 128);
+	assert(tess.numVertexes < 128);
 
 	unsigned int pointOr = 0;
 	unsigned int pointAnd = (unsigned int)~0;

@@ -16,10 +16,7 @@
 
 #include <windows.h>
 #include <windowsx.h>
-
 #include <mmsystem.h>
-#include <assert.h>
-#include <stdio.h>
 
 #include "midi.h"
 #include "midstuff.h"

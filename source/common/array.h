@@ -85,7 +85,7 @@ public:
 
 	void Resize(int NewSize)
 	{
-		qassert(NewSize >= 0);
+		assert(NewSize >= 0);
 
 		if (NewSize <= 0)
 		{
@@ -126,7 +126,7 @@ public:
 	}
 	void SetNum(int NewNum, bool bResize = true)
 	{
-		qassert(NewNum >= 0);
+		assert(NewNum >= 0);
 		if (bResize || NewNum > ArrSize)
 		{
 			Resize(NewNum);
@@ -135,7 +135,7 @@ public:
 	}
 	void SetNumWithReserve(int NewNum)
 	{
-		qassert(NewNum >= 0);
+		assert(NewNum >= 0);
 		if (NewNum > ArrSize)
 		{
 			Resize(NewNum + NewNum * 3 / 8 + 32);
@@ -169,14 +169,14 @@ public:
 	}
 	T& operator[](int Index)
 	{
-		qassert(Index >= 0);
-		qassert(Index < ArrNum);
+		assert(Index >= 0);
+		assert(Index < ArrNum);
 		return ArrData[Index];
 	}
 	const T& operator[](int Index) const
 	{
-		qassert(Index >= 0);
-		qassert(Index < ArrNum);
+		assert(Index >= 0);
+		assert(Index < ArrNum);
 		return ArrData[Index];
 	}
 
@@ -214,9 +214,9 @@ public:
 	}
 	bool RemoveIndex(int Index)
 	{
-		qassert(ArrData != NULL);
-		qassert(Index >= 0);
-		qassert(Index < ArrNum);
+		assert(ArrData != NULL);
+		assert(Index >= 0);
+		assert(Index < ArrNum);
 
 		if (Index < 0 || Index >= ArrNum)
 		{

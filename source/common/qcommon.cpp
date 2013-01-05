@@ -15,6 +15,8 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "system.h"
+#include "strings.h"
 
 Interface::~Interface()
 {
@@ -603,3 +605,15 @@ void Com_Memset(void* dest, const int val, const size_t count)
 	memset(dest, val, count);
 }
 #endif	// bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
+
+void AssertFailed(const char* file, int line, const char* expression)
+{
+	Sys_Print(va("\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression));
+#ifdef _MSC_VER
+	__asm int 0x03
+#elif defined( __GNUC__ )
+	__builtin_trap();
+#else
+#error dont know how to crash :P
+#endif
+}

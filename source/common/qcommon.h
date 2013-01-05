@@ -23,6 +23,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <cmath>
+#include <cassert>
 
 #ifdef _WIN32
 #pragma warning(disable : 4018)		// signed/unsigned mismatch
@@ -179,8 +180,13 @@ public:
 
 void Com_Memset(void* dest, const int val, const size_t count);
 void Com_Memcpy(void* dest, const void* src, const size_t count);
+void AssertFailed(const char* file, int line, const char* expression);
 
-#define qassert(x)      if (x) {} else {common->FatalError("Assertion failed " #x); }
+#ifdef _DEBUG
+void AssertFailed( const char *file, int line, const char *expression );
+#undef assert
+#define assert(x)		if (x) {} else AssertFailed(__FILE__, __LINE__, #x)
+#endif
 
 #include "memory.h"		//	Memory allocation
 

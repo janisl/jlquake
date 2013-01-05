@@ -26,7 +26,7 @@ void idStr::EnsureDataWritable
 	void
 )
 {
-	qassert(m_data);
+	assert(m_data);
 	strdata* olddata;
 	int len;
 
@@ -66,7 +66,7 @@ void idStr::EnsureAlloced(int amount, bool keepold)
 		return;
 	}
 
-	qassert(amount);
+	assert(amount);
 	if (amount == 1)
 	{
 		m_data->alloced = 1;

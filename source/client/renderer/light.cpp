@@ -389,7 +389,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t* ent)
 	vec3_t direction;
 	VectorClear(direction);
 
-	qassert(tr.world->lightGridData);	// bk010103 - NULL with -nolight maps
+	assert(tr.world->lightGridData);	// bk010103 - NULL with -nolight maps
 
 	// trilerp the light value
 	int gridStep[3];

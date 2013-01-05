@@ -26,7 +26,6 @@
 #include <dirent.h>
 #include <sys/time.h>
 #include <dlfcn.h>
-#include <assert.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <execinfo.h>

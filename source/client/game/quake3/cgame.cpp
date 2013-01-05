@@ -475,7 +475,7 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 		return CLT3_InPvs((float*)VMA(1), (float*)VMA(2));
 
 	default:
-		qassert(0);
+		assert(0);
 		common->Error("Bad cgame system trap: %i", static_cast<int>(args[0]));
 	}
 	return 0;

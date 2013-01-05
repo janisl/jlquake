@@ -324,7 +324,7 @@ void GL_State(unsigned long stateBits)
 			qglAlphaFunc(GL_GEQUAL, 0.5f);
 			break;
 		default:
-			qassert(0);
+			assert(0);
 			break;
 		}
 	}

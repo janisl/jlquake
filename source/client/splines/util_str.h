@@ -95,7 +95,7 @@ inline idStr::idStr
 {
 	int len;
 
-	qassert(text);
+	assert(text);
 
 	if (text)
 	{
@@ -128,7 +128,7 @@ inline int idStr::length(void) const
 
 inline const char* idStr::c_str(void) const
 {
-	qassert(m_data);
+	assert(m_data);
 
 	return m_data->data;
 }
@@ -152,7 +152,7 @@ inline void idStr::operator=
 {
 	int len;
 
-	qassert(text);
+	assert(text);
 
 	if (!text)
 	{
@@ -186,11 +186,11 @@ inline void idStr::operator=
 	{
 		// Great, we're aliasing.  We're copying from inside ourselves.
 		// This means that I don't have to ensure that anything is alloced,
-		// though I'll qassert just in case.
+		// though I'll assert just in case.
 		int diff = text - m_data->data;
 		int i;
 
-		qassert(String::Length(text) < (unsigned)m_data->len);
+		assert(String::Length(text) < (unsigned)m_data->len);
 
 		for (i = 0; text[i]; i++)
 		{

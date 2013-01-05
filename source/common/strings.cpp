@@ -31,10 +31,10 @@ static char com_token[1024];
 String::String(const String& InStr, int Start, int Len)
 	: Str(NULL)
 {
-	qassert(Start >= 0);
-	qassert(Start <= (int)InStr.Length());
-	qassert(Len >= 0);
-	qassert(Start + Len <= (int)InStr.Length());
+	assert(Start >= 0);
+	assert(Start <= (int)InStr.Length());
+	assert(Len >= 0);
+	assert(Start + Len <= (int)InStr.Length());
 	if (Len)
 	{
 		Resize(Len);
@@ -44,7 +44,7 @@ String::String(const String& InStr, int Start, int Len)
 
 void String::Resize(int NewLen)
 {
-	qassert(NewLen >= 0);
+	assert(NewLen >= 0);
 	if (NewLen == Length())
 	{
 		//	Same length, use existing buffer.
@@ -335,10 +335,10 @@ String String::Replace(const String& Search, const String& Replacement) const
 
 String String::Utf8Substring(int Start, int Len) const
 {
-	qassert(Start >= 0);
-	qassert(Start <= (int)Utf8Length());
-	qassert(Len >= 0);
-	qassert(Start + Len <= (int)Utf8Length());
+	assert(Start >= 0);
+	assert(Start <= (int)Utf8Length());
+	assert(Len >= 0);
+	assert(Start + Len <= (int)Utf8Length());
 	if (!Len)
 	{
 		return String();
@@ -478,7 +478,7 @@ int String::ByteLengthForUtf8(const char* S, int N)
 			Count++;
 		}
 	}
-	qassert(N == Count);
+	assert(N == Count);
 	return c - S;
 }
 

@@ -268,7 +268,7 @@ to kill their compiled DLL with extracted ones though :-( )
 static void* VM_LoadDll(const char* name, qintptr(**entryPoint) (int, ...),
 	qintptr (* systemcalls)(int, ...))
 {
-	qassert(name);
+	assert(name);
 
 	if (GGameType & GAME_Quake3 && !Sys_Quake3DllWarningConfirmation())
 	{

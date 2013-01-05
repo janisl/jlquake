@@ -169,7 +169,7 @@ static void tty_Back()
 // bring cursor back to beginning of line
 void tty_Hide()
 {
-	qassert(ttycon_on);
+	assert(ttycon_on);
 	if (ttycon_hide)
 	{
 		ttycon_hide++;
@@ -189,8 +189,8 @@ void tty_Hide()
 //	FIXME TTimo need to position the cursor if needed??
 void tty_Show()
 {
-	qassert(ttycon_on);
-	qassert(ttycon_hide > 0);
+	assert(ttycon_on);
+	assert(ttycon_hide > 0);
 	ttycon_hide--;
 	if (ttycon_hide == 0)
 	{
@@ -206,10 +206,10 @@ void tty_Show()
 
 static void Hist_Add(field_t* field)
 {
-	qassert(hist_count <= TTY_HISTORY);
-	qassert(hist_count >= 0);
-	qassert(hist_current >= -1);
-	qassert(hist_current <= hist_count);
+	assert(hist_count <= TTY_HISTORY);
+	assert(hist_count >= 0);
+	assert(hist_current >= -1);
+	assert(hist_current <= hist_count);
 	// make some room
 	for (int i = TTY_HISTORY - 1; i > 0; i--)
 	{
@@ -225,10 +225,10 @@ static void Hist_Add(field_t* field)
 
 static field_t* Hist_Prev()
 {
-	qassert(hist_count <= TTY_HISTORY);
-	qassert(hist_count >= 0);
-	qassert(hist_current >= -1);
-	qassert(hist_current <= hist_count);
+	assert(hist_count <= TTY_HISTORY);
+	assert(hist_count >= 0);
+	assert(hist_current >= -1);
+	assert(hist_current <= hist_count);
 	int hist_prev = hist_current + 1;
 	if (hist_prev >= hist_count)
 	{
@@ -240,10 +240,10 @@ static field_t* Hist_Prev()
 
 static field_t* Hist_Next()
 {
-	qassert(hist_count <= TTY_HISTORY);
-	qassert(hist_count >= 0);
-	qassert(hist_current >= -1);
-	qassert(hist_current <= hist_count);
+	assert(hist_count <= TTY_HISTORY);
+	assert(hist_count >= 0);
+	assert(hist_current >= -1);
+	assert(hist_current <= hist_count);
 	if (hist_current >= 0)
 	{
 		hist_current--;

@@ -115,7 +115,7 @@ static void R_DrawStripElements(int numIndexes, const glIndex_t* indexes, void (
 			if ((indexes[i + 0] == last[2]) && (indexes[i + 1] == last[1]))
 			{
 				element(indexes[i + 2]);
-				qassert(indexes[i + 2] < (glIndex_t)tess.numVertexes);
+				assert(indexes[i + 2] < (glIndex_t)tess.numVertexes);
 				even = true;
 			}
 			// otherwise we're done with this strip so finish it and start

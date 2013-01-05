@@ -29,9 +29,9 @@ vm_t* gvm = NULL;							// game virtual machine
 
 idEntity3* SVT3_EntityNum(int number)
 {
-	qassert(number >= 0);
-	qassert(number < MAX_GENTITIES_Q3);
-	qassert(sv.q3_entities[number]);
+	assert(number >= 0);
+	assert(number < MAX_GENTITIES_Q3);
+	assert(sv.q3_entities[number]);
 	return sv.q3_entities[number];
 }
 
@@ -43,8 +43,8 @@ idEntity3* SVT3_EntityForSvEntity(const q3svEntity_t* svEnt)
 
 idPlayerState3* SVT3_GameClientNum(int num)
 {
-	qassert(num >= 0);
-	qassert(num < sv_maxclients->integer);
+	assert(num >= 0);
+	assert(num < sv_maxclients->integer);
 	return sv.q3_gamePlayerStates[num];
 }
 

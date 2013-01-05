@@ -586,7 +586,7 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 //	updates an interpreted modules' version of a cvar
 void Cvar_Update(vmCvar_t* vmCvar)
 {
-	qassert(vmCvar);// bk
+	assert(vmCvar);// bk
 
 	if ((unsigned)vmCvar->handle >= (unsigned)cvar_numIndexes)
 	{

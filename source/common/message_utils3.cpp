@@ -1110,7 +1110,7 @@ void MSGQ3_WriteDeltaEntity(QMsg* msg, q3entityState_t* from, q3entityState_t* t
 	// the "number" field is not part of the field list
 	// if this assert fails, someone added a field to the q3entityState_t
 	// struct without updating the message fields
-	qassert(numFields + 1 == sizeof(*from) / 4);
+	assert(numFields + 1 == sizeof(*from) / 4);
 
 	// a NULL to is a delta remove message
 	if (to == NULL)
@@ -1425,7 +1425,7 @@ void MSGWS_WriteDeltaEntity(QMsg* msg, struct wsentityState_t* from, struct wsen
 	// the "number" field is not part of the field list
 	// if this assert fails, someone added a field to the wsentityState_t
 	// struct without updating the message fields
-	qassert(numFields + 1 == sizeof(*from) / 4);
+	assert(numFields + 1 == sizeof(*from) / 4);
 
 	c = msg->cursize;
 
@@ -1814,7 +1814,7 @@ void MSGWM_WriteDeltaEntity(QMsg* msg, struct wmentityState_t* from, struct wmen
 	// the "number" field is not part of the field list
 	// if this assert fails, someone added a field to the wmentityState_t
 	// struct without updating the message fields
-	qassert(numFields + 1 == sizeof(*from) / 4);
+	assert(numFields + 1 == sizeof(*from) / 4);
 
 	// a NULL to is a delta remove message
 	if (to == NULL)
@@ -2146,7 +2146,7 @@ void MSGET_WriteDeltaEntity(QMsg* msg, struct etentityState_t* from, struct eten
 	// the "number" field is not part of the field list
 	// if this assert fails, someone added a field to the etentityState_t
 	// struct without updating the message fields
-	qassert(numFields + 1 == sizeof(*from) / 4);
+	assert(numFields + 1 == sizeof(*from) / 4);
 
 	// a NULL to is a delta remove message
 	if (to == NULL)

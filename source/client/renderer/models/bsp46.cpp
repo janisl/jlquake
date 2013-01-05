@@ -2420,7 +2420,7 @@ static void R_LoadSubmodels(bsp46_lump_t* l)
 	{
 		model_t* model = R_AllocModel();
 
-		qassert(model != NULL);			// this should never happen
+		assert(model != NULL);			// this should never happen
 
 		model->type = MOD_BRUSH46;
 		model->q3_bmodel = out;

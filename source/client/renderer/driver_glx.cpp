@@ -814,7 +814,7 @@ void GLimp_WakeRenderer(void* data)
 	glXMakeCurrent(dpy, None, NULL);
 
 	pthread_mutex_lock(&smpMutex);
-	qassert(smpData == NULL);
+	assert(smpData == NULL);
 	smpData = data;
 	smpDataReady = true;
 

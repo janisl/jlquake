@@ -424,7 +424,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 // the same timestamp on press/release event pairs for key repeats.
 static bool X11_PendingInput()
 {
-	qassert(dpy != NULL);
+	assert(dpy != NULL);
 
 	// Flush the display connection
 	//  and look to see if events are queued
@@ -453,7 +453,7 @@ static bool X11_PendingInput()
 // bk001206 - from Ryan's Fakk2. See above.
 static bool repeated_press(XEvent* event)
 {
-	qassert(dpy != NULL);
+	assert(dpy != NULL);
 
 	bool repeated = false;
 	if (X11_PendingInput())

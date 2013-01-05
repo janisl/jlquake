@@ -421,7 +421,7 @@ void CLT3_SendPureChecksums()
 //	Clear download information that we keep in cls (disconnected download support)
 void CLET_ClearStaticDownload()
 {
-	qassert(!cls.et_bWWWDlDisconnected);		// reset before calling
+	assert(!cls.et_bWWWDlDisconnected);		// reset before calling
 	cls.et_downloadRestart = false;
 	cls.et_downloadTempName[0] = '\0';
 	cls.et_downloadName[0] = '\0';
@@ -492,7 +492,7 @@ static void CLT3_DownloadsComplete()
 	if (GGameType & GAME_ET)
 	{
 		// TTimo: I wonder if that happens - it should not but I suspect it could happen if a download fails in the middle or is aborted
-		qassert(!cls.et_bWWWDlDisconnected);
+		assert(!cls.et_bWWWDlDisconnected);
 	}
 
 	// let the client game init and load data
