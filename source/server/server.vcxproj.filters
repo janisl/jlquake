@@ -276,7 +276,6 @@
     <ClInclude Include="quake2serverdefs.h" />
     <ClInclude Include="quake3serverdefs.h" />
     <ClInclude Include="quakeserverdefs.h" />
-    <ClInclude Include="server.h" />
     <ClInclude Include="wolfserverdefs.h" />
     <ClInclude Include="worldsector.h" />
     <ClInclude Include="botlib\aas_local.h">
@@ -381,5 +380,6 @@
     <ClInclude Include="quake2\local.h">
       <Filter>quake2</Filter>
     </ClInclude>
+    <ClInclude Include="public.h" />
   </ItemGroup>
 </Project>

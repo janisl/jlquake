@@ -23,7 +23,10 @@
 #include "midstuff.h"
 #include "midi.h"
 #include "../public.h"
-
+#include "../../../common/Common.h"
+#include "../../../common/command_buffer.h"
+#include "../../../common/command_line_args.h"
+#include "../../../common/strings.h"
 
 BOOL bMidiInited,bFileOpen, bPlaying, bBuffersPrepared;
 BOOL bPaused, bLooped;

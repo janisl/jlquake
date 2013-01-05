@@ -484,6 +484,7 @@
     <ClInclude Include="progsvm/progs_file.h" />
     <ClInclude Include="progsvm/progsvm.h" />
     <ClInclude Include="progsvm\edict.h" />
+    <ClInclude Include="public.h" />
     <ClInclude Include="quake2serverdefs.h" />
     <ClInclude Include="quake2\game.h" />
     <ClInclude Include="quake2\local.h" />
@@ -495,7 +496,6 @@
     <ClInclude Include="quakeserverdefs.h" />
     <ClInclude Include="quake\local.h" />
     <ClInclude Include="quake_hexen\local.h" />
-    <ClInclude Include="server.h" />
     <ClInclude Include="tech3\Entity3.h" />
     <ClInclude Include="tech3\local.h" />
     <ClInclude Include="tech3\PlayerState3.h" />

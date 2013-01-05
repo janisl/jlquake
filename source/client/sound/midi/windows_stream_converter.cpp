@@ -21,6 +21,7 @@
 #include "midi.h"
 #include "midstuff.h"
 #include "../public.h"
+#include "../../../common/Common.h"
 
 // Global stuff which is defined in the main module
 //

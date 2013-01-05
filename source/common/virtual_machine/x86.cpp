@@ -15,7 +15,7 @@
 //**************************************************************************
 // vm_x86.c -- load time compiler and execution environment for x86
 
-#include "../qcommon.h"
+#include "../Common.h"
 #include "local.h"
 
 #ifdef __FreeBSD__	// rb0101023

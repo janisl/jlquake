@@ -18,6 +18,11 @@
 
 #include "local.h"
 #include "../windows_shared.h"
+#include "../../common/Common.h"
+#include "../../common/strings.h"
+#include "../../common/command_buffer.h"
+#include "../sound/public.h"
+#include "../input/public.h"
 
 // MACROS ------------------------------------------------------------------
 

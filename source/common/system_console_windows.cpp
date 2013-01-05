@@ -15,7 +15,13 @@
 //**************************************************************************
 
 #include "qcommon.h"
+#include "system.h"
 #include "system_windows.h"
+#include "Common.h"
+#include "common_defs.h"
+#include "command_buffer.h"
+#include "strings.h"
+#include "event_queue.h"
 
 #define COPY_ID         1
 #define QUIT_ID         2

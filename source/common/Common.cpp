@@ -155,15 +155,16 @@ void idCommonLocal::Disconnect(const char* format, ...)
 // do the apropriate things.
 void idCommonLocal::VError(int code, const char* format, va_list argPtr)
 {
-#if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
+#ifdef _DEBUG
 	if (code != ERR_DISCONNECT)
 	{
 		if (!com_noErrorInterrupt->integer)
 		{
-			__asm
-			{
-				int 0x03
-			}
+#ifdef _MSC_VER
+			__debugbreak();
+#elif defined( __GNUC__ )
+			__builtin_trap();
+#endif
 		}
 	}
 #endif

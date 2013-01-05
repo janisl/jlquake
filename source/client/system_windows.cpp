@@ -16,6 +16,9 @@
 
 #include "system.h"
 #include "windows_shared.h"
+#include "../common/Common.h"
+#include "../common/command_buffer.h"
+#include "../common/strings.h"
 
 HWND GMainWindow;
 bool ActiveApp;

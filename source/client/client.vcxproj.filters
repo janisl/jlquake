@@ -598,7 +598,6 @@
     <ClInclude Include="game\quake2\local.h">
       <Filter>game\quake2</Filter>
     </ClInclude>
-    <ClInclude Include="client.h" />
     <ClInclude Include="windows_shared.h" />
     <ClInclude Include="hexen2clientdefs.h" />
     <ClInclude Include="quake2clientdefs.h" />
@@ -721,5 +720,9 @@
     <ClInclude Include="game\et\dl_public.h">
       <Filter>game\et</Filter>
     </ClInclude>
+    <ClInclude Include="client_main.h" />
+    <ClInclude Include="chase.h" />
+    <ClInclude Include="system.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
 </Project>

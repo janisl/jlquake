@@ -95,6 +95,7 @@
     <ClInclude Include="clip_map\bsp29\local.h" />
     <ClInclude Include="clip_map\bsp38\local.h" />
     <ClInclude Include="clip_map\bsp46\local.h" />
+    <ClInclude Include="command_line_args.h" />
     <ClInclude Include="file_formats\bsp29.h" />
     <ClInclude Include="file_formats\bsp38.h" />
     <ClInclude Include="file_formats\bsp46.h" />
@@ -234,6 +235,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)clip_map\bsp46\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)clip_map\bsp46\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="command_line_args.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="game_utils1.cpp" />
     <ClCompile Include="hexen2strings.cpp" />
@@ -244,6 +246,7 @@
     <ClCompile Include="network_channel_netquake.cpp" />
     <ClCompile Include="player_move2.cpp" />
     <ClCompile Include="precompiler.cpp" />
+    <ClCompile Include="qcommon.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="virtual_machine\interpreted.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)virtual_machine\</ObjectFileName>
