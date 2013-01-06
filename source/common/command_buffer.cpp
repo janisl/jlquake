@@ -355,7 +355,7 @@ static void Cmd_Exec_f()
 	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	String::DefaultExtension(filename, sizeof(filename), ".cfg");
 
-	Array<byte> Buffer;
+	idList<byte> Buffer;
 	FS_ReadFile(filename, Buffer);
 	if (!Buffer.Num())
 	{

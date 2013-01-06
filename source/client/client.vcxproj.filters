@@ -617,9 +617,6 @@
     <ClInclude Include="splines\splines.h">
       <Filter>splines</Filter>
     </ClInclude>
-    <ClInclude Include="splines\util_list.h">
-      <Filter>splines</Filter>
-    </ClInclude>
     <ClInclude Include="splines\util_str.h">
       <Filter>splines</Filter>
     </ClInclude>

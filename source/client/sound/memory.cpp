@@ -372,7 +372,7 @@ bool S_LoadSound(sfx_t* sfx)
 		String::Sprintf(namebuffer, sizeof(namebuffer), "sound/%s", name);
 	}
 
-	Array<byte> data;
+	idList<byte> data;
 	int size = FS_ReadFile(namebuffer, data);
 	if (size <= 0)
 	{

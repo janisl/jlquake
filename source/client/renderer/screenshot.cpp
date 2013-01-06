@@ -429,7 +429,7 @@ static void SCR_DrawStringToSnap(const char* s, byte* buf, int x, int y, int wid
 //
 //==========================================================================
 
-void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, Array<byte>& buffer)
+void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, idList<byte>& buffer)
 {
 	byte* newbuf = new byte[glConfig.vidHeight * glConfig.vidWidth * 3];
 

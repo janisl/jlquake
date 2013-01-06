@@ -389,7 +389,7 @@ static int SVH2_LoadGamestate(char* level, char* startspot, int ClientsMode)
 		}
 	}
 
-	Array<byte> Buffer;
+	idList<byte> Buffer;
 	int len = FS_ReadFile(name, Buffer);
 	if (len <= 0)
 	{
@@ -712,7 +712,7 @@ static void SVQ1_Loadgame_f()
 	// been used.  The menu calls it before stuffing loadgame command
 	//SCRQH_BeginLoadingPlaque ();
 
-	Array<byte> Buffer;
+	idList<byte> Buffer;
 	common->Printf("Loading game from %s...\n", name);
 	int FileLen = FS_ReadFile(name, Buffer);
 	if (FileLen <= 0)
@@ -964,7 +964,7 @@ static void SVH2_Loadgame_f()
 	char dest[MAX_OSPATH];
 	sprintf(dest, "%s/info.dat", Cmd_Argv(1));
 
-	Array<byte> Buffer;
+	idList<byte> Buffer;
 	int Len = FS_ReadFile(dest, Buffer);
 	if (Len <= 0)
 	{

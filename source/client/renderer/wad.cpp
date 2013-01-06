@@ -57,7 +57,7 @@ struct lumpinfo_t
 
 static int wad_numlumps;
 static lumpinfo_t* wad_lumps;
-static Array<byte>  wad_base;
+static idList<byte>  wad_base;
 
 // CODE --------------------------------------------------------------------
 

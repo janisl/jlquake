@@ -200,7 +200,7 @@ static void SCRQW_RSShot_f()
 	time_t now;
 	time(&now);
 
-	Array<byte> buffer;
+	idList<byte> buffer;
 	R_CaptureRemoteScreenShot(ctime(&now), cls.servername, clqh_name->string, buffer);
 	CLQW_StartUpload(buffer.Ptr(), buffer.Num());
 }

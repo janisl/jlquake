@@ -136,7 +136,7 @@ public:
 	QClipMap29();
 	~QClipMap29();
 
-	void LoadMap(const char* name, const Array<quint8>& Buffer);
+	void LoadMap(const char* name, const idList<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;

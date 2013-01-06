@@ -236,7 +236,7 @@ void SVQH_SaveSpawnparms()
 
 static unsigned SVQW_CheckModel(const char* mdl)
 {
-	Array<byte> buffer;
+	idList<byte> buffer;
 	FS_ReadFile(mdl, buffer);
 	return CRC_Block(buffer.Ptr(), buffer.Num());
 }

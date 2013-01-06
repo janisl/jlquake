@@ -349,7 +349,7 @@ String String::Utf8Substring(int Start, int Len) const
 	return String(*this, RealStart, RealLen);
 }
 
-void String::Split(char C, Array<String>& A) const
+void String::Split(char C, idList<String>& A) const
 {
 	A.Clear();
 	if (!Str)
@@ -371,7 +371,7 @@ void String::Split(char C, Array<String>& A) const
 	}
 }
 
-void String::Split(const char* Chars, Array<String>& A) const
+void String::Split(const char* Chars, idList<String>& A) const
 {
 	A.Clear();
 	if (!Str)

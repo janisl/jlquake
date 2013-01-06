@@ -17,7 +17,6 @@
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
-#include "util_list.h"
 #include "util_str.h"
 #include "math_vector.h"
 

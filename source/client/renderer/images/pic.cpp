@@ -81,7 +81,7 @@ void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPi
 
 void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
 {
-	Array<byte> Buffer;
+	idList<byte> Buffer;
 	if (FS_ReadFile(FileName, Buffer) <= 0)
 	{
 		*Pic = NULL;

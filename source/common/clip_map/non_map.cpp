@@ -45,7 +45,7 @@ public:
 	vec3_t ModelMins;
 	vec3_t ModelMaxs;
 
-	void LoadMap(const char* name, const Array<quint8>& Buffer);
+	void LoadMap(const char* name, const idList<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad)
 	{}
 	clipHandle_t InlineModel(int Index) const
@@ -149,7 +149,7 @@ public:
 	void AliasTransformVector(vec3_t in, vec3_t out);
 };
 
-Array<QClipMap*>        CMNonMapModels;
+idList<QClipMap*>        CMNonMapModels;
 
 clipHandle_t CM_PrecacheModel(const char* Name)
 {
@@ -172,7 +172,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	//
 	// load the file
 	//
-	Array<quint8> Buffer;
+	idList<quint8> Buffer;
 	if (FS_ReadFile(Name, Buffer) <= 0)
 	{
 		common->Error("CM_PrecacheModel: %s not found", Name);
@@ -205,7 +205,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	return CMNonMapModels.Num() << CMH_NON_MAP_SHIFT;
 }
 
-void QClipMapNonMap::LoadMap(const char* name, const Array<quint8>& Buffer)
+void QClipMapNonMap::LoadMap(const char* name, const idList<quint8>& Buffer)
 {
 	this->Name = name;
 

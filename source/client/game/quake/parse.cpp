@@ -688,7 +688,7 @@ static void CLQW_ParseChokeCount(QMsg& message)
 
 static void CLQW_CalcModelChecksum(const char* modelName, const char* cvarName)
 {
-	Array<byte> buffer;
+	idList<byte> buffer;
 	if (!FS_ReadFile(modelName, buffer))
 	{
 		common->Error("Couldn't load %s", modelName);

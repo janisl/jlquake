@@ -2131,7 +2131,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 }
 
 //	Filename are relative to the quake search path
-int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
+int FS_ReadFile(const char* qpath, idList<byte>& buffer)
 {
 	fileHandle_t h;
 
@@ -2158,19 +2158,19 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 			int r = FS_Read(&len, sizeof(len), com_journalDataFile);
 			if (r != sizeof(len))
 			{
-				Buffer.Clear();
+				buffer.Clear();
 				return -1;
 			}
 			// if the file didn't exist when the journal was created
 			if (!len)
 			{
-				Buffer.Clear();
+				buffer.Clear();
 				return -1;
 			}
 
-			Buffer.SetNum(len + 1);
+			buffer.SetNum(len);
 
-			r = FS_Read(Buffer.Ptr(), len, com_journalDataFile);
+			r = FS_Read(buffer.Ptr(), len, com_journalDataFile);
 			if (r != len)
 			{
 				common->FatalError("Read from journalDataFile failed");
@@ -2188,7 +2188,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 	int len = FS_FOpenFileRead(qpath, &h, false);
 	if (h == 0)
 	{
-		Buffer.Clear();
+		buffer.Clear();
 		// if we are journalling and it is a config file, write a zero to the journal file
 		if (isConfig && com_journal && com_journal->integer == 1)
 		{
@@ -2200,9 +2200,9 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 		return -1;
 	}
 
-	Buffer.SetNum(len);
+	buffer.SetNum(len);
 
-	FS_Read(Buffer.Ptr(), len, h);
+	FS_Read(buffer.Ptr(), len, h);
 
 	FS_FCloseFile(h);
 
@@ -2211,7 +2211,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 	{
 		common->DPrintf("Writing %s to journal file.\n", qpath);
 		FS_Write(&len, sizeof(len), com_journalDataFile);
-		FS_Write(Buffer.Ptr(), len, com_journalDataFile);
+		FS_Write(buffer.Ptr(), len, com_journalDataFile);
 		FS_Flush(com_journalDataFile);
 	}
 	return len;

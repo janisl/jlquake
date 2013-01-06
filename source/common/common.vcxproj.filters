@@ -72,7 +72,6 @@
     <ClInclude Include="virtual_machine\public.h">
       <Filter>virtual_machine</Filter>
     </ClInclude>
-    <ClInclude Include="array.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="common_defs.h" />

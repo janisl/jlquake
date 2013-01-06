@@ -299,7 +299,7 @@ static void GfxInfo_f()
 	common->Printf("GL_VERSION: %s\n", glConfig.version_string);
 
 	common->Printf("GL_EXTENSIONS:\n");
-	Array<String> Exts;
+	idList<String> Exts;
 	String(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{

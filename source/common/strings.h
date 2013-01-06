@@ -21,7 +21,7 @@
 #ifndef __STRINGS_H__
 #define __STRINGS_H__
 
-#include "array.h"
+#include "containers/List.h"
 
 class String
 {
@@ -320,8 +320,8 @@ public:
 
 	String Utf8Substring(int, int) const;
 
-	void Split(char, Array<String>&) const;
-	void Split(const char*, Array<String>&) const;
+	void Split(char, idList<String>&) const;
+	void Split(const char*, idList<String>&) const;
 
 	bool IsValidUtf8() const;
 	String Latin1ToUtf8() const;

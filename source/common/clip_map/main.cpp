@@ -134,7 +134,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 
 	if (!name[0])
 	{
-		Array<quint8> Buffer;
+		idList<quint8> Buffer;
 		CMapShared = CM_CreateQClipMap38();
 		CMapShared->LoadMap(name, Buffer);
 		if (checksum)
@@ -147,7 +147,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 	//
 	// load the file
 	//
-	Array<quint8> Buffer;
+	idList<quint8> Buffer;
 	if (FS_ReadFile(name, Buffer) <= 0)
 	{
 		common->Error("Couldn't load %s", name);

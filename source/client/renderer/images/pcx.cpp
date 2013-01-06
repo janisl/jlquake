@@ -232,7 +232,7 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int 
 //
 //==========================================================================
 
-void R_SavePCXMem(Array<byte>& buffer, byte* data, int width, int height, byte* palette)
+void R_SavePCXMem(idList<byte>& buffer, byte* data, int width, int height, byte* palette)
 {
 	buffer.SetNum(width * height * 2 + 1000);
 	pcx_t* pcx = (pcx_t*)buffer.Ptr();

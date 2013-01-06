@@ -1047,7 +1047,6 @@
     <ClInclude Include="splines\public.h" />
     <ClInclude Include="splines\q_parse.h" />
     <ClInclude Include="splines\splines.h" />
-    <ClInclude Include="splines\util_list.h" />
     <ClInclude Include="splines\util_str.h" />
     <ClInclude Include="translate.h" />
     <ClInclude Include="ui\console.h" />

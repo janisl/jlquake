@@ -37,7 +37,7 @@ int pr_edict_size;			// in bytes
 progGlobalVars_t pr_globalVars;
 unsigned short pr_crc;
 
-static Array<const char*> pr_strtbl;
+static idList<const char*> pr_strtbl;
 
 static void PR_ClearStringMap()
 {
@@ -701,7 +701,7 @@ static void PR_LoadProgsFile(const char* name, int expectedHeaderCrc)
 static void GetHexen2ProgsName(char* finalprogname)
 {
 	String::Cpy(finalprogname, "progs.dat");
-	Array<byte> MapList;
+	idList<byte> MapList;
 	FS_ReadFile("maplist.txt", MapList);
 	MapList.Append(0);
 	const char* p = (char*)MapList.Ptr();

@@ -53,7 +53,7 @@
 //
 //==========================================================================
 
-void QClipMap29::LoadMap(const char* AName, const Array<quint8>& Buffer)
+void QClipMap29::LoadMap(const char* AName, const idList<quint8>& Buffer)
 {
 	bsp29_dheader_t header = *(bsp29_dheader_t*)Buffer.Ptr();
 

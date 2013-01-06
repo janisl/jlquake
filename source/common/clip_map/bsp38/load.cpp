@@ -48,7 +48,7 @@
 //
 //==========================================================================
 
-void QClipMap38::LoadMap(const char* AName, const Array<quint8>& Buffer)
+void QClipMap38::LoadMap(const char* AName, const idList<quint8>& Buffer)
 {
 	map_noareas = Cvar_Get("map_noareas", "0", 0);
 
