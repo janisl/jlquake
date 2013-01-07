@@ -48,43 +48,43 @@ public:
 	idList(const idList<type>& other);
 	~idList();
 
-	void Clear();										// clear the list
-	int Num() const;									// returns number of elements in list
-	int NumAllocated() const;							// returns number of elements allocated for
+	void Clear();											// clear the list
+	int Num() const;										// returns number of elements in list
+	int NumAllocated() const;								// returns number of elements allocated for
 	void SetGranularity(int newGranularity);				// set new granularity
-	int GetGranularity() const;						// get the current granularity
+	int GetGranularity() const;								// get the current granularity
 
-	size_t Allocated() const;							// returns total size of allocated memory
+	size_t Allocated() const;								// returns total size of allocated memory
 	size_t Size() const;									// returns total size of allocated memory including size of list type
-	size_t MemoryUsed() const;							// returns size of the used elements in the list
+	size_t MemoryUsed() const;								// returns size of the used elements in the list
 
 	idList<type>& operator=(const idList<type>& other);
 	const type& operator[](int index) const;
 	type& operator[](int index);
 
-	void Condense();									// resizes list to exactly the number of elements it contains
+	void Condense();										// resizes list to exactly the number of elements it contains
 	void Resize(int newSize);								// resizes list to the given number of elements
 	void SetNum(int newNum, bool resize = true);			// set number of elements in list and resize to exactly this number if necessary
 	void AssureSize(int newSize);							// assure list has given number of elements, but leave them uninitialized
 	void AssureSize(int newSize, const type& initValue);	// assure list has given number of elements and initialize any new elements
 	void AssureSizeAlloc(int newSize, new_t* allocator);	// assure the pointer list has the given number of elements and allocate any new elements
 
-	type* Ptr();										// returns a pointer to the list
-	const type* Ptr() const;									// returns a pointer to the list
-	type& Alloc();										// returns reference to a new data element at the end of the list
+	type* Ptr();											// returns a pointer to the list
+	const type* Ptr() const;								// returns a pointer to the list
+	type& Alloc();											// returns reference to a new data element at the end of the list
 	int Append(const type& obj);							// append element
-	int Append(const idList<type>& other);				// append list
-	int AddUnique(const type& obj);						// add unique element
-	int Insert(const type& obj, int index = 0);			// insert the element at the given index
-	int FindIndex(const type& obj) const;				// find the index for the given element
+	int Append(const idList<type>& other);					// append list
+	int AddUnique(const type& obj);							// add unique element
+	int Insert(const type& obj, int index = 0);				// insert the element at the given index
+	int FindIndex(const type& obj) const;					// find the index for the given element
 	type* Find(type const& obj) const;						// find pointer to the given element
-	int FindNull() const;								// find the index for the first NULL pointer in the list
-	int IndexOf(const type* obj) const;					// returns the index for the pointer to an element in the list
+	int FindNull() const;									// find the index for the first NULL pointer in the list
+	int IndexOf(const type* obj) const;						// returns the index for the pointer to an element in the list
 	bool RemoveIndex(int index);							// remove the element at the given index
 	bool Remove(const type& obj);							// remove the element
 	void Sort(cmp_t* compare = &idListSortCompare<type>);
 	void SortSubSection(int startIndex, int endIndex, cmp_t* compare = &idListSortCompare<type>);
-	void Swap(idList<type> &other);						// swap the contents of the lists
+	void Swap(idList<type> &other);							// swap the contents of the lists
 	void DeleteContents(bool clear);						// delete the contents of the list
 
 private:
