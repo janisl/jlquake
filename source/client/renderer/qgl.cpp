@@ -652,8 +652,8 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 static bool CheckExtension(const char* Extension)
 {
-	idList<String> Extensions;
-	String((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
+	idList<idStr> Extensions;
+	idStr((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
 	for (int i = 0; i < Extensions.Num(); i++)
 	{
 		if (Extensions[i] == Extension)
@@ -666,8 +666,8 @@ static bool CheckExtension(const char* Extension)
 
 static bool CheckSystemExtension(const char* Extension)
 {
-	idList<String> Extensions;
-	String(GLimp_GetSystemExtensionsString()).Split(' ', Extensions);
+	idList<idStr> Extensions;
+	idStr(GLimp_GetSystemExtensionsString()).Split(' ', Extensions);
 	for (int i = 0; i < Extensions.Num(); i++)
 	{
 		if (Extensions[i] == Extension)

@@ -17,7 +17,7 @@
 #ifndef __SPLINES_H
 #define __SPLINES_H
 
-#include "util_str.h"
+#include "../../common/strings.h"
 #include "math_vector.h"
 
 class idSplineList
@@ -150,7 +150,7 @@ public:
 
 	const char* getName()
 	{
-		return name.c_str();
+		return name.CStr();
 	}
 
 	void setName(const char* p)
@@ -313,7 +313,7 @@ public:
 
 	const char* getName()
 	{
-		return name.c_str();
+		return name.CStr();
 	}
 
 	void setName(const char* p)
@@ -619,7 +619,7 @@ public:						// parameters
 
 	const char* getParam()
 	{
-		return paramStr.c_str();
+		return paramStr.CStr();
 	}
 
 	long getTime()

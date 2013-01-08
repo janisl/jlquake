@@ -47,6 +47,7 @@ set(COMMON_FILES
 	script.cpp
 	socket.cpp
 	socket_unix.cpp
+	Str.cpp
 	strings.cpp
 	system_console_unix.cpp
 	system_unix.cpp

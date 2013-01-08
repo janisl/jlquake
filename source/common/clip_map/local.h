@@ -18,7 +18,7 @@
 #define _CM_LOCAL_H
 
 #include "public.h"
-#include "../strings.h"
+#include "../Str.h"
 
 #define CMH_NON_MAP_MASK    0xffff0000
 #define CMH_NON_MAP_SHIFT   16
@@ -37,7 +37,7 @@ struct leafList_t
 class QClipMap
 {
 public:
-	String Name;
+	idStr Name;
 
 	quint32 CheckSum;
 	quint32 CheckSum2;

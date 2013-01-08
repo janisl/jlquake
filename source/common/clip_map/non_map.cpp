@@ -267,7 +267,7 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	if (version != MESH1_VERSION)
 	{
 		common->Error("%s has wrong version number (%i should be %i)",
-				*mod->Name, version, MESH1_VERSION);
+			mod->Name.CStr(), version, MESH1_VERSION);
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -321,7 +321,7 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	if (version != MESH1_NEWVERSION)
 	{
 		common->Error("%s has wrong version number (%i should be %i)",
-				*mod->Name, version, MESH1_NEWVERSION);
+			mod->Name.CStr(), version, MESH1_NEWVERSION);
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -468,7 +468,7 @@ void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 	int version = LittleLong(pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		common->Error("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION);
+		common->Error("%s has wrong version number (%i should be %i)", Name.CStr(), version, SPRITE1_VERSION);
 	}
 
 	ModelMins[0] = ModelMins[1] = -LittleLong(pin->width) / 2;

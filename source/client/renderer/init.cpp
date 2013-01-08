@@ -299,21 +299,21 @@ static void GfxInfo_f()
 	common->Printf("GL_VERSION: %s\n", glConfig.version_string);
 
 	common->Printf("GL_EXTENSIONS:\n");
-	idList<String> Exts;
-	String(glConfig.extensions_string).Split(' ', Exts);
+	idList<idStr> Exts;
+	idStr(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
-		common->Printf(" %s\n", *Exts[i]);
+		common->Printf(" %s\n", Exts[i].CStr());
 	}
 #ifdef _WIN32
 	common->Printf("WGL_EXTENSIONS:\n");
 #else
 	common->Printf("GLX_EXTENSIONS:\n");
 #endif
-	String(gl_system_extensions_string).Split(' ', Exts);
+	idStr(gl_system_extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
-		common->Printf(" %s\n", *Exts[i]);
+		common->Printf(" %s\n", Exts[i].CStr());
 	}
 
 	common->Printf("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);

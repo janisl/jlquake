@@ -14,9 +14,9 @@
 //**
 //**************************************************************************
 
+#include "splines.h"
 #include "public.h"
 #include "q_parse.h"
-#include "splines.h"
 #include "../../common/Common.h"
 #include "../../common/command_buffer.h"
 #include "../../common/strings.h"
@@ -253,11 +253,11 @@ void idSplineList::parse(const char** text)
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "granularity") == 0)
+			if (String::ICmp(key.CStr(), "granularity") == 0)
 			{
 				granularity = String::Atof(token);
 			}
-			else if (String::ICmp(key.c_str(), "name") == 0)
+			else if (String::ICmp(key.CStr(), "name") == 0)
 			{
 				name = token;
 			}
@@ -699,15 +699,15 @@ void idCameraEvent::parse(const char** text)
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "type") == 0)
+			if (String::ICmp(key.CStr(), "type") == 0)
 			{
 				type = static_cast<idCameraEvent::eventType>(String::Atoi(token));
 			}
-			else if (String::ICmp(key.c_str(), "param") == 0)
+			else if (String::ICmp(key.CStr(), "param") == 0)
 			{
 				paramStr = token;
 			}
-			else if (String::ICmp(key.c_str(), "time") == 0)
+			else if (String::ICmp(key.CStr(), "time") == 0)
 			{
 				time = String::Atoi(token);
 			}
@@ -806,19 +806,19 @@ void idCameraFOV::parse(const char** text)
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "fov") == 0)
+			if (String::ICmp(key.CStr(), "fov") == 0)
 			{
 				fov = String::Atof(token);
 			}
-			else if (String::ICmp(key.c_str(), "startFOV") == 0)
+			else if (String::ICmp(key.CStr(), "startFOV") == 0)
 			{
 				startFOV = String::Atof(token);
 			}
-			else if (String::ICmp(key.c_str(), "endFOV") == 0)
+			else if (String::ICmp(key.CStr(), "endFOV") == 0)
 			{
 				endFOV = String::Atof(token);
 			}
-			else if (String::ICmp(key.c_str(), "time") == 0)
+			else if (String::ICmp(key.CStr(), "time") == 0)
 			{
 				time = String::Atoi(token);
 			}
@@ -913,7 +913,7 @@ void idFixedPosition::parse(const char** text)
 			idStr key = Com_ParseOnLine(text);
 
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "pos") == 0)
+			if (String::ICmp(key.CStr(), "pos") == 0)
 			{
 				Com_UngetToken();
 				Com_Parse1DMatrix(text, 3, pos);
@@ -921,7 +921,7 @@ void idFixedPosition::parse(const char** text)
 			else
 			{
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.c_str(), text);
+				idCameraPosition::parseToken(key.CStr(), text);
 			}
 			token = Com_Parse(text);
 
@@ -970,12 +970,12 @@ void idInterpolatedPosition::parse(const char** text)
 			idStr key = Com_ParseOnLine(text);
 
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "startPos") == 0)
+			if (String::ICmp(key.CStr(), "startPos") == 0)
 			{
 				Com_UngetToken();
 				Com_Parse1DMatrix(text, 3, startPos);
 			}
-			else if (String::ICmp(key.c_str(), "endPos") == 0)
+			else if (String::ICmp(key.CStr(), "endPos") == 0)
 			{
 				Com_UngetToken();
 				Com_Parse1DMatrix(text, 3, endPos);
@@ -983,7 +983,7 @@ void idInterpolatedPosition::parse(const char** text)
 			else
 			{
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.c_str(), text);
+				idCameraPosition::parseToken(key.CStr(), text);
 			}
 			token = Com_Parse(text);
 
@@ -1033,14 +1033,14 @@ void idSplinePosition::parse(const char** text)
 			idStr key = Com_ParseOnLine(text);
 
 			const char* token = Com_Parse(text);
-			if (String::ICmp(key.c_str(), "target") == 0)
+			if (String::ICmp(key.CStr(), "target") == 0)
 			{
 				target.parse(text);
 			}
 			else
 			{
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.c_str(), text);
+				idCameraPosition::parseToken(key.CStr(), text);
 			}
 			token = Com_Parse(text);
 

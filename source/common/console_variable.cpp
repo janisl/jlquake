@@ -785,7 +785,7 @@ static void Cvar_Set_f()
 		}
 	}
 
-	String combined;
+	idStr combined;
 	for (int i = 2; i < c; i++)
 	{
 		combined += Cmd_Argv(i);
@@ -794,7 +794,7 @@ static void Cvar_Set_f()
 			combined += " ";
 		}
 	}
-	Cvar_Set2(Cmd_Argv(1), *combined, false);
+	Cvar_Set2(Cmd_Argv(1), combined.CStr(), false);
 }
 
 //	As Cvar_Set, but also flags it as userinfo

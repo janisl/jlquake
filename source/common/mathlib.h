@@ -297,4 +297,6 @@ float DistanceFromLineSquared(const vec3_t p, const vec3_t lp1, const vec3_t lp2
 float Q_random(int* seed);
 extern "C" void Sys_SnapVector(float* v);
 
+#define INTSIGNBITNOTSET(i)		((~((const unsigned int)(i))) >> 31)
+
 #endif

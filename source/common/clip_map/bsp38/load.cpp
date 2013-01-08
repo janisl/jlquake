@@ -22,6 +22,7 @@
 #include "../../console_variable.h"
 #include "../../content_types.h"
 #include "../../md4.h"
+#include "../../strings.h"
 #include "local.h"
 
 // MACROS ------------------------------------------------------------------
