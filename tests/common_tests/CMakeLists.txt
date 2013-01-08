@@ -1,6 +1,7 @@
 add_executable(common_tests
 	common_tests.cpp
 	ListTest.cpp
+	StrTest.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET run_tests POST_BUILD
