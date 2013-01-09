@@ -1,5 +1,6 @@
 add_executable(common_tests
 	common_tests.cpp
+	Hexen2EffectsRandomTest.cpp
 	ListTest.cpp
 	StrTest.cpp
 )

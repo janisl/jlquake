@@ -1218,12 +1218,12 @@ static idHexen2EffectsRandom svh2_random;
 
 static void PF_setseed()
 {
-	svh2_random.setSeed(G_FLOAT(OFS_PARM0));
+	svh2_random.SetSeed(G_FLOAT(OFS_PARM0));
 }
 
 static void PF_seedrand()
 {
-	G_FLOAT(OFS_RETURN) = svh2_random.seedRand();
+	G_FLOAT(OFS_RETURN) = svh2_random.SeedRand();
 }
 
 static void PF_multieffect()

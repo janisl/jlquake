@@ -25,16 +25,16 @@ class idHexen2EffectsRandom
 public:
 	unsigned int seed;
 
-	void setSeed(unsigned int seed);
-	float seedRand();
+	void SetSeed(unsigned int seed);
+	float SeedRand();
 };
 
-inline void idHexen2EffectsRandom::setSeed(unsigned int seed)
+inline void idHexen2EffectsRandom::SetSeed(unsigned int seed)
 {
 	this->seed = seed;
 }
 
-inline float idHexen2EffectsRandom::seedRand()
+inline float idHexen2EffectsRandom::SeedRand()
 {
 	seed = (seed * 877 + 573) % 9968;
 	return (float)seed / 9968;

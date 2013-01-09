@@ -1139,7 +1139,7 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 	cl.h2_Effects[index].Xbow.activebolts = message.ReadByte();
 
 	idHexen2EffectsRandom clh2_random;
-	clh2_random.setSeed(cl.h2_Effects[index].Xbow.randseed);
+	clh2_random.SetSeed(cl.h2_Effects[index].Xbow.randseed);
 
 	vec3_t forward, right, up;
 	AngleVectors(cl.h2_Effects[index].Xbow.angle, forward, right, up);
@@ -1158,18 +1158,18 @@ static void CLHW_ParseEffectXBowShoot(int index, QMsg& message)
 
 	for (int i = 0; i < cl.h2_Effects[index].Xbow.bolts; i++)
 	{
-		cl.h2_Effects[index].Xbow.gonetime[i] = 1 + clh2_random.seedRand() * 2;
+		cl.h2_Effects[index].Xbow.gonetime[i] = 1 + clh2_random.SeedRand() * 2;
 		cl.h2_Effects[index].Xbow.state[i] = 0;
 
 		if ((1 << i) & cl.h2_Effects[index].Xbow.turnedbolts)
 		{
 			vec3_t forward2;
 			CLHW_ParseEffectXBowThunderbolt(index, message, i, forward2);
-			VectorScale(forward2, 800 + clh2_random.seedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
+			VectorScale(forward2, 800 + clh2_random.SeedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
 		}
 		else
 		{
-			VectorScale(forward, 800 + clh2_random.seedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
+			VectorScale(forward, 800 + clh2_random.SeedRand() * 500, cl.h2_Effects[index].Xbow.vel[i]);
 
 			vec3_t vtemp;
 			VectorScale(right, i * 100 - (cl.h2_Effects[index].Xbow.bolts - 1) * 50, vtemp);
