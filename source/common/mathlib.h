@@ -18,20 +18,9 @@
 #define __MATHLIB_H__
 
 #include "qcommon.h"
+#include "math/Math.h"
 
 #if idppc
-static inline float Q_rsqrt(float number)
-{
-	float x = 0.5f * number;
-	float y;
-#ifdef __GNUC__
-	asm ("frsqrte %0,%1" : "=f" (y) : "f" (number));
-#else
-	y = __frsqrte(number);
-#endif
-	return y * (1.5f - (x * y * y));
-}
-
 #ifdef __GNUC__
 static inline float Q_fabs(float x)
 {
@@ -45,7 +34,6 @@ static inline float Q_fabs(float x)
 #endif
 #else
 float Q_fabs(float f);
-float Q_rsqrt(float f);		// reciprocal square root
 #endif
 int Q_log2(int val);
 float Q_acos(float c);
@@ -62,7 +50,7 @@ int Q_ftol(float f);
 #define Q_ftol(f)       (int)(f)
 #endif
 
-#define SQRTFAST(x)     ((x) * Q_rsqrt(x))
+#define SQRTFAST(x)     ((x) * idMath::RSqrt(x))
 
 qint8 ClampChar(int i);
 qint16 ClampShort(int i);
@@ -158,7 +146,7 @@ inline void VectorNormalizeFast(vec3_t v)
 {
 	float ilength;
 
-	ilength = Q_rsqrt(DotProduct(v, v));
+	ilength = idMath::RSqrt(DotProduct(v, v));
 
 	v[0] *= ilength;
 	v[1] *= ilength;

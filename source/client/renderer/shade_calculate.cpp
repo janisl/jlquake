@@ -929,7 +929,7 @@ static void RB_CalcSpecularAlpha(byte* alphas)
 
 		vec3_t viewer;
 		VectorSubtract(backEnd.orient.viewOrigin, v, viewer);
-		float ilength = Q_rsqrt(DotProduct(viewer, viewer));
+		float ilength = idMath::RSqrt(DotProduct(viewer, viewer));
 		float l = DotProduct(reflected, viewer);
 		l *= ilength;
 
