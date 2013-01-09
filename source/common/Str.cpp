@@ -15,7 +15,7 @@
 //**************************************************************************
 
 #include "Str.h"
-#include "mathlib.h"
+#include "math/Math.h"
 
 #if 0
 #if !defined(ID_REDIRECT_NEWDELETE) && !defined(MACOS_X)
