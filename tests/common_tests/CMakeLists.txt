@@ -2,6 +2,7 @@ add_executable(common_tests
 	common_tests.cpp
 	Hexen2EffectsRandomTest.cpp
 	ListTest.cpp
+	MathTests.cpp
 	StrTest.cpp
 )
 
