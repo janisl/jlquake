@@ -1030,7 +1030,7 @@ static void R_DrawNullModel()
 	qglVertex3f(0, 0, -16);
 	for (int i = 0; i <= 4; i++)
 	{
-		qglVertex3f(16 * cos(i * idMath::PI / 2), 16 * sin(i * idMath::PI / 2), 0);
+		qglVertex3f(16 * cos(i * idMath::HALF_PI), 16 * sin(i * idMath::HALF_PI), 0);
 	}
 	qglEnd();
 
@@ -1038,7 +1038,7 @@ static void R_DrawNullModel()
 	qglVertex3f(0, 0, 16);
 	for (int i = 4; i >= 0; i--)
 	{
-		qglVertex3f(16 * cos(i * idMath::PI / 2), 16 * sin(i * idMath::PI / 2), 0);
+		qglVertex3f(16 * cos(i * idMath::HALF_PI), 16 * sin(i * idMath::HALF_PI), 0);
 	}
 	qglEnd();
 

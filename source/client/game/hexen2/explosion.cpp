@@ -3122,9 +3122,9 @@ void CLHW_UpdateTargetBall()
 
 	vec3_t newOrg;
 	VectorCopy(cl.qh_simorg, newOrg);
-	newOrg[0] += cos(clh2_targetAngle * idMath::PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * idMath::PI * 2 / 256.0);
-	newOrg[1] += sin(clh2_targetAngle * idMath::PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * idMath::PI * 2 / 256.0);
-	newOrg[2] += 44 + sin(clh2_targetPitch * idMath::PI * 2 / 256.0) * 50 + cos(cl.serverTime * 0.001 * 2) * 5;
+	newOrg[0] += cos(clh2_targetAngle * idMath::TWO_PI / 256.0) * 50 * cos(clh2_targetPitch * idMath::TWO_PI / 256.0);
+	newOrg[1] += sin(clh2_targetAngle * idMath::TWO_PI / 256.0) * 50 * cos(clh2_targetPitch * idMath::TWO_PI / 256.0);
+	newOrg[2] += 44 + sin(clh2_targetPitch * idMath::TWO_PI / 256.0) * 50 + cos(cl.serverTime * 0.001 * 2) * 5;
 	float newScale;
 	if (clh2_targetDistance < 60)
 	{

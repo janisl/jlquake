@@ -862,8 +862,7 @@ static const void* RB_RotatedPic(const void* data)
 			*(int*)tess.vertexColors[numVerts + 2] =
 				*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
 
-	float pi2 = idMath::PI * 2;
-	float angle = cmd->angle * pi2;
+	float angle = cmd->angle * idMath::TWO_PI;
 	tess.xyz[numVerts][0] = cmd->x + (cos(angle) * cmd->w);
 	tess.xyz[numVerts][1] = cmd->y + (sin(angle) * cmd->h);
 	tess.xyz[numVerts][2] = 0;
@@ -871,7 +870,7 @@ static const void* RB_RotatedPic(const void* data)
 	tess.texCoords[numVerts][0][0] = cmd->s1;
 	tess.texCoords[numVerts][0][1] = cmd->t1;
 
-	angle = cmd->angle * pi2 + 0.25 * pi2;
+	angle = cmd->angle * idMath::TWO_PI + 0.25 * idMath::TWO_PI;
 	tess.xyz[numVerts + 1][0] = cmd->x + (cos(angle) * cmd->w);
 	tess.xyz[numVerts + 1][1] = cmd->y + (sin(angle) * cmd->h);
 	tess.xyz[numVerts + 1][2] = 0;
@@ -879,7 +878,7 @@ static const void* RB_RotatedPic(const void* data)
 	tess.texCoords[numVerts + 1][0][0] = cmd->s2;
 	tess.texCoords[numVerts + 1][0][1] = cmd->t1;
 
-	angle = cmd->angle * pi2 + 0.50 * pi2;
+	angle = cmd->angle * idMath::TWO_PI + 0.50 * idMath::TWO_PI;
 	tess.xyz[numVerts + 2][0] = cmd->x + (cos(angle) * cmd->w);
 	tess.xyz[numVerts + 2][1] = cmd->y + (sin(angle) * cmd->h);
 	tess.xyz[numVerts + 2][2] = 0;
@@ -887,7 +886,7 @@ static const void* RB_RotatedPic(const void* data)
 	tess.texCoords[numVerts + 2][0][0] = cmd->s2;
 	tess.texCoords[numVerts + 2][0][1] = cmd->t2;
 
-	angle = cmd->angle * pi2 + 0.75 * pi2;
+	angle = cmd->angle * idMath::TWO_PI + 0.75 * idMath::TWO_PI;
 	tess.xyz[numVerts + 3][0] = cmd->x + (cos(angle) * cmd->w);
 	tess.xyz[numVerts + 3][1] = cmd->y + (sin(angle) * cmd->h);
 	tess.xyz[numVerts + 3][2] = 0;

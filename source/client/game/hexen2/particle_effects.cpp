@@ -330,8 +330,8 @@ void CLH2_RunQuakeEffect(const vec3_t origin, float distance)
 		float num = rand() / (float)RAND_MAX;
 		float num2 = distance * num;
 		num = rand() / (float)RAND_MAX;
-		p->org[0] = origin[0] + cos(num * 2 * idMath::PI) * num2;
-		p->org[1] = origin[1] + sin(num * 2 * idMath::PI) * num2;
+		p->org[0] = origin[0] + cos(num * idMath::TWO_PI) * num2;
+		p->org[1] = origin[1] + sin(num * idMath::TWO_PI) * num2;
 		p->org[2] = origin[2];
 
 		num = rand() / (float)RAND_MAX;
@@ -396,7 +396,7 @@ void CLH2_RiderParticles(int count, const vec3_t origin)
 
 		VectorCopy(origin, p->org);
 
-		float angle = (rand() % 360) / (2 * idMath::PI);
+		float angle = (rand() % 360) / idMath::TWO_PI;
 		float radius = 300 + (rand() & 255);
 		p->org[0] += sin(angle) * radius;
 		p->org[1] += cos(angle) * radius;
@@ -432,7 +432,7 @@ void CLH2_GravityWellParticle(int count, const vec3_t origin, int colour)
 
 		VectorCopy(origin,p->org);
 
-		angle = (rand() % 360) / (2 * idMath::PI);
+		angle = (rand() % 360) / idMath::TWO_PI;
 		radius = 300 + (rand() & 255);
 		p->org[0] += sin(angle) * radius;
 		p->org[1] += cos(angle) * radius;

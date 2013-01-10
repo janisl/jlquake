@@ -233,7 +233,7 @@ void CLQ2_BigTeleportParticles(vec3_t origin)
 
 		p->color = colortable[rand() & 3];
 
-		float angle = idMath::PI * 2 * (rand() & 1023) / 1023.0;
+		float angle = idMath::TWO_PI * (rand() & 1023) / 1023.0;
 		float dist = rand() & 31;
 		p->org[0] = origin[0] + cos(angle) * dist;
 		p->vel[0] = cos(angle) * (70 + (rand() & 63));
@@ -1068,7 +1068,7 @@ void CLQ2_HeatbeamPaticles(vec3_t start, vec3_t forward)
 			break;
 		}
 
-		for (float rot = 0; rot < idMath::PI * 2; rot += rstep)
+		for (float rot = 0; rot < idMath::TWO_PI; rot += rstep)
 		{
 			cparticle_t* p = CL_AllocParticle();
 			if (!p)
