@@ -84,6 +84,8 @@
 #define IEEE_DBLE_EXPONENT_BIAS 0
 #define IEEE_DBLE_SIGN_BIT      79
 
+template<class T> inline T Max(T x, T y) { return (x > y) ? x : y; }
+template<class T> inline T Min(T x, T y) { return (x < y) ? x : y; }
 template<class T> inline int MaxIndex(T x, T y) { return (x > y) ? 0 : 1; }
 template<class T> inline int MinIndex(T x, T y) { return (x < y) ? 0 : 1; }
 
