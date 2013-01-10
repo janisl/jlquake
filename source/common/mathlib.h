@@ -55,8 +55,6 @@ int Q_ftol(float f);
 qint8 ClampChar(int i);
 qint16 ClampShort(int i);
 
-#define Square(x) ((x) * (x))
-
 // angle indexes
 #define PITCH               0		// up / down
 #define YAW                 1		// left / right

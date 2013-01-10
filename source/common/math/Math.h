@@ -95,7 +95,9 @@ template<class T> inline int Max3Index(T x, T y, T z) { return (x > y) ? ((x > z
 template<class T> inline int Min3Index(T x, T y, T z) { return (x < y) ? ((x < z) ? 0 : 2) : ((y < z) ? 1 : 2); }
 
 template<class T> inline T   Sign(T f) { return (f > 0) ? 1 : ((f < 0) ? -1 : 0); }
-template<class T> inline T   Square(T x) { return x * x; }
+#endif
+template<class T> inline T Square(T x) { return x * x; }
+#if 0
 template<class T> inline T   Cube(T x) { return x * x * x; }
 #endif
 
