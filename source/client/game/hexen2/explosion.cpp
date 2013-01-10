@@ -1112,8 +1112,8 @@ void CLHW_ParsePlayerDeath(QMsg& message)
 		ex->frameFunc = ChunkThink;
 
 		throwPower = 3.5 + ((rand() % 100) / 100.0);
-		curAng = angle * 6.28 / 256.0 + ((rand() % 100) / 50.0) - 1.0;
-		curPitch = pitch * 6.28 / 256.0 + ((rand() % 100) / 100.0) - .5;
+		curAng = angle * idMath::TWO_PI / 256.0 + ((rand() % 100) / 50.0) - 1.0;
+		curPitch = pitch * idMath::TWO_PI / 256.0 + ((rand() % 100) / 100.0) - .5;
 
 		ex->velocity[0] = force * throwPower * cos(curAng) * cos(curPitch);
 		ex->velocity[1] = force * throwPower * sin(curAng) * cos(curPitch);
@@ -1359,8 +1359,8 @@ void CLHW_ParseTeleport(QMsg& message)
 
 	for (int dir = 0; dir < 360; dir += 45)
 	{
-		float cosval = 10 * cos(dir * idMath::PI * 2 / 360);
-		float sinval = 10 * sin(dir * idMath::PI * 2 / 360);
+		float cosval = 10 * cos(DEG2RAD(dir));
+		float sinval = 10 * sin(DEG2RAD(dir));
 		ex = CLH2_AllocExplosion();
 		VectorCopy(pos, ex->origin);
 		ex->model = R_RegisterModel("models/telesmk2.spr");
@@ -1647,8 +1647,8 @@ void CLHW_ParsePurify1Effect(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float angle = message.ReadByte() * 6.28 / 256.0;
-	float pitch = message.ReadByte() * 6.28 / 256.0;
+	float angle = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float pitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float dist = message.ReadShort();
 
 	vec3_t endPos;
@@ -2028,8 +2028,8 @@ void CLHW_ParseFireWall(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	int fireCounts = message.ReadByte();
 
 	CLH2_DimLight(0, pos);
@@ -2124,14 +2124,14 @@ void CLHW_ParsePowerFlame(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	int fireCounts = message.ReadByte();
 	float svTime = message.ReadLong();
 
 	vec3_t angles;
-	angles[0] = travelPitch * 360 / (2 * idMath::PI);
-	angles[1] = travelAng * 360 / (2 * idMath::PI);
+	angles[0] = RAD2DEG(travelPitch);
+	angles[1] = RAD2DEG(travelAng);
 	angles[2] = 0;
 
 	vec3_t forward, right, up;
@@ -2210,8 +2210,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte();
 	byte health = message.ReadByte();
 
@@ -2225,8 +2225,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 	ex->model = R_RegisterModel("models/sucwp1p.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 10 / 8;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	ex->scale = health;
 	VectorCopy(vel, ex->velocity);
 	ex->frameFunc = updateBloodRain;
@@ -2235,8 +2235,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 	if (health > 90)
 	{
 		vec3_t angles;
-		angles[0] = travelPitch * 360 / (2 * idMath::PI);
-		angles[1] = travelAng * 360 / (2 * idMath::PI);
+		angles[0] = RAD2DEG(travelPitch);
+		angles[1] = RAD2DEG(travelAng);
 		angles[2] = 0;
 
 		vec3_t forward, right, up;
@@ -2248,8 +2248,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
 		ex->startTime = cl.serverTime;
 		ex->endTime = ex->startTime + trailLen * 10 / 8;
-		ex->angles[0] = travelPitch * 360 / 6.28;
-		ex->angles[1] = travelAng * 360 / 6.28;
+		ex->angles[0] = RAD2DEG(travelPitch);
+		ex->angles[1] = RAD2DEG(travelAng);
 		ex->scale = health - 90;
 		VectorCopy(vel, ex->velocity);
 		ex->frameFunc = updateBloodRain;
@@ -2260,8 +2260,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 		ex->model = R_RegisterModel("models/sucwp1p.mdl");
 		ex->startTime = cl.serverTime;
 		ex->endTime = ex->startTime + trailLen * 10 / 8;
-		ex->angles[0] = travelPitch * 360 / 6.28;
-		ex->angles[1] = travelAng * 360 / 6.28;
+		ex->angles[0] = RAD2DEG(travelPitch);
+		ex->angles[1] = RAD2DEG(travelAng);
 		ex->scale = health - 90;
 		VectorCopy(vel, ex->velocity);
 		ex->frameFunc = updateBloodRain;
@@ -2273,8 +2273,8 @@ void CLHW_ParseAxe(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2287,8 +2287,8 @@ void CLHW_ParseAxe(QMsg& message)
 	ex->model = R_RegisterModel("models/axblade.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 
@@ -2297,8 +2297,8 @@ void CLHW_ParseAxe(QMsg& message)
 	ex->model = R_RegisterModel("models/axtail.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->exflags |= EXFLAG_STILL_FRAME;
@@ -2369,8 +2369,8 @@ void CLHW_ParsePurify2Missile(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2383,8 +2383,8 @@ void CLHW_ParsePurify2Missile(QMsg& message)
 	ex->model = R_RegisterModel("models/drgnball.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updatePurify2;
@@ -2416,8 +2416,8 @@ void CLHW_ParseSwordShot(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2430,8 +2430,8 @@ void CLHW_ParseSwordShot(QMsg& message)
 	ex->model = R_RegisterModel("models/vorpshot.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateSwordShot;
@@ -2449,8 +2449,8 @@ void CLHW_ParseIceShot(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2463,8 +2463,8 @@ void CLHW_ParseIceShot(QMsg& message)
 	ex->model = R_RegisterModel("models/iceshot1.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateIceShot;
@@ -2483,8 +2483,8 @@ void CLHW_ParseIceShot(QMsg& message)
 	ex->model = R_RegisterModel("models/iceshot2.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->scale = 200;
@@ -2504,8 +2504,8 @@ void CLHW_ParseMeteor(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2518,8 +2518,8 @@ void CLHW_ParseMeteor(QMsg& message)
 	ex->model = R_RegisterModel("models/tempmetr.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateMeteor;
@@ -2536,8 +2536,8 @@ void CLHW_ParseMegaMeteor(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2550,8 +2550,8 @@ void CLHW_ParseMegaMeteor(QMsg& message)
 	ex->model = R_RegisterModel("models/tempmetr.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateMeteor;
@@ -2569,8 +2569,8 @@ void CLHW_ParseLightningBall(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float speed = message.ReadShort();
 	float trailLen = message.ReadByte();
 
@@ -2587,8 +2587,8 @@ void CLHW_ParseLightningBall(QMsg& message)
 	ex->model = R_RegisterModel("models/lball.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 2;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 }
@@ -2602,8 +2602,8 @@ void CLHW_ParseAcidBallFly(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte() * .01;
 
 	vec3_t vel;
@@ -2616,8 +2616,8 @@ void CLHW_ParseAcidBallFly(QMsg& message)
 	ex->model = R_RegisterModel("models/sucwp2p.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 300;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateAcidBall;
@@ -2657,8 +2657,8 @@ void CLHW_ParseAcidBlobFly(QMsg& message)
 {
 	vec3_t pos;
 	message.ReadPos(pos);
-	float travelAng = message.ReadByte() * 6.28 / 256.0;
-	float travelPitch = message.ReadByte() * 6.28 / 256.0;
+	float travelAng = message.ReadByte() * idMath::TWO_PI / 256.0;
+	float travelPitch = message.ReadByte() * idMath::TWO_PI / 256.0;
 	float trailLen = message.ReadByte();
 
 	vec3_t vel;
@@ -2671,8 +2671,8 @@ void CLHW_ParseAcidBlobFly(QMsg& message)
 	ex->model = R_RegisterModel("models/sucwp2p.mdl");
 	ex->startTime = cl.serverTime;
 	ex->endTime = ex->startTime + trailLen * 3;
-	ex->angles[0] = travelPitch * 360 / 6.28;
-	ex->angles[1] = travelAng * 360 / 6.28;
+	ex->angles[0] = RAD2DEG(travelPitch);
+	ex->angles[1] = RAD2DEG(travelAng);
 	VectorCopy(vel, ex->velocity);
 	ex->exflags |= EXFLAG_COLLIDE;
 	ex->frameFunc = updateAcidBlob;

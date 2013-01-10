@@ -626,13 +626,13 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	static float sr, sp, sy, cr, cp, cy;
 	// static to help MS compiler fp bugs
 
-	angle = angles[YAW] * (idMath::PI * 2 / 360);
+	angle = DEG2RAD(angles[YAW]);
 	sy = sin(angle);
 	cy = cos(angle);
-	angle = angles[PITCH] * (idMath::PI * 2 / 360);
+	angle = DEG2RAD(angles[PITCH]);
 	sp = sin(angle);
 	cp = cos(angle);
-	angle = angles[ROLL] * (idMath::PI * 2 / 360);
+	angle = DEG2RAD(angles[ROLL]);
 	sr = sin(angle);
 	cr = cos(angle);
 
@@ -998,7 +998,7 @@ static float VecToYawNotAlongZ(const vec3_t vector)
 {
 	if (vector[0])
 	{
-		float yaw = atan2(vector[1], vector[0]) * 180 / idMath::PI;
+		float yaw = RAD2DEG(atan2(vector[1], vector[0]));
 		if (yaw < 0)
 		{
 			yaw += 360;
@@ -1030,7 +1030,7 @@ float VecToYaw(const vec3_t vector)
 static float VecToPitchNotAlongZ(const vec3_t vector)
 {
 	float forward = sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
-	float pitch = (atan2(vector[2], forward) * 180 / idMath::PI);
+	float pitch = RAD2DEG(atan2(vector[2], forward));
 	if (pitch < 0)
 	{
 		pitch += 360;

@@ -26,8 +26,10 @@ const float idMath::SQRT_TWO        = 1.41421356237309504880f;
 const float idMath::SQRT_THREE      = 1.73205080756887729352f;
 const float idMath::SQRT_1OVER2     = 0.70710678118654752440f;
 const float idMath::SQRT_1OVER3     = 0.57735026918962576450f;
+#endif
 const float idMath::M_DEG2RAD       = PI / 180.0f;
 const float idMath::M_RAD2DEG       = 180.0f / PI;
+#if 0
 const float idMath::M_SEC2MS        = 1000.0f;
 const float idMath::M_MS2SEC        = 0.001f;
 const float idMath::INFINITY        = 1e30f;

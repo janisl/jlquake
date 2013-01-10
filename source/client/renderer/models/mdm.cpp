@@ -650,10 +650,10 @@ static inline void LocalIngleVector(int ingles[3], vec3_t forward)
 	float sp = SIN_TABLE(ingles[PITCH] & 65535);
 	float cp = COS_TABLE(ingles[PITCH] & 65535);
 
-	//%	sy = sin( SHORT2ANGLE( ingles[ YAW ] ) * (idMath::PI*2 / 360) );
-	//%	cy = cos( SHORT2ANGLE( ingles[ YAW ] ) * (idMath::PI*2 / 360) );
-	//%	sp = sin( SHORT2ANGLE( ingles[ PITCH ] ) * (idMath::PI*2 / 360) );
-	//%	cp = cos( SHORT2ANGLE( ingles[ PITCH ] ) *  (idMath::PI*2 / 360) );
+	//%	sy = sin( DEG2RAD(SHORT2ANGLE( ingles[ YAW ] )) );
+	//%	cy = cos( DEG2RAD(SHORT2ANGLE( ingles[ YAW ] )) );
+	//%	sp = sin( DEG2RAD(SHORT2ANGLE( ingles[ PITCH ] )) );
+	//%	cp = cos( DEG2RAD(SHORT2ANGLE( ingles[ PITCH ] )) );
 
 	forward[0] = cp * cy;
 	forward[1] = cp * sy;

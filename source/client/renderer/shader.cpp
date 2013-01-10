@@ -1772,11 +1772,11 @@ static bool ParseShader(const char** text)
 
 			token = String::ParseExt(text, false);
 			a = String::Atof(token);
-			a = a / 180 * idMath::PI;
+			a = DEG2RAD(a);
 
 			token = String::ParseExt(text, false);
 			b = String::Atof(token);
-			b = b / 180 * idMath::PI;
+			b = DEG2RAD(b);
 
 			tr.sunDirection[0] = cos(a) * cos(b);
 			tr.sunDirection[1] = sin(a) * cos(b);

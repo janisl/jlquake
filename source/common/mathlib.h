@@ -179,9 +179,6 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
 
 void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3]);
 
-#define DEG2RAD(a)      (((a) * idMath::PI) / 180.0f)
-#define RAD2DEG(a)      (((a) * 180.0f) / idMath::PI)
-
 #define AngleMod(a)     AngleNormalize360(a)
 float AngleNormalize360(float angle);
 float AngleNormalize180(float angle);

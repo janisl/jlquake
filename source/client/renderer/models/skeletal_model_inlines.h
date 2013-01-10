@@ -37,10 +37,10 @@ inline void LocalAddScaledMatrixTransformVectorTranslate(const vec3_t in, float 
 
 inline void LocalAngleVector(const vec3_t angles, vec3_t forward)
 {
-	float LAVangle = angles[YAW] * (idMath::PI * 2 / 360);
+	float LAVangle = DEG2RAD(angles[YAW]);
 	float sy = sin(LAVangle);
 	float cy = cos(LAVangle);
-	LAVangle = angles[PITCH] * (idMath::PI * 2 / 360);
+	LAVangle = DEG2RAD(angles[PITCH]);
 	float sp = sin(LAVangle);
 	float cp = cos(LAVangle);
 

@@ -295,7 +295,7 @@ static bool SVQH_StepDirection(qhedict_t* ent, float yaw, float dist)
 	ent->SetIdealYaw(yaw);
 	PF_changeyaw();
 
-	yaw = yaw * idMath::PI * 2 / 360;
+	yaw = DEG2RAD(yaw);
 	move[0] = cos(yaw) * dist;
 	move[1] = sin(yaw) * dist;
 	move[2] = 0;

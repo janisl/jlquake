@@ -407,7 +407,7 @@ static void SetFarClip()
 
 static void R_SetupFrustum()
 {
-	float ang = tr.viewParms.fovX / 180 * idMath::PI * 0.5f;
+	float ang = DEG2RAD(tr.viewParms.fovX) * 0.5f;
 	float xs = sin(ang);
 	float xc = cos(ang);
 
@@ -417,7 +417,7 @@ static void R_SetupFrustum()
 	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal);
 	VectorMA(tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal);
 
-	ang = tr.viewParms.fovY / 180 * idMath::PI * 0.5f;
+	ang = DEG2RAD(tr.viewParms.fovY) * 0.5f;
 	xs = sin(ang);
 	xc = cos(ang);
 
@@ -476,10 +476,10 @@ void R_SetupProjection()
 		zNear /= ((tr.refdef.fov_x - 90.0f) * 0.09f + 1.0f);
 	}
 
-	float ymax = zNear * tan(tr.viewParms.fovY * idMath::PI / 360.0f);
+	float ymax = zNear * tan(DEG2RAD(tr.viewParms.fovY * 0.5f));
 	float ymin = -ymax;
 
-	float xmax = zNear * tan(tr.viewParms.fovX * idMath::PI / 360.0f);
+	float xmax = zNear * tan(DEG2RAD(tr.viewParms.fovX * 0.5f));
 	float xmin = -xmax;
 
 	float width = xmax - xmin;

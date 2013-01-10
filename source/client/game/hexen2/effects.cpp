@@ -941,7 +941,7 @@ static void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
 		effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
 		VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
 
-		float angleval = dir * idMath::PI * 2 / 360;
+		float angleval = DEG2RAD(dir);
 
 		float sinval = sin(angleval);
 		float cosval = cos(angleval);

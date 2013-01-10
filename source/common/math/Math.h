@@ -24,6 +24,7 @@
 // for FLT_MIN
 #include <float.h>
 #endif
+#endif
 
 /*
 ===============================================================================
@@ -44,6 +45,7 @@
 #define DEG2RAD(a)              ((a) * idMath::M_DEG2RAD)
 #define RAD2DEG(a)              ((a) * idMath::M_RAD2DEG)
 
+#if 0
 #define SEC2MS(t)               (idMath::FtoiFast((t) * idMath::M_SEC2MS))
 #define MS2SEC(t)               ((t) * idMath::M_MS2SEC)
 
@@ -206,8 +208,10 @@ public:
 	static const float SQRT_THREE;							// sqrt( 3 )
 	static const float SQRT_1OVER2;							// sqrt( 1 / 2 )
 	static const float SQRT_1OVER3;							// sqrt( 1 / 3 )
+#endif
 	static const float M_DEG2RAD;							// degrees to radians multiplier
 	static const float M_RAD2DEG;							// radians to degrees multiplier
+#if 0
 	static const float M_SEC2MS;							// seconds to milliseconds multiplier
 	static const float M_MS2SEC;							// milliseconds to seconds multiplier
 	static const float INFINITY;							// huge number which should be larger than any valid number used
