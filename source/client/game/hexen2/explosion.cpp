@@ -1359,8 +1359,8 @@ void CLHW_ParseTeleport(QMsg& message)
 
 	for (int dir = 0; dir < 360; dir += 45)
 	{
-		float cosval = 10 * cos(dir * M_PI * 2 / 360);
-		float sinval = 10 * sin(dir * M_PI * 2 / 360);
+		float cosval = 10 * cos(dir * idMath::PI * 2 / 360);
+		float sinval = 10 * sin(dir * idMath::PI * 2 / 360);
 		ex = CLH2_AllocExplosion();
 		VectorCopy(pos, ex->origin);
 		ex->model = R_RegisterModel("models/telesmk2.spr");
@@ -2130,8 +2130,8 @@ void CLHW_ParsePowerFlame(QMsg& message)
 	float svTime = message.ReadLong();
 
 	vec3_t angles;
-	angles[0] = travelPitch * 360 / (2 * M_PI);
-	angles[1] = travelAng * 360 / (2 * M_PI);
+	angles[0] = travelPitch * 360 / (2 * idMath::PI);
+	angles[1] = travelAng * 360 / (2 * idMath::PI);
 	angles[2] = 0;
 
 	vec3_t forward, right, up;
@@ -2235,8 +2235,8 @@ void CLHW_ParseBloodRain(QMsg& message)
 	if (health > 90)
 	{
 		vec3_t angles;
-		angles[0] = travelPitch * 360 / (2 * M_PI);
-		angles[1] = travelAng * 360 / (2 * M_PI);
+		angles[0] = travelPitch * 360 / (2 * idMath::PI);
+		angles[1] = travelAng * 360 / (2 * idMath::PI);
 		angles[2] = 0;
 
 		vec3_t forward, right, up;
@@ -3122,9 +3122,9 @@ void CLHW_UpdateTargetBall()
 
 	vec3_t newOrg;
 	VectorCopy(cl.qh_simorg, newOrg);
-	newOrg[0] += cos(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
-	newOrg[1] += sin(clh2_targetAngle * M_PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * M_PI * 2 / 256.0);
-	newOrg[2] += 44 + sin(clh2_targetPitch * M_PI * 2 / 256.0) * 50 + cos(cl.serverTime * 0.001 * 2) * 5;
+	newOrg[0] += cos(clh2_targetAngle * idMath::PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * idMath::PI * 2 / 256.0);
+	newOrg[1] += sin(clh2_targetAngle * idMath::PI * 2 / 256.0) * 50 * cos(clh2_targetPitch * idMath::PI * 2 / 256.0);
+	newOrg[2] += 44 + sin(clh2_targetPitch * idMath::PI * 2 / 256.0) * 50 + cos(cl.serverTime * 0.001 * 2) * 5;
 	float newScale;
 	if (clh2_targetDistance < 60)
 	{

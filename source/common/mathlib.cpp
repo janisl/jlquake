@@ -221,13 +221,13 @@ float Q_acos(float c)
 
 	angle = acos(c);
 
-	if (angle > M_PI)
+	if (angle > idMath::PI)
 	{
-		return (float)M_PI;
+		return (float)idMath::PI;
 	}
-	if (angle < -M_PI)
+	if (angle < -idMath::PI)
 	{
-		return (float)M_PI;
+		return (float)idMath::PI;
 	}
 	return angle;
 }
@@ -626,13 +626,13 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	static float sr, sp, sy, cr, cp, cy;
 	// static to help MS compiler fp bugs
 
-	angle = angles[YAW] * (M_PI * 2 / 360);
+	angle = angles[YAW] * (idMath::PI * 2 / 360);
 	sy = sin(angle);
 	cy = cos(angle);
-	angle = angles[PITCH] * (M_PI * 2 / 360);
+	angle = angles[PITCH] * (idMath::PI * 2 / 360);
 	sp = sin(angle);
 	cp = cos(angle);
-	angle = angles[ROLL] * (M_PI * 2 / 360);
+	angle = angles[ROLL] * (idMath::PI * 2 / 360);
 	sr = sin(angle);
 	cr = cos(angle);
 
@@ -998,7 +998,7 @@ static float VecToYawNotAlongZ(const vec3_t vector)
 {
 	if (vector[0])
 	{
-		float yaw = atan2(vector[1], vector[0]) * 180 / M_PI;
+		float yaw = atan2(vector[1], vector[0]) * 180 / idMath::PI;
 		if (yaw < 0)
 		{
 			yaw += 360;
@@ -1030,7 +1030,7 @@ float VecToYaw(const vec3_t vector)
 static float VecToPitchNotAlongZ(const vec3_t vector)
 {
 	float forward = sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
-	float pitch = (atan2(vector[2], forward) * 180 / M_PI);
+	float pitch = (atan2(vector[2], forward) * 180 / idMath::PI);
 	if (pitch < 0)
 	{
 		pitch += 360;

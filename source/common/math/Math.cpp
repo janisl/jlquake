@@ -16,11 +16,11 @@
 
 #include "Math.h"
 
-#if 0
 const float idMath::PI              = 3.14159265358979323846f;
 const float idMath::TWO_PI          = 2.0f * PI;
 const float idMath::HALF_PI         = 0.5f * PI;
 const float idMath::ONEFOURTH_PI    = 0.25f * PI;
+#if 0
 const float idMath::E               = 2.71828182845904523536f;
 const float idMath::SQRT_TWO        = 1.41421356237309504880f;
 const float idMath::SQRT_THREE      = 1.73205080756887729352f;

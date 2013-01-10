@@ -407,7 +407,7 @@ static void SetFarClip()
 
 static void R_SetupFrustum()
 {
-	float ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
+	float ang = tr.viewParms.fovX / 180 * idMath::PI * 0.5f;
 	float xs = sin(ang);
 	float xc = cos(ang);
 
@@ -417,7 +417,7 @@ static void R_SetupFrustum()
 	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal);
 	VectorMA(tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal);
 
-	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
+	ang = tr.viewParms.fovY / 180 * idMath::PI * 0.5f;
 	xs = sin(ang);
 	xc = cos(ang);
 
@@ -476,10 +476,10 @@ void R_SetupProjection()
 		zNear /= ((tr.refdef.fov_x - 90.0f) * 0.09f + 1.0f);
 	}
 
-	float ymax = zNear * tan(tr.viewParms.fovY * M_PI / 360.0f);
+	float ymax = zNear * tan(tr.viewParms.fovY * idMath::PI / 360.0f);
 	float ymin = -ymax;
 
-	float xmax = zNear * tan(tr.viewParms.fovX * M_PI / 360.0f);
+	float xmax = zNear * tan(tr.viewParms.fovX * idMath::PI / 360.0f);
 	float xmin = -xmax;
 
 	float width = xmax - xmin;
@@ -1030,7 +1030,7 @@ static void R_DrawNullModel()
 	qglVertex3f(0, 0, -16);
 	for (int i = 0; i <= 4; i++)
 	{
-		qglVertex3f(16 * cos(i * M_PI / 2), 16 * sin(i * M_PI / 2), 0);
+		qglVertex3f(16 * cos(i * idMath::PI / 2), 16 * sin(i * idMath::PI / 2), 0);
 	}
 	qglEnd();
 
@@ -1038,7 +1038,7 @@ static void R_DrawNullModel()
 	qglVertex3f(0, 0, 16);
 	for (int i = 4; i >= 0; i--)
 	{
-		qglVertex3f(16 * cos(i * M_PI / 2), 16 * sin(i * M_PI / 2), 0);
+		qglVertex3f(16 * cos(i * idMath::PI / 2), 16 * sin(i * idMath::PI / 2), 0);
 	}
 	qglEnd();
 

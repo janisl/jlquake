@@ -194,11 +194,13 @@ public:
 	static float                BitsToFloat(int i, int exponentBits, int mantissaBits);
 
 	static int                  FloatHash(const float* array, const int numFloats);
+#endif
 
 	static const float PI;									// pi
 	static const float TWO_PI;								// pi * 2
 	static const float HALF_PI;								// pi / 2
 	static const float ONEFOURTH_PI;						// pi / 4
+#if 0
 	static const float E;									// e
 	static const float SQRT_TWO;							// sqrt( 2 )
 	static const float SQRT_THREE;							// sqrt( 3 )

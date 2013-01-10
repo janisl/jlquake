@@ -655,7 +655,7 @@ extern int c_alias_polys;
 extern int c_visible_textures;
 extern int c_visible_lightmaps;
 
-#define TURBSCALE (256.0 / (2 * M_PI))
+#define TURBSCALE (256.0 / (2 * idMath::PI))
 extern float r_turbsin[256];
 
 extern int gl_NormalFontBase;

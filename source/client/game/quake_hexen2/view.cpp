@@ -640,11 +640,11 @@ static float VQH_CalcBob()
 	cycle /= clqh_bobcycle->value;
 	if (cycle < clqh_bobup->value)
 	{
-		cycle = M_PI * cycle / clqh_bobup->value;
+		cycle = idMath::PI * cycle / clqh_bobup->value;
 	}
 	else
 	{
-		cycle = M_PI + M_PI * (cycle - clqh_bobup->value) / (1.0 - clqh_bobup->value);
+		cycle = idMath::PI + idMath::PI * (cycle - clqh_bobup->value) / (1.0 - clqh_bobup->value);
 	}
 
 	// bob is proportional to simulated velocity in the xy plane

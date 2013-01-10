@@ -44,11 +44,11 @@ float CalcFov(float fovX, float width, float height)
 		common->Error("Bad fov: %f", fovX);
 	}
 
-	float x = width / tan(fovX / 360 * M_PI);
+	float x = width / tan(fovX / 360 * idMath::PI);
 
 	float a = atan(height / x);
 
-	a = a * 360 / M_PI;
+	a = a * 360 / idMath::PI;
 
 	return a;
 }

@@ -285,7 +285,7 @@ void PF_Cos()
 {
 	float angle = G_FLOAT(OFS_PARM0);
 
-	angle = angle * M_PI * 2 / 360;
+	angle = angle * idMath::PI * 2 / 360;
 
 	G_FLOAT(OFS_RETURN) = cos(angle);
 }
@@ -294,7 +294,7 @@ void PF_Sin()
 {
 	float angle = G_FLOAT(OFS_PARM0);
 
-	angle = angle * M_PI * 2 / 360;
+	angle = angle * idMath::PI * 2 / 360;
 
 	G_FLOAT(OFS_RETURN) = sin(angle);
 }

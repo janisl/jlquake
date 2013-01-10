@@ -3823,7 +3823,7 @@ static bool AAS_Reachability_Grapple(int area1num, int area2num)
 		}
 		//check the minimal angle of the movement
 		mingrappleangle = 15;	//15 degrees
-		if (z / hordist < tan(2 * M_PI * mingrappleangle / 360))
+		if (z / hordist < tan(2 * idMath::PI * mingrappleangle / 360))
 		{
 			continue;
 		}

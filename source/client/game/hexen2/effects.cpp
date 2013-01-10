@@ -941,7 +941,7 @@ static void CLH2_ParseEffectTeleporterPuffs(int index, QMsg& message)
 		effect_entity_t* ent = &EffectEntities[cl.h2_Effects[index].Teleporter.entity_index[i]];
 		VectorCopy(cl.h2_Effects[index].Teleporter.origin, ent->state.origin);
 
-		float angleval = dir * M_PI * 2 / 360;
+		float angleval = dir * idMath::PI * 2 / 360;
 
 		float sinval = sin(angleval);
 		float cosval = cos(angleval);
@@ -2637,8 +2637,8 @@ static void CLH2_UpdateEffectGravityWell(int index, float frametime)
 
 	vec3_t org;
 	VectorCopy(cl.h2_Effects[index].GravityWell.origin, org);
-	org[0] += sin(cl.h2_Effects[index].GravityWell.time_amount * 2 * M_PI) * 30;
-	org[1] += cos(cl.h2_Effects[index].GravityWell.time_amount * 2 * M_PI) * 30;
+	org[0] += sin(cl.h2_Effects[index].GravityWell.time_amount * 2 * idMath::PI) * 30;
+	org[1] += cos(cl.h2_Effects[index].GravityWell.time_amount * 2 * idMath::PI) * 30;
 
 	if (cl.h2_Effects[index].GravityWell.lifetime < cl.serverTime * 0.001)
 	{
@@ -3201,8 +3201,8 @@ static void CLH2_UpdateEffectRiderDeath(int index, float frametime)
 
 	vec3_t org;
 	VectorCopy(cl.h2_Effects[index].RD.origin, org);
-	org[0] += sin(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
-	org[1] += cos(cl.h2_Effects[index].RD.time_amount * 2 * M_PI) * 30;
+	org[0] += sin(cl.h2_Effects[index].RD.time_amount * 2 * idMath::PI) * 30;
+	org[1] += cos(cl.h2_Effects[index].RD.time_amount * 2 * idMath::PI) * 30;
 
 	if (cl.h2_Effects[index].RD.stage <= 6)
 	{

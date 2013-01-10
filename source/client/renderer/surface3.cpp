@@ -732,7 +732,7 @@ static void RB_SurfaceSprite()
 	}
 	else
 	{
-		float ang = M_PI * backEnd.currentEntity->e.rotation / 180;
+		float ang = idMath::PI * backEnd.currentEntity->e.rotation / 180;
 		float s = sin(ang);
 		float c = cos(ang);
 

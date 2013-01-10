@@ -72,10 +72,6 @@ typedef int fixed4_t;
 typedef int fixed8_t;
 typedef int fixed16_t;
 
-#ifndef M_PI
-#define M_PI        3.14159265358979323846	// matches value in gcc v2 math.h
-#endif
-
 extern vec3_t vec3_origin;
 
 #define nanmask                 (255 << 23)
@@ -183,8 +179,8 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
 
 void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3]);
 
-#define DEG2RAD(a)      (((a) * M_PI) / 180.0f)
-#define RAD2DEG(a)      (((a) * 180.0f) / M_PI)
+#define DEG2RAD(a)      (((a) * idMath::PI) / 180.0f)
+#define RAD2DEG(a)      (((a) * 180.0f) / idMath::PI)
 
 #define AngleMod(a)     AngleNormalize360(a)
 float AngleNormalize360(float angle);

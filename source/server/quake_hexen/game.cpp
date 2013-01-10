@@ -570,7 +570,7 @@ static void WalkMoveCommon(bool noEnemy, bool setTrace)
 		return;
 	}
 
-	yaw = yaw * M_PI * 2 / 360;
+	yaw = yaw * idMath::PI * 2 / 360;
 
 	vec3_t move;
 	move[0] = cos(yaw) * dist;

@@ -183,7 +183,7 @@ void SVQH_SetIdealPitch(qhedict_t* player)
 		return;
 	}
 
-	float angleval = player->GetAngles()[YAW] * M_PI * 2 / 360;
+	float angleval = player->GetAngles()[YAW] * idMath::PI * 2 / 360;
 	float sinval = sin(angleval);
 	float cosval = cos(angleval);
 

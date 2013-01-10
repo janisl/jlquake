@@ -862,7 +862,7 @@ static const void* RB_RotatedPic(const void* data)
 			*(int*)tess.vertexColors[numVerts + 2] =
 				*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
 
-	float pi2 = M_PI * 2;
+	float pi2 = idMath::PI * 2;
 	float angle = cmd->angle * pi2;
 	tess.xyz[numVerts][0] = cmd->x + (cos(angle) * cmd->w);
 	tess.xyz[numVerts][1] = cmd->y + (sin(angle) * cmd->h);
