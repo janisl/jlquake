@@ -192,8 +192,10 @@ public:
 #if 0
 	static unsigned int         Ftol(float f);				// float to int conversion
 	static unsigned int         FtolFast(float);			// fast float to int conversion but uses current FPU round mode (default round nearest)
+#endif
 
-	static signed char          ClampChar(int i);
+	static signed char ClampChar(int i);
+#if 0
 	static signed short         ClampShort(int i);
 	static int                  ClampInt(int min, int max, int value);
 	static float                ClampFloat(float min, float max, float value);
@@ -1021,6 +1023,7 @@ inline unsigned int idMath::FtolFast(float f)
 	return (unsigned int)f;
 #endif
 }
+#endif
 
 inline signed char idMath::ClampChar(int i)
 {
@@ -1035,6 +1038,7 @@ inline signed char idMath::ClampChar(int i)
 	return i;
 }
 
+#if 0
 inline signed short idMath::ClampShort(int i)
 {
 	if (i < -32768)

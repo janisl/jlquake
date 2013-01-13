@@ -27,6 +27,7 @@ class idMathTest : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestACos);
 	CPPUNIT_TEST(TestFabs);
 	CPPUNIT_TEST(TestFtoiFast);
+	CPPUNIT_TEST(TestClampChar);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -36,6 +37,7 @@ public:
 	void TestACos();
 	void TestFabs();
 	void TestFtoiFast();
+	void TestClampChar();
 };
 
 // Registers the fixture into the 'registry'
@@ -76,4 +78,11 @@ void idMathTest::TestFtoiFast()
 {
 	CPPUNIT_ASSERT_EQUAL(5, idMath::FtoiFast(5.1));
 	CPPUNIT_ASSERT_EQUAL(-6, idMath::FtoiFast(-6.1));
+}
+
+void idMathTest::TestClampChar()
+{
+	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(127), idMath::ClampChar(64564));
+	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(-128), idMath::ClampChar(-9700978));
+	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(6), idMath::ClampChar(6));
 }

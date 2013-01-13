@@ -1109,7 +1109,7 @@ static void CL_Kick(in_usercmd_t* cmd)
 	{
 		return;
 	}
-	cmd->kick = ClampChar(CL_KeyState(&in_kick));
+	cmd->kick = idMath::ClampChar(CL_KeyState(&in_kick));
 }
 
 static void CL_RecoilPitch()
@@ -1210,9 +1210,9 @@ static void CL_FinishMove(in_usercmd_t* cmd)
 
 	if (GGameType & GAME_Tech3)
 	{
-		cmd->forwardmove = ClampChar(cmd->forwardmove);
-		cmd->sidemove = ClampChar(cmd->sidemove);
-		cmd->upmove = ClampChar(cmd->upmove);
+		cmd->forwardmove = idMath::ClampChar(cmd->forwardmove);
+		cmd->sidemove = idMath::ClampChar(cmd->sidemove);
+		cmd->upmove = idMath::ClampChar(cmd->upmove);
 
 		// send the current server time so the amount of movement
 		// can be determined without allowing cheating

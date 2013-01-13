@@ -189,32 +189,6 @@ float bytedirs[NUMVERTEXNORMALS][3] =
 	{-0.688191, -0.587785, -0.425325},
 };
 
-qint8 ClampChar(int i)
-{
-	if (i < MIN_QINT8)
-	{
-		return MIN_QINT8;
-	}
-	if (i > MAX_QINT8)
-	{
-		return MAX_QINT8;
-	}
-	return i;
-}
-
-qint16 ClampShort(int i)
-{
-	if (i < MIN_QINT16)
-	{
-		return MIN_QINT16;
-	}
-	if (i > MAX_QINT16)
-	{
-		return MAX_QINT16;
-	}
-	return i;
-}
-
 void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc)
 {
 	vecc[0] = veca[0] + scale * vecb[0];

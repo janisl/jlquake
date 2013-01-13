@@ -22,9 +22,6 @@
 
 #define SQRTFAST(x)     ((x) * idMath::RSqrt(x))
 
-qint8 ClampChar(int i);
-qint16 ClampShort(int i);
-
 // angle indexes
 #define PITCH               0		// up / down
 #define YAW                 1		// left / right
