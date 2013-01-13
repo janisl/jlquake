@@ -52,7 +52,7 @@ bool loadCamera(int camNum, const char* name)
 
 bool getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov)
 {
-	idVec3 dir, org;
+	idVec3Splines dir, org;
 	if (camNum < 0 || camNum >= MAX_CAMERAS)
 	{
 		return false;
@@ -81,7 +81,7 @@ void startCamera(int camNum, int time)
 	camera[camNum].startCamera(time);
 }
 
-idVec3 idSplineList::zero(0,0,0);
+idVec3Splines idSplineList::zero(0,0,0);
 
 void idSplineList::buildSpline()
 {
@@ -100,7 +100,7 @@ void idSplineList::buildSpline()
 				y += controlPoints[i - (3 - j)]->y * calcSpline(j, tension);
 				z += controlPoints[i - (3 - j)]->z * calcSpline(j, tension);
 			}
-			splinePoints.Append(new idVec3(x, y, z));
+			splinePoints.Append(new idVec3Splines(x, y, z));
 		}
 	}
 	dirty = false;
@@ -123,7 +123,7 @@ float idSplineList::totalDistance()
 	}
 
 	float dist = 0.0;
-	idVec3 temp;
+	idVec3Splines temp;
 	int count = splinePoints.Num();
 	for (int i = 1; i < count; i++)
 	{
@@ -155,7 +155,7 @@ void idSplineList::initPosition(long bt, long totalTime)
 	splineTime.Append(bt);
 	double dist = totalDistance();
 	double distSoFar = 0.0;
-	idVec3 temp;
+	idVec3Splines temp;
 	int count = splinePoints.Num();
 	//for(int i = 2; i < count - 1; i++) {
 	for (int i = 1; i < count; i++)
@@ -185,9 +185,9 @@ float idSplineList::calcSpline(int step, float tension)
 	return 0.0;
 }
 
-const idVec3* idSplineList::getPosition(long t)
+const idVec3Splines* idSplineList::getPosition(long t)
 {
-	static idVec3 interpolatedPos;
+	static idVec3Splines interpolatedPos;
 
 	int count = splineTime.Num();
 	if (count == 0)
@@ -207,8 +207,8 @@ const idVec3* idSplineList::getPosition(long t)
 				double timeLo = splineTime[activeSegment - 1];
 				double percent = (timeHi - t) / (timeHi - timeLo);
 				// pick two bounding points
-				idVec3 v1 = *splinePoints[activeSegment - 1];
-				idVec3 v2 = *splinePoints[activeSegment + 1];
+				idVec3Splines v1 = *splinePoints[activeSegment - 1];
+				idVec3Splines v2 = *splinePoints[activeSegment + 1];
 				v2 *= (1.0 - percent);
 				v1 *= percent;
 				v2 += v1;
@@ -273,7 +273,7 @@ void idSplineList::parse(const char** text)
 
 		Com_UngetToken();
 		// read the control point
-		idVec3 point;
+		idVec3Splines point;
 		Com_Parse1DMatrix(text, 3, point);
 		addPoint(point.x, point.y, point.z);
 	}
@@ -284,7 +284,7 @@ void idSplineList::parse(const char** text)
 	dirty = true;
 }
 
-bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, float* fv)
+bool idCameraDef::getCameraInfo(long time, idVec3Splines&origin, idVec3Splines&direction, float* fv)
 {
 
 	char buff[1024];
@@ -364,7 +364,7 @@ bool idCameraDef::getCameraInfo(long time, idVec3&origin, idVec3&direction, floa
 
 	*fv = fov.getFOV(time);
 
-	idVec3 temp = origin;
+	idVec3Splines temp = origin;
 
 	int numTargets = targetPositions.Num();
 	if (numTargets == 0)
@@ -728,9 +728,9 @@ void idCameraEvent::parse(const char** text)
 	Com_MatchToken(text, "}");
 }
 
-const idVec3* idInterpolatedPosition::getPosition(long t)
+const idVec3Splines* idInterpolatedPosition::getPosition(long t)
 {
-	static idVec3 interpolatedPos;
+	static idVec3Splines interpolatedPos;
 	float percent = 0.0;
 	float velocity = getVelocity(t);
 	float timePassed = t - lastTime;
@@ -741,7 +741,7 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 
 	float distToTravel = timePassed * velocity;
 
-	idVec3 temp = startPos;
+	idVec3Splines temp = startPos;
 	temp -= endPos;
 	float distance = temp.Length();
 
@@ -767,8 +767,8 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 	// the following line does a straigt calc on percentage of time
 	// float percent = (float)(startTime + time - t) / time;
 
-	idVec3 v1 = startPos;
-	idVec3 v2 = endPos;
+	idVec3Splines v1 = startPos;
+	idVec3Splines v2 = endPos;
 	v1 *= (1.0 - percent);
 	v2 *= percent;
 	v1 += v2;
@@ -1075,9 +1075,9 @@ void idCameraDef::addTarget(const char* name, idCameraPosition::positionType typ
 	}
 }
 
-const idVec3* idSplinePosition::getPosition(long t)
+const idVec3Splines* idSplinePosition::getPosition(long t)
 {
-	static idVec3 interpolatedPos;
+	static idVec3Splines interpolatedPos;
 
 	float velocity = getVelocity(t);
 	float timePassed = t - lastTime;
@@ -1099,7 +1099,7 @@ const idVec3* idSplinePosition::getPosition(long t)
 	double lastDistance1,lastDistance2;
 	lastDistance1 = lastDistance2 = 0;
 	//FIXME: calc distances on spline build
-	idVec3 temp;
+	idVec3Splines temp;
 	int count = target.numSegments();
 	// TTimo fixed MSVCism
 	int i;
@@ -1132,8 +1132,8 @@ const idVec3* idSplinePosition::getPosition(long t)
 		double timeHi = target.getSegmentTime(i + 1);
 		double timeLo = target.getSegmentTime(i - 1);
 		double percent = (timeHi - t) / (timeHi - timeLo);
-		idVec3 v1 = *target.getSegmentPoint(i - 1);
-		idVec3 v2 = *target.getSegmentPoint(i + 1);
+		idVec3Splines v1 = *target.getSegmentPoint(i - 1);
+		idVec3Splines v2 = *target.getSegmentPoint(i + 1);
 		v2 *= (1.0 - percent);
 		v1 *= percent;
 		v2 += v1;
@@ -1146,8 +1146,8 @@ const idVec3* idSplinePosition::getPosition(long t)
 			lastDistance1 = d;
 		}
 
-		idVec3 v1 = *target.getSegmentPoint(i - 1);
-		idVec3 v2 = *target.getSegmentPoint(i);
+		idVec3Splines v1 = *target.getSegmentPoint(i - 1);
+		idVec3Splines v2 = *target.getSegmentPoint(i);
 		double percent = (lastDistance2 - targetDistance) / (lastDistance2 - lastDistance1);
 		v2 *= (1.0 - percent);
 		v1 *= percent;

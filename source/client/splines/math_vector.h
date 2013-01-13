@@ -18,20 +18,19 @@
 #define __MATH_VECTOR_H__
 
 #include "../../common/mathlib.h"
+#include "../../common/math/Vec3.h"
 
 #ifndef EQUAL_EPSILON
 #define EQUAL_EPSILON   0.001
 #endif
 
-class idVec3
+class idVec3Splines : public idVec3
 {
 public:
-	float x, y, z;
-
-	idVec3()
+	idVec3Splines()
 	{
 	}
-	idVec3(const float x, const float y, const float z);
+	idVec3Splines(const float x, const float y, const float z);
 
 	operator float*();
 
@@ -40,26 +39,26 @@ public:
 
 	void set(const float x, const float y, const float z);
 
-	idVec3 operator-() const;
+	idVec3Splines operator-() const;
 
-	idVec3& operator=(const idVec3& a);
+	idVec3Splines& operator=(const idVec3Splines& a);
 
-	float operator*(const idVec3& a) const;
-	idVec3 operator*(const float a) const;
-	friend idVec3 operator*(float a, idVec3 b);
+	float operator*(const idVec3Splines& a) const;
+	idVec3Splines operator*(const float a) const;
+	friend idVec3Splines operator*(float a, idVec3Splines b);
 
-	idVec3 operator+(const idVec3& a) const;
-	idVec3 operator-(const idVec3& a) const;
+	idVec3Splines operator+(const idVec3Splines& a) const;
+	idVec3Splines operator-(const idVec3Splines& a) const;
 
-	idVec3& operator+=(const idVec3& a);
-	idVec3& operator-=(const idVec3& a);
-	idVec3& operator*=(const float a);
+	idVec3Splines& operator+=(const idVec3Splines& a);
+	idVec3Splines& operator-=(const idVec3Splines& a);
+	idVec3Splines& operator*=(const float a);
 
-	int operator==(const idVec3& a) const;
-	int operator!=(const idVec3& a) const;
+	int operator==(const idVec3Splines& a) const;
+	int operator!=(const idVec3Splines& a) const;
 
-	idVec3 Cross(const idVec3& a) const;
-	idVec3& Cross(const idVec3& a, const idVec3& b);
+	idVec3Splines Cross(const idVec3Splines& a) const;
+	idVec3Splines& Cross(const idVec3Splines& a, const idVec3Splines& b);
 
 	float Length() const;
 	float Normalize();
@@ -68,34 +67,32 @@ public:
 	void Snap();
 };
 
-inline idVec3::idVec3(const float x, const float y, const float z)
+inline idVec3Splines::idVec3Splines(const float x, const float y, const float z)
+: idVec3(x, y, z)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
 }
 
-inline float idVec3::operator[](const int index) const
+inline float idVec3Splines::operator[](const int index) const
 {
 	return (&x)[index];
 }
 
-inline float& idVec3::operator[](const int index)
+inline float& idVec3Splines::operator[](const int index)
 {
 	return (&x)[index];
 }
 
-inline idVec3::operator float*()
+inline idVec3Splines::operator float*()
 {
 	return &x;
 }
 
-inline idVec3 idVec3::operator-() const
+inline idVec3Splines idVec3Splines::operator-() const
 {
-	return idVec3(-x, -y, -z);
+	return idVec3Splines(-x, -y, -z);
 }
 
-inline idVec3& idVec3::operator=(const idVec3& a)
+inline idVec3Splines& idVec3Splines::operator=(const idVec3Splines& a)
 {
 	x = a.x;
 	y = a.y;
@@ -104,39 +101,39 @@ inline idVec3& idVec3::operator=(const idVec3& a)
 	return *this;
 }
 
-inline void idVec3::set(const float x, const float y, const float z)
+inline void idVec3Splines::set(const float x, const float y, const float z)
 {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 }
 
-inline idVec3 idVec3::operator-(const idVec3& a) const
+inline idVec3Splines idVec3Splines::operator-(const idVec3Splines& a) const
 {
-	return idVec3(x - a.x, y - a.y, z - a.z);
+	return idVec3Splines(x - a.x, y - a.y, z - a.z);
 }
 
-inline float idVec3::operator*(const idVec3& a) const
+inline float idVec3Splines::operator*(const idVec3Splines& a) const
 {
 	return x * a.x + y * a.y + z * a.z;
 }
 
-inline idVec3 idVec3::operator*(const float a) const
+inline idVec3Splines idVec3Splines::operator*(const float a) const
 {
-	return idVec3(x * a, y * a, z * a);
+	return idVec3Splines(x * a, y * a, z * a);
 }
 
-inline idVec3 operator*(const float a, const idVec3 b)
+inline idVec3Splines operator*(const float a, const idVec3Splines b)
 {
-	return idVec3(b.x * a, b.y * a, b.z * a);
+	return idVec3Splines(b.x * a, b.y * a, b.z * a);
 }
 
-inline idVec3 idVec3::operator+(const idVec3& a) const
+inline idVec3Splines idVec3Splines::operator+(const idVec3Splines& a) const
 {
-	return idVec3(x + a.x, y + a.y, z + a.z);
+	return idVec3Splines(x + a.x, y + a.y, z + a.z);
 }
 
-inline idVec3& idVec3::operator+=(const idVec3& a)
+inline idVec3Splines& idVec3Splines::operator+=(const idVec3Splines& a)
 {
 	x += a.x;
 	y += a.y;
@@ -145,7 +142,7 @@ inline idVec3& idVec3::operator+=(const idVec3& a)
 	return *this;
 }
 
-inline idVec3& idVec3::operator-=(const idVec3& a)
+inline idVec3Splines& idVec3Splines::operator-=(const idVec3Splines& a)
 {
 	x -= a.x;
 	y -= a.y;
@@ -154,7 +151,7 @@ inline idVec3& idVec3::operator-=(const idVec3& a)
 	return *this;
 }
 
-inline idVec3& idVec3::operator*=(const float a)
+inline idVec3Splines& idVec3Splines::operator*=(const float a)
 {
 	x *= a;
 	y *= a;
@@ -163,7 +160,7 @@ inline idVec3& idVec3::operator*=(const float a)
 	return *this;
 }
 
-inline int idVec3::operator==(const idVec3& a) const
+inline int idVec3Splines::operator==(const idVec3Splines& a) const
 {
 	if (idMath::Fabs(x - a.x) > EQUAL_EPSILON)
 	{
@@ -183,7 +180,7 @@ inline int idVec3::operator==(const idVec3& a) const
 	return true;
 }
 
-inline int idVec3::operator!=(const idVec3& a) const
+inline int idVec3Splines::operator!=(const idVec3Splines& a) const
 {
 	if (idMath::Fabs(x - a.x) > EQUAL_EPSILON)
 	{
@@ -203,12 +200,12 @@ inline int idVec3::operator!=(const idVec3& a) const
 	return false;
 }
 
-inline idVec3 idVec3::Cross(const idVec3& a) const
+inline idVec3Splines idVec3Splines::Cross(const idVec3Splines& a) const
 {
-	return idVec3(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
+	return idVec3Splines(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
 }
 
-inline idVec3& idVec3::Cross(const idVec3& a, const idVec3& b)
+inline idVec3Splines& idVec3Splines::Cross(const idVec3Splines& a, const idVec3Splines& b)
 {
 	x = a.y * b.z - a.z * b.y;
 	y = a.z * b.x - a.x * b.z;
@@ -217,7 +214,7 @@ inline idVec3& idVec3::Cross(const idVec3& a, const idVec3& b)
 	return *this;
 }
 
-inline float idVec3::Length() const
+inline float idVec3Splines::Length() const
 {
 	float length;
 
@@ -225,7 +222,7 @@ inline float idVec3::Length() const
 	return (float)sqrt(length);
 }
 
-inline float idVec3::Normalize()
+inline float idVec3Splines::Normalize()
 {
 	float length;
 	float ilength;
@@ -242,14 +239,14 @@ inline float idVec3::Normalize()
 	return length;
 }
 
-inline void idVec3::Zero()
+inline void idVec3Splines::Zero()
 {
 	x = 0.0f;
 	y = 0.0f;
 	z = 0.0f;
 }
 
-inline void idVec3::Snap()
+inline void idVec3Splines::Snap()
 {
 	x = float(int(x));
 	y = float(int(y));

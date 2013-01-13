@@ -4,6 +4,7 @@ add_executable(common_tests
 	ListTest.cpp
 	MathTests.cpp
 	StrTest.cpp
+	Vec3Test.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET run_tests POST_BUILD
