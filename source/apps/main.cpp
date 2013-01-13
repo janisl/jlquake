@@ -551,6 +551,8 @@ void Com_Init(int argc, char* argv[], char* commandLine)
 	// get the initial time base
 	Sys_Milliseconds();
 
+	idMath::Init();
+
 	Com_InitByteOrder();
 
 	// bk001129 - do this before anything else decides to push events

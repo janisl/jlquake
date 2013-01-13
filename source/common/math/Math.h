@@ -104,18 +104,18 @@ template<class T> inline T   Cube(T x) { return x * x * x; }
 class idMath
 {
 public:
-#if 0
-	static void                 Init(void);
-#endif
+	static void Init();
 
 	static float RSqrt(float x);				// reciprocal square root, returns huge number when x == 0.0
 
+	static float InvSqrt(float x);			// inverse square root with 32 bits precision, returns huge number when x == 0.0
 #if 0
-	static float                InvSqrt(float x);			// inverse square root with 32 bits precision, returns huge number when x == 0.0
 	static float                InvSqrt16(float x);			// inverse square root with 16 bits precision, returns huge number when x == 0.0
 	static double               InvSqrt64(float x);			// inverse square root with 64 bits precision, returns huge number when x == 0.0
+#endif
 
-	static float                Sqrt(float x);				// square root with 32 bits precision
+	static float Sqrt(float x);				// square root with 32 bits precision
+#if 0
 	static float                Sqrt16(float x);			// square root with 16 bits precision
 	static double               Sqrt64(float x);			// square root with 64 bits precision
 
@@ -228,9 +228,11 @@ public:
 	static const float M_MS2SEC;							// milliseconds to seconds multiplier
 	static const float INFINITY;							// huge number which should be larger than any valid number used
 	static const float FLT_EPSILON;							// smallest positive number such that 1.0+FLT_EPSILON != 1.0
+#endif
 
 private:
-	enum {
+	enum
+	{
 		LOOKUP_BITS             = 8,
 		EXP_POS                 = 23,
 		EXP_BIAS                = 127,
@@ -242,13 +244,12 @@ private:
 
 	union _flint
 	{
-		dword i;
+		quint32 i;
 		float f;
 	};
 
-	static dword iSqrt[SQRT_TABLE_SIZE];
+	static quint32 iSqrt[SQRT_TABLE_SIZE];
 	static bool initialized;
-#endif
 };
 
 inline float idMath::RSqrt(float x)
@@ -265,7 +266,7 @@ inline float idMath::RSqrt(float x)
 inline float idMath::InvSqrt16(float x)
 {
 
-	dword a = ((union _flint*)(&x))->i;
+	quint32 a = ((union _flint*)(&x))->i;
 	union _flint seed;
 
 	assert(initialized);
@@ -276,11 +277,11 @@ inline float idMath::InvSqrt16(float x)
 	r = r * (1.5f - r * r * y);
 	return (float)r;
 }
+#endif
 
 inline float idMath::InvSqrt(float x)
 {
-
-	dword a = ((union _flint*)(&x))->i;
+	quint32 a = ((union _flint*)(&x))->i;
 	union _flint seed;
 
 	assert(initialized);
@@ -293,9 +294,10 @@ inline float idMath::InvSqrt(float x)
 	return (float)r;
 }
 
+#if 0
 inline double idMath::InvSqrt64(float x)
 {
-	dword a = ((union _flint*)(&x))->i;
+	quint32 a = ((union _flint*)(&x))->i;
 	union _flint seed;
 
 	assert(initialized);
@@ -313,12 +315,14 @@ inline float idMath::Sqrt16(float x)
 {
 	return x * InvSqrt16(x);
 }
+#endif
 
 inline float idMath::Sqrt(float x)
 {
 	return x * InvSqrt(x);
 }
 
+#if 0
 inline double idMath::Sqrt64(float x)
 {
 	return x * InvSqrt64(x);
@@ -440,8 +444,8 @@ inline void idMath::SinCos(float a, float& s, float& c)
 		fsincos
 		mov ecx, c
 		mov edx, s
-		fstp dword ptr [ecx]
-		fstp dword ptr [edx]
+		fstp quint32 ptr [ecx]
+		fstp quint32 ptr [edx]
 	}
 #else
 	s = sinf(a);

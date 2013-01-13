@@ -24,6 +24,8 @@ class idMathTest : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestDEG2RAD);
 	CPPUNIT_TEST(TestRAD2DEG);
 	CPPUNIT_TEST(TestRSqrt);
+	CPPUNIT_TEST(TestInvSqrt);
+	CPPUNIT_TEST(TestSqrt);
 	CPPUNIT_TEST(TestACos);
 	CPPUNIT_TEST(TestFabs);
 	CPPUNIT_TEST(TestFtoiFast);
@@ -31,9 +33,13 @@ class idMathTest : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE_END();
 
 public:
+	virtual void setUp();
+
 	void TestDEG2RAD();
 	void TestRAD2DEG();
 	void TestRSqrt();
+	void TestInvSqrt();
+	void TestSqrt();
 	void TestACos();
 	void TestFabs();
 	void TestFtoiFast();
@@ -42,6 +48,11 @@ public:
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(idMathTest);
+
+void idMathTest::setUp()
+{
+	idMath::Init();
+}
 
 void idMathTest::TestDEG2RAD()
 {
@@ -59,6 +70,18 @@ void idMathTest::TestRSqrt()
 {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, idMath::RSqrt(16), 0.001);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(2, idMath::RSqrt(0.25), 0.01);
+}
+
+void idMathTest::TestInvSqrt()
+{
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, idMath::InvSqrt(16), 0.0000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(2, idMath::InvSqrt(0.25), 0.0000001);
+}
+
+void idMathTest::TestSqrt()
+{
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(4, idMath::Sqrt(16), 0.0000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, idMath::Sqrt(0.25), 0.0000001);
 }
 
 void idMathTest::TestACos()
