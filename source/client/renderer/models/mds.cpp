@@ -583,7 +583,7 @@ static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneN
 			for (int j = 0; j < 3; j++)
 			{
 				diff = tangles[j] - angles[j];
-				if (Q_fabs(diff) > 180)
+				if (idMath::Fabs(diff) > 180)
 				{
 					diff = AngleNormalize180(diff);
 				}
@@ -613,7 +613,7 @@ static void R_CalcBone(mdsHeader_t* header, const refEntity_t* refent, int boneN
 			for (int j = 0; j < 3; j++)
 			{
 				diff = tangles[j] - angles[j];
-				if (Q_fabs(diff) > 180)
+				if (idMath::Fabs(diff) > 180)
 				{
 					diff = AngleNormalize180(diff);
 				}
@@ -797,7 +797,7 @@ static void R_CalcBoneLerp(mdsHeader_t* header, const refEntity_t* refent, int b
 			for (int j = 0; j < 3; j++)
 			{
 				diff = tangles[j] - angles[j];
-				if (Q_fabs(diff) > 180)
+				if (idMath::Fabs(diff) > 180)
 				{
 					diff = AngleNormalize180(diff);
 				}
@@ -1072,7 +1072,7 @@ static float ProjectRadius(float r, vec3_t location)
 
 	vec3_t p;
 	p[0] = 0;
-	p[1] = Q_fabs(r);
+	p[1] = idMath::Fabs(r);
 	p[2] = -dist;
 
 	float projected[4];

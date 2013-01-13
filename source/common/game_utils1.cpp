@@ -36,7 +36,7 @@ float VQH_CalcRoll(const vec3_t angles, const vec3_t velocity)
 	AngleVectors(angles, forward, right, up);
 	side = DotProduct(velocity, right);
 	sign = side < 0 ? -1 : 1;
-	side = Q_fabs(side);
+	side = idMath::Fabs(side);
 
 	value = cl_rollangle->value;
 

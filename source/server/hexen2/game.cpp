@@ -555,7 +555,7 @@ static void PF_matchAngleToSlope()
 	float dot = DotProduct(v_forward, old_forward);
 
 	actor->GetAngles()[0] = dot * pitch;
-	actor->GetAngles()[2] = (1 - Q_fabs(dot)) * pitch * mod;
+	actor->GetAngles()[2] = (1 - idMath::Fabs(dot)) * pitch * mod;
 }
 
 static void PF_updateInfoPlaque()

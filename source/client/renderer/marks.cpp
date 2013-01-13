@@ -743,7 +743,7 @@ int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t proj
 					{
 						continue;
 					}
-					else if (Q_fabs(dot) > radius)
+					else if (idMath::Fabs(dot) > radius)
 					{
 						continue;
 					}

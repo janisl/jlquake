@@ -165,17 +165,17 @@ inline idVec3& idVec3::operator*=(const float a)
 
 inline int idVec3::operator==(const idVec3& a) const
 {
-	if (Q_fabs(x - a.x) > EQUAL_EPSILON)
+	if (idMath::Fabs(x - a.x) > EQUAL_EPSILON)
 	{
 		return false;
 	}
 
-	if (Q_fabs(y - a.y) > EQUAL_EPSILON)
+	if (idMath::Fabs(y - a.y) > EQUAL_EPSILON)
 	{
 		return false;
 	}
 
-	if (Q_fabs(z - a.z) > EQUAL_EPSILON)
+	if (idMath::Fabs(z - a.z) > EQUAL_EPSILON)
 	{
 		return false;
 	}
@@ -185,17 +185,17 @@ inline int idVec3::operator==(const idVec3& a) const
 
 inline int idVec3::operator!=(const idVec3& a) const
 {
-	if (Q_fabs(x - a.x) > EQUAL_EPSILON)
+	if (idMath::Fabs(x - a.x) > EQUAL_EPSILON)
 	{
 		return true;
 	}
 
-	if (Q_fabs(y - a.y) > EQUAL_EPSILON)
+	if (idMath::Fabs(y - a.y) > EQUAL_EPSILON)
 	{
 		return true;
 	}
 
-	if (Q_fabs(z - a.z) > EQUAL_EPSILON)
+	if (idMath::Fabs(z - a.z) > EQUAL_EPSILON)
 	{
 		return true;
 	}

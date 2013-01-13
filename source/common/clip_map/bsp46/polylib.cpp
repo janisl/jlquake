@@ -98,7 +98,7 @@ winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist)
 	int x = -1;
 	for (int i = 0; i < 3; i++)
 	{
-		vec_t v = Q_fabs(normal[i]);
+		vec_t v = idMath::Fabs(normal[i]);
 		if (v > max)
 		{
 			x = i;

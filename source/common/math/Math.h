@@ -178,7 +178,9 @@ public:
 	static int                  BitReverse(int x);			// returns the bit reverse of x
 
 	static int                  Abs(int x);					// returns the absolute value of the integer value (for reference only)
-	static float                Fabs(float f);				// returns the absolute value of the floating point value
+#endif
+	static float Fabs(float f);				// returns the absolute value of the floating point value
+#if 0
 	static float                Floor(float f);				// returns the largest integer that is less than or equal to the given value
 	static float                Ceil(float f);				// returns the smallest integer that is greater than or equal to the given value
 	static float                Rint(float f);				// returns the nearest integer
@@ -919,6 +921,7 @@ inline int idMath::Abs(int x)
 	int y = x >> 31;
 	return ((x ^ y) - y);
 }
+#endif
 
 inline float idMath::Fabs(float f)
 {
@@ -927,6 +930,7 @@ inline float idMath::Fabs(float f)
 	return *reinterpret_cast<float*>(&tmp);
 }
 
+#if 0
 inline float idMath::Floor(float f)
 {
 	return floorf(f);

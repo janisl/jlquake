@@ -493,7 +493,7 @@ void CLQW_PredictMove()
 
 	for (i = 0; i < 3; i++)
 	{
-		if (Q_fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
+		if (idMath::Fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
 		{	// teleported, so don't lerp
 			VectorCopy(to->playerstate[cl.playernum].velocity, cl.qh_simvel);
 			VectorCopy(to->playerstate[cl.playernum].origin, cl.qh_simorg);
@@ -611,7 +611,7 @@ void CLHW_PredictMove()
 	}
 
 	for (i = 0; i < 3; i++)
-		if (Q_fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
+		if (idMath::Fabs(from->playerstate[cl.playernum].origin[i] - to->playerstate[cl.playernum].origin[i]) > 128)
 		{	// teleported, so don't lerp
 			VectorCopy(to->playerstate[cl.playernum].velocity, cl.qh_simvel);
 			VectorCopy(to->playerstate[cl.playernum].origin, cl.qh_simorg);

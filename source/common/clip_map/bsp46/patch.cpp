@@ -1288,10 +1288,10 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 
 bool patchCollide_t::PlaneEqual(patchPlane_t* p, float plane[4], int* flipped)
 {
-	if (Q_fabs(p->plane[0] - plane[0]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[1] - plane[1]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[2] - plane[2]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[3] - plane[3]) < DIST_EPSILON)
+	if (idMath::Fabs(p->plane[0] - plane[0]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[1] - plane[1]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[2] - plane[2]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[3] - plane[3]) < DIST_EPSILON)
 	{
 		*flipped = false;
 		return true;
@@ -1301,10 +1301,10 @@ bool patchCollide_t::PlaneEqual(patchPlane_t* p, float plane[4], int* flipped)
 	VectorNegate(plane, invplane);
 	invplane[3] = -plane[3];
 
-	if (Q_fabs(p->plane[0] - invplane[0]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[1] - invplane[1]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON &&
-		Q_fabs(p->plane[3] - invplane[3]) < DIST_EPSILON)
+	if (idMath::Fabs(p->plane[0] - invplane[0]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[1] - invplane[1]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON &&
+		idMath::Fabs(p->plane[3] - invplane[3]) < DIST_EPSILON)
 	{
 		*flipped = true;
 		return true;
@@ -1356,13 +1356,13 @@ void patchCollide_t::CM_SnapVector(vec3_t normal)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		if (Q_fabs(normal[i] - 1) < NORMAL_EPSILON)
+		if (idMath::Fabs(normal[i] - 1) < NORMAL_EPSILON)
 		{
 			VectorClear(normal);
 			normal[i] = 1;
 			break;
 		}
-		if (Q_fabs(normal[i] - -1) < NORMAL_EPSILON)
+		if (idMath::Fabs(normal[i] - -1) < NORMAL_EPSILON)
 		{
 			VectorClear(normal);
 			normal[i] = -1;
@@ -1480,7 +1480,7 @@ void patchCollide_t::TraceThrough(traceWork_t* tw) const
 			{
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct(tw->offsets[planes->signbits], plane);
-				plane[3] += Q_fabs(offset);
+				plane[3] += idMath::Fabs(offset);
 				VectorCopy(tw->start, startp);
 				VectorCopy(tw->end, endp);
 			}
@@ -1812,7 +1812,7 @@ bool patchCollide_t::PositionTest(traceWork_t* tw) const
 			{
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct(tw->offsets[planes->signbits], plane);
-				plane[3] += Q_fabs(offset);
+				plane[3] += idMath::Fabs(offset);
 				VectorCopy(tw->start, startp);
 			}
 
@@ -1854,7 +1854,7 @@ bool patchCollide_t::PositionTestWolfMP(traceWork_t* tw) const
 	for (int i = 0; i < numPlanes; i++, planes++)
 	{
 		float d = DotProduct(tw->start, planes->plane) - planes->plane[3];
-		float offset = Q_fabs(DotProduct(tw->offsets[planes->signbits], planes->plane));
+		float offset = idMath::Fabs(DotProduct(tw->offsets[planes->signbits], planes->plane));
 		if (d < -offset)
 		{
 			cross[i] = BOX_FRONT;
@@ -1984,7 +1984,7 @@ void QClipMap46::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, fl
 				}
 			}	//end for
 			VectorNegate(plane, v2);
-			plane[3] += Q_fabs(DotProduct(v1, v2));
+			plane[3] += idMath::Fabs(DotProduct(v1, v2));
 			//*/
 
 			w = CM46_BaseWindingForPlane(plane,  plane[3]);
@@ -2029,7 +2029,7 @@ void QClipMap46::DrawDebugSurface(void (* drawPoly)(int color, int numPoints, fl
 					}
 				}	//end for
 				VectorNegate(plane, v2);
-				plane[3] -= Q_fabs(DotProduct(v1, v2));
+				plane[3] -= idMath::Fabs(DotProduct(v1, v2));
 
 				CM46_ChopWindingInPlace(&w, plane, plane[3], 0.1f);
 			}

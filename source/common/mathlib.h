@@ -20,21 +20,6 @@
 #include "qcommon.h"
 #include "math/Math.h"
 
-#if idppc
-#ifdef __GNUC__
-static inline float Q_fabs(float x)
-{
-	float abs_x;
-
-	asm ("fabs %0,%1" : "=f" (abs_x) : "f" (x));
-	return abs_x;
-}
-#else
-#define Q_fabs __fabsf
-#endif
-#else
-float Q_fabs(float f);
-#endif
 int Q_log2(int val);
 float Q_acos(float c);
 

@@ -323,12 +323,12 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 				tw.traceDist1 = tw.traceDist2 = 0.0f;
 				for (i = 0; i < 8; i++)
 				{
-					float dist = Q_fabs(DotProduct(tw.tracePlane1.normal, tw.offsets[i]) - tw.tracePlane1.dist);
+					float dist = idMath::Fabs(DotProduct(tw.tracePlane1.normal, tw.offsets[i]) - tw.tracePlane1.dist);
 					if (dist > tw.traceDist1)
 					{
 						tw.traceDist1 = dist;
 					}
-					dist = Q_fabs(DotProduct(tw.tracePlane2.normal, tw.offsets[i]) - tw.tracePlane2.dist);
+					dist = idMath::Fabs(DotProduct(tw.tracePlane2.normal, tw.offsets[i]) - tw.tracePlane2.dist);
 					if (dist > tw.traceDist2)
 					{
 						tw.traceDist2 = dist;
@@ -353,13 +353,13 @@ void QClipMap46::Trace(q3trace_t* results, const vec3_t start, const vec3_t end,
 			{
 				if (tw.start[i] < tw.end[i])
 				{
-					tw.bounds[0][i] = tw.start[i] - Q_fabs(tw.sphere.offset[i]) - tw.sphere.radius;
-					tw.bounds[1][i] = tw.end[i] + Q_fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+					tw.bounds[0][i] = tw.start[i] - idMath::Fabs(tw.sphere.offset[i]) - tw.sphere.radius;
+					tw.bounds[1][i] = tw.end[i] + idMath::Fabs(tw.sphere.offset[i]) + tw.sphere.radius;
 				}
 				else
 				{
-					tw.bounds[0][i] = tw.end[i] - Q_fabs(tw.sphere.offset[i]) - tw.sphere.radius;
-					tw.bounds[1][i] = tw.start[i] + Q_fabs(tw.sphere.offset[i]) + tw.sphere.radius;
+					tw.bounds[0][i] = tw.end[i] - idMath::Fabs(tw.sphere.offset[i]) - tw.sphere.radius;
+					tw.bounds[1][i] = tw.start[i] + idMath::Fabs(tw.sphere.offset[i]) + tw.sphere.radius;
 				}
 			}
 		}
@@ -770,13 +770,13 @@ void QClipMap46::CalcTraceBounds(traceWork_t* tw, bool expand)
 		{
 			if (tw->start[i] < tw->end[i])
 			{
-				tw->bounds[0][i] = tw->start[i] - Q_fabs(tw->sphere.offset[i]) - tw->sphere.radius;
-				tw->bounds[1][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] + Q_fabs(tw->sphere.offset[i]) + tw->sphere.radius;
+				tw->bounds[0][i] = tw->start[i] - idMath::Fabs(tw->sphere.offset[i]) - tw->sphere.radius;
+				tw->bounds[1][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] + idMath::Fabs(tw->sphere.offset[i]) + tw->sphere.radius;
 			}
 			else
 			{
-				tw->bounds[0][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] - Q_fabs(tw->sphere.offset[i]) - tw->sphere.radius;
-				tw->bounds[1][i] = tw->start[i] + Q_fabs(tw->sphere.offset[i]) + tw->sphere.radius;
+				tw->bounds[0][i] = tw->start[i] + tw->trace.fraction * tw->dir[i] - idMath::Fabs(tw->sphere.offset[i]) - tw->sphere.radius;
+				tw->bounds[1][i] = tw->start[i] + idMath::Fabs(tw->sphere.offset[i]) + tw->sphere.radius;
 			}
 		}
 	}
@@ -828,11 +828,11 @@ int QClipMap46::TraceThroughBounds(const traceWork_t* tw, const vec3_t mins, con
 	vec3_t extents;
 	VectorSubtract(maxs, center, extents);
 
-	if (Q_fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane1)) > tw->traceDist1)
+	if (idMath::Fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane1)) > tw->traceDist1)
 	{
 		return false;
 	}
-	if (Q_fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane2)) > tw->traceDist2)
+	if (idMath::Fabs(BoxDistanceFromPlane(center, extents, &tw->tracePlane2)) > tw->traceDist2)
 	{
 		return false;
 	}
@@ -844,9 +844,9 @@ int QClipMap46::TraceThroughBounds(const traceWork_t* tw, const vec3_t mins, con
 float QClipMap46::BoxDistanceFromPlane(const vec3_t center, const vec3_t extents, const cplane_t* plane)
 {
 	float d1 = DotProduct(center, plane->normal) - plane->dist;
-	float d2 = Q_fabs(extents[0] * plane->normal[0]) +
-			   Q_fabs(extents[1] * plane->normal[1]) +
-			   Q_fabs(extents[2] * plane->normal[2]);
+	float d2 = idMath::Fabs(extents[0] * plane->normal[0]) +
+			   idMath::Fabs(extents[1] * plane->normal[1]) +
+			   idMath::Fabs(extents[2] * plane->normal[2]);
 
 	if (d1 - d2 > 0.0f)
 	{

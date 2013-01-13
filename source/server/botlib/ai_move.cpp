@@ -1695,7 +1695,7 @@ static void BotCheckBlocked(const bot_movestate_t* ms, const vec3_t dir, int che
 	//test for entities obstructing the bot's path
 	AAS_PresenceTypeBoundingBox(ms->presencetype, mins, maxs);
 	//
-	if (Q_fabs(DotProduct(dir, up)) < 0.7)
+	if (idMath::Fabs(DotProduct(dir, up)) < 0.7)
 	{
 		mins[2] += sv_maxstep->value;	//if the bot can step on
 		maxs[2] -= 10;	//a little lower to avoid low ceiling
@@ -2807,7 +2807,7 @@ static bot_moveresult_t BotFinishTravel_Elevator(const bot_movestate_t* ms, cons
 	vec3_t topdir;
 	VectorSubtract(reach->end, ms->origin, topdir);
 
-	if (Q_fabs(bottomdir[2]) < Q_fabs(topdir[2]))
+	if (idMath::Fabs(bottomdir[2]) < idMath::Fabs(topdir[2]))
 	{
 		VectorNormalize(bottomdir);
 		EA_Move(ms->client, bottomdir, 300);
@@ -3075,8 +3075,8 @@ static bot_moveresult_t BotTravel_RocketJump(bot_movestate_t* ms, const aas_reac
 	}
 
 	if (dist < 5 && (!(GGameType & GAME_Quake3) ||
-		(Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
-		Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)))
+		(idMath::Fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
+		idMath::Fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)))
 	{
 		hordir[0] = reach->end[0] - ms->origin[0];
 		hordir[1] = reach->end[1] - ms->origin[1];
@@ -3131,8 +3131,8 @@ static bot_moveresult_t BotTravel_BFGJump(bot_movestate_t* ms, const aas_reachab
 	float dist = VectorNormalize(hordir);
 
 	if (dist < 5 &&
-		Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
-		Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)
+		idMath::Fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 5 &&
+		idMath::Fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 5)
 	{
 		hordir[0] = reach->end[0] - ms->origin[0];
 		hordir[1] = reach->end[1] - ms->origin[1];
@@ -3462,8 +3462,8 @@ static bot_moveresult_t BotTravel_Grapple(bot_movestate_t* ms, const aas_reachab
 		result.flags |= MOVERESULT_MOVEMENTVIEW;
 
 		if (dist < 5 &&
-			Q_fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 &&
-			Q_fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
+			idMath::Fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 &&
+			idMath::Fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2)
 		{
 			if (GGameType & GAME_Quake3)
 			{

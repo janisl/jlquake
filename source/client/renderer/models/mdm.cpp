@@ -609,7 +609,7 @@ static float ProjectRadius(float r, vec3_t location)
 	}
 
 	p[0] = 0;
-	p[1] = Q_fabs(r);
+	p[1] = idMath::Fabs(r);
 	p[2] = -dist;
 
 	projected[0] = p[0] * tr.viewParms.projectionMatrix[0] +
@@ -745,7 +745,7 @@ static void R_CalcBone(const int torsoParent, const refEntity_t* refent, int bon
 			for (j = 0; j < 3; j++)
 			{
 				diff = tangles[j] - angles[j];
-				if (Q_fabs(diff) > 180)
+				if (idMath::Fabs(diff) > 180)
 				{
 					diff = AngleNormalize180(diff);
 				}
@@ -934,7 +934,7 @@ static void R_CalcBoneLerp(const int torsoParent, const refEntity_t* refent, int
 			for (j = 0; j < 3; j++)
 			{
 				diff = tangles[j] - angles[j];
-				if (Q_fabs(diff) > 180)
+				if (idMath::Fabs(diff) > 180)
 				{
 					diff = AngleNormalize180(diff);
 				}

@@ -237,7 +237,7 @@ void PF_eprint()
 void PF_fabs()
 {
 	float v = G_FLOAT(OFS_PARM0);
-	G_FLOAT(OFS_RETURN) = Q_fabs(v);
+	G_FLOAT(OFS_RETURN) = idMath::Fabs(v);
 }
 
 void PF_rint()

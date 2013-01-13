@@ -105,7 +105,7 @@ q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t end)
 
 		if (GGameType & GAME_Hexen2)
 		{
-			if (pe->model >= 0 && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1))
+			if (pe->model >= 0 && (idMath::Fabs(pe->angles[0]) > 1 || idMath::Fabs(pe->angles[1]) > 1 || idMath::Fabs(pe->angles[2]) > 1))
 			{
 				vec3_t forward, right, up;
 				AngleVectors(pe->angles, forward, right, up);
@@ -147,7 +147,7 @@ q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t end)
 			// rjr will need to adjust for player when going into different hulls
 			trace.endpos[2] += clip_mins[2];
 
-			if (pe->model >= 0 && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1))
+			if (pe->model >= 0 && (idMath::Fabs(pe->angles[0]) > 1 || idMath::Fabs(pe->angles[1]) > 1 || idMath::Fabs(pe->angles[2]) > 1))
 			{
 				if (trace.fraction != 1)
 				{
@@ -606,7 +606,7 @@ static void PMQH_WaterMove()
 		// client 400 (assasin running) is scaled to maxspeed
 		// clamp is tested seperately so strafe running works
 		maxspeed *= qh_pmove.hasted;
-		if (Q_fabs(fmove) > maxspeed)
+		if (idMath::Fabs(fmove) > maxspeed)
 		{
 			if (fmove < 0)
 			{
@@ -618,7 +618,7 @@ static void PMQH_WaterMove()
 			}
 		}
 
-		if (Q_fabs(smove) > maxspeed)
+		if (idMath::Fabs(smove) > maxspeed)
 		{
 			if (smove < 0)
 			{
@@ -725,7 +725,7 @@ static void PMQH_AirMove()
 		// client 400 (assasin running) is scaled to maxspeed
 		// clamp is tested seperately so strafe running works
 		maxspeed *= qh_pmove.hasted;
-		if (Q_fabs(fmove) > maxspeed)
+		if (idMath::Fabs(fmove) > maxspeed)
 		{
 			if (fmove < 0)
 			{
@@ -737,7 +737,7 @@ static void PMQH_AirMove()
 			}
 		}
 
-		if (Q_fabs(smove) > maxspeed)
+		if (idMath::Fabs(smove) > maxspeed)
 		{
 			if (smove < 0)
 			{
@@ -817,7 +817,7 @@ static void PMHW_FlyingMove()
 	// client 400 (assasin running) is scaled to maxspeed
 	// clamp is tested seperately so strafe running works
 	float clamp = movevars.maxspeed * qh_pmove.hasted;
-	if (Q_fabs(fmove) > clamp)
+	if (idMath::Fabs(fmove) > clamp)
 	{
 		if (fmove < 0)
 		{
@@ -829,7 +829,7 @@ static void PMHW_FlyingMove()
 		}
 	}
 
-	if (Q_fabs(smove) > clamp)
+	if (idMath::Fabs(smove) > clamp)
 	{
 		if (smove < 0)
 		{
@@ -840,7 +840,7 @@ static void PMHW_FlyingMove()
 			smove = clamp;
 		}
 	}
-	if (Q_fabs(umove) > clamp)
+	if (idMath::Fabs(umove) > clamp)
 	{
 		if (umove < 0)
 		{

@@ -485,7 +485,7 @@ static void SetChainPosition(float health, float maxHealth)
 		health = maxHealth;
 	}
 	float chainTargetPosition = (health * 195) / maxHealth;
-	if (Q_fabs(sbh2_ChainPosition - chainTargetPosition) < 0.1)
+	if (idMath::Fabs(sbh2_ChainPosition - chainTargetPosition) < 0.1)
 	{
 		return;
 	}

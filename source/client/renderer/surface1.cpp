@@ -114,7 +114,7 @@ static void R_AddDynamicLightsQ1(mbrush29_surface_t* surf)
 
 		float rad = tr.refdef.dlights[lnum].radius;
 		float dist = DotProduct(tr.refdef.dlights[lnum].origin, surf->plane->normal) - surf->plane->dist;
-		rad -= Q_fabs(dist);
+		rad -= idMath::Fabs(dist);
 		float minlight = 0;	//tr.refdef.dlights[lnum].minlight;
 		if (rad < minlight)
 		{
@@ -350,9 +350,9 @@ static void BuildSurfaceDisplayList(mbrush29_surface_t* fa)
 
 			// skip co-linear points
 			#define COLINEAR_EPSILON 0.001
-			if ((Q_fabs(v1[0] - v2[0]) <= COLINEAR_EPSILON) &&
-				(Q_fabs(v1[1] - v2[1]) <= COLINEAR_EPSILON) &&
-				(Q_fabs(v1[2] - v2[2]) <= COLINEAR_EPSILON))
+			if ((idMath::Fabs(v1[0] - v2[0]) <= COLINEAR_EPSILON) &&
+				(idMath::Fabs(v1[1] - v2[1]) <= COLINEAR_EPSILON) &&
+				(idMath::Fabs(v1[2] - v2[2]) <= COLINEAR_EPSILON))
 			{
 				for (int j = i + 1; j < lnumverts; ++j)
 				{

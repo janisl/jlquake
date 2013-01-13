@@ -137,12 +137,12 @@ void SVQH_LinkEdict(qhedict_t* ent, bool touch_triggers)
 		float max = 0;
 		for (int i = 0; i < 3; i++)
 		{
-			float v = Q_fabs(ent->GetMins()[i]);
+			float v = idMath::Fabs(ent->GetMins()[i]);
 			if (v > max)
 			{
 				max = v;
 			}
-			v = Q_fabs(ent->GetMaxs()[i]);
+			v = idMath::Fabs(ent->GetMaxs()[i]);
 			if (v > max)
 			{
 				max = v;
@@ -361,7 +361,7 @@ static q1trace_t SV_ClipMoveToEntity(qhedict_t* ent, const vec3_t start, const v
 	{
 		// rotate start and end into the models frame of reference
 		if (ent->GetSolid() == QHSOLID_BSP &&
-			(Q_fabs(ent->GetAngles()[0]) > 1 || Q_fabs(ent->GetAngles()[1]) > 1 || Q_fabs(ent->GetAngles()[2]) > 1))
+			(idMath::Fabs(ent->GetAngles()[0]) > 1 || idMath::Fabs(ent->GetAngles()[1]) > 1 || idMath::Fabs(ent->GetAngles()[2]) > 1))
 		{
 			vec3_t forward, right, up;
 			AngleVectors(ent->GetAngles(), forward, right, up);
@@ -395,7 +395,7 @@ static q1trace_t SV_ClipMoveToEntity(qhedict_t* ent, const vec3_t start, const v
 	{
 		// rotate endpos back to world frame of reference
 		if (ent->GetSolid() == QHSOLID_BSP &&
-			(Q_fabs(ent->GetAngles()[0]) > 1 || Q_fabs(ent->GetAngles()[1]) > 1 || Q_fabs(ent->GetAngles()[2]) > 1))
+			(idMath::Fabs(ent->GetAngles()[0]) > 1 || idMath::Fabs(ent->GetAngles()[1]) > 1 || idMath::Fabs(ent->GetAngles()[2]) > 1))
 		{
 			if (trace.fraction != 1)
 			{

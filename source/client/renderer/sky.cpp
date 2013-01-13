@@ -352,9 +352,9 @@ static void AddSkyPolygon(int nump, vec3_t vecs)
 		VectorAdd(vp, v, v);
 	}
 	vec3_t av;
-	av[0] = Q_fabs(v[0]);
-	av[1] = Q_fabs(v[1]);
-	av[2] = Q_fabs(v[2]);
+	av[0] = idMath::Fabs(v[0]);
+	av[1] = idMath::Fabs(v[1]);
+	av[2] = idMath::Fabs(v[2]);
 	int axis;
 	if (av[0] > av[1] && av[0] > av[2])
 	{

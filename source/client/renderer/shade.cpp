@@ -747,7 +747,7 @@ static void ProjectDlightTexture()
 			}
 			else
 			{
-				dist[2] = Q_fabs(dist[2]);
+				dist[2] = idMath::Fabs(dist[2]);
 				if (dist[2] < radius * 0.5f)
 				{
 					modulate = 1.0f;

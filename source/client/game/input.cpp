@@ -1121,7 +1121,7 @@ static void CL_RecoilPitch()
 
 	// RF, set the kickAngles so aiming is effected
 	float recoilAdd = cl_recoilPitch->value;
-	if (Q_fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
+	if (idMath::Fabs(cl.viewangles[PITCH] + recoilAdd) < 40)
 	{
 		cl.viewangles[PITCH] += recoilAdd;
 	}

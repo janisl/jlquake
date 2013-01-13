@@ -189,17 +189,6 @@ float bytedirs[NUMVERTEXNORMALS][3] =
 	{-0.688191, -0.587785, -0.425325},
 };
 
-#if !idppc
-
-float Q_fabs(float f)
-{
-	int tmp = *(int*)&f;
-	tmp &= 0x7FFFFFFF;
-	return *(float*)&tmp;
-}
-
-#endif
-
 int Q_log2(int val)
 {
 	int answer = 0;
@@ -326,7 +315,7 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out)
 
 	if (length)
 	{
-//		assert( ((Q_fabs(v[0])!=0.0f) || (Q_fabs(v[1])!=0.0f) || (Q_fabs(v[2])!=0.0f)) );
+//		assert( ((idMath::Fabs(v[0])!=0.0f) || (idMath::Fabs(v[1])!=0.0f) || (idMath::Fabs(v[2])!=0.0f)) );
 		ilength = 1 / length;
 		out[0] = v[0] * ilength;
 		out[1] = v[1] * ilength;
@@ -334,7 +323,7 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out)
 	}
 	else
 	{
-//		assert( ((Q_fabs(v[0])==0.0f) && (Q_fabs(v[1])==0.0f) && (Q_fabs(v[2])==0.0f)) );
+//		assert( ((idMath::Fabs(v[0])==0.0f) && (idMath::Fabs(v[1])==0.0f) && (idMath::Fabs(v[2])==0.0f)) );
 		VectorClear(out);
 	}
 
@@ -348,7 +337,7 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 	float inv_denom;
 
 	inv_denom =  DotProduct(normal, normal);
-	if (Q_fabs(inv_denom) == 0.0f)
+	if (idMath::Fabs(inv_denom) == 0.0f)
 	{
 		// bk010122 - zero vectors get here
 		common->FatalError("Zero vector");
@@ -1254,7 +1243,7 @@ void ProjectPointOntoVectorBounded(const vec3_t point, const vec3_t vStart, cons
 	}
 	if (j < 3)
 	{
-		if (Q_fabs(vProj[j] - vStart[j]) < Q_fabs(vProj[j] - vEnd[j]))
+		if (idMath::Fabs(vProj[j] - vStart[j]) < idMath::Fabs(vProj[j] - vEnd[j]))
 		{
 			VectorCopy(vStart, vProj);
 		}
@@ -1281,7 +1270,7 @@ float DistanceFromLineSquaredDir(const vec3_t p, const vec3_t lp1, const vec3_t 
 	if (j < 3)
 	{
 		vec3_t t;
-		if (Q_fabs(proj[j] - lp1[j]) < Q_fabs(proj[j] - lp2[j]))
+		if (idMath::Fabs(proj[j] - lp1[j]) < idMath::Fabs(proj[j] - lp2[j]))
 		{
 			VectorSubtract(p, lp1, t);
 		}

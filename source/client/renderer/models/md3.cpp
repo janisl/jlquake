@@ -391,7 +391,7 @@ static float ProjectRadius(float r, vec3_t location)
 
 	vec3_t p;
 	p[0] = 0;
-	p[1] = Q_fabs(r);
+	p[1] = idMath::Fabs(r);
 	p[2] = -dist;
 
 	float projected[4];

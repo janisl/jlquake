@@ -881,13 +881,13 @@ static void SVQH_PushRotate(qhedict_t* pusher, float movetime)
 				VectorSubtract(check->GetOrigin(),testmove,check->GetOrigin());
 				testmove[0] = 0;
 				testmove[1] = 0;
-				testmove[2] = org[2] * 3;	//was: +org[2]*(Q_fabs(org[1])+Q_fabs(org[2]));
+				testmove[2] = org[2] * 3;	//was: +org[2]*(idMath::Fabs(org[1])+idMath::Fabs(org[2]));
 				break;
 			case 10:
 				//Try normalized org xy * 2 only
 				VectorSubtract(check->GetOrigin(),testmove,check->GetOrigin());
-				testmove[0] = org[0] * 2;	//was: +org[0]*Q_fabs(org[2]);
-				testmove[1] = org[1] * 2;	//was: +org[1]*Q_fabs(org[2]);
+				testmove[0] = org[0] * 2;	//was: +org[0]*idMath::Fabs(org[2]);
+				testmove[1] = org[1] * 2;	//was: +org[1]*idMath::Fabs(org[2]);
 				testmove[2] = 0;
 				break;
 			case 11:
@@ -1344,8 +1344,8 @@ static int SVQH_TryUnstick(qhedict_t* ent, const vec3_t oldvel)
 		q1trace_t steptrace;
 		int clip = SVQH_FlyMove(ent, 0.1, &steptrace);
 
-		if (Q_fabs(oldorg[1] - ent->GetOrigin()[1]) > 4 ||
-			Q_fabs(oldorg[0] - ent->GetOrigin()[0]) > 4)
+		if (idMath::Fabs(oldorg[1] - ent->GetOrigin()[1]) > 4 ||
+			idMath::Fabs(oldorg[0] - ent->GetOrigin()[0]) > 4)
 		{
 			return clip;
 		}
@@ -1431,8 +1431,8 @@ static void SVQH_WalkMove(qhedict_t* ent, float frametime)
 	// in the clipping hulls
 	if (clip)
 	{
-		if (Q_fabs(oldorg[1] - ent->GetOrigin()[1]) < 0.03125 &&
-			Q_fabs(oldorg[0] - ent->GetOrigin()[0]) < 0.03125)
+		if (idMath::Fabs(oldorg[1] - ent->GetOrigin()[1]) < 0.03125 &&
+			idMath::Fabs(oldorg[0] - ent->GetOrigin()[0]) < 0.03125)
 		{
 			// stepping up didn't make any progress
 			clip = SVQH_TryUnstick(ent, oldvel);
