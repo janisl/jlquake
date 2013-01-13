@@ -17,7 +17,7 @@
 #ifndef __idVec3__
 #define __idVec3__
 
-#include "../qcommon.h"
+#include "Math.h"
 
 #if 0
 #define VECTOR_EPSILON      0.001f
@@ -33,25 +33,31 @@ public:
 	idVec3();
 	explicit idVec3(const float x, const float y, const float z);
 
-#if 0
-	void            Set(const float x, const float y, const float z);
-	void            Zero(void);
+	void Set(const float x, const float y, const float z);
+	void Zero();
 
 	float operator[](const int index) const;
-	float&         operator[](const int index);
+	float& operator[](const int index);
+#if 0
 	idVec3 operator-() const;
-	idVec3&        operator=(const idVec3& a);			// required because of a msvc 6 & 7 bug
+#endif
+	idVec3& operator=(const idVec3& a);
+#if 0
 	float operator*(const idVec3& a) const;
 	idVec3 operator*(const float a) const;
 	idVec3 operator/(const float a) const;
 	idVec3 operator+(const idVec3& a) const;
 	idVec3 operator-(const idVec3& a) const;
-	idVec3&        operator+=(const idVec3& a);
-	idVec3&        operator-=(const idVec3& a);
+#endif
+	idVec3& operator+=(const idVec3& a);
+	idVec3& operator-=(const idVec3& a);
+#if 0
 	idVec3&        operator/=(const idVec3& a);
 	idVec3&        operator/=(const float a);
-	idVec3&        operator*=(const float a);
+#endif
+	idVec3& operator*=(const float a);
 
+#if 0
 	friend idVec3 operator*(const float a, const idVec3 b);
 
 	bool            Compare(const idVec3& a) const;								// exact compare, no epsilon
@@ -64,10 +70,14 @@ public:
 
 	idVec3          Cross(const idVec3& a) const;
 	idVec3&        Cross(const idVec3& a, const idVec3& b);
-	float           Length(void) const;
+#endif
+	float Length() const;
+#if 0
 	float           LengthSqr(void) const;
 	float           LengthFast(void) const;
-	float           Normalize(void);				// returns length
+#endif
+	float Normalize();				// returns length
+#if 0
 	float           NormalizeFast(void);			// returns length
 	idVec3&        Truncate(float length);			// cap length
 	void            Clamp(const idVec3& min, const idVec3& max);
@@ -84,7 +94,9 @@ public:
 	const idVec2&  ToVec2(void) const;
 	idVec2&        ToVec2(void);
 	const float* ToFloatPtr(void) const;
-	float* ToFloatPtr(void);
+#endif
+	float* ToFloatPtr();
+#if 0
 	const char* ToString(int precision = 2) const;
 
 	void            NormalVectors(idVec3& left, idVec3& down) const;	// vector should be normalized
@@ -115,7 +127,18 @@ inline idVec3::idVec3(const float x, const float y, const float z)
 	this->z = z;
 }
 
-#if 0
+inline void idVec3::Set(const float x, const float y, const float z)
+{
+	this->x = x;
+	this->y = y;
+	this->z = z;
+}
+
+inline void idVec3::Zero()
+{
+	x = y = z = 0.0f;
+}
+
 inline float idVec3::operator[](const int index) const
 {
 	return (&x)[index];
@@ -126,22 +149,12 @@ inline float& idVec3::operator[](const int index)
 	return (&x)[index];
 }
 
-inline void idVec3::Set(const float x, const float y, const float z)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-}
-
-inline void idVec3::Zero(void)
-{
-	x = y = z = 0.0f;
-}
-
+#if 0
 inline idVec3 idVec3::operator-() const
 {
 	return idVec3(-x, -y, -z);
 }
+#endif
 
 inline idVec3& idVec3::operator=(const idVec3& a)
 {
@@ -151,6 +164,7 @@ inline idVec3& idVec3::operator=(const idVec3& a)
 	return *this;
 }
 
+#if 0
 inline idVec3 idVec3::operator-(const idVec3& a) const
 {
 	return idVec3(x - a.x, y - a.y, z - a.z);
@@ -181,6 +195,7 @@ inline idVec3 idVec3::operator+(const idVec3& a) const
 {
 	return idVec3(x + a.x, y + a.y, z + a.z);
 }
+#endif
 
 inline idVec3& idVec3::operator+=(const idVec3& a)
 {
@@ -191,6 +206,16 @@ inline idVec3& idVec3::operator+=(const idVec3& a)
 	return *this;
 }
 
+inline idVec3& idVec3::operator-=(const idVec3& a)
+{
+	x -= a.x;
+	y -= a.y;
+	z -= a.z;
+
+	return *this;
+}
+
+#if 0
 inline idVec3& idVec3::operator/=(const idVec3& a)
 {
 	x /= a.x;
@@ -209,15 +234,7 @@ inline idVec3& idVec3::operator/=(const float a)
 
 	return *this;
 }
-
-inline idVec3& idVec3::operator-=(const idVec3& a)
-{
-	x -= a.x;
-	y -= a.y;
-	z -= a.z;
-
-	return *this;
-}
+#endif
 
 inline idVec3& idVec3::operator*=(const float a)
 {
@@ -228,6 +245,7 @@ inline idVec3& idVec3::operator*=(const float a)
 	return *this;
 }
 
+#if 0
 inline bool idVec3::Compare(const idVec3& a) const
 {
 	return ((x == a.x) && (y == a.y) && (z == a.z));
@@ -407,12 +425,14 @@ inline idVec3& idVec3::Cross(const idVec3& a, const idVec3& b)
 
 	return *this;
 }
+#endif
 
 inline float idVec3::Length(void) const
 {
 	return (float)idMath::Sqrt(x * x + y * y + z * z);
 }
 
+#if 0
 inline float idVec3::LengthSqr(void) const
 {
 	return (x * x + y * y + z * z);
@@ -425,19 +445,19 @@ inline float idVec3::LengthFast(void) const
 	sqrLength = x * x + y * y + z * z;
 	return sqrLength * idMath::RSqrt(sqrLength);
 }
+#endif
 
-inline float idVec3::Normalize(void)
+inline float idVec3::Normalize()
 {
-	float sqrLength, invLength;
-
-	sqrLength = x * x + y * y + z * z;
-	invLength = idMath::InvSqrt(sqrLength);
+	float sqrLength = x * x + y * y + z * z;
+	float invLength = idMath::InvSqrt(sqrLength);
 	x *= invLength;
 	y *= invLength;
 	z *= invLength;
 	return invLength * sqrLength;
 }
 
+#if 0
 inline idVec3& idVec3::Truncate(float length)
 {
 	float length2;
@@ -523,12 +543,14 @@ inline const float* idVec3::ToFloatPtr(void) const
 {
 	return &x;
 }
+#endif
 
-inline float* idVec3::ToFloatPtr(void)
+inline float* idVec3::ToFloatPtr()
 {
 	return &x;
 }
 
+#if 0
 inline void idVec3::NormalVectors(idVec3& left, idVec3& down) const
 {
 	float d;

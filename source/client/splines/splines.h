@@ -18,7 +18,8 @@
 #define __SPLINES_H
 
 #include "../../common/strings.h"
-#include "math_vector.h"
+#include "../../common/mathlib.h"
+#include "../../common/math/Vec3.h"
 
 class idSplineList
 {
@@ -64,23 +65,18 @@ public:
 		clearControl();
 		clearSpline();
 		splineTime.Clear();
-		selected = NULL;
 		dirty = true;
 		activeSegment = 0;
 		granularity = 0.025;
-		pathColor.set(1.0, 0.5, 0.0);
-		controlColor.set(0.7, 0.0, 1.0);
-		segmentColor.set(0.0, 0.0, 1.0);
-		activeColor.set(1.0, 0.0, 0.0);
 	}
 
 	void initPosition(long startTime, long totalTime);
-	const idVec3Splines* getPosition(long time);
+	const idVec3* getPosition(long time);
 
 
 	void addPoint(float x, float y, float z)
 	{
-		controlPoints.Append(new idVec3Splines(x, y, z));
+		controlPoints.Append(new idVec3(x, y, z));
 		dirty = true;
 	}
 
@@ -96,7 +92,7 @@ public:
 		return granularity;
 	}
 
-	idVec3Splines* getSegmentPoint(int index)
+	idVec3* getSegmentPoint(int index)
 	{
 		assert(index >= 0 && index < splinePoints.Num());
 		return splinePoints[index];
@@ -122,7 +118,7 @@ public:
 
 	float totalDistance();
 
-	static idVec3Splines zero;
+	static idVec3 zero;
 
 	int getActiveSegment()
 	{
@@ -138,14 +134,6 @@ public:
 	int numSegments()
 	{
 		return splinePoints.Num();
-	}
-
-	void setColors(idVec3Splines&path, idVec3Splines&segment, idVec3Splines&control, idVec3Splines&active)
-	{
-		pathColor = path;
-		segmentColor = segment;
-		controlColor = control;
-		activeColor = active;
 	}
 
 	const char* getName()
@@ -182,11 +170,9 @@ public:
 protected:
 	idStr name;
 	float calcSpline(int step, float tension);
-	idList<idVec3Splines*> controlPoints;
-	idList<idVec3Splines*> splinePoints;
+	idList<idVec3*> controlPoints;
+	idList<idVec3*> splinePoints;
 	idList<double> splineTime;
-	idVec3Splines* selected;
-	idVec3Splines pathColor, segmentColor, controlColor, activeColor;
 	float granularity;
 	bool dirty;
 	int activeSegment;
@@ -302,7 +288,7 @@ public:
 		velocities.Append(new idVelocity(start, duration, speed));
 	}
 
-	virtual const idVec3Splines* getPosition(long t)
+	virtual const idVec3* getPosition(long t)
 	{
 		assert(true);
 		return NULL;
@@ -353,7 +339,7 @@ public:
 		init();
 	}
 
-	idFixedPosition(idVec3Splines p) : idCameraPosition()
+	idFixedPosition(idVec3 p) : idCameraPosition()
 	{
 		init();
 		pos = p;
@@ -361,7 +347,7 @@ public:
 
 	virtual void addPoint(const float x, const float y, const float z)
 	{
-		pos.set(x, y, z);
+		pos.Set(x, y, z);
 	}
 
 
@@ -369,7 +355,7 @@ public:
 	{
 	}
 
-	virtual const idVec3Splines* getPosition(long t)
+	virtual const idVec3* getPosition(long t)
 	{
 		return &pos;
 	}
@@ -377,7 +363,7 @@ public:
 	void parse(const char** text);
 
 protected:
-	idVec3Splines pos;
+	idVec3 pos;
 };
 
 class idInterpolatedPosition : public idCameraPosition
@@ -396,7 +382,7 @@ public:
 		init();
 	}
 
-	idInterpolatedPosition(idVec3Splines start, idVec3Splines end, long time) : idCameraPosition(time)
+	idInterpolatedPosition(idVec3 start, idVec3 end, long time) : idCameraPosition(time)
 	{
 		init();
 		startPos = start;
@@ -407,7 +393,7 @@ public:
 	{
 	}
 
-	virtual const idVec3Splines* getPosition(long t);
+	virtual const idVec3* getPosition(long t);
 
 	void parse(const char** text);
 
@@ -415,12 +401,12 @@ public:
 	{
 		if (first)
 		{
-			startPos.set(x, y, z);
+			startPos.Set(x, y, z);
 			first = false;
 		}
 		else
 		{
-			endPos.set(x, y, z);
+			endPos.Set(x, y, z);
 			first = true;
 		}
 	}
@@ -430,15 +416,15 @@ public:
 		idCameraPosition::start(t);
 		lastTime = startTime;
 		distSoFar = 0.0;
-		idVec3Splines temp = startPos;
+		idVec3 temp = startPos;
 		temp -= endPos;
 		calcVelocity(temp.Length());
 	}
 
 protected:
 	bool first;
-	idVec3Splines startPos;
-	idVec3Splines endPos;
+	idVec3 startPos;
+	idVec3 endPos;
 	long lastTime;
 	float distSoFar;
 };
@@ -474,7 +460,7 @@ public:
 		calcVelocity(target.totalDistance());
 	}
 
-	virtual const idVec3Splines* getPosition(long t);
+	virtual const idVec3* getPosition(long t);
 
 	void parse(const char** text);
 
@@ -758,10 +744,10 @@ public:
 	}
 
 	void startCamera(long t);
-	bool getCameraInfo(long time, idVec3Splines&origin, idVec3Splines&direction, float* fv);
+	bool getCameraInfo(long time, idVec3& origin, idVec3& direction, float* fv);
 	bool getCameraInfo(long time, float* origin, float* direction, float* fv)
 	{
-		idVec3Splines org, dir;
+		idVec3 org, dir;
 		org[0] = origin[0];
 		org[1] = origin[1];
 		org[2] = origin[2];
@@ -781,7 +767,7 @@ public:
 protected:
 	idStr name;
 	int currentCameraPosition;
-	idVec3Splines lastDirection;
+	idVec3 lastDirection;
 	bool cameraRunning;
 	idCameraPosition* cameraPosition;
 	idList<idCameraPosition*> targetPositions;
