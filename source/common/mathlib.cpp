@@ -232,19 +232,6 @@ float Q_acos(float c)
 	return angle;
 }
 
-#if id386 && defined _MSC_VER
-#pragma warning (disable:4035)
-__declspec(naked) int Q_ftol(float f)
-{
-	static int tmp;
-	__asm fld dword ptr [esp + 4]
-	__asm fistp tmp
-	__asm mov eax, tmp
-	__asm ret
-}
-#pragma warning (default:4035)
-#endif
-
 qint8 ClampChar(int i)
 {
 	if (i < MIN_QINT8)

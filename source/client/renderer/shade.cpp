@@ -253,7 +253,7 @@ static void R_BindAnimatedImage(textureBundle_t* bundle)
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	int index = Q_ftol(tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE);
+	int index = idMath::FtoiFast(tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE);
 	index >>= FUNCTABLE_SIZE2;
 
 	if (index < 0)
@@ -759,9 +759,9 @@ static void ProjectDlightTexture()
 			}
 			clipBits[i] = clip;
 
-			colors[0] = Q_ftol(floatColor[0] * modulate);
-			colors[1] = Q_ftol(floatColor[1] * modulate);
-			colors[2] = Q_ftol(floatColor[2] * modulate);
+			colors[0] = idMath::FtoiFast(floatColor[0] * modulate);
+			colors[1] = idMath::FtoiFast(floatColor[1] * modulate);
+			colors[2] = idMath::FtoiFast(floatColor[2] * modulate);
 			colors[3] = 255;
 		}
 
@@ -937,11 +937,11 @@ static void DynamicLightSinglePass()
 			}
 
 			// add to color
-			int color = colors[0] + Q_ftol(floatColor[0] * modulate);
+			int color = colors[0] + idMath::FtoiFast(floatColor[0] * modulate);
 			colors[0] = color > 255 ? 255 : color;
-			color = colors[1] + Q_ftol(floatColor[1] * modulate);
+			color = colors[1] + idMath::FtoiFast(floatColor[1] * modulate);
 			colors[1] = color > 255 ? 255 : color;
-			color = colors[2] + Q_ftol(floatColor[2] * modulate);
+			color = colors[2] + idMath::FtoiFast(floatColor[2] * modulate);
 			colors[2] = color > 255 ? 255 : color;
 		}
 	}
@@ -1082,11 +1082,11 @@ static void DynamicLightPass()
 			}
 
 			// set color
-			int color = Q_ftol(floatColor[0] * modulate);
+			int color = idMath::FtoiFast(floatColor[0] * modulate);
 			colors[0] = color > 255 ? 255 : color;
-			color = Q_ftol(floatColor[1] * modulate);
+			color = idMath::FtoiFast(floatColor[1] * modulate);
 			colors[1] = color > 255 ? 255 : color;
-			color = Q_ftol(floatColor[2] * modulate);
+			color = idMath::FtoiFast(floatColor[2] * modulate);
 			colors[2] = color > 255 ? 255 : color;
 		}
 

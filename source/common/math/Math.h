@@ -183,7 +183,9 @@ public:
 	static float                Ceil(float f);				// returns the smallest integer that is greater than or equal to the given value
 	static float                Rint(float f);				// returns the nearest integer
 	static int                  Ftoi(float f);				// float to int conversion
-	static int                  FtoiFast(float f);			// fast float to int conversion but uses current FPU round mode (default round nearest)
+#endif
+	static int FtoiFast(float f);			// fast float to int conversion but uses current FPU round mode (default round nearest)
+#if 0
 	static unsigned int         Ftol(float f);				// float to int conversion
 	static unsigned int         FtolFast(float);			// fast float to int conversion but uses current FPU round mode (default round nearest)
 
@@ -944,10 +946,11 @@ inline int idMath::Ftoi(float f)
 {
 	return (int)f;
 }
+#endif
 
 inline int idMath::FtoiFast(float f)
 {
-#ifdef _MSC_VER
+#if id386 && defined _MSC_VER
 	int i;
 	__asm fld f
 	__asm fistp i			// use default rouding mode (round nearest)
@@ -974,6 +977,7 @@ inline int idMath::FtoiFast(float f)
 #endif
 }
 
+#if 0
 inline unsigned int idMath::Ftol(float f)
 {
 	return (unsigned int)f;

@@ -558,7 +558,7 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 		}
 
 		flod *= tr.currentModel->q3_numLods;
-		lod = Q_ftol(flod);
+		lod = idMath::FtoiFast(flod);
 
 		if (lod < 0)
 		{

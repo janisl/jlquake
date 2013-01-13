@@ -235,7 +235,7 @@ static void R_AddDynamicLightsQ2(mbrush38_surface_t* surf)
 			float fsacc = 0;
 			for (int s = 0; s < smax; s++, fsacc += 16, pfBL += 3)
 			{
-				int sd = Q_ftol(local[0] - fsacc);
+				int sd = idMath::FtoiFast(local[0] - fsacc);
 
 				if (sd < 0)
 				{
@@ -389,9 +389,9 @@ static void R_BuildLightMapQ2(mbrush38_surface_t* surf, byte* dest, int stride)
 	{
 		for (int j = 0; j < smax; j++)
 		{
-			int r = Q_ftol(bl[0]);
-			int g = Q_ftol(bl[1]);
-			int b = Q_ftol(bl[2]);
+			int r = idMath::FtoiFast(bl[0]);
+			int g = idMath::FtoiFast(bl[1]);
+			int b = idMath::FtoiFast(bl[2]);
 
 			// catch negative lights
 			if (r < 0)
@@ -566,11 +566,11 @@ static void EmitWaterPolysQ2(mbrush38_surface_t* fa)
 			float os = v[3];
 			float ot = v[4];
 
-			float s = os + r_turbsin[Q_ftol(((ot * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
+			float s = os + r_turbsin[idMath::FtoiFast(((ot * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
 			s += scroll;
 			s *= (1.0 / 64);
 
-			float t = ot + r_turbsin[Q_ftol(((os * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
+			float t = ot + r_turbsin[idMath::FtoiFast(((os * 0.125 + tr.refdef.floatTime) * TURBSCALE)) & 255] * 0.5;
 			t *= (1.0 / 64);
 
 			qglTexCoord2f(s, t);

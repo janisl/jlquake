@@ -565,7 +565,7 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 		}
 
 		flod *= tr.currentModel->q3_numLods;
-		lod = Q_ftol(flod);
+		lod = idMath::FtoiFast(flod);
 
 		if (lod < 0)
 		{
@@ -914,9 +914,9 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 			if (GGameType & GAME_ET)
 			{
 				// ydnar: ok :)
-				unsigned lat = Q_ftol((((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
+				unsigned lat = idMath::FtoiFast((((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
 					(((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
-				unsigned lng = Q_ftol(((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
+				unsigned lng = idMath::FtoiFast(((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
 					((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
 
 				outNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];

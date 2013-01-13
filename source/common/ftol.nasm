@@ -115,19 +115,6 @@ qftol0E7F:
 	mov eax, [temp]
 	ret
 
-
-;
-; long Q_ftol( float q )
-;
-
-global Q_ftol
-
-Q_ftol:
-	fld dword [esp+4]  
-	fistp dword [temp]
-	mov eax, [temp]
-	ret
-
 ;
 ; long qftol0F7F( float q ) - Linux FPU 
 ;
