@@ -138,8 +138,10 @@ public:
 	static float                ASin(float a);				// arc sine with 32 bits precision, input is clamped to [-1, 1] to avoid a silent NaN
 	static float                ASin16(float a);			// arc sine with 16 bits precision, maximum absolute error is 6.7626e-05
 	static double               ASin64(float a);			// arc sine with 64 bits precision
+#endif
 
-	static float                ACos(float a);				// arc cosine with 32 bits precision, input is clamped to [-1, 1] to avoid a silent NaN
+	static float ACos(float a);				// arc cosine with 32 bits precision, input is clamped to [-1, 1] to avoid a silent NaN
+#if 0
 	static float                ACos16(float a);			// arc cosine with 16 bits precision, maximum absolute error is 6.7626e-05
 	static double               ACos64(float a);			// arc cosine with 64 bits precision
 
@@ -628,6 +630,7 @@ inline double idMath::ASin64(float a)
 	}
 	return asin(a);
 }
+#endif
 
 inline float idMath::ACos(float a)
 {
@@ -642,6 +645,7 @@ inline float idMath::ACos(float a)
 	return acosf(a);
 }
 
+#if 0
 inline float idMath::ACos16(float a)
 {
 	if (FLOATSIGNBITSET(a))

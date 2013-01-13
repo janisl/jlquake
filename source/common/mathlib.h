@@ -20,9 +20,6 @@
 #include "qcommon.h"
 #include "math/Math.h"
 
-int Q_log2(int val);
-float Q_acos(float c);
-
 #define SQRTFAST(x)     ((x) * idMath::RSqrt(x))
 
 qint8 ClampChar(int i);

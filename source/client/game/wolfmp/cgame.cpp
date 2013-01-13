@@ -528,7 +528,7 @@ qintptr CLWM_CgameSystemCalls(qintptr* args)
 	case WMCG_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
 	case WMCG_ACOS:
-		return FloatAsInt(Q_acos(VMF(1)));
+		return FloatAsInt(idMath::ACos(VMF(1)));
 
 	case WMCG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));

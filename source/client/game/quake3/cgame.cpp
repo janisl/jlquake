@@ -430,7 +430,7 @@ qintptr CLQ3_CgameSystemCalls(qintptr* args)
 	case Q3CG_CEIL:
 		return FloatAsInt(ceil(VMF(1)));
 	case Q3CG_ACOS:
-		return FloatAsInt(Q_acos(VMF(1)));
+		return FloatAsInt(idMath::ACos(VMF(1)));
 
 	case Q3CG_PC_ADD_GLOBAL_DEFINE:
 		return PC_AddGlobalDefine((char*)VMA(1));

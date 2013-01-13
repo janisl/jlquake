@@ -24,6 +24,7 @@ class idMathTest : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestDEG2RAD);
 	CPPUNIT_TEST(TestRAD2DEG);
 	CPPUNIT_TEST(TestRSqrt);
+	CPPUNIT_TEST(TestACos);
 	CPPUNIT_TEST(TestFabs);
 	CPPUNIT_TEST(TestFtoiFast);
 	CPPUNIT_TEST_SUITE_END();
@@ -32,6 +33,7 @@ public:
 	void TestDEG2RAD();
 	void TestRAD2DEG();
 	void TestRSqrt();
+	void TestACos();
 	void TestFabs();
 	void TestFtoiFast();
 };
@@ -55,6 +57,13 @@ void idMathTest::TestRSqrt()
 {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, idMath::RSqrt(16), 0.001);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(2, idMath::RSqrt(0.25), 0.01);
+}
+
+void idMathTest::TestACos()
+{
+	CPPUNIT_ASSERT_EQUAL(0.0f, idMath::ACos(23));
+	CPPUNIT_ASSERT_EQUAL(idMath::PI, idMath::ACos(-456));
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.15928f, idMath::ACos(0.4), 0.000001);
 }
 
 void idMathTest::TestFabs()

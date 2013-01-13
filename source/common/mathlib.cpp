@@ -189,38 +189,6 @@ float bytedirs[NUMVERTEXNORMALS][3] =
 	{-0.688191, -0.587785, -0.425325},
 };
 
-int Q_log2(int val)
-{
-	int answer = 0;
-	while ((val >>= 1) != 0)
-	{
-		answer++;
-	}
-	return answer;
-}
-
-//	the msvc acos doesn't always return a value between -PI and PI:
-//
-//	int i;
-//	i = 1065353246;
-//	acos(*(float*) &i) == -1.#IND0
-float Q_acos(float c)
-{
-	float angle;
-
-	angle = acos(c);
-
-	if (angle > idMath::PI)
-	{
-		return (float)idMath::PI;
-	}
-	if (angle < -idMath::PI)
-	{
-		return (float)idMath::PI;
-	}
-	return angle;
-}
-
 qint8 ClampChar(int i)
 {
 	if (i < MIN_QINT8)
