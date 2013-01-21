@@ -60,7 +60,7 @@ extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar* com_timescale;
 
 extern Cvar* com_developer;
-#if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
+#if defined(_DEBUG)
 extern Cvar* com_noErrorInterrupt;
 #endif
 

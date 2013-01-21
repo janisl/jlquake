@@ -16,8 +16,9 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../client.h"
 #include "local.h"
+#include "../../common/Common.h"
+#include "../../common/common_defs.h"
 #include "../windows_shared.h"
 #include <dsound.h>
 

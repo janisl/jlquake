@@ -16,6 +16,9 @@
 
 #include "../common/qcommon.h"
 #include "../common/system_windows.h"
+#include "../common/common_defs.h"
+#include "../common/strings.h"
+#include "../common/system.h"
 #include "main.h"
 
 static char sys_cmdline[MAX_STRING_CHARS];

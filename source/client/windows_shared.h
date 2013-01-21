@@ -18,6 +18,7 @@
 #define _WIN_SHARED_H
 
 #include "../common/system_windows.h"
+#include "../common/console_variable.h"
 
 void SNDDMA_Activate();
 

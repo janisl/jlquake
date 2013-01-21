@@ -16,6 +16,11 @@
 
 #include "system.h"
 #include "system_windows.h"
+#include "Common.h"
+#include "common_defs.h"
+#include "command_buffer.h"
+#include "strings.h"
+#include "network_channel.h"
 #include "../client/public.h"
 #include <direct.h>
 #include <io.h>

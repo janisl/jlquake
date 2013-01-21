@@ -598,11 +598,8 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	if (Len >= Size)
 	{
 		common->Printf("String::Sprintf: overflow of %i in %i\n", Len, Size);
-#if defined _DEBUG && defined _MSC_VER && !defined _WIN64
-		__asm
-		{
-			int 3;
-		}
+#if defined _DEBUG && defined _MSC_VER
+		__debugbreak();
 #endif
 	}
 	NCpyZ(Dest, BigBuffer, Size);

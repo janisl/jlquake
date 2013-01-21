@@ -19,6 +19,10 @@
 #include "public.h"
 #include "keycodes.h"
 #include "../../common/event_queue.h"
+#include "../../common/Common.h"
+#include "../../common/common_defs.h"
+#include "../../common/command_buffer.h"
+#include "../translate.h"
 #include "../public.h"
 #include "../windows_shared.h"
 #define DIRECTINPUT_VERSION 0x0300

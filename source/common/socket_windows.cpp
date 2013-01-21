@@ -18,6 +18,8 @@
 
 #include "socket_local.h"
 #include "console_variable.h"
+#include "Common.h"
+#include "strings.h"
 #include <windows.h>
 #include <iphlpapi.h>
 

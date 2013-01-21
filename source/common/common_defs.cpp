@@ -32,7 +32,7 @@ Cvar* com_viewlog;
 Cvar* com_timescale;
 
 Cvar* com_developer;
-#if defined(_WIN32) && defined(_DEBUG)
+#if defined(_DEBUG)
 Cvar* com_noErrorInterrupt;
 #endif
 
