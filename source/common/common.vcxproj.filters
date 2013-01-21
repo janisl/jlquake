@@ -72,6 +72,7 @@
     <ClInclude Include="virtual_machine\public.h">
       <Filter>virtual_machine</Filter>
     </ClInclude>
+    <ClInclude Include="array.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="common_defs.h" />
@@ -100,6 +101,7 @@
     <ClInclude Include="script.h" />
     <ClInclude Include="network_channel.h" />
     <ClInclude Include="hexen2strings.h" />
+    <ClInclude Include="command_line_args.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clip_map\main.cpp">
@@ -194,5 +196,7 @@
     <ClCompile Include="player_move2.cpp" />
     <ClCompile Include="hexen2strings.cpp" />
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="command_line_args.cpp" />
+    <ClCompile Include="qcommon.cpp" />
   </ItemGroup>
 </Project>

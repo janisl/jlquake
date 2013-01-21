@@ -617,6 +617,9 @@
     <ClInclude Include="splines\splines.h">
       <Filter>splines</Filter>
     </ClInclude>
+    <ClInclude Include="splines\util_list.h">
+      <Filter>splines</Filter>
+    </ClInclude>
     <ClInclude Include="splines\util_str.h">
       <Filter>splines</Filter>
     </ClInclude>
@@ -718,5 +721,9 @@
     <ClInclude Include="game\et\dl_public.h">
       <Filter>game\et</Filter>
     </ClInclude>
+    <ClInclude Include="client_main.h" />
+    <ClInclude Include="chase.h" />
+    <ClInclude Include="system.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
 </Project>
