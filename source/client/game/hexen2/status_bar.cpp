@@ -270,8 +270,10 @@ void SbarH2_InitImages() {
 
 // Relative to the current status bar location.
 static void SbarH2_DrawPic( int x, int y, image_t* pic ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), pic );
+	R_SyncRenderThread();
 }
 
 static void SbarH2_DrawSubPic( int x, int y, int h, image_t* pic ) {
@@ -700,24 +702,30 @@ static void DrawActiveRings() {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngtrn%d.lmp", frame );
+		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
+		R_SyncRenderThread();
 	}
 
 	if ( flag & RING_WATER ) {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngwtr%d.lmp", frame );
+		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
+		R_SyncRenderThread();
 	}
 
 	if ( flag & RING_FLIGHT ) {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngfly%d.lmp", frame );
+		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
+		R_SyncRenderThread();
 	}
 }
 
@@ -735,24 +743,30 @@ static void DrawActiveArtifacts() {
 
 	flag = ( int )cl.h2_v.artifact_active;
 	if ( flag & H2ARTFLAG_TOMEOFPOWER ) {
+		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/pwrbook%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
 		art_col += 50;
+		R_SyncRenderThread();
 	}
 
 	if ( flag & H2ARTFLAG_HASTE ) {
+		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/durhst%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col,1, R_CachePic( tempStr ) );
 		art_col += 50;
+		R_SyncRenderThread();
 	}
 
 	if ( flag & H2ARTFLAG_INVINCIBILITY ) {
+		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/durshd%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
 		art_col += 50;
+		R_SyncRenderThread();
 	}
 
 	oldflags = flag;

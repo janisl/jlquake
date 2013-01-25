@@ -73,7 +73,9 @@ static int mq2_menudepth;
 static void MQ2_Banner( const char* name ) {
 	int w, h;
 	R_GetPicSize( &w, &h, name );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, name );
+	R_SyncRenderThread();
 }
 
 static void MQ2_PushMenu( void ( * draw )( void ), const char*( *key )( int k ), void ( * charfunc )( int key ) ) {
@@ -282,7 +284,9 @@ static void MQ2_DrawCursor( int x, int y, int f ) {
 
 	char cursorname[ 80 ];
 	String::Sprintf( cursorname, sizeof ( cursorname ), "m_cursor%d", f );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( x, y, cursorname );
+	R_SyncRenderThread();
 }
 
 static void MQ2_DrawTextBox( int x, int y, int width, int lines ) {
@@ -374,19 +378,27 @@ static void M_Main_Draw() {
 
 	for ( i = 0; names[ i ] != 0; i++ ) {
 		if ( i != m_main_cursor ) {
+			R_VerifyNoRenderCommands();
 			UI_DrawNamedPic( xoffset, ystart + i * 40 + 13, names[ i ] );
+			R_SyncRenderThread();
 		}
 	}
 	String::Cpy( litname, names[ m_main_cursor ] );
 	String::Cat( litname, sizeof ( litname ), "_sel" );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
+	R_SyncRenderThread();
 
 	MQ2_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, ( int )( cls.realtime / 100 ) % NUM_CURSOR_FRAMES );
 
 	R_GetPicSize( &w, &h, "m_main_plaque" );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset - 30 - w, ystart + h + 5, "m_main_logo" );
+	R_SyncRenderThread();
 }
 
 static const char* M_Main_Key( int key ) {
@@ -2505,10 +2517,12 @@ static void PlayerConfig_MenuDraw() {
 
 		R_RenderScene( &refdef );
 
+		R_VerifyNoRenderCommands();
 		String::Sprintf( scratch, sizeof ( scratch ), "/players/%s/%s_i.pcx",
 			s_pmi[ s_player_model_box.curvalue ].directory,
 			s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
 		UI_DrawNamedPic( s_player_config_menu.x - 40, refdef.y, scratch );
+		R_SyncRenderThread();
 	}
 }
 
@@ -3462,7 +3476,9 @@ static void VID_MenuDraw() {
 	//	draw the banner
 	int w, h;
 	R_GetPicSize( &w, &h, "m_banner_video" );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, "m_banner_video" );
+	R_SyncRenderThread();
 
 	//	move cursor to a reasonable starting position
 	Menu_AdjustCursor( &s_opengl_menu, 1 );
@@ -3544,7 +3560,9 @@ static const char* M_Quit_Key( int key ) {
 static void M_Quit_Draw() {
 	int w, h;
 	R_GetPicSize( &w, &h, "quit" );
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "quit" );
+	R_SyncRenderThread();
 }
 
 static void MQ2_Menu_Quit_f() {

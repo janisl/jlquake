@@ -247,11 +247,13 @@ void SbarQ1_InitImages() {
 // drawing routines are relative to the status bar location
 
 static void SbarQ1_DrawPic( int x, int y, image_t* pic ) {
+	R_VerifyNoRenderCommands();
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), pic );
 	} else   {
 		UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y + ( viddef.height - Q1SBAR_HEIGHT ), pic );
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
@@ -840,8 +842,10 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	int teamplay = GGameType & GAME_QuakeWorld && String::Atoi( Info_ValueForKey( cl.qh_serverinfo, "teamplay" ) );
 
 	if ( !start ) {
+		R_VerifyNoRenderCommands();
 		image_t* pic = R_CachePic( "gfx/ranking.lmp" );
 		UI_DrawPic( viddef.width / 2 - R_GetImageWidth( pic ) / 2, 8, pic );
+		R_SyncRenderThread();
 	}
 
 	// scores
@@ -1005,8 +1009,10 @@ static void SbarQW_TeamOverlay() {
 		return;
 	}
 
+	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/ranking.lmp" );
 	UI_DrawPic( 160 - R_GetImageWidth( pic ) / 2, 8, pic );
+	R_SyncRenderThread();
 
 	int y = 32;
 	int x = 36 + ( ( viddef.width - 320 ) >> 1 );
@@ -1296,6 +1302,7 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 	}
 
 	while ( *ptr ) {
+		R_VerifyNoRenderCommands();
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
 		} else   {
@@ -1305,6 +1312,7 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 		UI_DrawPic( x,y,sbq1_nums[ color ][ frame ] );
 		x += 24;
 		ptr++;
+		R_SyncRenderThread();
 	}
 }
 
@@ -1323,30 +1331,46 @@ void SbarQ1_IntermissionOverlay() {
 		return;
 	}
 
+	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/complete.lmp" );
 	UI_DrawPic( 64, 24, pic );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	pic = R_CachePic( "gfx/inter.lmp" );
 	UI_DrawPic( 0, 56, pic );
+	R_SyncRenderThread();
 
 	// time
 	int dig = cl.qh_completed_time / 60;
 	SbarQ1_IntermissionNumber( 160, 64, dig, 3, 0 );
 	int num = cl.qh_completed_time - dig * 60;
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( 234,64,sbq1_colon );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
+	R_SyncRenderThread();
 
 	SbarQ1_IntermissionNumber( 160, 104, cl.qh_stats[ Q1STAT_SECRETS ], 3, 0 );
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( 232,104,sbq1_slash );
+	R_SyncRenderThread();
 	SbarQ1_IntermissionNumber( 240, 104, cl.qh_stats[ Q1STAT_TOTALSECRETS ], 3, 0 );
 
 	SbarQ1_IntermissionNumber( 160, 144, cl.qh_stats[ Q1STAT_MONSTERS ], 3, 0 );
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( 232,144,sbq1_slash );
+	R_SyncRenderThread();
 	SbarQ1_IntermissionNumber( 240, 144, cl.qh_stats[ Q1STAT_TOTALMONSTERS ], 3, 0 );
 }
 
 void SbarQ1_FinaleOverlay() {
+	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/finale.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, 16, pic );
+	R_SyncRenderThread();
 }

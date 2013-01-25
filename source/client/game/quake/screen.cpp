@@ -28,6 +28,7 @@
 static Cvar* scrqw_allowsnap;
 
 static void SCRQ1_DrawPause() {
+	R_VerifyNoRenderCommands();
 	if ( !scr_showpause->value ) {		// turn off for screenshots
 		return;
 	}
@@ -39,9 +40,11 @@ static void SCRQ1_DrawPause() {
 	image_t* pic = R_CachePic( "gfx/pause.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
 		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
+	R_SyncRenderThread();
 }
 
 static void SCRQ1_DrawLoading() {
+	R_VerifyNoRenderCommands();
 	if ( !scr_draw_loading ) {
 		return;
 	}
@@ -49,6 +52,7 @@ static void SCRQ1_DrawLoading() {
 	image_t* pic = R_CachePic( "gfx/loading.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
 		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
+	R_SyncRenderThread();
 }
 
 #define NET_GRAPHHEIGHT 32

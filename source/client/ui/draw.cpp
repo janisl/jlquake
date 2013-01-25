@@ -81,9 +81,7 @@ void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h ) {
 }
 
 void UI_DrawPic( int x, int y, image_t* pic, float alpha ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic, alpha );
-	R_SyncRenderThread();
 }
 
 void UI_DrawNamedPic( int x, int y, const char* pic ) {

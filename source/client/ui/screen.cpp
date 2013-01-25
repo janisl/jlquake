@@ -400,11 +400,13 @@ void SCR_DrawNet() {
 		return;
 	}
 
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Quake2 ) {
 		UI_DrawNamedPic( scr_vrect.x + 64, scr_vrect.y, "net" );
 	} else   {
 		UI_DrawPic( scr_vrect.x + 64, scr_vrect.y, scr_net );
 	}
+	R_SyncRenderThread();
 }
 
 void SCR_DrawFPS() {

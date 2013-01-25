@@ -60,7 +60,9 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 			frame = *ptr - '0';
 		}
 
+		R_VerifyNoRenderCommands();
 		UI_DrawNamedPic( x,y,sb_nums[ color ][ frame ] );
+		R_SyncRenderThread();
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
@@ -147,7 +149,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				common->Error( "Pic >= MAX_IMAGES_Q2" );
 			}
 			if ( cl.q2_configstrings[ Q2CS_IMAGES + value ] ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, cl.q2_configstrings[ Q2CS_IMAGES + value ] );
+				R_SyncRenderThread();
 			}
 			continue;
 		}
@@ -185,7 +189,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			if ( !ci->icon ) {
 				ci = &cl.q2_baseclientinfo;
 			}
+			R_VerifyNoRenderCommands();
 			UI_DrawNamedPic( x, y, ci->iconname );
+			R_SyncRenderThread();
 			continue;
 		}
 
@@ -226,7 +232,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 		if ( !String::Cmp( token, "picn" ) ) {	// draw a pic from a name
 			token = String::Parse2( &s );
+			R_VerifyNoRenderCommands();
 			UI_DrawNamedPic( x, y, token );
+			R_SyncRenderThread();
 			continue;
 		}
 
@@ -253,7 +261,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			}
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 1 ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
+				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -274,7 +284,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 			}
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 4 ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
+				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -293,7 +305,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			color = 0;	// green
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 2 ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
+				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -402,7 +416,9 @@ static void CLQ2_DrawInventory() {
 	int x = ( viddef.width - 256 ) / 2;
 	int y = ( viddef.height - 240 ) / 2;
 
+	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( x, y + 8, "inventory" );
+	R_SyncRenderThread();
 
 	y += 24;
 	x += 24;

@@ -172,7 +172,9 @@ static void SCRH2_DrawPause() {
 	}
 
 	finaly = ( ( float )R_GetImageHeight( pic ) * LogoPercent ) - R_GetImageHeight( pic );
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, finaly, pic );
+	R_SyncRenderThread();
 }
 
 static void SCRH2_DrawLoading() {
@@ -185,7 +187,9 @@ static void SCRH2_DrawLoading() {
 
 	pic = R_CachePic( "gfx/menu/loading.lmp" );
 	offset = ( viddef.width - R_GetImageWidth( pic ) ) / 2;
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( offset, 0, pic );
+	R_SyncRenderThread();
 
 	if ( clh2_loading_stage == 0 ) {
 		return;
@@ -358,7 +362,9 @@ static void SBH2_IntermissionOverlay() {
 		break;
 	}
 
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( ( ( viddef.width - 320 ) >> 1 ),( ( viddef.height - 200 ) >> 1 ), pic );
+	R_SyncRenderThread();
 
 	if ( cl.qh_intermission >= 6 && cl.qh_intermission <= 8 ) {
 		elapsed = ( cl.qh_serverTimeFloat - cl.qh_completed_time ) * 20;

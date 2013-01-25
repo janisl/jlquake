@@ -75,7 +75,9 @@ static void MQH_Menu_Video_f();
 static void MQH_Menu_Help_f();
 
 void MQH_DrawPic( int x, int y, image_t* pic ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y, pic );
+	R_SyncRenderThread();
 }
 
 //	Draws one solid graphics character
