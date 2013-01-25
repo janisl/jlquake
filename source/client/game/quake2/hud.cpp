@@ -438,7 +438,9 @@ static void CLQ2_DrawInventory() {
 			bind, cl.q2_inventory[ item ], cl.q2_configstrings[ Q2CS_ITEMS + item ] );
 		// draw a blinky cursor by the selected item
 		if ( item == selected && ( cls.realtime * 10 ) & 1 ) {
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x - 8, y, 15 );
+			R_SyncRenderThread();
 		}
 		UI_DrawString( x, y, string );
 		y += 8;

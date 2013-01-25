@@ -156,7 +156,6 @@ void UI_FillPal( int x, int y, int w, int h, int c ) {
 
 void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
 	int numberOfRows, float r, float g, float b, float a ) {
-	R_VerifyNoRenderCommands();
 	if ( y <= -h || y >= viddef.height ) {
 		// Totally off screen
 		return;
@@ -171,7 +170,6 @@ void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int n
 	float frow = row * ysize;
 
 	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a );
-	R_SyncRenderThread();
 }
 
 void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
@@ -206,7 +204,9 @@ void UI_DrawString( int x, int y, const char* str, int mask ) {
 			str += 2;
 			continue;
 		}
+		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, ( ( byte ) * str ) | mask, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+		R_SyncRenderThread();
 		str++;
 		x += 8;
 	}
@@ -243,7 +243,9 @@ void UI_DrawSmallString( int x, int y, const char* str ) {
 			str += 2;
 			continue;
 		}
+		R_VerifyNoRenderCommands();
 		UI_SmallCharacter( x, y, *str, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+		R_SyncRenderThread();
 		str++;
 		x += 6;
 	}

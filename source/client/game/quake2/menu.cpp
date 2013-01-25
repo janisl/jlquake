@@ -260,7 +260,9 @@ static void Default_MenuChar( menuframework_s* m, int key ) {
 // cx and cy are in 320*240 coordinates, and will be centered on
 // higher res screens.
 static void MQ2_DrawCharacter( int cx, int cy, int num ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawChar( cx + ( ( viddef.width - 320 ) >> 1 ), cy + ( ( viddef.height - 240 ) >> 1 ), num );
+	R_SyncRenderThread();
 }
 
 static void MQ2_Print( int cx, int cy, const char* str ) {
@@ -3000,11 +3002,13 @@ static menuaction_s s_keys_inv_next_action;
 static menuaction_s s_keys_help_computer_action;
 
 static void KeyCursorDrawFunc( menuframework_s* menu ) {
+	R_VerifyNoRenderCommands();
 	if ( bind_grab ) {
 		UI_DrawChar( menu->x, menu->y + menu->cursor * 9, '=' );
 	} else   {
 		UI_DrawChar( menu->x, menu->y + menu->cursor * 9, 12 + ( ( Sys_Milliseconds() / 250 ) & 1 ) );
 	}
+	R_SyncRenderThread();
 }
 
 static void DrawKeyBindingFunc( void* self ) {

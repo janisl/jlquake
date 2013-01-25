@@ -264,11 +264,13 @@ static void SbarQ1_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, i
 
 //	Draws one solid graphics character
 static void SbarQ1_DrawCharacter( int x, int y, int num ) {
+	R_VerifyNoRenderCommands();
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawChar( x + 4, y + viddef.height - Q1SBAR_HEIGHT, num );
 	} else   {
 		UI_DrawChar( x + ( ( viddef.width - 320 ) >> 1 ) + 4, y + viddef.height - Q1SBAR_HEIGHT, num );
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawString( int x, int y, const char* str ) {
@@ -970,8 +972,12 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			UI_DrawString( x + 112, y, num );
 
 			if ( k == cl.playernum ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 104, y, 16 );
+				R_SyncRenderThread();
+				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 136, y, 17 );
+				R_SyncRenderThread();
 			}
 
 			// team
@@ -992,7 +998,9 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			UI_DrawString( x + 8, y, num );
 
 			if ( k == cl.viewentity - 1 ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawChar( x - 8, y, 12 );
+				R_SyncRenderThread();
 			}
 
 			// draw name
@@ -1076,8 +1084,12 @@ static void SbarQW_TeamOverlay() {
 
 		if ( !String::NCmp( Info_ValueForKey( cl.q1_players[ cl.playernum ].userinfo,
 					 "team" ), tm->team, 16 ) ) {
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 104 - 8, y, 16 );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 104 + 32, y, 17 );
+			R_SyncRenderThread();
 		}
 
 		y += 8;
@@ -1165,8 +1177,12 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		UI_DrawString( x + 8, y, num );
 
 		if ( k == cl.viewentity - 1 ) {
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x, y, 16 );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 32, y, 17 );
+			R_SyncRenderThread();
 		}
 
 		// team
@@ -1198,8 +1214,11 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 	// draw seperator
 	x += 208;
-	for ( y = viddef.height - sbqh_lines; y < ( int )viddef.height - 6; y += 2 )
+	for ( y = viddef.height - sbqh_lines; y < ( int )viddef.height - 6; y += 2 ) {
+		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, 14 );
+		R_SyncRenderThread();
+	}
 
 	x += 16;
 
@@ -1220,8 +1239,12 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 		if ( !String::NCmp( Info_ValueForKey( cl.q1_players[ cl.playernum ].userinfo,
 					 "team" ), tm->team, 16 ) ) {
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x - 8, y, 16 );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 32, y, 17 );
+			R_SyncRenderThread();
 		}
 
 		y += 8;

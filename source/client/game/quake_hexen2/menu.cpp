@@ -82,7 +82,9 @@ void MQH_DrawPic( int x, int y, image_t* pic ) {
 
 //	Draws one solid graphics character
 static void MQH_DrawCharacter( int cx, int line, int num ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawChar( cx + ( ( viddef.width - 320 ) >> 1 ), line, num );
+	R_SyncRenderThread();
 }
 
 void MQH_Print( int cx, int cy, const char* str ) {
@@ -196,7 +198,9 @@ static void MH2_DrawBigString( int x, int y, const char* string ) {
 
 	int length = String::Length( string );
 	for ( int c = 0; c < length; c++ ) {
+		R_VerifyNoRenderCommands();
 		x += MH2_DrawBigCharacter( x, y, string[ c ], string[ c + 1 ] );
+		R_SyncRenderThread();
 	}
 }
 

@@ -1072,21 +1072,21 @@ static void VQH_DropPunchAngle() {
 }
 
 static void VQH_DrawCrosshair() {
+	R_VerifyNoRenderCommands();
 	if ( cl.qh_intermission ) {
 		return;
 	}
 
 	if ( crosshair->value == 2 ) {
-		R_VerifyNoRenderCommands();
 		int x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
 		int y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
 		unsigned char* pColor = r_palette[ crosshaircolor->integer ];
 		UI_DrawStretchPicWithColour( x - 4, y - 4, 16, 16, cs_texture, pColor );
-		R_SyncRenderThread();
 	} else if ( crosshair->value )     {
 		UI_DrawChar( scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+' );
 	}
+	R_SyncRenderThread();
 }
 
 //	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
