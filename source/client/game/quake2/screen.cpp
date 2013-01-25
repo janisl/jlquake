@@ -77,7 +77,9 @@ void CLQ2_AddNetgraph() {
 }
 
 void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
+	R_VerifyNoRenderCommands();
 	R_BeginFrame( stereoFrame );
+	R_SyncRenderThread();
 
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
 		int w, h;

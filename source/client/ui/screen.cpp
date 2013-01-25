@@ -517,6 +517,7 @@ void SCR_UpdateScreen() {
 			SCRQ2_DrawScreen( STEREO_CENTER, 0 );
 		}
 
+		R_VerifyNoRenderCommands();
 		R_EndFrame( NULL, NULL );
 
 		if ( cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid ) {

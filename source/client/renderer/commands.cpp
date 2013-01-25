@@ -383,9 +383,6 @@ void R_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader ) {
 //	If running in stereo, RE_BeginFrame will be called twice
 // for each R_EndFrame
 void R_BeginFrame( stereoFrame_t stereoFrame ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	if ( !tr.registered ) {
 		return;
 	}
@@ -558,18 +555,10 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 			cmd->buffer = ( int )GL_BACK;
 		}
 	}
-
-	//FIXME Temporary hack
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 }
 
 //	Returns the number of msec spent in the back end
 void R_EndFrame( int* frontEndMsec, int* backEndMsec ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	if ( !tr.registered ) {
 		return;
 	}

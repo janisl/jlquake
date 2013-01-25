@@ -455,20 +455,26 @@ static void SCRQ2_TimeRefresh_f() {
 	viewangles[ 2 ] = 0;
 	if ( Cmd_Argc() == 2 ) {
 		// run without page flipping
+		R_VerifyNoRenderCommands();
 		R_BeginFrame( STEREO_CENTER );
+		R_SyncRenderThread();
 		for ( int i = 0; i < 128; i++ ) {
 			viewangles[ 1 ] = i / 128.0 * 360.0;
 			AnglesToAxis( viewangles, cl.refdef.viewaxis );
 			VQ2_TimeRefreshScene();
 		}
+		R_VerifyNoRenderCommands();
 		R_EndFrame( NULL, NULL );
 	} else   {
 		for ( int i = 0; i < 128; i++ ) {
 			viewangles[ 1 ] = i / 128.0 * 360.0;
 			AnglesToAxis( viewangles, cl.refdef.viewaxis );
 
+			R_VerifyNoRenderCommands();
 			R_BeginFrame( STEREO_CENTER );
+			R_SyncRenderThread();
 			VQ2_TimeRefreshScene();
+			R_VerifyNoRenderCommands();
 			R_EndFrame( NULL, NULL );
 		}
 	}

@@ -103,7 +103,9 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		return;				// not initialized yet
 
 	}
+	R_VerifyNoRenderCommands();
 	R_BeginFrame( stereoFrame );
+	R_SyncRenderThread();
 
 	//
 	// determine size of refresh window
@@ -143,6 +145,7 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		UI_DrawMenu();
 	}
 
+	R_VerifyNoRenderCommands();
 	R_EndFrame( NULL, NULL );
 }
 
